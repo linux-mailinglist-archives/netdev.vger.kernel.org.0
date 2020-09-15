@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC36526AC98
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 20:53:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ABA826ACC2
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 20:59:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727897AbgIOSwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 14:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
+        id S1727870AbgIOS7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 14:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727784AbgIORXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 13:23:40 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A24C0611BE;
-        Tue, 15 Sep 2020 10:11:03 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id w5so4123736wrp.8;
-        Tue, 15 Sep 2020 10:11:03 -0700 (PDT)
+        with ESMTP id S1727880AbgIOROf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 13:14:35 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7ACC061A29;
+        Tue, 15 Sep 2020 10:11:05 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id q9so241238wmj.2;
+        Tue, 15 Sep 2020 10:11:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=wSjHquXGGSBRC1E8BzsuQPA5XSPZNn6B9qBviuWtzU8=;
-        b=dc7+0GoEGYY/tzYR9c8tmPWtUTnOI7+/PDYINWv5clIJ8xeznxRVTT/mRrYcmYNXaq
-         zkBgxmoEKVb977Ybh0jBVM3vw89HByHP4jvRMH8kqvccGWa8F9O3kbpShKrmC54RLYqe
-         /7ROJX+54c8vhDujXNxwjyPHjhNVTr4vfKOqkN/tWtlywaErfnB28XvNMmeoKCgrmzQ2
-         Bg/vW83uOeYMkuia6ZZPjLQ45nQhZSgB/JgjkrqI+lePBiryIRxa3wcd0O4DCKl6uXYy
-         ci306/S1J2zPJ6OCM6jeD5hqRyNVBbVRIOjHHn0YGpEceyeARk/oMpadJAiydo6yKLxF
-         nM5Q==
+        bh=NKS1auYv56m49WmI6rHkbjfbXUfFIyNjZnkjGaV5oqw=;
+        b=PBglwBULwxFS7sZlLcXhTdumZbKAaLkPmpF0DqVWK0jslIeNL9iUCvnIdNGOodQR7n
+         xXVIuX0gKMtzsSatSgKDHdMCFC71F22jpu+Z/R5mdYHnRtoZ3LyDa3q424omQ6S/m+Rz
+         6nyHLZpBvC3f6UEMJ/zouPnLvWLM+HXik8j/8hN4TlgC+Qa5+s8y12TzwukvgkCQrpds
+         fsD+lq+Lqw+PyCUXMnttp/Wi6pwjoc4w9bW+Eibm0blZXizBZ7SYVrSbSPocHhiodDBI
+         lusHGmvcqp6fxHhCwSPektkqn7RYw9XRQd97NKnJl4W55Xha4HnQFkgWvZOPRMHozbKF
+         cnjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=wSjHquXGGSBRC1E8BzsuQPA5XSPZNn6B9qBviuWtzU8=;
-        b=N//buv3S5xrcR0pGgitWc9Jf1uQYYjKbasFM7ORRZVgl3VmFdQSqD7wB9FUq+DkGBK
-         9+67Syjmwlt6PsgdraGWJlHnZaatp8wJhzovpBUse0SlhpW0Fpcefdc5oeyZQTRcC72t
-         PVqjAvBKWexXoMnbK8rGB9F/y7EWpW6iYLgJTVK7r+V5uktf8Buk8ajd8hARAucze1E8
-         7Wzm/axaczk5RGoT5G18p9kcqukaW0t001HEQgKPeRXW8EvuxJDpgVx3pglsc9r0LEwv
-         hf2lwEzG7r6jdvBmtNiw8vZX4wD6w9PqyTkz7GW1keOptCLBVNi2RtqNZ6JI6/ju4jxU
-         ixxQ==
-X-Gm-Message-State: AOAM533feB2nGepnMNC83uRUO1skCqowRkL1rNM/JsaF5hzTr5h19dqu
-        NudIRkH66HfSoR7cM1mGBx3SYcocCp+Y+Q==
-X-Google-Smtp-Source: ABdhPJx/KjL9B2S2zYL5Yr8Sfkw0m5yRqeXuyY/k7LYjaUj4mOXgctYfAnXvE0NbD7YLfHY7FKn38A==
-X-Received: by 2002:adf:f24f:: with SMTP id b15mr24145845wrp.301.1600189861432;
-        Tue, 15 Sep 2020 10:11:01 -0700 (PDT)
+        bh=NKS1auYv56m49WmI6rHkbjfbXUfFIyNjZnkjGaV5oqw=;
+        b=Z5uIHZZn5CjVQ6mzSrj5YquRp2j0CVMzks3zqxM3EHwVq+MvIBD5qpXbFR01eyRXDs
+         d4is+690eVuMi59JeqrqjXR7wCZHcEyf93j1plBjv+g8q51doHvmcRG/1LNkDywjQdqo
+         WdOItjaYwgQI5Gpa6PArF5YBvhYfSr5eJ7TejjbnDElff6yNvLPISdyfiJAxcqMF+jim
+         xuWbNXOAPmrTRPyDr1kebf7B0kpO4mIREeC7EWOlmvRO3AtScO2UEBNVG6Fnz20kkTY4
+         GtHLKIt098Xg5O+lGe+JWMVFCINlgG03Ur+cwHgRNiVMrpzwo+6Q9aOc/wv7tq9xxTG1
+         8brQ==
+X-Gm-Message-State: AOAM530WsmaTLW55Mxh8MLVncWS2V2rVN6mVW5Kg/ce5xFwvh2QB/IBy
+        JqCiHiJhnGNOooLUU2OU6RFk4XlPgZMc/Q==
+X-Google-Smtp-Source: ABdhPJzlj77FLdcHtFlGx5jKYWYuFaGAY3ooFb8CmtdJZ/bJekq7eYsyCew031SBOBGDt5sEde9BlQ==
+X-Received: by 2002:a1c:7d16:: with SMTP id y22mr409144wmc.104.1600189863788;
+        Tue, 15 Sep 2020 10:11:03 -0700 (PDT)
 Received: from ogabbay-VM.habana-labs.com ([213.57.90.10])
-        by smtp.gmail.com with ESMTPSA id b194sm356558wmd.42.2020.09.15.10.10.59
+        by smtp.gmail.com with ESMTPSA id b194sm356558wmd.42.2020.09.15.10.11.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 10:11:00 -0700 (PDT)
+        Tue, 15 Sep 2020 10:11:02 -0700 (PDT)
 From:   Oded Gabbay <oded.gabbay@gmail.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     SW_Drivers@habana.ai, gregkh@linuxfoundation.org,
         davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         f.fainelli@gmail.com, Omer Shpigelman <oshpigelman@habana.ai>
-Subject: [PATCH v3 13/14] habanalabs/gaudi: support DCB protocol
-Date:   Tue, 15 Sep 2020 20:10:21 +0300
-Message-Id: <20200915171022.10561-14-oded.gabbay@gmail.com>
+Subject: [PATCH v3 14/14] habanalabs/gaudi: add NIC init/fini calls from common code
+Date:   Tue, 15 Sep 2020 20:10:22 +0300
+Message-Id: <20200915171022.10561-15-oded.gabbay@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200915171022.10561-1-oded.gabbay@gmail.com>
 References: <20200915171022.10561-1-oded.gabbay@gmail.com>
@@ -64,168 +64,185 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Omer Shpigelman <oshpigelman@habana.ai>
 
-Add DCB support to configure the NIC's Priority Flow Control (PFC).
-The added support is minimal because a full support is not
-currently required.
+Finally, enable the NIC engines. Initialize the NIC ports mask variable
+with full mask so all ports will be initialized.
 
-A summary of the supported callbacks:
-
-- ieee_getpfc: get the current PFC configuration. PFC is enabled by
-               default.
-- ieee_setpfc: set PFC configuration. Only 0 or all 4 priorities can be
-               enabled, no subset is allowed.
-- getdcbx: get DCBX capability.
-- setdcbx: set DCBX capability. Only host LLDP agent and IEEE protocol
-           flavors are supported.
+Call the NIC init/fini from the common code.
 
 Signed-off-by: Omer Shpigelman <oshpigelman@habana.ai>
 Reviewed-by: Oded Gabbay <oded.gabbay@gmail.com>
 Signed-off-by: Oded Gabbay <oded.gabbay@gmail.com>
 ---
- drivers/misc/habanalabs/gaudi/Makefile        |   2 +-
- drivers/misc/habanalabs/gaudi/gaudi_nic.c     |   3 +
- .../misc/habanalabs/gaudi/gaudi_nic_dcbnl.c   | 108 ++++++++++++++++++
- 3 files changed, 112 insertions(+), 1 deletion(-)
- create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_dcbnl.c
+ drivers/misc/habanalabs/common/device.c       | 18 +++++++++++++++
+ drivers/misc/habanalabs/common/habanalabs.h   |  6 +++++
+ .../misc/habanalabs/common/habanalabs_drv.c   |  1 +
+ drivers/misc/habanalabs/common/pci.c          |  1 +
+ drivers/misc/habanalabs/gaudi/gaudi.c         | 23 +++++++++++++++++++
+ drivers/misc/habanalabs/goya/goya.c           | 12 ++++++++++
+ 6 files changed, 61 insertions(+)
 
-diff --git a/drivers/misc/habanalabs/gaudi/Makefile b/drivers/misc/habanalabs/gaudi/Makefile
-index df674c5973e0..0345c91c40f8 100644
---- a/drivers/misc/habanalabs/gaudi/Makefile
-+++ b/drivers/misc/habanalabs/gaudi/Makefile
-@@ -3,4 +3,4 @@ HL_GAUDI_FILES := gaudi/gaudi.o gaudi/gaudi_hwmgr.o gaudi/gaudi_security.o \
- 	gaudi/gaudi_coresight.o
+diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
+index 73d64f84aeba..dd815a545160 100644
+--- a/drivers/misc/habanalabs/common/device.c
++++ b/drivers/misc/habanalabs/common/device.c
+@@ -1083,6 +1083,12 @@ int hl_device_reset(struct hl_device *hdev, bool hard_reset,
+ 			goto out_err;
+ 		}
  
- HL_GAUDI_FILES += gaudi/gaudi_nic.o gaudi/gaudi_phy.o \
--	gaudi/gaudi_nic_ethtool.o
-+	gaudi/gaudi_nic_ethtool.o gaudi/gaudi_nic_dcbnl.o
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi_nic.c b/drivers/misc/habanalabs/gaudi/gaudi_nic.c
-index c97e5f0e1c53..83d369ffbd89 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi_nic.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi_nic.c
-@@ -2779,6 +2779,9 @@ static int port_register(struct hl_device *hdev, int port)
++		rc = hdev->asic_funcs->nic_init(hdev);
++		if (rc) {
++			dev_err(hdev->dev, "Failed to init NIC driver\n");
++			goto out_err;
++		}
++
+ 		hl_set_max_power(hdev);
+ 	} else {
+ 		rc = hdev->asic_funcs->soft_reset_late_init(hdev);
+@@ -1318,6 +1324,13 @@ int hl_device_init(struct hl_device *hdev, struct class *hclass)
+ 		goto out_disabled;
+ 	}
  
- 	ndev->netdev_ops = &gaudi_nic_netdev_ops;
- 	ndev->ethtool_ops = &gaudi_nic_ethtool_ops;
-+#ifdef CONFIG_DCB
-+	ndev->dcbnl_ops = &gaudi_nic_dcbnl_ops;
-+#endif
- 	ndev->watchdog_timeo = NIC_TX_TIMEOUT;
- 	ndev->min_mtu = ETH_MIN_MTU;
- 	ndev->max_mtu = NIC_MAX_MTU;
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi_nic_dcbnl.c b/drivers/misc/habanalabs/gaudi/gaudi_nic_dcbnl.c
-new file mode 100644
-index 000000000000..87394f50400a
---- /dev/null
-+++ b/drivers/misc/habanalabs/gaudi/gaudi_nic_dcbnl.c
-@@ -0,0 +1,108 @@
-+// SPDX-License-Identifier: GPL-2.0
++	rc = hdev->asic_funcs->nic_init(hdev);
++	if (rc) {
++		dev_err(hdev->dev, "Failed to init NIC driver\n");
++		rc = 0;
++		goto out_disabled;
++	}
 +
-+/*
-+ * Copyright 2018-2020 HabanaLabs, Ltd.
-+ * All Rights Reserved.
-+ */
+ 	/*
+ 	 * Expose devices and sysfs nodes to user.
+ 	 * From here there is no need to add char devices and create sysfs nodes
+@@ -1469,6 +1482,11 @@ void hl_device_fini(struct hl_device *hdev)
+ 
+ 	hl_cb_pool_fini(hdev);
+ 
++	/* the NIC uses the kernel context for MMU mappings, therefore must be
++	 * cleaned before it
++	 */
++	hdev->asic_funcs->nic_fini(hdev);
 +
-+#include "gaudi_nic.h"
-+
-+#define PFC_PRIO_NUM		4
-+#define PFC_PRIO_MASK_ALL	GENMASK(PFC_PRIO_NUM - 1, 0)
-+#define PFC_PRIO_MASK_NONE	0
-+#define PFC_STAT_TX_OFFSET	17
-+#define PFC_STAT_RX_OFFSET	27
-+
-+#ifdef CONFIG_DCB
-+static int gaudi_nic_dcbnl_ieee_getpfc(struct net_device *netdev,
-+					struct ieee_pfc *pfc)
+ 	/* Release kernel context */
+ 	if ((hdev->kernel_ctx) && (hl_ctx_put(hdev->kernel_ctx) != 1))
+ 		dev_err(hdev->dev, "kernel ctx is still alive\n");
+diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
+index 65bc2527338b..d6130715a0ef 100644
+--- a/drivers/misc/habanalabs/common/habanalabs.h
++++ b/drivers/misc/habanalabs/common/habanalabs.h
+@@ -697,6 +697,10 @@ struct hl_info_mac_addr;
+  *                    then the timeout is the default timeout for the specific
+  *                    ASIC
+  * @get_hw_state: retrieve the H/W state
++ * @nic_init: init the NIC H/W and I/F. This should be called in the final satge
++ *            of the init flow, as we must not have anything that might fail
++ *            during its initialization after the NIC init.
++ * @nic_fini: perform NIC cleanup.
+  * @nic_control: Perform NIC related operations.
+  * @nic_cq_mmap: map the NIC CQ buffer.
+  * @pci_bars_map: Map PCI BARs.
+@@ -803,6 +807,8 @@ struct hl_asic_funcs {
+ 	int (*send_cpu_message)(struct hl_device *hdev, u32 *msg,
+ 				u16 len, u32 timeout, long *result);
+ 	enum hl_device_hw_state (*get_hw_state)(struct hl_device *hdev);
++	int (*nic_init)(struct hl_device *hdev);
++	void (*nic_fini)(struct hl_device *hdev);
+ 	int (*nic_control)(struct hl_device *hdev, u32 op, void *input,
+ 				void *output);
+ 	int (*nic_cq_mmap)(struct hl_device *hdev, struct vm_area_struct *vma);
+diff --git a/drivers/misc/habanalabs/common/habanalabs_drv.c b/drivers/misc/habanalabs/common/habanalabs_drv.c
+index b7fbbe8f2577..e99e84b6a787 100644
+--- a/drivers/misc/habanalabs/common/habanalabs_drv.c
++++ b/drivers/misc/habanalabs/common/habanalabs_drv.c
+@@ -242,6 +242,7 @@ static void set_driver_behavior_per_device(struct hl_device *hdev)
+ 	hdev->bmc_enable = 1;
+ 	hdev->hard_reset_on_fw_events = 1;
+ 	hdev->card_type = cpucp_card_type_pci;
++	hdev->nic_ports_mask = 0x3FF;
+ 	hdev->nic_ports_ext_mask = 0x3FF;
+ 	hdev->nic_auto_neg_mask = 0x3FF;
+ 	hdev->nic_load_fw = 0;
+diff --git a/drivers/misc/habanalabs/common/pci.c b/drivers/misc/habanalabs/common/pci.c
+index 923b2606e29f..c376ab4695ab 100644
+--- a/drivers/misc/habanalabs/common/pci.c
++++ b/drivers/misc/habanalabs/common/pci.c
+@@ -230,6 +230,7 @@ int hl_pci_set_inbound_region(struct hl_device *hdev, u8 region,
+ 			lower_32_bits(pci_region->addr));
+ 	rc |= hl_pci_iatu_write(hdev, offset + 0x18,
+ 			upper_32_bits(pci_region->addr));
++	/* Set bar type as memory */
+ 	rc |= hl_pci_iatu_write(hdev, offset + 0x0, 0);
+ 
+ 	/* Enable + bar/address match + match enable + bar number */
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index 2af07eb4165c..836391ddb890 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -883,6 +883,27 @@ static void gaudi_late_fini(struct hl_device *hdev)
+ 	hdev->hl_chip_info->info = NULL;
+ }
+ 
++static int gaudi_nic_init(struct hl_device *hdev)
 +{
-+	struct gaudi_nic_device **ptr = netdev_priv(netdev);
-+	struct gaudi_nic_device *gaudi_nic = *ptr;
-+	struct hl_device *hdev = gaudi_nic->hdev;
-+	int rc = 0, i, tx_idx, rx_idx;
-+	u32 port = gaudi_nic->port;
-+
-+	if (disabled_or_in_reset(gaudi_nic)) {
-+		dev_info_ratelimited(hdev->dev,
-+				"port %d is in reset, can't get PFC", port);
-+		return -EBUSY;
++	/*
++	 * In init flow we initialize the NIC ports from scratch. In hard reset
++	 * flow, we get here after the NIC ports were halted, hence we only
++	 * need to reopen them.
++	 */
++	if (atomic_read(&hdev->in_reset)) {
++		gaudi_nic_ports_reopen(hdev);
++		return 0;
 +	}
 +
-+	pfc->pfc_en = gaudi_nic->pfc_enable ? PFC_PRIO_MASK_ALL :
-+							PFC_PRIO_MASK_NONE;
-+	pfc->pfc_cap = PFC_PRIO_NUM;
-+
-+	for (i = 0 ; i < PFC_PRIO_NUM ; i++) {
-+		tx_idx = PFC_STAT_TX_OFFSET + i;
-+		rx_idx = PFC_STAT_RX_OFFSET + i;
-+
-+		pfc->requests[i] = gaudi_nic_read_mac_stat_counter(hdev, port,
-+								tx_idx, false);
-+		pfc->indications[i] = gaudi_nic_read_mac_stat_counter(hdev,
-+							port, rx_idx, true);
-+	}
-+
-+	return rc;
++	return gaudi_nic_ports_init(hdev);
 +}
 +
-+static int gaudi_nic_dcbnl_ieee_setpfc(struct net_device *netdev,
-+					struct ieee_pfc *pfc)
++static void gaudi_nic_fini(struct hl_device *hdev)
 +{
-+	struct gaudi_nic_device **ptr = netdev_priv(netdev);
-+	struct gaudi_nic_device *gaudi_nic = *ptr;
-+	struct hl_device *hdev = gaudi_nic->hdev;
-+	u32 port = gaudi_nic->port;
-+	u8 curr_pfc_en;
++	/* must be called after MSI was disabled */
++	gaudi_nic_ports_fini(hdev);
++}
 +
-+	if (pfc->pfc_en & ~PFC_PRIO_MASK_ALL) {
-+		dev_info_ratelimited(hdev->dev,
-+					"PFC supports %d priorities only, port %d\n",
-+					PFC_PRIO_NUM, port);
-+		return -EINVAL;
-+	}
-+
-+	if ((pfc->pfc_en != PFC_PRIO_MASK_NONE) &&
-+			(pfc->pfc_en != PFC_PRIO_MASK_ALL)) {
-+		dev_info_ratelimited(hdev->dev,
-+					"PFC should be enabled/disabled on all priorities, port %d\n",
-+					port);
-+		return -EINVAL;
-+	}
-+
-+	if (disabled_or_in_reset(gaudi_nic)) {
-+		dev_info_ratelimited(hdev->dev,
-+				"port %d is in reset, can't set PFC", port);
-+		return -EBUSY;
-+	}
-+
-+	curr_pfc_en = gaudi_nic->pfc_enable ? PFC_PRIO_MASK_ALL :
-+							PFC_PRIO_MASK_NONE;
-+
-+	if (pfc->pfc_en == curr_pfc_en)
-+		return 0;
-+
-+	gaudi_nic->pfc_enable = !gaudi_nic->pfc_enable;
-+
-+	gaudi_nic_set_pfc(gaudi_nic);
-+
+ static void gaudi_nic_handle_rx(struct gaudi_nic_device *gaudi_nic)
+ {
+ 	/* at this point, interrupts were disabled by the H/W */
+@@ -7484,6 +7505,8 @@ static const struct hl_asic_funcs gaudi_funcs = {
+ 	.get_eeprom_data = gaudi_get_eeprom_data,
+ 	.send_cpu_message = gaudi_send_cpu_message,
+ 	.get_hw_state = gaudi_get_hw_state,
++	.nic_init = gaudi_nic_init,
++	.nic_fini = gaudi_nic_fini,
+ 	.nic_control = gaudi_nic_control,
+ 	.nic_cq_mmap = gaudi_nic_cq_mmap,
+ 	.pci_bars_map = gaudi_pci_bars_map,
+diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
+index 9620654eefae..76f855fbc4d5 100644
+--- a/drivers/misc/habanalabs/goya/goya.c
++++ b/drivers/misc/habanalabs/goya/goya.c
+@@ -5269,6 +5269,16 @@ static enum hl_device_hw_state goya_get_hw_state(struct hl_device *hdev)
+ 	return RREG32(mmHW_STATE);
+ }
+ 
++static int goya_nic_init(struct hl_device *hdev)
++{
 +	return 0;
 +}
 +
-+static u8 gaudi_nic_dcbnl_getdcbx(struct net_device *netdev)
++static void goya_nic_fini(struct hl_device *hdev)
 +{
-+	return DCB_CAP_DCBX_HOST | DCB_CAP_DCBX_VER_IEEE;
++
 +}
 +
-+static u8 gaudi_nic_dcbnl_setdcbx(struct net_device *netdev, u8 mode)
-+{
-+	return !(mode == (DCB_CAP_DCBX_HOST | DCB_CAP_DCBX_VER_IEEE));
-+}
-+
-+const struct dcbnl_rtnl_ops gaudi_nic_dcbnl_ops = {
-+	.ieee_getpfc	= gaudi_nic_dcbnl_ieee_getpfc,
-+	.ieee_setpfc	= gaudi_nic_dcbnl_ieee_setpfc,
-+	.getdcbx	= gaudi_nic_dcbnl_getdcbx,
-+	.setdcbx	= gaudi_nic_dcbnl_setdcbx
-+};
-+#endif
+ static int goya_nic_control(struct hl_device *hdev, u32 op, void *input,
+ 			void *output)
+ {
+@@ -5409,6 +5419,8 @@ static const struct hl_asic_funcs goya_funcs = {
+ 	.get_eeprom_data = goya_get_eeprom_data,
+ 	.send_cpu_message = goya_send_cpu_message,
+ 	.get_hw_state = goya_get_hw_state,
++	.nic_init = goya_nic_init,
++	.nic_fini = goya_nic_fini,
+ 	.nic_control = goya_nic_control,
+ 	.nic_cq_mmap = goya_nic_mmap,
+ 	.pci_bars_map = goya_pci_bars_map,
 -- 
 2.17.1
 
