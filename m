@@ -2,73 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA80269A57
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 02:19:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A771269A5D
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 02:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726115AbgIOAS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 20:18:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44486 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726094AbgIOASv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 20:18:51 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5456AC06178A
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 17:18:51 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id cy2so942751qvb.0
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 17:18:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3SS1s2bcIajdOhzJNcG34pKsTgSXmi5SyNe45Z5KeOU=;
-        b=D3/Laad26nWG0jVuJqRDskVeoKxWhem3DThdqPc68YY9ZtuXSag6flsVMFn+pq/ZUj
-         AETchVxjh/tZTUPFl4mxxCVvdk0rbThkdFxM3mH/XPoMTf9yEmqe1VdWNH2oLjieIiNM
-         w7RRpvIJGBz6Zd9gy8P1Cqu1vTwH5r7q4EJdQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3SS1s2bcIajdOhzJNcG34pKsTgSXmi5SyNe45Z5KeOU=;
-        b=K8W9crc5cjIdQmAoLCO+uvA8nDL0E5sr6xMeRF+R16gEjBgDWncJ92QqSB8SRVNuSu
-         laK94+pGjkol8b03d4cLjI0zaeCz84qG6/2Fq+V5ni//QRRlY7OkUPQMfBEAvZIKo7vs
-         cdzYq0WlmwcuEQTJm4wc3V+KYV0OuYqoSNzBNORoFudngooS03SxV6rD8AKp/beCejJ/
-         6luFsOtyzJWlZ8AgKYdjfJkQxQktcuTfI69kn/0o7tD8n2nLAYwAg0/kk9nmd0y27n/U
-         GloMezJdE+JD8SEpuwKIx/vAGpAWH+2ZqgEwMiy13miL1RCkzU65g5ybx/Y9/p0mRsg+
-         XRWA==
-X-Gm-Message-State: AOAM533N5uENtg52lQsD/YD1Q/4oq5sZOqzP/QibWs1sGAsQBCzDsiCt
-        J5V8h3cMuRai7Nyk3kHLzP7F1cXvEAh+DK/nzsZytg==
-X-Google-Smtp-Source: ABdhPJzCVTZfTr21R4NObFPIVPYKnbJtf4w/G45xjFZAvEk1ALJXz0J/9CQwkBJrLZpAN/NjVLXrkyfS9I0YvWDyv30=
-X-Received: by 2002:a0c:d689:: with SMTP id k9mr15938559qvi.58.1600129130302;
- Mon, 14 Sep 2020 17:18:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200915001159.346469-1-kuba@kernel.org> <20200915001159.346469-6-kuba@kernel.org>
-In-Reply-To: <20200915001159.346469-6-kuba@kernel.org>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Mon, 14 Sep 2020 17:18:39 -0700
-Message-ID: <CACKFLikL_urC8KY4ONZs=UtrQmUmcjS1sKv8HptdNpLT4EskWQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 5/8] bnxt: add pause frame stats
+        id S1726153AbgIOAUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 20:20:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59716 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726024AbgIOAUN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 20:20:13 -0400
+Received: from paulmck-ThinkPad-P72.home (unknown [50.45.173.55])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0A8EA208DB;
+        Tue, 15 Sep 2020 00:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600129212;
+        bh=KpQcyw4rRtH7VKNeV9Vu9Ov4ZG0MW+PZLdYwJFvWQ/8=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=fFGv5T3c9maMM26lk1DHaV4i/s24/M4XwSahghU7CzgCcrDVjE+pmIisFmdX6ApP7
+         Nb9d9iN1tJES5rul/GZkTpKK9UiNLHUdzm3UnPe4egrKTd6sSGMpmuAClU3K92+45I
+         dai+gA/GBg2oKhxSVaX0FGU8CbxqPnR/sFuZSvm4=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id CCE6A35227CC; Mon, 14 Sep 2020 17:20:11 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 17:20:11 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, mkubecek@suse.cz,
-        saeedm@nvidia.com, tariqt@nvidia.com, Andrew Lunn <andrew@lunn.ch>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Cc:     Joel Fernandes <joel@joelfernandes.org>,
+        nikolay@cumulusnetworks.com, davem@davemloft.net,
+        netdev@vger.kernel.org, josh@joshtriplett.org,
+        peterz@infradead.org, christian.brauner@ubuntu.com,
+        rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sfr@canb.auug.org.au, roopa@nvidia.com
+Subject: Re: [PATCH net-next] rcu: prevent RCU_LOCKDEP_WARN() from swallowing
+ the condition
+Message-ID: <20200915002011.GJ29330@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <20200908090049.7e528e7f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200908173624.160024-1-kuba@kernel.org>
+ <5ABC15D5-3709-4CA4-A747-6A7812BB12DD@cumulusnetworks.com>
+ <20200908172751.4da35d60@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200914202122.GC2579423@google.com>
+ <20200914154738.3f4b980a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200914154738.3f4b980a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 5:13 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> These stats are already reported in ethtool -S.
-> Michael confirms they are equivalent to standard stats.
->
-> v2: - fix sparse warning about endian by using the macro
->     - use u64 for pointer type
->
+On Mon, Sep 14, 2020 at 03:47:38PM -0700, Jakub Kicinski wrote:
+> On Mon, 14 Sep 2020 16:21:22 -0400 Joel Fernandes wrote:
+> > On Tue, Sep 08, 2020 at 05:27:51PM -0700, Jakub Kicinski wrote:
+> > > On Tue, 08 Sep 2020 21:15:56 +0300 nikolay@cumulusnetworks.com wrote:  
+> > > > Ah, you want to solve it for all. :) 
+> > > > Looks and sounds good to me, 
+> > > > Reviewed-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>  
+> > > 
+> > > Actually, I give up, lockdep_is_held() is not defined without
+> > > CONFIG_LOCKDEP, let's just go with your patch..  
+> > 
+> > Care to send a patch just for the RCU macro then? Not sure what Dave is
+> > applying but if the net-next tree is not taking the RCU macro change, then
+> > send another one with my tag:
+> 
+> Seems like quite a few places depend on the macro disappearing its
+> argument. I was concerned that it's going to be had to pick out whether
+> !LOCKDEP builds should return true or false from LOCKDEP helpers, but
+> perhaps relying on the linker errors even more is not such poor taste?
+> 
+> Does the patch below look acceptable to you?
+
+The thing to check would be whether all compilers do sufficient
+dead-code elimination (it used to be that they did not).  One way to
+get a quick sniff test of this would be to make sure that a dead-code
+lockdep_is_held() is in common code, and then expose this patch to kbuild
+test robot.
+
+Seem reasonable?
+
+							Thanx, Paul
+
+> --->8------------
+> 
+> rcu: prevent RCU_LOCKDEP_WARN() from swallowing the condition
+> 
+> We run into a unused variable warning in bridge code when
+> variable is only used inside the condition of
+> rcu_dereference_protected().
+> 
+>  #define mlock_dereference(X, br) \
+> 	rcu_dereference_protected(X, lockdep_is_held(&br->multicast_lock))
+> 
+> Since on builds with CONFIG_PROVE_RCU=n rcu_dereference_protected()
+> compiles to nothing the compiler doesn't see the variable use.
+> 
+> Prevent the warning by adding the condition as dead code.
+> We need to un-hide the declaration of lockdep_tasklist_lock_is_held(),
+> lockdep_sock_is_held(), RCU lock maps and remove some declarations
+> in net/sched header, because they have a wrong type.
+> 
+> Add forward declarations of lockdep_is_held(), lock_is_held() which
+> will cause a linker errors if actually used with !LOCKDEP.
+> At least RCU expects some locks _not_ to be held so it's hard to
+> pick true/false for a dummy implementation.
+> 
 > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
-
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-
-Thanks.
+> ---
+>  include/linux/lockdep.h        |  6 ++++++
+>  include/linux/rcupdate.h       | 11 ++++++-----
+>  include/linux/rcupdate_trace.h |  4 ++--
+>  include/linux/sched/task.h     |  2 --
+>  include/net/sch_generic.h      | 12 ------------
+>  include/net/sock.h             |  2 --
+>  6 files changed, 14 insertions(+), 23 deletions(-)
+> 
+> diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+> index 6a584b3e5c74..c4b6225ee320 100644
+> --- a/include/linux/lockdep.h
+> +++ b/include/linux/lockdep.h
+> @@ -371,6 +371,12 @@ static inline void lockdep_unregister_key(struct lock_class_key *key)
+>  
+>  #define lockdep_depth(tsk)	(0)
+>  
+> +/*
+> + * Dummy forward declarations, allow users to write less ifdef-y code
+> + * and depend on dead code elimination.
+> + */
+> +int lock_is_held(const void *);
+> +int lockdep_is_held(const void *);
+>  #define lockdep_is_held_type(l, r)		(1)
+>  
+>  #define lockdep_assert_held(l)			do { (void)(l); } while (0)
+> diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
+> index d15d46db61f7..50d45781fa99 100644
+> --- a/include/linux/rcupdate.h
+> +++ b/include/linux/rcupdate.h
+> @@ -234,6 +234,11 @@ bool rcu_lockdep_current_cpu_online(void);
+>  static inline bool rcu_lockdep_current_cpu_online(void) { return true; }
+>  #endif /* #else #if defined(CONFIG_HOTPLUG_CPU) && defined(CONFIG_PROVE_RCU) */
+>  
+> +extern struct lockdep_map rcu_lock_map;
+> +extern struct lockdep_map rcu_bh_lock_map;
+> +extern struct lockdep_map rcu_sched_lock_map;
+> +extern struct lockdep_map rcu_callback_map;
+> +
+>  #ifdef CONFIG_DEBUG_LOCK_ALLOC
+>  
+>  static inline void rcu_lock_acquire(struct lockdep_map *map)
+> @@ -246,10 +251,6 @@ static inline void rcu_lock_release(struct lockdep_map *map)
+>  	lock_release(map, _THIS_IP_);
+>  }
+>  
+> -extern struct lockdep_map rcu_lock_map;
+> -extern struct lockdep_map rcu_bh_lock_map;
+> -extern struct lockdep_map rcu_sched_lock_map;
+> -extern struct lockdep_map rcu_callback_map;
+>  int debug_lockdep_rcu_enabled(void);
+>  int rcu_read_lock_held(void);
+>  int rcu_read_lock_bh_held(void);
+> @@ -320,7 +321,7 @@ static inline void rcu_preempt_sleep_check(void) { }
+>  
+>  #else /* #ifdef CONFIG_PROVE_RCU */
+>  
+> -#define RCU_LOCKDEP_WARN(c, s) do { } while (0)
+> +#define RCU_LOCKDEP_WARN(c, s) do { } while (0 && (c))
+>  #define rcu_sleep_check() do { } while (0)
+>  
+>  #endif /* #else #ifdef CONFIG_PROVE_RCU */
+> diff --git a/include/linux/rcupdate_trace.h b/include/linux/rcupdate_trace.h
+> index aaaac8ac927c..25cdef506cae 100644
+> --- a/include/linux/rcupdate_trace.h
+> +++ b/include/linux/rcupdate_trace.h
+> @@ -11,10 +11,10 @@
+>  #include <linux/sched.h>
+>  #include <linux/rcupdate.h>
+>  
+> -#ifdef CONFIG_DEBUG_LOCK_ALLOC
+> -
+>  extern struct lockdep_map rcu_trace_lock_map;
+>  
+> +#ifdef CONFIG_DEBUG_LOCK_ALLOC
+> +
+>  static inline int rcu_read_lock_trace_held(void)
+>  {
+>  	return lock_is_held(&rcu_trace_lock_map);
+> diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
+> index a98965007eef..9f943c391df9 100644
+> --- a/include/linux/sched/task.h
+> +++ b/include/linux/sched/task.h
+> @@ -47,9 +47,7 @@ extern spinlock_t mmlist_lock;
+>  extern union thread_union init_thread_union;
+>  extern struct task_struct init_task;
+>  
+> -#ifdef CONFIG_PROVE_RCU
+>  extern int lockdep_tasklist_lock_is_held(void);
+> -#endif /* #ifdef CONFIG_PROVE_RCU */
+>  
+>  extern asmlinkage void schedule_tail(struct task_struct *prev);
+>  extern void init_idle(struct task_struct *idle, int cpu);
+> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+> index d60e7c39d60c..1aaa9e3d2e9c 100644
+> --- a/include/net/sch_generic.h
+> +++ b/include/net/sch_generic.h
+> @@ -432,7 +432,6 @@ struct tcf_block {
+>  	struct mutex proto_destroy_lock; /* Lock for proto_destroy hashtable. */
+>  };
+>  
+> -#ifdef CONFIG_PROVE_LOCKING
+>  static inline bool lockdep_tcf_chain_is_locked(struct tcf_chain *chain)
+>  {
+>  	return lockdep_is_held(&chain->filter_chain_lock);
+> @@ -442,17 +441,6 @@ static inline bool lockdep_tcf_proto_is_locked(struct tcf_proto *tp)
+>  {
+>  	return lockdep_is_held(&tp->lock);
+>  }
+> -#else
+> -static inline bool lockdep_tcf_chain_is_locked(struct tcf_block *chain)
+> -{
+> -	return true;
+> -}
+> -
+> -static inline bool lockdep_tcf_proto_is_locked(struct tcf_proto *tp)
+> -{
+> -	return true;
+> -}
+> -#endif /* #ifdef CONFIG_PROVE_LOCKING */
+>  
+>  #define tcf_chain_dereference(p, chain)					\
+>  	rcu_dereference_protected(p, lockdep_tcf_chain_is_locked(chain))
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index eaa5cac5e836..1c67b1297a72 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -1566,13 +1566,11 @@ do {									\
+>  	lockdep_init_map(&(sk)->sk_lock.dep_map, (name), (key), 0);	\
+>  } while (0)
+>  
+> -#ifdef CONFIG_LOCKDEP
+>  static inline bool lockdep_sock_is_held(const struct sock *sk)
+>  {
+>  	return lockdep_is_held(&sk->sk_lock) ||
+>  	       lockdep_is_held(&sk->sk_lock.slock);
+>  }
+> -#endif
+>  
+>  void lock_sock_nested(struct sock *sk, int subclass);
+>  
+> -- 
+> 2.24.1
+> 
