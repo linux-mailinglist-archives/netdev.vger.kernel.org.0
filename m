@@ -2,100 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E62626B214
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:41:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0413326B215
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:41:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727717AbgIOWlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 18:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48064 "EHLO
+        id S1727694AbgIOWlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 18:41:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727434AbgIOP5x (ORCPT
+        with ESMTP id S1727544AbgIOP5x (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 11:57:53 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FA7C06178B;
-        Tue, 15 Sep 2020 08:48:32 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id b19so3234945lji.11;
-        Tue, 15 Sep 2020 08:48:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CaOGhpbsvAKZ1xKkD6mDooerCGhLM4qieRX/kAjlRF0=;
-        b=h1miVdBNCAKPdvV2ZSqK0snhgJr6Tn3fIlpOovCOXfF7pQ1I55L/K9R8OxYe+Nz34n
-         CnhFm6L7KahjSDaCrEYYec0uULxzLKCwMBy3DVzGPByUDglSqX/1B+hvtGvqjd5plVgP
-         qEa4cl29Zm7HAZSKgEtnEo4uq3a/sNZZmKn6ZLY6DIg/MKUpwtUrxaFf2RTLBv6d9Z2s
-         VpBLtlswNxh0X5vK83p1bHSu78TsW4KZxX9s1Iyn+/JUwcA5SF2it/yTcsPWm2WG9W3A
-         BWvZUjKBDaOAvqdgJIpotUV4m4wUhDCxnHs3sDfoNghsybxwnJL8/q6YkjJE1G9e2cYM
-         fLUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CaOGhpbsvAKZ1xKkD6mDooerCGhLM4qieRX/kAjlRF0=;
-        b=bq7/SdibQGr65u2XTYOmeTrdt90ehmJswfiojy9WPdQJ2hyPb/qM9tqJF/W/s2XRZH
-         k08krrA2DBGXm/c1s56VEVVW6jzhV2RgDCOgTrUoQb3yBxls00hmyhnvNx5+BQalrKJ/
-         r9uCBR7O3aBRaWdi4se/k04kvAUL7UcZALhNT5+MowKUpgD8IHiLxlgCSM/BXb9Tmzb3
-         X91zYTCCbL3cA8wWQ9q01yZhD9vQ5Gv26CTINusn3vfIH/4lC6DAwUeYa9DCY13ziRoT
-         yZT/cMUvDNrPtiqiG2sIQblT9rfB+buWTlo108WeWg7s5shggu1Cw6GMTM2+G0gY/wbF
-         vdlg==
-X-Gm-Message-State: AOAM531aC4ZO2i3+9ZO3ejzbBPFXsimiDtl4r722EVZs9T0pS7fdD1Os
-        y0SPaRm/Xy4kOr8qOPMA7gSXKkUdWL/DP407QEo=
-X-Google-Smtp-Source: ABdhPJzYZIs3iwl7dynyIfnvaKxqVJAmszYOcCrYqvAMffkF3MwmjowLn/dWFzc+UmdDfUGuwqoRUUNht3PbiMWgAUg=
-X-Received: by 2002:a2e:8593:: with SMTP id b19mr6762656lji.290.1600184911181;
- Tue, 15 Sep 2020 08:48:31 -0700 (PDT)
+Received: from www62.your-server.de (www62.your-server.de [IPv6:2a01:4f8:d0a:276a::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFF6C061352
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 08:50:42 -0700 (PDT)
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kIDD3-0002c1-5I; Tue, 15 Sep 2020 17:49:33 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kIDD2-000VJk-Us; Tue, 15 Sep 2020 17:49:32 +0200
+Subject: Re: [PATCH bpf v4] xsk: do not discard packet when NETDEV_TX_BUSY
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        netdev@vger.kernel.org, jonathan.lemon@gmail.com
+Cc:     A.Zema@falconvsystems.com
+References: <1599828221-19364-1-git-send-email-magnus.karlsson@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <6e58cde8-9e38-079a-589d-7b7a860ef61e@iogearbox.net>
+Date:   Tue, 15 Sep 2020 17:49:32 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20200902200815.3924-1-maciej.fijalkowski@intel.com>
- <20200902200815.3924-8-maciej.fijalkowski@intel.com> <20200903195114.ccfzmgcl4ngz2mqv@ast-mbp.dhcp.thefacebook.com>
- <20200911185927.GA2543@ranger.igk.intel.com> <20200915043924.uicfgbhuszccycbq@ast-mbp.dhcp.thefacebook.com>
- <5bf5a63c-7607-a24d-7e14-e41caa84bfc3@iogearbox.net>
-In-Reply-To: <5bf5a63c-7607-a24d-7e14-e41caa84bfc3@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 15 Sep 2020 08:48:19 -0700
-Message-ID: <CAADnVQJoCXa90Pvkm5xyNAR3cHGx+0YO58hHOnq+LsiQuJMBiQ@mail.gmail.com>
-Subject: Re: [PATCH v7 bpf-next 7/7] selftests: bpf: add dummy prog for
- bpf2bpf with tailcall
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1599828221-19364-1-git-send-email-magnus.karlsson@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25930/Tue Sep 15 15:55:28 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 15, 2020 at 8:03 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 9/15/20 6:39 AM, Alexei Starovoitov wrote:
-> > On Fri, Sep 11, 2020 at 08:59:27PM +0200, Maciej Fijalkowski wrote:
-> >> On Thu, Sep 03, 2020 at 12:51:14PM -0700, Alexei Starovoitov wrote:
-> >>> On Wed, Sep 02, 2020 at 10:08:15PM +0200, Maciej Fijalkowski wrote:
-> [...]
-> >>> Could you add few more tests to exercise the new feature more thoroughly?
-> >>> Something like tailcall3.c that checks 32 limit, but doing tail_call from subprog.
-> >>> And another test that consume non-trival amount of stack in each function.
-> >>> Adding 'volatile char arr[128] = {};' would do the trick.
-> >>
-> >> Yet another prolonged silence from my side, but not without a reason -
-> >> this request opened up a Pandora's box.
-> >
-> > Great catch and thanks to our development practices! As a community we should
-> > remember this lesson and request selftests more often than not.
->
-> +1, speaking of pandora ... ;-) I recently noticed that we also have the legacy
-> ld_abs/ld_ind instructions. Right now check_ld_abs() gates them by bailing out
-> if env->subprog_cnt > 1, but that doesn't solve everything given the prog itself
-> may not have bpf2bpf calls, but it could get tail-called out of a subprog. We
-> need to reject such cases (& add selftests for it), otherwise this would be a
-> verifier bypass given they may implicitly exit the program (and then mismatch
-> the return type that the verifier was expecting).
+Hey Magnus,
 
-Good point. I think it's easier to allow ld_abs though.
-The comment in check_ld_abs() is obsolete after gen_ld_abs() was added.
-The verifier needs to check that subprog that is doing ld_abs or tail_call
-has 'int' return type and check_reference_leak() doesn't error before
-ld_abs and before bpf_tail_call.
-In that sense doing bpf_tail_call from subprog has the same issues as ld_abs
-(reference leaks and int return requirement)
+On 9/11/20 2:43 PM, Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> In the skb Tx path, transmission of a packet is performed with
+> dev_direct_xmit(). When NETDEV_TX_BUSY is set in the drivers, it
+> signifies that it was not possible to send the packet right now,
+> please try later. Unfortunately, the xsk transmit code discarded the
+> packet and returned EBUSY to the application. Fix this unnecessary
+> packet loss, by not discarding the packet in the Tx ring and return
+> EAGAIN. As EAGAIN is returned to the application, it can then retry
+> the send operation later and the packet will then likely be sent as
+> the driver will then likely have space/resources to send the packet.
+> 
+> In summary, EAGAIN tells the application that the packet was not
+> discarded from the Tx ring and that it needs to call send()
+> again. EBUSY, on the other hand, signifies that the packet was not
+> sent and discarded from the Tx ring. The application needs to put the
+> packet on the Tx ring again if it wants it to be sent.
+> 
+> Fixes: 35fcde7f8deb ("xsk: support for Tx")
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> Reported-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
+> Suggested-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
+> Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+> v3->v4:
+> * Free the skb without triggering the drop trace when NETDEV_TX_BUSY
+> * Call consume_skb instead of kfree_skb when the packet has been
+>    sent successfully for correct tracing
+> * Use sock_wfree as destructor when NETDEV_TX_BUSY
+> v1->v3:
+> * Hinder dev_direct_xmit() from freeing and completing the packet to
+>    user space by manipulating the skb->users count as suggested by
+>    Daniel Borkmann.
+> ---
+>   net/xdp/xsk.c | 17 ++++++++++++++++-
+>   1 file changed, 16 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index c323162..d32e39d 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -377,15 +377,30 @@ static int xsk_generic_xmit(struct sock *sk)
+>   		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
+>   		skb->destructor = xsk_destruct_skb;
+>   
+> +		/* Hinder dev_direct_xmit from freeing the packet and
+> +		 * therefore completing it in the destructor
+> +		 */
+> +		refcount_inc(&skb->users);
+>   		err = dev_direct_xmit(skb, xs->queue_id);
+> +		if  (err == NETDEV_TX_BUSY) {
+> +			/* Tell user-space to retry the send */
+> +			skb->destructor = sock_wfree;
+
+I see, good catch, you need this one here as otherwise you leak wmem accounting
+given it's also part of xsk_destruct_skb() and we do free the prior allocated skb
+in this case.
+
+> +			/* Free skb without triggering the perf drop trace */
+> +			__kfree_skb(skb);
+
+As a minor nit, I would just use consume_skb(skb) here given this doesn't blindly
+ignore the skb_unref(). It's mostly about seeing where drops are happening so that
+tracepoint is set to kfree_skb() which is the more interesting one. Other than that
+looks good and ready to go. Thanks (& sorry for late reply)!
+
+> +			err = -EAGAIN;
+> +			goto out;
+> +		}
+> +
+>   		xskq_cons_release(xs->tx);
+>   		/* Ignore NET_XMIT_CN as packet might have been sent */
+> -		if (err == NET_XMIT_DROP || err == NETDEV_TX_BUSY) {
+> +		if (err == NET_XMIT_DROP) {
+>   			/* SKB completed but not sent */
+> +			kfree_skb(skb);
+>   			err = -EBUSY;
+>   			goto out;
+>   		}
+>   
+> +		consume_skb(skb);
+>   		sent_frame = true;
+>   	}
+>   
+> 
+
