@@ -2,256 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A771269A5D
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 02:20:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1806269A67
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 02:27:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726153AbgIOAUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 20:20:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59716 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726024AbgIOAUN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 20:20:13 -0400
-Received: from paulmck-ThinkPad-P72.home (unknown [50.45.173.55])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0A8EA208DB;
-        Tue, 15 Sep 2020 00:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600129212;
-        bh=KpQcyw4rRtH7VKNeV9Vu9Ov4ZG0MW+PZLdYwJFvWQ/8=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=fFGv5T3c9maMM26lk1DHaV4i/s24/M4XwSahghU7CzgCcrDVjE+pmIisFmdX6ApP7
-         Nb9d9iN1tJES5rul/GZkTpKK9UiNLHUdzm3UnPe4egrKTd6sSGMpmuAClU3K92+45I
-         dai+gA/GBg2oKhxSVaX0FGU8CbxqPnR/sFuZSvm4=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id CCE6A35227CC; Mon, 14 Sep 2020 17:20:11 -0700 (PDT)
-Date:   Mon, 14 Sep 2020 17:20:11 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Joel Fernandes <joel@joelfernandes.org>,
-        nikolay@cumulusnetworks.com, davem@davemloft.net,
-        netdev@vger.kernel.org, josh@joshtriplett.org,
-        peterz@infradead.org, christian.brauner@ubuntu.com,
-        rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sfr@canb.auug.org.au, roopa@nvidia.com
-Subject: Re: [PATCH net-next] rcu: prevent RCU_LOCKDEP_WARN() from swallowing
- the condition
-Message-ID: <20200915002011.GJ29330@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200908090049.7e528e7f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200908173624.160024-1-kuba@kernel.org>
- <5ABC15D5-3709-4CA4-A747-6A7812BB12DD@cumulusnetworks.com>
- <20200908172751.4da35d60@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200914202122.GC2579423@google.com>
- <20200914154738.3f4b980a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726043AbgIOA1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 20:27:35 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:56372 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726013AbgIOA1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 20:27:33 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08F0PmqX086919;
+        Tue, 15 Sep 2020 00:26:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=/lp3ssLFIF9grSJMfNvaz6HxSc4T07AGymekTnSNWLo=;
+ b=D/M2X9A5slRKJGp/rXq/kiEFcmcwXxFp2tHp1UdyuCxEDowoaMk+WSsA5KDBiQfu0BbF
+ IxAjf2DV3zJt5aie3at8QvzeCnyGBMvJCcpLlD8eBGkkYEHnszRIv034FamClD4HTlCe
+ GPZjnzW/wx52Di89jiafv788Bm/pGFxTkkFcjKMtds5YKGJv+ppHMR7hXnY4Q4xHaoTo
+ mdw6yK6SZ0RuFlRNmkAa0tjTL4Ra4U+YaUT9/frt3SPn0RMctWTZyvzpuc/5zgLlE9n8
+ QMDjM5ZkbTrfnFMoneGIiAkTa8dq+6KCbiC3LC5LPwqhRaFmI9dIO+dMCtr8RQnVB7G0 yw== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 33gp9m1r7j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 15 Sep 2020 00:26:35 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08F09toZ049766;
+        Tue, 15 Sep 2020 00:24:35 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 33h7wn3qga-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Sep 2020 00:24:35 +0000
+Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08F0OSfW003043;
+        Tue, 15 Sep 2020 00:24:28 GMT
+Received: from [10.74.107.135] (/10.74.107.135)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 15 Sep 2020 00:24:28 +0000
+Subject: Re: [PATCH v3 01/11] xen/manage: keep track of the on-going suspend
+ mode
+To:     Anchal Agarwal <anchalag@amazon.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
+        x86@kernel.org, jgross@suse.com, linux-pm@vger.kernel.org,
+        linux-mm@kvack.org, kamatam@amazon.com, sstabellini@kernel.org,
+        konrad.wilk@oracle.com, roger.pau@citrix.com, axboe@kernel.dk,
+        davem@davemloft.net, rjw@rjwysocki.net, len.brown@intel.com,
+        pavel@ucw.cz, peterz@infradead.org, eduval@amazon.com,
+        sblbir@amazon.com, xen-devel@lists.xenproject.org,
+        vkuznets@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dwmw@amazon.co.uk,
+        benh@kernel.crashing.org
+References: <cover.1598042152.git.anchalag@amazon.com>
+ <9b970e12491107afda0c1d4a6f154b52d90346ac.1598042152.git.anchalag@amazon.com>
+ <4b2bbc8b-7817-271a-4ff0-5ee5df956049@oracle.com>
+ <20200914214754.GA19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+From:   boris.ostrovsky@oracle.com
+Organization: Oracle Corporation
+Message-ID: <e9b94104-d20a-b6b2-cbe0-f79b1ed09c98@oracle.com>
+Date:   Mon, 14 Sep 2020 20:24:22 -0400
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200914154738.3f4b980a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200914214754.GA19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9744 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ adultscore=0 bulkscore=0 phishscore=0 mlxlogscore=999 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009150000
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9744 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
+ adultscore=0 malwarescore=0 clxscore=1015 lowpriorityscore=0 phishscore=0
+ spamscore=0 priorityscore=1501 suspectscore=0 impostorscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009150001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 03:47:38PM -0700, Jakub Kicinski wrote:
-> On Mon, 14 Sep 2020 16:21:22 -0400 Joel Fernandes wrote:
-> > On Tue, Sep 08, 2020 at 05:27:51PM -0700, Jakub Kicinski wrote:
-> > > On Tue, 08 Sep 2020 21:15:56 +0300 nikolay@cumulusnetworks.com wrote:  
-> > > > Ah, you want to solve it for all. :) 
-> > > > Looks and sounds good to me, 
-> > > > Reviewed-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>  
-> > > 
-> > > Actually, I give up, lockdep_is_held() is not defined without
-> > > CONFIG_LOCKDEP, let's just go with your patch..  
-> > 
-> > Care to send a patch just for the RCU macro then? Not sure what Dave is
-> > applying but if the net-next tree is not taking the RCU macro change, then
-> > send another one with my tag:
-> 
-> Seems like quite a few places depend on the macro disappearing its
-> argument. I was concerned that it's going to be had to pick out whether
-> !LOCKDEP builds should return true or false from LOCKDEP helpers, but
-> perhaps relying on the linker errors even more is not such poor taste?
-> 
-> Does the patch below look acceptable to you?
 
-The thing to check would be whether all compilers do sufficient
-dead-code elimination (it used to be that they did not).  One way to
-get a quick sniff test of this would be to make sure that a dead-code
-lockdep_is_held() is in common code, and then expose this patch to kbuild
-test robot.
+On 9/14/20 5:47 PM, Anchal Agarwal wrote:
+> On Sun, Sep 13, 2020 at 11:43:30AM -0400, boris.ostrovsky@oracle.com wrote:
+>> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+>>
+>>
+>>
+>> On 8/21/20 6:25 PM, Anchal Agarwal wrote:
+>>> Though, accquirng pm_mutex is still right thing to do, we may
+>>> see deadlock if PM hibernation is interrupted by Xen suspend.
+>>> PM hibernation depends on xenwatch thread to process xenbus state
+>>> transactions, but the thread will sleep to wait pm_mutex which is
+>>> already held by PM hibernation context in the scenario. Xen shutdown
+>>> code may need some changes to avoid the issue.
+>>
+>>
+>> Is it Xen's shutdown or suspend code that needs to address this? (Or I
+>> may not understand what the problem is that you are describing)
+>>
+> Its Xen suspend code I think. If we do not take the system_transition_mutex
+> in do_suspend then if hibernation is triggered in parallel to xen suspend there
+> could be issues. 
 
-Seem reasonable?
 
-							Thanx, Paul
+But you *are* taking this mutex to avoid this exact race, aren't you?
 
-> --->8------------
-> 
-> rcu: prevent RCU_LOCKDEP_WARN() from swallowing the condition
-> 
-> We run into a unused variable warning in bridge code when
-> variable is only used inside the condition of
-> rcu_dereference_protected().
-> 
->  #define mlock_dereference(X, br) \
-> 	rcu_dereference_protected(X, lockdep_is_held(&br->multicast_lock))
-> 
-> Since on builds with CONFIG_PROVE_RCU=n rcu_dereference_protected()
-> compiles to nothing the compiler doesn't see the variable use.
-> 
-> Prevent the warning by adding the condition as dead code.
-> We need to un-hide the declaration of lockdep_tasklist_lock_is_held(),
-> lockdep_sock_is_held(), RCU lock maps and remove some declarations
-> in net/sched header, because they have a wrong type.
-> 
-> Add forward declarations of lockdep_is_held(), lock_is_held() which
-> will cause a linker errors if actually used with !LOCKDEP.
-> At least RCU expects some locks _not_ to be held so it's hard to
-> pick true/false for a dummy implementation.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  include/linux/lockdep.h        |  6 ++++++
->  include/linux/rcupdate.h       | 11 ++++++-----
->  include/linux/rcupdate_trace.h |  4 ++--
->  include/linux/sched/task.h     |  2 --
->  include/net/sch_generic.h      | 12 ------------
->  include/net/sock.h             |  2 --
->  6 files changed, 14 insertions(+), 23 deletions(-)
-> 
-> diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-> index 6a584b3e5c74..c4b6225ee320 100644
-> --- a/include/linux/lockdep.h
-> +++ b/include/linux/lockdep.h
-> @@ -371,6 +371,12 @@ static inline void lockdep_unregister_key(struct lock_class_key *key)
->  
->  #define lockdep_depth(tsk)	(0)
->  
-> +/*
-> + * Dummy forward declarations, allow users to write less ifdef-y code
-> + * and depend on dead code elimination.
-> + */
-> +int lock_is_held(const void *);
-> +int lockdep_is_held(const void *);
->  #define lockdep_is_held_type(l, r)		(1)
->  
->  #define lockdep_assert_held(l)			do { (void)(l); } while (0)
-> diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
-> index d15d46db61f7..50d45781fa99 100644
-> --- a/include/linux/rcupdate.h
-> +++ b/include/linux/rcupdate.h
-> @@ -234,6 +234,11 @@ bool rcu_lockdep_current_cpu_online(void);
->  static inline bool rcu_lockdep_current_cpu_online(void) { return true; }
->  #endif /* #else #if defined(CONFIG_HOTPLUG_CPU) && defined(CONFIG_PROVE_RCU) */
->  
-> +extern struct lockdep_map rcu_lock_map;
-> +extern struct lockdep_map rcu_bh_lock_map;
-> +extern struct lockdep_map rcu_sched_lock_map;
-> +extern struct lockdep_map rcu_callback_map;
-> +
->  #ifdef CONFIG_DEBUG_LOCK_ALLOC
->  
->  static inline void rcu_lock_acquire(struct lockdep_map *map)
-> @@ -246,10 +251,6 @@ static inline void rcu_lock_release(struct lockdep_map *map)
->  	lock_release(map, _THIS_IP_);
->  }
->  
-> -extern struct lockdep_map rcu_lock_map;
-> -extern struct lockdep_map rcu_bh_lock_map;
-> -extern struct lockdep_map rcu_sched_lock_map;
-> -extern struct lockdep_map rcu_callback_map;
->  int debug_lockdep_rcu_enabled(void);
->  int rcu_read_lock_held(void);
->  int rcu_read_lock_bh_held(void);
-> @@ -320,7 +321,7 @@ static inline void rcu_preempt_sleep_check(void) { }
->  
->  #else /* #ifdef CONFIG_PROVE_RCU */
->  
-> -#define RCU_LOCKDEP_WARN(c, s) do { } while (0)
-> +#define RCU_LOCKDEP_WARN(c, s) do { } while (0 && (c))
->  #define rcu_sleep_check() do { } while (0)
->  
->  #endif /* #else #ifdef CONFIG_PROVE_RCU */
-> diff --git a/include/linux/rcupdate_trace.h b/include/linux/rcupdate_trace.h
-> index aaaac8ac927c..25cdef506cae 100644
-> --- a/include/linux/rcupdate_trace.h
-> +++ b/include/linux/rcupdate_trace.h
-> @@ -11,10 +11,10 @@
->  #include <linux/sched.h>
->  #include <linux/rcupdate.h>
->  
-> -#ifdef CONFIG_DEBUG_LOCK_ALLOC
-> -
->  extern struct lockdep_map rcu_trace_lock_map;
->  
-> +#ifdef CONFIG_DEBUG_LOCK_ALLOC
-> +
->  static inline int rcu_read_lock_trace_held(void)
->  {
->  	return lock_is_held(&rcu_trace_lock_map);
-> diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
-> index a98965007eef..9f943c391df9 100644
-> --- a/include/linux/sched/task.h
-> +++ b/include/linux/sched/task.h
-> @@ -47,9 +47,7 @@ extern spinlock_t mmlist_lock;
->  extern union thread_union init_thread_union;
->  extern struct task_struct init_task;
->  
-> -#ifdef CONFIG_PROVE_RCU
->  extern int lockdep_tasklist_lock_is_held(void);
-> -#endif /* #ifdef CONFIG_PROVE_RCU */
->  
->  extern asmlinkage void schedule_tail(struct task_struct *prev);
->  extern void init_idle(struct task_struct *idle, int cpu);
-> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-> index d60e7c39d60c..1aaa9e3d2e9c 100644
-> --- a/include/net/sch_generic.h
-> +++ b/include/net/sch_generic.h
-> @@ -432,7 +432,6 @@ struct tcf_block {
->  	struct mutex proto_destroy_lock; /* Lock for proto_destroy hashtable. */
->  };
->  
-> -#ifdef CONFIG_PROVE_LOCKING
->  static inline bool lockdep_tcf_chain_is_locked(struct tcf_chain *chain)
->  {
->  	return lockdep_is_held(&chain->filter_chain_lock);
-> @@ -442,17 +441,6 @@ static inline bool lockdep_tcf_proto_is_locked(struct tcf_proto *tp)
->  {
->  	return lockdep_is_held(&tp->lock);
->  }
-> -#else
-> -static inline bool lockdep_tcf_chain_is_locked(struct tcf_block *chain)
-> -{
-> -	return true;
-> -}
-> -
-> -static inline bool lockdep_tcf_proto_is_locked(struct tcf_proto *tp)
-> -{
-> -	return true;
-> -}
-> -#endif /* #ifdef CONFIG_PROVE_LOCKING */
->  
->  #define tcf_chain_dereference(p, chain)					\
->  	rcu_dereference_protected(p, lockdep_tcf_chain_is_locked(chain))
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index eaa5cac5e836..1c67b1297a72 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -1566,13 +1566,11 @@ do {									\
->  	lockdep_init_map(&(sk)->sk_lock.dep_map, (name), (key), 0);	\
->  } while (0)
->  
-> -#ifdef CONFIG_LOCKDEP
->  static inline bool lockdep_sock_is_held(const struct sock *sk)
->  {
->  	return lockdep_is_held(&sk->sk_lock) ||
->  	       lockdep_is_held(&sk->sk_lock.slock);
->  }
-> -#endif
->  
->  void lock_sock_nested(struct sock *sk, int subclass);
->  
-> -- 
-> 2.24.1
-> 
+
+> Now this is still theoretical in my case and I havent been able
+> to reproduce such a race. So the approach the original author took was to take
+> this lock which to me seems right.
+> And its Xen suspend and not Xen Shutdown. So basically if this scenario
+> happens I am of the view one of other will fail to occur then how do we recover
+> or avoid this at all.
+>
+> Does that answer your question?
+>
+
+
+>>> +
+>>> +static int xen_setup_pm_notifier(void)
+>>> +{
+>>> +     if (!xen_hvm_domain() || xen_initial_domain())
+>>> +             return -ENODEV;
+>>
+>> I don't think this works anymore.
+> What do you mean?
+> The first check is for xen domain types and other is for architecture support. 
+> The reason I put this check here is because I wanted to segregate the two.
+> I do not want to register this notifier at all for !hmv guest and also if its
+> an initial control domain.
+> The arm check only lands in notifier because once hibernate() api is called ->
+> calls pm_notifier_call_chain for PM_HIBERNATION_PREPARE this will fail for
+> aarch64. 
+> Once we have support for aarch64 this notifier can go away altogether. 
+>
+> Is there any other reason I may be missing why we should move this check to
+> notifier?
+
+
+Not registering this notifier is equivalent to having it return NOTIFY_OK.
+
+
+In your earlier versions just returning NOTIFY_OK was not sufficient for
+hibernation to proceed since the notifier would also need to set
+suspend_mode appropriately. But now your notifier essentially filters
+out unsupported configurations. And so if it is not called your
+configuration (e.g. PV domain) will be considered supported.
+
+
+>> In the past your notifier would set suspend_mode (or something) but now
+>> it really doesn't do anything except reports an error in some (ARM) cases.
+>>
+>> So I think you should move this check into the notifier.
+>> (And BTW I still think PM_SUSPEND_PREPARE should return an error too.
+>> The fact that we are using "suspend" in xen routine names is irrelevant)
+>>
+> I may have send "not-updated" version of the notifier's function change.
+>
+> +    switch (pm_event) {
+> +       case PM_HIBERNATION_PREPARE:
+> +        /* Guest hibernation is not supported for aarch64 currently*/
+> +        if (IS_ENABLED(CONFIG_ARM64)) {
+> +             ret = NOTIFY_BAD;                                                                                                                                                                                                                                                    
+> +             break;                                                                                                                                                                                                                                                               
+> +     }               
+> +       case PM_RESTORE_PREPARE:
+> +       case PM_POST_RESTORE:
+> +       case PM_POST_HIBERNATION:
+> +       default:
+> +           ret = NOTIFY_OK;
+> +    }
+
+
+There is no difference on x86 between this code and what you sent
+earlier. In both instances PM_SUSPEND_PREPARE will return NOTIFY_OK.
+
+
+On ARM this code will allow suspend to proceed (which is not what we want).
+
+
+-boris
+
+
+>
+> With the above path PM_SUSPEND_PREPARE will go all together. Does that
+> resolves this issue? I wanted to get rid of all SUSPEND_* as they are not needed
+> here clearly.
+> The only reason I kept it there is if someone tries to trigger hibernation on
+> ARM instances they should get an error. As I am not sure about the current
+> behavior. There may be a better way to not invoke hibernation on ARM DomU's and
+> get rid of this block all together.
+>
+> Again, sorry for sending in the half baked fix. My workspace switch may have
+> caused the error.
+>>
+>>
+>> -boris
+>>
+> Anchal
+>>
+>>> +     return register_pm_notifier(&xen_pm_notifier_block);
+>>> +}
+>>> +
