@@ -2,64 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CE0426AFDB
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 23:46:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04CBE26B123
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:25:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727591AbgIOVqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 17:46:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47244 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728039AbgIOVqN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Sep 2020 17:46:13 -0400
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CC1F02078E;
-        Tue, 15 Sep 2020 21:45:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600206339;
-        bh=ABO82mts5nM3TIDHabvdMa6Lu89g2lxW//DekJQN3sI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=lpJM6v5gln7UPseNFO1kEyhfOQWZhRGg/0Us3J2MY7Utt41YPGejkC0+DqRiNfhYL
-         58ugG7zikfF/d0O16LiHqmgs4w17t1ZsabLQD9PBJXD/NQJ8ssFDnr03+EOdtV981W
-         FMb2w1KLKojd9VRgY2PV7/+Ff0Mu5c/I/h6xrsJY=
-Received: by mail-lj1-f182.google.com with SMTP id a22so4097951ljp.13;
-        Tue, 15 Sep 2020 14:45:38 -0700 (PDT)
-X-Gm-Message-State: AOAM530OdAJ6u9SfDHwOna8ghOY+9E0jDqUfS4hXkP6B2fUA/JSHPdi/
-        Qw4ING6bw5Q/aQKVvaA5NaFDDkkWzyPp0xQhgSk=
-X-Google-Smtp-Source: ABdhPJxy0f+UQrcOiRM36neEKe54grnKyDt4O7nHzMMmZUen0Fhk4jrRtUVHboHkjWZlS2jhPpTIoAWDt1muzOesD2I=
-X-Received: by 2002:a2e:98cf:: with SMTP id s15mr7935962ljj.446.1600206337180;
- Tue, 15 Sep 2020 14:45:37 -0700 (PDT)
+        id S1727661AbgIOWZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 18:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727624AbgIOQWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 12:22:52 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DA6C06174A;
+        Tue, 15 Sep 2020 08:58:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description;
+        bh=yG7qWXKBUIxg7RQ3+cci8dpYxavPbFHR4ZLuySoica4=; b=t6Ws/MdHdLJs2XLcTrYc7bL7HB
+        OLZi/bOn/73POpUaXeC1ed/v/kFUkUxTJLfl12YpD3qYAUQgZ6kE65MhsxkCerZanCvd5xJnuGXVP
+        d5yX2p/2ZLmheiBRRktpBIy42haP2KLL/hBmeEjfStYgrd/sIfatnvsRXhMp4FwqBhDQMDuNFuNKw
+        ggXRbUlyeGOFi0hj24V+mj/JOjuhyPv5M7pE9Hr+ZE+yckaVWBw+/BC1uJFrpcacKnyKov8pttEEa
+        4VtqRW2WqCleQn5wsPxUOKeUxILx3bToavJ30o/oJgwoHWUbYxQ3FkO2BPGoJpzxcsEw/syGg3B+W
+        Btf+oB9g==;
+Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92] helo=localhost)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kIDLA-0003bv-2A; Tue, 15 Sep 2020 15:57:56 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        iommu@lists.linux-foundation.org
+Cc:     Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        linux1394-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
+        alsa-devel@alsa-project.org
+Subject: [PATCH 02/18] mm: turn alloc_pages into an inline function
+Date:   Tue, 15 Sep 2020 17:51:06 +0200
+Message-Id: <20200915155122.1768241-3-hch@lst.de>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200915155122.1768241-1-hch@lst.de>
+References: <20200915155122.1768241-1-hch@lst.de>
 MIME-Version: 1.0
-References: <20200915182959.241101-1-kafai@fb.com>
-In-Reply-To: <20200915182959.241101-1-kafai@fb.com>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 15 Sep 2020 14:45:25 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7b6oMHgOn0Oyq1Fk-xOws=8tK0Bfmbh-UvZUYUFE-zCQ@mail.gmail.com>
-Message-ID: <CAPhsuW7b6oMHgOn0Oyq1Fk-xOws=8tK0Bfmbh-UvZUYUFE-zCQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: bpf_skc_to_* casting helpers require a NULL
- check on sk
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 15, 2020 at 11:32 AM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> The bpf_skc_to_* type casting helpers are available to
-> BPF_PROG_TYPE_TRACING.  The traced PTR_TO_BTF_ID may be NULL.
-> For example, the skb->sk may be NULL.  Thus, these casting helpers
-> need to check "!sk" also and this patch fixes them.
->
-> Fixes: 0d4fad3e57df ("bpf: Add bpf_skc_to_udp6_sock() helper")
-> Fixes: 478cfbdf5f13 ("bpf: Add bpf_skc_to_{tcp, tcp_timewait, tcp_request}_sock() helpers")
-> Fixes: af7ec1383361 ("bpf: Add bpf_skc_to_tcp6_sock() helper")
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+To prevent a compiler error when a method call alloc_pages is
+added (which I plan to for the dma_map_ops).
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ include/linux/gfp.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+index 67a0774e080b98..dd2577c5407112 100644
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -550,8 +550,10 @@ extern struct page *alloc_pages_vma(gfp_t gfp_mask, int order,
+ #define alloc_hugepage_vma(gfp_mask, vma, addr, order) \
+ 	alloc_pages_vma(gfp_mask, order, vma, addr, numa_node_id(), true)
+ #else
+-#define alloc_pages(gfp_mask, order) \
+-		alloc_pages_node(numa_node_id(), gfp_mask, order)
++static inline struct page *alloc_pages(gfp_t gfp_mask, unsigned int order)
++{
++	return alloc_pages_node(numa_node_id(), gfp_mask, order);
++}
+ #define alloc_pages_vma(gfp_mask, order, vma, addr, node, false)\
+ 	alloc_pages(gfp_mask, order)
+ #define alloc_hugepage_vma(gfp_mask, vma, addr, order) \
+-- 
+2.28.0
+
