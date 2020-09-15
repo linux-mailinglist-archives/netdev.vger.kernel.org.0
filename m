@@ -2,71 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0FB9269A6B
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 02:30:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45811269A6F
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 02:31:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726074AbgIOAag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 20:30:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32846 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725994AbgIOAac (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 20:30:32 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 85964208DB;
-        Tue, 15 Sep 2020 00:30:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600129832;
-        bh=HVBTbKnwBEpFXclm8qQqDqlib/rfo66Alp+9WBUODkQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Wm8mNngC4wY7l4bTcpzPb0zIAlOSfAJl8UKtlts8lQ6e3TxsUaQWj4UF4SOD4RK+T
-         8EG5qzAmhWey7Aw3auOzCNM37dWgBfaCWskFMpTN5sgrOJ76HSJYSrnFCQN1R9UJt+
-         c+NFjrT2bGsmSx0asA1K/WXWZ7dK09nPhYa/CI9U=
-Date:   Mon, 14 Sep 2020 17:30:29 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Joel Fernandes <joel@joelfernandes.org>,
-        nikolay@cumulusnetworks.com, davem@davemloft.net,
-        netdev@vger.kernel.org, josh@joshtriplett.org,
-        peterz@infradead.org, christian.brauner@ubuntu.com,
-        rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sfr@canb.auug.org.au, roopa@nvidia.com
-Subject: Re: [PATCH net-next] rcu: prevent RCU_LOCKDEP_WARN() from
- swallowing the condition
-Message-ID: <20200914173029.60bdfc02@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200915002011.GJ29330@paulmck-ThinkPad-P72>
-References: <20200908090049.7e528e7f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200908173624.160024-1-kuba@kernel.org>
-        <5ABC15D5-3709-4CA4-A747-6A7812BB12DD@cumulusnetworks.com>
-        <20200908172751.4da35d60@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200914202122.GC2579423@google.com>
-        <20200914154738.3f4b980a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200915002011.GJ29330@paulmck-ThinkPad-P72>
+        id S1726046AbgIOAbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 20:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46366 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725994AbgIOAbP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 20:31:15 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E12C06174A;
+        Mon, 14 Sep 2020 17:31:15 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id x8so1242581ybm.3;
+        Mon, 14 Sep 2020 17:31:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vSuua+KQFUkRQnZw9f4qmHsHpgSqDmm375Cjk5dD/tg=;
+        b=k7yQ3U9wo0YcKmPIKDR0DAx7ocNOQ1GeqbYmghwmK5tzpUxVbhfflxwyBz0nsIeV5N
+         oPuwA89IGJ+u+zfSEdnRFo6+SmmK5DysQImD5Cz1uY8pZEgLY8f+7j9GVRkvs+0xAby7
+         qY+p45ZRO3O9UXLe+kYFsyxaoMss5LX5lLB4atZvFeJCMU3OE57SM7OLhj64O+3b0P/2
+         xU2sVJlwkNJeYEVIsPegcSY/pPcNznUk4krtB8q9NnMU8GvbVfiBYSTzM4Tzjcje8fsi
+         QDG/vT0KPcK8ThUVZvgFHhDZF+BHxIwzXvvXCPEjJGeSoZWtsxbNYg6T3Cimfn5eXzJ2
+         cykw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vSuua+KQFUkRQnZw9f4qmHsHpgSqDmm375Cjk5dD/tg=;
+        b=bV0WVZR6hhxFhDKTR9/3eqH3aH2L6gNIe04CHQu5wj/1kC5jeqQZKeQE5B6elxejH1
+         OkN3Eko9wvM4q0VEITL3QrXp3A26VjbMCJbyhsg26YVq8PC9onhb2aahJqDAXhEdZGg0
+         5nXu0lGG/aV1yL0KaZFe0+u66Y6bexvkzUtlLI++HpzMH8ZslexVDvPi4hYq6861ybxV
+         zfnNjLV/HS0OMhZLNi6PM8vzfwpT43m5O9MSTXjV7/5+imUO0B5RhaS/2vUkktlLzdLi
+         /fd3NV5RqfDsOoN/7oKJgvFHRmtve1M7tYLdkNloIQeZNbw+K4DPdGtMOYd7a0Gq4OOZ
+         mLAA==
+X-Gm-Message-State: AOAM530kYSp227g15Mm7kBkdPTCINBuGh8Vga2I7z/wYYZjnZM3kkPVn
+        Xb9kjnUp8C5ry94ZpB3RcC3Yh73Atk8PcGsfhN4=
+X-Google-Smtp-Source: ABdhPJzbJN4nH3rol5IoQwJtIva1nHqf2KozRRo7uMW+7Wmk728PEtcMDEBOkffueJVJ1tvsSgnx4cPaRSmYbZcTHM0=
+X-Received: by 2002:a25:da90:: with SMTP id n138mr4805165ybf.260.1600129874642;
+ Mon, 14 Sep 2020 17:31:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200914183615.2038347-1-sdf@google.com> <20200914183615.2038347-6-sdf@google.com>
+In-Reply-To: <20200914183615.2038347-6-sdf@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 14 Sep 2020 17:31:03 -0700
+Message-ID: <CAEf4BzaP6JvbsiTg6sAfGijk0sXkNAdjv0LUmSvQfXoCUKYTTQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 5/5] selftests/bpf: Test load and dump
+ metadata with btftool and skel
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        YiFei Zhu <zhuyifei1999@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Sep 2020 17:20:11 -0700 Paul E. McKenney wrote:
-> > Seems like quite a few places depend on the macro disappearing its
-> > argument. I was concerned that it's going to be had to pick out whether
-> > !LOCKDEP builds should return true or false from LOCKDEP helpers, but
-> > perhaps relying on the linker errors even more is not such poor taste?
-> > 
-> > Does the patch below look acceptable to you?  
-> 
-> The thing to check would be whether all compilers do sufficient
-> dead-code elimination (it used to be that they did not).  One way to
-> get a quick sniff test of this would be to make sure that a dead-code
-> lockdep_is_held() is in common code, and then expose this patch to kbuild
-> test robot.
+On Mon, Sep 14, 2020 at 11:37 AM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> From: YiFei Zhu <zhuyifei@google.com>
+>
+> This is a simple test to check that loading and dumping metadata
+> in btftool works, whether or not metadata contents are used by the
+> program.
+>
+> A C test is also added to make sure the skeleton code can read the
+> metadata values.
+>
+> Cc: YiFei Zhu <zhuyifei1999@gmail.com>
+> Signed-off-by: YiFei Zhu <zhuyifei@google.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
 
-I'm pretty sure it's in common code because kbuild bot complaints were
-the reason I gave up the first time around ;) 
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-I'll expose this to kbuild bot via my kernel.org tree in case it
-doesn't consider scissored patches and report back!
+>  tools/testing/selftests/bpf/Makefile          |   3 +-
+>  .../selftests/bpf/prog_tests/metadata.c       | 141 ++++++++++++++++++
+>  .../selftests/bpf/progs/metadata_unused.c     |  15 ++
+>  .../selftests/bpf/progs/metadata_used.c       |  15 ++
+>  .../selftests/bpf/test_bpftool_metadata.sh    |  82 ++++++++++
+>  5 files changed, 255 insertions(+), 1 deletion(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/metadata.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/metadata_unused.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/metadata_used.c
+>  create mode 100755 tools/testing/selftests/bpf/test_bpftool_metadata.sh
+>
+
+[...]
