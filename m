@@ -2,195 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6042026AE0E
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 21:50:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FE7526AE31
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 21:54:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727958AbgIOTuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 15:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59340 "EHLO
+        id S1727767AbgIORHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 13:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727829AbgIORKu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 13:10:50 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABBAC061353
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 09:36:12 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id g128so4737483iof.11
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 09:36:12 -0700 (PDT)
+        with ESMTP id S1727789AbgIOQsd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 12:48:33 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71DCC061356
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 09:36:56 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id r9so4813569ioa.2
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 09:36:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hTYtDNRWZ3IQd17IVwiFvjdPJC2m5bl5cpimFc01bsE=;
-        b=dd8bL7ebVaZyzMDfsYKo20tvtiuZtcDmrHxwpMH6xunQdc01MjGuk18V+0XPn8WHrl
-         Fis6Uo8ZkZSeYMw/H78zlSzVvrGy4lwsCvjqkxiT5CkoD8OYqyA+IbeH5o+YrirpA6r0
-         K8iLbnom0h1MLtbmdJo3GIQKZLGp8PT7JlepSGsUyzIZ6zgUM0WQ7PA3XVS8h2Jhq2pJ
-         kzHaBtpJJTkGGvgCKfbE1evnoBXp1Dad1Boq4Vl9c9ekuQvXK4qX4JS1c1w7QWEIZ0q7
-         lhbLIxyyUMt0OvM1lYg8LZlT0B+Pe0m3kwJXdmKVS7TF7Hciljn7WW/NJvTrGqu6jynF
-         Td1Q==
+        bh=E1zHw0XeuL4dlY2QFEYUyucdLBRDAvQdUCIhzYvG7so=;
+        b=R9TESOzQDWifSPgyqICUAwBgB89dU9aKoUGfKcNI7CWNmMibzoBuDVnIIjT5hkpdwN
+         PqHISEYfRgwP8lg5gOabpcngfVrMtJSIgwnNLe/ivuyoPAqqGcgLMllTY3W+wwfsQHvv
+         oUw4dr5YGouogoFnUPLukYTygv59ctRT4/nS3WmAGcJ95+wnQwPrQ5+KXMIKdhCEmr/f
+         To0NVcSenjSyVb/9+oDLepY0HMSv8FfmQbDXgcVu0K0AQ5KmsFuiZEI1U0y525qSmB1G
+         e5JWChotdR/5gj/6cyoA+jqDecWd/v2bQaAQX/9ZqsFQ9UYXLPk+rZN4w2+qDhC+vU1H
+         4KLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hTYtDNRWZ3IQd17IVwiFvjdPJC2m5bl5cpimFc01bsE=;
-        b=GLbaN/pB3hFdtR4xZEIUtxbEINobF3MW4rAMby2OdyrOpMjET2I8pwhwGZjWInfjzK
-         dXkkYPkPX0avSjKFvWtHro9U54m0v78owbu36IvzORFbvGivcb2+KvMuNsKGFJddMlvW
-         TymAd+RxScmebws0zR4BIl9oFGJrVTKlCUg8apQsfySWudNaNOJ5/J6m0/KyGDlMRtui
-         SsAcfKV+X71UX7kV3R/FFT+92EENkxQLWy2om9ia8aB7ozQtTTPhEe44nVJ+UO96z4iX
-         Nt9uw+esOOU+ddVpExA7x3gg7EIY1tWQP2YsxXhTvayY5wlhw/qyTai7cKdO6d7Thdip
-         JgFA==
-X-Gm-Message-State: AOAM533S1YUF+OR4+A9oILyCmMF/1NsV2Q1DChtnmss2Pay4xBEaIGG6
-        xoYq4naclMYil/fDzO9OykqCVmW0/4gXH98aME/xSw==
-X-Google-Smtp-Source: ABdhPJxfSpUADTY11rW/0vm2ayF8vH2q7+GTpuu5qgBeHOpVJABcAhpG1Zc/csWA4GJs7zkMIHdIbQ5efNp5B3lCemM=
-X-Received: by 2002:a05:6638:1643:: with SMTP id a3mr18483174jat.4.1600187770959;
- Tue, 15 Sep 2020 09:36:10 -0700 (PDT)
+        bh=E1zHw0XeuL4dlY2QFEYUyucdLBRDAvQdUCIhzYvG7so=;
+        b=I0dlX2JJQ1mNesJXO2oYDOkNQ3+yLt7IBAVYuXrmpt0hYR05xanhe2/9fzu4G7cPEI
+         siEcoWCql0GmibVNGsajZKmQ/9GXBc6YZtMcNX4Mg6gzKLYYeM55ZrVJkgNjggmfZzGT
+         r0KEqISpDs763ZcgIarLnMTw16swbrFrqHFqUMGbmJA9RB57IniCzXGgvSqnVsenw9Eq
+         ZZnsM3oPehxrPwQu+oOAZUcE+kJp6ii5aBxwFUTGD0hplKeKEC0vO2VmUcMmucy0QUyk
+         CRHBJ2hYrcOJH/w39MzKioEq3/KdpJAa6j4+YzUxZHPoTB3z3aufc0/hLsbE+8n8SPkM
+         TVrA==
+X-Gm-Message-State: AOAM530I9KZSuMrsZnIyaVK9Nw9/Pf9Vb51Mjg8+GfV5yozxd/0Nn2Tj
+        o46suqLt4An2Mwqvs/Cd2gBzSaACdtDe/MQFzCs=
+X-Google-Smtp-Source: ABdhPJzm1hJgZtPTLVw4S/wTkG3Dh8vgmYzifLih1j3NSyXmLDwqaL8OAsSLdE/5KJF8UxFu8Pq2iMt20Gbejw/xyjc=
+X-Received: by 2002:a05:6638:237:: with SMTP id f23mr19178297jaq.142.1600187816163;
+ Tue, 15 Sep 2020 09:36:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200911143022.414783-1-nicolas.rybowski@tessares.net>
- <20200911143022.414783-4-nicolas.rybowski@tessares.net> <CAPhsuW5Gbx2pWgM1XcSYqVsN6L=q+0u3QFNxG7A+Qez=Tziu2A@mail.gmail.com>
-In-Reply-To: <CAPhsuW5Gbx2pWgM1XcSYqVsN6L=q+0u3QFNxG7A+Qez=Tziu2A@mail.gmail.com>
-From:   Nicolas Rybowski <nicolas.rybowski@tessares.net>
-Date:   Tue, 15 Sep 2020 18:35:59 +0200
-Message-ID: <CACXrtpRzZuCyZnduYcV+1d2Z3qTK2b7Mcj2gQvcRbnv7+k0VRw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 4/5] bpf: selftests: add MPTCP test base
-To:     Song Liu <song@kernel.org>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <1599117498-30145-1-git-send-email-sundeep.lkml@gmail.com>
+ <20200903121803.75fb0ade@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <BY5PR18MB3298899BF15F266144EE8760C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904083709.GF2997@nanopsycho.orion> <BY5PR18MB3298EB53D2F869D64D7F534DC62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904121126.GI2997@nanopsycho.orion> <BY5PR18MB3298C4C84704BCE864133C33C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904133753.77ce6bc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CALHRZuoa8crCaOAkEqyBq1DnmVqUgpv_jzQboMNZcU_3R4RGvg@mail.gmail.com>
+ <CALHRZuo9w=NJ4B6hw4afhoY21rAbqxBTZnLKN4+A=q21wNPPjQ@mail.gmail.com> <20200915091212.3b857f80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200915091212.3b857f80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Tue, 15 Sep 2020 22:06:45 +0530
+Message-ID: <CALHRZupiMFJXb6_Abd6qbyZJzjdpMCy_t+DWQs7zU9cXtuhWGA@mail.gmail.com>
+Subject: Re: [EXT] Re: [net-next PATCH 0/2] Introduce mbox tracepoints for Octeontx2
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Song,
-
-Thanks for the feedback !
-
-On Mon, Sep 14, 2020 at 8:07 PM Song Liu <song@kernel.org> wrote:
+On Tue, Sep 15, 2020 at 9:42 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Fri, Sep 11, 2020 at 8:02 AM Nicolas Rybowski
-> <nicolas.rybowski@tessares.net> wrote:
+> On Tue, 15 Sep 2020 21:22:21 +0530 sundeep subbaraya wrote:
+> > > > Make use of the standard devlink tracepoint wherever applicable, and you
+> > > > can keep your extra ones if you want (as long as Jiri don't object).
+> > >
+> > > Sure and noted. I have tried to use devlink tracepoints and since it
+> > > could not fit our purpose I used these.
 > >
-> > This patch adds a base for MPTCP specific tests.
-> >
-> > It is currently limited to the is_mptcp field in case of plain TCP
-> > connection because for the moment there is no easy way to get the subflow
-> > sk from a msk in userspace. This implies that we cannot lookup the
-> > sk_storage attached to the subflow sk in the sockops program.
-> >
-> > Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> > Signed-off-by: Nicolas Rybowski <nicolas.rybowski@tessares.net>
+> > Can you please comment.
 >
-> Acked-by: Song Liu <songliubraving@fb.com>
->
-> With some nitpicks below.
->
-> > ---
-> >
-> > Notes:
-> >     v1 -> v2:
-> >     - new patch: mandatory selftests (Alexei)
-> >
-> [...]
-> >                      int timeout_ms);
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/mptcp.c b/tools/testing/selftests/bpf/prog_tests/mptcp.c
-> > new file mode 100644
-> > index 000000000000..0e65d64868e9
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/prog_tests/mptcp.c
-> > @@ -0,0 +1,119 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include <test_progs.h>
-> > +#include "cgroup_helpers.h"
-> > +#include "network_helpers.h"
-> > +
-> > +struct mptcp_storage {
-> > +       __u32 invoked;
-> > +       __u32 is_mptcp;
-> > +};
-> > +
-> > +static int verify_sk(int map_fd, int client_fd, const char *msg, __u32 is_mptcp)
-> > +{
-> > +       int err = 0, cfd = client_fd;
-> > +       struct mptcp_storage val;
-> > +
-> > +       /* Currently there is no easy way to get back the subflow sk from the MPTCP
-> > +        * sk, thus we cannot access here the sk_storage associated to the subflow
-> > +        * sk. Also, there is no sk_storage associated with the MPTCP sk since it
-> > +        * does not trigger sockops events.
-> > +        * We silently pass this situation at the moment.
-> > +        */
-> > +       if (is_mptcp == 1)
-> > +               return 0;
-> > +
-> > +       if (CHECK_FAIL(bpf_map_lookup_elem(map_fd, &cfd, &val) < 0)) {
-> > +               perror("Failed to read socket storage");
->
-> Maybe simplify this with CHECK(), which contains a customized error message?
-> Same for some other calls.
->
+> Comment on what? Restate what I already said? Add the standard
+> tracepoint, you can add extra ones where needed.
 
-The whole logic here is strongly inspired from prog_tests/tcp_rtt.c
-where CHECK_FAIL is used.
-Also the CHECK macro will print a PASS message on successful map
-lookup, which is not expected at this point of the tests.
-I think it would be more interesting to leave it as it is to keep a
-cohesion between TCP and MPTCP selftests. What do you think?
+We did look at using the devlink tracepoint for our purpose and found
+it not suitable for our current requirement.
+As and when we want to add new tracepoints we will keep this in mind
+to see if we can use the devlink one.
 
-If there are no objections, I will send a v3 with the other requested
-changes and a rebase on the latest bpf-next.
-
-> > +               return -1;
-> > +       }
-> > +
-> > +       if (val.invoked != 1) {
-> > +               log_err("%s: unexpected invoked count %d != %d",
-> > +                       msg, val.invoked, 1);
-> > +               err++;
-> > +       }
-> > +
-> > +       if (val.is_mptcp != is_mptcp) {
-> > +               log_err("%s: unexpected bpf_tcp_sock.is_mptcp %d != %d",
-> > +                       msg, val.is_mptcp, is_mptcp);
-> > +               err++;
-> > +       }
-> > +
-> > +       return err;
-> > +}
-> > +
-> > +static int run_test(int cgroup_fd, int server_fd, bool is_mptcp)
-> [...]
->
-> > +
-> > +       client_fd = is_mptcp ? connect_to_mptcp_fd(server_fd, 0) :
-> > +                              connect_to_fd(server_fd, 0);
-> > +       if (client_fd < 0) {
-> > +               err = -1;
-> > +               goto close_client_fd;
->
-> This should be "goto close_bpf_object;", and we don't really need the label
-> close_client_fd.
->
-> > +       }
-> > +
-> > +       err += is_mptcp ? verify_sk(map_fd, client_fd, "MPTCP subflow socket", 1) :
->
-> It doesn't really change the logic, but I guess we only need "err = xxx"?
->
-> > +                         verify_sk(map_fd, client_fd, "plain TCP socket", 0);
-> > +
-> > +close_client_fd:
-> > +       close(client_fd);
-> > +
-> > +close_bpf_object:
-> > +       bpf_object__close(obj);
-> > +       return err;
-> > +}
-> > +
+So was just checking if Jiri is okay with this.
