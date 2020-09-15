@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FD8F26B030
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:04:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6157326B02B
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:04:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728037AbgIOWEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 18:04:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48992 "EHLO
+        id S1728054AbgIOWD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 18:03:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728113AbgIOWD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 18:03:28 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A900C061788
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 15:03:17 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id g72so6029017qke.8
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 15:03:17 -0700 (PDT)
+        with ESMTP id S1728085AbgIOWDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 18:03:34 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3785EC06178B
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 15:03:33 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id z18so2542434qvp.6
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 15:03:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lImUIif1n8cBB0bKcX9LH+MkHbSgbzjwXMS0j6OhnaE=;
-        b=IFrtkdnH6jjt1bb2TOXNW8Q0T3RI6vk9C9kqInbxvF2qhQESPdggFaza8Nykc2PDLN
-         x5Nz7+Aw3222BMiUTy3t6b8uhpUf+y0HrdpGAe8NojsRGFGeTakA1Xu2E8f4DGSJxfuJ
-         y89rn20nSjWH8gVy1xGtoCDVtMOEdsv6Tnq8oOVlDq1Jy5/ZDsYRTHOdOmeqX1KrhNzd
-         UmUc8Axcv0ldSx58qKRp3CL2cNghLX5/AB0v6zvF2aXumCokSB6P7R3mYGrEw73xRuXz
-         NLAvB4jZh+/721TP5tDagpfWi+EqGAoXVOZXntcNgMSO3ZInii4XrxuyKtLr57r61sVt
-         l1kA==
+        bh=JOLtYWV5k43t7zSbOIgN7n22Qeg30cuT8X6VukPd788=;
+        b=bTy/eiUmBRcA2datxSAmLf8APHcXrKNfoi7DcoTegfryY5ZEBzTSirUErrimu584Xu
+         AsJiAXThsmidhIga+KvkysynDV//n6c8F76aN2aWK5X74oq8Tdqda2TlWY90JgCDlBps
+         yFKqjqfrdq1nDgRkno7HvOeSEIs1GvhGnslTR/fuitSEJ6k1N/MDIv2R2ADIYcQf2MdX
+         r7O1U9WYHSm49mk/0uubwoTZPPrfrQb/FkPjU03FiYcSAB106SC03LnKbimvvbWzYAJ2
+         thtEsoE74MaII0EE1Yl4Bw2PrQJpNR7CD0baI4AqKIz1cqz9H7p/K3hVwCtMMoU20/Yd
+         yu4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lImUIif1n8cBB0bKcX9LH+MkHbSgbzjwXMS0j6OhnaE=;
-        b=Gozo4rQ1p20zKJ133fMe0IIrCmTUWgG8I5OFCHIuO/OHa4k+3MgWcVDawEwc9BwxaZ
-         ll9F08kh0B2fgbVjxr2NZgHVtoyUUC32sG4hdfN2GWVwa6wjFDQEIErZ2mD0XP+pvAbK
-         0qxC4SU8X8vvmymqNWSiY/AuLBtDr9eMdiXfo7+GuKi1lZCACLu/nD/dG/GYcsVuv1cV
-         KovrIQcgEpPyzS9UV9VNwrveWGyM6pPxHWVKG+3zum39jOEDGdD5oSpkv6eXRUYAes3g
-         WgG7kkZwRm4qWkbMsEkb/+JfXdZRU7vp5bDWB4lqyvKTDoJd7io1mZjoULbvF3YHtqTf
-         NEvA==
-X-Gm-Message-State: AOAM530yqhiKOyfL02vz69n4hwgDD33fIKH794/fUWk3kbXx/l8koEyw
-        MuGJKEow+nR5mEql6B9qZLSk750pMD+Gwf97SH2Ub4Kw9x4=
-X-Google-Smtp-Source: ABdhPJxVnBBDB4MLjqFZ0gEG1oDU1Hdb4YInmJJoSXBz+1UjcNfRKHK7sQ5xVjQPOfA7quLfVZUeqg3k2/du3pWj/Ko=
-X-Received: by 2002:a37:6248:: with SMTP id w69mr18906009qkb.448.1600207396118;
- Tue, 15 Sep 2020 15:03:16 -0700 (PDT)
+        bh=JOLtYWV5k43t7zSbOIgN7n22Qeg30cuT8X6VukPd788=;
+        b=SBW206c4Z0Ul9enImXFwNLg82XW0627zj+aHXG6qK/AB5LM+y9+Rik2ah5ee4pTl+a
+         FbJXVLa5Oj4v6QIJGLhFGMjPh1GKGMHukuDX9nSNV3ZATQOrjr9Z7FnVdHojmWp3AQ/D
+         UB0Yer9Ino6tWsXf27b6wuDv4kN0A+4wTXxXveOsRONJRamNUUsplVuzFK4CAOJwIqc3
+         jquJ5emrvua0MxIdyAf1vhc8JkZkKiQ/+G61ASpm6bPhd63SKN0nybS0ww+PXs6GAFAd
+         nKAf8Z/HHsFao0CCaLs6FwhPqJ0TfR84VFHI0SAoPcDFhDSWkUXZUKx7CWgHUpC6ggzN
+         ELDA==
+X-Gm-Message-State: AOAM533FjBk3mDytz5JbXJ0LYOSPKh4bwOnM/T5DDB+l4PaxQAeHmLT8
+        Ih5l+N1kWN1qe1nvUSWF8+scwhWoD5AA48OxZyl7ao7Ownc=
+X-Google-Smtp-Source: ABdhPJwal7ruFnyisaxC3ZAEvhE3qWh1qncCnYQR8nf232vyk+NFYH/WW1mOYb3sZlPKJFIGdOLDTLlDCcNUgmuNHJ0=
+X-Received: by 2002:a05:6214:b2a:: with SMTP id w10mr3940821qvj.33.1600207411895;
+ Tue, 15 Sep 2020 15:03:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200914183615.2038347-1-sdf@google.com> <20200914183615.2038347-4-sdf@google.com>
- <CAEf4BzbW46kyE3pVm1fGXkXV+ZW9ScoYAGdMuTkgCNHP-dpiuQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzbW46kyE3pVm1fGXkXV+ZW9ScoYAGdMuTkgCNHP-dpiuQ@mail.gmail.com>
+References: <20200914183615.2038347-1-sdf@google.com> <20200914183615.2038347-5-sdf@google.com>
+ <CAEf4BzZUS1Ht9mu3R+RY=CYbkdLt7k-xG5r35hUkeSDr_sjnFQ@mail.gmail.com>
+In-Reply-To: <CAEf4BzZUS1Ht9mu3R+RY=CYbkdLt7k-xG5r35hUkeSDr_sjnFQ@mail.gmail.com>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 15 Sep 2020 15:03:05 -0700
-Message-ID: <CAKH8qBvY-0Qb+x3czVgwFyBWuDS8eLfQVaLmD8V7W7pWhv5DQg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 3/5] libbpf: Add BPF_PROG_BIND_MAP syscall and
- use it on .rodata section
+Date:   Tue, 15 Sep 2020 15:03:21 -0700
+Message-ID: <CAKH8qBuCGiRCj=ju5XZpuHvVBqLme6pgfpH0JV+2jgr30j0idA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 4/5] bpftool: support dumping metadata
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -64,25 +63,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 4:28 PM Andrii Nakryiko
+On Mon, Sep 14, 2020 at 4:39 PM Andrii Nakryiko
 <andrii.nakryiko@gmail.com> wrote:
 >
 > On Mon, Sep 14, 2020 at 11:37 AM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > +       if (!kernel_supports(FEAT_GLOBAL_DATA))
-> > +               return 0;
+> > +               if (map_info.type != BPF_MAP_TYPE_ARRAY)
+> > +                       continue;
+> > +               if (map_info.key_size != sizeof(int))
+> > +                       continue;
+> > +               if (map_info.max_entries != 1)
+> > +                       continue;
+> > +               if (!map_info.btf_value_type_id)
+> > +                       continue;
+> > +               if (!strstr(map_info.name, ".rodata"))
+> > +                       continue;
+> > +
+> > +               *map_id = map_ids[i];
 >
-> TBH, I don't think this check is needed, and it's actually coupling
-> two independent features together. probe_prog_bind_map() probes
-> PROG_BIND_MAP, it has nothing to do with global data itself. It's all
-> cached now, so there is no problem with that, it just feels unclean.
-> If someone is using .rodata and the kernel doesn't support global
-> data, we'll fail way sooner. On the other hand, if there will be
-> another use case where PROG_BIND_MAP is needed for something else, why
-> would we care about global data support? I know that in the real world
-> it will be hard to find a kernel with PROG_BIND_MAP and no global data
-> support, due to the latter being so much older, but still, unnecessary
-> coupling.
+> return value_size here to avoid extra syscall below; or rather just
+> accept bpf_map_info pointer and read everything into it?
+Good idea, will just return bpf_map_info.
+
+> > +       value = malloc(map_info->value_size);
+> > +       if (!value)
+> > +               goto out_close;
+> > +
+> > +       if (bpf_map_lookup_elem(map_fd, &key, value))
+> > +               goto out_free;
+> > +
+> > +       close(map_fd);
+> > +       return value;
+> > +
+> > +out_free:
+> > +       free(value);
+> > +out_close:
+> > +       close(map_fd);
+> > +       return NULL;
+> > +}
+> > +
+> > +static bool has_metadata_prefix(const char *s)
+> > +{
+> > +       return strstr(s, BPF_METADATA_PREFIX) == s;
 >
-> Would be nice to follow up and remove this, thanks.
-Agreed, will respin, thanks!
+> this is a substring check, not a prefix check, use strncmp instead
+Right, but I then compare the result to the original value (== s).
+So if the substring starts with 0th index, we are good.
+
+"strncmp(s, BPF_METADATA_PREFIX, BPF_METADATA_PREFIX_LEN) == 0;" felt
+a bit clunky, but I can use it anyway if it helps the readability.
+
+> > +}
+> > +
+> > +static void show_prog_metadata(int fd, __u32 num_maps)
+> > +{
+> > +       const struct btf_type *t_datasec, *t_var;
+> > +       struct bpf_map_info map_info = {};
+>
+> it should be memset
+Sounds good.
+
+>
+> > +       } else {
+> > +               json_writer_t *btf_wtr = jsonw_new(stdout);
+> > +               struct btf_dumper d = {
+> > +                       .btf = btf,
+> > +                       .jw = btf_wtr,
+> > +                       .is_plain_text = true,
+> > +               };
+>
+> empty line here?
+Sure.
