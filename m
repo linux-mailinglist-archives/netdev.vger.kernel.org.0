@@ -2,145 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5053269EC3
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 08:45:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CE58269F0E
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 09:04:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726056AbgIOGpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 02:45:32 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:37569 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726033AbgIOGp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 02:45:27 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 699F95C00C1;
-        Tue, 15 Sep 2020 02:45:25 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 15 Sep 2020 02:45:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=GldgJ7
-        RQPmzPgW3JiwuzicyOz0XVLdYlzL3wC9ojd4w=; b=hcTuqWy7erNiktGtVzF8uP
-        2YL10NlcSzn5r+EdNUIaZwz5Hs7LNwOdowplGemJ5xX8IAN/vjFE0/7/DlAW4H9z
-        goSBFgm9C3AWQtwdv+cqF244avZaYMTD8MGtEaz2tYGCL4rjSp1jd8tHa5a13zr8
-        0AQu1QE76f0aAgnc/fcTSJv7kZHPuX2xL2zD3CTTRJ5BFS89eFUHnFMGJM9P96lI
-        ioTD7SspJBys6y5AHo2ZjZNn9+VYkQHjKYHOlRAs6CMeZQL1F9Hr5QhouZxC0qAs
-        V4SbCnyjJGtyuSzm7p+3T0M6wQy4rU2LLV7VQh+DRloaCXXhKXhd+sIWPxUuhJiw
-        ==
-X-ME-Sender: <xms:AmNgX5llK84vGMHy9c138Jc9sgLDMqe5zDFx3yAlapZqisWsShWRQw>
-    <xme:AmNgX03Uw2RyGQ74z_g0pmNFncCmYu18PMDSwQfImWnxJTicDtV1iZyeOJ-MnCUy0
-    yfT9oy9hz7WafI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudeijedguddtjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhephefhtdfhudeuhefgkeekhfehuddtvdevfeetheetkeelvefggeetveeuleeh
-    keeunecuffhomhgrihhnpehgihhthhhusgdrtghomhenucfkphepkeegrddvvdelrdefie
-    drkedvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhep
-    ihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:AmNgX_rqekxLfVML6ASgBdlgSgz1KJUdaxhrOWQED1KSqZG-xe2sqw>
-    <xmx:AmNgX5kUzq63WmKn_uPXA0ipJYjhUzfeafzmZQEZ6PQNJjrmbkErSA>
-    <xmx:AmNgX33_j3t9B9SMi52cOTHtqbs8Zcza13gQmGb0Clac_6-rWm0nqw>
-    <xmx:BWNgX4y-NqVEersN1ujQk41a3r85269b5qzFklwY_6-mZcrDft5BUQ>
-Received: from localhost (igld-84-229-36-82.inter.net.il [84.229.36.82])
-        by mail.messagingengine.com (Postfix) with ESMTPA id EB9FF306467D;
-        Tue, 15 Sep 2020 02:45:21 -0400 (EDT)
-Date:   Tue, 15 Sep 2020 09:45:19 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v4 04/15] devlink: Add reload actions stats
- to dev get
-Message-ID: <20200915064519.GA5390@shredder>
-References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
- <1600063682-17313-5-git-send-email-moshe@mellanox.com>
- <20200914134500.GH2236@nanopsycho.orion>
+        id S1726157AbgIOHEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 03:04:49 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:36512 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726134AbgIOHEk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Sep 2020 03:04:40 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 394AD1C3D1EE78AF187E;
+        Tue, 15 Sep 2020 15:04:22 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 15 Sep 2020 15:04:14 +0800
+Subject: Re: [PATCH net-next 6/6] net: hns3: use napi_consume_skb() when
+ cleaning tx desc
+To:     Saeed Mahameed <saeedm@nvidia.com>,
+        "tanhuazhong@huawei.com" <tanhuazhong@huawei.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
+        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
+        "linuxarm@huawei.com" <linuxarm@huawei.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>
+References: <1600085217-26245-1-git-send-email-tanhuazhong@huawei.com>
+ <1600085217-26245-7-git-send-email-tanhuazhong@huawei.com>
+ <e615366cb2b260bf1b77fdaa0692957ab750a9a4.camel@nvidia.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <2b1219b6-a7dd-38a3-bfb7-1cb49330df90@huawei.com>
+Date:   Tue, 15 Sep 2020 15:04:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200914134500.GH2236@nanopsycho.orion>
+In-Reply-To: <e615366cb2b260bf1b77fdaa0692957ab750a9a4.camel@nvidia.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 03:45:00PM +0200, Jiri Pirko wrote:
-> Mon, Sep 14, 2020 at 08:07:51AM CEST, moshe@mellanox.com wrote:
-> >Expose devlink reload actions stats to the user through devlink dev
-> >get command.
-> >
-> >Examples:
-> >$ devlink dev show
-> >pci/0000:82:00.0:
-> >  reload_action_stats:
-> >    driver_reinit 2
-> >    fw_activate 1
-> >    driver_reinit_no_reset 0
-> >    fw_activate_no_reset 0
-> >pci/0000:82:00.1:
-> >  reload_action_stats:
-> >    driver_reinit 1
-> >    fw_activate 1
-> >    driver_reinit_no_reset 0
-> >    fw_activate_no_reset 0
+On 2020/9/15 13:09, Saeed Mahameed wrote:
+> On Mon, 2020-09-14 at 20:06 +0800, Huazhong Tan wrote:
+>> From: Yunsheng Lin <linyunsheng@huawei.com>
+>>
+>> Use napi_consume_skb() to batch consuming skb when cleaning
+>> tx desc in NAPI polling.
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+>> ---
+>>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 27 +++++++++++-
+>> ----------
+>>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 +-
+>>  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  4 ++--
+>>  3 files changed, 17 insertions(+), 16 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+>> b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+>> index 4a49a76..feeaf75 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+>> @@ -2333,10 +2333,10 @@ static int hns3_alloc_buffer(struct
+>> hns3_enet_ring *ring,
+>>  }
+>>  
+>>  static void hns3_free_buffer(struct hns3_enet_ring *ring,
+>> -			     struct hns3_desc_cb *cb)
+>> +			     struct hns3_desc_cb *cb, int budget)
+>>  {
+>>  	if (cb->type == DESC_TYPE_SKB)
+>> -		dev_kfree_skb_any((struct sk_buff *)cb->priv);
+>> +		napi_consume_skb(cb->priv, budget);
 > 
-> I would rather have something like:
->    stats:
->      reload_action:
->        driver_reinit 1
->        fw_activate 1
->        driver_reinit_no_reset 0
->        fw_activate_no_reset 0
-> 
-> Then we can easily extend and add other stats in the tree.
-> 
-> 
-> Also, I wonder if these stats could be somehow merged with Ido's metrics
-> work:
-> https://github.com/idosch/linux/commits/submit/devlink_metric_rfc_v1
-> 
-> Ido, would it make sense?
+> This code can be reached from hns3_lb_clear_tx_ring() below which is
+> your loopback test and called with non-zero budget, I am not sure you
+> are allowed to call napi_consume_skb() with non-zero budget outside
+> napi context, perhaps the cb->type for loopback test is different in lb
+> test case ? Idk.. , please double check other code paths.
 
-I guess. My original idea for devlink-metric was to expose
-design-specific metrics to user space where the entity registering the
-metrics is the device driver. In this case the entity would be devlink
-itself and it would be auto-registered for each device.
+Yes, loopback test may call napi_consume_skb() with non-zero budget outside
+napi context. Thanks for pointing out this case.
+
+How about add the below WARN_ONCE() in napi_consume_skb() to catch this
+kind of error?
+
+WARN_ONCE(!in_serving_softirq(), "napi_consume_skb() is called with non-zero budget outside napi context");
 
 > 
+> [...]
 > 
-> >
-> >$ devlink dev show -jp
-> >{
-> >    "dev": {
-> >        "pci/0000:82:00.0": {
-> >            "reload_action_stats": [ {
-> >                    "driver_reinit": 2
-> >                },{
-> >                    "fw_activate": 1
-> >                },{
-> >                    "driver_reinit_no_reset": 0
-> >                },{
-> >                    "fw_activate_no_reset": 0
-> >                } ]
-> >        },
-> >        "pci/0000:82:00.1": {
-> >            "reload_action_stats": [ {
-> >                    "driver_reinit": 1
-> >                },{
-> >                    "fw_activate": 1
-> >                },{
-> >                    "driver_reinit_no_reset": 0
-> >                },{
-> >                    "fw_activate_no_reset": 0
-> >                } ]
-> >        }
-> >    }
-> >}
-> >
-> 
-> [..]
+>>  static void hns3_lb_clear_tx_ring(struct hns3_nic_priv *priv, u32
+>> start_ringid,
+>> -				  u32 end_ringid, u32 budget)
+>> +				  u32 end_ringid, int budget)
+>>  {
+>>  	u32 i;
+>>  
+>>  	for (i = start_ringid; i <= end_ringid; i++) {
+>>  		struct hns3_enet_ring *ring = &priv->ring[i];
+>>  
+>> -		hns3_clean_tx_ring(ring);
+>> +		hns3_clean_tx_ring(ring, budget);
+>>  	}
+>>  }
+>>  
