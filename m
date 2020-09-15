@@ -2,196 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0D7D269C3D
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 05:04:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E91F269C80
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 05:25:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726136AbgIODEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 23:04:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51906 "EHLO mail.kernel.org"
+        id S1726057AbgIODZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 23:25:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56970 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726117AbgIODD7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 23:03:59 -0400
-Received: from Davids-MacBook-Pro.local.net (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1725953AbgIODZL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 23:25:11 -0400
+Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 49C9720897;
-        Tue, 15 Sep 2020 03:03:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 742AB20684;
+        Tue, 15 Sep 2020 03:25:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600139038;
-        bh=NKc9oqaeexxh3U3k4jEk8eBcR3hQlq1sqpaRc//VbVg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=TsDbkmdRTV4DBK2ZeAFm4badaqoKI9jtHRHmle9ukT+ZGUQgw7IljGD5k7X9S58Pe
-         Zu+LTIJo7nd7QpqcJux79NNvWX3ovpqOUy2CtH0gLPn6ZFqGo4MJutGGNKezFiPqn+
-         qfgQvGPxvRwzgO5PihfGOiy2XM/Aqn79aEeobHps=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        David Ahern <dsahern@kernel.org>,
-        Kfir Itzhak <mastertheknife@gmail.com>
-Subject: [PATCH net] ipv4: Update exception handling for multipath routes via same device
-Date:   Mon, 14 Sep 2020 21:03:54 -0600
-Message-Id: <20200915030354.38468-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        s=default; t=1600140310;
+        bh=RWrWk57pznwEZaqUARPii65hMfIeSjo9uSwjvFQoDJQ=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=OXFkdtbQ+xjTabPuPDuJUf4RwcBmKNDlWtGAsinMU9l5qBF4U1RI/kv/PoxMrs4GK
+         pgZNlniAJhhZ2HdQ/NLtae3LM1dEVl76cABBDts1zyHE6r5+j4trDHnkxI9FSAURWw
+         PvNNYesKTwkRZO0Lns0D2R+5tF4Udk6V06FGJUz8=
+Message-ID: <e15b85af416c7257aaa601901b18c7c9bc9586e0.camel@kernel.org>
+Subject: Re: [PATCH net-next v2 06/10] drivers/net/ethernet: handle one
+ warning explicitly
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org
+Cc:     intel-wired-lan@lists.osuosl.org
+Date:   Mon, 14 Sep 2020 20:25:09 -0700
+In-Reply-To: <20200915014455.1232507-7-jesse.brandeburg@intel.com>
+References: <20200915014455.1232507-1-jesse.brandeburg@intel.com>
+         <20200915014455.1232507-7-jesse.brandeburg@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kfir reported that pmtu exceptions are not created properly for
-deployments where multipath routes use the same device.
+On Mon, 2020-09-14 at 18:44 -0700, Jesse Brandeburg wrote:
+> While fixing the W=1 builds, this warning came up because the
+> developers used a very tricky way to get structures initialized
+> to a non-zero value, but this causes GCC to warn about an
+> override. In this case the override was intentional, so just
+> disable the warning for this code with a macro that results
+> in disabling the warning for compiles on GCC versions after 8.
+> 
+> NOTE: the __diag_ignore macro currently only accepts a second
+> argument of 8 (version 80000)
+> 
+> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> ---
+>  drivers/net/ethernet/renesas/sh_eth.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/renesas/sh_eth.c
+> b/drivers/net/ethernet/renesas/sh_eth.c
+> index 586642c33d2b..c63304632935 100644
+> --- a/drivers/net/ethernet/renesas/sh_eth.c
+> +++ b/drivers/net/ethernet/renesas/sh_eth.c
+> @@ -45,6 +45,15 @@
+>  #define SH_ETH_OFFSET_DEFAULTS			\
+>  	[0 ... SH_ETH_MAX_REGISTER_OFFSET - 1] = SH_ETH_OFFSET_INVALID
+>  
+> +/* use some intentionally tricky logic here to initialize the whole
+> struct to
+> + * 0xffff, but then override certain fields, requiring us to
+> indicate that we
+> + * "know" that there are overrides in this structure, and we'll need
+> to disable
+> + * that warning from W=1 builds. GCC has supported this option since
+> 4.2.X, but
+> + * the macros available to do this only define GCC 8.
+> + */
+> +__diag_push();
+> +__diag_ignore(GCC, 8, "-Woverride-init",
+> +	      "logic to initialize all and then override some is OK");
+>  static const u16 sh_eth_offset_gigabit[SH_ETH_MAX_REGISTER_OFFSET] =
+> {
+>  	SH_ETH_OFFSET_DEFAULTS,
+>  
+> @@ -332,6 +341,7 @@ static const u16
+> sh_eth_offset_fast_sh3_sh2[SH_ETH_MAX_REGISTER_OFFSET] = {
+>  
+>  	[TSU_ADRH0]	= 0x0100,
+>  };
+> +__diag_pop();
+>  
 
-After some digging I see 2 compounding problems:
-1. ip_route_output_key_hash_rcu is updating the flowi4_oif *after*
-   the route lookup. This is the second use case where this has
-   been a problem (the first is related to use of vti devices with
-   VRF). I can not find any reason for the oif to be changed after the
-   lookup; the code goes back to the start of git. It does not seem
-   logical so remove it.
+I don't have any strong feeling against disabling compiler warnings,
+but maybe the right thing to do here is to initialize the gaps to the
+invalid value instead of pre-initializing the whole thing first and
+then setting up the valid values on the 2nd pass.
 
-2. fib_lookups for exceptions do not call fib_select_path to handle
-   multipath route selection based on the hash.
+I don't think there are too many gaps to fill, it is doable, so maybe
+add this as a comment to this driver maintainer so they could pickup
+the work from here.
 
-The end result is that the fib_lookup used to add the exception
-always creates it based using the first leg of the route.
-
-An example topology showing the problem:
-
-                 |  host1
-             +------+
-             | eth0 |  .209
-             +------+
-                 |
-             +------+
-     switch  | br0  |
-             +------+
-                 |
-       +---------+---------+
-       | host2             |  host3
-   +------+             +------+
-   | eth0 | .250        | eth0 | 192.168.252.252
-   +------+             +------+
-
-   +-----+             +-----+
-   | vti | .2          | vti | 192.168.247.3
-   +-----+             +-----+
-       \                  /
- =================================
- tunnels
-         192.168.247.1/24
-
-for h in host1 host2 host3; do
-        ip netns add ${h}
-        ip -netns ${h} link set lo up
-        ip netns exec ${h} sysctl -wq net.ipv4.ip_forward=1
-done
-
-ip netns add switch
-ip -netns switch li set lo up
-ip -netns switch link add br0 type bridge stp 0
-ip -netns switch link set br0 up
-
-for n in 1 2 3; do
-        ip -netns switch link add eth-sw type veth peer name eth-h${n}
-        ip -netns switch li set eth-h${n} master br0 up
-        ip -netns switch li set eth-sw netns host${n} name eth0
-done
-
-ip -netns host1 addr add 192.168.252.209/24 dev eth0
-ip -netns host1 link set dev eth0 up
-ip -netns host1 route add 192.168.247.0/24 \
-        nexthop via 192.168.252.250 dev eth0 nexthop via 192.168.252.252 dev eth0
-
-ip -netns host2 addr add 192.168.252.250/24 dev eth0
-ip -netns host2 link set dev eth0 up
-
-ip -netns host2 addr add 192.168.252.252/24 dev eth0
-ip -netns host3 link set dev eth0 up
-
-ip netns add tunnel
-ip -netns tunnel li set lo up
-ip -netns tunnel li add br0 type bridge
-ip -netns tunnel li set br0 up
-for n in $(seq 11 20); do
-        ip -netns tunnel addr add dev br0 192.168.247.${n}/24
-done
-
-for n in 2 3
-do
-        ip -netns tunnel link add vti${n} type veth peer name eth${n}
-        ip -netns tunnel link set eth${n} mtu 1360 master br0 up
-        ip -netns tunnel link set vti${n} netns host${n} mtu 1360 up
-        ip -netns host${n} addr add dev vti${n} 192.168.247.${n}/24
-done
-ip -netns tunnel ro add default nexthop via 192.168.247.2 nexthop via 192.168.247.3
-
-ip netns exec host1 ping -M do -s 1400 -c3 -I 192.168.252.209 192.168.247.11
-ip netns exec host1 ping -M do -s 1400 -c3 -I 192.168.252.209 192.168.247.15
-ip -netns host1 ro ls cache
-
-Before this patch the cache always shows exceptions against the first
-leg in the multipath route; 192.168.252.250 per this example. Since the
-hash has an initial random seed, you may need to vary the final octet
-more than what is listed. In my tests, using addresses between 11 and 19
-usually found 1 that used both legs.
-
-With this patch, the cache will have exceptions for both legs.
-
-Fixes: 4895c771c7f0 ("ipv4: Add FIB nexthop exceptions")
-Reported-by: Kfir Itzhak <mastertheknife@gmail.com>
-Signed-off-by: David Ahern <dsahern@kernel.org>
----
- net/ipv4/route.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index e5f210d00851..58642b29a499 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -786,8 +786,10 @@ static void __ip_do_redirect(struct rtable *rt, struct sk_buff *skb, struct flow
- 			neigh_event_send(n, NULL);
- 		} else {
- 			if (fib_lookup(net, fl4, &res, 0) == 0) {
--				struct fib_nh_common *nhc = FIB_RES_NHC(res);
-+				struct fib_nh_common *nhc;
- 
-+				fib_select_path(net, &res, fl4, skb);
-+				nhc = FIB_RES_NHC(res);
- 				update_or_create_fnhe(nhc, fl4->daddr, new_gw,
- 						0, false,
- 						jiffies + ip_rt_gc_timeout);
-@@ -1013,6 +1015,7 @@ out:	kfree_skb(skb);
- static void __ip_rt_update_pmtu(struct rtable *rt, struct flowi4 *fl4, u32 mtu)
- {
- 	struct dst_entry *dst = &rt->dst;
-+	struct net *net = dev_net(dst->dev);
- 	u32 old_mtu = ipv4_mtu(dst);
- 	struct fib_result res;
- 	bool lock = false;
-@@ -1033,9 +1036,11 @@ static void __ip_rt_update_pmtu(struct rtable *rt, struct flowi4 *fl4, u32 mtu)
- 		return;
- 
- 	rcu_read_lock();
--	if (fib_lookup(dev_net(dst->dev), fl4, &res, 0) == 0) {
--		struct fib_nh_common *nhc = FIB_RES_NHC(res);
-+	if (fib_lookup(net, fl4, &res, 0) == 0) {
-+		struct fib_nh_common *nhc;
- 
-+		fib_select_path(net, &res, fl4, NULL);
-+		nhc = FIB_RES_NHC(res);
- 		update_or_create_fnhe(nhc, fl4->daddr, 0, mtu, lock,
- 				      jiffies + ip_rt_mtu_expires);
- 	}
-@@ -2668,8 +2673,6 @@ struct rtable *ip_route_output_key_hash_rcu(struct net *net, struct flowi4 *fl4,
- 	fib_select_path(net, res, fl4, skb);
- 
- 	dev_out = FIB_RES_DEV(*res);
--	fl4->flowi4_oif = dev_out->ifindex;
--
- 
- make_route:
- 	rth = __mkroute_output(res, fl4, orig_oif, dev_out, flags);
--- 
-2.24.3 (Apple Git-128)
 
