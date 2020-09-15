@@ -2,116 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 543DA26B07B
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:12:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17B5126B06F
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:10:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727735AbgIOQor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 12:44:47 -0400
-Received: from mga05.intel.com ([192.55.52.43]:10809 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727779AbgIOQmO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Sep 2020 12:42:14 -0400
-IronPort-SDR: KWegu6OuociK4oIxPsIY26z5IqrF2MWT8JlhLv+6SMID37EilqUGfOs/iSPYvmIiVc9Uzfu8+K
- ac31BoeuOpoQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9745"; a="244130883"
-X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; 
-   d="scan'208";a="244130883"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2020 09:41:36 -0700
-IronPort-SDR: X1Z8bwqnLS38s1hSAEgytpQLbi6j4B/9YrhjrX4W475Rl5ZLgkvoZXnWAYIpVQfTQCszaMK3rj
- J8RyfodN2jpQ==
-X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; 
-   d="scan'208";a="338733991"
-Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.118.172])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2020 09:41:36 -0700
-Date:   Tue, 15 Sep 2020 09:41:35 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH net-next v2 06/10] drivers/net/ethernet: handle one
- warning explicitly
-Message-ID: <20200915094135.00005d21@intel.com>
-In-Reply-To: <e15b85af416c7257aaa601901b18c7c9bc9586e0.camel@kernel.org>
-References: <20200915014455.1232507-1-jesse.brandeburg@intel.com>
-        <20200915014455.1232507-7-jesse.brandeburg@intel.com>
-        <e15b85af416c7257aaa601901b18c7c9bc9586e0.camel@kernel.org>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S1727990AbgIOWKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 18:10:51 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:26056 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727794AbgIOUCq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 16:02:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1600200166; x=1631736166;
+  h=date:from:to:cc:message-id:references:mime-version:
+   in-reply-to:subject;
+  bh=wNziNNDxrF6gCaxX+ImX9p6CNqpNyiGV3hOiiuWa1DA=;
+  b=psG5UNU9DwNKfm4PLgr+eRkxEcvrIbzuy9ppNmJ+Cd044GhxpLKCHYFO
+   +Ro/wcZyPGGn5jsprcO6v55qX4ECXKI22+0u+d/Yip5SYTVnP8YfYHxdt
+   h1IKrKGArBuIP9+BbMgenpH+j7WctJGb935cs74EAty33DqsP1dER1+op
+   U=;
+X-IronPort-AV: E=Sophos;i="5.76,430,1592870400"; 
+   d="scan'208";a="75198936"
+Subject: Re: [PATCH v3 02/11] xenbus: add freeze/thaw/restore callbacks support
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 15 Sep 2020 19:57:00 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com (Postfix) with ESMTPS id 8A814A21BE;
+        Tue, 15 Sep 2020 19:56:58 +0000 (UTC)
+Received: from EX13D05UWC004.ant.amazon.com (10.43.162.223) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 15 Sep 2020 19:56:43 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13D05UWC004.ant.amazon.com (10.43.162.223) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 15 Sep 2020 19:56:43 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Tue, 15 Sep 2020 19:56:43 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id 5B464408BF; Tue, 15 Sep 2020 19:56:43 +0000 (UTC)
+Date:   Tue, 15 Sep 2020 19:56:43 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     <boris.ostrovsky@oracle.com>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <hpa@zytor.com>, <x86@kernel.org>, <jgross@suse.com>,
+        <linux-pm@vger.kernel.org>, <linux-mm@kvack.org>,
+        <kamatam@amazon.com>, <sstabellini@kernel.org>,
+        <konrad.wilk@oracle.com>, <roger.pau@citrix.com>,
+        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
+        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
+        <eduval@amazon.com>, <sblbir@amazon.com>,
+        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dwmw@amazon.co.uk>, <benh@kernel.crashing.org>
+Message-ID: <20200915195643.GA28542@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <cover.1598042152.git.anchalag@amazon.com>
+ <2d3a7ed32bf38e13e0141a631a453b6e4c7ba5dc.1598042152.git.anchalag@amazon.com>
+ <eebc26b8-f1b1-3bea-5366-dd77f063237e@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <eebc26b8-f1b1-3bea-5366-dd77f063237e@oracle.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Saeed Mahameed wrote:
-
-> On Mon, 2020-09-14 at 18:44 -0700, Jesse Brandeburg wrote:
-> > While fixing the W=1 builds, this warning came up because the
-> > developers used a very tricky way to get structures initialized
-> > to a non-zero value, but this causes GCC to warn about an
-> > override. In this case the override was intentional, so just
-> > disable the warning for this code with a macro that results
-> > in disabling the warning for compiles on GCC versions after 8.
-> > 
-> > NOTE: the __diag_ignore macro currently only accepts a second
-> > argument of 8 (version 80000)
-> > 
-> > Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> > ---
-> >  drivers/net/ethernet/renesas/sh_eth.c | 10 ++++++++++
-> >  1 file changed, 10 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/renesas/sh_eth.c
-> > b/drivers/net/ethernet/renesas/sh_eth.c
-> > index 586642c33d2b..c63304632935 100644
-> > --- a/drivers/net/ethernet/renesas/sh_eth.c
-> > +++ b/drivers/net/ethernet/renesas/sh_eth.c
-> > @@ -45,6 +45,15 @@
-> >  #define SH_ETH_OFFSET_DEFAULTS			\
-> >  	[0 ... SH_ETH_MAX_REGISTER_OFFSET - 1] = SH_ETH_OFFSET_INVALID
-> >  
-> > +/* use some intentionally tricky logic here to initialize the whole
-> > struct to
-> > + * 0xffff, but then override certain fields, requiring us to
-> > indicate that we
-> > + * "know" that there are overrides in this structure, and we'll need
-> > to disable
-> > + * that warning from W=1 builds. GCC has supported this option since
-> > 4.2.X, but
-> > + * the macros available to do this only define GCC 8.
-> > + */
-> > +__diag_push();
-> > +__diag_ignore(GCC, 8, "-Woverride-init",
-> > +	      "logic to initialize all and then override some is OK");
-> >  static const u16 sh_eth_offset_gigabit[SH_ETH_MAX_REGISTER_OFFSET] =
-> > {
-> >  	SH_ETH_OFFSET_DEFAULTS,
-> >  
-> > @@ -332,6 +341,7 @@ static const u16
-> > sh_eth_offset_fast_sh3_sh2[SH_ETH_MAX_REGISTER_OFFSET] = {
-> >  
-> >  	[TSU_ADRH0]	= 0x0100,
-> >  };
-> > +__diag_pop();
-> >  
+On Sun, Sep 13, 2020 at 12:11:47PM -0400, boris.ostrovsky@oracle.com wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
 > 
-> I don't have any strong feeling against disabling compiler warnings,
-> but maybe the right thing to do here is to initialize the gaps to the
-> invalid value instead of pre-initializing the whole thing first and
-> then setting up the valid values on the 2nd pass.
 > 
-> I don't think there are too many gaps to fill, it is doable, so maybe
-> add this as a comment to this driver maintainer so they could pickup
-> the work from here.
-
-
-added linux-renesas-soc list. @list, any comments on Saeed's comment
-above?
-
+> 
+> On 8/21/20 6:26 PM, Anchal Agarwal wrote:
+> > From: Munehisa Kamata <kamatam@amazon.com>
+> >
+> > Since commit b3e96c0c7562 ("xen: use freeze/restore/thaw PM events for
+> > suspend/resume/chkpt"), xenbus uses PMSG_FREEZE, PMSG_THAW and
+> > PMSG_RESTORE events for Xen suspend. However, they're actually assigned
+> > to xenbus_dev_suspend(), xenbus_dev_cancel() and xenbus_dev_resume()
+> > respectively, and only suspend and resume callbacks are supported at
+> > driver level. To support PM suspend and PM hibernation, modify the bus
+> > level PM callbacks to invoke not only device driver's suspend/resume but
+> > also freeze/thaw/restore.
+> >
+> > Note that we'll use freeze/restore callbacks even for PM suspend whereas
+> > suspend/resume callbacks are normally used in the case, becausae the
+> > existing xenbus device drivers already have suspend/resume callbacks
+> > specifically designed for Xen suspend.
+> 
+> 
+> Something is wrong with this sentence. Or with my brain --- I can't
+> quite parse this.
+> 
+The message is trying to say that that freeze/thaw/restore callbacks will be
+used for both PM SUSPEND and PM HIBERNATION. Since, we are only focussing on PM
+hibernation, I will remove all wordings of PM suspend from this message to avoid
+confusion. I left it there in case someone wants to pick it up in future knowing
+framework is already present.
+> 
+> And please be consistent with "PM suspend" vs. "PM hibernation".
+>
+I should remove PM suspend from everywhere since the mode is not tested
+for.
+> 
+> >  So we can allow the device
+> > drivers to keep the existing callbacks wihtout modification.
+> >
+> 
+> 
+> > @@ -599,16 +600,33 @@ int xenbus_dev_suspend(struct device *dev)
+> >       struct xenbus_driver *drv;
+> >       struct xenbus_device *xdev
+> >               = container_of(dev, struct xenbus_device, dev);
+> > +     bool xen_suspend = is_xen_suspend();
+> >
+> >       DPRINTK("%s", xdev->nodename);
+> >
+> >       if (dev->driver == NULL)
+> >               return 0;
+> >       drv = to_xenbus_driver(dev->driver);
+> > -     if (drv->suspend)
+> > -             err = drv->suspend(xdev);
+> > -     if (err)
+> > -             dev_warn(dev, "suspend failed: %i\n", err);
+> > +     if (xen_suspend) {
+> > +             if (drv->suspend)
+> > +                     err = drv->suspend(xdev);
+> > +     } else {
+> > +             if (drv->freeze) {
+> 
+> 
+> 'else if' (to avoid extra indent level).  In xenbus_dev_resume() too.
+> 
+> 
+> > +                     err = drv->freeze(xdev);
+> > +                     if (!err) {
+> > +                             free_otherend_watch(xdev);
+> > +                             free_otherend_details(xdev);
+> > +                             return 0;
+> > +                     }
+> > +             }
+> > +     }
+> > +
+> > +     if (err) {
+> > +             dev_warn(&xdev->dev,
+> 
+> 
+> Is there a reason why you replaced dev with xdev->dev (here and elsewhere)?
+> 
+> 
+Nope, they should be same. We can use dev here too. I should probably just use
+dev.
+> >  "%s %s failed: %d\n", xen_suspend ?
+> > +                             "suspend" : "freeze", xdev->nodename, err);
+> > +             return err;
+> > +     }
+> > +
+> >
+> 
+> > @@ -653,8 +683,44 @@ EXPORT_SYMBOL_GPL(xenbus_dev_resume);
+> >
+> >  int xenbus_dev_cancel(struct device *dev)
+> >  {
+> > -     /* Do nothing */
+> > -     DPRINTK("cancel");
+> > +     int err;
+> > +     struct xenbus_driver *drv;
+> > +     struct xenbus_device *xendev = to_xenbus_device(dev);
+> 
+> 
+> xdev for consistency please.
+> 
+Yes this I left unchanged, it should be consistent with xdev.
+> 
+> > +     bool xen_suspend = is_xen_suspend();
+> 
+> 
+> No need for this, you use it only once anyway.
+> 
+> 
+> -boris
+>
 Thanks,
- Jesse
+Anchal
+> 
