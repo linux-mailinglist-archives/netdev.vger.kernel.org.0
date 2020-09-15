@@ -2,81 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E02B269B51
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 03:41:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95268269B54
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 03:41:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726129AbgIOBlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 21:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57068 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726019AbgIOBlD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 21:41:03 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 835DAC06174A;
-        Mon, 14 Sep 2020 18:41:01 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id z17so1300928lfi.12;
-        Mon, 14 Sep 2020 18:41:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0P9Hh8b6A3uQAMa1CjhoAwCfuRMTfsPjp/wKwAiv9FA=;
-        b=OrJUPbbbjcbay3kyLroo5DazvijKb1FcvbKrNsRhzP4VQcoqFbNtKtBzT+cWB3dk9q
-         NsW5xtV29NImOzT5D6jUbNSgf0NbL9OMinGHqcpBBB8TZzbdRdJftzYYscd1Ts6t1pVF
-         TMkTtLK7OVrrRup0ctIaCpGO+B6dg98UWf0mot5WGaRhsmO3W6HMigNuheFfzweOT2r4
-         Zpr/S004WbUs2fT9CJY6Al1adwcg3ZwzMNjwhe1afcMyuy38FajBSp1FdQFbrgQn4Cch
-         93nm0Oo1irLfJ7nWuwpzT6vgc6noUDlmOBPd+eqPtFOuaMlJVE41wZ+JCOdt5qRhqHLh
-         nTbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0P9Hh8b6A3uQAMa1CjhoAwCfuRMTfsPjp/wKwAiv9FA=;
-        b=jc7EfuyY/kdF1CG2CNzoo2QE+AYn+PfkRfuBOwMsctIWjcsaYQfx09V0uy+akVe2YA
-         +55N580shHNsbpsuqU7dKXi2nsEJzKJY0DAQuO2hL9PdaLpE/RiIJhKCDqv0SY3Q/iDF
-         1EPGqrMt7dtCU78zyyXNaV8iXiZv/yD20tTjbtQ2PC4t9F5pyert2xvPdhCcJxH9aNqz
-         PPTKKCO0Aa2JQ7cuBJd+5w/D+KsdwmgYS8WtVOhcmMXkQveqBuuz+Os1Am8UMMs0mA7F
-         poHQpKD+gC7e9DAqlaBQ83hXel+rYR2ZnAuSjATXdqWCgk1/VVlCaievdyE41I0xU823
-         ctJA==
-X-Gm-Message-State: AOAM530Q8p23ANss05Zciw75vKZXgkCufws9qrEGKp+Y5AxjLU743CS7
-        MGJaU2gIdZGH2HwUc+FSncIcc63xhDNbZg6xKOg=
-X-Google-Smtp-Source: ABdhPJxGV5Vm4+5vhjj1JCrFbbSvjpFMbFaww1l2mrbKd5XRfS+tzhaVc4eDqdSYpIJT+1PDMfIKzTeNz0hE1KUZXEw=
-X-Received: by 2002:a19:df53:: with SMTP id q19mr5324242lfj.119.1600134059894;
- Mon, 14 Sep 2020 18:40:59 -0700 (PDT)
+        id S1726140AbgIOBlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 21:41:23 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:12280 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726046AbgIOBlV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 21:41:21 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 622865FBFC3D407F7873;
+        Tue, 15 Sep 2020 09:41:19 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 15 Sep 2020 09:41:13 +0800
+Subject: Re: [PATCH net-next 5/6] net: hns3: use writel() to optimize the
+ barrier operation
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>
+References: <1600085217-26245-1-git-send-email-tanhuazhong@huawei.com>
+ <1600085217-26245-6-git-send-email-tanhuazhong@huawei.com>
+ <20200914144522.02d469a8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <4141ed72-c359-ca49-d4a5-57a810888083@huawei.com>
+Date:   Tue, 15 Sep 2020 09:41:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-References: <1599726666-8431-1-git-send-email-magnus.karlsson@gmail.com>
-In-Reply-To: <1599726666-8431-1-git-send-email-magnus.karlsson@gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 14 Sep 2020 18:40:48 -0700
-Message-ID: <CAADnVQJ_ReAbcifq+QEdAJataJj3DV9P4SRqcMQXwHVC0ZUH6g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] samples/bpf: improve xdpsock application
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200914144522.02d469a8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 1:31 AM Magnus Karlsson
-<magnus.karlsson@gmail.com> wrote:
->
-> This small series improves/fixes three things in the xdpsock sample
-> application. Details can be found in the individual commit messages,
-> but a brief summary follows:
->
-> Patch 1: fix one packet sending in xdpsock
-> Patch 2: fix possible deadlock in xdpsock
-> Patch 3: add quiet option to xdpsock
->
-> This patch has been applied against commit 8081ede1f731 ("perf: Stop using deprecated bpf_program__title()")
->
-> Thanks: Magnus
+On 2020/9/15 5:45, Jakub Kicinski wrote:
+> On Mon, 14 Sep 2020 20:06:56 +0800 Huazhong Tan wrote:
+>> From: Yunsheng Lin <linyunsheng@huawei.com>
+>>
+>> writel() can be used to order I/O vs memory by default when
+>> writing portable drivers. Use writel() to replace wmb() +
+>> writel_relaxed(), and writel() is dma_wmb() + writel_relaxed()
+>> for ARM64, so there is an optimization here because dma_wmb()
+>> is a lighter barrier than wmb().
+> 
+> Cool, although lots of drivers will need a change like this now. 
+> 
+> And looks like memory-barriers.txt is slightly, eh, not coherent there,
+> between the documentation of writeX() and dma_wmb() :S
+> 
+> 	3. A writeX() by a CPU thread to the peripheral will first wait for the
+> 	   completion of all prior writes to memory either issued by, or
 
-Applied. Thanks
+"wait for the completion of all prior writes to memory" seems to match the semantics
+of writel() here?
+
+> 	   propagated to, the same thread. This ensures that writes by the CPU
+> 	   to an outbound DMA buffer allocated by dma_alloc_coherent() will be
+
+"outbound DMA buffer" mapped by the streaming API can also be ordered by the
+writel(), Is that what you meant by "not coherent"?
+
+
+> 	   visible to a DMA engine when the CPU writes to its MMIO control
+> 	   register to trigger the transfer.
+> 
+> 
+> 
+>  (*) dma_wmb();
+>  (*) dma_rmb();
+> 
+>      These are for use with consistent memory to guarantee the ordering
+>      of writes or reads of shared memory accessible to both the CPU and a
+>      DMA capable device.
+> 
+>      For example, consider a device driver that shares memory with a device
+>      and uses a descriptor status value to indicate if the descriptor belongs
+>      to the device or the CPU, and a doorbell to notify it when new
+>      descriptors are available:
+> 
+> 	if (desc->status != DEVICE_OWN) {
+> 		/* do not read data until we own descriptor */
+> 		dma_rmb();
+> 
+> 		/* read/modify data */
+> 		read_data = desc->data;
+> 		desc->data = write_data;
+> 
+> 		/* flush modifications before status update */
+> 		dma_wmb();
+> 
+> 		/* assign ownership */
+> 		desc->status = DEVICE_OWN;
+> 
+> 		/* notify device of new descriptors */
+> 		writel(DESC_NOTIFY, doorbell);
+> 	}
+> 
+>      The dma_rmb() allows us guarantee the device has released ownership
+>      before we read the data from the descriptor, and the dma_wmb() allows
+>      us to guarantee the data is written to the descriptor before the device
+>      can see it now has ownership.  Note that, when using writel(), a prior
+>      wmb() is not needed to guarantee that the cache coherent memory writes
+>      have completed before writing to the MMIO region.  The cheaper
+>      writel_relaxed() does not provide this guarantee and must not be used
+>      here.
+
+I am not sure writel() has any implication here. My interpretation to the above
+doc is that dma_wmb() is more appropriate when only coherent/consistent memory
+need to be ordered.
+
+If writel() is used, then dma_wmb() or wmb() is unnecessary, see:
+
+commit: 5846581e3563 ("locking/memory-barriers.txt: Fix broken DMA vs. MMIO ordering example")
+
+
+> .
+> 
