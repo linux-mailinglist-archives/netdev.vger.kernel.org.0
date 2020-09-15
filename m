@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D410E26B09E
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4599226B0A3
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:16:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727788AbgIOWPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 18:15:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
+        id S1727707AbgIOWQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 18:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727783AbgIOWP0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 18:15:26 -0400
+        with ESMTP id S1727744AbgIOWQM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 18:16:12 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82ABEC061788
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 15:15:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A88BC061788
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 15:16:11 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kIJEM-0008Ja-A1; Wed, 16 Sep 2020 00:15:18 +0200
+        id 1kIJF9-0008So-E5; Wed, 16 Sep 2020 00:16:07 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:8d0c:cfd0:3f99:a545] (unknown [IPv6:2a03:f580:87bc:d400:8d0c:cfd0:3f99:a545])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id A6B765611C4;
-        Tue, 15 Sep 2020 22:15:16 +0000 (UTC)
-Subject: Re: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
-To:     Michael Walle <michael@walle.cc>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org,
-        dl-linux-imx <linux-imx@nxp.com>, netdev@vger.kernel.org
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 61AB25611C7;
+        Tue, 15 Sep 2020 22:16:06 +0000 (UTC)
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Michael Walle <michael@walle.cc>
+Cc:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <20200416093126.15242-1-qiangqing.zhang@nxp.com>
  <20200416093126.15242-2-qiangqing.zhang@nxp.com>
  <DB8PR04MB6795F7E28A9964A121A06140E6D80@DB8PR04MB6795.eurprd04.prod.outlook.com>
@@ -38,6 +39,7 @@ References: <20200416093126.15242-1-qiangqing.zhang@nxp.com>
  <39b5d77bda519c4d836f44a554890bae@walle.cc>
  <e38cf40b-ead3-81de-0be7-18cca5ca1a0c@pengutronix.de>
  <9dc13a697c246a5c7c53bdd89df7d3c7@walle.cc>
+ <DB8PR04MB6795751DBB178E1EDF74136FE66F0@DB8PR04MB6795.eurprd04.prod.outlook.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -99,15 +101,16 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <12214d6d-8d42-80ea-4682-1d4d52896c05@pengutronix.de>
-Date:   Wed, 16 Sep 2020 00:15:11 +0200
+Subject: Re: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
+Message-ID: <61489f52-84d5-e800-02f9-e40596e269ef@pengutronix.de>
+Date:   Wed, 16 Sep 2020 00:16:02 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <9dc13a697c246a5c7c53bdd89df7d3c7@walle.cc>
+In-Reply-To: <DB8PR04MB6795751DBB178E1EDF74136FE66F0@DB8PR04MB6795.eurprd04.prod.outlook.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="7ARiva11CixJLFiiKIU3TinQiPgdotatO"
+ boundary="oktyPB2XaEkVQu5bljUrqPoWNIloAeCJn"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -118,14 +121,15 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---7ARiva11CixJLFiiKIU3TinQiPgdotatO
-Content-Type: multipart/mixed; boundary="Tz3WRKIkT8vdRIIiyRPTvwNk9ELfdqAaE";
+--oktyPB2XaEkVQu5bljUrqPoWNIloAeCJn
+Content-Type: multipart/mixed; boundary="nhgaP010P1WugN0YmumH3rp69KyfXv3Xe";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Michael Walle <michael@walle.cc>
-Cc: Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org,
- dl-linux-imx <linux-imx@nxp.com>, netdev@vger.kernel.org
-Message-ID: <12214d6d-8d42-80ea-4682-1d4d52896c05@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>, Michael Walle <michael@walle.cc>
+Cc: "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+ dl-linux-imx <linux-imx@nxp.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <61489f52-84d5-e800-02f9-e40596e269ef@pengutronix.de>
 Subject: Re: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
 References: <20200416093126.15242-1-qiangqing.zhang@nxp.com>
  <20200416093126.15242-2-qiangqing.zhang@nxp.com>
@@ -134,31 +138,92 @@ References: <20200416093126.15242-1-qiangqing.zhang@nxp.com>
  <39b5d77bda519c4d836f44a554890bae@walle.cc>
  <e38cf40b-ead3-81de-0be7-18cca5ca1a0c@pengutronix.de>
  <9dc13a697c246a5c7c53bdd89df7d3c7@walle.cc>
-In-Reply-To: <9dc13a697c246a5c7c53bdd89df7d3c7@walle.cc>
+ <DB8PR04MB6795751DBB178E1EDF74136FE66F0@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <DB8PR04MB6795751DBB178E1EDF74136FE66F0@DB8PR04MB6795.eurprd04.prod.outlook.com>
 
---Tz3WRKIkT8vdRIIiyRPTvwNk9ELfdqAaE
+--nhgaP010P1WugN0YmumH3rp69KyfXv3Xe
 Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
+Content-Language: en-GB
 Content-Transfer-Encoding: quoted-printable
 
-On 6/29/20 6:23 PM, Michael Walle wrote:
-> Hi Marc,
+On 6/30/20 4:25 AM, Joakim Zhang wrote:
+> I have also noticed this difference, although this could not break func=
+tion,
+> but IMO, using priv->can.ctrlmode should be better.
 >=20
->> I've cleaned up the patches a bit, can you test this branch:
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git=
-/log/?h=3Dflexcan
+> Some nitpicks:
+>
+> 1) Can we use uniform check for HW which supports CAN FD in the driver,=
+ using
+> priv->can.ctrlmode_supported instead of quirks?>
+> --- a/drivers/net/can/flexcan.c
+> +++ b/drivers/net/can/flexcan.c
+> @@ -1392,7 +1392,7 @@ static int flexcan_chip_start(struct net_device *=
+dev)
+>                 priv->write(reg_ctrl2, &regs->ctrl2);
+>         }
 >=20
-> This is working, but as Joakim already said, CAN-FD ISO mode is missing=
-=2E
-> It defaults to non-ISO mode, which is even worse, IMHO.
->=20
-> But I've also noticed a difference between the original patch and the
-> one in that branch. When FD mode is enabled the original patch checks
-> the priv->can.controlmode [1], the patch in the branch looks at
-> priv->can.ctrlmode_supported instead [2], is that correct?
+> -       if ((priv->devtype_data->quirks & FLEXCAN_QUIRK_SUPPORT_FD)) {
+> +       if (priv->can.ctrlmode_supported & CAN_CTRLMODE_FD) {
 
-Nope, I've corrected this.
+makes sense
+
+>                 u32 reg_fdctrl;
+>=20
+>                 reg_fdctrl =3D priv->read(&regs->fdctrl);
+>=20
+> Also delete the redundant parentheses here.
+>=20
+> 2) Clean timing register.
+> --- a/drivers/net/can/flexcan.c
+> +++ b/drivers/net/can/flexcan.c
+> @@ -1167,6 +1167,14 @@ static void flexcan_set_bittiming_cbt(const stru=
+ct net_device *dev)
+>         struct flexcan_regs __iomem *regs =3D priv->regs;
+>         u32 reg_cbt, reg_fdctrl;
+>=20
+> +       reg_cbt =3D priv->read(&regs->cbt);
+> +       reg_cbt &=3D ~(FLEXCAN_CBT_BTF |
+> +               FIELD_PREP(FLEXCAN_CBT_EPRESDIV_MASK, 0x3ff) |
+> +               FIELD_PREP(FLEXCAN_CBT_ERJW_MASK, 0x1f) |
+> +               FIELD_PREP(FLEXCAN_CBT_EPROPSEG_MASK, 0x3f) |
+> +               FIELD_PREP(FLEXCAN_CBT_EPSEG1_MASK, 0x1f) |
+> +               FIELD_PREP(FLEXCAN_CBT_EPSEG2_MASK, 0x1f));
+> +
+
+Why is this needed? The "reg_cbt &=3D" sets reg_cbt basically to 0, as th=
+e fields
+and the BTF occupy all 32bit.
+
+The only thing that's left over is the read()....
+
+>         /* CBT */
+>         /* CBT[EPSEG1] is 5 bit long and CBT[EPROPSEG] is 6 bit
+>          * long. The can_calc_bittiming() tries to divide the tseg1
+> @@ -1192,6 +1200,13 @@ static void flexcan_set_bittiming_cbt(const stru=
+ct net_device *dev)
+>         if (priv->can.ctrlmode & CAN_CTRLMODE_FD) {
+>                 u32 reg_fdcbt;
+>=20
+> +               reg_fdcbt =3D priv->read(&regs->fdcbt);
+> +               reg_fdcbt &=3D ~(FIELD_PREP(FLEXCAN_FDCBT_FPRESDIV_MASK=
+, 0x3ff) |
+> +                       FIELD_PREP(FLEXCAN_FDCBT_FRJW_MASK, 0x7) |
+> +                       FIELD_PREP(FLEXCAN_FDCBT_FPROPSEG_MASK, 0x1f) |=
+
+> +                       FIELD_PREP(FLEXCAN_FDCBT_FPSEG1_MASK, 0x7) |
+> +                       FIELD_PREP(FLEXCAN_FDCBT_FPSEG2_MASK, 0x7));
+> +
+
+Okay, I'll add this, as the fdcbt contains some reserved bits...Let's pre=
+serve them.
+
+I've changed the setting of reg_fdcbt like this to make sense:
+
+> -               reg_fdcbt =3D FIELD_PREP(FLEXCAN_FDCBT_FPRESDIV_MASK, d=
+bt->brp - 1) |
+> +               reg_fdcbt |=3D FIELD_PREP(FLEXCAN_FDCBT_FPRESDIV_MASK, =
+dbt->brp - 1) |
 
 thanks,
 Marc
@@ -170,23 +235,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---Tz3WRKIkT8vdRIIiyRPTvwNk9ELfdqAaE--
+--nhgaP010P1WugN0YmumH3rp69KyfXv3Xe--
 
---7ARiva11CixJLFiiKIU3TinQiPgdotatO
+--oktyPB2XaEkVQu5bljUrqPoWNIloAeCJn
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9hPO8ACgkQqclaivrt
-76k4ZQgAsNvS7/PqAWlLSA1z4OkiLT2zAWdwJplmf6xkjhP/EbM2+vPgV7rMIhAe
-J6b0J9HYMUWxSna4ulD7u/7T6t44X9QBjoMebcgm6VKUfSk7Qq0dmgEQTsz8pH2x
-OH8yOzuLpyCc3C+90LpmElsDhwT9YQmmRXq5jTuPNUwOymnQhJxMhmM/u3U7a7K7
-/gHhRLGRKxVNo7PfvYI4pdethm3BmuYAouf1TGZSnMxOOgurKAxNKuZXmmuQB6GY
-HqU+QOF3apy62Cm3+fdpfg3y/fIHbWbVc1evaSipvU2fmEPN0nGQUwwo/KS+IKnd
-YLPSLPEDbmUf+EqBNlXQdMWUocEp/Q==
-=Bk5S
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9hPSIACgkQqclaivrt
+76k6ywf8CL2DTulCTb5oUza5T84JI4bu82tlKa74W7TPy24AFU0AHgCNAI7xRF23
+yNokchx9mk3D3Emf0uZxG3JxeGd8OhHgmLwzk561vtOIZig+FNxIUuFDK8UcIiOI
+1hgy4ABPkke9hG7W78tc2f9QTCDBDbkYTpr1G/WjeB4R/TDiJX41Xsj6nWuxcBeR
+y76VvJZgb5HzR1tIwEeOj42kEwzUGIeh99cnWQxPugkhxlTUngSrFMzz5rHKdk2K
+iOi/NXKMPHdFuE6T6Nice7ozPFcfmvM8mBk4xzHcStWBNt4DnzzArEaI4WndvAFs
+BV9i4MUUOxrDR7mF0y1eeAIZ9GYwXQ==
+=1TXd
 -----END PGP SIGNATURE-----
 
---7ARiva11CixJLFiiKIU3TinQiPgdotatO--
+--oktyPB2XaEkVQu5bljUrqPoWNIloAeCJn--
