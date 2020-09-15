@@ -2,513 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF25C269D7F
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 06:39:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C544A269D86
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 06:41:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726123AbgIOEje (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 00:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726057AbgIOEj2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 00:39:28 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F45C06174A;
-        Mon, 14 Sep 2020 21:39:28 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id d19so679179pld.0;
-        Mon, 14 Sep 2020 21:39:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CT2DA0L5QIO62rgxbmqHh76vJTvwmF0J8tLl4pCaoPU=;
-        b=H3WuFfyQl7gN7NTFSuSLBGZMnKpQDmOLnppo2sLWCsw/TMCoAQp7b21VoZCe/La3WE
-         /tdNg9MqgaNJ+VFtlLzz3uiO+jwJPoDji2XKqueDfPrAx2wdqJopWKcDUUPdr+7YGMgv
-         dqY+U/RJWFNaka8+YZg9cKD4MoKOh0znW8VgccuHUg0jzRh2X0XbSfkQkgtm0+Y+2yuI
-         xkbitLLSfM7A6aE4CdBK8P+d042UMzCAh/D2bNUHZeHEVORyvuRYjCNcUA3IlwXPjF6B
-         +MOCTXwtNR0Wr6azkW1qjYGcbN6gW5mV+AFxf9YgEFTr4GhkvEJSAyB/W2OzX2O64cLv
-         KmRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CT2DA0L5QIO62rgxbmqHh76vJTvwmF0J8tLl4pCaoPU=;
-        b=QQhIjYSUDPh6rmLPyOBaD0yovHQCSHry2I3GPsAIcCXJhxA2qvum3rQ3OTZ4M00xnd
-         DgfsIqs3tvpC73W6XnCf/ATF+Ds8wsQjkrYXnBoHPdtUa/9zT/tE2rnfat91pzK/CQ6U
-         4oznMd9m8yYM6Os5tBbI3G6Qs6Eo1b604UGMHIhzN5nAFGA/WoVs111nOdNCVhOYtjFP
-         ANw7zQG9u2ZwqvJyorSXA+GqRA76FfvKfYSpFlxwzCBX1HfkjFLsJG6O2G+2DcvAwXRP
-         gzr572Z1ckq4FM5DNPJFNfw7Sl7bH6PxWo/CiIXAiTAsoXRD1WpGNdtGh/aOSRC78jBn
-         Wf/Q==
-X-Gm-Message-State: AOAM532NsWe+cWI+56UPftcTrOsI0MLvsk2VOpzRWp9j6bFzKhTnR7OT
-        rh0g/DNcyUk4dnzU9FYAcXY=
-X-Google-Smtp-Source: ABdhPJwZHAKlQOXAnEqw3dhH6mnfmh+6Hld2uq34IpPp04u7KmTna++QOj7sZMOxQGeWmwxKj5Vw+A==
-X-Received: by 2002:a17:90a:f686:: with SMTP id cl6mr2385547pjb.43.1600144767687;
-        Mon, 14 Sep 2020 21:39:27 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:f16b])
-        by smtp.gmail.com with ESMTPSA id e125sm11823659pfe.154.2020.09.14.21.39.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 21:39:26 -0700 (PDT)
-Date:   Mon, 14 Sep 2020 21:39:24 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com
-Subject: Re: [PATCH v7 bpf-next 7/7] selftests: bpf: add dummy prog for
- bpf2bpf with tailcall
-Message-ID: <20200915043924.uicfgbhuszccycbq@ast-mbp.dhcp.thefacebook.com>
-References: <20200902200815.3924-1-maciej.fijalkowski@intel.com>
- <20200902200815.3924-8-maciej.fijalkowski@intel.com>
- <20200903195114.ccfzmgcl4ngz2mqv@ast-mbp.dhcp.thefacebook.com>
- <20200911185927.GA2543@ranger.igk.intel.com>
+        id S1726152AbgIOElm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 00:41:42 -0400
+Received: from nat-hk.nvidia.com ([203.18.50.4]:34330 "EHLO nat-hk.nvidia.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726057AbgIOElk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Sep 2020 00:41:40 -0400
+Received: from hkpgpgate102.nvidia.com (Not Verified[10.18.92.9]) by nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f6045ff0000>; Tue, 15 Sep 2020 12:41:35 +0800
+Received: from HKMAIL104.nvidia.com ([10.18.16.13])
+  by hkpgpgate102.nvidia.com (PGP Universal service);
+  Mon, 14 Sep 2020 21:41:35 -0700
+X-PGP-Universal: processed;
+        by hkpgpgate102.nvidia.com on Mon, 14 Sep 2020 21:41:35 -0700
+Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL104.nvidia.com
+ (10.18.16.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 15 Sep
+ 2020 04:41:32 +0000
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Tue, 15 Sep 2020 04:41:32 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MMK/8ihkQJzKwcYfHMufEOo5pwW3vCawCnLLC8D9iWSKUaBoHCEUzQs55yCi2oAp7Y009SF4+hd7xav1+F7becaUvI+Lr5iK2392WwedMuNIN9LxNR+R7hUHIoawIQQXdO8KdpxkXx4EVvwX/8syXrKiziwuKdbmzI258PVcZJDtgcCCoO7pii54aYqaY+wpWQdcswLEJnEKOVP5P45w6diCVD5Yf1iQrv438gFc8X0gp66YxwOhu/S/WUmFKN/68GugNcwH3DkMnLQv08an9/QNvYPIl0s8qYP0ExoITkHo8AiSXWm3rhs22+0ohma12SFdwa/iKgLLVmNU/JWIWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=s0Ixb8mtRO4kOqj2JMqIXFZnydkHfz7qaUnOnXVMjYo=;
+ b=D478vnaxlu68Yene+3IwndcTrvFSP80/wsOYeLIjJqQ4LUcbF21zTLEx1NelI35R5QhXGeZW6I3G2i+/BWvEpphVcDtbXEN1vfl4UC7Dp6OP1ikn1EMQGxmgekJO21zisYFrf6k5BC5pNFODlAqTRJQIT2UunH9RSpG2wg+H8Lj9P/55Ine+O2ZOc8NFWIjstcoxIR9xyCPIFC2AgjKEVyYkAYKF3Jkppqh9H2LHMcMUpfa3LsCgr9K/cI0h3uFH5kRotSFwucsFV0ypRBhXXqVUlRGRJPi20EjYGzm89AZomA0ZbClSDdjdhqNhGfaQldNGlyMVi0r3anrby0//Sw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
+ by BYAPR12MB3447.namprd12.prod.outlook.com (2603:10b6:a03:a9::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Tue, 15 Sep
+ 2020 04:41:29 +0000
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::90a0:8549:2aeb:566]) by BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::90a0:8549:2aeb:566%6]) with mapi id 15.20.3370.019; Tue, 15 Sep 2020
+ 04:41:29 +0000
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     "apais@linux.microsoft.com" <apais@linux.microsoft.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "allen.lkml@gmail.com" <allen.lkml@gmail.com>
+CC:     "m.grzeschik@pengutronix.de" <m.grzeschik@pengutronix.de>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "woojung.huh@microchip.com" <woojung.huh@microchip.com>,
+        "petkan@nucleusys.com" <petkan@nucleusys.com>,
+        "oliver@neukum.org" <oliver@neukum.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "paulus@samba.org" <paulus@samba.org>,
+        "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>
+Subject: Re: [RESEND net-next v2 00/12]drivers: net: convert tasklets to use
+ new tasklet_setup() API
+Thread-Topic: [RESEND net-next v2 00/12]drivers: net: convert tasklets to use
+ new tasklet_setup() API
+Thread-Index: AQHWimk5SmafUBxlxU23WRnz8uztzqloo8cAgAB0WoCAAAf/AA==
+Date:   Tue, 15 Sep 2020 04:41:28 +0000
+Message-ID: <52bb16899e14923b7df195d6c9e68dad6a7a404b.camel@nvidia.com>
+References: <20200914073131.803374-1-allen.lkml@gmail.com>
+         <5ab44bd27936325201e8f71a30e74d8b9d6b34ee.camel@nvidia.com>
+         <87508263-99f1-c56a-5fb1-2f4700b6b375@linux.microsoft.com>
+In-Reply-To: <87508263-99f1-c56a-5fb1-2f4700b6b375@linux.microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: linux.microsoft.com; dkim=none (message not signed)
+ header.d=none;linux.microsoft.com; dmarc=none action=none
+ header.from=nvidia.com;
+x-originating-ip: [24.6.56.119]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5daa9e41-e913-4d12-efed-08d859319cc7
+x-ms-traffictypediagnostic: BYAPR12MB3447:
+x-microsoft-antispam-prvs: <BYAPR12MB344775E5FAAE76F1908963C8B3200@BYAPR12MB3447.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: JZhfxtc2VYU8zdu+aULXZweaHWxOJvldG4D0HvfAjIohxKXYDU0LR/mJUgvC/imp9TuktY2gIWIF2Z+7UuwpnmNAswzpvMI2+ExpJu5QvaWTVewwNUniKc93PTUxCzqgToaIVHcIKhi2x2JbaoIXsSs2pZXz0LJs9K+wjD9FvEzV/uL7nwwSZxIwv6g/dB4bJ54UqHYobfQ1dmmGJEnugyA9oVFOy3EDR8+HjBJ58RCyrExjI1UF0oN3xEQQhZyS1n3wdMgR4mRs8A5pB0t3EnZCSPh2YbVYE6XQH+0uAEb9KpKZSo6Kd5pWcuhvP1zi
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(366004)(376002)(136003)(39860400002)(2906002)(26005)(316002)(2616005)(186003)(7416002)(8936002)(4326008)(478600001)(83380400001)(5660300002)(66446008)(6506007)(6512007)(8676002)(66946007)(86362001)(64756008)(66556008)(66476007)(110136005)(36756003)(76116006)(71200400001)(6486002)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: eKuJ5NQxAmk3wIALww0pUv6R/TwGkRjnlxLMUX6jWVoCGnat4b8TtubxeavSOcvTP6ocf+ZY7DM7shs9yOHvlUVriy5XEBbqhpm5KhUyd1ZeCF0R/Rg8MHlfQQpeMfPZSxW76wSIjCgcOlVVsPygw9f/E7j0TWgtKFh0bDPI/BOw2MvjBXnHHLB0aUT4JBvcDNWG5HTYy/UlZOvAmMeznk8oFn49aygO9y6q0PRA72kUb5W8RzuarM/EExh5xrrNofh8xpeou757etPYtiTiXvVrJTkFaSzrmxLecqrBMl5Q6ezdgeJWSrn1X6ZaTdebjqTHVE5ybLIb7T9bfDg5JTyUr1IBBbOlWvOrEEc/24wm5DE7zs5wJ2bEeHGF4hxwAYUjMykd1PyR9/omiUIkjykenyeGX9J6RIIwjbJZigF8k1kDGvQvLgp4V95UVLnTly9eaf4AGN2bEo5h5llEO/Jg35ZBID23uH3bRYBLjmi/WxMQlmcd+u4dx6KK7KCIWJ4A27XJvSdAxfV0ddB2DJKZdqTp1zNErM78SQnhoP5BMZsLKT6/Xu93HIIWpg9zTmxVdOmsz+RWWuRMD6WVfhJ7dPWrnjGPS4kovlnmcINYjAumbEib0n6Begc25TJpbuNIatdjKNXSEwhwKIqPTw==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E8A883A2CF73DC418601F63B3CD8AE08@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200911185927.GA2543@ranger.igk.intel.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5daa9e41-e913-4d12-efed-08d859319cc7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Sep 2020 04:41:29.0498
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NacIMWjMKrVSaWzMI6xoGfhUDWMuTOJn+gt4acv1KM9JIRlrCLrdeUUk1zqJAME75auuzIq2tRyKQlR0xmMD0g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3447
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1600144895; bh=s0Ixb8mtRO4kOqj2JMqIXFZnydkHfz7qaUnOnXVMjYo=;
+        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+         ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
+         Thread-Index:Date:Message-ID:References:In-Reply-To:
+         Accept-Language:Content-Language:X-MS-Has-Attach:
+         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
+         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
+         x-ms-traffictypediagnostic:x-microsoft-antispam-prvs:
+         x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
+         x-microsoft-antispam:x-microsoft-antispam-message-info:
+         x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
+         x-ms-exchange-transport-forked:Content-Type:Content-ID:
+         Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=IPkf1ub++ly+OJWwMwoc7tw05pN22mscnD7GaW6f/xRyeUb82mJHrLFJ5coC6jHAr
+         5kDvV/V5oSnU3pbio7EksN6Srg8n0bTtjqCCmKlHKc0TLE0nFPXob7deJo26jkL8Sr
+         mtYtZJWhyloxDr90EgqEhTh55xC6UfZWRmAOJ6YSdzbfzgYRG5OtiwpPqGtwNOlzlU
+         dHbXgBa504KDNrfwxNiN6gH02BQAI6KRL7hm5GahlSOuETturPpGsDE/zXX6/4WoN4
+         otkKvZhroiB1QyGCKijzpfZbMGZekSkdkF3f6asBda4R0MfWfk+HRXa4NbwgrKjXvu
+         E7DmERS/pZiIQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 11, 2020 at 08:59:27PM +0200, Maciej Fijalkowski wrote:
-> On Thu, Sep 03, 2020 at 12:51:14PM -0700, Alexei Starovoitov wrote:
-> > On Wed, Sep 02, 2020 at 10:08:15PM +0200, Maciej Fijalkowski wrote:
-> > > diff --git a/tools/testing/selftests/bpf/progs/tailcall6.c b/tools/testing/selftests/bpf/progs/tailcall6.c
-> > > new file mode 100644
-> > > index 000000000000..e72ca5869b58
-> > > --- /dev/null
-> > > +++ b/tools/testing/selftests/bpf/progs/tailcall6.c
-> > > @@ -0,0 +1,38 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +#include <linux/bpf.h>
-> > > +#include <bpf/bpf_helpers.h>
-> > > +
-> > > +struct {
-> > > +	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-> > > +	__uint(max_entries, 2);
-> > > +	__uint(key_size, sizeof(__u32));
-> > > +	__uint(value_size, sizeof(__u32));
-> > > +} jmp_table SEC(".maps");
-> > > +
-> > > +#define TAIL_FUNC(x) 				\
-> > > +	SEC("classifier/" #x)			\
-> > > +	int bpf_func_##x(struct __sk_buff *skb)	\
-> > > +	{					\
-> > > +		return x;			\
-> > > +	}
-> > > +TAIL_FUNC(0)
-> > > +TAIL_FUNC(1)
-> > > +
-> > > +static __attribute__ ((noinline))
-> > > +int subprog_tail(struct __sk_buff *skb)
-> > > +{
-> > > +	bpf_tail_call(skb, &jmp_table, 0);
-> > > +
-> > > +	return skb->len * 2;
-> > > +}
-> > > +
-> > > +SEC("classifier")
-> > > +int entry(struct __sk_buff *skb)
-> > > +{
-> > > +	bpf_tail_call(skb, &jmp_table, 1);
-> > > +
-> > > +	return subprog_tail(skb);
-> > > +}
-> > 
-> > Could you add few more tests to exercise the new feature more thoroughly?
-> > Something like tailcall3.c that checks 32 limit, but doing tail_call from subprog.
-> > And another test that consume non-trival amount of stack in each function.
-> > Adding 'volatile char arr[128] = {};' would do the trick.
-> 
-> Yet another prolonged silence from my side, but not without a reason -
-> this request opened up a Pandora's box.
-
-Great catch and thanks to our development practices! As a community we should
-remember this lesson and request selftests more often than not.
-
-> First thing that came out when I added the global variable to act as a
-> counter in the tailcall3-like subprog-based test was the fact that when
-> the patching happen, we need to update the index of tailcall insn that we
-> store within the poke descriptor. Due to patching and insn not being
-> adjusted, the poke descriptor was not propagated to subprogram and JIT
-> started to fail.
-> 
-> It's rather obvious change so I won't post it here to decrease the chaos
-> in this response, but I simply teached bpf_patch_insn_data() to go over
-> poke descriptors and update the insn_idx by given len. Will include in
-> next revision.
-
-+1
-
-> Now onto serious stuff that I would like to discuss. Turns out that for
-> tailcall3-like selftest:
-> 
-> // SPDX-License-Identifier: GPL-2.0
-> #include <linux/bpf.h>
-> #include <bpf/bpf_helpers.h>
-> 
-> struct {
-> 	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-> 	__uint(max_entries, 1);
-> 	__uint(key_size, sizeof(__u32));
-> 	__uint(value_size, sizeof(__u32));
-> } jmp_table SEC(".maps");
-> 
-> static __attribute__ ((noinline))
-> int subprog_tail(struct __sk_buff *skb)
-> {
-> 	bpf_tail_call(skb, &jmp_table, 0);
-> 	return 1;
-> }
-> 
-> SEC("classifier/0")
-> int bpf_func_0(struct __sk_buff *skb)
-> {
-> 	return subprog_tail(skb);
-> }
-> 
-> SEC("classifier")
-> int entry(struct __sk_buff *skb)
-> {
-> 	bpf_tail_call(skb, &jmp_table, 0);
-> 
-> 	return 0;
-> }
-> 
-> char __license[] SEC("license") = "GPL";
-> int _version SEC("version") = 1;
-> 
-> following asm was generated:
-> 
-> entry:
-> ffffffffa0ca0c40 <load4+0xca0c40>:
-> ffffffffa0ca0c40:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
-> ffffffffa0ca0c45:       31 c0                   xor    %eax,%eax
-> ffffffffa0ca0c47:       55                      push   %rbp
-> ffffffffa0ca0c48:       48 89 e5                mov    %rsp,%rbp
-> ffffffffa0ca0c4b:       48 81 ec 00 00 00 00    sub    $0x0,%rsp
-> ffffffffa0ca0c52:       50                      push   %rax
-> ffffffffa0ca0c53:       48 be 00 6c b1 c1 81    movabs $0xffff8881c1b16c00,%rsi
-> ffffffffa0ca0c5a:       88 ff ff 
-> ffffffffa0ca0c5d:       31 d2                   xor    %edx,%edx
-> ffffffffa0ca0c5f:       8b 85 fc ff ff ff       mov    -0x4(%rbp),%eax
-> ffffffffa0ca0c65:       83 f8 20                cmp    $0x20,%eax
-> ffffffffa0ca0c68:       77 1b                   ja     0xffffffffa0ca0c85
-> ffffffffa0ca0c6a:       83 c0 01                add    $0x1,%eax
-> ffffffffa0ca0c6d:       89 85 fc ff ff ff       mov    %eax,-0x4(%rbp)
-> ffffffffa0ca0c73:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
-> ffffffffa0ca0c78:       58                      pop    %rax
-> ffffffffa0ca0c79:       48 81 c4 00 00 00 00    add    $0x0,%rsp
-> ffffffffa0ca0c80:       e9 d2 b6 ff ff          jmpq   0xffffffffa0c9c357
-> ffffffffa0ca0c85:       31 c0                   xor    %eax,%eax
-> ffffffffa0ca0c87:       59                      pop    %rcx
-> ffffffffa0ca0c88:       c9                      leaveq 
-> ffffffffa0ca0c89:       c3                      retq
-> 
-> func0:
-> ffffffffa0c9c34c <load4+0xc9c34c>:
-> ffffffffa0c9c34c:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
-> ffffffffa0c9c351:       66 90                   xchg   %ax,%ax
-> ffffffffa0c9c353:       55                      push   %rbp
-> ffffffffa0c9c354:       48 89 e5                mov    %rsp,%rbp
-> ffffffffa0c9c357:       48 81 ec 00 00 00 00    sub    $0x0,%rsp
-> ffffffffa0c9c35e:       e8 b1 20 00 00          callq  0xffffffffa0c9e414
-> ffffffffa0c9c363:       b8 01 00 00 00          mov    $0x1,%eax
-> ffffffffa0c9c368:       c9                      leaveq 
-> ffffffffa0c9c369:       c3                      retq 
-> 
-> subprog_tail:
-> ffffffffa0c9e414:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
-> ffffffffa0c9e419:       31 c0                   xor    %eax,%eax
-> ffffffffa0c9e41b:       55                      push   %rbp
-> ffffffffa0c9e41c:       48 89 e5                mov    %rsp,%rbp
-> ffffffffa0c9e41f:       48 81 ec 00 00 00 00    sub    $0x0,%rsp
-> ffffffffa0c9e426:       50                      push   %rax
-> ffffffffa0c9e427:       48 be 00 6c b1 c1 81    movabs $0xffff8881c1b16c00,%rsi
-> ffffffffa0c9e42e:       88 ff ff 
-> ffffffffa0c9e431:       31 d2                   xor    %edx,%edx
-> ffffffffa0c9e433:       8b 85 fc ff ff ff       mov    -0x4(%rbp),%eax
-> ffffffffa0c9e439:       83 f8 20                cmp    $0x20,%eax
-> ffffffffa0c9e43c:       77 1b                   ja     0xffffffffa0c9e459
-> ffffffffa0c9e43e:       83 c0 01                add    $0x1,%eax
-> ffffffffa0c9e441:       89 85 fc ff ff ff       mov    %eax,-0x4(%rbp)
-> ffffffffa0c9e447:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
-> ffffffffa0c9e44c:       58                      pop    %rax
-> ffffffffa0c9e44d:       48 81 c4 00 00 00 00    add    $0x0,%rsp
-> ffffffffa0c9e454:       e9 fe de ff ff          jmpq   0xffffffffa0c9c357
-> ffffffffa0c9e459:       59                      pop    %rcx
-> ffffffffa0c9e45a:       c9                      leaveq 
-> ffffffffa0c9e45b:       c3                      retq 
-> 
-> So this flow was doing:
-> entry -> set tailcall counter to 0, bump it by 1, tailcall to func0
-> func0 -> call subprog_tail
-> (we are NOT skipping the first 11 bytes of prologue and this subprogram
-> has a tailcall, therefore we clear the counter...)
-> subprog -> do the same thing as entry
-> 
-> and then loop forever. This shows that in our current design there's a
-> missing gap of preserving the tailcall counter when bpf2bpf gets mixed
-> with tailcalls.
-> 
-> To address this, the idea is to go through the call chain of bpf2bpf progs
-> and look for a tailcall presence throughout whole chain. If we saw a
-> single tail call then each node in this call chain needs to be marked as
-> as a subprog that can reach the tailcall. We would later feed the JIT with
-> this info and:
-> - set eax to 0 only when tailcall is reachable and this is the
->   entry prog
-> - if tailcall is reachable but there's no tailcall in insns of currently
->   JITed prog then push rax anyway, so that it will be possible to
->   propagate further down the call chain
-> - finally if tailcall is reachable, then we need to precede the 'call'
->   insn with mov rax, [rsp]
-
-may be 'mov rax, [rbp - 4]' for consistency with other places
-with it's read/written ?
-
-> This way jumping to subprog results in tailcall counter sitting in rax and
-> we will not clear it since it is a subprog.
-> 
-> I think we can easily mark such progs after we reach the end of insn of
-> current subprog in check_max_stack_depth().
-> 
-> I'd like to share a dirty diff that I currently have so that it's easier
-> to review this approach rather than finding the diff between revisions.
-> It also includes the concern Alexei had on 5/7 (hopefully, if i understood
-> it right):
-> 
-> ------------------------------------------------------
-> 
-> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> index 58b848029e2f..ed03de3ba27b 100644
-> --- a/arch/x86/net/bpf_jit_comp.c
-> +++ b/arch/x86/net/bpf_jit_comp.c
-> @@ -262,7 +262,7 @@ static void pop_callee_regs(u8 **pprog, bool *callee_regs_used)
->   * while jumping to another program
->   */
->  static void emit_prologue(u8 **pprog, u32 stack_depth, bool ebpf_from_cbpf,
-> -			  bool tail_call)
-> +			  bool tail_call, bool is_subprog, bool tcr)
->  {
->  	u8 *prog = *pprog;
->  	int cnt = X86_PATCH_SIZE;
-> @@ -273,7 +273,7 @@ static void emit_prologue(u8 **pprog, u32 stack_depth, bool ebpf_from_cbpf,
->  	memcpy(prog, ideal_nops[NOP_ATOMIC5], cnt);
->  	prog += cnt;
->  	if (!ebpf_from_cbpf) {
-> -		if (tail_call)
-> +		if ((tcr || tail_call) && !is_subprog)
-
-please spell it out as 'tail_call_reachable'.
-Also probably 'tail_call' argument is no longer needed.
-
->  			EMIT2(0x31, 0xC0); /* xor eax, eax */
->  		else
->  			EMIT2(0x66, 0x90); /* nop2 */
-> @@ -282,7 +282,7 @@ static void emit_prologue(u8 **pprog, u32 stack_depth, bool ebpf_from_cbpf,
->  	EMIT3(0x48, 0x89, 0xE5); /* mov rbp, rsp */
->  	/* sub rsp, rounded_stack_depth */
->  	EMIT3_off32(0x48, 0x81, 0xEC, round_up(stack_depth, 8));
-> -	if (!ebpf_from_cbpf && tail_call)
-> +	if ((!ebpf_from_cbpf && tail_call) || tcr)
-
-May be do 'if (tail_call_reachable)' ?
-cbpf doesn't have tail_calls, so ebpf_from_cbpf is unnecessary.
-
->  		EMIT1(0x50);         /* push rax */
->  	*pprog = prog;
->  }
-> @@ -793,7 +793,9 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
->  			 &tail_call_seen);
->  
->  	emit_prologue(&prog, bpf_prog->aux->stack_depth,
-> -		      bpf_prog_was_classic(bpf_prog), tail_call_seen);
-> +		      bpf_prog_was_classic(bpf_prog), tail_call_seen,
-> +		      bpf_prog->aux->is_subprog,
-> +		      bpf_prog->aux->tail_call_reachable);
->  	push_callee_regs(&prog, callee_regs_used);
->  	addrs[0] = prog - temp;
->  
-> @@ -1232,8 +1234,14 @@ xadd:			if (is_imm8(insn->off))
->  			/* call */
->  		case BPF_JMP | BPF_CALL:
->  			func = (u8 *) __bpf_call_base + imm32;
-> -			if (!imm32 || emit_call(&prog, func, image + addrs[i - 1]))
-> -				return -EINVAL;
-> +			if (bpf_prog->aux->tail_call_reachable) {
-> +				EMIT4(0x48, 0x8B, 0x04, 0x24); // mov rax, [rsp]
-
-[rbp-4] ?
-
-> +				if (!imm32 || emit_call(&prog, func, image + addrs[i - 1] + 4))
-> +					return -EINVAL;
-> +			} else {
-> +				if (!imm32 || emit_call(&prog, func, image + addrs[i - 1]))
-> +					return -EINVAL;
-> +			}
->  			break;
->  
->  		case BPF_JMP | BPF_TAIL_CALL:
-> @@ -1429,7 +1437,9 @@ xadd:			if (is_imm8(insn->off))
->  			/* Update cleanup_addr */
->  			ctx->cleanup_addr = proglen;
->  			pop_callee_regs(&prog, callee_regs_used);
-> -			if (!bpf_prog_was_classic(bpf_prog) && tail_call_seen)
-> +			if ((!bpf_prog_was_classic(bpf_prog) && tail_call_seen) ||
-> +			    bpf_prog->aux->tail_call_reachable)
-
-bpf_prog_was_classic() check is redundant?
-Just 'if (bpf_prog->aux->tail_call_reachable)' should be enough?
-
-> +
->  				EMIT1(0x59); /* pop rcx, get rid of tail_call_cnt */
->  			EMIT1(0xC9);         /* leave */
->  			EMIT1(0xC3);         /* ret */
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 7910b87e4ea2..d41e08fbb85f 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -740,6 +740,8 @@ struct bpf_prog_aux {
->  	bool attach_btf_trace; /* true if attaching to BTF-enabled raw tp */
->  	bool func_proto_unreliable;
->  	bool sleepable;
-> +	bool is_subprog;
-
-why?
-aux->func_idx != 0 would do the same.
-
-> +	bool tail_call_reachable;
->  	enum bpf_tramp_prog_type trampoline_prog_type;
->  	struct bpf_trampoline *trampoline;
->  	struct hlist_node tramp_hlist;
-> diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-> index 5026b75db972..fbc964526ba3 100644
-> --- a/include/linux/bpf_verifier.h
-> +++ b/include/linux/bpf_verifier.h
-> @@ -359,6 +359,7 @@ struct bpf_subprog_info {
->  	u32 linfo_idx; /* The idx to the main_prog->aux->linfo */
->  	u16 stack_depth; /* max. stack depth used by this function */
->  	bool has_tail_call;
-> +	bool tail_call_reachable;
->  };
->  
->  /* single container for all structs
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index deb6bf3d9f5d..3a7ebcdf076e 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -1490,12 +1490,13 @@ static int check_subprogs(struct bpf_verifier_env *env)
->  	for (i = 0; i < insn_cnt; i++) {
->  		u8 code = insn[i].code;
->  
-> -		if (insn[i].imm == BPF_FUNC_tail_call)
-> -			subprog[cur_subprog].has_tail_call = true;
->  		if (BPF_CLASS(code) != BPF_JMP && BPF_CLASS(code) != BPF_JMP32)
->  			goto next;
->  		if (BPF_OP(code) == BPF_EXIT || BPF_OP(code) == BPF_CALL)
->  			goto next;
-> +		if ((code == (BPF_JMP | BPF_CALL)) &&
-> +			insn[i].imm == BPF_FUNC_tail_call)
-
-&& insn->src_reg != BPF_PSEUDO_CALL is still missing.
-
-> +			subprog[cur_subprog].has_tail_call = true;
-
->  		off = i + insn[i].off + 1;
->  		if (off < subprog_start || off >= subprog_end) {
->  			verbose(env, "jump out of range from insn %d to %d\n", i, off);
-> @@ -2983,6 +2984,8 @@ static int check_max_stack_depth(struct bpf_verifier_env *env)
->  	struct bpf_insn *insn = env->prog->insnsi;
->  	int ret_insn[MAX_CALL_FRAMES];
->  	int ret_prog[MAX_CALL_FRAMES];
-> +	bool tcr;
-
-how does it work?
-Shouldn't it be inited to = false; ?
-
-> +	int j;
->  
->  process_func:
->  #if defined(CONFIG_X86_64) && defined(CONFIG_BPF_JIT_ALWAYS_ON)
-> @@ -3039,6 +3042,10 @@ static int check_max_stack_depth(struct bpf_verifier_env *env)
->  				  i);
->  			return -EFAULT;
->  		}
-> +
-> +		if (!tcr && subprog[idx].has_tail_call)
-> +			tcr = true;
-> +
->  		frame++;
->  		if (frame >= MAX_CALL_FRAMES) {
->  			verbose(env, "the call stack of %d frames is too deep !\n",
-> @@ -3047,11 +3054,24 @@ static int check_max_stack_depth(struct bpf_verifier_env *env)
->  		}
->  		goto process_func;
->  	}
-> +	/* this means we are at the end of the call chain; if throughout this
-
-In my mind 'end of the call chain' means 'leaf function',
-so the comment reads a bit misleading to me.
-Here we're at the end of subprog.
-It's not necessarily the leaf function.
-
-> +	 * whole call chain tailcall has been detected, then each of the
-> +	 * subprogs (or their frames) that are currently present on stack need
-> +	 * to be marked as tail call reachable subprogs;
-> +	 * this info will be utilized by JIT so that we will be preserving the
-> +	 * tail call counter throughout bpf2bpf calls combined with tailcalls
-> +	 */
-> +	if (!tcr)
-> +		goto skip;
-> +	for (j = 0; j < frame; j++)
-> +		subprog[ret_prog[j]].tail_call_reachable = true;
-> +skip:
-
-please avoid goto. Just extra indent isn't that bad:
-	if (tail_call_reachable)
-        	for (j = 0; j < frame; j++)
-	        	subprog[ret_prog[j]].tail_call_reachable = true;
-
->  	/* end of for() loop means the last insn of the 'subprog'
->  	 * was reached. Doesn't matter whether it was JA or EXIT
->  	 */
->  	if (frame == 0)
->  		return 0;
-> +
-
-no need.
-
->  	depth -= round_up(max_t(u32, subprog[idx].stack_depth, 1), 32);
->  	frame--;
->  	i = ret_insn[frame];
-> 
-> ------------------------------------------------------
-> 
-> Having this in place preserves the tailcall counter when we mix bpf2bpf
-> and tailcalls. I will attach the selftest that has a following call chain:
-> 
-> entry -> entry_subprog -> tailcall0 -> bpf_func0 -> subprog0 ->
-> -> tailcall1 -> bpf_func1 -> subprog1 -> tailcall2 -> bpf_func2 ->
-> subprog2 [here bump global counter] --------^
-> 
-> We go through first two tailcalls and start counting from the subprog2
-> where the loop begins. At the end of the test i see that global counter
-> gets the value of 31 which is correct.
-
-sounds great.
-
-> For the test that uses lot of stack across subprogs - i suppose we should
-> use up to 256 in total, right? otherwise we wouldn't even load the prog so
-> test won't even run.
-
-yep. makes sense to me.
-
-> Kudos to Bjorn for brainstorming on this!
-
-Indeed. It's pretty cool problem and I think you've came up with
-a good solution.
-
-Since this tail_call_cnt will now be passed from subprog to subrpog via
-"interesting" rax calling convention we can eventually retrofit it to count
-used-stack-so-far. That would be for the case we discussed earlier (counting
-stack vs counting calls). For now the approach you're proposing is good.
+T24gVHVlLCAyMDIwLTA5LTE1IGF0IDA5OjQyICswNTMwLCBBbGxlbiBQYWlzIHdyb3RlOg0KPiA+
+ID4gb21taXQgMTJjYzkyM2YxY2NjICgidGFza2xldDogSW50cm9kdWNlIG5ldyBpbml0aWFsaXph
+dGlvbiBBUEkiKScNCj4gPiA+IGludHJvZHVjZWQgYSBuZXcgdGFza2xldCBpbml0aWFsaXphdGlv
+biBBUEkuIFRoaXMgc2VyaWVzIGNvbnZlcnRzDQo+ID4gPiBhbGwgdGhlIG5ldC8qIGRyaXZlcnMg
+dG8gdXNlIHRoZSBuZXcgdGFza2xldF9zZXR1cCgpIEFQSQ0KICAgICAgXl5eDQp0aGlzIGlzIG5v
+dCBhbGwgZHJpdmVycyAuLiANCg0Kc2VlIGJlbG93IA0KDQo+ID4gPiBUaGlzIHNlcmllcyBpcyBi
+YXNlZCBvbiB2NS45LXJjNQ0KPiA+ID4gDQo+ID4gPiBBbGxlbiBQYWlzICgxMik6DQo+ID4gPiAg
+ICBuZXQ6IG12cHAyOiBQcmVwYXJlIHRvIHVzZSB0aGUgbmV3IHRhc2tsZXQgQVBJDQo+ID4gPiAg
+ICBuZXQ6IGFyY25ldDogY29udmVydCB0YXNrbGV0cyB0byB1c2UgbmV3IHRhc2tsZXRfc2V0dXAo
+KSBBUEkNCj4gPiA+ICAgIG5ldDogY2FpZjogY29udmVydCB0YXNrbGV0cyB0byB1c2UgbmV3IHRh
+c2tsZXRfc2V0dXAoKSBBUEkNCj4gPiA+ICAgIG5ldDogaWZiOiBjb252ZXJ0IHRhc2tsZXRzIHRv
+IHVzZSBuZXcgdGFza2xldF9zZXR1cCgpIEFQSQ0KPiA+ID4gICAgbmV0OiBwcHA6IGNvbnZlcnQg
+dGFza2xldHMgdG8gdXNlIG5ldyB0YXNrbGV0X3NldHVwKCkgQVBJDQo+ID4gPiAgICBuZXQ6IGNk
+Y19uY206IGNvbnZlcnQgdGFza2xldHMgdG8gdXNlIG5ldyB0YXNrbGV0X3NldHVwKCkgQVBJDQo+
+ID4gPiAgICBuZXQ6IGhzbzogY29udmVydCB0YXNrbGV0cyB0byB1c2UgbmV3IHRhc2tsZXRfc2V0
+dXAoKSBBUEkNCj4gPiA+ICAgIG5ldDogbGFuNzh4eDogY29udmVydCB0YXNrbGV0cyB0byB1c2Ug
+bmV3IHRhc2tsZXRfc2V0dXAoKSBBUEkNCj4gPiA+ICAgIG5ldDogcGVnYXN1czogY29udmVydCB0
+YXNrbGV0cyB0byB1c2UgbmV3IHRhc2tsZXRfc2V0dXAoKSBBUEkNCj4gPiA+ICAgIG5ldDogcjgx
+NTI6IGNvbnZlcnQgdGFza2xldHMgdG8gdXNlIG5ldyB0YXNrbGV0X3NldHVwKCkgQVBJDQo+ID4g
+PiAgICBuZXQ6IHJ0bDgxNTA6IGNvbnZlcnQgdGFza2xldHMgdG8gdXNlIG5ldyB0YXNrbGV0X3Nl
+dHVwKCkgQVBJDQo+ID4gPiAgICBuZXQ6IHVzYm5ldDogY29udmVydCB0YXNrbGV0cyB0byB1c2Ug
+bmV3IHRhc2tsZXRfc2V0dXAoKSBBUEkNCj4gPiA+IA0KPiA+ID4gDQo+ID4gDQo+ID4gWW91IGFy
+ZSBvbmx5IGNvbnZlcnRpbmcgZHJpdmVycyB3aGljaCBhcmUgcGFzc2luZyB0aGUgdGFza2VsdA0K
+PiA+IHN0cnVjdCBhcw0KPiA+IGRhdGEgcHRyLCBtb3N0IG9mIG90aGVyIGRyaXZlcnMgYXJlIHBh
+c3NpbmcgdGhlIGNvbnRhaW5lciBvZiB0aGUNCj4gPiB0YXNrbGV0IGFzIGRhdGEsIHdoeSBub3Qg
+Y29udmVydCB0aGVtIGFzIHdlbGwsIGFuZCBsZXQgdGhlbSB1c2UNCj4gPiBjb250YWluZXJfb2Yg
+dG8gZmluZCB0aGVpciBkYXRhID8gaXQgaXMgcmVhbGx5IHN0cmFpZ2h0IGZvcndhcmQgYW5kDQo+
+ID4gd2lsbCBoZWxwIGNvbnZlcnQgbW9zdCBvZiBuZXQgZHJpdmVyIGlmIG5vdCBhbGwuDQo+ID4g
+DQo+IA0KPiBmcm9tX3Rhc2tsZXQgdXNlcyBjb250YWluZXJfb2YgaW50ZXJuYWxseS4gdXNlIG9m
+IGNvbnRhaW5lcl9vZiBpcyANCj4gYXZvaWRlZCBjYXVzZSBpdCBlbmQgYmVpbmcgcmVhbGx5IGxv
+bmcuDQoNCkkgdW5kZXJzdGFuZCB0aGF0LCB3aGF0IEkgbWVhbnQsIHlvdSBkaWRuJ3QgcmVhbGx5
+IGNvbnZlcnQgYWxsIGRyaXZlcnMsDQphcyB5b3UgY2xhaW0gaW4gdGhlIGNvdmVyIGxldHRlciwg
+YWxsIHlvdSBkaWQgaXMgY29udmVydGluZyBfX3NvbWVfXw0KZHJpdmVycyB3aGljaCBhcmUgcGFz
+c2luZyB0aGUgdGFza2xldCBwdHIgYXMgZGF0YSBwdHIuIGFsbCBvdGhlcg0KZHJpdmVycyB0aGF0
+IHVzZSB0YXNrbGV0X2luaXQgZGlmZmVyZW50bHkgYXJlIG5vdCBjb252ZXJ0ZWQsIGFuZCBpdA0K
+c2hvdWxkIGJlIHJlbGF0aXZlbHkgZWFzeSBhcyBpIGV4cGxhaW5lZCBhYm92ZS4gDQoNClRoZSBs
+aXN0IG9mIGRyaXZlcnMgdXNpbmcgdGFza2xldF9pbml0IGlzIGxvbmdlciB0aGFuIHdoYXQgeW91
+IHRvdWNoZWQNCmluIHlvdXIgc2VyaWVzOg0KDQogZHJpdmVycy9uZXQvYXJjbmV0L2FyY25ldC5j
+ICAgICAgICAgICAgICAgICAgICAgfCAgNyArKystLS0tDQogZHJpdmVycy9uZXQvY2FpZi9jYWlm
+X3ZpcnRpby5jICAgICAgICAgICAgICAgICAgfCAgOCArKystLS0tLQ0KIGRyaXZlcnMvbmV0L2V0
+aGVybmV0L21hcnZlbGwvbXZwcDIvbXZwcDIuaCAgICAgIHwgIDEgKw0KIGRyaXZlcnMvbmV0L2V0
+aGVybmV0L21hcnZlbGwvbXZwcDIvbXZwcDJfbWFpbi5jIHwgIDEgKw0KIGRyaXZlcnMvbmV0L2lm
+Yi5jICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDcgKysrLS0tLQ0KIGRyaXZlcnMv
+bmV0L3BwcC9wcHBfYXN5bmMuYyAgICAgICAgICAgICAgICAgICAgIHwgIDggKysrKy0tLS0NCiBk
+cml2ZXJzL25ldC9wcHAvcHBwX3N5bmN0dHkuYyAgICAgICAgICAgICAgICAgICB8ICA4ICsrKyst
+LS0tDQogZHJpdmVycy9uZXQvdXNiL2NkY19uY20uYyAgICAgICAgICAgICAgICAgICAgICAgfCAg
+OCArKysrLS0tLQ0KIGRyaXZlcnMvbmV0L3VzYi9oc28uYyAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHwgMTAgKysrKystLS0tLQ0KIGRyaXZlcnMvbmV0L3VzYi9sYW43OHh4LmMgICAgICAgICAg
+ICAgICAgICAgICAgIHwgIDYgKysrLS0tDQogZHJpdmVycy9uZXQvdXNiL3BlZ2FzdXMuYyAgICAg
+ICAgICAgICAgICAgICAgICAgfCAgNiArKystLS0NCiBkcml2ZXJzL25ldC91c2IvcjgxNTIuYyAg
+ICAgICAgICAgICAgICAgICAgICAgICB8ICA4ICsrKy0tLS0tDQogZHJpdmVycy9uZXQvdXNiL3J0
+bDgxNTAuYyAgICAgICAgICAgICAgICAgICAgICAgfCAgNiArKystLS0NCiBkcml2ZXJzL25ldC91
+c2IvdXNibmV0LmMgICAgICAgICAgICAgICAgICAgICAgICB8ICAzICstLQ0KIDE0IGZpbGVzIGNo
+YW5nZWQsIDQxIGluc2VydGlvbnMoKyksIDQ2IGRlbGV0aW9ucygtKQ0KDQpUaGUgZnVsbCBmaWxl
+L2RyaXZlciBsaXN0IDoNCg0KJCBnaXQgZ3JlcCAtbCB0YXNrbGV0X2luaXQgZHJpdmVycy9uZXQv
+IA0KZHJpdmVycy9uZXQvYXJjbmV0L2FyY25ldC5jDQpkcml2ZXJzL25ldC9jYWlmL2NhaWZfdmly
+dGlvLmMNCmRyaXZlcnMvbmV0L2V0aGVybmV0L2FsdGVvbi9hY2VuaWMuYw0KZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvYW1kL3hnYmUveGdiZS1kcnYuYw0KZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1kL3hn
+YmUveGdiZS1pMmMuYw0KZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1kL3hnYmUveGdiZS1tZGlvLmMN
+CmRyaXZlcnMvbmV0L2V0aGVybmV0L2Jyb2FkY29tL2NuaWMuYw0KZHJpdmVycy9uZXQvZXRoZXJu
+ZXQvY2FkZW5jZS9tYWNiX21haW4uYw0KZHJpdmVycy9uZXQvZXRoZXJuZXQvY2F2aXVtL2xpcXVp
+ZGlvL2xpb19tYWluLmMNCmRyaXZlcnMvbmV0L2V0aGVybmV0L2Nhdml1bS9vY3Rlb24vb2N0ZW9u
+X21nbXQuYw0KZHJpdmVycy9uZXQvZXRoZXJuZXQvY2F2aXVtL3RodW5kZXIvbmljdmZfbWFpbi5j
+DQpkcml2ZXJzL25ldC9ldGhlcm5ldC9jaGVsc2lvL2N4Z2Ivc2dlLmMNCmRyaXZlcnMvbmV0L2V0
+aGVybmV0L2NoZWxzaW8vY3hnYjMvc2dlLmMNCmRyaXZlcnMvbmV0L2V0aGVybmV0L2NoZWxzaW8v
+Y3hnYjQvY3hnYjRfdGNfbXFwcmlvLmMNCmRyaXZlcnMvbmV0L2V0aGVybmV0L2NoZWxzaW8vY3hn
+YjQvc2dlLmMNCmRyaXZlcnMvbmV0L2V0aGVybmV0L2RsaW5rL3N1bmRhbmNlLmMNCmRyaXZlcnMv
+bmV0L2V0aGVybmV0L2h1YXdlaS9oaW5pYy9oaW5pY19od19lcXMuYw0KZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvaWJtL2VoZWEvZWhlYV9tYWluLmMNCmRyaXZlcnMvbmV0L2V0aGVybmV0L2libS9pYm12
+bmljLmMNCmRyaXZlcnMvbmV0L2V0aGVybmV0L2ptZS5jDQpkcml2ZXJzL25ldC9ldGhlcm5ldC9t
+YXJ2ZWxsL3NrZ2UuYw0KZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NC9lcS5jDQpk
+cml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXEuYw0KZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2ZwZ2EvY29ubi5jDQpkcml2ZXJzL25ldC9ldGhl
+cm5ldC9tZWxsYW5veC9tbHhzdy9wY2kuYw0KZHJpdmVycy9uZXQvZXRoZXJuZXQvbWljcmVsL2tz
+ODg0Mi5jDQpkcml2ZXJzL25ldC9ldGhlcm5ldC9taWNyZWwva3N6ODg0eC5jDQpkcml2ZXJzL25l
+dC9ldGhlcm5ldC9uYXRzZW1pL25zODM4MjAuYw0KZHJpdmVycy9uZXQvZXRoZXJuZXQvbmV0cm9u
+b21lL25mcC9uZnBfbmV0X2NvbW1vbi5jDQpkcml2ZXJzL25ldC9ldGhlcm5ldC9uaS9uaXhnZS5j
+DQpkcml2ZXJzL25ldC9ldGhlcm5ldC9xbG9naWMvcWVkL3FlZF9pbnQuYw0KZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvc2lsYW4vc2M5MjAzMS5jDQpkcml2ZXJzL25ldC9ldGhlcm5ldC9zbXNjL3NtYzkx
+eC5jDQpkcml2ZXJzL25ldC9pZmIuYw0KZHJpdmVycy9uZXQvcHBwL3BwcF9hc3luYy5jDQpkcml2
+ZXJzL25ldC9wcHAvcHBwX3N5bmN0dHkuYw0KZHJpdmVycy9uZXQvdXNiL2NkY19uY20uYw0KZHJp
+dmVycy9uZXQvdXNiL2hzby5jDQpkcml2ZXJzL25ldC91c2IvbGFuNzh4eC5jDQpkcml2ZXJzL25l
+dC91c2IvcGVnYXN1cy5jDQpkcml2ZXJzL25ldC91c2IvcjgxNTIuYw0KZHJpdmVycy9uZXQvdXNi
+L3J0bDgxNTAuYw0KZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDExay9wY2kuYw0KZHJpdmVy
+cy9uZXQvd2lyZWxlc3MvbWVkaWF0ZWsvbXQ3Ni9tYWM4MDIxMS5jDQpkcml2ZXJzL25ldC93aXJl
+bGVzcy9tZWRpYXRlay9tdDc2L210NzYwMy9pbml0LmMNCmRyaXZlcnMvbmV0L3dpcmVsZXNzL21l
+ZGlhdGVrL210NzYvbXQ3NjE1L21taW8uYw0KZHJpdmVycy9uZXQvd2lyZWxlc3MvbWVkaWF0ZWsv
+bXQ3Ni9tdDc2eDAyX2Rmcy5jDQpkcml2ZXJzL25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2L210
+NzZ4MDJfbW1pby5jDQpkcml2ZXJzL25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2L3VzYi5jDQpk
+cml2ZXJzL25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2MDF1L2RtYS5jDQo=
