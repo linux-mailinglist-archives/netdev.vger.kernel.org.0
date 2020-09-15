@@ -2,137 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0413326B215
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:41:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE1F326B1AB
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:34:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727694AbgIOWlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 18:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727544AbgIOP5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 11:57:53 -0400
-Received: from www62.your-server.de (www62.your-server.de [IPv6:2a01:4f8:d0a:276a::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFF6C061352
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 08:50:42 -0700 (PDT)
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kIDD3-0002c1-5I; Tue, 15 Sep 2020 17:49:33 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kIDD2-000VJk-Us; Tue, 15 Sep 2020 17:49:32 +0200
-Subject: Re: [PATCH bpf v4] xsk: do not discard packet when NETDEV_TX_BUSY
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        netdev@vger.kernel.org, jonathan.lemon@gmail.com
-Cc:     A.Zema@falconvsystems.com
-References: <1599828221-19364-1-git-send-email-magnus.karlsson@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <6e58cde8-9e38-079a-589d-7b7a860ef61e@iogearbox.net>
-Date:   Tue, 15 Sep 2020 17:49:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727556AbgIOWeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 18:34:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58872 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727600AbgIOQQN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Sep 2020 12:16:13 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 12C6120708;
+        Tue, 15 Sep 2020 15:50:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600185047;
+        bh=lCA/GyD+jMAe3LS5aaH7D+Yrp0Lg6oBxca1iCbrC+VE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WxrAaWGL1ohTKvcPBZ+8eA12pBm7Pu9MGkA3YhugPyYiesO6wlFB6XHNYtbZMhqnR
+         easA64mz0PzFTaXwHWY0/5tqhUFQ8dKcSQ5jrkZsUAly5Xp3Z+dBfU5ojFffXBksJE
+         aAVW8k3dZ3KCX5069NSlgUhmfZ66Rsx2w65dUOZ0=
+Date:   Tue, 15 Sep 2020 08:50:45 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
+Message-ID: <20200915085045.446b854b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <f4e4e9c3-b293-cef1-bb84-db7fe691882a@pensando.io>
+References: <20200908224812.63434-1-snelson@pensando.io>
+        <20200908224812.63434-3-snelson@pensando.io>
+        <20200908165433.08afb9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <9938e3cc-b955-11a1-d667-8e5893bb6367@pensando.io>
+        <20200909094426.68c417fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <581f2161-1c55-31ae-370b-bbea5a677862@pensando.io>
+        <20200909122233.45e4c65c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3d75c4be-ae5d-43b0-407c-5df1e7645447@pensando.io>
+        <20200910105643.2e2d07f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a04313f7-649e-a928-767c-b9d27f3a0c7c@intel.com>
+        <20200914163605.750b0f23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3b18d92f-3a0a-c0b0-1b46-ecfd4408038c@pensando.io>
+        <7e44037cedb946d4a72055dd0898ab1d@intel.com>
+        <f4e4e9c3-b293-cef1-bb84-db7fe691882a@pensando.io>
 MIME-Version: 1.0
-In-Reply-To: <1599828221-19364-1-git-send-email-magnus.karlsson@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25930/Tue Sep 15 15:55:28 2020)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey Magnus,
+On Mon, 14 Sep 2020 18:14:22 -0700 Shannon Nelson wrote:
+> So now we're beginning to dance around timeout boundaries - how can we=20
+> define the beginning and end of a timeout boundary, and how do they=20
+> relate to the component and label?=C2=A0 Currently, if either the compone=
+nt=20
+> or status_msg changes, the devlink user program does a newline to start=20
+> a new status line.=C2=A0 The done and total values are used from each not=
+ify=20
+> message to create a % value displayed, but are not dependent on any=20
+> previous done or total values, so the total doesn't need to be the same=20
+> value from status message to status message, even if the component and=20
+> label remain the same, devlink will just print whatever % gets=20
+> calculated that time.
 
-On 9/11/20 2:43 PM, Magnus Karlsson wrote:
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
-> 
-> In the skb Tx path, transmission of a packet is performed with
-> dev_direct_xmit(). When NETDEV_TX_BUSY is set in the drivers, it
-> signifies that it was not possible to send the packet right now,
-> please try later. Unfortunately, the xsk transmit code discarded the
-> packet and returned EBUSY to the application. Fix this unnecessary
-> packet loss, by not discarding the packet in the Tx ring and return
-> EAGAIN. As EAGAIN is returned to the application, it can then retry
-> the send operation later and the packet will then likely be sent as
-> the driver will then likely have space/resources to send the packet.
-> 
-> In summary, EAGAIN tells the application that the packet was not
-> discarded from the Tx ring and that it needs to call send()
-> again. EBUSY, on the other hand, signifies that the packet was not
-> sent and discarded from the Tx ring. The application needs to put the
-> packet on the Tx ring again if it wants it to be sent.
-> 
-> Fixes: 35fcde7f8deb ("xsk: support for Tx")
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> Reported-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-> Suggested-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-> Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
-> ---
-> v3->v4:
-> * Free the skb without triggering the drop trace when NETDEV_TX_BUSY
-> * Call consume_skb instead of kfree_skb when the packet has been
->    sent successfully for correct tracing
-> * Use sock_wfree as destructor when NETDEV_TX_BUSY
-> v1->v3:
-> * Hinder dev_direct_xmit() from freeing and completing the packet to
->    user space by manipulating the skb->users count as suggested by
->    Daniel Borkmann.
-> ---
->   net/xdp/xsk.c | 17 ++++++++++++++++-
->   1 file changed, 16 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index c323162..d32e39d 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -377,15 +377,30 @@ static int xsk_generic_xmit(struct sock *sk)
->   		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
->   		skb->destructor = xsk_destruct_skb;
->   
-> +		/* Hinder dev_direct_xmit from freeing the packet and
-> +		 * therefore completing it in the destructor
-> +		 */
-> +		refcount_inc(&skb->users);
->   		err = dev_direct_xmit(skb, xs->queue_id);
-> +		if  (err == NETDEV_TX_BUSY) {
-> +			/* Tell user-space to retry the send */
-> +			skb->destructor = sock_wfree;
+I think systemd removes the timeout marking when it moves on to the
+next job, and so should devlink when it moves on to the next
+component/status_msg.
 
-I see, good catch, you need this one here as otherwise you leak wmem accounting
-given it's also part of xsk_destruct_skb() and we do free the prior allocated skb
-in this case.
+> I'm thinking that the behavior of the timeout value should remain=20
+> separate from the component and status_msg values, such that once given,=
+=20
+> then the userland countdown continues on that timeout.=C2=A0 Each subsequ=
+ent=20
+> notify, regardless of component or label changes, should continue=20
+> reporting that same timeout value for as long as it applies to the=20
+> action.=C2=A0 If a new timeout value is reported, the countdown starts ov=
+er.=C2=A0=20
 
-> +			/* Free skb without triggering the perf drop trace */
-> +			__kfree_skb(skb);
+What if no timeout exists for the next action? Driver reports 0 to
+"clear"?
 
-As a minor nit, I would just use consume_skb(skb) here given this doesn't blindly
-ignore the skb_unref(). It's mostly about seeing where drops are happening so that
-tracepoint is set to kfree_skb() which is the more interesting one. Other than that
-looks good and ready to go. Thanks (& sorry for late reply)!
+> This continues until either the countdown finishes or the driver reports=
+=20
+> the flash as completed.=C2=A0 I think this allows is the flexibility for=
+=20
+> multiple steps that Jake alludes to above.=C2=A0 Does this make sense?
 
-> +			err = -EAGAIN;
-> +			goto out;
-> +		}
-> +
->   		xskq_cons_release(xs->tx);
->   		/* Ignore NET_XMIT_CN as packet might have been sent */
-> -		if (err == NET_XMIT_DROP || err == NETDEV_TX_BUSY) {
-> +		if (err == NET_XMIT_DROP) {
->   			/* SKB completed but not sent */
-> +			kfree_skb(skb);
->   			err = -EBUSY;
->   			goto out;
->   		}
->   
-> +		consume_skb(skb);
->   		sent_frame = true;
->   	}
->   
-> 
+I disagree. This doesn't match reality/driver behavior and will lead to
+timeouts counting to some random value, that's to say the drivers
+timeout instant will not match when user space reaches timeout.
 
+The timeout should be per notification, because drivers send a
+notification per command, and commands have timeout.
+
+The timeout is only needed if there is no progress to report, i.e.
+driver is waiting for something to happen.
+
+> What should the userland program do when the timeout expires?=C2=A0 Start=
+=20
+> counting backwards?=C2=A0 Stop waiting?=C2=A0 Do we care to define this a=
+t the moment?
+
+[component] bla bla X% (timeout reached)
