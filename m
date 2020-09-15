@@ -2,112 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4E6A26B160
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:30:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 543DA26B07B
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:12:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727578AbgIOW3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 18:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51226 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727628AbgIOQSX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 12:18:23 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D5EC061797
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 08:52:33 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id t13so3446956ile.9
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 08:52:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5bN4Gitx2t/7jk6xB5oQmdQ699PApOvwciF8USGYv3M=;
-        b=jMLorCYJPV2tkld/VNrA3E/c4Fpy9S8AawsX0mWVsXqNrXY9VoeRnRfgERJNcHVMCa
-         bU+5rDAzYGzCY6V3MkniEqABpM/FEbHGVz8bSLAfZjgZBQHkYyyGkDlHZOvaITa8sUdW
-         M5S+3nseQCPbHeKNE1TB44ZrfOGq4PSCikQEbdVtmTtFAhOIAFMaOflp7p8gI2cbTCWz
-         4ygZQfgPF0bVgG/TkMdsAKRKalCPdFvW1XR7XK6HEgPpw3b+meDrXatYnEmXfwltJQTD
-         4ubdtjC6i+H55Wv4TPIWnT++fo/gbsVOPu3RlakmCFIQ6UpbvX1oL6Ot+Btn3/1p34B2
-         7Rsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5bN4Gitx2t/7jk6xB5oQmdQ699PApOvwciF8USGYv3M=;
-        b=cLr9Y/6r4yoEGUq7NLiR31bPSubuN0mg71EcGEA+giPGe6upxLamTWA4V/SPdEurps
-         KSiqgLtWcSLJyzsVOKVUbZLu3esSsafR04XMElpoppK4mLD6596tVPedWAXA5dbfgIhO
-         wuQcpPt3Xm5alrWmtputq1FeFZRDPO1Ibws6Jht6B/chBkExrJMdpN5foeZGx07a74UO
-         s/mx2p7Uh9+8GC2IYnlX9f1k4Q+oEl41TRVf0Rby7dYTHwd8GSdm1FxB9kSwlv3ilUjy
-         FpXykbeyUMBBeFjgR+5UJmhBwxd9qY8RCenVh57vDJdaGDwfEuTUZmkZ/Wla/sxxE+92
-         TlHg==
-X-Gm-Message-State: AOAM531mSr6Ie601bYq2B4YxElC5i8n2DfJhFWqhKZTcrP7tFIi63Nrc
-        2ahQf/2NOUmHN2a4HYs209HmSkna7dvKfBYaocHeOwMx/+Y=
-X-Google-Smtp-Source: ABdhPJwogM0lvds/ahwJWzGq++Q1zaEQNFmFH7c5be5WOV20csm9MS4iG3klAEyFC8XnJMweicAsK1GmAmj/qvv0QDU=
-X-Received: by 2002:a92:8b52:: with SMTP id i79mr17538689ild.177.1600185152537;
- Tue, 15 Sep 2020 08:52:32 -0700 (PDT)
+        id S1727735AbgIOQor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 12:44:47 -0400
+Received: from mga05.intel.com ([192.55.52.43]:10809 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727779AbgIOQmO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Sep 2020 12:42:14 -0400
+IronPort-SDR: KWegu6OuociK4oIxPsIY26z5IqrF2MWT8JlhLv+6SMID37EilqUGfOs/iSPYvmIiVc9Uzfu8+K
+ ac31BoeuOpoQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9745"; a="244130883"
+X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; 
+   d="scan'208";a="244130883"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2020 09:41:36 -0700
+IronPort-SDR: X1Z8bwqnLS38s1hSAEgytpQLbi6j4B/9YrhjrX4W475Rl5ZLgkvoZXnWAYIpVQfTQCszaMK3rj
+ J8RyfodN2jpQ==
+X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; 
+   d="scan'208";a="338733991"
+Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.118.172])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2020 09:41:36 -0700
+Date:   Tue, 15 Sep 2020 09:41:35 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH net-next v2 06/10] drivers/net/ethernet: handle one
+ warning explicitly
+Message-ID: <20200915094135.00005d21@intel.com>
+In-Reply-To: <e15b85af416c7257aaa601901b18c7c9bc9586e0.camel@kernel.org>
+References: <20200915014455.1232507-1-jesse.brandeburg@intel.com>
+        <20200915014455.1232507-7-jesse.brandeburg@intel.com>
+        <e15b85af416c7257aaa601901b18c7c9bc9586e0.camel@kernel.org>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-References: <1599117498-30145-1-git-send-email-sundeep.lkml@gmail.com>
- <20200903121803.75fb0ade@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <BY5PR18MB3298899BF15F266144EE8760C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
- <20200904083709.GF2997@nanopsycho.orion> <BY5PR18MB3298EB53D2F869D64D7F534DC62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
- <20200904121126.GI2997@nanopsycho.orion> <BY5PR18MB3298C4C84704BCE864133C33C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
- <20200904133753.77ce6bc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CALHRZuoa8crCaOAkEqyBq1DnmVqUgpv_jzQboMNZcU_3R4RGvg@mail.gmail.com>
-In-Reply-To: <CALHRZuoa8crCaOAkEqyBq1DnmVqUgpv_jzQboMNZcU_3R4RGvg@mail.gmail.com>
-From:   sundeep subbaraya <sundeep.lkml@gmail.com>
-Date:   Tue, 15 Sep 2020 21:22:21 +0530
-Message-ID: <CALHRZuo9w=NJ4B6hw4afhoY21rAbqxBTZnLKN4+A=q21wNPPjQ@mail.gmail.com>
-Subject: Re: [EXT] Re: [net-next PATCH 0/2] Introduce mbox tracepoints for Octeontx2
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiri,
 
-On Mon, Sep 7, 2020 at 4:29 PM sundeep subbaraya <sundeep.lkml@gmail.com> wrote:
->
-> Hi Jakub,
->
-> On Sat, Sep 5, 2020 at 2:07 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Fri, 4 Sep 2020 12:29:04 +0000 Sunil Kovvuri Goutham wrote:
-> > > > >No, there are 3 drivers registering to 3 PCI device IDs and there can
-> > > > >be many instances of the same devices. So there can be 10's of instances of
-> > > > AF, PF and VFs.
-> > > >
-> > > > So you can still have per-pci device devlink instance and use the tracepoint
-> > > > Jakub suggested.
-> > > >
-> > >
-> > > Two things
-> > > - As I mentioned above, there is a Crypto driver which uses the same mbox APIs
-> > >   which is in the process of upstreaming. There also we would need trace points.
-> > >   Not sure registering to devlink just for the sake of tracepoint is proper.
-> > >
-> > > - The devlink trace message is like this
-> > >
-> > >    TRACE_EVENT(devlink_hwmsg,
-> > >      . . .
-> > >         TP_printk("bus_name=%s dev_name=%s driver_name=%s incoming=%d type=%lu buf=0x[%*phD] len=%zu",
-> > >                   __get_str(bus_name), __get_str(dev_name),
-> > >                   __get_str(driver_name), __entry->incoming, __entry->type,
-> > >                   (int) __entry->len, __get_dynamic_array(buf), __entry->len)
-> > >    );
-> > >
-> > >    Whatever debug message we want as output doesn't fit into this.
-> >
-> > Make use of the standard devlink tracepoint wherever applicable, and you
-> > can keep your extra ones if you want (as long as Jiri don't object).
->
-> Sure and noted. I have tried to use devlink tracepoints and since it
-> could not fit our purpose I used these.
->
-Can you please comment.
+Saeed Mahameed wrote:
 
-> Thanks,
-> Sundeep
+> On Mon, 2020-09-14 at 18:44 -0700, Jesse Brandeburg wrote:
+> > While fixing the W=1 builds, this warning came up because the
+> > developers used a very tricky way to get structures initialized
+> > to a non-zero value, but this causes GCC to warn about an
+> > override. In this case the override was intentional, so just
+> > disable the warning for this code with a macro that results
+> > in disabling the warning for compiles on GCC versions after 8.
+> > 
+> > NOTE: the __diag_ignore macro currently only accepts a second
+> > argument of 8 (version 80000)
+> > 
+> > Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> > ---
+> >  drivers/net/ethernet/renesas/sh_eth.c | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> > 
+> > diff --git a/drivers/net/ethernet/renesas/sh_eth.c
+> > b/drivers/net/ethernet/renesas/sh_eth.c
+> > index 586642c33d2b..c63304632935 100644
+> > --- a/drivers/net/ethernet/renesas/sh_eth.c
+> > +++ b/drivers/net/ethernet/renesas/sh_eth.c
+> > @@ -45,6 +45,15 @@
+> >  #define SH_ETH_OFFSET_DEFAULTS			\
+> >  	[0 ... SH_ETH_MAX_REGISTER_OFFSET - 1] = SH_ETH_OFFSET_INVALID
+> >  
+> > +/* use some intentionally tricky logic here to initialize the whole
+> > struct to
+> > + * 0xffff, but then override certain fields, requiring us to
+> > indicate that we
+> > + * "know" that there are overrides in this structure, and we'll need
+> > to disable
+> > + * that warning from W=1 builds. GCC has supported this option since
+> > 4.2.X, but
+> > + * the macros available to do this only define GCC 8.
+> > + */
+> > +__diag_push();
+> > +__diag_ignore(GCC, 8, "-Woverride-init",
+> > +	      "logic to initialize all and then override some is OK");
+> >  static const u16 sh_eth_offset_gigabit[SH_ETH_MAX_REGISTER_OFFSET] =
+> > {
+> >  	SH_ETH_OFFSET_DEFAULTS,
+> >  
+> > @@ -332,6 +341,7 @@ static const u16
+> > sh_eth_offset_fast_sh3_sh2[SH_ETH_MAX_REGISTER_OFFSET] = {
+> >  
+> >  	[TSU_ADRH0]	= 0x0100,
+> >  };
+> > +__diag_pop();
+> >  
+> 
+> I don't have any strong feeling against disabling compiler warnings,
+> but maybe the right thing to do here is to initialize the gaps to the
+> invalid value instead of pre-initializing the whole thing first and
+> then setting up the valid values on the 2nd pass.
+> 
+> I don't think there are too many gaps to fill, it is doable, so maybe
+> add this as a comment to this driver maintainer so they could pickup
+> the work from here.
+
+
+added linux-renesas-soc list. @list, any comments on Saeed's comment
+above?
+
+Thanks,
+ Jesse
