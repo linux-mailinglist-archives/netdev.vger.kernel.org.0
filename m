@@ -2,82 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60EAF269EA7
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 08:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5053269EC3
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 08:45:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726122AbgIOGgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 02:36:31 -0400
-Received: from verein.lst.de ([213.95.11.211]:46605 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726056AbgIOGgY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Sep 2020 02:36:24 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id CFEFC6736F; Tue, 15 Sep 2020 08:36:18 +0200 (CEST)
-Date:   Tue, 15 Sep 2020 08:36:18 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        iommu@lists.linux-foundation.org,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        linux1394-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
-        alsa-devel@alsa-project.org
-Subject: Re: a saner API for allocating DMA addressable pages v2
-Message-ID: <20200915063618.GD19113@lst.de>
-References: <20200914144433.1622958-1-hch@lst.de> <20200914152617.GR6583@casper.infradead.org>
+        id S1726056AbgIOGpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 02:45:32 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:37569 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726033AbgIOGp1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 02:45:27 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 699F95C00C1;
+        Tue, 15 Sep 2020 02:45:25 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Tue, 15 Sep 2020 02:45:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=GldgJ7
+        RQPmzPgW3JiwuzicyOz0XVLdYlzL3wC9ojd4w=; b=hcTuqWy7erNiktGtVzF8uP
+        2YL10NlcSzn5r+EdNUIaZwz5Hs7LNwOdowplGemJ5xX8IAN/vjFE0/7/DlAW4H9z
+        goSBFgm9C3AWQtwdv+cqF244avZaYMTD8MGtEaz2tYGCL4rjSp1jd8tHa5a13zr8
+        0AQu1QE76f0aAgnc/fcTSJv7kZHPuX2xL2zD3CTTRJ5BFS89eFUHnFMGJM9P96lI
+        ioTD7SspJBys6y5AHo2ZjZNn9+VYkQHjKYHOlRAs6CMeZQL1F9Hr5QhouZxC0qAs
+        V4SbCnyjJGtyuSzm7p+3T0M6wQy4rU2LLV7VQh+DRloaCXXhKXhd+sIWPxUuhJiw
+        ==
+X-ME-Sender: <xms:AmNgX5llK84vGMHy9c138Jc9sgLDMqe5zDFx3yAlapZqisWsShWRQw>
+    <xme:AmNgX03Uw2RyGQ74z_g0pmNFncCmYu18PMDSwQfImWnxJTicDtV1iZyeOJ-MnCUy0
+    yfT9oy9hz7WafI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudeijedguddtjecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhephefhtdfhudeuhefgkeekhfehuddtvdevfeetheetkeelvefggeetveeuleeh
+    keeunecuffhomhgrihhnpehgihhthhhusgdrtghomhenucfkphepkeegrddvvdelrdefie
+    drkedvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhep
+    ihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:AmNgX_rqekxLfVML6ASgBdlgSgz1KJUdaxhrOWQED1KSqZG-xe2sqw>
+    <xmx:AmNgX5kUzq63WmKn_uPXA0ipJYjhUzfeafzmZQEZ6PQNJjrmbkErSA>
+    <xmx:AmNgX33_j3t9B9SMi52cOTHtqbs8Zcza13gQmGb0Clac_6-rWm0nqw>
+    <xmx:BWNgX4y-NqVEersN1ujQk41a3r85269b5qzFklwY_6-mZcrDft5BUQ>
+Received: from localhost (igld-84-229-36-82.inter.net.il [84.229.36.82])
+        by mail.messagingengine.com (Postfix) with ESMTPA id EB9FF306467D;
+        Tue, 15 Sep 2020 02:45:21 -0400 (EDT)
+Date:   Tue, 15 Sep 2020 09:45:19 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next RFC v4 04/15] devlink: Add reload actions stats
+ to dev get
+Message-ID: <20200915064519.GA5390@shredder>
+References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
+ <1600063682-17313-5-git-send-email-moshe@mellanox.com>
+ <20200914134500.GH2236@nanopsycho.orion>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200914152617.GR6583@casper.infradead.org>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20200914134500.GH2236@nanopsycho.orion>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 04:26:17PM +0100, Matthew Wilcox wrote:
-> On Mon, Sep 14, 2020 at 04:44:16PM +0200, Christoph Hellwig wrote:
-> > I'm still a little unsure about the API naming, as alloc_pages sort of
-> > implies a struct page return value, but we return a kernel virtual
-> > address.
+On Mon, Sep 14, 2020 at 03:45:00PM +0200, Jiri Pirko wrote:
+> Mon, Sep 14, 2020 at 08:07:51AM CEST, moshe@mellanox.com wrote:
+> >Expose devlink reload actions stats to the user through devlink dev
+> >get command.
+> >
+> >Examples:
+> >$ devlink dev show
+> >pci/0000:82:00.0:
+> >  reload_action_stats:
+> >    driver_reinit 2
+> >    fw_activate 1
+> >    driver_reinit_no_reset 0
+> >    fw_activate_no_reset 0
+> >pci/0000:82:00.1:
+> >  reload_action_stats:
+> >    driver_reinit 1
+> >    fw_activate 1
+> >    driver_reinit_no_reset 0
+> >    fw_activate_no_reset 0
 > 
-> Erm ... dma_alloc_pages() returns a struct page, so is this sentence
-> stale?
-
-Yes.
-
-> You say that like it's a bad thing.  I think the problem is more that
-> people don't understand what non-coherent means and think they're
-> supporting it when they're not.
+> I would rather have something like:
+>    stats:
+>      reload_action:
+>        driver_reinit 1
+>        fw_activate 1
+>        driver_reinit_no_reset 0
+>        fw_activate_no_reset 0
 > 
-> dma_alloc_manual_flushing()?
+> Then we can easily extend and add other stats in the tree.
+> 
+> 
+> Also, I wonder if these stats could be somehow merged with Ido's metrics
+> work:
+> https://github.com/idosch/linux/commits/submit/devlink_metric_rfc_v1
+> 
+> Ido, would it make sense?
 
-That sounds pretty awkward..
+I guess. My original idea for devlink-metric was to expose
+design-specific metrics to user space where the entity registering the
+metrics is the device driver. In this case the entity would be devlink
+itself and it would be auto-registered for each device.
 
 > 
-> > As a follow up I plan to move the implementation of the
-> > DMA_ATTR_NO_KERNEL_MAPPING flag over to this framework as well, given
-> > that is also is a fundamentally non coherent allocation.  The replacement
-> > for that flag would then return a struct page, as it is allowed to
-> > actually return pages without a kernel mapping as the name suggested
-> > (although most of the time they will actually have a kernel mapping..)
 > 
-> If the page doesn't have a kernel mapping, shouldn't it return a PFN
-> or a phys_addr?
-
-Most APIs we'll feed it into need a struct page.  The difference is just
-that it can be a highmem page.  And if we want to get fancy we could
-change the kernel mapping to PROT_NONE eventually.
+> >
+> >$ devlink dev show -jp
+> >{
+> >    "dev": {
+> >        "pci/0000:82:00.0": {
+> >            "reload_action_stats": [ {
+> >                    "driver_reinit": 2
+> >                },{
+> >                    "fw_activate": 1
+> >                },{
+> >                    "driver_reinit_no_reset": 0
+> >                },{
+> >                    "fw_activate_no_reset": 0
+> >                } ]
+> >        },
+> >        "pci/0000:82:00.1": {
+> >            "reload_action_stats": [ {
+> >                    "driver_reinit": 1
+> >                },{
+> >                    "fw_activate": 1
+> >                },{
+> >                    "driver_reinit_no_reset": 0
+> >                },{
+> >                    "fw_activate_no_reset": 0
+> >                } ]
+> >        }
+> >    }
+> >}
+> >
+> 
+> [..]
