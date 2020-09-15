@@ -2,111 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C06326A05E
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 10:05:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6537E26A088
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 10:19:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726184AbgIOIEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 04:04:54 -0400
-Received: from mail-io1-f80.google.com ([209.85.166.80]:49566 "EHLO
-        mail-io1-f80.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726131AbgIOIEV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 04:04:21 -0400
-Received: by mail-io1-f80.google.com with SMTP id k133so1635119iof.16
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 01:04:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=xNbe/yDuQhQzJ3d3+c2AFbxK3UB/SRkgVKKkH8tRHCw=;
-        b=JuBIfUMKFY4uALuVG9Xh+Sj/IchBQO8E/KtUeXH4LYcmevRRdwp/d+0gMY5Kr4KrmB
-         O4vi3sA70fiVaynGfrEwWNw4H+hvPAkoNXpEGfSj4udum4WnQWkl9wTQ5e3ZkjW3vdQ6
-         +dzesxera0a2D9mEBSBZsiDtwg0yKdDfI2psYO39Va+uP6GPqFmzig+LhCQ8jAEKMFhA
-         62mpCeSKYEU69YKXri48eDwrW1LXs+A2nfInw4okX6gFpqmSng+qg2ZaRgv4x3tD/tku
-         7WX2iSaPXS79NHtFOGH4Ow//z0TLuFvKjQnOYCG8EfjRWh2fzRZKbUImbjqdwbmSKxHU
-         1HtA==
-X-Gm-Message-State: AOAM531W5RhQsZ49xXSaeFwJZEKl1ZaH7RrCeOs4ynRSWKhxjsrnDpDh
-        tzowwAqzTCJs60mi9jiDO/0S84/4N/MbQCXoVqCxaSvqa0gy
-X-Google-Smtp-Source: ABdhPJxCiiZsr/IymUa6U1cNW5Kt9Y9Trg/saWU+QvMcydFf6OJ6eCuKKuwuiBYWc3vN65CsWy4ZN3X0yKS0POSIpB/h670CZONZ
+        id S1726368AbgIOITp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 04:19:45 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:53694 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726361AbgIOITK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 04:19:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600157947;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3bhDFHrLKx2Ugr++K3UZXsMiyEdJCQXQW25owbTuEPc=;
+        b=EcDpTG1arSWhyuAHQuyBdv0+Q+G1IMK5Z9AboLCn8j8AvfH5MaYqnwnnMurdsejbSCnQ/6
+        /wsZAo5+CfMSvEU+a/7RBKuQvAYDS0KMi+0gDUjWZa4soXd1IFIi6TIY76br98cPMruJ33
+        gkDNNv812WTxRAcnkDSq3fSNCwOmP9o=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-592-zNagHMNCPB-SgFEqX8TqPw-1; Tue, 15 Sep 2020 04:19:03 -0400
+X-MC-Unique: zNagHMNCPB-SgFEqX8TqPw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 53E0480F040;
+        Tue, 15 Sep 2020 08:19:01 +0000 (UTC)
+Received: from [10.72.13.94] (ovpn-13-94.pek2.redhat.com [10.72.13.94])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1A9D55DDB8;
+        Tue, 15 Sep 2020 08:18:47 +0000 (UTC)
+Subject: Re: [RFC PATCH 00/22] Enhance VHOST to enable SoC-to-SoC
+ communication
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Cornelia Huck <cohuck@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-ntb@googlegroups.com,
+        linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20200702082143.25259-1-kishon@ti.com>
+ <20200702055026-mutt-send-email-mst@kernel.org>
+ <603970f5-3289-cd53-82a9-aa62b292c552@redhat.com>
+ <14c6cad7-9361-7fa4-e1c6-715ccc7e5f6b@ti.com>
+ <59fd6a0b-8566-44b7-3dae-bb52b468219b@redhat.com>
+ <ce9eb6a5-cd3a-a390-5684-525827b30f64@ti.com>
+ <da2b671c-b05d-a57f-7bdf-8b1043a41240@redhat.com>
+ <fee8a0fb-f862-03bd-5ede-8f105b6af529@ti.com>
+ <b2178e1d-2f5c-e8a3-72fb-70f2f8d6aa45@redhat.com>
+ <45a8a97c-2061-13ee-5da8-9877a4a3b8aa@ti.com>
+ <c8739d7f-e12e-f6a2-7018-9eeaf6feb054@redhat.com>
+ <20200828123409.4cd2a812.cohuck@redhat.com>
+ <ac8f7e4f-9f46-919a-f5c2-89b07794f0ab@ti.com>
+ <9cd58cd1-0041-3d98-baf7-6e5bc2e7e317@redhat.com>
+ <edf25301-93c0-4ba6-aa85-5f04137d0906@ti.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <5733dbfc-76c1-45dc-6dce-ef5449eacc73@redhat.com>
+Date:   Tue, 15 Sep 2020 16:18:46 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:bea:: with SMTP id d10mr14985132ilu.143.1600157060379;
- Tue, 15 Sep 2020 01:04:20 -0700 (PDT)
-Date:   Tue, 15 Sep 2020 01:04:20 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002b3ac605af559958@google.com>
-Subject: general protection fault in cache_clean
-From:   syzbot <syzbot+1594adb1b44e354153d8@syzkaller.appspotmail.com>
-To:     anna.schumaker@netapp.com, bfields@fieldses.org,
-        chuck.lever@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        trond.myklebust@hammerspace.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <edf25301-93c0-4ba6-aa85-5f04137d0906@ti.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Kishon:
 
-syzbot found the following issue on:
+On 2020/9/14 下午3:23, Kishon Vijay Abraham I wrote:
+>> Then you need something that is functional equivalent to virtio PCI
+>> which is actually the concept of vDPA (e.g vDPA provides alternatives if
+>> the queue_sel is hard in the EP implementation).
+> Okay, I just tried to compare the 'struct vdpa_config_ops' and 'struct
+> vhost_config_ops' ( introduced in [RFC PATCH 03/22] vhost: Add ops for
+> the VHOST driver to configure VHOST device).
+>
+> struct vdpa_config_ops {
+> 	/* Virtqueue ops */
+> 	int (*set_vq_address)(struct vdpa_device *vdev,
+> 			      u16 idx, u64 desc_area, u64 driver_area,
+> 			      u64 device_area);
+> 	void (*set_vq_num)(struct vdpa_device *vdev, u16 idx, u32 num);
+> 	void (*kick_vq)(struct vdpa_device *vdev, u16 idx);
+> 	void (*set_vq_cb)(struct vdpa_device *vdev, u16 idx,
+> 			  struct vdpa_callback *cb);
+> 	void (*set_vq_ready)(struct vdpa_device *vdev, u16 idx, bool ready);
+> 	bool (*get_vq_ready)(struct vdpa_device *vdev, u16 idx);
+> 	int (*set_vq_state)(struct vdpa_device *vdev, u16 idx,
+> 			    const struct vdpa_vq_state *state);
+> 	int (*get_vq_state)(struct vdpa_device *vdev, u16 idx,
+> 			    struct vdpa_vq_state *state);
+> 	struct vdpa_notification_area
+> 	(*get_vq_notification)(struct vdpa_device *vdev, u16 idx);
+> 	/* vq irq is not expected to be changed once DRIVER_OK is set */
+> 	int (*get_vq_irq)(struct vdpa_device *vdv, u16 idx);
+>
+> 	/* Device ops */
+> 	u32 (*get_vq_align)(struct vdpa_device *vdev);
+> 	u64 (*get_features)(struct vdpa_device *vdev);
+> 	int (*set_features)(struct vdpa_device *vdev, u64 features);
+> 	void (*set_config_cb)(struct vdpa_device *vdev,
+> 			      struct vdpa_callback *cb);
+> 	u16 (*get_vq_num_max)(struct vdpa_device *vdev);
+> 	u32 (*get_device_id)(struct vdpa_device *vdev);
+> 	u32 (*get_vendor_id)(struct vdpa_device *vdev);
+> 	u8 (*get_status)(struct vdpa_device *vdev);
+> 	void (*set_status)(struct vdpa_device *vdev, u8 status);
+> 	void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
+> 			   void *buf, unsigned int len);
+> 	void (*set_config)(struct vdpa_device *vdev, unsigned int offset,
+> 			   const void *buf, unsigned int len);
+> 	u32 (*get_generation)(struct vdpa_device *vdev);
+>
+> 	/* DMA ops */
+> 	int (*set_map)(struct vdpa_device *vdev, struct vhost_iotlb *iotlb);
+> 	int (*dma_map)(struct vdpa_device *vdev, u64 iova, u64 size,
+> 		       u64 pa, u32 perm);
+> 	int (*dma_unmap)(struct vdpa_device *vdev, u64 iova, u64 size);
+>
+> 	/* Free device resources */
+> 	void (*free)(struct vdpa_device *vdev);
+> };
+>
+> +struct vhost_config_ops {
+> +	int (*create_vqs)(struct vhost_dev *vdev, unsigned int nvqs,
+> +			  unsigned int num_bufs, struct vhost_virtqueue *vqs[],
+> +			  vhost_vq_callback_t *callbacks[],
+> +			  const char * const names[]);
+> +	void (*del_vqs)(struct vhost_dev *vdev);
+> +	int (*write)(struct vhost_dev *vdev, u64 vhost_dst, void *src, int len);
+> +	int (*read)(struct vhost_dev *vdev, void *dst, u64 vhost_src, int len);
+> +	int (*set_features)(struct vhost_dev *vdev, u64 device_features);
+> +	int (*set_status)(struct vhost_dev *vdev, u8 status);
+> +	u8 (*get_status)(struct vhost_dev *vdev);
+> +};
+> +
+> struct virtio_config_ops
+> I think there's some overlap here and some of the ops tries to do the
+> same thing.
+>
+> I think it differs in (*set_vq_address)() and (*create_vqs)().
+> [create_vqs() introduced in struct vhost_config_ops provides
+> complimentary functionality to (*find_vqs)() in struct
+> virtio_config_ops. It seemingly encapsulates the functionality of
+> (*set_vq_address)(), (*set_vq_num)(), (*set_vq_cb)(),..].
+>
+> Back to the difference between (*set_vq_address)() and (*create_vqs)(),
+> set_vq_address() directly provides the virtqueue address to the vdpa
+> device but create_vqs() only provides the parameters of the virtqueue
+> (like the number of virtqueues, number of buffers) but does not directly
+> provide the address. IMO the backend client drivers (like net or vhost)
+> shouldn't/cannot by itself know how to access the vring created on
+> virtio front-end. The vdpa device/vhost device should have logic for
+> that. That will help the client drivers to work with different types of
+> vdpa device/vhost device and can access the vring created by virtio
+> irrespective of whether the vring can be accessed via mmio or kernel
+> space or user space.
+>
+> I think vdpa always works with client drivers in userspace and providing
+> userspace address for vring.
 
-HEAD commit:    581cb3a2 Merge tag 'f2fs-for-5.9-rc5' of git://git.kernel...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11f5c011900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a9075b36a6ae26c9
-dashboard link: https://syzkaller.appspot.com/bug?extid=1594adb1b44e354153d8
-compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Sorry for being unclear. What I meant is not replacing vDPA with the 
+vhost(bus) you proposed but the possibility of replacing virtio-pci-epf 
+with vDPA in:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+1594adb1b44e354153d8@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0012e34a9a: 0000 [#1] PREEMPT SMP KASAN
-KASAN: probably user-memory-access in range [0x00000000971a54d0-0x00000000971a54d7]
-CPU: 1 PID: 19990 Comm: kworker/1:11 Not tainted 5.9.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events_power_efficient do_cache_clean
-RIP: 0010:cache_clean+0x119/0x7f0 net/sunrpc/cache.c:444
-Code: 81 fb 20 eb 94 8a 0f 84 b8 00 00 00 e8 80 df 33 fa 48 8d 83 40 ff ff ff 48 8d 7b 10 48 89 05 8e 8e 13 06 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 e0 05 00 00 48 8d 6c 24 38 4c 8b 63 10 48 89
-RSP: 0018:ffffc90008e1fc48 EFLAGS: 00010206
-RAX: 0000000012e34a9a RBX: 00000000971a54c0 RCX: ffffffff87406dbb
-RDX: ffff88804358a000 RSI: ffffffff87406e00 RDI: 00000000971a54d0
-RBP: 0000000000000100 R08: 0000000000000001 R09: 0000000000000003
-R10: 0000000000000100 R11: 0000000000000000 R12: 0000000000000100
-R13: dffffc0000000000 R14: ffff88803451b200 R15: ffff8880ae735600
-FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000004ef310 CR3: 000000009ca1b000 CR4: 00000000001526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- do_cache_clean+0xd/0xd0 net/sunrpc/cache.c:502
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Modules linked in:
----[ end trace 4c54bbd0e20d734b ]---
-RIP: 0010:cache_clean+0x119/0x7f0 net/sunrpc/cache.c:444
-Code: 81 fb 20 eb 94 8a 0f 84 b8 00 00 00 e8 80 df 33 fa 48 8d 83 40 ff ff ff 48 8d 7b 10 48 89 05 8e 8e 13 06 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 e0 05 00 00 48 8d 6c 24 38 4c 8b 63 10 48 89
-RSP: 0018:ffffc90008e1fc48 EFLAGS: 00010206
-RAX: 0000000012e34a9a RBX: 00000000971a54c0 RCX: ffffffff87406dbb
-RDX: ffff88804358a000 RSI: ffffffff87406e00 RDI: 00000000971a54d0
-RBP: 0000000000000100 R08: 0000000000000001 R09: 0000000000000003
-R10: 0000000000000100 R11: 0000000000000000 R12: 0000000000000100
-R13: dffffc0000000000 R14: ffff88803451b200 R15: ffff8880ae735600
-FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000004ef310 CR3: 000000009ca1b000 CR4: 00000000001526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+My question is basically for the part of virtio_pci_epf_send_command(), 
+so it looks to me you have a vendor specific API to replace the 
+virtio-pci layout of the BAR:
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
++static int virtio_pci_epf_send_command(struct virtio_pci_device *vp_dev,
++                       u32 command)
++{
++    struct virtio_pci_epf *pci_epf;
++    void __iomem *ioaddr;
++    ktime_t timeout;
++    bool timedout;
++    int ret = 0;
++    u8 status;
++
++    pci_epf = to_virtio_pci_epf(vp_dev);
++    ioaddr = vp_dev->ioaddr;
++
++    mutex_lock(&pci_epf->lock);
++    writeb(command, ioaddr + HOST_CMD);
++    timeout = ktime_add_ms(ktime_get(), COMMAND_TIMEOUT);
++    while (1) {
++        timedout = ktime_after(ktime_get(), timeout);
++        status = readb(ioaddr + HOST_CMD_STATUS);
++
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Several questions:
+
+- It's not clear to me how the synchronization is done between the RC 
+and EP. E.g how and when the value of HOST_CMD_STATUS can be changed.  
+If you still want to introduce a new transport, a virtio spec patch 
+would be helpful for us to understand the device API.
+- You have you vendor specific layout (according to 
+virtio_pci_epb_table()), so I guess you it's better to have a vendor 
+specific vDPA driver instead
+- The advantage of vendor specific vDPA driver is that it can 1) have 
+less codes 2) support userspace drivers through vhost-vDPA (instead of 
+inventing new APIs since we can't use vfio-pci here).
+
+
+>>> "Virtio Over NTB" should anyways be a new transport.
+>>>> Does that make any sense?
+>>> yeah, in the approach I used the initial features are hard-coded in
+>>> vhost-rpmsg (inherent to the rpmsg) but when we have to use adapter
+>>> layer (vhost only for accessing virtio ring and use virtio drivers on
+>>> both front end and backend), based on the functionality (e.g, rpmsg),
+>>> the vhost should be configured with features (to be presented to the
+>>> virtio) and that's why additional layer or APIs will be required.
+>> A question here, if we go with vhost bus approach, does it mean the
+>> virtio device can only be implemented in EP's userspace?
+> The vhost bus approach doesn't provide any restriction in where the
+> virto backend device should be created. This series creates two types of
+> virtio backend device (one for PCIe endpoint and the other for NTB) and
+> both these devices are created in kernel.
+
+
+Ok.
+
+Thanks
+
+
+>
+> Thanks
+> Kishon
+>
+
