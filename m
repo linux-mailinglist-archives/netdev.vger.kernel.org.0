@@ -2,133 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B54E26A3B2
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 12:55:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBBE926A43F
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 13:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726130AbgIOKzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 06:55:14 -0400
-Received: from mail-eopbgr80111.outbound.protection.outlook.com ([40.107.8.111]:56738
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726291AbgIOKyl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Sep 2020 06:54:41 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JkzFMiak8tzZSSTlEnYST1c9AFzBQVvVnWFNX6WqKzqN32ouRwYAsq1Ah7klnq+/0YXbbFaZi1fdYmL1as5zATCzU4HkF1tbjUVTQQogC0OZHuxtp24DqnfAS8M7JxZxjmYbzfH8wzYRUeTBJfy1GXt/+KYOSUbAdQ+hITDCNuYCQrsWc/KBnJk5/2djuZn3jWKVf17xsSqtrlDG1gxIg39X7iv1ih9SZ41OQuwtAn/r/0Ki3YNdoq4ZmTjMExEyay9kKJ2BIe86vgJ3Z0FuTxB8+QdX1+qapvudYH/+qCh4Q5hnE+umvNUDOqtXSs5Iw3Qk5r5NNn/GBIRVz8vh0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DZMHcPMKJaEpPGaTC0B5+Hh5H9l6Pcz5GSflZC9wb4Q=;
- b=j/oykAZ2mBqS+g6vTEwNbJ0CufBvPJPXdNml0gasBwe7BWg8AYnffR1K1n39+AfNl9mPXRp+buYnF1EHNAGleSCdri9d/68TsBPOPOJKCLelLamnWEk12e4lQlw8w2hv2zH9GvaUth6CS4SEZY3RExPZjvmI4mLX9IkeNz+chiPxwt22tTynz1NC51lBpjKihshd6+MABwNy/NlCuOOesbdrgkHNY40ZYJhq8b/xdvMfQdYgDV+ibEnCDMlYocBzmlkkPZXLm4bWKrGVpMAvJBpyXcms3pXPG1k7JGdL9icmFka/Lo6HO2zLciqjDQNe3uKMPS0qYqK2VrXj+Sfb8w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DZMHcPMKJaEpPGaTC0B5+Hh5H9l6Pcz5GSflZC9wb4Q=;
- b=BLqMwp+CmlN575wv3mpuKZkPibsitDwEeiHUbXfkxHekc94w8DsXi8j0O+EiuammE0rVKHg8ibFiZM5GktwtC4PkAZICQxyGONgEe08KNoMb6RayiZDD5En/p8TadSNhx6JrOrd/+sIMWt2vEiVx6xT9vXBHpaMec6lhFNLySEc=
-Received: from AM8PR05MB7332.eurprd05.prod.outlook.com (2603:10a6:20b:1db::9)
- by AM0PR05MB6643.eurprd05.prod.outlook.com (2603:10a6:20b:156::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Tue, 15 Sep
- 2020 10:54:36 +0000
-Received: from AM8PR05MB7332.eurprd05.prod.outlook.com
- ([fe80::64de:d33d:e82:b902]) by AM8PR05MB7332.eurprd05.prod.outlook.com
- ([fe80::64de:d33d:e82:b902%7]) with mapi id 15.20.3370.019; Tue, 15 Sep 2020
- 10:54:36 +0000
-From:   Tuong Tong Lien <tuong.t.lien@dektech.com.au>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jmaloy@redhat.com" <jmaloy@redhat.com>,
-        "maloy@donjonn.com" <maloy@donjonn.com>,
-        "ying.xue@windriver.com" <ying.xue@windriver.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>
-Subject: RE: [net] tipc: fix using smp_processor_id() in preemptible
-Thread-Topic: [net] tipc: fix using smp_processor_id() in preemptible
-Thread-Index: AQHWfoc+himFBG6tQEGws4qIktdqQalR4IkAgAACUeCAABe0AIAAAmDQgAAv7QCAAYkt0IAAEM4AgAA+DjCAAO5sgIAUqugw
-Date:   Tue, 15 Sep 2020 10:54:35 +0000
-Message-ID: <AM8PR05MB73321BFCEC3FF0CECC2DE390E2200@AM8PR05MB7332.eurprd05.prod.outlook.com>
-References: <20200829193755.9429-1-tuong.t.lien@dektech.com.au>
- <f81eafce-e1d1-bb18-cb70-cfdf45bb2ed0@gmail.com>
- <AM8PR05MB733222C45D3F0CC19E909BB0E2510@AM8PR05MB7332.eurprd05.prod.outlook.com>
- <0ed21ba7-2b3b-9d4f-563e-10d329ebeecb@gmail.com>
- <AM8PR05MB7332E91A67120D78823353F6E2510@AM8PR05MB7332.eurprd05.prod.outlook.com>
- <3f858962-4e38-0b72-4341-1304ec03cd7a@gmail.com>
- <AM8PR05MB7332BE4B6E0381D2894E057AE22E0@AM8PR05MB7332.eurprd05.prod.outlook.com>
- <338d5df9-fe4e-7acf-1480-99984dfeab34@gmail.com>
- <AM8PR05MB7332020CE2FB9E0B416D70BAE22E0@AM8PR05MB7332.eurprd05.prod.outlook.com>
- <2b31e772-3229-3c67-1faf-9ae88849ce77@gmail.com>
-In-Reply-To: <2b31e772-3229-3c67-1faf-9ae88849ce77@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=dektech.com.au;
-x-originating-ip: [123.20.195.8]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2e99b69b-64e3-4cfd-f90a-08d85965bc66
-x-ms-traffictypediagnostic: AM0PR05MB6643:
-x-microsoft-antispam-prvs: <AM0PR05MB6643BB9CD57FA7FA2C605021E2200@AM0PR05MB6643.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: eOB5A/vMNJuV5sW3jfQzLyVJP9X0wcgxrXFtjQZLyKVWgTaCf7eaZrPeZI+NNdIqNBUvB3gHqhCcycLmdEXrhowwVhpv2R7s0/LSo0hQoIMVKOZ9U5EeVM2cL12pZTo0VFwHWyM8eDu/vm/ddphi9n0RKl+4erLMP6nKd13CMmrzUeBFYdkx+66JnIQgilohx0O+7hN8kR+MZLhJ8g9wJwLf3tW1zh1H4ShTBGbO2e8l1Wez3sLHRuCw+QloWAfloan8wp8jPL/hZaLiTGO/yRDY+TtHp4SEWhYYSvyqxa2aYxBAeURRTApjvwcQDOPzFge9OnkJAi3eX9dUYmjtOESDbSZnQ21QMKHavSWlKGS5ki7yIlTwR89zVwT8TR1R
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR05MB7332.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(396003)(376002)(39850400004)(346002)(136003)(55236004)(6506007)(478600001)(86362001)(316002)(8936002)(53546011)(4326008)(76116006)(66556008)(110136005)(64756008)(66446008)(66476007)(83380400001)(66946007)(186003)(26005)(71200400001)(8676002)(2906002)(33656002)(52536014)(9686003)(7696005)(5660300002)(55016002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: Xd1O4G5lUDUxwv6MKjn3DcfhvghaYEMoKpl1pCYQJs1wrIgL7BvYJ40a9dNGDqn+CkkF4C9jxKJvGmfqkOIooEfNm9Gvk6MFl277TUjVdzgxLAJNi2UAPBk7/ZMskaDQ8lKNctgFM/P/vgPuCxHgvF+Sh2m57W7Y5qyAgy6t9xe1IAC/uIjmC4lPfgJNCjgUMc8k4n4LeQST01ibsFjLoU4x0H2COvlFpWTDpaV1vsTyi4huaBBT0d+YgXV4dt8BFKboCBXwXxyXMWngMdIad5pXXcTMxBJDupbHSZOcdSaF0ftDtxNxpTQAcjnXR3OyY+Z91VcXb87xTgRdY4a3QGyp8p6H4/EQX+PuG5+v5d+6AUbTzYuZjxmOafIlXGfzwZEPlBKQjY+LDUvUqjeeCzqYllC8GrNk2F0L1G3p9s8FAJ5LR8gN6NrVLLK66uOfTdb4KLPVp3tzUgaXau27BjbKKA2lbcGCmn7Mkq5m3462G2MUFkFCvApuBneDQ8/zbXWedKNRQLcdkxi/TcUuDYdZUM2vWi01c7sdJtAyVcfS4dSOKDGHTklU/kZoCGeclS5cfPabsYQAcWG77l8o/eVB71tAnhQK8rPGL2cw2JjPBycf5d4MS5snNax0+dorIn6NX0wghqoRKponM2xNxQ==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726137AbgIOLhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 07:37:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:31859 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726189AbgIOLff (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 07:35:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600169734;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3rr8VaiyxE099qjL7tO/ARj7fFPfUXxauef1g0727VU=;
+        b=B3yvO8bdk9CThlrSWekKtHuiY4I9D0hFEqjflSztXNjnIR6PkSpv2PJqJLRy537rhy1BMn
+        mzAzePY6nfKtC4+ubQPQDbsHTDpJ++hnXk/9iLGLN1vxmgNJ+j3CbzNSQ/Fxv/AiVDejTw
+        msKHCNtl71vAsFJul4iS3EmGaR3QWlA=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-504-gfQsaZRJO5adz4KXcpsjCg-1; Tue, 15 Sep 2020 07:35:32 -0400
+X-MC-Unique: gfQsaZRJO5adz4KXcpsjCg-1
+Received: by mail-wr1-f69.google.com with SMTP id d9so1108578wrv.16
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 04:35:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=3rr8VaiyxE099qjL7tO/ARj7fFPfUXxauef1g0727VU=;
+        b=S7NI8+vwRHX6tIFycU0QCcZP2/NyciacacSnk+ZI6TsmHzEW4it4dpOObR8I9lu+Db
+         5bB6dhfdLsPQu99ttUNBgtRhv7sWd6Sll2Y3sjO5+s+lZJZy66M45rNDRKDuytE2b3M8
+         TF7iuIQLwc0CtX89gIpxT5LYz1/pmIep6Ng8BHa/7SW+owbEuYFryujbxn/XuFsFfm26
+         LwfwlFYPxn4AVkvQazi4Zar99aOn6BhVcF5rnqERhsHktDA4PjErzF3B9eySYmcH4rxk
+         bqpCX24VTDahKt2VzpoFK4hQbQyVCSCILdtT01pFPpCYpapce29K02l0la2+W4zIrdA5
+         HP/g==
+X-Gm-Message-State: AOAM532XcuiEuOwP1tjzLJkf6rOZCclbv4e2nX9Wrmcu7mzOLbdG5nZ4
+        aQAjbpEb5m2kc7adq8oYJIK1zqg8UfZ4blv6dp+2M7kob+GVEso/sJcy/uhEXW50HW/exU5XFuu
+        wpA02Lpyj/fOmRvxP
+X-Received: by 2002:adf:9b8b:: with SMTP id d11mr13493130wrc.71.1600169730552;
+        Tue, 15 Sep 2020 04:35:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxrxnZV0v/APUuWUQyglUlEpBpUNY4U1W+sX6RLU4556c09WO8YcebevS2Oiya7fGleP6KdmQ==
+X-Received: by 2002:adf:9b8b:: with SMTP id d11mr13493094wrc.71.1600169730164;
+        Tue, 15 Sep 2020 04:35:30 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id t6sm29252973wre.30.2020.09.15.04.35.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Sep 2020 04:35:29 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 74C711829CB; Tue, 15 Sep 2020 13:35:28 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH RESEND bpf-next v3 4/9] bpf: support attaching freplace
+ programs to multiple attach points
+In-Reply-To: <CAEf4Bzb9Xw65jL1UxVjOz5HdwgMckEkFHWrYdEPbnj01a7X1hQ@mail.gmail.com>
+References: <159981835466.134722.8652987144251743467.stgit@toke.dk>
+ <159981835908.134722.4550898174324943652.stgit@toke.dk>
+ <CAEf4BzZMj0sPisgUZ+3qKvqaAxfzzRNHZTpoR-zuDXvKcY3URQ@mail.gmail.com>
+ <87imcgz6gk.fsf@toke.dk>
+ <CAEf4Bzb9Xw65jL1UxVjOz5HdwgMckEkFHWrYdEPbnj01a7X1hQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 15 Sep 2020 13:35:28 +0200
+Message-ID: <87zh5rxofz.fsf@toke.dk>
 MIME-Version: 1.0
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM8PR05MB7332.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e99b69b-64e3-4cfd-f90a-08d85965bc66
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Sep 2020 10:54:35.9443
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zYpZOG5snasQDlMCLpz2ajfss5owA+7Kwz5ZLwrUQ22YOtfFZjnseRoRQZLs1YrKUpWtKkI+zyb9LcxDOFrIWMQDSa+FJI67jVzeDJxmwgs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6643
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRXJpYyBEdW1hemV0IDxl
-cmljLmR1bWF6ZXRAZ21haWwuY29tPg0KPiBTZW50OiBXZWRuZXNkYXksIFNlcHRlbWJlciAyLCAy
-MDIwIDI6MTEgUE0NCj4gVG86IFR1b25nIFRvbmcgTGllbiA8dHVvbmcudC5saWVuQGRla3RlY2gu
-Y29tLmF1PjsgRXJpYyBEdW1hemV0IDxlcmljLmR1bWF6ZXRAZ21haWwuY29tPjsgZGF2ZW1AZGF2
-ZW1sb2Z0Lm5ldDsNCj4gam1hbG95QHJlZGhhdC5jb207IG1hbG95QGRvbmpvbm4uY29tOyB5aW5n
-Lnh1ZUB3aW5kcml2ZXIuY29tOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnDQo+IENjOiB0aXBjLWRp
-c2N1c3Npb25AbGlzdHMuc291cmNlZm9yZ2UubmV0DQo+IFN1YmplY3Q6IFJlOiBbbmV0XSB0aXBj
-OiBmaXggdXNpbmcgc21wX3Byb2Nlc3Nvcl9pZCgpIGluIHByZWVtcHRpYmxlDQo+IA0KPiANCj4g
-DQo+IE9uIDkvMS8yMCAxMDo1MiBBTSwgVHVvbmcgVG9uZyBMaWVuIHdyb3RlOg0KPiANCj4gPiBP
-aywgSSd2ZSBnb3QgeW91ciBjb25jZXJuIG5vdy4gQWN0dWFsbHkgd2hlbiB3cml0aW5nIHRoaXMg
-Y29kZSwgSSBoYWQgdGhlIHNhbWUgdGhvdWdodCBhcyB5b3UsIGJ1dCBkZWNpZGVkIHRvIHJlbGF4
-IGl0IGJlY2F1c2Ugb2YgdGhlDQo+IGZvbGxvd2luZyByZWFzb25zOg0KPiA+IDEuIEkgZG9uJ3Qg
-d2FudCB0byB1c2UgYW55IGxvY2tpbmcgbWV0aG9kcyBoZXJlIHRoYXQgY2FuIGxlYWQgdG8gY29t
-cGV0aXRpb24gKHRodXMgYWZmZWN0IG92ZXJhbGwgcGVyZm9ybWFuY2UuLi4pOw0KPiA+IDIuIFRo
-ZSBsaXN0IGlzIG5vdCBhbiB1c3VhbCBsaXN0IGJ1dCBhIGZpeGVkICJyaW5nIiBvZiBwZXJzaXN0
-ZW50IGVsZW1lbnRzIChubyBvbmUgd2lsbCBpbnNlcnQvcmVtb3ZlIGFueSBlbGVtZW50IGFmdGVy
-IGl0IGlzIGNyZWF0ZWQpOw0KPiA+IDMuIEl0IGRvZXMgX25vdF8gbWF0dGVyIGF0IGFsbCBpZiB0
-aGUgZnVuY3Rpb24gY2FsbHMgd2lsbCByZXN1bHQgaW4gdGhlIHNhbWUgZWxlbWVudCwgb3Igb25l
-IGNhbGwgcG9pbnRzIHRvIHRoZSAxc3QgZWxlbWVudCB3aGlsZSBhbm90aGVyDQo+IGF0IHRoZSBz
-YW1lIHRpbWUgcG9pbnRzIHRvIHRoZSAzcmQgb25lLCBldGMuIGFzIGxvbmcgYXMgaXQgcmV0dXJu
-cyBhbiBlbGVtZW50IGluIHRoZSBsaXN0LiBBbHNvLCB0aGUgcGVyLWNwdSBwb2ludGVyIGlzIF9u
-b3RfIHJlcXVpcmVkIHRvDQo+IGV4YWN0bHkgcG9pbnQgdG8gdGhlIG5leHQgZWxlbWVudCwgYnV0
-IG5lZWRzIHRvIGJlIG1vdmVkIG9uIHRoaXMgb3IgbmV4dCB0aW1lLi4uLCBzbyBqdXN0IHJlbGF4
-aW5nIQ0KPiA+IDQuIElzbid0IGEgIndyaXRlIiB0byB0aGUgcGVyLWNwdSB2YXJpYWJsZSBhdG9t
-aWM/DQo+ID4NCj4gDQo+IEkgdGhpbmsgSSB3aWxsIGdpdmUgdXAsIHRoaXMgY29kZSBpcyBjbGVh
-cmx5IHJhY3ksIGFuZCB3aWxsIGNvbnNpZGVyIFRJUEMgYXMgYnJva2VuLg0KPiANCj4gWW91ciBw
-YXRjaCBvbmx5IHNpbGVuY2VkIHN5emJvdCByZXBvcnQsIGJ1dCB0aGUgYnVnIGlzIHN0aWxsIHRo
-ZXJlLg0KSGkgRXJpYywNClNvcnJ5IGJ1dCBjb3VsZCB5b3UgcGxlYXNlIHRlbGwgbWUgd2h5IHlv
-dSB0aGluayBpdCBpcyAicmFjeSIuLi4gYW5kIHRoZSBidWcgaXMgc3RpbGwgdGhlcmUuLi4/IFRo
-YW5rcyENCkkgYWdyZWVkIHdlIGNvdWxkIG1ha2UgaXQgaW4gc29tZSBicmlnaHRlciB3YXlzLCBi
-dXQgZm9yIG5vdyBieSBkaXNhYmxpbmcgcHJlZW1wdGlvbiBwcmlvciB0byB0aGUgcGVyLWNwdSB2
-YXJpYWJsZSBhY2Nlc3MgaXMgZmluZSBlbm91Z2g/IEFsc28gbGV0cyBzYXkgZXZlbiBpbiBjYXNl
-IHRoZSBjb2RlIGlzIGludGVycnVwdGVkIGJ5IEJIIG9yIGludGVycnVwdHMuLi4sIHdlIHNob3Vs
-ZCBoYXZlIG5vIGlzc3VlLg0KDQpCUi9UdW9uZw0KPiANCg0K
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+
+> On Mon, Sep 14, 2020 at 9:08 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>
+>> > On Fri, Sep 11, 2020 at 3:01 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
+@redhat.com> wrote:
+>> >>
+>> >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> >>
+>> >> This enables support for attaching freplace programs to multiple atta=
+ch
+>> >> points. It does this by amending UAPI for bpf_raw_tracepoint_open wit=
+h a
+>> >> target prog fd and btf ID pair that can be used to supply the new
+>> >> attachment point. The target must be compatible with the target that =
+was
+>> >> supplied at program load time.
+>> >>
+>> >> The implementation reuses the checks that were factored out of
+>> >> check_attach_btf_id() to ensure compatibility between the BTF types o=
+f the
+>> >> old and new attachment. If these match, a new bpf_tracing_link will be
+>> >> created for the new attach target, allowing multiple attachments to
+>> >> co-exist simultaneously.
+>> >>
+>> >> The code could theoretically support multiple-attach of other types of
+>> >> tracing programs as well, but since I don't have a use case for any of
+>> >> those, the bpf_tracing_prog_attach() function will reject new targets=
+ for
+>> >> anything other than PROG_TYPE_EXT programs.
+>> >>
+>> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> >> ---
+>> >
+>> > It feels like using a semi-constructed bpf_tracing_link inside
+>> > prog->aux->tgt_link is just an unnecessary complication, after reading
+>> > this and previous patches. Seems more straightforward and simpler to
+>> > store tgt_attach_type/tgt_prog_type (permanently) and
+>> > tgt_prog/tgt_trampoline (until first attachment) in prog->aux and then
+>> > properly create bpf_link on attach.
+>>
+>> I updated v4 with your comments, but kept the link in prog->aux; the
+>> reason being that having a container for the two pointers makes it
+>> possible to atomically swap it out with xchg() as you suggested
+>> previously. Could you please take a look at v4? If you still think it's
+>> better to just keep two separate pointers (and add a lock) in prog->aux,
+>> I can change it to that. But I'd rather avoid the lock if possible...
+>
+> I took a very quick look at this specific bit, planning to do another
+> pass tomorrow.
+>
+> What's the problem with adding a mutex to bpf_prog_aux? In your case,
+> now you introduced (unlikely, but still) extra state transition for
+> tgt_link from non-NULL to NULL and then back to non-NULL? And why?
+> Just to use atomic xchg, while using atomic operation is not an
+> absolute necessity because it's not a performance-critical path at
+> all. We are not optimizing for millions of freplace attachments a
+> second, right? On the other hand, having a mutex there won't require
+> restoration logic, it will be dead simple, obvious and
+> straightforward. So yeah, I still think mutex is better there.
+
+So I went ahead and implemented a mutex-based version of this. I'm not
+sure I agree with "dead simple", I'd say it's on par with the previous
+version; and that is only if I explicitly limit the scope of the mutex
+to *writing* of the tgt_* pointers (i.e., I haven't gone through and
+protected all the reads from within the verifier).
+
+The mutex version does have the benefit of still making it possible to
+retry a bpf_raw_tracepoint_open() if it fails, so I guess that is a
+benefit; I'll post it as v5 and you can have a look :)
+
+> BTW, check Stanislav's latest patch set. He's adding used_maps_mutex
+> to bpf_prog_aux with no problems at all. It seems to me that we might
+> want to generalize that used_maps_mutex to be just bpf_prog_aux's
+> mutex ('prog_aux_mutex' or whatever we'd call it) and use it for such
+> kinds of low-frequency bpf_prog metadata manipulations/checks.
+
+I'm not sure I like the idea of widening the scope of the mutex. Or at
+least I think that should be done as a follow-up patch that does a
+proper analysis of all the different fields it is supposed to protect
+and makes sure no deadlocks creep in.
+
+-Toke
+
