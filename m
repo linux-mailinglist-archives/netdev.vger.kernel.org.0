@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B57E26A456
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 13:45:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2020026A45A
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 13:46:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726467AbgIOLob (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 07:44:31 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:34595 "EHLO
+        id S1726423AbgIOLqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 07:46:23 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:42391 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726324AbgIOLm0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 07:42:26 -0400
+        by vger.kernel.org with ESMTP id S1726137AbgIOLnd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 07:43:33 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 72CBE5C00F2;
-        Tue, 15 Sep 2020 07:41:53 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id E2B645C004B;
+        Tue, 15 Sep 2020 07:41:58 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 15 Sep 2020 07:41:53 -0400
+  by compute4.internal (MEProxy); Tue, 15 Sep 2020 07:41:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=hD+laVjBmaNwq1jET6SPWcNQAtZSxT6WC0wrTEqBKwk=; b=r/jLVbF2
-        V1o4p934ZS27YCT6Q5I+EyPWBfQic3cskblkfOdn3ydrjAksO3qpfru1PRGECHKo
-        TfwPmoy+vhDNsU6I5SSB1z3lGjxfqxUA0uAQYVo1IwOKItluPV8yrwGMMVxJXz9t
-        09DIbzQYhrfOZdwreEXOHhTKIE00HzGIN9nxLADnekUhqQzvjQ0Si+zIiyoHsV4z
-        DcKqCOFt5l+AAdjqQgEMD8Sv4XbMziIuuDERRgVO6Se90KDZPV+SS+BOO/Qs0BCg
-        WZmeRYvcYQc1iydRIW1q+gE5NcdnwLYUPF/PqmS5ogddDjEze5oBGnLnm3kf5YNX
-        TkMOHdbphvj4sw==
-X-ME-Sender: <xms:gahgX75zLU83CreV14p_z4Sm-ZcvrZfAWr_o4dJmUpjMyOhqpy47cw>
-    <xme:gahgXw4YdUt_2qBxTM5hdErGjhvIR4UZMLnClsQd8k478WCeRkcn7WGgvlWtom5RO
-    ffRhOsI_s4QvMc>
+        fm3; bh=R1y9Mma9sU9srpiUHUc7yNIiodSmxT9kKrmlRNaMRRc=; b=OJvSM9bM
+        tnnrc2jh6L6AR67no8MwUSGngeZYC9yBzpZpcDhyGAyIYUkTkfQpHbjeYHDRrUp2
+        IUF6dME7jvKNwLO7KmXQ530Hhwbpuu4Q96TmhmQcsVk7BCoKnKMAwgQhfjMyBZs4
+        IcdYlssqzaiei//GgdCHzmaYInzMnbFvHrgKn4YaPouneptEJIgpIGJ9MtRY89MH
+        ttel9epmkoR1TCJ60UeKcYMlvrkiwJqZvgGec4SefNy9ZEMVrEiryLw/ywUKFuXA
+        +a7VrfmDVDMce2zFzBGsa822E3A6+Wn+DNAm4WJHDhByXQ7nK6eLCXJygF3aHAet
+        CtnCk6w0zUcXgQ==
+X-ME-Sender: <xms:hqhgX891sCR1D8esEGcuorCdGCEz5tqai-QKmO36OOkDAOfyRymJow>
+    <xme:hqhgX0s_xI2NFkeug-WjFFPdeysj7wsQQA9qNC2zqjSj88jKFoIl1wAELEt5E3TfS
+    ANHdSUIm9vw3ao>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrtddtgdduvdcutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdefiedrkedvnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    vehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
     hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:gahgXycqwJxfRL1dBbX9sTlQxHTOyhqg6TnQ-gw9_WLZRcOhoToYXQ>
-    <xmx:gahgX8JoiFY2sDcqH7Z1Lg5li6GkduBIYaTPxp5LPqvMniZjs6sjCA>
-    <xmx:gahgX_KqTnHobUAsupRR_2cebhyE1x20b_8NdnDg2RNwiNEelkf1kg>
-    <xmx:gahgX2VkFTcptwgMJRJ9uVgk4AKpQ6FMJivmRIWgB7TKdMf7hA0CDw>
+X-ME-Proxy: <xmx:hqhgXyCt8AfT0S3vjK1bjnmXHGCGGTUr4ZMe6TqHLBVy2sDWFdROow>
+    <xmx:hqhgX8fiZzu0auNF9WuVIwFSM5d1XhjYXxrYM_whxlb0JvPRUS0qxg>
+    <xmx:hqhgXxMdsn5iFeIRzm0nokExccpCVjduvab2GFKiIdVa3ugzQV6p3g>
+    <xmx:hqhgX6aZjrJaD_WrLlrd7x7DIeI7GNlDcrfKGLsEppmQ8by9Um8Ewg>
 Received: from shredder.mtl.com (igld-84-229-36-82.inter.net.il [84.229.36.82])
-        by mail.messagingengine.com (Postfix) with ESMTPA id ECFCF306467D;
-        Tue, 15 Sep 2020 07:41:51 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 163543064682;
+        Tue, 15 Sep 2020 07:41:56 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 2/5] nexthop: Remove NEXTHOP_EVENT_ADD
-Date:   Tue, 15 Sep 2020 14:41:00 +0300
-Message-Id: <20200915114103.88883-3-idosch@idosch.org>
+Subject: [PATCH net-next 5/5] selftests: fib_nexthops: Test cleanup of FDB entries following nexthop deletion
+Date:   Tue, 15 Sep 2020 14:41:03 +0300
+Message-Id: <20200915114103.88883-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200915114103.88883-1-idosch@idosch.org>
 References: <20200915114103.88883-1-idosch@idosch.org>
@@ -64,25 +64,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Not used anywhere.
+Commit c7cdbe2efc40 ("vxlan: support for nexthop notifiers") registered
+a listener in the VXLAN driver to the nexthop notification chain. Its
+purpose is to cleanup FDB entries that use a nexthop that is being
+deleted.
+
+Test that such FDB entries are removed when the nexthop group that they
+use is deleted. Test that entries are not deleted when a single nexthop
+in the group is deleted.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Suggested-by: David Ahern <dsahern@gmail.com>
+Reviewed-by: David Ahern <dsahern@gmail.com>
 ---
- include/net/nexthop.h | 1 -
- 1 file changed, 1 deletion(-)
+ tools/testing/selftests/net/fib_nexthops.sh | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index 2e44efe5709b..2fd76a9b6dc8 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -105,7 +105,6 @@ struct nexthop {
- };
+diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
+index b74884d52913..eb693a3b7b4a 100755
+--- a/tools/testing/selftests/net/fib_nexthops.sh
++++ b/tools/testing/selftests/net/fib_nexthops.sh
+@@ -411,9 +411,16 @@ ipv6_fdb_grp_fcnal()
+ 	run_cmd "$IP -6 ro add 2001:db8:101::1/128 nhid 103"
+ 	log_test $? 2 "Route add with fdb nexthop group"
  
- enum nexthop_event_type {
--	NEXTHOP_EVENT_ADD,
- 	NEXTHOP_EVENT_DEL
- };
++	run_cmd "$IP nexthop del id 61"
++	run_cmd "$BRIDGE fdb get to 02:02:00:00:00:13 dev vx10 self"
++	log_test $? 0 "Fdb entry after deleting a single nexthop"
++
+ 	run_cmd "$IP nexthop del id 102"
+ 	log_test $? 0 "Fdb nexthop delete"
+ 
++	run_cmd "$BRIDGE fdb get to 02:02:00:00:00:13 dev vx10 self"
++	log_test $? 254 "Fdb entry after deleting a nexthop group"
++
+ 	$IP link del dev vx10
+ }
+ 
+@@ -484,9 +491,16 @@ ipv4_fdb_grp_fcnal()
+ 	run_cmd "$IP ro add 172.16.0.0/22 nhid 103"
+ 	log_test $? 2 "Route add with fdb nexthop group"
+ 
++	run_cmd "$IP nexthop del id 12"
++	run_cmd "$BRIDGE fdb get to 02:02:00:00:00:13 dev vx10 self"
++	log_test $? 0 "Fdb entry after deleting a single nexthop"
++
+ 	run_cmd "$IP nexthop del id 102"
+ 	log_test $? 0 "Fdb nexthop delete"
+ 
++	run_cmd "$BRIDGE fdb get to 02:02:00:00:00:13 dev vx10 self"
++	log_test $? 254 "Fdb entry after deleting a nexthop group"
++
+ 	$IP link del dev vx10
+ }
  
 -- 
 2.26.2
