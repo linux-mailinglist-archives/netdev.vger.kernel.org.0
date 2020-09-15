@@ -2,164 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DC4526AA63
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 19:20:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3EA126AAE0
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 19:40:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727795AbgIORUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 13:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727685AbgIORUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 13:20:15 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C43C061788
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 10:20:14 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id z17so2342958pgc.4
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 10:20:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=I+iVT8KgXs3nBI84O7gr7eRuC956h54v3IdKtll29gg=;
-        b=Zr+5RRwHltHEtxKPNEP81CgrKO1J/t8w8iFuiaD/sxoJsmxbFdMRF1GD5gjVcpLmRi
-         LawPnRIYVrNTtX0Q5wVGHvRdstDC+oaCaQfYbSdbEkJcs2H4Z6Zakv7CL+5vMo5PPIou
-         mEj1px3AkJMWtVjWdBtoJP2EXaR+JlDuFxX3UsO2dihXXWPoem2mc7TZfR3hmNv7MIv6
-         6zs4DpNVCV0dQOBb/lb5sA2KoAlal4G1+axOJYWjrDIvgeaGYmXknv37CFYQX++283U4
-         QueeOmLm41msYNQel7q7n3U9h9MiAS/rQ/KixTokU7ujMbt+wHCACpALPoQhlhANbKj5
-         A9AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=I+iVT8KgXs3nBI84O7gr7eRuC956h54v3IdKtll29gg=;
-        b=m0YsqDylI/FhU3kMmS9Fwe2hzKd7iurc0roKvyA2APbom7ffKKz32kgGirbg2MLaTt
-         TmRsxxM8cL/tvkKArAUp52U9cBEfF88FKSRy+eM3mPgaI/3+2hFiF+VQyeV89LdKAy20
-         GcruY/x4Q9xJR612pDkhoTAvaqSe1eqoGvxFAknepFVdohpDaGTuRFLRhllfOtyx3LkX
-         m+H1V6qL9UOb6owb2qTBaBhwNsqjnxwYNcB5FmZu92lyL2XwkBe6uwNMR5zuh1y4IgUB
-         6TXBkyMnzTGU5TfHxMW0ahN52qf1uWBLNea15jyKCOOxJeTVMxPomz6mCkPfjo2E26Xm
-         i2kg==
-X-Gm-Message-State: AOAM532/9YwZJXI+elulomvvTleJBPAOZiNhQkE7XPAbunoMGWB3zLC0
-        HL6a77QzRE1CtJzDIQ2e2sdQBg==
-X-Google-Smtp-Source: ABdhPJzPIZMc9LrIp5N7o7AiTnd5xTbWxJK2y44l0y3PfzTGxmDnHeBU07zaxi764YsMYVMUD+YxXg==
-X-Received: by 2002:a65:6913:: with SMTP id s19mr14856275pgq.116.1600190413606;
-        Tue, 15 Sep 2020 10:20:13 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id y202sm14769889pfc.179.2020.09.15.10.20.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Sep 2020 10:20:12 -0700 (PDT)
-Subject: Re: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-References: <20200908224812.63434-1-snelson@pensando.io>
- <20200908224812.63434-3-snelson@pensando.io>
- <20200908165433.08afb9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <9938e3cc-b955-11a1-d667-8e5893bb6367@pensando.io>
- <20200909094426.68c417fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <581f2161-1c55-31ae-370b-bbea5a677862@pensando.io>
- <20200909122233.45e4c65c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <3d75c4be-ae5d-43b0-407c-5df1e7645447@pensando.io>
- <20200910105643.2e2d07f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <a04313f7-649e-a928-767c-b9d27f3a0c7c@intel.com>
- <20200914163605.750b0f23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <3b18d92f-3a0a-c0b0-1b46-ecfd4408038c@pensando.io>
- <7e44037cedb946d4a72055dd0898ab1d@intel.com>
- <f4e4e9c3-b293-cef1-bb84-db7fe691882a@pensando.io>
- <20200915085045.446b854b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <4b5e3547f3854fd399b26a663405b1f8@intel.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <ad9b1163-fe3b-6793-c799-75a9c4ce87f9@pensando.io>
-Date:   Tue, 15 Sep 2020 10:20:11 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1727683AbgIORkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 13:40:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58000 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727911AbgIORkH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Sep 2020 13:40:07 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 56C15206E6;
+        Tue, 15 Sep 2020 17:40:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600191603;
+        bh=50cSQ09DT28MN2hajr+tkRvQFyQLLq6+Ze2bBmektmw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Oivw3em1Lw/7vxFjeTEMdlrMSlVsRJmX9nI5CSWBTBZdgCNzCbpALPF/HXfNJfWTn
+         3w50cS+Spg2nmRRkWOF77gfN/Hl6ehTjCNAzQ45CIfHiXQ2uQFRbrsx+0Z+CRboUMZ
+         ZFopceHAvP8K0KZxLt2r3vHr+9FJykPYTbC+DBv8=
+Date:   Tue, 15 Sep 2020 10:40:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf-next] bpf: using rcu_read_lock for
+ bpf_sk_storage_map iterator
+Message-ID: <20200915104001.0182ae73@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <bc24e2da-33e5-e13c-8fe0-1e24c2a5a579@fb.com>
+References: <20200914184630.1048718-1-yhs@fb.com>
+        <20200915083327.7e98cf2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <bc24e2da-33e5-e13c-8fe0-1e24c2a5a579@fb.com>
 MIME-Version: 1.0
-In-Reply-To: <4b5e3547f3854fd399b26a663405b1f8@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/15/20 9:50 AM, Keller, Jacob E wrote:
->
->> -----Original Message-----
->> From: Jakub Kicinski <kuba@kernel.org>
->> Sent: Tuesday, September 15, 2020 8:51 AM
->> To: Shannon Nelson <snelson@pensando.io>
->> Cc: Keller, Jacob E <jacob.e.keller@intel.com>; netdev@vger.kernel.org;
->> davem@davemloft.net
->> Subject: Re: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
->>
->> On Mon, 14 Sep 2020 18:14:22 -0700 Shannon Nelson wrote:
->>> So now we're beginning to dance around timeout boundaries - how can we
->>> define the beginning and end of a timeout boundary, and how do they
->>> relate to the component and label?  Currently, if either the component
->>> or status_msg changes, the devlink user program does a newline to start
->>> a new status line.  The done and total values are used from each notify
->>> message to create a % value displayed, but are not dependent on any
->>> previous done or total values, so the total doesn't need to be the same
->>> value from status message to status message, even if the component and
->>> label remain the same, devlink will just print whatever % gets
->>> calculated that time.
->> I think systemd removes the timeout marking when it moves on to the
->> next job, and so should devlink when it moves on to the next
->> component/status_msg.
+On Tue, 15 Sep 2020 10:35:50 -0700 Yonghong Song wrote:
+> On 9/15/20 8:33 AM, Jakub Kicinski wrote:
+> > On Mon, 14 Sep 2020 11:46:30 -0700 Yonghong Song wrote:  
+> >> Currently, we use bucket_lock when traversing bpf_sk_storage_map
+> >> elements. Since bpf_iter programs cannot use bpf_sk_storage_get()
+> >> and bpf_sk_storage_delete() helpers which may also grab bucket lock,
+> >> we do not have a deadlock issue which exists for hashmap when
+> >> using bucket_lock ([1]).
+> >>
+> >> If a bucket contains a lot of sockets, during bpf_iter traversing
+> >> a bucket, concurrent bpf_sk_storage_{get,delete}() may experience
+> >> some undesirable delays. Using rcu_read_lock() is a reasonable
+> >> compromise here. Although it may lose some precision, e.g.,
+> >> access stale sockets, but it will not hurt performance of other
+> >> bpf programs.
+> >>
+> >> [1] https://lore.kernel.org/bpf/20200902235341.2001534-1-yhs@fb.com
+> >>
+> >> Cc: Martin KaFai Lau <kafai@fb.com>
+> >> Signed-off-by: Yonghong Song <yhs@fb.com>  
+> > 
+> > Sparse is not happy about it. Could you add some annotations, perhaps?
+> > 
+> > include/linux/rcupdate.h:686:9: warning: context imbalance in 'bpf_sk_storage_map_seq_find_next' - unexpected unlock
+> > include/linux/rcupdate.h:686:9: warning: context imbalance in 'bpf_sk_storage_map_seq_stop' - unexpected unlock  
+> 
+> Okay, I will try.
+> 
+> On my system, sparse is unhappy and core dumped....
+> 
+> /data/users/yhs/work/net-next/include/linux/string.h:12:38: error: too 
+> many errors
+> /bin/sh: line 1: 2710132 Segmentation fault      (core dumped) sparse 
+> -D__linux__ -Dlinux -D__STDC__ -Dunix
+> -D__unix__ -Wbitwise -Wno-return-void -Wno-unknown-attribute 
+> -D__x86_64__ --arch=x86 -mlittle-endian -m64 -W
+> p,-MMD,net/core/.bpf_sk_storage.o.d -nostdinc -isystem
+> ...
+> /data/users/yhs/work/net-next/net/core/bpf_sk_storage.c
+> make[3]: *** [net/core/bpf_sk_storage.o] Error 139
+> make[3]: *** Deleting file `net/core/bpf_sk_storage.o'
+> 
+> -bash-4.4$ rpm -qf /bin/sparse
+> sparse-0.5.2-1.el7.x86_64
+> -bash-4.4$
 
-Works for me.  I'll try to note these UI implementation hints somewhere 
-useful.
+I think you need to build from source, sadly :(
 
->>
->>> I'm thinking that the behavior of the timeout value should remain
->>> separate from the component and status_msg values, such that once given,
->>> then the userland countdown continues on that timeout.  Each subsequent
->>> notify, regardless of component or label changes, should continue
->>> reporting that same timeout value for as long as it applies to the
->>> action.  If a new timeout value is reported, the countdown starts over.
->> What if no timeout exists for the next action? Driver reports 0 to
->> "clear"?
-
-Yes, that's what I would expect.
-
->>
->>> This continues until either the countdown finishes or the driver reports
->>> the flash as completed.  I think this allows is the flexibility for
->>> multiple steps that Jake alludes to above.  Does this make sense?
->> I disagree. This doesn't match reality/driver behavior and will lead to
->> timeouts counting to some random value, that's to say the drivers
->> timeout instant will not match when user space reaches timeout.
->>
->> The timeout should be per notification, because drivers send a
->> notification per command, and commands have timeout.
->>
-> This is how everything operates today. Just send a new status for every command.
->
-> Is that not how your case works?
->
->> The timeout is only needed if there is no progress to report, i.e.
->> driver is waiting for something to happen.
->>
-> Right.
->
->>> What should the userland program do when the timeout expires?  Start
->>> counting backwards?  Stop waiting?  Do we care to define this at the moment?
->> [component] bla bla X% (timeout reached)
-> Yep. I don't think userspace should bail or do anything but display here. Basically: the driver will timeout and then end the update process with an error. The timeout value is just a useful display so that users aren't confused why there is no output going on while waiting.
->
->
-
-If individual notify messages have a timeout, how can we have a 
-progress-percentage reported with a timeout?  This implies to me that 
-the timeout is on the component:bla-bla pair, but there are many notify 
-messages in order to show the progress in percentage done.  This is why 
-I was suggesting that if the timeout and component and status messages 
-haven't changed, then we're still working on the same timeout.
-
-sln
-
-
-
-
+https://git.kernel.org/pub/scm//devel/sparse/sparse.git
