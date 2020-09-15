@@ -2,89 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D87F26ACD5
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 21:01:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C46426ACF4
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 21:05:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727222AbgIOTAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 15:00:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38210 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727637AbgIOTA2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Sep 2020 15:00:28 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E761E206A2;
-        Tue, 15 Sep 2020 19:00:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600196428;
-        bh=kG4SBxBUMbKR7Td7+QWH0A/2VOsHN2v6DsK+67l9AvY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Jpy6qNl5jnh7HwZku0urEhkSIQ9X0P6pKWFMNxOZdWVfCJAr7a2YcSkhZfBoz2ajG
-         9XiTuNceazMTgET3HV8ikKfqWLp0QO61wwmOkLCUIUOuIW1pafCMfbq5E8MaqdsPQn
-         N9PEHg1QmXdkuZwgCi78m/+x4ePIu85UyeKfCw7w=
-Date:   Tue, 15 Sep 2020 12:00:25 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Shannon Nelson <snelson@pensando.io>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
-Message-ID: <20200915120025.0858e324@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1dfa16c8-8bb6-a429-6644-68fd94fc2830@intel.com>
-References: <20200908224812.63434-1-snelson@pensando.io>
-        <20200909094426.68c417fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <581f2161-1c55-31ae-370b-bbea5a677862@pensando.io>
-        <20200909122233.45e4c65c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3d75c4be-ae5d-43b0-407c-5df1e7645447@pensando.io>
-        <20200910105643.2e2d07f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <a04313f7-649e-a928-767c-b9d27f3a0c7c@intel.com>
-        <20200914163605.750b0f23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3b18d92f-3a0a-c0b0-1b46-ecfd4408038c@pensando.io>
-        <7e44037cedb946d4a72055dd0898ab1d@intel.com>
-        <f4e4e9c3-b293-cef1-bb84-db7fe691882a@pensando.io>
-        <20200915085045.446b854b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <4b5e3547f3854fd399b26a663405b1f8@intel.com>
-        <ad9b1163-fe3b-6793-c799-75a9c4ce87f9@pensando.io>
-        <20200915103913.46cebf69@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <1dfa16c8-8bb6-a429-6644-68fd94fc2830@intel.com>
+        id S1727822AbgIOTFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 15:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48966 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727933AbgIOTEK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 15:04:10 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F810C06178A;
+        Tue, 15 Sep 2020 12:04:09 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id a22so3748374ljp.13;
+        Tue, 15 Sep 2020 12:04:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ry2ka2feDSNnj4w0OPi1lBAxRKQ1If9rOytHry/skfU=;
+        b=cXET9d6r/rJW35xLOmSbGJaGBiYb81AMf52U+tADfDhg5Vg1n8jdEMcQogJZfS0uhb
+         9UbiSSUFyabXunfKJaXVe9PxFh81Zym3Wr749tuxLYc22wG2M3Aezgi+w5g6BbsiiN+W
+         1CYWQiTJQ9G+GxWj5x6RkxwPTdzMba2UrijmW0RGC2vMTaEkfblgJO0i4XLNpi1GFwc7
+         yF3sjFLeCtAgy/NgXLtQeb1qw2VR+2dhNn+b6Fy9fASzA7njIZeCYKHILuTrM/nhAI6n
+         mmeia85NbuD9YUCbfE2HWYp59YDg6c1qHrORQ3YSTWgc/obYflsIl2aKovKJ5dS9ix2L
+         7dXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ry2ka2feDSNnj4w0OPi1lBAxRKQ1If9rOytHry/skfU=;
+        b=pHnygWVn5Oo662IkNJsau8qcCUeGqSM1CZycc2b7icEWPSL9XPl5NlvE7D+VIDUl/K
+         JjPmEu9YrmthBRJNQY+Bx5RfxbmE3CdfEglLaiZq9IPQuy6TkglwLUSK+fAuADUNUlde
+         BTjyh1kZntZ/81Bbvaa+QRT9G7AgNwODR9hXkUc6IdmPLS+2FtT4W5jqx3LZvofpPA4a
+         a/DEozDmuK+rMSlSmupDhXmKz+0FiTvGEnjIEEkMCygAq4cbFNZ1kj1oBZdEwmN60mGN
+         QAI5EVSJU/sC2Lk3o/u/gNhAHAYFqT7L5HbYuFqEy9qzwOleFiQ2kmsBvUTgbX9CP9i3
+         qpaA==
+X-Gm-Message-State: AOAM533n77qZB1vH9JR2yhHJ+6D5vke57Z2IBybsfbBPTgTH27SXWDYi
+        sMvZxkjCW8OS25iG6Sz4+UH+GmaMdJmwktXXJANF3yV2
+X-Google-Smtp-Source: ABdhPJztd1Xvq0HQLx7b+yVy/EH4dVyR77szdf+769t9JsCGhy4ikWrrij/TbYITuhQaN+587Q8jXor4dvm0f8zecCc=
+X-Received: by 2002:a2e:9782:: with SMTP id y2mr7583410lji.91.1600196647637;
+ Tue, 15 Sep 2020 12:04:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200914184630.1048718-1-yhs@fb.com> <20200915083327.7e98cf2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <bc24e2da-33e5-e13c-8fe0-1e24c2a5a579@fb.com> <20200915104001.0182ae73@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <837b7690-247a-083d-65f5-ea9dc48b972a@fb.com>
+In-Reply-To: <837b7690-247a-083d-65f5-ea9dc48b972a@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 15 Sep 2020 12:03:55 -0700
+Message-ID: <CAADnVQ+nNPOJux1_DgC6Ze8bP8mS1yBMZOAqsknuyEbnSTeCgg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: using rcu_read_lock for bpf_sk_storage_map iterator
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Sep 2020 11:44:07 -0700 Jacob Keller wrote:
-> Exactly how I saw it.
-> 
-> Basically, the timeout should take effect as long as the (component,
-> msg) pair stays the same.
-> 
-> So if you send percentage reports with the same message and component,
-> then the timeout stays in effect. Once you start a new message, then the
-> timeout would be reset.
+On Tue, Sep 15, 2020 at 11:56 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 9/15/20 10:40 AM, Jakub Kicinski wrote:
+> > On Tue, 15 Sep 2020 10:35:50 -0700 Yonghong Song wrote:
+> >> On 9/15/20 8:33 AM, Jakub Kicinski wrote:
+> >>> On Mon, 14 Sep 2020 11:46:30 -0700 Yonghong Song wrote:
+> >>>> Currently, we use bucket_lock when traversing bpf_sk_storage_map
+> >>>> elements. Since bpf_iter programs cannot use bpf_sk_storage_get()
+> >>>> and bpf_sk_storage_delete() helpers which may also grab bucket lock,
+> >>>> we do not have a deadlock issue which exists for hashmap when
+> >>>> using bucket_lock ([1]).
+> >>>>
+> >>>> If a bucket contains a lot of sockets, during bpf_iter traversing
+> >>>> a bucket, concurrent bpf_sk_storage_{get,delete}() may experience
+> >>>> some undesirable delays. Using rcu_read_lock() is a reasonable
+> >>>> compromise here. Although it may lose some precision, e.g.,
+> >>>> access stale sockets, but it will not hurt performance of other
+> >>>> bpf programs.
+> >>>>
+> >>>> [1] https://lore.kernel.org/bpf/20200902235341.2001534-1-yhs@fb.com
+> >>>>
+> >>>> Cc: Martin KaFai Lau <kafai@fb.com>
+> >>>> Signed-off-by: Yonghong Song <yhs@fb.com>
+> >>>
+> >>> Sparse is not happy about it. Could you add some annotations, perhaps?
+> >>>
+> >>> include/linux/rcupdate.h:686:9: warning: context imbalance in 'bpf_sk_storage_map_seq_find_next' - unexpected unlock
+> >>> include/linux/rcupdate.h:686:9: warning: context imbalance in 'bpf_sk_storage_map_seq_stop' - unexpected unlock
+> >>
+> >> Okay, I will try.
+> >>
+> >> On my system, sparse is unhappy and core dumped....
+> >>
+> >> /data/users/yhs/work/net-next/include/linux/string.h:12:38: error: too
+> >> many errors
+> >> /bin/sh: line 1: 2710132 Segmentation fault      (core dumped) sparse
+> >> -D__linux__ -Dlinux -D__STDC__ -Dunix
+> >> -D__unix__ -Wbitwise -Wno-return-void -Wno-unknown-attribute
+> >> -D__x86_64__ --arch=x86 -mlittle-endian -m64 -W
+> >> p,-MMD,net/core/.bpf_sk_storage.o.d -nostdinc -isystem
+> >> ...
+> >> /data/users/yhs/work/net-next/net/core/bpf_sk_storage.c
+> >> make[3]: *** [net/core/bpf_sk_storage.o] Error 139
+> >> make[3]: *** Deleting file `net/core/bpf_sk_storage.o'
+> >>
+> >> -bash-4.4$ rpm -qf /bin/sparse
+> >> sparse-0.5.2-1.el7.x86_64
+> >> -bash-4.4$
+> >
+> > I think you need to build from source, sadly :(
+> >
+> > https://git.kernel.org/pub/scm//devel/sparse/sparse.git
+>
+> Indeed, building sparse from source works. After adding some
+> __releases(RCU) and __acquires(RCU), I now have:
+>    context imbalance in 'bpf_sk_storage_map_seq_find_next' - different
+> lock contexts for basic block
+> I may need to restructure code to please sparse...
 
-I don't think I agree with that. As I said that'd make the timeout not
-match the reality of what happens in the driver.
-
-Say I have 4 updates (every 25%) each has a timeout of 30 seconds.
-If I understand what you're saying correctly you'd set a timeout of 
-2 min for the operation. But if first two chunks finish in 10 seconds,
-and 3rd one timeouts out the timeout will happen (in the driver) when
-the user-visible timer is at (50sec / 2 min). 
-
-I think that each notification should update the timeout. And like
-systemd we should not display the timeout counter in the first, say 5
-seconds to minimize the display noise.
-
-> We could in theory provide both a "timeout" and "time elapsed" field,
-> which would allow the application to draw the timeout at an abitrary
-> point. Then it could progress the time as normal if it hasn't received a
-> new message yet, allowing for consistent screen updates...
-
-I'm not sure I follow this part.
-
-> But I think that might be overkill. For the cases where we do get some
-> sort of progress, then the percentage update is usually enough.
+I don't think sparse can handle such things even with all annotations.
+I would spend too much time on it.
