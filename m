@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EDE126B37E
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 01:04:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F4E126B371
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 01:03:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727358AbgIOXEF convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Sep 2020 19:04:05 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:22882 "EHLO
+        id S1727352AbgIOXDC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Sep 2020 19:03:02 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:55849 "EHLO
         eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727347AbgIOOzZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 10:55:25 -0400
+        by vger.kernel.org with ESMTP id S1727154AbgIOOzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 10:55:50 -0400
 Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
  TLS) by relay.mimecast.com with ESMTP id
- uk-mta-228-UwHUunUMNimNqcwZQRPI5A-1; Tue, 15 Sep 2020 15:55:21 +0100
-X-MC-Unique: UwHUunUMNimNqcwZQRPI5A-1
+ uk-mta-58-hE9Q3gdSNFe5XdWmGMGaOw-1; Tue, 15 Sep 2020 15:55:28 +0100
+X-MC-Unique: hE9Q3gdSNFe5XdWmGMGaOw-1
 Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
  AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Tue, 15 Sep 2020 15:55:20 +0100
+ Server (TLS) id 15.0.1347.2; Tue, 15 Sep 2020 15:55:27 +0100
 Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
  AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 15 Sep 2020 15:55:20 +0100
+ Tue, 15 Sep 2020 15:55:27 +0100
 From:   David Laight <David.Laight@ACULAB.COM>
 To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -29,13 +29,13 @@ To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Al Viro <viro@zeniv.linux.org.uk>,
         linux-fsdevel <linux-fsdevel@vger.kernel.org>
-Subject: [PATCH 4/9 next] fs/io_uring Don't use the return value from
+Subject: [PATCH 6/9 next] security/keys: Use iovec_import() instead of
  import_iovec().
-Thread-Topic: [PATCH 4/9 next] fs/io_uring Don't use the return value from
+Thread-Topic: [PATCH 6/9 next] security/keys: Use iovec_import() instead of
  import_iovec().
-Thread-Index: AdaLbe1b5RzSfSnfQoqJG9wxedvDFg==
-Date:   Tue, 15 Sep 2020 14:55:20 +0000
-Message-ID: <0dc67994b6b2478caa3d96a9e24d2bfb@AcuMS.aculab.com>
+Thread-Index: AdaLbbVb64qzHlH6QG+P0w/qtCnTtA==
+Date:   Tue, 15 Sep 2020 14:55:27 +0000
+Message-ID: <4cea8bac469142118b996f62294de6ef@AcuMS.aculab.com>
 Accept-Language: en-GB, en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
@@ -44,7 +44,7 @@ x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
 Authentication-Results: relay.mimecast.com;
         auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0.001
+X-Mimecast-Spam-Score: 0.002
 X-Mimecast-Originator: aculab.com
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
@@ -55,55 +55,69 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-This is the only code that relies on import_iovec() returning
-iter.count on success.
-This allows a better interface to import_iovec().
+iovec_import() has a safer calling convention than import_iovec().
 
 Signed-off-by: David Laight <david.laight@aculab.com>
 ---
- fs/io_uring.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ security/keys/compat.c | 11 +++++------
+ security/keys/keyctl.c | 10 +++++-----
+ 2 files changed, 10 insertions(+), 11 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 3790c7fe9fee..0df43882e4b3 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -2824,7 +2824,7 @@ static ssize_t __io_import_iovec(int rw, struct io_kiocb *req,
+diff --git a/security/keys/compat.c b/security/keys/compat.c
+index 6ee9d8f6a4a5..c8b6cc77028b 100644
+--- a/security/keys/compat.c
++++ b/security/keys/compat.c
+@@ -26,18 +26,17 @@ static long compat_keyctl_instantiate_key_iov(
+ 	unsigned ioc,
+ 	key_serial_t ringid)
+ {
+-	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
++	struct iovec_cache cache;
+ 	struct iov_iter from;
++	struct iovec *iov;
+ 	long ret;
  
- 		ret = import_single_range(rw, buf, sqe_len, *iovec, iter);
- 		*iovec = NULL;
--		return ret < 0 ? ret : sqe_len;
-+		return ret;
- 	}
+ 	if (!_payload_iov)
+ 		ioc = 0;
  
- 	if (req->flags & REQ_F_BUFFER_SELECT) {
-@@ -2853,7 +2853,7 @@ static ssize_t io_import_iovec(int rw, struct io_kiocb *req,
- 	if (!req->io)
- 		return __io_import_iovec(rw, req, iovec, iter, needs_lock);
- 	*iovec = NULL;
--	return iov_iter_count(&req->io->rw.iter);
-+	return 0;
- }
+-	ret = compat_import_iovec(WRITE, _payload_iov, ioc,
+-				  ARRAY_SIZE(iovstack), &iov,
+-				  &from);
+-	if (ret < 0)
+-		return ret;
++	iov = compat_iovec_import(WRITE, _payload_iov, ioc, &cache, &from);
++	if (IS_ERR(iov))
++		return PTR_ERR(iov);
  
- static inline loff_t *io_kiocb_ppos(struct kiocb *kiocb)
-@@ -3123,7 +3123,7 @@ static int io_read(struct io_kiocb *req, bool force_nonblock,
- 	if (ret < 0)
- 		return ret;
- 	iov_count = iov_iter_count(iter);
--	io_size = ret;
-+	io_size = iov_count;
- 	req->result = io_size;
- 	ret = 0;
+ 	ret = keyctl_instantiate_key_common(id, &from, ringid);
+ 	kfree(iov);
+diff --git a/security/keys/keyctl.c b/security/keys/keyctl.c
+index 9febd37a168f..9a90b89ef24b 100644
+--- a/security/keys/keyctl.c
++++ b/security/keys/keyctl.c
+@@ -1276,17 +1276,17 @@ long keyctl_instantiate_key_iov(key_serial_t id,
+ 				unsigned ioc,
+ 				key_serial_t ringid)
+ {
+-	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
++	struct iovec_cache cache;
+ 	struct iov_iter from;
++	struct iovec *iov;
+ 	long ret;
  
-@@ -3246,7 +3246,7 @@ static int io_write(struct io_kiocb *req, bool force_nonblock,
- 	if (ret < 0)
- 		return ret;
- 	iov_count = iov_iter_count(iter);
--	io_size = ret;
-+	io_size = iov_count;
- 	req->result = io_size;
+ 	if (!_payload_iov)
+ 		ioc = 0;
  
- 	/* Ensure we clear previously set non-block flag */
+-	ret = import_iovec(WRITE, _payload_iov, ioc,
+-				    ARRAY_SIZE(iovstack), &iov, &from);
+-	if (ret < 0)
+-		return ret;
++	iov = iovec_import(WRITE, _payload_iov, ioc, &cache, &from);
++	if (IS_ERR(iov))
++		return PTR_ERR(iov);
+ 	ret = keyctl_instantiate_key_common(id, &from, ringid);
+ 	kfree(iov);
+ 	return ret;
 -- 
 2.25.1
 
