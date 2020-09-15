@@ -2,103 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A39D269DCD
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 07:26:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FAAA269DD1
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 07:27:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726140AbgIOF0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 01:26:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56276 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726057AbgIOF0p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Sep 2020 01:26:45 -0400
-Received: from sol.localdomain (172-10-235-113.lightspeed.sntcca.sbcglobal.net [172.10.235.113])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4320C20756;
-        Tue, 15 Sep 2020 05:26:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600147604;
-        bh=3YRNdYIm4sAf3BLgQjBz79qzM15AHtoJPCq5PN9ukyQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zuMEpouuEr8pt08h+xo1UWS3YJw43raWeTOxfgZvC72zPFpYl70NRSDSuToU2Aecw
-         X/ofVOJe662gdkbA2w8+rjyoemD2RHFUoyKTjYBbwCPVC2NiX9BqjTCM09AI7r4xkk
-         JZUwj2AgpmKt4RTu/lraKqhKBfczLVvVeZcWYQYI=
-Date:   Mon, 14 Sep 2020 22:26:42 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Anmol Karn <anmol.karan123@gmail.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+f7204dcf3df4bb4ce42c@syzkaller.appspotmail.com,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Necip Fazil Yildiran <necip@google.com>
-Subject: Re: [PATCH] idr: remove WARN_ON_ONCE() when trying to check id
-Message-ID: <20200915052642.GO899@sol.localdomain>
-References: <20200914071724.202365-1-anmol.karan123@gmail.com>
- <20200914110803.GL6583@casper.infradead.org>
- <20200914184755.GB213347@Thinkpad>
- <20200914192655.GW6583@casper.infradead.org>
- <20200915051331.GA7980@Thinkpad>
+        id S1726179AbgIOF1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 01:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726057AbgIOF1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 01:27:03 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98CF7C06174A;
+        Mon, 14 Sep 2020 22:27:03 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id s19so1683036ybc.5;
+        Mon, 14 Sep 2020 22:27:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Lk+CY6J81kHHm/fhYkEfth8p3cjmwEi9LJuhc81snMk=;
+        b=UzK6G/p3IBlITVRQCJ5QgIPFnBBZO9livPGtyDEqHLmLpLvi1aJYc3iAtHxe8ZOJfe
+         v2RuS5bL2nH2p8n4/Kd09OMjnYHOZ2Dl5VD4vPUyLnIoyqBUAdW2GpFw7lFlUtoCUP3w
+         hbjCc5tbZ5tNngMhAlWCAo1CQqfo6LT6zu5lw4QH33s6X713WMLAkkLNfcnzERxCQcjb
+         6nwHv4XreM7/dRKXuqlEoJzsHoZ3YNGJcTr2Ednw42o3RHc6+nWKAAA4PpdaUz6yRd6v
+         8sJpqsPY5qTCtxRS/SQ8Cx0/uOq/Ybd68aZUBuSORSYFV2OHnbHGjxTFMh0mZOiB8GeZ
+         y30w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Lk+CY6J81kHHm/fhYkEfth8p3cjmwEi9LJuhc81snMk=;
+        b=BuS5ZWoblvospFiqi7ns4Zq/ylCn1m5mhm7W8RfoIDb3tuHIXAVfEDxXFV/H3HUvMd
+         Xz0MTcpVrQAz/z/kjNSH8Zev1EQJO3ZCjSA9Bbgg9wBH3aAN2ZfAa0XbY7Gn7PG2GINy
+         yCGVOJHnIqDaNMbxGIlt2pM/LhBqUJ5rEtXT3DmiWz5VrHWmbkieVmAPJfx3pCp+dyCS
+         6y6C7Q5B6Gn8YwDzRRX+153CmPvjX/0JF/c6Gfr40Gu8pMB3mhV2+HjSEYvXim8Ute1E
+         AcYtCC2/kDNc1vKBFuWSrApQVR3PQK8BD0kX9ekJnkazeSZt9R3X+u8yXLRUfZAzKJSO
+         nhpQ==
+X-Gm-Message-State: AOAM533QOFuwujKyxBGTHUsIY7OEGvrRQskDIW/K36pbDvdPNTSFCeB0
+        I/pNc6/pKNK8KlINxLJmfYcPXIYgkkCMZGTfw+0=
+X-Google-Smtp-Source: ABdhPJzY1Ywzl+bYjFE3S5D78wZR80KKz9P/8wY9KRhG9x0U0+sUVLwFZvPYXz/OjrMJAsEz4ch7DPwnXNYRYYkh9nM=
+X-Received: by 2002:a25:c049:: with SMTP id c70mr26007937ybf.403.1600147622477;
+ Mon, 14 Sep 2020 22:27:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200915051331.GA7980@Thinkpad>
+References: <20200915014341.2949692-1-andriin@fb.com>
+In-Reply-To: <20200915014341.2949692-1-andriin@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 14 Sep 2020 22:26:51 -0700
+Message-ID: <CAEf4BzarJgmvKXwEL+48QvWZRxzx_035ovSFRfVRodZKra+pTw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] selftests/bpf: merge most of test_btf into test_progs
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 15, 2020 at 10:43:31AM +0530, Anmol Karn wrote:
-> On Mon, Sep 14, 2020 at 08:26:55PM +0100, Matthew Wilcox wrote:
-> > On Tue, Sep 15, 2020 at 12:17:55AM +0530, Anmol Karn wrote:
-> > > On Mon, Sep 14, 2020 at 12:08:03PM +0100, Matthew Wilcox wrote:
-> > > > On Mon, Sep 14, 2020 at 12:47:24PM +0530, Anmol Karn wrote:
-> > > > > idr_get_next() gives WARN_ON_ONCE() when it gets (id > INT_MAX) true
-> > > > > and this happens when syzbot does fuzzing, and that warning is
-> > > > > expected, but WARN_ON_ONCE() is not required here and, cecking
-> > > > > the condition and returning NULL value would be suffice.
-> > > > > 
-> > > > > Reference: commit b9959c7a347 ("filldir[64]: remove WARN_ON_ONCE() for bad directory entries")
-> > > > > Reported-and-tested-by: syzbot+f7204dcf3df4bb4ce42c@syzkaller.appspotmail.com
-> > > > > Link: https://syzkaller.appspot.com/bug?extid=f7204dcf3df4bb4ce42c 
-> > > > > Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
-> > > > 
-> > > > https://lore.kernel.org/netdev/20200605120037.17427-1-willy@infradead.org/
-> > > 
-> > > Hello sir,
-> > > 
-> > > I have looked into the patch, and it seems the problem is fixed to the root cause
-> > > in this patch, but not yet merged due to some backport issues, so, please ignore 
-> > > this patch(sent by me), and please let me know if i can contribute to fixing this 
-> > > bug's root cause.
-> > 
-> > The root cause is that the network maintainers believe I have a far
-> > greater interest in the qrtr code than I actually do, and the maintainer
-> > of the qrtr code is not doing anything.
-> 
-> Hello sir,
-> 
-> I hope the patch will get merged soon.
+On Mon, Sep 14, 2020 at 6:43 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Move almost 200 tests from test_btf into test_progs framework to be exercised
+> regularly. Pretty-printing tests were left alone and renamed into
+> test_btf_pprint because they are very slow and were not even executed by
+> default with test_btf.
+>
+> All the test_btf tests that were moved are modeled as proper sub-tests in
+> test_progs framework for ease of debugging and reporting.
+>
+> No functional or behavioral changes were intended, I tried to preserve
+> original behavior as close to the original as possible. `test_progs -v` will
+> activate "always_log" flag to emit BTF validation log.
+>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>
+> v1->v2:
+>  - pretty-print BTF tests were renamed test_btf -> test_btf_pprint, which
+>    allowed GIT to detect that majority of  test_btf code was moved into
+>    prog_tests/btf.c; so diff is much-much smaller;
+>
+>  tools/testing/selftests/bpf/.gitignore        |    2 +-
+>  .../bpf/{test_btf.c => prog_tests/btf.c}      | 1069 +----------------
+>  tools/testing/selftests/bpf/test_btf_pprint.c |  969 +++++++++++++++
+>  3 files changed, 1033 insertions(+), 1007 deletions(-)
+>  rename tools/testing/selftests/bpf/{test_btf.c => prog_tests/btf.c} (85%)
+>  create mode 100644 tools/testing/selftests/bpf/test_btf_pprint.c
 
-No need to "hope"; you could split up Matthew's patch yourself, and test and
-send the resulting patches.  From the above thread, it looks like the networking
-developers want one patch to fix the improper use of GFP_ATOMIC (which is the
-bug reported by syzbot), and a separate patch to convert qrtr to use the XArray.
+Looks like I forgot to check in a trivial Makefile change (test_btf ->
+test_btf_pprint), but I'll hold off until we decided where
+pretty-print BTF tests should live.
 
-> also, i have tried a patch for this bug
-> 
-> Link: https://syzkaller.appspot.com/bug?extid=3b14b2ed9b3d06dcaa07
-> 
-> can you please guide me little how should i proceede with it, and 
-> also syzbot tested it.  
-
-Looks like something timer-related.  You'll need to investigate more, write and
-test a fix, and send it to the appropriate kernel mailing lists and developers
-(which will probably be different from the ones receiving this current thread).
-
-- Eric
+[...]
