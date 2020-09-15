@@ -2,84 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0785126AB7E
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 20:08:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C948326ABAC
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 20:20:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727984AbgIOSH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 14:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728000AbgIOSCg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 14:02:36 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1F6C06178A;
-        Tue, 15 Sep 2020 11:02:20 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id y4so3621883ljk.8;
-        Tue, 15 Sep 2020 11:02:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LzBv6m1vPIL7/RF8uYFkuOR2dwzIsUMdUh6iBcqPluI=;
-        b=ejQlfQPcLifvN49urcdE4CMTzVJFXphkZdhL3jg/MjKwpaHywIma22I996/7Lj6Dz0
-         Z3MoR6ewUMCQzyxMRNqKBWA0CaXl9Kg5bSXAqpF+qymVNeHuxCynyHLZSGt894vCOaLr
-         +nbvUvDOHlICO8iEvKfzFa1VvrPrsrZqQ0xu57qzCej4TXrmKtgTNK3CBdehnz1Yad8m
-         E2a8JTpizIf0gfK0AN6ntAXuth03Dmk/Sf4kMcRv+a0/P8rSz9yZtMDakDfI4581CONP
-         nhGtVUEFqqNBkjmkWNglbF1fByuEFKdfNeFvebemixKUMSu/QX6rexv18UlUL/bEbF7Y
-         TdLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LzBv6m1vPIL7/RF8uYFkuOR2dwzIsUMdUh6iBcqPluI=;
-        b=pyELWw2xpAu5pZ9kWE2WS/yPZaApcNGHIZn+mjzUXu1h3A6me2pQFV+27e8Z4Wf8X7
-         /sNlgDNxCVClnjrGxOV4A9Ayk6rnXM044fGobzAEyeekVQkVrVLNu6dAGrzRHpyfM4Vc
-         5DlDeT6LZjISmsKtFnyNWkbta1d0vSmG/J/XccCv4nV4hgA4etbm9rlXTbaDPOh8YVPD
-         e80BjAYEDB+YsXelDPIgNLD6X5HHQ1F+pfT9DO4a0q3Gn5x1fyIzPh60X+vy2W8gjSxI
-         CPwxFDHtk5Ap86/EpQ2Urpf+XL10+xSN6FPVmfADdeIEPPwyxzLh6LgJLxwDzenS0F5o
-         KUfw==
-X-Gm-Message-State: AOAM532as0NP/b9AuKftHFggvqlR733Q7K1xUSC4vY5Vg/nLd79llRwk
-        t/TLExsgbWtNVi4KxDXsF7JrOAgQkkRw9QHntjw4wvqq
-X-Google-Smtp-Source: ABdhPJxNNC7peE5ca7c1t+3nBX3Ern1zKf1FTCJMjcvEzV0VZjC4bLYL77PxoVyFBD/A3Atnn6Dr8avv3W9r9It0Tjo=
-X-Received: by 2002:a2e:8593:: with SMTP id b19mr6927289lji.290.1600192939198;
- Tue, 15 Sep 2020 11:02:19 -0700 (PDT)
+        id S1727865AbgIOSUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 14:20:48 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:59210 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728005AbgIOSRc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 14:17:32 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08FIHKh2046524;
+        Tue, 15 Sep 2020 13:17:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1600193840;
+        bh=r3ke1zZm81K0BubUdM3clirtSu1378acPCeuBxm0VC8=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=M6yeDLwDx5do7+QZ07F+KcW6c+5boU3OQLY2EtLIK54E8J2KavQe/mlxkzL5BHatm
+         pNv3G5REl1uUNLKPBJhlWG3AQ2lNYuDJIk6v3J+Atpxbdvcczt3CQDNWw9I07P9C9D
+         0jmWd2KEXIebVm7sHeE7ZVt4hla+ANvbBu/b5yAc=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08FIHK4c002712
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 15 Sep 2020 13:17:20 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 15
+ Sep 2020 13:17:19 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 15 Sep 2020 13:17:19 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08FIHJXx015960;
+        Tue, 15 Sep 2020 13:17:19 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
+        <hkallweit1@gmail.com>
+CC:     <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net-next 1/3] ethtool: Add 100base-FX link mode entries
+Date:   Tue, 15 Sep 2020 13:17:06 -0500
+Message-ID: <20200915181708.25842-2-dmurphy@ti.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20200915181708.25842-1-dmurphy@ti.com>
+References: <20200915181708.25842-1-dmurphy@ti.com>
 MIME-Version: 1.0
-References: <20200902200815.3924-1-maciej.fijalkowski@intel.com>
- <20200902200815.3924-8-maciej.fijalkowski@intel.com> <20200903195114.ccfzmgcl4ngz2mqv@ast-mbp.dhcp.thefacebook.com>
- <20200911185927.GA2543@ranger.igk.intel.com> <20200915043924.uicfgbhuszccycbq@ast-mbp.dhcp.thefacebook.com>
- <20200915174551.GA3728@ranger.igk.intel.com>
-In-Reply-To: <20200915174551.GA3728@ranger.igk.intel.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 15 Sep 2020 11:02:07 -0700
-Message-ID: <CAADnVQLz1UhmNQKX=+x3E=to8ZUrF_xZq_4b3R=Pr1O7ZtshCQ@mail.gmail.com>
-Subject: Re: [PATCH v7 bpf-next 7/7] selftests: bpf: add dummy prog for
- bpf2bpf with tailcall
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 15, 2020 at 10:52 AM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
-> > > +   /* this means we are at the end of the call chain; if throughout this
-> >
-> > In my mind 'end of the call chain' means 'leaf function',
-> > so the comment reads a bit misleading to me.
-> > Here we're at the end of subprog.
-> > It's not necessarily the leaf function.
->
-> Hmm you're right i'll try to rephrase that.
->
-> What about just:
-> "if tail call got detected across bpf2bpf calls then mark each of the
-> currently present subprog frames as tail call reachable subprogs"
+Add entries for the 100base-FX full and half duplex supported modes.
 
-sounds good to me.
+$ ethtool eth0
+        Supported ports: [ TP    MII     FIBRE ]
+        Supported link modes:   10baseT/Half 10baseT/Full
+                                100baseT/Half 100baseT/Full
+                                100baseFX/Half 100baseFX/Full
+        Supported pause frame use: Symmetric Receive-only
+        Supports auto-negotiation: No
+        Supported FEC modes: Not reported
+        Advertised link modes:  10baseT/Half 10baseT/Full
+                                100baseT/Half 100baseT/Full
+                                100baseFX/Half 100baseFX/Full
+        Advertised pause frame use: No
+        Advertised auto-negotiation: No
+        Advertised FEC modes: Not reported
+        Speed: 100Mb/s
+        Duplex: Full
+        Auto-negotiation: off
+        Port: MII
+        PHYAD: 1
+        Transceiver: external
+        Supports Wake-on: gs
+        Wake-on: d
+        SecureOn password: 00:00:00:00:00:00
+        Current message level: 0x00000000 (0)
+
+        Link detected: yes
+
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
+---
+ drivers/net/phy/phy-core.c   | 4 +++-
+ include/uapi/linux/ethtool.h | 2 ++
+ net/ethtool/common.c         | 2 ++
+ net/ethtool/linkmodes.c      | 2 ++
+ 4 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index ff8e14b01eeb..de5b869139d7 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -8,7 +8,7 @@
+ 
+ const char *phy_speed_to_str(int speed)
+ {
+-	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 90,
++	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 92,
+ 		"Enum ethtool_link_mode_bit_indices and phylib are out of sync. "
+ 		"If a speed or mode has been added please update phy_speed_to_str "
+ 		"and the PHY settings array.\n");
+@@ -160,6 +160,8 @@ static const struct phy_setting settings[] = {
+ 	PHY_SETTING(    100, FULL,    100baseT_Full		),
+ 	PHY_SETTING(    100, FULL,    100baseT1_Full		),
+ 	PHY_SETTING(    100, HALF,    100baseT_Half		),
++	PHY_SETTING(    100, HALF,    100baseFX_Half		),
++	PHY_SETTING(    100, FULL,    100baseFX_Full		),
+ 	/* 10M */
+ 	PHY_SETTING(     10, FULL,     10baseT_Full		),
+ 	PHY_SETTING(     10, HALF,     10baseT_Half		),
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index b4f2d134e713..9ca87bc73c44 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -1617,6 +1617,8 @@ enum ethtool_link_mode_bit_indices {
+ 	ETHTOOL_LINK_MODE_400000baseLR4_ER4_FR4_Full_BIT = 87,
+ 	ETHTOOL_LINK_MODE_400000baseDR4_Full_BIT	 = 88,
+ 	ETHTOOL_LINK_MODE_400000baseCR4_Full_BIT	 = 89,
++	ETHTOOL_LINK_MODE_100baseFX_Half_BIT		 = 90,
++	ETHTOOL_LINK_MODE_100baseFX_Full_BIT		 = 91,
+ 	/* must be last entry */
+ 	__ETHTOOL_LINK_MODE_MASK_NBITS
+ };
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+index ed19573fccd7..24036e3055a1 100644
+--- a/net/ethtool/common.c
++++ b/net/ethtool/common.c
+@@ -192,6 +192,8 @@ const char link_mode_names[][ETH_GSTRING_LEN] = {
+ 	__DEFINE_LINK_MODE_NAME(400000, LR4_ER4_FR4, Full),
+ 	__DEFINE_LINK_MODE_NAME(400000, DR4, Full),
+ 	__DEFINE_LINK_MODE_NAME(400000, CR4, Full),
++	__DEFINE_LINK_MODE_NAME(100, FX, Half),
++	__DEFINE_LINK_MODE_NAME(100, FX, Full),
+ };
+ static_assert(ARRAY_SIZE(link_mode_names) == __ETHTOOL_LINK_MODE_MASK_NBITS);
+ 
+diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
+index 7044a2853886..29dcd675b65a 100644
+--- a/net/ethtool/linkmodes.c
++++ b/net/ethtool/linkmodes.c
+@@ -272,6 +272,8 @@ static const struct link_mode_info link_mode_params[] = {
+ 	__DEFINE_LINK_MODE_PARAMS(400000, LR4_ER4_FR4, Full),
+ 	__DEFINE_LINK_MODE_PARAMS(400000, DR4, Full),
+ 	__DEFINE_LINK_MODE_PARAMS(400000, CR4, Full),
++	__DEFINE_LINK_MODE_PARAMS(100, FX, Half),
++	__DEFINE_LINK_MODE_PARAMS(100, FX, Full),
+ };
+ 
+ static const struct nla_policy
+-- 
+2.28.0
+
