@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05C8326B493
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 01:27:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8765026B4B3
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 01:30:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727415AbgIOX0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 19:26:54 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:42500 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727359AbgIOX0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 19:26:51 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08FNQepT001080;
-        Tue, 15 Sep 2020 18:26:40 -0500
+        id S1727345AbgIOXaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 19:30:15 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:57460 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727196AbgIOX3c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 19:29:32 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08FNTNTg075733;
+        Tue, 15 Sep 2020 18:29:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1600212400;
-        bh=nR6reMnzuShhnQAUVf9pjPzWzCB1Ke7a/UlmPVYyG4I=;
+        s=ti-com-17Q1; t=1600212563;
+        bh=f31VW0gtdRpGEDp6axuwxXoDMfdhCxcxnCweY4Nqnpc=;
         h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=E4eoJo4Gub8aHeh+fYxpUs6RRFZhFz7e97KAQNVo+srqYCvdnYGuXBIeXVCqEtpVJ
-         0jlA+DlnTk+jGb0R7BW43MniNxq48Ti1tCiheds+EiPxrRKEGs8xA8hdSyxF4Qoe6a
-         zUGctxY0FVWOri/c2yMIVzieBum+CdPeOh0Mw5ec=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08FNQe21050737
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 15 Sep 2020 18:26:40 -0500
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+        b=oV1FNHWbs4X5N/wyU7TnZjYg49dt0/riQh95fTuZhOAp1hd8Ae7p/IxTyvYd+Tv6h
+         8T3xekBvlYs0p2bpczQ0OWe7B0W6iNw8j4wRxdLE5kNGLmLbLpCDeIXNOyQ2zOa0kx
+         mo1A92x6AuYuu72S2GDusHF5gnDudV0iJbURHKMQ=
+Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08FNTNrt030035;
+        Tue, 15 Sep 2020 18:29:23 -0500
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 15
- Sep 2020 18:26:39 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ Sep 2020 18:29:22 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 15 Sep 2020 18:26:39 -0500
+ Frontend Transport; Tue, 15 Sep 2020 18:29:22 -0500
 Received: from [10.250.38.37] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08FNQdNG081051;
-        Tue, 15 Sep 2020 18:26:39 -0500
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08FNTMif048879;
+        Tue, 15 Sep 2020 18:29:22 -0500
 Subject: Re: [PATCH net-next 1/3] ethtool: Add 100base-FX link mode entries
 To:     Andrew Lunn <andrew@lunn.ch>
 CC:     <davem@davemloft.net>, <f.fainelli@gmail.com>,
         <hkallweit1@gmail.com>, <mkubecek@suse.cz>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 References: <20200915181708.25842-1-dmurphy@ti.com>
- <20200915181708.25842-2-dmurphy@ti.com> <20200915201014.GC3526428@lunn.ch>
+ <20200915181708.25842-2-dmurphy@ti.com> <20200915202113.GE3526428@lunn.ch>
 From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <bfe1a5fa-2092-7aa8-db24-86306042d3fc@ti.com>
-Date:   Tue, 15 Sep 2020 18:26:34 -0500
+Message-ID: <f2a38c01-8726-a7fe-f645-2c83fe30b932@ti.com>
+Date:   Tue, 15 Sep 2020 18:29:22 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200915201014.GC3526428@lunn.ch>
+In-Reply-To: <20200915202113.GE3526428@lunn.ch>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
@@ -61,37 +60,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Andrew
 
-On 9/15/20 3:10 PM, Andrew Lunn wrote:
+On 9/15/20 3:21 PM, Andrew Lunn wrote:
 > On Tue, Sep 15, 2020 at 01:17:06PM -0500, Dan Murphy wrote:
->> @@ -160,6 +160,8 @@ static const struct phy_setting settings[] = {
->>   	PHY_SETTING(    100, FULL,    100baseT_Full		),
->>   	PHY_SETTING(    100, FULL,    100baseT1_Full		),
->>   	PHY_SETTING(    100, HALF,    100baseT_Half		),
->> +	PHY_SETTING(    100, HALF,    100baseFX_Half		),
->> +	PHY_SETTING(    100, FULL,    100baseFX_Full		),
-> Hi Dan
+>> Add entries for the 100base-FX full and half duplex supported modes.
+>>
+>> $ ethtool eth0
+>>          Supported ports: [ TP    MII     FIBRE ]
+>>          Supported link modes:   10baseT/Half 10baseT/Full
+>>                                  100baseT/Half 100baseT/Full
+>>                                  100baseFX/Half 100baseFX/Full
+>>          Supported pause frame use: Symmetric Receive-only
+>>          Supports auto-negotiation: No
+>>          Supported FEC modes: Not reported
+>>          Advertised link modes:  10baseT/Half 10baseT/Full
+>>                                  100baseT/Half 100baseT/Full
+>>                                  100baseFX/Half 100baseFX/Full
+> I thought this PHY could not switch between TP and Fibre. It has a
+> strap which decides? So i would expect the supported modes to be
+> either BaseT or BaseFX. Not both. Same for Advertised?
 >
-> Does 100baseFX_Half make an sense? My understanding of 802.3 section
-> 26 is that it is always a pair, not a single fibre where you might
-> need CSMA/CD?
+>         Andrew
 
-I actually questioned that too and looked it up
+I found that the phy-device was setting all these bits in phy_init in 
+features_init.
 
-I found these and thought they could be viable
+My first pass was to clear all these bits as well because the PHY was 
+still advertising these modes.
 
-http://www.certiology.com/tech-terms/network/100base-fx.html
+But you are right this PHY cannot switch without strapping.
 
-"The 100Base-FX can be used in a maximum length of 412 meters if being 
-used in
-
-half-duplex connections or as 2 kilometer lengths in the case of 
-full-duplex transmissions over optical fiber."
-
-https://www.cnet.com/products/half-duplex-100basefx-interface-pb7/
-
-Of course I never have seen one myself
+I can clear these bits.
 
 Dan
 
-
->     Andrew
