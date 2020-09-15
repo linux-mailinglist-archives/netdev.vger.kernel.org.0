@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E760926A2A4
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 12:03:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D83B26A317
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 12:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726265AbgIOKCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 06:02:54 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:29987 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726095AbgIOKCx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 06:02:53 -0400
+        id S1726276AbgIOK1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 06:27:14 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:16638 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726102AbgIOK1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 06:27:11 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1600164172; x=1631700172;
+  t=1600165631; x=1631701631;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=VDuFAZKE9N46+36zzKBBpzaXvyDd1MrM8aOiIAUSOH8=;
-  b=cKICjDU+JzmnWaU1KH4rD34ssV7LdGpRZ63hyZy6w9R6hCt9bEoOYTeT
-   ppfBDImDvRSWVSvjK5VlqZAUZXjYvqLbM0ywoRqpAFpbZ/RkGPjDqJcQx
-   BBk+8em8gnSTWUQcV/mnFSwgMJQq1p+92Fl4W0xob71OhfDx1YcXeLNOS
-   u7wDm84lO4u5955EK7RlOsQc1ohwq2WP5/8meLCPQQUVucvecIDrWhyfI
-   8FwYPiiPcRNxRCwiczVbKDt930X3JBZXxyCiZaYa79VQln8TTRBWzxMXP
-   /5XvHWFMNcDkuV8jg/8WneH3rxjqnFbVBn+FyQ6L4oW1j6IdPr1sKR9sN
-   A==;
-IronPort-SDR: 60d1DH5BYDUTQVvtML3UYotGwxATmlj7AZjfXzE7e5K7TW52BW/opeeRGeurkNBpxQeI/4ZD+g
- Yh+orLXzKlUPHPb2d+sS4+6UBCEPwh8Cj5TovDlgBfVQ0lqfXrnm6u4BFEGpXWkERvuVQIt9/k
- fHeTH6mJ0IF7N1alc8H+aGbXpXNupPsEqZEi1MZIOfnxzwFuIWXVl+9+HaqEX/+LmKT53z0mJ4
- MZ2rZtYU7GTAxLtLp3rWe6oeqGW+wXwDCKxknrpK851s7qWk4aIttXeNiExXzKpc9kUEqw5XFu
- QkM=
+  bh=6pj42hcpmKOUyMQ9MhDbUOl6HOtbIojY8r2/GLfcYBk=;
+  b=cAI6zxY48uUIZKfOkoAgTqTHMvUJuLOZgJIoeviH6e5s1RlOZ+L6TCaB
+   eZlYrjHwsPb720R1E6Ha9XWnb6oxKOttBh4Mx4T18KzcBNJDkHH4knOIB
+   ITEG/QIyHyl7gctWlLh1Z1LTT8BB/0uUlwpAIVvZUecu9bQCR72fWJsyV
+   nNabZHNMLXfgkCQrt8Yv8IEMwq3oh4/mvfjPY41eDbxdptSnlE8dLijgB
+   VePo863cuP1jg3TySt1IrTVCOLJ7P5m7wxMAUTycTQ9tQJljI5t1Zoj0Q
+   1k89KohnB1+WhGlMP35nXn06LZNPx8woPgkqXzRy9/40T9B77AKgnEt6j
+   g==;
+IronPort-SDR: SeG2nD/GORJgPmYvGhclPsw+G8TXL3rsyaBt8PW20lW/8KhOAwcwu7c0eGtJj72zuL7UlA7vic
+ ySqqbTGvBfI2fKz8lGViZBn4kK5p9XyK4r2BIii3Iz2GtNniC3dZSytzS9Vcjjgo/S7wMsI2e4
+ FO7vUlsYEQNxoRf0xi0VOFr1dcb1zwL+IgMfbPMxZdkKVZ0J+U3caEcyKBBghp2SaOjNDAmV9O
+ KxljA5ep7WrE3dRTvSEPUUcQByQQqZ00iKc0dcKAliua+/ybuR9seP2ngf/8cs+CmLDVuYurI8
+ R7g=
 X-IronPort-AV: E=Sophos;i="5.76,429,1592895600"; 
-   d="scan'208";a="91846117"
+   d="scan'208";a="95789163"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Sep 2020 03:02:52 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Sep 2020 03:26:58 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 15 Sep 2020 03:02:42 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Tue, 15 Sep 2020 03:02:50 -0700
-Date:   Tue, 15 Sep 2020 10:00:16 +0000
+ 15.1.1979.3; Tue, 15 Sep 2020 03:26:48 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Tue, 15 Sep 2020 03:26:48 -0700
+Date:   Tue, 15 Sep 2020 10:24:22 +0000
 From:   "henrik.bjoernlund@microchip.com" <henrik.bjoernlund@microchip.com>
 To:     Nikolay Aleksandrov <nikolay@nvidia.com>
 CC:     "bridge@lists.linux-foundation.org" 
@@ -54,96 +54,52 @@ CC:     "bridge@lists.linux-foundation.org"
         "kuba@kernel.org" <kuba@kernel.org>,
         "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
         "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH RFC 7/7] bridge: cfm: Bridge port remove.
-Message-ID: <20200915100016.tqxsgef6dts2rbno@soft-test08>
+Subject: Re: [PATCH RFC 6/7] bridge: cfm: Netlink Notifications.
+Message-ID: <20200915102422.ronvnumdu4lk3l4b@soft-test08>
 References: <20200904091527.669109-1-henrik.bjoernlund@microchip.com>
- <20200904091527.669109-8-henrik.bjoernlund@microchip.com>
- <d84df90ff3fd079ba0fec33f865ce4a257ab23d8.camel@nvidia.com>
+ <20200904091527.669109-7-henrik.bjoernlund@microchip.com>
+ <cbb516e37457ef1875f99001ec72624c49ab51ed.camel@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <d84df90ff3fd079ba0fec33f865ce4a257ab23d8.camel@nvidia.com>
+In-Reply-To: <cbb516e37457ef1875f99001ec72624c49ab51ed.camel@nvidia.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for the review. I will update the next version as suggested.
+Thanks for the review. Comments below.
 
-The 09/08/2020 13:58, Nikolay Aleksandrov wrote:
+The 09/08/2020 13:54, Nikolay Aleksandrov wrote:
 > 
 > On Fri, 2020-09-04 at 09:15 +0000, Henrik Bjoernlund wrote:
-> > This is addition of CFM functionality to delete MEP instances
-> > on a port that is removed from the bridge.
-> > A MEP can only exist on a port that is related to a bridge.
+> > This is the implementation of Netlink notifications out of CFM.
 > >
-> > Signed-off-by: Henrik Bjoernlund  <henrik.bjoernlund@microchip.com>
-> > ---
-> >  net/bridge/br_cfm.c     | 13 +++++++++++++
-> >  net/bridge/br_if.c      |  1 +
-> >  net/bridge/br_private.h |  6 ++++++
-> >  3 files changed, 20 insertions(+)
+> > Notifications are initiated whenever a state change happens in CFM.
 > >
-> > diff --git a/net/bridge/br_cfm.c b/net/bridge/br_cfm.c
-> > index b7fed2c1d8ec..c724ce020ce3 100644
-> > --- a/net/bridge/br_cfm.c
-> > +++ b/net/bridge/br_cfm.c
-> > @@ -921,3 +921,16 @@ bool br_cfm_created(struct net_bridge *br)
-> >  {
-> >       return !list_empty(&br->mep_list);
-> >  }
+> [snip]
+> > +     *count = 0;
 > > +
-> > +/* Deletes the CFM instances on a specific bridge port
-> > + * note: called under rtnl_lock
-> > + */
-> > +void br_cfm_port_del(struct net_bridge *br, struct net_bridge_port *port)
-> > +{
-> > +     struct br_cfm_mep *mep;
+> > +     rcu_read_lock();
+> > +     list_for_each_entry_rcu(mep, &br->mep_list, head)
+> > +             * count += 1;
+> 
+> please remove the extra space
+> 
+I have removed the extra space.
+This space was added to satify checkpatch as without this space it gives
+this error:
+CHECK: spaces preferred around that '*' (ctx:ExV)
+#136: FILE: net/bridge/br_cfm.c:883:
++               *count += 1;
+                ^
+
+> > +     rcu_read_unlock();
 > > +
-> > +     list_for_each_entry_rcu(mep, &br->mep_list, head,
-> > +                             lockdep_rtnl_is_held())
-> 
-> Use standard/non-rcu list traversing, rtnl is already held.
-> 
-> > +             if (mep->create.ifindex == port->dev->ifindex)
-> > +                     mep_delete_implementation(br, mep);
-> > +}
-> > diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
-> > index a0e9a7937412..f7d2f472ae24 100644
-> > --- a/net/bridge/br_if.c
-> > +++ b/net/bridge/br_if.c
-> > @@ -334,6 +334,7 @@ static void del_nbp(struct net_bridge_port *p)
-> >       spin_unlock_bh(&br->lock);
-> >
-> >       br_mrp_port_del(br, p);
-> > +     br_cfm_port_del(br, p);
-> >
-> >       br_ifinfo_notify(RTM_DELLINK, NULL, p);
-> >
-> > diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> > index 53bcbdd21f34..5617255f0c0c 100644
-> > --- a/net/bridge/br_private.h
-> > +++ b/net/bridge/br_private.h
-> > @@ -1369,6 +1369,7 @@ int br_cfm_parse(struct net_bridge *br, struct net_bridge_port *p,
-> >                struct nlattr *attr, int cmd, struct netlink_ext_ack *extack);
-> >  int br_cfm_rx_frame_process(struct net_bridge_port *p, struct sk_buff *skb);
-> >  bool br_cfm_created(struct net_bridge *br);
-> > +void br_cfm_port_del(struct net_bridge *br, struct net_bridge_port *p);
-> >  int br_cfm_config_fill_info(struct sk_buff *skb, struct net_bridge *br);
-> >  int br_cfm_status_fill_info(struct sk_buff *skb,
-> >                           struct net_bridge *br,
-> > @@ -1393,6 +1394,11 @@ static inline bool br_cfm_created(struct net_bridge *br)
-> >       return false;
-> >  }
-> >
-> > +static inline void br_cfm_port_del(struct net_bridge *br,
-> > +                                struct net_bridge_port *p)
-> > +{
+> > +     return 0;
 > > +}
 > > +
-> >  static inline int br_cfm_config_fill_info(struct sk_buff *skb, struct net_bridge *br)
-> >  {
-> >       return -EOPNOTSUPP;
+> 
 > 
 
 -- 
