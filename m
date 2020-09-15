@@ -2,111 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52F3F26AF17
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 23:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B04D26AF12
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 23:01:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728009AbgIOVCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 17:02:30 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37090 "EHLO vps0.lunn.ch"
+        id S1727848AbgIOVBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 17:01:39 -0400
+Received: from mga06.intel.com ([134.134.136.31]:59767 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728068AbgIOUoG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Sep 2020 16:44:06 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kIHnz-00Eomd-BX; Tue, 15 Sep 2020 22:43:59 +0200
-Date:   Tue, 15 Sep 2020 22:43:59 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+        id S1728066AbgIOVBN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Sep 2020 17:01:13 -0400
+IronPort-SDR: Pb/QOaVSIXb6MzQv5lPwu3PmdQ83Znjkgz4OErdpMpa+AQaW1NBP0hmCDpQetfovuCAZD8AoJI
+ 0WANqjhrgZEA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9745"; a="220908134"
+X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; 
+   d="scan'208";a="220908134"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2020 14:01:01 -0700
+IronPort-SDR: I/XBhBVhiQRmdXFSW8IHhwqdaQGXrJha0whNjIJTr9uaqsnI+mKGIgXYd1vV4bDA/IKhVmdK4K
+ cWHvFrIrNatQ==
+X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; 
+   d="scan'208";a="506907383"
+Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.118.172])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2020 14:01:00 -0700
+Date:   Tue, 15 Sep 2020 14:00:58 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     <netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>
 Subject: Re: [PATCH net-next v2 00/10] make drivers/net/ethernet W=1 clean
-Message-ID: <20200915204359.GF3526428@lunn.ch>
+Message-ID: <20200915140058.00007553@intel.com>
+In-Reply-To: <20200915.133156.1580615428345209072.davem@davemloft.net>
 References: <20200915014455.1232507-1-jesse.brandeburg@intel.com>
- <a28498acdf87f11e81d3282d63f18dbe1a3d5329.camel@kernel.org>
- <20200915140326.GG3485708@lunn.ch>
- <734f0c4595a18ab136263b6e5c97e7f48a93abe1.camel@kernel.org>
+        <20200915.133156.1580615428345209072.davem@davemloft.net>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <734f0c4595a18ab136263b6e5c97e7f48a93abe1.camel@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Yes we can have our own gcc options in the Makfile regardless of what
-> you put in W command line argument.
+David Miller wrote:
+> Jesse, in all of these patches, I want to see the warning you are
+> fixing in the commit message.
 > 
-> Example:
-> 
-> KBUILD_CFLAGS += -Wextra -Wunused -Wno-unused-parameter
-> KBUILD_CFLAGS += -Wmissing-declarations
-> KBUILD_CFLAGS += -Wmissing-format-attribute
-> KBUILD_CFLAGS += -Wmissing-prototypes
-> KBUILD_CFLAGS += -Wold-style-definition
-> KBUILD_CFLAGS += -Wmissing-include-dirs
+> Especially for the sh_eth.c one because I have no idea what the
+> compiler is actually warning about just by reading your commit
+> message and patch on it's own.
 
-How about something like this, so we get whatever W=1 means.
+Ok, I'll respin with those added for the compiler warning fixes in
+particular, and some simplified descriptions of the classes of kdoc
+warnings.
 
-    Andrew
-
-diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-index 72e18d505d1a..d4e125831d1c 100644
---- a/drivers/net/Makefile
-+++ b/drivers/net/Makefile
-@@ -3,6 +3,9 @@
- # Makefile for the Linux network device drivers.
- #
- 
-+# Enable W=1 by default
-+subdir-ccflags-y := $(KBUILD_CFLAGS_WARN1)
-+
- #
- # Networking Core Drivers
- #
-diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
-index 95e4cdb94fe9..bf0de3502849 100644
---- a/scripts/Makefile.extrawarn
-+++ b/scripts/Makefile.extrawarn
-@@ -20,23 +20,26 @@ export KBUILD_EXTRA_WARN
- #
- # W=1 - warnings which may be relevant and do not occur too often
- #
--ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
--
--KBUILD_CFLAGS += -Wextra -Wunused -Wno-unused-parameter
--KBUILD_CFLAGS += -Wmissing-declarations
--KBUILD_CFLAGS += -Wmissing-format-attribute
--KBUILD_CFLAGS += -Wmissing-prototypes
--KBUILD_CFLAGS += -Wold-style-definition
--KBUILD_CFLAGS += -Wmissing-include-dirs
--KBUILD_CFLAGS += $(call cc-option, -Wunused-but-set-variable)
--KBUILD_CFLAGS += $(call cc-option, -Wunused-const-variable)
--KBUILD_CFLAGS += $(call cc-option, -Wpacked-not-aligned)
--KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation)
-+KBUILD_CFLAGS_WARN1 += -Wextra -Wunused -Wno-unused-parameter
-+KBUILD_CFLAGS_WARN1 += -Wmissing-declarations
-+KBUILD_CFLAGS_WARN1 += -Wmissing-format-attribute
-+KBUILD_CFLAGS_WARN1 += -Wmissing-prototypes
-+KBUILD_CFLAGS_WARN1 += -Wold-style-definition
-+KBUILD_CFLAGS_WARN1 += -Wmissing-include-dirs
-+KBUILD_CFLAGS_WARN1 += $(call cc-option, -Wunused-but-set-variable)
-+KBUILD_CFLAGS_WARN1 += $(call cc-option, -Wunused-const-variable)
-+KBUILD_CFLAGS_WARN1 += $(call cc-option, -Wpacked-not-aligned)
-+KBUILD_CFLAGS_WARN1 += $(call cc-option, -Wstringop-truncation)
- # The following turn off the warnings enabled by -Wextra
--KBUILD_CFLAGS += -Wno-missing-field-initializers
--KBUILD_CFLAGS += -Wno-sign-compare
--KBUILD_CFLAGS += -Wno-type-limits
-+KBUILD_CFLAGS_WARN1 += -Wno-missing-field-initializers
-+KBUILD_CFLAGS_WARN1 += -Wno-sign-compare
-+KBUILD_CFLAGS_WARN1 += -Wno-type-limits
-+
-+export KBUILD_CFLAGS_WARN1
-+
-+ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
- 
-+KBUILD_CFLAGS += $(KBUILD_CFLAGS_WARN1)
- KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN1
- 
- else
