@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAB2626A927
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 17:55:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CF6426A965
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 18:14:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727528AbgIOPze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 11:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47492 "EHLO
+        id S1727604AbgIOQMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 12:12:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727504AbgIOPyI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 11:54:08 -0400
+        with ESMTP id S1727559AbgIOQKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 12:10:42 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30423C061355;
-        Tue, 15 Sep 2020 08:54:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970E1C0611C0;
+        Tue, 15 Sep 2020 09:04:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=2UlbGdiZDTOnbAr3xs1aHbeR9XTzI0Lit7D+l7hf2I4=; b=oc+kgjLwN6z7KfpzJBCa7G7OBj
-        xMg3Fwxams8c4EpKokR8UZQx2ybyjDj6drc+aW/2LIv1O+PR2BmjXm+WhI4RUptwlI8TGWRoAeWLn
-        tDzzTX6C7Wcaz+wjCgZzqB/SScThzcLyj8JgUrilV2pjnlwL2WrjnmkdPgkjiBopQKBs17NlwGyrT
-        ONpkConNykQRC+jrpDpmqw3ajb1dphcelbcTILjH85oTRbiw7nNGsu7203+03im4y0uv272kq3shG
-        s0VEBKB5Z/ya3O5D9oa/TJdMgnhrtizoC8G9P+/zAzkC5+arP3EQvUavmCF3BtD/B11AifbDQWTH6
-        Z2mcOZcw==;
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description;
+        bh=5I0Wekw7PGkNV3dZaIEsA8c8Eplwzl97xo8vYosQxdI=; b=jyzc8j2w+fdt85nueKxbnd3ezP
+        GuBg/J0RMKy53mEvPLRvYYUeRE5qfD5pZK/2Tg56DYlGHEbkysaFTe/z7DbC3zZ0it9jaR+Ho4oKb
+        WOidKq9LH32d8MbsIyn+EYu/QtdftFyud9pZgBRYX6fV0ATMBBQWcgDXSXhH3CUw8UpF+twk1mY5j
+        9b1OtIxjo6lTrMtXdNQtB+WILFf1H+IvhiDOzJTlJEVRAssivT7ZhTdp6FlQfsfVe/xidCfVGoTim
+        M/jzfaXnAQdUutiuaqhKSAHmP6hnx5JVmcNjwpY2wXcC8uu+7pYrtjrX2VAxOT4u7diGSMpHJV/If
+        sHAa5gkw==;
 Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92] helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kIDGv-0003AQ-TI; Tue, 15 Sep 2020 15:53:34 +0000
+        id 1kIDRV-00047a-8O; Tue, 15 Sep 2020 16:04:29 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -46,10 +46,12 @@ Cc:     Stefan Richter <stefanr@s5r6.in-berlin.de>,
         nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
         linux-scsi@vger.kernel.org, linux-mm@kvack.org,
         alsa-devel@alsa-project.org
-Subject: a saner API for allocating DMA addressable pages v3
-Date:   Tue, 15 Sep 2020 17:51:04 +0200
-Message-Id: <20200915155122.1768241-1-hch@lst.de>
+Subject: [PATCH 05/18] net/au1000-eth: stop using DMA_ATTR_NON_CONSISTENT
+Date:   Tue, 15 Sep 2020 17:51:09 +0200
+Message-Id: <20200915155122.1768241-6-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200915155122.1768241-1-hch@lst.de>
+References: <20200915155122.1768241-1-hch@lst.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
@@ -58,53 +60,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+The au1000-eth driver contains none of the manual cache synchronization
+required for using DMA_ATTR_NON_CONSISTENT.  From what I can tell it
+can be used on both dma coherent and non-coherent DMA platforms, but
+I suspect it has been buggy on the non-coherent platforms all along.
 
-this series replaced the DMA_ATTR_NON_CONSISTENT flag to dma_alloc_attrs
-with a separate new dma_alloc_pages API, which is available on all
-platforms.  In addition to cleaning up the convoluted code path, this
-ensures that other drivers that have asked for better support for
-non-coherent DMA to pages with incurring bounce buffering over can finally
-be properly supported.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ drivers/net/ethernet/amd/au1000_eth.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-As a follow up I plan to move the implementation of the
-DMA_ATTR_NO_KERNEL_MAPPING flag over to this framework as well, given
-that is also is a fundamentally non coherent allocation.  The replacement
-for that flag would then return a struct page, as it is allowed to
-actually return pages without a kernel mapping as the name suggested
-(although most of the time they will actually have a kernel mapping..)
+diff --git a/drivers/net/ethernet/amd/au1000_eth.c b/drivers/net/ethernet/amd/au1000_eth.c
+index 75dbd221dc594b..19e195420e2434 100644
+--- a/drivers/net/ethernet/amd/au1000_eth.c
++++ b/drivers/net/ethernet/amd/au1000_eth.c
+@@ -1131,10 +1131,9 @@ static int au1000_probe(struct platform_device *pdev)
+ 	/* Allocate the data buffers
+ 	 * Snooping works fine with eth on all au1xxx
+ 	 */
+-	aup->vaddr = (u32)dma_alloc_attrs(&pdev->dev, MAX_BUF_SIZE *
++	aup->vaddr = (u32)dma_alloc_coherent(&pdev->dev, MAX_BUF_SIZE *
+ 					  (NUM_TX_BUFFS + NUM_RX_BUFFS),
+-					  &aup->dma_addr, 0,
+-					  DMA_ATTR_NON_CONSISTENT);
++					  &aup->dma_addr, 0);
+ 	if (!aup->vaddr) {
+ 		dev_err(&pdev->dev, "failed to allocate data buffers\n");
+ 		err = -ENOMEM;
+@@ -1310,9 +1309,8 @@ static int au1000_probe(struct platform_device *pdev)
+ err_remap2:
+ 	iounmap(aup->mac);
+ err_remap1:
+-	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
+-			(void *)aup->vaddr, aup->dma_addr,
+-			DMA_ATTR_NON_CONSISTENT);
++	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
++			(void *)aup->vaddr, aup->dma_addr);
+ err_vaddr:
+ 	free_netdev(dev);
+ err_alloc:
+@@ -1344,9 +1342,8 @@ static int au1000_remove(struct platform_device *pdev)
+ 		if (aup->tx_db_inuse[i])
+ 			au1000_ReleaseDB(aup, aup->tx_db_inuse[i]);
+ 
+-	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
+-			(void *)aup->vaddr, aup->dma_addr,
+-			DMA_ATTR_NON_CONSISTENT);
++	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
++			(void *)aup->vaddr, aup->dma_addr);
+ 
+ 	iounmap(aup->macdma);
+ 	iounmap(aup->mac);
+-- 
+2.28.0
 
-In addition to the conversions of the existing non-coherent DMA users,
-I've also added a patch to convert the firewire ohci driver to use
-the new dma_alloc_pages API.
-
-The first patch is queued up for 5.9 in the media tree, but included here
-for completeness.
-
-
-A git tree is available here:
-
-    git://git.infradead.org/users/hch/misc.git dma_alloc_pages
-
-Gitweb:
-
-    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma_alloc_pages
-
-
-Changes since v2:
- - fix up the patch reshuffle which wasn't quite correct
- - fix up a few commit messages
-
-Changes since v1:
- - rebased on the latests dma-mapping tree, which merged many of the
-   cleanups
- - fix an argument passing typo in 53c700, caught by sparse
- - rename a few macro arguments in 53c700
- - pass the right device to the DMA API in the lib82596 drivers
- - fix memory ownershiptransfers in sgiseeq
- - better document what a page in the direct kernel mapping means
- - split into dma_alloc_pages that returns a struct page and is in the
-   direct mapping vs dma_alloc_noncoherent that can be vmapped
- - conver the firewire ohci driver to dma_alloc_pages
-
-Diffstat:
