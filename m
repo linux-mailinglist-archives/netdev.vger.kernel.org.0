@@ -2,130 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF4AE26B0AA
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:17:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E6A26B160
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:30:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727992AbgIOWRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 18:17:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
+        id S1727578AbgIOW3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 18:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727701AbgIOQdY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 12:33:24 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C3DC06178A;
-        Tue, 15 Sep 2020 09:33:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=3uuWATlux5CLwoYUg+NN5gOtHb6T7EXPohKT/lTJKJI=; b=n3p/yVJZRK+wbxyYEp8pkVnF7d
-        hOOHcYTdFzo7akNyeet0DZXxccLdgZIoOr6taxspBy/6Nw2HzuudIL5cO3cux/0Ps1kPOPpCaDuiZ
-        71xYegixSYfkkcrW3QjKCgmzELBA6x8wDtzWuiR4saDycE2AC35+V5oi4+daZIEjq2ToSWnv4R9cJ
-        boT1A66ZJ9G2igo0eQXvpTU9Ka7B0HiUCVukCMermJx4dV3Bpp33w8WLP0t3lZ8ajE4VQW97wGslQ
-        7cj3CUwUESH+xL2nh4b2897z9ZoRIetEyG0yjYlRcvvUAz2cF1ga1smN8Gnx/99jq8B/YKpwQ7hY/
-        2LJFzrkw==;
-Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92] helo=localhost)
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kIDt1-0006DO-8d; Tue, 15 Sep 2020 16:32:55 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        iommu@lists.linux-foundation.org
-Cc:     Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        linux1394-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
-        alsa-devel@alsa-project.org
-Subject: [PATCH 18/18] firewire-ohci: use dma_alloc_pages
-Date:   Tue, 15 Sep 2020 17:51:22 +0200
-Message-Id: <20200915155122.1768241-19-hch@lst.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200915155122.1768241-1-hch@lst.de>
-References: <20200915155122.1768241-1-hch@lst.de>
+        with ESMTP id S1727628AbgIOQSX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 12:18:23 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D5EC061797
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 08:52:33 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id t13so3446956ile.9
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 08:52:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5bN4Gitx2t/7jk6xB5oQmdQ699PApOvwciF8USGYv3M=;
+        b=jMLorCYJPV2tkld/VNrA3E/c4Fpy9S8AawsX0mWVsXqNrXY9VoeRnRfgERJNcHVMCa
+         bU+5rDAzYGzCY6V3MkniEqABpM/FEbHGVz8bSLAfZjgZBQHkYyyGkDlHZOvaITa8sUdW
+         M5S+3nseQCPbHeKNE1TB44ZrfOGq4PSCikQEbdVtmTtFAhOIAFMaOflp7p8gI2cbTCWz
+         4ygZQfgPF0bVgG/TkMdsAKRKalCPdFvW1XR7XK6HEgPpw3b+meDrXatYnEmXfwltJQTD
+         4ubdtjC6i+H55Wv4TPIWnT++fo/gbsVOPu3RlakmCFIQ6UpbvX1oL6Ot+Btn3/1p34B2
+         7Rsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5bN4Gitx2t/7jk6xB5oQmdQ699PApOvwciF8USGYv3M=;
+        b=cLr9Y/6r4yoEGUq7NLiR31bPSubuN0mg71EcGEA+giPGe6upxLamTWA4V/SPdEurps
+         KSiqgLtWcSLJyzsVOKVUbZLu3esSsafR04XMElpoppK4mLD6596tVPedWAXA5dbfgIhO
+         wuQcpPt3Xm5alrWmtputq1FeFZRDPO1Ibws6Jht6B/chBkExrJMdpN5foeZGx07a74UO
+         s/mx2p7Uh9+8GC2IYnlX9f1k4Q+oEl41TRVf0Rby7dYTHwd8GSdm1FxB9kSwlv3ilUjy
+         FpXykbeyUMBBeFjgR+5UJmhBwxd9qY8RCenVh57vDJdaGDwfEuTUZmkZ/Wla/sxxE+92
+         TlHg==
+X-Gm-Message-State: AOAM531mSr6Ie601bYq2B4YxElC5i8n2DfJhFWqhKZTcrP7tFIi63Nrc
+        2ahQf/2NOUmHN2a4HYs209HmSkna7dvKfBYaocHeOwMx/+Y=
+X-Google-Smtp-Source: ABdhPJwogM0lvds/ahwJWzGq++Q1zaEQNFmFH7c5be5WOV20csm9MS4iG3klAEyFC8XnJMweicAsK1GmAmj/qvv0QDU=
+X-Received: by 2002:a92:8b52:: with SMTP id i79mr17538689ild.177.1600185152537;
+ Tue, 15 Sep 2020 08:52:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+References: <1599117498-30145-1-git-send-email-sundeep.lkml@gmail.com>
+ <20200903121803.75fb0ade@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <BY5PR18MB3298899BF15F266144EE8760C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904083709.GF2997@nanopsycho.orion> <BY5PR18MB3298EB53D2F869D64D7F534DC62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904121126.GI2997@nanopsycho.orion> <BY5PR18MB3298C4C84704BCE864133C33C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904133753.77ce6bc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CALHRZuoa8crCaOAkEqyBq1DnmVqUgpv_jzQboMNZcU_3R4RGvg@mail.gmail.com>
+In-Reply-To: <CALHRZuoa8crCaOAkEqyBq1DnmVqUgpv_jzQboMNZcU_3R4RGvg@mail.gmail.com>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Tue, 15 Sep 2020 21:22:21 +0530
+Message-ID: <CALHRZuo9w=NJ4B6hw4afhoY21rAbqxBTZnLKN4+A=q21wNPPjQ@mail.gmail.com>
+Subject: Re: [EXT] Re: [net-next PATCH 0/2] Introduce mbox tracepoints for Octeontx2
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use dma_alloc_pages to allocate DMAable pages instead of hoping that
-the architecture either has GFP_DMA32 or not more than 4G of memory.
+Hi Jiri,
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/firewire/ohci.c | 26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+On Mon, Sep 7, 2020 at 4:29 PM sundeep subbaraya <sundeep.lkml@gmail.com> wrote:
+>
+> Hi Jakub,
+>
+> On Sat, Sep 5, 2020 at 2:07 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Fri, 4 Sep 2020 12:29:04 +0000 Sunil Kovvuri Goutham wrote:
+> > > > >No, there are 3 drivers registering to 3 PCI device IDs and there can
+> > > > >be many instances of the same devices. So there can be 10's of instances of
+> > > > AF, PF and VFs.
+> > > >
+> > > > So you can still have per-pci device devlink instance and use the tracepoint
+> > > > Jakub suggested.
+> > > >
+> > >
+> > > Two things
+> > > - As I mentioned above, there is a Crypto driver which uses the same mbox APIs
+> > >   which is in the process of upstreaming. There also we would need trace points.
+> > >   Not sure registering to devlink just for the sake of tracepoint is proper.
+> > >
+> > > - The devlink trace message is like this
+> > >
+> > >    TRACE_EVENT(devlink_hwmsg,
+> > >      . . .
+> > >         TP_printk("bus_name=%s dev_name=%s driver_name=%s incoming=%d type=%lu buf=0x[%*phD] len=%zu",
+> > >                   __get_str(bus_name), __get_str(dev_name),
+> > >                   __get_str(driver_name), __entry->incoming, __entry->type,
+> > >                   (int) __entry->len, __get_dynamic_array(buf), __entry->len)
+> > >    );
+> > >
+> > >    Whatever debug message we want as output doesn't fit into this.
+> >
+> > Make use of the standard devlink tracepoint wherever applicable, and you
+> > can keep your extra ones if you want (as long as Jiri don't object).
+>
+> Sure and noted. I have tried to use devlink tracepoints and since it
+> could not fit our purpose I used these.
+>
+Can you please comment.
 
-diff --git a/drivers/firewire/ohci.c b/drivers/firewire/ohci.c
-index 020cb15a4d8fcc..9811c40956e54d 100644
---- a/drivers/firewire/ohci.c
-+++ b/drivers/firewire/ohci.c
-@@ -674,17 +674,16 @@ static void ar_context_link_page(struct ar_context *ctx, unsigned int index)
- 
- static void ar_context_release(struct ar_context *ctx)
- {
-+	struct device *dev = ctx->ohci->card.device;
- 	unsigned int i;
- 
- 	vunmap(ctx->buffer);
- 
--	for (i = 0; i < AR_BUFFERS; i++)
--		if (ctx->pages[i]) {
--			dma_unmap_page(ctx->ohci->card.device,
--				       ar_buffer_bus(ctx, i),
--				       PAGE_SIZE, DMA_FROM_DEVICE);
--			__free_page(ctx->pages[i]);
--		}
-+	for (i = 0; i < AR_BUFFERS; i++) {
-+		if (ctx->pages[i])
-+			dma_free_pages(dev, PAGE_SIZE, ctx->pages[i],
-+				       ar_buffer_bus(ctx, i), DMA_FROM_DEVICE);
-+	}
- }
- 
- static void ar_context_abort(struct ar_context *ctx, const char *error_msg)
-@@ -970,6 +969,7 @@ static void ar_context_tasklet(unsigned long data)
- static int ar_context_init(struct ar_context *ctx, struct fw_ohci *ohci,
- 			   unsigned int descriptors_offset, u32 regs)
- {
-+	struct device *dev = ohci->card.device;
- 	unsigned int i;
- 	dma_addr_t dma_addr;
- 	struct page *pages[AR_BUFFERS + AR_WRAPAROUND_PAGES];
-@@ -980,17 +980,13 @@ static int ar_context_init(struct ar_context *ctx, struct fw_ohci *ohci,
- 	tasklet_init(&ctx->tasklet, ar_context_tasklet, (unsigned long)ctx);
- 
- 	for (i = 0; i < AR_BUFFERS; i++) {
--		ctx->pages[i] = alloc_page(GFP_KERNEL | GFP_DMA32);
-+		ctx->pages[i] = dma_alloc_pages(dev, PAGE_SIZE, &dma_addr,
-+						DMA_FROM_DEVICE, GFP_KERNEL);
- 		if (!ctx->pages[i])
- 			goto out_of_memory;
--		dma_addr = dma_map_page(ohci->card.device, ctx->pages[i],
--					0, PAGE_SIZE, DMA_FROM_DEVICE);
--		if (dma_mapping_error(ohci->card.device, dma_addr)) {
--			__free_page(ctx->pages[i]);
--			ctx->pages[i] = NULL;
--			goto out_of_memory;
--		}
- 		set_page_private(ctx->pages[i], dma_addr);
-+		dma_sync_single_for_device(dev, dma_addr, PAGE_SIZE,
-+					   DMA_FROM_DEVICE);
- 	}
- 
- 	for (i = 0; i < AR_BUFFERS; i++)
--- 
-2.28.0
-
+> Thanks,
+> Sundeep
