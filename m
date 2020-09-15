@@ -2,119 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3D5B269DB4
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 07:13:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48EB9269DC3
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 07:21:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726102AbgIOFNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 01:13:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33140 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726046AbgIOFNp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 01:13:45 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D411C06174A;
-        Mon, 14 Sep 2020 22:13:42 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id mm21so1147157pjb.4;
-        Mon, 14 Sep 2020 22:13:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yHkFrl3Bv6B6udCbLyaz9Af4oabGh1R3lkIWOhnNv0g=;
-        b=ZWNyXnsbLfqzH3w9WKv2LKhpVULHRW2Txv3WiV7qjI6jIw9VVWj1mMWKmPuKLLUZ5p
-         phHnhiIbSOy1/+I4h6vw1xC8Wb5PZ227bbpXqsWPQMd0c+aI+psliMJY4TvKvihxNeEg
-         39xdUyuo1ac0woG+8AKKXMD5BrKJD4OLJZXkPGO6wKv3Sy0uq2szqnHPrYWnXWh6Fn6/
-         GSm3oNbcR53fLjFOvNGgS3ee8pL3peP3lEiFTYjBX51NADHwH/FQvlxDlYKgyXZBSkh6
-         kk/4DpHQeH+l8A7jaIW67QzBaBSUqSQ2DqmwWp4hE82tS8APStVQhQrpj6yFZcHs/2yB
-         5VRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yHkFrl3Bv6B6udCbLyaz9Af4oabGh1R3lkIWOhnNv0g=;
-        b=jksm30p3qJY6H2x9xPQswMPLDARq3KMFS1B26AgCClc+qsMNJvuTwnlb1HKl7ZrXG+
-         W/bXE4wgZoPXlNaY2yiGL+1Y0EcnmUoxsi9ZOdiM9jq08G22vCr08rO2fC0TbId9hQou
-         ZtAZ6IsE8ocIo5WPge6dnhE0naFc9YaNyiAPykbEELkxHuQpYL5HwNvvInJvozcWvF4T
-         88bJiSwx49DJbg6cLbOS/b9H2QzZPTGRSVfio+cNaOV+zStg6dTxfA2BthPdEEIa9K22
-         XRtP385h6nlpdjogAq+Qpb0liESAHxVPR2Tw/6a4wWhbaQZMPyQ1PXzKV7CkTCJbIVJ8
-         5epA==
-X-Gm-Message-State: AOAM530a411IIHhv3PTt3P6HYGdNThb1DJPoBi9YBLgpHcz3FlIpwZuX
-        QvYPtWg02ICAv7AFs5BlIhI=
-X-Google-Smtp-Source: ABdhPJzPRd+YYR2ntFr9sZ2/8C78t45z+RCD4rx7cSP8YZgRl1yztspa+/c0WJuhap130BHzqox0Yg==
-X-Received: by 2002:a17:90a:738d:: with SMTP id j13mr2524443pjg.114.1600146821965;
-        Mon, 14 Sep 2020 22:13:41 -0700 (PDT)
-Received: from Thinkpad ([45.118.167.196])
-        by smtp.gmail.com with ESMTPSA id m20sm12270590pfa.115.2020.09.14.22.13.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 22:13:41 -0700 (PDT)
-Date:   Tue, 15 Sep 2020 10:43:31 +0530
-From:   Anmol Karn <anmol.karan123@gmail.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+f7204dcf3df4bb4ce42c@syzkaller.appspotmail.com,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Biggers <ebiggers@google.com>,
-        Necip Fazil Yildiran <necip@google.com>
-Subject: Re: [Linux-kernel-mentees] [PATCH] idr: remove WARN_ON_ONCE() when
- trying to check id
-Message-ID: <20200915051331.GA7980@Thinkpad>
-References: <20200914071724.202365-1-anmol.karan123@gmail.com>
- <20200914110803.GL6583@casper.infradead.org>
- <20200914184755.GB213347@Thinkpad>
- <20200914192655.GW6583@casper.infradead.org>
+        id S1726089AbgIOFVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 01:21:32 -0400
+Received: from smtprelay0224.hostedemail.com ([216.40.44.224]:38172 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726046AbgIOFVc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 01:21:32 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 341C1180AA4FD;
+        Tue, 15 Sep 2020 05:21:30 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3871:3872:3874:4321:5007:6691:10004:10400:10848:11026:11232:11657:11658:11914:12043:12296:12297:12740:12760:12895:13069:13255:13311:13357:13439:14659:14721:21080:21451:21627:30012:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: jam58_380e3482710e
+X-Filterd-Recvd-Size: 2003
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf12.hostedemail.com (Postfix) with ESMTPA;
+        Tue, 15 Sep 2020 05:21:29 +0000 (UTC)
+Message-ID: <d42ad86fb17e575b4e56b361b53629a9d8f858e8.camel@perches.com>
+Subject: Re: [PATCH net-next v5 1/6] lib8390: Fix coding style issues and
+ remove version printing
+From:   Joe Perches <joe@perches.com>
+To:     Armin Wolf <W_Armin@gmx.de>, davem@davemloft.net,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     netdev@vger.kernel.org
+Date:   Mon, 14 Sep 2020 22:21:28 -0700
+In-Reply-To: <20200914210128.7741-2-W_Armin@gmx.de>
+References: <20200914210128.7741-1-W_Armin@gmx.de>
+         <20200914210128.7741-2-W_Armin@gmx.de>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.4-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200914192655.GW6583@casper.infradead.org>
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 08:26:55PM +0100, Matthew Wilcox wrote:
-> On Tue, Sep 15, 2020 at 12:17:55AM +0530, Anmol Karn wrote:
-> > On Mon, Sep 14, 2020 at 12:08:03PM +0100, Matthew Wilcox wrote:
-> > > On Mon, Sep 14, 2020 at 12:47:24PM +0530, Anmol Karn wrote:
-> > > > idr_get_next() gives WARN_ON_ONCE() when it gets (id > INT_MAX) true
-> > > > and this happens when syzbot does fuzzing, and that warning is
-> > > > expected, but WARN_ON_ONCE() is not required here and, cecking
-> > > > the condition and returning NULL value would be suffice.
-> > > > 
-> > > > Reference: commit b9959c7a347 ("filldir[64]: remove WARN_ON_ONCE() for bad directory entries")
-> > > > Reported-and-tested-by: syzbot+f7204dcf3df4bb4ce42c@syzkaller.appspotmail.com
-> > > > Link: https://syzkaller.appspot.com/bug?extid=f7204dcf3df4bb4ce42c 
-> > > > Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
-> > > 
-> > > https://lore.kernel.org/netdev/20200605120037.17427-1-willy@infradead.org/
-> > 
-> > Hello sir,
-> > 
-> > I have looked into the patch, and it seems the problem is fixed to the root cause
-> > in this patch, but not yet merged due to some backport issues, so, please ignore 
-> > this patch(sent by me), and please let me know if i can contribute to fixing this 
-> > bug's root cause.
+On Mon, 2020-09-14 at 23:01 +0200, Armin Wolf wrote:
+> Fix various checkpatch warnings.
 > 
-> The root cause is that the network maintainers believe I have a far
-> greater interest in the qrtr code than I actually do, and the maintainer
-> of the qrtr code is not doing anything.
+> Remove version printing so modules including lib8390 do not
+> have to provide a global version string for successful
+> compilation.
 
-Hello sir,
+This 8390 code is for a _really_ old driver.
+It doesn't seem likely these changes are all that useful.
+(and I say that as someone that's done a lot of drive-by
+ cleaning to this code, mostly treewide though)
 
-I hope the patch will get merged soon.
+> diff --git a/drivers/net/ethernet/8390/lib8390.c b/drivers/net/ethernet/8390/lib8390.c
+[]
+> @@ -308,25 +301,24 @@ static netdev_tx_t __ei_start_xmit(struct sk_buff *skb,
+>  	char *data = skb->data;
+> 
+>  	if (skb->len < ETH_ZLEN) {
+> -		memset(buf, 0, ETH_ZLEN);	/* more efficient than doing just the needed bits */
+> +		/* More efficient than doing just the needed bits */
+> +		memset(buf, 0, ETH_ZLEN);
+>  		memcpy(buf, data, skb->len);
 
-also, i have tried a patch for this bug
+Even with the comment, this bit seems less than optimal.
+Maybe not overwriting the already zeroed content is better?
+At least it's fewer memory accesses.
 
-Link: https://syzkaller.appspot.com/bug?extid=3b14b2ed9b3d06dcaa07
-
-can you please guide me little how should i proceede with it, and 
-also syzbot tested it.  
+		memcpy(buf, data, skb->len);
+		memset(&buf[skb->len], 0, ETH_ZLEN - skb->len);
 
 
-Thanks,
-Anmol
