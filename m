@@ -2,99 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C2FD26ABA9
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 20:20:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0265626ABDD
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 20:29:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728003AbgIOSTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 14:19:14 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:42972 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727683AbgIOSR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 14:17:56 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08FIHUmx119199;
-        Tue, 15 Sep 2020 13:17:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1600193850;
-        bh=9O1VHv+tQ8CeuoeX59nCI2lzZxErqiar7lWemFEzsE0=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=mVb7bLo4kf6CG7xewsdoFINJY0ppfqGe5j4qeuhs3G9MxmPfzGB8p8hbWqVmMYYKA
-         2DvV1ymyHOtAWJlFNMrbrnbDVluc6kQww2wknO5AOMu4TD9FxU3Rx7DiNQSFV000Gs
-         d5YpaCRnZyKkGGzsiyTrYdyHPQ/FOYgKJmLNc+kc=
-Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08FIHUw5123020
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 15 Sep 2020 13:17:30 -0500
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 15
- Sep 2020 13:17:30 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 15 Sep 2020 13:17:30 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08FIHUqu130526;
-        Tue, 15 Sep 2020 13:17:30 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
-        <hkallweit1@gmail.com>
-CC:     <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next 3/3] net: phy: dp83822: Update the fiber advertisement for speed
-Date:   Tue, 15 Sep 2020 13:17:08 -0500
-Message-ID: <20200915181708.25842-4-dmurphy@ti.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200915181708.25842-1-dmurphy@ti.com>
-References: <20200915181708.25842-1-dmurphy@ti.com>
+        id S1727865AbgIOS2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 14:28:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42496 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728026AbgIOSXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 14:23:31 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA780C06174A
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 11:22:50 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id w1so4027359edr.3
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 11:22:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gT6Gz5m6moOODWK8Kt5bgtrqD1oKBeDUi/nGQD03HVs=;
+        b=EamPb4tXaSPykhnY4qcDQgyvL/Y2r3lzZ32QvZbb9X2ZpFStNGHdezzFSGlsh6+lEr
+         XOct4J+qFw40gW0+yEUrIGcyPpkLC2Z0YdpaOqRMoOrwPpz9ZYTRkzG9Sy+qaG8HGXE0
+         tG/zHwnLr+3MHv5AS9hYD6lLxYVG5N2X9UIPaBtfBJSQlppuYLqRZWO6NCENOZhb4pxA
+         JghwJEf+Qw3gJvQw+gh7TxPFNW3FqC5wWGl8JH3AWU2XFW0f5jvntHINGIufkSNPgPIm
+         OuMrGX87ppBi1tyPB19EA5+K62w+qVbXzyBAeQR4ln1WMdbPYIeCqOjmvCs2SCEy8BI4
+         Vxqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gT6Gz5m6moOODWK8Kt5bgtrqD1oKBeDUi/nGQD03HVs=;
+        b=U2dQ36BaD4/gvkOf66gHGsHWQP9kmoh7CTM3ySa3ajOfAzLSOtEyQmA3Z9bF5gGVSE
+         Taezjntz+JDOmFfLrVoYLHaxfuFntzj+5YFjlxMrXvV91vOFcqQK2cG3oUjwLnp7pS8k
+         QWLO5idtSK3u2iD9/5hTflX0+0je7runv7AQql0R58rF2v3ttY07X5Jkw0XrkjghEqj3
+         6HxQwckq8LDvTMs5RIYMkykwO5Al65ZH/9Tjex0gDBTqLz51S/V2HlZ0pA1qX1wZC5p5
+         qFEiZxJMAWrUS6EHq0n6yIqATt2GvUrr4HVsTxOyldSw8gynnYL/dapERg2/Wme6AUxQ
+         cpXg==
+X-Gm-Message-State: AOAM530ZfI/kELRKgPnrysftg9jCQnFe1jWUrHhMUqd6SuLZkx6KTkZ0
+        9MsPfw340S693Sb4L11o6XU=
+X-Google-Smtp-Source: ABdhPJxK64hiHsY/CZhKK3mKSgbsrlvKtr7fbXxgFgzbzf3nSbpg4yjNdOGn735zK9395CgBXkWiPQ==
+X-Received: by 2002:a05:6402:1851:: with SMTP id v17mr23395480edy.46.1600194169337;
+        Tue, 15 Sep 2020 11:22:49 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.217.212])
+        by smtp.gmail.com with ESMTPSA id q11sm11860481eds.16.2020.09.15.11.22.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Sep 2020 11:22:48 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
+        UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org
+Subject: [PATCH net 0/7] Bugfixes in Microsemi Ocelot switch driver
+Date:   Tue, 15 Sep 2020 21:22:22 +0300
+Message-Id: <20200915182229.69529-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the fiber advertisement for speed and duplex modes with the
-100base-FX full and half linkmode entries.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/dp83822.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+This is a series of 7 assorted patches for "net", on the drivers for the
+VSC7514 MIPS switch (Ocelot-1), the VSC9953 PowerPC (Seville), and a few
+more that are common to all supported devices since they are in the
+common library portion.
 
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index 732c8bec7452..c162c9551bd1 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -110,9 +110,8 @@
- #define DP83822_RX_ER_SHIFT	8
- 
- #define MII_DP83822_FIBER_ADVERTISE    (ADVERTISED_TP | ADVERTISED_MII | \
--					ADVERTISED_FIBRE | ADVERTISED_BNC |  \
--					ADVERTISED_Pause | ADVERTISED_Asym_Pause | \
--					ADVERTISED_100baseT_Full)
-+					ADVERTISED_FIBRE | \
-+					ADVERTISED_Pause | ADVERTISED_Asym_Pause)
- 
- struct dp83822_private {
- 	bool fx_signal_det_low;
-@@ -406,6 +405,14 @@ static int dp83822_config_init(struct phy_device *phydev)
- 				 phydev->supported);
- 		linkmode_set_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
- 				 phydev->advertising);
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseFX_Full_BIT,
-+				 phydev->supported);
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseFX_Half_BIT,
-+				 phydev->supported);
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseFX_Full_BIT,
-+				 phydev->advertising);
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseFX_Half_BIT,
-+				 phydev->advertising);
- 
- 		/* Auto neg is not supported in fiber mode */
- 		bmcr = phy_read(phydev, MII_BMCR);
+Vladimir Oltean (7):
+  net: mscc: ocelot: fix race condition with TX timestamping
+  net: mscc: ocelot: add locking for the port TX timestamp ID
+  net: dsa: seville: fix buffer size of the queue system
+  net: mscc: ocelot: check for errors on memory allocation of ports
+  net: mscc: ocelot: error checking when calling ocelot_init()
+  net: mscc: ocelot: refactor ports parsing code into a dedicated
+    function
+  net: mscc: ocelot: unregister net devices on unbind
+
+ drivers/net/dsa/ocelot/felix.c             |   5 +-
+ drivers/net/dsa/ocelot/seville_vsc9953.c   |   2 +-
+ drivers/net/ethernet/mscc/ocelot.c         |  13 +-
+ drivers/net/ethernet/mscc/ocelot_net.c     |  12 +-
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c | 234 ++++++++++++---------
+ include/soc/mscc/ocelot.h                  |   1 +
+ net/dsa/tag_ocelot.c                       |  11 +-
+ 7 files changed, 168 insertions(+), 110 deletions(-)
+
 -- 
-2.28.0
+2.25.1
 
