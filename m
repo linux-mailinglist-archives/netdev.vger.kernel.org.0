@@ -2,202 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD9DB26AF47
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 23:16:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBD1326AF7F
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 23:23:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728014AbgIOVPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 17:15:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727925AbgIOVOt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 17:14:49 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC37C06178A
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 14:14:48 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id x10so4728177ybj.19
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 14:14:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=K+OfCoM6oTmkFdqxGs+YSyPIFR+NJtTdbrbahx+pi8o=;
-        b=Bfbb6PAjFKNPNmBiLhOhqp8uf+5dfGDcVtfLcv83W6I4mmz8leffU/S6ATJ0NoEcAS
-         v1VM7hSpryC5Zauqdu6RcvSUTpFZwn0SROVOg8yfdiPto085QZO2xD+JPI0lb5kBTuK5
-         sRXkaD5z5MkbrYn2N/Eu/MAMtEUePcvEBd33t7RdW3i4TuR6llHN4ezRrgipgYs2+33i
-         IhBVEV/aHL1iMHk7sX1HiMGJVcDCemlIYsORCB84pLS6RjpT6RNH+MlgKDSi2A6p6Bbz
-         IKK1p5CaBXGfFWRijvbhUT/GCHri9hZhxul8R6Cm7YmExyGEfivaE0P6MZucOBtoFRX5
-         n95g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=K+OfCoM6oTmkFdqxGs+YSyPIFR+NJtTdbrbahx+pi8o=;
-        b=k/cHL/W6MIeRCPpRffREmfdpQzi96Ph9JZfufuuJT5wX5GHRuwqaxDR8VkmGZp1wg3
-         vl9XRakyKk+0UgKXPke7oIhyeoTomfcpFczpktACSHuWxotI5HGAyr+Ghvx27dIXtIVR
-         1WO1Ypd7TU4lnaWuVXNcaP6/wDwBqDaeKtF40y5vPLWZ0GFX/vnI4F27RjFOP8yh09/C
-         wk4ST0H752MilySc9OL82rzVH6/cTrCSUZSMHvGmPzxbxJyo1P+gsRMj/WHOVOWewhpU
-         bu+WlDT31sVfR2UMQGsKYvlHpa9vTDITjgy7z8OGDTQ6Nsz/2I+QvM9naxn+3oHGZaQu
-         Xq/A==
-X-Gm-Message-State: AOAM531u7s99PjRhGuno+VyIrt3dT7bVaWt3Rh1ThzBKNJYxUkB/7au9
-        CIM0G9Qc1PqtK8rQkxeR3UMehL2tJnlR8K0MPcD0
-X-Google-Smtp-Source: ABdhPJyww2+5qPFKot6oq/w5hjYv4FO0/obmugq2VwsJRMK9d8CCeO5bHaloVjkf47P7tieu34FzW1yIWD4tngmvw+TY
-X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:f693:9fff:fef4:4e59])
- (user=danielwinkler job=sendgmr) by 2002:a25:3783:: with SMTP id
- e125mr8595152yba.423.1600204487979; Tue, 15 Sep 2020 14:14:47 -0700 (PDT)
-Date:   Tue, 15 Sep 2020 14:14:27 -0700
-Message-Id: <20200915141229.1.Icfac86f8dfa0813bba6c7604c420d11c3820b4ab@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
-Subject: [PATCH] Bluetooth: pause/resume advertising around suspend
-From:   Daniel Winkler <danielwinkler@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Daniel Winkler <danielwinkler@google.com>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1728042AbgIOVXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 17:23:40 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:42990 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728002AbgIOVV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 17:21:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1600204887; x=1631740887;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0VFMgaGsSU+bPsmymR/qG5LuCoPD62OHSlNQdMf8wbA=;
+  b=GeI4wV8uyVujq3BTnB8JCrhnHMD6Ds3eD6G6bu0jje85BBXqqligcvYu
+   eKaS6iJ0MIJB+Gt7YEGj2MC4K/fASLdWcAWLw+pN1JEQ4TFbZyDFkfCJt
+   yYpb+ZwawLCgKj2lNII9XFJ3DRU4teJojyBdNTSzPEf+fbJxG+FfhY3pm
+   woI3gyfzd/LsqJ648UTE/xX0qUvX0qPzByVmhMUcmU5GQ0mKca3IKtC9L
+   nJ+KCtQJTiSMqzN5LQ4SQLQ7spr0BMSP8msUT/ikc/K7Y6xzz29PT0t19
+   muNnrBL1/R2EEOFgVJen5Ue3Ii/+ek/bjCidk860FcJl5yQLn5yR+T/mU
+   w==;
+IronPort-SDR: PI07gbYQL+1FCilpqPyDP6GH/y9KngYrjJsNjmHWSTCzeJ1UNpB1zAQWaeMDb1IxLFH2ehGZxF
+ AzkGV8OY5Q2i5rLcXBEyq68EGCVjDkijFKzA6DFELGR8V0RKrAO1tnteVIfCfm4LWBwiwu4Ko8
+ bi+NQAGFNJGPUJSbubh3jhR02AYAjpCPMpz0I8ciYQR9LARm2nJkVAfI0+wk5x5LogKuiMJA9C
+ bEOZhmQHL4VWQOkKxwV1dYN71DjmKTQTT+NbodSS/QYxSJM0/b88CMHbh9JV0cZoQRH60iJIca
+ Uz4=
+X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; 
+   d="scan'208";a="95905028"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Sep 2020 14:19:25 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 15 Sep 2020 14:19:24 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Tue, 15 Sep 2020 14:19:24 -0700
+Date:   Tue, 15 Sep 2020 23:19:20 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <yangbo.lu@nxp.com>, <xiaoliang.yang_1@nxp.com>,
+        <UNGLinuxDriver@microchip.com>, <claudiu.manoil@nxp.com>,
+        <alexandre.belloni@bootlin.com>, <andrew@lunn.ch>,
+        <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>,
+        <kuba@kernel.org>
+Subject: Re: [PATCH net 0/7] Bugfixes in Microsemi Ocelot switch driver
+Message-ID: <20200915211920.p3zyl2skzgqyuv32@soft-dev3.localdomain>
+References: <20200915182229.69529-1-olteanv@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20200915182229.69529-1-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the controller will continue advertising when the system
-enters suspend. This patch makes sure that all advertising instances are
-paused when entering suspend, and resumed when suspend exits.
+The 09/15/2020 21:22, Vladimir Oltean wrote:
+> 
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> This is a series of 7 assorted patches for "net", on the drivers for the
+> VSC7514 MIPS switch (Ocelot-1), the VSC9953 PowerPC (Seville), and a few
+> more that are common to all supported devices since they are in the
+> common library portion.
 
-The Advertising and Suspend/Resume test suites were both run on this
-change on 4.19 kernel with both hardware offloaded multi-advertising and
-software rotated multi-advertising. In addition, a new test was added
-that performs the following steps:
-* Register 3 advertisements via bluez RegisterAdvertisement
-* Verify reception of all advertisements by remote peer
-* Enter suspend on DUT
-* Verify failure to receive all advertisements by remote peer
-* Exit suspend on DUT
-* Verify reception of all advertisements by remote peer
+I have looked over ocelot changes and they look fine to me.
 
-Signed-off-by: Daniel Winkler <danielwinkler@google.com>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
+Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
- net/bluetooth/hci_request.c | 67 +++++++++++++++++++++++++++++++------
- 1 file changed, 57 insertions(+), 10 deletions(-)
+> 
+> Vladimir Oltean (7):
+>   net: mscc: ocelot: fix race condition with TX timestamping
+>   net: mscc: ocelot: add locking for the port TX timestamp ID
+>   net: dsa: seville: fix buffer size of the queue system
+>   net: mscc: ocelot: check for errors on memory allocation of ports
+>   net: mscc: ocelot: error checking when calling ocelot_init()
+>   net: mscc: ocelot: refactor ports parsing code into a dedicated
+>     function
+>   net: mscc: ocelot: unregister net devices on unbind
+> 
+>  drivers/net/dsa/ocelot/felix.c             |   5 +-
+>  drivers/net/dsa/ocelot/seville_vsc9953.c   |   2 +-
+>  drivers/net/ethernet/mscc/ocelot.c         |  13 +-
+>  drivers/net/ethernet/mscc/ocelot_net.c     |  12 +-
+>  drivers/net/ethernet/mscc/ocelot_vsc7514.c | 234 ++++++++++++---------
+>  include/soc/mscc/ocelot.h                  |   1 +
+>  net/dsa/tag_ocelot.c                       |  11 +-
+>  7 files changed, 168 insertions(+), 110 deletions(-)
+> 
+> --
+> 2.25.1
+> 
 
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index e17bc8a1c66ddd..413e3a5aabf544 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1111,6 +1111,53 @@ static void hci_req_config_le_suspend_scan(struct hci_request *req)
- 	set_bit(SUSPEND_SCAN_ENABLE, req->hdev->suspend_tasks);
- }
- 
-+static void cancel_adv_timeout(struct hci_dev *hdev)
-+{
-+	if (hdev->adv_instance_timeout) {
-+		hdev->adv_instance_timeout = 0;
-+		cancel_delayed_work(&hdev->adv_instance_expire);
-+	}
-+}
-+
-+/* This function requires the caller holds hdev->lock */
-+static void hci_suspend_adv_instances(struct hci_request *req)
-+{
-+	bt_dev_dbg(req->hdev, "Suspending advertising instances");
-+
-+	/* Call to disable any advertisements active on the controller.
-+	 * This will succeed even if no advertisements are configured.
-+	 */
-+	__hci_req_disable_advertising(req);
-+
-+	/* If we are using software rotation, pause the loop */
-+	if (!ext_adv_capable(req->hdev))
-+		cancel_adv_timeout(req->hdev);
-+}
-+
-+/* This function requires the caller holds hdev->lock */
-+static void hci_resume_adv_instances(struct hci_request *req)
-+{
-+	struct adv_info *adv;
-+
-+	bt_dev_dbg(req->hdev, "Resuming advertising instances");
-+
-+	if (ext_adv_capable(req->hdev)) {
-+		/* Call for each tracked instance to be re-enabled */
-+		list_for_each_entry(adv, &req->hdev->adv_instances, list) {
-+			__hci_req_enable_ext_advertising(req,
-+							 adv->instance);
-+		}
-+
-+	} else {
-+		/* Schedule for most recent instance to be restarted and begin
-+		 * the software rotation loop
-+		 */
-+		__hci_req_schedule_adv_instance(req,
-+						req->hdev->cur_adv_instance,
-+						true);
-+	}
-+}
-+
- static void suspend_req_complete(struct hci_dev *hdev, u8 status, u16 opcode)
- {
- 	bt_dev_dbg(hdev, "Request complete opcode=0x%x, status=0x%x", opcode,
-@@ -1153,7 +1200,7 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 		hdev->discovery_paused = true;
- 		hdev->discovery_old_state = old_state;
- 
--		/* Stop advertising */
-+		/* Stop directed advertising */
- 		old_state = hci_dev_test_flag(hdev, HCI_ADVERTISING);
- 		if (old_state) {
- 			set_bit(SUSPEND_PAUSE_ADVERTISING, hdev->suspend_tasks);
-@@ -1162,6 +1209,10 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 					   &hdev->discov_off, 0);
- 		}
- 
-+		/* Pause other advertisements */
-+		if (hdev->adv_instance_cnt)
-+			hci_suspend_adv_instances(&req);
-+
- 		hdev->advertising_paused = true;
- 		hdev->advertising_old_state = old_state;
- 		/* Disable page scan */
-@@ -1212,7 +1263,7 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 		/* Reset passive/background scanning to normal */
- 		hci_req_config_le_suspend_scan(&req);
- 
--		/* Unpause advertising */
-+		/* Unpause directed advertising */
- 		hdev->advertising_paused = false;
- 		if (hdev->advertising_old_state) {
- 			set_bit(SUSPEND_UNPAUSE_ADVERTISING,
-@@ -1223,6 +1274,10 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 			hdev->advertising_old_state = 0;
- 		}
- 
-+		/* Resume other advertisements */
-+		if (hdev->adv_instance_cnt)
-+			hci_resume_adv_instances(&req);
-+
- 		/* Unpause discovery */
- 		hdev->discovery_paused = false;
- 		if (hdev->discovery_old_state != DISCOVERY_STOPPED &&
-@@ -2186,14 +2241,6 @@ int __hci_req_schedule_adv_instance(struct hci_request *req, u8 instance,
- 	return 0;
- }
- 
--static void cancel_adv_timeout(struct hci_dev *hdev)
--{
--	if (hdev->adv_instance_timeout) {
--		hdev->adv_instance_timeout = 0;
--		cancel_delayed_work(&hdev->adv_instance_expire);
--	}
--}
--
- /* For a single instance:
-  * - force == true: The instance will be removed even when its remaining
-  *   lifetime is not zero.
 -- 
-2.28.0.618.gf4bc123cb7-goog
-
+/Horatiu
