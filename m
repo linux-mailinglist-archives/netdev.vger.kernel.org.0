@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47D3F269E7B
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 08:28:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38E17269E83
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 08:31:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726185AbgIOG2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 02:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44538 "EHLO
+        id S1726107AbgIOGbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 02:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726031AbgIOG2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 02:28:43 -0400
+        with ESMTP id S1726066AbgIOGba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 02:31:30 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF07C06174A
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 23:28:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913F0C06174A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 23:31:29 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kI4S3-0001sf-Ho; Tue, 15 Sep 2020 08:28:27 +0200
+        id 1kI4Up-0002O4-Gx; Tue, 15 Sep 2020 08:31:19 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:8d0c:cfd0:3f99:a545] (unknown [IPv6:2a03:f580:87bc:d400:8d0c:cfd0:3f99:a545])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 62E57560984;
-        Tue, 15 Sep 2020 06:28:23 +0000 (UTC)
-Subject: Re: [PATCH net-next] can: peak_canfd: Remove unused macros
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 4D1F3560990;
+        Tue, 15 Sep 2020 06:31:18 +0000 (UTC)
+Subject: Re: [PATCH net-next] can: kvaser_pciefd: Remove unused macro
+ KVASER_PCIEFD_KCAN_CTRL_EFRAME
 To:     Wang Hai <wanghai38@huawei.com>, wg@grandegger.com,
-        davem@davemloft.net, kuba@kernel.org, gustavoars@kernel.org
+        davem@davemloft.net, kuba@kernel.org
 Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20200904131247.23021-1-wanghai38@huawei.com>
+References: <20200904131026.21817-1-wanghai38@huawei.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -94,15 +95,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <8456d3e0-5862-68e6-cc2e-6ff3f55e6f5e@pengutronix.de>
-Date:   Tue, 15 Sep 2020 08:28:17 +0200
+Message-ID: <29cae48f-34be-b77f-4585-4439c4b626d8@pengutronix.de>
+Date:   Tue, 15 Sep 2020 08:31:03 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200904131247.23021-1-wanghai38@huawei.com>
+In-Reply-To: <20200904131026.21817-1-wanghai38@huawei.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="NePVxY7sRHBaLUkdZpQrN3n46ptNG8EDj"
+ boundary="WQj3l6yxrwAifG0JAx2vdVAH82PdGdxvd"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -113,65 +114,52 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---NePVxY7sRHBaLUkdZpQrN3n46ptNG8EDj
-Content-Type: multipart/mixed; boundary="5lYF6xXw6PXlaG5vjGjXjWcytCLGyZgrZ";
+--WQj3l6yxrwAifG0JAx2vdVAH82PdGdxvd
+Content-Type: multipart/mixed; boundary="klCaL39Vp1Vu4qQxwSajHqp5hQKwA8q40";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: Wang Hai <wanghai38@huawei.com>, wg@grandegger.com, davem@davemloft.net,
- kuba@kernel.org, gustavoars@kernel.org
+ kuba@kernel.org
 Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Message-ID: <8456d3e0-5862-68e6-cc2e-6ff3f55e6f5e@pengutronix.de>
-Subject: Re: [PATCH net-next] can: peak_canfd: Remove unused macros
-References: <20200904131247.23021-1-wanghai38@huawei.com>
-In-Reply-To: <20200904131247.23021-1-wanghai38@huawei.com>
+Message-ID: <29cae48f-34be-b77f-4585-4439c4b626d8@pengutronix.de>
+Subject: Re: [PATCH net-next] can: kvaser_pciefd: Remove unused macro
+ KVASER_PCIEFD_KCAN_CTRL_EFRAME
+References: <20200904131026.21817-1-wanghai38@huawei.com>
+In-Reply-To: <20200904131026.21817-1-wanghai38@huawei.com>
 
---5lYF6xXw6PXlaG5vjGjXjWcytCLGyZgrZ
+--klCaL39Vp1Vu4qQxwSajHqp5hQKwA8q40
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 9/4/20 3:12 PM, Wang Hai wrote:
-> CANFD_CLK_SEL_DIV_MASK and CANFD_OPTIONS_SET are
-> never used after they were introduced. Remove them.
+On 9/4/20 3:10 PM, Wang Hai wrote:
+> KVASER_PCIEFD_KCAN_CTRL_EFRAME is never used after it was introduced.
+> So better to remove it.
 >=20
 > Reported-by: Hulk Robot <hulkci@huawei.com>
 > Signed-off-by: Wang Hai <wanghai38@huawei.com>
 > ---
->  drivers/net/can/peak_canfd/peak_pciefd_main.c | 3 ---
->  1 file changed, 3 deletions(-)
+>  drivers/net/can/kvaser_pciefd.c | 1 -
+>  1 file changed, 1 deletion(-)
 >=20
-> diff --git a/drivers/net/can/peak_canfd/peak_pciefd_main.c b/drivers/ne=
-t/can/peak_canfd/peak_pciefd_main.c
-> index 9469d4421afe..5f0f39d2fa28 100644
-> --- a/drivers/net/can/peak_canfd/peak_pciefd_main.c
-> +++ b/drivers/net/can/peak_canfd/peak_pciefd_main.c
-> @@ -83,7 +83,6 @@ MODULE_LICENSE("GPL v2");
->  #define CANFD_MISC_TS_RST		0x00000001	/* timestamp cnt rst */
+> diff --git a/drivers/net/can/kvaser_pciefd.c b/drivers/net/can/kvaser_p=
+ciefd.c
+> index 6f766918211a..c0b18ff107c7 100644
+> --- a/drivers/net/can/kvaser_pciefd.c
+> +++ b/drivers/net/can/kvaser_pciefd.c
+> @@ -131,7 +131,6 @@ MODULE_DESCRIPTION("CAN driver for Kvaser CAN/PCIe =
+devices");
 > =20
->  /* CAN-FD channel Clock SELector Source & DIVider */
-> -#define CANFD_CLK_SEL_DIV_MASK		0x00000007
-
-I would like to keep this for documentation purpose.
-
->  #define CANFD_CLK_SEL_DIV_60MHZ		0x00000000	/* SRC=3D240MHz only */
->  #define CANFD_CLK_SEL_DIV_40MHZ		0x00000001	/* SRC=3D240MHz only */
->  #define CANFD_CLK_SEL_DIV_30MHZ		0x00000002	/* SRC=3D240MHz only */
-> @@ -116,8 +115,6 @@ MODULE_LICENSE("GPL v2");
->  #define CANFD_CTL_IRQ_CL_DEF	16	/* Rx msg max nb per IRQ in Rx DMA */
->  #define CANFD_CTL_IRQ_TL_DEF	10	/* Time before IRQ if < CL (x100 =C2=B5=
-s) */
+>  /* Kvaser KCAN definitions */
+>  #define KVASER_PCIEFD_KCAN_CTRL_EFLUSH (4 << 29)
+> -#define KVASER_PCIEFD_KCAN_CTRL_EFRAME (5 << 29)
 > =20
-> -#define CANFD_OPTIONS_SET	(CANFD_OPTION_ERROR | CANFD_OPTION_BUSLOAD)
-> -
-
-Okay, let's remove this.
-
->  /* Tx anticipation window (link logical address should be aligned on 2=
-K
->   * boundary)
->   */
+>  #define KVASER_PCIEFD_KCAN_CMD_SEQ_SHIFT 16
+>  /* Request status packet */
 >=20
+
+I'd like to keep this for documentation purpose, too.
 
 Marc
 
@@ -182,23 +170,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---5lYF6xXw6PXlaG5vjGjXjWcytCLGyZgrZ--
+--klCaL39Vp1Vu4qQxwSajHqp5hQKwA8q40--
 
---NePVxY7sRHBaLUkdZpQrN3n46ptNG8EDj
+--WQj3l6yxrwAifG0JAx2vdVAH82PdGdxvd
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9gXwEACgkQqclaivrt
-76m/7Af/RCoKqcOa71iEtnhoIa6EpR+2JaHAXAU6WfpBTXreSaw8NS1IHyrErCio
-P/lt9vvQJdeZ0nTKvg+uTM1JxvBeUlJW9AQSzW3wxPopSc5BOZPoBUfoxspeadEY
-QHzQJfbVCJwvp9oVeiYvQGJk9ajtD1bvUNsE8qCakAzSRzL7IJ9zx5Ofsopv0Rb+
-UHZBfoJw/L2uFCptZf78FrubGvsArSADXz7M6sPtndYIFsLj7qbQTQf+HcQNJTK6
-p/mTseJF6CMgUWgWE54rJiexIJ171ZHYjN7z8GluMvy5KGikyLGBkLvmsxUaCLYb
-XyLUxS5XeSuahqx3V4rb4Zte1dJRVw==
-=KKcK
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9gX6cACgkQqclaivrt
+76mcNAf/YqWcJptRhR3D20qE0obLgDg+vjc6NykOCZYzUa9m1fgA4h02/cB2Hh3n
+UJGOnqh2FtLgS/HuZiEn2ry851xGbWEed+6/Ec/bIw4DdTVlzzEi18a9XxAED6u5
+GmQ8qzBwJDfvTDV4EpcQ8x9lfRg6WbImTGOWTDC4u1ns50ihAMPCMkO4OgIh9y2h
+pjOImPM8nXumYLxTj4nCWg8phWxevbN8QhDGcWH7UbSF9NoVJqSsQpQXhW03Lm/U
+Nb9IBEaSvhJCUrSAxg18VynqAIxX/sM5jPcMg/sxf4OleyOtWzx2BcIfQiAPsGgP
+YJtF2dzo3L1Q5HQ2AsSLv2eH0/zgJw==
+=rVEo
 -----END PGP SIGNATURE-----
 
---NePVxY7sRHBaLUkdZpQrN3n46ptNG8EDj--
+--WQj3l6yxrwAifG0JAx2vdVAH82PdGdxvd--
