@@ -2,105 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B99C226AF07
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 22:59:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEF8026AF00
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 22:58:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728011AbgIOU7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 16:59:05 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:12536 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726454AbgIOU6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 16:58:04 -0400
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08FKWoxS183723;
-        Tue, 15 Sep 2020 16:58:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pp1;
- bh=ssoDHG2MAO56Ek3O5TB9CWGQjxqMgfp53u1nsDqaq1A=;
- b=s7Lu+8xtAa1Ng2O9KrfLLQCMOTnodiQ2PIAf3/iqvhYNhtl1appKDeZcyzDLSb+LlBFG
- YQ7SKPTadAlwzoYVE38XxHON8mxxoPTaWF9Nf5SQEil+BGSKIUtWedXgIoThb88WIYk5
- sYw4xJKkJZvOTdlwlCwHVYzlfM7nnVTVhCUaWhDiLAykVbFYxRtRoICOfeRLJprF1O1o
- 0JiF9y4fICgI1tr5HywqzQ3ubhrqtLIcGvbDSm2RZBQvgXw9JRy68BH+3EkYJ/9Kxwiw
- 3cB2j5QAIA/6G7F3L9RHmvlP1skdAzknHNzumITNdfaT/5Uo0RM46l21fUo/FcPdKye5 Ww== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33k1tmmxt3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Sep 2020 16:58:00 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08FKvskf010822;
-        Tue, 15 Sep 2020 20:57:58 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma04ams.nl.ibm.com with ESMTP id 33h2r9bh50-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Sep 2020 20:57:58 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08FKuLEV26673544
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Sep 2020 20:56:21 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9454C42042;
-        Tue, 15 Sep 2020 20:57:55 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4BC8D42045;
-        Tue, 15 Sep 2020 20:57:55 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 15 Sep 2020 20:57:55 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net-next 1/1] net/smc: check variable before dereferencing in smc_close.c
-Date:   Tue, 15 Sep 2020 22:57:09 +0200
-Message-Id: <20200915205709.50325-2-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200915205709.50325-1-kgraul@linux.ibm.com>
-References: <20200915205709.50325-1-kgraul@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-15_13:2020-09-15,2020-09-15 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 malwarescore=0
- impostorscore=0 spamscore=0 priorityscore=1501 mlxscore=0 phishscore=0
- mlxlogscore=999 clxscore=1015 lowpriorityscore=0 bulkscore=0
- suspectscore=1 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009150161
+        id S1727707AbgIOU6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 16:58:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727935AbgIOU5W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 16:57:22 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC735C06174A
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 13:57:16 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id f18so2645686pfa.10
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 13:57:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=Op3M2buZBNHAA3h6SnszooROqIE76wP3kayGu1+tIgQ=;
+        b=Z2Bl/OpDosliUR7vLATGSufowOr+nwbAmeNmntnjDUjHePWj9IuOGttU4ELhcDTtfU
+         /0YKwsuRtw+6W/3OatTuP6VrTXqmI3V0sfBOXVsrVI8poXfoH7NkSaqFDkIpzy0KBqQr
+         I7FDQSFmhypIlHtL/4gz3FndnaUrshEVHSV4xX8X0KEDC1PLqPO98sRyEbp2Avou1kw8
+         8/pTsc3Nh+BRStYAgfEaEie1FRKcymEf6H//dfNnrJkkx6VNPk8vLdqLES7qwFBWl0IY
+         R5p8c9BxH5NwWM2vipNip1MbEVLlaW/1HZCXijkU506H1tC1wzqDslL89Yq3ea4VKsZR
+         MURA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=Op3M2buZBNHAA3h6SnszooROqIE76wP3kayGu1+tIgQ=;
+        b=TmTp9zMkoU45VDHRnnE9RYxPB2TGx/1On1rHOw1bSQbYX1bLs9g7bMJXkx3jB0dFhu
+         NnC1mUuEhrvizcIrRFPi/02k1FqVJ4eTmOLZm6rmZ03/E/3gIInlUFUKk6XN9wH6Tz11
+         Lz7ixnQhJYvIvN/PXYvPFWMOTTVIBO2zyAGCOGFgOeWmKo0idccVMfMprGuizlG2ocNr
+         611wdVgUmOm8+2KPByin/HXduqLogDhbHLMu2f46aqjaR9RtfdVlAoUpN9Ln+U18gD4C
+         rgDL70oBWrHvRpI0kFcWz/8HIp6DmfrmkRdTcI4PzDw0hVXHnpRmT3NZ15iC5dfIghZp
+         DeyQ==
+X-Gm-Message-State: AOAM530R8ZIuM+B6LR3kaW3YTs91JfOUoVVDj1mEWN3Q2Zafbyb2WR8n
+        l+cl1pYOxORYF02V46DNf9Y5DvNs9/Kisg==
+X-Google-Smtp-Source: ABdhPJyP4hFTO/U2YM28oVlanzSQGJbVXpdmrRjvptgIq/WkQMmcIZXM5IWIBt1uMrqTdoXtz7LsLQ==
+X-Received: by 2002:aa7:9f0a:0:b029:13e:d13d:a107 with SMTP id g10-20020aa79f0a0000b029013ed13da107mr19525819pfr.35.1600203436008;
+        Tue, 15 Sep 2020 13:57:16 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id j6sm14040680pfi.129.2020.09.15.13.57.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Sep 2020 13:57:15 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next] ionic: dynamic interrupt moderation
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+References: <20200915013345.27309-1-snelson@pensando.io>
+ <20200915.132837.1353627986155410882.davem@davemloft.net>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <0f6203ca-e9d2-c7b6-f4b6-e4573b3d1cfa@pensando.io>
+Date:   Tue, 15 Sep 2020 13:57:14 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
+MIME-Version: 1.0
+In-Reply-To: <20200915.132837.1353627986155410882.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-smc->clcsock and smc->clcsock->sk are used before the check if they can
-be dereferenced. Fix this by checking the variables first.
+On 9/15/20 1:28 PM, David Miller wrote:
+> From: Shannon Nelson <snelson@pensando.io>
+> Date: Mon, 14 Sep 2020 18:33:45 -0700
+>
+>> Use the dim library to manage dynamic interrupt
+>> moderation in ionic.
+>>
+>> v2: untangled declarations in ionic_dim_work()
+>>
+>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+>> Acked-by: Jakub Kicinski <kuba@kernel.org>
+> This doesn't apply cleanly to net-next, please respin.
 
-Fixes: a60a2b1e0af1 ("net/smc: reduce active tcp_listen workers")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/smc_close.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Oh, sorry, will do.
 
-diff --git a/net/smc/smc_close.c b/net/smc/smc_close.c
-index 10d05a6d34fc..0f9ffba07d26 100644
---- a/net/smc/smc_close.c
-+++ b/net/smc/smc_close.c
-@@ -208,11 +208,12 @@ int smc_close_active(struct smc_sock *smc)
- 		break;
- 	case SMC_LISTEN:
- 		sk->sk_state = SMC_CLOSED;
--		smc->clcsock->sk->sk_data_ready = smc->clcsk_data_ready;
--		smc->clcsock->sk->sk_user_data = NULL;
- 		sk->sk_state_change(sk); /* wake up accept */
--		if (smc->clcsock && smc->clcsock->sk)
-+		if (smc->clcsock && smc->clcsock->sk) {
-+			smc->clcsock->sk->sk_data_ready = smc->clcsk_data_ready;
-+			smc->clcsock->sk->sk_user_data = NULL;
- 			rc = kernel_sock_shutdown(smc->clcsock, SHUT_RDWR);
-+		}
- 		smc_close_cleanup_listen(sk);
- 		release_sock(sk);
- 		flush_work(&smc->tcp_listen_work);
--- 
-2.17.1
+sln
 
