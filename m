@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5E8726B03B
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:05:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB71C26B03A
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:05:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728089AbgIOWFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 18:05:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54460 "EHLO mail.kernel.org"
+        id S1728072AbgIOWFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 18:05:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54462 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728024AbgIOU0w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728025AbgIOU0w (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 15 Sep 2020 16:26:52 -0400
 Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BEDCF21D95;
-        Tue, 15 Sep 2020 20:25:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 524CC21655;
+        Tue, 15 Sep 2020 20:26:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1600201560;
-        bh=eOIgJ3K5fKzjDwbyfKRxAW5sRKnnAo83yf+Zt09mhK4=;
+        bh=89JICqsZB0T3uyP94O987jhlADuKCu2FuCy71ToRpMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WpSjtKPvs1WN4/rXnkdqZM7s9d/eobwQ63cvbGfJsMZefiok+7RwyoCWXGgZxwmVR
-         kBt+oPGvWEboicUndyMl4oet0UUaUBY+ozkgQ6tsI1r4WnVlnD+1enhfpWJq2XYMP8
-         2cpp3IHLqcB4uEvuIAKPZcrl0d+Xy+e0byTq3z94=
+        b=SCOrsN+gaxrhWjNvWcD1urY/Hq5nTUz7ymv0Yihm2nYvtVdxZVQMwcDT2v9BtN0qj
+         wKg6uOUenQkOfcqqmAlafvd7mkPvccZ8CziUuq2YV/Fk9mDq2CoHTu/XCK+gIGXtZp
+         cMEL98lneASDp0ucavldmPBLxaPtWBUM55d9nsrg=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Vu Pham <vuhuong@mellanox.com>,
         Bodong Wang <bodong@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 12/16] net/mlx5: E-Switch, Setup all vports' metadata to support peer miss rule
-Date:   Tue, 15 Sep 2020 13:25:29 -0700
-Message-Id: <20200915202533.64389-13-saeed@kernel.org>
+Subject: [net-next 13/16] net/mlx5: E-Switch, Use vport metadata matching by default
+Date:   Tue, 15 Sep 2020 13:25:30 -0700
+Message-Id: <20200915202533.64389-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200915202533.64389-1-saeed@kernel.org>
 References: <20200915202533.64389-1-saeed@kernel.org>
@@ -45,130 +46,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vu Pham <vuhuong@mellanox.com>
 
-In merged eswitch configuration, peer miss rule is setup for all
-vports. If metadata is enabled, peer miss rule with metadata matching
-will be configured instead of source port matching; however, some
-vports that have not yet been enabled don't have default_metadata
-setup and their default_metadata will be zero.
+Multiple features use metadata matching such as bond vport
+in live migration, multi-port RoCE mode, stacked devices;
+hence, enable vport metadata matching by default.
 
-Hence, setup/cleanup default metadata for all vports when eswitch moves
-in/out of offloads mode.
-
-Fixes: 133dcfc577ea ("net/mlx5: E-Switch, Alloc and free unique metadata for match")
+Fixes: 1e62e222db2e ("net/mlx5: E-Switch, Use vport metadata matching only when mandatory")
 Signed-off-by: Vu Pham <vuhuong@mellanox.com>
 Reviewed-by: Bodong Wang <bodong@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/eswitch_offloads.c     | 51 +++++++++++++++----
- 1 file changed, 42 insertions(+), 9 deletions(-)
+ .../mellanox/mlx5/core/eswitch_offloads.c        | 16 ++--------------
+ 1 file changed, 2 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 9c740ce73085..3321bb1f188d 100644
+index 3321bb1f188d..b23d20e16495 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -1923,19 +1923,49 @@ static void esw_offloads_vport_metadata_cleanup(struct mlx5_eswitch *esw,
- 	mlx5_esw_match_metadata_free(esw, vport->default_metadata);
+@@ -1864,18 +1864,6 @@ esw_check_vport_match_metadata_supported(const struct mlx5_eswitch *esw)
+ 	return true;
  }
  
-+static void esw_offloads_metadata_uninit(struct mlx5_eswitch *esw)
-+{
-+	struct mlx5_vport *vport;
-+	int i;
-+
-+	if (!mlx5_eswitch_vport_match_metadata_enabled(esw))
-+		return;
-+
-+	mlx5_esw_for_all_vports_reverse(esw, i, vport)
-+		esw_offloads_vport_metadata_cleanup(esw, vport);
-+}
-+
-+static int esw_offloads_metadata_init(struct mlx5_eswitch *esw)
-+{
-+	struct mlx5_vport *vport;
-+	int err;
-+	int i;
-+
-+	if (!mlx5_eswitch_vport_match_metadata_enabled(esw))
-+		return 0;
-+
-+	mlx5_esw_for_all_vports(esw, i, vport) {
-+		err = esw_offloads_vport_metadata_setup(esw, vport);
-+		if (err)
-+			goto metadata_err;
-+	}
-+
-+	return 0;
-+
-+metadata_err:
-+	esw_offloads_metadata_uninit(esw);
-+	return err;
-+}
-+
- int
- esw_vport_create_offloads_acl_tables(struct mlx5_eswitch *esw,
- 				     struct mlx5_vport *vport)
- {
- 	int err;
- 
--	err = esw_offloads_vport_metadata_setup(esw, vport);
--	if (err)
--		goto metadata_err;
+-static bool
+-esw_check_vport_match_metadata_mandatory(const struct mlx5_eswitch *esw)
+-{
+-	return mlx5_core_mp_enabled(esw->dev);
+-}
 -
- 	err = esw_acl_ingress_ofld_setup(esw, vport);
- 	if (err)
--		goto ingress_err;
-+		return err;
- 
- 	if (mlx5_eswitch_is_vf_vport(esw, vport->vport)) {
- 		err = esw_acl_egress_ofld_setup(esw, vport);
-@@ -1947,9 +1977,6 @@ esw_vport_create_offloads_acl_tables(struct mlx5_eswitch *esw,
- 
- egress_err:
- 	esw_acl_ingress_ofld_cleanup(esw, vport);
--ingress_err:
--	esw_offloads_vport_metadata_cleanup(esw, vport);
--metadata_err:
- 	return err;
- }
- 
-@@ -1959,7 +1986,6 @@ esw_vport_destroy_offloads_acl_tables(struct mlx5_eswitch *esw,
+-static bool esw_use_vport_metadata(const struct mlx5_eswitch *esw)
+-{
+-	return esw_check_vport_match_metadata_mandatory(esw) &&
+-	       esw_check_vport_match_metadata_supported(esw);
+-}
+-
+ u32 mlx5_esw_match_metadata_alloc(struct mlx5_eswitch *esw)
  {
- 	esw_acl_egress_ofld_cleanup(vport);
- 	esw_acl_ingress_ofld_cleanup(esw, vport);
--	esw_offloads_vport_metadata_cleanup(esw, vport);
- }
+ 	u32 num_vports = GENMASK(ESW_VPORT_BITS - 1, 0) - 1;
+@@ -2159,9 +2147,9 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
  
- static int esw_create_uplink_offloads_acl_tables(struct mlx5_eswitch *esw)
-@@ -2138,6 +2164,10 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
- 	if (esw_use_vport_metadata(esw))
+ 	err = mlx5_esw_host_number_init(esw);
+ 	if (err)
+-		goto err_vport_metadata;
++		goto err_metadata;
+ 
+-	if (esw_use_vport_metadata(esw))
++	if (esw_check_vport_match_metadata_supported(esw))
  		esw->flags |= MLX5_ESWITCH_VPORT_MATCH_METADATA;
  
-+	err = esw_offloads_metadata_init(esw);
-+	if (err)
-+		goto err_metadata;
-+
- 	err = esw_set_passing_vport_metadata(esw, true);
- 	if (err)
- 		goto err_vport_metadata;
-@@ -2170,6 +2200,8 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
- err_steering_init:
- 	esw_set_passing_vport_metadata(esw, false);
- err_vport_metadata:
-+	esw_offloads_metadata_uninit(esw);
-+err_metadata:
- 	esw->flags &= ~MLX5_ESWITCH_VPORT_MATCH_METADATA;
- 	mlx5_rdma_disable_roce(esw->dev);
- 	mutex_destroy(&esw->offloads.termtbl_mutex);
-@@ -2204,6 +2236,7 @@ void esw_offloads_disable(struct mlx5_eswitch *esw)
- 	esw_offloads_unload_rep(esw, MLX5_VPORT_UPLINK);
- 	esw_set_passing_vport_metadata(esw, false);
- 	esw_offloads_steering_cleanup(esw);
-+	esw_offloads_metadata_uninit(esw);
- 	esw->flags &= ~MLX5_ESWITCH_VPORT_MATCH_METADATA;
- 	mlx5_rdma_disable_roce(esw->dev);
- 	mutex_destroy(&esw->offloads.termtbl_mutex);
+ 	err = esw_offloads_metadata_init(esw);
 -- 
 2.26.2
 
