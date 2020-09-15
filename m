@@ -2,119 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8443B26B179
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:31:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0989E26B216
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:41:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727694AbgIOWbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 18:31:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727266AbgIOQRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 12:17:34 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A2CC061A2B;
-        Tue, 15 Sep 2020 09:13:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=Guqxj07xwr5MuMGWT2PdBQLUVmSBHz1SxHMxp26SQAM=; b=Itp/Q3JRcH/NoLIHSU3m7qeF67
-        gdhEr5XoAv7CiO4A0JxQ9Ti91ecohZg09mmgvHrQ+qoZ6uxG9jjAF5CYBRkGY4hkrZ8oLusOXawRu
-        itEmIISOfcaM1ZycQkbekQzpocP6mbHhti1ust7wPgdCSXc66m8BGmkDx98nY/j8QwaRK1bMXlU+m
-        bYtvv7XU/3VQJbFpljGBOuuUeAEg3A3Iw5CUCndXJ/8B9we1WY5JyUIiuhTRei/9HurInzcXik9Ju
-        uioPNWsVFBKt3ob9SdqR4jaV4K2ad4/sztjOMkemAO/dxqRpZQjqa6xUWACYYBfwxKEGU2wvZU38V
-        7RUXb+ng==;
-Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92] helo=localhost)
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kIDZx-0004jl-Hl; Tue, 15 Sep 2020 16:13:13 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        iommu@lists.linux-foundation.org
-Cc:     Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        linux1394-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
-        alsa-devel@alsa-project.org
-Subject: [PATCH 09/18] sgiwd93: convert to dma_alloc_noncoherent
-Date:   Tue, 15 Sep 2020 17:51:13 +0200
-Message-Id: <20200915155122.1768241-10-hch@lst.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200915155122.1768241-1-hch@lst.de>
-References: <20200915155122.1768241-1-hch@lst.de>
+        id S1727688AbgIOWk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 18:40:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52078 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727208AbgIOP6D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Sep 2020 11:58:03 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1BDE6206B7;
+        Tue, 15 Sep 2020 15:58:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600185483;
+        bh=+HMSv9EJEU9r90uLwbq9RCqS1JjJ75MwUi2oubnP9go=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TX+VUGTdBqo7VmUC4KngVKqU3tbJFYRJKwUztePzhOVu6WSxmPLjVK1U1+ywWuh+D
+         LEOxzCaAGffF/j3SR67jSXFqJpP271WzCdWVu6peEmnyq3tTF+hAjzcC80yEXTrK5w
+         B6gmjCOdq9UdASu8mPw4xPF1drrDOnMQIXB9d+Io=
+Date:   Tue, 15 Sep 2020 08:58:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+Subject: Re: [PATCH net-next v2 00/10] make drivers/net/ethernet W=1 clean
+Message-ID: <20200915085801.475e32f2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a28498acdf87f11e81d3282d63f18dbe1a3d5329.camel@kernel.org>
+References: <20200915014455.1232507-1-jesse.brandeburg@intel.com>
+        <a28498acdf87f11e81d3282d63f18dbe1a3d5329.camel@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new non-coherent DMA API including proper ownership transfers.
-This also means we can allocate the memory as DMA_TO_DEVICE instead
-of bidirectional.
+On Mon, 14 Sep 2020 21:24:28 -0700 Saeed Mahameed wrote:
+> I know Jakub and Dave do some compilation testing before merging but i
+> don't know how much driver coverage they have and if they use a
+> specific .config or they just manually create one on demand..
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/scsi/sgiwd93.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+allmodconfig, it should be able to catch everything that builds on x86
+and for a given GCC version.
 
-diff --git a/drivers/scsi/sgiwd93.c b/drivers/scsi/sgiwd93.c
-index 3bdf0deb8f1529..cf1030c9dda17f 100644
---- a/drivers/scsi/sgiwd93.c
-+++ b/drivers/scsi/sgiwd93.c
-@@ -95,7 +95,7 @@ void fill_hpc_entries(struct ip22_hostdata *hd, struct scsi_cmnd *cmd, int din)
- 	 */
- 	hcp->desc.pbuf = 0;
- 	hcp->desc.cntinfo = HPCDMA_EOX;
--	dma_cache_sync(hd->dev, hd->cpu,
-+	dma_sync_single_for_device(hd->dev, hd->dma,
- 		       (unsigned long)(hcp + 1) - (unsigned long)hd->cpu,
- 		       DMA_TO_DEVICE);
- }
-@@ -234,8 +234,8 @@ static int sgiwd93_probe(struct platform_device *pdev)
- 
- 	hdata = host_to_hostdata(host);
- 	hdata->dev = &pdev->dev;
--	hdata->cpu = dma_alloc_attrs(&pdev->dev, HPC_DMA_SIZE, &hdata->dma,
--				     GFP_KERNEL, DMA_ATTR_NON_CONSISTENT);
-+	hdata->cpu = dma_alloc_noncoherent(&pdev->dev, HPC_DMA_SIZE,
-+				&hdata->dma, DMA_TO_DEVICE, GFP_KERNEL);
- 	if (!hdata->cpu) {
- 		printk(KERN_WARNING "sgiwd93: Could not allocate memory for "
- 		       "host %d buffer.\n", unit);
-@@ -274,8 +274,8 @@ static int sgiwd93_probe(struct platform_device *pdev)
- out_irq:
- 	free_irq(irq, host);
- out_free:
--	dma_free_attrs(&pdev->dev, HPC_DMA_SIZE, hdata->cpu, hdata->dma,
--		       DMA_ATTR_NON_CONSISTENT);
-+	dma_free_noncoherent(&pdev->dev, HPC_DMA_SIZE, hdata->cpu, hdata->dma,
-+			DMA_TO_DEVICE);
- out_put:
- 	scsi_host_put(host);
- out:
-@@ -291,8 +291,8 @@ static int sgiwd93_remove(struct platform_device *pdev)
- 
- 	scsi_remove_host(host);
- 	free_irq(pd->irq, host);
--	dma_free_attrs(&pdev->dev, HPC_DMA_SIZE, hdata->cpu, hdata->dma,
--		       DMA_ATTR_NON_CONSISTENT);
-+	dma_free_noncoherent(&pdev->dev, HPC_DMA_SIZE, hdata->cpu, hdata->dma,
-+			DMA_TO_DEVICE);
- 	scsi_host_put(host);
- 	return 0;
- }
--- 
-2.28.0
-
+The other advantage of this series is that we won't have to apply a
+thousand single-warning fixes.
