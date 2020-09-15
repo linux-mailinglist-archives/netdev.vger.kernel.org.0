@@ -2,127 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9536426ABCA
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 20:26:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 200C626ABEF
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 20:30:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728012AbgIOSZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 14:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727861AbgIOSXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 14:23:50 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9289C061352
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 11:22:58 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id z23so6385424ejr.13
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 11:22:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bHMA1OZ71J24cXNTJ+Ui1obSZeD2uKalee+oYkWXVSo=;
-        b=o3Zmi1BASo6TM8wuDMXiZEyslXtCmYHAvnnX8uQzlEg5z+ZnlMnyJaZkaR+fIXjr7c
-         9LwwyQIDIPDRM6kwNtrR76W+DIkgV0BuoqsqCOkWOPI3ubiu8SJorYUEhRbIkysEmZcM
-         aeufrGzmG0/KTofPtDqWa2BejUoEfRlcnx35ihAK5G5qDJKS+OC63krwvKuD9zNsH4Zl
-         +av0nF8l4Sa9P0PcS3p3hRzRFVgD+s9u3Br2rCUwDEQknNsPPs368LiBuk88szvQEfqV
-         wXzio2B9doND17j8jnbqPmwugKFcchweWxFSu5vdKnPJrlr6hyN6W46H9a9+UcdjPK0d
-         RkcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bHMA1OZ71J24cXNTJ+Ui1obSZeD2uKalee+oYkWXVSo=;
-        b=uoQ59Z4lE9iBdUEqLnGwGEoPq84L5VSu+R4CQyFQmlN60uJM129kCAwk40FBIryO1x
-         s1xNMkcjOUDHq9h0yePfiDlI9oNPB908ls4rzg6QLmnyidsIHHCtrb01r3XaNQwgU0dC
-         MSDAxac3zeKRiKfourgCF1aIS3qHuCDNCKJm7LWNxTXl3MG091c0eC4uycs9mc+XLK8g
-         pWN/wpC0tC15MKBoRpIOA0CPiEVzd+Uy7DqRwZByL6R9c85GJqV05JseUxN0UfwzixD2
-         J9L18l28huiCTzNmU04BR6vZkWEg9sx0UKCmmeQQS7S5eu4YJ5k5MIN0vC87+QnB0JXE
-         7D1Q==
-X-Gm-Message-State: AOAM5323KMYiATQvexvfDHqsT+nnSZq2pylPEdKFZP/igT3z0WQh/22D
-        5nEpOei82Zbxf/VLNDuLKng=
-X-Google-Smtp-Source: ABdhPJzCx7lbcnICOWq2+HMh8ASb4UmQVzeIS8XESQ9UpfTkzmrj71yiwc/f6coONx8MLMz5W8OHuQ==
-X-Received: by 2002:a17:906:2552:: with SMTP id j18mr21089605ejb.476.1600194177560;
-        Tue, 15 Sep 2020 11:22:57 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id q11sm11860481eds.16.2020.09.15.11.22.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 11:22:57 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
-        UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org
-Subject: [PATCH net 7/7] net: mscc: ocelot: unregister net devices on unbind
-Date:   Tue, 15 Sep 2020 21:22:29 +0300
-Message-Id: <20200915182229.69529-8-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200915182229.69529-1-olteanv@gmail.com>
-References: <20200915182229.69529-1-olteanv@gmail.com>
+        id S1728069AbgIOSaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 14:30:23 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:20136 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728068AbgIOSaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 14:30:16 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08FIJBCX013924
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 11:30:09 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=NsQ7h/XnKhl3Izio8nb4VLBC0WdywdRtn0ET+jvqZ5M=;
+ b=bOl3pDj9Pph4Tjkrc3zTn92/5DVHdcE6Q6i8HkXBdnBP63FcJBmT2aWFDvChglh8/YoJ
+ nwuVmav7GAV+KMyjqhUwM782VQkPd3bhxDyphMNfcS2aJEmu07qUqmIIUOVfGQLKB1fx
+ baqE9e+RR8YBwHL9iSsmmInpiFB8DmNtcYc= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33guums9as-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 11:30:08 -0700
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 15 Sep 2020 11:30:07 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id 293072946053; Tue, 15 Sep 2020 11:29:59 -0700 (PDT)
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>
+Subject: [PATCH bpf] bpf: bpf_skc_to_* casting helpers require a NULL check on sk
+Date:   Tue, 15 Sep 2020 11:29:59 -0700
+Message-ID: <20200915182959.241101-1-kafai@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-15_12:2020-09-15,2020-09-15 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 spamscore=0 priorityscore=1501 bulkscore=0
+ malwarescore=0 clxscore=1015 mlxlogscore=862 phishscore=0 adultscore=0
+ suspectscore=13 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009150147
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+The bpf_skc_to_* type casting helpers are available to
+BPF_PROG_TYPE_TRACING.  The traced PTR_TO_BTF_ID may be NULL.
+For example, the skb->sk may be NULL.  Thus, these casting helpers
+need to check "!sk" also and this patch fixes them.
 
-This driver was not unregistering its network interfaces on unbind.
-Now it is.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Fixes: 0d4fad3e57df ("bpf: Add bpf_skc_to_udp6_sock() helper")
+Fixes: 478cfbdf5f13 ("bpf: Add bpf_skc_to_{tcp, tcp_timewait, tcp_request=
+}_sock() helpers")
+Fixes: af7ec1383361 ("bpf: Add bpf_skc_to_tcp6_sock() helper")
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ net/core/filter.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 851e79e11aed..b8f895483653 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -896,6 +896,26 @@ static struct ptp_clock_info ocelot_ptp_clock_info = {
- 	.enable		= ocelot_ptp_enable,
- };
- 
-+static void mscc_ocelot_release_ports(struct ocelot *ocelot)
-+{
-+	int port;
-+
-+	for (port = 0; port < ocelot->num_phys_ports; port++) {
-+		struct ocelot_port_private *priv;
-+		struct ocelot_port *ocelot_port;
-+
-+		ocelot_port = ocelot->ports[port];
-+		if (!ocelot_port)
-+			continue;
-+
-+		priv = container_of(ocelot_port, struct ocelot_port_private,
-+				    port);
-+
-+		unregister_netdev(priv->dev);
-+		free_netdev(priv->dev);
-+	}
-+}
-+
- static int mscc_ocelot_init_ports(struct platform_device *pdev)
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 2d62c25e0395..23e8ded0ec97 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -9522,7 +9522,7 @@ BPF_CALL_1(bpf_skc_to_tcp6_sock, struct sock *, sk)
+ 	 * trigger an explicit type generation here.
+ 	 */
+ 	BTF_TYPE_EMIT(struct tcp6_sock);
+-	if (sk_fullsock(sk) && sk->sk_protocol =3D=3D IPPROTO_TCP &&
++	if (sk && sk_fullsock(sk) && sk->sk_protocol =3D=3D IPPROTO_TCP &&
+ 	    sk->sk_family =3D=3D AF_INET6)
+ 		return (unsigned long)sk;
+=20
+@@ -9540,7 +9540,7 @@ const struct bpf_func_proto bpf_skc_to_tcp6_sock_pr=
+oto =3D {
+=20
+ BPF_CALL_1(bpf_skc_to_tcp_sock, struct sock *, sk)
  {
- 	struct ocelot *ocelot = platform_get_drvdata(pdev);
-@@ -1008,6 +1028,7 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev)
- 
- out_put_ports:
- 	of_node_put(ports);
-+	mscc_ocelot_release_ports(ocelot);
- 	return err;
- }
- 
-@@ -1132,6 +1153,7 @@ static int mscc_ocelot_remove(struct platform_device *pdev)
- 	struct ocelot *ocelot = platform_get_drvdata(pdev);
- 
- 	ocelot_deinit_timestamp(ocelot);
-+	mscc_ocelot_release_ports(ocelot);
- 	ocelot_deinit(ocelot);
- 	unregister_switchdev_blocking_notifier(&ocelot_switchdev_blocking_nb);
- 	unregister_switchdev_notifier(&ocelot_switchdev_nb);
--- 
-2.25.1
+-	if (sk_fullsock(sk) && sk->sk_protocol =3D=3D IPPROTO_TCP)
++	if (sk && sk_fullsock(sk) && sk->sk_protocol =3D=3D IPPROTO_TCP)
+ 		return (unsigned long)sk;
+=20
+ 	return (unsigned long)NULL;
+@@ -9558,12 +9558,12 @@ const struct bpf_func_proto bpf_skc_to_tcp_sock_p=
+roto =3D {
+ BPF_CALL_1(bpf_skc_to_tcp_timewait_sock, struct sock *, sk)
+ {
+ #ifdef CONFIG_INET
+-	if (sk->sk_prot =3D=3D &tcp_prot && sk->sk_state =3D=3D TCP_TIME_WAIT)
++	if (sk && sk->sk_prot =3D=3D &tcp_prot && sk->sk_state =3D=3D TCP_TIME_=
+WAIT)
+ 		return (unsigned long)sk;
+ #endif
+=20
+ #if IS_BUILTIN(CONFIG_IPV6)
+-	if (sk->sk_prot =3D=3D &tcpv6_prot && sk->sk_state =3D=3D TCP_TIME_WAIT=
+)
++	if (sk && sk->sk_prot =3D=3D &tcpv6_prot && sk->sk_state =3D=3D TCP_TIM=
+E_WAIT)
+ 		return (unsigned long)sk;
+ #endif
+=20
+@@ -9582,12 +9582,12 @@ const struct bpf_func_proto bpf_skc_to_tcp_timewa=
+it_sock_proto =3D {
+ BPF_CALL_1(bpf_skc_to_tcp_request_sock, struct sock *, sk)
+ {
+ #ifdef CONFIG_INET
+-	if (sk->sk_prot =3D=3D &tcp_prot  && sk->sk_state =3D=3D TCP_NEW_SYN_RE=
+CV)
++	if (sk && sk->sk_prot =3D=3D &tcp_prot && sk->sk_state =3D=3D TCP_NEW_S=
+YN_RECV)
+ 		return (unsigned long)sk;
+ #endif
+=20
+ #if IS_BUILTIN(CONFIG_IPV6)
+-	if (sk->sk_prot =3D=3D &tcpv6_prot && sk->sk_state =3D=3D TCP_NEW_SYN_R=
+ECV)
++	if (sk && sk->sk_prot =3D=3D &tcpv6_prot && sk->sk_state =3D=3D TCP_NEW=
+_SYN_RECV)
+ 		return (unsigned long)sk;
+ #endif
+=20
+@@ -9609,7 +9609,7 @@ BPF_CALL_1(bpf_skc_to_udp6_sock, struct sock *, sk)
+ 	 * trigger an explicit type generation here.
+ 	 */
+ 	BTF_TYPE_EMIT(struct udp6_sock);
+-	if (sk_fullsock(sk) && sk->sk_protocol =3D=3D IPPROTO_UDP &&
++	if (sk && sk_fullsock(sk) && sk->sk_protocol =3D=3D IPPROTO_UDP &&
+ 	    sk->sk_type =3D=3D SOCK_DGRAM && sk->sk_family =3D=3D AF_INET6)
+ 		return (unsigned long)sk;
+=20
+--=20
+2.24.1
 
