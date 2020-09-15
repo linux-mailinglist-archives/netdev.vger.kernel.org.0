@@ -2,73 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CA1426A1F2
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 11:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD01926A259
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 11:36:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726436AbgIOJTx convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Sep 2020 05:19:53 -0400
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:59441 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726185AbgIOJTo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 05:19:44 -0400
-X-Originating-IP: 91.224.148.103
-Received: from xps13 (unknown [91.224.148.103])
-        (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id A7B9F60004;
-        Tue, 15 Sep 2020 09:19:26 +0000 (UTC)
-Date:   Tue, 15 Sep 2020 11:19:25 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Joe Perches <joe@perches.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Jiri Kosina <trivial@kernel.org>,
-        linux-wireless@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        oss-drivers@netronome.com, nouveau@lists.freedesktop.org,
-        alsa-devel <alsa-devel@alsa-project.org>,
-        dri-devel@lists.freedesktop.org, linux-ide@vger.kernel.org,
-        dm-devel@redhat.com, linux-mtd@lists.infradead.org,
-        linux-i2c@vger.kernel.org, sparclinux@vger.kernel.org,
-        kvmarm@lists.cs.columbia.edu, linux-rtc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org,
-        dccp@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net,
-        linux-afs@lists.infradead.org, coreteam@netfilter.org,
-        intel-wired-lan@lists.osuosl.org, linux-serial@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Kees Cook <kees.cook@canonical.com>,
-        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-sctp@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-nvme@lists.infradead.org,
-        storagedev@microchip.com, ceph-devel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-nfs@vger.kernel.org,
-        linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-mips@vger.kernel.org, iommu@lists.linux-foundation.org,
-        netfilter-devel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        bpf@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [trivial PATCH] treewide: Convert switch/case fallthrough; to
- break;
-Message-ID: <20200915111925.475dd3f1@xps13>
-In-Reply-To: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
-References: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S1726420AbgIOJgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 05:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45194 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726208AbgIOJgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 05:36:00 -0400
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFBFC061788
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 02:35:59 -0700 (PDT)
+Received: from ramsan ([84.195.186.194])
+        by xavier.telenet-ops.be with bizsmtp
+        id U9bt230034C55Sk019btuN; Tue, 15 Sep 2020 11:35:55 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1kI7NQ-00060F-Vq; Tue, 15 Sep 2020 11:35:52 +0200
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1kI7NQ-0007eP-T2; Tue, 15 Sep 2020 11:35:52 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] chelsio/chtls: Re-add dependencies on CHELSIO_T4 to fix modular CHELSIO_T4
+Date:   Tue, 15 Sep 2020 11:35:51 +0200
+Message-Id: <20200915093551.29368-1-geert+renesas@glider.be>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joe,
+As CHELSIO_INLINE_CRYPTO is bool, and CHELSIO_T4 is tristate, the
+dependency of CHELSIO_INLINE_CRYPTO on CHELSIO_T4 is not sufficient to
+protect CRYPTO_DEV_CHELSIO_TLS and CHELSIO_IPSEC_INLINE.  The latter two
+are also tristate, hence if CHELSIO_T4=n, they cannot be builtin, as
+that would lead to link failures like:
 
-For MTD:
+    drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.c:259: undefined reference to `cxgb4_port_viid'
 
->  drivers/mtd/nand/raw/nandsim.c                            |  2 +-
+and
 
-Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
+    drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c:752: undefined reference to `cxgb4_reclaim_completed_tx'
 
+Fix this by re-adding dependencies on CHELSIO_T4 to tristate symbols.
+The dependency of CHELSIO_INLINE_CRYPTO on CHELSIO_T4 is kept to avoid
+asking the user.
 
-Thanks,
-Miquèl
+Fixes: 6bd860ac1c2a0ec2 ("chelsio/chtls: CHELSIO_INLINE_CRYPTO should depend on CHELSIO_T4")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/net/ethernet/chelsio/inline_crypto/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/Kconfig b/drivers/net/ethernet/chelsio/inline_crypto/Kconfig
+index 1923e713b53a1bf5..7dfa57348d542921 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/Kconfig
++++ b/drivers/net/ethernet/chelsio/inline_crypto/Kconfig
+@@ -15,6 +15,7 @@ if CHELSIO_INLINE_CRYPTO
+ 
+ config CRYPTO_DEV_CHELSIO_TLS
+ 	tristate "Chelsio Crypto Inline TLS Driver"
++	depends on CHELSIO_T4
+ 	depends on TLS_TOE
+ 	help
+ 	  Support Chelsio Inline TLS with Chelsio crypto accelerator.
+@@ -25,6 +26,7 @@ config CRYPTO_DEV_CHELSIO_TLS
+ 
+ config CHELSIO_IPSEC_INLINE
+        tristate "Chelsio IPSec XFRM Tx crypto offload"
++       depends on CHELSIO_T4
+        depends on XFRM_OFFLOAD
+        depends on INET_ESP_OFFLOAD || INET6_ESP_OFFLOAD
+        help
+-- 
+2.17.1
+
