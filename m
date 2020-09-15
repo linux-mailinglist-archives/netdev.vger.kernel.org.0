@@ -2,87 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDFDF26B312
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:59:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D5A226B317
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 01:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727465AbgIOW7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 18:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40266 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727422AbgIOPHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 11:07:53 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9EFC06174A
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 07:57:38 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id n13so3324981edo.10
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 07:57:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=V0oVeorJEn639RUtHYFD9WKWaUEUtKz13YDNA91Zt1M=;
-        b=VNhG4zHEKDWxe/WBUk+BEg4hHxxdD4aw6BHfCqYM/7+u34DRHtu5P7rDWDKRF2SXSG
-         QMPOQmY3+CnpDK/dDjJuZUnqmSfll9zei2DQFzwzvr+/V1+KWrIKCMAGdVLEMCvjcrTW
-         AkNEB8uwQqlPiEDzKCsgb+uIg8h0PscZzoBhE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=V0oVeorJEn639RUtHYFD9WKWaUEUtKz13YDNA91Zt1M=;
-        b=fzHRuYqQsWj2CS5VJkEAAICnMR1UjuevHMoEQUM9uxFDqy5pbSA32Gz8RONXVcTUV3
-         Vo0TOTJzp/xLF1P/m1vnyK1gWLCcn2CxTzweLfR/huw2QBuhabTYtr2mZqHYDj+lBC+K
-         fbP7bJ9AFFagoLXyD3QMwlppDEUeEZjugYgs2BTNuWLa5MLYljh37ZBariNZWjOKXLrh
-         3P6V0hKZjIDWpz8NuvNb8g54vZ5XdxKD00EkA/uza+nKQsRIr/zMizIouOjValUJsHYL
-         xI7OWwzhEZR9GfVjiQLCuoX2xBUw2nG1pQS1tdnZ65IQ9VjSX1cDpv79lgWSt6qghV52
-         29ig==
-X-Gm-Message-State: AOAM533zFdpFkinpX4JHg8/M8+RJJJGwKflKsEMFMqAk/IYLwQWP1ol2
-        Ph2AeWnMBgPwOjRv8Nf/HSPr22/JRoVwWA==
-X-Google-Smtp-Source: ABdhPJzAY2rvtPAX3p+iCT0TCc1/IqUnwzAOXGRCF1BXWWkr1TNlJe8m5QiOvSUrdBN9sQEQ4mxZfg==
-X-Received: by 2002:a50:fc87:: with SMTP id f7mr22614057edq.162.1600181856204;
-        Tue, 15 Sep 2020 07:57:36 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id m14sm10255700ejn.8.2020.09.15.07.57.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 07:57:35 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        davem@davemloft.net,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next] net: bridge: mcast: don't ignore return value of __grp_src_toex_excl
-Date:   Tue, 15 Sep 2020 17:57:24 +0300
-Message-Id: <20200915145724.2065042-1-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.25.4
+        id S1726205AbgIOXAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 19:00:21 -0400
+Received: from www62.your-server.de ([213.133.104.62]:40766 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727322AbgIOPEj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 11:04:39 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kICUf-0006cS-DR; Tue, 15 Sep 2020 17:03:41 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kICUf-0001Me-5p; Tue, 15 Sep 2020 17:03:41 +0200
+Subject: Re: [PATCH v7 bpf-next 7/7] selftests: bpf: add dummy prog for
+ bpf2bpf with tailcall
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     ast@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com
+References: <20200902200815.3924-1-maciej.fijalkowski@intel.com>
+ <20200902200815.3924-8-maciej.fijalkowski@intel.com>
+ <20200903195114.ccfzmgcl4ngz2mqv@ast-mbp.dhcp.thefacebook.com>
+ <20200911185927.GA2543@ranger.igk.intel.com>
+ <20200915043924.uicfgbhuszccycbq@ast-mbp.dhcp.thefacebook.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5bf5a63c-7607-a24d-7e14-e41caa84bfc3@iogearbox.net>
+Date:   Tue, 15 Sep 2020 17:03:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200915043924.uicfgbhuszccycbq@ast-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25930/Tue Sep 15 15:55:28 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we're handling TO_EXCLUDE report in EXCLUDE filter mode we should
-not ignore the return value of __grp_src_toex_excl() as we'll miss
-sending notifications about group changes.
+On 9/15/20 6:39 AM, Alexei Starovoitov wrote:
+> On Fri, Sep 11, 2020 at 08:59:27PM +0200, Maciej Fijalkowski wrote:
+>> On Thu, Sep 03, 2020 at 12:51:14PM -0700, Alexei Starovoitov wrote:
+>>> On Wed, Sep 02, 2020 at 10:08:15PM +0200, Maciej Fijalkowski wrote:
+[...]
+>>> Could you add few more tests to exercise the new feature more thoroughly?
+>>> Something like tailcall3.c that checks 32 limit, but doing tail_call from subprog.
+>>> And another test that consume non-trival amount of stack in each function.
+>>> Adding 'volatile char arr[128] = {};' would do the trick.
+>>
+>> Yet another prolonged silence from my side, but not without a reason -
+>> this request opened up a Pandora's box.
+> 
+> Great catch and thanks to our development practices! As a community we should
+> remember this lesson and request selftests more often than not.
 
-Fixes: 5bf1e00b6849 ("net: bridge: mcast: support for IGMPV3/MLDv2 CHANGE_TO_INCLUDE/EXCLUDE report")
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- net/bridge/br_multicast.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
++1, speaking of pandora ... ;-) I recently noticed that we also have the legacy
+ld_abs/ld_ind instructions. Right now check_ld_abs() gates them by bailing out
+if env->subprog_cnt > 1, but that doesn't solve everything given the prog itself
+may not have bpf2bpf calls, but it could get tail-called out of a subprog. We
+need to reject such cases (& add selftests for it), otherwise this would be a
+verifier bypass given they may implicitly exit the program (and then mismatch
+the return type that the verifier was expecting).
 
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 33adf44ef7ec..e77f1e27caf7 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -1710,7 +1710,7 @@ static bool br_multicast_toex(struct net_bridge_port_group *pg,
- 		changed = true;
- 		break;
- 	case MCAST_EXCLUDE:
--		__grp_src_toex_excl(pg, srcs, nsrcs, src_size);
-+		changed = __grp_src_toex_excl(pg, srcs, nsrcs, src_size);
- 		break;
- 	}
- 
--- 
-2.25.4
-
+Best,
+Daniel
