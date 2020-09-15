@@ -2,178 +2,315 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 167B826ADD6
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 21:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B762526ADD9
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 21:44:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727937AbgIOTnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 15:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
+        id S1727784AbgIOTng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 15:43:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727849AbgIORLm (ORCPT
+        with ESMTP id S1727857AbgIORLm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 13:11:42 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1D5C061351;
-        Tue, 15 Sep 2020 10:10:28 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id k15so4114389wrn.10;
-        Tue, 15 Sep 2020 10:10:28 -0700 (PDT)
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60F1C0611C0;
+        Tue, 15 Sep 2020 10:10:47 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id a9so254755wmm.2;
+        Tue, 15 Sep 2020 10:10:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=z4AlU+bb1rRabX9jd0xPn0doqLyUa6Q99eDRG9m8Hck=;
-        b=IjyD3RKXnOA+jYMv7/MCPOcg+luKGNwOrcqJ0Y6VXkQE56UMurXy259fmpHxcq/QmR
-         ob5294GZJkRAdnTAwtAHvk1TyOrRRZG1WX8JAkVw8TOPs1PTKdsKiHNRCStoh81mUKD6
-         gy2OLcqxLwZko4jt0Edl6UChHFoOX/IXgNU/2CHI/1bm0Bm5YOP+I0m11I5PXplVnL60
-         /WPwDA/QoqX8D/4940GipTMeNbtNn8GBYL9iG3GsaKu4ScMol3UQcUx77nu4q0yCCl0U
-         /LYg1ovDAv+TrQnFjaD7qWAMF5g5AtOFgn9JpAz1EkHae2a+igYoRuKS650PPJhuxdb0
-         m+uA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=l55/Ej6p5WMH/jDYWpnuT6dWROGRv10BCJgM9R7k6L4=;
+        b=d1OklII3VVo7HqUqY1M2q52v4HXB0Pcb6bjxoPykjw9PZfTDB97szU9WE/6OOgq51e
+         N12HHi25GttfOD8j+Fpof9DfybKUqFgdx9h0jKP16H0zbFIElJLjmF+DbzZ38DZJ1cup
+         VyF8QZbb5tlEEURdrVtqFyFXbx1uc0LS7dSh3QtSWRCYwceZf9Opis+AORiWhcuvj97D
+         y/rKibenk0Ea+uFvTt6+CYA+4qWGV4K3A/u4mDnCeHJPRXdYfbGBnAMJqmeTysTWyGQ4
+         Bl526fKH3OyRIHLyw1HsT+4qSxTx38yiWZEtGSsQyvx3HvmVnwjaZuqD+iedJOZlCKpD
+         esSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=z4AlU+bb1rRabX9jd0xPn0doqLyUa6Q99eDRG9m8Hck=;
-        b=XzAs2EWsTB6KlxjbXqanV1n+W4OqKu/rlhtpyf4V8+RXwd3iJu/+xkMpsG9gTPtOk8
-         rwN8kb7ne71thPwx1gld9W48KQr5S72VceKKobqthbhl13hjWSJc/Qyk68BDOYD8RN18
-         FZop2/oapWukEriXSrDkCH40lJGwcOyRdjSmXiKZXnjAB11SMfqfI4Pb6r0MitzGHd0K
-         n/P5cqx1MILQMvA1H7PFs0SLIZ0CJZ0LGJ0Wk6l3RzCShW/Bh9MV4Uzr6fX6EnfRpHH2
-         Tdwur9dVxMsMnTYZtFJMZjm9ZyX739U6J5FAuxOvFcruFSeWCkM+Jizv2MgSScXOH9ks
-         bMrg==
-X-Gm-Message-State: AOAM533k2Julqk83EYUqyKekU4izssueU70DuG9VJq8QyBXux0kAkrJ7
-        ag8pBkb4lpTvIjkvHCac3xkgWnhP+LQcrw==
-X-Google-Smtp-Source: ABdhPJyrsbFv7yAgMEnhArc6JtSBxI092rwtDMuaTpvj40ps2My+GndLF84RgkedbyJN/oq3yjJYWw==
-X-Received: by 2002:a5d:5106:: with SMTP id s6mr23912942wrt.166.1600189826089;
-        Tue, 15 Sep 2020 10:10:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=l55/Ej6p5WMH/jDYWpnuT6dWROGRv10BCJgM9R7k6L4=;
+        b=JYHt5aoVbV1nwgx8mcaTxJo9LPx7shLpHwTUATB3GxXzLjC3+E0GnDw5ONiI7XACPq
+         hPY7A+FCcGuUlmAmvP+Q7jUxxD3XX9EH8ZNztNleFl9f8yhtwBqFA8vqi08ypgIYZ+nl
+         7FBiNwR2RCKcXVlTHcGt2N0Q62g0HHVPjgiquHLyZvvbLbsdeHzGO8eUQ/gFPq7oOgRh
+         kOsTsBplAfPz8BksvdRXzk7BIjHDAbM7YMb+SpjjpqO9I8O6HMsm+x3ycxXpF5v4S2Wd
+         r8R612FqidzEUBut7C/PXzrV15t8vsBSh/lm3iINZj7rfG4f49ij5RdxZx1jA5Nv9sol
+         PMEQ==
+X-Gm-Message-State: AOAM5318t5H/W/bwMGUNsx3s//EDV8f3moHzKcKYdNvHPoFDIBaWmnNE
+        4GllqoiG7dTONJjOfq/9GVoCbay52oG4hA==
+X-Google-Smtp-Source: ABdhPJyWyQvXJxVp4hTZ9DwxGXFXFkFnoa2Lg++3PXDNmGmo2rn+Woew4yb8xutlVKvkkYazy6/U0Q==
+X-Received: by 2002:a1c:f214:: with SMTP id s20mr379410wmc.84.1600189845856;
+        Tue, 15 Sep 2020 10:10:45 -0700 (PDT)
 Received: from ogabbay-VM.habana-labs.com ([213.57.90.10])
-        by smtp.gmail.com with ESMTPSA id b194sm356558wmd.42.2020.09.15.10.10.23
+        by smtp.gmail.com with ESMTPSA id b194sm356558wmd.42.2020.09.15.10.10.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 10:10:24 -0700 (PDT)
+        Tue, 15 Sep 2020 10:10:44 -0700 (PDT)
 From:   Oded Gabbay <oded.gabbay@gmail.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     SW_Drivers@habana.ai, gregkh@linuxfoundation.org,
         davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        f.fainelli@gmail.com
-Subject: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-Date:   Tue, 15 Sep 2020 20:10:08 +0300
-Message-Id: <20200915171022.10561-1-oded.gabbay@gmail.com>
+        f.fainelli@gmail.com, Omer Shpigelman <oshpigelman@habana.ai>
+Subject: [PATCH v3 07/14] habanalabs/gaudi: allow user to get MAC addresses in INFO IOCTL
+Date:   Tue, 15 Sep 2020 20:10:15 +0300
+Message-Id: <20200915171022.10561-8-oded.gabbay@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200915171022.10561-1-oded.gabbay@gmail.com>
+References: <20200915171022.10561-1-oded.gabbay@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Omer Shpigelman <oshpigelman@habana.ai>
 
-This is the second version of the patch-set to upstream the GAUDI NIC code
-into the habanalabs driver.
+The user needs this information when working in a distributed environment
+with master/slave configuration. All the slaves get their MAC addresses
+from the driver and send them to the master.
 
-The only modification from v2 is in the ethtool patch (patch 12). Details
-are in that patch's commit message.
+Signed-off-by: Omer Shpigelman <oshpigelman@habana.ai>
+Reviewed-by: Oded Gabbay <oded.gabbay@gmail.com>
+Signed-off-by: Oded Gabbay <oded.gabbay@gmail.com>
+---
+ drivers/misc/habanalabs/common/habanalabs.h   |  5 +++
+ .../misc/habanalabs/common/habanalabs_ioctl.c | 31 +++++++++++++++++++
+ drivers/misc/habanalabs/gaudi/gaudi.c         |  1 +
+ drivers/misc/habanalabs/gaudi/gaudiP.h        |  2 ++
+ drivers/misc/habanalabs/gaudi/gaudi_nic.c     | 27 ++++++++++++++++
+ drivers/misc/habanalabs/goya/goya.c           |  9 ++++++
+ include/uapi/misc/habanalabs.h                | 20 +++++++++++-
+ 7 files changed, 94 insertions(+), 1 deletion(-)
 
-Link to v2 cover letter:
-https://lkml.org/lkml/2020/9/12/201
-
-Thanks,
-Oded
-
-Omer Shpigelman (14):
-  habanalabs/gaudi: add NIC H/W and registers definitions
-  habanalabs/gaudi: add NIC firmware-related definitions
-  habanalabs/gaudi: add NIC security configuration
-  habanalabs/gaudi: add support for NIC QMANs
-  habanalabs/gaudi: add NIC Ethernet support
-  habanalabs/gaudi: add NIC PHY code
-  habanalabs/gaudi: allow user to get MAC addresses in INFO IOCTL
-  habanalabs/gaudi: add a new IOCTL for NIC control operations
-  habanalabs/gaudi: add CQ control operations
-  habanalabs/gaudi: add WQ control operations
-  habanalabs/gaudi: add QP error handling
-  habanalabs/gaudi: Add ethtool support using coresight
-  habanalabs/gaudi: support DCB protocol
-  habanalabs/gaudi: add NIC init/fini calls from common code
-
- drivers/misc/habanalabs/common/context.c      |    1 +
- drivers/misc/habanalabs/common/device.c       |   24 +-
- drivers/misc/habanalabs/common/firmware_if.c  |   44 +
- drivers/misc/habanalabs/common/habanalabs.h   |   33 +-
- .../misc/habanalabs/common/habanalabs_drv.c   |    5 +
- .../misc/habanalabs/common/habanalabs_ioctl.c |  151 +-
- drivers/misc/habanalabs/common/pci.c          |    1 +
- drivers/misc/habanalabs/gaudi/Makefile        |    3 +
- drivers/misc/habanalabs/gaudi/gaudi.c         |  957 +++-
- drivers/misc/habanalabs/gaudi/gaudiP.h        |  331 +-
- .../misc/habanalabs/gaudi/gaudi_coresight.c   |  144 +
- drivers/misc/habanalabs/gaudi/gaudi_nic.c     | 4093 +++++++++++++++++
- drivers/misc/habanalabs/gaudi/gaudi_nic.h     |  353 ++
- .../misc/habanalabs/gaudi/gaudi_nic_dcbnl.c   |  108 +
- .../misc/habanalabs/gaudi/gaudi_nic_ethtool.c |  616 +++
- drivers/misc/habanalabs/gaudi/gaudi_phy.c     | 1276 +++++
- .../misc/habanalabs/gaudi/gaudi_security.c    | 3973 ++++++++++++++++
- drivers/misc/habanalabs/goya/goya.c           |   44 +
- .../misc/habanalabs/include/common/cpucp_if.h |   34 +-
- .../include/gaudi/asic_reg/gaudi_regs.h       |   26 +-
- .../include/gaudi/asic_reg/nic0_qm0_masks.h   |  800 ++++
- .../include/gaudi/asic_reg/nic0_qm0_regs.h    |  834 ++++
- .../include/gaudi/asic_reg/nic0_qm1_regs.h    |  834 ++++
- .../include/gaudi/asic_reg/nic0_qpc0_masks.h  |  500 ++
- .../include/gaudi/asic_reg/nic0_qpc0_regs.h   |  710 +++
- .../include/gaudi/asic_reg/nic0_qpc1_regs.h   |  710 +++
- .../include/gaudi/asic_reg/nic0_rxb_regs.h    |  508 ++
- .../include/gaudi/asic_reg/nic0_rxe0_masks.h  |  354 ++
- .../include/gaudi/asic_reg/nic0_rxe0_regs.h   |  158 +
- .../include/gaudi/asic_reg/nic0_rxe1_regs.h   |  158 +
- .../include/gaudi/asic_reg/nic0_stat_regs.h   |  518 +++
- .../include/gaudi/asic_reg/nic0_tmr_regs.h    |  184 +
- .../include/gaudi/asic_reg/nic0_txe0_masks.h  |  336 ++
- .../include/gaudi/asic_reg/nic0_txe0_regs.h   |  264 ++
- .../include/gaudi/asic_reg/nic0_txe1_regs.h   |  264 ++
- .../include/gaudi/asic_reg/nic0_txs0_masks.h  |  336 ++
- .../include/gaudi/asic_reg/nic0_txs0_regs.h   |  214 +
- .../include/gaudi/asic_reg/nic0_txs1_regs.h   |  214 +
- .../include/gaudi/asic_reg/nic1_qm0_regs.h    |  834 ++++
- .../include/gaudi/asic_reg/nic1_qm1_regs.h    |  834 ++++
- .../include/gaudi/asic_reg/nic2_qm0_regs.h    |  834 ++++
- .../include/gaudi/asic_reg/nic2_qm1_regs.h    |  834 ++++
- .../include/gaudi/asic_reg/nic3_qm0_regs.h    |  834 ++++
- .../include/gaudi/asic_reg/nic3_qm1_regs.h    |  834 ++++
- .../include/gaudi/asic_reg/nic4_qm0_regs.h    |  834 ++++
- .../include/gaudi/asic_reg/nic4_qm1_regs.h    |  834 ++++
- drivers/misc/habanalabs/include/gaudi/gaudi.h |   12 +
- .../habanalabs/include/gaudi/gaudi_fw_if.h    |   24 +
- .../habanalabs/include/gaudi/gaudi_masks.h    |   15 +
- .../include/hw_ip/nic/nic_general.h           |   13 +
- include/uapi/misc/habanalabs.h                |  296 +-
- 51 files changed, 27083 insertions(+), 62 deletions(-)
- create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic.c
- create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic.h
- create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_dcbnl.c
- create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_ethtool.c
- create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_phy.c
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm0_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm1_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc0_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc1_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxb_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe0_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe1_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_stat_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_tmr_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe0_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe1_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs0_masks.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs1_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic1_qm0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic1_qm1_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic2_qm0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic2_qm1_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic3_qm0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic3_qm1_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic4_qm0_regs.h
- create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic4_qm1_regs.h
- create mode 100644 drivers/misc/habanalabs/include/hw_ip/nic/nic_general.h
-
+diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
+index 45feb4884ab3..fee04299360d 100644
+--- a/drivers/misc/habanalabs/common/habanalabs.h
++++ b/drivers/misc/habanalabs/common/habanalabs.h
+@@ -619,6 +619,8 @@ enum div_select_defs {
+ 	DIV_SEL_DIVIDED_PLL = 3,
+ };
+ 
++struct hl_info_mac_addr;
++
+ /**
+  * struct hl_asic_funcs - ASIC specific functions that are can be called from
+  *                        common code.
+@@ -696,6 +698,7 @@ enum div_select_defs {
+  * @get_hw_state: retrieve the H/W state
+  * @pci_bars_map: Map PCI BARs.
+  * @init_iatu: Initialize the iATU unit inside the PCI controller.
++ * @get_mac_addr: Get list of MAC addresses.
+  * @rreg: Read a register. Needed for simulator support.
+  * @wreg: Write a register. Needed for simulator support.
+  * @halt_coresight: stop the ETF and ETR traces.
+@@ -799,6 +802,8 @@ struct hl_asic_funcs {
+ 	enum hl_device_hw_state (*get_hw_state)(struct hl_device *hdev);
+ 	int (*pci_bars_map)(struct hl_device *hdev);
+ 	int (*init_iatu)(struct hl_device *hdev);
++	int (*get_mac_addr)(struct hl_device *hdev,
++				struct hl_info_mac_addr *mac_addr);
+ 	u32 (*rreg)(struct hl_device *hdev, u32 reg);
+ 	void (*wreg)(struct hl_device *hdev, u32 reg, u32 val);
+ 	void (*halt_coresight)(struct hl_device *hdev);
+diff --git a/drivers/misc/habanalabs/common/habanalabs_ioctl.c b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+index 07317ea49129..5db6c978415c 100644
+--- a/drivers/misc/habanalabs/common/habanalabs_ioctl.c
++++ b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+@@ -203,6 +203,33 @@ static int debug_coresight(struct hl_device *hdev, struct hl_debug_args *args)
+ 	return rc;
+ }
+ 
++static int mac_addr_info(struct hl_device *hdev, struct hl_info_args *args)
++{
++	void __user *out = (void __user *) (uintptr_t) args->return_pointer;
++	struct hl_info_mac_addr *mac_addr;
++	u32 max_size = args->return_size;
++	int rc;
++
++	if (!max_size || !out)
++		return -EINVAL;
++
++	mac_addr = kzalloc(sizeof(struct hl_info_mac_addr), GFP_KERNEL);
++	if (!mac_addr)
++		return -ENOMEM;
++
++	rc = hdev->asic_funcs->get_mac_addr(hdev, mac_addr);
++	if (rc)
++		goto out;
++
++	rc = copy_to_user(out, mac_addr,
++		min((size_t) max_size, sizeof(struct hl_info_mac_addr))) ?
++								-EFAULT : 0;
++
++out:
++	kfree(mac_addr);
++	return rc;
++}
++
+ static int device_utilization(struct hl_device *hdev, struct hl_info_args *args)
+ {
+ 	struct hl_info_device_utilization device_util = {0};
+@@ -423,6 +450,10 @@ static int _hl_info_ioctl(struct hl_fpriv *hpriv, void *data,
+ 		rc = hw_idle(hdev, args);
+ 		break;
+ 
++	case HL_INFO_MAC_ADDR:
++		rc = mac_addr_info(hdev, args);
++		break;
++
+ 	case HL_INFO_DEVICE_UTILIZATION:
+ 		rc = device_utilization(hdev, args);
+ 		break;
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index eee83e0a8c6d..d2f51497fa8e 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -7472,6 +7472,7 @@ static const struct hl_asic_funcs gaudi_funcs = {
+ 	.get_hw_state = gaudi_get_hw_state,
+ 	.pci_bars_map = gaudi_pci_bars_map,
+ 	.init_iatu = gaudi_init_iatu,
++	.get_mac_addr = gaudi_nic_get_mac_addr,
+ 	.rreg = hl_rreg,
+ 	.wreg = hl_wreg,
+ 	.halt_coresight = gaudi_halt_coresight,
+diff --git a/drivers/misc/habanalabs/gaudi/gaudiP.h b/drivers/misc/habanalabs/gaudi/gaudiP.h
+index 6dea73c5682f..69b3656eaaeb 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudiP.h
++++ b/drivers/misc/habanalabs/gaudi/gaudiP.h
+@@ -564,6 +564,8 @@ void gaudi_nic_ports_fini(struct hl_device *hdev);
+ int gaudi_nic_hard_reset_prepare(struct hl_device *hdev);
+ void gaudi_nic_stop(struct hl_device *hdev);
+ void gaudi_nic_ports_reopen(struct hl_device *hdev);
++int gaudi_nic_get_mac_addr(struct hl_device *hdev,
++				struct hl_info_mac_addr *mac_addr);
+ void gaudi_nic_ctx_fini(struct hl_ctx *ctx);
+ irqreturn_t gaudi_nic_rx_irq_handler(int irq, void *arg);
+ irqreturn_t gaudi_nic_cq_irq_handler(int irq, void *arg);
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi_nic.c b/drivers/misc/habanalabs/gaudi/gaudi_nic.c
+index 1e3f58297e5e..fc4fc80eb005 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi_nic.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi_nic.c
+@@ -2774,6 +2774,33 @@ void gaudi_nic_ports_reopen(struct hl_device *hdev)
+ 	gaudi->hw_cap_initialized |= HW_CAP_NIC_DRV;
+ }
+ 
++int gaudi_nic_get_mac_addr(struct hl_device *hdev,
++				struct hl_info_mac_addr *mac_addr)
++{
++	struct gaudi_device *gaudi = hdev->asic_specific;
++	struct net_device *ndev;
++	int i, number_of_ports;
++
++	if (!(gaudi->hw_cap_initialized & HW_CAP_NIC_DRV))
++		goto out;
++
++	number_of_ports = min_t(int, NIC_NUMBER_OF_PORTS,
++				HL_INFO_MAC_ADDR_MAX_NUM);
++
++	for (i = 0 ; i < number_of_ports ; i++) {
++		if (!(hdev->nic_ports_mask & BIT(i)))
++			continue;
++
++		ndev = gaudi->nic_devices[i].ndev;
++		if (!ndev)
++			continue;
++
++		ether_addr_copy(mac_addr->array[i].addr, ndev->dev_addr);
++		mac_addr->mask[i / 64] |= BIT_ULL(i % 64);
++	}
++out:
++	return 0;
++}
+ void gaudi_nic_ctx_fini(struct hl_ctx *ctx)
+ {
+ }
+diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
+index f82212310114..75e3b3bac47c 100644
+--- a/drivers/misc/habanalabs/goya/goya.c
++++ b/drivers/misc/habanalabs/goya/goya.c
+@@ -5269,6 +5269,14 @@ static enum hl_device_hw_state goya_get_hw_state(struct hl_device *hdev)
+ 	return RREG32(mmHW_STATE);
+ }
+ 
++static int goya_get_mac_addr(struct hl_device *hdev,
++			struct hl_info_mac_addr *mac_addr)
++{
++	dev_err_ratelimited(hdev->dev,
++				"No MAC addresses are assigned to Goya\n");
++	return -ENXIO;
++}
++
+ static int goya_ctx_init(struct hl_ctx *ctx)
+ {
+ 	return 0;
+@@ -5388,6 +5396,7 @@ static const struct hl_asic_funcs goya_funcs = {
+ 	.get_hw_state = goya_get_hw_state,
+ 	.pci_bars_map = goya_pci_bars_map,
+ 	.init_iatu = goya_init_iatu,
++	.get_mac_addr = goya_get_mac_addr,
+ 	.rreg = hl_rreg,
+ 	.wreg = hl_wreg,
+ 	.halt_coresight = goya_halt_coresight,
+diff --git a/include/uapi/misc/habanalabs.h b/include/uapi/misc/habanalabs.h
+index cd9d05e03464..4c545ae8b6df 100644
+--- a/include/uapi/misc/habanalabs.h
++++ b/include/uapi/misc/habanalabs.h
+@@ -10,6 +10,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/ioctl.h>
++#include <linux/if_ether.h>
+ 
+ /*
+  * Defines that are asic-specific but constitutes as ABI between kernel driver
+@@ -248,6 +249,8 @@ enum hl_device_status {
+  *                         internal engine.
+  * HL_INFO_DEVICE_STATUS - Retrieve the device's status. This opcode doesn't
+  *                         require an open context.
++ * HL_INFO_MAC_ADDR      - Retrieve the list of MAC addresses of the device's
++ *                         network ports, if the device has network ports.
+  * HL_INFO_DEVICE_UTILIZATION  - Retrieve the total utilization of the device
+  *                               over the last period specified by the user.
+  *                               The period can be between 100ms to 1s, in
+@@ -274,6 +277,7 @@ enum hl_device_status {
+ #define HL_INFO_DRAM_USAGE		2
+ #define HL_INFO_HW_IDLE			3
+ #define HL_INFO_DEVICE_STATUS		4
++#define HL_INFO_MAC_ADDR		5
+ #define HL_INFO_DEVICE_UTILIZATION	6
+ #define HL_INFO_HW_EVENTS_AGGREGATE	7
+ #define HL_INFO_CLK_RATE		8
+@@ -285,9 +289,11 @@ enum hl_device_status {
+ #define HL_INFO_SYNC_MANAGER		14
+ #define HL_INFO_TOTAL_ENERGY		15
+ 
+-#define HL_INFO_VERSION_MAX_LEN	128
++#define HL_INFO_VERSION_MAX_LEN		128
+ #define HL_INFO_CARD_NAME_MAX_LEN	16
+ 
++#define HL_INFO_MAC_ADDR_MAX_NUM	128
++
+ struct hl_info_hw_ip_info {
+ 	__u64 sram_base_address;
+ 	__u64 dram_base_address;
+@@ -334,6 +340,18 @@ struct hl_info_device_status {
+ 	__u32 pad;
+ };
+ 
++struct hl_mac_addr {
++	__u8 addr[ETH_ALEN];
++	__u8 pad[2];
++};
++
++struct hl_info_mac_addr {
++	/* MAC address at index N is of the corresponding PORT ID */
++	struct hl_mac_addr array[HL_INFO_MAC_ADDR_MAX_NUM];
++	/* Mask of valid entries at the MAC addresses array */
++	__u64 mask[2];
++};
++
+ struct hl_info_device_utilization {
+ 	__u32 utilization;
+ 	__u32 pad;
 -- 
 2.17.1
 
