@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1490526A116
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 10:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B41726A11B
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 10:42:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726357AbgIOImI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 04:42:08 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:36909 "EHLO
+        id S1726367AbgIOIm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 04:42:26 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:34513 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726285AbgIOIlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 04:41:55 -0400
+        by vger.kernel.org with ESMTP id S1726122AbgIOIl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 04:41:57 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 056175C012C;
-        Tue, 15 Sep 2020 04:41:54 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 3056D5C00EC;
+        Tue, 15 Sep 2020 04:41:56 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 15 Sep 2020 04:41:54 -0400
+  by compute4.internal (MEProxy); Tue, 15 Sep 2020 04:41:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=b+nxJjp0FfSyYPsIo66BRkZCPpHi7L4/v+JNR3ze888=; b=n6o8hmY+
-        p41xPebZQc3/Lb/Aj1khvuznR9KxL3OCKvNLQJSV9rv70ylqipia4pwJoBV12Qhr
-        spvCqCvenSMy3I7WhXJvvpujGrSplds5TMZSYgYRpHqYajzLKwOY5d+bZB6LntnW
-        DjK77JNdwH9Vjbavai6qG5pN9PW6itGjBTiK30r70bwBBTDIIrWUklEDFgfF37TY
-        dFAR1g7o315ibEv9RdJp9m0ydcw9FtB35Jm6jIxfiujxHvHpn6r2MIEPyZEQu84N
-        BZMAKzto195bXgql7OJ23Gpup8LZkz74SK1HT9Np8b9dekxuCqAAsmDK56NceIzg
-        iDfiB7zJbmBJfQ==
-X-ME-Sender: <xms:UX5gX_ojw0wc4jvqmIZydnkq0G-VUlKxEdruH3Hb3VuIEL8AfP7_zQ>
-    <xme:UX5gX5oJ1z_Ps8if9TGjiqdvNMbcUvvPNTQbNGUAPbWEUL9MD1ilnINAXHhEEkm_M
-    8ul4YvYsmUeM1o>
+        fm3; bh=Ll6vjQlzKnuXrvHsq4V8jvRjvN6aV/Ru86IAFfMNtHw=; b=Aq5kPe08
+        XwBta5wQq7MIja06tTOyiYRt9sAMGlAqpBReYYIj7XJfOTyka28N8brwNxfh9K0M
+        ypPEI4biRxXnTvyspAWOQGjRCrCrpimAjTVAmpNIrlPD8u4yYIl0vPTijYQZZqtz
+        XuwJVScg+wBIX75naxfVZzeyOU5P5hZ9Vg8eCd0kh0yXaB4Qaca9jEXPt+BlJCVn
+        M3BcmnXhGIJhJqfSjCFureo/hwizB0xAksvMwtdRuK5aRgDFif8AAME6L6GUNar4
+        9B0hD3LGOVzNaevVyNisl6qL/X/sF2nXrLTdAyENZPQzqxeoIedJBoZWOVgLCjQN
+        /XQ2RviWI2FMoA==
+X-ME-Sender: <xms:VH5gX_zfD8eie-iouEwtxXnaDGQSf5m0qyVz1AaGRWrJamBsIyHQwA>
+    <xme:VH5gX3TiRFHAhEwemFMKd7j_OIa5fwtHkUs5tPga7mPfffdXB8dWa-IyLUYBm6GGQ
+    Nefg-IcEHixI5U>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudeikedgtdejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrfeeirdekvden
-    ucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    ucevlhhushhtvghrufhiiigvpeeinecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:UX5gX8PKh74I73nnPvuBpRegZpOnfqvqOVlgasmx4mxw8e1w7e2bBA>
-    <xmx:UX5gXy7zo2qDG9U_ET6bW4yV_UAtK5s3BVJeboVmKUBRD2uq_Kutcw>
-    <xmx:UX5gX-6i9QJeaGHKdL7dA8PqBVxBjpZSD_Jkv_pjwaVJLrfxQTwBlg>
-    <xmx:Un5gX-HfDA3Yt-o33-a12Y7MPa8FLFkgbsKri4whgGV8TZ3DEzJ0Rg>
+X-ME-Proxy: <xmx:VH5gX5X7GNC6rUfqv2l1xgby2d9x38O_gGnJ8sRMPYqUoEFzEx7cWw>
+    <xmx:VH5gX5ho6nTzZnqYSlakaoSgHPcjSR5_5JzuF1cRCd6CZEdQ2MZo9A>
+    <xmx:VH5gXxDdKtpySKDBE6ySY-DSPRd9ZT1pMzbZG9HIQs0JNIVtZYbB_A>
+    <xmx:VH5gX0N87l5GR7_k1hmIALCr8AS4GVER-uRqCpEDQ0iXatepoLe4Aw>
 Received: from shredder.mtl.com (igld-84-229-36-82.inter.net.il [84.229.36.82])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2FE433064682;
-        Tue, 15 Sep 2020 04:41:51 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3C0013064674;
+        Tue, 15 Sep 2020 04:41:54 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 6/8] mlxsw: reg: Add Monitoring FW General Debug Register
-Date:   Tue, 15 Sep 2020 11:40:56 +0300
-Message-Id: <20200915084058.18555-7-idosch@idosch.org>
+Subject: [PATCH net-next 7/8] devlink: introduce the health reporter test command
+Date:   Tue, 15 Sep 2020 11:40:57 +0300
+Message-Id: <20200915084058.18555-8-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200915084058.18555-1-idosch@idosch.org>
 References: <20200915084058.18555-1-idosch@idosch.org>
@@ -64,53 +64,99 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Introduce MFGD register that is used to configure firmware debugging.
+Introduce a test command for health reporters. User might use this
+command to trigger test event on a reporter if the reporter supports it.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ include/net/devlink.h        |  3 +++
+ include/uapi/linux/devlink.h |  2 ++
+ net/core/devlink.c           | 30 ++++++++++++++++++++++++++++++
+ 3 files changed, 35 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index f53761114f5a..421f02eac20f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -9821,6 +9821,26 @@ static inline void mlxsw_reg_mtptptp_pack(char *payload,
- 	mlxsw_reg_mtptpt_message_type_set(payload, message_type);
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index eaec0a8cc5ef..48b1c1ef1ebd 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -566,6 +566,7 @@ enum devlink_health_reporter_state {
+  * @dump: callback to dump an object
+  *        if priv_ctx is NULL, run a full dump
+  * @diagnose: callback to diagnose the current status
++ * @test: callback to trigger a test event
+  */
+ 
+ struct devlink_health_reporter_ops {
+@@ -578,6 +579,8 @@ struct devlink_health_reporter_ops {
+ 	int (*diagnose)(struct devlink_health_reporter *reporter,
+ 			struct devlink_fmsg *fmsg,
+ 			struct netlink_ext_ack *extack);
++	int (*test)(struct devlink_health_reporter *reporter,
++		    struct netlink_ext_ack *extack);
+ };
+ 
+ /**
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index 40d35145c879..631f5bdf1707 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -122,6 +122,8 @@ enum devlink_command {
+ 	DEVLINK_CMD_TRAP_POLICER_NEW,
+ 	DEVLINK_CMD_TRAP_POLICER_DEL,
+ 
++	DEVLINK_CMD_HEALTH_REPORTER_TEST,
++
+ 	/* add new commands above here */
+ 	__DEVLINK_CMD_MAX,
+ 	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 19037f114307..e5b71f3c2d4d 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -6096,6 +6096,28 @@ devlink_nl_cmd_health_reporter_dump_clear_doit(struct sk_buff *skb,
+ 	return 0;
  }
  
-+/* MFGD - Monitoring FW General Debug Register
-+ * -------------------------------------------
-+ */
-+#define MLXSW_REG_MFGD_ID 0x90F0
-+#define MLXSW_REG_MFGD_LEN 0x0C
++static int devlink_nl_cmd_health_reporter_test_doit(struct sk_buff *skb,
++						    struct genl_info *info)
++{
++	struct devlink *devlink = info->user_ptr[0];
++	struct devlink_health_reporter *reporter;
++	int err;
 +
-+MLXSW_REG_DEFINE(mfgd, MLXSW_REG_MFGD_ID, MLXSW_REG_MFGD_LEN);
++	reporter = devlink_health_reporter_get_from_info(devlink, info);
++	if (!reporter)
++		return -EINVAL;
 +
-+/* reg_mfgd_fw_fatal_event_mode
-+ * 0 - don't check FW fatal (default)
-+ * 1 - check FW fatal - enable MFDE trap
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, mfgd, fatal_event_mode, 0x00, 9, 2);
++	if (!reporter->ops->test) {
++		devlink_health_reporter_put(reporter);
++		return -EOPNOTSUPP;
++	}
 +
-+/* reg_mfgd_trigger_test
-+ * Access: WO
-+ */
-+MLXSW_ITEM32(reg, mfgd, trigger_test, 0x00, 11, 1);
++	err = reporter->ops->test(reporter, info->extack);
 +
- /* MGPIR - Management General Peripheral Information Register
-  * ----------------------------------------------------------
-  * MGPIR register allows software to query the hardware and
-@@ -11071,6 +11091,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(mtpppc),
- 	MLXSW_REG(mtpptr),
- 	MLXSW_REG(mtptpt),
-+	MLXSW_REG(mfgd),
- 	MLXSW_REG(mgpir),
- 	MLXSW_REG(mfde),
- 	MLXSW_REG(tngcr),
++	devlink_health_reporter_put(reporter);
++	return err;
++}
++
+ struct devlink_stats {
+ 	u64 rx_bytes;
+ 	u64 rx_packets;
+@@ -7316,6 +7338,14 @@ static const struct genl_ops devlink_nl_ops[] = {
+ 		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK_OR_PORT |
+ 				  DEVLINK_NL_FLAG_NO_LOCK,
+ 	},
++	{
++		.cmd = DEVLINK_CMD_HEALTH_REPORTER_TEST,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = devlink_nl_cmd_health_reporter_test_doit,
++		.flags = GENL_ADMIN_PERM,
++		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK_OR_PORT |
++				  DEVLINK_NL_FLAG_NO_LOCK,
++	},
+ 	{
+ 		.cmd = DEVLINK_CMD_FLASH_UPDATE,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 -- 
 2.26.2
 
