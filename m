@@ -2,110 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E53326B7CC
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 02:29:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 179EB26B798
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 02:26:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727270AbgIPA3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 20:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726534AbgIONr6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 09:47:58 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F11EC061A29
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 06:37:07 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id w2so3421893wmi.1
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 06:37:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yqLuuHaDPyMZVYvimcEZ7loynWyyZ/gx/ESoc2H8RgI=;
-        b=NbFFa/sH+YSHIMHYgG6y+VP6Rtaq7brZnnEH5p9fkhvhHrS70345ou7fSALoGVmJEb
-         iQR1crdjRF9adAfUXYlZKFmFpZjm/TLUNapOr1q+jc33+3mA78YJimFt/qtHQApbP1PZ
-         9CAZ24egKoDdBnVZZUhuPJEvgfIiddMReF+1fH0bc7AlJ463gjh2JJRTc83/KpgHbOul
-         X/S5BuThOTrRcMsLAaU9EHU9bRZesA0P1e4zVmVc081PywUpFB64hrQaqBKCWFACJbO+
-         giZQQ00zWCI2DPoERJCzyZ3YpiEfxgko1GnPxi7xJF7mu+bYmjNK/pBgGAmCwkO+Jq++
-         uW0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yqLuuHaDPyMZVYvimcEZ7loynWyyZ/gx/ESoc2H8RgI=;
-        b=U2hU/XsCDdA53AUiAO9CNU1hxSIqwOAsXCQdUPF2WvZ8+NedsTHpn8TUnj+2fRxGJm
-         BgUojXB0L59tVye9EAnz53dXKbUBa7egYtmMnVQqALMpXt3R4jLoKaVZeTYCs4d6giVk
-         ymiFP0hTKkLlOnmtiMT7qL4pMAFAc3DJ0HH31adR5JtXD6H2h3ULQ/RhMIr5D3gpfTAZ
-         7319lm1sO/3RIFtgXn/SaTFX8ozybvWDjvnc/zI2CnE2/KfXxQMbKs3/ZzP0PY/K8hZA
-         H0OXw+z38LrVdWz/xwu+FegNjVVthlDMN35izVooz+9UyAiLTrKvEQItzQsWb2K4PWJx
-         d6rA==
-X-Gm-Message-State: AOAM5310EZK5NQS7yEnhJPiZAiitsm025vo6G7bpeh5QCdaK5q0wXra/
-        c0ekQdEFipHTP+e6DscW/ephfg==
-X-Google-Smtp-Source: ABdhPJwDuI1DT+CUN2L98nHfTizNA421ofnREorseq+7fgmsW7YGpQnQiJxwQHh+JLrZGtgnQVxmqQ==
-X-Received: by 2002:a05:600c:4104:: with SMTP id j4mr4669381wmi.36.1600177026314;
-        Tue, 15 Sep 2020 06:37:06 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id d18sm27231619wrm.10.2020.09.15.06.37.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 06:37:05 -0700 (PDT)
-Date:   Tue, 15 Sep 2020 15:37:05 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Moshe Shemesh <moshe@nvidia.com>
-Cc:     Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v4 10/15] net/mlx5: Add support for devlink
- reload action fw activate
-Message-ID: <20200915133705.GR2236@nanopsycho.orion>
-References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
- <1600063682-17313-11-git-send-email-moshe@mellanox.com>
- <20200914135442.GJ2236@nanopsycho.orion>
- <565e63b3-2a01-4eba-42d3-f5abc6794ee8@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <565e63b3-2a01-4eba-42d3-f5abc6794ee8@nvidia.com>
+        id S1726768AbgIPA0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 20:26:33 -0400
+Received: from bedivere.hansenpartnership.com ([66.63.167.143]:34438 "EHLO
+        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726798AbgIOOMf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 10:12:35 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 9BF068EE188;
+        Tue, 15 Sep 2020 07:10:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1600179008;
+        bh=+R+IKAKZQYkLR7KIiLxpuuPm5bZnjzeal3GKWrEShUo=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=ZDUvluzGV6yKCC/nF9wrKzitsx/6M3Qz4Dv0CFUEt0vmhscavKWlYegA3t3D9AtoS
+         cgl18SKCLQ6g+fOWhOlSE1rajdI6kKqsO/3XSzI9vcO6roMQjXQ+sBvii1pDKecG7Q
+         7/nP62+cOOfIkefYX7rGreL2C+Tu2bzmyrkPw+GQ=
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id o2D0dkS7cauB; Tue, 15 Sep 2020 07:10:08 -0700 (PDT)
+Received: from [153.66.254.174] (c-73-35-198-56.hsd1.wa.comcast.net [73.35.198.56])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 329868EE107;
+        Tue, 15 Sep 2020 07:10:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1600179008;
+        bh=+R+IKAKZQYkLR7KIiLxpuuPm5bZnjzeal3GKWrEShUo=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=ZDUvluzGV6yKCC/nF9wrKzitsx/6M3Qz4Dv0CFUEt0vmhscavKWlYegA3t3D9AtoS
+         cgl18SKCLQ6g+fOWhOlSE1rajdI6kKqsO/3XSzI9vcO6roMQjXQ+sBvii1pDKecG7Q
+         7/nP62+cOOfIkefYX7rGreL2C+Tu2bzmyrkPw+GQ=
+Message-ID: <1600179006.5092.6.camel@HansenPartnership.com>
+Subject: Re: [PATCH 07/17] 53c700: improve non-coherent DMA handling
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        iommu@lists.linux-foundation.org,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        linux1394-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
+        alsa-devel@alsa-project.org
+Date:   Tue, 15 Sep 2020 07:10:06 -0700
+In-Reply-To: <20200915062738.GA19113@lst.de>
+References: <20200914144433.1622958-1-hch@lst.de>
+         <20200914144433.1622958-8-hch@lst.de>
+         <1600096818.4061.7.camel@HansenPartnership.com>
+         <20200915062738.GA19113@lst.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Sep 15, 2020 at 02:44:02PM CEST, moshe@nvidia.com wrote:
->
->On 9/14/2020 4:54 PM, Jiri Pirko wrote:
->> Mon, Sep 14, 2020 at 08:07:57AM CEST, moshe@mellanox.com wrote:
->> 
->> [..]
->> 
->> > +static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev)
->> > +{
->> > +	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
->> > +
->> > +	/* if this is the driver that initiated the fw reset, devlink completed the reload */
->> > +	if (test_bit(MLX5_FW_RESET_FLAGS_PENDING_COMP, &fw_reset->reset_flags)) {
->> > +		complete(&fw_reset->done);
->> > +	} else {
->> > +		mlx5_load_one(dev, false);
->> > +		devlink_reload_implicit_actions_performed(priv_to_devlink(dev),
->> > +							  DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE,
->> > +							  BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
->> > +							  BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE));
->> Hmm, who originated the reset? Devlink_reload of the same devlink
->> instance?
->
->
->Not the same devlink instance for sure. I defer it by the flag above
->MLX5_FW_RESET_FLAG_PENDING_COMP. If the flag set, I set complete to the
->reload_down() waiting for it.
+On Tue, 2020-09-15 at 08:27 +0200, Christoph Hellwig wrote:
+> On Mon, Sep 14, 2020 at 08:20:18AM -0700, James Bottomley wrote:
+> > If you're going to change the macros from taking a device to taking
+> > a hostdata structure then the descriptive argument name needs to
+> > change ... it can't be dev anymore.  I'm happy with it simply
+> > becoming 'h' if hostdata is too long.
+> > 
+> > I already asked for this on the first go around:
+> 
+> And I did rename them, those hunks just accidentally slipped into
+> patch 12 instead of this one.  Fixed for the next versions.
 
-Hmm, thinking about the stats, as
-devlink_reload_implicit_actions_performed() is called only in case
-another instance does the reload, shouldn't it be a separate set of
-stats? I think that the user would like to distinguish local and remote
-reload, don't you think?
+Ah, yes, found it ... thanks for doing that!
 
+James
 
->
->
->> [..]
