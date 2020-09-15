@@ -2,161 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8AB226A99E
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 18:22:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2BBE26A979
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 18:16:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727577AbgIOQVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 12:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727579AbgIOQUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 12:20:16 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072EEC0611BD;
-        Tue, 15 Sep 2020 09:20:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=i+wSADPYCfjiINNNap/OtPKewAd3CUR2UpLQDRhWXVM=; b=KV4MHtGI1c35fx301ypBZ2ix5f
-        j6+9ZBm5fX2GTWrmr4Ucexej6a/A5AgmrccjxIJaXRVSJ25VeGNarsOyAh2mV63O4QoWYIt397+p/
-        PEj6Fh9y7Z9MocC0Hlfy6ktdLodgEKBx1jPzxDDRVZFQxq6HUKkZ+ruLNJ7tWvxCUBT0Uc4ZWj9aI
-        eodnHxY42TKdaain8L+MAGrX7+JkUf2CCLX1ArOSkzY+hjEXko2GALiYhYarDUPJ5lEjgchOlPjSa
-        oTRbf+Wq093khDrwEuwBqMXFNj+Kn+GSdd95aFRR1UNfKr4GP9znnnjfctGimxooOjIWir3e/76iY
-        9DM3BvgA==;
-Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92] helo=localhost)
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kIDgI-0005Cn-PU; Tue, 15 Sep 2020 16:19:47 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        iommu@lists.linux-foundation.org
-Cc:     Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        linux1394-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
-        alsa-devel@alsa-project.org
-Subject: [PATCH 12/18] sgiseeq: convert to dma_alloc_noncoherent
-Date:   Tue, 15 Sep 2020 17:51:16 +0200
-Message-Id: <20200915155122.1768241-13-hch@lst.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200915155122.1768241-1-hch@lst.de>
-References: <20200915155122.1768241-1-hch@lst.de>
+        id S1727579AbgIOQPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 12:15:21 -0400
+Received: from www62.your-server.de ([213.133.104.62]:51930 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727589AbgIOQLL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 12:11:11 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kIDXk-0003yI-Mu; Tue, 15 Sep 2020 18:10:56 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kIDXk-000EWV-Fm; Tue, 15 Sep 2020 18:10:56 +0200
+Subject: Re: [PATCH v7 bpf-next 7/7] selftests: bpf: add dummy prog for
+ bpf2bpf with tailcall
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+References: <20200902200815.3924-1-maciej.fijalkowski@intel.com>
+ <20200902200815.3924-8-maciej.fijalkowski@intel.com>
+ <20200903195114.ccfzmgcl4ngz2mqv@ast-mbp.dhcp.thefacebook.com>
+ <20200911185927.GA2543@ranger.igk.intel.com>
+ <20200915043924.uicfgbhuszccycbq@ast-mbp.dhcp.thefacebook.com>
+ <5bf5a63c-7607-a24d-7e14-e41caa84bfc3@iogearbox.net>
+ <CAADnVQJoCXa90Pvkm5xyNAR3cHGx+0YO58hHOnq+LsiQuJMBiQ@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <ed704e11-3399-135d-0bab-8699ef2e85e8@iogearbox.net>
+Date:   Tue, 15 Sep 2020 18:10:55 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <CAADnVQJoCXa90Pvkm5xyNAR3cHGx+0YO58hHOnq+LsiQuJMBiQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25930/Tue Sep 15 15:55:28 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new non-coherent DMA API including proper ownership transfers.
-This includes adding additional calls to dma_sync_desc_dev as the
-old syncing was rather ad-hoc.
+On 9/15/20 5:48 PM, Alexei Starovoitov wrote:
+> On Tue, Sep 15, 2020 at 8:03 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>
+>> On 9/15/20 6:39 AM, Alexei Starovoitov wrote:
+>>> On Fri, Sep 11, 2020 at 08:59:27PM +0200, Maciej Fijalkowski wrote:
+>>>> On Thu, Sep 03, 2020 at 12:51:14PM -0700, Alexei Starovoitov wrote:
+>>>>> On Wed, Sep 02, 2020 at 10:08:15PM +0200, Maciej Fijalkowski wrote:
+>> [...]
+>>>>> Could you add few more tests to exercise the new feature more thoroughly?
+>>>>> Something like tailcall3.c that checks 32 limit, but doing tail_call from subprog.
+>>>>> And another test that consume non-trival amount of stack in each function.
+>>>>> Adding 'volatile char arr[128] = {};' would do the trick.
+>>>>
+>>>> Yet another prolonged silence from my side, but not without a reason -
+>>>> this request opened up a Pandora's box.
+>>>
+>>> Great catch and thanks to our development practices! As a community we should
+>>> remember this lesson and request selftests more often than not.
+>>
+>> +1, speaking of pandora ... ;-) I recently noticed that we also have the legacy
+>> ld_abs/ld_ind instructions. Right now check_ld_abs() gates them by bailing out
+>> if env->subprog_cnt > 1, but that doesn't solve everything given the prog itself
+>> may not have bpf2bpf calls, but it could get tail-called out of a subprog. We
+>> need to reject such cases (& add selftests for it), otherwise this would be a
+>> verifier bypass given they may implicitly exit the program (and then mismatch
+>> the return type that the verifier was expecting).
+> 
+> Good point. I think it's easier to allow ld_abs though.
+> The comment in check_ld_abs() is obsolete after gen_ld_abs() was added.
+> The verifier needs to check that subprog that is doing ld_abs or tail_call
+> has 'int' return type and check_reference_leak() doesn't error before
+> ld_abs and before bpf_tail_call.
 
-Thanks to Thomas Bogendoerfer for debugging the ownership transfer
-issues.
-
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/net/ethernet/seeq/sgiseeq.c | 28 ++++++++++++++++++----------
- 1 file changed, 18 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/seeq/sgiseeq.c b/drivers/net/ethernet/seeq/sgiseeq.c
-index 8507ff2420143a..37ff25a84030eb 100644
---- a/drivers/net/ethernet/seeq/sgiseeq.c
-+++ b/drivers/net/ethernet/seeq/sgiseeq.c
-@@ -112,14 +112,18 @@ struct sgiseeq_private {
- 
- static inline void dma_sync_desc_cpu(struct net_device *dev, void *addr)
- {
--	dma_cache_sync(dev->dev.parent, addr, sizeof(struct sgiseeq_rx_desc),
--		       DMA_FROM_DEVICE);
-+	struct sgiseeq_private *sp = netdev_priv(dev);
-+
-+	dma_sync_single_for_cpu(dev->dev.parent, VIRT_TO_DMA(sp, addr),
-+			sizeof(struct sgiseeq_rx_desc), DMA_BIDIRECTIONAL);
- }
- 
- static inline void dma_sync_desc_dev(struct net_device *dev, void *addr)
- {
--	dma_cache_sync(dev->dev.parent, addr, sizeof(struct sgiseeq_rx_desc),
--		       DMA_TO_DEVICE);
-+	struct sgiseeq_private *sp = netdev_priv(dev);
-+
-+	dma_sync_single_for_device(dev->dev.parent, VIRT_TO_DMA(sp, addr),
-+			sizeof(struct sgiseeq_rx_desc), DMA_BIDIRECTIONAL);
- }
- 
- static inline void hpc3_eth_reset(struct hpc3_ethregs *hregs)
-@@ -403,6 +407,8 @@ static inline void sgiseeq_rx(struct net_device *dev, struct sgiseeq_private *sp
- 		rd = &sp->rx_desc[sp->rx_new];
- 		dma_sync_desc_cpu(dev, rd);
- 	}
-+	dma_sync_desc_dev(dev, rd);
-+
- 	dma_sync_desc_cpu(dev, &sp->rx_desc[orig_end]);
- 	sp->rx_desc[orig_end].rdma.cntinfo &= ~(HPCDMA_EOR);
- 	dma_sync_desc_dev(dev, &sp->rx_desc[orig_end]);
-@@ -443,6 +449,7 @@ static inline void kick_tx(struct net_device *dev,
- 		dma_sync_desc_cpu(dev, td);
- 	}
- 	if (td->tdma.cntinfo & HPCDMA_XIU) {
-+		dma_sync_desc_dev(dev, td);
- 		hregs->tx_ndptr = VIRT_TO_DMA(sp, td);
- 		hregs->tx_ctrl = HPC3_ETXCTRL_ACTIVE;
- 	}
-@@ -476,6 +483,7 @@ static inline void sgiseeq_tx(struct net_device *dev, struct sgiseeq_private *sp
- 		if (!(td->tdma.cntinfo & (HPCDMA_XIU)))
- 			break;
- 		if (!(td->tdma.cntinfo & (HPCDMA_ETXD))) {
-+			dma_sync_desc_dev(dev, td);
- 			if (!(status & HPC3_ETXCTRL_ACTIVE)) {
- 				hregs->tx_ndptr = VIRT_TO_DMA(sp, td);
- 				hregs->tx_ctrl = HPC3_ETXCTRL_ACTIVE;
-@@ -740,8 +748,8 @@ static int sgiseeq_probe(struct platform_device *pdev)
- 	sp = netdev_priv(dev);
- 
- 	/* Make private data page aligned */
--	sr = dma_alloc_attrs(&pdev->dev, sizeof(*sp->srings), &sp->srings_dma,
--			     GFP_KERNEL, DMA_ATTR_NON_CONSISTENT);
-+	sr = dma_alloc_noncoherent(&pdev->dev, sizeof(*sp->srings),
-+			&sp->srings_dma, DMA_BIDIRECTIONAL, GFP_KERNEL);
- 	if (!sr) {
- 		printk(KERN_ERR "Sgiseeq: Page alloc failed, aborting.\n");
- 		err = -ENOMEM;
-@@ -802,8 +810,8 @@ static int sgiseeq_probe(struct platform_device *pdev)
- 	return 0;
- 
- err_out_free_attrs:
--	dma_free_attrs(&pdev->dev, sizeof(*sp->srings), sp->srings,
--		       sp->srings_dma, DMA_ATTR_NON_CONSISTENT);
-+	dma_free_noncoherent(&pdev->dev, sizeof(*sp->srings), sp->srings,
-+		       sp->srings_dma, DMA_BIDIRECTIONAL);
- err_out_free_dev:
- 	free_netdev(dev);
- 
-@@ -817,8 +825,8 @@ static int sgiseeq_remove(struct platform_device *pdev)
- 	struct sgiseeq_private *sp = netdev_priv(dev);
- 
- 	unregister_netdev(dev);
--	dma_free_attrs(&pdev->dev, sizeof(*sp->srings), sp->srings,
--		       sp->srings_dma, DMA_ATTR_NON_CONSISTENT);
-+	dma_free_noncoherent(&pdev->dev, sizeof(*sp->srings), sp->srings,
-+		       sp->srings_dma, DMA_BIDIRECTIONAL);
- 	free_netdev(dev);
- 
- 	return 0;
--- 
-2.28.0
-
+Agree, sub prog 'int' return type is also currently the only option for tail call
+progs anyway w/o bigger rework in verifier to track signatures.
