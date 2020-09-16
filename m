@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D926E26CD9F
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 23:02:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEE2926CDD6
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 23:05:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728592AbgIPVCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 17:02:37 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:12790 "EHLO huawei.com"
+        id S1726655AbgIPVFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 17:05:42 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:12791 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726309AbgIPQPG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Sep 2020 12:15:06 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id A4CBA443C0E1A38A211B;
-        Wed, 16 Sep 2020 22:16:23 +0800 (CST)
-Received: from localhost (10.174.179.108) by DGGEMS405-HUB.china.huawei.com
- (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Wed, 16 Sep 2020
- 22:16:14 +0800
+        id S1726304AbgIPQO4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 12:14:56 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id C4C71CAE6EA42423FFAE;
+        Wed, 16 Sep 2020 22:16:43 +0800 (CST)
+Received: from localhost (10.174.179.108) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.487.0; Wed, 16 Sep 2020
+ 22:16:33 +0800
 From:   YueHaibing <yuehaibing@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH -next] net/sched: Remove unused function qdisc_queue_drop_head()
-Date:   Wed, 16 Sep 2020 22:16:11 +0800
-Message-ID: <20200916141611.43524-1-yuehaibing@huawei.com>
+Subject: [PATCH net-next] net/sched: Remove unused function qdisc_queue_drop_head()
+Date:   Wed, 16 Sep 2020 22:16:29 +0800
+Message-ID: <20200916141629.24032-1-yuehaibing@huawei.com>
 X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
 Content-Type: text/plain
