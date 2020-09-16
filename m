@@ -2,88 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C67B526CF30
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 00:59:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E23B26CF37
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 01:04:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726383AbgIPW7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 18:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56044 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726174AbgIPW7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 18:59:16 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C642C06174A
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 15:59:16 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id x18so55579pll.6
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 15:59:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vSVidPoWsHTaL3++CNt2hGN6ubsxTuUK5PKF8pad3EM=;
-        b=prlq5cpaDgbPv0WvfjafiepOoK001zAy4o4Y3p/LZrrNGkDgrFPMtG3TBStN5bIOqf
-         KWTh6baD7k2MXwnQlTjitzyoxTwXYJ/bTkc2+RjcRYDd7vitQxGrReUmD9QIe2SCdx//
-         k8zFmkes2eExZYpOX2yW2D7SbVfhJXVFEizX5rgH0EV0W5NdG9khr0+HNaOJzT7BxZ8T
-         iUJTJMyFlISozk5zCMGKL3GhgdxgUpc6ufE6GtwTGCQyHsoT5ipqCX5JNBHJhYzQY/ht
-         TbCe5honU1blrFmqJ9ekXvNNCkRUSNjL6JTi7kD2w2YsIuy5unwDjCAYwBVCx48DKpvu
-         KrJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vSVidPoWsHTaL3++CNt2hGN6ubsxTuUK5PKF8pad3EM=;
-        b=YIvpQ+DPqmpDk6J0btvj/DAjJ1qCULoh4C0MfRlDBQKRzc66uNRkxK2qqzTMk+rg6M
-         q/WrRu5khFepvYX+z4IljYY0MLLrbu0lyvs8G7gC8DJ7jyrAkx8Sc4Dax0ZxzKM8f5oi
-         wGQ3g4faUAFDg21LYssaNM29PEzSR2owtkNMHzlgsIv3hUwPUvC7HuzRCVMyV1ZKrvp7
-         8PiT0fPt8iXL3KJZuhe9BADXg21pv4aDfGmSLkyYU4CdWXHjhCUf6hnK5ZkL6kgtKwBW
-         wS3luIeDPyoJGmLzoxtWXvrk8CsgcAremZDBTwS07s09L1+r2zcX1usYI07gbnctEP1H
-         IZAA==
-X-Gm-Message-State: AOAM531VMNKhnwuPP1Jp2MXI3h0hSIz0SQdnjZkcoMptiCen+1sR5of8
-        krch+AqTCZ06BEkU23XjChmOO8wfitfBRg==
-X-Google-Smtp-Source: ABdhPJzzCGy8hV9/DGLfcXwL9QALBZcJsmLIbrBVoT3tFNlaGpKcbqqgrblRBn60R2ia7MGIwQy6Gw==
-X-Received: by 2002:a17:902:784d:b029:d1:e7cf:83e6 with SMTP id e13-20020a170902784db02900d1e7cf83e6mr6815429pln.63.1600297155043;
-        Wed, 16 Sep 2020 15:59:15 -0700 (PDT)
-Received: from [10.230.28.120] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id b203sm18278191pfb.205.2020.09.16.15.59.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Sep 2020 15:59:14 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/2] net: phy: bcm7xxx: request and manage GPHY
- clock
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, kuba@kernel.org,
-        davem@davemloft.net
-References: <20200916204415.1831417-1-f.fainelli@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <ecb04eba-dd43-4f46-0f19-8c7ae0abb04a@gmail.com>
-Date:   Wed, 16 Sep 2020 15:59:12 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.2
-MIME-Version: 1.0
-In-Reply-To: <20200916204415.1831417-1-f.fainelli@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726387AbgIPXEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 19:04:14 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42266 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726084AbgIPXEN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 19:04:13 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id EF587B3E0;
+        Wed, 16 Sep 2020 23:04:25 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 34FCE6074F; Thu, 17 Sep 2020 01:04:10 +0200 (CEST)
+From:   Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH net] ethtool: add and use message type for tunnel info reply
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Message-Id: <20200916230410.34FCE6074F@lion.mk-sys.cz>
+Date:   Thu, 17 Sep 2020 01:04:10 +0200 (CEST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Tunnel offload info code uses ETHTOOL_MSG_TUNNEL_INFO_GET message type (cmd
+field in genetlink header) for replies to tunnel info netlink request, i.e.
+the same value as the request have. This is a problem because we are using
+two separate enums for userspace to kernel and kernel to userspace message
+types so that this ETHTOOL_MSG_TUNNEL_INFO_GET (28) collides with
+ETHTOOL_MSG_CABLE_TEST_TDR_NTF which is what message type 28 means for
+kernel to userspace messages.
 
+As the tunnel info request reached mainline in 5.9 merge window, we should
+still be able to fix the reply message type without breaking backward
+compatibility.
 
-On 9/16/2020 1:44 PM, Florian Fainelli wrote:
-> Hi all,
-> 
-> This patch series is intended to address the very specific case of the
-> Broadcom STB internal Gigabit PHY devices that require both a dummy read
-> because of a hardware issue with their MDIO interface. We also need to
-> turn on their internal digital PHY otherwise they will not be responding
-> to any MDIO read or write. If they do not respond we would not be able
-> to identify their OUI and associate them with an appropriate PHY driver.
+Fixes: c7d759eb7b12 ("ethtool: add tunnel info interface")
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+---
+ Documentation/networking/ethtool-netlink.rst | 3 +++
+ include/uapi/linux/ethtool_netlink.h         | 1 +
+ net/ethtool/tunnels.c                        | 4 ++--
+ 3 files changed, 6 insertions(+), 2 deletions(-)
 
-Scratch this, looks like we can solve this entirely and in a better way 
-using the Ethernet PHY driver only and using the appropriate compatible 
-string for Ethernet PHYs in the form of "ethernet-phyidAAAA.BBBB".
-
-Please discard this for now.
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index d53bcb31645a..b5a79881551f 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -206,6 +206,7 @@ Userspace to kernel:
+   ``ETHTOOL_MSG_TSINFO_GET``		get timestamping info
+   ``ETHTOOL_MSG_CABLE_TEST_ACT``        action start cable test
+   ``ETHTOOL_MSG_CABLE_TEST_TDR_ACT``    action start raw TDR cable test
++  ``ETHTOOL_MSG_TUNNEL_INFO_GET``       get tunnel offload info
+   ===================================== ================================
+ 
+ Kernel to userspace:
+@@ -239,6 +240,7 @@ Kernel to userspace:
+   ``ETHTOOL_MSG_TSINFO_GET_REPLY``	timestamping info
+   ``ETHTOOL_MSG_CABLE_TEST_NTF``        Cable test results
+   ``ETHTOOL_MSG_CABLE_TEST_TDR_NTF``    Cable test TDR results
++  ``ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY`` tunnel offload info
+   ===================================== =================================
+ 
+ ``GET`` requests are sent by userspace applications to retrieve device
+@@ -1363,4 +1365,5 @@ are netlink only.
+   ``ETHTOOL_SFECPARAM``               n/a
+   n/a                                 ''ETHTOOL_MSG_CABLE_TEST_ACT''
+   n/a                                 ''ETHTOOL_MSG_CABLE_TEST_TDR_ACT''
++  n/a                                 ``ETHTOOL_MSG_TUNNEL_INFO_GET``
+   =================================== =====================================
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index 5dcd24cb33ea..72ba36be9655 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -79,6 +79,7 @@ enum {
+ 	ETHTOOL_MSG_TSINFO_GET_REPLY,
+ 	ETHTOOL_MSG_CABLE_TEST_NTF,
+ 	ETHTOOL_MSG_CABLE_TEST_TDR_NTF,
++	ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_KERNEL_CNT,
+diff --git a/net/ethtool/tunnels.c b/net/ethtool/tunnels.c
+index 84f23289475b..d93bf2da0f34 100644
+--- a/net/ethtool/tunnels.c
++++ b/net/ethtool/tunnels.c
+@@ -200,7 +200,7 @@ int ethnl_tunnel_info_doit(struct sk_buff *skb, struct genl_info *info)
+ 	reply_len = ret + ethnl_reply_header_size();
+ 
+ 	rskb = ethnl_reply_init(reply_len, req_info.dev,
+-				ETHTOOL_MSG_TUNNEL_INFO_GET,
++				ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY,
+ 				ETHTOOL_A_TUNNEL_INFO_HEADER,
+ 				info, &reply_payload);
+ 	if (!rskb) {
+@@ -273,7 +273,7 @@ int ethnl_tunnel_info_dumpit(struct sk_buff *skb, struct netlink_callback *cb)
+ 				goto cont;
+ 
+ 			ehdr = ethnl_dump_put(skb, cb,
+-					      ETHTOOL_MSG_TUNNEL_INFO_GET);
++					      ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY);
+ 			if (!ehdr) {
+ 				ret = -EMSGSIZE;
+ 				goto out;
 -- 
-Florian
+2.28.0
+
