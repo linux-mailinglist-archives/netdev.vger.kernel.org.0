@@ -2,164 +2,398 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43A4926C880
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 20:51:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7C5826C8C2
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 20:57:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728154AbgIPSvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 14:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727775AbgIPSJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 14:09:11 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2062b.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e1b::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C35C0A8936
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 06:06:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=muGfER8ZXf51E/yCXMdGRX/xDIn6T6qggEl5sMNPViVNlKpagQOHp8bauUW1DNrUyo+1kCFDqxCbg86WKX7lzqXv+3bKT7467ek3C6vavRYCnTJhYKE524+pF7pwOSEiGBU18GJtOLLIi2lNOmH2Q/n0eJS+RffG2r+VPwGs9P6qXwp81Lq0KOjFGvspIXvQHcn0LhOukAxsqPhrU40qtCWaFfgtsHx+DSuyfmBLvAJNyUU6pHSmGfPeOAko4HuwjVym/Vf1OUus5cEGsaUb9Bf8FCoNzl4sCJpHX2LiQNV6HSpIOm2qsfpqj29bAh4VBemMKgUTiBu51X78bda2sA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c00eVYrE3Aw0Wwm52Mm5aEKAEr5nUkNGrWlakZvVvlQ=;
- b=JRDMTLPC1XY8dz5Jv2ZS/RibAR8fOE1Ajx/d/1ivfXK39Q3KIqMX2nPqDjUBjwMv8AMmzyq95z0ABTrRwKERR4QdCssY8/+CRYG7UduXNzPJoJs7/cDs/uwYFpH8Q20TQ8uN7ORxbKhISXHhGZ/aACuVLKJnwRgY0WeqRcD6ZoWp1sYlmvod6C1Jgn5htSeMe3UVi05y+f3+Zg0Czho4Wr61kZrES4seeqlhRSZcEFZtD6QgAS9xyloXho84GjL/tdT5iRsVSGKGtZCevIDGWRVQ5i6HMieXpLYFtLLCclNZbhb5Ouov7VQaNFTFx5TaxRGKh7WoOCD74R+p4wG7Qg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c00eVYrE3Aw0Wwm52Mm5aEKAEr5nUkNGrWlakZvVvlQ=;
- b=E0SWIxxmf0zHjAP7GWp4m0MkfudimOUoFsEW7/mEhjEWczOBz/I6oNbjrZ7EBKkmc6TSax/JTmOiCP5uNV7UWfOF7hrAKxmHr3aFnS+nrfxwQcHaDViYySeGanycOBjv0Z7Oy4A4T7CWwGYpm08KFijZJcFGTdS0v5NANRO0WQQ=
-Received: from VI1PR04MB5677.eurprd04.prod.outlook.com (2603:10a6:803:ed::22)
- by VE1PR04MB6461.eurprd04.prod.outlook.com (2603:10a6:803:120::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.11; Wed, 16 Sep
- 2020 10:28:38 +0000
-Received: from VI1PR04MB5677.eurprd04.prod.outlook.com
- ([fe80::c99:9749:3211:2e1f]) by VI1PR04MB5677.eurprd04.prod.outlook.com
- ([fe80::c99:9749:3211:2e1f%5]) with mapi id 15.20.3370.019; Wed, 16 Sep 2020
- 10:28:38 +0000
-From:   Hongbo Wang <hongbo.wang@nxp.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, Po Liu <po.liu@nxp.com>,
-        Mingkai Hu <mingkai.hu@nxp.com>,
-        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Leo Li <leoyang.li@nxp.com>, "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "idosch@idosch.org" <idosch@idosch.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
-        "roopa@cumulusnetworks.com" <roopa@cumulusnetworks.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "ivecera@redhat.com" <ivecera@redhat.com>
-Subject: RE: [EXT] Re: [PATCH v6 3/3] net: dsa: ocelot: Add support for QinQ
- Operation
-Thread-Topic: [EXT] Re: [PATCH v6 3/3] net: dsa: ocelot: Add support for QinQ
- Operation
-Thread-Index: AQHWjA46YADFMZ9LUEuuxHMi/AxAAKlrCEcAgAAAYCA=
-Date:   Wed, 16 Sep 2020 10:28:38 +0000
-Message-ID: <VI1PR04MB56775FD490351CCA04DAF3D7E1210@VI1PR04MB5677.eurprd04.prod.outlook.com>
-References: <20200916094845.10782-1-hongbo.wang@nxp.com>
- <20200916094845.10782-4-hongbo.wang@nxp.com>
- <20200916100024.lqlrqeuefudvgkxt@skbuf>
-In-Reply-To: <20200916100024.lqlrqeuefudvgkxt@skbuf>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 02b03721-a7bd-4189-60cd-08d85a2b469a
-x-ms-traffictypediagnostic: VE1PR04MB6461:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB6461BCC26A0317EDF1207FABE1210@VE1PR04MB6461.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DJPPRTe7xJZL90a+eoD0wsrIByUMkv8fM+4sfmkRgQINol8pk1b4aucv4P7Mak+7/j0f6eK2LONi5nLd2SVSFGNE55xNDHmET9X1gA4aqoTZxN1Y66ReCJGuDH9J0DG+HE0uRsG7vZuUp0tBwfi9GUbXWsrcN5Q6qP+FPe46HInCabALaSaTCjn7IBEyGJpNmR0PLp2dA59dlwhKQpKcvodzGlyuf651oCWfY1iLQljazA4bDNQcLfJrkz+lqmfgRTLb3hnHTPrt3vS8A4JxouKs94XGAwUZVtpDzYZrTx+nYSUyz2M26U57PV2B7y7S4+rxEwahx5L/uKQ8iioAAg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5677.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(366004)(396003)(346002)(376002)(136003)(2906002)(66556008)(55016002)(9686003)(6916009)(71200400001)(76116006)(66446008)(66946007)(4326008)(66476007)(7416002)(83380400001)(86362001)(6506007)(8936002)(8676002)(33656002)(64756008)(52536014)(5660300002)(186003)(7696005)(316002)(53546011)(26005)(54906003)(478600001)(44832011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: bvycnws5ApF/HUc7Yv5OB0lIRlVffgtw/Kz6E2PYRwrhJEZOtjg/bPgWCny9e1KXxBALau2jBEOU9elPmjAi4R6O2yB669dVN5R8CsQDTg5GuIy4b20f/YLaHRwl48GAKcucmzTQLbIT7Kis4VUJ/S+gSD7OTaxi++9jbiEwzK4AKV9jxXDp9AKhWYlXQHE0D2xOw6XdmtJPoRWFNKt0QXUfSY27k0R052S3gNGW5KSIDZY/Pcd9wXyf9P/vZaoJfqS+Cm9hTzURzAbAv06hwheAuWFpJLwZGAfdbpYMb30GZYLKo/t/b2G9h22KrVSo6N7mAEEF13RcnAPjvWFI+GTvkbBMjoKVoM/Mg+Q59bAYKN5KNecb/v67KX2eppMde+GWjhUJs/6XHTMfANgdo4/8uDZn2/Z2R1ecwPnZSwmp7KuO7X5Kd4CrPXfEqLHglz4HqjztBd2id0398eX0kJQZbtG2hdgTstwQ4UN648Q9qo1Uky+JKgpSaGQ1IZicus9SVpdkqYBkM8scWdfkEGSkGUBIO9Z8WT+ItgQIFGPuxMNt24NQuUx6uupNP1bR1ocV1WKfKRuhymnrKbp7xlthRAIKF0ZXXe3t7IezOZwIfdLFLF9Wstoyr7n20FGlSg6YG/kCgOcWsWKSqdQzew==
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S1728112AbgIPS50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 14:57:26 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:42674 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727771AbgIPS5B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 14:57:01 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08GBlfvq027172;
+        Wed, 16 Sep 2020 06:47:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1600256861;
+        bh=3AGiro3FnSBmxJs2uBGM1pA1oOZ6S/GI8y/Cm28nbw4=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=IfP1zphgUN6Zw2XJNKhMMVG/ylE5qbF4CVR+eQjef20EE7290yM6Ev4B5FFBMsmUF
+         rfNfsVNlbINmL9HkKfqTMRzWqWK2vxDVPch5F2rlPfFI1NZ3OrWXYFNS8daLeRbE2a
+         bTE2BrjGT8jdqaBADcJk3RiseeaORT6KKSxI2z5w=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08GBlfhS000950
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 16 Sep 2020 06:47:41 -0500
+Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 16
+ Sep 2020 06:47:40 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 16 Sep 2020 06:47:41 -0500
+Received: from [10.250.232.147] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08GBlXSA024715;
+        Wed, 16 Sep 2020 06:47:34 -0500
+Subject: Re: [RFC PATCH 00/22] Enhance VHOST to enable SoC-to-SoC
+ communication
+To:     Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>
+CC:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <linux-ntb@googlegroups.com>,
+        <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>
+References: <20200702082143.25259-1-kishon@ti.com>
+ <20200702055026-mutt-send-email-mst@kernel.org>
+ <603970f5-3289-cd53-82a9-aa62b292c552@redhat.com>
+ <14c6cad7-9361-7fa4-e1c6-715ccc7e5f6b@ti.com>
+ <59fd6a0b-8566-44b7-3dae-bb52b468219b@redhat.com>
+ <ce9eb6a5-cd3a-a390-5684-525827b30f64@ti.com>
+ <da2b671c-b05d-a57f-7bdf-8b1043a41240@redhat.com>
+ <fee8a0fb-f862-03bd-5ede-8f105b6af529@ti.com>
+ <b2178e1d-2f5c-e8a3-72fb-70f2f8d6aa45@redhat.com>
+ <45a8a97c-2061-13ee-5da8-9877a4a3b8aa@ti.com>
+ <c8739d7f-e12e-f6a2-7018-9eeaf6feb054@redhat.com>
+ <20200828123409.4cd2a812.cohuck@redhat.com>
+ <ac8f7e4f-9f46-919a-f5c2-89b07794f0ab@ti.com>
+ <9cd58cd1-0041-3d98-baf7-6e5bc2e7e317@redhat.com>
+ <edf25301-93c0-4ba6-aa85-5f04137d0906@ti.com>
+ <5733dbfc-76c1-45dc-6dce-ef5449eacc73@redhat.com>
+ <181ae83d-edeb-9406-27cc-1195fe29ae95@ti.com>
+ <ee0aa81d-064b-d7a7-86bb-79a3f4d3dd11@redhat.com>
+From:   Kishon Vijay Abraham I <kishon@ti.com>
+Message-ID: <67924594-c70e-390e-ce2e-dda41a94ada1@ti.com>
+Date:   Wed, 16 Sep 2020 17:17:32 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5677.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 02b03721-a7bd-4189-60cd-08d85a2b469a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2020 10:28:38.5002
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6t9ea12aBx9ZZDBp2lsmGw4uFl7gDUTgZtfOwYkd3AQ9E5UJUuyWhwOSO68bCykPlwbJvbhCGxeG2KJD8nZvUg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6461
+In-Reply-To: <ee0aa81d-064b-d7a7-86bb-79a3f4d3dd11@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgVmxhZGltaXIsDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogVmxh
-ZGltaXIgT2x0ZWFuIDxvbHRlYW52QGdtYWlsLmNvbT4NCj4gU2VudDogMjAyMMTqOdTCMTbI1SAx
-ODowMA0KPiBUbzogSG9uZ2JvIFdhbmcgPGhvbmdiby53YW5nQG54cC5jb20+DQo+IENjOiBYaWFv
-bGlhbmcgWWFuZyA8eGlhb2xpYW5nLnlhbmdfMUBueHAuY29tPjsgUG8gTGl1IDxwby5saXVAbnhw
-LmNvbT47DQo+IE1pbmdrYWkgSHUgPG1pbmdrYWkuaHVAbnhwLmNvbT47IGFsbGFuLm5pZWxzZW5A
-bWljcm9jaGlwLmNvbTsgQ2xhdWRpdQ0KPiBNYW5vaWwgPGNsYXVkaXUubWFub2lsQG54cC5jb20+
-OyBBbGV4YW5kcnUgTWFyZ2luZWFuDQo+IDxhbGV4YW5kcnUubWFyZ2luZWFuQG54cC5jb20+OyBW
-bGFkaW1pciBPbHRlYW4NCj4gPHZsYWRpbWlyLm9sdGVhbkBueHAuY29tPjsgTGVvIExpIDxsZW95
-YW5nLmxpQG54cC5jb20+OyBhbmRyZXdAbHVubi5jaDsNCj4gZi5mYWluZWxsaUBnbWFpbC5jb207
-IHZpdmllbi5kaWRlbG90QGdtYWlsLmNvbTsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsNCj4gamlyaUBy
-ZXNudWxsaS51czsgaWRvc2NoQGlkb3NjaC5vcmc7IGt1YmFAa2VybmVsLm9yZzsNCj4gdmluaWNp
-dXMuZ29tZXNAaW50ZWwuY29tOyBuaWtvbGF5QGN1bXVsdXNuZXR3b3Jrcy5jb207DQo+IHJvb3Bh
-QGN1bXVsdXNuZXR3b3Jrcy5jb207IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7DQo+IGxpbnV4LWtl
-cm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGhvcmF0aXUudnVsdHVyQG1pY3JvY2hpcC5jb207DQo+IGFs
-ZXhhbmRyZS5iZWxsb25pQGJvb3RsaW4uY29tOyBVTkdMaW51eERyaXZlckBtaWNyb2NoaXAuY29t
-Ow0KPiBpdmVjZXJhQHJlZGhhdC5jb20NCj4gU3ViamVjdDogW0VYVF0gUmU6IFtQQVRDSCB2NiAz
-LzNdIG5ldDogZHNhOiBvY2Vsb3Q6IEFkZCBzdXBwb3J0IGZvciBRaW5RDQo+IE9wZXJhdGlvbg0K
-PiANCj4gQ2F1dGlvbjogRVhUIEVtYWlsDQo+IA0KPiBIaSBIb25nYm8sDQo+IA0KPiBPbiBXZWQs
-IFNlcCAxNiwgMjAyMCBhdCAwNTo0ODo0NVBNICswODAwLCBob25nYm8ud2FuZ0BueHAuY29tIHdy
-b3RlOg0KPiA+IEZyb206ICJob25nYm8ud2FuZyIgPGhvbmdiby53YW5nQG54cC5jb20+DQo+ID4N
-Cj4gPiBUaGlzIGZlYXR1cmUgY2FuIGJlIHRlc3QgaW4gdGhlIGZvbGxvd2luZyBjYXNlOg0KPiA+
-IEN1c3RvbWVyIDwtLS0tLT4gc3dwMCAgPC0tLS0tPiBzd3AxIDwtLS0tLT4gSVNQDQo+ID4NCj4g
-PiBDdXN0b21lciB3aWxsIHNlbmQgYW5kIHJlY2VpdmUgcGFja2V0cyB3aXRoIHNpbmdsZSBWTEFO
-IHRhZyhDVEFHKSwgSVNQDQo+ID4gd2lsbCBzZW5kIGFuZCByZWNlaXZlIHBhY2tldHMgd2l0aCBk
-b3VibGUgVkxBTiB0YWcoU1RBRyBhbmQgQ1RBRykuDQo+ID4gVGhpcyByZWZlcnMgdG8gIjQuMy4z
-IFByb3ZpZGVyIEJyaWRnZXMgYW5kIFEtaW4tUSBPcGVyYXRpb24iIGluDQo+ID4gVlNDOTk1OTlf
-MV8wMF9UUy5wZGYuDQo+ID4NCj4gPiBUaGUgcmVsYXRlZCB0ZXN0IGNvbW1hbmRzOg0KPiA+IDEu
-DQo+ID4gZGV2bGluayBkZXYgcGFyYW0gc2V0IHBjaS8wMDAwOjAwOjAwLjUgbmFtZSBxaW5xX3Bv
-cnRfYml0bWFwIFwgdmFsdWUgMg0KPiA+IGNtb2RlIHJ1bnRpbWUgMi4NCj4gPiBpcCBsaW5rIGFk
-ZCBkZXYgYnIwIHR5cGUgYnJpZGdlIHZsYW5fcHJvdG9jb2wgODAyLjFhZCBpcCBsaW5rIHNldCBk
-ZXYNCj4gPiBzd3AwIG1hc3RlciBicjAgaXAgbGluayBzZXQgZGV2IHN3cDEgbWFzdGVyIGJyMCBp
-cCBsaW5rIHNldCBkZXYgYnIwDQo+ID4gdHlwZSBicmlkZ2Ugdmxhbl9maWx0ZXJpbmcgMSAzLg0K
-PiA+IGJyaWRnZSB2bGFuIGRlbCBkZXYgc3dwMCB2aWQgMSBwdmlkDQo+ID4gYnJpZGdlIHZsYW4g
-YWRkIGRldiBzd3AwIHZpZCAxMDAgcHZpZCB1bnRhZ2dlZCBicmlkZ2UgdmxhbiBhZGQgZGV2DQo+
-ID4gc3dwMSB2aWQgMTAwDQo+ID4gUmVzdWx0Og0KPiA+IEN1c3RvbWVyKHRwaWQ6ODEwMCB2aWQ6
-MTExKSAtPiBzd3AwIC0+IHN3cDEgLT4gSVNQKFNUQUcgXA0KPiA+ICAgICAgICAgICAgIHRwaWQ6
-ODhBOCB2aWQ6MTAwLCBDVEFHIHRwaWQ6ODEwMCB2aWQ6MTExKQ0KPiA+IElTUCh0cGlkOjg4QTgg
-dmlkOjEwMCB0cGlkOjgxMDAgdmlkOjIyMikgLT4gc3dwMSAtPiBzd3AwIC0+XA0KPiA+ICAgICAg
-ICAgICAgIEN1c3RvbWVyKHRwaWQ6ODEwMCB2aWQ6MjIyKQ0KPiA+DQo+ID4gU2lnbmVkLW9mZi1i
-eTogaG9uZ2JvLndhbmcgPGhvbmdiby53YW5nQG54cC5jb20+DQo+ID4gLS0tDQo+IA0KPiBDYW4g
-eW91IHBsZWFzZSBleHBsYWluIHdoYXQgaXMgdGhlIHB1cnBvc2Ugb2YgdGhlIGRldmxpbmsgcGFy
-YW1ldGVyIGNvbW1hbmQ/DQo+IEFzIGZhciBhcyBJIHVuZGVyc3RhbmQsIHRoZSBjb21tYW5kcyBm
-cm9tIHN0ZXAgMiBhbmQgMyBzaG91bGQgYmVoYXZlIGxpa2UNCj4gdGhhdCwgZXZlbiB3aXRob3V0
-IHJ1bm5pbmcgdGhlIGNvbW1hbmQgYXQgc3RlcCAxLg0KDQppZiBzd3AwIGNvbm5lY3RzIHdpdGgg
-Y3VzdG9tZXIsIGFuZCBzd3AxIGNvbm5lY3RzIHdpdGggSVNQLCBBY2NvcmRpbmcgdG8gdGhlIFZT
-Qzk5NTk5XzFfMDBfVFMucGRmLA0Kc3dwMCBhbmQgc3dwMSB3aWxsIGhhdmUgZGlmZmVyZW50IFZM
-QU5fUE9QX0NOVCAmJiBWTEFOX0FXQVJFX0VOQSwgDQoNCnN3cDAgc2hvdWxkIHNldCBWTEFOX0NG
-Ry5WTEFOX1BPUF9DTlQ9MCAmJiBWTEFOX0NGRy5WTEFOX0FXQVJFX0VOQT0wDQpzd3AxIHNob3Vs
-ZCBzZXQgVkxBTl9DRkcuVkxBTl9QT1BfQ05UPTEgJiYgVkxBTl9DRkcuVkxBTl9BV0FSRV9FTkE9
-MQ0KDQpidXQgd2hlbiBzZXQgdmxhbl9maWx0ZXI9MSwgY3VycmVudCBjb2RlIHdpbGwgc2V0IHNh
-bWUgdmFsdWUgZm9yIGJvdGggc3dwMCBhbmQgc3dwMSwgDQpmb3IgY29tcGF0aWJpbGl0eSB3aXRo
-IGV4aXN0aW5nIGNvZGUoODAyLjFRIG1vZGUpLCBzbyBhZGQgZGV2bGluayB0byBzZXQgc3dwMCBh
-bmQgc3dwMSBpbnRvIGRpZmZlcmVudCBtb2Rlcy4NCg0KVGhhbmtzLA0KaG9uZ2JvDQoNCg==
+Hi Jason,
+
+On 16/09/20 8:40 am, Jason Wang wrote:
+> 
+> On 2020/9/15 下午11:47, Kishon Vijay Abraham I wrote:
+>> Hi Jason,
+>>
+>> On 15/09/20 1:48 pm, Jason Wang wrote:
+>>> Hi Kishon:
+>>>
+>>> On 2020/9/14 下午3:23, Kishon Vijay Abraham I wrote:
+>>>>> Then you need something that is functional equivalent to virtio PCI
+>>>>> which is actually the concept of vDPA (e.g vDPA provides
+>>>>> alternatives if
+>>>>> the queue_sel is hard in the EP implementation).
+>>>> Okay, I just tried to compare the 'struct vdpa_config_ops' and 'struct
+>>>> vhost_config_ops' ( introduced in [RFC PATCH 03/22] vhost: Add ops for
+>>>> the VHOST driver to configure VHOST device).
+>>>>
+>>>> struct vdpa_config_ops {
+>>>>      /* Virtqueue ops */
+>>>>      int (*set_vq_address)(struct vdpa_device *vdev,
+>>>>                    u16 idx, u64 desc_area, u64 driver_area,
+>>>>                    u64 device_area);
+>>>>      void (*set_vq_num)(struct vdpa_device *vdev, u16 idx, u32 num);
+>>>>      void (*kick_vq)(struct vdpa_device *vdev, u16 idx);
+>>>>      void (*set_vq_cb)(struct vdpa_device *vdev, u16 idx,
+>>>>                struct vdpa_callback *cb);
+>>>>      void (*set_vq_ready)(struct vdpa_device *vdev, u16 idx, bool
+>>>> ready);
+>>>>      bool (*get_vq_ready)(struct vdpa_device *vdev, u16 idx);
+>>>>      int (*set_vq_state)(struct vdpa_device *vdev, u16 idx,
+>>>>                  const struct vdpa_vq_state *state);
+>>>>      int (*get_vq_state)(struct vdpa_device *vdev, u16 idx,
+>>>>                  struct vdpa_vq_state *state);
+>>>>      struct vdpa_notification_area
+>>>>      (*get_vq_notification)(struct vdpa_device *vdev, u16 idx);
+>>>>      /* vq irq is not expected to be changed once DRIVER_OK is set */
+>>>>      int (*get_vq_irq)(struct vdpa_device *vdv, u16 idx);
+>>>>
+>>>>      /* Device ops */
+>>>>      u32 (*get_vq_align)(struct vdpa_device *vdev);
+>>>>      u64 (*get_features)(struct vdpa_device *vdev);
+>>>>      int (*set_features)(struct vdpa_device *vdev, u64 features);
+>>>>      void (*set_config_cb)(struct vdpa_device *vdev,
+>>>>                    struct vdpa_callback *cb);
+>>>>      u16 (*get_vq_num_max)(struct vdpa_device *vdev);
+>>>>      u32 (*get_device_id)(struct vdpa_device *vdev);
+>>>>      u32 (*get_vendor_id)(struct vdpa_device *vdev);
+>>>>      u8 (*get_status)(struct vdpa_device *vdev);
+>>>>      void (*set_status)(struct vdpa_device *vdev, u8 status);
+>>>>      void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
+>>>>                 void *buf, unsigned int len);
+>>>>      void (*set_config)(struct vdpa_device *vdev, unsigned int offset,
+>>>>                 const void *buf, unsigned int len);
+>>>>      u32 (*get_generation)(struct vdpa_device *vdev);
+>>>>
+>>>>      /* DMA ops */
+>>>>      int (*set_map)(struct vdpa_device *vdev, struct vhost_iotlb
+>>>> *iotlb);
+>>>>      int (*dma_map)(struct vdpa_device *vdev, u64 iova, u64 size,
+>>>>                 u64 pa, u32 perm);
+>>>>      int (*dma_unmap)(struct vdpa_device *vdev, u64 iova, u64 size);
+>>>>
+>>>>      /* Free device resources */
+>>>>      void (*free)(struct vdpa_device *vdev);
+>>>> };
+>>>>
+>>>> +struct vhost_config_ops {
+>>>> +    int (*create_vqs)(struct vhost_dev *vdev, unsigned int nvqs,
+>>>> +              unsigned int num_bufs, struct vhost_virtqueue *vqs[],
+>>>> +              vhost_vq_callback_t *callbacks[],
+>>>> +              const char * const names[]);
+>>>> +    void (*del_vqs)(struct vhost_dev *vdev);
+>>>> +    int (*write)(struct vhost_dev *vdev, u64 vhost_dst, void *src,
+>>>> int len);
+>>>> +    int (*read)(struct vhost_dev *vdev, void *dst, u64 vhost_src, int
+>>>> len);
+>>>> +    int (*set_features)(struct vhost_dev *vdev, u64 device_features);
+>>>> +    int (*set_status)(struct vhost_dev *vdev, u8 status);
+>>>> +    u8 (*get_status)(struct vhost_dev *vdev);
+>>>> +};
+>>>> +
+>>>> struct virtio_config_ops
+>>>> I think there's some overlap here and some of the ops tries to do the
+>>>> same thing.
+>>>>
+>>>> I think it differs in (*set_vq_address)() and (*create_vqs)().
+>>>> [create_vqs() introduced in struct vhost_config_ops provides
+>>>> complimentary functionality to (*find_vqs)() in struct
+>>>> virtio_config_ops. It seemingly encapsulates the functionality of
+>>>> (*set_vq_address)(), (*set_vq_num)(), (*set_vq_cb)(),..].
+>>>>
+>>>> Back to the difference between (*set_vq_address)() and (*create_vqs)(),
+>>>> set_vq_address() directly provides the virtqueue address to the vdpa
+>>>> device but create_vqs() only provides the parameters of the virtqueue
+>>>> (like the number of virtqueues, number of buffers) but does not
+>>>> directly
+>>>> provide the address. IMO the backend client drivers (like net or vhost)
+>>>> shouldn't/cannot by itself know how to access the vring created on
+>>>> virtio front-end. The vdpa device/vhost device should have logic for
+>>>> that. That will help the client drivers to work with different types of
+>>>> vdpa device/vhost device and can access the vring created by virtio
+>>>> irrespective of whether the vring can be accessed via mmio or kernel
+>>>> space or user space.
+>>>>
+>>>> I think vdpa always works with client drivers in userspace and
+>>>> providing
+>>>> userspace address for vring.
+>>>
+>>> Sorry for being unclear. What I meant is not replacing vDPA with the
+>>> vhost(bus) you proposed but the possibility of replacing virtio-pci-epf
+>>> with vDPA in:
+>> Okay, so the virtio back-end still use vhost and front end should use
+>> vDPA. I see. So the host side PCI driver for EPF should populate
+>> vdpa_config_ops and invoke vdpa_register_device().
+> 
+> 
+> Yes.
+> 
+> 
+>>> My question is basically for the part of virtio_pci_epf_send_command(),
+>>> so it looks to me you have a vendor specific API to replace the
+>>> virtio-pci layout of the BAR:
+>> Even when we use vDPA, we have to use some sort of
+>> virtio_pci_epf_send_command() to communicate with virtio backend right?
+> 
+> 
+> Right.
+> 
+> 
+>>
+>> Right, the layout is slightly different from the standard layout.
+>>
+>> This is the layout
+>> struct epf_vhost_reg_queue {
+>>          u8 cmd;
+>>          u8 cmd_status;
+>>          u16 status;
+>>          u16 num_buffers;
+>>          u16 msix_vector;
+>>          u64 queue_addr;
+> 
+> 
+> What's the meaning of queue_addr here?
+
+Using queue_addr, the virtio front-end communicates the address of the
+allocated memory for virtqueue to the virtio back-end.
+> 
+> Does not mean the device expects a contiguous memory for avail/desc/used
+> ring?
+
+It's contiguous memory. Isn't this similar to other virtio transport
+(both PCI legacy and modern interface)?.
+> 
+> 
+>> } __packed;
+>>
+>> struct epf_vhost_reg {
+>>          u64 host_features;
+>>          u64 guest_features;
+>>          u16 msix_config;
+>>          u16 num_queues;
+>>          u8 device_status;
+>>          u8 config_generation;
+>>          u32 isr;
+>>          u8 cmd;
+>>          u8 cmd_status;
+>>          struct epf_vhost_reg_queue vq[MAX_VQS];
+>> } __packed;
+>>>
+>>> +static int virtio_pci_epf_send_command(struct virtio_pci_device
+>>> *vp_dev,
+>>> +                       u32 command)
+>>> +{
+>>> +    struct virtio_pci_epf *pci_epf;
+>>> +    void __iomem *ioaddr;
+>>> +    ktime_t timeout;
+>>> +    bool timedout;
+>>> +    int ret = 0;
+>>> +    u8 status;
+>>> +
+>>> +    pci_epf = to_virtio_pci_epf(vp_dev);
+>>> +    ioaddr = vp_dev->ioaddr;
+>>> +
+>>> +    mutex_lock(&pci_epf->lock);
+>>> +    writeb(command, ioaddr + HOST_CMD);
+>>> +    timeout = ktime_add_ms(ktime_get(), COMMAND_TIMEOUT);
+>>> +    while (1) {
+>>> +        timedout = ktime_after(ktime_get(), timeout);
+>>> +        status = readb(ioaddr + HOST_CMD_STATUS);
+>>> +
+>>>
+>>> Several questions:
+>>>
+>>> - It's not clear to me how the synchronization is done between the RC
+>>> and EP. E.g how and when the value of HOST_CMD_STATUS can be changed.
+>> The HOST_CMD (commands sent to the EP) is serialized by using mutex.
+>> Once the EP reads the command, it resets the value in HOST_CMD. So
+>> HOST_CMD is less likely an issue.
+> 
+> 
+> Here's my understanding of the protocol:
+> 
+> 1) RC write to HOST_CMD
+> 2) RC wait for HOST_CMD_STATUS to be HOST_CMD_STATUS_OKAY
+
+That's right!
+> 
+> It looks to me what EP should do is
+> 
+> 1) EP reset HOST_CMD after reading new command
+
+That's right! It does.
+> 
+> And it looks to me EP should also reset HOST_CMD_STATUS here?
+
+yeah, that would require RC to send another command to reset the status.
+Didn't see it required in the normal scenario but good to add this.
+> 
+> (I thought there should be patch to handle stuffs like this but I didn't
+> find it in this series)
+
+This is added in [RFC PATCH 19/22] PCI: endpoint: Add EP function driver
+to provide VHOST interface
+
+pci_epf_vhost_cmd_handler() gets commands from RC using "reg->cmd;". On
+the EP side, it is local memory access (mapped to BAR memory exposed to
+the host) and hence accessed using structure member access.
+> 
+> 
+>>
+>> A sufficiently large time is given for the EP to complete it's operation
+>> (1 Sec) where the EP provides the status in HOST_CMD_STATUS. After it
+>> expires, HOST_CMD_STATUS_NONE is written to HOST_CMD_STATUS. There could
+>> be case where EP updates HOST_CMD_STATUS after RC writes
+>> HOST_CMD_STATUS_NONE, but by then HOST has already detected this as
+>> failure and error-ed out.
+>>  
+>>> If you still want to introduce a new transport, a virtio spec patch
+>>> would be helpful for us to understand the device API.
+>> Okay, that should be on https://github.com/oasis-tcs/virtio-spec.git?
+> 
+> 
+> Yes.
+> 
+> 
+>>> - You have you vendor specific layout (according to
+>>> virtio_pci_epb_table()), so I guess you it's better to have a vendor
+>>> specific vDPA driver instead
+>> Okay, with vDPA, we are free to define our own layouts.
+> 
+> 
+> Right, but vDPA have other requirements. E.g it requires the device have
+> the ability to save/restore the state (e.g the last_avail_idx).
+> 
+> So it actually depends on what you want. If you don't care about
+> userspace drivers and want to have a standard transport, you can still
+> go virtio.
+
+okay.
+> 
+> 
+>>> - The advantage of vendor specific vDPA driver is that it can 1) have
+>>> less codes 2) support userspace drivers through vhost-vDPA (instead of
+>>> inventing new APIs since we can't use vfio-pci here).
+>> I see there's an additional level of indirection from virtio to vDPA and
+>> probably no need for spec update but don't exactly see how it'll reduce
+>> code.
+> 
+> 
+> AFAIK you don't need to implement your own setup_vq and del_vq.
+> 
+There should still be some entity that allocates memory for virtqueues
+and then communicate this address to the backend.
+
+Maybe I have to look this further.
+> 
+>>
+>> For 2, Isn't vhost-vdpa supposed to run on virtio backend?
+> 
+> 
+> Not currently, vDPA is a superset of virtio (e.g it support virtqueue
+> state save/restore). This it should be possible in the future probably.
+> 
+> 
+>>
+>>  From a high level, I think I should be able to use vDPA for
+>> virtio_pci_epf.c. Would you also suggest using vDPA for ntb_virtio.c?
+>> ([RFC PATCH 20/22] NTB: Add a new NTB client driver to implement VIRTIO
+>> functionality).
+> 
+> 
+> I think it's your call. If you want
+> 
+> 1) a well-defined standard virtio transport
+> 2) willing to finalize d and maintain the spec
+> 3) doesn't care about userspace drivers
+
+IIUC, we can use vDPA (virtio_vdpa.c) but still don't need userspace
+drivers right?
+> 
+> You can go with virtio, otherwise vDPA.
+
+Okay, let me see. Thanks for your inputs.
+
+Best Regards,
+Kishon
