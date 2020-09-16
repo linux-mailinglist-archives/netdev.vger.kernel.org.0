@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC09626CC5E
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 455B426CC4C
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:42:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728527AbgIPUnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 16:43:01 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:48482 "EHLO inva020.nxp.com"
+        id S1726756AbgIPUkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 16:40:53 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:59252 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726660AbgIPREf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Sep 2020 13:04:35 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 02DE71A0098;
-        Wed, 16 Sep 2020 14:16:48 +0200 (CEST)
+        id S1726757AbgIPREy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 13:04:54 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 8608D200071;
+        Wed, 16 Sep 2020 14:16:49 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B73461A0334;
-        Wed, 16 Sep 2020 14:16:44 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4B531200A60;
+        Wed, 16 Sep 2020 14:16:46 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id EEE214030D;
-        Wed, 16 Sep 2020 14:16:39 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 93A3E40310;
+        Wed, 16 Sep 2020 14:16:41 +0200 (CEST)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
@@ -28,9 +28,9 @@ Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ioana Radulescu <ruxandra.radulescu@nxp.com>,
         Richard Cochran <richardcochran@gmail.com>
-Subject: [v3, 3/6] dpaa2-eth: invoke dpaa2_eth_enable_tx_tstamp() once in code
-Date:   Wed, 16 Sep 2020 20:08:27 +0800
-Message-Id: <20200916120830.11456-4-yangbo.lu@nxp.com>
+Subject: [v3, 4/6] dpaa2-eth: utilize skb->cb[0] for hardware timestamping
+Date:   Wed, 16 Sep 2020 20:08:28 +0800
+Message-Id: <20200916120830.11456-5-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200916120830.11456-1-yangbo.lu@nxp.com>
 References: <20200916120830.11456-1-yangbo.lu@nxp.com>
@@ -40,147 +40,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Invoke dpaa2_eth_enable_tx_tstamp() once in code after building FD,
-rather than calling it in dpaa2_eth_build_single_fd(),
-dpaa2_eth_build_sg_fd_single_buf(), and dpaa2_eth_build_sg_fd().
+This patch is a preparation for next hardware one-step timestamping
+support. For DPAA2, the one step timestamping configuration on
+hardware registers has to be done when there is no one-step timestamping
+packet in flight. So we will have to use workqueue and skb queue
+for such packets transmitting, to make sure waiting the last packet has
+already been sent on hardware, and starting to transmit the current one.
+
+So the tx timestamping flag in private data may not reflect the actual
+request for the one-step timestamping packets of skb queue. This also
+affects skb headroom allocation. Let's use skb->cb[0] to mark the
+timestamping request for each skb.
 
 Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 ---
 Changes for v2:
-	- None.
+	- Removed unused variable priv in dpaa2_eth_xdp_create_fd().
 Changes for v3:
 	- None.
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 31 ++++++++++++------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 26 +++++++++++++++---------
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h | 13 ++++++------
+ 2 files changed, 23 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index daf8fd4..a8c311fb 100644
+index a8c311fb..eab9470 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -589,7 +589,8 @@ static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_fd *fd, void *buf_start)
- /* Create a frame descriptor based on a fragmented skb */
- static int dpaa2_eth_build_sg_fd(struct dpaa2_eth_priv *priv,
- 				 struct sk_buff *skb,
--				 struct dpaa2_fd *fd)
-+				 struct dpaa2_fd *fd,
-+				 void **swa_addr)
- {
- 	struct device *dev = priv->net_dev->dev.parent;
- 	void *sgt_buf = NULL;
-@@ -658,6 +659,7 @@ static int dpaa2_eth_build_sg_fd(struct dpaa2_eth_priv *priv,
- 	 * skb backpointer in the software annotation area. We'll need
- 	 * all of them on Tx Conf.
- 	 */
-+	*swa_addr = (void *)sgt_buf;
- 	swa = (struct dpaa2_eth_swa *)sgt_buf;
- 	swa->type = DPAA2_ETH_SWA_SG;
- 	swa->sg.skb = skb;
-@@ -677,9 +679,6 @@ static int dpaa2_eth_build_sg_fd(struct dpaa2_eth_priv *priv,
- 	dpaa2_fd_set_len(fd, skb->len);
- 	dpaa2_fd_set_ctrl(fd, FD_CTRL_PTA);
+@@ -11,7 +11,6 @@
+ #include <linux/msi.h>
+ #include <linux/kthread.h>
+ #include <linux/iommu.h>
+-#include <linux/net_tstamp.h>
+ #include <linux/fsl/mc.h>
+ #include <linux/bpf.h>
+ #include <linux/bpf_trace.h>
+@@ -780,7 +779,7 @@ static int dpaa2_eth_build_single_fd(struct dpaa2_eth_priv *priv,
+ 	struct dpaa2_eth_swa *swa;
+ 	dma_addr_t addr;
  
--	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
--		dpaa2_eth_enable_tx_tstamp(fd, sgt_buf);
--
- 	return 0;
+-	buffer_start = skb->data - dpaa2_eth_needed_headroom(priv, skb);
++	buffer_start = skb->data - dpaa2_eth_needed_headroom(skb);
  
- dma_map_single_failed:
-@@ -699,7 +698,8 @@ static int dpaa2_eth_build_sg_fd(struct dpaa2_eth_priv *priv,
-  */
- static int dpaa2_eth_build_sg_fd_single_buf(struct dpaa2_eth_priv *priv,
- 					    struct sk_buff *skb,
--					    struct dpaa2_fd *fd)
-+					    struct dpaa2_fd *fd,
-+					    void **swa_addr)
- {
- 	struct device *dev = priv->net_dev->dev.parent;
- 	struct dpaa2_eth_sgt_cache *sgt_cache;
-@@ -737,6 +737,7 @@ static int dpaa2_eth_build_sg_fd_single_buf(struct dpaa2_eth_priv *priv,
- 	dpaa2_sg_set_final(sgt, true);
- 
- 	/* Store the skb backpointer in the SGT buffer */
-+	*swa_addr = (void *)sgt_buf;
- 	swa = (struct dpaa2_eth_swa *)sgt_buf;
- 	swa->type = DPAA2_ETH_SWA_SINGLE;
- 	swa->single.skb = skb;
-@@ -755,9 +756,6 @@ static int dpaa2_eth_build_sg_fd_single_buf(struct dpaa2_eth_priv *priv,
- 	dpaa2_fd_set_len(fd, skb->len);
- 	dpaa2_fd_set_ctrl(fd, FD_CTRL_PTA);
- 
--	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
--		dpaa2_eth_enable_tx_tstamp(fd, sgt_buf);
--
- 	return 0;
- 
- sgt_map_failed:
-@@ -774,7 +772,8 @@ static int dpaa2_eth_build_sg_fd_single_buf(struct dpaa2_eth_priv *priv,
- /* Create a frame descriptor based on a linear skb */
- static int dpaa2_eth_build_single_fd(struct dpaa2_eth_priv *priv,
- 				     struct sk_buff *skb,
--				     struct dpaa2_fd *fd)
-+				     struct dpaa2_fd *fd,
-+				     void **swa_addr)
- {
- 	struct device *dev = priv->net_dev->dev.parent;
- 	u8 *buffer_start, *aligned_start;
-@@ -795,6 +794,7 @@ static int dpaa2_eth_build_single_fd(struct dpaa2_eth_priv *priv,
- 	 * (in the private data area) such that we can release it
- 	 * on Tx confirm
- 	 */
-+	*swa_addr = (void *)buffer_start;
- 	swa = (struct dpaa2_eth_swa *)buffer_start;
- 	swa->type = DPAA2_ETH_SWA_SINGLE;
- 	swa->single.skb = skb;
-@@ -811,9 +811,6 @@ static int dpaa2_eth_build_single_fd(struct dpaa2_eth_priv *priv,
- 	dpaa2_fd_set_format(fd, dpaa2_fd_single);
- 	dpaa2_fd_set_ctrl(fd, FD_CTRL_PTA);
- 
--	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
--		dpaa2_eth_enable_tx_tstamp(fd, buffer_start);
--
- 	return 0;
- }
- 
-@@ -939,6 +936,7 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
- 	u32 fd_len;
- 	u8 prio = 0;
- 	int err, i;
-+	void *swa;
- 
- 	percpu_stats = this_cpu_ptr(priv->percpu_stats);
- 	percpu_extras = this_cpu_ptr(priv->percpu_extras);
-@@ -959,17 +957,17 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
- 	memset(&fd, 0, sizeof(fd));
- 
- 	if (skb_is_nonlinear(skb)) {
--		err = dpaa2_eth_build_sg_fd(priv, skb, &fd);
-+		err = dpaa2_eth_build_sg_fd(priv, skb, &fd, &swa);
- 		percpu_extras->tx_sg_frames++;
- 		percpu_extras->tx_sg_bytes += skb->len;
- 	} else if (skb_headroom(skb) < needed_headroom) {
--		err = dpaa2_eth_build_sg_fd_single_buf(priv, skb, &fd);
-+		err = dpaa2_eth_build_sg_fd_single_buf(priv, skb, &fd, &swa);
- 		percpu_extras->tx_sg_frames++;
- 		percpu_extras->tx_sg_bytes += skb->len;
- 		percpu_extras->tx_converted_sg_frames++;
- 		percpu_extras->tx_converted_sg_bytes += skb->len;
- 	} else {
--		err = dpaa2_eth_build_single_fd(priv, skb, &fd);
-+		err = dpaa2_eth_build_single_fd(priv, skb, &fd, &swa);
+ 	/* If there's enough room to align the FD address, do it.
+ 	 * It will help hardware optimize accesses.
+@@ -894,7 +893,7 @@ static void dpaa2_eth_free_tx_fd(const struct dpaa2_eth_priv *priv,
  	}
  
- 	if (unlikely(err)) {
-@@ -977,6 +975,9 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
+ 	/* Get the timestamp value */
+-	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
++	if (skb->cb[0] == TX_TSTAMP) {
+ 		struct skb_shared_hwtstamps shhwtstamps;
+ 		__le64 *ts = dpaa2_get_ts(buffer_start, true);
+ 		u64 ns;
+@@ -938,10 +937,17 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
+ 	int err, i;
+ 	void *swa;
+ 
++	/* Utilize skb->cb[0] for timestamping request per skb */
++	skb->cb[0] = 0;
++
++	if (priv->tx_tstamp_type == HWTSTAMP_TX_ON &&
++	    skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
++		skb->cb[0] = TX_TSTAMP;
++
+ 	percpu_stats = this_cpu_ptr(priv->percpu_stats);
+ 	percpu_extras = this_cpu_ptr(priv->percpu_extras);
+ 
+-	needed_headroom = dpaa2_eth_needed_headroom(priv, skb);
++	needed_headroom = dpaa2_eth_needed_headroom(skb);
+ 
+ 	/* We'll be holding a back-reference to the skb until Tx Confirmation;
+ 	 * we don't want that overwritten by a concurrent Tx with a cloned skb.
+@@ -975,7 +981,7 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
  		goto err_build_fd;
  	}
  
-+	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
-+		dpaa2_eth_enable_tx_tstamp(&fd, swa);
-+
- 	/* Tracing point */
- 	trace_dpaa2_tx_fd(net_dev, &fd);
+-	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
++	if (skb->cb[0] == TX_TSTAMP)
+ 		dpaa2_eth_enable_tx_tstamp(&fd, swa);
  
+ 	/* Tracing point */
+@@ -1899,10 +1905,8 @@ static int dpaa2_eth_ts_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ 
+ 	switch (config.tx_type) {
+ 	case HWTSTAMP_TX_OFF:
+-		priv->tx_tstamp = false;
+-		break;
+ 	case HWTSTAMP_TX_ON:
+-		priv->tx_tstamp = true;
++		priv->tx_tstamp_type = config.tx_type;
+ 		break;
+ 	default:
+ 		return -ERANGE;
+@@ -2097,7 +2101,6 @@ static int dpaa2_eth_xdp_create_fd(struct net_device *net_dev,
+ 				   struct xdp_frame *xdpf,
+ 				   struct dpaa2_fd *fd)
+ {
+-	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
+ 	struct device *dev = net_dev->dev.parent;
+ 	unsigned int needed_headroom;
+ 	struct dpaa2_eth_swa *swa;
+@@ -2107,7 +2110,7 @@ static int dpaa2_eth_xdp_create_fd(struct net_device *net_dev,
+ 	/* We require a minimum headroom to be able to transmit the frame.
+ 	 * Otherwise return an error and let the original net_device handle it
+ 	 */
+-	needed_headroom = dpaa2_eth_needed_headroom(priv, NULL);
++	needed_headroom = dpaa2_eth_needed_headroom(NULL);
+ 	if (xdpf->headroom < needed_headroom)
+ 		return -EINVAL;
+ 
+@@ -3963,6 +3966,9 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
+ 
+ 	priv->iommu_domain = iommu_get_domain_for_dev(dev);
+ 
++	priv->tx_tstamp_type = HWTSTAMP_TX_OFF;
++	priv->rx_tstamp = false;
++
+ 	/* Obtain a MC portal */
+ 	err = fsl_mc_portal_allocate(dpni_dev, FSL_MC_IO_ATOMIC_CONTEXT_PORTAL,
+ 				     &priv->mc_io);
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index 7be684b..e33d79e 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -10,6 +10,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/if_vlan.h>
+ #include <linux/fsl/mc.h>
++#include <linux/net_tstamp.h>
+ 
+ #include <soc/fsl/dpaa2-io.h>
+ #include <soc/fsl/dpaa2-fd.h>
+@@ -433,8 +434,8 @@ struct dpaa2_eth_priv {
+ 	u16 bpid;
+ 	struct iommu_domain *iommu_domain;
+ 
+-	bool tx_tstamp; /* Tx timestamping enabled */
+-	bool rx_tstamp; /* Rx timestamping enabled */
++	enum hwtstamp_tx_types tx_tstamp_type;	/* Tx timestamping type */
++	bool rx_tstamp;				/* Rx timestamping enabled */
+ 
+ 	u16 tx_qdid;
+ 	struct fsl_mc_io *mc_io;
+@@ -475,6 +476,8 @@ struct dpaa2_eth_priv {
+ 	struct dpaa2_mac *mac;
+ };
+ 
++#define TX_TSTAMP		0x1
++
+ #define DPAA2_RXH_SUPPORTED	(RXH_L2DA | RXH_VLAN | RXH_L3_PROTO \
+ 				| RXH_IP_SRC | RXH_IP_DST | RXH_L4_B_0_1 \
+ 				| RXH_L4_B_2_3)
+@@ -561,9 +564,7 @@ static inline bool dpaa2_eth_rx_pause_enabled(u64 link_options)
+ 	return !!(link_options & DPNI_LINK_OPT_PAUSE);
+ }
+ 
+-static inline
+-unsigned int dpaa2_eth_needed_headroom(struct dpaa2_eth_priv *priv,
+-				       struct sk_buff *skb)
++static inline unsigned int dpaa2_eth_needed_headroom(struct sk_buff *skb)
+ {
+ 	unsigned int headroom = DPAA2_ETH_SWA_SIZE;
+ 
+@@ -580,7 +581,7 @@ unsigned int dpaa2_eth_needed_headroom(struct dpaa2_eth_priv *priv,
+ 		return 0;
+ 
+ 	/* If we have Tx timestamping, need 128B hardware annotation */
+-	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
++	if (skb->cb[0] == TX_TSTAMP)
+ 		headroom += DPAA2_ETH_TX_HWA_SIZE;
+ 
+ 	return headroom;
 -- 
 2.7.4
 
