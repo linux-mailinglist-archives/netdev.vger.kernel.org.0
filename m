@@ -2,139 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7700E26C5ED
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 19:25:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76AFA26C618
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 19:33:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727006AbgIPRZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 13:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60240 "EHLO
+        id S1727198AbgIPRdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 13:33:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727004AbgIPRZS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:25:18 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8F6C061BD1
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 10:25:14 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id k15so7734286wrn.10
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 10:25:14 -0700 (PDT)
+        with ESMTP id S1727120AbgIPRdO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:33:14 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E400C014DB0
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 06:17:22 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id y15so3018893wmi.0
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 06:17:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FLIuBcEfXFqBGnCMg96s4H8fMHjOET/yZlTCC4s2SjY=;
-        b=iSKsbfCaH85JTyF93w9TDVj+qgI43v1QxUEyWe0EQUbDc2aQHYBMp7y1gRr8uJgVuM
-         1cVf+stUl9US5B0yTdv8lUKTKT+fgWT5ER7KxMErMG5bzGAZRoKGiAAiQD7o1yhB+czu
-         N8jMTmR0u6nEsuq1VQl1fAx9EM4X/d/DETGps=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HYDGktxm5Yk9Jc3ILH+B9gt66sMh0wgrn23SbZ7R4kg=;
+        b=tjryK8s0CUqs3kovVGVx+IXeKZCQBuHIBzYbxKssEuOfWAmunncudTXIsNk0wVmDgD
+         8ECYqhSLGrmhzcOJKGWqb3AvzQmVoXXr1oahpyMoDnSKeODjHmQBxSEDQa1FOpFoMNAw
+         cReUomjwPtgNPST8bh1MGsbfkbjHkwysi85sreirEDS6ZoFBBb38GCNUg1hzinT0suhM
+         AwgoUmns6X3G9id4xFydV8NyppVGeVZJdHvvUp7gw9hkWPK9umHBDNlxmszmTT+RimNd
+         A+QxU8CeznkX3zKc0YUMU0HK4u3KGMCMEcSt3OffGjBHvlRLofDQUuKxPb3KDV7Tseaw
+         pWQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FLIuBcEfXFqBGnCMg96s4H8fMHjOET/yZlTCC4s2SjY=;
-        b=kcp8i0Fup1l89ruDcp6ghJrYWOgyqvcUbgqkgXal61uQzD03gWOC/wNtXIDqXeqytn
-         e5NUjjbdfc+6iGwbItbZlb+fuXAP5GbpTlou+80ubZFs1qQRb3tVPzIRU+sKuZORg+cN
-         0qb9+LcdXqRHbjTfQaL+6qtgil1utKzdmyA15ho+CNyjrO1hqS6udNGcOm1ErHYECej7
-         OekMyn3CtRtLzZOTiNJZGHKY96ge3KdT6A9OWjwmihmGhv3plvlQcTiqqtK1D4PlIZlb
-         ZGOSovzjJBYLspNYk+KPc4bbmR5VeSQf81cT7oCRflsq/Bv6Pindjtc1LPMCS3FsYdzz
-         q9lA==
-X-Gm-Message-State: AOAM532BcHk7dJkBQgHbQnuViR1e4ZY523vzlH04tOFTRCLuf7zENsX4
-        nq/yjYlXajTQRa9ZhLu0IdFT8WrFmmhGi0UPyid4Bw==
-X-Google-Smtp-Source: ABdhPJzFG0CKotHKNUMxQnzas0sxg7FAmpAAmBAxshrbYB7YiD0VwMPfDZp16xsSPod2p+vLLrtXqNwlDt36g8M7VhU=
-X-Received: by 2002:adf:e711:: with SMTP id c17mr28472007wrm.359.1600277113217;
- Wed, 16 Sep 2020 10:25:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200916112416.2321204-1-jolsa@kernel.org>
-In-Reply-To: <20200916112416.2321204-1-jolsa@kernel.org>
-From:   KP Singh <kpsingh@chromium.org>
-Date:   Wed, 16 Sep 2020 19:25:02 +0200
-Message-ID: <CACYkzJ7Y8WhVE9-6jSCC1svVLeuFFzXQ0Q-A9sjHomGQGgtZCw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: Fix stat probe in d_path test
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HYDGktxm5Yk9Jc3ILH+B9gt66sMh0wgrn23SbZ7R4kg=;
+        b=DKv4yOzS0Ieo3D/9c7AnWGnHn8b2xt3bUJQ5rFh1WDoiFCu64cjid5lBs1Y1u/RbcQ
+         EF+hP3ukdP6cw5u7fLv2hOKtovSsgga89B7NaKkRn1tSan8AiZYRjdK2xsSbFWMHByyO
+         aGc6xQmtCnTGqnnPbGHDBmfhq8JfiU0qMH80xdj81zxx7GgjAKZvlyaadvJcpBJ+9/YO
+         8xSelsZl/ObK8O3V/9TDGbOSDeWatwd+nKMXG2+h/rXsk3wmjlDK18hD005cQjfxNaFX
+         dnzZ70hb1L7f8aNyunb60KL2AvgYbPUqudwcvJ1ftUUN1VHSfuB2XQtuazekFsTalq6W
+         kNMQ==
+X-Gm-Message-State: AOAM532SMKBM9xR6AX1qbTRCv279InBVuZXDFP0fsBFRNLtN88ZKiTTY
+        vR+VV3o7msc+tBkspm4p/+kHSQ==
+X-Google-Smtp-Source: ABdhPJx8U4yEfYF7c9LM4YlgMc/Is2k63uF9wauRkwth16t0jTMXEnEugF/Na7HedGEh7Idj2lypcA==
+X-Received: by 2002:a1c:c906:: with SMTP id f6mr4972209wmb.9.1600262241258;
+        Wed, 16 Sep 2020 06:17:21 -0700 (PDT)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+        by smtp.gmail.com with ESMTPSA id j14sm34538837wrr.66.2020.09.16.06.17.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Sep 2020 06:17:20 -0700 (PDT)
+Date:   Wed, 16 Sep 2020 15:17:02 +0200
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Will Deacon <will@kernel.org>, bpf@vger.kernel.org,
+        ardb@kernel.org, naresh.kamboju@linaro.org,
+        Jiri Olsa <jolsa@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] arm64: bpf: Fix branch offset in JIT
+Message-ID: <20200916131702.GB5316@myrica>
+References: <20200914160355.19179-1-ilias.apalodimas@linaro.org>
+ <20200915131102.GA26439@willie-the-truck>
+ <20200915135344.GA113966@apalos.home>
+ <20200915141707.GB26439@willie-the-truck>
+ <20200915192311.GA124360@apalos.home>
+ <xunyo8m5hp4m.fsf@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <xunyo8m5hp4m.fsf@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 1:24 PM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Some kernels builds might inline vfs_getattr call within fstat
-> syscall code path, so fentry/vfs_getattr trampoline is not called.
->
-> Alexei suggested [1] we should use security_inode_getattr instead,
-> because it's less likely to get inlined.
->
-> Adding security_inode_getattr to the d_path allowed list and
-> switching the stat trampoline to security_inode_getattr.
->
-> Adding flags that indicate trampolines were called and failing
-> the test if any of them got missed, so it's easier to identify
-> the issue next time.
->
-> [1] https://lore.kernel.org/bpf/CAADnVQJ0FchoPqNWm+dEppyij-MOvvEG_trEfyrHdabtcEuZGg@mail.gmail.com/
-> Fixes: e4d1af4b16f8 ("selftests/bpf: Add test for d_path helper")
-> Signed-off-by: Jiri Olsa <jolsa@redhat.com>
+On Wed, Sep 16, 2020 at 03:39:37PM +0300, Yauheni Kaliuta wrote:
+> If you start to amend extables, could you consider a change like
+> 
+> 05a68e892e89 ("s390/kernel: expand exception table logic to allow new handling options")
+> 
+> and implementation of BPF_PROBE_MEM then?
 
-Acked-by: KP Singh <kpsingh@google.com>
+Commit 800834285361 ("bpf, arm64: Add BPF exception tables") should have
+taken care of that, no?
 
-> ---
->  kernel/trace/bpf_trace.c                        | 1 +
->  tools/testing/selftests/bpf/prog_tests/d_path.c | 6 ++++++
->  tools/testing/selftests/bpf/progs/test_d_path.c | 9 ++++++++-
->  3 files changed, 15 insertions(+), 1 deletion(-)
->
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index b2a5380eb187..1001c053ebb3 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -1122,6 +1122,7 @@ BTF_ID(func, vfs_truncate)
->  BTF_ID(func, vfs_fallocate)
->  BTF_ID(func, dentry_open)
->  BTF_ID(func, vfs_getattr)
-> +BTF_ID(func, security_inode_getattr)
->  BTF_ID(func, filp_close)
->  BTF_SET_END(btf_allowlist_d_path)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
-> index fc12e0d445ff..f507f1a6fa3a 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/d_path.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
-> @@ -120,6 +120,12 @@ void test_d_path(void)
->         if (err < 0)
->                 goto cleanup;
->
-> +       if (CHECK(!bss->called_stat || !bss->called_close,
-> +                 "check",
-> +                 "failed to call trampolines called_stat %d, bss->called_close %d\n",
-> +                  bss->called_stat, bss->called_close))
-
-optional:
-
-maybe it's better to add two separate checks with specific error messages?
-
-"stat", "trampoline for security_inode_getattr was not called\n"
-"close", "trampoline for filp_close was not called\n"
-
-I think this would make the output more readable.
-
-- KP
-
-> +               goto cleanup;
-> +
->         for (int i = 0; i < MAX_FILES; i++) {
->                 CHECK(strncmp(src.paths[i], bss->paths_stat[i], MAX_PATH_LEN),
->                       "check",
-
-[...]
-
->         if (pid != my_pid)
->                 return 0;
->
-> --
-> 2.26.2
->
+Thanks,
+Jean
