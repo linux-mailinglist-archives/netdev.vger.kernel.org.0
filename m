@@ -2,109 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA6D226BB37
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 06:05:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6D4B26BB80
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 06:27:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726187AbgIPEFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 00:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48604 "EHLO
+        id S1726145AbgIPE05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 00:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726023AbgIPEFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 00:05:18 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47203C06174A;
-        Tue, 15 Sep 2020 21:05:17 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id d9so3201413pfd.3;
-        Tue, 15 Sep 2020 21:05:16 -0700 (PDT)
+        with ESMTP id S1726079AbgIPE04 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 00:26:56 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A50F5C06174A;
+        Tue, 15 Sep 2020 21:26:54 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id g96so5404176otb.12;
+        Tue, 15 Sep 2020 21:26:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=J5hBLNAeKi7sYZ3kBhjD3Odx80a8hnn7AnndRx+Ra8w=;
-        b=JI6cl06/ZTc9Eqe4z9EIUEoq8cN7ktx+bhfqFUaPKb9qD4Ftz8EmjiAa+6pJH5y3kl
-         ztEPpr9a1qYIM+MxU7OIaCWSrLAn6Hzepv3g/YbrWuHmSjKpLd8Rt5rUt6eMBjsdNONV
-         dLbulSM55aHScKGon+ECfE7K9eZe0Z73KvnepSSaL+TZGp4KbsU2uUrFbiPpBw6rfAS0
-         mBg+hUuCgaQ47Ff1pw2L6aYIG/Xo2k9pz8Ewjkt5WcQlOrzyfv/ZnD9WD/WR1z/sGosJ
-         hVEa2uaTzJs7A5PM3RoUzHdPa1FTViY0ptVCFcwXRpX0m5e7xyVcYF1DxxC7qCr5SOli
-         iwBA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BjCFbGmPmsk7PjTa4PqyTGBZejxzGNrHohCt8u93HL0=;
+        b=Rt2LpIbxECIIT5r72IgzJlUWFN/DiqiKJfmOc7EFuBihxuYMIeiU7ZRS4Qr2t5Qb+O
+         hjJkiLBms7/rjA2i0o35xAUWE6tLaHPrToLirTEMP4pC2jpvsog3c/uk9McMnaZybDoP
+         U+zGR44vxisksgcner/C2JHvIV1eO+4Ja+sPy2nNiTDMDrNR6nm/SXzoeSAk9rbZ2EWT
+         6i5wh/oWq0xR4Q+zPkyNwHHnhPs+Ajn4ZqTLYfuHFlv4F47vpKQqEVkr2kH5FWdJtg0Y
+         vB6fnlTukD/f/BfvJ40vIg5/l5Oss09QcNDKPEUxF3hakvYV1JvmxzLa/oF7NegdR+RO
+         5SXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=J5hBLNAeKi7sYZ3kBhjD3Odx80a8hnn7AnndRx+Ra8w=;
-        b=C5lPEGj0N7h+oaoNMX0HM4fqBiZj5axM/4nucMTqxslpcufKKQhGmd1+l7WlVyjWeN
-         igBORQJAZS1PrPDVw0QvZceb4Z/160OPwDTHx5T7WCcI0d+BHXckX4HRNDvyYB3lnXqm
-         jWzomRh2P6UdHC9O0tMtombzEYlmvenCFF0i4kKDB/QK52zrWAWtXMzQxDjNyLJGS0c0
-         jWyhSKT7Y2LPyQDCGi02LZ3D9rN8Ld8SdzDcXeviIiwguti+6ejfL0Xg88ef4APpUB4o
-         PchgbXgDHcgWIO7Yr0QZzTAfzLOn3Sf8hK2fHpD2TNKkG13mI59+PzUR5uqIFl8dJiAt
-         jAkQ==
-X-Gm-Message-State: AOAM532ZUPfawu5z+HRj/yP/viG/nl/po4EAawnt7d274/KDd/kJEk/O
-        bI+HsFG+dWD6YAC/2yKBv2o=
-X-Google-Smtp-Source: ABdhPJwuBQJfISTIpXKH+vrbO4W1krC4th+wfsmwkF0zsNhfMBFZefvLS0SVIQPZr+pLCQ+S2HXWGw==
-X-Received: by 2002:a63:521c:: with SMTP id g28mr10130802pgb.43.1600229114515;
-        Tue, 15 Sep 2020 21:05:14 -0700 (PDT)
-Received: from dtor-ws ([2620:15c:202:201:a6ae:11ff:fe11:fcc3])
-        by smtp.gmail.com with ESMTPSA id d25sm7586887pgl.23.2020.09.15.21.05.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 21:05:13 -0700 (PDT)
-Date:   Tue, 15 Sep 2020 21:05:11 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Boqun Feng <boqun.feng@gmail.com>
-Cc:     linux-hyperv@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Michael Kelley <mikelley@microsoft.com>, will@kernel.org,
-        ardb@kernel.org, arnd@arndb.de, catalin.marinas@arm.com,
-        mark.rutland@arm.com, maz@kernel.org
-Subject: Re: [PATCH v4 08/11] Input: hyperv-keyboard: Use VMBUS_RING_SIZE()
- for ringbuffer sizes
-Message-ID: <20200916040511.GH1681290@dtor-ws>
-References: <20200916034817.30282-1-boqun.feng@gmail.com>
- <20200916034817.30282-9-boqun.feng@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BjCFbGmPmsk7PjTa4PqyTGBZejxzGNrHohCt8u93HL0=;
+        b=nYgTwJanxsCRcCUtJ2ovhy7Ep9eryTKul1S97unmVRfEdE+vEFxO5v6TGjTaEGKQVi
+         SFMd6m1X42kzOl81wBJa9HqxSiPibknIyrPviGL2c8qEyyTyPrDp1ZoNBtDt1etngHNC
+         VzH772gegEoK5bpNnx4mMakyhegkt2e26I7ASB92yXNiT0OeCypfSIbnHRds0/TcscXB
+         hC3hnJg6fYc8gURrPubQe/javTBT99lWSFZJzIMS4c6TjC4wwpBQxFcGrYUgf7699FIw
+         HLBWdAXJGqH1H4A5bRV/YbQTVrsigx2URXxeAh8Zp0RIy7IYbt0mByHDEHitfVBU6FW4
+         PqAg==
+X-Gm-Message-State: AOAM530FcDWj/xapO3L0msTJ+ka2rYD2eHRwoq87Z93CmQnBaAzYUk1o
+        ukALoCIOzw1E81G9oPeLUojdIE0Iv4AL3SgprZ5eezlni+yioQ==
+X-Google-Smtp-Source: ABdhPJx6Reu4lQxpEQCi6cm/jKU0KJZ1o/chXk6/dcA7ql4ztI76CFS66ybppJIiP6EdnWWUSOkrIPElxCHgo2u0M6w=
+X-Received: by 2002:a9d:5a92:: with SMTP id w18mr14967737oth.145.1600230414131;
+ Tue, 15 Sep 2020 21:26:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200916034817.30282-9-boqun.feng@gmail.com>
+References: <CAFCwf12XZRxLYifSfuB+RGhuiKBytzsUTOnEa6FqfJHYvcVJPQ@mail.gmail.com>
+ <20200915140418.4afbc1eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAFCwf10+_hQOSH4Ot+keE9Tc+ybupvp5JyUhFbvfoy6HseVyZg@mail.gmail.com> <20200915.153449.1384323730053933155.davem@davemloft.net>
+In-Reply-To: <20200915.153449.1384323730053933155.davem@davemloft.net>
+From:   Oded Gabbay <oded.gabbay@gmail.com>
+Date:   Wed, 16 Sep 2020 07:26:26 +0300
+Message-ID: <CAFCwf10fa7Hq=hMeg9mrfnaFXi9gtJU82BiShE4TpBOg8yuHgQ@mail.gmail.com>
+Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
+To:     David Miller <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-rdma@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 11:48:14AM +0800, Boqun Feng wrote:
-> For a Hyper-V vmbus, the size of the ringbuffer has two requirements:
-> 
-> 1)	it has to take one PAGE_SIZE for the header
-> 
-> 2)	it has to be PAGE_SIZE aligned so that double-mapping can work
-> 
-> VMBUS_RING_SIZE() could calculate a correct ringbuffer size which
-> fulfills both requirements, therefore use it to make sure vmbus work
-> when PAGE_SIZE != HV_HYP_PAGE_SIZE (4K).
-> 
-> Note that since the argument for VMBUS_RING_SIZE() is the size of
-> payload (data part), so it will be minus 4k (the size of header when
-> PAGE_SIZE = 4k) than the original value to keep the ringbuffer total
-> size unchanged when PAGE_SIZE = 4k.
-> 
-> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
-> Cc: Michael Kelley <mikelley@microsoft.com>
-> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+On Wed, Sep 16, 2020 at 1:34 AM David Miller <davem@davemloft.net> wrote:
+>
+> From: Oded Gabbay <oded.gabbay@gmail.com>
+> Date: Wed, 16 Sep 2020 00:20:12 +0300
+>
+> > I completely understand but you didn't answer my question. How come
+> > there are drivers which create netdev objects, and specifically sgi-xp
+> > in misc (but I also saw it in usb drivers) that live outside
+> > drivers/net ? Why doesn't your request apply to them as well ?
+>
+> Don't use examples of drivers doing the wrong thing as an excuse for
+> you to repeat the mistake.
+>
+> Ok?
+Well, it's not like there is a big red warning near those drivers
+saying "this is wrong"...
+How could I have known that in advance ?
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+>
+> That kind of argument doesn't work here.
+I know that, I just didn't know those drivers did "the wrong thing"
 
-Please feel free to merge through whatever tree the rest of the patches
-will go.
-
-Thanks.
-
--- 
-Dmitry
+Oded
