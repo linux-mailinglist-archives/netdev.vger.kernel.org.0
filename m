@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1E8926C010
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 11:03:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B18B26C057
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 11:19:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726381AbgIPJDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 05:03:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40965 "EHLO
+        id S1726661AbgIPJTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 05:19:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:32223 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726149AbgIPJDh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 05:03:37 -0400
+        by vger.kernel.org with ESMTP id S1726369AbgIPJTr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 05:19:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600247014;
+        s=mimecast20190719; t=1600247985;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=gsSuuwOM1HZHIH/9xEU+RRc3nsPcI35w2ChtA7/HJSo=;
-        b=hLFdCX3CWbQFeM1lXnBmhxe4YLgJwOtSdeqbh0S25gMQi4mcnYGkfew54qPe3fttW7qRVZ
-        7Zy9ZNFtAirdEdDddVEb4koEeAjRKS/KoTlVumCAIEiYfWdnrVOgQwcyfC9Jj8regBsBVh
-        dafd0MOGDm6vYHj9cKG3nu5J6/SNTT0=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-411-RLskqN2VPaC-oIsnR8ydLg-1; Wed, 16 Sep 2020 05:03:32 -0400
-X-MC-Unique: RLskqN2VPaC-oIsnR8ydLg-1
-Received: by mail-qk1-f199.google.com with SMTP id w64so5550872qkc.14
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 02:03:32 -0700 (PDT)
+        bh=9gODzx5y+CaRlb+xCcHOYC/XLWXub4hPyfIYDgI69fs=;
+        b=SxAdoObdmksSQlTzMVGFIWzbXNk5NaFz6BZLYCCY4DDHismFyeiraDslPPdv8gMRs8cyts
+        dyAAU85vMxJkzNufc1AxJfU4OIrHtnXl24kPI3wy8nGuAmSGqapXs40gF+mk4laykKI5cl
+        B4Veo7PZZthq3p0PwgPG/TtesSavAI4=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-2-U7gfavGkPU6Nb1a2CttnNg-1; Wed, 16 Sep 2020 05:19:43 -0400
+X-MC-Unique: U7gfavGkPU6Nb1a2CttnNg-1
+Received: by mail-qk1-f198.google.com with SMTP id y17so5609224qky.0
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 02:19:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=gsSuuwOM1HZHIH/9xEU+RRc3nsPcI35w2ChtA7/HJSo=;
-        b=TOnRp8biDa+tI2A0M7ZnnBhPgp/csPGjNPLNVMEzqF2J4OiFwKZMMOFLhHoG9RmoKx
-         USBvoN0kkJ8lVrHs1c92lXN0v3UcwDWpO4cZkyA+o23GNxh8sm3h+SCaCyaNgIWg7a0n
-         iBWZ1eju5dxP10f5NhE7zZzda0/R6duwehE/uzdPupXjkbPR1lAHW4Ffv8MN6iK/4Ujt
-         cq0dt8x8rT/6dUePTw41JAEODTZPwXoo6pAZpfxv2JdW3ryuKD0E3jjxzvBYjeNYhEuc
-         RBq1AfcuLPtH5LgjUXexcZSeoV/s7wQlh13s2q5mIgM5yyeZo8y5MvyaYwtB2CjmvojP
-         5W6Q==
-X-Gm-Message-State: AOAM533XuDB/mqdzgoRTlwotLZrZnFe9OvN6F0ALja/OVVB4WEc9MpWz
-        +z74BtH1iYd8dtM26W6vI0uKSGTvOUVobo0RapjymclAueMovuX+25Vip/K62XwAUS5mG1dyPT5
-        kzzflabfjMRjk6J7T
-X-Received: by 2002:ad4:5006:: with SMTP id s6mr5798925qvo.51.1600247011906;
-        Wed, 16 Sep 2020 02:03:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzjsLvmhNkLsM55R1edjdWQofoIAWWnwRLQ0kRvjWqHwyX023nn/2z8IgeP8JRtZmDjCxducg==
-X-Received: by 2002:ad4:5006:: with SMTP id s6mr5798908qvo.51.1600247011645;
-        Wed, 16 Sep 2020 02:03:31 -0700 (PDT)
+        bh=9gODzx5y+CaRlb+xCcHOYC/XLWXub4hPyfIYDgI69fs=;
+        b=Ta4m2JpImCsz0ZR+zrgWqlllbTeGco9YynXC8KKs1ZBcx70NM2jdK5rJ98vlcyIkXv
+         B4JJ3SYCVcjz2nPdSPYm5NQg/mXCT/7GAXKCxLRyUfn1G3YNK8qi/6zdtCV/rN9bpzDN
+         8tMoPpqqio80IG2oTJyOABOJK4U9/14OZyeLXiaScEQlvWZPVqGoauZfOXK8YYw4HF7q
+         k18W68XDC3Ue4Z2MlAALko8bM6WKC1WGFdKV+2gg5s7+6BRzskSZlKeem9XMLC4A+fH0
+         GF3opkZDteS6CtCrgt0ZuiY+hckG1OxwDu4YdfcaLpZfL4hT4qUjlpefJLnFbdqGOmeQ
+         S7qQ==
+X-Gm-Message-State: AOAM530GmEOvqRa0mk0jqLpdKb2iFtmpnmMpXVdxhC4x9bOKO3rgcK0w
+        lRTi8Vqx1vPWDQV2S8AGPcY/vsAge+ivyF/WamQihSJeosSMJg5kSdFjQpJ4/mXIJ15pqnZ/K1u
+        1D/rJ67Jfs71q1bST
+X-Received: by 2002:a05:620a:40d0:: with SMTP id g16mr21182947qko.282.1600247982652;
+        Wed, 16 Sep 2020 02:19:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxo7N7Niag+jWgMuZEa8pCliVPlleyzUwZaXfeGlO6w45khvn5Qjhw9PCF3SWw8W2zpGaBIkw==
+X-Received: by 2002:a05:620a:40d0:: with SMTP id g16mr21182937qko.282.1600247982412;
+        Wed, 16 Sep 2020 02:19:42 -0700 (PDT)
 Received: from wsfd-netdev77.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id j88sm18541059qte.96.2020.09.16.02.03.30
+        by smtp.gmail.com with ESMTPSA id c40sm19433846qtb.72.2020.09.16.02.19.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2020 02:03:31 -0700 (PDT)
+        Wed, 16 Sep 2020 02:19:41 -0700 (PDT)
 From:   Mark Gray <mark.d.gray@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Mark Gray <mark.d.gray@redhat.com>,
         Qiuyu Xiao <qiuyu.xiao.qyx@gmail.com>,
         Greg Rose <gvrose8192@gmail.com>
-Subject: [PATCH net] geneve: add transport ports in route lookup for geneve
-Date:   Wed, 16 Sep 2020 05:03:27 -0400
-Message-Id: <20200916090327.859006-1-mark.d.gray@redhat.com>
+Subject: [PATCH net v2] geneve: add transport ports in route lookup for geneve
+Date:   Wed, 16 Sep 2020 05:19:35 -0400
+Message-Id: <20200916091935.859119-1-mark.d.gray@redhat.com>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -111,6 +111,10 @@ Signed-off-by: Qiuyu Xiao <qiuyu.xiao.qyx@gmail.com>
 Signed-off-by: Mark Gray <mark.d.gray@redhat.com>
 Reviewed-by: Greg Rose <gvrose8192@gmail.com>
 ---
+
+v2 - Accidently sent two v1 patches. To remove any confusion, I am
+     sending this as v2.
+
  drivers/net/geneve.c | 37 +++++++++++++++++++++++++++----------
  1 file changed, 27 insertions(+), 10 deletions(-)
 
