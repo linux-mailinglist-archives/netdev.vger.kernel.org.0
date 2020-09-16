@@ -2,708 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A499A26CF23
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 00:54:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CDE526CEC9
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 00:32:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726533AbgIPWyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 18:54:09 -0400
-Received: from mga17.intel.com ([192.55.52.151]:44501 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726280AbgIPWyI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Sep 2020 18:54:08 -0400
-IronPort-SDR: YQ12HQ8065Q/y7Wb9b+p1W1Y3CPkYhuwVfQAw45W+0z7fVALnnN2aMVkM7ETxluT8VLTKprD67
- GMFMH3jxBjYA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9746"; a="139578084"
-X-IronPort-AV: E=Sophos;i="5.76,434,1592895600"; 
-   d="scan'208";a="139578084"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2020 14:16:56 -0700
-IronPort-SDR: wsIZwBOy85wxVtKcXtSFxE4frLbrUWWpycZdVfn59lFfbZRVYVR9/a+XAN+bEmKF+YeaIaM5qe
- Si9v6c0m662g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,434,1592895600"; 
-   d="scan'208";a="346369964"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga007.jf.intel.com with ESMTP; 16 Sep 2020 14:16:53 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     ast@kernel.org, daniel@iogearbox.net
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH v8 bpf-next 7/7] selftests: bpf: introduce tailcall_bpf2bpf test suite
-Date:   Wed, 16 Sep 2020 23:10:10 +0200
-Message-Id: <20200916211010.3685-8-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200916211010.3685-1-maciej.fijalkowski@intel.com>
-References: <20200916211010.3685-1-maciej.fijalkowski@intel.com>
+        id S1726304AbgIPWc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 18:32:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726397AbgIPWc4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 18:32:56 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2EF3C061797;
+        Wed, 16 Sep 2020 14:17:35 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id x10so39125ybj.13;
+        Wed, 16 Sep 2020 14:17:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=O9oURKzCK+SY2r7WF/hiBkZhA0HPPtP9OQSF2tHZCb4=;
+        b=N8z0gb2lxZPTenYaPje8kRJCFQ1YSG6WVnwU+NiJCuG/AsxP4na2Oj3Ic9QqnSv97k
+         AIS1gymLDWepQEHtRy2lG4MKS5ehWy7zU1jckAirXEnw2ys0RR9+aA8wrDJnlV4VvUl1
+         48rNjzLactFvBrlV8IHRz4zwk53P8aE3GprjqU2rLjiEGSkMtw3WSWO8KFBUqF+j8m/K
+         yKVd2ZvyplkCYJx82a1n2CjKVmNL89QZGTV33zjBVbb9ji5yhbtDGyIP73yc5GGBNgPn
+         LLUJBFt5UsocoOza/LCrxk+8Ga8s8SJoJ/IdPL/Iw4puLxz+gJ8OiTbVFJAI1VfPOCU9
+         yURw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=O9oURKzCK+SY2r7WF/hiBkZhA0HPPtP9OQSF2tHZCb4=;
+        b=gi64p3DdaBiiqHs727/r6+CJmzLb8e/vQB8XC1bfgAbJv8jjcqa02SoArBctPUhCqi
+         AS2bsYEDEhvcTcXoh3NoFAIXaXvRN5hnxWY5U3JO9hyJs3ElWciI2yfF400UgxnZhhbw
+         w8ZORPrEBZ7b1YbQ5Yc0B4s609dNVfLqVZSTk8FJWgkL6Bqr00X+v4BYAb24qLDloauZ
+         4genQn940DW1klYPtqg6kQyO8O4JD8fsmWeECgom5T4itImQlnt5xNUN6DpTE08+14Kf
+         jNKqGd+FMhh8qyjEB6SFRnXIhUR0aMiOgVUhf3xHx+C4tIVfd4HkXrMyXtakt6vF9kci
+         n4mg==
+X-Gm-Message-State: AOAM532qsq+cXyHribJFx2NHQNADoUuUrH6oSUFOyf3YY1n1pzhNu6ch
+        ylssmB92oJUOX3G5Evg1bam3oVUH/V5JSwu01sw=
+X-Google-Smtp-Source: ABdhPJz1NjlJNRKOu1OYGq4Uv2XMSa8M0PRGL+zygN6VI3zWo1ZU44vViaK3MXBgC1ju+Z3FSHu5ffUipZgvQyxPDus=
+X-Received: by 2002:a25:d70e:: with SMTP id o14mr28397822ybg.425.1600291054948;
+ Wed, 16 Sep 2020 14:17:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <160017005691.98230.13648200635390228683.stgit@toke.dk>
+ <160017006133.98230.8867570651560085505.stgit@toke.dk> <CAEf4BzYP6MpVEqJ1TVW6rcfqJjkBi9x9U9F8MZPQdGMmoaUX_A@mail.gmail.com>
+ <87r1r1pgr5.fsf@toke.dk>
+In-Reply-To: <87r1r1pgr5.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 16 Sep 2020 14:17:23 -0700
+Message-ID: <CAEf4BzY+nMbye8wkQjiUra7wHtWZ14aWO5kNwkQFQaj=6-qp9w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 4/8] bpf: support attaching freplace programs
+ to multiple attach points
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add four tests to tailcalls selftest explicitly named
-"tailcall_bpf2bpf2_X" as their purpose is to validate that combination
-of tailcalls with bpf2bpf calls are working properly.
+On Wed, Sep 16, 2020 at 2:13 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+>
+> [ will fix all your comments above ]
+>
+> >> @@ -3924,10 +3983,16 @@ static int tracing_bpf_link_attach(const union=
+ bpf_attr *attr, struct bpf_prog *
+> >>             prog->expected_attach_type =3D=3D BPF_TRACE_ITER)
+> >>                 return bpf_iter_link_attach(attr, prog);
+> >>
+> >> +       if (attr->link_create.attach_type =3D=3D BPF_TRACE_FREPLACE &&
+> >> +           !prog->expected_attach_type)
+> >> +               return bpf_tracing_prog_attach(prog,
+> >> +                                              attr->link_create.targe=
+t_fd,
+> >> +                                              attr->link_create.targe=
+t_btf_id);
+> >
+> > Hm.. so you added a "fake" BPF_TRACE_FREPLACE attach_type, which is
+> > not really set with BPF_PROG_TYPE_EXT and is only specified for the
+> > LINK_CREATE command. Are you just trying to satisfy the link_create
+> > flow of going from attach_type to program type? If that's the only
+> > reason, I think we can adjust link_create code to handle this more
+> > flexibly.
+> >
+> > I need to think a bit more whether we want BPF_TRACE_FREPLACE at all,
+> > but if we do, whether we should make it an expected_attach_type for
+> > BPF_PROG_TYPE_EXT then...
+>
+> Yeah, wasn't too sure about this. But attach_type seemed to be the only
+> way to disambiguate between the different link types in the LINK_CREATE
+> command, so went with that. Didn't think too much about it, TBH :)
 
-Include also test_verifier's test cases, one negative that will exercise
-check_max_stack_depth check against caller's stack being larger than 256
-bytes. Second one should be accepted by verifier as caller's stack depth
-is smaller than 256 and from subprogram that has the tailcall new stack
-frame is intentionally created, so the total stack depth is > 256 but
-this last stack frame will be unwinded before the actual tailcall.
+having extra attach types has real costs in terms of memory (in cgroup
+land), which no one ever got to fixing yet. And then
+prog->expected_attach_type !=3D link's expected_attach_type looks weird
+and wrong and who knows which bugs we'll get later because of this.
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- .../selftests/bpf/prog_tests/tailcalls.c      | 332 ++++++++++++++++++
- .../selftests/bpf/progs/tailcall_bpf2bpf1.c   |  38 ++
- .../selftests/bpf/progs/tailcall_bpf2bpf2.c   |  37 ++
- .../selftests/bpf/progs/tailcall_bpf2bpf3.c   |  57 +++
- .../selftests/bpf/progs/tailcall_bpf2bpf4.c   |  61 ++++
- tools/testing/selftests/bpf/verifier/calls.c  |  53 +++
- 6 files changed, 578 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/tailcall_bpf2bpf1.c
- create mode 100644 tools/testing/selftests/bpf/progs/tailcall_bpf2bpf2.c
- create mode 100644 tools/testing/selftests/bpf/progs/tailcall_bpf2bpf3.c
- create mode 100644 tools/testing/selftests/bpf/progs/tailcall_bpf2bpf4.c
+>
+> I guess an alternative could be to just enforce attach_type=3D=3D0 and lo=
+ok
+> at prog->type? Or if you have any other ideas, I'm all ears!
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tailcalls.c b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-index bb8fe646dd9f..ee27d68d2a1c 100644
---- a/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- /* test_tailcall_1 checks basic functionality by patching multiple locations
-  * in a single program for a single tail call slot with nop->jmp, jmp->nop
-@@ -472,6 +473,329 @@ static void test_tailcall_5(void)
- 	bpf_object__close(obj);
- }
- 
-+/* test_tailcall_bpf2bpf_1 purpose is to make sure that tailcalls are working
-+ * correctly in correlation with BPF subprograms
-+ */
-+static void test_tailcall_bpf2bpf_1(void)
-+{
-+	int err, map_fd, prog_fd, main_fd, i;
-+	struct bpf_map *prog_array;
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	__u32 retval, duration;
-+	char prog_name[32];
-+
-+	err = bpf_prog_load("tailcall_bpf2bpf1.o", BPF_PROG_TYPE_SCHED_CLS,
-+			    &obj, &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	prog = bpf_object__find_program_by_title(obj, "classifier");
-+	if (CHECK_FAIL(!prog))
-+		goto out;
-+
-+	main_fd = bpf_program__fd(prog);
-+	if (CHECK_FAIL(main_fd < 0))
-+		goto out;
-+
-+	prog_array = bpf_object__find_map_by_name(obj, "jmp_table");
-+	if (CHECK_FAIL(!prog_array))
-+		goto out;
-+
-+	map_fd = bpf_map__fd(prog_array);
-+	if (CHECK_FAIL(map_fd < 0))
-+		goto out;
-+
-+	/* nop -> jmp */
-+	for (i = 0; i < bpf_map__def(prog_array)->max_entries; i++) {
-+		snprintf(prog_name, sizeof(prog_name), "classifier/%i", i);
-+
-+		prog = bpf_object__find_program_by_title(obj, prog_name);
-+		if (CHECK_FAIL(!prog))
-+			goto out;
-+
-+		prog_fd = bpf_program__fd(prog);
-+		if (CHECK_FAIL(prog_fd < 0))
-+			goto out;
-+
-+		err = bpf_map_update_elem(map_fd, &i, &prog_fd, BPF_ANY);
-+		if (CHECK_FAIL(err))
-+			goto out;
-+	}
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				0, &retval, &duration);
-+	CHECK(err || retval != 1, "tailcall",
-+	      "err %d errno %d retval %d\n", err, errno, retval);
-+
-+	/* jmp -> nop, call subprog that will do tailcall */
-+	i = 1;
-+	err = bpf_map_delete_elem(map_fd, &i);
-+	if (CHECK_FAIL(err))
-+		goto out;
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				0, &retval, &duration);
-+	CHECK(err || retval != 0, "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+
-+	/* make sure that subprog can access ctx and entry prog that
-+	 * called this subprog can properly return
-+	 */
-+	i = 0;
-+	err = bpf_map_delete_elem(map_fd, &i);
-+	if (CHECK_FAIL(err))
-+		goto out;
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				0, &retval, &duration);
-+	CHECK(err || retval != sizeof(pkt_v4) * 2,
-+	      "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+out:
-+	bpf_object__close(obj);
-+}
-+
-+/* test_tailcall_bpf2bpf_2 checks that the count value of the tail call limit
-+ * enforcement matches with expectations when tailcall is preceded with
-+ * bpf2bpf call.
-+ */
-+static void test_tailcall_bpf2bpf_2(void)
-+{
-+	int err, map_fd, prog_fd, main_fd, data_fd, i, val;
-+	struct bpf_map *prog_array, *data_map;
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	__u32 retval, duration;
-+	char buff[128] = {};
-+
-+	err = bpf_prog_load("tailcall_bpf2bpf2.o", BPF_PROG_TYPE_SCHED_CLS,
-+			    &obj, &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	prog = bpf_object__find_program_by_title(obj, "classifier");
-+	if (CHECK_FAIL(!prog))
-+		goto out;
-+
-+	main_fd = bpf_program__fd(prog);
-+	if (CHECK_FAIL(main_fd < 0))
-+		goto out;
-+
-+	prog_array = bpf_object__find_map_by_name(obj, "jmp_table");
-+	if (CHECK_FAIL(!prog_array))
-+		goto out;
-+
-+	map_fd = bpf_map__fd(prog_array);
-+	if (CHECK_FAIL(map_fd < 0))
-+		goto out;
-+
-+	prog = bpf_object__find_program_by_title(obj, "classifier/0");
-+	if (CHECK_FAIL(!prog))
-+		goto out;
-+
-+	prog_fd = bpf_program__fd(prog);
-+	if (CHECK_FAIL(prog_fd < 0))
-+		goto out;
-+
-+	i = 0;
-+	err = bpf_map_update_elem(map_fd, &i, &prog_fd, BPF_ANY);
-+	if (CHECK_FAIL(err))
-+		goto out;
-+
-+	err = bpf_prog_test_run(main_fd, 1, buff, sizeof(buff), 0,
-+				&duration, &retval, NULL);
-+	CHECK(err || retval != 1, "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+
-+	data_map = bpf_object__find_map_by_name(obj, "tailcall.bss");
-+	if (CHECK_FAIL(!data_map || !bpf_map__is_internal(data_map)))
-+		return;
-+
-+	data_fd = bpf_map__fd(data_map);
-+	if (CHECK_FAIL(map_fd < 0))
-+		return;
-+
-+	i = 0;
-+	err = bpf_map_lookup_elem(data_fd, &i, &val);
-+	CHECK(err || val != 33, "tailcall count", "err %d errno %d count %d\n",
-+	      err, errno, val);
-+
-+	i = 0;
-+	err = bpf_map_delete_elem(map_fd, &i);
-+	if (CHECK_FAIL(err))
-+		goto out;
-+
-+	err = bpf_prog_test_run(main_fd, 1, buff, sizeof(buff), 0,
-+				&duration, &retval, NULL);
-+	CHECK(err || retval != 0, "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+out:
-+	bpf_object__close(obj);
-+}
-+
-+/* test_tailcall_bpf2bpf_3 checks that non-trivial amount of stack (up to
-+ * 256 bytes) can be used within bpf subprograms that have the tailcalls
-+ * in them
-+ */
-+static void test_tailcall_bpf2bpf_3(void)
-+{
-+	int err, map_fd, prog_fd, main_fd, i;
-+	struct bpf_map *prog_array;
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	__u32 retval, duration;
-+	char prog_name[32];
-+
-+	err = bpf_prog_load("tailcall_bpf2bpf3.o", BPF_PROG_TYPE_SCHED_CLS,
-+			    &obj, &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	prog = bpf_object__find_program_by_title(obj, "classifier");
-+	if (CHECK_FAIL(!prog))
-+		goto out;
-+
-+	main_fd = bpf_program__fd(prog);
-+	if (CHECK_FAIL(main_fd < 0))
-+		goto out;
-+
-+	prog_array = bpf_object__find_map_by_name(obj, "jmp_table");
-+	if (CHECK_FAIL(!prog_array))
-+		goto out;
-+
-+	map_fd = bpf_map__fd(prog_array);
-+	if (CHECK_FAIL(map_fd < 0))
-+		goto out;
-+
-+	for (i = 0; i < bpf_map__def(prog_array)->max_entries; i++) {
-+		snprintf(prog_name, sizeof(prog_name), "classifier/%i", i);
-+
-+		prog = bpf_object__find_program_by_title(obj, prog_name);
-+		if (CHECK_FAIL(!prog))
-+			goto out;
-+
-+		prog_fd = bpf_program__fd(prog);
-+		if (CHECK_FAIL(prog_fd < 0))
-+			goto out;
-+
-+		err = bpf_map_update_elem(map_fd, &i, &prog_fd, BPF_ANY);
-+		if (CHECK_FAIL(err))
-+			goto out;
-+	}
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				&duration, &retval, NULL);
-+	CHECK(err || retval != sizeof(pkt_v4) * 3,
-+	      "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+
-+	i = 1;
-+	err = bpf_map_delete_elem(map_fd, &i);
-+	if (CHECK_FAIL(err))
-+		goto out;
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				&duration, &retval, NULL);
-+	CHECK(err || retval != sizeof(pkt_v4),
-+	      "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+
-+	i = 0;
-+	err = bpf_map_delete_elem(map_fd, &i);
-+	if (CHECK_FAIL(err))
-+		goto out;
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				&duration, &retval, NULL);
-+	CHECK(err || retval != sizeof(pkt_v4) * 2,
-+	      "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+out:
-+	bpf_object__close(obj);
-+}
-+
-+/* test_tailcall_bpf2bpf_4 checks that tailcall counter is correctly preserved
-+ * across tailcalls combined with bpf2bpf calls. for making sure that tailcall
-+ * counter behaves correctly, bpf program will go through following flow:
-+ *
-+ * entry -> entry_subprog -> tailcall0 -> bpf_func0 -> subprog0 ->
-+ * -> tailcall1 -> bpf_func1 -> subprog1 -> tailcall2 -> bpf_func2 ->
-+ * subprog2 [here bump global counter] --------^
-+ *
-+ * We go through first two tailcalls and start counting from the subprog2 where
-+ * the loop begins. At the end of the test make sure that the global counter is
-+ * equal to 31, because tailcall counter includes the first two tailcalls
-+ * whereas global counter is incremented only on loop presented on flow above.
-+ */
-+static void test_tailcall_bpf2bpf_4(void)
-+{
-+	int err, map_fd, prog_fd, main_fd, data_fd, i, val;
-+	struct bpf_map *prog_array, *data_map;
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	__u32 retval, duration;
-+	char prog_name[32];
-+
-+	err = bpf_prog_load("tailcall_bpf2bpf4.o", BPF_PROG_TYPE_SCHED_CLS,
-+			    &obj, &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	prog = bpf_object__find_program_by_title(obj, "classifier");
-+	if (CHECK_FAIL(!prog))
-+		goto out;
-+
-+	main_fd = bpf_program__fd(prog);
-+	if (CHECK_FAIL(main_fd < 0))
-+		goto out;
-+
-+	prog_array = bpf_object__find_map_by_name(obj, "jmp_table");
-+	if (CHECK_FAIL(!prog_array))
-+		goto out;
-+
-+	map_fd = bpf_map__fd(prog_array);
-+	if (CHECK_FAIL(map_fd < 0))
-+		goto out;
-+
-+	for (i = 0; i < bpf_map__def(prog_array)->max_entries; i++) {
-+		snprintf(prog_name, sizeof(prog_name), "classifier/%i", i);
-+
-+		prog = bpf_object__find_program_by_title(obj, prog_name);
-+		if (CHECK_FAIL(!prog))
-+			goto out;
-+
-+		prog_fd = bpf_program__fd(prog);
-+		if (CHECK_FAIL(prog_fd < 0))
-+			goto out;
-+
-+		err = bpf_map_update_elem(map_fd, &i, &prog_fd, BPF_ANY);
-+		if (CHECK_FAIL(err))
-+			goto out;
-+	}
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				&duration, &retval, NULL);
-+	CHECK(err || retval != sizeof(pkt_v4) * 3, "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+
-+	data_map = bpf_object__find_map_by_name(obj, "tailcall.bss");
-+	if (CHECK_FAIL(!data_map || !bpf_map__is_internal(data_map)))
-+		return;
-+
-+	data_fd = bpf_map__fd(data_map);
-+	if (CHECK_FAIL(map_fd < 0))
-+		return;
-+
-+	i = 0;
-+	err = bpf_map_lookup_elem(data_fd, &i, &val);
-+	CHECK(err || val != 31, "tailcall count", "err %d errno %d count %d\n",
-+	      err, errno, val);
-+
-+out:
-+	bpf_object__close(obj);
-+}
-+
- void test_tailcalls(void)
- {
- 	if (test__start_subtest("tailcall_1"))
-@@ -484,4 +808,12 @@ void test_tailcalls(void)
- 		test_tailcall_4();
- 	if (test__start_subtest("tailcall_5"))
- 		test_tailcall_5();
-+	if (test__start_subtest("tailcall_bpf2bpf_1"))
-+		test_tailcall_bpf2bpf_1();
-+	if (test__start_subtest("tailcall_bpf2bpf_2"))
-+		test_tailcall_bpf2bpf_2();
-+	if (test__start_subtest("tailcall_bpf2bpf_3"))
-+		test_tailcall_bpf2bpf_3();
-+	if (test__start_subtest("tailcall_bpf2bpf_4"))
-+		test_tailcall_bpf2bpf_4();
- }
-diff --git a/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf1.c b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf1.c
-new file mode 100644
-index 000000000000..e72ca5869b58
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf1.c
-@@ -0,0 +1,38 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-+	__uint(max_entries, 2);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(__u32));
-+} jmp_table SEC(".maps");
-+
-+#define TAIL_FUNC(x) 				\
-+	SEC("classifier/" #x)			\
-+	int bpf_func_##x(struct __sk_buff *skb)	\
-+	{					\
-+		return x;			\
-+	}
-+TAIL_FUNC(0)
-+TAIL_FUNC(1)
-+
-+static __attribute__ ((noinline))
-+int subprog_tail(struct __sk_buff *skb)
-+{
-+	bpf_tail_call(skb, &jmp_table, 0);
-+
-+	return skb->len * 2;
-+}
-+
-+SEC("classifier")
-+int entry(struct __sk_buff *skb)
-+{
-+	bpf_tail_call(skb, &jmp_table, 1);
-+
-+	return subprog_tail(skb);
-+}
-+
-+char __license[] SEC("license") = "GPL";
-+int _version SEC("version") = 1;
-diff --git a/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf2.c b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf2.c
-new file mode 100644
-index 000000000000..1f7fc46628e4
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf2.c
-@@ -0,0 +1,37 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-+	__uint(max_entries, 1);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(__u32));
-+} jmp_table SEC(".maps");
-+
-+static __attribute__ ((noinline))
-+int subprog_tail(struct __sk_buff *skb)
-+{
-+	bpf_tail_call(skb, &jmp_table, 0);
-+	return 1;
-+}
-+
-+static volatile int count;
-+
-+SEC("classifier/0")
-+int bpf_func_0(struct __sk_buff *skb)
-+{
-+	count++;
-+	return subprog_tail(skb);
-+}
-+
-+SEC("classifier")
-+int entry(struct __sk_buff *skb)
-+{
-+	bpf_tail_call(skb, &jmp_table, 0);
-+
-+	return 0;
-+}
-+
-+char __license[] SEC("license") = "GPL";
-+int _version SEC("version") = 1;
-diff --git a/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf3.c b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf3.c
-new file mode 100644
-index 000000000000..2f61abce83ca
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf3.c
-@@ -0,0 +1,57 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-+	__uint(max_entries, 2);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(__u32));
-+} jmp_table SEC(".maps");
-+
-+static __attribute__ ((noinline))
-+int subprog_tail2(struct __sk_buff *skb)
-+{
-+	volatile char arr[64] = {};
-+
-+	bpf_tail_call(skb, &jmp_table, 1);
-+
-+	return skb->len;
-+}
-+
-+static __attribute__ ((noinline))
-+int subprog_tail(struct __sk_buff *skb)
-+{
-+	volatile char arr[64] = {};
-+
-+	bpf_tail_call(skb, &jmp_table, 0);
-+
-+	return skb->len * 2;
-+}
-+
-+SEC("classifier/0")
-+int bpf_func_0(struct __sk_buff *skb)
-+{
-+	volatile char arr[128] = {};
-+
-+	return subprog_tail2(skb);
-+}
-+
-+SEC("classifier/1")
-+int bpf_func_1(struct __sk_buff *skb)
-+{
-+	volatile char arr[128] = {};
-+
-+	return skb->len * 3;
-+}
-+
-+SEC("classifier")
-+int entry(struct __sk_buff *skb)
-+{
-+	volatile char arr[128] = {};
-+
-+	return subprog_tail(skb);
-+}
-+
-+char __license[] SEC("license") = "GPL";
-+int _version SEC("version") = 1;
-diff --git a/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf4.c b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf4.c
-new file mode 100644
-index 000000000000..686511535f83
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf4.c
-@@ -0,0 +1,61 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-+	__uint(max_entries, 3);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(__u32));
-+} jmp_table SEC(".maps");
-+
-+static volatile int count;
-+
-+static __attribute__ ((noinline))
-+int subprog_tail_2(struct __sk_buff *skb)
-+{
-+	bpf_tail_call(skb, &jmp_table, 2);
-+	return skb->len * 3;
-+}
-+
-+static __attribute__ ((noinline))
-+int subprog_tail_1(struct __sk_buff *skb)
-+{
-+	bpf_tail_call(skb, &jmp_table, 1);
-+	return skb->len * 2;
-+}
-+
-+static __attribute__ ((noinline))
-+int subprog_tail(struct __sk_buff *skb)
-+{
-+	bpf_tail_call(skb, &jmp_table, 0);
-+	return skb->len;
-+}
-+
-+SEC("classifier/1")
-+int bpf_func_1(struct __sk_buff *skb)
-+{
-+	return subprog_tail_2(skb);
-+}
-+
-+SEC("classifier/2")
-+int bpf_func_2(struct __sk_buff *skb)
-+{
-+	count++;
-+	return subprog_tail_2(skb);
-+}
-+
-+SEC("classifier/0")
-+int bpf_func_0(struct __sk_buff *skb)
-+{
-+	return subprog_tail_1(skb);
-+}
-+
-+SEC("classifier")
-+int entry(struct __sk_buff *skb)
-+{
-+	return subprog_tail(skb);
-+}
-+
-+char __license[] SEC("license") = "GPL";
-+int _version SEC("version") = 1;
-diff --git a/tools/testing/selftests/bpf/verifier/calls.c b/tools/testing/selftests/bpf/verifier/calls.c
-index 94258c6b5235..dc4603adb9eb 100644
---- a/tools/testing/selftests/bpf/verifier/calls.c
-+++ b/tools/testing/selftests/bpf/verifier/calls.c
-@@ -780,6 +780,59 @@
- 	.errstr = "combined stack size",
- 	.result = REJECT,
- },
-+{
-+	"calls: stack overflow for bpf2bpf calls combined with tailcall",
-+	.insns = {
-+	/* prog 1 */
-+	BPF_ST_MEM(BPF_B, BPF_REG_10, -128, 0),
-+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),
-+	BPF_EXIT_INSN(),
-+
-+	/* prog 2 */
-+	BPF_ST_MEM(BPF_B, BPF_REG_10, -192, 0),
-+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),
-+	BPF_EXIT_INSN(),
-+
-+	/*prog 3, caller's stack depth > 256 */
-+	BPF_MOV64_IMM(BPF_REG_3, 0),
-+	BPF_LD_MAP_FD(BPF_REG_2, 0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_tail_call),
-+	BPF_MOV64_IMM(BPF_REG_0, 1),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.errstr = "Cannot do bpf_tail_call in subprog",
-+	.fixup_prog1 = { 7 },
-+	.result = REJECT,
-+},
-+{
-+	"calls: bpf2bpf calls combined with tailcall",
-+	.insns = {
-+	/* prog 1 */
-+	BPF_ST_MEM(BPF_B, BPF_REG_10, -128, 0),
-+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),
-+	BPF_EXIT_INSN(),
-+
-+	/* prog 2 */
-+	BPF_ST_MEM(BPF_B, BPF_REG_10, -64, 0),
-+	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),
-+	BPF_EXIT_INSN(),
-+
-+	/* prog 3, caller's stack depth < 256; we are free to introduce here new
-+	 * stack frame which will be unwinded before the tailcall
-+	 */
-+	BPF_ST_MEM(BPF_B, BPF_REG_10, -192, 0),
-+	BPF_MOV64_IMM(BPF_REG_3, 0),
-+	BPF_LD_MAP_FD(BPF_REG_2, 0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_tail_call),
-+	BPF_MOV64_IMM(BPF_REG_0, 1),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.fixup_prog1 = { 8 },
-+	.result = ACCEPT,
-+	.retval = 42,
-+},
- {
- 	"calls: stack depth check using three frames. test1",
- 	.insns = {
--- 
-2.20.1
+Right, we have prog fd, so can get it (regardless of type), then do
+switch by type, then translate expected attach type to prog type and
+see if it matches, but only for program types that care (which right
+now is all but tracing, where it's obvious from prog_type alone, I
+think).
 
+>
+> -Toke
+>
