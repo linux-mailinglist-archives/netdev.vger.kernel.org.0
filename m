@@ -2,115 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E183126C149
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 12:00:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDFC626C181
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 12:09:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726701AbgIPKAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 06:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726349AbgIPKA3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 06:00:29 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15DD7C06174A;
-        Wed, 16 Sep 2020 03:00:29 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id w1so5683118edr.3;
-        Wed, 16 Sep 2020 03:00:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kv9fwVSdMjPtvsSnxmGO3fkBoe+GHiU00vGndpd8sog=;
-        b=BxfljAmtSCe4UqLuDveGKKVWgQstSaJiCtoMfTzJ4akE6TvUSLrdC2MydrCkpWU6UP
-         1NOGRBSeJaUbmrz11j3G0d7gUQ328I9nJlFHH7u8NSPAeSaKhBPYVpt/z4yoh8sI38U9
-         Y69Z2hvEGCgjdktzsWJEGkk7JRXwkownamXBSS7aLXg5W/qDmTBR+U7/x4ugB0ubrDy/
-         sw8WmnyGoMG9YepiGQtI05L13rTFpl9QuvlHIUK4mY6T+7JdIrf01E1BzmwWd0ef4K+v
-         0sVtfu1TH+bJbo9/q5KrD2eteeMni49JetTGrZpFSVKjy44U7HWPnCSYy7W50h1Jidir
-         9nmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kv9fwVSdMjPtvsSnxmGO3fkBoe+GHiU00vGndpd8sog=;
-        b=BpRRphrbqWKFJsGy15X8gnyglvEUAeq8/PVaKc+JLKsNQu+uo3sFIbziQLPgBu5jRt
-         5co7iX6E5XHu3GF9A7Q8jvL5zb2ArmpXte12Xw5nUb4ZTFVmjOwE/tPJg1L4HS1T/EM5
-         5STaFgqjbDizQEg98Z52N4blEBbgF6XSafh6YUpUsQAhmj+W5K2WNjo7Dr3UW5jrR/R6
-         xRHcoHVk/d9WkaqV3i0uQmGIXuzWESp+tvZQxZJg72dDyciD13MslM7sf3auuuVjdwxR
-         feSV8ZkUq7Y6xWOe14TmBbrvRtZmP04/bQI4feEHO4+/ROd2IiqGWSVRrai7skAN2Ird
-         5ZhQ==
-X-Gm-Message-State: AOAM533Hzww+DTimzjN5+gLrTqCnm1bR74u2IZjRd3ROAIcSAXBEU3hj
-        bUyBjbdKneUP6rpHEwYwIsQ=
-X-Google-Smtp-Source: ABdhPJwXTMREV+V+0t3OTipIvoKX22NzJXJgeiaTXlChzE5AheIWUQfz0Umk4uuM9AuGq4STFdhmIg==
-X-Received: by 2002:aa7:dcc6:: with SMTP id w6mr26881330edu.10.1600250427652;
-        Wed, 16 Sep 2020 03:00:27 -0700 (PDT)
-Received: from skbuf ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id lz22sm12125426ejb.98.2020.09.16.03.00.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2020 03:00:27 -0700 (PDT)
-Date:   Wed, 16 Sep 2020 13:00:24 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     hongbo.wang@nxp.com
-Cc:     xiaoliang.yang_1@nxp.com, po.liu@nxp.com, mingkai.hu@nxp.com,
-        allan.nielsen@microchip.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, vladimir.oltean@nxp.com,
-        leoyang.li@nxp.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, davem@davemloft.net, jiri@resnulli.us,
-        idosch@idosch.org, kuba@kernel.org, vinicius.gomes@intel.com,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        id S1726769AbgIPKJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 06:09:44 -0400
+Received: from mx1.tq-group.com ([62.157.118.193]:52588 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726726AbgIPKJl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 06:09:41 -0400
+IronPort-SDR: 2YUMVyEGOWA/tfr9WxngXa84kUpu4ds6P5MmREyiwAoeOrjtRtcl7TbMdxPNsOvfC5dNgPtTJU
+ IJIwSn5swriaoXGP4MeL5p2uqf7E49z5C/3qHln3uJB9+IskzurGSQt0Fbk3hEGjXK/AXLCMSD
+ vKyHoKdDZfhgz7eUTarpaz79aD8HgwgdOXZPbfdssts0GC2kZLAD6y40LZRHaLC4U1yAg7AKDu
+ A+8Vn9IXSeun79vuhMI44D8R2FJvSwioenjvdIaWCfm0FmA0fmMSqSz7x1mBzAMy8gIzYRMLk1
+ IQY=
+X-IronPort-AV: E=Sophos;i="5.76,432,1592863200"; 
+   d="scan'208";a="13886499"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 16 Sep 2020 12:08:52 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Wed, 16 Sep 2020 12:08:52 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Wed, 16 Sep 2020 12:08:52 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1600250932; x=1631786932;
+  h=from:to:cc:subject:date:message-id;
+  bh=tKwDDfKEIeokAjENkz+QHEWU2sljEnyvtM1KcwS62K4=;
+  b=oGFUJU87l3FIuREKx/UbBstIuye4ETCFLFSIJBXeWiVOfHLzy14vP8RE
+   zwK+tmWQt0WDBc28NYM3OIqdLpxrokaUdyHnuju0bmLNLYvqwnhcP4X1V
+   4Sr5WReOu39aETPN7XZ3oHe8AzxODqufhqKLNxIpbZ8sNQSMoE4GBZAmK
+   uJ/NPD1FXYfgyhKM5gF+m+glQ7TterRdQ7jpO/AjKwdiYrgo0TjWjmMcW
+   LvQ6zQx83+kIDnzkxXLWjM/OnGZb5KQHfxwqGnw3YyAJoSJ1aXJ/+kwOY
+   DFnv3ql2qVdp1f2a/MhX3ekAcU6wP18m914Czy3harg8RSN59xc8p2Z0J
+   Q==;
+IronPort-SDR: XXb5JNNPsJ7kfreUjuEXHKvAl7qCd0WdY12sJJtWVIvN/LLlkeaEEbeCyhnCHv5yn5caquGK/k
+ S5GczmeJUPwvLYzIkJFH86e2wY/DGboxhpLEG9+jXNnZ7qnpERlVEVJU6SMuM+poWM+SzYGX4F
+ BvBG6Uku0rSc0gpst2XacrkiAIBvMXaChYZXPcMUMDZcQBZwgjZCDomtn4FBKmKs9/nG0G6wR8
+ YFQ9wOcCsoj+o0j97dEL6X/bo3Qad+JGReVc3Qx6NL3FXkp2R+rGhd2n2uKQ2mC0e0HfYa0mDv
+ k6Q=
+X-IronPort-AV: E=Sophos;i="5.76,432,1592863200"; 
+   d="scan'208";a="13886498"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 16 Sep 2020 12:08:52 +0200
+Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.117.48.12])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 01134280070;
+        Wed, 16 Sep 2020 12:08:51 +0200 (CEST)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, ivecera@redhat.com
-Subject: Re: [PATCH v6 3/3] net: dsa: ocelot: Add support for QinQ Operation
-Message-ID: <20200916100024.lqlrqeuefudvgkxt@skbuf>
-References: <20200916094845.10782-1-hongbo.wang@nxp.com>
- <20200916094845.10782-4-hongbo.wang@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200916094845.10782-4-hongbo.wang@nxp.com>
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH net] net: dsa: microchip: ksz8795: really set the correct number of ports
+Date:   Wed, 16 Sep 2020 12:08:39 +0200
+Message-Id: <20200916100839.843-1-matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hongbo,
+The KSZ9477 and KSZ8795 use the port_cnt field differently: For the
+KSZ9477, it includes the CPU port(s), while for the KSZ8795, it doesn't.
 
-On Wed, Sep 16, 2020 at 05:48:45PM +0800, hongbo.wang@nxp.com wrote:
-> From: "hongbo.wang" <hongbo.wang@nxp.com>
->
-> This feature can be test in the following case:
-> Customer <-----> swp0  <-----> swp1 <-----> ISP
->
-> Customer will send and receive packets with single VLAN tag(CTAG),
-> ISP will send and receive packets with double VLAN tag(STAG and CTAG).
-> This refers to "4.3.3 Provider Bridges and Q-in-Q Operation" in
-> VSC99599_1_00_TS.pdf.
->
-> The related test commands:
-> 1.
-> devlink dev param set pci/0000:00:00.5 name qinq_port_bitmap \
-> value 2 cmode runtime
-> 2.
-> ip link add dev br0 type bridge vlan_protocol 802.1ad
-> ip link set dev swp0 master br0
-> ip link set dev swp1 master br0
-> ip link set dev br0 type bridge vlan_filtering 1
-> 3.
-> bridge vlan del dev swp0 vid 1 pvid
-> bridge vlan add dev swp0 vid 100 pvid untagged
-> bridge vlan add dev swp1 vid 100
-> Result:
-> Customer(tpid:8100 vid:111) -> swp0 -> swp1 -> ISP(STAG \
->             tpid:88A8 vid:100, CTAG tpid:8100 vid:111)
-> ISP(tpid:88A8 vid:100 tpid:8100 vid:222) -> swp1 -> swp0 ->\
->             Customer(tpid:8100 vid:222)
->
-> Signed-off-by: hongbo.wang <hongbo.wang@nxp.com>
-> ---
+It would be a good cleanup to make the handling of both drivers match,
+but as a first step, fix the recently broken assignment of num_ports in
+the KSZ8795 driver (which completely broke probing, as the CPU port
+index was always failing the num_ports check).
 
-Can you please explain what is the purpose of the devlink parameter
-command? As far as I understand, the commands from step 2 and 3 should
-behave like that, even without running the command at step 1.
+Fixes: af199a1a9cb0 ("net: dsa: microchip: set the correct number of
+ports")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ drivers/net/dsa/microchip/ksz8795.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
--Vladimir
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index f7d59d7b2cbe..f5779e152377 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -1260,7 +1260,7 @@ static int ksz8795_switch_init(struct ksz_device *dev)
+ 	}
+ 
+ 	/* set the real number of ports */
+-	dev->ds->num_ports = dev->port_cnt;
++	dev->ds->num_ports = dev->port_cnt + 1;
+ 
+ 	return 0;
+ }
+-- 
+2.17.1
+
