@@ -2,92 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7A5E26B972
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 03:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA12226B99F
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 04:03:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726217AbgIPBji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 21:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54246 "EHLO
+        id S1726302AbgIPCDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 22:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726159AbgIPBjh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 21:39:37 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F03EC06174A;
-        Tue, 15 Sep 2020 18:39:37 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id 34so2939162pgo.13;
-        Tue, 15 Sep 2020 18:39:37 -0700 (PDT)
+        with ESMTP id S1726061AbgIPCDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 22:03:19 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534CAC06174A;
+        Tue, 15 Sep 2020 19:03:19 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id l191so3007531pgd.5;
+        Tue, 15 Sep 2020 19:03:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nsZSxf6bknKWz5B/SxUyJuYB2K7c48cbSeGDJpaBcyQ=;
-        b=nc9tQcNpyGObSutyaAvEQ9nCYSIK7diObRzAYUTjmPoeR0o76sw1fJSNbzkIr0lKaH
-         7vqN5sjAmdApZPt/pdbyd6i8W+sfp9VYQc1T+AO43T6JFWjBfLaEUKBuoK85aH2UQ0Wp
-         Uztrq6gOxD7JvKIOBeTg9V0AiIa94CRHJrWoZMvb0oUuwDfjWkr8nUAcMCEbtSa+n6QD
-         4teEhDv0OiVTVNDkmdT8mq0ltgZYUSLQ/OTbJRAn9PxqOfGQEk4yDStEerXWo4iJl49Y
-         oNgTN3ZuGwn6XBX+ANo7Uj19/0ze7tQygbP+FW7OXAGpCJNIG/NP9rkUQqbje9cTr8c8
-         BW4A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R1eCAG8h6I0Q09MjaaDkWuLMChrptUJ7/Euhkn/bFWU=;
+        b=MsOZBc5bF777DutgbLfDLg+WGKDthoYyY6KFNjYNiee7se+Nhp3H5+O56077KSprfK
+         AMpg9A5mSkXvgVkAo221YZODFqV+W5Nab03UTNClasjZzOSJRvnpzLy+fQiOrSXjDZ3X
+         DtznxbF9HzpNKBldflIVHCF1Bh0G0PGllYhnwbxWREGmPd8Ttz/m7VnalQ+oYOnYWd8m
+         iDDVw2GlLC98A25Uzx9m7AJ1/V2vcduMG0wtr60S9PAXD/BN88z0bzT00kBYvY+5ztJp
+         QKTffRyV6+EASANnOsaPAjq0wDE3HFYPuUihVxJQ18zUPwLetqabiVHWmNYm01Dq0Mx+
+         rHFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nsZSxf6bknKWz5B/SxUyJuYB2K7c48cbSeGDJpaBcyQ=;
-        b=rj/RO34TqzisfL1Iqcaay0MUlDG+OzH+gXQd+sRgp7U/moeYjjCsCx9E4/84doNXvg
-         hrysoDsxcDZvYT3AXeTRYu1ZMVa6Evp+Q11Mq7SNIlG11ObpU046NmWV3ZJzMrX27V1Y
-         zr+35kOkhEHXrmyHNXBNub2Y4QMTCqFyRVB0jvxKa0GvliT1Uzm1x9Npyc2rcQiNtIcf
-         TrcMgJvKxxuNS6Ra9Am7+9q7I/3llpspXOmmk3bI/lNttKHFjwO/8TTtrwolAYHtSvHw
-         FJv/dbdugqGwKnEHb2S6fGbN/B3UD9pUniBGXvXXbZsvI/79x7pWIOOreQJLhTXCPH0e
-         vjEw==
-X-Gm-Message-State: AOAM530zkaP0sCIYGjHDWZMahHEAwec+rA9dpL8hy3ozmreSZnioiJp4
-        8ROajA2FpiCsb3p9S80VpDE=
-X-Google-Smtp-Source: ABdhPJz9OCpkwSyNYezPNsFf8tqmVrnNTK/uA5ittzU7PKyvsCyltrEbkjhKoUSQfb9pQOVZ4bQcCw==
-X-Received: by 2002:a63:4b47:: with SMTP id k7mr2826025pgl.315.1600220376462;
-        Tue, 15 Sep 2020 18:39:36 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:8a26])
-        by smtp.gmail.com with ESMTPSA id g9sm15546310pfo.144.2020.09.15.18.39.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 18:39:35 -0700 (PDT)
-Date:   Tue, 15 Sep 2020 18:39:33 -0700
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R1eCAG8h6I0Q09MjaaDkWuLMChrptUJ7/Euhkn/bFWU=;
+        b=MdKpeYOr/wrssKNaHRCC/dPV35Hw8bpF9gR9jHFZoLCBQH15AI1shUlc+VzVjz6qtO
+         3rEK40H1kuzWuaDGRZk3Iz9oZbQS3iUXkG7a9xi0wAqZeD1wJtB0miqQKA9Jz3J/mu5t
+         CSVJKtuSXWkTxKEAVlOXEZCqZCjC3nEUKZht6fAsZTbgxCKPytS0pW5PWm4pDBFRYOzN
+         2CrWH40PkZ0X0XaRKq6odUNKqZL1Dd/NMCzHg11NCFUcesMO9W90UCneiykg0ZoO0Bru
+         CFGo9YphzIjamh9NXT2513Rkd9nZjZfeGkhyKwToasCRj/wDpLPOR4dd0p+sJ3fdTvF6
+         pBMg==
+X-Gm-Message-State: AOAM532pXN8AqWk4/nS0BcOXVk34d3TYcWv2u6iYkMEv9R93Y4hjMVUQ
+        gVWzZ+KMraKuVlzRprF0palQ74XlwH8=
+X-Google-Smtp-Source: ABdhPJwfjVFeez6USKJ+ESZTJbJnwqoUoKW9D/AkVqPNdF9CkNG/XCyHgMN+iRVWymz7yb1k/bue4A==
+X-Received: by 2002:aa7:9522:0:b029:13c:f6b9:1c17 with SMTP id c2-20020aa795220000b029013cf6b91c17mr20139022pfp.11.1600221798759;
+        Tue, 15 Sep 2020 19:03:18 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([163.114.132.7])
+        by smtp.gmail.com with ESMTPSA id 126sm1058630pfg.192.2020.09.15.19.03.17
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 15 Sep 2020 19:03:17 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next] selftests/bpf: merge most of test_btf into
- test_progs
-Message-ID: <20200916013933.lflk4peklgl2hi7q@ast-mbp.dhcp.thefacebook.com>
-References: <20200916004819.3767489-1-andriin@fb.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: pull-request: bpf 2020-09-15
+Date:   Tue, 15 Sep 2020 19:03:16 -0700
+Message-Id: <20200916020316.18673-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200916004819.3767489-1-andriin@fb.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 15, 2020 at 05:48:19PM -0700, Andrii Nakryiko wrote:
-> Merge 183 tests from test_btf into test_progs framework to be exercised
-> regularly. All the test_btf tests that were moved are modeled as proper
-> sub-tests in test_progs framework for ease of debugging and reporting.
-> 
-> No functional or behavioral changes were intended, I tried to preserve
-> original behavior as much as possible. E.g., `test_progs -v` will activate
-> "always_log" flag to emit BTF validation log.
-> 
-> The only difference is in reducing the max_entries limit for pretty-printing
-> tests from (128 * 1024) to just 128 to reduce tests running time without
-> reducing the coverage.
-> 
-> Example test run:
-> 
->   $ sudo ./test_progs -n 8
->   ...
->   #8 btf:OK
->   Summary: 1/183 PASSED, 0 SKIPPED, 0 FAILED
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Hi David,
 
-Applied. Thanks.
+The following pull-request contains BPF updates for your *net* tree.
 
-Now we have that rcu warn in bpf-next tree. I'll send bpf PR shortly to
-converge the trees.
+We've added 12 non-merge commits during the last 19 day(s) which contain
+a total of 10 files changed, 47 insertions(+), 38 deletions(-).
+
+The main changes are:
+
+1) docs/bpf fixes, from Andrii.
+
+2) ld_abs fix, from Daniel.
+
+3) socket casting helpers fix, from Martin.
+
+4) hash iterator fixes, from Yonghong.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alexei Starovoitov, Andrii Nakryiko, Bryce Kahle, Ciara Loftus, Jiri 
+Olsa, Mauro Carvalho Chehab, Song Liu, Vaidyanathan Srinivasan, Yonghong 
+Song
+
+----------------------------------------------------------------
+
+The following changes since commit c8146fe292a726d71e302719df90b53e2f84f7a5:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2020-08-28 16:12:48 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to ce880cb825fcc22d4e39046a6c3a3a7f6603883d:
+
+  bpf: Fix a rcu warning for bpffs map pretty-print (2020-09-15 18:17:39 -0700)
+
+----------------------------------------------------------------
+Alexei Starovoitov (1):
+      Merge branch 'hashmap_iter_bucket_lock_fix'
+
+Andrii Nakryiko (2):
+      docs/bpf: Fix ringbuf documentation
+      docs/bpf: Remove source code links
+
+Björn Töpel (1):
+      xsk: Fix number of pinned pages/umem size discrepancy
+
+Daniel Borkmann (1):
+      bpf: Fix clobbering of r2 in bpf_gen_ld_abs
+
+Martin KaFai Lau (1):
+      bpf: Bpf_skc_to_* casting helpers require a NULL check on sk
+
+Naveen N. Rao (1):
+      libbpf: Remove arch-specific include path in Makefile
+
+Toke Høiland-Jørgensen (1):
+      tools/bpf: build: Make sure resolve_btfids cleans up after itself
+
+Tony Ambardar (2):
+      libbpf: Fix build failure from uninitialized variable warning
+      tools/libbpf: Avoid counting local symbols in ABI check
+
+Yonghong Song (3):
+      bpf: Do not use bucket_lock for hashmap iterator
+      selftests/bpf: Add bpf_{update, delete}_map_elem in hashmap iter program
+      bpf: Fix a rcu warning for bpffs map pretty-print
+
+ Documentation/bpf/ringbuf.rst                          |  5 +----
+ kernel/bpf/hashtab.c                                   | 15 ++++-----------
+ kernel/bpf/inode.c                                     |  4 +++-
+ net/core/filter.c                                      | 18 +++++++++---------
+ net/xdp/xdp_umem.c                                     | 17 ++++++++---------
+ tools/bpf/Makefile                                     |  4 ++--
+ tools/bpf/resolve_btfids/Makefile                      |  1 +
+ tools/lib/bpf/Makefile                                 |  4 +++-
+ tools/lib/bpf/libbpf.c                                 |  2 +-
+ .../selftests/bpf/progs/bpf_iter_bpf_hash_map.c        | 15 +++++++++++++++
+ 10 files changed, 47 insertions(+), 38 deletions(-)
