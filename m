@@ -2,100 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECB8526BF27
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 10:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A35D226BF60
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 10:33:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726564AbgIPIZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 04:25:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36154 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726149AbgIPIZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 04:25:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600244749;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SciDp7vow7Osmi2JbFd8Ljpt7Ueze55tLv9AQ9bbklI=;
-        b=Z8iGj86n+IRmml15GPDfD1U41w5bUXKZkW9vjlkPeweTGwMELdh1eWS1Xb0EzKOGV6I7wY
-        i23Dc9FcKXbtBEgUfaU3QFaShByIaGXF5zzdc7e4OpCyyR5vyIzcSAiZxkv84fjlBrYiU2
-        yZFgzLMt63hjYkzmuxQPCyoInY+fCDE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-47-4e6vjzvRNDef2aTCXru_-w-1; Wed, 16 Sep 2020 04:25:47 -0400
-X-MC-Unique: 4e6vjzvRNDef2aTCXru_-w-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726575AbgIPIdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 04:33:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36110 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726349AbgIPIdh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 04:33:37 -0400
+Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1F7741084C81;
-        Wed, 16 Sep 2020 08:25:46 +0000 (UTC)
-Received: from ovpn-114-223.ams2.redhat.com (ovpn-114-223.ams2.redhat.com [10.36.114.223])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 559D75D9CA;
-        Wed, 16 Sep 2020 08:25:43 +0000 (UTC)
-Message-ID: <5f5aa2608856865a8b3e4dfd4195e2de31ba9762.camel@redhat.com>
-Subject: Re: [PATCH] mptcp: Fix unsigned 'max_seq' compared with zero in
- mptcp_data_queue_ofo
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Ye Bin <yebin10@huawei.com>, mathew.j.martineau@linux.intel.com,
-        matthieu.baerts@tessares.net, netdev@vger.kernel.org,
-        mptcp@lists.01.org
-Cc:     Hulk Robot <hulkci@huawei.com>
-Date:   Wed, 16 Sep 2020 10:25:42 +0200
-In-Reply-To: <20200916033003.1186727-1-yebin10@huawei.com>
-References: <20200916033003.1186727-1-yebin10@huawei.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 7F2D8206DC;
+        Wed, 16 Sep 2020 08:33:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600245217;
+        bh=Rxv7LUtX5OOwYwfMY6OFP0ly0hsgeYow1jDz+KP5aNA=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=nd09tyczy1fwGBIA4dlKWgU20CIqgxVYoR7eidAzDV84z4U170OgQdsLYFaKUlxR4
+         uikblA9OmXDhqrnZ9dhX+ajoujqfaUi+rCCtz5JKw0ZdHIL9Kf2B8HJjhips2CIcc3
+         EeJc5w5m39NHViYfjArIlqsT+JQSfKCsM/o3BWZw=
+Message-ID: <f2a27306606ab6a882f6a6e4363d07174e55c745.camel@kernel.org>
+Subject: Re: [PATCH net-next 6/6] net: hns3: use napi_consume_skb() when
+ cleaning tx desc
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "tanhuazhong@huawei.com" <tanhuazhong@huawei.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
+        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
+        "linuxarm@huawei.com" <linuxarm@huawei.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>
+Date:   Wed, 16 Sep 2020 01:33:35 -0700
+In-Reply-To: <2b1219b6-a7dd-38a3-bfb7-1cb49330df90@huawei.com>
+References: <1600085217-26245-1-git-send-email-tanhuazhong@huawei.com>
+         <1600085217-26245-7-git-send-email-tanhuazhong@huawei.com>
+         <e615366cb2b260bf1b77fdaa0692957ab750a9a4.camel@nvidia.com>
+         <2b1219b6-a7dd-38a3-bfb7-1cb49330df90@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Wed, 2020-09-16 at 11:30 +0800, Ye Bin wrote:
-> Fixes make coccicheck warnig:
-> net/mptcp/protocol.c:164:11-18: WARNING: Unsigned expression compared with zero: max_seq > 0
+On Tue, 2020-09-15 at 15:04 +0800, Yunsheng Lin wrote:
+> On 2020/9/15 13:09, Saeed Mahameed wrote:
+> > On Mon, 2020-09-14 at 20:06 +0800, Huazhong Tan wrote:
+> > > From: Yunsheng Lin <linyunsheng@huawei.com>
+> > > 
+> > > Use napi_consume_skb() to batch consuming skb when cleaning
+> > > tx desc in NAPI polling.
+> > > 
+> > > Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> > > Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> > > ---
+> > >  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 27
+> > > +++++++++++-
+> > > ----------
+> > >  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 +-
+> > >  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  4 ++--
+> > >  3 files changed, 17 insertions(+), 16 deletions(-)
+> > > 
+> > > diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> > > b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> > > index 4a49a76..feeaf75 100644
+> > > --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> > > +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> > > @@ -2333,10 +2333,10 @@ static int hns3_alloc_buffer(struct
+> > > hns3_enet_ring *ring,
+> > >  }
+> > >  
+> > >  static void hns3_free_buffer(struct hns3_enet_ring *ring,
+> > > -			     struct hns3_desc_cb *cb)
+> > > +			     struct hns3_desc_cb *cb, int budget)
+> > >  {
+> > >  	if (cb->type == DESC_TYPE_SKB)
+> > > -		dev_kfree_skb_any((struct sk_buff *)cb->priv);
+> > > +		napi_consume_skb(cb->priv, budget);
+> > 
+> > This code can be reached from hns3_lb_clear_tx_ring() below which
+> > is
+> > your loopback test and called with non-zero budget, I am not sure
+> > you
+> > are allowed to call napi_consume_skb() with non-zero budget outside
+> > napi context, perhaps the cb->type for loopback test is different
+> > in lb
+> > test case ? Idk.. , please double check other code paths.
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Ye Bin <yebin10@huawei.com>
-> ---
->  net/mptcp/protocol.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+> Yes, loopback test may call napi_consume_skb() with non-zero budget
+> outside
+> napi context. Thanks for pointing out this case.
 > 
-> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> index ef0dd2f23482..3b71f6202524 100644
-> --- a/net/mptcp/protocol.c
-> +++ b/net/mptcp/protocol.c
-> @@ -155,13 +155,14 @@ static void mptcp_data_queue_ofo(struct mptcp_sock *msk, struct sk_buff *skb)
->  {
->  	struct sock *sk = (struct sock *)msk;
->  	struct rb_node **p, *parent;
-> +	int space;
->  	u64 seq, end_seq, max_seq;
->  	struct sk_buff *skb1;
->  
->  	seq = MPTCP_SKB_CB(skb)->map_seq;
->  	end_seq = MPTCP_SKB_CB(skb)->end_seq;
-> -	max_seq = tcp_space(sk);
-> -	max_seq = max_seq > 0 ? max_seq + msk->ack_seq : msk->ack_seq;
-> +	space = tcp_space(sk);
-> +	max_seq = space > 0 ? space + msk->ack_seq : msk->ack_seq;
->  
->  	pr_debug("msk=%p seq=%llx limit=%llx empty=%d", msk, seq, max_seq,
->  		 RB_EMPTY_ROOT(&msk->out_of_order_queue));
+> How about add the below WARN_ONCE() in napi_consume_skb() to catch
+> this
+> kind of error?
+> 
+> WARN_ONCE(!in_serving_softirq(), "napi_consume_skb() is called with
+> non-zero budget outside napi context");
+> 
 
-The patch looks correct, but could you please add an appropriate
-'Fixes' tag, and also preserve the reverse x-mas tree order for
-variables declaration?
+Cc: Eric
 
-Also, this patch should likely target the net-next tree, the MPTCP OoO
-queue is present only there.
+I don't know, need to check performance impact.
+And in_serving_softirq() doesn't necessarily mean in napi
+but looking at _kfree_skb_defer(), i think it shouldn't care if napi or
+not as long as it runs in soft irq it will push the skb to that
+particular cpu napi_alloc_cache, which should be fine.
 
-Thanks!
+Maybe instead of the WARN_ONCE just remove the budget condition and
+replace it with
 
-Paolo
+if (!in_serving_softirq())
+      dev_consume_skb_any(skb);
+
 
