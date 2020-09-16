@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAD7E26CCAD
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:48:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BDB526CCA4
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:47:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728549AbgIPUsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 16:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55408 "EHLO
+        id S1728491AbgIPUrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 16:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726382AbgIPRBO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:01:14 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26F1C014D06;
-        Wed, 16 Sep 2020 06:38:27 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id 34so3885592pgo.13;
-        Wed, 16 Sep 2020 06:38:27 -0700 (PDT)
+        with ESMTP id S1726649AbgIPRBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:01:20 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC9BC0086D1;
+        Wed, 16 Sep 2020 06:41:01 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id t7so1622229pjd.3;
+        Wed, 16 Sep 2020 06:41:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=RPMmBa/zuVIVa6YT0Ct/PRYo3W8xK4AI2YIowuyMAz8=;
-        b=fHilp9TKndRfRIpIEW7pskStpJIx9tJimZ/y0pA9ypEvUHuYNm+18QlWmYOouD1tX0
-         LCK9aNAEI5YK+8CxLy6PgjIyLZmIZKfqvdx8B+9dwUnu8GnDSki3ejFJDcxMtw4ZvZkD
-         o58I2PumQyjbrEwCBsQvpOvIod2iRymYkDGLSlbDNe4W6UpmWWVqCwY2nBO6TgvF0l4g
-         KHU2qC9MgZICr7bfyPlIUWcx9aqQb6z72coEyRXs4xC52mJuXIJ47/9zIuWZe9xlXciN
-         rWrQ0jdnFJUZre4qzzTb/8uUrDgfCghNIQGgFqFdkhyrVn5mG75WLqiOFP8ZrHLbyxL8
-         NelQ==
+        bh=a7VpgUXD3etb/W2u95CFqiHYYBXyXu79NXiK4t98Blw=;
+        b=I+qQ5j9mEE3iA0H4ZUBphMax7ReOC8kLIFC4DG0UZcKdQnYem3m8Y+7sCVJiRZJ/B/
+         pw8tMLhpfRFVWel7rSka1hqv7O+41MZIaPaAoRO64Re5IL8TAkR1wJJOSWwT10WJMY1S
+         MmLmpoRxLod/Oqy9GDd2FhG94gZ7/74YYZ25q0zp1FMPB/mZFfmEX8B2sotKLoWCAR9m
+         ScqhB8raR4jlvngSTMKThpKS98ZX+BfZbhZnmqcHUcIZJeWdC/MkkwOEN+mlx2nDXPJ+
+         rGBjZ0Qawi4ak9DsvFSaQWQtOz12PLCl68CPxiYgA+fLS6yRBLooKDQ4+D0XFi4PMMz6
+         4PZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=RPMmBa/zuVIVa6YT0Ct/PRYo3W8xK4AI2YIowuyMAz8=;
-        b=jfTHcUUvW1CA4vlmQzW1747Vme3acmyrR3wNr4HC65JdygXqIXH7fDntCYyEB+f4i8
-         QOTQNC6c28ILk0iygOtM069qUUUne4a3FBHnWoT05EQUq3zaNhp635qY/iX5GOj2OneX
-         kUtt8blkzqNfd/fYrsDofD7iD4au/6oi/Ywr73rYPRzzoXfdz0hMAk2enY6UVBlXSFf9
-         AL4KJLZx0ONwZ+GA9hIcgPg3I37DQErwYXyJv2jeW6uLdTyrrYmaoE5t7HKfP0FxbL+Z
-         0dT5Oq/iFHY9g7QA6qJso1RCbzaN5FBHMSoaH1YiOJQ8ewHZWJKr+gF0BPR0QOMIDXol
-         0X5w==
-X-Gm-Message-State: AOAM531Dw56MEgBasnOcUr5nIuOy12nC75STWwx/VKsehDoX4SYaetoC
-        AcfZy4lkMfMbgI3cSMSomRkrRNVSgiKjVukRLFE=
-X-Google-Smtp-Source: ABdhPJw8pDY+mq6BWskzMRd1QiEHrMA+qZcz43pBqGlrejs0IcKqbHwaajsxiVnJqEydNRZeG2HCHg==
-X-Received: by 2002:a63:30c:: with SMTP id 12mr18613171pgd.66.1600263506704;
-        Wed, 16 Sep 2020 06:38:26 -0700 (PDT)
+        bh=a7VpgUXD3etb/W2u95CFqiHYYBXyXu79NXiK4t98Blw=;
+        b=hn+VglDnqbU6nU8bK3NmY/Nqmd/OsbglntwwyiW4BwxLcGPPyWrAN+BYfmR9mBENhw
+         kRPvC6BJee56w4g5VlTv0LCEz9d2w+sQmEnHK93co54v6XqCOEgT6GMH2Ap4/Fp6mCis
+         uGRUYLu5AKjehB/iAHMvSFoTRMxAAYmxEbdzf9JnyiM0ZDUmzALBlNe5tKXYHoxCaow1
+         1+ZoBEYqzTRLPSD3BiC2rIMd4RTFwEiUtVK5CGtaMHBi9ywdGKLH/Njn+8TnpI0WgJwL
+         0KTohg6vvyj1LrXePhi238b/A9JD7qqs+k3pPcNDYLMBGgkyPJYHuhqFW2yJ8JQEwPnO
+         T9ag==
+X-Gm-Message-State: AOAM533giAi5udOIqwEqYtzsfrKM2bynIw61Ja3tjU273s9tnd3Z3B4A
+        /gyKvHQU++nEGKl7JwGkJKodk6E2nwpOnNJDQxE=
+X-Google-Smtp-Source: ABdhPJwsdlcogMP86H7W0+GT+TmcgrKpclDe9FF5ms19t0nLyBthmXVXaKb8aLBdzPeosDJc3+hC3w==
+X-Received: by 2002:a17:90a:7ac1:: with SMTP id b1mr3975237pjl.121.1600263660892;
+        Wed, 16 Sep 2020 06:41:00 -0700 (PDT)
 Received: from [192.168.0.104] ([49.207.198.18])
-        by smtp.gmail.com with ESMTPSA id e62sm16987968pfh.76.2020.09.16.06.38.23
+        by smtp.gmail.com with ESMTPSA id gm17sm2784507pjb.46.2020.09.16.06.40.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Sep 2020 06:38:26 -0700 (PDT)
+        Wed, 16 Sep 2020 06:41:00 -0700 (PDT)
 Subject: Re: [Linux-kernel-mentees][PATCH] rtl8150: set memory to all 0xFFs on
  failed register reads
-To:     Petko Manolov <petkan@nucleusys.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
         syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
+        Petko Manolov <petkan@nucleusys.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20200916050540.15290-1-anant.thazhemadam@gmail.com>
- <20200916061946.GA38262@p310>
+ <20200916062227.GD142621@kroah.com>
 From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Message-ID: <780e991d-864d-0491-f440-12a926920a8a@gmail.com>
-Date:   Wed, 16 Sep 2020 19:08:21 +0530
+Message-ID: <dfdb48b8-5cd9-2b19-11cc-b17f45904e0f@gmail.com>
+Date:   Wed, 16 Sep 2020 19:10:55 +0530
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200916061946.GA38262@p310>
+In-Reply-To: <20200916062227.GD142621@kroah.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
@@ -74,62 +75,64 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 16/09/20 11:49 am, Petko Manolov wrote:
-> On 20-09-16 10:35:40, Anant Thazhemadam wrote:
+On 16/09/20 11:52 am, Greg KH wrote:
+> On Wed, Sep 16, 2020 at 10:35:40AM +0530, Anant Thazhemadam wrote:
 >> get_registers() copies whatever memory is written by the
 >> usb_control_msg() call even if the underlying urb call ends up failing.
-> Not true, memcpy() is only called if "ret" is positive.
-Right. I'm really sorry I fumbled and messed up the commit message
-there. Thank you for pointing that out.
->> If get_registers() fails, or ends up reading 0 bytes, meaningless and junk 
->> register values would end up being copied over (and eventually read by the 
->> driver), and since most of the callers of get_registers() don't check the 
->> return values of get_registers() either, this would go unnoticed.
-> usb_control_msg() returns negative on error (look up usb_internal_control_msg() 
-> to see for yourself) so it does not go unnoticed.
-
-When I said "this would go unnoticed", I meant get_register() failing would
-go unnoticed, not that usb_control_msg() failing would go unnoticed.
-I agree that get_registers() notices usb_control_msg() failing, and
-appropriately returns the return value from usb_control_msg().
-But there are many instances where get_registers() is called but the return
-value of get_registers() is not checked, to see if it failed or not; hence, "this
-would go unnoticed".
-
-> If for some reason it return zero, nothing is copied.  Also, if usb transfer fail 
-> no register values are being copied anywhere.
-
-True.
-Now consider set_ethernet_addr(), and suppose get_register() fails when
-invoked from inside set_ethernet_addr().
-As you said, no value is copied back, which means no value is copied back
-into node_id, which leaves node_id uninitialized. This node_id (still
-uninitialized) is then blindly copied into dev->netdev->dev_addr; which
-is less than ideal and could also quickly prove to become an issue, right?
-
-> Your patch also allows for memcpy() to be called with 'size' either zero or 
-> greater than the allocated buffer size. Please, look at the code carefully.
-Oh. I apologize for this. This can be reverted relatively easily.
+>>
+>> If get_registers() fails, or ends up reading 0 bytes, meaningless and 
+>> junk register values would end up being copied over (and eventually read 
+>> by the driver), and since most of the callers of get_registers() don't 
+>> check the return values of get_registers() either, this would go unnoticed.
+>>
 >> It might be a better idea to try and mirror the PCI master abort
 >> termination and set memory to 0xFFs instead in such cases.
-> I wasn't aware drivers are now responsible for filling up the memory with 
-> anything.  Does not sound like a good idea to me.
-Since we copy the correct register values when get_register() doesn't fail,
-I thought it might be a slightly better alternative to fill node_id with 0xFFs,
-instead of leaving it go uninitialized in case get_registers() fails.
+> It would be better to use this new api call instead of
+> usb_control_msg():
+> 	https://lore.kernel.org/r/20200914153756.3412156-1-gregkh@linuxfoundation.org
+>
+> How about porting this patch to run on top of that series instead?  That
+> should make this logic much simpler.
+This looks viable to me. I'll be sure to try this out.
+>> Fixes: https://syzkaller.appspot.com/bug?extid=abbc768b560c84d92fd3
+>> Reported-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+>> Tested-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+>> Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+>> ---
+>>  drivers/net/usb/rtl8150.c | 9 +++++++--
+>>  1 file changed, 7 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
+>> index 733f120c852b..04fca7bfcbcb 100644
+>> --- a/drivers/net/usb/rtl8150.c
+>> +++ b/drivers/net/usb/rtl8150.c
+>> @@ -162,8 +162,13 @@ static int get_registers(rtl8150_t * dev, u16 indx, u16 size, void *data)
+>>  	ret = usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
+>>  			      RTL8150_REQ_GET_REGS, RTL8150_REQT_READ,
+>>  			      indx, 0, buf, size, 500);
+>> -	if (ret > 0 && ret <= size)
+>> +
+>> +	if (ret < 0)
+>> +		memset(data, 0xff, size);
+>> +
+>> +	else
+>>  		memcpy(data, buf, ret);
+>> +
+>>  	kfree(buf);
+>>  	return ret;
+>>  }
+>> @@ -276,7 +281,7 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
+>>  
+>>  static inline void set_ethernet_addr(rtl8150_t * dev)
+>>  {
+>> -	u8 node_id[6];
+>> +	u8 node_id[6] = {0};
+> This should not be needed to be done.
 
-Also, what are the odds that a successful get_register() call would see
-0xFFs being copied?
-If that's very real scenario, then I admit this doesn't work at all.
-
-The only other alternative approach I can think of that can handle the
-issue I highlighted above, is to introduce checking for get_registers()'s
-return values nearly everywhere it gets called.
-Would that be a more preferable and welcome approach?
+Noted.
 
 Thank you for your time.
 
 Thanks,
 Anant
-
 
