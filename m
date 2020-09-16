@@ -2,139 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40B4426C1EA
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 12:57:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75E4E26C1F1
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 13:06:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbgIPKsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 06:48:22 -0400
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:46050 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726867AbgIPKeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 06:34:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1600252476; x=1631788476;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=ZqDxoyi2CE5TDuUki9vFnONxwFNUPXF9QfdulSaviFk=;
-  b=s0JIkBJGPjc2Wn/tlPMfAacQrJA48ObpLumF0+RX1rfbXuI7UHgEKKfw
-   Cblvhy2wA6QnVfKVkZacz4YXiSiBloftcPu6wuPOcIPH+YprSYcng5q9c
-   omYQmfbnkPiyK+t/kgOyMQVFpAYPZoZQaVZX7DNxx7DclbPOViBKqVNFo
-   Wo/hD6oWouyn/REfo0RbYly+4YkJPwKcafbbXX50A+yi0abdZyNF6r0Fs
-   cfDLr7TOQ2Sc+jsS6zEzfPXTiwrTax7eVaRsYGCbyCbrWZdBa2INn8REs
-   YKY1WaiPmdsZ2EXzg6o81gTE33RbCNumiv6abv10qHpFVUYUeKhb560WP
-   Q==;
-IronPort-SDR: lInEfgqVFhVhCrsozkw7GnsZayjG4zpQWA7SLyAAtaaujk+03OK9MTrW/kV0fymv2waLfTMpX6
- c4yyaHDIFLEWGuo3DkdSnbHE3x7dgBYSDXIb9VzN8Z3zWeV/tDKZoNM0r64fimDB2YcrRiJiOZ
- zAQiaYaU7ERRUlW0qjaHc3kDwY5lla3FfXQ+rdDwDXzb9lbp1kNuQqy6v2auewaLw/42yueTvO
- BG7xLSQrI77A7uI7aQ8bLpSO3i34ddset5tkzso2TDy5jx8JfK27OA09Q/AdE5M/xQaKLy92Cx
- Q1Y=
-X-IronPort-AV: E=Sophos;i="5.76,432,1592895600"; 
-   d="scan'208";a="26592826"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Sep 2020 03:33:28 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 16 Sep 2020 03:33:25 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3
- via Frontend Transport; Wed, 16 Sep 2020 03:33:25 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YK83lAI2M60mEGve9mIZeklNvTeISmhAqB8+Urk4DIH8NnJNCIOuCx06GbO1z277YbHE/Gy3ZOBWoNpyGH9ls4QNc1XXpMHgoI5Cl2FyceFhtBJ4M9zHAH6S2cfrpzsNVTn/DihTvTnQ4U6dP4iZbAU2kTHxY9XoO/sRzWnRuaZw39KrVO3yg40IfuBP3b9Ecw+EXUCvoxvcgtyEA9w/yQjR+dXTvXnyymB7vccMcN6Wy6EK4QyNRkYgSqPJuVNdpekG7lBky2FyzKy9Jh0ziPRGuJda/HomeejiyQ2byQxHPANG/k9uXvf4uD7XVR5IJ+NuP4TuxefHxcdyu4uK9w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZqDxoyi2CE5TDuUki9vFnONxwFNUPXF9QfdulSaviFk=;
- b=lLTUPF/+XcK0pJsyYc/Y7h6sqonhBVl72oo254Glc4xvzzAOG70nig8esWwNlb4rVXD9kn90C8V+womD3GOW7LLjine5bcfvY7ClVbURs6VVIkWkqlR1sQpwQlQBUqU88sB3fSrs0zTuzGvbRy4zcoxridG/8HAM+H00J6oN3WgfkGVC98OON1swzNkSGCcAS3EZMDqmRcFjpU4+dMTT4E/U/2JHdvQQtA9X6/d92UKJjGFJ2bIuGMaiI9s8wG+dWHIxEN8lVE/yrVW/HFgUP/pvvmy9HNGluRQNxr+RE+da6OuPcAzT7snJV3X24RgcL2FSQnp9f6FtM/n5t1PA+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        id S1726940AbgIPLAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 07:00:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51574 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726881AbgIPKeg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 06:34:36 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B61EC061222
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 03:34:33 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id o5so6273136wrn.13
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 03:34:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZqDxoyi2CE5TDuUki9vFnONxwFNUPXF9QfdulSaviFk=;
- b=hr6wBUlkDqWY9ktg6wp54Dq89dSTw/RtPfTY0p2tq2IBdMkYxyEvrUtIgwBjgCb6V/NJT6cSat7Mk92x8jW86qZUl0Pq//YeQ0w+JBDO0jqe0mNW8MzYphJeZCrCTMDfZhGs5+igCtJmGiyQSP3mLvCM+ze3Y2CieyXcM2MK7O4=
-Received: from CY4PR1101MB2341.namprd11.prod.outlook.com (10.173.188.150) by
- CY4PR11MB0070.namprd11.prod.outlook.com (10.171.254.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3348.19; Wed, 16 Sep 2020 10:33:19 +0000
-Received: from CY4PR1101MB2341.namprd11.prod.outlook.com
- ([fe80::908:a628:69ca:d62e]) by CY4PR1101MB2341.namprd11.prod.outlook.com
- ([fe80::908:a628:69ca:d62e%7]) with mapi id 15.20.3391.014; Wed, 16 Sep 2020
- 10:33:19 +0000
-From:   <Codrin.Ciubotariu@microchip.com>
-To:     <matthias.schiffer@ew.tq-group.com>, <Woojung.Huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <andrew@lunn.ch>,
-        <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: dsa: microchip: ksz8795: really set the correct
- number of ports
-Thread-Topic: [PATCH net] net: dsa: microchip: ksz8795: really set the correct
- number of ports
-Thread-Index: AQHWjBFmjW4HSyny6kSUPuJoqVs5JalrEXIA
-Date:   Wed, 16 Sep 2020 10:33:19 +0000
-Message-ID: <832ce428-961b-62d6-1930-dc106b3202aa@microchip.com>
-References: <20200916100839.843-1-matthias.schiffer@ew.tq-group.com>
-In-Reply-To: <20200916100839.843-1-matthias.schiffer@ew.tq-group.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-authentication-results: ew.tq-group.com; dkim=none (message not signed)
- header.d=none;ew.tq-group.com; dmarc=none action=none
- header.from=microchip.com;
-x-originating-ip: [2a02:2f0a:c803:a00:5546:80a7:ca6:707e]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4d946a64-49fc-487c-b425-08d85a2bedcb
-x-ms-traffictypediagnostic: CY4PR11MB0070:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CY4PR11MB00705B8BBA855AAC368FB6CEE7210@CY4PR11MB0070.namprd11.prod.outlook.com>
-x-bypassexternaltag: True
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5+XH7/6Lbj4JhmlMSgmbQACduJTpud2hGl1jHe0kkGgFlZoyCpQiXIPmjIaa5P/68OvaVxpQMdRYU5M9AJRaFWmgkq2fcHHp7eBJOq4qvuvLmcoyWs/ROMgL8vQA//RMNLHzqMhulLbMmdn4C2okREV3UQhBKzEusdx2kDKf3BKdRaNbRJJIno+HPPeNWaMV6q9NZA/xuTRhhUSnrghiyXRnkoCPRAOt4z3Xv+ecFmKNzN1YZIIOm46nmzUFrOGKjIB8C0w4D+O6pzUkoXnCV9HTqhXPuLnJnDM6xmcj3MzMtIM+vSGmFgNRXBaS0IKNanC8M5Evwl3122Ktnxptrj1z4Qx8Yf+epLX3MTDiSZ0yQDd7Zy2ydqh1aXauwoW8LYT238wJUEyhJLaLuzo/DceZpVmsiI/xydzt/69CY303ixsocE0yGFeYglNP+bum
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR1101MB2341.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(39850400004)(366004)(396003)(376002)(136003)(66946007)(66476007)(66556008)(53546011)(71200400001)(83380400001)(5660300002)(478600001)(6506007)(76116006)(186003)(6486002)(31686004)(4744005)(6512007)(316002)(110136005)(2906002)(2616005)(8936002)(4326008)(66446008)(54906003)(64756008)(36756003)(8676002)(31696002)(91956017)(86362001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: y9I8I9UOlEVvHw6anCd419Gs9FxLdEPgnLImgQIq882aNxnkxCxBS5H64Gljg8ITP0syVOZlIdRU/VdOE5o3Z3DUb5PmCJrwIpzTRuZ2v1XHlZgCCEEyokEM+jOE8XKvBi0LNzLHqAV3sH9mTG/mx6vWPYfGDo1WQluHzh6NYZnUjvB/ug5Kj5XRUxZ0MRSqst0rEGBArbChJAIW1RI5KsSXCSGwYhJloRb7ZZYwB6M2LYrOeHx/I3gWU3qhG3ulEuMOPJTdtsDUbmwZZOusQhCnKVFyMa1VuRLISWLYFxReBWU8qWqm45ZAdy8qNHwIPLkf+ZliUfdf47V26VaM+OnhGXLANTYfhwXlBBpRW+zOk8qaz3vKVRD/S/r1PtajmAV8qSfSZ9jvZC7R5uQpYsEhcBkqNUQwnhfPfkwsMYu0NFQfTIR/0pycwuMmd76+onkCwHotY2MH5EcvINzS1OaRX2hl3z4o2j601Vu0uH1isEbYsjlHN4uBH3rRZw06xmbjJvNYKa4OJ6NBOWuJvpiVz6W3mYXR9mxY4o8dLY/VEoUkXozZBmNmobAAJ9PQn6ij66L4dGIPGLnJNjbbisI77/bV+kwkIg27WJyA1cexL0Kj08tqu9/ITkSwh2Q8vmDkOozk26Ch0iyycZJ78xMQWgXxe+4rZieq01XddC4fOg9yHA3pAEhwej9+zhGV+OAcFjOHxVkiVoAttyMX/Q==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <183B390177E4E64F9790E0FDFEBC0EF9@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Mwjb/6V6tLL+6i19tWf9cpaEUzM4KdeyjSnTmhOi4Mc=;
+        b=bqaKAdLmgZaJV7L1s6ljxOLzJY0awLwFjfPknTPnvCqEN2tYxuaZ/nNsfbHoyBcIXF
+         oGfAdDpfZ622txpVcI5BtzYBDpBWN18zg8Te4zgNZ/bJKD2wYANFIH1+aJTDM7h/17T8
+         8pl/DjF52h3bgaEFEcAA6EmQSPYx08o1UO1NN2MQw3K/x6ZaKOJuaVs5tSsZXidtNYsq
+         tSPnfZvVBHODGo2oB7uDPe/G2L7Fh620+5uiqDiM8nro1boft6oReUV5VUKVVTd0cMqV
+         S3o/IhU0N2TkecHqH14liVNjdOD/0lWM/aquJTRjzEzCL9kH5L9R+4UtH5V1jvheaDZu
+         tfog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Mwjb/6V6tLL+6i19tWf9cpaEUzM4KdeyjSnTmhOi4Mc=;
+        b=RfZG4BXV/H8HLXYuPtI/SPj8R9qZpGBoQBYWOrp+TY5iWxoZ2KkmO1olB17pF5+sn5
+         YY3cdGjA0MNG94CJYXruk3g+BsOy8LsUyY9RgDYrIafjvwO3FwRYprzMmbHXQouRL8KW
+         flBkVxcejlveTi4KgN7/I9mBeqpRN6cmEoUe6TjBEIHUbRNUl1fzS4xhbUJ5S6Pkv+e/
+         E3jYsSVIsl2VNuJXcXGcwjhjXYPJe3QtKXmbeMq2Unlo8rHA/YQuS7CLu0ls5vYBYUOE
+         h+LTKsK5NnoBZn9shTUB/BCB2/jp5GGqpv7AsvVsY5YcNo1uN5hOmEPT9/qni/tD5Rt4
+         LfOA==
+X-Gm-Message-State: AOAM530B0kQuLib+b48O2hlm+RB0tkxEAsXAre+GaMnk9zDFqe97Wj9c
+        ogYyTWCB8Brwz/r3ic4Tke230Q==
+X-Google-Smtp-Source: ABdhPJwozht5PdwAnzcnVhUOQcmIn7GmTqjzATyD7S3zt/1AzxIiBUKq5TM3446+ZlSsmJBa8VM7DQ==
+X-Received: by 2002:adf:e488:: with SMTP id i8mr27639492wrm.116.1600252471989;
+        Wed, 16 Sep 2020 03:34:31 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id 189sm4702629wmb.3.2020.09.16.03.34.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Sep 2020 03:34:31 -0700 (PDT)
+Date:   Wed, 16 Sep 2020 12:34:30 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     sundeep subbaraya <sundeep.lkml@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
+Subject: Re: [EXT] Re: [net-next PATCH 0/2] Introduce mbox tracepoints for
+ Octeontx2
+Message-ID: <20200916103430.GA2298@nanopsycho.orion>
+References: <1599117498-30145-1-git-send-email-sundeep.lkml@gmail.com>
+ <20200903121803.75fb0ade@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <BY5PR18MB3298899BF15F266144EE8760C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904083709.GF2997@nanopsycho.orion>
+ <BY5PR18MB3298EB53D2F869D64D7F534DC62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904121126.GI2997@nanopsycho.orion>
+ <BY5PR18MB3298C4C84704BCE864133C33C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904133753.77ce6bc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CALHRZuoa8crCaOAkEqyBq1DnmVqUgpv_jzQboMNZcU_3R4RGvg@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR1101MB2341.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d946a64-49fc-487c-b425-08d85a2bedcb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2020 10:33:19.1539
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /UPkTw41G+74RMcQjrAsR8Maa9IfQXNeu+zXLP/bHE6i+XjdJ4ZRZlNFlEO4IlgaAxnMydoUZJdkDDkKZqfta5RfklW5uiJRJHhiDFa3mMY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB0070
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALHRZuoa8crCaOAkEqyBq1DnmVqUgpv_jzQboMNZcU_3R4RGvg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTYuMDkuMjAyMCAxMzowOCwgTWF0dGhpYXMgU2NoaWZmZXIgd3JvdGU6DQo+IEVYVEVSTkFM
-IEVNQUlMOiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3MgeW91
-IGtub3cgdGhlIGNvbnRlbnQgaXMgc2FmZQ0KPiANCj4gVGhlIEtTWjk0NzcgYW5kIEtTWjg3OTUg
-dXNlIHRoZSBwb3J0X2NudCBmaWVsZCBkaWZmZXJlbnRseTogRm9yIHRoZQ0KPiBLU1o5NDc3LCBp
-dCBpbmNsdWRlcyB0aGUgQ1BVIHBvcnQocyksIHdoaWxlIGZvciB0aGUgS1NaODc5NSwgaXQgZG9l
-c24ndC4NCj4gDQo+IEl0IHdvdWxkIGJlIGEgZ29vZCBjbGVhbnVwIHRvIG1ha2UgdGhlIGhhbmRs
-aW5nIG9mIGJvdGggZHJpdmVycyBtYXRjaCwNCj4gYnV0IGFzIGEgZmlyc3Qgc3RlcCwgZml4IHRo
-ZSByZWNlbnRseSBicm9rZW4gYXNzaWdubWVudCBvZiBudW1fcG9ydHMgaW4NCj4gdGhlIEtTWjg3
-OTUgZHJpdmVyICh3aGljaCBjb21wbGV0ZWx5IGJyb2tlIHByb2JpbmcsIGFzIHRoZSBDUFUgcG9y
-dA0KPiBpbmRleCB3YXMgYWx3YXlzIGZhaWxpbmcgdGhlIG51bV9wb3J0cyBjaGVjaykuDQo+IA0K
-PiBGaXhlczogYWYxOTlhMWE5Y2IwICgibmV0OiBkc2E6IG1pY3JvY2hpcDogc2V0IHRoZSBjb3Jy
-ZWN0IG51bWJlciBvZg0KPiBwb3J0cyIpDQo+IFNpZ25lZC1vZmYtYnk6IE1hdHRoaWFzIFNjaGlm
-ZmVyIDxtYXR0aGlhcy5zY2hpZmZlckBldy50cS1ncm91cC5jb20+DQo+IC0tLQ0KDQpTb3JyeSBh
-Ym91dCB0aGlzLiBJIGFzc3VtZWQgY29uc2lzdGVuY3kgYmV0d2VlbiB0aGUgdHdvIGRyaXZlcnMu
-DQoNClJldmlld2VkLWJ5OiBDb2RyaW4gQ2l1Ym90YXJpdSA8Y29kcmluLmNpdWJvdGFyaXVAbWlj
-cm9jaGlwLmNvbT4NCg==
+Mon, Sep 07, 2020 at 12:59:45PM CEST, sundeep.lkml@gmail.com wrote:
+>Hi Jakub,
+>
+>On Sat, Sep 5, 2020 at 2:07 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>>
+>> On Fri, 4 Sep 2020 12:29:04 +0000 Sunil Kovvuri Goutham wrote:
+>> > > >No, there are 3 drivers registering to 3 PCI device IDs and there can
+>> > > >be many instances of the same devices. So there can be 10's of instances of
+>> > > AF, PF and VFs.
+>> > >
+>> > > So you can still have per-pci device devlink instance and use the tracepoint
+>> > > Jakub suggested.
+>> > >
+>> >
+>> > Two things
+>> > - As I mentioned above, there is a Crypto driver which uses the same mbox APIs
+>> >   which is in the process of upstreaming. There also we would need trace points.
+>> >   Not sure registering to devlink just for the sake of tracepoint is proper.
+>> >
+>> > - The devlink trace message is like this
+>> >
+>> >    TRACE_EVENT(devlink_hwmsg,
+>> >      . . .
+>> >         TP_printk("bus_name=%s dev_name=%s driver_name=%s incoming=%d type=%lu buf=0x[%*phD] len=%zu",
+>> >                   __get_str(bus_name), __get_str(dev_name),
+>> >                   __get_str(driver_name), __entry->incoming, __entry->type,
+>> >                   (int) __entry->len, __get_dynamic_array(buf), __entry->len)
+>> >    );
+>> >
+>> >    Whatever debug message we want as output doesn't fit into this.
+>>
+>> Make use of the standard devlink tracepoint wherever applicable, and you
+>> can keep your extra ones if you want (as long as Jiri don't object).
+>
+>Sure and noted. I have tried to use devlink tracepoints and since it
+>could not fit our purpose I used these.
+
+Why exactly the existing TP didn't fit your need?
+
+>
+>Thanks,
+>Sundeep
