@@ -2,107 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05D5726B65A
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 02:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB95926B6E5
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 02:13:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727391AbgIPADJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 20:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39282 "EHLO
+        id S1727383AbgIPANi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 20:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727353AbgIPADF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 20:03:05 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED93C06174A;
-        Tue, 15 Sep 2020 17:03:05 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id d19so2190481pld.0;
-        Tue, 15 Sep 2020 17:03:05 -0700 (PDT)
+        with ESMTP id S1727476AbgIPANO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 20:13:14 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACEFC061788
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 17:13:13 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id j2so6223394ioj.7
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 17:13:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/9YC3jzxgXrgHNvLV2DgKLu9vRPOEeUndPKkcJPjDSI=;
-        b=jf9mDfg00fVj/EphFCM3fHgNMnH5rlkZ88FTfEbdsiXbD3jHObKr2feFEkpxgSqHgM
-         w8xtcPHIrz5QxSdbj68FYVkzfR6KXWRiXFiu3RqGA4lkgv8z+iENnMEf5h2UPCdcbY41
-         de6Urh5A4PvZ9ztobefpx8bA0PsGBQ4Yl+JMjPiJblHEEsBSq2CLiRzEURv0W5jXdMes
-         gDmvm5JB+JRMI1bFPWDQ7Q9TdJ9U7fF2WPm6Z3rCPM+IaPBFqxWMjgBUnkWLclRI8z7O
-         Kx40EhJyj6I7q9wINksgDQIIuUz8aXeiSY9riKg+FKD+c1Ul1Cl/u7lwNYnG0uJamBoy
-         xagw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=K16SS9rcPXwS/KBnQsaiiaLjK9KWOSN5Uw5UgElGEE4=;
+        b=RM4StYvI2cYuO7L8XUXzRU2wmAiwjmtIjwTmr4k19e++1WqPgmUjascPUP0w4VqkrH
+         tViLRoFMbM6+6SjFyPBJN5ij2KEkqAozyPfPN3Jw4GDzCv/8UvK7gSdDYjA2MdrZmzBX
+         OCV34G5VlHwCVy039uJ9r9l84x6tIXTZGNF7zUAHQeBzlWUeL6wxOq0GnKqblY3pHhsW
+         pdwvatPLB1QmHqvXmCdvc3ihgomB8cLhlvPzr+HtMGQqRxgVBBIShClFlSnVWsAg1Qsn
+         vcgyKbKpienH/klJNOy/KzryUVTkynSi8pTvQS0mhy3I3QlkyhzFDRYvhozjWuhzqtA1
+         u5eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/9YC3jzxgXrgHNvLV2DgKLu9vRPOEeUndPKkcJPjDSI=;
-        b=QOIrdmnAt7pUxFLsR+wLFXpeyKpRX5A7NTzFnjN6F+Ibx4ALEebXhiKpctyCDfx3iy
-         1ZKZzQ0Nvr/3GnnT5uC0+PU94Ru0xa5F+rbMCgSMhb2X/p35528kVe8gDZ6/BdFZMJhm
-         VuTo+J5gYkp6Gnr/twhGnExRtFHtqaUrj37l/LNPOT1PDb3ohlhsJygq9VdfLw0fKuh4
-         fXq1GUUNwv56/lcsaTQxLcDkbfPeMMv3M50E0y2u91rcmPOA9ZwUszlrxpTxBw+w7P5b
-         wPv+B2xmQKTJk1jHmHTCb/op9OJTX0TqnfOVDqzfrKcPZqiDToJ/MqSL/uKPd+oaBqeo
-         jQKg==
-X-Gm-Message-State: AOAM533MPKiWx0EG8v38nfiXRXFjLBcJBoUYpq5Qpr1xhlOVeO4t8PYL
-        e5L0Cu89F/wiCGEFk+uc1lM=
-X-Google-Smtp-Source: ABdhPJwXZLREEPePNQ09vlrQA/w6bnVK1+xr2DoofOoKKiFD/yJFWzHp7fSEVmNoHeMMrfNyXMrCgw==
-X-Received: by 2002:a17:90a:db0f:: with SMTP id g15mr1569754pjv.145.1600214584632;
-        Tue, 15 Sep 2020 17:03:04 -0700 (PDT)
-Received: from [10.230.28.120] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o17sm12100848pgb.46.2020.09.15.17.02.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Sep 2020 17:03:03 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/3] net: stmmac: Add ethtool support for get|set
- channels
-To:     "Wong, Vee Khee" <vee.khee.wong@intel.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Joao.Pinto@synopsys.com" <Joao.Pinto@synopsys.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "Vijaya Balan, Sadhishkhanna" <sadhishkhanna.vijaya.balan@intel.com>,
-        "Seow, Chen Yong" <chen.yong.seow@intel.com>
-References: <20200915012840.31841-1-vee.khee.wong@intel.com>
- <20200915.154302.373083705277550666.davem@davemloft.net>
- <b945fcc5-e287-73e2-8e37-bd78559944ab@gmail.com>
- <BYAPR11MB287046044CA144193135B0E7AB200@BYAPR11MB2870.namprd11.prod.outlook.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <16a0dc9e-4e08-6d71-6be4-13c2fc8c53dd@gmail.com>
-Date:   Tue, 15 Sep 2020 17:02:54 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=K16SS9rcPXwS/KBnQsaiiaLjK9KWOSN5Uw5UgElGEE4=;
+        b=bDk5rxUoSkEF+Se+rcOXsH95/cYIekQHcW/3NeDb9Cv+vedjKVOD1yztDIQkHSgqvB
+         Y2Z6vOSJIaCyucEPB18MKORiDKIKQVGhXlXtTJI/9wVAU9RiK8yGC2kIXFrJF8pQAIzu
+         eG8EcZQJQxfTedBC0u9IGWjeTcXuycF2O0J3badJZeWtBx1CGBX5Nw3fRbCnfY7qZp6a
+         Z330D/GuyNlzxfE7ASKZbcOJ2Ks0mNEdmcXjgIs0nlCIXr3s8V0wJ8dvmY5rp+NSODOW
+         04/RED+NI1sqz0KB/DyQj888b/B/E2dOALVw/HZx2GzMLh+KXiUxRo/FJVdjoR6KbEzU
+         ezEw==
+X-Gm-Message-State: AOAM530Zfm8W6RvX5J4qCks9tE46V6J6e4QS7PcamBJ0l3N+3U5cC1F3
+        hSLwcNujxDyu2WSWuxZHO/XpsS4Ttr6ZCzy0pMC2Xw==
+X-Google-Smtp-Source: ABdhPJxcld7S0TfU57/c6MV0BtBBz450m+30655BTDKoD3NWCBexpyEM41tdzU3AAqi6oxmUEvqY1BD/vBbXmZmmVm8=
+X-Received: by 2002:a05:6638:144:: with SMTP id y4mr19842940jao.61.1600215192042;
+ Tue, 15 Sep 2020 17:13:12 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <BYAPR11MB287046044CA144193135B0E7AB200@BYAPR11MB2870.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <159921182827.1260200.9699352760916903781.stgit@firesoul>
+ <20200904163947.20839d7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200907160757.1f249256@carbon> <CANP3RGfjUOoVH152VHLXL3y7mBsF+sUCqEZgGAMdeb9_r_Z-Bw@mail.gmail.com>
+ <20200914160538.2bd51893@carbon> <CANP3RGftg2-_tBc=hGGzxjGZUq9b1amb=TiKRVHSBEyXq-A5QA@mail.gmail.com>
+ <87ft7jzas7.fsf@toke.dk>
+In-Reply-To: <87ft7jzas7.fsf@toke.dk>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Tue, 15 Sep 2020 17:12:59 -0700
+Message-ID: <CANP3RGf581mZKE2Eky-bY6swU6TAFv1vzxxZ24SQ+yB9TGAD8w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: don't check against device MTU in __bpf_skb_max_len
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Sep 15, 2020 at 1:47 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> [ just jumping in to answer this bit: ]
+>
+> > Would you happen to know what ebpf startup overhead is?
+> > How big a problem is having two (or more) back to back tc programs
+> > instead of one?
+>
+> With a jit'ed BPF program and the in-kernel dispatcher code (which
+> avoids indirect calls), it's quite close to a native function call.
 
+Hmm, I know we have (had? they're upstream now I think) some CFI vs
+BPF interaction issues.
+We needed to mark the BPF call into JIT'ed code as CFI exempt.
 
-On 9/15/2020 4:59 PM, Wong, Vee Khee wrote:
-> My bad...
-> 
-> Hi David Miller,
+CFI is Code Flow Integrity and is some compiler magic, to quote wikipedia:
+Google has shipped Android with the Linux kernel compiled by Clang
+with link-time optimization (LTO) and CFI since 2018.[12]
+I don't know much more about it.
 
-(please don't top post)
+But we do BPF_JIT_ALWAYS_ON on 64-bit kernels, so it sounds like we
+might be good.
 
-> 
-> Can you help with the commit message fix or do you want to to send a new patch with the fix since the patches are applied on net-next?
+> > We're running into both verifier performance scaling problems and code
+> > ownership issues with large programs...
+> >
+> > [btw. I understand for XDP we could only use 1 program anyway...]
+>
+> Working on that! See my talk at LPC:
+> https://linuxplumbersconf.org/event/7/contributions/671/
 
-It has already been applied, so this is too late, just telling you so 
-you can avoid it next time. And it should be part of David's CI while 
-applying patching, too.
--- 
-Florian
+Yes, I'm aware and excited about it!
+
+Unfortunately, Android S will only support 4.19, 5.4 and 5.10 for
+newly launched devices (and 4.9/4.14 for upgrades).
+(5.10 here means 'whatever is the next 5.x LTS', but that's most likely 5.1=
+0)
+I don't (yet) even have real phone hardware running 5.4, and 5.10
+within the next year is even more of a stretch.
+
+> Will post a follow-up to the list once the freplace multi-attach series
+> lands.
