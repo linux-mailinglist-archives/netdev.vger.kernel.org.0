@@ -2,183 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B1B126CB83
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:29:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6473826CBD5
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:35:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726986AbgIPU26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 16:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60824 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726942AbgIPU2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 16:28:52 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7393C06174A;
-        Wed, 16 Sep 2020 13:28:51 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id c17so6383223ybe.0;
-        Wed, 16 Sep 2020 13:28:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=MVIs1JBkJFZ61cdKipIPslS3rOhT6YsS69ihKIm6isI=;
-        b=Cfsh1gc4YG0BdHbDMGnWTV59MZNiCqZ1cxM25XnGcigdAnTeFkaoVX3xENNRc9suKS
-         6nGKYtDFymW+I0N39d6LSxl4hpkhZGetxgIHZGlp0B7iSzcws+LLNsn4XqXcrFFzkC2N
-         +0M3a2YtUaIieBSVVo30S3VmJt9Xzn3eSVMHhO8gJpfTKyXmFFFm7TkXLLqPjrIEiCXN
-         XcxgAXM41VNB87PuuQVGS5ok0ai8mrXTDJy8LDiv7f+Sbo3AV/sU1sHGbAf/aFo8sBGV
-         zeiolJ4RPtSAuG33JGpGIyBqoFwAWEoCm3B3kyHCBmrNB5Y/v3oWObRxV5YjErXvieTx
-         MSWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=MVIs1JBkJFZ61cdKipIPslS3rOhT6YsS69ihKIm6isI=;
-        b=LTDRd4S2l2uN0vjS+RQi5LP7O7VanVnKyZIY3BFAJn6Lu6ODjosk2oMzLLATjf/I9n
-         9WHRAcDbFqCv0ijc7jw9+0/1Zv+Rr70v3gzt92T3/qPY7VbK6SEJCFM4pLuBagB+P+Gm
-         I4s8AQknyZB1lVr/Qp0r7nacxQirGf9vHztmBWRzGPYskggZQ2sNkBqHxJwM9fYguZaL
-         xqbPYDXnvsUoQeRO2J6ZsFmF/6/LMnC/NafB8ea6GKTbPF2VgLWGuwNfy23VkJHyRldR
-         3O3ou3TfrXXYcCOeXzri4Y9sgKDxj34GnRHlqkk30kk1ODPeu9eXvw75HULXXaRtpzY6
-         5eQw==
-X-Gm-Message-State: AOAM533YgpMNW4n0/MxaJpdRJuVnYYeKhRyXy1+26fm7LieiFEp0ejwX
-        OGfoIOPuN2duJdL0X0Y0LNdZBqlg206XtwE9dLM=
-X-Google-Smtp-Source: ABdhPJy3eu8Z76RA/1AIXZuufjmbSfPRmDcmQAJT8ImQJO0F9+8jPzCF0vugf5Q+b6Rwalze40D25vht+VEIyH3OzR4=
-X-Received: by 2002:a25:4446:: with SMTP id r67mr3608241yba.459.1600288131072;
- Wed, 16 Sep 2020 13:28:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <160017005691.98230.13648200635390228683.stgit@toke.dk>
- <160017006242.98230.15812695975228745782.stgit@toke.dk> <CAEf4Bzafmu5w6wjWT_d0B-JaUnm3KOf0Dgp+552iZii2+=3DWg@mail.gmail.com>
-In-Reply-To: <CAEf4Bzafmu5w6wjWT_d0B-JaUnm3KOf0Dgp+552iZii2+=3DWg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 16 Sep 2020 13:28:40 -0700
-Message-ID: <CAEf4BzbqW12q_nXvat6=iTvKpy1P+e-r0N+9eY3vgDAZ8rcfLQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 5/8] bpf: Fix context type resolving for
- extension programs
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        id S1727351AbgIPUfV convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Sep 2020 16:35:21 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:53518 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726678AbgIPRKo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:10:44 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-211-D-DZJao1OIiChtMGd9S-Pg-1; Wed, 16 Sep 2020 07:24:22 -0400
+X-MC-Unique: D-DZJao1OIiChtMGd9S-Pg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4B7AF8030AC;
+        Wed, 16 Sep 2020 11:24:20 +0000 (UTC)
+Received: from krava.redhat.com (ovpn-114-172.ams2.redhat.com [10.36.114.172])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4D9B25DE46;
+        Wed, 16 Sep 2020 11:24:17 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCH bpf-next] selftests/bpf: Fix stat probe in d_path test
+Date:   Wed, 16 Sep 2020 13:24:16 +0200
+Message-Id: <20200916112416.2321204-1-jolsa@kernel.org>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0.001
+X-Mimecast-Originator: kernel.org
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 12:59 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Sep 15, 2020 at 5:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
-> >
-> > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >
-> > Eelco reported we can't properly access arguments if the tracing
-> > program is attached to extension program.
-> >
-> > Having following program:
-> >
-> >   SEC("classifier/test_pkt_md_access")
-> >   int test_pkt_md_access(struct __sk_buff *skb)
-> >
-> > with its extension:
-> >
-> >   SEC("freplace/test_pkt_md_access")
-> >   int test_pkt_md_access_new(struct __sk_buff *skb)
-> >
-> > and tracing that extension with:
-> >
-> >   SEC("fentry/test_pkt_md_access_new")
-> >   int BPF_PROG(fentry, struct sk_buff *skb)
-> >
-> > It's not possible to access skb argument in the fentry program,
-> > with following error from verifier:
-> >
-> >   ; int BPF_PROG(fentry, struct sk_buff *skb)
-> >   0: (79) r1 =3D *(u64 *)(r1 +0)
-> >   invalid bpf_context access off=3D0 size=3D8
-> >
-> > The problem is that btf_ctx_access gets the context type for the
-> > traced program, which is in this case the extension.
-> >
-> > But when we trace extension program, we want to get the context
-> > type of the program that the extension is attached to, so we can
-> > access the argument properly in the trace program.
-> >
-> > This version of the patch is tweaked slightly from Jiri's original one,
-> > since the refactoring in the previous patches means we have to get the
-> > target prog type from the new variable in prog->aux instead of directly
-> > from the target prog.
-> >
-> > Reported-by: Eelco Chaudron <echaudro@redhat.com>
-> > Suggested-by: Jiri Olsa <jolsa@kernel.org>
-> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> > ---
-> >  kernel/bpf/btf.c |    9 ++++++++-
-> >  1 file changed, 8 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > index 9228af9917a8..55f7b2ba1cbd 100644
-> > --- a/kernel/bpf/btf.c
-> > +++ b/kernel/bpf/btf.c
-> > @@ -3860,7 +3860,14 @@ bool btf_ctx_access(int off, int size, enum bpf_=
-access_type type,
-> >
-> >         info->reg_type =3D PTR_TO_BTF_ID;
-> >         if (tgt_prog) {
-> > -               ret =3D btf_translate_to_vmlinux(log, btf, t, tgt_prog-=
->type, arg);
-> > +               enum bpf_prog_type tgt_type;
-> > +
-> > +               if (tgt_prog->type =3D=3D BPF_PROG_TYPE_EXT)
-> > +                       tgt_type =3D tgt_prog->aux->tgt_prog_type;
->
-> what if tgt_prog->aux->tgt_prog_type is also BPF_PROG_TYPE_EXT? Should
-> this be a loop?
+Some kernels builds might inline vfs_getattr call within fstat
+syscall code path, so fentry/vfs_getattr trampoline is not called.
 
-ok, never mind this specifically. there is an explicit check
+Alexei suggested [1] we should use security_inode_getattr instead,
+because it's less likely to get inlined.
 
-if (tgt_prog->type =3D=3D prog->type) {
-    verbose(env, "Cannot recursively attach\n");
-    return -EINVAL;
-}
+Adding security_inode_getattr to the d_path allowed list and
+switching the stat trampoline to security_inode_getattr.
 
-that will prevent this.
+Adding flags that indicate trampolines were called and failing
+the test if any of them got missed, so it's easier to identify
+the issue next time.
 
-But, I think we still will be able to construct a long chain of
-fmod_ret -> freplace -> fmod_ret -> freplace -> and so on ad
-infinitum. Can you please construct such a selftest? And then we
-should probably fix those checks to also disallow FMOD_RET, in
-addition to BPF_TRACE_FENTRY/FEXIT (and someone more familiar with LSM
-prog type should check if that can cause any problems).
+[1] https://lore.kernel.org/bpf/CAADnVQJ0FchoPqNWm+dEppyij-MOvvEG_trEfyrHdabtcEuZGg@mail.gmail.com/
+Fixes: e4d1af4b16f8 ("selftests/bpf: Add test for d_path helper")
+Signed-off-by: Jiri Olsa <jolsa@redhat.com>
+---
+ kernel/trace/bpf_trace.c                        | 1 +
+ tools/testing/selftests/bpf/prog_tests/d_path.c | 6 ++++++
+ tools/testing/selftests/bpf/progs/test_d_path.c | 9 ++++++++-
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
->
-> Which also brings up a few follow up questions. Now that we allow same
-> PROG_EXT program to be attached to multiple other programs:
->
-> 1. what prevents us from attaching PROG_EXT to itself?
-> 2. How do we prevent long chain of EXT programs or even loops?
->
-> Can you please add a few selftests testing such cases? I have a
-> feeling that with your changes in this patch set now it's possible to
-> break the kernel very easily. I don't know what the proper solution
-> is, but let's at least have a test that does show breakage, then try
-> to figure out the solution. See also comment in check_attach_btf_id()
-> about fentry/fexit and freplace interactions. That might not be
-> enough.
->
->
-> > +               else
-> > +                       tgt_type =3D tgt_prog->type;
-> > +
-> > +               ret =3D btf_translate_to_vmlinux(log, btf, t, tgt_type,=
- arg);
-> >                 if (ret > 0) {
-> >                         info->btf_id =3D ret;
-> >                         return true;
-> >
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index b2a5380eb187..1001c053ebb3 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1122,6 +1122,7 @@ BTF_ID(func, vfs_truncate)
+ BTF_ID(func, vfs_fallocate)
+ BTF_ID(func, dentry_open)
+ BTF_ID(func, vfs_getattr)
++BTF_ID(func, security_inode_getattr)
+ BTF_ID(func, filp_close)
+ BTF_SET_END(btf_allowlist_d_path)
+ 
+diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
+index fc12e0d445ff..f507f1a6fa3a 100644
+--- a/tools/testing/selftests/bpf/prog_tests/d_path.c
++++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
+@@ -120,6 +120,12 @@ void test_d_path(void)
+ 	if (err < 0)
+ 		goto cleanup;
+ 
++	if (CHECK(!bss->called_stat || !bss->called_close,
++		  "check",
++		  "failed to call trampolines called_stat %d, bss->called_close %d\n",
++		   bss->called_stat, bss->called_close))
++		goto cleanup;
++
+ 	for (int i = 0; i < MAX_FILES; i++) {
+ 		CHECK(strncmp(src.paths[i], bss->paths_stat[i], MAX_PATH_LEN),
+ 		      "check",
+diff --git a/tools/testing/selftests/bpf/progs/test_d_path.c b/tools/testing/selftests/bpf/progs/test_d_path.c
+index 61f007855649..84e1f883f97b 100644
+--- a/tools/testing/selftests/bpf/progs/test_d_path.c
++++ b/tools/testing/selftests/bpf/progs/test_d_path.c
+@@ -15,7 +15,10 @@ char paths_close[MAX_FILES][MAX_PATH_LEN] = {};
+ int rets_stat[MAX_FILES] = {};
+ int rets_close[MAX_FILES] = {};
+ 
+-SEC("fentry/vfs_getattr")
++int called_stat = 0;
++int called_close = 0;
++
++SEC("fentry/security_inode_getattr")
+ int BPF_PROG(prog_stat, struct path *path, struct kstat *stat,
+ 	     __u32 request_mask, unsigned int query_flags)
+ {
+@@ -23,6 +26,8 @@ int BPF_PROG(prog_stat, struct path *path, struct kstat *stat,
+ 	__u32 cnt = cnt_stat;
+ 	int ret;
+ 
++	called_stat = 1;
++
+ 	if (pid != my_pid)
+ 		return 0;
+ 
+@@ -42,6 +47,8 @@ int BPF_PROG(prog_close, struct file *file, void *id)
+ 	__u32 cnt = cnt_close;
+ 	int ret;
+ 
++	called_close = 1;
++
+ 	if (pid != my_pid)
+ 		return 0;
+ 
+-- 
+2.26.2
+
