@@ -2,136 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1422626CAD1
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:15:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6814226CB26
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728216AbgIPUNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 16:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33218 "EHLO
+        id S1727204AbgIPUWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 16:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727061AbgIPRdO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:33:14 -0400
-Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA66EC02C2AD;
-        Wed, 16 Sep 2020 09:03:24 -0700 (PDT)
-Received: by fieldses.org (Postfix, from userid 2815)
-        id 30C2D689F; Wed, 16 Sep 2020 12:03:16 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 30C2D689F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
-        s=default; t=1600272196;
-        bh=AhbQil9hi1jajqnwwBoDpoEkSw6sqlLr283ReFc5xQg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oGFyz4comJG6R79ISTIV5cstLTo7DBCtV3gmkUf2vHJHQue7W9VeVwmdy+Dqp2ucR
-         gc1fU3CQra+Ebnqq67PfhQ2EkkLC5VhhQcXeZdIQb3xyWM1iBUU7TXG+MbbMZiejrz
-         E1/Wi9MFGcYe+jJfw4dnRGXPvS+jDFiftMA3szxs=
-Date:   Wed, 16 Sep 2020 12:03:16 -0400
-From:   "J. Bruce Fields" <bfields@fieldses.org>
-To:     syzbot <syzbot+1594adb1b44e354153d8@syzkaller.appspotmail.com>
-Cc:     anna.schumaker@netapp.com, chuck.lever@oracle.com,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, trond.myklebust@hammerspace.com
-Subject: Re: general protection fault in cache_clean
-Message-ID: <20200916160316.GA4560@fieldses.org>
-References: <0000000000002b3ac605af559958@google.com>
+        with ESMTP id S1727111AbgIPR2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:28:42 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35ABBC061225
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 10:19:49 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id j2so9113880ioj.7
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 10:19:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=z9QWQBLKVwzSm/Zoboscyj8Yu/BFKaHG3w3tS3Xur4A=;
+        b=MfGfZc7554EHqtaqqURQcO03kTBY4K/81ul3FL5rihdGEQyB5MYacWy3ZCSBOLLnNN
+         z0dOuO0cneQkUNI6OG22vjC1AOcsIW8I+qZB0w8DpZihY4JcZOjhnmCxCwBjzxknFYb/
+         PaUoX1S5jume1bFq/LO/hq4FBT9as/e+AlbTUZZbdWTwCoxBe/tOBu1CSCyxtaxJYZUR
+         xvMf+IekWrLEkZGNe+K+Chk7Zox45uzr/GESCUqHrA3h0KV9s9NC/3L557pS8gYklMRE
+         Y5CowwV55Ib6PsZvZkRvgeVukvemPeP52Ttk+Ruql5QQoknq4KDVbekPxpPEUea197tr
+         A36w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z9QWQBLKVwzSm/Zoboscyj8Yu/BFKaHG3w3tS3Xur4A=;
+        b=Cd+IPNy7pLuEpsL6j2UN7FfablYvMgTHHrJCjQg5U6uhxS4DGdf36r0rZZ4uJmnpY5
+         8y8z3pit26xL421VztKhCLZqFHeWbuoE+lD2RCYskXaqVaqzJwCy1BO5j3RjOk0ZKVuh
+         t5OmFd56gRdxUY3IdgFz6GHSCI98tSheke8oZ4obXKLlFgML1gH2MbN2J5dkeklMgzMZ
+         hLj0o3qLmFrzHkB93PKOQwBT451IOFfhlfKR4vuITGZb5mWfq5+r++YD/ZmXmmVcIFkY
+         zWBDXz7KMt9fgAX2aUDzFC4JAFrdjJT33IQ5AkU04d4iHC/gphFUYFhmKRPE23HHO23b
+         qwyw==
+X-Gm-Message-State: AOAM5333pbdblNtFNWr/2CMBQ/9+JHl57hqSX6vb4CbVtjwZZqy7crjs
+        e1vGQ5ukP3ZMvzjeAuaeMYHhxjtvG2qYjhaatvGRkq8gsuU=
+X-Google-Smtp-Source: ABdhPJzCoCGJrG+yjgIiOUonIzew/SHAhRITgCSbZLYNnitYTTL10mtG8DGfMSFacoj5N+IyEPzb/SARFHytT5CNN4c=
+X-Received: by 2002:a05:6602:2e89:: with SMTP id m9mr20356881iow.77.1600276787699;
+ Wed, 16 Sep 2020 10:19:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0000000000002b3ac605af559958@google.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+References: <1599117498-30145-1-git-send-email-sundeep.lkml@gmail.com>
+ <20200903121803.75fb0ade@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <BY5PR18MB3298899BF15F266144EE8760C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904083709.GF2997@nanopsycho.orion> <BY5PR18MB3298EB53D2F869D64D7F534DC62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904121126.GI2997@nanopsycho.orion> <BY5PR18MB3298C4C84704BCE864133C33C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904133753.77ce6bc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CALHRZuoa8crCaOAkEqyBq1DnmVqUgpv_jzQboMNZcU_3R4RGvg@mail.gmail.com> <20200916103430.GA2298@nanopsycho.orion>
+In-Reply-To: <20200916103430.GA2298@nanopsycho.orion>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Wed, 16 Sep 2020 22:49:36 +0530
+Message-ID: <CALHRZuru42FZUQ=8S8k2M7Xsp8_9Lh8HrDMxf8LPQmw=Svc15Q@mail.gmail.com>
+Subject: Re: [EXT] Re: [net-next PATCH 0/2] Introduce mbox tracepoints for Octeontx2
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 15, 2020 at 01:04:20AM -0700, syzbot wrote:
-> syzbot found the following issue on:
-> 
-> HEAD commit:    581cb3a2 Merge tag 'f2fs-for-5.9-rc5' of git://git.kernel...
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=11f5c011900000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a9075b36a6ae26c9
-> dashboard link: https://syzkaller.appspot.com/bug?extid=1594adb1b44e354153d8
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+1594adb1b44e354153d8@syzkaller.appspotmail.com
-> 
-> general protection fault, probably for non-canonical address 0xdffffc0012e34a9a: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: probably user-memory-access in range [0x00000000971a54d0-0x00000000971a54d7]
-> CPU: 1 PID: 19990 Comm: kworker/1:11 Not tainted 5.9.0-rc4-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Workqueue: events_power_efficient do_cache_clean
-> RIP: 0010:cache_clean+0x119/0x7f0 net/sunrpc/cache.c:444
+On Wed, Sep 16, 2020 at 4:04 PM Jiri Pirko <jiri@resnulli.us> wrote:
+>
+> Mon, Sep 07, 2020 at 12:59:45PM CEST, sundeep.lkml@gmail.com wrote:
+> >Hi Jakub,
+> >
+> >On Sat, Sep 5, 2020 at 2:07 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >>
+> >> On Fri, 4 Sep 2020 12:29:04 +0000 Sunil Kovvuri Goutham wrote:
+> >> > > >No, there are 3 drivers registering to 3 PCI device IDs and there can
+> >> > > >be many instances of the same devices. So there can be 10's of instances of
+> >> > > AF, PF and VFs.
+> >> > >
+> >> > > So you can still have per-pci device devlink instance and use the tracepoint
+> >> > > Jakub suggested.
+> >> > >
+> >> >
+> >> > Two things
+> >> > - As I mentioned above, there is a Crypto driver which uses the same mbox APIs
+> >> >   which is in the process of upstreaming. There also we would need trace points.
+> >> >   Not sure registering to devlink just for the sake of tracepoint is proper.
+> >> >
+> >> > - The devlink trace message is like this
+> >> >
+> >> >    TRACE_EVENT(devlink_hwmsg,
+> >> >      . . .
+> >> >         TP_printk("bus_name=%s dev_name=%s driver_name=%s incoming=%d type=%lu buf=0x[%*phD] len=%zu",
+> >> >                   __get_str(bus_name), __get_str(dev_name),
+> >> >                   __get_str(driver_name), __entry->incoming, __entry->type,
+> >> >                   (int) __entry->len, __get_dynamic_array(buf), __entry->len)
+> >> >    );
+> >> >
+> >> >    Whatever debug message we want as output doesn't fit into this.
+> >>
+> >> Make use of the standard devlink tracepoint wherever applicable, and you
+> >> can keep your extra ones if you want (as long as Jiri don't object).
+> >
+> >Sure and noted. I have tried to use devlink tracepoints and since it
+> >could not fit our purpose I used these.
+>
+> Why exactly the existing TP didn't fit your need?
+>
+Existing TP has provision to dump skb and trace error strings with
+error code but
+we are trying to trace the entire mailbox flow of the AF/PF and VF
+drivers. In particular
+we trace the below:
+    message allocation with message id and size at initiator.
+    number of messages sent and total size.
+    check message requester id, response id and response code after
+reply is received.
+    interrupts happened on behalf of mailboxes in the entire process
+with source and receiver of interrupt along with isr status.
+    error like initiator timeout waiting for response.
+  All the above are relevant and are required for Octeontx2 only hence
+used own tracepoints.
 
-That's in cache_clean():
-	spin_lock(&cache_list_lock);
-	...
-	current_detail = list_entry(next, struct cache_detail, others)
-444:	if (current_detail->nextcheck > seconds_since_boot())
+Thanks,
+Sundeep
 
-It suggests cache_list or current_detail (both globals) are corrupted
-somehow.
-
-Those are manipulated only by cache_clean() and
-sunrpc_{init,destroy}_cache_detail(), always under the cache_list_lock.
-
-All the callers have to do to get this right is make sure the
-cache_detail they pass in is allocated before calling
-sunrpc_init_cache_detail() and not freed till after calling
-sunrpc_destroy_cache_detail().  I think they all get that right.
-
-So I'm assuming this is a random memory scribble from somewhere else or
-something, unless it pops up again....
-
-(The one thing I'm a little unsure of here is the
-list_empty(&cache_list) checks used to decide when to stop the
-cache_cleaner.  But that's a separate problem, if it is a problem.)
-
---b.
-
-
-> Code: 81 fb 20 eb 94 8a 0f 84 b8 00 00 00 e8 80 df 33 fa 48 8d 83 40 ff ff ff 48 8d 7b 10 48 89 05 8e 8e 13 06 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 e0 05 00 00 48 8d 6c 24 38 4c 8b 63 10 48 89
-> RSP: 0018:ffffc90008e1fc48 EFLAGS: 00010206
-> RAX: 0000000012e34a9a RBX: 00000000971a54c0 RCX: ffffffff87406dbb
-> RDX: ffff88804358a000 RSI: ffffffff87406e00 RDI: 00000000971a54d0
-> RBP: 0000000000000100 R08: 0000000000000001 R09: 0000000000000003
-> R10: 0000000000000100 R11: 0000000000000000 R12: 0000000000000100
-> R13: dffffc0000000000 R14: ffff88803451b200 R15: ffff8880ae735600
-> FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00000000004ef310 CR3: 000000009ca1b000 CR4: 00000000001526e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  do_cache_clean+0xd/0xd0 net/sunrpc/cache.c:502
->  process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
->  worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
->  kthread+0x3b5/0x4a0 kernel/kthread.c:292
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-> Modules linked in:
-> ---[ end trace 4c54bbd0e20d734b ]---
-> RIP: 0010:cache_clean+0x119/0x7f0 net/sunrpc/cache.c:444
-> Code: 81 fb 20 eb 94 8a 0f 84 b8 00 00 00 e8 80 df 33 fa 48 8d 83 40 ff ff ff 48 8d 7b 10 48 89 05 8e 8e 13 06 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 e0 05 00 00 48 8d 6c 24 38 4c 8b 63 10 48 89
-> RSP: 0018:ffffc90008e1fc48 EFLAGS: 00010206
-> RAX: 0000000012e34a9a RBX: 00000000971a54c0 RCX: ffffffff87406dbb
-> RDX: ffff88804358a000 RSI: ffffffff87406e00 RDI: 00000000971a54d0
-> RBP: 0000000000000100 R08: 0000000000000001 R09: 0000000000000003
-> R10: 0000000000000100 R11: 0000000000000000 R12: 0000000000000100
-> R13: dffffc0000000000 R14: ffff88803451b200 R15: ffff8880ae735600
-> FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00000000004ef310 CR3: 000000009ca1b000 CR4: 00000000001526e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> >
+> >Thanks,
+> >Sundeep
