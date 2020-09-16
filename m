@@ -2,125 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9890326C58B
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 19:05:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7700E26C5ED
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 19:25:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726792AbgIPRFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 13:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56570 "EHLO
+        id S1727006AbgIPRZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 13:25:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726736AbgIPRD1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:03:27 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AA9C025266;
-        Wed, 16 Sep 2020 09:59:20 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id a17so7671605wrn.6;
-        Wed, 16 Sep 2020 09:59:20 -0700 (PDT)
+        with ESMTP id S1727004AbgIPRZS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:25:18 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8F6C061BD1
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 10:25:14 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id k15so7734286wrn.10
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 10:25:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zuDfgEoZuBS30U/qqcPskrweiytOsrp9+LzlvUTV6AI=;
-        b=e+KWNj6SHmuBq3BSL+qt3D6fhSFFzr/deE+ZSnbxvXRInB13Yb4CrMYEHuYZEezRLS
-         altf9ECg8xUR5AiWnH8yDPgit6kOXeBV2g7Km5jNq2dJgu6dcp5m3KgkJ0lljJw1UIBN
-         cnV6OYQxN2+vQrsIdLl+aaq747FTCHsTFgvM+OANBr2H9I9jMrdLCjpLOJ2JyyVkqAi8
-         blc0lu/7lE5GredQggAQyw06iTxyDSQqtitb8GLrYZpGdiigHpec7G1zYUXtsUz1H/jV
-         jIZGXv7/4sXgvVwvW7IMrLbk/24eoO8eiPRC5WXjm1EOpYj+2+EDsNRZqEtIdhMGB4z8
-         TpsA==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FLIuBcEfXFqBGnCMg96s4H8fMHjOET/yZlTCC4s2SjY=;
+        b=iSKsbfCaH85JTyF93w9TDVj+qgI43v1QxUEyWe0EQUbDc2aQHYBMp7y1gRr8uJgVuM
+         1cVf+stUl9US5B0yTdv8lUKTKT+fgWT5ER7KxMErMG5bzGAZRoKGiAAiQD7o1yhB+czu
+         N8jMTmR0u6nEsuq1VQl1fAx9EM4X/d/DETGps=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zuDfgEoZuBS30U/qqcPskrweiytOsrp9+LzlvUTV6AI=;
-        b=lBcM/hqRjnwpMTsTJzGKccG0zaUTwH87t0kjuzi957GdYVxQChVCbw9lYik+7lFPT3
-         z77X6c6/JmLgcNd1JHwwv0FvnQmm1ha+lMayMetT7gk6HeR2lP6syveDpL1XlcxirD0m
-         qOsEsf5+VoIVQB5kLGVJoYU1Wl1QV2W82sQvzzCh3fOinZLEdqsIhGOvsnlO+taOCqAd
-         wzmj9+rdUw4NMiNtNIq0nmxWTtCRc/XN2MY7GKLmS0nTUzBA+kmxbkAsNKezulHV9qyO
-         /m4BX/IKpZ43+ZT9uxwxFh4M3FF2oRN5civumJFOBByGbY64p5vPx5C6YI72QP6qFizK
-         OIIw==
-X-Gm-Message-State: AOAM532YxFGlUtmbKTXcdFW2gNM93YSGg22w20lPF4vWucOB6rpglKpf
-        BfpTMRZHUPmw91T9XELuW4k=
-X-Google-Smtp-Source: ABdhPJw6gOPk33k8iaAOP74REJ4QomG2u3G+8mRYr0/W/BvTPcNtre4cpC/zNon9IAMNdzUQnWz/wQ==
-X-Received: by 2002:a5d:53d1:: with SMTP id a17mr26306527wrw.98.1600275559519;
-        Wed, 16 Sep 2020 09:59:19 -0700 (PDT)
-Received: from localhost.localdomain (cpc83661-brig20-2-0-cust443.3-3.cable.virginm.net. [82.28.105.188])
-        by smtp.gmail.com with ESMTPSA id x24sm33266130wrd.53.2020.09.16.09.59.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2020 09:59:19 -0700 (PDT)
-From:   Alex Dewar <alex.dewar90@gmail.com>
-Cc:     Alex Dewar <alex.dewar90@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] ath10k: sdio: remove redundant check in for loop
-Date:   Wed, 16 Sep 2020 17:57:49 +0100
-Message-Id: <20200916165748.20927-1-alex.dewar90@gmail.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <c2987351e3bdad16510dd35847991c2412a9db6b.camel@nvidia.com>
-References: <c2987351e3bdad16510dd35847991c2412a9db6b.camel@nvidia.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FLIuBcEfXFqBGnCMg96s4H8fMHjOET/yZlTCC4s2SjY=;
+        b=kcp8i0Fup1l89ruDcp6ghJrYWOgyqvcUbgqkgXal61uQzD03gWOC/wNtXIDqXeqytn
+         e5NUjjbdfc+6iGwbItbZlb+fuXAP5GbpTlou+80ubZFs1qQRb3tVPzIRU+sKuZORg+cN
+         0qb9+LcdXqRHbjTfQaL+6qtgil1utKzdmyA15ho+CNyjrO1hqS6udNGcOm1ErHYECej7
+         OekMyn3CtRtLzZOTiNJZGHKY96ge3KdT6A9OWjwmihmGhv3plvlQcTiqqtK1D4PlIZlb
+         ZGOSovzjJBYLspNYk+KPc4bbmR5VeSQf81cT7oCRflsq/Bv6Pindjtc1LPMCS3FsYdzz
+         q9lA==
+X-Gm-Message-State: AOAM532BcHk7dJkBQgHbQnuViR1e4ZY523vzlH04tOFTRCLuf7zENsX4
+        nq/yjYlXajTQRa9ZhLu0IdFT8WrFmmhGi0UPyid4Bw==
+X-Google-Smtp-Source: ABdhPJzFG0CKotHKNUMxQnzas0sxg7FAmpAAmBAxshrbYB7YiD0VwMPfDZp16xsSPod2p+vLLrtXqNwlDt36g8M7VhU=
+X-Received: by 2002:adf:e711:: with SMTP id c17mr28472007wrm.359.1600277113217;
+ Wed, 16 Sep 2020 10:25:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20200916112416.2321204-1-jolsa@kernel.org>
+In-Reply-To: <20200916112416.2321204-1-jolsa@kernel.org>
+From:   KP Singh <kpsingh@chromium.org>
+Date:   Wed, 16 Sep 2020 19:25:02 +0200
+Message-ID: <CACYkzJ7Y8WhVE9-6jSCC1svVLeuFFzXQ0Q-A9sjHomGQGgtZCw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix stat probe in d_path test
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The for loop checks whether cur_section is NULL on every iteration, but
-we know it can never be NULL as there is another check towards the
-bottom of the loop body. Refactor to avoid this unnecessary check.
+On Wed, Sep 16, 2020 at 1:24 PM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Some kernels builds might inline vfs_getattr call within fstat
+> syscall code path, so fentry/vfs_getattr trampoline is not called.
+>
+> Alexei suggested [1] we should use security_inode_getattr instead,
+> because it's less likely to get inlined.
+>
+> Adding security_inode_getattr to the d_path allowed list and
+> switching the stat trampoline to security_inode_getattr.
+>
+> Adding flags that indicate trampolines were called and failing
+> the test if any of them got missed, so it's easier to identify
+> the issue next time.
+>
+> [1] https://lore.kernel.org/bpf/CAADnVQJ0FchoPqNWm+dEppyij-MOvvEG_trEfyrHdabtcEuZGg@mail.gmail.com/
+> Fixes: e4d1af4b16f8 ("selftests/bpf: Add test for d_path helper")
+> Signed-off-by: Jiri Olsa <jolsa@redhat.com>
 
-Also, increment the variable i inline for clarity
+Acked-by: KP Singh <kpsingh@google.com>
 
-Addresses-Coverity: 1496984 ("Null pointer dereferences)
-Suggested-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
----
-v2: refactor in the manner suggested by Saeed
+> ---
+>  kernel/trace/bpf_trace.c                        | 1 +
+>  tools/testing/selftests/bpf/prog_tests/d_path.c | 6 ++++++
+>  tools/testing/selftests/bpf/progs/test_d_path.c | 9 ++++++++-
+>  3 files changed, 15 insertions(+), 1 deletion(-)
+>
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index b2a5380eb187..1001c053ebb3 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -1122,6 +1122,7 @@ BTF_ID(func, vfs_truncate)
+>  BTF_ID(func, vfs_fallocate)
+>  BTF_ID(func, dentry_open)
+>  BTF_ID(func, vfs_getattr)
+> +BTF_ID(func, security_inode_getattr)
+>  BTF_ID(func, filp_close)
+>  BTF_SET_END(btf_allowlist_d_path)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
+> index fc12e0d445ff..f507f1a6fa3a 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/d_path.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
+> @@ -120,6 +120,12 @@ void test_d_path(void)
+>         if (err < 0)
+>                 goto cleanup;
+>
+> +       if (CHECK(!bss->called_stat || !bss->called_close,
+> +                 "check",
+> +                 "failed to call trampolines called_stat %d, bss->called_close %d\n",
+> +                  bss->called_stat, bss->called_close))
 
- drivers/net/wireless/ath/ath10k/sdio.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+optional:
 
-diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
-index 81ddaafb6721..486886c74e6a 100644
---- a/drivers/net/wireless/ath/ath10k/sdio.c
-+++ b/drivers/net/wireless/ath/ath10k/sdio.c
-@@ -2307,8 +2307,8 @@ static int ath10k_sdio_dump_memory_section(struct ath10k *ar,
- 	}
- 
- 	count = 0;
--
--	for (i = 0; cur_section; i++) {
-+	i = 0;
-+	for (; cur_section; cur_section = next_section) {
- 		section_size = cur_section->end - cur_section->start;
- 
- 		if (section_size <= 0) {
-@@ -2318,7 +2318,7 @@ static int ath10k_sdio_dump_memory_section(struct ath10k *ar,
- 			break;
- 		}
- 
--		if ((i + 1) == mem_region->section_table.size) {
-+		if (++i == mem_region->section_table.size) {
- 			/* last section */
- 			next_section = NULL;
- 			skip_size = 0;
-@@ -2361,12 +2361,6 @@ static int ath10k_sdio_dump_memory_section(struct ath10k *ar,
- 		}
- 
- 		count += skip_size;
--
--		if (!next_section)
--			/* this was the last section */
--			break;
--
--		cur_section = next_section;
- 	}
- 
- 	return count;
--- 
-2.28.0
+maybe it's better to add two separate checks with specific error messages?
 
+"stat", "trampoline for security_inode_getattr was not called\n"
+"close", "trampoline for filp_close was not called\n"
+
+I think this would make the output more readable.
+
+- KP
+
+> +               goto cleanup;
+> +
+>         for (int i = 0; i < MAX_FILES; i++) {
+>                 CHECK(strncmp(src.paths[i], bss->paths_stat[i], MAX_PATH_LEN),
+>                       "check",
+
+[...]
+
+>         if (pid != my_pid)
+>                 return 0;
+>
+> --
+> 2.26.2
+>
