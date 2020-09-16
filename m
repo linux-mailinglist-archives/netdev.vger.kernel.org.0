@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1258426C0F2
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 11:46:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C4F26C0F5
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 11:46:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbgIPJqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 05:46:14 -0400
-Received: from mail-eopbgr140083.outbound.protection.outlook.com ([40.107.14.83]:45697
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        id S1726788AbgIPJqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 05:46:19 -0400
+Received: from mail-eopbgr00043.outbound.protection.outlook.com ([40.107.0.43]:4297
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726243AbgIPJqE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Sep 2020 05:46:04 -0400
+        id S1726737AbgIPJqO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 05:46:14 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SmeK8e2pLE3Gx/4SOYSZ9ZvxlrwXDCSm3gdVrRexCYxT9n0+uHHDgYINcnDB3emgE4kjmQwGYiIs5TpBAQQLlyDMeQ+JwkafWXQMAeLySRsncudjAFusbSHVYVGUyrLi9mxEVC+BIUpyw9TzP4tfIUL30+siedFbv7azV6AohTuMUR7gaKNoTKh16xqmL6KcOVie1jV/miO5/RGXxJYCTffe6TMqTtMxQ7TpZ84hluMROdo6S3c4M7ZKJ4AVbO/h/yhqxFuF6vX2TkhJqwpLJQA9Km5JzdCHHS7EektlOh7F+AgT7BOO6Knsc8sLdJvYKo3Lp/6wpJp3ER9ytJX9Wg==
+ b=lTR4zJgIwMFITGGICnQ0a7gQUrV7I7V0qo/BOI0QItwbh943hk7ecg4ART5PexaGetRLJA4VOiQQZ0rssvNvhUEHRCNzye8wgMSNkGWp7u/k+/v7hkWY0crN7uJdyW/dc4F1n3G5RUzQAVEoGqqXy1hlucJzXeerJ1mq0PvyumHI2jZJXHVPLGXbKLfSYd4DMpzRHzNIJsTrI0PFGFsFxJh561peTRVtqp1uU6VaN8y5gapGveI2ODHQgoXixtVUUWlVdmkK7813P2bBBcC7Cg0j82u8dHSvZKpD/+kGLFO+1eXcx/BFhnU3pImqSioK3nNqGwUKREkr9iMfElVu+w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6dVPayfLk31g+O3S8HOzWIcj4tReGB9qrvlqDXc4wMQ=;
- b=DFDWhxdk6Tj+zBTAVY4ttHyGDPXgkQDrDCeAqmfQTsuo57kzg0Hyus7n2mrewfAG9sH698NbhgDomKui8MR7nCKgR5xFfotvv/QhnQFvIoU//X/2IKeNnQ46MMlC1HB4duvD0D9eGBd/6pZNenP2OjraLHMYht3yonIjOGjOvwJaGZn6IiILZzCb02EZHfag+vdWobDvRxPY5YGUtm1mO9V/ZlGifYEWsmmaBAoV8ucl+2+ZkXZSbKKrukVKw3MFPFu1ylQO5ofUQrQU6rlm0D5CkM2opTnKvJnWLP8zakgBy6kZur10rFq0GdYuJRku2wFXiufo0qFD6PDnV7O+Pw==
+ bh=IJ546LEOH2d55Cj13U0K9xzotjrw+D1wlzXV3vPj170=;
+ b=Q35ba5ae9eae0bj3AhvzlEbfHRcHSjtzxAUt9ueE9mUawpWrPV1WRy6+bGwNQ9ZwspFjXl4kIxxUt8YcZbv/QOQtjFjaVi8ARulVVDddrto1Mw1BqGEA8q7S0ZNsN79KktibRSMJckhqsp2+/8q+JrPBnaTvjaSbm9p3LxluTIRiHIOhuLduTA5ofnl377YdeZR8uhYU5yp+rnXECA+2Md0tlqaFEyzyFQbvdSlZAi1/euyo5lKCnz5MhNXtaHR/9NGMWCbHUbZ1IZQFoHVjXCDbgc33bj0d7ecgURh5qpfaFMxV2rXWQ13MRNfYfPjBbc5DY1XlWPuj8A8B8d9Olw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6dVPayfLk31g+O3S8HOzWIcj4tReGB9qrvlqDXc4wMQ=;
- b=DbcFzJEOhBfsTSsTJh+N0lHH73oFZ5cy7u09k3jINAw2QHEwAwcaj8pU4XcHxtv6gUwe8C7Wp9Cb309qN7sPd7hoXvzO3+OXnG9MGW6DVO5dlzX3Brb0H6VvLmE3KgO4Mw8B9qsqkvDoYychGlnLHZSTP8l6IQejzGYHD2N3rmg=
+ bh=IJ546LEOH2d55Cj13U0K9xzotjrw+D1wlzXV3vPj170=;
+ b=PT5Ac2vbdN3VrE/V+134UG6dl5AdbGaF9yvQ4oTxaSnAqPGdFQzKWdRUR7X9sPLD9fLn36/UDdrQmRf7ELpueXhQBmr7aJGq+zHq6/HJjvnycejqpLNJ8u9vWgZA91ygY4klFTJaMaUMXHaxGTJvrPNgoTmi/83tZ1dOxnyL2ec=
 Authentication-Results: nxp.com; dkim=none (message not signed)
  header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5677.eurprd04.prod.outlook.com (2603:10a6:803:ed::22)
- by VI1PR0402MB3453.eurprd04.prod.outlook.com (2603:10a6:803:6::33) with
+ by VI1PR04MB6078.eurprd04.prod.outlook.com (2603:10a6:803:f2::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.11; Wed, 16 Sep
- 2020 09:45:59 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Wed, 16 Sep
+ 2020 09:46:09 +0000
 Received: from VI1PR04MB5677.eurprd04.prod.outlook.com
  ([fe80::c99:9749:3211:2e1f]) by VI1PR04MB5677.eurprd04.prod.outlook.com
  ([fe80::c99:9749:3211:2e1f%5]) with mapi id 15.20.3370.019; Wed, 16 Sep 2020
- 09:45:59 +0000
+ 09:46:09 +0000
 From:   hongbo.wang@nxp.com
 To:     xiaoliang.yang_1@nxp.com, po.liu@nxp.com, mingkai.hu@nxp.com,
         allan.nielsen@microchip.com, claudiu.manoil@nxp.com,
@@ -49,9 +49,9 @@ To:     xiaoliang.yang_1@nxp.com, po.liu@nxp.com, mingkai.hu@nxp.com,
         horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
         UNGLinuxDriver@microchip.com, ivecera@redhat.com
 Cc:     "hongbo.wang" <hongbo.wang@nxp.com>
-Subject: [PATCH v6 1/3] net: dsa: Add protocol support for 802.1AD when adding or deleting vlan for dsa switch port
-Date:   Wed, 16 Sep 2020 17:48:43 +0800
-Message-Id: <20200916094845.10782-2-hongbo.wang@nxp.com>
+Subject: [PATCH v6 2/3] net: switchdev: Add VLAN protocol support for switchdev port
+Date:   Wed, 16 Sep 2020 17:48:44 +0800
+Message-Id: <20200916094845.10782-3-hongbo.wang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200916094845.10782-1-hongbo.wang@nxp.com>
 References: <20200916094845.10782-1-hongbo.wang@nxp.com>
@@ -61,32 +61,32 @@ X-ClientProxiedBy: AM0PR10CA0091.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:803:ed::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from whb-OptiPlex-790.ap.freescale.net (119.31.174.73) by AM0PR10CA0091.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:15::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14 via Frontend Transport; Wed, 16 Sep 2020 09:45:49 +0000
+Received: from whb-OptiPlex-790.ap.freescale.net (119.31.174.73) by AM0PR10CA0091.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:15::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14 via Frontend Transport; Wed, 16 Sep 2020 09:45:59 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [119.31.174.73]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: f0aac4af-0647-481e-321a-08d85a2550b8
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB3453:
+X-MS-Office365-Filtering-Correlation-Id: cbcd7832-c464-4d1e-d75c-08d85a255699
+X-MS-TrafficTypeDiagnostic: VI1PR04MB6078:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB345336C4E7A58A63298BE4B2E1210@VI1PR0402MB3453.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:983;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB6078DD58AB7B1010842A6A2FE1210@VI1PR04MB6078.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WFT6A7fdPw3PbjuG5i4dJGe0IneceCPuDJ8hkLJMEafZGUmF7KfxhT0IEFErhMoiG15UgcvA4iuF5GEuwO6IM3z9LUTkOrKGpSMWA0aKrAGQuMFXz/nPe06lZd5xf7hIY/VlDEh/4PCrHvfjlpoM3l3vYHRj4rNBBr8iujomxJbu4xip1DDARDAlIDWGH5aUo2Lhew51qwSPRLY4pVWWJKsZzZagP3Z9MAZQNsooNeleDoj8W03AOf4L0cRKiQvMeKGbe6LVgS6let3ovlxx0T5oTdG3TraxAXFPUdw5ego+ghxglFI8WQRKTuwEnhxKCC+5TwK+ywtyk8anyJkRnQhzwAe9yS3h+UlSi+zalMr4ACv/k+byxeAmGZXSmdHI
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5677.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(396003)(366004)(346002)(376002)(136003)(316002)(86362001)(6666004)(16526019)(186003)(8936002)(8676002)(83380400001)(52116002)(7416002)(9686003)(1076003)(36756003)(5660300002)(6512007)(2906002)(26005)(66946007)(6506007)(4326008)(6486002)(66556008)(956004)(2616005)(478600001)(66476007)(921003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: YagdgLyuz38R8F+ffN/Rk9XO7LwGA/5hxOuvneouJhyHJ6lWme2zt7sr+AntNjCvCaISA6P6BEpGlwTdf/qNTZP9UqP6/IuYhfZcK5SfMY59ht+ueFza+tPlyQwDnX9Rnv4ThzuwMHI263IsgZuZWbuC6JFXH/Njk7RUqVnfwVZF7pugGf50AjBA2Q66YDCTKD3EKPuaVjiQheJMCc9IDUqo/c22IzGHDEHDvuFSvnH/+c2gqfjTlmQkHzUzpCmxgUaBKwuiRLYCVqIh4VpUM8QfLvDuypavbx/qzhdLL01upgz6Irle+r4fAX87OCFHDVP5tDbjqQdUAtpSSq1O2MAOyamhUHkDDGf4CFMWN4Ni82csT4Mn+D/zz5Yl0W8NMeQoyI62OTUMvizo/2D6OOEReSCQf+kFVcvLh0Rjjs26+SVt+hBT/L7bftdI2ghI0jt1dy/Msc0K5kP7eO3qCUgUx7XEXNgqboagClBy8NPwdE74d8hXU2wZEu+pr4s/GVhzdu0GBp7il1V96aARMjtpgSaxigwuTvgHRAdANGZPNx9o9h5MajXpgqFw2aFnCSGb7nPTLEJ57a34eSffEHfJtVStZEMo9/oNuBXCpyeGxAj1y/mv+ac1uigaVbTEegp6Ze8LiCs9FPPNd+tcsg==
+X-Microsoft-Antispam-Message-Info: BwXokNDPdLuUCCxk6uu7sc2k0NrErIl2nZMtVYC9Npz0BI/HUkUyTnUNeP7HO24ZtU5BbF/sTBN0aWed1qBiaENEbygYtOl2toGNqOTEWNXhnxG8kOawjv2vtuQbQCcPciWqZJtXuin6zSFU+v4DOACVbJR+7+gSXOQMEISq2WecpYyrrq/adQ+5EptVm+pXf9ws1yvW1nbij6FWi2j09eDw/SH//14hbTaVSAjWeVTANa40W/2OGWWpEUIDI5hyDFV3+K09quBdAg1UVmZ6ukEoagbzOMJzr4dad88pPQn7TJAF/eY+V/mSsQf37lt/rNSAw8Y4h3mA9Fss6nj0alWzfFJ+vIpwB/Nj3v6uBWM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5677.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(376002)(346002)(396003)(366004)(136003)(8936002)(6506007)(9686003)(186003)(16526019)(52116002)(8676002)(36756003)(316002)(66476007)(66556008)(66946007)(6512007)(478600001)(2906002)(4326008)(7416002)(1076003)(26005)(6666004)(6486002)(86362001)(5660300002)(956004)(2616005)(921003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: svr/75BHqGCj3MIACYKtn4ZFCALq+HJYHPRPlVZrH9G3N0RRcz6ZcLsAxVwHjr1EGHNkdtTj7FCKAWzdIkBV9/95TNa84/X9ZN5b8yyW4UmBTLAiklUjJ5MalP43fSC9wZcdmb2Ghq238G/2nmFHDgkVFRJYbkeQHsaHJJAOKvGpqh5fVmrWuZJaujgTIKwWfOMGHziqqHi+HdM/yNp0L5mUuX1yPf+5qYIvY8AOJl4EV+x9ilu95/DJjLZJ2vmMnFjU1cAReyD/7vvmhuwaHOdUtLtAkKt2r7+lpcsw+Z6wDY0u5Wb48SNx92R+iaT3VeP6Gj8KKhaxFFtNqkEicviqT3JfK4m4ALoGkaK6WC1y1qArBhyfqrF2rR3bGZye0NwSw1MIz7mGQNkQtILUCwTu99znrqGCy2+nrjqsuOBOM7j8QhF8qz7ATGmv+QOvJW3lTy7mLM+U0mAbISfFpkGfd2UE8iqFXiijWPpVoMh/baeMmrLVxwPPhsfTm5OAURtj+pyJO5iKtFh5DwxBzvv3XCshYoNSlgFJJBkNPexu+noarKZO3c0gD4u0CUe5kniHLrGuWjInk8GWG6XfIeMq/DufY2k+cKR1QHlXkukAaUrSBP2lTbKhgfiaRW7UKR8hF74ZKhj860+6J/EBLA==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f0aac4af-0647-481e-321a-08d85a2550b8
+X-MS-Exchange-CrossTenant-Network-Message-Id: cbcd7832-c464-4d1e-d75c-08d85a255699
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5677.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Sep 2020 09:45:59.2920
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Sep 2020 09:46:09.1124
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wc4lO4YCm4NujKZdhRaISiPsQrTR/wv6Ldc4VShzZcJwNlCMoJBQ//+leovAiPftzCuTV3pOmUqQEC+WMoGyOA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3453
+X-MS-Exchange-CrossTenant-UserPrincipalName: AGDu5ClN87CUqFVchz4s+KWEWnuaxdJXKvJef+5JIYTZjzfi8KMyzxSJ86UlstQq+O7E03wbHBISDjQelJAbqw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6078
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -94,147 +94,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "hongbo.wang" <hongbo.wang@nxp.com>
 
-the following command will be supported:
-
-Set bridge's vlan protocol:
-    ip link set br0 type bridge vlan_protocol 802.1ad
-Add VLAN:
-    ip link add link swp1 name swp1.100 type vlan protocol 802.1ad id 100
-Delete VLAN:
-    ip link del link swp1 name swp1.100
+Add VLAN protocol support when adding or deleting VLAN for switchdev
+port, get current bridge's VLAN protocol and pass it to port driver.
 
 Signed-off-by: hongbo.wang <hongbo.wang@nxp.com>
 ---
- include/net/switchdev.h |  1 +
- net/dsa/slave.c         | 51 +++++++++++++++++++++++++++++------------
- 2 files changed, 37 insertions(+), 15 deletions(-)
+ net/bridge/br_switchdev.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 53e8b4994296..d93532201ec2 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -97,6 +97,7 @@ struct switchdev_obj_port_vlan {
- 	u16 flags;
- 	u16 vid_begin;
- 	u16 vid_end;
-+	u16 proto;
- };
- 
- #define SWITCHDEV_OBJ_PORT_VLAN(OBJ) \
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 66a5268398a5..731ab9e2aacc 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -328,6 +328,7 @@ static int dsa_slave_vlan_add(struct net_device *dev,
- 	 * it doesn't make sense to program a PVID, so clear this flag.
- 	 */
- 	vlan.flags &= ~BRIDGE_VLAN_INFO_PVID;
-+	vlan.proto = ETH_P_8021Q;
- 
- 	err = dsa_port_vlan_add(dp->cpu_dp, &vlan, trans);
- 	if (err)
-@@ -1229,18 +1230,46 @@ static int dsa_slave_get_ts_info(struct net_device *dev,
- 	return ds->ops->get_ts_info(ds, p->dp->index, ts);
+diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+index 015209bf44aa..7712da3e7912 100644
+--- a/net/bridge/br_switchdev.c
++++ b/net/bridge/br_switchdev.c
+@@ -146,6 +146,26 @@ br_switchdev_fdb_notify(const struct net_bridge_fdb_entry *fdb, int type)
+ 	}
  }
  
-+static bool dsa_slave_skip_vlan_configuration(struct dsa_port *dp,
-+					      u16 vlan_proto, u16 vid)
++static u16 br_switchdev_get_bridge_vlan_proto(const struct net_device *dev)
 +{
-+	struct bridge_vlan_info info;
-+	bool change_proto = false;
-+	u16 br_proto = 0;
-+	int ret;
++	const struct net_device *br = NULL;
++	u16 vlan_proto = ETH_P_8021Q;
++	struct net_bridge_port *p;
 +
-+	/* when changing bridge's vlan protocol, it will change bridge
-+	 * port's protocol firstly, then set bridge's protocol. if it's
-+	 * changing vlan protocol, should not return -EBUSY.
-+	 */
-+	ret = br_vlan_get_proto(dp->bridge_dev, &br_proto);
-+	if (ret == 0 && br_proto != vlan_proto)
-+		change_proto = true;
++	if (netif_is_bridge_master(dev)) {
++		br = dev;
++	} else {
++		p = br_port_get_rtnl_rcu(dev);
++		if (p)
++			br = p->br->dev;
++	}
 +
-+	/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
-+	 * device, respectively the VID is not found, returning
-+	 * 0 means success, which is a failure for us here.
-+	 */
-+	ret = br_vlan_get_info(dp->bridge_dev, vid, &info);
-+	if (ret == 0 && !change_proto)
-+		return true;
-+	else
-+		return false;
++	if (br)
++		br_vlan_get_proto(br, &vlan_proto);
++
++	return vlan_proto;
 +}
 +
- static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- 				     u16 vid)
+ int br_switchdev_port_vlan_add(struct net_device *dev, u16 vid, u16 flags,
+ 			       struct netlink_ext_ack *extack)
  {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	u16 vlan_proto = ntohs(proto);
- 	struct switchdev_obj_port_vlan vlan = {
- 		.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
- 		.vid_begin = vid,
+@@ -157,6 +177,8 @@ int br_switchdev_port_vlan_add(struct net_device *dev, u16 vid, u16 flags,
  		.vid_end = vid,
- 		/* This API only allows programming tagged, non-PVID VIDs */
- 		.flags = 0,
-+		.proto = vlan_proto,
  	};
--	struct bridge_vlan_info info;
- 	struct switchdev_trans trans;
- 	int ret;
  
-@@ -1251,12 +1280,7 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- 		if (dsa_port_skip_vlan_configuration(dp))
- 			return 0;
- 
--		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
--		 * device, respectively the VID is not found, returning
--		 * 0 means success, which is a failure for us here.
--		 */
--		ret = br_vlan_get_info(dp->bridge_dev, vid, &info);
--		if (ret == 0)
-+		if (dsa_slave_skip_vlan_configuration(dp, vlan_proto, vid))
- 			return -EBUSY;
- 	}
- 
-@@ -1271,6 +1295,8 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- 	if (ret)
- 		return ret;
- 
-+	vlan.proto = ETH_P_8021Q;
++	v.proto = br_switchdev_get_bridge_vlan_proto(dev);
 +
- 	/* And CPU port... */
- 	trans.ph_prepare = true;
- 	ret = dsa_port_vlan_add(dp->cpu_dp, &vlan, &trans);
-@@ -1289,14 +1315,14 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 				      u16 vid)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	u16 vlan_proto = ntohs(proto);
- 	struct switchdev_obj_port_vlan vlan = {
- 		.vid_begin = vid,
+ 	return switchdev_port_obj_add(dev, &v.obj, extack);
+ }
+ 
+@@ -169,5 +191,7 @@ int br_switchdev_port_vlan_del(struct net_device *dev, u16 vid)
  		.vid_end = vid,
- 		/* This API only allows programming tagged, non-PVID VIDs */
- 		.flags = 0,
-+		.proto = vlan_proto,
  	};
--	struct bridge_vlan_info info;
--	int ret;
  
- 	/* Check for a possible bridge VLAN entry now since there is no
- 	 * need to emulate the switchdev prepare + commit phase.
-@@ -1305,12 +1331,7 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 		if (dsa_port_skip_vlan_configuration(dp))
- 			return 0;
- 
--		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
--		 * device, respectively the VID is not found, returning
--		 * 0 means success, which is a failure for us here.
--		 */
--		ret = br_vlan_get_info(dp->bridge_dev, vid, &info);
--		if (ret == 0)
-+		if (dsa_slave_skip_vlan_configuration(dp, vlan_proto, vid))
- 			return -EBUSY;
- 	}
- 
++	v.proto = br_switchdev_get_bridge_vlan_proto(dev);
++
+ 	return switchdev_port_obj_del(dev, &v.obj);
+ }
 -- 
 2.17.1
 
