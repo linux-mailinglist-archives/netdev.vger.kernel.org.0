@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F63226CCA3
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:47:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C249526CCA6
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:47:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728329AbgIPUrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 16:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
+        id S1728450AbgIPUri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 16:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726708AbgIPUrO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 16:47:14 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2455C06174A
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 13:47:14 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id d13so28536pgl.6
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 13:47:14 -0700 (PDT)
+        with ESMTP id S1726705AbgIPUrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 16:47:16 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1844BC061756
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 13:47:16 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id bd2so3838680plb.7
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 13:47:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VhlNwxQKC8iXLlrLgB5H8XXWA7fwh8RmrAQKN8lDyK8=;
-        b=KhEz3XENtONt6hSqxgH2Yz5CbMAFbE2DOs1a/DnUeQC+2psAC7C+GEMeZcwWki1LaR
-         tzvqaQUnhgoZFh+xJo4q6O/pIHq+0edjZRw4pXNO1fQrvf9/AInKJIyb7mRrlW9KRsys
-         Y1sPlw5PFILjDWfVQ2d4hUQ2Dn0Z65w05Fqvwq9/g2f4myxzTPMXpzZAim4wImvic0Bt
-         +9Dr+AsUw15o3aumrBJToP2l/rfbL/ryv/W1ygmjK+sgCFhC2/B7jRGXqbjRrFyFNK3h
-         L7Aoe/Jm5NiNTVLA3u6Bpqb++xzbxRWNvXNhtouwFDtFB3riy8N9xt7k6OhmjSk8qGj3
-         s7xg==
+        bh=5aWZzX82c0nLX/s70yWwltAKwH5AU5Pve+rjX5edcUk=;
+        b=jGVr0g2MMkQDdDdwCnhF63dbAYRELIOS4jmYhvTnjVBNZrvoQY+NmSwMGerFyzo6Zt
+         7XET+IIju49A4f68IQeMZg779o0gQ9SE1gktTLYZnGE5VZkMDLGR3LyaaBWS5+bJxOA2
+         cRAM67Cdoi2Wcq2jEjwI6BEPG1HZzTptg2vdhZKgQ0aEYzhhLn9TP0J827cbnD/FBzze
+         2OuTczVQza1UmCt0pkDuHkUaTsdXRqwFobWa5GMdESwfzj9u2tbsNLDPmV0vAt75DFkv
+         O5p62dpaE8lPFtCI93587bMoFS5DlihBlg/G2sBc8mIGWHf0p6B4HsJtNJdF/FXa0aNN
+         Q8IA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VhlNwxQKC8iXLlrLgB5H8XXWA7fwh8RmrAQKN8lDyK8=;
-        b=BQhpNDqi+WjnTOjEze0OpTlMqVoJ1ZSSks/M9dFhFm7czgUG0RkyC1SCJrgiLjhjed
-         jgF2K7rwOQ5Ily0XW5GPr0N6TXyz282yeGeAR/66Qa19wgaQjMWEzgk1qLaUGSdu2zoI
-         rAlYoYtTz1y/cN1h9ffl6Ajk4IVeVohAWMnNkxOksleb/Kc68EeeZ0VdtChLP4eQf9+b
-         miU2GIgOCggu3+BWsG9zgKu0Slaah5UUbnbht+pFN/XEZcRi8GVRsZ4Ui3/2YRkhKdmw
-         XxqxYY3Qqzvqga4mZ6N+IgkHGHj4PfS8VoSVDSY6Kwdj+0zJnbM4Y0ZGj47gzWnv4E2b
-         05zQ==
-X-Gm-Message-State: AOAM532EAFUjqTbijBYBMU0GQJwb68sLtrXB05rER+3BNMtr64bfOU5/
-        CssqQzjFdzcpONuZQ7t1nqrZcik38/ZJ0w==
-X-Google-Smtp-Source: ABdhPJyTIdtCBHoJ5a/UoYJMkm6XsGPgxIf1ImELdBlHl3io+hbzbqFQxf/tizY7Q3cl/r4IE2Y+xg==
-X-Received: by 2002:a05:6a00:1695:b029:142:2501:34e4 with SMTP id k21-20020a056a001695b0290142250134e4mr7758876pfc.61.1600289233825;
-        Wed, 16 Sep 2020 13:47:13 -0700 (PDT)
+        bh=5aWZzX82c0nLX/s70yWwltAKwH5AU5Pve+rjX5edcUk=;
+        b=rJIeBgPI6RGZk1Uz/ZrAl4FpfkiGteRZZBaIMY6XuElsLM0BFVQPxHyXe7pEbhws5b
+         gGRhs4d1gECEL65cDL3UoGGE9qtRbyCr8fqo+dsU4aiZENRPyknvl1uGjDeQ3cHCCs/Y
+         lR4nF59k9icYbg5CWhHKUCQ5Ay6suPoglAi/2zZLK/X3apFvBLgRVo6KG5CusZOnY61c
+         8cAOa+2nyTS7KwqnJJSLP/jWL7mubBAzOrlkqn7+o/Y68hHS9kzaubBX3O3PnpQd5GAM
+         jfjJIJ2M5hG6LbkT3NkjcrIh7tkjG64wFPMgXgFu3TySccGOnDrQiZGuf0e6wwjjI5Gq
+         J48g==
+X-Gm-Message-State: AOAM5332OkYWvqRUu0O0vSXQCOeNLj6EyqkMYQPPx6+0tVxV+wNbi3mc
+        JQShyu2jtBOAsrGm2dEin7acws3Qsomoyw==
+X-Google-Smtp-Source: ABdhPJxdMgTQYEXTrx9daHhY03ulwHDyHwJKW//fKKQL4LPMtatbQkcZP5jrHS6IspW22Vx6028rVw==
+X-Received: by 2002:a17:90b:209:: with SMTP id fy9mr5444272pjb.189.1600289235276;
+        Wed, 16 Sep 2020 13:47:15 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p11sm17684138pfq.130.2020.09.16.13.47.12
+        by smtp.gmail.com with ESMTPSA id p11sm17684138pfq.130.2020.09.16.13.47.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2020 13:47:13 -0700 (PDT)
+        Wed, 16 Sep 2020 13:47:14 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>, andrew@lunn.ch,
         hkallweit1@gmail.com, kuba@kernel.org, davem@davemloft.net
-Subject: [PATCH net-next 1/2] net: mdio: mdio-bcm-unimac: Turn on PHY clock before dummy read
-Date:   Wed, 16 Sep 2020 13:44:14 -0700
-Message-Id: <20200916204415.1831417-2-f.fainelli@gmail.com>
+Subject: [PATCH net-next 2/2] net: phy: bcm7xxx: request and manage GPHY clock
+Date:   Wed, 16 Sep 2020 13:44:15 -0700
+Message-Id: <20200916204415.1831417-3-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200916204415.1831417-1-f.fainelli@gmail.com>
 References: <20200916204415.1831417-1-f.fainelli@gmail.com>
@@ -64,48 +64,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Broadcom internal Gigabit PHYs not only require a dummy read to
-clear an incorrect state in their MDIO logic, but they also need their
-digital PHY clock to be turned on otherwise they will not respond to any
-MDIO transaction.
-
-Turning on that clock must happen shortly before we do the dummy read
-otherwise we will never manage to get the correct PHY driver to probe.
+The internal Gigabit PHY on Broadcom STB chips has a digital clock which
+drives its MDIO interface among other things, the driver now requests
+and manage that clock during .probe() and .remove() accordingly.
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/mdio/mdio-bcm-unimac.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/phy/bcm7xxx.c | 30 +++++++++++++++++++++++++++++-
+ 1 file changed, 29 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/mdio/mdio-bcm-unimac.c b/drivers/net/mdio/mdio-bcm-unimac.c
-index fbd36891ee64..43d389c1648e 100644
---- a/drivers/net/mdio/mdio-bcm-unimac.c
-+++ b/drivers/net/mdio/mdio-bcm-unimac.c
-@@ -160,6 +160,7 @@ static int unimac_mdio_reset(struct mii_bus *bus)
- {
- 	struct device_node *np = bus->dev.of_node;
- 	struct device_node *child;
+diff --git a/drivers/net/phy/bcm7xxx.c b/drivers/net/phy/bcm7xxx.c
+index 692048d86ab1..aa70b322b119 100644
+--- a/drivers/net/phy/bcm7xxx.c
++++ b/drivers/net/phy/bcm7xxx.c
+@@ -11,6 +11,8 @@
+ #include "bcm-phy-lib.h"
+ #include <linux/bitops.h>
+ #include <linux/brcmphy.h>
++#include <linux/clk.h>
++#include <linux/clk-provider.h>
+ #include <linux/mdio.h>
+ 
+ /* Broadcom BCM7xxx internal PHY registers */
+@@ -39,6 +41,7 @@
+ 
+ struct bcm7xxx_phy_priv {
+ 	u64	*stats;
 +	struct clk *clk;
- 	u32 read_mask = 0;
- 	int addr;
+ };
  
-@@ -172,6 +173,16 @@ static int unimac_mdio_reset(struct mii_bus *bus)
- 				continue;
+ static int bcm7xxx_28nm_d0_afe_config_init(struct phy_device *phydev)
+@@ -521,6 +524,7 @@ static void bcm7xxx_28nm_get_phy_stats(struct phy_device *phydev,
+ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
+ {
+ 	struct bcm7xxx_phy_priv *priv;
++	int ret = 0;
  
- 			read_mask |= 1 << addr;
+ 	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+@@ -534,7 +538,29 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
+ 	if (!priv->stats)
+ 		return -ENOMEM;
+ 
+-	return 0;
++	priv->clk = devm_clk_get_optional(&phydev->mdio.dev, NULL);
++	if (IS_ERR(priv->clk))
++		return PTR_ERR(priv->clk);
 +
-+			/* Some of the internal PHYs on this bus require their
-+			 * digital clock to be turned on and this must be done
-+			 * before the dummy BMSR read done right below. Do this
-+			 * now such that we can successfully identify these
-+			 * devices during get_phy_id().
-+			 */
-+			clk = of_clk_get(child, 0);
-+			if (!IS_ERR(clk))
-+				clk_prepare_enable(clk);
- 		}
- 	}
++	/* Do not increment the clock reference count here, the MDIO driver has
++	 * already done that in order to successfully enable the PHY during its
++	 * bus->reset() callback and get us past get_phy_device() which reads
++	 * the PHY ID and later matches against a given PHY driver. If we
++	 * incremented the reference count, a driver unbind would not be able
++	 * to turn off the clock.
++	 */
++	if (!__clk_is_enabled(priv->clk))
++		ret = clk_prepare_enable(priv->clk);
++
++	return ret;
++}
++
++static void bcm7xxx_28nm_remove(struct phy_device *phydev)
++{
++	struct bcm7xxx_phy_priv *priv = phydev->priv;
++
++	clk_disable_unprepare(priv->clk);
++	devm_clk_put(&phydev->mdio.dev, priv->clk);
+ }
  
+ #define BCM7XXX_28NM_GPHY(_oui, _name)					\
+@@ -552,6 +578,7 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
+ 	.get_strings	= bcm_phy_get_strings,				\
+ 	.get_stats	= bcm7xxx_28nm_get_phy_stats,			\
+ 	.probe		= bcm7xxx_28nm_probe,				\
++	.remove		= bcm7xxx_28nm_remove,				\
+ }
+ 
+ #define BCM7XXX_28NM_EPHY(_oui, _name)					\
+@@ -567,6 +594,7 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
+ 	.get_strings	= bcm_phy_get_strings,				\
+ 	.get_stats	= bcm7xxx_28nm_get_phy_stats,			\
+ 	.probe		= bcm7xxx_28nm_probe,				\
++	.remove		= bcm7xxx_28nm_remove,				\
+ }
+ 
+ #define BCM7XXX_40NM_EPHY(_oui, _name)					\
 -- 
 2.25.1
 
