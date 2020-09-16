@@ -2,141 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9536726BD54
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 08:37:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E91A26BD5F
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 08:39:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726479AbgIPGg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 02:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726245AbgIPGgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 02:36:52 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28971C06174A;
-        Tue, 15 Sep 2020 23:36:52 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id c10so5629356otm.13;
-        Tue, 15 Sep 2020 23:36:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Z23HU1mxCZZbJlpTvKa8qAEV3TkyoUwCFPg8hsdXyL0=;
-        b=jqsK7I8FfhK/0plFJio08fNWJbDmkMvS/e3NY5NZHbwGC/SfxM4SV5lW0cpmCYW/Z2
-         KPDI++0LRPCVrTtGtxWRxD7WyHSlra1HLtlUk6x0Bgj84jg0muk55uGJ8W850+DwhpGr
-         0gelcUxwnLP1idWXnCoA/hw9gjOreKKDISWotuXE+fdjqFqZk2QYRP67ihxu9se/hCat
-         DUM/T1IU5bcVPzmksnt3INw0lN4fnkf2pCTG4kGGRvsFEAg7+QQwa/HxsJqL/Nv99PHN
-         /6MbnHnx1hoXdemU1hLwcMHVWk8sA0qv6KbHoEatayh+8SwGL12CzfUeAvXFoZwFs3S9
-         0sKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Z23HU1mxCZZbJlpTvKa8qAEV3TkyoUwCFPg8hsdXyL0=;
-        b=lcDb4rsQetZZwYUV28wLaTBhOlfURudZdO5TCSo6/g5L++CYyvJcVx4jFDwiq9DKnC
-         VAVywnRW3lNKie1nJz9PmW5fxn8fhJ+UFhWB97oT+gp9u6MLAJ9XBPUucOT7Tfu4p37f
-         z8nfwM0cpv0H5vyjw3sKTM35Ptwb0rg6a53mm7JOZcwwBJbbbTjZaFB0ehL/x8lcmy52
-         hqTfWteDXFEjRXfs3K61rXGHiLMEiAPpyfc7oq4a3eAY3Aladl9qVTGD/XlMB2KrMMGi
-         m9SBrQ6cJlr6Ar76eAH0HNGXwPqjJTrpjXExgTbVyPva9ob6zds/QTWjs8tZZmkYkhtt
-         0+ig==
-X-Gm-Message-State: AOAM532apA0I9+1HSydPl664FTs7rqszMuEK8zAyeXKTCvE3Zhu0Zw5t
-        z9bjYaaUoYhxtx6EyDsKqyuZMkE6Ny7ueDCRnps=
-X-Google-Smtp-Source: ABdhPJzLmCOY1/3HseaJIDt4VnhSnKOsj1qaq2zNlFrQ7tsZlyYn1PjCufexO7Zrz5iF+wm61/TN9iZAz8LgHjerLU8=
-X-Received: by 2002:a9d:5a92:: with SMTP id w18mr15199348oth.145.1600238211305;
- Tue, 15 Sep 2020 23:36:51 -0700 (PDT)
+        id S1726273AbgIPGjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 02:39:36 -0400
+Received: from lan.nucleusys.com ([92.247.61.126]:56154 "EHLO
+        zztop.nucleusys.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726140AbgIPGjf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 02:39:35 -0400
+X-Greylist: delayed 1172 seconds by postgrey-1.27 at vger.kernel.org; Wed, 16 Sep 2020 02:39:34 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=nucleusys.com; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
+        Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Wtu7UwIuDippJJwE5jWzvgh91CAIDjoUM/4pw51EOEc=; b=pqmtaaTvkLHf6V1EmHjEox/Z0I
+        HvraRytcLRb1olVf6GUtBPM7FbCviCPkC2x7Cspnzm5G1hi/hPR0Ax2FifJ295RGrksZZM4xx/BEW
+        GsW+Lw8ce7T4uheXR30LEcxT/xm+1jmG79erCMq1xZpmneERgwtKTlcp/sftGbZTzu/0=;
+Received: from 78-83-68-78.spectrumnet.bg ([78.83.68.78] helo=p310)
+        by zztop.nucleusys.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <petkan@nucleusys.com>)
+        id 1kIR6D-0005AO-Oi; Wed, 16 Sep 2020 09:39:25 +0300
+Date:   Wed, 16 Sep 2020 09:39:25 +0300
+From:   Petko Manolov <petkan@nucleusys.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Anant Thazhemadam <anant.thazhemadam@gmail.com>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [Linux-kernel-mentees][PATCH] rtl8150: set memory to all 0xFFs
+ on failed register reads
+Message-ID: <20200916063925.GC38262@p310>
+References: <20200916050540.15290-1-anant.thazhemadam@gmail.com>
+ <20200916062227.GD142621@kroah.com>
 MIME-Version: 1.0
-References: <20200915171022.10561-1-oded.gabbay@gmail.com> <20200915.134252.1280841239760138359.davem@davemloft.net>
- <CAFCwf131Vbo3im1BjOi_XXfRUu+nfrJY54sEZv8Z5LKut3QE6w@mail.gmail.com> <20200916062614.GF142621@kroah.com>
-In-Reply-To: <20200916062614.GF142621@kroah.com>
-From:   Oded Gabbay <oded.gabbay@gmail.com>
-Date:   Wed, 16 Sep 2020 09:36:23 +0300
-Message-ID: <CAFCwf126PVDtjeAD8wCc_TiDfer04iydrW1AjUicH4oVHbs12Q@mail.gmail.com>
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     David Miller <davem@davemloft.net>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200916062227.GD142621@kroah.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Score: -1.0 (-)
+X-Spam-Report: Spam detection software, running on the system "zztop.nucleusys.com",
+ has NOT identified this incoming email as spam.  The original
+ message has been attached to this so you can view it or label
+ similar future email.  If you have any questions, see
+ the administrator of that system for details.
+ Content preview:  On 20-09-16 08:22:27, Greg KH wrote: > On Wed, Sep 16, 2020
+    at 10:35:40AM +0530, Anant Thazhemadam wrote: > > get_registers() copies
+   whatever memory is written by the > > usb_control_msg() call even i [...] 
+ Content analysis details:   (-1.0 points, 5.0 required)
+  pts rule name              description
+ ---- ---------------------- --------------------------------------------------
+ -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
+  0.0 TVD_RCVD_IP            Message was received from an IP address
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 9:25 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Sep 15, 2020 at 11:49:12PM +0300, Oded Gabbay wrote:
-> > On Tue, Sep 15, 2020 at 11:42 PM David Miller <davem@davemloft.net> wrote:
-> > >
-> > > From: Oded Gabbay <oded.gabbay@gmail.com>
-> > > Date: Tue, 15 Sep 2020 20:10:08 +0300
-> > >
-> > > > This is the second version of the patch-set to upstream the GAUDI NIC code
-> > > > into the habanalabs driver.
-> > > >
-> > > > The only modification from v2 is in the ethtool patch (patch 12). Details
-> > > > are in that patch's commit message.
-> > > >
-> > > > Link to v2 cover letter:
-> > > > https://lkml.org/lkml/2020/9/12/201
-> > >
-> > > I agree with Jakub, this driver definitely can't go-in as it is currently
-> > > structured and designed.
-> > Why is that ?
-> > Can you please point to the things that bother you or not working correctly?
-> > I can't really fix the driver if I don't know what's wrong.
-> >
-> > In addition, please read my reply to Jakub with the explanation of why
-> > we designed this driver as is.
-> >
-> > And because of the RDMA'ness of it, the RDMA
-> > > folks have to be CC:'d and have a chance to review this.
-> > As I said to Jakub, the driver doesn't use the RDMA infrastructure in
-> > the kernel and we can't connect to it due to the lack of H/W support
-> > we have
-> > Therefore, I don't see why we need to CC linux-rdma.
-> > I understood why Greg asked me to CC you because we do connect to the
-> > netdev and standard eth infrastructure, but regarding the RDMA, it's
-> > not really the same.
->
-> Ok, to do this "right" it needs to be split up into separate drivers,
-> hopefully using the "virtual bus" code that some day Intel will resubmit
-> again that will solve this issue.
-Hi Greg,
-Can I suggest an alternative for the short/medium term ?
+On 20-09-16 08:22:27, Greg KH wrote:
+> On Wed, Sep 16, 2020 at 10:35:40AM +0530, Anant Thazhemadam wrote:
+> > get_registers() copies whatever memory is written by the
+> > usb_control_msg() call even if the underlying urb call ends up failing.
+> > 
+> > If get_registers() fails, or ends up reading 0 bytes, meaningless and 
+> > junk register values would end up being copied over (and eventually read 
+> > by the driver), and since most of the callers of get_registers() don't 
+> > check the return values of get_registers() either, this would go unnoticed.
+> > 
+> > It might be a better idea to try and mirror the PCI master abort
+> > termination and set memory to 0xFFs instead in such cases.
+> 
+> It would be better to use this new api call instead of
+> usb_control_msg():
+> 	https://lore.kernel.org/r/20200914153756.3412156-1-gregkh@linuxfoundation.org
 
-In an earlier email, Jakub said:
-"Is it not possible to move the files and still build them into a single
-module?"
+Heh, wasn't aware of the new api.
 
-I thought maybe that's a good way to progress here ?
-First, split the content to Ethernet and RDMA.
-Then move the Ethernet part to drivers/net but build it as part of
-habanalabs.ko.
-Regarding the RDMA code, upstream/review it in a different patch-set
-(maybe they will want me to put the files elsewhere).
+> How about porting this patch to run on top of that series instead?  That 
+> should make this logic much simpler.
 
-What do you think ?
+I'll need to check if in this case 'size' is the right amount of bytes expected 
+and not an upper limit.  Then i'll convert it to the new api.
 
->
-> That will allow you to put the network driver portion in drivers/net/
-> and split the code up into the proper different pieces easier.
->
-> I recommend grabbing the virtual bus code from the archives and looking
-> at that for how this can be done.  Now that you are part of Intel, I'm
-> sure that the internal-Intel-Linux-kernel-review-process can kick in and
-> those developers can help you out.  If not, let me know, so I can go
-> kick them :)
->
-> As for the RDMA stuff, yeah, you should look at the current RDMA
-> interfaces and verify that those really do not work for you here, and
-> then document why that is in your patch submission.
-ok, will do that.
 
-Thanks,
-Oded
->
+cheers,
+Petko
+
+
+> > Fixes: https://syzkaller.appspot.com/bug?extid=abbc768b560c84d92fd3
+> > Reported-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+> > Tested-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+> > Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+> > ---
+> >  drivers/net/usb/rtl8150.c | 9 +++++++--
+> >  1 file changed, 7 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
+> > index 733f120c852b..04fca7bfcbcb 100644
+> > --- a/drivers/net/usb/rtl8150.c
+> > +++ b/drivers/net/usb/rtl8150.c
+> > @@ -162,8 +162,13 @@ static int get_registers(rtl8150_t * dev, u16 indx, u16 size, void *data)
+> >  	ret = usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
+> >  			      RTL8150_REQ_GET_REGS, RTL8150_REQT_READ,
+> >  			      indx, 0, buf, size, 500);
+> > -	if (ret > 0 && ret <= size)
+> > +
+> > +	if (ret < 0)
+> > +		memset(data, 0xff, size);
+> > +
+> > +	else
+> >  		memcpy(data, buf, ret);
+> > +
+> >  	kfree(buf);
+> >  	return ret;
+> >  }
+> > @@ -276,7 +281,7 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
+> >  
+> >  static inline void set_ethernet_addr(rtl8150_t * dev)
+> >  {
+> > -	u8 node_id[6];
+> > +	u8 node_id[6] = {0};
+> 
+> This should not be needed to be done.
+> 
 > thanks,
->
+> 
 > greg k-h
+> 
