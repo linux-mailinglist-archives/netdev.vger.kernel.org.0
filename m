@@ -2,108 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 850D626C9B6
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 21:19:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E610526C90A
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 21:02:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727302AbgIPTSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 15:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
+        id S1728301AbgIPTCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 15:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727264AbgIPRiI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:38:08 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C580FC0A54D6
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 05:25:51 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id gr14so10120172ejb.1
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 05:25:51 -0700 (PDT)
+        with ESMTP id S1727521AbgIPRss (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:48:48 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34AEC0A54D7
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 05:25:56 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id i26so10020833ejb.12
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 05:25:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nJ/CTVBYbV+sObz+/eFOS/tabHyZyjSxFy+JeARS5js=;
-        b=06vfJejynapeS3xd7mxWli41LEAlSlfj3KrQA+rHicqamR4/+KoJ7cviKkDu0Y6gM5
-         qvWylYFv1cRt7s3+K3N7r7YIBnYe1kF4UBp6uUNroOs9KeKY97tkGi3l4VDDWvBWow3w
-         8t/gq4gnKSkWorcftfrMn68zCJlnSUtmE3eQUQYA9oIjnWsqQptbQKrdOlXELPRZMl73
-         6K+XBkOi7QWpJ7RJIZB393IR73lOSFbzLRXPe1R2JDGuX15NE6GSDVtAC5393ue5G1qA
-         afQe/Il4okrNXxP+RrXHfrzJ48r5C4Lq57lRTlsOEIlSXakTL4LfFh0DOR4kYfQkCEHn
-         ma1w==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AZpremIIx4eu/qcxDqCyM1sUWJTrYOhobHvXL9nMHmE=;
+        b=Akq7gGIzX/DGB7ZywdV7xmEXZliggBNisa+hrSLfQU5W0x/4u19WzfiJt7eqfgqiGs
+         BQnM/aGTFtCKrGPSxBhkN8AnCqMebkctB4VneBYWkhUuqD/VDOqqxsrX5ljXBg0VvZAC
+         NxgIyM/X89sIt1gV3S3XUTkWwMC6Im8e/jNXclEyQ1gyMAoUCR42Ufrgcl6iB96h53Bs
+         JCW32WCk5Zo2h1R+TJkmEGDh3gtbfDIsWRhR2Oayji1qa6UvNfQa/tJSZQ7beulaJccx
+         P3d7jNWZN0HzA7LbG77i13wFBaPaXP12m6OFWUL0TKEtCtN+3uZX+4gLop7KruVbyUtK
+         rxNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nJ/CTVBYbV+sObz+/eFOS/tabHyZyjSxFy+JeARS5js=;
-        b=JUMcrwN0dDcpP8EUnw9f7QyNiGkAXZ4n3XLazNw0aktESHoMQBxkfkYEO9aLlKcjFV
-         KB5gmbRAWF4oor67b+8sE4A2N0BZrZNov90wTeduCWoziOAz23Ks86sR35jaS/2AUrIz
-         DzO6vfx1MOIm9K/S+pazfrN30Nevb2RG+QBXU51FyzlTgSJ8h68t/uLSDYKs1MsU1cO/
-         Pdl0NLJW57eDes91XPucRVcsnbe+qI5iiXmVaCuiH/+yLxJmrTluuvS1Dfe+GL00qtnk
-         i9QSly2E3BBYCa92sXTJlT9MPeqBY3XmILol7tl/b+5wOv3m5HdryHOvxApCvmpjpHY/
-         zKHA==
-X-Gm-Message-State: AOAM530TUO41nM2U2LVqngPPL+KQ0X77c5OtXUip3HI6prAnhygeKzM6
-        +a2DBYGt6kXs2zV7Fo7ut6pJ/A==
-X-Google-Smtp-Source: ABdhPJwQIkRa8JSa0SghwpmFKkHgnFurUfYNxwg4c1z9zKkfuf0fTKNlPIM7mMK26FlcU4qBgKB0jQ==
-X-Received: by 2002:a17:906:344e:: with SMTP id d14mr26050404ejb.42.1600259150320;
-        Wed, 16 Sep 2020 05:25:50 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([77.109.98.55])
-        by smtp.gmail.com with ESMTPSA id z17sm14486949edi.90.2020.09.16.05.25.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Sep 2020 05:25:49 -0700 (PDT)
-Subject: Re: [PATCH v2] mptcp: Fix unsigned 'max_seq' compared with zero in
- mptcp_data_queue_ofo
-To:     Ye Bin <yebin10@huawei.com>, mathew.j.martineau@linux.intel.com,
-        netdev@vger.kernel.org, mptcp@lists.01.org
-Cc:     Hulk Robot <hulkci@huawei.com>
-References: <20200916114104.1556846-1-yebin10@huawei.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <f947d64e-5970-7022-1a06-964c7dfbbd03@tessares.net>
-Date:   Wed, 16 Sep 2020 14:23:39 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AZpremIIx4eu/qcxDqCyM1sUWJTrYOhobHvXL9nMHmE=;
+        b=uOSz2sAcIalJw7FMG2/OiDLh0yY1bYLiVPbHe7nHhb3xO+A8o037pZ06SECNSGBJmg
+         AIZaFF/VNA3uQH/T5DfdPIcvulfpWdTfiRKU83sVKPEOgcsFNI2XlYDaizmNAFtL0uvA
+         CsjqYT0Cp9QoLdgnLJ2ZH4EIfHssSaUPcIVcfOjX9cjbFefnqBejOR3K1OWzfgIEttCt
+         tx3E5zGsq2I27e2FNiwZH7hLMsMFXi2xa90Ujb8uVgfDvS58qNNhuPfigaxuXFq4zkrH
+         fdAlfxx08uCNe2SAK086wbgo3/jcaT1CHon3yk3W4WXnA1WSxil4odcT5sX/ucfgwg00
+         ic6g==
+X-Gm-Message-State: AOAM533WVANIlefr4jRREVrXA8WP0Ngpe9q7HTTLD5lKz+U4wMDQ2beU
+        I2Mpbqt81xY9sgy84q4ZdQotqkZuM3I=
+X-Google-Smtp-Source: ABdhPJyBULU9wpKF7p5bRpdjRakGfr35vDbAfo/AfA7r/6xkOImwTcnJQ0A0FXTJaYJagxRtOCwI6w==
+X-Received: by 2002:a17:906:c1d4:: with SMTP id bw20mr16317538ejb.91.1600259155411;
+        Wed, 16 Sep 2020 05:25:55 -0700 (PDT)
+Received: from skbuf ([188.25.217.212])
+        by smtp.gmail.com with ESMTPSA id a15sm12253490eje.16.2020.09.16.05.25.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Sep 2020 05:25:54 -0700 (PDT)
+Date:   Wed, 16 Sep 2020 15:25:52 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, yangbo.lu@nxp.com,
+        xiaoliang.yang_1@nxp.com, UNGLinuxDriver@microchip.com,
+        claudiu.manoil@nxp.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, kuba@kernel.org
+Subject: Re: [PATCH net 2/7] net: mscc: ocelot: add locking for the port TX
+ timestamp ID
+Message-ID: <20200916122552.alrwgbp3zulkffyf@skbuf>
+References: <20200915182229.69529-1-olteanv@gmail.com>
+ <20200915182229.69529-3-olteanv@gmail.com>
+ <20200916111204.GJ9675@piout.net>
 MIME-Version: 1.0
-In-Reply-To: <20200916114104.1556846-1-yebin10@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200916111204.GJ9675@piout.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ye,
-
-Thank you for this v2.
-
-On 16/09/2020 13:41, Ye Bin wrote:
-> Fixes coccicheck warnig:
-> net/mptcp/protocol.c:164:11-18: WARNING: Unsigned expression compared with zero: max_seq > 0
+On Wed, Sep 16, 2020 at 01:12:04PM +0200, Alexandre Belloni wrote:
+> > +	for (port = 0; port < ocelot->num_phys_ports; port++) {
+> > +		struct ocelot_port *ocelot_port = ocelot->ports[port];
+> > +
 > 
-> Fixes: ab174ad8ef76 ("mptcp: move ooo skbs into msk out of order queue")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Ye Bin <yebin10@huawei.com>
-> ---
->   net/mptcp/protocol.c | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> index ef0dd2f23482..3b71f6202524 100644
-> --- a/net/mptcp/protocol.c
-> +++ b/net/mptcp/protocol.c
-> @@ -155,13 +155,14 @@ static void mptcp_data_queue_ofo(struct mptcp_sock *msk, struct sk_buff *skb)
->   {
->   	struct sock *sk = (struct sock *)msk;
->   	struct rb_node **p, *parent;
-> +	int space;
->   	u64 seq, end_seq, max_seq;
->   	struct sk_buff *skb1;
+> At this point, ocelot_port is NULL because ocelot_init is called before
+> the port structures are allocated in mscc_ocelot_probe
 
-In the network subsystem, variables have to be declared following the 
-"reverse Xmas tree" order: longest to shortest line length.
+Yikes, you're right, thanks for testing!
 
-Could you then please move your new variable to the end of the list, 
-under skb1?
-
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+-Vladimir
