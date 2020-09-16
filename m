@@ -2,108 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48F9426DFF9
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 17:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 526DE26E033
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 18:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728073AbgIQPpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 11:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728061AbgIQPOw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 11:14:52 -0400
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D92C06178A;
-        Thu, 17 Sep 2020 08:14:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=9VdUj82i1voMW0HzA3fhImIu/omKpBsKf5XkZHcle8M=; b=fN/clyJLi0gpSAQ9dY/gHSFtzi
-        B9i3x4sG59TjoaZhhi1PxQfXznlkNpc0JifdCAofvS2cQPUKZjIeOCetK9upe3aGB2zNzF93xKS5N
-        mjU2qL6fjktaSIZZZugRhBN6m5eidycNeMWPgEnPYFf3ey3V0Lg5X0KNkcJAz+oZEXZD/vq+N49/J
-        HnPtKN/dcj/xafFGSMGXV3CLDfQiSyP/Uf0Hb7KdVn80iotliaV6r7uMXmD3m3iIxeBbwxWB9o9wW
-        U6FnyMqd0fQDpsgLHi3FGXF21IaKMLMCnyFIXItEyF0eb4AF51asiik5+y1lzrjlAK2KisKxcGuVY
-        vHmVsaUw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kIvcG-00025n-K8; Thu, 17 Sep 2020 15:14:32 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2BD833011C6;
-        Thu, 17 Sep 2020 17:14:29 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id CE97E2BC7FEE6; Thu, 17 Sep 2020 17:14:29 +0200 (CEST)
-Date:   Thu, 17 Sep 2020 17:14:29 +0200
-From:   peterz@infradead.org
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, paulmck@kernel.org, joel@joelfernandes.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rcu@vger.kernel.org, josh@joshtriplett.org,
-        christian.brauner@ubuntu.com, mingo@redhat.com, will@kernel.org
-Subject: Re: [PATCH net-next 6/7] lockdep: provide dummy forward declaration
- of *_is_held() helpers
-Message-ID: <20200917151429.GJ1362448@hirez.programming.kicks-ass.net>
-References: <20200916184528.498184-1-kuba@kernel.org>
- <20200916184528.498184-7-kuba@kernel.org>
+        id S1728290AbgIQQDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 12:03:09 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36820 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728278AbgIQQBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 12:01:48 -0400
+Received: from pps.filterd (m0042983.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08HFPfv9001453;
+        Thu, 17 Sep 2020 08:37:21 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : in-reply-to : mime-version :
+ content-type : content-transfer-encoding; s=facebook;
+ bh=GT8vEKOaHtcIs+WE7PO4+9KfvhnFBUXyBqd0ZSPge/o=;
+ b=UeqI0PKsebjd/7HCvBNwEzo6eo/unXdJn78sv/FDCTwdsiZskQvKqaIrWfZ6G8IaoFu6
+ BmYZwPtwcJIR1VDgFB6cRV2SERJD9l0fz2eyossGJtjUHEB0kc0TSV3E7nDQ53vm5IT7
+ qfID+LXThElfEcKLgJnWTBomRnInUoyeq6A= 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-00082601.pphosted.com with ESMTP id 33m9wg8f09-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 17 Sep 2020 08:37:21 -0700
+Received: from pps.reinject (m0042983.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 08HFbI1C026278;
+        Thu, 17 Sep 2020 08:37:20 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 33k5nbpq0s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 16 Sep 2020 16:00:55 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 16 Sep 2020 16:00:54 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O1iWAKvLDaU0RDfV9f1eaLYxcDIwVOxEGe2G1fP8HzhXSh6/leQJSPOR5mkrpE7CgZHhOjROZVnVQ7otF57mRxGdlxee6magluFCuwkOCrC10j4icB/FZQhHTstaShUtA/i3O6w4dq6yhqA7RJRtj4KMI8+p3t0vHhw6jkyh04Tv2mlVlcA1EO7AB8QMfL4vZrGqDU7KGnk/X4FqD+S0ig9S517YbqiSbiJQXUxf/miRJINKiy7JWgfsIPSiMzsTyXWs2mwlyQxzwz/HjkJ+QwE/8PAitiz4DtziXgAXqey4gSmkIxKqalYfp17oiQJOkt/1I2opSUxq14JOfsY29A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GT8vEKOaHtcIs+WE7PO4+9KfvhnFBUXyBqd0ZSPge/o=;
+ b=JDtBdjl+ZFtKe+vNTL10ETlRjnbgYi8qUgacnePvlIaNiBrpFMGrPKfEVjl0LsYckrsVNyZuXzWSmvXeVNPB7McgQ6RTfK+lmMo45dajSyjHIEMMZuDoOdyCh3yUgp6QKwLGH5EaibZmHewiIu2yha0KgyrYyeqBGzJNN3GZU1Trqb2I3K1BYAQyLuPZLw+XL55XEo194X++v3VW8AxDGTGvq98MyZ2FG0kSIWq5JMBzR4lghEknb+6cZtLybrq6F4ZZb6ERTsgsjyH0/bLiAt9n5Mz1WG4DKFDaunCKp+Vn3FiSPGmTy5zt41vJ/g4K4TqNTrddiKShb4f7j0zCWQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GT8vEKOaHtcIs+WE7PO4+9KfvhnFBUXyBqd0ZSPge/o=;
+ b=krmnwcTaWGQTkffegtS0KFzcH7UYl9TZezNi9bvkuLZPmRrGxiaj2qnkvpmnYnxzCxhqhFvIDXk2GPaZOw9FEoQymbXbaaueXXQhtOpGIQZRY986fOesRMKmp3k07BnDPgONzw7W4cgbfs9psuf8mK+lBa9zkMJP3eE7lMYO3ls=
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2453.namprd15.prod.outlook.com (2603:10b6:a02:8d::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15; Wed, 16 Sep
+ 2020 23:00:51 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c13c:fca9:5e04:9bfb]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c13c:fca9:5e04:9bfb%3]) with mapi id 15.20.3391.011; Wed, 16 Sep 2020
+ 23:00:51 +0000
+Date:   Wed, 16 Sep 2020 16:00:45 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Yonghong Song <yhs@fb.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Song Liu <songliubraving@fb.com>
+Subject: Re: [PATCH bpf-next v4] bpf: using rcu_read_lock for
+ bpf_sk_storage_map iterator
+Message-ID: <20200916230045.b6ofgnbibwealhiz@kafai-mbp>
+References: <20200916224645.720172-1-yhs@fb.com>
+In-Reply-To: <20200916224645.720172-1-yhs@fb.com>
+X-ClientProxiedBy: MWHPR17CA0064.namprd17.prod.outlook.com
+ (2603:10b6:300:93::26) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp (2620:10d:c090:400::5:2074) by MWHPR17CA0064.namprd17.prod.outlook.com (2603:10b6:300:93::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.13 via Frontend Transport; Wed, 16 Sep 2020 23:00:50 +0000
+X-Originating-IP: [2620:10d:c090:400::5:2074]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: dffc3f2b-f43a-4fae-ee3d-08d85a945ba3
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2453:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2453084B1303C18A397BF97ED5210@BYAPR15MB2453.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nfA4kyvTy66G4QNzQ8qDCXrZSyzFKfVWx0ViyV9hSq8fp3bA3sCgN0fuZjFgOEV/Upjj5Q1s+COOcJCdOITiYfO8plSCLSC80MOP66iAElGyHheB1kEM/zdkkbyViZFHG7xu40s7tVgJQCTJHF8Fj5eGegnVa+pOHM/xvy4rWIYRv5llyPhDzD6WjgAPFtNhWwO41teIOZYnk3YXa1C5zVC4CEd66IFZEg28pKkrNKnUExgu0yXqNuwCho4sysTnxwHPouWA9o79CuoojWvBv4MubjUVUDQUt/z7QmP4x8tmntP7G5c96fogjPe5AmzB/b00dBkmghtQhwfxKaVi6Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(39860400002)(366004)(376002)(346002)(66556008)(66476007)(66946007)(55016002)(5660300002)(186003)(16526019)(83380400001)(9686003)(6496006)(8936002)(52116002)(2906002)(33716001)(478600001)(6862004)(316002)(54906003)(8676002)(4326008)(86362001)(1076003)(6666004)(6636002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: VIHKEgh0hiCubri8aRa2cjgIMLjqkKZs1DLNNWpqpNUUPsGcuR/ILdvu2h52uzDOk1lOVUhmUG4ONssVQDqWm6xDcTlsvhN53wa0qqDSv4YAAFs6QZAjabSh/+OPUI5qprp/WTTaKItsSO+zhDsXTMXnzijttk1lsbc3sT0e4Km1MiefEOI2fYsZBOW+SooRYO1uc0xt/BVP+pM01XMtNzUVXlo3vKF2dEEfyQzI2tBKNU/vc1yj/cWw2wsgKKNJU0S0YcOI7PVvXEqYPvGKNnsT4ygNfhpt/6QWGkdmdeap8657H5yUHLk4AIXvIapMW8wmu2sqNPKt0UPqZQsFqLcVesa0CATlrrAmUt4jNOIj0nwSDZ6QVfmC7y2p03TXAX1J8e+WvdYC+N0rt8OYnLQ20XWKv2siCNE90l8wXK7TUSNowMfZ7seq9pz2rrFuy0pw3oxYBdQ/gqTfJgB6d5sHmSO4R4l6yQX7blVHEZt01UAkDwAHRt0aJL18IxrgvNkNvtXKjHjX4Cj4oL5O7kXZiRL+l5czmwY4UbOHaBzrWWvSafCBJ5ECdt1NfNPqFBG4/UPHA0fRY12TOdmWn8lxrcXwW4goiZF14zOE/9srjXcPjOC+ekVL/ih6h1aGGGzXjFkBDBjK6kyWyxgSLEv+1kHI6ezOOPXRHPGkjW+QH7iVRd9UZYdc069FWbGg
+X-MS-Exchange-CrossTenant-Network-Message-Id: dffc3f2b-f43a-4fae-ee3d-08d85a945ba3
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Sep 2020 23:00:51.4303
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Rpvf8MpTPdshJEPIntxWierYMlQzhF2tosUSEyM8gf2j5ZTQl2jHvBM2z6rY6bIO
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2453
+X-OriginatorOrg: fb.com
 Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <20200916184528.498184-7-kuba@kernel.org>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-16_13:2020-09-16,2020-09-16 signatures=0
+X-FB-Internal: deliver
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-17_10:2020-09-16,2020-09-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ mlxlogscore=718 mlxscore=0 lowpriorityscore=0 adultscore=0 impostorscore=0
+ suspectscore=1 phishscore=0 priorityscore=1501 malwarescore=0 bulkscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=2
+ engine=8.12.0-2006250000 definitions=main-2009170119
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 11:45:27AM -0700, Jakub Kicinski wrote:
-> When CONFIG_LOCKDEP is not set, lock_is_held() and lockdep_is_held()
-> are not declared or defined. This forces all callers to use ifdefs
-> around these checks.
+On Wed, Sep 16, 2020 at 03:46:45PM -0700, Yonghong Song wrote:
+> If a bucket contains a lot of sockets, during bpf_iter traversing
+> a bucket, concurrent userspace bpf_map_update_elem() and
+> bpf program bpf_sk_storage_{get,delete}() may experience
+> some undesirable delays as they will compete with bpf_iter
+> for bucket lock.
 > 
-> Recent RCU changes added a lot of lockdep_is_held() calls inside
-> rcu_dereference_protected(). rcu_dereference_protected() hides
-> its argument on !LOCKDEP builds, but this may lead to unused variable
-> warnings.
+> Note that the number of buckets for bpf_sk_storage_map
+> is roughly the same as the number of cpus. So if there
+> are lots of sockets in the system, each bucket could
+> contain lots of sockets.
 > 
-> Provide forward declarations of lock_is_held() and lockdep_is_held()
-> but never define them. This way callers can keep them visible to
-> the compiler on !LOCKDEP builds and instead depend on dead code
-> elimination to remove the references before the linker barfs.
+> Different actual use cases may experience different delays.
+> Here, using selftest bpf_iter subtest bpf_sk_storage_map,
+> I hacked the kernel with ktime_get_mono_fast_ns()
+> to collect the time when a bucket was locked
+> during bpf_iter prog traversing that bucket. This way,
+> the maximum incurred delay was measured w.r.t. the
+> number of elements in a bucket.
+>     # elems in each bucket          delay(ns)
+>       64                            17000
+>       256                           72512
+>       2048                          875246
 > 
-> We need lock_is_held() for RCU.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> --
-> CC: peterz@infradead.org
-> CC: mingo@redhat.com
-> CC: will@kernel.org
-> ---
->  include/linux/lockdep.h | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-> index 6a584b3e5c74..6b5bbc536bf6 100644
-> --- a/include/linux/lockdep.h
-> +++ b/include/linux/lockdep.h
-> @@ -371,6 +371,12 @@ static inline void lockdep_unregister_key(struct lock_class_key *key)
->  
->  #define lockdep_depth(tsk)	(0)
->  
-> +/*
-> + * Dummy forward declarations, allow users to write less ifdef-y code
-> + * and depend on dead code elimination.
-> + */
-> +int lock_is_held(const void *);
-
-extern int lock_is_held(const struct lockdep_map *);
-
-> +int lockdep_is_held(const void *);
-
-extern
-
-I suppose we can't pull the lockdep_is_held() definition out from under
-CONFIG_LOCKDEP because it does the ->dep_map dereference and many types
-will simply not have that member.
-
->  #define lockdep_is_held_type(l, r)		(1)
->  
->  #define lockdep_assert_held(l)			do { (void)(l); } while (0)
+> The potential delays will be further increased if
+> we have even more elemnts in a bucket. Using rcu_read_lock()
+> is a reasonable compromise here. It may lose some precision, e.g.,
+> access stale sockets, but it will not hurt performance of
+> bpf program or user space application which also tries
+> to get/delete or update map elements.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
