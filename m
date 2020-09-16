@@ -2,153 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C249526CCA6
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:47:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A9826CC7B
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:45:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728450AbgIPUri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 16:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
+        id S1727024AbgIPUpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 16:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726705AbgIPUrQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 16:47:16 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1844BC061756
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 13:47:16 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id bd2so3838680plb.7
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 13:47:16 -0700 (PDT)
+        with ESMTP id S1726423AbgIPUpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 16:45:07 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E01C06174A;
+        Wed, 16 Sep 2020 13:45:06 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id g96so1521059ybi.12;
+        Wed, 16 Sep 2020 13:45:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5aWZzX82c0nLX/s70yWwltAKwH5AU5Pve+rjX5edcUk=;
-        b=jGVr0g2MMkQDdDdwCnhF63dbAYRELIOS4jmYhvTnjVBNZrvoQY+NmSwMGerFyzo6Zt
-         7XET+IIju49A4f68IQeMZg779o0gQ9SE1gktTLYZnGE5VZkMDLGR3LyaaBWS5+bJxOA2
-         cRAM67Cdoi2Wcq2jEjwI6BEPG1HZzTptg2vdhZKgQ0aEYzhhLn9TP0J827cbnD/FBzze
-         2OuTczVQza1UmCt0pkDuHkUaTsdXRqwFobWa5GMdESwfzj9u2tbsNLDPmV0vAt75DFkv
-         O5p62dpaE8lPFtCI93587bMoFS5DlihBlg/G2sBc8mIGWHf0p6B4HsJtNJdF/FXa0aNN
-         Q8IA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=a9McxN0SPcs/brf1883/a8qVYY3w5PNE9zRZ22kWcRk=;
+        b=hBFNHl8VKHdu0bMQEIo7Huplgr8OaeHxOaNxi/9ASLqR8KxJY2Ao1BNb1V+M+c9lTg
+         r9DBXjfMiTPgGu0H9PqiPKuSfwEagyVbq1T4d1A0gwI7A/pWVf8wuVZBZtybynO/g15W
+         0ASVoIPojLnbus2iG9NilaF8AO1Ecxzz8SmM+YUFNlgwppNffjkkGoVicv86jWEfk8Dn
+         qPGLvRXEs+dH+vboMLcNN690CROOSXE/6o1z6vbKJewwtNLPzZrL1v7GvsQHzefyK9Kw
+         q1A/OKnQdVf3kyq5hKSRa3RdRvdHs9c3OOpCujmaUr21BlbJ3jfVhWmCE4MZCRLkOvPL
+         c1Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5aWZzX82c0nLX/s70yWwltAKwH5AU5Pve+rjX5edcUk=;
-        b=rJIeBgPI6RGZk1Uz/ZrAl4FpfkiGteRZZBaIMY6XuElsLM0BFVQPxHyXe7pEbhws5b
-         gGRhs4d1gECEL65cDL3UoGGE9qtRbyCr8fqo+dsU4aiZENRPyknvl1uGjDeQ3cHCCs/Y
-         lR4nF59k9icYbg5CWhHKUCQ5Ay6suPoglAi/2zZLK/X3apFvBLgRVo6KG5CusZOnY61c
-         8cAOa+2nyTS7KwqnJJSLP/jWL7mubBAzOrlkqn7+o/Y68hHS9kzaubBX3O3PnpQd5GAM
-         jfjJIJ2M5hG6LbkT3NkjcrIh7tkjG64wFPMgXgFu3TySccGOnDrQiZGuf0e6wwjjI5Gq
-         J48g==
-X-Gm-Message-State: AOAM5332OkYWvqRUu0O0vSXQCOeNLj6EyqkMYQPPx6+0tVxV+wNbi3mc
-        JQShyu2jtBOAsrGm2dEin7acws3Qsomoyw==
-X-Google-Smtp-Source: ABdhPJxdMgTQYEXTrx9daHhY03ulwHDyHwJKW//fKKQL4LPMtatbQkcZP5jrHS6IspW22Vx6028rVw==
-X-Received: by 2002:a17:90b:209:: with SMTP id fy9mr5444272pjb.189.1600289235276;
-        Wed, 16 Sep 2020 13:47:15 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p11sm17684138pfq.130.2020.09.16.13.47.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2020 13:47:14 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, andrew@lunn.ch,
-        hkallweit1@gmail.com, kuba@kernel.org, davem@davemloft.net
-Subject: [PATCH net-next 2/2] net: phy: bcm7xxx: request and manage GPHY clock
-Date:   Wed, 16 Sep 2020 13:44:15 -0700
-Message-Id: <20200916204415.1831417-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200916204415.1831417-1-f.fainelli@gmail.com>
-References: <20200916204415.1831417-1-f.fainelli@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=a9McxN0SPcs/brf1883/a8qVYY3w5PNE9zRZ22kWcRk=;
+        b=kbQEsGcrwSCEjyIHz/v4Bg0xOjhT2mUOsPlwHx+1kuwCzPIGRh+TdabHDrq+wMYSlg
+         xRiW6RGROkpvvH82BJ2zjDeFWBWK0Kw0srQrYkQZdvTosGSIEh9r3HvQWsVy6qHlOc9u
+         EM0AkZZtiRqOS4oN+7aVZsnNFB5lH/sLFnU/91Mpa80Ys/vfOApN+PbRfHy7f0yGOr9I
+         XA4n6YBh6e+OVx88nxO/USNNoLu6Up6r2PsEaK1irdE5hgz1YI5IYPjFhgVZvlilIM/Q
+         ucwpMwGn8D9L69N8rDjMJfqtzevpvy+ndCkGLQFxiscpNVU2B69lP2SJYj82WCyMloCK
+         Lo0w==
+X-Gm-Message-State: AOAM530lk8thYWC0UrYetj6elhvkR65p5NUdlhnpKCQ3/2Pd4euc/yk1
+        PyeyHUH6S0oAg2P4sNmSSGa2VH5d2PA8/Uktz20=
+X-Google-Smtp-Source: ABdhPJxFmQi3hG59ryei3OUQBmRUhVx/C5Pyc3w8gF8Juen+cyyKHcwqrv4XeTjDfnxDiVK+BiYVjGF+Dp8QJ6TRoTc=
+X-Received: by 2002:a25:33c4:: with SMTP id z187mr22702413ybz.27.1600289106079;
+ Wed, 16 Sep 2020 13:45:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <160017005691.98230.13648200635390228683.stgit@toke.dk> <160017006573.98230.17217160170336621916.stgit@toke.dk>
+In-Reply-To: <160017006573.98230.17217160170336621916.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 16 Sep 2020 13:44:55 -0700
+Message-ID: <CAEf4BzZg7rSaRJ5GkcEoOvV2TKTA5etsr0xn_dYMtQL7Ly-w_w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 8/8] selftests/bpf: Adding test for arg
+ dereference in extension trace
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The internal Gigabit PHY on Broadcom STB chips has a digital clock which
-drives its MDIO interface among other things, the driver now requests
-and manage that clock during .probe() and .remove() accordingly.
+On Tue, Sep 15, 2020 at 5:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> From: Jiri Olsa <jolsa@kernel.org>
+>
+> Adding test that setup following program:
+>
+>   SEC("classifier/test_pkt_md_access")
+>   int test_pkt_md_access(struct __sk_buff *skb)
+>
+> with its extension:
+>
+>   SEC("freplace/test_pkt_md_access")
+>   int test_pkt_md_access_new(struct __sk_buff *skb)
+>
+> and tracing that extension with:
+>
+>   SEC("fentry/test_pkt_md_access_new")
+>   int BPF_PROG(fentry, struct sk_buff *skb)
+>
+> The test verifies that the tracing program can
+> dereference skb argument properly.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/phy/bcm7xxx.c | 30 +++++++++++++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
+Looks good, with a minor CHECK() complaint below.
 
-diff --git a/drivers/net/phy/bcm7xxx.c b/drivers/net/phy/bcm7xxx.c
-index 692048d86ab1..aa70b322b119 100644
---- a/drivers/net/phy/bcm7xxx.c
-+++ b/drivers/net/phy/bcm7xxx.c
-@@ -11,6 +11,8 @@
- #include "bcm-phy-lib.h"
- #include <linux/bitops.h>
- #include <linux/brcmphy.h>
-+#include <linux/clk.h>
-+#include <linux/clk-provider.h>
- #include <linux/mdio.h>
- 
- /* Broadcom BCM7xxx internal PHY registers */
-@@ -39,6 +41,7 @@
- 
- struct bcm7xxx_phy_priv {
- 	u64	*stats;
-+	struct clk *clk;
- };
- 
- static int bcm7xxx_28nm_d0_afe_config_init(struct phy_device *phydev)
-@@ -521,6 +524,7 @@ static void bcm7xxx_28nm_get_phy_stats(struct phy_device *phydev,
- static int bcm7xxx_28nm_probe(struct phy_device *phydev)
- {
- 	struct bcm7xxx_phy_priv *priv;
-+	int ret = 0;
- 
- 	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
- 	if (!priv)
-@@ -534,7 +538,29 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
- 	if (!priv->stats)
- 		return -ENOMEM;
- 
--	return 0;
-+	priv->clk = devm_clk_get_optional(&phydev->mdio.dev, NULL);
-+	if (IS_ERR(priv->clk))
-+		return PTR_ERR(priv->clk);
-+
-+	/* Do not increment the clock reference count here, the MDIO driver has
-+	 * already done that in order to successfully enable the PHY during its
-+	 * bus->reset() callback and get us past get_phy_device() which reads
-+	 * the PHY ID and later matches against a given PHY driver. If we
-+	 * incremented the reference count, a driver unbind would not be able
-+	 * to turn off the clock.
-+	 */
-+	if (!__clk_is_enabled(priv->clk))
-+		ret = clk_prepare_enable(priv->clk);
-+
-+	return ret;
-+}
-+
-+static void bcm7xxx_28nm_remove(struct phy_device *phydev)
-+{
-+	struct bcm7xxx_phy_priv *priv = phydev->priv;
-+
-+	clk_disable_unprepare(priv->clk);
-+	devm_clk_put(&phydev->mdio.dev, priv->clk);
- }
- 
- #define BCM7XXX_28NM_GPHY(_oui, _name)					\
-@@ -552,6 +578,7 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
- 	.get_strings	= bcm_phy_get_strings,				\
- 	.get_stats	= bcm7xxx_28nm_get_phy_stats,			\
- 	.probe		= bcm7xxx_28nm_probe,				\
-+	.remove		= bcm7xxx_28nm_remove,				\
- }
- 
- #define BCM7XXX_28NM_EPHY(_oui, _name)					\
-@@ -567,6 +594,7 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
- 	.get_strings	= bcm_phy_get_strings,				\
- 	.get_stats	= bcm7xxx_28nm_get_phy_stats,			\
- 	.probe		= bcm7xxx_28nm_probe,				\
-+	.remove		= bcm7xxx_28nm_remove,				\
- }
- 
- #define BCM7XXX_40NM_EPHY(_oui, _name)					\
--- 
-2.25.1
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
+>  tools/testing/selftests/bpf/prog_tests/trace_ext.c |  113 ++++++++++++++=
+++++++
+>  tools/testing/selftests/bpf/progs/test_trace_ext.c |   18 +++
+>  .../selftests/bpf/progs/test_trace_ext_tracing.c   |   25 ++++
+>  3 files changed, 156 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_ext.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_trace_ext.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_trace_ext_trac=
+ing.c
+>
+
+[...]
+
+> +       err =3D test_trace_ext_tracing__attach(skel_trace);
+> +       if (CHECK(err, "setup", "tracing/test_pkt_md_access_new attach fa=
+iled: %d\n", err))
+> +               goto cleanup;
+> +
+> +       /* trigger the test */
+> +       err =3D bpf_prog_test_run(pkt_fd, 1, &pkt_v4, sizeof(pkt_v4),
+> +                               NULL, NULL, &retval, &duration);
+> +       CHECK(err || retval, "",
+
+please don't use empty string here
+
+> +             "err %d errno %d retval %d duration %d\n",
+> +             err, errno, retval, duration);
+
+who and why cares about duration here?..
+
+> +
+> +       bss_ext =3D skel_ext->bss;
+> +       bss_trace =3D skel_trace->bss;
+> +
+> +       len =3D bss_ext->ext_called;
+> +
+> +       CHECK(bss_ext->ext_called =3D=3D 0,
+> +               "check", "failed to trigger freplace/test_pkt_md_access\n=
+");
+> +       CHECK(bss_trace->fentry_called !=3D len,
+> +               "check", "failed to trigger fentry/test_pkt_md_access_new=
+\n");
+> +       CHECK(bss_trace->fexit_called !=3D len,
+> +               "check", "failed to trigger fexit/test_pkt_md_access_new\=
+n");
+> +
+> +cleanup:
+> +       test_trace_ext_tracing__destroy(skel_trace);
+> +       test_trace_ext__destroy(skel_ext);
+> +       test_pkt_md_access__destroy(skel_pkt);
+> +}
+
+[...]
