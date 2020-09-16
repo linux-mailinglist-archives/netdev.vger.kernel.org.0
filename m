@@ -2,146 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A1C526C85B
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 20:47:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 938BB26C85A
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 20:47:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728183AbgIPSqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 14:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727939AbgIPSWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 14:22:21 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB552C061756;
-        Wed, 16 Sep 2020 11:22:20 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id c17so6126060ybe.0;
-        Wed, 16 Sep 2020 11:22:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=0yvq7JNthKxbYOHDHOWG0xNarv1GFWHVlIaBEc+BtOM=;
-        b=D/GXJTn1HM6gps0EGKWe8RnWjzIxNdP6IfbTrWQVSrXz+dt/4b7Txhvu3n3T+gagDU
-         6OF8h+QVOGMJrW9ggZjebNDBC1uWrtLPFJ4uSfXQTpW8CVlaHdwHHnxpKepBQ4j3tQvh
-         v0iPS8yxr5XZhi1gXyLS7XJVMXDUAkll9nqTtgn4jM90Hxnvf4Ql710DBmBwXGli0YCO
-         g6DuEFrL0Xr7X7bhWOnGdSAruGCDJ8fcsHVj0T5+vhxMtdNNnHHntLF/LfuhEtblfCyl
-         Ag9/W9gQLqHyNL8TwxCEuCxm3oHB9tGHa7PuxfOEhy+1beoHD00xzF2n3ztciQRb3Hxe
-         8dmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=0yvq7JNthKxbYOHDHOWG0xNarv1GFWHVlIaBEc+BtOM=;
-        b=aaLIyd9UyZPB7JeP26Lni9MQ+7ZNfNDBZ9oC9PObGjWdRsZkEAB9Zd8DPrrFzu6a28
-         3rfJcKDWDwLEeCKJGGcNvtVkzglg1gkKSx3CCPHXdhzfIwOXC/IJgkYdOhwfobX6VEPi
-         VI+gdeHR1P3ABOJO0hYpRHyWP9XT85cF3zm1EUCKm/5lN13cr+jPwMep5yIrbf4HfiAg
-         8BM0LpRzoXDjmoImAiQwb4cDouzC+ntyedj+pk3G79j4cpPwXdMnE5ckO90+JaYd9TO1
-         /fLKTQ4oYMxs4TU3FMIFOfVkzyyRxEE1sByBmyFmFfBXFBqOUYJGS6rHpDsBdG0BIjpO
-         uRRQ==
-X-Gm-Message-State: AOAM533zgxyxbWn1hxHxcaaWtFLaKUcDsmjBVnz+wKolA/PGUk9NWdr2
-        aehgdHO4ktuIhOjqwFVexwRxjGq9buSmz4rptSY=
-X-Google-Smtp-Source: ABdhPJysUJyNB7gcgsAktzk2oaIoLFmQ/kJOZs9XR0p+ZpiN/WMfaYvyZKJYCtMsSuiZ8Z3SfVGRdtB/e+wh2Ugd6Po=
-X-Received: by 2002:a25:9d06:: with SMTP id i6mr35125340ybp.510.1600280539251;
- Wed, 16 Sep 2020 11:22:19 -0700 (PDT)
+        id S1728215AbgIPSqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 14:46:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44130 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728146AbgIPSqF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 14:46:05 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7611F20809;
+        Wed, 16 Sep 2020 18:46:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600281965;
+        bh=nZOBAZJ8i1B5WAzn9kzW9pRaFqxTgYJjGm/mivE6qmw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Jie/Eo0tJ3qXhcAezeLBEEvASq6q5gjMQ35bdggOj357YUbOIkFQe3/fE7YbRPHWQ
+         AALflh1PUDV+9vnLDYvfFOf7H/nxqT+v/hagP8U0JYeUd19yRfKS0nx39LGyfiCqba
+         J3g4XpbWrqpoPyMp++XyYWs1iRbIM5dVtrEV5giI=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net, paulmck@kernel.org, joel@joelfernandes.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rcu@vger.kernel.org, josh@joshtriplett.org, peterz@infradead.org,
+        christian.brauner@ubuntu.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/7] rcu: prevent RCU_LOCKDEP_WARN() from swallowing  the condition
+Date:   Wed, 16 Sep 2020 11:45:21 -0700
+Message-Id: <20200916184528.498184-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <160017005691.98230.13648200635390228683.stgit@toke.dk> <160017006024.98230.18011033601869719353.stgit@toke.dk>
-In-Reply-To: <160017006024.98230.18011033601869719353.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 16 Sep 2020 11:22:08 -0700
-Message-ID: <CAEf4BzZuvzb8Oqp=bLHo9H9fawPxh0a2+qhAhB+8KEO36YkX1g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 3/8] bpf: move prog->aux->linked_prog and
- trampoline into bpf_link on attach
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 15, 2020 at 5:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> In preparation for allowing multiple attachments of freplace programs, mo=
-ve
-> the references to the target program and trampoline into the
-> bpf_tracing_link structure when that is created. To do this atomically,
-> introduce a new mutex in prog->aux to protect writing to the two pointers
-> to target prog and trampoline, and rename the members to make it clear th=
-at
-> they are related.
->
-> With this change, it is no longer possible to attach the same tracing
-> program multiple times (detaching in-between), since the reference from t=
-he
-> tracing program to the target disappears on the first attach. However,
-> since the next patch will let the caller supply an attach target, that wi=
-ll
-> also make it possible to attach to the same place multiple times.
->
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
+Hi!
 
-Seems much more straightforward to me with mutex. And I don't have to
-worry about various transient NULL states.
+So I unfolded the RFC patch into smaller chunks and fixed an issue
+in SRCU pointed out by build bot. Build bot has been quiet for
+a day but I'm not 100% sure it's scanning my tree, so let's
+give these patches some ML exposure.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+The motivation here is that we run into a unused variable
+warning in networking code because RCU_LOCKDEP_WARN() makes
+its argument disappear with !LOCKDEP / !PROVE_RCU. We marked
+the variable as __maybe_unused, but that's ugly IMHO.
 
->  include/linux/bpf.h     |   15 +++++++++------
->  kernel/bpf/btf.c        |    6 +++---
->  kernel/bpf/core.c       |    9 ++++++---
->  kernel/bpf/syscall.c    |   46 ++++++++++++++++++++++++++++++++++++++++-=
------
->  kernel/bpf/trampoline.c |   12 ++++--------
->  kernel/bpf/verifier.c   |    9 +++++----
->  6 files changed, 67 insertions(+), 30 deletions(-)
->
+This set makes the relevant function declarations visible to
+the compiler and uses (0 && (condition)) to make the compiler
+remove those calls before linker realizes they are never defined.
 
-[...]
+I'm tentatively marking these for net-next, but if anyone (Paul?)
+wants to take them into their tree - even better.
 
-> @@ -2583,19 +2598,38 @@ static int bpf_tracing_prog_attach(struct bpf_pro=
-g *prog)
->                       &bpf_tracing_link_lops, prog);
->         link->attach_type =3D prog->expected_attach_type;
->
-> +       mutex_lock(&prog->aux->tgt_mutex);
-> +
-> +       if (!prog->aux->tgt_trampoline) {
-> +               err =3D -ENOENT;
-> +               goto out_unlock;
-> +       }
-> +       tr =3D prog->aux->tgt_trampoline;
-> +       tgt_prog =3D prog->aux->tgt_prog;
-> +
->         err =3D bpf_link_prime(&link->link, &link_primer);
->         if (err) {
-> -               kfree(link);
-> -               goto out_put_prog;
-> +               goto out_unlock;
->         }
+Jakub Kicinski (7):
+  sched: un-hide lockdep_tasklist_lock_is_held() for !LOCKDEP
+  rcu: un-hide lockdep maps for !LOCKDEP
+  net: un-hide lockdep_sock_is_held() for !LOCKDEP
+  net: sched: remove broken definitions and un-hide for !LOCKDEP
+  srcu: use a more appropriate lockdep helper
+  lockdep: provide dummy forward declaration of *_is_held() helpers
+  rcu: prevent RCU_LOCKDEP_WARN() from swallowing the condition
 
-nit: unnecessary {} now
+ include/linux/lockdep.h        |  6 ++++++
+ include/linux/rcupdate.h       | 11 ++++++-----
+ include/linux/rcupdate_trace.h |  4 ++--
+ include/linux/sched/task.h     |  2 --
+ include/net/sch_generic.h      | 12 ------------
+ include/net/sock.h             |  2 --
+ kernel/rcu/srcutree.c          |  2 +-
+ 7 files changed, 15 insertions(+), 24 deletions(-)
 
->
-> -       err =3D bpf_trampoline_link_prog(prog);
-> +       err =3D bpf_trampoline_link_prog(prog, tr);
->         if (err) {
->                 bpf_link_cleanup(&link_primer);
-> -               goto out_put_prog;
-> +               link =3D NULL;
-> +               goto out_unlock;
->         }
+-- 
+2.26.2
 
-[...]
