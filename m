@@ -2,149 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 385CA26BF7E
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 10:39:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E34C26BFAF
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 10:48:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726536AbgIPIjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 04:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34242 "EHLO
+        id S1726559AbgIPIsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 04:48:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726161AbgIPIjH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 04:39:07 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D67C06174A
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 01:39:07 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id h11so5647114ilj.11
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 01:39:07 -0700 (PDT)
+        with ESMTP id S1726068AbgIPIs1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 04:48:27 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8705DC06174A;
+        Wed, 16 Sep 2020 01:48:27 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id n61so5926749ota.10;
+        Wed, 16 Sep 2020 01:48:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JT6v7wMmRRApS8LmHSvE0RpU/6xtKoeS84pBH0gWQr8=;
-        b=hrZv26mZbOdawlGGDUntFlNCFGHX9RG2dncSRkLVTNIK06u9xy9NOfglZd8EmquqqA
-         Wk9rVE3elxEjwWLHWLgh2bb5/l0apJW9rj2DMIqyHDo6LGI95awOPoaxIcblBYJhkSMo
-         aUkQabUHSOsmW2LBDvGD1irCNgmts6usIloEbvz3GilPUrvyZdk5K1THGh0qTEEEdogh
-         9jiFE/mOi7OjgVXESARkVWKGEdO3CEj8B0keuB8796ksgZNL2ZfutuAVuCFjhinr0e03
-         ortymrg2uAo6qnkShdTlX4otP1tXwTTtsES1gq05dAZRhjymEk8f/ShyDD//198O5eld
-         6/7A==
+        bh=9WmfdGG11fZlXHtIWtmEZpI64NmbJvrHDfdVUWJJ26I=;
+        b=WTBZsz3I1yt7dHuR/zcAGYSfhZgF/fh/i7uG0aE1q0wmhrwqhH5mV72hu1CWBEfP0x
+         NhoVDmEdXyNoGeiuHRFcfj8uRKdJerbF8uPZVcuZdgonfm1ix+F63SZTVXv/Sj58OElV
+         m04+wAMYuOKYa9THDLTCPWbO5KowcMYGFoXRhyGy0Bh5wKzeXLYpSxpd0R+GQnY3X+Lw
+         lZECnH8kD1fyLyXpHk4bTRtyBOxG5sR0IqtdXkB9EwBouBo1pwRENRcESlkdQWtLqk25
+         JUeBKq5UQcKfv/65Cft1+edkDTBMNLL6dpKpEP+p1V5jOaVsSJ5ySBHE0RZfukFa6ndF
+         dzXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JT6v7wMmRRApS8LmHSvE0RpU/6xtKoeS84pBH0gWQr8=;
-        b=jNFkpfAPu/RyTMNTkCHLQARZywuwZFdBSy2u9x60W/UCFhTSTn613Oh6CPbf97lYn3
-         agTMRUsMwogH6hwexGUocgAUvPravHnPNbmtLHKvHgZYaQzWXVYOG9+N6+n+gwUR2Z9Y
-         6q7WwgycfKJnvDd3LAwxCaJ325rPsadzqqFjanR806bkCwPCupuY56WthHWRx71NKtR3
-         9ifPmdrtgPAc7++Qzlvqh67THgJH64Pr5hB5s2X6epUSokPpl4WngXQNDwuOpVqbSOKZ
-         rmKMJVT6jG5GtTnHr9vd1HzsNXtnw152okp4QSdYYFrRyv2Try0m0gHwD8BFOKpcncSO
-         dQVw==
-X-Gm-Message-State: AOAM530EZwGCWL6acioh3cgMxvJmn+rX+BKAuAfve4/y7kvxT9RBVglS
-        N4r+cfOV+mWesoX57fs91sZI4NHwp696GMt+44gb1A==
-X-Google-Smtp-Source: ABdhPJwOaAT/NvvF3qHlNr93GTy/LMlROi45Sxaeub50tguwCjp+Gpc2PMcAJgNTlqDPHSUy2jleSwq1Moaw8fvLqYA=
-X-Received: by 2002:a92:1b8b:: with SMTP id f11mr3330268ill.216.1600245546474;
- Wed, 16 Sep 2020 01:39:06 -0700 (PDT)
+        bh=9WmfdGG11fZlXHtIWtmEZpI64NmbJvrHDfdVUWJJ26I=;
+        b=Qc8FeC65hR6CyJUyWhmWwTE8VsG0ohf5/k+mgNY9nvwsgy52DBo9wnLE0ombHNglUf
+         DYMD7SHn8P0BMBPsI9sy/lHe3ZfdSM0iG0riXNmhr8DZS/pDVV//wDYuPJTPnIqxJVwe
+         csdPlT91FNppt2TJiefO6EUoa3xriWmIKO7t+5xgtxThwhxJ7n4SuYWcY+O+q8rpEach
+         xn8I6aqDmyojept3D4k+lIlG5KT2dj3M/3L2sR6oaou1aVfn3p4IOXCMRsB0xA9IVhQA
+         472vCyz36tOFPwB5kvZexC164/KS34mTaoifnjjA13oc1jXMfdr/CknfkyK7dV/F2fM1
+         j/sg==
+X-Gm-Message-State: AOAM530XJVXsZF8Y9XZ4YsdyVMdxcXvtQCXKVQRha1penSfTYlq1X76L
+        uMVVMAxGkfGPSBTZ/Yyo93M530YJDicv15mLbqk=
+X-Google-Smtp-Source: ABdhPJwISwR0m1rtGDZALu5HLELsrHJCDuhuDRh2Wv0WsYeZ5yobjBKDu6QZDuf+CQPmlYwZlkuTGmR3YslmwW7D8Ow=
+X-Received: by 2002:a9d:6d95:: with SMTP id x21mr16350478otp.339.1600246106782;
+ Wed, 16 Sep 2020 01:48:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <1600085217-26245-1-git-send-email-tanhuazhong@huawei.com>
- <1600085217-26245-7-git-send-email-tanhuazhong@huawei.com>
- <e615366cb2b260bf1b77fdaa0692957ab750a9a4.camel@nvidia.com>
- <2b1219b6-a7dd-38a3-bfb7-1cb49330df90@huawei.com> <f2a27306606ab6a882f6a6e4363d07174e55c745.camel@kernel.org>
-In-Reply-To: <f2a27306606ab6a882f6a6e4363d07174e55c745.camel@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 16 Sep 2020 10:38:54 +0200
-Message-ID: <CANn89iJwJwzv60pmWEcU-nJ1unbxXuAU7hyFBuzEo-nTHZmm8A@mail.gmail.com>
-Subject: Re: [PATCH net-next 6/6] net: hns3: use napi_consume_skb() when
- cleaning tx desc
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        "tanhuazhong@huawei.com" <tanhuazhong@huawei.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
-        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>
+References: <20200915171022.10561-1-oded.gabbay@gmail.com> <20200915.134252.1280841239760138359.davem@davemloft.net>
+ <CAFCwf131Vbo3im1BjOi_XXfRUu+nfrJY54sEZv8Z5LKut3QE6w@mail.gmail.com>
+ <20200916062614.GF142621@kroah.com> <CAFCwf126PVDtjeAD8wCc_TiDfer04iydrW1AjUicH4oVHbs12Q@mail.gmail.com>
+ <20200916074217.GB189144@kroah.com> <CAFCwf10zLR9v65sgGGdkcf+JzZaw_WORAbQvEw-hbbfj=dy2Xg@mail.gmail.com>
+ <20200916082226.GA509119@kroah.com>
+In-Reply-To: <20200916082226.GA509119@kroah.com>
+From:   Oded Gabbay <oded.gabbay@gmail.com>
+Date:   Wed, 16 Sep 2020 11:47:58 +0300
+Message-ID: <CAFCwf1366_GoTj1gpneJBSqVxJ1mOnsdZiC+DJLG85GHGfZrzw@mail.gmail.com>
+Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     David Miller <davem@davemloft.net>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 10:33 AM Saeed Mahameed <saeed@kernel.org> wrote:
+On Wed, Sep 16, 2020 at 11:21 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> On Tue, 2020-09-15 at 15:04 +0800, Yunsheng Lin wrote:
-> > On 2020/9/15 13:09, Saeed Mahameed wrote:
-> > > On Mon, 2020-09-14 at 20:06 +0800, Huazhong Tan wrote:
-> > > > From: Yunsheng Lin <linyunsheng@huawei.com>
-> > > >
-> > > > Use napi_consume_skb() to batch consuming skb when cleaning
-> > > > tx desc in NAPI polling.
-> > > >
-> > > > Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> > > > Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-> > > > ---
-> > > >  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 27
-> > > > +++++++++++-
-> > > > ----------
-> > > >  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 +-
-> > > >  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  4 ++--
-> > > >  3 files changed, 17 insertions(+), 16 deletions(-)
-> > > >
-> > > > diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> > > > b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> > > > index 4a49a76..feeaf75 100644
-> > > > --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> > > > +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> > > > @@ -2333,10 +2333,10 @@ static int hns3_alloc_buffer(struct
-> > > > hns3_enet_ring *ring,
-> > > >  }
-> > > >
-> > > >  static void hns3_free_buffer(struct hns3_enet_ring *ring,
-> > > > -                      struct hns3_desc_cb *cb)
-> > > > +                      struct hns3_desc_cb *cb, int budget)
-> > > >  {
-> > > >   if (cb->type == DESC_TYPE_SKB)
-> > > > -         dev_kfree_skb_any((struct sk_buff *)cb->priv);
-> > > > +         napi_consume_skb(cb->priv, budget);
+> On Wed, Sep 16, 2020 at 11:02:39AM +0300, Oded Gabbay wrote:
+> > On Wed, Sep 16, 2020 at 10:41 AM Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
 > > >
-> > > This code can be reached from hns3_lb_clear_tx_ring() below which
-> > > is
-> > > your loopback test and called with non-zero budget, I am not sure
-> > > you
-> > > are allowed to call napi_consume_skb() with non-zero budget outside
-> > > napi context, perhaps the cb->type for loopback test is different
-> > > in lb
-> > > test case ? Idk.. , please double check other code paths.
+> > > On Wed, Sep 16, 2020 at 09:36:23AM +0300, Oded Gabbay wrote:
+> > > > On Wed, Sep 16, 2020 at 9:25 AM Greg Kroah-Hartman
+> > > > <gregkh@linuxfoundation.org> wrote:
+> > > > >
+> > > > > On Tue, Sep 15, 2020 at 11:49:12PM +0300, Oded Gabbay wrote:
+> > > > > > On Tue, Sep 15, 2020 at 11:42 PM David Miller <davem@davemloft.net> wrote:
+> > > > > > >
+> > > > > > > From: Oded Gabbay <oded.gabbay@gmail.com>
+> > > > > > > Date: Tue, 15 Sep 2020 20:10:08 +0300
+> > > > > > >
+> > > > > > > > This is the second version of the patch-set to upstream the GAUDI NIC code
+> > > > > > > > into the habanalabs driver.
+> > > > > > > >
+> > > > > > > > The only modification from v2 is in the ethtool patch (patch 12). Details
+> > > > > > > > are in that patch's commit message.
+> > > > > > > >
+> > > > > > > > Link to v2 cover letter:
+> > > > > > > > https://lkml.org/lkml/2020/9/12/201
+> > > > > > >
+> > > > > > > I agree with Jakub, this driver definitely can't go-in as it is currently
+> > > > > > > structured and designed.
+> > > > > > Why is that ?
+> > > > > > Can you please point to the things that bother you or not working correctly?
+> > > > > > I can't really fix the driver if I don't know what's wrong.
+> > > > > >
+> > > > > > In addition, please read my reply to Jakub with the explanation of why
+> > > > > > we designed this driver as is.
+> > > > > >
+> > > > > > And because of the RDMA'ness of it, the RDMA
+> > > > > > > folks have to be CC:'d and have a chance to review this.
+> > > > > > As I said to Jakub, the driver doesn't use the RDMA infrastructure in
+> > > > > > the kernel and we can't connect to it due to the lack of H/W support
+> > > > > > we have
+> > > > > > Therefore, I don't see why we need to CC linux-rdma.
+> > > > > > I understood why Greg asked me to CC you because we do connect to the
+> > > > > > netdev and standard eth infrastructure, but regarding the RDMA, it's
+> > > > > > not really the same.
+> > > > >
+> > > > > Ok, to do this "right" it needs to be split up into separate drivers,
+> > > > > hopefully using the "virtual bus" code that some day Intel will resubmit
+> > > > > again that will solve this issue.
+> > > > Hi Greg,
+> > > > Can I suggest an alternative for the short/medium term ?
+> > > >
+> > > > In an earlier email, Jakub said:
+> > > > "Is it not possible to move the files and still build them into a single
+> > > > module?"
+> > > >
+> > > > I thought maybe that's a good way to progress here ?
+> > >
+> > > Cross-directory builds of a single module are crazy.  Yes, they work,
+> > > but really, that's a mess, and would never suggest doing that.
+> > >
+> > > > First, split the content to Ethernet and RDMA.
+> > > > Then move the Ethernet part to drivers/net but build it as part of
+> > > > habanalabs.ko.
+> > > > Regarding the RDMA code, upstream/review it in a different patch-set
+> > > > (maybe they will want me to put the files elsewhere).
+> > > >
+> > > > What do you think ?
+> > >
+> > > I think you are asking for more work there than just splitting out into
+> > > separate modules :)
+> > >
+> > > thanks,
+> > >
+> > > greg k-h
+> > Hi Greg,
 > >
-> > Yes, loopback test may call napi_consume_skb() with non-zero budget
-> > outside
-> > napi context. Thanks for pointing out this case.
-> >
-> > How about add the below WARN_ONCE() in napi_consume_skb() to catch
-> > this
-> > kind of error?
-> >
-> > WARN_ONCE(!in_serving_softirq(), "napi_consume_skb() is called with
-> > non-zero budget outside napi context");
-> >
+> > If cross-directory building is out of the question, what about
+> > splitting into separate modules ? And use cross-module notifiers/calls
+> > ? I did that with amdkfd and amdgpu/radeon a couple of years back. It
+> > worked (that's the best thing I can say about it).
 >
-> Cc: Eric
+> That's fine with me.
 >
-> I don't know, need to check performance impact.
-> And in_serving_softirq() doesn't necessarily mean in napi
-> but looking at _kfree_skb_defer(), i think it shouldn't care if napi or
-> not as long as it runs in soft irq it will push the skb to that
-> particular cpu napi_alloc_cache, which should be fine.
+> > The main problem with this "virtual bus" thing is that I'm not
+> > familiar with it at all and from my experience I imagine it would take
+> > a considerable time and effort to upstream this infrastructure work.
 >
-> Maybe instead of the WARN_ONCE just remove the budget condition and
-> replace it with
+> It shouldn't be taking that long, but for some unknown reason, the
+> original author of that code is sitting on it and not resending it.  Go
+> poke them through internal Intel channels to find out what the problem
+> is, as I have no clue why a 200-300 line bus module is taking so long to
+> get "right" :(
 >
-> if (!in_serving_softirq())
->       dev_consume_skb_any(skb);
+> I'm _ALMOST_ at the point where I would just do that work myself, but
+> due to my current status with Intel, I'll let them do it as I have
+> enough other things on my plate...
 >
+> > This could delay the NIC code for a couple of years, which by then
+> > this won't be relevant at all.
+>
+> Why wouldn't this code be relevant in a year?  It's going to be 2+ years
+> before any of this shows up in an "enterprise distro" based on their
+> release cycles anyway :)
+>
+> thanks,
+>
+> greg k-h
 
-I think we need to keep costs small.
+Hi Greg,
+ok, I'll take a look. Do you happen to have the name of the patch-set / author ?
 
-So lets add a CONFIG_DEBUG_NET option so that developers can add
-various DEBUG_NET() clauses.
+Regarding the RDMA stuff, I'll do some work internally to separate it
+from the Ethernet code and then will send that code only to RDMA
+people with more detailed explanations.
+
+Thanks,
+Oded
