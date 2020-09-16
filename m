@@ -2,114 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC24026CDCA
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 23:05:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C6AC26CE02
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 23:08:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728640AbgIPVFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 17:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726403AbgIPQPB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 12:15:01 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4A1C02C2B6
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 09:04:09 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id z22so11100592ejl.7
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 09:04:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/MCv6kGzbCOa/DlsDScqqLMNRtWklF6jilIPECQzCg0=;
-        b=Z9MjrknpOuPF+pqKLQzqZid8FW3zEaHnhoX5IP5NryC11gEwO7uLcWUhqVJxueC9W6
-         7CyEpxmwOqnfqxe61a1+dIvuU7OnfHkNIofhb5es+kRTzdzNW0FeLmP3GTVpwKsqCAx9
-         i/yxgS1SeMvI41chMQEFucT6tmbFzA5SyLmdZGcX8ThN3ccdXUQ0V2MbUttBhZ4aR/uG
-         kTDaZX/9nNor4lMYTgCQTv4GahD7XgYuDxdC8I1g6Qdg9zarXeNsOCuXfRjOpkDCi5/h
-         qT5Y31/7nfG6eQqQ4BRT9zXcgnZPcL68LubYbNrQEx0ABy/gIz0PExjwugqJxjUAo47o
-         hPww==
+        id S1726375AbgIPVIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 17:08:23 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:20680 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726298AbgIPVID (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 17:08:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600290474;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/54H5boGPOw6PIuMrJAthQBR69fhyyzb/6j3eNXf2IE=;
+        b=CUz2dJvtqZajCT527/gwmDpjZur1cZ+bUf2WpFV3JK3CkhtUp6Mgj8hRzuypdzTTAdoo57
+        W0v2yIRnVDOKkDeu0aoSHdEuH4CcCoz81K7M0ObixDf1/q1RHh65VYDFrR+fstczGin1bg
+        2ZKLryoK1Uv5lYNc83Yn9QFalx1sMmQ=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-167-zYsqCCUoNMqy52uNvP09aQ-1; Wed, 16 Sep 2020 17:07:51 -0400
+X-MC-Unique: zYsqCCUoNMqy52uNvP09aQ-1
+Received: by mail-wr1-f72.google.com with SMTP id v5so3000758wrs.17
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 14:07:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/MCv6kGzbCOa/DlsDScqqLMNRtWklF6jilIPECQzCg0=;
-        b=gXHw7ua97lBVJRHrh3VA+OG3KcW5qQ3LcEOvkPsJ9MtetDPOeqKpK0ZWQjpP73cKwt
-         45UZnpiic0UvFAFSRFn6u2LyQ1LgSM6VWow7M5cFonIFVBwmDkj3mukPhfYbJGFq1H4p
-         hFiYsS8qlg4Bzcy35mRmLdzci7cTrxDAlm3CDO+cuNAHBZEjxqmHkaXyrsjNMx/5KWrz
-         nBfkJIi82cN8BoCQpdIQE4tMnnbmDtbq2eTNCUgisskmEHIZMPIk8O0IvpJbE9l/l+WX
-         +Torw0tob7yHDd06R6vQOHh1ROAMt6nzawxB2Wv626q2n3t4W/KoJBAwwBuM7X8I4rua
-         GcpA==
-X-Gm-Message-State: AOAM533eOmq4sbQL9u65MZhCScPhu+KYiHrfeW0kI57dN2a+HtzGgPkK
-        pLjuDf/+rQ5IhH3Dip4hgi2AWg==
-X-Google-Smtp-Source: ABdhPJwnwOjURbFapQp8v5CLihCKN0iTNY+IAPC8bmYxQUARFNDKMn4DRN3DSrBLnjhBjmyMpFoO8Q==
-X-Received: by 2002:a17:906:52c2:: with SMTP id w2mr26710730ejn.389.1600272247918;
-        Wed, 16 Sep 2020 09:04:07 -0700 (PDT)
-Received: from apalos.home (athedsl-246545.home.otenet.gr. [85.73.10.175])
-        by smtp.gmail.com with ESMTPSA id lc25sm13011774ejb.35.2020.09.16.09.04.05
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=/54H5boGPOw6PIuMrJAthQBR69fhyyzb/6j3eNXf2IE=;
+        b=cS0YvKgbkELvIbwwz04d8A25BNsPfY1xHA34Xsq5nCMu93eqr52LugS90XVjvKuOEk
+         GFxeaXH4xXIC21AKE37EWUU1bq8wZpcNnMnW2GSBkNVGPKzeWu04T48ULa7vfosAnozt
+         N3GwRe6ko5PnjXtP8Zkze2IcyeBYJPcOCPUUCBH+HVqkIudDBTsvXp7ZJetquXQ0Kygh
+         p6GzZS14WvmeMVtRKpC3/3u5BCtFFroE/bs6EzJ093TgqjgBboLj7tF8LaY3GW8T2rVa
+         dJo3iWZuees++MKaT8f7ww/a0KziU2TDmkpS2zDmhzkWJY2E1TRj9m5RzBhcC/Es8gWU
+         iBAg==
+X-Gm-Message-State: AOAM530qmCgsA4TqPnjZEMLTL0mAJDzXJQVdaB9G0sdObVbq4Cc3svWI
+        El5R9rfp6H71hc+LlnrCmmVAeFdbPnWkEWIIExXfzj5LMhfSMU6RFzdBvTx0lROJOQG/dy7dPHR
+        AuNAUaAHeTdh+h02j
+X-Received: by 2002:a5d:6291:: with SMTP id k17mr28325422wru.130.1600290470609;
+        Wed, 16 Sep 2020 14:07:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwRIpLByKR9vlbbyb4rveY1q0jSfOuRdwKkvCTSqfg5buShe2kGa0NkbbkTrTS5aEe33zZZeg==
+X-Received: by 2002:a5d:6291:: with SMTP id k17mr28325397wru.130.1600290470314;
+        Wed, 16 Sep 2020 14:07:50 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id w81sm7606143wmg.47.2020.09.16.14.07.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2020 09:04:07 -0700 (PDT)
-Date:   Wed, 16 Sep 2020 19:04:04 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Will Deacon <will@kernel.org>
-Cc:     bpf@vger.kernel.org, ardb@kernel.org, naresh.kamboju@linaro.org,
-        Jiri Olsa <jolsa@kernel.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
+        Wed, 16 Sep 2020 14:07:49 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2DDAE183A90; Wed, 16 Sep 2020 23:07:49 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
         KP Singh <kpsingh@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] arm64: bpf: Fix branch offset in JIT
-Message-ID: <20200916160404.GA153139@apalos.home>
-References: <20200914160355.19179-1-ilias.apalodimas@linaro.org>
- <20200915131102.GA26439@willie-the-truck>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v5 2/8] bpf: verifier: refactor
+ check_attach_btf_id()
+In-Reply-To: <CAEf4BzbAsnzAUPksUs+bcNuuUPkumc15RLESu3jOGf87mzabBA@mail.gmail.com>
+References: <160017005691.98230.13648200635390228683.stgit@toke.dk>
+ <160017005916.98230.1736872862729846213.stgit@toke.dk>
+ <CAEf4BzbAsnzAUPksUs+bcNuuUPkumc15RLESu3jOGf87mzabBA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 16 Sep 2020 23:07:49 +0200
+Message-ID: <87tuvxph0a.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200915131102.GA26439@willie-the-truck>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Will, 
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-On Tue, Sep 15, 2020 at 02:11:03PM +0100, Will Deacon wrote:
-[...]
-> >  			continue;
-> >  		}
-> > -		if (ctx->image == NULL)
-> > -			ctx->offset[i] = ctx->idx;
-> >  		if (ret)
-> >  			return ret;
-> >  	}
-> > +	if (ctx->image == NULL)
-> > +		ctx->offset[i] = ctx->idx;
-> 
-> I think it would be cleared to set ctx->offset[0] before the for loop (with
-> a comment about what it is) and then change the for loop to iterate from 1
-> all the way to prog->len.
+> On Tue, Sep 15, 2020 at 5:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>
+>> The check_attach_btf_id() function really does three things:
+>>
+>> 1. It performs a bunch of checks on the program to ensure that the
+>>    attachment is valid.
+>>
+>> 2. It stores a bunch of state about the attachment being requested in
+>>    the verifier environment and struct bpf_prog objects.
+>>
+>> 3. It allocates a trampoline for the attachment.
+>>
+>> This patch splits out (1.) and (3.) into separate functions in preparati=
+on
+>> for reusing them when the actual attachment is happening (in the
+>> raw_tracepoint_open syscall operation), which will allow tracing programs
+>> to have multiple (compatible) attachments.
+>>
+>> No functional change is intended with this patch.
+>>
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> ---
+>
+> I almost acked this, but found a problem at the very last moment. See
+> below, along with few more comments while I have enough context in my
+> head.
 
-On a second thought while trying to code this, I'd prefer leaving it as is. 
-First of all we'll have to increase ctx->idx while adding ctx->offset[0] and 
-more importantly, I don't think that's a 'special' case. 
-It's still the same thing i.e the start of the 1st instruction (which happens 
-to be the end of prologue), the next one will be the start of the second 
-instruction etc etc. 
+Right, will fix, thanks!
 
-I don't mind changing if you feel strongly about it, but I think it makese sense
-as-is.
+> BTW, for whatever reason your patches arrived with a 12 hour delay
+> yesterday (cover letter received at 5am, while patches arrived at
+> 6pm), don't know if its vger or gmail...
 
-Thanks
-/Ilias
-> 
-> Will
+Ugh, sorry about that. I think it's an interaction between vger and the
+Red Hat corporate mail proxy - it's really a mess. I'll try switching my
+patch submissions to use a different SMTP server...
+
+-Toke
+
