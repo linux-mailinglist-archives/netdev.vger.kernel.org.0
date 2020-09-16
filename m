@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0433C26BB1C
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 05:51:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 560EB26BB16
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 05:51:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726401AbgIPDvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 23:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
+        id S1726589AbgIPDuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 23:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726371AbgIPDse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 23:48:34 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58671C06178C;
-        Tue, 15 Sep 2020 20:48:34 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id di5so2833533qvb.13;
-        Tue, 15 Sep 2020 20:48:34 -0700 (PDT)
+        with ESMTP id S1726387AbgIPDsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 23:48:36 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0E1C06174A;
+        Tue, 15 Sep 2020 20:48:36 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id d20so6816533qka.5;
+        Tue, 15 Sep 2020 20:48:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LLfWd/DL19TaMGLzlv+saDu0DmdhCKi6JBFDyV46Z4U=;
-        b=QxvWBZUWRGZUC0l/CHUVQEAlbrS/NPQVFXHgWKwr7wM7p50e4ovtKUhCLX61aNsKcf
-         FFWpm2OReF/5Avg/lsKKayKuDV6tIboK0nTuNtUIHnUiT2+v5T8SkRwnty0xbjS5G7G/
-         iLGRJoMWSzPl3TAhuHRPMmsmTDWaLndjlL8gpzGeqwbhaENWV5mxtKBH9OYbww/UIdEV
-         oxZBhehFPDDVY/jnLB1qzGWN7AQrEbjPKTMKZLxKBrxZUBLtk+BDenVflmywi1199hhg
-         fNRsDTGQdjYy4FmFgXdAAw3vX5QT29ZV8v9XZruUliDaXiAsauJHCuz4QnEUiMynPyK5
-         MF1Q==
+        bh=cfdZosb2wz8tjTjhVSyQ0JhRneNprQvsTD85NoPjnkk=;
+        b=THHMBkUuWe3CpLtWWCIBCupKKVhyM0gFpQrCn1bQlsK9fdCpZopv0KrayjdEoD/N7m
+         SKhxoNDSYE2CFUxdUec4hTvbmu1+rCx/ikRh24Optq75ZeOA5uXeAMRHDVGk3a+hP9LJ
+         7Ny6kFTPdo+fEiASMClKvxAsdRvjEcoh6HLVrXgGA4WdjLyJwjmRyaPg2n869COCktQS
+         l9yB+frm1QewFmtBc0cdx8w6QY/UX7r3igfOl7+BHr52F+8AfP29GhUqKqOyuXMP9wOZ
+         xbvxV8hySYsC7ZDkiqlCFAIb6l+WI3J/06CCo4pSje7TP9La6mFLtQeHxtsRPsaNMVkv
+         SC4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LLfWd/DL19TaMGLzlv+saDu0DmdhCKi6JBFDyV46Z4U=;
-        b=EZVTZcS/8KU5v5bNOzd3qheiBfrslGB4pGaPKcPjhR5IlWDG4b0mZE3h5J5t7i1RSd
-         K6PGIVwLR87k3tku+BiJ6i972R/FltuRWVjVVPBs8e5LCRHPX6BS5/wc1GBLqSIyZGcx
-         7aUOuVfrOPhfrrr6vrQDgc8+Q8P4NmWCggofapkJuS3kbfcPh8NH6nt8IBNhIiXCj88W
-         3/DvdG0D+b5dOoK5RRIcK1/E2osNnX6ZLprpDoTYQzhqwyCJj3ZlTbu1g01Ykuw3HhjB
-         3wh+bMdBraDKI/eBJ7jxhzmHAFoCOK7MBPddkfwAxR9eL9UWCL08VgSzQTByccDwQ1Hy
-         G+KQ==
-X-Gm-Message-State: AOAM533xWO2ibU3/h+e8Z+EdObqLxU7aasnNHlRa/jDOSTPdwbJo77iu
-        0pDGiTf1yTO9EleF617hbW4=
-X-Google-Smtp-Source: ABdhPJzJQHG3X//D7JwlwujItinTq++iLAYXDD8WfKbl+aAgbTthqjfrC3eAy+2+bR0FGgrH002qrA==
-X-Received: by 2002:ad4:5a0e:: with SMTP id ei14mr6514536qvb.15.1600228113592;
-        Tue, 15 Sep 2020 20:48:33 -0700 (PDT)
+        bh=cfdZosb2wz8tjTjhVSyQ0JhRneNprQvsTD85NoPjnkk=;
+        b=gRKykArm1LiJnp1MM4K41k22q/X/1m48O1Mm59+3e7L7cmf7jG7VB7Ritykbu6bz/h
+         s9SkHPegD5IQ2P6XEWgl/3T05sBXrGXTk36Ss5qbSH7SvsIK3/LjamYnQ11zv8uPxNHh
+         equc8EQAIANQGRpyYz4f/VEoURrjdnXOWmy5jT8ICUXq+RiaLsI1UF3x/Z7E2MWvHIxu
+         NIIv8tSN6tSJoxrZENpi5STgRlkcRHZxI9iDLgqUgsi3cfBMijMNsHzamdbquUp2qCnD
+         DikvvnZa/I0ekxzyx745Nlsb4x0R1o0krg2+n6CWFHbzA/JMsBBEMUUls4/7Tpu9H3eK
+         bX5Q==
+X-Gm-Message-State: AOAM530vNIu5FUQUih9DrYNY5sIgPjm5izuNNEX2wCBymCd+UMjdjyIa
+        rI3KU1wPpzDIxwwE+ozh68U=
+X-Google-Smtp-Source: ABdhPJzCAN6dS3vCbPFQn5fElDxXwYt0QjHIlnA98x3BqLCh7Xl5WgLZUNxavfj9nY9Ky2jTWKogiQ==
+X-Received: by 2002:a37:a602:: with SMTP id p2mr21332909qke.254.1600228115497;
+        Tue, 15 Sep 2020 20:48:35 -0700 (PDT)
 Received: from auth1-smtp.messagingengine.com (auth1-smtp.messagingengine.com. [66.111.4.227])
-        by smtp.gmail.com with ESMTPSA id j6sm17570163qtn.97.2020.09.15.20.48.32
+        by smtp.gmail.com with ESMTPSA id g12sm18491619qke.90.2020.09.15.20.48.34
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 15 Sep 2020 20:48:32 -0700 (PDT)
+        Tue, 15 Sep 2020 20:48:34 -0700 (PDT)
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 2164727C0054;
-        Tue, 15 Sep 2020 23:48:32 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 15 Sep 2020 23:48:32 -0400
-X-ME-Sender: <xms:D4thX0MHO-of8HMXJSGNQ-SmfESBTREk9Qo-40UBn-g1AV0AXhaOQA>
-    <xme:D4thX69lYte7WLjnTXac7fRFoZuz_RVVYCB1X2PvkwWdeOrRsLsUtkGZe4RUU83jH
-    J3F-lCsehSPpGecqA>
+        by mailauth.nyi.internal (Postfix) with ESMTP id 0D21227C0054;
+        Tue, 15 Sep 2020 23:48:34 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 15 Sep 2020 23:48:34 -0400
+X-ME-Sender: <xms:EYthX_w4mV67hISrYhAnNVdd8K_jiDCHesD91j0ZJl_x-aiNq1IF-w>
+    <xme:EYthX3THtUh0T0jgI2hz0bx_NdxvbNtFI1ubp6wpUZeCfF7ARI72Gri0Ch-mSa1ti
+    Ucte0m-UadVAzqFeg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrtddugdeikecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenog
@@ -66,13 +66,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrtddugdeikecutefuodetggdote
     sghoqhhunhdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqieelvdeghedtie
     egqddujeejkeehheehvddqsghoqhhunhdrfhgvnhhgpeepghhmrghilhdrtghomhesfhhi
     gihmvgdrnhgrmhgv
-X-ME-Proxy: <xmx:EIthX7Td9JJZohS94NNSyW5zmxZFQLtbXudjVBBHjFILrHSmM7enMA>
-    <xmx:EIthX8uJRVCXM7mJlg8vzHkg4jZnqO5XcIGCZ0umYYAimxcLaZVr-Q>
-    <xmx:EIthX8fRz_Se2ElsDQ_x-PEyydZ1wB0LBIh6sEfMj0lfGbMpkKzUuQ>
-    <xmx:EIthXwP_S8c1u9cbVVkBE_M9UG-lY0N8xubf5rtaExQzNiuDTpbgwhRDp4k>
+X-ME-Proxy: <xmx:EYthX5V86LQkNR5zLODirhtEHeCrczZoDvx8EDlRmPju4PtXAmRo5A>
+    <xmx:EYthX5hVKjvpMyJdiHQOlME2U4QSIl_OTR1WzMVA1VPkzbomwpY-hw>
+    <xmx:EYthXxDGUC4BmR-ERD0uOBU8UwdsCMYhSXlLYDCEu89tAoxYkmujJw>
+    <xmx:EothXzyB6sjpJJZXRFwZhjg4KOov3PlF1UaxpsE617NTz9pmtXUneQ-oSgc>
 Received: from localhost (unknown [52.155.111.71])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 5D90F306467E;
-        Tue, 15 Sep 2020 23:48:31 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 618BA328005A;
+        Tue, 15 Sep 2020 23:48:33 -0400 (EDT)
 From:   Boqun Feng <boqun.feng@gmail.com>
 To:     linux-hyperv@vger.kernel.org, linux-input@vger.kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
@@ -91,9 +91,9 @@ Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
         ardb@kernel.org, arnd@arndb.de, catalin.marinas@arm.com,
         mark.rutland@arm.com, maz@kernel.org,
         Boqun Feng <boqun.feng@gmail.com>
-Subject: [PATCH v4 05/11] Drivers: hv: vmbus: Move virt_to_hvpfn() to hyperv header
-Date:   Wed, 16 Sep 2020 11:48:11 +0800
-Message-Id: <20200916034817.30282-6-boqun.feng@gmail.com>
+Subject: [PATCH v4 06/11] hv: hyperv.h: Introduce some hvpfn helper functions
+Date:   Wed, 16 Sep 2020 11:48:12 +0800
+Message-Id: <20200916034817.30282-7-boqun.feng@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200916034817.30282-1-boqun.feng@gmail.com>
 References: <20200916034817.30282-1-boqun.feng@gmail.com>
@@ -104,77 +104,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There will be more places other than vmbus where we need to calculate
-the Hyper-V page PFN from a virtual address, so move virt_to_hvpfn() to
-hyperv generic header.
+When a guest communicate with the hypervisor, it must use HV_HYP_PAGE to
+calculate PFN, so introduce a few hvpfn helper functions as the
+counterpart of the page helper functions. This is the preparation for
+supporting guest whose PAGE_SIZE is not 4k.
 
 Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
 Reviewed-by: Michael Kelley <mikelley@microsoft.com>
 ---
- drivers/hv/channel.c   | 13 -------------
- include/linux/hyperv.h | 15 +++++++++++++++
- 2 files changed, 15 insertions(+), 13 deletions(-)
+ include/linux/hyperv.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
-index 45267b6d069e..fbdda9938039 100644
---- a/drivers/hv/channel.c
-+++ b/drivers/hv/channel.c
-@@ -22,19 +22,6 @@
- 
- #include "hyperv_vmbus.h"
- 
--static unsigned long virt_to_hvpfn(void *addr)
--{
--	phys_addr_t paddr;
--
--	if (is_vmalloc_addr(addr))
--		paddr = page_to_phys(vmalloc_to_page(addr)) +
--					 offset_in_page(addr);
--	else
--		paddr = __pa(addr);
--
--	return  paddr >> HV_HYP_PAGE_SHIFT;
--}
--
- /*
-  * hv_gpadl_size - Return the real size of a gpadl, the size that Hyper-V uses
-  *
 diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
-index 9c19149c0e1a..83456dc181a8 100644
+index 83456dc181a8..1ce131f29f3b 100644
 --- a/include/linux/hyperv.h
 +++ b/include/linux/hyperv.h
-@@ -14,6 +14,7 @@
+@@ -1691,4 +1691,9 @@ static inline unsigned long virt_to_hvpfn(void *addr)
+ 	return  paddr >> HV_HYP_PAGE_SHIFT;
+ }
  
- #include <uapi/linux/hyperv.h>
- 
-+#include <linux/mm.h>
- #include <linux/types.h>
- #include <linux/scatterlist.h>
- #include <linux/list.h>
-@@ -23,6 +24,7 @@
- #include <linux/mod_devicetable.h>
- #include <linux/interrupt.h>
- #include <linux/reciprocal_div.h>
-+#include <asm/hyperv-tlfs.h>
- 
- #define MAX_PAGE_BUFFER_COUNT				32
- #define MAX_MULTIPAGE_BUFFER_COUNT			32 /* 128K */
-@@ -1676,4 +1678,17 @@ struct hyperv_pci_block_ops {
- 
- extern struct hyperv_pci_block_ops hvpci_block_ops;
- 
-+static inline unsigned long virt_to_hvpfn(void *addr)
-+{
-+	phys_addr_t paddr;
-+
-+	if (is_vmalloc_addr(addr))
-+		paddr = page_to_phys(vmalloc_to_page(addr)) +
-+				     offset_in_page(addr);
-+	else
-+		paddr = __pa(addr);
-+
-+	return  paddr >> HV_HYP_PAGE_SHIFT;
-+}
++#define NR_HV_HYP_PAGES_IN_PAGE	(PAGE_SIZE / HV_HYP_PAGE_SIZE)
++#define offset_in_hvpage(ptr)	((unsigned long)(ptr) & ~HV_HYP_PAGE_MASK)
++#define HVPFN_UP(x)	(((x) + HV_HYP_PAGE_SIZE-1) >> HV_HYP_PAGE_SHIFT)
++#define page_to_hvpfn(page)	(page_to_pfn(page) * NR_HV_HYP_PAGES_IN_PAGE)
 +
  #endif /* _HYPERV_H */
 -- 
