@@ -2,138 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D538E26C81E
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 20:41:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E9D926C7FE
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 20:38:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728055AbgIPSla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 14:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42140 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728007AbgIPS2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 14:28:48 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6163DC0698FE
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 05:00:44 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id w7so3851621pfi.4
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 05:00:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=1le4DTARMbrHPXyWfwyAoP+2vFGgktTmW78DRFKnSHo=;
-        b=CMwrMbz04vxhPGAqkFa9abs0apbcNU5KZTsxtPIfjt8HRnd0wtHHUNao2tStxzX1ms
-         5afHTch+h+r3FNkBQ1XfOaRgfoIJoF7ISXccXTDmuFOzsy2Cd8b5IIFkgpr923ggUnsv
-         R3lU4g/Pq0tSoflwsUTUnqJCdVkmsz5LvxfTvmVzViqfpAYKsexRVKRHTjDYuOQsLhOc
-         tiCTsSagfipMi8btbRYHeZ+/a5bc/LHPbBefiiAwfA76MU8cnBwqVIiBT0jOtXosB/wj
-         rbHEfqp0j0EWvUr1qW9o6Eftt3IoBALwWx0ApwPX6BUKpgD90gjahHsrHlRt6pYSjxFi
-         9bWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=1le4DTARMbrHPXyWfwyAoP+2vFGgktTmW78DRFKnSHo=;
-        b=uDHZodri8MjQKRmSqVAERPaIbuKI8TuKlXZMXmAQic8YP/rAM4hZsxn3QYO1mEoTue
-         kTWxR6JsXK+GLbOmrscyZWdAA3rdM0gFgsYj6sYXxaate0Fykf68ueTqSSWPXFe3fWaS
-         BzYFytSnjO9SIHwtaWA0SwKStsHrARjvgwzDsobVFftWkOY4rM5zBdtNX0n0wWxu45Vi
-         OexBtQugnWXwB2OX4dKOvKisE2L4XQ6ftonXh9Tg/nE77TYNNICuPhtW/HbqHB9ip7Nl
-         kaFwL6PlfT5Z54zIweRQs+Qw+XhgAE+lGcFGX2FWWLqUfnOcGRZTePDTyQZAdjuGr2sv
-         JR6Q==
-X-Gm-Message-State: AOAM533oV2Zm/FFZq0H+ePPAVJvP4I/BC/Ax4SkCxB/sBS8ex79cYw5A
-        hbZ8LC+6GFKhcArnUtRag+E=
-X-Google-Smtp-Source: ABdhPJw6t/xbcAIHzz3K9sIwJH7Il/dA50sA9Xo0VHzuJFqOIQ1me6qla5fzNfr2bSArbHeOakOq0g==
-X-Received: by 2002:a62:3706:0:b029:142:2501:39e5 with SMTP id e6-20020a6237060000b0290142250139e5mr6416602pfa.52.1600257638289;
-        Wed, 16 Sep 2020 05:00:38 -0700 (PDT)
-Received: from VM.ger.corp.intel.com ([192.55.54.40])
-        by smtp.gmail.com with ESMTPSA id q190sm18141145pfq.99.2020.09.16.05.00.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 16 Sep 2020 05:00:37 -0700 (PDT)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com
-Cc:     A.Zema@falconvsystems.com
-Subject: [PATCH bpf v5] xsk: do not discard packet when NETDEV_TX_BUSY
-Date:   Wed, 16 Sep 2020 14:00:25 +0200
-Message-Id: <1600257625-2353-1-git-send-email-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1728150AbgIPSiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 14:38:07 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:46756 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728057AbgIPS24 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 14:28:56 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id CF4831A0CCA;
+        Wed, 16 Sep 2020 14:16:42 +0200 (CEST)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B8F3A1A0098;
+        Wed, 16 Sep 2020 14:16:39 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id E8B5A402AE;
+        Wed, 16 Sep 2020 14:16:34 +0200 (CEST)
+From:   Yangbo Lu <yangbo.lu@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: [v3, 0/6] dpaa2_eth: support 1588 one-step timestamping
+Date:   Wed, 16 Sep 2020 20:08:24 +0800
+Message-Id: <20200916120830.11456-1-yangbo.lu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+This patch-set is to add MC APIs of 1588 one-step timestamping, and
+support one-step timestamping for PTP Sync packet on DPAA2.
 
-In the skb Tx path, transmission of a packet is performed with
-dev_direct_xmit(). When NETDEV_TX_BUSY is set in the drivers, it
-signifies that it was not possible to send the packet right now,
-please try later. Unfortunately, the xsk transmit code discarded the
-packet and returned EBUSY to the application. Fix this unnecessary
-packet loss, by not discarding the packet in the Tx ring and return
-EAGAIN. As EAGAIN is returned to the application, it can then retry
-the send operation later and the packet will then likely be sent as
-the driver will then likely have space/resources to send the packet.
+Before egress, one-step timestamping enablement needs,
 
-In summary, EAGAIN tells the application that the packet was not
-discarded from the Tx ring and that it needs to call send()
-again. EBUSY, on the other hand, signifies that the packet was not
-sent and discarded from the Tx ring. The application needs to put the
-packet on the Tx ring again if it wants it to be sent.
+- Enabling timestamp and FAS (Frame Annotation Status) in
+  dpni buffer layout.
 
-Fixes: 35fcde7f8deb ("xsk: support for Tx")
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Reported-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-Suggested-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
----
-v4->v5:
-* Replaced __kfree_skb() with consume_skb()
-v3->v4:
-* Free the skb without triggering the drop trace when NETDEV_TX_BUSY
-* Call consume_skb instead of kfree_skb when the packet has been
-  sent successfully for correct tracing
-* Use sock_wfree as destructor when NETDEV_TX_BUSY
-v1->v3:
-* Hinder dev_direct_xmit() from freeing and completing the packet to
-  user space by manipulating the skb->users count as suggested by
-  Daniel Borkmann.
----
- net/xdp/xsk.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+- Write timestamp to frame annotation and set PTP bit in
+  FAS to mark as one-step timestamping event.
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index c323162..6c5e09e 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -377,15 +377,30 @@ static int xsk_generic_xmit(struct sock *sk)
- 		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
- 		skb->destructor = xsk_destruct_skb;
- 
-+		/* Hinder dev_direct_xmit from freeing the packet and
-+		 * therefore completing it in the destructor
-+		 */
-+		refcount_inc(&skb->users);
- 		err = dev_direct_xmit(skb, xs->queue_id);
-+		if  (err == NETDEV_TX_BUSY) {
-+			/* Tell user-space to retry the send */
-+			skb->destructor = sock_wfree;
-+			/* Free skb without triggering the perf drop trace */
-+			consume_skb(skb);
-+			err = -EAGAIN;
-+			goto out;
-+		}
-+
- 		xskq_cons_release(xs->tx);
- 		/* Ignore NET_XMIT_CN as packet might have been sent */
--		if (err == NET_XMIT_DROP || err == NETDEV_TX_BUSY) {
-+		if (err == NET_XMIT_DROP) {
- 			/* SKB completed but not sent */
-+			kfree_skb(skb);
- 			err = -EBUSY;
- 			goto out;
- 		}
- 
-+		consume_skb(skb);
- 		sent_frame = true;
- 	}
- 
+- Enabling one-step timestamping by dpni_set_single_step_cfg()
+  API, with offset provided to insert correction time on frame.
+  The offset must respect all MAC headers, VLAN tags and other
+  protocol headers accordingly. The correction field update can
+  consider delays up to one second. So PTP frame needs to be
+  filtered and parsed, and written timestamp into Sync frame
+  originTimestamp field.
+
+The operation of API dpni_set_single_step_cfg() has to be done
+when no one-step timestamping frames are in flight. So we have
+to make sure the last one-step timestamping frame has already
+been transmitted on hardware before starting to send the current
+one. The resolution is,
+
+- Utilize skb->cb[0] to mark timestamping request per packet.
+  If it is one-step timestamping PTP sync packet, queue to skb queue.
+  If not, transmit immediately.
+
+- Schedule a work to transmit skbs in skb queue.
+
+- mutex lock is used to ensure the last one-step timestamping packet
+  has already been transmitted on hardware through TX confirmation queue
+  before transmitting current packet.
+
+Changes for v2:
+	- Removed unused variable priv in dpaa2_eth_xdp_create_fd().
+Changes for v3:
+	- Fixed sparse warnings.
+	- Fix build issue on 32-bit.
+	- Converted to use ptp_parse_header.
+
+Yangbo Lu (6):
+  dpaa2-eth: add APIs of 1588 single step timestamping
+  dpaa2-eth: define a global ptp_qoriq structure pointer
+  dpaa2-eth: invoke dpaa2_eth_enable_tx_tstamp() once in code
+  dpaa2-eth: utilize skb->cb[0] for hardware timestamping
+  dpaa2-eth: support PTP Sync packet one-step timestamping
+  dpaa2-eth: fix a build warning in dpmac.c
+
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c   | 232 ++++++++++++++++++---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h   |  44 +++-
+ .../net/ethernet/freescale/dpaa2/dpaa2-ethtool.c   |   4 +-
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c   |   3 +-
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.h   |   4 +
+ drivers/net/ethernet/freescale/dpaa2/dpmac.c       |   2 +-
+ drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h    |  21 ++
+ drivers/net/ethernet/freescale/dpaa2/dpni.c        |  79 +++++++
+ drivers/net/ethernet/freescale/dpaa2/dpni.h        |  31 +++
+ 9 files changed, 382 insertions(+), 38 deletions(-)
+
 -- 
 2.7.4
 
