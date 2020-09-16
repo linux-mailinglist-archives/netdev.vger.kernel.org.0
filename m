@@ -2,133 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A3B926C9E0
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 21:34:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E06226CA09
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 21:43:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727630AbgIPTeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 15:34:13 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:36056 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727323AbgIPTbq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 15:31:46 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08GJObHT022349;
-        Wed, 16 Sep 2020 19:30:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=Zi4KIsbSGtozSi0Vpv/S07eccak3oW8n1oDQsyU9fn8=;
- b=KPpTtv0+WFGmHMu202FqIcRPq/CZd0F+tnpzfqpjdb1crdBcr+4tZ1mDNZAqdow10Iqj
- 502pmcPeGkGrIy1djPkqCe2WVDeXaVfV8cCnHZIUoT9ZLhWeQ0ZJyXE6faSX2jGiRWx9
- ryDpgXL7jrwMG7VGVrxHYepXhpnjKxyqPr+3418vepsEp8zaa7MBHjUv+FToAiTAjwVs
- TNQQeHNYP65qhB0ngQQzTrUiirjjZRj05bTbGiC7n+Cd+tnx8zSxJtzgMoxd+uNCLP+b
- xEFU0wrQVqdywaMnv/IpHOKb4NCWQtGASRdpKASLK+Ne/x+boBAMnXUlM712jv8LbKdd 4g== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 33j91dpr4k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 16 Sep 2020 19:30:23 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08GJPUGF056658;
-        Wed, 16 Sep 2020 19:28:23 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 33h8893f2j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 16 Sep 2020 19:28:22 +0000
-Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08GJSMRX027971;
-        Wed, 16 Sep 2020 19:28:22 GMT
-Received: from [10.74.111.69] (/10.74.111.69)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 16 Sep 2020 19:27:42 +0000
-Subject: Re: [PATCH 1/1] net/rds: suppress page allocation failure error in
- recv buffer refill
-To:     Manjunath Patil <manjunath.b.patil@oracle.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        aruna.ramakrishna@oracle.com, rama.nichanamatlu@oracle.com
-References: <1600283326-30323-1-git-send-email-manjunath.b.patil@oracle.com>
-From:   santosh.shilimkar@oracle.com
-Organization: Oracle Corporation
-Message-ID: <389b52c6-0d9a-7644-49f6-66eb7a45b3e6@oracle.com>
-Date:   Wed, 16 Sep 2020 12:27:40 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.9.0
+        id S1727269AbgIPTn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 15:43:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51288 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727988AbgIPTnI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 15:43:08 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3656120936;
+        Wed, 16 Sep 2020 19:42:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600285371;
+        bh=8Z+lDdeh/Lm54wkc4RMJo8HAmOvWkS+ewAR6dfsYcPQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AX69Si35meEms7Rz4sNGJC1SKd2elLLYYH9IavaMlECDn8e3Z1c7C5x2iuzD2TaWN
+         EzYD53ev3gCtekoqW619v5aF9FolTPEnhk4bDpKQ0OIkL3aNhXdqwA/R/jdxox+w0w
+         RWakqZXzwL+x5msCwAPwB19oNMAirqewfUyKvELs=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     dsahern@gmail.com
+Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH iproute2-next] ip: promote missed packets to the -s row
+Date:   Wed, 16 Sep 2020 12:42:49 -0700
+Message-Id: <20200916194249.505389-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <1600283326-30323-1-git-send-email-manjunath.b.patil@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9746 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 adultscore=0
- suspectscore=0 phishscore=0 malwarescore=0 bulkscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009160137
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9746 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 impostorscore=0
- priorityscore=1501 malwarescore=0 suspectscore=0 mlxlogscore=999
- clxscore=1011 adultscore=0 lowpriorityscore=0 spamscore=0 mlxscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009160137
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/16/20 12:08 PM, Manjunath Patil wrote:
-> RDS/IB tries to refill the recv buffer in softirq context using
-> GFP_NOWAIT flag. However alloc failure is handled by queueing a work to
-> refill the recv buffer with GFP_KERNEL flag. This means failure to
-> allocate with GFP_NOWAIT isn't fatal. Do not print the PAF warnings if
-> softirq context fails to refill the recv buffer, instead print a one
-> line warning once a day.
-> 
-> Signed-off-by: Manjunath Patil <manjunath.b.patil@oracle.com>
-> Reviewed-by: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
-> ---
->   net/rds/ib_recv.c | 16 +++++++++++++---
->   1 file changed, 13 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/rds/ib_recv.c b/net/rds/ib_recv.c
-> index 694d411dc72f..38d2894f6bb2 100644
-> --- a/net/rds/ib_recv.c
-> +++ b/net/rds/ib_recv.c
-> @@ -310,8 +310,8 @@ static int rds_ib_recv_refill_one(struct rds_connection *conn,
->   	struct rds_ib_connection *ic = conn->c_transport_data;
->   	struct ib_sge *sge;
->   	int ret = -ENOMEM;
-> -	gfp_t slab_mask = GFP_NOWAIT;
-> -	gfp_t page_mask = GFP_NOWAIT;
-> +	gfp_t slab_mask = gfp;
-> +	gfp_t page_mask = gfp;
->   
->   	if (gfp & __GFP_DIRECT_RECLAIM) {
->   		slab_mask = GFP_KERNEL;
-> @@ -406,6 +406,16 @@ void rds_ib_recv_refill(struct rds_connection *conn, int prefill, gfp_t gfp)
->   		recv = &ic->i_recvs[pos];
->   		ret = rds_ib_recv_refill_one(conn, recv, gfp);
->   		if (ret) {
-> +			static unsigned long warn_time;
-Comment should start on next line.
-> +			/* warn max once per day. This should be enough to
-> +			 * warn users about low mem situation.
-> +			 */
-> +			if (printk_timed_ratelimit(&warn_time,
-> +						   24 * 60 * 60 * 1000))
-> +				pr_warn("RDS/IB: failed to refill recv buffer for <%pI6c,%pI6c,%d>, waking worker\n",
-> +					&conn->c_laddr, &conn->c_faddr,
-> +					conn->c_tos);
-Didn't notice this before.
-Why not just use "pr_warn_ratelimited()" ?
-> +
->   			must_wake = true;
->   			break;
->   		}
-> @@ -1020,7 +1030,7 @@ void rds_ib_recv_cqe_handler(struct rds_ib_connection *ic,
->   		rds_ib_stats_inc(s_ib_rx_ring_empty);
->   
->   	if (rds_ib_ring_low(&ic->i_recv_ring)) {
-> -		rds_ib_recv_refill(conn, 0, GFP_NOWAIT);
-> +		rds_ib_recv_refill(conn, 0, GFP_NOWAIT | __GFP_NOWARN);
->   		rds_ib_stats_inc(s_ib_rx_refill_from_cq);
->   	}
->   }
-> 
+missed_packet_errors are much more commonly reported:
+
+linux$ git grep -c '[.>]rx_missed_errors ' -- drivers/ | wc -l
+64
+linux$ git grep -c '[.>]rx_over_errors ' -- drivers/ | wc -l
+37
+
+Plus those drivers are generally more modern than those
+using rx_over_errors.
+
+Since recently merged kernel documentation makes this
+preference official, let's make ip -s output more informative
+and let rx_missed_errors take the place of rx_over_errors.
+
+Before:
+
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 00:0a:f7:c1:4d:38 brd ff:ff:ff:ff:ff:ff
+    RX: bytes  packets  errors  dropped overrun mcast
+    6.04T      4.67G    0       0       0       67.7M
+    RX errors: length   crc     frame   fifo    missed
+               0        0       0       0       7
+    TX: bytes  packets  errors  dropped carrier collsns
+    3.13T      2.76G    0       0       0       0
+    TX errors: aborted  fifo   window heartbeat transns
+               0        0       0       0       6
+
+After:
+
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 00:0a:f7:c1:4d:38 brd ff:ff:ff:ff:ff:ff
+    RX: bytes  packets  errors  dropped missed  mcast
+    6.04T      4.67G    0       0       7       67.7M
+    RX errors: length   crc     frame   fifo    overrun
+               0        0       0       0       0
+    TX: bytes  packets  errors  dropped carrier collsns
+    3.13T      2.76G    0       0       0       0
+    TX errors: aborted  fifo   window heartbeat transns
+               0        0       0       0       6
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ ip/ipaddress.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index ccf67d1dd55c..0822a8d2d792 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -744,7 +744,7 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
+ 		close_json_object();
+ 	} else {
+ 		/* RX stats */
+-		fprintf(fp, "    RX: bytes  packets  errors  dropped overrun mcast   %s%s",
++		fprintf(fp, "    RX: bytes  packets  errors  dropped missed  mcast   %s%s",
+ 			s->rx_compressed ? "compressed" : "", _SL_);
+ 
+ 		fprintf(fp, "    ");
+@@ -752,7 +752,7 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
+ 		print_num(fp, 8, s->rx_packets);
+ 		print_num(fp, 7, s->rx_errors);
+ 		print_num(fp, 7, s->rx_dropped);
+-		print_num(fp, 7, s->rx_over_errors);
++		print_num(fp, 7, s->rx_missed_errors);
+ 		print_num(fp, 7, s->multicast);
+ 		if (s->rx_compressed)
+ 			print_num(fp, 7, s->rx_compressed);
+@@ -760,14 +760,14 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
+ 		/* RX error stats */
+ 		if (show_stats > 1) {
+ 			fprintf(fp, "%s", _SL_);
+-			fprintf(fp, "    RX errors: length   crc     frame   fifo    missed%s%s",
++			fprintf(fp, "    RX errors: length   crc     frame   fifo    overrun%s%s",
+ 				s->rx_nohandler ? "   nohandler" : "", _SL_);
+ 			fprintf(fp, "               ");
+ 			print_num(fp, 8, s->rx_length_errors);
+ 			print_num(fp, 7, s->rx_crc_errors);
+ 			print_num(fp, 7, s->rx_frame_errors);
+ 			print_num(fp, 7, s->rx_fifo_errors);
+-			print_num(fp, 7, s->rx_missed_errors);
++			print_num(fp, 7, s->rx_over_errors);
+ 			if (s->rx_nohandler)
+ 				print_num(fp, 7, s->rx_nohandler);
+ 		}
+-- 
+2.26.2
+
