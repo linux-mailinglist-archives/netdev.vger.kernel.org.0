@@ -2,71 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D99926CE93
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 00:20:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D7FB26CEB7
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 00:26:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726311AbgIPWT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 18:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49842 "EHLO
+        id S1726375AbgIPWZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 18:25:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726255AbgIPWTz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 18:19:55 -0400
+        with ESMTP id S1726187AbgIPWZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 18:25:53 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C3EC061221
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 15:19:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B04BC061221;
+        Wed, 16 Sep 2020 15:25:53 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 843C413608519;
-        Wed, 16 Sep 2020 15:03:07 -0700 (PDT)
-Date:   Wed, 16 Sep 2020 15:19:53 -0700 (PDT)
-Message-Id: <20200916.151953.971004880688415778.davem@davemloft.net>
-To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, jiri@nvidia.com,
-        petrm@nvidia.com, mlxsw@nvidia.com, idosch@nvidia.com
-Subject: Re: [PATCH net-next 00/15] mlxsw: Refactor headroom management
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 25F8713624E0E;
+        Wed, 16 Sep 2020 15:09:04 -0700 (PDT)
+Date:   Wed, 16 Sep 2020 15:25:50 -0700 (PDT)
+Message-Id: <20200916.152550.1833517348137875378.davem@davemloft.net>
+To:     vee.khee.wong@intel.com
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, kuba@kernel.org, mcoquelin.stm32@gmail.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        boon.leong.ong@intel.com, weifeng.voon@intel.com,
+        yoong.siang.song@intel.com, sadhishkhanna.vijaya.balan@intel.com,
+        chen.yong.seow@intel.com
+Subject: Re: [PATCH net-next] net: stmmac: Add support to Ethtool get/set
+ ring parameters
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200916063528.116624-1-idosch@idosch.org>
-References: <20200916063528.116624-1-idosch@idosch.org>
+In-Reply-To: <20200916074020.25491-1-vee.khee.wong@intel.com>
+References: <20200916074020.25491-1-vee.khee.wong@intel.com>
 X-Mailer: Mew version 6.8 on Emacs 27.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Wed, 16 Sep 2020 15:03:07 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Wed, 16 Sep 2020 15:09:04 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@idosch.org>
-Date: Wed, 16 Sep 2020 09:35:13 +0300
+From: Wong Vee Khee <vee.khee.wong@intel.com>
+Date: Wed, 16 Sep 2020 15:40:20 +0800
 
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> Petr says:
-> 
-> On Spectrum, port buffers, also called port headroom, is where packets are
-> stored while they are parsed and the forwarding decision is being made. For
-> lossless traffic flows, in case shared buffer admission is not allowed,
-> headroom is also where to put the extra traffic received before the sent
-> PAUSE takes effect. Another aspect of the port headroom is the so called
-> internal buffer, which is used for egress mirroring.
-> 
-> Linux supports two DCB interfaces related to the headroom: dcbnl_setbuffer
-> for configuration, and dcbnl_getbuffer for inspection. In order to make it
-> possible to implement these interfaces, it is first necessary to clean up
-> headroom handling, which is currently strewn in several places in the
-> driver.
-> 
-> The end goal is an architecture whereby it is possible to take a copy of
-> the current configuration, adjust parameters, and then hand the proposed
-> configuration over to the system to implement it. When everything works,
-> the proposed configuration is accepted and saved. First, this centralizes
-> the reconfiguration handling to one function, which takes care of
-> coordinating buffer size changes and priority map changes to avoid
-> introducing drops. Second, the fact that the configuration is all in one
-> place makes it easy to keep a backup and handle error path rollbacks, which
-> were previously hard to understand.
+> +int stmmac_reinit_ringparam(struct net_device *dev, u32 rx_size, u32 tx_size)
+> +{
+> +	struct stmmac_priv *priv = netdev_priv(dev);
+> +	int ret = 0;
+> +
+> +	if (netif_running(dev))
+> +		stmmac_release(dev);
  ...
+> +	if (netif_running(dev))
+> +		ret = stmmac_open(dev);
+> +
 
-Series applied, thank you.
+I've applied this patch but this approach is so fragile, but everyone
+does it initially because it is so easy.
+
+The problem here is that for so many reasons the stmmac_open() can
+fail, and instead of just the ringparam() operation failing, the
+interface becomes down and unusable.
+
+Can you please eventually implement this properly?  Allocate the new
+ring resources, and only commit the new configuration if it is
+guaranteed to succeed.  Otherwise, backout the ringparam change
+and keep the old configuration.
+
+This way the device stays up regardless of whether the resources
+(memory, DMA mappings, etc.) can be allocated fully.
+
+Right now, if you do a ringparam under hard memory pressure, this will
+take the inteface down as stmmac_open() fails.
