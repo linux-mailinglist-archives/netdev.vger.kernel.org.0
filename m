@@ -2,248 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C8EA26CF00
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 00:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 807DC26CF02
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 00:43:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726703AbgIPWnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 18:43:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
+        id S1726764AbgIPWnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 18:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726375AbgIPWm5 (ORCPT
+        with ESMTP id S1726419AbgIPWm5 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 18:42:57 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6706C061356;
-        Wed, 16 Sep 2020 14:24:32 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id g96so56274ybi.12;
-        Wed, 16 Sep 2020 14:24:32 -0700 (PDT)
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E9A0C0612F2;
+        Wed, 16 Sep 2020 14:25:13 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id gf14so108657pjb.5;
+        Wed, 16 Sep 2020 14:25:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=FpS/+5JyfGrVbJJkvaQpYEm4wHItEk98fBuyol9kQdQ=;
-        b=XRjFNZH7+gk68Hi6zcPmIfGBU+vtr2vCkYT44DHu9qBHYrdyjIXH4R6louzi+4x0Je
-         1Vy9FbwfouMZxkoUDk+fvB+27EikmvJARB7GyjUlx/yvyw/JaHtugPASiJpeoUbHKJkC
-         +5QxRJmRuPhRJQt/DInPReNpLt/v7gXf5s972KIVdDxRva7dPYYxCi8WHJjJD6cMcbf+
-         q+ImQO8cATtyzGf6Zb3A9GLKG+NXQm8CZx9hsxLTFt/5BoeAjnNpOSd91gfQ/r6t3NFC
-         UeU+hll8d3FtbaWyTOjmYIhcQwM1M0yiRy6D2TvuVY+jtcnM+HTMzP2OmJwJdgj9HzGe
-         4ykg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z2SL8leUcQ+GFmuhnu/vBMX/sD7AIUfW+Lu4/oT5nM4=;
+        b=jU8TZVQaKvpoZn48V0fPVDESmoUOlJvSmXcM1jzqxATMguMtTvqeIFOs54NVItQQhT
+         13gwhrZ7QICZsC0xEXBjbTadwGXs//4htc3xHHQ72Yt2IYiieW9dID7IA6FI195Cdr0a
+         RXegAC2bOd+Yam+0aYytWTUaATxJR2K716+dSDw2HWWDscPXbnd+uvwcN2kbUMrl3TlC
+         TkxiYGJt4rZ6vW86UN39aiIBEKfeVj3IHc4gYo8AdrCf7M5+BmmTJ3TYPlXQvQvaV8+t
+         lwxoYvmwYsmkjzDRXp2O3x20V1VAAvy2v2wZJ9SjlOn3m/GHGvqhfjK1EfaSLSBW5K2P
+         uogg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FpS/+5JyfGrVbJJkvaQpYEm4wHItEk98fBuyol9kQdQ=;
-        b=k3MIM4vbq1XXQE8phs02ojaeTqcyW5Sag7pv9g8fQPT8aU/BIHMJVXd0QfStiWx27B
-         MLChoYLHZQkjKyO8fnnvQNiBgm4rUEb++qplY/6e/aWOc47xq+7nRhWQTMCoCtqh8Pmp
-         6JMtFg/yAjc+3TN5mwMYxOlLTbOFKkUH0C1OvwlTQEyGOVGj1Ll8s3zczctFbxIOcdGj
-         kfMhjeq4/P5rNJeFjW93g7LhpSSoyxATJS3nNoeb53nPdSWVamSut8oMDdwHjNqvvkQl
-         CoddPYy23VHUi+ojMo8RNqnFmINBecs4P4IKn17T0B2CYMRCG4FSZ8wNb66ifMZ+ek4Z
-         n1VA==
-X-Gm-Message-State: AOAM530HCujFnt1aX7axVaBHSMQPMI7oo1gZMsSjcizy8qiWk9WZthyL
-        1Dndn6GklvcZRfcqcPRG3KbYJkpnH3dUGb/f3UI=
-X-Google-Smtp-Source: ABdhPJyYqX6pLjQvnTVna+tuIUYamTmBUY+5eHjOWHDCAwJ8MFIQNKUcKLUXakPF6LKh2C7Iz5ywYKNgnXmmJ8nFafs=
-X-Received: by 2002:a25:d70e:: with SMTP id o14mr28429023ybg.425.1600291472000;
- Wed, 16 Sep 2020 14:24:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z2SL8leUcQ+GFmuhnu/vBMX/sD7AIUfW+Lu4/oT5nM4=;
+        b=GJWed8LyiTcC/1zLpHM8BMhve6JjkJLg0Mj5fZG1TOYsM3doDV5gWLAXLcOzHRwAkW
+         Q8hhEEUPET+B4FndVbZ71kliKdnUMmOLx4Grc7eC/EKFPbUicD8EJ4Y6R5qNZKZyMT+d
+         iqETUouOP9H0+yf+3f4MP1X71hEK6Faq6VmBqoet2PPD2mEoyvMnS7bx5YkviHifLS2I
+         hv2ndHRJzlm05BrQP4g1P/zL71LGIBWhbCTT7I8Exq9Xu1YQLFrWNUz5HRS8T78tcM+4
+         uVr5MESMcn41upiWT3/JQALDX7PhpkwzTVPDA+9NG2y44fWLRkmK0Y/MJxVi1kG84kht
+         ZF2A==
+X-Gm-Message-State: AOAM532s4Kgyoqx4xiMLwbLryd/skZNM5rXr5ClQXaUjbCWJfmJOVJQe
+        jWgJrF9M8587JpQVlHh2ohvp2N1zgA8=
+X-Google-Smtp-Source: ABdhPJwS6OC7psK9Il6Mr4+SqNhi5ewz3ZqrsJza3JzAgB1Sr3fBuMUQ4imuCBxyZ0Zkjg8QnKBWvw==
+X-Received: by 2002:a17:90a:a58d:: with SMTP id b13mr5668930pjq.49.1600291512914;
+        Wed, 16 Sep 2020 14:25:12 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:29a5:9632:a091:4adb])
+        by smtp.gmail.com with ESMTPSA id kt18sm3510088pjb.56.2020.09.16.14.25.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Sep 2020 14:25:12 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Xie He <xie.he.0141@gmail.com>, Krzysztof Halasa <khc@pm.waw.pl>
+Subject: [PATCH net] drivers/net/wan/hdlc: Set skb->protocol before transmitting
+Date:   Wed, 16 Sep 2020 14:25:07 -0700
+Message-Id: <20200916212507.528223-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <160017005691.98230.13648200635390228683.stgit@toke.dk>
- <160017006352.98230.621859348254499900.stgit@toke.dk> <CAEf4BzZx33sqDd2WU2j+Ht_njn2qfcV1C0ginPBde+wj8rROeQ@mail.gmail.com>
- <CAEf4Bzb5pLJaW_Rkiq+5QacH6G-FFmj6eRBiZKybYCkkBVMzLA@mail.gmail.com> <87h7rxpge0.fsf@toke.dk>
-In-Reply-To: <87h7rxpge0.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 16 Sep 2020 14:24:20 -0700
-Message-ID: <CAEf4BzZcp+ZCegpQRgo+gEp7y+XekajyfN=DE15X3hNb7XVksQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 6/8] libbpf: add support for freplace
- attachment in bpf_link_create
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 2:21 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->
-> > On Wed, Sep 16, 2020 at 1:37 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> >>
-> >> On Tue, Sep 15, 2020 at 5:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
-@redhat.com> wrote:
-> >> >
-> >> > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >> >
-> >> > This adds support for supplying a target btf ID for the bpf_link_cre=
-ate()
-> >> > operation, and adds a new bpf_program__attach_freplace() high-level =
-API for
-> >> > attaching freplace functions with a target.
-> >> >
-> >> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >> > ---
-> >> >  tools/lib/bpf/bpf.c      |    1 +
-> >> >  tools/lib/bpf/bpf.h      |    3 ++-
-> >> >  tools/lib/bpf/libbpf.c   |   24 ++++++++++++++++++------
-> >> >  tools/lib/bpf/libbpf.h   |    3 +++
-> >> >  tools/lib/bpf/libbpf.map |    1 +
-> >> >  5 files changed, 25 insertions(+), 7 deletions(-)
-> >> >
-> >> > diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-> >> > index 82b983ff6569..e928456c0dd6 100644
-> >> > --- a/tools/lib/bpf/bpf.c
-> >> > +++ b/tools/lib/bpf/bpf.c
-> >> > @@ -599,6 +599,7 @@ int bpf_link_create(int prog_fd, int target_fd,
-> >> >         attr.link_create.iter_info =3D
-> >> >                 ptr_to_u64(OPTS_GET(opts, iter_info, (void *)0));
-> >> >         attr.link_create.iter_info_len =3D OPTS_GET(opts, iter_info_=
-len, 0);
-> >> > +       attr.link_create.target_btf_id =3D OPTS_GET(opts, target_btf=
-_id, 0);
-> >> >
-> >> >         return sys_bpf(BPF_LINK_CREATE, &attr, sizeof(attr));
-> >> >  }
-> >> > diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-> >> > index 015d13f25fcc..f8dbf666b62b 100644
-> >> > --- a/tools/lib/bpf/bpf.h
-> >> > +++ b/tools/lib/bpf/bpf.h
-> >> > @@ -174,8 +174,9 @@ struct bpf_link_create_opts {
-> >> >         __u32 flags;
-> >> >         union bpf_iter_link_info *iter_info;
-> >> >         __u32 iter_info_len;
-> >> > +       __u32 target_btf_id;
-> >> >  };
-> >> > -#define bpf_link_create_opts__last_field iter_info_len
-> >> > +#define bpf_link_create_opts__last_field target_btf_id
-> >> >
-> >> >  LIBBPF_API int bpf_link_create(int prog_fd, int target_fd,
-> >> >                                enum bpf_attach_type attach_type,
-> >> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> >> > index 550950eb1860..165131c73f40 100644
-> >> > --- a/tools/lib/bpf/libbpf.c
-> >> > +++ b/tools/lib/bpf/libbpf.c
-> >> > @@ -9322,12 +9322,14 @@ static struct bpf_link *attach_iter(const st=
-ruct bpf_sec_def *sec,
-> >> >
-> >> >  static struct bpf_link *
-> >> >  bpf_program__attach_fd(struct bpf_program *prog, int target_fd,
-> >> > -                      const char *target_name)
-> >> > +                      int target_btf_id, const char *target_name)
-> >> >  {
-> >> >         enum bpf_attach_type attach_type;
-> >> >         char errmsg[STRERR_BUFSIZE];
-> >> >         struct bpf_link *link;
-> >> >         int prog_fd, link_fd;
-> >> > +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
-> >> > +                           .target_btf_id =3D target_btf_id);
-> >> >
-> >> >         prog_fd =3D bpf_program__fd(prog);
-> >> >         if (prog_fd < 0) {
-> >> > @@ -9340,8 +9342,12 @@ bpf_program__attach_fd(struct bpf_program *pr=
-og, int target_fd,
-> >> >                 return ERR_PTR(-ENOMEM);
-> >> >         link->detach =3D &bpf_link__detach_fd;
-> >> >
-> >> > -       attach_type =3D bpf_program__get_expected_attach_type(prog);
-> >> > -       link_fd =3D bpf_link_create(prog_fd, target_fd, attach_type,=
- NULL);
-> >> > +       if (bpf_program__get_type(prog) =3D=3D BPF_PROG_TYPE_EXT)
-> >> > +               attach_type =3D BPF_TRACE_FREPLACE;
-> >>
-> >> doing this unconditionally will break an old-style freplace without
-> >> target_fd/btf_id on older kernels. Safe and simple way would be to
-> >> continue using raw_tracepoint_open when there is no target_fd/btf_id,
-> >> and use LINK_CREATE for newer stuff. Alternatively, you'd need to do
-> >> feature detection, but it's still would be nice to handle old-style
-> >> attach through raw_tracepoint_open for bpf_program__attach_freplace.
-> >>
-> >> so I suggest leaving bpf_program__attach_fd() as is and to create a
-> >> custom bpf_program__attach_freplace() implementation.
->
-> Sure, I'll take another pass at this. Not sure how useful feature
-> detection in libbpf is; if the caller passes a target, libbpf can't
-> really do much if the kernel doesn't support it...
+This patch sets skb->protocol before transmitting frames on the HDLC
+device, so that a user listening on the HDLC device with an AF_PACKET
+socket will see outgoing frames' sll_protocol field correctly set and
+consistent with that of incoming frames.
 
-I was thinking about bpf_program__attach_freplace(prog, 0, NULL) doing
-bpf_raw_tracepoint_open(). It would be nice to support this, for API
-uniformity, no?
+1. Control frames in hdlc_cisco and hdlc_ppp
 
->
-> >> > +       else
-> >> > +               attach_type =3D bpf_program__get_expected_attach_typ=
-e(prog);
-> >> > +
-> >> > +       link_fd =3D bpf_link_create(prog_fd, target_fd, attach_type,=
- &opts);
-> >> >         if (link_fd < 0) {
-> >> >                 link_fd =3D -errno;
-> >> >                 free(link);
-> >> > @@ -9357,19 +9363,25 @@ bpf_program__attach_fd(struct bpf_program *p=
-rog, int target_fd,
-> >> >  struct bpf_link *
-> >> >  bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
-> >> >  {
-> >> > -       return bpf_program__attach_fd(prog, cgroup_fd, "cgroup");
-> >> > +       return bpf_program__attach_fd(prog, cgroup_fd, 0, "cgroup");
-> >> >  }
-> >> >
-> >> >  struct bpf_link *
-> >> >  bpf_program__attach_netns(struct bpf_program *prog, int netns_fd)
-> >> >  {
-> >> > -       return bpf_program__attach_fd(prog, netns_fd, "netns");
-> >> > +       return bpf_program__attach_fd(prog, netns_fd, 0, "netns");
-> >> >  }
-> >> >
-> >> >  struct bpf_link *bpf_program__attach_xdp(struct bpf_program *prog, =
-int ifindex)
-> >> >  {
-> >> >         /* target_fd/target_ifindex use the same field in LINK_CREAT=
-E */
-> >> > -       return bpf_program__attach_fd(prog, ifindex, "xdp");
-> >> > +       return bpf_program__attach_fd(prog, ifindex, 0, "xdp");
-> >> > +}
-> >> > +
-> >> > +struct bpf_link *bpf_program__attach_freplace(struct bpf_program *p=
-rog,
-> >> > +                                             int target_fd, int tar=
-get_btf_id)
-> >> > +{
-> >> > +       return bpf_program__attach_fd(prog, target_fd, target_btf_id=
-, "freplace");
-> >> >  }
-> >> >
-> >> >  struct bpf_link *
-> >> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> >> > index a750f67a23f6..ce5add9b9203 100644
-> >> > --- a/tools/lib/bpf/libbpf.h
-> >> > +++ b/tools/lib/bpf/libbpf.h
-> >> > @@ -261,6 +261,9 @@ LIBBPF_API struct bpf_link *
-> >> >  bpf_program__attach_netns(struct bpf_program *prog, int netns_fd);
-> >> >  LIBBPF_API struct bpf_link *
-> >> >  bpf_program__attach_xdp(struct bpf_program *prog, int ifindex);
-> >> > +LIBBPF_API struct bpf_link *
-> >> > +bpf_program__attach_freplace(struct bpf_program *prog,
-> >> > +                            int target_fd, int target_btf_id);
-> >>
-> >> maybe a const char * function name instead of target_btf_id would be a
-> >> nicer API? Users won't have to deal with fetching target prog's BTF,
-> >> searching it, etc. That's all pretty straightforward for libbpf to do,
-> >> leaving users with more natural and simpler API.
-> >>
-> >
-> > bpf_program__set_attach_target() uses string name for target
-> > functions, we should definitely be consistent here
->
-> All right, fair enough :)
->
-> -Toke
->
+When these drivers send control frames, skb->protocol is not set.
+
+This value should be set to htons(ETH_P_HDLC), because when receiving
+control frames, their skb->protocol is set to htons(ETH_P_HDLC).
+
+When receiving, hdlc_type_trans in hdlc.h is called, which then calls
+cisco_type_trans or ppp_type_trans. The skb->protocol of control frames
+is set to htons(ETH_P_HDLC) so that the control frames can be received
+by hdlc_rcv in hdlc.c, which calls cisco_rx or ppp_rx to process the
+control frames.
+
+2. hdlc_fr
+
+When this driver sends control frames, skb->protocol is set to internal
+values used in this driver.
+
+When this driver sends data frames (from upper stacked PVC devices),
+skb->protocol is the same as that of the user data packet being sent on
+the upper PVC device (for normal PVC devices), or is htons(ETH_P_802_3)
+(for Ethernet-emulating PVC devices).
+
+However, skb->protocol for both control frames and data frames should be
+set to htons(ETH_P_HDLC), because when receiving, all frames received on
+the HDLC device will have their skb->protocol set to htons(ETH_P_HDLC).
+
+When receiving, hdlc_type_trans in hdlc.h is called, and because this
+driver doesn't provide a type_trans function in struct hdlc_proto,
+all frames will have their skb->protocol set to htons(ETH_P_HDLC).
+The frames are then received by hdlc_rcv in hdlc.c, which calls fr_rx
+to process the frames (control frames are consumed and data frames
+are re-received on upper PVC devices).
+
+Cc: Krzysztof Halasa <khc@pm.waw.pl>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/hdlc_cisco.c | 1 +
+ drivers/net/wan/hdlc_fr.c    | 3 +++
+ drivers/net/wan/hdlc_ppp.c   | 1 +
+ 3 files changed, 5 insertions(+)
+
+diff --git a/drivers/net/wan/hdlc_cisco.c b/drivers/net/wan/hdlc_cisco.c
+index 444130655d8e..cb5898f7d68c 100644
+--- a/drivers/net/wan/hdlc_cisco.c
++++ b/drivers/net/wan/hdlc_cisco.c
+@@ -118,6 +118,7 @@ static void cisco_keepalive_send(struct net_device *dev, u32 type,
+ 	skb_put(skb, sizeof(struct cisco_packet));
+ 	skb->priority = TC_PRIO_CONTROL;
+ 	skb->dev = dev;
++	skb->protocol = htons(ETH_P_HDLC);
+ 	skb_reset_network_header(skb);
+ 
+ 	dev_queue_xmit(skb);
+diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
+index 12b35404cd8e..d6cfd51613ed 100644
+--- a/drivers/net/wan/hdlc_fr.c
++++ b/drivers/net/wan/hdlc_fr.c
+@@ -433,6 +433,8 @@ static netdev_tx_t pvc_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			if (pvc->state.fecn) /* TX Congestion counter */
+ 				dev->stats.tx_compressed++;
+ 			skb->dev = pvc->frad;
++			skb->protocol = htons(ETH_P_HDLC);
++			skb_reset_network_header(skb);
+ 			dev_queue_xmit(skb);
+ 			return NETDEV_TX_OK;
+ 		}
+@@ -555,6 +557,7 @@ static void fr_lmi_send(struct net_device *dev, int fullrep)
+ 	skb_put(skb, i);
+ 	skb->priority = TC_PRIO_CONTROL;
+ 	skb->dev = dev;
++	skb->protocol = htons(ETH_P_HDLC);
+ 	skb_reset_network_header(skb);
+ 
+ 	dev_queue_xmit(skb);
+diff --git a/drivers/net/wan/hdlc_ppp.c b/drivers/net/wan/hdlc_ppp.c
+index 16f33d1ffbfb..64f855651336 100644
+--- a/drivers/net/wan/hdlc_ppp.c
++++ b/drivers/net/wan/hdlc_ppp.c
+@@ -251,6 +251,7 @@ static void ppp_tx_cp(struct net_device *dev, u16 pid, u8 code,
+ 
+ 	skb->priority = TC_PRIO_CONTROL;
+ 	skb->dev = dev;
++	skb->protocol = htons(ETH_P_HDLC);
+ 	skb_reset_network_header(skb);
+ 	skb_queue_tail(&tx_queue, skb);
+ }
+-- 
+2.25.1
+
