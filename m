@@ -2,144 +2,482 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1214026CEC3
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 00:31:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9433126CEC7
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 00:31:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726513AbgIPWbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 18:31:44 -0400
-Received: from mail-dm6nam12on2134.outbound.protection.outlook.com ([40.107.243.134]:57697
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726187AbgIPWbl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Sep 2020 18:31:41 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XHq2kk4IMbnbypMHW+8EfopFhVUova5At7XyEuEQ7Z/ZU3n1riUsuMQ29PqwzRK/aV1pwW0BtdsKFtRCf5LCwsrYQimWZ9NQ3pniryqgcbWJScpuj74WzcnDVORd3mbUdJQSTQwXC+EyTIRtnXzJltgACkesMAs/Uk3Wq+BowPc0/AknLsF4liYz8t4CdVU9wSQh1SgcyuUKB6t4jIfU4445JQypcUjVG2NJT35iwZgM413XfXl1IYbt+e551THYFl0m9RTuW3nN/dNjFunXYeyEiKuPeja1CF8KKg8HRLipsEYUyCf1VOuntrg7shRmXeNdpIhF/hCWb/zApqwlpg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=367piMEasM5cbEsXMhz+DffljxGSrLlnMlQvsCu18BA=;
- b=EFmWscdAl3c+c6rZ+iFd4OIvBRiWTTUDcXSoRgI86YznYV5XlaiT0+XIeSbKnx/7BLMK9RR0SlqQzcVOypvJ7uUiMkQxRtHAfBYDd2kNz/IBZZSzXJ6jOquBM1dnB3Qiwbmrz2qMOI1cf/MBkmRnk+2BeCf3zXxv18hd9T5qBuhb9jkJjBsqevLnd+dyXI4bopBqTrWRQKKUUbtfzSt8WTvn0agzQa7o+97ALebMG2T81wfBEihhKSFS5S7zL27OLQWEMNO7FJrYeAIqhR6rJOzIlsLPU/VYB7KUBcrGKaNivSwqKREmmxrAAijX2CFJ2v5b5jUGQSGSHAq79Xyh6g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=367piMEasM5cbEsXMhz+DffljxGSrLlnMlQvsCu18BA=;
- b=MzpFLwJ2J6MiRUP8WqsB4sI8oKfjFUdNob7FWeY3KQUbjWuvSVq978AvnO/YTD+F5170jCdfc7YJDWcYPRcWc/jn9RP/nSCCavheJ2ktbiZBCwK3KUgcOCLUI+zND11mgP3sCOHN2rkMb6Oj7TXGIzz1zt+nA4ujdPpIHkn8n/8=
-Received: from DM5PR2101MB0934.namprd21.prod.outlook.com (2603:10b6:4:a5::36)
- by DM5PR21MB0281.namprd21.prod.outlook.com (2603:10b6:3:a7::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.1; Wed, 16 Sep
- 2020 22:31:38 +0000
-Received: from DM5PR2101MB0934.namprd21.prod.outlook.com
- ([fe80::6400:744d:ce9b:499a]) by DM5PR2101MB0934.namprd21.prod.outlook.com
- ([fe80::6400:744d:ce9b:499a%9]) with mapi id 15.20.3370.016; Wed, 16 Sep 2020
- 22:31:38 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        Andres Beltran <lkmlabelt@gmail.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Saruhan Karademir <skarade@microsoft.com>,
-        Juan Vazquez <juvazq@microsoft.com>,
+        id S1726588AbgIPWbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 18:31:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42386 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726187AbgIPWbq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 18:31:46 -0400
+Received: from localhost (52.sub-72-107-123.myvzw.com [72.107.123.52])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A43F8206B5;
+        Wed, 16 Sep 2020 22:31:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600295505;
+        bh=Ye+BgU+kxVtL+mwoYdOLNL+LbX7xusYS1JsD4TaD1vM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=0KxhFJqbXyHeqGJW2LJQr7VZUeCoAnMU+gkuTje5V+SGSQ5TabqMPziqXv3UdzicL
+         jWziK/PAYUVKnk4AUYV3/jpG5iekN5HUfhMkTEGwixrPS8j360fnFjw4+T5AqlR854
+         OzL1KDQ754OGNBKb0xpwOQP9ndMYvSGmw6z4mBgw=
+Date:   Wed, 16 Sep 2020 17:31:43 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v3] hv_netvsc: Add validation for untrusted Hyper-V values
-Thread-Topic: [PATCH v3] hv_netvsc: Add validation for untrusted Hyper-V
- values
-Thread-Index: AQHWjA5xloo3j6wqeUSXUjm/16PeWalr2cNQ
-Date:   Wed, 16 Sep 2020 22:31:38 +0000
-Message-ID: <DM5PR2101MB093495E2FCC02BF1C0291E57CA210@DM5PR2101MB0934.namprd21.prod.outlook.com>
-References: <20200916094727.46615-1-parri.andrea@gmail.com>
-In-Reply-To: <20200916094727.46615-1-parri.andrea@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=990a1d83-a6b9-4925-a417-cc704cfc5593;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-09-16T22:30:11Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [75.100.88.238]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 7669b01b-4c3f-40be-00c8-08d85a90471b
-x-ms-traffictypediagnostic: DM5PR21MB0281:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR21MB0281858EECF2C379CA91F92BCA210@DM5PR21MB0281.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4303;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bPgRVPuYf6U/jKzeSUnBqaYoEZ4i8Vmr6o+1ca32fWLIlzBzUbjvO4IHKLRwh60P96romTBnzlCgN7uPV6EcGUGrcX001lIqV4nXFFiWR7E+tW6ciQ2XkkOM+PJSaQz3iAQ7D9lALNuqzytnH9Z84RGPQj/P39ZD8G/950NtatxuKrojt3c65HIpZSNQ92HjuGp3bJ110xw1hWZIxeQ13+oc6o8ANyrQOGroZWos/4jGJ7Gmtp2BA47Gv3M6p7nxfc8LRs/OhjApnjXckoJqsmwYKi8YnI0k95PjSObg7IRktak55ltIQCkv4rScHBSOcBH15xLDYvsSWCH6EwOTFzcS4JuhpI4BPUsmEqOiHisqxQe64BTOiaXEbbdeRZ9T
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR2101MB0934.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(376002)(136003)(346002)(396003)(33656002)(55016002)(4326008)(9686003)(26005)(8990500004)(110136005)(186003)(316002)(66946007)(71200400001)(66476007)(52536014)(54906003)(66446008)(5660300002)(6506007)(76116006)(66556008)(53546011)(82960400001)(82950400001)(83380400001)(64756008)(7696005)(8676002)(86362001)(2906002)(8936002)(10290500003)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: v6E/Bu0EITHzeo6UsfFzCwMkxrLGFkFSF8GTVuQlXNXwn/loybUjJM29bTdps1CvNJ+k4jMsEr77oYATSLUPB6j3mPh6Ff1EH3IZrIhuXo6rD8qs8EO+kk7ghKoEXZ1s4NUjQIW1Ew/gDAYbcfkc/2yKpI71LPC/NCx/F5z/+WNkhF8WmAayXaWfVo88FmoHCivYAj8Cyu4JwMCWb/EJMFMh4v3yq8wqTFVnqS02wnhK3l1BlF7M2Yer71f2TyYrkhByNAl/XPVVqK4FHI5R5HKfO71byZv60cBNvgrzM2uIZqg5oNHXJb8+RoXG12anmGiR7BPVg5gGxqGmI+lYqfTlmJpFKQ6sns0wPG4pVVZ2n3lGPZ5uwARxXmaG3kp9b2ue+6UNs3nAXl/fZQbnNRLZzHKepZxcw2X5QttO/Fba0k+P1J7APVVyEmUFN3UkxYYBij3YaWCK9Fan0JRa7xkXdWzUriB4pXc2qLkaN0o9lB0EqWBfo3vRFq/xyGKj7dqTNzmOuWWbGwxy13SCZTiW6ddbkfwWwlUWIwWwPQ92u3392/tCAt/uNc7U/73NVEr4y4LiOhBaLKOesllCz/yXmJvz2mqCEYs5gNrB9QyM0UO28xgzJQUN3PXtoXp+8T5VDGSHAFe7rdQTndTy0w==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-net-drivers@solarflare.com,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Myron Stowe <myron.stowe@redhat.com>
+Subject: Re: [PATCH] Convert enum pci_dev_flags to bit fields in struct
+ pci_dev
+Message-ID: <20200916223143.GA1590208@bjorn-Precision-5520>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR2101MB0934.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7669b01b-4c3f-40be-00c8-08d85a90471b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2020 22:31:38.6208
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tXoL+RWoegKXcTzY0riZ9ALL2f0DhVFN1HiKoxK5WS1dzp5IyFjQDinUwyuyR/pXnRvj9K47QzHx6jJ5ffqGMQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR21MB0281
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200914035756.1965406-1-kw@linux.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+[+cc Kai-Heng, Colin, Myron]
 
+On Mon, Sep 14, 2020 at 03:57:56AM +0000, Krzysztof Wilczyński wrote:
+> All the flags defined in the enum pci_dev_flags are used to determine
+> whether a particular feature of an underlying PCI device should be used
+> or not - features are also often disabled via a device-specific quirk.
+> 
+> These flags are tightly coupled with a PCI device and primarily used in
+> simple binary on/off manner to check whether something is enabled or
+> disabled, and have almost no other users (aside of two network drivers)
+> outside of the PCI device drivers space.
+> 
+> Therefore, convert enum pci_dev_flags into a set of bit fields in the
+> struct pci_dev, and then drop said enum and the typedef pci_dev_flags_t.
+> 
+> This will keep PCI device-specific features as part of the struct
+> pci_dev and make the code that used to use flags simpler.
+> 
+> Suggested-by: Bjorn Helgaas <bhelgaas@google.com>
+> Signed-off-by: Krzysztof Wilczyński <kw@linux.com>
 
-> -----Original Message-----
-> From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> Sent: Wednesday, September 16, 2020 5:47 AM
-> To: linux-kernel@vger.kernel.org
-> Cc: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
-> <haiyangz@microsoft.com>; Stephen Hemminger
-> <sthemmin@microsoft.com>; Wei Liu <wei.liu@kernel.org>; linux-
-> hyperv@vger.kernel.org; Andres Beltran <lkmlabelt@gmail.com>; Michael
-> Kelley <mikelley@microsoft.com>; Saruhan Karademir
-> <skarade@microsoft.com>; Juan Vazquez <juvazq@microsoft.com>; Andrea
-> Parri <parri.andrea@gmail.com>; David S. Miller <davem@davemloft.net>;
-> Jakub Kicinski <kuba@kernel.org>; netdev@vger.kernel.org
-> Subject: [PATCH v3] hv_netvsc: Add validation for untrusted Hyper-V value=
-s
->=20
-> From: Andres Beltran <lkmlabelt@gmail.com>
->=20
-> For additional robustness in the face of Hyper-V errors or malicious
-> behavior, validate all values that originate from packets that Hyper-V
-> has sent to the guest in the host-to-guest ring buffer. Ensure that
-> invalid values cannot cause indexing off the end of an array, or
-> subvert an existing validation via integer overflow. Ensure that
-> outgoing packets do not have any leftover guest memory that has not
-> been zeroed out.
->=20
-> Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
-> Co-developed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: netdev@vger.kernel.org
+I like this because we currently have two styles for setting per-PCI
+dev flags:
+
+  pdev->dev_flags |= PCI_DEV_FLAGS_NO_D3
+  pdev->no_d3cold = true;
+
+and there's no obvious reason to choose one way over the other.  This
+patch converts everything to the second style.
+
+We might look at doing pci_bus_flags_t at the same time.
+
+How much heartburn does this cause distro folks?  You can let me know
+off-list if you want :)
+
+Generally we don't worry too much in the upstream world about breaking
+out-of-tree modules, and these are trivial changes that affect very
+few drivers anyway, but I don't want to gratuitously make things hard
+for distros.
+
 > ---
-> Changes in v3:
->   - Include header size in the estimate for hv_pkt_datalen (Haiyang)
-> Changes in v2:
->   - Replace size check on struct nvsp_message with sub-checks (Haiyang)
->=20
->  drivers/net/hyperv/hyperv_net.h   |   4 +
->  drivers/net/hyperv/netvsc.c       | 124 ++++++++++++++++++++++++++----
->  drivers/net/hyperv/netvsc_drv.c   |   7 ++
->  drivers/net/hyperv/rndis_filter.c |  73 ++++++++++++++++--
->  4 files changed, 188 insertions(+), 20 deletions(-)
-
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-
+>  drivers/net/ethernet/atheros/alx/main.c |  2 +-
+>  drivers/net/ethernet/sfc/ef10_sriov.c   |  3 +-
+>  drivers/pci/msi.c                       |  2 +-
+>  drivers/pci/pci.c                       | 22 ++++++------
+>  drivers/pci/probe.c                     |  2 +-
+>  drivers/pci/quirks.c                    | 24 ++++++-------
+>  drivers/pci/search.c                    |  4 +--
+>  drivers/pci/vpd.c                       |  4 +--
+>  include/linux/pci.h                     | 47 +++++++++----------------
+>  9 files changed, 47 insertions(+), 63 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
+> index 9b7f1af5f574..c52669f8ec26 100644
+> --- a/drivers/net/ethernet/atheros/alx/main.c
+> +++ b/drivers/net/ethernet/atheros/alx/main.c
+> @@ -1763,7 +1763,7 @@ static int alx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	netdev->watchdog_timeo = ALX_WATCHDOG_TIME;
+>  
+>  	if (ent->driver_data & ALX_DEV_QUIRK_MSI_INTX_DISABLE_BUG)
+> -		pdev->dev_flags |= PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG;
+> +		pdev->msi_intx_disabled = 1;
+>  
+>  	err = alx_init_sw(alx);
+>  	if (err) {
+> diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
+> index 21fa6c0e8873..9af7e11ea113 100644
+> --- a/drivers/net/ethernet/sfc/ef10_sriov.c
+> +++ b/drivers/net/ethernet/sfc/ef10_sriov.c
+> @@ -122,8 +122,7 @@ static void efx_ef10_sriov_free_vf_vports(struct efx_nic *efx)
+>  		struct ef10_vf *vf = nic_data->vf + i;
+>  
+>  		/* If VF is assigned, do not free the vport  */
+> -		if (vf->pci_dev &&
+> -		    vf->pci_dev->dev_flags & PCI_DEV_FLAGS_ASSIGNED)
+> +		if (vf->pci_dev && vf->pci_dev->flags_assigned)
+>  			continue;
+>  
+>  		if (vf->vport_assigned) {
+> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+> index 30ae4ffda5c1..719ae72d9028 100644
+> --- a/drivers/pci/msi.c
+> +++ b/drivers/pci/msi.c
+> @@ -405,7 +405,7 @@ static void free_msi_irqs(struct pci_dev *dev)
+>  
+>  static void pci_intx_for_msi(struct pci_dev *dev, int enable)
+>  {
+> -	if (!(dev->dev_flags & PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG))
+> +	if (!dev->msi_intx_disabled)
+>  		pci_intx(dev, enable);
+>  }
+>  
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index e39c5499770f..08ffe872c34c 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -1320,7 +1320,7 @@ int pci_set_power_state(struct pci_dev *dev, pci_power_t state)
+>  	 * This device is quirked not to be put into D3, so don't put it in
+>  	 * D3
+>  	 */
+> -	if (state >= PCI_D3hot && (dev->dev_flags & PCI_DEV_FLAGS_NO_D3))
+> +	if (state >= PCI_D3hot && dev->no_d3)
+>  		return 0;
+>  
+>  	/*
+> @@ -4528,7 +4528,7 @@ bool pcie_has_flr(struct pci_dev *dev)
+>  {
+>  	u32 cap;
+>  
+> -	if (dev->dev_flags & PCI_DEV_FLAGS_NO_FLR_RESET)
+> +	if (dev->no_flr_reset)
+>  		return false;
+>  
+>  	pcie_capability_read_dword(dev, PCI_EXP_DEVCAP, &cap);
+> @@ -4574,7 +4574,7 @@ static int pci_af_flr(struct pci_dev *dev, int probe)
+>  	if (!pos)
+>  		return -ENOTTY;
+>  
+> -	if (dev->dev_flags & PCI_DEV_FLAGS_NO_FLR_RESET)
+> +	if (dev->no_flr_reset)
+>  		return -ENOTTY;
+>  
+>  	pci_read_config_byte(dev, pos + PCI_AF_CAP, &cap);
+> @@ -4628,7 +4628,7 @@ static int pci_pm_reset(struct pci_dev *dev, int probe)
+>  {
+>  	u16 csr;
+>  
+> -	if (!dev->pm_cap || dev->dev_flags & PCI_DEV_FLAGS_NO_PM_RESET)
+> +	if (!dev->pm_cap || dev->no_pm_reset)
+>  		return -ENOTTY;
+>  
+>  	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &csr);
+> @@ -4890,7 +4890,7 @@ static int pci_parent_bus_reset(struct pci_dev *dev, int probe)
+>  	struct pci_dev *pdev;
+>  
+>  	if (pci_is_root_bus(dev->bus) || dev->subordinate ||
+> -	    !dev->bus->self || dev->dev_flags & PCI_DEV_FLAGS_NO_BUS_RESET)
+> +	    !dev->bus->self || dev->no_bus_reset)
+>  		return -ENOTTY;
+>  
+>  	list_for_each_entry(pdev, &dev->bus->devices, bus_list)
+> @@ -4922,8 +4922,7 @@ static int pci_dev_reset_slot_function(struct pci_dev *dev, int probe)
+>  {
+>  	struct pci_dev *pdev;
+>  
+> -	if (dev->subordinate || !dev->slot ||
+> -	    dev->dev_flags & PCI_DEV_FLAGS_NO_BUS_RESET)
+> +	if (dev->subordinate || !dev->slot || dev->no_bus_reset)
+>  		return -ENOTTY;
+>  
+>  	list_for_each_entry(pdev, &dev->bus->devices, bus_list)
+> @@ -5195,11 +5194,11 @@ static bool pci_bus_resetable(struct pci_bus *bus)
+>  	struct pci_dev *dev;
+>  
+>  
+> -	if (bus->self && (bus->self->dev_flags & PCI_DEV_FLAGS_NO_BUS_RESET))
+> +	if (bus->self && bus->self->no_bus_reset)
+>  		return false;
+>  
+>  	list_for_each_entry(dev, &bus->devices, bus_list) {
+> -		if (dev->dev_flags & PCI_DEV_FLAGS_NO_BUS_RESET ||
+> +		if (dev->no_bus_reset ||
+>  		    (dev->subordinate && !pci_bus_resetable(dev->subordinate)))
+>  			return false;
+>  	}
+> @@ -5262,14 +5261,13 @@ static bool pci_slot_resetable(struct pci_slot *slot)
+>  {
+>  	struct pci_dev *dev;
+>  
+> -	if (slot->bus->self &&
+> -	    (slot->bus->self->dev_flags & PCI_DEV_FLAGS_NO_BUS_RESET))
+> +	if (slot->bus->self && slot->bus->self->no_bus_reset)
+>  		return false;
+>  
+>  	list_for_each_entry(dev, &slot->bus->devices, bus_list) {
+>  		if (!dev->slot || dev->slot != slot)
+>  			continue;
+> -		if (dev->dev_flags & PCI_DEV_FLAGS_NO_BUS_RESET ||
+> +		if (dev->no_bus_reset ||
+>  		    (dev->subordinate && !pci_bus_resetable(dev->subordinate)))
+>  			return false;
+>  	}
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 03d37128a24f..439cd35fe8f9 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -2089,7 +2089,7 @@ static void pci_configure_relaxed_ordering(struct pci_dev *dev)
+>  	if (!root)
+>  		return;
+>  
+> -	if (root->dev_flags & PCI_DEV_FLAGS_NO_RELAXED_ORDERING) {
+> +	if (root->no_relaxed_ordering) {
+>  		pcie_capability_clear_word(dev, PCI_EXP_DEVCTL,
+>  					   PCI_EXP_DEVCTL_RELAX_EN);
+>  		pci_info(dev, "Relaxed Ordering disabled because the Root Port didn't support it\n");
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index 2a589b6d6ed8..e23290619683 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -1341,7 +1341,7 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82801CA_10, qui
+>  /* Some ATA devices break if put into D3 */
+>  static void quirk_no_ata_d3(struct pci_dev *pdev)
+>  {
+> -	pdev->dev_flags |= PCI_DEV_FLAGS_NO_D3;
+> +	pdev->no_d3 = 1;
+>  }
+>  /* Quirk the legacy ATA devices only. The AHCI ones are ok */
+>  DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_SERVERWORKS, PCI_ANY_ID,
+> @@ -2962,7 +2962,7 @@ DECLARE_PCI_FIXUP_RESUME_EARLY(PCI_VENDOR_ID_NVIDIA, PCI_ANY_ID, nv_msi_ht_cap_q
+>  
+>  static void quirk_msi_intx_disable_bug(struct pci_dev *dev)
+>  {
+> -	dev->dev_flags |= PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG;
+> +	dev->msi_intx_disabled = 1;
+>  }
+>  
+>  static void quirk_msi_intx_disable_ati_bug(struct pci_dev *dev)
+> @@ -2980,7 +2980,7 @@ static void quirk_msi_intx_disable_ati_bug(struct pci_dev *dev)
+>  		return;
+>  
+>  	if ((p->revision < 0x3B) && (p->revision >= 0x30))
+> -		dev->dev_flags |= PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG;
+> +		dev->msi_intx_disabled = 1;
+>  	pci_dev_put(p);
+>  }
+>  
+> @@ -2989,7 +2989,7 @@ static void quirk_msi_intx_disable_qca_bug(struct pci_dev *dev)
+>  	/* AR816X/AR817X/E210X MSI is fixed at HW level from revision 0x18 */
+>  	if (dev->revision < 0x18) {
+>  		pci_info(dev, "set MSI_INTX_DISABLE_BUG flag\n");
+> -		dev->dev_flags |= PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG;
+> +		dev->msi_intx_disabled = 1;
+>  	}
+>  }
+>  DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_BROADCOM,
+> @@ -3554,7 +3554,7 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_ANY_ID,
+>  
+>  static void quirk_no_bus_reset(struct pci_dev *dev)
+>  {
+> -	dev->dev_flags |= PCI_DEV_FLAGS_NO_BUS_RESET;
+> +	dev->no_bus_reset = 1;
+>  }
+>  
+>  /*
+> @@ -3584,7 +3584,7 @@ static void quirk_no_pm_reset(struct pci_dev *dev)
+>  	 * PM reset may be better than nothing.
+>  	 */
+>  	if (!pci_is_root_bus(dev->bus))
+> -		dev->dev_flags |= PCI_DEV_FLAGS_NO_PM_RESET;
+> +		dev->no_pm_reset = 1;
+>  }
+>  
+>  /*
+> @@ -4124,7 +4124,7 @@ static void quirk_use_pcie_bridge_dma_alias(struct pci_dev *pdev)
+>  	    pdev->hdr_type == PCI_HEADER_TYPE_BRIDGE &&
+>  	    !pci_is_pcie(pdev) && pci_is_pcie(pdev->bus->self) &&
+>  	    pci_pcie_type(pdev->bus->self) != PCI_EXP_TYPE_PCI_BRIDGE)
+> -		pdev->dev_flags |= PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS;
+> +		pdev->pcie_bridge_alias = 1;
+>  }
+>  /* ASM1083/1085, https://bugzilla.kernel.org/show_bug.cgi?id=44881#c46 */
+>  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_ASMEDIA, 0x1080,
+> @@ -4189,7 +4189,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x295A, quirk_pex_vca_alias);
+>   */
+>  static void quirk_bridge_cavm_thrx2_pcie_root(struct pci_dev *pdev)
+>  {
+> -	pdev->dev_flags |= PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT;
+> +	pdev->bridge_xlate_root = 1;
+>  }
+>  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+>  				quirk_bridge_cavm_thrx2_pcie_root);
+> @@ -4225,7 +4225,7 @@ DECLARE_PCI_FIXUP_CLASS_EARLY(0x1797, 0x6869, PCI_CLASS_NOT_DEFINED, 8,
+>   */
+>  static void quirk_relaxedordering_disable(struct pci_dev *dev)
+>  {
+> -	dev->dev_flags |= PCI_DEV_FLAGS_NO_RELAXED_ORDERING;
+> +	dev->no_relaxed_ordering = 1;
+>  	pci_info(dev, "Disable Relaxed Ordering Attributes to avoid PCIe Completion erratum\n");
+>  }
+>  
+> @@ -4557,7 +4557,7 @@ static int pci_quirk_intel_pch_acs(struct pci_dev *dev, u16 acs_flags)
+>  	if (!pci_quirk_intel_pch_acs_match(dev))
+>  		return -ENOTTY;
+>  
+> -	if (dev->dev_flags & PCI_DEV_FLAGS_ACS_ENABLED_QUIRK)
+> +	if (dev->acs_quirk_enabled)
+>  		return pci_acs_ctrl_enabled(acs_flags,
+>  			PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF);
+>  
+> @@ -4961,7 +4961,7 @@ static int pci_quirk_enable_intel_pch_acs(struct pci_dev *dev)
+>  
+>  	pci_quirk_enable_intel_rp_mpc_acs(dev);
+>  
+> -	dev->dev_flags |= PCI_DEV_FLAGS_ACS_ENABLED_QUIRK;
+> +	dev->acs_quirk_enabled = 1;
+>  
+>  	pci_info(dev, "Intel PCH root port ACS workaround enabled\n");
+>  
+> @@ -5171,7 +5171,7 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x443, quirk_intel_qat_vf_cap);
+>   */
+>  static void quirk_no_flr(struct pci_dev *dev)
+>  {
+> -	dev->dev_flags |= PCI_DEV_FLAGS_NO_FLR_RESET;
+> +	dev->no_flr_reset = 1;
+>  }
+>  DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_AMD, 0x1487, quirk_no_flr);
+>  DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_AMD, 0x148c, quirk_no_flr);
+> diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+> index 2061672954ee..b26b12e2cc3f 100644
+> --- a/drivers/pci/search.c
+> +++ b/drivers/pci/search.c
+> @@ -67,7 +67,7 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
+>  		tmp = bus->self;
+>  
+>  		/* stop at bridge where translation unit is associated */
+> -		if (tmp->dev_flags & PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT)
+> +		if (tmp->bridge_xlate_root)
+>  			return ret;
+>  
+>  		/*
+> @@ -99,7 +99,7 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
+>  				continue;
+>  			}
+>  		} else {
+> -			if (tmp->dev_flags & PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS)
+> +			if (tmp->pcie_bridge_alias)
+>  				ret = fn(tmp,
+>  					 PCI_DEVID(tmp->subordinate->number,
+>  						   PCI_DEVFN(0, 0)), data);
+> diff --git a/drivers/pci/vpd.c b/drivers/pci/vpd.c
+> index 7915d10f9aa1..5c4366362bd7 100644
+> --- a/drivers/pci/vpd.c
+> +++ b/drivers/pci/vpd.c
+> @@ -380,7 +380,7 @@ int pci_vpd_init(struct pci_dev *dev)
+>  		return -ENOMEM;
+>  
+>  	vpd->len = PCI_VPD_MAX_SIZE;
+> -	if (dev->dev_flags & PCI_DEV_FLAGS_VPD_REF_F0)
+> +	if (dev->pci_vpd_f0)
+>  		vpd->ops = &pci_vpd_f0_ops;
+>  	else
+>  		vpd->ops = &pci_vpd_ops;
+> @@ -536,7 +536,7 @@ static void quirk_f0_vpd_link(struct pci_dev *dev)
+>  
+>  	if (f0->vpd && dev->class == f0->class &&
+>  	    dev->vendor == f0->vendor && dev->device == f0->device)
+> -		dev->dev_flags |= PCI_DEV_FLAGS_VPD_REF_F0;
+> +		dev->pci_vpd_f0 = 1;
+>  
+>  	pci_dev_put(f0);
+>  }
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 835530605c0d..09b15f41a0ab 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -203,32 +203,6 @@ enum pcie_reset_state {
+>  	pcie_hot_reset = (__force pcie_reset_state_t) 3
+>  };
+>  
+> -typedef unsigned short __bitwise pci_dev_flags_t;
+> -enum pci_dev_flags {
+> -	/* INTX_DISABLE in PCI_COMMAND register disables MSI too */
+> -	PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG = (__force pci_dev_flags_t) (1 << 0),
+> -	/* Device configuration is irrevocably lost if disabled into D3 */
+> -	PCI_DEV_FLAGS_NO_D3 = (__force pci_dev_flags_t) (1 << 1),
+> -	/* Provide indication device is assigned by a Virtual Machine Manager */
+> -	PCI_DEV_FLAGS_ASSIGNED = (__force pci_dev_flags_t) (1 << 2),
+> -	/* Flag for quirk use to store if quirk-specific ACS is enabled */
+> -	PCI_DEV_FLAGS_ACS_ENABLED_QUIRK = (__force pci_dev_flags_t) (1 << 3),
+> -	/* Use a PCIe-to-PCI bridge alias even if !pci_is_pcie */
+> -	PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS = (__force pci_dev_flags_t) (1 << 5),
+> -	/* Do not use bus resets for device */
+> -	PCI_DEV_FLAGS_NO_BUS_RESET = (__force pci_dev_flags_t) (1 << 6),
+> -	/* Do not use PM reset even if device advertises NoSoftRst- */
+> -	PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 7),
+> -	/* Get VPD from function 0 VPD */
+> -	PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 8),
+> -	/* A non-root bridge where translation occurs, stop alias search here */
+> -	PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT = (__force pci_dev_flags_t) (1 << 9),
+> -	/* Do not use FLR even if device advertises PCI_AF_CAP */
+> -	PCI_DEV_FLAGS_NO_FLR_RESET = (__force pci_dev_flags_t) (1 << 10),
+> -	/* Don't use Relaxed Ordering for TLPs directed at this device */
+> -	PCI_DEV_FLAGS_NO_RELAXED_ORDERING = (__force pci_dev_flags_t) (1 << 11),
+> -};
+> -
+>  enum pci_irq_reroute_variant {
+>  	INTEL_IRQ_REROUTE_VARIANT = 1,
+>  	MAX_IRQ_REROUTE_VARIANTS = 3
+> @@ -445,7 +419,20 @@ struct pci_dev {
+>  	unsigned int	is_probed:1;		/* Device probing in progress */
+>  	unsigned int	link_active_reporting:1;/* Device capable of reporting link active */
+>  	unsigned int	no_vf_scan:1;		/* Don't scan for VFs after IOV enablement */
+> -	pci_dev_flags_t dev_flags;
+> +
+> +	/* PCI device flags */
+> +	unsigned int	flags_assigned:1;	/* Provide indication device is assigned by a Virtual Machine Manager */
+> +	unsigned int	msi_intx_disabled:1;	/* INTX_DISABLE in PCI_COMMAND register disables MSI too */
+> +	unsigned int	acs_quirk_enabled:1;	/* Flag for quirk use to store if quirk-specific ACS is enabled */
+> +	unsigned int	no_d3:1;		/* Device configuration is irrevocably lost if disabled into D3 */
+> +	unsigned int	no_bus_reset:1;		/* Don't use bus resets for device */
+> +	unsigned int	no_pm_reset:1;		/* Don't use PM reset even if device advertises NoSoftRst- */
+> +	unsigned int	no_flr_reset:1;		/* Don't use FLR even if device advertises PCI_AF_CAP */
+> +	unsigned int	no_relaxed_ordering:1;	/* Don't use Relaxed Ordering for TLPs directed at this device */
+> +	unsigned int	pcie_bridge_alias:1;	/* Use a PCIe-to-PCI bridge alias even if !pci_is_pcie */
+> +	unsigned int	bridge_xlate_root:1;	/* A non-root bridge where translation occurs, stop alias search here */
+> +	unsigned int	pci_vpd_f0:1;		/* Get VPD from function 0 VPD */
+> +
+>  	atomic_t	enable_cnt;	/* pci_enable_device has been called */
+>  
+>  	u32		saved_config_space[16]; /* Config space saved at suspend time */
+> @@ -2350,15 +2337,15 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
+>  /* Helper functions for operation of device flag */
+>  static inline void pci_set_dev_assigned(struct pci_dev *pdev)
+>  {
+> -	pdev->dev_flags |= PCI_DEV_FLAGS_ASSIGNED;
+> +	pdev->flags_assigned = 1;
+>  }
+>  static inline void pci_clear_dev_assigned(struct pci_dev *pdev)
+>  {
+> -	pdev->dev_flags &= ~PCI_DEV_FLAGS_ASSIGNED;
+> +	pdev->flags_assigned = 0;
+>  }
+>  static inline bool pci_is_dev_assigned(struct pci_dev *pdev)
+>  {
+> -	return (pdev->dev_flags & PCI_DEV_FLAGS_ASSIGNED) == PCI_DEV_FLAGS_ASSIGNED;
+> +	return !!pdev->flags_assigned;
+>  }
+>  
+>  /**
+> -- 
+> 2.28.0
+> 
