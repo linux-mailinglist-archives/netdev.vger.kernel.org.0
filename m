@@ -2,91 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5C3526BC29
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 08:07:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E1CD26BC2C
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 08:08:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726149AbgIPGHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 02:07:52 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:48380 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726093AbgIPGHw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Sep 2020 02:07:52 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1600236472; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=PjDPPtDXwEfTn0V8emtHYytm7C14QTX7ob6r1/GtgjU=;
- b=GUgyy6LIdGKcdQyaOoWdpqm64uerHAuPVEsQXw+iLaPZkyy8Q6tHO8caxoJR/20x/UN11QEZ
- I/5PzJfEGoJuLQJQEjS00xokf+uNDrX8ErWGxta1pHcYhkcdsjc5GdFkDc00qWBAg6w2J65/
- yBicBBy7t1UMXU4wlLsDipNOLeE=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 5f61ab75698ee477d1bbcf51 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 16 Sep 2020 06:06:45
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9232EC433F1; Wed, 16 Sep 2020 06:06:45 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 93CE2C433C8;
-        Wed, 16 Sep 2020 06:06:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 93CE2C433C8
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726267AbgIPGIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 02:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39148 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726100AbgIPGIB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 02:08:01 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79032C061788
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 23:07:57 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id a9so1623313wmm.2
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 23:07:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FILX8ZF1rNUuvb2e2fZU8NgwKYYWJqf30ppLCJV+z6w=;
+        b=d1VzDd3mYS7pu2QYeKz1zUzCdKc5ZOp1uul/AVh6cszwZDhJ4wMm02nwguzbaxZzfY
+         obrtxjKsCZjhfYtI7l1LwtVynNLX4bwSx6PQClhoL1eb+e+CFnnuveVEJH7fb6DqcOQg
+         RwEdyfi+ewam84AqUVmS9MXFlmz8B38nkQ1aPScJalZDmRnbPArDO5BVhhlL6ZfYmXuI
+         r18K5A2VtrLnmiIcmJNHKt25PE4HPMk+Y0O8LWT24r7j7Q8BXbYJr24BDFY4IbXOfgWe
+         Vg4Kc3fZVL/ZVtIvde0K5K1MtDD612OPrFdUuapY8puXwbfvcOVUHZQj2d3o1SWis16f
+         unag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FILX8ZF1rNUuvb2e2fZU8NgwKYYWJqf30ppLCJV+z6w=;
+        b=uceuysgCrTPstZ9DL4uxouLKzjAOCCOAZn9g+htq6q1z2oBbRtsWMAxnp2eKf6T7e9
+         YTBNDtcKz6NfjEFzgotphSS/cHnawt/5+2JhjAcBw8it00e06V64BhhPJid+07e2oNX3
+         Kbxbj4IKF+27ncXOiXnouG6sBhPkNTwu/PMz7Ro5ooZVsyL1jl/ca0yR+0isrqVyr6zp
+         JdydweUDlYciYo2lTillqOX/ebCFC0ZnIfpVcOTu8O7gtR2T8rMLMDPyAcEy9Xda9uqt
+         aa4O7Vgx1r/gZq9s+0hcE7kcC2KxjWuTEX3NqiVde+1iIO3l6U/+N6EwqgMJAR1ESjNN
+         Y2RQ==
+X-Gm-Message-State: AOAM532Do/1O4zdrnx9kIAGth+H2tFWRwq7eIaIqM/b9vFauZCPMoI4L
+        4h6P61C3m6YQz1BngZl/QX5LQMH8RF8ne29z
+X-Google-Smtp-Source: ABdhPJwUVB86ROAps9tp1EUn0uyafRfvbe5vpiWx+yD4iQ0rOCSyGJ5EpgDvgkhiEaHlxi82N5PyEQ==
+X-Received: by 2002:a7b:c4c3:: with SMTP id g3mr2835568wmk.128.1600236475870;
+        Tue, 15 Sep 2020 23:07:55 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id b84sm3579923wmd.0.2020.09.15.23.07.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Sep 2020 23:07:55 -0700 (PDT)
+Date:   Wed, 16 Sep 2020 08:07:54 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next RFC v4 03/15] devlink: Add reload action stats
+Message-ID: <20200916060754.GA2278@nanopsycho>
+References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
+ <1600063682-17313-4-git-send-email-moshe@mellanox.com>
+ <20200914133939.GG2236@nanopsycho.orion>
+ <a5b7cbd5-ef55-1d74-a21e-5fb962307773@nvidia.com>
+ <20200915133309.GP2236@nanopsycho.orion>
+ <3e5869e2-aad7-0d71-12fb-6d14c76864c9@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] brcmsmac: phy_lcn: Eliminate defined but not used
- 'lcnphy_rx_iqcomp_table_rev0'
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200910140455.1168174-1-yanaijie@huawei.com>
-References: <20200910140455.1168174-1-yanaijie@huawei.com>
-To:     Jason Yan <yanaijie@huawei.com>
-Cc:     <arend.vanspriel@broadcom.com>, <franky.lin@broadcom.com>,
-        <hante.meuleman@broadcom.com>, <chi-hsien.lin@cypress.com>,
-        <wright.feng@cypress.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <lee.jones@linaro.org>, <yanaijie@huawei.com>,
-        <linux-wireless@vger.kernel.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <brcm80211-dev-list@cypress.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Hulk Robot <hulkci@huawei.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200916060645.9232EC433F1@smtp.codeaurora.org>
-Date:   Wed, 16 Sep 2020 06:06:45 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3e5869e2-aad7-0d71-12fb-6d14c76864c9@nvidia.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jason Yan <yanaijie@huawei.com> wrote:
+Tue, Sep 15, 2020 at 10:20:39PM CEST, moshe@nvidia.com wrote:
+>
+>On 9/15/2020 4:33 PM, Jiri Pirko wrote:
+>> Tue, Sep 15, 2020 at 02:30:19PM CEST, moshe@nvidia.com wrote:
+>> > On 9/14/2020 4:39 PM, Jiri Pirko wrote:
+>> > > Mon, Sep 14, 2020 at 08:07:50AM CEST, moshe@mellanox.com wrote:
+>> [..]
+>> 
+>> 
+>> > > > +/**
+>> > > > + *	devlink_reload_implicit_actions_performed - Update devlink on reload actions
+>> > > > + *	  performed which are not a direct result of devlink reload call.
+>> > > > + *
+>> > > > + *	This should be called by a driver after performing reload actions in case it was not
+>> > > > + *	a result of devlink reload call. For example fw_activate was performed as a result
+>> > > > + *	of devlink reload triggered fw_activate on another host.
+>> > > > + *	The motivation for this function is to keep data on reload actions performed on this
+>> > > > + *	function whether it was done due to direct devlink reload call or not.
+>> > > > + *
+>> > > > + *	@devlink: devlink
+>> > > > + *	@limit_level: reload action limit level
+>> > > > + *	@actions_performed: bitmask of actions performed
+>> > > > + */
+>> > > > +void devlink_reload_implicit_actions_performed(struct devlink *devlink,
+>> > > > +					       enum devlink_reload_action_limit_level limit_level,
+>> > > > +					       unsigned long actions_performed)
+>> > > What I'm a bit scarred of that the driver would call this from withing
+>> > > reload_down()/up() ops. Perheps this could be WARN_ON'ed here (or in
+>> > > devlink_reload())?
+>> > > 
+>> > Not sure how I know if it was called from devlink_reload_down()/up() ? Maybe
+>> > mutex ? So the warn will be actually mutex deadlock ?
+>> No. Don't abuse mutex for this.
+>> Just make sure that the counters do not move when you call
+>> reload_down/up().
+>> 
+>
+>Can make that, but actually I better take devlink->lock anyway in this
+>function to avoid races, WDYT ?
 
-> This addresses the following gcc warning with "make W=1":
-> 
-> drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c:361:25:
-> warning: ‘lcnphy_rx_iqcomp_table_rev0’ defined but not used
-> [-Wunused-const-variable=]
->   361 | struct lcnphy_rx_iqcomp lcnphy_rx_iqcomp_table_rev0[] = {
->       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
+Either you need to protect some data or not. So if you do, do it.
 
-Already fixed.
 
-Patch set to Rejected.
+>
+>> > > > +{
+>> > > > +	if (!devlink_reload_supported(devlink))
+>> > > Hmm. I think that the driver does not have to support the reload and can
+>> > > still be reloaded by another instance and update the stats here. Why
+>> > > not?
+>> > > 
+>> > But I show counters only for supported reload actions and levels, otherwise
+>> > we will have these counters on devlink dev show output for other drivers that
+>> > don't have support for devlink reload and didn't implement any of these
+>> > including this function and these drivers may do some actions like
+>> > fw_activate in another way and don't update the stats and so that will make
+>> > these stats misleading. They will show history "stats" but they don't update
+>> > them as they didn't apply anything related to devlink reload.
+>> The case I tried to point at is the driver instance, that does not
+>> implement reload ops itself, but still it can be reloaded by someone else -
+>> the other driver instance outside.
+>> 
+>> The counters should work no matter if the driver implements reload ops
+>> or not. Why wouldn't they? The user still likes to know that the devices
+>> was reloaded.
+>> 
+>
+>OK, so you say that every driver should show all counters no matter what
+>actions it supports and if it supports devlink reload at all, right ?
 
--- 
-https://patchwork.kernel.org/patch/11769331/
+Well, as I wrote in the other email, I think that there should be 2 sets
+of stats for this.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
+>
+>> 
+>> > > > +		return;
+>> > > > +	devlink_reload_action_stats_update(devlink, limit_level, actions_performed);
+>> > > > +}
+>> > > > +EXPORT_SYMBOL_GPL(devlink_reload_implicit_actions_performed);
+>> > > > +
+>> > > > static int devlink_reload(struct devlink *devlink, struct net *dest_net,
+>> > > > 			  enum devlink_reload_action action,
+>> > > > 			  enum devlink_reload_action_limit_level limit_level,
+>> > > > -			  struct netlink_ext_ack *extack, unsigned long *actions_performed)
+>> > > > +			  struct netlink_ext_ack *extack, unsigned long *actions_performed_out)
+>> > > > {
+>> > > > +	unsigned long actions_performed;
+>> > > > 	int err;
+>> > > > 
+>> > > > 	if (!devlink->reload_enabled)
+>> > > > @@ -2998,9 +3045,14 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
+>> > > > 	if (dest_net && !net_eq(dest_net, devlink_net(devlink)))
+>> > > > 		devlink_reload_netns_change(devlink, dest_net);
+>> > > > 
+>> > > > -	err = devlink->ops->reload_up(devlink, action, limit_level, extack, actions_performed);
+>> > > > +	err = devlink->ops->reload_up(devlink, action, limit_level, extack, &actions_performed);
+>> > > > 	devlink_reload_failed_set(devlink, !!err);
+>> > > > -	return err;
+>> > > > +	if (err)
+>> > > > +		return err;
+>> > > > +	devlink_reload_action_stats_update(devlink, limit_level, actions_performed);
+>> > > > +	if (actions_performed_out)
+>> > > Just make the caller to provide valid pointer, as I suggested in the
+>> > > other patch review.
+>> > 
+>> > Ack.
+>> > 
+>> > > > +		*actions_performed_out = actions_performed;
+>> > > > +	return 0;
+>> > > > }
+>> > > > 
+>> > > > static int
+>> > > > -- 
+>> > > > 2.17.1
+>> > > > 
