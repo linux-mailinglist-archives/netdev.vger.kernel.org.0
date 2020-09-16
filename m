@@ -2,162 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BB2B26CA6E
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 21:59:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1422626CAD1
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:15:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728278AbgIPT7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 15:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56272 "EHLO
+        id S1728216AbgIPUNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 16:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727658AbgIPT7d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 15:59:33 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5E6C06174A;
-        Wed, 16 Sep 2020 12:59:31 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id a2so6328704ybj.2;
-        Wed, 16 Sep 2020 12:59:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=H0tFT+S3Q5m2KmovC6sFM4oD86DYyZDpAI79rU7bkA8=;
-        b=VPUqu/GJZYhN68/l5wuDDgw1GJSAXvMPeLtAUHGMcKMKsi8nfk8mRTHdL41Penvg1y
-         /vZhVH4kfCYRr0aore+rtLkam6rJ94AUlEseJT5ib74aV4pqE3el1qJbLudN1QEx18gp
-         uYSaau39g7jnibEFi7kykbGhqBA1qI9jW6O+vS9u0fOxL4/62yRqAWdRBhV+g+gGEWaN
-         9cdmjmDuKYmgtQlMnMOL0FiBaF+U7puPusAKUbLjrMGbW6G4E2v9VSYeJ7jGF3tw0CFu
-         JgtdGlLRI5GjHhbUkoljMT8ESehBSzpZ+2aueSl3SkUOZ3Vacn3rO3hQHGrfftPgV0P3
-         HegA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=H0tFT+S3Q5m2KmovC6sFM4oD86DYyZDpAI79rU7bkA8=;
-        b=XAmLAyffO3hvnYgacn1tzd9dRvG42Sl+3rxJa7nGilKUH/l02/E3LaT8NhVfK8HjwW
-         KvEedyi5Qh1LwzU9Sa3BDyHAiUDrXC8VddHtduqz1F3gA/vEza4g8yT9jlZKPbKKUbwS
-         QPvnGpAINp6+Y/eSHHec4q+zBp/fVeo/nphUwtvrOa12NWjAaXcJaCQFf3TaADQUQ0WC
-         zvKFAFpwnBj5ZfIpnv6ZGtt6gp5AbUEL0lg/JdNxF7p5h/3a8c5Ikg4oksu89ChzHrcf
-         2S20gAubn9Ox20Cgoyq+9Wmi8mRLDxzAIJgdyFQfZqxhpAXNFlxEXCFRHCbYduLMKRwm
-         fpdA==
-X-Gm-Message-State: AOAM530Zor56mxYp0rfCPcE2S0BAWwcilLXP9ae/JdSomFqkYwKvv1yz
-        vLQ13zx0AWVX9K5IDNvFQBGQaYzd/gaZDs4iEg8=
-X-Google-Smtp-Source: ABdhPJxPOaHaZbvLP9/lzIbLOOBJF0JkQUiPOmpffmdhIzPsofqzuP3Y1WUL98OKX0PPAP6YBo4bmgFuCbvTPjlARFg=
-X-Received: by 2002:a25:d70e:: with SMTP id o14mr27991264ybg.425.1600286370225;
- Wed, 16 Sep 2020 12:59:30 -0700 (PDT)
+        with ESMTP id S1727061AbgIPRdO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:33:14 -0400
+Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA66EC02C2AD;
+        Wed, 16 Sep 2020 09:03:24 -0700 (PDT)
+Received: by fieldses.org (Postfix, from userid 2815)
+        id 30C2D689F; Wed, 16 Sep 2020 12:03:16 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 30C2D689F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
+        s=default; t=1600272196;
+        bh=AhbQil9hi1jajqnwwBoDpoEkSw6sqlLr283ReFc5xQg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oGFyz4comJG6R79ISTIV5cstLTo7DBCtV3gmkUf2vHJHQue7W9VeVwmdy+Dqp2ucR
+         gc1fU3CQra+Ebnqq67PfhQ2EkkLC5VhhQcXeZdIQb3xyWM1iBUU7TXG+MbbMZiejrz
+         E1/Wi9MFGcYe+jJfw4dnRGXPvS+jDFiftMA3szxs=
+Date:   Wed, 16 Sep 2020 12:03:16 -0400
+From:   "J. Bruce Fields" <bfields@fieldses.org>
+To:     syzbot <syzbot+1594adb1b44e354153d8@syzkaller.appspotmail.com>
+Cc:     anna.schumaker@netapp.com, chuck.lever@oracle.com,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, trond.myklebust@hammerspace.com
+Subject: Re: general protection fault in cache_clean
+Message-ID: <20200916160316.GA4560@fieldses.org>
+References: <0000000000002b3ac605af559958@google.com>
 MIME-Version: 1.0
-References: <160017005691.98230.13648200635390228683.stgit@toke.dk> <160017006242.98230.15812695975228745782.stgit@toke.dk>
-In-Reply-To: <160017006242.98230.15812695975228745782.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 16 Sep 2020 12:59:19 -0700
-Message-ID: <CAEf4Bzafmu5w6wjWT_d0B-JaUnm3KOf0Dgp+552iZii2+=3DWg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 5/8] bpf: Fix context type resolving for
- extension programs
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0000000000002b3ac605af559958@google.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 15, 2020 at 5:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> Eelco reported we can't properly access arguments if the tracing
-> program is attached to extension program.
->
-> Having following program:
->
->   SEC("classifier/test_pkt_md_access")
->   int test_pkt_md_access(struct __sk_buff *skb)
->
-> with its extension:
->
->   SEC("freplace/test_pkt_md_access")
->   int test_pkt_md_access_new(struct __sk_buff *skb)
->
-> and tracing that extension with:
->
->   SEC("fentry/test_pkt_md_access_new")
->   int BPF_PROG(fentry, struct sk_buff *skb)
->
-> It's not possible to access skb argument in the fentry program,
-> with following error from verifier:
->
->   ; int BPF_PROG(fentry, struct sk_buff *skb)
->   0: (79) r1 =3D *(u64 *)(r1 +0)
->   invalid bpf_context access off=3D0 size=3D8
->
-> The problem is that btf_ctx_access gets the context type for the
-> traced program, which is in this case the extension.
->
-> But when we trace extension program, we want to get the context
-> type of the program that the extension is attached to, so we can
-> access the argument properly in the trace program.
->
-> This version of the patch is tweaked slightly from Jiri's original one,
-> since the refactoring in the previous patches means we have to get the
-> target prog type from the new variable in prog->aux instead of directly
-> from the target prog.
->
-> Reported-by: Eelco Chaudron <echaudro@redhat.com>
-> Suggested-by: Jiri Olsa <jolsa@kernel.org>
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+On Tue, Sep 15, 2020 at 01:04:20AM -0700, syzbot wrote:
+> syzbot found the following issue on:
+> 
+> HEAD commit:    581cb3a2 Merge tag 'f2fs-for-5.9-rc5' of git://git.kernel...
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=11f5c011900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a9075b36a6ae26c9
+> dashboard link: https://syzkaller.appspot.com/bug?extid=1594adb1b44e354153d8
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+1594adb1b44e354153d8@syzkaller.appspotmail.com
+> 
+> general protection fault, probably for non-canonical address 0xdffffc0012e34a9a: 0000 [#1] PREEMPT SMP KASAN
+> KASAN: probably user-memory-access in range [0x00000000971a54d0-0x00000000971a54d7]
+> CPU: 1 PID: 19990 Comm: kworker/1:11 Not tainted 5.9.0-rc4-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Workqueue: events_power_efficient do_cache_clean
+> RIP: 0010:cache_clean+0x119/0x7f0 net/sunrpc/cache.c:444
+
+That's in cache_clean():
+	spin_lock(&cache_list_lock);
+	...
+	current_detail = list_entry(next, struct cache_detail, others)
+444:	if (current_detail->nextcheck > seconds_since_boot())
+
+It suggests cache_list or current_detail (both globals) are corrupted
+somehow.
+
+Those are manipulated only by cache_clean() and
+sunrpc_{init,destroy}_cache_detail(), always under the cache_list_lock.
+
+All the callers have to do to get this right is make sure the
+cache_detail they pass in is allocated before calling
+sunrpc_init_cache_detail() and not freed till after calling
+sunrpc_destroy_cache_detail().  I think they all get that right.
+
+So I'm assuming this is a random memory scribble from somewhere else or
+something, unless it pops up again....
+
+(The one thing I'm a little unsure of here is the
+list_empty(&cache_list) checks used to decide when to stop the
+cache_cleaner.  But that's a separate problem, if it is a problem.)
+
+--b.
+
+
+> Code: 81 fb 20 eb 94 8a 0f 84 b8 00 00 00 e8 80 df 33 fa 48 8d 83 40 ff ff ff 48 8d 7b 10 48 89 05 8e 8e 13 06 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 e0 05 00 00 48 8d 6c 24 38 4c 8b 63 10 48 89
+> RSP: 0018:ffffc90008e1fc48 EFLAGS: 00010206
+> RAX: 0000000012e34a9a RBX: 00000000971a54c0 RCX: ffffffff87406dbb
+> RDX: ffff88804358a000 RSI: ffffffff87406e00 RDI: 00000000971a54d0
+> RBP: 0000000000000100 R08: 0000000000000001 R09: 0000000000000003
+> R10: 0000000000000100 R11: 0000000000000000 R12: 0000000000000100
+> R13: dffffc0000000000 R14: ffff88803451b200 R15: ffff8880ae735600
+> FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000004ef310 CR3: 000000009ca1b000 CR4: 00000000001526e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  do_cache_clean+0xd/0xd0 net/sunrpc/cache.c:502
+>  process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+>  worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+>  kthread+0x3b5/0x4a0 kernel/kthread.c:292
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+> Modules linked in:
+> ---[ end trace 4c54bbd0e20d734b ]---
+> RIP: 0010:cache_clean+0x119/0x7f0 net/sunrpc/cache.c:444
+> Code: 81 fb 20 eb 94 8a 0f 84 b8 00 00 00 e8 80 df 33 fa 48 8d 83 40 ff ff ff 48 8d 7b 10 48 89 05 8e 8e 13 06 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 e0 05 00 00 48 8d 6c 24 38 4c 8b 63 10 48 89
+> RSP: 0018:ffffc90008e1fc48 EFLAGS: 00010206
+> RAX: 0000000012e34a9a RBX: 00000000971a54c0 RCX: ffffffff87406dbb
+> RDX: ffff88804358a000 RSI: ffffffff87406e00 RDI: 00000000971a54d0
+> RBP: 0000000000000100 R08: 0000000000000001 R09: 0000000000000003
+> R10: 0000000000000100 R11: 0000000000000000 R12: 0000000000000100
+> R13: dffffc0000000000 R14: ffff88803451b200 R15: ffff8880ae735600
+> FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000004ef310 CR3: 000000009ca1b000 CR4: 00000000001526e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> 
+> 
 > ---
->  kernel/bpf/btf.c |    9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index 9228af9917a8..55f7b2ba1cbd 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -3860,7 +3860,14 @@ bool btf_ctx_access(int off, int size, enum bpf_ac=
-cess_type type,
->
->         info->reg_type =3D PTR_TO_BTF_ID;
->         if (tgt_prog) {
-> -               ret =3D btf_translate_to_vmlinux(log, btf, t, tgt_prog->t=
-ype, arg);
-> +               enum bpf_prog_type tgt_type;
-> +
-> +               if (tgt_prog->type =3D=3D BPF_PROG_TYPE_EXT)
-> +                       tgt_type =3D tgt_prog->aux->tgt_prog_type;
-
-what if tgt_prog->aux->tgt_prog_type is also BPF_PROG_TYPE_EXT? Should
-this be a loop?
-
-Which also brings up a few follow up questions. Now that we allow same
-PROG_EXT program to be attached to multiple other programs:
-
-1. what prevents us from attaching PROG_EXT to itself?
-2. How do we prevent long chain of EXT programs or even loops?
-
-Can you please add a few selftests testing such cases? I have a
-feeling that with your changes in this patch set now it's possible to
-break the kernel very easily. I don't know what the proper solution
-is, but let's at least have a test that does show breakage, then try
-to figure out the solution. See also comment in check_attach_btf_id()
-about fentry/fexit and freplace interactions. That might not be
-enough.
-
-
-> +               else
-> +                       tgt_type =3D tgt_prog->type;
-> +
-> +               ret =3D btf_translate_to_vmlinux(log, btf, t, tgt_type, a=
-rg);
->                 if (ret > 0) {
->                         info->btf_id =3D ret;
->                         return true;
->
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
