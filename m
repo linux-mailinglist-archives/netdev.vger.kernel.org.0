@@ -2,108 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33A3D26E11B
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 18:49:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2857226E220
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 19:19:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728661AbgIQQto (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 12:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728656AbgIQQsL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 12:48:11 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D52C061756;
-        Thu, 17 Sep 2020 09:47:54 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id c8so3235198edv.5;
-        Thu, 17 Sep 2020 09:47:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bjmlDZzFg35X0DNxptcCpMN+z9MdjCxJVOYy64jaQEQ=;
-        b=Y95eehdgKSLFEYq8ifcRAAWI3NKEAPumdd9PDqmOR4LgVlGG+Sw54F9iet69AlOHta
-         T2oi8iFDLIYm8H9fFUAPvHkKR7Kz3eZKwjzyzop1sC7tvo6KbNp2EIoljn12KAfvdnsP
-         BfMME7x3zthf77oIae3x/+lzsxClbzuEM9KX05voLeaRNZyAILjd9QUaCZc96wAc9rvp
-         zYRgoHTkRAXVSTtxjxoJLAKv7Pq8Rb2b/DCcNL5V15yA3do+9RcpBwf2RXfnX0QOHJFw
-         aPUP6nCIPdbR4ppIKSIc4gcVQPXG4o+WnTw8RefDsltuYJkAe82OA1U+ZHTA7ZPNDNfx
-         OnqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bjmlDZzFg35X0DNxptcCpMN+z9MdjCxJVOYy64jaQEQ=;
-        b=LtLTacrSebjMK8B75xETutjDusgiSwgWx9AaMuKTqWoLe10Xe+KO4WauKIYZ7Tckjg
-         nHiMiNizsuH1O9y24yCPT+t5vEVrQOYY/6/MDHeaIbL9dWzVpdRDzABDhHGPqA1ufEnA
-         sd+fWK6Layek1p9XY/4HlZtk3L64+QfYk3R5Rp54FeA9ZspWT4K9vEoXdI6PBWGF+YR6
-         C7mYhXG6JcsGk+PqL9aEBTws/5GNh4MvXEOUMmHaqiZ/BOdCTrB8SGYvxx7mTiD26Z5p
-         TbW6HRnK5NedxcZhaXceYQydawPmwQ4+iDqxD9Jt+5wDx+DQBYSxT0tX7fXcWNAg4MP5
-         gZPg==
-X-Gm-Message-State: AOAM533e2at3sLWsZ+5LO2TrAs6cPr6EyZym+CMmVsvlxrdK3fvKF8w6
-        B72hWzzvqCmNTATiw34GmHI=
-X-Google-Smtp-Source: ABdhPJynXcS11917/M/uXNidmod+eIDTLUJ1CkTRZs/oIy5YujVKRxCArPxaDbEFQKjgNSFJPg3amA==
-X-Received: by 2002:a50:a693:: with SMTP id e19mr33219556edc.205.1600361273370;
-        Thu, 17 Sep 2020 09:47:53 -0700 (PDT)
-Received: from localhost.localdomain ([85.153.229.188])
-        by smtp.gmail.com with ESMTPSA id s30sm191004edc.8.2020.09.17.09.47.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Sep 2020 09:47:52 -0700 (PDT)
-From:   Necip Fazil Yildiran <fazilyildiran@gmail.com>
-To:     davem@davemloft.net
-Cc:     david.lebrun@uclouvain.be, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, paul@pgazz.com, jeho@cs.utexas.edu,
-        Necip Fazil Yildiran <fazilyildiran@gmail.com>
-Subject: [PATCH] net: ipv6: fix kconfig dependency warning for IPV6_SEG6_HMAC
-Date:   Thu, 17 Sep 2020 19:46:43 +0300
-Message-Id: <20200917164642.158458-1-fazilyildiran@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1726390AbgIQRTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 13:19:41 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:5476 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726477AbgIQRTH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 13:19:07 -0400
+Received: from pps.filterd (m0042983.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08HHItCZ015818
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:18:59 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=facebook;
+ bh=OWYSlkIJXevIyxTLYTwCwcQtfwAY4Xrjlyq2L3EmK8k=;
+ b=SOc2UMtvQiJ8ZVB2+l9D/vfs5omFMaeniF8p328KKaNSh3lKN9fLK9zn1VOofxst6vzY
+ R67Wd377x0UngOLKuAJUudG8SzPbDcMuyWcBk6/gAXZrY7LQl4EV0K1xHkmehDfrpfMy
+ 2ckSo7UBuILBlphOqYB4l4Smvzqb4g0f0AI= 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-00082601.pphosted.com with ESMTP id 33m9wg9e4t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:18:57 -0700
+Received: from pps.reinject (m0042983.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 08HHHZce011472
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:17:57 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 33k5n7dtje-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 13:09:28 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 16 Sep 2020 13:09:26 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id BFE6C2945ACA; Wed, 16 Sep 2020 13:09:25 -0700 (PDT)
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH bpf] bpf: Use hlist_add_head_rcu when linking to sk_storage
+Date:   Wed, 16 Sep 2020 13:09:25 -0700
+Message-ID: <20200916200925.1803161-1-kafai@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-FB-Internal: Safe
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-16_12:2020-09-16,2020-09-16 signatures=0
+X-FB-Internal: deliver
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-17_12:2020-09-16,2020-09-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ mlxlogscore=732 mlxscore=0 lowpriorityscore=0 adultscore=0 impostorscore=0
+ suspectscore=13 phishscore=0 priorityscore=1501 malwarescore=0 bulkscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=2
+ engine=8.12.0-2006250000 definitions=main-2009170129
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When IPV6_SEG6_HMAC is enabled and CRYPTO is disabled, it results in the
-following Kbuild warning:
+The sk_storage->list will be traversed by rcu reader in parallel.
+Thus, hlist_add_head_rcu() is needed in __selem_link_sk().  This
+patch fixes it.
 
-WARNING: unmet direct dependencies detected for CRYPTO_HMAC
-  Depends on [n]: CRYPTO [=n]
-  Selected by [y]:
-  - IPV6_SEG6_HMAC [=y] && NET [=y] && INET [=y] && IPV6 [=y]
+This part of the code has recently been refactored in bpf-next.
+A separate fix will be provided for the bpf-next tree.
 
-WARNING: unmet direct dependencies detected for CRYPTO_SHA1
-  Depends on [n]: CRYPTO [=n]
-  Selected by [y]:
-  - IPV6_SEG6_HMAC [=y] && NET [=y] && INET [=y] && IPV6 [=y]
-
-WARNING: unmet direct dependencies detected for CRYPTO_SHA256
-  Depends on [n]: CRYPTO [=n]
-  Selected by [y]:
-  - IPV6_SEG6_HMAC [=y] && NET [=y] && INET [=y] && IPV6 [=y]
-
-The reason is that IPV6_SEG6_HMAC selects CRYPTO_HMAC, CRYPTO_SHA1, and
-CRYPTO_SHA256 without depending on or selecting CRYPTO while those configs
-are subordinate to CRYPTO.
-
-Honor the kconfig menu hierarchy to remove kconfig dependency warnings.
-
-Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
-Signed-off-by: Necip Fazil Yildiran <fazilyildiran@gmail.com>
+Fixes: 6ac99e8f23d4 ("bpf: Introduce bpf sk local storage")
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- net/ipv6/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ net/core/bpf_sk_storage.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
-index 76bff79d6fed..747f56e0c636 100644
---- a/net/ipv6/Kconfig
-+++ b/net/ipv6/Kconfig
-@@ -303,6 +303,7 @@ config IPV6_SEG6_LWTUNNEL
- config IPV6_SEG6_HMAC
- 	bool "IPv6: Segment Routing HMAC support"
- 	depends on IPV6
-+	select CRYPTO
- 	select CRYPTO_HMAC
- 	select CRYPTO_SHA1
- 	select CRYPTO_SHA256
--- 
-2.25.1
+diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+index b988f48153a4..d4d2a56e9d4a 100644
+--- a/net/core/bpf_sk_storage.c
++++ b/net/core/bpf_sk_storage.c
+@@ -219,7 +219,7 @@ static void __selem_link_sk(struct bpf_sk_storage *sk=
+_storage,
+ 			    struct bpf_sk_storage_elem *selem)
+ {
+ 	RCU_INIT_POINTER(selem->sk_storage, sk_storage);
+-	hlist_add_head(&selem->snode, &sk_storage->list);
++	hlist_add_head_rcu(&selem->snode, &sk_storage->list);
+ }
+=20
+ static void selem_unlink_map(struct bpf_sk_storage_elem *selem)
+--=20
+2.24.1
 
