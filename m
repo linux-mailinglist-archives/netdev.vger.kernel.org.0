@@ -2,121 +2,538 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC40626C97C
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 21:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AEAE26C9C4
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 21:24:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728272AbgIPTKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 15:10:08 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:49730 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727304AbgIPTJx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 15:09:53 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08GJ4BM8030758;
-        Wed, 16 Sep 2020 19:09:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2020-01-29;
- bh=qyKbWfoXqEDMlA9j1xjcPrM4x9W/VoaoccGRj6OqD2g=;
- b=dBLBTUPbSkon/18vX5bIG8yLCqIRSe8emCN/R4FYEdA2FBWeHx6dbTQ5PvNrzSUwVUIO
- 2niyUIZcc58ytpF7I6XCc/e6JWVG7VAg8alYljFBwFSP1xDCV3cdAwNGIB6ADUCv6eXW
- T9PayQU4cmCivgW7propmTsGCKubblLkwg65ZsDBcx++G1rfHSjolcTmq+4D48hFcezq
- PtgUwBkuVZQ8vfLsy29UzD0sKkWNpl/XDavFQaqj+3MCEnyP9Qun7r6EvNTsbQ+vdtco
- B7IE/R8cHq810rmPyc+CLtJP+JQJRLCMHQ/nJEBpzKVod75y7Iv/W18ACYETIqWfvysN Tg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 33gnrr521q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 16 Sep 2020 19:09:52 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08GJ4m9E132346;
-        Wed, 16 Sep 2020 19:09:52 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 33h89287a9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 16 Sep 2020 19:09:52 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08GJ9p2C024180;
-        Wed, 16 Sep 2020 19:09:51 GMT
-Received: from mbpatil.us.oracle.com (/10.211.44.53)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 16 Sep 2020 19:09:51 +0000
-From:   Manjunath Patil <manjunath.b.patil@oracle.com>
-To:     santosh.shilimkar@oracle.com
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        aruna.ramakrishna@oracle.com, rama.nichanamatlu@oracle.com
-Subject: [PATCH 1/1] net/rds: suppress page allocation failure error in recv buffer refill
-Date:   Wed, 16 Sep 2020 12:08:46 -0700
-Message-Id: <1600283326-30323-1-git-send-email-manjunath.b.patil@oracle.com>
-X-Mailer: git-send-email 1.7.1
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9746 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 adultscore=0
- suspectscore=1 mlxscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009160134
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9746 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0
- lowpriorityscore=0 malwarescore=0 mlxscore=0 bulkscore=0 suspectscore=1
- clxscore=1011 mlxlogscore=999 adultscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009160134
+        id S1727899AbgIPTX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 15:23:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40348 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727313AbgIPTWl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 15:22:41 -0400
+Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6275E20809;
+        Wed, 16 Sep 2020 19:22:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600284159;
+        bh=AkX3fQjEA4jpVuJ17g+OIDxtox0wVDTTdX7zjCddQvQ=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=S+qvrXA9tKWXofWcxScc8qJCqw43DR7ntv9Ir7bq+OuXVN3B/1gmeWc8JcF+LwMhW
+         VH2M3ErRcD0bwfRoexi+AQCfKrJqelvHqytumAPvDtwMlTzLlyh7Ha0801bJxfigki
+         j5BSezhIZzpnG5K6BP1/E+yxpSmvBfVvaNU34vWs=
+Message-ID: <a0114fa234fcf08208c3ba388beb1fe571df1c6c.camel@kernel.org>
+Subject: Re: [v3, 5/6] dpaa2-eth: support PTP Sync packet one-step
+ timestamping
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Date:   Wed, 16 Sep 2020 12:22:38 -0700
+In-Reply-To: <20200916120830.11456-6-yangbo.lu@nxp.com>
+References: <20200916120830.11456-1-yangbo.lu@nxp.com>
+         <20200916120830.11456-6-yangbo.lu@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RDS/IB tries to refill the recv buffer in softirq context using
-GFP_NOWAIT flag. However alloc failure is handled by queueing a work to
-refill the recv buffer with GFP_KERNEL flag. This means failure to
-allocate with GFP_NOWAIT isn't fatal. Do not print the PAF warnings if
-softirq context fails to refill the recv buffer, instead print a one
-line warning once a day.
+On Wed, 2020-09-16 at 20:08 +0800, Yangbo Lu wrote:
+> This patch is to add PTP sync packet one-step timestamping support.
+> Before egress, one-step timestamping enablement needs,
+> 
+> - Enabling timestamp and FAS (Frame Annotation Status) in
+>   dpni buffer layout.
+> 
+> - Write timestamp to frame annotation and set PTP bit in
+>   FAS to mark as one-step timestamping event.
+> 
+> - Enabling one-step timestamping by dpni_set_single_step_cfg()
+>   API, with offset provided to insert correction time on frame.
+>   The offset must respect all MAC headers, VLAN tags and other
+>   protocol headers accordingly. The correction field update can
+>   consider delays up to one second. So PTP frame needs to be
+>   filtered and parsed, and written timestamp into Sync frame
+>   originTimestamp field.
+> 
+> The operation of API dpni_set_single_step_cfg() has to be done
+> when no one-step timestamping frames are in flight. So we have
+> to make sure the last one-step timestamping frame has already
+> been transmitted on hardware before starting to send the current
+> one. The resolution is,
+> 
+> - Utilize skb->cb[0] to mark timestamping request per packet.
+>   If it is one-step timestamping PTP sync packet, queue to skb queue.
+>   If not, transmit immediately.
+> 
+> - Schedule a work to transmit skbs in skb queue.
+> 
+> - mutex lock is used to ensure the last one-step timestamping packet
+>   has already been transmitted on hardware through TX confirmation
+> queue
+>   before transmitting current packet.
+> 
+> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+> ---
+> Changes for v2:
+> 	- None.
+> Changes for v3:
+> 	- Fixed build issue on 32-bit.
+> 	- Converted to use ptp_parse_header.
+> ---
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c   | 191
+> +++++++++++++++++++--
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h   |  32 +++-
+>  .../net/ethernet/freescale/dpaa2/dpaa2-ethtool.c   |   4 +-
+>  3 files changed, 211 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> index eab9470..ba570f6 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/bpf.h>
+>  #include <linux/bpf_trace.h>
+>  #include <linux/fsl/ptp_qoriq.h>
+> +#include <linux/ptp_classify.h>
+>  #include <net/pkt_cls.h>
+>  #include <net/sock.h>
+>  
+> @@ -563,11 +564,57 @@ static int dpaa2_eth_consume_frames(struct
+> dpaa2_eth_channel *ch,
+>  	return cleaned;
+>  }
+>  
+> +static int dpaa2_eth_ptp_parse(struct sk_buff *skb,
+> +			       u8 *msgtype, u8 *twostep, u8 *udp,
+> +			       u16 *correction_offset,
+> +			       u16 *origintimestamp_offset)
+> +{
+> +	unsigned int ptp_class;
+> +	struct ptp_header *hdr;
+> +	unsigned int type;
+> +	u8 *base;
+> +
+> +	ptp_class = ptp_classify_raw(skb);
+> +	if (ptp_class == PTP_CLASS_NONE)
+> +		return -EINVAL;
+> +
+> +	hdr = ptp_parse_header(skb, ptp_class);
+> +	if (!hdr)
+> +		return -EINVAL;
+> +
+> +	*msgtype = ptp_get_msgtype(hdr, ptp_class);
+> +	*twostep = hdr->flag_field[0] & 0x2;
+> +
+> +	type = ptp_class & PTP_CLASS_PMASK;
+> +	if (type == PTP_CLASS_IPV4 ||
+> +	    type == PTP_CLASS_IPV6)
+> +		*udp = 1;
+> +	else
+> +		*udp = 0;
+> +
+> +	base = skb_mac_header(skb);
+> +	*correction_offset = (u8 *)&hdr->correction - base;
+> +	*origintimestamp_offset = (u8 *)hdr + sizeof(struct ptp_header)
+> - base;
+> +
+> +	return 0;
+> +}
+> +
+>  /* Configure the egress frame annotation for timestamp update */
+> -static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_fd *fd, void
+> *buf_start)
+> +static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_eth_priv *priv,
+> +				       struct dpaa2_fd *fd,
+> +				       void *buf_start,
+> +				       struct sk_buff *skb)
+>  {
+> +	struct ptp_tstamp origin_timestamp;
+> +	struct dpni_single_step_cfg cfg;
+> +	u8 msgtype, twostep, udp;
+>  	struct dpaa2_faead *faead;
+> +	struct dpaa2_fas *fas;
+> +	struct timespec64 ts;
+> +	u16 offset1, offset2;
+>  	u32 ctrl, frc;
+> +	__le64 *ns;
+> +	u8 *data;
+>  
+>  	/* Mark the egress frame annotation area as valid */
+>  	frc = dpaa2_fd_get_frc(fd);
+> @@ -583,6 +630,58 @@ static void dpaa2_eth_enable_tx_tstamp(struct
+> dpaa2_fd *fd, void *buf_start)
+>  	ctrl = DPAA2_FAEAD_A2V | DPAA2_FAEAD_UPDV | DPAA2_FAEAD_UPD;
+>  	faead = dpaa2_get_faead(buf_start, true);
+>  	faead->ctrl = cpu_to_le32(ctrl);
+> +
+> +	if (skb->cb[0] == TX_TSTAMP_ONESTEP_SYNC) {
+> +		if (dpaa2_eth_ptp_parse(skb, &msgtype, &twostep, &udp,
+> +					&offset1, &offset2)) {
+> +			netdev_err(priv->net_dev,
+> +				   "bad packet for one-step
+> timestamping\n");
 
-Signed-off-by: Manjunath Patil <manjunath.b.patil@oracle.com>
-Reviewed-by: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
----
- net/rds/ib_recv.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+don't use netdev_err in data path, have a counter or
+WARN_ONCE/netdev_warn_once if you know that this shouldn't happen.
 
-diff --git a/net/rds/ib_recv.c b/net/rds/ib_recv.c
-index 694d411dc72f..38d2894f6bb2 100644
---- a/net/rds/ib_recv.c
-+++ b/net/rds/ib_recv.c
-@@ -310,8 +310,8 @@ static int rds_ib_recv_refill_one(struct rds_connection *conn,
- 	struct rds_ib_connection *ic = conn->c_transport_data;
- 	struct ib_sge *sge;
- 	int ret = -ENOMEM;
--	gfp_t slab_mask = GFP_NOWAIT;
--	gfp_t page_mask = GFP_NOWAIT;
-+	gfp_t slab_mask = gfp;
-+	gfp_t page_mask = gfp;
- 
- 	if (gfp & __GFP_DIRECT_RECLAIM) {
- 		slab_mask = GFP_KERNEL;
-@@ -406,6 +406,16 @@ void rds_ib_recv_refill(struct rds_connection *conn, int prefill, gfp_t gfp)
- 		recv = &ic->i_recvs[pos];
- 		ret = rds_ib_recv_refill_one(conn, recv, gfp);
- 		if (ret) {
-+			static unsigned long warn_time;
-+			/* warn max once per day. This should be enough to
-+			 * warn users about low mem situation.
-+			 */
-+			if (printk_timed_ratelimit(&warn_time,
-+						   24 * 60 * 60 * 1000))
-+				pr_warn("RDS/IB: failed to refill recv buffer for <%pI6c,%pI6c,%d>, waking worker\n",
-+					&conn->c_laddr, &conn->c_faddr,
-+					conn->c_tos);
-+
- 			must_wake = true;
- 			break;
- 		}
-@@ -1020,7 +1030,7 @@ void rds_ib_recv_cqe_handler(struct rds_ib_connection *ic,
- 		rds_ib_stats_inc(s_ib_rx_ring_empty);
- 
- 	if (rds_ib_ring_low(&ic->i_recv_ring)) {
--		rds_ib_recv_refill(conn, 0, GFP_NOWAIT);
-+		rds_ib_recv_refill(conn, 0, GFP_NOWAIT | __GFP_NOWARN);
- 		rds_ib_stats_inc(s_ib_rx_refill_from_cq);
- 	}
- }
--- 
-2.27.0.112.g101b320
+> +			return;
+> +		}
+> +
+> +		if (msgtype != 0 || twostep) {
+> +			netdev_err(priv->net_dev,
+> +				   "bad packet for one-step
+> timestamping\n");
+> +			return;
+> +		}
+> +
+> +		/* Mark the frame annotation status as valid */
+> +		frc = dpaa2_fd_get_frc(fd);
+> +		dpaa2_fd_set_frc(fd, frc | DPAA2_FD_FRC_FASV);
+> +
+> +		/* Mark the PTP flag for one step timestamping */
+> +		fas = dpaa2_get_fas(buf_start, true);
+> +		fas->status = cpu_to_le32(DPAA2_FAS_PTP);
+> +
+> +		/* Write current time to FA timestamp field */
+> +		if (!dpaa2_ptp) {
+> +			netdev_err(priv->net_dev,
+> +				   "ptp driver may not loaded for one-
+> step timestamping\n");
+
+why are you even here if dpaa2_ptp not valid ? isn't it too late to
+abort here ? some of the tx descriptor fields are already populated.
+
+Just don't allow ptp and avoid marking skbs for timestamping as early
+as possible if your driver is not ready for it .. 
+
+> +			return;
+> +		}
+> +		dpaa2_ptp->caps.gettime64(&dpaa2_ptp->caps, &ts);
+> +		ns = dpaa2_get_ts(buf_start, true);
+> +		*ns = cpu_to_le64(timespec64_to_ns(&ts) /
+> +				  DPAA2_PTP_CLK_PERIOD_NS);
+> +
+> +		/* Update current time to PTP message originTimestamp
+> field */
+> +		ns_to_ptp_tstamp(&origin_timestamp, le64_to_cpup(ns));
+> +		data = skb_mac_header(skb);
+> +		*(__be16 *)(data + offset2) =
+> htons(origin_timestamp.sec_msb);
+> +		*(__be32 *)(data + offset2 + 2) =
+> +			htonl(origin_timestamp.sec_lsb);
+> +		*(__be32 *)(data + offset2 + 6) =
+> htonl(origin_timestamp.nsec);
+> +
+> +		cfg.en = 1;
+> +		cfg.ch_update = udp;
+> +		cfg.offset = offset1;
+> +		cfg.peer_delay = 0;
+> +
+> +		if (dpni_set_single_step_cfg(priv->mc_io, 0, priv-
+> >mc_token,
+> +					     &cfg))
+> +			netdev_err(priv->net_dev,
+> +				   "dpni_set_single_step_cfg
+> failed\n");
+
+Again too much error prints on data path, without any real useful debug
+information 
+
+> +	}
+>  }
+>  
+>  /* Create a frame descriptor based on a fragmented skb */
+> @@ -820,7 +919,7 @@ static int dpaa2_eth_build_single_fd(struct
+> dpaa2_eth_priv *priv,
+>   * This can be called either from dpaa2_eth_tx_conf() or on the
+> error path of
+>   * dpaa2_eth_tx().
+>   */
+> -static void dpaa2_eth_free_tx_fd(const struct dpaa2_eth_priv *priv,
+> +static void dpaa2_eth_free_tx_fd(struct dpaa2_eth_priv *priv,
+>  				 struct dpaa2_eth_fq *fq,
+>  				 const struct dpaa2_fd *fd, bool
+> in_napi)
+>  {
+> @@ -903,6 +1002,8 @@ static void dpaa2_eth_free_tx_fd(const struct
+> dpaa2_eth_priv *priv,
+>  		ns = DPAA2_PTP_CLK_PERIOD_NS * le64_to_cpup(ts);
+>  		shhwtstamps.hwtstamp = ns_to_ktime(ns);
+>  		skb_tstamp_tx(skb, &shhwtstamps);
+> +	} else if (skb->cb[0] == TX_TSTAMP_ONESTEP_SYNC) {
+> +		mutex_unlock(&priv->onestep_tstamp_lock);
+>  	}
+>  
+>  	/* Free SGT buffer allocated on tx */
+> @@ -922,7 +1023,8 @@ static void dpaa2_eth_free_tx_fd(const struct
+> dpaa2_eth_priv *priv,
+>  	napi_consume_skb(skb, in_napi);
+>  }
+>  
+> -static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct
+> net_device *net_dev)
+> +static netdev_tx_t __dpaa2_eth_tx(struct sk_buff *skb,
+> +				  struct net_device *net_dev)
+>  {
+>  	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
+>  	struct dpaa2_fd fd;
+> @@ -937,13 +1039,6 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff
+> *skb, struct net_device *net_dev)
+>  	int err, i;
+>  	void *swa;
+>  
+> -	/* Utilize skb->cb[0] for timestamping request per skb */
+> -	skb->cb[0] = 0;
+> -
+> -	if (priv->tx_tstamp_type == HWTSTAMP_TX_ON &&
+> -	    skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
+> -		skb->cb[0] = TX_TSTAMP;
+> -
+>  	percpu_stats = this_cpu_ptr(priv->percpu_stats);
+>  	percpu_extras = this_cpu_ptr(priv->percpu_extras);
+>  
+> @@ -981,8 +1076,8 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff
+> *skb, struct net_device *net_dev)
+>  		goto err_build_fd;
+>  	}
+>  
+> -	if (skb->cb[0] == TX_TSTAMP)
+> -		dpaa2_eth_enable_tx_tstamp(&fd, swa);
+> +	if (skb->cb[0])
+> +		dpaa2_eth_enable_tx_tstamp(priv, &fd, swa, skb);
+>  
+>  	/* Tracing point */
+>  	trace_dpaa2_tx_fd(net_dev, &fd);
+> @@ -1037,6 +1132,58 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff
+> *skb, struct net_device *net_dev)
+>  	return NETDEV_TX_OK;
+>  }
+>  
+> +static void dpaa2_eth_tx_onestep_tstamp(struct work_struct *work)
+> +{
+> +	struct dpaa2_eth_priv *priv = container_of(work, struct
+> dpaa2_eth_priv,
+> +						   tx_onestep_tstamp);
+> +	struct sk_buff *skb;
+> +
+> +	while (true) {
+> +		skb = skb_dequeue(&priv->tx_skbs);
+> +		if (!skb)
+> +			return;
+> +
+> +		mutex_lock(&priv->onestep_tstamp_lock);
+> +		__dpaa2_eth_tx(skb, priv->net_dev);
+
+Very weird approach, at least document here where the lock is being
+released, in addition to the comment that you have on the mutex
+declaration.
+
+> +	}
+> +}
+> +
+> +static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct
+> net_device *net_dev)
+> +{
+> +	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
+> +	u8 msgtype, twostep, udp;
+> +	u16 offset1, offset2;
+> +
+> +	/* Utilize skb->cb[0] for timestamping request per skb */
+> +	skb->cb[0] = 0;
+> +
+> +	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
+> +		if (priv->tx_tstamp_type == HWTSTAMP_TX_ON)
+> +			skb->cb[0] = TX_TSTAMP;
+> +		else if (priv->tx_tstamp_type ==
+> HWTSTAMP_TX_ONESTEP_SYNC)
+> +			skb->cb[0] = TX_TSTAMP_ONESTEP_SYNC;
+> +	}
+> +
+> +	/* TX for one-step timestamping PTP Sync packet */
+> +	if (skb->cb[0] == TX_TSTAMP_ONESTEP_SYNC) {
+> +		if (!dpaa2_eth_ptp_parse(skb, &msgtype, &twostep, &udp,
+> +					 &offset1, &offset2))
+> +			if (msgtype == 0 && twostep == 0) {
+> +				skb_queue_tail(&priv->tx_skbs, skb);
+> +				queue_work(priv->dpaa2_ptp_wq,
+> +					   &priv->tx_onestep_tstamp);
+> +				return NETDEV_TX_OK;
+> +			}
+> +		/* Use two-step timestamping if not one-step
+> timestamping
+> +		 * PTP Sync packet
+> +		 */
+> +		skb->cb[0] = TX_TSTAMP;
+> +	}
+> +
+> +	/* TX for other packets */
+> +	return __dpaa2_eth_tx(skb, net_dev);
+> +}
+> +
+>  /* Tx confirmation frame processing routine */
+>  static void dpaa2_eth_tx_conf(struct dpaa2_eth_priv *priv,
+>  			      struct dpaa2_eth_channel *ch
+> __always_unused,
+> @@ -1906,6 +2053,7 @@ static int dpaa2_eth_ts_ioctl(struct net_device
+> *dev, struct ifreq *rq, int cmd)
+>  	switch (config.tx_type) {
+>  	case HWTSTAMP_TX_OFF:
+>  	case HWTSTAMP_TX_ON:
+> +	case HWTSTAMP_TX_ONESTEP_SYNC:
+>  		priv->tx_tstamp_type = config.tx_type;
+>  		break;
+>  	default:
+> @@ -2731,8 +2879,10 @@ static int dpaa2_eth_set_buffer_layout(struct
+> dpaa2_eth_priv *priv)
+>  	/* tx buffer */
+>  	buf_layout.private_data_size = DPAA2_ETH_SWA_SIZE;
+>  	buf_layout.pass_timestamp = true;
+> +	buf_layout.pass_frame_status = true;
+>  	buf_layout.options = DPNI_BUF_LAYOUT_OPT_PRIVATE_DATA_SIZE |
+> -			     DPNI_BUF_LAYOUT_OPT_TIMESTAMP;
+> +			     DPNI_BUF_LAYOUT_OPT_TIMESTAMP |
+> +			     DPNI_BUF_LAYOUT_OPT_FRAME_STATUS;
+>  	err = dpni_set_buffer_layout(priv->mc_io, 0, priv->mc_token,
+>  				     DPNI_QUEUE_TX, &buf_layout);
+>  	if (err) {
+> @@ -2741,7 +2891,8 @@ static int dpaa2_eth_set_buffer_layout(struct
+> dpaa2_eth_priv *priv)
+>  	}
+>  
+>  	/* tx-confirm buffer */
+> -	buf_layout.options = DPNI_BUF_LAYOUT_OPT_TIMESTAMP;
+> +	buf_layout.options = DPNI_BUF_LAYOUT_OPT_TIMESTAMP |
+> +			     DPNI_BUF_LAYOUT_OPT_FRAME_STATUS;
+>  	err = dpni_set_buffer_layout(priv->mc_io, 0, priv->mc_token,
+>  				     DPNI_QUEUE_TX_CONFIRM,
+> &buf_layout);
+>  	if (err) {
+> @@ -3969,6 +4120,16 @@ static int dpaa2_eth_probe(struct
+> fsl_mc_device *dpni_dev)
+>  	priv->tx_tstamp_type = HWTSTAMP_TX_OFF;
+>  	priv->rx_tstamp = false;
+>  
+> +	priv->dpaa2_ptp_wq = alloc_workqueue("dpaa2_ptp_wq", 0, 0);
+> +	if (!priv->dpaa2_ptp_wq) {
+> +		err = -ENOMEM;
+> +		goto err_wq_alloc;
+> +	}
+> +
+> +	INIT_WORK(&priv->tx_onestep_tstamp,
+> dpaa2_eth_tx_onestep_tstamp);
+> +
+> +	skb_queue_head_init(&priv->tx_skbs);
+> +
+>  	/* Obtain a MC portal */
+>  	err = fsl_mc_portal_allocate(dpni_dev,
+> FSL_MC_IO_ATOMIC_CONTEXT_PORTAL,
+>  				     &priv->mc_io);
+> @@ -4107,6 +4268,8 @@ static int dpaa2_eth_probe(struct fsl_mc_device
+> *dpni_dev)
+>  err_dpni_setup:
+>  	fsl_mc_portal_free(priv->mc_io);
+>  err_portal_alloc:
+> +	destroy_workqueue(priv->dpaa2_ptp_wq);
+> +err_wq_alloc:
+>  	dev_set_drvdata(dev, NULL);
+>  	free_netdev(net_dev);
+>  
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+> b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+> index e33d79e..6436fa3 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+> @@ -195,6 +195,24 @@ struct dpaa2_faead {
+>  #define DPAA2_FAEAD_EBDDV		0x00002000
+>  #define DPAA2_FAEAD_UPD			0x00000010
+>  
+> +struct ptp_tstamp {
+> +	u16 sec_msb;
+> +	u32 sec_lsb;
+> +	u32 nsec;
+> +};
+> +
+> +static inline void ns_to_ptp_tstamp(struct ptp_tstamp *tstamp, u64
+> ns)
+> +{
+> +	u64 sec, nsec;
+> +
+> +	sec = ns;
+> +	nsec = do_div(sec, 1000000000);
+> +
+> +	tstamp->sec_lsb = sec & 0xFFFFFFFF;
+> +	tstamp->sec_msb = (sec >> 32) & 0xFFFF;
+> +	tstamp->nsec = nsec;
+> +}
+> +
+>  /* Accessors for the hardware annotation fields that we use */
+>  static inline void *dpaa2_get_hwa(void *buf_addr, bool swa)
+>  {
+> @@ -474,9 +492,21 @@ struct dpaa2_eth_priv {
+>  #endif
+>  
+>  	struct dpaa2_mac *mac;
+> +	struct workqueue_struct	*dpaa2_ptp_wq;
+> +	struct work_struct	tx_onestep_tstamp;
+> +	struct sk_buff_head	tx_skbs;
+> +	/* The one-step timestamping configuration on hardware
+> +	 * registers could only be done when no one-step
+> +	 * timestamping frames are in flight. So we use a mutex
+> +	 * lock here to make sure the lock is released by last
+> +	 * one-step timestamping packet through TX confirmation
+> +	 * queue before transmit current packet.
+> +	 */
+> +	struct mutex		onestep_tstamp_lock;
+>  };
+>  
+>  #define TX_TSTAMP		0x1
+> +#define TX_TSTAMP_ONESTEP_SYNC	0x2
+>  
+>  #define DPAA2_RXH_SUPPORTED	(RXH_L2DA | RXH_VLAN | RXH_L3_PROTO \
+>  				| RXH_IP_SRC | RXH_IP_DST |
+> RXH_L4_B_0_1 \
+> @@ -581,7 +611,7 @@ static inline unsigned int
+> dpaa2_eth_needed_headroom(struct sk_buff *skb)
+>  		return 0;
+>  
+>  	/* If we have Tx timestamping, need 128B hardware annotation */
+> -	if (skb->cb[0] == TX_TSTAMP)
+> +	if (skb->cb[0])
+>  		headroom += DPAA2_ETH_TX_HWA_SIZE;
+>  
+>  	return headroom;
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+> b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+> index 26bd99b..bf3baf6 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+> @@ -1,6 +1,7 @@
+>  // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+>  /* Copyright 2014-2016 Freescale Semiconductor Inc.
+>   * Copyright 2016 NXP
+> + * Copyright 2020 NXP
+>   */
+>  
+>  #include <linux/net_tstamp.h>
+> @@ -770,7 +771,8 @@ static int dpaa2_eth_get_ts_info(struct
+> net_device *dev,
+>  	info->phc_index = dpaa2_phc_index;
+>  
+>  	info->tx_types = (1 << HWTSTAMP_TX_OFF) |
+> -			 (1 << HWTSTAMP_TX_ON);
+> +			 (1 << HWTSTAMP_TX_ON) |
+> +			 (1 << HWTSTAMP_TX_ONESTEP_SYNC);
+>  
+>  	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
+>  			   (1 << HWTSTAMP_FILTER_ALL);
 
