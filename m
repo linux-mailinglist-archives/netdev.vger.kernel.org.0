@@ -2,178 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DC5126CAE0
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:17:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B1B126CB83
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:29:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728340AbgIPURk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 16:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
+        id S1726986AbgIPU26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 16:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728328AbgIPUQq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 16:16:46 -0400
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF9CC061221
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 13:16:23 -0700 (PDT)
-Received: by mail-qt1-x84a.google.com with SMTP id r22so7135330qtc.9
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 13:16:23 -0700 (PDT)
+        with ESMTP id S1726942AbgIPU2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 16:28:52 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7393C06174A;
+        Wed, 16 Sep 2020 13:28:51 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id c17so6383223ybe.0;
+        Wed, 16 Sep 2020 13:28:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=mV/LFuTshHzotksH3grmXFg7Xs0h6PleCimRLiw3IeY=;
-        b=EQRl+RIO/iMmVWfKcZ8ED17Om52TeR9DzT0HzQt62GI8XYzbTx4iSE/e53TWLeRrC4
-         SinrfVtyjrg8237Bs3Z5Y6SWftmvQrUM2sPw4RnMoJ5vk10M2ZWGgSsoXIBGfqPA3DZW
-         dRiCE4KtBUMZZNXBlXikUyz/9lx9HSLDr/p1IjtZnwFCNbEYGhOtEnek7cUlCDGJ81RW
-         byBJJkGtNWPwky/MpFaZ8fHoDZpF4odneqa6wytQFAdaoV5xhvHMH8Nm5kYI/J+BiSyH
-         BThka3ZSKn46911pMjZGg8Q+1xXtdHCnJDIMl/URjQcO3oXG6Fpo6hfqmf9FQwAApsZL
-         mGzw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=MVIs1JBkJFZ61cdKipIPslS3rOhT6YsS69ihKIm6isI=;
+        b=Cfsh1gc4YG0BdHbDMGnWTV59MZNiCqZ1cxM25XnGcigdAnTeFkaoVX3xENNRc9suKS
+         6nGKYtDFymW+I0N39d6LSxl4hpkhZGetxgIHZGlp0B7iSzcws+LLNsn4XqXcrFFzkC2N
+         +0M3a2YtUaIieBSVVo30S3VmJt9Xzn3eSVMHhO8gJpfTKyXmFFFm7TkXLLqPjrIEiCXN
+         XcxgAXM41VNB87PuuQVGS5ok0ai8mrXTDJy8LDiv7f+Sbo3AV/sU1sHGbAf/aFo8sBGV
+         zeiolJ4RPtSAuG33JGpGIyBqoFwAWEoCm3B3kyHCBmrNB5Y/v3oWObRxV5YjErXvieTx
+         MSWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=mV/LFuTshHzotksH3grmXFg7Xs0h6PleCimRLiw3IeY=;
-        b=V/3aAsR/nRBA1P0gRol2bVS6AJTt2PY1y7RRylgrzeFKKZa+9gLFb9zezqV1YsZ/Yz
-         Cq146OesljvB+2N1no+kiboizxOPsH3zCVpMNUIOrMIsBp9GvVAD90XsIrXMXVDJkHTI
-         UkKl/rIyw+cuZbBsUHAT4vavD9cQWsVzD5i7Uoq7BhapRIMdUmXw8obSeLz4Mx94aoFa
-         oPrnh8yVLsqzIctKSWECUkDqk8nFpayANTd6+UAPb7yxO6kpI4kgVZFnoaT+uQOJkLoK
-         UrWSKM3dODKCMTZzFzjX88VfmcQeUKyR+9i0O856OMVx4A2xXr5fiGf8z/V7CHDzBtwy
-         g6AA==
-X-Gm-Message-State: AOAM531FTrPE2GWZsoUZO2+Z5e+6gp3K2eUuW2j4eCYQCQ7u6gArhgNE
-        bDLsBgOtTtoWUuhmKueNzlrY1igia16qBmjZwA5W
-X-Google-Smtp-Source: ABdhPJx9rr/wInvexTzLGszPhP52de+s7E+VegnMknnOC50bFToSeEmk3oEZlbiKA9jVdE7FHbXQXJRUfSF8TKP5DSid
-X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:f693:9fff:fef4:4e59])
- (user=danielwinkler job=sendgmr) by 2002:a0c:c244:: with SMTP id
- w4mr25344793qvh.12.1600287382444; Wed, 16 Sep 2020 13:16:22 -0700 (PDT)
-Date:   Wed, 16 Sep 2020 13:16:02 -0700
-In-Reply-To: <20200916201602.1223002-1-danielwinkler@google.com>
-Message-Id: <20200916131430.6.I5068c01cae3cea674a96e103a0cf4d8c81425a4f@changeid>
-Mime-Version: 1.0
-References: <20200916201602.1223002-1-danielwinkler@google.com>
-X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
-Subject: [PATCH 6/6] Bluetooth: Add MGMT command for controller capabilities
-From:   Daniel Winkler <danielwinkler@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Daniel Winkler <danielwinkler@google.com>,
-        Sonny Sasaka <sonnysasaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=MVIs1JBkJFZ61cdKipIPslS3rOhT6YsS69ihKIm6isI=;
+        b=LTDRd4S2l2uN0vjS+RQi5LP7O7VanVnKyZIY3BFAJn6Lu6ODjosk2oMzLLATjf/I9n
+         9WHRAcDbFqCv0ijc7jw9+0/1Zv+Rr70v3gzt92T3/qPY7VbK6SEJCFM4pLuBagB+P+Gm
+         I4s8AQknyZB1lVr/Qp0r7nacxQirGf9vHztmBWRzGPYskggZQ2sNkBqHxJwM9fYguZaL
+         xqbPYDXnvsUoQeRO2J6ZsFmF/6/LMnC/NafB8ea6GKTbPF2VgLWGuwNfy23VkJHyRldR
+         3O3ou3TfrXXYcCOeXzri4Y9sgKDxj34GnRHlqkk30kk1ODPeu9eXvw75HULXXaRtpzY6
+         5eQw==
+X-Gm-Message-State: AOAM533YgpMNW4n0/MxaJpdRJuVnYYeKhRyXy1+26fm7LieiFEp0ejwX
+        OGfoIOPuN2duJdL0X0Y0LNdZBqlg206XtwE9dLM=
+X-Google-Smtp-Source: ABdhPJy3eu8Z76RA/1AIXZuufjmbSfPRmDcmQAJT8ImQJO0F9+8jPzCF0vugf5Q+b6Rwalze40D25vht+VEIyH3OzR4=
+X-Received: by 2002:a25:4446:: with SMTP id r67mr3608241yba.459.1600288131072;
+ Wed, 16 Sep 2020 13:28:51 -0700 (PDT)
+MIME-Version: 1.0
+References: <160017005691.98230.13648200635390228683.stgit@toke.dk>
+ <160017006242.98230.15812695975228745782.stgit@toke.dk> <CAEf4Bzafmu5w6wjWT_d0B-JaUnm3KOf0Dgp+552iZii2+=3DWg@mail.gmail.com>
+In-Reply-To: <CAEf4Bzafmu5w6wjWT_d0B-JaUnm3KOf0Dgp+552iZii2+=3DWg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 16 Sep 2020 13:28:40 -0700
+Message-ID: <CAEf4BzbqW12q_nXvat6=iTvKpy1P+e-r0N+9eY3vgDAZ8rcfLQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 5/8] bpf: Fix context type resolving for
+ extension programs
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For advertising, we wish to know the LE tx power capabilities of the
-controller in userspace, so this patch adds a new MGMT command to query
-controller capabilities. The data returned is in TLV format, so it can
-be easily used to convey any data determined to be useful in the future,
-but for now it simply contains LE min and max tx power.
+On Wed, Sep 16, 2020 at 12:59 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Tue, Sep 15, 2020 at 5:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+> >
+> > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >
+> > Eelco reported we can't properly access arguments if the tracing
+> > program is attached to extension program.
+> >
+> > Having following program:
+> >
+> >   SEC("classifier/test_pkt_md_access")
+> >   int test_pkt_md_access(struct __sk_buff *skb)
+> >
+> > with its extension:
+> >
+> >   SEC("freplace/test_pkt_md_access")
+> >   int test_pkt_md_access_new(struct __sk_buff *skb)
+> >
+> > and tracing that extension with:
+> >
+> >   SEC("fentry/test_pkt_md_access_new")
+> >   int BPF_PROG(fentry, struct sk_buff *skb)
+> >
+> > It's not possible to access skb argument in the fentry program,
+> > with following error from verifier:
+> >
+> >   ; int BPF_PROG(fentry, struct sk_buff *skb)
+> >   0: (79) r1 =3D *(u64 *)(r1 +0)
+> >   invalid bpf_context access off=3D0 size=3D8
+> >
+> > The problem is that btf_ctx_access gets the context type for the
+> > traced program, which is in this case the extension.
+> >
+> > But when we trace extension program, we want to get the context
+> > type of the program that the extension is attached to, so we can
+> > access the argument properly in the trace program.
+> >
+> > This version of the patch is tweaked slightly from Jiri's original one,
+> > since the refactoring in the previous patches means we have to get the
+> > target prog type from the new variable in prog->aux instead of directly
+> > from the target prog.
+> >
+> > Reported-by: Eelco Chaudron <echaudro@redhat.com>
+> > Suggested-by: Jiri Olsa <jolsa@kernel.org>
+> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> > ---
+> >  kernel/bpf/btf.c |    9 ++++++++-
+> >  1 file changed, 8 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> > index 9228af9917a8..55f7b2ba1cbd 100644
+> > --- a/kernel/bpf/btf.c
+> > +++ b/kernel/bpf/btf.c
+> > @@ -3860,7 +3860,14 @@ bool btf_ctx_access(int off, int size, enum bpf_=
+access_type type,
+> >
+> >         info->reg_type =3D PTR_TO_BTF_ID;
+> >         if (tgt_prog) {
+> > -               ret =3D btf_translate_to_vmlinux(log, btf, t, tgt_prog-=
+>type, arg);
+> > +               enum bpf_prog_type tgt_type;
+> > +
+> > +               if (tgt_prog->type =3D=3D BPF_PROG_TYPE_EXT)
+> > +                       tgt_type =3D tgt_prog->aux->tgt_prog_type;
+>
+> what if tgt_prog->aux->tgt_prog_type is also BPF_PROG_TYPE_EXT? Should
+> this be a loop?
 
-The change was tested by manually verifying that the new MGMT command
-returns the tx power range as expected in userspace.
+ok, never mind this specifically. there is an explicit check
 
-Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
-Signed-off-by: Daniel Winkler <danielwinkler@google.com>
----
+if (tgt_prog->type =3D=3D prog->type) {
+    verbose(env, "Cannot recursively attach\n");
+    return -EINVAL;
+}
 
- include/net/bluetooth/mgmt.h |  9 +++++++++
- net/bluetooth/mgmt.c         | 39 ++++++++++++++++++++++++++++++++++++
- 2 files changed, 48 insertions(+)
+that will prevent this.
 
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index db64cf4747554c..9aa792e5efc8d0 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -815,6 +815,15 @@ struct mgmt_rp_add_ext_adv_data {
- 	__u8	instance;
- } __packed;
- 
-+#define MGMT_CAP_LE_TX_PWR_MIN	0x0000
-+#define MGMT_CAP_LE_TX_PWR_MAX	0x0001
-+
-+#define MGMT_OP_READ_CONTROLLER_CAP	0x0056
-+#define MGMT_OP_READ_CONTROLLER_CAP_SIZE	0
-+struct mgmt_rp_read_controller_cap {
-+	__u8     capabilities[0];
-+} __packed;
-+
- #define MGMT_EV_CMD_COMPLETE		0x0001
- struct mgmt_ev_cmd_complete {
- 	__le16	opcode;
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index b9347ff1a1e961..d2e5bc4b3ddb8f 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -124,6 +124,7 @@ static const u16 mgmt_commands[] = {
- 	MGMT_OP_REMOVE_ADV_MONITOR,
- 	MGMT_OP_ADD_EXT_ADV_PARAMS,
- 	MGMT_OP_ADD_EXT_ADV_DATA,
-+	MGMT_OP_READ_CONTROLLER_CAP,
- };
- 
- static const u16 mgmt_events[] = {
-@@ -181,6 +182,7 @@ static const u16 mgmt_untrusted_commands[] = {
- 	MGMT_OP_READ_EXP_FEATURES_INFO,
- 	MGMT_OP_READ_DEF_SYSTEM_CONFIG,
- 	MGMT_OP_READ_DEF_RUNTIME_CONFIG,
-+	MGMT_OP_READ_CONTROLLER_CAP,
- };
- 
- static const u16 mgmt_untrusted_events[] = {
-@@ -4356,6 +4358,42 @@ static int remove_adv_monitor(struct sock *sk, struct hci_dev *hdev,
- 	return err;
- }
- 
-+static int read_controller_cap(struct sock *sk, struct hci_dev *hdev,
-+			       void *data, u16 len)
-+{
-+	u8 i = 0;
-+
-+	/* This command will return its data in TVL format. Currently we only
-+	 * wish to include LE tx power parameters, so this struct can be given
-+	 * a fixed size as data types are not changing.
-+	 */
-+	struct {
-+		struct mgmt_tlv entry;
-+		__s8 value;
-+	} __packed cap[2];
-+
-+	BT_DBG("request for %s", hdev->name);
-+	memset(cap, 0, sizeof(cap));
-+
-+	hci_dev_lock(hdev);
-+
-+	/* Append LE tx power bounds */
-+	cap[i].entry.type = MGMT_CAP_LE_TX_PWR_MIN;
-+	cap[i].entry.length = sizeof(__s8);
-+	cap[i].value = hdev->min_le_tx_power;
-+	i++;
-+
-+	cap[i].entry.type = MGMT_CAP_LE_TX_PWR_MAX;
-+	cap[i].entry.length = sizeof(__s8);
-+	cap[i].value = hdev->max_le_tx_power;
-+	i++;
-+
-+	hci_dev_unlock(hdev);
-+
-+	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_READ_CONTROLLER_CAP,
-+				 MGMT_STATUS_SUCCESS, cap, sizeof(cap));
-+}
-+
- static void read_local_oob_data_complete(struct hci_dev *hdev, u8 status,
- 				         u16 opcode, struct sk_buff *skb)
- {
-@@ -8208,6 +8246,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
- 						HCI_MGMT_VAR_LEN },
- 	{ add_ext_adv_data,        MGMT_ADD_EXT_ADV_DATA_SIZE,
- 						HCI_MGMT_VAR_LEN },
-+	{ read_controller_cap,     MGMT_OP_READ_CONTROLLER_CAP_SIZE },
- };
- 
- void mgmt_index_added(struct hci_dev *hdev)
--- 
-2.28.0.618.gf4bc123cb7-goog
+But, I think we still will be able to construct a long chain of
+fmod_ret -> freplace -> fmod_ret -> freplace -> and so on ad
+infinitum. Can you please construct such a selftest? And then we
+should probably fix those checks to also disallow FMOD_RET, in
+addition to BPF_TRACE_FENTRY/FEXIT (and someone more familiar with LSM
+prog type should check if that can cause any problems).
 
+>
+> Which also brings up a few follow up questions. Now that we allow same
+> PROG_EXT program to be attached to multiple other programs:
+>
+> 1. what prevents us from attaching PROG_EXT to itself?
+> 2. How do we prevent long chain of EXT programs or even loops?
+>
+> Can you please add a few selftests testing such cases? I have a
+> feeling that with your changes in this patch set now it's possible to
+> break the kernel very easily. I don't know what the proper solution
+> is, but let's at least have a test that does show breakage, then try
+> to figure out the solution. See also comment in check_attach_btf_id()
+> about fentry/fexit and freplace interactions. That might not be
+> enough.
+>
+>
+> > +               else
+> > +                       tgt_type =3D tgt_prog->type;
+> > +
+> > +               ret =3D btf_translate_to_vmlinux(log, btf, t, tgt_type,=
+ arg);
+> >                 if (ret > 0) {
+> >                         info->btf_id =3D ret;
+> >                         return true;
+> >
