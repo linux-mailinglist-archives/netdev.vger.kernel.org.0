@@ -2,163 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 517CE26CC2E
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:40:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAD7E26CCAD
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728474AbgIPUkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 16:40:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:22004 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726798AbgIPRFy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:05:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600275952;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gyutKQ7iDiDszh0jv8Q/Pe+omXRolnMPIqJhMtRQapY=;
-        b=A0kllOkYnUlYXIUO9TEQoe7BrC3heU7iE4j2wPnifbVce3TtG13Cp2VLTOgoZHDjwuw8w8
-        J3xKdCIW8lHaHl7vOJBjp9/ph4bsmXv9URQxoNfAZT/UVw1wT4wgYu219csWnumoVEDBhx
-        fhkxdOOWlwj/GT2H71ev+hSZhLbJYmg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-156-isAKG4fLMS2R26-5FIglVw-1; Wed, 16 Sep 2020 08:39:49 -0400
-X-MC-Unique: isAKG4fLMS2R26-5FIglVw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D1A19800C78;
-        Wed, 16 Sep 2020 12:39:45 +0000 (UTC)
-Received: from astarta.redhat.com (ovpn-114-67.ams2.redhat.com [10.36.114.67])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8D7A475137;
-        Wed, 16 Sep 2020 12:39:39 +0000 (UTC)
-From:   Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     Will Deacon <will@kernel.org>, bpf@vger.kernel.org,
-        ardb@kernel.org, naresh.kamboju@linaro.org,
-        Jiri Olsa <jolsa@kernel.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
+        id S1728549AbgIPUsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 16:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726382AbgIPRBO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:01:14 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26F1C014D06;
+        Wed, 16 Sep 2020 06:38:27 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id 34so3885592pgo.13;
+        Wed, 16 Sep 2020 06:38:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=RPMmBa/zuVIVa6YT0Ct/PRYo3W8xK4AI2YIowuyMAz8=;
+        b=fHilp9TKndRfRIpIEW7pskStpJIx9tJimZ/y0pA9ypEvUHuYNm+18QlWmYOouD1tX0
+         LCK9aNAEI5YK+8CxLy6PgjIyLZmIZKfqvdx8B+9dwUnu8GnDSki3ejFJDcxMtw4ZvZkD
+         o58I2PumQyjbrEwCBsQvpOvIod2iRymYkDGLSlbDNe4W6UpmWWVqCwY2nBO6TgvF0l4g
+         KHU2qC9MgZICr7bfyPlIUWcx9aqQb6z72coEyRXs4xC52mJuXIJ47/9zIuWZe9xlXciN
+         rWrQ0jdnFJUZre4qzzTb/8uUrDgfCghNIQGgFqFdkhyrVn5mG75WLqiOFP8ZrHLbyxL8
+         NelQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=RPMmBa/zuVIVa6YT0Ct/PRYo3W8xK4AI2YIowuyMAz8=;
+        b=jfTHcUUvW1CA4vlmQzW1747Vme3acmyrR3wNr4HC65JdygXqIXH7fDntCYyEB+f4i8
+         QOTQNC6c28ILk0iygOtM069qUUUne4a3FBHnWoT05EQUq3zaNhp635qY/iX5GOj2OneX
+         kUtt8blkzqNfd/fYrsDofD7iD4au/6oi/Ywr73rYPRzzoXfdz0hMAk2enY6UVBlXSFf9
+         AL4KJLZx0ONwZ+GA9hIcgPg3I37DQErwYXyJv2jeW6uLdTyrrYmaoE5t7HKfP0FxbL+Z
+         0dT5Oq/iFHY9g7QA6qJso1RCbzaN5FBHMSoaH1YiOJQ8ewHZWJKr+gF0BPR0QOMIDXol
+         0X5w==
+X-Gm-Message-State: AOAM531Dw56MEgBasnOcUr5nIuOy12nC75STWwx/VKsehDoX4SYaetoC
+        AcfZy4lkMfMbgI3cSMSomRkrRNVSgiKjVukRLFE=
+X-Google-Smtp-Source: ABdhPJw8pDY+mq6BWskzMRd1QiEHrMA+qZcz43pBqGlrejs0IcKqbHwaajsxiVnJqEydNRZeG2HCHg==
+X-Received: by 2002:a63:30c:: with SMTP id 12mr18613171pgd.66.1600263506704;
+        Wed, 16 Sep 2020 06:38:26 -0700 (PDT)
+Received: from [192.168.0.104] ([49.207.198.18])
+        by smtp.gmail.com with ESMTPSA id e62sm16987968pfh.76.2020.09.16.06.38.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Sep 2020 06:38:26 -0700 (PDT)
+Subject: Re: [Linux-kernel-mentees][PATCH] rtl8150: set memory to all 0xFFs on
+ failed register reads
+To:     Petko Manolov <petkan@nucleusys.com>
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] arm64: bpf: Fix branch offset in JIT
-References: <20200914160355.19179-1-ilias.apalodimas@linaro.org>
-        <20200915131102.GA26439@willie-the-truck>
-        <20200915135344.GA113966@apalos.home>
-        <20200915141707.GB26439@willie-the-truck>
-        <20200915192311.GA124360@apalos.home>
-Date:   Wed, 16 Sep 2020 15:39:37 +0300
-In-Reply-To: <20200915192311.GA124360@apalos.home> (Ilias Apalodimas's message
-        of "Tue, 15 Sep 2020 22:23:11 +0300")
-Message-ID: <xunyo8m5hp4m.fsf@redhat.com>
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200916050540.15290-1-anant.thazhemadam@gmail.com>
+ <20200916061946.GA38262@p310>
+From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Message-ID: <780e991d-864d-0491-f440-12a926920a8a@gmail.com>
+Date:   Wed, 16 Sep 2020 19:08:21 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <20200916061946.GA38262@p310>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Ilias!
 
->>>>> On Tue, 15 Sep 2020 22:23:11 +0300, Ilias Apalodimas  wrote:
+On 16/09/20 11:49 am, Petko Manolov wrote:
+> On 20-09-16 10:35:40, Anant Thazhemadam wrote:
+>> get_registers() copies whatever memory is written by the
+>> usb_control_msg() call even if the underlying urb call ends up failing.
+> Not true, memcpy() is only called if "ret" is positive.
+Right. I'm really sorry I fumbled and messed up the commit message
+there. Thank you for pointing that out.
+>> If get_registers() fails, or ends up reading 0 bytes, meaningless and junk 
+>> register values would end up being copied over (and eventually read by the 
+>> driver), and since most of the callers of get_registers() don't check the 
+>> return values of get_registers() either, this would go unnoticed.
+> usb_control_msg() returns negative on error (look up usb_internal_control_msg() 
+> to see for yourself) so it does not go unnoticed.
 
- > Hi Will, 
- > On Tue, Sep 15, 2020 at 03:17:08PM +0100, Will Deacon wrote:
- >> On Tue, Sep 15, 2020 at 04:53:44PM +0300, Ilias Apalodimas wrote:
- >> > On Tue, Sep 15, 2020 at 02:11:03PM +0100, Will Deacon wrote:
- >> > > Hi Ilias,
- >> > > 
- >> > > On Mon, Sep 14, 2020 at 07:03:55PM +0300, Ilias Apalodimas wrote:
- >> > > > Running the eBPF test_verifier leads to random errors looking like this:
- >> > > > 
- >> > > > [ 6525.735488] Unexpected kernel BRK exception at EL1
- >> > > > [ 6525.735502] Internal error: ptrace BRK handler: f2000100 [#1] SMP
- >> > > 
- >> > > Does this happen because we poison the BPF memory with BRK instructions?
- >> > > Maybe we should look at using a special immediate so we can detect this,
- >> > > rather than end up in the ptrace handler.
- >> > 
- >> > As discussed offline this is what aarch64_insn_gen_branch_imm() will return for
- >> > offsets > 128M and yes replacing the handler with a more suitable message would 
- >> > be good.
- >> 
- >> Can you give the diff below a shot, please? Hopefully printing a more useful
- >> message will mean these things get triaged/debugged better in future.
+When I said "this would go unnoticed", I meant get_register() failing would
+go unnoticed, not that usb_control_msg() failing would go unnoticed.
+I agree that get_registers() notices usb_control_msg() failing, and
+appropriately returns the return value from usb_control_msg().
+But there are many instances where get_registers() is called but the return
+value of get_registers() is not checked, to see if it failed or not; hence, "this
+would go unnoticed".
 
- > [...]
+> If for some reason it return zero, nothing is copied.  Also, if usb transfer fail 
+> no register values are being copied anywhere.
 
- > The error print is going to be helpful imho. At least it will help
- > people notice something is wrong a lot faster than the previous one.
+True.
+Now consider set_ethernet_addr(), and suppose get_register() fails when
+invoked from inside set_ethernet_addr().
+As you said, no value is copied back, which means no value is copied back
+into node_id, which leaves node_id uninitialized. This node_id (still
+uninitialized) is then blindly copied into dev->netdev->dev_addr; which
+is less than ideal and could also quickly prove to become an issue, right?
 
+> Your patch also allows for memcpy() to be called with 'size' either zero or 
+> greater than the allocated buffer size. Please, look at the code carefully.
+Oh. I apologize for this. This can be reverted relatively easily.
+>> It might be a better idea to try and mirror the PCI master abort
+>> termination and set memory to 0xFFs instead in such cases.
+> I wasn't aware drivers are now responsible for filling up the memory with 
+> anything.  Does not sound like a good idea to me.
+Since we copy the correct register values when get_register() doesn't fail,
+I thought it might be a slightly better alternative to fill node_id with 0xFFs,
+instead of leaving it go uninitialized in case get_registers() fails.
 
-If you start to amend extables, could you consider a change like
+Also, what are the odds that a successful get_register() call would see
+0xFFs being copied?
+If that's very real scenario, then I admit this doesn't work at all.
 
-05a68e892e89 ("s390/kernel: expand exception table logic to allow new handling options")
+The only other alternative approach I can think of that can handle the
+issue I highlighted above, is to introduce checking for get_registers()'s
+return values nearly everywhere it gets called.
+Would that be a more preferable and welcome approach?
 
-and implementation of BPF_PROBE_MEM then?
+Thank you for your time.
 
- > [ 575.273203] BPF JIT generated an invalid instruction at
- > bpf_prog_64e6f4ba80861823_F+0x2e4/0x9a4!
- > [  575.281996] Unexpected kernel BRK exception at EL1
- > [  575.286786] Internal error: BRK handler: f2000100 [#5] PREEMPT SMP
- > [ 575.292965] Modules linked in: crct10dif_ce drm ip_tables x_tables
- > ipv6 btrfs blake2b_generic libcrc32c xor xor_neon zstd_compress
- > raid6_pq nvme nvme_core realtek
- > [ 575.307516] CPU: 21 PID: 11760 Comm: test_verifier Tainted: G D W
- > 5.9.0-rc3-01410-ged6d9b022813-dirty #1
- > [ 575.318125] Hardware name: Socionext SynQuacer E-series
- > DeveloperBox, BIOS build #1 Jun 6 2020
- > [  575.326825] pstate: 20000005 (nzCv daif -PAN -UAO BTYPE=--)
- > [  575.332396] pc : bpf_prog_64e6f4ba80861823_F+0x2e4/0x9a4
- > [  575.337705] lr : bpf_prog_d3e125b76c96daac+0x40/0xdec
- > [  575.342752] sp : ffff8000144e3ba0
- > [  575.346061] x29: ffff8000144e3bd0 x28: 0000000000000000
- > [  575.351371] x27: 00000085f19dc08d x26: 0000000000000000
- > [  575.356681] x25: ffff8000144e3ba0 x24: ffff800011fdf038
- > [  575.361991] x23: ffff8000144e3d20 x22: 0000000000000001
- > [  575.367301] x21: ffff800011fdf000 x20: ffff0009609d4740
- > [  575.372611] x19: 0000000000000000 x18: 0000000000000000
- > [  575.377921] x17: 0000000000000000 x16: 0000000000000000
- > [  575.383231] x15: 0000000000000000 x14: 0000000000000000
- > [  575.388540] x13: 0000000000000000 x12: 0000000000000000
- > [  575.393850] x11: 0000000000000000 x10: ffff8000000bc65c
- > [  575.399160] x9 : 0000000000000000 x8 : ffff8000144e3c58
- > [  575.404469] x7 : 0000000000000000 x6 : 0000000dd7ae967a
- > [  575.409779] x5 : 00ffffffffffffff x4 : 0007fabd6992cf96
- > [  575.415088] x3 : 0000000000000018 x2 : ffff8000000ba214
- > [  575.420398] x1 : 000000000000000a x0 : 0000000000000009
- > [  575.425708] Call trace:
- > [  575.428152]  bpf_prog_64e6f4ba80861823_F+0x2e4/0x9a4
- > [  575.433114]  bpf_prog_d3e125b76c96daac+0x40/0xdec
- > [  575.437822]  bpf_dispatcher_xdp_func+0x10/0x1c
- > [  575.442265]  bpf_test_run+0x80/0x240
- > [  575.445838]  bpf_prog_test_run_xdp+0xe8/0x190
- > [  575.450196]  __do_sys_bpf+0x8e8/0x1b00
- > [  575.453943]  __arm64_sys_bpf+0x24/0x510
- > [  575.457780]  el0_svc_common.constprop.0+0x6c/0x170
- > [  575.462570]  do_el0_svc+0x24/0x90
- > [  575.465883]  el0_sync_handler+0x90/0x19c
- > [  575.469802]  el0_sync+0x158/0x180
- > [  575.473118] Code: d4202000 d4202000 d4202000 d4202000 (d4202000)
- > [  575.479211] ---[ end trace 8cd54c7d5c0ffda4 ]---
+Thanks,
+Anant
 
- > Cheers
- > /Ilias
-
-
--- 
-WBR,
-Yauheni Kaliuta
 
