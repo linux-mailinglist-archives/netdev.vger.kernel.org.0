@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C1EC26C7FF
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 20:38:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1AE426C7FD
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 20:38:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728167AbgIPSiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 14:38:21 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:46804 "EHLO inva020.nxp.com"
+        id S1727653AbgIPSiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 14:38:05 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:46764 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728066AbgIPS24 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Sep 2020 14:28:56 -0400
+        id S1728065AbgIPS25 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 14:28:57 -0400
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 99E141A0C32;
-        Wed, 16 Sep 2020 14:16:44 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D0E231A0CCB;
+        Wed, 16 Sep 2020 14:16:51 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 5DB9D1A0334;
-        Wed, 16 Sep 2020 14:16:41 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 69C851A0334;
+        Wed, 16 Sep 2020 14:16:48 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 89143402E3;
-        Wed, 16 Sep 2020 14:16:36 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 9050D402A5;
+        Wed, 16 Sep 2020 14:16:43 +0200 (CEST)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
@@ -28,9 +28,9 @@ Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ioana Radulescu <ruxandra.radulescu@nxp.com>,
         Richard Cochran <richardcochran@gmail.com>
-Subject: [v3, 1/6] dpaa2-eth: add APIs of 1588 single step timestamping
-Date:   Wed, 16 Sep 2020 20:08:25 +0800
-Message-Id: <20200916120830.11456-2-yangbo.lu@nxp.com>
+Subject: [v3, 5/6] dpaa2-eth: support PTP Sync packet one-step timestamping
+Date:   Wed, 16 Sep 2020 20:08:29 +0800
+Message-Id: <20200916120830.11456-6-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200916120830.11456-1-yangbo.lu@nxp.com>
 References: <20200916120830.11456-1-yangbo.lu@nxp.com>
@@ -40,208 +40,432 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to add APIs of 1588 single step timestamping.
+This patch is to add PTP sync packet one-step timestamping support.
+Before egress, one-step timestamping enablement needs,
 
-- dpni_set_single_step_cfg
-- dpni_get_single_step_cfg
+- Enabling timestamp and FAS (Frame Annotation Status) in
+  dpni buffer layout.
+
+- Write timestamp to frame annotation and set PTP bit in
+  FAS to mark as one-step timestamping event.
+
+- Enabling one-step timestamping by dpni_set_single_step_cfg()
+  API, with offset provided to insert correction time on frame.
+  The offset must respect all MAC headers, VLAN tags and other
+  protocol headers accordingly. The correction field update can
+  consider delays up to one second. So PTP frame needs to be
+  filtered and parsed, and written timestamp into Sync frame
+  originTimestamp field.
+
+The operation of API dpni_set_single_step_cfg() has to be done
+when no one-step timestamping frames are in flight. So we have
+to make sure the last one-step timestamping frame has already
+been transmitted on hardware before starting to send the current
+one. The resolution is,
+
+- Utilize skb->cb[0] to mark timestamping request per packet.
+  If it is one-step timestamping PTP sync packet, queue to skb queue.
+  If not, transmit immediately.
+
+- Schedule a work to transmit skbs in skb queue.
+
+- mutex lock is used to ensure the last one-step timestamping packet
+  has already been transmitted on hardware through TX confirmation queue
+  before transmitting current packet.
 
 Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 ---
 Changes for v2:
 	- None.
 Changes for v3:
-	- Fixed sparse warnings.
+	- Fixed build issue on 32-bit.
+	- Converted to use ptp_parse_header.
 ---
- drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h | 21 +++++++
- drivers/net/ethernet/freescale/dpaa2/dpni.c     | 79 +++++++++++++++++++++++++
- drivers/net/ethernet/freescale/dpaa2/dpni.h     | 31 ++++++++++
- 3 files changed, 131 insertions(+)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c   | 191 +++++++++++++++++++--
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h   |  32 +++-
+ .../net/ethernet/freescale/dpaa2/dpaa2-ethtool.c   |   4 +-
+ 3 files changed, 211 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h b/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
-index 593e381..1222a4e 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
- /* Copyright 2013-2016 Freescale Semiconductor Inc.
-  * Copyright 2016 NXP
-+ * Copyright 2020 NXP
-  */
- #ifndef _FSL_DPNI_CMD_H
- #define _FSL_DPNI_CMD_H
-@@ -90,6 +91,9 @@
- #define DPNI_CMDID_SET_RX_HASH_DIST			DPNI_CMD(0x274)
- #define DPNI_CMDID_GET_LINK_CFG				DPNI_CMD(0x278)
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index eab9470..ba570f6 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -15,6 +15,7 @@
+ #include <linux/bpf.h>
+ #include <linux/bpf_trace.h>
+ #include <linux/fsl/ptp_qoriq.h>
++#include <linux/ptp_classify.h>
+ #include <net/pkt_cls.h>
+ #include <net/sock.h>
  
-+#define DPNI_CMDID_SET_SINGLE_STEP_CFG			DPNI_CMD(0x279)
-+#define DPNI_CMDID_GET_SINGLE_STEP_CFG			DPNI_CMD(0x27a)
+@@ -563,11 +564,57 @@ static int dpaa2_eth_consume_frames(struct dpaa2_eth_channel *ch,
+ 	return cleaned;
+ }
+ 
++static int dpaa2_eth_ptp_parse(struct sk_buff *skb,
++			       u8 *msgtype, u8 *twostep, u8 *udp,
++			       u16 *correction_offset,
++			       u16 *origintimestamp_offset)
++{
++	unsigned int ptp_class;
++	struct ptp_header *hdr;
++	unsigned int type;
++	u8 *base;
 +
- /* Macros for accessing command fields smaller than 1byte */
- #define DPNI_MASK(field)	\
- 	GENMASK(DPNI_##field##_SHIFT + DPNI_##field##_SIZE - 1, \
-@@ -639,4 +643,21 @@ struct dpni_cmd_set_tx_shaping {
- 	u8 coupled;
++	ptp_class = ptp_classify_raw(skb);
++	if (ptp_class == PTP_CLASS_NONE)
++		return -EINVAL;
++
++	hdr = ptp_parse_header(skb, ptp_class);
++	if (!hdr)
++		return -EINVAL;
++
++	*msgtype = ptp_get_msgtype(hdr, ptp_class);
++	*twostep = hdr->flag_field[0] & 0x2;
++
++	type = ptp_class & PTP_CLASS_PMASK;
++	if (type == PTP_CLASS_IPV4 ||
++	    type == PTP_CLASS_IPV6)
++		*udp = 1;
++	else
++		*udp = 0;
++
++	base = skb_mac_header(skb);
++	*correction_offset = (u8 *)&hdr->correction - base;
++	*origintimestamp_offset = (u8 *)hdr + sizeof(struct ptp_header) - base;
++
++	return 0;
++}
++
+ /* Configure the egress frame annotation for timestamp update */
+-static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_fd *fd, void *buf_start)
++static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_eth_priv *priv,
++				       struct dpaa2_fd *fd,
++				       void *buf_start,
++				       struct sk_buff *skb)
+ {
++	struct ptp_tstamp origin_timestamp;
++	struct dpni_single_step_cfg cfg;
++	u8 msgtype, twostep, udp;
+ 	struct dpaa2_faead *faead;
++	struct dpaa2_fas *fas;
++	struct timespec64 ts;
++	u16 offset1, offset2;
+ 	u32 ctrl, frc;
++	__le64 *ns;
++	u8 *data;
+ 
+ 	/* Mark the egress frame annotation area as valid */
+ 	frc = dpaa2_fd_get_frc(fd);
+@@ -583,6 +630,58 @@ static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_fd *fd, void *buf_start)
+ 	ctrl = DPAA2_FAEAD_A2V | DPAA2_FAEAD_UPDV | DPAA2_FAEAD_UPD;
+ 	faead = dpaa2_get_faead(buf_start, true);
+ 	faead->ctrl = cpu_to_le32(ctrl);
++
++	if (skb->cb[0] == TX_TSTAMP_ONESTEP_SYNC) {
++		if (dpaa2_eth_ptp_parse(skb, &msgtype, &twostep, &udp,
++					&offset1, &offset2)) {
++			netdev_err(priv->net_dev,
++				   "bad packet for one-step timestamping\n");
++			return;
++		}
++
++		if (msgtype != 0 || twostep) {
++			netdev_err(priv->net_dev,
++				   "bad packet for one-step timestamping\n");
++			return;
++		}
++
++		/* Mark the frame annotation status as valid */
++		frc = dpaa2_fd_get_frc(fd);
++		dpaa2_fd_set_frc(fd, frc | DPAA2_FD_FRC_FASV);
++
++		/* Mark the PTP flag for one step timestamping */
++		fas = dpaa2_get_fas(buf_start, true);
++		fas->status = cpu_to_le32(DPAA2_FAS_PTP);
++
++		/* Write current time to FA timestamp field */
++		if (!dpaa2_ptp) {
++			netdev_err(priv->net_dev,
++				   "ptp driver may not loaded for one-step timestamping\n");
++			return;
++		}
++		dpaa2_ptp->caps.gettime64(&dpaa2_ptp->caps, &ts);
++		ns = dpaa2_get_ts(buf_start, true);
++		*ns = cpu_to_le64(timespec64_to_ns(&ts) /
++				  DPAA2_PTP_CLK_PERIOD_NS);
++
++		/* Update current time to PTP message originTimestamp field */
++		ns_to_ptp_tstamp(&origin_timestamp, le64_to_cpup(ns));
++		data = skb_mac_header(skb);
++		*(__be16 *)(data + offset2) = htons(origin_timestamp.sec_msb);
++		*(__be32 *)(data + offset2 + 2) =
++			htonl(origin_timestamp.sec_lsb);
++		*(__be32 *)(data + offset2 + 6) = htonl(origin_timestamp.nsec);
++
++		cfg.en = 1;
++		cfg.ch_update = udp;
++		cfg.offset = offset1;
++		cfg.peer_delay = 0;
++
++		if (dpni_set_single_step_cfg(priv->mc_io, 0, priv->mc_token,
++					     &cfg))
++			netdev_err(priv->net_dev,
++				   "dpni_set_single_step_cfg failed\n");
++	}
+ }
+ 
+ /* Create a frame descriptor based on a fragmented skb */
+@@ -820,7 +919,7 @@ static int dpaa2_eth_build_single_fd(struct dpaa2_eth_priv *priv,
+  * This can be called either from dpaa2_eth_tx_conf() or on the error path of
+  * dpaa2_eth_tx().
+  */
+-static void dpaa2_eth_free_tx_fd(const struct dpaa2_eth_priv *priv,
++static void dpaa2_eth_free_tx_fd(struct dpaa2_eth_priv *priv,
+ 				 struct dpaa2_eth_fq *fq,
+ 				 const struct dpaa2_fd *fd, bool in_napi)
+ {
+@@ -903,6 +1002,8 @@ static void dpaa2_eth_free_tx_fd(const struct dpaa2_eth_priv *priv,
+ 		ns = DPAA2_PTP_CLK_PERIOD_NS * le64_to_cpup(ts);
+ 		shhwtstamps.hwtstamp = ns_to_ktime(ns);
+ 		skb_tstamp_tx(skb, &shhwtstamps);
++	} else if (skb->cb[0] == TX_TSTAMP_ONESTEP_SYNC) {
++		mutex_unlock(&priv->onestep_tstamp_lock);
+ 	}
+ 
+ 	/* Free SGT buffer allocated on tx */
+@@ -922,7 +1023,8 @@ static void dpaa2_eth_free_tx_fd(const struct dpaa2_eth_priv *priv,
+ 	napi_consume_skb(skb, in_napi);
+ }
+ 
+-static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
++static netdev_tx_t __dpaa2_eth_tx(struct sk_buff *skb,
++				  struct net_device *net_dev)
+ {
+ 	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
+ 	struct dpaa2_fd fd;
+@@ -937,13 +1039,6 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
+ 	int err, i;
+ 	void *swa;
+ 
+-	/* Utilize skb->cb[0] for timestamping request per skb */
+-	skb->cb[0] = 0;
+-
+-	if (priv->tx_tstamp_type == HWTSTAMP_TX_ON &&
+-	    skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
+-		skb->cb[0] = TX_TSTAMP;
+-
+ 	percpu_stats = this_cpu_ptr(priv->percpu_stats);
+ 	percpu_extras = this_cpu_ptr(priv->percpu_extras);
+ 
+@@ -981,8 +1076,8 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
+ 		goto err_build_fd;
+ 	}
+ 
+-	if (skb->cb[0] == TX_TSTAMP)
+-		dpaa2_eth_enable_tx_tstamp(&fd, swa);
++	if (skb->cb[0])
++		dpaa2_eth_enable_tx_tstamp(priv, &fd, swa, skb);
+ 
+ 	/* Tracing point */
+ 	trace_dpaa2_tx_fd(net_dev, &fd);
+@@ -1037,6 +1132,58 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
+ 	return NETDEV_TX_OK;
+ }
+ 
++static void dpaa2_eth_tx_onestep_tstamp(struct work_struct *work)
++{
++	struct dpaa2_eth_priv *priv = container_of(work, struct dpaa2_eth_priv,
++						   tx_onestep_tstamp);
++	struct sk_buff *skb;
++
++	while (true) {
++		skb = skb_dequeue(&priv->tx_skbs);
++		if (!skb)
++			return;
++
++		mutex_lock(&priv->onestep_tstamp_lock);
++		__dpaa2_eth_tx(skb, priv->net_dev);
++	}
++}
++
++static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
++{
++	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
++	u8 msgtype, twostep, udp;
++	u16 offset1, offset2;
++
++	/* Utilize skb->cb[0] for timestamping request per skb */
++	skb->cb[0] = 0;
++
++	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
++		if (priv->tx_tstamp_type == HWTSTAMP_TX_ON)
++			skb->cb[0] = TX_TSTAMP;
++		else if (priv->tx_tstamp_type == HWTSTAMP_TX_ONESTEP_SYNC)
++			skb->cb[0] = TX_TSTAMP_ONESTEP_SYNC;
++	}
++
++	/* TX for one-step timestamping PTP Sync packet */
++	if (skb->cb[0] == TX_TSTAMP_ONESTEP_SYNC) {
++		if (!dpaa2_eth_ptp_parse(skb, &msgtype, &twostep, &udp,
++					 &offset1, &offset2))
++			if (msgtype == 0 && twostep == 0) {
++				skb_queue_tail(&priv->tx_skbs, skb);
++				queue_work(priv->dpaa2_ptp_wq,
++					   &priv->tx_onestep_tstamp);
++				return NETDEV_TX_OK;
++			}
++		/* Use two-step timestamping if not one-step timestamping
++		 * PTP Sync packet
++		 */
++		skb->cb[0] = TX_TSTAMP;
++	}
++
++	/* TX for other packets */
++	return __dpaa2_eth_tx(skb, net_dev);
++}
++
+ /* Tx confirmation frame processing routine */
+ static void dpaa2_eth_tx_conf(struct dpaa2_eth_priv *priv,
+ 			      struct dpaa2_eth_channel *ch __always_unused,
+@@ -1906,6 +2053,7 @@ static int dpaa2_eth_ts_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ 	switch (config.tx_type) {
+ 	case HWTSTAMP_TX_OFF:
+ 	case HWTSTAMP_TX_ON:
++	case HWTSTAMP_TX_ONESTEP_SYNC:
+ 		priv->tx_tstamp_type = config.tx_type;
+ 		break;
+ 	default:
+@@ -2731,8 +2879,10 @@ static int dpaa2_eth_set_buffer_layout(struct dpaa2_eth_priv *priv)
+ 	/* tx buffer */
+ 	buf_layout.private_data_size = DPAA2_ETH_SWA_SIZE;
+ 	buf_layout.pass_timestamp = true;
++	buf_layout.pass_frame_status = true;
+ 	buf_layout.options = DPNI_BUF_LAYOUT_OPT_PRIVATE_DATA_SIZE |
+-			     DPNI_BUF_LAYOUT_OPT_TIMESTAMP;
++			     DPNI_BUF_LAYOUT_OPT_TIMESTAMP |
++			     DPNI_BUF_LAYOUT_OPT_FRAME_STATUS;
+ 	err = dpni_set_buffer_layout(priv->mc_io, 0, priv->mc_token,
+ 				     DPNI_QUEUE_TX, &buf_layout);
+ 	if (err) {
+@@ -2741,7 +2891,8 @@ static int dpaa2_eth_set_buffer_layout(struct dpaa2_eth_priv *priv)
+ 	}
+ 
+ 	/* tx-confirm buffer */
+-	buf_layout.options = DPNI_BUF_LAYOUT_OPT_TIMESTAMP;
++	buf_layout.options = DPNI_BUF_LAYOUT_OPT_TIMESTAMP |
++			     DPNI_BUF_LAYOUT_OPT_FRAME_STATUS;
+ 	err = dpni_set_buffer_layout(priv->mc_io, 0, priv->mc_token,
+ 				     DPNI_QUEUE_TX_CONFIRM, &buf_layout);
+ 	if (err) {
+@@ -3969,6 +4120,16 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
+ 	priv->tx_tstamp_type = HWTSTAMP_TX_OFF;
+ 	priv->rx_tstamp = false;
+ 
++	priv->dpaa2_ptp_wq = alloc_workqueue("dpaa2_ptp_wq", 0, 0);
++	if (!priv->dpaa2_ptp_wq) {
++		err = -ENOMEM;
++		goto err_wq_alloc;
++	}
++
++	INIT_WORK(&priv->tx_onestep_tstamp, dpaa2_eth_tx_onestep_tstamp);
++
++	skb_queue_head_init(&priv->tx_skbs);
++
+ 	/* Obtain a MC portal */
+ 	err = fsl_mc_portal_allocate(dpni_dev, FSL_MC_IO_ATOMIC_CONTEXT_PORTAL,
+ 				     &priv->mc_io);
+@@ -4107,6 +4268,8 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
+ err_dpni_setup:
+ 	fsl_mc_portal_free(priv->mc_io);
+ err_portal_alloc:
++	destroy_workqueue(priv->dpaa2_ptp_wq);
++err_wq_alloc:
+ 	dev_set_drvdata(dev, NULL);
+ 	free_netdev(net_dev);
+ 
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index e33d79e..6436fa3 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -195,6 +195,24 @@ struct dpaa2_faead {
+ #define DPAA2_FAEAD_EBDDV		0x00002000
+ #define DPAA2_FAEAD_UPD			0x00000010
+ 
++struct ptp_tstamp {
++	u16 sec_msb;
++	u32 sec_lsb;
++	u32 nsec;
++};
++
++static inline void ns_to_ptp_tstamp(struct ptp_tstamp *tstamp, u64 ns)
++{
++	u64 sec, nsec;
++
++	sec = ns;
++	nsec = do_div(sec, 1000000000);
++
++	tstamp->sec_lsb = sec & 0xFFFFFFFF;
++	tstamp->sec_msb = (sec >> 32) & 0xFFFF;
++	tstamp->nsec = nsec;
++}
++
+ /* Accessors for the hardware annotation fields that we use */
+ static inline void *dpaa2_get_hwa(void *buf_addr, bool swa)
+ {
+@@ -474,9 +492,21 @@ struct dpaa2_eth_priv {
+ #endif
+ 
+ 	struct dpaa2_mac *mac;
++	struct workqueue_struct	*dpaa2_ptp_wq;
++	struct work_struct	tx_onestep_tstamp;
++	struct sk_buff_head	tx_skbs;
++	/* The one-step timestamping configuration on hardware
++	 * registers could only be done when no one-step
++	 * timestamping frames are in flight. So we use a mutex
++	 * lock here to make sure the lock is released by last
++	 * one-step timestamping packet through TX confirmation
++	 * queue before transmit current packet.
++	 */
++	struct mutex		onestep_tstamp_lock;
  };
  
-+#define DPNI_PTP_ENABLE_SHIFT			0
-+#define DPNI_PTP_ENABLE_SIZE			1
-+#define DPNI_PTP_CH_UPDATE_SHIFT		1
-+#define DPNI_PTP_CH_UPDATE_SIZE			1
-+
-+struct dpni_cmd_single_step_cfg {
-+	__le16 flags;
-+	__le16 offset;
-+	__le32 peer_delay;
-+};
-+
-+struct dpni_rsp_single_step_cfg {
-+	__le16 flags;
-+	__le16 offset;
-+	__le32 peer_delay;
-+};
-+
- #endif /* _FSL_DPNI_CMD_H */
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.c b/drivers/net/ethernet/freescale/dpaa2/dpni.c
-index 68ed4c4..6ea7db66 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpni.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpni.c
+ #define TX_TSTAMP		0x1
++#define TX_TSTAMP_ONESTEP_SYNC	0x2
+ 
+ #define DPAA2_RXH_SUPPORTED	(RXH_L2DA | RXH_VLAN | RXH_L3_PROTO \
+ 				| RXH_IP_SRC | RXH_IP_DST | RXH_L4_B_0_1 \
+@@ -581,7 +611,7 @@ static inline unsigned int dpaa2_eth_needed_headroom(struct sk_buff *skb)
+ 		return 0;
+ 
+ 	/* If we have Tx timestamping, need 128B hardware annotation */
+-	if (skb->cb[0] == TX_TSTAMP)
++	if (skb->cb[0])
+ 		headroom += DPAA2_ETH_TX_HWA_SIZE;
+ 
+ 	return headroom;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+index 26bd99b..bf3baf6 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
 @@ -1,6 +1,7 @@
  // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
- /* Copyright 2013-2016 Freescale Semiconductor Inc.
+ /* Copyright 2014-2016 Freescale Semiconductor Inc.
   * Copyright 2016 NXP
 + * Copyright 2020 NXP
   */
- #include <linux/kernel.h>
- #include <linux/errno.h>
-@@ -1999,3 +2000,81 @@ int dpni_set_tx_shaping(struct fsl_mc_io *mc_io,
- 	/* send command to mc*/
- 	return mc_send_command(mc_io, &cmd);
- }
-+
-+/**
-+ * dpni_get_single_step_cfg() - return current configuration for
-+ *                              single step PTP
-+ * @mc_io:	Pointer to MC portal's I/O object
-+ * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
-+ * @token:	Token of DPNI object
-+ * @ptp_cfg:	ptp single step configuration
-+ *
-+ * Return:	'0' on Success; Error code otherwise.
-+ *
-+ */
-+int dpni_get_single_step_cfg(struct fsl_mc_io *mc_io,
-+			     u32 cmd_flags,
-+			     u16 token,
-+			     struct dpni_single_step_cfg *ptp_cfg)
-+{
-+	struct dpni_rsp_single_step_cfg *rsp_params;
-+	struct fsl_mc_command cmd = { 0 };
-+	int err;
-+
-+	/* prepare command */
-+	cmd.header = mc_encode_cmd_header(DPNI_CMDID_GET_SINGLE_STEP_CFG,
-+					  cmd_flags, token);
-+	/* send command to mc*/
-+	err =  mc_send_command(mc_io, &cmd);
-+	if (err)
-+		return err;
-+
-+	/* read command response */
-+	rsp_params = (struct dpni_rsp_single_step_cfg *)cmd.params;
-+	ptp_cfg->offset = le16_to_cpu(rsp_params->offset);
-+	ptp_cfg->en = dpni_get_field(le16_to_cpu(rsp_params->flags),
-+				     PTP_ENABLE) ? 1 : 0;
-+	ptp_cfg->ch_update = dpni_get_field(le16_to_cpu(rsp_params->flags),
-+					    PTP_CH_UPDATE) ? 1 : 0;
-+	ptp_cfg->peer_delay = le32_to_cpu(rsp_params->peer_delay);
-+
-+	return err;
-+}
-+
-+/**
-+ * dpni_set_single_step_cfg() - enable/disable and configure single step PTP
-+ * @mc_io:	Pointer to MC portal's I/O object
-+ * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
-+ * @token:	Token of DPNI object
-+ * @ptp_cfg:	ptp single step configuration
-+ *
-+ * Return:	'0' on Success; Error code otherwise.
-+ *
-+ * The function has effect only when dpni object is connected to a dpmac
-+ * object. If the dpni is not connected to a dpmac the configuration will
-+ * be stored inside and applied when connection is made.
-+ */
-+int dpni_set_single_step_cfg(struct fsl_mc_io *mc_io,
-+			     u32 cmd_flags,
-+			     u16 token,
-+			     struct dpni_single_step_cfg *ptp_cfg)
-+{
-+	struct dpni_cmd_single_step_cfg *cmd_params;
-+	struct fsl_mc_command cmd = { 0 };
-+	u16 flags;
-+
-+	/* prepare command */
-+	cmd.header = mc_encode_cmd_header(DPNI_CMDID_SET_SINGLE_STEP_CFG,
-+					  cmd_flags, token);
-+	cmd_params = (struct dpni_cmd_single_step_cfg *)cmd.params;
-+	cmd_params->offset = cpu_to_le16(ptp_cfg->offset);
-+	cmd_params->peer_delay = cpu_to_le32(ptp_cfg->peer_delay);
-+
-+	flags = le16_to_cpu(cmd_params->flags);
-+	dpni_set_field(flags, PTP_ENABLE, !!ptp_cfg->en);
-+	dpni_set_field(flags, PTP_CH_UPDATE, !!ptp_cfg->ch_update);
-+	cmd_params->flags = cpu_to_le16(flags);
-+
-+	/* send command to mc*/
-+	return mc_send_command(mc_io, &cmd);
-+}
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.h b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-index 3938799..74456a3 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpni.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
- /* Copyright 2013-2016 Freescale Semiconductor Inc.
-  * Copyright 2016 NXP
-+ * Copyright 2020 NXP
-  */
- #ifndef __FSL_DPNI_H
- #define __FSL_DPNI_H
-@@ -1079,4 +1080,34 @@ int dpni_set_tx_shaping(struct fsl_mc_io *mc_io,
- 			const struct dpni_tx_shaping_cfg *tx_er_shaper,
- 			int coupled);
  
-+/**
-+ * struct dpni_single_step_cfg - configure single step PTP (IEEE 1588)
-+ * @en:		enable single step PTP. When enabled the PTPv1 functionality
-+ *		will not work. If the field is zero, offset and ch_update
-+ *		parameters will be ignored
-+ * @offset:	start offset from the beginning of the frame where
-+ *		timestamp field is found. The offset must respect all MAC
-+ *		headers, VLAN tags and other protocol headers
-+ * @ch_update:	when set UDP checksum will be updated inside packet
-+ * @peer_delay:	For peer-to-peer transparent clocks add this value to the
-+ *		correction field in addition to the transient time update.
-+ *		The value expresses nanoseconds.
-+ */
-+struct dpni_single_step_cfg {
-+	u8	en;
-+	u8	ch_update;
-+	u16	offset;
-+	u32	peer_delay;
-+};
-+
-+int dpni_set_single_step_cfg(struct fsl_mc_io *mc_io,
-+			     u32 cmd_flags,
-+			     u16 token,
-+			     struct dpni_single_step_cfg *ptp_cfg);
-+
-+int dpni_get_single_step_cfg(struct fsl_mc_io *mc_io,
-+			     u32 cmd_flags,
-+			     u16 token,
-+			     struct dpni_single_step_cfg *ptp_cfg);
-+
- #endif /* __FSL_DPNI_H */
+ #include <linux/net_tstamp.h>
+@@ -770,7 +771,8 @@ static int dpaa2_eth_get_ts_info(struct net_device *dev,
+ 	info->phc_index = dpaa2_phc_index;
+ 
+ 	info->tx_types = (1 << HWTSTAMP_TX_OFF) |
+-			 (1 << HWTSTAMP_TX_ON);
++			 (1 << HWTSTAMP_TX_ON) |
++			 (1 << HWTSTAMP_TX_ONESTEP_SYNC);
+ 
+ 	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
+ 			   (1 << HWTSTAMP_FILTER_ALL);
 -- 
 2.7.4
 
