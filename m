@@ -2,154 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5D3A26BF13
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 10:22:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECB8526BF27
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 10:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726532AbgIPIV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 04:21:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56476 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726068AbgIPIVx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Sep 2020 04:21:53 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726564AbgIPIZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 04:25:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36154 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726149AbgIPIZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 04:25:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600244749;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SciDp7vow7Osmi2JbFd8Ljpt7Ueze55tLv9AQ9bbklI=;
+        b=Z8iGj86n+IRmml15GPDfD1U41w5bUXKZkW9vjlkPeweTGwMELdh1eWS1Xb0EzKOGV6I7wY
+        i23Dc9FcKXbtBEgUfaU3QFaShByIaGXF5zzdc7e4OpCyyR5vyIzcSAiZxkv84fjlBrYiU2
+        yZFgzLMt63hjYkzmuxQPCyoInY+fCDE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-47-4e6vjzvRNDef2aTCXru_-w-1; Wed, 16 Sep 2020 04:25:47 -0400
+X-MC-Unique: 4e6vjzvRNDef2aTCXru_-w-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CBF642083B;
-        Wed, 16 Sep 2020 08:21:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600244512;
-        bh=xvNuiguLoALCQNOj0pxCTsjPZcdVb4n1+r7PPV4LjIY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mfpzGTxzw8SBYHiJahTjs3M5wMRgXhvi68qJZrwNt0QX+AT+DvC0DsrZH8IzC7WiG
-         Gy2KBL5BWVQ5d/n4Qs0/m2hHS+nOjjfAV/LTiMdQE7EnPomR7+Fk60sMqxW+3dPrQg
-         3tbBrFDWkuA7Kg/OzciQQ7QJDdzzSYARU6/l70X8=
-Date:   Wed, 16 Sep 2020 10:22:26 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Oded Gabbay <oded.gabbay@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-Message-ID: <20200916082226.GA509119@kroah.com>
-References: <20200915171022.10561-1-oded.gabbay@gmail.com>
- <20200915.134252.1280841239760138359.davem@davemloft.net>
- <CAFCwf131Vbo3im1BjOi_XXfRUu+nfrJY54sEZv8Z5LKut3QE6w@mail.gmail.com>
- <20200916062614.GF142621@kroah.com>
- <CAFCwf126PVDtjeAD8wCc_TiDfer04iydrW1AjUicH4oVHbs12Q@mail.gmail.com>
- <20200916074217.GB189144@kroah.com>
- <CAFCwf10zLR9v65sgGGdkcf+JzZaw_WORAbQvEw-hbbfj=dy2Xg@mail.gmail.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1F7741084C81;
+        Wed, 16 Sep 2020 08:25:46 +0000 (UTC)
+Received: from ovpn-114-223.ams2.redhat.com (ovpn-114-223.ams2.redhat.com [10.36.114.223])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 559D75D9CA;
+        Wed, 16 Sep 2020 08:25:43 +0000 (UTC)
+Message-ID: <5f5aa2608856865a8b3e4dfd4195e2de31ba9762.camel@redhat.com>
+Subject: Re: [PATCH] mptcp: Fix unsigned 'max_seq' compared with zero in
+ mptcp_data_queue_ofo
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Ye Bin <yebin10@huawei.com>, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net, netdev@vger.kernel.org,
+        mptcp@lists.01.org
+Cc:     Hulk Robot <hulkci@huawei.com>
+Date:   Wed, 16 Sep 2020 10:25:42 +0200
+In-Reply-To: <20200916033003.1186727-1-yebin10@huawei.com>
+References: <20200916033003.1186727-1-yebin10@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFCwf10zLR9v65sgGGdkcf+JzZaw_WORAbQvEw-hbbfj=dy2Xg@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 11:02:39AM +0300, Oded Gabbay wrote:
-> On Wed, Sep 16, 2020 at 10:41 AM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Wed, Sep 16, 2020 at 09:36:23AM +0300, Oded Gabbay wrote:
-> > > On Wed, Sep 16, 2020 at 9:25 AM Greg Kroah-Hartman
-> > > <gregkh@linuxfoundation.org> wrote:
-> > > >
-> > > > On Tue, Sep 15, 2020 at 11:49:12PM +0300, Oded Gabbay wrote:
-> > > > > On Tue, Sep 15, 2020 at 11:42 PM David Miller <davem@davemloft.net> wrote:
-> > > > > >
-> > > > > > From: Oded Gabbay <oded.gabbay@gmail.com>
-> > > > > > Date: Tue, 15 Sep 2020 20:10:08 +0300
-> > > > > >
-> > > > > > > This is the second version of the patch-set to upstream the GAUDI NIC code
-> > > > > > > into the habanalabs driver.
-> > > > > > >
-> > > > > > > The only modification from v2 is in the ethtool patch (patch 12). Details
-> > > > > > > are in that patch's commit message.
-> > > > > > >
-> > > > > > > Link to v2 cover letter:
-> > > > > > > https://lkml.org/lkml/2020/9/12/201
-> > > > > >
-> > > > > > I agree with Jakub, this driver definitely can't go-in as it is currently
-> > > > > > structured and designed.
-> > > > > Why is that ?
-> > > > > Can you please point to the things that bother you or not working correctly?
-> > > > > I can't really fix the driver if I don't know what's wrong.
-> > > > >
-> > > > > In addition, please read my reply to Jakub with the explanation of why
-> > > > > we designed this driver as is.
-> > > > >
-> > > > > And because of the RDMA'ness of it, the RDMA
-> > > > > > folks have to be CC:'d and have a chance to review this.
-> > > > > As I said to Jakub, the driver doesn't use the RDMA infrastructure in
-> > > > > the kernel and we can't connect to it due to the lack of H/W support
-> > > > > we have
-> > > > > Therefore, I don't see why we need to CC linux-rdma.
-> > > > > I understood why Greg asked me to CC you because we do connect to the
-> > > > > netdev and standard eth infrastructure, but regarding the RDMA, it's
-> > > > > not really the same.
-> > > >
-> > > > Ok, to do this "right" it needs to be split up into separate drivers,
-> > > > hopefully using the "virtual bus" code that some day Intel will resubmit
-> > > > again that will solve this issue.
-> > > Hi Greg,
-> > > Can I suggest an alternative for the short/medium term ?
-> > >
-> > > In an earlier email, Jakub said:
-> > > "Is it not possible to move the files and still build them into a single
-> > > module?"
-> > >
-> > > I thought maybe that's a good way to progress here ?
-> >
-> > Cross-directory builds of a single module are crazy.  Yes, they work,
-> > but really, that's a mess, and would never suggest doing that.
-> >
-> > > First, split the content to Ethernet and RDMA.
-> > > Then move the Ethernet part to drivers/net but build it as part of
-> > > habanalabs.ko.
-> > > Regarding the RDMA code, upstream/review it in a different patch-set
-> > > (maybe they will want me to put the files elsewhere).
-> > >
-> > > What do you think ?
-> >
-> > I think you are asking for more work there than just splitting out into
-> > separate modules :)
-> >
-> > thanks,
-> >
-> > greg k-h
-> Hi Greg,
+Hi,
+
+On Wed, 2020-09-16 at 11:30 +0800, Ye Bin wrote:
+> Fixes make coccicheck warnig:
+> net/mptcp/protocol.c:164:11-18: WARNING: Unsigned expression compared with zero: max_seq > 0
 > 
-> If cross-directory building is out of the question, what about
-> splitting into separate modules ? And use cross-module notifiers/calls
-> ? I did that with amdkfd and amdgpu/radeon a couple of years back. It
-> worked (that's the best thing I can say about it).
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Ye Bin <yebin10@huawei.com>
+> ---
+>  net/mptcp/protocol.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+> index ef0dd2f23482..3b71f6202524 100644
+> --- a/net/mptcp/protocol.c
+> +++ b/net/mptcp/protocol.c
+> @@ -155,13 +155,14 @@ static void mptcp_data_queue_ofo(struct mptcp_sock *msk, struct sk_buff *skb)
+>  {
+>  	struct sock *sk = (struct sock *)msk;
+>  	struct rb_node **p, *parent;
+> +	int space;
+>  	u64 seq, end_seq, max_seq;
+>  	struct sk_buff *skb1;
+>  
+>  	seq = MPTCP_SKB_CB(skb)->map_seq;
+>  	end_seq = MPTCP_SKB_CB(skb)->end_seq;
+> -	max_seq = tcp_space(sk);
+> -	max_seq = max_seq > 0 ? max_seq + msk->ack_seq : msk->ack_seq;
+> +	space = tcp_space(sk);
+> +	max_seq = space > 0 ? space + msk->ack_seq : msk->ack_seq;
+>  
+>  	pr_debug("msk=%p seq=%llx limit=%llx empty=%d", msk, seq, max_seq,
+>  		 RB_EMPTY_ROOT(&msk->out_of_order_queue));
 
-That's fine with me.
+The patch looks correct, but could you please add an appropriate
+'Fixes' tag, and also preserve the reverse x-mas tree order for
+variables declaration?
 
-> The main problem with this "virtual bus" thing is that I'm not
-> familiar with it at all and from my experience I imagine it would take
-> a considerable time and effort to upstream this infrastructure work.
+Also, this patch should likely target the net-next tree, the MPTCP OoO
+queue is present only there.
 
-It shouldn't be taking that long, but for some unknown reason, the
-original author of that code is sitting on it and not resending it.  Go
-poke them through internal Intel channels to find out what the problem
-is, as I have no clue why a 200-300 line bus module is taking so long to
-get "right" :(
+Thanks!
 
-I'm _ALMOST_ at the point where I would just do that work myself, but
-due to my current status with Intel, I'll let them do it as I have
-enough other things on my plate...
+Paolo
 
-> This could delay the NIC code for a couple of years, which by then
-> this won't be relevant at all.
-
-Why wouldn't this code be relevant in a year?  It's going to be 2+ years
-before any of this shows up in an "enterprise distro" based on their
-release cycles anyway :)
-
-thanks,
-
-greg k-h
