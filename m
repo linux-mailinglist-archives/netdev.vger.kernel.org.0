@@ -2,137 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A43C26CBC5
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:34:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34EE826CCC3
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:49:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726627AbgIPUeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 16:34:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55958 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726913AbgIPRMz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:12:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600276345;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RQyq2xuCGNHkYvL97fJ+nfUr6mDnAugF/ipqA9mhYME=;
-        b=JAffHlIVZl6VFgcxbjk3iK0uUZf7IVQHlD3gcII6QkoTXWpw2Fyk83xU9vMdY1gKqN8+jD
-        TTb9hKBnIxuSPLJ8zwK64Tcb7cLQs1K2cf6KCgoyc4Hoj/35Dnfgd1kG4V/OATuf9AQ+Yr
-        x/URuo6hSFx/6gsDCcbdXtuZOocn6WQ=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-53-GG6ekhEAP72wuGwZAkGmrA-1; Wed, 16 Sep 2020 07:37:30 -0400
-X-MC-Unique: GG6ekhEAP72wuGwZAkGmrA-1
-Received: by mail-ed1-f69.google.com with SMTP id x23so2360350eds.5
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 04:37:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=RQyq2xuCGNHkYvL97fJ+nfUr6mDnAugF/ipqA9mhYME=;
-        b=D8OYbZgBS1vtels5HFiJaIY0VpEhWaSbVwDi9y3IIo82/iV++rRsdwfkKgfa1bJeVI
-         jac6mlpzjF6JVmVY7kFqYbd8KU9fGayb2pfU0p7sziDlNJOSo0huIQyqh3jXL95B/TKf
-         SRyLyWum3R5ilZmlEFwSJbH9LgaVq0llpjpSIVNXqZ5+ZxbfHkFYTfCY/LZiY9Bnq8Uz
-         1tKAV8iPs1ae3paU+TmXxgVBKtuhBl/5hOI17SeGsPzO2U4/JKLVJ/pJ4KJVWvEI58NC
-         kcS6Gs8Qeo6cDypwoe6thLqR/EPrUwyUNqlrW5kX/DBH+KZxt27H4B44X3tHEMk8qVKJ
-         zvlw==
-X-Gm-Message-State: AOAM5320ja2Jo17knwsGTfre5YEv/Imjv0RhpTm6MlOlCJYVGe1ybVTL
-        EWPrdNr8OroUs6t5mZimkBZ++zi6u6zuqzkpYLSAcTIrx2D21VFicZmdDgJM0nuX4Z2NIu/f6om
-        NVLlP4Dc8k/vDlrOu
-X-Received: by 2002:a17:906:3088:: with SMTP id 8mr14075901ejv.487.1600256249051;
-        Wed, 16 Sep 2020 04:37:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx5qscMaMnIvPB74Nt602ZvP3284TeQZsUwMmfnfhukiJAfLhlw8RjOfPXviImTQCvk2iGm6A==
-X-Received: by 2002:a17:906:3088:: with SMTP id 8mr14075875ejv.487.1600256248771;
-        Wed, 16 Sep 2020 04:37:28 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id o6sm13971569edh.40.2020.09.16.04.37.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2020 04:37:27 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 57809183A90; Wed, 16 Sep 2020 13:37:27 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: don't check against device MTU in
- __bpf_skb_max_len
-In-Reply-To: <CANP3RGf581mZKE2Eky-bY6swU6TAFv1vzxxZ24SQ+yB9TGAD8w@mail.gmail.com>
-References: <159921182827.1260200.9699352760916903781.stgit@firesoul>
- <20200904163947.20839d7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200907160757.1f249256@carbon>
- <CANP3RGfjUOoVH152VHLXL3y7mBsF+sUCqEZgGAMdeb9_r_Z-Bw@mail.gmail.com>
- <20200914160538.2bd51893@carbon>
- <CANP3RGftg2-_tBc=hGGzxjGZUq9b1amb=TiKRVHSBEyXq-A5QA@mail.gmail.com>
- <87ft7jzas7.fsf@toke.dk>
- <CANP3RGf581mZKE2Eky-bY6swU6TAFv1vzxxZ24SQ+yB9TGAD8w@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 16 Sep 2020 13:37:27 +0200
-Message-ID: <875z8eq7ew.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        id S1726874AbgIPUtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 16:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726631AbgIPRAu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:00:50 -0400
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01on062a.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe1e::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45C3CC0A889B
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 05:58:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K1p0uIZoa9T/wQWBZtb/MBvI6U75JKSDH7rN/5CKFC9k70cUjyeq2yEf8H1QmF/cdKgoSwPOEgGJS/oQMcjipolGEpEXsAfyx24DUr0uL2oz3UdjpgRS/EZazDDA5Yx/IAsyyA9iDvPS38QJnN2cXUbbecL5U5pv/q8t3iU7vYARKiBX22IE2bn+U90WvRp8Wyv0xLTWb3Dz0xyOJHhkGgrTK+Ns3uxiVBfigjMu7rtVF+X3bhN0C/XtNIw9T7tz4qknWtH4OT5ukGC/hb72+zVmChUnYHKMuwU9X2W60g5rInI60NVvdGIMJBswcSAmLG+uXcxvshgzYbrfMJKjjw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CZHAaVx43InUKaQrHzMqsjLq0WAqCVjH2bFLeUzl6Zc=;
+ b=HoQZxuRY8LkTHRtTPMYiewQc2QbL3H2uPhpNRmDywiWnf4IHm2oWZb0RLX/uJLSIAAKwis/37VqOW7s7uIDKRklvrEbIFRPn+nHZAqA4A8w/4UdIaXMmEQaGY+IVZ6Fup1dL3EhBydVSJgRJF5aTf8Plf7W0WWhjG8g8bI7kRN9Db47dyqvUlp4lPT5UeXBrtmdnyTQwn3pFlZgh5IRSCIBBXGeNNV99RC6oJvxgWl1Ys9v3VW3vjhKh2VK2nm9brnjfKMVGHNPVTcH+DqTxjN2LIqhdRxRDbHy0fLSNcGJY2Q6R1R7QRO1BVsg3mYgqf7Er7M5oAcMd+n8YC3YEtA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CZHAaVx43InUKaQrHzMqsjLq0WAqCVjH2bFLeUzl6Zc=;
+ b=O5m8jXv3p7Y/7hUtXbxP5xOsYQsgadj07hnz/8PxYXixLF4mqA6DSamzRYmqLejchyLj7WRGSjrcwUgu/CQnQgQsTZuhP5MBBbGi1qAJTDYxfHh28luU+M/s24VS+s+VSaIwloatpn7u4Y9XbzlaATfyj6HLFRvu6Hgy1+ImzzQ=
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com (2603:10a6:20b:10d::24)
+ by AM6PR04MB3959.eurprd04.prod.outlook.com (2603:10a6:209:4f::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Wed, 16 Sep
+ 2020 11:43:05 +0000
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::f431:1df6:f18b:ad99]) by AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::f431:1df6:f18b:ad99%7]) with mapi id 15.20.3370.019; Wed, 16 Sep 2020
+ 11:43:05 +0000
+From:   "Y.b. Lu" <yangbo.lu@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: RE: [PATCH 5/5] dpaa2-eth: support PTP Sync packet one-step
+ timestamping
+Thread-Topic: [PATCH 5/5] dpaa2-eth: support PTP Sync packet one-step
+ timestamping
+Thread-Index: AQHWh1du5aIDBW7z4EaIAdM1IwookKlh8r+AgAk7fcA=
+Date:   Wed, 16 Sep 2020 11:43:05 +0000
+Message-ID: <AM7PR04MB6885CD2526DA6A647D4B53A7F8210@AM7PR04MB6885.eurprd04.prod.outlook.com>
+References: <20200910093835.24317-1-yangbo.lu@nxp.com>
+        <20200910093835.24317-6-yangbo.lu@nxp.com>
+ <20200910074315.59771a9a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200910074315.59771a9a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [92.121.68.129]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 70148cb5-cccd-46c4-bbeb-08d85a35ad0c
+x-ms-traffictypediagnostic: AM6PR04MB3959:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR04MB39596B275C6064D3E584CAF9F8210@AM6PR04MB3959.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 82qwWs9JXj7d49CypGHsjHSq+6jZrTK2hudaYsPt/gmtfqHgEsKomm47PvorqfdKrzt6FHF7foViUCXYCCDJ3ZoIkChS3e61NTDlxl7bxWPgtyFXxzbWFutlWbWqYxdAf/DLtdgJ5xN0hQ1A3zvVcr8frNi0nskPD69G2E6ETUqBjviquPiVe08MsbfFTg/jYQhA1JxHb+64FOh1Ldh5Nr+7KCag3l5aSCrxfrRL0KwWfEu0Ps9dWwAzQqOamQC7TXbZ8pStWJM/CP27Jk/pepLSWSZ8lYJPQHqSpeQeL0uDci34gILGkHEpAMtgMH51PdQ6ai+6PoefHJFA4Br22w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB6885.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(366004)(396003)(136003)(33656002)(186003)(52536014)(71200400001)(5660300002)(86362001)(53546011)(8936002)(6506007)(66556008)(4326008)(64756008)(54906003)(76116006)(66446008)(66946007)(66476007)(7696005)(478600001)(8676002)(83380400001)(26005)(6916009)(316002)(55016002)(9686003)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: DToxoyE0HoPiMIzZxsch/3BZmGigNSKg2LRd7SrzZ/M+7F4OgI7AKD3XEqGddaZ5ci8eTXOiwv0Ah5JZSKbCgIaGW9s0HJ4hZWACJrlASjj6VqfOuMuU9cnt0a9rosUmFrzm0yBiwDNX4Q7I40uidfLJmhDrf7KBIJanu1qsIGpBRee4XbNey4ydZomWov6RKGiq3veMm3eywDmST7UU3G5gv41ghCo2ok3grqP+0aOygczXvQ7WO0ugV24yckUyUl/gBGUo+CUbZ65kzS9uMU5FPvfYjmIaY/utHKqRzUfbacGjv+WpITcLccdr1knXtrqAbqAPVCJYNImQHOKiHp9tdSkZGkwsiUIowMXdLsqjOL/C6SgDJy4qenwsXPuOR9wrO2Wn2VEQWdRfUG8hVMCuKlSfb25LpKcruXzNEhqp784YgCE/J3vJdGPmXE2yXtaizcPk9fWzbkR+QA6l0pUQX5Q3p4sJDA2kGOIshsR3OQF0QASWkrkGV+N/2gHnhFloj9Pmt3iJo5+57I/QhJcUeEj5JYTmpEB7UrOcijjpbwQSx35Gc8P4qoOrTbSKf61CMPCCDy2YOg6bPILep+yxvpMr2cEbWeEFTFzVf9+pLQ2xr/Vb1v8RGOCMvDg7wnzc34vLoDkkSqcG5+hmuQ==
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB6885.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 70148cb5-cccd-46c4-bbeb-08d85a35ad0c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2020 11:43:05.4570
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yu4FG5uUj+mkLRGLqND5b8/+YWw5nmym493y4eEWEbLqM8lYEHwsfX5+Th9MHMWG3GWshxETD7Enc0tJnOkboQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB3959
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maciej =C5=BBenczykowski <maze@google.com> writes:
+Hi Jakub,
 
-> On Tue, Sep 15, 2020 at 1:47 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> [ just jumping in to answer this bit: ]
->>
->> > Would you happen to know what ebpf startup overhead is?
->> > How big a problem is having two (or more) back to back tc programs
->> > instead of one?
->>
->> With a jit'ed BPF program and the in-kernel dispatcher code (which
->> avoids indirect calls), it's quite close to a native function call.
->
-> Hmm, I know we have (had? they're upstream now I think) some CFI vs
-> BPF interaction issues.
-> We needed to mark the BPF call into JIT'ed code as CFI exempt.
->
-> CFI is Code Flow Integrity and is some compiler magic, to quote wikipedia:
-> Google has shipped Android with the Linux kernel compiled by Clang
-> with link-time optimization (LTO) and CFI since 2018.[12]
-> I don't know much more about it.
->
-> But we do BPF_JIT_ALWAYS_ON on 64-bit kernels, so it sounds like we
-> might be good.
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Thursday, September 10, 2020 10:43 PM
+> To: Y.b. Lu <yangbo.lu@nxp.com>
+> Cc: netdev@vger.kernel.org; David S . Miller <davem@davemloft.net>; Ioana
+> Ciornei <ioana.ciornei@nxp.com>; Ioana Ciocoi Radulescu
+> <ruxandra.radulescu@nxp.com>; Richard Cochran
+> <richardcochran@gmail.com>
+> Subject: Re: [PATCH 5/5] dpaa2-eth: support PTP Sync packet one-step
+> timestamping
+>=20
+> On Thu, 10 Sep 2020 17:38:35 +0800 Yangbo Lu wrote:
+> > This patch is to add PTP sync packet one-step timestamping support.
+> > Before egress, one-step timestamping enablement needs,
+> >
+> > - Enabling timestamp and FAS (Frame Annotation Status) in
+> >   dpni buffer layout.
+> >
+> > - Write timestamp to frame annotation and set PTP bit in
+> >   FAS to mark as one-step timestamping event.
+> >
+> > - Enabling one-step timestamping by dpni_set_single_step_cfg()
+> >   API, with offset provided to insert correction time on frame.
+> >   The offset must respect all MAC headers, VLAN tags and other
+> >   protocol headers accordingly. The correction field update can
+> >   consider delays up to one second. So PTP frame needs to be
+> >   filtered and parsed, and written timestamp into Sync frame
+> >   originTimestamp field.
+> >
+> > The operation of API dpni_set_single_step_cfg() has to be done
+> > when no one-step timestamping frames are in flight. So we have
+> > to make sure the last one-step timestamping frame has already
+> > been transmitted on hardware before starting to send the current
+> > one. The resolution is,
+> >
+> > - Utilize skb->cb[0] to mark timestamping request per packet.
+> >   If it is one-step timestamping PTP sync packet, queue to skb queue.
+> >   If not, transmit immediately.
+> >
+> > - Schedule a work to transmit skbs in skb queue.
+> >
+> > - mutex lock is used to ensure the last one-step timestamping packet
+> >   has already been transmitted on hardware through TX confirmation
+> queue
+> >   before transmitting current packet.
+> >
+> > Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+>=20
+> This doesn't build on 32bit:
+>=20
+> ERROR: modpost: "__udivdi3"
+> [drivers/net/ethernet/freescale/dpaa2/fsl-dpaa2-eth.ko] undefined!
+> ERROR: modpost: "__umoddi3"
+> [drivers/net/ethernet/freescale/dpaa2/fsl-dpaa2-eth.ko] undefined!
 
-No idea about the CFI thing...
-
->> > We're running into both verifier performance scaling problems and code
->> > ownership issues with large programs...
->> >
->> > [btw. I understand for XDP we could only use 1 program anyway...]
->>
->> Working on that! See my talk at LPC:
->> https://linuxplumbersconf.org/event/7/contributions/671/
->
-> Yes, I'm aware and excited about it!
-
-Great! :)
-
-> Unfortunately, Android S will only support 4.19, 5.4 and 5.10 for
-> newly launched devices (and 4.9/4.14 for upgrades).
-> (5.10 here means 'whatever is the next 5.x LTS', but that's most likely 5=
-.10)
-> I don't (yet) even have real phone hardware running 5.4, and 5.10
-> within the next year is even more of a stretch.
-
-Right, I saw your talk at LPC and of course the kernel version thing is
-a bit of an issue. I suppose you could do some compile-time magic to
-wrap programs and use the tail-call-based chaining for older kernels -
-bit of a hassle, though :/
-
--Toke
-
+Will fix by using do_div in next version. Thanks.
