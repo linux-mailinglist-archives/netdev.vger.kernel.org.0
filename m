@@ -2,79 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F386926BC2F
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 08:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEBC726BC34
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 08:09:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726279AbgIPGI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 02:08:26 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:48380 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726193AbgIPGIV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Sep 2020 02:08:21 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1600236500; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=sACAp3XOdkGTgtb5Bx1apDUtcLqnVpEZFqB5s5mEvLQ=;
- b=rzFUWUgKc3tF7dggk/OOt+lXlkxI4CyeMExPhNc9qOFXz2GaD86Qm8CXTQkgC4bNCLXJGjdh
- EXVf3JpirmlqllhfwV1chvNz6GfekpTJyv9s7EUUvy8lKC4e8xerNnwN7lPIPj1a8LGR8qtL
- Av8zwuPjXgcrD/0lHckOGvep8SY=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 5f61abc8947f606f7e86de7f (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 16 Sep 2020 06:08:08
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D5CACC43382; Wed, 16 Sep 2020 06:08:07 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A0F37C433F1;
-        Wed, 16 Sep 2020 06:08:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A0F37C433F1
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726338AbgIPGI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 02:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726133AbgIPGI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 02:08:58 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E034C061788
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 23:08:57 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id m6so5598956wrn.0
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 23:08:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=6ltP0aOGQD+pWXD6AJUF98sdvcO7hY5wybesnqZaXUw=;
+        b=Ux1DfmrceSWVJcjxg6rX12nRmouD06dTwTwqh7Kcyhgg4TgM3iB/16UnLsoRmsu+st
+         4v6TkVr6sf2Ei73kzDFuDad+NgXokkTdeChhvnbFU8X8FhYA7W4+zSENytFEiiG2f4QA
+         OW5NdYyiktAhLQmJ/tCpVQ60kPIqaGoveJOrm2xkCWUe5JKM6P3nypW6/Ma4gOLd0PVq
+         XGI8690y/Wob6hZia8JoG5Q8k+LuiDjFEVG+08915OuzGuxgDOp1O9qvSeNh3CnF/OMD
+         oPsPL8h0Ty4pcIJWMpHhfU9vJXBPI08o5aWnRvXSPIPnEEcz9xUMKDV/P1nwDaiHFkIV
+         /EkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=6ltP0aOGQD+pWXD6AJUF98sdvcO7hY5wybesnqZaXUw=;
+        b=iJlHIspPN2OntFRX6LXTcNtDH9dcgaetraPIKwY3bAbhf/6d/iBwnHHrTfmCpSivF/
+         u1WLWPghTQ6kEDf5DvQ/MZNt5D6GFcJ15ggwAaNMSmcTfwKQOVO+//X8kMLMm3oSI8YV
+         er/Qw0bv49QkfeZuSq7TlKGtGroWmvO2Znu/wtdN+iXy46ND0NuY3EeW7Yc+GkltUKtU
+         /iT74ZBoDvvf4UfducnHFCmscc0ISqtbOU5RpGlmTjo6iQZgPJuDZFhagaZ0I2rNLu2H
+         MTdew06vCOVF8zn7S7Ue61WAnCW54rBP5zWQWa1wK/78yHb9SL1X1VLg53h7CnydNcds
+         M8sg==
+X-Gm-Message-State: AOAM531xLhkNdoqH8plwW2e/mrGpg45T0zAgxgexyMNRQ3ZsHc+xpDml
+        noALPpPa2U8yxPdtA83dmRcH9Q==
+X-Google-Smtp-Source: ABdhPJy1lHwl1CXyERuGj7W3u4wqt7kLrissmRGrhp5aC0BjolySXgBxonRNQGZjAdNklIJwvrVT1A==
+X-Received: by 2002:a5d:5751:: with SMTP id q17mr1867192wrw.409.1600236536019;
+        Tue, 15 Sep 2020 23:08:56 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id q18sm29992660wre.78.2020.09.15.23.08.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Sep 2020 23:08:55 -0700 (PDT)
+Date:   Wed, 16 Sep 2020 08:08:54 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next RFC v4 10/15] net/mlx5: Add support for devlink
+ reload action fw activate
+Message-ID: <20200916060854.GB2278@nanopsycho>
+References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
+ <1600063682-17313-11-git-send-email-moshe@mellanox.com>
+ <20200914135442.GJ2236@nanopsycho.orion>
+ <565e63b3-2a01-4eba-42d3-f5abc6794ee8@nvidia.com>
+ <20200915133705.GR2236@nanopsycho.orion>
+ <5c5689d9-c2ba-7656-10f3-1d5f33fc6a2e@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wlcore: Remove unused macro WL1271_SUSPEND_SLEEP
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200909135905.35728-1-yuehaibing@huawei.com>
-References: <20200909135905.35728-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200916060807.D5CACC43382@smtp.codeaurora.org>
-Date:   Wed, 16 Sep 2020 06:08:07 +0000 (UTC)
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5c5689d9-c2ba-7656-10f3-1d5f33fc6a2e@nvidia.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-YueHaibing <yuehaibing@huawei.com> wrote:
+Tue, Sep 15, 2020 at 10:28:44PM CEST, moshe@nvidia.com wrote:
+>
+>On 9/15/2020 4:37 PM, Jiri Pirko wrote:
+>> Tue, Sep 15, 2020 at 02:44:02PM CEST, moshe@nvidia.com wrote:
+>> > On 9/14/2020 4:54 PM, Jiri Pirko wrote:
+>> > > Mon, Sep 14, 2020 at 08:07:57AM CEST, moshe@mellanox.com wrote:
+>> > > 
+>> > > [..]
+>> > > 
+>> > > > +static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev)
+>> > > > +{
+>> > > > +	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
+>> > > > +
+>> > > > +	/* if this is the driver that initiated the fw reset, devlink completed the reload */
+>> > > > +	if (test_bit(MLX5_FW_RESET_FLAGS_PENDING_COMP, &fw_reset->reset_flags)) {
+>> > > > +		complete(&fw_reset->done);
+>> > > > +	} else {
+>> > > > +		mlx5_load_one(dev, false);
+>> > > > +		devlink_reload_implicit_actions_performed(priv_to_devlink(dev),
+>> > > > +							  DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE,
+>> > > > +							  BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+>> > > > +							  BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE));
+>> > > Hmm, who originated the reset? Devlink_reload of the same devlink
+>> > > instance?
+>> > 
+>> > Not the same devlink instance for sure. I defer it by the flag above
+>> > MLX5_FW_RESET_FLAG_PENDING_COMP. If the flag set, I set complete to the
+>> > reload_down() waiting for it.
+>> Hmm, thinking about the stats, as
+>> devlink_reload_implicit_actions_performed() is called only in case
+>> another instance does the reload, shouldn't it be a separate set of
+>> stats? I think that the user would like to distinguish local and remote
+>> reload, don't you think?
+>> 
+>
+>Possible, it will double the counters, but it will give more info.
+>
+>So actually, if devlink_reload is not supported by driver, I should hold and
+>show only the remote stats or all stats always ?
 
-> commit 45aa7f071b06 ("wlcore: Use generic runtime pm calls for wowlan elp configuration")
-> left behind this, remove it.
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+It would make sense to show just remote stats.
 
-Patch applied to wireless-drivers-next.git, thanks.
+>
+>How such remote counter should look like ? something like remote_fw_activate 
+>while the local is just fw_activate ?
 
-d06e2f8b41b6 wlcore: Remove unused macro WL1271_SUSPEND_SLEEP
+Sounds good.
 
--- 
-https://patchwork.kernel.org/patch/11765701/
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+>
+>> > 
+>> > > [..]
