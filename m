@@ -2,107 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2059326CC66
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:43:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5EC126CBF2
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 22:37:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728513AbgIPUns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 16:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56366 "EHLO
+        id S1728466AbgIPUhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 16:37:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726695AbgIPRD1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:03:27 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7721AC0258FA;
-        Wed, 16 Sep 2020 09:59:14 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id l9so3790405wme.3;
-        Wed, 16 Sep 2020 09:59:14 -0700 (PDT)
+        with ESMTP id S1726666AbgIPRKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 13:10:15 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62574C061223;
+        Wed, 16 Sep 2020 10:08:25 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id g96so1070143ybi.12;
+        Wed, 16 Sep 2020 10:08:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=1Cyg0WIppUnNjtSQjb5xzehZs4xNIP5GmeGygQdn4yo=;
-        b=rvPzgDuJ+cVuZ5Hx+9BQPemjI1Y70qzwAVVQEeYKOtQjKMFR6beZHS+KEszMZdFjO6
-         Aleit13kXaRzgU1wgxMoxMxGWKCrB/l/f5Kndr71xLi0+6371kqmSanFtiBKav6HRFe8
-         68ximSA9OCEKJyaTMWMDLe4CryacLImZ3zWePzp+1apJ71Ll641acOahO6yJZxZuafh2
-         cfiSAGzYMSdU/kZiLlES2qtE1EJ0ky+OjOm7JxgaGlgwndhkbiwUGGrNy8l7wVaK4vC7
-         zcwvAUCWEZxBhnaAToiGgGKO7FHAB2jb+2Q2+Jo5S042zN5PIagJXiUikIN2NMyK2wg8
-         gDag==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=7ptBkp4xdHHe4seAGHtrtcjPEqw5vfXo8/OjJOz+4vo=;
+        b=tyUNudrabayD3JwPEmQY4XYb0Z9um6wyD1MuAVIUGdE2zXPnviLL06emxcGClGBFsC
+         O/TaIxxK1iR/HUrbYWAxV1qIZsydniT4HHKNs8cGb2DIRgngIolIhLzN92SpM6JLhpfs
+         7v8jHz8Rh+N60BTTLdUj5s+tMkeiA8gujqUEv9Khx+yc4+ES8z33Z84M2khAEENA6ox+
+         Uz3GBBYSlUKMgS6peddac3bMQcAoT9pbafdY6WfHTOZruGOobTj/2s5aCiz/Iitl7T7c
+         1O7oGjG2yWDi/iaRrVvJ+08xrQ30ZAMuJZVUdSoXZUHc6RKX+E4pREep6h65hBJk2G1x
+         PG9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=1Cyg0WIppUnNjtSQjb5xzehZs4xNIP5GmeGygQdn4yo=;
-        b=lWMJrGeqxCUxzMsEXaRAGSqQOy+uVWhZecEWd7dC9xURyhCDjmgskVkPxf+NKvxPJj
-         lZewqxxpbeizQdxAwq3uGesibQAYZml3uou4mIoPL5u5FdSH9jICNBHywyJgmH7xCQ/7
-         ajuD5rxjZ+EiylvvDYgoJdSUi1U226PSfStwHXtyr9R2wLV8tj4Jw9CSTN7D+IdJRs7p
-         ftf8E/tIAGkC8k1F35Ey752Gcy34gBm3tgcoAfp7bZ+2sbo9mLj0joe5io+/yTYPApyS
-         qihFgjOh4ChUsDiSpGMag+gwgqHfuJO8hNDEP3IiPOtKLFBQCSX8WGkuq8qwS5JJMODI
-         43fw==
-X-Gm-Message-State: AOAM532mIFJJVLD2Uf7Gg5MjPLlpVwUuwUB9Pb2m0ldbPuEatENMH2yE
-        D2xsOdMbiYgljF+0nmSAL3w=
-X-Google-Smtp-Source: ABdhPJzCoxjasywHVAn6Hb2IHWmpF2ygM4DriiiSTBMx2ZYCjMTJNnY6K+2m4NlxnokqZwZ66/AgGw==
-X-Received: by 2002:a1c:7502:: with SMTP id o2mr5552050wmc.29.1600275553009;
-        Wed, 16 Sep 2020 09:59:13 -0700 (PDT)
-Received: from [192.168.0.18] (cpc83661-brig20-2-0-cust443.3-3.cable.virginm.net. [82.28.105.188])
-        by smtp.gmail.com with ESMTPSA id s17sm35710235wrr.40.2020.09.16.09.59.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Sep 2020 09:59:12 -0700 (PDT)
-Subject: Re: [PATCH] ath10k: sdio: remove reduntant check in for loop
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>
-References: <20200914191925.24192-1-alex.dewar90@gmail.com>
- <c2987351e3bdad16510dd35847991c2412a9db6b.camel@nvidia.com>
-From:   Alex Dewar <alex.dewar90@gmail.com>
-Message-ID: <57efff54-7aa4-8220-c705-1fdf35b0099e@gmail.com>
-Date:   Wed, 16 Sep 2020 17:59:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7ptBkp4xdHHe4seAGHtrtcjPEqw5vfXo8/OjJOz+4vo=;
+        b=l39KEyTW8su38UbkZYY2BLO8KqHGYvP/nf1mb+X0n8mjod4orKU2GSSrI8tAaHQJrR
+         t3zn1YGUv47fQsy/YLMjmwOa7ykQwYGiNIgp4ZQL1ZcZKGc7k6AmFANNG9ctOWno9QPy
+         X4+vFkspd9pLxKs64ug9BlGk/aO8sZseL7qv2yB3CF3hEUiVL/KF70lHFWTxDNYLHY9f
+         q9T4+D6PDH9zbxrw+icCXVv/BYrBXNj0xfOeSKtmPXsX7+tHOsqqhOAYtHpHP+Vvfp5S
+         YOUoDoGuR7o2D+3zJOcKtBLLZMcH/bXEV0lLS3PXSVwF/IaoKAO2HvLXoKc1hUiOTUoB
+         0cIQ==
+X-Gm-Message-State: AOAM531lfidvezxhSBWTMpPXDukSubeHYrOnG1TOIk8mvR4ap5/M6mB1
+        9Ez/VBu2eXziwe3XBJ2xL2ViwEougmysU1T1w9Y=
+X-Google-Smtp-Source: ABdhPJxmcqGA5X1/GtJsWgz5/0S5cv1fNPTsbWnNm703TSNTsYGTekLKYo4nvUaIK9ZB3yTlZeGClthDD0+1eMf1DN4=
+X-Received: by 2002:a25:33c4:: with SMTP id z187mr21570384ybz.27.1600276104518;
+ Wed, 16 Sep 2020 10:08:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <c2987351e3bdad16510dd35847991c2412a9db6b.camel@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <160017005691.98230.13648200635390228683.stgit@toke.dk> <160017005805.98230.16775816864129373411.stgit@toke.dk>
+In-Reply-To: <160017005805.98230.16775816864129373411.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 16 Sep 2020 10:08:13 -0700
+Message-ID: <CAEf4BzaE7PzKw8nEesraKZRmK9oDSV-Ei=8v1fRH3Mf22zHgsA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 1/8] bpf: change logging calls from verbose()
+ to bpf_log() and use log pointer
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[snip]
-> 'i' is only referenced once inside the loop to check boundary,
+On Tue, Sep 15, 2020 at 5:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> the loop is actually iterating over cur_section, so i would make it
-> clear in the loop statement, e.g.:
-> Remove the break condition and the cur_section assignment at the end of
-> the loop and use the loop statement to do it for you
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 >
-> for (; cur_section; cur_section = next_section)
+> In preparation for moving code around, change a bunch of references to
+> env->log (and the verbose() logging helper) to use bpf_log() and a direct
+> pointer to struct bpf_verifier_log. While we're touching the function
+> signature, mark the 'prog' argument to bpf_check_type_match() as const.
 >
+> Also enhance the bpf_verifier_log_needed() check to handle NULL pointers
+> for the log struct so we can re-use the code with logging disabled.
 >
->>   		section_size = cur_section->end - cur_section->start;
->>   
->>   		if (section_size <= 0) {
->> @@ -2318,7 +2318,7 @@ static int
->> ath10k_sdio_dump_memory_section(struct ath10k *ar,
->>   			break;
->>   		}
->>   
->> -		if ((i + 1) == mem_region->section_table.size) {
-> And for i you can just increment it inline:
-> if (++i == ...)
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
 
-Good suggestions! I've sent a v2 with these changes.
+Ok, let's get this out of the way :)
 
->      
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  include/linux/bpf.h          |    2 +-
+>  include/linux/bpf_verifier.h |    5 +++-
+>  kernel/bpf/btf.c             |    6 +++--
+>  kernel/bpf/verifier.c        |   48 +++++++++++++++++++++---------------=
+------
+>  4 files changed, 31 insertions(+), 30 deletions(-)
 >
->> +		if (i == mem_region->section_table.size) {
->>   			/* last section */
->>   			next_section = NULL;
->>   			skip_size = 0;
 
+[...]
