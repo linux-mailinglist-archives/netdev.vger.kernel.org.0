@@ -2,88 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06BA626D60E
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 10:12:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EBB126D658
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 10:23:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbgIQIMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 04:12:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54284 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726362AbgIQIMM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 04:12:12 -0400
-X-Greylist: delayed 353 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 04:12:11 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600330330;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cBI8f1/R2C8gGei3me+pMyZKfvONcZONLHWJofQzyXM=;
-        b=QVunZ4LzdkMwympSJmctTDTszjNFaDZC3qByB2bc4uPDOAAozKGSIYEfy+9LmEv7uMe0fu
-        ieb61TZVUdcVsoIXWrU4oJ0o5BSWKTHKTL0793kYyisIZEzZiBhtGQWf2UMRjp+4N6hQYo
-        aHVGzTRrm7Kg2vlnoxdJvXEsw2C7dBc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-420-YfU2mhUcN_Cr4TOEz-iS8g-1; Thu, 17 Sep 2020 04:04:56 -0400
-X-MC-Unique: YfU2mhUcN_Cr4TOEz-iS8g-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 05A841018722;
-        Thu, 17 Sep 2020 08:04:55 +0000 (UTC)
-Received: from krava (ovpn-114-176.ams2.redhat.com [10.36.114.176])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 4E6941002D69;
-        Thu, 17 Sep 2020 08:04:53 +0000 (UTC)
-Date:   Thu, 17 Sep 2020 10:04:52 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Seth Forshee <seth.forshee@canonical.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: resolve_btfids breaks kernel cross-compilation
-Message-ID: <20200917080452.GB2411168@krava>
-References: <20200916194733.GA4820@ubuntu-x1>
+        id S1726382AbgIQIXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 04:23:03 -0400
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1657 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726153AbgIQIWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 04:22:55 -0400
+X-Greylist: delayed 300 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 04:22:55 EDT
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f631b7f0006>; Thu, 17 Sep 2020 01:17:03 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Thu, 17 Sep 2020 01:17:47 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Thu, 17 Sep 2020 01:17:47 -0700
+Received: from sw-mtx-036.mtx.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 17 Sep
+ 2020 08:17:46 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     Parav Pandit <parav@nvidia.com>
+Subject: [PATCH net-next 0/8] devlink: Add SF add/delete devlink ops
+Date:   Thu, 17 Sep 2020 11:17:23 +0300
+Message-ID: <20200917081731.8363-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200916194733.GA4820@ubuntu-x1>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1600330623; bh=KbOVsYU6uT2Nz/sH55CuLQN4mra5NsjmcjFMV2LSyb0=;
+        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
+         MIME-Version:Content-Transfer-Encoding:Content-Type:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=J2s7UHHHidH2QpAdz/ITa8cRRbgWlQ7jQv0uJphjIwTEnCrQ5LJNoGhEpIkpv/6KR
+         pezul+kI2yvtVNG/Rld0lbQrMCrz6Jg+7R61Ds63r/q1usawJ/ovg9qRieXIG5jaHl
+         3xEfDA+6+rNDFnevU9RTQwVYhYqWJBT3qXLUmPc1DsXlnZ+6PRKnEiAV7mdDvqQYvW
+         +78K1dgntz1h/hyLoxhoqA29bIN/25OlePXhc6woc2JcTbbP+nT1U1rs0S0eB15CeD
+         XZnS0weBDcl2lGtxid4pIUTI9LDCR+zCGZzBYhoZCj3vbMy4+QcwrpIEU0wG107owC
+         9QUOfJf+dVXIQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 02:47:33PM -0500, Seth Forshee wrote:
-> The requirement to build resolve_btfids whenever CONFIG_DEBUG_INFO_BTF
-> is enabled breaks some cross builds. For example, when building a 64-bit
-> powerpc kernel on amd64 I get:
-> 
->  Auto-detecting system features:
->  ...                        libelf: [ [32mon[m  ]
->  ...                          zlib: [ [32mon[m  ]
->  ...                           bpf: [ [31mOFF[m ]
->  
->  BPF API too old
->  make[6]: *** [Makefile:295: bpfdep] Error 1
-> 
-> The contents of tools/bpf/resolve_btfids/feature/test-bpf.make.output:
-> 
->  In file included from /home/sforshee/src/u-k/unstable/tools/arch/powerpc/include/uapi/asm/bitsperlong.h:11,
->                   from /usr/include/asm-generic/int-ll64.h:12,
->                   from /usr/include/asm-generic/types.h:7,
->                   from /usr/include/x86_64-linux-gnu/asm/types.h:1,
->                   from /home/sforshee/src/u-k/unstable/tools/include/linux/types.h:10,
->                   from /home/sforshee/src/u-k/unstable/tools/include/uapi/linux/bpf.h:11,
->                   from test-bpf.c:3:
->  /home/sforshee/src/u-k/unstable/tools/include/asm-generic/bitsperlong.h:14:2: error: #error Inconsistent word size. Check asm/bitsperlong.h
->     14 | #error Inconsistent word size. Check asm/bitsperlong.h
->        |  ^~~~~
-> 
-> This is because tools/arch/powerpc/include/uapi/asm/bitsperlong.h sets
-> __BITS_PER_LONG based on the predefinied compiler macro __powerpc64__,
-> which is not defined by the host compiler. What can we do to get cross
-> builds working again?
+Hi Dave, Jakub,
 
-could you please share the command line and setup?
+Similar to PCI VF, PCI SF represents portion of the device.
+PCI SF is represented using a new devlink port flavour.
 
-thanks,
-jirka
+This short series implements small part of the RFC described in detail at [=
+1] and [2].
+
+It extends
+(a) devlink core to expose new devlink port flavour 'pcisf'.
+(b) Expose new user interface to add/delete devlink port.
+(c) Extends netdevsim driver to simulate PCI PF and SF ports
+(d) Add port function state attribute
+
+Patch summary:
+Patch-1 Extends devlink to expose new PCI SF port flavour
+Patch-2 Extends devlink to let user add, delete devlink Port
+Patch-3 Prepare code to handle multiple port attributes
+Patch-4 Extends devlink to let user get, set function state
+Patch-5 Extends netdevsim driver to simulate PCI PF ports
+Patch-6 Extends netdevsim driver to simulate hw_addr get/set
+Patch-7 Extends netdevsim driver to simulate function state get/set
+Patch-8 Extends netdevsim driver to simulate PCI SF ports
+
+[1] https://lore.kernel.org/netdev/20200519092258.GF4655@nanopsycho/
+[2] https://marc.info/?l=3Dlinux-netdev&m=3D158555928517777&w=3D2
+
+Parav Pandit (8):
+  devlink: Introduce PCI SF port flavour and port attribute
+  devlink: Support add and delete devlink port
+  devlink: Prepare code to fill multiple port function attributes
+  devlink: Support get and set state of port function
+  netdevsim: Add support for add and delete of a PCI PF port
+  netdevsim: Simulate get/set hardware address of a PCI port
+  netdevsim: Simulate port function state for a PCI port
+  netdevsim: Add support for add and delete PCI SF port
+
+ drivers/net/netdevsim/Makefile        |   3 +-
+ drivers/net/netdevsim/dev.c           |  14 +
+ drivers/net/netdevsim/netdevsim.h     |  32 ++
+ drivers/net/netdevsim/port_function.c | 498 ++++++++++++++++++++++++++
+ include/net/devlink.h                 |  75 ++++
+ include/uapi/linux/devlink.h          |  13 +
+ net/core/devlink.c                    | 230 ++++++++++--
+ 7 files changed, 840 insertions(+), 25 deletions(-)
+ create mode 100644 drivers/net/netdevsim/port_function.c
+
+--=20
+2.26.2
 
