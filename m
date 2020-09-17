@@ -2,116 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF61D26D4EA
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 09:42:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC75026D4F8
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 09:45:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726241AbgIQHlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 03:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51936 "EHLO
+        id S1726321AbgIQHpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 03:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726178AbgIQHlt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 03:41:49 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA766C061756
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 00:41:48 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id b124so661317pfg.13
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 00:41:48 -0700 (PDT)
+        with ESMTP id S1726306AbgIQHpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 03:45:07 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC91EC06174A
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 00:45:06 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id gf14so798010pjb.5
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 00:45:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:author;
-        bh=FXDiiYkOrBBkVMM60XIvsHKuLK5wSyPpdEYR7aXyVeE=;
-        b=iCw4GwLwH4XXyDXgc0qXrpwDfvZsPiJOvBqE4DHe9rNTw9dyeZdz73ZGAaYeJFhfAc
-         5jBxJXFSncPIyRXCtdeFWzeXnTb9NyZEDSzN0E7DaOPWo5kyl0920tplCBronsYZeneR
-         8jOUfjj5ef671oSxEfy3FiXQZ9FtXWywocHpg8liT1Rl8jvyJZ7NyWmcMGkI9K7NMbRz
-         uKEVG8/DE88glop1q9AdGMTFU5fppJsVLWyZ27UGFTkbp3cS5UNMNcONYteUA/Lz+AVw
-         YQ3JmUkIMUz175TX0Ff6jGGvDv3BsPDDtzRklvJrBKDA8iibWpfjGd/LaOHKQyLD5AkA
-         tFVA==
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2N3mWH4dWBjYIgMqML5SFtLQn8Wc+WVJixIOAPyOzJA=;
+        b=idh71yNvBVxWLoWXnqR9b8hBq73P+5oYksH6cYCmUxaJLP3zItcAtvxAsAEejSKGD6
+         OOnwMp8FC7fdVZGvrLSajJRiOAdWaiH7Ab3/T8FSAi3AYtwsXOtMe1KxQCTIq2ZfIfOE
+         Bu6qWr+/agn6NHYaPkONMNJXpevY4g5TXNbSapVm1mCRUaBqrcdOoeAe63iXk47IHqRo
+         esN9NiE0x3+j9s4y4bD3NKKQnQofCIUBsNHFaMc0rXJAsC3KUusnfWyD8cadGXUKOuyM
+         ndR0r5mTn+vArVbFj/8G+gS8Lo/xY9SiWnUEgcjoxZzvz76QzjKbgVGVEbm+5jSk/X/h
+         9nbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:author;
-        bh=FXDiiYkOrBBkVMM60XIvsHKuLK5wSyPpdEYR7aXyVeE=;
-        b=m7nxmOq4v0vqAnn4TANi9AJERjqWZF5Vf3iw+S+LvoHaKHiMkR7qiaPFHUF+RcJ5n8
-         I69KG5me0mCqBsGdBRtuXRX9wtSTzQuJGRN5eFa965C9bQmr+ThpdAjLb3rwaM68dGCx
-         jrS00YBib2oUVMpx5BskdmNGoI9sNyF847xxxgGfUhD1I+L99VNiqDvYRPSoLTY/cK8R
-         6uaYEGD+fL7PRJkQr9SUtPxX+HyrYo+mKfQUooBRydzYnNMHunRjiQDTnMpoQIcmxAmQ
-         pCDkqBcTMH3KOnP8Il8HmMFnkWO7wqvZJzxmRNQQdqNasQ/dEkgeTi/tA3lKr2B75JP8
-         babQ==
-X-Gm-Message-State: AOAM530HZSKTkEO3TmyN99JJgiU8LCkp77JFaKFg/WH7HuQudfsuICzb
-        jIFY0rHBiw5bl+77MRqtY7Qvsg==
-X-Google-Smtp-Source: ABdhPJzeq73boIofbBUIov5zoWTDDc1vmS133UThfzm7c+wWboFUL3yGWk8BGO8uBksiOtHwbMmvyA==
-X-Received: by 2002:a63:4c57:: with SMTP id m23mr20910626pgl.77.1600328508312;
-        Thu, 17 Sep 2020 00:41:48 -0700 (PDT)
-Received: from localhost.localdomain ([2405:201:6803:6073:ddd6:7b70:6083:ecc4])
-        by smtp.gmail.com with ESMTPSA id e27sm19365745pfj.62.2020.09.17.00.41.43
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2N3mWH4dWBjYIgMqML5SFtLQn8Wc+WVJixIOAPyOzJA=;
+        b=b/UBn8HB5vwoRpelF2n/347lc4IOLbjaxuCY7yNw8+F/LhV62TieKy6hGKTdU9N7Jf
+         xx44hEbUvq0/Ik17/AMdB/obc1k9pJigaSvkoZDBhrs3QOh9lpC9+MTX3C5uitdWmu/M
+         zwNki4qTj185agKaU2WMWT1HN4DYnxhDlEU6UNPUZ6ia4h6NgH/rkndKJhoyA+STInjt
+         iSaVeNX5a60vcXBsaW2OqEd7084auWJrN4qTd2B4TfMzl9BdMFWDD7v1RVIw7XZ62K+U
+         MDPqzyYSqU/2FUt+Mz2pEaQi3Ub2jJoCwlLnH9+8kQmeF+NFeQTpMbmpNaiirMga2UcS
+         VNIg==
+X-Gm-Message-State: AOAM530gBqU98+3xV0cOwHfT1i8UESTclbANAaM/9EZQQ1+eE/zu91Xh
+        10Y5TWPHrpvOHWcNFkpUlhbygQ==
+X-Google-Smtp-Source: ABdhPJwXaMllPXLLBBq/ZdkN+0JpO5r0KMFYX2Af8lAj/0slXE5K3cOn/uUBCY85+zsg2ZmTQcGeuA==
+X-Received: by 2002:a17:90b:20d1:: with SMTP id ju17mr6874545pjb.134.1600328706465;
+        Thu, 17 Sep 2020 00:45:06 -0700 (PDT)
+Received: from bogon.bytedance.net ([103.136.220.66])
+        by smtp.gmail.com with ESMTPSA id v26sm17786351pgo.83.2020.09.17.00.45.01
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 17 Sep 2020 00:41:47 -0700 (PDT)
-From:   Amit Pundir <amit.pundir@linaro.org>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Cc:     John Stultz <john.stultz@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
-Subject: [PATCH] ath10k: qmi: Skip host capability request for Xiaomi Poco F1
-Date:   Thu, 17 Sep 2020 13:11:41 +0530
-Message-Id: <1600328501-8832-1-git-send-email-amit.pundir@linaro.org>
-X-Mailer: git-send-email 2.7.4
-Author: Amit Pundir <amit.pundir@linaro.org>
+        Thu, 17 Sep 2020 00:45:05 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [RFC PATCH] bpf: Fix potential call bpf_link_free() in atomic context
+Date:   Thu, 17 Sep 2020 15:44:53 +0800
+Message-Id: <20200917074453.20621-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.21.0 (Apple Git-122)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Workaround to get WiFi working on Xiaomi Poco F1 (sdm845)
-phone. We get a non-fatal QMI_ERR_MALFORMED_MSG_V01 error
-message in ath10k_qmi_host_cap_send_sync(), but we can still
-bring up WiFi services successfully on AOSP if we ignore it.
+The in_atomic macro cannot always detect atomic context. In particular,
+it cannot know about held spinlocks in non-preemptible kernels. Although,
+there is no user call bpf_link_put() with holding spinlock now. Be the
+safe side, we can avoid this in the feature.
 
-We suspect either the host cap is not implemented or there
-may be firmware specific issues. Firmware version is
-QC_IMAGE_VERSION_STRING=WLAN.HL.2.0.c3-00257-QCAHLSWMTPLZ-1
-
-qcom,snoc-host-cap-8bit-quirk didn't help. If I use this
-quirk, then the host capability request does get accepted,
-but we run into fatal "msa info req rejected" error and
-WiFi interface doesn't come up.
-
-Attempts are being made to debug the failure reasons but no
-luck so far. Hence this device specific workaround instead
-of checking for QMI_ERR_MALFORMED_MSG_V01 error message.
-Tried ath10k/WCN3990/hw1.0/wlanmdsp.mbn from the upstream
-linux-firmware project but it didn't help and neither did
-building board-2.bin file from stock bdwlan* files.
-
-This workaround will be removed once we have a viable fix.
-Thanks to postmarketOS guys for catching this.
-
-Signed-off-by: Amit Pundir <amit.pundir@linaro.org>
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 ---
-Device-tree for Xiaomi Poco F1(Beryllium) got merged in
-qcom/arm64-for-5.10 last week
-https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/commit/?id=77809cf74a8c
+ kernel/bpf/syscall.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
- drivers/net/wireless/ath/ath10k/qmi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
-index 0dee1353d395..37c5350eb8b1 100644
---- a/drivers/net/wireless/ath/ath10k/qmi.c
-+++ b/drivers/net/wireless/ath/ath10k/qmi.c
-@@ -651,7 +651,8 @@ static int ath10k_qmi_host_cap_send_sync(struct ath10k_qmi *qmi)
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 178c147350f5..6347be0a5c82 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2345,12 +2345,8 @@ void bpf_link_put(struct bpf_link *link)
+ 	if (!atomic64_dec_and_test(&link->refcnt))
+ 		return;
  
- 	/* older FW didn't support this request, which is not fatal */
- 	if (resp.resp.result != QMI_RESULT_SUCCESS_V01 &&
--	    resp.resp.error != QMI_ERR_NOT_SUPPORTED_V01) {
-+	    resp.resp.error != QMI_ERR_NOT_SUPPORTED_V01 &&
-+	    !of_machine_is_compatible("xiaomi,beryllium")) { /* Xiaomi Poco F1 workaround */
- 		ath10k_err(ar, "host capability request rejected: %d\n", resp.resp.error);
- 		ret = -EINVAL;
- 		goto out;
+-	if (in_atomic()) {
+-		INIT_WORK(&link->work, bpf_link_put_deferred);
+-		schedule_work(&link->work);
+-	} else {
+-		bpf_link_free(link);
+-	}
++	INIT_WORK(&link->work, bpf_link_put_deferred);
++	schedule_work(&link->work);
+ }
+ 
+ static int bpf_link_release(struct inode *inode, struct file *filp)
 -- 
-2.7.4
+2.20.1
 
