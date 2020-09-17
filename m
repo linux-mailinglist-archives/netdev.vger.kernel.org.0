@@ -2,110 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CA8E26D72A
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 10:51:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40B7C26D748
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 11:00:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726365AbgIQIvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 04:51:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbgIQIvL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 04:51:11 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F91C06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 01:51:11 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id 7so837290vsp.6
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 01:51:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sj5UyJ8Py1XxMDm1b+Dp3kuayDC9hTLomojipNJ49uc=;
-        b=jFzLRPPIW49GK3JuychHrqNiDw05L+uuzWGpzbxeyx8Du8MaP9ZsQ71e9xkmAz08Ps
-         Zgn9QZ23r8KwHYIoTDS9kw6d1UxhgY21LUwAJDESWqBd5PmdYb5e6sKPcw0/LiePv1uL
-         Ci8zwmuJv4I/hNyh4QkIV/TrGlUXIIRKEThamueOtLskzhc3tKRlZNhgwcb9PpYXVPYs
-         9VjSAlghdUTyhLsTBXLUomEroYjo5QR+fdtWJtqMWAyB060b7SvEe1Glvv+l/Df0ZTnw
-         ikcwKmWLMV21PrQ/mZNeDg4vj0gaT5tZW7ISSY6AuL1NLwY3MJ6ut939ADxj+CjF1XbV
-         n0nA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sj5UyJ8Py1XxMDm1b+Dp3kuayDC9hTLomojipNJ49uc=;
-        b=CBd01cTTTRBIW7Pzky6VqCr5eyK0C5Y2C6w4yJqq0Yj46RNZYOmgkixOTq+5qenurN
-         naOK8SoL0YH2+/jFgSwHSJ6gOAyeql17xj6gJcby5CKpfBKqkglvKQDlcOJUBY38yXuA
-         eUBkIeY8rgiaXJzl3gDYNmIpEzGbLFXynVZ14mCjchbaY+1qKSYdaL/51m0X8tlPbc+R
-         tqZsg6DFwLkAcZ8927ywXOy8aDLyP66g4kbCamz0nsFRDn0jXNr/bljWhvFHO5AANlZu
-         wAM7KPv/AgCJVAVDWDKCvALJF2OG4Nhr4TkVNAK7rgDU6wvKVT4tMs2E1raeZpxIr6Z/
-         4LvA==
-X-Gm-Message-State: AOAM530AL9di3YEKGNhrQdMKcjTD5mNc1qKilULLafVlc1K2LrzHcE7Q
-        n4L51vE6YqVCUZIXkck0jYV1pn9B+msB8A==
-X-Google-Smtp-Source: ABdhPJz2bIZBxaAjClSEdj/zL7hjmdSD1qvwT09749xROCN3XHYwHqvP2DcVDCAOTR9TgiNWvxEVeg==
-X-Received: by 2002:a67:2645:: with SMTP id m66mr16987712vsm.16.1600332670212;
-        Thu, 17 Sep 2020 01:51:10 -0700 (PDT)
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com. [209.85.221.181])
-        by smtp.gmail.com with ESMTPSA id z81sm2966569vkd.22.2020.09.17.01.51.09
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Sep 2020 01:51:09 -0700 (PDT)
-Received: by mail-vk1-f181.google.com with SMTP id e5so287987vkm.2
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 01:51:09 -0700 (PDT)
-X-Received: by 2002:a1f:1f15:: with SMTP id f21mr16008951vkf.12.1600332668648;
- Thu, 17 Sep 2020 01:51:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200916122308.11678-1-xie.he.0141@gmail.com>
-In-Reply-To: <20200916122308.11678-1-xie.he.0141@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 17 Sep 2020 10:50:30 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSf4di9Zsw+7XD1+3rwRMT4f0pUPprWKtmg83mVkHum9Zw@mail.gmail.com>
-Message-ID: <CA+FuTSf4di9Zsw+7XD1+3rwRMT4f0pUPprWKtmg83mVkHum9Zw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/packet: Fix a comment about mac_header
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S1726359AbgIQJAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 05:00:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46148 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726211AbgIQJAr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 05:00:47 -0400
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C15D4206A2;
+        Thu, 17 Sep 2020 09:00:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600333246;
+        bh=YUpRAK2hv+ZY1z1wbFM4JkS3zRWCKMAo84o8MPgEdMQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bFHSbW5XHotn8JY5ZnNn9TTbo2v6ZKKSh9rAJoC2UJ7zPFR9YEc0twYS9BVjaxD2d
+         0Ss3X7SUKCXfsanrIt1RQCTKYkHv3eIDttPkH5CFIT8aju8WbiOAZ7oC11xn9lzm+d
+         +4cYKUx/dtIFP1IJnAlq/Hv8zV6GSvWAITQvDPBE=
+Date:   Thu, 17 Sep 2020 10:00:38 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     bpf@vger.kernel.org, ardb@kernel.org, naresh.kamboju@linaro.org,
+        xi.wang@gmail.com, luke.r.nels@gmail.com,
+        Jiri Olsa <jolsa@kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Wang Hai <wanghai38@huawei.com>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] arm64: bpf: Fix branch offset in JIT
+Message-ID: <20200917090037.GA29556@willie-the-truck>
+References: <20200917084925.177348-1-ilias.apalodimas@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200917084925.177348-1-ilias.apalodimas@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 8:54 PM Xie He <xie.he.0141@gmail.com> wrote:
->
-> 1. Change all "dev->hard_header" to "dev->header_ops"
->
-> 2. On receiving incoming frames when header_ops == NULL:
->
-> The comment only says what is wrong, but doesn't say what is right.
-> This patch changes the comment to make it clear what is right.
->
-> 3. On transmitting and receiving outgoing frames when header_ops == NULL:
->
-> The comment explains that the LL header will be later added by the driver.
->
-> However, I think it's better to simply say that the LL header is invisible
-> to us. This phrasing is better from a software engineering perspective,
-> because this makes it clear that what happens in the driver should be
-> hidden from us and we should not care about what happens internally in the
-> driver.
->
-> 4. On resuming the LL header (for RAW frames) when header_ops == NULL:
->
-> The comment says we are "unlikely" to restore the LL header.
->
-> However, we should say that we are "unable" to restore it.
-> It's not possible (rather than not likely) to restore it, because:
->
-> 1) There is no way for us to restore because the LL header internally
-> processed by the driver should be invisible to us.
->
-> 2) In function packet_rcv and tpacket_rcv, the code only tries to restore
-> the LL header when header_ops != NULL.
->
-> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> Signed-off-by: Xie He <xie.he.0141@gmail.com>
+On Thu, Sep 17, 2020 at 11:49:25AM +0300, Ilias Apalodimas wrote:
+> Running the eBPF test_verifier leads to random errors looking like this:
+> 
+> [ 6525.735488] Unexpected kernel BRK exception at EL1
+> [ 6525.735502] Internal error: ptrace BRK handler: f2000100 [#1] SMP
+> [ 6525.741609] Modules linked in: nls_utf8 cifs libdes libarc4 dns_resolver fscache binfmt_misc nls_ascii nls_cp437 vfat fat aes_ce_blk crypto_simd cryptd aes_ce_cipher ghash_ce gf128mul efi_pstore sha2_ce sha256_arm64 sha1_ce evdev efivars efivarfs ip_tables x_tables autofs4 btrfs blake2b_generic xor xor_neon zstd_compress raid6_pq libcrc32c crc32c_generic ahci xhci_pci libahci xhci_hcd igb libata i2c_algo_bit nvme realtek usbcore nvme_core scsi_mod t10_pi netsec mdio_devres of_mdio gpio_keys fixed_phy libphy gpio_mb86s7x
+> [ 6525.787760] CPU: 3 PID: 7881 Comm: test_verifier Tainted: G        W         5.9.0-rc1+ #47
+> [ 6525.796111] Hardware name: Socionext SynQuacer E-series DeveloperBox, BIOS build #1 Jun  6 2020
+> [ 6525.804812] pstate: 20000005 (nzCv daif -PAN -UAO BTYPE=--)
+> [ 6525.810390] pc : bpf_prog_c3d01833289b6311_F+0xc8/0x9f4
+> [ 6525.815613] lr : bpf_prog_d53bb52e3f4483f9_F+0x38/0xc8c
+> [ 6525.820832] sp : ffff8000130cbb80
+> [ 6525.824141] x29: ffff8000130cbbb0 x28: 0000000000000000
+> [ 6525.829451] x27: 000005ef6fcbf39b x26: 0000000000000000
+> [ 6525.834759] x25: ffff8000130cbb80 x24: ffff800011dc7038
+> [ 6525.840067] x23: ffff8000130cbd00 x22: ffff0008f624d080
+> [ 6525.845375] x21: 0000000000000001 x20: ffff800011dc7000
+> [ 6525.850682] x19: 0000000000000000 x18: 0000000000000000
+> [ 6525.855990] x17: 0000000000000000 x16: 0000000000000000
+> [ 6525.861298] x15: 0000000000000000 x14: 0000000000000000
+> [ 6525.866606] x13: 0000000000000000 x12: 0000000000000000
+> [ 6525.871913] x11: 0000000000000001 x10: ffff8000000a660c
+> [ 6525.877220] x9 : ffff800010951810 x8 : ffff8000130cbc38
+> [ 6525.882528] x7 : 0000000000000000 x6 : 0000009864cfa881
+> [ 6525.887836] x5 : 00ffffffffffffff x4 : 002880ba1a0b3e9f
+> [ 6525.893144] x3 : 0000000000000018 x2 : ffff8000000a4374
+> [ 6525.898452] x1 : 000000000000000a x0 : 0000000000000009
+> [ 6525.903760] Call trace:
+> [ 6525.906202]  bpf_prog_c3d01833289b6311_F+0xc8/0x9f4
+> [ 6525.911076]  bpf_prog_d53bb52e3f4483f9_F+0x38/0xc8c
+> [ 6525.915957]  bpf_dispatcher_xdp_func+0x14/0x20
+> [ 6525.920398]  bpf_test_run+0x70/0x1b0
+> [ 6525.923969]  bpf_prog_test_run_xdp+0xec/0x190
+> [ 6525.928326]  __do_sys_bpf+0xc88/0x1b28
+> [ 6525.932072]  __arm64_sys_bpf+0x24/0x30
+> [ 6525.935820]  el0_svc_common.constprop.0+0x70/0x168
+> [ 6525.940607]  do_el0_svc+0x28/0x88
+> [ 6525.943920]  el0_sync_handler+0x88/0x190
+> [ 6525.947838]  el0_sync+0x140/0x180
+> [ 6525.951154] Code: d4202000 d4202000 d4202000 d4202000 (d4202000)
+> [ 6525.957249] ---[ end trace cecc3f93b14927e2 ]---
+> 
+> The reason is the offset[] creation and later usage, while building
+> the eBPF body. The code currently omits the first instruction, since
+> build_insn() will increase our ctx->idx before saving it.
+> That was fine up until bounded eBPF loops were introduced. After that
+> introduction, offset[0] must be the offset of the end of prologue which
+> is the start of the 1st insn while, offset[n] holds the
+> offset of the end of n-th insn.
+> 
+> When "taken loop with back jump to 1st insn" test runs, it will
+> eventually call bpf2a64_offset(-1, 2, ctx). Since negative indexing is
+> permitted, the current outcome depends on the value stored in
+> ctx->offset[-1], which has nothing to do with our array.
+> If the value happens to be 0 the tests will work. If not this error
+> triggers.
+> 
+> commit 7c2e988f400e ("bpf: fix x64 JIT code generation for jmp to 1st insn")
+> fixed an indentical bug on x86 when eBPF bounded loops were introduced.
+> 
+> So let's fix it by creating the ctx->offset[] differently. Track the
+> beginning of instruction and account for the extra instruction while
+> calculating the arm instruction offsets.
+> 
+> Fixes: 2589726d12a1 ("bpf: introduce bounded loops")
+> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+> Reported-by: Jiri Olsa <jolsa@kernel.org>
+> Co-developed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Co-developed-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+> Signed-off-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+Acked-by: Will Deacon <will@kernel.org>
+
+Catalin -- do you want to take this as a fix?
+
+Will
