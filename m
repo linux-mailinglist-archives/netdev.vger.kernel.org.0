@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FC1D26D65C
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 10:23:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53C2826D65D
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 10:23:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726106AbgIQIXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 04:23:17 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:3198 "EHLO
+        id S1726405AbgIQIXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 04:23:21 -0400
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:3200 "EHLO
         hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726321AbgIQIW5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 04:22:57 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f631b550000>; Thu, 17 Sep 2020 01:16:21 -0700
+        with ESMTP id S1726340AbgIQIW7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 04:22:59 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f631b560000>; Thu, 17 Sep 2020 01:16:22 -0700
 Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Thu, 17 Sep 2020 01:17:49 -0700
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Thu, 17 Sep 2020 01:17:50 -0700
 X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Thu, 17 Sep 2020 01:17:49 -0700
+        by hqpgpgate101.nvidia.com on Thu, 17 Sep 2020 01:17:50 -0700
 Received: from sw-mtx-036.mtx.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 17 Sep
  2020 08:17:49 +0000
 From:   Parav Pandit <parav@nvidia.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
 CC:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net-next 4/8] devlink: Support get and set state of port function
-Date:   Thu, 17 Sep 2020 11:17:27 +0300
-Message-ID: <20200917081731.8363-5-parav@nvidia.com>
+Subject: [PATCH net-next 5/8] netdevsim: Add support for add and delete of a PCI PF port
+Date:   Thu, 17 Sep 2020 11:17:28 +0300
+Message-ID: <20200917081731.8363-6-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200917081731.8363-1-parav@nvidia.com>
 References: <20200917081731.8363-1-parav@nvidia.com>
@@ -37,256 +37,529 @@ X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1600330581; bh=wVUPQlv106oY+JsL8GVyqHIX8yKor1zTAaU/FqVuZ3A=;
+        t=1600330582; bh=k0NjwRB4Z8bkUU37kbMjeYgHFICT0SXOf49kNsvYOkw=;
         h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
          In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
          Content-Type:X-Originating-IP:X-ClientProxiedBy;
-        b=f1ZLKHRC1MfWG+hk8DK8U+cc2kxnwY2IUengEn0vHDGn3fmjjWmCT0leQzkqe6hpr
-         NqrVpdkVZCDAWg3qvxs86uvy2vO0VhUF/G8d563uxfHTx5sHBSHBv6aSQZ1kG3sUOm
-         Mn2yJy8guhsrrtgJviQEJz+Ia8LqlH24K0bNWVCl9nchjjbMDi7nb0t9heJNHirNpo
-         K9UofXAjgwFZA1RkDGyX5hkskZk5AoVzKHafrm1OKDFZmPi21Lm6l+VETzEGx+teqI
-         +5iSeNJWJ43lec9P5CwQT0mAAp56XtV4XiF5CvgxbPJv1VM0QWleNYBSCZo5prKPMz
-         E97HXc+/oP+nA==
+        b=YTU/sSjUPYu0RQVIcpEBXp2AwKms5mPcoPNbvHJOHmfpb1YadH/6vzND4CQMpyDdZ
+         wo66EH8rUVl8mat74W7LggK7ArSkJ6+RvUM60o20PwIIAltPn3+Wj4IPGsHHvQsmeq
+         v7i/4JKJdfaLcES51hI1TekWOK8X4ZlY+tM5f00idjEwxoIpxl3nXLYHYCH5pa0M0B
+         7XHQjklXLxBrI6tVLsnPjK30DxpGcocycqgzfJQeMvxGFiXQ7BEBfTQe8vVe0bfkQU
+         lpBJqnIXU5b7dnDnOrZDpa4WAIUMGtrIShljHAbXIzVsCtMbgmgBuCchk9kS5zdkXF
+         SHRD/JmoLZLQA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-devlink port function can be in active or inactive state.
-Allow users to get and set port function's state.
+Simulate PCI PF ports. Allow user to create one or more PCI PF ports.
 
-Example of a PCI SF port which supports a port function:
+Examples:
+
 Create a device with ID=3D10 and one physical port.
 $ echo "10 1" > /sys/bus/netdevsim/new_device
 $ devlink port show
 netdevsim/netdevsim10/0: type eth netdev eni10np1 flavour physical port 1 s=
 plittable false
 
+Add and show devlink port of flavour 'pcipf' for PF number 0.
+
 $ devlink port add netdevsim/netdevsim10/10 flavour pcipf pfnum 0
-$ devlink port add netdevsim/netdevsim10/11 flavour pcisf pfnum 0 sfnum 44
-$ devlink port show netdevsim/netdevsim10/11
-netdevsim/netdevsim10/11: type eth netdev eni10npf0sf44 flavour pcisf contr=
-oller 0 pfnum 0 sfnum 44 external false splittable false
+
+$ devlink port show netdevsim/netdevsim10/10
+netdevsim/netdevsim10/10: type eth netdev eni10npf0 flavour pcipf controlle=
+r 0 pfnum 0 external false splittable false
   function:
     hw_addr 00:00:00:00:00:00 state inactive
 
-$ devlink port function set netdevsim/netdevsim10/11 hw_addr 00:11:22:33:44=
-:55 state active
-
-$ devlink port show netdevsim/netdevsim10/11 -jp
-{
-    "port": {
-        "netdevsim/netdevsim10/11": {
-            "type": "eth",
-            "netdev": "eni10npf0sf44",
-            "flavour": "pcisf",
-            "controller": 0,
-            "pfnum": 0,
-            "sfnum": 44,
-            "external": false,
-            "splittable": false,
-            "function": {
-                "hw_addr": "00:11:22:33:44:55",
-                "state": "active"
-            }
-        }
-    }
-}
+Delete newly added devlink port
+$ devlink port add netdevsim/netdevsim10/10
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- include/net/devlink.h        | 20 ++++++++++
- include/uapi/linux/devlink.h |  6 +++
- net/core/devlink.c           | 77 +++++++++++++++++++++++++++++++++++-
- 3 files changed, 101 insertions(+), 2 deletions(-)
+ drivers/net/netdevsim/Makefile        |   3 +-
+ drivers/net/netdevsim/dev.c           |  10 +
+ drivers/net/netdevsim/netdevsim.h     |  19 ++
+ drivers/net/netdevsim/port_function.c | 337 ++++++++++++++++++++++++++
+ 4 files changed, 368 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/netdevsim/port_function.c
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index ebab2c0360d0..500c22835686 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1200,6 +1200,26 @@ struct devlink_ops {
- 	int (*port_function_hw_addr_set)(struct devlink *devlink, struct devlink_=
-port *port,
- 					 const u8 *hw_addr, int hw_addr_len,
- 					 struct netlink_ext_ack *extack);
-+	/**
-+	 * @port_function_state_get: Port function's state get function.
-+	 *
-+	 * Should be used by device drivers to report the state of a function man=
-aged
-+	 * by the devlink port. Driver should return -EOPNOTSUPP if it doesn't su=
-pport port
-+	 * function handling for a particular port.
-+	 */
-+	int (*port_function_state_get)(struct devlink *devlink, struct devlink_po=
-rt *port,
-+				       enum devlink_port_function_state *state,
-+				       struct netlink_ext_ack *extack);
-+	/**
-+	 * @port_function_state_set: Port function's state set function.
-+	 *
-+	 * Should be used by device drivers to set the state of a function manage=
-d
-+	 * by the devlink port. Driver should return -EOPNOTSUPP if it doesn't su=
-pport port
-+	 * function handling for a particular port.
-+	 */
-+	int (*port_function_state_set)(struct devlink *devlink, struct devlink_po=
-rt *port,
-+				       enum devlink_port_function_state state,
-+				       struct netlink_ext_ack *extack);
- 	/**
- 	 * @port_new: Port add function.
- 	 *
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 09c41b9ce407..8e513f1cd638 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -518,9 +518,15 @@ enum devlink_resource_unit {
- enum devlink_port_function_attr {
- 	DEVLINK_PORT_FUNCTION_ATTR_UNSPEC,
- 	DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR,	/* binary */
-+	DEVLINK_PORT_FUNCTION_ATTR_STATE,	/* u8 */
+diff --git a/drivers/net/netdevsim/Makefile b/drivers/net/netdevsim/Makefil=
+e
+index ade086eed955..e69e895af62c 100644
+--- a/drivers/net/netdevsim/Makefile
++++ b/drivers/net/netdevsim/Makefile
+@@ -3,7 +3,8 @@
+ obj-$(CONFIG_NETDEVSIM) +=3D netdevsim.o
 =20
- 	__DEVLINK_PORT_FUNCTION_ATTR_MAX,
- 	DEVLINK_PORT_FUNCTION_ATTR_MAX =3D __DEVLINK_PORT_FUNCTION_ATTR_MAX - 1
+ netdevsim-objs :=3D \
+-	netdev.o dev.o ethtool.o fib.o bus.o health.o udp_tunnels.o
++	netdev.o dev.o ethtool.o fib.o bus.o health.o udp_tunnels.o \
++	port_function.o
+=20
+ ifeq ($(CONFIG_BPF_SYSCALL),y)
+ netdevsim-objs +=3D \
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index 32f339fedb21..e3b81c8b5125 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -884,6 +884,8 @@ static const struct devlink_ops nsim_dev_devlink_ops =
+=3D {
+ 	.trap_group_set =3D nsim_dev_devlink_trap_group_set,
+ 	.trap_policer_set =3D nsim_dev_devlink_trap_policer_set,
+ 	.trap_policer_counter_get =3D nsim_dev_devlink_trap_policer_counter_get,
++	.port_new =3D nsim_dev_devlink_port_new,
++	.port_del =3D nsim_dev_devlink_port_del,
  };
 =20
-+enum devlink_port_function_state {
-+	DEVLINK_PORT_FUNCTION_STATE_INACTIVE,
-+	DEVLINK_PORT_FUNCTION_STATE_ACTIVE,
+ #define NSIM_DEV_MAX_MACS_DEFAULT 32
+@@ -1017,6 +1019,8 @@ static int nsim_dev_reload_create(struct nsim_dev *ns=
+im_dev,
+ 						      nsim_dev->ddir,
+ 						      nsim_dev,
+ 						&nsim_dev_take_snapshot_fops);
++
++	nsim_dev_port_function_enable(nsim_dev);
+ 	return 0;
+=20
+ err_health_exit:
+@@ -1050,6 +1054,7 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
+ 	nsim_dev->max_macs =3D NSIM_DEV_MAX_MACS_DEFAULT;
+ 	nsim_dev->test1 =3D NSIM_DEV_TEST1_DEFAULT;
+ 	spin_lock_init(&nsim_dev->fa_cookie_lock);
++	nsim_dev_port_function_init(nsim_dev);
+=20
+ 	dev_set_drvdata(&nsim_bus_dev->dev, nsim_dev);
+=20
+@@ -1097,6 +1102,7 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
+ 	if (err)
+ 		goto err_bpf_dev_exit;
+=20
++	nsim_dev_port_function_enable(nsim_dev);
+ 	devlink_params_publish(devlink);
+ 	devlink_reload_enable(devlink);
+ 	return 0;
+@@ -1131,6 +1137,9 @@ static void nsim_dev_reload_destroy(struct nsim_dev *=
+nsim_dev)
+=20
+ 	if (devlink_is_reload_failed(devlink))
+ 		return;
++
++	/* Disable and destroy any user created devlink ports */
++	nsim_dev_port_function_disable(nsim_dev);
+ 	debugfs_remove(nsim_dev->take_snapshot);
+ 	nsim_dev_port_del_all(nsim_dev);
+ 	nsim_dev_health_exit(nsim_dev);
+@@ -1155,6 +1164,7 @@ void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_de=
+v)
+ 				  ARRAY_SIZE(nsim_devlink_params));
+ 	devlink_unregister(devlink);
+ 	devlink_resources_unregister(devlink, NULL);
++	nsim_dev_port_function_exit(nsim_dev);
+ 	devlink_free(devlink);
+ }
+=20
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netd=
+evsim.h
+index 0c86561e6d8d..aec3c4d5fda7 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -213,6 +213,16 @@ struct nsim_dev {
+ 		bool ipv4_only;
+ 		u32 sleep;
+ 	} udp_ports;
++	struct {
++		refcount_t refcount; /* refcount along with disable_complete serializes
++				      * port operations with port function disablement
++				      * during driver unload.
++				      */
++		struct completion disable_complete;
++		struct list_head head;
++		struct ida ida;
++		struct ida pfnum_ida;
++	} port_functions;
+ };
+=20
+ static inline struct net *nsim_dev_net(struct nsim_dev *nsim_dev)
+@@ -283,3 +293,12 @@ struct nsim_bus_dev {
+=20
+ int nsim_bus_init(void);
+ void nsim_bus_exit(void);
++
++void nsim_dev_port_function_init(struct nsim_dev *nsim_dev);
++void nsim_dev_port_function_exit(struct nsim_dev *nsim_dev);
++void nsim_dev_port_function_enable(struct nsim_dev *nsim_dev);
++void nsim_dev_port_function_disable(struct nsim_dev *nsim_dev);
++int nsim_dev_devlink_port_new(struct devlink *devlink, const struct devlin=
+k_port_new_attrs *attrs,
++			      struct netlink_ext_ack *extack);
++int nsim_dev_devlink_port_del(struct devlink *devlink, unsigned int port_i=
+ndex,
++			      struct netlink_ext_ack *extack);
+diff --git a/drivers/net/netdevsim/port_function.c b/drivers/net/netdevsim/=
+port_function.c
+new file mode 100644
+index 000000000000..9a1634898c7d
+--- /dev/null
++++ b/drivers/net/netdevsim/port_function.c
+@@ -0,0 +1,337 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2020 Mellanox Technologies Ltd. */
++
++#include <linux/etherdevice.h>
++#include <uapi/linux/devlink.h>
++
++#include "netdevsim.h"
++
++struct nsim_port_function {
++	struct devlink_port dl_port;
++	struct net_device *netdev;
++	struct list_head list;
++	unsigned int port_index;
++	enum devlink_port_flavour flavour;
++	u32 controller;
++	u16 pfnum;
++	struct nsim_port_function *pf_port; /* Valid only for SF port */
 +};
 +
- #endif /* _UAPI_LINUX_DEVLINK_H_ */
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index d152489e48da..c82098cb75da 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -87,6 +87,9 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(devlink_hwerr);
-=20
- static const struct nla_policy devlink_function_nl_policy[DEVLINK_PORT_FUN=
-CTION_ATTR_MAX + 1] =3D {
- 	[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR] =3D { .type =3D NLA_BINARY },
-+	[DEVLINK_PORT_FUNCTION_ATTR_STATE] =3D
-+		NLA_POLICY_RANGE(NLA_U8, DEVLINK_PORT_FUNCTION_STATE_INACTIVE,
-+				 DEVLINK_PORT_FUNCTION_STATE_ACTIVE),
- };
-=20
- static LIST_HEAD(devlink_list);
-@@ -595,6 +598,40 @@ devlink_port_function_hw_addr_fill(struct devlink *dev=
-link, const struct devlink
- 	return 0;
- }
-=20
-+static bool devlink_port_function_state_valid(u8 state)
++void nsim_dev_port_function_init(struct nsim_dev *nsim_dev)
 +{
-+	return state =3D=3D DEVLINK_PORT_FUNCTION_STATE_INACTIVE ||
-+	       state =3D=3D DEVLINK_PORT_FUNCTION_STATE_ACTIVE;
++	refcount_set(&nsim_dev->port_functions.refcount, 0);
++	INIT_LIST_HEAD(&nsim_dev->port_functions.head);
++	ida_init(&nsim_dev->port_functions.ida);
++	ida_init(&nsim_dev->port_functions.pfnum_ida);
 +}
 +
-+static int devlink_port_function_state_fill(struct devlink *devlink, const=
- struct devlink_ops *ops,
-+					    struct devlink_port *port, struct sk_buff *msg,
-+					    struct netlink_ext_ack *extack, bool *msg_updated)
++void nsim_dev_port_function_exit(struct nsim_dev *nsim_dev)
 +{
-+	enum devlink_port_function_state state;
++	WARN_ON(!ida_is_empty(&nsim_dev->port_functions.pfnum_ida));
++	ida_destroy(&nsim_dev->port_functions.pfnum_ida);
++	WARN_ON(!ida_is_empty(&nsim_dev->port_functions.ida));
++	ida_destroy(&nsim_dev->port_functions.ida);
++	WARN_ON(!list_empty(&nsim_dev->port_functions.head));
++	WARN_ON(refcount_read(&nsim_dev->port_functions.refcount));
++}
++
++static bool nsim_dev_port_function_try_get(struct nsim_dev *nsim_dev)
++{
++	return refcount_inc_not_zero(&nsim_dev->port_functions.refcount);
++}
++
++static void nsim_dev_port_function_put(struct nsim_dev *nsim_dev)
++{
++	if (refcount_dec_and_test(&nsim_dev->port_functions.refcount))
++		complete(&nsim_dev->port_functions.disable_complete);
++}
++
++static struct devlink_port *nsim_dev_port_function_get_devlink_port(struct=
+ net_device *dev)
++{
++	struct nsim_port_function *port =3D netdev_priv(dev);
++
++	return &port->dl_port;
++}
++
++static netdev_tx_t nsim_dev_port_function_start_xmit(struct sk_buff *skb, =
+struct net_device *dev)
++{
++	dev_kfree_skb(skb);
++	return NETDEV_TX_OK;
++}
++
++static const struct net_device_ops nsim_netdev_ops =3D {
++	.ndo_start_xmit =3D nsim_dev_port_function_start_xmit,
++	.ndo_get_devlink_port =3D nsim_dev_port_function_get_devlink_port,
++};
++
++static void nsim_port_function_ndev_setup(struct net_device *dev)
++{
++	ether_setup(dev);
++	eth_hw_addr_random(dev);
++
++	dev->tx_queue_len =3D 0;
++	dev->flags |=3D IFF_NOARP;
++	dev->flags &=3D ~IFF_MULTICAST;
++	dev->max_mtu =3D ETH_MAX_MTU;
++}
++
++static struct nsim_port_function *
++nsim_devlink_port_function_alloc(struct nsim_dev *dev, const struct devlin=
+k_port_new_attrs *attrs)
++{
++	struct nsim_bus_dev *nsim_bus_dev =3D dev->nsim_bus_dev;
++	struct nsim_port_function *port;
++	struct net_device *netdev;
++	int ret;
++
++	netdev =3D alloc_netdev(sizeof(*port), "eth%d", NET_NAME_UNKNOWN,
++			      nsim_port_function_ndev_setup);
++	if (!netdev)
++		return ERR_PTR(-ENOMEM);
++
++	dev_net_set(netdev, nsim_dev_net(dev));
++	netdev->netdev_ops =3D &nsim_netdev_ops;
++	nsim_bus_dev =3D dev->nsim_bus_dev;
++	SET_NETDEV_DEV(netdev, &nsim_bus_dev->dev);
++
++	port =3D netdev_priv(netdev);
++	memset(port, 0, sizeof(*port));
++	port->netdev =3D netdev;
++	port->flavour =3D attrs->flavour;
++
++	if (attrs->port_index_valid)
++		ret =3D ida_alloc_range(&dev->port_functions.ida, attrs->port_index,
++				      attrs->port_index, GFP_KERNEL);
++	else
++		ret =3D ida_alloc_min(&dev->port_functions.ida, nsim_bus_dev->port_count=
+, GFP_KERNEL);
++	if (ret < 0)
++		goto port_ida_err;
++
++	port->port_index =3D ret;
++	port->controller =3D attrs->controller_valid ? attrs->controller : 0;
++
++	switch (port->flavour) {
++	case DEVLINK_PORT_FLAVOUR_PCI_PF:
++		ret =3D ida_alloc_range(&dev->port_functions.pfnum_ida, attrs->pfnum, at=
+trs->pfnum,
++				      GFP_KERNEL);
++		if (ret < 0)
++			goto fn_ida_err;
++		port->pfnum =3D ret;
++		break;
++	default:
++		break;
++	};
++	return port;
++
++fn_ida_err:
++	ida_simple_remove(&dev->port_functions.ida, port->port_index);
++port_ida_err:
++	free_netdev(netdev);
++	return ERR_PTR(ret);
++}
++
++static void nsim_devlink_port_function_free(struct nsim_dev *dev, struct n=
+sim_port_function *port)
++{
++	switch (port->flavour) {
++	case DEVLINK_PORT_FLAVOUR_PCI_PF:
++		ida_simple_remove(&dev->port_functions.pfnum_ida, port->pfnum);
++		break;
++	default:
++		break;
++	};
++	ida_simple_remove(&dev->port_functions.ida, port->port_index);
++	free_netdev(port->netdev);
++}
++
++static bool nsim_dev_port_index_internal(struct nsim_dev *nsim_dev, unsign=
+ed int port_index)
++{
++	struct nsim_bus_dev *nsim_bus_dev =3D nsim_dev->nsim_bus_dev;
++
++	return (port_index < nsim_bus_dev->port_count) ? true : false;
++}
++
++static bool
++nsim_dev_port_port_exists(struct nsim_dev *nsim_dev, const struct devlink_=
+port_new_attrs *attrs)
++{
++	struct nsim_port_function *tmp;
++
++	list_for_each_entry(tmp, &nsim_dev->port_functions.head, list) {
++		if (attrs->port_index_valid && tmp->port_index =3D=3D attrs->port_index)
++			return true;
++		if (attrs->controller_valid && tmp->controller !=3D attrs->controller)
++			continue;
++		/* If controller is provided, and if the port is for a specific controll=
+er,
++		 * skip them.
++		 */
++		if (!attrs->controller_valid && tmp->controller)
++			continue;
++
++		if (attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF &&
++		    tmp->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF && tmp->pfnum =3D=3D=
+ attrs->pfnum)
++			return true;
++	}
++	return false;
++}
++
++static struct nsim_port_function *
++nsim_dev_devlink_port_index_lookup(const struct nsim_dev *nsim_dev, unsign=
+ed int port_index,
++				   struct netlink_ext_ack *extack)
++{
++	struct nsim_port_function *port;
++
++	list_for_each_entry(port, &nsim_dev->port_functions.head, list) {
++		if (port->port_index !=3D port_index)
++			continue;
++		return port;
++	}
++	NL_SET_ERR_MSG_MOD(extack, "User created port not found");
++	return ERR_PTR(-ENOENT);
++}
++
++static int nsim_devlink_port_function_add(struct devlink *devlink, struct =
+nsim_dev *nsim_dev,
++					  struct nsim_port_function *port,
++					  struct netlink_ext_ack *extack)
++{
 +	int err;
 +
-+	if (!ops->port_function_state_get)
-+		return 0;
++	list_add(&port->list, &nsim_dev->port_functions.head);
 +
-+	err =3D ops->port_function_state_get(devlink, port, &state, extack);
-+	if (err) {
-+		if (err =3D=3D -EOPNOTSUPP)
-+			return 0;
-+		return err;
-+	}
-+	if (!devlink_port_function_state_valid(state)) {
-+		WARN_ON(1);
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid state value read from driver");
-+		return -EINVAL;
-+	}
-+	err =3D nla_put_u8(msg, DEVLINK_PORT_FUNCTION_ATTR_STATE, state);
++	err =3D devlink_port_register(devlink, &port->dl_port, port->port_index);
 +	if (err)
-+		return err;
-+	*msg_updated =3D true;
++		goto reg_err;
++
++	err =3D register_netdev(port->netdev);
++	if (err)
++		goto netdev_err;
++
++	devlink_port_type_eth_set(&port->dl_port, port->netdev);
 +	return 0;
++
++netdev_err:
++	devlink_port_type_clear(&port->dl_port);
++	devlink_port_unregister(&port->dl_port);
++reg_err:
++	list_del(&port->list);
++	return err;
 +}
 +
- static int
- devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_por=
-t *port,
- 				   struct netlink_ext_ack *extack)
-@@ -611,6 +648,11 @@ devlink_nl_port_function_attrs_put(struct sk_buff *msg=
-, struct devlink_port *por
-=20
- 	ops =3D devlink->ops;
- 	err =3D devlink_port_function_hw_addr_fill(devlink, ops, port, msg, extac=
-k, &msg_updated);
-+	if (err)
-+		goto out;
-+	err =3D devlink_port_function_state_fill(devlink, ops, port, msg, extack,=
- &msg_updated);
-+
-+out:
- 	if (err || !msg_updated)
- 		nla_nest_cancel(msg, function_attr);
- 	else
-@@ -879,6 +921,28 @@ devlink_port_function_hw_addr_set(struct devlink *devl=
-ink, struct devlink_port *
- 	return 0;
- }
-=20
-+static int
-+devlink_port_function_state_set(struct devlink *devlink, struct devlink_po=
-rt *port,
-+				const struct nlattr *attr, struct netlink_ext_ack *extack)
++static void nsim_devlink_port_function_del(struct nsim_dev *nsim_dev,
++					   struct nsim_port_function *port)
 +{
-+	enum devlink_port_function_state state;
-+	const struct devlink_ops *ops;
++	devlink_port_type_clear(&port->dl_port);
++	unregister_netdev(port->netdev);
++	devlink_port_unregister(&port->dl_port);
++	list_del(&port->list);
++}
++
++static bool nsim_dev_port_flavour_supported(const struct nsim_dev *nsim_de=
+v,
++					    const struct devlink_port_new_attrs *attrs)
++{
++	return attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF;
++}
++
++int nsim_dev_devlink_port_new(struct devlink *devlink, const struct devlin=
+k_port_new_attrs *attrs,
++			      struct netlink_ext_ack *extack)
++{
++	struct nsim_dev *nsim_dev =3D devlink_priv(devlink);
++	struct nsim_bus_dev *nsim_bus_dev;
++	struct nsim_port_function *port;
 +	int err;
 +
-+	state =3D nla_get_u8(attr);
-+	ops =3D devlink->ops;
-+	if (!ops->port_function_state_set) {
-+		NL_SET_ERR_MSG_MOD(extack, "Port function does not support state setting=
-");
++	nsim_bus_dev =3D nsim_dev->nsim_bus_dev;
++	if (attrs->port_index_valid && attrs->port_index < nsim_bus_dev->port_cou=
+nt) {
++		NL_SET_ERR_MSG_MOD(extack, "Port with given port index already exist");
++		return -EEXIST;
++	}
++	if (!nsim_dev_port_flavour_supported(nsim_dev, attrs)) {
++		NL_SET_ERR_MSG_MOD(extack, "Unsupported port flavour specified");
 +		return -EOPNOTSUPP;
 +	}
-+	err =3D ops->port_function_state_set(devlink, port, state, extack);
-+	if (err)
-+		return err;
++	if (!nsim_dev_port_function_try_get(nsim_dev))
++		return -EPERM;
++	if (nsim_dev_port_port_exists(nsim_dev, attrs)) {
++		NL_SET_ERR_MSG_MOD(extack, "Port with given attributes already exists");
++		err =3D -EEXIST;
++		goto alloc_err;
++	}
++	port =3D nsim_devlink_port_function_alloc(nsim_dev, attrs);
++	if (IS_ERR(port)) {
++		NL_SET_ERR_MSG_MOD(extack, "Fail to allocate port");
++		err =3D PTR_ERR(port);
++		goto alloc_err;
++	}
++	memcpy(port->dl_port.attrs.switch_id.id, nsim_dev->switch_id.id,
++	       nsim_dev->switch_id.id_len);
++	port->dl_port.attrs.switch_id.id_len =3D nsim_dev->switch_id.id_len;
 +
-+	devlink_port_notify(port, DEVLINK_CMD_PORT_NEW);
++	devlink_port_attrs_pci_pf_set(&port->dl_port, port->controller, port->pfn=
+um, false);
++
++	err =3D nsim_devlink_port_function_add(devlink, nsim_dev, port, extack);
++	if (err)
++		goto add_err;
++
++	nsim_dev_port_function_put(nsim_dev);
 +	return 0;
++
++add_err:
++	nsim_devlink_port_function_free(nsim_dev, port);
++alloc_err:
++	nsim_dev_port_function_put(nsim_dev);
++	return err;
 +}
 +
- static int
- devlink_port_function_set(struct devlink *devlink, struct devlink_port *po=
-rt,
- 			  const struct nlattr *attr, struct netlink_ext_ack *extack)
-@@ -894,9 +958,18 @@ devlink_port_function_set(struct devlink *devlink, str=
-uct devlink_port *port,
- 	}
-=20
- 	attr =3D tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR];
--	if (attr)
-+	if (attr) {
- 		err =3D devlink_port_function_hw_addr_set(devlink, port, attr, extack);
--
-+		if (err)
-+			return err;
++int nsim_dev_devlink_port_del(struct devlink *devlink, unsigned int port_i=
+ndex,
++			      struct netlink_ext_ack *extack)
++{
++	struct nsim_dev *nsim_dev =3D devlink_priv(devlink);
++	struct nsim_port_function *port;
++
++	if (nsim_dev_port_index_internal(nsim_dev, port_index)) {
++		NL_SET_ERR_MSG_MOD(extack, "Port index doesn't belong to user created po=
+rt");
++		return -EINVAL;
 +	}
-+	/* Keep this as the last function attribute set, so that when
-+	 * multiple port function attributes are set along with state,
-+	 * Those can be applied first before activating the state.
++
++	if (!nsim_dev_port_function_try_get(nsim_dev))
++		return -EPERM;
++
++	port =3D nsim_dev_devlink_port_index_lookup(nsim_dev, port_index, extack)=
+;
++	if (IS_ERR(port))
++		goto err;
++	nsim_devlink_port_function_del(nsim_dev, port);
++	nsim_devlink_port_function_free(nsim_dev, port);
++	nsim_dev_port_function_put(nsim_dev);
++	return 0;
++
++err:
++	nsim_dev_port_function_put(nsim_dev);
++	return PTR_ERR(port);
++}
++
++void nsim_dev_port_function_enable(struct nsim_dev *nsim_dev)
++{
++	init_completion(&nsim_dev->port_functions.disable_complete);
++	refcount_set(&nsim_dev->port_functions.refcount, 1);
++}
++
++void nsim_dev_port_function_disable(struct nsim_dev *nsim_dev)
++{
++	struct nsim_port_function *port;
++	struct nsim_port_function *tmp;
++
++	/* Balances with refcount_set(); drop the refcount so that
++	 * any new port new/del or port function get/set commands
++	 * cannot start.
 +	 */
-+	attr =3D tb[DEVLINK_PORT_FUNCTION_ATTR_STATE];
-+	if (attr)
-+		err =3D devlink_port_function_state_set(devlink, port, attr, extack);
- 	return err;
- }
-=20
++	nsim_dev_port_function_put(nsim_dev);
++	/* Wait for any ongoing commands to complete. */
++	wait_for_completion(&nsim_dev->port_functions.disable_complete);
++
++	/* At this point, no new user commands can start and any ongoing
++	 * commands have completed, so it is safe to delete all user created
++	 * ports.
++	 */
++
++	list_for_each_entry_safe_reverse(port, tmp, &nsim_dev->port_functions.hea=
+d, list) {
++		nsim_devlink_port_function_del(nsim_dev, port);
++		nsim_devlink_port_function_free(nsim_dev, port);
++	}
++}
 --=20
 2.26.2
 
