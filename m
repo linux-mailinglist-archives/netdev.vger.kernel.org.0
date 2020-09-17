@@ -2,104 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C42E126E6DB
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 22:42:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0398F26E6E1
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 22:46:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726412AbgIQUmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 16:42:36 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:30861 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726216AbgIQUmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 16:42:36 -0400
+        id S1726353AbgIQUp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 16:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60986 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726180AbgIQUp5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 16:45:57 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D69AC06174A
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 13:45:57 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id gf14so1809464pjb.5
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 13:45:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1600375356; x=1631911356;
-  h=references:from:to:cc:subject:message-id:in-reply-to:
-   date:mime-version;
-  bh=Xw3SbsX0I6fHN7+dBF4HZ0B+m5MossERQUlwNKM92ns=;
-  b=kO+ltg+9Qbl9oaOjS286cLCPoMmFjHLR4BygWmENS5i3Tq4fm/lH95pf
-   thMtxqdpbWVIv2D8KVfPJEaD1grUsI1a50e2VcKjtcJb1Qw75Bri5a85v
-   krBo8W9ZnwdTqwcWyVYYhME2F+r3byPDXa9PwIhgZrQ6mSlwC+s2CVlQe
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.77,272,1596499200"; 
-   d="scan'208";a="54495380"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1a-e34f1ddc.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 17 Sep 2020 20:42:34 +0000
-Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-1a-e34f1ddc.us-east-1.amazon.com (Postfix) with ESMTPS id A6B6DA18B8;
-        Thu, 17 Sep 2020 20:42:33 +0000 (UTC)
-Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.161.146) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 17 Sep 2020 20:42:24 +0000
-References: <20200913.143022.1949357995189636518.davem@davemloft.net> <pj41zlk0wsdyy7.fsf@u68c7b5b1d2d758.ant.amazon.com> <339bb56eebdddbefb5da87d4f97b7bbe74e9f4b4.camel@kernel.org> <20200917.131223.1581791862348029357.davem@davemloft.net>
-User-agent: mu4e 1.4.12; emacs 26.3
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     David Miller <davem@davemloft.net>
-CC:     <saeed@kernel.org>, <netdev@vger.kernel.org>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>, <sameehj@amazon.com>,
-        <ndagan@amazon.com>, <amitbern@amazon.com>
-Subject: Re: [PATCH V1 net-next 2/8] net: ena: Add device distinct log prefix to files
-Message-ID: <pj41zlimccdudx.fsf@u68c7b5b1d2d758.ant.amazon.com>
-In-Reply-To: <20200917.131223.1581791862348029357.davem@davemloft.net>
-Date:   Thu, 17 Sep 2020 23:42:11 +0300
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=foJ+lU9of3Z0w7uU++7iNpoAxFauzBfBINnD09vIHcw=;
+        b=MLJoE/8xS74eCvFhQBHWDt6ZnzUCs1O+2ZLxR3YlJpsdf6B0e1AdNjCE1m0pHRkGfh
+         BoWxD3c9gpWCd+dq/5iTZWyyUGkTKlvM6dVH+ZPuXHqm6UgG9RzcUWLhyEurt28uk1xl
+         Ri69KS3ekaEkwZ6hpOrShGvLVVcxQYd0RFuyqHY38h54/OCGAy8qAmtDzOCMLfPQAWve
+         woKbrTZL/i/uXxoNoAuaxdozDbaj9QW0oBLvJv9AieeaO71BFli2BOo0um1AdqyYAxp8
+         V9r2n3eyd4cC5/v9OAfKiAJdxPa1r6QRjtOyUm54cdehsuBdrCTttP7tMKl5mWT8Bu2+
+         GDPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=foJ+lU9of3Z0w7uU++7iNpoAxFauzBfBINnD09vIHcw=;
+        b=BvHcKnVB9MlGQRa7s9lcPtscmTvC0j1xW/uMrfaQu7CijDmFcl1r9QDsawYLQlJhqh
+         B/RpYWF85vNbg03gsvOaqFdC1Q29iVVGrrZ+PwGhGS0kns8EJLcwrWaBWycPQn4z/41k
+         FhaooLOkFHqrpW7jJWYTc7omPA43854EOPbfL15bZ4X4FyQr/YNA/C70a/yekLZ/DvJc
+         MBlEsoGX0agyqBiC9clZAy0it6ekYx+ZMZdEhZhHXFq51L8q/cPyNKFdKecMfeoyCZN2
+         s6fABxIUuhfGp+lgNxDFeqUhW7eRlFWcyq57TqEi5QxC3xhc2+b1jx0K0XN6o7oxp1at
+         VapA==
+X-Gm-Message-State: AOAM531vf/FDXjC5zKUfU02Xl4lDHCBtltLyibQurPY+n3qO9b64RkzL
+        IR2LwcAb1jr6WEZ94vnIDWK/og==
+X-Google-Smtp-Source: ABdhPJxd/fZa1tPncp57SbyFFnXRPejo180VQh1ndfoW6fPONoXQneLOl+XNl9DzYKTWa/Dn+6ey2A==
+X-Received: by 2002:a17:90b:357:: with SMTP id fh23mr9878197pjb.221.1600375556648;
+        Thu, 17 Sep 2020 13:45:56 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id y1sm506238pgr.3.2020.09.17.13.45.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Sep 2020 13:45:56 -0700 (PDT)
+Subject: Re: [PATCH v4 net-next 1/5] devlink: add timeout information to
+ status_notify
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20200917030204.50098-1-snelson@pensando.io>
+ <20200917030204.50098-2-snelson@pensando.io>
+ <20200917124655.6bc16d99@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <1ad33f34-60e0-848f-a9b7-42869172e4b8@pensando.io>
+Date:   Thu, 17 Sep 2020 13:45:55 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.161.146]
-X-ClientProxiedBy: EX13D45UWB004.ant.amazon.com (10.43.161.54) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+In-Reply-To: <20200917124655.6bc16d99@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-David Miller <davem@davemloft.net> writes:
-
-> From: Saeed Mahameed <saeed@kernel.org>
-> Date: Thu, 17 Sep 2020 12:38:28 -0700
+On 9/17/20 12:46 PM, Jakub Kicinski wrote:
+> On Wed, 16 Sep 2020 20:02:00 -0700 Shannon Nelson wrote:
+>> Add a timeout element to the DEVLINK_CMD_FLASH_UPDATE_STATUS
+>> netlink message for use by a userland utility to show that
+>> a particular firmware flash activity may take a long but
+>> bounded time to finish.  Also add a handy helper for drivers
+>> to make use of the new timeout value.
+>>
+>> UI usage hints:
+>>   - if non-zero, add timeout display to the end of the status line
+>>   	[component] status_msg  ( Xm Ys : Am Bs )
+>>       using the timeout value for Am Bs and updating the Xm Ys
+>>       every second
+>>   - if the timeout expires while awaiting the next update,
+>>     display something like
+>>   	[component] status_msg  ( timeout reached : Am Bs )
+>>   - if new status notify messages are received, remove
+>>     the timeout and start over
+>>
+>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+> Minor nits, otherwise LGTM:
 >
->> allocated but unregistered netdevices also do not help much as 
->> the name
->> of the netdev is not assigned yet.
->> 
->> why don't use dev_info(pci_dev) macors  for low level functions 
->> when
->> netdev is not available or not allocated yet.
->
-> The problem in this case is that they have this huge suite of
-> functions that operate on a specific ena sub-object.  Most of 
-> the time
-> the associated netdev is fully realized, but in the few calls 
-> made
-> during early probe it is not.
->
-> To me it is a serious loss that just because a small number of 
-> times
-> the interface lacks a fully realized netdev object, we can't use 
-> the
-> netdev_*() routines.
->
-> Most users aren't going to understand that an error message for 
-> PCI
-> device XyZ means eth0 is having problems.
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 
-I agree that netdev_* functions would be more useful, which is why 
-we're working on a patch to transform ena_com functions to use 
-them as well.
-For the time being, switching to dev_* functions makes the 
-driver's logs more informative than pr_* functions.
+Thanks.
 
-I would rather not divide ena_com functions to use netdev_* and 
-dev_* according to net_device allocative state just for this 
-patch. Doing so, besides doing quite some work for a temporary 
-solution, wouldn't provide a full solution (same as it doesn't in 
-this patch).
-As stated, a more complete solution is in the works. We can look 
-at the glass as being half full, and decide that this patch 
-improves the previous situation even if not in the most optimal 
-solution.
 
-thanks,
-Shay
+>
+>> @@ -3052,6 +3054,9 @@ static int devlink_nl_flash_update_fill(struct sk_buff *msg,
+>>   	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL,
+>>   			      total, DEVLINK_ATTR_PAD))
+>>   		goto nla_put_failure;
+>> +	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT,
+>> +			      timeout, DEVLINK_ATTR_PAD))
+>> +		goto nla_put_failure;
+> nit: since old kernels don't report this user space has to deal with it
+>       not being present so I'd be tempted to only report it if timeout
+>       is not 0
+
+Hmmm... Unless there are any other comments on this, I think we can be 
+consistent with the other fields here.
+
+>
+>> +void devlink_flash_update_timeout_notify(struct devlink *devlink,
+>> +					 const char *status_msg,
+>> +					 const char *component,
+>> +					 unsigned long timeout)
+>> +{
+>> +	__devlink_flash_update_notify(devlink,
+>> +				      DEVLINK_CMD_FLASH_UPDATE_STATUS,
+>> +				      status_msg, component, 0, 0, timeout);
+> nit: did we ever report cmd == UPDATE_STATUS and total == 0?
+>       could this cause a division by zero in some unsuspecting
+>       implementation? Perhaps we should pass 1 here?
+
+Yes, there are several examples of this.  The userland devlink.c does a 
+check for total == 0 before calculating the percentage.
+
+sln
+
