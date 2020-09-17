@@ -2,55 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E246A26DC8D
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 15:12:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41E5526DCC0
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 15:26:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727009AbgIQNMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 09:12:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40584 "EHLO vps0.lunn.ch"
+        id S1726962AbgIQNQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 09:16:15 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40600 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727055AbgIQNLt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 09:11:49 -0400
+        id S1726851AbgIQNQB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 09:16:01 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kIthA-00F550-I6; Thu, 17 Sep 2020 15:11:28 +0200
-Date:   Thu, 17 Sep 2020 15:11:28 +0200
+        id 1kItlJ-00F58G-4V; Thu, 17 Sep 2020 15:15:45 +0200
+Date:   Thu, 17 Sep 2020 15:15:45 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, opendmb@gmail.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:BROADCOM ETHERNET PHY DRIVERS" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] net: phy: bcm7xxx: request and manage GPHY
- clock
-Message-ID: <20200917131128.GK3526428@lunn.ch>
-References: <20200917020413.2313461-1-f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com, kuba@kernel.org,
+        davem@davemloft.net
+Subject: Re: [PATCH net 1/2] net: phy: Avoid NPD upon phy_detach() when
+ driver is unbound
+Message-ID: <20200917131545.GL3526428@lunn.ch>
+References: <20200917034310.2360488-1-f.fainelli@gmail.com>
+ <20200917034310.2360488-2-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200917020413.2313461-1-f.fainelli@gmail.com>
+In-Reply-To: <20200917034310.2360488-2-f.fainelli@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 07:04:13PM -0700, Florian Fainelli wrote:
-> The internal Gigabit PHY on Broadcom STB chips has a digital clock which
-> drives its MDIO interface among other things, the driver now requests
-> and manage that clock during .probe() and .remove() accordingly.
+On Wed, Sep 16, 2020 at 08:43:09PM -0700, Florian Fainelli wrote:
+> If we have unbound the PHY driver prior to calling phy_detach() (often
+> via phy_disconnect()) then we can cause a NULL pointer de-reference
+> accessing the driver owner member. The steps to reproduce are:
 > 
-> Because the PHY driver can be probed with the clocks turned off we need
-> to apply the dummy BMSR workaround during the driver probe function to
-> ensure subsequent MDIO read or write towards the PHY will succeed.
+> echo unimac-mdio-0:01 > /sys/class/net/eth0/phydev/driver/unbind
+> ip link set eth0 down
 
 Hi Florian
 
-Is it worth mentioning this in the DT binding? It is all pretty much
-standard lego pieces, but it has taken you a while to assemble them in
-the correct way. So giving hits to others who might want to uses these
-STB chips could be nice.
+How forceful is this unbind? Can we actually block it while the
+interface is up? Or returning -EBUSY would make sense.
 
-	Andrew
+	  Andrew
