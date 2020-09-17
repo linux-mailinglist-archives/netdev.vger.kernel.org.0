@@ -2,343 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C0D926D659
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 10:23:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05A0226D661
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 10:24:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726390AbgIQIXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 04:23:06 -0400
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1676 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726350AbgIQIW5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 04:22:57 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f631b850002>; Thu, 17 Sep 2020 01:17:09 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 17 Sep 2020 01:17:52 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Thu, 17 Sep 2020 01:17:52 -0700
-Received: from sw-mtx-036.mtx.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 17 Sep
- 2020 08:17:51 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net-next 8/8] netdevsim: Add support for add and delete PCI SF port
-Date:   Thu, 17 Sep 2020 11:17:31 +0300
-Message-ID: <20200917081731.8363-9-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200917081731.8363-1-parav@nvidia.com>
-References: <20200917081731.8363-1-parav@nvidia.com>
+        id S1726359AbgIQIYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 04:24:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:47982 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726368AbgIQIYF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 04:24:05 -0400
+X-Greylist: delayed 303 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 04:24:04 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600331043;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LYKzEuRLnXn1tFjbAdxREws6PF3YO56THLfLneD1eRo=;
+        b=ZwuqY+4aFJDy1spStnXc6KOgJ/WfNENbcpx2Re7IN5jE3+Fe6bO3O6FIQYJsUv1guKAfvl
+        59b/JU4+uXth8ei9pWl4zuOquwKk5Pfdhe6wQcZ5c12eadFXekVrO94kNFvxNw3ok9uUpT
+        eJBmNHvw8sg8eV4xc5oxBueLFOCJFdg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-283-jnj7EB0KMA-AvKDpH3WMaQ-1; Thu, 17 Sep 2020 04:17:42 -0400
+X-MC-Unique: jnj7EB0KMA-AvKDpH3WMaQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0CB9F1017DC1;
+        Thu, 17 Sep 2020 08:17:40 +0000 (UTC)
+Received: from ovpn-114-192.ams2.redhat.com (ovpn-114-192.ams2.redhat.com [10.36.114.192])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EFA0D7880C;
+        Thu, 17 Sep 2020 08:17:36 +0000 (UTC)
+Message-ID: <1cb1ca491d7ea2fb8a928c14a56e3a2a5c5e7917.camel@redhat.com>
+Subject: Re: [PATCH net-next] selftests: mptcp: interpret \n as a new line
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Florian Westphal <fw@strlen.de>
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 17 Sep 2020 10:17:35 +0200
+In-Reply-To: <20200916131352.3072764-1-matthieu.baerts@tessares.net>
+References: <20200916131352.3072764-1-matthieu.baerts@tessares.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1600330629; bh=5XAO3Vw0TgtQm7gK0fSkjxFoCJnTlDYbpJN9T2fiODw=;
-        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-         In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
-         Content-Type:X-Originating-IP:X-ClientProxiedBy;
-        b=QtOvFJiocVQDEuurr5K7q4NgV/XzmV25s2obnoOJvmaTOTCIEKSZIn9jV51+EHpG+
-         U3WK8sKCIdpHBFLGiADOAxFY0RPuxag3806n1av6XLOlPLf+2GVPbOuWmVkCB/kUAp
-         hOUSwWIfkaWLnL3me4/Nk8Bw8P631ZAj7GG3wlYDEpjmFwPd+VVdT0jmx4lDVsOzPI
-         JTEe7l8Lb6ivAXW8dXitbhqzZHwcBXfsAVSQTXXJBjHEWvOpqtzpdA+TEHZVGmnLzj
-         mTSfnk7Tlk17rGzMf02+vGxxrDdsRGLRhz8+EeOxOaj+wp+M+h37yLyfJDKnwRU4Rv
-         74gpNRFwAAgcw==
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simulate PCI SF ports. Allow user to create one or more PCI SF ports.
+On Wed, 2020-09-16 at 15:13 +0200, Matthieu Baerts wrote:
+> In case of errors, this message was printed:
+> 
+>   (...)
+>   # read: Resource temporarily unavailable
+>   #  client exit code 0, server 3
+>   # \nnetns ns1-0-BJlt5D socket stat for 10003:
+>   (...)
+> 
+> Obviously, the idea was to add a new line before the socket stat and not
+> print "\nnetns".
+> 
+> Fixes: b08fbf241064 ("selftests: add test-cases for MPTCP MP_JOIN")
+> Fixes: 048d19d444be ("mptcp: add basic kselftest for mptcp")
+> Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-Examples:
-
-Create a PCI PF and PCI SF port.
-Create a device with ID=3D10 and one physical port.
-$ echo "10 1" > /sys/bus/netdevsim/new_device
-$ devlink port show
-netdevsim/netdevsim10/0: type eth netdev eni10np1 flavour physical port 1 s=
-plittable false
-
-$ devlink port add netdevsim/netdevsim10/10 flavour pcipf pfnum 0
-$ devlink port add netdevsim/netdevsim10/11 flavour pcisf pfnum 0 sfnum 44
-$ devlink port show netdevsim/netdevsim10/11
-netdevsim/netdevsim10/11: type eth netdev eni10npf0sf44 flavour pcisf contr=
-oller 0 pfnum 0 sfnum 44 external true splittable false
-  function:
-    hw_addr 00:00:00:00:00:00 state inactive
-
-$ devlink port function set netdevsim/netdevsim10/11 hw_addr 00:11:22:33:44=
-:55 state active
-
-$ devlink port show netdevsim/netdevsim10/11 -jp
-{
-    "port": {
-        "netdevsim/netdevsim10/11": {
-            "type": "eth",
-            "netdev": "eni10npf0sf44",
-            "flavour": "pcisf",
-            "controller": 0,
-            "pfnum": 0,
-            "sfnum": 44,
-            "external": true,
-            "splittable": false,
-            "function": {
-                "hw_addr": "00:11:22:33:44:55",
-                "state": "active"
-            }
-        }
-    }
-}
-
-Delete newly added devlink port
-$ devlink port add netdevsim/netdevsim10/11
-
-Add devlink port of flavour 'pcisf' where port index and sfnum are
-auto assigned by driver.
-$ devlink port add netdevsim/netdevsim10 flavour pcisf controller 0 pfnum 0
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
- drivers/net/netdevsim/netdevsim.h     |  1 +
- drivers/net/netdevsim/port_function.c | 95 +++++++++++++++++++++++++--
- 2 files changed, 92 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netd=
-evsim.h
-index 0ea9705eda38..c70782e444d5 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -222,6 +222,7 @@ struct nsim_dev {
- 		struct list_head head;
- 		struct ida ida;
- 		struct ida pfnum_ida;
-+		struct ida sfnum_ida;
- 	} port_functions;
- };
-=20
-diff --git a/drivers/net/netdevsim/port_function.c b/drivers/net/netdevsim/=
-port_function.c
-index 01587b54f0e0..3a90de50b152 100644
---- a/drivers/net/netdevsim/port_function.c
-+++ b/drivers/net/netdevsim/port_function.c
-@@ -13,10 +13,12 @@ struct nsim_port_function {
- 	unsigned int port_index;
- 	enum devlink_port_flavour flavour;
- 	u32 controller;
-+	u32 sfnum;
- 	u16 pfnum;
- 	struct nsim_port_function *pf_port; /* Valid only for SF port */
- 	u8 hw_addr[ETH_ALEN];
- 	u8 state; /* enum devlink_port_function_state */
-+	int refcount; /* Counts how many sf ports are bound attached to this pf p=
-ort. */
- };
-=20
- void nsim_dev_port_function_init(struct nsim_dev *nsim_dev)
-@@ -25,10 +27,13 @@ void nsim_dev_port_function_init(struct nsim_dev *nsim_=
-dev)
- 	INIT_LIST_HEAD(&nsim_dev->port_functions.head);
- 	ida_init(&nsim_dev->port_functions.ida);
- 	ida_init(&nsim_dev->port_functions.pfnum_ida);
-+	ida_init(&nsim_dev->port_functions.sfnum_ida);
- }
-=20
- void nsim_dev_port_function_exit(struct nsim_dev *nsim_dev)
- {
-+	WARN_ON(!ida_is_empty(&nsim_dev->port_functions.sfnum_ida));
-+	ida_destroy(&nsim_dev->port_functions.sfnum_ida);
- 	WARN_ON(!ida_is_empty(&nsim_dev->port_functions.pfnum_ida));
- 	ida_destroy(&nsim_dev->port_functions.pfnum_ida);
- 	WARN_ON(!ida_is_empty(&nsim_dev->port_functions.ida));
-@@ -119,9 +124,24 @@ nsim_devlink_port_function_alloc(struct nsim_dev *dev,=
- const struct devlink_port
- 			goto fn_ida_err;
- 		port->pfnum =3D ret;
- 		break;
-+	case DEVLINK_PORT_FLAVOUR_PCI_SF:
-+		if (attrs->sfnum_valid)
-+			ret =3D ida_alloc_range(&dev->port_functions.sfnum_ida, attrs->sfnum,
-+					      attrs->sfnum, GFP_KERNEL);
-+		else
-+			ret =3D ida_alloc(&dev->port_functions.sfnum_ida, GFP_KERNEL);
-+		if (ret < 0)
-+			goto fn_ida_err;
-+		port->sfnum =3D ret;
-+		port->pfnum =3D attrs->pfnum;
-+		break;
- 	default:
- 		break;
- 	};
-+	/* refcount_t is not needed as port is protected by port_functions.mutex.
-+	 * This count is to keep track of how many SF ports are attached a PF por=
-t.
-+	 */
-+	port->refcount =3D 1;
- 	return port;
-=20
- fn_ida_err:
-@@ -137,6 +157,9 @@ static void nsim_devlink_port_function_free(struct nsim=
-_dev *dev, struct nsim_po
- 	case DEVLINK_PORT_FLAVOUR_PCI_PF:
- 		ida_simple_remove(&dev->port_functions.pfnum_ida, port->pfnum);
- 		break;
-+	case DEVLINK_PORT_FLAVOUR_PCI_SF:
-+		ida_simple_remove(&dev->port_functions.sfnum_ida, port->sfnum);
-+		break;
- 	default:
- 		break;
- 	};
-@@ -170,6 +193,11 @@ nsim_dev_port_port_exists(struct nsim_dev *nsim_dev, c=
-onst struct devlink_port_n
- 		if (attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF &&
- 		    tmp->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF && tmp->pfnum =3D=3D=
- attrs->pfnum)
- 			return true;
-+
-+		if (attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_SF &&
-+		    tmp->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_SF &&
-+		    tmp->sfnum =3D=3D attrs->sfnum && tmp->pfnum =3D=3D attrs->pfnum)
-+			return true;
- 	}
- 	return false;
- }
-@@ -183,21 +211,71 @@ nsim_dev_devlink_port_index_lookup(const struct nsim_=
-dev *nsim_dev, unsigned int
- 	list_for_each_entry(port, &nsim_dev->port_functions.head, list) {
- 		if (port->port_index !=3D port_index)
- 			continue;
-+		if (port->refcount > 1) {
-+			NL_SET_ERR_MSG_MOD(extack, "Port is in use");
-+			return ERR_PTR(-EBUSY);
-+		}
- 		return port;
- 	}
- 	NL_SET_ERR_MSG_MOD(extack, "User created port not found");
- 	return ERR_PTR(-ENOENT);
- }
-=20
-+static struct nsim_port_function *
-+pf_port_get(struct nsim_dev *nsim_dev, struct nsim_port_function *port)
-+{
-+	struct nsim_port_function *tmp;
-+
-+	/* PF port addition doesn't need a parent. */
-+	if (port->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF)
-+		return NULL;
-+
-+	list_for_each_entry(tmp, &nsim_dev->port_functions.head, list) {
-+		if (tmp->flavour !=3D DEVLINK_PORT_FLAVOUR_PCI_PF || tmp->pfnum !=3D por=
-t->pfnum)
-+			continue;
-+
-+		if (tmp->refcount + 1 =3D=3D INT_MAX)
-+			return ERR_PTR(-ENOSPC);
-+
-+		port->pf_port =3D tmp;
-+		tmp->refcount++;
-+		return tmp;
-+	}
-+	return ERR_PTR(-ENOENT);
-+}
-+
-+static void pf_port_put(struct nsim_port_function *port)
-+{
-+	if (port->pf_port) {
-+		port->pf_port->refcount--;
-+		WARN_ON(port->pf_port->refcount < 0);
-+	}
-+	port->refcount--;
-+	WARN_ON(port->refcount !=3D 0);
-+}
-+
- static int nsim_devlink_port_function_add(struct devlink *devlink, struct =
-nsim_dev *nsim_dev,
- 					  struct nsim_port_function *port,
- 					  struct netlink_ext_ack *extack)
- {
-+	struct nsim_port_function *pf_port;
- 	int err;
-=20
--	list_add(&port->list, &nsim_dev->port_functions.head);
-+	/* Keep all PF ports at the start, so that when driver is unloaded
-+	 * All SF ports from the end of the list can be removed first.
-+	 */
-+	if (port->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF)
-+		list_add(&port->list, &nsim_dev->port_functions.head);
-+	else
-+		list_add_tail(&port->list, &nsim_dev->port_functions.head);
-+
-+	pf_port =3D pf_port_get(nsim_dev, port);
-+	if (IS_ERR(pf_port)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Fail to get pf port");
-+		err =3D PTR_ERR(pf_port);
-+		goto pf_err;
-+	}
-=20
--	port->state =3D DEVLINK_PORT_FUNCTION_STATE_INACTIVE;
- 	err =3D devlink_port_register(devlink, &port->dl_port, port->port_index);
- 	if (err)
- 		goto reg_err;
-@@ -213,6 +291,8 @@ static int nsim_devlink_port_function_add(struct devlin=
-k *devlink, struct nsim_d
- 	devlink_port_type_clear(&port->dl_port);
- 	devlink_port_unregister(&port->dl_port);
- reg_err:
-+	pf_port_put(port);
-+pf_err:
- 	list_del(&port->list);
- 	return err;
- }
-@@ -224,12 +304,14 @@ static void nsim_devlink_port_function_del(struct nsi=
-m_dev *nsim_dev,
- 	unregister_netdev(port->netdev);
- 	devlink_port_unregister(&port->dl_port);
- 	list_del(&port->list);
-+	pf_port_put(port);
- }
-=20
- static bool nsim_dev_port_flavour_supported(const struct nsim_dev *nsim_de=
-v,
- 					    const struct devlink_port_new_attrs *attrs)
- {
--	return attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF;
-+	return attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF ||
-+	       attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_SF;
- }
-=20
- int nsim_dev_devlink_port_new(struct devlink *devlink, const struct devlin=
-k_port_new_attrs *attrs,
-@@ -266,7 +348,11 @@ int nsim_dev_devlink_port_new(struct devlink *devlink,=
- const struct devlink_port
- 	       nsim_dev->switch_id.id_len);
- 	port->dl_port.attrs.switch_id.id_len =3D nsim_dev->switch_id.id_len;
-=20
--	devlink_port_attrs_pci_pf_set(&port->dl_port, port->controller, port->pfn=
-um, false);
-+	if (attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF)
-+		devlink_port_attrs_pci_pf_set(&port->dl_port, port->controller, port->pf=
-num, false);
-+	else
-+		devlink_port_attrs_pci_sf_set(&port->dl_port, port->controller, port->pf=
-num,
-+					      port->sfnum, false);
-=20
- 	err =3D nsim_devlink_port_function_add(devlink, nsim_dev, port, extack);
- 	if (err)
-@@ -333,6 +419,7 @@ void nsim_dev_port_function_disable(struct nsim_dev *ns=
-im_dev)
- 	 * ports.
- 	 */
-=20
-+	/* Remove SF ports first, followed by PF ports. */
- 	list_for_each_entry_safe_reverse(port, tmp, &nsim_dev->port_functions.hea=
-d, list) {
- 		nsim_devlink_port_function_del(nsim_dev, port);
- 		nsim_devlink_port_function_free(nsim_dev, port);
---=20
-2.26.2
+Acked-by: Paolo Abeni <pabeni@redhat.com>
 
