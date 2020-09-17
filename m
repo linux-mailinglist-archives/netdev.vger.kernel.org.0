@@ -2,88 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1F5F26D3F5
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 08:52:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C04426D41C
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 09:03:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726217AbgIQGv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 02:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726151AbgIQGv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 02:51:58 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14BD0C061756
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 23:51:57 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id y9so1261031ilq.2
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 23:51:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WmO3lehPU5xgp/AaU9lW0DTy2BiuALKSxjt4YpqCbPQ=;
-        b=OXBVMolKXu9oHOH/RIVylOl8xeQHwn7gTVs/vMb1xmk0j8xZdei1Po6uQNaOcCi0rz
-         k/Jz5O9iQZos06Ktg9342AdyYAQwGZNtt26Mwkfv0C35hYQyYctENMR8d/OqQCdpTbS4
-         QBVmNA9+8VsrdPxfGbmfu219GQDfZJ9EL/j/jHq9WnPHJTfkYv+T4y1pLQUGrLNHA1yd
-         Mu7KIvQVM+I6p+UhhZw2Ji0gC497GSvFD0it8TrSqlO5Fam7Zk3fnx1S3HpBdVjy6wU/
-         saKkt6Ejo4b5N/r+CYf70DfONvV0JcvnKQ7ZIyaC2Sr5OoAh9KEn6JuJd1g+gpIB7kCk
-         SIsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WmO3lehPU5xgp/AaU9lW0DTy2BiuALKSxjt4YpqCbPQ=;
-        b=AYbSR+kbRaRptZkVUCTJeedpXXMJVP/kg+8keHanSORSzg75yexleCZDjRqV6bReuK
-         W41FnsZb/TfHCBXkYNjX510LEISrkcPw4/m5OuddsTSm4qZhCEMZjG/VhcnLpMqK5FRD
-         HC503Bm16t+wXJ/LekBN4T48QsG7Ut6vmsubm5m0Rvf0js6VfjnbztGdOzuLEaIqO50X
-         uM5xmD2AUutIUFMfchqwi4OgmrzM4cSNwJuYLBsD6/6MDl3G4NtDz4hWs77zQ74eFKBJ
-         29B0leq8VAyS9DCD2TpF0lfSBLTvWxkiQO7teYaMl3fxU/hiIj9iGRskpBVUjh/zpQFz
-         yfkw==
-X-Gm-Message-State: AOAM531fZeHNj13GfVTYlqepjEq58IqJNdbxYX4DiEZZxd7FgGEZ6te3
-        44/PJkRabUIh7abXGw2Ysi852h6nT4S7uWLIJ/40SNiSEEc=
-X-Google-Smtp-Source: ABdhPJxFYzwV1YLidOSKXI1r/DxKCDAaTVJyjocue5dOmnluWfcXOUoJWW2TLVCA5K/Yy25eZFSB7+QxpoVqTOXas+8=
-X-Received: by 2002:a92:d48b:: with SMTP id p11mr19958635ilg.69.1600325516756;
- Wed, 16 Sep 2020 23:51:56 -0700 (PDT)
+        id S1726241AbgIQHD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 03:03:28 -0400
+Received: from lan.nucleusys.com ([92.247.61.126]:56520 "EHLO
+        zztop.nucleusys.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726310AbgIQHCo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 03:02:44 -0400
+X-Greylist: delayed 1198 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 03:02:43 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=nucleusys.com; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
+        Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=s/zX2WJfzeffLweLiV/sKRa73szTthE7Wojt7KGvJvU=; b=Und5kiPlLrhyocqNNJRZRUkA9c
+        mFeRIkY4CoqHI267/+CGIrvervkM6JlPf4SVnTSshfS3uujtudWl/JD/txPrXTWV+WqNxEJIm0hMd
+        XK64SaGsdt65TUOWgY63D69vlpq+KU81V4o3nMVi2pa5B15fFSel11h4o8W8gNeZYJH0=;
+Received: from 78-83-68-78.spectrumnet.bg ([78.83.68.78] helo=p310)
+        by zztop.nucleusys.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <petkan@nucleusys.com>)
+        id 1kIncs-0006zN-Q0; Thu, 17 Sep 2020 09:42:39 +0300
+Date:   Thu, 17 Sep 2020 09:42:39 +0300
+From:   Petko Manolov <petkan@nucleusys.com>
+To:     David Bilsby <d.bilsby@virgin.net>
+Cc:     Thor Thayer <thor.thayer@linux.intel.com>, netdev@vger.kernel.org
+Subject: Re: Re: Altera TSE driver not working in 100mbps mode
+Message-ID: <20200917064239.GA40050@p310>
+Mail-Followup-To: David Bilsby <d.bilsby@virgin.net>,
+        Thor Thayer <thor.thayer@linux.intel.com>, netdev@vger.kernel.org
+References: <20191127135419.7r53qw6vtp747x62@p310>
+ <20191203092918.52x3dfuvnryr5kpx@carbon>
+ <c8e4fc3a-0f40-45b6-d9c8-f292c3fdec9d@virgin.net>
 MIME-Version: 1.0
-References: <20200917020021.0860995C06B9@us180.sjc.aristanetworks.com> <CA+HUmGjX4_4_UXWNn=EehQ_3QtFPZq8RJU146r-nc0nA8apx7w@mail.gmail.com>
-In-Reply-To: <CA+HUmGjX4_4_UXWNn=EehQ_3QtFPZq8RJU146r-nc0nA8apx7w@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 17 Sep 2020 08:51:45 +0200
-Message-ID: <CANn89iJOO9cbOqCNpRK4OrZy-L6P8aJJcPMjs5=RHF=fsjEe2Q@mail.gmail.com>
-Subject: Re: [PATCH] net: make netdev_wait_allrefs wake-able
-To:     Francesco Ruggeri <fruggeri@arista.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c8e4fc3a-0f40-45b6-d9c8-f292c3fdec9d@virgin.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Score: -1.0 (-)
+X-Spam-Report: Spam detection software, running on the system "zztop.nucleusys.com",
+ has NOT identified this incoming email as spam.  The original
+ message has been attached to this so you can view it or label
+ similar future email.  If you have any questions, see
+ the administrator of that system for details.
+ Content preview:  On 20-09-16 22:32:03, David Bilsby wrote: > Hi > > Would you
+    consider making the PhyLink modifications to the Altera TSE driver > public
+    as this would be very useful for a board we have which uses an [...] 
+ Content analysis details:   (-1.0 points, 5.0 required)
+  pts rule name              description
+ ---- ---------------------- --------------------------------------------------
+ -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
+  0.0 TVD_RCVD_IP            Message was received from an IP address
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 17, 2020 at 8:33 AM Francesco Ruggeri <fruggeri@arista.com> wrote:
->
-> >  static inline void dev_put(struct net_device *dev)
-> >  {
-> > +       struct task_struct *destroy_task = dev->destroy_task;
-> > +
-> >         this_cpu_dec(*dev->pcpu_refcnt);
-> > +       if (destroy_task)
-> > +               wake_up_process(destroy_task);
-> >  }
->
-> I just realized that this introduces a race, if dev_put drops the last
-> reference, an already running netdev_wait_allrefs runs to completion
-> and then dev_put tries to wake it up.
-> Any suggestions on how to avoid this without resorting to
-> locking?
->
+On 20-09-16 22:32:03, David Bilsby wrote:
+> Hi
+> 
+> Would you consider making the PhyLink modifications to the Altera TSE driver 
+> public as this would be very useful for a board we have which uses an SFP PHY 
+> connected to the TSE core via I2C. Currently we are using a fibre SFP and 
+> fixing the speed to 1G but would really like to be able to use a copper SFP 
+> which needs to do negotiation.
 
-Honestly I would not touch dev_put() at all.
+Well, definitely yes.
 
-Simply change the msleep(250) to something better, with maybe
-exponential backoff.
+The driver isn't 100% finished, but it mostly works.  One significant downside 
+is the kernel version i had to port it to: 4.19.  IIRC there is API change so my 
+current patches can't be applied to 5.x kernels.  Also, i could not finish the 
+upstreaming as the customer device i worked on had to be returned.
+
+However, given access to Altera TSE capable device (which i don't have atm), 
+running a recent kernel, i'll gladly finish the upstreaming.
+
+
+cheers,
+Petko
