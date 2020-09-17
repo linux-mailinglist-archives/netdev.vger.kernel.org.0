@@ -2,105 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6230F26D3EE
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 08:50:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C1FA26D404
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 08:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726186AbgIQGt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 02:49:59 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:60136 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726106AbgIQGt7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 02:49:59 -0400
-X-Greylist: delayed 936 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 02:49:58 EDT
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id F07A2AB09F246D0E5BCC;
-        Thu, 17 Sep 2020 14:34:19 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Thu, 17 Sep 2020
- 14:34:11 +0800
-From:   Wang Xiaojun <wangxiaojun11@huawei.com>
-To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH -next] can: ti_hecc: use devm_platform_ioremap_resource_byname
-Date:   Thu, 17 Sep 2020 14:36:34 +0800
-Message-ID: <20200917063634.2183792-1-wangxiaojun11@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S1726310AbgIQG4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 02:56:40 -0400
+Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:60075 "EHLO
+        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726280AbgIQG4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 02:56:24 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id CD255828;
+        Thu, 17 Sep 2020 02:50:07 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Thu, 17 Sep 2020 02:50:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=d8BOLbx9+HnAzROue
+        DOfPMsUImxBxj0eRSOLnbFMpic=; b=ItSsc+EU7RmXb8wg8/RUiv2dGfUyO+w9N
+        K4YKIDMskQ1DgplC35NT1JIVxCiVbQy21esv9S5OkeoLpJo0jXNi2I39gY9R1uxd
+        pFZtDVisB+HByPW/VUjrSD336j/q/eI2qKLdxMMd5p7Md40Dc1/+0tgkkCPoBP4q
+        yZab2/leHHHke5XiR6Q1MaAZ9oIh3PT7b6vXuWjeUnth3byckneBgWBQUxPtrjXB
+        66yghx4iCQTbZA2cCZbnxmaR113ODtlUg41A9TtGKfiTxxTmbiL3ABOspPyDtP5o
+        /QDrfl1sraoJLilixyV/q549kfo/g96C6BLEK3ENT0pukS/YqQTDA==
+X-ME-Sender: <xms:HwdjX1uPJEQrmHVvhdqhsWuxn9MWDZZTy50n9ad6Z9esbGZ7nQ687w>
+    <xme:HwdjX-fnNjZ7dwu6RFU_pMKD9gxFoYytv2jtoMM9kXg-X02ZPUFW7QDJNsVyPhBU6
+    DZbGVcikzlIa8U>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrtdefgdduudduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrfeeirdekvdenucev
+    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthh
+    esihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:HwdjX4yfDnwx5CVEkLEFJxoPL6zYS35AxS6w0i5ZrJGE4jmfmX3fXw>
+    <xmx:HwdjX8Mihbe0wVabKnDo3VmoHEV2ndZ-x14QQpGMaKVc4p3elsPonA>
+    <xmx:HwdjX1_D8iJtFaK10q8ecwZbJ6UvaQuRls2xunC6ZKjIfbsjWWoobw>
+    <xmx:HwdjXwaf2jVHNzSWjDravByvcL1m2I2551GM2j8WEaNy77OOfXk1pQ>
+Received: from shredder.mtl.com (igld-84-229-36-82.inter.net.il [84.229.36.82])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 455AC3064683;
+        Thu, 17 Sep 2020 02:50:05 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        petrm@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 0/3] mlxsw: Support dcbnl_setbuffer, dcbnl_getbuffer
+Date:   Thu, 17 Sep 2020 09:49:00 +0300
+Message-Id: <20200917064903.260700-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the devm_platform_ioremap_resource_byname() helper instead of
-calling platform_get_resource_byname() and devm_ioremap_resource()
-separately.
+From: Ido Schimmel <idosch@nvidia.com>
 
-Signed-off-by: Wang Xiaojun <wangxiaojun11@huawei.com>
----
- drivers/net/can/ti_hecc.c | 27 +++++----------------------
- 1 file changed, 5 insertions(+), 22 deletions(-)
+Petr says:
 
-diff --git a/drivers/net/can/ti_hecc.c b/drivers/net/can/ti_hecc.c
-index 94b1491b569f..d2712de34b74 100644
---- a/drivers/net/can/ti_hecc.c
-+++ b/drivers/net/can/ti_hecc.c
-@@ -857,7 +857,7 @@ static int ti_hecc_probe(struct platform_device *pdev)
- 	struct net_device *ndev = (struct net_device *)0;
- 	struct ti_hecc_priv *priv;
- 	struct device_node *np = pdev->dev.of_node;
--	struct resource *res, *irq;
-+	struct resource *irq;
- 	struct regulator *reg_xceiver;
- 	int err = -ENODEV;
- 
-@@ -878,39 +878,22 @@ static int ti_hecc_probe(struct platform_device *pdev)
- 	priv = netdev_priv(ndev);
- 
- 	/* handle hecc memory */
--	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "hecc");
--	if (!res) {
--		dev_err(&pdev->dev, "can't get IORESOURCE_MEM hecc\n");
--		return -EINVAL;
--	}
--
--	priv->base = devm_ioremap_resource(&pdev->dev, res);
-+	priv->base = devm_platform_ioremap_resource_byname(pdev, "hecc");
- 	if (IS_ERR(priv->base)) {
- 		dev_err(&pdev->dev, "hecc ioremap failed\n");
- 		return PTR_ERR(priv->base);
- 	}
- 
- 	/* handle hecc-ram memory */
--	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "hecc-ram");
--	if (!res) {
--		dev_err(&pdev->dev, "can't get IORESOURCE_MEM hecc-ram\n");
--		return -EINVAL;
--	}
--
--	priv->hecc_ram = devm_ioremap_resource(&pdev->dev, res);
-+	priv->hecc_ram = devm_platform_ioremap_resource_byname(pdev,
-+						"hecc-ram");
- 	if (IS_ERR(priv->hecc_ram)) {
- 		dev_err(&pdev->dev, "hecc-ram ioremap failed\n");
- 		return PTR_ERR(priv->hecc_ram);
- 	}
- 
- 	/* handle mbx memory */
--	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mbx");
--	if (!res) {
--		dev_err(&pdev->dev, "can't get IORESOURCE_MEM mbx\n");
--		return -EINVAL;
--	}
--
--	priv->mbx = devm_ioremap_resource(&pdev->dev, res);
-+	priv->mbx = devm_platform_ioremap_resource_byname(pdev, "mbx");
- 	if (IS_ERR(priv->mbx)) {
- 		dev_err(&pdev->dev, "mbx ioremap failed\n");
- 		return PTR_ERR(priv->mbx);
+On Spectrum, port buffers, also called port headroom, is where packets are
+stored while they are parsed and the forwarding decision is being made. For
+lossless traffic flows, in case shared buffer admission is not allowed,
+headroom is also where to put the extra traffic received before the sent
+PAUSE takes effect.
+
+Linux supports two DCB interfaces related to the headroom: dcbnl_setbuffer
+for configuration, and dcbnl_getbuffer for inspection. This patch set
+implements them.
+
+With dcbnl_setbuffer in place, there will be two sources of authority over
+the ingress configuration: the DCB ETS hook, because ETS configuration is
+mirrored to ingress, and the DCB setbuffer hook. mlxsw is in a similar
+situation on the egress side, where there are two sources of the ETS
+configuration: the DCB ETS hook, and the TC qdisc hooks. This is a
+non-intuitive situation, because the way the ASIC ends up being configured
+depends not only on the actual configured bits, but also on the order in
+which they were configured.
+
+To prevent these issues on the ingress side, two configuration modes will
+exist: DCB mode and TC mode. DCB ETS will keep getting projected to ingress
+in the (default) DCB mode. When a qdisc is installed on a port, it will be
+switched to the TC mode, the ingress configuration will be done through the
+dcbnl_setbuffer callback. The reason is that the dcbnl_setbuffer hook is
+not standardized and supported by lldpad. Projecting DCB ETS configuration
+to ingress is a reasonable heuristic to configure ingress especially when
+PFC is in effect.
+
+In patch #1, the toggle between the DCB and TC modes of headroom
+configuration, described above, is introduced.
+
+Patch #2 implements dcbnl_getbuffer and dcbnl_setbuffer. dcbnl_getbuffer
+can be always used to determine the current port headroom configuration.
+dcbnl_setbuffer is only permitted in the TC mode.
+
+In patch #3, make the qdisc module toggle the headroom mode from DCB to TC
+and back, depending on whether there is an offloaded qdisc on the port.
+
+Petr Machata (3):
+  mlxsw: spectrum_buffers: Support two headroom modes
+  mlxsw: spectrum_dcb: Implement dcbnl_setbuffer / getbuffer
+  mlxsw: spectrum_qdisc: Disable port buffer autoresize with qdiscs
+
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    | 11 ++++
+ .../mellanox/mlxsw/spectrum_buffers.c         | 22 ++++++-
+ .../ethernet/mellanox/mlxsw/spectrum_dcb.c    | 59 +++++++++++++++++++
+ .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 34 ++++++++++-
+ 4 files changed, 122 insertions(+), 4 deletions(-)
+
 -- 
-2.25.1
+2.26.2
 
