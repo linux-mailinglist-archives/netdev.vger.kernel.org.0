@@ -2,236 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5990126D903
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 12:28:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C12AF26D90D
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 12:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726592AbgIQK23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 06:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
+        id S1726547AbgIQKa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 06:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726545AbgIQK22 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 06:28:28 -0400
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F4AC06174A;
-        Thu, 17 Sep 2020 03:28:28 -0700 (PDT)
-Received: by mail-oi1-x244.google.com with SMTP id a3so1900615oib.4;
-        Thu, 17 Sep 2020 03:28:27 -0700 (PDT)
+        with ESMTP id S1726236AbgIQKaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 06:30:15 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0326C06174A
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 03:30:15 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id y2so1756957ilp.7
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 03:30:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ptYB+2YxqjfJpTc3PmxXkmZ15dGcdrLu7QLIcznhvc4=;
-        b=RqHuaOdmpyOf+j9RiBUhsHFL8EkySKMFlmQy3YU7YXH3bMuPllku3LmyW5HjmL+OIA
-         VFbXGQIyaNlrdI5nZ8VHuE5IkYbrMOGwdEKMCj9tH0+lWqmQ50l+5q9oV+giaoxmOGIl
-         3moc1ZIjx32DLhRi7H2B8mrnhYODksHe6U0Shn12kjDImEBVvcA/MHLFFYaOpBwbNmZ+
-         dlwpQgKusncXCnHNIz8F3a6fyZF1T4DNUPDC5pWloe4qfd5Y8bXkxPnXrUbXndpT2yy4
-         2OVtWTcWFe1Cnzj3KQFIUa7DBOj1xskZpssewN1GMf2sxYjfEywV6Qzx+IeAvP/24Po1
-         H+7A==
+         :cc;
+        bh=eIj7e3t/2LEnP8uq7RAznO9UoSe/WvEuOuC4CbDgvzk=;
+        b=fndjdEXniqyyjEzYOASnozcVRrFkill2ITfkU8YmCkpepDg2bo+yT2uBCnzP7vRFBb
+         b+B20r2zXu3UOea+sPnYu7WoqbTHULZf22LbCGSe/kYBkOMP2ycaGtayBzRSMq8cCg4p
+         um/r3RkAk7Md4C8zzk2HE9m+nm8y+DrDXATiizDRwq8kccAWPVYAGMMnGyIhwCHyZQnL
+         m2ycW9gNnLw3mcODv0dp2aY/uNpsn0HU+WJOp6ATzl21viTa9owDtasQpRndpzTM3Vhp
+         Vi2BJYN9F6hVVUdBkYf17a8oVgZq5xBwDv2PeG71TJZFdWvEUZBNycEDVSSCbwCKBV9m
+         +xDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ptYB+2YxqjfJpTc3PmxXkmZ15dGcdrLu7QLIcznhvc4=;
-        b=GVwGlZB/Ag1oxg1eG/DWpKKtBWGI87BlloQtOpMzIMzsK4V/gmscb6y3B4wEbLFvdx
-         hE1q3iaogdl+FPJUXpUqcWNsK9y/i1qqlWuY0TPEick9NRJTerQM5WZCRsCAiowgFy1Q
-         klonq7I8LIc3PrFcDvhSaZKQNI/lB0RBCqg6tFOXBkNgn3skLD5DArUqzpzk343wseoU
-         u5mdE4ts6MInshIJbiIjjAcHesjCqv+/MbErQcDZy2AKtdEa1eP0yRRuj+jEO1B0BZF+
-         RJxYzaynlmSJToq/L8LzrPIe/Ss75snWhlqjXg5E+9MwHpSJIGI/M47DGMxR0iRvkqSu
-         nmeQ==
-X-Gm-Message-State: AOAM532i8p6QxKTtT7EOPleBbbgdSgSSoPBCs6WZ6xFEwFDxHLuwFM33
-        omditxs2hHwyNLeL1vFv7TAPt7aZni0KWVzhnPs=
-X-Google-Smtp-Source: ABdhPJwkotvJGKJOFQiCEnpUsBRdm7f5L3y8uf9Rsa+YFS30Sm6tTvTfN4Wq9LIWloL4Rgwtkzkk+9kEOHeibWMtm6A=
-X-Received: by 2002:aca:da8b:: with SMTP id r133mr5803110oig.163.1600338507323;
- Thu, 17 Sep 2020 03:28:27 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=eIj7e3t/2LEnP8uq7RAznO9UoSe/WvEuOuC4CbDgvzk=;
+        b=ptrpE+LHuBnATeDZQjbgid6VbKKWiDCPJSdI+8A2L00KGYRIijoMG9pK4iC/2039Jl
+         iZzSpxmtIUTwgND/eEqR5QdJCco5Bl8azZW3cWNPFTNvRwO31tGog36RettCLMpE4o3N
+         BRV2u2ox+XqF3dhfgIRWKo3dSV3ejf/cKfG8aZHd4A+rlqANH+5/G+/9IZkV93YcFZ6u
+         sbmP3U1ZiQCeznbHROf0xpW7Hudkh4AfHviUOcjpF3IdK2FzR54GRkcP8MBpZdU+8Vqb
+         VDMxN4EEAuSylCpzr/VMvW2DCU9kwxE8LPyMhbJNWu/VmLQpiDTZ6Jmo70ET7RWgsF8R
+         eOaw==
+X-Gm-Message-State: AOAM531IWTcjUNJMJtpeYIjnErqRG2aF7xW4ZlMsRRR1yNwADAL3P8sS
+        1loPalIImwAGhLEYrMwDdKfq9O1flCrcvqx4HYvAnKTR+N+qeA==
+X-Google-Smtp-Source: ABdhPJzL3H7QnE90sctx/jNbkO6G3KR2DJC+7pqtnWnzb0AGpJHECzI4do0vkW0Md/RNezVWX6++tKZLCZ6LNZlichk=
+X-Received: by 2002:a92:9145:: with SMTP id t66mr23811634ild.305.1600338614858;
+ Thu, 17 Sep 2020 03:30:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200904162154.GA24295@wunner.de> <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
- <20200905052403.GA10306@wunner.de> <e8aecc2b-80cb-8ee5-8efe-7ae5c4eafc70@iogearbox.net>
- <CAF90-Whc3HL9x-7TJ7m3tZp10RNmQxFD=wdQUJLCaUajL2RqXg@mail.gmail.com>
- <8e991436-cb1c-1306-51ac-bb582bfaa8a7@iogearbox.net> <CAF90-Wh=wzjNtFWRv9bzn=-Dkg-Qc9G_cnyoq0jSypxQQgg3uA@mail.gmail.com>
- <29b888f5-5e8e-73fe-18db-6c5dd57c6b4f@iogearbox.net>
-In-Reply-To: <29b888f5-5e8e-73fe-18db-6c5dd57c6b4f@iogearbox.net>
-From:   =?UTF-8?Q?Laura_Garc=C3=ADa_Li=C3=A9bana?= <nevola@gmail.com>
-Date:   Thu, 17 Sep 2020 12:28:15 +0200
-Message-ID: <CAF90-Wiof1aut-KoA=uA-T=UGmUpQvZx_ckwY7KnBbYB8Y3+PA@mail.gmail.com>
-Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Netfilter Development Mailing list 
-        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>, David Miller <davem@davemloft.net>
+References: <20200903121803.75fb0ade@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <BY5PR18MB3298899BF15F266144EE8760C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904083709.GF2997@nanopsycho.orion> <BY5PR18MB3298EB53D2F869D64D7F534DC62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904121126.GI2997@nanopsycho.orion> <BY5PR18MB3298C4C84704BCE864133C33C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+ <20200904133753.77ce6bc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CALHRZuoa8crCaOAkEqyBq1DnmVqUgpv_jzQboMNZcU_3R4RGvg@mail.gmail.com>
+ <20200916103430.GA2298@nanopsycho.orion> <CALHRZuru42FZUQ=8S8k2M7Xsp8_9Lh8HrDMxf8LPQmw=Svc15Q@mail.gmail.com>
+ <20200917060445.GA2244@nanopsycho>
+In-Reply-To: <20200917060445.GA2244@nanopsycho>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Thu, 17 Sep 2020 16:00:03 +0530
+Message-ID: <CALHRZur56k2V9BMdz6DAwc4WGg=sunmWmk6ZcYHpNuNkJuaVVA@mail.gmail.com>
+Subject: Re: [EXT] Re: [net-next PATCH 0/2] Introduce mbox tracepoints for Octeontx2
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
-
-On Tue, Sep 15, 2020 at 12:02 AM Daniel Borkmann <daniel@iogearbox.net> wro=
-te:
+On Thu, Sep 17, 2020 at 11:34 AM Jiri Pirko <jiri@resnulli.us> wrote:
 >
-> On 9/14/20 1:29 PM, Laura Garc=C3=ADa Li=C3=A9bana wrote:
-> > On Fri, Sep 11, 2020 at 6:28 PM Daniel Borkmann <daniel@iogearbox.net> =
-wrote:
-> >> On 9/11/20 9:42 AM, Laura Garc=C3=ADa Li=C3=A9bana wrote:
-> >>> On Tue, Sep 8, 2020 at 2:55 PM Daniel Borkmann <daniel@iogearbox.net>=
- wrote:
-> >>>> On 9/5/20 7:24 AM, Lukas Wunner wrote:
-> >>>>> On Fri, Sep 04, 2020 at 11:14:37PM +0200, Daniel Borkmann wrote:
-> >>>>>> On 9/4/20 6:21 PM, Lukas Wunner wrote:
-> >>>> [...]
-> >>>>>> The tc queueing layer which is below is not the tc egress hook; th=
-e
-> >>>>>> latter is for filtering/mangling/forwarding or helping the lower t=
-c
-> >>>>>> queueing layer to classify.
-> >>>>>
-> >>>>> People want to apply netfilter rules on egress, so either we need a=
-n
-> >>>>> egress hook in the xmit path or we'd have to teach tc to filter and
-> >>>>> mangle based on netfilter rules.  The former seemed more straight-f=
-orward
-> >>>>> to me but I'm happy to pursue other directions.
-> >>>>
-> >>>> I would strongly prefer something where nf integrates into existing =
-tc hook,
-> >>>> not only due to the hook reuse which would be better, but also to al=
-low for a
-> >>>> more flexible interaction between tc/BPF use cases and nf, to name o=
-ne
-> >>>
-> >>> That sounds good but I'm afraid that it would take too much back and
-> >>> forth discussions. We'll really appreciate it if this small patch can
-> >>> be unblocked and then rethink the refactoring of ingress/egress hooks
-> >>> that you commented in another thread.
+> Wed, Sep 16, 2020 at 07:19:36PM CEST, sundeep.lkml@gmail.com wrote:
+> >On Wed, Sep 16, 2020 at 4:04 PM Jiri Pirko <jiri@resnulli.us> wrote:
 > >>
-> >> I'm not sure whether your comment was serious or not, but nope, this n=
-eeds
-> >> to be addressed as mentioned as otherwise this use case would regress.=
- It
-> >
-> > This patch doesn't break anything. The tc redirect use case that you
-> > just commented on is the expected behavior and the same will happen
-> > with ingress. To be consistent, in the case that someone requires both
-> > hooks, another tc redirect would be needed in the egress path. If you
-> > mean to bypass the nf egress if tc redirect in ingress is used, that
-> > would lead in a huge security concern.
+> >> Mon, Sep 07, 2020 at 12:59:45PM CEST, sundeep.lkml@gmail.com wrote:
+> >> >Hi Jakub,
+> >> >
+> >> >On Sat, Sep 5, 2020 at 2:07 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >> >>
+> >> >> On Fri, 4 Sep 2020 12:29:04 +0000 Sunil Kovvuri Goutham wrote:
+> >> >> > > >No, there are 3 drivers registering to 3 PCI device IDs and there can
+> >> >> > > >be many instances of the same devices. So there can be 10's of instances of
+> >> >> > > AF, PF and VFs.
+> >> >> > >
+> >> >> > > So you can still have per-pci device devlink instance and use the tracepoint
+> >> >> > > Jakub suggested.
+> >> >> > >
+> >> >> >
+> >> >> > Two things
+> >> >> > - As I mentioned above, there is a Crypto driver which uses the same mbox APIs
+> >> >> >   which is in the process of upstreaming. There also we would need trace points.
+> >> >> >   Not sure registering to devlink just for the sake of tracepoint is proper.
+> >> >> >
+> >> >> > - The devlink trace message is like this
+> >> >> >
+> >> >> >    TRACE_EVENT(devlink_hwmsg,
+> >> >> >      . . .
+> >> >> >         TP_printk("bus_name=%s dev_name=%s driver_name=%s incoming=%d type=%lu buf=0x[%*phD] len=%zu",
+> >> >> >                   __get_str(bus_name), __get_str(dev_name),
+> >> >> >                   __get_str(driver_name), __entry->incoming, __entry->type,
+> >> >> >                   (int) __entry->len, __get_dynamic_array(buf), __entry->len)
+> >> >> >    );
+> >> >> >
+> >> >> >    Whatever debug message we want as output doesn't fit into this.
+> >> >>
+> >> >> Make use of the standard devlink tracepoint wherever applicable, and you
+> >> >> can keep your extra ones if you want (as long as Jiri don't object).
+> >> >
+> >> >Sure and noted. I have tried to use devlink tracepoints and since it
+> >> >could not fit our purpose I used these.
+> >>
+> >> Why exactly the existing TP didn't fit your need?
+> >>
+> >Existing TP has provision to dump skb and trace error strings with
+> >error code but
+> >we are trying to trace the entire mailbox flow of the AF/PF and VF
+> >drivers. In particular
+> >we trace the below:
+> >    message allocation with message id and size at initiator.
+> >    number of messages sent and total size.
+> >    check message requester id, response id and response code after
+> >reply is received.
+> >    interrupts happened on behalf of mailboxes in the entire process
+> >with source and receiver of interrupt along with isr status.
+> >    error like initiator timeout waiting for response.
+> >  All the above are relevant and are required for Octeontx2 only hence
+> >used own tracepoints.
 >
-> I'm not sure I parse what you're saying above ... today it is possible an=
-d
-> perfectly fine to e.g. redirect to a host-facing veth from tc ingress whi=
-ch
-> then goes into container. Only traffic that goes up the host stack is see=
-n
-> by nf ingress hook in that case. Likewise, reply traffic can be redirecte=
-d
-> from host-facing veth to phys dev for xmit w/o any netfilter interference=
-.
-> This means netfilter in host ns really only sees traffic to/from host as
-> intended. This is fine today, however, if 3rd party entities (e.g. distro
-> side) start pushing down rules on the two nf hooks, then these use cases =
-will
-> break on the egress one due to this asymmetric layering violation. Hence =
-my
-> ask that this needs to be configurable from a control plane perspective s=
-o
-> that both use cases can live next to each other w/o breakage. Most trivia=
-l
-
-Why does it should be symmetric? Fast-paths create "asymmetric
-layering" continuously, see: packet hit XDP to user space bypassing
-ingress, but in the response will hit egress. So the "breakage" is
-already there.
-
-Also, we're here to create mechanisms not policies that distros have to fol=
-low.
-
-> one I can think of is (aside from the fact to refactor the hooks and impr=
-ove
-> their performance) a flag e.g. for skb that can be set from tc/BPF layer =
-to
-> bypass the nf hooks. Basically a flexible opt-in so that existing use-cas=
-es
-> can be retained w/o breakage. This is one option with what I meant in my
-> earlier mail.
-
-No comment.
-
+> You can still use devlink_hwmsg for the actual data exchanged between
+> the driver and hw. For the rest, you can have driver-specific TPs.
 >
-> >> is one thing for you wanting to remove tc / BPF from your application =
-stack
-> >> as you call it, but not at the cost of breaking others.
-> >
-> > I'm not intended to remove tc / BPF from my application stack as I'm
-> > not using it and, as I explained in past emails, it can't be used for
-> > my use cases.
-> >
-> > In addition, let's review your NACK reasons:
-> >
-> >     This reverts the following commits:
-> >
-> >       8537f78647c0 ("netfilter: Introduce egress hook")
-> >       5418d3881e1f ("netfilter: Generalize ingress hook")
-> >       b030f194aed2 ("netfilter: Rename ingress hook include file")
-> >
-> >     From the discussion in [0], the author's main motivation to add a h=
-ook
-> >     in fast path is for an out of tree kernel module, which is a red fl=
-ag
-> >     to begin with. Other mentioned potential use cases like NAT{64,46}
-> >     is on future extensions w/o concrete code in the tree yet. Revert a=
-s
-> >     suggested [1] given the weak justification to add more hooks to cri=
-tical
-> >     fast-path.
-> >
-> >       [0] https://lore.kernel.org/netdev/cover.1583927267.git.lukas@wun=
-ner.de/
-> >       [1] https://lore.kernel.org/netdev/20200318.011152.72770718915606=
-186.davem@davemloft.net/
-> >
-> > It has been explained already that there are more use cases that
-> > require this hook in nf, not only for future developments or out of
-> > tree modules.
 >
-> Sure, aside from the two mentioned cases above, we scratched DHCP a littl=
-e
-> bit on the surface but it was found that i) you need a af_packet specific
-> hook to get there instead, and ii) dhcp clients implement their own filte=
-ring
-> internally to check for bogus messages. What is confusing to me is whethe=
-r
-> this is just brought up as an example or whether you actually care to sol=
-ve
+I totally got your point and adding devlink to our drivers is work in progress
+since we got a similar comment from Jakub for a patch previously:
+https://www.mail-archive.com/netdev@vger.kernel.org/msg341414.html
+All the errors in the drivers will be turned to devlink TP in future.
+This patchset is a bit different since it traces mailbox messages state machine
+at low level and does not even trace message data exchanged between
+driver and hw.
 
-I need a af_packet filter in nf egress but never said it was related
-to DHCP. It is more related to clustering.
+Thanks,
+Sundeep
 
-> it (.. but then why would you do that in fast-path to penalize every othe=
-r
-> traffic as well just for this type of slow-path filtering instead of doin=
-g
-
-With nft if the hook is not registered it is not going to be used at
-all, so the penalty will never happen to any traffic.
-
-> in af_packet only). Similarly, why not add this along with /actual/ nat64
-> code with /concrete/ explanation of why it cannot be performed in post-ro=
-uting?
-> Either way, whatever your actual/real use-case, the above must be address=
-ed
-> one way or another.
->
-
-Pablo already explained why it should be done in egress [0].
-
-Thank you for your time!
-
-
-[0] https://marc.info/?l=3Dlinux-netdev&m=3D158449203321811&w=3D2
+> >
+> >Thanks,
+> >Sundeep
+> >
+> >> >
+> >> >Thanks,
+> >> >Sundeep
