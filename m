@@ -2,178 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBF3E26DE11
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 16:22:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C29B426DDC6
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 16:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727384AbgIQOLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 10:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53942 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727112AbgIQN6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 09:58:15 -0400
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44530C0698C6
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 06:57:28 -0700 (PDT)
-Received: from ramsan ([84.195.186.194])
-        by laurent.telenet-ops.be with bizsmtp
-        id V1xD230064C55Sk011xDCq; Thu, 17 Sep 2020 15:57:25 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1kIuPR-0001Kn-3Q; Thu, 17 Sep 2020 15:57:13 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1kIuPR-0003Hi-1v; Thu, 17 Sep 2020 15:57:13 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Magnus Damm <magnus.damm@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH net-next v4 5/5] ravb: Add support for explicit internal clock delay configuration
-Date:   Thu, 17 Sep 2020 15:57:07 +0200
-Message-Id: <20200917135707.12563-6-geert+renesas@glider.be>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200917135707.12563-1-geert+renesas@glider.be>
-References: <20200917135707.12563-1-geert+renesas@glider.be>
+        id S1727180AbgIQOPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 10:15:51 -0400
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:5747 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727200AbgIQN5y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 09:57:54 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f636b030000>; Thu, 17 Sep 2020 06:56:19 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Thu, 17 Sep 2020 06:57:48 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Thu, 17 Sep 2020 06:57:48 -0700
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 17 Sep
+ 2020 13:57:47 +0000
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.173)
+ by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Thu, 17 Sep 2020 13:57:46 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bd1ndm4FR1jhV0LcWwAtv4PfSsNru1u2uc6uKAOpZu0RKIjr7S92dsckSnuSLffxXWsVg6Aph8rnlyEk4UbYA57dpp/S5SsVk0qAT2xHVnAFlrEeaWMt5YkljwDGDFd7+pm/9GFjFsay4rXx05Pxfh2wCoAoUx8hkU9111jXSCo3syVxMCXA8/cFOUw2vEQYfupxb/ZTyCiuZQ9Q9VuX3dLQc5VjH6jklF7iJX3OEkUJxRyw3H5GxdBLYgStbVbYBnGnDa3U6q1o+DFz0SQ4SvcDs+Uo6H2IZDm3g+ePismQBN7d2x72zXQ4XPMbuv8Sb+lnCOAVoCLM7iY7Yrnt4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0L6sni8+BLz5nCb/03iL3ZLENYcCw9RjLoHbTg1V5Vw=;
+ b=knzLf8IyPdISSjge68/uK3zyjcgjqQDvCquFOypHiaqTuFJkQriaFFenJKNSU2FmhKe53plbVGrC4gsQfoN924AHtgxbLhd6TVAwgVPbswC0fFu/ku0JZDneZ83Zwrmy5yf3XS7S1iefEk9WcCGyhyXjvJlTI5yRaVRL20rLbgiNLhFyX5ehxa3mm63RxfNef260szEspwsVc6CZ0V6zRKFGDv2+u+O7cdFeRNGM5eiw/PoHQLbjcg8KusTpupqeSKARTq0/kKlKfPwE7bJ2HjUm6Jjl/1NDHRfDZinjEJJgFtIKHaUuZCdvvEZziDZkpp3sxmrjPTL2L8xqIntD6w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
+ by BYAPR12MB3112.namprd12.prod.outlook.com (2603:10b6:a03:ae::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.11; Thu, 17 Sep
+ 2020 13:57:45 +0000
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::3c25:6e4c:d506:6105]) by BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::3c25:6e4c:d506:6105%6]) with mapi id 15.20.3370.019; Thu, 17 Sep 2020
+ 13:57:45 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     kernel test robot <lkp@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: RE: [PATCH net-next 5/8] netdevsim: Add support for add and delete of
+ a PCI PF port
+Thread-Topic: [PATCH net-next 5/8] netdevsim: Add support for add and delete
+ of a PCI PF port
+Thread-Index: AQHWjMsL8gKWg0I4YUi42AevKwUwg6lsrmMAgAAs5SA=
+Date:   Thu, 17 Sep 2020 13:57:45 +0000
+Message-ID: <BY5PR12MB4322321C2ADF35CB8A2B7E71DC3E0@BY5PR12MB4322.namprd12.prod.outlook.com>
+References: <20200917081731.8363-6-parav@nvidia.com>
+ <202009171937.JRIyGgCc%lkp@intel.com>
+In-Reply-To: <202009171937.JRIyGgCc%lkp@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [49.207.209.10]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 122c51af-0860-439a-6516-08d85b11a76d
+x-ms-traffictypediagnostic: BYAPR12MB3112:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR12MB3112815033D4C5DD460FF6BCDC3E0@BYAPR12MB3112.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2yFl2sqycvzoYWtEFRxZkQBVN2l4zgeIPT4OI381wrn5rwnxbzdqXqiXCeXdvodW4TrV2bvv6at6YXOxk/7evGutMXWsw8ORP6gvM/qFtGO5W85XiejfT0V8JPSC3ILgR/Is08YPt4n4mEeVeFtB1m9eUOwj1PToc4zJBllWnyiTKR6R4ixp0xjC5TE0Td4XwYdr/J4HU4YnyYYdK/qde6rK/msbmor1fsI0zjVIzuHVL1oCwZuXS5WufMyfPrusZHjqNvCSieAlmr1JCUHmYCA+UJBXjRIzl7ggqeqsA5dgdY/ZgVlpwmQ2URmo6WxmV8DbOv4W2hsP4YfGRwc3IkrJMxtsuxeYdAdvQboXUX+0kJ2avZsGn8RUpJ7SFWSG3pzLLa3nZIAdfiLaN1bfIw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(136003)(366004)(396003)(71200400001)(54906003)(86362001)(55236004)(110136005)(26005)(6506007)(186003)(2906002)(8936002)(33656002)(66946007)(83380400001)(5660300002)(4744005)(76116006)(4326008)(66556008)(52536014)(66476007)(7696005)(966005)(64756008)(66446008)(316002)(8676002)(9686003)(55016002)(478600001)(107886003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: DkXO+Y8O31T1rZ+ghoc2Ah7IvTOWO6a3GvmjUZnFGvxu6M+RWF41SaQV8P4Lp55qSAJN6vwdSnU610S16OSelxjajidQl2I2YcGaEA9rv/Nw4ZyeJapTrbKg1U/hImL3PDaQ8AIzkGiVPTFSGU+fYCDgVtIIhWZLf0GOTMYWmPWbp42E2agf8HyqrNwicQ7TRAtjsEY1zf9Ju5SfbmuFPuoQuoeAWfCL4MTdWHBC/Ps5F2TQmHYTn7zbJoI2NdVX4xi5kAxq2aUYeTt8/HLeq1AMbN3Sr2JoLZNL/VVm7EILGUlqzUa0XAOfjCeR7miEJYBNOB86/VuRbNxqwjTOJfsNNHMA4HkZ/xgoQ+TpyQYa5hr3/uuKENHRZxtCoKeYbMSIWrSAp8IZLgL58lPkYGuJ8QlpmUQZvxW+G2VNigkByqq8C5Nmk4QQMy7F5u/wwr0m12xQMV6rEiI5kCHyB8jijBsR5VFI5rGDHE3bPddK0wnEihd7/Kt2J2p7Q64U8tKNEIek6FBMHYj3p6P1ZFj7F9l7f7ZrKWt9WfwPSDpRnuwfrSicZOjJEOzUugtrzeuIELHxTP19zFkzyapp9k28mGyzSlPEig+AOkR+jt0JyqFgl6haP4fgmK2acVO5raGrqptRUo7nGDOuqZuCTA==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 122c51af-0860-439a-6516-08d85b11a76d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Sep 2020 13:57:45.2708
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: iWf7GDBPScP//34smqL3K0UHRe2Gg4HnFAiKfXrSMIUDlssrlISP8Y9BsK0YTFeWNMAQtAaxpIeLb9pPxn7idQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3112
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1600350979; bh=0L6sni8+BLz5nCb/03iL3ZLENYcCw9RjLoHbTg1V5Vw=;
+        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+         ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
+         Thread-Index:Date:Message-ID:References:In-Reply-To:
+         Accept-Language:Content-Language:X-MS-Has-Attach:
+         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
+         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
+         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
+         x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
+         x-ms-exchange-senderadcheck:x-microsoft-antispam:
+         x-microsoft-antispam-message-info:x-forefront-antispam-report:
+         x-ms-exchange-antispam-messagedata:Content-Type:
+         Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=PXPEGBUsliriYgv/BzsI8wWWiH0b953Yi1BbylvfXnpYqiq1aF6QT0iELI2V6X15N
+         /kSpVXnQSrmE6k9ZQM6woUnIk9julIe/xukemUYJ3Xil7nfP60Ucr99yxJXe5stZHI
+         1GqcBkLCXOS/NLgrVo1J/bDtEk37rTlPsIg2OrwNTCd6O8STDblc4f64PVa34nNDPr
+         rO9thet2wNjnEes2NPr04ZumOkTHlHP5CVJftFvSz+xPlxPhsmm4QQ7fhc99yjDNAy
+         xr9H/8is8Nh+rKfFq1gPtDP+AnmAxf1faWQCgMjND0XU0Kak/eDn1g1qLFfP1whRId
+         pRutzopSn6nyg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some EtherAVB variants support internal clock delay configuration, which
-can add larger delays than the delays that are typically supported by
-the PHY (using an "rgmii-*id" PHY mode, and/or "[rt]xc-skew-ps"
-properties).
 
-Historically, the EtherAVB driver configured these delays based on the
-"rgmii-*id" PHY mode.  This caused issues with PHY drivers that
-implement PHY internal delays properly[1].  Hence a backwards-compatible
-workaround was added by masking the PHY mode[2].
 
-Add proper support for explicit configuration of the MAC internal clock
-delays using the new "[rt]x-internal-delay-ps" properties.
-Fall back to the old handling if none of these properties is present.
+> From: kernel test robot <lkp@intel.com>
+> Sent: Thursday, September 17, 2020 4:46 PM
+>=20
+> Hi Parav,
+>=20
+> Thank you for the patch! Perhaps something to improve:
+>=20
+> [auto build test WARNING on net-next/master]
+>=20
+> url:    https://github.com/0day-ci/linux/commits/Parav-Pandit/devlink-Add=
+-
+> SF-add-delete-devlink-ops/20200917-162417
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.gi=
+t
+> b948577b984a01d24d401d2264efbccc7f0146c1
+> config: i386-randconfig-c003-20200917 (attached as .config)
+> compiler: gcc-9 (Debian 9.3.0-15) 9.3.0
+>=20
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>=20
+>=20
+> coccinelle warnings: (new ones prefixed by >>)
+>=20
+> >> drivers/net/netdevsim/port_function.c:122:2-3: Unneeded semicolon
+>    drivers/net/netdevsim/port_function.c:140:2-3: Unneeded semicolon
+>=20
+> Please review and possibly fold the followup patch.
+>=20
 
-[1] Commit bcf3440c6dd78bfe ("net: phy: micrel: add phy-mode support for
-    the KSZ9031 PHY")
-[2] Commit 9b23203c32ee02cd ("ravb: Mask PHY mode to avoid inserting
-    delays twice").
-
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
-v4:
-  - Add Reviewed-by,
-
-v3:
-  - No changes,
-
-v2:
-  - Add Reviewed-by,
-  - Split long line,
-  - Replace "renesas,[rt]xc-delay-ps" by "[rt]x-internal-delay-ps",
-  - Use 1 instead of true when assigning to a single-bit bitfield.
----
- drivers/net/ethernet/renesas/ravb.h      |  1 +
- drivers/net/ethernet/renesas/ravb_main.c | 36 ++++++++++++++++++------
- 2 files changed, 28 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-index e5ca12ce93c730a9..7453b17a37a2c8d0 100644
---- a/drivers/net/ethernet/renesas/ravb.h
-+++ b/drivers/net/ethernet/renesas/ravb.h
-@@ -1038,6 +1038,7 @@ struct ravb_private {
- 	unsigned wol_enabled:1;
- 	unsigned rxcidm:1;		/* RX Clock Internal Delay Mode */
- 	unsigned txcidm:1;		/* TX Clock Internal Delay Mode */
-+	unsigned rgmii_override:1;	/* Deprecated rgmii-*id behavior */
- 	int num_tx_desc;		/* TX descriptors per packet */
- };
- 
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index 59dadd971345e0d1..aa120e3f1e4d4da5 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -1034,11 +1034,8 @@ static int ravb_phy_init(struct net_device *ndev)
- 		pn = of_node_get(np);
- 	}
- 
--	iface = priv->phy_interface;
--	if (priv->chip_id != RCAR_GEN2 && phy_interface_mode_is_rgmii(iface)) {
--		/* ravb_set_delay_mode() takes care of internal delay mode */
--		iface = PHY_INTERFACE_MODE_RGMII;
--	}
-+	iface = priv->rgmii_override ? PHY_INTERFACE_MODE_RGMII
-+				     : priv->phy_interface;
- 	phydev = of_phy_connect(ndev, pn, ravb_adjust_link, 0, iface);
- 	of_node_put(pn);
- 	if (!phydev) {
-@@ -1989,20 +1986,41 @@ static const struct soc_device_attribute ravb_delay_mode_quirk_match[] = {
- };
- 
- /* Set tx and rx clock internal delay modes */
--static void ravb_parse_delay_mode(struct net_device *ndev)
-+static void ravb_parse_delay_mode(struct device_node *np, struct net_device *ndev)
- {
- 	struct ravb_private *priv = netdev_priv(ndev);
-+	bool explicit_delay = false;
-+	u32 delay;
-+
-+	if (!of_property_read_u32(np, "rx-internal-delay-ps", &delay)) {
-+		/* Valid values are 0 and 1800, according to DT bindings */
-+		priv->rxcidm = !!delay;
-+		explicit_delay = true;
-+	}
-+	if (!of_property_read_u32(np, "tx-internal-delay-ps", &delay)) {
-+		/* Valid values are 0 and 2000, according to DT bindings */
-+		priv->txcidm = !!delay;
-+		explicit_delay = true;
-+	}
- 
-+	if (explicit_delay)
-+		return;
-+
-+	/* Fall back to legacy rgmii-*id behavior */
- 	if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
--	    priv->phy_interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+	    priv->phy_interface == PHY_INTERFACE_MODE_RGMII_RXID) {
- 		priv->rxcidm = 1;
-+		priv->rgmii_override = 1;
-+	}
- 
- 	if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
- 	    priv->phy_interface == PHY_INTERFACE_MODE_RGMII_TXID) {
- 		if (!WARN(soc_device_match(ravb_delay_mode_quirk_match),
- 			  "phy-mode %s requires TX clock internal delay mode which is not supported by this hardware revision. Please update device tree",
--			  phy_modes(priv->phy_interface)))
-+			  phy_modes(priv->phy_interface))) {
- 			priv->txcidm = 1;
-+			priv->rgmii_override = 1;
-+		}
- 	}
- }
- 
-@@ -2148,7 +2166,7 @@ static int ravb_probe(struct platform_device *pdev)
- 	ravb_modify(ndev, GCCR, GCCR_LTI, GCCR_LTI);
- 
- 	if (priv->chip_id != RCAR_GEN2) {
--		ravb_parse_delay_mode(ndev);
-+		ravb_parse_delay_mode(np, ndev);
- 		ravb_set_delay_mode(ndev);
- 	}
- 
--- 
-2.17.1
-
+Sending v2 containing the fix.
+Thanks.
