@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9741026E83F
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 00:22:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6076E26E84A
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 00:23:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbgIQWWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 18:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47644 "EHLO
+        id S1726433AbgIQWW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 18:22:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726326AbgIQWWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 18:22:36 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E22C061788
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 15:22:36 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id j20so3521869ybt.10
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 15:22:36 -0700 (PDT)
+        with ESMTP id S1726353AbgIQWWi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 18:22:38 -0400
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400DEC061788
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 15:22:38 -0700 (PDT)
+Received: by mail-qt1-x84a.google.com with SMTP id j35so3136447qtk.14
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 15:22:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=6KVYAtT8avJT6nGdwz/alAqsUTxpVl7DrmYqi+6Qdd8=;
-        b=ZH0qQn3XVVbWQYzf0YQMBRIESHKTr2OukmgdWCO7WpgSghJMC5GBZgbU+O54fT590T
-         eJ89xfjzBGJrWmmoaEn9a2UVFKV0pIgx0iT8sP9XfBjqnoozwvZ1y+AWHgLro7YkEUPB
-         /O0KJ4TAhPmFnNalCuIctndomyQddXPjK9UwVLltnQukZkh1lx1df7mwHeAXwv3cp0Hs
-         cehN093GPSs7uhvOasMD9SCBzbewXNAapHdl4uWY/UMFm4qBt0k4UCwVe8vdd0/SfFnp
-         kZ+tk5yCrr1WDu4S1meI9P6KPsd4rW17FvpYpBT6KwzL8Nvhu8AS9YDFvsyNIx+TlWl5
-         RI/Q==
+        bh=IaJ7+vsFyvrnLSPfue9ByLmu7bRRks/6xUYOpfJTdBM=;
+        b=HjpZ03rr6c+5GqAa6ALQLVZe20uBr6rmFeyEfwkNwc1jUyv5Z24h0862guJtd4l53M
+         xrs0+QluQQtaKYSCff4Z4wjMnYQ1k+Em6K+OO9Yx1CDxgQUlrPkIf+44MtnWrOgDY0FY
+         BnHEDFNi70Oh1Ig05b7A3LYsWYx2MDFWOg8TQVRvyPjSPBabbetD2J0TmcEFLJKPXZO3
+         2Eo88P3iFD8MxZnI7el4tM96cAyD4C+GkLER/QnVRNsbvRiFK6GoKis/HIf89+w9KVf4
+         6KOmZu9gWEaXyJovkmgYmvhorctZsgsZrwKQXqABH/c18seDirVf0NWBQJI/uU54WKzd
+         tdLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=6KVYAtT8avJT6nGdwz/alAqsUTxpVl7DrmYqi+6Qdd8=;
-        b=paPrZU33oMdK8OoEDPS1Poz3t1rDNjcgl/jQyAwGwlPdZu7YDERDo71cnfh7HCuhEx
-         912AGfE2hnlhMKTN1PVij1eMRMJFZcEPTGE+s1Y2BXAopHfSuiewAAH2uQoDgkmibh7o
-         G/Viv/02cWKnJ69q6teY2+PWiX2bI7EiCuFXZgvlmkQMOp6IfOqJvcvZrV5vFQ7FkE++
-         QsNcj9kkt1iHc/jDMb7uoe+kWWR2kwNE3zJIrhfklyVihmfN5J5ozgtLKeLQ7/5XkNMp
-         EhhGbSQFF9VUlZH6xW7Tyd8RKeRxvdq56e6UB7XndBqVZTlorqsPFee+f1GTJAZTEYa4
-         3kxA==
-X-Gm-Message-State: AOAM532enVHCc0uTi8UXhBa+bC8XHiZvqMcmaeC7EyEkB7091jorD3Ci
-        xa2K2Wu6VF18QinVOWXeawyXvAcH1QU8d2ZEonim
-X-Google-Smtp-Source: ABdhPJxC5/D/JnjQqVL5U6aZTf7ASRpfVuPf7sKnRKkHPapIb8ol4CGQKVQOcDJ5d2kUA1+KTfn8miyv1abmQCzMoMPo
+        bh=IaJ7+vsFyvrnLSPfue9ByLmu7bRRks/6xUYOpfJTdBM=;
+        b=KwqlYaECV+OIPmJdthE3SPz82zyXqc4k6SvQ+M9CPCEYvKFO4lUqw/RJbHxe2bNDQo
+         3LnK86v2mc49xR2FPyxWIS212ELJ7YWt7lPIhHnMDDWZ63Jj6u3gqbyw9qjJVDsldvMt
+         kz/0Zv7TIQHwvZ3pLofqgJX2NAhm+nIskxCexC2Gw/aEIPKCymNVvc+4I/NHgAq6oJ9C
+         YXCBOfgki7TiA+NiXVTnMdG4HVG+ENI9JzZj8Rayz3QEKyW17gF0JjIqD6/KZauOE2mr
+         l1I5McNiXYa1KhtNjG/kM7JilrEm11pvMolnoQrFl2S6QLBTTvg6nYpnT1U+IsanrLQK
+         AQ5g==
+X-Gm-Message-State: AOAM531Zo/xnf1LfEE6vkghq4usDV4+8rYdoqp9KrQrRmdzwPcR6jkYV
+        xliN3ZKbYx5fRc9VnnBL+am9/4vLUkbK0hf//nvX
+X-Google-Smtp-Source: ABdhPJxO04i6TgoP1lLH0ob3dEGaTPbQWTgn04wotZaWZPj/xXlqEtFTx9ZyI4mTjtBNs67uGrvrNjaLcprBSDWSWQLg
 X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:f693:9fff:fef4:4e59])
- (user=danielwinkler job=sendgmr) by 2002:a25:c694:: with SMTP id
- k142mr18415607ybf.369.1600381355591; Thu, 17 Sep 2020 15:22:35 -0700 (PDT)
-Date:   Thu, 17 Sep 2020 15:22:15 -0700
+ (user=danielwinkler job=sendgmr) by 2002:a05:6214:c2:: with SMTP id
+ f2mr14131052qvs.44.1600381357429; Thu, 17 Sep 2020 15:22:37 -0700 (PDT)
+Date:   Thu, 17 Sep 2020 15:22:16 -0700
 In-Reply-To: <20200917222217.2534502-1-danielwinkler@google.com>
-Message-Id: <20200917152052.v2.4.I34169001276125c476e86ece0b4802c36aa08bca@changeid>
+Message-Id: <20200917152052.v2.5.Ibedcb7af24f1c01a680de4cc8cc5a98951588393@changeid>
 Mime-Version: 1.0
 References: <20200917222217.2534502-1-danielwinkler@google.com>
 X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
-Subject: [PATCH v2 4/6] Bluetooth: Emit tx power chosen on ext adv params completion
+Subject: [PATCH v2 5/6] Bluetooth: Query LE tx power on startup
 From:   Daniel Winkler <danielwinkler@google.com>
 To:     marcel@holtmann.org
 Cc:     chromeos-bluetooth-upstreaming@chromium.org,
@@ -66,14 +66,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Our hci call to set extended advertising parameters returns the actual
-tx power selected by the controller. This patch signals a new
-TX_POWER_SELECTED mgmt event to alert the caller of the actual tx power
-that is being used. This is important because the power selected will
-not necessarily match the power requested by the user.
+Queries tx power via HCI_LE_Read_Transmit_Power command when the hci
+device is initialized, and stores resulting min/max LE power in hdev
+struct. If command isn't available (< BT5 support), min/max values
+both default to HCI_TX_POWER_INVALID.
 
-This patch is manually verified by ensuring the tx power selected event
-is signalled and caught by bluetoothd.
+This patch is manually verified by ensuring BT5 devices correctly query
+and receive controller tx power range.
 
 Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
 Signed-off-by: Daniel Winkler <danielwinkler@google.com>
@@ -81,83 +80,105 @@ Signed-off-by: Daniel Winkler <danielwinkler@google.com>
 
 Changes in v2: None
 
+ include/net/bluetooth/hci.h      |  7 +++++++
  include/net/bluetooth/hci_core.h |  2 ++
- include/net/bluetooth/mgmt.h     |  6 ++++++
- net/bluetooth/hci_event.c        |  4 ++++
- net/bluetooth/mgmt.c             | 11 +++++++++++
- 4 files changed, 23 insertions(+)
+ net/bluetooth/hci_core.c         |  8 ++++++++
+ net/bluetooth/hci_event.c        | 18 ++++++++++++++++++
+ 4 files changed, 35 insertions(+)
 
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index c8e67042a3b14c..c1504aa3d9cfd5 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -1797,6 +1797,13 @@ struct hci_cp_le_set_adv_set_rand_addr {
+ 	bdaddr_t  bdaddr;
+ } __packed;
+ 
++#define HCI_OP_LE_READ_TRANSMIT_POWER	0x204b
++struct hci_rp_le_read_transmit_power {
++	__u8  status;
++	__s8  min_le_tx_power;
++	__s8  max_le_tx_power;
++} __packed;
++
+ #define HCI_OP_LE_READ_BUFFER_SIZE_V2	0x2060
+ struct hci_rp_le_read_buffer_size_v2 {
+ 	__u8    status;
 diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index ab168f46b6d909..667b9d37099dec 100644
+index 667b9d37099dec..c1f5b5c4109215 100644
 --- a/include/net/bluetooth/hci_core.h
 +++ b/include/net/bluetooth/hci_core.h
-@@ -1781,6 +1781,8 @@ void mgmt_advertising_added(struct sock *sk, struct hci_dev *hdev,
- 			    u8 instance);
- void mgmt_advertising_removed(struct sock *sk, struct hci_dev *hdev,
- 			      u8 instance);
-+void mgmt_adv_tx_power_selected(struct hci_dev *hdev, u8 instance,
-+				s8 tx_power);
- int mgmt_phy_configuration_changed(struct hci_dev *hdev, struct sock *skip);
+@@ -381,6 +381,8 @@ struct hci_dev {
+ 	__u16		def_page_timeout;
+ 	__u16		def_multi_adv_rotation_duration;
+ 	__u16		def_le_autoconnect_timeout;
++	__s8		min_le_tx_power;
++	__s8		max_le_tx_power;
  
- u8 hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max, u16 latency,
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 859f0d3cd6ea38..db64cf4747554c 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -1079,3 +1079,9 @@ struct mgmt_ev_controller_resume {
- #define MGMT_WAKE_REASON_NON_BT_WAKE		0x0
- #define MGMT_WAKE_REASON_UNEXPECTED		0x1
- #define MGMT_WAKE_REASON_REMOTE_WAKE		0x2
+ 	__u16		pkt_type;
+ 	__u16		esco_type;
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 3a2332f4a9bba2..6bff1c09be3b42 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -741,6 +741,12 @@ static int hci_init3_req(struct hci_request *req, unsigned long opt)
+ 			hci_req_add(req, HCI_OP_LE_READ_ADV_TX_POWER, 0, NULL);
+ 		}
+ 
++		if (hdev->commands[38] & 0x80) {
++			/* Read LE Min/Max Tx Power*/
++			hci_req_add(req, HCI_OP_LE_READ_TRANSMIT_POWER,
++				    0, NULL);
++		}
 +
-+#define MGMT_EV_ADV_TX_POWER_SELECTED	0x002f
-+struct mgmt_ev_adv_tx_power_selected {
-+	__u8	instance;
-+	__s8	tx_power;
-+}  __packed;
+ 		if (hdev->commands[26] & 0x40) {
+ 			/* Read LE White List Size */
+ 			hci_req_add(req, HCI_OP_LE_READ_WHITE_LIST_SIZE,
+@@ -3654,6 +3660,8 @@ struct hci_dev *hci_alloc_dev(void)
+ 	hdev->le_num_of_adv_sets = HCI_MAX_ADV_INSTANCES;
+ 	hdev->def_multi_adv_rotation_duration = HCI_DEFAULT_ADV_DURATION;
+ 	hdev->def_le_autoconnect_timeout = HCI_LE_AUTOCONN_TIMEOUT;
++	hdev->min_le_tx_power = HCI_TX_POWER_INVALID;
++	hdev->max_le_tx_power = HCI_TX_POWER_INVALID;
+ 
+ 	hdev->rpa_timeout = HCI_DEFAULT_RPA_TIMEOUT;
+ 	hdev->discov_interleaved_timeout = DISCOV_INTERLEAVED_TIMEOUT;
 diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index bd306ba3ade545..9a24fd99d9e08e 100644
+index 9a24fd99d9e08e..beb35680f3a83a 100644
 --- a/net/bluetooth/hci_event.c
 +++ b/net/bluetooth/hci_event.c
-@@ -1749,6 +1749,10 @@ static void hci_cc_set_ext_adv_param(struct hci_dev *hdev, struct sk_buff *skb)
- 	}
- 	/* Update adv data as tx power is known now */
- 	hci_req_update_adv_data(hdev, hdev->cur_adv_instance);
-+
-+	if (cp->handle)
-+		mgmt_adv_tx_power_selected(hdev, cp->handle, rp->tx_power);
-+
+@@ -1202,6 +1202,20 @@ static void hci_cc_le_set_adv_set_random_addr(struct hci_dev *hdev,
  	hci_dev_unlock(hdev);
  }
  
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 717c97affb1554..b9347ff1a1e961 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -167,6 +167,7 @@ static const u16 mgmt_events[] = {
- 	MGMT_EV_DEVICE_FLAGS_CHANGED,
- 	MGMT_EV_CONTROLLER_SUSPEND,
- 	MGMT_EV_CONTROLLER_RESUME,
-+	MGMT_EV_ADV_TX_POWER_SELECTED,
- };
- 
- static const u16 mgmt_untrusted_commands[] = {
-@@ -1152,6 +1153,16 @@ void mgmt_advertising_removed(struct sock *sk, struct hci_dev *hdev,
- 	mgmt_event(MGMT_EV_ADVERTISING_REMOVED, hdev, &ev, sizeof(ev), sk);
- }
- 
-+void mgmt_adv_tx_power_selected(struct hci_dev *hdev, u8 instance, s8 tx_power)
++static void hci_cc_le_read_transmit_power(struct hci_dev *hdev,
++					  struct sk_buff *skb)
 +{
-+	struct mgmt_ev_adv_tx_power_selected ev;
++	struct hci_rp_le_read_transmit_power *rp = (void *)skb->data;
 +
-+	ev.instance = instance;
-+	ev.tx_power = tx_power;
++	BT_DBG("%s status 0x%2.2x", hdev->name, rp->status);
 +
-+	mgmt_event(MGMT_EV_ADV_TX_POWER_SELECTED, hdev, &ev, sizeof(ev), NULL);
++	if (rp->status)
++		return;
++
++	hdev->min_le_tx_power = rp->min_le_tx_power;
++	hdev->max_le_tx_power = rp->max_le_tx_power;
 +}
 +
- static void cancel_adv_timeout(struct hci_dev *hdev)
+ static void hci_cc_le_set_adv_enable(struct hci_dev *hdev, struct sk_buff *skb)
  {
- 	if (hdev->adv_instance_timeout) {
+ 	__u8 *sent, status = *((__u8 *) skb->data);
+@@ -3577,6 +3591,10 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, struct sk_buff *skb,
+ 		hci_cc_le_set_adv_set_random_addr(hdev, skb);
+ 		break;
+ 
++	case HCI_OP_LE_READ_TRANSMIT_POWER:
++		hci_cc_le_read_transmit_power(hdev, skb);
++		break;
++
+ 	default:
+ 		BT_DBG("%s opcode 0x%4.4x", hdev->name, *opcode);
+ 		break;
 -- 
 2.28.0.681.g6f77f65b4e-goog
 
