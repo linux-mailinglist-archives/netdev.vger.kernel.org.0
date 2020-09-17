@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F83126E3DD
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 20:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8BFC26E4BB
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 20:56:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726358AbgIQSgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 14:36:52 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:41856 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726665AbgIQSg0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 14:36:26 -0400
-X-Greylist: delayed 13114 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 14:36:25 EDT
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08HEvfcf109799;
-        Thu, 17 Sep 2020 09:57:41 -0500
+        id S1726492AbgIQSzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 14:55:05 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:36320 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728413AbgIQQU3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 12:20:29 -0400
+X-Greylist: delayed 4574 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 12:20:29 EDT
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08HF3nrx093974;
+        Thu, 17 Sep 2020 10:03:49 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1600354661;
-        bh=MUUriQmoDl0IAD2+idX5HWLt4OHGMZ2OvXBr/yXqYPE=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=ZKpGyqo57A7n6jxXx7n3Wxj53/PWhJRKroietC2X5tdvUpbXqL8dFoeHiQjODT55Z
-         b+krQ8NSrtZiLqUZ1FagRiMMDAZw1S48+pEfzBGcRMxcWbFMq/7CMKs4rFUiXYlYT7
-         xjHZGXTYSxTrlEMxRZouG02zHFsU1stRn+bLwooA=
-Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08HEvfW8091773;
-        Thu, 17 Sep 2020 09:57:41 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+        s=ti-com-17Q1; t=1600355029;
+        bh=68MpQKTxCsWGwGbzyWvdukkDiJlxjWj2z9bwK07+mIc=;
+        h=Subject:From:To:CC:References:Date:In-Reply-To;
+        b=lOpXGXAPhmGYsk2hY2bA9ZJ7mS1TXFA0SFETEkwJEZE7azGrHllU51Kd3btXbG0xa
+         YIcmSI1PTtcPhj8IxkcxOr+6DcPoBhTygSCnH3m8nYxnmtOKCaRKWGKw8slQnv4ijx
+         wGTd2sGIc2GC+/qho4wa8fm4Yi1TAEe0efWoRlik=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08HF3niL092139
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 17 Sep 2020 10:03:49 -0500
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 17
- Sep 2020 09:57:41 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ Sep 2020 10:03:49 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 17 Sep 2020 09:57:41 -0500
+ Frontend Transport; Thu, 17 Sep 2020 10:03:49 -0500
 Received: from [10.250.32.129] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08HEvfeX021517;
-        Thu, 17 Sep 2020 09:57:41 -0500
-Subject: Re: [PATCH net-next 2/3] net: dp83869: Add ability to advertise Fiber
- connection
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08HF3mer076110;
+        Thu, 17 Sep 2020 10:03:48 -0500
+Subject: Re: [PATCH net-next 1/3] ethtool: Add 100base-FX link mode entries
+From:   Dan Murphy <dmurphy@ti.com>
 To:     Andrew Lunn <andrew@lunn.ch>
 CC:     <davem@davemloft.net>, <f.fainelli@gmail.com>,
         <hkallweit1@gmail.com>, <mkubecek@suse.cz>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 References: <20200915181708.25842-1-dmurphy@ti.com>
- <20200915181708.25842-3-dmurphy@ti.com> <20200915201718.GD3526428@lunn.ch>
- <4b297d8a-b4da-0e19-a5fb-6dda89ca4148@ti.com>
- <20200916221313.GI3526428@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <44ee56f6-fd72-b479-3b96-7565a439e4bc@ti.com>
-Date:   Thu, 17 Sep 2020 09:57:36 -0500
+ <20200915181708.25842-2-dmurphy@ti.com> <20200915202113.GE3526428@lunn.ch>
+ <f2a38c01-8726-a7fe-f645-2c83fe30b932@ti.com>
+Message-ID: <24c84585-2a42-31c7-2493-1a9891b3a21e@ti.com>
+Date:   Thu, 17 Sep 2020 10:03:43 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200916221313.GI3526428@lunn.ch>
+In-Reply-To: <f2a38c01-8726-a7fe-f645-2c83fe30b932@ti.com>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
@@ -63,79 +62,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Andrew
 
-On 9/16/20 5:13 PM, Andrew Lunn wrote:
-> On Wed, Sep 16, 2020 at 03:54:34PM -0500, Dan Murphy wrote:
->> Andrew
->>
->> On 9/15/20 3:17 PM, Andrew Lunn wrote:
->>>> +		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseFX_Full_BIT,
->>>> +				 phydev->supported);
->>>> +		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseFX_Half_BIT,
->>>> +				 phydev->supported);
->>>> +
->>>> +		/* Auto neg is not supported in 100base FX mode */
->>> Hi Dan
->>>
->>> If it does not support auto neg, how do you decide to do half duplex?
->>> I don't see any code here which allows the user to configure it.
->> Ethtool has the provisions to set the duplex and speed right?.
-> What i'm getting at is you say you support
-> ETHTOOL_LINK_MODE_100baseFX_Full_BIT &
-> ETHTOOL_LINK_MODE_100baseFX_Half_BIT. If there is no auto neg in FX
-> mode, i'm questioning how these two different modes code be used? I'm
-> guessing the PHY defaults to ETHTOOL_LINK_MODE_100baseFX_Full_BIT? How
-> does the user set it to ETHTOOL_LINK_MODE_100baseFX_Half_BIT?
-
-The user can use ethtool to set the speed and duplex. And ethtool uses 
-the IOCTLs to configure the device.
-
-So if the user creates their own HAL then they can use those IOCTLs as well.
-
-The data sheet indicates
-
-"In fiber mode, the speed is not
-decided through auto-negotiation. Both sides of the link must be 
-configured to the same operating speed."
-
+On 9/15/20 6:29 PM, Dan Murphy wrote:
+> Andrew
 >
->> The only call back I see which is valid is config_aneg which would still
->> require a user space tool to set the needed link modes.
-> Correct. Maybe all you need to do is point me at the code in the
-> driver which actually sets the PHY into half duplex in FX mode when
-> the user asks for it. Is it just clearing BMCR_FULLDPLX?
+> On 9/15/20 3:21 PM, Andrew Lunn wrote:
+>> On Tue, Sep 15, 2020 at 01:17:06PM -0500, Dan Murphy wrote:
+>>> Add entries for the 100base-FX full and half duplex supported modes.
+>>>
+>>> $ ethtool eth0
+>>>          Supported ports: [ TP    MII     FIBRE ]
+>>>          Supported link modes:   10baseT/Half 10baseT/Full
+>>>                                  100baseT/Half 100baseT/Full
+>>>                                  100baseFX/Half 100baseFX/Full
+>>>          Supported pause frame use: Symmetric Receive-only
+>>>          Supports auto-negotiation: No
+>>>          Supported FEC modes: Not reported
+>>>          Advertised link modes:  10baseT/Half 10baseT/Full
+>>>                                  100baseT/Half 100baseT/Full
+>>>                                  100baseFX/Half 100baseFX/Full
+>> I thought this PHY could not switch between TP and Fibre. It has a
+>> strap which decides? So i would expect the supported modes to be
+>> either BaseT or BaseFX. Not both. Same for Advertised?
+>>
+>>         Andrew
+>
+> I found that the phy-device was setting all these bits in phy_init in 
+> features_init.
+>
+> My first pass was to clear all these bits as well because the PHY was 
+> still advertising these modes.
+>
+> But you are right this PHY cannot switch without strapping.
+>
+> I can clear these bits.
 
-Here is the full flow when setting the speed and duplex mode from the 
-Ethtool or when the IOCTL's are called to update the PHY
+I re-read your reply and this is just an example.  This patch really has 
+nothing to do with any PHY as it is just adding in the new link modes.
 
-phy_ethtool_ksettings_set updates the phydev->speed and phydev->duplex
-
-Since Auto Neg is disabled the call to genphy_setup_forced is done in 
-the __genphy_config_aneg in phy_device.
-
-genphy_setup_forced updates the BMCR with the updated values.
-
-So IMO there is no need to populate the config_aneg call back to
-
-root@am335x-evm:~# ./ethtool -s eth0 speed 10 duplex half
-[   92.098491] phy_ethtool_ksettings_set
-[   92.102247] phy_ethtool_ksettings_set: speed 10 duplex 0
-[   92.107755] phy_sanitize_settings
-[   92.111085] phy_config_aneg
-[   92.113930] genphy_config_aneg
-[   92.116997] __genphy_config_aneg
-[   92.120237] genphy_setup_forced
-[   92.123419] genphy_setup_forced: Update the BMCR
-root@am335x-evm:~# ./ethtool -s eth0 speed 100 duplex full
-[  102.693105] phy_ethtool_ksettings_set
-[  102.697029] phy_ethtool_ksettings_set: speed 100 duplex 1
-[  102.702462] phy_sanitize_settings
-[  102.705892] phy_config_aneg
-[  102.708702] genphy_config_aneg
-[  102.711770] __genphy_config_aneg
-[  102.715051] genphy_setup_forced
-[  102.718209] genphy_setup_forced: Update the BMCR
-
-I am hoping this answers your question.
+Unless you comment wanted me to remove the TP and advertised modes from 
+the example in the commit message?
 
 Dan
 
+
+>
+> Dan
+>
