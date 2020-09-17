@@ -2,80 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 540D626DEE3
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 16:58:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB5E526DEE5
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 16:58:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727787AbgIQO6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 10:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35086 "EHLO
+        id S1727823AbgIQO6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 10:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727446AbgIQO4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 10:56:35 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E394DC061352
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 07:56:25 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id t10so2433981wrv.1
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 07:56:25 -0700 (PDT)
+        with ESMTP id S1727674AbgIQO6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 10:58:12 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 975A2C06178B;
+        Thu, 17 Sep 2020 07:58:09 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id a22so2274423ljp.13;
+        Thu, 17 Sep 2020 07:58:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5WWJnUiVV8xQIounCSA9TC9B/8xEj+eiqEw7XoNCU+4=;
-        b=JYxo13TO/XEZs3VNeokubUvB9P8CBHzwgRQav+MKHLIsAJI1W7NQ2HSnDdwh5WHGX3
-         vEUbpZsItKIhYbRIcKQJiteSUwzN67aPuxo6ZtPleTRiw9YGAYQFsx3jZD5eXbMzGL5q
-         HuGXvhiMalSFHgQzD7pLhDQhCD2UDdgnAtFMhQ5sHjejA5E5EvX3ApVH1eoGV4BtwMu1
-         4OXUbbXaJ+4PFWJwZXlXUikGyIkBRuHBcBlbyzOrEVp6aSVJ6JAfNdszc8hrJhQJ1XiN
-         jAkT3wjlSoV+rulwXEhF34a0kTEoqng+1x+urJk+qNj7VHJtKTAa9sleZtMqPJ7/6yyI
-         8O3g==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ewdb/5Luu0M1Zlvd5mbxKVbE7mouw/5QSqBvh/Tsm34=;
+        b=stLXKjGAsmeHxLLHNtha9cMqFeZVf4hQkQzUwa8WbmDPPvPuWlFY0mn3aNGLg28Yyz
+         JCxQ32eETI53110Z0gkaQPJ2sXGxcAlD08ywBOuh4+nMSpe6oJSirP/ydLw3h0ID8sWH
+         QlnXXvqTSreZ62s4CrcAx4iT3BHiROSAyD6n+3I2YOybQ+uP9td1SGFezcRaSjb1eSxz
+         2LyTWtlQCHj12S7ENTKAooKtXHRwEkaLnhVRJa4Ja1ZLbJylmOQp+/Kly9wwYhq6WJ40
+         Aeym7wVJTfujkGTXsWAHTT8mCIxQi36mXcz52cs7ewwZgLLcQZqqYoN5HlosnaJjNKAU
+         0FRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5WWJnUiVV8xQIounCSA9TC9B/8xEj+eiqEw7XoNCU+4=;
-        b=gtlPLzKgkHdV80UHiU2i/802RbG3z+7pFLJdKX6uuGOwdxAiWw9YPF+Oa/bkjPuSj2
-         Q5wXqSchVfHsw1wLUyrUEuABlzFpbi8lHPKoNUsR1uTXnZSy2H6yjqQBtNT51U/xexbw
-         omgwdRtls5bxgsvZC0eD3uCNqMbpSEKFxpaEfc1LMpRyEFZWHsiBJJaId9pPOVEAwwJX
-         xm+nO9DxKTJ7oUAapoyxMWuPkjWSdhD7Ixss3FGXFyaJrYhtScmR3KuSx73rWuUXZ2W0
-         BTSbBzBXSCD/Dj2UdWDxuzlEb7rWVc8lg5pI4ERKUJkM1ibrQ9FZkkIo/oB6Dnpv01Zd
-         pvOQ==
-X-Gm-Message-State: AOAM5331A+yafy1PWArLd0T5/vSQLuaoPXl+QTkXBwanoF+4ljcOlV+F
-        iLq8jJJg8hW6DOLSeJX4bvwrnw==
-X-Google-Smtp-Source: ABdhPJxgA3yFQqYbYn5qv/ZjHU66UDfDKgdlyjRQC9IL33sK78Q+HhAZlVM1jcgG288HKnjqL04ESA==
-X-Received: by 2002:adf:c64e:: with SMTP id u14mr31692294wrg.373.1600354584615;
-        Thu, 17 Sep 2020 07:56:24 -0700 (PDT)
-Received: from [192.168.1.12] ([194.35.117.91])
-        by smtp.gmail.com with UTF8SMTPSA id s17sm41233012wrr.40.2020.09.17.07.56.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Sep 2020 07:56:24 -0700 (PDT)
-Subject: Re: [PATCH bpf v1] tools/bpftool: support passing BPFTOOL_VERSION to
- make
-To:     Tony Ambardar <tony.ambardar@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20200917115833.1235518-1-Tony.Ambardar@gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <33dd4a10-9b2a-7315-7709-cd8e7c1cd030@isovalent.com>
-Date:   Thu, 17 Sep 2020 15:56:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:82.0) Gecko/20100101
- Thunderbird/82.0a1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ewdb/5Luu0M1Zlvd5mbxKVbE7mouw/5QSqBvh/Tsm34=;
+        b=E+5eNNwauiQj8JW+55U3xp4CPkxa/8X6RLtE4isohT0sqB3oKDse3DUkm2envrxbCS
+         sUqCQHCGF1tNdqb+R934Pol5C6fXfbsahdaHL66fwXoeN5bArdBkjg3xevzTqL835zPm
+         JRIWTBi6jIG47hVF7jpZAx7rfkHxHXUWYg9K3F0kMl5GPafmhiBAM+zpWeDjkgOSHGdP
+         2KcRbFBuTGIK6kBcRhmw0vQJlQCnYzWSSP9AxRLk0O5SCI9Ie2eEAQyNm6qKmzuS4J1f
+         1ICsSaxO5KowRzupq37g8xeg7/5Xj1HjTTiMQlgk1UYrmevdfL2mgD+RIxkkRMvaShli
+         4TSA==
+X-Gm-Message-State: AOAM530Hbn1ARUK/zHe7tOiNHHU/P2EGn13cQd88RSSEs3YHBAaxt2sK
+        YT/3S8OmE6b1d8W6v8LiIZBfJnhEZR23Ul0G7hQ=
+X-Google-Smtp-Source: ABdhPJwN5AmQBJJ2AO+EFJ66Tw4J2dPtIALeak4KqJXY5jpmOy7HWt6GfFR1+fP1XxI0NpLo5TsZeSAuHlEAZUXa0+E=
+X-Received: by 2002:a2e:808f:: with SMTP id i15mr9643911ljg.51.1600354687981;
+ Thu, 17 Sep 2020 07:58:07 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200917115833.1235518-1-Tony.Ambardar@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <cover.1600328701.git.mchehab+huawei@kernel.org> <442b27cc035ab7f9e5e000f2ac44ce88ea8b16a6.1600328701.git.mchehab+huawei@kernel.org>
+In-Reply-To: <442b27cc035ab7f9e5e000f2ac44ce88ea8b16a6.1600328701.git.mchehab+huawei@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 17 Sep 2020 07:57:56 -0700
+Message-ID: <CAADnVQJr+FAnRCtKxpi97qw1aGZe6D9g-VHjjWLfyQbeEZFYAQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] docs: bpf: ringbuf.rst: fix a broken cross-reference
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/09/2020 12:58, Tony Ambardar wrote:
-> This change facilitates out-of-tree builds, packaging, and versioning for
-> test and debug purposes. Defining BPFTOOL_VERSION allows self-contained
-> builds within the tools tree, since it avoids use of the 'kernelversion'
-> target in the top-level makefile, which would otherwise pull in several
-> other includes from outside the tools tree.
-> 
-> Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+On Thu, Sep 17, 2020 at 1:04 AM Mauro Carvalho Chehab
+<mchehab+huawei@kernel.org> wrote:
+>
+> Sphinx warns about a broken cross-reference:
+>
+>         Documentation/bpf/ringbuf.rst:194: WARNING: Unknown target name: "bench_ringbufs.c".
+>
+> It seems that the original idea were to add a reference for this file:
+>
+>         tools/testing/selftests/bpf/benchs/bench_ringbufs.c
+>
+> However, this won't work as such file is not part of the
+> documentation output dir. It could be possible to use
+> an extension like interSphinx in order to make external
+> references to be pointed to some website (like kernel.org),
+> where the file is stored, but currently we don't use it.
+>
+> It would also be possible to include this file as a
+> literal include, placing it inside Documentation/bpf.
+>
+> For now, let's take the simplest approach: just drop
+> the "_" markup at the end of the reference. This
+> should solve the warning, and it sounds quite obvious
+> that the file to see is at the Kernel tree.
+>
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> ---
+>  Documentation/bpf/ringbuf.rst | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/bpf/ringbuf.rst b/Documentation/bpf/ringbuf.rst
+> index 4d4f3bcb1477..6a615cd62bda 100644
+> --- a/Documentation/bpf/ringbuf.rst
+> +++ b/Documentation/bpf/ringbuf.rst
+> @@ -197,7 +197,7 @@ a self-pacing notifications of new data being availability.
+>  being available after commit only if consumer has already caught up right up to
+>  the record being committed. If not, consumer still has to catch up and thus
+>  will see new data anyways without needing an extra poll notification.
+> -Benchmarks (see tools/testing/selftests/bpf/benchs/bench_ringbufs.c_) show that
+> +Benchmarks (see tools/testing/selftests/bpf/benchs/bench_ringbufs.c) show that
 
-Acked-by: Quentin Monnet <quentin@isovalent.com>
+This fix already landed in bpf and net trees.
+Did you miss it?
