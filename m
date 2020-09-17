@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A323C26E2FE
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 19:55:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89EE326E301
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 19:55:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726592AbgIQRzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 13:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60476 "EHLO
+        id S1726440AbgIQRzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 13:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726574AbgIQRjm (ORCPT
+        with ESMTP id S1726582AbgIQRjm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 13:39:42 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68D0C061220
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:39:38 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id j2so3128210ioj.7
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:39:38 -0700 (PDT)
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACBBC061221
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:39:41 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id t18so3105936ilp.5
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:39:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HrZCFxVFcYmGpM7JLW5ZudWd5nkjs2XIh9Pd/OiKsY0=;
-        b=K3Ac1DXpCUDFckXVqfzLOHAWwGMN6dq3ot6IW6bcmrnjNhVJyoUuGUkN8jQkaAuLfP
-         8M+jfohg5uj6njFc14tkJPL4rmiXsOdeXXT5q/pUVKBYSlDur1WwBf575bfX3PkkEKUr
-         AeJVa+zjaJWj/R/zNHs0Q1LHsn514TU0WhQEHEdvYvWzSRnyPG+GB5O894O4cnR3RVu8
-         q+zeXa4zSuLLDW/3/Ko3B80JQFlb7jSb7GP/5+gUwajDg0JfDrRwG3JtTPhJa2Xij5pA
-         /DNzmd43ZwZ/x5Bq5QZdLixq9XORb5pBNWozbasYrdW1qUP5Kj03mbmS4ERHiuzhwnaN
-         ZkJA==
+        bh=QtUWdu0boBZfHKiwa2SwHiBOCnpmKxcR3V7b9dhKC/U=;
+        b=ZcH1VLRn9FP/6UN0owL7QxSHThCvJQxUHQ/eE5TwtAGhO+hOJlndEktTeRQunrxBqF
+         XujShKHmGZZW9ptlkrTXO6Hy9Gv0zfnSAi7qLkXCBO3KEBsjAeF7VqMWzktTKAtyZPAH
+         vclwSl1YMLKxdCW1prHwcBIvTDNclJjMLzAJbd8LS0N6kN1gcTM9plyaz19eD1ELf/oT
+         OqrKX1cJE7YhmrtO/tsbOzWswzUWWlGItPyfINy8DeM5pvT4Z+RA+DVZKiq/RyNelDzY
+         OuesX2lAGm0GbkgVP3hGoWdtAK6gZzIdUg1nb3H/HYF1lF1j5qKXrkdWwkAObTkkjSqy
+         O2QA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HrZCFxVFcYmGpM7JLW5ZudWd5nkjs2XIh9Pd/OiKsY0=;
-        b=Wpup2OR32gpxA6wYtn6xUfozUsfE0tXqJJkx6KWTZzzJ9qVKAIsEaSbjlY6AyZ3bSD
-         kU+hprIPxW4LUoGuihbMWcL4rJJwdky5aWC7iwcUWICRIwfXRcAXsr5R6Dj+qk2MQAeq
-         DKW8IIlw0EGHQHJ86bGqbx2XWefz797y5KbIlSGSjVGb/UX3H97yxKNabAZhKMLxKuvX
-         34ImmYTxdA3BWKdl5rSIkuPBF0qNjq/bDBWe9TmCD5OPHxtoWTF6kHJtalC2QhKtA4il
-         Yick+ho3wW7dSNHt9ES4YKLKsMATBUGJSGprJozwJONIAA2QqBMJOuzBMU8X0/jX/Lb+
-         y8og==
-X-Gm-Message-State: AOAM530Xu1ajE7A+WZjb9aKBWvN8qQmGLfByYmEggegBmXSyGGOleW32
-        NIXpZAKS9hh3LfHiHimubYW8+g==
-X-Google-Smtp-Source: ABdhPJz+iPi9RVcnb1dl99VPd/ct60p0U2gUgsb/VWfvS5Z46FlYjdvhnktkK4WE62uiKjzi0CNqzg==
-X-Received: by 2002:a05:6602:2201:: with SMTP id n1mr23796879ion.35.1600364378167;
-        Thu, 17 Sep 2020 10:39:38 -0700 (PDT)
+        bh=QtUWdu0boBZfHKiwa2SwHiBOCnpmKxcR3V7b9dhKC/U=;
+        b=fYZ1GcaAT+VfvK/o2LyLF/+tzLwiizFnUJRrXr3EpOpbOVxRp+ncqSOmxgSttcNqfO
+         DtHTbz01SvRj5UL6bSMFTKiLVi4J6rigf2JBat67AB07zoxhTVtRyYaChPIRh7Uw1uaQ
+         n0Y/LwvxiFEhA7Tc4oTSkr8H/nydRHnFPXe/XJ/WfQpcuGUOlmZz6Vmb2DqeU/KYkW/s
+         pjzLgKCnAGQDKgFVqhWbWwa1vMHKueB0U5yGDM8pyfi0F9sy8suAOTt83e+DimXcv2EM
+         wFkP6PpGogGlmucloMO0LcmpFDSsVa79Y6uHz1ytuXn4iPNAon9AcjQBfCsPE0vx8sEU
+         h8Ng==
+X-Gm-Message-State: AOAM530tLeg3ImAwceaI2WjfQ1dAl2GglwVNwNNbfuhw5R7MrnY1Fvgj
+        bIX0I0aICZ9gaaD+iXMsV3GH3oajLBuEfw==
+X-Google-Smtp-Source: ABdhPJw2DwhHqg+4Nb9+pBU2XL2/aXqwHh8AAiTKPaykUKEtj11lqJV8gG45MXBObm5T/G3ifVjKGw==
+X-Received: by 2002:a92:ca85:: with SMTP id t5mr9989407ilo.254.1600364379249;
+        Thu, 17 Sep 2020 10:39:39 -0700 (PDT)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id l6sm192725ilt.34.2020.09.17.10.39.37
+        by smtp.gmail.com with ESMTPSA id l6sm192725ilt.34.2020.09.17.10.39.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Sep 2020 10:39:37 -0700 (PDT)
+        Thu, 17 Sep 2020 10:39:38 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 6/7] net: ipa: enable wakeup on IPA interrupt
-Date:   Thu, 17 Sep 2020 12:39:25 -0500
-Message-Id: <20200917173926.24266-7-elder@linaro.org>
+Subject: [PATCH net-next v3 7/7] net: ipa: do not enable GSI interrupt for wakeup
+Date:   Thu, 17 Sep 2020 12:39:26 -0500
+Message-Id: <20200917173926.24266-8-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200917173926.24266-1-elder@linaro.org>
 References: <20200917173926.24266-1-elder@linaro.org>
@@ -64,51 +64,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we handle wakeup interrupts properly, arrange for the IPA
-interrupt to be treated as a wakeup interrupt.
+We now trigger a system resume when we receive an IPA SUSPEND
+interrupt.  We should *not* wake up on GSI interrupts.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
 v3: Added Bjorn's reviewed-by tag.
 
- drivers/net/ipa/ipa_interrupt.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/ipa/gsi.c | 17 ++++-------------
+ drivers/net/ipa/gsi.h |  1 -
+ 2 files changed, 4 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_interrupt.c b/drivers/net/ipa/ipa_interrupt.c
-index 90353987c45fc..cc1ea28f7bc2e 100644
---- a/drivers/net/ipa/ipa_interrupt.c
-+++ b/drivers/net/ipa/ipa_interrupt.c
-@@ -237,8 +237,16 @@ struct ipa_interrupt *ipa_interrupt_setup(struct ipa *ipa)
- 		goto err_kfree;
+diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
+index 0e63d35320aaf..cb75f7d540571 100644
+--- a/drivers/net/ipa/gsi.c
++++ b/drivers/net/ipa/gsi.c
+@@ -1987,31 +1987,26 @@ int gsi_init(struct gsi *gsi, struct platform_device *pdev, bool prefetch,
+ 	}
+ 	gsi->irq = irq;
+ 
+-	ret = enable_irq_wake(gsi->irq);
+-	if (ret)
+-		dev_warn(dev, "error %d enabling gsi wake irq\n", ret);
+-	gsi->irq_wake_enabled = !ret;
+-
+ 	/* Get GSI memory range and map it */
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "gsi");
+ 	if (!res) {
+ 		dev_err(dev, "DT error getting \"gsi\" memory property\n");
+ 		ret = -ENODEV;
+-		goto err_disable_irq_wake;
++		goto err_free_irq;
  	}
  
-+	ret = enable_irq_wake(irq);
-+	if (ret) {
-+		dev_err(dev, "error %d enabling wakeup for \"ipa\" IRQ\n", ret);
+ 	size = resource_size(res);
+ 	if (res->start > U32_MAX || size > U32_MAX - res->start) {
+ 		dev_err(dev, "DT memory resource \"gsi\" out of range\n");
+ 		ret = -EINVAL;
+-		goto err_disable_irq_wake;
 +		goto err_free_irq;
-+	}
-+
- 	return interrupt;
+ 	}
  
+ 	gsi->virt = ioremap(res->start, size);
+ 	if (!gsi->virt) {
+ 		dev_err(dev, "unable to remap \"gsi\" memory\n");
+ 		ret = -ENOMEM;
+-		goto err_disable_irq_wake;
++		goto err_free_irq;
+ 	}
+ 
+ 	ret = gsi_channel_init(gsi, prefetch, count, data, modem_alloc);
+@@ -2025,9 +2020,7 @@ int gsi_init(struct gsi *gsi, struct platform_device *pdev, bool prefetch,
+ 
+ err_iounmap:
+ 	iounmap(gsi->virt);
+-err_disable_irq_wake:
+-	if (gsi->irq_wake_enabled)
+-		(void)disable_irq_wake(gsi->irq);
 +err_free_irq:
-+	free_irq(interrupt->irq, interrupt);
- err_kfree:
- 	kfree(interrupt);
+ 	free_irq(gsi->irq, gsi);
  
-@@ -248,6 +256,12 @@ struct ipa_interrupt *ipa_interrupt_setup(struct ipa *ipa)
- /* Tear down the IPA interrupt framework */
- void ipa_interrupt_teardown(struct ipa_interrupt *interrupt)
+ 	return ret;
+@@ -2038,8 +2031,6 @@ void gsi_exit(struct gsi *gsi)
  {
-+	struct device *dev = &interrupt->ipa->pdev->dev;
-+	int ret;
-+
-+	ret = disable_irq_wake(interrupt->irq);
-+	if (ret)
-+		dev_err(dev, "error %d disabling \"ipa\" IRQ wakeup\n", ret);
- 	free_irq(interrupt->irq, interrupt);
- 	kfree(interrupt);
+ 	mutex_destroy(&gsi->mutex);
+ 	gsi_channel_exit(gsi);
+-	if (gsi->irq_wake_enabled)
+-		(void)disable_irq_wake(gsi->irq);
+ 	free_irq(gsi->irq, gsi);
+ 	iounmap(gsi->virt);
  }
+diff --git a/drivers/net/ipa/gsi.h b/drivers/net/ipa/gsi.h
+index 061312773df09..3f9f29d531c43 100644
+--- a/drivers/net/ipa/gsi.h
++++ b/drivers/net/ipa/gsi.h
+@@ -150,7 +150,6 @@ struct gsi {
+ 	struct net_device dummy_dev;	/* needed for NAPI */
+ 	void __iomem *virt;
+ 	u32 irq;
+-	bool irq_wake_enabled;
+ 	u32 channel_count;
+ 	u32 evt_ring_count;
+ 	struct gsi_channel channel[GSI_CHANNEL_COUNT_MAX];
 -- 
 2.20.1
 
