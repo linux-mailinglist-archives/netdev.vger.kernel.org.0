@@ -2,152 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0F6126E3C9
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 20:35:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4460926E3BC
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 20:34:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726366AbgIQRZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 13:25:59 -0400
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:19683 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726420AbgIQRUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 13:20:40 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f639ad60000>; Thu, 17 Sep 2020 10:20:22 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 17 Sep 2020 10:20:35 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Thu, 17 Sep 2020 10:20:35 -0700
-Received: from sw-mtx-036.mtx.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 17 Sep
- 2020 17:20:34 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net-next v2 3/8] devlink: Prepare code to fill multiple port function attributes
-Date:   Thu, 17 Sep 2020 20:20:15 +0300
-Message-ID: <20200917172020.26484-4-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200917172020.26484-1-parav@nvidia.com>
-References: <20200917081731.8363-8-parav@nvidia.com>
- <20200917172020.26484-1-parav@nvidia.com>
+        id S1726554AbgIQSdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 14:33:04 -0400
+Received: from mga04.intel.com ([192.55.52.120]:27797 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726325AbgIQScs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 14:32:48 -0400
+X-Greylist: delayed 506 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 14:32:42 EDT
+IronPort-SDR: 7ew2Hb6n78lGQ3CqvJOe1JiPoVu193dtxB2v2OaHWgVNILDosVxvnq8P6UlKCEM2TqmkQaagiP
+ nwN1OtBqaffQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9747"; a="157152788"
+X-IronPort-AV: E=Sophos;i="5.77,271,1596524400"; 
+   d="scan'208";a="157152788"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 11:24:00 -0700
+IronPort-SDR: yYtdAPkiDQ4SILsHO3HluWV0SOgMmQfmPW+5nbU66OIMIbrUlVibSnpBqoEUSwT69RNxgFV7pi
+ IBD6K8SdIkxw==
+X-IronPort-AV: E=Sophos;i="5.77,271,1596524400"; 
+   d="scan'208";a="483851908"
+Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.251.16.238])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 11:24:00 -0700
+Date:   Thu, 17 Sep 2020 11:23:59 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Nitesh Narayan Lal <nitesh@redhat.com>
+Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>, <frederic@kernel.org>,
+        <mtosatti@redhat.com>, <sassmann@redhat.com>,
+        <jeffrey.t.kirsher@intel.com>, <jacob.e.keller@intel.com>,
+        <jlelli@redhat.com>, <hch@infradead.org>, <bhelgaas@google.com>,
+        <mike.marciniszyn@intel.com>, <dennis.dalessandro@intel.com>,
+        <thomas.lendacky@amd.com>, <jerinj@marvell.com>,
+        <mathias.nyman@intel.com>, <jiri@nvidia.com>
+Subject: Re: [RFC][Patch v1 2/3] i40e: limit msix vectors based on
+ housekeeping CPUs
+Message-ID: <20200917112359.00006e10@intel.com>
+In-Reply-To: <20200909150818.313699-3-nitesh@redhat.com>
+References: <20200909150818.313699-1-nitesh@redhat.com>
+        <20200909150818.313699-3-nitesh@redhat.com>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1600363222; bh=wdfLzZOZMJtp/ZqF6MO+GBRLjYMAiW+DHTHVJy6JAqI=;
-        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-         In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
-         Content-Type:X-Originating-IP:X-ClientProxiedBy;
-        b=haZn+MSdBhqNjgYmKAl1xELqi0tiLV/vNbu5vzn5aH/f+opOm5unbY9LsJxrshZn+
-         vq+/iJKcSECReg39ZupFPPCMWz35S45pMroSlGTu+Sqje6d+msqD6a+GPoa9VR+FWC
-         WRQpBbHLbjbrLMvyVHOeHf1NbX6qslv/rfs7avNPaXNk+RJrvxmrRM6ptS//Zj4sa3
-         XOAmvtDjUUhRaRbkHFfiivxQjcbw6QstYWBcV/yXMFLnxb7Aqtc5UhoV7hju3Gwi3I
-         FhGICoI4pZIwuiIDHAdmfslN+DDR4f4rlFz9yco56MXkHXet3iMI9HAcToqZ4xmxp0
-         phruXkNRFMQLQ==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prepare code to fill zero or more port function optional attributes.
-Subsequent patch makes use of this to fill more port function
-attributes.
+Nitesh Narayan Lal wrote:
 
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
- net/core/devlink.c | 53 +++++++++++++++++++++++++---------------------
- 1 file changed, 29 insertions(+), 24 deletions(-)
+> In a realtime environment, it is essential to isolate unwanted IRQs from
+> isolated CPUs to prevent latency overheads. Creating MSIX vectors only
+> based on the online CPUs could lead to a potential issue on an RT setup
+> that has several isolated CPUs but a very few housekeeping CPUs. This is
+> because in these kinds of setups an attempt to move the IRQs to the
+> limited housekeeping CPUs from isolated CPUs might fail due to the per
+> CPU vector limit. This could eventually result in latency spikes because
+> of the IRQ threads that we fail to move from isolated CPUs.
+> 
+> This patch prevents i40e to add vectors only based on available
+> housekeeping CPUs by using num_housekeeping_cpus().
+> 
+> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index e93730065c57..d152489e48da 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -570,6 +570,31 @@ static int devlink_nl_port_attrs_put(struct sk_buff *m=
-sg,
- 	return 0;
- }
-=20
-+static int
-+devlink_port_function_hw_addr_fill(struct devlink *devlink, const struct d=
-evlink_ops *ops,
-+				   struct devlink_port *port, struct sk_buff *msg,
-+				   struct netlink_ext_ack *extack, bool *msg_updated)
-+{
-+	u8 hw_addr[MAX_ADDR_LEN];
-+	int hw_addr_len;
-+	int err;
-+
-+	if (!ops->port_function_hw_addr_get)
-+		return 0;
-+
-+	err =3D ops->port_function_hw_addr_get(devlink, port, hw_addr, &hw_addr_l=
-en, extack);
-+	if (err) {
-+		if (err =3D=3D -EOPNOTSUPP)
-+			return 0;
-+		return err;
-+	}
-+	err =3D nla_put(msg, DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR, hw_addr_len, hw_=
-addr);
-+	if (err)
-+		return err;
-+	*msg_updated =3D true;
-+	return 0;
-+}
-+
- static int
- devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_por=
-t *port,
- 				   struct netlink_ext_ack *extack)
-@@ -577,36 +602,16 @@ devlink_nl_port_function_attrs_put(struct sk_buff *ms=
-g, struct devlink_port *por
- 	struct devlink *devlink =3D port->devlink;
- 	const struct devlink_ops *ops;
- 	struct nlattr *function_attr;
--	bool empty_nest =3D true;
--	int err =3D 0;
-+	bool msg_updated =3D false;
-+	int err;
-=20
- 	function_attr =3D nla_nest_start_noflag(msg, DEVLINK_ATTR_PORT_FUNCTION);
- 	if (!function_attr)
- 		return -EMSGSIZE;
-=20
- 	ops =3D devlink->ops;
--	if (ops->port_function_hw_addr_get) {
--		int hw_addr_len;
--		u8 hw_addr[MAX_ADDR_LEN];
--
--		err =3D ops->port_function_hw_addr_get(devlink, port, hw_addr, &hw_addr_=
-len, extack);
--		if (err =3D=3D -EOPNOTSUPP) {
--			/* Port function attributes are optional for a port. If port doesn't
--			 * support function attribute, returning -EOPNOTSUPP is not an error.
--			 */
--			err =3D 0;
--			goto out;
--		} else if (err) {
--			goto out;
--		}
--		err =3D nla_put(msg, DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR, hw_addr_len, hw=
-_addr);
--		if (err)
--			goto out;
--		empty_nest =3D false;
--	}
--
--out:
--	if (err || empty_nest)
-+	err =3D devlink_port_function_hw_addr_fill(devlink, ops, port, msg, extac=
-k, &msg_updated);
-+	if (err || !msg_updated)
- 		nla_nest_cancel(msg, function_attr);
- 	else
- 		nla_nest_end(msg, function_attr);
---=20
-2.26.2
+The driver changes are straightforward, but this isn't the only driver
+with this issue, right?  I'm sure ixgbe and ice both have this problem
+too, you should fix them as well, at a minimum, and probably other
+vendors drivers:
 
+$ rg -c --stats num_online_cpus drivers/net/ethernet
+...
+50 files contained matches
+
+for this patch i40e
+Acked-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
