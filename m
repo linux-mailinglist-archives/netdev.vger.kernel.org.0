@@ -2,118 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0268426E73D
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 23:16:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2C1626E744
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 23:20:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726409AbgIQVQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 17:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37406 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726022AbgIQVQL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 17:16:11 -0400
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CFAC061351;
-        Thu, 17 Sep 2020 14:16:11 -0700 (PDT)
-Received: by mail-oi1-x242.google.com with SMTP id x14so4168885oic.9;
-        Thu, 17 Sep 2020 14:16:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AsrYKbcsJijPEVDhNCGN3B0ZQvVsWmRif4gtcVM+Ig8=;
-        b=FtUH6ig8YVS7H8bq0navRcZiYF49TxzPX9fRzW7JKIGPgQLl2EM8/yhiD5j44bQ5N3
-         8KxclSLs7LhUcRssHDeyWFLIYh/uUBJpKkgAU36525ji5vAeQzRB2FNDpU416v06C7O9
-         r6h2rNPcrVHuP+G36S31dawRBJH6qkk/R0P9ZfpLNtlslHwcOGxepemxn5QBrd5j/zSm
-         Plw7DpGnqv3XvZFroop5Ggan5mCF3sjgN5rFNIjFUXQKcpRYC7LPZbdygTtB3TUgeK87
-         Q5B0imxW6aNeVDmtvxlylz6TgcmnDq4LT0ys5o+2dYDdPm52aKc5S8w5FjKpqktuSPv0
-         QhtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AsrYKbcsJijPEVDhNCGN3B0ZQvVsWmRif4gtcVM+Ig8=;
-        b=Ch6/oOMXUDydS65yn08UX0gPfm4UMLWtOPJiAHJvxhHvX7rhxoeIer+acGEVQHXlN8
-         i+k/+NGGfX4wdipLa61K91Jm9lmaYbAOmUNIn7xR4NuFHhTf26N+7zBTQvIX/a1qpGZd
-         uNulk190FtSDLgxfrU6xXz7virIPKiAiQ4RPnLCob0EHvpJIf8Z5R2Od2xfJpL50pUjX
-         K/JH4IYDZe69ycD28KWGfiZ/C/P8suPJRMCub6hG8hPVcD1XHbHJkN5JXStyP8cteD/I
-         EhFzNBtrZcoj3+N5rFu181pf5rEP+1xTtjsB4ELhR4wZNioVxvTtk2S1ZNt46+BXsbkl
-         7hsA==
-X-Gm-Message-State: AOAM5304z7F2dsfkTbJDPkWqqqQnUxQXQGKYl3Yqm5ame1K3fkEE2O4b
-        yl/fF1SCYt7WQxu9+1RuqW8cwMK1eHX5saFEDZk=
-X-Google-Smtp-Source: ABdhPJwgDDnl5tN43fme5AYZxwAY7UH2LIKkocXlWvtrFI5ouRKFJxpFRz92OcU3mU5hG8H7yUd4lgTV6f3PMlvsUpc=
-X-Received: by 2002:aca:1b01:: with SMTP id b1mr7789495oib.137.1600377370438;
- Thu, 17 Sep 2020 14:16:10 -0700 (PDT)
+        id S1726139AbgIQVUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 17:20:45 -0400
+Received: from mga09.intel.com ([134.134.136.24]:33449 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725874AbgIQVUo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 17:20:44 -0400
+IronPort-SDR: wRrFjzXo2OkVZX1RBgI3L2hPuCaC/anhcjyzsfV9Lo3fEBaoDpzdK090fuNQbo5Z2/56g4AEav
+ cnjcyMkvDsag==
+X-IronPort-AV: E=McAfee;i="6000,8403,9747"; a="160723263"
+X-IronPort-AV: E=Sophos;i="5.77,272,1596524400"; 
+   d="scan'208";a="160723263"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 14:19:27 -0700
+IronPort-SDR: Hriccl3i1c7PAJSohBCSu7F+vimqBHKplqQpVpqClYBv3dp3spvi7kXuImTz7zs34dqBpy1JX/
+ 2Umtjg1eZCiQ==
+X-IronPort-AV: E=Sophos;i="5.77,272,1596524400"; 
+   d="scan'208";a="289117720"
+Received: from shantika-mobl1.amr.corp.intel.com ([10.255.229.204])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 14:19:27 -0700
+Date:   Thu, 17 Sep 2020 14:19:26 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@shantika-mobl1.amr.corp.intel.com
+To:     Paolo Abeni <pabeni@redhat.com>
+cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        mptcp@lists.01.org
+Subject: Re: [MPTCP] [PATCH net-next] mptcp: fix integer overflow in
+ mptcp_subflow_discard_data()
+In-Reply-To: <1a927c595adf46cf5ff186ca6b129f12fb70f492.1600375771.git.pabeni@redhat.com>
+Message-ID: <alpine.OSX.2.23.453.2009171413360.4728@shantika-mobl1.amr.corp.intel.com>
+References: <1a927c595adf46cf5ff186ca6b129f12fb70f492.1600375771.git.pabeni@redhat.com>
+User-Agent: Alpine 2.23 (OSX 453 2020-06-18)
 MIME-Version: 1.0
-References: <20200917164632.BlueZ.v2.1.I27ef2a783d8920c147458639f3fa91b69f6fd9ea@changeid>
-In-Reply-To: <20200917164632.BlueZ.v2.1.I27ef2a783d8920c147458639f3fa91b69f6fd9ea@changeid>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Thu, 17 Sep 2020 14:15:59 -0700
-Message-ID: <CABBYNZJv2-GAsfOrUVjb+ZcTQz5TJBDvuCjFzMQm=N7_F0VYPg@mail.gmail.com>
-Subject: Re: [BlueZ PATCH v2 1/6] Bluetooth: Update Adv monitor count upon removal
-To:     Howard Chung <howardchung@google.com>
-Cc:     "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Manish Mandlik <mmandlik@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Howard,
 
-On Thu, Sep 17, 2020 at 1:47 AM Howard Chung <howardchung@google.com> wrote:
+On Thu, 17 Sep 2020, Paolo Abeni wrote:
+
+> Christoph reported an infinite loop in the subflow receive path
+> under stress condition.
 >
-> From: Miao-chen Chou <mcchou@chromium.org>
+> If there are multiple subflows, each of them using a large send
+> buffer, the delta between the sequence number used by
+> MPTCP-level retransmission can and the current msk->ack_seq
+> can be greater than MAX_INT.
 >
-> This fixes the count of Adv monitor upon monitor removal.
+> In the above scenario, when calling mptcp_subflow_discard_data(),
+> such delta will be truncated to int, and could result in a negative
+> number: no bytes will be dropped, and subflow_check_data_avail()
+> will try again to process the same packet, looping forever.
 >
-> The following test was performed.
-> - Start two btmgmt consoles, issue a btmgmt advmon-remove command on one
-> console and observe a MGMT_EV_ADV_MONITOR_REMOVED event on the other.
+> This change addresses the issue by expanding the 'limit' size to 64
+> bits, so that overflows are not possible anymore.
 >
-> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
-> Signed-off-by: Howard Chung <howardchung@google.com>
-> Reviewed-by: Alain Michaud <alainm@chromium.org>
+> Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/87
+> Fixes: 6719331c2f73 ("mptcp: trigger msk processing even for OoO data")
+> Reported-and-tested-by: Christoph Paasch <cpaasch@apple.com>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 > ---
+> net-next patch, as the culprit commit is only on net-next currently
+> ---
+> net/mptcp/subflow.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> Changes in v2:
-> - delete 'case 0x001c' in mgmt_config.c
->
->  net/bluetooth/hci_core.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index 8a2645a833013..f30a1f5950e15 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -3061,6 +3061,7 @@ static int free_adv_monitor(int id, void *ptr, void *data)
->
->         idr_remove(&hdev->adv_monitors_idr, monitor->handle);
->         hci_free_adv_monitor(monitor);
-> +       hdev->adv_monitors_cnt--;
->
->         return 0;
->  }
-> @@ -3077,6 +3078,7 @@ int hci_remove_adv_monitor(struct hci_dev *hdev, u16 handle)
->
->                 idr_remove(&hdev->adv_monitors_idr, monitor->handle);
->                 hci_free_adv_monitor(monitor);
-> +               hdev->adv_monitors_cnt--;
->         } else {
->                 /* Remove all monitors if handle is 0. */
->                 idr_for_each(&hdev->adv_monitors_idr, &free_adv_monitor, hdev);
-> --
-> 2.28.0.618.gf4bc123cb7-goog
 
-This looks like a kernel patch so you shouldn't be prefixing it with
-BlueZ as it might confuse CI.
+Thanks Paolo!
 
--- 
-Luiz Augusto von Dentz
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+
+
+--
+Mat Martineau
+Intel
