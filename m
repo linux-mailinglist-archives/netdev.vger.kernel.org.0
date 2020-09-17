@@ -2,152 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C04B526D711
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 10:48:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80C4526D722
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 10:49:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbgIQIs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 04:48:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34026 "EHLO
+        id S1726648AbgIQIti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 04:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726505AbgIQIrl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 04:47:41 -0400
-Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC19C06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 01:47:41 -0700 (PDT)
-Received: by mail-qk1-x74a.google.com with SMTP id s141so1058989qka.13
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 01:47:41 -0700 (PDT)
+        with ESMTP id S1726642AbgIQItd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 04:49:33 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9BCC06174A
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 01:49:31 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id q13so2124800ejo.9
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 01:49:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=kL2AQmKmQ8DRMKjtBMJBwyEAwBYPLpPCmkHC9nftMgY=;
-        b=fgXrxwl5WGPHQG8YKqyWsKa+CPdKEMhNFS4ZyclxNkVJqc25wKfupVBKvCKG6haRzC
-         0TBWGdEgUhbiblMCalHV7r39WltR8n+867Sh825ejjZPfMAUeAOVcCA8uWA91UdO1q09
-         rBfY0YRvul6BhI5xFScawLndUs39LHNgfoS6sMd2OOQ0BBsL8fWi56CjRgKL7w74mZLT
-         WdjeAueIV0Z9LX+87sesrytlq2Xa6FS3WpVUqbyiukolI7Y/2GE3ArMPaUux2JBaHiQ/
-         SvjeabzpQfozVT//Xr828aSEJVLIVBv+6TtSP5G6PTem8xH83EcFNnwWhXE4XEBLPv6p
-         rWvw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/ZD6uiMISg/fpcyTy88cLwJ4vqsBUwMi3b4vpK88cUM=;
+        b=kFhLAcUMkbF4edZ9eKREh3+VZQMUJqW2YJ+W+d+1k5RC4KmEycQqotxAqYVrui1zOu
+         MJurHSUWV1vZlmxaqTPDpScrPArADgfONJE4ONU+wHD27zlesJH7APjnnNeL5Hyu8WCh
+         C4fAqUlrVL5xqk0pz3tov56HVHYZmf5VCIdsjY2I5SB8pvcSOCrGAb17Do3/DLu50IPO
+         mQldNKHsLCwdf3fv8ko9VHUai0K1tzD0WXJCags87pS/U9JC0JbwOg9o7zo0OqlVM/9s
+         H5HLr6QwoggBU4u78jV79dGO5WzBVs+WlIm8sXgNUkULCC9AM+0lmKxwzf4BSrjqA0u2
+         Zkgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=kL2AQmKmQ8DRMKjtBMJBwyEAwBYPLpPCmkHC9nftMgY=;
-        b=WumRMuDNplk+F+hlyJVZ8haSOvgxuWGEmF0Un/GSo7LR+jAIVV7rU4miWv9Cgc2fmW
-         yBCP/2+JgN0LB5YmnOgjKmWY41EivhVWpcxytj9H1qU9KMnnYL3kVsp4n75Mj+usudP8
-         eUE+U0CN0Osr9D7wZkUw08msO2Z20sFWvWwkuVZfhQoXMQfUYCYDzyfBAoytUp7VWYqv
-         weCjkNPuenBJDhimU96fu+LQEYqpq3QmVSL94aDOgPqonkjhxNXsqCwx47/d3cyiRdgm
-         Cl+zFRqM+yAIRWKyS6fItEaEVblWgpd5xl/blqtdQol9EEqvdZi1/aLSRl/a/BqaKQau
-         1o/Q==
-X-Gm-Message-State: AOAM530W9ooX34KvcpNYbs8A7PG57p1L8lw2ZINyNBVFn1Ywop4FBdsu
-        gm4PF1u63etOwWZqLPfj4KlqjO7rO1rRSK+F4w==
-X-Google-Smtp-Source: ABdhPJyNGGCWI5ydqkiZgandDqVu55u47O7nGmUqX2w1Bd9eqbdqO7yMoMa6S7yTGTAh34aYZvpS9plvu9PUEnoVRw==
-X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:10:f693:9fff:fef4:4e45])
- (user=howardchung job=sendgmr) by 2002:ad4:5a0e:: with SMTP id
- ei14mr12731226qvb.15.1600332460122; Thu, 17 Sep 2020 01:47:40 -0700 (PDT)
-Date:   Thu, 17 Sep 2020 16:47:15 +0800
-In-Reply-To: <20200917164632.BlueZ.v2.1.I27ef2a783d8920c147458639f3fa91b69f6fd9ea@changeid>
-Message-Id: <20200917164632.BlueZ.v2.6.I756c1fecc03bcc0cd94400b4992cd7e743f4b3e2@changeid>
-Mime-Version: 1.0
-References: <20200917164632.BlueZ.v2.1.I27ef2a783d8920c147458639f3fa91b69f6fd9ea@changeid>
-X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
-Subject: [BlueZ PATCH v2 6/6] Bluetooth: Add toggle to switch off interleave scan
-From:   Howard Chung <howardchung@google.com>
-To:     linux-bluetooth@vger.kernel.org
-Cc:     marcel@holtmann.org, luiz.dentz@gmail.com, mmandlik@chromium.org,
-        mcchou@chromium.org, howardchung@google.com, alainm@chromium.org,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/ZD6uiMISg/fpcyTy88cLwJ4vqsBUwMi3b4vpK88cUM=;
+        b=S3cumbQPj7NqEW3d07dW/b/McvYsdE+rgrMB3bbfZHurU3rFkp+Y/zXD+A/rBJtjdq
+         TfmDCQDtLb5WEnxcX073Ggf7+tR0Vac0cPrhS/FYVWiITC28z63j/QtI3H//xXjo/JE7
+         QBXlWkA+a02alQZ6CH/HMAlc+bN9SJ6Il+L2uQIkmK6UOAYdudywA9Tc/uiLNZzm8LXD
+         TqO+qVHdl7bHgBKcjfppyD4ZShhJyH/m0p/JIfaYRu0yXxWZczCFu3j22GsMpM7OCD0x
+         p+Xcps/k/RP3e+atCsc9ojgOv21l5SWEfLP6/9PlKx6wnIjqK2WFm6+UnuVK9bdICKjq
+         KLYg==
+X-Gm-Message-State: AOAM5330WSV7xu2wtUsz80DIUK6MU/zMEASHAot7peqRtN/vtKF1xmuz
+        2oH86tlbCAoNz8Za1oicpARyqA==
+X-Google-Smtp-Source: ABdhPJyNRfp0OtisgQ1SdFHWwaIMZS2PexUPwtv9uoGERRa6Db+PA/QE5xxnZ7iO6FUZ0pih+rf/PA==
+X-Received: by 2002:a17:906:52c2:: with SMTP id w2mr30212544ejn.389.1600332570250;
+        Thu, 17 Sep 2020 01:49:30 -0700 (PDT)
+Received: from apalos.home ([2a02:587:4615:c071:2e56:dcff:fe9a:8f06])
+        by smtp.gmail.com with ESMTPSA id y24sm15822393eds.35.2020.09.17.01.49.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Sep 2020 01:49:29 -0700 (PDT)
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     bpf@vger.kernel.org
+Cc:     ardb@kernel.org, naresh.kamboju@linaro.org, xi.wang@gmail.com,
+        luke.r.nels@gmail.com,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] arm64: bpf: Fix branch offset in JIT
+Date:   Thu, 17 Sep 2020 11:49:25 +0300
+Message-Id: <20200917084925.177348-1-ilias.apalodimas@linaro.org>
+X-Mailer: git-send-email 2.28.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add a configurable parameter to switch off the interleave
-scan feature.
+Running the eBPF test_verifier leads to random errors looking like this:
 
-Signed-off-by: Howard Chung <howardchung@google.com>
-Reviewed-by: Alain Michaud <alainm@chromium.org>
+[ 6525.735488] Unexpected kernel BRK exception at EL1
+[ 6525.735502] Internal error: ptrace BRK handler: f2000100 [#1] SMP
+[ 6525.741609] Modules linked in: nls_utf8 cifs libdes libarc4 dns_resolver fscache binfmt_misc nls_ascii nls_cp437 vfat fat aes_ce_blk crypto_simd cryptd aes_ce_cipher ghash_ce gf128mul efi_pstore sha2_ce sha256_arm64 sha1_ce evdev efivars efivarfs ip_tables x_tables autofs4 btrfs blake2b_generic xor xor_neon zstd_compress raid6_pq libcrc32c crc32c_generic ahci xhci_pci libahci xhci_hcd igb libata i2c_algo_bit nvme realtek usbcore nvme_core scsi_mod t10_pi netsec mdio_devres of_mdio gpio_keys fixed_phy libphy gpio_mb86s7x
+[ 6525.787760] CPU: 3 PID: 7881 Comm: test_verifier Tainted: G        W         5.9.0-rc1+ #47
+[ 6525.796111] Hardware name: Socionext SynQuacer E-series DeveloperBox, BIOS build #1 Jun  6 2020
+[ 6525.804812] pstate: 20000005 (nzCv daif -PAN -UAO BTYPE=--)
+[ 6525.810390] pc : bpf_prog_c3d01833289b6311_F+0xc8/0x9f4
+[ 6525.815613] lr : bpf_prog_d53bb52e3f4483f9_F+0x38/0xc8c
+[ 6525.820832] sp : ffff8000130cbb80
+[ 6525.824141] x29: ffff8000130cbbb0 x28: 0000000000000000
+[ 6525.829451] x27: 000005ef6fcbf39b x26: 0000000000000000
+[ 6525.834759] x25: ffff8000130cbb80 x24: ffff800011dc7038
+[ 6525.840067] x23: ffff8000130cbd00 x22: ffff0008f624d080
+[ 6525.845375] x21: 0000000000000001 x20: ffff800011dc7000
+[ 6525.850682] x19: 0000000000000000 x18: 0000000000000000
+[ 6525.855990] x17: 0000000000000000 x16: 0000000000000000
+[ 6525.861298] x15: 0000000000000000 x14: 0000000000000000
+[ 6525.866606] x13: 0000000000000000 x12: 0000000000000000
+[ 6525.871913] x11: 0000000000000001 x10: ffff8000000a660c
+[ 6525.877220] x9 : ffff800010951810 x8 : ffff8000130cbc38
+[ 6525.882528] x7 : 0000000000000000 x6 : 0000009864cfa881
+[ 6525.887836] x5 : 00ffffffffffffff x4 : 002880ba1a0b3e9f
+[ 6525.893144] x3 : 0000000000000018 x2 : ffff8000000a4374
+[ 6525.898452] x1 : 000000000000000a x0 : 0000000000000009
+[ 6525.903760] Call trace:
+[ 6525.906202]  bpf_prog_c3d01833289b6311_F+0xc8/0x9f4
+[ 6525.911076]  bpf_prog_d53bb52e3f4483f9_F+0x38/0xc8c
+[ 6525.915957]  bpf_dispatcher_xdp_func+0x14/0x20
+[ 6525.920398]  bpf_test_run+0x70/0x1b0
+[ 6525.923969]  bpf_prog_test_run_xdp+0xec/0x190
+[ 6525.928326]  __do_sys_bpf+0xc88/0x1b28
+[ 6525.932072]  __arm64_sys_bpf+0x24/0x30
+[ 6525.935820]  el0_svc_common.constprop.0+0x70/0x168
+[ 6525.940607]  do_el0_svc+0x28/0x88
+[ 6525.943920]  el0_sync_handler+0x88/0x190
+[ 6525.947838]  el0_sync+0x140/0x180
+[ 6525.951154] Code: d4202000 d4202000 d4202000 d4202000 (d4202000)
+[ 6525.957249] ---[ end trace cecc3f93b14927e2 ]---
+
+The reason is the offset[] creation and later usage, while building
+the eBPF body. The code currently omits the first instruction, since
+build_insn() will increase our ctx->idx before saving it.
+That was fine up until bounded eBPF loops were introduced. After that
+introduction, offset[0] must be the offset of the end of prologue which
+is the start of the 1st insn while, offset[n] holds the
+offset of the end of n-th insn.
+
+When "taken loop with back jump to 1st insn" test runs, it will
+eventually call bpf2a64_offset(-1, 2, ctx). Since negative indexing is
+permitted, the current outcome depends on the value stored in
+ctx->offset[-1], which has nothing to do with our array.
+If the value happens to be 0 the tests will work. If not this error
+triggers.
+
+commit 7c2e988f400e ("bpf: fix x64 JIT code generation for jmp to 1st insn")
+fixed an indentical bug on x86 when eBPF bounded loops were introduced.
+
+So let's fix it by creating the ctx->offset[] differently. Track the
+beginning of instruction and account for the extra instruction while
+calculating the arm instruction offsets.
+
+Fixes: 2589726d12a1 ("bpf: introduce bounded loops")
+Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+Reported-by: Jiri Olsa <jolsa@kernel.org>
+Co-developed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Co-developed-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+Signed-off-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 ---
+Changes since v1: 
+ - Added Co-developed-by, Reported-by and Fixes tags correctly
+ - Describe the expected context of ctx->offset[] in comments
+Changes since v2:
+ - Drop the change of behavior for 16-byte eBPF instructions. This won't
+ currently cause any problems and can go in on a different patch
+ - simplify bpf2a64_offset()
 
-(no changes since v1)
+ arch/arm64/net/bpf_jit_comp.c | 43 +++++++++++++++++++++++++----------
+ 1 file changed, 31 insertions(+), 12 deletions(-)
 
- include/net/bluetooth/hci_core.h | 1 +
- net/bluetooth/hci_core.c         | 1 +
- net/bluetooth/hci_request.c      | 3 ++-
- net/bluetooth/mgmt_config.c      | 6 ++++++
- 4 files changed, 10 insertions(+), 1 deletion(-)
-
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 179350f869fdb..c3253f1cac0c2 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -363,6 +363,7 @@ struct hci_dev {
- 	__u32		clock;
- 	__u16		advmon_allowlist_duration;
- 	__u16		advmon_no_filter_duration;
-+	__u16		enable_advmon_interleave_scan;
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index f8912e45be7a..ef9f1d5e989d 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -143,14 +143,17 @@ static inline void emit_addr_mov_i64(const int reg, const u64 val,
+ 	}
+ }
  
- 	__u16		devid_source;
- 	__u16		devid_vendor;
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 6c8850149265a..4608715860cce 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3595,6 +3595,7 @@ struct hci_dev *hci_alloc_dev(void)
- 	/* The default values will be chosen in the future */
- 	hdev->advmon_allowlist_duration = 300;
- 	hdev->advmon_no_filter_duration = 500;
-+	hdev->enable_advmon_interleave_scan = 0x0001;	/* Default to enable */
+-static inline int bpf2a64_offset(int bpf_to, int bpf_from,
++static inline int bpf2a64_offset(int bpf_insn, int off,
+ 				 const struct jit_ctx *ctx)
+ {
+-	int to = ctx->offset[bpf_to];
+-	/* -1 to account for the Branch instruction */
+-	int from = ctx->offset[bpf_from] - 1;
+-
+-	return to - from;
++	/* BPF JMP offset is relative to the next instruction */
++	bpf_insn++;
++	/*
++	 * Whereas arm64 branch instructions encode the offset
++	 * from the branch itself, so we must subtract 1 from the
++	 * instruction offset.
++	 */
++	return ctx->offset[bpf_insn + off] - (ctx->offset[bpf_insn] - 1);
+ }
  
- 	hdev->sniff_max_interval = 800;
- 	hdev->sniff_min_interval = 80;
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 1fcf6736811e4..bb38e1dead68f 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -500,7 +500,8 @@ static void __hci_update_background_scan(struct hci_request *req)
- 		if (hci_dev_test_flag(hdev, HCI_LE_SCAN))
- 			hci_req_add_le_scan_disable(req, false);
+ static void jit_fill_hole(void *area, unsigned int size)
+@@ -642,7 +645,7 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
  
--		if (!update_adv_monitor_scan_state(hdev)) {
-+		if (!hdev->enable_advmon_interleave_scan ||
-+		    !update_adv_monitor_scan_state(hdev)) {
- 			hci_req_add_le_passive_scan(req);
- 			bt_dev_dbg(hdev, "%s starting background scanning",
- 				   hdev->name);
-diff --git a/net/bluetooth/mgmt_config.c b/net/bluetooth/mgmt_config.c
-index 1802f7023158c..b4198c33a1b72 100644
---- a/net/bluetooth/mgmt_config.c
-+++ b/net/bluetooth/mgmt_config.c
-@@ -69,6 +69,7 @@ int read_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 						def_le_autoconnect_timeout),
- 		HDEV_PARAM_U16(0x001d, advmon_allowlist_duration),
- 		HDEV_PARAM_U16(0x001e, advmon_no_filter_duration),
-+		HDEV_PARAM_U16(0x001f, enable_advmon_interleave_scan),
- 	};
- 	struct mgmt_rp_read_def_system_config *rp = (void *)params;
+ 	/* JUMP off */
+ 	case BPF_JMP | BPF_JA:
+-		jmp_offset = bpf2a64_offset(i + off, i, ctx);
++		jmp_offset = bpf2a64_offset(i, off, ctx);
+ 		check_imm26(jmp_offset);
+ 		emit(A64_B(jmp_offset), ctx);
+ 		break;
+@@ -669,7 +672,7 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
+ 	case BPF_JMP32 | BPF_JSLE | BPF_X:
+ 		emit(A64_CMP(is64, dst, src), ctx);
+ emit_cond_jmp:
+-		jmp_offset = bpf2a64_offset(i + off, i, ctx);
++		jmp_offset = bpf2a64_offset(i, off, ctx);
+ 		check_imm19(jmp_offset);
+ 		switch (BPF_OP(code)) {
+ 		case BPF_JEQ:
+@@ -908,10 +911,21 @@ static int build_body(struct jit_ctx *ctx, bool extra_pass)
+ 	const struct bpf_prog *prog = ctx->prog;
+ 	int i;
  
-@@ -142,6 +143,7 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 		case 0x001b:
- 		case 0x001d:
- 		case 0x001e:
-+		case 0x001f:
- 			if (len != sizeof(u16)) {
- 				bt_dev_warn(hdev, "invalid length %d, exp %zu for type %d",
- 					    len, sizeof(u16), type);
-@@ -263,6 +265,10 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 			hdev->advmon_no_filter_duration =
- 							TLV_GET_LE16(buffer);
- 			break;
-+		case 0x0001f:
-+			hdev->enable_advmon_interleave_scan =
-+							TLV_GET_LE16(buffer);
-+			break;
- 		default:
- 			bt_dev_warn(hdev, "unsupported parameter %u", type);
- 			break;
++	/*
++	 * - offset[0] offset of the end of prologue,
++	 *   start of the 1st instruction.
++	 * - offset[1] - offset of the end of 1st instruction,
++	 *   start of the 2nd instruction
++	 * [....]
++	 * - offset[3] - offset of the end of 3rd instruction,
++	 *   start of 4th instruction
++	 */
+ 	for (i = 0; i < prog->len; i++) {
+ 		const struct bpf_insn *insn = &prog->insnsi[i];
+ 		int ret;
+ 
++		if (ctx->image == NULL)
++			ctx->offset[i] = ctx->idx;
+ 		ret = build_insn(insn, ctx, extra_pass);
+ 		if (ret > 0) {
+ 			i++;
+@@ -919,11 +933,16 @@ static int build_body(struct jit_ctx *ctx, bool extra_pass)
+ 				ctx->offset[i] = ctx->idx;
+ 			continue;
+ 		}
+-		if (ctx->image == NULL)
+-			ctx->offset[i] = ctx->idx;
+ 		if (ret)
+ 			return ret;
+ 	}
++	/*
++	 * offset is allocated with prog->len + 1 so fill in
++	 * the last element with the offset after the last
++	 * instruction (end of program)
++	 */
++	if (ctx->image == NULL)
++		ctx->offset[i] = ctx->idx;
+ 
+ 	return 0;
+ }
+@@ -1002,7 +1021,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	memset(&ctx, 0, sizeof(ctx));
+ 	ctx.prog = prog;
+ 
+-	ctx.offset = kcalloc(prog->len, sizeof(int), GFP_KERNEL);
++	ctx.offset = kcalloc(prog->len + 1, sizeof(int), GFP_KERNEL);
+ 	if (ctx.offset == NULL) {
+ 		prog = orig_prog;
+ 		goto out_off;
+@@ -1089,7 +1108,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	prog->jited_len = prog_size;
+ 
+ 	if (!prog->is_func || extra_pass) {
+-		bpf_prog_fill_jited_linfo(prog, ctx.offset);
++		bpf_prog_fill_jited_linfo(prog, ctx.offset + 1);
+ out_off:
+ 		kfree(ctx.offset);
+ 		kfree(jit_data);
 -- 
-2.28.0.618.gf4bc123cb7-goog
+2.28.0
 
