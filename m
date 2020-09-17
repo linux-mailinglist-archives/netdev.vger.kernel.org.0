@@ -2,145 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6731326D364
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 08:04:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8661826D365
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 08:05:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726218AbgIQGEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 02:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36976 "EHLO
+        id S1726269AbgIQGFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 02:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725267AbgIQGEs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 02:04:48 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DCE9C06174A
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 23:04:48 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id gr14so1576318ejb.1
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 23:04:47 -0700 (PDT)
+        with ESMTP id S1725267AbgIQGFj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 02:05:39 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABF9C06174A;
+        Wed, 16 Sep 2020 23:05:39 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id z18so556340pfg.0;
+        Wed, 16 Sep 2020 23:05:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hvNbwTZwzZgyj/0qtecok/Nbf7vvPX4dKWQ7X0Xs6VU=;
-        b=Cfha07paoEWxVCHc+QNc9BsHG7140H39C+TlNmSPZzLT7fNTeLKr1V2n30MQRWbKP7
-         vpxNe2s2G6gQLMdJmwjf1pNvbw5nFzTkLZV1r0J7YggW7izA2SeWvboyq+nibHxKfgEn
-         oYTwNun/sMFSecmalPbQ0agKktKSX4JrifFkzjKirKwjAV1TqzssX27UJtlJl/26BFIK
-         PpPR9c6vX51nL+bVuauzVTuEIo2yW0Yph2lR3zhT1OWV9157dm2hL5bKApGPOPpGphVL
-         RzKM+krSAG9dKuZS6+tcRRL6v1le5SbzZ1wiTfEiWin9IXnFG9SJg8lQ1fWWJulOt+6y
-         wfIA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pbPHu2PuH4qcHADJrXkNowzKC39J0pwMZtsiGih/dV4=;
+        b=TOwQXSDXw5HygVk495IeVn+i2S8342sbCNL+0eyJPD7bXkQF9WNJUeWCX+UZWJ992k
+         GBgeYN0+YizUPScQE+M384a9pMMLdgXz+uxslfARL/gCZ7bVfPZXo9Wbjhu7XltaYlpH
+         6m/4AL4UkQOw90csermz2RsBIl8QyGYfUwf0O8NRpLnGONLFIta8/bY5bDY7xQbEo5QB
+         1P7LSbnJBhyPxj0adxRnfGp9psuqXHSfFQLtvgjYaDI6US0rte9cm5xh+0Qa6JQ0I5e7
+         MXa7Kv7v7me5dwprzf1PYpTEVUTWNSaOk7liAWpayRdWiSzbdor1GenFjtFxEXMb9smY
+         M4ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hvNbwTZwzZgyj/0qtecok/Nbf7vvPX4dKWQ7X0Xs6VU=;
-        b=nRBP4dQ7WP2bR8e2Id7PeNLycFXyPEpxGQjGfeWHJAYgrNG+A2K/7LxG+i2wAn4eOR
-         JXzWDfGk3/RGvJQqEuM70w/WPZNoNlfKTLbbiYnF3rzo///P1VQmnIYWutckRB9XNzv6
-         UO8mFGPQWWqVZ+pFxJlmkD9uKeyOaflDWKKZnixBntkbbyhBxtUsYIGTH1XHvGZUq+gv
-         2zvGRWtXZ5/DBwubGNX7TuOCXYEO9ElKC91Pz9xDZObbIxgt4R5AS1zu0l3uMAv86WIe
-         HTpsqJVslsV3g89RbnrX+ZYOSSxgzso81pSKDKjyly+a1bbflv3OZikl0ffI+38BEHT3
-         daOw==
-X-Gm-Message-State: AOAM531CR4/HZhdIOKYQtFEgBJaoudB1TLJBYo6Iks8QStnLFFUfL3kg
-        0oi0/uR5TfxSug0twEEpPpenVA==
-X-Google-Smtp-Source: ABdhPJzJor9AQT0VeFbhA/wEFF14PjaVPlimBbVjGP17T+T29+1823JzscasfBkOP4Czwll5RnVoyA==
-X-Received: by 2002:a17:906:c830:: with SMTP id dd16mr29813709ejb.196.1600322686716;
-        Wed, 16 Sep 2020 23:04:46 -0700 (PDT)
-Received: from localhost (ip-94-113-111-128.net.upcbroadband.cz. [94.113.111.128])
-        by smtp.gmail.com with ESMTPSA id h64sm9836005edd.50.2020.09.16.23.04.45
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pbPHu2PuH4qcHADJrXkNowzKC39J0pwMZtsiGih/dV4=;
+        b=E4YnoQX/g+A4TB3y9XksTtzXbQhwTwGufLpUweD7hAKmovZhdYPcLerYRhjKpoEYhq
+         H7aWVABKaWN2MA1TBmbtnaaKKna0JOrvTWdRM+YVAgoKs+bZAV3WxyRNKgi6fVs1emtQ
+         6FdzfYPj4XU4KmIcUQ0vbwnQ/zq/ubJUiyzIWA37QNy+Q2UGw9Huus3sWmv1RvcTu9dP
+         vNsbpv8YBuEnX8DKpUR58z0ANsoiOy8g3UPTioZXJuEDEXA0TPS9QvYWyy6JH7Hfsp3r
+         Uysocd0r/oNt5MnI/b4wxEiTQcppbrcUpZlDhpdCJW8WFtn1GarHDeepY8zXBjmvaJCR
+         UQ0g==
+X-Gm-Message-State: AOAM530mn1f/Q/D664SckNRsS5PQ3qk9Tu2cNlmb32rxoIwlg8XrM/hy
+        Tb/rKxqbNHZUGcL6Gyz7RvLRYxqzrhbicw==
+X-Google-Smtp-Source: ABdhPJyTSzRIHL37V9LwkQ+z+94onYUaCMywPIGgjkoTfvAjwyVN3s2v/XSsCR7PoVZXhZS9ehAuww==
+X-Received: by 2002:a62:7747:0:b029:13f:d779:5f95 with SMTP id s68-20020a6277470000b029013fd7795f95mr19039059pfc.2.1600322738752;
+        Wed, 16 Sep 2020 23:05:38 -0700 (PDT)
+Received: from localhost.localdomain ([115.192.213.183])
+        by smtp.gmail.com with ESMTPSA id m12sm4587060pjs.34.2020.09.16.23.05.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2020 23:04:46 -0700 (PDT)
-Date:   Thu, 17 Sep 2020 08:04:45 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     sundeep subbaraya <sundeep.lkml@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
-Subject: Re: [EXT] Re: [net-next PATCH 0/2] Introduce mbox tracepoints for
- Octeontx2
-Message-ID: <20200917060445.GA2244@nanopsycho>
-References: <20200903121803.75fb0ade@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <BY5PR18MB3298899BF15F266144EE8760C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
- <20200904083709.GF2997@nanopsycho.orion>
- <BY5PR18MB3298EB53D2F869D64D7F534DC62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
- <20200904121126.GI2997@nanopsycho.orion>
- <BY5PR18MB3298C4C84704BCE864133C33C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
- <20200904133753.77ce6bc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CALHRZuoa8crCaOAkEqyBq1DnmVqUgpv_jzQboMNZcU_3R4RGvg@mail.gmail.com>
- <20200916103430.GA2298@nanopsycho.orion>
- <CALHRZuru42FZUQ=8S8k2M7Xsp8_9Lh8HrDMxf8LPQmw=Svc15Q@mail.gmail.com>
+        Wed, 16 Sep 2020 23:05:38 -0700 (PDT)
+From:   Xiaoyong Yan <yanxiaoyong5@gmail.com>
+To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xiaoyong Yan <yanxiaoyong5@gmail.com>
+Subject: [PATCH] [PATCH] net/sched : cbs : fix calculation error of idleslope credits
+Date:   Wed, 16 Sep 2020 23:05:33 -0700
+Message-Id: <20200917060533.73217-1-yanxiaoyong5@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALHRZuru42FZUQ=8S8k2M7Xsp8_9Lh8HrDMxf8LPQmw=Svc15Q@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Sep 16, 2020 at 07:19:36PM CEST, sundeep.lkml@gmail.com wrote:
->On Wed, Sep 16, 2020 at 4:04 PM Jiri Pirko <jiri@resnulli.us> wrote:
->>
->> Mon, Sep 07, 2020 at 12:59:45PM CEST, sundeep.lkml@gmail.com wrote:
->> >Hi Jakub,
->> >
->> >On Sat, Sep 5, 2020 at 2:07 AM Jakub Kicinski <kuba@kernel.org> wrote:
->> >>
->> >> On Fri, 4 Sep 2020 12:29:04 +0000 Sunil Kovvuri Goutham wrote:
->> >> > > >No, there are 3 drivers registering to 3 PCI device IDs and there can
->> >> > > >be many instances of the same devices. So there can be 10's of instances of
->> >> > > AF, PF and VFs.
->> >> > >
->> >> > > So you can still have per-pci device devlink instance and use the tracepoint
->> >> > > Jakub suggested.
->> >> > >
->> >> >
->> >> > Two things
->> >> > - As I mentioned above, there is a Crypto driver which uses the same mbox APIs
->> >> >   which is in the process of upstreaming. There also we would need trace points.
->> >> >   Not sure registering to devlink just for the sake of tracepoint is proper.
->> >> >
->> >> > - The devlink trace message is like this
->> >> >
->> >> >    TRACE_EVENT(devlink_hwmsg,
->> >> >      . . .
->> >> >         TP_printk("bus_name=%s dev_name=%s driver_name=%s incoming=%d type=%lu buf=0x[%*phD] len=%zu",
->> >> >                   __get_str(bus_name), __get_str(dev_name),
->> >> >                   __get_str(driver_name), __entry->incoming, __entry->type,
->> >> >                   (int) __entry->len, __get_dynamic_array(buf), __entry->len)
->> >> >    );
->> >> >
->> >> >    Whatever debug message we want as output doesn't fit into this.
->> >>
->> >> Make use of the standard devlink tracepoint wherever applicable, and you
->> >> can keep your extra ones if you want (as long as Jiri don't object).
->> >
->> >Sure and noted. I have tried to use devlink tracepoints and since it
->> >could not fit our purpose I used these.
->>
->> Why exactly the existing TP didn't fit your need?
->>
->Existing TP has provision to dump skb and trace error strings with
->error code but
->we are trying to trace the entire mailbox flow of the AF/PF and VF
->drivers. In particular
->we trace the below:
->    message allocation with message id and size at initiator.
->    number of messages sent and total size.
->    check message requester id, response id and response code after
->reply is received.
->    interrupts happened on behalf of mailboxes in the entire process
->with source and receiver of interrupt along with isr status.
->    error like initiator timeout waiting for response.
->  All the above are relevant and are required for Octeontx2 only hence
->used own tracepoints.
+in the function cbs_dequeue_soft, when q->credits <0, [now - q->last]
+should be accounted for sendslope,not idleslope.
 
-You can still use devlink_hwmsg for the actual data exchanged between
-the driver and hw. For the rest, you can have driver-specific TPs.
+so the solution as follows: when q->credits is less than 0, directly
+calculate delay time, activate hrtimer and when hrtimer fires,
+calculate idleslope credits and update it to q->credits.
 
+because of the lack of self-defined qdisc_watchdog_func, so in the
+generic sch_api, add qdisc_watchdog_init_func and
+qdisc_watchdog_init_clockid_func, so sch_cbs can use it to define its
+own process.
 
->
->Thanks,
->Sundeep
->
->> >
->> >Thanks,
->> >Sundeep
+the patch is changed based on v5.4.42,and the test result as follows:
+the NIC is 100Mb/s ,full duplex.
+
+step1:
+tc qdisc add dev ens33 root cbs idleslope 75 sendslope -25 hicredit 1000000 locredit -1000000 offload 0
+step2:
+root@ubuntu:/home/yxy/kernel/linux-stable# iperf -c 192.168.1.114 -i 1
+------------------------------------------------------------
+Client connecting to 192.168.1.114, TCP port 5001
+TCP window size:  246 KByte (default)
+------------------------------------------------------------
+[  3] local 192.168.1.120 port 42004 connected with 192.168.1.114 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0- 1.0 sec  9.00 MBytes  75.5 Mbits/sec
+[  3]  1.0- 2.0 sec  8.50 MBytes  71.3 Mbits/sec
+[  3]  2.0- 3.0 sec  8.50 MBytes  71.3 Mbits/sec
+[  3]  3.0- 4.0 sec  8.38 MBytes  70.3 Mbits/sec
+[  3]  4.0- 5.0 sec  8.38 MBytes  70.3 Mbits/sec
+[  3]  5.0- 6.0 sec  8.50 MBytes  71.3 Mbits/sec
+[  3]  6.0- 7.0 sec  8.50 MBytes  71.3 Mbits/sec
+[  3]  7.0- 8.0 sec  8.62 MBytes  72.4 Mbits/sec
+[  3]  8.0- 9.0 sec  8.50 MBytes  71.3 Mbits/sec
+[  3]  9.0-10.0 sec  8.62 MBytes  72.4 Mbits/sec
+[  3]  0.0-10.0 sec  85.5 MBytes  71.5 Mbits/sec
+
+Signed-off-by: Xiaoyong Yan <yanxiaoyong5@gmail.com>
+---
+ include/net/pkt_sched.h |  7 +++++++
+ net/sched/sch_api.c     | 20 ++++++++++++++++++--
+ net/sched/sch_cbs.c     | 41 +++++++++++++++++++++++++----------------
+ 3 files changed, 50 insertions(+), 18 deletions(-)
+
+diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+index 6a70845bd9ab..5fec23b15e1c 100644
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -9,6 +9,7 @@
+ #include <net/sch_generic.h>
+ #include <net/net_namespace.h>
+ #include <uapi/linux/pkt_sched.h>
++#include <linux/hrtimer.h>
+
+#define DEFAULT_TX_QUEUE_LEN	1000
+
+@@ -72,6 +73,12 @@ struct qdisc_watchdog {
+ 	struct Qdisc	*qdisc;
+ };
+
++typedef enum hrtimer_restart (*qdisc_watchdog_func_t)(struct hrtimer *timer);
++void qdisc_watchdog_init_clockid_func(struct qdisc_watchdog *wd, struct Qdisc *qdisc,
++		 clockid_t clockid,qdisc_watchdog_func_t func);
++void qdisc_watchdog_init_func(struct qdisc_watchdog *wd,struct Qdisc *qdisc,qdisc_watchdog_func_t func);
++enum hrtimer_restart qdisc_watchdog(struct hrtimer *timer);
++
+ void qdisc_watchdog_init_clockid(struct qdisc_watchdog *wd, struct Qdisc *qdisc,
+ 				 clockid_t clockid);
+ void qdisc_watchdog_init(struct qdisc_watchdog *wd, struct Qdisc *qdisc);
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index 50794125bf02..fea08d10c811 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -22,7 +22,6 @@
+ #include <linux/seq_file.h>
+ #include <linux/kmod.h>
+ #include <linux/list.h>
+-#include <linux/hrtimer.h>
+ #include <linux/slab.h>
+ #include <linux/hashtable.h>
+
+@@ -591,7 +590,7 @@ void qdisc_warn_nonwc(const char *txt, struct Qdisc *qdisc)
+ }
+ EXPORT_SYMBOL(qdisc_warn_nonwc);
+
+-static enum hrtimer_restart qdisc_watchdog(struct hrtimer *timer)
++enum hrtimer_restart qdisc_watchdog(struct hrtimer *timer)
+ {
+ 	struct qdisc_watchdog *wd = container_of(timer, struct qdisc_watchdog,
+ 						 timer);
+@@ -602,7 +601,24 @@ static enum hrtimer_restart qdisc_watchdog(struct hrtimer *timer)
+
+ 	return HRTIMER_NORESTART;
+ }
++EXPORT_SYMBOL(qdisc_watchdog);
+
++void qdisc_watchdog_init_clockid_func(struct qdisc_watchdog *wd,struct Qdisc *qdisc,clockid_t clockid,qdisc_watchdog_func_t func)
++{
++	hrtimer_init(&wd->timer,clockid,HRTIMER_MODE_ABS_PINNED);
++	if(!func)
++		wd->timer.function = qdisc_watchdog;
++	else
++		wd->timer.function = func;
++	wd->qdisc = qdisc;
++}
++EXPORT_SYMBOL(qdisc_watchdog_init_clockid_func);
++
++void qdisc_watchdog_init_func(struct qdisc_watchdog *wd,struct Qdisc *qdisc,qdisc_watchdog_func_t func)
++{
++	qdisc_watchdog_init_clockid_func(wd,qdisc,CLOCK_MONOTONIC,func);
++}
++EXPORT_SYMBOL(qdisc_watchdog_init_func);
+ void qdisc_watchdog_init_clockid(struct qdisc_watchdog *wd, struct Qdisc *qdisc,
+ 				 clockid_t clockid)
+ {
+diff --git a/net/sched/sch_cbs.c b/net/sched/sch_cbs.c
+index 2eaac2ff380f..351d3927e107 100644
+--- a/net/sched/sch_cbs.c
++++ b/net/sched/sch_cbs.c
+@@ -187,21 +187,15 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
+ 		return NULL;
+ 	}
+ 	if (q->credits < 0) {
+-		credits = timediff_to_credits(now - q->last, q->idleslope);
++		s64 delay;
++
++		delay = delay_from_credits(q->credits, q->idleslope);
++		qdisc_watchdog_schedule_ns(&q->watchdog, now + delay);
+
+-		credits = q->credits + credits;
+-		q->credits = min_t(s64, credits, q->hicredit);
+-
+-		if (q->credits < 0) {
+-			s64 delay;
+-
+-			delay = delay_from_credits(q->credits, q->idleslope);
+-			qdisc_watchdog_schedule_ns(&q->watchdog, now + delay);
+-
+-			q->last = now;
++		q->last = now;
+
+-			return NULL;
+-		}
++		return NULL;
++
+ 	}
+ 	skb = cbs_child_dequeue(sch, qdisc);
+ 	if (!skb)
+@@ -212,11 +206,12 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
+ 	/* As sendslope is a negative number, this will decrease the
+ 	 * amount of q->credits.
+ 	 */
++
+ 	credits = credits_from_len(len, q->sendslope,
+ 				   atomic64_read(&q->port_rate));
+ 	credits += q->credits;
+
+-	q->credits = max_t(s64, credits, q->locredit);
++	q->credits = clamp_t(s64, credits, q->locredit,q->hicredit);
+ 	/* Estimate of the transmission of the last byte of the packet in ns */
+ 	if (unlikely(atomic64_read(&q->port_rate) == 0))
+ 		q->last = now;
+@@ -323,7 +318,7 @@ static void cbs_set_port_rate(struct net_device *dev, struct cbs_sched_data *q)
+ 	port_rate = speed * 1000 * BYTES_PER_KBIT;
+
+ 	atomic64_set(&q->port_rate, port_rate);
+-	netdev_dbg(dev, "cbs: set %s's port_rate to: %lld, linkspeed: %d\n",
++	netdev_dbg(dev,"cbs: set %s's port_rate to: %lld, linkspeed: %d\n",
+ 		   dev->name, (long long)atomic64_read(&q->port_rate),
+ 		   ecmd.base.speed);
+ }
+@@ -396,7 +391,21 @@ static int cbs_change(struct Qdisc *sch, struct nlattr *opt,
+
+ 	return 0;
+ }
++static enum hrtimer_restart cbs_qdisc_watchdog(struct hrtimer *timer)
++{
++	struct qdisc_watchdog *wd = container_of(timer,struct qdisc_watchdog,timer);
++	struct Qdisc *sch = wd->qdisc;
++	struct cbs_sched_data *q = qdisc_priv(sch);
++	s64 now = ktime_get_ns();
++	s64 credits;
++
++	credits  = timediff_to_credits(now-q->last,q->idleslope);
++	credits = q->credits+credits;
++	q->credits = clamp_t(s64,credits,q->locredit,q->hicredit);
++	q->last = now;
+
++	return qdisc_watchdog(timer);
++}
+ static int cbs_init(struct Qdisc *sch, struct nlattr *opt,
+ 		    struct netlink_ext_ack *extack)
+ {
+@@ -424,7 +433,7 @@ static int cbs_init(struct Qdisc *sch, struct nlattr *opt,
+ 	q->enqueue = cbs_enqueue_soft;
+ 	q->dequeue = cbs_dequeue_soft;
+
+-	qdisc_watchdog_init(&q->watchdog, sch);
++	qdisc_watchdog_init_func(&q->watchdog, sch,cbs_qdisc_watchdog);
+
+ 	return cbs_change(sch, opt, extack);
+ }
+--
+2.25.1
+
