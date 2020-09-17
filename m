@@ -2,189 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7740026E339
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 20:06:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98CD626E381
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 20:27:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726621AbgIQSGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 14:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726582AbgIQSGf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 14:06:35 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC493C06174A;
-        Thu, 17 Sep 2020 11:06:30 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id x10so2294158ybj.13;
-        Thu, 17 Sep 2020 11:06:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=crHNAHVlKQymoKWU9RZhNMhhrAe0GtaAQ+q4H8Ky7gQ=;
-        b=bYWRHxOzfJNJuoZ1Cdwv4Ywrhoy11eW8AFQj+haPXS4aRhaecmpKuVLIH9G6l13+Vb
-         gmulKuPjGUHvyEASzFA5fQQhhqeEUk2NVMcpjmyLJNlqFJ3rKFn2SEuzeSVPemdepQdN
-         BLHeGAKQlqjKTZZChabNjynOkF8qXxSYIr82LfM7Lka/ryteE+ymVIw3upyA3zVfwFP8
-         fUUas3XOnq+/Y98w1aOoFuUB705TAeQsZ/XFS52V7UnZU7hFoz1w7CBK2OJIOSSRxscA
-         99GXOnrF0g81Yeh60ESBofZTJ887ctt7B5Jv60t2zP3yaNkbkWG7JCs8gX0hSvpT7lyc
-         0Rqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=crHNAHVlKQymoKWU9RZhNMhhrAe0GtaAQ+q4H8Ky7gQ=;
-        b=somFH133c473myP4eXuZ1/zYeQhZ8Lr5DyTbrFZqv9+/LKlvtbZ00Xf6LWidBpZMeY
-         Mt42nC/F+XqvTocOgrtOlRnpPlS97/fwDbhZ9pN9pAFZKt4DyL6ViFYjOgmadT/q53pn
-         X9DZ+3P8YbbO+dmxPl4fCEyz3p6yFcMVlidIUPBza+PbDL7sMdHunRAiQgaqdW3DP7Vf
-         oEbr3j2q3YVDKFp0H06iBJw2K9iopFZyuya5pbCWZVpn6aH4wTphlv3FcS+koW4wQKHV
-         X8isDP6Te3Kg4FWmK+Bfy7idOg0FC2A7bLCF1RRuxYrAaNpXFtSjxE3aM8cMlWoavAoe
-         n4HQ==
-X-Gm-Message-State: AOAM530uH0TZXyJDJ07DAfwlB0YL1qJ3zX11srtf6T+GtLBKdYcSymJQ
-        UjzJDGsUy7r9rqKBexjaA5ZoBw1IWDlxzn4U5Lc=
-X-Google-Smtp-Source: ABdhPJzlpw3EHAH3wllQAWOWN4kOdf8ElsIcCSpqU2vWXffxtg1acTl1+GovFCEwviHOmq4lD8gt5VmRxkwOWF1MOQw=
-X-Received: by 2002:a25:6644:: with SMTP id z4mr13530911ybm.347.1600365989911;
- Thu, 17 Sep 2020 11:06:29 -0700 (PDT)
+        id S1726416AbgIQSLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 14:11:00 -0400
+Received: from nat-hk.nvidia.com ([203.18.50.4]:44957 "EHLO nat-hk.nvidia.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726401AbgIQSKl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 14:10:41 -0400
+Received: from hkpgpgate102.nvidia.com (Not Verified[10.18.92.9]) by nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f63a6970000>; Fri, 18 Sep 2020 02:10:31 +0800
+Received: from HKMAIL104.nvidia.com ([10.18.16.13])
+  by hkpgpgate102.nvidia.com (PGP Universal service);
+  Thu, 17 Sep 2020 11:10:31 -0700
+X-PGP-Universal: processed;
+        by hkpgpgate102.nvidia.com on Thu, 17 Sep 2020 11:10:31 -0700
+Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL104.nvidia.com
+ (10.18.16.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 17 Sep
+ 2020 18:10:31 +0000
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.107)
+ by HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Thu, 17 Sep 2020 18:10:30 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A7177KTBxXJ2VQu24oONnhYSCo8bOd9aQ552Wg51z6MkUZyD6QeX7HY/U7BeSayPjkxDM7g7+PY0W5frudL/FiOi3VtOoItjBRDEeafO949ivLfORlIjbW4TRPACgGbvV9YW9/ofH9+jn5kurZOIFgaWvyMnMq7nLjGNgCdc/yLe6tSL5JWgzlSBqSah+hF4io3csCBSW8j8pj+FXrZv7ooMgSOteSZAY9ge/owNslxe2zdxwc/lhicpbeVSwQ2g1eOQsfA34Kxpgw9MCXhv4evfm4kvYodn27ske58t0xXbe6GH/NoHqnK15NdlR2n9gPRkjV9Hjy8/gFpfagYbVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v0JSfB0PxYfT4bcnDMLWNqBgAXHHQcDQGPvw21tT7ZI=;
+ b=FDR2VFYJWBA/HOnoqQke4oGlaEjSY3U6k7cxaYB6Z3t8wkoxj4n4cZgcN6Y6azm93v76diPI/GKnqlXacEFBNJhKr9GeTNPgoVczcgcsdIW2g1l3SxEV0GYWah06EJO78OSuSasXV/TChtbZv0CKSCwjvWvdt3uqtZBgtxPRCWGaAtKnEROGf2ggbXr8PmZ2YTrBoAYiwmxsh7H3NDK+4wIuv483wF1MnLf92NNOBbzjZgwPcP4OWmTbZH/7jRSDdvopNH8E4nSjKrxPMCHK3FG3xQIoqLnchvCAeBKNCtQGzP0/O45MRecZs2Qi1rTYZ7RmnXCdb8c/dVZ2T4rGtA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB3020.namprd12.prod.outlook.com (2603:10b6:5:11f::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14; Thu, 17 Sep
+ 2020 18:10:28 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78%7]) with mapi id 15.20.3391.011; Thu, 17 Sep 2020
+ 18:10:28 +0000
+Date:   Thu, 17 Sep 2020 15:10:26 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>, <linux-rdma@vger.kernel.org>,
+        <netdev@vger.kernel.org>, Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH rdma-next 0/3] Extend mlx5_ib software steering interface
+Message-ID: <20200917181026.GA144224@nvidia.com>
+References: <20200903073857.1129166-1-leon@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200903073857.1129166-1-leon@kernel.org>
+X-ClientProxiedBy: BL1PR13CA0026.namprd13.prod.outlook.com
+ (2603:10b6:208:256::31) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-References: <160017005691.98230.13648200635390228683.stgit@toke.dk>
- <160017006242.98230.15812695975228745782.stgit@toke.dk> <CAEf4Bzafmu5w6wjWT_d0B-JaUnm3KOf0Dgp+552iZii2+=3DWg@mail.gmail.com>
- <CAEf4BzbqW12q_nXvat6=iTvKpy1P+e-r0N+9eY3vgDAZ8rcfLQ@mail.gmail.com> <87tuvwmirx.fsf@toke.dk>
-In-Reply-To: <87tuvwmirx.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 17 Sep 2020 11:06:18 -0700
-Message-ID: <CAEf4BzZkaViCyJnnJtSVjN2q7aD1SgEOqKKmy5m+1icWd3B72Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 5/8] bpf: Fix context type resolving for
- extension programs
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (156.34.48.30) by BL1PR13CA0026.namprd13.prod.outlook.com (2603:10b6:208:256::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.8 via Frontend Transport; Thu, 17 Sep 2020 18:10:27 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kIyMU-000bWx-Ds; Thu, 17 Sep 2020 15:10:26 -0300
+X-Originating-IP: [156.34.48.30]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a2249408-a2a5-4c33-3e75-08d85b34f4fb
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3020:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR12MB302094653EF403AB3CB99376C23E0@DM6PR12MB3020.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: r3KyckqJ9B+zybu+YhwQVwBUSD+zUTMHOhskOKynzyRfX6DxlVBtokJJWSRD8lY0q5rHxAlj5Zmd1O9uNgcGdaEk4AmD2EIc3rFsSLzEQ15RKA3k5mXywvQOXTuk0GtUhY0LjObFk/xFM3ofCEcYF+jvv0H04yM/FUDrxZLQ79ap3uxg8iJeqXOKxR+2g5WDsuJORx4zWPFw3ocFq0wSZhNwK6Cam07hxJWYMQPwkiAHnLkyg1ROawJPY9irWjpDVYjgBKP5K7q802UnKQLJjItPHaYzM9eXJWTwd+XcjJRyv4TcvFQE4vKvifF82W6I0isTYzg0oh1SZlFHU5dXQUf77VyXn9u4rlF/P1s9QeZYuJwhMpzPU7yJfoASBgTU
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(346002)(39860400002)(376002)(396003)(86362001)(186003)(426003)(26005)(4326008)(6916009)(2906002)(9746002)(54906003)(9786002)(107886003)(478600001)(8936002)(36756003)(5660300002)(83380400001)(33656002)(1076003)(316002)(4744005)(66946007)(8676002)(2616005)(66556008)(66476007)(27376004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: bLNVL/jMBo4cpgwrWoSu6dUHKNA7wgQxOknS9zAbmQ1b5IpOLAYqNv5dg+JXSy1wf99/HfN9UqKlD3Hz63zDs82HtQjAtgP4XLa4y0xqUBaPvncVErBi2E0y541/+LRWM5UlzyBJRc0Y06k6BjXXlvBiPJeXT953X8WATPsGRrLRlmRJyFS54EY3/2Tv5qMDJr9vXRnzcXN9Z3Hx4CjJdWTawjPooEUNuBSBStgL0JrSSJ9QRZrzF/1bF0//TI0GPoRVDhQ8BnJjXN50f9y1nYMdnAecAOYsgdk/fC/wCyNb4jQegHEOSQRwY8g9gk2OzmaFr9/aeMg//qIwzzBH2nCfVAMWfWbBs9mZc4W90/mHSjV12AJcqWJ/59LbFyyhT4ZKw35DLgMHDZeQs10vKznRqv8G2qSZtheA32+r89e71xqAoZwNqOHTpZHZ4FdcnT/0TnUpF9F6Fn2dUXHClwsZ1YjYpSVd19cePII5/HnUQYAb2jmJ2AM80U3BeMngCcsHeE9+k06gK0yNbIlVx+fvLIAZGosUasHNFbD/ZqQIVl9C7611+poec2xpO0WKmcMrIYbLXrsgrGPaf0/cHwtWUiBr7Mn71oGm4FQp3xzzsAmD2Q7L6I766NodL/jKs8cimON7PrtXr1IgSZgOrA==
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2249408-a2a5-4c33-3e75-08d85b34f4fb
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2020 18:10:28.1187
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: r9fzcVoTjHIeWMozBvCZuebMNOauXhEYSi3f8f1F3+e9IcMOX8YtT2rPQBseRvHz
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3020
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1600366231; bh=v0JSfB0PxYfT4bcnDMLWNqBgAXHHQcDQGPvw21tT7ZI=;
+        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+         ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
+         Subject:Message-ID:References:Content-Type:Content-Disposition:
+         In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
+         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
+         X-MS-TrafficTypeDiagnostic:X-MS-Exchange-Transport-Forked:
+         X-Microsoft-Antispam-PRVS:X-MS-Oob-TLC-OOBClassifiers:
+         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
+         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+         X-MS-Exchange-AntiSpam-MessageData:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+         X-MS-Exchange-CrossTenant-FromEntityHeader:
+         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+         X-MS-Exchange-CrossTenant-UserPrincipalName:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=FSJijcYI1xbrQf0kKSr2D+IzYLZ8ms5He3zqVd5fUUJ/89WkvNKd4+B6uDjCiXHJg
+         VxUashjy5QYS9/Ghyy6ShXB92bWd+q0UPDx7upmCjkH0P6PkfHWFVZ05bHiPkFzmxa
+         Yc6sj4hoCyFmp9iCAaJ3wPkVixWmR57KM3WbKUnODQVMAm/pwbpyWAzWvsma/9K4Dz
+         NWhSaCfvxAmtzBqctPkkjLqZiS1QNLoKkfxxl3CxEEDPYc/WcmFaq3XUs/o3QHe5e4
+         NfYQHXRP95mGjb8Jp3Ge7YThm2UOcZ13Tt1p0A9bvy9kVJPtPaYt30pLigVW8L86zz
+         3r0DrnCi67khA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 17, 2020 at 10:10 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
-hat.com> wrote:
->
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->
-> > On Wed, Sep 16, 2020 at 12:59 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> >>
-> >> On Tue, Sep 15, 2020 at 5:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
-@redhat.com> wrote:
-> >> >
-> >> > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >> >
-> >> > Eelco reported we can't properly access arguments if the tracing
-> >> > program is attached to extension program.
-> >> >
-> >> > Having following program:
-> >> >
-> >> >   SEC("classifier/test_pkt_md_access")
-> >> >   int test_pkt_md_access(struct __sk_buff *skb)
-> >> >
-> >> > with its extension:
-> >> >
-> >> >   SEC("freplace/test_pkt_md_access")
-> >> >   int test_pkt_md_access_new(struct __sk_buff *skb)
-> >> >
-> >> > and tracing that extension with:
-> >> >
-> >> >   SEC("fentry/test_pkt_md_access_new")
-> >> >   int BPF_PROG(fentry, struct sk_buff *skb)
-> >> >
-> >> > It's not possible to access skb argument in the fentry program,
-> >> > with following error from verifier:
-> >> >
-> >> >   ; int BPF_PROG(fentry, struct sk_buff *skb)
-> >> >   0: (79) r1 =3D *(u64 *)(r1 +0)
-> >> >   invalid bpf_context access off=3D0 size=3D8
-> >> >
-> >> > The problem is that btf_ctx_access gets the context type for the
-> >> > traced program, which is in this case the extension.
-> >> >
-> >> > But when we trace extension program, we want to get the context
-> >> > type of the program that the extension is attached to, so we can
-> >> > access the argument properly in the trace program.
-> >> >
-> >> > This version of the patch is tweaked slightly from Jiri's original o=
-ne,
-> >> > since the refactoring in the previous patches means we have to get t=
-he
-> >> > target prog type from the new variable in prog->aux instead of direc=
-tly
-> >> > from the target prog.
-> >> >
-> >> > Reported-by: Eelco Chaudron <echaudro@redhat.com>
-> >> > Suggested-by: Jiri Olsa <jolsa@kernel.org>
-> >> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >> > ---
-> >> >  kernel/bpf/btf.c |    9 ++++++++-
-> >> >  1 file changed, 8 insertions(+), 1 deletion(-)
-> >> >
-> >> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> >> > index 9228af9917a8..55f7b2ba1cbd 100644
-> >> > --- a/kernel/bpf/btf.c
-> >> > +++ b/kernel/bpf/btf.c
-> >> > @@ -3860,7 +3860,14 @@ bool btf_ctx_access(int off, int size, enum b=
-pf_access_type type,
-> >> >
-> >> >         info->reg_type =3D PTR_TO_BTF_ID;
-> >> >         if (tgt_prog) {
-> >> > -               ret =3D btf_translate_to_vmlinux(log, btf, t, tgt_pr=
-og->type, arg);
-> >> > +               enum bpf_prog_type tgt_type;
-> >> > +
-> >> > +               if (tgt_prog->type =3D=3D BPF_PROG_TYPE_EXT)
-> >> > +                       tgt_type =3D tgt_prog->aux->tgt_prog_type;
-> >>
-> >> what if tgt_prog->aux->tgt_prog_type is also BPF_PROG_TYPE_EXT? Should
-> >> this be a loop?
-> >
-> > ok, never mind this specifically. there is an explicit check
-> >
-> > if (tgt_prog->type =3D=3D prog->type) {
-> >     verbose(env, "Cannot recursively attach\n");
-> >     return -EINVAL;
-> > }
-> >
-> > that will prevent this.
-> >
-> > But, I think we still will be able to construct a long chain of
-> > fmod_ret -> freplace -> fmod_ret -> freplace -> and so on ad
-> > infinitum. Can you please construct such a selftest? And then we
-> > should probably fix those checks to also disallow FMOD_RET, in
-> > addition to BPF_TRACE_FENTRY/FEXIT (and someone more familiar with LSM
-> > prog type should check if that can cause any problems).
->
-> Huh, I thought fmod_ret was supposed to be for kernel functions only?
+On Thu, Sep 03, 2020 at 10:38:54AM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> This series from Alex extends software steering interface to support
+> devices with extra capability "sw_owner_2" which will replace existing
+> "sw_owner".
+> 
+> Thanks
+> 
+> Alex Vesker (3):
+>   RDMA/mlx5: Add sw_owner_v2 bit capability
+>   RDMA/mlx5: Allow DM allocation for sw_owner_v2 enabled devices
+>   RDMA/mlx5: Expose TIR and QP ICM address for sw_owner_v2 devices
 
-Yeah, I realized that afterwards, but didn't want to ramble on forever :)
+Ok, can you update the shared branch with the first patch? Thanks
 
-> However, I can't really point to anywhere in the code that ensures this,
-> other than check_attach_modify_return(), but I think that will allow a
-> bpf function as long as its name starts with "security_" ?
-
-I think error_injection_list check will disallow anything that's not a
-specially marked kernel function. So we are probably safe as is, even
-though a bit implicitly.
-
->
-> Is there actually any use case for modify_return being attached to a BPF
-> function (you could just use freplace instead, couldn't you?). Or should
-> we just disallow that entirely (if I'm not missing somewhere it's
-> already blocked)?
-
-No idea, but I think it works as is right now, so I wouldn't touch it.
-
->
-> -Toke
->
+Jason
