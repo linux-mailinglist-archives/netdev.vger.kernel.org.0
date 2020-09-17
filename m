@@ -2,95 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AA6E26E80D
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 00:16:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70C8926E827
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 00:19:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726201AbgIQWQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 18:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46696 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725858AbgIQWQe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 18:16:34 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2729C06174A;
-        Thu, 17 Sep 2020 15:16:34 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id f1so1853109plo.13;
-        Thu, 17 Sep 2020 15:16:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ywkgIpwld/FMaMli5/HwP3hx315xEIkzM50or8RHF+8=;
-        b=VCzGC7gbkVO6YjPDzkTh71liI87nlMg+luII0WdIoxlSOiQKIV523J1rzBTp42htrl
-         +oC4XNf6ous2Aj/Q2Bugo4kLh4IKfzLE7sJjfnhIIbLUNdCRkDiKzWv4P6tbshMc7aFV
-         sv5ph4X7GOWkZECOQbO2K/+jzFu66WAhfkXhXUswas9WJnJjNhNCy0mqL5UuLpuhlMTL
-         8b84VGuRnc+xVDQQm0HCUma+SUOOX/93M5m/vLP2V0V8f2fM5gP9GIS4nHMdDWvJvDC0
-         HfLvjYEttmiXAY529sxZLRc0AOprR1LhRMbM0bDnME186wfB7MDcI6K/ig/DM3bkRKLC
-         obCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ywkgIpwld/FMaMli5/HwP3hx315xEIkzM50or8RHF+8=;
-        b=hBuJv08xxdinz0DaMS2IUFe2GSIRxU1Uo/YyLYUuY9SWwB7FrI7pztxyDNSjqhPf4Y
-         0beUKwJzKjLTIMVn8skv513quHXUiK6diKd6FFDJoFqhTjrIRkVzhMQUcGcbp4/RO4lF
-         use4Xe9zZ1o7QOPIcInlU0sBdEh840hMdQWeDnEaqcfaEE9Ra5xZ5aBg3RHJ8cBUkG0w
-         hKL4/g6JWz24wNozDxXIArTkTInK5I1LvBgV4+kb+DQ+ZQL4sPg7HXQrOMhVRYu6zTa+
-         GEGN1OsgqO/tkm9PLXYn08W5ErdNMMHdW++Ic1vO08lHfSvi6kmG4/VPX6GpBbcJ4rNj
-         /Njw==
-X-Gm-Message-State: AOAM533yYI0vnKRBrtDayaWwp8k/WSdAhI+HJT+pMQCbhZDylsoZvthb
-        PIrbzJseWl8pRMGxYs8qXKsNbtd4xfd7Hw==
-X-Google-Smtp-Source: ABdhPJyhRGF7DX5l1zlxP8sMd39l1T7ioMc/EQ9RaVwBuQmoNBeoPChHeC0FZ857A76hwIqTE7XdCQ==
-X-Received: by 2002:a17:90a:55c8:: with SMTP id o8mr10036858pjm.215.1600380993619;
-        Thu, 17 Sep 2020 15:16:33 -0700 (PDT)
-Received: from [10.230.28.120] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id k4sm661252pfp.189.2020.09.17.15.16.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Sep 2020 15:16:32 -0700 (PDT)
-Subject: Re: [PATCH] add virtual PHY for PHY-less devices
-To:     Sergej Bauer <sbauer@blackbox.su>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20200917214030.646-1-sbauer@blackbox.su>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <b708f713-4840-7521-1d3d-e4aba5b3fc5e@gmail.com>
-Date:   Thu, 17 Sep 2020 15:16:30 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.2
-MIME-Version: 1.0
-In-Reply-To: <20200917214030.646-1-sbauer@blackbox.su>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        id S1726157AbgIQWT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 18:19:26 -0400
+Received: from mx.aristanetworks.com ([162.210.129.12]:15395 "EHLO
+        smtp.aristanetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725858AbgIQWTX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 18:19:23 -0400
+Received: from us180.sjc.aristanetworks.com (us180.sjc.aristanetworks.com [10.243.128.7])
+        by smtp.aristanetworks.com (Postfix) with ESMTP id BFF41402CE1;
+        Thu, 17 Sep 2020 15:19:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
+        s=Arista-A; t=1600381162;
+        bh=k9P2QeP8+h4sKQYgygqDAJqCac3kqaF+OlOMeZPgGfs=;
+        h=Date:To:Subject:From:From;
+        b=GldQ0CyuHp6mXwpztLt6sjjxM+NnkqfNRYeH50kE5Bz5oZQGurEe8ZrqtnXkoZjxY
+         VkOFQbCFzOcIJ/X71duHNZbT+h7XPjEi/zCCNoPySTxvqprpjrsFcvK8D0ZXhLGU1i
+         do4OsC6o28KnyXR3h7t2FLqW3pcVBH+rPAvMgpgwjd94RNJC6UFKuWn9z7NW4/GIf/
+         M5NzgOOpV6Tn2s7FDfYtUMvA8Cgki+GGjekE7PnH9a/YvTSO7hv8iUCHzI0UImVjFm
+         y0NGQjk9nsJNUf+/J0prD4Xgs2c4703y+dGdkavzDAnkaUf/BhnUAq+j0w3Cs0H6Yx
+         09dMVfnHkrtQQ==
+Received: by us180.sjc.aristanetworks.com (Postfix, from userid 10189)
+        id A5D3D95C0A57; Thu, 17 Sep 2020 15:19:22 -0700 (PDT)
+Date:   Thu, 17 Sep 2020 15:19:22 -0700
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        xiyou.wangcong@gmail.com, ap420073@gmail.com, andriin@fb.com,
+        edumazet@google.com, jiri@mellanox.com, ast@kernel.org,
+        kuba@kernel.org, davem@davemloft.net, fruggeri@arista.com
+Subject: [PATCH v2] net: use exponential backoff in netdev_wait_allrefs
+User-Agent: Heirloom mailx 12.5 7/5/10
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-Id: <20200917221922.A5D3D95C0A57@us180.sjc.aristanetworks.com>
+From:   fruggeri@arista.com (Francesco Ruggeri)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The combination of aca_free_rcu, introduced in commit 2384d02520ff
+("net/ipv6: Add anycast addresses to a global hashtable"), and
+fib6_info_destroy_rcu, introduced in commit 9b0a8da8c4c6 ("net/ipv6:
+respect rcu grace period before freeing fib6_info"), can result in
+an extra rcu grace period being needed when deleting an interface,
+with the result that netdev_wait_allrefs ends up hitting the msleep(250),
+which is considerably longer than the required grace period.
+This can result in long delays when deleting a large number of interfaces,
+and it can be observed with this script:
 
+ns=dummy-ns
+NIFS=100
 
-On 9/17/2020 2:40 PM, Sergej Bauer wrote:
-> From: sbauer@blackbox.su
-> 
->      Here is a kernel related part of my work which was helps to develop brand
-> new PHY device.
-> 
->      It is migth be helpful for developers work with PHY-less lan743x
-> (7431:0011 in my case). It's just a fake virtual PHY which can change speed of
-> network card processing as a loopback device. Baud rate can be tuned with
-> ethtool from command line or by means of SIOCSMIIREG ioctl. Duplex mode not
-> configurable and it's allways DUPLEX_FULL.
-> 
->      It also provides module parameter mii_regs for setting initial values of
-> IEEE 802.3 Control Register.
+ip netns add $ns
+ip netns exec $ns ip link set lo up
+ip netns exec $ns sysctl net.ipv6.conf.default.disable_ipv6=0
+ip netns exec $ns sysctl net.ipv6.conf.default.forwarding=1
 
-You appear to have re-implemented the fixed PHY driver, please use that 
-instead of rolling your own.
+for ((i=0; i<$NIFS; i++))
+do
+        if=eth$i
+        ip netns exec $ns ip link add $if type dummy
+        ip netns exec $ns ip link set $if up
+        ip netns exec $ns ip -6 addr add 2021:$i::1/120 dev $if
+done
+
+for ((i=0; i<$NIFS; i++))
+do
+        if=eth$i
+        ip netns exec $ns ip link del $if
+done
+
+ip netns del $ns
+
+This patch uses exponential backoff instead of the fixed msleep(250)
+to get out of the loop faster.
+
+Time with this patch on a 5.4 kernel:
+
+real	0m8.199s
+user	0m0.402s
+sys	0m1.213s
+
+Time without this patch:
+
+real	0m31.522s
+user	0m0.438s
+sys	0m1.156s
+
+v2: use exponential backoff instead of trying to wake up
+    netdev_wait_allrefs.
+
+Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+
+---
+ net/core/dev.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 4086d335978c..69f549780b8e 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9986,10 +9986,13 @@ EXPORT_SYMBOL(netdev_refcnt_read);
+  * We can get stuck here if buggy protocols don't correctly
+  * call dev_put.
+  */
++#define MIN_MSLEEP	((unsigned int)16)
++#define MAX_MSLEEP	((unsigned int)250)
+ static void netdev_wait_allrefs(struct net_device *dev)
+ {
+ 	unsigned long rebroadcast_time, warning_time;
+ 	int refcnt;
++	unsigned int wait = MIN_MSLEEP;
+ 
+ 	linkwatch_forget_dev(dev);
+ 
+@@ -10023,7 +10026,8 @@ static void netdev_wait_allrefs(struct net_device *dev)
+ 			rebroadcast_time = jiffies;
+ 		}
+ 
+-		msleep(250);
++		msleep(wait);
++		wait = min(wait << 1, MAX_MSLEEP);
+ 
+ 		refcnt = netdev_refcnt_read(dev);
+ 
 -- 
-Florian
+2.28.0
