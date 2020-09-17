@@ -2,130 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C8926E827
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 00:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A7C426E83A
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 00:22:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726157AbgIQWT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 18:19:26 -0400
-Received: from mx.aristanetworks.com ([162.210.129.12]:15395 "EHLO
-        smtp.aristanetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725858AbgIQWTX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 18:19:23 -0400
-Received: from us180.sjc.aristanetworks.com (us180.sjc.aristanetworks.com [10.243.128.7])
-        by smtp.aristanetworks.com (Postfix) with ESMTP id BFF41402CE1;
-        Thu, 17 Sep 2020 15:19:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1600381162;
-        bh=k9P2QeP8+h4sKQYgygqDAJqCac3kqaF+OlOMeZPgGfs=;
-        h=Date:To:Subject:From:From;
-        b=GldQ0CyuHp6mXwpztLt6sjjxM+NnkqfNRYeH50kE5Bz5oZQGurEe8ZrqtnXkoZjxY
-         VkOFQbCFzOcIJ/X71duHNZbT+h7XPjEi/zCCNoPySTxvqprpjrsFcvK8D0ZXhLGU1i
-         do4OsC6o28KnyXR3h7t2FLqW3pcVBH+rPAvMgpgwjd94RNJC6UFKuWn9z7NW4/GIf/
-         M5NzgOOpV6Tn2s7FDfYtUMvA8Cgki+GGjekE7PnH9a/YvTSO7hv8iUCHzI0UImVjFm
-         y0NGQjk9nsJNUf+/J0prD4Xgs2c4703y+dGdkavzDAnkaUf/BhnUAq+j0w3Cs0H6Yx
-         09dMVfnHkrtQQ==
-Received: by us180.sjc.aristanetworks.com (Postfix, from userid 10189)
-        id A5D3D95C0A57; Thu, 17 Sep 2020 15:19:22 -0700 (PDT)
-Date:   Thu, 17 Sep 2020 15:19:22 -0700
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        xiyou.wangcong@gmail.com, ap420073@gmail.com, andriin@fb.com,
-        edumazet@google.com, jiri@mellanox.com, ast@kernel.org,
-        kuba@kernel.org, davem@davemloft.net, fruggeri@arista.com
-Subject: [PATCH v2] net: use exponential backoff in netdev_wait_allrefs
-User-Agent: Heirloom mailx 12.5 7/5/10
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-Id: <20200917221922.A5D3D95C0A57@us180.sjc.aristanetworks.com>
-From:   fruggeri@arista.com (Francesco Ruggeri)
+        id S1726121AbgIQWW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 18:22:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725987AbgIQWW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 18:22:28 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7EB6C061756
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 15:22:28 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id 140so2283461ybf.2
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 15:22:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=R8WEgJrMetWJNrqEtzBhqLHZfLiSdt4Hll3zS+w3mL4=;
+        b=LuOayWOT30KhGQ64pljmo3YZfT4n3AMOP/VuhP+krwnQDGkwHABX+yw/BJsJ+hLIIe
+         Ulh6WTje8RSbruv70Sc+kpgMhfyVGiOcQdzEbA/zmIqOnyNoBGHbNLs27GaikevQvtz4
+         89asAVFiS2S7t6g2SJ41MWbbHseZIbwnoxtzpM2divOrFyqEnBTHt74tmz/8+/b62THJ
+         B5sMI3P3XWOLDazTsZVJUlEi/yz46xEc5jTC+GbNKeb56ncrSey5uH41g54M6UfqiSPH
+         0EJnuth2sPqAPpRvVhY3lx4xR4LM/1qnN9buIPIy4MSHGr6Y89aPFkUt+2oA66ViB7qj
+         87Dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=R8WEgJrMetWJNrqEtzBhqLHZfLiSdt4Hll3zS+w3mL4=;
+        b=e3W/IQEfCg6KqBQ1Z5M2mZaTQdotJAe1QwMt9l6FteovYWqisvH30Pzm6Fg7TpVkTb
+         IW3vD/hY2Hfj5PYyW4r9r6wSS83Sx+SbtKnuD0Uf5Qd0jp1jUj9fUpgHu8UUmubKtvHn
+         GyPYY2WOT/soGrvzftH/qJUgpHCpLK8g0y6/KkASaiYVMDVg27xG7Do0X32nmXasOSt3
+         n72YQ6oNcEEP/4jQLIjNFKXmxjaNL7LVca8XmuA12Y77nT8iy2kfxnRpLvBgcq2DXV86
+         xykh2Ysk8xw2zTZWsG4WUQGmmBUsZ/ptC/XXOaf+JggjOg+ksXd0jZsvwXKOcolYpuzB
+         ms/Q==
+X-Gm-Message-State: AOAM533+MWigcamEcCn2yG36ORgXE50dBtJJ05fdFAs5K6mCr+g2MHoJ
+        KGxMAM2FPYIZD6L2jjb29cH4xtIsJg2yXOJykYwE
+X-Google-Smtp-Source: ABdhPJwxgj4oj1GzHKD3/4dU+VhpN0mjUP7crNTQPhZayLjhtttuxehZiouwKLTbDrq27Bd6SbFZV61Q7bZj+I0+QlEY
+X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:f693:9fff:fef4:4e59])
+ (user=danielwinkler job=sendgmr) by 2002:a25:ad46:: with SMTP id
+ l6mr20065498ybe.492.1600381347766; Thu, 17 Sep 2020 15:22:27 -0700 (PDT)
+Date:   Thu, 17 Sep 2020 15:22:11 -0700
+Message-Id: <20200917222217.2534502-1-danielwinkler@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
+Subject: [PATCH v2 0/6] Bluetooth: Add new MGMT interface for advertising add
+From:   Daniel Winkler <danielwinkler@google.com>
+To:     marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        linux-bluetooth@vger.kernel.org,
+        Daniel Winkler <danielwinkler@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The combination of aca_free_rcu, introduced in commit 2384d02520ff
-("net/ipv6: Add anycast addresses to a global hashtable"), and
-fib6_info_destroy_rcu, introduced in commit 9b0a8da8c4c6 ("net/ipv6:
-respect rcu grace period before freeing fib6_info"), can result in
-an extra rcu grace period being needed when deleting an interface,
-with the result that netdev_wait_allrefs ends up hitting the msleep(250),
-which is considerably longer than the required grace period.
-This can result in long delays when deleting a large number of interfaces,
-and it can be observed with this script:
+Hi Maintainers,
 
-ns=dummy-ns
-NIFS=100
+This patch series defines the new two-call MGMT interface for adding
+new advertising instances. Similarly to the hci advertising commands, a
+mgmt call to set parameters is expected to be first, followed by a mgmt
+call to set advertising data/scan response. The members of the
+parameters request are optional; the caller defines a "params" bitfield
+in the structure that indicates which parameters were intentionally set,
+and others are set to defaults.
 
-ip netns add $ns
-ip netns exec $ns ip link set lo up
-ip netns exec $ns sysctl net.ipv6.conf.default.disable_ipv6=0
-ip netns exec $ns sysctl net.ipv6.conf.default.forwarding=1
+The main feature here is the introduction of min/max parameters and tx
+power that can be requested by the client. Min/max parameters will be
+used both with and without extended advertising support, and tx power
+will be used with extended advertising support. After a call for hci
+advertising parameters, a new TX_POWER_SELECTED event will be emitted to
+alert userspace to the actual chosen tx power.
 
-for ((i=0; i<$NIFS; i++))
-do
-        if=eth$i
-        ip netns exec $ns ip link add $if type dummy
-        ip netns exec $ns ip link set $if up
-        ip netns exec $ns ip -6 addr add 2021:$i::1/120 dev $if
-done
+Additionally, to inform userspace of the controller LE Tx power
+capabilities for the client's benefit, this series also adds an MGMT
+command to query controller capabilities, which returns a flexible TLV
+format for future flexibility.
 
-for ((i=0; i<$NIFS; i++))
-do
-        if=eth$i
-        ip netns exec $ns ip link del $if
-done
+All changes have been tested on hatch (extended advertising) and kukui
+(no extended advertising) chromebooks with manual testing verifying
+correctness of parameters/data in btmon traces, and our automated test
+suite of 25 single- and multi-advertising usage scenarios.
 
-ip netns del $ns
+A separate patch series will add support in bluetoothd. Thanks in
+advance for your feedback!
 
-This patch uses exponential backoff instead of the fixed msleep(250)
-to get out of the loop faster.
+Daniel Winkler
 
-Time with this patch on a 5.4 kernel:
 
-real	0m8.199s
-user	0m0.402s
-sys	0m1.213s
+Changes in v2:
+- Fixed sparse error in Capabilities MGMT command
 
-Time without this patch:
+Daniel Winkler (6):
+  Bluetooth: Add helper to set adv data
+  Bluetooth: Break add adv into two mgmt commands
+  Bluetooth: Use intervals and tx power from mgmt cmds
+  Bluetooth: Emit tx power chosen on ext adv params completion
+  Bluetooth: Query LE tx power on startup
+  Bluetooth: Add MGMT command for controller capabilities
 
-real	0m31.522s
-user	0m0.438s
-sys	0m1.156s
+ include/net/bluetooth/hci.h      |   7 +
+ include/net/bluetooth/hci_core.h |  14 +-
+ include/net/bluetooth/mgmt.h     |  48 ++++
+ net/bluetooth/hci_core.c         |  47 +++-
+ net/bluetooth/hci_event.c        |  22 ++
+ net/bluetooth/hci_request.c      |  29 ++-
+ net/bluetooth/mgmt.c             | 420 ++++++++++++++++++++++++++++++-
+ 7 files changed, 561 insertions(+), 26 deletions(-)
 
-v2: use exponential backoff instead of trying to wake up
-    netdev_wait_allrefs.
-
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
-
----
- net/core/dev.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 4086d335978c..69f549780b8e 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9986,10 +9986,13 @@ EXPORT_SYMBOL(netdev_refcnt_read);
-  * We can get stuck here if buggy protocols don't correctly
-  * call dev_put.
-  */
-+#define MIN_MSLEEP	((unsigned int)16)
-+#define MAX_MSLEEP	((unsigned int)250)
- static void netdev_wait_allrefs(struct net_device *dev)
- {
- 	unsigned long rebroadcast_time, warning_time;
- 	int refcnt;
-+	unsigned int wait = MIN_MSLEEP;
- 
- 	linkwatch_forget_dev(dev);
- 
-@@ -10023,7 +10026,8 @@ static void netdev_wait_allrefs(struct net_device *dev)
- 			rebroadcast_time = jiffies;
- 		}
- 
--		msleep(250);
-+		msleep(wait);
-+		wait = min(wait << 1, MAX_MSLEEP);
- 
- 		refcnt = netdev_refcnt_read(dev);
- 
 -- 
-2.28.0
+2.28.0.681.g6f77f65b4e-goog
+
