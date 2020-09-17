@@ -2,78 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFA9226E1FB
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 19:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7BA926E22F
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 19:21:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726365AbgIQROk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 13:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbgIQROC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 13:14:02 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8651EC06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:14:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=Fak2+gosAv7HTsTLdZACvYkJ60Fv7KUhcaO8dkBtFlM=; b=tZaVU24q42Z+g7j3ZGboOdXH4x
-        wvZ2G39/Mvly9+FiQWBZ1ZDk0ply1k1vbGJRMiLh57C6c/pLlHx6X+/7D3qvRk9HSTbHpWSmTOdRW
-        jsd1frCzdMQWEV2Cfp7LcbIFpimTWXfeK3/GHZvZPKKVfYKKT+d5+HkQD4B6FT5QYEk/Hkv04XhDe
-        pu7DYJtCmQXaXDqFFUCrI10Lb8WeNt2x4KRrcBBy6LtjPKURDZlWsEdfG6e/m933nwv6gDqmlEQf5
-        AnHkDjar+1XBq+oCEraGtIrxlGhhqQ+4Zq53qDAiAfkFedlLsGYQ+D9qFAqswPp/xyBiJrE3HuAwy
-        MgzAajoA==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kIxTp-0001Ow-Ks; Thu, 17 Sep 2020 17:13:57 +0000
-Subject: Re: [PATCH net-next] net: mdio: octeon: Select MDIO_DEVRES
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>
-References: <20200917161949.3598839-1-andrew@lunn.ch>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <fca10247-1832-e0f3-6b1f-153a86a070c4@infradead.org>
-Date:   Thu, 17 Sep 2020 10:13:54 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726495AbgIQRUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 13:20:51 -0400
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:11028 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726411AbgIQRUf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 13:20:35 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f639a880001>; Thu, 17 Sep 2020 10:19:04 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Thu, 17 Sep 2020 10:20:33 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Thu, 17 Sep 2020 10:20:33 -0700
+Received: from sw-mtx-036.mtx.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 17 Sep
+ 2020 17:20:32 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     Parav Pandit <parav@nvidia.com>
+Subject: [PATCH net-next v2 0/8] devlink: Add SF add/delete devlink ops
+Date:   Thu, 17 Sep 2020 20:20:12 +0300
+Message-ID: <20200917172020.26484-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200917081731.8363-8-parav@nvidia.com>
+References: <20200917081731.8363-8-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20200917161949.3598839-1-andrew@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1600363144; bh=zvuS8s0qxZ5cKsy1wxygzQ59kQ4ObXSo+U0oboEg5kE=;
+        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
+         In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
+         Content-Type:X-Originating-IP:X-ClientProxiedBy;
+        b=WawXX1GCVfRz7G9O/r0J8MOumiiiAAWLcTal6/mNoCIwD71TGJLxAEMhAjdpKZACR
+         SSzg6bFMt5AU6gncNX7U6jR/tzgukeOJB4RmFH1PPdqR9ddpjQhgjQBH5fn3xp7q57
+         pIMAi5hdk1SdFgCsHuJFWqhOBO7BE4xqsOV54j4pup5ej6aENMb8vRSyABtx8HB3v4
+         QU2NeNGDiMzhfuHG092G7kmjWKaaKOLm+sUGQl2ohhX1C4WxDelINxNd/OztgAP9MJ
+         DLIzaZDZU0chiAYznK0WWVrOcSGaucECcpfHhLyhzFF1zqtWyqa7ZLmAGzUre4+zSf
+         9eiImRc2ziQNg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/17/20 9:19 AM, Andrew Lunn wrote:
-> This driver makes use of devm_mdiobus_alloc_size. To ensure this is
-> available select MDIO_DEVRES which provides it.
-> 
+Hi Dave, Jakub,
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
+Similar to PCI VF, PCI SF represents portion of the device.
+PCI SF is represented using a new devlink port flavour.
 
-Thanks.
+This short series implements small part of the RFC described in detail at [=
+1] and [2].
 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  drivers/net/mdio/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
-> index 1299880dfe74..840727cc9499 100644
-> --- a/drivers/net/mdio/Kconfig
-> +++ b/drivers/net/mdio/Kconfig
-> @@ -138,6 +138,7 @@ config MDIO_OCTEON
->  	depends on (64BIT && OF_MDIO) || COMPILE_TEST
->  	depends on HAS_IOMEM
->  	select MDIO_CAVIUM
-> +	select MDIO_DEVRES
->  	help
->  	  This module provides a driver for the Octeon and ThunderX MDIO
->  	  buses. It is required by the Octeon and ThunderX ethernet device
-> 
+It extends
+(a) devlink core to expose new devlink port flavour 'pcisf'.
+(b) Expose new user interface to add/delete devlink port.
+(c) Extends netdevsim driver to simulate PCI PF and SF ports
+(d) Add port function state attribute
 
+Patch summary:
+Patch-1 Extends devlink to expose new PCI SF port flavour
+Patch-2 Extends devlink to let user add, delete devlink Port
+Patch-3 Prepare code to handle multiple port attributes
+Patch-4 Extends devlink to let user get, set function state
+Patch-5 Extends netdevsim driver to simulate PCI PF ports
+Patch-6 Extends netdevsim driver to simulate hw_addr get/set
+Patch-7 Extends netdevsim driver to simulate function state get/set
+Patch-8 Extends netdevsim driver to simulate PCI SF ports
 
--- 
-~Randy
+[1] https://lore.kernel.org/netdev/20200519092258.GF4655@nanopsycho/
+[2] https://marc.info/?l=3Dlinux-netdev&m=3D158555928517777&w=3D2
+
+---
+Changelog:
+v1->v2:
+ - Fixed extra semicolon at end of switch case reportec by coccinelle
+
+Parav Pandit (8):
+  devlink: Introduce PCI SF port flavour and port attribute
+  devlink: Support add and delete devlink port
+  devlink: Prepare code to fill multiple port function attributes
+  devlink: Support get and set state of port function
+  netdevsim: Add support for add and delete of a PCI PF port
+  netdevsim: Simulate get/set hardware address of a PCI port
+  netdevsim: Simulate port function state for a PCI port
+  netdevsim: Add support for add and delete PCI SF port
+
+ drivers/net/netdevsim/Makefile        |   3 +-
+ drivers/net/netdevsim/dev.c           |  14 +
+ drivers/net/netdevsim/netdevsim.h     |  32 ++
+ drivers/net/netdevsim/port_function.c | 498 ++++++++++++++++++++++++++
+ include/net/devlink.h                 |  75 ++++
+ include/uapi/linux/devlink.h          |  13 +
+ net/core/devlink.c                    | 230 ++++++++++--
+ 7 files changed, 840 insertions(+), 25 deletions(-)
+ create mode 100644 drivers/net/netdevsim/port_function.c
+
+--=20
+2.26.2
+
