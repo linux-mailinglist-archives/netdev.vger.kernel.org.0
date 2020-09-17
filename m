@@ -2,160 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC07F26D403
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 08:56:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1F5F26D3F5
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 08:52:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726191AbgIQG4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 02:56:35 -0400
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:50841 "EHLO
-        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726290AbgIQG4Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 02:56:24 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 3BCB777B;
-        Thu, 17 Sep 2020 02:50:14 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 17 Sep 2020 02:50:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=QiYAGUn33p2izElOMqkqYk5B2f5wa840MMlY46h4VGY=; b=RwnaynU+
-        Yth+R1ycr6bMBGHBVcsG4TldaNaEJBs8lmvTppcTk5kzvSiof188EnZMuAWuXnN0
-        G1+XOoF09NjKZxtAbqnrvc1bouR7j5CAOCDlvGxvpaJSMNjK5bTlMrFFNtrD+eci
-        0rl8B1i3fV301CYp0ytk3DuyfEd5DxFTtKn/l9YhNm1xq3SwGJov1yAzaj778h6p
-        pAFoBfYbHKqFGf1OSKfao67q0NLS4xLzXYoSGwWF4Dm2nfGt2HkKHGMKeQoKOc2z
-        DGcOiGsxwKxbhBgMTJ7Wc2AZEZJEBIqzUXh5NrrOA9kiCwEjScyM2StsHm/owxBi
-        VCktFYB/Zrhfmw==
-X-ME-Sender: <xms:JQdjXzbk-2f1PvL4NTvVj0ziCPiTz9zsfA0mb84Ab5JW-USx1oDOKQ>
-    <xme:JQdjXybLBhOrtA8z-tSNY5AM2jwE1FbbONGBffUiL5aTYp0mMIDx63xPeWgSuQyLu
-    rarL9FlPJo5b1A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrtdefgdduudduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrfeeirdekvden
-    ucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
-    gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:JQdjX1_70GbiiqbsuPKpJJG9snDNITwr6XQe1xGXhcZBSr9pjr2tnA>
-    <xmx:JQdjX5rNSetMrJ2rokQq5JgolVcUL03UARcA5i8OPxUAEmtIP4VRog>
-    <xmx:JQdjX-qqYM9jYzES9NsCZZinJtf4Q94kzgKI091VPl1mYjedtdsiGw>
-    <xmx:JQdjXxVOEOCG5XePHnLsmV1V8TOdKo9qXIr_QFzQL2StrXrqBVaEig>
-Received: from shredder.mtl.com (igld-84-229-36-82.inter.net.il [84.229.36.82])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CCAD73064680;
-        Thu, 17 Sep 2020 02:50:11 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        petrm@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 3/3] mlxsw: spectrum_qdisc: Disable port buffer autoresize with qdiscs
-Date:   Thu, 17 Sep 2020 09:49:03 +0300
-Message-Id: <20200917064903.260700-4-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200917064903.260700-1-idosch@idosch.org>
-References: <20200917064903.260700-1-idosch@idosch.org>
+        id S1726217AbgIQGv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 02:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726151AbgIQGv6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 02:51:58 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14BD0C061756
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 23:51:57 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id y9so1261031ilq.2
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 23:51:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WmO3lehPU5xgp/AaU9lW0DTy2BiuALKSxjt4YpqCbPQ=;
+        b=OXBVMolKXu9oHOH/RIVylOl8xeQHwn7gTVs/vMb1xmk0j8xZdei1Po6uQNaOcCi0rz
+         k/Jz5O9iQZos06Ktg9342AdyYAQwGZNtt26Mwkfv0C35hYQyYctENMR8d/OqQCdpTbS4
+         QBVmNA9+8VsrdPxfGbmfu219GQDfZJ9EL/j/jHq9WnPHJTfkYv+T4y1pLQUGrLNHA1yd
+         Mu7KIvQVM+I6p+UhhZw2Ji0gC497GSvFD0it8TrSqlO5Fam7Zk3fnx1S3HpBdVjy6wU/
+         saKkt6Ejo4b5N/r+CYf70DfONvV0JcvnKQ7ZIyaC2Sr5OoAh9KEn6JuJd1g+gpIB7kCk
+         SIsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WmO3lehPU5xgp/AaU9lW0DTy2BiuALKSxjt4YpqCbPQ=;
+        b=AYbSR+kbRaRptZkVUCTJeedpXXMJVP/kg+8keHanSORSzg75yexleCZDjRqV6bReuK
+         W41FnsZb/TfHCBXkYNjX510LEISrkcPw4/m5OuddsTSm4qZhCEMZjG/VhcnLpMqK5FRD
+         HC503Bm16t+wXJ/LekBN4T48QsG7Ut6vmsubm5m0Rvf0js6VfjnbztGdOzuLEaIqO50X
+         uM5xmD2AUutIUFMfchqwi4OgmrzM4cSNwJuYLBsD6/6MDl3G4NtDz4hWs77zQ74eFKBJ
+         29B0leq8VAyS9DCD2TpF0lfSBLTvWxkiQO7teYaMl3fxU/hiIj9iGRskpBVUjh/zpQFz
+         yfkw==
+X-Gm-Message-State: AOAM531fZeHNj13GfVTYlqepjEq58IqJNdbxYX4DiEZZxd7FgGEZ6te3
+        44/PJkRabUIh7abXGw2Ysi852h6nT4S7uWLIJ/40SNiSEEc=
+X-Google-Smtp-Source: ABdhPJxFYzwV1YLidOSKXI1r/DxKCDAaTVJyjocue5dOmnluWfcXOUoJWW2TLVCA5K/Yy25eZFSB7+QxpoVqTOXas+8=
+X-Received: by 2002:a92:d48b:: with SMTP id p11mr19958635ilg.69.1600325516756;
+ Wed, 16 Sep 2020 23:51:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200917020021.0860995C06B9@us180.sjc.aristanetworks.com> <CA+HUmGjX4_4_UXWNn=EehQ_3QtFPZq8RJU146r-nc0nA8apx7w@mail.gmail.com>
+In-Reply-To: <CA+HUmGjX4_4_UXWNn=EehQ_3QtFPZq8RJU146r-nc0nA8apx7w@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 17 Sep 2020 08:51:45 +0200
+Message-ID: <CANn89iJOO9cbOqCNpRK4OrZy-L6P8aJJcPMjs5=RHF=fsjEe2Q@mail.gmail.com>
+Subject: Re: [PATCH] net: make netdev_wait_allrefs wake-able
+To:     Francesco Ruggeri <fruggeri@arista.com>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+On Thu, Sep 17, 2020 at 8:33 AM Francesco Ruggeri <fruggeri@arista.com> wrote:
+>
+> >  static inline void dev_put(struct net_device *dev)
+> >  {
+> > +       struct task_struct *destroy_task = dev->destroy_task;
+> > +
+> >         this_cpu_dec(*dev->pcpu_refcnt);
+> > +       if (destroy_task)
+> > +               wake_up_process(destroy_task);
+> >  }
+>
+> I just realized that this introduces a race, if dev_put drops the last
+> reference, an already running netdev_wait_allrefs runs to completion
+> and then dev_put tries to wake it up.
+> Any suggestions on how to avoid this without resorting to
+> locking?
+>
 
-There are two interfaces to configure ETS: qdiscs and DCB. Historically,
-DCB ETS configuration was projected to ingress as well, and configured port
-buffers. Qdisc was not.
+Honestly I would not touch dev_put() at all.
 
-Keep qdiscs behaving this way, and if an offloaded qdisc is configured on a
-port, move this port's headroom to a manual mode, thus allowing
-configuration of port buffers through dcbnl_setbuffer.
-
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 34 ++++++++++++++++++-
- 1 file changed, 33 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-index 964fd444bb10..fd672c6c9133 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-@@ -140,18 +140,31 @@ static int
- mlxsw_sp_qdisc_destroy(struct mlxsw_sp_port *mlxsw_sp_port,
- 		       struct mlxsw_sp_qdisc *mlxsw_sp_qdisc)
- {
-+	struct mlxsw_sp_qdisc *root_qdisc = &mlxsw_sp_port->qdisc->root_qdisc;
-+	int err_hdroom = 0;
- 	int err = 0;
- 
- 	if (!mlxsw_sp_qdisc)
- 		return 0;
- 
-+	if (root_qdisc == mlxsw_sp_qdisc) {
-+		struct mlxsw_sp_hdroom hdroom = *mlxsw_sp_port->hdroom;
-+
-+		hdroom.mode = MLXSW_SP_HDROOM_MODE_DCB;
-+		mlxsw_sp_hdroom_prios_reset_buf_idx(&hdroom);
-+		mlxsw_sp_hdroom_bufs_reset_lossiness(&hdroom);
-+		mlxsw_sp_hdroom_bufs_reset_sizes(mlxsw_sp_port, &hdroom);
-+		err_hdroom = mlxsw_sp_hdroom_configure(mlxsw_sp_port, &hdroom);
-+	}
-+
- 	if (mlxsw_sp_qdisc->ops && mlxsw_sp_qdisc->ops->destroy)
- 		err = mlxsw_sp_qdisc->ops->destroy(mlxsw_sp_port,
- 						   mlxsw_sp_qdisc);
- 
- 	mlxsw_sp_qdisc->handle = TC_H_UNSPEC;
- 	mlxsw_sp_qdisc->ops = NULL;
--	return err;
-+
-+	return err_hdroom ?: err;
- }
- 
- static int
-@@ -159,6 +172,8 @@ mlxsw_sp_qdisc_replace(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle,
- 		       struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
- 		       struct mlxsw_sp_qdisc_ops *ops, void *params)
- {
-+	struct mlxsw_sp_qdisc *root_qdisc = &mlxsw_sp_port->qdisc->root_qdisc;
-+	struct mlxsw_sp_hdroom orig_hdroom;
- 	int err;
- 
- 	if (mlxsw_sp_qdisc->ops && mlxsw_sp_qdisc->ops->type != ops->type)
-@@ -168,6 +183,21 @@ mlxsw_sp_qdisc_replace(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle,
- 		 * new one.
- 		 */
- 		mlxsw_sp_qdisc_destroy(mlxsw_sp_port, mlxsw_sp_qdisc);
-+
-+	orig_hdroom = *mlxsw_sp_port->hdroom;
-+	if (root_qdisc == mlxsw_sp_qdisc) {
-+		struct mlxsw_sp_hdroom hdroom = orig_hdroom;
-+
-+		hdroom.mode = MLXSW_SP_HDROOM_MODE_TC;
-+		mlxsw_sp_hdroom_prios_reset_buf_idx(&hdroom);
-+		mlxsw_sp_hdroom_bufs_reset_lossiness(&hdroom);
-+		mlxsw_sp_hdroom_bufs_reset_sizes(mlxsw_sp_port, &hdroom);
-+
-+		err = mlxsw_sp_hdroom_configure(mlxsw_sp_port, &hdroom);
-+		if (err)
-+			goto err_hdroom_configure;
-+	}
-+
- 	err = ops->check_params(mlxsw_sp_port, mlxsw_sp_qdisc, params);
- 	if (err)
- 		goto err_bad_param;
-@@ -191,6 +221,8 @@ mlxsw_sp_qdisc_replace(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle,
- 
- err_bad_param:
- err_config:
-+	mlxsw_sp_hdroom_configure(mlxsw_sp_port, &orig_hdroom);
-+err_hdroom_configure:
- 	if (mlxsw_sp_qdisc->handle == handle && ops->unoffload)
- 		ops->unoffload(mlxsw_sp_port, mlxsw_sp_qdisc, params);
- 
--- 
-2.26.2
-
+Simply change the msleep(250) to something better, with maybe
+exponential backoff.
