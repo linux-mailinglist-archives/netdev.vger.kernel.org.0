@@ -2,109 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8BFC26E4BB
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 20:56:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C08726E49D
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 20:53:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726492AbgIQSzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 14:55:05 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:36320 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728413AbgIQQU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 12:20:29 -0400
-X-Greylist: delayed 4574 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 12:20:29 EDT
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08HF3nrx093974;
-        Thu, 17 Sep 2020 10:03:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1600355029;
-        bh=68MpQKTxCsWGwGbzyWvdukkDiJlxjWj2z9bwK07+mIc=;
-        h=Subject:From:To:CC:References:Date:In-Reply-To;
-        b=lOpXGXAPhmGYsk2hY2bA9ZJ7mS1TXFA0SFETEkwJEZE7azGrHllU51Kd3btXbG0xa
-         YIcmSI1PTtcPhj8IxkcxOr+6DcPoBhTygSCnH3m8nYxnmtOKCaRKWGKw8slQnv4ijx
-         wGTd2sGIc2GC+/qho4wa8fm4Yi1TAEe0efWoRlik=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08HF3niL092139
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 17 Sep 2020 10:03:49 -0500
-Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 17
- Sep 2020 10:03:49 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 17 Sep 2020 10:03:49 -0500
-Received: from [10.250.32.129] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08HF3mer076110;
-        Thu, 17 Sep 2020 10:03:48 -0500
-Subject: Re: [PATCH net-next 1/3] ethtool: Add 100base-FX link mode entries
-From:   Dan Murphy <dmurphy@ti.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <f.fainelli@gmail.com>,
-        <hkallweit1@gmail.com>, <mkubecek@suse.cz>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20200915181708.25842-1-dmurphy@ti.com>
- <20200915181708.25842-2-dmurphy@ti.com> <20200915202113.GE3526428@lunn.ch>
- <f2a38c01-8726-a7fe-f645-2c83fe30b932@ti.com>
-Message-ID: <24c84585-2a42-31c7-2493-1a9891b3a21e@ti.com>
-Date:   Thu, 17 Sep 2020 10:03:43 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728442AbgIQQUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 12:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728409AbgIQQUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 12:20:15 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E27C061756;
+        Thu, 17 Sep 2020 09:19:07 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id f18so1510198pfa.10;
+        Thu, 17 Sep 2020 09:19:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=igiQ5JmS/cZQA1RCpu2Wa1Xr/x0ZU1VRDuvNFsuCJEA=;
+        b=kXGdctaPtSBO4/eiipRRwnvwnDhU0nYpt2C9EaVBD7aF3W/Bn+sbezVsJ+q50FjwAv
+         3PE+teijCjpcwvcj1jFFgWvcFmDD3BBt8A88b55n2lRUzA/LdM2ZxsyE/ejmDD8vsQOw
+         tL1jjYlWw7BKGSafrhsGaOlm2ioy/o2590DdT5gXGXLpEDyi+B6ceMcXhLKvXBVdbob/
+         9+DQPTIiwyPGhCKuDLoJ1Ofz0ja6nmIIXjWu4EZkUKT+0OGI9bpJbgHFSmDbiXPtjBq9
+         /dZrNQ/zXaSfvJezLb2/VFiF5vkkh5dblvMxmoX2qf3WS0eYsHgtIBorytSTidA3L88a
+         6azw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=igiQ5JmS/cZQA1RCpu2Wa1Xr/x0ZU1VRDuvNFsuCJEA=;
+        b=mXaVEJ3D8wjpqvfRcvErXMZab8C2YnAmGrnYln0fPJdI2s8OzaeiVFK+ZJ4Xf6Hozr
+         nL4/t8ygUFzpcja40j/T23AkLSso4Xlztxnmn/jefOG+4Bb7wGHoaLIcGxZo3Dw3rnWm
+         +a3cifqMLvfsfyzhzLdRqKBEErQof6ZsighOpE/JDLr4dyG17rHqX3TikvoENYE2P55Q
+         /wM8xAt+GdqnZ/8R4/Xrhh6GP3zxYHEG5/+Rliyb6RgrCbGueKlCl00kKzppPiWPbYLy
+         10VjuH+EIfm9nS6jcuQ+8wlS95PfCsOebXPhWL5daTCy1YvWDYcodrUEUf7pdGIoHchI
+         i9QA==
+X-Gm-Message-State: AOAM532iKL2EUporjTptCAivkNEMia37ZhV2uGQEIV82SeE9IMjXzzqW
+        c4q93CP29L1hZE0mTDYR7176oFE98UWTQg==
+X-Google-Smtp-Source: ABdhPJwI2BNaXOemPWMimeOvliVMWNuwsEUSrBGW0+jT12LVjHVWi4drigx3HYYCP/xDNSXUYG0xBQ==
+X-Received: by 2002:a62:5f02:0:b029:13c:1611:6536 with SMTP id t2-20020a625f020000b029013c16116536mr26658330pfb.8.1600359545856;
+        Thu, 17 Sep 2020 09:19:05 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id r6sm99028pfq.11.2020.09.17.09.19.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Sep 2020 09:19:05 -0700 (PDT)
+Subject: Re: [PATCH net-next v2] net: phy: bcm7xxx: request and manage GPHY
+ clock
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, opendmb@gmail.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:BROADCOM ETHERNET PHY DRIVERS" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20200917020413.2313461-1-f.fainelli@gmail.com>
+ <20200917131128.GK3526428@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <ce0bb513-045c-aa7f-6437-fdc77e9ecab1@gmail.com>
+Date:   Thu, 17 Sep 2020 09:19:03 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.2
 MIME-Version: 1.0
-In-Reply-To: <f2a38c01-8726-a7fe-f645-2c83fe30b932@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200917131128.GK3526428@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew
 
-On 9/15/20 6:29 PM, Dan Murphy wrote:
-> Andrew
->
-> On 9/15/20 3:21 PM, Andrew Lunn wrote:
->> On Tue, Sep 15, 2020 at 01:17:06PM -0500, Dan Murphy wrote:
->>> Add entries for the 100base-FX full and half duplex supported modes.
->>>
->>> $ ethtool eth0
->>>          Supported ports: [ TP    MII     FIBRE ]
->>>          Supported link modes:   10baseT/Half 10baseT/Full
->>>                                  100baseT/Half 100baseT/Full
->>>                                  100baseFX/Half 100baseFX/Full
->>>          Supported pause frame use: Symmetric Receive-only
->>>          Supports auto-negotiation: No
->>>          Supported FEC modes: Not reported
->>>          Advertised link modes:  10baseT/Half 10baseT/Full
->>>                                  100baseT/Half 100baseT/Full
->>>                                  100baseFX/Half 100baseFX/Full
->> I thought this PHY could not switch between TP and Fibre. It has a
->> strap which decides? So i would expect the supported modes to be
->> either BaseT or BaseFX. Not both. Same for Advertised?
+
+On 9/17/2020 6:11 AM, Andrew Lunn wrote:
+> On Wed, Sep 16, 2020 at 07:04:13PM -0700, Florian Fainelli wrote:
+>> The internal Gigabit PHY on Broadcom STB chips has a digital clock which
+>> drives its MDIO interface among other things, the driver now requests
+>> and manage that clock during .probe() and .remove() accordingly.
 >>
->>         Andrew
->
-> I found that the phy-device was setting all these bits in phy_init in 
-> features_init.
->
-> My first pass was to clear all these bits as well because the PHY was 
-> still advertising these modes.
->
-> But you are right this PHY cannot switch without strapping.
->
-> I can clear these bits.
+>> Because the PHY driver can be probed with the clocks turned off we need
+>> to apply the dummy BMSR workaround during the driver probe function to
+>> ensure subsequent MDIO read or write towards the PHY will succeed.
+> 
+> Hi Florian
+> 
+> Is it worth mentioning this in the DT binding? It is all pretty much
+> standard lego pieces, but it has taken you a while to assemble them in
+> the correct way. So giving hits to others who might want to uses these
+> STB chips could be nice.
 
-I re-read your reply and this is just an example.  This patch really has 
-nothing to do with any PHY as it is just adding in the new link modes.
+In some respect this does not really belong in the DT binding because we 
+are describing how Linux will be matching a given compatible string with 
+its driver, but it is certainly worth mentioning somewhere, like in the 
+PHY document.
 
-Unless you comment wanted me to remove the TP and advertised modes from 
-the example in the commit message?
-
-Dan
-
-
->
-> Dan
->
+Are you fine with the changes though?
+-- 
+Florian
