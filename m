@@ -2,165 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5C3726D449
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 09:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D95F626D466
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 09:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726142AbgIQHKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 03:10:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726245AbgIQHK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 03:10:26 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A083AC06174A;
-        Thu, 17 Sep 2020 00:10:22 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id m6so838906wrn.0;
-        Thu, 17 Sep 2020 00:10:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=cc:subject:to:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=A31FuXoR1fQi2PzgN3S9/yzmUsIB4Q6KUIbYTBZoMUg=;
-        b=WO6I9dBUgrgvztEMZwkfHNMPP/CKACvZCioIJaptH8xoBI6jJujARKF/odQGVTV2dP
-         nDWKqH13Nq62i9fWlpCqtsiS8LqxeJKkMGA29wdqudKfCSG1jaRapBKTY4O+TuuambpR
-         oK55fMREyHLZ2jNwyCuQLSfRBPw42sCrnovx85TfTSVmkxDZ4ti/mGlR8pBcM/eoTR9e
-         DfT2hD5j9wutP7lU0b2dhd6qB06L1XL0pNZgMGu4O6RIIfjDiMN1AQtrSdlhoef/YuVI
-         EHBni56clsLw3JOdJYAzCqQfbEerCL4EXO8b8bIiwOiZDro/N5w5oKEIrtb1+XaAE/BH
-         RKYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:cc:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=A31FuXoR1fQi2PzgN3S9/yzmUsIB4Q6KUIbYTBZoMUg=;
-        b=nZMRPEZBz78xo7sJz9F/56ECdb62vNOhnL6ZNBbfLUcenUb5mR/whUVdZQDDcDxJ2g
-         oRiCmD9goQTf9Pd2ieS2gNJmByqzXZwxMSGle3UugSF+aJng3pXaLqrAyebUzU+war0l
-         ZMJP3CMoyll1b4FmaYhEz7URM9f2gGgkiaUOqb0BFQzr/mjNKc9OJOU1sXQV+36JX18+
-         NhYEUMSarxLBiGqfHi6IEDHCAFedtnncNn5TAogTfnOF/5+r5bledalUNSktxGsF+USw
-         MJ++B0JqrUteKmrDj5yJflElF0QkKDcrbYDs3zH95O+GdxrVcRqQdphmH6h0isrs1hzt
-         teqQ==
-X-Gm-Message-State: AOAM531FHCKj6lFaysVq3pgQM6K48eiAhpBLgtmlD3L5QfNsV2q9PRDU
-        9nS37qY0BsSFUUSU1/jUzgk=
-X-Google-Smtp-Source: ABdhPJxG2Ct8Tj/O6+K1c9CT4v8cdLErCg7r24QQV1rlVen0F9dx2EeyYaxRf3gDiMJlsTrSDWHQrQ==
-X-Received: by 2002:adf:c404:: with SMTP id v4mr29923632wrf.17.1600326620779;
-        Thu, 17 Sep 2020 00:10:20 -0700 (PDT)
-Received: from ?IPv6:2001:a61:2479:6801:d8fe:4132:9f23:7e8f? ([2001:a61:2479:6801:d8fe:4132:9f23:7e8f])
-        by smtp.gmail.com with ESMTPSA id i15sm2842919wrb.91.2020.09.17.00.10.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Sep 2020 00:10:20 -0700 (PDT)
-Cc:     mtk.manpages@gmail.com, linux-man <linux-man@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, beej@beej.us
-Subject: Re: [patch] freeaddrinfo.3: memory leaks in freeaddrinfo examples
-To:     Marko Hrastovec <marko.hrastovec@gmail.com>
-References: <CAA+iEG_gYH0Em5Ff+xwFkcuph32AKvAu=CQvREEy1q8c8C7Tvg@mail.gmail.com>
- <CAKgNAkgQO+Spi=g6sC8dXdEGkJDOLziBYaxa7phdT9tQL=BuVA@mail.gmail.com>
- <CAA+iEG9eAwkmYiVoUTxSptVsijeD8NqRTR6tRHuboo8MdB9jqg@mail.gmail.com>
-From:   "Michael Kerrisk (man-pages)" <mtk.manpages@gmail.com>
-Message-ID: <41a3c0be-56fc-cbe2-523b-2719cdcb7264@gmail.com>
-Date:   Thu, 17 Sep 2020 09:10:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726239AbgIQHQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 03:16:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59314 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726109AbgIQHQK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 03:16:10 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E05C82072E;
+        Thu, 17 Sep 2020 07:16:08 +0000 (UTC)
+Date:   Thu, 17 Sep 2020 10:16:05 +0300
+From:   Leon Romanovsky <leonro@nvidia.com>
+To:     Herrington <hankinsea@gmail.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ptp: mark symbols static where possible
+Message-ID: <20200917071605.GQ486552@unreal>
+References: <20200917022508.9732-1-hankinsea@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAA+iEG9eAwkmYiVoUTxSptVsijeD8NqRTR6tRHuboo8MdB9jqg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200917022508.9732-1-hankinsea@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[CC += beej, to alert the author about the memory leaks 
-in the network programming guide]
-
-Hello Marko,
-
-> On Thu, Sep 17, 2020 at 7:42 AM Michael Kerrisk (man-pages) <
-> mtk.manpages@gmail.com> wrote:
-> 
->> Hi Marko,
->>
->> On Thu, 17 Sep 2020 at 07:34, Marko Hrastovec <marko.hrastovec@gmail.com>
->> wrote:
->>>
->>> Hi,
->>>
->>> examples in freeaddrinfo.3 have a memory leak, which is replicated in
->> many real world programs copying an example from manual pages. The two
->> examples should have different order of lines, which is done in the
->> following patch.
->>>
->>> diff --git a/man3/getaddrinfo.3 b/man3/getaddrinfo.3
->>> index c9a4b3e43..4d383bea0 100644
->>> --- a/man3/getaddrinfo.3
->>> +++ b/man3/getaddrinfo.3
->>> @@ -711,13 +711,13 @@ main(int argc, char *argv[])
->>>          close(sfd);
->>>      }
->>>
->>> +    freeaddrinfo(result);           /* No longer needed */
->>> +
->>>      if (rp == NULL) {               /* No address succeeded */
->>>          fprintf(stderr, "Could not bind\en");
->>>          exit(EXIT_FAILURE);
->>>      }
->>>
->>> -    freeaddrinfo(result);           /* No longer needed */
->>> -
->>>      /* Read datagrams and echo them back to sender */
->>>
->>>      for (;;) {
->>> @@ -804,13 +804,13 @@ main(int argc, char *argv[])
->>>          close(sfd);
->>>      }
->>>
->>> +    freeaddrinfo(result);           /* No longer needed */
->>> +
->>>      if (rp == NULL) {               /* No address succeeded */
->>>          fprintf(stderr, "Could not connect\en");
->>>          exit(EXIT_FAILURE);
->>>      }
->>>
->>> -    freeaddrinfo(result);           /* No longer needed */
->>> -
->>>      /* Send remaining command\-line arguments as separate
->>>         datagrams, and read responses from server */
->>>
->>
->> When you say "memory leak", do you mean that something like valgrind
->> complains? I mean, strictly speaking, there is no memory leak that I
->> can see that is fixed by that patch, since the if-branches that the
->> freeaddrinfo() calls are shifted above terminates the process in each
->> case.
+On Thu, Sep 17, 2020 at 10:25:08AM +0800, Herrington wrote:
+> We get 1 warning when building kernel with W=1:
+> drivers/ptp/ptp_pch.c:182:5: warning: no previous prototype for ‘pch_ch_control_read’ [-Wmissing-prototypes]
+>  u32 pch_ch_control_read(struct pci_dev *pdev)
+> drivers/ptp/ptp_pch.c:193:6: warning: no previous prototype for ‘pch_ch_control_write’ [-Wmissing-prototypes]
+>  void pch_ch_control_write(struct pci_dev *pdev, u32 val)
+> drivers/ptp/ptp_pch.c:201:5: warning: no previous prototype for ‘pch_ch_event_read’ [-Wmissing-prototypes]
+>  u32 pch_ch_event_read(struct pci_dev *pdev)
+> drivers/ptp/ptp_pch.c:212:6: warning: no previous prototype for ‘pch_ch_event_write’ [-Wmissing-prototypes]
+>  void pch_ch_event_write(struct pci_dev *pdev, u32 val)
+> drivers/ptp/ptp_pch.c:220:5: warning: no previous prototype for ‘pch_src_uuid_lo_read’ [-Wmissing-prototypes]
+>  u32 pch_src_uuid_lo_read(struct pci_dev *pdev)
+> drivers/ptp/ptp_pch.c:231:5: warning: no previous prototype for ‘pch_src_uuid_hi_read’ [-Wmissing-prototypes]
+>  u32 pch_src_uuid_hi_read(struct pci_dev *pdev)
+> drivers/ptp/ptp_pch.c:242:5: warning: no previous prototype for ‘pch_rx_snap_read’ [-Wmissing-prototypes]
+>  u64 pch_rx_snap_read(struct pci_dev *pdev)
+> drivers/ptp/ptp_pch.c:259:5: warning: no previous prototype for ‘pch_tx_snap_read’ [-Wmissing-prototypes]
+>  u64 pch_tx_snap_read(struct pci_dev *pdev)
+> drivers/ptp/ptp_pch.c:300:5: warning: no previous prototype for ‘pch_set_station_address’ [-Wmissing-prototypes]
+>  int pch_set_station_address(u8 *addr, struct pci_dev *pdev)
 >
-> you are right about terminating the process. However, people copy that
-> example and put the code in function changing "exit" to "return". There are
-> a bunch of examples like that here https://beej.us/guide/bgnet/html/#poll,
-> for instance.
+> Signed-off-by: Herrington <hankinsea@gmail.com>
+> ---
+>  drivers/ptp/ptp_pch.c | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
 
-Oh -- I see what you mean.
+This file is total mess.
 
-> That error bothered me when reading the network programming
-> guide https://beej.us/guide/bgnet/html/. Than I looked for information
-> elsewhere:
-> -
-> https://stackoverflow.com/questions/6712740/valgrind-reporting-that-getaddrinfo-is-leaking-memory
-> -
-> https://stackoverflow.com/questions/15690303/server-client-sockets-freeaddrinfo3-placement
-> And finally, I checked manual pages and saw where these errors come from.
-> 
-> When you change that to a function and return without doing freeaddrinfo,
-> that is a memory leak. I believe an example should show good programming
-> practices. Relying on exiting and clearing the memory in that case is not
-> such a case. In my opinion, these examples lead people to make mistakes in
-> their programs.
+>
+> diff --git a/drivers/ptp/ptp_pch.c b/drivers/ptp/ptp_pch.c
+> index ce10ecd41ba0..8db2d1893577 100644
+> --- a/drivers/ptp/ptp_pch.c
+> +++ b/drivers/ptp/ptp_pch.c
+> @@ -179,7 +179,7 @@ static inline void pch_block_reset(struct pch_dev *chip)
+>  	iowrite32(val, (&chip->regs->control));
+>  }
+>
+> -u32 pch_ch_control_read(struct pci_dev *pdev)
+> +static u32 pch_ch_control_read(struct pci_dev *pdev)
+>  {
+>  	struct pch_dev *chip = pci_get_drvdata(pdev);
+>  	u32 val;
+> @@ -190,7 +190,7 @@ u32 pch_ch_control_read(struct pci_dev *pdev)
+>  }
+>  EXPORT_SYMBOL(pch_ch_control_read);
 
-Yes, I can buy that argument. I've applied your patch.
+This function is not used and can be deleted.
 
-Thanks,
+>
+> -void pch_ch_control_write(struct pci_dev *pdev, u32 val)
+> +static void pch_ch_control_write(struct pci_dev *pdev, u32 val)
+>  {
+>  	struct pch_dev *chip = pci_get_drvdata(pdev);
+>
+> @@ -198,7 +198,7 @@ void pch_ch_control_write(struct pci_dev *pdev, u32 val)
+>  }
+>  EXPORT_SYMBOL(pch_ch_control_write);
 
-Michael
 
--- 
-Michael Kerrisk
-Linux man-pages maintainer; http://www.kernel.org/doc/man-pages/
-Linux/UNIX System Programming Training: http://man7.org/training/
+This function in use (incorrectly) by
+drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
+
+Your patch will break it.
+
+I didn't check other functions, but assume they are broken too.
+
+Thanks
