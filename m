@@ -2,108 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EAFD26E6E9
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 22:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C856326E741
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 23:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726441AbgIQUsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 16:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33120 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726180AbgIQUsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 16:48:18 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0223EC06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 13:48:18 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id x18so1760568pll.6
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 13:48:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=ZUBu9tP6qD05G1XgazYU6XgKBCzSxjM/sY2+RtcuFE4=;
-        b=s39PfAPlKL6fxSBpeGDDXR0CTstPEvPjTpu1RbiCpX/NvK+XTur8XL5I+hM9XUdztb
-         AGwK52R8a4GvUJ/SCxCrVGYGFZCK6vihM5RZ6ltdxdDykl2wOTw2rxpOdyuCEue5VeZ/
-         A201E+Y6MkX3ig9Y6dJHV6UDKsXE++I2D1ePkNqJRC5sEBE57TvMTj3HDnuYa0FudpBK
-         D9N5px1x5oNusvraCUc9DterPmthARGgH/GQRIneDYDTpYwQP5ilevlWHJwKSbB/APlK
-         gD1qXZPD9lWX55LjzrVQubN3Zo6LvsG5xv45y7kzV83Y6y1DUeIApGaYaMnwjgPYqt7U
-         kd+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=ZUBu9tP6qD05G1XgazYU6XgKBCzSxjM/sY2+RtcuFE4=;
-        b=TgV0KrAaO7fLKyj9vqRo9rjpqkxg83i9tNqvHsd8GKrNYOKgkMgXKbopwODpFgjM/S
-         9MdknMs3YBjW+luSZDPtM9wnWpww0GOo+LBhN2f2jMvRwi1gHuTTa1cW5FHs/dhnigU7
-         RM9k+Rni6XaL3ixtL18qjH3qezVRfHjXHXb4Dcip26K7BuD64lsLWI0JJhIXd3DGwJ+W
-         V/tBK0yQcQaQrMxT9Ef38GCYjW6TXTB4vRKl5j9KxiwJJkTu+gyYgDNKC/wkaeENCT4o
-         9gyXCZVSUveuKC8iyX0wMojT6XfjyztKDIUDN1RxWfbDmmafXAkcC0Zve82UeeckZZzY
-         5PTA==
-X-Gm-Message-State: AOAM532JX5irVGdJOkKMueconDxp71WREgsb+6BkgDAkRvWdqdeLnFNY
-        LPI54EZxt+k4ZgDquownW0s57g==
-X-Google-Smtp-Source: ABdhPJwmJB+Q/qLfI8KaD1LeisuiFDkZe/D10RnDDVTIhxH+ZVqcHicwhPnJconx3ck9kobOXb0kLQ==
-X-Received: by 2002:a17:902:7484:b029:d1:dea3:a490 with SMTP id h4-20020a1709027484b02900d1dea3a490mr14410945pll.30.1600375697595;
-        Thu, 17 Sep 2020 13:48:17 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id c22sm483116pgb.52.2020.09.17.13.48.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Sep 2020 13:48:17 -0700 (PDT)
-Subject: Re: [PATCH v4 net-next 1/5] devlink: add timeout information to
- status_notify
-To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        davem@davemloft.net
-References: <20200917030204.50098-1-snelson@pensando.io>
- <20200917030204.50098-2-snelson@pensando.io>
- <4036d5eb-2e12-b4e2-03b1-94d6a93af0b6@intel.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <e3bb96b4-a2ad-df24-8b3e-6a05e58950ce@pensando.io>
-Date:   Thu, 17 Sep 2020 13:48:16 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1726174AbgIQVRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 17:17:52 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:33174 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725900AbgIQVRw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 17:17:52 -0400
+X-Greylist: delayed 2770 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 17:17:51 EDT
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08HKVYul106387;
+        Thu, 17 Sep 2020 16:31:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=x0PCALOWsgiw7nHSMa6cDtM+fttuYQs3TpJPDxmAOGQ=;
+ b=XslhrVW2aXNiSCghymXT+oy1t0MCOJaZ0sFGXdc8HSZY/eUBJ9jS8uGp4m0/sn6yiYr4
+ qDo6y8fxZuEvRW+e1Wm8oglZigowG+5xUcG3dU2r8ie54+w/n9t+yuRaToueLL2nWoSG
+ WnoDV/tcu/WFz1oxVW7e5XAIF+v1jowb7qJPJ8/tjg9gQhjQqr6dWkiiGwlLvZRldUvS
+ TGimmBDTOrFcHQZPaJzU4QPIwNGPwFUO2KB2CpbW2bbvMAa3vWDF6T1aLOGwxm2tJ7db
+ 2DUJojynJEMh0To0GD/S0H6YHlCJQGXgjh2XXshlGkobKwVGrJWAQYnSU7eSXTj2Xbov OA== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 33mda6ambm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 17 Sep 2020 16:31:36 -0400
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08HKQQP6004784;
+        Thu, 17 Sep 2020 20:31:12 GMT
+Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
+        by ppma01dal.us.ibm.com with ESMTP id 33k6594jp2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 17 Sep 2020 20:31:12 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08HKVBFO33423642
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 17 Sep 2020 20:31:12 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D8499AE063;
+        Thu, 17 Sep 2020 20:31:11 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6D4D6AE05F;
+        Thu, 17 Sep 2020 20:31:11 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.65.243.76])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Thu, 17 Sep 2020 20:31:11 +0000 (GMT)
+Subject: Re: Exposing device ACL setting through devlink
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        jiri@nvidia.com
+References: <e7f76581-8525-2b98-ec4d-e772db692318@linux.ibm.com>
+ <20200904083141.GE2997@nanopsycho.orion>
+ <20200904153751.17ad4b48@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <7e4c2c8f-a5b0-799c-3083-cfefcf37bf10@linux.ibm.com>
+ <20200910070016.GT2997@nanopsycho.orion>
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+Message-ID: <f4d3923c-958c-c0b4-6aa3-f2500d4967e9@linux.ibm.com>
+Date:   Thu, 17 Sep 2020 15:31:10 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <4036d5eb-2e12-b4e2-03b1-94d6a93af0b6@intel.com>
+In-Reply-To: <20200910070016.GT2997@nanopsycho.orion>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-17_17:2020-09-16,2020-09-17 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
+ mlxlogscore=593 adultscore=0 lowpriorityscore=0 mlxscore=0 phishscore=0
+ clxscore=1015 priorityscore=1501 suspectscore=0 spamscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009170146
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/17/20 12:50 PM, Jacob Keller wrote:
-> On 9/16/2020 8:02 PM, Shannon Nelson wrote:
->> Add a timeout element to the DEVLINK_CMD_FLASH_UPDATE_STATUS
->> netlink message for use by a userland utility to show that
->> a particular firmware flash activity may take a long but
->> bounded time to finish.  Also add a handy helper for drivers
->> to make use of the new timeout value.
+
+On 9/10/20 2:00 AM, Jiri Pirko wrote:
+> Tue, Sep 08, 2020 at 08:27:13PM CEST, tlfalcon@linux.ibm.com wrote:
+>> On 9/4/20 5:37 PM, Jakub Kicinski wrote:
+>>> On Fri, 4 Sep 2020 10:31:41 +0200 Jiri Pirko wrote:
+>>>> Thu, Sep 03, 2020 at 07:59:45PM CEST, tlfalcon@linux.ibm.com wrote:
+>>>>> Hello, I am trying to expose MAC/VLAN ACL and pvid settings for IBM
+>>>>> VNIC devices to administrators through devlink (originally through
+>>>>> sysfs files, but that was rejected in favor of devlink). Could you
+>>>>> give any tips on how you might go about doing this?
+>>>> Tom, I believe you need to provide more info about what exactly do you
+>>>> need to setup. But from what you wrote, it seems like you are looking
+>>>> for bridge/tc offload. The infra is already in place and drivers are
+>>>> implementing it. See mlxsw for example.
+>>> I think Tom's use case is effectively exposing the the VF which VLANs
+>>> and what MAC addrs it can use. Plus it's pvid. See:
+>>>
+>>> https://www.spinics.net/lists/netdev/msg679750.html
+>> Thanks, Jakub,
 >>
->> UI usage hints:
->>   - if non-zero, add timeout display to the end of the status line
->>   	[component] status_msg  ( Xm Ys : Am Bs )
->>       using the timeout value for Am Bs and updating the Xm Ys
->>       every second
->>   - if the timeout expires while awaiting the next update,
->>     display something like
->>   	[component] status_msg  ( timeout reached : Am Bs )
->>   - if new status notify messages are received, remove
->>     the timeout and start over
->>
->> Signed-off-by: Shannon Nelson <snelson@pensando.io>
->> ---
-> This one looks good to me. I think the only other things that I saw from
-> previous discussion are:
+>> Right now, the use-case is to expose the allowed VLAN's and MAC addresses and
+>> the VF's PVID. Other use-cases may be explored later on though.
+> Who is configuring those?
 >
-> a) we could convert the internal helper devlink_nl_flash_update_fill and
-> __devlink_flash_update_notify to use structs for their fields, and..
+> What does mean "allowed MAC address"? Does it mean a MAC address that VF
+> can use to send packet as a source MAC?
 >
-> b) Jakub pointed out that most drivers don't currently use the component
-> field so we could remove that from the helpers.
+> What does mean "allowed VLAN"? VF is sending vlan tagged frames and only
+> some VIDs are allowed.
 >
-> However, I don't have strong feelings about those either way, so:
+> Pardon my ignorance, this may be routine in the nic world. However I
+> find the desc very vague. Please explain in details, then we can try to
+> find fitting solution.
 >
-> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
->
->
-Thanks,
-sln
+> Thanks!
+
+These MAC or VLAN ACL settings are configured on the Power Hypervisor.
+
+The rules for a VF can be to allow or deny all MAC addresses or VLAN 
+ID's or to allow a specified list of MAC address and VLAN ID's. The 
+interface allows or denies frames based on whether the ID in the VLAN 
+tag or the source MAC address is included in the list of allowed VLAN 
+ID's or MAC addresses specified during creation of the VF.
+
+Thanks for your help,
+
+Tom
 
