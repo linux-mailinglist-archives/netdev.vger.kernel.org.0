@@ -2,151 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89EE326E301
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 19:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F28CD26E2DA
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 19:49:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbgIQRzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 13:55:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60500 "EHLO
+        id S1726635AbgIQRsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 13:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726582AbgIQRjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 13:39:42 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACBBC061221
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:39:41 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id t18so3105936ilp.5
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:39:41 -0700 (PDT)
+        with ESMTP id S1726236AbgIQRrv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 13:47:51 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E33FAC06174A;
+        Thu, 17 Sep 2020 10:47:42 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id md22so3135864pjb.0;
+        Thu, 17 Sep 2020 10:47:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QtUWdu0boBZfHKiwa2SwHiBOCnpmKxcR3V7b9dhKC/U=;
-        b=ZcH1VLRn9FP/6UN0owL7QxSHThCvJQxUHQ/eE5TwtAGhO+hOJlndEktTeRQunrxBqF
-         XujShKHmGZZW9ptlkrTXO6Hy9Gv0zfnSAi7qLkXCBO3KEBsjAeF7VqMWzktTKAtyZPAH
-         vclwSl1YMLKxdCW1prHwcBIvTDNclJjMLzAJbd8LS0N6kN1gcTM9plyaz19eD1ELf/oT
-         OqrKX1cJE7YhmrtO/tsbOzWswzUWWlGItPyfINy8DeM5pvT4Z+RA+DVZKiq/RyNelDzY
-         OuesX2lAGm0GbkgVP3hGoWdtAK6gZzIdUg1nb3H/HYF1lF1j5qKXrkdWwkAObTkkjSqy
-         O2QA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zvTQuLhevp37w7yfIsEU+r4hqA1hR5pcgpJm3L1z8/w=;
+        b=gltpvHHTrIv0uo4znq1dMDMf0xQtZhkZR1MnxRB6KcxfOj9f07jQ+TqX4tqkpeqbmn
+         Qg1wm/K6xK72NXq0soulNVL4HRu5oqvShEyqxnhfNQbWLb+PpjJo7NvhmY+29sC8UqOO
+         T1fbgNLQHZAeldqHIS1guLeuNqjVYtE51Qb70J9/YFlyaKuTFbpKR+btMETRFufRYaZS
+         1EbvxLfSEiu/2lW12RPUDMgrBataq7CAS9d6UvCU1HydReEGAd7j7ypeteuTptCNmMaK
+         hZ1w3jXHSzISRWfjm/ho/yCG+MzqbHtrss0hRNBVGYW+1Syn8K0A1Gntzolzjpxo2m8o
+         Mkiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QtUWdu0boBZfHKiwa2SwHiBOCnpmKxcR3V7b9dhKC/U=;
-        b=fYZ1GcaAT+VfvK/o2LyLF/+tzLwiizFnUJRrXr3EpOpbOVxRp+ncqSOmxgSttcNqfO
-         DtHTbz01SvRj5UL6bSMFTKiLVi4J6rigf2JBat67AB07zoxhTVtRyYaChPIRh7Uw1uaQ
-         n0Y/LwvxiFEhA7Tc4oTSkr8H/nydRHnFPXe/XJ/WfQpcuGUOlmZz6Vmb2DqeU/KYkW/s
-         pjzLgKCnAGQDKgFVqhWbWwa1vMHKueB0U5yGDM8pyfi0F9sy8suAOTt83e+DimXcv2EM
-         wFkP6PpGogGlmucloMO0LcmpFDSsVa79Y6uHz1ytuXn4iPNAon9AcjQBfCsPE0vx8sEU
-         h8Ng==
-X-Gm-Message-State: AOAM530tLeg3ImAwceaI2WjfQ1dAl2GglwVNwNNbfuhw5R7MrnY1Fvgj
-        bIX0I0aICZ9gaaD+iXMsV3GH3oajLBuEfw==
-X-Google-Smtp-Source: ABdhPJw2DwhHqg+4Nb9+pBU2XL2/aXqwHh8AAiTKPaykUKEtj11lqJV8gG45MXBObm5T/G3ifVjKGw==
-X-Received: by 2002:a92:ca85:: with SMTP id t5mr9989407ilo.254.1600364379249;
-        Thu, 17 Sep 2020 10:39:39 -0700 (PDT)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id l6sm192725ilt.34.2020.09.17.10.39.38
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zvTQuLhevp37w7yfIsEU+r4hqA1hR5pcgpJm3L1z8/w=;
+        b=OxVZ9o6esZdYtwoSvAHFHmI5ic6JL897To7E+ayumQqiWHYtYUu3KK/f976V6VXR8L
+         l0AVXyDpcgHcLtuk1BHwjKlPBzt93AUxxKtuvnGotReoJlM0lXCCpZl7tUtQydO2Ip2j
+         iU2WKurKEqmqAwrdYA9xvqw31NNgNAFt6/n1tpdde2ejBKrCVsV+UNEBCEt2zMu6PU0X
+         qPXh7UxeExlhFn1JtYcGMV1lDDRoHcyeN6feW8noXBdvmACgc5aekCtSAUquZil9E+an
+         10nXrdhvmPuOjb/OU8cMMoXB0luJffrc8ixOyhuNosz/ApnRv/Pi3sugBdB/AhKtGfjG
+         fiuQ==
+X-Gm-Message-State: AOAM532mD9wsR+VzuLZ0iQcQYLzNek55RXccxeS7Qs/qsnnHhQeuzZjP
+        kANWPxn/zYFEYwq09WiHD88=
+X-Google-Smtp-Source: ABdhPJw0/VxVRqP9HWaijLykqzPAJ47yc4fpsrx/cpHeUcalf8rAVaGrTkR9KjfuLPXaOc2Ahsd/vg==
+X-Received: by 2002:a17:902:d88c:b029:d1:e5ec:5ef5 with SMTP id b12-20020a170902d88cb02900d1e5ec5ef5mr11981837plz.43.1600364861985;
+        Thu, 17 Sep 2020 10:47:41 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:ee50])
+        by smtp.gmail.com with ESMTPSA id a74sm267621pfa.16.2020.09.17.10.47.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Sep 2020 10:39:38 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     evgreen@chromium.org, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 7/7] net: ipa: do not enable GSI interrupt for wakeup
-Date:   Thu, 17 Sep 2020 12:39:26 -0500
-Message-Id: <20200917173926.24266-8-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200917173926.24266-1-elder@linaro.org>
-References: <20200917173926.24266-1-elder@linaro.org>
+        Thu, 17 Sep 2020 10:47:41 -0700 (PDT)
+Date:   Thu, 17 Sep 2020 10:47:39 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf] bpf: Use hlist_add_head_rcu when linking to
+ sk_storage
+Message-ID: <20200917174739.wbwiayb66aemydc5@ast-mbp.dhcp.thefacebook.com>
+References: <20200916200925.1803161-1-kafai@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200916200925.1803161-1-kafai@fb.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We now trigger a system resume when we receive an IPA SUSPEND
-interrupt.  We should *not* wake up on GSI interrupts.
+On Wed, Sep 16, 2020 at 01:09:25PM -0700, Martin KaFai Lau wrote:
+> The sk_storage->list will be traversed by rcu reader in parallel.
+> Thus, hlist_add_head_rcu() is needed in __selem_link_sk().  This
+> patch fixes it.
+> 
+> This part of the code has recently been refactored in bpf-next.
+> A separate fix will be provided for the bpf-next tree.
+> 
+> Fixes: 6ac99e8f23d4 ("bpf: Introduce bpf sk local storage")
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
+>  net/core/bpf_sk_storage.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+> index b988f48153a4..d4d2a56e9d4a 100644
+> --- a/net/core/bpf_sk_storage.c
+> +++ b/net/core/bpf_sk_storage.c
+> @@ -219,7 +219,7 @@ static void __selem_link_sk(struct bpf_sk_storage *sk_storage,
+>  			    struct bpf_sk_storage_elem *selem)
+>  {
+>  	RCU_INIT_POINTER(selem->sk_storage, sk_storage);
+> -	hlist_add_head(&selem->snode, &sk_storage->list);
+> +	hlist_add_head_rcu(&selem->snode, &sk_storage->list);
+>  }
 
-Signed-off-by: Alex Elder <elder@linaro.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
-v3: Added Bjorn's reviewed-by tag.
-
- drivers/net/ipa/gsi.c | 17 ++++-------------
- drivers/net/ipa/gsi.h |  1 -
- 2 files changed, 4 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index 0e63d35320aaf..cb75f7d540571 100644
---- a/drivers/net/ipa/gsi.c
-+++ b/drivers/net/ipa/gsi.c
-@@ -1987,31 +1987,26 @@ int gsi_init(struct gsi *gsi, struct platform_device *pdev, bool prefetch,
- 	}
- 	gsi->irq = irq;
- 
--	ret = enable_irq_wake(gsi->irq);
--	if (ret)
--		dev_warn(dev, "error %d enabling gsi wake irq\n", ret);
--	gsi->irq_wake_enabled = !ret;
--
- 	/* Get GSI memory range and map it */
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "gsi");
- 	if (!res) {
- 		dev_err(dev, "DT error getting \"gsi\" memory property\n");
- 		ret = -ENODEV;
--		goto err_disable_irq_wake;
-+		goto err_free_irq;
- 	}
- 
- 	size = resource_size(res);
- 	if (res->start > U32_MAX || size > U32_MAX - res->start) {
- 		dev_err(dev, "DT memory resource \"gsi\" out of range\n");
- 		ret = -EINVAL;
--		goto err_disable_irq_wake;
-+		goto err_free_irq;
- 	}
- 
- 	gsi->virt = ioremap(res->start, size);
- 	if (!gsi->virt) {
- 		dev_err(dev, "unable to remap \"gsi\" memory\n");
- 		ret = -ENOMEM;
--		goto err_disable_irq_wake;
-+		goto err_free_irq;
- 	}
- 
- 	ret = gsi_channel_init(gsi, prefetch, count, data, modem_alloc);
-@@ -2025,9 +2020,7 @@ int gsi_init(struct gsi *gsi, struct platform_device *pdev, bool prefetch,
- 
- err_iounmap:
- 	iounmap(gsi->virt);
--err_disable_irq_wake:
--	if (gsi->irq_wake_enabled)
--		(void)disable_irq_wake(gsi->irq);
-+err_free_irq:
- 	free_irq(gsi->irq, gsi);
- 
- 	return ret;
-@@ -2038,8 +2031,6 @@ void gsi_exit(struct gsi *gsi)
- {
- 	mutex_destroy(&gsi->mutex);
- 	gsi_channel_exit(gsi);
--	if (gsi->irq_wake_enabled)
--		(void)disable_irq_wake(gsi->irq);
- 	free_irq(gsi->irq, gsi);
- 	iounmap(gsi->virt);
- }
-diff --git a/drivers/net/ipa/gsi.h b/drivers/net/ipa/gsi.h
-index 061312773df09..3f9f29d531c43 100644
---- a/drivers/net/ipa/gsi.h
-+++ b/drivers/net/ipa/gsi.h
-@@ -150,7 +150,6 @@ struct gsi {
- 	struct net_device dummy_dev;	/* needed for NAPI */
- 	void __iomem *virt;
- 	u32 irq;
--	bool irq_wake_enabled;
- 	u32 channel_count;
- 	u32 evt_ring_count;
- 	struct gsi_channel channel[GSI_CHANNEL_COUNT_MAX];
--- 
-2.20.1
-
+Applying the same, yet very different from git point of view, patch to
+bpf and bpf-next trees will create a ton of confusion for everyone.
+I prefer to take this fix (in bpf-next form) into bpf-next only and apply
+this fix (in bpf form) to 5.9 and stable after the merge window.
+The code has been around since April 2019 and it wasn't hit in prod,
+so I don't think there is urgency.
+Agree?
