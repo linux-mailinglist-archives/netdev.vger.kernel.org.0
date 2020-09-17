@@ -2,81 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0867526D030
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 02:48:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7667626D071
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 03:13:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726331AbgIQAsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 20:48:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52044 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726304AbgIQAsm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Sep 2020 20:48:42 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        id S1726134AbgIQBNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 21:13:44 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:60272 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725886AbgIQBNk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 21:13:40 -0400
+X-Greylist: delayed 482 seconds by postgrey-1.27 at vger.kernel.org; Wed, 16 Sep 2020 21:13:38 EDT
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4BsJg03z3Pz1qs4G;
+        Thu, 17 Sep 2020 03:05:25 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4BsJfr6Jl6z1qwSy;
+        Thu, 17 Sep 2020 03:05:24 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id FqgdTcnucdjh; Thu, 17 Sep 2020 03:05:23 +0200 (CEST)
+X-Auth-Info: QtW3ZCSFydW7Acop+OgmpJ4MGJ4Y9os5JMB4YDj5fGA=
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 25335206A4;
-        Thu, 17 Sep 2020 00:48:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600303718;
-        bh=9ulv5jv9pJhqtRTxFWJWZ3bKt7i9GYxG1m9W2m+4RSY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZotmgASXWB6fIEAU9GkPSAO/v4Tagu4jVZSwB41P4mgM92EeiC+NZ5ZwnBVl6K0Oq
-         2EUz1Ql5c3swNskssvc7TROyx8qXpA+MSKtOInjpwRCfn6S9J1HQDyg00rnJs0HB/D
-         65CbAlgT9kTFiv+gJ6aq1YUVqgLLFlCdwzFzlfs4=
-Date:   Wed, 16 Sep 2020 17:48:36 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     davem@davemloft.net, joel@joelfernandes.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rcu@vger.kernel.org, josh@joshtriplett.org, peterz@infradead.org,
-        christian.brauner@ubuntu.com
-Subject: Re: [PATCH net-next 0/7] rcu: prevent RCU_LOCKDEP_WARN() from
- swallowing  the condition
-Message-ID: <20200916174836.4dd22aca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200916231505.GH29330@paulmck-ThinkPad-P72>
-References: <20200916184528.498184-1-kuba@kernel.org>
-        <20200916231505.GH29330@paulmck-ThinkPad-P72>
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Thu, 17 Sep 2020 03:05:23 +0200 (CEST)
+Subject: Re: [PATCH] can: m_can: Set pinmux into "default" state on start
+From:   Marek Vasut <marex@denx.de>
+To:     linux-can@vger.kernel.org
+Cc:     Alexandre Torgue <alexandre.torgue@st.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>, dmurphy@ti.com,
+        netdev@vger.kernel.org, socketcan@hartkopp.net,
+        davem@davemloft.net, andrew@lunn.ch
+References: <20200531181324.383930-1-marex@denx.de>
+ <419338dc-870d-51a4-87ac-ceddcba046dc@denx.de>
+ <341ddbb5-d46a-813a-8fe9-b0d16ca25041@denx.de>
+Message-ID: <c0c2b01d-8cdb-713d-5b4a-cb5dd6e2dd9d@denx.de>
+Date:   Thu, 17 Sep 2020 03:04:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <341ddbb5-d46a-813a-8fe9-b0d16ca25041@denx.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Sep 2020 16:15:05 -0700 Paul E. McKenney wrote:
-> On Wed, Sep 16, 2020 at 11:45:21AM -0700, Jakub Kicinski wrote:
-> > Hi!
-> > 
-> > So I unfolded the RFC patch into smaller chunks and fixed an issue
-> > in SRCU pointed out by build bot. Build bot has been quiet for
-> > a day but I'm not 100% sure it's scanning my tree, so let's
-> > give these patches some ML exposure.
-> > 
-> > The motivation here is that we run into a unused variable
-> > warning in networking code because RCU_LOCKDEP_WARN() makes
-> > its argument disappear with !LOCKDEP / !PROVE_RCU. We marked
-> > the variable as __maybe_unused, but that's ugly IMHO.
-> > 
-> > This set makes the relevant function declarations visible to
-> > the compiler and uses (0 && (condition)) to make the compiler
-> > remove those calls before linker realizes they are never defined.
-> > 
-> > I'm tentatively marking these for net-next, but if anyone (Paul?)
-> > wants to take them into their tree - even better.  
+On 9/1/20 8:56 PM, Marek Vasut wrote:
+> On 8/9/20 1:01 PM, Marek Vasut wrote:
+>> On 5/31/20 8:13 PM, Marek Vasut wrote:
+>>> On systems like stm32mp1 where pins have both "default" and "sleep" pinmux
+>>> states in DT, the pins are in "sleep" state by default. Switch the pins into
+>>> the "default" state when bringing the interface up in m_can_start(), because
+>>> otherwise no CAN communication is possible. This replicates the behavior of
+>>> the resume path, which does the same.
+>>>
+>>> Signed-off-by: Marek Vasut <marex@denx.de>
+>>> Cc: Alexandre Torgue <alexandre.torgue@st.com>
+>>> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+>>> Cc: Wolfgang Grandegger <wg@grandegger.com>
+>>> To: linux-can@vger.kernel.org
+>>> ---
+>>>  drivers/net/can/m_can/m_can.c | 2 ++
+>>>  1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+>>> index 02c5795b7393..76fadf2b8ac2 100644
+>>> --- a/drivers/net/can/m_can/m_can.c
+>>> +++ b/drivers/net/can/m_can/m_can.c
+>>> @@ -1247,6 +1247,8 @@ static void m_can_start(struct net_device *dev)
+>>>  	/* basic m_can configuration */
+>>>  	m_can_chip_config(dev);
+>>>  
+>>> +	pinctrl_pm_select_default_state(cdev->dev);
+>>> +
+>>>  	cdev->can.state = CAN_STATE_ERROR_ACTIVE;
+>>>  
+>>>  	m_can_enable_all_interrupts(cdev);
+>>>
+>>
+>> Any news on this ?
 > 
-> I have pulled these into -rcu for review and further testing, thank you!
-> I of course could not resist editing the commit logs, so please check
-> to make sure that I did not mess anything up.
+> Almost another month has passed by, ping ?
 
-Done & thank you!
-
-> Just so you know, unless this is urgent, it is in my v5.11 pile, that
-> is, for the merge window after next.
-> 
-> If someone else wants to take them, please feel free to add my
-> Acked-by to the RCU pieces.
-
-Sounds good to me, the RCU tree seems most appropriate and we added 
-a workaround for the issue in net-next already, anyway.
-
-Thanks!
+Bump ?
