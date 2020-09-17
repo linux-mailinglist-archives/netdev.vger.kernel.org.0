@@ -2,84 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE57C26D181
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 05:19:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB52126D1E9
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 05:49:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726040AbgIQDTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 23:19:55 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:40932 "EHLO huawei.com"
+        id S1726152AbgIQDty (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 23:49:54 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:49178 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725858AbgIQDTy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Sep 2020 23:19:54 -0400
-X-Greylist: delayed 933 seconds by postgrey-1.27 at vger.kernel.org; Wed, 16 Sep 2020 23:19:53 EDT
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 6F50573C8FE365E61F5B;
-        Thu, 17 Sep 2020 11:04:18 +0800 (CST)
-Received: from euler.huawei.com (10.175.124.27) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 17 Sep 2020 11:04:08 +0800
-From:   Wei Li <liwei391@huawei.com>
-To:     Bin Luo <luobin9@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <huawei.libin@huawei.com>, <guohanjun@huawei.com>
-Subject: [PATCH] hinic: fix potential resource leak
-Date:   Thu, 17 Sep 2020 11:03:07 +0800
-Message-ID: <20200917030307.47195-1-liwei391@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1725267AbgIQDtx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 23:49:53 -0400
+X-Greylist: delayed 956 seconds by postgrey-1.27 at vger.kernel.org; Wed, 16 Sep 2020 23:49:53 EDT
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 3F4C8A0AF3D2D8A30130;
+        Thu, 17 Sep 2020 11:33:56 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.487.0; Thu, 17 Sep 2020
+ 11:33:47 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <yangyingliang@huawei.com>
+Subject: [PATCH net-next] netlink: add spaces around '&' in netlink_recv/sendmsg()
+Date:   Thu, 17 Sep 2020 11:32:23 +0800
+Message-ID: <20200917033223.659862-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.175.124.27]
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In rx_request_irq(), it will just return what irq_set_affinity_hint()
-returns. If it is failed, the napi added is not deleted properly.
-Add a common exit for failures to do this.
+It's hard to read the code without spaces around '&',
+for better reading, add spaces around '&'.
 
-Signed-off-by: Wei Li <liwei391@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_rx.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ net/netlink/af_netlink.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_rx.c b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-index 5bee951fe9d4..63da9cc8ca51 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-@@ -543,18 +543,23 @@ static int rx_request_irq(struct hinic_rxq *rxq)
- 	if (err) {
- 		netif_err(nic_dev, drv, rxq->netdev,
- 			  "Failed to set RX interrupt coalescing attribute\n");
--		rx_del_napi(rxq);
--		return err;
-+		goto err_irq;
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index d2d1448274f5..57a6318ec940 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -1853,7 +1853,7 @@ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	struct scm_cookie scm;
+ 	u32 netlink_skb_flags = 0;
+ 
+-	if (msg->msg_flags&MSG_OOB)
++	if (msg->msg_flags & MSG_OOB)
+ 		return -EOPNOTSUPP;
+ 
+ 	err = scm_send(sock, msg, &scm, true);
+@@ -1916,7 +1916,7 @@ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 		refcount_inc(&skb->users);
+ 		netlink_broadcast(sk, skb, dst_portid, dst_group, GFP_KERNEL);
  	}
+-	err = netlink_unicast(sk, skb, dst_portid, msg->msg_flags&MSG_DONTWAIT);
++	err = netlink_unicast(sk, skb, dst_portid, msg->msg_flags & MSG_DONTWAIT);
  
- 	err = request_irq(rq->irq, rx_irq, 0, rxq->irq_name, rxq);
--	if (err) {
--		rx_del_napi(rxq);
--		return err;
--	}
-+	if (err)
-+		goto err_irq;
+ out:
+ 	scm_destroy(&scm);
+@@ -1929,12 +1929,12 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 	struct scm_cookie scm;
+ 	struct sock *sk = sock->sk;
+ 	struct netlink_sock *nlk = nlk_sk(sk);
+-	int noblock = flags&MSG_DONTWAIT;
++	int noblock = flags & MSG_DONTWAIT;
+ 	size_t copied;
+ 	struct sk_buff *skb, *data_skb;
+ 	int err, ret;
  
- 	cpumask_set_cpu(qp->q_id % num_online_cpus(), &rq->affinity_mask);
--	return irq_set_affinity_hint(rq->irq, &rq->affinity_mask);
-+	err = irq_set_affinity_hint(rq->irq, &rq->affinity_mask);
-+	if (err)
-+		goto err_irq;
-+
-+	return 0;
-+
-+err_irq:
-+	rx_del_napi(rxq);
-+	return err;
- }
+-	if (flags&MSG_OOB)
++	if (flags & MSG_OOB)
+ 		return -EOPNOTSUPP;
  
- static void rx_free_irq(struct hinic_rxq *rxq)
+ 	copied = 0;
 -- 
-2.17.1
+2.25.1
 
