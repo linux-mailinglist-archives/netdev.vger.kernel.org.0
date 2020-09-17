@@ -2,204 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA21D26D445
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 09:09:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D583B26D435
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 09:06:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726216AbgIQHJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 03:09:12 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:50398 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726142AbgIQHJI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 03:09:08 -0400
-X-Greylist: delayed 959 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 03:09:05 EDT
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 0FEE185A67CC42766640;
-        Thu, 17 Sep 2020 14:53:02 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 17 Sep 2020 14:52:54 +0800
-Subject: Re: [PATCH net-next 6/6] net: hns3: use napi_consume_skb() when
- cleaning tx desc
-To:     Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeed@kernel.org>
-CC:     Saeed Mahameed <saeedm@nvidia.com>,
-        "tanhuazhong@huawei.com" <tanhuazhong@huawei.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
-        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>
-References: <1600085217-26245-1-git-send-email-tanhuazhong@huawei.com>
- <1600085217-26245-7-git-send-email-tanhuazhong@huawei.com>
- <e615366cb2b260bf1b77fdaa0692957ab750a9a4.camel@nvidia.com>
- <2b1219b6-a7dd-38a3-bfb7-1cb49330df90@huawei.com>
- <f2a27306606ab6a882f6a6e4363d07174e55c745.camel@kernel.org>
- <CANn89iJwJwzv60pmWEcU-nJ1unbxXuAU7hyFBuzEo-nTHZmm8A@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <3a5c8a23-bc03-e79b-47ef-b67f66452327@huawei.com>
-Date:   Thu, 17 Sep 2020 14:52:54 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1726369AbgIQHGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 03:06:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55844 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726293AbgIQHGY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 03:06:24 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B6941206E6;
+        Thu, 17 Sep 2020 07:06:17 +0000 (UTC)
+Date:   Thu, 17 Sep 2020 10:06:14 +0300
+From:   Leon Romanovsky <leonro@nvidia.com>
+To:     Wong Vee Khee <vee.khee.wong@intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Wei Feng <weifeng.voon@intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        Vijaya Balan Sadhishkhanna 
+        <sadhishkhanna.vijaya.balan@intel.com>,
+        Seow Chen Yong <chen.yong.seow@intel.com>
+Subject: Re: [PATCH net-next] net: stmmac: introduce rtnl_lock|unlock() on
+ configuring real_num_rx|tx_queues
+Message-ID: <20200917070614.GP486552@unreal>
+References: <20200917050215.8725-1-vee.khee.wong@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <CANn89iJwJwzv60pmWEcU-nJ1unbxXuAU7hyFBuzEo-nTHZmm8A@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200917050215.8725-1-vee.khee.wong@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/9/16 16:38, Eric Dumazet wrote:
-> On Wed, Sep 16, 2020 at 10:33 AM Saeed Mahameed <saeed@kernel.org> wrote:
->>
->> On Tue, 2020-09-15 at 15:04 +0800, Yunsheng Lin wrote:
->>> On 2020/9/15 13:09, Saeed Mahameed wrote:
->>>> On Mon, 2020-09-14 at 20:06 +0800, Huazhong Tan wrote:
->>>>> From: Yunsheng Lin <linyunsheng@huawei.com>
->>>>>
->>>>> Use napi_consume_skb() to batch consuming skb when cleaning
->>>>> tx desc in NAPI polling.
->>>>>
->>>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->>>>> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
->>>>> ---
->>>>>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 27
->>>>> +++++++++++-
->>>>> ----------
->>>>>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 +-
->>>>>  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  4 ++--
->>>>>  3 files changed, 17 insertions(+), 16 deletions(-)
->>>>>
->>>>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
->>>>> b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
->>>>> index 4a49a76..feeaf75 100644
->>>>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
->>>>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
->>>>> @@ -2333,10 +2333,10 @@ static int hns3_alloc_buffer(struct
->>>>> hns3_enet_ring *ring,
->>>>>  }
->>>>>
->>>>>  static void hns3_free_buffer(struct hns3_enet_ring *ring,
->>>>> -                      struct hns3_desc_cb *cb)
->>>>> +                      struct hns3_desc_cb *cb, int budget)
->>>>>  {
->>>>>   if (cb->type == DESC_TYPE_SKB)
->>>>> -         dev_kfree_skb_any((struct sk_buff *)cb->priv);
->>>>> +         napi_consume_skb(cb->priv, budget);
->>>>
->>>> This code can be reached from hns3_lb_clear_tx_ring() below which
->>>> is
->>>> your loopback test and called with non-zero budget, I am not sure
->>>> you
->>>> are allowed to call napi_consume_skb() with non-zero budget outside
->>>> napi context, perhaps the cb->type for loopback test is different
->>>> in lb
->>>> test case ? Idk.. , please double check other code paths.
->>>
->>> Yes, loopback test may call napi_consume_skb() with non-zero budget
->>> outside
->>> napi context. Thanks for pointing out this case.
->>>
->>> How about add the below WARN_ONCE() in napi_consume_skb() to catch
->>> this
->>> kind of error?
->>>
->>> WARN_ONCE(!in_serving_softirq(), "napi_consume_skb() is called with
->>> non-zero budget outside napi context");
->>>
->>
->> Cc: Eric
->>
->> I don't know, need to check performance impact.
->> And in_serving_softirq() doesn't necessarily mean in napi
->> but looking at _kfree_skb_defer(), i think it shouldn't care if napi or
->> not as long as it runs in soft irq it will push the skb to that
->> particular cpu napi_alloc_cache, which should be fine.
+On Thu, Sep 17, 2020 at 01:02:15PM +0800, Wong Vee Khee wrote:
+> From: "Tan, Tee Min" <tee.min.tan@intel.com>
+>
+> For driver open(), rtnl_lock is acquired by network stack but not in the
+> resume(). Therefore, we introduce lock_acquired boolean to control when
+> to use rtnl_lock|unlock() within stmmac_hw_setup().
 
-Yes, we only need to ensure _kfree_skb_defer() runs with automic context.
+Doesn't really make sense, if function needs to have lock acquired, the
+caller is supposed to take it and function should have proper lockdep
+annotation inside and not this conditional lock/unlock.
 
-And it seems NAPI polling can be in thread context with BH disabled in below
-patch, so in_softirq() checking should be more future-proof?
+Thanks
 
-* in_softirq()   - We have BH disabled, or are processing softirqs
+>
+> Fixes: 686cff3d7022 ("net: stmmac: Fix incorrect location to set real_num_rx|tx_queues")
+>
 
-net: add support for threaded NAPI polling
-https://www.mail-archive.com/netdev@vger.kernel.org/msg348491.html
+Extra line.
 
-
->>
->> Maybe instead of the WARN_ONCE just remove the budget condition and
->> replace it with
->>
->> if (!in_serving_softirq())
->>       dev_consume_skb_any(skb);
-
-Yes, that is good idea, _kfree_skb_defer() is only called in softirq or
-BH disabled context, dev_consume_skb_any(skb) is called in other context,
-so driver author do not need to worry about the calling context of the
-napi_consume_skb().
-
->>
-> 
-> I think we need to keep costs small.
-> 
-> So lets add a CONFIG_DEBUG_NET option so that developers can add
-> various DEBUG_NET() clauses.
-
-Do you means something like below:
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 157e024..61a6a62 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -5104,6 +5104,15 @@ do {								\
- })
- #endif
-
-+#if defined(CONFIG_DEBUG_NET)
-+#define DEBUG_NET_WARN(condition, format...)				\
-+	do {								\
-+		WARN(condition, ##__VA_ARGS__);
-+	} while (0)
-+#else
-+#define DEBUG_NET_WARN(condition, format...)
-+#endif
-+
- /*
-  *	The list of packet types we will receive (as opposed to discard)
-  *	and the routines to invoke.
-diff --git a/net/Kconfig b/net/Kconfig
-index 3831206..f59ea4b 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -473,3 +473,9 @@ config HAVE_CBPF_JIT
- # Extended BPF JIT (eBPF)
- config HAVE_EBPF_JIT
- 	bool
-+
-+config DEBUG_NET
-+	bool
-+	depends on DEBUG_KERNEL
-+	help
-+	  Say Y here to add some extra checks and diagnostics to networking.
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index bfd7483..10547db 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -904,6 +904,9 @@ void napi_consume_skb(struct sk_buff *skb, int budget)
- 		return;
- 	}
-
-+	DEBUG_NET_WARN(!in_serving_softirq(),
-+		        "napi_consume_skb() is called with non-zero budget outside softirq context");
-+
- 	if (!skb_unref(skb))
- 		return;
-
-
-> .
-> 
+> Signed-off-by: Tan, Tee Min <tee.min.tan@intel.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 13 ++++++++++---
+>  1 file changed, 10 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index df2c74bbfcff..22e6a3defa78 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -2607,7 +2607,8 @@ static void stmmac_safety_feat_configuration(struct stmmac_priv *priv)
+>   *  0 on success and an appropriate (-)ve integer as defined in errno.h
+>   *  file on failure.
+>   */
+> -static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
+> +static int stmmac_hw_setup(struct net_device *dev, bool init_ptp,
+> +			   bool lock_acquired)
+>  {
+>  	struct stmmac_priv *priv = netdev_priv(dev);
+>  	u32 rx_cnt = priv->plat->rx_queues_to_use;
+> @@ -2715,9 +2716,15 @@ static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
+>  	}
+>
+>  	/* Configure real RX and TX queues */
+> +	if (!lock_acquired)
+> +		rtnl_lock();
+> +
+>  	netif_set_real_num_rx_queues(dev, priv->plat->rx_queues_to_use);
+>  	netif_set_real_num_tx_queues(dev, priv->plat->tx_queues_to_use);
+>
+> +	if (!lock_acquired)
+> +		rtnl_unlock();
+> +
+>  	/* Start the ball rolling... */
+>  	stmmac_start_all_dma(priv);
+>
+> @@ -2804,7 +2811,7 @@ static int stmmac_open(struct net_device *dev)
+>  		goto init_error;
+>  	}
+>
+> -	ret = stmmac_hw_setup(dev, true);
+> +	ret = stmmac_hw_setup(dev, true, true);
+>  	if (ret < 0) {
+>  		netdev_err(priv->dev, "%s: Hw setup failed\n", __func__);
+>  		goto init_error;
+> @@ -5238,7 +5245,7 @@ int stmmac_resume(struct device *dev)
+>
+>  	stmmac_clear_descriptors(priv);
+>
+> -	stmmac_hw_setup(ndev, false);
+> +	stmmac_hw_setup(ndev, false, false);
+>  	stmmac_init_coalesce(priv);
+>  	stmmac_set_rx_mode(ndev);
+>
+> --
+> 2.17.0
+>
