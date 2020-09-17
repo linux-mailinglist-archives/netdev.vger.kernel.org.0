@@ -2,92 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 098F326E515
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 21:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FFF526E533
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 21:15:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726436AbgIQTKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 15:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46116 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726409AbgIQTIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 15:08:48 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51671C06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 12:08:48 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id k15so1809853pfc.12
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 12:08:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=VKv6z07aYQPsxB48QNXJUQzrVe584fxJmB3mzOp7sH8=;
-        b=NVSjVijZBRh8G4hBlxfKRnjwyqRk9uT+XDBF3HxP8YjoApin00YX8QVU2eySzc0uEe
-         AoNB4OyxAP3zR/L1s9cM6RC+FV/Mi6La+IR2ivp6TZAnIhACwgnebTLVH05QimQRxNSh
-         TlAP69lxukYWDI1zdLCiIzcj3I+foMW27cbEuIDVzY/xWmmEr7EaGyDoltcDnT/Nnkmc
-         4lPJ9Nn+CAHi8HkdC7WG2iOy27dGOE95AZtoLNdao8zypRgRLd0pz8QM1qGckWl86NEV
-         WE3jBZHUuU3Xj8bduENhiHaATuFKhup5Z0w94MuSlXLYod/Dm5E/zkDs1ZxTq2pC+L3d
-         /e/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=VKv6z07aYQPsxB48QNXJUQzrVe584fxJmB3mzOp7sH8=;
-        b=PVQwFoB0jZh9Xb5+8+WOz9C8rGhoiNA/yrHzPqRcPgZq0ci3ZZfYRwi9lMr2unq3eC
-         83O1sih0N5DJRn0qisuDAJRfUQzUj7V6cUER0dGMwZM6sKHV6t4t/UUe5MeM1fyRao/j
-         n2aPOBMY73izU93R+32bweyC2rapbzU13EXVi7TQFV/Wms0TQ6OJMe8QldDioFRiC5fz
-         EotN3ZxugXc7RNZHiIQoWnJtuoMI65AaOcFQ58YfDVhekMEx2KT37zvE7zwS3YsZReZo
-         5HiF3Me4MIjBhfRZdZ8OMwtIKAE9O+yWrR4C1EbIiVFcnkn4H+OOSWA//5sRxbUGIMNt
-         vZKg==
-X-Gm-Message-State: AOAM530+tNrMYdKQC/HYzCVRcpfN85mc5pR+0mSLGuB48lzocTXi0CG9
-        FYFiMKaK2Og7yncC6DcCTDcIPmxUtfXvQw==
-X-Google-Smtp-Source: ABdhPJykPsrYID2dHTgW5BkvE0hV1y7RZkg+QNFbGb/EkyyB3qTKE1UvuqKeMwTTKiUHKnZ4Nmp8RQ==
-X-Received: by 2002:aa7:82ce:0:b029:142:2501:35cb with SMTP id f14-20020aa782ce0000b0290142250135cbmr12555727pfn.43.1600369727854;
-        Thu, 17 Sep 2020 12:08:47 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id r4sm421855pjf.4.2020.09.17.12.08.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Sep 2020 12:08:47 -0700 (PDT)
-Subject: Re: [PATCH net-next] ionic: add DIMLIB to Kconfig
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20200917184243.11994-1-snelson@pensando.io>
- <20200917120243.045975ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <a17b550c-1db1-d32e-f69c-d51bb4a1ca2b@pensando.io>
-Date:   Thu, 17 Sep 2020 12:08:45 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1726526AbgIQTNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 15:13:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726408AbgIQTMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 15:12:25 -0400
+Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C2C9820672;
+        Thu, 17 Sep 2020 19:11:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600369895;
+        bh=ajBZWptjR+4/DgvjPNb+OHJkTGyVuVOG0g+Y9AOLi4s=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=J3ikwQQviPGUGhvMSmUxT+I/vZ6dfN5u1UGs4mXkdxms8Sea6tDyTL+diYfE/eSW3
+         5EHHqI6cb5jTx4hSMJJPYq1l+GMmILq1XDs9pivEkoaV+w5lyOX+MTMEQqjbNELusH
+         0bqq4SsTglEFNDhv9nKUKeMOcme49GdAzZbiyjjI=
+Message-ID: <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org>
+Subject: Re: BPF redirect API design issue for BPF-prog MTU feedback?
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Maciej =?UTF-8?Q?=C5=BBenczykowski?= <maze@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shaun Crampton <shaun@tigera.io>,
+        David Miller <davem@davemloft.net>,
+        Marek Majkowski <marek@cloudflare.com>
+Date:   Thu, 17 Sep 2020 12:11:33 -0700
+In-Reply-To: <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
+References: <20200917143846.37ce43a0@carbon>
+         <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-In-Reply-To: <20200917120243.045975ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/17/20 12:02 PM, Jakub Kicinski wrote:
-> On Thu, 17 Sep 2020 11:42:43 -0700 Shannon Nelson wrote:
->>>> ld.lld: error: undefined symbol: net_dim_get_rx_moderation
->>     >>> referenced by ionic_lif.c:52 (drivers/net/ethernet/pensando/ionic/ionic_lif.c:52)
->>     >>> net/ethernet/pensando/ionic/ionic_lif.o:(ionic_dim_work) in archive drivers/built-in.a
->> --
-> This is going to cut off the commit message when patch is applied.
+On Thu, 2020-09-17 at 05:54 -0700, Maciej Żenczykowski wrote:
+> On Thu, Sep 17, 2020 at 5:39 AM Jesper Dangaard Brouer
+> <brouer@redhat.com> wrote:
+> > 
+> > As you likely know[1] I'm looking into moving the MTU check (for
+> > TC-BPF)
+> > in __bpf_skb_max_len() when e.g. called by bpf_skb_adjust_room(),
+> > because when redirecting packets to another netdev it is not
+> > correct to
+> > limit the MTU based on the incoming netdev.
+> > 
+> > I was looking at doing the MTU check in bpf_redirect() helper,
+> > because
+> > at this point we know the redirect to netdev, and returning an
+> > indication/error that MTU was exceed, would allow the BPF-prog
+> > logic to
+> > react, e.g. sending ICMP (instead of packet getting silently
+> > dropped).
+> > BUT this is not possible because bpf_redirect(index, flags) helper
+> > don't provide the packet context-object (so I cannot lookup the
+> > packet
+> > length).
+> > 
+> > Seeking input:
+> > 
+> > Should/can we change the bpf_redirect API or create a new helper
+> > with
+> > packet-context?
+> > 
+> >  Note: We have the same need for the packet context for XDP when
+> >  redirecting the new multi-buffer packets, as not all destination
+> > netdev
+> >  will support these new multi-buffer packets.
+> > 
+> > I can of-cause do the MTU checks on kernel-side in skb_do_redirect,
+> > but
+> > then how do people debug this? as packet will basically be silently
+> > dropped.
+> > 
+> > 
+> > 
+> > (Looking at how does BPF-prog logic handle MTU today)
+> > 
+> > How do bpf_skb_adjust_room() report that the MTU was exceeded?
+> > Unfortunately it uses a common return code -ENOTSUPP which used for
+> > multiple cases (include MTU exceeded). Thus, the BPF-prog logic
+> > cannot
+> > use this reliably to know if this is a MTU exceeded event. (Looked
+> > BPF-prog code and they all simply exit with TC_ACT_SHOT for all
+> > error
+> > codes, cloudflare have the most advanced handling with
+> > metrics->errors_total_encap_adjust_failed++).
+> > 
+> > 
+> > [1] 
+> > https://lore.kernel.org/bpf/159921182827.1260200.9699352760916903781.stgit@firesoul/
+> > --
+> > Best regards,
+> >   Jesper Dangaard Brouer
+> >   MSc.CS, Principal Kernel Engineer at Red Hat
+> >   LinkedIn: http://www.linkedin.com/in/brouer
+> > 
+> 
+> (a) the current state of the world seems very hard to use correctly,
+> so adding new apis,
+> or even changing existing ones seems ok to me.
+> especially if this just means changing what error code they return
+> 
+> (b) another complexity with bpf_redirect() is you can call it, it can
+> succeed,
+> but then you can not return TC_ACT_REDIRECT from the bpf program,
+> which effectively makes the earlier *successful* bpf_redirect() call
+> an utter no-op.
+> 
+> (bpf_redirect() just determines what a future return TC_ACT_REDIRECT
+> will do)
+> 
+> so if you bpf_redirect to interface with larger mtu, then increase
+> packet size,
 
-Isn't the trigger a three dash string?  It is only two dashes, not 
-three, and "git am" seems to work correctly for me.  Is there a 
-different mechanism I need to watch out for?
+why would you redirect then touch the packet afterwards ? 
+if you have a bad program, then it is a user issue.
 
-sln
+> then return TC_ACT_OK, then you potentially end up with excessively
+> large
+> packet egressing through original interface (with small mtu).
+> 
+> My vote would be to return a new distinct error from bpf_redirect()
+> based on then current
+> packet size and interface being redirected to, save this interface
+> mtu
+> somewhere,
+> then in operations that increase packet size check against this saved
+> mtu,
+> for correctness you still have to check mtu after the bpf program is
+> done,
+> but this is then just to deal with braindead bpf code (that calls
+> bpf_redirect and returns TC_ACT_OK, or calls bpf_redirect() multiple
+> times, or something...).
+> 
 
 
->
->>>> ld.lld: error: undefined symbol: net_dim
->>     >>> referenced by ionic_txrx.c:456 (drivers/net/ethernet/pensando/ionic/ionic_txrx.c:456)
->>     >>> net/ethernet/pensando/ionic/ionic_txrx.o:(ionic_dim_update) in archive drivers/built-in.a
->>
->> Fixes: 04a834592bf5 ("ionic: dynamic interrupt moderation")
->> Reported-by: kernel test robot <lkp@intel.com>
->> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Another solution is to have an exception function defined in the
+BPF_prog, this function by itself is another program that can be
+executed to notify the prog about any exception/err that happened after
+the main BPF_program exited and let the XDP program react by its own
+logic.
+
+example:
+
+BPF_prog:
+    int XDP_main_prog(xdp_buff) {
+        xdp_adjust_head/tail(xdp_buff);
+        return xdp_redirect(ifindex, flags);
+    }
+
+    int XDP_exception(xdp_buff, excption_code) {
+        if (excetption_code == XDP_REDIRECRT_MTU_EXCEEDED) {
+                ICMP_response(xdp_buff);
+                return XDP_TX;
+        }
+        return XDP_DROP;
+    }
+
+
+netdev_driver_xdp_handle():
+   act = bpf_prog_run_xdp(prog, xdp); // Run XDP_main_prog
+   if (act == XDP_REDIRECT)
+       err = xdp_do_redirect(netdev, xdp, prog);
+       if (err) { 
+          // Run XDP_exception() function in the user prog
+          // finds the exception handler of active program
+          act = bpf_prog_run_xdp_exciption(prog, xdp, err);
+          // then handle exception action in the driver
+(XDP_TX/DROP/FORWARD).. 
+       }
+
+of-course a user program will be notified only on the first err .. 
+if it fails on the 2nd time .. just drop..
+
+-Saeed.
 
