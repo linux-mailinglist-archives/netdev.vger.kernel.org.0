@@ -2,83 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2C1626E744
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 23:20:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F02726E76F
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 23:29:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726139AbgIQVUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 17:20:45 -0400
-Received: from mga09.intel.com ([134.134.136.24]:33449 "EHLO mga09.intel.com"
+        id S1726037AbgIQV3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 17:29:21 -0400
+Received: from mx2.suse.de ([195.135.220.15]:33310 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725874AbgIQVUo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 17:20:44 -0400
-IronPort-SDR: wRrFjzXo2OkVZX1RBgI3L2hPuCaC/anhcjyzsfV9Lo3fEBaoDpzdK090fuNQbo5Z2/56g4AEav
- cnjcyMkvDsag==
-X-IronPort-AV: E=McAfee;i="6000,8403,9747"; a="160723263"
-X-IronPort-AV: E=Sophos;i="5.77,272,1596524400"; 
-   d="scan'208";a="160723263"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 14:19:27 -0700
-IronPort-SDR: Hriccl3i1c7PAJSohBCSu7F+vimqBHKplqQpVpqClYBv3dp3spvi7kXuImTz7zs34dqBpy1JX/
- 2Umtjg1eZCiQ==
-X-IronPort-AV: E=Sophos;i="5.77,272,1596524400"; 
-   d="scan'208";a="289117720"
-Received: from shantika-mobl1.amr.corp.intel.com ([10.255.229.204])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 14:19:27 -0700
-Date:   Thu, 17 Sep 2020 14:19:26 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-X-X-Sender: mjmartin@shantika-mobl1.amr.corp.intel.com
-To:     Paolo Abeni <pabeni@redhat.com>
-cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        mptcp@lists.01.org
-Subject: Re: [MPTCP] [PATCH net-next] mptcp: fix integer overflow in
- mptcp_subflow_discard_data()
-In-Reply-To: <1a927c595adf46cf5ff186ca6b129f12fb70f492.1600375771.git.pabeni@redhat.com>
-Message-ID: <alpine.OSX.2.23.453.2009171413360.4728@shantika-mobl1.amr.corp.intel.com>
-References: <1a927c595adf46cf5ff186ca6b129f12fb70f492.1600375771.git.pabeni@redhat.com>
-User-Agent: Alpine 2.23 (OSX 453 2020-06-18)
+        id S1725844AbgIQV3V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 17:29:21 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id CA1E6B178;
+        Thu, 17 Sep 2020 21:29:53 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 962076074F; Thu, 17 Sep 2020 23:29:19 +0200 (CEST)
+Date:   Thu, 17 Sep 2020 23:29:19 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] ethtool: add and use message type for tunnel info
+ reply
+Message-ID: <20200917212919.3n6f3zdegjeyhfud@lion.mk-sys.cz>
+References: <20200916230410.34FCE6074F@lion.mk-sys.cz>
+ <20200917014151.GK3463198@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200917014151.GK3463198@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Sep 17, 2020 at 03:41:51AM +0200, Andrew Lunn wrote:
+> On Thu, Sep 17, 2020 at 01:04:10AM +0200, Michal Kubecek wrote:
+> > Tunnel offload info code uses ETHTOOL_MSG_TUNNEL_INFO_GET message type (cmd
+> > field in genetlink header) for replies to tunnel info netlink request, i.e.
+> > the same value as the request have. This is a problem because we are using
+> > two separate enums for userspace to kernel and kernel to userspace message
+> > types so that this ETHTOOL_MSG_TUNNEL_INFO_GET (28) collides with
+> > ETHTOOL_MSG_CABLE_TEST_TDR_NTF which is what message type 28 means for
+> > kernel to userspace messages.
+> 
+> >  
+> >  	rskb = ethnl_reply_init(reply_len, req_info.dev,
+> > -				ETHTOOL_MSG_TUNNEL_INFO_GET,
+> > +				ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY,
+> >  				ETHTOOL_A_TUNNEL_INFO_HEADER,
+> >  				info, &reply_payload);
+> 
+> Michal
+> 
+> Maybe it would make sense to change the two enums from anonymous to
+> tagged. We can then make ethnl_reply_init() do type checking and
+> hopefully catch such problems earlier?
 
-On Thu, 17 Sep 2020, Paolo Abeni wrote:
+This sounds like a good idea, it should prevent similar mistakes.
 
-> Christoph reported an infinite loop in the subflow receive path
-> under stress condition.
->
-> If there are multiple subflows, each of them using a large send
-> buffer, the delta between the sequence number used by
-> MPTCP-level retransmission can and the current msk->ack_seq
-> can be greater than MAX_INT.
->
-> In the above scenario, when calling mptcp_subflow_discard_data(),
-> such delta will be truncated to int, and could result in a negative
-> number: no bytes will be dropped, and subflow_check_data_avail()
-> will try again to process the same packet, looping forever.
->
-> This change addresses the issue by expanding the 'limit' size to 64
-> bits, so that overflows are not possible anymore.
->
-> Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/87
-> Fixes: 6719331c2f73 ("mptcp: trigger msk processing even for OoO data")
-> Reported-and-tested-by: Christoph Paasch <cpaasch@apple.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
-> net-next patch, as the culprit commit is only on net-next currently
-> ---
-> net/mptcp/subflow.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
+> I just wonder if we then run into ABI problems?
 
-Thanks Paolo!
+I don't think there would be a problem with ABI, binary representation
+of the values shouldn't change and ethnl_reply_init() is not even
+exported; ethtool_notify() which would also benefit from stricter type
+checking is exported but it is still kernel API which is not guaranteed
+to be stable.
 
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+On the other hand, the enums are part of userspace API so I better take
+a closer look to make sure we don't run into some trouble there.
 
-
---
-Mat Martineau
-Intel
+Michal
