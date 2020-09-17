@@ -2,338 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB81126E238
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 19:22:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C18826E30E
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 19:59:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726514AbgIQRWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 13:22:23 -0400
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:4967 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726470AbgIQRUt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 13:20:49 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f639abb0001>; Thu, 17 Sep 2020 10:19:55 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Thu, 17 Sep 2020 10:20:39 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Thu, 17 Sep 2020 10:20:39 -0700
-Received: from sw-mtx-036.mtx.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 17 Sep
- 2020 17:20:38 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net-next v2 8/8] netdevsim: Add support for add and delete PCI SF port
-Date:   Thu, 17 Sep 2020 20:20:20 +0300
-Message-ID: <20200917172020.26484-9-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200917172020.26484-1-parav@nvidia.com>
-References: <20200917081731.8363-8-parav@nvidia.com>
- <20200917172020.26484-1-parav@nvidia.com>
+        id S1726353AbgIQR6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 13:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726551AbgIQRjl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 13:39:41 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0236EC061356
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:39:35 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id g128so3103809iof.11
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 10:39:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1JC8Jq8l5d3FMIOqG3s3tOJTv29rQ/B9PWS+aSrpLGw=;
+        b=U405yXMXivO9GetXit4zYyFid6bzqqIA4UwrlGS5LHR/5sRVogi2Yb/2UL2pKQhQ6I
+         h2y8mLHqugpSytlwllaXNvD6yLD2LkMx6JYV9OkEP9tOlOXqlqXR51d7I0PXmXIgGSsN
+         Z56BE5EQTRP3G5Ug/DWidnc4tOtRGffpZTTssuJqbgiX/9ELY7wXCL/+ZS3FxPlQWGF6
+         macQV8BiucaZiMVMEUIulgydWrNK1duaqGU3OOj+9FOBLjc3olAiIFCgp8R3MkMyWWgA
+         5qS+MG6/cUb69sajAlTpfCU8wIwH/K+AT3KB9jsPOHI/1Cg3LPckfVKgyvafgZhfiaOt
+         2cXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1JC8Jq8l5d3FMIOqG3s3tOJTv29rQ/B9PWS+aSrpLGw=;
+        b=gIvXgGADX6Q6NC6JD0j1fdi796g+OL8PJfKCaj/sXkT98y1Zt97guBY7UDuGYUYd0B
+         Tw9co5uTq+i509C/WO+0ttSCsjHuQb0ZPCYpyavjd7m7VTcaunTRSCn1H2UygrpSJfqN
+         Uz+6Qt1PSHz8zf608FtSK5D/f9bDNqhSEupLLJm4Q50SJaDbYUq72cmIbRWy1Nf8sZoY
+         7POenYdsag0ytwgf1UvYtU2sPicJMZSSU0x8Y6u4AKa2jSsM/fk/o02BIchqdJSwkSCL
+         4hr+s3/hwTwKzKk8Az2Wa/U1OtYqb/sGkfC7Ji6Vy6wSYFavr2fCDQxO/VPebwr+C/Bt
+         OUyA==
+X-Gm-Message-State: AOAM532Q7nV6HzA8dlV17iqXCNRQelK8BGbxqT+uyj/QmCK7hvHjTWjw
+        ELpETEKsGsnFxhHzp+pTmZHezgHV1C3SAg==
+X-Google-Smtp-Source: ABdhPJybbRBFZ3GvAgFEYWFu2IpIWGxn/o7bQ4EoBVHUsEH7hygQHQnFqx2LFmtttDZyH5am5EUs7Q==
+X-Received: by 2002:a05:6638:144:: with SMTP id y4mr27177041jao.61.1600364374081;
+        Thu, 17 Sep 2020 10:39:34 -0700 (PDT)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id l6sm192725ilt.34.2020.09.17.10.39.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Sep 2020 10:39:33 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3 3/7] net: ipa: manage endpoints separate from clock
+Date:   Thu, 17 Sep 2020 12:39:22 -0500
+Message-Id: <20200917173926.24266-4-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200917173926.24266-1-elder@linaro.org>
+References: <20200917173926.24266-1-elder@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1600363195; bh=/AiavoDGmWDAXWAOOXL6PjYKYzFMPXnr8WU9tXlwyUI=;
-        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-         In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
-         Content-Type:X-Originating-IP:X-ClientProxiedBy;
-        b=AIcJJbWqaDwmilJtlDkz7F+oGHAUvf5J4d8IrgYHJvv3+q/xHx7ekGZ3bbOnFBGBP
-         xl/WrStHi7UFcOUxVt3JpZN4oJF0uSRkJPLgkO/5ndBu/7eFgHZfrZpCoReKkUMCzK
-         0m1jEhs19im20eajtyFFypzWyckPuRMajC8j0QetCwzSsksrHxsXEbS7ohJIKOnfXh
-         8lZFBA2y3/LDluvE05NGiolTBsw6neneqAXwjoGH1iz6WFaErZt4EgewTJq7XMY9/I
-         h6tzHYg6bZQppjZIxnusrloJGm6wZtIGz1FT7NN2704UmmS1suOlvDpZ1SxJG3H4qU
-         67PG50+hcxeog==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simulate PCI SF ports. Allow user to create one or more PCI SF ports.
+Currently, when (before) the last IPA clock reference is dropped,
+all endpoints are suspended.  And whenever the first IPA clock
+reference is taken, all endpoints are resumed (or started).
 
-Examples:
+In most cases there's no need to start endpoints when the clock
+starts.  So move the calls to ipa_endpoint_suspend() and
+ipa_endpoint_resume() out of ipa_clock_put() and ipa_clock_get(),
+respectiely.  Instead, only suspend endpoints when handling a system
+suspend, and only resume endpoints when handling a system resume.
 
-Create a PCI PF and PCI SF port.
-$ devlink port add netdevsim/netdevsim10/10 flavour pcipf pfnum 0
-$ devlink port add netdevsim/netdevsim10/11 flavour pcisf pfnum 0 sfnum 44
-$ devlink port show netdevsim/netdevsim10/11
-netdevsim/netdevsim10/11: type eth netdev eni10npf0sf44 flavour pcisf contr=
-oller 0 pfnum 0 sfnum 44 external true splittable false
-  function:
-    hw_addr 00:00:00:00:00:00 state inactive
-
-$ devlink port function set netdevsim/netdevsim10/11 hw_addr 00:11:22:33:44=
-:55 state active
-
-$ devlink port show netdevsim/netdevsim10/11 -jp
-{
-    "port": {
-        "netdevsim/netdevsim10/11": {
-            "type": "eth",
-            "netdev": "eni10npf0sf44",
-            "flavour": "pcisf",
-            "controller": 0,
-            "pfnum": 0,
-            "sfnum": 44,
-            "external": true,
-            "splittable": false,
-            "function": {
-                "hw_addr": "00:11:22:33:44:55",
-                "state": "active"
-            }
-        }
-    }
-}
-
-Delete newly added devlink port
-$ devlink port add netdevsim/netdevsim10/11
-
-Add devlink port of flavour 'pcisf' where port index and sfnum are
-auto assigned by driver.
-$ devlink port add netdevsim/netdevsim10 flavour pcisf controller 0 pfnum 0
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Alex Elder <elder@linaro.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/net/netdevsim/netdevsim.h     |  1 +
- drivers/net/netdevsim/port_function.c | 95 +++++++++++++++++++++++++--
- 2 files changed, 92 insertions(+), 4 deletions(-)
+v3: Added Bjorn's reviewed-by tag.
 
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netd=
-evsim.h
-index 0ea9705eda38..c70782e444d5 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -222,6 +222,7 @@ struct nsim_dev {
- 		struct list_head head;
- 		struct ida ida;
- 		struct ida pfnum_ida;
-+		struct ida sfnum_ida;
- 	} port_functions;
- };
-=20
-diff --git a/drivers/net/netdevsim/port_function.c b/drivers/net/netdevsim/=
-port_function.c
-index 99581d3d15fe..e1812acd55b4 100644
---- a/drivers/net/netdevsim/port_function.c
-+++ b/drivers/net/netdevsim/port_function.c
-@@ -13,10 +13,12 @@ struct nsim_port_function {
- 	unsigned int port_index;
- 	enum devlink_port_flavour flavour;
- 	u32 controller;
-+	u32 sfnum;
- 	u16 pfnum;
- 	struct nsim_port_function *pf_port; /* Valid only for SF port */
- 	u8 hw_addr[ETH_ALEN];
- 	u8 state; /* enum devlink_port_function_state */
-+	int refcount; /* Counts how many sf ports are bound attached to this pf p=
-ort. */
- };
-=20
- void nsim_dev_port_function_init(struct nsim_dev *nsim_dev)
-@@ -25,10 +27,13 @@ void nsim_dev_port_function_init(struct nsim_dev *nsim_=
-dev)
- 	INIT_LIST_HEAD(&nsim_dev->port_functions.head);
- 	ida_init(&nsim_dev->port_functions.ida);
- 	ida_init(&nsim_dev->port_functions.pfnum_ida);
-+	ida_init(&nsim_dev->port_functions.sfnum_ida);
+ drivers/net/ipa/ipa_clock.c | 14 ++++----------
+ drivers/net/ipa/ipa_main.c  |  8 ++++++++
+ 2 files changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/ipa/ipa_clock.c b/drivers/net/ipa/ipa_clock.c
+index b703866f2e20b..a2c0fde058199 100644
+--- a/drivers/net/ipa/ipa_clock.c
++++ b/drivers/net/ipa/ipa_clock.c
+@@ -200,9 +200,8 @@ bool ipa_clock_get_additional(struct ipa *ipa)
+ 
+ /* Get an IPA clock reference.  If the reference count is non-zero, it is
+  * incremented and return is immediate.  Otherwise it is checked again
+- * under protection of the mutex, and if appropriate the clock (and
+- * interconnects) are enabled suspended endpoints (if any) are resumed
+- * before returning.
++ * under protection of the mutex, and if appropriate the IPA clock
++ * is enabled.
+  *
+  * Incrementing the reference count is intentionally deferred until
+  * after the clock is running and endpoints are resumed.
+@@ -229,17 +228,14 @@ void ipa_clock_get(struct ipa *ipa)
+ 		goto out_mutex_unlock;
+ 	}
+ 
+-	ipa_endpoint_resume(ipa);
+-
+ 	refcount_set(&clock->count, 1);
+ 
+ out_mutex_unlock:
+ 	mutex_unlock(&clock->mutex);
  }
-=20
- void nsim_dev_port_function_exit(struct nsim_dev *nsim_dev)
+ 
+-/* Attempt to remove an IPA clock reference.  If this represents the last
+- * reference, suspend endpoints and disable the clock (and interconnects)
+- * under protection of a mutex.
++/* Attempt to remove an IPA clock reference.  If this represents the
++ * last reference, disable the IPA clock under protection of the mutex.
+  */
+ void ipa_clock_put(struct ipa *ipa)
  {
-+	WARN_ON(!ida_is_empty(&nsim_dev->port_functions.sfnum_ida));
-+	ida_destroy(&nsim_dev->port_functions.sfnum_ida);
- 	WARN_ON(!ida_is_empty(&nsim_dev->port_functions.pfnum_ida));
- 	ida_destroy(&nsim_dev->port_functions.pfnum_ida);
- 	WARN_ON(!ida_is_empty(&nsim_dev->port_functions.ida));
-@@ -119,9 +124,24 @@ nsim_devlink_port_function_alloc(struct nsim_dev *dev,=
- const struct devlink_port
- 			goto fn_ida_err;
- 		port->pfnum =3D ret;
- 		break;
-+	case DEVLINK_PORT_FLAVOUR_PCI_SF:
-+		if (attrs->sfnum_valid)
-+			ret =3D ida_alloc_range(&dev->port_functions.sfnum_ida, attrs->sfnum,
-+					      attrs->sfnum, GFP_KERNEL);
-+		else
-+			ret =3D ida_alloc(&dev->port_functions.sfnum_ida, GFP_KERNEL);
-+		if (ret < 0)
-+			goto fn_ida_err;
-+		port->sfnum =3D ret;
-+		port->pfnum =3D attrs->pfnum;
-+		break;
- 	default:
- 		break;
- 	}
-+	/* refcount_t is not needed as port is protected by port_functions.mutex.
-+	 * This count is to keep track of how many SF ports are attached a PF por=
-t.
-+	 */
-+	port->refcount =3D 1;
- 	return port;
-=20
- fn_ida_err:
-@@ -137,6 +157,9 @@ static void nsim_devlink_port_function_free(struct nsim=
-_dev *dev, struct nsim_po
- 	case DEVLINK_PORT_FLAVOUR_PCI_PF:
- 		ida_simple_remove(&dev->port_functions.pfnum_ida, port->pfnum);
- 		break;
-+	case DEVLINK_PORT_FLAVOUR_PCI_SF:
-+		ida_simple_remove(&dev->port_functions.sfnum_ida, port->sfnum);
-+		break;
- 	default:
- 		break;
- 	}
-@@ -170,6 +193,11 @@ nsim_dev_port_port_exists(struct nsim_dev *nsim_dev, c=
-onst struct devlink_port_n
- 		if (attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF &&
- 		    tmp->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF && tmp->pfnum =3D=3D=
- attrs->pfnum)
- 			return true;
-+
-+		if (attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_SF &&
-+		    tmp->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_SF &&
-+		    tmp->sfnum =3D=3D attrs->sfnum && tmp->pfnum =3D=3D attrs->pfnum)
-+			return true;
- 	}
- 	return false;
- }
-@@ -183,21 +211,71 @@ nsim_dev_devlink_port_index_lookup(const struct nsim_=
-dev *nsim_dev, unsigned int
- 	list_for_each_entry(port, &nsim_dev->port_functions.head, list) {
- 		if (port->port_index !=3D port_index)
- 			continue;
-+		if (port->refcount > 1) {
-+			NL_SET_ERR_MSG_MOD(extack, "Port is in use");
-+			return ERR_PTR(-EBUSY);
-+		}
- 		return port;
- 	}
- 	NL_SET_ERR_MSG_MOD(extack, "User created port not found");
- 	return ERR_PTR(-ENOENT);
- }
-=20
-+static struct nsim_port_function *
-+pf_port_get(struct nsim_dev *nsim_dev, struct nsim_port_function *port)
-+{
-+	struct nsim_port_function *tmp;
-+
-+	/* PF port addition doesn't need a parent. */
-+	if (port->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF)
-+		return NULL;
-+
-+	list_for_each_entry(tmp, &nsim_dev->port_functions.head, list) {
-+		if (tmp->flavour !=3D DEVLINK_PORT_FLAVOUR_PCI_PF || tmp->pfnum !=3D por=
-t->pfnum)
-+			continue;
-+
-+		if (tmp->refcount + 1 =3D=3D INT_MAX)
-+			return ERR_PTR(-ENOSPC);
-+
-+		port->pf_port =3D tmp;
-+		tmp->refcount++;
-+		return tmp;
-+	}
-+	return ERR_PTR(-ENOENT);
-+}
-+
-+static void pf_port_put(struct nsim_port_function *port)
-+{
-+	if (port->pf_port) {
-+		port->pf_port->refcount--;
-+		WARN_ON(port->pf_port->refcount < 0);
-+	}
-+	port->refcount--;
-+	WARN_ON(port->refcount !=3D 0);
-+}
-+
- static int nsim_devlink_port_function_add(struct devlink *devlink, struct =
-nsim_dev *nsim_dev,
- 					  struct nsim_port_function *port,
- 					  struct netlink_ext_ack *extack)
+@@ -249,8 +245,6 @@ void ipa_clock_put(struct ipa *ipa)
+ 	if (!refcount_dec_and_mutex_lock(&clock->count, &clock->mutex))
+ 		return;
+ 
+-	ipa_endpoint_suspend(ipa);
+-
+ 	ipa_clock_disable(ipa);
+ 
+ 	mutex_unlock(&clock->mutex);
+diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+index 409375b96eb8f..4d5394bcfe47e 100644
+--- a/drivers/net/ipa/ipa_main.c
++++ b/drivers/net/ipa/ipa_main.c
+@@ -907,11 +907,15 @@ static int ipa_remove(struct platform_device *pdev)
+  * Return:	Always returns zero
+  *
+  * Called by the PM framework when a system suspend operation is invoked.
++ * Suspends endpoints and releases the clock reference held to keep
++ * the IPA clock running until this point.
+  */
+ static int ipa_suspend(struct device *dev)
  {
-+	struct nsim_port_function *pf_port;
- 	int err;
-=20
--	list_add(&port->list, &nsim_dev->port_functions.head);
-+	/* Keep all PF ports at the start, so that when driver is unloaded
-+	 * All SF ports from the end of the list can be removed first.
-+	 */
-+	if (port->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF)
-+		list_add(&port->list, &nsim_dev->port_functions.head);
-+	else
-+		list_add_tail(&port->list, &nsim_dev->port_functions.head);
+ 	struct ipa *ipa = dev_get_drvdata(dev);
+ 
++	ipa_endpoint_suspend(ipa);
 +
-+	pf_port =3D pf_port_get(nsim_dev, port);
-+	if (IS_ERR(pf_port)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Fail to get pf port");
-+		err =3D PTR_ERR(pf_port);
-+		goto pf_err;
-+	}
-=20
--	port->state =3D DEVLINK_PORT_FUNCTION_STATE_INACTIVE;
- 	err =3D devlink_port_register(devlink, &port->dl_port, port->port_index);
- 	if (err)
- 		goto reg_err;
-@@ -213,6 +291,8 @@ static int nsim_devlink_port_function_add(struct devlin=
-k *devlink, struct nsim_d
- 	devlink_port_type_clear(&port->dl_port);
- 	devlink_port_unregister(&port->dl_port);
- reg_err:
-+	pf_port_put(port);
-+pf_err:
- 	list_del(&port->list);
- 	return err;
- }
-@@ -224,12 +304,14 @@ static void nsim_devlink_port_function_del(struct nsi=
-m_dev *nsim_dev,
- 	unregister_netdev(port->netdev);
- 	devlink_port_unregister(&port->dl_port);
- 	list_del(&port->list);
-+	pf_port_put(port);
- }
-=20
- static bool nsim_dev_port_flavour_supported(const struct nsim_dev *nsim_de=
-v,
- 					    const struct devlink_port_new_attrs *attrs)
+ 	ipa_clock_put(ipa);
+ 	__clear_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
+ 
+@@ -925,6 +929,8 @@ static int ipa_suspend(struct device *dev)
+  * Return:	Always returns 0
+  *
+  * Called by the PM framework when a system resume operation is invoked.
++ * Takes an IPA clock reference to keep the clock running until suspend,
++ * and resumes endpoints.
+  */
+ static int ipa_resume(struct device *dev)
  {
--	return attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF;
-+	return attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF ||
-+	       attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_SF;
+@@ -936,6 +942,8 @@ static int ipa_resume(struct device *dev)
+ 	__set_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
+ 	ipa_clock_get(ipa);
+ 
++	ipa_endpoint_resume(ipa);
++
+ 	return 0;
  }
-=20
- int nsim_dev_devlink_port_new(struct devlink *devlink, const struct devlin=
-k_port_new_attrs *attrs,
-@@ -266,7 +348,11 @@ int nsim_dev_devlink_port_new(struct devlink *devlink,=
- const struct devlink_port
- 	       nsim_dev->switch_id.id_len);
- 	port->dl_port.attrs.switch_id.id_len =3D nsim_dev->switch_id.id_len;
-=20
--	devlink_port_attrs_pci_pf_set(&port->dl_port, port->controller, port->pfn=
-um, false);
-+	if (attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF)
-+		devlink_port_attrs_pci_pf_set(&port->dl_port, port->controller, port->pf=
-num, false);
-+	else
-+		devlink_port_attrs_pci_sf_set(&port->dl_port, port->controller, port->pf=
-num,
-+					      port->sfnum, false);
-=20
- 	err =3D nsim_devlink_port_function_add(devlink, nsim_dev, port, extack);
- 	if (err)
-@@ -333,6 +419,7 @@ void nsim_dev_port_function_disable(struct nsim_dev *ns=
-im_dev)
- 	 * ports.
- 	 */
-=20
-+	/* Remove SF ports first, followed by PF ports. */
- 	list_for_each_entry_safe_reverse(port, tmp, &nsim_dev->port_functions.hea=
-d, list) {
- 		nsim_devlink_port_function_del(nsim_dev, port);
- 		nsim_devlink_port_function_free(nsim_dev, port);
---=20
-2.26.2
+ 
+-- 
+2.20.1
 
