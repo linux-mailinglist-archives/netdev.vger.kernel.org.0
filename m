@@ -2,52 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FA5B26D313
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 07:30:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9F0226D31A
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 07:30:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726191AbgIQF3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 01:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59768 "EHLO
+        id S1726306AbgIQFaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 01:30:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725267AbgIQF3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 01:29:50 -0400
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9998BC06174A
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 22:29:50 -0700 (PDT)
-Received: by mail-qv1-xf4a.google.com with SMTP id w2so765448qvr.19
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 22:29:50 -0700 (PDT)
+        with ESMTP id S1725267AbgIQFaE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 01:30:04 -0400
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02EDC06174A
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 22:30:03 -0700 (PDT)
+Received: by mail-qt1-x84a.google.com with SMTP id u6so881304qte.8
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 22:30:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=DZtn9Rr5NAewp1qZv3hmsmsuQTNnLlGeDd7GB4F/76U=;
-        b=N5U4fkyXuSJJo80wRUSBbIGDBA3w3e+zfqT8bI/6fqISU81t+RiYolHSLlsTvDD19M
-         xjSY3EkS66Pg6nTWAfsAMszpfpx/k1bH0dAwzGAkqAiS35tTV9xqJysEccv+1kZnP/xr
-         4LeXHMQXLFZ0mkry9aoUkV0IxLTVIHGv6VoRNyraUdBGsGxjvyrAmEL9+6lCOcbqCU/6
-         ffRKh03667e2hOaNrprKQRxp6HeqietvqwpIGd43ki0BKutqaMI9X49iqoLqGYMg+D8z
-         cdo5fFARDhZeRM5RlYxWuw3CHSU0ORRCSB21QPhNCZHqjw27+I2yEXQaHlapIcXd84bE
-         /yQg==
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=XmWCE7age5UnMwS5JxN69B5KWt/qREsunjUKP7hacM0=;
+        b=TohQyaKedV/7Ibhkoc0hUwGYUEX+/BNWsSL89N2gO0v+tE9tqhLwpg6tZeaw4GUbZo
+         4HhpI/j7aAxBG2p8cW/hQfog/Kmro0dyRPtJQtGNmyH54sBGaXykSOQGiR/ASZmrz8BF
+         tB78F/5HihiYxkviq3wgYXKfaYCMIF+MQqfbpXGGxHWVrp06DGKXlmhcBOx929fO4+VY
+         fJ449NLpfNWft19izeqkHXiNKFEvYfZa1hQnlrx2VsjAIbgz1MzSDAimpkHRCDpoC6bK
+         ePgoYsCEivmmA6gpPsZYqOuNoETRSoKI10bgfJU+B7xe6W6Huuf2ythSEi2yJIlqmoJr
+         Zblg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=DZtn9Rr5NAewp1qZv3hmsmsuQTNnLlGeDd7GB4F/76U=;
-        b=rO7tk2h1wvUsZZLSe3X5fIPEUJF8Sm6RTcCplqoqcqT3pVlTQRst1rJBNnPnYKx2H0
-         HOZhr8vhlhJANy0ec+x8JFwVS4t+1vr4xplpsgpuf4S2olaA2zm22klru68RFGsuTttZ
-         Gc20rlCyVZDGntG+AAB707yMeotOJNmhEfv8pW+F3nSQtny/4+Eu4I4bCD2FPvXDqR9V
-         4L7OCBYLybzmdWivB8sEHeTZez5VY+5uNna7xUIsY3UL1UTnymjyVoWwMlZjUVju8RW5
-         fRYj5ULFI8DCQGC3ZaEjUtA4XYydbSIpCuGc8hwiu5C1BdzrQXEZ3u7V1t1LX/z7KB3H
-         ENsg==
-X-Gm-Message-State: AOAM531MXVYZhtPXTPIb56VjhEDw0fHNhDHuevhmb2PlIgznm9yvIVEa
-        xO13aQ+3di5Exlhbmw7XobzNVHdJO1p5vO58Mw==
-X-Google-Smtp-Source: ABdhPJxBxxNGWgG//JG92tXqEKNVQMibAYANYD7k1sVUyTqLXpM98PAOyJ1XVSkQqbQ9sd3NjaACQu/QPCpkCcX6lQ==
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=XmWCE7age5UnMwS5JxN69B5KWt/qREsunjUKP7hacM0=;
+        b=h4jya0UVy0kzzx8qicfkeKwNb2M8F1qVhEknEjb7Wk6RD854GP/qnGByDtFnILRxIq
+         NmdqF2e0tjUpkIjH8xJImYmKFcDgt8rj0kBsChWHgPXJSEZ32AOCG2tIOlo2QqRo36t7
+         P/Fgka8KoCzZZGYEiY549d/gaHnHwwkguQBAuRHgZSmNDW+JUExj1z+qUweft0Pkcrqj
+         BDNKg0EEivsdEP1jyuoxlJcdNiadd2apKYEJJwUaRcs3cuiTeiqlOGXxvyIpJcSmun6S
+         MX5z61QHTDstHDfeffK8Wui8rHL3rDOWMzD+KA/+M5V62Fzh46ahkTTmp7O15KWTlTcI
+         6KJA==
+X-Gm-Message-State: AOAM532vtGx2pgI+HVdVcsJ//4Hk78GHk955FMysIgDNzQ17VzMvrapK
+        WFM5Lwa2ty2yrR65yGpuCelCsx8UVoqGjXMl8w==
+X-Google-Smtp-Source: ABdhPJwtM46x5bZUFvh2+P9WwAGt7EnNMSpRF+abYwADScuXGTd4JUZBu0FtOj7Xlb0a4eiqNhvSTg7TGV+oMTOq8A==
 X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:10:f693:9fff:fef4:4e45])
- (user=howardchung job=sendgmr) by 2002:a0c:fe8b:: with SMTP id
- d11mr10852077qvs.48.1600320588288; Wed, 16 Sep 2020 22:29:48 -0700 (PDT)
-Date:   Thu, 17 Sep 2020 13:29:38 +0800
-Message-Id: <20200917132836.BlueZ.1.I27ef2a783d8920c147458639f3fa91b69f6fd9ea@changeid>
+ (user=howardchung job=sendgmr) by 2002:a0c:d848:: with SMTP id
+ i8mr27007933qvj.31.1600320603105; Wed, 16 Sep 2020 22:30:03 -0700 (PDT)
+Date:   Thu, 17 Sep 2020 13:29:42 +0800
+In-Reply-To: <20200917132836.BlueZ.1.I27ef2a783d8920c147458639f3fa91b69f6fd9ea@changeid>
+Message-Id: <20200917132836.BlueZ.5.I21e5741249e78c560ca377499ba06b56c7214985@changeid>
 Mime-Version: 1.0
+References: <20200917132836.BlueZ.1.I27ef2a783d8920c147458639f3fa91b69f6fd9ea@changeid>
 X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
-Subject: [BlueZ PATCH 1/6] Bluetooth: Update Adv monitor count upon removal
+Subject: [BlueZ PATCH 5/6] Bluetooth: Handle active scan case
 From:   Howard Chung <howardchung@google.com>
 To:     linux-bluetooth@vger.kernel.org
 Cc:     mcchou@chromium.org, marcel@holtmann.org, mmandlik@chromium.org,
@@ -61,42 +64,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miao-chen Chou <mcchou@chromium.org>
-
-This fixes the count of Adv monitor upon monitor removal.
-
-The following test was performed.
-- Start two btmgmt consoles, issue a btmgmt advmon-remove command on one
-console and observe a MGMT_EV_ADV_MONITOR_REMOVED event on the other.
+This patch adds code to handle the active scan during interleave
+scan. The interleave scan will be canceled when users start active scan,
+and it will be restarted after active scan stopped.
 
 Signed-off-by: Howard Chung <howardchung@google.com>
-Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
 Reviewed-by: Alain Michaud <alainm@chromium.org>
+Reviewed-by: Manish Mandlik <mmandlik@chromium.org>
 ---
 
- net/bluetooth/hci_core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/bluetooth/hci_request.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 8a2645a833013..f30a1f5950e15 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3061,6 +3061,7 @@ static int free_adv_monitor(int id, void *ptr, void *data)
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index d9082019b6386..1fcf6736811e4 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -3085,8 +3085,10 @@ static int active_scan(struct hci_request *req, unsigned long opt)
+ 	 * running. Thus, we should temporarily stop it in order to set the
+ 	 * discovery scanning parameters.
+ 	 */
+-	if (hci_dev_test_flag(hdev, HCI_LE_SCAN))
++	if (hci_dev_test_flag(hdev, HCI_LE_SCAN)) {
+ 		hci_req_add_le_scan_disable(req, false);
++		cancel_interleave_scan(hdev);
++	}
  
- 	idr_remove(&hdev->adv_monitors_idr, monitor->handle);
- 	hci_free_adv_monitor(monitor);
-+	hdev->adv_monitors_cnt--;
- 
- 	return 0;
- }
-@@ -3077,6 +3078,7 @@ int hci_remove_adv_monitor(struct hci_dev *hdev, u16 handle)
- 
- 		idr_remove(&hdev->adv_monitors_idr, monitor->handle);
- 		hci_free_adv_monitor(monitor);
-+		hdev->adv_monitors_cnt--;
- 	} else {
- 		/* Remove all monitors if handle is 0. */
- 		idr_for_each(&hdev->adv_monitors_idr, &free_adv_monitor, hdev);
+ 	/* All active scans will be done with either a resolvable private
+ 	 * address (when privacy feature has been enabled) or non-resolvable
 -- 
 2.28.0.618.gf4bc123cb7-goog
 
