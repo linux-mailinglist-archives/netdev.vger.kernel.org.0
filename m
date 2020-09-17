@@ -2,91 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7667626D071
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 03:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 991C626D095
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 03:28:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726134AbgIQBNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 21:13:44 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:60272 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725886AbgIQBNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 21:13:40 -0400
-X-Greylist: delayed 482 seconds by postgrey-1.27 at vger.kernel.org; Wed, 16 Sep 2020 21:13:38 EDT
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4BsJg03z3Pz1qs4G;
-        Thu, 17 Sep 2020 03:05:25 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4BsJfr6Jl6z1qwSy;
-        Thu, 17 Sep 2020 03:05:24 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id FqgdTcnucdjh; Thu, 17 Sep 2020 03:05:23 +0200 (CEST)
-X-Auth-Info: QtW3ZCSFydW7Acop+OgmpJ4MGJ4Y9os5JMB4YDj5fGA=
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Thu, 17 Sep 2020 03:05:23 +0200 (CEST)
-Subject: Re: [PATCH] can: m_can: Set pinmux into "default" state on start
-From:   Marek Vasut <marex@denx.de>
-To:     linux-can@vger.kernel.org
-Cc:     Alexandre Torgue <alexandre.torgue@st.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>, dmurphy@ti.com,
-        netdev@vger.kernel.org, socketcan@hartkopp.net,
-        davem@davemloft.net, andrew@lunn.ch
-References: <20200531181324.383930-1-marex@denx.de>
- <419338dc-870d-51a4-87ac-ceddcba046dc@denx.de>
- <341ddbb5-d46a-813a-8fe9-b0d16ca25041@denx.de>
-Message-ID: <c0c2b01d-8cdb-713d-5b4a-cb5dd6e2dd9d@denx.de>
-Date:   Thu, 17 Sep 2020 03:04:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726115AbgIQB2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 21:28:10 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:46878 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725858AbgIQB2G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Sep 2020 21:28:06 -0400
+X-Greylist: delayed 989 seconds by postgrey-1.27 at vger.kernel.org; Wed, 16 Sep 2020 21:28:05 EDT
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 02BD1B9DAD897B943D82;
+        Thu, 17 Sep 2020 09:11:35 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Thu, 17 Sep 2020
+ 09:11:27 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <mathew.j.martineau@linux.intel.com>,
+        <matthieu.baerts@tessares.net>, <pabeni@redhat.com>,
+        <mptcp@lists.01.org>, <netdev@vger.kernel.org>
+CC:     Ye Bin <yebin10@huawei.com>, Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH v3] mptcp: Fix unsigned 'max_seq' compared with zero in mptcp_data_queue_ofo
+Date:   Thu, 17 Sep 2020 09:12:33 +0800
+Message-ID: <20200917011233.2948595-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-In-Reply-To: <341ddbb5-d46a-813a-8fe9-b0d16ca25041@denx.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/1/20 8:56 PM, Marek Vasut wrote:
-> On 8/9/20 1:01 PM, Marek Vasut wrote:
->> On 5/31/20 8:13 PM, Marek Vasut wrote:
->>> On systems like stm32mp1 where pins have both "default" and "sleep" pinmux
->>> states in DT, the pins are in "sleep" state by default. Switch the pins into
->>> the "default" state when bringing the interface up in m_can_start(), because
->>> otherwise no CAN communication is possible. This replicates the behavior of
->>> the resume path, which does the same.
->>>
->>> Signed-off-by: Marek Vasut <marex@denx.de>
->>> Cc: Alexandre Torgue <alexandre.torgue@st.com>
->>> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
->>> Cc: Wolfgang Grandegger <wg@grandegger.com>
->>> To: linux-can@vger.kernel.org
->>> ---
->>>  drivers/net/can/m_can/m_can.c | 2 ++
->>>  1 file changed, 2 insertions(+)
->>>
->>> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
->>> index 02c5795b7393..76fadf2b8ac2 100644
->>> --- a/drivers/net/can/m_can/m_can.c
->>> +++ b/drivers/net/can/m_can/m_can.c
->>> @@ -1247,6 +1247,8 @@ static void m_can_start(struct net_device *dev)
->>>  	/* basic m_can configuration */
->>>  	m_can_chip_config(dev);
->>>  
->>> +	pinctrl_pm_select_default_state(cdev->dev);
->>> +
->>>  	cdev->can.state = CAN_STATE_ERROR_ACTIVE;
->>>  
->>>  	m_can_enable_all_interrupts(cdev);
->>>
->>
->> Any news on this ?
-> 
-> Almost another month has passed by, ping ?
+Fixes coccicheck warnig:
+net/mptcp/protocol.c:164:11-18: WARNING: Unsigned expression compared with zero: max_seq > 0
 
-Bump ?
+Fixes: ab174ad8ef76 ("mptcp: move ooo skbs into msk out of order queue")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ net/mptcp/protocol.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index ef0dd2f23482..386cd4e60250 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -157,11 +157,12 @@ static void mptcp_data_queue_ofo(struct mptcp_sock *msk, struct sk_buff *skb)
+ 	struct rb_node **p, *parent;
+ 	u64 seq, end_seq, max_seq;
+ 	struct sk_buff *skb1;
++	int space;
+ 
+ 	seq = MPTCP_SKB_CB(skb)->map_seq;
+ 	end_seq = MPTCP_SKB_CB(skb)->end_seq;
+-	max_seq = tcp_space(sk);
+-	max_seq = max_seq > 0 ? max_seq + msk->ack_seq : msk->ack_seq;
++	space = tcp_space(sk);
++	max_seq = space > 0 ? space + msk->ack_seq : msk->ack_seq;
+ 
+ 	pr_debug("msk=%p seq=%llx limit=%llx empty=%d", msk, seq, max_seq,
+ 		 RB_EMPTY_ROOT(&msk->out_of_order_queue));
+-- 
+2.25.4
+
