@@ -2,219 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3EF526E0D7
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 18:36:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03AD926E0C9
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 18:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728540AbgIQQgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 12:36:33 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:64564 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728418AbgIQQfQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 12:35:16 -0400
-X-Greylist: delayed 2852 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 12:35:16 EDT
-Received: from pps.filterd (m0042983.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08HFkcwU007994
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 08:46:47 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=facebook;
- bh=NBHVH/CzC9RE0f9KItLHPsUJVMCjI2w0gOkNagZilLo=;
- b=RMEM12DfFinEMt9oLOoQ27+fTdFa9bumVTj/wwWJzlguIpJk2rdpYjDlLJtMkHsb8mFQ
- gNFNghAR2zcCZP2Zsqwflfl8fK/63jk66Xn9vt7BLuXu6tRE0BreWmfQmR3tIfYmXTR4
- vf53wbNui+oD+Vfs/UuvmWwtkXjMlZJiZ4k= 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-00082601.pphosted.com with ESMTP id 33m9wg8hpx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 08:46:47 -0700
-Received: from pps.reinject (m0042983.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 08HFk26L003857
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 08:46:07 -0700
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33k5nbpn9v-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 15:46:53 -0700
-Received: from intmgw004.03.ash8.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 16 Sep 2020 15:46:50 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 50CEF3700914; Wed, 16 Sep 2020 15:46:45 -0700 (PDT)
-From:   Yonghong Song <yhs@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH bpf-next v4] bpf: using rcu_read_lock for bpf_sk_storage_map iterator
-Date:   Wed, 16 Sep 2020 15:46:45 -0700
-Message-ID: <20200916224645.720172-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1728563AbgIQQdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 12:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49984 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728359AbgIQQcH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 12:32:07 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66B3C06174A
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 09:32:06 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id u9so1411046plk.4
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 09:32:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=T50BXHTsMxY1BXgJYVOqihQD0a/bg+J/15Vehb5M1Pw=;
+        b=kNVCPSIiPbB0FqFpVPOthcnRh+WymznM1jMTsizqteXXBYLf5aftOuDYOBd33c2kTk
+         ktS8I3G2zVhTFnnWlL4zq2l1AUCQHnb7cNbfRnYmDMSML+I9NFN4rOv0jc9s7mMhIWuY
+         qH1ga5ykro9duHYJKVC8OYsjDnV6mmLOcNNcMHdwNrDiwSNQBP1UFGMIQ/AY3NBmQyi2
+         MQwFkfvsBcQfm3PTFeipG2OnhBt3CrjlsKFfahfq89hq+13J0eGkOS1e+GVjD7mIR2+8
+         eS+k90G5JH4YmZf91cBFWyYnM68gLVJYXqjHtuw5Qxy3s9oNq6TCNBey73B3ZXwfYd3G
+         eUdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=T50BXHTsMxY1BXgJYVOqihQD0a/bg+J/15Vehb5M1Pw=;
+        b=lEciwDkiIUBjIBe8CJqLlHUaHKLh7qUt5ikz+OoMgzRA2Yqq7NWcPz72khxpakad54
+         NPBNomnlXR2Wqphzgl9t68Sph+PgDVsGMMhXYoroKOs0Ji2t8uGT8XDPCE0/f+1qhMBT
+         +hMV7vJEvEGlfEfjC7iFOg9Nzh8ialYUKljedjICzxCRo4IFeJQN+ihjwuhyryv8Hje4
+         mp2bfPXOlSUjgdJYZmSR+L5orUA/SUgrotj90dpM+/zTGkbTwwiLXtiNOeNKqpmKJ0ZR
+         TOdcT+3AGitvXxfgKmln9WzEGM3T2PVqKeKBxHhvjpd0z6LMgYbQOdr8VqYVHqZGWNRV
+         vx4w==
+X-Gm-Message-State: AOAM533YcEKyfj1XK6AZnItKDetatXRxTFbQxAtugjOJwROrw8fwngub
+        g1qJLEafYAh/aUWQkiAUVzs=
+X-Google-Smtp-Source: ABdhPJzQuDGnOMRmq6N6x61Ut2n4lQph9UTuSheQo63mxcwansGscoXRqbc//rCce04g0wx9lRrGQA==
+X-Received: by 2002:a17:90a:d997:: with SMTP id d23mr9447184pjv.171.1600360326176;
+        Thu, 17 Sep 2020 09:32:06 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id i9sm107720pfq.53.2020.09.17.09.32.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Sep 2020 09:32:05 -0700 (PDT)
+Subject: Re: [PATCH net 1/2] net: phy: Avoid NPD upon phy_detach() when driver
+ is unbound
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com, kuba@kernel.org,
+        davem@davemloft.net
+References: <20200917034310.2360488-1-f.fainelli@gmail.com>
+ <20200917034310.2360488-2-f.fainelli@gmail.com>
+ <20200917131545.GL3526428@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <b33da0da-4c6a-ae11-b77e-93d014a90123@gmail.com>
+Date:   Thu, 17 Sep 2020 09:32:03 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.2
 MIME-Version: 1.0
-X-FB-Internal: Safe
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-16_13:2020-09-16,2020-09-16 signatures=0
-X-FB-Internal: deliver
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-17_10:2020-09-16,2020-09-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- mlxlogscore=901 mlxscore=0 lowpriorityscore=0 adultscore=0 impostorscore=0
- suspectscore=9 phishscore=0 priorityscore=1501 malwarescore=0 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=2
- engine=8.12.0-2006250000 definitions=main-2009170120
-X-FB-Internal: deliver
+In-Reply-To: <20200917131545.GL3526428@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a bucket contains a lot of sockets, during bpf_iter traversing
-a bucket, concurrent userspace bpf_map_update_elem() and
-bpf program bpf_sk_storage_{get,delete}() may experience
-some undesirable delays as they will compete with bpf_iter
-for bucket lock.
 
-Note that the number of buckets for bpf_sk_storage_map
-is roughly the same as the number of cpus. So if there
-are lots of sockets in the system, each bucket could
-contain lots of sockets.
 
-Different actual use cases may experience different delays.
-Here, using selftest bpf_iter subtest bpf_sk_storage_map,
-I hacked the kernel with ktime_get_mono_fast_ns()
-to collect the time when a bucket was locked
-during bpf_iter prog traversing that bucket. This way,
-the maximum incurred delay was measured w.r.t. the
-number of elements in a bucket.
-    # elems in each bucket          delay(ns)
-      64                            17000
-      256                           72512
-      2048                          875246
+On 9/17/2020 6:15 AM, Andrew Lunn wrote:
+> On Wed, Sep 16, 2020 at 08:43:09PM -0700, Florian Fainelli wrote:
+>> If we have unbound the PHY driver prior to calling phy_detach() (often
+>> via phy_disconnect()) then we can cause a NULL pointer de-reference
+>> accessing the driver owner member. The steps to reproduce are:
+>>
+>> echo unimac-mdio-0:01 > /sys/class/net/eth0/phydev/driver/unbind
+>> ip link set eth0 down
+> 
+> Hi Florian
+> 
+> How forceful is this unbind? Can we actually block it while the
+> interface is up? Or returning -EBUSY would make sense.
 
-The potential delays will be further increased if
-we have even more elemnts in a bucket. Using rcu_read_lock()
-is a reasonable compromise here. It may lose some precision, e.g.,
-access stale sockets, but it will not hurt performance of
-bpf program or user space application which also tries
-to get/delete or update map elements.
-
-Cc: Martin KaFai Lau <kafai@fb.com>
-Acked-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- net/core/bpf_sk_storage.c | 31 +++++++++++++------------------
- 1 file changed, 13 insertions(+), 18 deletions(-)
-
-Changelog:
-  v3 -> v4:
-     - use rcu_dereference/hlist_next_rcu for hlist_entry_safe. (Martin)
-  v2 -> v3:
-     - fix a bug hlist_for_each_entry() =3D> hlist_for_each_entry_rcu(). =
-(Martin)
-     - use rcu_dereference() instead of rcu_dereference_raw() for lockdep=
- checking. (Martin)
-  v1 -> v2:
-    - added some performance number. (Song)
-    - tried to silence some sparse complains. but still has some left lik=
-e
-        context imbalance in "..." - different lock contexts for basic bl=
-ock
-      which the code is too hard for sparse to analyze. (Jakub)
-
-diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-index 4a86ea34f29e..6b6ba874061c 100644
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -678,6 +678,7 @@ struct bpf_iter_seq_sk_storage_map_info {
- static struct bpf_local_storage_elem *
- bpf_sk_storage_map_seq_find_next(struct bpf_iter_seq_sk_storage_map_info=
- *info,
- 				 struct bpf_local_storage_elem *prev_selem)
-+	__acquires(RCU) __releases(RCU)
- {
- 	struct bpf_local_storage *sk_storage;
- 	struct bpf_local_storage_elem *selem;
-@@ -696,16 +697,16 @@ bpf_sk_storage_map_seq_find_next(struct bpf_iter_se=
-q_sk_storage_map_info *info,
- 	selem =3D prev_selem;
- 	count =3D 0;
- 	while (selem) {
--		selem =3D hlist_entry_safe(selem->map_node.next,
-+		selem =3D hlist_entry_safe(rcu_dereference(hlist_next_rcu(&selem->map_=
-node)),
- 					 struct bpf_local_storage_elem, map_node);
- 		if (!selem) {
- 			/* not found, unlock and go to the next bucket */
- 			b =3D &smap->buckets[bucket_id++];
--			raw_spin_unlock_bh(&b->lock);
-+			rcu_read_unlock();
- 			skip_elems =3D 0;
- 			break;
- 		}
--		sk_storage =3D rcu_dereference_raw(selem->local_storage);
-+		sk_storage =3D rcu_dereference(selem->local_storage);
- 		if (sk_storage) {
- 			info->skip_elems =3D skip_elems + count;
- 			return selem;
-@@ -715,10 +716,10 @@ bpf_sk_storage_map_seq_find_next(struct bpf_iter_se=
-q_sk_storage_map_info *info,
-=20
- 	for (i =3D bucket_id; i < (1U << smap->bucket_log); i++) {
- 		b =3D &smap->buckets[i];
--		raw_spin_lock_bh(&b->lock);
-+		rcu_read_lock();
- 		count =3D 0;
--		hlist_for_each_entry(selem, &b->list, map_node) {
--			sk_storage =3D rcu_dereference_raw(selem->local_storage);
-+		hlist_for_each_entry_rcu(selem, &b->list, map_node) {
-+			sk_storage =3D rcu_dereference(selem->local_storage);
- 			if (sk_storage && count >=3D skip_elems) {
- 				info->bucket_id =3D i;
- 				info->skip_elems =3D count;
-@@ -726,7 +727,7 @@ bpf_sk_storage_map_seq_find_next(struct bpf_iter_seq_=
-sk_storage_map_info *info,
- 			}
- 			count++;
- 		}
--		raw_spin_unlock_bh(&b->lock);
-+		rcu_read_unlock();
- 		skip_elems =3D 0;
- 	}
-=20
-@@ -785,7 +786,7 @@ static int __bpf_sk_storage_map_seq_show(struct seq_f=
-ile *seq,
- 		ctx.meta =3D &meta;
- 		ctx.map =3D info->map;
- 		if (selem) {
--			sk_storage =3D rcu_dereference_raw(selem->local_storage);
-+			sk_storage =3D rcu_dereference(selem->local_storage);
- 			ctx.sk =3D sk_storage->owner;
- 			ctx.value =3D SDATA(selem)->data;
- 		}
-@@ -801,18 +802,12 @@ static int bpf_sk_storage_map_seq_show(struct seq_f=
-ile *seq, void *v)
- }
-=20
- static void bpf_sk_storage_map_seq_stop(struct seq_file *seq, void *v)
-+	__releases(RCU)
- {
--	struct bpf_iter_seq_sk_storage_map_info *info =3D seq->private;
--	struct bpf_local_storage_map *smap;
--	struct bpf_local_storage_map_bucket *b;
--
--	if (!v) {
-+	if (!v)
- 		(void)__bpf_sk_storage_map_seq_show(seq, v);
--	} else {
--		smap =3D (struct bpf_local_storage_map *)info->map;
--		b =3D &smap->buckets[info->bucket_id];
--		raw_spin_unlock_bh(&b->lock);
--	}
-+	else
-+		rcu_read_unlock();
- }
-=20
- static int bpf_iter_init_sk_storage_map(void *priv_data,
---=20
-2.24.1
-
+It it not forceful, you can unbind the PHY driver from underneath the 
+net_device and nothing bad happens, really. This is not a very realistic 
+or practical use case, but several years ago, I went into making sure we 
+would not create NPD if that happened.
+-- 
+Florian
