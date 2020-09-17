@@ -2,140 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECACA26D74F
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 11:02:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AB1626D773
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 11:14:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbgIQJCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 05:02:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47212 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726185AbgIQJCf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 05:02:35 -0400
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726411AbgIQJOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 05:14:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28232 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726200AbgIQJOO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 05:14:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600334052;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1tTpvnMoCb1NsVfn35+ROGQLf4M3BQUBOT4NFROA7ho=;
+        b=FsbosTX1fBDEX1PU5XcFpxmHC1rMNidV5zjK3B0Bx6dRRjaGioYKZ0UqiXs8ZtxNwDQ/Du
+        BqS1RTWIVlr2159ieEFTBjhEYDt6HeWhPyPRvD4Q/r9mmCVQWYji2LD1Afm2weA9y+gDuJ
+        f5zzHd7jwssB9tWmPK0PrAhPTox9WqQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-219-FniT8trpPISzoYpzCnaMSA-1; Thu, 17 Sep 2020 05:14:10 -0400
+X-MC-Unique: FniT8trpPISzoYpzCnaMSA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 483A620795;
-        Thu, 17 Sep 2020 09:02:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600333354;
-        bh=GIgXMYtPxyeF+td39Ayw/a+MKlrS9lFGK5YHMg0vgRM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1LjGdzLHCsba0eQmhDHWStGul0PHPKy5LADRAg0HGnqeCE7BYk0sCrzNmFZYrj+XF
-         nOzJnMxBPbDJf5Pda2r74bt+AGVExVq4OtIpEfWkWyBL1eJAXzyzHcRKl/6fH0bz6B
-         6X3Hz8V6IHTezy726SrpOaFgM6qadZghuknpBwpw=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Aharon Landau <aharonl@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
-        Michael Guralnik <michaelgur@nvidia.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH mlx5-next v2 2/3] RDMA/mlx5: Delete duplicated mlx5_ptys_width enum
-Date:   Thu, 17 Sep 2020 12:02:22 +0300
-Message-Id: <20200917090223.1018224-3-leon@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200917090223.1018224-1-leon@kernel.org>
-References: <20200917090223.1018224-1-leon@kernel.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CAD151018724;
+        Thu, 17 Sep 2020 09:14:08 +0000 (UTC)
+Received: from krava (ovpn-114-176.ams2.redhat.com [10.36.114.176])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 3CACF7B7A0;
+        Thu, 17 Sep 2020 09:14:06 +0000 (UTC)
+Date:   Thu, 17 Sep 2020 11:14:06 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Seth Forshee <seth.forshee@canonical.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: resolve_btfids breaks kernel cross-compilation
+Message-ID: <20200917091406.GF2411168@krava>
+References: <20200916194733.GA4820@ubuntu-x1>
+ <20200917080452.GB2411168@krava>
+ <20200917083809.GE2411168@krava>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200917083809.GE2411168@krava>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aharon Landau <aharonl@mellanox.com>
+On Thu, Sep 17, 2020 at 10:38:12AM +0200, Jiri Olsa wrote:
+> On Thu, Sep 17, 2020 at 10:04:55AM +0200, Jiri Olsa wrote:
+> > On Wed, Sep 16, 2020 at 02:47:33PM -0500, Seth Forshee wrote:
+> > > The requirement to build resolve_btfids whenever CONFIG_DEBUG_INFO_BTF
+> > > is enabled breaks some cross builds. For example, when building a 64-bit
+> > > powerpc kernel on amd64 I get:
+> > > 
+> > >  Auto-detecting system features:
+> > >  ...                        libelf: [ [32mon[m  ]
+> > >  ...                          zlib: [ [32mon[m  ]
+> > >  ...                           bpf: [ [31mOFF[m ]
+> > >  
+> > >  BPF API too old
+> > >  make[6]: *** [Makefile:295: bpfdep] Error 1
+> > > 
+> > > The contents of tools/bpf/resolve_btfids/feature/test-bpf.make.output:
+> > > 
+> > >  In file included from /home/sforshee/src/u-k/unstable/tools/arch/powerpc/include/uapi/asm/bitsperlong.h:11,
+> > >                   from /usr/include/asm-generic/int-ll64.h:12,
+> > >                   from /usr/include/asm-generic/types.h:7,
+> > >                   from /usr/include/x86_64-linux-gnu/asm/types.h:1,
+> > >                   from /home/sforshee/src/u-k/unstable/tools/include/linux/types.h:10,
+> > >                   from /home/sforshee/src/u-k/unstable/tools/include/uapi/linux/bpf.h:11,
+> > >                   from test-bpf.c:3:
+> > >  /home/sforshee/src/u-k/unstable/tools/include/asm-generic/bitsperlong.h:14:2: error: #error Inconsistent word size. Check asm/bitsperlong.h
+> > >     14 | #error Inconsistent word size. Check asm/bitsperlong.h
+> > >        |  ^~~~~
+> > > 
+> > > This is because tools/arch/powerpc/include/uapi/asm/bitsperlong.h sets
+> > > __BITS_PER_LONG based on the predefinied compiler macro __powerpc64__,
+> > > which is not defined by the host compiler. What can we do to get cross
+> > > builds working again?
+> > 
+> > could you please share the command line and setup?
+> 
+> I just reproduced.. checking on fix
 
-Combine two same enums to avoid duplication.
+I still need to check on few things, but patch below should help
 
-Signed-off-by: Aharon Landau <aharonl@mellanox.com>
-Reviewed-by: Michael Guralnik <michaelgur@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+we might have a problem for cross builds with different endianity
+than the host because libbpf does not support reading BTF data
+with different endianity, and we get:
+
+  BTFIDS  vmlinux
+libbpf: non-native ELF endianness is not supported
+
+jirka
+
+
 ---
- drivers/infiniband/hw/mlx5/main.c             | 20 ++++++-------------
- .../mellanox/mlx5/core/ipoib/ethtool.c        |  8 --------
- include/linux/mlx5/port.h                     |  8 ++++++++
- 3 files changed, 14 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index ca33ff4b1d5e..545f23d27660 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -1179,32 +1179,24 @@ static int mlx5_ib_query_device(struct ib_device *ibdev,
- 	return 0;
- }
+diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
+index a88cd4426398..d3c818b8d8d3 100644
+--- a/tools/bpf/resolve_btfids/Makefile
++++ b/tools/bpf/resolve_btfids/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ include ../../scripts/Makefile.include
++include ../../scripts/Makefile.arch
  
--enum mlx5_ib_width {
--	MLX5_IB_WIDTH_1X	= 1 << 0,
--	MLX5_IB_WIDTH_2X	= 1 << 1,
--	MLX5_IB_WIDTH_4X	= 1 << 2,
--	MLX5_IB_WIDTH_8X	= 1 << 3,
--	MLX5_IB_WIDTH_12X	= 1 << 4
--};
--
- static void translate_active_width(struct ib_device *ibdev, u16 active_width,
- 				   u8 *ib_width)
- {
- 	struct mlx5_ib_dev *dev = to_mdev(ibdev);
+ ifeq ($(srctree),)
+ srctree := $(patsubst %/,%,$(dir $(CURDIR)))
+@@ -29,6 +30,7 @@ endif
+ AR       = $(HOSTAR)
+ CC       = $(HOSTCC)
+ LD       = $(HOSTLD)
++ARCH     = $(HOSTARCH)
  
--	if (active_width & MLX5_IB_WIDTH_1X)
-+	if (active_width & MLX5_PTYS_WIDTH_1X)
- 		*ib_width = IB_WIDTH_1X;
--	else if (active_width & MLX5_IB_WIDTH_2X)
-+	else if (active_width & MLX5_PTYS_WIDTH_2X)
- 		*ib_width = IB_WIDTH_2X;
--	else if (active_width & MLX5_IB_WIDTH_4X)
-+	else if (active_width & MLX5_PTYS_WIDTH_4X)
- 		*ib_width = IB_WIDTH_4X;
--	else if (active_width & MLX5_IB_WIDTH_8X)
-+	else if (active_width & MLX5_PTYS_WIDTH_8X)
- 		*ib_width = IB_WIDTH_8X;
--	else if (active_width & MLX5_IB_WIDTH_12X)
-+	else if (active_width & MLX5_PTYS_WIDTH_12X)
- 		*ib_width = IB_WIDTH_12X;
- 	else {
- 		mlx5_ib_dbg(dev, "Invalid active_width %d, setting width to default value: 4x\n",
--			    (int)active_width);
-+			    active_width);
- 		*ib_width = IB_WIDTH_4X;
- 	}
+ OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-index 17f5be801d2f..cac8f085b16d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-@@ -130,14 +130,6 @@ static int mlx5i_flash_device(struct net_device *netdev,
- 	return mlx5e_ethtool_flash_device(priv, flash);
- }
- 
--enum mlx5_ptys_width {
--	MLX5_PTYS_WIDTH_1X	= 1 << 0,
--	MLX5_PTYS_WIDTH_2X	= 1 << 1,
--	MLX5_PTYS_WIDTH_4X	= 1 << 2,
--	MLX5_PTYS_WIDTH_8X	= 1 << 3,
--	MLX5_PTYS_WIDTH_12X	= 1 << 4,
--};
--
- static inline int mlx5_ptys_width_enum_to_int(enum mlx5_ptys_width width)
- {
- 	switch (width) {
-diff --git a/include/linux/mlx5/port.h b/include/linux/mlx5/port.h
-index 4d33ae0c2d97..23edd2db4803 100644
---- a/include/linux/mlx5/port.h
-+++ b/include/linux/mlx5/port.h
-@@ -125,6 +125,14 @@ enum mlx5e_connector_type {
- 	MLX5E_CONNECTOR_TYPE_NUMBER,
- };
- 
-+enum mlx5_ptys_width {
-+	MLX5_PTYS_WIDTH_1X	= 1 << 0,
-+	MLX5_PTYS_WIDTH_2X	= 1 << 1,
-+	MLX5_PTYS_WIDTH_4X	= 1 << 2,
-+	MLX5_PTYS_WIDTH_8X	= 1 << 3,
-+	MLX5_PTYS_WIDTH_12X	= 1 << 4,
-+};
-+
- #define MLX5E_PROT_MASK(link_mode) (1 << link_mode)
- #define MLX5_GET_ETH_PROTO(reg, out, ext, field)	\
- 	(ext ? MLX5_GET(reg, out, ext_##field) :	\
--- 
-2.26.2
 
