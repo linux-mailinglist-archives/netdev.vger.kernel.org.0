@@ -2,77 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD32F26E549
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 21:18:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD3B326E51A
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 21:11:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726392AbgIQTS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 15:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728381AbgIQQRy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 12:17:54 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B59A0C061224
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 09:17:45 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id w12so2805593qki.6
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 09:17:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=googlenew;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XRDdNTNIua0HCbm3MCn0pcIszSG9ZVBbCO9Y6jjOxgQ=;
-        b=KKG3p8LuTjIR8VB4z43UiojqXjrK+GbySfTQF4f6ZLZ2ujF/oJlKMKNsbsUaPh/Vtz
-         1Cj36qvj7vxhb9cM1N7/Eo+RZH/jtUiC8EQOuF0ojzm7d0SI/Ub+WpfeVohemjIxhVC3
-         8b4LNtSsLaSrryOqqk9pccpZIBcKyn5aEyembXRjdI1QX67WCiHaBmMaX6sdLC3EuL8D
-         bR0zPutE+wBZ9NMnJ6Q66yuLVh2VugdKm1NFIuKMty5baRK/dFcS0boBGgxBh2AlfwUt
-         Ia6kibbHIutM7n1eop03gvtspyFK10mTG1mnXsvzXQdCVGbd99o5BBk/1mmz71Kp1Rzr
-         xdKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XRDdNTNIua0HCbm3MCn0pcIszSG9ZVBbCO9Y6jjOxgQ=;
-        b=qQlrU+7JO0P+PFaqXConjT4SNLwdsrDK/gQfB8mggAUfD3fpqKnhQsCNHhH0VZy8cB
-         GD86sUWtDkY7vumh4hDgysJfG6bKasks8WOEBWhMBzCWukujbVoUqJ3/t+euLmF5YzVE
-         GViunLcIIM6+QHzPsbPKPZWL0wouhXf4M1I/aDN0NA9LISRLIGofrzmA4mlEJeplrXr2
-         XmGw3A/tX7NTOt1XSeQw0YIYwX5+E5Bx19WXdSu5mlUfa28ZhXUfAmH5QaTqPHU5dEh1
-         rliPpE2naOQKjpktP33rRNqitKLY3tgk8QcI0QYeLyRfm35cYmGZCKEL98QCEcZ4Nukp
-         16iw==
-X-Gm-Message-State: AOAM532By9Ey3Suf1JOA4szjUj+2qX/TFpOVYlQ+gjs29uG/0+webZhk
-        Pm4JRWySJ+wT/wiTbnAhWAhAL79J8pwuS9iICtaWzg==
-X-Google-Smtp-Source: ABdhPJyHk7FfUoSZhEiDjpGn8vc9yfIWEwSDGdfFYe+qK5dn4fzTlSJQdfvn9Stjh7lS+OLz6i5sjZ/2gXzd/a/tV/g=
-X-Received: by 2002:ae9:f104:: with SMTP id k4mr18530915qkg.10.1600359464772;
- Thu, 17 Sep 2020 09:17:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200917020021.0860995C06B9@us180.sjc.aristanetworks.com>
- <CA+HUmGjX4_4_UXWNn=EehQ_3QtFPZq8RJU146r-nc0nA8apx7w@mail.gmail.com> <CANn89iJOO9cbOqCNpRK4OrZy-L6P8aJJcPMjs5=RHF=fsjEe2Q@mail.gmail.com>
-In-Reply-To: <CANn89iJOO9cbOqCNpRK4OrZy-L6P8aJJcPMjs5=RHF=fsjEe2Q@mail.gmail.com>
-From:   Francesco Ruggeri <fruggeri@arista.com>
-Date:   Thu, 17 Sep 2020 09:17:33 -0700
-Message-ID: <CA+HUmGihUwWojfEpYHkhj8AqdpA1OKFqD18pOeCiVW5RvmuEtA@mail.gmail.com>
-Subject: Re: [PATCH] net: make netdev_wait_allrefs wake-able
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1726446AbgIQTLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 15:11:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57406 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726401AbgIQS4B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 14:56:01 -0400
+Received: from kozik-lap.mshome.net (unknown [194.230.155.191])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5295C206A1;
+        Thu, 17 Sep 2020 18:55:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600368961;
+        bh=wL7HaC1hn98JFuXM3OfIlHr5pwBBqmaVf7S/f2xbfXY=;
+        h=From:To:Subject:Date:From;
+        b=V0aDQqowhKindSOApT5agahzCEA7RK5W2euK2YClXaR8WqIPXbD7S72WZtfj6DaqU
+         +xPwmC93bEwfqp2eFhcr2vLaLPLOSwo0XKhYKyIjpHEXnvGgvxS4nna+mEfEc++Xdt
+         N5C4Cc8Gim4EpQZ8cxwrYanIDkHMgOY9w84O/V54=
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Dan Murphy <dmurphy@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] dt-bindings: net: correct interrupt flags in examples
+Date:   Thu, 17 Sep 2020 20:55:53 +0200
+Message-Id: <20200917185553.5843-1-krzk@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 16, 2020 at 11:51 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> Honestly I would not touch dev_put() at all.
->
-> Simply change the msleep(250) to something better, with maybe
-> exponential backoff.
+GPIO_ACTIVE_x flags are not correct in the context of interrupt flags.
+These are simple defines so they could be used in DTS but they will not
+have the same meaning:
+1. GPIO_ACTIVE_HIGH = 0 = IRQ_TYPE_NONE
+2. GPIO_ACTIVE_LOW  = 1 = IRQ_TYPE_EDGE_RISING
 
-OK, I will try that.
+Correct the interrupt flags, assuming the author of the code wanted same
+logical behavior behind the name "ACTIVE_xxx", this is:
+  ACTIVE_LOW  => IRQ_TYPE_LEVEL_LOW
+  ACTIVE_HIGH => IRQ_TYPE_LEVEL_HIGH
 
-Francesco
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Marc Kleine-Budde <mkl@pengutronix.de> # for tcan4x5x.txt
+
+---
+
+Changes since v1:
+1. Add acks
+---
+ Documentation/devicetree/bindings/net/can/tcan4x5x.txt | 2 +-
+ Documentation/devicetree/bindings/net/nfc/nxp-nci.txt  | 2 +-
+ Documentation/devicetree/bindings/net/nfc/pn544.txt    | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+index 3613c2c8f75d..0968b40aef1e 100644
+--- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
++++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+@@ -33,7 +33,7 @@ tcan4x5x: tcan4x5x@0 {
+ 		spi-max-frequency = <10000000>;
+ 		bosch,mram-cfg = <0x0 0 0 32 0 0 1 1>;
+ 		interrupt-parent = <&gpio1>;
+-		interrupts = <14 GPIO_ACTIVE_LOW>;
++		interrupts = <14 IRQ_TYPE_LEVEL_LOW>;
+ 		device-state-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
+ 		device-wake-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
+ 		reset-gpios = <&gpio1 27 GPIO_ACTIVE_HIGH>;
+diff --git a/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt b/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
+index cfaf88998918..9e4dc510a40a 100644
+--- a/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
++++ b/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
+@@ -25,7 +25,7 @@ Example (for ARM-based BeagleBone with NPC100 NFC controller on I2C2):
+ 		clock-frequency = <100000>;
+ 
+ 		interrupt-parent = <&gpio1>;
+-		interrupts = <29 GPIO_ACTIVE_HIGH>;
++		interrupts = <29 IRQ_TYPE_LEVEL_HIGH>;
+ 
+ 		enable-gpios = <&gpio0 30 GPIO_ACTIVE_HIGH>;
+ 		firmware-gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
+diff --git a/Documentation/devicetree/bindings/net/nfc/pn544.txt b/Documentation/devicetree/bindings/net/nfc/pn544.txt
+index 92f399ec22b8..2bd82562ce8e 100644
+--- a/Documentation/devicetree/bindings/net/nfc/pn544.txt
++++ b/Documentation/devicetree/bindings/net/nfc/pn544.txt
+@@ -25,7 +25,7 @@ Example (for ARM-based BeagleBone with PN544 on I2C2):
+ 		clock-frequency = <400000>;
+ 
+ 		interrupt-parent = <&gpio1>;
+-		interrupts = <17 GPIO_ACTIVE_HIGH>;
++		interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
+ 
+ 		enable-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
+ 		firmware-gpios = <&gpio3 19 GPIO_ACTIVE_HIGH>;
+-- 
+2.17.1
+
