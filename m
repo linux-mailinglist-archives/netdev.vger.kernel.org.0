@@ -2,165 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 313B126D0F7
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 04:05:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC40E26D0FF
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 04:13:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726098AbgIQCFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 22:05:46 -0400
-Received: from mx.aristanetworks.com ([162.210.129.12]:48774 "EHLO
-        smtp.aristanetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725886AbgIQCFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 22:05:45 -0400
-X-Greylist: delayed 323 seconds by postgrey-1.27 at vger.kernel.org; Wed, 16 Sep 2020 22:05:45 EDT
-Received: from us180.sjc.aristanetworks.com (us180.sjc.aristanetworks.com [10.243.128.7])
-        by smtp.aristanetworks.com (Postfix) with ESMTP id 2AF3A402016;
-        Wed, 16 Sep 2020 19:00:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1600308021;
-        bh=SvKZ8Kw+7/Bi01muC9TH1YqAsEfXrFdMBkoXYal1lOs=;
-        h=Date:To:Subject:From:From;
-        b=1kI4KZdkY+YqXhUYEhHQBgob2rVjUyakuHf0KPaqggchgPsjFOO2JnxBMDha4jalu
-         6NQHa6Sl3VatjzyEqa4GZFRB1irUGQDWGBhqRnFmL+g9xk8qNfAS5Avz1fyxyM4fvg
-         I40LMqaG2cuBGIYHVbKqGCPmIQvV491c4gqGz+JQg/BZN0fVGsTDdK2MhoDp9V9eDQ
-         58tj0qaaKj2cilXo2xgIUfsIOydqXVlEaXBR12ZVMODkg+GqiptMQZtH4Tc2rbL7ga
-         JQFAVJdisg8cfUgbrNIFgrhJZV3w8Ew+Rp6GLj1HJk8H6ikrDH4cGTSaK9bH6+IzoL
-         Gf2vz40DJjqiw==
-Received: by us180.sjc.aristanetworks.com (Postfix, from userid 10189)
-        id 0860995C06B9; Wed, 16 Sep 2020 19:00:20 -0700 (PDT)
-Date:   Wed, 16 Sep 2020 19:00:20 -0700
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        xiyou.wangcong@gmail.com, ap420073@gmail.com, andriin@fb.com,
-        edumazet@google.com, jiri@mellanox.com, ast@kernel.org,
-        kuba@kernel.org, davem@davemloft.net, fruggeri@arista.com
-Subject: [PATCH] net: make netdev_wait_allrefs wake-able
-User-Agent: Heirloom mailx 12.5 7/5/10
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-Id: <20200917020021.0860995C06B9@us180.sjc.aristanetworks.com>
-From:   fruggeri@arista.com (Francesco Ruggeri)
+        id S1726151AbgIQCNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 22:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726106AbgIQCNA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 22:13:00 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058A8C06178A;
+        Wed, 16 Sep 2020 19:07:02 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id d9so234744pfd.3;
+        Wed, 16 Sep 2020 19:07:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yNI3ayBSErH9ngje/k7Sy+18TDFnxYArZPNbdUTIJOk=;
+        b=FsX6DT57g7I+hXAfzCe9huqDMe1fWNbooBB5T1kx8wZ6vnBwCNpxwngBxhP9TI9sAS
+         I+ACHmu3hilq1NSS95gNSeu8vIysyPWSRg2Yy0l58BlS1S+7V9qOWfkB6+WgtZHH9oAQ
+         tgAvflUDEV9KPtif+FYBTYS3fCHiZ7nUPVZH4tapWCB19LvlTBR4f2gs88NvjYqkWyyj
+         8ql5Zy4wARRsOMTHlyIsLyPARh+SkxqMxo4itnSnMnMb+5P2vDMfgRwy6PlqJBSAHaVZ
+         bZZk+zwFrOkPVfMPFBQ7Q/rFKtN+jUYBEldKD+BLHGQN4BiMWCUbWljYdndenblhiq51
+         jqWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yNI3ayBSErH9ngje/k7Sy+18TDFnxYArZPNbdUTIJOk=;
+        b=t0FZ+PtQi+AX5i6VNvsegS7THWcpsPdukni+Tk0BgOP2Oo7gmT7bRFDriIDDtZW1Q8
+         BHsiAWikbMa9u7/9LnsPU0dJJreAP1AGl15pDyoxZSGbnasINMjxN4Js/l4y/s94y/ED
+         TIYOot2b81bV02PBVyXqaT7fOwbGkO4+oYttADxooM4TUwz3wdSZy4eX1sgpPm/Ro9Z/
+         3muO3SsfSDDV2i8Lh5nZhrLE03TGoaAZbmAOGQNMuQAMw6BgfpAojL8RWrmAn6r2kBKT
+         2TgYeeO/AImqQx7h3M6ArNJrdwK0PMhh7kSpUDhfWZyz1kZAEmIHFkqEpTebDJGWBo9C
+         HEDg==
+X-Gm-Message-State: AOAM530B0Rhxs/CtBuTqDcdFJTuG9N/tv00JIDu6k+tyJNf0o96LYV4c
+        Y7Rv8HhRjUpxN/eAKmMgKTWEkw6YD7rZvQ==
+X-Google-Smtp-Source: ABdhPJxy+UPhTkmPJunXbuI+3voBAHstyhHq6nLyiqJWtisHZpvpTN6M2Iydb1YJBbYxY/M9ilb/8g==
+X-Received: by 2002:aa7:9ab0:0:b029:13c:1611:66bb with SMTP id x16-20020aa79ab00000b029013c161166bbmr24966939pfi.6.1600308421256;
+        Wed, 16 Sep 2020 19:07:01 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id m13sm17181370pfk.103.2020.09.16.19.06.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Sep 2020 19:07:00 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     opendmb@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM ETHERNET PHY
+        DRIVERS), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next v2] net: phy: bcm7xxx: request and manage GPHY clock
+Date:   Wed, 16 Sep 2020 19:04:13 -0700
+Message-Id: <20200917020413.2313461-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The combination of aca_free_rcu, introduced in commit 2384d02520ff
-("net/ipv6: Add anycast addresses to a global hashtable"), and
-fib6_info_destroy_rcu, introduced in commit 9b0a8da8c4c6 ("net/ipv6:
-respect rcu grace period before freeing fib6_info"), can result in
-an extra rcu grace period being needed when deleting an interface,
-with the result that netdev_wait_allrefs ends up hitting the msleep(250),
-which is considerably longer than the required grace period.
-This can result in long delays when deleting a large number of interfaces,
-and it can be observed with this script:
+The internal Gigabit PHY on Broadcom STB chips has a digital clock which
+drives its MDIO interface among other things, the driver now requests
+and manage that clock during .probe() and .remove() accordingly.
 
-ns=dummy-ns
-NIFS=100
+Because the PHY driver can be probed with the clocks turned off we need
+to apply the dummy BMSR workaround during the driver probe function to
+ensure subsequent MDIO read or write towards the PHY will succeed.
 
-ip netns add $ns
-ip netns exec $ns ip link set lo up
-ip netns exec $ns sysctl net.ipv6.conf.default.disable_ipv6=0
-ip netns exec $ns sysctl net.ipv6.conf.default.forwarding=1
-
-for ((i=0; i<$NIFS; i++))
-do
-        if=eth$i
-        ip netns exec $ns ip link add $if type dummy
-        ip netns exec $ns ip link set $if up
-        ip netns exec $ns ip -6 addr add 2021:$i::1/120 dev $if
-done
-
-for ((i=0; i<$NIFS; i++))
-do
-        if=eth$i
-        ip netns exec $ns ip link del $if
-done
-
-ip netns del $ns
-
-This patch converts the msleep(250) into a wake-able wait,
-allowing dev_put to wake up netdev_wait_allrefs.
-
-Time with this patch on a 5.4 kernel:
-
-real	0m7.494s
-user	0m0.403s
-sys	0m1.197s
-
-Time without this patch:
-
-real	0m31.522s
-user	0m0.438s
-sys	0m1.156s
-
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
-
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- include/linux/netdevice.h | 6 ++++++
- net/core/dev.c            | 5 ++++-
- 2 files changed, 10 insertions(+), 1 deletion(-)
+Changes in v2:
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index b0e303f6603f..3bbae238c11d 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1795,6 +1795,7 @@ enum netdev_priv_flags {
-  *
-  *	@needs_free_netdev:	Should unregister perform free_netdev?
-  *	@priv_destructor:	Called from unregister
-+ *	@destroy_task:		Task waiting for refcount to drop to 0
-  *	@npinfo:		XXX: need comments on this one
-  * 	@nd_net:		Network namespace this network device is inside
-  *
-@@ -2089,6 +2090,7 @@ struct net_device {
+- localize the changes exclusively within the PHY driver and do not
+  involve the MDIO driver at all. Using the ethernet-phyidAAAA.BBBB
+  compatible string we can get straight to the desired driver without
+  requiring clocks to be assumed on.
+
+ drivers/net/phy/bcm7xxx.c | 30 +++++++++++++++++++++++++++++-
+ 1 file changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/bcm7xxx.c b/drivers/net/phy/bcm7xxx.c
+index 692048d86ab1..744c24491d63 100644
+--- a/drivers/net/phy/bcm7xxx.c
++++ b/drivers/net/phy/bcm7xxx.c
+@@ -11,6 +11,7 @@
+ #include "bcm-phy-lib.h"
+ #include <linux/bitops.h>
+ #include <linux/brcmphy.h>
++#include <linux/clk.h>
+ #include <linux/mdio.h>
  
- 	bool needs_free_netdev;
- 	void (*priv_destructor)(struct net_device *dev);
-+	struct task_struct	*destroy_task;
+ /* Broadcom BCM7xxx internal PHY registers */
+@@ -39,6 +40,7 @@
  
- #ifdef CONFIG_NETPOLL
- 	struct netpoll_info __rcu	*npinfo;
-@@ -3873,7 +3875,11 @@ void netdev_run_todo(void);
-  */
- static inline void dev_put(struct net_device *dev)
+ struct bcm7xxx_phy_priv {
+ 	u64	*stats;
++	struct clk *clk;
+ };
+ 
+ static int bcm7xxx_28nm_d0_afe_config_init(struct phy_device *phydev)
+@@ -521,6 +523,7 @@ static void bcm7xxx_28nm_get_phy_stats(struct phy_device *phydev,
+ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
  {
-+	struct task_struct *destroy_task = dev->destroy_task;
+ 	struct bcm7xxx_phy_priv *priv;
++	int ret = 0;
+ 
+ 	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+@@ -534,7 +537,30 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
+ 	if (!priv->stats)
+ 		return -ENOMEM;
+ 
+-	return 0;
++	priv->clk = devm_clk_get_optional(&phydev->mdio.dev, NULL);
++	if (IS_ERR(priv->clk))
++		return PTR_ERR(priv->clk);
 +
- 	this_cpu_dec(*dev->pcpu_refcnt);
-+	if (destroy_task)
-+		wake_up_process(destroy_task);
++	ret = clk_prepare_enable(priv->clk);
++	if (ret)
++		return ret;
++
++	/* Dummy read to a register to workaround an issue upon reset where the
++	 * internal inverter may not allow the first MDIO transaction to pass
++	 * the MDIO management controller and make us return 0xffff for such
++	 * reads. This is needed to ensure that any subsequent reads to the
++	 * PHY will succeed.
++	 */
++	phy_read(phydev, MII_BMSR);
++
++	return ret;
++}
++
++static void bcm7xxx_28nm_remove(struct phy_device *phydev)
++{
++	struct bcm7xxx_phy_priv *priv = phydev->priv;
++
++	clk_disable_unprepare(priv->clk);
  }
  
- /**
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 4086d335978c..795c3d39e807 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9994,6 +9994,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
- 	linkwatch_forget_dev(dev);
- 
- 	rebroadcast_time = warning_time = jiffies;
-+	dev->destroy_task = current;
- 	refcnt = netdev_refcnt_read(dev);
- 
- 	while (refcnt != 0) {
-@@ -10023,7 +10024,8 @@ static void netdev_wait_allrefs(struct net_device *dev)
- 			rebroadcast_time = jiffies;
- 		}
- 
--		msleep(250);
-+		set_current_state(TASK_UNINTERRUPTIBLE);
-+		schedule_timeout(HZ/4);
- 
- 		refcnt = netdev_refcnt_read(dev);
- 
-@@ -10033,6 +10035,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
- 			warning_time = jiffies;
- 		}
- 	}
-+	dev->destroy_task = NULL;
+ #define BCM7XXX_28NM_GPHY(_oui, _name)					\
+@@ -552,6 +578,7 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
+ 	.get_strings	= bcm_phy_get_strings,				\
+ 	.get_stats	= bcm7xxx_28nm_get_phy_stats,			\
+ 	.probe		= bcm7xxx_28nm_probe,				\
++	.remove		= bcm7xxx_28nm_remove,				\
  }
  
- /* The sequence is:
+ #define BCM7XXX_28NM_EPHY(_oui, _name)					\
+@@ -567,6 +594,7 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
+ 	.get_strings	= bcm_phy_get_strings,				\
+ 	.get_stats	= bcm7xxx_28nm_get_phy_stats,			\
+ 	.probe		= bcm7xxx_28nm_probe,				\
++	.remove		= bcm7xxx_28nm_remove,				\
+ }
+ 
+ #define BCM7XXX_40NM_EPHY(_oui, _name)					\
 -- 
-2.28.0
-
+2.25.1
 
