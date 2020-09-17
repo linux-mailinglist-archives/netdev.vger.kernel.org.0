@@ -2,147 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 232AB26D16A
-	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 05:03:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1A4226D172
+	for <lists+netdev@lfdr.de>; Thu, 17 Sep 2020 05:08:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726098AbgIQDDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Sep 2020 23:03:23 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:60278 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726007AbgIQDDW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 23:03:22 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08GL8uCS160374;
-        Wed, 16 Sep 2020 21:15:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=AVQPLWUU6K3yO+73vDw9BdNKEyDGmBgF91TwAjI7JwI=;
- b=bXOwmSRY052K6room7bqoNWMZPTAHbjC1b5arRkxd6a8dXVL7XgEK1yoc/J9bxuy02zH
- I1VzYshe6d2hib3DsMu1e+EIs5gKPBDAudNSM82VFUUK6YFczSTggQ2gPDv/Yuk58EzY
- NZIhjJ4I+xzk9G1pfWQDF7jOqyUU9Y97RF4LetOrH3lYRJM6L9rGdc+yWRwz7N8cDazo
- 8ULOrIbidwEo2zn7uhZjt+XF4aGCGg0tmVC6VRftkvH+tZByCfqa0AyLiOIfUaKS+f1c
- K4Daz1AdDO3YVyJxkJQ/zBvgtbwaen3QsQ4bv+S/os3KGUwYiPJJec9ASGWZCXTc1qVF fA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 33gp9mdj1g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 16 Sep 2020 21:15:12 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08GL9w92071742;
-        Wed, 16 Sep 2020 21:15:11 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 33hm33hw1a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 16 Sep 2020 21:15:11 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08GLFASO027204;
-        Wed, 16 Sep 2020 21:15:10 GMT
-Received: from [10.159.236.249] (/10.159.236.249)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 16 Sep 2020 21:15:10 +0000
-Subject: Re: [PATCH 1/1] net/rds: suppress page allocation failure error in
- recv buffer refill
-To:     santosh.shilimkar@oracle.com
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        aruna.ramakrishna@oracle.com, rama.nichanamatlu@oracle.com
-References: <1600283326-30323-1-git-send-email-manjunath.b.patil@oracle.com>
- <389b52c6-0d9a-7644-49f6-66eb7a45b3e6@oracle.com>
-From:   Manjunath Patil <manjunath.b.patil@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <392801e0-cebd-d0dd-fc65-666161c6599b@oracle.com>
-Date:   Wed, 16 Sep 2020 14:15:08 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
-MIME-Version: 1.0
-In-Reply-To: <389b52c6-0d9a-7644-49f6-66eb7a45b3e6@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9746 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 mlxlogscore=999
- malwarescore=0 mlxscore=0 phishscore=0 adultscore=0 suspectscore=1
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009160155
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9746 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
- adultscore=0 malwarescore=0 clxscore=1015 lowpriorityscore=0 phishscore=0
- spamscore=0 priorityscore=1501 suspectscore=1 impostorscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009160155
+        id S1726157AbgIQDIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Sep 2020 23:08:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726054AbgIQDIH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Sep 2020 23:08:07 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9709C061355
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 20:02:13 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id d19so361840pld.0
+        for <netdev@vger.kernel.org>; Wed, 16 Sep 2020 20:02:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=y3iIlKq/pnnbVvM61zgnvZl54pIzQmA9YD7RgieevAM=;
+        b=480BFvns9Djwe2d6G++Vfjxt0Ht+/QvnwH3j/bdIIxzAa7FZPi1rLGyyxv78DM6JMn
+         GPvqx0QByl2NF0oolvd31a/+O7LTsE5EQyoNunNfz3NTTnCUR7hRDbdfvY2xnTcZjuZG
+         wssf9DO/MD5SCBsmucnSkL6DSqu07dIUYy9gCLLbwYmaWp8UgNOJ8o6h4WmuuakdJf3g
+         /A6vbb1reWSCz9lTw9FIIREnk6Nx0+xY3/POMOvEfDL9IMTFFcvUICBKihwP/A+APjon
+         /D/DSLXmHe14ny3ICjda48H+EHfEHVWS+mblJVcfdANRSzi/Ei4LsLwN1HOSnC8hGPQH
+         ctpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=y3iIlKq/pnnbVvM61zgnvZl54pIzQmA9YD7RgieevAM=;
+        b=L7+EbivQ/NbHiUu0o0pOySVkFCZLbJP+zS/v07LUGq/4/dlSKBYBrgk06S4HThAYje
+         p7AnzT1LEbgOYwuHLKZ+yIkyiOxhQIWtPAmbejvmBEg6gjTPQ1DX3f8yVMVqb5lRvB9M
+         cqrS7hMzMtfkNekoqlUeE5HedMEdzwtzquheekxeUErfcm4WpULJaNfh4RApqrguvSK4
+         mOa0QunMBnxxm3U3u1dkFV1UmzdNs1KvlfqXjFNVHD/VFcPClcHelN1M/v9y3htw+26Z
+         Em33JFaMWw1dxuLeSdRsS5L7SrxSbiy95D2P9gXhVY7VBNT4PJ9scqMKvPwFZxfOf97V
+         NCgQ==
+X-Gm-Message-State: AOAM530I2PIzsKV8e9mKbiR86obPD70yl+TS+42ZQENC8+48q8o5a+ut
+        AIAQ2D+Om0ZzrjCMny/TJ/AIkpQmA50VcQ==
+X-Google-Smtp-Source: ABdhPJx2gE/mQqMW63vBi5Sq50vF9YV4hVTMYMx1onLAhc1MEup7kOhSZaA4oQRfbsuiCu8aI+7OZw==
+X-Received: by 2002:a17:902:c14b:b029:d1:ec9a:aaae with SMTP id 11-20020a170902c14bb02900d1ec9aaaaemr6126523plj.62.1600311732614;
+        Wed, 16 Sep 2020 20:02:12 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id b2sm12072498pfp.3.2020.09.16.20.02.11
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 16 Sep 2020 20:02:11 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH v4 net-next 0/5] ionic: add devlink dev flash support
+Date:   Wed, 16 Sep 2020 20:01:59 -0700
+Message-Id: <20200917030204.50098-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Santosh,
+Add support for using devlink's dev flash facility to update the
+firmware on an ionic device, and add a new timeout parameter to the
+devlink flash netlink message.
 
-inline.
-On 9/16/2020 12:27 PM, santosh.shilimkar@oracle.com wrote:
-> On 9/16/20 12:08 PM, Manjunath Patil wrote:
->> RDS/IB tries to refill the recv buffer in softirq context using
->> GFP_NOWAIT flag. However alloc failure is handled by queueing a work to
->> refill the recv buffer with GFP_KERNEL flag. This means failure to
->> allocate with GFP_NOWAIT isn't fatal. Do not print the PAF warnings if
->> softirq context fails to refill the recv buffer, instead print a one
->> line warning once a day.
->>
->> Signed-off-by: Manjunath Patil <manjunath.b.patil@oracle.com>
->> Reviewed-by: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
->> ---
->>   net/rds/ib_recv.c | 16 +++++++++++++---
->>   1 file changed, 13 insertions(+), 3 deletions(-)
->>
->> diff --git a/net/rds/ib_recv.c b/net/rds/ib_recv.c
->> index 694d411dc72f..38d2894f6bb2 100644
->> --- a/net/rds/ib_recv.c
->> +++ b/net/rds/ib_recv.c
->> @@ -310,8 +310,8 @@ static int rds_ib_recv_refill_one(struct 
->> rds_connection *conn,
->>       struct rds_ib_connection *ic = conn->c_transport_data;
->>       struct ib_sge *sge;
->>       int ret = -ENOMEM;
->> -    gfp_t slab_mask = GFP_NOWAIT;
->> -    gfp_t page_mask = GFP_NOWAIT;
->> +    gfp_t slab_mask = gfp;
->> +    gfp_t page_mask = gfp;
->>         if (gfp & __GFP_DIRECT_RECLAIM) {
->>           slab_mask = GFP_KERNEL;
->> @@ -406,6 +406,16 @@ void rds_ib_recv_refill(struct rds_connection 
->> *conn, int prefill, gfp_t gfp)
->>           recv = &ic->i_recvs[pos];
->>           ret = rds_ib_recv_refill_one(conn, recv, gfp);
->>           if (ret) {
->> +            static unsigned long warn_time;
-> Comment should start on next line.
-I will add new line. checkpatch.pl didn't find it though.
->> +            /* warn max once per day. This should be enough to
->> +             * warn users about low mem situation.
->> +             */
->> +            if (printk_timed_ratelimit(&warn_time,
->> +                           24 * 60 * 60 * 1000))
->> +                pr_warn("RDS/IB: failed to refill recv buffer for 
->> <%pI6c,%pI6c,%d>, waking worker\n",
->> +                    &conn->c_laddr, &conn->c_faddr,
->> +                    conn->c_tos);
-> Didn't notice this before.
-> Why not just use "pr_warn_ratelimited()" ?
-I think you meant, get rid of if clause and use "pr_warn_ratelimited()" 
-instead.
-That can still produce more than needed logs during low memory situation.
+For long-running flash commands, we add a timeout element to the dev
+flash notify message in order for a userland utility to display a timeout
+deadline to the user.  This allows the userland utility to display a
+count down to the user when a firmware update action is otherwise going
+to go for ahile without any updates.  An example use is added to the
+netdevsim module.
 
--Thanks,
-Manjunath
->> +
->>               must_wake = true;
->>               break;
->>           }
->> @@ -1020,7 +1030,7 @@ void rds_ib_recv_cqe_handler(struct 
->> rds_ib_connection *ic,
->>           rds_ib_stats_inc(s_ib_rx_ring_empty);
->>         if (rds_ib_ring_low(&ic->i_recv_ring)) {
->> -        rds_ib_recv_refill(conn, 0, GFP_NOWAIT);
->> +        rds_ib_recv_refill(conn, 0, GFP_NOWAIT | __GFP_NOWARN);
->>           rds_ib_stats_inc(s_ib_rx_refill_from_cq);
->>       }
->>   }
->>
+The ionic driver uses this timeout element in its new flash function.
+The driver uses a simple model of pushing the firmware file to the NIC,
+asking the NIC to unpack and install the file into the device, and then
+selecting it for the next boot.  If any of these steps fail, the whole
+transaction is failed.  A couple of the steps can take a long time,
+so we use the timeout status message rather than faking it with bogus
+done/total messages.
+
+The driver doesn't currently support doing these steps individually.
+In the future we want to be able to list the FW that is installed and
+selectable but we don't yet have the API to fully support that.
+
+v4: Added a new devlink status notify message for showing timeout
+    information, and modified the ionic fw update to use it for its long
+    running firmware commands.
+
+v3: Changed long dev_cmd timeout on status check calls to a loop around
+    calls with a normal timeout, which allows for more intermediate log
+    messaging when in a long wait, and for letting other threads run
+    dev_cmds if waiting.
+
+v2: Changed "Activate" to "Select" in status messages.
+
+Shannon Nelson (5):
+  devlink: add timeout information to status_notify
+  devlink: collect flash notify params into a struct
+  netdevsim: devlink flash timeout message
+  ionic: update the fw update api
+  ionic: add devlink firmware update
+
+ drivers/net/ethernet/pensando/ionic/Makefile  |   2 +-
+ .../ethernet/pensando/ionic/ionic_devlink.c   |  14 ++
+ .../ethernet/pensando/ionic/ionic_devlink.h   |   3 +
+ .../net/ethernet/pensando/ionic/ionic_fw.c    | 206 ++++++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_if.h    |  33 ++-
+ .../net/ethernet/pensando/ionic/ionic_main.c  |  27 ++-
+ drivers/net/netdevsim/dev.c                   |   2 +
+ include/net/devlink.h                         |  25 +++
+ include/uapi/linux/devlink.h                  |   3 +
+ net/core/devlink.c                            |  83 ++++---
+ 10 files changed, 350 insertions(+), 48 deletions(-)
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_fw.c
+
+-- 
+2.17.1
 
