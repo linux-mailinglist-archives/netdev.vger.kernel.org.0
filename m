@@ -2,164 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53D6527090B
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 01:06:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39B7A27090D
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 01:06:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726104AbgIRXFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 19:05:09 -0400
-Received: from mga06.intel.com ([134.134.136.31]:37642 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726009AbgIRXFJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 19:05:09 -0400
-IronPort-SDR: KfinRy2E9cj1nMdvKn8uKEDXIHsweTgpdVyWqVpo8kVa+uRhBsE13dfrJYp4yRQ4igBIS+8gLL
- Qk1AKTQc8ykA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9748"; a="221615370"
-X-IronPort-AV: E=Sophos;i="5.77,276,1596524400"; 
-   d="scan'208";a="221615370"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2020 16:05:02 -0700
-IronPort-SDR: ubDUrOK2HBGXca3TyKKo/E9uWZDxmud16ijxnRVFcWW2a3hF8K40FCWTDaxdnkpzhW3E4MWeEB
- t8vOZ/zjPpBA==
-X-IronPort-AV: E=Sophos;i="5.77,276,1596524400"; 
-   d="scan'208";a="484416816"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.100.226]) ([10.209.100.226])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2020 16:05:01 -0700
-Subject: Re: [PATCH net-next v2 1/8] devlink: Introduce PCI SF port flavour
- and port attribute
-To:     Parav Pandit <parav@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Jiri Pirko <jiri@nvidia.com>
-References: <20200917081731.8363-8-parav@nvidia.com>
- <20200917172020.26484-1-parav@nvidia.com>
- <20200917172020.26484-2-parav@nvidia.com>
- <fcb55cc1-3be3-3eaa-68d5-28b4d112e291@intel.com>
- <BY5PR12MB4322441DBA23EB8F5B8D3B90DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <1c5459bb-ca89-732e-3a23-78ef6d27869d@intel.com>
-Date:   Fri, 18 Sep 2020 16:04:59 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
+        id S1726154AbgIRXG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 19:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726119AbgIRXG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 19:06:28 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35610C0613CF
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 16:06:25 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id m17so8834503ioo.1
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 16:06:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9bNyiqZRy9v9UN6kOHlDSQbOqmNPV8IizTEQRLcyfn0=;
+        b=v1cuLNoXQ+GVGb4l56ge0mP3bK/5G8UVWWN4zIDq0tBYHlT3ihH4H2it9xJZCsv/W7
+         qM0Lb++ZebLGePVpFv1qTco8d0zGgfWRHEKqFRTe+l24ktHnsWPuqTGo/xN7OKThoUu6
+         mFI2nXjrbz0ylzzWeAnSdOhJe5viXOlU/JCGZeVBo44jIzPZJUF3iEmJQrHStMeDazxL
+         gtyzGo2U1jQ/1a/f12uPJZdUoHzXRmyFn8kDJ9L8CijRlHGDqEYrD3FmwYSrRyv+BLZj
+         8JwMRJVCVH2EXnOxgKTko6UdH3tBW41a7jsqVkGzKq94UR7odmcrw3co9AY4nWpdtamJ
+         GB1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9bNyiqZRy9v9UN6kOHlDSQbOqmNPV8IizTEQRLcyfn0=;
+        b=KCYmfnSugS8UUGK9oN99hs6ZQ2aghUSWDfpElsfhkrpz726Oe0GE5d/SGLg8xWSafh
+         Wal3+KhoFkp+SvinsxryZgmu1uWNrvo8XQO/UWEeblLXK62Mpl1NprM0eqUJlHRrJcwm
+         YyBqAN0qGyy+Jpr/r+J8ULx8s5gvadb/4A2V1j6xT4uWJMZPk47dpDBBNqtqlE0740ba
+         hFDtMD7mYG0QNDhELDZy/Ow1vlw9Ga/e3SuFFXMwHr6E0TvuLMMDoMFHHAHsU2bdHbJo
+         RBSIYLPQBxs3vfBI+mOxnF9AFXu3xu2+t6NwvSTr74brwzwqCsewiRlN369LKb2brcYS
+         s3lQ==
+X-Gm-Message-State: AOAM532or8zt3oji99X6xE6ic5Cuo99VXK8smrGD+5SMJHtIYOUpULi8
+        Jc0hlIO6DUiO6mOYubZg8lCYlSEVITcX0gz9dLMx0g==
+X-Google-Smtp-Source: ABdhPJwEMLRoquIHfcHeqo6SsUZIdVaVx2GPzrJ7bsG7/HRNsqafMwUOiC7OJ64e00v2okkmvKLar3TyyKgRs3PDpYE=
+X-Received: by 2002:a5e:c017:: with SMTP id u23mr28425394iol.139.1600470383614;
+ Fri, 18 Sep 2020 16:06:23 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <BY5PR12MB4322441DBA23EB8F5B8D3B90DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200917143846.37ce43a0@carbon> <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
+ <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org> <20200918120016.7007f437@carbon>
+In-Reply-To: <20200918120016.7007f437@carbon>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Fri, 18 Sep 2020 16:06:13 -0700
+Message-ID: <CANP3RGfUj-KKHHQtbggiZ4V-Xrr_sk+TWyN5FgYUGZS6rOX1yw@mail.gmail.com>
+Subject: Re: BPF redirect API design issue for BPF-prog MTU feedback?
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shaun Crampton <shaun@tigera.io>,
+        David Miller <davem@davemloft.net>,
+        Marek Majkowski <marek@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> This is a good point.  As bpf_skb_adjust_room() can just be run after
+> bpf_redirect() call, then a MTU check in bpf_redirect() actually
+> doesn't make much sense.  As clever/bad BPF program can then avoid the
+> MTU check anyhow.  This basically means that we have to do the MTU
+> check (again) on kernel side anyhow to catch such clever/bad BPF
+> programs.  (And I don't like wasting cycles on doing the same check two
+> times).
 
+If you get rid of the check in bpf_redirect() you might as well get
+rid of *all* the checks for excessive mtu in all the helpers that
+adjust packet size one way or another way.  They *all* then become
+useless overhead.
 
-On 9/17/2020 8:54 PM, Parav Pandit wrote:
-> 
-> 
->> From: Jacob Keller <jacob.e.keller@intel.com>
->> Sent: Friday, September 18, 2020 12:00 AM
->>
->>
->> On 9/17/2020 10:20 AM, Parav Pandit wrote:
->>> A PCI sub-function (SF) represents a portion of the device similar to
->>> PCI VF.
->>>
->>> In an eswitch, PCI SF may have port which is normally represented
->>> using a representor netdevice.
->>> To have better visibility of eswitch port, its association with SF,
->>> and its representor netdevice, introduce a PCI SF port flavour.
->>>
->>> When devlink port flavour is PCI SF, fill up PCI SF attributes of the
->>> port.
->>>
->>> Extend port name creation using PCI PF and SF number scheme on best
->>> effort basis, so that vendor drivers can skip defining their own
->>> scheme.
->>
->> What does this mean? What's the scheme used? 
->>
-> Scheme used is equivalent as what is used for PCI VF ports. pfNvfM.
-> It is pfNsfM.
-> Below example shows the representor netdevice name as 'eni10npf0sf44' built by systemd/udev using phys_port_name.
-> 
->> Do drivers still have the option to make their own scheme? If so, why?
-> Today we have two types of drivers (mlx5_core, netdevsim) which uses devlink core which creates the name.
-> Or other drivers (bnxt, nfp) which doesn't yet migrated to use devlink infra for PCI PF, VF ports.
-> Such drivers are phys_port_name and other ndos.
-> It is not the role of this patch to block those drivers, but any new implementation doesn't need to hand code switch_id and phys_port_name related ndos for SF.
-> For example, bnxt_vf_rep_get_phys_port_name().
-> 
+I don't like that.  There may be something the bpf program could do to
+react to the error condition (for example in my case, not modify
+things and just let the core stack deal with things - which will
+probably just generate packet too big icmp error).
 
+btw. right now our forwarding programs first adjust the packet size
+then call bpf_redirect() and almost immediately return what it
+returned.
 
-Ok, thanks for the explanation.
+but this could I think easily be changed to reverse the ordering, so
+we wouldn't increase packet size before the core stack was informed we
+would be forwarding via a different interface.
 
->> It's not obvious to me in this patch where the numbering scheme comes from. It
->> looks like it's still up to the caller to set the numbers.
->>
-> Naming scheme for PCI PF and PCI VF port flavours already exist.
-> Scheme is equivalent for PCI SF flavour.
-> 
-> I thought example is good enough to show that, but I will update commit message to describe this scheme to make it clear. pfNsfM.
->  
+> If we do the MTU check on the kernel side, then there are no feedback
+> to the program, and how are end-users going to debug this?
 
-I think I just hadn't quite moved from "sf number" to "name of the
-netdevice" and was thinking of scheme for how the sf number is selected,
-which isn't really what the statement was about.
+What about just adding a net_ratelimited printk in the >mtu but too
+late to return error case?
+This is only useful though if this should never happen unless you do
+something 'evil' in your bpf code.
+(ie. to be useful this requires all the bpf helpers to have correct
+mtu checks in them)
 
->>>>>> An example view of a PCI SF port.
->>>
->>> $ devlink port show netdevsim/netdevsim10/2
->>> netdevsim/netdevsim10/2: type eth netdev eni10npf0sf44 flavour pcisf
->> controller 0 pfnum 0 sfnum 44 external false splittable false
->>>   function:
->>>     hw_addr 00:00:00:00:00:00
->>>
->>> devlink port show netdevsim/netdevsim10/2 -jp {
->>>     "port": {
->>>         "netdevsim/netdevsim10/2": {
->>>             "type": "eth",
->>>             "netdev": "eni10npf0sf44",
->>>             "flavour": "pcisf",
->>>             "controller": 0,
->>>             "pfnum": 0,
->>>             "sfnum": 44,
->>>             "external": false,
->>>             "splittable": false,
->>>             "function": {
->>>                 "hw_addr": "00:00:00:00:00:00"
->>>             }
->>>         }
->>>     }
->>> }
->>>
->>> Signed-off-by: Parav Pandit <parav@nvidia.com>
->>> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
->>> ---
->>>  include/net/devlink.h        | 17 +++++++++++++++++
->>>  include/uapi/linux/devlink.h |  7 +++++++
->>>  net/core/devlink.c           | 37 ++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 61 insertions(+)
->>>
-> 
-> 
->>>  static int __devlink_port_phys_port_name_get(struct devlink_port
->> *devlink_port,
->>>  					     char *name, size_t len)
->>>  {
->>> @@ -7855,6 +7889,9 @@ static int
->> __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
->>>  		n = snprintf(name, len, "pf%uvf%u",
->>>  			     attrs->pci_vf.pf, attrs->pci_vf.vf);
->>>  		break;
->>> +	case DEVLINK_PORT_FLAVOUR_PCI_SF:
->>> +		n = snprintf(name, len, "pf%usf%u", attrs->pci_sf.pf, attrs-
->>> pci_sf.sf);
->>> +		break;
->>>  	}
->>>
-> This is where the naming scheme is done, like pcipf and pcivf port flavours.
-> 
->>>  	if (n >= len)
->>>
+Alternatively a sysctl that would generate icmp error on such a drop?
+Or just always do that anyway?
+
+> Hmm, I don't like wasting cycles on doing the same check multiple times.
+
+I'm not sure this is avoidable without making bpf code error prone...
+
+> In bpf_redirect() we store the netdev we want to redirect to, thus, if
+> bpf_skb_adjust_room() is run after bpf_redirect(), we could also do a
+> MTU check in bpf_skb_adjust_room() based on this netdev. (maybe there
+> are still ways for a BPF-prog to cheat the MTU check?).
+
+Sure but, bpf_redirect() can be from large to small mtu device without
+packet ever being modified.
+bpf_redirect() needs to check mtu in such a case.
+bpf code may decide that if can't redirect then it just wants core
+stack to do something with it (like frag it).
+
+> > Another solution is to have an exception function defined in the
+> > BPF_prog, this function by itself is another program that can be
+> > executed to notify the prog about any exception/err that happened
+> > after the main BPF_program exited and let the XDP program react by
+> > its own logic.
+>
+> We are talking about TC-BPF programs here, but the concept and
+> usability issue with bpf_redirect() is the same for XDP.
+>
+> If doing the MTU check (and drop) on kernel side, as was thinking about
+> adding a simple tracepoint, for end-users to debug this. It would also
+> allow for attaching a BPF-prog to the tracepoint to get more direct
+> feedback, but it would not allow sending back an ICMP response.
+>
+> Your approach of calling a 2nd BPF-prog to deal with exceptions, and
+> allow it to alter the packet and flow "action" is definitely
+> interesting.  What do others think?
+>
+>
+> > example:
+> >
+> > BPF_prog:
+> >     int XDP_main_prog(xdp_buff) {
+> >         xdp_adjust_head/tail(xdp_buff);
+> >         return xdp_redirect(ifindex, flags);
+> >     }
+> >
+> >     int XDP_exception(xdp_buff, excption_code) {
+> >         if (excetption_code =3D=3D XDP_REDIRECRT_MTU_EXCEEDED) {
+> >                 ICMP_response(xdp_buff);
+> >                 return XDP_TX;
+> >         }
+> >         return XDP_DROP;
+> >     }
+> >
+> >
+> > netdev_driver_xdp_handle():
+> >    act =3D bpf_prog_run_xdp(prog, xdp); // Run XDP_main_prog
+> >    if (act =3D=3D XDP_REDIRECT)
+> >        err =3D xdp_do_redirect(netdev, xdp, prog);
+> >        if (err) {
+> >           // Run XDP_exception() function in the user prog
+> >           // finds the exception handler of active program
+> >           act =3D bpf_prog_run_xdp_exciption(prog, xdp, err);
+> >           // then handle exception action in the driver
+> > (XDP_TX/DROP/FORWARD)..
+> >        }
+> >
+> > of-course a user program will be notified only on the first err ..
+> > if it fails on the 2nd time .. just drop..
+>
+>
+> --
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>
+Maciej =C5=BBenczykowski, Kernel Networking Developer @ Google
