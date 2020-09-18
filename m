@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0779626EE17
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:26:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 331AF26EE00
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:25:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728953AbgIRC0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:26:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45502 "EHLO mail.kernel.org"
+        id S1729532AbgIRCZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:25:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45894 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729335AbgIRCQG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:16:06 -0400
+        id S1729051AbgIRCQU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:16:20 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1A18A23787;
-        Fri, 18 Sep 2020 02:16:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 15530235F7;
+        Fri, 18 Sep 2020 02:16:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600395365;
-        bh=CM75nd8kgWpkZbuZK2jNXYJcq2Zfe/ixqzZG0K+l4V4=;
+        s=default; t=1600395377;
+        bh=eRhLSHWLg8jIE38ZEn7ZZMokZ3lZzVVbn52lcanlTjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ztR+uv1uByWTKGDVLnWN6RRNhzeydPXXm0eoMfVDj1EOVPEsIp8xYJ2ZoeVuEwcby
-         1gap9eKXtSbq+CoEWZCpL8Kqv2telN8ZYX+P25Of+1OSnjnFRhOHIWgOlqRfDy9hGH
-         SF2EKfZyzaUF+jFnOBPTWNGYtWa5ehQB4B7D+tes=
+        b=pudpudagnAeDOc9I65Vg0dlNjHFWIHRXUQHaw3YDBGQ6mHrGsSAhCi/572Ss/2j+2
+         apVvSUwIVGLw/xtkuv11DXXsJ803KRrQzAMfTYozmY2IKa3a/1g5gcvzVKwtwbpttB
+         au6rlVv1lQOk7pJWWnF8+72UB31wtZqlHwzItNpU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 59/90] svcrdma: Fix leak of transport addresses
-Date:   Thu, 17 Sep 2020 22:14:24 -0400
-Message-Id: <20200918021455.2067301-59-sashal@kernel.org>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Gengming Liu <l.dmxcsnsbh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 69/90] atm: fix a memory leak of vcc->user_back
+Date:   Thu, 17 Sep 2020 22:14:34 -0400
+Message-Id: <20200918021455.2067301-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918021455.2067301-1-sashal@kernel.org>
 References: <20200918021455.2067301-1-sashal@kernel.org>
@@ -42,54 +43,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Cong Wang <xiyou.wangcong@gmail.com>
 
-[ Upstream commit 1a33d8a284b1e85e03b8c7b1ea8fb985fccd1d71 ]
+[ Upstream commit 8d9f73c0ad2f20e9fed5380de0a3097825859d03 ]
 
-Kernel memory leak detected:
+In lec_arp_clear_vccs() only entry->vcc is freed, but vcc
+could be installed on entry->recv_vcc too in lec_vcc_added().
 
-unreferenced object 0xffff888849cdf480 (size 8):
-  comm "kworker/u8:3", pid 2086, jiffies 4297898756 (age 4269.856s)
-  hex dump (first 8 bytes):
-    30 00 cd 49 88 88 ff ff                          0..I....
+This fixes the following memory leak:
+
+unreferenced object 0xffff8880d9266b90 (size 16):
+  comm "atm2", pid 425, jiffies 4294907980 (age 23.488s)
+  hex dump (first 16 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 6b 6b 6b a5  ............kkk.
   backtrace:
-    [<00000000acfc370b>] __kmalloc_track_caller+0x137/0x183
-    [<00000000a2724354>] kstrdup+0x2b/0x43
-    [<0000000082964f84>] xprt_rdma_format_addresses+0x114/0x17d [rpcrdma]
-    [<00000000dfa6ed00>] xprt_setup_rdma_bc+0xc0/0x10c [rpcrdma]
-    [<0000000073051a83>] xprt_create_transport+0x3f/0x1a0 [sunrpc]
-    [<0000000053531a8e>] rpc_create+0x118/0x1cd [sunrpc]
-    [<000000003a51b5f8>] setup_callback_client+0x1a5/0x27d [nfsd]
-    [<000000001bd410af>] nfsd4_process_cb_update.isra.7+0x16c/0x1ac [nfsd]
-    [<000000007f4bbd56>] nfsd4_run_cb_work+0x4c/0xbd [nfsd]
-    [<0000000055c5586b>] process_one_work+0x1b2/0x2fe
-    [<00000000b1e3e8ef>] worker_thread+0x1a6/0x25a
-    [<000000005205fb78>] kthread+0xf6/0xfb
-    [<000000006d2dc057>] ret_from_fork+0x3a/0x50
+    [<(____ptrval____)>] kmem_cache_alloc_trace+0x10e/0x151
+    [<(____ptrval____)>] lane_ioctl+0x4b3/0x569
+    [<(____ptrval____)>] do_vcc_ioctl+0x1ea/0x236
+    [<(____ptrval____)>] svc_ioctl+0x17d/0x198
+    [<(____ptrval____)>] sock_do_ioctl+0x47/0x12f
+    [<(____ptrval____)>] sock_ioctl+0x2f9/0x322
+    [<(____ptrval____)>] vfs_ioctl+0x1e/0x2b
+    [<(____ptrval____)>] ksys_ioctl+0x61/0x80
+    [<(____ptrval____)>] __x64_sys_ioctl+0x16/0x19
+    [<(____ptrval____)>] do_syscall_64+0x57/0x65
+    [<(____ptrval____)>] entry_SYSCALL_64_after_hwframe+0x49/0xb3
 
-Introduce a call to xprt_rdma_free_addresses() similar to the way
-that the TCP backchannel releases a transport's peer address
-strings.
-
-Fixes: 5d252f90a800 ("svcrdma: Add class for RDMA backwards direction transport")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Cc: Gengming Liu <l.dmxcsnsbh@gmail.com>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xprtrdma/svc_rdma_backchannel.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/atm/lec.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/sunrpc/xprtrdma/svc_rdma_backchannel.c b/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
-index 6035c5a380a6b..b3d48c6243c80 100644
---- a/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
-+++ b/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
-@@ -277,6 +277,7 @@ xprt_rdma_bc_put(struct rpc_xprt *xprt)
- {
- 	dprintk("svcrdma: %s: xprt %p\n", __func__, xprt);
- 
-+	xprt_rdma_free_addresses(xprt);
- 	xprt_free(xprt);
- 	module_put(THIS_MODULE);
- }
+diff --git a/net/atm/lec.c b/net/atm/lec.c
+index 704892d79bf19..756429c95e859 100644
+--- a/net/atm/lec.c
++++ b/net/atm/lec.c
+@@ -1290,6 +1290,12 @@ static void lec_arp_clear_vccs(struct lec_arp_table *entry)
+ 		entry->vcc = NULL;
+ 	}
+ 	if (entry->recv_vcc) {
++		struct atm_vcc *vcc = entry->recv_vcc;
++		struct lec_vcc_priv *vpriv = LEC_VCC_PRIV(vcc);
++
++		kfree(vpriv);
++		vcc->user_back = NULL;
++
+ 		entry->recv_vcc->push = entry->old_recv_push;
+ 		vcc_release_async(entry->recv_vcc, -EPIPE);
+ 		entry->recv_vcc = NULL;
 -- 
 2.25.1
 
