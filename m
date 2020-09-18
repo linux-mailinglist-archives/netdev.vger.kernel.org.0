@@ -2,59 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E841027088D
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 23:51:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18435270890
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 23:53:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726290AbgIRVv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 17:51:28 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:50920 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726064AbgIRVv2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 17:51:28 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1kJOHu-0004pb-B5; Fri, 18 Sep 2020 21:51:26 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Thomas Graf <tgraf@suug.ch>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] rhashtable: fix indentation of a continue statement
-Date:   Fri, 18 Sep 2020 22:51:26 +0100
-Message-Id: <20200918215126.49236-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        id S1726267AbgIRVxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 17:53:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726064AbgIRVxM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 17:53:12 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B45C0613CE;
+        Fri, 18 Sep 2020 14:53:12 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4AE7915A09C01;
+        Fri, 18 Sep 2020 14:36:23 -0700 (PDT)
+Date:   Fri, 18 Sep 2020 14:53:09 -0700 (PDT)
+Message-Id: <20200918.145309.961435680460105722.davem@davemloft.net>
+To:     wanghai38@huawei.com
+Cc:     dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] liquidio: Fix -Wmissing-prototypes warnings
+ for liquidio
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200918130210.16902-1-wanghai38@huawei.com>
+References: <20200918130210.16902-1-wanghai38@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-7
+Content-Transfer-Encoding: base64
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 18 Sep 2020 14:36:23 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
-
-A continue statement is indented incorrectly, add in the missing
-tab.
-
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- lib/test_rhashtable.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/lib/test_rhashtable.c b/lib/test_rhashtable.c
-index c5a6fef7b45d..76c607ee6db5 100644
---- a/lib/test_rhashtable.c
-+++ b/lib/test_rhashtable.c
-@@ -434,7 +434,7 @@ static int __init test_rhltable(unsigned int entries)
- 		} else {
- 			if (WARN(err != -ENOENT, "removed non-existent element, error %d not %d",
- 				 err, -ENOENT))
--			continue;
-+				continue;
- 		}
- 	}
- 
--- 
-2.27.0
-
+RnJvbTogV2FuZyBIYWkgPHdhbmdoYWkzOEBodWF3ZWkuY29tPg0KRGF0ZTogRnJpLCAxOCBTZXAg
+MjAyMCAyMTowMjoxMCArMDgwMA0KDQo+IElmIHRoZSBoZWFkZXIgZmlsZSBjb250YWluaW5nIGEg
+ZnVuY3Rpb24ncyBwcm90b3R5cGUgaXNuJ3QgaW5jbHVkZWQgYnkNCj4gdGhlIHNvdXJjZWZpbGUg
+Y29udGFpbmluZyB0aGUgYXNzb2NpYXRlZCBmdW5jdGlvbiwgdGhlIGJ1aWxkIHN5c3RlbQ0KPiBj
+b21wbGFpbnMgb2YgbWlzc2luZyBwcm90b3R5cGVzLg0KPiANCj4gRml4ZXMgdGhlIGZvbGxvd2lu
+ZyBXPTEga2VybmVsIGJ1aWxkIHdhcm5pbmcocyk6DQo+IA0KPiBkcml2ZXJzL25ldC9ldGhlcm5l
+dC9jYXZpdW0vbGlxdWlkaW8vY242OHh4X2RldmljZS5jOjEyNDo1OiB3YXJuaW5nOiBubyBwcmV2
+aW91cyBwcm90b3R5cGUgZm9yIKFsaW9fc2V0dXBfY242OHh4X29jdGVvbl9kZXZpY2WiIFstV21p
+c3NpbmctcHJvdG90eXBlc10NCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvY2F2aXVtL2xpcXVpZGlv
+L29jdGVvbl9tZW1fb3BzLmM6MTU5OjE6IHdhcm5pbmc6IG5vIHByZXZpb3VzIHByb3RvdHlwZSBm
+b3IgoW9jdGVvbl9wY2lfcmVhZF9jb3JlX21lbaIgWy1XbWlzc2luZy1wcm90b3R5cGVzXQ0KPiBk
+cml2ZXJzL25ldC9ldGhlcm5ldC9jYXZpdW0vbGlxdWlkaW8vb2N0ZW9uX21lbV9vcHMuYzoxNjg6
+MTogd2FybmluZzogbm8gcHJldmlvdXMgcHJvdG90eXBlIGZvciChb2N0ZW9uX3BjaV93cml0ZV9j
+b3JlX21lbaIgWy1XbWlzc2luZy1wcm90b3R5cGVzXQ0KPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9j
+YXZpdW0vbGlxdWlkaW8vb2N0ZW9uX21lbV9vcHMuYzoxNzY6NTogd2FybmluZzogbm8gcHJldmlv
+dXMgcHJvdG90eXBlIGZvciChb2N0ZW9uX3JlYWRfZGV2aWNlX21lbTY0oiBbLVdtaXNzaW5nLXBy
+b3RvdHlwZXNdDQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L2Nhdml1bS9saXF1aWRpby9vY3Rlb25f
+bWVtX29wcy5jOjE4NTo1OiB3YXJuaW5nOiBubyBwcmV2aW91cyBwcm90b3R5cGUgZm9yIKFvY3Rl
+b25fcmVhZF9kZXZpY2VfbWVtMzKiIFstV21pc3NpbmctcHJvdG90eXBlc10NCj4gZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvY2F2aXVtL2xpcXVpZGlvL29jdGVvbl9tZW1fb3BzLmM6MTk0OjY6IHdhcm5p
+bmc6IG5vIHByZXZpb3VzIHByb3RvdHlwZSBmb3IgoW9jdGVvbl93cml0ZV9kZXZpY2VfbWVtMzKi
+IFstV21pc3NpbmctcHJvdG90eXBlc10NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFdhbmcgSGFpIDx3
+YW5naGFpMzhAaHVhd2VpLmNvbT4NCg0KQXBwbGllZC4NCg==
