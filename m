@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7777726EA42
+	by mail.lfdr.de (Postfix) with ESMTP id E3E8C26EA43
 	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 03:08:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726139AbgIRBHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 21:07:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44862 "EHLO
+        id S1726174AbgIRBHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 21:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725987AbgIRBHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 21:07:38 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B202C06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:38 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id r7so5780860ejs.11
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:38 -0700 (PDT)
+        with ESMTP id S1726093AbgIRBHj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 21:07:39 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE44C061756
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:39 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id q13so5796036ejo.9
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+kWCR6aUEJm2UH9U9WnCYeVYUUyNOBgXHiL7tHQV/g0=;
-        b=rdWj32tLSyQ8XfssA+jsfNQVWmRTg//l6qn8HWQFYnOXrPZ6Bty9VxCwSLhuHJEtej
-         23GXai+euyGfS1UUuianpJjverGFniDh0Si63gW4sO4iAtpw53hHoQatAFAHzh33QzeQ
-         tZS/91WPAeX1x1128wcajjjn4F+pLBrkzsgWZG/ooQO/OrCOSjITC2okvnqekxoxe0ci
-         w0CEvAi4XiGM3XLx5lr2a8/3/ODFVJbCbqU6IgD4zPzQhZ5Z4RG4lOjRbHuzSQvCZscI
-         ZTVeXccZKfdPjzE5pvQxeMpQ+1p0mRihhhSMmlDM7HbNUgDLE5B3QNwbnEwig+DvVABm
-         0ZuQ==
+        bh=gMnn+3ijzX9xUjpcQpFh+UbI23b8gpkZfS877nin950=;
+        b=jHWhDRDEhnjyqlonIiGsyJJnu+iLgcSfCLV7/8QnqGkxULYDbrAQTDl+iPRvmN340h
+         4ZmLpWN5iFXMamgEWT40Pjr+iVqOFWV54leFCq4Gt7tozlVr6uqaIqS7G4IpyxQjFJnB
+         0173b5imWUEAkQBOkVQ9SJWmWhi2A2XBYh1+kIC1wdD38pfsYAE/1skcRCM9HkxuxZ7+
+         rjkSowm34Olb2VuR0mEDVSVFQjvi+roOL/eyeKBoz9w7fnupb9KMhngpxxWCLiHtTBCg
+         vO93uWlpZoaM/yE/lTnxL1eu0SIA/O+4YZJa7da7glOGmuWZ5rSXyKwk0J6UStsiv0j/
+         8zCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+kWCR6aUEJm2UH9U9WnCYeVYUUyNOBgXHiL7tHQV/g0=;
-        b=aF/bUNnYg1m582K5cthkgWF4qc/w8aat2XuzAOOdnQMyS5ykgHFfxzbd6rAYRDIr5o
-         2FdDRVwqYp+CTdjrjFzNzDYWmIqpKUMz9lz11mU493HQcQ5YMSMaHfNpMFWCue4UbSw1
-         9iUUJhjj6BNe93djjz/rlZQhp/Kcx8GyLoRkCtlVPXufKgufgVFYNyVGpwLyuEgjo6aQ
-         G1zatDg9l7EXBHgbnX1fz/JXzz0ih+5IPPQIKsXrZcGWxFsifh2KVq3uUVYQAePf1e+w
-         fixFHhOyyLH25G828tMwDXXQz4IerqPnXzCxsfr6qD1F+VUuH6tniw8ujk0uPbFigEXk
-         uzQA==
-X-Gm-Message-State: AOAM533E+2Krs2lZnMxmp0dA95zJI5DmJSKGLfADgLNtgv4m2jpFtsBq
-        xgJb692pYxEGd83K5gNCuCBCrXt2YrI=
-X-Google-Smtp-Source: ABdhPJy4DFXG9vjRvk6CQ8RqWm+QGjSQZqJ80h3Gl0FedcA5wHFbSAud9tI/NDpeOU3SR1BVuOvmxA==
-X-Received: by 2002:a17:906:7c82:: with SMTP id w2mr32873346ejo.87.1600391256731;
-        Thu, 17 Sep 2020 18:07:36 -0700 (PDT)
+        bh=gMnn+3ijzX9xUjpcQpFh+UbI23b8gpkZfS877nin950=;
+        b=WFC77QhhQc2tAhcu26gp/3/BqOhw0BnsY5+Be9RrlJr+BmHuWyKsHu6ZOtIxa8ySQo
+         YLRgbCeCDxOQtF3C6eDfdzfpOyCPdJg/vGSLsBShTiyMxCDM5xv8ELk7rIrFapyQI0QI
+         HrwtRj5cKkRUNgfoWga/ETgn9TfYpbW7kDgPhVFxlEM4ZfVqCD9xiVXyHIVcaMAz6sst
+         oOjdRSXKPhf3quXQHOkTubLkdfb8g3X1HyzwcH6oI5kXdOqjrAOyYD/kFJBqmV6c7cad
+         cHVNOAYzmesIq6nO08jYsq3m+F3HWov07oS/GQ50aKhGc9Hq0w0UWxF5/glv6bymwOUE
+         wOmg==
+X-Gm-Message-State: AOAM53054qMUx6LtWsU9+KHw0cVtTlnxj3l/xfbcrN7TaA9wsLWCPe/k
+        UrGH01m1PEE0d0HbIOuc2WQ=
+X-Google-Smtp-Source: ABdhPJynxj89yr59WS1v5qc2Mq9TDC5yJcE9iU5/Wyd4cV6YXyw0Wd3lZmPmfD6amrsgfaug7hY7ng==
+X-Received: by 2002:a17:907:aa9:: with SMTP id bz9mr32563451ejc.421.1600391257900;
+        Thu, 17 Sep 2020 18:07:37 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id g20sm1068591ejx.12.2020.09.17.18.07.35
+        by smtp.gmail.com with ESMTPSA id g20sm1068591ejx.12.2020.09.17.18.07.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Sep 2020 18:07:36 -0700 (PDT)
+        Thu, 17 Sep 2020 18:07:37 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
         UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
         alexandre.belloni@bootlin.com, andrew@lunn.ch,
         vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org
-Subject: [PATCH v2 net 1/8] net: mscc: ocelot: fix race condition with TX timestamping
-Date:   Fri, 18 Sep 2020 04:07:23 +0300
-Message-Id: <20200918010730.2911234-2-olteanv@gmail.com>
+Subject: [PATCH v2 net 2/8] net: mscc: ocelot: add locking for the port TX timestamp ID
+Date:   Fri, 18 Sep 2020 04:07:24 +0300
+Message-Id: <20200918010730.2911234-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918010730.2911234-1-olteanv@gmail.com>
 References: <20200918010730.2911234-1-olteanv@gmail.com>
@@ -67,64 +67,120 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The TX-timestampable skb is added late to the ocelot_port->tx_skbs. It
-is in a race with the TX timestamp IRQ, which checks that queue trying
-to match the timestamp with the skb by the ts_id. The skb should be
-added to the queue before the IRQ can fire.
+The ocelot_port->ts_id is used to:
+(a) populate skb->cb[0] for matching the TX timestamp in the PTP IRQ
+    with an skb.
+(b) populate the REW_OP from the injection header of the ongoing skb.
+Only then is ocelot_port->ts_id incremented.
 
-Fixes: 4e3b0468e6d7 ("net: mscc: PTP Hardware Clock (PHC) support")
+This is a problem because, at least theoretically, another timestampable
+skb might use the same ocelot_port->ts_id before that is incremented.
+Normally all transmit calls are serialized by the netdev transmit
+spinlock, but in this case, ocelot_port_add_txtstamp_skb() is also
+called by DSA, which has started declaring the NETIF_F_LLTX feature
+since commit 2b86cb829976 ("net: dsa: declare lockless TX feature for
+slave ports").  So the logic of using and incrementing the timestamp id
+should be atomic per port.
+
+The solution is to use the global ocelot_port->ts_id only while
+protected by the associated ocelot_port->ts_id_lock. That's where we
+populate skb->cb[0]. Note that for ocelot, ocelot_port_add_txtstamp_skb
+is called for the actual skb, but for felix, it is called for the skb's
+clone. That is something which will also be changed in the future.
+
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
 Changes in v2:
-None.
+Added an extra explanation about NETIF_F_LLTX in commit message.
 
- drivers/net/ethernet/mscc/ocelot_net.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c     |  8 +++++++-
+ drivers/net/ethernet/mscc/ocelot_net.c |  6 ++----
+ include/soc/mscc/ocelot.h              |  1 +
+ net/dsa/tag_ocelot.c                   | 11 +++++++----
+ 4 files changed, 17 insertions(+), 9 deletions(-)
 
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 5abb7d2b0a9e..83eb7c325061 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -421,10 +421,15 @@ int ocelot_port_add_txtstamp_skb(struct ocelot_port *ocelot_port,
+ 
+ 	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP &&
+ 	    ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
++		spin_lock(&ocelot_port->ts_id_lock);
++
+ 		shinfo->tx_flags |= SKBTX_IN_PROGRESS;
+ 		/* Store timestamp ID in cb[0] of sk_buff */
+-		skb->cb[0] = ocelot_port->ts_id % 4;
++		skb->cb[0] = ocelot_port->ts_id;
++		ocelot_port->ts_id = (ocelot_port->ts_id + 1) % 4;
+ 		skb_queue_tail(&ocelot_port->tx_skbs, skb);
++
++		spin_unlock(&ocelot_port->ts_id_lock);
+ 		return 0;
+ 	}
+ 	return -ENODATA;
+@@ -1300,6 +1305,7 @@ void ocelot_init_port(struct ocelot *ocelot, int port)
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 
+ 	skb_queue_head_init(&ocelot_port->tx_skbs);
++	spin_lock_init(&ocelot_port->ts_id_lock);
+ 
+ 	/* Basic L2 initialization */
+ 
 diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index 0668d23cdbfa..cacabc23215a 100644
+index cacabc23215a..8490e42e9e2d 100644
 --- a/drivers/net/ethernet/mscc/ocelot_net.c
 +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -330,6 +330,7 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 	u8 grp = 0; /* Send everything on CPU group 0 */
- 	unsigned int i, count, last;
- 	int port = priv->chip_port;
-+	bool do_tstamp;
+@@ -349,10 +349,8 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
  
- 	val = ocelot_read(ocelot, QS_INJ_STATUS);
- 	if (!(val & QS_INJ_STATUS_FIFO_RDY(BIT(grp))) ||
-@@ -344,10 +345,14 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 	info.vid = skb_vlan_tag_get(skb);
- 
- 	/* Check if timestamping is needed */
-+	do_tstamp = (ocelot_port_add_txtstamp_skb(ocelot_port, skb) == 0);
-+
  	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP) {
  		info.rew_op = ocelot_port->ptp_cmd;
--		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
-+		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
- 			info.rew_op |= (ocelot_port->ts_id  % 4) << 3;
-+			ocelot_port->ts_id++;
-+		}
+-		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
+-			info.rew_op |= (ocelot_port->ts_id  % 4) << 3;
+-			ocelot_port->ts_id++;
+-		}
++		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
++			info.rew_op |= skb->cb[0] << 3;
  	}
  
  	ocelot_gen_ifh(ifh, &info);
-@@ -380,12 +385,9 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 	dev->stats.tx_packets++;
- 	dev->stats.tx_bytes += skb->len;
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index da369b12005f..4521dd602ddc 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -566,6 +566,7 @@ struct ocelot_port {
+ 	u8				ptp_cmd;
+ 	struct sk_buff_head		tx_skbs;
+ 	u8				ts_id;
++	spinlock_t			ts_id_lock;
  
--	if (!ocelot_port_add_txtstamp_skb(ocelot_port, skb)) {
--		ocelot_port->ts_id++;
--		return NETDEV_TX_OK;
--	}
-+	if (!do_tstamp)
-+		dev_kfree_skb_any(skb);
+ 	phy_interface_t			phy_mode;
  
--	dev_kfree_skb_any(skb);
- 	return NETDEV_TX_OK;
- }
+diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
+index 42f327c06dca..b4fc05cafaa6 100644
+--- a/net/dsa/tag_ocelot.c
++++ b/net/dsa/tag_ocelot.c
+@@ -160,11 +160,14 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
+ 	packing(injection, &qos_class, 19,  17, OCELOT_TAG_LEN, PACK, 0);
  
+ 	if (ocelot->ptp && (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
++		struct sk_buff *clone = DSA_SKB_CB(skb)->clone;
++
+ 		rew_op = ocelot_port->ptp_cmd;
+-		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
+-			rew_op |= (ocelot_port->ts_id  % 4) << 3;
+-			ocelot_port->ts_id++;
+-		}
++		/* Retrieve timestamp ID populated inside skb->cb[0] of the
++		 * clone by ocelot_port_add_txtstamp_skb
++		 */
++		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
++			rew_op |= clone->cb[0] << 3;
+ 
+ 		packing(injection, &rew_op, 125, 117, OCELOT_TAG_LEN, PACK, 0);
+ 	}
 -- 
 2.25.1
 
