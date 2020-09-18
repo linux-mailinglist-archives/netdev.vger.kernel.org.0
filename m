@@ -2,81 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA1CC26FF32
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:54:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC1AF26FF3A
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:57:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726681AbgIRNyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 09:54:10 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43438 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726121AbgIRNyJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 09:54:09 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kJGpv-00FF2u-D6; Fri, 18 Sep 2020 15:54:03 +0200
-Date:   Fri, 18 Sep 2020 15:54:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?utf-8?B?5YqJ5YGJ5qyK?= <willy.liu@realtek.com>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ryan Kao <ryankao@realtek.com>,
-        Kyle Evans <kevans@FreeBSD.org>,
-        Joe Hershberger <joe.hershberger@ni.com>,
-        Peter Robinson <pbrobinson@gmail.com>
-Subject: Re: [PATCH] net: phy: realtek: fix rtl8211e rx/tx delay config
-Message-ID: <20200918135403.GC3631014@lunn.ch>
-References: <1600307253-3538-1-git-send-email-willy.liu@realtek.com>
- <20200917101035.uwajg4m524g4lz5o@mobilestation>
- <87c4ebf4b1fe48a7a10b27d0ba0b333c@realtek.com>
+        id S1726406AbgIRN4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 09:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726130AbgIRN4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 09:56:22 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54CE4C0613CE;
+        Fri, 18 Sep 2020 06:56:22 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id mm21so3211110pjb.4;
+        Fri, 18 Sep 2020 06:56:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e50txI21qxCOlSZEE/s+KXBs121bkQlo+YOTZFWgT4Q=;
+        b=ol79raY7QT6yuZbVEC8ss5TbRNg/D6VHGtP71k7PLl/RvjMhwvOBnBc77dZdmiAQae
+         uGDOIgAgii96oZxF49vtTJv86Zodq6Jdz+pZfGF0QdUKVfzwBTnVuVqGz1RO2I/s4dEO
+         n+xaonQ2FMcEgL93C8luOrgIjN3F1FgNDk+eiexRQDDHPbdtanOKFV1+SAkuVDx5gYVn
+         5b7nJd35Ea9rYOEha5Xa3cgpeWPawVkaSqJ55YjMmL4l/49zdAnOPDFCfXj9nHGD1Wzl
+         pDEv16PMkEffvUuzbSxDUnimW362oVAo9tXneta1xyKz7pqxpXNAJbnv2wBGHHwIlTQH
+         DVcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e50txI21qxCOlSZEE/s+KXBs121bkQlo+YOTZFWgT4Q=;
+        b=AuuQrSeIpRf4m+7jgiZQyw8y73F6+0a47NsfgKMeZFnoNP7IXTjVukBTWls9RyUb83
+         Un8TcspnsU/IXBtHkE9PN5HXIqEtlifWoAs42aNZGpmNkCQ13rGGS20J+rmO6wOhiXmL
+         lflNZ23CP8KD7TF4nucbqw0RB4BPwFO+PyYvUeV0euAq6lYgh7SA3sC3hm7BDGcVP+aQ
+         QmSYY33EbGeyFpR6J2Vm8i3kBw9ctPRs6LrahMfd8m5j9Bx+vFdivoQnTpSs1iRktNBO
+         uGRb0ySAj3vScjWnvSskrAcIic5Wu/sENxTQqZ4puCFn3vSTnbLz5dCmOqz6aGo/bR0x
+         99Fg==
+X-Gm-Message-State: AOAM532RvET26I6X9ftEJwiuUyxGOVwHsn31Z4q87MNBKZUv+BPtQqNI
+        ZbbbTAHBzY2exgMUU0vyp+0=
+X-Google-Smtp-Source: ABdhPJwLkAxgojWnrZX3yOs2JsVG9eiToCOYAcxB+sHd8LxKfK/VXr+TWs7qMk+xzG0S048RUECdJA==
+X-Received: by 2002:a17:902:aa49:b029:d0:cbe1:e7b3 with SMTP id c9-20020a170902aa49b02900d0cbe1e7b3mr33675444plr.36.1600437381635;
+        Fri, 18 Sep 2020 06:56:21 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:8c72:c180:8ad1:6676])
+        by smtp.gmail.com with ESMTPSA id u15sm3480867pfm.61.2020.09.18.06.56.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Sep 2020 06:56:21 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net-next] net/packet: Fix a comment about network_header
+Date:   Fri, 18 Sep 2020 06:56:16 -0700
+Message-Id: <20200918135616.8677-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87c4ebf4b1fe48a7a10b27d0ba0b333c@realtek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 18, 2020 at 06:55:16AM +0000, 劉偉權 wrote:
-> Hi Serge,
+skb->nh.raw has been renamed as skb->network_header in 2007, in
+commit b0e380b1d8a8 ("[SK_BUFF]: unions of just one member don't get
+                      anything done, kill them")
 
-> Thanks for your reply. There is a confidential issue that realtek
-> doesn't offer the detail of a full register layout for configuration
-> register.
+So here we change it to the new name.
 
-...
+Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ net/packet/af_packet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> >  	 * 0xa4 extension page (0x7) layout. It can be used to disable/enable
-> >  	 * the RX/TX delays otherwise controlled by RXDLY/TXDLY pins. It can
-> >  	 * also be used to customize the whole configuration register:
-> 
-> > -	 * 8:6 = PHY Address, 5:4 = Auto-Negotiation, 3 = Interface Mode Select,
-> > -	 * 2 = RX Delay, 1 = TX Delay, 0 = SELRGV (see original PHY datasheet
-> > -	 * for details).
-> > +	 * 13 = Force Tx RX Delay controlled by bit12 bit11,
-> > +	 * 12 = RX Delay, 11 = TX Delay
-> 
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index f59fa26d4826..cefbd50c1090 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -142,7 +142,7 @@ dev->header_ops == NULL (ll header is invisible to us)
+    mac_header -> data
+    data       -> data
+ 
+-   We should set nh.raw on output to correct posistion,
++   We should set network_header on output to the correct position,
+    packet classifier depends on it.
+  */
+ 
+-- 
+2.25.1
 
-> Here you've removed the register layout description and replaced itq
-> with just three bits info. So from now the text above doesn't really
-> corresponds to what follows.
-
-> I might have forgotten something, but AFAIR that register bits
-> stateq mapped well to what was available on the corresponding
-> external pins.
-
-Hi Willy
-
-So it appears bits 3 to 8 have been reverse engineered. Unless you
-know from your confidential datasheet that these are wrong, please
-leave the comment alone.
-
-If you confidential datasheet says that the usage of bits 0-2 is
-wrong, then please do correct that part.
-
-       Andrew
