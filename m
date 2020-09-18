@@ -2,84 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 333DC270060
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 17:00:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63A5126FFF4
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 16:33:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726716AbgIRPA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 11:00:27 -0400
-Received: from mail1.windriver.com ([147.11.146.13]:61950 "EHLO
-        mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgIRPA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 11:00:26 -0400
-X-Greylist: delayed 7316 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 11:00:12 EDT
-Received: from ALA-HCB.corp.ad.wrs.com (ala-hcb.corp.ad.wrs.com [147.11.189.41])
-        by mail1.windriver.com (8.15.2/8.15.2) with ESMTPS id 08ICvm7X029634
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
-        Fri, 18 Sep 2020 05:57:49 -0700 (PDT)
-Received: from pek-lpg-core2.corp.ad.wrs.com (128.224.153.41) by
- ALA-HCB.corp.ad.wrs.com (147.11.189.41) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 18 Sep 2020 05:57:27 -0700
-From:   <zhe.he@windriver.com>
-To:     <bfields@fieldses.org>, <chuck.lever@oracle.com>,
-        <trond.myklebust@hammerspace.com>, <anna.schumaker@netapp.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-nfs@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <zhe.he@windriver.com>
-Subject: [PATCH] SUNRPC: Flush dcache only when receiving more seeking
-Date:   Fri, 18 Sep 2020 20:50:52 +0800
-Message-ID: <20200918125052.2493006-1-zhe.he@windriver.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726397AbgIROdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 10:33:33 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:41610 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726126AbgIROdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 10:33:33 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08IESxZJ081681;
+        Fri, 18 Sep 2020 14:33:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=pC5PeaObzOnZ0t+mhJGBnj35yVCcyEMfey6oRomZY7Y=;
+ b=nRcvy6DLJXMwyQFXGrW3bRANiKAjT5MRbDoTCyx5NUT6q2KFrm/JwCCeP42Tbu63XIsi
+ shopfyGBpoLSi2a6IbLmljOuqwXqsJNXYB17j0tL9+eDgtrkSCyz09HtbYw2uTJzPF/g
+ drKy6NuVJqcQ9V7015uYU9/M58fs0cU0s/fhwaBYI5DcDcERV7BhjYHtYTxtfpFZEt5/
+ xs0nlGG64Z9vlA7TMy7i8aTxTDOyqq/FOSEtcOn7SakPw8RB3+z3L+t1zwIpZLBa49S/
+ WwEfdUSBzIqJQxONQWsAzIIp0K6eNzbhw4DlzvkmudN2uHUiNw+NEpOLOqqKaFXZNPUP 0w== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 33gp9mqga0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 18 Sep 2020 14:33:27 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08IEV2Zt120436;
+        Fri, 18 Sep 2020 14:33:26 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3030.oracle.com with ESMTP id 33megbhprb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 18 Sep 2020 14:33:26 +0000
+Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08IEXO12011726;
+        Fri, 18 Sep 2020 14:33:25 GMT
+Received: from mwanda (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 18 Sep 2020 14:33:18 +0000
+Date:   Fri, 18 Sep 2020 17:33:11 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Solarflare linux maintainers <linux-net-drivers@solarflare.com>
+Cc:     Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net] sfc: Fix error code in probe
+Message-ID: <20200918143311.GD909725@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9747 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0 spamscore=0
+ mlxlogscore=999 adultscore=0 bulkscore=0 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009180118
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9747 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
+ adultscore=0 malwarescore=0 clxscore=1011 lowpriorityscore=0 phishscore=0
+ spamscore=0 priorityscore=1501 suspectscore=0 impostorscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009180118
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: He Zhe <zhe.he@windriver.com>
+This failure path should return a negative error code but it currently
+returns success.
 
-commit ca07eda33e01 ("SUNRPC: Refactor svc_recvfrom()") introduces
-svc_flush_bvec to after sock_recvmsg, but sometimes we receive less than we
-seek, which triggers the following warning.
-
-WARNING: CPU: 0 PID: 18266 at include/linux/bvec.h:101 bvec_iter_advance+0x44/0xa8
-Attempted to advance past end of bvec iter
-Modules linked in: sch_fq_codel openvswitch nsh nf_conncount nf_nat
-nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4
-CPU: 1 PID: 18266 Comm: nfsd Not tainted 5.9.0-rc5 #1
-Hardware name: Xilinx Zynq Platform
-[<80112ec0>] (unwind_backtrace) from [<8010c3a8>] (show_stack+0x18/0x1c)
-[<8010c3a8>] (show_stack) from [<80755214>] (dump_stack+0x9c/0xd0)
-[<80755214>] (dump_stack) from [<80125e64>] (__warn+0xdc/0xf4)
-[<80125e64>] (__warn) from [<80126244>] (warn_slowpath_fmt+0x84/0xac)
-[<80126244>] (warn_slowpath_fmt) from [<80c88514>] (bvec_iter_advance+0x44/0xa8)
-[<80c88514>] (bvec_iter_advance) from [<80c88940>] (svc_tcp_read_msg+0x10c/0x1bc)
-[<80c88940>] (svc_tcp_read_msg) from [<80c895d4>] (svc_tcp_recvfrom+0x98/0x63c)
-[<80c895d4>] (svc_tcp_recvfrom) from [<80c97bf4>] (svc_handle_xprt+0x48c/0x4f8)
-[<80c97bf4>] (svc_handle_xprt) from [<80c98038>] (svc_recv+0x94/0x1e0)
-[<80c98038>] (svc_recv) from [<804747cc>] (nfsd+0xf0/0x168)
-[<804747cc>] (nfsd) from [<80148a0c>] (kthread+0x144/0x154)
-[<80148a0c>] (kthread) from [<80100114>] (ret_from_fork+0x14/0x20)
-
-Fixes: ca07eda33e01 ("SUNRPC: Refactor svc_recvfrom()")
-Cc: <stable@vger.kernel.org> # 5.8+
-Signed-off-by: He Zhe <zhe.he@windriver.com>
+Fixes: 51b35a454efd ("sfc: skeleton EF100 PF driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- net/sunrpc/svcsock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/ef100.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
-index d5805fa1d066..ea3bc9635448 100644
---- a/net/sunrpc/svcsock.c
-+++ b/net/sunrpc/svcsock.c
-@@ -277,7 +277,7 @@ static ssize_t svc_tcp_read_msg(struct svc_rqst *rqstp, size_t buflen,
- 		buflen -= seek;
+diff --git a/drivers/net/ethernet/sfc/ef100.c b/drivers/net/ethernet/sfc/ef100.c
+index c54b7f8243f3..ffdb36715a49 100644
+--- a/drivers/net/ethernet/sfc/ef100.c
++++ b/drivers/net/ethernet/sfc/ef100.c
+@@ -490,6 +490,7 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
+ 	if (fcw.offset > pci_resource_len(efx->pci_dev, fcw.bar) - ESE_GZ_FCW_LEN) {
+ 		netif_err(efx, probe, efx->net_dev,
+ 			  "Func control window overruns BAR\n");
++		rc = -EIO;
+ 		goto fail;
  	}
- 	len = sock_recvmsg(svsk->sk_sock, &msg, MSG_DONTWAIT);
--	if (len > 0)
-+	if (len > (seek & PAGE_MASK))
- 		svc_flush_bvec(bvec, len, seek);
  
- 	/* If we read a full record, then assume there may be more
 -- 
-2.17.1
+2.28.0
 
