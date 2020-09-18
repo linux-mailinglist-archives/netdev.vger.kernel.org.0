@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35CE626F075
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FAB626F04C
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:44:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730169AbgIRCn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:43:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35512 "EHLO mail.kernel.org"
+        id S1728506AbgIRCKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:10:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727527AbgIRCKl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:10:41 -0400
+        id S1728484AbgIRCKm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:10:42 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 85E802311A;
-        Fri, 18 Sep 2020 02:10:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AA52D235F9;
+        Fri, 18 Sep 2020 02:10:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600395040;
-        bh=dd0qtlhGR+BuXIEjFCLdHvdAATNJgb10wbQgvOO26c8=;
+        s=default; t=1600395041;
+        bh=ti6HRQ/IcV2A2YJFoLnGunt84o8zR3wRKUG8qEzCUk4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TS9aa9HCgMaGIbhWhcFisuPFuwT1/eAN57lgkgaam6Gw3euV+16B9yoVjWbNVhv14
-         tZ3yhKdxmaNgSkmQQIqprt7enwweION/vGeD1I8HKWDkhO3C2OF/ZsLBCmAdVisGry
-         e6QjuO7MlYj5vZ1+54c2BOosxqzdFEHJwBpu75rw=
+        b=skIevvTD/GIezT9Z5pLXQOyyha6vwCgrNNqzGaI37v/rEIoMt5JsMpUOHDSpDS/st
+         gHEF+uAha8sBcYbBMhqpN0iUMe8sQqk7aXTu+WItkwZJU32JNWNYpH78gBbQsdW2Rs
+         kikAj5A9NWBAJ5EbSRzolsiU/eycHodzllXPZIZs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Chuck Lever <chuck.lever@oracle.com>,
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
         Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 130/206] SUNRPC: Fix a potential buffer overflow in 'svc_print_xprts()'
-Date:   Thu, 17 Sep 2020 22:06:46 -0400
-Message-Id: <20200918020802.2065198-130-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 131/206] svcrdma: Fix leak of transport addresses
+Date:   Thu, 17 Sep 2020 22:06:47 -0400
+Message-Id: <20200918020802.2065198-131-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918020802.2065198-1-sashal@kernel.org>
 References: <20200918020802.2065198-1-sashal@kernel.org>
@@ -43,73 +42,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit b25b60d7bfb02a74bc3c2d998e09aab159df8059 ]
+[ Upstream commit 1a33d8a284b1e85e03b8c7b1ea8fb985fccd1d71 ]
 
-'maxlen' is the total size of the destination buffer. There is only one
-caller and this value is 256.
+Kernel memory leak detected:
 
-When we compute the size already used and what we would like to add in
-the buffer, the trailling NULL character is not taken into account.
-However, this trailling character will be added by the 'strcat' once we
-have checked that we have enough place.
+unreferenced object 0xffff888849cdf480 (size 8):
+  comm "kworker/u8:3", pid 2086, jiffies 4297898756 (age 4269.856s)
+  hex dump (first 8 bytes):
+    30 00 cd 49 88 88 ff ff                          0..I....
+  backtrace:
+    [<00000000acfc370b>] __kmalloc_track_caller+0x137/0x183
+    [<00000000a2724354>] kstrdup+0x2b/0x43
+    [<0000000082964f84>] xprt_rdma_format_addresses+0x114/0x17d [rpcrdma]
+    [<00000000dfa6ed00>] xprt_setup_rdma_bc+0xc0/0x10c [rpcrdma]
+    [<0000000073051a83>] xprt_create_transport+0x3f/0x1a0 [sunrpc]
+    [<0000000053531a8e>] rpc_create+0x118/0x1cd [sunrpc]
+    [<000000003a51b5f8>] setup_callback_client+0x1a5/0x27d [nfsd]
+    [<000000001bd410af>] nfsd4_process_cb_update.isra.7+0x16c/0x1ac [nfsd]
+    [<000000007f4bbd56>] nfsd4_run_cb_work+0x4c/0xbd [nfsd]
+    [<0000000055c5586b>] process_one_work+0x1b2/0x2fe
+    [<00000000b1e3e8ef>] worker_thread+0x1a6/0x25a
+    [<000000005205fb78>] kthread+0xf6/0xfb
+    [<000000006d2dc057>] ret_from_fork+0x3a/0x50
 
-So, there is a off-by-one issue and 1 byte of the stack could be
-erroneously overwridden.
+Introduce a call to xprt_rdma_free_addresses() similar to the way
+that the TCP backchannel releases a transport's peer address
+strings.
 
-Take into account the trailling NULL, when checking if there is enough
-place in the destination buffer.
-
-While at it, also replace a 'sprintf' by a safer 'snprintf', check for
-output truncation and avoid a superfluous 'strlen'.
-
-Fixes: dc9a16e49dbba ("svc: Add /proc/sys/sunrpc/transport files")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-[ cel: very minor fix to documenting comment
+Fixes: 5d252f90a800 ("svcrdma: Add class for RDMA backwards direction transport")
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/svc_xprt.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+ net/sunrpc/xprtrdma/svc_rdma_backchannel.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/sunrpc/svc_xprt.c b/net/sunrpc/svc_xprt.c
-index c8ee8e801edb8..709c082dc9059 100644
---- a/net/sunrpc/svc_xprt.c
-+++ b/net/sunrpc/svc_xprt.c
-@@ -103,8 +103,17 @@ void svc_unreg_xprt_class(struct svc_xprt_class *xcl)
- }
- EXPORT_SYMBOL_GPL(svc_unreg_xprt_class);
- 
--/*
-- * Format the transport list for printing
-+/**
-+ * svc_print_xprts - Format the transport list for printing
-+ * @buf: target buffer for formatted address
-+ * @maxlen: length of target buffer
-+ *
-+ * Fills in @buf with a string containing a list of transport names, each name
-+ * terminated with '\n'. If the buffer is too small, some entries may be
-+ * missing, but it is guaranteed that all lines in the output buffer are
-+ * complete.
-+ *
-+ * Returns positive length of the filled-in string.
-  */
- int svc_print_xprts(char *buf, int maxlen)
+diff --git a/net/sunrpc/xprtrdma/svc_rdma_backchannel.c b/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
+index b9827665ff355..d183d4aee822c 100644
+--- a/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
++++ b/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
+@@ -256,6 +256,7 @@ xprt_rdma_bc_put(struct rpc_xprt *xprt)
  {
-@@ -117,9 +126,9 @@ int svc_print_xprts(char *buf, int maxlen)
- 	list_for_each_entry(xcl, &svc_xprt_class_list, xcl_list) {
- 		int slen;
+ 	dprintk("svcrdma: %s: xprt %p\n", __func__, xprt);
  
--		sprintf(tmpstr, "%s %d\n", xcl->xcl_name, xcl->xcl_max_payload);
--		slen = strlen(tmpstr);
--		if (len + slen > maxlen)
-+		slen = snprintf(tmpstr, sizeof(tmpstr), "%s %d\n",
-+				xcl->xcl_name, xcl->xcl_max_payload);
-+		if (slen >= sizeof(tmpstr) || len + slen >= maxlen)
- 			break;
- 		len += slen;
- 		strcat(buf, tmpstr);
++	xprt_rdma_free_addresses(xprt);
+ 	xprt_free(xprt);
+ 	module_put(THIS_MODULE);
+ }
 -- 
 2.25.1
 
