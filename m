@@ -2,87 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBA6426E9E8
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 02:17:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9605C26E9EA
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 02:18:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726115AbgIRARc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 20:17:32 -0400
-Received: from 95-31-39-132.broadband.corbina.ru ([95.31.39.132]:47940 "EHLO
-        blackbox.su" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725886AbgIRARc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 20:17:32 -0400
-Received: from metabook.localnet (metabook.metanet [192.168.2.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by blackbox.su (Postfix) with ESMTPSA id A2B868195C;
-        Fri, 18 Sep 2020 03:17:59 +0300 (MSK)
-From:   Sergej Bauer <sbauer@blackbox.su>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] add virtual PHY for PHY-less devices
-Date:   Fri, 18 Sep 2020 03:17:14 +0300
-Message-ID: <1680322.qRJ2Tc3Qy1@metabook>
-In-Reply-To: <20200917221547.GD3598897@lunn.ch>
-References: <20200917214030.646-1-sbauer@blackbox.su> <20200917221547.GD3598897@lunn.ch>
+        id S1726216AbgIRASp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 20:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37318 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725886AbgIRASp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 20:18:45 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7D9C06174A
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 17:18:45 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id t7so2184774pjd.3
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 17:18:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ijUN7Kv9bVS+drgMywd3RanRvlTJLxpIFnbTipEHWaA=;
+        b=gCihyLR75hrpywSSrv33CESSi0GR9NW+rp5WDaZH17fdKFdqWT+9h1sJbjpGXXnqeB
+         JGDRsAwe5XsPKvdIQVYyN2mMpKxFM+896jg7x3y+qJTps0rYTL/7TPSoq8tstN6j/CYh
+         eVBoPwkYUQJ9vkEJyMG5BRXaHi7bDk286b5bPq7ulTc38zLafV1O+exWJrg/M71nVMyW
+         Tk07cXoXirQmO9fUhcmPJzhMhIGti07q4NlT/oad71LtgmB6g0AWNeqfzV1A/NwzO7xT
+         O0NqELTsWmAdLcbGcz+274vUBaPvfs+fc0dzZmU0kOa3xwYkkVsd9T+cCDCRpuwPlsP4
+         BsqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ijUN7Kv9bVS+drgMywd3RanRvlTJLxpIFnbTipEHWaA=;
+        b=V5I9s6Kg6A5tRXYK1Fca+Led3jwmgH66yRYUQYY75LDi/PK61twUCwEyIzVrvvl4Nr
+         JvTKXROIMLihG4VxYnlUIb+VJ9KS0n8SOiVF4+DN5KlbTHc1SZi///eZJgNFyQMsOc/y
+         EWuwdPZC0uPGa7ZcbxTjJMeBrP+KdO3JNx3LEywglDJZ8cnmJnr/WtVJ3/K+dpIF/zJX
+         aodguXbMOCnUroL81R7zGw81egwXmkY0GQ5rC4+UTBrUJgYUfX/SXPF/Nk1z3VAkCJ0P
+         7je+vsWGNzgdZrc/zAfzhT3crI2OahK+8955aDyYym4uWxxUPSXmGsz8eG2KuD+xh5pE
+         AQ/g==
+X-Gm-Message-State: AOAM53250Y7FV0Dv/YFIKN6JWiFf0hZ5wPc9AOe7E2WSfFYoPO+gIh/g
+        1QOHhhJWDjDyJTeoNsTIfis=
+X-Google-Smtp-Source: ABdhPJz66dJu3tJTJ5lZu5hQItnFfiVRF8AkNWZN2xJ+uLKl6tvJRfpddZCIXwVJbCwbq4tAE3BFQw==
+X-Received: by 2002:a17:90b:3351:: with SMTP id lm17mr10330488pjb.151.1600388324690;
+        Thu, 17 Sep 2020 17:18:44 -0700 (PDT)
+Received: from [10.230.28.120] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id x27sm814439pfp.128.2020.09.17.17.18.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Sep 2020 17:18:43 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/2] net: mdio: mdio-bcm-unimac: Turn on PHY
+ clock before dummy read
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        kuba@kernel.org
+References: <20200916204415.1831417-1-f.fainelli@gmail.com>
+ <20200916204415.1831417-2-f.fainelli@gmail.com>
+ <20200917.164011.166801140665121114.davem@davemloft.net>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <9d499cbc-9a6b-3543-1c28-0fd4689e13cc@gmail.com>
+Date:   Thu, 17 Sep 2020 17:18:42 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <20200917.164011.166801140665121114.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew
-
-  To tell the truth, I thought that fixed_phy is only for devices with a Device
-Trees and I never met DTS on x86 machines... 
-
-So it looks like there realy no any significant advantage _except_ of
-ability to use ethtool and ioctl to set speed and rx-all/fcs flags without
-removing module. That was most wanted request from HW designers as they are
-wanted to change registers of virtual PHY on-the-fly with ethtool either custom
-tool (using SIOCSMIIREG ioctl) for controling PHY registers.
-
-p.s. And that's my bad, the original driver was developed year ago (for 
-linux-5.2.15),
-but I had no time before this moment.
 
 
-p.p.s. sorry for long time to answer but it's far behind the midnight in my 
-region.
+On 9/17/2020 4:40 PM, David Miller wrote:
+> From: Florian Fainelli <f.fainelli@gmail.com>
+> Date: Wed, 16 Sep 2020 13:44:14 -0700
+> 
+>> @@ -160,6 +160,7 @@ static int unimac_mdio_reset(struct mii_bus *bus)
+>>   {
+>>   	struct device_node *np = bus->dev.of_node;
+>>   	struct device_node *child;
+>> +	struct clk *clk;
+>>   	u32 read_mask = 0;
+>>   	int addr;
+> 
+> Please preserve the reverse christmas tree ordering of these local
+> variables, thank you.
 
+Looks like I used the same thread for all patches, the most recent is 
+this one:
+
+https://patchwork.ozlabs.org/project/netdev/patch/20200917020413.2313461-1-f.fainelli@gmail.com/
+
+and is the one I would like to see you apply if you are happy with it.
 -- 
-                                        Sergej
-
-
-On Friday, September 18, 2020 1:15:47 AM MSK Andrew Lunn wrote:
-> On Fri, Sep 18, 2020 at 12:40:10AM +0300, Sergej Bauer wrote:
-> > From: sbauer@blackbox.su
-> > 
-> >     Here is a kernel related part of my work which was helps to develop
-> >     brand
-> > 
-> > new PHY device.
-> > 
-> >     It is migth be helpful for developers work with PHY-less lan743x
-> > 
-> > (7431:0011 in my case). It's just a fake virtual PHY which can change
-> > speed of network card processing as a loopback device. Baud rate can be
-> > tuned with ethtool from command line or by means of SIOCSMIIREG ioctl.
-> > Duplex mode not configurable and it's allways DUPLEX_FULL.
-> 
-> Hi Sergej
-> 
-> What is the advantage of this over using driver/net/phy/fixed_phy.c
-> which also emulates a standard PHY?
-> 
->       Andrew
-
-
-
-
+Florian
