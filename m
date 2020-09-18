@@ -2,109 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 531C926ED42
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:21:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 780A126EDA3
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:22:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729617AbgIRCRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:17:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48798 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729605AbgIRCRu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:17:50 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1727317AbgIRCWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:22:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57217 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729185AbgIRCRL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 22:17:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600395430;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ku+sICGKzWJ9hbk/lDryotAHNAcONZujUxBnYspdRTU=;
+        b=Fjn5NYgscaLzBZ6FN8sKBSmHnI/WMoDdmHlolpOGkrjbf5Q+cpPux7UCoeCB7I7fj+A++V
+        Nmj7l+wxDQjEdU5lT3gYTTlMmBH6WqzPtY9GSewOJ3qRILKSQNZ89+/71hTqoe6b1j60kk
+        aI90lrhALptljSN76WqronQMioeIkYs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-137-wx2RmR3bNLelwWeZZ_RbzQ-1; Thu, 17 Sep 2020 22:17:06 -0400
+X-MC-Unique: wx2RmR3bNLelwWeZZ_RbzQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6575523600;
-        Fri, 18 Sep 2020 02:17:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600395470;
-        bh=lMkrXVPs6tn1bQEf4liM779mvfh72/5GDT1ZaVbXnJw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r0YvNbdcQOZqUOEiKwl54YIeECS4auKXK31xS1Bt9WUbu5/liKQDe1h4FLz9MZDoK
-         uczSCrOkWXQR2k3sMfRj5CNLeFNGHRdUF0VOqqF9YVa5JfiUdPqeOrsHTADBOjHWYz
-         /z03S9hMze3hj9Xl1cnLK/9hkvkbadwp7914GDs8=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Duyck <alexander.h.duyck@linux.intel.com>,
-        Maxim Zhukov <mussitantesmortem@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 55/64] e1000: Do not perform reset in reset_task if we are already down
-Date:   Thu, 17 Sep 2020 22:16:34 -0400
-Message-Id: <20200918021643.2067895-55-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200918021643.2067895-1-sashal@kernel.org>
-References: <20200918021643.2067895-1-sashal@kernel.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3B88110BBEE6;
+        Fri, 18 Sep 2020 02:17:05 +0000 (UTC)
+Received: from [10.72.13.167] (ovpn-13-167.pek2.redhat.com [10.72.13.167])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4314510013C1;
+        Fri, 18 Sep 2020 02:16:58 +0000 (UTC)
+Subject: Re: [PATCH v2 -next] vdpa: mlx5: change Kconfig depends to fix build
+ errors
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        virtualization@lists.linux-foundation.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+References: <22a2bd60-d895-2bfb-50be-4ac3d131ed82@infradead.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <f306fbfb-2984-d52d-b7be-7d65db643955@redhat.com>
+Date:   Fri, 18 Sep 2020 10:16:57 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+In-Reply-To: <22a2bd60-d895-2bfb-50be-4ac3d131ed82@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-[ Upstream commit 49ee3c2ab5234757bfb56a0b3a3cb422f427e3a3 ]
+On 2020/9/18 上午3:45, Randy Dunlap wrote:
+> From: Randy Dunlap <rdunlap@infradead.org>
+>
+> drivers/vdpa/mlx5/ uses vhost_iotlb*() interfaces, so add a dependency
+> on VHOST to eliminate build errors.
+>
+> ld: drivers/vdpa/mlx5/core/mr.o: in function `add_direct_chain':
+> mr.c:(.text+0x106): undefined reference to `vhost_iotlb_itree_first'
+> ld: mr.c:(.text+0x1cf): undefined reference to `vhost_iotlb_itree_next'
+> ld: mr.c:(.text+0x30d): undefined reference to `vhost_iotlb_itree_first'
+> ld: mr.c:(.text+0x3e8): undefined reference to `vhost_iotlb_itree_next'
+> ld: drivers/vdpa/mlx5/core/mr.o: in function `_mlx5_vdpa_create_mr':
+> mr.c:(.text+0x908): undefined reference to `vhost_iotlb_itree_first'
+> ld: mr.c:(.text+0x9e6): undefined reference to `vhost_iotlb_itree_next'
+> ld: drivers/vdpa/mlx5/core/mr.o: in function `mlx5_vdpa_handle_set_map':
+> mr.c:(.text+0xf1d): undefined reference to `vhost_iotlb_itree_first'
+>
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: "Michael S. Tsirkin" <mst@redhat.com>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: virtualization@lists.linux-foundation.org
+> Cc: Saeed Mahameed <saeedm@nvidia.com>
+> Cc: Leon Romanovsky <leonro@nvidia.com>
+> Cc: netdev@vger.kernel.org
+> ---
+> v2: change from select to depends (Saeed)
+>
+>   drivers/vdpa/Kconfig |    2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> --- linux-next-20200917.orig/drivers/vdpa/Kconfig
+> +++ linux-next-20200917/drivers/vdpa/Kconfig
+> @@ -31,7 +31,7 @@ config IFCVF
+>   
+>   config MLX5_VDPA
+>   	bool "MLX5 VDPA support library for ConnectX devices"
+> -	depends on MLX5_CORE
+> +	depends on VHOST && MLX5_CORE
 
-We are seeing a deadlock in e1000 down when NAPI is being disabled. Looking
-over the kernel function trace of the system it appears that the interface
-is being closed and then a reset is hitting which deadlocks the interface
-as the NAPI interface is already disabled.
 
-To prevent this from happening I am disabling the reset task when
-__E1000_DOWN is already set. In addition code has been added so that we set
-the __E1000_DOWN while holding the __E1000_RESET flag in e1000_close in
-order to guarantee that the reset task will not run after we have started
-the close call.
+It looks to me that depending on VHOST is too heavyweight.
 
-Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-Tested-by: Maxim Zhukov <mussitantesmortem@gmail.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/intel/e1000/e1000_main.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+I guess what it really needs is VHOST_IOTLB. So we can use select 
+VHOST_IOTLB here.
 
-diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-index f958188207fd6..e57aca6239f8e 100644
---- a/drivers/net/ethernet/intel/e1000/e1000_main.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-@@ -568,8 +568,13 @@ void e1000_reinit_locked(struct e1000_adapter *adapter)
- 	WARN_ON(in_interrupt());
- 	while (test_and_set_bit(__E1000_RESETTING, &adapter->flags))
- 		msleep(1);
--	e1000_down(adapter);
--	e1000_up(adapter);
-+
-+	/* only run the task if not already down */
-+	if (!test_bit(__E1000_DOWN, &adapter->flags)) {
-+		e1000_down(adapter);
-+		e1000_up(adapter);
-+	}
-+
- 	clear_bit(__E1000_RESETTING, &adapter->flags);
- }
- 
-@@ -1456,10 +1461,15 @@ static int e1000_close(struct net_device *netdev)
- 	struct e1000_hw *hw = &adapter->hw;
- 	int count = E1000_CHECK_RESET_COUNT;
- 
--	while (test_bit(__E1000_RESETTING, &adapter->flags) && count--)
-+	while (test_and_set_bit(__E1000_RESETTING, &adapter->flags) && count--)
- 		usleep_range(10000, 20000);
- 
--	WARN_ON(test_bit(__E1000_RESETTING, &adapter->flags));
-+	WARN_ON(count < 0);
-+
-+	/* signal that we're down so that the reset task will no longer run */
-+	set_bit(__E1000_DOWN, &adapter->flags);
-+	clear_bit(__E1000_RESETTING, &adapter->flags);
-+
- 	e1000_down(adapter);
- 	e1000_power_down_phy(adapter);
- 	e1000_free_irq(adapter);
--- 
-2.25.1
+Thanks
+
+
+>   	default n
+>   	help
+>   	  Support library for Mellanox VDPA drivers. Provides code that is
+>
 
