@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0163E26F2E7
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 05:03:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8A4E26F2F1
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 05:03:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727477AbgIRCFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:05:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53204 "EHLO mail.kernel.org"
+        id S1730550AbgIRDDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 23:03:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53234 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727456AbgIRCFK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:05:10 -0400
+        id S1727464AbgIRCFL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:05:11 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BB8CA23600;
-        Fri, 18 Sep 2020 02:05:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E476623772;
+        Fri, 18 Sep 2020 02:05:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600394709;
-        bh=L5kmpAn79D/tXs9IeDbby86Z83ojvIcGboEfiX1DnFs=;
+        s=default; t=1600394710;
+        bh=2Tf3zgpSVukYlNlSee2szXJUKUQnMg6ZoWjteapx+o8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dk47Dm6gsY+/25QkwQTzdDqWqMOoZmi10EboJNLtWVW8uOfOnDzPetqGxeu9S1htY
-         VYR3trw5wQR5aMoyfMw9iVeTyHc9nwPXmYk8VHyyduULEQBMNlkUTSw9N+n9HZlrJf
-         tKpRLCWFK9mmZ5xsUnbDKL9l1v/NgaQYHWo+P5H4=
+        b=gmTVm0+7fZ0c25VyaEIMM4Srxjb5Ttn92TNJgPIwIf//PeYHKntRDc1FEAmY6okon
+         BGNdP0cVuIoWfhIk4rtmlbrGYu5rUpxQ88of1JLCGHqJ+K86vRpdot/l7ebDKmfRKs
+         4AQSeP0GgDMiv5IK58APEXlyh8y3aXQBtz5vqVmM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Andre Przywara <andre.przywara@arm.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 194/330] net: axienet: Convert DMA error handler to a work queue
-Date:   Thu, 17 Sep 2020 21:58:54 -0400
-Message-Id: <20200918020110.2063155-194-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 195/330] net: axienet: Propagate failure of DMA descriptor setup
+Date:   Thu, 17 Sep 2020 21:58:55 -0400
+Message-Id: <20200918020110.2063155-195-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918020110.2063155-1-sashal@kernel.org>
 References: <20200918020110.2063155-1-sashal@kernel.org>
@@ -45,170 +46,110 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit 24201a64770afe2e17050b2ab9e8c0e24e9c23b2 ]
+[ Upstream commit ee44d0b78839b21591501424fd3cb3648cc803b5 ]
 
-The DMA error handler routine is currently a tasklet, scheduled to run
-after the DMA error IRQ was handled.
-However it needs to take the MDIO mutex, which is not allowed to do in a
-tasklet. A kernel (with debug options) complains consequently:
-[  614.050361] net eth0: DMA Tx error 0x174019
-[  614.064002] net eth0: Current BD is at: 0x8f84aa0ce
-[  614.080195] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:935
-[  614.109484] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 40, name: kworker/u4:4
-[  614.135428] 3 locks held by kworker/u4:4/40:
-[  614.149075]  #0: ffff000879863328 ((wq_completion)rpciod){....}, at: process_one_work+0x1f0/0x6a8
-[  614.177528]  #1: ffff80001251bdf8 ((work_completion)(&task->u.tk_work)){....}, at: process_one_work+0x1f0/0x6a8
-[  614.209033]  #2: ffff0008784e0110 (sk_lock-AF_INET-RPC){....}, at: tcp_sendmsg+0x24/0x58
-[  614.235429] CPU: 0 PID: 40 Comm: kworker/u4:4 Not tainted 5.6.0-rc3-00926-g4a165a9d5921 #26
-[  614.260854] Hardware name: ARM Test FPGA (DT)
-[  614.274734] Workqueue: rpciod rpc_async_schedule
-[  614.289022] Call trace:
-[  614.296871]  dump_backtrace+0x0/0x1a0
-[  614.308311]  show_stack+0x14/0x20
-[  614.318751]  dump_stack+0xbc/0x100
-[  614.329403]  ___might_sleep+0xf0/0x140
-[  614.341018]  __might_sleep+0x4c/0x80
-[  614.352201]  __mutex_lock+0x5c/0x8a8
-[  614.363348]  mutex_lock_nested+0x1c/0x28
-[  614.375654]  axienet_dma_err_handler+0x38/0x388
-[  614.389999]  tasklet_action_common.isra.15+0x160/0x1a8
-[  614.405894]  tasklet_action+0x24/0x30
-[  614.417297]  efi_header_end+0xe0/0x494
-[  614.429020]  irq_exit+0xd0/0xd8
-[  614.439047]  __handle_domain_irq+0x60/0xb0
-[  614.451877]  gic_handle_irq+0xdc/0x2d0
-[  614.463486]  el1_irq+0xcc/0x180
-[  614.473451]  __tcp_transmit_skb+0x41c/0xb58
-[  614.486513]  tcp_write_xmit+0x224/0x10a0
-[  614.498792]  __tcp_push_pending_frames+0x38/0xc8
-[  614.513126]  tcp_rcv_established+0x41c/0x820
-[  614.526301]  tcp_v4_do_rcv+0x8c/0x218
-[  614.537784]  __release_sock+0x5c/0x108
-[  614.549466]  release_sock+0x34/0xa0
-[  614.560318]  tcp_sendmsg+0x40/0x58
-[  614.571053]  inet_sendmsg+0x40/0x68
-[  614.582061]  sock_sendmsg+0x18/0x30
-[  614.593074]  xs_sendpages+0x218/0x328
-[  614.604506]  xs_tcp_send_request+0xa0/0x1b8
-[  614.617461]  xprt_transmit+0xc8/0x4f0
-[  614.628943]  call_transmit+0x8c/0xa0
-[  614.640028]  __rpc_execute+0xbc/0x6f8
-[  614.651380]  rpc_async_schedule+0x28/0x48
-[  614.663846]  process_one_work+0x298/0x6a8
-[  614.676299]  worker_thread+0x40/0x490
-[  614.687687]  kthread+0x134/0x138
-[  614.697804]  ret_from_fork+0x10/0x18
-[  614.717319] xilinx_axienet 7fe00000.ethernet eth0: Link is Down
-[  615.748343] xilinx_axienet 7fe00000.ethernet eth0: Link is Up - 1Gbps/Full - flow control off
+When we fail allocating the DMA buffers in axienet_dma_bd_init(), we
+report this error, but carry on with initialisation nevertheless.
 
-Since tasklets are not really popular anymore anyway, lets convert this
-over to a work queue, which can sleep and thus can take the MDIO mutex.
+This leads to a kernel panic when the driver later wants to send a
+packet, as it uses uninitialised data structures.
+
+Make the axienet_device_reset() routine return an error value, as it
+contains the DMA buffer initialisation. Make sure we propagate the error
+up the chain and eventually fail the driver initialisation, to avoid
+relying on non-initialised buffers.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet.h  |  2 +-
- .../net/ethernet/xilinx/xilinx_axienet_main.c | 24 +++++++++----------
- 2 files changed, 13 insertions(+), 13 deletions(-)
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 26 ++++++++++++++-----
+ 1 file changed, 19 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-index 2dacfc85b3baa..04e51af32178c 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-@@ -435,7 +435,7 @@ struct axienet_local {
- 	void __iomem *regs;
- 	void __iomem *dma_regs;
- 
--	struct tasklet_struct dma_err_tasklet;
-+	struct work_struct dma_err_task;
- 
- 	int tx_irq;
- 	int rx_irq;
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 479325eeaf8a0..345a795666e92 100644
+index 345a795666e92..bb6e52f3bdf9b 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -806,7 +806,7 @@ static irqreturn_t axienet_tx_irq(int irq, void *_ndev)
- 		/* Write to the Rx channel control register */
- 		axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, cr);
- 
--		tasklet_schedule(&lp->dma_err_tasklet);
-+		schedule_work(&lp->dma_err_task);
- 		axienet_dma_out32(lp, XAXIDMA_TX_SR_OFFSET, status);
- 	}
- out:
-@@ -855,7 +855,7 @@ static irqreturn_t axienet_rx_irq(int irq, void *_ndev)
- 		/* write to the Rx channel control register */
- 		axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, cr);
- 
--		tasklet_schedule(&lp->dma_err_tasklet);
-+		schedule_work(&lp->dma_err_task);
- 		axienet_dma_out32(lp, XAXIDMA_RX_SR_OFFSET, status);
- 	}
- out:
-@@ -891,7 +891,7 @@ static irqreturn_t axienet_eth_irq(int irq, void *_ndev)
- 	return IRQ_HANDLED;
+@@ -437,9 +437,10 @@ static void axienet_setoptions(struct net_device *ndev, u32 options)
+ 	lp->options |= options;
  }
  
--static void axienet_dma_err_handler(unsigned long data);
-+static void axienet_dma_err_handler(struct work_struct *work);
- 
- /**
-  * axienet_open - Driver open routine.
-@@ -935,9 +935,8 @@ static int axienet_open(struct net_device *ndev)
- 
- 	phylink_start(lp->phylink);
- 
--	/* Enable tasklets for Axi DMA error handling */
--	tasklet_init(&lp->dma_err_tasklet, axienet_dma_err_handler,
--		     (unsigned long) lp);
-+	/* Enable worker thread for Axi DMA error handling */
-+	INIT_WORK(&lp->dma_err_task, axienet_dma_err_handler);
- 
- 	/* Enable interrupts for Axi DMA Tx */
- 	ret = request_irq(lp->tx_irq, axienet_tx_irq, IRQF_SHARED,
-@@ -966,7 +965,7 @@ err_rx_irq:
- err_tx_irq:
- 	phylink_stop(lp->phylink);
- 	phylink_disconnect_phy(lp->phylink);
--	tasklet_kill(&lp->dma_err_tasklet);
-+	cancel_work_sync(&lp->dma_err_task);
- 	dev_err(lp->dev, "request_irq() failed\n");
- 	return ret;
+-static void __axienet_device_reset(struct axienet_local *lp)
++static int __axienet_device_reset(struct axienet_local *lp)
+ {
+ 	u32 timeout;
++
+ 	/* Reset Axi DMA. This would reset Axi Ethernet core as well. The reset
+ 	 * process of Axi DMA takes a while to complete as all pending
+ 	 * commands/transfers will be flushed or completed during this
+@@ -455,9 +456,11 @@ static void __axienet_device_reset(struct axienet_local *lp)
+ 		if (--timeout == 0) {
+ 			netdev_err(lp->ndev, "%s: DMA reset timeout!\n",
+ 				   __func__);
+-			break;
++			return -ETIMEDOUT;
+ 		}
+ 	}
++
++	return 0;
  }
-@@ -1025,7 +1024,7 @@ static int axienet_stop(struct net_device *ndev)
- 	axienet_mdio_enable(lp);
- 	mutex_unlock(&lp->mii_bus->mdio_lock);
- 
--	tasklet_kill(&lp->dma_err_tasklet);
-+	cancel_work_sync(&lp->dma_err_task);
- 
- 	if (lp->eth_irq > 0)
- 		free_irq(lp->eth_irq, ndev);
-@@ -1505,17 +1504,18 @@ static const struct phylink_mac_ops axienet_phylink_ops = {
- };
  
  /**
-- * axienet_dma_err_handler - Tasklet handler for Axi DMA Error
-- * @data:	Data passed
-+ * axienet_dma_err_handler - Work queue task for Axi DMA Error
-+ * @work:	pointer to work_struct
-  *
-  * Resets the Axi DMA and Axi Ethernet devices, and reconfigures the
-  * Tx/Rx BDs.
+@@ -470,13 +473,17 @@ static void __axienet_device_reset(struct axienet_local *lp)
+  * areconnected to Axi Ethernet reset lines, this in turn resets the Axi
+  * Ethernet core. No separate hardware reset is done for the Axi Ethernet
+  * core.
++ * Returns 0 on success or a negative error number otherwise.
   */
--static void axienet_dma_err_handler(unsigned long data)
-+static void axienet_dma_err_handler(struct work_struct *work)
+-static void axienet_device_reset(struct net_device *ndev)
++static int axienet_device_reset(struct net_device *ndev)
  {
  	u32 axienet_status;
- 	u32 cr, i;
--	struct axienet_local *lp = (struct axienet_local *) data;
-+	struct axienet_local *lp = container_of(work, struct axienet_local,
-+						dma_err_task);
- 	struct net_device *ndev = lp->ndev;
- 	struct axidma_bd *cur_p;
+ 	struct axienet_local *lp = netdev_priv(ndev);
++	int ret;
  
+-	__axienet_device_reset(lp);
++	ret = __axienet_device_reset(lp);
++	if (ret)
++		return ret;
+ 
+ 	lp->max_frm_size = XAE_MAX_VLAN_FRAME_SIZE;
+ 	lp->options |= XAE_OPTION_VLAN;
+@@ -491,9 +498,11 @@ static void axienet_device_reset(struct net_device *ndev)
+ 			lp->options |= XAE_OPTION_JUMBO;
+ 	}
+ 
+-	if (axienet_dma_bd_init(ndev)) {
++	ret = axienet_dma_bd_init(ndev);
++	if (ret) {
+ 		netdev_err(ndev, "%s: descriptor allocation failed\n",
+ 			   __func__);
++		return ret;
+ 	}
+ 
+ 	axienet_status = axienet_ior(lp, XAE_RCW1_OFFSET);
+@@ -518,6 +527,8 @@ static void axienet_device_reset(struct net_device *ndev)
+ 	axienet_setoptions(ndev, lp->options);
+ 
+ 	netif_trans_update(ndev);
++
++	return 0;
+ }
+ 
+ /**
+@@ -921,8 +932,9 @@ static int axienet_open(struct net_device *ndev)
+ 	 */
+ 	mutex_lock(&lp->mii_bus->mdio_lock);
+ 	axienet_mdio_disable(lp);
+-	axienet_device_reset(ndev);
+-	ret = axienet_mdio_enable(lp);
++	ret = axienet_device_reset(ndev);
++	if (ret == 0)
++		ret = axienet_mdio_enable(lp);
+ 	mutex_unlock(&lp->mii_bus->mdio_lock);
+ 	if (ret < 0)
+ 		return ret;
 -- 
 2.25.1
 
