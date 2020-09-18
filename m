@@ -2,69 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17FC626FDD5
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 427D726FDE1
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:11:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726402AbgIRNJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 09:09:13 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43258 "EHLO vps0.lunn.ch"
+        id S1726757AbgIRNKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 09:10:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45750 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726174AbgIRNJM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 09:09:12 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kJG8S-00FEeU-AL; Fri, 18 Sep 2020 15:09:08 +0200
-Date:   Fri, 18 Sep 2020 15:09:08 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH v3 net-next 7/9] net: dsa: mv88e6xxx: Add devlink regions
-Message-ID: <20200918130908.GA3631014@lunn.ch>
-References: <20200909235827.3335881-1-andrew@lunn.ch>
- <20200909235827.3335881-8-andrew@lunn.ch>
- <f4942b08-3bf8-cdd6-a8b7-61b77c746648@gmail.com>
+        id S1726406AbgIRNKA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 09:10:00 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F411F235FD;
+        Fri, 18 Sep 2020 13:09:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600434599;
+        bh=AIZsqDKqusAtAp+ep4BDpo81voa/dxE7UpcixUilc7E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kAtu/1Ee3pTjZ52xAindcmZEXpXE8sOUqD6IxxhqIH55IIRyVudrWbeGPZPvDP3pV
+         IrP1QVx5Xy28erE/fy1kVpwTc2m6Ujq0kzpOcF2BImirLm1Cy+/gbdnm8DaOOLpG4X
+         +PEthXnn3++NGWHK1umO2tMJASDlrM03vX102Lnw=
+Date:   Fri, 18 Sep 2020 16:09:55 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Oded Gabbay <oded.gabbay@gmail.com>
+Cc:     Gal Pressman <galpress@amazon.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-rdma@vger.kernel.org, izur@habana.ai,
+        Olof Johansson <olof@lixom.net>
+Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
+Message-ID: <20200918130955.GV869610@unreal>
+References: <20200915133556.21268811@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAFCwf12XZRxLYifSfuB+RGhuiKBytzsUTOnEa6FqfJHYvcVJPQ@mail.gmail.com>
+ <20200917171833.GJ8409@ziepe.ca>
+ <0b21db8d-1061-6453-960b-8043951b3bad@amazon.com>
+ <20200918115227.GR869610@unreal>
+ <CAFCwf10C1zm91e=tqPVGOX8kZD7o=AR2EW-P9VwCF4rcvnEJnA@mail.gmail.com>
+ <20200918120340.GT869610@unreal>
+ <CAFCwf12VPuyGFqFJK5D19zcKFQJ=fmzjwscdPG82tfR_v_h3Kg@mail.gmail.com>
+ <20200918121905.GU869610@unreal>
+ <CAFCwf12KEa=chCZCWWkJ5bvGDeRCrmBcY9fB8CrtzjOknRQ5Qg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f4942b08-3bf8-cdd6-a8b7-61b77c746648@gmail.com>
+In-Reply-To: <CAFCwf12KEa=chCZCWWkJ5bvGDeRCrmBcY9fB8CrtzjOknRQ5Qg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +static int mv88e6xxx_region_global_snapshot(struct devlink *dl,
-> > +					    const struct devlink_region_ops *ops,
-> > +					    struct netlink_ext_ack *extack,
-> > +					    u8 **data)
-> > +{
-> > +	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
-> > +	struct mv88e6xxx_chip *chip = ds->priv;
-> > +	u16 *registers;
-> > +	int i, err;
-> > +
-> > +	registers = kmalloc_array(32, sizeof(u16), GFP_KERNEL);
-> > +	if (!registers)
-> > +		return -ENOMEM;
-> > +
-> > +	mv88e6xxx_reg_lock(chip);
-> > +	for (i = 0; i < 32; i++) {
-> > +		switch ((long)ops->priv) {
-> > +		case 1:
-> > +			err = mv88e6xxx_g1_read(chip, i, &registers[i]);
-> > +			break;
-> > +		case 2:
-> > +			err = mv88e6xxx_g1_read(chip, i, &registers[i]);
-> 
-> Should this be mv88e6xxx_g2_read() here?
+On Fri, Sep 18, 2020 at 03:31:51PM +0300, Oded Gabbay wrote:
+> On Fri, Sep 18, 2020 at 3:19 PM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > On Fri, Sep 18, 2020 at 03:07:19PM +0300, Oded Gabbay wrote:
+> > > On Fri, Sep 18, 2020 at 3:03 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > > >
+> > > > On Fri, Sep 18, 2020 at 02:56:09PM +0300, Oded Gabbay wrote:
+> > > > > On Fri, Sep 18, 2020 at 2:52 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > > > > >
+> > > > > > On Fri, Sep 18, 2020 at 02:36:10PM +0300, Gal Pressman wrote:
+> > > > > > > On 17/09/2020 20:18, Jason Gunthorpe wrote:
+> > > > > > > > On Tue, Sep 15, 2020 at 11:46:58PM +0300, Oded Gabbay wrote:
+> > > > > > > >> infrastructure for communication between multiple accelerators. Same
+> > > > > > > >> as Nvidia uses NVlink, we use RDMA that we have inside our ASIC.
+> > > > > > > >> The RDMA implementation we did does NOT support some basic RDMA
+> > > > > > > >> IBverbs (such as MR and PD) and therefore, we can't use the rdma-core
+> > > > > > > >> library or to connect to the rdma infrastructure in the kernel.
+> > > > > > > >
+> > > > > > > > You can't create a parallel RDMA subsystem in netdev, or in misc, and
+> > > > > > > > you can't add random device offloads as IOCTL to nedevs.
+> > > > > > > >
+> > > > > > > > RDMA is the proper home for all the networking offloads that don't fit
+> > > > > > > > into netdev.
+> > > > > > > >
+> > > > > > > > EFA was able to fit into rdma-core/etc and it isn't even RoCE at
+> > > > > > > > all. I'm sure this can too.
+> > > > > > >
+> > > > > > > Well, EFA wasn't welcomed to the RDMA subsystem with open arms ;), initially it
+> > > > > > > was suggested to go through the vfio subsystem instead.
+> > > > > > >
+> > > > > > > I think this comes back to the discussion we had when EFA was upstreamed, which
+> > > > > > > is what's the bar to get accepted to the RDMA subsystem.
+> > > > > > > IIRC, what we eventually agreed on is having a userspace rdma-core provider and
+> > > > > > > ibv_{ud,rc}_pingpong working (or just supporting one of the IB spec's QP types?).
+> > > > > > >
+> > > > > > > Does GAUDI fit these requirements? If not, should it be in a different subsystem
+> > > > > > > or should we open the "what qualifies as an RDMA device" question again?
+> > > > > >
+> > > > > > I want to remind you that rdma-core requirement came to make sure that
+> > > > > > anything exposed from the RDMA to the userspace is strict with proper
+> > > > > > UAPI header hygiene.
+> > > > > >
+> > > > > > I doubt that Havana's ioctls are backed by anything like this.
+> > > > > >
+> > > > > > Thanks
+> > > > >
+> > > > > Why do you doubt that ? Have you looked at our code ?
+> > > > > Our uapi and IOCTLs interface is based on drm subsystem uapi interface
+> > > > > and it is very safe and protected.
+> > > >
+> > > > Yes, I looked and didn't find open-source users of your UAPI headers.
+> > > > It is not related to being safe or protected by to the common request
+> > > > to present userspace that relies on those exported interfaces.
+> > > >
+> > > > > Otherwise Greg would have never allowed me to go upstream in the first place.
+> > > >
+> > > > Nice, can we get a link?
+> > > >
+> > > > >
+> > > > > We have a single function which is the entry point for all the IOCTLs
+> > > > > of our drivers (only one IOCTL is RDMA related, all the others are
+> > > > > compute related).
+> > > > > That function is almost 1:1 copy of the function in drm.
+> > > >
+> > > > DRM has same rules as RDMA, no kernel code will be merged without seeing
+> > > > open-source userspace.
+> > > >
+> > > > Thanks
+> > > >
+> > > > >
+> > > > > Thanks,
+> > > > > Oded
+> > >
+> > > So we do have an open-source library called hl-thunk, which uses our
+> > > driver and indeed that was part of the requirement.
+> > > It is similar to libdrm.
+> > > Here is the link:
+> > > https://github.com/HabanaAI/hl-thunk
+> >
+> > Are you kidding?
+> >
+> > This is mirror of some internal repository that looks like dumpster
+> > with ChangeId, internal bug tracker numbers, not part of major OS
+> > distributions.
+> >
+> > It is not open-source library and shows very clear why you chose
+> > to upstream your driver through driver/misc/ tree.
+> >
+> > Thanks
+>
+> Adding Olof here.
+>
+> No, usually not.
+> But are you kidding ?
+> What did you exactly expect to find ? Is there an open-source project
+> somewhere that encapsulates Deep-learning accelerators which I could
+> connect to ?
 
-Doh! Thanks.
+I would expect certain level of code quality, collaboration and review
+that distros require for inclusion. It is not the case for the github
+repo you presented.
 
-> Can you use the region IDs you defined above?
+> AFAIK, the only thing remotely relevant is CUDA and that is
+> closed-source (strange to hear lectures about open-source from NVIDIA
+> people here...)
 
-Yes. That would be more readable. I probably need to make ops->priv
-point to a real structure, to avoid compiler warnings about down
-sizing types on casts.
+Please check git log statistics to estimate Nvidia/Mellanox/Cumulus
+contributions to the Linux kernel and the open-source. You will be
+surprised.
 
-       Andrew
+>
+> So we are trying to give to the community such an open source library,
+> or at least an example. Hopefully one day, when more companies
+> upstream their drivers for deep-learning accelerators we could do
+> something like libdrm or rdma-core, but for now, it's just our driver.
+
+AFAIR, your driver is not unique, HiSilicon tried to submit something
+similar years ago (warpdrive) and they are not alone.
+
+>
+> I have been in this community since 2013 with AMD and then RedHat, and
+> I come with good intentions and a desire to open source and upstream
+> as much as I can. I don't think I deserve this kind of response.
+
+There is no need to take it personal. It was you who posted a link
+to the github repo. What did you expect?
+
+>
+> The bottom line is that we had this discussion with Greg and Olof and
+> DRM people almost 2 years ago and if there was some open-source
+> project in user-space or some subsystem in the kernel we could connect
+> to, we would have done that instead of what we did, but the fact of
+> the matter there isn't such thing. Olof tried and is trying to create
+> a h/w accelerator subsystem but it still hasn't got up from the ground
+> yet.
+
+Maybe it is a time to do it right.
+
+>
+> Oded
