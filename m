@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09F4F26FCFD
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 14:46:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 638B326FD00
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 14:46:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbgIRMqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 08:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39844 "EHLO
+        id S1726923AbgIRMqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 08:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726749AbgIRMpx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 08:45:53 -0400
+        with ESMTP id S1726756AbgIRMpy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 08:45:54 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30386C061788;
-        Fri, 18 Sep 2020 05:45:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325B5C06178B;
+        Fri, 18 Sep 2020 05:45:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=0ayfAaSqizeJ1SF3mkyRKUWptEcabgutUx7Iqg6Kv38=; b=PYRCSk1Pf5PDSaYp3ja/j7t1VH
-        0r14l7w3u5hTgbkaMrae6qfnBkZX/wO1Q3fsdiTANbZoJrG3E0Ywm6R+22GQQrU0pirIXsR1s66T6
-        sbiTFXfBXRcHSPXBxe6xkStA6TIh7/K0ajdFXavWZafyQdBflt8mPKFiiMmb2afM+IMZh+bel166t
-        HhDMVy83Pa6Ae4z3W0SSpDzF2iL2PKvfFSXUccqtgGAbAoZjh2IHkcmmaV1AVOPFr8Ae8RCz1Fnyt
-        y3LW3hdn4IMGyuzOVd0cxCbx7DMT5ciKDDCOW1pYJ1ROYShGK68y9fsO8VSdHugmktY0r6tY15TET
-        A3adHgIA==;
+        bh=WvVKZaY5AB7hAtdeNZdzckfozxkchoQJ2MiCsAJiU/o=; b=UEfYzXZZrYIkIGKM06IeIkYnFd
+        LQJQ4RCBzxPFpwNiZLwc3188Z8CEfUJWi1ibpbbacqYpilR63xTTv1eK3C7FoV3X3dM9VdXnA3thT
+        GK1+MdWGUho/9rBIrWhSJFonVzQ+bc4TpTvReK9PSUD1w8QNd/0lOwR4sz2jvLGJ5RQl1WRIChsE1
+        LamVUmUnDSIYjBfamw6Ugy5vEd20kZQFre/BhTEKWRkJS1Q5H1aDh3UwPPzSlu9L1NMK7la62fYG/
+        3pKS9F2QNTykVkfV0TXwtxKosE9ljSwA+eGM+8vxTd641JJ/8i8OFvhZvMgnoF77qfGjAsCNoqdqY
+        PRZHXKlA==;
 Received: from [80.122.85.238] (helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kJFln-0008Tc-Qe; Fri, 18 Sep 2020 12:45:44 +0000
+        id 1kJFlo-0008U1-Vo; Fri, 18 Sep 2020 12:45:45 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Alexander Viro <viro@zeniv.linux.org.uk>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -41,9 +41,9 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
         linux-mm@kvack.org, netdev@vger.kernel.org,
         keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [PATCH 6/9] fs: remove the compat readv/writev syscalls
-Date:   Fri, 18 Sep 2020 14:45:30 +0200
-Message-Id: <20200918124533.3487701-7-hch@lst.de>
+Subject: [PATCH 7/9] fs: remove compat_sys_vmsplice
+Date:   Fri, 18 Sep 2020 14:45:31 +0200
+Message-Id: <20200918124533.3487701-8-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200918124533.3487701-1-hch@lst.de>
 References: <20200918124533.3487701-1-hch@lst.de>
@@ -54,303 +54,333 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that import_iovec handles compat iovecs, the native readv and writev
-syscalls can be used for the compat case as well.
+Now that import_iovec handles compat iovecs, the native vmsplice syscall
+can be used for the compat case as well.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/arm64/include/asm/unistd32.h                  |  4 ++--
- arch/mips/kernel/syscalls/syscall_n32.tbl          |  4 ++--
- arch/mips/kernel/syscalls/syscall_o32.tbl          |  4 ++--
- arch/parisc/kernel/syscalls/syscall.tbl            |  4 ++--
- arch/powerpc/kernel/syscalls/syscall.tbl           |  4 ++--
- arch/s390/kernel/syscalls/syscall.tbl              |  4 ++--
- arch/sparc/kernel/syscalls/syscall.tbl             |  4 ++--
- arch/x86/entry/syscall_x32.c                       |  2 ++
- arch/x86/entry/syscalls/syscall_32.tbl             |  4 ++--
- arch/x86/entry/syscalls/syscall_64.tbl             |  4 ++--
- fs/read_write.c                                    | 14 --------------
- include/linux/compat.h                             |  4 ----
- include/uapi/asm-generic/unistd.h                  |  4 ++--
- tools/include/uapi/asm-generic/unistd.h            |  4 ++--
- tools/perf/arch/powerpc/entry/syscalls/syscall.tbl |  4 ++--
- tools/perf/arch/s390/entry/syscalls/syscall.tbl    |  4 ++--
- tools/perf/arch/x86/entry/syscalls/syscall_64.tbl  |  4 ++--
- 17 files changed, 30 insertions(+), 46 deletions(-)
+ arch/arm64/include/asm/unistd32.h             |  2 +-
+ arch/mips/kernel/syscalls/syscall_n32.tbl     |  2 +-
+ arch/mips/kernel/syscalls/syscall_o32.tbl     |  2 +-
+ arch/parisc/kernel/syscalls/syscall.tbl       |  2 +-
+ arch/powerpc/kernel/syscalls/syscall.tbl      |  2 +-
+ arch/s390/kernel/syscalls/syscall.tbl         |  2 +-
+ arch/sparc/kernel/syscalls/syscall.tbl        |  2 +-
+ arch/x86/entry/syscall_x32.c                  |  1 +
+ arch/x86/entry/syscalls/syscall_32.tbl        |  2 +-
+ arch/x86/entry/syscalls/syscall_64.tbl        |  2 +-
+ fs/splice.c                                   | 57 +++++--------------
+ include/linux/compat.h                        |  4 --
+ include/uapi/asm-generic/unistd.h             |  2 +-
+ tools/include/uapi/asm-generic/unistd.h       |  2 +-
+ .../arch/powerpc/entry/syscalls/syscall.tbl   |  2 +-
+ .../perf/arch/s390/entry/syscalls/syscall.tbl |  2 +-
+ .../arch/x86/entry/syscalls/syscall_64.tbl    |  2 +-
+ 17 files changed, 28 insertions(+), 62 deletions(-)
 
 diff --git a/arch/arm64/include/asm/unistd32.h b/arch/arm64/include/asm/unistd32.h
-index 734860ac7cf9d5..4a236493dca5b9 100644
+index 4a236493dca5b9..11dfae3a8563bd 100644
 --- a/arch/arm64/include/asm/unistd32.h
 +++ b/arch/arm64/include/asm/unistd32.h
-@@ -301,9 +301,9 @@ __SYSCALL(__NR_flock, sys_flock)
- #define __NR_msync 144
- __SYSCALL(__NR_msync, sys_msync)
- #define __NR_readv 145
--__SYSCALL(__NR_readv, compat_sys_readv)
-+__SYSCALL(__NR_readv, sys_readv)
- #define __NR_writev 146
--__SYSCALL(__NR_writev, compat_sys_writev)
-+__SYSCALL(__NR_writev, sys_writev)
- #define __NR_getsid 147
- __SYSCALL(__NR_getsid, sys_getsid)
- #define __NR_fdatasync 148
+@@ -697,7 +697,7 @@ __SYSCALL(__NR_sync_file_range2, compat_sys_aarch32_sync_file_range2)
+ #define __NR_tee 342
+ __SYSCALL(__NR_tee, sys_tee)
+ #define __NR_vmsplice 343
+-__SYSCALL(__NR_vmsplice, compat_sys_vmsplice)
++__SYSCALL(__NR_vmsplice, sys_vmsplice)
+ #define __NR_move_pages 344
+ __SYSCALL(__NR_move_pages, compat_sys_move_pages)
+ #define __NR_getcpu 345
 diff --git a/arch/mips/kernel/syscalls/syscall_n32.tbl b/arch/mips/kernel/syscalls/syscall_n32.tbl
-index f9df9edb67a407..c99a92646f8ee9 100644
+index c99a92646f8ee9..5a39d4de0ac85b 100644
 --- a/arch/mips/kernel/syscalls/syscall_n32.tbl
 +++ b/arch/mips/kernel/syscalls/syscall_n32.tbl
-@@ -25,8 +25,8 @@
- 15	n32	ioctl				compat_sys_ioctl
- 16	n32	pread64				sys_pread64
- 17	n32	pwrite64			sys_pwrite64
--18	n32	readv				compat_sys_readv
--19	n32	writev				compat_sys_writev
-+18	n32	readv				sys_readv
-+19	n32	writev				sys_writev
- 20	n32	access				sys_access
- 21	n32	pipe				sysm_pipe
- 22	n32	_newselect			compat_sys_select
+@@ -278,7 +278,7 @@
+ 267	n32	splice				sys_splice
+ 268	n32	sync_file_range			sys_sync_file_range
+ 269	n32	tee				sys_tee
+-270	n32	vmsplice			compat_sys_vmsplice
++270	n32	vmsplice			sys_vmsplice
+ 271	n32	move_pages			compat_sys_move_pages
+ 272	n32	set_robust_list			compat_sys_set_robust_list
+ 273	n32	get_robust_list			compat_sys_get_robust_list
 diff --git a/arch/mips/kernel/syscalls/syscall_o32.tbl b/arch/mips/kernel/syscalls/syscall_o32.tbl
-index 195b43cf27c848..075064d10661bf 100644
+index 075064d10661bf..136efc6b8c5444 100644
 --- a/arch/mips/kernel/syscalls/syscall_o32.tbl
 +++ b/arch/mips/kernel/syscalls/syscall_o32.tbl
-@@ -156,8 +156,8 @@
- 142	o32	_newselect			sys_select			compat_sys_select
- 143	o32	flock				sys_flock
- 144	o32	msync				sys_msync
--145	o32	readv				sys_readv			compat_sys_readv
--146	o32	writev				sys_writev			compat_sys_writev
-+145	o32	readv				sys_readv
-+146	o32	writev				sys_writev
- 147	o32	cacheflush			sys_cacheflush
- 148	o32	cachectl			sys_cachectl
- 149	o32	sysmips				__sys_sysmips
+@@ -318,7 +318,7 @@
+ 304	o32	splice				sys_splice
+ 305	o32	sync_file_range			sys_sync_file_range		sys32_sync_file_range
+ 306	o32	tee				sys_tee
+-307	o32	vmsplice			sys_vmsplice			compat_sys_vmsplice
++307	o32	vmsplice			sys_vmsplice
+ 308	o32	move_pages			sys_move_pages			compat_sys_move_pages
+ 309	o32	set_robust_list			sys_set_robust_list		compat_sys_set_robust_list
+ 310	o32	get_robust_list			sys_get_robust_list		compat_sys_get_robust_list
 diff --git a/arch/parisc/kernel/syscalls/syscall.tbl b/arch/parisc/kernel/syscalls/syscall.tbl
-index def64d221cd4fb..192abde0001d9d 100644
+index 192abde0001d9d..a9e184192caedd 100644
 --- a/arch/parisc/kernel/syscalls/syscall.tbl
 +++ b/arch/parisc/kernel/syscalls/syscall.tbl
-@@ -159,8 +159,8 @@
- 142	common	_newselect		sys_select			compat_sys_select
- 143	common	flock			sys_flock
- 144	common	msync			sys_msync
--145	common	readv			sys_readv			compat_sys_readv
--146	common	writev			sys_writev			compat_sys_writev
-+145	common	readv			sys_readv
-+146	common	writev			sys_writev
- 147	common	getsid			sys_getsid
- 148	common	fdatasync		sys_fdatasync
- 149	common	_sysctl			sys_ni_syscall
+@@ -330,7 +330,7 @@
+ 292	32	sync_file_range		parisc_sync_file_range
+ 292	64	sync_file_range		sys_sync_file_range
+ 293	common	tee			sys_tee
+-294	common	vmsplice		sys_vmsplice			compat_sys_vmsplice
++294	common	vmsplice		sys_vmsplice
+ 295	common	move_pages		sys_move_pages			compat_sys_move_pages
+ 296	common	getcpu			sys_getcpu
+ 297	common	epoll_pwait		sys_epoll_pwait			compat_sys_epoll_pwait
 diff --git a/arch/powerpc/kernel/syscalls/syscall.tbl b/arch/powerpc/kernel/syscalls/syscall.tbl
-index c2d737ff2e7bec..6f1e2ecf0edad9 100644
+index 6f1e2ecf0edad9..0d4985919ca34d 100644
 --- a/arch/powerpc/kernel/syscalls/syscall.tbl
 +++ b/arch/powerpc/kernel/syscalls/syscall.tbl
-@@ -193,8 +193,8 @@
- 142	common	_newselect			sys_select			compat_sys_select
- 143	common	flock				sys_flock
- 144	common	msync				sys_msync
--145	common	readv				sys_readv			compat_sys_readv
--146	common	writev				sys_writev			compat_sys_writev
-+145	common	readv				sys_readv
-+146	common	writev				sys_writev
- 147	common	getsid				sys_getsid
- 148	common	fdatasync			sys_fdatasync
- 149	nospu	_sysctl				sys_ni_syscall
+@@ -369,7 +369,7 @@
+ 282	common	unshare				sys_unshare
+ 283	common	splice				sys_splice
+ 284	common	tee				sys_tee
+-285	common	vmsplice			sys_vmsplice			compat_sys_vmsplice
++285	common	vmsplice			sys_vmsplice
+ 286	common	openat				sys_openat			compat_sys_openat
+ 287	common	mkdirat				sys_mkdirat
+ 288	common	mknodat				sys_mknodat
 diff --git a/arch/s390/kernel/syscalls/syscall.tbl b/arch/s390/kernel/syscalls/syscall.tbl
-index 10456bc936fb09..6101cf2e004cb4 100644
+index 6101cf2e004cb4..b5495a42814bd1 100644
 --- a/arch/s390/kernel/syscalls/syscall.tbl
 +++ b/arch/s390/kernel/syscalls/syscall.tbl
-@@ -134,8 +134,8 @@
- 142  64		select			sys_select			-
- 143  common	flock			sys_flock			sys_flock
- 144  common	msync			sys_msync			sys_msync
--145  common	readv			sys_readv			compat_sys_readv
--146  common	writev			sys_writev			compat_sys_writev
-+145  common	readv			sys_readv			sys_readv
-+146  common	writev			sys_writev			sys_writev
- 147  common	getsid			sys_getsid			sys_getsid
- 148  common	fdatasync		sys_fdatasync			sys_fdatasync
- 149  common	_sysctl			-				-
+@@ -316,7 +316,7 @@
+ 306  common	splice			sys_splice			sys_splice
+ 307  common	sync_file_range		sys_sync_file_range		compat_sys_s390_sync_file_range
+ 308  common	tee			sys_tee				sys_tee
+-309  common	vmsplice		sys_vmsplice			compat_sys_vmsplice
++309  common	vmsplice		sys_vmsplice			sys_vmsplice
+ 310  common	move_pages		sys_move_pages			compat_sys_move_pages
+ 311  common	getcpu			sys_getcpu			sys_getcpu
+ 312  common	epoll_pwait		sys_epoll_pwait			compat_sys_epoll_pwait
 diff --git a/arch/sparc/kernel/syscalls/syscall.tbl b/arch/sparc/kernel/syscalls/syscall.tbl
-index 4af114e84f2022..a87ddb282ab16f 100644
+index a87ddb282ab16f..f1810c1a35caa5 100644
 --- a/arch/sparc/kernel/syscalls/syscall.tbl
 +++ b/arch/sparc/kernel/syscalls/syscall.tbl
-@@ -149,8 +149,8 @@
- 117	common	getrusage		sys_getrusage			compat_sys_getrusage
- 118	common	getsockopt		sys_getsockopt			sys_getsockopt
- 119	common	getcwd			sys_getcwd
--120	common	readv			sys_readv			compat_sys_readv
--121	common	writev			sys_writev			compat_sys_writev
-+120	common	readv			sys_readv
-+121	common	writev			sys_writev
- 122	common	settimeofday		sys_settimeofday		compat_sys_settimeofday
- 123	32	fchown			sys_fchown16
- 123	64	fchown			sys_fchown
+@@ -38,7 +38,7 @@
+ 23	64    	setuid			sys_setuid
+ 24	32	getuid			sys_getuid16
+ 24	64   	getuid			sys_getuid
+-25	common	vmsplice		sys_vmsplice			compat_sys_vmsplice
++25	common	vmsplice		sys_vmsplice
+ 26	common	ptrace			sys_ptrace			compat_sys_ptrace
+ 27	common	alarm			sys_alarm
+ 28	common	sigaltstack		sys_sigaltstack			compat_sys_sigaltstack
 diff --git a/arch/x86/entry/syscall_x32.c b/arch/x86/entry/syscall_x32.c
-index 1583831f61a9df..aa321444a41f63 100644
+index aa321444a41f63..a4840b9d50ad14 100644
 --- a/arch/x86/entry/syscall_x32.c
 +++ b/arch/x86/entry/syscall_x32.c
-@@ -12,6 +12,8 @@
-  * Reuse the 64-bit entry points for the x32 versions that occupy different
-  * slots in the syscall table.
-  */
-+#define __x32_sys_readv		__x64_sys_readv
-+#define __x32_sys_writev	__x64_sys_writev
+@@ -16,6 +16,7 @@
+ #define __x32_sys_writev	__x64_sys_writev
  #define __x32_sys_getsockopt	__x64_sys_getsockopt
  #define __x32_sys_setsockopt	__x64_sys_setsockopt
++#define __x32_sys_vmsplice	__x64_sys_vmsplice
+ 
+ #define __SYSCALL_64(nr, sym)
  
 diff --git a/arch/x86/entry/syscalls/syscall_32.tbl b/arch/x86/entry/syscalls/syscall_32.tbl
-index 9d11028736661b..54ab4beb517f25 100644
+index 54ab4beb517f25..0fb2f172581e51 100644
 --- a/arch/x86/entry/syscalls/syscall_32.tbl
 +++ b/arch/x86/entry/syscalls/syscall_32.tbl
-@@ -156,8 +156,8 @@
- 142	i386	_newselect		sys_select			compat_sys_select
- 143	i386	flock			sys_flock
- 144	i386	msync			sys_msync
--145	i386	readv			sys_readv			compat_sys_readv
--146	i386	writev			sys_writev			compat_sys_writev
-+145	i386	readv			sys_readv
-+146	i386	writev			sys_writev
- 147	i386	getsid			sys_getsid
- 148	i386	fdatasync		sys_fdatasync
- 149	i386	_sysctl			sys_ni_syscall
+@@ -327,7 +327,7 @@
+ 313	i386	splice			sys_splice
+ 314	i386	sync_file_range		sys_ia32_sync_file_range
+ 315	i386	tee			sys_tee
+-316	i386	vmsplice		sys_vmsplice			compat_sys_vmsplice
++316	i386	vmsplice		sys_vmsplice
+ 317	i386	move_pages		sys_move_pages			compat_sys_move_pages
+ 318	i386	getcpu			sys_getcpu
+ 319	i386	epoll_pwait		sys_epoll_pwait
 diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
-index f30d6ae9a6883c..b1e59957c5c51c 100644
+index b1e59957c5c51c..642af919183de4 100644
 --- a/arch/x86/entry/syscalls/syscall_64.tbl
 +++ b/arch/x86/entry/syscalls/syscall_64.tbl
-@@ -371,8 +371,8 @@
- 512	x32	rt_sigaction		compat_sys_rt_sigaction
- 513	x32	rt_sigreturn		compat_sys_x32_rt_sigreturn
- 514	x32	ioctl			compat_sys_ioctl
--515	x32	readv			compat_sys_readv
--516	x32	writev			compat_sys_writev
-+515	x32	readv			sys_readv
-+516	x32	writev			sys_writev
- 517	x32	recvfrom		compat_sys_recvfrom
- 518	x32	sendmsg			compat_sys_sendmsg
- 519	x32	recvmsg			compat_sys_recvmsg
-diff --git a/fs/read_write.c b/fs/read_write.c
-index 9eb63c53da78f2..560d1b0bdef7bc 100644
---- a/fs/read_write.c
-+++ b/fs/read_write.c
-@@ -1217,13 +1217,6 @@ SYSCALL_DEFINE6(pwritev2, unsigned long, fd, const struct iovec __user *, vec,
-  * in_compat_syscall().
-  */
- #ifdef CONFIG_COMPAT
--COMPAT_SYSCALL_DEFINE3(readv, compat_ulong_t, fd,
--		const struct iovec __user *, vec,
--		compat_ulong_t, vlen)
--{
--	return do_readv(fd, vec, vlen, 0);
--}
--
- #ifdef __ARCH_WANT_COMPAT_SYS_PREADV64
- COMPAT_SYSCALL_DEFINE4(preadv64, unsigned long, fd,
- 		const struct iovec __user *, vec,
-@@ -1265,13 +1258,6 @@ COMPAT_SYSCALL_DEFINE6(preadv2, compat_ulong_t, fd,
- 	return do_preadv(fd, vec, vlen, pos, flags);
- }
+@@ -388,7 +388,7 @@
+ 529	x32	waitid			compat_sys_waitid
+ 530	x32	set_robust_list		compat_sys_set_robust_list
+ 531	x32	get_robust_list		compat_sys_get_robust_list
+-532	x32	vmsplice		compat_sys_vmsplice
++532	x32	vmsplice		sys_vmsplice
+ 533	x32	move_pages		compat_sys_move_pages
+ 534	x32	preadv			compat_sys_preadv64
+ 535	x32	pwritev			compat_sys_pwritev64
+diff --git a/fs/splice.c b/fs/splice.c
+index 132d42b9871f9b..18d84544030b39 100644
+--- a/fs/splice.c
++++ b/fs/splice.c
+@@ -33,7 +33,6 @@
+ #include <linux/security.h>
+ #include <linux/gfp.h>
+ #include <linux/socket.h>
+-#include <linux/compat.h>
+ #include <linux/sched/signal.h>
  
--COMPAT_SYSCALL_DEFINE3(writev, compat_ulong_t, fd,
--		const struct iovec __user *, vec,
--		compat_ulong_t, vlen)
+ #include "internal.h"
+@@ -1332,20 +1331,6 @@ static int vmsplice_type(struct fd f, int *type)
+  * Currently we punt and implement it as a normal copy, see pipe_to_user().
+  *
+  */
+-static long do_vmsplice(struct file *f, struct iov_iter *iter, unsigned int flags)
 -{
--	return do_writev(fd, vec, vlen, 0);
+-	if (unlikely(flags & ~SPLICE_F_ALL))
+-		return -EINVAL;
+-
+-	if (!iov_iter_count(iter))
+-		return 0;
+-
+-	if (iov_iter_rw(iter) == WRITE)
+-		return vmsplice_to_pipe(f, iter, flags);
+-	else
+-		return vmsplice_to_user(f, iter, flags);
 -}
 -
- #ifdef __ARCH_WANT_COMPAT_SYS_PWRITEV64
- COMPAT_SYSCALL_DEFINE4(pwritev64, unsigned long, fd,
- 		const struct iovec __user *, vec,
+ SYSCALL_DEFINE4(vmsplice, int, fd, const struct iovec __user *, uiov,
+ 		unsigned long, nr_segs, unsigned int, flags)
+ {
+@@ -1356,6 +1341,9 @@ SYSCALL_DEFINE4(vmsplice, int, fd, const struct iovec __user *, uiov,
+ 	struct fd f;
+ 	int type;
+ 
++	if (unlikely(flags & ~SPLICE_F_ALL))
++		return -EINVAL;
++
+ 	f = fdget(fd);
+ 	error = vmsplice_type(f, &type);
+ 	if (error)
+@@ -1363,40 +1351,21 @@ SYSCALL_DEFINE4(vmsplice, int, fd, const struct iovec __user *, uiov,
+ 
+ 	error = import_iovec(type, uiov, nr_segs,
+ 			     ARRAY_SIZE(iovstack), &iov, &iter);
+-	if (error >= 0) {
+-		error = do_vmsplice(f.file, &iter, flags);
+-		kfree(iov);
+-	}
+-	fdput(f);
+-	return error;
+-}
++	if (error < 0)
++		goto out_fdput;
+ 
+-#ifdef CONFIG_COMPAT
+-COMPAT_SYSCALL_DEFINE4(vmsplice, int, fd, const struct compat_iovec __user *, iov32,
+-		    unsigned int, nr_segs, unsigned int, flags)
+-{
+-	struct iovec iovstack[UIO_FASTIOV];
+-	struct iovec *iov = iovstack;
+-	struct iov_iter iter;
+-	ssize_t error;
+-	struct fd f;
+-	int type;
+-
+-	f = fdget(fd);
+-	error = vmsplice_type(f, &type);
+-	if (error)
+-		return error;
++	if (!iov_iter_count(&iter))
++		error = 0;
++	else if (iov_iter_rw(&iter) == WRITE)
++		error = vmsplice_to_pipe(f.file, &iter, flags);
++	else
++		error = vmsplice_to_user(f.file, &iter, flags);
+ 
+-	error = import_iovec(type, (struct iovec __user *)iov32, nr_segs,
+-			     ARRAY_SIZE(iovstack), &iov, &iter);
+-	if (error >= 0) {
+-		error = do_vmsplice(f.file, &iter, flags);
+-		kfree(iov);
+-	}
++	kfree(iov);
++out_fdput:
+ 	fdput(f);
+ 	return error;
+ }
+-#endif
+ 
+ SYSCALL_DEFINE6(splice, int, fd_in, loff_t __user *, off_in,
+ 		int, fd_out, loff_t __user *, off_out,
 diff --git a/include/linux/compat.h b/include/linux/compat.h
-index ad6dc56e8828d6..0ff848234df8ba 100644
+index 0ff848234df8ba..a7af6ed06cb000 100644
 --- a/include/linux/compat.h
 +++ b/include/linux/compat.h
-@@ -545,10 +545,6 @@ asmlinkage long compat_sys_getdents(unsigned int fd,
+@@ -597,10 +597,6 @@ asmlinkage long compat_sys_signalfd4(int ufd,
+ 				     const compat_sigset_t __user *sigmask,
+ 				     compat_size_t sigsetsize, int flags);
  
- /* fs/read_write.c */
- asmlinkage long compat_sys_lseek(unsigned int, compat_off_t, unsigned int);
--asmlinkage ssize_t compat_sys_readv(compat_ulong_t fd,
--		const struct compat_iovec __user *vec, compat_ulong_t vlen);
--asmlinkage ssize_t compat_sys_writev(compat_ulong_t fd,
--		const struct compat_iovec __user *vec, compat_ulong_t vlen);
- /* No generic prototype for pread64 and pwrite64 */
- asmlinkage ssize_t compat_sys_preadv(compat_ulong_t fd,
- 		const struct compat_iovec __user *vec,
+-/* fs/splice.c */
+-asmlinkage long compat_sys_vmsplice(int fd, const struct compat_iovec __user *,
+-				    unsigned int nr_segs, unsigned int flags);
+-
+ /* fs/stat.c */
+ asmlinkage long compat_sys_newfstatat(unsigned int dfd,
+ 				      const char __user *filename,
 diff --git a/include/uapi/asm-generic/unistd.h b/include/uapi/asm-generic/unistd.h
-index 995b36c2ea7d8a..211c9eacbda6eb 100644
+index 211c9eacbda6eb..f2dcb0d5703014 100644
 --- a/include/uapi/asm-generic/unistd.h
 +++ b/include/uapi/asm-generic/unistd.h
-@@ -207,9 +207,9 @@ __SYSCALL(__NR_read, sys_read)
- #define __NR_write 64
- __SYSCALL(__NR_write, sys_write)
- #define __NR_readv 65
--__SC_COMP(__NR_readv, sys_readv, compat_sys_readv)
-+__SC_COMP(__NR_readv, sys_readv, sys_readv)
- #define __NR_writev 66
--__SC_COMP(__NR_writev, sys_writev, compat_sys_writev)
-+__SC_COMP(__NR_writev, sys_writev, sys_writev)
- #define __NR_pread64 67
- __SC_COMP(__NR_pread64, sys_pread64, compat_sys_pread64)
- #define __NR_pwrite64 68
+@@ -237,7 +237,7 @@ __SC_COMP(__NR_signalfd4, sys_signalfd4, compat_sys_signalfd4)
+ 
+ /* fs/splice.c */
+ #define __NR_vmsplice 75
+-__SC_COMP(__NR_vmsplice, sys_vmsplice, compat_sys_vmsplice)
++__SYSCALL(__NR_vmsplice, sys_vmsplice)
+ #define __NR_splice 76
+ __SYSCALL(__NR_splice, sys_splice)
+ #define __NR_tee 77
 diff --git a/tools/include/uapi/asm-generic/unistd.h b/tools/include/uapi/asm-generic/unistd.h
-index 995b36c2ea7d8a..211c9eacbda6eb 100644
+index 211c9eacbda6eb..f2dcb0d5703014 100644
 --- a/tools/include/uapi/asm-generic/unistd.h
 +++ b/tools/include/uapi/asm-generic/unistd.h
-@@ -207,9 +207,9 @@ __SYSCALL(__NR_read, sys_read)
- #define __NR_write 64
- __SYSCALL(__NR_write, sys_write)
- #define __NR_readv 65
--__SC_COMP(__NR_readv, sys_readv, compat_sys_readv)
-+__SC_COMP(__NR_readv, sys_readv, sys_readv)
- #define __NR_writev 66
--__SC_COMP(__NR_writev, sys_writev, compat_sys_writev)
-+__SC_COMP(__NR_writev, sys_writev, sys_writev)
- #define __NR_pread64 67
- __SC_COMP(__NR_pread64, sys_pread64, compat_sys_pread64)
- #define __NR_pwrite64 68
+@@ -237,7 +237,7 @@ __SC_COMP(__NR_signalfd4, sys_signalfd4, compat_sys_signalfd4)
+ 
+ /* fs/splice.c */
+ #define __NR_vmsplice 75
+-__SC_COMP(__NR_vmsplice, sys_vmsplice, compat_sys_vmsplice)
++__SYSCALL(__NR_vmsplice, sys_vmsplice)
+ #define __NR_splice 76
+ __SYSCALL(__NR_splice, sys_splice)
+ #define __NR_tee 77
 diff --git a/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl b/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl
-index 3ca6fe057a0b1f..46be68029587f9 100644
+index 46be68029587f9..26f0347c15118b 100644
 --- a/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl
 +++ b/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl
-@@ -189,8 +189,8 @@
- 142	common	_newselect			sys_select			compat_sys_select
- 143	common	flock				sys_flock
- 144	common	msync				sys_msync
--145	common	readv				sys_readv			compat_sys_readv
--146	common	writev				sys_writev			compat_sys_writev
-+145	common	readv				sys_readv
-+146	common	writev				sys_writev
- 147	common	getsid				sys_getsid
- 148	common	fdatasync			sys_fdatasync
- 149	nospu	_sysctl				sys_ni_syscall
+@@ -363,7 +363,7 @@
+ 282	common	unshare				sys_unshare
+ 283	common	splice				sys_splice
+ 284	common	tee				sys_tee
+-285	common	vmsplice			sys_vmsplice			compat_sys_vmsplice
++285	common	vmsplice			sys_vmsplice
+ 286	common	openat				sys_openat			compat_sys_openat
+ 287	common	mkdirat				sys_mkdirat
+ 288	common	mknodat				sys_mknodat
 diff --git a/tools/perf/arch/s390/entry/syscalls/syscall.tbl b/tools/perf/arch/s390/entry/syscalls/syscall.tbl
-index 6a0bbea225db0d..fb5e61ce9d5838 100644
+index fb5e61ce9d5838..02ad81f69bb7e3 100644
 --- a/tools/perf/arch/s390/entry/syscalls/syscall.tbl
 +++ b/tools/perf/arch/s390/entry/syscalls/syscall.tbl
-@@ -134,8 +134,8 @@
- 142  64		select			sys_select			-
- 143  common	flock			sys_flock			sys_flock
- 144  common	msync			sys_msync			compat_sys_msync
--145  common	readv			sys_readv			compat_sys_readv
--146  common	writev			sys_writev			compat_sys_writev
-+145  common	readv			sys_readv
-+146  common	writev			sys_writev
- 147  common	getsid			sys_getsid			sys_getsid
- 148  common	fdatasync		sys_fdatasync			sys_fdatasync
- 149  common	_sysctl			-				-
+@@ -316,7 +316,7 @@
+ 306  common	splice			sys_splice			compat_sys_splice
+ 307  common	sync_file_range		sys_sync_file_range		compat_sys_s390_sync_file_range
+ 308  common	tee			sys_tee				compat_sys_tee
+-309  common	vmsplice		sys_vmsplice			compat_sys_vmsplice
++309  common	vmsplice		sys_vmsplice			sys_vmsplice
+ 310  common	move_pages		sys_move_pages			compat_sys_move_pages
+ 311  common	getcpu			sys_getcpu			compat_sys_getcpu
+ 312  common	epoll_pwait		sys_epoll_pwait			compat_sys_epoll_pwait
 diff --git a/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl b/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
-index f30d6ae9a6883c..b1e59957c5c51c 100644
+index b1e59957c5c51c..642af919183de4 100644
 --- a/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
 +++ b/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
-@@ -371,8 +371,8 @@
- 512	x32	rt_sigaction		compat_sys_rt_sigaction
- 513	x32	rt_sigreturn		compat_sys_x32_rt_sigreturn
- 514	x32	ioctl			compat_sys_ioctl
--515	x32	readv			compat_sys_readv
--516	x32	writev			compat_sys_writev
-+515	x32	readv			sys_readv
-+516	x32	writev			sys_writev
- 517	x32	recvfrom		compat_sys_recvfrom
- 518	x32	sendmsg			compat_sys_sendmsg
- 519	x32	recvmsg			compat_sys_recvmsg
+@@ -388,7 +388,7 @@
+ 529	x32	waitid			compat_sys_waitid
+ 530	x32	set_robust_list		compat_sys_set_robust_list
+ 531	x32	get_robust_list		compat_sys_get_robust_list
+-532	x32	vmsplice		compat_sys_vmsplice
++532	x32	vmsplice		sys_vmsplice
+ 533	x32	move_pages		compat_sys_move_pages
+ 534	x32	preadv			compat_sys_preadv64
+ 535	x32	pwritev			compat_sys_pwritev64
 -- 
 2.28.0
 
