@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3289226FBDB
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 13:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDC7C26FBF0
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 14:00:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbgIRL4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 07:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60434 "EHLO
+        id S1726598AbgIRL77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 07:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726064AbgIRL4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 07:56:39 -0400
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B40BC06174A;
-        Fri, 18 Sep 2020 04:56:39 -0700 (PDT)
-Received: by mail-ot1-x342.google.com with SMTP id h17so5141955otr.1;
-        Fri, 18 Sep 2020 04:56:39 -0700 (PDT)
+        with ESMTP id S1726199AbgIRL76 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 07:59:58 -0400
+Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A45C06174A;
+        Fri, 18 Sep 2020 04:59:58 -0700 (PDT)
+Received: by mail-oi1-x241.google.com with SMTP id x14so6668790oic.9;
+        Fri, 18 Sep 2020 04:59:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=bKOrvyGUMEvEmOgg/jMWt/EUqVke0/N7VcikSM/zy5E=;
-        b=nT1xkTnBT44HIB5gZBYN1J8G2VdO+OJkIKIhOXeBgLEsONUbEOECgEIBmC+CzOB4fi
-         s2+RJpe+KtnS4Ny1JZ8AkkwfkKPKpZD2lHHco54ucxQO123wIch6Trxm3LEleX5owCNQ
-         N7WNQ64lLwj8qzil+7QMxCj1TZXzeGdescOOEeqDER7fuNIH8FlK+yS3TqtEXUGWW/dY
-         S4+QI2I0wajHSS4iY9bMvXerjQFmdEegIdMNFO9BC727wJ2HJJ0VtbaCkGtQq/3hbx0k
-         53PyzP3ACS78t8wqQQ7NcV9xl/r/EIK0UDehYXZS6w0jb6jVyud4sqR3PWIHAzQVVaKi
-         YIgg==
+        bh=/Lzn6u1TqSXCWYoBwgZEzZ6h25P/gRjpfquy+GupLuk=;
+        b=jY/BUGmCjODZdeRrPGcQFkExyjBFYrD+vuMkiB9sK1tmfoRp6G0SLPElqNyu6YymMS
+         rgR8pDKjM6/rDM/qO8v1qdJ8R42If1YH1EdzYrgiaQt5KoPEf5QXdej9boJ/94O0Wf/z
+         Jqf8wNLqLXAd1bvpeBnZQk8jL2YNX6a2EdT6Y74hM7IeqBM9d893ExDAlIXSMrE4YxN0
+         bZV1yuRe/HGJryS2/hAfooAdVKalqkRak5oLp9oovH2dROvJTkWtTrLYpllHT8EOgVDs
+         Lq/jvsHopGwR8Z/lqwHpx+s4gvK8FwCotAsC6E+s1aItr06yu89oPQb3qpM85Nhyfh78
+         CGIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=bKOrvyGUMEvEmOgg/jMWt/EUqVke0/N7VcikSM/zy5E=;
-        b=fNdbuLPGLdb57fgS43GAqjKpo/u0vTmxP3hMi7y406qT11wV+ViGkdFk7EOvZlahIZ
-         3stxAY+kAKujqNIZ2wPiYarZD9TUTgu9YRvMoFH3kODJm1f8tNEUkJ77VXaWqlehzoje
-         TN1lsI3N2PU2O4yGAdND5iBbnVVoKaYJ8G/IAw3jg9g/KuGWdNXylIuMtG5Tv9jlX3XO
-         iq3rKxm2GAAX+QuY3aG8HU9vyB5CpTygIlikTJPJbsvDCy+9X+fhbD7tXZtwyTHUzvEf
-         ffkhwpmiSN+62rlWuWjFBqCbK6hnMuxYeACC7ywicArwxIfzQCz3wtkAp7UaHsCmGGrp
-         f05g==
-X-Gm-Message-State: AOAM532jwYaIiorKincyPmLQ9beRQIbqvrarxZlQhvv6RvWMR53AxAOR
-        eTvy6r1CqQXGAceeUptrVlTZv+0iFBNb1esy43E=
-X-Google-Smtp-Source: ABdhPJzk5hzh3206q304HnVA4MDalu//mmX4OhC3q96ogtc63dcCtzPNKyFt3Rusp6BT9OtcYeEocHth+XDGyX/528o=
-X-Received: by 2002:a9d:b95:: with SMTP id 21mr6191903oth.143.1600430198690;
- Fri, 18 Sep 2020 04:56:38 -0700 (PDT)
+        bh=/Lzn6u1TqSXCWYoBwgZEzZ6h25P/gRjpfquy+GupLuk=;
+        b=k2MkooPAdnhFRZwUPGvYfN/rP4qmI4EqNyi9G85x0twiLxafPIONKvRjm4R1A+ilqq
+         Qc5MUVqdAB7LIaxyCEojKXhH/c0VRxrKvxUTDyujfcSxU1nFtvGG3gMhyFpsxj61Xln5
+         Mbv+q4e68M86ENFM7cKZv4u1n/PMiJHsogHMhOzfGY7+WuXMqim1cAw5cPMnu2yZDSED
+         ENzEOWLaXWeIKdUPt22xwsvIrwuTU/sC1e5hZGPPVPU0yWxdQQLxv4x79L9Dxm5YnSBf
+         luwopF/FM4j01yQh6DZNdG8Vgbe3WDbGHdNBEVLmJx1gtJW0b4/83l4hpX10/5WVeC7x
+         r/vQ==
+X-Gm-Message-State: AOAM533nvp9ja880z3XyNbTY9q1tvBhho+DZi+bR9Q01XtLr7zH/IREY
+        YxhBcvncpUL5FXabphpa6jwrQ8KAMp6+SDPw4h/qzJbYE9jJCA==
+X-Google-Smtp-Source: ABdhPJw+2KeGVhCIuG1Whvj7EwbbzAPMoclqLsTA9zfvDdIVEA8IacOY8yoQu6EXJkYLaDaG+HADJ+I+2V+vPF6GuEk=
+X-Received: by 2002:aca:c758:: with SMTP id x85mr9262586oif.102.1600430398098;
+ Fri, 18 Sep 2020 04:59:58 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200915171022.10561-1-oded.gabbay@gmail.com> <20200915133556.21268811@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
  <CAFCwf12XZRxLYifSfuB+RGhuiKBytzsUTOnEa6FqfJHYvcVJPQ@mail.gmail.com>
  <20200917171833.GJ8409@ziepe.ca> <0b21db8d-1061-6453-960b-8043951b3bad@amazon.com>
- <20200918115227.GR869610@unreal>
-In-Reply-To: <20200918115227.GR869610@unreal>
+ <20200918115601.GP8409@ziepe.ca>
+In-Reply-To: <20200918115601.GP8409@ziepe.ca>
 From:   Oded Gabbay <oded.gabbay@gmail.com>
-Date:   Fri, 18 Sep 2020 14:56:09 +0300
-Message-ID: <CAFCwf10C1zm91e=tqPVGOX8kZD7o=AR2EW-P9VwCF4rcvnEJnA@mail.gmail.com>
+Date:   Fri, 18 Sep 2020 14:59:28 +0300
+Message-ID: <CAFCwf12G4FnhjzijZLh_=n59SQMcTnULTqp8DOeQGyX6_q_ayA@mail.gmail.com>
 Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Gal Pressman <galpress@amazon.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Gal Pressman <galpress@amazon.com>,
         Jakub Kicinski <kuba@kernel.org>,
         "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
         netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
@@ -68,7 +68,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 18, 2020 at 2:52 PM Leon Romanovsky <leon@kernel.org> wrote:
+On Fri, Sep 18, 2020 at 2:56 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
 >
 > On Fri, Sep 18, 2020 at 02:36:10PM +0300, Gal Pressman wrote:
 > > On 17/09/2020 20:18, Jason Gunthorpe wrote:
@@ -95,27 +95,31 @@ On Fri, Sep 18, 2020 at 2:52 PM Leon Romanovsky <leon@kernel.org> wrote:
 > > is what's the bar to get accepted to the RDMA subsystem.
 > > IIRC, what we eventually agreed on is having a userspace rdma-core provider and
 > > ibv_{ud,rc}_pingpong working (or just supporting one of the IB spec's QP types?).
-> >
-> > Does GAUDI fit these requirements? If not, should it be in a different subsystem
-> > or should we open the "what qualifies as an RDMA device" question again?
 >
-> I want to remind you that rdma-core requirement came to make sure that
-> anything exposed from the RDMA to the userspace is strict with proper
-> UAPI header hygiene.
+> That is more or less where we ended up, yes.
 >
-> I doubt that Havana's ioctls are backed by anything like this.
+> I'm most worried about this lack of PD and MR.
 >
-> Thanks
+> Kernel must provide security for apps doing user DMA, PD and MR do
+> this. If the device doesn't have PD/MR then it is hard to see how a WQ
+> could ever be exposed directly to userspace, regardless of subsystem.
+>
+> Jason
 
-Why do you doubt that ? Have you looked at our code ?
-Our uapi and IOCTLs interface is based on drm subsystem uapi interface
-and it is very safe and protected.
-Otherwise Greg would have never allowed me to go upstream in the first place.
+Hi Jason,
+What you say here is very true and we handle that with different
+mechanisms. I will start working on a dedicated patch-set of the RDMA
+code in the next few weeks with MUCH MORE details in the commit
+messages. That will explain exactly how we expose stuff and protect.
 
-We have a single function which is the entry point for all the IOCTLs
-of our drivers (only one IOCTL is RDMA related, all the others are
-compute related).
-That function is almost 1:1 copy of the function in drm.
+For example, regarding isolating between applications, we only support
+a single application opening our file descriptor.
+Another example is that the submission of WQ is done through our QMAN
+mechanism and is NOT mapped to userspace (due to the restrictions you
+mentioned above and other restrictions).
+
+But again, I want to send something organized and with proper explanations.
+I hope to have something in a couple of weeks.
 
 Thanks,
 Oded
