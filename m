@@ -2,152 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E06932705AB
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 21:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CE712705FA
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 22:09:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726247AbgIRTji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 15:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbgIRTji (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 15:39:38 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F34C0613CE
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 12:39:38 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id j7so3498909plk.11
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 12:39:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ugDHAjreJcjr2sWmhzBxhqb0r9L38OJhgw/SK5/hXcA=;
-        b=MMijeS5iSCBD6TdcsROq3wTBNGom0mymBli3Y7GoxookncCyXLPhiCD1hGXMM0OPi5
-         FseDWPW8AhtFzulUwDfOV2C3xvDwwnImE4cEeDboLKnfr5d0EoqWPWaiBKAtg9etgxJ1
-         QsnrQSM3hWlZXg8UiHNO4ulb7iMZt/9OiWq3v38GuXw68fRaJ2bKNZWfI61k64ntRwZf
-         uzPs70jvLCyw0j05qFjWEogD5N0tr2ki5DrGgtt/3hABsWDoXC1CkjoQAc0IsqUrG0bC
-         LACfKgVvIhbxEGYIP5RFTiKMGlbl71EUpNLtn63mpCgEKqp3RqIyxU20U5v4ocLq8a11
-         8OFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ugDHAjreJcjr2sWmhzBxhqb0r9L38OJhgw/SK5/hXcA=;
-        b=AIlHycqTzEgsWpDf47X//wXhF/AbKz/QcqUaC7XeQ0U2vYJ14KPcTwnr9zQbfhtfA+
-         KY/u5cHWDhSMfTwS02JiVAR9EzfeaAYU7yY5XG0+8Rl8uVJAQR3K25b2RDGvmRmcWMso
-         M1Scyqnn1Ld6JqIaCPlHhhXBMCIKIBAnFNYewRVmE5SC9QWE4mJk1wAsMqIffOhGGd7G
-         e6kWYtpK99IRAc5OOlySx+69X3QWNwyShX4QwkKJxaOL8HZx6CovVlNIAKO5Ystxxz1Z
-         8AUclsSqEGAnrNsk++iZ/02X0ReIroLw3IRaqRw4sfTOL+BtM/Fx2De+TUMYcMzDCXmQ
-         O3GA==
-X-Gm-Message-State: AOAM533Ah3niFzlfq5EkcN3UFGZ42UDGslXsC+M+BKWtbWXWwcsDJ87y
-        0BH66nXuSttakU11fVSN7HKkY44+/hDOE8rlWCvvYQ==
-X-Google-Smtp-Source: ABdhPJyuTQ6eWHseHu6pz8Fdfd7MU+vsvAbZLf6HZw27l+sY0R/11CACwcB2ADGtOmcQ/AT2rgvgSVZPcMhDmT/R5Yo=
-X-Received: by 2002:a17:90b:f18:: with SMTP id br24mr1807074pjb.32.1600457977854;
- Fri, 18 Sep 2020 12:39:37 -0700 (PDT)
+        id S1726200AbgIRUJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 16:09:26 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:15146 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbgIRUJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 16:09:26 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f6513e90000>; Fri, 18 Sep 2020 13:09:13 -0700
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 18 Sep
+ 2020 20:09:25 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ by HQMAIL109.nvidia.com (172.20.187.15) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Fri, 18 Sep 2020 20:09:25 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=m5wmyC8s8ih9CYIqy6gDPTVeNj3RfJFodMLLX/cZkOUTUddHDeEQS2jptmlYdQ+a+YF7dZj53WOXynNFtJo68SCsYlcz8zgUO2cifHSbdjUOLqErbiBIGuqQtiaDUvShwbXwtKlN9E2WVDJOWq0EbHvP1FdSfBbDrlljKxtzWzPWbI12EvU/KOsbeEJPWiuvwRFuQKsOV110GowSvRfvrAOfyQI2gPLTAcpLrLmwCDrjXtasB1kRGiCFxfNQw7td1djmxQDQkRLaKGrSd2WBe44PREy0wRqkNnvYTTCf5Dd4vntntbvNYQbSd7XOGieHK5av1ALEHmqyZLyI2se+CQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CqgG4vTA03Uge2Q0JwU50ejXnLS87IlXz8llbGbHXDw=;
+ b=YnOxh1hewf7S0NVdpvJL//V6CpYlvInrCN6u0uKhG4s250X4fpVfVIZcobCtcNpm5A0SnusWuW8L60kNnIQE9oErqtk8JaNQ5HCkoxfOElbOdWGlN0HEtWLNFLOxkjR+dNk8qJVmw3R0zorZevybKXhE4Qj1HbQzr9xdK5djKC/rlujUIFcbRmnY7WKrup9rf4Sh2c3I8iKCXm01HMmirzLDo65NBH7lz0wMBLXBfb1Is3L6leR7iqyfRVLSjb/Rw6xWwfRJDKpKQecJOqTwze3xvI8hBJY4/QKDxtS1ETks7HOiGYy1ofms4I8zjlOSjnZ1coDbNK5XiVZqzTBKCA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
+ by BY5PR12MB4228.namprd12.prod.outlook.com (2603:10b6:a03:20b::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.11; Fri, 18 Sep
+ 2020 20:09:24 +0000
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::3c25:6e4c:d506:6105]) by BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::3c25:6e4c:d506:6105%6]) with mapi id 15.20.3370.027; Fri, 18 Sep 2020
+ 20:09:24 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next v2 0/8] devlink: Add SF add/delete devlink ops
+Thread-Topic: [PATCH net-next v2 0/8] devlink: Add SF add/delete devlink ops
+Thread-Index: AQHWjRbejAHFYrcRiUC40XmVyPqlcqlune4AgAABw7CAAArcgIAAAWQggAAM1YCAABv/wA==
+Date:   Fri, 18 Sep 2020 20:09:24 +0000
+Message-ID: <BY5PR12MB4322C97E73753786B179ACE3DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+References: <20200917081731.8363-8-parav@nvidia.com>
+        <20200917172020.26484-1-parav@nvidia.com>
+        <20200918095212.61d4d60a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BY5PR12MB4322941E1B2EFE8C0F3E38A0DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+        <20200918103723.618c7360@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BY5PR12MB43222DFADC76AE0780BC7C83DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20200918112817.410ed3b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200918112817.410ed3b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [49.207.209.10]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ee9619dc-9a4e-4837-e69c-08d85c0ebd01
+x-ms-traffictypediagnostic: BY5PR12MB4228:
+x-microsoft-antispam-prvs: <BY5PR12MB4228C95FD6114C2193429453DC3F0@BY5PR12MB4228.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VhH+9h5CdyELbNpebBU2g53qe/MOHcnea7fkSd3vlIAPVzgrmY/q+g4FlVhbXsvEAIoMlO+EpI1ih+RA6lXPl0AjzArWEGDqYQsabeL4VMf2RQawU8lTYM/bOYPUEiiTclzIjemPbTpiW+uvVr968mT2il3TbCo3eAft4hNie3uAiowTu3BO9+bT6dAxNbFQG7oM9KgHgo5COkwVOYDydNtPgYc1+wD/S63o+hnP6V9vt5dsT3tlNlhEBLSNc0y5VnTd7SvnpCicfuGWhl889vBknpQ/8k40eZ330yL4kwpeNeucCSiA6V2+kjySJSJQl5/hXvhLMP5747z9nPgZ22VCqOsPwVyCVWq0ErhAnG5PHgKWN6veaphr+m1//okd
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(366004)(39860400002)(396003)(136003)(4744005)(5660300002)(66946007)(86362001)(55016002)(52536014)(76116006)(54906003)(7696005)(71200400001)(8676002)(4326008)(66556008)(66446008)(66476007)(64756008)(478600001)(6916009)(316002)(9686003)(6506007)(55236004)(8936002)(26005)(2906002)(186003)(33656002)(83380400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: H+cWLWY7+9X69Nd8bTqO+tXULS0w0UUoLNemJpdqPqidYlwdSe/d6/XI/l95KtiLiDTFHXNHakmmVr+8DOOAWwyLkvhwgDxaPH/jLmnaim9eb2UbXnudh5Z9vLFyVxwo//J7rrY+M6x2epEHGL6vBx5MV9sTO0uq3BdHpO/rte3PZpjyBtbJuGXaALvIHqU/YqlsNFcXuBczqdDosIkMF+w6zElgdy8T6XU+lXvPfyXbxyEz3/lBRE4myRdCQRDN8xgpgN7TqPYhJWBcbwr2CQWN4+K8rTcod2LYiTiqcivJOQyAssKVb0Vix2V/03W0J1By6MmCXNH9a/ejGLWJX35EouZA/5WaHXh5xqWkDVTTQOGSG/JUCZLz75+M6SHdM8y2EKnustAlyO8f6KqgyrcKEfvXaObrEHhVJh7U3adNB/KqzNc1uV8C8GKvqdA8Nyzc2LZ3ocKESW5DvKJ8jAhKx5F/5ZBFtxfSii4Amojvon4gY5gSpC2sHLcaWYFZWdBr5pgnUt2skakhDd73YiBNr5sqUSSC7Z/OgkVkouqAyBNbM3GvxNozg6t+/Z3cdEPZ9rIkrBKFtTE9RZi4nhEBozCDL5fS1gJffA7sz2hDQ/BqLgZhY7X7toalyVN+SWcgoIClBs/ZwRre9RuIFA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20200916071950.1493-3-gilad@benyossef.com> <202009162154.fxQ0Z6wT%lkp@intel.com>
- <CAOtvUMdv9QNVdaU7N6wJVq27Asyrckuu9bf15fO=+oZUh5iKOg@mail.gmail.com>
-In-Reply-To: <CAOtvUMdv9QNVdaU7N6wJVq27Asyrckuu9bf15fO=+oZUh5iKOg@mail.gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Fri, 18 Sep 2020 12:39:26 -0700
-Message-ID: <CAKwvOdmW+n_g4C_pXnF+8wh2q0gZZyXAfaYR9cVNm3p1QeJ-xA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] crypto: ccree - add custom cache params from DT file
-To:     Gilad Ben-Yossef <gilad@benyossef.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, kbuild-all@lists.01.org,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Ofir Drang <ofir.drang@arm.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Alex Elder <elder@linaro.org>, Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee9619dc-9a4e-4837-e69c-08d85c0ebd01
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Sep 2020 20:09:24.2315
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: XUrzSrdgPb7s5jK9hir8BmFHh1+2qXuPPzCfkzRcJ6qvau5aKTe8ipZIJq07EIG4M+8kcjKalPKkk2qzlOJ2aw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4228
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1600459753; bh=CqgG4vTA03Uge2Q0JwU50ejXnLS87IlXz8llbGbHXDw=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
+         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
+         In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
+         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
+         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
+         x-ms-traffictypediagnostic:x-microsoft-antispam-prvs:
+         x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
+         x-microsoft-antispam:x-microsoft-antispam-message-info:
+         x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
+         x-ms-exchange-transport-forked:Content-Type:
+         Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=kooR8aN+6I7HjA0xidPmAx/A75OujzWwy5+My2Ye7ZF8OvxPhsx6akSVbmHT661JQ
+         nTdb2he15SXuFtkvVl4GjjAvMLfC8uoF8V/9mvxwBLYs3S22FkrZY/Ow7KKgcD6tH6
+         hJObQg+Nx4PIzqRorrc0sWfR4LwG1/qQLuQ3KzentZkHlgU6oCMjilPYHtF5s+RPs/
+         dSYQ33Y+NlZL8CB3jufKG9/xC8U0itW+Z22l/pKeigCrKaWBWu4r3ijMc/tCW2azeA
+         01o/hdv5AvKfrp1P9Uyyr/sjohtN8XOAtwclZHpqJc0o+CHzydcRvGWOuaP9aG0nq9
+         UxJgJexGcJ+NQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 17, 2020 at 12:20 AM Gilad Ben-Yossef <gilad@benyossef.com> wrote:
->
-> hmm...
->
-> On Wed, Sep 16, 2020 at 4:48 PM kernel test robot <lkp@intel.com> wrote:
+
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Friday, September 18, 2020 11:58 PM
+>=20
+> On Fri, 18 Sep 2020 17:47:24 +0000 Parav Pandit wrote:
+> > > > What do you suggest?
+> > >
+> > > Start with real patches, not netdevsim.
 > >
-> > url:    https://github.com/0day-ci/linux/commits/Gilad-Ben-Yossef/add-optional-cache-params-from-DT/20200916-152151
-> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git master
-> > config: arm64-randconfig-r015-20200916 (attached as .config)
-> > compiler: clang version 12.0.0 (https://github.com/llvm/llvm-project 9e3842d60351f986d77dfe0a94f76e4fd895f188)
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # install arm64 cross compiling tool for clang build
-> >         # apt-get install binutils-aarch64-linux-gnu
-> >         # save the attached .config to linux build tree
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=arm64
+> > Hmm. Shall I split the series below, would that be ok?
 > >
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
+> > First patchset,
+> > (a) devlink piece to add/delete port
+> > (b) mlx5 counter part
 > >
-> > All warnings (new ones prefixed by >>):
+> > Second patchset,
+> > (a) devlink piece to set the state
+> > (b) mlx5 counter part
 > >
-> > >> drivers/crypto/ccree/cc_driver.c:120:18: warning: result of comparison of constant 18446744073709551615 with expression of type 'u32' (aka 'unsigned int') is always false [-Wtautological-constant-out-of-range-compare]
-> >            cache_params |= FIELD_PREP(mask, val);
-> >                            ^~~~~~~~~~~~~~~~~~~~~
-> >    include/linux/bitfield.h:94:3: note: expanded from macro 'FIELD_PREP'
-> >                    __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");    \
-> >                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >    include/linux/bitfield.h:52:28: note: expanded from macro '__BF_FIELD_CHECK'
-> >                    BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ull,         \
-> >                    ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >    include/linux/build_bug.h:39:58: note: expanded from macro 'BUILD_BUG_ON_MSG'
-> >    #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-> >                                        ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
-> >    include/linux/compiler_types.h:319:22: note: expanded from macro 'compiletime_assert'
-> >            _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-> >            ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >    include/linux/compiler_types.h:307:23: note: expanded from macro '_compiletime_assert'
-> >            __compiletime_assert(condition, msg, prefix, suffix)
-> >            ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >    include/linux/compiler_types.h:299:9: note: expanded from macro '__compiletime_assert'
-> >                    if (!(condition))                                       \
-> >                          ^~~~~~~~~
->
-> I am unable to understand this warning. It looks like it is
-> complaining about a FIELD_GET sanity check that is always false, which
-> makes sense since we're using a constant.
->
-> Anyone can enlighten me if I've missed something?
+> > Follow on patchset to create/delete sf's netdev on virtbus in mlx5 + de=
+vlink
+> plumbing.
+> > Netdevsim after that.
+>=20
+> I'd start from the virtbus part so we can see what's being created.
 
-Looked at some of this code recently.  I think it may have an issue
-for masks where sizeof(mask) < sizeof(unsigned long long).
-
-In your code, via 0day bot:
-
-   107          u32 cache_params, ace_const, val, mask;
-...
-> 120          cache_params |= FIELD_PREP(mask, val);
-
-then in include/linux/bitfield.h, we have:
-
- 92 #define FIELD_PREP(_mask, _val)           \
- 93   ({                \
- 94     __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");  \
-
- 44 #define __BF_FIELD_CHECK(_mask, _reg, _val, _pfx)     \
-...
- 52     BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ull,   \
- 53          _pfx "type of reg too small for mask"); \
-
-so the 0ULL in FIELD_PREP is important.  In __BF_FIELD_CHECK, the
-typeof(_reg) is unsigned long long (because 0ULL was passed).  So we
-have a comparison between a u32 and a u64; indeed any u32 can never be
-greater than a u64 that we know has the value of ULLONG_MAX.
-
-I did send a series splitting these up, I wonder if they'd help here:
-https://lore.kernel.org/lkml/20200708230402.1644819-3-ndesaulniers@google.com/
--- 
-Thanks,
-~Nick Desaulniers
+How do you reach there without a user interface?
