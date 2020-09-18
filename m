@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39CAF2701E5
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:16:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04BE02701B0
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:13:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726321AbgIRQP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 12:15:58 -0400
-Received: from mslow2.mail.gandi.net ([217.70.178.242]:42974 "EHLO
+        id S1726299AbgIRQNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 12:13:33 -0400
+Received: from mslow2.mail.gandi.net ([217.70.178.242]:39904 "EHLO
         mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726200AbgIRQP5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:15:57 -0400
-Received: from relay1-d.mail.gandi.net (unknown [217.70.183.193])
-        by mslow2.mail.gandi.net (Postfix) with ESMTP id 38AA03A32DF
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 15:24:30 +0000 (UTC)
+        with ESMTP id S1726115AbgIRQNc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:13:32 -0400
+Received: from relay9-d.mail.gandi.net (unknown [217.70.183.199])
+        by mslow2.mail.gandi.net (Postfix) with ESMTP id 7C0713A05ED
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 15:24:43 +0000 (UTC)
 X-Originating-IP: 90.65.88.165
 Received: from localhost (lfbn-lyo-1-1908-165.w90-65.abo.wanadoo.fr [90.65.88.165])
         (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id BE576240004;
-        Fri, 18 Sep 2020 15:24:06 +0000 (UTC)
-Date:   Fri, 18 Sep 2020 17:24:06 +0200
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id BDB99FF81E;
+        Fri, 18 Sep 2020 15:24:21 +0000 (UTC)
+Date:   Fri, 18 Sep 2020 17:24:21 +0200
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, yangbo.lu@nxp.com,
@@ -28,7 +28,7 @@ Cc:     davem@davemloft.net, netdev@vger.kernel.org, yangbo.lu@nxp.com,
         f.fainelli@gmail.com, kuba@kernel.org
 Subject: Re: [PATCH v2 net 1/8] net: mscc: ocelot: fix race condition with TX
  timestamping
-Message-ID: <20200918152406.GQ9675@piout.net>
+Message-ID: <20200918152421.GR9675@piout.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
