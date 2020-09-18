@@ -2,58 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B12D8270849
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 23:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19BE7270856
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 23:34:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726298AbgIRVaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 17:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36412 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726201AbgIRVaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 17:30:14 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C921C0613CE;
-        Fri, 18 Sep 2020 14:30:14 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B247B159F3C4F;
-        Fri, 18 Sep 2020 14:13:26 -0700 (PDT)
-Date:   Fri, 18 Sep 2020 14:30:13 -0700 (PDT)
-Message-Id: <20200918.143013.184259371965563025.davem@davemloft.net>
-To:     zhengyongjun3@huawei.com
-Cc:     fmanlunas@marvell.com, sburla@marvell.com, dchickles@marvell.com,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ethernet: Remove set but not used
- variable
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200918083938.21046-1-zhengyongjun3@huawei.com>
-References: <20200918083938.21046-1-zhengyongjun3@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-7
-Content-Transfer-Encoding: base64
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 18 Sep 2020 14:13:27 -0700 (PDT)
+        id S1726311AbgIRVeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 17:34:03 -0400
+Received: from mga01.intel.com ([192.55.52.88]:65030 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726139AbgIRVeD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 17:34:03 -0400
+IronPort-SDR: 8v1UzLtuEK0cWKLEzZgyjNuHpxDqHgkkzr28P4PXRdk+WC4r9VntvV1S04IqPA32cAd1Nk4jzX
+ k9xHeFEV8O1Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9748"; a="178128528"
+X-IronPort-AV: E=Sophos;i="5.77,274,1596524400"; 
+   d="scan'208";a="178128528"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2020 14:27:15 -0700
+IronPort-SDR: K+xwbNPGE/S3PQM3/6DVpnrV3qgHYSErGoTFj2URfXTnqHgPKZpPTI73IHbzZ4IXTojKtDbkmn
+ i/L4CquZyD2Q==
+X-IronPort-AV: E=Sophos;i="5.77,274,1596524400"; 
+   d="scan'208";a="508299900"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2020 14:27:13 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        jeffrey.t.kirsher@intel.com
+Subject: [net 0/4][pull request] Intel Wired LAN Driver Updates 2020-09-18
+Date:   Fri, 18 Sep 2020 14:26:59 -0700
+Message-Id: <20200918212703.3398038-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogWmhlbmcgWW9uZ2p1biA8emhlbmd5b25nanVuM0BodWF3ZWkuY29tPg0KRGF0ZTogRnJp
-LCAxOCBTZXAgMjAyMCAxNjozOTozOCArMDgwMA0KDQo+IEZpeGVzIGdjYyAnLVd1bnVzZWQtYnV0
-LXNldC12YXJpYWJsZScgd2FybmluZzoNCj4gDQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L2Nhdml1
-bS9saXF1aWRpby9vY3Rlb25fZGV2aWNlLmM6IEluIGZ1bmN0aW9uIGxpb19wY2lfcmVhZHE6DQo+
-IGRyaXZlcnMvbmV0L2V0aGVybmV0L2Nhdml1bS9saXF1aWRpby9vY3Rlb25fZGV2aWNlLmM6MTMy
-Nzo2OiB3YXJuaW5nOiB2YXJpYWJsZSChdmFsMzKiIHNldCBidXQgbm90IHVzZWQgWy1XdW51c2Vk
-LWJ1dC1zZXQtdmFyaWFibGVdDQo+IA0KPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9jYXZpdW0vbGlx
-dWlkaW8vb2N0ZW9uX2RldmljZS5jOiBJbiBmdW5jdGlvbiBsaW9fcGNpX3dyaXRlcToNCj4gZHJp
-dmVycy9uZXQvZXRoZXJuZXQvY2F2aXVtL2xpcXVpZGlvL29jdGVvbl9kZXZpY2UuYzoxMzU4OjY6
-IHdhcm5pbmc6IHZhcmlhYmxlIKF2YWwzMqIgc2V0IGJ1dCBub3QgdXNlZCBbLVd1bnVzZWQtYnV0
-LXNldC12YXJpYWJsZV0NCj4gDQo+IHRoZXNlIHZhcmlhYmxlIGlzIG5ldmVyIHVzZWQsIHNvIHJl
-bW92ZSBpdC4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFpoZW5nIFlvbmdqdW4gPHpoZW5neW9uZ2p1
-bjNAaHVhd2VpLmNvbT4NCg0KVGhlIHByb3BlciBzdWJzeXN0ZW0gcHJlZml4IGZvciB0aGVzZSBj
-aGFuZ2VzIGlzIGp1c3QgImxpcXVpZGlvOiAiLg0KDQpGb3IgY2hhbmdlcyB0byBhIHNwZWNpZmlj
-IGRyaXZlciBpdCBpcyBub3QgYXBwcm9wcmlhdGUgdG8gdXNlDQoibmV0OiBldGhlcm5ldDogIiBv
-ciBzaW1pbGFyLg0KDQpQbGVhc2UgZml4IHVwIHlvdXIgU3ViamVjdCBsaW5lIGFuZCByZXN1Ym1p
-dC4NCg0KVGhhbmsgeW91Lg0K
+This series contains updates to the iavf and ice driver.
+
+Sylwester fixes a crash with iavf resume due to getting the wrong pointers.
+
+Ani fixes a call trace in ice resume by calling pci_save_state().
+
+Jakes fixes memory leaks in case of register_netdev() failure or
+ice_cfg_vsi_lan() failure for the ice driver.
+
+The following are changes since commit 5f6857e808a8bd078296575b417c4b9d160b9779:
+  nfp: use correct define to return NONE fec
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/net-queue 100GbE
+
+Anirudh Venkataramanan (1):
+  ice: Fix call trace on suspend
+
+Jacob Keller (2):
+  ice: fix memory leak if register_netdev_fails
+  ice: fix memory leak in ice_vsi_setup
+
+Sylwester Dziedziuch (1):
+  iavf: Fix incorrect adapter get in iavf_resume
+
+ drivers/net/ethernet/intel/iavf/iavf_main.c |  4 ++--
+ drivers/net/ethernet/intel/ice/ice_lib.c    | 20 ++++++++++++++++----
+ drivers/net/ethernet/intel/ice/ice_lib.h    |  6 ------
+ drivers/net/ethernet/intel/ice/ice_main.c   | 14 ++++----------
+ 4 files changed, 22 insertions(+), 22 deletions(-)
+
+-- 
+2.26.2
+
