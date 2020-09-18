@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CE8C26F129
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:49:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E19C026F110
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:48:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728220AbgIRCJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:09:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60660 "EHLO mail.kernel.org"
+        id S1730023AbgIRCs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:48:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32812 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726759AbgIRCJA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:09:00 -0400
+        id S1728258AbgIRCJP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:09:15 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 58E562389E;
-        Fri, 18 Sep 2020 02:08:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E56DD2395B;
+        Fri, 18 Sep 2020 02:09:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600394939;
-        bh=1S77m4row9Ck+TBXx2z25Pwb64xZDCNkJSlX5PfCtF4=;
+        s=default; t=1600394954;
+        bh=HrjJ0jFLb60o1G6BMxIy8NQyRQ1fSNuPiH83ljiFXX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b54frm6rigxi28dU+rKEl+uD59iPOg/gn8qVMEsNymRG/dy8EefTne35Gr8C3dw4U
-         MjYrvjY/TL+ldGdFeRSu0JTNcn6d6hYPT9+Isxtb8nBKI0UVc80F0HvhtOCNOYfRez
-         QM7r9mzpLS9/THgnjNoSKKHRYMoxWBvAE1E1D+Nk=
+        b=JWnBYWU5pCfh62sIWrRWKRI2poimneEBau8Atb1cruVEkz2j8MhuxYtu8xHKoXkZY
+         S8f+tLg5wPSVICLfUU+QVpSP4OwPuvtJdiyzpCaHDlB58g0ZKpIBLzcqXjoMkJNF50
+         295l4TaknYkS9ZBjQrt0rjKxDT5emDPlIraUFa+k=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kevin Kou <qdkevin.kou@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 048/206] sctp: move trace_sctp_probe_path into sctp_outq_sack
-Date:   Thu, 17 Sep 2020 22:05:24 -0400
-Message-Id: <20200918020802.2065198-48-sashal@kernel.org>
+Cc:     Mert Dirik <mertdirik@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 061/206] ar5523: Add USB ID of SMCWUSBT-G2 wireless adapter
+Date:   Thu, 17 Sep 2020 22:05:37 -0400
+Message-Id: <20200918020802.2065198-61-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918020802.2065198-1-sashal@kernel.org>
 References: <20200918020802.2065198-1-sashal@kernel.org>
@@ -44,179 +43,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kevin Kou <qdkevin.kou@gmail.com>
+From: Mert Dirik <mertdirik@gmail.com>
 
-[ Upstream commit f643ee295c1c63bc117fb052d4da681354d6f732 ]
+[ Upstream commit 5b362498a79631f283578b64bf6f4d15ed4cc19a ]
 
-The original patch bringed in the "SCTP ACK tracking trace event"
-feature was committed at Dec.20, 2017, it replaced jprobe usage
-with trace events, and bringed in two trace events, one is
-TRACE_EVENT(sctp_probe), another one is TRACE_EVENT(sctp_probe_path).
-The original patch intended to trigger the trace_sctp_probe_path in
-TRACE_EVENT(sctp_probe) as below code,
+Add the required USB ID for running SMCWUSBT-G2 wireless adapter (SMC
+"EZ Connect g").
 
-+TRACE_EVENT(sctp_probe,
-+
-+	TP_PROTO(const struct sctp_endpoint *ep,
-+		 const struct sctp_association *asoc,
-+		 struct sctp_chunk *chunk),
-+
-+	TP_ARGS(ep, asoc, chunk),
-+
-+	TP_STRUCT__entry(
-+		__field(__u64, asoc)
-+		__field(__u32, mark)
-+		__field(__u16, bind_port)
-+		__field(__u16, peer_port)
-+		__field(__u32, pathmtu)
-+		__field(__u32, rwnd)
-+		__field(__u16, unack_data)
-+	),
-+
-+	TP_fast_assign(
-+		struct sk_buff *skb = chunk->skb;
-+
-+		__entry->asoc = (unsigned long)asoc;
-+		__entry->mark = skb->mark;
-+		__entry->bind_port = ep->base.bind_addr.port;
-+		__entry->peer_port = asoc->peer.port;
-+		__entry->pathmtu = asoc->pathmtu;
-+		__entry->rwnd = asoc->peer.rwnd;
-+		__entry->unack_data = asoc->unack_data;
-+
-+		if (trace_sctp_probe_path_enabled()) {
-+			struct sctp_transport *sp;
-+
-+			list_for_each_entry(sp, &asoc->peer.transport_addr_list,
-+					    transports) {
-+				trace_sctp_probe_path(sp, asoc);
-+			}
-+		}
-+	),
+This device uses ar5523 chipset and requires firmware to be loaded. Even
+though pid of the device is 4507, this patch adds it as 4506 so that
+AR5523_DEVICE_UG macro can set the AR5523_FLAG_PRE_FIRMWARE flag for pid
+4507.
 
-But I found it did not work when I did testing, and trace_sctp_probe_path
-had no output, I finally found that there is trace buffer lock
-operation(trace_event_buffer_reserve) in include/trace/trace_events.h:
-
-static notrace void							\
-trace_event_raw_event_##call(void *__data, proto)			\
-{									\
-	struct trace_event_file *trace_file = __data;			\
-	struct trace_event_data_offsets_##call __maybe_unused __data_offsets;\
-	struct trace_event_buffer fbuffer;				\
-	struct trace_event_raw_##call *entry;				\
-	int __data_size;						\
-									\
-	if (trace_trigger_soft_disabled(trace_file))			\
-		return;							\
-									\
-	__data_size = trace_event_get_offsets_##call(&__data_offsets, args); \
-									\
-	entry = trace_event_buffer_reserve(&fbuffer, trace_file,	\
-				 sizeof(*entry) + __data_size);		\
-									\
-	if (!entry)							\
-		return;							\
-									\
-	tstruct								\
-									\
-	{ assign; }							\
-									\
-	trace_event_buffer_commit(&fbuffer);				\
-}
-
-The reason caused no output of trace_sctp_probe_path is that
-trace_sctp_probe_path written in TP_fast_assign part of
-TRACE_EVENT(sctp_probe), and it will be placed( { assign; } ) after the
-trace_event_buffer_reserve() when compiler expands Macro,
-
-        entry = trace_event_buffer_reserve(&fbuffer, trace_file,        \
-                                 sizeof(*entry) + __data_size);         \
-                                                                        \
-        if (!entry)                                                     \
-                return;                                                 \
-                                                                        \
-        tstruct                                                         \
-                                                                        \
-        { assign; }                                                     \
-
-so trace_sctp_probe_path finally can not acquire trace_event_buffer
-and return no output, that is to say the nest of tracepoint entry function
-is not allowed. The function call flow is:
-
-trace_sctp_probe()
--> trace_event_raw_event_sctp_probe()
- -> lock buffer
- -> trace_sctp_probe_path()
-   -> trace_event_raw_event_sctp_probe_path()  --nested
-   -> buffer has been locked and return no output.
-
-This patch is to remove trace_sctp_probe_path from the TP_fast_assign
-part of TRACE_EVENT(sctp_probe) to avoid the nest of entry function,
-and trigger sctp_probe_path_trace in sctp_outq_sack.
-
-After this patch, you can enable both events individually,
-  # cd /sys/kernel/debug/tracing
-  # echo 1 > events/sctp/sctp_probe/enable
-  # echo 1 > events/sctp/sctp_probe_path/enable
-
-Or, you can enable all the events under sctp.
-
-  # echo 1 > events/sctp/enable
-
-Signed-off-by: Kevin Kou <qdkevin.kou@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Mert Dirik <mertdirik@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/sctp.h | 9 ---------
- net/sctp/outqueue.c         | 6 ++++++
- 2 files changed, 6 insertions(+), 9 deletions(-)
+ drivers/net/wireless/ath/ar5523/ar5523.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/trace/events/sctp.h b/include/trace/events/sctp.h
-index 7475c7be165aa..d4aac34365955 100644
---- a/include/trace/events/sctp.h
-+++ b/include/trace/events/sctp.h
-@@ -75,15 +75,6 @@ TRACE_EVENT(sctp_probe,
- 		__entry->pathmtu = asoc->pathmtu;
- 		__entry->rwnd = asoc->peer.rwnd;
- 		__entry->unack_data = asoc->unack_data;
--
--		if (trace_sctp_probe_path_enabled()) {
--			struct sctp_transport *sp;
--
--			list_for_each_entry(sp, &asoc->peer.transport_addr_list,
--					    transports) {
--				trace_sctp_probe_path(sp, asoc);
--			}
--		}
- 	),
- 
- 	TP_printk("asoc=%#llx mark=%#x bind_port=%d peer_port=%d pathmtu=%d "
-diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
-index 7bb8e5603298d..d6e83a37a1adf 100644
---- a/net/sctp/outqueue.c
-+++ b/net/sctp/outqueue.c
-@@ -51,6 +51,7 @@
- #include <net/sctp/sctp.h>
- #include <net/sctp/sm.h>
- #include <net/sctp/stream_sched.h>
-+#include <trace/events/sctp.h>
- 
- /* Declare internal functions here.  */
- static int sctp_acked(struct sctp_sackhdr *sack, __u32 tsn);
-@@ -1257,6 +1258,11 @@ int sctp_outq_sack(struct sctp_outq *q, struct sctp_chunk *chunk)
- 	/* Grab the association's destination address list. */
- 	transport_list = &asoc->peer.transport_addr_list;
- 
-+	/* SCTP path tracepoint for congestion control debugging. */
-+	list_for_each_entry(transport, transport_list, transports) {
-+		trace_sctp_probe_path(transport, asoc);
-+	}
-+
- 	sack_ctsn = ntohl(sack->cum_tsn_ack);
- 	gap_ack_blocks = ntohs(sack->num_gap_ack_blocks);
- 	asoc->stats.gapcnt += gap_ack_blocks;
+diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
+index da2d179430ca5..4c57e79e5779a 100644
+--- a/drivers/net/wireless/ath/ar5523/ar5523.c
++++ b/drivers/net/wireless/ath/ar5523/ar5523.c
+@@ -1770,6 +1770,8 @@ static const struct usb_device_id ar5523_id_table[] = {
+ 	AR5523_DEVICE_UX(0x0846, 0x4300),	/* Netgear / WG111U */
+ 	AR5523_DEVICE_UG(0x0846, 0x4250),	/* Netgear / WG111T */
+ 	AR5523_DEVICE_UG(0x0846, 0x5f00),	/* Netgear / WPN111 */
++	AR5523_DEVICE_UG(0x083a, 0x4506),	/* SMC / EZ Connect
++						   SMCWUSBT-G2 */
+ 	AR5523_DEVICE_UG(0x157e, 0x3006),	/* Umedia / AR5523_1 */
+ 	AR5523_DEVICE_UX(0x157e, 0x3205),	/* Umedia / AR5523_2 */
+ 	AR5523_DEVICE_UG(0x157e, 0x3006),	/* Umedia / TEW444UBEU */
 -- 
 2.25.1
 
