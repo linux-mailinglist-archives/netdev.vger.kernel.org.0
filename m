@@ -2,96 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACA7F2702A0
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:53:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C64232702A2
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:53:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726497AbgIRQxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 12:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49980 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726304AbgIRQxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:53:38 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FD2C0613CE;
-        Fri, 18 Sep 2020 09:53:38 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id o8so9001639ejb.10;
-        Fri, 18 Sep 2020 09:53:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=t4UNWRw3XtjaYPT1Tohvguum4En79LX5R37iA+oLJ0A=;
-        b=H82+wAJgm2/HJXACILHMrIK39S3n8alrwnjBXhCk+vwg9VSlNsBRp4ICEKf2XNxCSe
-         ut3AV73svZ9T/d97O8LXGNT30NI9iTsFA99zY70cIRgujDlHMve/IBLq2713Oae6OINK
-         WM9z+Qlm9a8/tpfORt9A43LPVER6ejaUv+A/uZbcHZDra0urMSvHjcYNZrVJIMyPKgdR
-         SKuS9lP+45ISXCbrI1ngJoBY72aLQu+m2N9kcw1S/NzXFWX5GFpMSmdvG7bnjV849085
-         82lR9OCUElD4XF3mG+F5xa6haTQZskautC3hFikdWAzw/uNmYEvofVqvYbt11YVYIeVs
-         Uzyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=t4UNWRw3XtjaYPT1Tohvguum4En79LX5R37iA+oLJ0A=;
-        b=AXFYlNHPNSOYKBw+rP5Ff6R6a7y5s9uO0zPPOxJJ8W5VCR10ImqmGqVr8UyGsPgN5A
-         auhZV9hwpRUyWXIMB+lhjF4vzHxgx/RjXNsMiW+sdjQ7Qe3fhXeIkQFfjeGMKoA68pN+
-         suYXeYXYYCjahA2JNg4k4TyRAVgLl4EjaXUNR5pvxcOwvHa+auFkVJije6gKufLopf8p
-         bCV6CURbAV1vSB7DZnQs+LlFuDbofQ+6UkYZZOO3DEgVBiY3POIH7YQPFEOW+9tA0cVa
-         cLY8Bg7QSSg8crH/EsQGvGeid7Yr4btiPnLbP2nJZRmjWckYXDS3z+Sno86BFdO9u75v
-         W4vA==
-X-Gm-Message-State: AOAM532iLtd62vEDkOIl7h9WicFbpEfXV7opVgbg/TurDEDmNekQHJor
-        Fk2J2euoKtMcMHk1qUDN7Vg=
-X-Google-Smtp-Source: ABdhPJw/qQ1CFM15zpGleITT62o8jtVWAf0d3CugqJMzbgDFfTt7Xf33FX+TUfrq/i/jLiahu8ig6g==
-X-Received: by 2002:a17:907:2506:: with SMTP id y6mr35175644ejl.265.1600448016964;
-        Fri, 18 Sep 2020 09:53:36 -0700 (PDT)
-Received: from debian64.daheim (p5b0d776c.dip0.t-ipconnect.de. [91.13.119.108])
-        by smtp.gmail.com with ESMTPSA id ce14sm2678057edb.25.2020.09.18.09.53.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 09:53:36 -0700 (PDT)
-Received: from localhost.daheim ([127.0.0.1])
-        by debian64.daheim with esmtp (Exim 4.94)
-        (envelope-from <chunkeey@gmail.com>)
-        id 1kJJdb-002nB9-9i; Fri, 18 Sep 2020 18:53:35 +0200
-Subject: Re: [PATCH 2/2] dt: bindings: ath10k: Document qcom,
- ath10k-pre-calibration-data-mtd
-To:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-mtd@lists.infradead.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-References: <20200918162928.14335-1-ansuelsmth@gmail.com>
- <20200918162928.14335-2-ansuelsmth@gmail.com>
-From:   Christian Lamparter <chunkeey@gmail.com>
-Message-ID: <8f886e3d-e2ee-cbf8-a676-28ebed4977aa@gmail.com>
-Date:   Fri, 18 Sep 2020 18:53:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726307AbgIRQxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 12:53:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50868 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726200AbgIRQxx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 12:53:53 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8142220848;
+        Fri, 18 Sep 2020 16:53:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600448032;
+        bh=jt99wjCTrwNvm6t176XkQ+cxOSHpk5BHFp5VFlM+c9k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aSNP7o2tpohkepOFv9FbcQXoHeMxktcc772WpCwvfjqIdBwhGyfvaqWpFaWq1giq9
+         pYC7e89LEa5KqRp1YYw6a2TQjZP4BfQVIY4FZIWv3LggbOE3XVBntghCafyHCe1Lru
+         AY/Kug30CwoNaXbIoklhGqbqzlAZK2WckLYTR+jU=
+Date:   Fri, 18 Sep 2020 09:53:50 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+Subject: Re: [net-next v6 1/5] devlink: check flash_update parameter support
+ in net core
+Message-ID: <20200918095350.346c018b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200918004529.533989-2-jacob.e.keller@intel.com>
+References: <20200918004529.533989-1-jacob.e.keller@intel.com>
+        <20200918004529.533989-2-jacob.e.keller@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200918162928.14335-2-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: de-DE
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-09-18 18:29, Ansuel Smith wrote:
-> Document use of qcom,ath10k-pre-calibration-data-mtd bindings used to
-> define from where the driver will load the pre-cal data in the defined
-> mtd partition.
+On Thu, 17 Sep 2020 17:45:25 -0700 Jacob Keller wrote:
+> When implementing .flash_update, drivers which do not support
+> per-component update are manually checking the component parameter to
+> verify that it is NULL. Without this check, the driver might accept an
+> update request with a component specified even though it will not honor
+> such a request.
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> Instead of having each driver check this, move the logic into
+> net/core/devlink.c, and use a new `supported_flash_update_params` field
+> in the devlink_ops. Drivers which will support per-component update must
+> now specify this by setting DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT in
+> the supported_flash_update_params in their devlink_ops.
+> 
+> This helps ensure that drivers do not forget to check for a NULL
+> component if they do not support per-component update. This also enables
+> a slightly better error message by enabling the core stack to set the
+> netlink bad attribute message to indicate precisely the unsupported
+> attribute in the message.
+> 
+> Going forward, any new additional parameter to flash update will require
+> a bit in the supported_flash_update_params bitfield.
 
-Q: Doesn't mtd now come with nvmem support from the get go? So
-the MAC-Addresses and pre-caldata could be specified as a
-nvmem-node in the devicetree? I remember seeing that this was
-worked on or was this mtd->nvmem dropped?
-
-Cheers,
-Christian
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
