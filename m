@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8B192703E7
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 20:25:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A6D42703E5
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 20:25:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726276AbgIRSZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 14:25:03 -0400
-Received: from mail.efficios.com ([167.114.26.124]:59980 "EHLO
+        id S1726305AbgIRSZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 14:25:04 -0400
+Received: from mail.efficios.com ([167.114.26.124]:59982 "EHLO
         mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726156AbgIRSZC (ORCPT
+        with ESMTP id S1726152AbgIRSZC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 14:25:02 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 7B3602724CA;
+        by mail.efficios.com (Postfix) with ESMTP id B12732727B5;
         Fri, 18 Sep 2020 14:18:09 -0400 (EDT)
 Received: from mail.efficios.com ([127.0.0.1])
         by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 9835xoVbywmi; Fri, 18 Sep 2020 14:18:09 -0400 (EDT)
+        with ESMTP id CPhPFy4Gzcoo; Fri, 18 Sep 2020 14:18:09 -0400 (EDT)
 Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id DC07E2720C7;
+        by mail.efficios.com (Postfix) with ESMTP id F0FEB2725C6;
         Fri, 18 Sep 2020 14:18:08 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com DC07E2720C7
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com F0FEB2725C6
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
         s=default; t=1600453088;
-        bh=BuUEY6vVZAx7YvCmo3Gcuwe0FMd/Hehs/wIysAuLkpc=;
+        bh=yrIS8m3rknvWl9hL7dggbRVvRNlMDfO6Jcr+vUoXE2M=;
         h=From:To:Date:Message-Id;
-        b=GiP7EP/B3CRv0eXlfaTRwzTSZalzLlEufumkFHOwg9uiFQI2jA3Md+WG48gJGwRgR
-         /0SLxPUoeXQK+yFB3wPkCh9F1D3VJLLK+hLB4JVoYuL/Uc1ZAGRJ5W1iR+RMoIBysm
-         8p1GZ6AWmbQvEF06eLmq0sR7O6odQfbaAtS/BHQvfS/xXPmQuC5/JWlZpB4GwWAEzE
-         1LzfmzsxOh7l0vTbVAxojadIW1Dpnd6pCGgOu1B1prhpl1iCsm9kgo2MVagVdaUuo5
-         5fNpjULVIDCM8ZPXVFzOC743cYi9TjWHwcBC0JaU+sbvAd+Uceh7t42P1ZZugvfcoV
-         C6Xl+ZMR0b/iQ==
+        b=cJHLomqSDxRtxQI2tUIxCkf++c9Ln5Bhg1ClmYDc1Oi4ynMdpMcffQKX13NGydfeW
+         N4DE7v/0Ia86k47S9VA7rTFGD78Ou4GPfBdXMcLLOip5xs/HFC7wHB/pp/MGnt1BV+
+         yjMhQuKMmvYuLvRchCL30ZWqkwhm1DoOTWW/dyvtXbEluPnRBQkjC35qA/EmgAo5q/
+         rZsppCC4XtoBAdRqhtg0s2f6AWq/R+SyExldJXkUx7D3cKrsJSC/YdqEw8Wd2c1KXQ
+         SIVrFkBNWNgNfvE0o9h29XMtb2Yka9hAV61hqhw6dd9eLd4xuD5PRfg8t18aXUmlkU
+         7MK/A/1pDfWHA==
 X-Virus-Scanned: amavisd-new at efficios.com
 Received: from mail.efficios.com ([127.0.0.1])
         by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id NdqFME_FHCcc; Fri, 18 Sep 2020 14:18:08 -0400 (EDT)
+        with ESMTP id kAV2HjzB4I_W; Fri, 18 Sep 2020 14:18:08 -0400 (EDT)
 Received: from localhost.localdomain (192-222-181-218.qc.cable.ebox.net [192.222.181.218])
-        by mail.efficios.com (Postfix) with ESMTPSA id A72292727B1;
+        by mail.efficios.com (Postfix) with ESMTPSA id D01B92727B2;
         Fri, 18 Sep 2020 14:18:08 -0400 (EDT)
 From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 To:     David Ahern <dsahern@kernel.org>,
         "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Subject: [RFC PATCH v2 1/3] ipv4/icmp: l3mdev: Perform icmp error route lookup on source device routing table (v2)
-Date:   Fri, 18 Sep 2020 14:17:59 -0400
-Message-Id: <20200918181801.2571-2-mathieu.desnoyers@efficios.com>
+Subject: [RFC PATCH v2 2/3] ipv6/icmp: l3mdev: Perform icmp error route lookup on source device routing table (v2)
+Date:   Fri, 18 Sep 2020 14:18:00 -0400
+Message-Id: <20200918181801.2571-3-mathieu.desnoyers@efficios.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200918181801.2571-1-mathieu.desnoyers@efficios.com>
 References: <20200918181801.2571-1-mathieu.desnoyers@efficios.com>
@@ -53,120 +53,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As per RFC792, ICMP errors should be sent to the source host.
+As per RFC4443, the destination address field for ICMPv6 error messages
+is copied from the source address field of the invoking packet.
 
-However, in configurations with Virtual Routing and Forwarding tables,
-looking up which routing table to use is currently done by using the
-destination net_device.
+In configurations with Virtual Routing and Forwarding tables, looking up
+which routing table to use for sending ICMPv6 error messages is
+currently done by using the destination net_device.
 
-commit 9d1a6c4ea43e ("net: icmp_route_lookup should use rt dev to
-determine L3 domain") changes the interface passed to
-l3mdev_master_ifindex() and inet_addr_type_dev_table() from skb_in->dev
-to skb_dst(skb_in)->dev. This effectively uses the destination device
-rather than the source device for choosing which routing table should be
-used to lookup where to send the ICMP error.
+If the source and destination interfaces are within separate VRFs, or
+one in the global routing table and the other in a VRF, looking up the
+source address of the invoking packet in the destination interface's
+routing table will fail if the destination interface's routing table
+contains no route to the invoking packet's source address.
 
-Therefore, if the source and destination interfaces are within separate
-VRFs, or one in the global routing table and the other in a VRF, looking
-up the source host in the destination interface's routing table will
-fail if the destination interface's routing table contains no route to
-the source host.
-
-One observable effect of this issue is that traceroute does not work in
+One observable effect of this issue is that traceroute6 does not work in
 the following cases:
 
 - Route leaking between global routing table and VRF
 - Route leaking between VRFs
 
-Preferably use the source device routing table when sending ICMP error
-messages. If no source device is set, fall-back on the destination
-device routing table. Else, use the main routing table (index 0).
+Use the source device routing table when sending ICMPv6 error
+messages.
 
-[ It has been pointed out that a similar issue may exist with ICMP
-  errors triggered when forwarding between network namespaces. It would
-  be worthwhile to investigate, but is outside of the scope of this
-  investigation. ]
+[ In the context of ipv4, it has been pointed out that a similar issue
+  may exist with ICMP errors triggered when forwarding between network
+  namespaces. It would be worthwhile to investigate whether ipv6 has
+  similar issues, but is outside of the scope of this investigation. ]
 
-[ It has also been pointed out that a similar issue exists with
-  unreachable / fragmentation needed messages, which can be triggered by
-  changing the MTU of eth1 in r1 to 1400 and running:
+[ Testing shows that similar issues exist with ipv6 unreachable /
+  fragmentation needed messages.  However, investigation of this
+  additional failure mode is beyond this investigation's scope. ]
 
-  ip netns exec h1 ping -s 1450 -Mdo -c1 172.16.2.2
-
-  Some investigation points to raw_icmp_error() and raw_err() as being
-  involved in this last scenario. The focus of this patch is TTL expired
-  ICMP messages, which go through icmp_route_lookup.
-  Investigation of failure modes related to raw_icmp_error() is beyond
-  this investigation's scope. ]
-
-Fixes: 9d1a6c4ea43e ("net: icmp_route_lookup should use rt dev to determine L3 domain")
-Link: https://tools.ietf.org/html/rfc792
+Link: https://tools.ietf.org/html/rfc4443
 Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 Cc: David Ahern <dsahern@kernel.org>
 Cc: David S. Miller <davem@davemloft.net>
 Cc: netdev@vger.kernel.org
 ---
 Changes since v1:
-- Introduce icmp_get_route_lookup_dev.
+- Introduce icmp6_get_route_lookup_dev.
+- Use skb->dev for routing table lookup, because it is guaranteed to be
+  non-NULL.
 ---
- net/ipv4/icmp.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+ net/ipv6/icmp.c       | 7 +++++--
+ net/ipv6/ip6_output.c | 2 --
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index cf36f955bfe6..9ea66d903c41 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -457,6 +457,23 @@ static void icmp_reply(struct icmp_bxm *icmp_param, struct sk_buff *skb)
- 	local_bh_enable();
- }
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index a4e4912ad607..91209a2760aa 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -501,8 +501,11 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+ 	if (__ipv6_addr_needs_scope_id(addr_type)) {
+ 		iif = icmp6_iif(skb);
+ 	} else {
+-		dst = skb_dst(skb);
+-		iif = l3mdev_master_ifindex(dst ? dst->dev : skb->dev);
++		/*
++		 * The source device is used for looking up which routing table
++		 * to use for sending an ICMP error.
++		 */
++		iif = l3mdev_master_ifindex(skb->dev);
+ 	}
  
-+/*
-+ * The device used for looking up which routing table to use for sending an ICMP
-+ * error is preferably the source whenever it is set, which should ensure the
-+ * icmp error can be sent to the source host, else lookup using the routing
-+ * table of the destination device, else use the main routing table (index 0).
-+ */
-+static struct net_device *icmp_get_route_lookup_dev(struct sk_buff *skb)
-+{
-+	struct net_device *route_lookup_dev = NULL;
-+
-+	if (skb->dev)
-+		route_lookup_dev = skb->dev;
-+	else if (skb_dst(skb))
-+		route_lookup_dev = skb_dst(skb)->dev;
-+	return route_lookup_dev;
-+}
-+
- static struct rtable *icmp_route_lookup(struct net *net,
- 					struct flowi4 *fl4,
- 					struct sk_buff *skb_in,
-@@ -465,6 +482,7 @@ static struct rtable *icmp_route_lookup(struct net *net,
- 					int type, int code,
- 					struct icmp_bxm *param)
- {
-+	struct net_device *route_lookup_dev;
- 	struct rtable *rt, *rt2;
- 	struct flowi4 fl4_dec;
- 	int err;
-@@ -479,7 +497,8 @@ static struct rtable *icmp_route_lookup(struct net *net,
- 	fl4->flowi4_proto = IPPROTO_ICMP;
- 	fl4->fl4_icmp_type = type;
- 	fl4->fl4_icmp_code = code;
--	fl4->flowi4_oif = l3mdev_master_ifindex(skb_dst(skb_in)->dev);
-+	route_lookup_dev = icmp_get_route_lookup_dev(skb_in);
-+	fl4->flowi4_oif = l3mdev_master_ifindex(route_lookup_dev);
+ 	/*
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index c78e67d7747f..cd623068de53 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -468,8 +468,6 @@ int ip6_forward(struct sk_buff *skb)
+ 	 *	check and decrement ttl
+ 	 */
+ 	if (hdr->hop_limit <= 1) {
+-		/* Force OUTPUT device used as source address */
+-		skb->dev = dst->dev;
+ 		icmpv6_send(skb, ICMPV6_TIME_EXCEED, ICMPV6_EXC_HOPLIMIT, 0);
+ 		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
  
- 	security_skb_classify_flow(skb_in, flowi4_to_flowi(fl4));
- 	rt = ip_route_output_key_hash(net, fl4, skb_in);
-@@ -503,7 +522,7 @@ static struct rtable *icmp_route_lookup(struct net *net,
- 	if (err)
- 		goto relookup_failed;
- 
--	if (inet_addr_type_dev_table(net, skb_dst(skb_in)->dev,
-+	if (inet_addr_type_dev_table(net, route_lookup_dev,
- 				     fl4_dec.saddr) == RTN_LOCAL) {
- 		rt2 = __ip_route_output_key(net, &fl4_dec);
- 		if (IS_ERR(rt2))
 -- 
 2.17.1
 
