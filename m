@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1552C26EBFF
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:10:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54DFA26EC27
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:11:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728210AbgIRCJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:09:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60550 "EHLO mail.kernel.org"
+        id S1728428AbgIRCKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:10:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34082 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728195AbgIRCI4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:08:56 -0400
+        id S1727513AbgIRCJ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:09:58 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 136C623770;
-        Fri, 18 Sep 2020 02:08:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BDEB0239D1;
+        Fri, 18 Sep 2020 02:09:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600394935;
-        bh=SgnL6lV3WEABDJJLLTBkyo4xD4dIVj3iRHnI1tAuXnA=;
+        s=default; t=1600394997;
+        bh=X7HvMDAeXbk7Y56Bs6YVhdAtjtsCFbi4aOnIKUSW0JQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tq6miZgOxZFQApIR5K4ifyTzOjpXgPBKDI57fhRKNC65cj+l2hL4M4wUtjkOXtqWh
-         0aWQ0VMH6Rj4VSnGY+KEt7O9/n0vvcihWbBTaeyhQ0idFRxyG1tAmyIR6UeuphIgAg
-         4JCLbr4KYcxCd/cNEjfN80E4SG286kigqJuBxvq0=
+        b=XzOtc7c0w+3AL2Anp2r5onZ/S8j0TFuJv9roLQJGH2c694oEu75mZlXLjwY4Uu5mO
+         uK3tGeT8OJjXeIP6VzlNbr7cPZfA7CEDSLMposBFZYmh93gw6xISz8gymEjg0vuvch
+         TD1EUz3CJhjWDn6TlQZc+NG1B2VnafTWRZdVgWYA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vasily Averin <vvs@virtuozzo.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 045/206] ipv6_route_seq_next should increase position index
-Date:   Thu, 17 Sep 2020 22:05:21 -0400
-Message-Id: <20200918020802.2065198-45-sashal@kernel.org>
+Cc:     Alain Michaud <alainm@chromium.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 095/206] Bluetooth: guard against controllers sending zero'd events
+Date:   Thu, 17 Sep 2020 22:06:11 -0400
+Message-Id: <20200918020802.2065198-95-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918020802.2065198-1-sashal@kernel.org>
 References: <20200918020802.2065198-1-sashal@kernel.org>
@@ -42,51 +43,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasily Averin <vvs@virtuozzo.com>
+From: Alain Michaud <alainm@chromium.org>
 
-[ Upstream commit 4fc427e0515811250647d44de38d87d7b0e0790f ]
+[ Upstream commit 08bb4da90150e2a225f35e0f642cdc463958d696 ]
 
-if seq_file .next fuction does not change position index,
-read after some lseek can generate unexpected output.
+Some controllers have been observed to send zero'd events under some
+conditions.  This change guards against this condition as well as adding
+a trace to facilitate diagnosability of this condition.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=206283
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Alain Michaud <alainm@chromium.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_fib.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ net/bluetooth/hci_event.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-index 5e8979c1f76d8..28b51f4aa6418 100644
---- a/net/ipv6/ip6_fib.c
-+++ b/net/ipv6/ip6_fib.c
-@@ -2372,14 +2372,13 @@ static void *ipv6_route_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- 	struct net *net = seq_file_net(seq);
- 	struct ipv6_route_iter *iter = seq->private;
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 2b4a7cf03041b..ec6b3a87b3e7f 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5738,6 +5738,11 @@ void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb)
+ 	u8 status = 0, event = hdr->evt, req_evt = 0;
+ 	u16 opcode = HCI_OP_NOP;
  
-+	++(*pos);
- 	if (!v)
- 		goto iter_table;
++	if (!event) {
++		bt_dev_warn(hdev, "Received unexpected HCI Event 00000000");
++		goto done;
++	}
++
+ 	if (hdev->sent_cmd && bt_cb(hdev->sent_cmd)->hci.req_event == event) {
+ 		struct hci_command_hdr *cmd_hdr = (void *) hdev->sent_cmd->data;
+ 		opcode = __le16_to_cpu(cmd_hdr->opcode);
+@@ -5949,6 +5954,7 @@ void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb)
+ 		req_complete_skb(hdev, status, opcode, orig_skb);
+ 	}
  
- 	n = rcu_dereference_bh(((struct fib6_info *)v)->fib6_next);
--	if (n) {
--		++*pos;
-+	if (n)
- 		return n;
--	}
- 
- iter_table:
- 	ipv6_route_check_sernum(iter);
-@@ -2387,8 +2386,6 @@ iter_table:
- 	r = fib6_walk_continue(&iter->w);
- 	spin_unlock_bh(&iter->tbl->tb6_lock);
- 	if (r > 0) {
--		if (v)
--			++*pos;
- 		return iter->w.leaf;
- 	} else if (r < 0) {
- 		fib6_walker_unlink(net, &iter->w);
++done:
+ 	kfree_skb(orig_skb);
+ 	kfree_skb(skb);
+ 	hdev->stat.evt_rx++;
 -- 
 2.25.1
 
