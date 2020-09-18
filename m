@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75867270349
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 19:29:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B669827034B
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 19:29:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbgIRR3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 13:29:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38338 "EHLO mail.kernel.org"
+        id S1726452AbgIRR3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 13:29:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38346 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726344AbgIRR2w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726354AbgIRR2w (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 18 Sep 2020 13:28:52 -0400
 Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9A93A22208;
-        Fri, 18 Sep 2020 17:28:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2750A23119;
+        Fri, 18 Sep 2020 17:28:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1600450131;
-        bh=GfhLaSun/K/njtj0BDp1ts4HZCash8EndXvWvWKLfMQ=;
+        bh=B5Ckl8S+NxCrNoLmIKXHy3mTQU8RLFDo33X38U3/ULo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WB5kAK0c3tlV0WEQ5VZpjHiBbbam51v2w+Z/VQhFs8Zf5/vXzfuwA36dDO+E8Cww2
-         GIbciVP0NgG0EQwrne8ygnuQls5fZm5sVEbpn81Y1DiQSMHqALlBJVg51MQt96Bhgb
-         LKhtyHXoqc2ZeCYUaYTFei8QYyUrABMxf5ewMwxE=
+        b=ZIgOv19fU1oRl6gEvoMG2PDQnTjjtY6f9ckqWgthSRf6DbXEYO/6hqBQ8JleGW3yJ
+         n/cADeIAPfkSLqBEOg26zY5synzHhtdU1+K5/KMddlGQh7dYI+gulpwTbNRXA+w4Oo
+         K4p93SpZlSpM8++sTBvpvi3onCexWsi+2EouR9dM=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         Tariq Toukan <tariqt@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 02/15] net/mlx5e: Use RCU to protect rq->xdp_prog
-Date:   Fri, 18 Sep 2020 10:28:26 -0700
-Message-Id: <20200918172839.310037-3-saeed@kernel.org>
+Subject: [net 03/15] net/mlx5e: Use synchronize_rcu to sync with NAPI
+Date:   Fri, 18 Sep 2020 10:28:27 -0700
+Message-Id: <20200918172839.310037-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200918172839.310037-1-saeed@kernel.org>
 References: <20200918172839.310037-1-saeed@kernel.org>
@@ -44,162 +44,248 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@mellanox.com>
 
-Currently, the RQs are temporarily deactivated while hot-replacing the
-XDP program, and napi_synchronize is used to make sure rq->xdp_prog is
-not in use. However, napi_synchronize is not ideal: instead of waiting
-till the end of a NAPI cycle, it polls and waits until NAPI is not
-running, sleeping for 1ms between the periodic checks. Under heavy
-workloads, this loop will never end, which may even lead to a kernel
-panic if the kernel detects the hangup. Such workloads include XSK TX
-and possibly also heavy RX (XSK or normal).
+As described in the previous commit, napi_synchronize doesn't quite fit
+the purpose when we just need to wait until the currently running NAPI
+quits. Its implementation waits until NAPI is not running by polling and
+waiting for 1ms in between. In cases where we need to deactivate one
+queue (e.g., recovery flows) or where we deactivate them one-by-one
+(deactivate channel flow), we may get stuck in napi_synchronize forever
+if other queues keep NAPI active, causing a soft lockup. Depending on
+kernel configuration (CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC), it may result
+in a kernel panic.
 
-The fix is inspired by commit 326fe02d1ed6 ("net/mlx4_en: protect
-ring->xdp_prog with rcu_read_lock"). As mlx5e_xdp_handle is already
-protected by rcu_read_lock, and bpf_prog_put uses call_rcu to free the
-program, there is no need for additional synchronization if proper RCU
-functions are used to access the pointer. This patch converts all
-accesses to rq->xdp_prog to use RCU functions.
+To fix the issue, use synchronize_rcu to wait for NAPI to quit, and wrap
+the whole NAPI in rcu_read_lock.
 
-Fixes: 86994156c736 ("net/mlx5e: XDP fast RX drop bpf programs support")
-Fixes: db05815b36cb ("net/mlx5e: Add XSK zero-copy support")
+Fixes: acc6c5953af1 ("net/mlx5e: Split open/close channels to stages")
 Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  2 +-
- .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  2 +-
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 53 +++++++++----------
- 3 files changed, 27 insertions(+), 30 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.c | 14 ++------------
+ .../ethernet/mellanox/mlx5/core/en/xsk/setup.c  |  3 +--
+ .../net/ethernet/mellanox/mlx5/core/en_main.c   | 12 ++++--------
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 12 ++----------
+ .../net/ethernet/mellanox/mlx5/core/en_txrx.c   | 17 +++++++++++++----
+ 5 files changed, 22 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 0cc2080fd847..5d7b79518449 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -600,7 +600,7 @@ struct mlx5e_rq {
- 	struct dim         dim; /* Dynamic Interrupt Moderation */
- 
- 	/* XDP */
--	struct bpf_prog       *xdp_prog;
-+	struct bpf_prog __rcu *xdp_prog;
- 	struct mlx5e_xdpsq    *xdpsq;
- 	DECLARE_BITMAP(flags, 8);
- 	struct page_pool      *page_pool;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index 0e6946fc121f..b28df21981a1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -122,7 +122,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
- bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
- 		      u32 *len, struct xdp_buff *xdp)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
+index a33a1f762c70..40db27bf790b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
+@@ -31,7 +31,6 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
  {
--	struct bpf_prog *prog = READ_ONCE(rq->xdp_prog);
-+	struct bpf_prog *prog = rcu_dereference(rq->xdp_prog);
- 	u32 act;
- 	int err;
+ 	struct xdp_buff *xdp = wi->umr.dma_info[page_idx].xsk;
+ 	u32 cqe_bcnt32 = cqe_bcnt;
+-	bool consumed;
  
+ 	/* Check packet size. Note LRO doesn't use linear SKB */
+ 	if (unlikely(cqe_bcnt > rq->hw_mtu)) {
+@@ -51,10 +50,6 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
+ 	xsk_buff_dma_sync_for_cpu(xdp);
+ 	prefetch(xdp->data);
+ 
+-	rcu_read_lock();
+-	consumed = mlx5e_xdp_handle(rq, NULL, &cqe_bcnt32, xdp);
+-	rcu_read_unlock();
+-
+ 	/* Possible flows:
+ 	 * - XDP_REDIRECT to XSKMAP:
+ 	 *   The page is owned by the userspace from now.
+@@ -70,7 +65,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
+ 	 * allocated first from the Reuse Ring, so it has enough space.
+ 	 */
+ 
+-	if (likely(consumed)) {
++	if (likely(mlx5e_xdp_handle(rq, NULL, &cqe_bcnt32, xdp))) {
+ 		if (likely(__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)))
+ 			__set_bit(page_idx, wi->xdp_xmit_bitmap); /* non-atomic */
+ 		return NULL; /* page/packet was consumed by XDP */
+@@ -88,7 +83,6 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
+ 					      u32 cqe_bcnt)
+ {
+ 	struct xdp_buff *xdp = wi->di->xsk;
+-	bool consumed;
+ 
+ 	/* wi->offset is not used in this function, because xdp->data and the
+ 	 * DMA address point directly to the necessary place. Furthermore, the
+@@ -107,11 +101,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
+ 		return NULL;
+ 	}
+ 
+-	rcu_read_lock();
+-	consumed = mlx5e_xdp_handle(rq, NULL, &cqe_bcnt, xdp);
+-	rcu_read_unlock();
+-
+-	if (likely(consumed))
++	if (likely(mlx5e_xdp_handle(rq, NULL, &cqe_bcnt, xdp)))
+ 		return NULL; /* page/packet was consumed by XDP */
+ 
+ 	/* XDP_PASS: copy the data from the UMEM to a new SKB. The frame reuse
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
+index dd9df519d383..55e65a438de7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
+@@ -106,8 +106,7 @@ int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_params *params,
+ void mlx5e_close_xsk(struct mlx5e_channel *c)
+ {
+ 	clear_bit(MLX5E_CHANNEL_STATE_XSK, c->state);
+-	napi_synchronize(&c->napi);
+-	synchronize_rcu(); /* Sync with the XSK wakeup. */
++	synchronize_rcu(); /* Sync with the XSK wakeup and with NAPI. */
+ 
+ 	mlx5e_close_rq(&c->xskrq);
+ 	mlx5e_close_cq(&c->xskrq.cq);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index aebcf73f8546..bde97b108db5 100644
+index bde97b108db5..917c28e7f29e 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -399,7 +399,7 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
- 
- 	if (params->xdp_prog)
- 		bpf_prog_inc(params->xdp_prog);
--	rq->xdp_prog = params->xdp_prog;
-+	RCU_INIT_POINTER(rq->xdp_prog, params->xdp_prog);
- 
- 	rq_xdp_ix = rq->ix;
- 	if (xsk)
-@@ -408,7 +408,7 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
- 	if (err < 0)
- 		goto err_rq_wq_destroy;
- 
--	rq->buff.map_dir = rq->xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
-+	rq->buff.map_dir = params->xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
- 	rq->buff.headroom = mlx5e_get_rq_headroom(mdev, params, xsk);
- 	pool_size = 1 << params->log_rq_mtu_frames;
- 
-@@ -564,8 +564,8 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
- 	}
- 
- err_rq_wq_destroy:
--	if (rq->xdp_prog)
--		bpf_prog_put(rq->xdp_prog);
-+	if (params->xdp_prog)
-+		bpf_prog_put(params->xdp_prog);
- 	xdp_rxq_info_unreg(&rq->xdp_rxq);
- 	page_pool_destroy(rq->page_pool);
- 	mlx5_wq_destroy(&rq->wq_ctrl);
-@@ -575,10 +575,16 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
- 
- static void mlx5e_free_rq(struct mlx5e_rq *rq)
+@@ -873,7 +873,7 @@ void mlx5e_activate_rq(struct mlx5e_rq *rq)
+ void mlx5e_deactivate_rq(struct mlx5e_rq *rq)
  {
-+	struct mlx5e_channel *c = rq->channel;
-+	struct bpf_prog *old_prog = NULL;
- 	int i;
- 
--	if (rq->xdp_prog)
--		bpf_prog_put(rq->xdp_prog);
-+	/* drop_rq has neither channel nor xdp_prog. */
-+	if (c)
-+		old_prog = rcu_dereference_protected(rq->xdp_prog,
-+						     lockdep_is_held(&c->priv->state_lock));
-+	if (old_prog)
-+		bpf_prog_put(old_prog);
- 
- 	switch (rq->wq_type) {
- 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
-@@ -4330,6 +4336,16 @@ static int mlx5e_xdp_allowed(struct mlx5e_priv *priv, struct bpf_prog *prog)
- 	return 0;
+ 	clear_bit(MLX5E_RQ_STATE_ENABLED, &rq->state);
+-	napi_synchronize(&rq->channel->napi); /* prevent mlx5e_post_rx_wqes */
++	synchronize_rcu(); /* Sync with NAPI to prevent mlx5e_post_rx_wqes. */
  }
  
-+static void mlx5e_rq_replace_xdp_prog(struct mlx5e_rq *rq, struct bpf_prog *prog)
-+{
-+	struct bpf_prog *old_prog;
-+
-+	old_prog = rcu_replace_pointer(rq->xdp_prog, prog,
-+				       lockdep_is_held(&rq->channel->priv->state_lock));
-+	if (old_prog)
-+		bpf_prog_put(old_prog);
-+}
-+
- static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
-@@ -4388,29 +4404,10 @@ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
- 	 */
- 	for (i = 0; i < priv->channels.num; i++) {
- 		struct mlx5e_channel *c = priv->channels.c[i];
--		bool xsk_open = test_bit(MLX5E_CHANNEL_STATE_XSK, c->state);
--
--		clear_bit(MLX5E_RQ_STATE_ENABLED, &c->rq.state);
--		if (xsk_open)
--			clear_bit(MLX5E_RQ_STATE_ENABLED, &c->xskrq.state);
--		napi_synchronize(&c->napi);
--		/* prevent mlx5e_poll_rx_cq from accessing rq->xdp_prog */
--
--		old_prog = xchg(&c->rq.xdp_prog, prog);
--		if (old_prog)
--			bpf_prog_put(old_prog);
--
--		if (xsk_open) {
--			old_prog = xchg(&c->xskrq.xdp_prog, prog);
--			if (old_prog)
--				bpf_prog_put(old_prog);
--		}
+ void mlx5e_close_rq(struct mlx5e_rq *rq)
+@@ -1318,12 +1318,10 @@ void mlx5e_tx_disable_queue(struct netdev_queue *txq)
  
--		set_bit(MLX5E_RQ_STATE_ENABLED, &c->rq.state);
--		if (xsk_open)
--			set_bit(MLX5E_RQ_STATE_ENABLED, &c->xskrq.state);
--		/* napi_schedule in case we have missed anything */
--		napi_schedule(&c->napi);
-+		mlx5e_rq_replace_xdp_prog(&c->rq, prog);
-+		if (test_bit(MLX5E_CHANNEL_STATE_XSK, c->state))
-+			mlx5e_rq_replace_xdp_prog(&c->xskrq, prog);
+ static void mlx5e_deactivate_txqsq(struct mlx5e_txqsq *sq)
+ {
+-	struct mlx5e_channel *c = sq->channel;
+ 	struct mlx5_wq_cyc *wq = &sq->wq;
+ 
+ 	clear_bit(MLX5E_SQ_STATE_ENABLED, &sq->state);
+-	/* prevent netif_tx_wake_queue */
+-	napi_synchronize(&c->napi);
++	synchronize_rcu(); /* Sync with NAPI to prevent netif_tx_wake_queue. */
+ 
+ 	mlx5e_tx_disable_queue(sq->txq);
+ 
+@@ -1398,10 +1396,8 @@ void mlx5e_activate_icosq(struct mlx5e_icosq *icosq)
+ 
+ void mlx5e_deactivate_icosq(struct mlx5e_icosq *icosq)
+ {
+-	struct mlx5e_channel *c = icosq->channel;
+-
+ 	clear_bit(MLX5E_SQ_STATE_ENABLED, &icosq->state);
+-	napi_synchronize(&c->napi);
++	synchronize_rcu(); /* Sync with NAPI. */
+ }
+ 
+ void mlx5e_close_icosq(struct mlx5e_icosq *sq)
+@@ -1480,7 +1476,7 @@ void mlx5e_close_xdpsq(struct mlx5e_xdpsq *sq)
+ 	struct mlx5e_channel *c = sq->channel;
+ 
+ 	clear_bit(MLX5E_SQ_STATE_ENABLED, &sq->state);
+-	napi_synchronize(&c->napi);
++	synchronize_rcu(); /* Sync with NAPI. */
+ 
+ 	mlx5e_destroy_sq(c->mdev, sq->sqn);
+ 	mlx5e_free_xdpsq_descs(sq);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index 65828af120b7..99d102c035b0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -1132,7 +1132,6 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
+ 	struct xdp_buff xdp;
+ 	struct sk_buff *skb;
+ 	void *va, *data;
+-	bool consumed;
+ 	u32 frag_size;
+ 
+ 	va             = page_address(di->page) + wi->offset;
+@@ -1144,11 +1143,8 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
+ 	prefetchw(va); /* xdp_frame data area */
+ 	prefetch(data);
+ 
+-	rcu_read_lock();
+ 	mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt, &xdp);
+-	consumed = mlx5e_xdp_handle(rq, di, &cqe_bcnt, &xdp);
+-	rcu_read_unlock();
+-	if (consumed)
++	if (mlx5e_xdp_handle(rq, di, &cqe_bcnt, &xdp))
+ 		return NULL; /* page/packet was consumed by XDP */
+ 
+ 	rx_headroom = xdp.data - xdp.data_hard_start;
+@@ -1438,7 +1434,6 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+ 	struct sk_buff *skb;
+ 	void *va, *data;
+ 	u32 frag_size;
+-	bool consumed;
+ 
+ 	/* Check packet size. Note LRO doesn't use linear SKB */
+ 	if (unlikely(cqe_bcnt > rq->hw_mtu)) {
+@@ -1455,11 +1450,8 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+ 	prefetchw(va); /* xdp_frame data area */
+ 	prefetch(data);
+ 
+-	rcu_read_lock();
+ 	mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt32, &xdp);
+-	consumed = mlx5e_xdp_handle(rq, di, &cqe_bcnt32, &xdp);
+-	rcu_read_unlock();
+-	if (consumed) {
++	if (mlx5e_xdp_handle(rq, di, &cqe_bcnt32, &xdp)) {
+ 		if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags))
+ 			__set_bit(page_idx, wi->xdp_xmit_bitmap); /* non-atomic */
+ 		return NULL; /* page/packet was consumed by XDP */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
+index de10b06bade5..d5868670f8a5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
+@@ -121,13 +121,17 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
+ 	struct mlx5e_xdpsq *xsksq = &c->xsksq;
+ 	struct mlx5e_rq *xskrq = &c->xskrq;
+ 	struct mlx5e_rq *rq = &c->rq;
+-	bool xsk_open = test_bit(MLX5E_CHANNEL_STATE_XSK, c->state);
+ 	bool aff_change = false;
+ 	bool busy_xsk = false;
+ 	bool busy = false;
+ 	int work_done = 0;
++	bool xsk_open;
+ 	int i;
+ 
++	rcu_read_lock();
++
++	xsk_open = test_bit(MLX5E_CHANNEL_STATE_XSK, c->state);
++
+ 	ch_stats->poll++;
+ 
+ 	for (i = 0; i < c->num_tc; i++)
+@@ -167,8 +171,10 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
+ 	busy |= busy_xsk;
+ 
+ 	if (busy) {
+-		if (likely(mlx5e_channel_no_affinity_change(c)))
+-			return budget;
++		if (likely(mlx5e_channel_no_affinity_change(c))) {
++			work_done = budget;
++			goto out;
++		}
+ 		ch_stats->aff_change++;
+ 		aff_change = true;
+ 		if (budget && work_done == budget)
+@@ -176,7 +182,7 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
  	}
  
- unlock:
+ 	if (unlikely(!napi_complete_done(napi, work_done)))
+-		return work_done;
++		goto out;
+ 
+ 	ch_stats->arm++;
+ 
+@@ -203,6 +209,9 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
+ 		ch_stats->force_irq++;
+ 	}
+ 
++out:
++	rcu_read_unlock();
++
+ 	return work_done;
+ }
+ 
 -- 
 2.26.2
 
