@@ -2,127 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FB4126FE6E
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:27:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12FB626FE7D
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726864AbgIRN0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 09:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
+        id S1726613AbgIRNaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 09:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726700AbgIRN0s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 09:26:48 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF2DC0A88A8
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 06:26:47 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id k25so4921028qtu.4
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 06:26:47 -0700 (PDT)
+        with ESMTP id S1726126AbgIRNaC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 09:30:02 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08894C0613CE;
+        Fri, 18 Sep 2020 06:30:02 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id n10so4923297qtv.3;
+        Fri, 18 Sep 2020 06:30:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=WoBViBDy5KOAoh/IFmmvq1hFC5lBWKi3LJbgCVOvAak=;
-        b=WYzV4JSwOKBbAILhniesAD87+6GNHfZR5/KF7g1OAVXOBUYVU0RnhtM8At1x4Bk1df
-         kYIJ9CBPTEVTaILzPEdSu9Wd0Q/zSl1TpjnBO3BL6pTzXo3rXdVTWiW1kJy8Mb+Z7c4d
-         98MAklpR8a0if5vyWmIyAJWccc7GOQowqHhpVTKG36+aW3Z4RXIHCCc3wciQAVV8mXxY
-         kqF10jNHRevkzmywLc8XPbn+70spZ9GWaJhlf1AOI1zlm8BV4G7VRHRPIfu+b4R+qPaC
-         +rOFj8yqyGYTqxReHcN2i0tbkUnq/TRYB9zmY7OnTwrtrUn+FhukGYCEcQgjI1wK4aCx
-         FB1w==
+        bh=vASDjEll6360SujAnjlOkOkT4JdvbE9lhOhXWeoPleE=;
+        b=iaE8JMtgxMFET5j8BgD9mRCKX/eq0V3KVrnKyozizQNZ/SK2gOuiy9LuDCcd5wN9yo
+         ZiYisPuSzE/UqpsvLSxzY7O/J0x+MCPvX/9+kLqhkoqljp38LRLoFFnkaax1TtE8bVof
+         pVLq0q0gY+yuypZK42If1I+/HfvlPUvypPQYZG/AX/Ko929il5wWQXDijPvUzgWO9YMl
+         nzChB4l2bH9/YXxDoN72CKoM9/hIcifgZ7GPxQecPmcKF78/PFbUzl1ib0JM+Mj4zz1T
+         c90HOkfg3+k+fuiDt8WMpHvcM8+PCKlVNKFlaCwNMvIhlAOJNpTzAcbqiDjGnaNHyiu7
+         H15g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=WoBViBDy5KOAoh/IFmmvq1hFC5lBWKi3LJbgCVOvAak=;
-        b=TM9LfYi76dlprXtBp6k69sTfMhchi7sPshLNfO95PMnkLc/+C5vA3NpuYb1UivVBuv
-         Qq/XuSosGfwGZ9eKH0BYM4m32ymvHcz3mdZH/ggqLhf0H6mi6d/iiVS8pnfGgTBG2HCW
-         aaPxp3Du7MFiZhpCUf6QUXXYPZW0sBr0s/RW5vOXvZLpEnVuS2WbR/pBHAY+KYBqxv4v
-         eLJyBWj5Dswx7qZYEfhIxb/qQUi52lM/iLqqtyTDtQY368vKY+Ii0EVRYNHmCp7UR+z4
-         p/IyuTzYDl+mexSjKOIHSVKJ8t1LL856k+Rwj7uW82YTFIet1W5Ef+Lk+SZkrt5CS9Gu
-         A4/g==
-X-Gm-Message-State: AOAM533H3sgEPph2A1442/U6C67AX7bxSEbCFKpUZDrYh9JxQnrr6b8G
-        kXOREpQT3O15E2AZLjvSkHkVFA==
-X-Google-Smtp-Source: ABdhPJxCWlPb1YfzCc8AhG1VYILjRP3pn/B6quLeHYW7+F1CfmtAFFswxdVyqU645LsMkuSZG9dBCA==
-X-Received: by 2002:aed:278a:: with SMTP id a10mr21145659qtd.261.1600435606823;
-        Fri, 18 Sep 2020 06:26:46 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id w128sm2015848qkb.6.2020.09.18.06.26.46
+        bh=vASDjEll6360SujAnjlOkOkT4JdvbE9lhOhXWeoPleE=;
+        b=NVMH+zNvBs+eVauhg8f2mONNvFMAs+3Rg43MvRu2VPxCpTytD5NxAeBa6GMubsCCw6
+         HPqgDHT3wgnP78ZqyntMaO7AmKPdOivzIFAGL0Xz1CjJQiOGiizC8a7enkTx08qn5tjM
+         gndKqIH6ph1//AIBpnQjoUEPH9R2T/4nFrpIcGo7AZHPGx1iS9dMMWudN3R8s7Uuw84W
+         CFmwRW9BwslFZw9Eja6ubvZ5bGOMUDOFRlQ35ZjWVR4tZgtlQxYn9J1FK+Gk4Mk1u2st
+         dnYkroM4+/iqnS3OJ/gUxCr3hpkABYn8yAdm5pA9ogztXZY3GFBt7Xv2Y8uyuH6j05wN
+         jSMQ==
+X-Gm-Message-State: AOAM530k3rxTfmHZ3bACOx7Zwf/EpCu3KLk3OkhvVhSuEDTsDMzULHVK
+        U/+u98BuOUdZi3Drtwsl6t8=
+X-Google-Smtp-Source: ABdhPJwP89l58R0b0P2ljD2Q/hpiLcFOLGbgRZjclDShsIg/UelGnTmLNnAFslgB0yxcJKURjsYOeg==
+X-Received: by 2002:ac8:1488:: with SMTP id l8mr33223704qtj.131.1600435801141;
+        Fri, 18 Sep 2020 06:30:01 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:eda9:8c35:6fe5:a04c:832])
+        by smtp.gmail.com with ESMTPSA id p3sm1996690qkj.113.2020.09.18.06.29.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 06:26:46 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1kJGPV-0017Py-F7; Fri, 18 Sep 2020 10:26:45 -0300
-Date:   Fri, 18 Sep 2020 10:26:45 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Oded Gabbay <oded.gabbay@gmail.com>
-Cc:     izur@habana.ai, Gal Pressman <galpress@amazon.com>,
+        Fri, 18 Sep 2020 06:30:00 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id C354BC1D68; Fri, 18 Sep 2020 10:29:57 -0300 (-03)
+Date:   Fri, 18 Sep 2020 10:29:57 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Henry Ptasinski <hptasinski@google.com>
+Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-Message-ID: <20200918132645.GS8409@ziepe.ca>
-References: <20200915133556.21268811@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAFCwf12XZRxLYifSfuB+RGhuiKBytzsUTOnEa6FqfJHYvcVJPQ@mail.gmail.com>
- <20200917171833.GJ8409@ziepe.ca>
- <0b21db8d-1061-6453-960b-8043951b3bad@amazon.com>
- <20200918115601.GP8409@ziepe.ca>
- <CAFCwf12G4FnhjzijZLh_=n59SQMcTnULTqp8DOeQGyX6_q_ayA@mail.gmail.com>
- <20200918121621.GQ8409@ziepe.ca>
- <CAFCwf12YBaka2w2cnTxyX9L=heMnaM6QN1_oJ7h7DxHDmy2Xng@mail.gmail.com>
- <20200918125014.GR8409@ziepe.ca>
- <CAFCwf12oK4RXYhgzXiN_YvXvjoW1Fwx1xBzR3Y5E4RLvzn_vhA@mail.gmail.com>
+        Corey Minyard <cminyard@mvista.com>
+Subject: Re: [PATCH] net: sctp: Fix IPv6 ancestor_size calc in
+ sctp_copy_descendant
+Message-ID: <20200918132957.GB82043@localhost.localdomain>
+References: <20200918015610.3596417-1-hptasinski@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAFCwf12oK4RXYhgzXiN_YvXvjoW1Fwx1xBzR3Y5E4RLvzn_vhA@mail.gmail.com>
+In-Reply-To: <20200918015610.3596417-1-hptasinski@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 18, 2020 at 04:02:24PM +0300, Oded Gabbay wrote:
- 
-> The problem with MR is that the API doesn't let us return a new VA. It
-> forces us to use the original VA that the Host OS allocated.
+On Fri, Sep 18, 2020 at 01:56:10AM +0000, Henry Ptasinski wrote:
+> When calculating ancestor_size with IPv6 enabled, simply using
+> sizeof(struct ipv6_pinfo) doesn't account for extra bytes needed for
+> alignment in the struct sctp6_sock. On x86, there aren't any extra
+> bytes, but on ARM the ipv6_pinfo structure is aligned on an 8-byte
+> boundary so there were 4 pad bytes that were omitted from the
+> ancestor_size calculation.  This would lead to corruption of the
+> pd_lobby pointers, causing an oops when trying to free the sctp
+> structure on socket close.
 
-If using the common MR API you'd have to assign a unique linear range
-in the single device address map and record both the IOVA and the MMU
-VA in the kernel struct.
+Makes sense.
 
-Then when submitting work using that MR lkey the kernel will adjust
-the work VA using the equation (WORK_VA - IOVA) + MMU_VA before
-forwarding to HW.
-
-EFA doesn't support rkeys, so they are not required to be emulated. It
-would have to create rkeys using some guadidv_reg_mr_rkey()
-
-It is important to understand that the usual way we support these
-non-RDMA devices is to insist that they use SW to construct a minimal
-standards based RDMA API, and then allow the device to have a 'dv' API
-to access a faster, highly device specific, SW bypass path.
-
-So for instance you might have some guadidv_post_work(qp) that doesn't
-use lkeys and works directly on the MMU_VA. A guadidv_get_mmu_va(mr)
-would return the required HW VA from the kernel.
-
-Usually the higher level communication library (UCX, MPI, etc) forms
-the dv primitives into something application usable.
-
-> we do if that VA is in the range of our HBM addresses ? The device
-> won't be able to distinguish between them. The transaction that is
-> generated by an engine inside our device will go to the HBM instead of
-> going to the PCI controller and then to the host.
 > 
-> That's the crust of the problem and why we didn't use MR.
+> Signed-off-by: Henry Ptasinski <hptasinski@google.com>
 
-No, the problem with the device is that it doesn't have a lkey/rkey,
-so it is stuck with a single translation domain. RoCE compliant
-devices are required to have multiple translation domains - each
-lkey/rkey specifies a unique translation.
+Please add a:
+Fixes: 636d25d557d1 ("sctp: not copy sctp_sock pd_lobby in sctp_copy_descendant")
 
-The MR concept is a region of process VA mapped into the device for
-device access, and this device *clearly* has that.
+> ---
+>  net/sctp/socket.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index 836615f71a7d..a6358c81f087 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -9220,12 +9220,14 @@ void sctp_copy_sock(struct sock *newsk, struct sock *sk,
+>  static inline void sctp_copy_descendant(struct sock *sk_to,
+          ^^^^^^  I'll send a patch to fix/remove this.
 
-Jason
+>  					const struct sock *sk_from)
+>  {
+> -	int ancestor_size = sizeof(struct inet_sock) +
+> -			    sizeof(struct sctp_sock) -
+> -			    offsetof(struct sctp_sock, pd_lobby);
+                                                       ^^^^^^^^
+
+Then, as this patch is actually fixing the aforementioned commit,
+please also update the comment on sctp_sock definition, as pd_lobby
+now is also skipped.
+
+> +	size_t ancestor_size = sizeof(struct inet_sock);
+>  
+>  	if (sk_from->sk_family == PF_INET6)
+> -		ancestor_size += sizeof(struct ipv6_pinfo);
+> +		ancestor_size += sizeof(struct sctp6_sock);
+
+As you probably noticed by the build bot email already, there need to
+be some protection to building without IPv6 enabled.
+
+To avoid ifdefs here, something similar to how
+inet_sk_copy_descendant() is done is probably welcomed, but please
+feel free to be creative. :-)
+
+> +	else
+> +		ancestor_size += sizeof(struct sctp_sock);
+> +
+> +	ancestor_size -= offsetof(struct sctp_sock, pd_lobby);
+>  
+>  	__inet_sk_copy_descendant(sk_to, sk_from, ancestor_size);
+>  }
+> -- 
+> 2.28.0.681.g6f77f65b4e-goog
+> 
