@@ -2,218 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8699A26FB10
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 12:58:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1294526FB7F
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 13:32:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726477AbgIRK6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 06:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726455AbgIRK6R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 06:58:17 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5DCBC06174A
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:58:16 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id i1so5704083edv.2
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:58:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TQIQa0gS3WPmmxwptczUkgj44MFbqm0AWi5fXpLCy60=;
-        b=JH1+12xyyf6hW+NsK6HFSMuJ9Jir+C8K4xXkmsq2n1YgKHKSTkAiJsxBCTnot3g2mY
-         sWCKaX7IjMcjkOcaR0IKNRVmoNBZAayssfe4igValyPF1uQmNmSCe6PAb0ANpT4IiJkA
-         Op/WvCB9Fler6UUyHW0uJkwa4lbP564gi9QJUZUQb8LJUfSmkwJ71ouJif0dNcxlg4UZ
-         VtUi2tKxdkAuIPp1kkaitHG+7GCC2X5qq2/V4elKo4or1R3xC8yIjc9Vm7g41SwgKfFH
-         ICztOvnLcPuYvqB+SCMZDWMWtXvRfPSoaJTTDffXPfF2Soul/h5NvFYsh03SyJGIqagd
-         NzUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TQIQa0gS3WPmmxwptczUkgj44MFbqm0AWi5fXpLCy60=;
-        b=KGDKJJB8qOWxPl41tTU23Zkbj4EAKNdHQTignXzzswCz6vTH4Ena8cE0Yba8o6uTlL
-         jCkDUjpyvZ3C5ArLfTvT5chpDYz1TQffi6NJxJ1qWjyPSPEbI1xV66yBviibLFUTRwOA
-         Ma5n3GXjfYLxv7clCuX5pIHqCvO+xXX6SCipj/ahFx+lKz9aP1UggiRn2HNMUGU1XVt7
-         Oa+PHKCXxwJXQDPl9APvdV7iDMh7PZRyzsc0OvrHq3uCMUbdBZMbfIUBFbobO5KYl3Zv
-         PNo171LrJkCAbSNC5TqNadVCdTWsJadEplZq8lC/4mwcyLRwW5TtSceRHjpBp5kYEeml
-         K6yA==
-X-Gm-Message-State: AOAM532MAa8ajOngzIdRJUJQVBUvkLkbFx4JGqycdbdMyI38iRojSjnf
-        Lpj6JwsYSGRxyk/+XONEMyM=
-X-Google-Smtp-Source: ABdhPJwCBYeSgbzF0G1o8VtTm1Dty3V4jWLcf3pOBPEQ3XxZUmp2o00uki4a6EhgDhfgM4fIxWglyA==
-X-Received: by 2002:a05:6402:1515:: with SMTP id f21mr38914042edw.175.1600426695511;
-        Fri, 18 Sep 2020 03:58:15 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id k1sm1995086eji.20.2020.09.18.03.58.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 03:58:15 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
-        UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org
-Subject: [PATCH net-next 11/11] net: dsa: seville: build as separate module
-Date:   Fri, 18 Sep 2020 13:57:53 +0300
-Message-Id: <20200918105753.3473725-12-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200918105753.3473725-1-olteanv@gmail.com>
-References: <20200918105753.3473725-1-olteanv@gmail.com>
+        id S1726473AbgIRLba convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 18 Sep 2020 07:31:30 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:57618 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726241AbgIRLad (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 07:30:33 -0400
+X-Greylist: delayed 312 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 07:30:32 EDT
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-475-CM1PxpJcOxmNqaadFh7ddg-1; Fri, 18 Sep 2020 07:23:43 -0400
+X-MC-Unique: CM1PxpJcOxmNqaadFh7ddg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A446510BBEE1;
+        Fri, 18 Sep 2020 11:23:41 +0000 (UTC)
+Received: from krava.redhat.com (ovpn-114-24.ams2.redhat.com [10.36.114.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1837D78818;
+        Fri, 18 Sep 2020 11:23:38 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCHv2 bpf-next] selftests/bpf: Fix stat probe in d_path test
+Date:   Fri, 18 Sep 2020 13:23:38 +0200
+Message-Id: <20200918112338.2618444-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Some kernels builds might inline vfs_getattr call within fstat
+syscall code path, so fentry/vfs_getattr trampoline is not called.
 
-Seville does not need to depend on PCI or on the ENETC MDIO controller.
-There will also be other compile-time differences in the future.
+Alexei suggested [1] we should use security_inode_getattr instead,
+because it's less likely to get inlined. Using this idea also for
+vfs_truncate (replaced with security_path_truncate) and vfs_fallocate
+(replaced with security_file_permission).
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Keeping dentry_open and filp_close, because they are in their own
+files, so unlikely to be inlined, but in case they are, adding
+security_file_open.
+
+Switching the d_path test stat trampoline to security_inode_getattr.
+
+Adding flags that indicate trampolines were called and failing
+the test if any of them got missed, so it's easier to identify
+the issue next time.
+
+Suggested-by: Alexei Starovoitov <ast@kernel.org>
+[1] https://lore.kernel.org/bpf/CAADnVQJ0FchoPqNWm+dEppyij-MOvvEG_trEfyrHdabtcEuZGg@mail.gmail.com/
+Fixes: e4d1af4b16f8 ("selftests/bpf: Add test for d_path helper")
+Signed-off-by: Jiri Olsa <jolsa@redhat.com>
 ---
- drivers/net/dsa/ocelot/Kconfig           | 22 ++++++++++++--------
- drivers/net/dsa/ocelot/Makefile          |  6 +++++-
- drivers/net/dsa/ocelot/felix.c           | 26 ------------------------
- drivers/net/dsa/ocelot/felix.h           |  2 --
- drivers/net/dsa/ocelot/felix_vsc9959.c   |  6 +++++-
- drivers/net/dsa/ocelot/seville_vsc9953.c |  6 +++++-
- 6 files changed, 29 insertions(+), 39 deletions(-)
+v2 changes:
+  - replaced vfs_* function with security_* in d_path allow list
+    vfs_truncate  -> security_path_truncate
+    vfs_fallocate -> security_file_permission
+    vfs_getattr   -> security_inode_getattr
+  - added security_file_open to d_path allow list
+  - split verbose output for trampoline flags
 
-diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
-index e19718d4a7d4..c110e82a7973 100644
---- a/drivers/net/dsa/ocelot/Kconfig
-+++ b/drivers/net/dsa/ocelot/Kconfig
-@@ -10,11 +10,17 @@ config NET_DSA_MSCC_FELIX
- 	select FSL_ENETC_MDIO
- 	select PCS_LYNX
- 	help
--	  This driver supports network switches from the Vitesse /
--	  Microsemi / Microchip Ocelot family of switching cores that are
--	  connected to their host CPU via Ethernet.
--	  The following switches are supported:
--	  - VSC9959 (Felix): embedded as a PCIe function of the NXP LS1028A
--	    ENETC integrated endpoint.
--	  - VSC9953 (Seville): embedded as a platform device on the
--	    NXP T1040 SoC.
-+	  This driver supports the VSC9959 (Felix) switch, which is embedded as
-+	  a PCIe function of the NXP LS1028A ENETC RCiEP.
+ kernel/trace/bpf_trace.c                        |  7 ++++---
+ tools/testing/selftests/bpf/prog_tests/d_path.c | 10 ++++++++++
+ tools/testing/selftests/bpf/progs/test_d_path.c |  9 ++++++++-
+ 3 files changed, 22 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index b2a5380eb187..e24323d72cac 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1118,10 +1118,11 @@ BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
+ }
+ 
+ BTF_SET_START(btf_allowlist_d_path)
+-BTF_ID(func, vfs_truncate)
+-BTF_ID(func, vfs_fallocate)
++BTF_ID(func, security_path_truncate)
++BTF_ID(func, security_file_permission)
++BTF_ID(func, security_inode_getattr)
++BTF_ID(func, security_file_open)
+ BTF_ID(func, dentry_open)
+-BTF_ID(func, vfs_getattr)
+ BTF_ID(func, filp_close)
+ BTF_SET_END(btf_allowlist_d_path)
+ 
+diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
+index fc12e0d445ff..0a577a248d34 100644
+--- a/tools/testing/selftests/bpf/prog_tests/d_path.c
++++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
+@@ -120,6 +120,16 @@ void test_d_path(void)
+ 	if (err < 0)
+ 		goto cleanup;
+ 
++	if (CHECK(!bss->called_stat,
++		  "stat",
++		  "trampoline for security_inode_getattr was not called\n"))
++		goto cleanup;
 +
-+config NET_DSA_MSCC_SEVILLE
-+	tristate "Ocelot / Seville Ethernet switch support"
-+	depends on NET_DSA
-+	depends on NET_VENDOR_MICROSEMI
-+	depends on HAS_IOMEM
-+	select MSCC_OCELOT_SWITCH_LIB
-+	select NET_DSA_TAG_OCELOT
-+	select PCS_LYNX
-+	help
-+	  This driver supports the VSC9953 (Seville) switch, which is embedded
-+	  as a platform device on the NXP T1040 SoC.
-diff --git a/drivers/net/dsa/ocelot/Makefile b/drivers/net/dsa/ocelot/Makefile
-index ec57a5a12330..f6dd131e7491 100644
---- a/drivers/net/dsa/ocelot/Makefile
-+++ b/drivers/net/dsa/ocelot/Makefile
-@@ -1,7 +1,11 @@
- # SPDX-License-Identifier: GPL-2.0-only
- obj-$(CONFIG_NET_DSA_MSCC_FELIX) += mscc_felix.o
-+obj-$(CONFIG_NET_DSA_MSCC_SEVILLE) += mscc_seville.o
- 
- mscc_felix-objs := \
- 	felix.o \
--	felix_vsc9959.o \
-+	felix_vsc9959.o
++	if (CHECK(!bss->called_close,
++		  "close",
++		  "trampoline for filp_close was not called\n"))
++		goto cleanup;
 +
-+mscc_seville-objs := \
-+	felix.o \
- 	seville_vsc9953.o
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index fb1b3e117c78..5f395d4119ac 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -788,29 +788,3 @@ const struct dsa_switch_ops felix_switch_ops = {
- 	.cls_flower_stats	= felix_cls_flower_stats,
- 	.port_setup_tc		= felix_port_setup_tc,
- };
--
--static int __init felix_init(void)
--{
--	int err;
--
--	err = pci_register_driver(&felix_vsc9959_pci_driver);
--	if (err)
--		return err;
--
--	err = platform_driver_register(&seville_vsc9953_driver);
--	if (err)
--		return err;
--
--	return 0;
--}
--module_init(felix_init);
--
--static void __exit felix_exit(void)
--{
--	pci_unregister_driver(&felix_vsc9959_pci_driver);
--	platform_driver_unregister(&seville_vsc9953_driver);
--}
--module_exit(felix_exit);
--
--MODULE_DESCRIPTION("Felix Switch driver");
--MODULE_LICENSE("GPL v2");
-diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index d0b2043e0ccb..cc3ec83a600a 100644
---- a/drivers/net/dsa/ocelot/felix.h
-+++ b/drivers/net/dsa/ocelot/felix.h
-@@ -42,8 +42,6 @@ struct felix_info {
- };
+ 	for (int i = 0; i < MAX_FILES; i++) {
+ 		CHECK(strncmp(src.paths[i], bss->paths_stat[i], MAX_PATH_LEN),
+ 		      "check",
+diff --git a/tools/testing/selftests/bpf/progs/test_d_path.c b/tools/testing/selftests/bpf/progs/test_d_path.c
+index 61f007855649..84e1f883f97b 100644
+--- a/tools/testing/selftests/bpf/progs/test_d_path.c
++++ b/tools/testing/selftests/bpf/progs/test_d_path.c
+@@ -15,7 +15,10 @@ char paths_close[MAX_FILES][MAX_PATH_LEN] = {};
+ int rets_stat[MAX_FILES] = {};
+ int rets_close[MAX_FILES] = {};
  
- extern const struct dsa_switch_ops felix_switch_ops;
--extern struct pci_driver felix_vsc9959_pci_driver;
--extern struct platform_driver seville_vsc9953_driver;
- 
- /* DSA glue / front-end for struct ocelot */
- struct felix {
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 38e0fba6bca8..79ddc4ba27a3 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1328,9 +1328,13 @@ static struct pci_device_id felix_ids[] = {
- };
- MODULE_DEVICE_TABLE(pci, felix_ids);
- 
--struct pci_driver felix_vsc9959_pci_driver = {
-+static struct pci_driver felix_vsc9959_pci_driver = {
- 	.name		= "mscc_felix",
- 	.id_table	= felix_ids,
- 	.probe		= felix_pci_probe,
- 	.remove		= felix_pci_remove,
- };
-+module_pci_driver(felix_vsc9959_pci_driver);
+-SEC("fentry/vfs_getattr")
++int called_stat = 0;
++int called_close = 0;
 +
-+MODULE_DESCRIPTION("Felix Switch driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 23f66bb1ab4e..650f7c0e6e6a 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1110,7 +1110,7 @@ static const struct of_device_id seville_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, seville_of_match);
++SEC("fentry/security_inode_getattr")
+ int BPF_PROG(prog_stat, struct path *path, struct kstat *stat,
+ 	     __u32 request_mask, unsigned int query_flags)
+ {
+@@ -23,6 +26,8 @@ int BPF_PROG(prog_stat, struct path *path, struct kstat *stat,
+ 	__u32 cnt = cnt_stat;
+ 	int ret;
  
--struct platform_driver seville_vsc9953_driver = {
-+static struct platform_driver seville_vsc9953_driver = {
- 	.probe		= seville_probe,
- 	.remove		= seville_remove,
- 	.driver = {
-@@ -1118,3 +1118,7 @@ struct platform_driver seville_vsc9953_driver = {
- 		.of_match_table	= of_match_ptr(seville_of_match),
- 	},
- };
-+module_platform_driver(seville_vsc9953_driver);
++	called_stat = 1;
 +
-+MODULE_DESCRIPTION("Seville Switch driver");
-+MODULE_LICENSE("GPL v2");
+ 	if (pid != my_pid)
+ 		return 0;
+ 
+@@ -42,6 +47,8 @@ int BPF_PROG(prog_close, struct file *file, void *id)
+ 	__u32 cnt = cnt_close;
+ 	int ret;
+ 
++	called_close = 1;
++
+ 	if (pid != my_pid)
+ 		return 0;
+ 
 -- 
-2.25.1
+2.26.2
 
