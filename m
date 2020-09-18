@@ -2,485 +2,406 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EF6126F928
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 11:24:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 865A926F8FF
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 11:13:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726728AbgIRJYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 05:24:04 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:51646 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726707AbgIRJX7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 05:23:59 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 69F35201186;
-        Fri, 18 Sep 2020 11:16:27 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id C8F16201167;
-        Fri, 18 Sep 2020 11:16:23 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 6BED440314;
-        Fri, 18 Sep 2020 11:16:16 +0200 (CEST)
-From:   Yangbo Lu <yangbo.lu@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S1726312AbgIRJM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 05:12:59 -0400
+Received: from mail-db8eur05on2064.outbound.protection.outlook.com ([40.107.20.64]:28225
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726148AbgIRJM6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 05:12:58 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eBJ/3xt1MRv+B8U5hIolSX2f4ML/d1VHdIJAtNiJgwWBsZmmYELucLAcSmk3RJ7kSq+WcOJUQzAT56X2vkMTSwWMeXGcKnEOn0zV2XiNkH8Nxv9QFzXJAWDeQ65NmTetwy2he17K209ZT76qkrIiPNF9bEuv6zJyyFSFEQLqOTgZSWqrFW6Y8jJVDQAJa/HslRNiyL7GHh1Uka+DiauTHbctHTgPtiAGg8FH6hOtRlUQ/9hJ3edQy9cCDvUEFddgnxetswhTn5VerjhMNVcblynR6+/mkBhHAMdp1pRqmysTrm9OGDA70Yn9ZSfRO0XN/ptyLnlM3i0GHGqSxvFHng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0c4MCY/d+asKIO/f0Ds0ZG0OauSgGtY5qssfd9Tt+IY=;
+ b=LpTulFZekQwkkjXs3MIC92VvNk0T1kL/z2wReosnAkLQKx8LcvfaRlnjXg3qvyKbuVZsxJ2CNhoJGeYF6GTexi56fEOMGIC4CV0D9VXGKQt57xOmLAYnnT/1u6MMSZwm64xsF5hJ5XYvZ3+3/q1LZz2acL3ETP+/Pj3KC/tWnECWnIOOg8HFF+YLc488dp+QQ5IYOWcFHPBcYk462irW18+IGEqzOLrJWDOVjT1p6NQbWTs+RsnoZ8hahyTg9hyltYpb/8HzojswxoRLsBlJyRnfHHVdj7DZ8NjE9DbTct2RqwO2m5v4pj771/fcbTO0WA7KMh9uWQipVPiVgDcSUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0c4MCY/d+asKIO/f0Ds0ZG0OauSgGtY5qssfd9Tt+IY=;
+ b=hT7REQs6HMGYMidzEUUi0I1eRIAqrIzdFF6DEoBlCCOlDQZ/IH84WiLV9bmhF7BIM/xIL4mwIE/uqadoQdgHIvcy4Dw8eKvbxRRKT3tOQhBdn6HxjXRmfYgmaPbc2Z5KIdDRmubF16TaA54rw6pOuQ9lwkgQmfjo1GOQXCMpl9M=
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com (2603:10a6:20b:10d::24)
+ by AM6PR04MB5061.eurprd04.prod.outlook.com (2603:10a6:20b:9::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.17; Fri, 18 Sep
+ 2020 09:12:51 +0000
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::f431:1df6:f18b:ad99]) by AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::f431:1df6:f18b:ad99%7]) with mapi id 15.20.3391.019; Fri, 18 Sep 2020
+ 09:12:50 +0000
+From:   "Y.b. Lu" <yangbo.lu@nxp.com>
+To:     Saeed Mahameed <saeed@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>
-Subject: [v4, 5/5] dpaa2-eth: support PTP Sync packet one-step timestamping
-Date:   Fri, 18 Sep 2020 17:08:02 +0800
-Message-Id: <20200918090802.13757-6-yangbo.lu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200918090802.13757-1-yangbo.lu@nxp.com>
-References: <20200918090802.13757-1-yangbo.lu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: RE: [v3, 5/6] dpaa2-eth: support PTP Sync packet one-step
+ timestamping
+Thread-Topic: [v3, 5/6] dpaa2-eth: support PTP Sync packet one-step
+ timestamping
+Thread-Index: AQHWjCND63WCPgLbNkiEM8KwkVI9dqlrpTMAgAJ2pgA=
+Date:   Fri, 18 Sep 2020 09:12:50 +0000
+Message-ID: <AM7PR04MB6885E78D44A460E49FB324AEF83F0@AM7PR04MB6885.eurprd04.prod.outlook.com>
+References: <20200916120830.11456-1-yangbo.lu@nxp.com>
+         <20200916120830.11456-6-yangbo.lu@nxp.com>
+ <a0114fa234fcf08208c3ba388beb1fe571df1c6c.camel@kernel.org>
+In-Reply-To: <a0114fa234fcf08208c3ba388beb1fe571df1c6c.camel@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.73]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: e69b7381-b3fb-449e-1d12-08d85bb304c0
+x-ms-traffictypediagnostic: AM6PR04MB5061:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR04MB5061EC9B0F53807579B5BA84F83F0@AM6PR04MB5061.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:569;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: NW6p1t+WW0/MD5dzBCgGGItlxeLDDw5V+BZycpMmJcstdDNQuVmIpCbWff5LB9CHC0Lvy3ix4zVHOasDouQRghdEAiWoXKe61wS0E0kCv6CKRGxZev39jEv37g2lgqMPf+Or1/1efbTeF6jL0T9fVBj0SMprTUT4mlTJqX6rmce8kq5GsarVKyq7eJfZ5T/dl0mpygod8xGM454kqD9M7cddFQ05vZESvFyDLvUExJeS89lRcAHxfvWIB8Q2NtU56zaiSDI6lgBblssG7ODO58CSF3rjUFoPZSjKL0KA0+tprdBHkg0YgF0HLY7jXxCM0UPaEzt6afj8BUr+IbUzlA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB6885.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(4326008)(186003)(53546011)(110136005)(54906003)(498600001)(6506007)(8936002)(2906002)(5660300002)(55016002)(86362001)(7696005)(83380400001)(52536014)(33656002)(66446008)(66946007)(9686003)(8676002)(64756008)(30864003)(26005)(76116006)(66476007)(71200400001)(66556008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: Wyh+GW4VasISQQ0bctb5Ty6w5NMcRyX/0Tl4njyj3qu+M25C6SE62q8+uWNmEtjhf/hESFKnbk3Q0EMVa2qDDYz0ZnYVYKhi1ULPLQh8e+fGW2nKS7QMSYlhtgOhB0Xx28Z0OYSHQJ57aH6lMlzzNwP/pVG7tZ3X9TA2g1C5e13kr6EPd9meyrzkqsfAlYXsqWfwGLES3fTjOViad1y3FyPn+4O+Jj81hxVCcRKyO7xHkZav/DhFElJNCy4U2LFZaDaOatiQgHDgk3fN0PMhRMK+GiAl5yDTjvquutaXrwUsNfYH/RuanGv+YCvFhgLrbjRvH3RB1RSwPSStuA46EXkVBYfafAoCMB+afCqdZD9SVgvgdiRlbrd8pyx3GQcFqMEy22IM8eDl5tAWkESyioWjwFht9t5qvQlT6c4qhJJ74CxoCprf8HlszVjRRYBeKwTcCobPhKoCxXhOrLlkcBa6osyAWWUkUe32myCjYaWW0mEd7ABRn6wsUvj9cRzkW3M5O6PbgxnNEbUNj9hDAOprJj3H4AEBZIGMIlTNd9CX6zQnjgNOC8/ifzwvEqKMx0ejMN2fwUKdbzTJfnk0bk0U1njh9H8byZ/OgrSnzFYw54O5U+LS4o38tud9lCA0DjabDdhbrUP2ATDfcdD44Q==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB6885.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e69b7381-b3fb-449e-1d12-08d85bb304c0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Sep 2020 09:12:50.8992
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mZ7QSKf9qv+IdEU3ECVI3aHVdxiYWnLaPENkdyUvZETjT+EA7xu87/R+T8v8A6+kZfewvoOfRWvABNU8RiUhig==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5061
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to add PTP sync packet one-step timestamping support.
-Before egress, one-step timestamping enablement needs,
-
-- Enabling timestamp and FAS (Frame Annotation Status) in
-  dpni buffer layout.
-
-- Write timestamp to frame annotation and set PTP bit in
-  FAS to mark as one-step timestamping event.
-
-- Enabling one-step timestamping by dpni_set_single_step_cfg()
-  API, with offset provided to insert correction time on frame.
-  The offset must respect all MAC headers, VLAN tags and other
-  protocol headers accordingly. The correction field update can
-  consider delays up to one second. So PTP frame needs to be
-  filtered and parsed, and written timestamp into Sync frame
-  originTimestamp field.
-
-The operation of API dpni_set_single_step_cfg() has to be done
-when no one-step timestamping frames are in flight. So we have
-to make sure the last one-step timestamping frame has already
-been transmitted on hardware before starting to send the current
-one. The resolution is,
-
-- Utilize skb->cb[0] to mark timestamping request per packet.
-  If it is one-step timestamping PTP sync packet, queue to skb queue.
-  If not, transmit immediately.
-
-- Schedule a work to transmit skbs in skb queue.
-
-- mutex lock is used to ensure the last one-step timestamping packet
-  has already been transmitted on hardware through TX confirmation queue
-  before transmitting current packet.
-
-Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
----
-Changes for v2:
-	- None.
-Changes for v3:
-	- Fixed build issue on 32-bit.
-	- Converted to use ptp_parse_header.
-Changes for v4:
-	- Used WARN_ONCE instead of netdev_err in data path.
-	- Enabled timestamping only when PTP driver is ready.
-	- Added comments in using onestep_tstamp_lock.
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c   | 186 +++++++++++++++++++--
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h   |  32 +++-
- .../net/ethernet/freescale/dpaa2/dpaa2-ethtool.c   |   7 +-
- 3 files changed, 209 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index eab9470..b6cdf84 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -15,6 +15,7 @@
- #include <linux/bpf.h>
- #include <linux/bpf_trace.h>
- #include <linux/fsl/ptp_qoriq.h>
-+#include <linux/ptp_classify.h>
- #include <net/pkt_cls.h>
- #include <net/sock.h>
- 
-@@ -563,11 +564,57 @@ static int dpaa2_eth_consume_frames(struct dpaa2_eth_channel *ch,
- 	return cleaned;
- }
- 
-+static int dpaa2_eth_ptp_parse(struct sk_buff *skb,
-+			       u8 *msgtype, u8 *twostep, u8 *udp,
-+			       u16 *correction_offset,
-+			       u16 *origintimestamp_offset)
-+{
-+	unsigned int ptp_class;
-+	struct ptp_header *hdr;
-+	unsigned int type;
-+	u8 *base;
-+
-+	ptp_class = ptp_classify_raw(skb);
-+	if (ptp_class == PTP_CLASS_NONE)
-+		return -EINVAL;
-+
-+	hdr = ptp_parse_header(skb, ptp_class);
-+	if (!hdr)
-+		return -EINVAL;
-+
-+	*msgtype = ptp_get_msgtype(hdr, ptp_class);
-+	*twostep = hdr->flag_field[0] & 0x2;
-+
-+	type = ptp_class & PTP_CLASS_PMASK;
-+	if (type == PTP_CLASS_IPV4 ||
-+	    type == PTP_CLASS_IPV6)
-+		*udp = 1;
-+	else
-+		*udp = 0;
-+
-+	base = skb_mac_header(skb);
-+	*correction_offset = (u8 *)&hdr->correction - base;
-+	*origintimestamp_offset = (u8 *)hdr + sizeof(struct ptp_header) - base;
-+
-+	return 0;
-+}
-+
- /* Configure the egress frame annotation for timestamp update */
--static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_fd *fd, void *buf_start)
-+static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_eth_priv *priv,
-+				       struct dpaa2_fd *fd,
-+				       void *buf_start,
-+				       struct sk_buff *skb)
- {
-+	struct ptp_tstamp origin_timestamp;
-+	struct dpni_single_step_cfg cfg;
-+	u8 msgtype, twostep, udp;
- 	struct dpaa2_faead *faead;
-+	struct dpaa2_fas *fas;
-+	struct timespec64 ts;
-+	u16 offset1, offset2;
- 	u32 ctrl, frc;
-+	__le64 *ns;
-+	u8 *data;
- 
- 	/* Mark the egress frame annotation area as valid */
- 	frc = dpaa2_fd_get_frc(fd);
-@@ -583,6 +630,45 @@ static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_fd *fd, void *buf_start)
- 	ctrl = DPAA2_FAEAD_A2V | DPAA2_FAEAD_UPDV | DPAA2_FAEAD_UPD;
- 	faead = dpaa2_get_faead(buf_start, true);
- 	faead->ctrl = cpu_to_le32(ctrl);
-+
-+	if (skb->cb[0] == TX_TSTAMP_ONESTEP_SYNC) {
-+		if (dpaa2_eth_ptp_parse(skb, &msgtype, &twostep, &udp,
-+					&offset1, &offset2) ||
-+		    msgtype != 0 || twostep) {
-+			WARN_ONCE(1, "Bad packet for one-step timestamping\n");
-+			return;
-+		}
-+
-+		/* Mark the frame annotation status as valid */
-+		frc = dpaa2_fd_get_frc(fd);
-+		dpaa2_fd_set_frc(fd, frc | DPAA2_FD_FRC_FASV);
-+
-+		/* Mark the PTP flag for one step timestamping */
-+		fas = dpaa2_get_fas(buf_start, true);
-+		fas->status = cpu_to_le32(DPAA2_FAS_PTP);
-+
-+		dpaa2_ptp->caps.gettime64(&dpaa2_ptp->caps, &ts);
-+		ns = dpaa2_get_ts(buf_start, true);
-+		*ns = cpu_to_le64(timespec64_to_ns(&ts) /
-+				  DPAA2_PTP_CLK_PERIOD_NS);
-+
-+		/* Update current time to PTP message originTimestamp field */
-+		ns_to_ptp_tstamp(&origin_timestamp, le64_to_cpup(ns));
-+		data = skb_mac_header(skb);
-+		*(__be16 *)(data + offset2) = htons(origin_timestamp.sec_msb);
-+		*(__be32 *)(data + offset2 + 2) =
-+			htonl(origin_timestamp.sec_lsb);
-+		*(__be32 *)(data + offset2 + 6) = htonl(origin_timestamp.nsec);
-+
-+		cfg.en = 1;
-+		cfg.ch_update = udp;
-+		cfg.offset = offset1;
-+		cfg.peer_delay = 0;
-+
-+		if (dpni_set_single_step_cfg(priv->mc_io, 0, priv->mc_token,
-+					     &cfg))
-+			WARN_ONCE(1, "Failed to set single step register");
-+	}
- }
- 
- /* Create a frame descriptor based on a fragmented skb */
-@@ -820,7 +906,7 @@ static int dpaa2_eth_build_single_fd(struct dpaa2_eth_priv *priv,
-  * This can be called either from dpaa2_eth_tx_conf() or on the error path of
-  * dpaa2_eth_tx().
-  */
--static void dpaa2_eth_free_tx_fd(const struct dpaa2_eth_priv *priv,
-+static void dpaa2_eth_free_tx_fd(struct dpaa2_eth_priv *priv,
- 				 struct dpaa2_eth_fq *fq,
- 				 const struct dpaa2_fd *fd, bool in_napi)
- {
-@@ -903,6 +989,8 @@ static void dpaa2_eth_free_tx_fd(const struct dpaa2_eth_priv *priv,
- 		ns = DPAA2_PTP_CLK_PERIOD_NS * le64_to_cpup(ts);
- 		shhwtstamps.hwtstamp = ns_to_ktime(ns);
- 		skb_tstamp_tx(skb, &shhwtstamps);
-+	} else if (skb->cb[0] == TX_TSTAMP_ONESTEP_SYNC) {
-+		mutex_unlock(&priv->onestep_tstamp_lock);
- 	}
- 
- 	/* Free SGT buffer allocated on tx */
-@@ -922,7 +1010,8 @@ static void dpaa2_eth_free_tx_fd(const struct dpaa2_eth_priv *priv,
- 	napi_consume_skb(skb, in_napi);
- }
- 
--static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
-+static netdev_tx_t __dpaa2_eth_tx(struct sk_buff *skb,
-+				  struct net_device *net_dev)
- {
- 	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
- 	struct dpaa2_fd fd;
-@@ -937,13 +1026,6 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
- 	int err, i;
- 	void *swa;
- 
--	/* Utilize skb->cb[0] for timestamping request per skb */
--	skb->cb[0] = 0;
--
--	if (priv->tx_tstamp_type == HWTSTAMP_TX_ON &&
--	    skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
--		skb->cb[0] = TX_TSTAMP;
--
- 	percpu_stats = this_cpu_ptr(priv->percpu_stats);
- 	percpu_extras = this_cpu_ptr(priv->percpu_extras);
- 
-@@ -981,8 +1063,8 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
- 		goto err_build_fd;
- 	}
- 
--	if (skb->cb[0] == TX_TSTAMP)
--		dpaa2_eth_enable_tx_tstamp(&fd, swa);
-+	if (skb->cb[0])
-+		dpaa2_eth_enable_tx_tstamp(priv, &fd, swa, skb);
- 
- 	/* Tracing point */
- 	trace_dpaa2_tx_fd(net_dev, &fd);
-@@ -1037,6 +1119,63 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
- 	return NETDEV_TX_OK;
- }
- 
-+static void dpaa2_eth_tx_onestep_tstamp(struct work_struct *work)
-+{
-+	struct dpaa2_eth_priv *priv = container_of(work, struct dpaa2_eth_priv,
-+						   tx_onestep_tstamp);
-+	struct sk_buff *skb;
-+
-+	while (true) {
-+		skb = skb_dequeue(&priv->tx_skbs);
-+		if (!skb)
-+			return;
-+
-+		/* Lock just before TX one-step timestamping packet,
-+		 * and release the lock in dpaa2_eth_free_tx_fd when
-+		 * confirm the packet has been sent on hardware, or
-+		 * when clean up during transmit failure.
-+		 */
-+		mutex_lock(&priv->onestep_tstamp_lock);
-+		__dpaa2_eth_tx(skb, priv->net_dev);
-+	}
-+}
-+
-+static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
-+{
-+	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
-+	u8 msgtype, twostep, udp;
-+	u16 offset1, offset2;
-+
-+	/* Utilize skb->cb[0] for timestamping request per skb */
-+	skb->cb[0] = 0;
-+
-+	if ((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) && dpaa2_ptp) {
-+		if (priv->tx_tstamp_type == HWTSTAMP_TX_ON)
-+			skb->cb[0] = TX_TSTAMP;
-+		else if (priv->tx_tstamp_type == HWTSTAMP_TX_ONESTEP_SYNC)
-+			skb->cb[0] = TX_TSTAMP_ONESTEP_SYNC;
-+	}
-+
-+	/* TX for one-step timestamping PTP Sync packet */
-+	if (skb->cb[0] == TX_TSTAMP_ONESTEP_SYNC) {
-+		if (!dpaa2_eth_ptp_parse(skb, &msgtype, &twostep, &udp,
-+					 &offset1, &offset2))
-+			if (msgtype == 0 && twostep == 0) {
-+				skb_queue_tail(&priv->tx_skbs, skb);
-+				queue_work(priv->dpaa2_ptp_wq,
-+					   &priv->tx_onestep_tstamp);
-+				return NETDEV_TX_OK;
-+			}
-+		/* Use two-step timestamping if not one-step timestamping
-+		 * PTP Sync packet
-+		 */
-+		skb->cb[0] = TX_TSTAMP;
-+	}
-+
-+	/* TX for other packets */
-+	return __dpaa2_eth_tx(skb, net_dev);
-+}
-+
- /* Tx confirmation frame processing routine */
- static void dpaa2_eth_tx_conf(struct dpaa2_eth_priv *priv,
- 			      struct dpaa2_eth_channel *ch __always_unused,
-@@ -1900,12 +2039,16 @@ static int dpaa2_eth_ts_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
- 	struct dpaa2_eth_priv *priv = netdev_priv(dev);
- 	struct hwtstamp_config config;
- 
-+	if (!dpaa2_ptp)
-+		return -EINVAL;
-+
- 	if (copy_from_user(&config, rq->ifr_data, sizeof(config)))
- 		return -EFAULT;
- 
- 	switch (config.tx_type) {
- 	case HWTSTAMP_TX_OFF:
- 	case HWTSTAMP_TX_ON:
-+	case HWTSTAMP_TX_ONESTEP_SYNC:
- 		priv->tx_tstamp_type = config.tx_type;
- 		break;
- 	default:
-@@ -2731,8 +2874,10 @@ static int dpaa2_eth_set_buffer_layout(struct dpaa2_eth_priv *priv)
- 	/* tx buffer */
- 	buf_layout.private_data_size = DPAA2_ETH_SWA_SIZE;
- 	buf_layout.pass_timestamp = true;
-+	buf_layout.pass_frame_status = true;
- 	buf_layout.options = DPNI_BUF_LAYOUT_OPT_PRIVATE_DATA_SIZE |
--			     DPNI_BUF_LAYOUT_OPT_TIMESTAMP;
-+			     DPNI_BUF_LAYOUT_OPT_TIMESTAMP |
-+			     DPNI_BUF_LAYOUT_OPT_FRAME_STATUS;
- 	err = dpni_set_buffer_layout(priv->mc_io, 0, priv->mc_token,
- 				     DPNI_QUEUE_TX, &buf_layout);
- 	if (err) {
-@@ -2741,7 +2886,8 @@ static int dpaa2_eth_set_buffer_layout(struct dpaa2_eth_priv *priv)
- 	}
- 
- 	/* tx-confirm buffer */
--	buf_layout.options = DPNI_BUF_LAYOUT_OPT_TIMESTAMP;
-+	buf_layout.options = DPNI_BUF_LAYOUT_OPT_TIMESTAMP |
-+			     DPNI_BUF_LAYOUT_OPT_FRAME_STATUS;
- 	err = dpni_set_buffer_layout(priv->mc_io, 0, priv->mc_token,
- 				     DPNI_QUEUE_TX_CONFIRM, &buf_layout);
- 	if (err) {
-@@ -3969,6 +4115,16 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
- 	priv->tx_tstamp_type = HWTSTAMP_TX_OFF;
- 	priv->rx_tstamp = false;
- 
-+	priv->dpaa2_ptp_wq = alloc_workqueue("dpaa2_ptp_wq", 0, 0);
-+	if (!priv->dpaa2_ptp_wq) {
-+		err = -ENOMEM;
-+		goto err_wq_alloc;
-+	}
-+
-+	INIT_WORK(&priv->tx_onestep_tstamp, dpaa2_eth_tx_onestep_tstamp);
-+
-+	skb_queue_head_init(&priv->tx_skbs);
-+
- 	/* Obtain a MC portal */
- 	err = fsl_mc_portal_allocate(dpni_dev, FSL_MC_IO_ATOMIC_CONTEXT_PORTAL,
- 				     &priv->mc_io);
-@@ -4107,6 +4263,8 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
- err_dpni_setup:
- 	fsl_mc_portal_free(priv->mc_io);
- err_portal_alloc:
-+	destroy_workqueue(priv->dpaa2_ptp_wq);
-+err_wq_alloc:
- 	dev_set_drvdata(dev, NULL);
- 	free_netdev(net_dev);
- 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index e33d79e..6436fa3 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -195,6 +195,24 @@ struct dpaa2_faead {
- #define DPAA2_FAEAD_EBDDV		0x00002000
- #define DPAA2_FAEAD_UPD			0x00000010
- 
-+struct ptp_tstamp {
-+	u16 sec_msb;
-+	u32 sec_lsb;
-+	u32 nsec;
-+};
-+
-+static inline void ns_to_ptp_tstamp(struct ptp_tstamp *tstamp, u64 ns)
-+{
-+	u64 sec, nsec;
-+
-+	sec = ns;
-+	nsec = do_div(sec, 1000000000);
-+
-+	tstamp->sec_lsb = sec & 0xFFFFFFFF;
-+	tstamp->sec_msb = (sec >> 32) & 0xFFFF;
-+	tstamp->nsec = nsec;
-+}
-+
- /* Accessors for the hardware annotation fields that we use */
- static inline void *dpaa2_get_hwa(void *buf_addr, bool swa)
- {
-@@ -474,9 +492,21 @@ struct dpaa2_eth_priv {
- #endif
- 
- 	struct dpaa2_mac *mac;
-+	struct workqueue_struct	*dpaa2_ptp_wq;
-+	struct work_struct	tx_onestep_tstamp;
-+	struct sk_buff_head	tx_skbs;
-+	/* The one-step timestamping configuration on hardware
-+	 * registers could only be done when no one-step
-+	 * timestamping frames are in flight. So we use a mutex
-+	 * lock here to make sure the lock is released by last
-+	 * one-step timestamping packet through TX confirmation
-+	 * queue before transmit current packet.
-+	 */
-+	struct mutex		onestep_tstamp_lock;
- };
- 
- #define TX_TSTAMP		0x1
-+#define TX_TSTAMP_ONESTEP_SYNC	0x2
- 
- #define DPAA2_RXH_SUPPORTED	(RXH_L2DA | RXH_VLAN | RXH_L3_PROTO \
- 				| RXH_IP_SRC | RXH_IP_DST | RXH_L4_B_0_1 \
-@@ -581,7 +611,7 @@ static inline unsigned int dpaa2_eth_needed_headroom(struct sk_buff *skb)
- 		return 0;
- 
- 	/* If we have Tx timestamping, need 128B hardware annotation */
--	if (skb->cb[0] == TX_TSTAMP)
-+	if (skb->cb[0])
- 		headroom += DPAA2_ETH_TX_HWA_SIZE;
- 
- 	return headroom;
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
-index 26bd99b..11e0c04 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
- /* Copyright 2014-2016 Freescale Semiconductor Inc.
-  * Copyright 2016 NXP
-+ * Copyright 2020 NXP
-  */
- 
- #include <linux/net_tstamp.h>
-@@ -763,6 +764,9 @@ EXPORT_SYMBOL(dpaa2_phc_index);
- static int dpaa2_eth_get_ts_info(struct net_device *dev,
- 				 struct ethtool_ts_info *info)
- {
-+	if (!dpaa2_ptp)
-+		return ethtool_op_get_ts_info(dev, info);
-+
- 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
- 				SOF_TIMESTAMPING_RX_HARDWARE |
- 				SOF_TIMESTAMPING_RAW_HARDWARE;
-@@ -770,7 +774,8 @@ static int dpaa2_eth_get_ts_info(struct net_device *dev,
- 	info->phc_index = dpaa2_phc_index;
- 
- 	info->tx_types = (1 << HWTSTAMP_TX_OFF) |
--			 (1 << HWTSTAMP_TX_ON);
-+			 (1 << HWTSTAMP_TX_ON) |
-+			 (1 << HWTSTAMP_TX_ONESTEP_SYNC);
- 
- 	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
- 			   (1 << HWTSTAMP_FILTER_ALL);
--- 
-2.7.4
-
+SGkgU2FlZWQsDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU2FlZWQg
+TWFoYW1lZWQgPHNhZWVkQGtlcm5lbC5vcmc+DQo+IFNlbnQ6IFRodXJzZGF5LCBTZXB0ZW1iZXIg
+MTcsIDIwMjAgMzoyMyBBTQ0KPiBUbzogWS5iLiBMdSA8eWFuZ2JvLmx1QG54cC5jb20+OyBuZXRk
+ZXZAdmdlci5rZXJuZWwub3JnDQo+IENjOiBEYXZpZCBTIC4gTWlsbGVyIDxkYXZlbUBkYXZlbWxv
+ZnQubmV0PjsgSmFrdWIgS2ljaW5za2kNCj4gPGt1YmFAa2VybmVsLm9yZz47IElvYW5hIENpb3Ju
+ZWkgPGlvYW5hLmNpb3JuZWlAbnhwLmNvbT47IElvYW5hIENpb2NvaQ0KPiBSYWR1bGVzY3UgPHJ1
+eGFuZHJhLnJhZHVsZXNjdUBueHAuY29tPjsgUmljaGFyZCBDb2NocmFuDQo+IDxyaWNoYXJkY29j
+aHJhbkBnbWFpbC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbdjMsIDUvNl0gZHBhYTItZXRoOiBzdXBw
+b3J0IFBUUCBTeW5jIHBhY2tldCBvbmUtc3RlcA0KPiB0aW1lc3RhbXBpbmcNCj4gDQo+IE9uIFdl
+ZCwgMjAyMC0wOS0xNiBhdCAyMDowOCArMDgwMCwgWWFuZ2JvIEx1IHdyb3RlOg0KPiA+IFRoaXMg
+cGF0Y2ggaXMgdG8gYWRkIFBUUCBzeW5jIHBhY2tldCBvbmUtc3RlcCB0aW1lc3RhbXBpbmcgc3Vw
+cG9ydC4NCj4gPiBCZWZvcmUgZWdyZXNzLCBvbmUtc3RlcCB0aW1lc3RhbXBpbmcgZW5hYmxlbWVu
+dCBuZWVkcywNCj4gPg0KPiA+IC0gRW5hYmxpbmcgdGltZXN0YW1wIGFuZCBGQVMgKEZyYW1lIEFu
+bm90YXRpb24gU3RhdHVzKSBpbg0KPiA+ICAgZHBuaSBidWZmZXIgbGF5b3V0Lg0KPiA+DQo+ID4g
+LSBXcml0ZSB0aW1lc3RhbXAgdG8gZnJhbWUgYW5ub3RhdGlvbiBhbmQgc2V0IFBUUCBiaXQgaW4N
+Cj4gPiAgIEZBUyB0byBtYXJrIGFzIG9uZS1zdGVwIHRpbWVzdGFtcGluZyBldmVudC4NCj4gPg0K
+PiA+IC0gRW5hYmxpbmcgb25lLXN0ZXAgdGltZXN0YW1waW5nIGJ5IGRwbmlfc2V0X3NpbmdsZV9z
+dGVwX2NmZygpDQo+ID4gICBBUEksIHdpdGggb2Zmc2V0IHByb3ZpZGVkIHRvIGluc2VydCBjb3Jy
+ZWN0aW9uIHRpbWUgb24gZnJhbWUuDQo+ID4gICBUaGUgb2Zmc2V0IG11c3QgcmVzcGVjdCBhbGwg
+TUFDIGhlYWRlcnMsIFZMQU4gdGFncyBhbmQgb3RoZXINCj4gPiAgIHByb3RvY29sIGhlYWRlcnMg
+YWNjb3JkaW5nbHkuIFRoZSBjb3JyZWN0aW9uIGZpZWxkIHVwZGF0ZSBjYW4NCj4gPiAgIGNvbnNp
+ZGVyIGRlbGF5cyB1cCB0byBvbmUgc2Vjb25kLiBTbyBQVFAgZnJhbWUgbmVlZHMgdG8gYmUNCj4g
+PiAgIGZpbHRlcmVkIGFuZCBwYXJzZWQsIGFuZCB3cml0dGVuIHRpbWVzdGFtcCBpbnRvIFN5bmMg
+ZnJhbWUNCj4gPiAgIG9yaWdpblRpbWVzdGFtcCBmaWVsZC4NCj4gPg0KPiA+IFRoZSBvcGVyYXRp
+b24gb2YgQVBJIGRwbmlfc2V0X3NpbmdsZV9zdGVwX2NmZygpIGhhcyB0byBiZSBkb25lDQo+ID4g
+d2hlbiBubyBvbmUtc3RlcCB0aW1lc3RhbXBpbmcgZnJhbWVzIGFyZSBpbiBmbGlnaHQuIFNvIHdl
+IGhhdmUNCj4gPiB0byBtYWtlIHN1cmUgdGhlIGxhc3Qgb25lLXN0ZXAgdGltZXN0YW1waW5nIGZy
+YW1lIGhhcyBhbHJlYWR5DQo+ID4gYmVlbiB0cmFuc21pdHRlZCBvbiBoYXJkd2FyZSBiZWZvcmUg
+c3RhcnRpbmcgdG8gc2VuZCB0aGUgY3VycmVudA0KPiA+IG9uZS4gVGhlIHJlc29sdXRpb24gaXMs
+DQo+ID4NCj4gPiAtIFV0aWxpemUgc2tiLT5jYlswXSB0byBtYXJrIHRpbWVzdGFtcGluZyByZXF1
+ZXN0IHBlciBwYWNrZXQuDQo+ID4gICBJZiBpdCBpcyBvbmUtc3RlcCB0aW1lc3RhbXBpbmcgUFRQ
+IHN5bmMgcGFja2V0LCBxdWV1ZSB0byBza2IgcXVldWUuDQo+ID4gICBJZiBub3QsIHRyYW5zbWl0
+IGltbWVkaWF0ZWx5Lg0KPiA+DQo+ID4gLSBTY2hlZHVsZSBhIHdvcmsgdG8gdHJhbnNtaXQgc2ti
+cyBpbiBza2IgcXVldWUuDQo+ID4NCj4gPiAtIG11dGV4IGxvY2sgaXMgdXNlZCB0byBlbnN1cmUg
+dGhlIGxhc3Qgb25lLXN0ZXAgdGltZXN0YW1waW5nIHBhY2tldA0KPiA+ICAgaGFzIGFscmVhZHkg
+YmVlbiB0cmFuc21pdHRlZCBvbiBoYXJkd2FyZSB0aHJvdWdoIFRYIGNvbmZpcm1hdGlvbg0KPiA+
+IHF1ZXVlDQo+ID4gICBiZWZvcmUgdHJhbnNtaXR0aW5nIGN1cnJlbnQgcGFja2V0Lg0KPiA+DQo+
+ID4gU2lnbmVkLW9mZi1ieTogWWFuZ2JvIEx1IDx5YW5nYm8ubHVAbnhwLmNvbT4NCj4gPiAtLS0N
+Cj4gPiBDaGFuZ2VzIGZvciB2MjoNCj4gPiAJLSBOb25lLg0KPiA+IENoYW5nZXMgZm9yIHYzOg0K
+PiA+IAktIEZpeGVkIGJ1aWxkIGlzc3VlIG9uIDMyLWJpdC4NCj4gPiAJLSBDb252ZXJ0ZWQgdG8g
+dXNlIHB0cF9wYXJzZV9oZWFkZXIuDQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0
+L2ZyZWVzY2FsZS9kcGFhMi9kcGFhMi1ldGguYyAgIHwgMTkxDQo+ID4gKysrKysrKysrKysrKysr
+KysrKy0tDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9kcGFhMi9kcGFhMi1l
+dGguaCAgIHwgIDMyICsrKy0NCj4gPiAgLi4uL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYTIv
+ZHBhYTItZXRodG9vbC5jICAgfCAgIDQgKy0NCj4gPiAgMyBmaWxlcyBjaGFuZ2VkLCAyMTEgaW5z
+ZXJ0aW9ucygrKSwgMTYgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEyL2RwYWEyLWV0aC5jDQo+ID4gYi9kcml2ZXJz
+L25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYTIvZHBhYTItZXRoLmMNCj4gPiBpbmRleCBlYWI5
+NDcwLi5iYTU3MGY2IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVz
+Y2FsZS9kcGFhMi9kcGFhMi1ldGguYw0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2Zy
+ZWVzY2FsZS9kcGFhMi9kcGFhMi1ldGguYw0KPiA+IEBAIC0xNSw2ICsxNSw3IEBADQo+ID4gICNp
+bmNsdWRlIDxsaW51eC9icGYuaD4NCj4gPiAgI2luY2x1ZGUgPGxpbnV4L2JwZl90cmFjZS5oPg0K
+PiA+ICAjaW5jbHVkZSA8bGludXgvZnNsL3B0cF9xb3JpcS5oPg0KPiA+ICsjaW5jbHVkZSA8bGlu
+dXgvcHRwX2NsYXNzaWZ5Lmg+DQo+ID4gICNpbmNsdWRlIDxuZXQvcGt0X2Nscy5oPg0KPiA+ICAj
+aW5jbHVkZSA8bmV0L3NvY2suaD4NCj4gPg0KPiA+IEBAIC01NjMsMTEgKzU2NCw1NyBAQCBzdGF0
+aWMgaW50IGRwYWEyX2V0aF9jb25zdW1lX2ZyYW1lcyhzdHJ1Y3QNCj4gPiBkcGFhMl9ldGhfY2hh
+bm5lbCAqY2gsDQo+ID4gIAlyZXR1cm4gY2xlYW5lZDsNCj4gPiAgfQ0KPiA+DQo+ID4gK3N0YXRp
+YyBpbnQgZHBhYTJfZXRoX3B0cF9wYXJzZShzdHJ1Y3Qgc2tfYnVmZiAqc2tiLA0KPiA+ICsJCQkg
+ICAgICAgdTggKm1zZ3R5cGUsIHU4ICp0d29zdGVwLCB1OCAqdWRwLA0KPiA+ICsJCQkgICAgICAg
+dTE2ICpjb3JyZWN0aW9uX29mZnNldCwNCj4gPiArCQkJICAgICAgIHUxNiAqb3JpZ2ludGltZXN0
+YW1wX29mZnNldCkNCj4gPiArew0KPiA+ICsJdW5zaWduZWQgaW50IHB0cF9jbGFzczsNCj4gPiAr
+CXN0cnVjdCBwdHBfaGVhZGVyICpoZHI7DQo+ID4gKwl1bnNpZ25lZCBpbnQgdHlwZTsNCj4gPiAr
+CXU4ICpiYXNlOw0KPiA+ICsNCj4gPiArCXB0cF9jbGFzcyA9IHB0cF9jbGFzc2lmeV9yYXcoc2ti
+KTsNCj4gPiArCWlmIChwdHBfY2xhc3MgPT0gUFRQX0NMQVNTX05PTkUpDQo+ID4gKwkJcmV0dXJu
+IC1FSU5WQUw7DQo+ID4gKw0KPiA+ICsJaGRyID0gcHRwX3BhcnNlX2hlYWRlcihza2IsIHB0cF9j
+bGFzcyk7DQo+ID4gKwlpZiAoIWhkcikNCj4gPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gPiArDQo+
+ID4gKwkqbXNndHlwZSA9IHB0cF9nZXRfbXNndHlwZShoZHIsIHB0cF9jbGFzcyk7DQo+ID4gKwkq
+dHdvc3RlcCA9IGhkci0+ZmxhZ19maWVsZFswXSAmIDB4MjsNCj4gPiArDQo+ID4gKwl0eXBlID0g
+cHRwX2NsYXNzICYgUFRQX0NMQVNTX1BNQVNLOw0KPiA+ICsJaWYgKHR5cGUgPT0gUFRQX0NMQVNT
+X0lQVjQgfHwNCj4gPiArCSAgICB0eXBlID09IFBUUF9DTEFTU19JUFY2KQ0KPiA+ICsJCSp1ZHAg
+PSAxOw0KPiA+ICsJZWxzZQ0KPiA+ICsJCSp1ZHAgPSAwOw0KPiA+ICsNCj4gPiArCWJhc2UgPSBz
+a2JfbWFjX2hlYWRlcihza2IpOw0KPiA+ICsJKmNvcnJlY3Rpb25fb2Zmc2V0ID0gKHU4ICopJmhk
+ci0+Y29ycmVjdGlvbiAtIGJhc2U7DQo+ID4gKwkqb3JpZ2ludGltZXN0YW1wX29mZnNldCA9ICh1
+OCAqKWhkciArIHNpemVvZihzdHJ1Y3QgcHRwX2hlYWRlcikNCj4gPiAtIGJhc2U7DQo+ID4gKw0K
+PiA+ICsJcmV0dXJuIDA7DQo+ID4gK30NCj4gPiArDQo+ID4gIC8qIENvbmZpZ3VyZSB0aGUgZWdy
+ZXNzIGZyYW1lIGFubm90YXRpb24gZm9yIHRpbWVzdGFtcCB1cGRhdGUgKi8NCj4gPiAtc3RhdGlj
+IHZvaWQgZHBhYTJfZXRoX2VuYWJsZV90eF90c3RhbXAoc3RydWN0IGRwYWEyX2ZkICpmZCwgdm9p
+ZA0KPiA+ICpidWZfc3RhcnQpDQo+ID4gK3N0YXRpYyB2b2lkIGRwYWEyX2V0aF9lbmFibGVfdHhf
+dHN0YW1wKHN0cnVjdCBkcGFhMl9ldGhfcHJpdiAqcHJpdiwNCj4gPiArCQkJCSAgICAgICBzdHJ1
+Y3QgZHBhYTJfZmQgKmZkLA0KPiA+ICsJCQkJICAgICAgIHZvaWQgKmJ1Zl9zdGFydCwNCj4gPiAr
+CQkJCSAgICAgICBzdHJ1Y3Qgc2tfYnVmZiAqc2tiKQ0KPiA+ICB7DQo+ID4gKwlzdHJ1Y3QgcHRw
+X3RzdGFtcCBvcmlnaW5fdGltZXN0YW1wOw0KPiA+ICsJc3RydWN0IGRwbmlfc2luZ2xlX3N0ZXBf
+Y2ZnIGNmZzsNCj4gPiArCXU4IG1zZ3R5cGUsIHR3b3N0ZXAsIHVkcDsNCj4gPiAgCXN0cnVjdCBk
+cGFhMl9mYWVhZCAqZmFlYWQ7DQo+ID4gKwlzdHJ1Y3QgZHBhYTJfZmFzICpmYXM7DQo+ID4gKwlz
+dHJ1Y3QgdGltZXNwZWM2NCB0czsNCj4gPiArCXUxNiBvZmZzZXQxLCBvZmZzZXQyOw0KPiA+ICAJ
+dTMyIGN0cmwsIGZyYzsNCj4gPiArCV9fbGU2NCAqbnM7DQo+ID4gKwl1OCAqZGF0YTsNCj4gPg0K
+PiA+ICAJLyogTWFyayB0aGUgZWdyZXNzIGZyYW1lIGFubm90YXRpb24gYXJlYSBhcyB2YWxpZCAq
+Lw0KPiA+ICAJZnJjID0gZHBhYTJfZmRfZ2V0X2ZyYyhmZCk7DQo+ID4gQEAgLTU4Myw2ICs2MzAs
+NTggQEAgc3RhdGljIHZvaWQgZHBhYTJfZXRoX2VuYWJsZV90eF90c3RhbXAoc3RydWN0DQo+ID4g
+ZHBhYTJfZmQgKmZkLCB2b2lkICpidWZfc3RhcnQpDQo+ID4gIAljdHJsID0gRFBBQTJfRkFFQURf
+QTJWIHwgRFBBQTJfRkFFQURfVVBEViB8IERQQUEyX0ZBRUFEX1VQRDsNCj4gPiAgCWZhZWFkID0g
+ZHBhYTJfZ2V0X2ZhZWFkKGJ1Zl9zdGFydCwgdHJ1ZSk7DQo+ID4gIAlmYWVhZC0+Y3RybCA9IGNw
+dV90b19sZTMyKGN0cmwpOw0KPiA+ICsNCj4gPiArCWlmIChza2ItPmNiWzBdID09IFRYX1RTVEFN
+UF9PTkVTVEVQX1NZTkMpIHsNCj4gPiArCQlpZiAoZHBhYTJfZXRoX3B0cF9wYXJzZShza2IsICZt
+c2d0eXBlLCAmdHdvc3RlcCwgJnVkcCwNCj4gPiArCQkJCQkmb2Zmc2V0MSwgJm9mZnNldDIpKSB7
+DQo+ID4gKwkJCW5ldGRldl9lcnIocHJpdi0+bmV0X2RldiwNCj4gPiArCQkJCSAgICJiYWQgcGFj
+a2V0IGZvciBvbmUtc3RlcA0KPiA+IHRpbWVzdGFtcGluZ1xuIik7DQo+IA0KPiBkb24ndCB1c2Ug
+bmV0ZGV2X2VyciBpbiBkYXRhIHBhdGgsIGhhdmUgYSBjb3VudGVyIG9yDQo+IFdBUk5fT05DRS9u
+ZXRkZXZfd2Fybl9vbmNlIGlmIHlvdSBrbm93IHRoYXQgdGhpcyBzaG91bGRuJ3QgaGFwcGVuLg0K
+DQpPay4gSSB3aWxsIHVzZSBXQVJOX09OQ0UgaW5zdGVhZC4NCg0KPiANCj4gPiArCQkJcmV0dXJu
+Ow0KPiA+ICsJCX0NCj4gPiArDQo+ID4gKwkJaWYgKG1zZ3R5cGUgIT0gMCB8fCB0d29zdGVwKSB7
+DQo+ID4gKwkJCW5ldGRldl9lcnIocHJpdi0+bmV0X2RldiwNCj4gPiArCQkJCSAgICJiYWQgcGFj
+a2V0IGZvciBvbmUtc3RlcA0KPiA+IHRpbWVzdGFtcGluZ1xuIik7DQo+ID4gKwkJCXJldHVybjsN
+Cj4gPiArCQl9DQo+ID4gKw0KPiA+ICsJCS8qIE1hcmsgdGhlIGZyYW1lIGFubm90YXRpb24gc3Rh
+dHVzIGFzIHZhbGlkICovDQo+ID4gKwkJZnJjID0gZHBhYTJfZmRfZ2V0X2ZyYyhmZCk7DQo+ID4g
+KwkJZHBhYTJfZmRfc2V0X2ZyYyhmZCwgZnJjIHwgRFBBQTJfRkRfRlJDX0ZBU1YpOw0KPiA+ICsN
+Cj4gPiArCQkvKiBNYXJrIHRoZSBQVFAgZmxhZyBmb3Igb25lIHN0ZXAgdGltZXN0YW1waW5nICov
+DQo+ID4gKwkJZmFzID0gZHBhYTJfZ2V0X2ZhcyhidWZfc3RhcnQsIHRydWUpOw0KPiA+ICsJCWZh
+cy0+c3RhdHVzID0gY3B1X3RvX2xlMzIoRFBBQTJfRkFTX1BUUCk7DQo+ID4gKw0KPiA+ICsJCS8q
+IFdyaXRlIGN1cnJlbnQgdGltZSB0byBGQSB0aW1lc3RhbXAgZmllbGQgKi8NCj4gPiArCQlpZiAo
+IWRwYWEyX3B0cCkgew0KPiA+ICsJCQluZXRkZXZfZXJyKHByaXYtPm5ldF9kZXYsDQo+ID4gKwkJ
+CQkgICAicHRwIGRyaXZlciBtYXkgbm90IGxvYWRlZCBmb3Igb25lLQ0KPiA+IHN0ZXAgdGltZXN0
+YW1waW5nXG4iKTsNCj4gDQo+IHdoeSBhcmUgeW91IGV2ZW4gaGVyZSBpZiBkcGFhMl9wdHAgbm90
+IHZhbGlkID8gaXNuJ3QgaXQgdG9vIGxhdGUgdG8NCj4gYWJvcnQgaGVyZSA/IHNvbWUgb2YgdGhl
+IHR4IGRlc2NyaXB0b3IgZmllbGRzIGFyZSBhbHJlYWR5IHBvcHVsYXRlZC4NCj4gDQo+IEp1c3Qg
+ZG9uJ3QgYWxsb3cgcHRwIGFuZCBhdm9pZCBtYXJraW5nIHNrYnMgZm9yIHRpbWVzdGFtcGluZyBh
+cyBlYXJseQ0KPiBhcyBwb3NzaWJsZSBpZiB5b3VyIGRyaXZlciBpcyBub3QgcmVhZHkgZm9yIGl0
+IC4uDQoNCldpbGwgY2hlY2sgUFRQIGRyaXZlciBhdmFpbGFiaWxpdHkgYmVmb3JlIG1hcmtpbmcg
+c2tiIGZvciB0aW1lc3RhbXBpbmcuDQpBbmQgd2lsbCBjaGVjayBpdCBpbiBpb2N0bCBhbmQgZXRo
+dG9vbCBnZXRfdHNfaW5mbyBjYWxsIGJhY2sgdG9vLg0KDQo+IA0KPiA+ICsJCQlyZXR1cm47DQo+
+ID4gKwkJfQ0KPiA+ICsJCWRwYWEyX3B0cC0+Y2Fwcy5nZXR0aW1lNjQoJmRwYWEyX3B0cC0+Y2Fw
+cywgJnRzKTsNCj4gPiArCQlucyA9IGRwYWEyX2dldF90cyhidWZfc3RhcnQsIHRydWUpOw0KPiA+
+ICsJCSpucyA9IGNwdV90b19sZTY0KHRpbWVzcGVjNjRfdG9fbnMoJnRzKSAvDQo+ID4gKwkJCQkg
+IERQQUEyX1BUUF9DTEtfUEVSSU9EX05TKTsNCj4gPiArDQo+ID4gKwkJLyogVXBkYXRlIGN1cnJl
+bnQgdGltZSB0byBQVFAgbWVzc2FnZSBvcmlnaW5UaW1lc3RhbXANCj4gPiBmaWVsZCAqLw0KPiA+
+ICsJCW5zX3RvX3B0cF90c3RhbXAoJm9yaWdpbl90aW1lc3RhbXAsIGxlNjRfdG9fY3B1cChucykp
+Ow0KPiA+ICsJCWRhdGEgPSBza2JfbWFjX2hlYWRlcihza2IpOw0KPiA+ICsJCSooX19iZTE2ICop
+KGRhdGEgKyBvZmZzZXQyKSA9DQo+ID4gaHRvbnMob3JpZ2luX3RpbWVzdGFtcC5zZWNfbXNiKTsN
+Cj4gPiArCQkqKF9fYmUzMiAqKShkYXRhICsgb2Zmc2V0MiArIDIpID0NCj4gPiArCQkJaHRvbmwo
+b3JpZ2luX3RpbWVzdGFtcC5zZWNfbHNiKTsNCj4gPiArCQkqKF9fYmUzMiAqKShkYXRhICsgb2Zm
+c2V0MiArIDYpID0NCj4gPiBodG9ubChvcmlnaW5fdGltZXN0YW1wLm5zZWMpOw0KPiA+ICsNCj4g
+PiArCQljZmcuZW4gPSAxOw0KPiA+ICsJCWNmZy5jaF91cGRhdGUgPSB1ZHA7DQo+ID4gKwkJY2Zn
+Lm9mZnNldCA9IG9mZnNldDE7DQo+ID4gKwkJY2ZnLnBlZXJfZGVsYXkgPSAwOw0KPiA+ICsNCj4g
+PiArCQlpZiAoZHBuaV9zZXRfc2luZ2xlX3N0ZXBfY2ZnKHByaXYtPm1jX2lvLCAwLCBwcml2LQ0K
+PiA+ID5tY190b2tlbiwNCj4gPiArCQkJCQkgICAgICZjZmcpKQ0KPiA+ICsJCQluZXRkZXZfZXJy
+KHByaXYtPm5ldF9kZXYsDQo+ID4gKwkJCQkgICAiZHBuaV9zZXRfc2luZ2xlX3N0ZXBfY2ZnDQo+
+ID4gZmFpbGVkXG4iKTsNCj4gDQo+IEFnYWluIHRvbyBtdWNoIGVycm9yIHByaW50cyBvbiBkYXRh
+IHBhdGgsIHdpdGhvdXQgYW55IHJlYWwgdXNlZnVsIGRlYnVnDQo+IGluZm9ybWF0aW9uDQoNCldp
+bGwgdXNlIFdBUk5fT05DRSBpbnN0ZWFkLg0KDQo+IA0KPiA+ICsJfQ0KPiA+ICB9DQo+ID4NCj4g
+PiAgLyogQ3JlYXRlIGEgZnJhbWUgZGVzY3JpcHRvciBiYXNlZCBvbiBhIGZyYWdtZW50ZWQgc2ti
+ICovDQo+ID4gQEAgLTgyMCw3ICs5MTksNyBAQCBzdGF0aWMgaW50IGRwYWEyX2V0aF9idWlsZF9z
+aW5nbGVfZmQoc3RydWN0DQo+ID4gZHBhYTJfZXRoX3ByaXYgKnByaXYsDQo+ID4gICAqIFRoaXMg
+Y2FuIGJlIGNhbGxlZCBlaXRoZXIgZnJvbSBkcGFhMl9ldGhfdHhfY29uZigpIG9yIG9uIHRoZQ0K
+PiA+IGVycm9yIHBhdGggb2YNCj4gPiAgICogZHBhYTJfZXRoX3R4KCkuDQo+ID4gICAqLw0KPiA+
+IC1zdGF0aWMgdm9pZCBkcGFhMl9ldGhfZnJlZV90eF9mZChjb25zdCBzdHJ1Y3QgZHBhYTJfZXRo
+X3ByaXYgKnByaXYsDQo+ID4gK3N0YXRpYyB2b2lkIGRwYWEyX2V0aF9mcmVlX3R4X2ZkKHN0cnVj
+dCBkcGFhMl9ldGhfcHJpdiAqcHJpdiwNCj4gPiAgCQkJCSBzdHJ1Y3QgZHBhYTJfZXRoX2ZxICpm
+cSwNCj4gPiAgCQkJCSBjb25zdCBzdHJ1Y3QgZHBhYTJfZmQgKmZkLCBib29sDQo+ID4gaW5fbmFw
+aSkNCj4gPiAgew0KPiA+IEBAIC05MDMsNiArMTAwMiw4IEBAIHN0YXRpYyB2b2lkIGRwYWEyX2V0
+aF9mcmVlX3R4X2ZkKGNvbnN0IHN0cnVjdA0KPiA+IGRwYWEyX2V0aF9wcml2ICpwcml2LA0KPiA+
+ICAJCW5zID0gRFBBQTJfUFRQX0NMS19QRVJJT0RfTlMgKiBsZTY0X3RvX2NwdXAodHMpOw0KPiA+
+ICAJCXNoaHd0c3RhbXBzLmh3dHN0YW1wID0gbnNfdG9fa3RpbWUobnMpOw0KPiA+ICAJCXNrYl90
+c3RhbXBfdHgoc2tiLCAmc2hod3RzdGFtcHMpOw0KPiA+ICsJfSBlbHNlIGlmIChza2ItPmNiWzBd
+ID09IFRYX1RTVEFNUF9PTkVTVEVQX1NZTkMpIHsNCj4gPiArCQltdXRleF91bmxvY2soJnByaXYt
+Pm9uZXN0ZXBfdHN0YW1wX2xvY2spOw0KPiA+ICAJfQ0KPiA+DQo+ID4gIAkvKiBGcmVlIFNHVCBi
+dWZmZXIgYWxsb2NhdGVkIG9uIHR4ICovDQo+ID4gQEAgLTkyMiw3ICsxMDIzLDggQEAgc3RhdGlj
+IHZvaWQgZHBhYTJfZXRoX2ZyZWVfdHhfZmQoY29uc3Qgc3RydWN0DQo+ID4gZHBhYTJfZXRoX3By
+aXYgKnByaXYsDQo+ID4gIAluYXBpX2NvbnN1bWVfc2tiKHNrYiwgaW5fbmFwaSk7DQo+ID4gIH0N
+Cj4gPg0KPiA+IC1zdGF0aWMgbmV0ZGV2X3R4X3QgZHBhYTJfZXRoX3R4KHN0cnVjdCBza19idWZm
+ICpza2IsIHN0cnVjdA0KPiA+IG5ldF9kZXZpY2UgKm5ldF9kZXYpDQo+ID4gK3N0YXRpYyBuZXRk
+ZXZfdHhfdCBfX2RwYWEyX2V0aF90eChzdHJ1Y3Qgc2tfYnVmZiAqc2tiLA0KPiA+ICsJCQkJICBz
+dHJ1Y3QgbmV0X2RldmljZSAqbmV0X2RldikNCj4gPiAgew0KPiA+ICAJc3RydWN0IGRwYWEyX2V0
+aF9wcml2ICpwcml2ID0gbmV0ZGV2X3ByaXYobmV0X2Rldik7DQo+ID4gIAlzdHJ1Y3QgZHBhYTJf
+ZmQgZmQ7DQo+ID4gQEAgLTkzNywxMyArMTAzOSw2IEBAIHN0YXRpYyBuZXRkZXZfdHhfdCBkcGFh
+Ml9ldGhfdHgoc3RydWN0IHNrX2J1ZmYNCj4gPiAqc2tiLCBzdHJ1Y3QgbmV0X2RldmljZSAqbmV0
+X2RldikNCj4gPiAgCWludCBlcnIsIGk7DQo+ID4gIAl2b2lkICpzd2E7DQo+ID4NCj4gPiAtCS8q
+IFV0aWxpemUgc2tiLT5jYlswXSBmb3IgdGltZXN0YW1waW5nIHJlcXVlc3QgcGVyIHNrYiAqLw0K
+PiA+IC0Jc2tiLT5jYlswXSA9IDA7DQo+ID4gLQ0KPiA+IC0JaWYgKHByaXYtPnR4X3RzdGFtcF90
+eXBlID09IEhXVFNUQU1QX1RYX09OICYmDQo+ID4gLQkgICAgc2tiX3NoaW5mbyhza2IpLT50eF9m
+bGFncyAmIFNLQlRYX0hXX1RTVEFNUCkNCj4gPiAtCQlza2ItPmNiWzBdID0gVFhfVFNUQU1QOw0K
+PiA+IC0NCj4gPiAgCXBlcmNwdV9zdGF0cyA9IHRoaXNfY3B1X3B0cihwcml2LT5wZXJjcHVfc3Rh
+dHMpOw0KPiA+ICAJcGVyY3B1X2V4dHJhcyA9IHRoaXNfY3B1X3B0cihwcml2LT5wZXJjcHVfZXh0
+cmFzKTsNCj4gPg0KPiA+IEBAIC05ODEsOCArMTA3Niw4IEBAIHN0YXRpYyBuZXRkZXZfdHhfdCBk
+cGFhMl9ldGhfdHgoc3RydWN0IHNrX2J1ZmYNCj4gPiAqc2tiLCBzdHJ1Y3QgbmV0X2RldmljZSAq
+bmV0X2RldikNCj4gPiAgCQlnb3RvIGVycl9idWlsZF9mZDsNCj4gPiAgCX0NCj4gPg0KPiA+IC0J
+aWYgKHNrYi0+Y2JbMF0gPT0gVFhfVFNUQU1QKQ0KPiA+IC0JCWRwYWEyX2V0aF9lbmFibGVfdHhf
+dHN0YW1wKCZmZCwgc3dhKTsNCj4gPiArCWlmIChza2ItPmNiWzBdKQ0KPiA+ICsJCWRwYWEyX2V0
+aF9lbmFibGVfdHhfdHN0YW1wKHByaXYsICZmZCwgc3dhLCBza2IpOw0KPiA+DQo+ID4gIAkvKiBU
+cmFjaW5nIHBvaW50ICovDQo+ID4gIAl0cmFjZV9kcGFhMl90eF9mZChuZXRfZGV2LCAmZmQpOw0K
+PiA+IEBAIC0xMDM3LDYgKzExMzIsNTggQEAgc3RhdGljIG5ldGRldl90eF90IGRwYWEyX2V0aF90
+eChzdHJ1Y3Qgc2tfYnVmZg0KPiA+ICpza2IsIHN0cnVjdCBuZXRfZGV2aWNlICpuZXRfZGV2KQ0K
+PiA+ICAJcmV0dXJuIE5FVERFVl9UWF9PSzsNCj4gPiAgfQ0KPiA+DQo+ID4gK3N0YXRpYyB2b2lk
+IGRwYWEyX2V0aF90eF9vbmVzdGVwX3RzdGFtcChzdHJ1Y3Qgd29ya19zdHJ1Y3QgKndvcmspDQo+
+ID4gK3sNCj4gPiArCXN0cnVjdCBkcGFhMl9ldGhfcHJpdiAqcHJpdiA9IGNvbnRhaW5lcl9vZih3
+b3JrLCBzdHJ1Y3QNCj4gPiBkcGFhMl9ldGhfcHJpdiwNCj4gPiArCQkJCQkJICAgdHhfb25lc3Rl
+cF90c3RhbXApOw0KPiA+ICsJc3RydWN0IHNrX2J1ZmYgKnNrYjsNCj4gPiArDQo+ID4gKwl3aGls
+ZSAodHJ1ZSkgew0KPiA+ICsJCXNrYiA9IHNrYl9kZXF1ZXVlKCZwcml2LT50eF9za2JzKTsNCj4g
+PiArCQlpZiAoIXNrYikNCj4gPiArCQkJcmV0dXJuOw0KPiA+ICsNCj4gPiArCQltdXRleF9sb2Nr
+KCZwcml2LT5vbmVzdGVwX3RzdGFtcF9sb2NrKTsNCj4gPiArCQlfX2RwYWEyX2V0aF90eChza2Is
+IHByaXYtPm5ldF9kZXYpOw0KPiANCj4gVmVyeSB3ZWlyZCBhcHByb2FjaCwgYXQgbGVhc3QgZG9j
+dW1lbnQgaGVyZSB3aGVyZSB0aGUgbG9jayBpcyBiZWluZw0KPiByZWxlYXNlZCwgaW4gYWRkaXRp
+b24gdG8gdGhlIGNvbW1lbnQgdGhhdCB5b3UgaGF2ZSBvbiB0aGUgbXV0ZXgNCj4gZGVjbGFyYXRp
+b24uDQo+IA0KPiA+ICsJfQ0KPiA+ICt9DQo+ID4gKw0KPiA+ICtzdGF0aWMgbmV0ZGV2X3R4X3Qg
+ZHBhYTJfZXRoX3R4KHN0cnVjdCBza19idWZmICpza2IsIHN0cnVjdA0KPiA+IG5ldF9kZXZpY2Ug
+Km5ldF9kZXYpDQo+ID4gK3sNCj4gPiArCXN0cnVjdCBkcGFhMl9ldGhfcHJpdiAqcHJpdiA9IG5l
+dGRldl9wcml2KG5ldF9kZXYpOw0KPiA+ICsJdTggbXNndHlwZSwgdHdvc3RlcCwgdWRwOw0KPiA+
+ICsJdTE2IG9mZnNldDEsIG9mZnNldDI7DQo+ID4gKw0KPiA+ICsJLyogVXRpbGl6ZSBza2ItPmNi
+WzBdIGZvciB0aW1lc3RhbXBpbmcgcmVxdWVzdCBwZXIgc2tiICovDQo+ID4gKwlza2ItPmNiWzBd
+ID0gMDsNCj4gPiArDQo+ID4gKwlpZiAoc2tiX3NoaW5mbyhza2IpLT50eF9mbGFncyAmIFNLQlRY
+X0hXX1RTVEFNUCkgew0KPiA+ICsJCWlmIChwcml2LT50eF90c3RhbXBfdHlwZSA9PSBIV1RTVEFN
+UF9UWF9PTikNCj4gPiArCQkJc2tiLT5jYlswXSA9IFRYX1RTVEFNUDsNCj4gPiArCQllbHNlIGlm
+IChwcml2LT50eF90c3RhbXBfdHlwZSA9PQ0KPiA+IEhXVFNUQU1QX1RYX09ORVNURVBfU1lOQykN
+Cj4gPiArCQkJc2tiLT5jYlswXSA9IFRYX1RTVEFNUF9PTkVTVEVQX1NZTkM7DQo+ID4gKwl9DQo+
+ID4gKw0KPiA+ICsJLyogVFggZm9yIG9uZS1zdGVwIHRpbWVzdGFtcGluZyBQVFAgU3luYyBwYWNr
+ZXQgKi8NCj4gPiArCWlmIChza2ItPmNiWzBdID09IFRYX1RTVEFNUF9PTkVTVEVQX1NZTkMpIHsN
+Cj4gPiArCQlpZiAoIWRwYWEyX2V0aF9wdHBfcGFyc2Uoc2tiLCAmbXNndHlwZSwgJnR3b3N0ZXAs
+ICZ1ZHAsDQo+ID4gKwkJCQkJICZvZmZzZXQxLCAmb2Zmc2V0MikpDQo+ID4gKwkJCWlmIChtc2d0
+eXBlID09IDAgJiYgdHdvc3RlcCA9PSAwKSB7DQo+ID4gKwkJCQlza2JfcXVldWVfdGFpbCgmcHJp
+di0+dHhfc2ticywgc2tiKTsNCj4gPiArCQkJCXF1ZXVlX3dvcmsocHJpdi0+ZHBhYTJfcHRwX3dx
+LA0KPiA+ICsJCQkJCSAgICZwcml2LT50eF9vbmVzdGVwX3RzdGFtcCk7DQo+ID4gKwkJCQlyZXR1
+cm4gTkVUREVWX1RYX09LOw0KPiA+ICsJCQl9DQo+ID4gKwkJLyogVXNlIHR3by1zdGVwIHRpbWVz
+dGFtcGluZyBpZiBub3Qgb25lLXN0ZXANCj4gPiB0aW1lc3RhbXBpbmcNCj4gPiArCQkgKiBQVFAg
+U3luYyBwYWNrZXQNCj4gPiArCQkgKi8NCj4gPiArCQlza2ItPmNiWzBdID0gVFhfVFNUQU1QOw0K
+PiA+ICsJfQ0KPiA+ICsNCj4gPiArCS8qIFRYIGZvciBvdGhlciBwYWNrZXRzICovDQo+ID4gKwly
+ZXR1cm4gX19kcGFhMl9ldGhfdHgoc2tiLCBuZXRfZGV2KTsNCj4gPiArfQ0KPiA+ICsNCj4gPiAg
+LyogVHggY29uZmlybWF0aW9uIGZyYW1lIHByb2Nlc3Npbmcgcm91dGluZSAqLw0KPiA+ICBzdGF0
+aWMgdm9pZCBkcGFhMl9ldGhfdHhfY29uZihzdHJ1Y3QgZHBhYTJfZXRoX3ByaXYgKnByaXYsDQo+
+ID4gIAkJCSAgICAgIHN0cnVjdCBkcGFhMl9ldGhfY2hhbm5lbCAqY2gNCj4gPiBfX2Fsd2F5c191
+bnVzZWQsDQo+ID4gQEAgLTE5MDYsNiArMjA1Myw3IEBAIHN0YXRpYyBpbnQgZHBhYTJfZXRoX3Rz
+X2lvY3RsKHN0cnVjdCBuZXRfZGV2aWNlDQo+ID4gKmRldiwgc3RydWN0IGlmcmVxICpycSwgaW50
+IGNtZCkNCj4gPiAgCXN3aXRjaCAoY29uZmlnLnR4X3R5cGUpIHsNCj4gPiAgCWNhc2UgSFdUU1RB
+TVBfVFhfT0ZGOg0KPiA+ICAJY2FzZSBIV1RTVEFNUF9UWF9PTjoNCj4gPiArCWNhc2UgSFdUU1RB
+TVBfVFhfT05FU1RFUF9TWU5DOg0KPiA+ICAJCXByaXYtPnR4X3RzdGFtcF90eXBlID0gY29uZmln
+LnR4X3R5cGU7DQo+ID4gIAkJYnJlYWs7DQo+ID4gIAlkZWZhdWx0Og0KPiA+IEBAIC0yNzMxLDgg
+KzI4NzksMTAgQEAgc3RhdGljIGludCBkcGFhMl9ldGhfc2V0X2J1ZmZlcl9sYXlvdXQoc3RydWN0
+DQo+ID4gZHBhYTJfZXRoX3ByaXYgKnByaXYpDQo+ID4gIAkvKiB0eCBidWZmZXIgKi8NCj4gPiAg
+CWJ1Zl9sYXlvdXQucHJpdmF0ZV9kYXRhX3NpemUgPSBEUEFBMl9FVEhfU1dBX1NJWkU7DQo+ID4g
+IAlidWZfbGF5b3V0LnBhc3NfdGltZXN0YW1wID0gdHJ1ZTsNCj4gPiArCWJ1Zl9sYXlvdXQucGFz
+c19mcmFtZV9zdGF0dXMgPSB0cnVlOw0KPiA+ICAJYnVmX2xheW91dC5vcHRpb25zID0gRFBOSV9C
+VUZfTEFZT1VUX09QVF9QUklWQVRFX0RBVEFfU0laRSB8DQo+ID4gLQkJCSAgICAgRFBOSV9CVUZf
+TEFZT1VUX09QVF9USU1FU1RBTVA7DQo+ID4gKwkJCSAgICAgRFBOSV9CVUZfTEFZT1VUX09QVF9U
+SU1FU1RBTVAgfA0KPiA+ICsJCQkgICAgIERQTklfQlVGX0xBWU9VVF9PUFRfRlJBTUVfU1RBVFVT
+Ow0KPiA+ICAJZXJyID0gZHBuaV9zZXRfYnVmZmVyX2xheW91dChwcml2LT5tY19pbywgMCwgcHJp
+di0+bWNfdG9rZW4sDQo+ID4gIAkJCQkgICAgIERQTklfUVVFVUVfVFgsICZidWZfbGF5b3V0KTsN
+Cj4gPiAgCWlmIChlcnIpIHsNCj4gPiBAQCAtMjc0MSw3ICsyODkxLDggQEAgc3RhdGljIGludCBk
+cGFhMl9ldGhfc2V0X2J1ZmZlcl9sYXlvdXQoc3RydWN0DQo+ID4gZHBhYTJfZXRoX3ByaXYgKnBy
+aXYpDQo+ID4gIAl9DQo+ID4NCj4gPiAgCS8qIHR4LWNvbmZpcm0gYnVmZmVyICovDQo+ID4gLQli
+dWZfbGF5b3V0Lm9wdGlvbnMgPSBEUE5JX0JVRl9MQVlPVVRfT1BUX1RJTUVTVEFNUDsNCj4gPiAr
+CWJ1Zl9sYXlvdXQub3B0aW9ucyA9IERQTklfQlVGX0xBWU9VVF9PUFRfVElNRVNUQU1QIHwNCj4g
+PiArCQkJICAgICBEUE5JX0JVRl9MQVlPVVRfT1BUX0ZSQU1FX1NUQVRVUzsNCj4gPiAgCWVyciA9
+IGRwbmlfc2V0X2J1ZmZlcl9sYXlvdXQocHJpdi0+bWNfaW8sIDAsIHByaXYtPm1jX3Rva2VuLA0K
+PiA+ICAJCQkJICAgICBEUE5JX1FVRVVFX1RYX0NPTkZJUk0sDQo+ID4gJmJ1Zl9sYXlvdXQpOw0K
+PiA+ICAJaWYgKGVycikgew0KPiA+IEBAIC0zOTY5LDYgKzQxMjAsMTYgQEAgc3RhdGljIGludCBk
+cGFhMl9ldGhfcHJvYmUoc3RydWN0DQo+ID4gZnNsX21jX2RldmljZSAqZHBuaV9kZXYpDQo+ID4g
+IAlwcml2LT50eF90c3RhbXBfdHlwZSA9IEhXVFNUQU1QX1RYX09GRjsNCj4gPiAgCXByaXYtPnJ4
+X3RzdGFtcCA9IGZhbHNlOw0KPiA+DQo+ID4gKwlwcml2LT5kcGFhMl9wdHBfd3EgPSBhbGxvY193
+b3JrcXVldWUoImRwYWEyX3B0cF93cSIsIDAsIDApOw0KPiA+ICsJaWYgKCFwcml2LT5kcGFhMl9w
+dHBfd3EpIHsNCj4gPiArCQllcnIgPSAtRU5PTUVNOw0KPiA+ICsJCWdvdG8gZXJyX3dxX2FsbG9j
+Ow0KPiA+ICsJfQ0KPiA+ICsNCj4gPiArCUlOSVRfV09SSygmcHJpdi0+dHhfb25lc3RlcF90c3Rh
+bXAsDQo+ID4gZHBhYTJfZXRoX3R4X29uZXN0ZXBfdHN0YW1wKTsNCj4gPiArDQo+ID4gKwlza2Jf
+cXVldWVfaGVhZF9pbml0KCZwcml2LT50eF9za2JzKTsNCj4gPiArDQo+ID4gIAkvKiBPYnRhaW4g
+YSBNQyBwb3J0YWwgKi8NCj4gPiAgCWVyciA9IGZzbF9tY19wb3J0YWxfYWxsb2NhdGUoZHBuaV9k
+ZXYsDQo+ID4gRlNMX01DX0lPX0FUT01JQ19DT05URVhUX1BPUlRBTCwNCj4gPiAgCQkJCSAgICAg
+JnByaXYtPm1jX2lvKTsNCj4gPiBAQCAtNDEwNyw2ICs0MjY4LDggQEAgc3RhdGljIGludCBkcGFh
+Ml9ldGhfcHJvYmUoc3RydWN0IGZzbF9tY19kZXZpY2UNCj4gPiAqZHBuaV9kZXYpDQo+ID4gIGVy
+cl9kcG5pX3NldHVwOg0KPiA+ICAJZnNsX21jX3BvcnRhbF9mcmVlKHByaXYtPm1jX2lvKTsNCj4g
+PiAgZXJyX3BvcnRhbF9hbGxvYzoNCj4gPiArCWRlc3Ryb3lfd29ya3F1ZXVlKHByaXYtPmRwYWEy
+X3B0cF93cSk7DQo+ID4gK2Vycl93cV9hbGxvYzoNCj4gPiAgCWRldl9zZXRfZHJ2ZGF0YShkZXYs
+IE5VTEwpOw0KPiA+ICAJZnJlZV9uZXRkZXYobmV0X2Rldik7DQo+ID4NCj4gPiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEyL2RwYWEyLWV0aC5oDQo+ID4g
+Yi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYTIvZHBhYTItZXRoLmgNCj4gPiBp
+bmRleCBlMzNkNzllLi42NDM2ZmEzIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVy
+bmV0L2ZyZWVzY2FsZS9kcGFhMi9kcGFhMi1ldGguaA0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0L2V0
+aGVybmV0L2ZyZWVzY2FsZS9kcGFhMi9kcGFhMi1ldGguaA0KPiA+IEBAIC0xOTUsNiArMTk1LDI0
+IEBAIHN0cnVjdCBkcGFhMl9mYWVhZCB7DQo+ID4gICNkZWZpbmUgRFBBQTJfRkFFQURfRUJERFYJ
+CTB4MDAwMDIwMDANCj4gPiAgI2RlZmluZSBEUEFBMl9GQUVBRF9VUEQJCQkweDAwMDAwMDEwDQo+
+ID4NCj4gPiArc3RydWN0IHB0cF90c3RhbXAgew0KPiA+ICsJdTE2IHNlY19tc2I7DQo+ID4gKwl1
+MzIgc2VjX2xzYjsNCj4gPiArCXUzMiBuc2VjOw0KPiA+ICt9Ow0KPiA+ICsNCj4gPiArc3RhdGlj
+IGlubGluZSB2b2lkIG5zX3RvX3B0cF90c3RhbXAoc3RydWN0IHB0cF90c3RhbXAgKnRzdGFtcCwg
+dTY0DQo+ID4gbnMpDQo+ID4gK3sNCj4gPiArCXU2NCBzZWMsIG5zZWM7DQo+ID4gKw0KPiA+ICsJ
+c2VjID0gbnM7DQo+ID4gKwluc2VjID0gZG9fZGl2KHNlYywgMTAwMDAwMDAwMCk7DQo+ID4gKw0K
+PiA+ICsJdHN0YW1wLT5zZWNfbHNiID0gc2VjICYgMHhGRkZGRkZGRjsNCj4gPiArCXRzdGFtcC0+
+c2VjX21zYiA9IChzZWMgPj4gMzIpICYgMHhGRkZGOw0KPiA+ICsJdHN0YW1wLT5uc2VjID0gbnNl
+YzsNCj4gPiArfQ0KPiA+ICsNCj4gPiAgLyogQWNjZXNzb3JzIGZvciB0aGUgaGFyZHdhcmUgYW5u
+b3RhdGlvbiBmaWVsZHMgdGhhdCB3ZSB1c2UgKi8NCj4gPiAgc3RhdGljIGlubGluZSB2b2lkICpk
+cGFhMl9nZXRfaHdhKHZvaWQgKmJ1Zl9hZGRyLCBib29sIHN3YSkNCj4gPiAgew0KPiA+IEBAIC00
+NzQsOSArNDkyLDIxIEBAIHN0cnVjdCBkcGFhMl9ldGhfcHJpdiB7DQo+ID4gICNlbmRpZg0KPiA+
+DQo+ID4gIAlzdHJ1Y3QgZHBhYTJfbWFjICptYWM7DQo+ID4gKwlzdHJ1Y3Qgd29ya3F1ZXVlX3N0
+cnVjdAkqZHBhYTJfcHRwX3dxOw0KPiA+ICsJc3RydWN0IHdvcmtfc3RydWN0CXR4X29uZXN0ZXBf
+dHN0YW1wOw0KPiA+ICsJc3RydWN0IHNrX2J1ZmZfaGVhZAl0eF9za2JzOw0KPiA+ICsJLyogVGhl
+IG9uZS1zdGVwIHRpbWVzdGFtcGluZyBjb25maWd1cmF0aW9uIG9uIGhhcmR3YXJlDQo+ID4gKwkg
+KiByZWdpc3RlcnMgY291bGQgb25seSBiZSBkb25lIHdoZW4gbm8gb25lLXN0ZXANCj4gPiArCSAq
+IHRpbWVzdGFtcGluZyBmcmFtZXMgYXJlIGluIGZsaWdodC4gU28gd2UgdXNlIGEgbXV0ZXgNCj4g
+PiArCSAqIGxvY2sgaGVyZSB0byBtYWtlIHN1cmUgdGhlIGxvY2sgaXMgcmVsZWFzZWQgYnkgbGFz
+dA0KPiA+ICsJICogb25lLXN0ZXAgdGltZXN0YW1waW5nIHBhY2tldCB0aHJvdWdoIFRYIGNvbmZp
+cm1hdGlvbg0KPiA+ICsJICogcXVldWUgYmVmb3JlIHRyYW5zbWl0IGN1cnJlbnQgcGFja2V0Lg0K
+PiA+ICsJICovDQo+ID4gKwlzdHJ1Y3QgbXV0ZXgJCW9uZXN0ZXBfdHN0YW1wX2xvY2s7DQo+ID4g
+IH07DQo+ID4NCj4gPiAgI2RlZmluZSBUWF9UU1RBTVAJCTB4MQ0KPiA+ICsjZGVmaW5lIFRYX1RT
+VEFNUF9PTkVTVEVQX1NZTkMJMHgyDQo+ID4NCj4gPiAgI2RlZmluZSBEUEFBMl9SWEhfU1VQUE9S
+VEVECShSWEhfTDJEQSB8IFJYSF9WTEFOIHwNCj4gUlhIX0wzX1BST1RPIFwNCj4gPiAgCQkJCXwg
+UlhIX0lQX1NSQyB8IFJYSF9JUF9EU1QgfA0KPiA+IFJYSF9MNF9CXzBfMSBcDQo+ID4gQEAgLTU4
+MSw3ICs2MTEsNyBAQCBzdGF0aWMgaW5saW5lIHVuc2lnbmVkIGludA0KPiA+IGRwYWEyX2V0aF9u
+ZWVkZWRfaGVhZHJvb20oc3RydWN0IHNrX2J1ZmYgKnNrYikNCj4gPiAgCQlyZXR1cm4gMDsNCj4g
+Pg0KPiA+ICAJLyogSWYgd2UgaGF2ZSBUeCB0aW1lc3RhbXBpbmcsIG5lZWQgMTI4QiBoYXJkd2Fy
+ZSBhbm5vdGF0aW9uICovDQo+ID4gLQlpZiAoc2tiLT5jYlswXSA9PSBUWF9UU1RBTVApDQo+ID4g
+KwlpZiAoc2tiLT5jYlswXSkNCj4gPiAgCQloZWFkcm9vbSArPSBEUEFBMl9FVEhfVFhfSFdBX1NJ
+WkU7DQo+ID4NCj4gPiAgCXJldHVybiBoZWFkcm9vbTsNCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEyL2RwYWEyLWV0aHRvb2wuYw0KPiA+IGIvZHJp
+dmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEyL2RwYWEyLWV0aHRvb2wuYw0KPiA+IGlu
+ZGV4IDI2YmQ5OWIuLmJmM2JhZjYgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJu
+ZXQvZnJlZXNjYWxlL2RwYWEyL2RwYWEyLWV0aHRvb2wuYw0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0
+L2V0aGVybmV0L2ZyZWVzY2FsZS9kcGFhMi9kcGFhMi1ldGh0b29sLmMNCj4gPiBAQCAtMSw2ICsx
+LDcgQEANCj4gPiAgLy8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IChHUEwtMi4wKyBPUiBCU0Qt
+My1DbGF1c2UpDQo+ID4gIC8qIENvcHlyaWdodCAyMDE0LTIwMTYgRnJlZXNjYWxlIFNlbWljb25k
+dWN0b3IgSW5jLg0KPiA+ICAgKiBDb3B5cmlnaHQgMjAxNiBOWFANCj4gPiArICogQ29weXJpZ2h0
+IDIwMjAgTlhQDQo+ID4gICAqLw0KPiA+DQo+ID4gICNpbmNsdWRlIDxsaW51eC9uZXRfdHN0YW1w
+Lmg+DQo+ID4gQEAgLTc3MCw3ICs3NzEsOCBAQCBzdGF0aWMgaW50IGRwYWEyX2V0aF9nZXRfdHNf
+aW5mbyhzdHJ1Y3QNCj4gPiBuZXRfZGV2aWNlICpkZXYsDQo+ID4gIAlpbmZvLT5waGNfaW5kZXgg
+PSBkcGFhMl9waGNfaW5kZXg7DQo+ID4NCj4gPiAgCWluZm8tPnR4X3R5cGVzID0gKDEgPDwgSFdU
+U1RBTVBfVFhfT0ZGKSB8DQo+ID4gLQkJCSAoMSA8PCBIV1RTVEFNUF9UWF9PTik7DQo+ID4gKwkJ
+CSAoMSA8PCBIV1RTVEFNUF9UWF9PTikgfA0KPiA+ICsJCQkgKDEgPDwgSFdUU1RBTVBfVFhfT05F
+U1RFUF9TWU5DKTsNCj4gPg0KPiA+ICAJaW5mby0+cnhfZmlsdGVycyA9ICgxIDw8IEhXVFNUQU1Q
+X0ZJTFRFUl9OT05FKSB8DQo+ID4gIAkJCSAgICgxIDw8IEhXVFNUQU1QX0ZJTFRFUl9BTEwpOw0K
+DQo=
