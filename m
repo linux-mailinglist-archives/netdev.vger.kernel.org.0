@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 488FF26FB0D
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 12:58:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 358F126FB0B
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 12:58:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726458AbgIRK6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 06:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
+        id S1726463AbgIRK6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 06:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726437AbgIRK6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 06:58:15 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B63FC061756
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:58:14 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id z22so7495321ejl.7
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:58:14 -0700 (PDT)
+        with ESMTP id S1726440AbgIRK6Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 06:58:16 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDA8C061788
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:58:15 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id i1so5704026edv.2
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:58:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XCPXM1cG7U3MCbziuVA0nBNFMY+VjATKo3apGChd5y0=;
-        b=hytelxy/JhJmBXB/v8bNNvLpLd5cdLPwTsYUaf60EobvPnavy0oWABY/OpVOjBcXmt
-         tB8h0QYYzSX/40fLqaHKRykS0OmIqwRSBS89XAgJ+IfwkII6STLl41GK3xSifbUdeOXs
-         7uYYNEd50I7JBsVSRg1jLu1zF/EAsWyt0Fk/WPavXF1VzNxGKP60IAAMdrlmMkvj3P3E
-         WXdzwn/i4jygkjh5l4tP+GvOfjKOAYpFB7bZ5EZ/0KXgQ5RuSB87lsTDy7FY+l5WKI0c
-         trTnWPcz/l86hxknU0JzXWeSQR5EHfw6zewn9DhJBoP69IL5iUoX09pLlSpxUx9Yw88R
-         mAPA==
+        bh=v+26uBvU6tumwRNqNzFdC9/Kfd/Isq6Eu/czK8T9n9w=;
+        b=rAoOPhiwsU0Fr0IqG2ni/gnPckGizpsmT2tWC93WDaBR53sUqwCFKDRte3iyjqgdiE
+         /+Ydbet+1RPB4e5qDlePSZDo7QKeqqRVFZfpElrbDyTUr88ArSomMcbIfKj0i5LI+32Z
+         xZOLiRFsFL+MXbgjtWrNaq64RmcKoMVZHvhVA2Sp/cG+a5/oOAiX7icgeamdPvzrs0sJ
+         KGevlCJZCSTEoDVckzdWsG+sAN+Yyl9r/ZwbJBzk2ZToq8zMgwcwhIxcqtCufN4s6z0q
+         Y+SJvOYBzBFWpKarHuMzRn5gqLpsbjgUc339qTwy2f0/0t5hD8+dY3qifUgMrGF39I06
+         DEdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XCPXM1cG7U3MCbziuVA0nBNFMY+VjATKo3apGChd5y0=;
-        b=Tr/GkxNr/7Cgrh7I2I2wf0WjImLXMnkm0hlIfzYXPUyqOx1PttZx2TghyMAILULBRF
-         aLd2V/ae2MLTJKbjbzsECwq6kHtUU1z0+UFseIgdnwkwIlD+qVc58YnB4vzJjoIR8EgR
-         dx+Q2eDp3d7CnRuVFnWDEh/moVMIMwQwXUpBoroNVOnHTLikkf3agqwo8LcMjJK6DWx6
-         eSO0G9uBXG9fLSMsGYY7bE4GrYmnfrxO04mn/GTN5SgTo43kdlBQwLGAq++KYGXDyYqH
-         msPGRH+jLV5RzVw0jp7oLCszzI7cb+X2x0xUwOjX4sUtNtyJbqdfVc+5uSGB74FKNtDL
-         mIgA==
-X-Gm-Message-State: AOAM530KdVB4Vk2y8UKUvpvUed6OKlBWJWi5PQ8mfe2gG81XKc41K/Gc
-        EBU8YiFsRZ2y+uJ3IhxoHiU=
-X-Google-Smtp-Source: ABdhPJzzwZOf7oAX7fOFTrO4P41AniYRIaqcD6YpyIOeZ2mx08H7kIlZDhqtyy64GwqTKf2JsKtaEg==
-X-Received: by 2002:a17:906:a101:: with SMTP id t1mr34576569ejy.203.1600426693280;
-        Fri, 18 Sep 2020 03:58:13 -0700 (PDT)
+        bh=v+26uBvU6tumwRNqNzFdC9/Kfd/Isq6Eu/czK8T9n9w=;
+        b=kSaIhGUJeTN7kYNS/rf1pL1GCZVqL5hPB+ZeaxTURc+nFVDgH2X60kYWq5735dzCxo
+         O/cLMCaN6AUK9J38rVNrIiF/l0Yihk/KrMydLeMGD4YU4ncOcovzrwdNgbFpRu1g1YEB
+         liurMs33JKeoG8rp6OM1rxtGDAdz8jnmuksVsZEmp+KwEC3Z4J7NsY10XH99KMYAhzD4
+         jMBRqfU3XAhqGvdWL/eKzX+a21tJUHWAdpuawG26/qJSAdk27vH4Yn8VrQW4na6XGuLz
+         F0Wt/nQIw+MDUBTPGl3mWTgKvfst9Nu0HEZYuLhjSQA/KiTLtw4eKD9KBWiz21vpQmU9
+         FWGw==
+X-Gm-Message-State: AOAM532ZVjPr6wfmkrX2wFilNNswh+QufkSB2ZFPHwx9YtTa0herK+l6
+        YdC732FgxFw1Flx5OSw6ArZXr2DfI8k=
+X-Google-Smtp-Source: ABdhPJw3P1eu+cGAAJyqPXda7XWWjjH8n/zWN0ZR06mBEiGKQoVnvGO8sfyYL6e1hvBcBtmIXwlDFw==
+X-Received: by 2002:a50:bf47:: with SMTP id g7mr38101164edk.26.1600426694370;
+        Fri, 18 Sep 2020 03:58:14 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id k1sm1995086eji.20.2020.09.18.03.58.12
+        by smtp.gmail.com with ESMTPSA id k1sm1995086eji.20.2020.09.18.03.58.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 03:58:12 -0700 (PDT)
+        Fri, 18 Sep 2020 03:58:13 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
         UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
         alexandre.belloni@bootlin.com, andrew@lunn.ch,
         vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org
-Subject: [PATCH net-next 09/11] net: mscc: ocelot: make ocelot_init_timestamp take a const struct ptp_clock_info
-Date:   Fri, 18 Sep 2020 13:57:51 +0300
-Message-Id: <20200918105753.3473725-10-olteanv@gmail.com>
+Subject: [PATCH net-next 10/11] net: dsa: felix: move the PTP clock structure to felix_vsc9959.c
+Date:   Fri, 18 Sep 2020 13:57:52 +0300
+Message-Id: <20200918105753.3473725-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918105753.3473725-1-olteanv@gmail.com>
 References: <20200918105753.3473725-1-olteanv@gmail.com>
@@ -67,43 +67,104 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-It is a good measure to ensure correctness if the structures that are
-meant to remain constant are only processed by functions that thake
-constant arguments.
+Not only does Sevile not have a PTP clock, but with separate modules,
+this structure cannot even live in felix.c, due to the .owner =
+THIS_MODULE assignment causing this link time error:
+
+drivers/net/dsa/ocelot/felix.o:(.data+0x0): undefined reference to `__this_module'
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot_ptp.c | 3 ++-
- include/soc/mscc/ocelot_ptp.h          | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/dsa/ocelot/felix.c         | 19 +------------------
+ drivers/net/dsa/ocelot/felix.h         |  1 +
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 18 ++++++++++++++++++
+ 3 files changed, 20 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.c b/drivers/net/ethernet/mscc/ocelot_ptp.c
-index 1e08fe4daaef..a33ab315cc6b 100644
---- a/drivers/net/ethernet/mscc/ocelot_ptp.c
-+++ b/drivers/net/ethernet/mscc/ocelot_ptp.c
-@@ -300,7 +300,8 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index b523ea3a2e5f..fb1b3e117c78 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -538,23 +538,6 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	return 0;
  }
- EXPORT_SYMBOL(ocelot_ptp_enable);
  
--int ocelot_init_timestamp(struct ocelot *ocelot, struct ptp_clock_info *info)
-+int ocelot_init_timestamp(struct ocelot *ocelot,
-+			  const struct ptp_clock_info *info)
- {
- 	struct ptp_clock *ptp_clock;
- 	int i;
-diff --git a/include/soc/mscc/ocelot_ptp.h b/include/soc/mscc/ocelot_ptp.h
-index 4a6b2f71b6b2..6a7388fa7cc5 100644
---- a/include/soc/mscc/ocelot_ptp.h
-+++ b/include/soc/mscc/ocelot_ptp.h
-@@ -53,6 +53,7 @@ int ocelot_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
- 		      enum ptp_pin_function func, unsigned int chan);
- int ocelot_ptp_enable(struct ptp_clock_info *ptp,
- 		      struct ptp_clock_request *rq, int on);
--int ocelot_init_timestamp(struct ocelot *ocelot, struct ptp_clock_info *info);
-+int ocelot_init_timestamp(struct ocelot *ocelot,
-+			  const struct ptp_clock_info *info);
- int ocelot_deinit_timestamp(struct ocelot *ocelot);
- #endif
+-static struct ptp_clock_info ocelot_ptp_clock_info = {
+-	.owner		= THIS_MODULE,
+-	.name		= "felix ptp",
+-	.max_adj	= 0x7fffffff,
+-	.n_alarm	= 0,
+-	.n_ext_ts	= 0,
+-	.n_per_out	= OCELOT_PTP_PINS_NUM,
+-	.n_pins		= OCELOT_PTP_PINS_NUM,
+-	.pps		= 0,
+-	.gettime64	= ocelot_ptp_gettime64,
+-	.settime64	= ocelot_ptp_settime64,
+-	.adjtime	= ocelot_ptp_adjtime,
+-	.adjfine	= ocelot_ptp_adjfine,
+-	.verify		= ocelot_ptp_verify,
+-	.enable		= ocelot_ptp_enable,
+-};
+-
+ /* Hardware initialization done here so that we can allocate structures with
+  * devm without fear of dsa_register_switch returning -EPROBE_DEFER and causing
+  * us to allocate structures twice (leak memory) and map PCI memory twice
+@@ -576,7 +559,7 @@ static int felix_setup(struct dsa_switch *ds)
+ 		return err;
+ 
+ 	if (ocelot->ptp) {
+-		err = ocelot_init_timestamp(ocelot, &ocelot_ptp_clock_info);
++		err = ocelot_init_timestamp(ocelot, felix->info->ptp_caps);
+ 		if (err) {
+ 			dev_err(ocelot->dev,
+ 				"Timestamp initialization failed\n");
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index 1d41eeda126e..d0b2043e0ccb 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -26,6 +26,7 @@ struct felix_info {
+ 	const struct vcap_props		*vcap;
+ 	int				switch_pci_bar;
+ 	int				imdio_pci_bar;
++	const struct ptp_clock_info	*ptp_caps;
+ 	int	(*mdio_bus_alloc)(struct ocelot *ocelot);
+ 	void	(*mdio_bus_free)(struct ocelot *ocelot);
+ 	void	(*phylink_validate)(struct ocelot *ocelot, int port,
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index b198fe9cb62b..38e0fba6bca8 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -719,6 +719,23 @@ static const struct vcap_props vsc9959_vcap_props[] = {
+ 	},
+ };
+ 
++static const struct ptp_clock_info vsc9959_ptp_caps = {
++	.owner		= THIS_MODULE,
++	.name		= "felix ptp",
++	.max_adj	= 0x7fffffff,
++	.n_alarm	= 0,
++	.n_ext_ts	= 0,
++	.n_per_out	= OCELOT_PTP_PINS_NUM,
++	.n_pins		= OCELOT_PTP_PINS_NUM,
++	.pps		= 0,
++	.gettime64	= ocelot_ptp_gettime64,
++	.settime64	= ocelot_ptp_settime64,
++	.adjtime	= ocelot_ptp_adjtime,
++	.adjfine	= ocelot_ptp_adjfine,
++	.verify		= ocelot_ptp_verify,
++	.enable		= ocelot_ptp_enable,
++};
++
+ #define VSC9959_INIT_TIMEOUT			50000
+ #define VSC9959_GCB_RST_SLEEP			100
+ #define VSC9959_SYS_RAMINIT_SLEEP		80
+@@ -1169,6 +1186,7 @@ static const struct felix_info felix_info_vsc9959 = {
+ 	.num_tx_queues		= FELIX_NUM_TC,
+ 	.switch_pci_bar		= 4,
+ 	.imdio_pci_bar		= 0,
++	.ptp_caps		= &vsc9959_ptp_caps,
+ 	.mdio_bus_alloc		= vsc9959_mdio_bus_alloc,
+ 	.mdio_bus_free		= vsc9959_mdio_bus_free,
+ 	.phylink_validate	= vsc9959_phylink_validate,
 -- 
 2.25.1
 
