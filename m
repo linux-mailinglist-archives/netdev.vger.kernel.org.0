@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B49226E9C3
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 02:06:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3F2726E9C5
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 02:07:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726301AbgIRAGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 20:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35370 "EHLO
+        id S1726112AbgIRAH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 20:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726040AbgIRAGA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 20:06:00 -0400
+        with ESMTP id S1725987AbgIRAH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 20:07:27 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC569C06174A;
-        Thu, 17 Sep 2020 17:05:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53269C06174A
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 17:07:27 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6E1121366F788;
-        Thu, 17 Sep 2020 16:49:12 -0700 (PDT)
-Date:   Thu, 17 Sep 2020 17:05:58 -0700 (PDT)
-Message-Id: <20200917.170558.1442899488685465216.davem@davemloft.net>
-To:     miaoqinglang@huawei.com
-Cc:     ioana.ciornei@nxp.com, ruxandra.radulescu@nxp.com, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next v2] dpaa2-eth: Convert to DEFINE_SHOW_ATTRIBUTE
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id F3F2213671A30;
+        Thu, 17 Sep 2020 16:50:39 -0700 (PDT)
+Date:   Thu, 17 Sep 2020 17:07:26 -0700 (PDT)
+Message-Id: <20200917.170726.1556365058537185463.davem@davemloft.net>
+To:     dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, kuba@kernel.org
+Subject: Re: [PATCH net-next] selftests: Set default protocol for raw
+ sockets in nettest
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200917124508.102754-1-miaoqinglang@huawei.com>
-References: <20200917124508.102754-1-miaoqinglang@huawei.com>
+In-Reply-To: <20200917151333.41252-1-dsahern@kernel.org>
+References: <20200917151333.41252-1-dsahern@kernel.org>
 X-Mailer: Mew version 6.8 on Emacs 27.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Thu, 17 Sep 2020 16:49:12 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Thu, 17 Sep 2020 16:50:40 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qinglang Miao <miaoqinglang@huawei.com>
-Date: Thu, 17 Sep 2020 20:45:08 +0800
+From: David Ahern <dsahern@kernel.org>
+Date: Thu, 17 Sep 2020 09:13:33 -0600
 
-> Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
-> ---
-> v2: based on linux-next(20200917), and can be applied to
->     mainline cleanly now.
+> IPPROTO_IP (0) is not valid for raw sockets. Default the protocol for
+> raw sockets to IPPROTO_RAW if the protocol has not been set via the -P
+> option.
+> 
+> Signed-off-by: David Ahern <dsahern@kernel.org>
 
-Applied.
+Applied, thanks David.
