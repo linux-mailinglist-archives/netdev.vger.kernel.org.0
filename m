@@ -2,88 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 512E726FA82
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 12:22:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C93926FA86
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 12:23:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbgIRKWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 06:22:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35099 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726236AbgIRKWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 06:22:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600424561;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6YHTNcXUDMlGUX4+EWozNlgqZItEXQQ/C2QXIGAw5zg=;
-        b=FDOaEJ752s9EwQY1Gd+qDIAdRFIjiRIrpJ044fwaA+z8v/8sPQCOm7wp0rYMd3hMNLM3fH
-        ndd09yWZWz5sLJvGCezZKL9xWQ3gqurPDaZuE/A8siD7skUNgTPuZrOm3mOmNClLk6BIPl
-        EFuUbXT/dZSroUgL1WgGa4vgLlkpeqI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-67-LdbWP44DP4a_iJLv7Yn2zA-1; Fri, 18 Sep 2020 06:22:37 -0400
-X-MC-Unique: LdbWP44DP4a_iJLv7Yn2zA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6680780B702;
-        Fri, 18 Sep 2020 10:22:35 +0000 (UTC)
-Received: from krava (ovpn-114-24.ams2.redhat.com [10.36.114.24])
-        by smtp.corp.redhat.com (Postfix) with SMTP id B70CF5DA30;
-        Fri, 18 Sep 2020 10:22:32 +0000 (UTC)
-Date:   Fri, 18 Sep 2020 12:22:31 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCH bpf-next] selftests/bpf: Fix stat probe in d_path test
-Message-ID: <20200918102231.GE2514666@krava>
-References: <20200916112416.2321204-1-jolsa@kernel.org>
- <20200917014531.lmpkorybofrggte4@ast-mbp.dhcp.thefacebook.com>
- <20200917082516.GD2411168@krava>
- <CAADnVQ+o-0hoiJ5SBDXOuJ2MKJkTmsOxh60z61+_ZZ+8_=DhrA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQ+o-0hoiJ5SBDXOuJ2MKJkTmsOxh60z61+_ZZ+8_=DhrA@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+        id S1726130AbgIRKX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 06:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726064AbgIRKX1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 06:23:27 -0400
+Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68414C06174A
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:23:27 -0700 (PDT)
+Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id E6F8486B43;
+        Fri, 18 Sep 2020 11:23:24 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1600424605; bh=0tRMACoWqGgJub+9sYesY3HfZaZokO0BodaA/U+TEc8=;
+        h=From:To:Cc:Subject:Date:Message-Id:From;
+        z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
+         rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
+         in@katalix.com>|Subject:=20[PATCH=20net-next=201/1]=20l2tp:=20fix=
+         20up=20inconsistent=20rx/tx=20statistics|Date:=20Fri,=2018=20Sep=2
+         02020=2011:23:21=20+0100|Message-Id:=20<20200918102321.7036-1-tpar
+         kin@katalix.com>;
+        b=mW3Ipoaia9OZmwm5+RvsZUnP7N0nFfkAduro/uEjybjnC23XsZiu0YYX8bw1jeX5K
+         XYy0fSmrg5jV8FogchLa2M4sy5y4ftUassM5Tr9wKDRXMRDtb00QTxxrobirEXCSw/
+         qPHRCbtnKXR2tJE8E4oAaX1mwLugmbaIk0doK+PstfSF+2GuI+tbk2wPf4no5424Q6
+         9AJmaTexxLk1kbr+nI8OxTvmDS8Pkpc/YdBj4a4p/M6mDCbMsdHRiFPBEkvr1jLLwV
+         eEr58yhq94s2vrfDzLb/p5fFqQB1B6lo1rFesR9Os+Wd7SPb/xysa8QMuCQ1//Fzvh
+         XTcxkAZ4JZRTw==
+From:   Tom Parkin <tparkin@katalix.com>
+To:     netdev@vger.kernel.org
+Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
+Subject: [PATCH net-next 1/1] l2tp: fix up inconsistent rx/tx statistics
+Date:   Fri, 18 Sep 2020 11:23:21 +0100
+Message-Id: <20200918102321.7036-1-tparkin@katalix.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 17, 2020 at 02:14:38PM -0700, Alexei Starovoitov wrote:
-> On Thu, Sep 17, 2020 at 1:25 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > > Ideally resolve_btfids would parse dwarf info and check
-> > > whether any of the funcs in allowlist were inlined.
-> > > That would be more reliable, but not pretty to drag libdw
-> > > dependency into resolve_btfids.
-> >
-> > hm, we could add some check to perf|bpftrace that would
-> > show you all the places where function is called from and
-> > if it was inlined or is a regular call.. so user is aware
-> > what probe calls to expect
-> 
-> The check like this belongs in some library,
-> but making libbpf depend on dwarf is not great.
-> I think we're at the point where we need to break libbpf
-> into many libraries. This one could be called libbpftrace.
-> It would potentially include symbolizer and other dwarf
-> related operations.
+Historically L2TP core statistics count the L2TP header in the
+per-session and per-tunnel byte counts tracked for transmission and
+receipt.
 
-ok
+Now that l2tp_xmit_skb updates tx stats, it is necessary for
+l2tp_xmit_core to pass out the length of the transmitted packet so that
+the statistics can be updated correctly.
 
-> Such inlining check would be good to do not only for d_path
-> allowlist, but for any kprobe/fentry function.
+Signed-off-by: Tom Parkin <tparkin@katalix.com>
+---
+ net/l2tp/l2tp_core.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-yes, that's what I meant
-
-jirka
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index 7de05be4fc33..7be5103ff2a8 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -1006,7 +1006,7 @@ static int l2tp_xmit_queue(struct l2tp_tunnel *tunnel, struct sk_buff *skb, stru
+ 	return err >= 0 ? NET_XMIT_SUCCESS : NET_XMIT_DROP;
+ }
+ 
+-static int l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb)
++static int l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb, unsigned int *len)
+ {
+ 	struct l2tp_tunnel *tunnel = session->tunnel;
+ 	unsigned int data_len = skb->len;
+@@ -1054,6 +1054,11 @@ static int l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb)
+ 		goto out_unlock;
+ 	}
+ 
++	/* Report transmitted length before we add encap header, which keeps
++	 * statistics consistent for both UDP and IP encap tx/rx paths.
++	 */
++	*len = skb->len;
++
+ 	inet = inet_sk(sk);
+ 	switch (tunnel->encap) {
+ 	case L2TP_ENCAPTYPE_UDP:
+@@ -1095,10 +1100,10 @@ static int l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb)
+  */
+ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb)
+ {
+-	unsigned int len = skb->len;
++	unsigned int len = 0;
+ 	int ret;
+ 
+-	ret = l2tp_xmit_core(session, skb);
++	ret = l2tp_xmit_core(session, skb, &len);
+ 	if (ret == NET_XMIT_SUCCESS) {
+ 		atomic_long_inc(&session->tunnel->stats.tx_packets);
+ 		atomic_long_add(len, &session->tunnel->stats.tx_bytes);
+-- 
+2.17.1
 
