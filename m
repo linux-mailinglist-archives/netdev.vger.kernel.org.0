@@ -2,77 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F7CB26FDC2
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:04:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFD0D26FDDE
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:11:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726698AbgIRNDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 09:03:51 -0400
-Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:43361 "EHLO
-        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726301AbgIRNDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 09:03:50 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R351e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=tianjia.zhang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0U9JntaJ_1600434225;
-Received: from B-455UMD6M-2027.local(mailfrom:tianjia.zhang@linux.alibaba.com fp:SMTPD_---0U9JntaJ_1600434225)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 18 Sep 2020 21:03:46 +0800
-Subject: Re: [PATCH] vhost-vdpa: fix memory leak in error path
-To:     Li Qiang <liq3ea@163.com>, mst@redhat.com, jasowang@redhat.com
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liq3ea@gmail.com
-References: <20200909154120.363209-1-liq3ea@163.com>
-From:   Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Message-ID: <1104febd-1f2d-5edd-52e9-ca992e6d5340@linux.alibaba.com>
-Date:   Fri, 18 Sep 2020 21:03:45 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.2.2
+        id S1726723AbgIRNJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 09:09:58 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:59950 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726406AbgIRNJ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 09:09:58 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 6A92C99AE582B3C564F1;
+        Fri, 18 Sep 2020 21:09:54 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Fri, 18 Sep 2020
+ 21:09:46 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <tanhuazhong@huawei.com>,
+        <liaoguojia@huawei.com>, <liuyonglong@huawei.com>,
+        <linyunsheng@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] net: hns3: Supply missing hclge_dcb.h include file
+Date:   Fri, 18 Sep 2020 21:06:53 +0800
+Message-ID: <20200918130653.20064-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20200909154120.363209-1-liq3ea@163.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.113.133]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LGTM.
+If the header file containing a function's prototype isn't included by
+the sourcefile containing the associated function, the build system
+complains of missing prototypes.
 
-Reviewed-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Fixes the following W=1 kernel build warning(s):
 
-Thanks.
+drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c:453:6: warning: no previous prototype for ‘hclge_dcb_ops_set’ [-Wmissing-prototypes]
 
-On 9/9/20 11:41 PM, Li Qiang wrote:
-> Free the 'page_list' when the 'npages' is zero.
-> 
-> Signed-off-by: Li Qiang <liq3ea@163.com>
-> ---
->   drivers/vhost/vdpa.c | 8 ++++++--
->   1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 3fab94f88894..6a9fcaf1831d 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -609,8 +609,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
->   		gup_flags |= FOLL_WRITE;
->   
->   	npages = PAGE_ALIGN(msg->size + (iova & ~PAGE_MASK)) >> PAGE_SHIFT;
-> -	if (!npages)
-> -		return -EINVAL;
-> +	if (!npages) {
-> +		ret = -EINVAL;
-> +		goto free_page;
-> +	}
->   
->   	mmap_read_lock(dev->mm);
->   
-> @@ -666,6 +668,8 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
->   		atomic64_sub(npages, &dev->mm->pinned_vm);
->   	}
->   	mmap_read_unlock(dev->mm);
-> +
-> +free_page:
->   	free_page((unsigned long)page_list);
->   	return ret;
->   }
-> 
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
+index d6c3952aba04..f990f6915226 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
+@@ -2,6 +2,7 @@
+ // Copyright (c) 2016-2017 Hisilicon Limited.
+ 
+ #include "hclge_main.h"
++#include "hclge_dcb.h"
+ #include "hclge_tm.h"
+ #include "hnae3.h"
+ 
+-- 
+2.17.1
+
