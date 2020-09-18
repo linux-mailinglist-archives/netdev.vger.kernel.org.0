@@ -2,124 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD7F626F11C
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:48:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FA1D26F47C
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 05:15:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730307AbgIRCsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:48:52 -0400
-Received: from mail-dm6nam10on2044.outbound.protection.outlook.com ([40.107.93.44]:1760
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730203AbgIRCsc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:48:32 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bkE+9UTDKdxxmoZBz9DKbkWeGtse8Szkn447gWC0FcZCGLMO/8WcYwn5p7MO8NSV7Huw0L/LIMiANaNdLPjRmsmSn2/yo+im5cD7XwzKs+9I7K9F7kFQIdX70X7NrXdQjTFRWkCPr0Q4vNKd2J4un9nc2fpnhoGdrkxeIvFRLv65DjK2N/7exlwHaxFwuxoPAjsvwrLkUCZqKMm3Is+fUiICmBMPvbzWoA3Q9gL7s6xdl7ZFQyRIA7n0bOpODHgKKh07ZtQ7rEQXRcdSlgmr0+4MdqrxToxiYylmqmYXvVOoH1pkMOl5oqWba2nLdRppZL2sRkD0bba+yQs5bpkh6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JlnggPJKUY3Qx5pRNvFZgONgogBR19amHI5SIx5Qcic=;
- b=cBLPKX+VKtkwTAXebnKsbg4veO3FtkVhd4OeeOXLKKiBfSBMTkd6FOFCHajxy23fp3C/uZbkDzeKPqIm+HqncYsPp/hHE1yDS95spoRjat9qNCBfeOv2B4kGyiFC5d7vPTMBfviBPAxKaplzxdCPWPGImDAH7wfBYH1eDD1BbtQkuniyMTDqDCY1n+oR4t9IBHiU5+DePzRxe9ujdvlJWkMf2ugEOgEpjewunaAgaQAkXdjbG31l4gSf/gWf6RL+SkSn3zvwjLRFm+ZbVNe0f8P/ECkd0HwWMWxAdOmUJVhPni2mfdfOuKhttDPox3CEd7+uQMyXAIRajyKa8oIcew==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synaptics.com; dmarc=pass action=none
- header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JlnggPJKUY3Qx5pRNvFZgONgogBR19amHI5SIx5Qcic=;
- b=GDA49g0jFjjxWkYLfkHU5OrhRu4Tjdb1K8bUyJ5iFIWaN0naasU7Xfh3a9ixu0vu5N2hLIYPvvem2elqWLImIY93cFY3Aw41ddfuW6xqHKins0kNkRwo/PdzxyzxqCXbBruD9rViqnk+Kmh/GVsxqUvO/ref7hgJVBscnbakthQ=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=synaptics.com;
-Received: from DM6PR03MB4555.namprd03.prod.outlook.com (2603:10b6:5:102::17)
- by DM6PR03MB4441.namprd03.prod.outlook.com (2603:10b6:5:109::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14; Fri, 18 Sep
- 2020 02:48:29 +0000
-Received: from DM6PR03MB4555.namprd03.prod.outlook.com
- ([fe80::e494:740f:155:4a38]) by DM6PR03MB4555.namprd03.prod.outlook.com
- ([fe80::e494:740f:155:4a38%7]) with mapi id 15.20.3370.019; Fri, 18 Sep 2020
- 02:48:29 +0000
-Date:   Fri, 18 Sep 2020 10:47:56 +0800
-From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: phy: realtek: enable ALDPS to save power for
- RTL8211F
-Message-ID: <20200918104756.557f9129@xhacker.debian>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TYAPR01CA0185.jpnprd01.prod.outlook.com
- (2603:1096:404:ba::29) To DM6PR03MB4555.namprd03.prod.outlook.com
- (2603:10b6:5:102::17)
+        id S1726413AbgIRCBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:01:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45656 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726361AbgIRCB0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:01:26 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 52F2D21707;
+        Fri, 18 Sep 2020 02:01:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600394485;
+        bh=Fm6jXLSpDYVGejFkqBr0le1Cr0+VQzM/yBzIoueAvII=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Whn9GkInu9XWX5D2p5PhRVuMCsSVdAMSsPl8jSviLSWX26C2YrSEpyTLifhLAKu6o
+         QylfaY0eto928kXUfmpQva/JvyKjwmFJRAtnn4uurEFjPUu/GJkuAnSZXcfPNJbx3L
+         is2aDAv16Ia0h2Y0/41Mi77GRH4rgm9KgQRK645E=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Miaoqing Pan <miaoqing@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 011/330] ath10k: fix array out-of-bounds access
+Date:   Thu, 17 Sep 2020 21:55:51 -0400
+Message-Id: <20200918020110.2063155-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200918020110.2063155-1-sashal@kernel.org>
+References: <20200918020110.2063155-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from xhacker.debian (124.74.246.114) by TYAPR01CA0185.jpnprd01.prod.outlook.com (2603:1096:404:ba::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14 via Frontend Transport; Fri, 18 Sep 2020 02:48:26 +0000
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-X-Originating-IP: [124.74.246.114]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 92b6edeb-6c91-4832-ef98-08d85b7d529c
-X-MS-TrafficTypeDiagnostic: DM6PR03MB4441:
-X-Microsoft-Antispam-PRVS: <DM6PR03MB4441912C22083990A97DD05FED3F0@DM6PR03MB4441.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:153;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oriIKMqxMUU4NPS5VJfkzN4FxfdHj5bscvkxJtIHCAr3+t0uaudg36i7Qh0bkqtFEjhbioIAcfekNG8Bs9X0/zui2D9RqZPULVrL/i2+Q6OqxKNudK6GFO0uR+Q+378B26hogFvL85qHe8IRfZCohEpH7vhcy6g1PCKFVww6snKLgfLvVKNG9f/OPwtz1Wi1HnLz7J8FJmRZmBWRftSOdeZpiHUY4xF+9ZJVo8qfLzfjQuTEDqZloU320SWtVrArJYy3SPsYNe0Q3Jw8llrLcE0WVDSYTqbnIbi+GA9NZKfe9ug4UdX/D52/AHHzwpfq
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR03MB4555.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(136003)(396003)(366004)(39860400002)(55016002)(2906002)(26005)(6666004)(6506007)(86362001)(66946007)(7696005)(52116002)(16526019)(1076003)(8936002)(186003)(5660300002)(8676002)(956004)(316002)(110136005)(66476007)(478600001)(66556008)(9686003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Ft48Emz7GUfB30vfijgmAUR5LiE0FnCQbP4P6vRXmjUcNuLimshpYOJ9PDpscpn9v+YN2FAYxRYk+2rZFB3RWadEYluHXx6Bw0wekvbarSpLBKC38Q+rUPmGKini4CVuSxnrVnQg0zTs8JVd+n0TrMrRmqbQR58kIc46ygGsP6N+yD5Bym8tc2enyrljLnC8hK0cN23I8oLW7YOKAVQUQpC2g1PMvuYmLamiSu3LKhgigOt2NZL30AnE6LQIb3HNzW7wVGdwE+kHr+2yvTs+YKH3zLFMqK98v1SdyAaq9YWJiB83s+1M3g0CQqjShodqttBAOZiA7xKpH5E0MaCXHVI9iHa/YV5r1grbAD6Pw64p3zRPLedSB5oY5/XPy6PgBHLIQJxpcoMhsEGXHF4QfwaVLujSj8hHcVVTQsnkZw+uLQ27AbQNje6zzE2qHTg+i9nyry624QXjntLYHG7ZdjpkLMGlmt+vhnHRuzJeb4Qjii8OKOZhngcYxwlUbJIKTykkY5NIhflOBE17wW+5Qz+9A4AuR29WXdKICpzJx3AQlefBJITn3aKPuVGZ00lOAD7+e9fAQc5GriokGXDyyL0M8nx/Hzxm1QZhi3Y0TP0flGXDn3J3bBCunSruWRPVR91k0oCC+DNCkt59rkTRKQ==
-X-OriginatorOrg: synaptics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 92b6edeb-6c91-4832-ef98-08d85b7d529c
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR03MB4555.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2020 02:48:29.1639
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZD6LyY8pFHGhH6N4YsVSEI3RyJY59HaSMb33IPf/YiOsBHlio65znMeuSur30r0bcWcTZea0BuiFWxvPGiz5GQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB4441
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable ALDPS function to save power when link down.
+From: Miaoqing Pan <miaoqing@codeaurora.org>
 
-Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+[ Upstream commit c5329b2d5b8b4e41be14d31ee8505b4f5607bf9b ]
+
+If firmware reports rate_max > WMI_TPC_RATE_MAX(WMI_TPC_FINAL_RATE_MAX)
+or num_tx_chain > WMI_TPC_TX_N_CHAIN, it will cause array out-of-bounds
+access, so print a warning and reset to avoid memory corruption.
+
+Tested HW: QCA9984
+Tested FW: 10.4-3.9.0.2-00035
+
+Signed-off-by: Miaoqing Pan <miaoqing@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/realtek.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/wireless/ath/ath10k/debug.c |  2 +-
+ drivers/net/wireless/ath/ath10k/wmi.c   | 49 ++++++++++++++++---------
+ 2 files changed, 32 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 95dbe5e8e1d8..961570186822 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -39,6 +39,10 @@
- #define RTL8201F_ISR				0x1e
- #define RTL8201F_IER				0x13
+diff --git a/drivers/net/wireless/ath/ath10k/debug.c b/drivers/net/wireless/ath/ath10k/debug.c
+index bd2b5628f850b..40baf25ac99f3 100644
+--- a/drivers/net/wireless/ath/ath10k/debug.c
++++ b/drivers/net/wireless/ath/ath10k/debug.c
+@@ -1516,7 +1516,7 @@ static void ath10k_tpc_stats_print(struct ath10k_tpc_stats *tpc_stats,
+ 	*len += scnprintf(buf + *len, buf_len - *len,
+ 			  "No.  Preamble Rate_code ");
  
-+#define RTL8211F_ALDPS_PLL_OFF			BIT(1)
-+#define RTL8211F_ALDPS_ENABLE			BIT(2)
-+#define RTL8211F_ALDPS_XTAL_OFF			BIT(12)
-+
- #define RTL8366RB_POWER_SAVE			0x15
- #define RTL8366RB_POWER_SAVE_ON			BIT(12)
+-	for (i = 0; i < WMI_TPC_TX_N_CHAIN; i++)
++	for (i = 0; i < tpc_stats->num_tx_chain; i++)
+ 		*len += scnprintf(buf + *len, buf_len - *len,
+ 				  "tpc_value%d ", i);
  
-@@ -178,8 +182,12 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
+index 90f1197a6ad84..2675174cc4fec 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi.c
++++ b/drivers/net/wireless/ath/ath10k/wmi.c
+@@ -4668,16 +4668,13 @@ static void ath10k_tpc_config_disp_tables(struct ath10k *ar,
+ 	}
+ 
+ 	pream_idx = 0;
+-	for (i = 0; i < __le32_to_cpu(ev->rate_max); i++) {
++	for (i = 0; i < tpc_stats->rate_max; i++) {
+ 		memset(tpc_value, 0, sizeof(tpc_value));
+ 		memset(buff, 0, sizeof(buff));
+ 		if (i == pream_table[pream_idx])
+ 			pream_idx++;
+ 
+-		for (j = 0; j < WMI_TPC_TX_N_CHAIN; j++) {
+-			if (j >= __le32_to_cpu(ev->num_tx_chain))
+-				break;
+-
++		for (j = 0; j < tpc_stats->num_tx_chain; j++) {
+ 			tpc[j] = ath10k_tpc_config_get_rate(ar, ev, i, j + 1,
+ 							    rate_code[i],
+ 							    type);
+@@ -4790,7 +4787,7 @@ void ath10k_wmi_tpc_config_get_rate_code(u8 *rate_code, u16 *pream_table,
+ 
+ void ath10k_wmi_event_pdev_tpc_config(struct ath10k *ar, struct sk_buff *skb)
  {
- 	struct device *dev = &phydev->mdio.dev;
- 	u16 val_txdly, val_rxdly;
-+	u16 val;
- 	int ret;
+-	u32 num_tx_chain;
++	u32 num_tx_chain, rate_max;
+ 	u8 rate_code[WMI_TPC_RATE_MAX];
+ 	u16 pream_table[WMI_TPC_PREAM_TABLE_MAX];
+ 	struct wmi_pdev_tpc_config_event *ev;
+@@ -4806,6 +4803,13 @@ void ath10k_wmi_event_pdev_tpc_config(struct ath10k *ar, struct sk_buff *skb)
+ 		return;
+ 	}
  
-+	val = RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_XTAL_OFF;
-+	phy_modify_paged_changed(phydev, 0xa43, 0x18, val, val);
++	rate_max = __le32_to_cpu(ev->rate_max);
++	if (rate_max > WMI_TPC_RATE_MAX) {
++		ath10k_warn(ar, "number of rate is %d greater than TPC configured rate %d\n",
++			    rate_max, WMI_TPC_RATE_MAX);
++		rate_max = WMI_TPC_RATE_MAX;
++	}
 +
- 	switch (phydev->interface) {
- 	case PHY_INTERFACE_MODE_RGMII:
- 		val_txdly = 0;
+ 	tpc_stats = kzalloc(sizeof(*tpc_stats), GFP_ATOMIC);
+ 	if (!tpc_stats)
+ 		return;
+@@ -4822,8 +4826,8 @@ void ath10k_wmi_event_pdev_tpc_config(struct ath10k *ar, struct sk_buff *skb)
+ 		__le32_to_cpu(ev->twice_antenna_reduction);
+ 	tpc_stats->power_limit = __le32_to_cpu(ev->power_limit);
+ 	tpc_stats->twice_max_rd_power = __le32_to_cpu(ev->twice_max_rd_power);
+-	tpc_stats->num_tx_chain = __le32_to_cpu(ev->num_tx_chain);
+-	tpc_stats->rate_max = __le32_to_cpu(ev->rate_max);
++	tpc_stats->num_tx_chain = num_tx_chain;
++	tpc_stats->rate_max = rate_max;
+ 
+ 	ath10k_tpc_config_disp_tables(ar, ev, tpc_stats,
+ 				      rate_code, pream_table,
+@@ -5018,16 +5022,13 @@ ath10k_wmi_tpc_stats_final_disp_tables(struct ath10k *ar,
+ 	}
+ 
+ 	pream_idx = 0;
+-	for (i = 0; i < __le32_to_cpu(ev->rate_max); i++) {
++	for (i = 0; i < tpc_stats->rate_max; i++) {
+ 		memset(tpc_value, 0, sizeof(tpc_value));
+ 		memset(buff, 0, sizeof(buff));
+ 		if (i == pream_table[pream_idx])
+ 			pream_idx++;
+ 
+-		for (j = 0; j < WMI_TPC_TX_N_CHAIN; j++) {
+-			if (j >= __le32_to_cpu(ev->num_tx_chain))
+-				break;
+-
++		for (j = 0; j < tpc_stats->num_tx_chain; j++) {
+ 			tpc[j] = ath10k_wmi_tpc_final_get_rate(ar, ev, i, j + 1,
+ 							       rate_code[i],
+ 							       type, pream_idx);
+@@ -5043,7 +5044,7 @@ ath10k_wmi_tpc_stats_final_disp_tables(struct ath10k *ar,
+ 
+ void ath10k_wmi_event_tpc_final_table(struct ath10k *ar, struct sk_buff *skb)
+ {
+-	u32 num_tx_chain;
++	u32 num_tx_chain, rate_max;
+ 	u8 rate_code[WMI_TPC_FINAL_RATE_MAX];
+ 	u16 pream_table[WMI_TPC_PREAM_TABLE_MAX];
+ 	struct wmi_pdev_tpc_final_table_event *ev;
+@@ -5051,12 +5052,24 @@ void ath10k_wmi_event_tpc_final_table(struct ath10k *ar, struct sk_buff *skb)
+ 
+ 	ev = (struct wmi_pdev_tpc_final_table_event *)skb->data;
+ 
++	num_tx_chain = __le32_to_cpu(ev->num_tx_chain);
++	if (num_tx_chain > WMI_TPC_TX_N_CHAIN) {
++		ath10k_warn(ar, "number of tx chain is %d greater than TPC final configured tx chain %d\n",
++			    num_tx_chain, WMI_TPC_TX_N_CHAIN);
++		return;
++	}
++
++	rate_max = __le32_to_cpu(ev->rate_max);
++	if (rate_max > WMI_TPC_FINAL_RATE_MAX) {
++		ath10k_warn(ar, "number of rate is %d greater than TPC final configured rate %d\n",
++			    rate_max, WMI_TPC_FINAL_RATE_MAX);
++		rate_max = WMI_TPC_FINAL_RATE_MAX;
++	}
++
+ 	tpc_stats = kzalloc(sizeof(*tpc_stats), GFP_ATOMIC);
+ 	if (!tpc_stats)
+ 		return;
+ 
+-	num_tx_chain = __le32_to_cpu(ev->num_tx_chain);
+-
+ 	ath10k_wmi_tpc_config_get_rate_code(rate_code, pream_table,
+ 					    num_tx_chain);
+ 
+@@ -5069,8 +5082,8 @@ void ath10k_wmi_event_tpc_final_table(struct ath10k *ar, struct sk_buff *skb)
+ 		__le32_to_cpu(ev->twice_antenna_reduction);
+ 	tpc_stats->power_limit = __le32_to_cpu(ev->power_limit);
+ 	tpc_stats->twice_max_rd_power = __le32_to_cpu(ev->twice_max_rd_power);
+-	tpc_stats->num_tx_chain = __le32_to_cpu(ev->num_tx_chain);
+-	tpc_stats->rate_max = __le32_to_cpu(ev->rate_max);
++	tpc_stats->num_tx_chain = num_tx_chain;
++	tpc_stats->rate_max = rate_max;
+ 
+ 	ath10k_wmi_tpc_stats_final_disp_tables(ar, ev, tpc_stats,
+ 					       rate_code, pream_table,
 -- 
-2.28.0
+2.25.1
 
