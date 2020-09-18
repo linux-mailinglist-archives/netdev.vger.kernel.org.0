@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D09026F388
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 05:09:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27DDC26F33B
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 05:06:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730644AbgIRDHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 23:07:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50584 "EHLO mail.kernel.org"
+        id S1727214AbgIRCEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:04:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50882 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727167AbgIRCDu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:03:50 -0400
+        id S1727200AbgIRCEB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:04:01 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7580E23600;
-        Fri, 18 Sep 2020 02:03:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 148882388B;
+        Fri, 18 Sep 2020 02:03:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600394630;
-        bh=StopoSPyCs7EocPsq1Gp2kQ/vfNkfLuq7EPGBHDEt7c=;
+        s=default; t=1600394640;
+        bh=z7GkIRBfIpqHZ8dIEWx/p44xdirXNH0oyPkAC+8qQJg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AD5O4+QcRjFfmVpVKcYJRkqMJU1RXEJrbikUu3CEcmZGgmCg5fiavj7chnGma2tKA
-         bVkNjPVgee+ilEei1DLut1t4/i6vMplj2T6uOiPMdXRjOXKKOnXEViXwzDg0uABSIo
-         9Qqe6/IMS+WOaO/3Skb6lguw+dweaN/JLxFNLHS4=
+        b=hELPF3eHOwgMbPLMhDkjlvNB01TTvHoFcXlzEWx5U25a0b17aNa/U0r7AnT5q5pml
+         aYJwxEgcmAcgG3PDjPXWjXjkJ0VI/a0s+hMJqMcFQYEZf+BkjfidIWxBsFMRQ2kZjG
+         wEyyRsQ2all9I8xonizcPlpls6beeLis42wndbfM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 130/330] mt76: fix handling full tx queues in mt76_dma_tx_queue_skb_raw
-Date:   Thu, 17 Sep 2020 21:57:50 -0400
-Message-Id: <20200918020110.2063155-130-sashal@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 139/330] bpf: Remove recursion prevention from rcu free callback
+Date:   Thu, 17 Sep 2020 21:57:59 -0400
+Message-Id: <20200918020110.2063155-139-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918020110.2063155-1-sashal@kernel.org>
 References: <20200918020110.2063155-1-sashal@kernel.org>
@@ -43,49 +42,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-[ Upstream commit 93eaec7625f13cffb593b471405b017c7e64d4ee ]
+[ Upstream commit 8a37963c7ac9ecb7f86f8ebda020e3f8d6d7b8a0 ]
 
-Fixes a theoretical issue where it could potentially overwrite an existing
-descriptor entry (and leaking its skb)
+If an element is freed via RCU then recursion into BPF instrumentation
+functions is not a concern. The element is already detached from the map
+and the RCU callback does not hold any locks on which a kprobe, perf event
+or tracepoint attached BPF program could deadlock.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20200224145643.259118710@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/dma.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ kernel/bpf/hashtab.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
-index 6249a46c19762..026d996612fbe 100644
---- a/drivers/net/wireless/mediatek/mt76/dma.c
-+++ b/drivers/net/wireless/mediatek/mt76/dma.c
-@@ -261,10 +261,13 @@ mt76_dma_tx_queue_skb_raw(struct mt76_dev *dev, enum mt76_txq_id qid,
- 	struct mt76_queue_buf buf;
- 	dma_addr_t addr;
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 039d64b1bfb7d..728ffec52cf36 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -664,15 +664,7 @@ static void htab_elem_free_rcu(struct rcu_head *head)
+ 	struct htab_elem *l = container_of(head, struct htab_elem, rcu);
+ 	struct bpf_htab *htab = l->htab;
  
-+	if (q->queued + 1 >= q->ndesc - 1)
-+		goto error;
-+
- 	addr = dma_map_single(dev->dev, skb->data, skb->len,
- 			      DMA_TO_DEVICE);
- 	if (unlikely(dma_mapping_error(dev->dev, addr)))
--		return -ENOMEM;
-+		goto error;
- 
- 	buf.addr = addr;
- 	buf.len = skb->len;
-@@ -275,6 +278,10 @@ mt76_dma_tx_queue_skb_raw(struct mt76_dev *dev, enum mt76_txq_id qid,
- 	spin_unlock_bh(&q->lock);
- 
- 	return 0;
-+
-+error:
-+	dev_kfree_skb(skb);
-+	return -ENOMEM;
+-	/* must increment bpf_prog_active to avoid kprobe+bpf triggering while
+-	 * we're calling kfree, otherwise deadlock is possible if kprobes
+-	 * are placed somewhere inside of slub
+-	 */
+-	preempt_disable();
+-	__this_cpu_inc(bpf_prog_active);
+ 	htab_elem_free(htab, l);
+-	__this_cpu_dec(bpf_prog_active);
+-	preempt_enable();
  }
  
- static int
+ static void htab_put_fd_value(struct bpf_htab *htab, struct htab_elem *l)
 -- 
 2.25.1
 
