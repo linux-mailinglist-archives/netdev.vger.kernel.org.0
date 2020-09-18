@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 168372706A2
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 22:16:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C8A22706C6
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 22:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726732AbgIRUQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 16:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53132 "EHLO
+        id S1726863AbgIRURS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 16:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726508AbgIRUQN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 16:16:13 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67D9C0613CF;
-        Fri, 18 Sep 2020 13:16:13 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id q4so3750934pjh.5;
-        Fri, 18 Sep 2020 13:16:13 -0700 (PDT)
+        with ESMTP id S1726420AbgIRURN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 16:17:13 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C37EC0613CE;
+        Fri, 18 Sep 2020 13:17:13 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id m15so3558034pls.8;
+        Fri, 18 Sep 2020 13:17:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=41QoXfpKo7UzNUol4u8WuN/OTNWDMbCscm13jCI9UFU=;
-        b=uaT1lnIbfxITlNVsGT7aCs2tujStzD2UVIhAs3c8p80CGgpnmqvBFX/7srzPgcS0O8
-         iAMdYSXpL/8Wb8TAuzsit0MxktWDdebnyT4p1jzTDpUxp4auTIwmU5SWw0inVGZa9Y+m
-         cE4TrSJl7ES3QLgxXLzhKQ3OMahua5ppcROE7AdyhX3Y/BkJUBzUyaY5winrWlLOENCw
-         6xrcnfROQoRJgYlSzESGI9lXz/HuJfPC/CW04WBw9XITyt1tlFwtF1iFSDSSlfvNNOkm
-         syXrlRi8MC45QeX0Jtc0ujzKBvLFFIWQai8cyijhtiGZYVmBieqPt0kfOy68dTRI/GAi
-         jBWg==
+        bh=WZFf6ltXN0q6i6KfdkHs41/4zFJI2xjfS0NImoIhVB8=;
+        b=fk3vLF2VSSpAeTi8FDW6tR1CzQJ0c3ULllbkERTtXNmHGHs93EwRcrNWjL0PTYVrma
+         ZpSVBQy5ejTY50kUPt3TKByJ19uzC1YMDEynRRvnDRu4nYyGKYDA82x2UOHskkL9CqIE
+         eRPDRqL38gkpcp8Kh0pKBrjO2smmYy4mEDhupuy1Z5EtVshN3bimkesTLKhsUMuw8s6J
+         h4230k7Sy+FPLrtEeTe6vxZw/o7us4/UQ8m3V3/3GqqN6V3v2JqSJ+HjT2A8uqJM5ZK0
+         +TBkfedRMaAadi4wpV+YJJwxRfWHKbuyEWZgoBs+X9O7Ws4Xx1SRmLjmQf3RUMy62AGD
+         7D/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=41QoXfpKo7UzNUol4u8WuN/OTNWDMbCscm13jCI9UFU=;
-        b=DNJ2dx8PVfp+U551ZYmgTzFlPJg3UqtYDaP0qcLQYQRKtdTFUtzTnyaI+LGauwO+n2
-         aOeTyVcJ1Uuu3bcZlb8qpjsUpRliaA3SPW6wRs6EQmHwGH7XGn8n9V4nMeuolj01EwzC
-         3dC1+gly3wEd+RisJAEoU+k9TBQSKH9EzTFNtALbRLfyVByz6kzL+dU3ulj3QRFz/bk4
-         62dyikXFxma7a7r2M0c2TPiIFgBaY/muaav8VF0OHV78QL0UXI9wO9XC5DJ6uauCf42K
-         s1UD3VOHjgvhW8JG+abkILrCyVnbtuQ1uYllOZh0kcqd3AAe6z7qLguG4WZLBX5TMPdJ
-         v56g==
-X-Gm-Message-State: AOAM530EX0QMEbwipf/KA1ImWZIL3py1sIHrEHLP6PmRCGytnA2I0351
-        vb5cwLMXvP7NqQ2S7AFwQRe5vEE3bhfG0w==
-X-Google-Smtp-Source: ABdhPJzYBeVeBHXjzWd4u/vHReDwP2+AryEvgQqTIMrz9JImklpPFxRZVsvBCaGo9032lCzeNUq9BA==
-X-Received: by 2002:a17:90a:62c5:: with SMTP id k5mr14481426pjs.100.1600460172927;
-        Fri, 18 Sep 2020 13:16:12 -0700 (PDT)
+        bh=WZFf6ltXN0q6i6KfdkHs41/4zFJI2xjfS0NImoIhVB8=;
+        b=MgPpPupiIzmhYUTzV11opiwr7bhrm/mWYgIsVX77xiqORLpEKbfxcm9bhvDfT8ygm3
+         GoyLnQxBnyCizobJTAMjLS4O+1bR8KQS9qybdoaMa6Gg/1OOXWVtygw963zYaF/zWB4p
+         r07Bbi2v5O+hJnHZUOSuiRQJLSb7++lh5uNtQMd+lA0r+5EnHaij1DxUy5BB362upCuq
+         GPUxubNI7rLj9/iG7LB3QYKXSUvKijvia2EhPG1wj4HZjBt3uHeXWpOb9wsr7JulJlQF
+         xCEnhun2x+uaJSh9vEbaK8aU7mS9+1QU9gJfYVE30YjlRMj2cw6Q6hvCBnngV4Gnp1GN
+         Lu9Q==
+X-Gm-Message-State: AOAM532VXiIwVQyhbykeXYbq10fPNJRDYjH2+95oZI4XWgAOg8ibbwXo
+        sv+vPknNYIVoT0qud4czPodL4XcpZe3rdQ==
+X-Google-Smtp-Source: ABdhPJw/GVkj9zbCNxU04b7IYQ3kf0A3z194OFufFFNA8+nzS50hme0yBDpwF7LI3apoN/bLJ/YZ+Q==
+X-Received: by 2002:a17:902:d888:b029:d0:cb2d:f274 with SMTP id b8-20020a170902d888b02900d0cb2df274mr34481802plz.13.1600460232794;
+        Fri, 18 Sep 2020 13:17:12 -0700 (PDT)
 Received: from [10.230.28.120] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id y203sm4153438pfb.58.2020.09.18.13.16.11
+        by smtp.gmail.com with ESMTPSA id 1sm4600803pfx.126.2020.09.18.13.17.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Sep 2020 13:16:11 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 2/3] net: dp83869: Add ability to advertise
- Fiber connection
+        Fri, 18 Sep 2020 13:17:11 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/3] net: phy: dp83822: Update the fiber
+ advertisement for speed
 To:     Dan Murphy <dmurphy@ti.com>, davem@davemloft.net, andrew@lunn.ch,
         hkallweit1@gmail.com
 Cc:     mkubecek@suse.cz, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <20200918191453.13914-1-dmurphy@ti.com>
- <20200918191453.13914-3-dmurphy@ti.com>
+ <20200918191453.13914-4-dmurphy@ti.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <1607ec30-01ae-1c3a-c972-44ee0105b4cd@gmail.com>
-Date:   Fri, 18 Sep 2020 13:16:10 -0700
+Message-ID: <0af1f797-ce97-2111-cff6-15d9deef3b62@gmail.com>
+Date:   Fri, 18 Sep 2020 13:17:10 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.2.2
 MIME-Version: 1.0
-In-Reply-To: <20200918191453.13914-3-dmurphy@ti.com>
+In-Reply-To: <20200918191453.13914-4-dmurphy@ti.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -73,10 +73,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 9/18/2020 12:14 PM, Dan Murphy wrote:
-> Add the ability to advertise the Fiber connection if the strap or the
-> op-mode is configured for 100Base-FX.
-> 
-> Auto negotiation is not supported on this PHY when in fiber mode.
+> Update the fiber advertisement for speed and duplex modes with the
+> 100base-FX full and half linkmode entries.
 > 
 > Signed-off-by: Dan Murphy <dmurphy@ti.com>
 
