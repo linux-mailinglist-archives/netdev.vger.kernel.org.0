@@ -2,183 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0417126FAAA
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 12:34:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43F4F26FB01
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 12:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726260AbgIRKe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 06:34:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34246 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726121AbgIRKe2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 06:34:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600425266;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nkMlmtD8uTyDJMt02ssxr1Uf6VzDRnVAhWgrVKIjiUg=;
-        b=FO2kHQg54kajUqjySJPa4xnN1ijtXP2fWkanm2Tn09+ns/UIuV+VrdnKw35J6aZbIMmEyz
-        rXemy5EW+68vIny6KVStPDYSu2yteHEHu9/YPSXif2zlix+RAJVTzLo+uiGhE8bsiDE1mR
-        foACQvaprdC9renIAZs+snPTLho42XM=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-119-695Dl2v7Px2lvZHR0X8F1w-1; Fri, 18 Sep 2020 06:34:25 -0400
-X-MC-Unique: 695Dl2v7Px2lvZHR0X8F1w-1
-Received: by mail-ej1-f72.google.com with SMTP id f17so2024729ejq.5
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:34:24 -0700 (PDT)
+        id S1726241AbgIRK5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 06:57:07 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:35006 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725882AbgIRK5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 06:57:07 -0400
+X-Greylist: delayed 1035 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 06:57:05 EDT
+Received: from mail-lj1-f199.google.com ([209.85.208.199])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <po-hsu.lin@canonical.com>)
+        id 1kJDnx-00071O-Cw
+        for netdev@vger.kernel.org; Fri, 18 Sep 2020 10:39:49 +0000
+Received: by mail-lj1-f199.google.com with SMTP id j4so1931290ljo.1
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:39:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=nkMlmtD8uTyDJMt02ssxr1Uf6VzDRnVAhWgrVKIjiUg=;
-        b=mN6Si69Que9ZDLF3VqnJ7pFvZnX8LwhH1K96SwpDgj+6OUoV5SHWjkWSoFJAyo29uk
-         /cEuG0nZ10PFcwOIuK7Y0UPJWIXFJKneaMmHxT/AaXC2XvfEfR5HIJFCN+7lvMuFD/9p
-         g8iBBXnZ62iOt9PWN2cEvaoHk/asWQbyhzbGo2dr4ftbdNL79KqX77p17D7jl/v6nVI4
-         Psx9T3uaVqyX/k7RutK/Yu1y1dI/sYl2LYAUCWz7x+U3BYfsv0E/AOYj5gCkN7A4T0qy
-         kXrY+EXTshuvYdT1/TfxOJfjJGFwPc6ZtFldldKnZ7Amfi1glElm9AjJdoM+NEbvoBaT
-         HNBg==
-X-Gm-Message-State: AOAM530P6Tqwt2ppZlbASbZisQfXHX9/j89sOKA9l9J+LZbvVxPJoBsP
-        JA0WPtwo9kOFFCDzGDX2g1+Or4QdLkAQm7WXOevtotdGElNC8RQ6DwVToGgckMHJqjzsP46uOdF
-        wFTQ8Bmmf/c1QGwix
-X-Received: by 2002:a50:e685:: with SMTP id z5mr29254467edm.259.1600425255561;
-        Fri, 18 Sep 2020 03:34:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy+nFdzy9eE1Pro6YK7eE6i0OeESEtdaL4r2RpncAY9krOEf87Oz1PoihnQ6mpz7pKTrZq/rg==
-X-Received: by 2002:a50:e685:: with SMTP id z5mr29253984edm.259.1600425249241;
-        Fri, 18 Sep 2020 03:34:09 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id f13sm1840116edn.73.2020.09.18.03.34.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 03:34:08 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 2D102183A90; Fri, 18 Sep 2020 12:34:08 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Saeed Mahameed <saeed@kernel.org>
-Cc:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shaun Crampton <shaun@tigera.io>,
-        David Miller <davem@davemloft.net>,
-        Marek Majkowski <marek@cloudflare.com>, brouer@redhat.com
-Subject: Re: BPF redirect API design issue for BPF-prog MTU feedback?
-In-Reply-To: <20200918120016.7007f437@carbon>
-References: <20200917143846.37ce43a0@carbon>
- <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
- <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org>
- <20200918120016.7007f437@carbon>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 18 Sep 2020 12:34:08 +0200
-Message-ID: <87ft7ffk67.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8TQIpEkK3UURZSuTWdFxaxjlA5aeVAZ+3spWA7nEMrY=;
+        b=SEPYMtp93kIym79CoCWiMV1kfLu4Q+cVUMQSLXeNaI1d/bL0V19Q7IHJG0fTuCwXv0
+         dpjE3xsUwZtCyeROzV+LYwY7Omo9mXvnF7kOPdbslTjHy+1S2y8SYpaiMU8Lh66PD9uB
+         ZeNGqLPqwPiq8NGExXf9qwAv2SzPGxGoxQxOT8A0L4lvAT1cjK1UEyopgYpSs4ALrIbb
+         Q6DsDZxlxKZO5E+y8EHXEAs4/FQEkdBT2wXQ8EsbBByyolBv3j9zb8ktuKVWi/B9O/Rm
+         yl/nPu8UAqMSK3E5rh38QYWnqvUrIUL0C91rdftB/w9vxf1fXpc9991uctwWEbYu2muY
+         ObJg==
+X-Gm-Message-State: AOAM5313V3DUOPJz9fh2PVQ41jhp4pOzDe2tamFHymL8w+K7xkf7qJOW
+        V74N4O/M5vE6HfmfEHwH2NYEmyFr8svCu9HmOYaxiszMxpXargmrWs3nkyGSoq5kqLOmfJka5UK
+        23ns53rW+JEZZi9LZF3LVcXYzRbOC6jzv8OlzqvOBGkT7OS+x
+X-Received: by 2002:a2e:9a0c:: with SMTP id o12mr12181068lji.191.1600425588783;
+        Fri, 18 Sep 2020 03:39:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyjdifQSj/on5KrMw8Uc/IRsfoxNs9Bf+W2IqpozLJMGxB4ZcAjvQ0UDDusCs6H/dI1hVNWjY2TLNHtYxHpBrY=
+X-Received: by 2002:a2e:9a0c:: with SMTP id o12mr12181057lji.191.1600425588488;
+ Fri, 18 Sep 2020 03:39:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20200907035010.9154-1-po-hsu.lin@canonical.com>
+ <20200907131217.61643ada@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CAMy_GT-kaqkcdR+0q5eKoW3CJn7dZSCfr+UxRf6e5iRzZMiKTA@mail.gmail.com>
+In-Reply-To: <CAMy_GT-kaqkcdR+0q5eKoW3CJn7dZSCfr+UxRf6e5iRzZMiKTA@mail.gmail.com>
+From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
+Date:   Fri, 18 Sep 2020 18:39:37 +0800
+Message-ID: <CAMy_GT-0ad7dnWZ=sVt7kZQSMeKQ-9AXdxTe+LqD4uuFnVd+Vw@mail.gmail.com>
+Subject: Re: [PATCHv3] selftests: rtnetlink: load fou module for
+ kci_test_encap_fou() test
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer <brouer@redhat.com> writes:
+Hello folks,
 
-> On Thu, 17 Sep 2020 12:11:33 -0700
-> Saeed Mahameed <saeed@kernel.org> wrote:
+any thoughts on this patch?
+It can make the test pass and reduce the failure numbers in
+kselftests, it will be great to have this applied.
+
+Thanks
+PHLin
+
+
+On Tue, Sep 8, 2020 at 2:57 PM Po-Hsu Lin <po-hsu.lin@canonical.com> wrote:
 >
->> On Thu, 2020-09-17 at 05:54 -0700, Maciej =C5=BBenczykowski wrote:
->> > On Thu, Sep 17, 2020 at 5:39 AM Jesper Dangaard Brouer
->> > <brouer@redhat.com> wrote:=20=20
->> > >=20
->> > > As you likely know[1] I'm looking into moving the MTU check (for
->> > > TC-BPF) in __bpf_skb_max_len() when e.g. called by
->> > > bpf_skb_adjust_room(), because when redirecting packets to
->> > > another netdev it is not correct to limit the MTU based on the
->> > > incoming netdev.
->> > >=20
->> > > I was looking at doing the MTU check in bpf_redirect() helper,
->> > > because at this point we know the redirect to netdev, and
->> > > returning an indication/error that MTU was exceed, would allow
->> > > the BPF-prog logic to react, e.g. sending ICMP (instead of packet
->> > > getting silently dropped).=20
->> > > BUT this is not possible because bpf_redirect(index, flags) helper
->> > > don't provide the packet context-object (so I cannot lookup the
->> > > packet length).
->> > >=20
->> > > Seeking input:
->> > >=20
->> > > Should/can we change the bpf_redirect API or create a new helper
->> > > with packet-context?
->> > >=20
->> > >  Note: We have the same need for the packet context for XDP when
->> > >  redirecting the new multi-buffer packets, as not all destination
->> > >  netdev will support these new multi-buffer packets.
->> > >=20
->> > > I can of-cause do the MTU checks on kernel-side in
->> > > skb_do_redirect, but then how do people debug this? as packet
->> > > will basically be silently dropped.
->> > >=20
->> > >=20
->> > >=20
->> > > (Looking at how does BPF-prog logic handle MTU today)
->> > >=20
->> > > How do bpf_skb_adjust_room() report that the MTU was exceeded?
->> > > Unfortunately it uses a common return code -ENOTSUPP which used
->> > > for multiple cases (include MTU exceeded). Thus, the BPF-prog
->> > > logic cannot use this reliably to know if this is a MTU exceeded
->> > > event. (Looked BPF-prog code and they all simply exit with
->> > > TC_ACT_SHOT for all error codes, cloudflare have the most
->> > > advanced handling with metrics->errors_total_encap_adjust_failed++).
->> > >=20
->> > >=20
->> > > [1]=20
->> > > https://lore.kernel.org/bpf/159921182827.1260200.9699352760916903781=
-.stgit@firesoul/
->> > > --
->> > > Best regards,
->> > >   Jesper Dangaard Brouer
->> > >   MSc.CS, Principal Kernel Engineer at Red Hat
->> > >   LinkedIn: http://www.linkedin.com/in/brouer
->> > >=20=20=20
->> >=20
->> > (a) the current state of the world seems very hard to use correctly,
->> > so adding new apis, or even changing existing ones seems ok to me.
->> > especially if this just means changing what error code they return
->> >=20
->> > (b) another complexity with bpf_redirect() is you can call it, it
->> > can succeed, but then you can not return TC_ACT_REDIRECT from the
->> > bpf program, which effectively makes the earlier *successful*
->> > bpf_redirect() call an utter no-op.
->> >=20
->> > (bpf_redirect() just determines what a future return TC_ACT_REDIRECT
->> > will do)
->> >=20
->> > so if you bpf_redirect to interface with larger mtu, then increase
->> > packet size,=20=20
->>=20
->> why would you redirect then touch the packet afterwards ?=20
->> if you have a bad program, then it is a user issue.
->>=20
->> > then return TC_ACT_OK, then you potentially end up with excessively
->> > large packet egressing through original interface (with small mtu).
->> >=20
+> On Tue, Sep 8, 2020 at 4:12 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Mon,  7 Sep 2020 11:50:10 +0800 Po-Hsu Lin wrote:
+> > > The kci_test_encap_fou() test from kci_test_encap() in rtnetlink.sh
+> > > needs the fou module to work. Otherwise it will fail with:
+> > >
+> > >   $ ip netns exec "$testns" ip fou add port 7777 ipproto 47
+> > >   RTNETLINK answers: No such file or directory
+> > >   Error talking to the kernel
+> > >
+> > > Add the CONFIG_NET_FOU into the config file as well. Which needs at
+> > > least to be set as a loadable module.
+> > >
+> > > Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
+> >
+> > > diff --git a/tools/testing/selftests/net/rtnetlink.sh b/tools/testing/selftests/net/rtnetlink.sh
+> > > index 7c38a90..a711b3e 100755
+> > > --- a/tools/testing/selftests/net/rtnetlink.sh
+> > > +++ b/tools/testing/selftests/net/rtnetlink.sh
+> > > @@ -520,6 +520,11 @@ kci_test_encap_fou()
+> > >               return $ksft_skip
+> > >       fi
+> > >
+> > > +     if ! /sbin/modprobe -q -n fou; then
+> > > +             echo "SKIP: module fou is not found"
+> > > +             return $ksft_skip
+> > > +     fi
+> > > +     /sbin/modprobe -q fou
+> > >       ip -netns "$testns" fou add port 7777 ipproto 47 2>/dev/null
+> > >       if [ $? -ne 0 ];then
+> > >               echo "FAIL: can't add fou port 7777, skipping test"
+> > > @@ -540,6 +545,7 @@ kci_test_encap_fou()
+> > >               return 1
+> > >       fi
+> > >
+> > > +     /sbin/modprobe -q -r fou
+> >
+> > I think the common practice is to not remove the module at the end of
+> > the test. It may be used by something else than the test itself.
+> >
+> Hello Jakub,
+> Thanks for your feedback.
 >
-> This is a good point.  As bpf_skb_adjust_room() can just be run after
-> bpf_redirect() call, then a MTU check in bpf_redirect() actually
-> doesn't make much sense.  As clever/bad BPF program can then avoid the
-> MTU check anyhow.  This basically means that we have to do the MTU
-> check (again) on kernel side anyhow to catch such clever/bad BPF
-> programs.  (And I don't like wasting cycles on doing the same check two
-> times).
+> For this case I think it's safe to remove the module here, as it was
+> never loaded before and thus causing this test to fail.
+> If other tests in this rtnetlink.sh need this fou module, we should be
+> able to spot those failures too, however this is the only failure as I
+> can see.
+> (pmtu.sh will need fou module to run as well, but it will be loaded there.)
 >
-> If we do the MTU check on the kernel side, then there are no feedback
-> to the program, and how are end-users going to debug this?
-
-The same way any other MTU-related error is seen? Isn't there a counter
-or something? Presumably (since this is in the skb path) it would also
-be caught by drop_monitor?
-
--Toke
-
+> Shouldn't we insert the required module whenever the test needs it? So
+> that we can run the test itself directly, without depending on other
+> tests.
+> Also, I can see modules for tests were being unloaded in other tests as well.
+>
+> Thanks
+>
+> > >       echo "PASS: fou"
+> > >  }
+> > >
+> >
