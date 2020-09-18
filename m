@@ -2,43 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A1D9270399
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 19:59:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A6522703B5
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 20:07:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726247AbgIRR6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 13:58:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60166 "EHLO mail.kernel.org"
+        id S1726205AbgIRSG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 14:06:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41946 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725955AbgIRR6x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 13:58:53 -0400
+        id S1726118AbgIRSG6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 14:06:58 -0400
 Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5B36221734;
-        Fri, 18 Sep 2020 17:58:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9BCA321741;
+        Fri, 18 Sep 2020 18:06:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600451932;
-        bh=Z1T7hbqtHBCbMhdQoLwdAAwn0wXBfiMFoCm8Vl9GhZw=;
+        s=default; t=1600452417;
+        bh=11zzBTt+zJr1XN2e3FnZDCJY23qoqQtx3dyPT9fdqgU=;
         h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=g6/Hj7Hxn3ewBH+c7YX77EBTQk3PJSJTB5UdoBi1ZCPoC15NTUWrVh/7so5lxRg0A
-         SZzhVD4Xe9lMeO5Odq1Qu7IypjDPtuyqEl7YM5j9ANo2B+g5sJ+Egfz9frwSEIwVB6
-         9T2/B8/lkwFYIzDvBt4MuvQEPDa4FBcGpX/OlqrE=
-Message-ID: <7bfebfdc0d7345c4612124ff00e20eebb0ff6cd9.camel@kernel.org>
-Subject: Re: [PATCH] Revert "net: linkwatch: add check for netdevice being
- present to linkwatch_do_dev"
+        b=SUx6YZW8PY2oISsxk+8BFbA9qE8GSbrXfngZtbiY7t+mSNZU9jgGvvM7nVRWLP6wM
+         PZ0YMwf8YUiexftTw5VrDZbdwAjw/c2dRv31vR4592wtxj3E2bE/MJwwC/vPw/YwTy
+         tWkZ8n64NqF1YE030kB6RwL71azn+9SWgF6sy3XU=
+Message-ID: <369798037f17899dbb775915bfafc363880fedbb.camel@kernel.org>
+Subject: Re: [PATCH v3,net-next,0/4] Add Support for Marvell OcteonTX2
+ Cryptographic
 From:   Saeed Mahameed <saeed@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Gaku Inami <gaku.inami.xh@renesas.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Fri, 18 Sep 2020 10:58:49 -0700
-In-Reply-To: <20200901150237.15302-1-geert+renesas@glider.be>
-References: <20200901150237.15302-1-geert+renesas@glider.be>
+To:     Srujana Challa <schalla@marvell.com>, herbert@gondor.apana.org.au,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        kuba@kernel.org, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com, schandran@marvell.com, pathreya@marvell.com
+Date:   Fri, 18 Sep 2020 11:06:55 -0700
+In-Reply-To: <20200917132835.28325-1-schalla@marvell.com>
+References: <20200917132835.28325-1-schalla@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
@@ -47,49 +43,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-09-01 at 17:02 +0200, Geert Uytterhoeven wrote:
-> This reverts commit 124eee3f6955f7aa19b9e6ff5c9b6d37cb3d1e2c.
+On Thu, 2020-09-17 at 18:58 +0530, Srujana Challa wrote:
+> The following series adds support for Marvell Cryptographic
+> Acceleration
+> Unit(CPT) on OcteonTX2 CN96XX SoC.
+> This series is tested with CRYPTO_EXTRA_TESTS enabled and
+> CRYPTO_DISABLE_TESTS disabled.
 > 
-> Inami-san reported that this commit breaks bridge support in a Xen
-> environment, and that reverting it fixes this.
-> 
-> During system resume, bridge ports are no longer enabled, as that
-> relies
-> on the receipt of the NETDEV_CHANGE notification.  This notification
-> is
-> not sent, as netdev_state_change() is no longer called.
-> 
-> Note that the condition this commit intended to fix never existed
-> upstream, as the patch triggering it and referenced in the commit was
-> never applied upstream.  Hence I can confirm s2ram on r8a73a4/ape6evm
-> and sh73a0/kzm9g works fine before/after this revert.
-> 
-> Reported-by Gaku Inami <gaku.inami.xh@renesas.com>
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  net/core/link_watch.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/core/link_watch.c b/net/core/link_watch.c
-> index 75431ca9300fb9c4..c24574493ecf95e6 100644
-> --- a/net/core/link_watch.c
-> +++ b/net/core/link_watch.c
-> @@ -158,7 +158,7 @@ static void linkwatch_do_dev(struct net_device
-> *dev)
->  	clear_bit(__LINK_STATE_LINKWATCH_PENDING, &dev->state);
->  
->  	rfc2863_policy(dev);
-> -	if (dev->flags & IFF_UP && netif_device_present(dev)) {
-> +	if (dev->flags & IFF_UP) {
 
-So with your issue the devices is both IFF_UP and !present ? how so ?
-I think you should look into that.
+I am with Jakub on this one, 10K LOC require more explanation in the
+cover-letter.
+e.g. some background, high level design, device components being
+added/changed.  Basically, what should we expect code-wise before we
+jump into 10K LOC review..
 
-I am ok with removing the "dev present" check from here just because we
-shouldn't  be expecting IFF_UP && !present .. such thing must be a bug
-somewhere else.
-
->  		if (netif_carrier_ok(dev))
->  			dev_activate(dev);
->  		else
+> Changes since v2:
+>  * Fixed C=1 warnings.
+>  * Added code to exit CPT VF driver gracefully.
+>  * Moved OcteonTx2 asm code to a header file under include/linux/soc/
+> 
+> Changes since v1:
+>  * Moved Makefile changes from patch4 to patch2 and patch3.
+> 
+> Srujana Challa (3):
+>   octeontx2-pf: move asm code to include/linux/soc
+>   octeontx2-af: add support to manage the CPT unit
+>   drivers: crypto: add support for OCTEONTX2 CPT engine
+>   drivers: crypto: add the Virtual Function driver for OcteonTX2 CPT
+> 
+>  MAINTAINERS                                   |    2 +
+>  drivers/crypto/marvell/Kconfig                |   17 +
+>  drivers/crypto/marvell/Makefile               |    1 +
+>  drivers/crypto/marvell/octeontx2/Makefile     |   10 +
+>  .../marvell/octeontx2/otx2_cpt_common.h       |   53 +
+>  .../marvell/octeontx2/otx2_cpt_hw_types.h     |  467 ++++
+>  .../marvell/octeontx2/otx2_cpt_mbox_common.c  |  286 +++
+>  .../marvell/octeontx2/otx2_cpt_mbox_common.h  |  100 +
+>  .../marvell/octeontx2/otx2_cpt_reqmgr.h       |  197 ++
+>  drivers/crypto/marvell/octeontx2/otx2_cptlf.h |  356 +++
+>  .../marvell/octeontx2/otx2_cptlf_main.c       |  967 ++++++++
+>  drivers/crypto/marvell/octeontx2/otx2_cptpf.h |   79 +
+>  .../marvell/octeontx2/otx2_cptpf_main.c       |  598 +++++
+>  .../marvell/octeontx2/otx2_cptpf_mbox.c       |  694 ++++++
+>  .../marvell/octeontx2/otx2_cptpf_ucode.c      | 2173
+> +++++++++++++++++
+>  .../marvell/octeontx2/otx2_cptpf_ucode.h      |  180 ++
+>  drivers/crypto/marvell/octeontx2/otx2_cptvf.h |   29 +
+>  .../marvell/octeontx2/otx2_cptvf_algs.c       | 1698 +++++++++++++
+>  .../marvell/octeontx2/otx2_cptvf_algs.h       |  172 ++
+>  .../marvell/octeontx2/otx2_cptvf_main.c       |  229 ++
+>  .../marvell/octeontx2/otx2_cptvf_mbox.c       |  189 ++
+>  .../marvell/octeontx2/otx2_cptvf_reqmgr.c     |  540 ++++
+>  .../ethernet/marvell/octeontx2/af/Makefile    |    3 +-
+>  .../net/ethernet/marvell/octeontx2/af/mbox.h  |   85 +
+>  .../net/ethernet/marvell/octeontx2/af/rvu.c   |    2 +-
+>  .../net/ethernet/marvell/octeontx2/af/rvu.h   |    7 +
+>  .../ethernet/marvell/octeontx2/af/rvu_cpt.c   |  343 +++
+>  .../marvell/octeontx2/af/rvu_debugfs.c        |  342 +++
+>  .../ethernet/marvell/octeontx2/af/rvu_nix.c   |   76 +
+>  .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   65 +-
+>  .../marvell/octeontx2/nic/otx2_common.h       |   13 +-
+>  include/linux/soc/marvell/octeontx2/asm.h     |   29 +
+>  32 files changed, 9982 insertions(+), 20 deletions(-)
+>  create mode 100644 drivers/crypto/marvell/octeontx2/Makefile
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cpt_common.h
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.c
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.h
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h
+>  create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptlf.h
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cptlf_main.c
+>  create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf.h
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.h
+>  create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf.h
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c
+>  create mode 100644
+> drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
+>  create mode 100644
+> drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+>  create mode 100644 include/linux/soc/marvell/octeontx2/asm.h
+> 
 
