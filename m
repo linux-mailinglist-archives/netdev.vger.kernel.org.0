@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 069F226F0EF
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF42626F0D5
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:46:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730293AbgIRCrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:47:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33468 "EHLO mail.kernel.org"
+        id S1730268AbgIRCqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:46:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33558 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727299AbgIRCJk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:09:40 -0400
+        id S1728363AbgIRCJt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:09:49 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 792892395C;
-        Fri, 18 Sep 2020 02:09:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D167B238A1;
+        Fri, 18 Sep 2020 02:09:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600394979;
-        bh=lQcexyaZjXVoeH73AvKNhcfC2KEiQeqKqtVo1iyGMso=;
+        s=default; t=1600394988;
+        bh=eJUpK7/qw6BnJLNqvb7DTW1JHZGMyCW4pYM7azEwQjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zH/WIS7SM34UKClyiA23KA3J5ftMBEyZFTlAqWWEc75GnD5c3zYH/aXLfUIiWa2cr
-         4fNRnH8brTv01Zn9MdniDMZStblswAehMHFgvTlEaG3qA6beaxJqPOGPN9258pLdmG
-         Fx3hsvkLSgwhEk2ibDa3NVATE6MJIj93o/Dh8wN8=
+        b=ewrq8rydFfRgXycQe2haog0kjuEqGQAoDdwvuSO2IGxKWmuPdPn2laN1uVWcKQqPc
+         kiKCiINulDTHF62V7KH0j50naYqpROtmUv+FLb7dIglHtY0xC20roLYqYCthG1l97m
+         aJcUmCGIh/AoR85xCuzbJtBXjpSIgOfeMs4PbWAU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 079/206] mt76: clear skb pointers from rx aggregation reorder buffer during cleanup
-Date:   Thu, 17 Sep 2020 22:05:55 -0400
-Message-Id: <20200918020802.2065198-79-sashal@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 087/206] bpf: Remove recursion prevention from rcu free callback
+Date:   Thu, 17 Sep 2020 22:06:03 -0400
+Message-Id: <20200918020802.2065198-87-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918020802.2065198-1-sashal@kernel.org>
 References: <20200918020802.2065198-1-sashal@kernel.org>
@@ -43,33 +42,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-[ Upstream commit 9379df2fd9234e3b67a23101c2370c99f6af6d77 ]
+[ Upstream commit 8a37963c7ac9ecb7f86f8ebda020e3f8d6d7b8a0 ]
 
-During the cleanup of the aggregation session, a rx handler (or release timer)
-on another CPU might still hold a pointer to the reorder buffer and could
-attempt to release some packets.
-Clearing pointers during cleanup avoids a theoretical use-after-free bug here.
+If an element is freed via RCU then recursion into BPF instrumentation
+functions is not a concern. The element is already detached from the map
+and the RCU callback does not hold any locks on which a kprobe, perf event
+or tracepoint attached BPF program could deadlock.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20200224145643.259118710@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/agg-rx.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/bpf/hashtab.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/agg-rx.c b/drivers/net/wireless/mediatek/mt76/agg-rx.c
-index d44d57e6eb27a..97df6b3a472b1 100644
---- a/drivers/net/wireless/mediatek/mt76/agg-rx.c
-+++ b/drivers/net/wireless/mediatek/mt76/agg-rx.c
-@@ -278,6 +278,7 @@ static void mt76_rx_aggr_shutdown(struct mt76_dev *dev, struct mt76_rx_tid *tid)
- 		if (!skb)
- 			continue;
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 1b28fb006763a..3f3ed33bd2fdc 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -667,15 +667,7 @@ static void htab_elem_free_rcu(struct rcu_head *head)
+ 	struct htab_elem *l = container_of(head, struct htab_elem, rcu);
+ 	struct bpf_htab *htab = l->htab;
  
-+		tid->reorder_buf[i] = NULL;
- 		tid->nframes--;
- 		dev_kfree_skb(skb);
- 	}
+-	/* must increment bpf_prog_active to avoid kprobe+bpf triggering while
+-	 * we're calling kfree, otherwise deadlock is possible if kprobes
+-	 * are placed somewhere inside of slub
+-	 */
+-	preempt_disable();
+-	__this_cpu_inc(bpf_prog_active);
+ 	htab_elem_free(htab, l);
+-	__this_cpu_dec(bpf_prog_active);
+-	preempt_enable();
+ }
+ 
+ static void htab_put_fd_value(struct bpf_htab *htab, struct htab_elem *l)
 -- 
 2.25.1
 
