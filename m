@@ -2,113 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0DF526F53F
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 07:00:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF10926F54A
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 07:08:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726139AbgIRFAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 01:00:25 -0400
-Received: from mga17.intel.com ([192.55.52.151]:13893 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726101AbgIRFAY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 01:00:24 -0400
-X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 01:00:24 EDT
-IronPort-SDR: hGLtLNqOC499k3S1WA8W1Q7JGvwoDTOVFN7cVg94ZMf6TU+pICvDVCE26BThL5b/8yRnb8lCzv
- tDGhbVkq6FkA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9747"; a="139867023"
-X-IronPort-AV: E=Sophos;i="5.77,273,1596524400"; 
-   d="scan'208";a="139867023"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 21:53:16 -0700
-IronPort-SDR: YWzM4T0BwpUVPZk66aYfXAZurZPV9xGQgroCxYM4ZSIwYpiddtSr+TPux3kSZNwd798eF6uVmW
- 5NEcAwPQUyow==
-X-IronPort-AV: E=Sophos;i="5.77,273,1596524400"; 
-   d="scan'208";a="484041576"
-Received: from samudral-mobl.amr.corp.intel.com (HELO [10.209.9.140]) ([10.209.9.140])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 21:53:15 -0700
-Subject: Re: [PATCH net-next v2 8/8] netdevsim: Add support for add and delete
- PCI SF port
-To:     Parav Pandit <parav@nvidia.com>, David Ahern <dsahern@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Jiri Pirko <jiri@nvidia.com>
-References: <20200917081731.8363-8-parav@nvidia.com>
- <20200917172020.26484-1-parav@nvidia.com>
- <20200917172020.26484-9-parav@nvidia.com>
- <e14f216f-19d9-7b4a-39ff-94ea89cd36c0@gmail.com>
- <BY5PR12MB43222EEBBC3B008918B82B98DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <c95859c8-e9cf-d218-e186-4f5d570c1298@gmail.com>
- <BY5PR12MB43220D8961B4F676CBA65A55DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <0b11ae28-3868-ee9f-184a-8cb577f717fc@intel.com>
-Date:   Thu, 17 Sep 2020 21:53:15 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <BY5PR12MB43220D8961B4F676CBA65A55DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726290AbgIRFIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 01:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726126AbgIRFIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 01:08:37 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909D8C06174A
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 22:08:37 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id p13so2682896plr.17
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 22:08:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=AET5NYtjacJg/hdDo6GkOEDGpazNSC59fCtzWBtCTKY=;
+        b=IRYZeAlNKa8jRqRLtExpukpZlvhoDfKntaLfhONKvMfZvP4PDy0qtOve0LNTQwfPJY
+         TnGeuEFkzEy4EtqfIore0vgfF1eoqzilg7w3HEHRoiY1a/bZtzkd5V7HJoDS0fZFHQao
+         2xl0ld0x5mRYJj48uNfi4fEAiRO8rKqmDSR2SpfpUkJOBQ0ALom+LyFlEdKvZmli6ydJ
+         fncRQTeXUT7Vv79XqUQLubnxRtK/YbuY3Z1Y7zRQ1817g0SBbDZmTSZNmmF/QWMyf7KK
+         xOePlovBRr13Lhg0fXbxzjyKxsgaFhSFOnBOxvBNfG2HMX9LeAWX7grGMzfynvMfAesU
+         /Ukw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=AET5NYtjacJg/hdDo6GkOEDGpazNSC59fCtzWBtCTKY=;
+        b=bpkMxx6LCa/UJ+Y5aPVxw1SXjkueK1LewQfUTTxjhGpr7WT9Ung25nXTdlXmqBRrHy
+         KMXNuwknWXueqQmEocYz/GhGRiokj2dE53V13TvYKphzth83vnr7ISKFH8gleB3c0I/O
+         jBSw9zS9OG4ZOlOfFUT+50QikVZV5KNWxquKvVeixyAlc5EmTyJTnP3TkAtu/bF7o6u4
+         aCbAxdeG47ff/vpxKK9ZxrDi2GCVkES0qGypxXIoDezNRE4pcjPhqfepiT0BGfrsB4U3
+         OjqfBNm1SCa0cXRJfZ5opqBxk6vuHvwlj86lxdXl+kZeGE/RdmvIuOdwPreqRanSh7Q8
+         lqjw==
+X-Gm-Message-State: AOAM533AAP26NTawX3Ea4Mcmgk8YbI6QuGwGVkR6QqTzDogDm+jbEIjC
+        F9xR+6CVG2FU5KfD5yUJo7JCwN3bsjpxiFXplJp3P58+CeTAqZ4eI3bz+r6W8RZAVt+9yQ6WlYZ
+        QenbKGoHUwwU+J4SFqWKRBxXLD1dlGFYCE4UgEuSsaMPpAqVYp7pdcLFN/HUJns0w
+X-Google-Smtp-Source: ABdhPJxckfMeilEdpwa4fk48+iuUSCO1bXQAhbwAVnzGLiGUUqSVcZR91vETOG2QL4hlC4V2cFbtofvvgDsU
+X-Received: from coldfire2.svl.corp.google.com ([2620:15c:2c4:201:f693:9fff:fef4:e398])
+ (user=maheshb job=sendgmr) by 2002:a62:93:0:b029:13e:d13d:a085 with SMTP id
+ 141-20020a6200930000b029013ed13da085mr29652631pfa.28.1600405716670; Thu, 17
+ Sep 2020 22:08:36 -0700 (PDT)
+Date:   Thu, 17 Sep 2020 22:08:32 -0700
+Message-Id: <20200918050832.1556691-1-maheshb@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
+Subject: [PATCH next] net: fix build without CONFIG_SYSCTL definition
+From:   Mahesh Bandewar <maheshb@google.com>
+To:     Netdev <netdev@vger.kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mahesh Bandewar <mahesh@bandewar.net>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Earlier commit 316cdaa1158a ("net: add option to not create fall-back
+tunnels in root-ns as well") removed the CONFIG_SYSCTL to enable the
+kernel-commandline to work. However, this variable gets defined only
+when CONFIG_SYSCTL option is selected.
 
+With this change the behavior would default to creating fall-back
+tunnels in all namespaces when CONFIG_SYSCTL is not selected and
+the kernel commandline option will be ignored.
 
-On 9/17/2020 9:41 PM, Parav Pandit wrote:
-> Hi David,
-> 
->> From: David Ahern <dsahern@gmail.com>
->> Sent: Friday, September 18, 2020 9:08 AM
->>
->> On 9/17/20 9:29 PM, Parav Pandit wrote:
->>>>> Examples:
->>>>>
->>>>> Create a PCI PF and PCI SF port.
->>>>> $ devlink port add netdevsim/netdevsim10/10 flavour pcipf pfnum 0 $
->>>>> devlink port add netdevsim/netdevsim10/11 flavour pcisf pfnum 0
->>>>> sfnum
->>>>> 44 $ devlink port show netdevsim/netdevsim10/11
->>>>> netdevsim/netdevsim10/11: type eth netdev eni10npf0sf44 flavour
->>>>> pcisf
->>>> controller 0 pfnum 0 sfnum 44 external true splittable false
->>>>>    function:
->>>>>      hw_addr 00:00:00:00:00:00 state inactive
->>>>>
->>>>> $ devlink port function set netdevsim/netdevsim10/11 hw_addr
->>>>> 00:11:22:33:44:55 state active
->>>>>
->>>>> $ devlink port show netdevsim/netdevsim10/11 -jp {
->>>>>      "port": {
->>>>>          "netdevsim/netdevsim10/11": {
->>>>>              "type": "eth",
->>>>>              "netdev": "eni10npf0sf44",
->>>>
->>>> I could be missing something, but it does not seem like this patch
->>>> creates the netdevice for the subfunction.
->>>>
->>> The sf port created here is the eswitch port with a valid switch id similar to PF
->> and physical port.
->>> So the netdev created is the representor netdevice.
->>> It is created uniformly for subfunction and pf port flavours.
->>
->> To be clear: If I run the devlink commands to create a sub-function, `ip link
->> show` should list a net_device that corresponds to the sub-function?
-> 
-> In this series only representor netdevice corresponds to sub-function will be visible in ip link show, i.e. eni10npf0sf44.
+Fixes: 316cdaa1158a ("net: add option to not create fall-back tunnels in root-ns as well")
+Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+---
+ include/linux/netdevice.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-This should be OK if the eSwitch mode is changed to switchdev.
-But i think it should be possible to create a subfunction even in legacy 
-mode where representor netdev is not created.
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 909b1fbb0481..fef0eb96cf69 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -634,8 +634,9 @@ extern int sysctl_devconf_inherit_init_net;
+  */
+ static inline bool net_has_fallback_tunnels(const struct net *net)
+ {
+-	return (net == &init_net && sysctl_fb_tunnels_only_for_init_net == 1) ||
+-	       !sysctl_fb_tunnels_only_for_init_net;
++	return !IS_ENABLED(CONFIG_SYSCTL) ||
++	       !sysctl_fb_tunnels_only_for_init_net ||
++	       (net == &init_net && sysctl_fb_tunnels_only_for_init_net == 1);
+ }
+ 
+ static inline int netdev_queue_numa_node_read(const struct netdev_queue *q)
+-- 
+2.28.0.681.g6f77f65b4e-goog
 
-> 
-> Netdevsim is only simulating the eswitch side or control path at present for pf/vf/sf ports.
-> So other end of this port (netdevice/rdma device/vdpa device) are not yet created.
-> 
-> Subfunction will be anchored on virtbus described in RFC [1], which is not yet in-kernel yet.
-> Grep for "every SF a device is created on virtbus" to jump to this part of the long RFC.
-> 
-> [1] https://lore.kernel.org/netdev/20200519092258.GF4655@nanopsycho/
-> 
