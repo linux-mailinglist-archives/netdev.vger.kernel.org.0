@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D3272704BD
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 21:11:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1CE32704C4
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 21:11:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726267AbgIRTLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 15:11:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44194 "EHLO vps0.lunn.ch"
+        id S1726396AbgIRTLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 15:11:45 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44240 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726236AbgIRTLa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 15:11:30 -0400
+        id S1726309AbgIRTLj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 15:11:39 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kJLn2-00FH9G-0U; Fri, 18 Sep 2020 21:11:24 +0200
+        id 1kJLn2-00FH9J-1u; Fri, 18 Sep 2020 21:11:24 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
@@ -21,9 +21,9 @@ Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
         Jiri Pirko <jiri@nvidia.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v4 6/9] net: dsa: mv88e6xxx: Create helper for FIDs in use
-Date:   Fri, 18 Sep 2020 21:11:06 +0200
-Message-Id: <20200918191109.3640779-7-andrew@lunn.ch>
+Subject: [PATCH net-next v4 7/9] net: dsa: mv88e6xxx: Add devlink regions
+Date:   Fri, 18 Sep 2020 21:11:07 +0200
+Message-Id: <20200918191109.3640779-8-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200918191109.3640779-1-andrew@lunn.ch>
 References: <20200918191109.3640779-1-andrew@lunn.ch>
@@ -33,77 +33,376 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Refactor the code in mv88e6xxx_atu_new() which builds a bitmaps of
-FIDs in use into a helper function. This will be reused by the devlink
-code when dumping the ATU.
+Allow the global registers, and the ATU to be snapshot via devlink
+regions. It is later planned to add support for the port registers.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+v2:
+Remove left over debug prints
+Comment ATU format is generic for mv88e6xxx, not wider
+
+v3:
+Make use of ops structure passed to snapshot function
+Remove port regions
+
+v4:
+Make use of enum mv88e6xxx_region_id
+Fix global2/global1 read typ0
+
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 20 ++++++++++++++++----
- drivers/net/dsa/mv88e6xxx/chip.h |  2 ++
- 2 files changed, 18 insertions(+), 4 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c    |  14 +-
+ drivers/net/dsa/mv88e6xxx/chip.h    |  16 ++
+ drivers/net/dsa/mv88e6xxx/devlink.c | 254 ++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/devlink.h |   2 +
+ 4 files changed, 285 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 984bdcaff1ea..d8bb5e5e8583 100644
+index d8bb5e5e8583..8d1710c896ae 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1466,21 +1466,21 @@ static int mv88e6xxx_vtu_loadpurge(struct mv88e6xxx_chip *chip,
- 	return chip->info->ops->vtu_loadpurge(chip, entry);
+@@ -2838,6 +2838,7 @@ static void mv88e6xxx_teardown(struct dsa_switch *ds)
+ {
+ 	mv88e6xxx_teardown_devlink_params(ds);
+ 	dsa_devlink_resources_unregister(ds);
++	mv88e6xxx_teardown_devlink_regions(ds);
  }
  
--static int mv88e6xxx_atu_new(struct mv88e6xxx_chip *chip, u16 *fid)
-+int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *fid_bitmap)
+ static int mv88e6xxx_setup(struct dsa_switch *ds)
+@@ -2970,7 +2971,18 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
+ 
+ 	err = mv88e6xxx_setup_devlink_params(ds);
+ 	if (err)
+-		dsa_devlink_resources_unregister(ds);
++		goto out_resources;
++
++	err = mv88e6xxx_setup_devlink_regions(ds);
++	if (err)
++		goto out_params;
++
++	return 0;
++
++out_params:
++	mv88e6xxx_teardown_devlink_params(ds);
++out_resources:
++	dsa_devlink_resources_unregister(ds);
+ 
+ 	return err;
+ }
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index 77d81aa99f37..81c244fc0419 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -238,6 +238,19 @@ struct mv88e6xxx_port {
+ 	bool mirror_egress;
+ 	unsigned int serdes_irq;
+ 	char serdes_irq_name[64];
++	struct devlink_region *region;
++};
++
++enum mv88e6xxx_region_id {
++	MV88E6XXX_REGION_GLOBAL1 = 0,
++	MV88E6XXX_REGION_GLOBAL2,
++	MV88E6XXX_REGION_ATU,
++
++	_MV88E6XXX_REGION_MAX,
++};
++
++struct mv88e6xxx_region_priv {
++	enum mv88e6xxx_region_id id;
+ };
+ 
+ struct mv88e6xxx_chip {
+@@ -334,6 +347,9 @@ struct mv88e6xxx_chip {
+ 
+ 	/* Array of port structures. */
+ 	struct mv88e6xxx_port ports[DSA_MAX_PORTS];
++
++	/* devlink regions */
++	struct devlink_region *regions[_MV88E6XXX_REGION_MAX];
+ };
+ 
+ struct mv88e6xxx_bus_ops {
+diff --git a/drivers/net/dsa/mv88e6xxx/devlink.c b/drivers/net/dsa/mv88e6xxx/devlink.c
+index 91e02024c5cf..01b7d036854d 100644
+--- a/drivers/net/dsa/mv88e6xxx/devlink.c
++++ b/drivers/net/dsa/mv88e6xxx/devlink.c
+@@ -5,6 +5,7 @@
+ #include "devlink.h"
+ #include "global1.h"
+ #include "global2.h"
++#include "port.h"
+ 
+ static int mv88e6xxx_atu_get_hash(struct mv88e6xxx_chip *chip, u8 *hash)
  {
--	DECLARE_BITMAP(fid_bitmap, MV88E6XXX_N_FID);
- 	struct mv88e6xxx_vtu_entry vlan;
- 	int i, err;
+@@ -260,3 +261,256 @@ int mv88e6xxx_setup_devlink_resources(struct dsa_switch *ds)
+ 	return err;
+ }
+ 
++static int mv88e6xxx_region_global_snapshot(struct devlink *dl,
++					    const struct devlink_region_ops *ops,
++					    struct netlink_ext_ack *extack,
++					    u8 **data)
++{
++	struct mv88e6xxx_region_priv *region_priv = ops->priv;
++	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
++	struct mv88e6xxx_chip *chip = ds->priv;
++	u16 *registers;
++	int i, err;
++
++	registers = kmalloc_array(32, sizeof(u16), GFP_KERNEL);
++	if (!registers)
++		return -ENOMEM;
++
++	mv88e6xxx_reg_lock(chip);
++	for (i = 0; i < 32; i++) {
++		switch (region_priv->id) {
++		case MV88E6XXX_REGION_GLOBAL1:
++			err = mv88e6xxx_g1_read(chip, i, &registers[i]);
++			break;
++		case MV88E6XXX_REGION_GLOBAL2:
++			err = mv88e6xxx_g2_read(chip, i, &registers[i]);
++			break;
++		default:
++			err = -EOPNOTSUPP;
++		}
++
++		if (err) {
++			kfree(registers);
++			goto out;
++		}
++	}
++	*data = (u8 *)registers;
++out:
++	mv88e6xxx_reg_unlock(chip);
++
++	return err;
++}
++
++/* The ATU entry varies between mv88e6xxx chipset generations. Define
++ * a generic format which covers all the current and hopefully future
++ * mv88e6xxx generations
++ */
++
++struct mv88e6xxx_devlink_atu_entry {
++	/* The FID is scattered over multiple registers. */
 +	u16 fid;
- 
- 	bitmap_zero(fid_bitmap, MV88E6XXX_N_FID);
- 
- 	/* Set every FID bit used by the (un)bridged ports */
- 	for (i = 0; i < mv88e6xxx_num_ports(chip); ++i) {
--		err = mv88e6xxx_port_get_fid(chip, i, fid);
-+		err = mv88e6xxx_port_get_fid(chip, i, &fid);
- 		if (err)
- 			return err;
- 
--		set_bit(*fid, fid_bitmap);
-+		set_bit(fid, fid_bitmap);
- 	}
- 
- 	/* Set every FID bit used by the VLAN entries */
-@@ -1498,6 +1498,18 @@ static int mv88e6xxx_atu_new(struct mv88e6xxx_chip *chip, u16 *fid)
- 		set_bit(vlan.fid, fid_bitmap);
- 	} while (vlan.vid < chip->info->max_vid);
- 
++	u16 atu_op;
++	u16 atu_data;
++	u16 atu_01;
++	u16 atu_23;
++	u16 atu_45;
++};
++
++static int mv88e6xxx_region_atu_snapshot_fid(struct mv88e6xxx_chip *chip,
++					     int fid,
++					     struct mv88e6xxx_devlink_atu_entry *table,
++					     int *count)
++{
++	u16 atu_op, atu_data, atu_01, atu_23, atu_45;
++	struct mv88e6xxx_atu_entry addr;
++	int err;
++
++	addr.state = 0;
++	eth_broadcast_addr(addr.mac);
++
++	do {
++		err = mv88e6xxx_g1_atu_getnext(chip, fid, &addr);
++		if (err)
++			return err;
++
++		if (!addr.state)
++			break;
++
++		err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_ATU_OP, &atu_op);
++		if (err)
++			return err;
++
++		err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_ATU_DATA, &atu_data);
++		if (err)
++			return err;
++
++		err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_ATU_MAC01, &atu_01);
++		if (err)
++			return err;
++
++		err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_ATU_MAC23, &atu_23);
++		if (err)
++			return err;
++
++		err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_ATU_MAC45, &atu_45);
++		if (err)
++			return err;
++
++		table[*count].fid = fid;
++		table[*count].atu_op = atu_op;
++		table[*count].atu_data = atu_data;
++		table[*count].atu_01 = atu_01;
++		table[*count].atu_23 = atu_23;
++		table[*count].atu_45 = atu_45;
++		(*count)++;
++	} while (!is_broadcast_ether_addr(addr.mac));
++
 +	return 0;
 +}
 +
-+static int mv88e6xxx_atu_new(struct mv88e6xxx_chip *chip, u16 *fid)
++static int mv88e6xxx_region_atu_snapshot(struct devlink *dl,
++					 const struct devlink_region_ops *ops,
++					 struct netlink_ext_ack *extack,
++					 u8 **data)
 +{
++	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
 +	DECLARE_BITMAP(fid_bitmap, MV88E6XXX_N_FID);
-+	int err;
++	struct mv88e6xxx_devlink_atu_entry *table;
++	struct mv88e6xxx_chip *chip = ds->priv;
++	int fid = -1, count, err;
++
++	table = kmalloc_array(mv88e6xxx_num_databases(chip),
++			      sizeof(struct mv88e6xxx_devlink_atu_entry),
++			      GFP_KERNEL);
++	if (!table)
++		return -ENOMEM;
++
++	memset(table, 0, mv88e6xxx_num_databases(chip) *
++	       sizeof(struct mv88e6xxx_devlink_atu_entry));
++
++	count = 0;
++
++	mv88e6xxx_reg_lock(chip);
 +
 +	err = mv88e6xxx_fid_map(chip, fid_bitmap);
 +	if (err)
-+		return err;
++		goto out;
 +
- 	/* The reset value 0x000 is used to indicate that multiple address
- 	 * databases are not needed. Return the next positive available.
- 	 */
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 823ae89e5fca..77d81aa99f37 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -689,4 +689,6 @@ static inline void mv88e6xxx_reg_unlock(struct mv88e6xxx_chip *chip)
- 	mutex_unlock(&chip->reg_lock);
- }
++	while (1) {
++		fid = find_next_bit(fid_bitmap, MV88E6XXX_N_FID, fid + 1);
++		if (fid == MV88E6XXX_N_FID)
++			break;
++
++		err =  mv88e6xxx_region_atu_snapshot_fid(chip, fid, table,
++							 &count);
++		if (err) {
++			kfree(table);
++			goto out;
++		}
++	}
++	*data = (u8 *)table;
++out:
++	mv88e6xxx_reg_unlock(chip);
++
++	return err;
++}
++
++static struct mv88e6xxx_region_priv mv88e6xxx_region_global1_priv = {
++	.id = MV88E6XXX_REGION_GLOBAL1,
++};
++
++static struct devlink_region_ops mv88e6xxx_region_global1_ops = {
++	.name = "global1",
++	.snapshot = mv88e6xxx_region_global_snapshot,
++	.destructor = kfree,
++	.priv = &mv88e6xxx_region_global1_priv,
++};
++
++static struct mv88e6xxx_region_priv mv88e6xxx_region_global2_priv = {
++	.id = MV88E6XXX_REGION_GLOBAL2,
++};
++
++static struct devlink_region_ops mv88e6xxx_region_global2_ops = {
++	.name = "global2",
++	.snapshot = mv88e6xxx_region_global_snapshot,
++	.destructor = kfree,
++	.priv = &mv88e6xxx_region_global2_priv,
++};
++
++static struct devlink_region_ops mv88e6xxx_region_atu_ops = {
++	.name = "atu",
++	.snapshot = mv88e6xxx_region_atu_snapshot,
++	.destructor = kfree,
++};
++
++struct mv88e6xxx_region {
++	struct devlink_region_ops *ops;
++	u64 size;
++};
++
++static struct mv88e6xxx_region mv88e6xxx_regions[] = {
++	[MV88E6XXX_REGION_GLOBAL1] = {
++		.ops = &mv88e6xxx_region_global1_ops,
++		.size = 32 * sizeof(u16)
++	},
++	[MV88E6XXX_REGION_GLOBAL2] = {
++		.ops = &mv88e6xxx_region_global2_ops,
++		.size = 32 * sizeof(u16) },
++	[MV88E6XXX_REGION_ATU] = {
++		.ops = &mv88e6xxx_region_atu_ops
++	  /* calculated at runtime */
++	},
++};
++
++static void
++mv88e6xxx_teardown_devlink_regions_global(struct mv88e6xxx_chip *chip)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(mv88e6xxx_regions); i++)
++		dsa_devlink_region_destroy(chip->regions[i]);
++}
++
++void mv88e6xxx_teardown_devlink_regions(struct dsa_switch *ds)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++
++	mv88e6xxx_teardown_devlink_regions_global(chip);
++}
++
++static int mv88e6xxx_setup_devlink_regions_global(struct dsa_switch *ds,
++						  struct mv88e6xxx_chip *chip)
++{
++	struct devlink_region_ops *ops;
++	struct devlink_region *region;
++	u64 size;
++	int i, j;
++
++	for (i = 0; i < ARRAY_SIZE(mv88e6xxx_regions); i++) {
++		ops = mv88e6xxx_regions[i].ops;
++		size = mv88e6xxx_regions[i].size;
++
++		if (i == MV88E6XXX_REGION_ATU)
++			size = mv88e6xxx_num_databases(chip) *
++				sizeof(struct mv88e6xxx_devlink_atu_entry);
++
++		region = dsa_devlink_region_create(ds, ops, 1, size);
++		if (IS_ERR(region))
++			goto out;
++		chip->regions[i] = region;
++	}
++	return 0;
++
++out:
++	for (j = 0; j < i; j++)
++		dsa_devlink_region_destroy(chip->regions[j]);
++
++	return PTR_ERR(region);
++}
++
++int mv88e6xxx_setup_devlink_regions(struct dsa_switch *ds)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++
++	return mv88e6xxx_setup_devlink_regions_global(ds, chip);
++}
+diff --git a/drivers/net/dsa/mv88e6xxx/devlink.h b/drivers/net/dsa/mv88e6xxx/devlink.h
+index f6254e049653..da83c25d944b 100644
+--- a/drivers/net/dsa/mv88e6xxx/devlink.h
++++ b/drivers/net/dsa/mv88e6xxx/devlink.h
+@@ -12,5 +12,7 @@ int mv88e6xxx_devlink_param_get(struct dsa_switch *ds, u32 id,
+ 				struct devlink_param_gset_ctx *ctx);
+ int mv88e6xxx_devlink_param_set(struct dsa_switch *ds, u32 id,
+ 				struct devlink_param_gset_ctx *ctx);
++int mv88e6xxx_setup_devlink_regions(struct dsa_switch *ds);
++void mv88e6xxx_teardown_devlink_regions(struct dsa_switch *ds);
  
-+int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *bitmap);
-+
- #endif /* _MV88E6XXX_CHIP_H */
+ #endif /* _MV88E6XXX_DEVLINK_H */
 -- 
 2.28.0
 
