@@ -2,83 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC37826EE1E
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:26:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30FBC26F268
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:59:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729693AbgIRC0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57080 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727969AbgIRC0U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 22:26:20 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70D7C06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 19:26:20 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id g29so2553923pgl.2
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 19:26:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BrUSnC0mCUZoH0wH/VmytCO2ZixRYVdUsUsdAtZKRYg=;
-        b=JK3ZJye7UR2kXVIgYMGtq5hpUmeEfbHAjKIu2e1qlSmZ7FJxonkz4ygV243syJDbVi
-         xdZu0UqzwPLDOsJAPTXEiB5BZwKKpcgHuBPkA2CJdbVxSUnnwWMVzCQ4WwlUMpxWYDJC
-         PnQN2Z5CKEtZ2Hf75oZMhggNTGGmQ2kiUQVBumUmk1fB6ndJE+/iDE7oGhQneHm6R2wo
-         6bTFwExG6E00yFjnyaJXOOJoZPmckXcwymUXWs0MM/Ss5tVgEqzZxYfZWGOn6x8UtVqP
-         Oa2Mxd6Q9lFUbsz1VglkYQo3T5d0g3F7EfsUzpvs55M17y+wCsZj7XmljUMWmv6CqidZ
-         QP4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BrUSnC0mCUZoH0wH/VmytCO2ZixRYVdUsUsdAtZKRYg=;
-        b=b6pVQdb/pJSA4QFt+yvD9e/gVRoNR9+/OCYTkq0Iwwsoem2d/qCo2ZDbNs/CKv6a9q
-         hRfVEGoHdMc0qMcEKq+NjEvb3TYGjqhYCh2JmdlhPZxZxG2Ql4xJ7HQnPi9plx70ndHM
-         JzuWZL1M6CVTNli8PrF9EWbuswecmtKp+a0qTIoqVVn9hi6vXUgVWOSzJvjEBwQGCVh6
-         rMJXFfokKXtgsqI+smi0+YaJal60FnNZ1f67dZD2md4nub5EdkCT5RJ8qnzx5J8v2SIj
-         OhQcQ9gJhCZ5VRaVL3hXoXhroV59SiZbRjmhMG0BupBy9OU1RcqBSxNHKtbXPmgcI+0h
-         qUsw==
-X-Gm-Message-State: AOAM5313Mqg7xfVSgL4MDmhVBJc4YekPBMYNeztq8hC8lvKUVkR+C6Ih
-        SLRxvqr0kTE79cPSX0HWQ+U=
-X-Google-Smtp-Source: ABdhPJx/2BegA8CHCrgdPiglfnUqOciJlzrBbk0UOIyGiVf9j4sqtrQbIaCL//LdN7slX0SJY5R3TQ==
-X-Received: by 2002:a62:26c1:0:b029:142:2501:35ef with SMTP id m184-20020a6226c10000b0290142250135efmr13195512pfm.79.1600395980287;
-        Thu, 17 Sep 2020 19:26:20 -0700 (PDT)
-Received: from [10.230.28.120] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id b10sm980230pgm.64.2020.09.17.19.26.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Sep 2020 19:26:19 -0700 (PDT)
-Subject: Re: [PATCH v3 net-next 6/9] net: dsa: mv88e6xxx: Create helper for
- FIDs in use
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-References: <20200909235827.3335881-1-andrew@lunn.ch>
- <20200909235827.3335881-7-andrew@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e48aa0b9-72f8-a967-c896-88ba53617dbc@gmail.com>
-Date:   Thu, 17 Sep 2020 19:26:17 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.2
+        id S1730402AbgIRC6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:58:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55482 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726828AbgIRCGQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:06:16 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7F0DA23888;
+        Fri, 18 Sep 2020 02:06:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600394776;
+        bh=/+pliRggyOjEy8m8uK+MrMptQUHltTkK+F/HawNYwaI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=L1gftzftYm33zQFwLqABDEou2g6vahtYcKtp7HIo9u+wBIA4nDOOg4yJ2gOATZPKS
+         yZ476RBH8wpLOHkJSwSbAytaIWhR17ILQ9FgeV0rNk0hCiJLVpaE8y3u4FddEFIY7J
+         gcffAfHEBKk2C/q9RqpfKOiYWG1U7vaopMNl/ibw=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 250/330] dpaa2-eth: fix error return code in setup_dpni()
+Date:   Thu, 17 Sep 2020 21:59:50 -0400
+Message-Id: <20200918020110.2063155-250-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200918020110.2063155-1-sashal@kernel.org>
+References: <20200918020110.2063155-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20200909235827.3335881-7-andrew@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
+[ Upstream commit 97fff7c8de1e54e5326dfeb66085796864bceb64 ]
 
-On 9/9/2020 4:58 PM, Andrew Lunn wrote:
-> Refactor the code in mv88e6xxx_atu_new() which builds a bitmaps of
-> FIDs in use into a helper function. This will be reused by the devlink
-> code when dumping the ATU.
-> 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Fix to return negative error code -ENOMEM from the error handling
+case instead of 0, as done elsewhere in this function.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 7a248cc1055a3..7af7cc7c8669a 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -2654,8 +2654,10 @@ static int setup_dpni(struct fsl_mc_device *ls_dev)
+ 
+ 	priv->cls_rules = devm_kzalloc(dev, sizeof(struct dpaa2_eth_cls_rule) *
+ 				       dpaa2_eth_fs_count(priv), GFP_KERNEL);
+-	if (!priv->cls_rules)
++	if (!priv->cls_rules) {
++		err = -ENOMEM;
+ 		goto close;
++	}
+ 
+ 	return 0;
+ 
 -- 
-Florian
+2.25.1
+
