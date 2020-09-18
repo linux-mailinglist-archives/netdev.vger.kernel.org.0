@@ -2,119 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF9D626FF64
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 16:01:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EBE526FF81
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 16:05:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726923AbgIRN7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 09:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51292 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726121AbgIRN7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 09:59:17 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21774C0613CE
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 06:59:17 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id 19so5020852qtp.1
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 06:59:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iDzy1sMgIGxVws9oU0uRMBwks6chpSBoUJBA5ZAPs6Y=;
-        b=dZS+Pz8uPa7xZedC6ywyuba3H9rxNa8iD2FLUWjM9LYjV/vp0Nnwuxl4sIAH/WzJmo
-         Z71YmWaPcUeza3JssOVlprHU4cGQ3yjZxah7wyneWO2mh86SvelVUNGd45Cqk9Yie1oG
-         617Nev2Z7twgiRUh132ng7fDDjipACTM4bU0rYD4M+AA9ZUYUyf0U4tF3fwh8UPfh7cR
-         ijQl8xM6r/btbx2DzAHfRisLO48r+cfseEBb/dQ/NLLKA9FIWvNEWjokBXGDc2fndUqW
-         ScKssfiqwnp2XUoY0uD9YyQ4SnhhADwwA+/HFxDHtK2d76LmBhaSyZ9tPLqOZUnoOxnr
-         5sUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iDzy1sMgIGxVws9oU0uRMBwks6chpSBoUJBA5ZAPs6Y=;
-        b=RXONe3ham3DmPX/Jt485lSurQ7LufDc8XDNJh3C+izToLJIr+ZR2aCkJSud3spUeCk
-         Ocr047yB4n/BUB615g1PeOPwcJnLhLVBUVskFGKjUhO6inx/2Zrb47ITiiwxRN4kpFRs
-         NqYyqPFa6Ip5H4d1EHnSg1NIqsL+8ZIFyNalPjwx074xe61AAmyCRG6SCizTR27gAf1l
-         D33Nh2vwlwKY3UjZA4boBdoJFvlA5gxhx0SNFb2IK8Ddkvm8UKIJ4Ji2qkVDQqUJxPCP
-         AKXEkoyiVI2Qv6ZjjlUmVzvHVygtz5nIC4Qt+0u07O6NuPsSu/JqXPqdVWdNzJJVpUtT
-         tSTA==
-X-Gm-Message-State: AOAM5305fW6zMHBuOtjoLqxLooTRMccpFw5HhxAVkrVlPvn9F+SIa55n
-        SsMKAALRL0Bjc3P59GuvnkJXmQ==
-X-Google-Smtp-Source: ABdhPJxJEjIjl7tbKTQubndOek+3OibCxEDhsqhs1uDEM/H/kHLq/g77HjdghQ/1oNTy7EDlsPqX1w==
-X-Received: by 2002:ac8:6e90:: with SMTP id c16mr33479531qtv.17.1600437556361;
-        Fri, 18 Sep 2020 06:59:16 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id v18sm2144966qtq.15.2020.09.18.06.59.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 06:59:15 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1kJGux-001HHG-3h; Fri, 18 Sep 2020 10:59:15 -0300
-Date:   Fri, 18 Sep 2020 10:59:15 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Oded Gabbay <oded.gabbay@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, izur@habana.ai,
-        Gal Pressman <galpress@amazon.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-rdma@vger.kernel.org, Olof Johansson <olof@lixom.net>
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-Message-ID: <20200918135915.GT8409@ziepe.ca>
-References: <20200917171833.GJ8409@ziepe.ca>
- <0b21db8d-1061-6453-960b-8043951b3bad@amazon.com>
- <20200918115601.GP8409@ziepe.ca>
- <CAFCwf12G4FnhjzijZLh_=n59SQMcTnULTqp8DOeQGyX6_q_ayA@mail.gmail.com>
- <20200918121621.GQ8409@ziepe.ca>
- <CAFCwf12YBaka2w2cnTxyX9L=heMnaM6QN1_oJ7h7DxHDmy2Xng@mail.gmail.com>
- <20200918125014.GR8409@ziepe.ca>
- <CAFCwf12oK4RXYhgzXiN_YvXvjoW1Fwx1xBzR3Y5E4RLvzn_vhA@mail.gmail.com>
- <20200918132645.GS8409@ziepe.ca>
- <CAFCwf109t5=GuNvqTqLUCiYbjLC6o2xVoLY5C-SBqbN66f6wxg@mail.gmail.com>
+        id S1726807AbgIROE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 10:04:59 -0400
+Received: from mout.kundenserver.de ([212.227.126.135]:43833 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726633AbgIROE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 10:04:58 -0400
+X-Greylist: delayed 306 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 10:04:56 EDT
+Received: from mail-qv1-f41.google.com ([209.85.219.41]) by
+ mrelayeu.kundenserver.de (mreue011 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1MlNYj-1kkrOA2cLF-00lmqY; Fri, 18 Sep 2020 15:59:47 +0200
+Received: by mail-qv1-f41.google.com with SMTP id db4so2894478qvb.4;
+        Fri, 18 Sep 2020 06:59:46 -0700 (PDT)
+X-Gm-Message-State: AOAM533TJj5xT1n4e1bGgoqAoKlLC4z2QSZZqgUFd8vCugbyjSOe/IMS
+        LVJQfW9Jog9OO5NB/Qqhi5Sm/YLe2Qbzf4Y/Ous=
+X-Google-Smtp-Source: ABdhPJyPq7mySMvROlaNxuZFtqLj9tUV6q55niOILmDEkx6ztioH5FRFrOH6npOQU7X7q9Cy/nZY2UELvp9CUKm70dc=
+X-Received: by 2002:a0c:b39a:: with SMTP id t26mr2701457qve.19.1600437585347;
+ Fri, 18 Sep 2020 06:59:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFCwf109t5=GuNvqTqLUCiYbjLC6o2xVoLY5C-SBqbN66f6wxg@mail.gmail.com>
+References: <20200918124533.3487701-1-hch@lst.de> <20200918124533.3487701-2-hch@lst.de>
+ <20200918134012.GY3421308@ZenIV.linux.org.uk> <20200918134406.GA17064@lst.de>
+In-Reply-To: <20200918134406.GA17064@lst.de>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 18 Sep 2020 15:59:29 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3_DL0T33e7CAuyRxgpRy8LaJO9h1sER7sebcX26hVVjA@mail.gmail.com>
+Message-ID: <CAK8P3a3_DL0T33e7CAuyRxgpRy8LaJO9h1sER7sebcX26hVVjA@mail.gmail.com>
+Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Howells <dhowells@redhat.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
+        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Networking <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:5bsXb+NC+lllYzcUOGgsO10SuiSw9kHorG4pcD07lr3QFbCWqJR
+ Hd2vOtRjq6zM6dfC422gwtrcI3R5GCUojEo3h2z2kZfRtoDGJYgYE+Le/OiYLQ+AfYeJUc7
+ KH3vEAyJZtGCUGYSkFwn1WnE2X3RbGV559CUsPqRgam5BOOvyh/QhpykfzE/YedWzwiNxtY
+ wiICue+oltyvAbFBEi/NQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:sk+r83jP25A=:/SIkK1K6onTr3J0pNT14Tr
+ NsrESH7tuKshtxaIzIHnGtmqrA5sQHG1trQWYkwG1rTNMaQ2B9TIKtC3ChQJa84t1Wf2e8BTE
+ tkUmn7RPRuVl01dc9wzJKFl+9hupsoq9xF7QU+YN9J2u4KJIZLTW2sLbE+WWDAxOs8qzpAkCC
+ ch3gmHGBxM5uZPG4LzNatfRYhJZWSq4ggBYsVgzbAsKVKrvSnJJShXH1ZuoLKLa45AfnkJIpH
+ 000HBaSbuUonwu4iks7bopTIfIv/PNliOeuaqyNdIKM21qto71vZ9xXsJ83MNll4syaoHZrqv
+ BQMihP6Evajn/ZfKb7ffmAp+JPOFFbvwFxobbT9OSHvEoWXk6V1cHvm2R8QL0ba285m6q2wvY
+ x9Iobt2uEbmqWyjhYh1V7Ss6t53IcxevRQIdl0PoI3TIQY6Z4sflorSpFPBGa3+si37D8CDan
+ 5yVg6ojNHxarpmZZKYoQmupKN/S6Uxnjd6BqfLhns8I5/n//YqlDQkpTZREOx76E3xF9mtm/S
+ O3OLOBwO2ILft4yH20aJ8P7ZiApX67gHJyjtDAdDIN2ZzxkEIyb/DIUOJNNNzAHhBOYjdQbXG
+ VhIr7/k+Lbpb8uRMTXrpKzfKcLGJDWVsZM7rnxR6xwEesmL/8RZT9OyqlLAgG1IpsJq8SmQLU
+ qudEdrwlal82xZWcv7D0s2v4lbIEAnF9K4J8NXbed/fIcfrMDvuviGIzx6G8Qw3WU/Ne8dTb2
+ 1kTBk9kYRC/sEaBsEqbjh5tZ8es/W8USlkc/Lja/DFhALH+GO8Vu4rjRrvmxYxuoTKcv8cIR1
+ wyPvIx8EQ+Dcu7nx9d8J+KlpsO4mgZOwb+4M3yyOYLXVQCjoTPkzoem0Ol4DOoJgilpyLPvp1
+ A+miM4jr98V6l5mDqMw9Rzs8yW+cRJnkTTJUmMFHYNBfhGhRa2aj9emK9eS3xMKq0LtMjwA4g
+ yAMK1P3EU2bRwJyY4bJdPVN4UpGzUy/hwrP9YBlozT7uA44iNdrl/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 18, 2020 at 04:49:25PM +0300, Oded Gabbay wrote:
-> On Fri, Sep 18, 2020 at 4:26 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
+On Fri, Sep 18, 2020 at 3:44 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Fri, Sep 18, 2020 at 02:40:12PM +0100, Al Viro wrote:
+> > >     /* Vector 0x110 is LINUX_32BIT_SYSCALL_TRAP */
+> > > -   return pt_regs_trap_type(current_pt_regs()) == 0x110;
+> > > +   return pt_regs_trap_type(current_pt_regs()) == 0x110 ||
+> > > +           (current->flags & PF_FORCE_COMPAT);
 > >
-> > On Fri, Sep 18, 2020 at 04:02:24PM +0300, Oded Gabbay wrote:
-> >
-> > > The problem with MR is that the API doesn't let us return a new VA. It
-> > > forces us to use the original VA that the Host OS allocated.
-> >
-> > If using the common MR API you'd have to assign a unique linear range
-> > in the single device address map and record both the IOVA and the MMU
-> > VA in the kernel struct.
-> >
-> > Then when submitting work using that MR lkey the kernel will adjust
-> > the work VA using the equation (WORK_VA - IOVA) + MMU_VA before
-> > forwarding to HW.
-> >
-> We can't do that. That will kill the performance. If for every
-> submission I need to modify the packet's contents, the throughput will
-> go downhill.
+> > Can't say I like that approach ;-/  Reasoning about the behaviour is much
+> > harder when it's controlled like that - witness set_fs() shite...
+>
+> I don't particularly like it either.  But do you have a better idea
+> how to deal with io_uring vs compat tasks?
 
-You clearly didn't read where I explained there is a fast path and
-slow path expectation.
+Do we need to worry about something other than the compat_iovec
+struct for now? Regarding the code in io_import_iovec(), it would
+seem that can easily be handled by exposing an internal helper.
+Instead of
 
-> Also, submissions to our RDMA qmans are coupled with submissions to
-> our DMA/Compute QMANs. We can't separate those to different API calls.
-> That will also kill performance and in addition, will prevent us from
-> synchronizing all the engines.
+#ifdef CONFIG_COMPAT
+     if (req->ctx->compat)
+            return compat_import_iovec(rw, buf, sqe_len, UIO_FASTIOV,
+iovec, iter);
+#endif
+        return import_iovec(rw, buf, sqe_len, UIO_FASTIOV, iovec, iter);
 
-Not sure I see why this is a problem. I already explained the fast
-device specific path. 
+This could do
 
-As long as the kernel maintains proper security when it processes
-submissions the driver can allow objects to cross between the two
-domains.
+    __import_iovec(rw, buf, sqe_len, UIO_FASTIOV, iovec,
+                     iter, req->ctx->compat);
 
-Jason
+With the normal import_iovec() becoming a trivial wrapper around
+the same thing:
+
+ssize_t import_iovec(int type, const struct iovec __user * uvector,
+                 unsigned nr_segs, unsigned fast_segs,
+                 struct iovec **iov, struct iov_iter *i)
+{
+     return __import_iovec(type, uvector, nr_segs, fast_segs, iov,
+              i, in_compat_syscall());
+}
+
+
+         Arnd
