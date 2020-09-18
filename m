@@ -2,152 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9107627020A
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:24:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DB4B27021F
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:30:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726412AbgIRQYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 12:24:16 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:60718 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbgIRQYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:24:15 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08IGKipY077374;
-        Fri, 18 Sep 2020 16:23:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2020-01-29; bh=ysUJ8GsPifQOWpjoAHKKFWtWqPWByaF7A8cQh+uuS+k=;
- b=BnErJDkSbl4OCYXi41UXvZ7oC1+gGWZGRXnNXtPTegtzlRcMAgcHhtU+E3rNAurcD9Ui
- 641pYS4YTcbTv0manRVcJ/3emB1/MMdyol+037VGQ6rigrAByRG0kL7MYwaFVQweLSd+
- 7IdKiipu5s52BkxkQhZXf+sSRPUTGcqGNkD6iLj1WG6cnPgkZXiX86MkFgNNP1gDnN2G
- MqRqIcscwthRZV4N6/GABePcVvxbxwsd0GZdGCQOZVfHKZvV0NZRS6hxRc2L5YWi3plZ
- ciMjKh8DNdFg0uIPXKit0KhFKLapASVkT/wKW8QhUsKiAEzbc34hXDwZKI2LlqdU3Fk0 HA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 33j91e1tmc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 18 Sep 2020 16:23:50 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08IGK5rn115741;
-        Fri, 18 Sep 2020 16:23:50 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3020.oracle.com with ESMTP id 33hm373ge5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Sep 2020 16:23:50 +0000
-Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08IGNfNE015188;
-        Fri, 18 Sep 2020 16:23:42 GMT
-Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 18 Sep 2020 16:23:41 +0000
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [PATCH] SUNRPC: Flush dcache only when receiving more seeking
-From:   Chuck Lever <chuck.lever@oracle.com>
-In-Reply-To: <20200918125052.2493006-1-zhe.he@windriver.com>
-Date:   Fri, 18 Sep 2020 12:23:40 -0400
-Cc:     Bruce Fields <bfields@fieldses.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S1726333AbgIRQ3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 12:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726416AbgIRQ3h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:29:37 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCE1C0613CE;
+        Fri, 18 Sep 2020 09:29:35 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id j2so6252249wrx.7;
+        Fri, 18 Sep 2020 09:29:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S49aIuYLpT+2JYfKysryYvgN235gurfGFJHDPWL3QzE=;
+        b=fNH63PJdbtii5p28SJargFVtP29JBMqu4VRxmdKvPFyOkSjLgc4EnArJAxzT7iRYRG
+         6Z6DqQADU16LveutJ0fL10Alcjr96VTtQwK/5vz6eJHBxPPV4w4Da8RX6d2u2WizDjf/
+         D6rn2lvsQS5KrnMTUmqEf8WzyZnN4YEugFrrJSISst5VrZ3ixIC9+pWWevaRoM9+lOKH
+         477U0HNJdiqVxsbEG2VhnAwlOvYfZpCCum3IvjAleQInirKCIwSs1Gh4/i1I2TLgO2qE
+         7dMIfXM+hCyB1ttA/11ZAyUTU9POcCLOFV8edA1GL4PxPcIoxX0zXUye314LTwKgy5A3
+         9ZFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S49aIuYLpT+2JYfKysryYvgN235gurfGFJHDPWL3QzE=;
+        b=lqwPepsc4mBIXVJSBZXixkpmdfYp8OsU49Dpjam6zDU2hafq0xzsWDZW5Tnuba5OjQ
+         Qx6y0KW63tFSA9GfSq2VbuqHQ37f4OR+r7rULmOzk9CMwxxWTd4431vK2lJV09fa4+1l
+         4oPJdR2nZuhmdJnw/UHseOa1nc9m3lzcLaOdLiAqnysNqHqDZEk3pQjPDPpHBErMmtmh
+         RdObs2SRjVB91air6vJzuo8Zs4XpWnpLsu83nDPFwTsWK9gSZ6YN6aqf5ujNk/WEKv4+
+         v8Nc8ftaqmx0l5yDKnrYLolkavKHvOZ13vbh6MgiEHdVR9Lre/480lzJUnYjUfgmAfEZ
+         qvjg==
+X-Gm-Message-State: AOAM530e8Qjprj/QV/8PevaN0jSmUt5/nJQNA2zUYuyiXU2REG6xwLtZ
+        rQLMOy9/ay9gEESpx33v5jr+f62I5ng=
+X-Google-Smtp-Source: ABdhPJw4wGg1+Wn7ryPfoWJp2mkPbx+vkCKrpZOZh7g3Lg8TmO6D2tc0OYSc0+e2jdBwIiC1DuF/XQ==
+X-Received: by 2002:adf:c3cc:: with SMTP id d12mr39463130wrg.399.1600446574306;
+        Fri, 18 Sep 2020 09:29:34 -0700 (PDT)
+Received: from Ansuel-XPS.localdomain (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
+        by smtp.googlemail.com with ESMTPSA id b11sm6028921wrt.38.2020.09.18.09.29.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Sep 2020 09:29:33 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <6C34098D-7227-4461-A345-825729E0BDEB@oracle.com>
-References: <20200918125052.2493006-1-zhe.he@windriver.com>
-To:     zhe.he@windriver.com
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9748 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 mlxlogscore=999
- malwarescore=0 mlxscore=0 phishscore=0 adultscore=0 suspectscore=1
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009180133
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9748 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 impostorscore=0
- priorityscore=1501 malwarescore=0 suspectscore=1 mlxlogscore=999
- clxscore=1011 adultscore=0 lowpriorityscore=0 spamscore=0 mlxscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009180133
+        Rob Herring <robh+dt@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ath10k@lists.infradead.org
+Subject: [PATCH] ath10k: Introduce download cal from mtd
+Date:   Fri, 18 Sep 2020 18:29:27 +0200
+Message-Id: <20200918162928.14335-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Most of routers that have the ath10k wifi chip integrated in the Soc
+have the pre-cal data stored in the art (or equivalent) mtd partition.
+Introduce a new function to directly extract and use it based on what is
+set in the dt if the system have mtd support.
+Pre-cal file have still priority to everything else.
 
+Tested-on: QCA9984 hw1.0 PCI 10.4
 
-> On Sep 18, 2020, at 8:50 AM, zhe.he@windriver.com wrote:
->=20
-> From: He Zhe <zhe.he@windriver.com>
->=20
-> commit ca07eda33e01 ("SUNRPC: Refactor svc_recvfrom()") introduces
-> svc_flush_bvec to after sock_recvmsg, but sometimes we receive less =
-than we
-> seek, which triggers the following warning.
->=20
-> WARNING: CPU: 0 PID: 18266 at include/linux/bvec.h:101 =
-bvec_iter_advance+0x44/0xa8
-> Attempted to advance past end of bvec iter
-> Modules linked in: sch_fq_codel openvswitch nsh nf_conncount nf_nat
-> nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4
-> CPU: 1 PID: 18266 Comm: nfsd Not tainted 5.9.0-rc5 #1
-> Hardware name: Xilinx Zynq Platform
-> [<80112ec0>] (unwind_backtrace) from [<8010c3a8>] =
-(show_stack+0x18/0x1c)
-> [<8010c3a8>] (show_stack) from [<80755214>] (dump_stack+0x9c/0xd0)
-> [<80755214>] (dump_stack) from [<80125e64>] (__warn+0xdc/0xf4)
-> [<80125e64>] (__warn) from [<80126244>] (warn_slowpath_fmt+0x84/0xac)
-> [<80126244>] (warn_slowpath_fmt) from [<80c88514>] =
-(bvec_iter_advance+0x44/0xa8)
-> [<80c88514>] (bvec_iter_advance) from [<80c88940>] =
-(svc_tcp_read_msg+0x10c/0x1bc)
-> [<80c88940>] (svc_tcp_read_msg) from [<80c895d4>] =
-(svc_tcp_recvfrom+0x98/0x63c)
-> [<80c895d4>] (svc_tcp_recvfrom) from [<80c97bf4>] =
-(svc_handle_xprt+0x48c/0x4f8)
-> [<80c97bf4>] (svc_handle_xprt) from [<80c98038>] (svc_recv+0x94/0x1e0)
-> [<80c98038>] (svc_recv) from [<804747cc>] (nfsd+0xf0/0x168)
-> [<804747cc>] (nfsd) from [<80148a0c>] (kthread+0x144/0x154)
-> [<80148a0c>] (kthread) from [<80100114>] (ret_from_fork+0x14/0x20)
->=20
-> Fixes: ca07eda33e01 ("SUNRPC: Refactor svc_recvfrom()")
-> Cc: <stable@vger.kernel.org> # 5.8+
-> Signed-off-by: He Zhe <zhe.he@windriver.com>
-> ---
-> net/sunrpc/svcsock.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
-> index d5805fa1d066..ea3bc9635448 100644
-> --- a/net/sunrpc/svcsock.c
-> +++ b/net/sunrpc/svcsock.c
-> @@ -277,7 +277,7 @@ static ssize_t svc_tcp_read_msg(struct svc_rqst =
-*rqstp, size_t buflen,
-> 		buflen -=3D seek;
-> 	}
-> 	len =3D sock_recvmsg(svsk->sk_sock, &msg, MSG_DONTWAIT);
-> -	if (len > 0)
-> +	if (len > (seek & PAGE_MASK))
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ drivers/net/wireless/ath/ath10k/core.c | 74 ++++++++++++++++++++++++++
+ drivers/net/wireless/ath/ath10k/core.h |  3 ++
+ 2 files changed, 77 insertions(+)
 
-I don't understand how this addresses the WARNING. Can you provide
-an example set of inputs that trigger the issue?
-
-Also this change introduces a mixed-sign comparison, so NACK on
-this particular patch unless it can be demonstrated that the
-implicit type conversion here is benign (I don't think it is,
-but I haven't thought through it).
-
-
-> 		svc_flush_bvec(bvec, len, seek);
->=20
-> 	/* If we read a full record, then assume there may be more
-> --=20
-> 2.17.1
->=20
-
---
-Chuck Lever
-
-
+diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
+index 5f4e12196..eef00d657 100644
+--- a/drivers/net/wireless/ath/ath10k/core.c
++++ b/drivers/net/wireless/ath/ath10k/core.c
+@@ -13,6 +13,7 @@
+ #include <linux/ctype.h>
+ #include <linux/pm_qos.h>
+ #include <asm/byteorder.h>
++#include <linux/mtd/mtd.h>
+ 
+ #include "core.h"
+ #include "mac.h"
+@@ -1701,6 +1702,69 @@ static int ath10k_download_and_run_otp(struct ath10k *ar)
+ 	return 0;
+ }
+ 
++static int ath10k_download_cal_mtd(struct ath10k *ar)
++{
++#ifdef CONFIG_MTD
++	struct device_node *node, *mtd_node = NULL;
++	struct mtd_info *mtd;
++	const __be32 *list;
++	u32 offset, size;
++	const char *part;
++	phandle phandle;
++	size_t retlen;
++	char *file;
++	int ret;
++
++	node = ar->dev->of_node;
++	if (!node)
++		return -ENOENT;
++
++	list = of_get_property(node, "qcom,ath10k-pre-calibration-data-mtd", &size);
++	if (!list || (size != (3 * sizeof(*list))))
++		return -EINVAL;
++
++	phandle = be32_to_cpup(list++);
++	if (phandle)
++		mtd_node = of_find_node_by_phandle(phandle);
++
++	if (!mtd_node)
++		return -ENODEV;
++
++	part = of_get_property(mtd_node, "label", NULL);
++	if (!part)
++		part = mtd_node->name;
++
++	mtd = get_mtd_device_nm(part);
++	if (IS_ERR(mtd))
++		return -ENODEV;
++
++	offset = be32_to_cpup(list++);
++	size = be32_to_cpup(list);
++
++	file = kzalloc(size, GFP_KERNEL);
++	if (!file)
++		return -ENOMEM;
++
++	ret = mtd_read(mtd, offset, size, &retlen, file);
++	put_mtd_device(mtd);
++
++	ret = ath10k_download_board_data(ar, file, size);
++	if (ret) {
++		ath10k_err(ar, "failed to download cal_file data: %d\n", ret);
++		goto err;
++	}
++
++	ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot cal file downloaded\n");
++
++	return 0;
++
++err:
++	kfree(file);
++	return ret;
++#endif
++	return -EOPNOTSUPP;
++}
++
+ static int ath10k_download_cal_file(struct ath10k *ar,
+ 				    const struct firmware *file)
+ {
+@@ -2047,6 +2111,16 @@ static int ath10k_core_pre_cal_download(struct ath10k *ar)
+ 		goto success;
+ 	}
+ 
++	ath10k_dbg(ar, ATH10K_DBG_BOOT,
++		   "boot did not find a pre calibration file, try MTD next: %d\n",
++		   ret);
++
++	ret = ath10k_download_cal_mtd(ar);
++	if (ret == 0) {
++		ar->cal_mode = ATH10K_PRE_CAL_MODE_MTD;
++		goto success;
++	}
++
+ 	ath10k_dbg(ar, ATH10K_DBG_BOOT,
+ 		   "boot did not find a pre calibration file, try DT next: %d\n",
+ 		   ret);
+diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
+index 4cf5bd489..3ca158605 100644
+--- a/drivers/net/wireless/ath/ath10k/core.h
++++ b/drivers/net/wireless/ath/ath10k/core.h
+@@ -864,6 +864,7 @@ enum ath10k_cal_mode {
+ 	ATH10K_CAL_MODE_OTP,
+ 	ATH10K_CAL_MODE_DT,
+ 	ATH10K_PRE_CAL_MODE_FILE,
++	ATH10K_PRE_CAL_MODE_MTD,
+ 	ATH10K_PRE_CAL_MODE_DT,
+ 	ATH10K_CAL_MODE_EEPROM,
+ };
+@@ -886,6 +887,8 @@ static inline const char *ath10k_cal_mode_str(enum ath10k_cal_mode mode)
+ 		return "dt";
+ 	case ATH10K_PRE_CAL_MODE_FILE:
+ 		return "pre-cal-file";
++	case ATH10K_PRE_CAL_MODE_MTD:
++		return "pre-cal-mtd";
+ 	case ATH10K_PRE_CAL_MODE_DT:
+ 		return "pre-cal-dt";
+ 	case ATH10K_CAL_MODE_EEPROM:
+-- 
+2.27.0
 
