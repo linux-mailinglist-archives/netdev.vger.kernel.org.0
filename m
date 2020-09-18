@@ -2,801 +2,440 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D83AD270265
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:41:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D82D27024C
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:34:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726483AbgIRQkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 12:40:52 -0400
-Received: from mslow2.mail.gandi.net ([217.70.178.242]:45500 "EHLO
-        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbgIRQkv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:40:51 -0400
-Received: from relay11.mail.gandi.net (unknown [217.70.178.231])
-        by mslow2.mail.gandi.net (Postfix) with ESMTP id 92D383A312C
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 15:27:31 +0000 (UTC)
-Received: from localhost (lfbn-lyo-1-1908-165.w90-65.abo.wanadoo.fr [90.65.88.165])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 7533010000E;
-        Fri, 18 Sep 2020 15:27:08 +0000 (UTC)
-Date:   Fri, 18 Sep 2020 17:27:08 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, yangbo.lu@nxp.com,
-        xiaoliang.yang_1@nxp.com, UNGLinuxDriver@microchip.com,
-        claudiu.manoil@nxp.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, kuba@kernel.org
-Subject: Re: [PATCH v2 net 1/8] net: mscc: ocelot: fix race condition with TX
- timestamping
-Message-ID: <20200918152708.GX9675@piout.net>
-References: <20200918010730.2911234-9-olteanv@gmail.com>
- <20200918010730.2911234-8-olteanv@gmail.com>
- <20200918010730.2911234-7-olteanv@gmail.com>
- <20200918010730.2911234-6-olteanv@gmail.com>
- <20200918010730.2911234-5-olteanv@gmail.com>
- <20200918010730.2911234-4-olteanv@gmail.com>
- <20200918010730.2911234-3-olteanv@gmail.com>
- <20200918010730.2911234-2-olteanv@gmail.com>
- <20200918152602.GW9675@piout.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200918152602.GW9675@piout.net>
+        id S1726481AbgIRQeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 12:34:05 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:56261 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726383AbgIRQeD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:34:03 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
+        with SMTP; 18 Sep 2020 19:07:10 +0300
+Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 08IG7ASf025147;
+        Fri, 18 Sep 2020 19:07:10 +0300
+Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 08IG7ArM031161;
+        Fri, 18 Sep 2020 19:07:10 +0300
+Received: (from moshe@localhost)
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 08IG79J1031159;
+        Fri, 18 Sep 2020 19:07:09 +0300
+From:   Moshe Shemesh <moshe@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Moshe Shemesh <moshe@mellanox.com>
+Subject: [PATCH net-next RFC v5 07/15] net/mlx5: Handle sync reset request event
+Date:   Fri, 18 Sep 2020 19:06:43 +0300
+Message-Id: <1600445211-31078-8-git-send-email-moshe@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
+In-Reply-To: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
+References: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/09/2020 17:26:03+0200, Alexandre Belloni wrote:
-> On 18/09/2020 04:07:23+0300, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > The TX-timestampable skb is added late to the ocelot_port->tx_skbs. It
-> > is in a race with the TX timestamp IRQ, which checks that queue trying
-> > to match the timestamp with the skb by the ts_id. The skb should be
-> > added to the queue before the IRQ can fire.
-> > 
-> > Fixes: 4e3b0468e6d7 ("net: mscc: PTP Hardware Clock (PHC) support")
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> 
-> Tested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Once the driver gets sync_reset_request from firmware it prepares for the
+coming reset and sends acknowledge.
+After getting this event the driver expects device reset, either it will
+trigger PCI reset on sync_reset_now event or such PCI reset will be
+triggered by another PF of the same device. So it moves to reset
+requested mode and if it gets PCI reset triggered by the other PF it
+detect the reset and reloads.
 
-Ok, this misfired, sorry about the noise.
+Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+---
+v1 -> v2:
+- Moved handling of sync reset recovery from health to fw_reset
+---
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    | 167 ++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/fw_reset.h    |   3 +
+ .../net/ethernet/mellanox/mlx5/core/health.c  |  35 ++--
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  10 ++
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
+ include/linux/mlx5/driver.h                   |   4 +
+ 6 files changed, 206 insertions(+), 15 deletions(-)
 
-> 
-> > ---
-> > Changes in v2:
-> > None.
-> > 
-> >  drivers/net/ethernet/mscc/ocelot_net.c | 14 ++++++++------
-> >  1 file changed, 8 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-> > index 0668d23cdbfa..cacabc23215a 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_net.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-> > @@ -330,6 +330,7 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
-> >  	u8 grp = 0; /* Send everything on CPU group 0 */
-> >  	unsigned int i, count, last;
-> >  	int port = priv->chip_port;
-> > +	bool do_tstamp;
-> >  
-> >  	val = ocelot_read(ocelot, QS_INJ_STATUS);
-> >  	if (!(val & QS_INJ_STATUS_FIFO_RDY(BIT(grp))) ||
-> > @@ -344,10 +345,14 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
-> >  	info.vid = skb_vlan_tag_get(skb);
-> >  
-> >  	/* Check if timestamping is needed */
-> > +	do_tstamp = (ocelot_port_add_txtstamp_skb(ocelot_port, skb) == 0);
-> > +
-> >  	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP) {
-> >  		info.rew_op = ocelot_port->ptp_cmd;
-> > -		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
-> > +		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
-> >  			info.rew_op |= (ocelot_port->ts_id  % 4) << 3;
-> > +			ocelot_port->ts_id++;
-> > +		}
-> >  	}
-> >  
-> >  	ocelot_gen_ifh(ifh, &info);
-> > @@ -380,12 +385,9 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
-> >  	dev->stats.tx_packets++;
-> >  	dev->stats.tx_bytes += skb->len;
-> >  
-> > -	if (!ocelot_port_add_txtstamp_skb(ocelot_port, skb)) {
-> > -		ocelot_port->ts_id++;
-> > -		return NETDEV_TX_OK;
-> > -	}
-> > +	if (!do_tstamp)
-> > +		dev_kfree_skb_any(skb);
-> >  
-> > -	dev_kfree_skb_any(skb);
-> >  	return NETDEV_TX_OK;
-> >  }
-> >  
-> > -- 
-> > 2.25.1
-> > 
-> 
-> On 18/09/2020 04:07:24+0300, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > The ocelot_port->ts_id is used to:
-> > (a) populate skb->cb[0] for matching the TX timestamp in the PTP IRQ
-> >     with an skb.
-> > (b) populate the REW_OP from the injection header of the ongoing skb.
-> > Only then is ocelot_port->ts_id incremented.
-> > 
-> > This is a problem because, at least theoretically, another timestampable
-> > skb might use the same ocelot_port->ts_id before that is incremented.
-> > Normally all transmit calls are serialized by the netdev transmit
-> > spinlock, but in this case, ocelot_port_add_txtstamp_skb() is also
-> > called by DSA, which has started declaring the NETIF_F_LLTX feature
-> > since commit 2b86cb829976 ("net: dsa: declare lockless TX feature for
-> > slave ports").  So the logic of using and incrementing the timestamp id
-> > should be atomic per port.
-> > 
-> > The solution is to use the global ocelot_port->ts_id only while
-> > protected by the associated ocelot_port->ts_id_lock. That's where we
-> > populate skb->cb[0]. Note that for ocelot, ocelot_port_add_txtstamp_skb
-> > is called for the actual skb, but for felix, it is called for the skb's
-> > clone. That is something which will also be changed in the future.
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> > Changes in v2:
-> > Added an extra explanation about NETIF_F_LLTX in commit message.
-> > 
-> >  drivers/net/ethernet/mscc/ocelot.c     |  8 +++++++-
-> >  drivers/net/ethernet/mscc/ocelot_net.c |  6 ++----
-> >  include/soc/mscc/ocelot.h              |  1 +
-> >  net/dsa/tag_ocelot.c                   | 11 +++++++----
-> >  4 files changed, 17 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> > index 5abb7d2b0a9e..83eb7c325061 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot.c
-> > @@ -421,10 +421,15 @@ int ocelot_port_add_txtstamp_skb(struct ocelot_port *ocelot_port,
-> >  
-> >  	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP &&
-> >  	    ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
-> > +		spin_lock(&ocelot_port->ts_id_lock);
-> > +
-> >  		shinfo->tx_flags |= SKBTX_IN_PROGRESS;
-> >  		/* Store timestamp ID in cb[0] of sk_buff */
-> > -		skb->cb[0] = ocelot_port->ts_id % 4;
-> > +		skb->cb[0] = ocelot_port->ts_id;
-> > +		ocelot_port->ts_id = (ocelot_port->ts_id + 1) % 4;
-> >  		skb_queue_tail(&ocelot_port->tx_skbs, skb);
-> > +
-> > +		spin_unlock(&ocelot_port->ts_id_lock);
-> >  		return 0;
-> >  	}
-> >  	return -ENODATA;
-> > @@ -1300,6 +1305,7 @@ void ocelot_init_port(struct ocelot *ocelot, int port)
-> >  	struct ocelot_port *ocelot_port = ocelot->ports[port];
-> >  
-> >  	skb_queue_head_init(&ocelot_port->tx_skbs);
-> > +	spin_lock_init(&ocelot_port->ts_id_lock);
-> >  
-> >  	/* Basic L2 initialization */
-> >  
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-> > index cacabc23215a..8490e42e9e2d 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_net.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-> > @@ -349,10 +349,8 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
-> >  
-> >  	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP) {
-> >  		info.rew_op = ocelot_port->ptp_cmd;
-> > -		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
-> > -			info.rew_op |= (ocelot_port->ts_id  % 4) << 3;
-> > -			ocelot_port->ts_id++;
-> > -		}
-> > +		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
-> > +			info.rew_op |= skb->cb[0] << 3;
-> >  	}
-> >  
-> >  	ocelot_gen_ifh(ifh, &info);
-> > diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-> > index da369b12005f..4521dd602ddc 100644
-> > --- a/include/soc/mscc/ocelot.h
-> > +++ b/include/soc/mscc/ocelot.h
-> > @@ -566,6 +566,7 @@ struct ocelot_port {
-> >  	u8				ptp_cmd;
-> >  	struct sk_buff_head		tx_skbs;
-> >  	u8				ts_id;
-> > +	spinlock_t			ts_id_lock;
-> >  
-> >  	phy_interface_t			phy_mode;
-> >  
-> > diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
-> > index 42f327c06dca..b4fc05cafaa6 100644
-> > --- a/net/dsa/tag_ocelot.c
-> > +++ b/net/dsa/tag_ocelot.c
-> > @@ -160,11 +160,14 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
-> >  	packing(injection, &qos_class, 19,  17, OCELOT_TAG_LEN, PACK, 0);
-> >  
-> >  	if (ocelot->ptp && (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
-> > +		struct sk_buff *clone = DSA_SKB_CB(skb)->clone;
-> > +
-> >  		rew_op = ocelot_port->ptp_cmd;
-> > -		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
-> > -			rew_op |= (ocelot_port->ts_id  % 4) << 3;
-> > -			ocelot_port->ts_id++;
-> > -		}
-> > +		/* Retrieve timestamp ID populated inside skb->cb[0] of the
-> > +		 * clone by ocelot_port_add_txtstamp_skb
-> > +		 */
-> > +		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
-> > +			rew_op |= clone->cb[0] << 3;
-> >  
-> >  		packing(injection, &rew_op, 125, 117, OCELOT_TAG_LEN, PACK, 0);
-> >  	}
-> > -- 
-> > 2.25.1
-> > 
-> 
-> On 18/09/2020 04:07:25+0300, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > The VSC9953 Seville switch has 2 megabits of buffer split into 4360
-> > words of 60 bytes each.
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> > Changes in v2:
-> > None.
-> > 
-> >  drivers/net/dsa/ocelot/seville_vsc9953.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> > index 2d6a5f5758f8..83a1ab9393e9 100644
-> > --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-> > +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> > @@ -1018,7 +1018,7 @@ static const struct felix_info seville_info_vsc9953 = {
-> >  	.vcap_is2_keys		= vsc9953_vcap_is2_keys,
-> >  	.vcap_is2_actions	= vsc9953_vcap_is2_actions,
-> >  	.vcap			= vsc9953_vcap_props,
-> > -	.shared_queue_sz	= 128 * 1024,
-> > +	.shared_queue_sz	= 2048 * 1024,
-> >  	.num_mact_rows		= 2048,
-> >  	.num_ports		= 10,
-> >  	.mdio_bus_alloc		= vsc9953_mdio_bus_alloc,
-> > -- 
-> > 2.25.1
-> > 
-> 
-> On 18/09/2020 04:07:26+0300, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > Do not proceed probing if we couldn't allocate memory for the ports
-> > array, just error out.
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> > Changes in v2:
-> > Stopped leaking the 'ports' OF node.
-> > 
-> >  drivers/net/ethernet/mscc/ocelot_vsc7514.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > index 65408bc994c4..904ea299a5e8 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > @@ -993,6 +993,10 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
-> >  
-> >  	ocelot->ports = devm_kcalloc(&pdev->dev, ocelot->num_phys_ports,
-> >  				     sizeof(struct ocelot_port *), GFP_KERNEL);
-> > +	if (!ocelot->ports) {
-> > +		err = -ENOMEM;
-> > +		goto out_put_ports;
-> > +	}
-> >  
-> >  	ocelot->vcap_is2_keys = vsc7514_vcap_is2_keys;
-> >  	ocelot->vcap_is2_actions = vsc7514_vcap_is2_actions;
-> > -- 
-> > 2.25.1
-> > 
-> 
-> On 18/09/2020 04:07:27+0300, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > ocelot_init() allocates memory, resets the switch and polls for a status
-> > register, things which can fail. Stop probing the driver in that case,
-> > and propagate the error result.
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> > Changes in v2:
-> > Stopped leaking the 'ports' OF node in the VSC7514 driver.
-> > 
-> >  drivers/net/dsa/ocelot/felix.c             | 5 ++++-
-> >  drivers/net/ethernet/mscc/ocelot_vsc7514.c | 5 ++++-
-> >  2 files changed, 8 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-> > index a1e1d3824110..f7b43f8d56ed 100644
-> > --- a/drivers/net/dsa/ocelot/felix.c
-> > +++ b/drivers/net/dsa/ocelot/felix.c
-> > @@ -571,7 +571,10 @@ static int felix_setup(struct dsa_switch *ds)
-> >  	if (err)
-> >  		return err;
-> >  
-> > -	ocelot_init(ocelot);
-> > +	err = ocelot_init(ocelot);
-> > +	if (err)
-> > +		return err;
-> > +
-> >  	if (ocelot->ptp) {
-> >  		err = ocelot_init_timestamp(ocelot, &ocelot_ptp_clock_info);
-> >  		if (err) {
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > index 904ea299a5e8..a1cbb20a7757 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > @@ -1002,7 +1002,10 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
-> >  	ocelot->vcap_is2_actions = vsc7514_vcap_is2_actions;
-> >  	ocelot->vcap = vsc7514_vcap_props;
-> >  
-> > -	ocelot_init(ocelot);
-> > +	err = ocelot_init(ocelot);
-> > +	if (err)
-> > +		goto out_put_ports;
-> > +
-> >  	if (ocelot->ptp) {
-> >  		err = ocelot_init_timestamp(ocelot, &ocelot_ptp_clock_info);
-> >  		if (err) {
-> > -- 
-> > 2.25.1
-> > 
-> 
-> On 18/09/2020 04:07:28+0300, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > mscc_ocelot_probe() is already pretty large and hard to follow. So move
-> > the code for parsing ports in a separate function.
-> > 
-> > This makes it easier for the next patch to just call
-> > mscc_ocelot_release_ports from the error path of mscc_ocelot_init_ports.
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> > Changes in v2:
-> > Keep a reference to the 'ports' OF node at caller side, in
-> > mscc_ocelot_probe, because we need to populate ocelot->num_phys_ports
-> > early. The ocelot_init() function depends on it being set correctly.
-> > 
-> >  drivers/net/ethernet/mscc/ocelot_vsc7514.c | 209 +++++++++++----------
-> >  1 file changed, 110 insertions(+), 99 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > index a1cbb20a7757..ff4a01424953 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > @@ -896,11 +896,115 @@ static struct ptp_clock_info ocelot_ptp_clock_info = {
-> >  	.enable		= ocelot_ptp_enable,
-> >  };
-> >  
-> > +static int mscc_ocelot_init_ports(struct platform_device *pdev,
-> > +				  struct device_node *ports)
-> > +{
-> > +	struct ocelot *ocelot = platform_get_drvdata(pdev);
-> > +	struct device_node *portnp;
-> > +	int err;
-> > +
-> > +	ocelot->ports = devm_kcalloc(ocelot->dev, ocelot->num_phys_ports,
-> > +				     sizeof(struct ocelot_port *), GFP_KERNEL);
-> > +	if (!ocelot->ports)
-> > +		return -ENOMEM;
-> > +
-> > +	/* No NPI port */
-> > +	ocelot_configure_cpu(ocelot, -1, OCELOT_TAG_PREFIX_NONE,
-> > +			     OCELOT_TAG_PREFIX_NONE);
-> > +
-> > +	for_each_available_child_of_node(ports, portnp) {
-> > +		struct ocelot_port_private *priv;
-> > +		struct ocelot_port *ocelot_port;
-> > +		struct device_node *phy_node;
-> > +		phy_interface_t phy_mode;
-> > +		struct phy_device *phy;
-> > +		struct regmap *target;
-> > +		struct resource *res;
-> > +		struct phy *serdes;
-> > +		char res_name[8];
-> > +		u32 port;
-> > +
-> > +		if (of_property_read_u32(portnp, "reg", &port))
-> > +			continue;
-> > +
-> > +		snprintf(res_name, sizeof(res_name), "port%d", port);
-> > +
-> > +		res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
-> > +						   res_name);
-> > +		target = ocelot_regmap_init(ocelot, res);
-> > +		if (IS_ERR(target))
-> > +			continue;
-> > +
-> > +		phy_node = of_parse_phandle(portnp, "phy-handle", 0);
-> > +		if (!phy_node)
-> > +			continue;
-> > +
-> > +		phy = of_phy_find_device(phy_node);
-> > +		of_node_put(phy_node);
-> > +		if (!phy)
-> > +			continue;
-> > +
-> > +		err = ocelot_probe_port(ocelot, port, target, phy);
-> > +		if (err) {
-> > +			of_node_put(portnp);
-> > +			return err;
-> > +		}
-> > +
-> > +		ocelot_port = ocelot->ports[port];
-> > +		priv = container_of(ocelot_port, struct ocelot_port_private,
-> > +				    port);
-> > +
-> > +		of_get_phy_mode(portnp, &phy_mode);
-> > +
-> > +		ocelot_port->phy_mode = phy_mode;
-> > +
-> > +		switch (ocelot_port->phy_mode) {
-> > +		case PHY_INTERFACE_MODE_NA:
-> > +			continue;
-> > +		case PHY_INTERFACE_MODE_SGMII:
-> > +			break;
-> > +		case PHY_INTERFACE_MODE_QSGMII:
-> > +			/* Ensure clock signals and speed is set on all
-> > +			 * QSGMII links
-> > +			 */
-> > +			ocelot_port_writel(ocelot_port,
-> > +					   DEV_CLOCK_CFG_LINK_SPEED
-> > +					   (OCELOT_SPEED_1000),
-> > +					   DEV_CLOCK_CFG);
-> > +			break;
-> > +		default:
-> > +			dev_err(ocelot->dev,
-> > +				"invalid phy mode for port%d, (Q)SGMII only\n",
-> > +				port);
-> > +			of_node_put(portnp);
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +		serdes = devm_of_phy_get(ocelot->dev, portnp, NULL);
-> > +		if (IS_ERR(serdes)) {
-> > +			err = PTR_ERR(serdes);
-> > +			if (err == -EPROBE_DEFER)
-> > +				dev_dbg(ocelot->dev, "deferring probe\n");
-> > +			else
-> > +				dev_err(ocelot->dev,
-> > +					"missing SerDes phys for port%d\n",
-> > +					port);
-> > +
-> > +			of_node_put(portnp);
-> > +			return err;
-> > +		}
-> > +
-> > +		priv->serdes = serdes;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >  static int mscc_ocelot_probe(struct platform_device *pdev)
-> >  {
-> >  	struct device_node *np = pdev->dev.of_node;
-> > -	struct device_node *ports, *portnp;
-> >  	int err, irq_xtr, irq_ptp_rdy;
-> > +	struct device_node *ports;
-> >  	struct ocelot *ocelot;
-> >  	struct regmap *hsio;
-> >  	unsigned int i;
-> > @@ -985,19 +1089,12 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
-> >  
-> >  	ports = of_get_child_by_name(np, "ethernet-ports");
-> >  	if (!ports) {
-> > -		dev_err(&pdev->dev, "no ethernet-ports child node found\n");
-> > +		dev_err(ocelot->dev, "no ethernet-ports child node found\n");
-> >  		return -ENODEV;
-> >  	}
-> >  
-> >  	ocelot->num_phys_ports = of_get_child_count(ports);
-> >  
-> > -	ocelot->ports = devm_kcalloc(&pdev->dev, ocelot->num_phys_ports,
-> > -				     sizeof(struct ocelot_port *), GFP_KERNEL);
-> > -	if (!ocelot->ports) {
-> > -		err = -ENOMEM;
-> > -		goto out_put_ports;
-> > -	}
-> > -
-> >  	ocelot->vcap_is2_keys = vsc7514_vcap_is2_keys;
-> >  	ocelot->vcap_is2_actions = vsc7514_vcap_is2_actions;
-> >  	ocelot->vcap = vsc7514_vcap_props;
-> > @@ -1006,6 +1103,10 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
-> >  	if (err)
-> >  		goto out_put_ports;
-> >  
-> > +	err = mscc_ocelot_init_ports(pdev, ports);
-> > +	if (err)
-> > +		goto out_put_ports;
-> > +
-> >  	if (ocelot->ptp) {
-> >  		err = ocelot_init_timestamp(ocelot, &ocelot_ptp_clock_info);
-> >  		if (err) {
-> > @@ -1015,96 +1116,6 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
-> >  		}
-> >  	}
-> >  
-> > -	/* No NPI port */
-> > -	ocelot_configure_cpu(ocelot, -1, OCELOT_TAG_PREFIX_NONE,
-> > -			     OCELOT_TAG_PREFIX_NONE);
-> > -
-> > -	for_each_available_child_of_node(ports, portnp) {
-> > -		struct ocelot_port_private *priv;
-> > -		struct ocelot_port *ocelot_port;
-> > -		struct device_node *phy_node;
-> > -		phy_interface_t phy_mode;
-> > -		struct phy_device *phy;
-> > -		struct regmap *target;
-> > -		struct resource *res;
-> > -		struct phy *serdes;
-> > -		char res_name[8];
-> > -		u32 port;
-> > -
-> > -		if (of_property_read_u32(portnp, "reg", &port))
-> > -			continue;
-> > -
-> > -		snprintf(res_name, sizeof(res_name), "port%d", port);
-> > -
-> > -		res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
-> > -						   res_name);
-> > -		target = ocelot_regmap_init(ocelot, res);
-> > -		if (IS_ERR(target))
-> > -			continue;
-> > -
-> > -		phy_node = of_parse_phandle(portnp, "phy-handle", 0);
-> > -		if (!phy_node)
-> > -			continue;
-> > -
-> > -		phy = of_phy_find_device(phy_node);
-> > -		of_node_put(phy_node);
-> > -		if (!phy)
-> > -			continue;
-> > -
-> > -		err = ocelot_probe_port(ocelot, port, target, phy);
-> > -		if (err) {
-> > -			of_node_put(portnp);
-> > -			goto out_put_ports;
-> > -		}
-> > -
-> > -		ocelot_port = ocelot->ports[port];
-> > -		priv = container_of(ocelot_port, struct ocelot_port_private,
-> > -				    port);
-> > -
-> > -		of_get_phy_mode(portnp, &phy_mode);
-> > -
-> > -		ocelot_port->phy_mode = phy_mode;
-> > -
-> > -		switch (ocelot_port->phy_mode) {
-> > -		case PHY_INTERFACE_MODE_NA:
-> > -			continue;
-> > -		case PHY_INTERFACE_MODE_SGMII:
-> > -			break;
-> > -		case PHY_INTERFACE_MODE_QSGMII:
-> > -			/* Ensure clock signals and speed is set on all
-> > -			 * QSGMII links
-> > -			 */
-> > -			ocelot_port_writel(ocelot_port,
-> > -					   DEV_CLOCK_CFG_LINK_SPEED
-> > -					   (OCELOT_SPEED_1000),
-> > -					   DEV_CLOCK_CFG);
-> > -			break;
-> > -		default:
-> > -			dev_err(ocelot->dev,
-> > -				"invalid phy mode for port%d, (Q)SGMII only\n",
-> > -				port);
-> > -			of_node_put(portnp);
-> > -			err = -EINVAL;
-> > -			goto out_put_ports;
-> > -		}
-> > -
-> > -		serdes = devm_of_phy_get(ocelot->dev, portnp, NULL);
-> > -		if (IS_ERR(serdes)) {
-> > -			err = PTR_ERR(serdes);
-> > -			if (err == -EPROBE_DEFER)
-> > -				dev_dbg(ocelot->dev, "deferring probe\n");
-> > -			else
-> > -				dev_err(ocelot->dev,
-> > -					"missing SerDes phys for port%d\n",
-> > -					port);
-> > -
-> > -			of_node_put(portnp);
-> > -			goto out_put_ports;
-> > -		}
-> > -
-> > -		priv->serdes = serdes;
-> > -	}
-> > -
-> >  	register_netdevice_notifier(&ocelot_netdevice_nb);
-> >  	register_switchdev_notifier(&ocelot_switchdev_nb);
-> >  	register_switchdev_blocking_notifier(&ocelot_switchdev_blocking_nb);
-> > -- 
-> > 2.25.1
-> > 
-> 
-> On 18/09/2020 04:07:29+0300, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > This driver was not unregistering its network interfaces on unbind.
-> > Now it is.
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> > Changes in v2:
-> > No longer call mscc_ocelot_release_ports from the regular exit path of
-> > mscc_ocelot_init_ports, which was incorrect.
-> > 
-> >  drivers/net/ethernet/mscc/ocelot_vsc7514.c | 21 +++++++++++++++++++++
-> >  1 file changed, 21 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > index ff4a01424953..252c49b5f22b 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > @@ -896,6 +896,26 @@ static struct ptp_clock_info ocelot_ptp_clock_info = {
-> >  	.enable		= ocelot_ptp_enable,
-> >  };
-> >  
-> > +static void mscc_ocelot_release_ports(struct ocelot *ocelot)
-> > +{
-> > +	int port;
-> > +
-> > +	for (port = 0; port < ocelot->num_phys_ports; port++) {
-> > +		struct ocelot_port_private *priv;
-> > +		struct ocelot_port *ocelot_port;
-> > +
-> > +		ocelot_port = ocelot->ports[port];
-> > +		if (!ocelot_port)
-> > +			continue;
-> > +
-> > +		priv = container_of(ocelot_port, struct ocelot_port_private,
-> > +				    port);
-> > +
-> > +		unregister_netdev(priv->dev);
-> > +		free_netdev(priv->dev);
-> > +	}
-> > +}
-> > +
-> >  static int mscc_ocelot_init_ports(struct platform_device *pdev,
-> >  				  struct device_node *ports)
-> >  {
-> > @@ -1132,6 +1152,7 @@ static int mscc_ocelot_remove(struct platform_device *pdev)
-> >  	struct ocelot *ocelot = platform_get_drvdata(pdev);
-> >  
-> >  	ocelot_deinit_timestamp(ocelot);
-> > +	mscc_ocelot_release_ports(ocelot);
-> >  	ocelot_deinit(ocelot);
-> >  	unregister_switchdev_blocking_notifier(&ocelot_switchdev_blocking_nb);
-> >  	unregister_switchdev_notifier(&ocelot_switchdev_nb);
-> > -- 
-> > 2.25.1
-> > 
-> 
-> On 18/09/2020 04:07:30+0300, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > Currently mscc_ocelot_init_ports() will skip initializing a port when it
-> > doesn't have a phy-handle, so the ocelot->ports[port] pointer will be
-> > NULL. Take this into consideration when tearing down the driver, and add
-> > a new function ocelot_deinit_port() to the switch library, mirror of
-> > ocelot_init_port(), which needs to be called by the driver for all ports
-> > it has initialized.
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > ---
-> > Changes in v2:
-> > Patch is new.
-> > 
-> >  drivers/net/dsa/ocelot/felix.c             |  3 +++
-> >  drivers/net/ethernet/mscc/ocelot.c         | 16 ++++++++--------
-> >  drivers/net/ethernet/mscc/ocelot_vsc7514.c |  2 ++
-> >  include/soc/mscc/ocelot.h                  |  1 +
-> >  4 files changed, 14 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-> > index f7b43f8d56ed..64939ee14648 100644
-> > --- a/drivers/net/dsa/ocelot/felix.c
-> > +++ b/drivers/net/dsa/ocelot/felix.c
-> > @@ -624,10 +624,13 @@ static void felix_teardown(struct dsa_switch *ds)
-> >  {
-> >  	struct ocelot *ocelot = ds->priv;
-> >  	struct felix *felix = ocelot_to_felix(ocelot);
-> > +	int port;
-> >  
-> >  	if (felix->info->mdio_bus_free)
-> >  		felix->info->mdio_bus_free(ocelot);
-> >  
-> > +	for (port = 0; port < ocelot->num_phys_ports; port++)
-> > +		ocelot_deinit_port(ocelot, port);
-> >  	ocelot_deinit_timestamp(ocelot);
-> >  	/* stop workqueue thread */
-> >  	ocelot_deinit(ocelot);
-> > diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> > index 83eb7c325061..8518e1d60da4 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot.c
-> > @@ -1550,18 +1550,18 @@ EXPORT_SYMBOL(ocelot_init);
-> >  
-> >  void ocelot_deinit(struct ocelot *ocelot)
-> >  {
-> > -	struct ocelot_port *port;
-> > -	int i;
-> > -
-> >  	cancel_delayed_work(&ocelot->stats_work);
-> >  	destroy_workqueue(ocelot->stats_queue);
-> >  	mutex_destroy(&ocelot->stats_lock);
-> > -
-> > -	for (i = 0; i < ocelot->num_phys_ports; i++) {
-> > -		port = ocelot->ports[i];
-> > -		skb_queue_purge(&port->tx_skbs);
-> > -	}
-> >  }
-> >  EXPORT_SYMBOL(ocelot_deinit);
-> >  
-> > +void ocelot_deinit_port(struct ocelot *ocelot, int port)
-> > +{
-> > +	struct ocelot_port *ocelot_port = ocelot->ports[port];
-> > +
-> > +	skb_queue_purge(&ocelot_port->tx_skbs);
-> > +}
-> > +EXPORT_SYMBOL(ocelot_deinit_port);
-> > +
-> >  MODULE_LICENSE("Dual MIT/GPL");
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > index 252c49b5f22b..e02fb8bfab63 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > @@ -908,6 +908,8 @@ static void mscc_ocelot_release_ports(struct ocelot *ocelot)
-> >  		if (!ocelot_port)
-> >  			continue;
-> >  
-> > +		ocelot_deinit_port(ocelot, port);
-> > +
-> >  		priv = container_of(ocelot_port, struct ocelot_port_private,
-> >  				    port);
-> >  
-> > diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-> > index 4521dd602ddc..0ac4e7fba086 100644
-> > --- a/include/soc/mscc/ocelot.h
-> > +++ b/include/soc/mscc/ocelot.h
-> > @@ -678,6 +678,7 @@ void ocelot_configure_cpu(struct ocelot *ocelot, int npi,
-> >  int ocelot_init(struct ocelot *ocelot);
-> >  void ocelot_deinit(struct ocelot *ocelot);
-> >  void ocelot_init_port(struct ocelot *ocelot, int port);
-> > +void ocelot_deinit_port(struct ocelot *ocelot, int port);
-> >  
-> >  /* DSA callbacks */
-> >  void ocelot_port_enable(struct ocelot *ocelot, int port,
-> > -- 
-> > 2.25.1
-> > 
-> 
-> 
-> -- 
-> Alexandre Belloni, Bootlin
-> Embedded Linux and Kernel engineering
-> https://bootlin.com
-
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+index 76d2cece29ac..0f224454b4a2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -3,6 +3,20 @@
+ 
+ #include "fw_reset.h"
+ 
++enum {
++	MLX5_FW_RESET_FLAGS_RESET_REQUESTED,
++};
++
++struct mlx5_fw_reset {
++	struct mlx5_core_dev *dev;
++	struct mlx5_nb nb;
++	struct workqueue_struct *wq;
++	struct work_struct reset_request_work;
++	struct work_struct reset_reload_work;
++	unsigned long reset_flags;
++	struct timer_list timer;
++};
++
+ static int mlx5_reg_mfrl_set(struct mlx5_core_dev *dev, u8 reset_level,
+ 			     u8 reset_type_sel, u8 sync_resp, bool sync_start)
+ {
+@@ -44,3 +58,156 @@ int mlx5_fw_set_live_patch(struct mlx5_core_dev *dev)
+ {
+ 	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL0, 0, 0, false);
+ }
++
++static int mlx5_fw_set_reset_sync_ack(struct mlx5_core_dev *dev)
++{
++	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 1, false);
++}
++
++static void mlx5_sync_reset_reload_work(struct work_struct *work)
++{
++	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
++						      reset_reload_work);
++	struct mlx5_core_dev *dev = fw_reset->dev;
++
++	mlx5_enter_error_state(dev, true);
++	mlx5_unload_one(dev, false);
++	if (mlx5_health_wait_pci_up(dev)) {
++		mlx5_core_err(dev, "reset reload flow aborted, PCI reads still not working\n");
++		return;
++	}
++	mlx5_load_one(dev, false);
++}
++
++static void mlx5_stop_sync_reset_poll(struct mlx5_core_dev *dev)
++{
++	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
++
++	del_timer(&fw_reset->timer);
++}
++
++static void mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
++{
++	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
++
++	mlx5_stop_sync_reset_poll(dev);
++	clear_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
++	if (poll_health)
++		mlx5_start_health_poll(dev);
++}
++
++#define MLX5_RESET_POLL_INTERVAL	(HZ / 10)
++static void poll_sync_reset(struct timer_list *t)
++{
++	struct mlx5_fw_reset *fw_reset = from_timer(fw_reset, t, timer);
++	struct mlx5_core_dev *dev = fw_reset->dev;
++	u32 fatal_error;
++
++	if (!test_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags))
++		return;
++
++	fatal_error = mlx5_health_check_fatal_sensors(dev);
++
++	if (fatal_error) {
++		mlx5_core_warn(dev, "Got Device Reset\n");
++		mlx5_sync_reset_clear_reset_requested(dev, false);
++		queue_work(fw_reset->wq, &fw_reset->reset_reload_work);
++		return;
++	}
++
++	mod_timer(&fw_reset->timer, round_jiffies(jiffies + MLX5_RESET_POLL_INTERVAL));
++}
++
++static void mlx5_start_sync_reset_poll(struct mlx5_core_dev *dev)
++{
++	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
++
++	timer_setup(&fw_reset->timer, poll_sync_reset, 0);
++	fw_reset->timer.expires = round_jiffies(jiffies + MLX5_RESET_POLL_INTERVAL);
++	add_timer(&fw_reset->timer);
++}
++
++static void mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
++{
++	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
++
++	mlx5_stop_health_poll(dev, true);
++	set_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
++	mlx5_start_sync_reset_poll(dev);
++}
++
++static void mlx5_sync_reset_request_event(struct work_struct *work)
++{
++	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
++						      reset_request_work);
++	struct mlx5_core_dev *dev = fw_reset->dev;
++
++	mlx5_sync_reset_set_reset_requested(dev);
++	if (mlx5_fw_set_reset_sync_ack(dev))
++		mlx5_core_warn(dev, "PCI Sync FW Update Reset Ack Failed.\n");
++	else
++		mlx5_core_warn(dev, "PCI Sync FW Update Reset Ack. Device reset is expected.\n");
++}
++
++static void mlx5_sync_reset_events_handle(struct mlx5_fw_reset *fw_reset, struct mlx5_eqe *eqe)
++{
++	struct mlx5_eqe_sync_fw_update *sync_fw_update_eqe;
++	u8 sync_event_rst_type;
++
++	sync_fw_update_eqe = &eqe->data.sync_fw_update;
++	sync_event_rst_type = sync_fw_update_eqe->sync_rst_state & SYNC_RST_STATE_MASK;
++	switch (sync_event_rst_type) {
++	case MLX5_SYNC_RST_STATE_RESET_REQUEST:
++		queue_work(fw_reset->wq, &fw_reset->reset_request_work);
++		break;
++	}
++}
++
++static int fw_reset_event_notifier(struct notifier_block *nb, unsigned long action, void *data)
++{
++	struct mlx5_fw_reset *fw_reset = mlx5_nb_cof(nb, struct mlx5_fw_reset, nb);
++	struct mlx5_eqe *eqe = data;
++
++	switch (eqe->sub_type) {
++	case MLX5_GENERAL_SUBTYPE_PCI_SYNC_FOR_FW_UPDATE_EVENT:
++		mlx5_sync_reset_events_handle(fw_reset, eqe);
++		break;
++	default:
++		return NOTIFY_DONE;
++	}
++
++	return NOTIFY_OK;
++}
++
++int mlx5_fw_reset_events_init(struct mlx5_core_dev *dev)
++{
++	struct mlx5_fw_reset *fw_reset = kzalloc(sizeof(*fw_reset), GFP_KERNEL);
++
++	if (!fw_reset)
++		return -ENOMEM;
++	fw_reset->wq = create_singlethread_workqueue("mlx5_fw_reset_events");
++	if (!fw_reset->wq) {
++		kfree(fw_reset);
++		return -ENOMEM;
++	}
++
++	fw_reset->dev = dev;
++	dev->priv.fw_reset = fw_reset;
++
++	INIT_WORK(&fw_reset->reset_request_work, mlx5_sync_reset_request_event);
++	INIT_WORK(&fw_reset->reset_reload_work, mlx5_sync_reset_reload_work);
++
++	MLX5_NB_INIT(&fw_reset->nb, fw_reset_event_notifier, GENERAL_EVENT);
++	mlx5_eq_notifier_register(dev, &fw_reset->nb);
++
++	return 0;
++}
++
++void mlx5_fw_reset_events_cleanup(struct mlx5_core_dev *dev)
++{
++	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
++
++	mlx5_eq_notifier_unregister(dev, &fw_reset->nb);
++	destroy_workqueue(fw_reset->wq);
++	kvfree(dev->priv.fw_reset);
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+index 1bbd95182ca6..278f538ea92a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+@@ -10,4 +10,7 @@ int mlx5_reg_mfrl_query(struct mlx5_core_dev *dev, u8 *reset_level, u8 *reset_ty
+ int mlx5_fw_set_reset_sync(struct mlx5_core_dev *dev, u8 reset_type_sel);
+ int mlx5_fw_set_live_patch(struct mlx5_core_dev *dev);
+ 
++int mlx5_fw_reset_events_init(struct mlx5_core_dev *dev);
++void mlx5_fw_reset_events_cleanup(struct mlx5_core_dev *dev);
++
+ #endif
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+index b31f769d2df9..54523bed16cd 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+@@ -110,7 +110,7 @@ static bool sensor_fw_synd_rfr(struct mlx5_core_dev *dev)
+ 	return rfr && synd;
+ }
+ 
+-static u32 check_fatal_sensors(struct mlx5_core_dev *dev)
++u32 mlx5_health_check_fatal_sensors(struct mlx5_core_dev *dev)
+ {
+ 	if (sensor_pci_not_working(dev))
+ 		return MLX5_SENSOR_PCI_COMM_ERR;
+@@ -173,7 +173,7 @@ static bool reset_fw_if_needed(struct mlx5_core_dev *dev)
+ 	 * Check again to avoid a redundant 2nd reset. If the fatal erros was
+ 	 * PCI related a reset won't help.
+ 	 */
+-	fatal_error = check_fatal_sensors(dev);
++	fatal_error = mlx5_health_check_fatal_sensors(dev);
+ 	if (fatal_error == MLX5_SENSOR_PCI_COMM_ERR ||
+ 	    fatal_error == MLX5_SENSOR_NIC_DISABLED ||
+ 	    fatal_error == MLX5_SENSOR_NIC_SW_RESET) {
+@@ -195,7 +195,7 @@ void mlx5_enter_error_state(struct mlx5_core_dev *dev, bool force)
+ 	bool err_detected = false;
+ 
+ 	/* Mark the device as fatal in order to abort FW commands */
+-	if ((check_fatal_sensors(dev) || force) &&
++	if ((mlx5_health_check_fatal_sensors(dev) || force) &&
+ 	    dev->state == MLX5_DEVICE_STATE_UP) {
+ 		dev->state = MLX5_DEVICE_STATE_INTERNAL_ERROR;
+ 		err_detected = true;
+@@ -208,7 +208,7 @@ void mlx5_enter_error_state(struct mlx5_core_dev *dev, bool force)
+ 		goto unlock;
+ 	}
+ 
+-	if (check_fatal_sensors(dev) || force) { /* protected state setting */
++	if (mlx5_health_check_fatal_sensors(dev) || force) { /* protected state setting */
+ 		dev->state = MLX5_DEVICE_STATE_INTERNAL_ERROR;
+ 		mlx5_cmd_flush(dev);
+ 	}
+@@ -231,7 +231,7 @@ void mlx5_error_sw_reset(struct mlx5_core_dev *dev)
+ 
+ 	mlx5_core_err(dev, "start\n");
+ 
+-	if (check_fatal_sensors(dev) == MLX5_SENSOR_FW_SYND_RFR) {
++	if (mlx5_health_check_fatal_sensors(dev) == MLX5_SENSOR_FW_SYND_RFR) {
+ 		/* Get cr-dump and reset FW semaphore */
+ 		lock = lock_sem_sw_reset(dev, true);
+ 
+@@ -308,26 +308,31 @@ static void mlx5_handle_bad_state(struct mlx5_core_dev *dev)
+ 
+ /* How much time to wait until health resetting the driver (in msecs) */
+ #define MLX5_RECOVERY_WAIT_MSECS 60000
+-static int mlx5_health_try_recover(struct mlx5_core_dev *dev)
++int mlx5_health_wait_pci_up(struct mlx5_core_dev *dev)
+ {
+ 	unsigned long end;
+ 
+-	mlx5_core_warn(dev, "handling bad device here\n");
+-	mlx5_handle_bad_state(dev);
+ 	end = jiffies + msecs_to_jiffies(MLX5_RECOVERY_WAIT_MSECS);
+ 	while (sensor_pci_not_working(dev)) {
+-		if (time_after(jiffies, end)) {
+-			mlx5_core_err(dev,
+-				      "health recovery flow aborted, PCI reads still not working\n");
+-			return -EIO;
+-		}
++		if (time_after(jiffies, end))
++			return -ETIMEDOUT;
+ 		msleep(100);
+ 	}
++	return 0;
++}
+ 
++static int mlx5_health_try_recover(struct mlx5_core_dev *dev)
++{
++	mlx5_core_warn(dev, "handling bad device here\n");
++	mlx5_handle_bad_state(dev);
++	if (mlx5_health_wait_pci_up(dev)) {
++		mlx5_core_err(dev, "health recovery flow aborted, PCI reads still not working\n");
++		return -EIO;
++	}
+ 	mlx5_core_err(dev, "starting health recovery flow\n");
+ 	mlx5_recover_device(dev);
+ 	if (!test_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state) ||
+-	    check_fatal_sensors(dev)) {
++	    mlx5_health_check_fatal_sensors(dev)) {
+ 		mlx5_core_err(dev, "health recovery failed\n");
+ 		return -EIO;
+ 	}
+@@ -696,7 +701,7 @@ static void poll_health(struct timer_list *t)
+ 	if (dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR)
+ 		goto out;
+ 
+-	fatal_error = check_fatal_sensors(dev);
++	fatal_error = mlx5_health_check_fatal_sensors(dev);
+ 
+ 	if (fatal_error && !health->fatal_error) {
+ 		mlx5_core_err(dev, "Fatal error %u detected\n", fatal_error);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 871d28b09f8a..e833db424f11 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -57,6 +57,7 @@
+ #include "lib/mpfs.h"
+ #include "eswitch.h"
+ #include "devlink.h"
++#include "fw_reset.h"
+ #include "lib/mlx5.h"
+ #include "fpga/core.h"
+ #include "fpga/ipsec.h"
+@@ -835,6 +836,12 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
+ 		goto err_eq_cleanup;
+ 	}
+ 
++	err = mlx5_fw_reset_events_init(dev);
++	if (err) {
++		mlx5_core_err(dev, "failed to initialize fw reset events\n");
++		goto err_events_cleanup;
++	}
++
+ 	mlx5_cq_debugfs_init(dev);
+ 
+ 	mlx5_init_reserved_gids(dev);
+@@ -896,6 +903,8 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
+ 	mlx5_geneve_destroy(dev->geneve);
+ 	mlx5_vxlan_destroy(dev->vxlan);
+ 	mlx5_cq_debugfs_cleanup(dev);
++	mlx5_fw_reset_events_cleanup(dev);
++err_events_cleanup:
+ 	mlx5_events_cleanup(dev);
+ err_eq_cleanup:
+ 	mlx5_eq_table_cleanup(dev);
+@@ -923,6 +932,7 @@ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
+ 	mlx5_cleanup_clock(dev);
+ 	mlx5_cleanup_reserved_gids(dev);
+ 	mlx5_cq_debugfs_cleanup(dev);
++	mlx5_fw_reset_events_cleanup(dev);
+ 	mlx5_events_cleanup(dev);
+ 	mlx5_eq_table_cleanup(dev);
+ 	mlx5_irq_table_cleanup(dev);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+index fc1649dac11b..d07a32165792 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+@@ -123,6 +123,8 @@ int mlx5_cmd_force_teardown_hca(struct mlx5_core_dev *dev);
+ int mlx5_cmd_fast_teardown_hca(struct mlx5_core_dev *dev);
+ void mlx5_enter_error_state(struct mlx5_core_dev *dev, bool force);
+ void mlx5_error_sw_reset(struct mlx5_core_dev *dev);
++u32 mlx5_health_check_fatal_sensors(struct mlx5_core_dev *dev);
++int mlx5_health_wait_pci_up(struct mlx5_core_dev *dev);
+ void mlx5_disable_device(struct mlx5_core_dev *dev);
+ void mlx5_recover_device(struct mlx5_core_dev *dev);
+ int mlx5_sriov_init(struct mlx5_core_dev *dev);
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index 8dc3da6e6480..80e31a7684e0 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -501,6 +501,7 @@ struct mlx5_mpfs;
+ struct mlx5_eswitch;
+ struct mlx5_lag;
+ struct mlx5_devcom;
++struct mlx5_fw_reset;
+ struct mlx5_eq_table;
+ struct mlx5_irq_table;
+ 
+@@ -578,6 +579,7 @@ struct mlx5_priv {
+ 	struct mlx5_core_sriov	sriov;
+ 	struct mlx5_lag		*lag;
+ 	struct mlx5_devcom	*devcom;
++	struct mlx5_fw_reset	*fw_reset;
+ 	struct mlx5_core_roce	roce;
+ 	struct mlx5_fc_stats		fc_stats;
+ 	struct mlx5_rl_table            rl_table;
+@@ -943,6 +945,8 @@ void mlx5_start_health_poll(struct mlx5_core_dev *dev);
+ void mlx5_stop_health_poll(struct mlx5_core_dev *dev, bool disable_health);
+ void mlx5_drain_health_wq(struct mlx5_core_dev *dev);
+ void mlx5_trigger_health_work(struct mlx5_core_dev *dev);
++void mlx5_health_set_reset_requested_mode(struct mlx5_core_dev *dev);
++void mlx5_health_clear_reset_requested_mode(struct mlx5_core_dev *dev);
+ int mlx5_buf_alloc(struct mlx5_core_dev *dev,
+ 		   int size, struct mlx5_frag_buf *buf);
+ void mlx5_buf_free(struct mlx5_core_dev *dev, struct mlx5_frag_buf *buf);
 -- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.17.1
+
