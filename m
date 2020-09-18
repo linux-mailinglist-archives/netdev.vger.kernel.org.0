@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8793D26EB26
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14E8026EB5F
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:06:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727088AbgIRCD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:03:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49604 "EHLO mail.kernel.org"
+        id S1727360AbgIRCEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:04:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52194 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727021AbgIRCDZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:03:25 -0400
+        id S1727343AbgIRCEg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:04:36 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AADC122211;
-        Fri, 18 Sep 2020 02:03:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 15F8F2376F;
+        Fri, 18 Sep 2020 02:04:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600394604;
-        bh=sa8V9fKJRb/Z1mV9EvJW3toD3jyQYQ4KVzzTVJ304d8=;
+        s=default; t=1600394675;
+        bh=xxpODNml237vmDZDxhlu0H+y5oiY6Ei9aZoj7zrq/sk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SsV25oNMALy5xYn7UKXa9JD5vpSUrn+7+E7SInfYX56SoiteQXlgYKleXTaSHB+Ii
-         hXxjUSEQprV03zQT7IXEQ8LOZuWxm/fD5JF0SvGOZLXdsRCaPGb/l1fgcP4ox/pu+W
-         KI9fn0+/xvxt/rC9Mft0F86dfYhZ2SRJKz+leWxo=
+        b=Y8IPasg4PZKaM3b/PDz7Rd8E+gG2ed+kA3kqok0Xf2zIrbODEujJmCb6cCkM07wR1
+         LyOw0pZfR3xXca2EjuO9jGVfsrSxJozrZcIUHwZZ6X9n3ZOXlGePVVQsFYCfGkgsZE
+         i7FEV4pptP4Lm2y8FhsFWKPKCXwN3axCGmiOBv5A=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Manish Mandlik <mmandlik@google.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 111/330] Bluetooth: Fix refcount use-after-free issue
-Date:   Thu, 17 Sep 2020 21:57:31 -0400
-Message-Id: <20200918020110.2063155-111-sashal@kernel.org>
+Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 166/330] ath10k: use kzalloc to read for ath10k_sdio_hif_diag_read
+Date:   Thu, 17 Sep 2020 21:58:26 -0400
+Message-Id: <20200918020110.2063155-166-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918020110.2063155-1-sashal@kernel.org>
 References: <20200918020110.2063155-1-sashal@kernel.org>
@@ -43,201 +42,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Manish Mandlik <mmandlik@google.com>
+From: Wen Gong <wgong@codeaurora.org>
 
-[ Upstream commit 6c08fc896b60893c5d673764b0668015d76df462 ]
+[ Upstream commit 402f2992b4d62760cce7c689ff216ea3bf4d6e8a ]
 
-There is no lock preventing both l2cap_sock_release() and
-chan->ops->close() from running at the same time.
+When use command to read values, it crashed.
 
-If we consider Thread A running l2cap_chan_timeout() and Thread B running
-l2cap_sock_release(), expected behavior is:
-  A::l2cap_chan_timeout()->l2cap_chan_close()->l2cap_sock_teardown_cb()
-  A::l2cap_chan_timeout()->l2cap_sock_close_cb()->l2cap_sock_kill()
-  B::l2cap_sock_release()->sock_orphan()
-  B::l2cap_sock_release()->l2cap_sock_kill()
+command:
+dd if=/sys/kernel/debug/ieee80211/phy0/ath10k/mem_value count=1 bs=4 skip=$((0x100233))
 
-where,
-sock_orphan() clears "sk->sk_socket" and l2cap_sock_teardown_cb() marks
-socket as SOCK_ZAPPED.
+It will call to ath10k_sdio_hif_diag_read with address = 0x4008cc and buf_len = 4.
 
-In l2cap_sock_kill(), there is an "if-statement" that checks if both
-sock_orphan() and sock_teardown() has been run i.e. sk->sk_socket is NULL
-and socket is marked as SOCK_ZAPPED. Socket is killed if the condition is
-satisfied.
+Then system crash:
+[ 1786.013258] Unable to handle kernel paging request at virtual address ffffffc00bd45000
+[ 1786.013273] Mem abort info:
+[ 1786.013281]   ESR = 0x96000045
+[ 1786.013291]   Exception class = DABT (current EL), IL = 32 bits
+[ 1786.013299]   SET = 0, FnV = 0
+[ 1786.013307]   EA = 0, S1PTW = 0
+[ 1786.013314] Data abort info:
+[ 1786.013322]   ISV = 0, ISS = 0x00000045
+[ 1786.013330]   CM = 0, WnR = 1
+[ 1786.013342] swapper pgtable: 4k pages, 39-bit VAs, pgdp = 000000008542a60e
+[ 1786.013350] [ffffffc00bd45000] pgd=0000000000000000, pud=0000000000000000
+[ 1786.013368] Internal error: Oops: 96000045 [#1] PREEMPT SMP
+[ 1786.013609] Process swapper/0 (pid: 0, stack limit = 0x0000000084b153c6)
+[ 1786.013623] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.19.86 #137
+[ 1786.013631] Hardware name: MediaTek krane sku176 board (DT)
+[ 1786.013643] pstate: 80000085 (Nzcv daIf -PAN -UAO)
+[ 1786.013662] pc : __memcpy+0x94/0x180
+[ 1786.013678] lr : swiotlb_tbl_unmap_single+0x84/0x150
+[ 1786.013686] sp : ffffff8008003c60
+[ 1786.013694] x29: ffffff8008003c90 x28: ffffffae96411f80
+[ 1786.013708] x27: ffffffae960d2018 x26: ffffff8019a4b9a8
+[ 1786.013721] x25: 0000000000000000 x24: 0000000000000001
+[ 1786.013734] x23: ffffffae96567000 x22: 00000000000051d4
+[ 1786.013747] x21: 0000000000000000 x20: 00000000fe6e9000
+[ 1786.013760] x19: 0000000000000004 x18: 0000000000000020
+[ 1786.013773] x17: 0000000000000001 x16: 0000000000000000
+[ 1786.013787] x15: 00000000ffffffff x14: 00000000000044c0
+[ 1786.013800] x13: 0000000000365ba4 x12: 0000000000000000
+[ 1786.013813] x11: 0000000000000001 x10: 00000037be6e9000
+[ 1786.013826] x9 : ffffffc940000000 x8 : 000000000bd45000
+[ 1786.013839] x7 : 0000000000000000 x6 : ffffffc00bd45000
+[ 1786.013852] x5 : 0000000000000000 x4 : 0000000000000000
+[ 1786.013865] x3 : 0000000000000c00 x2 : 0000000000000004
+[ 1786.013878] x1 : fffffff7be6e9004 x0 : ffffffc00bd45000
+[ 1786.013891] Call trace:
+[ 1786.013903]  __memcpy+0x94/0x180
+[ 1786.013914]  unmap_single+0x6c/0x84
+[ 1786.013925]  swiotlb_unmap_sg_attrs+0x54/0x80
+[ 1786.013938]  __swiotlb_unmap_sg_attrs+0x8c/0xa4
+[ 1786.013952]  msdc_unprepare_data+0x6c/0x84
+[ 1786.013963]  msdc_request_done+0x58/0x84
+[ 1786.013974]  msdc_data_xfer_done+0x1a0/0x1c8
+[ 1786.013985]  msdc_irq+0x12c/0x17c
+[ 1786.013996]  __handle_irq_event_percpu+0xe4/0x250
+[ 1786.014006]  handle_irq_event_percpu+0x28/0x68
+[ 1786.014015]  handle_irq_event+0x48/0x78
+[ 1786.014026]  handle_fasteoi_irq+0xd0/0x1a0
+[ 1786.014039]  __handle_domain_irq+0x84/0xc4
+[ 1786.014050]  gic_handle_irq+0x124/0x1a4
+[ 1786.014059]  el1_irq+0xb0/0x128
+[ 1786.014072]  cpuidle_enter_state+0x298/0x328
+[ 1786.014082]  cpuidle_enter+0x30/0x40
+[ 1786.014094]  do_idle+0x190/0x268
+[ 1786.014104]  cpu_startup_entry+0x24/0x28
+[ 1786.014116]  rest_init+0xd4/0xe0
+[ 1786.014126]  start_kernel+0x30c/0x38c
+[ 1786.014139] Code: f8408423 f80084c3 36100062 b8404423 (b80044c3)
+[ 1786.014150] ---[ end trace 3b02ddb698ea69ee ]---
+[ 1786.015415] Kernel panic - not syncing: Fatal exception in interrupt
+[ 1786.015433] SMP: stopping secondary CPUs
+[ 1786.015447] Kernel Offset: 0x2e8d200000 from 0xffffff8008000000
+[ 1786.015458] CPU features: 0x0,2188200c
+[ 1786.015466] Memory Limit: none
 
-In the race condition, following occurs:
-  A::l2cap_chan_timeout()->l2cap_chan_close()->l2cap_sock_teardown_cb()
-  B::l2cap_sock_release()->sock_orphan()
-  B::l2cap_sock_release()->l2cap_sock_kill()
-  A::l2cap_chan_timeout()->l2cap_sock_close_cb()->l2cap_sock_kill()
+For sdio chip, it need the memory which is kmalloc, if it is
+vmalloc from ath10k_mem_value_read, then it have a memory error.
+kzalloc of ath10k_sdio_hif_diag_read32 is the correct type, so
+add kzalloc in ath10k_sdio_hif_diag_read to replace the buffer
+which is vmalloc from ath10k_mem_value_read.
 
-In this scenario, "if-statement" is true in both B::l2cap_sock_kill() and
-A::l2cap_sock_kill() and we hit "refcount: underflow; use-after-free" bug.
+This patch only effect sdio chip.
 
-Similar condition occurs at other places where teardown/sock_kill is
-happening:
-  l2cap_disconnect_rsp()->l2cap_chan_del()->l2cap_sock_teardown_cb()
-  l2cap_disconnect_rsp()->l2cap_sock_close_cb()->l2cap_sock_kill()
+Tested with QCA6174 SDIO with firmware WLAN.RMH.4.4.1-00029.
 
-  l2cap_conn_del()->l2cap_chan_del()->l2cap_sock_teardown_cb()
-  l2cap_conn_del()->l2cap_sock_close_cb()->l2cap_sock_kill()
-
-  l2cap_disconnect_req()->l2cap_chan_del()->l2cap_sock_teardown_cb()
-  l2cap_disconnect_req()->l2cap_sock_close_cb()->l2cap_sock_kill()
-
-  l2cap_sock_cleanup_listen()->l2cap_chan_close()->l2cap_sock_teardown_cb()
-  l2cap_sock_cleanup_listen()->l2cap_sock_kill()
-
-Protect teardown/sock_kill and orphan/sock_kill by adding hold_lock on
-l2cap channel to ensure that the socket is killed only after marked as
-zapped and orphan.
-
-Signed-off-by: Manish Mandlik <mmandlik@google.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c | 26 +++++++++++++++-----------
- net/bluetooth/l2cap_sock.c | 16 +++++++++++++---
- 2 files changed, 28 insertions(+), 14 deletions(-)
+ drivers/net/wireless/ath/ath10k/sdio.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index a845786258a0b..eb2804ac50756 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -419,6 +419,9 @@ static void l2cap_chan_timeout(struct work_struct *work)
- 	BT_DBG("chan %p state %s", chan, state_to_string(chan->state));
- 
- 	mutex_lock(&conn->chan_lock);
-+	/* __set_chan_timer() calls l2cap_chan_hold(chan) while scheduling
-+	 * this work. No need to call l2cap_chan_hold(chan) here again.
-+	 */
- 	l2cap_chan_lock(chan);
- 
- 	if (chan->state == BT_CONNECTED || chan->state == BT_CONFIG)
-@@ -431,12 +434,12 @@ static void l2cap_chan_timeout(struct work_struct *work)
- 
- 	l2cap_chan_close(chan, reason);
- 
--	l2cap_chan_unlock(chan);
--
- 	chan->ops->close(chan);
--	mutex_unlock(&conn->chan_lock);
- 
-+	l2cap_chan_unlock(chan);
- 	l2cap_chan_put(chan);
-+
-+	mutex_unlock(&conn->chan_lock);
- }
- 
- struct l2cap_chan *l2cap_chan_create(void)
-@@ -1734,9 +1737,9 @@ static void l2cap_conn_del(struct hci_conn *hcon, int err)
- 
- 		l2cap_chan_del(chan, err);
- 
--		l2cap_chan_unlock(chan);
--
- 		chan->ops->close(chan);
-+
-+		l2cap_chan_unlock(chan);
- 		l2cap_chan_put(chan);
- 	}
- 
-@@ -4355,6 +4358,7 @@ static inline int l2cap_disconnect_req(struct l2cap_conn *conn,
- 		return 0;
- 	}
- 
-+	l2cap_chan_hold(chan);
- 	l2cap_chan_lock(chan);
- 
- 	rsp.dcid = cpu_to_le16(chan->scid);
-@@ -4363,12 +4367,11 @@ static inline int l2cap_disconnect_req(struct l2cap_conn *conn,
- 
- 	chan->ops->set_shutdown(chan);
- 
--	l2cap_chan_hold(chan);
- 	l2cap_chan_del(chan, ECONNRESET);
- 
--	l2cap_chan_unlock(chan);
--
- 	chan->ops->close(chan);
-+
-+	l2cap_chan_unlock(chan);
- 	l2cap_chan_put(chan);
- 
- 	mutex_unlock(&conn->chan_lock);
-@@ -4400,20 +4403,21 @@ static inline int l2cap_disconnect_rsp(struct l2cap_conn *conn,
- 		return 0;
- 	}
- 
-+	l2cap_chan_hold(chan);
- 	l2cap_chan_lock(chan);
- 
- 	if (chan->state != BT_DISCONN) {
- 		l2cap_chan_unlock(chan);
-+		l2cap_chan_put(chan);
- 		mutex_unlock(&conn->chan_lock);
- 		return 0;
- 	}
- 
--	l2cap_chan_hold(chan);
- 	l2cap_chan_del(chan, 0);
- 
--	l2cap_chan_unlock(chan);
--
- 	chan->ops->close(chan);
-+
-+	l2cap_chan_unlock(chan);
- 	l2cap_chan_put(chan);
- 
- 	mutex_unlock(&conn->chan_lock);
-diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-index a7be8b59b3c28..ab65304f3f637 100644
---- a/net/bluetooth/l2cap_sock.c
-+++ b/net/bluetooth/l2cap_sock.c
-@@ -1042,7 +1042,7 @@ done:
- }
- 
- /* Kill socket (only if zapped and orphan)
-- * Must be called on unlocked socket.
-+ * Must be called on unlocked socket, with l2cap channel lock.
-  */
- static void l2cap_sock_kill(struct sock *sk)
+diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
+index 9870d2d095c87..8fe626deadeb0 100644
+--- a/drivers/net/wireless/ath/ath10k/sdio.c
++++ b/drivers/net/wireless/ath/ath10k/sdio.c
+@@ -1582,23 +1582,33 @@ static int ath10k_sdio_hif_diag_read(struct ath10k *ar, u32 address, void *buf,
+ 				     size_t buf_len)
  {
-@@ -1203,8 +1203,15 @@ static int l2cap_sock_release(struct socket *sock)
+ 	int ret;
++	void *mem;
++
++	mem = kzalloc(buf_len, GFP_KERNEL);
++	if (!mem)
++		return -ENOMEM;
  
- 	err = l2cap_sock_shutdown(sock, 2);
- 
-+	l2cap_chan_hold(l2cap_pi(sk)->chan);
-+	l2cap_chan_lock(l2cap_pi(sk)->chan);
-+
- 	sock_orphan(sk);
- 	l2cap_sock_kill(sk);
-+
-+	l2cap_chan_unlock(l2cap_pi(sk)->chan);
-+	l2cap_chan_put(l2cap_pi(sk)->chan);
-+
- 	return err;
- }
- 
-@@ -1222,12 +1229,15 @@ static void l2cap_sock_cleanup_listen(struct sock *parent)
- 		BT_DBG("child chan %p state %s", chan,
- 		       state_to_string(chan->state));
- 
-+		l2cap_chan_hold(chan);
- 		l2cap_chan_lock(chan);
-+
- 		__clear_chan_timer(chan);
- 		l2cap_chan_close(chan, ECONNRESET);
--		l2cap_chan_unlock(chan);
--
- 		l2cap_sock_kill(sk);
-+
-+		l2cap_chan_unlock(chan);
-+		l2cap_chan_put(chan);
+ 	/* set window register to start read cycle */
+ 	ret = ath10k_sdio_write32(ar, MBOX_WINDOW_READ_ADDR_ADDRESS, address);
+ 	if (ret) {
+ 		ath10k_warn(ar, "failed to set mbox window read address: %d", ret);
+-		return ret;
++		goto out;
  	}
+ 
+ 	/* read the data */
+-	ret = ath10k_sdio_read(ar, MBOX_WINDOW_DATA_ADDRESS, buf, buf_len);
++	ret = ath10k_sdio_read(ar, MBOX_WINDOW_DATA_ADDRESS, mem, buf_len);
+ 	if (ret) {
+ 		ath10k_warn(ar, "failed to read from mbox window data address: %d\n",
+ 			    ret);
+-		return ret;
++		goto out;
+ 	}
+ 
+-	return 0;
++	memcpy(buf, mem, buf_len);
++
++out:
++	kfree(mem);
++
++	return ret;
  }
  
+ static int ath10k_sdio_hif_diag_read32(struct ath10k *ar, u32 address,
 -- 
 2.25.1
 
