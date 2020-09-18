@@ -2,40 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57C7A26FC74
+	by mail.lfdr.de (Postfix) with ESMTP id C702126FC75
 	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 14:27:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbgIRM1I convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 18 Sep 2020 08:27:08 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:39893 "EHLO
+        id S1726479AbgIRM1L convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 18 Sep 2020 08:27:11 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:46143 "EHLO
         us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726479AbgIRM1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 08:27:05 -0400
+        by vger.kernel.org with ESMTP id S1726481AbgIRM1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 08:27:09 -0400
+X-Greylist: delayed 3798 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 08:27:08 EDT
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-564-Vj-ZWnJTMQyEKZJkdrg9Jg-1; Fri, 18 Sep 2020 08:27:00 -0400
-X-MC-Unique: Vj-ZWnJTMQyEKZJkdrg9Jg-1
+ us-mta-479-9T0saRMuOhyZ2BBJjm3irA-1; Fri, 18 Sep 2020 08:27:04 -0400
+X-MC-Unique: 9T0saRMuOhyZ2BBJjm3irA-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1AE1F88EF21;
-        Fri, 18 Sep 2020 12:26:59 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 65C981091072;
+        Fri, 18 Sep 2020 12:27:02 +0000 (UTC)
 Received: from krava.redhat.com (ovpn-114-24.ams2.redhat.com [10.36.114.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CB25110016DA;
-        Fri, 18 Sep 2020 12:26:55 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 84C2110013C1;
+        Fri, 18 Sep 2020 12:26:59 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
+Cc:     Seth Forshee <seth.forshee@canonical.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Seth Forshee <seth.forshee@canonical.com>
-Subject: [PATCH bpf-next 1/2] bpf: Use --no-fail option if CONFIG_BPF is not enabled
-Date:   Fri, 18 Sep 2020 14:26:53 +0200
-Message-Id: <20200918122654.2625699-1-jolsa@kernel.org>
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCH bpf-next 2/2] tools resolve_btfids: Always force HOSTARCH
+Date:   Fri, 18 Sep 2020 14:26:54 +0200
+Message-Id: <20200918122654.2625699-2-jolsa@kernel.org>
+In-Reply-To: <20200918122654.2625699-1-jolsa@kernel.org>
+References: <20200918122654.2625699-1-jolsa@kernel.org>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Authentication-Results: relay.mimecast.com;
@@ -48,40 +50,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently all the resolve_btfids 'users' are under CONFIG_BPF
-code, so if we have CONFIG_BPF disabled, resolve_btfids will
-fail, because there's no data to resolve.
+Seth reported problem with cross builds, that fail
+on resolve_btfids build, because we are trying to
+build it on cross build arch.
 
-In case CONFIG_BPF is disabled, using resolve_btfids --no-fail
-option, that makes resolve_btfids leave quietly if there's no
-data to resolve.
+Fixing this by always forcing the host arch.
 
-Fixes: c9a0f3b85e09 ("bpf: Resolve BTF IDs in vmlinux image")
+Fixes: fbbb68de80a4 ("bpf: Add resolve_btfids tool to resolve BTF IDs in ELF object")
+Reported-by: Seth Forshee <seth.forshee@canonical.com>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- scripts/link-vmlinux.sh | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ tools/bpf/resolve_btfids/Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index e6e2d9e5ff48..3173b8cf08cb 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -342,8 +342,13 @@ vmlinux_link vmlinux "${kallsymso}" ${btf_vmlinux_bin_o}
+diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
+index a88cd4426398..d3c818b8d8d3 100644
+--- a/tools/bpf/resolve_btfids/Makefile
++++ b/tools/bpf/resolve_btfids/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ include ../../scripts/Makefile.include
++include ../../scripts/Makefile.arch
  
- # fill in BTF IDs
- if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
--info BTFIDS vmlinux
--${RESOLVE_BTFIDS} vmlinux
-+	info BTFIDS vmlinux
-+	# Let's be more permissive if CONFIG_BPF is disabled
-+	# and do not fail if there's no data to resolve.
-+	if [ -z "${CONFIG_BPF}" ]; then
-+	  no_fail=--no-fail
-+	fi
-+	${RESOLVE_BTFIDS} $no_fail vmlinux
- fi
+ ifeq ($(srctree),)
+ srctree := $(patsubst %/,%,$(dir $(CURDIR)))
+@@ -29,6 +30,7 @@ endif
+ AR       = $(HOSTAR)
+ CC       = $(HOSTCC)
+ LD       = $(HOSTLD)
++ARCH     = $(HOSTARCH)
  
- if [ -n "${CONFIG_BUILDTIME_TABLE_SORT}" ]; then
+ OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
+ 
 -- 
 2.26.2
 
