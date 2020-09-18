@@ -2,109 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2682F26EECB
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BCC126EF92
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:37:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729904AbgIRCbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:31:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42536 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728294AbgIRCO1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:14:27 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DA60D239E7;
-        Fri, 18 Sep 2020 02:14:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600395266;
-        bh=aywr7TN1jpqm1iKHFi8I8TzCMD28cUTGmIHxKNdZCo0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g4Jx05NieqjvaOEOm/2NfgjOXoH+uz46zwC1GY2ep7yvfTwIjth2mxJliL9lL/ieY
-         dkD+gAH89GcYVtmVaycrIv8dIDMvTsbqWFwX/vHpvoEnLsrixqaP8MrKaBThMqNB8/
-         LRIiUDjvR/8J9gZKdIg2RY+M50jYwfdoPUIjm1f8=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Duyck <alexander.h.duyck@linux.intel.com>,
-        Maxim Zhukov <mussitantesmortem@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 106/127] e1000: Do not perform reset in reset_task if we are already down
-Date:   Thu, 17 Sep 2020 22:11:59 -0400
-Message-Id: <20200918021220.2066485-106-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200918021220.2066485-1-sashal@kernel.org>
-References: <20200918021220.2066485-1-sashal@kernel.org>
+        id S1729326AbgIRCgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:36:41 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:15408 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728833AbgIRCMu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 22:12:50 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08I22OAo051705
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 22:12:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=uR9HUMSTAE+HdC7DoB128D5n4S2DQj6D+ZdtK36bs4M=;
+ b=c8r65Jq0xi+l7cuKU5hzA8JL0Mm/VVTz+2/ONULQrRK+m9Cn/uX9i+Kw/+tJPqOjPimJ
+ hg3elfaSYG+tlS2+yFkFvm5IdEWF4xgTma9ecNQ7rAcrb/RcIc8CYx1w/J0ApuIU9OhT
+ b9U6fD5UZHiYMjAMMJBqo9qTFzmfWn+35vO56EgzJ6S7F4etKKAs5UoB50P9637FKyY8
+ vhCZmDeH89hEoHTE20rdyW00iHmJb0cReTc6NWfIBq5H+hYbugDnyIt5YWRMfmYFcoBP
+ wMMbZngTROMWDSRYkGeIzyG4qrH50RjPPLd442Yt4VYGD4oUm8wEj40DblAWYN5dtmqK nA== 
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33mhv02sy1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 22:12:48 -0400
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08I2BmIk020040
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 02:12:47 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma05wdc.us.ibm.com with ESMTP id 33k6q18r75-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 02:12:47 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08I2ClxW40829376
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 18 Sep 2020 02:12:47 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 647D2112062;
+        Fri, 18 Sep 2020 02:12:47 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0816B112061;
+        Fri, 18 Sep 2020 02:12:47 +0000 (GMT)
+Received: from pompom.ibm.com (unknown [9.85.133.140])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri, 18 Sep 2020 02:12:46 +0000 (GMT)
+From:   Lijun Pan <ljp@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     sukadev@linux.ibm.com, drt@linux.ibm.com,
+        Lijun Pan <ljp@linux.ibm.com>
+Subject: [PATCH net-next] Revert "ibmvnic: remove never executed if statement"
+Date:   Thu, 17 Sep 2020 21:12:46 -0500
+Message-Id: <20200918021246.22600-1-ljp@linux.ibm.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-17_20:2020-09-16,2020-09-17 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ phishscore=0 impostorscore=0 mlxscore=0 spamscore=0 malwarescore=0
+ bulkscore=0 clxscore=1015 adultscore=0 suspectscore=1 lowpriorityscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009180013
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+This reverts commit 550f4d46aff6fe57c9b1c6719c3c9de2237d7ac2.
 
-[ Upstream commit 49ee3c2ab5234757bfb56a0b3a3cb422f427e3a3 ]
+adapter->from_passive_init may be changed in ibmvnic_handle_crq
+while ibmvnic_reset_init is waiting for the completion of
+adapter->init_done.
 
-We are seeing a deadlock in e1000 down when NAPI is being disabled. Looking
-over the kernel function trace of the system it appears that the interface
-is being closed and then a reset is hitting which deadlocks the interface
-as the NAPI interface is already disabled.
-
-To prevent this from happening I am disabling the reset task when
-__E1000_DOWN is already set. In addition code has been added so that we set
-the __E1000_DOWN while holding the __E1000_RESET flag in e1000_close in
-order to guarantee that the reset task will not run after we have started
-the close call.
-
-Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-Tested-by: Maxim Zhukov <mussitantesmortem@gmail.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
 ---
- drivers/net/ethernet/intel/e1000/e1000_main.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-index 175681aa52607..8cc0e48738152 100644
---- a/drivers/net/ethernet/intel/e1000/e1000_main.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-@@ -567,8 +567,13 @@ void e1000_reinit_locked(struct e1000_adapter *adapter)
- 	WARN_ON(in_interrupt());
- 	while (test_and_set_bit(__E1000_RESETTING, &adapter->flags))
- 		msleep(1);
--	e1000_down(adapter);
--	e1000_up(adapter);
-+
-+	/* only run the task if not already down */
-+	if (!test_bit(__E1000_DOWN, &adapter->flags)) {
-+		e1000_down(adapter);
-+		e1000_up(adapter);
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index e2a3c4bf00c9..6d320be47e60 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -5047,6 +5047,12 @@ static int ibmvnic_reset_init(struct ibmvnic_adapter *adapter, bool reset)
+ 		return adapter->init_done_rc;
+ 	}
+ 
++	if (adapter->from_passive_init) {
++		adapter->state = VNIC_OPEN;
++		adapter->from_passive_init = false;
++		return -1;
 +	}
 +
- 	clear_bit(__E1000_RESETTING, &adapter->flags);
- }
- 
-@@ -1458,10 +1463,15 @@ int e1000_close(struct net_device *netdev)
- 	struct e1000_hw *hw = &adapter->hw;
- 	int count = E1000_CHECK_RESET_COUNT;
- 
--	while (test_bit(__E1000_RESETTING, &adapter->flags) && count--)
-+	while (test_and_set_bit(__E1000_RESETTING, &adapter->flags) && count--)
- 		usleep_range(10000, 20000);
- 
--	WARN_ON(test_bit(__E1000_RESETTING, &adapter->flags));
-+	WARN_ON(count < 0);
-+
-+	/* signal that we're down so that the reset task will no longer run */
-+	set_bit(__E1000_DOWN, &adapter->flags);
-+	clear_bit(__E1000_RESETTING, &adapter->flags);
-+
- 	e1000_down(adapter);
- 	e1000_power_down_phy(adapter);
- 	e1000_free_irq(adapter);
+ 	if (reset &&
+ 	    test_bit(0, &adapter->resetting) && !adapter->wait_for_reset &&
+ 	    adapter->reset_reason != VNIC_RESET_MOBILITY) {
 -- 
-2.25.1
+2.23.0
 
