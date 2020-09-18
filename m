@@ -2,443 +2,396 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C6D526FC30
+	by mail.lfdr.de (Postfix) with ESMTP id B9EE126FC31
 	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 14:12:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726673AbgIRMLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 08:11:53 -0400
-Received: from mout.kundenserver.de ([212.227.17.10]:40919 "EHLO
+        id S1726678AbgIRMMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 08:12:03 -0400
+Received: from mout.kundenserver.de ([217.72.192.74]:59749 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726312AbgIRMLx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 08:11:53 -0400
-X-Greylist: delayed 307 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 08:11:49 EDT
+        with ESMTP id S1725955AbgIRMMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 08:12:02 -0400
+X-Greylist: delayed 337 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 08:12:01 EDT
 Received: from threadripper.lan ([149.172.98.151]) by mrelayeu.kundenserver.de
  (mreue109 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1MVNEv-1jsbl63FgN-00SLtH; Fri, 18 Sep 2020 14:05:47 +0200
+ 1MatZt-1kvKrO07Yp-00cUGJ; Fri, 18 Sep 2020 14:06:21 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Christoph Hellwig <hch@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 1/2] ethtool: improve compat ioctl handling
-Date:   Fri, 18 Sep 2020 14:05:18 +0200
-Message-Id: <20200918120536.1464804-1-arnd@arndb.de>
+        Arnd Bergmann <arnd@arndb.de>, Jiri Pirko <jiri@mellanox.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Jens Axboe <axboe@kernel.dk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] dev_ioctl: split out SIOC?IFMAP ioctls
+Date:   Fri, 18 Sep 2020 14:05:19 +0200
+Message-Id: <20200918120536.1464804-2-arnd@arndb.de>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20200918120536.1464804-1-arnd@arndb.de>
+References: <20200918120536.1464804-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:9603rvWeIIU7wH7aODCGTKsrkhxmWKtjqNReOVpZrNtjzZBORYp
- uuCn8MZq0gS2ZpWWlPAb0R5Bb8CXbQ4KKOMARJ5QRUtJ21TDFWJYSgB4TbRfbWEgk6ONGbF
- lxpsG2MDdxjX7RQ4Xh53bjK9EqUCtQ0J0LVSSOfx2TyIp0R72BbzxLHybR9tHJeDtJ0F/gG
- tQfa+3lH0F8cCk79qoIKQ==
+X-Provags-ID: V03:K1:SpgfmsP8dPVCBUGnsc/GtZuhJHOhBfKG0KX3A+zcFP47h5rfFQN
+ D4Vu19EzMBzfDP/yJNqIRjEyxnZqMJR8dLMampA8MsnKKK7MXzVzM9pDRBgHVqBIEfQMMHT
+ jte9XsR6BlJyxtqE5fQYmCWIF2D7BZijwlg2uQdzgZri+6kGJgqhl0ENvJr5lhxTBkqCRub
+ UCVOPzdQ/pkli2TdvrpAg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Oug5PeTwLxU=:Y9JJsKZL8QeEVvEWxFB7Nu
- eC/0/Sp24m4FOOc7XKQ6ItHamyd+NPJcWBQiEtAJT8JZngIewQ8UoI0ANj5UmX1BUlU3SL6wG
- KuYXJjrBc5hBBXfljb2X732wFgOzoUrCF3ulPR0E3oRjpVf8iVjtj2C945Dkc35m19NQoxt4h
- QlHfED4AG3ksHpmMJeNLxl4pK8+lgnjoBqPd+pjKSP1/bfYrhhJPvLvkTrNVpkHYuu3dFdMO1
- zYbkUv32LAdfJqegG5gpMi+eBjfpB+MnP8u5k/zdQHPZ1+R9RwsXKFnqnhJgDjmxh+CN3w+62
- MfHw4FgaiYANt/8zIU6fJOLyDkb2TJbTWkVIiCbpe4B+34+QLIOHrQeVEqtEWT115IPrQPEmB
- mEOLL0mNywg3BHzOsihlro5JaqEOuW255FHSlnBV3BaTDnhZv+Lwx9Uad6SLoiIPiSkRKiSOl
- Vt5Ggutjvq87LAnd4H2MANtnd27lNQ+IIrJyDbc9PSRLz/rGCFMxgCVujgfFuP5zPQMzPr5ft
- ENQJg5MP4puMYCqgJxPNVihgQW4TZgDt9XsV928pEigIwzsgcR1vURSTEF0hMVUq70E9VIVUm
- FfVWOchFEI12Wlo9EKcsXvkqHpqXrMWFlor0v1yZWiIttV7SzdWW7x+VQ9UQU70uF4RQ5w4Ym
- n7fy1kilWyuen1KtZernAj8Z3qlf7T4SVB8+J0Z25hneiooxiJxVdjjH4NVUTx2wTe7oHb9ne
- BldT39pJq5ck9FYIfVALM5NOUmNZ0TM4IkvZXpXww+qk0ziM/EC5+P7X7nz+kAie87D/K0K+B
- TSAbxhL3alw5JjQJtx2dOGGXL+h3MIjdxUTwdoMLy6vleHhrl6/FFLF5e3gNEQ3qDq4XXBe
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bdP8IueSfXk=:3qNibL0h1QapVzcbIh5fOW
+ Og2KdVZ6YhvB6olhZc9s73DpAqufucOO7W1Io3TX5g6wVZgHhOgZndtp9MxT890dM2UpJOuBO
+ 65CDjH2tJ7bhdwWSyecC157CxZOXqk071G119IkNj6V5OovSfeM3fhTuJlFVSepSDCYs9Vfmc
+ vsm0/jlkB3PKdxio8DsRRnXk75JfED8eSfqlhgHUCJ6WYphH7xUt0IPt/Yop/U+PVg6GXGgXQ
+ Ezs2RCao8ftsLL3mbsHZT7Veg7qGz+cEfYwaYkIZv5UojMHtVMGm9yWmZtmjViaubh+CcMUq0
+ HzSBWDl+KMh0d49m1vyw6qx/T4nR7XrKR8IMkjLDtuilFf8fPHAvpVZ0uHXqEcIXE2ocAiBWB
+ 8anyydFHxHx9/9+AfhDqB0F2Ccf4NCSYxnFR/JALis8EPqsWAMlKfpEi9j90bOY4jW43CEAsG
+ Mmvg5AeuPlKrcvkm+i8M7bsMpWvunthkqBybxga2EpkSr+tzBDe9Z2MARbGPrfxH2PPcnL7X/
+ umwZH2VKWK7d+FTEkXxTSxnhQ+PR+FQoIQQWceMaMqOz9NB6mvE1SWoBWLc7+amnToawoopkd
+ ZswioI/B1zj7J9YUozy5nEkrXMVlVKLymKazKypbeUtlkq1WHDX8OolAU0mgT/lcbzD+aAGnE
+ lzrvF2D0MFJy0pQI0asqhYlbWVFHq/SH5wDbpjIbvAZwNySKqpyUdkvFZj/VKAIxX0FdgMQyg
+ +/er06kbJLFwy2SxeMtdU7W/47Mn+GF/KZF5O+SMRldS8oEMb7ITJwxhjRsSB8rGMvarnCnxj
+ 4h061o4HbTSsDILGKrjR9cv0kgwY+ZerjZ/c4Pqx8t8SFoXdLHkICfqDdJ+kWuk07pwqhr9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ethtool compat ioctl handling is hidden away in net/socket.c,
-which introduces a couple of minor oddities:
+The ifreq ioctls need a special compat handler at the moment because of
+the size difference between the struct on native and compat architectures,
+but this difference exists only for one pair of ioctls, SIOCGIFMAP
+and SIOCSIFMAP.
 
-- The implementation may end up diverging, as seen in the RXNFC
-  extension in commit 84a1d9c48200 ("net: ethtool: extend RXNFC
-  API to support RSS spreading of filter matches") that does not work
-  in compat mode.
+Splitting these two out of dev_ioctl() into their own higher level
+implementation means the ifreq structure can be redefined in the kernel
+to be identical for all applications, avoiding the need for copying the
+structure around multiple times, and removing one of the call sites for
+compat_alloc_user_space() and copy_in_user().
 
-- Most architectures do not need the compat handling at all
-  because u64 and compat_u64 have the same alignment.
+This should also make it easier for drivers to implement ioctls correct
+that take an ifreq __user pointer and need to be careful about the size
+difference. This has been a problem in the past, but currently the kernel
+does not appear to have any drivers suffering from it.
 
-- On x86, the conversion is done for both x32 and i386 user space,
-  but it's actually wrong to do it for x32 and cannot work there.
-
-- On 32-bit Arm, it never worked for compat oabi user space, since
-  that needs to do the same conversion but does not.
-
-- It would be nice to get rid of both compat_alloc_user_space()
-  and copy_in_user() throughout the kernel.
-
-None of these actually seems to be a serious problem that real
-users are likely to encounter, but fixing all of them actually
-leads to code that is both shorter and more readable.
+Note that the user space definition is unchanged, so struct ifreq now
+has a different size between user space and kernel, but this is not a
+problem when the user space definition is larger, and the only time the
+extra members are accessed is in the ifmap ioctls.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- include/linux/ethtool.h |   4 --
- net/ethtool/ioctl.c     | 129 +++++++++++++++++++++++++++++++++++-----
- net/socket.c            | 125 +-------------------------------------
- 3 files changed, 114 insertions(+), 144 deletions(-)
+ include/linux/netdevice.h |   1 +
+ include/uapi/linux/if.h   |   6 +++
+ net/core/dev_ioctl.c      | 107 +++++++++++++++++++++++++++++++-------
+ net/socket.c              |  93 +++------------------------------
+ 4 files changed, 101 insertions(+), 106 deletions(-)
 
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 969a80211df6..283987123022 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -17,8 +17,6 @@
- #include <linux/compat.h>
- #include <uapi/linux/ethtool.h>
- 
--#ifdef CONFIG_COMPAT
--
- struct compat_ethtool_rx_flow_spec {
- 	u32		flow_type;
- 	union ethtool_flow_union h_u;
-@@ -38,8 +36,6 @@ struct compat_ethtool_rxnfc {
- 	u32				rule_locs[];
- };
- 
--#endif /* CONFIG_COMPAT */
--
- #include <linux/rculist.h>
- 
- /**
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 441794e0034f..38ae16f095a5 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -7,6 +7,7 @@
-  * the information ethtool needs.
-  */
- 
-+#include <linux/compat.h>
- #include <linux/module.h>
- #include <linux/types.h>
- #include <linux/capability.h>
-@@ -807,6 +808,113 @@ static noinline_for_stack int ethtool_get_sset_info(struct net_device *dev,
- 	return ret;
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index b0e303f6603f..31b170a9ac9c 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3787,6 +3787,7 @@ void netdev_rx_handler_unregister(struct net_device *dev);
+ bool dev_valid_name(const char *name);
+ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr,
+ 		bool *need_copyout);
++int dev_ifmap(struct net *net, struct ifreq __user *ifr, unsigned int cmd);
+ int dev_ifconf(struct net *net, struct ifconf *, int);
+ int dev_ethtool(struct net *net, struct ifreq *);
+ unsigned int dev_get_flags(const struct net_device *);
+diff --git a/include/uapi/linux/if.h b/include/uapi/linux/if.h
+index 797ba2c1562a..a332d6ae4dc6 100644
+--- a/include/uapi/linux/if.h
++++ b/include/uapi/linux/if.h
+@@ -247,7 +247,13 @@ struct ifreq {
+ 		short	ifru_flags;
+ 		int	ifru_ivalue;
+ 		int	ifru_mtu;
++#ifndef __KERNEL__
++		/*
++		 * ifru_map is rarely used but causes the incompatibility
++		 * between native and compat mode.
++		 */
+ 		struct  ifmap ifru_map;
++#endif
+ 		char	ifru_slave[IFNAMSIZ];	/* Just fits the size */
+ 		char	ifru_newname[IFNAMSIZ];
+ 		void __user *	ifru_data;
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index b2cf9b7bb7b8..7c8aeff98214 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -98,6 +98,94 @@ int dev_ifconf(struct net *net, struct ifconf *ifc, int size)
+ 	return 0;
  }
  
-+static inline bool ethtool_translate_compat(void)
++int dev_ifmap(struct net *net, struct ifreq __user *ifr, unsigned int cmd)
 +{
-+#ifdef CONFIG_X86_64
-+	/* On x86, translation is needed for i386 but not x32 */
-+	return in_ia32_syscall();
-+#elif defined(CONFIG_ARM)
-+	/* On 32-bit Arm, translation is needed for OABI only */
-+	return in_oabi_syscall();
-+#else
-+	BUILD_BUG_ON(sizeof(struct compat_ethtool_rxnfc) !=
-+		     sizeof(struct ethtool_rxnfc));
-+#endif
-+
-+	return 0;
-+}
-+
-+static int ethtool_rxnfc_copy_from_user(struct ethtool_rxnfc *rxnfc,
-+			const struct compat_ethtool_rxnfc __user *useraddr,
-+			size_t size)
-+{
-+	/* We expect there to be holes between fs.m_ext and
-+	 * fs.ring_cookie and at the end of fs, but nowhere else.
-+	 */
-+	BUILD_BUG_ON(offsetof(struct compat_ethtool_rxnfc, fs.m_ext) +
-+		     sizeof(useraddr->fs.m_ext) !=
-+		     offsetof(struct ethtool_rxnfc, fs.m_ext) +
-+		     sizeof(rxnfc->fs.m_ext));
-+	BUILD_BUG_ON(offsetof(struct compat_ethtool_rxnfc, fs.location) -
-+		     offsetof(struct compat_ethtool_rxnfc, fs.ring_cookie) !=
-+		     offsetof(struct ethtool_rxnfc, fs.location) -
-+		     offsetof(struct ethtool_rxnfc, fs.ring_cookie));
-+
-+	if (ethtool_translate_compat()) {
-+		struct compat_ethtool_rxnfc crxnfc = {};
-+
-+		if (copy_from_user(&crxnfc, useraddr,
-+				   min(size, sizeof(crxnfc))))
-+			return -EFAULT;
-+
-+		*rxnfc = (struct ethtool_rxnfc) {
-+			.cmd		= crxnfc.cmd,
-+			.flow_type	= crxnfc.flow_type,
-+			.data		= crxnfc.data,
-+			.fs		= {
-+				.flow_type	= crxnfc.fs.flow_type,
-+				.h_u		= crxnfc.fs.h_u,
-+				.h_ext		= crxnfc.fs.h_ext,
-+				.m_u		= crxnfc.fs.m_u,
-+				.m_ext		= crxnfc.fs.m_ext,
-+				.ring_cookie	= crxnfc.fs.ring_cookie,
-+				.location	= crxnfc.fs.location,
-+			},
-+			.rule_cnt	= crxnfc.rule_cnt,
-+		};
-+	} else {
-+		if (copy_from_user(&rxnfc, useraddr, size))
-+			return -EFAULT;
-+	}
-+
-+	return 0;
-+}
-+
-+static int ethtool_rxnfc_copy_to_user(void __user *useraddr,
-+			const struct ethtool_rxnfc *rxnfc,
-+			size_t size, const u32 *rule_buf)
-+{
++	struct net_device *dev;
++	char ifname[IFNAMSIZ];
++	char *colon;
++	struct compat_ifmap cifmap;
++	struct ifmap ifmap;
 +	int ret;
 +
-+	if (ethtool_translate_compat()) {
-+		struct compat_ethtool_rxnfc crxnfc;
-+
-+		memset(&crxnfc, 0, sizeof(crxnfc));
-+		crxnfc = (struct compat_ethtool_rxnfc) {
-+			.cmd		= rxnfc->cmd,
-+			.flow_type	= rxnfc->flow_type,
-+			.data		= rxnfc->data,
-+			.fs		= {
-+				.flow_type	= rxnfc->fs.flow_type,
-+				.h_u		= rxnfc->fs.h_u,
-+				.h_ext		= rxnfc->fs.h_ext,
-+				.m_u		= rxnfc->fs.m_u,
-+				.m_ext		= rxnfc->fs.m_ext,
-+				.ring_cookie	= rxnfc->fs.ring_cookie,
-+				.location	= rxnfc->fs.location,
-+			},
-+			.rule_cnt	= rxnfc->rule_cnt,
-+		};
-+
-+		ret = copy_to_user(useraddr, &crxnfc, min(size, sizeof(crxnfc)));
-+		useraddr += offsetof(struct compat_ethtool_rxnfc, rule_locs);
-+	} else {
-+		ret = copy_to_user(useraddr, &rxnfc, size);
-+		useraddr += offsetof(struct ethtool_rxnfc, rule_locs);
-+	}
-+
-+	if (ret)
++	if (copy_from_user(ifname, ifr->ifr_name, sizeof(ifname)))
 +		return -EFAULT;
++	ifname[IFNAMSIZ-1] = 0;
++	colon = strchr(ifname, ':');
++	if (colon)
++		*colon = 0;
++	dev_load(net, ifname);
 +
-+	if (rule_buf) {
-+		if (copy_to_user(useraddr, rule_buf,
-+				 rxnfc->rule_cnt * sizeof(u32)))
-+			return -EFAULT;
++	switch (cmd) {
++	case SIOCGIFMAP:
++		rcu_read_lock();
++		dev = dev_get_by_name_rcu(net, ifname);
++		if (!dev) {
++			rcu_read_unlock();
++			return -ENODEV;
++		}
++
++		if (in_compat_syscall()) {
++			cifmap.mem_start = dev->mem_start;
++			cifmap.mem_end   = dev->mem_end;
++			cifmap.base_addr = dev->base_addr;
++			cifmap.irq       = dev->irq;
++			cifmap.dma       = dev->dma;
++			cifmap.port      = dev->if_port;
++			rcu_read_unlock();
++
++			ret = copy_to_user(&ifr->ifr_data,
++					   &cifmap, sizeof(cifmap));
++		} else {
++			ifmap.mem_start  = dev->mem_start;
++			ifmap.mem_end    = dev->mem_end;
++			ifmap.base_addr  = dev->base_addr;
++			ifmap.irq        = dev->irq;
++			ifmap.dma        = dev->dma;
++			ifmap.port       = dev->if_port;
++			rcu_read_unlock();
++
++			ret = copy_to_user(&ifr->ifr_data,
++					   &ifmap, sizeof(ifmap));
++		}
++		ret = ret ? -EFAULT : 0;
++		break;
++
++	case SIOCSIFMAP:
++		if (!capable(CAP_NET_ADMIN) ||
++		    !ns_capable(net->user_ns, CAP_NET_ADMIN))
++			return -EPERM;
++
++		if (in_compat_syscall()) {
++			if (copy_from_user(&cifmap, &ifr->ifr_data,
++					   sizeof(cifmap)))
++				return -EFAULT;
++
++			ifmap.mem_start  = cifmap.mem_start;
++			ifmap.mem_end    = cifmap.mem_end;
++			ifmap.base_addr  = cifmap.base_addr;
++			ifmap.irq        = cifmap.irq;
++			ifmap.dma        = cifmap.dma;
++			ifmap.port       = cifmap.port;
++		} else {
++			if (copy_from_user(&ifmap, &ifr->ifr_data,
++					   sizeof(ifmap)))
++				return -EFAULT;
++		}
++
++		rtnl_lock();
++		dev = __dev_get_by_name(net, ifname);
++		if (!dev || !netif_device_present(dev))
++			ret = -ENODEV;
++		else if (!dev->netdev_ops->ndo_set_config)
++			ret = -EOPNOTSUPP;
++		else
++			ret = dev->netdev_ops->ndo_set_config(dev, &ifmap);
++		rtnl_unlock();
++		break;
 +	}
-+
-+	return 0;
++	return ret;
 +}
 +
- static noinline_for_stack int ethtool_set_rxnfc(struct net_device *dev,
- 						u32 cmd, void __user *useraddr)
- {
-@@ -825,7 +933,7 @@ static noinline_for_stack int ethtool_set_rxnfc(struct net_device *dev,
- 		info_size = (offsetof(struct ethtool_rxnfc, data) +
- 			     sizeof(info.data));
+ /*
+  *	Perform the SIOCxIFxxx calls, inside rcu_read_lock()
+  */
+@@ -138,15 +226,6 @@ static int dev_ifsioc_locked(struct net *net, struct ifreq *ifr, unsigned int cm
+ 		err = -EINVAL;
+ 		break;
  
--	if (copy_from_user(&info, useraddr, info_size))
-+	if (ethtool_rxnfc_copy_from_user(&info, useraddr, info_size))
- 		return -EFAULT;
+-	case SIOCGIFMAP:
+-		ifr->ifr_map.mem_start = dev->mem_start;
+-		ifr->ifr_map.mem_end   = dev->mem_end;
+-		ifr->ifr_map.base_addr = dev->base_addr;
+-		ifr->ifr_map.irq       = dev->irq;
+-		ifr->ifr_map.dma       = dev->dma;
+-		ifr->ifr_map.port      = dev->if_port;
+-		return 0;
+-
+ 	case SIOCGIFINDEX:
+ 		ifr->ifr_ifindex = dev->ifindex;
+ 		return 0;
+@@ -285,14 +364,6 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
+ 		call_netdevice_notifiers(NETDEV_CHANGEADDR, dev);
+ 		return 0;
  
- 	rc = dev->ethtool_ops->set_rxnfc(dev, &info);
-@@ -833,7 +941,7 @@ static noinline_for_stack int ethtool_set_rxnfc(struct net_device *dev,
- 		return rc;
- 
- 	if (cmd == ETHTOOL_SRXCLSRLINS &&
--	    copy_to_user(useraddr, &info, info_size))
-+	    ethtool_rxnfc_copy_to_user(useraddr, &info, info_size, NULL))
- 		return -EFAULT;
- 
- 	return 0;
-@@ -859,7 +967,7 @@ static noinline_for_stack int ethtool_get_rxnfc(struct net_device *dev,
- 		info_size = (offsetof(struct ethtool_rxnfc, data) +
- 			     sizeof(info.data));
- 
--	if (copy_from_user(&info, useraddr, info_size))
-+	if (ethtool_rxnfc_copy_from_user(&info, useraddr, info_size))
- 		return -EFAULT;
- 
- 	/* If FLOW_RSS was requested then user-space must be using the
-@@ -867,7 +975,7 @@ static noinline_for_stack int ethtool_get_rxnfc(struct net_device *dev,
+-	case SIOCSIFMAP:
+-		if (ops->ndo_set_config) {
+-			if (!netif_device_present(dev))
+-				return -ENODEV;
+-			return ops->ndo_set_config(dev, &ifr->ifr_map);
+-		}
+-		return -EOPNOTSUPP;
+-
+ 	case SIOCADDMULTI:
+ 		if (!ops->ndo_set_rx_mode ||
+ 		    ifr->ifr_hwaddr.sa_family != AF_UNSPEC)
+@@ -429,7 +500,6 @@ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr, bool *need_c
+ 	case SIOCGIFMTU:
+ 	case SIOCGIFHWADDR:
+ 	case SIOCGIFSLAVE:
+-	case SIOCGIFMAP:
+ 	case SIOCGIFINDEX:
+ 	case SIOCGIFTXQLEN:
+ 		dev_load(net, ifr->ifr_name);
+@@ -474,7 +544,6 @@ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr, bool *need_c
+ 	 *	- require strict serialization.
+ 	 *	- do not return a value
  	 */
- 	if (cmd == ETHTOOL_GRXFH && info.flow_type & FLOW_RSS) {
- 		info_size = sizeof(info);
--		if (copy_from_user(&info, useraddr, info_size))
-+		if (ethtool_rxnfc_copy_from_user(&info, useraddr, info_size))
- 			return -EFAULT;
- 		/* Since malicious users may modify the original data,
- 		 * we need to check whether FLOW_RSS is still requested.
-@@ -893,18 +1001,7 @@ static noinline_for_stack int ethtool_get_rxnfc(struct net_device *dev,
- 	if (ret < 0)
- 		goto err_out;
- 
--	ret = -EFAULT;
--	if (copy_to_user(useraddr, &info, info_size))
--		goto err_out;
--
--	if (rule_buf) {
--		useraddr += offsetof(struct ethtool_rxnfc, rule_locs);
--		if (copy_to_user(useraddr, rule_buf,
--				 info.rule_cnt * sizeof(u32)))
--			goto err_out;
--	}
--	ret = 0;
--
-+	ret = ethtool_rxnfc_copy_to_user(useraddr, &info, info_size, rule_buf);
- err_out:
- 	kfree(rule_buf);
- 
+-	case SIOCSIFMAP:
+ 	case SIOCSIFTXQLEN:
+ 		if (!capable(CAP_NET_ADMIN))
+ 			return -EPERM;
 diff --git a/net/socket.c b/net/socket.c
-index dbbe8ea7d395..3fe30ba2a09a 100644
+index 3fe30ba2a09a..f57a24f10109 100644
 --- a/net/socket.c
 +++ b/net/socket.c
-@@ -3121,128 +3121,6 @@ static int compat_dev_ifconf(struct net *net, struct compat_ifconf __user *uifc3
- 	return 0;
+@@ -1194,6 +1194,10 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
+ 						   cmd == SIOCGSTAMP_NEW,
+ 						   false);
+ 			break;
++		case SIOCGIFMAP:
++		case SIOCSIFMAP:
++			err = dev_ifmap(net, argp, cmd);
++			break;
+ 		default:
+ 			err = sock_do_ioctl(net, sock, cmd, arg);
+ 			break;
+@@ -3162,88 +3166,6 @@ static int compat_ifr_data_ioctl(struct net *net, unsigned int cmd,
+ 	return dev_ioctl(net, cmd, &ifreq, NULL);
  }
  
--static int ethtool_ioctl(struct net *net, struct compat_ifreq __user *ifr32)
+-static int compat_ifreq_ioctl(struct net *net, struct socket *sock,
+-			      unsigned int cmd,
+-			      struct compat_ifreq __user *uifr32)
 -{
--	struct compat_ethtool_rxnfc __user *compat_rxnfc;
--	bool convert_in = false, convert_out = false;
--	size_t buf_size = 0;
--	struct ethtool_rxnfc __user *rxnfc = NULL;
--	struct ifreq ifr;
--	u32 rule_cnt = 0, actual_rule_cnt;
--	u32 ethcmd;
--	u32 data;
--	int ret;
+-	struct ifreq __user *uifr;
+-	int err;
 -
--	if (get_user(data, &ifr32->ifr_ifru.ifru_data))
--		return -EFAULT;
--
--	compat_rxnfc = compat_ptr(data);
--
--	if (get_user(ethcmd, &compat_rxnfc->cmd))
--		return -EFAULT;
--
--	/* Most ethtool structures are defined without padding.
--	 * Unfortunately struct ethtool_rxnfc is an exception.
+-	/* Handle the fact that while struct ifreq has the same *layout* on
+-	 * 32/64 for everything but ifreq::ifru_ifmap and ifreq::ifru_data,
+-	 * which are handled elsewhere, it still has different *size* due to
+-	 * ifreq::ifru_ifmap (which is 16 bytes on 32 bit, 24 bytes on 64-bit,
+-	 * resulting in struct ifreq being 32 and 40 bytes respectively).
+-	 * As a result, if the struct happens to be at the end of a page and
+-	 * the next page isn't readable/writable, we get a fault. To prevent
+-	 * that, copy back and forth to the full size.
 -	 */
--	switch (ethcmd) {
--	default:
--		break;
--	case ETHTOOL_GRXCLSRLALL:
--		/* Buffer size is variable */
--		if (get_user(rule_cnt, &compat_rxnfc->rule_cnt))
--			return -EFAULT;
--		if (rule_cnt > KMALLOC_MAX_SIZE / sizeof(u32))
--			return -ENOMEM;
--		buf_size += rule_cnt * sizeof(u32);
--		fallthrough;
--	case ETHTOOL_GRXRINGS:
--	case ETHTOOL_GRXCLSRLCNT:
--	case ETHTOOL_GRXCLSRULE:
--	case ETHTOOL_SRXCLSRLINS:
--		convert_out = true;
--		fallthrough;
--	case ETHTOOL_SRXCLSRLDEL:
--		buf_size += sizeof(struct ethtool_rxnfc);
--		convert_in = true;
--		rxnfc = compat_alloc_user_space(buf_size);
--		break;
--	}
 -
--	if (copy_from_user(&ifr.ifr_name, &ifr32->ifr_name, IFNAMSIZ))
+-	uifr = compat_alloc_user_space(sizeof(*uifr));
+-	if (copy_in_user(uifr, uifr32, sizeof(*uifr32)))
 -		return -EFAULT;
 -
--	ifr.ifr_data = convert_in ? rxnfc : (void __user *)compat_rxnfc;
+-	err = sock_do_ioctl(net, sock, cmd, (unsigned long)uifr);
 -
--	if (convert_in) {
--		/* We expect there to be holes between fs.m_ext and
--		 * fs.ring_cookie and at the end of fs, but nowhere else.
--		 */
--		BUILD_BUG_ON(offsetof(struct compat_ethtool_rxnfc, fs.m_ext) +
--			     sizeof(compat_rxnfc->fs.m_ext) !=
--			     offsetof(struct ethtool_rxnfc, fs.m_ext) +
--			     sizeof(rxnfc->fs.m_ext));
--		BUILD_BUG_ON(
--			offsetof(struct compat_ethtool_rxnfc, fs.location) -
--			offsetof(struct compat_ethtool_rxnfc, fs.ring_cookie) !=
--			offsetof(struct ethtool_rxnfc, fs.location) -
--			offsetof(struct ethtool_rxnfc, fs.ring_cookie));
--
--		if (copy_in_user(rxnfc, compat_rxnfc,
--				 (void __user *)(&rxnfc->fs.m_ext + 1) -
--				 (void __user *)rxnfc) ||
--		    copy_in_user(&rxnfc->fs.ring_cookie,
--				 &compat_rxnfc->fs.ring_cookie,
--				 (void __user *)(&rxnfc->fs.location + 1) -
--				 (void __user *)&rxnfc->fs.ring_cookie))
--			return -EFAULT;
--		if (ethcmd == ETHTOOL_GRXCLSRLALL) {
--			if (put_user(rule_cnt, &rxnfc->rule_cnt))
--				return -EFAULT;
--		} else if (copy_in_user(&rxnfc->rule_cnt,
--					&compat_rxnfc->rule_cnt,
--					sizeof(rxnfc->rule_cnt)))
--			return -EFAULT;
--	}
--
--	ret = dev_ioctl(net, SIOCETHTOOL, &ifr, NULL);
--	if (ret)
--		return ret;
--
--	if (convert_out) {
--		if (copy_in_user(compat_rxnfc, rxnfc,
--				 (const void __user *)(&rxnfc->fs.m_ext + 1) -
--				 (const void __user *)rxnfc) ||
--		    copy_in_user(&compat_rxnfc->fs.ring_cookie,
--				 &rxnfc->fs.ring_cookie,
--				 (const void __user *)(&rxnfc->fs.location + 1) -
--				 (const void __user *)&rxnfc->fs.ring_cookie) ||
--		    copy_in_user(&compat_rxnfc->rule_cnt, &rxnfc->rule_cnt,
--				 sizeof(rxnfc->rule_cnt)))
--			return -EFAULT;
--
--		if (ethcmd == ETHTOOL_GRXCLSRLALL) {
--			/* As an optimisation, we only copy the actual
--			 * number of rules that the underlying
--			 * function returned.  Since Mallory might
--			 * change the rule count in user memory, we
--			 * check that it is less than the rule count
--			 * originally given (as the user buffer size),
--			 * which has been range-checked.
--			 */
--			if (get_user(actual_rule_cnt, &rxnfc->rule_cnt))
--				return -EFAULT;
--			if (actual_rule_cnt < rule_cnt)
--				rule_cnt = actual_rule_cnt;
--			if (copy_in_user(&compat_rxnfc->rule_locs[0],
--					 &rxnfc->rule_locs[0],
--					 rule_cnt * sizeof(u32)))
--				return -EFAULT;
+-	if (!err) {
+-		switch (cmd) {
+-		case SIOCGIFFLAGS:
+-		case SIOCGIFMETRIC:
+-		case SIOCGIFMTU:
+-		case SIOCGIFMEM:
+-		case SIOCGIFHWADDR:
+-		case SIOCGIFINDEX:
+-		case SIOCGIFADDR:
+-		case SIOCGIFBRDADDR:
+-		case SIOCGIFDSTADDR:
+-		case SIOCGIFNETMASK:
+-		case SIOCGIFPFLAGS:
+-		case SIOCGIFTXQLEN:
+-		case SIOCGMIIPHY:
+-		case SIOCGMIIREG:
+-		case SIOCGIFNAME:
+-			if (copy_in_user(uifr32, uifr, sizeof(*uifr32)))
+-				err = -EFAULT;
+-			break;
 -		}
 -	}
--
--	return 0;
+-	return err;
 -}
 -
- static int compat_siocwandev(struct net *net, struct compat_ifreq __user *uifr32)
- {
- 	compat_uptr_t uptr32;
-@@ -3397,8 +3275,6 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
- 		return old_bridge_ioctl(argp);
- 	case SIOCGIFCONF:
+-static int compat_sioc_ifmap(struct net *net, unsigned int cmd,
+-			struct compat_ifreq __user *uifr32)
+-{
+-	struct ifreq ifr;
+-	struct compat_ifmap __user *uifmap32;
+-	int err;
+-
+-	uifmap32 = &uifr32->ifr_ifru.ifru_map;
+-	err = copy_from_user(&ifr, uifr32, sizeof(ifr.ifr_name));
+-	err |= get_user(ifr.ifr_map.mem_start, &uifmap32->mem_start);
+-	err |= get_user(ifr.ifr_map.mem_end, &uifmap32->mem_end);
+-	err |= get_user(ifr.ifr_map.base_addr, &uifmap32->base_addr);
+-	err |= get_user(ifr.ifr_map.irq, &uifmap32->irq);
+-	err |= get_user(ifr.ifr_map.dma, &uifmap32->dma);
+-	err |= get_user(ifr.ifr_map.port, &uifmap32->port);
+-	if (err)
+-		return -EFAULT;
+-
+-	err = dev_ioctl(net, cmd, &ifr, NULL);
+-
+-	if (cmd == SIOCGIFMAP && !err) {
+-		err = copy_to_user(uifr32, &ifr, sizeof(ifr.ifr_name));
+-		err |= put_user(ifr.ifr_map.mem_start, &uifmap32->mem_start);
+-		err |= put_user(ifr.ifr_map.mem_end, &uifmap32->mem_end);
+-		err |= put_user(ifr.ifr_map.base_addr, &uifmap32->base_addr);
+-		err |= put_user(ifr.ifr_map.irq, &uifmap32->irq);
+-		err |= put_user(ifr.ifr_map.dma, &uifmap32->dma);
+-		err |= put_user(ifr.ifr_map.port, &uifmap32->port);
+-		if (err)
+-			err = -EFAULT;
+-	}
+-	return err;
+-}
+-
+ /* Since old style bridge ioctl's endup using SIOCDEVPRIVATE
+  * for some operations; this forces use of the newer bridge-utils that
+  * use compatible ioctls
+@@ -3277,9 +3199,6 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
  		return compat_dev_ifconf(net, argp);
--	case SIOCETHTOOL:
--		return ethtool_ioctl(net, argp);
  	case SIOCWANDEV:
  		return compat_siocwandev(net, argp);
- 	case SIOCGIFMAP:
-@@ -3411,6 +3287,7 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
- 		return sock->ops->gettstamp(sock, argp, cmd == SIOCGSTAMP_OLD,
- 					    !COMPAT_USE_64BIT_TIME);
+-	case SIOCGIFMAP:
+-	case SIOCSIFMAP:
+-		return compat_sioc_ifmap(net, cmd, argp);
+ 	case SIOCGSTAMP_OLD:
+ 	case SIOCGSTAMPNS_OLD:
+ 		if (!sock->ops->gettstamp)
+@@ -3294,6 +3213,8 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
+ 	case SIOCGHWTSTAMP:
+ 		return compat_ifr_data_ioctl(net, cmd, argp);
  
-+	case SIOCETHTOOL:
- 	case SIOCBONDSLAVEINFOQUERY:
- 	case SIOCBONDINFOQUERY:
- 	case SIOCSHWTSTAMP:
++	case SIOCGIFMAP:
++	case SIOCSIFMAP:
+ 	case FIOSETOWN:
+ 	case SIOCSPGRP:
+ 	case FIOGETOWN:
+@@ -3347,8 +3268,6 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
+ 	case SIOCBONDRELEASE:
+ 	case SIOCBONDSETHWADDR:
+ 	case SIOCBONDCHANGEACTIVE:
+-		return compat_ifreq_ioctl(net, sock, cmd, argp);
+-
+ 	case SIOCSARP:
+ 	case SIOCGARP:
+ 	case SIOCDARP:
 -- 
 2.27.0
 
