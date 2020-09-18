@@ -2,92 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC1AF26FF3A
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:57:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17EC426FF53
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:59:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726406AbgIRN4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 09:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
+        id S1726906AbgIRN6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 09:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgIRN4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 09:56:22 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54CE4C0613CE;
-        Fri, 18 Sep 2020 06:56:22 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id mm21so3211110pjb.4;
-        Fri, 18 Sep 2020 06:56:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e50txI21qxCOlSZEE/s+KXBs121bkQlo+YOTZFWgT4Q=;
-        b=ol79raY7QT6yuZbVEC8ss5TbRNg/D6VHGtP71k7PLl/RvjMhwvOBnBc77dZdmiAQae
-         uGDOIgAgii96oZxF49vtTJv86Zodq6Jdz+pZfGF0QdUKVfzwBTnVuVqGz1RO2I/s4dEO
-         n+xaonQ2FMcEgL93C8luOrgIjN3F1FgNDk+eiexRQDDHPbdtanOKFV1+SAkuVDx5gYVn
-         5b7nJd35Ea9rYOEha5Xa3cgpeWPawVkaSqJ55YjMmL4l/49zdAnOPDFCfXj9nHGD1Wzl
-         pDEv16PMkEffvUuzbSxDUnimW362oVAo9tXneta1xyKz7pqxpXNAJbnv2wBGHHwIlTQH
-         DVcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e50txI21qxCOlSZEE/s+KXBs121bkQlo+YOTZFWgT4Q=;
-        b=AuuQrSeIpRf4m+7jgiZQyw8y73F6+0a47NsfgKMeZFnoNP7IXTjVukBTWls9RyUb83
-         Un8TcspnsU/IXBtHkE9PN5HXIqEtlifWoAs42aNZGpmNkCQ13rGGS20J+rmO6wOhiXmL
-         lflNZ23CP8KD7TF4nucbqw0RB4BPwFO+PyYvUeV0euAq6lYgh7SA3sC3hm7BDGcVP+aQ
-         QmSYY33EbGeyFpR6J2Vm8i3kBw9ctPRs6LrahMfd8m5j9Bx+vFdivoQnTpSs1iRktNBO
-         uGRb0ySAj3vScjWnvSskrAcIic5Wu/sENxTQqZ4puCFn3vSTnbLz5dCmOqz6aGo/bR0x
-         99Fg==
-X-Gm-Message-State: AOAM532RvET26I6X9ftEJwiuUyxGOVwHsn31Z4q87MNBKZUv+BPtQqNI
-        ZbbbTAHBzY2exgMUU0vyp+0=
-X-Google-Smtp-Source: ABdhPJwLkAxgojWnrZX3yOs2JsVG9eiToCOYAcxB+sHd8LxKfK/VXr+TWs7qMk+xzG0S048RUECdJA==
-X-Received: by 2002:a17:902:aa49:b029:d0:cbe1:e7b3 with SMTP id c9-20020a170902aa49b02900d0cbe1e7b3mr33675444plr.36.1600437381635;
-        Fri, 18 Sep 2020 06:56:21 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:8c72:c180:8ad1:6676])
-        by smtp.gmail.com with ESMTPSA id u15sm3480867pfm.61.2020.09.18.06.56.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 06:56:21 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net-next] net/packet: Fix a comment about network_header
-Date:   Fri, 18 Sep 2020 06:56:16 -0700
-Message-Id: <20200918135616.8677-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S1726392AbgIRN63 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 09:58:29 -0400
+Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB3AC0613CE;
+        Fri, 18 Sep 2020 06:58:28 -0700 (PDT)
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kJGu6-0014uQ-9R; Fri, 18 Sep 2020 13:58:22 +0000
+Date:   Fri, 18 Sep 2020 14:58:22 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-aio@kvack.org,
+        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+Message-ID: <20200918135822.GZ3421308@ZenIV.linux.org.uk>
+References: <20200918124533.3487701-1-hch@lst.de>
+ <20200918124533.3487701-2-hch@lst.de>
+ <20200918134012.GY3421308@ZenIV.linux.org.uk>
+ <20200918134406.GA17064@lst.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200918134406.GA17064@lst.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-skb->nh.raw has been renamed as skb->network_header in 2007, in
-commit b0e380b1d8a8 ("[SK_BUFF]: unions of just one member don't get
-                      anything done, kill them")
+On Fri, Sep 18, 2020 at 03:44:06PM +0200, Christoph Hellwig wrote:
+> On Fri, Sep 18, 2020 at 02:40:12PM +0100, Al Viro wrote:
+> > >  	/* Vector 0x110 is LINUX_32BIT_SYSCALL_TRAP */
+> > > -	return pt_regs_trap_type(current_pt_regs()) == 0x110;
+> > > +	return pt_regs_trap_type(current_pt_regs()) == 0x110 ||
+> > > +		(current->flags & PF_FORCE_COMPAT);
+> > 
+> > Can't say I like that approach ;-/  Reasoning about the behaviour is much
+> > harder when it's controlled like that - witness set_fs() shite...
+> 
+> I don't particularly like it either.  But do you have a better idea
+> how to deal with io_uring vs compat tasks?
 
-So here we change it to the new name.
+<wry> git rm fs/io_uring.c would make a good starting point </wry>
+Yes, I know it's not going to happen, but one can dream...
 
-Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- net/packet/af_packet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index f59fa26d4826..cefbd50c1090 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -142,7 +142,7 @@ dev->header_ops == NULL (ll header is invisible to us)
-    mac_header -> data
-    data       -> data
- 
--   We should set nh.raw on output to correct posistion,
-+   We should set network_header on output to the correct position,
-    packet classifier depends on it.
-  */
- 
--- 
-2.25.1
-
+Said that, why not provide a variant that would take an explicit
+"is it compat" argument and use it there?  And have the normal
+one pass in_compat_syscall() to that...
