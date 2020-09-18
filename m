@@ -2,122 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97835270401
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 20:31:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C964270447
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 20:43:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726245AbgIRSbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 14:31:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36736 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbgIRSbX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 14:31:23 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BB1C0613CE;
-        Fri, 18 Sep 2020 11:31:23 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id z9so6501328wmk.1;
-        Fri, 18 Sep 2020 11:31:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:references:in-reply-to:subject:date:message-id
-         :mime-version:content-transfer-encoding:thread-index
-         :content-language;
-        bh=aq4S41RXE1vAQKwL/QYWeFUP5HTyFU3O/6rS50qdZsE=;
-        b=fTNJQYUPRjCv2jqehMXxCqoGu4qw4qcHntIzB6h/UkQq6e+wiXyKftBV4EgCPvHw53
-         LJzF6I7V2XJNSiiyZIQiTDyTuX+oey6c9gME8nBPQ3jpc3A+DsjTWkq16BC7SMYywtEd
-         7HroLi6axJlnSoWmbbkU+JHcZOwpWdfnSyagXLieeDNXPKJYgpI2xgEshv/URf4HCyc8
-         nI1WCxEBuxh7sfUEKHeng/28wAEP5EzruotnCQ5XFbizYjfuwfPyjCguXwQLaFDsWOPi
-         Um2/1v0Sip/meE/W1PMmB6KHrCrQ4HlvDihF362x19MMyR26WSLNJNA1kCySf4dH60+N
-         QmSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:references:in-reply-to:subject:date
-         :message-id:mime-version:content-transfer-encoding:thread-index
-         :content-language;
-        bh=aq4S41RXE1vAQKwL/QYWeFUP5HTyFU3O/6rS50qdZsE=;
-        b=huQJx6kb7nsqVQf989CYTg1VITUSxOqndOB00kvi6jjNW/AeOezGG8PlmiboBN5PGx
-         odQlcAh0IuqXDNVkVPN/J5TbugF0DNf1f4dTt/tw1ZB86a1HJcZqY+rC6AAPdc4n5sOD
-         VOmd7Yy0sZ8R+LiZCnSL/pFIp4uIN05RUvq0XtOpRXm7aG+OTZwfssdYjPCYmp5ipr4k
-         GpJpqsFhA1Qy99MLbP0oS/IQsexJhc40P2+IjZC4Yp7sP4QSfrJXDmC/QuSWkOvYzMX9
-         YgM06npkfnopAzjckc/QUYHuFsK0GHWH2gIILCQ8OpfZkh27BO1AR8mtCruO/QPyJXOc
-         D+8w==
-X-Gm-Message-State: AOAM5314scLH2t3VkJd0ASC63QB0r8Bpd317LF4Efa6cM7aKxEbH2tGS
-        /WyaZbmMH/RTrzG55p1OcsM=
-X-Google-Smtp-Source: ABdhPJy3Ubjg/Kg+A3AeGariVlXaUlhZ7Hiy38mgi+9UBFB8tesMKZR+49HLkc2mbq7LGh/ZOWVzwA==
-X-Received: by 2002:a7b:c3c8:: with SMTP id t8mr16894073wmj.101.1600453881837;
-        Fri, 18 Sep 2020 11:31:21 -0700 (PDT)
-Received: from AnsuelXPS (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
-        by smtp.gmail.com with ESMTPSA id d9sm61650wmb.30.2020.09.18.11.31.20
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Sep 2020 11:31:20 -0700 (PDT)
-From:   <ansuelsmth@gmail.com>
-To:     "'Christian Lamparter'" <chunkeey@gmail.com>,
-        "'Kalle Valo'" <kvalo@codeaurora.org>
-Cc:     <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <ath10k@lists.infradead.org>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        "'Rob Herring'" <robh+dt@kernel.org>,
-        "'Jakub Kicinski'" <kuba@kernel.org>,
-        <linux-mtd@lists.infradead.org>,
-        "'Srinivas Kandagatla'" <srinivas.kandagatla@linaro.org>,
-        "'Bartosz Golaszewski'" <bgolaszewski@baylibre.com>
-References: <20200918162928.14335-1-ansuelsmth@gmail.com> <20200918162928.14335-2-ansuelsmth@gmail.com> <8f886e3d-e2ee-cbf8-a676-28ebed4977aa@gmail.com>
-In-Reply-To: <8f886e3d-e2ee-cbf8-a676-28ebed4977aa@gmail.com>
-Subject: R: [PATCH 2/2] dt: bindings: ath10k: Document qcom, ath10k-pre-calibration-data-mtd
-Date:   Fri, 18 Sep 2020 20:31:18 +0200
-Message-ID: <000001d68de9$e7916450$b6b42cf0$@gmail.com>
+        id S1726159AbgIRSnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 14:43:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53566 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726115AbgIRSnv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 14:43:51 -0400
+Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 12C4321534;
+        Fri, 18 Sep 2020 18:43:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600454630;
+        bh=LglCVJhlKwie2ngrvhTX498Yb2sEwnMxnZXYyAZRMsw=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=L6ydRE7gU4R7x4qxgnexg5zVzKp5vAUgtqEFa/wCxMy2K8DkPxbTjtFNQ5MvhShcj
+         bvAbCpDOotdC+kA2zPeMdnHdOIf/6cRu6SHgkpBTmxiCEU/ED5YopkiXw1OzwMYuXE
+         jgiWjmmRgc6rjuSiqs32FaCi4od4k2oE4dXCht7I=
+Message-ID: <966695c14eb696cc5551663f2901144ddb8f98d7.camel@kernel.org>
+Subject: Re: [PATCH v3,net-next,3/4] drivers: crypto: add support for
+ OCTEONTX2 CPT engine
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Srujana Challa <schalla@marvell.com>, herbert@gondor.apana.org.au,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        kuba@kernel.org, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com, schandran@marvell.com, pathreya@marvell.com,
+        Lukas Bartosik <lbartosik@marvell.com>
+Date:   Fri, 18 Sep 2020 11:43:48 -0700
+In-Reply-To: <20200917132835.28325-4-schalla@marvell.com>
+References: <20200917132835.28325-1-schalla@marvell.com>
+         <20200917132835.28325-4-schalla@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQJEWVdigiv7VEZfce04PgG7d9c+lQHuGaaaAYeoZCCod3HyIA==
-Content-Language: it
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 2020-09-17 at 18:58 +0530, Srujana Challa wrote:
+> Add support for the cryptographic acceleration unit (CPT) on
+> 
+> OcteonTX2 CN96XX SoC.
+> 
+> 
+> 
+> Signed-off-by: Suheil Chandran <schandran@marvell.com>
+> 
+> Signed-off-by: Lukas Bartosik <lbartosik@marvell.com>
+> 
+> Signed-off-by: Srujana Challa <schalla@marvell.com>
+> 
+> ---
 
+[...]
+>  15 files changed, 5088 insertions(+)
 
-> -----Messaggio originale-----
-> Da: Christian Lamparter <chunkeey@gmail.com>
-> Inviato: venerd=C3=AC 18 settembre 2020 18:54
-> A: Ansuel Smith <ansuelsmth@gmail.com>; Kalle Valo
-> <kvalo@codeaurora.org>
-> Cc: devicetree@vger.kernel.org; netdev@vger.kernel.org; linux-
-> wireless@vger.kernel.org; linux-kernel@vger.kernel.org;
-> ath10k@lists.infradead.org; David S. Miller <davem@davemloft.net>; Rob
-> Herring <robh+dt@kernel.org>; Jakub Kicinski <kuba@kernel.org>; linux-
-> mtd@lists.infradead.org; Srinivas Kandagatla
-> <srinivas.kandagatla@linaro.org>; Bartosz Golaszewski
-> <bgolaszewski@baylibre.com>
-> Oggetto: Re: [PATCH 2/2] dt: bindings: ath10k: Document qcom, ath10k-
-> pre-calibration-data-mtd
->=20
-> On 2020-09-18 18:29, Ansuel Smith wrote:
-> > Document use of qcom,ath10k-pre-calibration-data-mtd bindings used =
-to
-> > define from where the driver will load the pre-cal data in the =
-defined
-> > mtd partition.
-> >
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
->=20
-> Q: Doesn't mtd now come with nvmem support from the get go? So
-> the MAC-Addresses and pre-caldata could be specified as a
-> nvmem-node in the devicetree? I remember seeing that this was
-> worked on or was this mtd->nvmem dropped?
->=20
-> Cheers,
-> Christian
+Huge patch, i suggest to break the whole series up to smaller patches, 
+i suggest each component in a separate patch (e.g: infrastructure, new
+mbox, debugfs, etc..)
 
-Sorry a lot for the double email... I think I found what you are talking =
-about.
-It looks like the code was merged but not the documentation.
-Will do some test and check if this works.
+What linux interfaces are going to enable your ipsec features? i
+couldn't find any netdev, xfrm references in your series .. and the
+cover letter + commit messages lack of such information.
 
-This should be the related patch.
-https://patchwork.ozlabs.org/project/linux-mtd/patch/1521933899-362-4-git=
--send-email-albeu@free.fr/
+FYI checkpatch is not happy at all with this patch:
+total: 0 errors, 2 warnings, 85 checks, 5094 lines checked
+
+85 mostly legit checks fire up.
+
 
 
