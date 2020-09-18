@@ -2,108 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C54D726F291
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 05:01:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F188F26F3E7
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 05:10:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727459AbgIRC7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:59:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54590 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727656AbgIRCFv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:05:51 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6C891238D6;
-        Fri, 18 Sep 2020 02:05:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600394751;
-        bh=uMzatrwYt8y8qpM4E128ZkyGVe/RJOCjs/3WqC4f2/E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0hilvsCY9dtRN2zSEjSx7zpxYrczgXJuPKeg9LtlHGDFrnRyfd232/qJqTxQzIPhK
-         NGqD7R2zioSy8qLREJd9tYnLTJ7mgz+aia3+D1nDdTrOvsbITTJW6eUCRShyoKFQdh
-         pgS0XlDJrvVerevmsNv83AZoIlAHht/QrAcvWQ7w=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 229/330] SUNRPC: Don't start a timer on an already queued rpc task
-Date:   Thu, 17 Sep 2020 21:59:29 -0400
-Message-Id: <20200918020110.2063155-229-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200918020110.2063155-1-sashal@kernel.org>
-References: <20200918020110.2063155-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        id S1730689AbgIRDK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 23:10:26 -0400
+Received: from mail.fudan.edu.cn ([202.120.224.73]:45203 "EHLO fudan.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726786AbgIRDKR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 23:10:17 -0400
+X-Greylist: delayed 369 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 23:10:15 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id; bh=ombxFY+WtHzRTIMahcPDgE9Yl8BvDDN9V7y66FFXn+M=; b=J
+        gNgaRnLpT6kT6Q/wzRgKmdsAot0xgW/JCCHEsvyQU93c6Bc/loQ//oIwdkFIc6BY
+        OshXylupO2b1G1Hgs3Q3/m8eUJ3p4D7OSy3h98G9o3mevzl7ESwTz7LCMYagQ/Sb
+        8d0tTMPb4wD9d9FBGfMJK6lYmiGa0ABKxLro9ZePVI=
+Received: from localhost.localdomain (unknown [10.162.140.61])
+        by app2 (Coremail) with SMTP id XQUFCgCnbAiJI2Rfrd9VBQ--.17995S3;
+        Fri, 18 Sep 2020 11:03:37 +0800 (CST)
+From:   Xiyu Yang <xiyuyang19@fudan.edu.cn>
+To:     Marek Lindner <mareklindner@neomailbox.ch>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Antonio Quartulli <a@unstable.cc>,
+        Sven Eckelmann <sven@narfation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     yuanxzhang@fudan.edu.cn, kjlu@umn.edu,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>
+Subject: [PATCH] batman-adv: Fix orig node refcnt leak when creating neigh node
+Date:   Fri, 18 Sep 2020 11:03:19 +0800
+Message-Id: <1600398200-8198-1-git-send-email-xiyuyang19@fudan.edu.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: XQUFCgCnbAiJI2Rfrd9VBQ--.17995S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7WrWfCr1DuFW5Aw1DJF43Wrg_yoW8WFWDpw
+        1fK3y5Cr95t3WkGFWkt34ruryUJa1qyr4jyrZ5u3WayryDX3savr4F9r4UCF1rJFWkWryj
+        qr1093ZIvF1DCFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9G14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26rxl
+        6s0DM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAG
+        YxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCFx2
+        IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v2
+        6r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67
+        AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IY
+        s7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxV
+        W8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbHa0DUUUUU==
+X-CM-SenderInfo: irzsiiysuqikmy6i3vldqovvfxof0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+batadv_neigh_node_create() is used to create a neigh node object, whose
+fields will be initialized with the specific object. When a new
+reference of the specific object is created during the initialization,
+its refcount should be increased.
 
-[ Upstream commit 1fab7dc477241c12f977955aa6baea7938b6f08d ]
+However, when "neigh_node" object initializes its orig_node field with
+the "orig_node" object, the function forgets to hold the refcount of the
+"orig_node", causing a potential refcount leak and use-after-free issue
+for the reason that the object can be freed in other places.
 
-Move the test for whether a task is already queued to prevent
-corruption of the timer list in __rpc_sleep_on_priority_timeout().
+Fix this issue by increasing the refcount of orig_node object during the
+initialization and adding corresponding batadv_orig_node_put() in
+batadv_neigh_node_release().
 
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
 ---
- net/sunrpc/sched.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ net/batman-adv/originator.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
-index 9c79548c68474..53d8b82eda006 100644
---- a/net/sunrpc/sched.c
-+++ b/net/sunrpc/sched.c
-@@ -204,10 +204,6 @@ static void __rpc_add_wait_queue(struct rpc_wait_queue *queue,
- 		struct rpc_task *task,
- 		unsigned char queue_priority)
- {
--	WARN_ON_ONCE(RPC_IS_QUEUED(task));
--	if (RPC_IS_QUEUED(task))
--		return;
--
- 	INIT_LIST_HEAD(&task->u.tk_wait.timer_list);
- 	if (RPC_IS_PRIORITY(queue))
- 		__rpc_add_wait_queue_priority(queue, task, queue_priority);
-@@ -382,7 +378,7 @@ static void rpc_make_runnable(struct workqueue_struct *wq,
-  * NB: An RPC task will only receive interrupt-driven events as long
-  * as it's on a wait queue.
-  */
--static void __rpc_sleep_on_priority(struct rpc_wait_queue *q,
-+static void __rpc_do_sleep_on_priority(struct rpc_wait_queue *q,
- 		struct rpc_task *task,
- 		unsigned char queue_priority)
- {
-@@ -395,12 +391,23 @@ static void __rpc_sleep_on_priority(struct rpc_wait_queue *q,
+diff --git a/net/batman-adv/originator.c b/net/batman-adv/originator.c
+index 805d8969bdfb..d6c2296f8e35 100644
+--- a/net/batman-adv/originator.c
++++ b/net/batman-adv/originator.c
+@@ -306,6 +306,8 @@ static void batadv_neigh_node_release(struct kref *ref)
  
+ 	batadv_hardif_put(neigh_node->if_incoming);
+ 
++	batadv_orig_node_put(neigh_node->orig_node);
++
+ 	kfree_rcu(neigh_node, rcu);
  }
  
-+static void __rpc_sleep_on_priority(struct rpc_wait_queue *q,
-+		struct rpc_task *task,
-+		unsigned char queue_priority)
-+{
-+	if (WARN_ON_ONCE(RPC_IS_QUEUED(task)))
-+		return;
-+	__rpc_do_sleep_on_priority(q, task, queue_priority);
-+}
-+
- static void __rpc_sleep_on_priority_timeout(struct rpc_wait_queue *q,
- 		struct rpc_task *task, unsigned long timeout,
- 		unsigned char queue_priority)
- {
-+	if (WARN_ON_ONCE(RPC_IS_QUEUED(task)))
-+		return;
- 	if (time_is_after_jiffies(timeout)) {
--		__rpc_sleep_on_priority(q, task, queue_priority);
-+		__rpc_do_sleep_on_priority(q, task, queue_priority);
- 		__rpc_add_timer(q, task, timeout);
- 	} else
- 		task->tk_status = -ETIMEDOUT;
+@@ -685,6 +687,7 @@ batadv_neigh_node_create(struct batadv_orig_node *orig_node,
+ 	kref_get(&hard_iface->refcount);
+ 	ether_addr_copy(neigh_node->addr, neigh_addr);
+ 	neigh_node->if_incoming = hard_iface;
++	kref_get(&orig_node->refcount);
+ 	neigh_node->orig_node = orig_node;
+ 	neigh_node->last_seen = jiffies;
+ 
 -- 
-2.25.1
+2.7.4
 
