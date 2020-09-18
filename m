@@ -2,161 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C7A026FC35
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 14:13:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17F1D26FC38
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 14:13:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726549AbgIRMMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 08:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
+        id S1725955AbgIRMMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 08:12:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbgIRMMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 08:12:33 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739D4C061756
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 05:12:33 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id c8so5870301edv.5
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 05:12:33 -0700 (PDT)
+        with ESMTP id S1726335AbgIRMMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 08:12:40 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C57C061788
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 05:12:40 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id e23so7814006eja.3
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 05:12:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CbLoMvbCVZR7v2qr1uLu68maulfUQM+3TJzgKeP8L7U=;
-        b=ARLlP/MI0ddfuPiVcUweomzB1eTSRRV+yworw6SVPrtnqjFn6hOLe3fLWaLcaMkXwe
-         enMhMKYrQQr5fEc0mb+IwCxK8QepcWsINr9KN8R1XNYOm841LzFb6GDySIeZRQNz6X11
-         ObJbBnLjmkABvmgRrdLKXSodve6GlaxbVn61a4QhINKVKHCS+R+Hn5LvEzy4TafoK5OI
-         oYS8Ph48ZVpAd9DdKOLU8Sa/5e5Vt3cjTmZ73j2pWpe3ZHg/XqQtvPyMYnYjz6lMdLNC
-         RtM+C+cDCJWWuHRb+e/4a35WlkbWRvJEPLEJsUs1+yXnZl4v2PRwEbvoG1jw9Aj07QaQ
-         tAfw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LwJh2Jg+llItfiPMDTwpwTSCiYeiFLD+g/KxngTUH6c=;
+        b=oVYgTbtocYLwTQ1yDb79D0yPhf6zQUR/yDffS2xPh2VZAMUm+h9otvXx+Qz3g1VutF
+         uYV1VSEospDv5SxawHAukf9jwaZWhX5AsRc9SiXfuaf/dqhr/XOGK8LSOhXV9u1HwCM9
+         HpZO+So0GJCh1GXsLz1CINYFnd6HCHcVCaz8v/JdqMV8Rc3rF/MoRk5SPBpZq4UBp84z
+         vyWOb/tlbC5hT3nvNLsI33uipWVEAH/07E5sFXPpy7C1KkgyQEkWb3Sly9MP6wTfK1eU
+         yNcLP/hncGwkNh9YxByvD59pl/F4s/R0amoOTK8ZpGJGaJK5ohOb3qHjAHwufNqJgeRc
+         fBWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CbLoMvbCVZR7v2qr1uLu68maulfUQM+3TJzgKeP8L7U=;
-        b=GrpbUUGsOPkiUvru1TzLF/G0SDJEfIszGo2R4BPXUj6qol8ns9D6AisD3lq02ZxH+q
-         sPVNChiMwsdSe+gtZhXxB0okHr9bphCyQm5zUC9jMvc9vqUMC/n11SwlYd4N+4A3FXjU
-         K0YdlZD816toAuhmTgD7kdQq7faAuzyY5uTzJ7eybjqqQg+/e+NL+WtXvCX4Y7OuABVW
-         AVkO5aiqbx57tR/dC8YKyvDkMvTs7kSdEV7COo8+cDmc7WGyS5YGxkM181aNGM2v1cS4
-         z7PN2lcEHUahZZWoWJx6R5dSXUA8mnY/OPx/Er7kvoTqp0kQ4EDSWfpVBwtDT9rHBNMZ
-         YFLw==
-X-Gm-Message-State: AOAM533duLy+IRAZ+xHHw+loJzzLIKtvjSR2Df9WRcktXGM4F1SLLLrc
-        si7/DcckDK57bAuGgoL4o7PFow==
-X-Google-Smtp-Source: ABdhPJzDfSsq2yp8nRiSvTZJdAK37gQFaNJFTMbYKv3ygzB+9nz9o2282pJYtE+ZnNoHhQFk/SUYtg==
-X-Received: by 2002:a50:f687:: with SMTP id d7mr39717142edn.353.1600431152011;
-        Fri, 18 Sep 2020 05:12:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LwJh2Jg+llItfiPMDTwpwTSCiYeiFLD+g/KxngTUH6c=;
+        b=poeGp1iX50Bo1qcikG+cU6ZosziBPdO70I2u0ZAAGoJEneDQZfmANrYVKo4DvABI7/
+         qDShbpzvsGl59m/jLQ1NfOpxPv8fy8J07umAEKc/DOPZkG5zxHfl4GfOM3Cg30f48by8
+         a6x5JaxTcxQykN0cQ1ZLyIF6kxw6Rxv1uKD0YBZiqEiQA0vnCVP6nS1AGr6+ztXZUvNf
+         tVkI7kQLFWeDM09j3aeqvwp1inT60ervSOq/Cqx2R1yaa+2BSm7CFunuZag36l0TEflG
+         OzQL7hGGESAs2mY2q1RqCAZGpSdRQ1VvS04yFuNcP9fQVpV6HLqPpM6yJ5eiWHhfwDKf
+         8oTQ==
+X-Gm-Message-State: AOAM530DBBM1r3tLk8Sujfc3lIcRWFz5qQOV8E+qS+FQstB4Fhxpi3HP
+        DrRd/CCfYalmP1s1XrqOntE2Uw==
+X-Google-Smtp-Source: ABdhPJzxhHDww5D+4AHJjLfbQSVVgWBHsh3RCLB87VoDO8t06KBqikrizZl6BvuqtoFiTvWkxR6yqQ==
+X-Received: by 2002:a17:906:cb92:: with SMTP id mf18mr37269577ejb.485.1600431158958;
+        Fri, 18 Sep 2020 05:12:38 -0700 (PDT)
 Received: from localhost.localdomain ([87.66.33.240])
-        by smtp.gmail.com with ESMTPSA id h64sm2084555edd.50.2020.09.18.05.12.30
+        by smtp.gmail.com with ESMTPSA id h64sm2084555edd.50.2020.09.18.05.12.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 05:12:31 -0700 (PDT)
+        Fri, 18 Sep 2020 05:12:38 -0700 (PDT)
 From:   Nicolas Rybowski <nicolas.rybowski@tessares.net>
-To:     Alexei Starovoitov <ast@kernel.org>,
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+        KP Singh <kpsingh@chromium.org>
 Cc:     Nicolas Rybowski <nicolas.rybowski@tessares.net>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v3 1/5] bpf: expose is_mptcp flag to bpf_tcp_sock
-Date:   Fri, 18 Sep 2020 14:10:40 +0200
-Message-Id: <20200918121046.190240-1-nicolas.rybowski@tessares.net>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        mptcp@lists.01.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next v3 2/5] mptcp: attach subflow socket to parent cgroup
+Date:   Fri, 18 Sep 2020 14:10:41 +0200
+Message-Id: <20200918121046.190240-2-nicolas.rybowski@tessares.net>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200918121046.190240-1-nicolas.rybowski@tessares.net>
+References: <20200918121046.190240-1-nicolas.rybowski@tessares.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-is_mptcp is a field from struct tcp_sock used to indicate that the
-current tcp_sock is part of the MPTCP protocol.
+It has been observed that the kernel sockets created for the subflows
+(except the first one) are not in the same cgroup as their parents.
+That's because the additional subflows are created by kernel workers.
 
-In this protocol, a first socket (mptcp_sock) is created with
-sk_protocol set to IPPROTO_MPTCP (=262) for control purpose but it
-isn't directly on the wire. This is the role of the subflow (kernel)
-sockets which are classical tcp_sock with sk_protocol set to
-IPPROTO_TCP. The only way to differentiate such sockets from plain TCP
-sockets is the is_mptcp field from tcp_sock.
+This is a problem with eBPF programs attached to the parent's
+cgroup won't be executed for the children. But also with any other features
+of CGroup linked to a sk.
 
-Such an exposure in BPF is thus required to be able to differentiate
-plain TCP sockets from MPTCP subflow sockets in BPF_PROG_TYPE_SOCK_OPS
-programs.
+This patch fixes this behaviour.
 
-The choice has been made to silently pass the case when CONFIG_MPTCP is
-unset by defaulting is_mptcp to 0 in order to make BPF independent of
-the MPTCP configuration. Another solution is to make the verifier fail
-in 'bpf_tcp_sock_is_valid_ctx_access' but this will add an additional
-'#ifdef CONFIG_MPTCP' in the BPF code and a same injected BPF program
-will not run if MPTCP is not set.
-
-An example use-case is provided in
-https://github.com/multipath-tcp/mptcp_net-next/tree/scripts/bpf/examples
+As the subflow sockets are created by the kernel, we can't use
+'mem_cgroup_sk_alloc' because of the current context being the one of the
+kworker. This is why we have to do low level memcg manipulation, if
+required.
 
 Suggested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Suggested-by: Paolo Abeni <pabeni@redhat.com>
 Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Acked-by: Song Liu <songliubraving@fb.com>
 Signed-off-by: Nicolas Rybowski <nicolas.rybowski@tessares.net>
 ---
- include/uapi/linux/bpf.h       | 1 +
- net/core/filter.c              | 9 ++++++++-
- tools/include/uapi/linux/bpf.h | 1 +
- 3 files changed, 10 insertions(+), 1 deletion(-)
+ net/mptcp/subflow.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index a22812561064..351b3d0a6ca8 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -4067,6 +4067,7 @@ struct bpf_tcp_sock {
- 	__u32 delivered;	/* Total data packets delivered incl. rexmits */
- 	__u32 delivered_ce;	/* Like the above but only ECE marked packets */
- 	__u32 icsk_retransmits;	/* Number of unrecovered [RTO] timeouts */
-+	__u32 is_mptcp;		/* Is MPTCP subflow? */
- };
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index e8cac2655c82..535a3f9f8cfc 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -1130,6 +1130,30 @@ int __mptcp_subflow_connect(struct sock *sk, int ifindex,
+ 	return err;
+ }
  
- struct bpf_sock_tuple {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index d266c6941967..dab48528dceb 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -5837,7 +5837,7 @@ bool bpf_tcp_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 				  struct bpf_insn_access_aux *info)
++static void mptcp_attach_cgroup(struct sock *parent, struct sock *child)
++{
++#ifdef CONFIG_SOCK_CGROUP_DATA
++	struct sock_cgroup_data *parent_skcd = &parent->sk_cgrp_data,
++				*child_skcd = &child->sk_cgrp_data;
++
++	/* only the additional subflows created by kworkers have to be modified */
++	if (cgroup_id(sock_cgroup_ptr(parent_skcd)) !=
++	    cgroup_id(sock_cgroup_ptr(child_skcd))) {
++#ifdef CONFIG_MEMCG
++		struct mem_cgroup *memcg = parent->sk_memcg;
++
++		mem_cgroup_sk_free(child);
++		if (memcg && css_tryget(&memcg->css))
++			child->sk_memcg = memcg;
++#endif /* CONFIG_MEMCG */
++
++		cgroup_sk_free(child_skcd);
++		*child_skcd = *parent_skcd;
++		cgroup_sk_clone(child_skcd);
++	}
++#endif /* CONFIG_SOCK_CGROUP_DATA */
++}
++
+ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
  {
- 	if (off < 0 || off >= offsetofend(struct bpf_tcp_sock,
--					  icsk_retransmits))
-+					  is_mptcp))
- 		return false;
+ 	struct mptcp_subflow_context *subflow;
+@@ -1150,6 +1174,9 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
  
- 	if (off % size != 0)
-@@ -5971,6 +5971,13 @@ u32 bpf_tcp_sock_convert_ctx_access(enum bpf_access_type type,
- 	case offsetof(struct bpf_tcp_sock, icsk_retransmits):
- 		BPF_INET_SOCK_GET_COMMON(icsk_retransmits);
- 		break;
-+	case offsetof(struct bpf_tcp_sock, is_mptcp):
-+#ifdef CONFIG_MPTCP
-+		BPF_TCP_SOCK_GET_COMMON(is_mptcp);
-+#else
-+		*insn++ = BPF_MOV32_IMM(si->dst_reg, 0);
-+#endif
-+		break;
- 	}
+ 	lock_sock(sf->sk);
  
- 	return insn - insn_buf;
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index a22812561064..351b3d0a6ca8 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -4067,6 +4067,7 @@ struct bpf_tcp_sock {
- 	__u32 delivered;	/* Total data packets delivered incl. rexmits */
- 	__u32 delivered_ce;	/* Like the above but only ECE marked packets */
- 	__u32 icsk_retransmits;	/* Number of unrecovered [RTO] timeouts */
-+	__u32 is_mptcp;		/* Is MPTCP subflow? */
- };
- 
- struct bpf_sock_tuple {
++	/* the newly created socket has to be in the same cgroup as its parent */
++	mptcp_attach_cgroup(sk, sf->sk);
++
+ 	/* kernel sockets do not by default acquire net ref, but TCP timer
+ 	 * needs it.
+ 	 */
 -- 
 2.28.0
 
