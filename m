@@ -2,114 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 780A126EDA3
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:22:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6151326EE13
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727317AbgIRCWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:22:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57217 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729185AbgIRCRL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 22:17:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600395430;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ku+sICGKzWJ9hbk/lDryotAHNAcONZujUxBnYspdRTU=;
-        b=Fjn5NYgscaLzBZ6FN8sKBSmHnI/WMoDdmHlolpOGkrjbf5Q+cpPux7UCoeCB7I7fj+A++V
-        Nmj7l+wxDQjEdU5lT3gYTTlMmBH6WqzPtY9GSewOJ3qRILKSQNZ89+/71hTqoe6b1j60kk
-        aI90lrhALptljSN76WqronQMioeIkYs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-137-wx2RmR3bNLelwWeZZ_RbzQ-1; Thu, 17 Sep 2020 22:17:06 -0400
-X-MC-Unique: wx2RmR3bNLelwWeZZ_RbzQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3B88110BBEE6;
-        Fri, 18 Sep 2020 02:17:05 +0000 (UTC)
-Received: from [10.72.13.167] (ovpn-13-167.pek2.redhat.com [10.72.13.167])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4314510013C1;
-        Fri, 18 Sep 2020 02:16:58 +0000 (UTC)
-Subject: Re: [PATCH v2 -next] vdpa: mlx5: change Kconfig depends to fix build
- errors
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        virtualization@lists.linux-foundation.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-References: <22a2bd60-d895-2bfb-50be-4ac3d131ed82@infradead.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <f306fbfb-2984-d52d-b7be-7d65db643955@redhat.com>
-Date:   Fri, 18 Sep 2020 10:16:57 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726714AbgIRC0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726920AbgIRCZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 22:25:50 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4788AC061788
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 19:25:50 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id l71so2548759pge.4
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 19:25:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GrPpFfViSWBlkjD8qUhinBCdC/NY8mE9TUs6Erx4apk=;
+        b=VYH4J+2gx2wDXQvjm/PjzYwmEBBRRVa+r9Px47Qb3Usy9/oYk0p+MAE+8HdYa2VQ9R
+         uOdTQMQ4BleGEpFYeMQjSLOFbCG2IjkXcPDIVgowydfv2KYKKUkcHIfdYGMpV8+F7Rn6
+         8BIywnUU12wrm94s257VFgYBiBsT7EMqnfVbS2iPTiccnwgnh+huVGDiotxsqeE5F09X
+         TZGwhD36TYd47kKniO1jF5KIEe680vRHDZCm35Q/Tu7mNOvO2/tYZI9afU2NB4Uk7qwG
+         huNYMscIKtjcwCgHuQmS8yslIRj1p2Hrc1n2C+hQ9DH9jZt9pT+P/p4NCebus/Dp9GkC
+         w+EA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GrPpFfViSWBlkjD8qUhinBCdC/NY8mE9TUs6Erx4apk=;
+        b=Vp6tqKkc0XU9y3NoMXP6sFAjQ+Sv1f24+RRzg3p+KQT44Lmuo5OZXZNnZaIb6OWRRq
+         94AVrSeDjkK2rcDKzgzGVPRdnXkPBScN7gklsFWLPDCUW93Zf02Zrp+RF8EBfo2jon38
+         U0BL/IUqMkL85I/XX2vkAz9F4CGsWfBL/bGOZxn7F5jeMG1jVvLFbvTOwmp3tggK5tic
+         ZJfHpgPG7P2IcWCqCFfGhLT9xxM/PiTFXHs1ltG08ngQIIRKcxWVpCeIZWC8b9Hbf5Z6
+         z5W0Goih+n92fdxZvCpJLip3fa+3cTuhkFzfHa7TeJEJi1enCSLKUtZcefqhYWf/HBJG
+         ByOA==
+X-Gm-Message-State: AOAM533Cd/1YkxPTBd7QLRTHADEdBoScwOjeZL2EwmRuSFNszkZ1Xr6A
+        cQhc6ClpMqKgb9nO9R3i3Gg=
+X-Google-Smtp-Source: ABdhPJwAvRW1hef5UOs6VklBAnGjWRNfljnfxw/bQXs76robNArD5o8451mACo2ItxYCgybPqvjD0A==
+X-Received: by 2002:a62:36c7:0:b029:13e:d13d:a05f with SMTP id d190-20020a6236c70000b029013ed13da05fmr29408468pfa.37.1600395949811;
+        Thu, 17 Sep 2020 19:25:49 -0700 (PDT)
+Received: from [10.230.28.120] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id bx18sm964975pjb.6.2020.09.17.19.25.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Sep 2020 19:25:49 -0700 (PDT)
+Subject: Re: [PATCH v3 net-next 5/9] net: dsa: mv88e6xxx: Move devlink code
+ into its own file
+To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+References: <20200909235827.3335881-1-andrew@lunn.ch>
+ <20200909235827.3335881-6-andrew@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <ea88eb9f-8029-08fc-b514-5ea9b92f58f2@gmail.com>
+Date:   Thu, 17 Sep 2020 19:25:47 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.2
 MIME-Version: 1.0
-In-Reply-To: <22a2bd60-d895-2bfb-50be-4ac3d131ed82@infradead.org>
+In-Reply-To: <20200909235827.3335881-6-andrew@lunn.ch>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/9/18 上午3:45, Randy Dunlap wrote:
-> From: Randy Dunlap <rdunlap@infradead.org>
->
-> drivers/vdpa/mlx5/ uses vhost_iotlb*() interfaces, so add a dependency
-> on VHOST to eliminate build errors.
->
-> ld: drivers/vdpa/mlx5/core/mr.o: in function `add_direct_chain':
-> mr.c:(.text+0x106): undefined reference to `vhost_iotlb_itree_first'
-> ld: mr.c:(.text+0x1cf): undefined reference to `vhost_iotlb_itree_next'
-> ld: mr.c:(.text+0x30d): undefined reference to `vhost_iotlb_itree_first'
-> ld: mr.c:(.text+0x3e8): undefined reference to `vhost_iotlb_itree_next'
-> ld: drivers/vdpa/mlx5/core/mr.o: in function `_mlx5_vdpa_create_mr':
-> mr.c:(.text+0x908): undefined reference to `vhost_iotlb_itree_first'
-> ld: mr.c:(.text+0x9e6): undefined reference to `vhost_iotlb_itree_next'
-> ld: drivers/vdpa/mlx5/core/mr.o: in function `mlx5_vdpa_handle_set_map':
-> mr.c:(.text+0xf1d): undefined reference to `vhost_iotlb_itree_first'
->
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: "Michael S. Tsirkin" <mst@redhat.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> Cc: virtualization@lists.linux-foundation.org
-> Cc: Saeed Mahameed <saeedm@nvidia.com>
-> Cc: Leon Romanovsky <leonro@nvidia.com>
-> Cc: netdev@vger.kernel.org
-> ---
-> v2: change from select to depends (Saeed)
->
->   drivers/vdpa/Kconfig |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> --- linux-next-20200917.orig/drivers/vdpa/Kconfig
-> +++ linux-next-20200917/drivers/vdpa/Kconfig
-> @@ -31,7 +31,7 @@ config IFCVF
->   
->   config MLX5_VDPA
->   	bool "MLX5 VDPA support library for ConnectX devices"
-> -	depends on MLX5_CORE
-> +	depends on VHOST && MLX5_CORE
 
+On 9/9/2020 4:58 PM, Andrew Lunn wrote:
+> There will soon be more devlink code. Move the existing code into a
+> file of its own, before we start adding this new code.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-It looks to me that depending on VHOST is too heavyweight.
-
-I guess what it really needs is VHOST_IOTLB. So we can use select 
-VHOST_IOTLB here.
-
-Thanks
-
-
->   	default n
->   	help
->   	  Support library for Mellanox VDPA drivers. Provides code that is
->
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
