@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F89526F2AE
+	by mail.lfdr.de (Postfix) with ESMTP id 2F6B126F2AD
 	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 05:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730489AbgIRDBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 23:01:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53712 "EHLO mail.kernel.org"
+        id S1730479AbgIRDBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 23:01:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53544 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726812AbgIRCF0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:05:26 -0400
+        id S1727556AbgIRCFc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:05:32 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B109A2376F;
-        Fri, 18 Sep 2020 02:05:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E0B0320872;
+        Fri, 18 Sep 2020 02:05:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600394725;
-        bh=4aJ98UjtJt7kaQkL7jPD6T/htJNsIC50/6P6Y5BPc+A=;
+        s=default; t=1600394731;
+        bh=/ySKV8YltLBzBdxYlotqiaNymuxI1/8UQNeR0WNNiyo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bMNFlgtD90B2gjNKS2bGsLGn6y9ExK/hlnIIks07vZQm8Cotnnw2zzZX5vwBTzTyB
-         WuwzKXMhgP8gEPl1fh9V1+33kytE6VXKattDCGXfXrSqqb1gSrbsi6LsxW1c6p5aIt
-         M+m/2DN3ish6yJDlTwhI1AHPOJ8EZJMEbmH3r7IE=
+        b=xKEkVXJejOtG5vmAR5uJJ8goIjjPLEnxjJfHQumshSpySjZfUpUpw1ZGDO6hbAIbz
+         tMdxNkrjLJwDp4Tsce1jCehbNLQxmC+k1bJkr3A5TZQZSsm5tsu3HvxGZc51zpyQ3b
+         wF0Y1DuWfwhUk82qxWkPPyQXhfetcw25thzcCWDw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Raveendran Somu <raveendran.somu@cypress.com>,
-        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 208/330] brcmfmac: Fix double freeing in the fmac usb data path
-Date:   Thu, 17 Sep 2020 21:59:08 -0400
-Message-Id: <20200918020110.2063155-208-sashal@kernel.org>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 213/330] SUNRPC: Fix a potential buffer overflow in 'svc_print_xprts()'
+Date:   Thu, 17 Sep 2020 21:59:13 -0400
+Message-Id: <20200918020110.2063155-213-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918020110.2063155-1-sashal@kernel.org>
 References: <20200918020110.2063155-1-sashal@kernel.org>
@@ -44,39 +43,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Raveendran Somu <raveendran.somu@cypress.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 78179869dc3f5c0059bbf5d931a2717f1ad97ecd ]
+[ Upstream commit b25b60d7bfb02a74bc3c2d998e09aab159df8059 ]
 
-When the brcmf_fws_process_skb() fails to get hanger slot for
-queuing the skb, it tries to free the skb.
-But the caller brcmf_netdev_start_xmit() of that funciton frees
-the packet on error return value.
-This causes the double freeing and which caused the kernel crash.
+'maxlen' is the total size of the destination buffer. There is only one
+caller and this value is 256.
 
-Signed-off-by: Raveendran Somu <raveendran.somu@cypress.com>
-Signed-off-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1585124429-97371-3-git-send-email-chi-hsien.lin@cypress.com
+When we compute the size already used and what we would like to add in
+the buffer, the trailling NULL character is not taken into account.
+However, this trailling character will be added by the 'strcat' once we
+have checked that we have enough place.
+
+So, there is a off-by-one issue and 1 byte of the stack could be
+erroneously overwridden.
+
+Take into account the trailling NULL, when checking if there is enough
+place in the destination buffer.
+
+While at it, also replace a 'sprintf' by a safer 'snprintf', check for
+output truncation and avoid a superfluous 'strlen'.
+
+Fixes: dc9a16e49dbba ("svc: Add /proc/sys/sunrpc/transport files")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+[ cel: very minor fix to documenting comment
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/sunrpc/svc_xprt.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-index eadc64454839d..3d36b6ee158bb 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-@@ -2149,8 +2149,7 @@ int brcmf_fws_process_skb(struct brcmf_if *ifp, struct sk_buff *skb)
- 		brcmf_fws_enq(fws, BRCMF_FWS_SKBSTATE_DELAYED, fifo, skb);
- 		brcmf_fws_schedule_deq(fws);
- 	} else {
--		bphy_err(drvr, "drop skb: no hanger slot\n");
--		brcmf_txfinalize(ifp, skb, false);
-+		bphy_err(drvr, "no hanger slot available\n");
- 		rc = -ENOMEM;
- 	}
- 	brcmf_fws_unlock(fws);
+diff --git a/net/sunrpc/svc_xprt.c b/net/sunrpc/svc_xprt.c
+index dc74519286be5..fe4cd0b4c4127 100644
+--- a/net/sunrpc/svc_xprt.c
++++ b/net/sunrpc/svc_xprt.c
+@@ -104,8 +104,17 @@ void svc_unreg_xprt_class(struct svc_xprt_class *xcl)
+ }
+ EXPORT_SYMBOL_GPL(svc_unreg_xprt_class);
+ 
+-/*
+- * Format the transport list for printing
++/**
++ * svc_print_xprts - Format the transport list for printing
++ * @buf: target buffer for formatted address
++ * @maxlen: length of target buffer
++ *
++ * Fills in @buf with a string containing a list of transport names, each name
++ * terminated with '\n'. If the buffer is too small, some entries may be
++ * missing, but it is guaranteed that all lines in the output buffer are
++ * complete.
++ *
++ * Returns positive length of the filled-in string.
+  */
+ int svc_print_xprts(char *buf, int maxlen)
+ {
+@@ -118,9 +127,9 @@ int svc_print_xprts(char *buf, int maxlen)
+ 	list_for_each_entry(xcl, &svc_xprt_class_list, xcl_list) {
+ 		int slen;
+ 
+-		sprintf(tmpstr, "%s %d\n", xcl->xcl_name, xcl->xcl_max_payload);
+-		slen = strlen(tmpstr);
+-		if (len + slen > maxlen)
++		slen = snprintf(tmpstr, sizeof(tmpstr), "%s %d\n",
++				xcl->xcl_name, xcl->xcl_max_payload);
++		if (slen >= sizeof(tmpstr) || len + slen >= maxlen)
+ 			break;
+ 		len += slen;
+ 		strcat(buf, tmpstr);
 -- 
 2.25.1
 
