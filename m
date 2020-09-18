@@ -2,101 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2593B270182
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:01:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC1B72701B1
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:13:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726236AbgIRQBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 12:01:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55409 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726115AbgIRQBT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:01:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600444878;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=5eN4nNcD42KXZSKM9zBnVU3lBrCBeehYq0w/GPTTTps=;
-        b=Y5N4GtgI+00RwZ+KkyiUcw5kvuNtRxXGVsxNLpPWUGmLbJpf5v8LKsbM5+HUUzKf4ntDWq
-        d7aB/Px34DDs2tA9eYu6O0Q9WmL55/aYU7bAzgVMyGM+5Sh6m3GdjYGFEp7KNflToPelUx
-        w1m8GIkhAdUuaCSd2NkPuRsU49oV17M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-122-WRtydvPkM2WDFuye-u6jAA-1; Fri, 18 Sep 2020 12:01:16 -0400
-X-MC-Unique: WRtydvPkM2WDFuye-u6jAA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3206E890EB0;
-        Fri, 18 Sep 2020 16:00:59 +0000 (UTC)
-Received: from linux.fritz.box.com (ovpn-114-107.ams2.redhat.com [10.36.114.107])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1475A55764;
-        Fri, 18 Sep 2020 16:00:57 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Subject: [PATCH net-next] net-sysfs: add backlog len and CPU id to softnet data
-Date:   Fri, 18 Sep 2020 18:00:46 +0200
-Message-Id: <5e503da366e0261632ab87559a72db2fff0e78a4.1600444637.git.pabeni@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+        id S1726326AbgIRQNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 12:13:51 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55234 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726306AbgIRQNv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:13:51 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
+        with SMTP; 18 Sep 2020 19:07:08 +0300
+Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 08IG78X1025125;
+        Fri, 18 Sep 2020 19:07:08 +0300
+Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 08IG78V9031146;
+        Fri, 18 Sep 2020 19:07:08 +0300
+Received: (from moshe@localhost)
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 08IG752t031143;
+        Fri, 18 Sep 2020 19:07:05 +0300
+From:   Moshe Shemesh <moshe@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Moshe Shemesh <moshe@mellanox.com>
+Subject: [PATCH net-next RFC v5 00/15] Add devlink reload action and limit level options
+Date:   Fri, 18 Sep 2020 19:06:36 +0300
+Message-Id: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the backlog status in not exposed to user-space.
-Since long backlogs (or simply not empty ones) can be a
-source of noticeable latency, -RT deployments need some way
-to inspect it.
+Introduce new options on devlink reload API to enable the user to select
+the reload action required and contrains limits on these actions that he
+may want to ensure. Complete support for reload actions in mlx5.
+The following reload actions are supported:
+  driver_reinit: driver entities re-initialization, applying devlink-param
+                 and devlink-resource values.
+  fw_activate: firmware activate.
 
-Additionally, there isn't a direct match between 'softnet_stat'
-lines and the related CPU - sd for offline CPUs are not dumped -
-so this patch also includes the CPU id into such entry.
+The uAPI is backward compatible, if the reload action option is omitted
+from the reload command, the driver reinit action will be used.
+Note that when required to do firmware activation some drivers may need
+to reload the driver. On the other hand some drivers may need to reset
+the firmware to reinitialize the driver entities. Therefore, the devlink
+reload command returns the actions which were actually performed.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/core/net-procfs.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+By default reload actions are not limited and driver implementation may
+include reset or downtime as needed to perform the actions.
+However, if limit_level is selected, the driver should perform only if
+it can do it while keeping the limit level constrains.
+Reload action limit level added:
+  no_reset: No reset allowed, no down time allowed, no link flap and no
+            configuration is lost.
 
-diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-index 6bbd06f7dc7d..c714e6a9dad4 100644
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -116,6 +116,12 @@ static int dev_seq_show(struct seq_file *seq, void *v)
- 	return 0;
- }
- 
-+static u32 softnet_backlog_len(struct softnet_data *sd)
-+{
-+	return skb_queue_len_lockless(&sd->input_pkt_queue) +
-+	       skb_queue_len_lockless(&sd->process_queue);
-+}
-+
- static struct softnet_data *softnet_get_online(loff_t *pos)
- {
- 	struct softnet_data *sd = NULL;
-@@ -159,12 +165,17 @@ static int softnet_seq_show(struct seq_file *seq, void *v)
- 	rcu_read_unlock();
- #endif
- 
-+	/* the index is the CPU id owing this sd. Since offline CPUs are not
-+	 * displayed, it would be othrwise not trivial for the user-space
-+	 * mapping the data a specific CPU
-+	 */
- 	seq_printf(seq,
--		   "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x\n",
-+		   "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x\n",
- 		   sd->processed, sd->dropped, sd->time_squeeze, 0,
- 		   0, 0, 0, 0, /* was fastroute */
- 		   0,	/* was cpu_collision */
--		   sd->received_rps, flow_limit_count);
-+		   sd->received_rps, flow_limit_count,
-+		   softnet_backlog_len(sd), (int)seq->index);
- 	return 0;
- }
- 
+Each driver which supports devlink reload command should expose the
+reload actions and limit levels supported.
+
+Add reload action stats to hold the history per reload action per limit
+level. For example, the number of times fw_activate has been done on
+this device since the driver module was added or if the firmware
+activation was done with or without reset.
+
+Patch 1-2 add the new API reload action and reload action limit level
+          option to devlink reload.
+Patch 3 adds reload actions stats.
+Patch 4 exposes the reload actions stats on devlink dev get.
+Patches 5-10 add support on mlx5 for devlink reload action fw_activate
+            and handle the firmware reset events.
+Patches 11-12 add devlink enable remote dev reset parameter and use it
+             in mlx5.
+Patches 13-14 mlx5 add devlink reload action limit level no_reset
+              support for fw_activate reload action.
+Patch 15 adds documentation file devlink-reload.rst 
+
+
+Moshe Shemesh (15):
+  devlink: Add reload action option to devlink reload command
+  devlink: Add reload action limit level
+  devlink: Add reload action stats
+  devlink: Add reload actions stats to dev get
+  net/mlx5: Add functions to set/query MFRL register
+  net/mlx5: Set cap for pci sync for fw update event
+  net/mlx5: Handle sync reset request event
+  net/mlx5: Handle sync reset now event
+  net/mlx5: Handle sync reset abort event
+  net/mlx5: Add support for devlink reload action fw activate
+  devlink: Add enable_remote_dev_reset generic parameter
+  net/mlx5: Add devlink param enable_remote_dev_reset support
+  net/mlx5: Add support for fw live patch event
+  net/mlx5: Add support for devlink reload action limit level no reset
+  devlink: Add Documentation/networking/devlink/devlink-reload.rst
+
+ .../networking/devlink/devlink-params.rst     |   6 +
+ .../networking/devlink/devlink-reload.rst     |  79 +++
+ Documentation/networking/devlink/index.rst    |   1 +
+ drivers/net/ethernet/mellanox/mlx4/main.c     |  16 +-
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 122 ++++-
+ .../mellanox/mlx5/core/diag/fw_tracer.c       |  31 ++
+ .../mellanox/mlx5/core/diag/fw_tracer.h       |   1 +
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    | 454 ++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/fw_reset.h    |  19 +
+ .../net/ethernet/mellanox/mlx5/core/health.c  |  35 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  13 +
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  27 +-
+ drivers/net/netdevsim/dev.c                   |  17 +-
+ include/linux/mlx5/device.h                   |   1 +
+ include/linux/mlx5/driver.h                   |   4 +
+ include/net/devlink.h                         |  21 +-
+ include/uapi/linux/devlink.h                  |  41 ++
+ net/core/devlink.c                            | 339 ++++++++++++-
+ 20 files changed, 1179 insertions(+), 52 deletions(-)
+ create mode 100644 Documentation/networking/devlink/devlink-reload.rst
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+
 -- 
-2.26.2
+2.17.1
 
