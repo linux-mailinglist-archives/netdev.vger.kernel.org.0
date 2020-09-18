@@ -2,74 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90CB5270180
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:00:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1934927010D
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 17:32:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726200AbgIRQAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 12:00:17 -0400
-Received: from mslow2.mail.gandi.net ([217.70.178.242]:51306 "EHLO
-        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbgIRQAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:00:16 -0400
-Received: from relay11.mail.gandi.net (unknown [217.70.178.231])
-        by mslow2.mail.gandi.net (Postfix) with ESMTP id 401483A3092
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 15:28:03 +0000 (UTC)
+        id S1726149AbgIRPcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 11:32:00 -0400
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:4825 "EHLO
+        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725941AbgIRPb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 11:31:59 -0400
+X-Originating-IP: 90.65.88.165
 Received: from localhost (lfbn-lyo-1-1908-165.w90-65.abo.wanadoo.fr [90.65.88.165])
         (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id C030F100004;
-        Fri, 18 Sep 2020 15:27:40 +0000 (UTC)
-Date:   Fri, 18 Sep 2020 17:27:40 +0200
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 56E3A24000C;
+        Fri, 18 Sep 2020 15:31:57 +0000 (UTC)
+Date:   Fri, 18 Sep 2020 17:31:57 +0200
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, yangbo.lu@nxp.com,
         xiaoliang.yang_1@nxp.com, UNGLinuxDriver@microchip.com,
         claudiu.manoil@nxp.com, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, kuba@kernel.org
-Subject: Re: [PATCH v2 net 3/8] net: dsa: seville: fix buffer size of the
- queue system
-Message-ID: <20200918152740.GZ9675@piout.net>
-References: <20200918010730.2911234-1-olteanv@gmail.com>
- <20200918010730.2911234-4-olteanv@gmail.com>
+Subject: Re: [PATCH net-next 09/11] net: mscc: ocelot: make
+ ocelot_init_timestamp take a const struct ptp_clock_info
+Message-ID: <20200918153157.GF9675@piout.net>
+References: <20200918105753.3473725-1-olteanv@gmail.com>
+ <20200918105753.3473725-10-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200918010730.2911234-4-olteanv@gmail.com>
+In-Reply-To: <20200918105753.3473725-10-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/09/2020 04:07:25+0300, Vladimir Oltean wrote:
+On 18/09/2020 13:57:51+0300, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> The VSC9953 Seville switch has 2 megabits of buffer split into 4360
-> words of 60 bytes each.
+> It is a good measure to ensure correctness if the structures that are
+> meant to remain constant are only processed by functions that thake
+> constant arguments.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-Tested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
 > ---
-> Changes in v2:
-> None.
+>  drivers/net/ethernet/mscc/ocelot_ptp.c | 3 ++-
+>  include/soc/mscc/ocelot_ptp.h          | 3 ++-
+>  2 files changed, 4 insertions(+), 2 deletions(-)
 > 
->  drivers/net/dsa/ocelot/seville_vsc9953.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> index 2d6a5f5758f8..83a1ab9393e9 100644
-> --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-> +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> @@ -1018,7 +1018,7 @@ static const struct felix_info seville_info_vsc9953 = {
->  	.vcap_is2_keys		= vsc9953_vcap_is2_keys,
->  	.vcap_is2_actions	= vsc9953_vcap_is2_actions,
->  	.vcap			= vsc9953_vcap_props,
-> -	.shared_queue_sz	= 128 * 1024,
-> +	.shared_queue_sz	= 2048 * 1024,
->  	.num_mact_rows		= 2048,
->  	.num_ports		= 10,
->  	.mdio_bus_alloc		= vsc9953_mdio_bus_alloc,
+> diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.c b/drivers/net/ethernet/mscc/ocelot_ptp.c
+> index 1e08fe4daaef..a33ab315cc6b 100644
+> --- a/drivers/net/ethernet/mscc/ocelot_ptp.c
+> +++ b/drivers/net/ethernet/mscc/ocelot_ptp.c
+> @@ -300,7 +300,8 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
+>  }
+>  EXPORT_SYMBOL(ocelot_ptp_enable);
+>  
+> -int ocelot_init_timestamp(struct ocelot *ocelot, struct ptp_clock_info *info)
+> +int ocelot_init_timestamp(struct ocelot *ocelot,
+> +			  const struct ptp_clock_info *info)
+>  {
+>  	struct ptp_clock *ptp_clock;
+>  	int i;
+> diff --git a/include/soc/mscc/ocelot_ptp.h b/include/soc/mscc/ocelot_ptp.h
+> index 4a6b2f71b6b2..6a7388fa7cc5 100644
+> --- a/include/soc/mscc/ocelot_ptp.h
+> +++ b/include/soc/mscc/ocelot_ptp.h
+> @@ -53,6 +53,7 @@ int ocelot_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
+>  		      enum ptp_pin_function func, unsigned int chan);
+>  int ocelot_ptp_enable(struct ptp_clock_info *ptp,
+>  		      struct ptp_clock_request *rq, int on);
+> -int ocelot_init_timestamp(struct ocelot *ocelot, struct ptp_clock_info *info);
+> +int ocelot_init_timestamp(struct ocelot *ocelot,
+> +			  const struct ptp_clock_info *info);
+>  int ocelot_deinit_timestamp(struct ocelot *ocelot);
+>  #endif
 > -- 
 > 2.25.1
 > 
