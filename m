@@ -2,80 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23CAA26EA02
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 02:40:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88FB726EA23
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 02:46:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726115AbgIRAkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 20:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725987AbgIRAkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 20:40:18 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEE1C06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 17:40:18 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id n18so3610776qtw.0
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 17:40:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=googlenew;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EiWtLtDGF+mbpQMLR50cNaArfWqLA5zM1FNbb2BWLtE=;
-        b=JNQ3qdoWnpY2C+vL+PxiQUinE5r83Ya4m4M9y1NGodZPRYXFzOjbpzB9NPd+kEcGI2
-         pfGErV51tWsTSE1huFj/By8DJXgOSdEysjt0DbLmAwZ6H92LadeTEKzpYZMNWm2DK+6v
-         9CA1Q2XJsuOw7FJWEs9rJSvwFwHK+edgjHkTWC6CSbYbIvz88RxCnlVBHKY5cyoExOAA
-         XUNijeZawtjMU9tAzbOSMTQ10uSQwMBgoFrcXMNxnT/+VWHgOzNh4tQ+Zl8BgvxSQw9o
-         YW7SRSXimhdwUZA8rI8h6l/e9K5jCmOOk3Z9a8j5BdhdLmYOrGN0I7ZXOX3D2NwEoXNr
-         nNZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EiWtLtDGF+mbpQMLR50cNaArfWqLA5zM1FNbb2BWLtE=;
-        b=LK9Zxd9e9Oz5WzpNcCsxJAKkb8NLY5RysZkgUK9Ni5jUnPx+SIpZiEb49+ZCrUEC2y
-         ZER8y1+UZTEpmDA1WhAs+VOjFVC7+QyQu24Nn587rjV1odqqfXGoXa2Y0lwPov8U8WvH
-         rAeNkTimSLNA1MMzqoRBXkBsIoao7G8e+FvMWv2zkYC+5ow9fw5CWjN/+MRXrxwh/b3L
-         Z5sgxNw/PNh2eG06Kxqyx/Bi0cGMv3c9kCMkVWUmTPqK0wuD7KMcZaAM38ZNbZiCJA0r
-         R4ONHMYtfXwWHBtk1+bqazYT8x9UufTc8RhEz+n6C2K0VoXert9IpN1opviheQ6je7uY
-         Fx8Q==
-X-Gm-Message-State: AOAM532H7GkvqejdKxHyce0RsdNpA+zs5sLl+GCCcGFxCxFfdBljWOai
-        GY46VaIW0DLU1b0TedXohLcuOu5StjTRMiWvgLp3Hw==
-X-Google-Smtp-Source: ABdhPJy6gwtDjN36l3NZwcD7QINChiEPoPq6nuSfu49TfysXqTl5qCy+1ybS08pYcX5KHunOrFdeSWOZifN+DttJlaI=
-X-Received: by 2002:ac8:660a:: with SMTP id c10mr18652652qtp.300.1600389617338;
- Thu, 17 Sep 2020 17:40:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200917234953.CB1D295C0A69@us180.sjc.aristanetworks.com> <20200917170203.1a363082@hermes.lan>
-In-Reply-To: <20200917170203.1a363082@hermes.lan>
-From:   Francesco Ruggeri <fruggeri@arista.com>
-Date:   Thu, 17 Sep 2020 17:40:06 -0700
-Message-ID: <CA+HUmGhEVFaC1gGJiXK7N0hfiDf-4x3of3f54n2cbiDz+SnVZQ@mail.gmail.com>
-Subject: Re: [PATCH v3] net: use exponential backoff in netdev_wait_allrefs
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
+        id S1726366AbgIRAq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 20:46:29 -0400
+Received: from mga18.intel.com ([134.134.136.126]:14361 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726104AbgIRAq3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 20:46:29 -0400
+IronPort-SDR: p8GEtUbXYmb+IonSHERIrHgVLxpTRtfsrCSLVz/irXQL5+pHQ+Sa1Ulgn1VeVzXkB0ZubI2mSn
+ eJisNJDjrJWg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9747"; a="147569973"
+X-IronPort-AV: E=Sophos;i="5.77,272,1596524400"; 
+   d="scan'208";a="147569973"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 17:46:25 -0700
+IronPort-SDR: IOiua5SGRL9EzmRXQC5mUG8TAj1RyY2yPrQEeImJmUoSPV6Llxg8xtnteVr3f7lvGwjPx5/UVa
+ pZrp/oqhie4w==
+X-IronPort-AV: E=Sophos;i="5.77,272,1596524400"; 
+   d="scan'208";a="380728908"
+Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.4])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 17:46:25 -0700
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
         Jiri Pirko <jiri@mellanox.com>,
-        Alexei Starovoitov <ast@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+Subject: [net-next v6 0/5] devlink flash update overwrite mask
+Date:   Thu, 17 Sep 2020 17:45:24 -0700
+Message-Id: <20200918004529.533989-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.28.0.497.g54e85e7af1ac
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 17, 2020 at 5:02 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
-> Is there anyway to make RCU trigger faster?
+This series introduces support for a new attribute to the flash update
+command: DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK.
 
-This is a case of the networking code requiring multiple cascading grace periods
-(functions executing at the end of a period scheduling more functions
-for the end
-of the next period), so it's a matter of how many steps are required,
-rather than
-how fast each step is, if that is what you are suggesting. I don't
-think that expediting
-rcu periods would help in this case, but I will defer to people with better
-knowledge of the networking code than me to comment.
+This attribute is a bitfield which allows userspace to specify what set of
+subfields to overwrite when performing a flash update for a device.
+
+The intention is to support the ability to control the behavior of
+overwriting the configuration and identifying fields in the Intel ice device
+flash update process. This is necessary  as the firmware layout for the ice
+device includes some settings and configuration within the same flash
+section as the main firmware binary.
+
+This series, and the accompanying iproute2 series, introduce support for the
+attribute. Once applied, the overwrite support can be be invoked via
+devlink:
+
+  # overwrite settings
+  devlink dev flash pci/0000:af:00.0 file firmware.bin overwrite settings
+
+  # overwrite identifiers and settings
+  devlink dev flash pci/0000:af:00.0 file firmware.bin overwrite settings overwrite identifiers
+
+To aid in the safe addition of new parameters, first some refactoring is
+done to the .flash_update function: its parameters are converted from a
+series of function arguments into a structure. This makes it easier to add
+the new parameter without changing the signature of the .flash_update
+handler in the future. Additionally, a "supported_flash_update_params" field
+is added to devlink_ops. This field is similar to the ethtool
+"supported_coalesc_params" field. The devlink core will now check that the
+DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT bit is set before forwarding the
+component attribute. Similarly, the new overwrite attribute will also
+require a supported bit.
+
+Doing these refactors will aid in adding any other attributes in the future,
+and creates a good pattern for other interfaces to use in the future. By
+requiring drivers to opt-in, we reduce the risk of accidentally breaking
+drivers when ever we add an additional parameter. We also reduce boiler
+plate code in drivers which do not support the parameters.
+
+Cc: Jiri Pirko <jiri@mellanox.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Michael Chan <michael.chan@broadcom.com>
+Cc: Bin Luo <luobin9@huawei.com>
+Cc: Saeed Mahameed <saeedm@mellanox.com>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: Ido Schimmel <idosch@mellanox.com>
+Cc: Danielle Ratson <danieller@mellanox.com>
+
+Changes since v5
+* Fix *all* of the BIT usage to use _BITUL() (thanks Jakub!)
+
+Changes since v4
+* Renamed nla_overwrite to nla_overwrite_mask at Jiri's suggestion
+* Added "by this device" to the netlink error messages for unsupported
+  attributes
+* Removed use of BIT() in the uapi header
+* Fixed the commit message for the netdevsim patch
+* Picked up Jakub's reviewed tag.
+
+Jacob Keller (5):
+  devlink: check flash_update parameter support in net core
+  devlink: convert flash_update to use params structure
+  devlink: introduce flash update overwrite mask
+  netdevsim: add support for flash_update overwrite mask
+  ice: add support for flash update overwrite mask
+
+ .../networking/devlink/devlink-flash.rst      | 28 +++++++++++++
+ Documentation/networking/devlink/ice.rst      | 31 ++++++++++++++
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 19 ++++-----
+ .../net/ethernet/huawei/hinic/hinic_devlink.c |  8 +---
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 34 ++++++++++-----
+ .../net/ethernet/intel/ice/ice_fw_update.c    | 16 ++++++-
+ .../net/ethernet/intel/ice/ice_fw_update.h    |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  8 +---
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  6 +--
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  2 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  7 +---
+ .../net/ethernet/netronome/nfp/nfp_devlink.c  |  9 ++--
+ drivers/net/netdevsim/dev.c                   | 21 +++++++---
+ drivers/net/netdevsim/netdevsim.h             |  1 +
+ include/net/devlink.h                         | 35 +++++++++++++++-
+ include/uapi/linux/devlink.h                  | 25 +++++++++++
+ net/core/devlink.c                            | 42 +++++++++++++++----
+ .../drivers/net/netdevsim/devlink.sh          | 21 ++++++++++
+ 18 files changed, 247 insertions(+), 68 deletions(-)
+
+
+base-commit: b599a5b9e16698424bced2429e935bee056dcf88
+-- 
+2.28.0.218.ge27853923b9d.dirty
+
