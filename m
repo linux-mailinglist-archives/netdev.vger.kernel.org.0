@@ -2,79 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F046027090F
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 01:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F61F270914
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 01:11:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726202AbgIRXHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 19:07:34 -0400
-Received: from mga14.intel.com ([192.55.52.115]:61468 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726119AbgIRXHe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 19:07:34 -0400
-IronPort-SDR: GQnVTufT/RiVJwA/dwIqov12CvmQznhmyqu00u1ltBpVZeX3vZA5wWu/GuXwnJ89Ue/x+bfp10
- gYm8wJ2mchFg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9748"; a="159361656"
-X-IronPort-AV: E=Sophos;i="5.77,276,1596524400"; 
-   d="scan'208";a="159361656"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2020 16:07:33 -0700
-IronPort-SDR: +Jj++1dXzcHL8EufSsd1S5V17zq0dozd2eJcbymOpQKbx83SZU+Mt0wI6xeUD5Uv5FBtaXKghy
- acQ9rgiO/91Q==
-X-IronPort-AV: E=Sophos;i="5.77,276,1596524400"; 
-   d="scan'208";a="484417788"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.100.226]) ([10.209.100.226])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2020 16:07:32 -0700
-Subject: Re: [net-next v6 0/5] devlink flash update overwrite mask
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, kuba@kernel.org,
-        corbet@lwn.net, michael.chan@broadcom.com, luobin9@huawei.com,
-        saeedm@mellanox.com, leon@kernel.org, idosch@mellanox.com,
-        danieller@mellanox.com
-References: <20200918004529.533989-1-jacob.e.keller@intel.com>
- <20200918.140457.1532137508491847343.davem@davemloft.net>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <be430c1c-b01b-ad04-b800-5f93d670194a@intel.com>
-Date:   Fri, 18 Sep 2020 16:07:32 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
+        id S1726245AbgIRXLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 19:11:08 -0400
+Received: from www62.your-server.de ([213.133.104.62]:48090 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726054AbgIRXLI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 19:11:08 -0400
+X-Greylist: delayed 9585 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 19:11:07 EDT
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kJPX0-0005YC-3T; Sat, 19 Sep 2020 01:11:06 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kJPWz-0005lr-Ur; Sat, 19 Sep 2020 01:11:05 +0200
+Subject: Re: [PATCH bpf v1] tools/bpftool: support passing BPFTOOL_VERSION to
+ make
+To:     Tony Ambardar <tony.ambardar@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20200917115833.1235518-1-Tony.Ambardar@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <f82613f1-9c61-4ccd-0d7c-5cec3b0c1604@iogearbox.net>
+Date:   Sat, 19 Sep 2020 01:11:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200918.140457.1532137508491847343.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200917115833.1235518-1-Tony.Ambardar@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25932/Fri Sep 18 15:48:08 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/18/2020 2:04 PM, David Miller wrote:
-> From: Jacob Keller <jacob.e.keller@intel.com>
-> Date: Thu, 17 Sep 2020 17:45:24 -0700
+On 9/17/20 1:58 PM, Tony Ambardar wrote:
+> This change facilitates out-of-tree builds, packaging, and versioning for
+> test and debug purposes. Defining BPFTOOL_VERSION allows self-contained
+> builds within the tools tree, since it avoids use of the 'kernelversion'
+> target in the top-level makefile, which would otherwise pull in several
+> other includes from outside the tools tree.
 > 
->> This series introduces support for a new attribute to the flash update
->> command: DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK.
->>
->> This attribute is a bitfield which allows userspace to specify what set of
->> subfields to overwrite when performing a flash update for a device.
->>
->> The intention is to support the ability to control the behavior of
->> overwriting the configuration and identifying fields in the Intel ice device
->> flash update process. This is necessary  as the firmware layout for the ice
->> device includes some settings and configuration within the same flash
->> section as the main firmware binary.
->  ...
-> 
-> There are a lot of rejects due to some recent mlxsw changes, could you
-> please respin?
-> 
-> Thank you.
-> 
+> Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
 
-Yep.
-
-Thanks,
-Jake
+Applied, thanks!
