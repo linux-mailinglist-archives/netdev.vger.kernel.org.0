@@ -2,146 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1165270113
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 17:33:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 426C4270142
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 17:44:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726306AbgIRPdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 11:33:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37602 "EHLO
+        id S1726126AbgIRPoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 11:44:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726044AbgIRPdG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 11:33:06 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5ADEC0613CE;
-        Fri, 18 Sep 2020 08:33:05 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id n25so5455468ljj.4;
-        Fri, 18 Sep 2020 08:33:05 -0700 (PDT)
+        with ESMTP id S1725941AbgIRPoi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 11:44:38 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D37DC0613CE
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 08:44:38 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id n61so5766258ota.10
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 08:44:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=wNOM6zr1Mh2QfwiAZNoraDFNpUhjuei2ItlYgdAj68o=;
-        b=QQ4IeIf7b/sTdn6o92fz7i7W/nGyknL7TCt5drh4SX+DtIjdU0wNZdBIfhvSjI1tXI
-         9a9OqVs/9UlxvKOQV5Nf1wejuA0CnhHKNpbKrJoh8L0Q/WrSI5cztmesrqHdf7sxu1bd
-         E3I/SHy9IkSdnBOxCK09LGTu0ecxWjIIAG7CmNpODymN1xshZuT5r36e+KzwlKelEuQO
-         T3t0sPAPvHigwoliZ+vHmK1DD5ORJh9pSk7iKSJwe2VFCvYVTSfAeQeCLST+nO4Qy/a4
-         Ln95qb8Df/PjmPAAmXGdYacXQEnCbhMdwhZBX6Po192xOz1IbJbk+WPMEB454KVtpi+p
-         JvkA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LS9Lok3HYzhgMzH/BOayYnb7/4Jux8Yd0XF3Va6kejI=;
+        b=tJvBabJHFn7XMk8UVdCNlk0FwGYby5dnlRqj+abSSA/PRo3DI+peGc77vnsymjdwZJ
+         mv1etVvtJgV0qOw2YWxeT7CcU8R5iFIlSGV4jcNl1IDwKMuIOXjiC20m7IDRpGrRaM6n
+         EBj6QZTJrj6VzIOgU2qi0Y/vbnd6kw+74r8MUKFBpf7FHZBpmwLknjESs2zXdXLIbtMF
+         EkXgQgQD7UFNhVtcyBfLiqCwpTpc9URwjQbvS1qecNNQhEkJXUAGEzvg9JDJfqzD1RP1
+         WGExsFp5fR01GWtAmI5l7jHxoyvipsUXmT+V8PGatqUEhwXEjFjjErSod10+fzaU5gg2
+         ulXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=wNOM6zr1Mh2QfwiAZNoraDFNpUhjuei2ItlYgdAj68o=;
-        b=thWgKBEXl96Mx4df8mdEgf8I3pZvGKO5kfiJ2BUUYxm67rOlaw2XJ/4zhGsvEKlJpF
-         68sUWtdOAtt6YZe3RftdtzyT6Vzb6hfvEbPe++zV4vxYdZMHEY4immnhsbaeyKhVfpDg
-         7b6BwJ+Dc0UZ5PhvNy1GsJwsrYPL5H+PdmstjYl3QnRJtWp4gPFYV1Aj/NTIHAFj7zxJ
-         zfLmJpg8Qhjr0l1snBhjt28a1LTsugdPHIhSVoX1IiqoNtAYTPf2JxA+5wPy2mCUnYFT
-         ZDMqdxrXqEfaT16TbJr4bS8LmJnaIpn5mvamP9MK5srrFnALbvoyr7HmSzrNKz/uB2QY
-         lSEQ==
-X-Gm-Message-State: AOAM53380zo9PdcsXP7BxOVBwCmz7koLoyTzqwjrGBKx5Neel3SMwUoy
-        QeCUpumE4atuFqodzWcjwyQ=
-X-Google-Smtp-Source: ABdhPJylcdJRAf/I2EOK5WE+iRZcPr52qiGreQL6YhIc6pXd9GLIT/0C02nSUCVAm3rMVa13zTpZ+Q==
-X-Received: by 2002:a05:651c:107b:: with SMTP id y27mr10985574ljm.338.1600443183947;
-        Fri, 18 Sep 2020 08:33:03 -0700 (PDT)
-Received: from mobilestation ([95.79.141.114])
-        by smtp.gmail.com with ESMTPSA id b25sm646174lfc.298.2020.09.18.08.33.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 08:33:03 -0700 (PDT)
-Date:   Fri, 18 Sep 2020 18:33:01 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Kyle Evans <kevans@FreeBSD.org>,
-        Willy Liu <willy.liu@realtek.com>
-Cc:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ryan Kao <ryankao@realtek.com>,
-        Joe Hershberger <joe.hershberger@ni.com>,
-        Peter Robinson <pbrobinson@gmail.com>
-Subject: Re: [PATCH] net: phy: realtek: fix rtl8211e rx/tx delay config
-Message-ID: <20200918153301.chwlvzh6a2bctbjw@mobilestation>
-References: <1600307253-3538-1-git-send-email-willy.liu@realtek.com>
- <20200917101035.uwajg4m524g4lz5o@mobilestation>
- <87c4ebf4b1fe48a7a10b27d0ba0b333c@realtek.com>
- <20200918135403.GC3631014@lunn.ch>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LS9Lok3HYzhgMzH/BOayYnb7/4Jux8Yd0XF3Va6kejI=;
+        b=FWJwiHeY0nkOxpWM9ZbV5hSgKzAI+llViYG12M8E72jBEh308wgfzFxBHa3ReCC4Xt
+         6wHtzkLWqQ60wdyfpZm10UfG2Ty6/aGSyyYbMUcHL5HgaQK0k85X2ehESb45CI0Wwuw0
+         nrkAbG0XAEHTNYs1HByYHXT081tsPoZz2vE9fEqanYufdlhR8OiIa6BtJRKC1YzY/WpG
+         n1/kFrmFhpU0m20RC42PKVBJSmvJp5VqJWLEOS8FO3sUovGbo0xoXJgszZ8JZ9/JbIOb
+         DHkn/Jt713e5vMRjKXC7r02tY63/NN0F/8Ktg6NiOQW6WmWGsDonmXuwXrCn7HyVn0rx
+         8uHw==
+X-Gm-Message-State: AOAM530K0BTz4Adzf2vTY/IEAplAeV20oSc1uNE7IoEO6Tsq+j3f9MQ2
+        CCnHiz3i26VhzLqYRl+axRVAtRngWrgACA==
+X-Google-Smtp-Source: ABdhPJz5+TUNxw83T0OKzyom0d+6nK8oxVydxrCr91fppUGDETdShGEEQ4vfXNaKuvWzbbgJ1SbO5Q==
+X-Received: by 2002:a9d:30d7:: with SMTP id r23mr23459978otg.186.1600443877651;
+        Fri, 18 Sep 2020 08:44:37 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:bd0c:595:7529:c07b])
+        by smtp.googlemail.com with ESMTPSA id p8sm3179934oot.29.2020.09.18.08.44.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Sep 2020 08:44:36 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] ip: promote missed packets to the -s row
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     stephen@networkplumber.org, netdev@vger.kernel.org
+References: <20200916194249.505389-1-kuba@kernel.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <0371023e-f46f-5dfd-6268-e11a18deeb06@gmail.com>
+Date:   Fri, 18 Sep 2020 09:44:35 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
+In-Reply-To: <20200916194249.505389-1-kuba@kernel.org>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200918135403.GC3631014@lunn.ch>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Andrew.
+On 9/16/20 1:42 PM, Jakub Kicinski wrote:
+> missed_packet_errors are much more commonly reported:
+> 
+> linux$ git grep -c '[.>]rx_missed_errors ' -- drivers/ | wc -l
+> 64
+> linux$ git grep -c '[.>]rx_over_errors ' -- drivers/ | wc -l
+> 37
+> 
+> Plus those drivers are generally more modern than those
+> using rx_over_errors.
+> 
+> Since recently merged kernel documentation makes this
+> preference official, let's make ip -s output more informative
+> and let rx_missed_errors take the place of rx_over_errors.
+> 
+> Before:
+> 
+> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+>     link/ether 00:0a:f7:c1:4d:38 brd ff:ff:ff:ff:ff:ff
+>     RX: bytes  packets  errors  dropped overrun mcast
+>     6.04T      4.67G    0       0       0       67.7M
+>     RX errors: length   crc     frame   fifo    missed
+>                0        0       0       0       7
+>     TX: bytes  packets  errors  dropped carrier collsns
+>     3.13T      2.76G    0       0       0       0
+>     TX errors: aborted  fifo   window heartbeat transns
+>                0        0       0       0       6
+> 
+> After:
+> 
+> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+>     link/ether 00:0a:f7:c1:4d:38 brd ff:ff:ff:ff:ff:ff
+>     RX: bytes  packets  errors  dropped missed  mcast
+>     6.04T      4.67G    0       0       7       67.7M
+>     RX errors: length   crc     frame   fifo    overrun
+>                0        0       0       0       0
+>     TX: bytes  packets  errors  dropped carrier collsns
+>     3.13T      2.76G    0       0       0       0
+>     TX errors: aborted  fifo   window heartbeat transns
+>                0        0       0       0       6
 
-On Fri, Sep 18, 2020 at 03:54:03PM +0200, Andrew Lunn wrote:
-> On Fri, Sep 18, 2020 at 06:55:16AM +0000, 劉偉權 wrote:
-> > Hi Serge,
-> 
-> > Thanks for your reply. There is a confidential issue that realtek
-> > doesn't offer the detail of a full register layout for configuration
-> > register.
-> 
-> ...
-> 
-> > >  	 * 0xa4 extension page (0x7) layout. It can be used to disable/enable
-> > >  	 * the RX/TX delays otherwise controlled by RXDLY/TXDLY pins. It can
-> > >  	 * also be used to customize the whole configuration register:
-> > 
-> > > -	 * 8:6 = PHY Address, 5:4 = Auto-Negotiation, 3 = Interface Mode Select,
-> > > -	 * 2 = RX Delay, 1 = TX Delay, 0 = SELRGV (see original PHY datasheet
-> > > -	 * for details).
-> > > +	 * 13 = Force Tx RX Delay controlled by bit12 bit11,
-> > > +	 * 12 = RX Delay, 11 = TX Delay
-> > 
-> 
-> > Here you've removed the register layout description and replaced itq
-> > with just three bits info. So from now the text above doesn't really
-> > corresponds to what follows.
-> 
-> > I might have forgotten something, but AFAIR that register bits
-> > stateq mapped well to what was available on the corresponding
-> > external pins.
-> 
-> Hi Willy
-> 
-
-> So it appears bits 3 to 8 have been reverse engineered. Unless you
-> know from your confidential datasheet that these are wrong, please
-> leave the comment alone.
-> 
-> If you confidential datasheet says that the usage of bits 0-2 is
-> wrong, then please do correct that part.
-
-I've got that info from Kyle post here:
-https://reviews.freebsd.org/D13591
-
-My work with that problem has been done more than a year ago, so I don't
-remember all the details. But IIRC the very first nine bits [8:0] must be a copy
-of what is set on the external configuration pins as I described in the comment.
-AFAIR I tried to manually change these pins [1] and detected that change right
-there in the register. That fully fitted to what Kyle wrote in his post. Alas I
-can't repeat it to be completely sure at the moment due to the lack of the
-hardware. So I might have missed something, and Willy' confirmation about that
-would have been more than welcome. What we can say now for sure I didn't use
-the magic number in my patch. That could have been a mistake from what Willy
-says in the commit-log...
-
-Anyway aside with the Magic bits settings (which by Willy' patch appears to be
-the Tx/Rx delays + Force Tx/Rx delay setting) Kyle also clears the bits 1-2 with
-a comment "Ensure both internal delays are turned off". Willy, what can you say
-about that? Can we really leave them out from the change? Kyle, could you give
-us a comment about your experience with that?
-
-[1] RTL8211E-VB-CG, RTL8211E-VL-CG, RTL8211E-VL-CG, "INTEGRATED 10/100/1000M ETHERNET
-    TRANSCEIVER" Datasheet, Table 13. Configuration Register Definition, Rev. 1.6,
-    03 April 2012, Track ID: JATR-3375-16, p.16
-
--Sergey
-
-> 
->        Andrew
+changes to ip output are usually not allowed.
