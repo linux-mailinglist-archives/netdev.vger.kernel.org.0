@@ -2,409 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE54B26EA5C
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 03:14:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B872B26EA67
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 03:21:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbgIRBNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 21:13:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726252AbgIRBNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 21:13:40 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43783C06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:13:40 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id u3so2132241pjr.3
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:13:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=mY4H8dYRQ92ZkLLDz9zjTf8Td9N5tEw4vOAppkq57Vo=;
-        b=jdrNxleN2tVlKc1hH9J8U2C53negyvBHHMcLJKYidV2KJTQPfqEEJ9RkpPDDFTnVl4
-         jPZizYAQqJxwhV5l/1EUuQe/uyav6h1IYHgw5EEBLP0XqkIH5WsEsPmEkrYN78m67nO3
-         0eFh+wvdZiX1upaf/chVEjJ2n7D+QZAmLTRxPw5x8QkmsHKb/u8LRJJXHieIasG9FdpT
-         CIa5ypYqUy1+4Omndle9FU1vJU8f1yZCxY+aK3e7Kv6sSCRCQ3aZ3UoxC7q1NQzuymeI
-         I/CPqkYsujxtdabneVsUPfp3llaqit5ltU+aJvnvEGnVL4XFIoMw4UvTb4VrBVHzS7nO
-         cO0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=mY4H8dYRQ92ZkLLDz9zjTf8Td9N5tEw4vOAppkq57Vo=;
-        b=W8tdNLRvlCy7fvmNImNC4Rx+8b+bqpvg5gCvnrgJIJpqnjToO/4F6RNnZ6qMuSt1BM
-         gxe4l9mzjHEnDApcsI5q/3VHelM2oJi2RJsgo9OnL2rG8uC3DfMjWKrJo/2MmlttK9L0
-         P6FGXjQloRi1BFxTpy001sS0BbcMVrr9TpnQdXjWYov/acTbXJ+Qp06CwVFcu/esKqLh
-         iEQtsoOypX4pdoMacDVgpd2QFOXDzmhhZAtRSezW1UvcvBEvF6qA5RkDpCiw4gKVbgkn
-         agKPI0PPYI0Rd/Q72rUS3qoLkGzg7NT2kJr+EtHzM4zLpMe6s86xrTyTbr2re7ZeuL+r
-         jw7Q==
-X-Gm-Message-State: AOAM530j7EzWteYV84bd2uDR7W9UJbvNIpyy+iOV03qCI4hiKeWloMB4
-        iws5kYuwtkOk3ZWaZxHRPX9NdrRQkAoHwQ==
-X-Google-Smtp-Source: ABdhPJx66bmmMdU3cA5NBgEzTW7AZFRl/5mMURnb0ZifdalD8rhWYQqHdTcwVtlT7Hhx1GWRZsGvmA==
-X-Received: by 2002:a17:902:161:b029:d1:9bc8:15f1 with SMTP id 88-20020a1709020161b02900d19bc815f1mr30797427plb.39.1600391619322;
-        Thu, 17 Sep 2020 18:13:39 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id e19sm955701pfl.135.2020.09.17.18.13.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 17 Sep 2020 18:13:38 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v5 net-next 5/5] ionic: add devlink firmware update
-Date:   Thu, 17 Sep 2020 18:13:27 -0700
-Message-Id: <20200918011327.31577-6-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200918011327.31577-1-snelson@pensando.io>
-References: <20200918011327.31577-1-snelson@pensando.io>
+        id S1726157AbgIRBVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 21:21:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37998 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725886AbgIRBVE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 21:21:04 -0400
+Received: from rorschach.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 89AFF2087D;
+        Fri, 18 Sep 2020 01:21:03 +0000 (UTC)
+Date:   Thu, 17 Sep 2020 21:21:01 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Marco Elver <elver@google.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH] random32: Use rcuidle variant for tracepoint
+Message-ID: <20200917212101.53287f29@rorschach.local.home>
+In-Reply-To: <20200821153532.GA3205540@elver.google.com>
+References: <20200821063043.1949509-1-elver@google.com>
+        <20200821085907.GJ1362448@hirez.programming.kicks-ass.net>
+        <CANn89i+1MQRCSRVg-af758en5e9nwQBes3aBSjQ6BY1pV5+HdQ@mail.gmail.com>
+        <20200821153532.GA3205540@elver.google.com>
+X-Mailer: Claws Mail 3.17.4git76 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for firmware update through the devlink interface.
-This update copies the firmware object into the device, asks
-the current firmware to install it, then asks the firmware to
-select the new firmware for the next boot-up.
 
-The install and select steps are launched as asynchronous
-requests, which are then followed up with status request
-commands.  These status request commands will be answered with
-an EAGAIN return value and will try again until the request
-has completed or reached the timeout specified.
+[ Late reply, due to Plumbers followed by a much needed vacation and
+  then drowning in 3 weeks of unread email! ]
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
-Acked-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/pensando/ionic/Makefile  |   2 +-
- .../ethernet/pensando/ionic/ionic_devlink.c   |  14 ++
- .../ethernet/pensando/ionic/ionic_devlink.h   |   3 +
- .../net/ethernet/pensando/ionic/ionic_fw.c    | 206 ++++++++++++++++++
- .../net/ethernet/pensando/ionic/ionic_main.c  |  23 +-
- 5 files changed, 239 insertions(+), 9 deletions(-)
- create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_fw.c
+On Fri, 21 Aug 2020 17:35:32 +0200
+Marco Elver <elver@google.com> wrote:
 
-diff --git a/drivers/net/ethernet/pensando/ionic/Makefile b/drivers/net/ethernet/pensando/ionic/Makefile
-index 29f304d75261..8d3c2d3cb10d 100644
---- a/drivers/net/ethernet/pensando/ionic/Makefile
-+++ b/drivers/net/ethernet/pensando/ionic/Makefile
-@@ -5,4 +5,4 @@ obj-$(CONFIG_IONIC) := ionic.o
- 
- ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o ionic_dev.o \
- 	   ionic_debugfs.o ionic_lif.o ionic_rx_filter.o ionic_ethtool.o \
--	   ionic_txrx.o ionic_stats.o
-+	   ionic_txrx.o ionic_stats.o ionic_fw.o
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-index 8d9fb2e19cca..5348f05ebc32 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-@@ -9,6 +9,19 @@
- #include "ionic_lif.h"
- #include "ionic_devlink.h"
- 
-+static int ionic_dl_flash_update(struct devlink *dl,
-+				 const char *fwname,
-+				 const char *component,
-+				 struct netlink_ext_ack *extack)
-+{
-+	struct ionic *ionic = devlink_priv(dl);
-+
-+	if (component)
-+		return -EOPNOTSUPP;
-+
-+	return ionic_firmware_update(ionic->lif, fwname, extack);
-+}
-+
- static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 			     struct netlink_ext_ack *extack)
- {
-@@ -48,6 +61,7 @@ static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 
- static const struct devlink_ops ionic_dl_ops = {
- 	.info_get	= ionic_dl_info_get,
-+	.flash_update	= ionic_dl_flash_update,
- };
- 
- struct ionic *ionic_devlink_alloc(struct device *dev)
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.h b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
-index 0690172fc57a..5c01a9e306d8 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
-@@ -6,6 +6,9 @@
- 
- #include <net/devlink.h>
- 
-+int ionic_firmware_update(struct ionic_lif *lif, const char *fw_name,
-+			  struct netlink_ext_ack *extack);
-+
- struct ionic *ionic_devlink_alloc(struct device *dev);
- void ionic_devlink_free(struct ionic *ionic);
- int ionic_devlink_register(struct ionic *ionic);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_fw.c b/drivers/net/ethernet/pensando/ionic/ionic_fw.c
-new file mode 100644
-index 000000000000..f492ae406a60
---- /dev/null
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_fw.c
-@@ -0,0 +1,206 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2020 Pensando Systems, Inc */
-+
-+#include <linux/kernel.h>
-+#include <linux/types.h>
-+#include <linux/errno.h>
-+#include <linux/firmware.h>
-+
-+#include "ionic.h"
-+#include "ionic_dev.h"
-+#include "ionic_lif.h"
-+#include "ionic_devlink.h"
-+
-+/* The worst case wait for the install activity is about 25 minutes when
-+ * installing a new CPLD, which is very seldom.  Normal is about 30-35
-+ * seconds.  Since the driver can't tell if a CPLD update will happen we
-+ * set the timeout for the ugly case.
-+ */
-+#define IONIC_FW_INSTALL_TIMEOUT	(25 * 60)
-+#define IONIC_FW_SELECT_TIMEOUT		30
-+
-+/* Number of periodic log updates during fw file download */
-+#define IONIC_FW_INTERVAL_FRACTION	32
-+
-+static void ionic_dev_cmd_firmware_download(struct ionic_dev *idev, u64 addr,
-+					    u32 offset, u32 length)
-+{
-+	union ionic_dev_cmd cmd = {
-+		.fw_download.opcode = IONIC_CMD_FW_DOWNLOAD,
-+		.fw_download.offset = offset,
-+		.fw_download.addr = addr,
-+		.fw_download.length = length
-+	};
-+
-+	ionic_dev_cmd_go(idev, &cmd);
-+}
-+
-+static void ionic_dev_cmd_firmware_install(struct ionic_dev *idev)
-+{
-+	union ionic_dev_cmd cmd = {
-+		.fw_control.opcode = IONIC_CMD_FW_CONTROL,
-+		.fw_control.oper = IONIC_FW_INSTALL_ASYNC
-+	};
-+
-+	ionic_dev_cmd_go(idev, &cmd);
-+}
-+
-+static void ionic_dev_cmd_firmware_activate(struct ionic_dev *idev, u8 slot)
-+{
-+	union ionic_dev_cmd cmd = {
-+		.fw_control.opcode = IONIC_CMD_FW_CONTROL,
-+		.fw_control.oper = IONIC_FW_ACTIVATE_ASYNC,
-+		.fw_control.slot = slot
-+	};
-+
-+	ionic_dev_cmd_go(idev, &cmd);
-+}
-+
-+static int ionic_fw_status_long_wait(struct ionic *ionic,
-+				     const char *label,
-+				     unsigned long timeout,
-+				     u8 fw_cmd,
-+				     struct netlink_ext_ack *extack)
-+{
-+	union ionic_dev_cmd cmd = {
-+		.fw_control.opcode = IONIC_CMD_FW_CONTROL,
-+		.fw_control.oper = fw_cmd,
-+	};
-+	unsigned long start_time;
-+	unsigned long end_time;
-+	int err;
-+
-+	start_time = jiffies;
-+	end_time = start_time + (timeout * HZ);
-+	do {
-+		mutex_lock(&ionic->dev_cmd_lock);
-+		ionic_dev_cmd_go(&ionic->idev, &cmd);
-+		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-+		mutex_unlock(&ionic->dev_cmd_lock);
-+
-+		msleep(20);
-+	} while (time_before(jiffies, end_time) && (err == -EAGAIN || err == -ETIMEDOUT));
-+
-+	if (err == -EAGAIN || err == -ETIMEDOUT) {
-+		NL_SET_ERR_MSG_MOD(extack, "Firmware wait timed out");
-+		dev_err(ionic->dev, "DEV_CMD firmware wait %s timed out\n", label);
-+	} else if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Firmware wait failed");
-+	}
-+
-+	return err;
-+}
-+
-+int ionic_firmware_update(struct ionic_lif *lif, const char *fw_name,
-+			  struct netlink_ext_ack *extack)
-+{
-+	struct ionic_dev *idev = &lif->ionic->idev;
-+	struct net_device *netdev = lif->netdev;
-+	struct ionic *ionic = lif->ionic;
-+	union ionic_dev_cmd_comp comp;
-+	u32 buf_sz, copy_sz, offset;
-+	const struct firmware *fw;
-+	struct devlink *dl;
-+	int next_interval;
-+	int err = 0;
-+	u8 fw_slot;
-+
-+	netdev_info(netdev, "Installing firmware %s\n", fw_name);
-+
-+	dl = priv_to_devlink(ionic);
-+	devlink_flash_update_begin_notify(dl);
-+	devlink_flash_update_status_notify(dl, "Preparing to flash", NULL, 0, 0);
-+
-+	err = request_firmware(&fw, fw_name, ionic->dev);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unable to find firmware file");
-+		goto err_out;
-+	}
-+
-+	buf_sz = sizeof(idev->dev_cmd_regs->data);
-+
-+	netdev_dbg(netdev,
-+		   "downloading firmware - size %d part_sz %d nparts %lu\n",
-+		   (int)fw->size, buf_sz, DIV_ROUND_UP(fw->size, buf_sz));
-+
-+	offset = 0;
-+	next_interval = 0;
-+	while (offset < fw->size) {
-+		if (offset >= next_interval) {
-+			devlink_flash_update_status_notify(dl, "Downloading", NULL,
-+							   offset, fw->size);
-+			next_interval = offset + (fw->size / IONIC_FW_INTERVAL_FRACTION);
-+		}
-+
-+		copy_sz = min_t(unsigned int, buf_sz, fw->size - offset);
-+		mutex_lock(&ionic->dev_cmd_lock);
-+		memcpy_toio(&idev->dev_cmd_regs->data, fw->data + offset, copy_sz);
-+		ionic_dev_cmd_firmware_download(idev,
-+						offsetof(union ionic_dev_cmd_regs, data),
-+						offset, copy_sz);
-+		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-+		mutex_unlock(&ionic->dev_cmd_lock);
-+		if (err) {
-+			netdev_err(netdev,
-+				   "download failed offset 0x%x addr 0x%lx len 0x%x\n",
-+				   offset, offsetof(union ionic_dev_cmd_regs, data),
-+				   copy_sz);
-+			NL_SET_ERR_MSG_MOD(extack, "Segment download failed");
-+			goto err_out;
-+		}
-+		offset += copy_sz;
-+	}
-+	devlink_flash_update_status_notify(dl, "Downloading", NULL,
-+					   fw->size, fw->size);
-+
-+	devlink_flash_update_timeout_notify(dl, "Installing", NULL,
-+					    IONIC_FW_INSTALL_TIMEOUT);
-+
-+	mutex_lock(&ionic->dev_cmd_lock);
-+	ionic_dev_cmd_firmware_install(idev);
-+	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-+	ionic_dev_cmd_comp(idev, (union ionic_dev_cmd_comp *)&comp);
-+	fw_slot = comp.fw_control.slot;
-+	mutex_unlock(&ionic->dev_cmd_lock);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to start firmware install");
-+		goto err_out;
-+	}
-+
-+	err = ionic_fw_status_long_wait(ionic, "Installing",
-+					IONIC_FW_INSTALL_TIMEOUT,
-+					IONIC_FW_INSTALL_STATUS,
-+					extack);
-+	if (err)
-+		goto err_out;
-+
-+	devlink_flash_update_timeout_notify(dl, "Selecting", NULL,
-+					    IONIC_FW_SELECT_TIMEOUT);
-+
-+	mutex_lock(&ionic->dev_cmd_lock);
-+	ionic_dev_cmd_firmware_activate(idev, fw_slot);
-+	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-+	mutex_unlock(&ionic->dev_cmd_lock);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to start firmware select");
-+		goto err_out;
-+	}
-+
-+	err = ionic_fw_status_long_wait(ionic, "Selecting",
-+					IONIC_FW_SELECT_TIMEOUT,
-+					IONIC_FW_ACTIVATE_STATUS,
-+					extack);
-+	if (err)
-+		goto err_out;
-+
-+	netdev_info(netdev, "Firmware update completed\n");
-+
-+err_out:
-+	if (err)
-+		devlink_flash_update_status_notify(dl, "Flash failed", NULL, 0, 0);
-+	else
-+		devlink_flash_update_status_notify(dl, "Flash done", NULL, 0, 0);
-+	release_firmware(fw);
-+	devlink_flash_update_end_notify(dl);
-+	return err;
-+}
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index 99e9dd15a303..e339216949a6 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -335,17 +335,22 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
- 	 */
- 	max_wait = jiffies + (max_seconds * HZ);
- try_again:
-+	opcode = idev->dev_cmd_regs->cmd.cmd.opcode;
- 	start_time = jiffies;
- 	do {
- 		done = ionic_dev_cmd_done(idev);
- 		if (done)
- 			break;
--		msleep(5);
--		hb = ionic_heartbeat_check(ionic);
-+		usleep_range(100, 200);
-+
-+		/* Don't check the heartbeat on FW_CONTROL commands as they are
-+		 * notorious for interrupting the firmware's heartbeat update.
-+		 */
-+		if (opcode != IONIC_CMD_FW_CONTROL)
-+			hb = ionic_heartbeat_check(ionic);
- 	} while (!done && !hb && time_before(jiffies, max_wait));
- 	duration = jiffies - start_time;
- 
--	opcode = idev->dev_cmd_regs->cmd.cmd.opcode;
- 	dev_dbg(ionic->dev, "DEVCMD %s (%d) done=%d took %ld secs (%ld jiffies)\n",
- 		ionic_opcode_to_str(opcode), opcode,
- 		done, duration / HZ, duration);
-@@ -369,8 +374,9 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
- 
- 	err = ionic_dev_cmd_status(&ionic->idev);
- 	if (err) {
--		if (err == IONIC_RC_EAGAIN && !time_after(jiffies, max_wait)) {
--			dev_err(ionic->dev, "DEV_CMD %s (%d) error, %s (%d) retrying...\n",
-+		if (err == IONIC_RC_EAGAIN &&
-+		    time_before(jiffies, (max_wait - HZ))) {
-+			dev_dbg(ionic->dev, "DEV_CMD %s (%d), %s (%d) retrying...\n",
- 				ionic_opcode_to_str(opcode), opcode,
- 				ionic_error_to_str(err), err);
- 
-@@ -380,9 +386,10 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
- 			goto try_again;
- 		}
- 
--		dev_err(ionic->dev, "DEV_CMD %s (%d) error, %s (%d) failed\n",
--			ionic_opcode_to_str(opcode), opcode,
--			ionic_error_to_str(err), err);
-+		if (!(opcode == IONIC_CMD_FW_CONTROL && err == IONIC_RC_EAGAIN))
-+			dev_err(ionic->dev, "DEV_CMD %s (%d) error, %s (%d) failed\n",
-+				ionic_opcode_to_str(opcode), opcode,
-+				ionic_error_to_str(err), err);
- 
- 		return ionic_error_to_errno(err);
- 	}
--- 
-2.17.1
+> So, if the _rcuidle() variant here doesn't break your usecase, there
+> should be no harm in using the _rcuidle() variant. This also lifts the
+> restriction on where prandom_u32() is usable to what it was before,
+> which should be any context.
+> 
+> Steven, Peter: What's the downside to of _rcuidle()?
 
+_rcuidle() only has a slightly more overhead in the tracing path (it's
+no different when not tracing). There's not a issue with _rcuidle()
+itself. The issue is that we need to have it. We'd like it to be that
+rcu *is* watching always except for a very minimal locations when
+switching context (kernel to and from user and running to and from
+idle), and then we just don't let tracing or anything that needs rcu in
+those locations.
+
+But for your patch:
+
+Acked-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+
+-- Steve
