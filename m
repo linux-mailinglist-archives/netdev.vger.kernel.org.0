@@ -2,152 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78E2726F430
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 05:13:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D6D126F4AF
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 05:26:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730635AbgIRDMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 23:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36110 "EHLO
+        id S1726495AbgIRD0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 23:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726932AbgIRDMk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 23:12:40 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9198C06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 20:12:39 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id l67so4058540ybb.7
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 20:12:39 -0700 (PDT)
+        with ESMTP id S1726187AbgIRD0s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 23:26:48 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D96C06174A;
+        Thu, 17 Sep 2020 20:26:48 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id s205so3830488lja.7;
+        Thu, 17 Sep 2020 20:26:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=64ZOoFGaOH0m/cPAtUtUGXYMPXoup8s7otAhkDt2H3M=;
-        b=UEW/Lh9lpl7cJQgrlAzxT3Ymbi9kik5IAj7EVI1GY2T6uE0YvsPwYWJedj5Yjddxb2
-         Nf9za12XPUpgMNJbYMg3nxYfm7tIUa4E4ybFE5NmmN662fd1cbc8aIWNfJTGDeVCo9Wq
-         1WJwF/8g5Ie4JkrEp9yIEza/HU17XBEhrMrcZRi+O9Jy9X/8DLPtjMbgX1ooTVXaYZ9G
-         9BkQbDFFUO3xE+c8n671VgQ1E2yeVtyvKvMHC2aqjootukqzQUqvzZd7GwT9bLVII80l
-         GbNwo30YIeEqvnUnUiLC8wEkHkGFP8RAbeLu0YLLKHJRU6RYHFMxIIgwCRY3z2vSxCxk
-         iZxQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ul5zV1bRKVhaboMGt4RIwflaVUDt2n5N8zmSNNGL//Q=;
+        b=Xbh29cptn7V8etz1DmYG2B8mEtgeeJJK3HUvkLKDpWtHIm+G3EduvKJEkxeS8+dE2D
+         gessXLggtGUpsHT2mU/74TsWh+eeytAeXExsLkL0uWwVxfu2DC+YRNRsYXMucQs+OVzY
+         ZXjvJep2NoLlhcdQ9nazv9qgm1bf3uJjAASL7T55VEm8WHny7U8snKPZgGN/3s2BNBaG
+         Rz4bd+R/CAH9Z1XrWzEgqgbZjWO0WXuY07i805EdiLpJ2FZQ9j+zIdbUbiVq6Nk0sP1c
+         eAuYu/liVug0/oB+deF8qNq6najOIjfIWmmYVReUe4yeawxFR0062R/xZwP7cfFPZZtP
+         IBHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=64ZOoFGaOH0m/cPAtUtUGXYMPXoup8s7otAhkDt2H3M=;
-        b=eUBV0FGEWuM+C/Z1WqxzSCyTZsBq7K6sOKa/KTp4SngHjlLjjiF3o60W+MPpbLpCKU
-         eQIuYZeHIbrgK1olOit78vA7g5gMa0NWryNWO4Lb2NF8paGl430wNXguM5IXdkfLdQYA
-         fGtseYWon5DDKy7h8wxNOx8QWHeZ6nWj1XpWtaSTaNuo6+oFma8ldiZDzcXSN1LXLOhU
-         IqldWMISbJgUucnnk7Jdy9TukZppZpArm60M2R9baMWZPHopDURAawA0HWqfh0NIZvmf
-         IIIfRIcMC+5wXXj2p3tpozCG/ZDG1DLC8eaArfl4imzf8S7RXvc/gY9CY9W3k9Wr0ckY
-         dZBw==
-X-Gm-Message-State: AOAM532umRFz1v52dExkDeWmQqfnfB72JWmGrJ78If1IHJyvHgX4aGhC
-        3JHDvAUIRtFWgoWIJUgIaOQ4uX61ngDhYEq4Lw==
-X-Google-Smtp-Source: ABdhPJxxoVj4sVwb3Pqb1zFKEUNanXR2/70HGloVVRNpSIBlL1Bw+Xd+ataxUCDEF5kqhDcJIjajKb/vuIQfOrUh9A==
-X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:10:f693:9fff:fef4:4e45])
- (user=howardchung job=sendgmr) by 2002:a25:d408:: with SMTP id
- m8mr41594928ybf.204.1600398759153; Thu, 17 Sep 2020 20:12:39 -0700 (PDT)
-Date:   Fri, 18 Sep 2020 11:11:53 +0800
-In-Reply-To: <20200918111110.v3.1.I27ef2a783d8920c147458639f3fa91b69f6fd9ea@changeid>
-Message-Id: <20200918111110.v3.6.I756c1fecc03bcc0cd94400b4992cd7e743f4b3e2@changeid>
-Mime-Version: 1.0
-References: <20200918111110.v3.1.I27ef2a783d8920c147458639f3fa91b69f6fd9ea@changeid>
-X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
-Subject: [PATCH v3 6/6] Bluetooth: Add toggle to switch off interleave scan
-From:   Howard Chung <howardchung@google.com>
-To:     linux-bluetooth@vger.kernel.org
-Cc:     howardchung@google.com, luiz.dentz@gmail.com, marcel@holtmann.org,
-        mcchou@chromium.org, mmandlik@chromium.org, alainm@chromium.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ul5zV1bRKVhaboMGt4RIwflaVUDt2n5N8zmSNNGL//Q=;
+        b=hCqI6VYPgpaO4YzLhehL4E5aiHCtFt7tPB5S4efi6muauyUc7SBnQXwXXi5fXbImeQ
+         B1FW405bJG+e57M4swDqtkZ8yjn+t1TgRFWV1VraHN176OqtFKl7fuVDaQUekCXSCRBf
+         0O1BC82ZBiHPUxTKwPjPGTxMUTSu62F6yMCvRcNvCCv0ytuAVDdD7+zo2zXypo18SFf6
+         1QSCDVh0VXEbTtjdBWzka2oWik90SPSTJe48sTR3GcDASprPtBpPY9j+6js0lILJFWCX
+         BxewAEg01n7XSp+RG2/r9Oy6SUIFAttK6HOWvw1Mwb93KZPNOOPf8DcN4y6FmPP5sDtM
+         OfNw==
+X-Gm-Message-State: AOAM532tbAfxcyYAJIfR9YquxHng/vVL5LjqN+62Xo0dIRPRElqoIXSW
+        8tcUmOL7pSuNb5EqNi4tD9H/d5gl+VIEkP+cJPI=
+X-Google-Smtp-Source: ABdhPJz5pboofniwqNeviqdOXxDp3qsHvEIs0H2zqpQwjZ+LfvN8HQhlNmKbZXFd17UKmc2Rct/csfXJbDccr6g62A0=
+X-Received: by 2002:a2e:808f:: with SMTP id i15mr10349752ljg.51.1600399606517;
+ Thu, 17 Sep 2020 20:26:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200916211010.3685-1-maciej.fijalkowski@intel.com>
+In-Reply-To: <20200916211010.3685-1-maciej.fijalkowski@intel.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 17 Sep 2020 20:26:34 -0700
+Message-ID: <CAADnVQLEYHZLeu-d4nV5Px6t+tVtYEgg8AfPE5-GwAS1uizc0w@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next 0/7] bpf: tailcalls in BPF subprograms
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add a configurable parameter to switch off the interleave
-scan feature.
+On Wed, Sep 16, 2020 at 2:16 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> Changelog:
+>
+> v7->v8:
+> - teach bpf_patch_insn_data to adjust insn_idx of tailcall insn
+> - address case of clearing tail call counter when bpf2bpf with tailcalls
+>   are mixed
+> - drop unnecessary checks against cbpf in JIT
+> - introduce more tailcall_bpf2bpf[X] selftests that are making sure the
+>   combination of tailcalls with bpf2bpf calls works correctly
+> - add test cases to test_verifier to make sure logic from
+>   check_max_stack_depth that limits caller's stack depth down to 256 is
+>   correct
+> - move the main patch to appear after the one that limits the caller's
+>   stack depth so that 'has_tail_call' can be used by 'tail_call_reachable'
+>   logic
 
-Signed-off-by: Howard Chung <howardchung@google.com>
-Reviewed-by: Alain Michaud <alainm@chromium.org>
----
+Thanks a lot for your hard work on this set. 5 month effort!
+I think it's a huge milestone that will enable cilium, cloudflare, katran to
+use bpf functions. Removing always_inline will improve performance.
+Switching to global functions with function-by-function verification
+will drastically improve program load times.
+libbpf has full support for subprogram composition and call relocations.
+Until now these verifier and libbpf features were impossible to use in XDP
+programs, since most of them use tail_calls.
+It's great to see all these building blocks finally coming together.
 
-(no changes since v1)
+I've applied the set with few changes.
+In patch 4 I've removed ifdefs and redundant ().
+In patch 5 removed redundant !tail_call_reachable check.
+In patch 6 replaced CONFIG_JIT_ALWAYS_ON dependency with
+jit_requested && IS_ENABLED(CONFIG_X86_64).
+It's more user friendly.
+I also added patch 7 that checks that ld_abs and tail_call are only
+allowed in subprograms that return 'int'.
+I felt that the fix is simple enough, so I just pushed it, since
+without it the set is not safe. Please review it here:
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=09b28d76eac48e922dc293da1aa2b2b85c32aeee
+I'll address any issues in the followups.
+Because of the above changes I tweaked patch 8 to increase test coverage
+with ld_abs and combination of global/static subprogs.
+Also did s/__attribute__((noinline))/__noinline/.
 
- include/net/bluetooth/hci_core.h | 1 +
- net/bluetooth/hci_core.c         | 1 +
- net/bluetooth/hci_request.c      | 3 ++-
- net/bluetooth/mgmt_config.c      | 6 ++++++
- 4 files changed, 10 insertions(+), 1 deletion(-)
+John and Daniel,
+I wasn't able to test it on cilium programs.
+When you have a chance please give it a thorough run.
+tail_call poke logic is delicate.
 
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 179350f869fdb..c3253f1cac0c2 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -363,6 +363,7 @@ struct hci_dev {
- 	__u32		clock;
- 	__u16		advmon_allowlist_duration;
- 	__u16		advmon_no_filter_duration;
-+	__u16		enable_advmon_interleave_scan;
- 
- 	__u16		devid_source;
- 	__u16		devid_vendor;
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 6c8850149265a..4608715860cce 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3595,6 +3595,7 @@ struct hci_dev *hci_alloc_dev(void)
- 	/* The default values will be chosen in the future */
- 	hdev->advmon_allowlist_duration = 300;
- 	hdev->advmon_no_filter_duration = 500;
-+	hdev->enable_advmon_interleave_scan = 0x0001;	/* Default to enable */
- 
- 	hdev->sniff_max_interval = 800;
- 	hdev->sniff_min_interval = 80;
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 1fcf6736811e4..bb38e1dead68f 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -500,7 +500,8 @@ static void __hci_update_background_scan(struct hci_request *req)
- 		if (hci_dev_test_flag(hdev, HCI_LE_SCAN))
- 			hci_req_add_le_scan_disable(req, false);
- 
--		if (!update_adv_monitor_scan_state(hdev)) {
-+		if (!hdev->enable_advmon_interleave_scan ||
-+		    !update_adv_monitor_scan_state(hdev)) {
- 			hci_req_add_le_passive_scan(req);
- 			bt_dev_dbg(hdev, "%s starting background scanning",
- 				   hdev->name);
-diff --git a/net/bluetooth/mgmt_config.c b/net/bluetooth/mgmt_config.c
-index 1802f7023158c..b4198c33a1b72 100644
---- a/net/bluetooth/mgmt_config.c
-+++ b/net/bluetooth/mgmt_config.c
-@@ -69,6 +69,7 @@ int read_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 						def_le_autoconnect_timeout),
- 		HDEV_PARAM_U16(0x001d, advmon_allowlist_duration),
- 		HDEV_PARAM_U16(0x001e, advmon_no_filter_duration),
-+		HDEV_PARAM_U16(0x001f, enable_advmon_interleave_scan),
- 	};
- 	struct mgmt_rp_read_def_system_config *rp = (void *)params;
- 
-@@ -142,6 +143,7 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 		case 0x001b:
- 		case 0x001d:
- 		case 0x001e:
-+		case 0x001f:
- 			if (len != sizeof(u16)) {
- 				bt_dev_warn(hdev, "invalid length %d, exp %zu for type %d",
- 					    len, sizeof(u16), type);
-@@ -263,6 +265,10 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 			hdev->advmon_no_filter_duration =
- 							TLV_GET_LE16(buffer);
- 			break;
-+		case 0x0001f:
-+			hdev->enable_advmon_interleave_scan =
-+							TLV_GET_LE16(buffer);
-+			break;
- 		default:
- 			bt_dev_warn(hdev, "unsupported parameter %u", type);
- 			break;
--- 
-2.28.0.681.g6f77f65b4e-goog
+Lorenz,
+if you can test it on cloudflare progs would be awesome.
 
+Thanks a lot everyone!
