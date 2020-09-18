@@ -2,163 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2513926EA48
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 03:08:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B6CC26EA4B
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 03:08:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726267AbgIRBHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 21:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44896 "EHLO
+        id S1726281AbgIRBIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 21:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726157AbgIRBHq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 21:07:46 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D729DC06178B
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:45 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id n22so4415335edt.4
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:45 -0700 (PDT)
+        with ESMTP id S1726007AbgIRBIP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 21:08:15 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D39C06174A;
+        Thu, 17 Sep 2020 18:08:15 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id z25so4791029iol.10;
+        Thu, 17 Sep 2020 18:08:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7Hu8VdlegKI/1lhVBESROiNGyqeA3bjfSgyKXWbmCq8=;
-        b=BSw9tUD7M/p6l/nVEU1LkF8SmDk3LKqAnnNRu9l2w3oC/r1gDMV9Yeox4Za4xBXBvb
-         T1dvH0rdRXoKFKlyXaxJKLlgaZ+U+pQdLPqkUSOfguLGgm6QX9Z7KuVh4zkc931lJjPB
-         HFblbS23WfL4HLzpLMkAAWXPbAky2/dsjI0lArAL23m9AAsJfKjhZGDw1yJ6SY451Nnm
-         OJIoWgHKuXRNfagewc0ZW8qfDLASG2XCtao0L8iblUizB1sEworPbt+y0CEuD+SLyTV4
-         7zLAsTDojN2RPtfasDJL06vXrBbwHMMrRlknYdjwxemisYIswqGuYXLCS89UH8uPvY04
-         e6rw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5w1jmkXLC7ZwZwnPVxI2ivN+2SEzDaz1fMdarp99Kwo=;
+        b=WEUhEa7orWf6PhBUa1v74+0qpiq/4c9HRRr+wRAlV7FU7UarkdO6LbISTTjvpQ5Vuk
+         Uys1J+l0Vl/EDAgseDjRa/swCgMx5CGLegC2NCbdQxc5APtGh+PjXomuxN5qrRr/B7U3
+         IPgyFxwKWroYA9aFlctSU0rmFNQq9gXP/VqNaC2ZeGIOx7ksnSppt/3ZkxVBDbhdORZJ
+         3jyYwsBDxModyirPNvxHOoKR6a9K/uxrQA1dLRB18eJGhA6PE27O58GWmj2QYrk37hfH
+         qOf/jILVDVdUOSAs9OmcPlse1ckVkNeYkJA5ezuYe6DgOx81JW9TF5r+WO0QqyN9wpGl
+         YjUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7Hu8VdlegKI/1lhVBESROiNGyqeA3bjfSgyKXWbmCq8=;
-        b=bXLgNksYnvjufAMjDZwFs0XAMr0l1hYwRJvZ+W258Q2kUutNPdFYu1dw/2WdWQ51NH
-         8DvtGaaSmfGnj9NMUyhw9xaj/YMIbQgPMDX/Hr5Vl0iZCRzvZg3gWCA00wuHAeu08TCz
-         /Ufq7LKoPXbdRDhqmlBnRtfVcQagA4+7afHG80Hd9Ls5xMdMsRsr9QpsIVuQr2lineVr
-         H5gKzrK+bkXMYdaHR4z4t9GpRia3HjUwpMS/wdoRvtFp9kgNUOQ3efpqecO697D0Ft0r
-         voVgqnItf247hssxBdbnrL+y09KFc7VqVCXfnTsnRpGqtK+0qQoQkAXQVecdVTeCNDDF
-         tKnA==
-X-Gm-Message-State: AOAM531c6ZEVKgyOXD6TmuwEvJYHWb8IlaNmufpEflW4B6QHnPbLG7Ol
-        9bm9wF3gsrpvEeWM2c2uzXA=
-X-Google-Smtp-Source: ABdhPJyqp97dMrbdGJD6G0sPlhzXgvJHbYIacXWFAaGAa56FGg5sqTXCIUE/HkaZ8pUY4pc4dCFhWw==
-X-Received: by 2002:aa7:c1c3:: with SMTP id d3mr36276701edp.228.1600391264567;
-        Thu, 17 Sep 2020 18:07:44 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id g20sm1068591ejx.12.2020.09.17.18.07.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Sep 2020 18:07:44 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
-        UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org
-Subject: [PATCH v2 net 8/8] net: mscc: ocelot: deinitialize only initialized ports
-Date:   Fri, 18 Sep 2020 04:07:30 +0300
-Message-Id: <20200918010730.2911234-9-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200918010730.2911234-1-olteanv@gmail.com>
-References: <20200918010730.2911234-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5w1jmkXLC7ZwZwnPVxI2ivN+2SEzDaz1fMdarp99Kwo=;
+        b=puUsTFapMgN9R7IZ1BTntjekA+sjrDl65YVtolHjbuW5C85pIixhnI+y2Nm9rsHOAY
+         Qrq3WpzcyrI6sDj8mlgEqPeGroO7FEmm5eIw3ytNVqVSclUUSgNq+wH35b2MAjr1sr3n
+         MEhTCfZNApmPHRyrfvqpD+CHZcnu3A06dVo0namGfd/nuVqoL1ZKQL88wniFLJO+wthE
+         NRB7/EFRdFwmgPs3Ag2bNwlEslnwwKh/hk/wagyCclwqRC3kER5bYribKLHbLhufoVxe
+         tvM+uG4kaw5jq6imIAnzOu0eqw2LVa4/Mvi3kOv4i+tmBPgJDcliMPVt86zIkW6bkTua
+         ecfA==
+X-Gm-Message-State: AOAM533OFfqJZK10UwLHEAIcANVePwz9uV2f4vq5G4GxW4LR/y3m8Mr9
+        7y1vIwxinKsneXQoX1abVJB4lfZLnDYva06P7so=
+X-Google-Smtp-Source: ABdhPJylCFqHxDlCTZWyHu0BaOy73iAIDqIuldCUzhR44fNPFG91gkwupqhxOT03KAsUXGBQxk2VdaOrNwNzTL3W6RA=
+X-Received: by 2002:a02:ce8c:: with SMTP id y12mr29409632jaq.53.1600391294416;
+ Thu, 17 Sep 2020 18:08:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200917115833.1235518-1-Tony.Ambardar@gmail.com>
+ <33dd4a10-9b2a-7315-7709-cd8e7c1cd030@isovalent.com> <CAPhsuW62F8CkQbrZpg-YEA+qyZ7=ra+aRwMaxEyU6zKBqZRCnQ@mail.gmail.com>
+In-Reply-To: <CAPhsuW62F8CkQbrZpg-YEA+qyZ7=ra+aRwMaxEyU6zKBqZRCnQ@mail.gmail.com>
+From:   Tony Ambardar <tony.ambardar@gmail.com>
+Date:   Thu, 17 Sep 2020 18:08:04 -0700
+Message-ID: <CAPGftE9+xn4y6vY5LH3txVmMZ7k6C+QAdULv6CR5EWAJB54=cg@mail.gmail.com>
+Subject: Re: [PATCH bpf v1] tools/bpftool: support passing BPFTOOL_VERSION to make
+To:     Song Liu <song@kernel.org>
+Cc:     Quentin Monnet <quentin@isovalent.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Thu, 17 Sep 2020 at 16:27, Song Liu <song@kernel.org> wrote:
+>
+> On Thu, Sep 17, 2020 at 7:58 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >
+> > On 17/09/2020 12:58, Tony Ambardar wrote:
+> > > This change facilitates out-of-tree builds, packaging, and versioning for
+> > > test and debug purposes. Defining BPFTOOL_VERSION allows self-contained
+> > > builds within the tools tree, since it avoids use of the 'kernelversion'
+> > > target in the top-level makefile, which would otherwise pull in several
+> > > other includes from outside the tools tree.
+> > >
+> > > Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+> >
+> > Acked-by: Quentin Monnet <quentin@isovalent.com>
+>
+> Acked-by: Song Liu <songliubraving@fb.com>
 
-Currently mscc_ocelot_init_ports() will skip initializing a port when it
-doesn't have a phy-handle, so the ocelot->ports[port] pointer will be
-NULL. Take this into consideration when tearing down the driver, and add
-a new function ocelot_deinit_port() to the switch library, mirror of
-ocelot_init_port(), which needs to be called by the driver for all ports
-it has initialized.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes in v2:
-Patch is new.
-
- drivers/net/dsa/ocelot/felix.c             |  3 +++
- drivers/net/ethernet/mscc/ocelot.c         | 16 ++++++++--------
- drivers/net/ethernet/mscc/ocelot_vsc7514.c |  2 ++
- include/soc/mscc/ocelot.h                  |  1 +
- 4 files changed, 14 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index f7b43f8d56ed..64939ee14648 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -624,10 +624,13 @@ static void felix_teardown(struct dsa_switch *ds)
- {
- 	struct ocelot *ocelot = ds->priv;
- 	struct felix *felix = ocelot_to_felix(ocelot);
-+	int port;
- 
- 	if (felix->info->mdio_bus_free)
- 		felix->info->mdio_bus_free(ocelot);
- 
-+	for (port = 0; port < ocelot->num_phys_ports; port++)
-+		ocelot_deinit_port(ocelot, port);
- 	ocelot_deinit_timestamp(ocelot);
- 	/* stop workqueue thread */
- 	ocelot_deinit(ocelot);
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 83eb7c325061..8518e1d60da4 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1550,18 +1550,18 @@ EXPORT_SYMBOL(ocelot_init);
- 
- void ocelot_deinit(struct ocelot *ocelot)
- {
--	struct ocelot_port *port;
--	int i;
--
- 	cancel_delayed_work(&ocelot->stats_work);
- 	destroy_workqueue(ocelot->stats_queue);
- 	mutex_destroy(&ocelot->stats_lock);
--
--	for (i = 0; i < ocelot->num_phys_ports; i++) {
--		port = ocelot->ports[i];
--		skb_queue_purge(&port->tx_skbs);
--	}
- }
- EXPORT_SYMBOL(ocelot_deinit);
- 
-+void ocelot_deinit_port(struct ocelot *ocelot, int port)
-+{
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
-+
-+	skb_queue_purge(&ocelot_port->tx_skbs);
-+}
-+EXPORT_SYMBOL(ocelot_deinit_port);
-+
- MODULE_LICENSE("Dual MIT/GPL");
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 252c49b5f22b..e02fb8bfab63 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -908,6 +908,8 @@ static void mscc_ocelot_release_ports(struct ocelot *ocelot)
- 		if (!ocelot_port)
- 			continue;
- 
-+		ocelot_deinit_port(ocelot, port);
-+
- 		priv = container_of(ocelot_port, struct ocelot_port_private,
- 				    port);
- 
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 4521dd602ddc..0ac4e7fba086 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -678,6 +678,7 @@ void ocelot_configure_cpu(struct ocelot *ocelot, int npi,
- int ocelot_init(struct ocelot *ocelot);
- void ocelot_deinit(struct ocelot *ocelot);
- void ocelot_init_port(struct ocelot *ocelot, int port);
-+void ocelot_deinit_port(struct ocelot *ocelot, int port);
- 
- /* DSA callbacks */
- void ocelot_port_enable(struct ocelot *ocelot, int port,
--- 
-2.25.1
-
+I should clarify for those performing stand-alone builds that a few
+items are still required from outside the tools/ tree:
+kernel/bpf/disasm.[ch] and scripts/bpf_helpers_doc.py. Not sure that's
+worth updating the commit description however.
