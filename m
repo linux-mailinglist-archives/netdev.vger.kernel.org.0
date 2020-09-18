@@ -2,69 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38C6827074F
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 22:47:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68052270752
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 22:47:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgIRUrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 16:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57924 "EHLO
+        id S1726456AbgIRUrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 16:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726247AbgIRUrI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 16:47:08 -0400
-Received: from mail-oo1-xc41.google.com (mail-oo1-xc41.google.com [IPv6:2607:f8b0:4864:20::c41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F7AEC0613CE;
-        Fri, 18 Sep 2020 13:47:08 -0700 (PDT)
-Received: by mail-oo1-xc41.google.com with SMTP id g26so1759640ooa.9;
-        Fri, 18 Sep 2020 13:47:08 -0700 (PDT)
+        with ESMTP id S1726154AbgIRUrl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 16:47:41 -0400
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B074C0613CE;
+        Fri, 18 Sep 2020 13:47:41 -0700 (PDT)
+Received: by mail-ot1-x344.google.com with SMTP id a2so6592000otr.11;
+        Fri, 18 Sep 2020 13:47:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=sender:subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zqU4dHq3cnc2cyAhM+VlOdSlfj3aXvC5EFVqPqbMfWE=;
-        b=Cv80qOtppzDi4hEsUIIA9NynPwWDXrUWBE7Utl+nRL151JiZFmkaV9mGVuzIivtIYq
-         rSM5wR2W/PVEOn9iPIwGmVKpdq3cbGnXs+a2SEncTq5FSbQiNMOqX96xxENlmRXvjLkS
-         GdqSXCcd7Ls7t06HZYp+m9PnASZ/WUL4M5t6AUW06XuBvTgS/rabJCgs7fJj8kljdVK6
-         NJqlvKMfkIyAidR9rgmcGmGa8o9+MelDUwM67RJnRORKYEqJoOmfH1YHiN6HnDxhbm3h
-         cDCJZW+rUIYtey/+Rg+G+H+wDJYhkurnATe8vuq3enVvfPngePkkzSJCgBoBTxM8Q+fx
-         0Yeg==
+        bh=fjLUBBkNYRNts2lWPX+gVf9aF11G3Xxzq9mQdqSzF28=;
+        b=onfwCGpYJskG/64FG+WpQXptndQupzPdHGfVajzBf2EZW/sFFdf7xmzd3IFtBebo9o
+         5iImK8XnQMt4rPPweI++wIGomvbB64xJTT/Q5yS1kgLT0NumbXcAow5NIYENgbFuex0y
+         8O9yjKv+Y/dFqn7jsUOhRD7DKy3ij4g5Sdxr9FdgOfEswmZzgIKhfsKgEsoZavLmV/et
+         RktR5tWiwwkx3cbV9ZsUCP6FALgM3BmEeAITzDlKpv6o8AWICN6UqADhUQkGBXHGo6Fv
+         ynARRXgy04xi76Wt0C0tl4zLyEp6VEBcxWM4fA7Q4aMRBXVkHpRDoe06p1VXJXu8dHVe
+         gSNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=zqU4dHq3cnc2cyAhM+VlOdSlfj3aXvC5EFVqPqbMfWE=;
-        b=C1cc8D1RiBElgGF28xw6CScV2PViG5wTT1FCx29KJMYZXd/2rFeW7jZQ+fyYI0uz+O
-         Aen6IzZDHTFguACnEl73PtnCxjyjp5lQtGellsnRmuJjYMxUevmRKiqY7ZB+/LBPNF+8
-         aMygpRIv/TRfu/7emLDfdrMNcdMXWl0Q4vDljy9ZaEjbC8+jFQzdKcMLYuph42PQSFWU
-         eODh37DQ0tngsQLTmzPFMJiGMK4IVDvvhOckPkszB584hm2HeT/E6Yx/Uxa29RkXnug+
-         6ZO08JNmfv5pDqA0Htc9c7jGEVm41DYSHSbPMzwN3KUehENPZgZBljPP7KnvNe8bI1p4
-         v2RA==
-X-Gm-Message-State: AOAM530usWvnI6u5bpbVw+voRX6nteyz+VnmcyBATNUJM8/Elk0BKCVJ
-        lw0HC9P7Fx45jzeVGAi0UGjF7EefsSo=
-X-Google-Smtp-Source: ABdhPJx9MpGLvkaa+tUmwmS/7S0wT0cgHv7CtmeI6rL0ncQopy3U+FcBqkfgQ2Lwbzgs8IPlKywD1A==
-X-Received: by 2002:a4a:c909:: with SMTP id v9mr25290671ooq.43.1600462027463;
-        Fri, 18 Sep 2020 13:47:07 -0700 (PDT)
+        bh=fjLUBBkNYRNts2lWPX+gVf9aF11G3Xxzq9mQdqSzF28=;
+        b=hdWQv4IJZctz+TxNekUlB44Et0XgiH5KH1SnVzbvOW9fK9vPgNQ7xI4aP3hD8+VYih
+         6F3MaG1OmscIQuLJ7NQ1bSe36JcQrRlL2s0fp3Vxu3gMyRzG9wiDRAlo/u3a9eDi10cP
+         XbPDz+qS5FMyjiW1w1MfOuADnDofMiQeZDTff+XuvIC1hrdwlOxrEPug5jbuAek7iCvG
+         bkbFM8H18GELYNDnP1UazVlnaUWvZ4Uw3YsnjCqRQgK3T5uNQ5lAXh3Rh22Fbqblh3h6
+         u6d4pNjtiDmLP2YXOmM1KsJzqmfA4yzwZxQX+40F3LjP0FcQVqioTlQAo3OdFta1AAnd
+         hQGQ==
+X-Gm-Message-State: AOAM531Qy2jfRFL1dgnXTCRZt8y6VeU/QT88MVG3mobbjdKgAuZgHd/h
+        3GgDnYfsF3Qlw4wMlru4WIs=
+X-Google-Smtp-Source: ABdhPJzLVFqsX8a+6Drui7SlJKLkJFmBr+lhFJGW9pjcDAUWQaCcW/rP7IEDCv8Ct1U4jQFGlMo2mQ==
+X-Received: by 2002:a9d:57c3:: with SMTP id q3mr22427156oti.146.1600462060846;
+        Fri, 18 Sep 2020 13:47:40 -0700 (PDT)
 Received: from localhost.localdomain (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
-        by smtp.gmail.com with ESMTPSA id l136sm3872514oig.7.2020.09.18.13.47.06
+        by smtp.gmail.com with ESMTPSA id a13sm3535682oib.35.2020.09.18.13.47.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Sep 2020 13:47:06 -0700 (PDT)
+        Fri, 18 Sep 2020 13:47:40 -0700 (PDT)
 Sender: Larry Finger <larry.finger@gmail.com>
-Subject: Re: [PATCH -next 2/9] rtlwifi: rtl8192c: fix comparison to bool
- warning in phy_common.c
+Subject: Re: [PATCH -next 3/9] rtlwifi: rtl8192cu: fix comparison to bool
+ warning in mac.c
 To:     Zheng Bin <zhengbin13@huawei.com>, pkshih@realtek.com,
         kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     yi.zhang@huawei.com
 References: <20200918102505.16036-1-zhengbin13@huawei.com>
- <20200918102505.16036-3-zhengbin13@huawei.com>
+ <20200918102505.16036-4-zhengbin13@huawei.com>
 From:   Larry Finger <Larry.Finger@lwfinger.net>
-Message-ID: <34dceb4c-8a5d-a0f1-f572-d05a9b8b9b76@lwfinger.net>
-Date:   Fri, 18 Sep 2020 15:47:05 -0500
+Message-ID: <b6dec9a5-4778-6e57-4be7-3c998482140a@lwfinger.net>
+Date:   Fri, 18 Sep 2020 15:47:39 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200918102505.16036-3-zhengbin13@huawei.com>
+In-Reply-To: <20200918102505.16036-4-zhengbin13@huawei.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -75,31 +75,59 @@ X-Mailing-List: netdev@vger.kernel.org
 On 9/18/20 5:24 AM, Zheng Bin wrote:
 > Fixes coccicheck warning:
 > 
-> drivers/net/wireless/realtek/rtlwifi/rtl8192c/phy_common.c:1106:14-18: WARNING: Comparison to bool
+> drivers/net/wireless/realtek/rtlwifi/rtl8192cu/mac.c:161:14-17: WARNING: Comparison to bool
+> drivers/net/wireless/realtek/rtlwifi/rtl8192cu/mac.c:168:13-16: WARNING: Comparison to bool
+> drivers/net/wireless/realtek/rtlwifi/rtl8192cu/mac.c:179:14-17: WARNING: Comparison to bool
+> drivers/net/wireless/realtek/rtlwifi/rtl8192cu/mac.c:186:13-16: WARNING: Comparison to bool
 > 
 > Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
 > ---
->   drivers/net/wireless/realtek/rtlwifi/rtl8192c/phy_common.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>   drivers/net/wireless/realtek/rtlwifi/rtl8192cu/mac.c | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+> 
 
 Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
 
 Larry
 
+> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/mac.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/mac.c
+> index d7afb6a186df..2890a495a23e 100644
+> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/mac.c
+> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/mac.c
+> @@ -158,14 +158,14 @@ bool rtl92c_init_llt_table(struct ieee80211_hw *hw, u32 boundary)
 > 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192c/phy_common.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192c/phy_common.c
-> index fc6c81291cf5..6a3deca404b9 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8192c/phy_common.c
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192c/phy_common.c
-> @@ -1103,7 +1103,7 @@ static void _rtl92c_phy_path_adda_on(struct ieee80211_hw *hw,
->   	u32 i;
-> 
->   	pathon = is_patha_on ? 0x04db25a4 : 0x0b1b25a4;
-> -	if (false == is2t) {
-> +	if (!is2t) {
->   		pathon = 0x0bdb25a0;
->   		rtl_set_bbreg(hw, addareg[0], MASKDWORD, 0x0b1b25a0);
->   	} else {
+>   	for (i = 0; i < (boundary - 1); i++) {
+>   		rst = rtl92c_llt_write(hw, i , i + 1);
+> -		if (true != rst) {
+> +		if (!rst) {
+>   			pr_err("===> %s #1 fail\n", __func__);
+>   			return rst;
+>   		}
+>   	}
+>   	/* end of list */
+>   	rst = rtl92c_llt_write(hw, (boundary - 1), 0xFF);
+> -	if (true != rst) {
+> +	if (!rst) {
+>   		pr_err("===> %s #2 fail\n", __func__);
+>   		return rst;
+>   	}
+> @@ -176,14 +176,14 @@ bool rtl92c_init_llt_table(struct ieee80211_hw *hw, u32 boundary)
+>   	 */
+>   	for (i = boundary; i < LLT_LAST_ENTRY_OF_TX_PKT_BUFFER; i++) {
+>   		rst = rtl92c_llt_write(hw, i, (i + 1));
+> -		if (true != rst) {
+> +		if (!rst) {
+>   			pr_err("===> %s #3 fail\n", __func__);
+>   			return rst;
+>   		}
+>   	}
+>   	/* Let last entry point to the start entry of ring buffer */
+>   	rst = rtl92c_llt_write(hw, LLT_LAST_ENTRY_OF_TX_PKT_BUFFER, boundary);
+> -	if (true != rst) {
+> +	if (!rst) {
+>   		pr_err("===> %s #4 fail\n", __func__);
+>   		return rst;
+>   	}
 > --
 > 2.26.0.106.g9fadedd
 > 
