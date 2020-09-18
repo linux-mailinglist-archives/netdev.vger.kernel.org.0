@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2E4A2701BD
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:14:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C66062701B9
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 18:14:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbgIRQOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 12:14:20 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55253 "EHLO
+        id S1726490AbgIRQOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 12:14:08 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55259 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726411AbgIRQOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:14:04 -0400
+        with ESMTP id S1726406AbgIRQOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 12:14:00 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 18 Sep 2020 19:07:08 +0300
+        with SMTP; 18 Sep 2020 19:07:09 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 08IG78fb025131;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 08IG78fr025134;
         Fri, 18 Sep 2020 19:07:08 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 08IG78i8031150;
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 08IG782x031152;
         Fri, 18 Sep 2020 19:07:08 +0300
 Received: (from moshe@localhost)
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 08IG78Ne031149;
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 08IG78Zo031151;
         Fri, 18 Sep 2020 19:07:08 +0300
 From:   Moshe Shemesh <moshe@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
@@ -28,9 +28,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Jiri Pirko <jiri@mellanox.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net-next RFC v5 02/15] devlink: Add reload action limit level
-Date:   Fri, 18 Sep 2020 19:06:38 +0300
-Message-Id: <1600445211-31078-3-git-send-email-moshe@mellanox.com>
+Subject: [PATCH net-next RFC v5 03/15] devlink: Add reload action stats
+Date:   Fri, 18 Sep 2020 19:06:39 +0300
+Message-Id: <1600445211-31078-4-git-send-email-moshe@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
 References: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
@@ -38,361 +38,160 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add reload action limit level to demand restrictions on actions.
-Reload action limit levels supported:
-none (default): No constrains on actions. Driver implementation may
-                include reset or downtime as needed to perform the
-                actions.
-no_reset: No reset allowed, no down time allowed, no link flap and no
-          configuration is lost.
+Add reload action stats to hold the history per reload action type and
+limit level.
 
-Some combinations of action and limit level are invalid. For example,
-driver can not reinitialize its entities without any downtime.
+For example, the number of times fw_activate has been performed on this
+device since the driver module was added or if the firmware activation
+was performed with or without reset.
 
-The no_reset limit level will have usecase in this patchset to
-implement restricted fw_activate on mlx5.
+The function devlink_remote_reload_actions_performed() is exported to
+enable also drivers update on reload actions performed, for example in
+case firmware activation with reset finished successfully but was
+initiated by remote host.
+
+Add devlink notification on stats update.
 
 Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
 ---
 v4 -> v5:
-- Remove check DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX
-- Added list of invalid action-limit_level combinations and add check to
-  supported actions and levels and check user request
+- Add separate reload action stats for updating on remote actions
+- Protect  from updating remote actions stats during reload_down()/up()
 v3 -> v4:
+- Renamed reload_actions_cnts to reload_action_stats
+- Add devlink notifications on stats update
+- Renamed devlink_reload_actions_implicit_actions_performed() and add
+  function comment in code
+v2 -> v3:
 - New patch
 ---
- drivers/net/ethernet/mellanox/mlx4/main.c     |  3 +
- .../net/ethernet/mellanox/mlx5/core/devlink.c |  3 +
- drivers/net/ethernet/mellanox/mlxsw/core.c    |  3 +
- drivers/net/netdevsim/dev.c                   |  6 +-
- include/net/devlink.h                         |  6 +-
- include/uapi/linux/devlink.h                  | 17 +++++
- net/core/devlink.c                            | 76 +++++++++++++++++--
- 7 files changed, 107 insertions(+), 7 deletions(-)
+ include/net/devlink.h |  8 ++++++
+ net/core/devlink.c    | 62 +++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 70 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-index 1a482120cc0a..f0ef295af477 100644
---- a/drivers/net/ethernet/mellanox/mlx4/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-@@ -3947,6 +3947,7 @@ static int mlx4_restart_one_up(struct pci_dev *pdev, bool reload,
- 
- static int mlx4_devlink_reload_down(struct devlink *devlink, bool netns_change,
- 				    enum devlink_reload_action action,
-+				    enum devlink_reload_action_limit_level limit_level,
- 				    struct netlink_ext_ack *extack)
- {
- 	struct mlx4_priv *priv = devlink_priv(devlink);
-@@ -3964,6 +3965,7 @@ static int mlx4_devlink_reload_down(struct devlink *devlink, bool netns_change,
- }
- 
- static int mlx4_devlink_reload_up(struct devlink *devlink, enum devlink_reload_action action,
-+				  enum devlink_reload_action_limit_level limit_level,
- 				  struct netlink_ext_ack *extack, unsigned long *actions_performed)
- {
- 	struct mlx4_priv *priv = devlink_priv(devlink);
-@@ -3985,6 +3987,7 @@ static int mlx4_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
- static const struct devlink_ops mlx4_devlink_ops = {
- 	.port_type_set	= mlx4_devlink_port_type_set,
- 	.supported_reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
-+	.supported_reload_action_limit_levels = BIT(DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE),
- 	.reload_down	= mlx4_devlink_reload_down,
- 	.reload_up	= mlx4_devlink_reload_up,
- };
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index ffc0525cea64..38b00b4a3ce8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -90,6 +90,7 @@ mlx5_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
- 
- static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
- 				    enum devlink_reload_action action,
-+				    enum devlink_reload_action_limit_level limit_level,
- 				    struct netlink_ext_ack *extack)
- {
- 	struct mlx5_core_dev *dev = devlink_priv(devlink);
-@@ -99,6 +100,7 @@ static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
- }
- 
- static int mlx5_devlink_reload_up(struct devlink *devlink, enum devlink_reload_action action,
-+				  enum devlink_reload_action_limit_level limit_level,
- 				  struct netlink_ext_ack *extack, unsigned long *actions_performed)
- {
- 	struct mlx5_core_dev *dev = devlink_priv(devlink);
-@@ -126,6 +128,7 @@ static const struct devlink_ops mlx5_devlink_ops = {
- 	.flash_update = mlx5_devlink_flash_update,
- 	.info_get = mlx5_devlink_info_get,
- 	.supported_reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
-+	.supported_reload_action_limit_levels = BIT(DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE),
- 	.reload_down = mlx5_devlink_reload_down,
- 	.reload_up = mlx5_devlink_reload_up,
- };
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 19f4486d5faf..fd20b77f70cf 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1410,6 +1410,7 @@ mlxsw_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
- static int
- mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
- 					  bool netns_change, enum devlink_reload_action action,
-+					  enum devlink_reload_action_limit_level limit_level,
- 					  struct netlink_ext_ack *extack)
- {
- 	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
-@@ -1423,6 +1424,7 @@ mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
- 
- static int
- mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink, enum devlink_reload_action action,
-+					enum devlink_reload_action_limit_level limit_level,
- 					struct netlink_ext_ack *extack,
- 					unsigned long *actions_performed)
- {
-@@ -1570,6 +1572,7 @@ mlxsw_devlink_trap_policer_counter_get(struct devlink *devlink,
- static const struct devlink_ops mlxsw_devlink_ops = {
- 	.supported_reload_actions	= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
- 					  BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
-+	.supported_reload_action_limit_levels = BIT(DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE),
- 	.reload_down		= mlxsw_devlink_core_bus_device_reload_down,
- 	.reload_up		= mlxsw_devlink_core_bus_device_reload_up,
- 	.port_type_set			= mlxsw_devlink_port_type_set,
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 0eb522f6a718..f59af3e85e3a 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -697,7 +697,9 @@ static int nsim_dev_reload_create(struct nsim_dev *nsim_dev,
- static void nsim_dev_reload_destroy(struct nsim_dev *nsim_dev);
- 
- static int nsim_dev_reload_down(struct devlink *devlink, bool netns_change,
--				enum devlink_reload_action action, struct netlink_ext_ack *extack)
-+				enum devlink_reload_action action,
-+				enum devlink_reload_action_limit_level limit_level,
-+				struct netlink_ext_ack *extack)
- {
- 	struct nsim_dev *nsim_dev = devlink_priv(devlink);
- 
-@@ -714,6 +716,7 @@ static int nsim_dev_reload_down(struct devlink *devlink, bool netns_change,
- }
- 
- static int nsim_dev_reload_up(struct devlink *devlink, enum devlink_reload_action action,
-+			      enum devlink_reload_action_limit_level limit_level,
- 			      struct netlink_ext_ack *extack, unsigned long *actions_performed)
- {
- 	struct nsim_dev *nsim_dev = devlink_priv(devlink);
-@@ -882,6 +885,7 @@ nsim_dev_devlink_trap_policer_counter_get(struct devlink *devlink,
- 
- static const struct devlink_ops nsim_dev_devlink_ops = {
- 	.supported_reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
-+	.supported_reload_action_limit_levels = BIT(DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE),
- 	.reload_down = nsim_dev_reload_down,
- 	.reload_up = nsim_dev_reload_up,
- 	.info_get = nsim_dev_info_get,
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 37abc3e08e9e..d8c62d605381 100644
+index d8c62d605381..f09f55a47d09 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -1015,9 +1015,13 @@ enum devlink_trap_group_generic_id {
+@@ -20,6 +20,9 @@
+ #include <uapi/linux/devlink.h>
+ #include <linux/xarray.h>
  
- struct devlink_ops {
- 	unsigned long supported_reload_actions;
-+	unsigned long supported_reload_action_limit_levels;
- 	int (*reload_down)(struct devlink *devlink, bool netns_change,
--			   enum devlink_reload_action action, struct netlink_ext_ack *extack);
-+			   enum devlink_reload_action action,
-+			   enum devlink_reload_action_limit_level limit_level,
-+			   struct netlink_ext_ack *extack);
- 	int (*reload_up)(struct devlink *devlink, enum devlink_reload_action action,
-+			 enum devlink_reload_action_limit_level limit_level,
- 			 struct netlink_ext_ack *extack, unsigned long *actions_performed);
- 	int (*port_type_set)(struct devlink_port *devlink_port,
- 			     enum devlink_port_type port_type);
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index fdba7ab58a79..0c5d942dcbd5 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -289,6 +289,22 @@ enum devlink_reload_action {
- 	DEVLINK_RELOAD_ACTION_MAX = __DEVLINK_RELOAD_ACTION_MAX - 1
- };
- 
-+/**
-+ * enum devlink_reload_action_limit_level - Reload action limit level.
-+ * @DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE: No constrains on action. Action may include
-+ *                                          reset or downtime as needed.
-+ * @DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET: No reset allowed, no down time allowed,
-+ *                                              no link flap and no configuration is lost.
-+ */
-+enum devlink_reload_action_limit_level {
-+	DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE,
-+	DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET,
++#define DEVLINK_RELOAD_ACTION_STATS_ARRAY_SIZE \
++	(__DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX * __DEVLINK_RELOAD_ACTION_MAX)
 +
-+	/* Add new reload actions limit level above */
-+	__DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX,
-+	DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX = __DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX - 1
-+};
-+
- enum devlink_attr {
- 	/* don't change the order or add anything between, this is ABI! */
- 	DEVLINK_ATTR_UNSPEC,
-@@ -480,6 +496,7 @@ enum devlink_attr {
+ struct devlink_ops;
  
- 	DEVLINK_ATTR_RELOAD_ACTION,		/* u8 */
- 	DEVLINK_ATTR_RELOAD_ACTIONS_PERFORMED,	/* nested */
-+	DEVLINK_ATTR_RELOAD_ACTION_LIMIT_LEVEL,	/* u8 */
+ struct devlink {
+@@ -38,6 +41,8 @@ struct devlink {
+ 	struct list_head trap_policer_list;
+ 	const struct devlink_ops *ops;
+ 	struct xarray snapshot_ids;
++	u32 reload_action_stats[DEVLINK_RELOAD_ACTION_STATS_ARRAY_SIZE];
++	u32 remote_reload_action_stats[DEVLINK_RELOAD_ACTION_STATS_ARRAY_SIZE];
+ 	struct device *dev;
+ 	possible_net_t _net;
+ 	struct mutex lock; /* Serializes access to devlink instance specific objects such as
+@@ -1400,6 +1405,9 @@ void
+ devlink_health_reporter_recovery_done(struct devlink_health_reporter *reporter);
  
- 	/* add new attributes above here, update the policy in devlink.c */
+ bool devlink_is_reload_failed(const struct devlink *devlink);
++void devlink_remote_reload_actions_performed(struct devlink *devlink,
++					     enum devlink_reload_action_limit_level limit_level,
++					     unsigned long actions_performed);
  
+ void devlink_flash_update_begin_notify(struct devlink *devlink);
+ void devlink_flash_update_end_notify(struct devlink *devlink);
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 318ef29f81f2..fee6fcc7dead 100644
+index fee6fcc7dead..1509c2ffb98b 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -462,12 +462,45 @@ static int devlink_nl_put_handle(struct sk_buff *msg, struct devlink *devlink)
- 	return 0;
+@@ -3007,16 +3007,74 @@ bool devlink_is_reload_failed(const struct devlink *devlink)
  }
- 
-+struct devlink_reload_combination {
-+	enum devlink_reload_action action;
-+	enum devlink_reload_action_limit_level limit_level;
-+};
-+
-+static const struct devlink_reload_combination devlink_reload_invalid_combinations[] = {
-+	{
-+		/* can't reinitialize driver with no down time */
-+		.action = DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
-+		.limit_level = DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET,
-+	},
-+};
-+
-+static bool
-+devlink_reload_combination_is_invalid(enum devlink_reload_action action,
-+				      enum devlink_reload_action_limit_level limit_level)
-+{
-+	int i;
-+
-+	for (i = 0 ; i <  ARRAY_SIZE(devlink_reload_invalid_combinations) ; i++)
-+		if (devlink_reload_invalid_combinations[i].action == action &&
-+		    devlink_reload_invalid_combinations[i].limit_level == limit_level)
-+			return true;
-+	return false;
-+}
-+
- static bool
- devlink_reload_action_is_supported(struct devlink *devlink, enum devlink_reload_action action)
- {
- 	return test_bit(action, &devlink->ops->supported_reload_actions);
- }
- 
-+static bool
-+devlink_reload_action_limit_level_is_supported(struct devlink *devlink,
-+					       enum devlink_reload_action_limit_level limit_level)
-+{
-+	return test_bit(limit_level, &devlink->ops->supported_reload_action_limit_levels);
-+}
-+
- static int devlink_nl_fill(struct sk_buff *msg, struct devlink *devlink,
- 			   enum devlink_command cmd, u32 portid,
- 			   u32 seq, int flags)
-@@ -2975,22 +3008,23 @@ bool devlink_is_reload_failed(const struct devlink *devlink)
  EXPORT_SYMBOL_GPL(devlink_is_reload_failed);
  
++static void
++__devlink_reload_action_stats_update(struct devlink *devlink,
++				     u32 *reload_action_stats,
++				     enum devlink_reload_action_limit_level limit_level,
++				     unsigned long actions_performed)
++{
++	int stat_idx;
++	int action;
++
++	if (!actions_performed)
++		return;
++
++	if (WARN_ON(limit_level > DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX))
++		return;
++	for (action = 0; action <= DEVLINK_RELOAD_ACTION_MAX; action++) {
++		if (!test_bit(action, &actions_performed))
++			continue;
++		stat_idx = limit_level * __DEVLINK_RELOAD_ACTION_MAX + action;
++		reload_action_stats[stat_idx]++;
++	}
++	devlink_notify(devlink, DEVLINK_CMD_NEW);
++}
++
++static void
++devlink_reload_action_stats_update(struct devlink *devlink,
++				   enum devlink_reload_action_limit_level limit_level,
++				   unsigned long actions_performed)
++{
++	__devlink_reload_action_stats_update(devlink, devlink->reload_action_stats,
++					     limit_level, actions_performed);
++}
++
++/**
++ *	devlink_remote_reload_actions_performed - Update devlink on reload actions
++ *	  performed which are not a direct result of devlink reload call.
++ *
++ *	This should be called by a driver after performing reload actions in case it was not
++ *	a result of devlink reload call. For example fw_activate was performed as a result
++ *	of devlink reload triggered fw_activate on another host.
++ *	The motivation for this function is to keep data on reload actions performed on this
++ *	function whether it was done due to direct devlink reload call or not.
++ *
++ *	@devlink: devlink
++ *	@limit_level: reload action limit level
++ *	@actions_performed: bitmask of actions performed
++ */
++void devlink_remote_reload_actions_performed(struct devlink *devlink,
++					     enum devlink_reload_action_limit_level limit_level,
++					     unsigned long actions_performed)
++{
++	__devlink_reload_action_stats_update(devlink, devlink->remote_reload_action_stats,
++					     limit_level, actions_performed);
++}
++EXPORT_SYMBOL_GPL(devlink_remote_reload_actions_performed);
++
  static int devlink_reload(struct devlink *devlink, struct net *dest_net,
--			  enum devlink_reload_action action, struct netlink_ext_ack *extack,
--			  unsigned long *actions_performed)
-+			  enum devlink_reload_action action,
-+			  enum devlink_reload_action_limit_level limit_level,
-+			  struct netlink_ext_ack *extack, unsigned long *actions_performed)
+ 			  enum devlink_reload_action action,
+ 			  enum devlink_reload_action_limit_level limit_level,
+ 			  struct netlink_ext_ack *extack, unsigned long *actions_performed)
  {
++	u32 remote_reload_action_stats[DEVLINK_RELOAD_ACTION_STATS_ARRAY_SIZE];
  	int err;
  
  	if (!devlink->reload_enabled)
  		return -EOPNOTSUPP;
  
--	err = devlink->ops->reload_down(devlink, !!dest_net, action, extack);
-+	err = devlink->ops->reload_down(devlink, !!dest_net, action, limit_level, extack);
++	memcpy(remote_reload_action_stats, devlink->remote_reload_action_stats,
++	       sizeof(remote_reload_action_stats));
+ 	err = devlink->ops->reload_down(devlink, !!dest_net, action, limit_level, extack);
  	if (err)
  		return err;
- 
- 	if (dest_net && !net_eq(dest_net, devlink_net(devlink)))
- 		devlink_reload_netns_change(devlink, dest_net);
- 
--	err = devlink->ops->reload_up(devlink, action, extack, actions_performed);
-+	err = devlink->ops->reload_up(devlink, action, limit_level, extack, actions_performed);
- 	devlink_reload_failed_set(devlink, !!err);
- 	if (err)
+@@ -3030,6 +3088,10 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
  		return err;
-@@ -3040,6 +3074,7 @@ devlink_nl_reload_actions_performed_fill(struct sk_buff *msg,
  
- static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
- {
-+	enum devlink_reload_action_limit_level limit_level;
- 	struct devlink *devlink = info->user_ptr[0];
- 	enum devlink_reload_action action;
- 	unsigned long actions_performed;
-@@ -3077,7 +3112,21 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
- 		return -EOPNOTSUPP;
- 	}
- 
--	err = devlink_reload(devlink, dest_net, action, info->extack, &actions_performed);
-+	if (info->attrs[DEVLINK_ATTR_RELOAD_ACTION_LIMIT_LEVEL])
-+		limit_level = nla_get_u8(info->attrs[DEVLINK_ATTR_RELOAD_ACTION_LIMIT_LEVEL]);
-+	else
-+		limit_level = DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE;
-+
-+	if (!devlink_reload_action_limit_level_is_supported(devlink, limit_level)) {
-+		NL_SET_ERR_MSG_MOD(info->extack, "Requested limit level is not supported by the driver");
-+		return -EOPNOTSUPP;
-+	}
-+	if (devlink_reload_combination_is_invalid(action, limit_level)) {
-+		NL_SET_ERR_MSG_MOD(info->extack, "Requested limit level is invalid for this action");
-+		return -EINVAL;
-+	}
-+	err = devlink_reload(devlink, dest_net, action, limit_level, info->extack,
-+			     &actions_performed);
- 
- 	if (dest_net)
- 		put_net(dest_net);
-@@ -7154,6 +7203,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_TRAP_POLICER_BURST] = { .type = NLA_U64 },
- 	[DEVLINK_ATTR_PORT_FUNCTION] = { .type = NLA_NESTED },
- 	[DEVLINK_ATTR_RELOAD_ACTION] = { .type = NLA_U8 },
-+	[DEVLINK_ATTR_RELOAD_ACTION_LIMIT_LEVEL] = { .type = NLA_U8 },
- };
- 
- static const struct genl_ops devlink_nl_ops[] = {
-@@ -7489,6 +7539,9 @@ static struct genl_family devlink_nl_family __ro_after_init = {
- 
- static bool devlink_reload_actions_valid(const struct devlink_ops *ops)
- {
-+	const struct devlink_reload_combination *comb;
-+	int i;
-+
- 	if (!devlink_reload_supported(ops)) {
- 		if (WARN_ON(ops->supported_reload_actions))
- 			return false;
-@@ -7498,6 +7551,18 @@ static bool devlink_reload_actions_valid(const struct devlink_ops *ops)
- 	if (WARN_ON(ops->supported_reload_actions >= BIT(__DEVLINK_RELOAD_ACTION_MAX) ||
- 		    ops->supported_reload_actions <= BIT(DEVLINK_RELOAD_ACTION_UNSPEC)))
- 		return false;
-+
-+	if (WARN_ON(!ops->supported_reload_action_limit_levels ||
-+		    ops->supported_reload_action_limit_levels >=
-+		    BIT(__DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX)))
-+		return false;
-+
-+	for (i = 0; i <  ARRAY_SIZE(devlink_reload_invalid_combinations); i++)  {
-+		comb = &devlink_reload_invalid_combinations[i];
-+		if (ops->supported_reload_actions == BIT(comb->action) &&
-+		    ops->supported_reload_action_limit_levels == BIT(comb->limit_level))
-+			return false;
-+	}
- 	return true;
+ 	WARN_ON(!test_bit(action, actions_performed));
++	/* protect from driver updating the remote action within devlink reload */
++	WARN_ON(memcmp(remote_reload_action_stats, devlink->remote_reload_action_stats,
++		       sizeof(remote_reload_action_stats)));
++	devlink_reload_action_stats_update(devlink, limit_level, *actions_performed);
+ 	return 0;
  }
  
-@@ -9793,6 +9858,7 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
- 				continue;
- 			err = devlink_reload(devlink, &init_net,
- 					     DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
-+					     DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE,
- 					     NULL, &actions_performed);
- 			if (err && err != -EOPNOTSUPP)
- 				pr_warn("Failed to reload devlink instance into init_net\n");
 -- 
 2.17.1
 
