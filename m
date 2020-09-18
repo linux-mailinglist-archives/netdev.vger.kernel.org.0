@@ -2,45 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3F97270936
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 01:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E278270932
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 01:43:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726276AbgIRXnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 19:43:19 -0400
+        id S1726129AbgIRXnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 19:43:08 -0400
 Received: from mga03.intel.com ([134.134.136.65]:59399 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726250AbgIRXnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 19:43:16 -0400
-IronPort-SDR: 6NZ22YJiUkQD6My9Tg3jlsqpXbe0lbGDOLlnRMGr/HWvuCpNaIPETCVGFuI9bMBp06wBQt0jIv
- 1CuAXgidWGWQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9748"; a="160113145"
+        id S1726009AbgIRXnH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 19:43:07 -0400
+IronPort-SDR: RoNGetoRB5QsNDqPO/AX7I+OS/jyyo3aonaPk1h/gXFd/rHHHH7KcvvpDnVIToUHNpE1pWWnUd
+ R1fXhYpmmhoA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9748"; a="160113147"
 X-IronPort-AV: E=Sophos;i="5.77,276,1596524400"; 
-   d="scan'208";a="160113145"
+   d="scan'208";a="160113147"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2020 16:43:05 -0700
-IronPort-SDR: bBhSA0cc21QCc4/UcQJeaNvWwH6/WVIw6hPKL0LPBSNetvU/gE/J8Sr7ihRS3LNS4VOfleb97A
- plHBLACTZpdA==
+IronPort-SDR: D66xK9vJ6xEGgpPbMAY0+hIC0W6L4hcPspgofj6N1iN+UrhavIrT+T+qvAdLD0hd09RfD5ZQOQ
+ Stkpo1iWeyeQ==
 X-IronPort-AV: E=Sophos;i="5.77,276,1596524400"; 
-   d="scan'208";a="332840560"
+   d="scan'208";a="332840563"
 Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.4])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2020 16:43:04 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2020 16:43:05 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Danielle Ratson <danieller@mellanox.com>
-Subject: [net-next v7 2/5] devlink: convert flash_update to use params structure
-Date:   Fri, 18 Sep 2020 16:42:05 -0700
-Message-Id: <20200918234208.1060371-3-jacob.e.keller@intel.com>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [net-next v7 3/5] devlink: introduce flash update overwrite mask
+Date:   Fri, 18 Sep 2020 16:42:06 -0700
+Message-Id: <20200918234208.1060371-4-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.28.0.497.g54e85e7af1ac
 In-Reply-To: <20200918234208.1060371-1-jacob.e.keller@intel.com>
 References: <20200918234208.1060371-1-jacob.e.keller@intel.com>
@@ -50,387 +42,196 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The devlink core recently gained support for checking whether the driver
-supports a flash_update parameter, via `supported_flash_update_params`.
-However, parameters are specified as function arguments. Adding a new
-parameter still requires modifying the signature of the .flash_update
-callback in all drivers.
+Sections of device flash may contain settings or device identifying
+information. When performing a flash update, it is generally expected
+that these settings and identifiers are not overwritten.
 
-Convert the .flash_update function to take a new `struct
-devlink_flash_update_params` instead. By using this structure, and the
-`supported_flash_update_params` bit field, a new parameter to
-flash_update can be added without requiring modification to existing
-drivers.
+However, it may sometimes be useful to allow overwriting these fields
+when performing a flash update. Some examples include, 1) customizing
+the initial device config on first programming, such as overwriting
+default device identifying information, or 2) reverting a device
+configuration to known good state provided in the new firmware image, or
+3) in case it is suspected that current firmware logic for managing the
+preservation of fields during an update is broken.
 
-As before, all parameters except file_name will require driver opt-in.
-Because file_name is a necessary field to for the flash_update to make
-sense, no "SUPPORTED" bitflag is provided and it is always considered
-valid. All future additional parameters will require a new bit in the
-supported_flash_update_params bitfield.
+Although some devices are able to completely separate these types of
+settings and fields into separate components, this is not true for all
+hardware.
+
+To support controlling this behavior, a new
+DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK is defined. This is an
+nla_bitfield32 which will define what subset of fields in a component
+should be overwritten during an update.
+
+If no bits are specified, or of the overwrite mask is not provided, then
+an update should not overwrite anything, and should maintain the
+settings and identifiers as they are in the previous image.
+
+If the overwrite mask has the DEVLINK_FLASH_OVERWRITE_SETTINGS bit set,
+then the device should be configured to overwrite any of the settings in
+the requested component with settings found in the provided image.
+
+Similarly, if the DEVLINK_FLASH_OVERWRITE_IDENTIFIERS bit is set, the
+device should be configured to overwrite any device identifiers in the
+requested component with the identifiers from the image.
+
+Multiple overwrite modes may be combined to indicate that a combination
+of the set of fields that should be overwritten.
+
+Drivers which support the new overwrite mask must set the
+DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK in the
+supported_flash_update_params field of their devlink_ops.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-Cc: Jiri Pirko <jiri@mellanox.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Michael Chan <michael.chan@broadcom.com>
-Cc: Bin Luo <luobin9@huawei.com>
-Cc: Saeed Mahameed <saeedm@mellanox.com>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: Ido Schimmel <idosch@mellanox.com>
-Cc: Danielle Ratson <danieller@mellanox.com>
 ---
-Changes since v6
-* Applied param changes to the ionic driver
-* Applied mlxsw changes to core.c instead of spectrum.c
+ .../networking/devlink/devlink-flash.rst      | 28 +++++++++++++++++++
+ include/net/devlink.h                         |  4 ++-
+ include/uapi/linux/devlink.h                  | 23 +++++++++++++++
+ net/core/devlink.c                            | 17 ++++++++++-
+ 4 files changed, 70 insertions(+), 2 deletions(-)
 
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c  |  7 ++++---
- .../net/ethernet/huawei/hinic/hinic_devlink.c  |  5 ++---
- drivers/net/ethernet/intel/ice/ice_devlink.c   | 10 +++++-----
- .../net/ethernet/mellanox/mlx5/core/devlink.c  |  5 ++---
- drivers/net/ethernet/mellanox/mlxsw/core.c     |  9 ++++-----
- .../net/ethernet/netronome/nfp/nfp_devlink.c   |  7 ++++---
- .../ethernet/pensando/ionic/ionic_devlink.c    |  5 ++---
- drivers/net/netdevsim/dev.c                    | 14 +++++++-------
- include/net/devlink.h                          | 18 ++++++++++++++++--
- net/core/devlink.c                             | 14 ++++++++------
- .../selftests/drivers/net/netdevsim/devlink.sh |  3 +++
- 11 files changed, 57 insertions(+), 40 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index a17764db1419..d436134bdc40 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -17,8 +17,9 @@
- #include "bnxt_ethtool.h"
+diff --git a/Documentation/networking/devlink/devlink-flash.rst b/Documentation/networking/devlink/devlink-flash.rst
+index 40a87c0222cb..603e732f00cc 100644
+--- a/Documentation/networking/devlink/devlink-flash.rst
++++ b/Documentation/networking/devlink/devlink-flash.rst
+@@ -16,6 +16,34 @@ Note that the file name is a path relative to the firmware loading path
+ (usually ``/lib/firmware/``). Drivers may send status updates to inform
+ user space about the progress of the update operation.
  
- static int
--bnxt_dl_flash_update(struct devlink *dl, const char *filename,
--		     const char *region, struct netlink_ext_ack *extack)
-+bnxt_dl_flash_update(struct devlink *dl,
-+		     struct devlink_flash_update_params *params,
-+		     struct netlink_ext_ack *extack)
- {
- 	struct bnxt *bp = bnxt_get_bp_from_dl(dl);
- 	int rc;
-@@ -31,7 +32,7 @@ bnxt_dl_flash_update(struct devlink *dl, const char *filename,
- 
- 	devlink_flash_update_begin_notify(dl);
- 	devlink_flash_update_status_notify(dl, "Preparing to flash", NULL, 0, 0);
--	rc = bnxt_flash_package_from_file(bp->dev, filename, 0);
-+	rc = bnxt_flash_package_from_file(bp->dev, params->file_name, 0);
- 	if (!rc)
- 		devlink_flash_update_status_notify(dl, "Flashing done", NULL, 0, 0);
- 	else
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
-index 662a27a514ae..2630d667f393 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
-@@ -281,15 +281,14 @@ static int hinic_firmware_update(struct hinic_devlink_priv *priv,
- }
- 
- static int hinic_devlink_flash_update(struct devlink *devlink,
--				      const char *file_name,
--				      const char *component,
-+				      struct devlink_flash_update_params *params,
- 				      struct netlink_ext_ack *extack)
- {
- 	struct hinic_devlink_priv *priv = devlink_priv(devlink);
- 	const struct firmware *fw;
- 	int err;
- 
--	err = request_firmware_direct(&fw, file_name,
-+	err = request_firmware_direct(&fw, params->file_name,
- 				      &priv->hwdev->hwif->pdev->dev);
- 	if (err)
- 		return err;
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index 6cdccd901637..4f8f9e229080 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -233,8 +233,7 @@ static int ice_devlink_info_get(struct devlink *devlink,
- /**
-  * ice_devlink_flash_update - Update firmware stored in flash on the device
-  * @devlink: pointer to devlink associated with device to update
-- * @path: the path of the firmware file to use via request_firmware
-- * @component: name of the component to update, or NULL
-+ * @params: flash update parameters
-  * @extack: netlink extended ACK structure
-  *
-  * Perform a device flash update. The bulk of the update logic is contained
-@@ -243,8 +242,9 @@ static int ice_devlink_info_get(struct devlink *devlink,
-  * Returns: zero on success, or an error code on failure.
-  */
- static int
--ice_devlink_flash_update(struct devlink *devlink, const char *path,
--			 const char *component, struct netlink_ext_ack *extack)
-+ice_devlink_flash_update(struct devlink *devlink,
-+			 struct devlink_flash_update_params *params,
-+			 struct netlink_ext_ack *extack)
- {
- 	struct ice_pf *pf = devlink_priv(devlink);
- 	struct device *dev = &pf->pdev->dev;
-@@ -261,7 +261,7 @@ ice_devlink_flash_update(struct devlink *devlink, const char *path,
- 	if (err)
- 		return err;
- 
--	err = request_firmware(&fw, path, dev);
-+	err = request_firmware(&fw, params->file_name, dev);
- 	if (err) {
- 		NL_SET_ERR_MSG_MOD(extack, "Unable to read file from disk");
- 		return err;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index fccae4b802b6..9b14e3f805a2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -8,15 +8,14 @@
- #include "eswitch.h"
- 
- static int mlx5_devlink_flash_update(struct devlink *devlink,
--				     const char *file_name,
--				     const char *component,
-+				     struct devlink_flash_update_params *params,
- 				     struct netlink_ext_ack *extack)
- {
- 	struct mlx5_core_dev *dev = devlink_priv(devlink);
- 	const struct firmware *fw;
- 	int err;
- 
--	err = request_firmware_direct(&fw, file_name, &dev->pdev->dev);
-+	err = request_firmware_direct(&fw, params->file_name, &dev->pdev->dev);
- 	if (err)
- 		return err;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 3ffd03ef9c0e..f8dddcf461f5 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1102,13 +1102,13 @@ static int mlxsw_core_fw_rev_validate(struct mlxsw_core *mlxsw_core,
- }
- 
- static int mlxsw_core_fw_flash_update(struct mlxsw_core *mlxsw_core,
--				      const char *file_name, const char *component,
-+				      struct devlink_flash_update_params *params,
- 				      struct netlink_ext_ack *extack)
- {
- 	const struct firmware *firmware;
- 	int err;
- 
--	err = request_firmware_direct(&firmware, file_name, mlxsw_core->bus_info->dev);
-+	err = request_firmware_direct(&firmware, params->file_name, mlxsw_core->bus_info->dev);
- 	if (err)
- 		return err;
- 	err = mlxsw_core_fw_flash(mlxsw_core, firmware, extack);
-@@ -1431,13 +1431,12 @@ mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink,
- }
- 
- static int mlxsw_devlink_flash_update(struct devlink *devlink,
--				      const char *file_name,
--				      const char *component,
-+				      struct devlink_flash_update_params *params,
- 				      struct netlink_ext_ack *extack)
- {
- 	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
- 
--	return mlxsw_core_fw_flash_update(mlxsw_core, file_name, component, extack);
-+	return mlxsw_core_fw_flash_update(mlxsw_core, params, extack);
- }
- 
- static int mlxsw_devlink_trap_init(struct devlink *devlink,
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
-index c93cb9a27e25..97d2b03208de 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
-@@ -329,10 +329,11 @@ nfp_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
- }
- 
- static int
--nfp_devlink_flash_update(struct devlink *devlink, const char *path,
--			 const char *component, struct netlink_ext_ack *extack)
-+nfp_devlink_flash_update(struct devlink *devlink,
-+			 struct devlink_flash_update_params *params,
-+			 struct netlink_ext_ack *extack)
- {
--	return nfp_flash_update_common(devlink_priv(devlink), path, extack);
-+	return nfp_flash_update_common(devlink_priv(devlink), params->file_name, extack);
- }
- 
- const struct devlink_ops nfp_devlink_ops = {
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-index c125988b0954..51d64718ed9f 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-@@ -10,13 +10,12 @@
- #include "ionic_devlink.h"
- 
- static int ionic_dl_flash_update(struct devlink *dl,
--				 const char *fwname,
--				 const char *component,
-+				 struct devlink_flash_update_params *params,
- 				 struct netlink_ext_ack *extack)
- {
- 	struct ionic *ionic = devlink_priv(dl);
- 
--	return ionic_firmware_update(ionic->lif, fwname, extack);
-+	return ionic_firmware_update(ionic->lif, params->file_name, extack);
- }
- 
- static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 079df309ca4b..505f6edfc1d1 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -740,8 +740,8 @@ static int nsim_dev_info_get(struct devlink *devlink,
- #define NSIM_DEV_FLASH_CHUNK_SIZE 1000
- #define NSIM_DEV_FLASH_CHUNK_TIME_MS 10
- 
--static int nsim_dev_flash_update(struct devlink *devlink, const char *file_name,
--				 const char *component,
-+static int nsim_dev_flash_update(struct devlink *devlink,
-+				 struct devlink_flash_update_params *params,
- 				 struct netlink_ext_ack *extack)
- {
- 	struct nsim_dev *nsim_dev = devlink_priv(devlink);
-@@ -751,13 +751,13 @@ static int nsim_dev_flash_update(struct devlink *devlink, const char *file_name,
- 		devlink_flash_update_begin_notify(devlink);
- 		devlink_flash_update_status_notify(devlink,
- 						   "Preparing to flash",
--						   component, 0, 0);
-+						   params->component, 0, 0);
- 	}
- 
- 	for (i = 0; i < NSIM_DEV_FLASH_SIZE / NSIM_DEV_FLASH_CHUNK_SIZE; i++) {
- 		if (nsim_dev->fw_update_status)
- 			devlink_flash_update_status_notify(devlink, "Flashing",
--							   component,
-+							   params->component,
- 							   i * NSIM_DEV_FLASH_CHUNK_SIZE,
- 							   NSIM_DEV_FLASH_SIZE);
- 		msleep(NSIM_DEV_FLASH_CHUNK_TIME_MS);
-@@ -765,13 +765,13 @@ static int nsim_dev_flash_update(struct devlink *devlink, const char *file_name,
- 
- 	if (nsim_dev->fw_update_status) {
- 		devlink_flash_update_status_notify(devlink, "Flashing",
--						   component,
-+						   params->component,
- 						   NSIM_DEV_FLASH_SIZE,
- 						   NSIM_DEV_FLASH_SIZE);
- 		devlink_flash_update_timeout_notify(devlink, "Flash select",
--						    component, 81);
-+						    params->component, 81);
- 		devlink_flash_update_status_notify(devlink, "Flashing done",
--						   component, 0, 0);
-+						   params->component, 0, 0);
- 		devlink_flash_update_end_notify(devlink);
- 	}
++Overwrite Mask
++==============
++
++The ``devlink-flash`` command allows optionally specifying a mask indicating
++how the device should handle subsections of flash components when updating.
++This mask indicates the set of sections which are allowed to be overwritten.
++
++.. list-table:: List of overwrite mask bits
++   :widths: 5 95
++
++   * - Name
++     - Description
++   * - ``DEVLINK_FLASH_OVERWRITE_SETTINGS``
++     - Indicates that the device should overwrite settings in the components
++       being updated with the settings found in the provided image.
++   * - ``DEVLINK_FLASH_OVERWRITE_IDENTIFIERS``
++     - Indicates that the device should overwrite identifiers in the
++       components being updated with the identifiers found in the provided
++       image. This includes MAC addresses, serial IDs, and similar device
++       identifiers.
++
++Multiple overwrite bits may be combined and requested together. If no bits
++are provided, it is expected that the device only update firmware binaries
++in the components being updated. Settings and identifiers are expected to be
++preserved across the update. A device may not support every combination and
++the driver for such a device must reject any combination which cannot be
++faithfully implemented.
++
+ Firmware Loading
+ ================
  
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 8f9324a45e13..61a08fed7ed5 100644
+index 61a08fed7ed5..fe3f02288292 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -550,6 +550,20 @@ enum devlink_param_generic_id {
- /* Firmware bundle identifier */
- #define DEVLINK_INFO_VERSION_GENERIC_FW_BUNDLE_ID	"fw.bundle_id"
+@@ -562,9 +562,11 @@ enum devlink_param_generic_id {
+ struct devlink_flash_update_params {
+ 	const char *file_name;
+ 	const char *component;
++	u32 overwrite_mask;
+ };
  
-+/**
-+ * struct devlink_flash_update_params - Flash Update parameters
-+ * @file_name: the name of the flash firmware file to update from
-+ * @component: the flash component to update
-+ *
-+ * With the exception of file_name, drivers must opt-in to parameters by
-+ * setting the appropriate bit in the supported_flash_update_params field in
-+ * their devlink_ops structure.
-+ */
-+struct devlink_flash_update_params {
-+	const char *file_name;
-+	const char *component;
-+};
-+
- #define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT	BIT(0)
+-#define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT	BIT(0)
++#define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT		BIT(0)
++#define DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK	BIT(1)
  
  struct devlink_region;
-@@ -1108,8 +1122,8 @@ struct devlink_ops {
- 	 * parameters supported by the driver should be set in
- 	 * supported_flash_update_params.
- 	 */
--	int (*flash_update)(struct devlink *devlink, const char *file_name,
--			    const char *component,
-+	int (*flash_update)(struct devlink *devlink,
-+			    struct devlink_flash_update_params *params,
- 			    struct netlink_ext_ack *extack);
- 	/**
- 	 * @trap_init: Trap initialization function.
+ struct devlink_info_req;
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index a2ecc8b00611..7b0face1bad5 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -230,6 +230,28 @@ enum {
+ 	DEVLINK_ATTR_STATS_MAX = __DEVLINK_ATTR_STATS_MAX - 1
+ };
+ 
++/* Specify what sections of a flash component can be overwritten when
++ * performing an update. Overwriting of firmware binary sections is always
++ * implicitly assumed to be allowed.
++ *
++ * Each section must be documented in
++ * Documentation/networking/devlink/devlink-flash.rst
++ *
++ */
++enum {
++	DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT,
++	DEVLINK_FLASH_OVERWRITE_IDENTIFIERS_BIT,
++
++	__DEVLINK_FLASH_OVERWRITE_MAX_BIT,
++	DEVLINK_FLASH_OVERWRITE_MAX_BIT = __DEVLINK_FLASH_OVERWRITE_MAX_BIT - 1
++};
++
++#define DEVLINK_FLASH_OVERWRITE_SETTINGS _BITUL(DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT)
++#define DEVLINK_FLASH_OVERWRITE_IDENTIFIERS _BITUL(DEVLINK_FLASH_OVERWRITE_IDENTIFIERS_BIT)
++
++#define DEVLINK_SUPPORTED_FLASH_OVERWRITE_SECTIONS \
++	(_BITUL(__DEVLINK_FLASH_OVERWRITE_MAX_BIT) - 1)
++
+ /**
+  * enum devlink_trap_action - Packet trap action.
+  * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy is not
+@@ -464,6 +486,7 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_PORT_CONTROLLER_NUMBER,	/* u32 */
+ 
+ 	DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT,	/* u64 */
++	DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK,	/* bitfield32 */
+ 
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 11ef03a62c37..52c830b41561 100644
+index 52c830b41561..5ac19eb51877 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -3149,8 +3149,8 @@ EXPORT_SYMBOL_GPL(devlink_flash_update_timeout_notify);
+@@ -3149,9 +3149,9 @@ EXPORT_SYMBOL_GPL(devlink_flash_update_timeout_notify);
  static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
  				       struct genl_info *info)
  {
-+	struct devlink_flash_update_params params = {};
++	struct nlattr *nla_component, *nla_overwrite_mask;
+ 	struct devlink_flash_update_params params = {};
  	struct devlink *devlink = info->user_ptr[0];
--	const char *file_name, *component = NULL;
- 	struct nlattr *nla_component;
+-	struct nlattr *nla_component;
  	u32 supported_params;
  
-@@ -3162,7 +3162,7 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
- 
- 	supported_params = devlink->ops->supported_flash_update_params;
- 
--	file_name = nla_data(info->attrs[DEVLINK_ATTR_FLASH_UPDATE_FILE_NAME]);
-+	params.file_name = nla_data(info->attrs[DEVLINK_ATTR_FLASH_UPDATE_FILE_NAME]);
- 
- 	nla_component = info->attrs[DEVLINK_ATTR_FLASH_UPDATE_COMPONENT];
- 	if (nla_component) {
-@@ -3171,11 +3171,10 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
- 					    "component update is not supported by this device");
- 			return -EOPNOTSUPP;
- 		}
--		component = nla_data(nla_component);
-+		params.component = nla_data(nla_component);
+ 	if (!devlink->ops->flash_update)
+@@ -3174,6 +3174,19 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
+ 		params.component = nla_data(nla_component);
  	}
  
--	return devlink->ops->flash_update(devlink, file_name, component,
--					  info->extack);
-+	return devlink->ops->flash_update(devlink, &params, info->extack);
++	nla_overwrite_mask = info->attrs[DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK];
++	if (nla_overwrite_mask) {
++		struct nla_bitfield32 sections;
++
++		if (!(supported_params & DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK)) {
++			NL_SET_ERR_MSG_ATTR(info->extack, nla_overwrite_mask,
++					    "overwrite settings are not supported by this device");
++			return -EOPNOTSUPP;
++		}
++		sections = nla_get_bitfield32(nla_overwrite_mask);
++		params.overwrite_mask = sections.value & sections.selector;
++	}
++
+ 	return devlink->ops->flash_update(devlink, &params, info->extack);
  }
  
- static const struct devlink_param devlink_param_generic[] = {
-@@ -9651,6 +9650,7 @@ void devlink_compat_running_version(struct net_device *dev,
- 
- int devlink_compat_flash_update(struct net_device *dev, const char *file_name)
- {
-+	struct devlink_flash_update_params params = {};
- 	struct devlink *devlink;
- 	int ret;
- 
-@@ -9663,8 +9663,10 @@ int devlink_compat_flash_update(struct net_device *dev, const char *file_name)
- 		goto out;
- 	}
- 
-+	params.file_name = file_name;
-+
- 	mutex_lock(&devlink->lock);
--	ret = devlink->ops->flash_update(devlink, file_name, NULL, NULL);
-+	ret = devlink->ops->flash_update(devlink, &params, NULL);
- 	mutex_unlock(&devlink->lock);
- 
- out:
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-index de4b32fc4223..1e7541688978 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-@@ -23,6 +23,9 @@ fw_flash_test()
- 	devlink dev flash $DL_HANDLE file dummy
- 	check_err $? "Failed to flash with status updates on"
- 
-+	devlink dev flash $DL_HANDLE file dummy component fw.mgmt
-+	check_err $? "Failed to flash with component attribute"
-+
- 	echo "n"> $DEBUGFS_DIR/fw_update_status
- 	check_err $? "Failed to disable status updates"
- 
+@@ -7093,6 +7106,8 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
+ 	[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER] = { .type = NLA_U8 },
+ 	[DEVLINK_ATTR_FLASH_UPDATE_FILE_NAME] = { .type = NLA_NUL_STRING },
+ 	[DEVLINK_ATTR_FLASH_UPDATE_COMPONENT] = { .type = NLA_NUL_STRING },
++	[DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK] =
++		NLA_POLICY_BITFIELD32(DEVLINK_SUPPORTED_FLASH_OVERWRITE_SECTIONS),
+ 	[DEVLINK_ATTR_TRAP_NAME] = { .type = NLA_NUL_STRING },
+ 	[DEVLINK_ATTR_TRAP_ACTION] = { .type = NLA_U8 },
+ 	[DEVLINK_ATTR_TRAP_GROUP_NAME] = { .type = NLA_NUL_STRING },
 -- 
 2.28.0.497.g54e85e7af1ac
 
