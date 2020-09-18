@@ -2,231 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B0326F9C5
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 12:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3108426F9E2
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 12:05:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726187AbgIRKAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 06:00:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24843 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726118AbgIRKAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 06:00:36 -0400
+        id S1726580AbgIRKFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 06:05:55 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:57912 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726551AbgIRKFx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 06:05:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600423234;
+        s=mimecast20190719; t=1600423551;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Cowvnht1B16jwPncWxMnAZL5RCq0sW/QkuOVkiw3zTw=;
-        b=TrlXWjdsBu0p5tiQ0ogVz14Q5AQ5g/0u5AigXe+cU1LaIMs/kBctESSA1NBqUBxBx8SYN9
-        IWz0xH19ICHbPv03nCODceVLWJwFniqCJrh3Hs9Zi2et5B05a7DpLiL/FX3rBw2oetC8kx
-        XFujKRRcgs3SumhXNYYUh819eKx9IOA=
+        bh=WkpClEmXxT84vDpjsqvB+DVNHu1sfbMIG8xOfJiWTAw=;
+        b=B5vjXDs1yeLh4Ew4xx+uFAIGu1+fqHOGTkiywxM5zcUNOKEXMdih/L5t8VsqRJ/VjC/yqq
+        TfeiQl7X2kl6OtSrD8A7G95lf88RMvLLKA/maw4/GLPtFMzIuklo91hP8smHXv3twncQB6
+        osz0QqjJkSOonuYr2cxW2mHfJls6NtE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-389-mtORsPYAPVCgbAVLXbbJRg-1; Fri, 18 Sep 2020 06:00:30 -0400
-X-MC-Unique: mtORsPYAPVCgbAVLXbbJRg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+ us-mta-379-pG7bMC-GPxaN-W1VdCndGg-1; Fri, 18 Sep 2020 06:05:47 -0400
+X-MC-Unique: pG7bMC-GPxaN-W1VdCndGg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E16ED64090;
-        Fri, 18 Sep 2020 10:00:27 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.42])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E532073662;
-        Fri, 18 Sep 2020 10:00:17 +0000 (UTC)
-Date:   Fri, 18 Sep 2020 12:00:16 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shaun Crampton <shaun@tigera.io>,
-        David Miller <davem@davemloft.net>,
-        Marek Majkowski <marek@cloudflare.com>, brouer@redhat.com
-Subject: Re: BPF redirect API design issue for BPF-prog MTU feedback?
-Message-ID: <20200918120016.7007f437@carbon>
-In-Reply-To: <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org>
-References: <20200917143846.37ce43a0@carbon>
-        <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
-        <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6FA621891E81;
+        Fri, 18 Sep 2020 10:05:45 +0000 (UTC)
+Received: from krava (ovpn-114-24.ams2.redhat.com [10.36.114.24])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 5A90D55771;
+        Fri, 18 Sep 2020 10:05:43 +0000 (UTC)
+Date:   Fri, 18 Sep 2020 12:05:42 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Seth Forshee <seth.forshee@canonical.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: resolve_btfids breaks kernel cross-compilation
+Message-ID: <20200918100542.GD2514666@krava>
+References: <20200916194733.GA4820@ubuntu-x1>
+ <20200917080452.GB2411168@krava>
+ <20200917083809.GE2411168@krava>
+ <20200917091406.GF2411168@krava>
+ <20200917125450.GC4820@ubuntu-x1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200917125450.GC4820@ubuntu-x1>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Sep 2020 12:11:33 -0700
-Saeed Mahameed <saeed@kernel.org> wrote:
+On Thu, Sep 17, 2020 at 07:54:50AM -0500, Seth Forshee wrote:
+> On Thu, Sep 17, 2020 at 11:14:06AM +0200, Jiri Olsa wrote:
+> > On Thu, Sep 17, 2020 at 10:38:12AM +0200, Jiri Olsa wrote:
+> > > On Thu, Sep 17, 2020 at 10:04:55AM +0200, Jiri Olsa wrote:
+> > > > On Wed, Sep 16, 2020 at 02:47:33PM -0500, Seth Forshee wrote:
+> > > > > The requirement to build resolve_btfids whenever CONFIG_DEBUG_INFO_BTF
+> > > > > is enabled breaks some cross builds. For example, when building a 64-bit
+> > > > > powerpc kernel on amd64 I get:
+> > > > > 
+> > > > >  Auto-detecting system features:
+> > > > >  ...                        libelf: [ [32mon[m  ]
+> > > > >  ...                          zlib: [ [32mon[m  ]
+> > > > >  ...                           bpf: [ [31mOFF[m ]
+> > > > >  
+> > > > >  BPF API too old
+> > > > >  make[6]: *** [Makefile:295: bpfdep] Error 1
+> > > > > 
+> > > > > The contents of tools/bpf/resolve_btfids/feature/test-bpf.make.output:
+> > > > > 
+> > > > >  In file included from /home/sforshee/src/u-k/unstable/tools/arch/powerpc/include/uapi/asm/bitsperlong.h:11,
+> > > > >                   from /usr/include/asm-generic/int-ll64.h:12,
+> > > > >                   from /usr/include/asm-generic/types.h:7,
+> > > > >                   from /usr/include/x86_64-linux-gnu/asm/types.h:1,
+> > > > >                   from /home/sforshee/src/u-k/unstable/tools/include/linux/types.h:10,
+> > > > >                   from /home/sforshee/src/u-k/unstable/tools/include/uapi/linux/bpf.h:11,
+> > > > >                   from test-bpf.c:3:
+> > > > >  /home/sforshee/src/u-k/unstable/tools/include/asm-generic/bitsperlong.h:14:2: error: #error Inconsistent word size. Check asm/bitsperlong.h
+> > > > >     14 | #error Inconsistent word size. Check asm/bitsperlong.h
+> > > > >        |  ^~~~~
+> > > > > 
+> > > > > This is because tools/arch/powerpc/include/uapi/asm/bitsperlong.h sets
+> > > > > __BITS_PER_LONG based on the predefinied compiler macro __powerpc64__,
+> > > > > which is not defined by the host compiler. What can we do to get cross
+> > > > > builds working again?
+> > > > 
+> > > > could you please share the command line and setup?
+> > > 
+> > > I just reproduced.. checking on fix
+> > 
+> > I still need to check on few things, but patch below should help
+> 
+> It does help with the word size problem, thanks.
+> 
+> > we might have a problem for cross builds with different endianity
+> > than the host because libbpf does not support reading BTF data
+> > with different endianity, and we get:
+> > 
+> >   BTFIDS  vmlinux
+> > libbpf: non-native ELF endianness is not supported
+> 
+> Yes, I see this now when cross building for s390.
 
-> On Thu, 2020-09-17 at 05:54 -0700, Maciej =C5=BBenczykowski wrote:
-> > On Thu, Sep 17, 2020 at 5:39 AM Jesper Dangaard Brouer
-> > <brouer@redhat.com> wrote: =20
-> > >=20
-> > > As you likely know[1] I'm looking into moving the MTU check (for
-> > > TC-BPF) in __bpf_skb_max_len() when e.g. called by
-> > > bpf_skb_adjust_room(), because when redirecting packets to
-> > > another netdev it is not correct to limit the MTU based on the
-> > > incoming netdev.
-> > >=20
-> > > I was looking at doing the MTU check in bpf_redirect() helper,
-> > > because at this point we know the redirect to netdev, and
-> > > returning an indication/error that MTU was exceed, would allow
-> > > the BPF-prog logic to react, e.g. sending ICMP (instead of packet
-> > > getting silently dropped).=20
-> > > BUT this is not possible because bpf_redirect(index, flags) helper
-> > > don't provide the packet context-object (so I cannot lookup the
-> > > packet length).
-> > >=20
-> > > Seeking input:
-> > >=20
-> > > Should/can we change the bpf_redirect API or create a new helper
-> > > with packet-context?
-> > >=20
-> > >  Note: We have the same need for the packet context for XDP when
-> > >  redirecting the new multi-buffer packets, as not all destination
-> > >  netdev will support these new multi-buffer packets.
-> > >=20
-> > > I can of-cause do the MTU checks on kernel-side in
-> > > skb_do_redirect, but then how do people debug this? as packet
-> > > will basically be silently dropped.
-> > >=20
-> > >=20
-> > >=20
-> > > (Looking at how does BPF-prog logic handle MTU today)
-> > >=20
-> > > How do bpf_skb_adjust_room() report that the MTU was exceeded?
-> > > Unfortunately it uses a common return code -ENOTSUPP which used
-> > > for multiple cases (include MTU exceeded). Thus, the BPF-prog
-> > > logic cannot use this reliably to know if this is a MTU exceeded
-> > > event. (Looked BPF-prog code and they all simply exit with
-> > > TC_ACT_SHOT for all error codes, cloudflare have the most
-> > > advanced handling with metrics->errors_total_encap_adjust_failed++).
-> > >=20
-> > >=20
-> > > [1]=20
-> > > https://lore.kernel.org/bpf/159921182827.1260200.9699352760916903781.=
-stgit@firesoul/
-> > > --
-> > > Best regards,
-> > >   Jesper Dangaard Brouer
-> > >   MSc.CS, Principal Kernel Engineer at Red Hat
-> > >   LinkedIn: http://www.linkedin.com/in/brouer
-> > >  =20
-> >=20
-> > (a) the current state of the world seems very hard to use correctly,
-> > so adding new apis, or even changing existing ones seems ok to me.
-> > especially if this just means changing what error code they return
-> >=20
-> > (b) another complexity with bpf_redirect() is you can call it, it
-> > can succeed, but then you can not return TC_ACT_REDIRECT from the
-> > bpf program, which effectively makes the earlier *successful*
-> > bpf_redirect() call an utter no-op.
-> >=20
-> > (bpf_redirect() just determines what a future return TC_ACT_REDIRECT
-> > will do)
-> >=20
-> > so if you bpf_redirect to interface with larger mtu, then increase
-> > packet size, =20
->=20
-> why would you redirect then touch the packet afterwards ?=20
-> if you have a bad program, then it is a user issue.
->=20
-> > then return TC_ACT_OK, then you potentially end up with excessively
-> > large packet egressing through original interface (with small mtu).
-> >=20
+Andrii,
+I read you might be already working on this?
+  https://lore.kernel.org/bpf/CAEf4Bza9tZ-Jj0dj9Ne0fmxa95t=9XxxJR+Ce=6hDmw_d8uVFA@mail.gmail.com/
 
-This is a good point.  As bpf_skb_adjust_room() can just be run after
-bpf_redirect() call, then a MTU check in bpf_redirect() actually
-doesn't make much sense.  As clever/bad BPF program can then avoid the
-MTU check anyhow.  This basically means that we have to do the MTU
-check (again) on kernel side anyhow to catch such clever/bad BPF
-programs.  (And I don't like wasting cycles on doing the same check two
-times).
+thanks,
+jirka
 
-If we do the MTU check on the kernel side, then there are no feedback
-to the program, and how are end-users going to debug this?
-
-
-> > My vote would be to return a new distinct error from bpf_redirect()
-> > based on then current packet size and interface being redirected
-> > to, save this interface mtu  somewhere, then in operations that
-> > increase packet size check against this saved mtu, for correctness
-> > you still have to check mtu after the bpf program is done,
-> > but this is then just to deal with braindead bpf code (that calls
-> > bpf_redirect and returns TC_ACT_OK, or calls bpf_redirect() multiple
-> > times, or something...).
-> >  =20
-
-Hmm, I don't like wasting cycles on doing the same check multiple times.
-
-In bpf_redirect() we store the netdev we want to redirect to, thus, if
-bpf_skb_adjust_room() is run after bpf_redirect(), we could also do a
-MTU check in bpf_skb_adjust_room() based on this netdev. (maybe there
-are still ways for a BPF-prog to cheat the MTU check?).
-
->=20
-> Another solution is to have an exception function defined in the
-> BPF_prog, this function by itself is another program that can be
-> executed to notify the prog about any exception/err that happened
-> after the main BPF_program exited and let the XDP program react by
-> its own logic.
-
-We are talking about TC-BPF programs here, but the concept and
-usability issue with bpf_redirect() is the same for XDP.
-
-If doing the MTU check (and drop) on kernel side, as was thinking about
-adding a simple tracepoint, for end-users to debug this. It would also
-allow for attaching a BPF-prog to the tracepoint to get more direct
-feedback, but it would not allow sending back an ICMP response.
-
-Your approach of calling a 2nd BPF-prog to deal with exceptions, and
-allow it to alter the packet and flow "action" is definitely
-interesting.  What do others think?
-
-
-> example:
->=20
-> BPF_prog:
->     int XDP_main_prog(xdp_buff) {
->         xdp_adjust_head/tail(xdp_buff);
->         return xdp_redirect(ifindex, flags);
->     }
->=20
->     int XDP_exception(xdp_buff, excption_code) {
->         if (excetption_code =3D=3D XDP_REDIRECRT_MTU_EXCEEDED) {
->                 ICMP_response(xdp_buff);
->                 return XDP_TX;
->         }
->         return XDP_DROP;
->     }
->=20
->=20
-> netdev_driver_xdp_handle():
->    act =3D bpf_prog_run_xdp(prog, xdp); // Run XDP_main_prog
->    if (act =3D=3D XDP_REDIRECT)
->        err =3D xdp_do_redirect(netdev, xdp, prog);
->        if (err) {=20
->           // Run XDP_exception() function in the user prog
->           // finds the exception handler of active program
->           act =3D bpf_prog_run_xdp_exciption(prog, xdp, err);
->           // then handle exception action in the driver
-> (XDP_TX/DROP/FORWARD)..=20
->        }
->=20
-> of-course a user program will be notified only on the first err ..=20
-> if it fails on the 2nd time .. just drop..
-
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+> 
+> Thanks,
+> Seth
+> 
+> > 
+> > jirka
+> > 
+> > 
+> > ---
+> > diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
+> > index a88cd4426398..d3c818b8d8d3 100644
+> > --- a/tools/bpf/resolve_btfids/Makefile
+> > +++ b/tools/bpf/resolve_btfids/Makefile
+> > @@ -1,5 +1,6 @@
+> >  # SPDX-License-Identifier: GPL-2.0-only
+> >  include ../../scripts/Makefile.include
+> > +include ../../scripts/Makefile.arch
+> >  
+> >  ifeq ($(srctree),)
+> >  srctree := $(patsubst %/,%,$(dir $(CURDIR)))
+> > @@ -29,6 +30,7 @@ endif
+> >  AR       = $(HOSTAR)
+> >  CC       = $(HOSTCC)
+> >  LD       = $(HOSTLD)
+> > +ARCH     = $(HOSTARCH)
+> >  
+> >  OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
+> >  
+> > 
+> 
 
