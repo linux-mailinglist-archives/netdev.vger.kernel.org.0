@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C12826EA44
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 03:08:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BB2E26EA49
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 03:08:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726201AbgIRBHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 21:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44872 "EHLO
+        id S1726279AbgIRBHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 21:07:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726102AbgIRBHk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 21:07:40 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3746BC061788
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:40 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id u21so5861152eja.2
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:40 -0700 (PDT)
+        with ESMTP id S1726102AbgIRBHl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 21:07:41 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70577C06174A
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:41 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id i22so5844451eja.5
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=63XTGrK5gzi1vWJvflWPFM9+keo4NDgShJ9JleCT+cg=;
-        b=lnucAtgW/t6E9KKpKidHxxaYhng22J+8hLPNRxKbNNGmhuaBjJ/jg8PVpVmxTsWHqC
-         Gg+MszJOEeicvXsnVkZZAXlVeNth4gho0l/wcIQ1yVltKuyRVlEEi21u/veE5mkltjxP
-         9CNxVMWQKVfyRUfA3CcvJrS1UuIAJtWYHHj+NS1VhNSqvCeBXdZaZQNwiFrm3uZ5prta
-         BJAzx8CNBJ2P3HBsACgdO/3IaDHowVOii6iB3hFlJ6aVffETCONM03bScPanG80jyYOJ
-         BgrX7z599TYsBUuePZiRmf7ddngGksqYShPM2FwI4mpBzno4JZjKWRoFNihIodB8+11M
-         YZCw==
+        bh=JhTFGyHSOYaDmD7ZbQ4GySgnyfZ0q7Iyo42XR1Uixhs=;
+        b=C9ATBbyM3A7zv712Gcu8I7X04taxbRcI8OrjDckjme0y9CQJeg1jMdvxCVDGfgkFEw
+         yw/PqvcrWs0+c2mcl1qKPtDmdPExKhjqCgD/MwDpxeYcqUQnXP5nejINyIJ1D/uijUrH
+         z2UyclUGNmGZaWwYEPm0b5HDYeO871CRDDYEbvKRI6K384xv/9BaFOQOcW6JestISB75
+         qyO+PgLeww3MGsBMbUvq2nAQ+Vjw5njUq9RYg7QumLuNbm40zy8UgtDbHRUaXMp8twWb
+         UsHgR25gZGJEFsJsngQMlI6JbiCIa5Mkiyt27JxY4+EKaxmtHcu8OMqOrVXqUpbIKGz5
+         yurA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=63XTGrK5gzi1vWJvflWPFM9+keo4NDgShJ9JleCT+cg=;
-        b=eYzI2yBCqIeqdkJm6173ZKiPdk6fNQ+vRocD4l3oyn3HPc6xvU2Ck4OugjbmN3ZLm8
-         VU62wnMy2MdFqXEDkW2J4smUMNOzk/1GL9garsqmYaXKpCMh34YDNDb2FmxEO8UfVEYz
-         ukPWK9zLYaQf+lLHz/Lf13rcKraD3pwQkb6Q/n7chxIVlfdyhAe+WPPYbiFQ/EBKZrUp
-         X+MHJlL9XJb19+yk6izah1/22fw41+khObXlqPLvPuyGI6zu6aTgF/Td3pRqmisJsIyC
-         9kP5OMrUlJFlEPiNce2ghbjmkbYIfxlApnCepyljHulinltPGpfV31B05y4yyzO+0oUV
-         qASw==
-X-Gm-Message-State: AOAM532gwcO3kZ42MX0MeTzgPDJR/mL2SWy1dHVR34d+tiw+r3suTsXJ
-        veW2ucQvnuQomXBQQosFMkU=
-X-Google-Smtp-Source: ABdhPJwXgID4T9sOPaU8509uqOoCZd9hgYGnrPkJPwuKYZqFTnJ3/isfi10N+Pjo0NZm/zNvfBdecA==
-X-Received: by 2002:a17:906:af92:: with SMTP id mj18mr33094990ejb.242.1600391258961;
-        Thu, 17 Sep 2020 18:07:38 -0700 (PDT)
+        bh=JhTFGyHSOYaDmD7ZbQ4GySgnyfZ0q7Iyo42XR1Uixhs=;
+        b=Jr56hknDXb0IyoVZxiSFKmRnp0AczxqHkZvpLBuQEj4A/ohCegMV0BBI7SfzO+Kzgu
+         uUM8nAwRQgPOALkKcAEQVJjZKCqnh3Jx/x8IAzASAVoluKh0XgJ9G64n8SuyWvxVq37+
+         rZwu2/3y63IFs9Y2QdS3tMnvd9R+UgTK2PwEQP6Z7TnV8on+YBN0XOUAhoWYxlmKp4nY
+         YT/Vwb/6Pw2nphHB2m8tTjlo4F7MNLoybx371IdV9bP2pmgC91nV2mO5zj4szJ7Ul7Sa
+         NwuujYPwxaDU3z83Vnc3KdyKQNGl8YkA85Serjz1F2oE7hH1af24RIaZpp6NlJP5QiXa
+         aE4w==
+X-Gm-Message-State: AOAM530Z7mbgoRybtrV6sIug9iHk8s1t4MmUtJLo2K3nR/mq5G55dGqP
+        E5vC0Xhj6F9EBUKShTGUv30=
+X-Google-Smtp-Source: ABdhPJyIkDROlfwHurVgSb6o5vfY6bOFuGWY7PcfanmLZiFR52yEzZeKQzI52Lf1vSxUdLdtzcWLzg==
+X-Received: by 2002:a17:906:4819:: with SMTP id w25mr33283093ejq.300.1600391260092;
+        Thu, 17 Sep 2020 18:07:40 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id g20sm1068591ejx.12.2020.09.17.18.07.37
+        by smtp.gmail.com with ESMTPSA id g20sm1068591ejx.12.2020.09.17.18.07.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Sep 2020 18:07:38 -0700 (PDT)
+        Thu, 17 Sep 2020 18:07:39 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
         UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
         alexandre.belloni@bootlin.com, andrew@lunn.ch,
         vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org
-Subject: [PATCH v2 net 3/8] net: dsa: seville: fix buffer size of the queue system
-Date:   Fri, 18 Sep 2020 04:07:25 +0300
-Message-Id: <20200918010730.2911234-4-olteanv@gmail.com>
+Subject: [PATCH v2 net 4/8] net: mscc: ocelot: check for errors on memory allocation of ports
+Date:   Fri, 18 Sep 2020 04:07:26 +0300
+Message-Id: <20200918010730.2911234-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918010730.2911234-1-olteanv@gmail.com>
 References: <20200918010730.2911234-1-olteanv@gmail.com>
@@ -67,31 +67,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The VSC9953 Seville switch has 2 megabits of buffer split into 4360
-words of 60 bytes each.
+Do not proceed probing if we couldn't allocate memory for the ports
+array, just error out.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
 Changes in v2:
-None.
+Stopped leaking the 'ports' OF node.
 
- drivers/net/dsa/ocelot/seville_vsc9953.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 2d6a5f5758f8..83a1ab9393e9 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1018,7 +1018,7 @@ static const struct felix_info seville_info_vsc9953 = {
- 	.vcap_is2_keys		= vsc9953_vcap_is2_keys,
- 	.vcap_is2_actions	= vsc9953_vcap_is2_actions,
- 	.vcap			= vsc9953_vcap_props,
--	.shared_queue_sz	= 128 * 1024,
-+	.shared_queue_sz	= 2048 * 1024,
- 	.num_mact_rows		= 2048,
- 	.num_ports		= 10,
- 	.mdio_bus_alloc		= vsc9953_mdio_bus_alloc,
+diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+index 65408bc994c4..904ea299a5e8 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
++++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+@@ -993,6 +993,10 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 
+ 	ocelot->ports = devm_kcalloc(&pdev->dev, ocelot->num_phys_ports,
+ 				     sizeof(struct ocelot_port *), GFP_KERNEL);
++	if (!ocelot->ports) {
++		err = -ENOMEM;
++		goto out_put_ports;
++	}
+ 
+ 	ocelot->vcap_is2_keys = vsc7514_vcap_is2_keys;
+ 	ocelot->vcap_is2_actions = vsc7514_vcap_is2_actions;
 -- 
 2.25.1
 
