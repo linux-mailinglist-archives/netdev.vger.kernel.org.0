@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE50026EF97
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F97E26EF83
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727449AbgIRCgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:36:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39518 "EHLO mail.kernel.org"
+        id S1730060AbgIRCgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:36:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39778 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728832AbgIRCMt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:12:49 -0400
+        id S1728861AbgIRCM7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:12:59 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 40D5D208E4;
-        Fri, 18 Sep 2020 02:12:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D5BCE208DB;
+        Fri, 18 Sep 2020 02:12:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600395168;
-        bh=hyi8QtbzjHoDYryMAAhuBOwXM2Dh9ZQWU5aNbOroRO8=;
+        s=default; t=1600395178;
+        bh=SUsGi52iwz/b8+clppZmZarS0BghQQJ738U/7mWT4xg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d9McLJN/ow/mdMDZXlQh66GL83xT+7faS4KKjQBGI/Hp4sEh1jf+Dfp7bjLgrHscI
-         3IKTGKz/sDSNKJIk5KTC6p1FVDaQXgRIEhjGt4qw+edPVz2swZNAGj7p0Fvt/xMa2e
-         01zsOFGf2W8mcY9lzU9JKsOlFJV1Zl1i7W9zYY+o=
+        b=PYzf2ZDUjnWqZYxBcqFrurrHDcFslpTT11qXiFqY0IfQ9NTWfPf/2Rufq5hfZgiiT
+         Ny9vW0jxAMKaa7Xp/5ITXxS+E8MZPqPFUmcD1NsQyQDniHu+rGlE7d2XImdvOM/rh0
+         yStQ8Jguha39cYx94bsbhfRusrLtTjFsyUHG+VbA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vasily Averin <vvs@virtuozzo.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 025/127] rt_cpu_seq_next should increase position index
-Date:   Thu, 17 Sep 2020 22:10:38 -0400
-Message-Id: <20200918021220.2066485-25-sashal@kernel.org>
+Cc:     Mert Dirik <mertdirik@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 034/127] ar5523: Add USB ID of SMCWUSBT-G2 wireless adapter
+Date:   Thu, 17 Sep 2020 22:10:47 -0400
+Message-Id: <20200918021220.2066485-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918021220.2066485-1-sashal@kernel.org>
 References: <20200918021220.2066485-1-sashal@kernel.org>
@@ -42,33 +43,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasily Averin <vvs@virtuozzo.com>
+From: Mert Dirik <mertdirik@gmail.com>
 
-[ Upstream commit a3ea86739f1bc7e121d921842f0f4a8ab1af94d9 ]
+[ Upstream commit 5b362498a79631f283578b64bf6f4d15ed4cc19a ]
 
-if seq_file .next fuction does not change position index,
-read after some lseek can generate unexpected output.
+Add the required USB ID for running SMCWUSBT-G2 wireless adapter (SMC
+"EZ Connect g").
 
-https://bugzilla.kernel.org/show_bug.cgi?id=206283
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This device uses ar5523 chipset and requires firmware to be loaded. Even
+though pid of the device is 4507, this patch adds it as 4506 so that
+AR5523_DEVICE_UG macro can set the AR5523_FLAG_PRE_FIRMWARE flag for pid
+4507.
+
+Signed-off-by: Mert Dirik <mertdirik@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/route.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ar5523/ar5523.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index a894adbb6c9b5..cca52e2f27a0e 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -276,6 +276,7 @@ static void *rt_cpu_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- 		*pos = cpu+1;
- 		return &per_cpu(rt_cache_stat, cpu);
- 	}
-+	(*pos)++;
- 	return NULL;
- 
- }
+diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
+index ad4a1efc57c97..e1a1d27427cc9 100644
+--- a/drivers/net/wireless/ath/ar5523/ar5523.c
++++ b/drivers/net/wireless/ath/ar5523/ar5523.c
+@@ -1771,6 +1771,8 @@ static const struct usb_device_id ar5523_id_table[] = {
+ 	AR5523_DEVICE_UX(0x0846, 0x4300),	/* Netgear / WG111U */
+ 	AR5523_DEVICE_UG(0x0846, 0x4250),	/* Netgear / WG111T */
+ 	AR5523_DEVICE_UG(0x0846, 0x5f00),	/* Netgear / WPN111 */
++	AR5523_DEVICE_UG(0x083a, 0x4506),	/* SMC / EZ Connect
++						   SMCWUSBT-G2 */
+ 	AR5523_DEVICE_UG(0x157e, 0x3006),	/* Umedia / AR5523_1 */
+ 	AR5523_DEVICE_UX(0x157e, 0x3205),	/* Umedia / AR5523_2 */
+ 	AR5523_DEVICE_UG(0x157e, 0x3006),	/* Umedia / TEW444UBEU */
 -- 
 2.25.1
 
