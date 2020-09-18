@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC20926FE08
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:18:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E7B926FE0B
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 15:18:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726549AbgIRNQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 09:16:31 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:13264 "EHLO huawei.com"
+        id S1726785AbgIRNRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 09:17:15 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:13265 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726174AbgIRNQb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 09:16:31 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 7855075E8274D5D3465C;
-        Fri, 18 Sep 2020 21:16:27 +0800 (CST)
-Received: from localhost (10.174.179.108) by DGGEMS402-HUB.china.huawei.com
- (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Fri, 18 Sep 2020
- 21:16:17 +0800
+        id S1726174AbgIRNRN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 09:17:13 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id C478EDD78A11CC0D0878;
+        Fri, 18 Sep 2020 21:17:09 +0800 (CST)
+Received: from localhost (10.174.179.108) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Fri, 18 Sep 2020
+ 21:17:01 +0800
 From:   YueHaibing <yuehaibing@huawei.com>
-To:     <jmaloy@redhat.com>, <ying.xue@windriver.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <tuong.t.lien@dektech.com.au>
-CC:     <netdev@vger.kernel.org>, <tipc-discussion@lists.sourceforge.net>,
+To:     <wensong@linux-vs.org>, <horms@verge.net.au>, <ja@ssi.bg>,
+        <pablo@netfilter.org>, <kadlec@netfilter.org>, <fw@strlen.de>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <lvs-devel@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <coreteam@netfilter.org>,
         <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] tipc: Remove unused macro CF_SERVER
-Date:   Fri, 18 Sep 2020 21:16:15 +0800
-Message-ID: <20200918131615.20124-1-yuehaibing@huawei.com>
+Subject: [PATCH net-next] ipvs: Remove unused macros
+Date:   Fri, 18 Sep 2020 21:16:56 +0800
+Message-ID: <20200918131656.46260-1-yuehaibing@huawei.com>
 X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -35,25 +36,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is no used any more, so can remove it.
+They are not used since commit e4ff67513096 ("ipvs: add
+sync_maxlen parameter for the sync daemon")
 
 Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- net/tipc/topsrv.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/netfilter/ipvs/ip_vs_sync.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
-index 1489cfb941d8..5f6f86051c83 100644
---- a/net/tipc/topsrv.c
-+++ b/net/tipc/topsrv.c
-@@ -48,7 +48,6 @@
- #define MAX_SEND_MSG_COUNT	25
- #define MAX_RECV_MSG_COUNT	25
- #define CF_CONNECTED		1
--#define CF_SERVER		2
+diff --git a/net/netfilter/ipvs/ip_vs_sync.c b/net/netfilter/ipvs/ip_vs_sync.c
+index 2b8abbfe018c..16b48064f715 100644
+--- a/net/netfilter/ipvs/ip_vs_sync.c
++++ b/net/netfilter/ipvs/ip_vs_sync.c
+@@ -242,9 +242,6 @@ struct ip_vs_sync_thread_data {
+       |                    IPVS Sync Connection (1)                   |
+ */
  
- #define TIPC_SERVER_NAME_LEN	32
- 
+-#define SYNC_MESG_HEADER_LEN	4
+-#define MAX_CONNS_PER_SYNCBUFF	255 /* nr_conns in ip_vs_sync_mesg is 8 bit */
+-
+ /* Version 0 header */
+ struct ip_vs_sync_mesg_v0 {
+ 	__u8                    nr_conns;
 -- 
 2.17.1
 
