@@ -2,87 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52BE426EFBA
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:38:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD7F626F11C
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:48:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728803AbgIRChp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58854 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726333AbgIRChm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 22:37:42 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93A8C06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 19:37:41 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id gf14so2216395pjb.5
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 19:37:41 -0700 (PDT)
+        id S1730307AbgIRCsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:48:52 -0400
+Received: from mail-dm6nam10on2044.outbound.protection.outlook.com ([40.107.93.44]:1760
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730203AbgIRCsc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:48:32 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bkE+9UTDKdxxmoZBz9DKbkWeGtse8Szkn447gWC0FcZCGLMO/8WcYwn5p7MO8NSV7Huw0L/LIMiANaNdLPjRmsmSn2/yo+im5cD7XwzKs+9I7K9F7kFQIdX70X7NrXdQjTFRWkCPr0Q4vNKd2J4un9nc2fpnhoGdrkxeIvFRLv65DjK2N/7exlwHaxFwuxoPAjsvwrLkUCZqKMm3Is+fUiICmBMPvbzWoA3Q9gL7s6xdl7ZFQyRIA7n0bOpODHgKKh07ZtQ7rEQXRcdSlgmr0+4MdqrxToxiYylmqmYXvVOoH1pkMOl5oqWba2nLdRppZL2sRkD0bba+yQs5bpkh6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JlnggPJKUY3Qx5pRNvFZgONgogBR19amHI5SIx5Qcic=;
+ b=cBLPKX+VKtkwTAXebnKsbg4veO3FtkVhd4OeeOXLKKiBfSBMTkd6FOFCHajxy23fp3C/uZbkDzeKPqIm+HqncYsPp/hHE1yDS95spoRjat9qNCBfeOv2B4kGyiFC5d7vPTMBfviBPAxKaplzxdCPWPGImDAH7wfBYH1eDD1BbtQkuniyMTDqDCY1n+oR4t9IBHiU5+DePzRxe9ujdvlJWkMf2ugEOgEpjewunaAgaQAkXdjbG31l4gSf/gWf6RL+SkSn3zvwjLRFm+ZbVNe0f8P/ECkd0HwWMWxAdOmUJVhPni2mfdfOuKhttDPox3CEd7+uQMyXAIRajyKa8oIcew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pyvmbRRRXfL+hz1A+sHcG8BaSWMkod3SBcCgg/IIxEA=;
-        b=DR/h6sNbheIT1nLioHbJacVevghREtTAoOF//8Lg4oscYrl7WEvBdGZUjsfQ3/z7MQ
-         VIlqqTwGCNPH10YrBc/8AvZzQDeZcYS659CFphKDqlsl4AE2eSvQnpbcCZXf06e9zb/H
-         TOEM12k1ootBBe55vmc0lEDgiybdgVuK8khPA+/O+FLoupzR74vbzVFt0axJiCTwoChi
-         xCINLL0nrt6/HntXIDA1PueqtSeM9LlOJ2ctIv/zeu2X0SrN80ZKJBomaOtFI4yAkyvx
-         AuVX7lS6zfDbmzXKR61thdC4oNKiHRVhxuUqSCwwDEEteaY+fofbLxSYYOKDI9GeFKiU
-         itAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pyvmbRRRXfL+hz1A+sHcG8BaSWMkod3SBcCgg/IIxEA=;
-        b=be7OfbXYYQKEKOSaPNI79F5Q7dXa6RMT6WzxYaQjTZSF90mF4elj8u6neDn4QZ3nW8
-         J/daeN9SGmV63OTiZBRGHohaETqs/WYzVegVSpkQTKdiAElc2LxC9asxkEZtcl6htx9p
-         OjusBFwt09QCqRFwz0pwcnj+k32HSCqbtrVgyXSXP+tIGmdxpKEIxrnLQyM63ohMJwaO
-         kKtsBkQuaNtUReJvZQ/Gujw/aKEn+l5f5FDMQbaOTN5OVNnH6B8SDg7BfyoztEJJcBRG
-         1K4F2NIjG5ts6tymGmm15COkbPq9BEREKfs0hYgOfLSctekKViIPY1ycT+tOg72h39mI
-         ZbHg==
-X-Gm-Message-State: AOAM532zeLrKbZfh9Jz8+gwWlK5AdcMGfzKp6jRV0qqRoqDGaRiAOahM
-        ekpCHCguc5tT3igZDYXNYcM=
-X-Google-Smtp-Source: ABdhPJxD9je4SCz7w0H7Sz7H17yU0YSChpmX6YnBaAjggsWz8e/mXuLzaPaIJE7vGqWauHY/7atpEg==
-X-Received: by 2002:a17:902:24c:b029:d0:cb2d:f270 with SMTP id 70-20020a170902024cb02900d0cb2df270mr31843332plc.9.1600396661511;
-        Thu, 17 Sep 2020 19:37:41 -0700 (PDT)
-Received: from [10.230.28.120] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 5sm1046935pgf.21.2020.09.17.19.37.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Sep 2020 19:37:40 -0700 (PDT)
-Subject: Re: [PATCH v2 net 3/8] net: dsa: seville: fix buffer size of the
- queue system
-To:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
-        UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, kuba@kernel.org
-References: <20200918010730.2911234-1-olteanv@gmail.com>
- <20200918010730.2911234-4-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <1d8f0d55-009e-75d5-0b47-a2e6f4e2793d@gmail.com>
-Date:   Thu, 17 Sep 2020 19:37:36 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.2
-MIME-Version: 1.0
-In-Reply-To: <20200918010730.2911234-4-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JlnggPJKUY3Qx5pRNvFZgONgogBR19amHI5SIx5Qcic=;
+ b=GDA49g0jFjjxWkYLfkHU5OrhRu4Tjdb1K8bUyJ5iFIWaN0naasU7Xfh3a9ixu0vu5N2hLIYPvvem2elqWLImIY93cFY3Aw41ddfuW6xqHKins0kNkRwo/PdzxyzxqCXbBruD9rViqnk+Kmh/GVsxqUvO/ref7hgJVBscnbakthQ=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=synaptics.com;
+Received: from DM6PR03MB4555.namprd03.prod.outlook.com (2603:10b6:5:102::17)
+ by DM6PR03MB4441.namprd03.prod.outlook.com (2603:10b6:5:109::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14; Fri, 18 Sep
+ 2020 02:48:29 +0000
+Received: from DM6PR03MB4555.namprd03.prod.outlook.com
+ ([fe80::e494:740f:155:4a38]) by DM6PR03MB4555.namprd03.prod.outlook.com
+ ([fe80::e494:740f:155:4a38%7]) with mapi id 15.20.3370.019; Fri, 18 Sep 2020
+ 02:48:29 +0000
+Date:   Fri, 18 Sep 2020 10:47:56 +0800
+From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: phy: realtek: enable ALDPS to save power for
+ RTL8211F
+Message-ID: <20200918104756.557f9129@xhacker.debian>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TYAPR01CA0185.jpnprd01.prod.outlook.com
+ (2603:1096:404:ba::29) To DM6PR03MB4555.namprd03.prod.outlook.com
+ (2603:10b6:5:102::17)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from xhacker.debian (124.74.246.114) by TYAPR01CA0185.jpnprd01.prod.outlook.com (2603:1096:404:ba::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14 via Frontend Transport; Fri, 18 Sep 2020 02:48:26 +0000
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+X-Originating-IP: [124.74.246.114]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 92b6edeb-6c91-4832-ef98-08d85b7d529c
+X-MS-TrafficTypeDiagnostic: DM6PR03MB4441:
+X-Microsoft-Antispam-PRVS: <DM6PR03MB4441912C22083990A97DD05FED3F0@DM6PR03MB4441.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:153;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: oriIKMqxMUU4NPS5VJfkzN4FxfdHj5bscvkxJtIHCAr3+t0uaudg36i7Qh0bkqtFEjhbioIAcfekNG8Bs9X0/zui2D9RqZPULVrL/i2+Q6OqxKNudK6GFO0uR+Q+378B26hogFvL85qHe8IRfZCohEpH7vhcy6g1PCKFVww6snKLgfLvVKNG9f/OPwtz1Wi1HnLz7J8FJmRZmBWRftSOdeZpiHUY4xF+9ZJVo8qfLzfjQuTEDqZloU320SWtVrArJYy3SPsYNe0Q3Jw8llrLcE0WVDSYTqbnIbi+GA9NZKfe9ug4UdX/D52/AHHzwpfq
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR03MB4555.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(136003)(396003)(366004)(39860400002)(55016002)(2906002)(26005)(6666004)(6506007)(86362001)(66946007)(7696005)(52116002)(16526019)(1076003)(8936002)(186003)(5660300002)(8676002)(956004)(316002)(110136005)(66476007)(478600001)(66556008)(9686003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: Ft48Emz7GUfB30vfijgmAUR5LiE0FnCQbP4P6vRXmjUcNuLimshpYOJ9PDpscpn9v+YN2FAYxRYk+2rZFB3RWadEYluHXx6Bw0wekvbarSpLBKC38Q+rUPmGKini4CVuSxnrVnQg0zTs8JVd+n0TrMrRmqbQR58kIc46ygGsP6N+yD5Bym8tc2enyrljLnC8hK0cN23I8oLW7YOKAVQUQpC2g1PMvuYmLamiSu3LKhgigOt2NZL30AnE6LQIb3HNzW7wVGdwE+kHr+2yvTs+YKH3zLFMqK98v1SdyAaq9YWJiB83s+1M3g0CQqjShodqttBAOZiA7xKpH5E0MaCXHVI9iHa/YV5r1grbAD6Pw64p3zRPLedSB5oY5/XPy6PgBHLIQJxpcoMhsEGXHF4QfwaVLujSj8hHcVVTQsnkZw+uLQ27AbQNje6zzE2qHTg+i9nyry624QXjntLYHG7ZdjpkLMGlmt+vhnHRuzJeb4Qjii8OKOZhngcYxwlUbJIKTykkY5NIhflOBE17wW+5Qz+9A4AuR29WXdKICpzJx3AQlefBJITn3aKPuVGZ00lOAD7+e9fAQc5GriokGXDyyL0M8nx/Hzxm1QZhi3Y0TP0flGXDn3J3bBCunSruWRPVR91k0oCC+DNCkt59rkTRKQ==
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92b6edeb-6c91-4832-ef98-08d85b7d529c
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR03MB4555.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2020 02:48:29.1639
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZD6LyY8pFHGhH6N4YsVSEI3RyJY59HaSMb33IPf/YiOsBHlio65znMeuSur30r0bcWcTZea0BuiFWxvPGiz5GQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB4441
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Enable ALDPS function to save power when link down.
 
+Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+---
+ drivers/net/phy/realtek.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-On 9/17/2020 6:07 PM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> The VSC9953 Seville switch has 2 megabits of buffer split into 4360
-> words of 60 bytes each.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 95dbe5e8e1d8..961570186822 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -39,6 +39,10 @@
+ #define RTL8201F_ISR				0x1e
+ #define RTL8201F_IER				0x13
+ 
++#define RTL8211F_ALDPS_PLL_OFF			BIT(1)
++#define RTL8211F_ALDPS_ENABLE			BIT(2)
++#define RTL8211F_ALDPS_XTAL_OFF			BIT(12)
++
+ #define RTL8366RB_POWER_SAVE			0x15
+ #define RTL8366RB_POWER_SAVE_ON			BIT(12)
+ 
+@@ -178,8 +182,12 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
+ 	u16 val_txdly, val_rxdly;
++	u16 val;
+ 	int ret;
+ 
++	val = RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_XTAL_OFF;
++	phy_modify_paged_changed(phydev, 0xa43, 0x18, val, val);
++
+ 	switch (phydev->interface) {
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 		val_txdly = 0;
 -- 
-Florian
+2.28.0
+
