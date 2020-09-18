@@ -2,92 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86FD22708F0
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 00:26:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AA2C2708F4
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 00:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726281AbgIRW0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 18:26:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58470 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726202AbgIRW0k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 18:26:40 -0400
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 787432220C;
-        Fri, 18 Sep 2020 22:26:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600467999;
-        bh=227oESQ7+B/CbICazXDivsh+4WfScaffUrrHgFBormI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=wRxmOHLz4ne5weGrgPDeUE31uCGVB96M+oMZ58a5FhbBvbK+LHTbxPTE5PYGCJr2A
-         9M/xm3Od4XJTSTmE4pMVe6XRMXvktxmSnZjyKG+hEQvUvxebKhiUc05sVEHNklQ25c
-         NW4Ul3AOI9IIq/l3dAefySwxLPoWFZic1HJ22+Qs=
-Received: by mail-lf1-f46.google.com with SMTP id b22so7690153lfs.13;
-        Fri, 18 Sep 2020 15:26:39 -0700 (PDT)
-X-Gm-Message-State: AOAM5333M5HTb2tKW/JMNUfnrmuq66PAdsz+sk+KtnbWcnc8qcvINGFO
-        AvCLIkQZtNhOWYmel1MyzQDsmvrCfDPUZxctOes=
-X-Google-Smtp-Source: ABdhPJyPMV28u/36HIp9uzNwpWJYYEcHG5pRT+AhxgIipClPww3MamLQTZcAsL7N5Bmpb5Xf7gpXpCSRyqSKQBtXEng=
-X-Received: by 2002:a19:7902:: with SMTP id u2mr12710536lfc.515.1600467997762;
- Fri, 18 Sep 2020 15:26:37 -0700 (PDT)
+        id S1726159AbgIRWa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 18:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45666 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726097AbgIRWa1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 18:30:27 -0400
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 284F9C0613CE
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 15:30:27 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id q8so7739866lfb.6
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 15:30:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OtQ4/QyF5GVKw9xFYnNkfpVIkRvRjeUHuugNd+TuDrs=;
+        b=Xg91GUvsrdobfQC19NIE3ldvNy6Za21jm9Nn9NO5gNWSwPyjzv2Z/9KhJOSb3X5nUs
+         0miyj3Jxla1JqtfyFAalTcQK+cWXmThDOSk6hDyui1oqZlO+o+hUghJcJ6WmmFj4OxcA
+         PmYeHOETELMzga94UIJiW/i3uqTT1ftrMb98WD5jKMo4dj81iUtzp2Pm+DigArWAwM8i
+         kK9VfIuEGqONzFVGXiZpsOAL7dhGVKX43ArwAzHHSAr6BZB9o/D0+UrvVVAt3FIucKcL
+         V6RuB4UgNXenbSr5ifibzkEjeiPRU/B0xl2qcKcDu76U6ZtvihBrg9TVhxe4YxpCzyRH
+         B7Lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OtQ4/QyF5GVKw9xFYnNkfpVIkRvRjeUHuugNd+TuDrs=;
+        b=aqTt6XrwptE+ZGKvA2D3qhEz3H4Xk9kXz1SfJCXaC9MdY78UdOmcWCxdsvfzKCF8/4
+         0k4qLh1ZF5GyUj4jcjzRBCAFir9mfqSTZ4dVanktFr1UxBTn/MiEBPPj5UJhGmEwDxQD
+         okVeHFnTe+tH0bk9JCPgTBKfOH2vca7f16VsYiH0Rsfbvf9Kzhcwb1d/GUlNFUm4+V4/
+         XMqSEmEtAqgVl0HAlOPd6ro6xCXxd911fgQ1ShogZ/niDDa/9hcXGhSzXpaODMpq0O05
+         drvtJDW9N3tdgQVHbkWgaPkJIhIVDVB/StQkDkHDzLPrZdtX+zFOUSakeUdDtHABz/Ij
+         Oa4w==
+X-Gm-Message-State: AOAM530SoDt+ecTNyXi3hmaF2NCnk9GWvS40F72fvTAdo+a8roIQp0yP
+        09+LUl6V29RJQRZQd2Wq1iEPeWqaxAnzVSik
+X-Google-Smtp-Source: ABdhPJwlPqc96UyZ0kDBitTSEoo1TBprcz7xAUBNaHlfvWrpsi73G2xAYcmcoA1t7xOXHQlQyM7n7Q==
+X-Received: by 2002:ac2:5398:: with SMTP id g24mr11154186lfh.7.1600468225373;
+        Fri, 18 Sep 2020 15:30:25 -0700 (PDT)
+Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
+        by smtp.gmail.com with ESMTPSA id b22sm847111lff.183.2020.09.18.15.30.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Sep 2020 15:30:24 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Cc:     Linus Walleij <linus.walleij@linaro.org>
+Subject: [net-next PATCH] net: dsa: rtl8366: Skip PVID setting if not requested
+Date:   Sat, 19 Sep 2020 00:29:54 +0200
+Message-Id: <20200918222954.210207-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20200918121046.190240-1-nicolas.rybowski@tessares.net>
-In-Reply-To: <20200918121046.190240-1-nicolas.rybowski@tessares.net>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 18 Sep 2020 15:26:26 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6=EDSwBvQzJUvc6uAytgp13bgfLXQgFnmBfsbFAgUzbQ@mail.gmail.com>
-Message-ID: <CAPhsuW6=EDSwBvQzJUvc6uAytgp13bgfLXQgFnmBfsbFAgUzbQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 1/5] bpf: expose is_mptcp flag to bpf_tcp_sock
-To:     Nicolas Rybowski <nicolas.rybowski@tessares.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 18, 2020 at 5:13 AM Nicolas Rybowski
-<nicolas.rybowski@tessares.net> wrote:
->
-> is_mptcp is a field from struct tcp_sock used to indicate that the
-> current tcp_sock is part of the MPTCP protocol.
->
-> In this protocol, a first socket (mptcp_sock) is created with
-> sk_protocol set to IPPROTO_MPTCP (=262) for control purpose but it
-> isn't directly on the wire. This is the role of the subflow (kernel)
-> sockets which are classical tcp_sock with sk_protocol set to
-> IPPROTO_TCP. The only way to differentiate such sockets from plain TCP
-> sockets is the is_mptcp field from tcp_sock.
->
-> Such an exposure in BPF is thus required to be able to differentiate
-> plain TCP sockets from MPTCP subflow sockets in BPF_PROG_TYPE_SOCK_OPS
-> programs.
->
-> The choice has been made to silently pass the case when CONFIG_MPTCP is
-> unset by defaulting is_mptcp to 0 in order to make BPF independent of
-> the MPTCP configuration. Another solution is to make the verifier fail
-> in 'bpf_tcp_sock_is_valid_ctx_access' but this will add an additional
-> '#ifdef CONFIG_MPTCP' in the BPF code and a same injected BPF program
-> will not run if MPTCP is not set.
->
-> An example use-case is provided in
-> https://github.com/multipath-tcp/mptcp_net-next/tree/scripts/bpf/examples
->
-> Suggested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> Signed-off-by: Nicolas Rybowski <nicolas.rybowski@tessares.net>
+We go to lengths to determine whether the PVID should be set
+for this port or not, and then fail to take it into account.
+Fix this oversight.
 
-Acked-by: Song Liu <songliubraving@fb.com>
-[...]
+Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/net/dsa/rtl8366.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
+index bd3c947976ce..c58ca324a4b2 100644
+--- a/drivers/net/dsa/rtl8366.c
++++ b/drivers/net/dsa/rtl8366.c
+@@ -436,6 +436,9 @@ void rtl8366_vlan_add(struct dsa_switch *ds, int port,
+ 				"failed to set up VLAN %04x",
+ 				vid);
+ 
++		if (!pvid)
++			continue;
++
+ 		ret = rtl8366_set_pvid(smi, port, vid);
+ 		if (ret)
+ 			dev_err(smi->dev,
+-- 
+2.26.2
+
