@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 629EB270355
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 19:29:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 480DB27034A
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 19:29:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726397AbgIRR26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 13:28:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38402 "EHLO mail.kernel.org"
+        id S1726426AbgIRR3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 13:29:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38416 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726371AbgIRR2y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726375AbgIRR2y (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 18 Sep 2020 13:28:54 -0400
 Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D37A32311B;
-        Fri, 18 Sep 2020 17:28:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 76C4E2311C;
+        Fri, 18 Sep 2020 17:28:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1600450133;
-        bh=IZjJS/gRptaQdMqMmcmvqvtBT6B9IaaRZerJM5ULIvs=;
+        bh=hzvoX9+gvPe5oT68Ks+WfxJxXsRQDHRIiy9J2+Rn6PU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NzysxiRCZKLJUA6L+ujuXflt6T/MAVGTgSSBa0zogqhQvrYMsVxv7M/vFE7SAMMcx
-         wWuUtuhER6okcEgnr9f/Fu9CpFn6TQxsHl1UDN7B8DYJvoAEx88QgmjEb15wv5eTxy
-         p7b/sCTk+Bq6jhTZR1Z16/TiYnq6Zv/Gu1asYXpM=
+        b=HgHlXjMcGbdGmNPtQ2vABDzvzHVyjvk4ADO2fpv2JsI0sPSSs78gYUN4aizkSk8XM
+         pdujwm9AS2rLtbYTSO7rg3KiUUpyNOoFC9p0ZgWDo62uO+C9wnK/XsOsotqNEkXe5M
+         8jzw9IZWHbwLSsXDkX6FhBB12AhdVDO5WwY/o+nk=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Maor Dickman <maord@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>, Raed Salem <raeds@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
+        Maor Dickman <maord@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 06/15] net/mlx5e: Enable adding peer miss rules only if merged eswitch is supported
-Date:   Fri, 18 Sep 2020 10:28:30 -0700
-Message-Id: <20200918172839.310037-7-saeed@kernel.org>
+Subject: [net 07/15] net/mlx5e: Fix endianness when calculating pedit mask first bit
+Date:   Fri, 18 Sep 2020 10:28:31 -0700
+Message-Id: <20200918172839.310037-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200918172839.310037-1-saeed@kernel.org>
 References: <20200918172839.310037-1-saeed@kernel.org>
@@ -42,109 +40,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Dickman <maord@mellanox.com>
+From: Maor Dickman <maord@nvidia.com>
 
-The cited commit creates peer miss group during switchdev mode
-initialization in order to handle miss packets correctly while in VF
-LAG mode. This is done regardless of FW support of such groups which
-could cause rules setups failure later on.
+The field mask value is provided in network byte order and has to
+be converted to host byte order before calculating pedit mask
+first bit.
 
-Fix by adding FW capability check before creating peer groups/rule.
-
-Fixes: ac004b832128 ("net/mlx5e: E-Switch, Add peer miss rules")
-Signed-off-by: Maor Dickman <maord@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Raed Salem <raeds@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Fixes: 88f30bbcbaaa ("net/mlx5e: Bit sized fields rewrite support")
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/eswitch_offloads.c     | 52 ++++++++++---------
- 1 file changed, 28 insertions(+), 24 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 34 ++++++++++++-------
+ 1 file changed, 21 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index d2516922d867..1bcf2609dca8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -1219,35 +1219,37 @@ static int esw_create_offloads_fdb_tables(struct mlx5_eswitch *esw)
- 	}
- 	esw->fdb_table.offloads.send_to_vport_grp = g;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index bf0c6f063941..1c93f92d9210 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -2624,6 +2624,22 @@ static struct mlx5_fields fields[] = {
+ 	OFFLOAD(UDP_DPORT, 16, U16_MAX, udp.dest,   0, udp_dport),
+ };
  
--	/* create peer esw miss group */
--	memset(flow_group_in, 0, inlen);
-+	if (MLX5_CAP_ESW(esw->dev, merged_eswitch)) {
-+		/* create peer esw miss group */
-+		memset(flow_group_in, 0, inlen);
++static unsigned long mask_to_le(unsigned long mask, int size)
++{
++	__be32 mask_be32;
++	__be16 mask_be16;
++
++	if (size == 32) {
++		mask_be32 = (__force __be32)(mask);
++		mask = (__force unsigned long)cpu_to_le32(be32_to_cpu(mask_be32));
++	} else if (size == 16) {
++		mask_be32 = (__force __be32)(mask);
++		mask_be16 = *(__be16 *)&mask_be32;
++		mask = (__force unsigned long)cpu_to_le16(be16_to_cpu(mask_be16));
++	}
++
++	return mask;
++}
+ static int offload_pedit_fields(struct mlx5e_priv *priv,
+ 				int namespace,
+ 				struct pedit_headers_action *hdrs,
+@@ -2637,9 +2653,7 @@ static int offload_pedit_fields(struct mlx5e_priv *priv,
+ 	u32 *s_masks_p, *a_masks_p, s_mask, a_mask;
+ 	struct mlx5e_tc_mod_hdr_acts *mod_acts;
+ 	struct mlx5_fields *f;
+-	unsigned long mask;
+-	__be32 mask_be32;
+-	__be16 mask_be16;
++	unsigned long mask, field_mask;
+ 	int err;
+ 	u8 cmd;
  
--	esw_set_flow_group_source_port(esw, flow_group_in);
-+		esw_set_flow_group_source_port(esw, flow_group_in);
+@@ -2705,14 +2719,7 @@ static int offload_pedit_fields(struct mlx5e_priv *priv,
+ 		if (skip)
+ 			continue;
  
--	if (!mlx5_eswitch_vport_match_metadata_enabled(esw)) {
--		match_criteria = MLX5_ADDR_OF(create_flow_group_in,
--					      flow_group_in,
--					      match_criteria);
-+		if (!mlx5_eswitch_vport_match_metadata_enabled(esw)) {
-+			match_criteria = MLX5_ADDR_OF(create_flow_group_in,
-+						      flow_group_in,
-+						      match_criteria);
+-		if (f->field_bsize == 32) {
+-			mask_be32 = (__force __be32)(mask);
+-			mask = (__force unsigned long)cpu_to_le32(be32_to_cpu(mask_be32));
+-		} else if (f->field_bsize == 16) {
+-			mask_be32 = (__force __be32)(mask);
+-			mask_be16 = *(__be16 *)&mask_be32;
+-			mask = (__force unsigned long)cpu_to_le16(be16_to_cpu(mask_be16));
+-		}
++		mask = mask_to_le(mask, f->field_bsize);
  
--		MLX5_SET_TO_ONES(fte_match_param, match_criteria,
--				 misc_parameters.source_eswitch_owner_vhca_id);
-+			MLX5_SET_TO_ONES(fte_match_param, match_criteria,
-+					 misc_parameters.source_eswitch_owner_vhca_id);
+ 		first = find_first_bit(&mask, f->field_bsize);
+ 		next_z = find_next_zero_bit(&mask, f->field_bsize, first);
+@@ -2743,9 +2750,10 @@ static int offload_pedit_fields(struct mlx5e_priv *priv,
+ 		if (cmd == MLX5_ACTION_TYPE_SET) {
+ 			int start;
  
--		MLX5_SET(create_flow_group_in, flow_group_in,
--			 source_eswitch_owner_vhca_id_valid, 1);
--	}
-+			MLX5_SET(create_flow_group_in, flow_group_in,
-+				 source_eswitch_owner_vhca_id_valid, 1);
-+		}
++			field_mask = mask_to_le(f->field_mask, f->field_bsize);
++
+ 			/* if field is bit sized it can start not from first bit */
+-			start = find_first_bit((unsigned long *)&f->field_mask,
+-					       f->field_bsize);
++			start = find_first_bit(&field_mask, f->field_bsize);
  
--	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, ix);
--	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index,
--		 ix + esw->total_vports - 1);
--	ix += esw->total_vports;
-+		MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, ix);
-+		MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index,
-+			 ix + esw->total_vports - 1);
-+		ix += esw->total_vports;
- 
--	g = mlx5_create_flow_group(fdb, flow_group_in);
--	if (IS_ERR(g)) {
--		err = PTR_ERR(g);
--		esw_warn(dev, "Failed to create peer miss flow group err(%d)\n", err);
--		goto peer_miss_err;
-+		g = mlx5_create_flow_group(fdb, flow_group_in);
-+		if (IS_ERR(g)) {
-+			err = PTR_ERR(g);
-+			esw_warn(dev, "Failed to create peer miss flow group err(%d)\n", err);
-+			goto peer_miss_err;
-+		}
-+		esw->fdb_table.offloads.peer_miss_grp = g;
- 	}
--	esw->fdb_table.offloads.peer_miss_grp = g;
- 
- 	/* create miss group */
- 	memset(flow_group_in, 0, inlen);
-@@ -1281,7 +1283,8 @@ static int esw_create_offloads_fdb_tables(struct mlx5_eswitch *esw)
- miss_rule_err:
- 	mlx5_destroy_flow_group(esw->fdb_table.offloads.miss_grp);
- miss_err:
--	mlx5_destroy_flow_group(esw->fdb_table.offloads.peer_miss_grp);
-+	if (MLX5_CAP_ESW(esw->dev, merged_eswitch))
-+		mlx5_destroy_flow_group(esw->fdb_table.offloads.peer_miss_grp);
- peer_miss_err:
- 	mlx5_destroy_flow_group(esw->fdb_table.offloads.send_to_vport_grp);
- send_vport_err:
-@@ -1305,7 +1308,8 @@ static void esw_destroy_offloads_fdb_tables(struct mlx5_eswitch *esw)
- 	mlx5_del_flow_rules(esw->fdb_table.offloads.miss_rule_multi);
- 	mlx5_del_flow_rules(esw->fdb_table.offloads.miss_rule_uni);
- 	mlx5_destroy_flow_group(esw->fdb_table.offloads.send_to_vport_grp);
--	mlx5_destroy_flow_group(esw->fdb_table.offloads.peer_miss_grp);
-+	if (MLX5_CAP_ESW(esw->dev, merged_eswitch))
-+		mlx5_destroy_flow_group(esw->fdb_table.offloads.peer_miss_grp);
- 	mlx5_destroy_flow_group(esw->fdb_table.offloads.miss_grp);
- 
- 	mlx5_esw_chains_destroy(esw);
+ 			MLX5_SET(set_action_in, action, offset, first - start);
+ 			/* length is num of bits to be written, zero means length of 32 */
 -- 
 2.26.2
 
