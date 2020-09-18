@@ -2,105 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6AD526FFB7
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 16:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 333DC270060
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 17:00:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726773AbgIROVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 10:21:09 -0400
-Received: from mail-eopbgr60126.outbound.protection.outlook.com ([40.107.6.126]:2082
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726130AbgIROVJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 10:21:09 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i5g84cckGrvp06PMfqrbw679wlr+ABiqO8LhkDxQGXp7+LlUqDfbnQl3e7OFjSpLEXpyxf49xRCg1EF1vzIfbuBwenEpLHnnVhU9C77/pYKC2YnNQTUoSJ3yiJVqSXE1rRJ95DPEF6GUriLp+v5+Ix8G2SO89RRqYgiG+BXVlCuUmG3zdUbQvaFs70+t1DkWS17xRrTHMkk9yYtQ5j9b59371cqkyTCHzHbs04celGtmMudAYZhx1elZoPvKeaYxAAiQNFJ3cCrwOXT+BqAb8FCtwNvFfYTVDCZ811Rm/vwQJtIEpAM1he3DxdOHwRwpFUbeyt3RL2mvzA9ZklFJCw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mtzCZNRgGC7Kud14PyWQvzgsejSzmJVOajvxS9+U3lo=;
- b=MlJjzr/YzXewUKjbM4yHJ5s5UV8tDbagBFo66VHRu/4oxnwv5lYbiTurIYy/fHqJdsFQDOrQ/PfdG3zmKp4DxLWmpIaNzRhOVJqsgFE7cv+lNzKG/0cbZEmPjYoW26hUV8Y0elkDzOrcZSeSyTVxbdZpNt9/MMsgrX0m5LgIHpGcCicYxHX0QhGdLixCU8kTgqumkSHcrP5tpzDFou+s5C8TeLKttGag/ScOjEA6zZlv/xBBANNuQpjulb1RH26MOq03cm2DMk5RUzE8YfeK/edo8RciKoAwBsfEwXCblpErJ9qzdAadti6WcLFtK5bp0X3IG9Zx3+wbM+KWhrjgFQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mtzCZNRgGC7Kud14PyWQvzgsejSzmJVOajvxS9+U3lo=;
- b=q3dMDduEgptrG8QyOqEoyvZ+nbeoP/LLiDxa/BV/01O4cSKWxEyIauwUmLqSKXAZyD/AOhVOHm3CvnVYvi8nyn6a8mR6G/Yd1fv8Gdx88a39kTXk9NUS0Ft1bCuzv9X65OQ5/HvOFdZfZ2GCXY6kLo9JB1SG2fyT6YICi4O3m+A=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=plvision.eu;
-Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
- HE1P190MB0364.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:62::25) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3391.13; Fri, 18 Sep 2020 14:21:05 +0000
-Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- ([fe80::c1ab:71de:6bc2:89fe]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- ([fe80::c1ab:71de:6bc2:89fe%6]) with mapi id 15.20.3370.019; Fri, 18 Sep 2020
- 14:21:05 +0000
-Date:   Fri, 18 Sep 2020 17:20:58 +0300
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     linux-firmware@kernel.org, Mickey Rachamim <mickeyr@marvell.com>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] linux-firmware: Update Marvell Prestera Switchdev
- firmware ABI changes
-Message-ID: <20200918142058.GA15376@plvision.eu>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: BE0P281CA0032.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:14::19) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:7:56::28)
+        id S1726716AbgIRPA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 11:00:27 -0400
+Received: from mail1.windriver.com ([147.11.146.13]:61950 "EHLO
+        mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726130AbgIRPA0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 11:00:26 -0400
+X-Greylist: delayed 7316 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 11:00:12 EDT
+Received: from ALA-HCB.corp.ad.wrs.com (ala-hcb.corp.ad.wrs.com [147.11.189.41])
+        by mail1.windriver.com (8.15.2/8.15.2) with ESMTPS id 08ICvm7X029634
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
+        Fri, 18 Sep 2020 05:57:49 -0700 (PDT)
+Received: from pek-lpg-core2.corp.ad.wrs.com (128.224.153.41) by
+ ALA-HCB.corp.ad.wrs.com (147.11.189.41) with Microsoft SMTP Server id
+ 14.3.487.0; Fri, 18 Sep 2020 05:57:27 -0700
+From:   <zhe.he@windriver.com>
+To:     <bfields@fieldses.org>, <chuck.lever@oracle.com>,
+        <trond.myklebust@hammerspace.com>, <anna.schumaker@netapp.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-nfs@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <zhe.he@windriver.com>
+Subject: [PATCH] SUNRPC: Flush dcache only when receiving more seeking
+Date:   Fri, 18 Sep 2020 20:50:52 +0800
+Message-ID: <20200918125052.2493006-1-zhe.he@windriver.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from plvision.eu (217.20.186.93) by BE0P281CA0032.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:14::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.10 via Frontend Transport; Fri, 18 Sep 2020 14:21:04 +0000
-X-Originating-IP: [217.20.186.93]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 81ad8d6d-b003-4750-8eda-08d85bde1430
-X-MS-TrafficTypeDiagnostic: HE1P190MB0364:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1P190MB0364532F82C44E34CFBC1600953F0@HE1P190MB0364.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:330;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /ff4NTGtsau4R9CpcS0PbZM6dVPaKAt1sqfFNcYptk0t5ktjvl0zvcphctHAqNb1FF0Zx/0+TkwEGyP0rxPIbvF3wKWCjNMitwPJceNwclTJ4wHxUj1fnlOcKoFJ3PsJhLeVsA3HFJGuH1E8d9ol3ASiNQqMlbg6S8LL2KsOMy+L4AC6wBnscNuIROTI+4A6Are8TfhHCraNzNp3Nh1yDUsLl9QaQHyqgG+bjqk2dD7/+Eh+wupfy5WPUdp1gYM442g3nnzc3DfR3hNsS1h0jn/aM3otSXQYMUxIgoWMUYaRTBMpYWtK6VhnX1bvH9GiUfEX1Olprpux7ilUR9pWT4udFyjVyMP8+7ZSskPqkpxKY9lOT4ZASLZU6bQcmPuX01UyE8LUigyNWzzOujzKhw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(376002)(346002)(39830400003)(396003)(136003)(6666004)(8676002)(66556008)(1076003)(86362001)(8886007)(966005)(4744005)(5660300002)(66476007)(66946007)(110136005)(7696005)(52116002)(55016002)(33656002)(316002)(2906002)(8936002)(36756003)(15650500001)(6636002)(44832011)(2616005)(83380400001)(4326008)(956004)(478600001)(16526019)(26005)(186003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: EjcvBdfpaueVhLb5zY3qPJE72q8khIJhZjA1YRmvuye65dpEMc8MlBS6vtNkI5Wfay6QHkRI7YEx1KtKgo9lV/o5IF25eZJpdZgdqtwGh0KagjXoRSTLCDmQojR9i1YHrwOj+hL83me/OYiiDFBeUGiAYbb3BscGO/+tGZRQG+Clrg6/HCEzlaqXFXfI6lXLTmdsawXvJ/DgBQ2S0gc+d1Y4em4y/zXZU4rodUof2BwbqIJXZ4SoWvDXo0l0VIAPkc/BHiOBWvTL2LuLcSUDi5RxfsOK3eU7hDJ0ddb0+Du9pmjKXtKbvd8Z/Guh4bkVT1rZJ3cvRTZwQAWyzkurC2jrBD5qHw7NQd13KzlIvbT6sCncG1D+TTfSuY/3RcPdrjvAmPkPK90vGQ16EqxXUarw3NXt9raKXKaZCFj/BSUlkt7AUTjh3xjpP8TpxiSae1xj2d4U/A7rPrnT+foeKu0qlHZ1VfoXjyfVzF58OqbpuNOoM8lebe5AXQ1z9lxr3jZZ83SrbF5yyCIt17VHPMWK3DFlb/jxFGFtKgh3OIqplQfXHs5fSQzK7IO1p9O/B5j+MgY7aKxvMrjhVDGso38S/1tSBsMPfbcLb/lKAYqQ2DbbUZHcsKCJZRGZYHu1kPdEYnh9FMGjHg8rIneYsw==
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81ad8d6d-b003-4750-8eda-08d85bde1430
-X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2020 14:21:05.4877
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FqkPyWuEHhXKakeRPPdIoQ8J7oIHewS2cXR/QSSaJ5H9LPxWfIsyF+n6bu4+RdRMhHMfVUBJ2ubNPD8pLNleBTPUN6ussTv2JiwQVRa400E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0364
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 00a84c516078defb76fbd57543b8d5c674a9a2be:
+From: He Zhe <zhe.he@windriver.com>
 
-  linux-firmware: Update AMD SEV firmware (2020-09-16 08:01:44 -0400)
+commit ca07eda33e01 ("SUNRPC: Refactor svc_recvfrom()") introduces
+svc_flush_bvec to after sock_recvmsg, but sometimes we receive less than we
+seek, which triggers the following warning.
 
-are available in the Git repository at:
+WARNING: CPU: 0 PID: 18266 at include/linux/bvec.h:101 bvec_iter_advance+0x44/0xa8
+Attempted to advance past end of bvec iter
+Modules linked in: sch_fq_codel openvswitch nsh nf_conncount nf_nat
+nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4
+CPU: 1 PID: 18266 Comm: nfsd Not tainted 5.9.0-rc5 #1
+Hardware name: Xilinx Zynq Platform
+[<80112ec0>] (unwind_backtrace) from [<8010c3a8>] (show_stack+0x18/0x1c)
+[<8010c3a8>] (show_stack) from [<80755214>] (dump_stack+0x9c/0xd0)
+[<80755214>] (dump_stack) from [<80125e64>] (__warn+0xdc/0xf4)
+[<80125e64>] (__warn) from [<80126244>] (warn_slowpath_fmt+0x84/0xac)
+[<80126244>] (warn_slowpath_fmt) from [<80c88514>] (bvec_iter_advance+0x44/0xa8)
+[<80c88514>] (bvec_iter_advance) from [<80c88940>] (svc_tcp_read_msg+0x10c/0x1bc)
+[<80c88940>] (svc_tcp_read_msg) from [<80c895d4>] (svc_tcp_recvfrom+0x98/0x63c)
+[<80c895d4>] (svc_tcp_recvfrom) from [<80c97bf4>] (svc_handle_xprt+0x48c/0x4f8)
+[<80c97bf4>] (svc_handle_xprt) from [<80c98038>] (svc_recv+0x94/0x1e0)
+[<80c98038>] (svc_recv) from [<804747cc>] (nfsd+0xf0/0x168)
+[<804747cc>] (nfsd) from [<80148a0c>] (kthread+0x144/0x154)
+[<80148a0c>] (kthread) from [<80100114>] (ret_from_fork+0x14/0x20)
 
-  https://github.com/PLVision/linux-firmware.git mrvl-prestera
+Fixes: ca07eda33e01 ("SUNRPC: Refactor svc_recvfrom()")
+Cc: <stable@vger.kernel.org> # 5.8+
+Signed-off-by: He Zhe <zhe.he@windriver.com>
+---
+ net/sunrpc/svcsock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-for you to fetch changes up to 7a0221265cda381b5231355965a403ca264392a5:
+diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+index d5805fa1d066..ea3bc9635448 100644
+--- a/net/sunrpc/svcsock.c
++++ b/net/sunrpc/svcsock.c
+@@ -277,7 +277,7 @@ static ssize_t svc_tcp_read_msg(struct svc_rqst *rqstp, size_t buflen,
+ 		buflen -= seek;
+ 	}
+ 	len = sock_recvmsg(svsk->sk_sock, &msg, MSG_DONTWAIT);
+-	if (len > 0)
++	if (len > (seek & PAGE_MASK))
+ 		svc_flush_bvec(bvec, len, seek);
+ 
+ 	/* If we read a full record, then assume there may be more
+-- 
+2.17.1
 
-  linux-firmware: Update Marvell Switchdev firmware with ABI changes (2020-09-18 16:54:29 +0300)
-
-----------------------------------------------------------------
-Vadym Kochan (1):
-      linux-firmware: Update Marvell Switchdev firmware with ABI changes
-
- mrvl/prestera/mvsw_prestera_fw-v2.0.img | Bin 13687252 -> 13686596 bytes
- 1 file changed, 0 insertions(+), 0 deletions(-)
