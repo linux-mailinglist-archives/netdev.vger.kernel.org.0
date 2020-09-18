@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30FBC26F268
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:59:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1505926F25F
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 04:59:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730402AbgIRC6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 22:58:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55482 "EHLO mail.kernel.org"
+        id S1728237AbgIRC6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 22:58:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55550 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726828AbgIRCGQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:06:16 -0400
+        id S1727743AbgIRCGT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:06:19 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7F0DA23888;
-        Fri, 18 Sep 2020 02:06:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D08442388E;
+        Fri, 18 Sep 2020 02:06:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600394776;
-        bh=/+pliRggyOjEy8m8uK+MrMptQUHltTkK+F/HawNYwaI=;
+        s=default; t=1600394778;
+        bh=KlyB1V7trltBZqapT92xp/ft/alNfcd/5PzlcK1on1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L1gftzftYm33zQFwLqABDEou2g6vahtYcKtp7HIo9u+wBIA4nDOOg4yJ2gOATZPKS
-         yZ476RBH8wpLOHkJSwSbAytaIWhR17ILQ9FgeV0rNk0hCiJLVpaE8y3u4FddEFIY7J
-         gcffAfHEBKk2C/q9RqpfKOiYWG1U7vaopMNl/ibw=
+        b=oRlTA8PPxt9Pepq6SkToBjum3szvkM4m9BAqdI0TsLjilzAj94tXPmQ0k1KGH66Eb
+         gzBrNKvPfse/MQgdTfs9jJF+M3lm4grnJu9DVEaGtwqsCzceEKZk2xZwlOszgOzNE8
+         e0Mfprh9pQ9JNbIodXMZ/CJdyEDMQdOn5PHGfJjQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+Cc:     Aya Levin <ayal@mellanox.com>, Moshe Shemesh <moshe@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 250/330] dpaa2-eth: fix error return code in setup_dpni()
-Date:   Thu, 17 Sep 2020 21:59:50 -0400
-Message-Id: <20200918020110.2063155-250-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 252/330] devlink: Fix reporter's recovery condition
+Date:   Thu, 17 Sep 2020 21:59:52 -0400
+Message-Id: <20200918020110.2063155-252-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918020110.2063155-1-sashal@kernel.org>
 References: <20200918020110.2063155-1-sashal@kernel.org>
@@ -42,36 +43,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Aya Levin <ayal@mellanox.com>
 
-[ Upstream commit 97fff7c8de1e54e5326dfeb66085796864bceb64 ]
+[ Upstream commit bea0c5c942d3b4e9fb6ed45f6a7de74c6b112437 ]
 
-Fix to return negative error code -ENOMEM from the error handling
-case instead of 0, as done elsewhere in this function.
+Devlink health core conditions the reporter's recovery with the
+expiration of the grace period. This is not relevant for the first
+recovery. Explicitly demand that the grace period will only apply to
+recoveries other than the first.
 
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Fixes: c8e1da0bf923 ("devlink: Add health report functionality")
+Signed-off-by: Aya Levin <ayal@mellanox.com>
+Reviewed-by: Moshe Shemesh <moshe@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/core/devlink.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 7a248cc1055a3..7af7cc7c8669a 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -2654,8 +2654,10 @@ static int setup_dpni(struct fsl_mc_device *ls_dev)
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 5667cae57072f..26c8993a17ae0 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4823,6 +4823,7 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
+ {
+ 	enum devlink_health_reporter_state prev_health_state;
+ 	struct devlink *devlink = reporter->devlink;
++	unsigned long recover_ts_threshold;
  
- 	priv->cls_rules = devm_kzalloc(dev, sizeof(struct dpaa2_eth_cls_rule) *
- 				       dpaa2_eth_fs_count(priv), GFP_KERNEL);
--	if (!priv->cls_rules)
-+	if (!priv->cls_rules) {
-+		err = -ENOMEM;
- 		goto close;
-+	}
+ 	/* write a log message of the current error */
+ 	WARN_ON(!msg);
+@@ -4832,10 +4833,12 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
+ 	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
  
- 	return 0;
- 
+ 	/* abort if the previous error wasn't recovered */
++	recover_ts_threshold = reporter->last_recovery_ts +
++			       msecs_to_jiffies(reporter->graceful_period);
+ 	if (reporter->auto_recover &&
+ 	    (prev_health_state != DEVLINK_HEALTH_REPORTER_STATE_HEALTHY ||
+-	     jiffies - reporter->last_recovery_ts <
+-	     msecs_to_jiffies(reporter->graceful_period))) {
++	     (reporter->last_recovery_ts && reporter->recovery_count &&
++	      time_is_after_jiffies(recover_ts_threshold)))) {
+ 		trace_devlink_health_recover_aborted(devlink,
+ 						     reporter->ops->name,
+ 						     reporter->health_state,
 -- 
 2.25.1
 
