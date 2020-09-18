@@ -2,24 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9821326F924
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 11:24:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D442126F922
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 11:23:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726716AbgIRJX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 05:23:58 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:47362 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726009AbgIRJXx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726694AbgIRJXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 18 Sep 2020 05:23:53 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:47302 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725874AbgIRJXw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 05:23:52 -0400
+X-Greylist: delayed 451 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 05:23:51 EDT
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id ED99F1A02BC;
-        Fri, 18 Sep 2020 11:16:21 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C57181A0057;
+        Fri, 18 Sep 2020 11:16:22 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 4AD4B1A0213;
-        Fri, 18 Sep 2020 11:16:18 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 3400C1A022C;
+        Fri, 18 Sep 2020 11:16:19 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id B6C24402C3;
-        Fri, 18 Sep 2020 11:16:13 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 9D57E402D5;
+        Fri, 18 Sep 2020 11:16:14 +0200 (CEST)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
@@ -29,9 +30,9 @@ Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
         Ioana Radulescu <ruxandra.radulescu@nxp.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Saeed Mahameed <saeed@kernel.org>
-Subject: [v4, 2/5] dpaa2-eth: define a global ptp_qoriq structure pointer
-Date:   Fri, 18 Sep 2020 17:07:59 +0800
-Message-Id: <20200918090802.13757-3-yangbo.lu@nxp.com>
+Subject: [v4, 3/5] dpaa2-eth: invoke dpaa2_eth_enable_tx_tstamp() once in code
+Date:   Fri, 18 Sep 2020 17:08:00 +0800
+Message-Id: <20200918090802.13757-4-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200918090802.13757-1-yangbo.lu@nxp.com>
 References: <20200918090802.13757-1-yangbo.lu@nxp.com>
@@ -40,115 +41,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define a global ptp_qoriq structure pointer, and export to use.
-The ptp clock operations will be used in dpaa2-eth driver.
-For example, supporting one step timestamping needs to write
-current time to hardware frame annotation before sending and
-then hardware inserts the delay time on frame during sending.
-So in driver, at least clock gettime operation will be needed
-to make sure right time is written to hardware frame annotation
-for one step timestamping.
+Invoke dpaa2_eth_enable_tx_tstamp() once in code after building FD,
+rather than calling it in dpaa2_eth_build_single_fd(),
+dpaa2_eth_build_sg_fd_single_buf(), and dpaa2_eth_build_sg_fd().
 
 Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 ---
 Changes for v2:
 	- None.
 Changes for v3:
-	- Fixed sparse warning.
+	- None.
 Changes for v4:
 	- None.
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 ++++
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h | 1 +
- drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c | 3 ++-
- drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.h | 4 ++++
- 4 files changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 31 ++++++++++++------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index ceaf761..daf8fd4 100644
+index daf8fd4..a8c311fb 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -15,6 +15,7 @@
- #include <linux/fsl/mc.h>
- #include <linux/bpf.h>
- #include <linux/bpf_trace.h>
-+#include <linux/fsl/ptp_qoriq.h>
- #include <net/pkt_cls.h>
- #include <net/sock.h>
- 
-@@ -30,6 +31,9 @@ MODULE_LICENSE("Dual BSD/GPL");
- MODULE_AUTHOR("Freescale Semiconductor, Inc");
- MODULE_DESCRIPTION("Freescale DPAA2 Ethernet Driver");
- 
-+struct ptp_qoriq *dpaa2_ptp;
-+EXPORT_SYMBOL(dpaa2_ptp);
-+
- static void *dpaa2_iova_to_virt(struct iommu_domain *domain,
- 				dma_addr_t iova_addr)
+@@ -589,7 +589,8 @@ static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_fd *fd, void *buf_start)
+ /* Create a frame descriptor based on a fragmented skb */
+ static int dpaa2_eth_build_sg_fd(struct dpaa2_eth_priv *priv,
+ 				 struct sk_buff *skb,
+-				 struct dpaa2_fd *fd)
++				 struct dpaa2_fd *fd,
++				 void **swa_addr)
  {
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index 7f3c41d..7be684b 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -491,6 +491,7 @@ struct dpaa2_eth_priv {
+ 	struct device *dev = priv->net_dev->dev.parent;
+ 	void *sgt_buf = NULL;
+@@ -658,6 +659,7 @@ static int dpaa2_eth_build_sg_fd(struct dpaa2_eth_priv *priv,
+ 	 * skb backpointer in the software annotation area. We'll need
+ 	 * all of them on Tx Conf.
+ 	 */
++	*swa_addr = (void *)sgt_buf;
+ 	swa = (struct dpaa2_eth_swa *)sgt_buf;
+ 	swa->type = DPAA2_ETH_SWA_SG;
+ 	swa->sg.skb = skb;
+@@ -677,9 +679,6 @@ static int dpaa2_eth_build_sg_fd(struct dpaa2_eth_priv *priv,
+ 	dpaa2_fd_set_len(fd, skb->len);
+ 	dpaa2_fd_set_ctrl(fd, FD_CTRL_PTA);
  
- extern const struct ethtool_ops dpaa2_ethtool_ops;
- extern int dpaa2_phc_index;
-+extern struct ptp_qoriq *dpaa2_ptp;
- 
- static inline int dpaa2_eth_cmp_dpni_ver(struct dpaa2_eth_priv *priv,
- 					 u16 ver_major, u16 ver_minor)
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
-index cc1b7f8..32b5faa 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
-@@ -2,6 +2,7 @@
- /*
-  * Copyright 2013-2016 Freescale Semiconductor Inc.
-  * Copyright 2016-2018 NXP
-+ * Copyright 2020 NXP
-  */
- 
- #include <linux/module.h>
-@@ -9,7 +10,6 @@
- #include <linux/of_address.h>
- #include <linux/msi.h>
- #include <linux/fsl/mc.h>
--#include <linux/fsl/ptp_qoriq.h>
- 
- #include "dpaa2-ptp.h"
- 
-@@ -201,6 +201,7 @@ static int dpaa2_ptp_probe(struct fsl_mc_device *mc_dev)
- 		goto err_free_threaded_irq;
- 
- 	dpaa2_phc_index = ptp_qoriq->phc_index;
-+	dpaa2_ptp = ptp_qoriq;
- 	dev_set_drvdata(dev, ptp_qoriq);
- 
+-	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
+-		dpaa2_eth_enable_tx_tstamp(fd, sgt_buf);
+-
  	return 0;
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.h
-index df2458a..e102353 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.h
-@@ -1,14 +1,18 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * Copyright 2018 NXP
-+ * Copyright 2020 NXP
+ 
+ dma_map_single_failed:
+@@ -699,7 +698,8 @@ static int dpaa2_eth_build_sg_fd(struct dpaa2_eth_priv *priv,
   */
+ static int dpaa2_eth_build_sg_fd_single_buf(struct dpaa2_eth_priv *priv,
+ 					    struct sk_buff *skb,
+-					    struct dpaa2_fd *fd)
++					    struct dpaa2_fd *fd,
++					    void **swa_addr)
+ {
+ 	struct device *dev = priv->net_dev->dev.parent;
+ 	struct dpaa2_eth_sgt_cache *sgt_cache;
+@@ -737,6 +737,7 @@ static int dpaa2_eth_build_sg_fd_single_buf(struct dpaa2_eth_priv *priv,
+ 	dpaa2_sg_set_final(sgt, true);
  
- #ifndef __RTC_H
- #define __RTC_H
+ 	/* Store the skb backpointer in the SGT buffer */
++	*swa_addr = (void *)sgt_buf;
+ 	swa = (struct dpaa2_eth_swa *)sgt_buf;
+ 	swa->type = DPAA2_ETH_SWA_SINGLE;
+ 	swa->single.skb = skb;
+@@ -755,9 +756,6 @@ static int dpaa2_eth_build_sg_fd_single_buf(struct dpaa2_eth_priv *priv,
+ 	dpaa2_fd_set_len(fd, skb->len);
+ 	dpaa2_fd_set_ctrl(fd, FD_CTRL_PTA);
  
-+#include <linux/fsl/ptp_qoriq.h>
+-	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
+-		dpaa2_eth_enable_tx_tstamp(fd, sgt_buf);
+-
+ 	return 0;
+ 
+ sgt_map_failed:
+@@ -774,7 +772,8 @@ static int dpaa2_eth_build_sg_fd_single_buf(struct dpaa2_eth_priv *priv,
+ /* Create a frame descriptor based on a linear skb */
+ static int dpaa2_eth_build_single_fd(struct dpaa2_eth_priv *priv,
+ 				     struct sk_buff *skb,
+-				     struct dpaa2_fd *fd)
++				     struct dpaa2_fd *fd,
++				     void **swa_addr)
+ {
+ 	struct device *dev = priv->net_dev->dev.parent;
+ 	u8 *buffer_start, *aligned_start;
+@@ -795,6 +794,7 @@ static int dpaa2_eth_build_single_fd(struct dpaa2_eth_priv *priv,
+ 	 * (in the private data area) such that we can release it
+ 	 * on Tx confirm
+ 	 */
++	*swa_addr = (void *)buffer_start;
+ 	swa = (struct dpaa2_eth_swa *)buffer_start;
+ 	swa->type = DPAA2_ETH_SWA_SINGLE;
+ 	swa->single.skb = skb;
+@@ -811,9 +811,6 @@ static int dpaa2_eth_build_single_fd(struct dpaa2_eth_priv *priv,
+ 	dpaa2_fd_set_format(fd, dpaa2_fd_single);
+ 	dpaa2_fd_set_ctrl(fd, FD_CTRL_PTA);
+ 
+-	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
+-		dpaa2_eth_enable_tx_tstamp(fd, buffer_start);
+-
+ 	return 0;
+ }
+ 
+@@ -939,6 +936,7 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
+ 	u32 fd_len;
+ 	u8 prio = 0;
+ 	int err, i;
++	void *swa;
+ 
+ 	percpu_stats = this_cpu_ptr(priv->percpu_stats);
+ 	percpu_extras = this_cpu_ptr(priv->percpu_extras);
+@@ -959,17 +957,17 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
+ 	memset(&fd, 0, sizeof(fd));
+ 
+ 	if (skb_is_nonlinear(skb)) {
+-		err = dpaa2_eth_build_sg_fd(priv, skb, &fd);
++		err = dpaa2_eth_build_sg_fd(priv, skb, &fd, &swa);
+ 		percpu_extras->tx_sg_frames++;
+ 		percpu_extras->tx_sg_bytes += skb->len;
+ 	} else if (skb_headroom(skb) < needed_headroom) {
+-		err = dpaa2_eth_build_sg_fd_single_buf(priv, skb, &fd);
++		err = dpaa2_eth_build_sg_fd_single_buf(priv, skb, &fd, &swa);
+ 		percpu_extras->tx_sg_frames++;
+ 		percpu_extras->tx_sg_bytes += skb->len;
+ 		percpu_extras->tx_converted_sg_frames++;
+ 		percpu_extras->tx_converted_sg_bytes += skb->len;
+ 	} else {
+-		err = dpaa2_eth_build_single_fd(priv, skb, &fd);
++		err = dpaa2_eth_build_single_fd(priv, skb, &fd, &swa);
+ 	}
+ 
+ 	if (unlikely(err)) {
+@@ -977,6 +975,9 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
+ 		goto err_build_fd;
+ 	}
+ 
++	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
++		dpaa2_eth_enable_tx_tstamp(&fd, swa);
 +
- #include "dprtc.h"
- #include "dprtc-cmd.h"
+ 	/* Tracing point */
+ 	trace_dpaa2_tx_fd(net_dev, &fd);
  
- extern int dpaa2_phc_index;
-+extern struct ptp_qoriq *dpaa2_ptp;
- 
- #endif
 -- 
 2.7.4
 
