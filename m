@@ -2,64 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72E912703FA
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 20:28:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97835270401
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 20:31:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726280AbgIRS2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 14:28:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50344 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726245AbgIRS2T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 14:28:19 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D616321D42;
-        Fri, 18 Sep 2020 18:28:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600453699;
-        bh=jIQCvfxwN4IxoHBYdaF+3BkrvxeKjqhYNfk7Cl1aByU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Fa6bfPJBM8nndCou0/Bv/0LpODuNTjHQreSFdkrYwrgVxys7ooK4ZkUFoe6uEBWKU
-         sGSOhfI16Im+ZDUAWG6/2xYQLUshQfS7DYGXU2iJzS0CKWzZNLiO84lqwnNQ0vrWyh
-         DDRMA+YJlOpLMRDjc/LJFtFGHa4n0yn4N4J5vLvs=
-Date:   Fri, 18 Sep 2020 11:28:17 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 0/8] devlink: Add SF add/delete devlink ops
-Message-ID: <20200918112817.410ed3b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <BY5PR12MB43222DFADC76AE0780BC7C83DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20200917081731.8363-8-parav@nvidia.com>
-        <20200917172020.26484-1-parav@nvidia.com>
-        <20200918095212.61d4d60a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB4322941E1B2EFE8C0F3E38A0DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20200918103723.618c7360@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB43222DFADC76AE0780BC7C83DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+        id S1726245AbgIRSbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 14:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36736 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726115AbgIRSbX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 14:31:23 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BB1C0613CE;
+        Fri, 18 Sep 2020 11:31:23 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id z9so6501328wmk.1;
+        Fri, 18 Sep 2020 11:31:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:references:in-reply-to:subject:date:message-id
+         :mime-version:content-transfer-encoding:thread-index
+         :content-language;
+        bh=aq4S41RXE1vAQKwL/QYWeFUP5HTyFU3O/6rS50qdZsE=;
+        b=fTNJQYUPRjCv2jqehMXxCqoGu4qw4qcHntIzB6h/UkQq6e+wiXyKftBV4EgCPvHw53
+         LJzF6I7V2XJNSiiyZIQiTDyTuX+oey6c9gME8nBPQ3jpc3A+DsjTWkq16BC7SMYywtEd
+         7HroLi6axJlnSoWmbbkU+JHcZOwpWdfnSyagXLieeDNXPKJYgpI2xgEshv/URf4HCyc8
+         nI1WCxEBuxh7sfUEKHeng/28wAEP5EzruotnCQ5XFbizYjfuwfPyjCguXwQLaFDsWOPi
+         Um2/1v0Sip/meE/W1PMmB6KHrCrQ4HlvDihF362x19MMyR26WSLNJNA1kCySf4dH60+N
+         QmSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:references:in-reply-to:subject:date
+         :message-id:mime-version:content-transfer-encoding:thread-index
+         :content-language;
+        bh=aq4S41RXE1vAQKwL/QYWeFUP5HTyFU3O/6rS50qdZsE=;
+        b=huQJx6kb7nsqVQf989CYTg1VITUSxOqndOB00kvi6jjNW/AeOezGG8PlmiboBN5PGx
+         odQlcAh0IuqXDNVkVPN/J5TbugF0DNf1f4dTt/tw1ZB86a1HJcZqY+rC6AAPdc4n5sOD
+         VOmd7Yy0sZ8R+LiZCnSL/pFIp4uIN05RUvq0XtOpRXm7aG+OTZwfssdYjPCYmp5ipr4k
+         GpJpqsFhA1Qy99MLbP0oS/IQsexJhc40P2+IjZC4Yp7sP4QSfrJXDmC/QuSWkOvYzMX9
+         YgM06npkfnopAzjckc/QUYHuFsK0GHWH2gIILCQ8OpfZkh27BO1AR8mtCruO/QPyJXOc
+         D+8w==
+X-Gm-Message-State: AOAM5314scLH2t3VkJd0ASC63QB0r8Bpd317LF4Efa6cM7aKxEbH2tGS
+        /WyaZbmMH/RTrzG55p1OcsM=
+X-Google-Smtp-Source: ABdhPJy3Ubjg/Kg+A3AeGariVlXaUlhZ7Hiy38mgi+9UBFB8tesMKZR+49HLkc2mbq7LGh/ZOWVzwA==
+X-Received: by 2002:a7b:c3c8:: with SMTP id t8mr16894073wmj.101.1600453881837;
+        Fri, 18 Sep 2020 11:31:21 -0700 (PDT)
+Received: from AnsuelXPS (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
+        by smtp.gmail.com with ESMTPSA id d9sm61650wmb.30.2020.09.18.11.31.20
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 18 Sep 2020 11:31:20 -0700 (PDT)
+From:   <ansuelsmth@gmail.com>
+To:     "'Christian Lamparter'" <chunkeey@gmail.com>,
+        "'Kalle Valo'" <kvalo@codeaurora.org>
+Cc:     <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-wireless@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <ath10k@lists.infradead.org>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        "'Rob Herring'" <robh+dt@kernel.org>,
+        "'Jakub Kicinski'" <kuba@kernel.org>,
+        <linux-mtd@lists.infradead.org>,
+        "'Srinivas Kandagatla'" <srinivas.kandagatla@linaro.org>,
+        "'Bartosz Golaszewski'" <bgolaszewski@baylibre.com>
+References: <20200918162928.14335-1-ansuelsmth@gmail.com> <20200918162928.14335-2-ansuelsmth@gmail.com> <8f886e3d-e2ee-cbf8-a676-28ebed4977aa@gmail.com>
+In-Reply-To: <8f886e3d-e2ee-cbf8-a676-28ebed4977aa@gmail.com>
+Subject: R: [PATCH 2/2] dt: bindings: ath10k: Document qcom, ath10k-pre-calibration-data-mtd
+Date:   Fri, 18 Sep 2020 20:31:18 +0200
+Message-ID: <000001d68de9$e7916450$b6b42cf0$@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQJEWVdigiv7VEZfce04PgG7d9c+lQHuGaaaAYeoZCCod3HyIA==
+Content-Language: it
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Sep 2020 17:47:24 +0000 Parav Pandit wrote:
-> > > What do you suggest?  
-> > 
-> > Start with real patches, not netdevsim.  
-> 
-> Hmm. Shall I split the series below, would that be ok?
-> 
-> First patchset,
-> (a) devlink piece to add/delete port
-> (b) mlx5 counter part
-> 
-> Second patchset,
-> (a) devlink piece to set the state
-> (b) mlx5 counter part
-> 
-> Follow on patchset to create/delete sf's netdev on virtbus in mlx5 + devlink plumbing.
-> Netdevsim after that.
- 
-I'd start from the virtbus part so we can see what's being created.
+
+
+> -----Messaggio originale-----
+> Da: Christian Lamparter <chunkeey@gmail.com>
+> Inviato: venerd=C3=AC 18 settembre 2020 18:54
+> A: Ansuel Smith <ansuelsmth@gmail.com>; Kalle Valo
+> <kvalo@codeaurora.org>
+> Cc: devicetree@vger.kernel.org; netdev@vger.kernel.org; linux-
+> wireless@vger.kernel.org; linux-kernel@vger.kernel.org;
+> ath10k@lists.infradead.org; David S. Miller <davem@davemloft.net>; Rob
+> Herring <robh+dt@kernel.org>; Jakub Kicinski <kuba@kernel.org>; linux-
+> mtd@lists.infradead.org; Srinivas Kandagatla
+> <srinivas.kandagatla@linaro.org>; Bartosz Golaszewski
+> <bgolaszewski@baylibre.com>
+> Oggetto: Re: [PATCH 2/2] dt: bindings: ath10k: Document qcom, ath10k-
+> pre-calibration-data-mtd
+>=20
+> On 2020-09-18 18:29, Ansuel Smith wrote:
+> > Document use of qcom,ath10k-pre-calibration-data-mtd bindings used =
+to
+> > define from where the driver will load the pre-cal data in the =
+defined
+> > mtd partition.
+> >
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+>=20
+> Q: Doesn't mtd now come with nvmem support from the get go? So
+> the MAC-Addresses and pre-caldata could be specified as a
+> nvmem-node in the devicetree? I remember seeing that this was
+> worked on or was this mtd->nvmem dropped?
+>=20
+> Cheers,
+> Christian
+
+Sorry a lot for the double email... I think I found what you are talking =
+about.
+It looks like the code was merged but not the documentation.
+Will do some test and check if this works.
+
+This should be the related patch.
+https://patchwork.ozlabs.org/project/linux-mtd/patch/1521933899-362-4-git=
+-send-email-albeu@free.fr/
+
+
