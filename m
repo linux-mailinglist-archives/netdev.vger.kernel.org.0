@@ -2,111 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 490F12703C6
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 20:11:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBA182703EB
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 20:25:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726327AbgIRSLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 14:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726007AbgIRSLZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 14:11:25 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A846C0613CE;
-        Fri, 18 Sep 2020 11:11:24 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id k15so6514661wrn.10;
-        Fri, 18 Sep 2020 11:11:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+ALrwdNETU2MxK86SGthSKgE8MUMcPyrI0lP0CVqjQI=;
-        b=C5sqb2yxcvsNocPhY2Lt3IwIlIROvFB5l5wNHYnGsMCGx9n+mMxLjFgVBddP5hBPCT
-         yY3ecasFwG1FymqjnUMeSkZ/bEtd5QDDKud901OlHdDIdUhaPQHonwK7ECAeCD39iGzo
-         1ceBzNiaEq5YGLyRWnZ73Sycp6czdV7kbXa4acm1kpyvzNrzxkb9lDCiaW+tqRYxLugN
-         WOxtIBRfR9PMygYkUZObTRnxLppsgc3A01wLrB2gKfcjPhbogE+ebXlgJy9hAmL9dswg
-         WdZojnwDp94191WZEhe8+W5lPfw5iN/HT4g+o81iXlgjUdMAWKFwB689QEIYiagiFbxj
-         mF/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+ALrwdNETU2MxK86SGthSKgE8MUMcPyrI0lP0CVqjQI=;
-        b=oNuPlL+A/HvRAnqA89UKXAYEP1sRMr8lwbZmKlI4hePHNxAp/KjhrGeWJU3G5ZysZ3
-         3vSxaVgAPoS1lGAtseZt9dVXKqHVzZTonhRabpk41pf2NqgNIVT2mpeSduZQxM3ZHSMh
-         u7P+mEFDGitm+celQYbnP4odY+hRz59f/0rWSXAvaubzMJxUyhmg7+roB9S37E/rXfQc
-         uQqGmlLWbBL1xOn9JoYUhBZVnrbpxPujuhbCTENs8EBu0WrpqVgLFA8ioxizaN/ECPUK
-         0pR/kNdvSJ1io/Cf4xGB908pZhy0g8ARXGdkoONRRpSG5lkd+4jwdtLIy2rS1wvoztWU
-         2GrQ==
-X-Gm-Message-State: AOAM533II/SL+qLDPUmcfcGGqaW25nxYYtDs4rNkQczWmtGKnKOjLrFc
-        iN6R9qhdzwPBO2lvD0+b6dA=
-X-Google-Smtp-Source: ABdhPJwDlGeI6/TcQ1Yi8Z/1litjaMhehBdyMUqomeNKRCP/fWUFevqhp2m/vY3A2LUYX6AyOu/7xw==
-X-Received: by 2002:a5d:5261:: with SMTP id l1mr38534694wrc.193.1600452682915;
-        Fri, 18 Sep 2020 11:11:22 -0700 (PDT)
-Received: from Ansuel-XPS.localdomain (host-95-248-206-89.retail.telecomitalia.it. [95.248.206.89])
-        by smtp.googlemail.com with ESMTPSA id f23sm21461466wmc.3.2020.09.18.11.11.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 11:11:21 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org
-Subject: [PATCH v2 2/2] dt: bindings: ath10k: Document qcom,ath10k-pre-calibration-data-mtd
-Date:   Fri, 18 Sep 2020 20:11:03 +0200
-Message-Id: <20200918181104.98-2-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200918181104.98-1-ansuelsmth@gmail.com>
-References: <20200918181104.98-1-ansuelsmth@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726200AbgIRSZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 14:25:02 -0400
+Received: from mail.efficios.com ([167.114.26.124]:59976 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbgIRSZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 14:25:02 -0400
+X-Greylist: delayed 412 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 14:25:01 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 269702720C9;
+        Fri, 18 Sep 2020 14:18:09 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id uwwoz7vMsGlG; Fri, 18 Sep 2020 14:18:08 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id B404D272278;
+        Fri, 18 Sep 2020 14:18:08 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com B404D272278
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1600453088;
+        bh=MU6thkWVkKoS8dDf7JdBpCGYTgh4e+6N89rnMjYFM+g=;
+        h=From:To:Date:Message-Id;
+        b=ONzbpc8OLZOyEIfj0MYaKRYW5hzVGb7wqVLZWa3nSpS4UcQ2Mw3ztAnP4i6QJRb2R
+         JYy/WRXrn/STTtbZ2JkNi+aTHWjxg2Q9DaMUJrTqoRFI957kjwHNsWxFFJogudh+ew
+         tgHgi7uDcBOgi2Np6pMlfp1imTchbuLosdCHg90IaH9N2gn8TiGds9p/VuWnr9MIvK
+         kI0QWkeAVmvhltNM0zVl9HcZAR+J/ymu7DA6LZAEZcelahj8oGcUU8mQgfhWIi0OiR
+         Yc+WvOwR6byzL7kpDbBq+u5whjrVhG0q8dPxpzWG7Vf/rOXhTN0raXqd1szRvySGfw
+         Sc9xewFdRzztw==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id VbkxNHjadDP4; Fri, 18 Sep 2020 14:18:08 -0400 (EDT)
+Received: from localhost.localdomain (192-222-181-218.qc.cable.ebox.net [192.222.181.218])
+        by mail.efficios.com (Postfix) with ESMTPSA id 6D31D2727B0;
+        Fri, 18 Sep 2020 14:18:08 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     David Ahern <dsahern@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Subject: [RFC PATCH v2 0/3] l3mdev icmp error route lookup fixes
+Date:   Fri, 18 Sep 2020 14:17:58 -0400
+Message-Id: <20200918181801.2571-1-mathieu.desnoyers@efficios.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document use of qcom,ath10k-pre-calibration-data-mtd bindings used to
-define from where the driver will load the pre-cal data in the defined
-mtd partition.
+Hi,
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- .../devicetree/bindings/net/wireless/qcom,ath10k.txt | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Here is an updated series of fixes for ipv4 and ipv6 which which ensure
+the route lookup is performed on the right routing table in VRF
+configurations when sending TTL expired icmp errors (useful for
+traceroute).
 
-diff --git a/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt b/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
-index b61c2d5a0..568364243 100644
---- a/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
-+++ b/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
-@@ -15,9 +15,9 @@ and also uses most of the properties defined in this doc (except
- "qcom,ath10k-calibration-data"). It uses "qcom,ath10k-pre-calibration-data"
- to carry pre calibration data.
- 
--In general, entry "qcom,ath10k-pre-calibration-data" and
--"qcom,ath10k-calibration-data" conflict with each other and only one
--can be provided per device.
-+In general, entry "qcom,ath10k-pre-calibration-data",
-+"qcom,ath10k-calibration-data-mtd" and "qcom,ath10k-calibration-data" conflict with
-+each other and only one can be provided per device.
- 
- SNOC based devices (i.e. wcn3990) uses compatible string "qcom,wcn3990-wifi".
- 
-@@ -63,6 +63,12 @@ Optional properties:
- 				 hw versions.
- - qcom,ath10k-pre-calibration-data : pre calibration data as an array,
- 				     the length can vary between hw versions.
-+- qcom,ath10k-pre-calibration-data-mtd :
-+	Usage: optional
-+	Value type: <phandle offset size>
-+	Definition: pre calibration data read from mtd partition. Take 3 value, the
-+		    mtd to read data from, the offset in the mtd partition and the
-+		    size of data to read.
- - <supply-name>-supply: handle to the regulator device tree node
- 			   optional "supply-name" are "vdd-0.8-cx-mx",
- 			   "vdd-1.8-xo", "vdd-1.3-rfa", "vdd-3.3-ch0",
+It includes tests for both ipv4 and ipv6.
+
+These fixes address specifically address the code paths involved in
+sending TTL expired icmp errors. As detailed in the individual commit
+messages, those fixes do not address similar issues related to network
+namespaces and unreachable / fragmentation needed messages, which appear
+to use different code paths.
+
+Thanks,
+
+Mathieu
+
+
+Mathieu Desnoyers (2):
+  ipv4/icmp: l3mdev: Perform icmp error route lookup on source device
+    routing table (v2)
+  ipv6/icmp: l3mdev: Perform icmp error route lookup on source device
+    routing table (v2)
+
+Michael Jeanson (1):
+  selftests: Add VRF icmp error route lookup test
+
+ net/ipv4/icmp.c                               |  23 +-
+ net/ipv6/icmp.c                               |   7 +-
+ net/ipv6/ip6_output.c                         |   2 -
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/vrf_icmp_error_route.sh     | 475 ++++++++++++++++++
+ 5 files changed, 502 insertions(+), 6 deletions(-)
+ create mode 100755 tools/testing/selftests/net/vrf_icmp_error_route.sh
+
 -- 
-2.27.0
+2.17.1
 
