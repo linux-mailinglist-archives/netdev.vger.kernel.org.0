@@ -2,102 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CD8D270086
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 17:07:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F5E82700A7
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 17:15:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726174AbgIRPHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 11:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
+        id S1726234AbgIRPPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 11:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726118AbgIRPHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 11:07:38 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48FCAC0613CE
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 08:07:38 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id z2so5195012qtv.12
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 08:07:38 -0700 (PDT)
+        with ESMTP id S1725955AbgIRPPW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 11:15:22 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32A98C0613CE
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 08:15:22 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id c10so5664607otm.13
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 08:15:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bGY4rCor0u5Eau3BIdTI66aGuODEp9MaPnc5641O2v8=;
-        b=XNRpSCLwXj4NAp4FBvi62kqhkQyhovgO/zvc5JHOD0QjULR+UHeJlbWdO6SuG5jPYw
-         OKqtnZrGU1aYU9Nf2VWgdKZ1G7e7UmQxPQs3tSlGc/eC83enTIa9iVGqNuDZzVFCh2h7
-         QK7Cerqj60OmlIQLAHSFE02ez+t49mdJAkZaekEsTj7WrFBU0nflv649z21ncc8QNdPf
-         ho8gG/vtn6AuN2+wsRwUErjLWQp3A96FmMI/bQAEi2hJtlNmdeWHl3yQVlf83xwRdurQ
-         IkuhMeo9fbUvK42I64u1yaiaZgsFtBi31hKwSNWUBVOKu7qXTedc2JslpFHMW34e21FL
-         eQLg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=J7BzP7iupf0aAfzpgXClACBnJ2mfzM3dL2+n3cNZHMk=;
+        b=CfdajHjof/cxMJ2keT+CZwuRjlulcgcnYLZPv0mMPLt1TT9tTUANvGPQoV3ewYuRcP
+         S8SQADeSN9na8Gyy91luka6xvbMXGIoPp2vkqm3FU/q1Z/Khx+1m1uWJ26m0ScfxNPfh
+         vyOyJv+n+Kjjc7ci8FsB2YCz3mgx591W/K1g9h+dZTBQcB98M+Dl583dkFN9tYK8jxnw
+         3otSGCwxrhltH9VLjcEladlBK/q+viClkSVpzJVjnVVWfSr9pBlmryrsDgqddAU4LytJ
+         kcDLDlFZhIX5+Ac8E/3Qg54H22B/MmDyXtd4+afE7FTgTOkHLexpzxPPKY8H6Chnuzhu
+         tqxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bGY4rCor0u5Eau3BIdTI66aGuODEp9MaPnc5641O2v8=;
-        b=ClcrGR0b5aLQHetZlDepRSrSCer8iDJhkEplHDL1xvLBknU0cMCaLsZUcfV7gP0lfe
-         ROaPt08D194OaeEAFOt6w9ssHRFTnfqnP8WSg8EyKZhSnlABr7QeHn9cS9kEim1tX/Os
-         +vo4xix3lkxhQ2dGGjYYBKIGMcm9Kd+MF0urSgzqlRpsQ+R2lvlGgfkojNBpIDQasuQy
-         rgl1hqqyTn4u1qnLsESgrK5siLRNb8tBfbpTNwwmmbdJjT03QQJ/9tvtKpkNurS9faWE
-         0fGqAPNLWNL5DX8dMrkwaNQYjyvlRF1zesdaozo9B5jUUKp/umvmL9d5ODHldbooDvjn
-         TDfg==
-X-Gm-Message-State: AOAM533w3C/ryQi08Mrq8QPCbrfSeYYMmVfckzxJEGMDj7NOtyg0mtO3
-        Sx2x6W0DCqfGo7cPlvYRkPij6w==
-X-Google-Smtp-Source: ABdhPJwy5uvRu/OK3ajL4mx0YmxSA+e7kwb8stYYtaHEg8B5tNNmlKiChdKwjuYw/79vtP8EG43gmA==
-X-Received: by 2002:ac8:1b92:: with SMTP id z18mr32542508qtj.265.1600441657528;
-        Fri, 18 Sep 2020 08:07:37 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id x43sm1290604qtx.40.2020.09.18.08.07.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 08:07:36 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1kJHz5-001IJ3-Ul; Fri, 18 Sep 2020 12:07:35 -0300
-Date:   Fri, 18 Sep 2020 12:07:35 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Oded Gabbay <oded.gabbay@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, izur@habana.ai,
-        Gal Pressman <galpress@amazon.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-rdma@vger.kernel.org, Olof Johansson <olof@lixom.net>
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-Message-ID: <20200918150735.GV8409@ziepe.ca>
-References: <20200918121621.GQ8409@ziepe.ca>
- <CAFCwf12YBaka2w2cnTxyX9L=heMnaM6QN1_oJ7h7DxHDmy2Xng@mail.gmail.com>
- <20200918125014.GR8409@ziepe.ca>
- <CAFCwf12oK4RXYhgzXiN_YvXvjoW1Fwx1xBzR3Y5E4RLvzn_vhA@mail.gmail.com>
- <20200918132645.GS8409@ziepe.ca>
- <CAFCwf109t5=GuNvqTqLUCiYbjLC6o2xVoLY5C-SBqbN66f6wxg@mail.gmail.com>
- <20200918135915.GT8409@ziepe.ca>
- <CAFCwf13rJgb4=as7yW-2ZHvSnUd2NK1GP0UKKjyMfkB3vsnE5w@mail.gmail.com>
- <20200918141909.GU8409@ziepe.ca>
- <CAFCwf121_UNivhfPfO6uFoHbF+2Odeb1c3+482bOXeOZUsEnug@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=J7BzP7iupf0aAfzpgXClACBnJ2mfzM3dL2+n3cNZHMk=;
+        b=qPdJlZssylsqzF6xkAgRQ1RuiG4fSTJjsKA4WLOF/26SvWir6nTpyvgyndoY7KnJXE
+         O3sSFyt9KSprVxJpAmPz0ao43e/dDrt9zVM5OEt0A13mU4FPapEscfrugQ4m2TElvcxr
+         5FQWzIBkRV9RMN0xG/OKAkcMP3D4sj9gwtV9RHg80e1Fa7HizxMXHIXSFtVmqyX46ane
+         PVrDwYWSRe8iys4Gh5hr8RAZeS/kfrRUIgcGAf7mfwNDBQ4tPvtRJVKaib9W++sys2Sk
+         vwtFw7VG0WCi2I8vMBNxvUr4h/BEXuZ4CUCsy3XCCrNKf96qkZT79c6fBsAzqjtI0Oa5
+         YdAg==
+X-Gm-Message-State: AOAM533zjTGPNUFQG41xlHVgNs/3hBcZUZqOdqpnLzjPvkmIxlm6dSQ5
+        0pUZoPI8gQGu9EKDOyiFu4w=
+X-Google-Smtp-Source: ABdhPJy5XRNEpACPzxmKU/s5H0R4XYuQP1RSlRHac2dBrXWVPg7y0o6SxpCNm0+6oPU8nTVso7Wo7w==
+X-Received: by 2002:a05:6830:22cb:: with SMTP id q11mr24240017otc.232.1600442121581;
+        Fri, 18 Sep 2020 08:15:21 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:bd0c:595:7529:c07b])
+        by smtp.googlemail.com with ESMTPSA id o9sm3162750oop.1.2020.09.18.08.15.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Sep 2020 08:15:20 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 1/8] devlink: Introduce PCI SF port flavour
+ and port attribute
+To:     Parav Pandit <parav@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Jiri Pirko <jiri@nvidia.com>
+References: <20200917081731.8363-8-parav@nvidia.com>
+ <20200917172020.26484-1-parav@nvidia.com>
+ <20200917172020.26484-2-parav@nvidia.com>
+ <7b4627d3-2a69-5700-e985-2fe5c56f03cb@gmail.com>
+ <BY5PR12MB43220E910463577F0D792965DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f89dca1d-4517-bf4a-b3f0-4c3a076dd2ab@gmail.com>
+Date:   Fri, 18 Sep 2020 09:15:18 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFCwf121_UNivhfPfO6uFoHbF+2Odeb1c3+482bOXeOZUsEnug@mail.gmail.com>
+In-Reply-To: <BY5PR12MB43220E910463577F0D792965DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 18, 2020 at 05:45:21PM +0300, Oded Gabbay wrote:
+On 9/17/20 10:18 PM, Parav Pandit wrote:
+> 
+>> From: David Ahern <dsahern@gmail.com>
+>> Sent: Friday, September 18, 2020 1:32 AM
+>>
+>> On 9/17/20 11:20 AM, Parav Pandit wrote:
+>>> diff --git a/include/net/devlink.h b/include/net/devlink.h index
+>>> 48b1c1ef1ebd..1edb558125b0 100644
+>>> --- a/include/net/devlink.h
+>>> +++ b/include/net/devlink.h
+>>> @@ -83,6 +83,20 @@ struct devlink_port_pci_vf_attrs {
+>>>  	u8 external:1;
+>>>  };
+>>>
+>>> +/**
+>>> + * struct devlink_port_pci_sf_attrs - devlink port's PCI SF
+>>> +attributes
+>>> + * @controller: Associated controller number
+>>> + * @pf: Associated PCI PF number for this port.
+>>> + * @sf: Associated PCI SF for of the PCI PF for this port.
+>>> + * @external: when set, indicates if a port is for an external
+>>> +controller  */ struct devlink_port_pci_sf_attrs {
+>>> +	u32 controller;
+>>> +	u16 pf;
+>>> +	u32 sf;
+>>
+>> Why a u32? Do you expect to support that many SFs? Seems like even a u16 is
+>> more than you can adequately name within an IFNAMESZ buffer.
+>>
+> I think u16 is likely enough, which let use creates 64K SF ports which is a lot. :-)
+> Was little concerned that it shouldn't fall short in few years. So picked u32. 
+> Users will be able to make use of alternative names so just because IFNAMESZ is 16 characters, do not want to limit sfnum size.
+> What do you think?
+> 
+>>
+>>> +	u8 external:1;
+>>> +};
+>>> +
+>>>  /**
+>>>   * struct devlink_port_attrs - devlink port object
+>>>   * @flavour: flavour of the port
+>>
+>>
+>>> diff --git a/net/core/devlink.c b/net/core/devlink.c index
+>>> e5b71f3c2d4d..fada660fd515 100644
+>>> --- a/net/core/devlink.c
+>>> +++ b/net/core/devlink.c
+>>> @@ -7855,6 +7889,9 @@ static int
+>> __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
+>>>  		n = snprintf(name, len, "pf%uvf%u",
+>>>  			     attrs->pci_vf.pf, attrs->pci_vf.vf);
+>>>  		break;
+>>> +	case DEVLINK_PORT_FLAVOUR_PCI_SF:
+>>> +		n = snprintf(name, len, "pf%usf%u", attrs->pci_sf.pf, attrs-
+>>> pci_sf.sf);
+>>> +		break;
+>>>  	}
+>>>
+>>>  	if (n >= len)
+>>>
+>>
+>> And as I noted before, this function continues to grow device names and it is
+>> going to spill over the IFNAMESZ buffer and EINVAL is going to be confusing. It
+>> really needs better error handling back to users (not kernel buffers).
+> Alternative names [1] should help to overcome the limitation of IFNAMESZ.
+> For error code EINVAL, should it be ENOSPC?
+> If so, should I insert a pre-patch in this series?
+> 
+> [1] ip link property add dev DEVICE [ altname NAME .. ]
+> 
 
-> Any access by the device's engines to the host memory is done via our
-> device's MMU. Our MMU supports multiple ASIDs - Address Space IDs. The
-> kernel driver is assigned ASID 0, while the user is assigned ASID 1.
-> We can support up to 1024 ASIDs, but because we limit the user to have
-> a single application, we only use ASID 0 and 1.
+You keep adding patches that extend the template based names. Those are
+going to cause odd EINVAL failures (the absolute worst kind of
+configuration failure) with no way for a user to understand why the
+command is failing, and you need to handle that. Returning an extack
+message back to the user is preferred.
 
-If the QP/WQ/etc is HW bound to an ASID then that binding is called a
-PD and the ASID is acting in the PD role.
+Yes, the altnames provides a solution after the the netdevice has been
+created, but I do not see how that works when the netdevice is created
+as part of devlink commands using the template names approach.
 
-If the ASID is translating from on the wire IOVA to DMA PA, then it is
-acting in the MR role as well.
-
-Bundling those two things together is not as flexible as standards
-based RDMA, but it is not as far away as you are making things out to
-be.
-
-Jason
