@@ -2,186 +2,311 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DDFE26F4D4
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 05:54:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43A4D26F4E2
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 06:05:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726342AbgIRDyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 23:54:46 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:1035 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726198AbgIRDyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 23:54:45 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f642f2c0000>; Thu, 17 Sep 2020 20:53:16 -0700
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 18 Sep
- 2020 03:54:40 +0000
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.176)
- by HQMAIL109.nvidia.com (172.20.187.15) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Fri, 18 Sep 2020 03:54:40 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PZ4Lhjww+NosHGDekWnDuZEwspaq8yEWq7dzhlaroA7DTHAbkMgzCSCq64mpD+dE4NhISMZkErkSUoZlaJLv0/xrpcN1WTT5LrgWnURfue3g1Ms7c2j9/S4TLFZsRHvTwXB75SHWxVun8ZdYhioHaAuhyN2HxK0cDRHXO+GkJ5HNk9+EeIBJOj/VkBP2pE0kYVJjZF33vQ8bExAHr1Cd9VsrFcMge+k5kcAyqX2ics1hahoMiXDwmGhf3+QBKaJigSU3uduio3J8XW6JmimYlK9qVB7W1UcMeocRLENktCQ18LxtKkdsuNbCtvClxvNiMbAqoOYRR+5q0v8KDEx2XQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uEsCN3Aqh/Z92x7EFGMf81ShSwjJk/zTYfgChdQEBmw=;
- b=Tfb1LVWQmmVn9rhT2ptXfJGU79GluM2jw6a2zmYpXimqbzQPL9yklkNXHUXvS7jzmsMYc3enS9OIlRDEcWUXz5WfkHDzXa4W8UMuFUyPeFQnB2l7bvTXSbMEPB+PR384mtwhEfusm/IH8LHxNxw51nDdwGNnDknIgaxOIEYa1M0VC38HwSenPTnGMUWb1Iafm31YkXlSYCofSoUBk96iRQ0Kqqe76QSiLpT6yZWpNwN8BHVtKyhog8QlOVS7cEGmj9rNW328dcdDX8bbklIqr/7AgFhu8H/bGab2phqJe7x2W8WNHzJJkwhzD0U6lsIjuW9065VKFnFC06/duO/gJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
- by BYAPR12MB3366.namprd12.prod.outlook.com (2603:10b6:a03:db::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.11; Fri, 18 Sep
- 2020 03:54:39 +0000
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::3c25:6e4c:d506:6105]) by BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::3c25:6e4c:d506:6105%6]) with mapi id 15.20.3370.019; Fri, 18 Sep 2020
- 03:54:39 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Jiri Pirko <jiri@nvidia.com>
-Subject: RE: [PATCH net-next v2 1/8] devlink: Introduce PCI SF port flavour
- and port attribute
-Thread-Topic: [PATCH net-next v2 1/8] devlink: Introduce PCI SF port flavour
- and port attribute
-Thread-Index: AQHWjRbfsBFsIsWtkkyNl1+R6ZtbG6ltJwsAgACYXQA=
-Date:   Fri, 18 Sep 2020 03:54:39 +0000
-Message-ID: <BY5PR12MB4322441DBA23EB8F5B8D3B90DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20200917081731.8363-8-parav@nvidia.com>
- <20200917172020.26484-1-parav@nvidia.com>
- <20200917172020.26484-2-parav@nvidia.com>
- <fcb55cc1-3be3-3eaa-68d5-28b4d112e291@intel.com>
-In-Reply-To: <fcb55cc1-3be3-3eaa-68d5-28b4d112e291@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [49.207.209.10]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: eaf3f55e-3ca5-43f1-7351-08d85b869169
-x-ms-traffictypediagnostic: BYAPR12MB3366:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR12MB3366525EEC4F5FCDE1AEF0D4DC3F0@BYAPR12MB3366.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:626;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lMzboflN1raOYxSUu2OjX2jymfoHV4w4cjcQlOjgsYRj0dg7Zu3FEmkYuuEjGptvZKz5LLH7s50MxjjQ58Bfv2V5HgXB2blwGmhCXMGrJCXpWOV/sj2nGPKOkFrFCFtWr3jSkhjNLvr6+EP/hj8OyEL3VvD9iY7K9eIOAGCCSxYJiVmWu4/XKHD0A+fHCm5Jrd3Oh/ErqSlzukLmQCte2CF4e0kaO82bQ7TOJVBGrES/cjBZXarIHXpPFZCeVaLZULGc3tjVCzyMtqMMkHR1K7sqRQYNn7F9k3SQRHBHVxN8L8c7Pka09OvpDgXu0oHYWrKjXGF/LXNigqw9tBmtNA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39860400002)(376002)(366004)(396003)(346002)(66946007)(52536014)(55236004)(83380400001)(2906002)(5660300002)(8676002)(86362001)(55016002)(6506007)(71200400001)(53546011)(9686003)(316002)(33656002)(26005)(66476007)(76116006)(66446008)(64756008)(107886003)(66556008)(7696005)(8936002)(186003)(110136005)(4326008)(478600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: z+iF9umerAkVsIVRlH1/+C7a1g/1PGjWqaB7K0Xjt3QzRMRxJe+6RNmWNE53KWP1RFSh2wgRLDnJbswc5e4mrOIC2Nuv5ztAEquzD5x8xlMV59jkfm96H/2E3aS2y1elLnQ4Mbck61TFDUZGyeMxBzgFhKYE1jm4qIxdmF+w+c4IbdHW7t8jxFyUh5LjQrA2Ng+3mqCI3bwlPoRyEghTSItzDVcGGK0L+ZpHdAPfvC4uYnf8udMce5w/vNTJxtL7BmtOqMvoBSDFeUCKyJmz+nohNQIBZuhswIqmAJPveOnvYvnOjWmpRLzEMjeaG4euzNXTGlyezcQMTfvctkgINHJUnNSMGg1TYbQwVBSXmtJqQ+vgvM6vJ1Y6EbAYNFjQSEwiGpcGHkl8pezlEc0UD+PS2I6/DM/XTEtYm43pKVc+BQRZSbb8EMwAf9HSH5NvOYKtrXtm+Dz2Y+JN0mQl4F2HKjEkbqVLwTKHF/LwKWooMYVYJ0m/pWlk/Pp9eqCkGNvCT0wd4j/kCMPVGIzL3B5z9XY0PhZvOx/WIKj/urx9YjILWKj6xpuLdiID6uUvu+DkewcnmtZ/XJkrAxYkTF781/+vjLQDzMNrr1NtK4NfdY1v2+vKYDiWYR1lQah5pIl8fHHVCbQ1kjL3qP59EQ==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726430AbgIREFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 00:05:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55361 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726249AbgIREFO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 00:05:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600401911;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wlk9HAI4Sd4VAZGEYPJ6IaZsqvXvWVGLIyj7zWCRFbs=;
+        b=T0wgRJynluaceOed3HYyjzcytboSmCgX9UvK0Y+F4O3Qr2W7oguRl6QH8zB+h129L9XBGP
+        A/soWadzE5ls3ezaoIxwT/teI6PE0De7/Q1gRgMRe1X+mNxq+xNhnaMsfwNBi0Goom7UrL
+        g6WXZjG3eO9HKhaltYDQq2Wba+JNMFI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-86-HkFJZdJ0NPyOW6MrbXbx0Q-1; Fri, 18 Sep 2020 00:05:09 -0400
+X-MC-Unique: HkFJZdJ0NPyOW6MrbXbx0Q-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DD7771891E84;
+        Fri, 18 Sep 2020 04:05:06 +0000 (UTC)
+Received: from [10.72.13.167] (ovpn-13-167.pek2.redhat.com [10.72.13.167])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E73E41C4;
+        Fri, 18 Sep 2020 04:04:52 +0000 (UTC)
+Subject: Re: [RFC PATCH 00/22] Enhance VHOST to enable SoC-to-SoC
+ communication
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Cornelia Huck <cohuck@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-ntb@googlegroups.com,
+        linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20200702082143.25259-1-kishon@ti.com>
+ <20200702055026-mutt-send-email-mst@kernel.org>
+ <603970f5-3289-cd53-82a9-aa62b292c552@redhat.com>
+ <14c6cad7-9361-7fa4-e1c6-715ccc7e5f6b@ti.com>
+ <59fd6a0b-8566-44b7-3dae-bb52b468219b@redhat.com>
+ <ce9eb6a5-cd3a-a390-5684-525827b30f64@ti.com>
+ <da2b671c-b05d-a57f-7bdf-8b1043a41240@redhat.com>
+ <fee8a0fb-f862-03bd-5ede-8f105b6af529@ti.com>
+ <b2178e1d-2f5c-e8a3-72fb-70f2f8d6aa45@redhat.com>
+ <45a8a97c-2061-13ee-5da8-9877a4a3b8aa@ti.com>
+ <c8739d7f-e12e-f6a2-7018-9eeaf6feb054@redhat.com>
+ <20200828123409.4cd2a812.cohuck@redhat.com>
+ <ac8f7e4f-9f46-919a-f5c2-89b07794f0ab@ti.com>
+ <9cd58cd1-0041-3d98-baf7-6e5bc2e7e317@redhat.com>
+ <edf25301-93c0-4ba6-aa85-5f04137d0906@ti.com>
+ <5733dbfc-76c1-45dc-6dce-ef5449eacc73@redhat.com>
+ <181ae83d-edeb-9406-27cc-1195fe29ae95@ti.com>
+ <ee0aa81d-064b-d7a7-86bb-79a3f4d3dd11@redhat.com>
+ <67924594-c70e-390e-ce2e-dda41a94ada1@ti.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <dc006fed-c3b6-8925-51d8-5ed3ee8662cd@redhat.com>
+Date:   Fri, 18 Sep 2020 12:04:51 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eaf3f55e-3ca5-43f1-7351-08d85b869169
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Sep 2020 03:54:39.5152
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: oEGPANpmbZIB79OKHMZhPJL3IOFhjzsgUq+7NQ8nMWTpsGFjNyDmOSaFdd47dpj/YkC80xkzVagB04QGaIuJAQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3366
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1600401196; bh=uEsCN3Aqh/Z92x7EFGMf81ShSwjJk/zTYfgChdQEBmw=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
-         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
-         In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
-         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
-         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
-         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
-         x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
-         x-ms-exchange-senderadcheck:x-microsoft-antispam:
-         x-microsoft-antispam-message-info:x-forefront-antispam-report:
-         x-ms-exchange-antispam-messagedata:Content-Type:
-         Content-Transfer-Encoding:MIME-Version:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-originalarrivaltime:
-         X-MS-Exchange-CrossTenant-fromentityheader:
-         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-         X-MS-Exchange-CrossTenant-userprincipalname:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=pkD76eTblcuTQDfoPJG4AfRAZTPxRjrp0vhmNKmGC7unAWSa5EUkrdi9Fvf04Azj6
-         Hz5GeD/6VGlj6PBBXRIDqp6Fzanny8ZmWyKbtbhZMXov8nRX9OyyxA6kj0NzdStuWk
-         kJvqfcPTIWfBwQacjbqlLiDQu8jwYFG1iRPHwFG1OmnPsECfm6/faR1QDQ1J1wC7s0
-         m4L6P45sGlf6vSMjzBcqdMP+7ILjcZH6sABtfYgW44/816Jn6xUh5iHimp8OLNMlvS
-         S9w0vshIuR3IGscH/X2NRJbQFNfiSWxUPb22H3P6pB3lhKWmo99ufF0B+BGNrvxYQR
-         OCPDutrlYvfCw==
+In-Reply-To: <67924594-c70e-390e-ce2e-dda41a94ada1@ti.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gRnJvbTogSmFjb2IgS2VsbGVyIDxqYWNvYi5lLmtlbGxlckBpbnRlbC5jb20+DQo+IFNl
-bnQ6IEZyaWRheSwgU2VwdGVtYmVyIDE4LCAyMDIwIDEyOjAwIEFNDQo+IA0KPiANCj4gT24gOS8x
-Ny8yMDIwIDEwOjIwIEFNLCBQYXJhdiBQYW5kaXQgd3JvdGU6DQo+ID4gQSBQQ0kgc3ViLWZ1bmN0
-aW9uIChTRikgcmVwcmVzZW50cyBhIHBvcnRpb24gb2YgdGhlIGRldmljZSBzaW1pbGFyIHRvDQo+
-ID4gUENJIFZGLg0KPiA+DQo+ID4gSW4gYW4gZXN3aXRjaCwgUENJIFNGIG1heSBoYXZlIHBvcnQg
-d2hpY2ggaXMgbm9ybWFsbHkgcmVwcmVzZW50ZWQNCj4gPiB1c2luZyBhIHJlcHJlc2VudG9yIG5l
-dGRldmljZS4NCj4gPiBUbyBoYXZlIGJldHRlciB2aXNpYmlsaXR5IG9mIGVzd2l0Y2ggcG9ydCwg
-aXRzIGFzc29jaWF0aW9uIHdpdGggU0YsDQo+ID4gYW5kIGl0cyByZXByZXNlbnRvciBuZXRkZXZp
-Y2UsIGludHJvZHVjZSBhIFBDSSBTRiBwb3J0IGZsYXZvdXIuDQo+ID4NCj4gPiBXaGVuIGRldmxp
-bmsgcG9ydCBmbGF2b3VyIGlzIFBDSSBTRiwgZmlsbCB1cCBQQ0kgU0YgYXR0cmlidXRlcyBvZiB0
-aGUNCj4gPiBwb3J0Lg0KPiA+DQo+ID4gRXh0ZW5kIHBvcnQgbmFtZSBjcmVhdGlvbiB1c2luZyBQ
-Q0kgUEYgYW5kIFNGIG51bWJlciBzY2hlbWUgb24gYmVzdA0KPiA+IGVmZm9ydCBiYXNpcywgc28g
-dGhhdCB2ZW5kb3IgZHJpdmVycyBjYW4gc2tpcCBkZWZpbmluZyB0aGVpciBvd24NCj4gPiBzY2hl
-bWUuDQo+IA0KPiBXaGF0IGRvZXMgdGhpcyBtZWFuPyBXaGF0J3MgdGhlIHNjaGVtZSB1c2VkPyAN
-Cj4NClNjaGVtZSB1c2VkIGlzIGVxdWl2YWxlbnQgYXMgd2hhdCBpcyB1c2VkIGZvciBQQ0kgVkYg
-cG9ydHMuIHBmTnZmTS4NCkl0IGlzIHBmTnNmTS4NCkJlbG93IGV4YW1wbGUgc2hvd3MgdGhlIHJl
-cHJlc2VudG9yIG5ldGRldmljZSBuYW1lIGFzICdlbmkxMG5wZjBzZjQ0JyBidWlsdCBieSBzeXN0
-ZW1kL3VkZXYgdXNpbmcgcGh5c19wb3J0X25hbWUuDQoNCj4gRG8gZHJpdmVycyBzdGlsbCBoYXZl
-IHRoZSBvcHRpb24gdG8gbWFrZSB0aGVpciBvd24gc2NoZW1lPyBJZiBzbywgd2h5Pw0KVG9kYXkg
-d2UgaGF2ZSB0d28gdHlwZXMgb2YgZHJpdmVycyAobWx4NV9jb3JlLCBuZXRkZXZzaW0pIHdoaWNo
-IHVzZXMgZGV2bGluayBjb3JlIHdoaWNoIGNyZWF0ZXMgdGhlIG5hbWUuDQpPciBvdGhlciBkcml2
-ZXJzIChibnh0LCBuZnApIHdoaWNoIGRvZXNuJ3QgeWV0IG1pZ3JhdGVkIHRvIHVzZSBkZXZsaW5r
-IGluZnJhIGZvciBQQ0kgUEYsIFZGIHBvcnRzLg0KU3VjaCBkcml2ZXJzIGFyZSBwaHlzX3BvcnRf
-bmFtZSBhbmQgb3RoZXIgbmRvcy4NCkl0IGlzIG5vdCB0aGUgcm9sZSBvZiB0aGlzIHBhdGNoIHRv
-IGJsb2NrIHRob3NlIGRyaXZlcnMsIGJ1dCBhbnkgbmV3IGltcGxlbWVudGF0aW9uIGRvZXNuJ3Qg
-bmVlZCB0byBoYW5kIGNvZGUgc3dpdGNoX2lkIGFuZCBwaHlzX3BvcnRfbmFtZSByZWxhdGVkIG5k
-b3MgZm9yIFNGLg0KRm9yIGV4YW1wbGUsIGJueHRfdmZfcmVwX2dldF9waHlzX3BvcnRfbmFtZSgp
-Lg0KDQo+IEl0J3Mgbm90IG9idmlvdXMgdG8gbWUgaW4gdGhpcyBwYXRjaCB3aGVyZSB0aGUgbnVt
-YmVyaW5nIHNjaGVtZSBjb21lcyBmcm9tLiBJdA0KPiBsb29rcyBsaWtlIGl0J3Mgc3RpbGwgdXAg
-dG8gdGhlIGNhbGxlciB0byBzZXQgdGhlIG51bWJlcnMuDQo+DQpOYW1pbmcgc2NoZW1lIGZvciBQ
-Q0kgUEYgYW5kIFBDSSBWRiBwb3J0IGZsYXZvdXJzIGFscmVhZHkgZXhpc3QuDQpTY2hlbWUgaXMg
-ZXF1aXZhbGVudCBmb3IgUENJIFNGIGZsYXZvdXIuDQoNCkkgdGhvdWdodCBleGFtcGxlIGlzIGdv
-b2QgZW5vdWdoIHRvIHNob3cgdGhhdCwgYnV0IEkgd2lsbCB1cGRhdGUgY29tbWl0IG1lc3NhZ2Ug
-dG8gZGVzY3JpYmUgdGhpcyBzY2hlbWUgdG8gbWFrZSBpdCBjbGVhci4gcGZOc2ZNLg0KIA0KPiA+
-DQo+ID4gQW4gZXhhbXBsZSB2aWV3IG9mIGEgUENJIFNGIHBvcnQuDQo+ID4NCj4gPiAkIGRldmxp
-bmsgcG9ydCBzaG93IG5ldGRldnNpbS9uZXRkZXZzaW0xMC8yDQo+ID4gbmV0ZGV2c2ltL25ldGRl
-dnNpbTEwLzI6IHR5cGUgZXRoIG5ldGRldiBlbmkxMG5wZjBzZjQ0IGZsYXZvdXIgcGNpc2YNCj4g
-Y29udHJvbGxlciAwIHBmbnVtIDAgc2ZudW0gNDQgZXh0ZXJuYWwgZmFsc2Ugc3BsaXR0YWJsZSBm
-YWxzZQ0KPiA+ICAgZnVuY3Rpb246DQo+ID4gICAgIGh3X2FkZHIgMDA6MDA6MDA6MDA6MDA6MDAN
-Cj4gPg0KPiA+IGRldmxpbmsgcG9ydCBzaG93IG5ldGRldnNpbS9uZXRkZXZzaW0xMC8yIC1qcCB7
-DQo+ID4gICAgICJwb3J0Ijogew0KPiA+ICAgICAgICAgIm5ldGRldnNpbS9uZXRkZXZzaW0xMC8y
-Ijogew0KPiA+ICAgICAgICAgICAgICJ0eXBlIjogImV0aCIsDQo+ID4gICAgICAgICAgICAgIm5l
-dGRldiI6ICJlbmkxMG5wZjBzZjQ0IiwNCj4gPiAgICAgICAgICAgICAiZmxhdm91ciI6ICJwY2lz
-ZiIsDQo+ID4gICAgICAgICAgICAgImNvbnRyb2xsZXIiOiAwLA0KPiA+ICAgICAgICAgICAgICJw
-Zm51bSI6IDAsDQo+ID4gICAgICAgICAgICAgInNmbnVtIjogNDQsDQo+ID4gICAgICAgICAgICAg
-ImV4dGVybmFsIjogZmFsc2UsDQo+ID4gICAgICAgICAgICAgInNwbGl0dGFibGUiOiBmYWxzZSwN
-Cj4gPiAgICAgICAgICAgICAiZnVuY3Rpb24iOiB7DQo+ID4gICAgICAgICAgICAgICAgICJod19h
-ZGRyIjogIjAwOjAwOjAwOjAwOjAwOjAwIg0KPiA+ICAgICAgICAgICAgIH0NCj4gPiAgICAgICAg
-IH0NCj4gPiAgICAgfQ0KPiA+IH0NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IFBhcmF2IFBhbmRp
-dCA8cGFyYXZAbnZpZGlhLmNvbT4NCj4gPiBSZXZpZXdlZC1ieTogSmlyaSBQaXJrbyA8amlyaUBu
-dmlkaWEuY29tPg0KPiA+IC0tLQ0KPiA+ICBpbmNsdWRlL25ldC9kZXZsaW5rLmggICAgICAgIHwg
-MTcgKysrKysrKysrKysrKysrKysNCj4gPiAgaW5jbHVkZS91YXBpL2xpbnV4L2RldmxpbmsuaCB8
-ICA3ICsrKysrKysNCj4gPiAgbmV0L2NvcmUvZGV2bGluay5jICAgICAgICAgICB8IDM3ICsrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KPiA+ICAzIGZpbGVzIGNoYW5nZWQsIDYx
-IGluc2VydGlvbnMoKykNCj4gPg0KDQoNCj4gPiAgc3RhdGljIGludCBfX2RldmxpbmtfcG9ydF9w
-aHlzX3BvcnRfbmFtZV9nZXQoc3RydWN0IGRldmxpbmtfcG9ydA0KPiAqZGV2bGlua19wb3J0LA0K
-PiA+ICAJCQkJCSAgICAgY2hhciAqbmFtZSwgc2l6ZV90IGxlbikNCj4gPiAgew0KPiA+IEBAIC03
-ODU1LDYgKzc4ODksOSBAQCBzdGF0aWMgaW50DQo+IF9fZGV2bGlua19wb3J0X3BoeXNfcG9ydF9u
-YW1lX2dldChzdHJ1Y3QgZGV2bGlua19wb3J0ICpkZXZsaW5rX3BvcnQsDQo+ID4gIAkJbiA9IHNu
-cHJpbnRmKG5hbWUsIGxlbiwgInBmJXV2ZiV1IiwNCj4gPiAgCQkJICAgICBhdHRycy0+cGNpX3Zm
-LnBmLCBhdHRycy0+cGNpX3ZmLnZmKTsNCj4gPiAgCQlicmVhazsNCj4gPiArCWNhc2UgREVWTElO
-S19QT1JUX0ZMQVZPVVJfUENJX1NGOg0KPiA+ICsJCW4gPSBzbnByaW50ZihuYW1lLCBsZW4sICJw
-ZiV1c2YldSIsIGF0dHJzLT5wY2lfc2YucGYsIGF0dHJzLQ0KPiA+cGNpX3NmLnNmKTsNCj4gPiAr
-CQlicmVhazsNCj4gPiAgCX0NCj4gPg0KVGhpcyBpcyB3aGVyZSB0aGUgbmFtaW5nIHNjaGVtZSBp
-cyBkb25lLCBsaWtlIHBjaXBmIGFuZCBwY2l2ZiBwb3J0IGZsYXZvdXJzLg0KDQo+ID4gIAlpZiAo
-biA+PSBsZW4pDQo+ID4NCg==
+
+On 2020/9/16 下午7:47, Kishon Vijay Abraham I wrote:
+> Hi Jason,
+>
+> On 16/09/20 8:40 am, Jason Wang wrote:
+>> On 2020/9/15 下午11:47, Kishon Vijay Abraham I wrote:
+>>> Hi Jason,
+>>>
+>>> On 15/09/20 1:48 pm, Jason Wang wrote:
+>>>> Hi Kishon:
+>>>>
+>>>> On 2020/9/14 下午3:23, Kishon Vijay Abraham I wrote:
+>>>>>> Then you need something that is functional equivalent to virtio PCI
+>>>>>> which is actually the concept of vDPA (e.g vDPA provides
+>>>>>> alternatives if
+>>>>>> the queue_sel is hard in the EP implementation).
+>>>>> Okay, I just tried to compare the 'struct vdpa_config_ops' and 'struct
+>>>>> vhost_config_ops' ( introduced in [RFC PATCH 03/22] vhost: Add ops for
+>>>>> the VHOST driver to configure VHOST device).
+>>>>>
+>>>>> struct vdpa_config_ops {
+>>>>>       /* Virtqueue ops */
+>>>>>       int (*set_vq_address)(struct vdpa_device *vdev,
+>>>>>                     u16 idx, u64 desc_area, u64 driver_area,
+>>>>>                     u64 device_area);
+>>>>>       void (*set_vq_num)(struct vdpa_device *vdev, u16 idx, u32 num);
+>>>>>       void (*kick_vq)(struct vdpa_device *vdev, u16 idx);
+>>>>>       void (*set_vq_cb)(struct vdpa_device *vdev, u16 idx,
+>>>>>                 struct vdpa_callback *cb);
+>>>>>       void (*set_vq_ready)(struct vdpa_device *vdev, u16 idx, bool
+>>>>> ready);
+>>>>>       bool (*get_vq_ready)(struct vdpa_device *vdev, u16 idx);
+>>>>>       int (*set_vq_state)(struct vdpa_device *vdev, u16 idx,
+>>>>>                   const struct vdpa_vq_state *state);
+>>>>>       int (*get_vq_state)(struct vdpa_device *vdev, u16 idx,
+>>>>>                   struct vdpa_vq_state *state);
+>>>>>       struct vdpa_notification_area
+>>>>>       (*get_vq_notification)(struct vdpa_device *vdev, u16 idx);
+>>>>>       /* vq irq is not expected to be changed once DRIVER_OK is set */
+>>>>>       int (*get_vq_irq)(struct vdpa_device *vdv, u16 idx);
+>>>>>
+>>>>>       /* Device ops */
+>>>>>       u32 (*get_vq_align)(struct vdpa_device *vdev);
+>>>>>       u64 (*get_features)(struct vdpa_device *vdev);
+>>>>>       int (*set_features)(struct vdpa_device *vdev, u64 features);
+>>>>>       void (*set_config_cb)(struct vdpa_device *vdev,
+>>>>>                     struct vdpa_callback *cb);
+>>>>>       u16 (*get_vq_num_max)(struct vdpa_device *vdev);
+>>>>>       u32 (*get_device_id)(struct vdpa_device *vdev);
+>>>>>       u32 (*get_vendor_id)(struct vdpa_device *vdev);
+>>>>>       u8 (*get_status)(struct vdpa_device *vdev);
+>>>>>       void (*set_status)(struct vdpa_device *vdev, u8 status);
+>>>>>       void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
+>>>>>                  void *buf, unsigned int len);
+>>>>>       void (*set_config)(struct vdpa_device *vdev, unsigned int offset,
+>>>>>                  const void *buf, unsigned int len);
+>>>>>       u32 (*get_generation)(struct vdpa_device *vdev);
+>>>>>
+>>>>>       /* DMA ops */
+>>>>>       int (*set_map)(struct vdpa_device *vdev, struct vhost_iotlb
+>>>>> *iotlb);
+>>>>>       int (*dma_map)(struct vdpa_device *vdev, u64 iova, u64 size,
+>>>>>                  u64 pa, u32 perm);
+>>>>>       int (*dma_unmap)(struct vdpa_device *vdev, u64 iova, u64 size);
+>>>>>
+>>>>>       /* Free device resources */
+>>>>>       void (*free)(struct vdpa_device *vdev);
+>>>>> };
+>>>>>
+>>>>> +struct vhost_config_ops {
+>>>>> +    int (*create_vqs)(struct vhost_dev *vdev, unsigned int nvqs,
+>>>>> +              unsigned int num_bufs, struct vhost_virtqueue *vqs[],
+>>>>> +              vhost_vq_callback_t *callbacks[],
+>>>>> +              const char * const names[]);
+>>>>> +    void (*del_vqs)(struct vhost_dev *vdev);
+>>>>> +    int (*write)(struct vhost_dev *vdev, u64 vhost_dst, void *src,
+>>>>> int len);
+>>>>> +    int (*read)(struct vhost_dev *vdev, void *dst, u64 vhost_src, int
+>>>>> len);
+>>>>> +    int (*set_features)(struct vhost_dev *vdev, u64 device_features);
+>>>>> +    int (*set_status)(struct vhost_dev *vdev, u8 status);
+>>>>> +    u8 (*get_status)(struct vhost_dev *vdev);
+>>>>> +};
+>>>>> +
+>>>>> struct virtio_config_ops
+>>>>> I think there's some overlap here and some of the ops tries to do the
+>>>>> same thing.
+>>>>>
+>>>>> I think it differs in (*set_vq_address)() and (*create_vqs)().
+>>>>> [create_vqs() introduced in struct vhost_config_ops provides
+>>>>> complimentary functionality to (*find_vqs)() in struct
+>>>>> virtio_config_ops. It seemingly encapsulates the functionality of
+>>>>> (*set_vq_address)(), (*set_vq_num)(), (*set_vq_cb)(),..].
+>>>>>
+>>>>> Back to the difference between (*set_vq_address)() and (*create_vqs)(),
+>>>>> set_vq_address() directly provides the virtqueue address to the vdpa
+>>>>> device but create_vqs() only provides the parameters of the virtqueue
+>>>>> (like the number of virtqueues, number of buffers) but does not
+>>>>> directly
+>>>>> provide the address. IMO the backend client drivers (like net or vhost)
+>>>>> shouldn't/cannot by itself know how to access the vring created on
+>>>>> virtio front-end. The vdpa device/vhost device should have logic for
+>>>>> that. That will help the client drivers to work with different types of
+>>>>> vdpa device/vhost device and can access the vring created by virtio
+>>>>> irrespective of whether the vring can be accessed via mmio or kernel
+>>>>> space or user space.
+>>>>>
+>>>>> I think vdpa always works with client drivers in userspace and
+>>>>> providing
+>>>>> userspace address for vring.
+>>>> Sorry for being unclear. What I meant is not replacing vDPA with the
+>>>> vhost(bus) you proposed but the possibility of replacing virtio-pci-epf
+>>>> with vDPA in:
+>>> Okay, so the virtio back-end still use vhost and front end should use
+>>> vDPA. I see. So the host side PCI driver for EPF should populate
+>>> vdpa_config_ops and invoke vdpa_register_device().
+>>
+>> Yes.
+>>
+>>
+>>>> My question is basically for the part of virtio_pci_epf_send_command(),
+>>>> so it looks to me you have a vendor specific API to replace the
+>>>> virtio-pci layout of the BAR:
+>>> Even when we use vDPA, we have to use some sort of
+>>> virtio_pci_epf_send_command() to communicate with virtio backend right?
+>>
+>> Right.
+>>
+>>
+>>> Right, the layout is slightly different from the standard layout.
+>>>
+>>> This is the layout
+>>> struct epf_vhost_reg_queue {
+>>>           u8 cmd;
+>>>           u8 cmd_status;
+>>>           u16 status;
+>>>           u16 num_buffers;
+>>>           u16 msix_vector;
+>>>           u64 queue_addr;
+>>
+>> What's the meaning of queue_addr here?
+> Using queue_addr, the virtio front-end communicates the address of the
+> allocated memory for virtqueue to the virtio back-end.
+>> Does not mean the device expects a contiguous memory for avail/desc/used
+>> ring?
+> It's contiguous memory. Isn't this similar to other virtio transport
+> (both PCI legacy and modern interface)?.
+
+
+That's only for legacy device, for modern device we don't have such 
+restriction.
+
+
+>>
+>>> } __packed;
+>>>
+>>> struct epf_vhost_reg {
+>>>           u64 host_features;
+>>>           u64 guest_features;
+>>>           u16 msix_config;
+>>>           u16 num_queues;
+>>>           u8 device_status;
+>>>           u8 config_generation;
+>>>           u32 isr;
+>>>           u8 cmd;
+>>>           u8 cmd_status;
+>>>           struct epf_vhost_reg_queue vq[MAX_VQS];
+>>> } __packed;
+>>>> +static int virtio_pci_epf_send_command(struct virtio_pci_device
+>>>> *vp_dev,
+>>>> +                       u32 command)
+>>>> +{
+>>>> +    struct virtio_pci_epf *pci_epf;
+>>>> +    void __iomem *ioaddr;
+>>>> +    ktime_t timeout;
+>>>> +    bool timedout;
+>>>> +    int ret = 0;
+>>>> +    u8 status;
+>>>> +
+>>>> +    pci_epf = to_virtio_pci_epf(vp_dev);
+>>>> +    ioaddr = vp_dev->ioaddr;
+>>>> +
+>>>> +    mutex_lock(&pci_epf->lock);
+>>>> +    writeb(command, ioaddr + HOST_CMD);
+>>>> +    timeout = ktime_add_ms(ktime_get(), COMMAND_TIMEOUT);
+>>>> +    while (1) {
+>>>> +        timedout = ktime_after(ktime_get(), timeout);
+>>>> +        status = readb(ioaddr + HOST_CMD_STATUS);
+>>>> +
+>>>>
+>>>> Several questions:
+>>>>
+>>>> - It's not clear to me how the synchronization is done between the RC
+>>>> and EP. E.g how and when the value of HOST_CMD_STATUS can be changed.
+>>> The HOST_CMD (commands sent to the EP) is serialized by using mutex.
+>>> Once the EP reads the command, it resets the value in HOST_CMD. So
+>>> HOST_CMD is less likely an issue.
+>>
+>> Here's my understanding of the protocol:
+>>
+>> 1) RC write to HOST_CMD
+>> 2) RC wait for HOST_CMD_STATUS to be HOST_CMD_STATUS_OKAY
+> That's right!
+>> It looks to me what EP should do is
+>>
+>> 1) EP reset HOST_CMD after reading new command
+> That's right! It does.
+>> And it looks to me EP should also reset HOST_CMD_STATUS here?
+> yeah, that would require RC to send another command to reset the status.
+> Didn't see it required in the normal scenario but good to add this.
+>> (I thought there should be patch to handle stuffs like this but I didn't
+>> find it in this series)
+> This is added in [RFC PATCH 19/22] PCI: endpoint: Add EP function driver
+> to provide VHOST interface
+>
+> pci_epf_vhost_cmd_handler() gets commands from RC using "reg->cmd;". On
+> the EP side, it is local memory access (mapped to BAR memory exposed to
+> the host) and hence accessed using structure member access.
+
+
+Thanks for the pointer, will have a look at and I think this part need 
+to be carefully designed and the key to the success of the epf transport.
+
+
