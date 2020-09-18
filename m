@@ -2,241 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F32F226EAA6
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 03:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1FEE26EAB7
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 03:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726218AbgIRBrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 21:47:37 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:32932 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726134AbgIRBrg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 21:47:36 -0400
-Received: by mail-wr1-f67.google.com with SMTP id m6so3962484wrn.0;
-        Thu, 17 Sep 2020 18:47:33 -0700 (PDT)
+        id S1726115AbgIRByv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 21:54:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726093AbgIRByv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 21:54:51 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90615C06174A
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:54:51 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id u3so2177871pjr.3
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:54:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yeDQ7WVZftU7kePfS6HHrDw2+K9T1LU+MTYiJR5MeQI=;
+        b=ti4AWfxLyTcPr0qmLgGHixfkOkEcpTY/GC1j5kwzdMKAT/17Bb6zVhOVQJ9axj+ie9
+         6GtEB+gKe4A8LGpCEul+Jo6izXINuJZZTkvnvSfQYeNtmBTvR5eBufFw1qOcSJbKct5V
+         5zsCYGuAycVizkUXlI1WQhfDyYb0dgU/5Phnym484AA3v/AFv2iaVMRZ2uBTZ2fwNcfZ
+         S9zeOgHrc5QRlx6/hnYToqK/pOro9rZ6tRxgW4lLAfrpKtRWIVgAk0Ft6SvRGu4tX5Gz
+         6NKHnMZl5Zf7KEqrjEWX0RcLSxOjqVjOZ5FqJXmRMiy4CMKDnTZTewk4KBSSO6hK7/lX
+         qC8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C+1Wgq984O7EqL7HxXmt0WUq/a4oFN5rhPnPuod0zeg=;
-        b=QSlsFwwbia2JWO9Dk9MRsPRRLvDRTMPTNIVH/HLLTEQtvtZRkDRtpqDCwO+dBKIvQC
-         McKNH9YnqnlY6R+6IvP5X/8R9hx4UQLtxiaJnlcEdBQ5ffK/6maZD/bxwmemMEo9RyWi
-         q1oOOGgZ6jrBVlpI0OJsolK1BDWMvJ1F1zFGCUw8Yuw2qUzEtDOjbCrEAE4GcPhLnyLW
-         aMAZIyGA97NpI3Gm9ajXVPokSpESEr2yl3wR9NC3ZOHBe2wq/KZ70jeF/qKwINL5deFo
-         Tr5p5hschEdFGYNxLI61NzCvdKDdB59DmBCKav4x+vYjezU8MP0ZUkSU38Yiz5ejXsS0
-         kHxA==
-X-Gm-Message-State: AOAM531JqYQmbYugivbOaZgXPmn7KaWa8B2pc27mJTE10C3s3Kdp6AFC
-        SFZJyXJUpE8VKbJxmdQKN6FXobGfIINuI3uDklo=
-X-Google-Smtp-Source: ABdhPJzVmPTcCbVc7mCuBNrULQ0BWJjfxWMZMHJvNu8XKbKZkGaV6kjgeCVhjI1ooAYp4XnV3hGCmgoPjuP490cC80c=
-X-Received: by 2002:adf:8b48:: with SMTP id v8mr35120279wra.21.1600393652930;
- Thu, 17 Sep 2020 18:47:32 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=yeDQ7WVZftU7kePfS6HHrDw2+K9T1LU+MTYiJR5MeQI=;
+        b=smAkPO44Qm2CWcJQg42dHe8O3VWdwH/Fc23kjxJTQeMj3g82LfNTkL1Z3UYWhhu4C4
+         wnVwbKx0ZMXu/8IxSR92V/sBCeXk+qvGqTFFBI62t96qaOcBCRmwPsrLQ7SK8FoA84gS
+         v0Q3DuNjq3XGl0J0imZhHlhtGTUO14BLjSwyjh1iFji4GbFaEG4n5xW5C0ztV5dDLW6g
+         UpFR3IAqee+/1cK94AIX6+QUr9wvu7aOYBHRsSRo+z8KG1qn7Dzo6FiZMSCDd7HMa80j
+         /MPd9FMS7hg70EN9mhVa0n+4H7E4KnI7OI5CSRMKE93HmIBKP7ODuow3nG6IBOPUXei7
+         Halw==
+X-Gm-Message-State: AOAM531IphSVamRjD31Sq2S3sC++AkMLhVuu5zMdwJe2XsfjJRM5KaGo
+        fdWGRdv73F87nPrrIxUqGkOZj1GPEF+9fg==
+X-Google-Smtp-Source: ABdhPJw8avjPp1L009axc/KjVv6YMHFJmtM8hSaT63otcZjPSmaZh8wXgjkKKr3AVwCeX766kyJuiA==
+X-Received: by 2002:a17:902:bd8d:b029:d1:cbfc:6137 with SMTP id q13-20020a170902bd8db02900d1cbfc6137mr19566446pls.23.1600394090828;
+        Thu, 17 Sep 2020 18:54:50 -0700 (PDT)
+Received: from [10.230.28.120] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id m20sm973150pfa.115.2020.09.17.18.54.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Sep 2020 18:54:49 -0700 (PDT)
+Subject: Re: [PATCH v3 net-next 1/9] net: devlink: regions: Add a priv member
+ to the regions ops struct
+To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+References: <20200909235827.3335881-1-andrew@lunn.ch>
+ <20200909235827.3335881-2-andrew@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <3bc1e6ce-fc45-c8c5-4713-5b03a4b08d11@gmail.com>
+Date:   Thu, 17 Sep 2020 18:54:43 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.2
 MIME-Version: 1.0
-References: <20200917190026.GB1426933@kernel.org> <20200917201807.4090224-1-irogers@google.com>
- <20200917203953.GA1525630@kernel.org>
-In-Reply-To: <20200917203953.GA1525630@kernel.org>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Fri, 18 Sep 2020 10:47:21 +0900
-Message-ID: <CAM9d7ciWo301cdQT7=MNB3XDrggjiR=4N4f-6CGaJfAiJO54Lw@mail.gmail.com>
-Subject: Re: [PATCH v4] perf metricgroup: Fix uncore metric expressions
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Stephane Eranian <eranian@google.com>,
-        Jin Yao <yao.jin@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200909235827.3335881-2-andrew@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arnaldo,
 
-On Fri, Sep 18, 2020 at 5:39 AM Arnaldo Carvalho de Melo
-<acme@kernel.org> wrote:
->
-> Em Thu, Sep 17, 2020 at 01:18:07PM -0700, Ian Rogers escreveu:
-> > A metric like DRAM_BW_Use has on SkylakeX events uncore_imc/cas_count_read/
-> > and uncore_imc/case_count_write/. These events open 6 events per socket
-> > with pmu names of uncore_imc_[0-5]. The current metric setup code in
-> > find_evsel_group assumes one ID will map to 1 event to be recorded in
-> > metric_events. For events with multiple matches, the first event is
-> > recorded in metric_events (avoiding matching >1 event with the same
-> > name) and the evlist_used updated so that duplicate events aren't
-> > removed when the evlist has unused events removed.
->
-> Namhyung, please check if you still Acks this as you provided it for v3.
 
-Sure,
+On 9/9/2020 4:58 PM, Andrew Lunn wrote:
+> The driver may have multiple regions which can be dumped using one
+> function. However, for this to work, additional information is
+> needed. Add a priv member to the ops structure for the driver to use
+> however it likes.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-Acked-by: Namhyung Kim <namhyung@kernel.org>
-
-Thanks
-Namhyung
-
->
-> > Before this change:
-> > $ /tmp/perf/perf stat -M DRAM_BW_Use -a -- sleep 1
-> >
-> >  Performance counter stats for 'system wide':
-> >
-> >              41.14 MiB  uncore_imc/cas_count_read/
-> >      1,002,614,251 ns   duration_time
-> >
-> >        1.002614251 seconds time elapsed
-> >
-> > After this change:
-> > $ /tmp/perf/perf stat -M DRAM_BW_Use -a -- sleep 1
-> >
-> >  Performance counter stats for 'system wide':
-> >
-> >             157.47 MiB  uncore_imc/cas_count_read/ #     0.00 DRAM_BW_Use
-> >             126.97 MiB  uncore_imc/cas_count_write/
-> >      1,003,019,728 ns   duration_time
-> >
-> > Erroneous duplication introduced in:
-> > commit 2440689d62e9 ("perf metricgroup: Remove duped metric group events").
-> >
-> > Fixes: ded80bda8bc9 ("perf expr: Migrate expr ids table to a hashmap").
-> > Reported-by: Jin Yao <yao.jin@linux.intel.com>
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  tools/perf/util/metricgroup.c | 75 ++++++++++++++++++++++++++---------
-> >  1 file changed, 56 insertions(+), 19 deletions(-)
-> >
-> > diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
-> > index ab5030fcfed4..d948a7f910cf 100644
-> > --- a/tools/perf/util/metricgroup.c
-> > +++ b/tools/perf/util/metricgroup.c
-> > @@ -150,6 +150,18 @@ static void expr_ids__exit(struct expr_ids *ids)
-> >               free(ids->id[i].id);
-> >  }
-> >
-> > +static bool contains_event(struct evsel **metric_events, int num_events,
-> > +                     const char *event_name)
-> > +{
-> > +     int i;
-> > +
-> > +     for (i = 0; i < num_events; i++) {
-> > +             if (!strcmp(metric_events[i]->name, event_name))
-> > +                     return true;
-> > +     }
-> > +     return false;
-> > +}
-> > +
-> >  /**
-> >   * Find a group of events in perf_evlist that correpond to those from a parsed
-> >   * metric expression. Note, as find_evsel_group is called in the same order as
-> > @@ -180,7 +192,11 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
-> >       int i = 0, matched_events = 0, events_to_match;
-> >       const int idnum = (int)hashmap__size(&pctx->ids);
-> >
-> > -     /* duration_time is grouped separately. */
-> > +     /*
-> > +      * duration_time is always grouped separately, when events are grouped
-> > +      * (ie has_constraint is false) then ignore it in the matching loop and
-> > +      * add it to metric_events at the end.
-> > +      */
-> >       if (!has_constraint &&
-> >           hashmap__find(&pctx->ids, "duration_time", (void **)&val_ptr))
-> >               events_to_match = idnum - 1;
-> > @@ -207,23 +223,20 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
-> >                               sizeof(struct evsel *) * idnum);
-> >                       current_leader = ev->leader;
-> >               }
-> > -             if (hashmap__find(&pctx->ids, ev->name, (void **)&val_ptr)) {
-> > -                     if (has_constraint) {
-> > -                             /*
-> > -                              * Events aren't grouped, ensure the same event
-> > -                              * isn't matched from two groups.
-> > -                              */
-> > -                             for (i = 0; i < matched_events; i++) {
-> > -                                     if (!strcmp(ev->name,
-> > -                                                 metric_events[i]->name)) {
-> > -                                             break;
-> > -                                     }
-> > -                             }
-> > -                             if (i != matched_events)
-> > -                                     continue;
-> > -                     }
-> > +             /*
-> > +              * Check for duplicate events with the same name. For example,
-> > +              * uncore_imc/cas_count_read/ will turn into 6 events per socket
-> > +              * on skylakex. Only the first such event is placed in
-> > +              * metric_events. If events aren't grouped then this also
-> > +              * ensures that the same event in different sibling groups
-> > +              * aren't both added to metric_events.
-> > +              */
-> > +             if (contains_event(metric_events, matched_events, ev->name))
-> > +                     continue;
-> > +             /* Does this event belong to the parse context? */
-> > +             if (hashmap__find(&pctx->ids, ev->name, (void **)&val_ptr))
-> >                       metric_events[matched_events++] = ev;
-> > -             }
-> > +
-> >               if (matched_events == events_to_match)
-> >                       break;
-> >       }
-> > @@ -239,7 +252,7 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
-> >       }
-> >
-> >       if (matched_events != idnum) {
-> > -             /* Not whole match */
-> > +             /* Not a whole match */
-> >               return NULL;
-> >       }
-> >
-> > @@ -247,8 +260,32 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
-> >
-> >       for (i = 0; i < idnum; i++) {
-> >               ev = metric_events[i];
-> > -             ev->metric_leader = ev;
-> > +             /* Don't free the used events. */
-> >               set_bit(ev->idx, evlist_used);
-> > +             /*
-> > +              * The metric leader points to the identically named event in
-> > +              * metric_events.
-> > +              */
-> > +             ev->metric_leader = ev;
-> > +             /*
-> > +              * Mark two events with identical names in the same group (or
-> > +              * globally) as being in use as uncore events may be duplicated
-> > +              * for each pmu. Set the metric leader of such events to be the
-> > +              * event that appears in metric_events.
-> > +              */
-> > +             evlist__for_each_entry_continue(perf_evlist, ev) {
-> > +                     /*
-> > +                      * If events are grouped then the search can terminate
-> > +                      * when then group is left.
-> > +                      */
-> > +                     if (!has_constraint &&
-> > +                         ev->leader != metric_events[i]->leader)
-> > +                             break;
-> > +                     if (!strcmp(metric_events[i]->name, ev->name)) {
-> > +                             set_bit(ev->idx, evlist_used);
-> > +                             ev->metric_leader = metric_events[i];
-> > +                     }
-> > +             }
-> >       }
-> >
-> >       return metric_events[0];
-> > --
-> > 2.28.0.618.gf4bc123cb7-goog
-> >
->
-> --
->
-> - Arnaldo
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
