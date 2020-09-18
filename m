@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E2B826FB0A
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 12:58:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDBA426FB0C
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 12:58:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726426AbgIRK6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 06:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51462 "EHLO
+        id S1726445AbgIRK6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 06:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726380AbgIRK6J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 06:58:09 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E028CC06174A
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:58:08 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id lo4so7494465ejb.8
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:58:08 -0700 (PDT)
+        with ESMTP id S1726326AbgIRK6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 06:58:10 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057ECC061756
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:58:10 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id lo4so7494533ejb.8
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 03:58:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=q3J/co0vkI6zAikSCuzCN/o51hkGLFwBzZE9TXL3a7g=;
-        b=rL6zrW6bp2ThS94wMBbQ8A2udj6NhEjuMGlz3t5C26N8Qlx/Boe/g8oPgL6ruRgEX7
-         r4+ph1D6MmDj49EsycPZqqsOQWlmbFQQjBka76vF8s5fqcLT207j2UXWG7nu5SNJsSu4
-         b11NywqLXGJhkCNjukkSgWx8jqBJhn/z5F45S8UHQSANfagDALAzSZAF0e6QSAHAGnRw
-         eQCk5OgKDQFO5k8uxADLk+1ONA3cNTFCOgPQtYlfPSM/pvR8hAPlDVhWsPhib/16/Rz9
-         i0CGaZMEb7yoFCQzHh/rJLsB7TPlao+Q1bwra61Ie9l3xAzAUpzXuj/9u8WHFPzDqIis
-         b34w==
+        bh=Mz0nf5lKPBUxgJuP35DRL+TsAjc1AJ4rawiw0Qy5rqs=;
+        b=uNPHXwa5Y8zNSbTInqX3pl2dxFZLvpvLq59lWYTJ+6extUA/gqD+yu32d0YWTkrYsa
+         QsDababULPd+5pdgau3C5CAQ+C8Cviixe3rKVx5bqgPjYYl+3oPvcn2OHMzgu/cCIHMf
+         aPqUe7jNzEy1p7D/KAavBlfKd4z/IFTPQh3f2Q9qi/OsdDivmpmMbbHq3G091wEHO1H0
+         J92e0w1YKSqJ+C0fbRFfJcJmgSHtB6TdD0l07DEkMEmfO4r+bbzS3GNtKg6bqcaAuOoD
+         AiJZHdqyonC4RmkJlpmN+PnQpSHmOxmc70k2kX0vH3aIv/UL670VviyT3HlpFCPkJcD5
+         ablw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=q3J/co0vkI6zAikSCuzCN/o51hkGLFwBzZE9TXL3a7g=;
-        b=Md1rrheqp4mnyp7TQwqOnELZ1ZfL1nD1p6z+HxZvMPgLbar0LTm4uXT/zCj9qmM0j5
-         Ywc0PEq6Fo4ok9fxWs5HXqtdfmOYrsJxuTG1Uth9zBAgfhxYR1k6mWVEmvHquA5DiCfQ
-         mhrwLrryaIqridzlDUKNiWyKmSbyTprouWJo2tgr1vQP9qtiAHRIjj5ptJhUEEOzuQXu
-         H4yNDBIK68VfhAy+uikW7OzURTuzl3QDzux66UxThQD8o2Cl25z50FqNiDHz/KDzOvnn
-         UjGywSaYiQ2mJcTALBvRt3DHx5ug7u9+D5s3TtblqiA1lQ8crZ4sLl076uZbEUcUFq1U
-         aoTg==
-X-Gm-Message-State: AOAM530Mo6kFGT3OlGSkf8uo7waLGFUQaETa18e3MqJ2DCfdsYJYVSWN
-        ByGjOEbSh+BwtSvaEI8Yrdg=
-X-Google-Smtp-Source: ABdhPJyH8gsMzr2sHANNZlta2lycixEqFbWcNUWi8VirgMXbo727/A4ZAYaux1nMCmUugwK5haeewg==
-X-Received: by 2002:a17:906:474f:: with SMTP id j15mr37432998ejs.468.1600426687580;
-        Fri, 18 Sep 2020 03:58:07 -0700 (PDT)
+        bh=Mz0nf5lKPBUxgJuP35DRL+TsAjc1AJ4rawiw0Qy5rqs=;
+        b=KPJYYMiXRMFOMt+B/IXpNow8XCgdk5upliwm9wNIkcPTGgV8Y3mia5EZivolaePHUT
+         lSmhkR2LUBn2DoBRF9Rd94dAfCrZPI1H7zTHXT/cOtXQGCsNo1f/CUhe2Ql0JhsD/evD
+         xO9uub0rWRyvDb0KlSsLI0xnXIEXOQkCxXg/RuPR9KjVwuRgMVBUxN4dhuC/Iqs1qcH0
+         2dkOvogQEHp8lZqCk8sr7ehmeX8+lF126KgHyImUulEq3WYSiraAdo4BUKrXvKN05xbB
+         TZnMsj1F7D2NiDew+l8f1cNEDryYlcbgE9K1P/8+0t6hSvl/qfmzOr61wNU2BH0A8uNu
+         uOMw==
+X-Gm-Message-State: AOAM531tEH/zAekSkdLHbz8aG3hH9Z17M6LBkbkUdBg4vTqgO2RmIhlO
+        ypbIiQ7iqPNbOaMLjPK1YAg=
+X-Google-Smtp-Source: ABdhPJywwhQqPgEWWh36koONOO/qekAGBUnqXfg3+G+lHUpcAhISAUHBdjY1UXNBIyCgifNCH7zYlg==
+X-Received: by 2002:a17:906:b285:: with SMTP id q5mr35042891ejz.545.1600426688713;
+        Fri, 18 Sep 2020 03:58:08 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id k1sm1995086eji.20.2020.09.18.03.58.06
+        by smtp.gmail.com with ESMTPSA id k1sm1995086eji.20.2020.09.18.03.58.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2020 03:58:07 -0700 (PDT)
+        Fri, 18 Sep 2020 03:58:08 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
         UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
         alexandre.belloni@bootlin.com, andrew@lunn.ch,
         vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org
-Subject: [PATCH net-next 04/11] net: dsa: ocelot: document why reset procedure is different for felix/seville
-Date:   Fri, 18 Sep 2020 13:57:46 +0300
-Message-Id: <20200918105753.3473725-5-olteanv@gmail.com>
+Subject: [PATCH net-next 05/11] net: dsa: seville: remove unused defines for the mdio controller
+Date:   Fri, 18 Sep 2020 13:57:47 +0300
+Message-Id: <20200918105753.3473725-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918105753.3473725-1-olteanv@gmail.com>
 References: <20200918105753.3473725-1-olteanv@gmail.com>
@@ -67,48 +67,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The overall idea (issue soft reset, enable memories, initialize
-memories, enable core) is the same, so it would make sense that an
-attempt is made to unify the procedures.
+Some definitions were likely copied from
+drivers/net/mdio/mdio-mscc-miim.c.
 
-It is not immediately obvious that the fields are not part of the same
-register targets, though. So add a comment.
+They are not necessary, remove them.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c   | 3 +++
- drivers/net/dsa/ocelot/seville_vsc9953.c | 4 ++++
- 2 files changed, 7 insertions(+)
+ drivers/net/dsa/ocelot/seville_vsc9953.c | 11 -----------
+ 1 file changed, 11 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 397d24c9f7c2..6f6e4ef299c3 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -737,6 +737,9 @@ static int vsc9959_sys_ram_init_status(struct ocelot *ocelot)
- 	return ocelot_read(ocelot, SYS_RAM_INIT);
- }
- 
-+/* CORE_ENA is in SYS:SYSTEM:RESET_CFG
-+ * RAM_INIT is in SYS:RAM_CTRL:RAM_INIT
-+ */
- static int vsc9959_reset(struct ocelot *ocelot)
- {
- 	int val, err;
 diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index a1f25f5e0efc..dfc9a1b2a504 100644
+index dfc9a1b2a504..0b6ceec85891 100644
 --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
 +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -820,6 +820,10 @@ static int vsc9953_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
- 	return err;
- }
+@@ -16,23 +16,12 @@
+ #define VSC9953_VCAP_IS2_ENTRY_WIDTH		376
+ #define VSC9953_VCAP_PORT_CNT			10
  
-+/* CORE_ENA is in SYS:SYSTEM:RESET_CFG
-+ * MEM_INIT is in SYS:SYSTEM:RESET_CFG
-+ * MEM_ENA is in SYS:SYSTEM:RESET_CFG
-+ */
- static int vsc9953_reset(struct ocelot *ocelot)
- {
- 	int val, err;
+-#define MSCC_MIIM_REG_STATUS			0x0
+-#define		MSCC_MIIM_STATUS_STAT_BUSY	BIT(3)
+-#define MSCC_MIIM_REG_CMD			0x8
+ #define		MSCC_MIIM_CMD_OPR_WRITE		BIT(1)
+ #define		MSCC_MIIM_CMD_OPR_READ		BIT(2)
+ #define		MSCC_MIIM_CMD_WRDATA_SHIFT	4
+ #define		MSCC_MIIM_CMD_REGAD_SHIFT	20
+ #define		MSCC_MIIM_CMD_PHYAD_SHIFT	25
+ #define		MSCC_MIIM_CMD_VLD		BIT(31)
+-#define MSCC_MIIM_REG_DATA			0xC
+-#define		MSCC_MIIM_DATA_ERROR		(BIT(16) | BIT(17))
+-
+-#define MSCC_PHY_REG_PHY_CFG		0x0
+-#define		PHY_CFG_PHY_ENA		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
+-#define		PHY_CFG_PHY_COMMON_RESET BIT(4)
+-#define		PHY_CFG_PHY_RESET	(BIT(5) | BIT(6) | BIT(7) | BIT(8))
+-#define MSCC_PHY_REG_PHY_STATUS		0x4
+ 
+ static const u32 vsc9953_ana_regmap[] = {
+ 	REG(ANA_ADVLEARN,			0x00b500),
 -- 
 2.25.1
 
