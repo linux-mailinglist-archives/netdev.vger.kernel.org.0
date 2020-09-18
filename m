@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0454326EA40
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 03:07:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7777726EA42
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 03:08:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726065AbgIRBHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Sep 2020 21:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44856 "EHLO
+        id S1726139AbgIRBHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Sep 2020 21:07:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725987AbgIRBHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 21:07:37 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9CAC06174A
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:36 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id c8so4410934edv.5
-        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:36 -0700 (PDT)
+        with ESMTP id S1725987AbgIRBHi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Sep 2020 21:07:38 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B202C06174A
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:38 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id r7so5780860ejs.11
+        for <netdev@vger.kernel.org>; Thu, 17 Sep 2020 18:07:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TI/8PU6Tkj4cU+ivZkFQA2uUaQTeF49GKTEA6KOTySQ=;
-        b=DwArsyZBQoSigofgOOvnJgxT4PIf/jGC6NFU78UeEZNGhWXGqMLBN21GY/UFqb6tv7
-         HqXEXl9dRfK30ZTtJvBzlT+QYcGRzOty1Vzv+XxmuXot/Fht3K8x353cYTVplTt/N82Y
-         mL5ENK818GYHhnZW+uB5HJeydeY0w51aZd61lVjr9mpwn8Xwn79qaC0BPniijNgt0d4m
-         at+dGdoxuxNzpX6kQk6VZ0vh6YTi3xxNEJIFpsYkTgAn6DxxZVAPHKAI3K0Bwu39Of6x
-         ZPSfMPExP56d0JO59SUpimDe0rIV5XK/Fa6fDPrz+gIO5Alr5WsfwAmWhdgvEHKyq/m2
-         pguA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+kWCR6aUEJm2UH9U9WnCYeVYUUyNOBgXHiL7tHQV/g0=;
+        b=rdWj32tLSyQ8XfssA+jsfNQVWmRTg//l6qn8HWQFYnOXrPZ6Bty9VxCwSLhuHJEtej
+         23GXai+euyGfS1UUuianpJjverGFniDh0Si63gW4sO4iAtpw53hHoQatAFAHzh33QzeQ
+         tZS/91WPAeX1x1128wcajjjn4F+pLBrkzsgWZG/ooQO/OrCOSjITC2okvnqekxoxe0ci
+         w0CEvAi4XiGM3XLx5lr2a8/3/ODFVJbCbqU6IgD4zPzQhZ5Z4RG4lOjRbHuzSQvCZscI
+         ZTVeXccZKfdPjzE5pvQxeMpQ+1p0mRihhhSMmlDM7HbNUgDLE5B3QNwbnEwig+DvVABm
+         0ZuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TI/8PU6Tkj4cU+ivZkFQA2uUaQTeF49GKTEA6KOTySQ=;
-        b=op6MY8Ita/uvi+isprwopIE0wa+g9DwFD+TjUmfLKS+0IHNI4pSr5URRVODmPWrPxU
-         w7qgADZfWJr1kRGJfkbgpoCOLudrYCjMBbfPhWCBar101r1de/TopgXC1X7nE2MBA/J6
-         t4aFcgz+3EJUmlJQxo8vzj8OATiwIHsh6xe1PR22jQzu4P67vFReYPIZIMTOV/NcaiSn
-         un08QxG6MKNDbmjYwGQxMI78CU4HlHgJqMR3z0X8lzHQEKYaZhc5PwOPIZzAZbuUbwlz
-         8crWDhBxSmkWRoTQmlmNtjOA7b3OmBrpyT/KnvP6zcwHDxNsbvf6R5Dc2fRNv3S5j+nz
-         rwtw==
-X-Gm-Message-State: AOAM530InSvFN1dlcKM2gYdPJvjogsso2e74JjXNq9XGvbvVoVdsRj/j
-        lMSGPTaRZvRtD58LYiBeB68=
-X-Google-Smtp-Source: ABdhPJw0O668bG2XoxIEZ1QLh3B921SIgYlBsExqfNkKc0UXZCTy8FPDRAdnsbt5iZpKusCsWn11Xg==
-X-Received: by 2002:aa7:d7ca:: with SMTP id e10mr34900837eds.191.1600391255555;
-        Thu, 17 Sep 2020 18:07:35 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+kWCR6aUEJm2UH9U9WnCYeVYUUyNOBgXHiL7tHQV/g0=;
+        b=aF/bUNnYg1m582K5cthkgWF4qc/w8aat2XuzAOOdnQMyS5ykgHFfxzbd6rAYRDIr5o
+         2FdDRVwqYp+CTdjrjFzNzDYWmIqpKUMz9lz11mU493HQcQ5YMSMaHfNpMFWCue4UbSw1
+         9iUUJhjj6BNe93djjz/rlZQhp/Kcx8GyLoRkCtlVPXufKgufgVFYNyVGpwLyuEgjo6aQ
+         G1zatDg9l7EXBHgbnX1fz/JXzz0ih+5IPPQIKsXrZcGWxFsifh2KVq3uUVYQAePf1e+w
+         fixFHhOyyLH25G828tMwDXXQz4IerqPnXzCxsfr6qD1F+VUuH6tniw8ujk0uPbFigEXk
+         uzQA==
+X-Gm-Message-State: AOAM533E+2Krs2lZnMxmp0dA95zJI5DmJSKGLfADgLNtgv4m2jpFtsBq
+        xgJb692pYxEGd83K5gNCuCBCrXt2YrI=
+X-Google-Smtp-Source: ABdhPJy4DFXG9vjRvk6CQ8RqWm+QGjSQZqJ80h3Gl0FedcA5wHFbSAud9tI/NDpeOU3SR1BVuOvmxA==
+X-Received: by 2002:a17:906:7c82:: with SMTP id w2mr32873346ejo.87.1600391256731;
+        Thu, 17 Sep 2020 18:07:36 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id g20sm1068591ejx.12.2020.09.17.18.07.34
+        by smtp.gmail.com with ESMTPSA id g20sm1068591ejx.12.2020.09.17.18.07.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Sep 2020 18:07:35 -0700 (PDT)
+        Thu, 17 Sep 2020 18:07:36 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
         UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
         alexandre.belloni@bootlin.com, andrew@lunn.ch,
         vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org
-Subject: [PATCH v2 net 0/8] Bugfixes in Microsemi Ocelot switch driver
-Date:   Fri, 18 Sep 2020 04:07:22 +0300
-Message-Id: <20200918010730.2911234-1-olteanv@gmail.com>
+Subject: [PATCH v2 net 1/8] net: mscc: ocelot: fix race condition with TX timestamping
+Date:   Fri, 18 Sep 2020 04:07:23 +0300
+Message-Id: <20200918010730.2911234-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200918010730.2911234-1-olteanv@gmail.com>
+References: <20200918010730.2911234-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -65,31 +67,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This is a series of 8 assorted patches for "net", on the drivers for the
-VSC7514 MIPS switch (Ocelot-1), the VSC9953 PowerPC (Seville), and a few
-more that are common to all supported devices since they are in the
-common library portion.
+The TX-timestampable skb is added late to the ocelot_port->tx_skbs. It
+is in a race with the TX timestamp IRQ, which checks that queue trying
+to match the timestamp with the skb by the ts_id. The skb should be
+added to the queue before the IRQ can fire.
 
-Vladimir Oltean (8):
-  net: mscc: ocelot: fix race condition with TX timestamping
-  net: mscc: ocelot: add locking for the port TX timestamp ID
-  net: dsa: seville: fix buffer size of the queue system
-  net: mscc: ocelot: check for errors on memory allocation of ports
-  net: mscc: ocelot: error checking when calling ocelot_init()
-  net: mscc: ocelot: refactor ports parsing code into a dedicated
-    function
-  net: mscc: ocelot: unregister net devices on unbind
-  net: mscc: ocelot: deinitialize only initialized ports
+Fixes: 4e3b0468e6d7 ("net: mscc: PTP Hardware Clock (PHC) support")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+Changes in v2:
+None.
 
- drivers/net/dsa/ocelot/felix.c             |   8 +-
- drivers/net/dsa/ocelot/seville_vsc9953.c   |   2 +-
- drivers/net/ethernet/mscc/ocelot.c         |  24 ++-
- drivers/net/ethernet/mscc/ocelot_net.c     |  12 +-
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 233 ++++++++++++---------
- include/soc/mscc/ocelot.h                  |   2 +
- net/dsa/tag_ocelot.c                       |  11 +-
- 7 files changed, 175 insertions(+), 117 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_net.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index 0668d23cdbfa..cacabc23215a 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -330,6 +330,7 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	u8 grp = 0; /* Send everything on CPU group 0 */
+ 	unsigned int i, count, last;
+ 	int port = priv->chip_port;
++	bool do_tstamp;
+ 
+ 	val = ocelot_read(ocelot, QS_INJ_STATUS);
+ 	if (!(val & QS_INJ_STATUS_FIFO_RDY(BIT(grp))) ||
+@@ -344,10 +345,14 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	info.vid = skb_vlan_tag_get(skb);
+ 
+ 	/* Check if timestamping is needed */
++	do_tstamp = (ocelot_port_add_txtstamp_skb(ocelot_port, skb) == 0);
++
+ 	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP) {
+ 		info.rew_op = ocelot_port->ptp_cmd;
+-		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
++		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
+ 			info.rew_op |= (ocelot_port->ts_id  % 4) << 3;
++			ocelot_port->ts_id++;
++		}
+ 	}
+ 
+ 	ocelot_gen_ifh(ifh, &info);
+@@ -380,12 +385,9 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	dev->stats.tx_packets++;
+ 	dev->stats.tx_bytes += skb->len;
+ 
+-	if (!ocelot_port_add_txtstamp_skb(ocelot_port, skb)) {
+-		ocelot_port->ts_id++;
+-		return NETDEV_TX_OK;
+-	}
++	if (!do_tstamp)
++		dev_kfree_skb_any(skb);
+ 
+-	dev_kfree_skb_any(skb);
+ 	return NETDEV_TX_OK;
+ }
+ 
 -- 
 2.25.1
 
