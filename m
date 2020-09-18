@@ -2,78 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDF4A270158
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 17:51:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F389270167
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 17:54:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726221AbgIRPvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 11:51:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47340 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726157AbgIRPvn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 11:51:43 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CA89121734;
-        Fri, 18 Sep 2020 15:51:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600444303;
-        bh=W+eCP9/oq+d3ilRDMujo/7+OI25X5P6rKSJQZeOohuY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jfqeQaffw4nL8qLcubuqqQJzqd3l8mfzXTzetXPN13LrqyMejyYDBY/+0/+ZmVorb
-         1HV7ymQiKCCyIIei3AW6n1Vj8s3urXRPswpAszi8Tv0BwaKZnEO3rP7PaVRbjun5xW
-         DyWMAIQ9Xxnl0itS6zJr7bPE7L6njFuE3s4k1kKM=
-Date:   Fri, 18 Sep 2020 08:51:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Herrington <hankinsea@gmail.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] ptp: mark symbols static where possible
-Message-ID: <20200918085141.4d247b94@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200918061013.2034-1-hankinsea@gmail.com>
-References: <20200918061013.2034-1-hankinsea@gmail.com>
+        id S1726249AbgIRPyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 11:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726044AbgIRPyr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 11:54:47 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4311C0613CE
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 08:54:46 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id n22so6592044edt.4
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 08:54:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1I1ECJPGCkCa5/9JeyVOe5qKBo9cnMKeRzMsHJ2l/+M=;
+        b=cyYd0rQ0Wqpq5crH2RGsvTo8snAMV61CqC5xjUa934X/NZkujy47TtrldzV7ItmyNS
+         JORtgDGPYPrMtP/hz0+5JcW0ifVkvCmrCbM3HUY/F1G0mhFSxG8+d3tQUQxDXOigTxdE
+         cV2OUmCP1RDI/BZ63WKBrFr3MQRXpBH4D2+bCNSEDIQdcMsdEeDXzA/i+cmeqx5SPFGU
+         I1GomANVrXiFiKTiW6mte+jqDk4uJ4LlucUs02pfT7i6BMpWqZl2Ktt802xpYf3meXu0
+         JQHJJj77xJcels6WykfyM/Y59ckMnmfbR7s13LGgzJ9k2gT4fVoSJZ+deiiZsx7eCo1d
+         tRew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1I1ECJPGCkCa5/9JeyVOe5qKBo9cnMKeRzMsHJ2l/+M=;
+        b=O59+Em0rJ1dm2iC6QmFNLUl2c0IUQZ6yNyg+QgmBT460E9KDvxa+oW/Lkkyny+JKnD
+         +6j+CxrRRwVfsXsuzmNfeEsxBVQrFfkmWM1w7DPU18Ir0TAb6MJ2xUQ3XBHw77ITdQE8
+         c0wehw2/jedZumzualqZqXBl5BhMpOyeFwGr9Qv4X+t8aRmeBEIoRgb2xL4tN+UpGj1D
+         0Li5lwYlOXgU8CTIBEuGBdCpaQVXpXk54+RIQCqMN5BauLHjU7HipS6+XSYr1w83emcI
+         KVZA96f0r22ffvliWfJDnt/uzDBnlCdFXWAFYYW6z/xIU63hqsdgLpn76nutpYQP4rnC
+         IHZA==
+X-Gm-Message-State: AOAM53153xRaiKqLE2YIl5HDKtwhtAZ8YE6H/DIvim8K8YkqZGmqHK6u
+        GdqBlzsfeW7VQH1Sxy71GwE=
+X-Google-Smtp-Source: ABdhPJyNt2dntZ3bNHAZYD0iHyhg8uyztVU2DOdl6HoTw8iqTVR9VjXKXCy5XQ8djcvWU/JYVIZ0JQ==
+X-Received: by 2002:a05:6402:1717:: with SMTP id y23mr41035880edu.112.1600444485447;
+        Fri, 18 Sep 2020 08:54:45 -0700 (PDT)
+Received: from skbuf ([188.25.217.212])
+        by smtp.gmail.com with ESMTPSA id j8sm2488470edp.58.2020.09.18.08.54.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Sep 2020 08:54:45 -0700 (PDT)
+Date:   Fri, 18 Sep 2020 18:54:42 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, yangbo.lu@nxp.com,
+        xiaoliang.yang_1@nxp.com, UNGLinuxDriver@microchip.com,
+        claudiu.manoil@nxp.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, kuba@kernel.org
+Subject: Re: [PATCH net-next 05/11] net: dsa: seville: remove unused defines
+ for the mdio controller
+Message-ID: <20200918155426.rb6mz72npul5m4fc@skbuf>
+References: <20200918105753.3473725-1-olteanv@gmail.com>
+ <20200918105753.3473725-6-olteanv@gmail.com>
+ <20200918154645.GG9675@piout.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200918154645.GG9675@piout.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Sep 2020 14:10:13 +0800 Herrington wrote:
-> We get 1 warning when building kernel with W=3D1:
-> drivers/ptp/ptp_pch.c:182:5: warning: no previous prototype for =E2=80=98=
-pch_ch_control_read=E2=80=99 [-Wmissing-prototypes]
->  u32 pch_ch_control_read(struct pci_dev *pdev)
-> drivers/ptp/ptp_pch.c:193:6: warning: no previous prototype for =E2=80=98=
-pch_ch_control_write=E2=80=99 [-Wmissing-prototypes]
->  void pch_ch_control_write(struct pci_dev *pdev, u32 val)
-> drivers/ptp/ptp_pch.c:201:5: warning: no previous prototype for =E2=80=98=
-pch_ch_event_read=E2=80=99 [-Wmissing-prototypes]
->  u32 pch_ch_event_read(struct pci_dev *pdev)
-> drivers/ptp/ptp_pch.c:212:6: warning: no previous prototype for =E2=80=98=
-pch_ch_event_write=E2=80=99 [-Wmissing-prototypes]
->  void pch_ch_event_write(struct pci_dev *pdev, u32 val)
-> drivers/ptp/ptp_pch.c:220:5: warning: no previous prototype for =E2=80=98=
-pch_src_uuid_lo_read=E2=80=99 [-Wmissing-prototypes]
->  u32 pch_src_uuid_lo_read(struct pci_dev *pdev)
-> drivers/ptp/ptp_pch.c:231:5: warning: no previous prototype for =E2=80=98=
-pch_src_uuid_hi_read=E2=80=99 [-Wmissing-prototypes]
->  u32 pch_src_uuid_hi_read(struct pci_dev *pdev)
-> drivers/ptp/ptp_pch.c:242:5: warning: no previous prototype for =E2=80=98=
-pch_rx_snap_read=E2=80=99 [-Wmissing-prototypes]
->  u64 pch_rx_snap_read(struct pci_dev *pdev)
-> drivers/ptp/ptp_pch.c:259:5: warning: no previous prototype for =E2=80=98=
-pch_tx_snap_read=E2=80=99 [-Wmissing-prototypes]
->  u64 pch_tx_snap_read(struct pci_dev *pdev)
-> drivers/ptp/ptp_pch.c:300:5: warning: no previous prototype for =E2=80=98=
-pch_set_station_address=E2=80=99 [-Wmissing-prototypes]
->  int pch_set_station_address(u8 *addr, struct pci_dev *pdev)
->=20
-> Signed-off-by: Herrington <hankinsea@gmail.com>
+On Fri, Sep 18, 2020 at 05:46:45PM +0200, Alexandre Belloni wrote:
+> On 18/09/2020 13:57:47+0300, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > Some definitions were likely copied from
+> > drivers/net/mdio/mdio-mscc-miim.c.
+> >
+> > They are not necessary, remove them.
+>
+> Seeing that the mdio controller is probably the same, couldn't
+> mdio-mscc-miim be reused?
 
-The declarations are in:
-
-drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe.h
-
-You need to split those out into a shared header and include them
-appropriately.
+Yeah, it probably can, but for 75 lines of code, is it worth it to
+butcher mdio-mscc-miim too? I'm not sure at what level that reuse should
+be. Should we pass it our regmap? mdio-mscc-miim doesn't use regmap.
