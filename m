@@ -2,79 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A4C426FDAD
-	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 14:59:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99B7026FDA3
+	for <lists+netdev@lfdr.de>; Fri, 18 Sep 2020 14:58:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726572AbgIRM6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 08:58:54 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:13303 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726129AbgIRM6v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 08:58:51 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 79AC7C7BCDB8C72956D4;
-        Fri, 18 Sep 2020 20:58:48 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Fri, 18 Sep 2020
- 20:58:43 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <gustavoars@kernel.org>,
-        <mhabets@solarflare.com>, <mst@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net/appletalk: Supply missing net/Space.h include file
-Date:   Fri, 18 Sep 2020 20:55:51 +0800
-Message-ID: <20200918125551.12075-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726609AbgIRM4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 08:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726064AbgIRM4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 08:56:18 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A6EC06174A;
+        Fri, 18 Sep 2020 05:56:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=zoOf0E5vEVvypLQZvTu3Qa4P//IZej+JhDzkQ4SZUbU=; b=Twr3txXoOUgAutBdzGyZB+lY1J
+        jlGkbNw57ycQeyDICn1qQL9BIF49y+wvEY79YsJqm+klFYXfm0D4wJQy3SSrZuX4oN/X8scImOz1x
+        iAvwhjjALzGEztMeZqVmVcGLW9G+To4auxoqyNMS/2NkqC80s33Ta7xmNuQV1rY8qKanIvXoGLe8B
+        6fal0Zox8xpamGqpfYQasr4KUlD6H2FixgEIiyw2pdQ2ZDQlOzArXaJmv2bnI8JP8Jm2wf1+J0rcP
+        pG1NLuH/an00oo9pw7YDidPu4WRCYUnv3lQPu2dFwfhtiUQ2ogaw+KlPq/67Y5JGwwImp7XdmncP5
+        jHtexrUQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kJFvv-0001A7-Pu; Fri, 18 Sep 2020 12:56:11 +0000
+Date:   Fri, 18 Sep 2020 13:56:11 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-aio@kvack.org,
+        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: Re: [PATCH 3/9] fs: explicitly check for CHECK_IOVEC_ONLY in
+ rw_copy_check_uvector
+Message-ID: <20200918125611.GE32101@casper.infradead.org>
+References: <20200918124533.3487701-1-hch@lst.de>
+ <20200918124533.3487701-4-hch@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.113.133]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200918124533.3487701-4-hch@lst.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the header file containing a function's prototype isn't included by
-the sourcefile containing the associated function, the build system
-complains of missing prototypes.
+On Fri, Sep 18, 2020 at 02:45:27PM +0200, Christoph Hellwig wrote:
+>  		}
+> -		if (type >= 0
+> -		    && unlikely(!access_ok(buf, len))) {
+> +		if (type != CHECK_IOVEC_ONLY && unlikely(!access_ok(buf, len))) {
 
-Fixes the following W=1 kernel build warning(s):
-
-drivers/net/appletalk/cops.c:213:28: warning: no previous prototype for ‘cops_probe’ [-Wmissing-prototypes]
-drivers/net/appletalk/ltpc.c:1014:28: warning: no previous prototype for ‘ltpc_probe’ [-Wmissing-prototypes]
-
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- drivers/net/appletalk/cops.c | 2 ++
- drivers/net/appletalk/ltpc.c | 2 ++
- 2 files changed, 4 insertions(+)
-
-diff --git a/drivers/net/appletalk/cops.c b/drivers/net/appletalk/cops.c
-index 1c6c27f35ac4..ba8e70a8e312 100644
---- a/drivers/net/appletalk/cops.c
-+++ b/drivers/net/appletalk/cops.c
-@@ -70,6 +70,8 @@ static const char *version =
- #include <linux/bitops.h>
- #include <linux/jiffies.h>
- 
-+#include <net/Space.h>
-+
- #include <asm/io.h>
- #include <asm/dma.h>
- 
-diff --git a/drivers/net/appletalk/ltpc.c b/drivers/net/appletalk/ltpc.c
-index 75a5a9b87c5a..c6f73aa3700c 100644
---- a/drivers/net/appletalk/ltpc.c
-+++ b/drivers/net/appletalk/ltpc.c
-@@ -229,6 +229,8 @@ static int dma;
- #include <linux/bitops.h>
- #include <linux/gfp.h>
- 
-+#include <net/Space.h>
-+
- #include <asm/dma.h>
- #include <asm/io.h>
- 
--- 
-2.17.1
+drop the unlikely() at the same time?  if it's really advantageous,
+that should be embedded in the access_ok macro.
 
