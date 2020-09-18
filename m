@@ -2,61 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE57D2708EE
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 00:25:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86FD22708F0
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 00:26:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726174AbgIRWZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 18:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726022AbgIRWZ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 18:25:57 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656D7C0613CE
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 15:25:57 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4CB9115A1774F;
-        Fri, 18 Sep 2020 15:09:09 -0700 (PDT)
-Date:   Fri, 18 Sep 2020 15:25:55 -0700 (PDT)
-Message-Id: <20200918.152555.1403201229559966970.davem@davemloft.net>
-To:     anthony.l.nguyen@intel.com
-Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        jeffrey.t.kirsher@intel.com
-Subject: Re: [net 0/4][pull request] Intel Wired LAN Driver Updates
- 2020-09-18
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200918212703.3398038-1-anthony.l.nguyen@intel.com>
-References: <20200918212703.3398038-1-anthony.l.nguyen@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 18 Sep 2020 15:09:09 -0700 (PDT)
+        id S1726281AbgIRW0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 18:26:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58470 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726202AbgIRW0k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 18:26:40 -0400
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 787432220C;
+        Fri, 18 Sep 2020 22:26:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600467999;
+        bh=227oESQ7+B/CbICazXDivsh+4WfScaffUrrHgFBormI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=wRxmOHLz4ne5weGrgPDeUE31uCGVB96M+oMZ58a5FhbBvbK+LHTbxPTE5PYGCJr2A
+         9M/xm3Od4XJTSTmE4pMVe6XRMXvktxmSnZjyKG+hEQvUvxebKhiUc05sVEHNklQ25c
+         NW4Ul3AOI9IIq/l3dAefySwxLPoWFZic1HJ22+Qs=
+Received: by mail-lf1-f46.google.com with SMTP id b22so7690153lfs.13;
+        Fri, 18 Sep 2020 15:26:39 -0700 (PDT)
+X-Gm-Message-State: AOAM5333M5HTb2tKW/JMNUfnrmuq66PAdsz+sk+KtnbWcnc8qcvINGFO
+        AvCLIkQZtNhOWYmel1MyzQDsmvrCfDPUZxctOes=
+X-Google-Smtp-Source: ABdhPJyPMV28u/36HIp9uzNwpWJYYEcHG5pRT+AhxgIipClPww3MamLQTZcAsL7N5Bmpb5Xf7gpXpCSRyqSKQBtXEng=
+X-Received: by 2002:a19:7902:: with SMTP id u2mr12710536lfc.515.1600467997762;
+ Fri, 18 Sep 2020 15:26:37 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200918121046.190240-1-nicolas.rybowski@tessares.net>
+In-Reply-To: <20200918121046.190240-1-nicolas.rybowski@tessares.net>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 18 Sep 2020 15:26:26 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6=EDSwBvQzJUvc6uAytgp13bgfLXQgFnmBfsbFAgUzbQ@mail.gmail.com>
+Message-ID: <CAPhsuW6=EDSwBvQzJUvc6uAytgp13bgfLXQgFnmBfsbFAgUzbQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/5] bpf: expose is_mptcp flag to bpf_tcp_sock
+To:     Nicolas Rybowski <nicolas.rybowski@tessares.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Sep 18, 2020 at 5:13 AM Nicolas Rybowski
+<nicolas.rybowski@tessares.net> wrote:
+>
+> is_mptcp is a field from struct tcp_sock used to indicate that the
+> current tcp_sock is part of the MPTCP protocol.
+>
+> In this protocol, a first socket (mptcp_sock) is created with
+> sk_protocol set to IPPROTO_MPTCP (=262) for control purpose but it
+> isn't directly on the wire. This is the role of the subflow (kernel)
+> sockets which are classical tcp_sock with sk_protocol set to
+> IPPROTO_TCP. The only way to differentiate such sockets from plain TCP
+> sockets is the is_mptcp field from tcp_sock.
+>
+> Such an exposure in BPF is thus required to be able to differentiate
+> plain TCP sockets from MPTCP subflow sockets in BPF_PROG_TYPE_SOCK_OPS
+> programs.
+>
+> The choice has been made to silently pass the case when CONFIG_MPTCP is
+> unset by defaulting is_mptcp to 0 in order to make BPF independent of
+> the MPTCP configuration. Another solution is to make the verifier fail
+> in 'bpf_tcp_sock_is_valid_ctx_access' but this will add an additional
+> '#ifdef CONFIG_MPTCP' in the BPF code and a same injected BPF program
+> will not run if MPTCP is not set.
+>
+> An example use-case is provided in
+> https://github.com/multipath-tcp/mptcp_net-next/tree/scripts/bpf/examples
+>
+> Suggested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> Signed-off-by: Nicolas Rybowski <nicolas.rybowski@tessares.net>
 
-Tony, there seems to be repeated problems with the patch serieses
-you post.
-
-Several of the patches in the series don't make it to the mailing
-list and looking at the vger.kernel.org logs I see:
-
-RVeMDj90000w    553 5.4.3 Hello [192.55.52.118], for MAIL FROM address <MAILER-DAEMON@fmsmga104.fm.intel.com> the policy analysis reports DNS error with your source domain.
-RVeMDj90001w    553 5.4.3 Hello [192.55.52.118], for MAIL FROM address <MAILER-DAEMON@fmsmga104.fm.intel.com> the policy analysis reports DNS error with your source domain.
-
-For patches 1 and 3 which didn't make it to the lists.
-
-The other patches went through different servers such as mga01.intel.com
-which don't have the DNS issues.
-
-I've never seen this happen when Jeff was posting his pull requests.
-
-Please fix this up otherwise we won't be able to review and apply you
-patch submissions.
-
-Thank you.
+Acked-by: Song Liu <songliubraving@fb.com>
+[...]
