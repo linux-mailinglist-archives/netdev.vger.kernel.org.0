@@ -2,132 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0F11270EAA
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 16:54:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22039270ED2
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 17:16:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726549AbgISOyS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 19 Sep 2020 10:54:18 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:20493 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726493AbgISOyR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 10:54:17 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-123-Q8cAoOVtN9-3ia4vwC15wg-1; Sat, 19 Sep 2020 15:53:09 +0100
-X-MC-Unique: Q8cAoOVtN9-3ia4vwC15wg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Sat, 19 Sep 2020 15:53:08 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Sat, 19 Sep 2020 15:53:08 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Al Viro' <viro@zeniv.linux.org.uk>, Christoph Hellwig <hch@lst.de>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-aio@kvack.org" <linux-aio@kvack.org>,
-        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: RE: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
-Thread-Topic: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
-Thread-Index: AQHWjcPPLxbJUITJXkeWJwtHmAdwxKlwCErw
-Date:   Sat, 19 Sep 2020 14:53:08 +0000
-Message-ID: <6d064d8688324279af89152a8da22d69@AcuMS.aculab.com>
-References: <20200918124533.3487701-1-hch@lst.de>
- <20200918124533.3487701-2-hch@lst.de>
- <20200918134012.GY3421308@ZenIV.linux.org.uk> <20200918134406.GA17064@lst.de>
- <20200918135822.GZ3421308@ZenIV.linux.org.uk>
-In-Reply-To: <20200918135822.GZ3421308@ZenIV.linux.org.uk>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726600AbgISPQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 11:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59968 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726590AbgISPQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 11:16:51 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FECC0613D2
+        for <netdev@vger.kernel.org>; Sat, 19 Sep 2020 08:16:50 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id b12so9319542lfp.9
+        for <netdev@vger.kernel.org>; Sat, 19 Sep 2020 08:16:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=/Yyx5fgdQQ53MJfSQkVm3NCGXBb0SNoIJgKMHS8hFqU=;
+        b=rN7OavEaQ4SwSGOpsJTrpu03q6Glz1O6NFAjy8AikXA7iFrkbitfUVx01VMLZ4M6Ue
+         sEqqInFS75d8eXpw59FJiEYbpUqnkORrfmcEaFVLhCeBLNOJhVo5dj2bSmpvRqwP1/5O
+         1jnLtTiBCA1tvQYPrfM7z5oe3bkE2zUKFDowcCoATPWIdhdX19EVq2dEezActrm+QKJg
+         0fn6ZG0N/BubIi9AhxEACFjMkKv7MQ2R4R0ziHGIKIuKhhI6HEZY5KiXWLxoCeoXRmv7
+         SXWGUC0YXiiSzojyoxsc120R58zfbMV53Vyys19g9flOxW6/svOkdhPuf132O66GguW2
+         FrUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=/Yyx5fgdQQ53MJfSQkVm3NCGXBb0SNoIJgKMHS8hFqU=;
+        b=SOb2Hrm7PgBA5isDX2d9P0XKkcpBIkcIo1uefQus27hP57xN/BWo5DiHVF4px9SEQc
+         QdTdjUo3HkwLwNrgJISINL/HdxsawRewNxYfEr42d7bMZJQCeLA35wVlx83aqbnavXDF
+         +GFHzvsi0n8n53ivpxv/YIfUlfrMFguIe9y+8TptF4BG3/uNRMoNdfshESx0IFPfKOCC
+         oxolKz1jEG1eeTmyxUmD2fUTVmNGzV7Me1qxwTv/P5jDBOdKYhpdykWvzhJIcuj0q19J
+         DXUacuCmf914SoWNIk4/AyAhdu0Yt7JwSqIbt4yK4YdWNqYcudn3D5QObUcda7NjCoqG
+         hSWw==
+X-Gm-Message-State: AOAM532rEat6J4ryoGId59M3TEwRDbLPuOqT0J5P17tnTTH5LqkBJpQ0
+        7ZWQSO/WVJK5GLVtw2znZtBIC33RIBTFnw7Jw14=
+X-Google-Smtp-Source: ABdhPJwuWHxT1algO/3mzGuimfSdFOFDRjOyCniqmj9rP8XU1guJfFUmBH+P7dbey4pHmLDJd+qS0RNZJZ8JsHkx+/c=
+X-Received: by 2002:ac2:4424:: with SMTP id w4mr11947842lfl.447.1600528608758;
+ Sat, 19 Sep 2020 08:16:48 -0700 (PDT)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-Language: en-US
+Received: by 2002:ab3:6e58:0:0:0:0:0 with HTTP; Sat, 19 Sep 2020 08:16:48
+ -0700 (PDT)
+Reply-To: kkoduah.sarpong@outlook.com
+From:   Kofi Koduah Sarpong <kofikoduahsarpong68@gmail.com>
+Date:   Sat, 19 Sep 2020 08:16:48 -0700
+Message-ID: <CAGyyCatJ-GsTnppF_8M5=VUOK+S9JoJyUVUoucVHSVOsHgJUkQ@mail.gmail.com>
+Subject: Re: investment interest from Engr: Kofi Sarpong Please go through and
+ get back to me.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Al Viro
-> Sent: 18 September 2020 14:58
-> 
-> On Fri, Sep 18, 2020 at 03:44:06PM +0200, Christoph Hellwig wrote:
-> > On Fri, Sep 18, 2020 at 02:40:12PM +0100, Al Viro wrote:
-> > > >  	/* Vector 0x110 is LINUX_32BIT_SYSCALL_TRAP */
-> > > > -	return pt_regs_trap_type(current_pt_regs()) == 0x110;
-> > > > +	return pt_regs_trap_type(current_pt_regs()) == 0x110 ||
-> > > > +		(current->flags & PF_FORCE_COMPAT);
-> > >
-> > > Can't say I like that approach ;-/  Reasoning about the behaviour is much
-> > > harder when it's controlled like that - witness set_fs() shite...
-> >
-> > I don't particularly like it either.  But do you have a better idea
-> > how to deal with io_uring vs compat tasks?
-> 
-> <wry> git rm fs/io_uring.c would make a good starting point </wry>
-> Yes, I know it's not going to happen, but one can dream...
+Lukoil Overseas Gh. Ltd.
+Oil & Gas Extraction Companies
+No. 68 Mankralo Street
+East Cantonments
+Accra Ghana.
 
-Maybe the io_uring code needs some changes to make it vaguely safe.
-- No support for 32-bit compat mixed working (or at all?).
-  Plausibly a special worker could do 32bit work.
-- ring structure (I'm assuming mapped by mmap()) never mapped
-  in more than one process (not cloned by fork()).
-- No implicit handover of files to another process.
-  Would need an munmap, handover, mmap sequence.
+Dear: Reem Awwaad
 
-In any case the io_ring rather abuses the import_iovec() interface.
+My name is Engr: Kofi Koduah Sarpong.
+I am the Chief Executive Officer of Lukoil Overseas Gh. Ltd Ghana.
+I will be retiring from my work by June next year. I write to inform
+you of my intention to invest in a Hotel business or any other forms
+of business in your country and i request you assists me in carrying
+out the feasibility studies on location and likely cost implication,
+type and estimation on how much it will cost to establish a three star
+hotel, either by outright purchase of already existing one or a
+dilapidated one that we can renovate or setting up a new one entirely.
 
-The canonical sequence is (types from memory):
-	struct iovec cache[8], *iov = cache;
-	struct iter iter;
-	...
-	rval = import_iovec(..., &iov, 8, &iter);
-	// Do read/write user using 'iter'
-	free(iov);
+If you sincerely carry out this survey, and give me feedback as fast
+as possible, I will give you the power of attorney to build & manage
+the hotel for me, pending my retirement next year as I said.
 
-I don't think there is any strict requirement that iter.iov
-is set to either 'cache' or 'iov' (it probably must point
-into one of them.)
-But the io_uring code will make that assumption because the
-actual copies can be done much later and it doesn't save 'iter'.
-It gets itself in a right mess because it doesn't separate
-the 'address I need to free' from 'the iov[] for any transfers'.
+Sir, i have the sum of (US$85 million USD) that I deposited in a
+Finance company outside my country for this project.
 
-io_uring is also the only code that relies on import_iovec()
-returning the iter.count on success.
-It would be much better to have:
-	iov = import_iovec(..., &cache, ...);
-	free(iov);
-and use ERR_PTR() et al for error detectoion.
+Please don=E2=80=99t disregard this message I am very sincere in what am
+telling you the documents for the deposit I will send them to you for
+your confirmation as soon as we proceed.
 
-	David
+I have very little issue with health right now as a result of age but
+I have been assured by my doctor that I will be fine and get back to
+work soon presently i am in the neighboring country for medical
+reason.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Please do let me know if you are capable, and can handling such
+business. Feed me back with your details, and your area of
+specialization should be indicated as well. I will be expecting your
+reply as soon as possible.
 
+Please send your telephone number to me i will call you for more details.
+
+
+Regards
+Engr: Kofi Koduah Sarpong
+Chief Executive Officer
