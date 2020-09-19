@@ -2,80 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ACD8271001
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 20:50:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E537E271019
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 21:03:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726537AbgISSth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Sep 2020 14:49:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45340 "EHLO vps0.lunn.ch"
+        id S1726528AbgISTDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 15:03:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45370 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726449AbgISSth (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Sep 2020 14:49:37 -0400
+        id S1726481AbgISTDZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Sep 2020 15:03:25 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kJhvG-00FPVc-R7; Sat, 19 Sep 2020 20:49:22 +0200
-Date:   Sat, 19 Sep 2020 20:49:22 +0200
+        id 1kJi8j-00FPaf-LS; Sat, 19 Sep 2020 21:03:17 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oded Gabbay <oded.gabbay@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Gal Pressman <galpress@amazon.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
+To:     netdev <netdev@vger.kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-Message-ID: <20200919184922.GA3665637@lunn.ch>
-References: <0b21db8d-1061-6453-960b-8043951b3bad@amazon.com>
- <20200918115227.GR869610@unreal>
- <CAFCwf10C1zm91e=tqPVGOX8kZD7o=AR2EW-P9VwCF4rcvnEJnA@mail.gmail.com>
- <20200918120340.GT869610@unreal>
- <CAFCwf12VPuyGFqFJK5D19zcKFQJ=fmzjwscdPG82tfR_v_h3Kg@mail.gmail.com>
- <20200918121905.GU869610@unreal>
- <20200919064020.GC439518@kroah.com>
- <20200919082003.GW869610@unreal>
- <20200919083012.GA465680@kroah.com>
- <CAFCwf122V-ep44Kqk1DgRJN+tq3ctxE9uVbqYL07apLkLe2Z7g@mail.gmail.com>
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH RFC/RFT 0/2] W=1 by default for Ethernet PHY subsystem
+Date:   Sat, 19 Sep 2020 21:02:56 +0200
+Message-Id: <20200919190258.3673246-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFCwf122V-ep44Kqk1DgRJN+tq3ctxE9uVbqYL07apLkLe2Z7g@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 19, 2020 at 07:43:28PM +0300, Oded Gabbay wrote:
-> It's probably heresy, but why do I need to integrate into the RDMA subsystem ?
+There is a movement to make the code base compile clean with W=1. Some
+subsystems are already clean. In order to keep them clean, we need
+developers to build new code with W=1 by default in these subsystems.
 
-Hi Oded
+This patchset refactors the core Makefile warning code to allow the
+additional warnings W=1 adds available to any Makefile. The Ethernet
+PHY subsystem Makefiles then make use of this to make W=1 the default
+for this subsystem.
 
-I don't know the RDMA subsystem at all. So i will give a more generic
-answer. Are you reinventing things which a subsystem core already has?
-The subsystem core will be well tested, since lots of devices use
-it. Because of this, subsystem cores generally have a lower bug count
-per line of code than driver code. Using core code means drivers are
-smaller, and smaller code has less bugs by definition.
+RFT since i've only tested with x86 and arm with a modern gcc. Is the
+code really clean for older compilers? For clang?
 
-We as maintainers have to assume you are going to abandon the driver
-at some point, while the hardware still exists, and leave the
-community to maintain it. So a smaller driver, which makes heavy use
-of the core is much easier to maintain.
+Andrew Lunn (2):
+  scripts: Makefile.extrawarn: Add W=1 warnings to a symbol
+  net: phylib: Enable W=1 by default
 
-By making use of core code, you also get freebies. Somebody adds new
-functionality to the core, your driver automatically gets it.
+ drivers/net/mdio/Makefile  |  3 +++
+ drivers/net/pcs/Makefile   |  3 +++
+ drivers/net/phy/Makefile   |  3 +++
+ scripts/Makefile.extrawarn | 33 ++++++++++++++++++---------------
+ 4 files changed, 27 insertions(+), 15 deletions(-)
 
-Look at this from the opposite perspective. Say every driver
-implemented their own TCP/IP stack? Or DMA engine? SPI infrastructure?
-How big a nightmare would it be to maintain?
+-- 
+2.28.0
 
-In your case, some parts of you hardware looks a bit like RDMA? So you
-ideally want to use the core code from the RDMA subsystem. Maybe you
-just need some of the lower layers? Maybe you need to refactor some of
-the RDMA core to make it a library you can pick and choice the bits
-useful to you? What you really want to avoid is re-implementing stuff
-in your driver which is already in the core.
-
-      Andrew
