@@ -2,211 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEA9B270DC1
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 13:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F7B5270E17
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 15:15:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726458AbgISLuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Sep 2020 07:50:05 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:29340 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726400AbgISLuB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 07:50:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600516198;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=utfMK0fpz+Di6YKgONWOEtGJeoQeNvRbM0wd8gaCZ8U=;
-        b=hPgDz2pyoVrfz2ows2uk9+c7x0NIrespsxXz5YR46cGecbzU0ZmSYPWxW942VVNoD7/OGB
-        b6B7f7OyFyxOdV3Q2A0AJ2IqcTUfdhQT0AZuFI1FYfX0x8IK3evnutBfxEbaWnCnNjrhFv
-        ddXuAXZ+IVFDbTL6CMo4YbEplYQwpHM=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-299-1S3kOP7RM-GBM1t67bnsYg-1; Sat, 19 Sep 2020 07:49:57 -0400
-X-MC-Unique: 1S3kOP7RM-GBM1t67bnsYg-1
-Received: by mail-ej1-f70.google.com with SMTP id dc22so3121249ejb.21
-        for <netdev@vger.kernel.org>; Sat, 19 Sep 2020 04:49:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=utfMK0fpz+Di6YKgONWOEtGJeoQeNvRbM0wd8gaCZ8U=;
-        b=Gc/P7DLhw2NfVt6q3bLubBwXvZiTacfg/6L9LwB0P7ynXRa8jnTFZerloGHuRglzET
-         ftgPvug7pIoqVj5T/Z2Koj0oNZxXxpe+74wQukg/maTbYs+Aa3RDxFYSY8/hzH5KUGI8
-         OjMyWwD5yVTbRdQOVBt1eGI6SM6yyVL4l6AyRtaFiuJQVwnOOsmmRj/Y6PgRQ9C6XGYf
-         gozS0hEswmURpKEfDDg09l8SWlYuJ590InCxjrqzvSMLZF/y9ObcK+X/HtSCvGzk0CsC
-         K6MGdbOVA8YlCTZAYZKNr+gBzo04TXBmDF7GEExSmZ4xOb/9VLAG7UmyEkGoQ1BiWdvo
-         ICqw==
-X-Gm-Message-State: AOAM531TmZPE5lMlzmikeYXhZ57FEI81IFDTGcha1Pop3WaSNha3S58k
-        w642dpNCEuApD0KLoNlYHslXPAnLgLPS/lhlEfBg2rfQ0KdNKyu1i2dga0AVLpzfAU6bK+jMOub
-        dI0FA7KfTJf3KTvt8
-X-Received: by 2002:a17:906:7248:: with SMTP id n8mr40167571ejk.160.1600516195311;
-        Sat, 19 Sep 2020 04:49:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwET4wLasS4GyN4HhrrhJC65BBFerQhuAVWgNzLqhJ7YH2ZyMXgBmViYW56KvvkEBeUQAEFFQ==
-X-Received: by 2002:a17:906:7248:: with SMTP id n8mr40167551ejk.160.1600516194925;
-        Sat, 19 Sep 2020 04:49:54 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id z23sm4271334eja.29.2020.09.19.04.49.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Sep 2020 04:49:54 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 0E336183A98; Sat, 19 Sep 2020 13:49:54 +0200 (CEST)
-Subject: [PATCH bpf-next v7 10/10] selftests: Add selftest for disallowing
- modify_return attachment to freplace
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Date:   Sat, 19 Sep 2020 13:49:54 +0200
-Message-ID: <160051619397.58048.16822043567956571063.stgit@toke.dk>
-In-Reply-To: <160051618267.58048.2336966160671014012.stgit@toke.dk>
-References: <160051618267.58048.2336966160671014012.stgit@toke.dk>
-User-Agent: StGit/0.23
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+        id S1726458AbgISNPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 09:15:31 -0400
+Received: from mail-dm6nam12on2041.outbound.protection.outlook.com ([40.107.243.41]:29792
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726388AbgISNPb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Sep 2020 09:15:31 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GYWUzKT7Sfjo14ZEZVcHPJh0gxhZBoysWFjCkAHvUNjSLErEGxSPcSr4GoRPF8comLQvgaQB/REpJCkNTVElKZIpBH/ihfdVBGQaY+TMpYmtf9fpK8m1BflzLfR6jLd1+4Aywn/4aI/mC+Ub75ibaU1gLnV3IgHMBa/RfVPQsZ7FjNhYQsPfS+aNTSHPSt4Dl/syaNmOvRjvGHEwqK4FvS/PtIwKzi8q3H2Mebvye8qniwhCgdpebitNurRPTrL9NROXnNkb+eKmTO/l11xVhoVAh+x7mxIvxyZ5TuzCxBbVzXT5BVkqBp7wD++AjxSE2ExtzjUdIP0Gr+dGr1ue3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2SmWhvI7BfmA5UkOixVDInCF8GGhhYgVGIIOyTFoM88=;
+ b=S/CsnUJuHCbbksYiypPz8r6DIzdanoSmCRsE+gxfAphgFyU0uPh1ch+tkEQxLGa+FiB65dLWypM2IXv0trf10WhACO77+HlghQVyJ0tX9i7iAPlr/ObVgNj7SSqHZadMebjeUBI9AaJVeHOGekLkLEJxGWglmOJ99dBrgAm80jQg0UaJVwR9qRM4eyMRDxV1i/Qv+u69jK0pkVw1Fhl+B6Shh9kO/Bt0MHa885RrQgq9PLsMXaDFW3J7xifXcZhLqiAZp/0mVuq2p24+ra4QhJ5p6i1NW4xNbcPY8ber90JkrrV8cfUGlSdPvZ3zGC74zJMas0P/oLgh5RmNtJ6ZSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=windriversystems.onmicrosoft.com;
+ s=selector2-windriversystems-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2SmWhvI7BfmA5UkOixVDInCF8GGhhYgVGIIOyTFoM88=;
+ b=lMkuBuYd6ZgjxiFFJ+tRnwHWP2mOmueE/bsc+d5MXKqjjiEquExiD8dEF1zfHBOwu4WiD0r2FmMsVLjM13xUQoAyy+HRiwlloMB0cJSq7WFUl8q3hDEtsn6QYMjT/pL85eBo+f+MaEzVxlvQXkVxM+E4zlhMcbGElx3Soa8tlUE=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=windriver.com;
+Received: from SN6PR11MB3360.namprd11.prod.outlook.com (2603:10b6:805:c8::30)
+ by SN6PR11MB2815.namprd11.prod.outlook.com (2603:10b6:805:62::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.19; Sat, 19 Sep
+ 2020 13:15:27 +0000
+Received: from SN6PR11MB3360.namprd11.prod.outlook.com
+ ([fe80::4dbe:2ab5:9b68:a966]) by SN6PR11MB3360.namprd11.prod.outlook.com
+ ([fe80::4dbe:2ab5:9b68:a966%7]) with mapi id 15.20.3391.015; Sat, 19 Sep 2020
+ 13:15:27 +0000
+Subject: Re: [PATCH] SUNRPC: Flush dcache only when receiving more seeking
+To:     Chuck Lever <chuck.lever@oracle.com>
+Cc:     Bruce Fields <bfields@fieldses.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+References: <20200918125052.2493006-1-zhe.he@windriver.com>
+ <6C34098D-7227-4461-A345-825729E0BDEB@oracle.com>
+From:   He Zhe <zhe.he@windriver.com>
+Message-ID: <7ee57ab3-80e1-5fab-9885-a6fb191b0b04@windriver.com>
+Date:   Sat, 19 Sep 2020 21:15:18 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <6C34098D-7227-4461-A345-825729E0BDEB@oracle.com>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-ClientProxiedBy: YT1PR01CA0088.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:2d::27) To SN6PR11MB3360.namprd11.prod.outlook.com
+ (2603:10b6:805:c8::30)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [128.224.162.175] (60.247.85.82) by YT1PR01CA0088.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:2d::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.13 via Frontend Transport; Sat, 19 Sep 2020 13:15:22 +0000
+X-Originating-IP: [60.247.85.82]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b41b987e-d25d-4a88-86fa-08d85c9e1243
+X-MS-TrafficTypeDiagnostic: SN6PR11MB2815:
+X-Microsoft-Antispam-PRVS: <SN6PR11MB28159A203DB301D78FA9A2388F3C0@SN6PR11MB2815.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0ZLwxOToMgy/g27CeWoAog9S84ov3iFVpFkoj3HLYAmRnXqNEigG7ieomjVSJphM0aNlXdETNEpyCdb7XQL2jLFeD0b/st/P6PtSXtrdjHvsLumDMUy//MIm+bbDiSKLCMqK/PdLDFSZ3RSzUXSNyzhuG6ZIro//uF4ByQFFskOtyD/63HwxD/aQkJvIjElFLKSit3m9gEThVSKQXSiqvptd037KKEGw2ghU8bb77hxSfSB6dt6hL6IGe6RTtnYo3TJr6MbWJ0Lx5U8DXMWoPp9bj8MA8yNPnYCoUVMHX/x8e9jWeUmI7ooaG8pQtwvCNmn8dJLoeM8P9NLuGbL/LVWolMWp26vHyOtWfDFEKJf5F34KAGZBvRvbF1+CmqBTeXYnwHmGVsxonqQECbVBlA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3360.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(346002)(376002)(396003)(39850400004)(366004)(26005)(186003)(16526019)(478600001)(956004)(53546011)(45080400002)(16576012)(52116002)(5660300002)(6666004)(31686004)(6916009)(2616005)(31696002)(36756003)(316002)(6706004)(86362001)(6486002)(83380400001)(4326008)(2906002)(8936002)(54906003)(8676002)(66476007)(66556008)(66946007)(78286007)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: eUsV+TSrK3SEgF7K5zgyRhBiJGLZhbju88RKfdo751W58L83fYOlsdbrHvQEL31h/HLXzlvHF1/sV+sIaZqBqLnUt0gvjLu/8NrkTa/sJpNfpePSXZbrM+YpFmGMqEAwRlOYp6BKTTwoutgLoGYPgsHX7JrnyUDaQzFTTjLbeHWIkz+iXOwb+dKb+JmqiX7ju+xu4tPrPAleYuWP8Ps3KrC+fUMRwhMQF8+rOzKKuHk75Dn6aTmGwkRHMP6JpcEu60ZHUNpKCGXd9cMHJ1UnwebJLBeglMJ4ar+KA1RwkvIxQixxrrexEzTpFWEDQoMTPyyjl0YbXyF6ibz4dgA7FL605Lxat5upodciivUIQ38q6z7buo7nvBQ69cNmIV9Me1rmSV7SC8LcEH5LWRTVNanVX/ljEzJlrMhv7lywDbxQA+D04qBMKkwSiR48BjKab9+BuBJHudGea8cZP6KhOA/WA8zAkHtpKvx0hRHAwHUncGoA5L4Jji/MyGuCqWV8sUizQiw7VoBufxy+XoQ97FlEY7kai5m5tFQ9JDj9rGZaIddx/Hz2PKDlu/7cPzKgcgFrbUOFk2uBH0AtTYX5wp7Mb26/Rus32e20QeOomvn5r8w/cDxPeK0ZOdXZcJT+T2zLjYKNxS1ky/iifOG6VQ==
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b41b987e-d25d-4a88-86fa-08d85c9e1243
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3360.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Sep 2020 13:15:27.2638
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vaUkt2oqbKnfn7BPowH7QzQ+CiEp48QGRz2173i+FH/hL3wca8PYD7zct/sJ0OVcUZ8ygTpyTyVJXZbvlgkrPg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2815
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-This adds a selftest that ensures that modify_return tracing programs
-cannot be attached to freplace programs. The security_ prefix is added to
-the freplace program because that would otherwise let it pass the check for
-modify_return.
 
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       |   68 ++++++++++++++++++++
- .../selftests/bpf/progs/fmod_ret_freplace.c        |   14 ++++
- .../selftests/bpf/progs/freplace_get_constant.c    |    2 -
- 3 files changed, 83 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/progs/fmod_ret_freplace.c
+On 9/19/20 12:23 AM, Chuck Lever wrote:
+>
+>> On Sep 18, 2020, at 8:50 AM, zhe.he@windriver.com wrote:
+>>
+>> From: He Zhe <zhe.he@windriver.com>
+>>
+>> commit ca07eda33e01 ("SUNRPC: Refactor svc_recvfrom()") introduces
+>> svc_flush_bvec to after sock_recvmsg, but sometimes we receive less than we
+>> seek, which triggers the following warning.
+>>
+>> WARNING: CPU: 0 PID: 18266 at include/linux/bvec.h:101 bvec_iter_advance+0x44/0xa8
+>> Attempted to advance past end of bvec iter
+>> Modules linked in: sch_fq_codel openvswitch nsh nf_conncount nf_nat
+>> nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4
+>> CPU: 1 PID: 18266 Comm: nfsd Not tainted 5.9.0-rc5 #1
+>> Hardware name: Xilinx Zynq Platform
+>> [<80112ec0>] (unwind_backtrace) from [<8010c3a8>] (show_stack+0x18/0x1c)
+>> [<8010c3a8>] (show_stack) from [<80755214>] (dump_stack+0x9c/0xd0)
+>> [<80755214>] (dump_stack) from [<80125e64>] (__warn+0xdc/0xf4)
+>> [<80125e64>] (__warn) from [<80126244>] (warn_slowpath_fmt+0x84/0xac)
+>> [<80126244>] (warn_slowpath_fmt) from [<80c88514>] (bvec_iter_advance+0x44/0xa8)
+>> [<80c88514>] (bvec_iter_advance) from [<80c88940>] (svc_tcp_read_msg+0x10c/0x1bc)
+>> [<80c88940>] (svc_tcp_read_msg) from [<80c895d4>] (svc_tcp_recvfrom+0x98/0x63c)
+>> [<80c895d4>] (svc_tcp_recvfrom) from [<80c97bf4>] (svc_handle_xprt+0x48c/0x4f8)
+>> [<80c97bf4>] (svc_handle_xprt) from [<80c98038>] (svc_recv+0x94/0x1e0)
+>> [<80c98038>] (svc_recv) from [<804747cc>] (nfsd+0xf0/0x168)
+>> [<804747cc>] (nfsd) from [<80148a0c>] (kthread+0x144/0x154)
+>> [<80148a0c>] (kthread) from [<80100114>] (ret_from_fork+0x14/0x20)
+>>
+>> Fixes: ca07eda33e01 ("SUNRPC: Refactor svc_recvfrom()")
+>> Cc: <stable@vger.kernel.org> # 5.8+
+>> Signed-off-by: He Zhe <zhe.he@windriver.com>
+>> ---
+>> net/sunrpc/svcsock.c | 2 +-
+>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+>> index d5805fa1d066..ea3bc9635448 100644
+>> --- a/net/sunrpc/svcsock.c
+>> +++ b/net/sunrpc/svcsock.c
+>> @@ -277,7 +277,7 @@ static ssize_t svc_tcp_read_msg(struct svc_rqst *rqstp, size_t buflen,
+>> 		buflen -= seek;
+>> 	}
+>> 	len = sock_recvmsg(svsk->sk_sock, &msg, MSG_DONTWAIT);
+>> -	if (len > 0)
+>> +	if (len > (seek & PAGE_MASK))
+> I don't understand how this addresses the WARNING. Can you provide
+> an example set of inputs that trigger the issue?
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-index 27677e015730..6339d125ef9a 100644
---- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-@@ -233,6 +233,72 @@ static void test_func_replace_multi(void)
- 				  prog_name, true, test_second_attach);
- }
- 
-+static void test_fmod_ret_freplace(void)
-+{
-+	const char *tgt_name = "./test_pkt_access.o";
-+	const char *freplace_name = "./freplace_get_constant.o";
-+	const char *fmod_ret_name = "./fmod_ret_freplace.o";
-+	struct bpf_link *freplace_link = NULL, *fmod_link = NULL;
-+	struct bpf_object *freplace_obj = NULL, *pkt_obj, *fmod_obj = NULL;
-+	struct bpf_program *prog;
-+	__u32 duration = 0;
-+	int err, pkt_fd;
-+
-+	err = bpf_prog_load(tgt_name, BPF_PROG_TYPE_UNSPEC,
-+			    &pkt_obj, &pkt_fd);
-+	/* the target prog should load fine */
-+	if (CHECK(err, "tgt_prog_load", "file %s err %d errno %d\n",
-+		  tgt_name, err, errno))
-+		return;
-+	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
-+			    .attach_prog_fd = pkt_fd,
-+			   );
-+
-+	freplace_obj = bpf_object__open_file(freplace_name, &opts);
-+	if (CHECK(IS_ERR_OR_NULL(freplace_obj), "freplace_obj_open",
-+		  "failed to open %s: %ld\n", freplace_name,
-+		  PTR_ERR(freplace_obj)))
-+		goto out;
-+
-+	err = bpf_object__load(freplace_obj);
-+	if (CHECK(err, "freplace_obj_load", "err %d\n", err))
-+		goto out;
-+
-+	prog = bpf_program__next(NULL, freplace_obj);
-+	freplace_link = bpf_program__attach_trace(prog);
-+	if (CHECK(IS_ERR(freplace_link), "freplace_attach_trace", "failed to link\n"))
-+		goto out;
-+
-+	opts.attach_prog_fd = bpf_program__fd(prog);
-+	fmod_obj = bpf_object__open_file(fmod_ret_name, &opts);
-+	if (CHECK(IS_ERR_OR_NULL(fmod_obj), "fmod_obj_open",
-+		  "failed to open %s: %ld\n", fmod_ret_name,
-+		  PTR_ERR(fmod_obj)))
-+		goto out;
-+
-+	err = bpf_object__load(fmod_obj);
-+	if (CHECK(err, "fmod_obj_load", "err %d\n", err))
-+		goto out;
-+
-+	prog = bpf_program__next(NULL, fmod_obj);
-+	fmod_link = bpf_program__attach_trace(prog);
-+	if (CHECK(!IS_ERR(fmod_link), "fmod_attach_trace",
-+		  "linking fmod_ret to freplace should fail\n"))
-+		goto out;
-+
-+out:
-+	if (!IS_ERR_OR_NULL(freplace_link))
-+		bpf_link__destroy(freplace_link);
-+	if (!IS_ERR_OR_NULL(fmod_link))
-+		bpf_link__destroy(fmod_link);
-+	if (!IS_ERR_OR_NULL(freplace_obj))
-+		bpf_object__close(freplace_obj);
-+	if (!IS_ERR_OR_NULL(fmod_obj))
-+		bpf_object__close(fmod_obj);
-+	bpf_object__close(pkt_obj);
-+}
-+
-+
- static void test_func_sockmap_update(void)
- {
- 	const char *prog_name[] = {
-@@ -315,4 +381,6 @@ void test_fexit_bpf2bpf(void)
- 		test_func_map_prog_compatibility();
- 	if (test__start_subtest("func_replace_multi"))
- 		test_func_replace_multi();
-+	if (test__start_subtest("fmod_ret_freplace"))
-+		test_fmod_ret_freplace();
- }
-diff --git a/tools/testing/selftests/bpf/progs/fmod_ret_freplace.c b/tools/testing/selftests/bpf/progs/fmod_ret_freplace.c
-new file mode 100644
-index 000000000000..c8943ccee6c0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/fmod_ret_freplace.c
-@@ -0,0 +1,14 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+volatile __u64 test_fmod_ret = 0;
-+SEC("fmod_ret/security_new_get_constant")
-+int BPF_PROG(fmod_ret_test, long val, int ret)
-+{
-+	test_fmod_ret = 1;
-+	return 120;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/freplace_get_constant.c b/tools/testing/selftests/bpf/progs/freplace_get_constant.c
-index 8f0ecf94e533..705e4b64dfc2 100644
---- a/tools/testing/selftests/bpf/progs/freplace_get_constant.c
-+++ b/tools/testing/selftests/bpf/progs/freplace_get_constant.c
-@@ -5,7 +5,7 @@
- 
- volatile __u64 test_get_constant = 0;
- SEC("freplace/get_constant")
--int new_get_constant(long val)
-+int security_new_get_constant(long val)
- {
- 	if (val != 123)
- 		return 0;
+I was trying to meet the not warning condition in bvec_iter_advance to make
+the flushing meaningful.
+
+svc_flush_bvec
+    bvec_iter_advance
+        WARN_ONCE(bytes > iter->bi_size,...
+
+Here are my steps:
+mkdir /root/mount_point/
+mount /dev/sda1 /root/mount_point/
+systemctl restart nfs-server
+exportfs
+mount -vvv -t nfs 127.0.0.1:/root/mount_point/ /mnt
+cp /bin/bash ./bash.tmp
+
+>
+> Also this change introduces a mixed-sign comparison, so NACK on
+> this particular patch unless it can be demonstrated that the
+> implicit type conversion here is benign (I don't think it is,
+> but I haven't thought through it).
+
+Thanks, I didn't notice the different types. What about this?
+if (len > 0 && (size_t)len > (seek & PAGE_MASK))
+
+
+Zhe
+
+>
+>
+>> 		svc_flush_bvec(bvec, len, seek);
+>>
+>> 	/* If we read a full record, then assume there may be more
+>> -- 
+>> 2.17.1
+>>
+> --
+> Chuck Lever
+>
+>
+>
 
