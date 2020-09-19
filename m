@@ -2,122 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A5A5271130
-	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 00:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2485271137
+	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 00:41:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726862AbgISWbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Sep 2020 18:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41870 "EHLO
+        id S1726799AbgISWlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 18:41:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726626AbgISWbJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 18:31:09 -0400
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91F99C0613CE;
-        Sat, 19 Sep 2020 15:31:09 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id w16so10866678qkj.7;
-        Sat, 19 Sep 2020 15:31:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FuUvgB8iMkHgcxvxhIPaKesqPeUDTnfXOpNMPbDpmVY=;
-        b=Kq1HpGi/RYvFJutzgEITb+4XKoQsYcQaiw+JEkrWbrHSNHzflhnewbfX+OA/ayuomc
-         x3AwuO3t6ZN/vhnJYTiArWB+c8Pu0QJUMS+brIYBidpJNVGEz9z7sTUTkkkivAKtsgGU
-         RGezSP7qEpItLVMgIEcxuxHKBWu3MIDWlAM9tqgm57ObEzYKGqa9JVYmkTrGUo2mfwzS
-         ZxY6ejgJBoT5TwyAYgFIDcg+QaX4gXcG4FmbOK2w1IA4Ubx7QgTojiH/B/H1cDuKif55
-         Y92TBtPpPRCIIrht7fIqeMgQx1pNYJw+mSfl6uw8QaKuMUI0/0a+UTtuhH46eDnZwOVW
-         01Tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FuUvgB8iMkHgcxvxhIPaKesqPeUDTnfXOpNMPbDpmVY=;
-        b=N8UnoZd9YzYjClP8pLLdHKWvuoc3+AFc/gzIyte9Il49DmctXxyBeinGMZL4JIvZEN
-         /gPOn/2G1IiF8AKts4D2ziujnPlRUyMTiLllIpwGSUxCGYfqeLkz3mhR4s4ij3ooHwIs
-         LxvpGSnaMVHAugsbfPX8lpSZVRwdjC/hHw9nsXVTZ8HWR/kVaYOOjqP8HUQTxe8ToLpt
-         JaGSnRZvAC+fMeuw878P69FqZp3ytuLhAemcqL09ZYIpZQgKNPs6q+7gTdOTxHkg4+1T
-         +58Rjf3X5pxXNK98U7N7fVHuX/1cG5dmPBlPqeOuyLXDlqPNCFtk+eV0/wf5rjUSBmKx
-         hi2g==
-X-Gm-Message-State: AOAM532BsGVgEY6dgBM/wau8KqcYYcba3IVTZYW0sYxuq9yxxetZ0zYG
-        5layRWw557DyAa0oBNo+13c=
-X-Google-Smtp-Source: ABdhPJwMQqLUYfruyEYwvtNhOG0DwZqLC/uJ2hsFUBlKE0cn+xgwFxVAVeYLm/LOL9qALxmfXyYNrA==
-X-Received: by 2002:a37:76c2:: with SMTP id r185mr38929715qkc.122.1600554668713;
-        Sat, 19 Sep 2020 15:31:08 -0700 (PDT)
-Received: from Ansuel-XPS.localdomain (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
-        by smtp.googlemail.com with ESMTPSA id f24sm2581139qkk.136.2020.09.19.15.31.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Sep 2020 15:31:08 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 4/4] dt-bindings: net: Document use of mac-address-increment
-Date:   Sun, 20 Sep 2020 00:30:23 +0200
-Message-Id: <20200919223026.20803-5-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200919223026.20803-1-ansuelsmth@gmail.com>
-References: <20200919223026.20803-1-ansuelsmth@gmail.com>
+        with ESMTP id S1726626AbgISWlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 18:41:31 -0400
+Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A614C0613CE;
+        Sat, 19 Sep 2020 15:41:31 -0700 (PDT)
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kJlXm-001zb3-7c; Sat, 19 Sep 2020 22:41:22 +0000
+Date:   Sat, 19 Sep 2020 23:41:22 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Andy Lutomirski <luto@amacapital.net>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-aio@kvack.org,
+        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+Message-ID: <20200919224122.GJ3421308@ZenIV.linux.org.uk>
+References: <20200919220920.GI3421308@ZenIV.linux.org.uk>
+ <AA2CFC7E-E685-4596-84AD-0E314137B93F@amacapital.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <AA2CFC7E-E685-4596-84AD-0E314137B93F@amacapital.net>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Two new bindings are now supported by the of_net driver to increase (or
-decrease) a mac-address. This can be very useful in case where the
-system extract the mac-address for the device from a dedicated partition
-and have a generic mac-address that needs to be incremented based on the
-device number.
-- mac-address-increment-byte is used to tell what byte must be
-  incremented (if not set the last byte is increased)
-- mac-address-increment is used to tell how much to increment of the
-  extracted mac-address decided byte.
+On Sat, Sep 19, 2020 at 03:23:54PM -0700, Andy Lutomirski wrote:
+> 
+> > On Sep 19, 2020, at 3:09 PM, Al Viro <viro@zeniv.linux.org.uk> wrote:
+> > 
+> > ﻿On Fri, Sep 18, 2020 at 05:16:15PM +0200, Christoph Hellwig wrote:
+> >>> On Fri, Sep 18, 2020 at 02:58:22PM +0100, Al Viro wrote:
+> >>> Said that, why not provide a variant that would take an explicit
+> >>> "is it compat" argument and use it there?  And have the normal
+> >>> one pass in_compat_syscall() to that...
+> >> 
+> >> That would help to not introduce a regression with this series yes.
+> >> But it wouldn't fix existing bugs when io_uring is used to access
+> >> read or write methods that use in_compat_syscall().  One example that
+> >> I recently ran into is drivers/scsi/sg.c.
+> > 
+> > So screw such read/write methods - don't use them with io_uring.
+> > That, BTW, is one of the reasons I'm sceptical about burying the
+> > decisions deep into the callchain - we don't _want_ different
+> > data layouts on read/write depending upon the 32bit vs. 64bit
+> > caller, let alone the pointer-chasing garbage that is /dev/sg.
+> 
+> Well, we could remove in_compat_syscall(), etc and instead have an implicit parameter in DEFINE_SYSCALL.  Then everything would have to be explicit.  This would probably be a win, although it could be quite a bit of work.
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- .../bindings/net/ethernet-controller.yaml     | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-index fa2baca8c726..43f2f21faf41 100644
---- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-@@ -32,6 +32,25 @@ properties:
-       - minItems: 6
-         maxItems: 6
- 
-+  mac-address-increment:
-+    description:
-+      The MAC address can optionally be increased (or decreased using
-+      negative values) from the original value readed (from a nvmem cell
-+      for example). This can be used if the mac is readed from a dedicated
-+      partition and must be increased based on the number of device
-+      present in the system.
-+    minimum: -255
-+    maximum: 255
-+
-+  mac-address-increment-byte:
-+    description:
-+      If 'mac-address-increment' is defined, this will tell what byte of
-+      the mac-address will be increased. If 'mac-address-increment' is
-+      not defined, this option will do nothing.
-+    default: 5
-+    minimum: 0
-+    maximum: 5
-+
-   max-frame-size:
-     $ref: /schemas/types.yaml#definitions/uint32
-     description:
--- 
-2.27.0
-
+It would not be a win - most of the syscalls don't give a damn
+about 32bit vs. 64bit...
