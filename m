@@ -2,29 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 931DC270B87
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 09:44:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D915270B88
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 09:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726343AbgISHow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Sep 2020 03:44:52 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:13766 "EHLO huawei.com"
+        id S1726360AbgISHpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 03:45:13 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:13722 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726041AbgISHow (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Sep 2020 03:44:52 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 00C39A9BF6338C50E7BE;
-        Sat, 19 Sep 2020 15:44:51 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Sat, 19 Sep 2020
- 15:44:43 +0800
+        id S1726041AbgISHpN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Sep 2020 03:45:13 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 6C31A49D8235136040DF;
+        Sat, 19 Sep 2020 15:45:06 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.487.0; Sat, 19 Sep 2020
+ 15:44:56 +0800
 From:   Jason Yan <yanaijie@huawei.com>
-To:     <aelior@marvell.com>, <skalluru@marvell.com>,
-        <GR-everest-linux-l2@marvell.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>
+To:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <vaibhavgupta40@gmail.com>, <netdev@vger.kernel.org>
 CC:     Jason Yan <yanaijie@huawei.com>, Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH net-next] bnx2x: use true,false for bool variables
-Date:   Sat, 19 Sep 2020 15:45:56 +0800
-Message-ID: <20200919074556.3460236-1-yanaijie@huawei.com>
+Subject: [PATCH net-next] 8139too: use true,false for bool variables
+Date:   Sat, 19 Sep 2020 15:46:09 +0800
+Message-ID: <20200919074609.3460496-1-yanaijie@huawei.com>
 X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -37,50 +36,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 This addresses the following coccinelle warning:
 
-drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c:15415:1-26: WARNING:
-Assignment of 0/1 to bool variable
-drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c:12393:2-17: WARNING:
-Assignment of 0/1 to bool variable
-drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c:15497:2-27: WARNING:
-Assignment of 0/1 to bool variable
+drivers/net/ethernet/realtek/8139too.c:981:2-8: WARNING: Assignment of
+0/1 to bool variable
 
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: Jason Yan <yanaijie@huawei.com>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/realtek/8139too.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index 3c543dd7a8f3..35f659310084 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -12390,7 +12390,7 @@ static int bnx2x_init_bp(struct bnx2x *bp)
+diff --git a/drivers/net/ethernet/realtek/8139too.c b/drivers/net/ethernet/realtek/8139too.c
+index 227139d42227..1e5a453dea14 100644
+--- a/drivers/net/ethernet/realtek/8139too.c
++++ b/drivers/net/ethernet/realtek/8139too.c
+@@ -978,7 +978,7 @@ static int rtl8139_init_one(struct pci_dev *pdev,
+ 	    pdev->subsystem_vendor == PCI_VENDOR_ID_ATHEROS &&
+ 	    pdev->subsystem_device == PCI_DEVICE_ID_REALTEK_8139) {
+ 		pr_info("OQO Model 2 detected. Forcing PIO\n");
+-		use_io = 1;
++		use_io = true;
  	}
  
- 	if (CHIP_IS_E1(bp))
--		bp->dropless_fc = 0;
-+		bp->dropless_fc = false;
- 	else
- 		bp->dropless_fc = dropless_fc | bnx2x_get_dropless_info(bp);
- 
-@@ -15412,7 +15412,7 @@ static int bnx2x_hwtstamp_ioctl(struct bnx2x *bp, struct ifreq *ifr)
- 		return -EINVAL;
- 	}
- 
--	bp->hwtstamp_ioctl_called = 1;
-+	bp->hwtstamp_ioctl_called = true;
- 	bp->tx_type = config.tx_type;
- 	bp->rx_filter = config.rx_filter;
- 
-@@ -15494,7 +15494,7 @@ void bnx2x_init_ptp(struct bnx2x *bp)
- 		bnx2x_init_cyclecounter(bp);
- 		timecounter_init(&bp->timecounter, &bp->cyclecounter,
- 				 ktime_to_ns(ktime_get_real()));
--		bp->timecounter_init_done = 1;
-+		bp->timecounter_init_done = true;
- 	}
- 
- 	DP(BNX2X_MSG_PTP, "PTP initialization ended successfully\n");
+ 	dev = rtl8139_init_board (pdev);
 -- 
 2.25.4
 
