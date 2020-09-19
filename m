@@ -2,77 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1DD5270A53
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 05:09:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AE01270AC0
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 06:49:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726152AbgISDI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 23:08:59 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3613 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726009AbgISDI7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 23:08:59 -0400
-Received: from dggeme759-chm.china.huawei.com (unknown [172.30.72.56])
-        by Forcepoint Email with ESMTP id 31A60BE72618CD898B52;
-        Sat, 19 Sep 2020 11:08:58 +0800 (CST)
-Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
- dggeme759-chm.china.huawei.com (10.3.19.105) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Sat, 19 Sep 2020 11:08:57 +0800
-Received: from dggeme760-chm.china.huawei.com ([10.6.80.70]) by
- dggeme760-chm.china.huawei.com ([10.6.80.70]) with mapi id 15.01.1913.007;
- Sat, 19 Sep 2020 11:08:57 +0800
-From:   zhengyongjun <zhengyongjun3@huawei.com>
-To:     "bryan.whitehead@microchip.com" <bryan.whitehead@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        id S1726174AbgISEtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 00:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726054AbgISEtS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 00:49:18 -0400
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF913C0613CE
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 21:49:18 -0700 (PDT)
+Received: by mail-ot1-x344.google.com with SMTP id u25so7396693otq.6
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 21:49:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=AsN9li4XUEyV4uBg408WUTZWVzmW2SdHCWJAYz5ibzQ=;
+        b=GTlRygKAi51iyeitnbgLRYFvEwlZhN2iph3eHdRzAVXznkvso2Q/uLybjzQmVlhBH/
+         bZ8A2s7Lqt6b/I9auI72trFOVmzyzOmxB13qewo4QLaeBuO7ssygtXNz3lHsfbwWAQ73
+         ukzsmLCjWn4ajwX7T9AUpksKJKPUcpOVOsx1oEH1Ie0bIHCZXOOYHsJC++/aSJbaaiBr
+         P8q+KUUf15pqG2z+jIxNAZJ0M27FsgVoR4O9fwqiXLvTlRzT986Az18XsPJ9d1tjVbFK
+         yn8L1PmkM6O30ohZ8Ycyrc9cA6e7XAWPqDJtY7Mi/1O2n9Ctpl835kHfjf+IXkKlk7mL
+         fCRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=AsN9li4XUEyV4uBg408WUTZWVzmW2SdHCWJAYz5ibzQ=;
+        b=KCBNMUfPxcboRUu4xFRK5Oh2+dDfj6FLDJ/9RHLinFxiJMGMBPKdye8p4SQKy2fmy2
+         BU4JetJmCoiBOgMR6wX+loMRqiR8Uypy6SXpYYkT3mYeDLsuOWTYK2WNGFttsaloCmgv
+         K3ysYnKs48K3vfwrvPAfQzTbHcG5j/LKrv6M4UhKVJ0hRUCK0pY+hqhsD7DM2+OUpJOq
+         dfZc1gKgBEslux9VUO0eF7W6JAJTwvXL5cVWsT+9JAy1pvo7UythD4vOSUd4C69leuwH
+         /ipPfxaxaJqcFJVyrDZh5nesIq+5F2a+knznagOYXTjNCexvKBvydHTn6CdLSr9SgqQP
+         Kj8w==
+X-Gm-Message-State: AOAM532VrNAyp4JyaiKp5hqPsTJvEVgY6y+QEXkVervVS7bsUjYQzGq7
+        aLhGjNIguBTNjHCob8g6lJw=
+X-Google-Smtp-Source: ABdhPJxFe8ifCINoJTKOuN19bM9OQBc7VmtlTmTurJZ9+JEeClcB9YE/FGDmao7S5RotOx1r2SdF/Q==
+X-Received: by 2002:a05:6830:168f:: with SMTP id k15mr7775348otr.64.1600490958091;
+        Fri, 18 Sep 2020 21:49:18 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:284:8202:10b0:fc15:41f5:881c:229a])
+        by smtp.googlemail.com with ESMTPSA id u2sm4929108oot.39.2020.09.18.21.49.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Sep 2020 21:49:17 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 1/8] devlink: Introduce PCI SF port flavour
+ and port attribute
+To:     Parav Pandit <parav@nvidia.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggbmV0LW5leHRdIG5ldDogbWljcm9jaGlwOiBSZW1v?=
- =?utf-8?Q?ve_set_but_not_used_variable?=
-Thread-Topic: [PATCH net-next] net: microchip: Remove set but not used
- variable
-Thread-Index: AQHWji3w2avWQB7gDEqtRhEuUp+Os6lvR5WA
-Date:   Sat, 19 Sep 2020 03:08:57 +0000
-Message-ID: <34c5c342e3bb4b778ba39d5535377da3@huawei.com>
-References: <20200919023909.23716-1-zhengyongjun3@huawei.com>
-In-Reply-To: <20200919023909.23716-1-zhengyongjun3@huawei.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.179.94]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Jiri Pirko <jiri@nvidia.com>
+References: <20200917081731.8363-8-parav@nvidia.com>
+ <20200917172020.26484-1-parav@nvidia.com>
+ <20200917172020.26484-2-parav@nvidia.com>
+ <7b4627d3-2a69-5700-e985-2fe5c56f03cb@gmail.com>
+ <BY5PR12MB43220E910463577F0D792965DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <f89dca1d-4517-bf4a-b3f0-4c3a076dd2ab@gmail.com>
+ <BY5PR12MB432298572152955D2ACAA2A3DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <4a55536d-3b79-c009-98e9-95f76c9aa88c@gmail.com>
+Date:   Fri, 18 Sep 2020 22:49:16 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+In-Reply-To: <BY5PR12MB432298572152955D2ACAA2A3DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhpcyBpcyB0aGUgYmFkIHBhdGNoLCBteSBmYXVsdCwgSSBmb3JnZXQgdG8gY2hlY2sgcGF0Y2gg
-dGl0bGUsIHBsZWFzZSBpZ25vcmUgaXQsIHRoYW5rIHlvdSB2ZXJ5IG11Y2guDQoNCi0tLS0t6YKu
-5Lu25Y6f5Lu2LS0tLS0NCuWPkeS7tuS6ujogemhlbmd5b25nanVuIA0K5Y+R6YCB5pe26Ze0OiAy
-MDIw5bm0OeaciDE55pelIDEwOjM5DQrmlLbku7bkuro6IGJyeWFuLndoaXRlaGVhZEBtaWNyb2No
-aXAuY29tOyBVTkdMaW51eERyaXZlckBtaWNyb2NoaXAuY29tOyBkYXZlbUBkYXZlbWxvZnQubmV0
-OyBrdWJhQGtlcm5lbC5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2
-Z2VyLmtlcm5lbC5vcmcNCuaKhOmAgTogemhlbmd5b25nanVuIDx6aGVuZ3lvbmdqdW4zQGh1YXdl
-aS5jb20+DQrkuLvpopg6IFtQQVRDSCBuZXQtbmV4dF0gbmV0OiBtaWNyb2NoaXA6IFJlbW92ZSBz
-ZXQgYnV0IG5vdCB1c2VkIHZhcmlhYmxlDQoNCkZpeGVzIGdjYyAnLVd1bnVzZWQtYnV0LXNldC12
-YXJpYWJsZScgd2FybmluZzoNCg0KZHJpdmVycy9uZXQvZXRoZXJuZXQvbWljcm9jaGlwL2xhbjc0
-M3hfbWFpbi5jOiBJbiBmdW5jdGlvbiBsYW43NDN4X3BtX3N1c3BlbmQ6DQpkcml2ZXJzL25ldC9l
-dGhlcm5ldC9taWNyb2NoaXAvbGFuNzQzeF9tYWluLmM6MzA0MTo2OiB3YXJuaW5nOiB2YXJpYWJs
-ZSDigJhyZXTigJkgc2V0IGJ1dCBub3QgdXNlZCBbLVd1bnVzZWQtYnV0LXNldC12YXJpYWJsZV0N
-Cg0KYHJldGAgaXMgc2V0IGJ1dCBub3QgdXNlZCwgc28gY2hlY2sgaXQncyB2YWx1ZS4NCg0KU2ln
-bmVkLW9mZi1ieTogWmhlbmcgWW9uZ2p1biA8emhlbmd5b25nanVuM0BodWF3ZWkuY29tPg0KLS0t
-DQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWljcm9jaGlwL2xhbjc0M3hfbWFpbi5jIHwgMiArLQ0K
-IDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KDQpkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWljcm9jaGlwL2xhbjc0M3hfbWFpbi5jIGIvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvbWljcm9jaGlwL2xhbjc0M3hfbWFpbi5jDQppbmRleCBkZTkzY2M2
-ZWJjMWEuLjU2YTFiNTkyOGY5YSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21p
-Y3JvY2hpcC9sYW43NDN4X21haW4uYw0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWljcm9j
-aGlwL2xhbjc0M3hfbWFpbi5jDQpAQCAtMzA1Myw3ICszMDUzLDcgQEAgc3RhdGljIGludCBsYW43
-NDN4X3BtX3N1c3BlbmQoc3RydWN0IGRldmljZSAqZGV2KQ0KIAkvKiBIb3N0IHNldHMgUE1FX0Vu
-LCBwdXQgRDNob3QgKi8NCiAJcmV0ID0gcGNpX3ByZXBhcmVfdG9fc2xlZXAocGRldik7DQogDQot
-CXJldHVybiAwOw0KKwlyZXR1cm4gcmV0Ow0KIH0NCiANCiBzdGF0aWMgaW50IGxhbjc0M3hfcG1f
-cmVzdW1lKHN0cnVjdCBkZXZpY2UgKmRldikNCi0tIA0KMi4xNy4xDQoNCg==
+On 9/18/20 10:13 AM, Parav Pandit wrote:
+>> You keep adding patches that extend the template based names. Those are
+>> going to cause odd EINVAL failures (the absolute worst kind of configuration
+>> failure) with no way for a user to understand why the command is failing, and
+>> you need to handle that. Returning an extack message back to the user is
+>> preferred.
+> Sure, make sense.
+> I will run one short series after this one, to return extack in below code flow and other where extack return is possible.
+> In sysfs flow it is irrelevant anyway.
+
+yes, sysfs is a different problem.
+
+> rtnl_getlink()
+>   rtnl_phys_port_name_fill()
+>      dev_get_phys_port_name()
+>        ndo_phys_port_name()
+> 
+> is that ok?
+
+sure. The overflow is not going to happen today with 1-10 SFs; but you
+are pushing ever close to the limit hence the push.
+
+
+> This series is not really making phys_port_name any worse except that sfnum field width is bit larger than vfnum.
+> 
+> Now coming back to phys_port_name not fitting in 15 characters which can trigger -EINVAL error is very slim in most sane cases.
+> Let's take an example.
+> A controller in valid range of 0 to 16,
+> PF in range of 0 to 7,
+> VF in range of 0 to 255,
+> SF in range of 0 to 65536,
+> 
+> Will generate VF phys_port_name=c16pf7vf255 (11 chars + 1 null)
+> SF phys_port name = c16pf7sf65535 (13 chars + 1 null)
+> So yes, eth dev name won't fit in but phys_port_name failure is almost nil.
+> 
+
+You lost me on that last sentence. Per your example for SF, adding 'eni'
+or 'eth' as a prefix (which you commonly use in examples and which are
+common prefixes) to that name and you overflow the IFNAMESZ limit.
+
+
+(understand about the systemd integration and appreciate the forward
+thinking about that).
