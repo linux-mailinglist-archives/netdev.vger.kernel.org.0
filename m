@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EB1C270A14
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 04:36:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C6FC270A19
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 04:38:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726218AbgISCgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 22:36:50 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:13710 "EHLO huawei.com"
+        id S1726280AbgISCir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 22:38:47 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:55348 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726054AbgISCgu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 22:36:50 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id F0781500FCD49F045492;
-        Sat, 19 Sep 2020 10:36:46 +0800 (CST)
+        id S1726054AbgISCir (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 22:38:47 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id D45489CD0D4469AD96A1;
+        Sat, 19 Sep 2020 10:38:21 +0800 (CST)
 Received: from ubuntu.network (10.175.138.68) by
- DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
- 14.3.487.0; Sat, 19 Sep 2020 10:36:38 +0800
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.487.0; Sat, 19 Sep 2020 10:38:15 +0800
 From:   Zheng Yongjun <zhengyongjun3@huawei.com>
 To:     <bryan.whitehead@microchip.com>, <UNGLinuxDriver@microchip.com>,
         <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
 Subject: [PATCH net-next] net: microchip: Remove set but not used variable
-Date:   Sat, 19 Sep 2020 10:37:32 +0800
-Message-ID: <20200919023732.23656-1-zhengyongjun3@huawei.com>
+Date:   Sat, 19 Sep 2020 10:39:09 +0800
+Message-ID: <20200919023909.23716-1-zhengyongjun3@huawei.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
@@ -40,7 +40,7 @@ Fixes gcc '-Wunused-but-set-variable' warning:
 drivers/net/ethernet/microchip/lan743x_main.c: In function lan743x_pm_suspend:
 drivers/net/ethernet/microchip/lan743x_main.c:3041:6: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
 
-`ret` is never used, so remove it.
+`ret` is set but not used, so check it's value.
 
 Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 ---
