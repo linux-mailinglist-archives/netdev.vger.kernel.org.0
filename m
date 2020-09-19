@@ -2,116 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45EB6271030
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 21:22:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F56271039
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 21:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726653AbgISTWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Sep 2020 15:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41346 "EHLO
+        id S1726617AbgIST3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 15:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726528AbgISTWi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 15:22:38 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB28C0613D0
-        for <netdev@vger.kernel.org>; Sat, 19 Sep 2020 12:22:38 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id f142so10514328qke.13
-        for <netdev@vger.kernel.org>; Sat, 19 Sep 2020 12:22:38 -0700 (PDT)
+        with ESMTP id S1726511AbgIST3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 15:29:46 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B0BC0613CE;
+        Sat, 19 Sep 2020 12:29:45 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id o5so8826043wrn.13;
+        Sat, 19 Sep 2020 12:29:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IfjJMShMAYEFKN5YLXC6yZVzsTKuAmJMrDmWZpivwoY=;
-        b=Tx7WEG+h7F8CDjBu/jlOiysl3JQczwwLMYKLACitzc0UuMfh/mFPRT69zR9TY7H7Y8
-         nRAsWx6u92MdLzYVKoSx5YIx4mt2rFOhQDzMPgq8dyo85LutFSqYJPxlyMr370qVWQPh
-         H9FeOWLwKF4zY4yKCuV+VGlC11W6EsuvkqvRVvXLEIkJO+TPJe+zoiNQjaGzFOpY/2Pv
-         0N2qI5aTyiz4H09KoLRv5WBBGvKV0pGaUI32g5Xey8ZEe9I9PREMEmdZyHtniJQlMHhM
-         vMq3MaatsAiEqhudJATetXS0Osaw8bIme03wLXpLmlJHKa+tt0fWG+C8mmjNMTlYaN/O
-         IogA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6bE1UCN2SxEtk5wLlW6eDkNj/1eK18tXtibVyotZ7CQ=;
+        b=Qf5i6PqwPm10hX6K72w6i3Ahe+JswP51uGU2ZDhEeloC8zDHKKHbTwO6Oa5pTuCoMO
+         lOPJGpLpgSFa59xdGiw42TqlQdRFGFaYuYbmloe5jp/f4rfBe+bIqnpOEpuwoWpRlurZ
+         HWa5NXPcJ5w1Cyd+tGdMpZ1rT+SIjERTam/2P1MkRvXBPXPxhIwhDqGZdZhxmkduQCsV
+         KMoSYloh1ZHbmWyO+3qbiVZiQbsIenoWoQ5zy67rXJyWijVkDZyeBUx5O6WZLQZ8usV9
+         l/miRQdSM5uvCUx0AwDI5t6k2A6R4w531OvHKxQ8aSwVewKcKoAb93DIO/66PQyQLHjR
+         15CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IfjJMShMAYEFKN5YLXC6yZVzsTKuAmJMrDmWZpivwoY=;
-        b=F0GfBLtBU6Vq1mSqIg98Fbs35r2E/jh2RdKSBT8xSznJtCbSjUaLmAEvRwHcuOIPv3
-         RlqvtVEuGjzxNjd4vfKh9IyBG+gb+lTqpum4XG/kRzNZHxLXYEKrkRKBAXUtgscoKbQY
-         7UtyTi5gvUdazpZ9OVn4zv85vWuWya+BGFCcNg8Q91yL367WONRCgWgAiEtOg71rkuSx
-         1oqslqWVQKz35k8E4f2eQMqTHu4LN0g4RUCgxq9bgrIIlfsbQFVXvSs5pyMzwutTeBfm
-         4hs3Ne3PsDf08NSCxoziDg1DxRaXP2MZDOTgxqYbvkfgQxQsyvHMiCtBGXEGyPCWudcL
-         6wQg==
-X-Gm-Message-State: AOAM531rOgpkcAJg+SPDkMDFwXRgFy04fhm+pYfYiJopcOKFhr4e5Bwo
-        aWup+SLMAD4Q7XHCylLJ002CdA==
-X-Google-Smtp-Source: ABdhPJxk5odPvPQ8xzh4HdByt+rV02OFXI2X/xCfsTAiUmLUSkpZ3MTa9p4Iad69Vfo49XEZDj73Cw==
-X-Received: by 2002:a37:9bd8:: with SMTP id d207mr41437784qke.100.1600543356975;
-        Sat, 19 Sep 2020 12:22:36 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id b43sm5299375qtk.84.2020.09.19.12.22.36
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6bE1UCN2SxEtk5wLlW6eDkNj/1eK18tXtibVyotZ7CQ=;
+        b=N+ZLiTX0JcB4SAQVpkE9+QK0TK/EmuMaOK9IZUQD2SErshSH+0MaiGuvV1y+T63ADK
+         w5Gd/gHKKahBl4UCwjifIGAPzamaMO6bPnf7nXKCXoWQjIG8R/+3OFetZfKMnplgOFXP
+         0QvGpbwZYU/57fCota/Qe5pxpZJXToU/EN0xm+urIarWdWQ68LZH/VBeh0wBmWn2aPn0
+         G9G40e1AOBSDXoFCxK1jEDRw9yOn2vBafJWCH2ayuyuS5Il/VIKO+eh/PT/IXa7eSlkq
+         xGXxjKlQoleDQYsC2Z75xiaL98NAYczJS7eJ8YjmbBzOEQI4uX+T84kFHBrH/3hzk0ZG
+         m5ew==
+X-Gm-Message-State: AOAM533sQ9i9PEY+pSltQOY5XCsFSX2/rAM5hyZn4PekzBk+Nli7SJsC
+        dAqFxg/11z+0k3CdVDlQlJP3srv9fEs=
+X-Google-Smtp-Source: ABdhPJxJ9woUCR9Om7Bguc63A/yyUADe7XauqnL2X/Pm4GtRnBNgoucoc9eAGjR2SMG2I8/nYhoOeQ==
+X-Received: by 2002:adf:fc0a:: with SMTP id i10mr43825459wrr.111.1600543784422;
+        Sat, 19 Sep 2020 12:29:44 -0700 (PDT)
+Received: from localhost.localdomain (92.40.169.140.threembb.co.uk. [92.40.169.140])
+        by smtp.gmail.com with ESMTPSA id h2sm12642069wrp.69.2020.09.19.12.29.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Sep 2020 12:22:36 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1kJiRP-0027Dz-Nf; Sat, 19 Sep 2020 16:22:35 -0300
-Date:   Sat, 19 Sep 2020 16:22:35 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Oded Gabbay <oded.gabbay@gmail.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Gal Pressman <galpress@amazon.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        "David S. Miller" <davem@davemloft.net>,
+        Sat, 19 Sep 2020 12:29:43 -0700 (PDT)
+From:   Alex Dewar <alex.dewar90@gmail.com>
+Cc:     Alex Dewar <alex.dewar90@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
         Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-Message-ID: <20200919192235.GB8409@ziepe.ca>
-References: <20200918115227.GR869610@unreal>
- <CAFCwf10C1zm91e=tqPVGOX8kZD7o=AR2EW-P9VwCF4rcvnEJnA@mail.gmail.com>
- <20200918120340.GT869610@unreal>
- <CAFCwf12VPuyGFqFJK5D19zcKFQJ=fmzjwscdPG82tfR_v_h3Kg@mail.gmail.com>
- <20200918121905.GU869610@unreal>
- <20200919064020.GC439518@kroah.com>
- <20200919082003.GW869610@unreal>
- <20200919083012.GA465680@kroah.com>
- <CAFCwf122V-ep44Kqk1DgRJN+tq3ctxE9uVbqYL07apLkLe2Z7g@mail.gmail.com>
- <20200919172730.GC2733595@kroah.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Landen Chao <landen.chao@mediatek.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] net: dsa: mt7530: Add some return-value checks
+Date:   Sat, 19 Sep 2020 20:28:10 +0100
+Message-Id: <20200919192809.29120-1-alex.dewar90@gmail.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <1600327978.11746.22.camel@mtksdccf07>
+References: <1600327978.11746.22.camel@mtksdccf07>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200919172730.GC2733595@kroah.com>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 19, 2020 at 07:27:30PM +0200, Greg Kroah-Hartman wrote:
-> > It's probably heresy, but why do I need to integrate into the RDMA subsystem ?
-> > I understand your reasoning about networking (Ethernet) as the driver
-> > connects to the kernel networking stack (netdev), but with RDMA the
-> > driver doesn't use or connect to anything in that stack. If I were to
-> > support IBverbs and declare that I support it, then of course I would
-> > need to integrate to the RDMA subsystem and add my backend to
-> > rdma-core.
-> 
-> IBverbs are horrid and I would not wish them on anyone.  Seriously.
+In mt7531_cpu_port_config(), if the variable port is neither 5 nor 6,
+then variable interface will be used uninitialised. Change the function
+to return -EINVAL in this case.
 
-I'm curious what drives this opinion? Did you have it since you
-reviewed the initial submission all those years ago?
+As the return value of mt7531_cpu_port_config() is never checked
+(even though it returns an int) add a check in the correct place so that
+the error can be passed up the call stack. Now that we correctly handle
+errors thrown in this function, also check the return value of
+mt7531_mac_config() in case an error occurs here. Also add misisng
+checks to mt7530_setup() and mt7531_setup(), which are another level
+further up the call stack.
 
-> I think the general rdma apis are the key here, not the userspace api.
+Fixes: c288575f7810 ("net: dsa: mt7530: Add the support of MT7531 switch")
+Addresses-Coverity: 1496993 ("Uninitialized variables")
+Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
+---
+v2:
+	- fix typo in commit message
+	- split variable declarations onto multiple lines (Gustavo)
+	- add additional checks for mt753*_setup (Landen)
 
-Are you proposing that habana should have uAPI in drivers/misc and
-present a standard rdma-core userspace for it? This is the only
-userspace programming interface for RoCE HW. I think that would be
-much more work.
+ drivers/net/dsa/mt7530.c | 31 ++++++++++++++++++++++---------
+ 1 file changed, 22 insertions(+), 9 deletions(-)
 
-If not, what open source userspace are you going to ask them to
-present to merge the kernel side into misc?
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 61388945d316..cb3efa7de7a8 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -945,10 +945,14 @@ static int
+ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
++	int ret;
+ 
+ 	/* Setup max capability of CPU port at first */
+-	if (priv->info->cpu_port_config)
+-		priv->info->cpu_port_config(ds, port);
++	if (priv->info->cpu_port_config) {
++		ret = priv->info->cpu_port_config(ds, port);
++		if (ret)
++			return ret;
++	}
+ 
+ 	/* Enable Mediatek header mode on the cpu port */
+ 	mt7530_write(priv, MT7530_PVC_P(port),
+@@ -1631,9 +1635,11 @@ mt7530_setup(struct dsa_switch *ds)
+ 		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
+ 			   PCR_MATRIX_CLR);
+ 
+-		if (dsa_is_cpu_port(ds, i))
+-			mt753x_cpu_port_enable(ds, i);
+-		else
++		if (dsa_is_cpu_port(ds, i)) {
++			ret = mt753x_cpu_port_enable(ds, i);
++			if (ret)
++				return ret;
++		} else
+ 			mt7530_port_disable(ds, i);
+ 
+ 		/* Enable consistent egress tag */
+@@ -1785,9 +1791,11 @@ mt7531_setup(struct dsa_switch *ds)
+ 
+ 		mt7530_set(priv, MT7531_DBG_CNT(i), MT7531_DIS_CLR);
+ 
+-		if (dsa_is_cpu_port(ds, i))
+-			mt753x_cpu_port_enable(ds, i);
+-		else
++		if (dsa_is_cpu_port(ds, i)) {
++			ret = mt753x_cpu_port_enable(ds, i);
++			if (ret)
++				return ret;
++		} else
+ 			mt7530_port_disable(ds, i);
+ 
+ 		/* Enable consistent egress tag */
+@@ -2276,6 +2284,7 @@ mt7531_cpu_port_config(struct dsa_switch *ds, int port)
+ 	struct mt7530_priv *priv = ds->priv;
+ 	phy_interface_t interface;
+ 	int speed;
++	int ret;
+ 
+ 	switch (port) {
+ 	case 5:
+@@ -2293,6 +2302,8 @@ mt7531_cpu_port_config(struct dsa_switch *ds, int port)
+ 
+ 		priv->p6_interface = interface;
+ 		break;
++	default:
++		return -EINVAL;
+ 	}
+ 
+ 	if (interface == PHY_INTERFACE_MODE_2500BASEX)
+@@ -2300,7 +2311,9 @@ mt7531_cpu_port_config(struct dsa_switch *ds, int port)
+ 	else
+ 		speed = SPEED_1000;
+ 
+-	mt7531_mac_config(ds, port, MLO_AN_FIXED, interface);
++	ret = mt7531_mac_config(ds, port, MLO_AN_FIXED, interface);
++	if (ret)
++		return ret;
+ 	mt7530_write(priv, MT7530_PMCR_P(port),
+ 		     PMCR_CPU_PORT_SETTING(priv->id));
+ 	mt753x_phylink_mac_link_up(ds, port, MLO_AN_FIXED, interface, NULL,
+-- 
+2.28.0
 
-> Note, I do not know exactly what they are, but no, IBverbs are not ok.
-
-Should we stop merging new drivers and abandon the RDMA subsystem? Is
-there something you'd like to see fixed?
-
-Don't really understand your position, sorry.
-
-Jason
