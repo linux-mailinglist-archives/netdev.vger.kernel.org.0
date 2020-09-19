@@ -2,51 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9F8027108E
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 23:15:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B29271099
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 23:16:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726768AbgISVPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Sep 2020 17:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726528AbgISVPL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 17:15:11 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6ECC0613CE;
-        Sat, 19 Sep 2020 14:15:11 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id BEAD611E3E4CE;
-        Sat, 19 Sep 2020 13:58:23 -0700 (PDT)
-Date:   Sat, 19 Sep 2020 14:15:10 -0700 (PDT)
-Message-Id: <20200919.141510.731442596296928108.davem@davemloft.net>
-To:     zhengyongjun3@huawei.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: micrel: Remove set but not used variable
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200919023235.23494-1-zhengyongjun3@huawei.com>
-References: <20200919023235.23494-1-zhengyongjun3@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-7
-Content-Transfer-Encoding: base64
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Sat, 19 Sep 2020 13:58:23 -0700 (PDT)
+        id S1726787AbgISVQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 17:16:35 -0400
+Received: from mout.kundenserver.de ([212.227.126.131]:35227 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726528AbgISVQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 17:16:32 -0400
+Received: from mail-qk1-f169.google.com ([209.85.222.169]) by
+ mrelayeu.kundenserver.de (mreue009 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1MKbc4-1k3BIm3TWm-00L0SP; Sat, 19 Sep 2020 23:16:29 +0200
+Received: by mail-qk1-f169.google.com with SMTP id v123so10707353qkd.9;
+        Sat, 19 Sep 2020 14:16:27 -0700 (PDT)
+X-Gm-Message-State: AOAM531+emzl8B3DqL41Bk83MYXpOUqzqfDVocNDlNc7kY058mjTM2a4
+        CmAubHAtnd4y0KjZA2ijcOrze8TZs8thcCm6Bsc=
+X-Google-Smtp-Source: ABdhPJzEvevcaGdjT3rDawI+GUfFFyk1d/TYHLiGAQUL5WydIguceSQ8UIqVNU/fh2JOVxE549L743HO0rSqi5ww2Ew=
+X-Received: by 2002:a37:5d8:: with SMTP id 207mr40303905qkf.352.1600550186478;
+ Sat, 19 Sep 2020 14:16:26 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200918124533.3487701-1-hch@lst.de> <20200918124533.3487701-2-hch@lst.de>
+ <20200918134012.GY3421308@ZenIV.linux.org.uk> <20200918134406.GA17064@lst.de>
+ <20200918135822.GZ3421308@ZenIV.linux.org.uk> <20200918151615.GA23432@lst.de> <CALCETrW=BzodXeTAjSvpCoUQoL+MKaKPEeSTRWnB=-C9jMotbQ@mail.gmail.com>
+In-Reply-To: <CALCETrW=BzodXeTAjSvpCoUQoL+MKaKPEeSTRWnB=-C9jMotbQ@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sat, 19 Sep 2020 23:16:10 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2Mi+1yttyGk4k7HxRVrMtmFqJewouVhynqUL0PJycmog@mail.gmail.com>
+Message-ID: <CAK8P3a2Mi+1yttyGk4k7HxRVrMtmFqJewouVhynqUL0PJycmog@mail.gmail.com>
+Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Christoph Hellwig <hch@lst.de>, Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Howells <dhowells@redhat.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        Linux SCSI List <linux-scsi@vger.kernel.org>,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Network Development <netdev@vger.kernel.org>,
+        keyrings@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:wnNAt0YQaQqE+S7E2jXWhut4vc34wb69sEYYMS2LRgo37wnXoFa
+ U5jNY34Mhb6zCLv7UZrXPhqOwTPEKPsdRpRBIsvUzI4lCW8zNqTUwVGGBSMe9Sn/rqP+0Hc
+ ZE2V2uxGuYnfv74AcslE8K94pghU8VDghg11No6WQ4CDmZQjGTkgwAwxRTd79ToUMk2jbhY
+ GAHuppk5TR0x8YjxOHq4w==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:sCszT6SAIfU=:EMbLDFo/4IQYxLPBQi+idh
+ b6TytVGhby0fIjgUjRLtGhNalYCQqk0iEjqjSgeP94XpxR9jGaqDAi1Y0Gb7/bSKG2rXCgoHb
+ Z80PODNcCqbXF9+DPY1M/dBSDA5WoqExxfMy34LEfOCijEHlQC1fgWoKJN+l9eS0XzuFzSLOQ
+ yPa4Q5en6gDbFGquLyeS0PP9fr9c0co9EcOvX0Un9vPckFT23e2cxKfuzJ8WVC4zFscR8dA3L
+ MTJ7XiQLdddcaDSNzS+2SC4v2pUdXTjHjSTdTWboqKbPnr16LNoZ11YSxAOXZN8UghZLxs8p2
+ RuTiyjItuzhEhNkPbbQmJJ9+aHAcQgVHg6Jy2nKsUA+d54zxL2f4XolSOVcKSktt/a+pggVYn
+ 36dCvpjFvkbouzb/D9GOvY3Rs6Yu7rFIjjy9Nz0bxaox2iRB9lswOkbrQBfEuDbBizwWp4xLO
+ nVphyraUcdFX0eqhlEICFjqe5GFTy3hHDfNgnadgMIIY1j0vBUXzZqcPXlp3ja1EmtwumlpGK
+ K+VcW/HaKszRxVibxSKg8aObdVYiYIkK2uXoxcQ2jUHetnZlWR7bifWQmPrRndlCG1xY3sYd0
+ Nq7pPhdm9mNCuy5pmZITSDP2d3RpX92bo14P6qA7ms9a3PTfrrOC9HjQAiBXlpjn5cMHGU331
+ 1Cu0H/rzXbq2dK8QgF+X0qIkU/IcqX5nN/ZsuRF6BWFDJRQoGTDVB2qIa8xk/AZVSsGFMZ9Sz
+ XtuObu2/qhC1DdRkg3oWrPs1udblQvJZH9D911HFE7TrE9cCuc/X+ezFIwxec/yr2ZvhSl/fX
+ WyPaO4XwWbnjQeuaaWmPic1FLY0vdTePBjBHJjlO7kq3bre409ZX7yzUcZ4eezydOp4oRcd
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogWmhlbmcgWW9uZ2p1biA8emhlbmd5b25nanVuM0BodWF3ZWkuY29tPg0KRGF0ZTogU2F0
-LCAxOSBTZXAgMjAyMCAxMDozMjozNSArMDgwMA0KDQo+IEZpeGVzIGdjYyAnLVd1bnVzZWQtYnV0
-LXNldC12YXJpYWJsZScgd2FybmluZzoNCj4gDQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21pY3Jl
-bC9rc3o4ODR4LmM6IEluIGZ1bmN0aW9uIHJ4X3Byb2M6DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0
-L21pY3JlbC9rc3o4ODR4LmM6NDk4MTo2OiB3YXJuaW5nOiB2YXJpYWJsZSChcnhfc3RhdHVzoiBz
-ZXQgYnV0IG5vdCB1c2VkIFstV3VudXNlZC1idXQtc2V0LXZhcmlhYmxlXQ0KPiANCj4gZHJpdmVy
-cy9uZXQvZXRoZXJuZXQvbWljcmVsL2tzejg4NHguYzogSW4gZnVuY3Rpb24gbmV0ZGV2X2dldF9l
-dGh0b29sX3N0YXRzOg0KPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9taWNyZWwva3N6ODg0eC5jOjY1
-MTI6Njogd2FybmluZzogdmFyaWFibGUgoXJjoiBzZXQgYnV0IG5vdCB1c2VkIFstV3VudXNlZC1i
-dXQtc2V0LXZhcmlhYmxlXQ0KPiANCj4gdGhlc2UgdmFyaWFibGUgaXMgbmV2ZXIgdXNlZCwgc28g
-cmVtb3ZlIGl0Lg0KPiANCj4gU2lnbmVkLW9mZi1ieTogWmhlbmcgWW9uZ2p1biA8emhlbmd5b25n
-anVuM0BodWF3ZWkuY29tPg0KDQpBcHBsaWVkLg0K
+On Sat, Sep 19, 2020 at 6:21 PM Andy Lutomirski <luto@kernel.org> wrote:
+> On Fri, Sep 18, 2020 at 8:16 AM Christoph Hellwig <hch@lst.de> wrote:
+> > On Fri, Sep 18, 2020 at 02:58:22PM +0100, Al Viro wrote:
+> > > Said that, why not provide a variant that would take an explicit
+> > > "is it compat" argument and use it there?  And have the normal
+> > > one pass in_compat_syscall() to that...
+> >
+> > That would help to not introduce a regression with this series yes.
+> > But it wouldn't fix existing bugs when io_uring is used to access
+> > read or write methods that use in_compat_syscall().  One example that
+> > I recently ran into is drivers/scsi/sg.c.
+
+Ah, so reading /dev/input/event* would suffer from the same issue,
+and that one would in fact be broken by your patch in the hypothetical
+case that someone tried to use io_uring to read /dev/input/event on x32...
+
+For reference, I checked the socket timestamp handling that has a
+number of corner cases with time32/time64 formats in compat mode,
+but none of those appear to be affected by the problem.
+
+> Aside from the potentially nasty use of per-task variables, one thing
+> I don't like about PF_FORCE_COMPAT is that it's one-way.  If we're
+> going to have a generic mechanism for this, shouldn't we allow a full
+> override of the syscall arch instead of just allowing forcing compat
+> so that a compat syscall can do a non-compat operation?
+
+The only reason it's needed here is that the caller is in a kernel
+thread rather than a system call. Are there any possible scenarios
+where one would actually need the opposite?
+
+       Arnd
