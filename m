@@ -2,72 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 918DD2709BE
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 03:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8B6C2709EE
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 04:05:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726222AbgISBtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 21:49:35 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:13268 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726009AbgISBte (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 21:49:34 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 84F359BA2C670F7431DF;
-        Sat, 19 Sep 2020 09:49:33 +0800 (CST)
-Received: from ubuntu.network (10.175.138.68) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Sat, 19 Sep 2020 09:49:26 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <jeffrey.t.kirsher@intel.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <intel-wired-lan@lists.osuosl.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] net: e1000: Remove set but not used variable
-Date:   Sat, 19 Sep 2020 09:50:20 +0800
-Message-ID: <20200919015020.22963-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726333AbgISCFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 22:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50370 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726054AbgISCFx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 22:05:53 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A469FC0613CE;
+        Fri, 18 Sep 2020 19:05:53 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id f142so8520035qke.13;
+        Fri, 18 Sep 2020 19:05:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eVR3VuNNBUjQaTbx6p6TQvN7yVIjqmwDAT7834tFyAc=;
+        b=AgGBFQPF9PGFEk+iFpfltq3KQewAVJUMg+qXgAxIPs17KMrq1kGnVSIk7WXkzMcnH7
+         /HLsYplNWBTxEwwY092W3srpuJhHMtD36jV8iA70/WWWTE+3pWIQ2kUO1uVAgx2lfmxQ
+         5MRz9lHRZFgFS62D1z5rVx8t2FV2+7oYetRcQYvKVc+KZJSevvq4g+P6gfMjEao4wL1J
+         SIaNnzf+8exJQBRAWgJXnNWHkAqRlKVwbOxvPnCh7DuiEZUkqGR/l6z79iWJ9D9fiV8y
+         Q3FLbPOCMp0drsI+NsF3YRgYWqAw1jYyMVlUFbnCZY13VELuUbZEJzXnAuilJMf2Smni
+         ovwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eVR3VuNNBUjQaTbx6p6TQvN7yVIjqmwDAT7834tFyAc=;
+        b=gKhNNWA83uLoluKg4mMG1d5Ar5NNGAr8VzRESju9w+vvpUWilc4MXUEbdqgGaH3GFS
+         jeBa0c/kb3Q76BU7vm/V7CsQxCxponXK306xc7XsZbM9QxTRsLsBmQQZmx5v7h1iL+mZ
+         oKvZM2ij95m+SCGMuok29uuJVRorppNHy2t1EgId1Dj/W77pgWAkkZBk5FyEpsV/k9Yh
+         HZhWiCtrW5siWG6XkaoG80c4+/3EppkS2owc1s3ZSUWJOVZnoShCXu30fkvEIAGtNemk
+         QeuTFgHBBcz+cxVW83LuDeJfWCpaPnd+QwiynVcKZbmLoT8WeqaZb/MJo7KjzqYLkNQd
+         g7xw==
+X-Gm-Message-State: AOAM533bNaPP48mVnfRIgfHyFNCUKbSY6opzEQAe/wCAm4659G580PCw
+        dy6XCRoGVkwPGTjWkDzC7p2lrGOqpCMXiA==
+X-Google-Smtp-Source: ABdhPJwIbnVBsSNNpDqlEs/qQdRKPbXZclLk8rfL/Z0hQ0qK5Bn7xAExc6IHJjifeQ6mHPQWc/7NiA==
+X-Received: by 2002:a05:620a:2082:: with SMTP id e2mr34512118qka.421.1600481152689;
+        Fri, 18 Sep 2020 19:05:52 -0700 (PDT)
+Received: from localhost.localdomain ([177.220.174.145])
+        by smtp.gmail.com with ESMTPSA id 7sm3381782qkh.60.2020.09.18.19.05.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Sep 2020 19:05:52 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 95013C189C; Fri, 18 Sep 2020 23:05:49 -0300 (-03)
+Date:   Fri, 18 Sep 2020 23:05:49 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Henry Ptasinski <hptasinski@google.com>
+Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Corey Minyard <cminyard@mvista.com>
+Subject: Re: [PATCH v2] net: sctp: Fix IPv6 ancestor_size calc in
+ sctp_copy_descendant
+Message-ID: <20200919020549.GA70998@localhost.localdomain>
+References: <20200918132957.GB82043@localhost.localdomain>
+ <20200919001211.355148-1-hptasinski@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.138.68]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200919001211.355148-1-hptasinski@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes gcc '-Wunused-but-set-variable' warning:
+On Sat, Sep 19, 2020 at 12:12:11AM +0000, Henry Ptasinski wrote:
+> When calculating ancestor_size with IPv6 enabled, simply using
+> sizeof(struct ipv6_pinfo) doesn't account for extra bytes needed for
+> alignment in the struct sctp6_sock. On x86, there aren't any extra
+> bytes, but on ARM the ipv6_pinfo structure is aligned on an 8-byte
+> boundary so there were 4 pad bytes that were omitted from the
+> ancestor_size calculation.  This would lead to corruption of the
+> pd_lobby pointers, causing an oops when trying to free the sctp
+> structure on socket close.
+> 
+> Fixes: 636d25d557d1 ("sctp: not copy sctp_sock pd_lobby in sctp_copy_descendant")
+> Signed-off-by: Henry Ptasinski <hptasinski@google.com>
 
-drivers/net/ethernet/intel/e1000/e1000_hw.c: In function e1000_phy_init_script:
-drivers/net/ethernet/intel/e1000/e1000_hw.c:132:6: warning: variable ‘ret_val’ set but not used [-Wunused-but-set-variable]
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-`ret_val` is never used, so remove it.
+...
+>  {
+> -	int ancestor_size = sizeof(struct inet_sock) +
+> -			    sizeof(struct sctp_sock) -
+> -			    offsetof(struct sctp_sock, pd_lobby);
+> -
+> -	if (sk_from->sk_family == PF_INET6)
+> -		ancestor_size += sizeof(struct ipv6_pinfo);
+> +	size_t ancestor_size = sizeof(struct inet_sock);
+>  
+> +	ancestor_size += sk_from->sk_prot->obj_size;
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- drivers/net/ethernet/intel/e1000/e1000_hw.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Heh, of course. Nice one.
 
-diff --git a/drivers/net/ethernet/intel/e1000/e1000_hw.c b/drivers/net/ethernet/intel/e1000/e1000_hw.c
-index 4e7a0810eaeb..f1dbd7b8ee32 100644
---- a/drivers/net/ethernet/intel/e1000/e1000_hw.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_hw.c
-@@ -129,7 +129,6 @@ static s32 e1000_set_phy_type(struct e1000_hw *hw)
-  */
- static void e1000_phy_init_script(struct e1000_hw *hw)
- {
--	u32 ret_val;
- 	u16 phy_saved_data;
- 
- 	if (hw->phy_init_script) {
-@@ -138,7 +137,7 @@ static void e1000_phy_init_script(struct e1000_hw *hw)
- 		/* Save off the current value of register 0x2F5B to be restored
- 		 * at the end of this routine.
- 		 */
--		ret_val = e1000_read_phy_reg(hw, 0x2F5B, &phy_saved_data);
-+		e1000_read_phy_reg(hw, 0x2F5B, &phy_saved_data);
- 
- 		/* Disabled the PHY transmitter */
- 		e1000_write_phy_reg(hw, 0x2F5B, 0x0003);
--- 
-2.17.1
-
+> +	ancestor_size -= offsetof(struct sctp_sock, pd_lobby);
+>  	__inet_sk_copy_descendant(sk_to, sk_from, ancestor_size);
+>  }
+>  
+> -- 
+> 2.28.0.681.g6f77f65b4e-goog
+> 
