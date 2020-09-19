@@ -2,30 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D247270B83
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 09:43:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DE75270B85
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 09:44:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726327AbgISHne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Sep 2020 03:43:34 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:13330 "EHLO huawei.com"
+        id S1726327AbgISHoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 03:44:23 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:13331 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726041AbgISHne (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Sep 2020 03:43:34 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 3EC60B6C95119CE91C1B;
-        Sat, 19 Sep 2020 15:43:32 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Sat, 19 Sep 2020
- 15:43:24 +0800
+        id S1726041AbgISHoX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Sep 2020 03:44:23 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 40A322C5E98B0BCB8539;
+        Sat, 19 Sep 2020 15:44:20 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Sat, 19 Sep 2020
+ 15:44:14 +0800
 From:   Jason Yan <yanaijie@huawei.com>
-To:     <pkshih@realtek.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <Larry.Finger@lwfinger.net>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>
+To:     <michael.chan@broadcom.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <fenghua.yu@intel.com>, <netdev@vger.kernel.org>
 CC:     Jason Yan <yanaijie@huawei.com>, Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH] rtlwifi: rtl8723be: use true,false for bool variable large_cfo_hit
-Date:   Sat, 19 Sep 2020 15:44:37 +0800
-Message-ID: <20200919074437.3459305-1-yanaijie@huawei.com>
+Subject: [PATCH net-next] net: b44: use true,false for bool variables
+Date:   Sat, 19 Sep 2020 15:45:27 +0800
+Message-ID: <20200919074527.3459788-1-yanaijie@huawei.com>
 X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -38,38 +36,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 This addresses the following coccinelle warning:
 
-drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c:1155:27-47: WARNING:
-Comparison of 0/1 to bool variable
-drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c:1156:3-23: WARNING:
-Assignment of 0/1 to bool variable
-drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c:1159:3-23: WARNING:
-Assignment of 0/1 to bool variable
+drivers/net/ethernet/broadcom/b44.c:2213:6-20: WARNING: Assignment of
+0/1 to bool variable
+drivers/net/ethernet/broadcom/b44.c:2218:2-16: WARNING: Assignment of
+0/1 to bool variable
+drivers/net/ethernet/broadcom/b44.c:2226:3-17: WARNING: Assignment of
+0/1 to bool variable
+drivers/net/ethernet/broadcom/b44.c:2230:3-17: WARNING: Assignment of
+0/1 to bool variable
 
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: Jason Yan <yanaijie@huawei.com>
 ---
- drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/b44.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c
-index fbcff23eb058..c3c990cc032f 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c
-@@ -1152,11 +1152,11 @@ static void rtl8723be_dm_dynamic_atc_switch(struct ieee80211_hw *hw)
- 			       (rtldm->cfo_ave_pre - cfo_ave) :
- 			       (cfo_ave - rtldm->cfo_ave_pre);
+diff --git a/drivers/net/ethernet/broadcom/b44.c b/drivers/net/ethernet/broadcom/b44.c
+index 6fb620e25208..74c1778d841e 100644
+--- a/drivers/net/ethernet/broadcom/b44.c
++++ b/drivers/net/ethernet/broadcom/b44.c
+@@ -2210,12 +2210,12 @@ static void b44_adjust_link(struct net_device *dev)
+ {
+ 	struct b44 *bp = netdev_priv(dev);
+ 	struct phy_device *phydev = dev->phydev;
+-	bool status_changed = 0;
++	bool status_changed = false;
  
--		if (cfo_ave_diff > 20 && rtldm->large_cfo_hit == 0) {
--			rtldm->large_cfo_hit = 1;
-+		if (cfo_ave_diff > 20 && !rtldm->large_cfo_hit) {
-+			rtldm->large_cfo_hit = true;
- 			return;
- 		} else
--			rtldm->large_cfo_hit = 0;
-+			rtldm->large_cfo_hit = false;
+ 	BUG_ON(!phydev);
  
- 		rtldm->cfo_ave_pre = cfo_ave;
+ 	if (bp->old_link != phydev->link) {
+-		status_changed = 1;
++		status_changed = true;
+ 		bp->old_link = phydev->link;
+ 	}
  
+@@ -2223,11 +2223,11 @@ static void b44_adjust_link(struct net_device *dev)
+ 	if (phydev->link) {
+ 		if ((phydev->duplex == DUPLEX_HALF) &&
+ 		    (bp->flags & B44_FLAG_FULL_DUPLEX)) {
+-			status_changed = 1;
++			status_changed = true;
+ 			bp->flags &= ~B44_FLAG_FULL_DUPLEX;
+ 		} else if ((phydev->duplex == DUPLEX_FULL) &&
+ 			   !(bp->flags & B44_FLAG_FULL_DUPLEX)) {
+-			status_changed = 1;
++			status_changed = true;
+ 			bp->flags |= B44_FLAG_FULL_DUPLEX;
+ 		}
+ 	}
 -- 
 2.25.4
 
