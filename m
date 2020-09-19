@@ -2,73 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AE01270AC0
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 06:49:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3C6E270AC3
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 06:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726174AbgISEtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Sep 2020 00:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
+        id S1726151AbgISEw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 00:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726054AbgISEtS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 00:49:18 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF913C0613CE
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 21:49:18 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id u25so7396693otq.6
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 21:49:18 -0700 (PDT)
+        with ESMTP id S1726054AbgISEw6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 00:52:58 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86639C0613CE
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 21:52:58 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id n61so7366985ota.10
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 21:52:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AsN9li4XUEyV4uBg408WUTZWVzmW2SdHCWJAYz5ibzQ=;
-        b=GTlRygKAi51iyeitnbgLRYFvEwlZhN2iph3eHdRzAVXznkvso2Q/uLybjzQmVlhBH/
-         bZ8A2s7Lqt6b/I9auI72trFOVmzyzOmxB13qewo4QLaeBuO7ssygtXNz3lHsfbwWAQ73
-         ukzsmLCjWn4ajwX7T9AUpksKJKPUcpOVOsx1oEH1Ie0bIHCZXOOYHsJC++/aSJbaaiBr
-         P8q+KUUf15pqG2z+jIxNAZJ0M27FsgVoR4O9fwqiXLvTlRzT986Az18XsPJ9d1tjVbFK
-         yn8L1PmkM6O30ohZ8Ycyrc9cA6e7XAWPqDJtY7Mi/1O2n9Ctpl835kHfjf+IXkKlk7mL
-         fCRA==
+        bh=+W6EmXEG1Z3vdrJsWNkeRsta/0t+g+iy9JwrWmtuLdU=;
+        b=FDKAfOhVR26Rpdh1dVGIi6z7PrGA/EQ2FbdQ0AuBFOpJWXjWnHOCJVqvGPMcTtAamz
+         MdAIk9HdRogKVC86T4cb8VTe5PIvyalgP35bmxobV7ik+pE4ljq39vI1xNh0DPLL5Otx
+         LXqBR3XO59oX4Jpq0hMGwR2wWztHvD4yWS9vGJ1yej50AGjxrgWG/sHfReF1bfwpE8pA
+         VyoehTmZD2RMtKfWfd5nttfdGO4B6826HT9h7v2STb82FERwWEuXVZeYMxhjB2jOmouV
+         Itgf/GTdsl2StXbWQKU4gTQHXU4COQZ3906HqsZVNyaJTbGQJnh7aFJbIiq1Ym4UeobM
+         hlBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=AsN9li4XUEyV4uBg408WUTZWVzmW2SdHCWJAYz5ibzQ=;
-        b=KCBNMUfPxcboRUu4xFRK5Oh2+dDfj6FLDJ/9RHLinFxiJMGMBPKdye8p4SQKy2fmy2
-         BU4JetJmCoiBOgMR6wX+loMRqiR8Uypy6SXpYYkT3mYeDLsuOWTYK2WNGFttsaloCmgv
-         K3ysYnKs48K3vfwrvPAfQzTbHcG5j/LKrv6M4UhKVJ0hRUCK0pY+hqhsD7DM2+OUpJOq
-         dfZc1gKgBEslux9VUO0eF7W6JAJTwvXL5cVWsT+9JAy1pvo7UythD4vOSUd4C69leuwH
-         /ipPfxaxaJqcFJVyrDZh5nesIq+5F2a+knznagOYXTjNCexvKBvydHTn6CdLSr9SgqQP
-         Kj8w==
-X-Gm-Message-State: AOAM532VrNAyp4JyaiKp5hqPsTJvEVgY6y+QEXkVervVS7bsUjYQzGq7
-        aLhGjNIguBTNjHCob8g6lJw=
-X-Google-Smtp-Source: ABdhPJxFe8ifCINoJTKOuN19bM9OQBc7VmtlTmTurJZ9+JEeClcB9YE/FGDmao7S5RotOx1r2SdF/Q==
-X-Received: by 2002:a05:6830:168f:: with SMTP id k15mr7775348otr.64.1600490958091;
-        Fri, 18 Sep 2020 21:49:18 -0700 (PDT)
+        bh=+W6EmXEG1Z3vdrJsWNkeRsta/0t+g+iy9JwrWmtuLdU=;
+        b=IydA7TUnrUhAhBynB92inEWGx48oLK2ONuD1b0ozphok8c6+EVFRMQ1D28wGLBSPNl
+         tBmE9fekSMyZqMi5YUCC6yETlRKHWEa2PwFKd7tmaqAkjCHqfBU+I+4mb9vN+3Lo1Mcu
+         UyI7lG7D/+iclqeaqTKUWMVdjl7uZ1BfOFQIQ4tFiBo4xVeqo9UDSY++C7Kc3baudHCa
+         dkFfAvx8+sanO/SU0ZNWGsxlMoJD7MBz0S4se0NUHEPz9vBmORM6UiecOUaxMmXdSsmw
+         fS3M3ufxn2W4Whi/8xgDKbbkAhWLx6A/z6ZxBbGACz4b96FzIE/4uvxjTmvedu2P6IDP
+         qOFg==
+X-Gm-Message-State: AOAM533nSGlgzN9dJLQe/yUeH1l5L2tNX7oCBFBuScP9cvy7pOr8WhUh
+        ROOlj2FhAucZ7RNr30ic/5HJogRAuQQuUg==
+X-Google-Smtp-Source: ABdhPJzrHgqRvFxsDVi7wf9WmAy9APYk+H0Iahzsr5Z5cumGXKWyHeaVpt6jqF627QN66MwZ+Y8ZIw==
+X-Received: by 2002:a9d:73d4:: with SMTP id m20mr23710288otk.227.1600491177695;
+        Fri, 18 Sep 2020 21:52:57 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([2601:284:8202:10b0:fc15:41f5:881c:229a])
-        by smtp.googlemail.com with ESMTPSA id u2sm4929108oot.39.2020.09.18.21.49.16
+        by smtp.googlemail.com with ESMTPSA id v7sm4615611oie.9.2020.09.18.21.52.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Sep 2020 21:49:17 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 1/8] devlink: Introduce PCI SF port flavour
- and port attribute
-To:     Parav Pandit <parav@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Jiri Pirko <jiri@nvidia.com>
-References: <20200917081731.8363-8-parav@nvidia.com>
- <20200917172020.26484-1-parav@nvidia.com>
- <20200917172020.26484-2-parav@nvidia.com>
- <7b4627d3-2a69-5700-e985-2fe5c56f03cb@gmail.com>
- <BY5PR12MB43220E910463577F0D792965DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <f89dca1d-4517-bf4a-b3f0-4c3a076dd2ab@gmail.com>
- <BY5PR12MB432298572152955D2ACAA2A3DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+        Fri, 18 Sep 2020 21:52:56 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] ip: promote missed packets to the -s row
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     stephen@networkplumber.org, netdev@vger.kernel.org
+References: <20200916194249.505389-1-kuba@kernel.org>
+ <0371023e-f46f-5dfd-6268-e11a18deeb06@gmail.com>
+ <20200918084826.14d2cea3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <4a55536d-3b79-c009-98e9-95f76c9aa88c@gmail.com>
-Date:   Fri, 18 Sep 2020 22:49:16 -0600
+Message-ID: <f936dedf-ee3a-976c-c535-55a2b075b37b@gmail.com>
+Date:   Fri, 18 Sep 2020 22:52:56 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <BY5PR12MB432298572152955D2ACAA2A3DC3F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+In-Reply-To: <20200918084826.14d2cea3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -76,47 +68,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/18/20 10:13 AM, Parav Pandit wrote:
->> You keep adding patches that extend the template based names. Those are
->> going to cause odd EINVAL failures (the absolute worst kind of configuration
->> failure) with no way for a user to understand why the command is failing, and
->> you need to handle that. Returning an extack message back to the user is
->> preferred.
-> Sure, make sense.
-> I will run one short series after this one, to return extack in below code flow and other where extack return is possible.
-> In sysfs flow it is irrelevant anyway.
-
-yes, sysfs is a different problem.
-
-> rtnl_getlink()
->   rtnl_phys_port_name_fill()
->      dev_get_phys_port_name()
->        ndo_phys_port_name()
+On 9/18/20 9:48 AM, Jakub Kicinski wrote:
+> On Fri, 18 Sep 2020 09:44:35 -0600 David Ahern wrote:
+>> On 9/16/20 1:42 PM, Jakub Kicinski wrote:
+>>> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+>>>     link/ether 00:0a:f7:c1:4d:38 brd ff:ff:ff:ff:ff:ff
+>>>     RX: bytes  packets  errors  dropped overrun mcast
+>>>     6.04T      4.67G    0       0       0       67.7M
+>>>     RX errors: length   crc     frame   fifo    missed
+>>>                0        0       0       0       7
+>>>     TX: bytes  packets  errors  dropped carrier collsns
+>>>     3.13T      2.76G    0       0       0       0
+>>>     TX errors: aborted  fifo   window heartbeat transns
+>>>                0        0       0       0       6
+>>>
+>>> After:
+>>>
+>>> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+>>>     link/ether 00:0a:f7:c1:4d:38 brd ff:ff:ff:ff:ff:ff
+>>>     RX: bytes  packets  errors  dropped missed  mcast
+>>>     6.04T      4.67G    0       0       7       67.7M
+>>>     RX errors: length   crc     frame   fifo    overrun
+>>>                0        0       0       0       0
+>>>     TX: bytes  packets  errors  dropped carrier collsns
+>>>     3.13T      2.76G    0       0       0       0
+>>>     TX errors: aborted  fifo   window heartbeat transns
+>>>                0        0       0       0       6  
+>>
+>> changes to ip output are usually not allowed.
 > 
-> is that ok?
-
-sure. The overflow is not going to happen today with 1-10 SFs; but you
-are pushing ever close to the limit hence the push.
-
-
-> This series is not really making phys_port_name any worse except that sfnum field width is bit larger than vfnum.
+> Does that mean "no" or "you need to be more convincing"? :)
 > 
-> Now coming back to phys_port_name not fitting in 15 characters which can trigger -EINVAL error is very slim in most sane cases.
-> Let's take an example.
-> A controller in valid range of 0 to 16,
-> PF in range of 0 to 7,
-> VF in range of 0 to 255,
-> SF in range of 0 to 65536,
-> 
-> Will generate VF phys_port_name=c16pf7vf255 (11 chars + 1 null)
-> SF phys_port name = c16pf7sf65535 (13 chars + 1 null)
-> So yes, eth dev name won't fit in but phys_port_name failure is almost nil.
+> JSON output is not changed. I don't think we care about screen
+> scrapers. If we cared about people how interpret values based 
+> on their position in the output we would break that with every
+> release, no?
 > 
 
-You lost me on that last sentence. Per your example for SF, adding 'eni'
-or 'eth' as a prefix (which you commonly use in examples and which are
-common prefixes) to that name and you overflow the IFNAMESZ limit.
+In this case you are not adding or inserting a new column, you are
+changing the meaning of an existing column.
+
+It's an 'error' stat so probably not as sensitive. I do not have a
+strong religion on it since it seems to be making the error stat more up
+to date.
 
 
-(understand about the systemd integration and appreciate the forward
-thinking about that).
