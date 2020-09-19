@@ -2,84 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACA9E270F73
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 18:22:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEA01270F9A
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 18:44:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726648AbgISQWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Sep 2020 12:22:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59062 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726633AbgISQV6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Sep 2020 12:21:58 -0400
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 97DB623719
-        for <netdev@vger.kernel.org>; Sat, 19 Sep 2020 16:21:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600532517;
-        bh=tnnKVle7uGlb4ye6ETfPhESD0icbWeK+NnxFIW79sro=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=QrIUAAqT1dp8+jrXrF0kfdV5PIOJITY8xSkYh8pnrNFPmM98EPjnnqgiUheWM3Zz4
-         0qTg36uFIa2gFwlgsZXnXxJdaWIK0Dls7hdq0zd60qlpvRgxcHCvRNqCi9kc1myB6l
-         slKQU2ILvCXePIOP8ZGSdUV9ciTDnkbyjJ8h5bj0=
-Received: by mail-ed1-f49.google.com with SMTP id l17so8855786edq.12
-        for <netdev@vger.kernel.org>; Sat, 19 Sep 2020 09:21:57 -0700 (PDT)
-X-Gm-Message-State: AOAM533XgJbH8B0Be+7VFHZiU1mF04wnIOfdCV3p0dgNwiN3kr6EIun3
-        ywWxJ6qutFoIqPhaDcfMB7EGbPObSCpPL8eMWGTu8g==
-X-Google-Smtp-Source: ABdhPJwBFQKjUG5Ajrf8DpZFR91CZN4BHC9/gKbhMJfUTwAnV0GCUbZx28T5SkvcVSnD9FMlBdmx1p4waD7HgdNSIPM=
-X-Received: by 2002:a5d:5281:: with SMTP id c1mr43283094wrv.184.1600532515963;
- Sat, 19 Sep 2020 09:21:55 -0700 (PDT)
+        id S1726623AbgISQoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 12:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45368 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbgISQoB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 12:44:01 -0400
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3521C0613CE;
+        Sat, 19 Sep 2020 09:44:01 -0700 (PDT)
+Received: by mail-oi1-x244.google.com with SMTP id a3so11310351oib.4;
+        Sat, 19 Sep 2020 09:44:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Cfduvuo2qaLqbrqkySQg+itnGIveDrg6Cvu0oEAcq/k=;
+        b=pU9HBPbUXcukfQfrJjasbEIUXNL/ChjPxwRvkTvdzlQgmVSa10YyaEIw7ZCOTf+H13
+         /NW1BQrmCMQLifiBnW0BTazPYzpTWmIFpH8KXJ4txuYts1G5o2iQa5wJdnb3I77WfKUE
+         cTWLqAbnz1m8HqqpJt5UfqDFB1OYtMX6Ixw0SXIzbg8yQQh0UfgIQeDY/CEaj9d5xM4V
+         GVmjVOw+jLpTqhoAbEqcn5gUO916XtAX7I5jFfZYm37l+W5yVFeeQH0mU4pO1b5MrjZW
+         8xIQ9WInrK/ZhDgPOJMpm5d3rMNNj59KA6nPNoIWY8DXioBAHND0dx9+AGGCqN5jQOE7
+         kyEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Cfduvuo2qaLqbrqkySQg+itnGIveDrg6Cvu0oEAcq/k=;
+        b=jSbadOkvJTD5Pzx/G2yUH9/D4bnnya7tuoRsdSnAQ0H4A3ew0SxAETX5JMUoPpnblF
+         youWFMcbwPooZKIr/w1pfqIG3lozsETKq3wDECgSfteiWh2064H9IwkNObK0plU7Z/W8
+         lVmmwnwzG6+7VoqUNTjctBwsN4vWrBQqWMKgEZ/iNxkvygeWTO7qWgVRZWSa0lgT9Szx
+         U3+EQcG6IF1o68B4i0Q6X/7jYpxUhYu4OV+F89zLIWcBuS46BPgwrrWo/oWDUM+d7rCz
+         Myr+WHRItGKUTqNW0hm7hGSVmWF/A4saQ4IyqfXi4CwaaSN8z3OHs+IbNevSpcGpVyAk
+         iLRQ==
+X-Gm-Message-State: AOAM530F+nv9GBXaf8cKvzCLS8sV+XJelLHB93e0CAdcx16D6n4AGNhn
+        nf1gYPBtC9UF413t18clYG3KfXqEbhhLQrV5ZdE=
+X-Google-Smtp-Source: ABdhPJwJqb/AKIJliKN7dAiHbWX51Djs2BGiO2F9MjnRLdzLcAZrD77jiGwWi8q2T31NGa25n//D/HTIw2eycuiNJNA=
+X-Received: by 2002:a05:6808:a05:: with SMTP id n5mr13138730oij.154.1600533839763;
+ Sat, 19 Sep 2020 09:43:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200918124533.3487701-1-hch@lst.de> <20200918124533.3487701-2-hch@lst.de>
- <20200918134012.GY3421308@ZenIV.linux.org.uk> <20200918134406.GA17064@lst.de>
- <20200918135822.GZ3421308@ZenIV.linux.org.uk> <20200918151615.GA23432@lst.de>
-In-Reply-To: <20200918151615.GA23432@lst.de>
-From:   Andy Lutomirski <luto@kernel.org>
-Date:   Sat, 19 Sep 2020 09:21:44 -0700
-X-Gmail-Original-Message-ID: <CALCETrW=BzodXeTAjSvpCoUQoL+MKaKPEeSTRWnB=-C9jMotbQ@mail.gmail.com>
-Message-ID: <CALCETrW=BzodXeTAjSvpCoUQoL+MKaKPEeSTRWnB=-C9jMotbQ@mail.gmail.com>
-Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        Linux SCSI List <linux-scsi@vger.kernel.org>,
-        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
-        linux-aio@kvack.org, io-uring@vger.kernel.org,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Network Development <netdev@vger.kernel.org>,
-        keyrings@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>
+References: <CAFCwf12XZRxLYifSfuB+RGhuiKBytzsUTOnEa6FqfJHYvcVJPQ@mail.gmail.com>
+ <20200917171833.GJ8409@ziepe.ca> <0b21db8d-1061-6453-960b-8043951b3bad@amazon.com>
+ <20200918115227.GR869610@unreal> <CAFCwf10C1zm91e=tqPVGOX8kZD7o=AR2EW-P9VwCF4rcvnEJnA@mail.gmail.com>
+ <20200918120340.GT869610@unreal> <CAFCwf12VPuyGFqFJK5D19zcKFQJ=fmzjwscdPG82tfR_v_h3Kg@mail.gmail.com>
+ <20200918121905.GU869610@unreal> <20200919064020.GC439518@kroah.com>
+ <20200919082003.GW869610@unreal> <20200919083012.GA465680@kroah.com>
+In-Reply-To: <20200919083012.GA465680@kroah.com>
+From:   Oded Gabbay <oded.gabbay@gmail.com>
+Date:   Sat, 19 Sep 2020 19:43:28 +0300
+Message-ID: <CAFCwf122V-ep44Kqk1DgRJN+tq3ctxE9uVbqYL07apLkLe2Z7g@mail.gmail.com>
+Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Gal Pressman <galpress@amazon.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-rdma@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 18, 2020 at 8:16 AM Christoph Hellwig <hch@lst.de> wrote:
+On Sat, Sep 19, 2020 at 11:30 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> On Fri, Sep 18, 2020 at 02:58:22PM +0100, Al Viro wrote:
-> > Said that, why not provide a variant that would take an explicit
-> > "is it compat" argument and use it there?  And have the normal
-> > one pass in_compat_syscall() to that...
+> On Sat, Sep 19, 2020 at 11:20:03AM +0300, Leon Romanovsky wrote:
+> > On Sat, Sep 19, 2020 at 08:40:20AM +0200, Greg Kroah-Hartman wrote:
+> > > On Fri, Sep 18, 2020 at 03:19:05PM +0300, Leon Romanovsky wrote:
+> > > > > So we do have an open-source library called hl-thunk, which uses our
+> > > > > driver and indeed that was part of the requirement.
+> > > > > It is similar to libdrm.
+> > > > > Here is the link:
+> > > > > https://github.com/HabanaAI/hl-thunk
+> > > >
+> > > > Are you kidding?
+> > > >
+> > > > This is mirror of some internal repository that looks like dumpster
+> > > > with ChangeId, internal bug tracker numbers, not part of major OS
+> > > > distributions.
+> > > >
+> > > > It is not open-source library and shows very clear why you chose
+> > > > to upstream your driver through driver/misc/ tree.
+> > >
+> > > It is an open source library, as per the license and the code
+> > > availability.  What more is expected here?
+> >
+> > So can I fork iproute2, add bunch of new custom netlink UAPIs and expect
+> > Dave to merge it after I throw it on github?
 >
-> That would help to not introduce a regression with this series yes.
-> But it wouldn't fix existing bugs when io_uring is used to access
-> read or write methods that use in_compat_syscall().  One example that
-> I recently ran into is drivers/scsi/sg.c.
+> Don't be silly, that's not the case here at all and you know that.
+>
+> > > No distro has to pick it up, that's not a requirement for kernel code,
+> > > we have many kernel helper programs that are not in distros.  Heck, udev
+> > > took a long time to get into distros, does that mean the kernel side of
+> > > that interface should never have been merged?
+> > >
+> > > I don't understand your complaint here, it's not our place to judge the
+> > > code quality of userspace libraries, otherwise we would never get any
+> > > real-work done :)
+> >
+> > My main complaint is that you can't imagine merging code into large
+> > subsystems (netdev, RDMA, DRM? e.t.c) without being civil open-source
+> > citizen. It means use of existing user-space libraries/tools and/or
+> > providing new ones that will be usable for everyone.
+>
+> Agreed.
+>
+> > In this case, we have some custom char device with library that is not
+> > usable for anyone else and this is why drivers/misc/ is right place.
+>
+> Also agreed.
+>
+> > While we are talking about real-work, it is our benefit to push companies
+> > to make investment into ecosystem and not letting them to find an excuse
+> > for not doing it.
+>
+> So why are you complaining about a stand-alone driver that does not have
+> any shared subsystems's userspace code to control that driver?
+>
+> Yes, when integrating into other subsystems (i.e. networking and rdma),
+> they should use those common subsystems interfaces, no one is arguing
+> that at all.
+Hi Greg,
+It's probably heresy, but why do I need to integrate into the RDMA subsystem ?
+I understand your reasoning about networking (Ethernet) as the driver
+connects to the kernel networking stack (netdev), but with RDMA the
+driver doesn't use or connect to anything in that stack. If I were to
+support IBverbs and declare that I support it, then of course I would
+need to integrate to the RDMA subsystem and add my backend to
+rdma-core.
+But we don't do that so why am I being forced to support IBverbs ?
+Forcing GAUDI to use the RDMA stack and IBverbs is like swatting flies
+with a sledgehammer.
+I do hope that in future devices we will support it natively and of
+course then we will integrate as requested, but for GAUDI it is just a
+huge overkill IMHO.
 
-Aside from the potentially nasty use of per-task variables, one thing
-I don't like about PF_FORCE_COMPAT is that it's one-way.  If we're
-going to have a generic mechanism for this, shouldn't we allow a full
-override of the syscall arch instead of just allowing forcing compat
-so that a compat syscall can do a non-compat operation?
+Thanks,
+Oded
+>
+> totally lost,
+>
+> greg k-h
