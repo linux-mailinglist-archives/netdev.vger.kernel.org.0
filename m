@@ -2,46 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4956027099E
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 03:21:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D0E52709AC
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 03:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726170AbgISBV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 21:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726009AbgISBVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 21:21:25 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D80C0613CE
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 18:21:25 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id ECDA015B52EE8;
-        Fri, 18 Sep 2020 18:04:36 -0700 (PDT)
-Date:   Fri, 18 Sep 2020 18:21:23 -0700 (PDT)
-Message-Id: <20200918.182123.1548774483812684447.davem@davemloft.net>
-To:     cforno12@linux.ibm.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: Update ibmveth maintainer
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200918184743.80406-1-cforno12@linux.ibm.com>
-References: <20200918184743.80406-1-cforno12@linux.ibm.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 18 Sep 2020 18:04:37 -0700 (PDT)
+        id S1726280AbgISBal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 21:30:41 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:58200 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726009AbgISBak (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 21:30:40 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 4F082EFD25FA7A788F1D;
+        Sat, 19 Sep 2020 09:30:39 +0800 (CST)
+Received: from ubuntu.network (10.175.138.68) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.487.0; Sat, 19 Sep 2020 09:30:29 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <dchickles@marvell.com>, <sburla@marvell.com>,
+        <fmanlunas@marvell.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: [PATCH net-next] net: liquidio: Remove set but not used variable
+Date:   Sat, 19 Sep 2020 09:31:23 +0800
+Message-ID: <20200919013123.22596-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.138.68]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cristobal Forno <cforno12@linux.ibm.com>
-Date: Fri, 18 Sep 2020 13:47:43 -0500
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-> Removed Thomas Falcon. Added myself (Cristobal Forno) as the maintainer of ibmveth.
-> 
-> Signed-off-by: Cristobal Forno <cforno12@linux.ibm.com>
+drivers/net/ethernet/cavium/liquidio/octeon_device.c: In function lio_pci_readq:
+drivers/net/ethernet/cavium/liquidio/octeon_device.c:1327:6: warning: variable ‘val32’ set but not used [-Wunused-but-set-variable]
 
-Applied.
+drivers/net/ethernet/cavium/liquidio/octeon_device.c: In function lio_pci_writeq:
+drivers/net/ethernet/cavium/liquidio/octeon_device.c:1358:6: warning: variable ‘val32’ set but not used [-Wunused-but-set-variable]
+
+these variable is never used, so remove it.
+
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ drivers/net/ethernet/cavium/liquidio/octeon_device.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_device.c b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
+index ac32facaa427..fbde7c58c4db 100644
+--- a/drivers/net/ethernet/cavium/liquidio/octeon_device.c
++++ b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
+@@ -1324,7 +1324,7 @@ u64 lio_pci_readq(struct octeon_device *oct, u64 addr)
+ {
+ 	u64 val64;
+ 	unsigned long flags;
+-	u32 val32, addrhi;
++	u32 addrhi;
+ 
+ 	spin_lock_irqsave(&oct->pci_win_lock, flags);
+ 
+@@ -1339,10 +1339,10 @@ u64 lio_pci_readq(struct octeon_device *oct, u64 addr)
+ 	writel(addrhi, oct->reg_list.pci_win_rd_addr_hi);
+ 
+ 	/* Read back to preserve ordering of writes */
+-	val32 = readl(oct->reg_list.pci_win_rd_addr_hi);
++	readl(oct->reg_list.pci_win_rd_addr_hi);
+ 
+ 	writel(addr & 0xffffffff, oct->reg_list.pci_win_rd_addr_lo);
+-	val32 = readl(oct->reg_list.pci_win_rd_addr_lo);
++	readl(oct->reg_list.pci_win_rd_addr_lo);
+ 
+ 	val64 = readq(oct->reg_list.pci_win_rd_data);
+ 
+@@ -1355,7 +1355,6 @@ void lio_pci_writeq(struct octeon_device *oct,
+ 		    u64 val,
+ 		    u64 addr)
+ {
+-	u32 val32;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&oct->pci_win_lock, flags);
+@@ -1365,7 +1364,7 @@ void lio_pci_writeq(struct octeon_device *oct,
+ 	/* The write happens when the LSB is written. So write MSB first. */
+ 	writel(val >> 32, oct->reg_list.pci_win_wr_data_hi);
+ 	/* Read the MSB to ensure ordering of writes. */
+-	val32 = readl(oct->reg_list.pci_win_wr_data_hi);
++	readl(oct->reg_list.pci_win_wr_data_hi);
+ 
+ 	writel(val & 0xffffffff, oct->reg_list.pci_win_wr_data_lo);
+ 
+-- 
+2.17.1
+
