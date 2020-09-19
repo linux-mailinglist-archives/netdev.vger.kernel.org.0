@@ -2,140 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF46B270C0D
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 10:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70FAB270CDB
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 12:14:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726249AbgISI6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Sep 2020 04:58:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55362 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726041AbgISI6G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Sep 2020 04:58:06 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C721B21582;
-        Sat, 19 Sep 2020 08:58:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600505885;
-        bh=++lE0cUaP7TIk6cdN49a/tPWXNii3KbrsDBs/q2JJZg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mXxJKosptnNHyuGtJY0GL4zqZ1KT7fJdVyNFptKO1EG5xo23cYTwOO21KBNxzNYoP
-         NxDJZh1QhTMEXbUovPfOg/+rOevuv/vRcVG6Hdky1+6HiW6QFA/2UIW8psc2O1+yPP
-         S/AO0yFWhuIRJIXxBGFNIYLLUpuHUkUKGPVpeGT4=
-Date:   Sat, 19 Sep 2020 11:58:01 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Oded Gabbay <oded.gabbay@gmail.com>,
-        Gal Pressman <galpress@amazon.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-Message-ID: <20200919085801.GA869610@unreal>
-References: <20200917171833.GJ8409@ziepe.ca>
- <0b21db8d-1061-6453-960b-8043951b3bad@amazon.com>
- <20200918115227.GR869610@unreal>
- <CAFCwf10C1zm91e=tqPVGOX8kZD7o=AR2EW-P9VwCF4rcvnEJnA@mail.gmail.com>
- <20200918120340.GT869610@unreal>
- <CAFCwf12VPuyGFqFJK5D19zcKFQJ=fmzjwscdPG82tfR_v_h3Kg@mail.gmail.com>
- <20200918121905.GU869610@unreal>
- <20200919064020.GC439518@kroah.com>
- <20200919082003.GW869610@unreal>
- <20200919083012.GA465680@kroah.com>
+        id S1726269AbgISKOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 06:14:15 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:41117 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726097AbgISKOP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 06:14:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600510452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aoVgzN6gz4PMJXa1bdz8RuSOTpnLg5Dub5S3R8LNFpM=;
+        b=NpL+bbSbXy8qpeIl3LTCPaQO2NX7LMHra/DUa/lqaEl9ucHE6lfVl1kdg13y+19MeUjgjB
+        a9PfBi5q0VSKs4YumFrBxj7U34Ynl9TCe0I4d6/bZ84dmhWCZZGLHmMrfJGYcbcadwwfGA
+        A+4xKkRIuj7wfMC3BDQFhOxCQDVNBLI=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-585-TZpLP7auMACDROxCVihLcw-1; Sat, 19 Sep 2020 06:14:11 -0400
+X-MC-Unique: TZpLP7auMACDROxCVihLcw-1
+Received: by mail-ej1-f71.google.com with SMTP id w10so3046808ejq.11
+        for <netdev@vger.kernel.org>; Sat, 19 Sep 2020 03:14:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=aoVgzN6gz4PMJXa1bdz8RuSOTpnLg5Dub5S3R8LNFpM=;
+        b=Ba/XGRx5f5uTWWs0k1CnXrVPZCufLu2kHgif+vNkvF2Agijz1BmvIbYnXbOUiDPbqT
+         OyNZ8v/7E4YP96Yy2uXkj0ODBSmDZBJ1WC9sJjZKFjX6EiyzYGoAsFtZvNDGdRnw2AZQ
+         IpxWGbmW07PqujdB8xu8PtXMlko5oiybqUXZPMiZxCOkmQcIVUSDYzZ31UIpctdxMO0d
+         9PEDSpooflZNRXgiOepEBHsdNwckb9IMYO6yac/VO4fu6jWC+RRQGHfSuApkNXGyXtIo
+         pdk5gRE04iP6D8pZL6f/uSiOh5uYKn+ESon+3R3jEP0/fSQIixzQc28lphVsRJUIJS37
+         9OBQ==
+X-Gm-Message-State: AOAM532sgktRGGAztZX+6WpJLW5FKc98IDksziQpqFqY9wdRRl7P9mds
+        t59E9WLESDRqcwlZlUOWl/ePGX6jJQPcqEQykAp7IatBjOkx4vyLj4nkyzkVUMEbSG8tDC31Gly
+        YPlgSeVgslWxfxtWN
+X-Received: by 2002:a50:93e2:: with SMTP id o89mr43022048eda.378.1600510449498;
+        Sat, 19 Sep 2020 03:14:09 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwdl/PmWIJRkfi1tLx7cqcu5/2QxmFvjALeUEQ4br3jqXc5u2DTCLfvKaJovLbI87ZU+Cx87Q==
+X-Received: by 2002:a50:93e2:: with SMTP id o89mr43022016eda.378.1600510449058;
+        Sat, 19 Sep 2020 03:14:09 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id m6sm4124138ejb.85.2020.09.19.03.14.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Sep 2020 03:14:08 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 43F5B183A90; Sat, 19 Sep 2020 12:14:07 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v6 05/10] bpf: support attaching freplace
+ programs to multiple attach points
+In-Reply-To: <CAEf4BzajBMf9btVJLfOYNdEbBHgs1m5o=D5mDcmTV4gPYTf9-w@mail.gmail.com>
+References: <160037400056.28970.7647821897296177963.stgit@toke.dk>
+ <160037400605.28970.12030576233071570541.stgit@toke.dk>
+ <CAEf4BzajBMf9btVJLfOYNdEbBHgs1m5o=D5mDcmTV4gPYTf9-w@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sat, 19 Sep 2020 12:14:07 +0200
+Message-ID: <871riyf500.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200919083012.GA465680@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 19, 2020 at 10:30:12AM +0200, Greg Kroah-Hartman wrote:
-> On Sat, Sep 19, 2020 at 11:20:03AM +0300, Leon Romanovsky wrote:
-> > On Sat, Sep 19, 2020 at 08:40:20AM +0200, Greg Kroah-Hartman wrote:
-> > > On Fri, Sep 18, 2020 at 03:19:05PM +0300, Leon Romanovsky wrote:
-> > > > > So we do have an open-source library called hl-thunk, which uses our
-> > > > > driver and indeed that was part of the requirement.
-> > > > > It is similar to libdrm.
-> > > > > Here is the link:
-> > > > > https://github.com/HabanaAI/hl-thunk
-> > > >
-> > > > Are you kidding?
-> > > >
-> > > > This is mirror of some internal repository that looks like dumpster
-> > > > with ChangeId, internal bug tracker numbers, not part of major OS
-> > > > distributions.
-> > > >
-> > > > It is not open-source library and shows very clear why you chose
-> > > > to upstream your driver through driver/misc/ tree.
-> > >
-> > > It is an open source library, as per the license and the code
-> > > availability.  What more is expected here?
-> >
-> > So can I fork iproute2, add bunch of new custom netlink UAPIs and expect
-> > Dave to merge it after I throw it on github?
->
-> Don't be silly, that's not the case here at all and you know that.
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-It was far-fetched example.
+> On Thu, Sep 17, 2020 at 1:21 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>
+>> This enables support for attaching freplace programs to multiple attach
+>> points. It does this by amending the UAPI for bpf_link_Create with a tar=
+get
+>> btf ID that can be used to supply the new attachment point along with the
+>> target program fd. The target must be compatible with the target that was
+>> supplied at program load time.
+>>
+>> The implementation reuses the checks that were factored out of
+>> check_attach_btf_id() to ensure compatibility between the BTF types of t=
+he
+>> old and new attachment. If these match, a new bpf_tracing_link will be
+>> created for the new attach target, allowing multiple attachments to
+>> co-exist simultaneously.
+>>
+>> The code could theoretically support multiple-attach of other types of
+>> tracing programs as well, but since I don't have a use case for any of
+>> those, there is no API support for doing so.
+>>
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> ---
+>
+> You patch set breaks at least bpf_iter tests:
+>
+> $ sudo ./test_progs -t bpf_iter
+> ...
+> #4 bpf_iter:FAIL
+> Summary: 0/19 PASSED, 0 SKIPPED, 6 FAILED
+>
+> Please check and fix.
 
->
-> > > No distro has to pick it up, that's not a requirement for kernel code,
-> > > we have many kernel helper programs that are not in distros.  Heck, udev
-> > > took a long time to get into distros, does that mean the kernel side of
-> > > that interface should never have been merged?
-> > >
-> > > I don't understand your complaint here, it's not our place to judge the
-> > > code quality of userspace libraries, otherwise we would never get any
-> > > real-work done :)
-> >
-> > My main complaint is that you can't imagine merging code into large
-> > subsystems (netdev, RDMA, DRM? e.t.c) without being civil open-source
-> > citizen. It means use of existing user-space libraries/tools and/or
-> > providing new ones that will be usable for everyone.
->
-> Agreed.
->
-> > In this case, we have some custom char device with library that is not
-> > usable for anyone else and this is why drivers/misc/ is right place.
->
-> Also agreed.
->
-> > While we are talking about real-work, it is our benefit to push companies
-> > to make investment into ecosystem and not letting them to find an excuse
-> > for not doing it.
->
-> So why are you complaining about a stand-alone driver that does not have
-> any shared subsystems's userspace code to control that driver?
+Huh, did notice something was broken, but they didn't when I reverted
+the patch either, so I put it down to just the tests being broken. I'll
+take another look :)
 
-I didn't, everything started when I explained to Gal why RDMA subsystem
-requires rdma-core counterpart for any UAPI code.
-https://lore.kernel.org/linux-rdma/CAFCwf12B4vCCwmfA7+VTUYUgJ9EHAtvg6F0bMYnsSCUBST+aWA@mail.gmail.com/T/#m17d52d61adadf54c12bfecf1af5db40f5d829ac3
-
-And expressed my view on the quality of the library that was presented
-as open-source example.
-https://lore.kernel.org/linux-rdma/CAFCwf12B4vCCwmfA7+VTUYUgJ9EHAtvg6F0bMYnsSCUBST+aWA@mail.gmail.com/T/#m9059c5a9405ba932d9ffb731195a43b27443d265
-
+>>  include/linux/bpf.h            |    2 +
+>>  include/uapi/linux/bpf.h       |    9 +++-
+>>  kernel/bpf/syscall.c           |  101 +++++++++++++++++++++++++++++++++=
++------
+>>  kernel/bpf/verifier.c          |    9 ++++
+>>  tools/include/uapi/linux/bpf.h |    9 +++-
+>>  5 files changed, 110 insertions(+), 20 deletions(-)
+>>
 >
-> Yes, when integrating into other subsystems (i.e. networking and rdma),
-> they should use those common subsystems interfaces, no one is arguing
-> that at all.
+> [...]
 >
-> totally lost,
-
-And here comes my request to do it right
-https://lore.kernel.org/linux-rdma/CAFCwf12B4vCCwmfA7+VTUYUgJ9EHAtvg6F0bMYnsSCUBST+aWA@mail.gmail.com/T/#ma1fa6fe63666f630674eb668f1c00e6a672db85b
-
-All that I asked from Oded is to do UAPI/libraries right, while all the responses
-can be summarized to one sentence - "it is too hard, we don't want to do it."
-
-Thanks
-
+>> -static int bpf_tracing_prog_attach(struct bpf_prog *prog)
+>> +static int bpf_tracing_prog_attach(struct bpf_prog *prog,
+>> +                                  int tgt_prog_fd,
+>> +                                  u32 btf_id)
+>>  {
+>>         struct bpf_link_primer link_primer;
+>>         struct bpf_prog *tgt_prog =3D NULL;
+>> +       struct bpf_trampoline *tr =3D NULL;
+>>         struct bpf_tracing_link *link;
+>> -       struct bpf_trampoline *tr;
+>> +       struct btf_func_model fmodel;
+>> +       u64 key =3D 0;
+>> +       long addr;
+>>         int err;
+>>
+>>         switch (prog->type) {
+>> @@ -2589,6 +2595,28 @@ static int bpf_tracing_prog_attach(struct bpf_pro=
+g *prog)
 >
-> greg k-h
+> bpf_tracing_prog_attach logic looks correct to me now, thanks.
+>
+>>                 goto out_put_prog;
+>>         }
+>>
+>
+> [...]
+>
+>> @@ -3934,6 +3986,16 @@ static int tracing_bpf_link_attach(const union bp=
+f_attr *attr, struct bpf_prog *
+>>         return -EINVAL;
+>>  }
+>>
+>> +static int freplace_bpf_link_attach(const union bpf_attr *attr, struct =
+bpf_prog *prog)
+>
+> Any reason to have this separate from tracing_bpf_link_attach? I'd
+> merge them and do a simple switch inside, based on prog->type. It
+> would also be easier to follow the flow if this expected_attach_type
+> check was first and returned -EINVAL immediately at the top.
+
+I created a different one function it had to be called at a different
+place; don't mind combining them, though.
+
+>> +{
+>> +       if (attr->link_create.attach_type =3D=3D prog->expected_attach_t=
+ype)
+>> +               return bpf_tracing_prog_attach(prog,
+>> +                                              attr->link_create.target_=
+fd,
+>> +                                              attr->link_create.target_=
+btf_id);
+>> +       return -EINVAL;
+>> +
+>
+> nit: unnecessary empty line?
+>
+>> +}
+>> +
+>>  #define BPF_LINK_CREATE_LAST_FIELD link_create.iter_info_len
+>>  static int link_create(union bpf_attr *attr)
+>>  {
+>> @@ -3944,18 +4006,25 @@ static int link_create(union bpf_attr *attr)
+>>         if (CHECK_ATTR(BPF_LINK_CREATE))
+>>                 return -EINVAL;
+>>
+>> -       ptype =3D attach_type_to_prog_type(attr->link_create.attach_type=
+);
+>> -       if (ptype =3D=3D BPF_PROG_TYPE_UNSPEC)
+>> -               return -EINVAL;
+>> -
+>> -       prog =3D bpf_prog_get_type(attr->link_create.prog_fd, ptype);
+>> +       prog =3D bpf_prog_get(attr->link_create.prog_fd);
+>>         if (IS_ERR(prog))
+>>                 return PTR_ERR(prog);
+>>
+>>         ret =3D bpf_prog_attach_check_attach_type(prog,
+>>                                                 attr->link_create.attach=
+_type);
+>>         if (ret)
+>> -               goto err_out;
+>> +               goto out;
+>> +
+>> +       if (prog->type =3D=3D BPF_PROG_TYPE_EXT) {
+>> +               ret =3D freplace_bpf_link_attach(attr, prog);
+>> +               goto out;
+>> +       }
+>> +
+>> +       ptype =3D attach_type_to_prog_type(attr->link_create.attach_type=
+);
+>> +       if (ptype =3D=3D BPF_PROG_TYPE_UNSPEC) {
+>> +               ret =3D -EINVAL;
+>> +               goto out;
+>> +       }
+>
+> you seem to be missing a check that prog->type matches ptype,
+> previously implicitly performed by bpf_prog_get_type(), no?
+
+Ah yes, good catch! I played around with different versions of this, and
+guess I forgot to put that check back in for this one...
+
+-Toke
+
