@@ -2,60 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9CC527115C
-	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 01:24:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7A2A271169
+	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 01:40:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726812AbgISXYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Sep 2020 19:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49962 "EHLO
+        id S1726776AbgISXkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Sep 2020 19:40:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726680AbgISXYU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 19:24:20 -0400
-Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFFE7C0613CE;
-        Sat, 19 Sep 2020 16:24:19 -0700 (PDT)
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kJmDD-0020kM-6N; Sat, 19 Sep 2020 23:24:11 +0000
-Date:   Sun, 20 Sep 2020 00:24:11 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Andy Lutomirski <luto@amacapital.net>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
-Message-ID: <20200919232411.GK3421308@ZenIV.linux.org.uk>
-References: <20200919224122.GJ3421308@ZenIV.linux.org.uk>
- <36CF3DE7-7B4B-41FD-9818-FDF8A5B440FB@amacapital.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <36CF3DE7-7B4B-41FD-9818-FDF8A5B440FB@amacapital.net>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+        with ESMTP id S1726680AbgISXkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Sep 2020 19:40:24 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A80C061755;
+        Sat, 19 Sep 2020 16:40:24 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 21F5A11FFD367;
+        Sat, 19 Sep 2020 16:23:35 -0700 (PDT)
+Date:   Sat, 19 Sep 2020 16:40:19 -0700 (PDT)
+Message-Id: <20200919.164019.1690811970196105603.davem@davemloft.net>
+To:     arnd@arndb.de
+Cc:     kuba@kernel.org, hch@infradead.org, mkubecek@suse.cz,
+        andrew@lunn.ch, f.fainelli@gmail.com, gustavo@embeddedor.com,
+        axboe@kernel.dk, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/2] ethtool: improve compat ioctl handling
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200918120536.1464804-1-arnd@arndb.de>
+References: <20200918120536.1464804-1-arnd@arndb.de>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Sat, 19 Sep 2020 16:23:35 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 19, 2020 at 03:53:40PM -0700, Andy Lutomirski wrote:
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Fri, 18 Sep 2020 14:05:18 +0200
 
-> > It would not be a win - most of the syscalls don't give a damn
-> > about 32bit vs. 64bit...
-> 
-> Any reasonable implementation would optimize it out for syscalls that don’t care.  Or it could be explicit:
-> 
-> DEFINE_MULTIARCH_SYSCALL(...)
+> --- a/net/ethtool/ioctl.c
+> +++ b/net/ethtool/ioctl.c
+ ...
+> +static inline bool ethtool_translate_compat(void)
+> +{
 
-1) what would that look like?
-2) have you counted the syscalls that do and do not need that?
-3) how many of those realistically *can* be unified with their
-compat counterparts?  [hint: ioctl(2) cannot]
+Please don't use the inline keyword in foo.c files.
+
+Thank you.
