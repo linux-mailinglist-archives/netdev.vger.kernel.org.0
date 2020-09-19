@@ -2,116 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCA88270A26
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 04:48:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B277270A4D
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 05:03:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726255AbgISCsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 22:48:20 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:13319 "EHLO huawei.com"
+        id S1726222AbgISDCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 23:02:41 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:3526 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726009AbgISCsT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Sep 2020 22:48:19 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 3101F85380A276DAB0C9;
-        Sat, 19 Sep 2020 10:48:16 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.487.0; Sat, 19 Sep 2020 10:48:06 +0800
-From:   Qinglang Miao <miaoqinglang@huawei.com>
-To:     Jakub Kicinski <kubakici@wp.pl>, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Qinglang Miao <miaoqinglang@huawei.com>
-Subject: [PATCH -next v2] mt7601u: Convert to DEFINE_SHOW_ATTRIBUTE
-Date:   Sat, 19 Sep 2020 10:48:38 +0800
-Message-ID: <20200919024838.14172-1-miaoqinglang@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726009AbgISDCl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Sep 2020 23:02:41 -0400
+Received: from dggeme710-chm.china.huawei.com (unknown [172.30.72.54])
+        by Forcepoint Email with ESMTP id D29FD89F2E2DD74390DE;
+        Sat, 19 Sep 2020 11:02:39 +0800 (CST)
+Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
+ dggeme710-chm.china.huawei.com (10.1.199.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Sat, 19 Sep 2020 11:02:39 +0800
+Received: from dggeme760-chm.china.huawei.com ([10.6.80.70]) by
+ dggeme760-chm.china.huawei.com ([10.6.80.70]) with mapi id 15.01.1913.007;
+ Sat, 19 Sep 2020 11:02:39 +0800
+From:   zhengyongjun <zhengyongjun3@huawei.com>
+To:     "bryan.whitehead@microchip.com" <bryan.whitehead@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggbmV0LW5leHRdIG5ldDogbWljcm9jaGlwOiBSZW1v?=
+ =?utf-8?Q?ve_set_but_not_used_variable?=
+Thread-Topic: [PATCH net-next] net: microchip: Remove set but not used
+ variable
+Thread-Index: AQHWji24+IG9pS1rNkq81mRmJVzAkKlvRhig
+Date:   Sat, 19 Sep 2020 03:02:39 +0000
+Message-ID: <874b27fec9d4494a89cbe76e4071b845@huawei.com>
+References: <20200919023732.23656-1-zhengyongjun3@huawei.com>
+In-Reply-To: <20200919023732.23656-1-zhengyongjun3@huawei.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.179.94]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use DEFINE_SHOW_ATTRIBUTE macro to simplify the code.
-
-Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
----
- .../net/wireless/mediatek/mt7601u/debugfs.c   | 34 ++++---------------
- 1 file changed, 6 insertions(+), 28 deletions(-)
-
-diff --git a/drivers/net/wireless/mediatek/mt7601u/debugfs.c b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-index 300242bce..20669eacb 100644
---- a/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-@@ -30,7 +30,7 @@ mt76_reg_get(void *data, u64 *val)
- DEFINE_DEBUGFS_ATTRIBUTE(fops_regval, mt76_reg_get, mt76_reg_set, "0x%08llx\n");
- 
- static int
--mt7601u_ampdu_stat_read(struct seq_file *file, void *data)
-+mt7601u_ampdu_stat_show(struct seq_file *file, void *data)
- {
- 	struct mt7601u_dev *dev = file->private;
- 	int i, j;
-@@ -73,21 +73,10 @@ mt7601u_ampdu_stat_read(struct seq_file *file, void *data)
- 	return 0;
- }
- 
--static int
--mt7601u_ampdu_stat_open(struct inode *inode, struct file *f)
--{
--	return single_open(f, mt7601u_ampdu_stat_read, inode->i_private);
--}
--
--static const struct file_operations fops_ampdu_stat = {
--	.open = mt7601u_ampdu_stat_open,
--	.read = seq_read,
--	.llseek = seq_lseek,
--	.release = single_release,
--};
-+DEFINE_SHOW_ATTRIBUTE(mt7601u_ampdu_stat);
- 
- static int
--mt7601u_eeprom_param_read(struct seq_file *file, void *data)
-+mt7601u_eeprom_param_show(struct seq_file *file, void *data)
- {
- 	struct mt7601u_dev *dev = file->private;
- 	struct mt7601u_rate_power *rp = &dev->ee->power_rate_table;
-@@ -131,18 +120,7 @@ mt7601u_eeprom_param_read(struct seq_file *file, void *data)
- 	return 0;
- }
- 
--static int
--mt7601u_eeprom_param_open(struct inode *inode, struct file *f)
--{
--	return single_open(f, mt7601u_eeprom_param_read, inode->i_private);
--}
--
--static const struct file_operations fops_eeprom_param = {
--	.open = mt7601u_eeprom_param_open,
--	.read = seq_read,
--	.llseek = seq_lseek,
--	.release = single_release,
--};
-+DEFINE_SHOW_ATTRIBUTE(mt7601u_eeprom_param);
- 
- void mt7601u_init_debugfs(struct mt7601u_dev *dev)
- {
-@@ -157,6 +135,6 @@ void mt7601u_init_debugfs(struct mt7601u_dev *dev)
- 
- 	debugfs_create_u32("regidx", 0600, dir, &dev->debugfs_reg);
- 	debugfs_create_file("regval", 0600, dir, dev, &fops_regval);
--	debugfs_create_file("ampdu_stat", 0400, dir, dev, &fops_ampdu_stat);
--	debugfs_create_file("eeprom_param", 0400, dir, dev, &fops_eeprom_param);
-+	debugfs_create_file("ampdu_stat", 0400, dir, dev, &mt7601u_ampdu_stat_fops);
-+	debugfs_create_file("eeprom_param", 0400, dir, dev, &mt7601u_eeprom_param_fops);
- }
--- 
-2.23.0
-
+VGhpcyBpcyB0aGUgYmFkIHBhdGNoLCBwbGVhc2UgaWdub3JlIGl0LCB0aGFuayB5b3UgdmVyeSBt
+dWNoLg0KDQotLS0tLemCruS7tuWOn+S7ti0tLS0tDQrlj5Hku7bkuro6IHpoZW5neW9uZ2p1biAN
+CuWPkemAgeaXtumXtDogMjAyMOW5tDnmnIgxOeaXpSAxMDozOA0K5pS25Lu25Lq6OiBicnlhbi53
+aGl0ZWhlYWRAbWljcm9jaGlwLmNvbTsgVU5HTGludXhEcml2ZXJAbWljcm9jaGlwLmNvbTsgZGF2
+ZW1AZGF2ZW1sb2Z0Lm5ldDsga3ViYUBrZXJuZWwub3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3Jn
+OyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQrmioTpgIE6IHpoZW5neW9uZ2p1biA8emhl
+bmd5b25nanVuM0BodWF3ZWkuY29tPg0K5Li76aKYOiBbUEFUQ0ggbmV0LW5leHRdIG5ldDogbWlj
+cm9jaGlwOiBSZW1vdmUgc2V0IGJ1dCBub3QgdXNlZCB2YXJpYWJsZQ0KDQpGaXhlcyBnY2MgJy1X
+dW51c2VkLWJ1dC1zZXQtdmFyaWFibGUnIHdhcm5pbmc6DQoNCmRyaXZlcnMvbmV0L2V0aGVybmV0
+L21pY3JvY2hpcC9sYW43NDN4X21haW4uYzogSW4gZnVuY3Rpb24gbGFuNzQzeF9wbV9zdXNwZW5k
+Og0KZHJpdmVycy9uZXQvZXRoZXJuZXQvbWljcm9jaGlwL2xhbjc0M3hfbWFpbi5jOjMwNDE6Njog
+d2FybmluZzogdmFyaWFibGUg4oCYcmV04oCZIHNldCBidXQgbm90IHVzZWQgWy1XdW51c2VkLWJ1
+dC1zZXQtdmFyaWFibGVdDQoNCmByZXRgIGlzIG5ldmVyIHVzZWQsIHNvIHJlbW92ZSBpdC4NCg0K
+U2lnbmVkLW9mZi1ieTogWmhlbmcgWW9uZ2p1biA8emhlbmd5b25nanVuM0BodWF3ZWkuY29tPg0K
+LS0tDQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWljcm9jaGlwL2xhbjc0M3hfbWFpbi5jIHwgMiAr
+LQ0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KDQpkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWljcm9jaGlwL2xhbjc0M3hfbWFpbi5jIGIv
+ZHJpdmVycy9uZXQvZXRoZXJuZXQvbWljcm9jaGlwL2xhbjc0M3hfbWFpbi5jDQppbmRleCBkZTkz
+Y2M2ZWJjMWEuLjU2YTFiNTkyOGY5YSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0
+L21pY3JvY2hpcC9sYW43NDN4X21haW4uYw0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWlj
+cm9jaGlwL2xhbjc0M3hfbWFpbi5jDQpAQCAtMzA1Myw3ICszMDUzLDcgQEAgc3RhdGljIGludCBs
+YW43NDN4X3BtX3N1c3BlbmQoc3RydWN0IGRldmljZSAqZGV2KQ0KIAkvKiBIb3N0IHNldHMgUE1F
+X0VuLCBwdXQgRDNob3QgKi8NCiAJcmV0ID0gcGNpX3ByZXBhcmVfdG9fc2xlZXAocGRldik7DQog
+DQotCXJldHVybiAwOw0KKwlyZXR1cm4gcmV0Ow0KIH0NCiANCiBzdGF0aWMgaW50IGxhbjc0M3hf
+cG1fcmVzdW1lKHN0cnVjdCBkZXZpY2UgKmRldikNCi0tIA0KMi4xNy4xDQoNCg==
