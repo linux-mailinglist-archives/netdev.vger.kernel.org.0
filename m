@@ -2,130 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11C5127095F
-	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 02:12:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63BDA270960
+	for <lists+netdev@lfdr.de>; Sat, 19 Sep 2020 02:13:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726170AbgISAMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Sep 2020 20:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32952 "EHLO
+        id S1726205AbgISANe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Sep 2020 20:13:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726112AbgISAMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 20:12:15 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E76C0613CF
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 17:12:15 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id q12so3699058pjg.9
-        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 17:12:15 -0700 (PDT)
+        with ESMTP id S1726112AbgISANe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Sep 2020 20:13:34 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63091C0613CE
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 17:13:30 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id j7so3814342plk.11
+        for <netdev@vger.kernel.org>; Fri, 18 Sep 2020 17:13:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=huQVogRrTJ8IjZrwun9QBbaOUshPSajlFOXa3DSBDGU=;
-        b=sAknZHsldl7EP0HUVpdNbtNGpNeQ/jiY3HQfsPitwNccFi6YkkF/4c6xyDt4bU8Wp6
-         LO/BdYGeZxKmTZaXcfP9g4srqrUWN/qWwNXYMr6flm6xoKEKoMk3zIxc6s7sR+bSQHqE
-         rLPRTEaXEEOufCZIOvvTx7zvysOmoDvb59qxrBH2H2+tdsVjC/ixP04QVes0EJc01SwR
-         KlY9wBJ3ceSyiy3t8Jlf236R6bQ0aETte/N1Q9SplbYirPMh1lsc0ohdsrPvNQLxgKMx
-         bTca0SV6xq30jcFoNl00CnhHfRRI2tij41tCGWYuj47kTkgzvJloWiEu9/aHM2HG5jNR
-         4PsA==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=DSivMfFX4LchJKRtonhlWtBQ7XG7j++xRPsnjvgGrDs=;
+        b=OfSypDWsr5RLqbkMc/zGF3m2AZxt0sMZgaWtMW+8pUm99X8Y5HBwTlO3L6lBw6twCu
+         Y7uS7Tx0ve2/PfXqKpw3GcMoIs8rZf1Hx6MRgN1PRiIXQfeKw0x8d4yOxXHlVSJjfXHT
+         HZSuv2SB+aK7QuUkh89DsYe/c+HbvO7VstWrGKinHDSH1FT8qZQ5kLn3Owak661p8DtB
+         50lexkkGCjcMHYIYetAweHL4+9bYFPQfu4MKIdlC55u/VmqHGQoKEoUiD0H6+tx/TBty
+         MAebUJqHzWqxd++JL4Vh3COOg4Q9pJ8ZblEMfF8NW0G0K6cDuCUJVjagSZDtFzxC3JDR
+         U33A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=huQVogRrTJ8IjZrwun9QBbaOUshPSajlFOXa3DSBDGU=;
-        b=Qvy0XBZpNWnn62EJCCThGQ9HpESXIw0A+pc+XTYJThL4fR7PxmJB1JzP4UHhnvNddu
-         t4ESQWXfzs01phz8Yrn+d9ruIpylVTh57DqxMHgs07VQ6BGr+4j/BpHtW8B2VK9Hwr+y
-         D0+hK7Bwxvwu5RwepFKGHBm8IuXQy31dxV44ULb6nU1DUhRUDZF6B4hTtx1V1yaG1d+P
-         KWeAzrAc+y7DMionBS1CEiALkdrjHYkbs0yNTu9WFJP32S7PWLU5pWWXH3Md/BqoFueF
-         t3jRUkX6ecXq0heQRXtwjyEQb3jDTKOg4FxVYQQgrlNgpaxIJtnuSHH0HZMi0v+NzIRx
-         UMgw==
-X-Gm-Message-State: AOAM531sLrF0Ee7Rk1ksTUKYqShVawnuye/H1i/Hc9KX4QXxTi4mbGw4
-        +afKcddNnaQL1KwV3nuYuctfLL6ScnMUM80r
-X-Google-Smtp-Source: ABdhPJw/Vdg/CFrhaWEGWa9vKGnznTJN+AQgKUgoILuh2WXMfK/8BDW80gy0jMuYHAXPRXihxBdvoPzje1xO+Iyp
-Sender: "hptasinski via sendgmr" <hptasinski@hptasinski.c.googlers.com>
-X-Received: from hptasinski.c.googlers.com ([fda3:e722:ac3:10:24:72f4:c0a8:1641])
- (user=hptasinski job=sendgmr) by 2002:a62:1dc1:0:b029:13e:d13d:a051 with SMTP
- id d184-20020a621dc10000b029013ed13da051mr33221931pfd.23.1600474335063; Fri,
- 18 Sep 2020 17:12:15 -0700 (PDT)
-Date:   Sat, 19 Sep 2020 00:12:11 +0000
-In-Reply-To: <20200918132957.GB82043@localhost.localdomain>
-Message-Id: <20200919001211.355148-1-hptasinski@google.com>
-Mime-Version: 1.0
-References: <20200918132957.GB82043@localhost.localdomain>
-X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
-Subject: [PATCH v2] net: sctp: Fix IPv6 ancestor_size calc in sctp_copy_descendant
-From:   Henry Ptasinski <hptasinski@google.com>
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Corey Minyard <cminyard@mvista.com>,
-        Henry Ptasinski <hptasinski@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=DSivMfFX4LchJKRtonhlWtBQ7XG7j++xRPsnjvgGrDs=;
+        b=KE3DNJcRqQw5K1AMkgCJI8vORyR3ArAj6NhDl91ceJCthQHCv0anrL4o5HVk8Uut/+
+         BwYzNJK7W56UgdziUPmbuyRTYLOUEz/k/DUxJUtsBvEDUd5FASdHI+EAJU++KbuY1stE
+         Py2RA0fKeFaxYNXgROz03RGSUzELOS60CF7gUarzr7The6V4/dAwZvKkB+k3HfNh7htS
+         +ovIwSfwfc15QciUFzHmu9+y9+b10tTUhapUMp2IL6UQesRkignQ6G5PlDnL1IrmCSyS
+         9Su8NNEZfBz4HDn/vF32rVj6yPDyvna/bYsuH2CpIbYXNN5MUrEQGWUBG39snQKMXi48
+         vXWQ==
+X-Gm-Message-State: AOAM5333yzXhUOZfSGaYimZVERHOkq2GaXJffll3MhPVvske81rQ6yYA
+        qGxXfW6BF7sMmkdsIa+j1EGHlw==
+X-Google-Smtp-Source: ABdhPJw9a319JVbIqufugrOtEwzU8yliHBpQaBQFs/No7G2zEFX4Okg0e+r4N7A1cEbmZJeDmuL1YA==
+X-Received: by 2002:a17:902:eb03:b029:d1:8c50:aafb with SMTP id l3-20020a170902eb03b02900d18c50aafbmr35721295plb.29.1600474409888;
+        Fri, 18 Sep 2020 17:13:29 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id j13sm1236670pjn.14.2020.09.18.17.13.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Sep 2020 17:13:29 -0700 (PDT)
+Subject: Re: [net-next v7 0/5] devlink flash update overwrite mask
+To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@mellanox.com>, Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+References: <20200918234208.1060371-1-jacob.e.keller@intel.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <08a7e6ef-ab23-9718-5fce-cdc53191197e@pensando.io>
+Date:   Fri, 18 Sep 2020 17:13:24 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
+MIME-Version: 1.0
+In-Reply-To: <20200918234208.1060371-1-jacob.e.keller@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When calculating ancestor_size with IPv6 enabled, simply using
-sizeof(struct ipv6_pinfo) doesn't account for extra bytes needed for
-alignment in the struct sctp6_sock. On x86, there aren't any extra
-bytes, but on ARM the ipv6_pinfo structure is aligned on an 8-byte
-boundary so there were 4 pad bytes that were omitted from the
-ancestor_size calculation.  This would lead to corruption of the
-pd_lobby pointers, causing an oops when trying to free the sctp
-structure on socket close.
+On 9/18/20 4:42 PM, Jacob Keller wrote:
+> This series introduces support for a new attribute to the flash update
+> command: DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK.
+>
+> This attribute is a bitfield which allows userspace to specify what set of
+> subfields to overwrite when performing a flash update for a device.
+>
+> The intention is to support the ability to control the behavior of
+> overwriting the configuration and identifying fields in the Intel ice device
+> flash update process. This is necessary  as the firmware layout for the ice
+> device includes some settings and configuration within the same flash
+> section as the main firmware binary.
+>
+> This series, and the accompanying iproute2 series, introduce support for the
+> attribute. Once applied, the overwrite support can be be invoked via
+> devlink:
+>
+>    # overwrite settings
+>    devlink dev flash pci/0000:af:00.0 file firmware.bin overwrite settings
+>
+>    # overwrite identifiers and settings
+>    devlink dev flash pci/0000:af:00.0 file firmware.bin overwrite settings overwrite identifiers
+>
+> To aid in the safe addition of new parameters, first some refactoring is
+> done to the .flash_update function: its parameters are converted from a
+> series of function arguments into a structure. This makes it easier to add
+> the new parameter without changing the signature of the .flash_update
+> handler in the future. Additionally, a "supported_flash_update_params" field
+> is added to devlink_ops. This field is similar to the ethtool
+> "supported_coalesc_params" field. The devlink core will now check that the
+> DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT bit is set before forwarding the
+> component attribute. Similarly, the new overwrite attribute will also
+> require a supported bit.
+>
+> Doing these refactors will aid in adding any other attributes in the future,
+> and creates a good pattern for other interfaces to use in the future. By
+> requiring drivers to opt-in, we reduce the risk of accidentally breaking
+> drivers when ever we add an additional parameter. We also reduce boiler
+> plate code in drivers which do not support the parameters.
+>
+> Cc: Jiri Pirko <jiri@mellanox.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Michael Chan <michael.chan@broadcom.com>
+> Cc: Bin Luo <luobin9@huawei.com>
+> Cc: Saeed Mahameed <saeedm@mellanox.com>
+> Cc: Leon Romanovsky <leon@kernel.org>
+> Cc: Ido Schimmel <idosch@mellanox.com>
+> Cc: Danielle Ratson <danieller@mellanox.com>
+> Cc: Shannon Nelson <snelson@pensando.io>
 
-Fixes: 636d25d557d1 ("sctp: not copy sctp_sock pd_lobby in sctp_copy_descendant")
-Signed-off-by: Henry Ptasinski <hptasinski@google.com>
----
- include/net/sctp/structs.h | 8 +++++---
- net/sctp/socket.c          | 9 +++------
- 2 files changed, 8 insertions(+), 9 deletions(-)
+Thanks Jake.  For ionic:
+Acked-by: Shannon Nelson <snelson@pensando.io>
 
-diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
-index b33f1aefad09..0bdff38eb4bb 100644
---- a/include/net/sctp/structs.h
-+++ b/include/net/sctp/structs.h
-@@ -226,12 +226,14 @@ struct sctp_sock {
- 		data_ready_signalled:1;
- 
- 	atomic_t pd_mode;
-+
-+	/* Fields after this point will be skipped on copies, like on accept
-+	 * and peeloff operations
-+	 */
-+
- 	/* Receive to here while partial delivery is in effect. */
- 	struct sk_buff_head pd_lobby;
- 
--	/* These must be the last fields, as they will skipped on copies,
--	 * like on accept and peeloff operations
--	 */
- 	struct list_head auto_asconf_list;
- 	int do_auto_asconf;
- };
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 836615f71a7d..53d0a4161df3 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -9220,13 +9220,10 @@ void sctp_copy_sock(struct sock *newsk, struct sock *sk,
- static inline void sctp_copy_descendant(struct sock *sk_to,
- 					const struct sock *sk_from)
- {
--	int ancestor_size = sizeof(struct inet_sock) +
--			    sizeof(struct sctp_sock) -
--			    offsetof(struct sctp_sock, pd_lobby);
--
--	if (sk_from->sk_family == PF_INET6)
--		ancestor_size += sizeof(struct ipv6_pinfo);
-+	size_t ancestor_size = sizeof(struct inet_sock);
- 
-+	ancestor_size += sk_from->sk_prot->obj_size;
-+	ancestor_size -= offsetof(struct sctp_sock, pd_lobby);
- 	__inet_sk_copy_descendant(sk_to, sk_from, ancestor_size);
- }
- 
--- 
-2.28.0.681.g6f77f65b4e-goog
 
