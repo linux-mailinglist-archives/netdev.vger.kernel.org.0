@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06638271640
-	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 19:17:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DF3027163F
+	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 19:17:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726454AbgITRRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 13:17:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46166 "EHLO vps0.lunn.ch"
+        id S1726442AbgITRR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 13:17:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46156 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726333AbgITRR2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Sep 2020 13:17:28 -0400
+        id S1726267AbgITRRZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 20 Sep 2020 13:17:25 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kK2xi-00FUYk-RD; Sun, 20 Sep 2020 19:17:18 +0200
+        id 1kK2xi-00FUYn-U2; Sun, 20 Sep 2020 19:17:18 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next 4/5] net: phy: Document core PHY structures
-Date:   Sun, 20 Sep 2020 19:17:02 +0200
-Message-Id: <20200920171703.3692328-5-andrew@lunn.ch>
+Subject: [PATCH net-next 5/5] net: mdio: Add kerneldoc for main data structures and some functions
+Date:   Sun, 20 Sep 2020 19:17:03 +0200
+Message-Id: <20200920171703.3692328-6-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200920171703.3692328-1-andrew@lunn.ch>
 References: <20200920171703.3692328-1-andrew@lunn.ch>
@@ -32,665 +32,225 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add kerneldoc for the core PHY data structures, a few inline functions
-and exported functions which are not already documented.
+Document the main structures, a few inline helpers and exported
+functions which are not already documented.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- Documentation/networking/kapi.rst |   9 +
- drivers/net/phy/phy-core.c        |  30 +++
- drivers/net/phy/phy.c             |  69 ++++-
- include/linux/phy.h               | 411 +++++++++++++++++++++---------
- 4 files changed, 393 insertions(+), 126 deletions(-)
+ Documentation/networking/kapi.rst | 15 ++++++
+ drivers/net/phy/mdio_bus.c        | 37 +++++++++++++
+ drivers/net/phy/mdio_device.c     | 21 ++++++++
+ include/linux/mdio.h              | 88 ++++++++++++++++++++++++++++---
+ 4 files changed, 154 insertions(+), 7 deletions(-)
 
 diff --git a/Documentation/networking/kapi.rst b/Documentation/networking/kapi.rst
-index f03ae64be8bc..d198fa5eaacd 100644
+index d198fa5eaacd..88361ccf976b 100644
 --- a/Documentation/networking/kapi.rst
 +++ b/Documentation/networking/kapi.rst
-@@ -134,6 +134,15 @@ PHY Support
- .. kernel-doc:: drivers/net/phy/phy.c
+@@ -155,6 +155,21 @@ PHY Support
+ .. kernel-doc:: drivers/net/phy/mdio_bus.c
     :internal:
  
-+.. kernel-doc:: drivers/net/phy/phy-core.c
++.. kernel-doc:: drivers/net/phy/mdio_device.c
 +   :export:
 +
-+.. kernel-doc:: drivers/net/phy/phy-c45.c
-+   :export:
-+
-+.. kernel-doc:: include/linux/phy.h
++.. kernel-doc:: drivers/net/phy/mdio_device.c
 +   :internal:
 +
- .. kernel-doc:: drivers/net/phy/phy_device.c
-    :export:
- 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index de5b869139d7..8f40f0c441b2 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -6,6 +6,11 @@
- #include <linux/phy.h>
- #include <linux/of.h>
- 
-+/**
-+ * phy_speed_to_str - Return a string representing the PHY link speed
-+ *
-+ * @speed: Speed of the link
-+ */
- const char *phy_speed_to_str(int speed)
- {
- 	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 92,
-@@ -52,6 +57,11 @@ const char *phy_speed_to_str(int speed)
- }
- EXPORT_SYMBOL_GPL(phy_speed_to_str);
- 
-+/**
-+ * phy_duplex_to_str - Return string describing the duplex
-+ *
-+ * @duplex: Duplex setting to describe
-+ */
- const char *phy_duplex_to_str(unsigned int duplex)
- {
- 	if (duplex == DUPLEX_HALF)
-@@ -252,6 +262,16 @@ static int __set_phy_supported(struct phy_device *phydev, u32 max_speed)
- 	return __set_linkmode_max_speed(max_speed, phydev->supported);
- }
- 
-+/**
-+ * phy_set_max_speed - Set the maximum speed the PHY should support
-+ *
-+ * @phydev: The phy_device struct
-+ * @max_speed: Maximum speed
-+ *
-+ * The PHY might be more capable than the MAC. For example a Fast Ethernet
-+ * is connected to a 1G PHY. This function allows the MAC to indicate its
-+ * maximum speed, and so limit what the PHY will advertise.
-+ */
- int phy_set_max_speed(struct phy_device *phydev, u32 max_speed)
- {
- 	int err;
-@@ -308,6 +328,16 @@ void of_set_phy_eee_broken(struct phy_device *phydev)
- 	phydev->eee_broken_modes = broken;
- }
- 
-+/**
-+ * phy_resolve_aneg_pause - Determine pause autoneg results
-+ *
-+ * @phydev: The phy_device struct
-+ *
-+ * Once autoneg has completed the local pause settings can be
-+ * resolved.  Determine if pause and asymmetric pause should be used
-+ * by the MAC.
-+ */
++.. kernel-doc:: drivers/net/phy/mdio_devres.c
++   :export:
 +
- void phy_resolve_aneg_pause(struct phy_device *phydev)
- {
- 	if (phydev->duplex == DUPLEX_FULL) {
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 735a806045ac..4449f0e9ce9e 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -456,7 +456,16 @@ int phy_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- }
- EXPORT_SYMBOL(phy_do_ioctl);
++.. kernel-doc:: include/linux/mdio.h
++   :internal:
++
++.. kernel-doc:: drivers/net/phy/mdio-boardinfo.c
++   :export:
++
+ PHYLINK
+ -------
  
--/* same as phy_do_ioctl, but ensures that net_device is running */
-+/**
-+ * phy_do_ioctl_running - generic ndo_do_ioctl implementation but test first
-+ *
-+ * @dev: the net_device struct
-+ * @ifr: &struct ifreq for socket ioctl's
-+ * @cmd: ioctl cmd to execute
-+ *
-+ * Same as phy_do_ioctl, but ensures that net_device is running before
-+ * handling the ioctl.
-+ */
- int phy_do_ioctl_running(struct net_device *dev, struct ifreq *ifr, int cmd)
- {
- 	if (!netif_running(dev))
-@@ -466,6 +475,12 @@ int phy_do_ioctl_running(struct net_device *dev, struct ifreq *ifr, int cmd)
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 0af20faad69d..b887544990c1 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -106,6 +106,15 @@ int mdiobus_unregister_device(struct mdio_device *mdiodev)
  }
- EXPORT_SYMBOL(phy_do_ioctl_running);
+ EXPORT_SYMBOL(mdiobus_unregister_device);
  
 +/**
-+ * phy_queue_state_machine - Trigger the state machine to run soon
++ * mdiobus_get_phy - Get the device at the address on the bus
 + *
-+ * @phydev: the phy_device struct
-+ * @jiffies: Run the state machine after these jiffies
++ * @bus: MDIO bus of interest
++ * @addr: Address on bus of device
++ *
++ * If there is a  device registered on the bus for the given address
++ * return the device. Else return NULL.
 + */
- void phy_queue_state_machine(struct phy_device *phydev, unsigned long jiffies)
+ struct phy_device *mdiobus_get_phy(struct mii_bus *bus, int addr)
  {
- 	mod_delayed_work(system_power_efficient_wq, &phydev->state_queue,
-@@ -473,6 +488,11 @@ void phy_queue_state_machine(struct phy_device *phydev, unsigned long jiffies)
+ 	struct mdio_device *mdiodev = bus->mdio_map[addr];
+@@ -120,6 +129,16 @@ struct phy_device *mdiobus_get_phy(struct mii_bus *bus, int addr)
  }
- EXPORT_SYMBOL(phy_queue_state_machine);
+ EXPORT_SYMBOL(mdiobus_get_phy);
  
 +/**
-+ * phy_queue_state_machine - Trigger the state machine to run now
++ * mdiobus_is_registered_device - Is there a device registered at the
++ *                                address on the bus
 + *
-+ * @phydev: the phy_device struct
++ * @bus: MDIO bus of interest
++ * @addr: Address on bus of device
++ *
++ * Returns True if there is a device registered on the bus for the given address.
++ * Otherwise False.
 + */
- static void phy_trigger_machine(struct phy_device *phydev)
+ bool mdiobus_is_registered_device(struct mii_bus *bus, int addr)
  {
- 	phy_queue_state_machine(phydev, 0);
-@@ -489,6 +509,12 @@ static void phy_abort_cable_test(struct phy_device *phydev)
- 		phydev_err(phydev, "Error while aborting cable test");
+ 	return bus->mdio_map[addr];
+@@ -603,6 +622,14 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
  }
+ EXPORT_SYMBOL(__mdiobus_register);
  
 +/**
-+ * phy_ethtool_get_strings - Get the statistic counter names
++ * mdiobus_unregister - Unregister an MDIO bus
 + *
-+ * @phydev: the phy_device struct
-+ * @data: Where to put the strings
++ * @bus: target mii_bus
++ *
++ * For all devices on the bus, any GPIOs held are released. If the bus
++ * as a reset GPIO the devices on the bus are put into reset
 + */
- int phy_ethtool_get_strings(struct phy_device *phydev, u8 *data)
+ void mdiobus_unregister(struct mii_bus *bus)
  {
- 	if (!phydev->drv)
-@@ -502,6 +528,11 @@ int phy_ethtool_get_strings(struct phy_device *phydev, u8 *data)
- }
- EXPORT_SYMBOL(phy_ethtool_get_strings);
+ 	struct mdio_device *mdiodev;
+@@ -1002,6 +1029,11 @@ struct bus_type mdio_bus_type = {
+ };
+ EXPORT_SYMBOL(mdio_bus_type);
  
 +/**
-+ * phy_ethtool_get_sset_count - Get the number of statistic counters
++ * mdio_bus_init - Initialize the MDIO bus subsystem
 + *
-+ * @phydev: the phy_device struct
++ * Register the MDIO bus class and the MDIO bus type
 + */
- int phy_ethtool_get_sset_count(struct phy_device *phydev)
+ int __init mdio_bus_init(void)
  {
  	int ret;
-@@ -523,6 +554,13 @@ int phy_ethtool_get_sset_count(struct phy_device *phydev)
- }
- EXPORT_SYMBOL(phy_ethtool_get_sset_count);
+@@ -1018,6 +1050,11 @@ int __init mdio_bus_init(void)
+ EXPORT_SYMBOL_GPL(mdio_bus_init);
  
+ #if IS_ENABLED(CONFIG_PHYLIB)
 +/**
-+ * phy_ethtool_get_stats - Get the statistic counters
++ * mdio_bus_exit - Cleanup the MDIO bus subsystem
 + *
-+ * @phydev: the phy_device struct
-+ * @stats: What counters to get
-+ * @data: Where to store the counters
++ * Unregister the MDIO bus class and the MDIO bus type
 + */
- int phy_ethtool_get_stats(struct phy_device *phydev,
- 			  struct ethtool_stats *stats, u64 *data)
+ void mdio_bus_exit(void)
  {
-@@ -537,6 +575,12 @@ int phy_ethtool_get_stats(struct phy_device *phydev,
+ 	class_unregister(&mdio_bus_class);
+diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
+index 0837319a52d7..826d19293985 100644
+--- a/drivers/net/phy/mdio_device.c
++++ b/drivers/net/phy/mdio_device.c
+@@ -44,6 +44,12 @@ int mdio_device_bus_match(struct device *dev, struct device_driver *drv)
+ 	return strcmp(mdiodev->modalias, drv->name) == 0;
  }
- EXPORT_SYMBOL(phy_ethtool_get_stats);
  
 +/**
-+ * phy_start_cable_test - Start a cable test
++ * mdio_device_create - Create an MDIO device
 + *
-+ * @phydev: the phy_device struct
-+ * @extack: extack for reporting useful error messages
++ * @bus: Bus the device is on
++ * @addr: Address of the device on the bus
 + */
- int phy_start_cable_test(struct phy_device *phydev,
- 			 struct netlink_ext_ack *extack)
+ struct mdio_device *mdio_device_create(struct mii_bus *bus, int addr)
  {
-@@ -600,6 +644,13 @@ int phy_start_cable_test(struct phy_device *phydev,
+ 	struct mdio_device *mdiodev;
+@@ -113,6 +119,17 @@ void mdio_device_remove(struct mdio_device *mdiodev)
  }
- EXPORT_SYMBOL(phy_start_cable_test);
+ EXPORT_SYMBOL(mdio_device_remove);
  
 +/**
-+ * phy_start_cable_test_tdr - Start a raw TDR cable test
++ * mdio_device_reset - Reset the MDIO device
 + *
-+ * @phydev: the phy_device struct
-+ * @extack: extack for reporting useful error messages
-+ * @config: Configuration of the test to run
-+ */
- int phy_start_cable_test_tdr(struct phy_device *phydev,
- 			     struct netlink_ext_ack *extack,
- 			     const struct phy_tdr_config *config)
-@@ -1363,6 +1414,12 @@ int phy_ethtool_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
- }
- EXPORT_SYMBOL(phy_ethtool_set_eee);
- 
-+/**
-+ * phy_ethtool_set_wol - Configure Wake On LAN
++ * @mdiodev:  Device to reset
++ * @value:  1 for reset, 0 for out of reset
 + *
-+ * @phydev: target phy_device struct
-+ * @wol: Configuration requested
++ * Place the device into our out of reset, depending on the value of
++ * @value.  Reset the device via a GPIO of a reset controller. If
++ * delays have been defined, wait the given time after change the
++ * reset.
 + */
- int phy_ethtool_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
+ void mdio_device_reset(struct mdio_device *mdiodev, int value)
  {
- 	if (phydev->drv && phydev->drv->set_wol)
-@@ -1372,6 +1429,12 @@ int phy_ethtool_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
+ 	unsigned int d;
+@@ -206,6 +223,10 @@ int mdio_driver_register(struct mdio_driver *drv)
  }
- EXPORT_SYMBOL(phy_ethtool_set_wol);
+ EXPORT_SYMBOL(mdio_driver_register);
  
 +/**
-+ * phy_ethtool_get_wol - Get the current Wake On LAN configuration
-+ *
-+ * @phydev: target phy_device struct
-+ * @wol: Store the current configuration here
++ * mdio_driver_unregister - Unregister an MDIO driver
++ * @drv: mdio_driver to unregister
 + */
- void phy_ethtool_get_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
+ void mdio_driver_unregister(struct mdio_driver *drv)
  {
- 	if (phydev->drv && phydev->drv->get_wol)
-@@ -1405,6 +1468,10 @@ int phy_ethtool_set_link_ksettings(struct net_device *ndev,
- }
- EXPORT_SYMBOL(phy_ethtool_set_link_ksettings);
- 
-+/**
-+ * phy_ethtool_nway_reset - Restart auto negotiation
-+ * @ndev: Network device to restart autoneg for
-+ */
- int phy_ethtool_nway_reset(struct net_device *ndev)
- {
- 	struct phy_device *phydev = ndev->phydev;
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 4901b2637059..2adbca0e42e3 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -82,7 +82,39 @@ extern const int phy_10gbit_features_array[1];
- #define PHY_POLL_CABLE_TEST	0x00000004
- #define MDIO_DEVICE_IS_PHY	0x80000000
- 
--/* Interface Mode definitions */
-+/**
-+ * enum phy_interface_t - Interface Mode definitions
-+ *
-+ * @PHY_INTERFACE_MODE_NA: Not Applicable - don't touch
-+ * @PHY_INTERFACE_MODE_INTERNAL: No interface, MAC and PHY combined
-+ * @PHY_INTERFACE_MODE_MII: Median-independent interface
-+ * @PHY_INTERFACE_MODE_GMII: Gigabit median-independent interface
-+ * @PHY_INTERFACE_MODE_SGMII: Serial gigabit media-independent interface
-+ * @PHY_INTERFACE_MODE_TBI: ???
-+ * @PHY_INTERFACE_MODE_REVMII: Reverse Media Independent Interface
-+ * @PHY_INTERFACE_MODE_RMII: Reduced Media Independent Interface
-+ * @PHY_INTERFACE_MODE_RGMII: Reduced gigabit media-independent interface
-+ * @PHY_INTERFACE_MODE_RGMII_ID: RGMII with Internal RX+TX delay
-+ * @PHY_INTERFACE_MODE_RGMII_RXID: RGMII with Internal RX delay
-+ * @PHY_INTERFACE_MODE_RGMII_TXID: RGMII with Internal RX delay
-+ * @PHY_INTERFACE_MODE_RTBI: Reduced TBI
-+ * @PHY_INTERFACE_MODE_SMII: ??? MII
-+ * @PHY_INTERFACE_MODE_XGMII: 10 gigabit media-independent interface
-+ * @PHY_INTERFACE_MODE_XLGMII:40 gigabit media-independent interface
-+ * @PHY_INTERFACE_MODE_MOCA: Multimetia over Coax
-+ * @PHY_INTERFACE_MODE_QSGMII: ??? MII
-+ * @PHY_INTERFACE_MODE_TRGMII: Turbo RGMII
-+ * @PHY_INTERFACE_MODE_1000BASEX: 1000 BaseX
-+ * @PHY_INTERFACE_MODE_2500BASEX: 2500 BaseX
-+ * @PHY_INTERFACE_MODE_RXAUI: Reduced XAUI
-+ * @PHY_INTERFACE_MODE_XAUI: 10 Gigabit Attachment Unit Interface
-+ * @PHY_INTERFACE_MODE_10GBASER: 10G BaseR
-+ * @PHY_INTERFACE_MODE_USXGMII:  Universal Serial 10GE MII
-+ * @PHY_INTERFACE_MODE_10GKR: 10GBASE-KR - with Clause 73 AN
-+ * @PHY_INTERFACE_MODE_MAX: Book keeping
-+ *
-+ * Describes the interface between the MAC and PHY.
-+ */
- typedef enum {
- 	PHY_INTERFACE_MODE_NA,
- 	PHY_INTERFACE_MODE_INTERNAL,
-@@ -134,7 +166,7 @@ unsigned int phy_supported_speeds(struct phy_device *phy,
-  * phy_modes - map phy_interface_t enum to device tree binding of phy-mode
-  * @interface: enum phy_interface_t value
-  *
-- * Description: maps 'enum phy_interface_t' defined in this file
-+ * Description: maps enum &phy_interface_t defined in this file
-  * into the device tree binding of 'phy-mode', so that Ethernet
-  * device driver can get phy interface from device tree.
-  */
-@@ -215,6 +247,14 @@ struct sfp_bus;
- struct sfp_upstream_ops;
- struct sk_buff;
- 
-+/**
-+ * struct mdio_bus_stats - Statistics counters for MDIO busses
-+ * @transfers: Total number of transfers, i.e. @writes + @reads
-+ * @errors: Number of MDIO transfers that returned an error
-+ * @writes: Number of write transfers
-+ * @reads: Number of read transfers
-+ * @syncp: Synchronization for incrimenting statistics
-+ */
- struct mdio_bus_stats {
- 	u64_stats_t transfers;
- 	u64_stats_t errors;
-@@ -224,7 +264,15 @@ struct mdio_bus_stats {
- 	struct u64_stats_sync syncp;
+ 	struct mdio_driver_common *mdiodrv = &drv->mdiodrv;
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index dbd69b3d170b..a3ca3e7c83f3 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -31,6 +31,21 @@ enum mdio_mutex_lock_class {
+ 	MDIO_MUTEX_NESTED,
  };
  
--/* Represents a shared structure between different phydev's in the same
 +/**
-+ * struct phy_package_shared - Shared information in PHY packages
-+ * @addr: Common PHY address used to combine PHYs in one package
-+ * @refcnt: Number of PHYs connected to this shared data
-+ * @flags: Initialization of PHY package
-+ * @priv_size: Size of the shared private data @priv
-+ * @priv: Driver private data shared across a PHY package
++ * struct mdio_device - A device on an MDIO bus
 + *
-+ * Represents a shared structure between different phydev's in the same
-  * package, for example a quad PHY. See phy_package_join() and
-  * phy_package_leave().
-  */
-@@ -247,7 +295,14 @@ struct phy_package_shared {
- #define PHY_SHARED_F_INIT_DONE  0
- #define PHY_SHARED_F_PROBE_DONE 1
- 
--/*
-+/**
-+ * struct mii_bus - Represents an MDIO bus
-+ *
-+ * @owner: Who owns this device
-+ * @name: User friendly name for this MDIO device, or driver name
-+ * @id: Identifer for this bus, typical from bus hierarchy
-+ * @priv: Driver private data
-+ *
-  * The Bus class for PHYs.  Devices which provide access to
-  * PHYs should register using this structure
-  */
-@@ -256,49 +311,58 @@ struct mii_bus {
- 	const char *name;
- 	char id[MII_BUS_ID_SIZE];
- 	void *priv;
-+	/** @read: Perform a read transfer on the bus */
- 	int (*read)(struct mii_bus *bus, int addr, int regnum);
-+	/** @write: Perform a write transfer on the bus */
- 	int (*write)(struct mii_bus *bus, int addr, int regnum, u16 val);
-+	/** @reset: Perform a reset of the bus */
- 	int (*reset)(struct mii_bus *bus);
-+
-+	/** @stats: Statistic counters per device on the bus */
- 	struct mdio_bus_stats stats[PHY_MAX_ADDR];
- 
--	/*
--	 * A lock to ensure that only one thing can read/write
-+	/**
-+	 * @mdio_lock: A lock to ensure that only one thing can read/write
- 	 * the MDIO bus at a time
- 	 */
- 	struct mutex mdio_lock;
- 
-+	/** @parent: Parent device of this bus */
- 	struct device *parent;
-+	/** @state: State of bus structure */
- 	enum {
- 		MDIOBUS_ALLOCATED = 1,
- 		MDIOBUS_REGISTERED,
- 		MDIOBUS_UNREGISTERED,
- 		MDIOBUS_RELEASED,
- 	} state;
-+
-+	/** @dev: Kernel device representation */
++ * @dev: Kernel device representation
++ * @bus: The MDIO bus this device is on
++ * @modalias: Alias of device driver
++ * @bus_match: Function to match driver to device
++ * @device_free: Free any resources used by the device
++ * @device_remove: Called before removing the device from the kernel
++ * @flags: Flags about the device, e.g. is it a PHY
++ * @reset_gpio: GPIO to reset the device
++ * @reset_ctrl: Reset controller to reset the device
++ * @reset_assert_delay: How long to old the device in reset
++ * @reset_deassert_delay: How long to wait after resetting the device
++ */
+ struct mdio_device {
  	struct device dev;
  
--	/* list of all PHYs on bus */
-+	/** @mdio_map: list of all PHYs on bus */
- 	struct mdio_device *mdio_map[PHY_MAX_ADDR];
+@@ -41,7 +56,7 @@ struct mdio_device {
+ 	void (*device_free)(struct mdio_device *mdiodev);
+ 	void (*device_remove)(struct mdio_device *mdiodev);
  
--	/* PHY addresses to be ignored when probing */
-+	/** @phy_mask: PHY addresses to be ignored when probing */
- 	u32 phy_mask;
- 
--	/* PHY addresses to ignore the TA/read failure */
-+	/** @phy_ignore_ta_mask: PHY addresses to ignore the TA/read failure */
- 	u32 phy_ignore_ta_mask;
- 
--	/*
--	 * An array of interrupts, each PHY's interrupt at the index
-+	/**
-+	 * @irq: An array of interrupts, each PHY's interrupt at the index
- 	 * matching its address
- 	 */
- 	int irq[PHY_MAX_ADDR];
- 
--	/* GPIO reset pulse width in microseconds */
-+	/** @reset_delay_us: GPIO reset pulse width in microseconds */
- 	int reset_delay_us;
--	/* GPIO reset deassert delay in microseconds */
-+	/** @reset_post_delay_us: GPIO reset deassert delay in microseconds */
- 	int reset_post_delay_us;
--	/* RESET GPIO descriptor pointer */
-+	/** @reset_gpiod: Reset GPIO descriptor pointer */
- 	struct gpio_desc *reset_gpiod;
- 
--	/* bus capabilities, used for probing */
-+	/** @probe_capabilities: bus capabilities, used for probing */
- 	enum {
- 		MDIOBUS_NO_CAP = 0,
- 		MDIOBUS_C22,
-@@ -306,15 +370,22 @@ struct mii_bus {
- 		MDIOBUS_C22_C45,
- 	} probe_capabilities;
- 
--	/* protect access to the shared element */
-+	/** @shared_lock: protect access to the shared element */
- 	struct mutex shared_lock;
- 
--	/* shared state across different PHYs */
-+	/** @shared: shared state across different PHYs */
- 	struct phy_package_shared *shared[PHY_MAX_ADDR];
+-	/* Bus address of the MDIO device (0-31) */
++	/** @addr: Bus address of the MDIO device (0-31) */
+ 	int addr;
+ 	int flags;
+ 	struct gpio_desc *reset_gpio;
+@@ -51,7 +66,12 @@ struct mdio_device {
  };
- #define to_mii_bus(d) container_of(d, struct mii_bus, dev)
+ #define to_mdio_device(d) container_of(d, struct mdio_device, dev)
  
--struct mii_bus *mdiobus_alloc_size(size_t);
-+struct mii_bus *mdiobus_alloc_size(size_t size);
-+
+-/* struct mdio_driver_common: Common to all MDIO drivers */
 +/**
-+ * mdiobus_alloc - Allocate an MDIO bus structure
++ * struct mdio_driver_common - Common to all MDIO drivers
 + *
-+ * The internal state of the MDIO bus will be set of MDIOBUS_ALLOCATED ready
-+ * for the driver to register the bus.
++ * @driver: Kernel driver representation
++ * @flags: Flags about this driver
 + */
- static inline struct mii_bus *mdiobus_alloc(void)
- {
- 	return mdiobus_alloc_size(0);
-@@ -341,40 +412,41 @@ struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr);
- #define PHY_INTERRUPT_DISABLED	false
- #define PHY_INTERRUPT_ENABLED	true
+ struct mdio_driver_common {
+ 	struct device_driver driver;
+ 	int flags;
+@@ -60,28 +80,41 @@ struct mdio_driver_common {
+ #define to_mdio_common_driver(d) \
+ 	container_of(d, struct mdio_driver_common, driver)
  
--/* PHY state machine states:
+-/* struct mdio_driver: Generic MDIO driver */
 +/**
-+ * enum phy_state - PHY state machine states:
-  *
-- * DOWN: PHY device and driver are not ready for anything.  probe
-+ * @PHY_DOWN: PHY device and driver are not ready for anything.  probe
-  * should be called if and only if the PHY is in this state,
-  * given that the PHY device exists.
-- * - PHY driver probe function will set the state to READY
-+ * - PHY driver probe function will set the state to @PHY_READY
-  *
-- * READY: PHY is ready to send and receive packets, but the
-+ * @PHY_READY: PHY is ready to send and receive packets, but the
-  * controller is not.  By default, PHYs which do not implement
-  * probe will be set to this state by phy_probe().
-  * - start will set the state to UP
-  *
-- * UP: The PHY and attached device are ready to do work.
-+ * @PHY_UP: The PHY and attached device are ready to do work.
-  * Interrupts should be started here.
-- * - timer moves to NOLINK or RUNNING
-+ * - timer moves to @PHY_NOLINK or @PHY_RUNNING
-  *
-- * NOLINK: PHY is up, but not currently plugged in.
-- * - irq or timer will set RUNNING if link comes back
-- * - phy_stop moves to HALTED
-+ * @PHY_NOLINK: PHY is up, but not currently plugged in.
-+ * - irq or timer will set @PHY_RUNNING if link comes back
-+ * - phy_stop moves to @PHY_HALTED
-  *
-- * RUNNING: PHY is currently up, running, and possibly sending
-+ * @PHY_RUNNING: PHY is currently up, running, and possibly sending
-  * and/or receiving packets
-- * - irq or timer will set NOLINK if link goes down
-- * - phy_stop moves to HALTED
-+ * - irq or timer will set @PHY_NOLINK if link goes down
-+ * - phy_stop moves to @PHY_HALTED
-  *
-- * CABLETEST: PHY is performing a cable test. Packet reception/sending
-+ * @PHY_CABLETEST: PHY is performing a cable test. Packet reception/sending
-  * is not expected to work, carrier will be indicated as down. PHY will be
-  * poll once per second, or on interrupt for it current state.
-  * Once complete, move to UP to restart the PHY.
-- * - phy_stop aborts the running test and moves to HALTED
-+ * - phy_stop aborts the running test and moves to @PHY_HALTED
-  *
-- * HALTED: PHY is up, but no polling or interrupts are done. Or
-+ * @PHY_HALTED: PHY is up, but no polling or interrupts are done. Or
-  * PHY is in an error state.
-- * - phy_start moves to UP
-+ * - phy_start moves to @PHY_UP
-  */
- enum phy_state {
- 	PHY_DOWN = 0,
-@@ -403,34 +475,67 @@ struct phy_c45_device_ids {
- struct macsec_context;
- struct macsec_ops;
- 
--/* phy_device: An instance of a PHY
-+/**
-+ * struct phy_device - An instance of a PHY
-  *
-- * drv: Pointer to the driver for this PHY instance
-- * phy_id: UID for this device found during discovery
-- * c45_ids: 802.3-c45 Device Identifers if is_c45.
-- * is_c45:  Set to true if this phy uses clause 45 addressing.
-- * is_internal: Set to true if this phy is internal to a MAC.
-- * is_pseudo_fixed_link: Set to true if this phy is an Ethernet switch, etc.
-- * is_gigabit_capable: Set to true if PHY supports 1000Mbps
-- * has_fixups: Set to true if this phy has fixups/quirks.
-- * suspended: Set to true if this phy has been suspended successfully.
-- * suspended_by_mdio_bus: Set to true if this phy was suspended by MDIO bus.
-- * sysfs_links: Internal boolean tracking sysfs symbolic links setup/removal.
-- * loopback_enabled: Set true if this phy has been loopbacked successfully.
-- * downshifted_rate: Set true if link speed has been downshifted.
-- * state: state of the PHY for management purposes
-- * dev_flags: Device-specific flags used by the PHY driver.
-- * irq: IRQ number of the PHY's interrupt (-1 if none)
-- * phy_timer: The timer for handling the state machine
-- * sfp_bus_attached: flag indicating whether the SFP bus has been attached
-- * sfp_bus: SFP bus attached to this PHY's fiber port
-- * attached_dev: The attached enet driver's device instance ptr
-- * adjust_link: Callback for the enet controller to respond to
-- * changes in the link state.
-- * macsec_ops: MACsec offloading ops.
-+ * @mdio: MDIO bus this PHY is on
-+ * @drv: Pointer to the driver for this PHY instance
-+ * @phy_id: UID for this device found during discovery
-+ * @c45_ids: 802.3-c45 Device Identifers if is_c45.
-+ * @is_c45:  Set to true if this phy uses clause 45 addressing.
-+ * @is_internal: Set to true if this phy is internal to a MAC.
-+ * @is_pseudo_fixed_link: Set to true if this phy is an Ethernet switch, etc.
-+ * @is_gigabit_capable: Set to true if PHY supports 1000Mbps
-+ * @has_fixups: Set to true if this phy has fixups/quirks.
-+ * @suspended: Set to true if this phy has been suspended successfully.
-+ * @suspended_by_mdio_bus: Set to true if this phy was suspended by MDIO bus.
-+ * @sysfs_links: Internal boolean tracking sysfs symbolic links setup/removal.
-+ * @loopback_enabled: Set true if this phy has been loopbacked successfully.
-+ * @downshifted_rate: Set true if link speed has been downshifted.
-+ * @state: State of the PHY for management purposes
-+ * @dev_flags: Device-specific flags used by the PHY driver.
-+ * @irq: IRQ number of the PHY's interrupt (-1 if none)
-+ * @phy_timer: The timer for handling the state machine
-+ * @phylink: Pointer to phylink instance for this PHY
-+ * @sfp_bus_attached: Flag indicating whether the SFP bus has been attached
-+ * @sfp_bus: SFP bus attached to this PHY's fiber port
-+ * @attached_dev: The attached enet driver's device instance ptr
-+ * @adjust_link: Callback for the enet controller to respond to changes: in the
-+ *               link state.
-+ * @phy_link_change: Callback for phylink for notification of link change
-+ * @macsec_ops: MACsec offloading ops.
-  *
-- * speed, duplex, pause, supported, advertising, lp_advertising,
-- * and autoneg are used like in mii_if_info
-+ * @speed: Current link speed
-+ * @duplex: Current duplex
-+ * @pause: Current pause
-+ * @asym_pause: Current asymmetric pause
-+ * @supported: Combined MAC/PHY supported linkmodes
-+ * @advertising: Currently advertised linkmodes
-+ * @adv_old: Saved advertised while power saving for WoL
-+ * @lp_advertising: Current link partner advertised linkmodes
-+ * @eee_broken_modes: Energy efficient ethernet modes which should be prohibited
-+ * @autoneg: Flag autoneg being used
-+ * @link: Current link state
-+ * @autoneg_complete: Flag auto negotiation of the link has completed
-+ * @mdix: Current crossover
-+ * @mdix_ctrl: User setting of crossover
-+ * @interrupts: Flag interrupts have been enabled
-+ * @interface: mii, rmii, rgmii etc.
-+ * @skb: Netlink message for cable diagnostics
-+ * @nest: Netlink nest used for cable diagnostics
-+ * @ehdr: nNtlink header for cable diagnostics
-+ * @phy_led_triggers: Array of LED triggers
-+ * @phy_num_led_triggers: Number of triggers in @phy_led_triggers
-+ * @led_link_trigger: LED trigger for link up/down
-+ * @last_triggered: last LED trigger for link speed
-+ * @master_slave_set: User requested master/slave configuration
-+ * @master_slave_get: Current master/slave advertisement
-+ * @master_slave_state: Current master/slave configuration
-+ * @mii_ts: Pointer to time stamper callbacks
-+ * @lock:  Mutex for serialization access to PHY
-+ * @state_queue: Work queue for state machine
-+ * @shared: Pointer to private data shared by phys in one package
-+ * @priv: Pointer to driver private data
-  *
-  * interrupts currently only supports enabled or disabled,
-  * but could be changed in the future to support enabling
-@@ -550,9 +655,18 @@ struct phy_device {
- #define to_phy_device(d) container_of(to_mdio_device(d), \
- 				      struct phy_device, mdio)
- 
--/* A structure containing possible configuration parameters
-+/**
-+ * struct phy_tdr_config - Configuration of a TDR raw test
-+ *
-+ * @first: Distance for first data collection point
-+ * @last: Distance for last data collection point
-+ * @step: Step between data collection points
-+ * @pair: Bitmap of cable pairs to collect data for
-+ *
-+ * A structure containing possible configuration parameters
-  * for a TDR cable test. The driver does not need to implement
-  * all the parameters, but should report what is actually used.
-+ * All distances are in centimeters.
-  */
- struct phy_tdr_config {
- 	u32 first;
-@@ -562,18 +676,20 @@ struct phy_tdr_config {
- };
- #define PHY_PAIR_ALL -1
- 
--/* struct phy_driver: Driver structure for a particular PHY type
-+/**
-+ * struct phy_driver - Driver structure for a particular PHY type
-  *
-- * driver_data: static driver data
-- * phy_id: The result of reading the UID registers of this PHY
-+ * @mdiodrv: Data common to all MDIO devices
-+ * @phy_id: The result of reading the UID registers of this PHY
-  *   type, and ANDing them with the phy_id_mask.  This driver
-  *   only works for PHYs with IDs which match this field
-- * name: The friendly name of this PHY type
-- * phy_id_mask: Defines the important bits of the phy_id
-- * features: A mandatory list of features (speed, duplex, etc)
-+ * @name: The friendly name of this PHY type
-+ * @phy_id_mask: Defines the important bits of the phy_id
-+ * @features: A mandatory list of features (speed, duplex, etc)
-  *   supported by this PHY
-- * flags: A bitfield defining certain other features this PHY
-+ * @flags: A bitfield defining certain other features this PHY
-  *   supports (like interrupts)
-+ * @driver_data: Static driver data
-  *
-  * All functions are optional. If config_aneg or read_status
-  * are not implemented, the phy core uses the genphy versions.
-@@ -592,151 +708,178 @@ struct phy_driver {
- 	u32 flags;
- 	const void *driver_data;
- 
--	/*
--	 * Called to issue a PHY software reset
-+	/**
-+	 * @soft_reset: Called to issue a PHY software reset
- 	 */
- 	int (*soft_reset)(struct phy_device *phydev);
- 
--	/*
--	 * Called to initialize the PHY,
-+	/**
-+	 * @config_init: Called to initialize the PHY,
- 	 * including after a reset
- 	 */
- 	int (*config_init)(struct phy_device *phydev);
++ * struct mdio_driver - Generic MDIO driver
++ * @mdiodrv: Common part to all MDIO drivers
++ */
+ struct mdio_driver {
+ 	struct mdio_driver_common mdiodrv;
  
 -	/*
 -	 * Called during discovery.  Used to set
@@ -698,258 +258,113 @@ index 4901b2637059..2adbca0e42e3 100644
 +	 * @probe: Called during discovery.  Used to set
  	 * up device-specific structures, if any
  	 */
- 	int (*probe)(struct phy_device *phydev);
- 
--	/*
--	 * Probe the hardware to determine what abilities it has.
--	 * Should only set phydev->supported.
-+	/**
-+	 * @get_features: Probe the hardware to determine what
-+	 * abilities it has.  Should only set phydev->supported.
- 	 */
- 	int (*get_features)(struct phy_device *phydev);
- 
- 	/* PHY Power Management */
-+	/** @suspend: Suspend the hardware, saving state if needed */
- 	int (*suspend)(struct phy_device *phydev);
-+	/** @resume: Resume the hardware, restoring state if needed */
- 	int (*resume)(struct phy_device *phydev);
- 
--	/*
--	 * Configures the advertisement and resets
-+	/**
-+	 * @config_aneg: Configures the advertisement and resets
- 	 * autonegotiation if phydev->autoneg is on,
- 	 * forces the speed to the current settings in phydev
- 	 * if phydev->autoneg is off
- 	 */
- 	int (*config_aneg)(struct phy_device *phydev);
- 
--	/* Determines the auto negotiation result */
-+	/** @aneg_done: Determines the auto negotiation result */
- 	int (*aneg_done)(struct phy_device *phydev);
- 
--	/* Determines the negotiated speed and duplex */
-+	/** @read_status: Determines the negotiated speed and duplex */
- 	int (*read_status)(struct phy_device *phydev);
- 
--	/* Clears any pending interrupts */
-+	/** @ack_interrupt: Clears any pending interrupts */
- 	int (*ack_interrupt)(struct phy_device *phydev);
- 
--	/* Enables or disables interrupts */
-+	/** @config_intr: Enables or disables interrupts */
- 	int (*config_intr)(struct phy_device *phydev);
- 
--	/*
--	 * Checks if the PHY generated an interrupt.
-+	/**
-+	 * @did_interrupt: Checks if the PHY generated an interrupt.
- 	 * For multi-PHY devices with shared PHY interrupt pin
- 	 * Set interrupt bits have to be cleared.
- 	 */
- 	int (*did_interrupt)(struct phy_device *phydev);
- 
--	/* Override default interrupt handling */
-+	/** @handle_interrupt: Override default interrupt handling */
- 	irqreturn_t (*handle_interrupt)(struct phy_device *phydev);
+ 	int (*probe)(struct mdio_device *mdiodev);
  
 -	/* Clears up any memory if needed */
 +	/** @remove: Clears up any memory if needed */
- 	void (*remove)(struct phy_device *phydev);
- 
--	/* Returns true if this is a suitable driver for the given
--	 * phydev.  If NULL, matching is based on phy_id and
--	 * phy_id_mask.
-+	/**
-+	 * @match_phy_device: Returns true if this is a suitable
-+	 * driver for the given phydev.	 If NULL, matching is based on
-+	 * phy_id and phy_id_mask.
- 	 */
- 	int (*match_phy_device)(struct phy_device *phydev);
- 
--	/* Some devices (e.g. qnap TS-119P II) require PHY register changes to
--	 * enable Wake on LAN, so set_wol is provided to be called in the
--	 * ethernet driver's set_wol function. */
-+	/**
-+	 * @set_wol: Some devices (e.g. qnap TS-119P II) require PHY
-+	 * register changes to enable Wake on LAN, so set_wol is
-+	 * provided to be called in the ethernet driver's set_wol
-+	 * function.
-+	 */
- 	int (*set_wol)(struct phy_device *dev, struct ethtool_wolinfo *wol);
- 
--	/* See set_wol, but for checking whether Wake on LAN is enabled. */
-+	/**
-+	 * @get_wol: See set_wol, but for checking whether Wake on LAN
-+	 * is enabled.
-+	 */
- 	void (*get_wol)(struct phy_device *dev, struct ethtool_wolinfo *wol);
- 
--	/*
--	 * Called to inform a PHY device driver when the core is about to
--	 * change the link state. This callback is supposed to be used as
--	 * fixup hook for drivers that need to take action when the link
--	 * state changes. Drivers are by no means allowed to mess with the
-+	/**
-+	 * @link_change_notify: Called to inform a PHY device driver
-+	 * when the core is about to change the link state. This
-+	 * callback is supposed to be used as fixup hook for drivers
-+	 * that need to take action when the link state
-+	 * changes. Drivers are by no means allowed to mess with the
- 	 * PHY device structure in their implementations.
- 	 */
- 	void (*link_change_notify)(struct phy_device *dev);
- 
--	/*
--	 * Phy specific driver override for reading a MMD register.
--	 * This function is optional for PHY specific drivers.  When
--	 * not provided, the default MMD read function will be used
--	 * by phy_read_mmd(), which will use either a direct read for
--	 * Clause 45 PHYs or an indirect read for Clause 22 PHYs.
--	 *  devnum is the MMD device number within the PHY device,
--	 *  regnum is the register within the selected MMD device.
-+	/**
-+	 * @read_mmd: Phy specific driver override for reading a MMD
-+	 * register.  This function is optional for PHY specific
-+	 * drivers.  When not provided, the default MMD read function
-+	 * will be used by phy_read_mmd(), which will use either a
-+	 * direct read for Clause 45 PHYs or an indirect read for
-+	 * Clause 22 PHYs.  devnum is the MMD device number within the
-+	 * PHY device, regnum is the register within the selected MMD
-+	 * device.
- 	 */
- 	int (*read_mmd)(struct phy_device *dev, int devnum, u16 regnum);
- 
--	/*
--	 * Phy specific driver override for writing a MMD register.
--	 * This function is optional for PHY specific drivers.  When
--	 * not provided, the default MMD write function will be used
--	 * by phy_write_mmd(), which will use either a direct write for
--	 * Clause 45 PHYs, or an indirect write for Clause 22 PHYs.
--	 *  devnum is the MMD device number within the PHY device,
--	 *  regnum is the register within the selected MMD device.
--	 *  val is the value to be written.
-+	/**
-+	 * @write_mmd: Phy specific driver override for writing a MMD
-+	 * register.  This function is optional for PHY specific
-+	 * drivers.  When not provided, the default MMD write function
-+	 * will be used by phy_write_mmd(), which will use either a
-+	 * direct write for Clause 45 PHYs, or an indirect write for
-+	 * Clause 22 PHYs.  devnum is the MMD device number within the
-+	 * PHY device, regnum is the register within the selected MMD
-+	 * device.  val is the value to be written.
- 	 */
- 	int (*write_mmd)(struct phy_device *dev, int devnum, u16 regnum,
- 			 u16 val);
- 
-+	/** @read_page: Return the current PHY register page number */
- 	int (*read_page)(struct phy_device *dev);
-+	/** @write_page: Set the current PHY register page number */
- 	int (*write_page)(struct phy_device *dev, int page);
- 
--	/* Get the size and type of the eeprom contained within a plug-in
--	 * module */
-+	/**
-+	 * @module_info: Get the size and type of the eeprom contained
-+	 * within a plug-in module
-+	 */
- 	int (*module_info)(struct phy_device *dev,
- 			   struct ethtool_modinfo *modinfo);
- 
--	/* Get the eeprom information from the plug-in module */
-+	/**
-+	 * @module_eeprom: Get the eeprom information from the plug-in
-+	 * module
-+	 */
- 	int (*module_eeprom)(struct phy_device *dev,
- 			     struct ethtool_eeprom *ee, u8 *data);
- 
--	/* Start a cable test */
-+	/** @cable_test_start: Start a cable test */
- 	int (*cable_test_start)(struct phy_device *dev);
- 
--	/* Start a raw TDR cable test */
-+	/**  @cable_test_tdr_start: Start a raw TDR cable test */
- 	int (*cable_test_tdr_start)(struct phy_device *dev,
- 				    const struct phy_tdr_config *config);
- 
--	/* Once per second, or on interrupt, request the status of the
--	 * test.
-+	/**
-+	 * @cable_test_get_status: Once per second, or on interrupt,
-+	 * request the status of the test.
- 	 */
- 	int (*cable_test_get_status)(struct phy_device *dev, bool *finished);
- 
- 	/* Get statistics from the phy using ethtool */
-+	/** @get_sset_count: Number of statistic counters */
- 	int (*get_sset_count)(struct phy_device *dev);
-+	/** @get_strings: Names of the statistic counters */
- 	void (*get_strings)(struct phy_device *dev, u8 *data);
-+	/** @get_stats: Return the statistic counter values */
- 	void (*get_stats)(struct phy_device *dev,
- 			  struct ethtool_stats *stats, u64 *data);
- 
- 	/* Get and Set PHY tunables */
-+	/** @get_tunable: Return the value of a tunable */
- 	int (*get_tunable)(struct phy_device *dev,
- 			   struct ethtool_tunable *tuna, void *data);
-+	/** @set_tunable: Set the value of a tunable */
- 	int (*set_tunable)(struct phy_device *dev,
- 			    struct ethtool_tunable *tuna,
- 			    const void *data);
-+	/** @set_loopback: Set the loopback mood of the PHY */
- 	int (*set_loopback)(struct phy_device *dev, bool enable);
-+	/** @get_sqi: Get the signal quality indication */
- 	int (*get_sqi)(struct phy_device *dev);
-+	/** @get_sqi_max: Get the maximum signal quality indication */
- 	int (*get_sqi_max)(struct phy_device *dev);
+ 	void (*remove)(struct mdio_device *mdiodev);
  };
- #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
-@@ -890,6 +1033,24 @@ static inline int __phy_modify_changed(struct phy_device *phydev, u32 regnum,
-  */
- int phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum);
+ #define to_mdio_driver(d)						\
+ 	container_of(to_mdio_common_driver(d), struct mdio_driver, mdiodrv)
  
+-/* device driver data */
 +/**
-+ * phy_read_mmd_poll_timeout - Periodically poll a phy register until a
-+ *                             condition is met or a timeout occurs
++ * mdiodev_set_drvdata - Set the device driver data
 + *
-+ * @phydev: The phy_device struct
-+ * @devaddr: The MMD to read from
-+ * @regnum: The register on the MMD to read
-+ * @val: Variable to read the register into
-+ * @cond: Break condition (usually involving @val)
-+ * @sleep_us: Maximum time to sleep between reads in us (0
-+ *            tight-loops).  Should be less than ~20ms since usleep_range
-+ *            is used (see Documentation/timers/timers-howto.rst).
-+ * @timeout_us: Timeout in us, 0 means never timeout
-+ * @sleep_before_read: if it is true, sleep @sleep_us before read.
-+ * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
-+ * case, the last read value at @args is stored in @val. Must not
-+ * be called from atomic context if sleep_us or timeout_us are used.
++ * @mdio: MDIO device to set the driver data for
++ * @data: Pointer to the data
 + */
- #define phy_read_mmd_poll_timeout(phydev, devaddr, regnum, val, cond, \
- 				  sleep_us, timeout_us, sleep_before_read) \
- ({ \
-@@ -1161,7 +1322,7 @@ static inline bool phy_is_internal(struct phy_device *phydev)
- /**
-  * phy_interface_mode_is_rgmii - Convenience function for testing if a
-  * PHY interface mode is RGMII (all variants)
-- * @mode: the phy_interface_t enum
-+ * @mode: the &phy_interface_t enum
-  */
- static inline bool phy_interface_mode_is_rgmii(phy_interface_t mode)
+ static inline void mdiodev_set_drvdata(struct mdio_device *mdio, void *data)
  {
-@@ -1193,7 +1354,7 @@ static inline bool phy_interface_is_rgmii(struct phy_device *phydev)
- 	return phy_interface_mode_is_rgmii(phydev->interface);
- };
+ 	dev_set_drvdata(&mdio->dev, data);
+ }
  
--/*
 +/**
-  * phy_is_pseudo_fixed_link - Convenience function for testing if this
-  * PHY is the CPU port facing side of an Ethernet switch, or similar.
-  * @phydev: the phy_device struct
++ * mdiodev_get_drvdata - Get the device driver data associated with the device
++ *
++ * @mdio: MDIO device to get the driver data for
++ */
+ static inline void *mdiodev_get_drvdata(struct mdio_device *mdio)
+ {
+ 	return dev_get_drvdata(&mdio->dev);
+@@ -96,16 +129,31 @@ int mdio_driver_register(struct mdio_driver *drv);
+ void mdio_driver_unregister(struct mdio_driver *drv);
+ int mdio_device_bus_match(struct device *dev, struct device_driver *drv);
+ 
++/**
++ * mdio_phy_id_is_c45 - Is the PHY id for a C45 transfer
++ *
++ * @phy_id: PHY address to determine if it is C45, otherwise C22
++ */
+ static inline bool mdio_phy_id_is_c45(int phy_id)
+ {
+ 	return (phy_id & MDIO_PHY_ID_C45) && !(phy_id & ~MDIO_PHY_ID_C45_MASK);
+ }
+ 
++/*
++ * mdio_phy_id_prtad - Return the part address
++ *
++ * @phy_id: PHY address to return the part address of
++ */
+ static inline __u16 mdio_phy_id_prtad(int phy_id)
+ {
+ 	return (phy_id & MDIO_PHY_ID_PRTAD) >> 5;
+ }
+ 
++/*
++ * mdio_phy_id_devad - Return the device address
++ *
++ * @phy_id: PHY address to return the device address of
++ */
+ static inline __u16 mdio_phy_id_devad(int phy_id)
+ {
+ 	return phy_id & MDIO_PHY_ID_DEVAD;
+@@ -334,6 +382,15 @@ int mdiobus_write_nested(struct mii_bus *bus, int addr, u32 regnum, u16 val);
+ int mdiobus_modify(struct mii_bus *bus, int addr, u32 regnum, u16 mask,
+ 		   u16 set);
+ 
++/**
++ * mdiobus_c44_addr - Construct a C45 Address
++ *
++ * @devad: Device address
++ * @regnum: Register number
++ *
++ * C45 accesses comprise of a device address and a register address, plus
++ * a flag to indicate it is a C45 address.
++ */
+ static inline u32 mdiobus_c45_addr(int devad, u16 regnum)
+ {
+ 	return MII_ADDR_C45 | devad << MII_DEVADDR_C45_SHIFT | regnum;
+@@ -352,12 +409,29 @@ static inline int __mdiobus_c45_write(struct mii_bus *bus, int prtad, int devad,
+ 			       val);
+ }
+ 
++/**
++ * mdiobus_c45_read - Helper to perform a C45 read
++ *
++ * @bus: MDIO bus the device is on
++ * @prtad: Part address
++ * @devad: Device address
++ * @regnum: Register to read
++ */
+ static inline int mdiobus_c45_read(struct mii_bus *bus, int prtad, int devad,
+ 				   u16 regnum)
+ {
+ 	return mdiobus_read(bus, prtad, mdiobus_c45_addr(devad, regnum));
+ }
+ 
++/**
++ * mdiobus_c45_write - Helper to perform a C45 write
++ *
++ * @bus: MDIO bus the device is on
++ * @prtad: Part address
++ * @devad: Device address
++ * @regnum: Register to write
++ * @val: Value to write to the register
++ */
+ static inline int mdiobus_c45_write(struct mii_bus *bus, int prtad, int devad,
+ 				    u16 regnum, u16 val)
+ {
 -- 
 2.28.0
 
