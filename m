@@ -2,78 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51A7F271759
-	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 21:10:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF80A27176F
+	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 21:15:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbgITTKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 15:10:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32876 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726109AbgITTKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 15:10:43 -0400
-Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CF2C061755;
-        Sun, 20 Sep 2020 12:10:42 -0700 (PDT)
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kK4jH-002dC7-8S; Sun, 20 Sep 2020 19:10:31 +0000
-Date:   Sun, 20 Sep 2020 20:10:31 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Christoph Hellwig <hch@lst.de>,
+        id S1726332AbgITTPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 15:15:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60164 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726314AbgITTPE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 20 Sep 2020 15:15:04 -0400
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3EB47235FD
+        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 19:15:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600629303;
+        bh=01MigO53P6iyZydtBYB0dVEV2Jvv4nS2ce79nd2bE4Q=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Wk8q/6dLv8zgmnj6frKsNEMKKbkKgfK14ioTWVmkH7d8IpexStF61cruMi2XHvhA8
+         doLJhfcTQOHJbboIkLR9Ergg8mqu95ZgaifCJQWLC7i89TWc2osLpGGy7ezgQQQkzJ
+         pDe1LbO4UQSuO8vfRtnIhj1TQBZOGhFNdwz0H6Iw=
+Received: by mail-wm1-f52.google.com with SMTP id q9so10067992wmj.2
+        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 12:15:03 -0700 (PDT)
+X-Gm-Message-State: AOAM530T2XgRwBCaixgV+NPLGcjnH5PCJPzr1ipapwwPstsjAvAG2Kox
+        HzMbJfqcLuox2Cy5rY3PutElm9aWpSdmx4+9C7d7KA==
+X-Google-Smtp-Source: ABdhPJznW7DCp463LJOKwLIqH+/ZeaOskntfIIXR0IAAA+ZM4omIXer1gN2IBUUGrBDkxuviLF20WI9Nmbt3oWZvbk0=
+X-Received: by 2002:a05:600c:2183:: with SMTP id e3mr27891946wme.49.1600629301119;
+ Sun, 20 Sep 2020 12:15:01 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200918124533.3487701-1-hch@lst.de> <20200918124533.3487701-2-hch@lst.de>
+ <20200920151510.GS32101@casper.infradead.org> <20200920180742.GN3421308@ZenIV.linux.org.uk>
+In-Reply-To: <20200920180742.GN3421308@ZenIV.linux.org.uk>
+From:   Andy Lutomirski <luto@kernel.org>
+Date:   Sun, 20 Sep 2020 12:14:49 -0700
+X-Gmail-Original-Message-ID: <CALCETrWHW4wHG+Z-mxsY-kvjSi+S6gRUQ+LHd9syPcm5bhi3cw@mail.gmail.com>
+Message-ID: <CALCETrWHW4wHG+Z-mxsY-kvjSi+S6gRUQ+LHd9syPcm5bhi3cw@mail.gmail.com>
+Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Christoph Hellwig <hch@lst.de>,
         Andrew Morton <akpm@linux-foundation.org>,
         Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
         David Howells <dhowells@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
-Message-ID: <20200920191031.GQ3421308@ZenIV.linux.org.uk>
-References: <20200918124533.3487701-1-hch@lst.de>
- <20200918124533.3487701-2-hch@lst.de>
- <20200920151510.GS32101@casper.infradead.org>
- <20200920180742.GN3421308@ZenIV.linux.org.uk>
- <20200920190159.GT32101@casper.infradead.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200920190159.GT32101@casper.infradead.org>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        Linux SCSI List <linux-scsi@vger.kernel.org>,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Network Development <netdev@vger.kernel.org>,
+        keyrings@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 20, 2020 at 08:01:59PM +0100, Matthew Wilcox wrote:
-> On Sun, Sep 20, 2020 at 07:07:42PM +0100, Al Viro wrote:
-> > 	2) a few drivers are really fucked in head.  They use different
-> > *DATA* layouts for reads/writes, depending upon the calling process.
-> > IOW, if you fork/exec a 32bit binary and your stdin is one of those,
-> > reads from stdin in parent and child will yield different data layouts.
-> > On the same struct file.
-> > 	That's what Christoph worries about (/dev/sg he'd mentioned is
-> > one of those).
-> > 
-> > 	IMO we should simply have that dozen or so of pathological files
-> > marked with FMODE_SHITTY_ABI; it's not about how they'd been opened -
-> > it describes the userland ABI provided by those.  And it's cast in stone.
-> > 
-> > 	Any in_compat_syscall() in ->read()/->write() instances is an ABI
-> > bug, plain and simple.  Some are unfixable for compatibility reasons, but
-> > any new caller like that should be a big red flag.
-> 
-> So an IOCB_COMPAT flag would let us know whether the caller is expecting
-> a 32-bit or 64-bit layout?  And io_uring could set it based on the
-> ctx->compat flag.
+On Sun, Sep 20, 2020 at 11:07 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
+>
+> On Sun, Sep 20, 2020 at 04:15:10PM +0100, Matthew Wilcox wrote:
+> > On Fri, Sep 18, 2020 at 02:45:25PM +0200, Christoph Hellwig wrote:
+> > > Add a flag to force processing a syscall as a compat syscall.  This is
+> > > required so that in_compat_syscall() works for I/O submitted by io_uring
+> > > helper threads on behalf of compat syscalls.
+> >
+> > Al doesn't like this much, but my suggestion is to introduce two new
+> > opcodes -- IORING_OP_READV32 and IORING_OP_WRITEV32.  The compat code
+> > can translate IORING_OP_READV to IORING_OP_READV32 and then the core
+> > code can know what that user pointer is pointing to.
+>
+> Let's separate two issues:
+>         1) compat syscalls want 32bit iovecs.  Nothing to do with the
+> drivers, dealt with just fine.
+>         2) a few drivers are really fucked in head.  They use different
+> *DATA* layouts for reads/writes, depending upon the calling process.
+> IOW, if you fork/exec a 32bit binary and your stdin is one of those,
+> reads from stdin in parent and child will yield different data layouts.
+> On the same struct file.
+>         That's what Christoph worries about (/dev/sg he'd mentioned is
+> one of those).
+>
+>         IMO we should simply have that dozen or so of pathological files
+> marked with FMODE_SHITTY_ABI; it's not about how they'd been opened -
+> it describes the userland ABI provided by those.  And it's cast in stone.
+>
 
-So you want to convert all that crap to a form that would see iocb
-(IOW, ->read_iter()/->write_iter())?  And, since quite a few are sysfs
-attributes, propagate that through sysfs, changing the method signatures
-to match that and either modifying fuckloads of instances or introducing
-new special methods for the ones that are sensitive to that crap?
+I wonder if this is really quite cast in stone.  We could also have
+FMODE_SHITTY_COMPAT and set that when a file like this is *opened* in
+compat mode.  Then that particular struct file would be read and
+written using the compat data format.  The change would be
+user-visible, but the user that would see it would be very strange
+indeed.
 
-IMO it's much saner to mark those and refuse to touch them from io_uring...
+I don't have a strong opinion as to whether that is better or worse
+than denying io_uring access to these things, but at least it moves
+the special case out of io_uring.
+
+--Andy
