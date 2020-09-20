@@ -2,137 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAE7D271554
-	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 17:21:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9AEA271568
+	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 17:38:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726314AbgITPVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 11:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726267AbgITPVl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 11:21:41 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8ED3C061755
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 08:21:40 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id x23so9728377wmi.3
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 08:21:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Zbqk19DRUKiAoEVE2ZMp3tw6spv8ELW5R8m5iBOQBcA=;
-        b=LEyAdlCa8fNSK76wZsQQltJFo1Ci7TUHgStyf2o0iWmO8RFlMNL0Te6C++pEYqB76V
-         CBNaTsqcVmWAd8RCaEr4MC5QTAQ0aJ/MPbfMOz4LDjYGl4quf3AZatbqS/YmREFlqqma
-         iZFXjW0GSwV9m2nGVZM5Ep2mTkQ8z8l9xJnXPgjG4A0sLPbxUpwei6yD2OGnxGhLTix5
-         eD8k6/7DJ04sx+qso4/kViVrwjvjxJonFnzAke1ZwVE7pL8Tv7BBC1PRJUVGcqyU8u7w
-         RPtfPsHIgGJvDeVcq/M8Oc4TF4l0Q4e+dzO8s0GDGxXn9WFP+NlbtFCNvMBpnqXaMQu8
-         +ENw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Zbqk19DRUKiAoEVE2ZMp3tw6spv8ELW5R8m5iBOQBcA=;
-        b=p+2eZd9MB5M9WoqghRyctWUo3Xot20hs+pGN1zdMgtz2Vv/37GVzaGG9E84Zzm2Ovi
-         hiHY3163moCpanm2Y1GpGW6juUgZTGlMLc4di4WplXjdKR77Y5rgkD/g9yMnKAHHBhfh
-         awXqtCl2EGU+LVAayl/emTcUIY4+CoJ2u+w8R03f4fTs9uqxu32Mg/zW+K+0lWP/MlC3
-         adYwlHNKARTPt+xXt6NcSVb20zoJ8XLFrGAtLu8vlFTpnJxiuAveM8WU+IqmL5Rx7jIO
-         kybMsmmMyqEsxeYgt7bpyEded5u9D4mw0e8T45/up+/8NfL9RY2H8WrsXyc7dUvsiV/a
-         M6rQ==
-X-Gm-Message-State: AOAM533pOsN7adFGqpVQyPPE9xBYtkI2YW0lL3DgEjlliC49fpAwS7n3
-        enfPM43BbS2C4fmmGWpR5+ZiQg==
-X-Google-Smtp-Source: ABdhPJzHJv+QUhDuwiK5NbjUtNgRgGxeTYr+LXUXqo35t4O9epo16YiYnszQUn4NiCjdV1XTqozqvg==
-X-Received: by 2002:a7b:cb17:: with SMTP id u23mr25207330wmj.166.1600615298338;
-        Sun, 20 Sep 2020 08:21:38 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id t6sm17593694wre.30.2020.09.20.08.21.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Sep 2020 08:21:37 -0700 (PDT)
-Date:   Sun, 20 Sep 2020 17:21:36 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Thomas Falcon <tlfalcon@linux.ibm.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        jiri@nvidia.com
-Subject: Re: Exposing device ACL setting through devlink
-Message-ID: <20200920152136.GB2323@nanopsycho.orion>
-References: <e7f76581-8525-2b98-ec4d-e772db692318@linux.ibm.com>
- <20200904083141.GE2997@nanopsycho.orion>
- <20200904153751.17ad4b48@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <7e4c2c8f-a5b0-799c-3083-cfefcf37bf10@linux.ibm.com>
- <20200910070016.GT2997@nanopsycho.orion>
- <f4d3923c-958c-c0b4-6aa3-f2500d4967e9@linux.ibm.com>
- <20200918072054.GA2323@nanopsycho.orion>
- <0bdb48e1-171b-3ec6-c993-0499639d0fc4@linux.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0bdb48e1-171b-3ec6-c993-0499639d0fc4@linux.ibm.com>
+        id S1726368AbgITPi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 11:38:27 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:44640 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726267AbgITPi1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 11:38:27 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08KFUwUh176600;
+        Sun, 20 Sep 2020 15:38:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2020-01-29; bh=K+0SzXgpoWzXCGxoZDrD7xWy3jeNjxytHxViKP+/Y8M=;
+ b=sZCkOODJjtJ5rTv/JewSzfUbHXCedk47yd3pBMTqy/5i+IBLcTP0y3XvRbMZSdcz4bGh
+ HzJ0Xq+g28zku330+tWu30ASPNqBw89XCZ3p9zXE6z4DxbQ0AX1bXYdEUiEiL8V+vzBh
+ nzNe9XW5MpOItYRGDFBdJ8fN8rlYvo/4gkGSm8sPwkSg8HzmO9uNyizy3ImgrEB3zPzn
+ e53GnaQwFXxQ8wC4K9sV2U0uEwc9TWnbBZQT+n4n/EgJYLiCxjVSwL/cXXg5rE4+rEmT
+ feIOwCVO+PpAcON1v70KLatOpNamuSFpVojPSPGY0fk81j2CEMFs5v1ItNvHljLxasTJ aw== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 33n9dqtm3q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 20 Sep 2020 15:38:08 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08KFZjYB043005;
+        Sun, 20 Sep 2020 15:38:07 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 33nuvx8p09-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 20 Sep 2020 15:38:07 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08KFbvKD020432;
+        Sun, 20 Sep 2020 15:37:58 GMT
+Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sun, 20 Sep 2020 08:37:57 -0700
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
+Subject: Re: [PATCH 08/14] xprtrdma: drop double zeroing
+From:   Chuck Lever <chuck.lever@oracle.com>
+In-Reply-To: <1600601186-7420-9-git-send-email-Julia.Lawall@inria.fr>
+Date:   Sun, 20 Sep 2020 11:37:56 -0400
+Cc:     Bruce Fields <bfields@fieldses.org>,
+        kernel-janitors@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <CC88D365-0362-4CD8-9B72-0EE8B51BF481@oracle.com>
+References: <1600601186-7420-1-git-send-email-Julia.Lawall@inria.fr>
+ <1600601186-7420-9-git-send-email-Julia.Lawall@inria.fr>
+To:     Julia Lawall <Julia.Lawall@inria.fr>,
+        Anna Schumaker <anna.schumaker@netapp.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.1)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9750 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0 malwarescore=0
+ mlxscore=0 suspectscore=0 adultscore=0 mlxlogscore=999 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009200136
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9750 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
+ phishscore=0 priorityscore=1501 malwarescore=0 mlxscore=0 impostorscore=0
+ clxscore=1011 lowpriorityscore=0 suspectscore=0 spamscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009200135
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, Sep 19, 2020 at 01:20:34AM CEST, tlfalcon@linux.ibm.com wrote:
->
->On 9/18/20 2:20 AM, Jiri Pirko wrote:
->> Thu, Sep 17, 2020 at 10:31:10PM CEST, tlfalcon@linux.ibm.com wrote:
->> > On 9/10/20 2:00 AM, Jiri Pirko wrote:
->> > > Tue, Sep 08, 2020 at 08:27:13PM CEST, tlfalcon@linux.ibm.com wrote:
->> > > > On 9/4/20 5:37 PM, Jakub Kicinski wrote:
->> > > > > On Fri, 4 Sep 2020 10:31:41 +0200 Jiri Pirko wrote:
->> > > > > > Thu, Sep 03, 2020 at 07:59:45PM CEST, tlfalcon@linux.ibm.com wrote:
->> > > > > > > Hello, I am trying to expose MAC/VLAN ACL and pvid settings for IBM
->> > > > > > > VNIC devices to administrators through devlink (originally through
->> > > > > > > sysfs files, but that was rejected in favor of devlink). Could you
->> > > > > > > give any tips on how you might go about doing this?
->> > > > > > Tom, I believe you need to provide more info about what exactly do you
->> > > > > > need to setup. But from what you wrote, it seems like you are looking
->> > > > > > for bridge/tc offload. The infra is already in place and drivers are
->> > > > > > implementing it. See mlxsw for example.
->> > > > > I think Tom's use case is effectively exposing the the VF which VLANs
->> > > > > and what MAC addrs it can use. Plus it's pvid. See:
->> > > > > 
->> > > > > https://www.spinics.net/lists/netdev/msg679750.html
->> > > > Thanks, Jakub,
->> > > > 
->> > > > Right now, the use-case is to expose the allowed VLAN's and MAC addresses and
->> > > > the VF's PVID. Other use-cases may be explored later on though.
->> > > Who is configuring those?
->> > > 
->> > > What does mean "allowed MAC address"? Does it mean a MAC address that VF
->> > > can use to send packet as a source MAC?
->> > > 
->> > > What does mean "allowed VLAN"? VF is sending vlan tagged frames and only
->> > > some VIDs are allowed.
->> > > 
->> > > Pardon my ignorance, this may be routine in the nic world. However I
->> > > find the desc very vague. Please explain in details, then we can try to
->> > > find fitting solution.
->> > > 
->> > > Thanks!
->> > These MAC or VLAN ACL settings are configured on the Power Hypervisor.
->> > 
->> > The rules for a VF can be to allow or deny all MAC addresses or VLAN ID's or
->> > to allow a specified list of MAC address and VLAN ID's. The interface allows
->> > or denies frames based on whether the ID in the VLAN tag or the source MAC
->> > address is included in the list of allowed VLAN ID's or MAC addresses
->> > specified during creation of the VF.
->> At which point are you doing this ACL? Sounds to me, like this is the
->> job of "a switch" which connects VFs and physical port. Then, you just
->> need to configure this switch to pass/drop packets according to match.
->> And that is what there is already implemented with TC-flower/u32 + actions
->> and bridge offload.
->> 
->Yes, this the filtering is done on a virtual switch in Power firmware. I am
->really just trying to report the ACL list's configured at the firmware level
->to users on the guest OS.
+Thanks, Julia!
 
-We have means to model switches properly in linux and offload to them.
-I advise you to do that.
+> On Sep 20, 2020, at 7:26 AM, Julia Lawall <Julia.Lawall@inria.fr> =
+wrote:
+>=20
+> sg_init_table zeroes its first argument, so the allocation of that =
+argument
+> doesn't have to.
+>=20
+> the semantic patch that makes this change is as follows:
+> (http://coccinelle.lip6.fr/)
+>=20
+> // <smpl>
+> @@
+> expression x,n,flags;
+> @@
+>=20
+> x =3D=20
+> - kcalloc
+> + kmalloc_array
+>  (n,sizeof(*x),flags)
+> ...
+> sg_init_table(x,n)
+> // </smpl>
+>=20
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+
+Acked-by: Chuck Lever <chuck.lever@oracle.com>
+
+This one goes to Anna.
 
 
->
->Tom
->
->> > Thanks for your help,
->> > 
->> > Tom
->> > 
+> ---
+> net/sunrpc/xprtrdma/frwr_ops.c |    2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff -u -p a/net/sunrpc/xprtrdma/frwr_ops.c =
+b/net/sunrpc/xprtrdma/frwr_ops.c
+> --- a/net/sunrpc/xprtrdma/frwr_ops.c
+> +++ b/net/sunrpc/xprtrdma/frwr_ops.c
+> @@ -124,7 +124,7 @@ int frwr_mr_init(struct rpcrdma_xprt *r_
+> 	if (IS_ERR(frmr))
+> 		goto out_mr_err;
+>=20
+> -	sg =3D kcalloc(depth, sizeof(*sg), GFP_NOFS);
+> +	sg =3D kmalloc_array(depth, sizeof(*sg), GFP_NOFS);
+> 	if (!sg)
+> 		goto out_list_err;
+>=20
+>=20
+
+--
+Chuck Lever
+
+
+
