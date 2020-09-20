@@ -2,108 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF80A27176F
-	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 21:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5385E27177A
+	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 21:23:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726332AbgITTPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 15:15:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60164 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726314AbgITTPE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Sep 2020 15:15:04 -0400
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3EB47235FD
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 19:15:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600629303;
-        bh=01MigO53P6iyZydtBYB0dVEV2Jvv4nS2ce79nd2bE4Q=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Wk8q/6dLv8zgmnj6frKsNEMKKbkKgfK14ioTWVmkH7d8IpexStF61cruMi2XHvhA8
-         doLJhfcTQOHJbboIkLR9Ergg8mqu95ZgaifCJQWLC7i89TWc2osLpGGy7ezgQQQkzJ
-         pDe1LbO4UQSuO8vfRtnIhj1TQBZOGhFNdwz0H6Iw=
-Received: by mail-wm1-f52.google.com with SMTP id q9so10067992wmj.2
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 12:15:03 -0700 (PDT)
-X-Gm-Message-State: AOAM530T2XgRwBCaixgV+NPLGcjnH5PCJPzr1ipapwwPstsjAvAG2Kox
-        HzMbJfqcLuox2Cy5rY3PutElm9aWpSdmx4+9C7d7KA==
-X-Google-Smtp-Source: ABdhPJznW7DCp463LJOKwLIqH+/ZeaOskntfIIXR0IAAA+ZM4omIXer1gN2IBUUGrBDkxuviLF20WI9Nmbt3oWZvbk0=
-X-Received: by 2002:a05:600c:2183:: with SMTP id e3mr27891946wme.49.1600629301119;
- Sun, 20 Sep 2020 12:15:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200918124533.3487701-1-hch@lst.de> <20200918124533.3487701-2-hch@lst.de>
- <20200920151510.GS32101@casper.infradead.org> <20200920180742.GN3421308@ZenIV.linux.org.uk>
-In-Reply-To: <20200920180742.GN3421308@ZenIV.linux.org.uk>
-From:   Andy Lutomirski <luto@kernel.org>
-Date:   Sun, 20 Sep 2020 12:14:49 -0700
-X-Gmail-Original-Message-ID: <CALCETrWHW4wHG+Z-mxsY-kvjSi+S6gRUQ+LHd9syPcm5bhi3cw@mail.gmail.com>
-Message-ID: <CALCETrWHW4wHG+Z-mxsY-kvjSi+S6gRUQ+LHd9syPcm5bhi3cw@mail.gmail.com>
-Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+        id S1726381AbgITTXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 15:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726126AbgITTXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 15:23:06 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DFEC061755;
+        Sun, 20 Sep 2020 12:23:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=M9C+xMteCLmxjuhFVA61FIZoHdpfMD5Lc3Ug+y14apc=; b=TU8gswjuXpvm/MyBSJB1vaOTwg
+        7CcQFeWPYOwW6PYXhvCpp0vzvWldb70TKuwk6v9nWcowTGn2VYxRj0sbzAeS1dOPc7tVJZV69Nc6Y
+        Oye5Ac32YDMVeUtWbcgDk6Lqhz34cgGhYuiR2uTx7CyOyrh4ejW/zOiv0nLMgTDXz/4QksW+LarsO
+        UKo48ovg6z43+egEg49LBUL7Qb1BK2+QYQXYWWRv+ZaoBr++1zvkvXaDBQNH/ENPEz9dpyIhUnPg/
+        RMo/EthNeTct23dRta9OEBgDELlkG8IIvv6XkLyXzRfFWLEelnomJhQf946LaXKaS04BIvNdWa7Hj
+        bCj2UmxA==;
+Received: from willy by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kK4vL-0001qh-MM; Sun, 20 Sep 2020 19:22:59 +0000
+Date:   Sun, 20 Sep 2020 20:22:59 +0100
+From:   Matthew Wilcox <willy@infradead.org>
 To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Christoph Hellwig <hch@lst.de>,
+Cc:     Christoph Hellwig <hch@lst.de>,
         Andrew Morton <akpm@linux-foundation.org>,
         Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
         David Howells <dhowells@redhat.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        Linux SCSI List <linux-scsi@vger.kernel.org>,
-        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
-        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Network Development <netdev@vger.kernel.org>,
-        keyrings@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-aio@kvack.org,
+        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+Message-ID: <20200920192259.GU32101@casper.infradead.org>
+References: <20200918124533.3487701-1-hch@lst.de>
+ <20200918124533.3487701-2-hch@lst.de>
+ <20200920151510.GS32101@casper.infradead.org>
+ <20200920180742.GN3421308@ZenIV.linux.org.uk>
+ <20200920190159.GT32101@casper.infradead.org>
+ <20200920191031.GQ3421308@ZenIV.linux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200920191031.GQ3421308@ZenIV.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 20, 2020 at 11:07 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
->
-> On Sun, Sep 20, 2020 at 04:15:10PM +0100, Matthew Wilcox wrote:
-> > On Fri, Sep 18, 2020 at 02:45:25PM +0200, Christoph Hellwig wrote:
-> > > Add a flag to force processing a syscall as a compat syscall.  This is
-> > > required so that in_compat_syscall() works for I/O submitted by io_uring
-> > > helper threads on behalf of compat syscalls.
-> >
-> > Al doesn't like this much, but my suggestion is to introduce two new
-> > opcodes -- IORING_OP_READV32 and IORING_OP_WRITEV32.  The compat code
-> > can translate IORING_OP_READV to IORING_OP_READV32 and then the core
-> > code can know what that user pointer is pointing to.
->
-> Let's separate two issues:
->         1) compat syscalls want 32bit iovecs.  Nothing to do with the
-> drivers, dealt with just fine.
->         2) a few drivers are really fucked in head.  They use different
-> *DATA* layouts for reads/writes, depending upon the calling process.
-> IOW, if you fork/exec a 32bit binary and your stdin is one of those,
-> reads from stdin in parent and child will yield different data layouts.
-> On the same struct file.
->         That's what Christoph worries about (/dev/sg he'd mentioned is
-> one of those).
->
->         IMO we should simply have that dozen or so of pathological files
-> marked with FMODE_SHITTY_ABI; it's not about how they'd been opened -
-> it describes the userland ABI provided by those.  And it's cast in stone.
->
+On Sun, Sep 20, 2020 at 08:10:31PM +0100, Al Viro wrote:
+> IMO it's much saner to mark those and refuse to touch them from io_uring...
 
-I wonder if this is really quite cast in stone.  We could also have
-FMODE_SHITTY_COMPAT and set that when a file like this is *opened* in
-compat mode.  Then that particular struct file would be read and
-written using the compat data format.  The change would be
-user-visible, but the user that would see it would be very strange
-indeed.
-
-I don't have a strong opinion as to whether that is better or worse
-than denying io_uring access to these things, but at least it moves
-the special case out of io_uring.
-
---Andy
+Simpler solution is to remove io_uring from the 32-bit syscall list.
+If you're a 32-bit process, you don't get to use io_uring.  Would
+any real users actually care about that?
