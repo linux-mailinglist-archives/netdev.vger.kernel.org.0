@@ -2,100 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 282322718A3
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 01:44:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6E552718A5
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 01:45:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726389AbgITXo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 19:44:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46278 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726126AbgITXo2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 19:44:28 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D414C061755
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 16:44:28 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id d13so7324388pgl.6
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 16:44:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Df9RYfrE87k9v8VtrQTzx+ZdRyc+yjqscgIAo+P8ZWU=;
-        b=XNsbPcM66KcMXSIQP4X2qr3hNYpp1iXGBvawknY1MKHsehwut8sWs3o6U/FWog9L9Z
-         qc/h26Za80hErTolcsipizo0dNSDqbk+jt5ajI5A9dcSVX5jTO74hMKJ0TUSjvcYLNp4
-         4bXKb/ZqhhwdokoUQQ3nuSc0cap/O944dosIYgH8iGNLXfTzbMwPDQqNRf595QhPyAYR
-         o6wvJ1Hp/1fmvX8OUQZV+BflfLDOwKeD/7J9jtZLZoj3NK/Or0ZGblxdJ5sMWLEeIeh6
-         pT49/8gSRK0A2geAHLTeCf/XEZp4HryaPRzJIAers2RSulW82GWR+dOokag9kHHQFp5E
-         HyWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Df9RYfrE87k9v8VtrQTzx+ZdRyc+yjqscgIAo+P8ZWU=;
-        b=hDtlOqdIaaPhwbCcsOOzRZcl3rP0Hs6X6lRAoByQGmtd2UEAyBGiRpJ1A5khuVpg/1
-         M2Jp/0jDhFXzCgOFa/ePjrLMNCSwe0i7gMHjUDd7baqzuJkEq8v0VSDdOBCRt7Sj3UOe
-         Ig3pN1BMScBt8aJVudnUPdoFTKMvxAFKqUe+tdx4B0Ax9SwURhc0rsMUIaaWLClob+Fh
-         kRcSQAu9Rp7+OmdAL+SXSrG9emtQ/iAx1OZliFCVqZB7T1UC6nIHFqK0sgqgDNPRIlGI
-         7fHdg5AWBNvvIRcf2aNyYQwgxMfriyAed/tg++as+QBv2yKbeCx2Ggxdwo9UQzkZnupF
-         2rGw==
-X-Gm-Message-State: AOAM530iH7JSCJYOt98Q7PQ8qw4oSNgOyZK8naevSXvToBbMjVfcA6TW
-        BwWrv9DeolYfvux7aTowLTI=
-X-Google-Smtp-Source: ABdhPJxDt2NUT/eMQiX2ng2iRlNrHCNnHFMjBagmWI6JSb61scYgTtb2hYPsx2ylG4Fl42P+Dye3ZA==
-X-Received: by 2002:a17:902:c40e:b029:d1:bb21:4c97 with SMTP id k14-20020a170902c40eb02900d1bb214c97mr37880659plk.31.1600645467313;
-        Sun, 20 Sep 2020 16:44:27 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id l78sm10107301pfd.26.2020.09.20.16.44.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Sep 2020 16:44:26 -0700 (PDT)
-Subject: Re: [PATCH net-next RFC v1 0/4] Add per port devlink regions
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, Chris Healy <cphealy@gmail.com>
+        id S1726368AbgITXpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 19:45:44 -0400
+Received: from mail-eopbgr20042.outbound.protection.outlook.com ([40.107.2.42]:41931
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726126AbgITXpo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 20 Sep 2020 19:45:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Fr+3oYVyAuotxbmB/NJ872YWpsHubPyT3d3rbC/ORamMzXOhxzVbH1jj7I2MA0A/nthIwPxQwcRQlKJqo7Zz5Z199D9cuEYS4xN7kLL4cq+CWWe8HI+lOICjxctGVFaHP1J36JUE0pH9dlaw9KWCWTCkGO8Fs7bLy5WSt8a/0FNTsuVXKd/3xj8OOI9ZH/rThZk5+ZwKJqi/ONrH1U/LQBrGQ+LyONQybwdqeeLzYyhEE+y9MSgXY2AEtfUTCMdG2iGrmw/8YHzlFbnpZ99ITnu8idEQXhPgQUO60/QeBYA/dOSpWuyo3nTTEqhlktHIKZurnZyW9s3r/lQvD6Rikw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fJdpuNbNKbObZs6irb2bmpsxRylUp0WX7Ep016YR5WY=;
+ b=I/ZA/moGCG4ItASXbaxM0S4OqJj5sNtpHA4M7RIIRNx6HvUDhb9NcYX0M31r5Vu0F2+OhG30k6grk5a35Oqrl3fGNreJskYCFy8Vx7SbGnNWNvPmrTj+fGQYkNj2dduGFKWBn4OUIEcbjcfxH93xSLftHsQAYRrwPTnAKl9YZ+kGdh8FL51xKx/TvkyiQBktTDQL+6vfITZi3fI80UriKdqT/pS75zF84QDGjxmwgfv+frumKG56cW5fxZcBfXfYZIrX4pQXl++lDQeCcIKJQP8Usu68ouqPtJbgzGrvi6CMTW0W+Jy8OimIgLzUlwPlq+aTe41SM4IKAR2cu9W6oA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fJdpuNbNKbObZs6irb2bmpsxRylUp0WX7Ep016YR5WY=;
+ b=BwLcQZW19vRpNuFId/Hu58cTYmxE9N3vz+sxcaYbdYccQ+RfLJBloLcebnfsUO8HN5Q1gjU6AGu5Q8RLMm/0lNDFkfe9DPRBHLPn9F+67oQLiHK7oGkI6NYkj5gSB01cdq/l2eqpQTQTT4qZazcfMPynsQbXT7z9f40LMmOguKE=
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR0402MB3838.eurprd04.prod.outlook.com (2603:10a6:803:20::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.19; Sun, 20 Sep
+ 2020 23:45:39 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3391.014; Sun, 20 Sep 2020
+ 23:45:39 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        Chris Healy <cphealy@gmail.com>
+Subject: Re: [PATCH net-next RFC v1 1/4] net: devlink: Add support for port
+ regions
+Thread-Topic: [PATCH net-next RFC v1 1/4] net: devlink: Add support for port
+ regions
+Thread-Index: AQHWjpNTDn/QEBX8Hk+qVrvSi0xeHqlyMyOA
+Date:   Sun, 20 Sep 2020 23:45:39 +0000
+Message-ID: <20200920234539.ayzonwdptqp27zgl@skbuf>
 References: <20200919144332.3665538-1-andrew@lunn.ch>
- <20200920233340.ddps7yxoqlbvmv7m@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <6ae49d7b-f33c-155b-d69b-c9c75a387edd@gmail.com>
-Date:   Sun, 20 Sep 2020 16:44:25 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.2
-MIME-Version: 1.0
-In-Reply-To: <20200920233340.ddps7yxoqlbvmv7m@skbuf>
-Content-Type: text/plain; charset=utf-8; format=flowed
+ <20200919144332.3665538-2-andrew@lunn.ch>
+In-Reply-To: <20200919144332.3665538-2-andrew@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.217.212]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: f279df9e-b26d-4c1a-bf3b-08d85dbf47ab
+x-ms-traffictypediagnostic: VI1PR0402MB3838:
+x-microsoft-antispam-prvs: <VI1PR0402MB38385B4356C00747960B39B7E03D0@VI1PR0402MB3838.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ZQCuClKLLHvEXGe/nZSwXvZ9T8BZcSRIqAc2E/NhCaVpNX92U1IDpn8Eb7oKUM4E75MTMVDrJ1W1pLQIbb1fSgAgEHRBiCGG7oXJxGPyAWuB9Tj/reh+MKaS3fNIS4NoFiaKRgCTjrI0pbZ+KApMHleBDZzNi3rCjBM/I/DXLVN4+KmqR14B40WrrnMnA3gR1qDv6zT9FW5y0Mq4FXa9v30le/ESnsbLvH0RkjnLYYgxXlNVmocoRt9/8pzlgPgx2YXbHl8BczNp5LY6pXuj86134Lm55/6Kf7JDpXhGKMu6uLp+BF5bUx3/Tj+i2qgRtGVZNUJRS+jlAeeUdjF0Gw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(136003)(346002)(376002)(39860400002)(396003)(83380400001)(66446008)(6512007)(71200400001)(8936002)(86362001)(66946007)(76116006)(64756008)(9686003)(66476007)(66556008)(4326008)(5660300002)(8676002)(2906002)(6506007)(6486002)(44832011)(186003)(26005)(33716001)(1076003)(478600001)(54906003)(316002)(6916009);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 9Bqd2ECI/Bw3AG95JzSouJN1b3bin0K/Hl2RKMVyxXWmXa41dXt1TNiG8Dhkg1vxCHyPiU+/l5Fgn2nvsu/Hxn8y26dCC6Kmjro/IeG7kaGBBY4udgk8DT+8n+2r4BUVF8EAlyag8v95FleiVqwkJUb5Adk7G8mcXcRAEoaxooOMgnqk6nNTOkjCJMsAvxwQKJNoVFLL+BTskJwA5LbcProPwVsxufl+4F11dMgfOew6uwebx3cQnfYocRNPvOgNO0zM93rbfEJNzmZc97Neafe/uMwfLHh/eOFK0gw5pQszDAliMMzlv9RDRHhsI7qSGKnmmp/eU/8RGkDzL3/9U0W4WGqht3w+XqVoj8ioQYJrdullf9cc2/BNLNKWo3gExiW1UnhySJc4JHyxvqX44ogD02j+O7dAOgB+vmnv/DOndMvCa64UyI2isF38b+VZ0sxbXv5j9/qbJmmtspsPbFeubzJ4WdYVN50R2meWQuTM97SnQ/mKQ/MZ4/sdMTl9AbTmhGbDbU5SX/8DJfMbl1+gGkYJom3alooJh+hb13VpazUBq7Opityw2oN6dN0A0oLBBo2KeiOeFq5f3Zq+zQbK+em49vMjV3FyejkqiiW68U/DyakogrG/wxjwp9OzQwExMJA7uPHC6lbV1NBLmQ==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <D4DC1E43A659104D81A65395C8107783@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f279df9e-b26d-4c1a-bf3b-08d85dbf47ab
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2020 23:45:39.5219
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rpdA9rAiVr0ZgPSkMcMIltl0Te3eWNNzEkhxzA6hOFFrWoaWwfOh2Ltp7mShuVUx/hYENo6IBz7kO0xO0aqSvg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3838
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Sep 19, 2020 at 04:43:29PM +0200, Andrew Lunn wrote:
+> Allow regions to be registered to a devlink port. The same netlink API
+> is used, but the port index is provided to indicate when a region is a
+> port region as opposed to a device region.
+>=20
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+>  include/net/devlink.h |  27 +++++
+>  net/core/devlink.c    | 251 +++++++++++++++++++++++++++++++++++++-----
+>  2 files changed, 252 insertions(+), 26 deletions(-)
+>=20
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index 045468390480..66469cdcdc1e 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -4198,16 +4225,30 @@ static int devlink_nl_cmd_region_get_doit(struct =
+sk_buff *skb,
+>  					  struct genl_info *info)
+>  {
+>  	struct devlink *devlink =3D info->user_ptr[0];
+> +	struct devlink_port *port =3D NULL;
+>  	struct devlink_region *region;
+>  	const char *region_name;
+>  	struct sk_buff *msg;
+> +	unsigned int index;
+>  	int err;
+> =20
+>  	if (!info->attrs[DEVLINK_ATTR_REGION_NAME])
+>  		return -EINVAL;
+> =20
+> +	if (info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
+> +		index =3D nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
+> +
+> +		port =3D devlink_port_get_by_index(devlink, index);
+> +		if (!port)
+> +			return -ENODEV;
+> +	}
+> +
+>  	region_name =3D nla_data(info->attrs[DEVLINK_ATTR_REGION_NAME]);
+> -	region =3D devlink_region_get_by_name(devlink, region_name);
+> +	if (port)
+> +		region =3D devlink_port_region_get_by_name(port, region_name);
+> +	else
+> +		region =3D devlink_region_get_by_name(devlink, region_name);
+> +
 
+This looks like a simple enough solution, but am I right that old
+kernels, which ignore this new DEVLINK_ATTR_PORT_INDEX netlink
+attribute, will consequently interpret any devlink command for a port as
+being for a global region? Sure, in the end, that kernel will probably
+fail anyway, due to the region name mismatch. And at the moment there
+isn't any driver that registers a global and a port region with the same
+name. But when that will happen, the user space tools of the future will
+trigger incorrect behavior into the kernel of today, instead of it
+reporting an unsupported operation as it should. Or am I
+misunderstanding?
 
-On 9/20/2020 4:33 PM, Vladimir Oltean wrote:
-> On Sat, Sep 19, 2020 at 04:43:28PM +0200, Andrew Lunn wrote:
->>
->> DSA only instantiates devlink ports for switch ports which are used.
->> For this hardware, only 4 user ports and the CPU port have devlink
->> ports, which explains the discontinuous port regions.
-> 
-> This is not so much a choice, as it is a workaround of the fact that
-> dsa_port_setup(), which registers devlink ports with devlink, is called
-> after ds->ops->setup(), so you can't register your port regions from
-> the same place as the global regions now.
-> 
-> So you're doing it from ds->ops->port_enable(), which is the DSA wrapper
-> for .ndo_open(). So, consequently, your port regions will only be
-> registered when the port is up, and will be unregistered when it goes
-> down. Is that what you want? I understand that users probably think they
-> want to debug only the ports that they actively use, but I've heard of
-> at least one problem in the past which was caused by invalid settings
-> (flooding in that case) on a port that was down. Sure, this is probably
-> a rare situation, but as I said, somebody trying to use port regions to
-> debug something like that is probably going to have a hard time, because
-> it isn't an easy surgery to figure the probe ordering out.
+>  	if (!region)
+>  		return -EINVAL;
+> =20
 
-Being able to debug the switch configuration as soon as it gets 
-registered with DSA all the way through enabling an user port has 
-definitively a lot of value so we should aim to support that use case.
--- 
-Florian
+Thanks,
+-Vladimir=
