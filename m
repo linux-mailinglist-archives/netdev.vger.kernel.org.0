@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90B8B271804
-	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 23:06:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D205271805
+	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 23:07:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726239AbgITVGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 17:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50564 "EHLO
+        id S1726417AbgITVHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 17:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726126AbgITVGx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 17:06:53 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E9EC061755
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 14:06:53 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id x123so7207712pfc.7
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 14:06:53 -0700 (PDT)
+        with ESMTP id S1726126AbgITVHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 17:07:13 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86953C061755
+        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 14:07:13 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id d6so7212213pfn.9
+        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 14:07:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=d+hazLB9SuQWdu3YJl++0+3a1YQycILLwZEAoTBZIwI=;
-        b=LNwGPjy8Zm1/9a0rvgwbEfYMO8C9KtAVzfIdwLHf+Q9wOLTlPf21nNX+elek2HDCOy
-         3b3CIbB2e08wfZAEWGcy8xat0PnFrIbnDuU4NEU33v+W2aVsCxLKYGbPAqIk049IK4ng
-         Ag7dsP5AfknEEuJud8eoqSCxfSS7vaqLVfkB5KE14yAijlqmPVRtpnLyOLRiDoOiNIzU
-         k3kvcC7OiLwSIBFaTatTlb1q8nCPsw+a3YyZLDG7/sfrk7N5Q80MhPMWQsirD7iDMP5O
-         frAoPH3da13uwYnIWGiUbw4VTA/jY4cpgH68+JIcKSUpoiqNtiNZbzT+nogymP30ImlC
-         hHHw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sTO+QCa+LrknLxidosv8L4AeRRoTrrgkBxb+WmU5Zlo=;
+        b=QcZDAbbTzdy0D5daMc/2EyB1lLj8fHZFPGZ0N5y1J2hxbrX/H/J76p5OIL6fv2DzjX
+         f9P7fCmyfieChn/xKGomeYGOEnZiw6GTlTB+QcIV6X7bLegG6CwG1mKh3ek96k4I9MIp
+         WxAXMqAHVWgHcW6B1bM8Jwyblcc5dWbBeWLSUWbjeopD6iBbMRK9cdNot+k8EKsvFhFT
+         B8Zf6ALAaguHtYY5b/5CLr934bIUnhrpIzDboBVc1DAdBAbHAKApVUWrXwVqSJg6A8uX
+         7YyLXlF3oRs94p8jbSc5ssM7h8/sQW0zcgsLQg4os++0fSKF6gTlzLVFxwv2P+Ji8hXJ
+         mEkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=d+hazLB9SuQWdu3YJl++0+3a1YQycILLwZEAoTBZIwI=;
-        b=QY+kSp5ucrJw5Sjz7d07k+kDW/8HekpBTz47hvd73OTCT5bltIjiZG6Nl5GoSTSAo+
-         REa9vwibVp2bTpB9Uye3rjBQ4gKEAKd6ciAeo0W3oMUZMZnv7ilwpCW9qFPGc+wOxyCp
-         6JIWR8m0/k18LU4PyYaW0Tqnhxw+3AcxTUyIdJAT+O/pJcqBtOCUBbvgZkDDhaJRPUTK
-         d5tx6iObvjcP0rwulDopr6CJPCKGohdGP3/kW9zuWCaJOoav+D3goxp+kxBvK6eKY8t/
-         FB0vOV0xzmQ65btB9re3WKulajdb2OE+Wp4tozuliYSJKWDouo3MsRbW94k/yS52w0T0
-         SklQ==
-X-Gm-Message-State: AOAM532+0A+tW2VIwjbkt9QjOE5apGyvkbU6nOt8RyBeFh1rvFXmSm4S
-        iBWtHQ4IS5UPK2yRS9/znkQ=
-X-Google-Smtp-Source: ABdhPJxeJIMg2ahWRaiRIG7FjieaFLTIQS4bX2Sf0tBs2GmlQIAl43ujmqBHNKhGiqU2QFyBJ+MyZQ==
-X-Received: by 2002:aa7:9548:0:b029:13e:d13d:a08d with SMTP id w8-20020aa795480000b029013ed13da08dmr40439909pfq.36.1600636012896;
-        Sun, 20 Sep 2020 14:06:52 -0700 (PDT)
+        bh=sTO+QCa+LrknLxidosv8L4AeRRoTrrgkBxb+WmU5Zlo=;
+        b=qKBj37qEgy+VXWrynRDa+Ou9zrNzqTesfr2eIWO6vbTuuBCthFWhyff1u64bCXiuNC
+         6eyAvmE6/pAKcTksrJy2H7j1pwO4uNF9FgYQ3vg4AwILKyqPi7pew3jKfDNzunooGUhr
+         ZoO7+PHz7/gHoIsV9BqLMTZNw4Q4s6MuW1Y7lJ27IFEesIKZT94fxbABjVuM1KG8xfVI
+         wN+iF1IaqKFBbHJA3GaZ4sZcALjSFbJvAfVuxZeEDEXvlXzOfoulKfhVSpw4iwoEu4yd
+         Tn/ApUVaJIi6NIQu2RlRTykJFRg/WP33pjn9NVw1ui/BO1ggkuLb7OCF0/SrvXvbeqL5
+         aa2A==
+X-Gm-Message-State: AOAM530fnMW/qhBMzuWHzDwRueiuaozI1SbeFYj8HCyTOD16kvyOjr87
+        f/xvlwPUiB7wdz1nFmj+BdKDuzP5q4iMCA==
+X-Google-Smtp-Source: ABdhPJxNopPpiWp9P8lGRniwZROmIyTLe30QUiScxLd1tE886zA730qJF0xB8KhNqrfGgG5WjDsc/Q==
+X-Received: by 2002:a17:902:fe13:b029:d0:89f4:6226 with SMTP id g19-20020a170902fe13b02900d089f46226mr43093723plj.14.1600636033023;
+        Sun, 20 Sep 2020 14:07:13 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id v6sm10087773pfi.38.2020.09.20.14.06.51
+        by smtp.gmail.com with ESMTPSA id o5sm8580079pjs.13.2020.09.20.14.07.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Sep 2020 14:06:52 -0700 (PDT)
-Subject: Re: [net-next PATCH] net: dsa: rtl8366rb: Support all 4096 VLANs
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-References: <20200920203733.409687-1-linus.walleij@linaro.org>
+        Sun, 20 Sep 2020 14:07:12 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/5] net: netdevice.h: Document proto_down_reason
+To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>
+References: <20200920171703.3692328-1-andrew@lunn.ch>
+ <20200920171703.3692328-2-andrew@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <3d5feeba-c438-1d79-723b-d22d2d0b9d55@gmail.com>
-Date:   Sun, 20 Sep 2020 14:06:50 -0700
+Message-ID: <4a41e362-386a-d218-37f2-ceae446c9dcc@gmail.com>
+Date:   Sun, 20 Sep 2020 14:07:11 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.2.2
 MIME-Version: 1.0
-In-Reply-To: <20200920203733.409687-1-linus.walleij@linaro.org>
+In-Reply-To: <20200920171703.3692328-2-andrew@lunn.ch>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,13 +71,16 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 9/20/2020 1:37 PM, Linus Walleij wrote:
-> There is an off-by-one error in rtl8366rb_is_vlan_valid()
-> making VLANs 0..4094 valid while it should be 1..4095.
-> Fix it.
+On 9/20/2020 10:16 AM, Andrew Lunn wrote:
+> Fix the Sphinx warning:
 > 
-> Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ./include/linux/netdevice.h:2162: warning: Function parameter or member
+> 'proto_down_reason' not described in 'net_device'
+> 
+> by adding the needed documentation.
+> 
+> Cc: Roopa Prabhu <roopa@cumulusnetworks.com>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
