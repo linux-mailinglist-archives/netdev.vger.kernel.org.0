@@ -2,159 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90724271339
-	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 11:46:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 609F627133B
+	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 11:57:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726311AbgITJpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 05:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59726 "EHLO
+        id S1726298AbgITJ5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 05:57:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726247AbgITJpQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 05:45:16 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF82C061755;
-        Sun, 20 Sep 2020 02:45:16 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id j3so5740864qvi.7;
-        Sun, 20 Sep 2020 02:45:16 -0700 (PDT)
+        with ESMTP id S1726247AbgITJ5j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 05:57:39 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34B6C061755;
+        Sun, 20 Sep 2020 02:57:36 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id n18so9704031qtw.0;
+        Sun, 20 Sep 2020 02:57:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:references:in-reply-to:subject:date:message-id
-         :mime-version:content-transfer-encoding:thread-index
-         :content-language;
-        bh=bI+KOrtm+DSOj1ybD5+aMPXLAeGAqLLQ4CXe7B48ZTE=;
-        b=NxAC5HjLQiiQOxYG1GSo4Va4sls7g1uaLOZZTDnvfUHeEzmqLO0BYQKz1TLdRixF3E
-         KbeMAmB3eCmXKcWTICE0OGJZrOpxm8DglmaSkqQzVoipcIbiO5ReHxTAyBhgg+iOs9zy
-         H7aMX0gyIxbIusGhjGvyD+tJKqezSxj50OGbo544PUDnOD+entJF548NRPSMCbT/Oyhq
-         oqzMY9cO6zakK6R2FVd//CwE3Tx+1YLTFk/syGN2r6Mq0VxoeN6mXKtRpJzXyXGE1X8B
-         ds5hzde/kJ6sdRDk9mT/SanfRkT4mBzMtp9q4Tu3KvaovtT2dzMyASKRsTFbKHCTFfPR
-         MXpg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uDVxCDw/mkuVh9Zb/S0gwKAdBr82bzOYeeKlHjwpmnI=;
+        b=ofx1D1NqfH5dHW/dxhWg2l3xCNYBm6LiecHnTZc6vBJFnpQeWKX2clJOrlPHe7Ao00
+         UT0RFEMsp51pob301SMzjdNLNa2paQDpaA16FUfCs5qUmp8g0i/epObbkH4bfte4T/St
+         HXYJOjkV/RVEufB/ao2ntSqe6uB4z+pBTXH0ceHfk4RwtiGXov9TFxRoBZUrf8FtruzO
+         b5lk5IADvtxrHkhWDtFRKry5EquXZY9yI0HtgcXXHrrI1crTb0OcXli8MOgA+4srkx1c
+         otcCkpCWZenJ4WVl0JLln6AGVzgiWnelhAJuoBWRqznJ9i1MQrxYgaduAcGqkpyLljBI
+         u/mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:references:in-reply-to:subject:date
-         :message-id:mime-version:content-transfer-encoding:thread-index
-         :content-language;
-        bh=bI+KOrtm+DSOj1ybD5+aMPXLAeGAqLLQ4CXe7B48ZTE=;
-        b=n8StgzuvedLKtEnktbROVhpuRtW+v7cO51LJ50ui8mLtOozsglv1rLzMVnMGKX/F0N
-         gL6rQftvRms0jCKuxQEKknW33IsObjDVfL1RUB1QvqX0l/XneUJpjcfnO9pbKmyOvn6B
-         t5P8X+v9xD4x7NEE6bYx7w3Py3uhjmi2oVPOd5R4cN23F+2BnPN7Yh8WSbuW/tkWamci
-         RdpLeeeEFG1G5uIaJO+nRRcFImoSVqmdMGHJw6vzK2/GxCNYhPi3s8sxkn6wE5yjtv0F
-         +5ZW8XUDOEROuGAVQ6HEjvkLzwRcAUIBKpPtyHzeHgNEKIa4pkOYrj+qwmzJfA1JUnUT
-         m8OQ==
-X-Gm-Message-State: AOAM531l62iDKsUtO21z1nhU2Xe4zoJbqsmzpXBzrZz3nTxJ38XS+MYe
-        c44epIe6MsFQPZXgfFUP5tO1EQ39TOvGtg==
-X-Google-Smtp-Source: ABdhPJydcBHGJIrOrtEfrenLSKbouJBsnyeBUGfdfMaMGB5KmQOskprwcIhcZLog9QuzQ3/4vEGcdQ==
-X-Received: by 2002:a0c:9a01:: with SMTP id p1mr24371120qvd.61.1600595115198;
-        Sun, 20 Sep 2020 02:45:15 -0700 (PDT)
-Received: from AnsuelXPS (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
-        by smtp.gmail.com with ESMTPSA id n144sm6257632qkn.69.2020.09.20.02.45.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 20 Sep 2020 02:45:14 -0700 (PDT)
-From:   <ansuelsmth@gmail.com>
-To:     "'Andrew Lunn'" <andrew@lunn.ch>
-Cc:     "'Miquel Raynal'" <miquel.raynal@bootlin.com>,
-        "'Richard Weinberger'" <richard@nod.at>,
-        "'Vignesh Raghavendra'" <vigneshr@ti.com>,
-        "'Rob Herring'" <robh+dt@kernel.org>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        "'Jakub Kicinski'" <kuba@kernel.org>,
-        "'Heiner Kallweit'" <hkallweit1@gmail.com>,
-        "'Russell King'" <linux@armlinux.org.uk>,
-        "'Frank Rowand'" <frowand.list@gmail.com>,
-        "'Boris Brezillon'" <bbrezillon@kernel.org>,
-        <linux-mtd@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-References: <20200919223026.20803-1-ansuelsmth@gmail.com> <20200919223026.20803-5-ansuelsmth@gmail.com> <20200920003128.GC3673389@lunn.ch> <006301d68ee6$87fcc400$97f64c00$@gmail.com> <20200920012216.GE3673389@lunn.ch>
-In-Reply-To: <20200920012216.GE3673389@lunn.ch>
-Subject: RE: R: [PATCH v2 4/4] dt-bindings: net: Document use of mac-address-increment
-Date:   Sun, 20 Sep 2020 11:45:08 +0200
-Message-ID: <002a01d68f32$bc737bb0$355a7310$@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uDVxCDw/mkuVh9Zb/S0gwKAdBr82bzOYeeKlHjwpmnI=;
+        b=m1kIHovBGC+xMMvQn1wTW/vLfeZWNFAh2wXd44QAMUIerK4cOzsfwYNKWBwLyXKZcX
+         Fk2M8OpYBpu4d9LovR0pHCJ6LtXmcQ6hK79QX4ubqaON8deRk35IIZ46DGetz1uYYehI
+         DaPijrr2PaHWc0WTlQf0W9wqZ+dl4n/DMVU+d2n8oSLXFFJw4gc/9mznbnMje+zwJvGI
+         uEp+Fig2V88UubdN6KzvxDvYpvg2SopRfWSDqWE8HwiiVzWw7CzhC/SCNMupOWtM0EOK
+         VLJ1S3C17ugSpT4u/LLxTqRczzeExlX2PsX49EJpcgYFZkB1GHE/ZsBewCm99yO5Jbsi
+         mxHQ==
+X-Gm-Message-State: AOAM533y3sxdXWO19QNyAvZ48Jb511p0+HkSld80m+SzyqQxyVZ2KJo3
+        CkTlTohnWQXH6A3Gj2ykdCo=
+X-Google-Smtp-Source: ABdhPJzAMgo/CGiZ0Vsks0+7msEFUyUjYcOWlQTJtyjBuCh5bhXnmX0eMlVDb73ddJ8e6oyfhXVC6Q==
+X-Received: by 2002:ac8:3848:: with SMTP id r8mr40698252qtb.205.1600595855672;
+        Sun, 20 Sep 2020 02:57:35 -0700 (PDT)
+Received: from Ansuel-XPS.localdomain (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
+        by smtp.googlemail.com with ESMTPSA id w6sm6968323qti.63.2020.09.20.02.57.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Sep 2020 02:57:35 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v3 0/4] Actually implement nvmem support for mtd
+Date:   Sun, 20 Sep 2020 11:57:18 +0200
+Message-Id: <20200920095724.8251-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQJTwTIROpBsKHcYsKMkb8exrd/FtgHUg4PZAkc+4zACC3fAJQJmQYzGqDJ2ekA=
-Content-Language: it
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Sun, Sep 20, 2020 at 02:39:39AM +0200, ansuelsmth@gmail.com
-> wrote:
-> >
-> >
-> > > -----Messaggio originale-----
-> > > Da: Andrew Lunn <andrew@lunn.ch>
-> > > Inviato: domenica 20 settembre 2020 02:31
-> > > A: Ansuel Smith <ansuelsmth@gmail.com>
-> > > Cc: Miquel Raynal <miquel.raynal@bootlin.com>; Richard Weinberger
-> > > <richard@nod.at>; Vignesh Raghavendra <vigneshr@ti.com>; Rob
-> Herring
-> > > <robh+dt@kernel.org>; David S. Miller <davem@davemloft.net>; Jakub
-> > > Kicinski <kuba@kernel.org>; Heiner Kallweit <hkallweit1@gmail.com>;
-> > > Russell King <linux@armlinux.org.uk>; Frank Rowand
-> > > <frowand.list@gmail.com>; Boris Brezillon <bbrezillon@kernel.org>;
-> linux-
-> > > mtd@lists.infradead.org; devicetree@vger.kernel.org; linux-
-> > > kernel@vger.kernel.org; netdev@vger.kernel.org
-> > > Oggetto: Re: [PATCH v2 4/4] dt-bindings: net: Document use of mac-
-> > > address-increment
-> > >
-> > > > +  mac-address-increment:
-> > > > +    description:
-> > > > +      The MAC address can optionally be increased (or decreased
-using
-> > > > +      negative values) from the original value readed (from a nvmem
-> > cell
-> > >
-> > > Read is irregular, there is no readed, just read.
-> > >
-> > > > +      for example). This can be used if the mac is readed from a
-> > dedicated
-> > > > +      partition and must be increased based on the number of device
-> > > > +      present in the system.
-> > >
-> > > You should probably add there is no underflow/overflow to other bytes
-> > > of the MAC address. 00:01:02:03:04:ff + 1 == 00:01:02:03:04:00.
-> > >
-> > > > +    minimum: -255
-> > > > +    maximum: 255
-> > > > +
-> > > > +  mac-address-increment-byte:
-> > > > +    description:
-> > > > +      If 'mac-address-increment' is defined, this will tell what
-byte
-> > of
-> > > > +      the mac-address will be increased. If 'mac-address-increment'
-is
-> > > > +      not defined, this option will do nothing.
-> > > > +    default: 5
-> > > > +    minimum: 0
-> > > > +    maximum: 5
-> > >
-> > > Is there a real need for this? A value of 0 seems like a bad idea,
-> > > since a unicast address could easily become a multicast address, which
-> > > is not valid for an interface address. It also does not seem like a
-> > > good idea to allow the OUI to be changed. So i think only bytes 3-5
-> > > should be allowed, but even then, i don't think this is needed, unless
-> > > you do have a clear use case.
-> > >
-> > >     Andrew
-> >
-> > Honestly the mac-address-increment-byte is added to give user some
-> control
-> > but I
-> > don't really have a use case for it. Should I limit it to 3 or just
-remove
-> > the function?
-> 
-> If you have no use case, just remove it and document that last byte
-> will be incremented. I somebody does need it, it can be added in a
-> backwards compatible way.
-> 
->      Andrew
+The mtd support for the nvmem api has been stalled from 2018 with a patch
+half pushed hoping that a scheme is found for the mtd name later. This
+pathset try to address this and add a very needed feature for the
+mac-address.
 
-I just rechecked mac-address-increment-byte and we have one device that
-use it and would benefits from this.  I will change the Documentation to
-min 3 and leave it.
+My solution to the already discussed problem here [1] is to keep it simple.
+A mtd subpartition can be set as a nvmem-provider with a specific tag and
+each direct subnode is treat by the nvmem api as a nvmem-cell and gets
+correctly registred. The mtd driver will treat a direct subnode of the
+subpartition as a legacy subpartition of the subpartition using the
+'fixed-partition' parser. To fix this every nvmem-cell has to have the
+'nvmem-cell' tag and the fixed-partition parser will skip these node if 
+this tag is detected. Simple as that. The subpartition with the tag 
+'nvmem-provider' will then be set by the config to not skip the of
+registration in the config and the nvmem-cells are correctly registred
+and can be used to set mac-address of the devices on the system.
+
+The last 2 patch try to address a problem in the embedded devices (mostly
+routers) that have the mac-address saved in a dedicated partition and is
+a ""master"" mac-address. Each device increment or decrement the extracted
+mac-address based on the device number. The increment function is
+implemented in the of_net function to get the mac-address that every net
+driver should allready use if they don't have a trusty mac-address source.
+(One example of this implementation are many ath10k device that gets the
+mac-address from the art mtd partition assigned to the network driver and
+increments it 1 for the wifi 2.4ghz and 2 for the wifi 5ghz).
+
+I really hope my mtd nvmem implementation doesn't conflicts with others
+and can be used, since this would remove many patch used to get mac-address
+and other nvmem data.
+
+[1] https://lore.kernel.org/patchwork/patch/765435/
+
+Changes:
+v3:
+* Fix const discard warning in of_net.c
+* Add some info about overflow/underflow of mac-increment
+* Limit mac-increment-bytes to the last 3 bytes
+v2:
+* Fix compile error (missing mtd_node in mtdcore)
+
+Ansuel Smith (4):
+  mtd: Add nvmem support for mtd nvmem-providers
+  dt-bindings: mtd: partition: Document use of nvmem-provider
+  of_net: add mac-address-increment support
+  dt-bindings: net: Document use of mac-address-increment
+
+ .../devicetree/bindings/mtd/partition.txt     | 59 +++++++++++++++++++
+ .../bindings/net/ethernet-controller.yaml     | 21 +++++++
+ drivers/mtd/mtdcore.c                         |  3 +-
+ drivers/mtd/parsers/ofpart.c                  |  8 +++
+ drivers/of/of_net.c                           | 57 ++++++++++++++----
+ 5 files changed, 134 insertions(+), 14 deletions(-)
+
+-- 
+2.27.0
 
