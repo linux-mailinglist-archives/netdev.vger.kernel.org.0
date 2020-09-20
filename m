@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43F4027133F
-	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 11:57:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4119A271341
+	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 11:57:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726344AbgITJ5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 05:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
+        id S1726384AbgITJ5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 05:57:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726247AbgITJ5n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 05:57:43 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22650C061755;
-        Sun, 20 Sep 2020 02:57:43 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id di5so5742127qvb.13;
-        Sun, 20 Sep 2020 02:57:43 -0700 (PDT)
+        with ESMTP id S1726247AbgITJ5t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 05:57:49 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670BEC061755;
+        Sun, 20 Sep 2020 02:57:49 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id z18so5754263qvp.6;
+        Sun, 20 Sep 2020 02:57:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1Cp6wGeZB6SS98LJtexBivyXrwvaD2ffDaajHaSACWY=;
-        b=ExV2J0dku2JMmlAU9XWVQ6EA1ZpDFcBWqnSgZ52HkNzqXKPznuXV2TscrMYYZshBMA
-         KScQZHTuODTN5KaT0FSwOi7O2X3RUWwcXQI+WDJ6bS9rvIyl/ZchqRy5d71W/JPiHwcb
-         1Fl1FTnD2W2BHC3sDNv16IeD96xIkM7YPS9RcOhTcWGi1pKFbd27vQX+ec9nyt11mEx+
-         drL7pH1LR/HnPBLImJ3r7TQOlyMoDYnfMqyx2Z/YQWlE7iPMRuUIam/1SXMBJm5Me8is
-         2tu2UXCrDOBaXBazoAa1+ZuUUmvSFSYNqMjJCI9ctYdCYdvKn5M1l6rIVBJBA9IEHHLM
-         Mb3g==
+        bh=64xYu3WDX6vWiceRdxZMl2E+VlBih2IULY9GL5lmn0U=;
+        b=p+WGbfqwHH1OXV5tEzCASV8LZW0RECh7wC89nEJa+Jgn3lNUwPM42+c6NpDjnvUJko
+         dzcxyFmqFi9GPNCuazz0U77Hw21k14/X2EtZbyjbdifztLrlQwEyG9YUAFya6uJaxv6G
+         Lz7sHNHBujFbHP08PRzbi9Uru/TwB6DsS4feb9FdukmPSc5kR/d8jAzQZo+8p606icDv
+         aZldmNlaaV2zhlAqqbD/mKeyUS4BEGnq4REiXhFsuFE0ekVv+4hUL3KKml9tdnHuXPqv
+         SW7MdT268hCNfXw5ff/y9GOVVzKHW/pGLJ5SdXdCwCYeGHGbDhk9RCCIRAjOzwrcVn7F
+         eK+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1Cp6wGeZB6SS98LJtexBivyXrwvaD2ffDaajHaSACWY=;
-        b=jTskMon6aLTD6+B49F064q5zDh0pFG5k3d2pDg964yCkWcEoY3MEJxnOPqGT0aguJg
-         9OyXojztsu2dorNHYvzkafFNYJtGMDzdOM5un8qeqwkPAgSuEp/mw4vcU4zAGafBw8Bk
-         MrmLTyZ23NWhDQqe4/23M5yC+XDCGP4iyZiK90f5tz2Ky+ZdWJsdU1K7gCxX+U5Qb6XU
-         94avYqgJUZL9j2WGVFUAltVU4sGZX2EBLDSEnH/X2ilrMgEkof2SM93Qi6t0uHPf/ciY
-         dVLKx66KbVZ2oM9KMTK8wVjrBuBkWDt/ibfUR/uuq3abPXjaUf41rAtJikMWB1rPfMWV
-         WJBw==
-X-Gm-Message-State: AOAM530fJgIBUEBf/QHHh43+rH9cG+LNY9DvEOdX3loZb/Rmk4Palo9D
-        sfHivPWlB+WxLPGD86MdOA4=
-X-Google-Smtp-Source: ABdhPJwEhDyAwUV5UVHjMYtJZMqZWnXncn13LWvoJ+ZoTbYCWu2zx0tKeSvcu7jECySfUWPeBSJS+g==
-X-Received: by 2002:a05:6214:1021:: with SMTP id k1mr24205091qvr.62.1600595862353;
-        Sun, 20 Sep 2020 02:57:42 -0700 (PDT)
+        bh=64xYu3WDX6vWiceRdxZMl2E+VlBih2IULY9GL5lmn0U=;
+        b=clWsszOPrHZjOH3X7JZTuNBQBoQj985WdZaoKOI3Chnl8DI4P7kNstD582IdM07Uf4
+         5BvdxVUTD7MtS4u5CuJYSdV8HnPvCDSZD12CAYYqxietsmQlBNw+Cx8sBtnCVHTQZhY1
+         0CsKMrrF/7gEEsOqJM+EH4d5HJz/1+CCtljnCMpS5iOYu+R+v97pFdOCabeYGoH9ZfS5
+         ExHCZ9tb1504Tqq5D+aDmBS2EXUH5OcrlhnWfSmNoaDpyyZLK2xtGuk3zpaEIZrcl2oI
+         0Gf/2SKJQRkM8C3+vk5qUCryfLziuK/HL1Okis0ckI2RAqOiAYVGCo6KYfF010fJcd+U
+         rS5A==
+X-Gm-Message-State: AOAM5327thhZxXkw5MLLPjOh5BBFSI/WM9FiBgfyv45T0OjpBp7UdWis
+        Mg3xLsNkw7z8rpbChkkvGzc=
+X-Google-Smtp-Source: ABdhPJyTALYmylKCiYZL9A6ya14pzjFRwQqsR7A+AhI03Pvj4NRRfyaxkMbpqweW9bRVphtRSAU7PA==
+X-Received: by 2002:ad4:52e3:: with SMTP id p3mr24148392qvu.42.1600595868538;
+        Sun, 20 Sep 2020 02:57:48 -0700 (PDT)
 Received: from Ansuel-XPS.localdomain (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
-        by smtp.googlemail.com with ESMTPSA id w6sm6968323qti.63.2020.09.20.02.57.38
+        by smtp.googlemail.com with ESMTPSA id w6sm6968323qti.63.2020.09.20.02.57.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Sep 2020 02:57:40 -0700 (PDT)
+        Sun, 20 Sep 2020 02:57:47 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
@@ -61,9 +61,9 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
         Boris Brezillon <bbrezillon@kernel.org>,
         linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 1/4] mtd: Add nvmem support for mtd nvmem-providers
-Date:   Sun, 20 Sep 2020 11:57:19 +0200
-Message-Id: <20200920095724.8251-2-ansuelsmth@gmail.com>
+Subject: [PATCH v3 2/4] dt-bindings: mtd: partition: Document use of nvmem-provider
+Date:   Sun, 20 Sep 2020 11:57:20 +0200
+Message-Id: <20200920095724.8251-3-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200920095724.8251-1-ansuelsmth@gmail.com>
 References: <20200920095724.8251-1-ansuelsmth@gmail.com>
@@ -73,64 +73,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce 2 new bindings for the mtd structure.
-Mtd partitions can be set as 'nvmem-provider' and any subpartition defined
-with the tag 'nvmem-cell' are skipped by the 'fixed-partitions' parser
-and registred as a nvmem cell by the nvmem api.
+Document the use of this 2 new bindings, nvmem-provider and nvmem-cell,
+used to describe the nvmem cell that the subpartition provide to the
+nvmem api and the system. Nvmem cell are direct subnode of the
+subpartition and are skipped by the 'fixed-partitions' parser if they
+contain the 'nvmem-cell' tag. The subpartition must have the
+'nvmem-provider' tag or the subpartition will not register the cell to
+the nvmem api.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/mtd/mtdcore.c        | 3 ++-
- drivers/mtd/parsers/ofpart.c | 8 ++++++++
- 2 files changed, 10 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/mtd/partition.txt     | 59 +++++++++++++++++++
+ 1 file changed, 59 insertions(+)
 
-diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
-index 7d930569a7df..ba5236db8318 100644
---- a/drivers/mtd/mtdcore.c
-+++ b/drivers/mtd/mtdcore.c
-@@ -551,6 +551,7 @@ static int mtd_nvmem_reg_read(void *priv, unsigned int offset,
+diff --git a/Documentation/devicetree/bindings/mtd/partition.txt b/Documentation/devicetree/bindings/mtd/partition.txt
+index 4a39698221a2..66d3a3f0a021 100644
+--- a/Documentation/devicetree/bindings/mtd/partition.txt
++++ b/Documentation/devicetree/bindings/mtd/partition.txt
+@@ -64,6 +64,16 @@ Optional properties:
+ - slc-mode: This parameter, if present, allows one to emulate SLC mode on a
+   partition attached to an MLC NAND thus making this partition immune to
+   paired-pages corruptions
++- nvmem-provider : Optionally a subpartition can be set as a nvmem-provider. This can
++  be very useful if some data like the mac-address is stored in a special partition
++  at a specific offset. Subpartition that describe nvmem-cell must have set the
++  'nvmem-cell' of they will be treated as a subpartition and not skipped and registred
++  as nvmem cells. In this specific case '#address-cells' and '#size-cells' must be
++  provided.
++- nvmem-cell : A direct subnode of a subpartition can be described as a nvmem-cell and
++  skipped by the fixed-partition parser and registred as a nvmem-cell of the registred
++  nvmem subpartition IF it does contain the 'nvmem-provider tag. If the subpartition
++  lacks of such tag the subnode will be skipped and the nvmem api won't register them.
  
- static int mtd_nvmem_add(struct mtd_info *mtd)
- {
-+	struct device_node *mtd_node = mtd_get_of_node(mtd);
- 	struct nvmem_config config = {};
+ Examples:
  
- 	config.id = -1;
-@@ -563,7 +564,7 @@ static int mtd_nvmem_add(struct mtd_info *mtd)
- 	config.stride = 1;
- 	config.read_only = true;
- 	config.root_only = true;
--	config.no_of_node = true;
-+	config.no_of_node = !of_property_read_bool(mtd_node, "nvmem-provider");
- 	config.priv = mtd;
- 
- 	mtd->nvmem = nvmem_register(&config);
-diff --git a/drivers/mtd/parsers/ofpart.c b/drivers/mtd/parsers/ofpart.c
-index daf507c123e6..442e039214bc 100644
---- a/drivers/mtd/parsers/ofpart.c
-+++ b/drivers/mtd/parsers/ofpart.c
-@@ -61,6 +61,10 @@ static int parse_fixed_partitions(struct mtd_info *master,
- 		if (!dedicated && node_has_compatible(pp))
- 			continue;
- 
-+		/* skip adding if a nvmem-cell is detected */
-+		if (of_property_read_bool(pp, "nvmem-cell"))
-+			continue;
+@@ -158,3 +168,52 @@ flash@3 {
+ 		};
+ 	};
+ };
 +
- 		nr_parts++;
- 	}
- 
-@@ -80,6 +84,10 @@ static int parse_fixed_partitions(struct mtd_info *master,
- 		if (!dedicated && node_has_compatible(pp))
- 			continue;
- 
-+		/* skip adding if a nvmem-cell is detected */
-+		if (of_property_read_bool(pp, "nvmem-cell"))
-+			continue;
++flash@0 {
++	partitions {
++		compatible = "fixed-partitions";
++		#address-cells = <1>;
++		#size-cells = <1>;
 +
- 		reg = of_get_property(pp, "reg", &len);
- 		if (!reg) {
- 			if (dedicated) {
++		partition@0 {
++			label = "u-boot";
++			reg = <0x0000000 0x100000>;
++			read-only;
++		};
++
++		art: art@1200000 {
++			label = "art";
++			reg = <0x1200000 0x0140000>;
++			read-only;
++			nvmem-provider;
++
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			macaddr_gmac1: macaddr_gmac1@0 {
++				nvmem-cell;
++				reg = <0x0 0x6>;
++			};
++
++			macaddr_gmac2: macaddr_gmac2@6 {
++				nvmem-cell;
++				reg = <0x6 0x6>;
++			};
++
++			macaddr_wifi: macaddr_wifi@6 {
++				nvmem-cell;
++				reg = <0x6 0x6>;
++			};
++
++			pre_cal_24g: pre_cal_24g@1000 {
++				nvmem-cell;
++				reg = <0x1000 0x2f20>;
++			};
++
++			pre_cal_5g: pre_cal_5g@5000{
++				nvmem-cell;
++				reg = <0x5000 0x2f20>;
++			};
++		};
++	};
++};
+\ No newline at end of file
 -- 
 2.27.0
 
