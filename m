@@ -2,81 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E93271810
-	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 23:11:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE5AF27181F
+	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 23:13:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726489AbgITVLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 17:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726126AbgITVLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 17:11:49 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409F1C061755
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 14:11:49 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id l126so7236815pfd.5
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 14:11:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pXg4ns9HnJh6CjP5E6H/mx9BP7VgqE6W4++/09ei8Xw=;
-        b=bwfUKiSVONShK1ykBAlHw2xyJs8rjOSbINhDrH+4m52EwmAHgVRL7BOYSbSd8ibB5E
-         dkG/V9WNVvJfplD3GdBQ1phH7AW/wzN/8cY+ZF3QUYlw33Fnt7Qmx9IrWGim9Sj4r/B7
-         tqWY+ZZdUdNJ1eIFA7h4M4U+oMBaKPxDzB+oaDDht+wd1m2nLhKp0WAwMZ5YWDtaxu0i
-         aXrDIxkMdR32hB0Pcei34Gl1WxRtoqqQ/aH1+ElLEQKZAMwj4yy0rh6FtWCQG/bmbQdz
-         Wkp0R0mw7xOah1asn3GjHKzAMYYV2UyG8Gp2WZGHl6n1bxu098g/7bbXgjfR4FkOHpgF
-         hnMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pXg4ns9HnJh6CjP5E6H/mx9BP7VgqE6W4++/09ei8Xw=;
-        b=rbTEu9JGw98ePRwgaiPyK/t2tgGutb7tyQlXniKvvlVAp9Vjh/1ciiCgtD/hMUV22E
-         upPw3peWnw6Czd1H0DjS1HM510Tvq8ZGh4D8NUHr7Ab+BfZ0nLJM+PkiB5KNh2x8+Ahn
-         kapC0Qj7gb18W27YaYoZCAGr6dM0uANQRaTJUEhjcho2UQfldqHadwLOPYXD7dDQ8NhZ
-         E/vYX6NkO/tUi3rm1jQnOYbFtLAsYBYHiK+Gs90VVkyoGcrWBxf1LowtZt9Fvxgk9LIW
-         5Ci2L9zfGVAz22dRXgcZbgPnE+vTbqzf3Rsdfe1P7PI/tT86YEbCL7Y3ng1bx0b/7HRc
-         AL+A==
-X-Gm-Message-State: AOAM532938qpa1526tmVERIdJlDNxLD9jjFrOCKDB7DSpc6A81J97N+L
-        koIYekfmhZFSpQkSBrgSbLg=
-X-Google-Smtp-Source: ABdhPJwVC7fS+tKXBSyacVweYE6XE0j6ylWSLJQdlEJtsyeSohrzts9fxdqdjBeOjMpW86q3Fim20Q==
-X-Received: by 2002:a63:1c26:: with SMTP id c38mr35693601pgc.105.1600636308668;
-        Sun, 20 Sep 2020 14:11:48 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id ih11sm8396516pjb.51.2020.09.20.14.11.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Sep 2020 14:11:48 -0700 (PDT)
-Subject: Re: [PATCH net-next 5/5] net: mdio: Add kerneldoc for main data
- structures and some functions
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <20200920171703.3692328-1-andrew@lunn.ch>
- <20200920171703.3692328-6-andrew@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <207017f9-02f4-b9b3-49e8-5f2061181680@gmail.com>
-Date:   Sun, 20 Sep 2020 14:11:46 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.2
+        id S1726543AbgITVNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 17:13:44 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:58554 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726508AbgITVNi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 17:13:38 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-64-HkvgTllpM-iYq_Po-gc7vg-1; Sun, 20 Sep 2020 22:13:25 +0100
+X-MC-Unique: HkvgTllpM-iYq_Po-gc7vg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Sun, 20 Sep 2020 22:13:24 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Sun, 20 Sep 2020 22:13:24 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Arnd Bergmann' <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>
+CC:     Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Howells <dhowells@redhat.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        Linux SCSI List <linux-scsi@vger.kernel.org>,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        linux-aio <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>
+Subject: RE: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+Thread-Topic: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+Thread-Index: AQHWj495LxbJUITJXkeWJwtHmAdwxKlyBKsQ
+Date:   Sun, 20 Sep 2020 21:13:24 +0000
+Message-ID: <8363d874e503470f8caa201e85e9fbd4@AcuMS.aculab.com>
+References: <20200918124533.3487701-1-hch@lst.de>
+ <20200918124533.3487701-2-hch@lst.de>
+ <20200920151510.GS32101@casper.infradead.org>
+ <20200920180742.GN3421308@ZenIV.linux.org.uk>
+ <20200920190159.GT32101@casper.infradead.org>
+ <20200920191031.GQ3421308@ZenIV.linux.org.uk>
+ <20200920192259.GU32101@casper.infradead.org>
+ <CALCETrXVtBkxNJcMxf9myaKT9snHKbCWUenKHGRfp8AOtORBPg@mail.gmail.com>
+ <CAK8P3a37BRFj_qg61gP2oVrjJzBrZ58y1vggeTk_5n55Ou5U2Q@mail.gmail.com>
+In-Reply-To: <CAK8P3a37BRFj_qg61gP2oVrjJzBrZ58y1vggeTk_5n55Ou5U2Q@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <20200920171703.3692328-6-andrew@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+RnJvbTogQXJuZCBCZXJnbWFubg0KPiBTZW50OiAyMCBTZXB0ZW1iZXIgMjAyMCAyMTo0OQ0KPiAN
+Cj4gT24gU3VuLCBTZXAgMjAsIDIwMjAgYXQgOToyOCBQTSBBbmR5IEx1dG9taXJza2kgPGx1dG9A
+a2VybmVsLm9yZz4gd3JvdGU6DQo+ID4gT24gU3VuLCBTZXAgMjAsIDIwMjAgYXQgMTI6MjMgUE0g
+TWF0dGhldyBXaWxjb3ggPHdpbGx5QGluZnJhZGVhZC5vcmc+IHdyb3RlOg0KPiA+ID4NCj4gPiA+
+IE9uIFN1biwgU2VwIDIwLCAyMDIwIGF0IDA4OjEwOjMxUE0gKzAxMDAsIEFsIFZpcm8gd3JvdGU6
+DQo+ID4gPiA+IElNTyBpdCdzIG11Y2ggc2FuZXIgdG8gbWFyayB0aG9zZSBhbmQgcmVmdXNlIHRv
+IHRvdWNoIHRoZW0gZnJvbSBpb191cmluZy4uLg0KPiA+ID4NCj4gPiA+IFNpbXBsZXIgc29sdXRp
+b24gaXMgdG8gcmVtb3ZlIGlvX3VyaW5nIGZyb20gdGhlIDMyLWJpdCBzeXNjYWxsIGxpc3QuDQo+
+ID4gPiBJZiB5b3UncmUgYSAzMi1iaXQgcHJvY2VzcywgeW91IGRvbid0IGdldCB0byB1c2UgaW9f
+dXJpbmcuICBXb3VsZA0KPiA+ID4gYW55IHJlYWwgdXNlcnMgYWN0dWFsbHkgY2FyZSBhYm91dCB0
+aGF0Pw0KPiA+DQo+ID4gV2UgY291bGQgZ28gb25lIHN0ZXAgZmFydGhlciBhbmQgZGVjbGFyZSB0
+aGF0IHdlJ3JlIGRvbmUgYWRkaW5nICphbnkqDQo+ID4gbmV3IGNvbXBhdCBzeXNjYWxscyA6KQ0K
+PiANCj4gV291bGQgeW91IGFsc28gc3RvcCBhZGRpbmcgc3lzdGVtIGNhbGxzIHRvIG5hdGl2ZSAz
+Mi1iaXQgc3lzdGVtcyB0aGVuPw0KPiANCj4gT24gbWVtb3J5IGNvbnN0cmFpbmVkIHN5c3RlbXMg
+KGxlc3MgdGhhbiAyR0IgYS50Lm0uKSwgdGhlcmUgaXMgc3RpbGwgYQ0KPiBzdHJvbmcgZGVtYW5k
+IGZvciBydW5uaW5nIDMyLWJpdCB1c2VyIHNwYWNlLCBidXQgYWxsIG9mIHRoZSByZWNlbnQgQXJt
+DQo+IGNvcmVzIChhZnRlciBDb3J0ZXgtQTU1KSBkcm9wcGVkIHRoZSBhYmlsaXR5IHRvIHJ1biAz
+Mi1iaXQga2VybmVscywgc28NCj4gdGhhdCBjb21wYXQgbW9kZSBtYXkgZXZlbnR1YWxseSBiZWNv
+bWUgdGhlIHByaW1hcnkgd2F5IHRvIHJ1bg0KPiBMaW51eCBvbiBjaGVhcCBlbWJlZGRlZCBzeXN0
+ZW1zLg0KPiANCj4gSSBkb24ndCB0aGluayB0aGVyZSBpcyBhbnkgY2hhbmNlIHdlIGNhbiByZWFs
+aXN0aWNhbGx5IHRha2UgYXdheSBpb191cmluZw0KPiBmcm9tIHRoZSAzMi1iaXQgQUJJIGFueSBt
+b3JlIG5vdy4NCg0KQ2FuJ3QgaXQganVzdCBydW4gcmVxdWVzdHMgZnJvbSAzMmJpdCBhcHBzIGlu
+IGEga2VybmVsIHRocmVhZCB0aGF0IGhhcw0KdGhlICdpbl9jb21wYXRfc3lzY2FsbCcgZmxhZyBz
+ZXQ/DQpOb3QgdGhhdCBpIHJlY2FsbCBzZWVpbmcgdGhlIGNvZGUgd2hlcmUgaXQgc2F2ZXMgdGhl
+ICdjb21wYXQnIG5hdHVyZQ0Kb2YgYW55IHJlcXVlc3RzLg0KDQpJdCBpcyBhbHJlYWR5IGNvbXBs
+ZXRlbHkgZipja2VkIGlmIHlvdSB0cnkgdG8gcGFzcyB0aGUgY29tbWFuZCByaW5nDQp0byBhIGNo
+aWxkIHByb2Nlc3MgLSBpdCB1c2VzIHRoZSB3cm9uZyAnbW0nLg0KSSBzdXNwZWN0IHRoZXJlIGFy
+ZSBzb21lIHJlYWxseSBob3JyaWQgc2VjdXJpdHkgaG9sZXMgaW4gdGhhdCBhcmVhLg0KDQoJRGF2
+aWQuDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3Vu
+dCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3
+Mzg2IChXYWxlcykNCg==
 
-
-On 9/20/2020 10:17 AM, Andrew Lunn wrote:
-> Document the main structures, a few inline helpers and exported
-> functions which are not already documented.
-> 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
