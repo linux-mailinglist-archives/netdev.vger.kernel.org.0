@@ -2,84 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A897F271495
-	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 15:36:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 266A32714B3
+	for <lists+netdev@lfdr.de>; Sun, 20 Sep 2020 15:56:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726368AbgITNgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 09:36:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbgITNgB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 09:36:01 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37ECEC0613CE
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 06:36:01 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id r8so9898981qtp.13
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 06:36:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=AlcJoneKXNfJvO8U/304wgnJFZRKZ49gwNcmCkuy6kI=;
-        b=tHTcgXDNp5QrYl8zImaCTIIBq7jn625bpXdEk8AnTT37aMC+arTYuR0O8MOyHEzbUo
-         joEk6PPh/iPRH5L8Yr8Zjq9KcETr6IEAwFVoYYpGBdnk39TajehNtYwUz8M+BmQFii9a
-         16B86+hDuuuXO6sQ3vmhWS1DZG7BRW8iLHK7LWUhI+ZyYYF9m34kKLsw1ZdJcrL+qXTO
-         r7NWWEtoN0cIcfmdyCqo3mRpYV72dOK0vz3ngTaQgw0guhNEqUlGcDvkwqEOJk+k7r8h
-         siHgCr93AfSDMVLXyuNxjfb4sQo3lSJjpJcrNc3gbplQYMtynkUvqYc23H1ONx+LScMy
-         YYoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=AlcJoneKXNfJvO8U/304wgnJFZRKZ49gwNcmCkuy6kI=;
-        b=QUSQINWPxSQGHaR/jM5EP1IE1tugECJs3bizWqYvS2779z3ta/Wk6ySfxflZyVg2MO
-         gZcBDJHOE84OBq7XIag9mk18u9d93rIoEzrYiKS6q1hzNQDPG05PmT4tuv5Jr1ACwr0y
-         x1Hdo96a6JUyy68SzbbqRSOHDwO/bMZmFCmXRufj3ddCCGJ+wKfCFk3BceniNjlnHN6I
-         3bu5v2HOjqg/b/Llyi4sPU2L/K5JxF2bGAeVA0aUPJf5Kf/UYNXKgWDl0h9CWAgqg8Yh
-         tUePf2AaM4d6vfhuypyI8pbHWodvrmRoyq6D9MgEhrNUszTm46zTys7YHbQwQ2OADLG1
-         tEZA==
-X-Gm-Message-State: AOAM532EJpo8H6L1HNjHFR4yq9qH4v8rdH3tE8pAzJye90VLjOlV6Bmr
-        twF2GJ7ISmt0PU1zAKzdQn5hRYdObgRMWA==
-X-Google-Smtp-Source: ABdhPJwD2ou54XRXZOzqX1B5Na/2NQVUqBGtTBGB9AvVWlo94bq11Pv0Fifo2tzLeJ4CgeCKwwlKwQ==
-X-Received: by 2002:ac8:7b2b:: with SMTP id l11mr40177140qtu.126.1600608958971;
-        Sun, 20 Sep 2020 06:35:58 -0700 (PDT)
-Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
-        by smtp.googlemail.com with ESMTPSA id 205sm6490316qki.118.2020.09.20.06.35.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Sep 2020 06:35:58 -0700 (PDT)
-To:     people <people@netdevconf.info>
-Cc:     speakers-0x14@netdevconf.info, prog-committee-0x14@netdevconf.info,
-        attendees-0x14@netdevconf.info,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, lwn@lwn.net,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org,
-        Christie Geldart <christie@ambedia.com>,
-        Kimberley Jeffries <kimberleyjeffries@gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: 0x14: slides and papers posted
-Message-ID: <0257b321-cf56-ef33-5c4a-1cce0fc4c877@mojatatu.com>
-Date:   Sun, 20 Sep 2020 09:35:48 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726466AbgITN4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 09:56:11 -0400
+Received: from mout.kundenserver.de ([212.227.126.131]:46411 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726305AbgITN4J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 09:56:09 -0400
+Received: from mail-qk1-f179.google.com ([209.85.222.179]) by
+ mrelayeu.kundenserver.de (mreue011 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1MMoOy-1k1Dwv2q28-00Ijbf; Sun, 20 Sep 2020 15:56:05 +0200
+Received: by mail-qk1-f179.google.com with SMTP id w16so12205786qkj.7;
+        Sun, 20 Sep 2020 06:56:04 -0700 (PDT)
+X-Gm-Message-State: AOAM533+Tg7GsRoHCgP40ir59ld5C/1Vm0N7+PC3SG26gIqEIleq3ONH
+        fksm3LFFVG+V0/cydp/yoybdjQO0QWCzFdtRnVg=
+X-Google-Smtp-Source: ABdhPJwjhkL3KLtOGKzNMPo/as4noBlQ9Jb8z4PXaKINeNIOOA3tWOtTq+bHeowiwT9kTTVa6K2ILOsBaWuTHLMSx30=
+X-Received: by 2002:a37:a495:: with SMTP id n143mr41151530qke.394.1600610163343;
+ Sun, 20 Sep 2020 06:56:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200918124533.3487701-1-hch@lst.de> <20200918124533.3487701-2-hch@lst.de>
+ <20200918134012.GY3421308@ZenIV.linux.org.uk> <20200918134406.GA17064@lst.de>
+ <20200918135822.GZ3421308@ZenIV.linux.org.uk> <20200918151615.GA23432@lst.de> <20200919220920.GI3421308@ZenIV.linux.org.uk>
+In-Reply-To: <20200919220920.GI3421308@ZenIV.linux.org.uk>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sun, 20 Sep 2020 15:55:47 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3QApj3isPu3TkLahArsfb5jaABb7DJ7EKMxey1T1YPbA@mail.gmail.com>
+Message-ID: <CAK8P3a3QApj3isPu3TkLahArsfb5jaABb7DJ7EKMxey1T1YPbA@mail.gmail.com>
+Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Howells <dhowells@redhat.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
+        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Networking <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:DEeFGJUPrk6u/LSjSFLEBpcAP+oeK32PoUjTZYC6fPIs6n+k1mv
+ XDMz6XlgCh1Nyx4j17+27me+L64NgDjpVdd7dXJCFrjon/aTAyIu+oh95nm9X9KaWl6wa9w
+ jNEmllGRXAiSS7LrTZQ8rS4tQWtbNU8yEqoB7YoTh84C0NTdLZyWEaqn7c0+w0xlPbaxYu4
+ ur3P1v08FrYIfJVpNVfUg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:6mkBVY6Bong=:SqXPt0trLeYLMHgx1cvXuJ
+ U5p4iiPSwCCzF8iboycWFBfO05sNkLPSd9pwnBrqqztOBcPkNasCWa49qwp+g4/XCsXhPAeIp
+ ZEo2wIs2JuHkQHCsr1J07cwiEuu+Jpl8XT2iP7S5i5y3yZeYsvvpW+zjEoGvo0lUUzt50b+DF
+ d+etXRDTAS4MI0KZwR66GwCASGNxKnFcidiAQ7uHqKF4jBCdVZRVVC3unjWR/zDQrf1UsSGl5
+ yiA+FMkQ1meD61zxEhK4DYTj39EHaC1fCYgevYfr50bwM5KeXfxunkJdrXZB40zmP6hwiP8U7
+ ZAYUI2x6IdnJZ7j005UTxSUKkFfiSfHKfIcRoNLVxmyXZFSZpZv1lHhqR5Lc7mlnrYMV7yfwX
+ jEWPWgGYdVS/0Pqp4mDctdka7FBBmnDQpnQCFWndo9r29o5kZmF/0FWZTAYaiXIc1zXQ0CNGs
+ ITo99AkK8c2i8ikDCjq3PgczN6CdTTM3aiqzqHKeSvyXfbkvI1hCX/5ydNZHKVZf8msKr2S8H
+ vq/kWx12tz5+znGWLFrLlf7992gz4tbGhg+ohl2KdxHhWBaLbGq7B7TrxKF2dX7bnaN+L5Zp/
+ vJ8JYq605hJO1se4r8NW3ew1++WG531E7DL/6Lx0YnzfRjxiToXb8Pg4KnyC0djlxEMEwUAlv
+ CmSJKACAV0HY6EMSYJ8+oWpo6MOxbBfBPrBaLdo9nEybAZsqUhO7gMBhw4FLPWxPNJ4TahNDG
+ ZB13aOM7zMIaLy9bXTcJUkAShP8ZyjBNl+F3C7ClxLkP593ksjcwF70rTpIg8nnqaoxY/0Dee
+ smdON9VOaGsvyMjHBc085FK8V3s316O5YhVW2qcAg2UzaNBdL/34eax1MABsisTpCdIrIGW
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Sep 20, 2020 at 12:09 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
+> On Fri, Sep 18, 2020 at 05:16:15PM +0200, Christoph Hellwig wrote:
+> > On Fri, Sep 18, 2020 at 02:58:22PM +0100, Al Viro wrote:
+> > > Said that, why not provide a variant that would take an explicit
+> > > "is it compat" argument and use it there?  And have the normal
+> > > one pass in_compat_syscall() to that...
+> >
+> > That would help to not introduce a regression with this series yes.
+> > But it wouldn't fix existing bugs when io_uring is used to access
+> > read or write methods that use in_compat_syscall().  One example that
+> > I recently ran into is drivers/scsi/sg.c.
+>
+> So screw such read/write methods - don't use them with io_uring.
+> That, BTW, is one of the reasons I'm sceptical about burying the
+> decisions deep into the callchain - we don't _want_ different
+> data layouts on read/write depending upon the 32bit vs. 64bit
+> caller, let alone the pointer-chasing garbage that is /dev/sg.
 
-To everyone (PC, organizing committee, speakers, workshop chairs,
-Tutors, sponsors, and attendees) - thank you for making the
-conference the success it was!
+Would it be too late to limit what kind of file descriptors we allow
+io_uring to read/write on?
 
-The slides and papers are now up. The videos will come after.
+If io_uring can get changed to return -EINVAL on trying to
+read/write something other than S_IFREG file descriptors,
+that particular problem space gets a lot simpler, but this
+is of course only possible if nobody actually relies on it yet.
 
-The sessions page is at:
-https://netdevconf.info/0x14/accepted-sessions.html
-
-cheers,
-jamal
-
-PS: apologies if you receive this multiple times...
+      Arnd
