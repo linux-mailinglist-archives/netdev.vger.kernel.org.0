@@ -2,111 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F084227223C
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 13:23:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1A4D272242
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 13:23:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbgIULXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 07:23:22 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:9480 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726367AbgIULXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 07:23:22 -0400
+        id S1726778AbgIULXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 07:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40692 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726367AbgIULXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 07:23:38 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E28C061755;
+        Mon, 21 Sep 2020 04:23:38 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id t13so13272038ile.9;
+        Mon, 21 Sep 2020 04:23:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1600687402; x=1632223402;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=TwH9MzHRv79x/EUOe5/xNeRXZrG6bmMJIXJfLBWxxGQ=;
-  b=YF2wvJ1D6mpruSYmJ4xIQh+LGmjQime2fvQqIINAVFuttxQGz+J3jxow
-   VXVBi1UnVwi0ACZA8GuTOzurUJx3Y59PwAcQrq/rTDccEb9ZCg3Ha5gfr
-   gsw2q9yIy8uU6/pbI8Fnm0qonIEt6blprcKxJM8WQghlL5eviKgBBXtDY
-   8=;
-X-IronPort-AV: E=Sophos;i="5.77,286,1596499200"; 
-   d="scan'208";a="77900423"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-c7c08562.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 21 Sep 2020 11:23:02 +0000
-Received: from EX13D19EUB003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-1e-c7c08562.us-east-1.amazon.com (Postfix) with ESMTPS id D5CD3240FD9;
-        Mon, 21 Sep 2020 11:22:58 +0000 (UTC)
-Received: from 8c85908914bf.ant.amazon.com (10.43.161.85) by
- EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 21 Sep 2020 11:22:50 +0000
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-To:     Jason Gunthorpe <jgg@ziepe.ca>, Oded Gabbay <oded.gabbay@gmail.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, <izur@habana.ai>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, SW_Drivers <SW_Drivers@habana.ai>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        <linux-rdma@vger.kernel.org>, Olof Johansson <olof@lixom.net>
-References: <20200918125014.GR8409@ziepe.ca>
- <CAFCwf12oK4RXYhgzXiN_YvXvjoW1Fwx1xBzR3Y5E4RLvzn_vhA@mail.gmail.com>
- <20200918132645.GS8409@ziepe.ca>
- <CAFCwf109t5=GuNvqTqLUCiYbjLC6o2xVoLY5C-SBqbN66f6wxg@mail.gmail.com>
- <20200918135915.GT8409@ziepe.ca>
- <CAFCwf13rJgb4=as7yW-2ZHvSnUd2NK1GP0UKKjyMfkB3vsnE5w@mail.gmail.com>
- <20200918141909.GU8409@ziepe.ca>
- <CAFCwf121_UNivhfPfO6uFoHbF+2Odeb1c3+482bOXeOZUsEnug@mail.gmail.com>
- <20200918150735.GV8409@ziepe.ca>
- <CAFCwf13y1VVy90zAoBPC-Gfj6mwMVbefh3fxKDVneuscp4esqA@mail.gmail.com>
- <20200918152852.GW8409@ziepe.ca>
-From:   Gal Pressman <galpress@amazon.com>
-Message-ID: <b0721756-d323-b95e-b2d2-ca3ce8d4a660@amazon.com>
-Date:   Mon, 21 Sep 2020 14:22:02 +0300
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.2.2
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Jylsjxure8iloHgTv6dK8e3IpVuFYGMIH7w1sVGlBAw=;
+        b=nqLrdxvYUsrTTUgEz8hFcvRTwfimgRk7PIAWUsvqWfJXTlPGfflwm8mzXT8aa2KY2P
+         68uE0ItUG43PEBQHvQz0n5LfzcY5Vinp3+0+N/mi9FzOG6wN7RalWfeVlXnWsudjvjLp
+         azA/VpQMdPVNfv0XmXevqqOz8FpUze8tuIoBUenMuu9HhVDRlzMDoeTwUTGMvMguTp/z
+         8XEmLlOEvu1vFSu26V/SA8TWV2zWBUcmtuQOOj/8mT/j0oWnquMpxzpvNWBy+D2FVLw5
+         URhzLqfaOkxtFGFL0xgduy16DEHqIIA4K/3Dp3aKV72mKsmud58QrDiQCeOAcPvNt6ik
+         /HCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Jylsjxure8iloHgTv6dK8e3IpVuFYGMIH7w1sVGlBAw=;
+        b=VpBFsAQt8SRUilAk7vzUPbEgMSDpvmAAYjlihtZNw3WYWjq1U9OY/6KRzCP1LjCqJe
+         3pvGDgYAYWaTbUaKyuIBXbV6S0UwnnDACG++eFfr5wYz/Eg2FCXTyR7yBng6Hsc7sVro
+         Wx0VXfdbmqier6CWhKXwyp74jeax/HcBa6ZihGwfVZlBHYZFFQgwiCtFmO4R3f2iqiTw
+         /CJUvRU8scN87ryc36Y8dENoVK+1aX8Z4LUUNhHfW+kqMtJj4NuCAVJ4zoLz4Q9HKPVO
+         nVZNSV7wxDbhJ6JPrcsgQkNNIaPpdTNNbXb55BX5QxeZhGhvX9C1KjCHADYNJsU8PYDX
+         xi5g==
+X-Gm-Message-State: AOAM5313eYskzQVmnjwiSnoo+cK7xo3esclVwUqxi9B1y4xzHj6qhzoS
+        O2So56RpNI8Fp7lTo5XiR3soty32W3vjkAxs6iE=
+X-Google-Smtp-Source: ABdhPJxKB3sTltABNKXrNPF1O/jcVNZisQ+S96LJnMDeQtk1GgN0zbXDBpIBy0vCshMqNA00/xnM1su+7h8kUnV4ny0=
+X-Received: by 2002:a92:c7b0:: with SMTP id f16mr41703231ilk.137.1600687417526;
+ Mon, 21 Sep 2020 04:23:37 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200918152852.GW8409@ziepe.ca>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.43.161.85]
-X-ClientProxiedBy: EX13D30UWC002.ant.amazon.com (10.43.162.235) To
- EX13D19EUB003.ant.amazon.com (10.43.166.69)
+References: <20200921080255.15505-1-zangchunxin@bytedance.com>
+ <20200921081200.GE12990@dhcp22.suse.cz> <CALOAHbDKvT58UFjxy770VDxO0VWABRYb7GVwgw+NiJp62mB06w@mail.gmail.com>
+ <20200921110505.GH12990@dhcp22.suse.cz>
+In-Reply-To: <20200921110505.GH12990@dhcp22.suse.cz>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Mon, 21 Sep 2020 19:23:01 +0800
+Message-ID: <CALOAHbCDXwjN+WDSGVv+G3ho-YRRPjAAqMJBtyxeGHH6utb5ew@mail.gmail.com>
+Subject: Re: [PATCH] mm/memcontrol: Add the drop_cache interface for cgroup v2
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     zangchunxin@bytedance.com, Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tejun Heo <tj@kernel.org>, lizefan@huawei.com,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kafai@fb.com,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        andriin@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
+        Cgroups <cgroups@vger.kernel.org>, linux-doc@vger.kernel.org,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/09/2020 18:28, Jason Gunthorpe wrote:
-> On Fri, Sep 18, 2020 at 06:15:52PM +0300, Oded Gabbay wrote:
-> 
->> I'm sorry, but you won't be able to convince me here that I need to
->> "enslave" my entire code to RDMA, just because my ASIC "also" has some
->> RDMA ports.
-> 
-> You can't recreate common shared subsystems in a driver just because
-> you don't want to work with the subsystem.
-> 
-> I don't care what else the ASIC has. In Linux the netdev part is
-> exposed through netdev, the RDMA part through RDMA, the
-> totally-not-a-GPU part through drivers/misc.
-> 
-> It is always been this way. Chelsio didn't get to rebuild the SCSI
-> stack in their driver just because "storage is a small part of their
-> device"
-> 
-> Drivers are not allowed to re-implement I2C/SPI/etc without re-using
-> the comon code for that just because "I2C is a small part of their
-> device"
-> 
-> Exposing to userspace the creation of RoCE QPs and their related
-> objects are unambiguously a RDMA subsystem task. I don't even know how
-> you think you can argue it is not. It is your company proudly claiming
-> the device has 100G RoCE ports in all the marketing literature, after
-> all.
-> 
-> It is too bad the device has a non-standards compliant implementation
-> of RoCE so this will be a bit hard for you. Oh well.
+On Mon, Sep 21, 2020 at 7:05 PM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Mon 21-09-20 18:55:40, Yafang Shao wrote:
+> > On Mon, Sep 21, 2020 at 4:12 PM Michal Hocko <mhocko@suse.com> wrote:
+> > >
+> > > On Mon 21-09-20 16:02:55, zangchunxin@bytedance.com wrote:
+> > > > From: Chunxin Zang <zangchunxin@bytedance.com>
+> > > >
+> > > > In the cgroup v1, we have 'force_mepty' interface. This is very
+> > > > useful for userspace to actively release memory. But the cgroup
+> > > > v2 does not.
+> > > >
+> > > > This patch reuse cgroup v1's function, but have a new name for
+> > > > the interface. Because I think 'drop_cache' may be is easier to
+> > > > understand :)
+> > >
+> > > This should really explain a usecase. Global drop_caches is a terrible
+> > > interface and it has caused many problems in the past. People have
+> > > learned to use it as a remedy to any problem they might see and cause
+> > > other problems without realizing that. This is the reason why we even
+> > > log each attempt to drop caches.
+> > >
+> > > I would rather not repeat the same mistake on the memcg level unless
+> > > there is a very strong reason for it.
+> > >
+> >
+> > I think we'd better add these comments above the function
+> > mem_cgroup_force_empty() to explain why we don't want to expose this
+> > interface in cgroup2, otherwise people will continue to send this
+> > proposal without any strong reason.
+>
+> I do not mind people sending this proposal.  "V1 used to have an
+> interface, we need it in v2 as well" is not really viable without
+> providing more reasoning on the specific usecase.
+>
+> _Any_ patch should have a proper justification. This is nothing really
+> new to the process and I am wondering why this is coming as a surprise.
+>
 
-What is considered a RoCE port in this case if it's not compliant with RoCE?
-Sounds like it's an implementation of RDMA over ethernet, not RoCE.
-Does GAUDI support UD/RC/.. QPs? Is it using a proprietary wire protocol?
-(BTW, Oded claims it's similar to nvlink, how is nvlink's implementation
-exposed? Or is it closed source?)
+Container users always want to drop cache in a specific container,
+because they used to use drop_caches to fix memory pressure issues.
+Although drop_caches can cause some unexpected issues, it could also
+fix some issues. So container users want to use it in containers as
+well.
+If this feature is not implemented in cgroup, they will ask you why
+but there is no explanation in the kernel.
 
-Jason, how do you imagine GAUDI in the RDMA subsystem? Userspace control path
-verbs (used by hl-thunk?) and all data path verbs exposed as kverbs (used by
-habanalabs driver)?
-So neither any userspace verbs apps could use it nor kernel ULPs?
+Regarding the memory.high, it is not perfect as well, because you have
+to set it to 0 to drop_caches, and the processes in the containers
+have to reclaim pages as well because they reach the memory.high, but
+memory.force_empty won't make other processes to reclaim.
+
+That doesn't mean I agree to add this interface, while I really mean
+that if we discard one feature we'd better explain why.
+
+-- 
+Thanks
+Yafang
