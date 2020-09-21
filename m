@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3F392724FB
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 15:13:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 691F42724F6
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 15:13:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727699AbgIUNMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 09:12:54 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:13760 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727321AbgIUNKa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727130AbgIUNKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 21 Sep 2020 09:10:30 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 89A28D6836BD7941DF21;
-        Mon, 21 Sep 2020 21:10:21 +0800 (CST)
+Received: from szxga04-in.huawei.com ([45.249.212.190]:13804 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727331AbgIUNK2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 09:10:28 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id C9984B85D2801ABBABC2;
+        Mon, 21 Sep 2020 21:10:26 +0800 (CST)
 Received: from localhost.localdomain.localdomain (10.175.113.25) by
  DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 21 Sep 2020 21:10:15 +0800
+ 14.3.487.0; Mon, 21 Sep 2020 21:10:16 +0800
 From:   Qinglang Miao <miaoqinglang@huawei.com>
 To:     Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
 CC:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         Qinglang Miao <miaoqinglang@huawei.com>
-Subject: [PATCH -next] mlxsw: spectrum_acl_tcam: simplify the return expression of ishtp_cl_driver_register()
-Date:   Mon, 21 Sep 2020 21:10:39 +0800
-Message-ID: <20200921131039.92249-1-miaoqinglang@huawei.com>
+Subject: [PATCH -next] mlxsw: spectrum_router: simplify the return expression of __mlxsw_sp_router_init()
+Date:   Mon, 21 Sep 2020 21:10:41 +0800
+Message-ID: <20200921131041.92294-1-miaoqinglang@huawei.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -40,32 +40,33 @@ Simplify the return expression.
 
 Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
-index 5c0204033..5b4313991 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
-@@ -289,17 +289,11 @@ static int
- mlxsw_sp_acl_tcam_group_add(struct mlxsw_sp_acl_tcam *tcam,
- 			    struct mlxsw_sp_acl_tcam_group *group)
- {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 24f1fd1f8..9188fc32b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -8033,7 +8033,6 @@ static int __mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp)
+ 	bool usp = net->ipv4.sysctl_ip_fwd_update_priority;
+ 	char rgcr_pl[MLXSW_REG_RGCR_LEN];
+ 	u64 max_rifs;
 -	int err;
--
- 	group->tcam = tcam;
- 	mutex_init(&group->lock);
- 	INIT_LIST_HEAD(&group->region_list);
  
--	err = mlxsw_sp_acl_tcam_group_id_get(tcam, &group->id);
+ 	if (!MLXSW_CORE_RES_VALID(mlxsw_sp->core, MAX_RIFS))
+ 		return -EIO;
+@@ -8042,10 +8041,7 @@ static int __mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp)
+ 	mlxsw_reg_rgcr_pack(rgcr_pl, true, true);
+ 	mlxsw_reg_rgcr_max_router_interfaces_set(rgcr_pl, max_rifs);
+ 	mlxsw_reg_rgcr_usp_set(rgcr_pl, usp);
+-	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(rgcr), rgcr_pl);
 -	if (err)
 -		return err;
--
 -	return 0;
-+	return mlxsw_sp_acl_tcam_group_id_get(tcam, &group->id);
++	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(rgcr), rgcr_pl);
  }
  
- static void mlxsw_sp_acl_tcam_group_del(struct mlxsw_sp_acl_tcam_group *group)
+ static void __mlxsw_sp_router_fini(struct mlxsw_sp *mlxsw_sp)
 -- 
 2.23.0
 
