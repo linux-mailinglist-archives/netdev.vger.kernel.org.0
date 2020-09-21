@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B9C6271AED
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 08:36:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D6E0271AEF
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 08:36:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726368AbgIUGgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 02:36:13 -0400
-Received: from avas10dua.indosat.net.id ([219.83.54.102]:33788 "EHLO
+        id S1726392AbgIUGgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 02:36:33 -0400
+Received: from avas10dua.indosat.net.id ([219.83.54.102]:33890 "EHLO
         avas10dua.indosat.net.id" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726011AbgIUGgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 02:36:12 -0400
-X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Sep 2020 02:33:17 EDT
-IronPort-SDR: SRr9fqbUox7NTQuarY/S+iCBxoAcxK0x29BI+wUbpcXWfiuv9E9eOxuEHGRiWMwEHw3zTolRFu
- uUoxm1K77GBcEggiaxDOIZo1eLHsCIybl5RS5MV9IeBC1kgdfcigIKaPORRLIQutKLsWgll8Kv
- UmdAkkYSCa8+LHplUDFmgK5DjXVnZXMnWq93DY8Kj+o3mPsIOrBuds/MvtuZobbOdsd5gwMOgy
- 9mG+wFo75fO0fxlc/dWsYgIeDoUhnqR2rhNMZtz9Jxh+C47NjmtHmyyMi+gjQKrBsj9zj36PCp
- 9LQ=
+        with ESMTP id S1726236AbgIUGgc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 02:36:32 -0400
+IronPort-SDR: 58Itfneat62naNm4uCIPfSM64aBvRwQzHxyxRsmquRgWbhUYEzNBBcE7BW5/lq5riXAJAfflkC
+ 6bG7joXuOuzurWecuKheAJQRo6Z52mlAOHWv+i/8vWERY2BYXb5eKTHnab9iuIHmLzDElwlqrY
+ hlmfJiNYGiXAJmJyw9MpgcwfeqtAH/WqQBVl9qILZqdaEvZddXUYLoKJFWqODRADhW5cNrcZ1L
+ FQ1SXrLks6WxStNYLWN8WaxC9R0uLFmzhzc44u0M5MzdNN7ZCjsHAtVG7V+OwuroiaJ7OyBman
+ LpM=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2CmBADYRmhf/4Iym8qHdKpOjRyCeQg?=
  =?us-ascii?q?DAg8DBgSGVYc22CWBwTg?=
 X-IPAS-Result: A2CmBADYRmhf/4Iym8qHdKpOjRyCeQgDAg8DBgSGVYc22CWBwTg
 X-IronPort-AV: E=Sophos;i="5.77,285,1596474000"; 
-   d="pdf'?jpg'145?scan'145,208,145";a="155872366"
+   d="pdf'?jpg'145?scan'145,208,145";a="155872450"
 Received: from im2mailps02.indosat.net.id ([202.155.50.130])
-  by avas11dua.indosat.net.id with ESMTP; 21 Sep 2020 13:24:30 +0700
-Received: from (36.76.244.224) by webmail.indosat.net.id;  Mon, 21 Sep 2020 13:25:13 +0700
-Message-ID: <26698363.30001600669513193.JavaMail.defaultUser@defaultHost>
-Date:   Mon, 21 Sep 2020 13:25:13 +0700 (WIT)
+  by avas11dua.indosat.net.id with ESMTP; 21 Sep 2020 13:24:48 +0700
+Received: from (36.76.244.224) by webmail.indosat.net.id;  Mon, 21 Sep 2020 13:25:30 +0700
+Message-ID: <6159669.30121600669531073.JavaMail.defaultUser@defaultHost>
+Date:   Mon, 21 Sep 2020 13:25:30 +0700 (WIT)
 From:   Dynamic Credit <loans@dynamicssolutions.com>
 Reply-To: dynamiccredit@zohomail.com
 Subject: Notice!
 MIME-Version: 1.0
 Content-Type: multipart/mixed; 
-        boundary="----=_Part_1512_32556040.1600669513112"
+        boundary="----=_Part_1518_26566886.1600669530996"
 To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-------=_Part_1512_32556040.1600669513112
+------=_Part_1518_26566886.1600669530996
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
@@ -56,7 +55,7 @@ attached flier and apply now for immediate response.
 Marketing Team
 
 
-------=_Part_1512_32556040.1600669513112
+------=_Part_1518_26566886.1600669530996
 Content-Type: IMAGE/JPEG; name="Dynamic Credit Solutions.jpg"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="Dynamic Credit Solutions.jpg"; 
@@ -4363,7 +4362,7 @@ FFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUU
 UUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRR
 QAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFA
 BRRRQAUUUUAf/9k=
-------=_Part_1512_32556040.1600669513112
+------=_Part_1518_26566886.1600669530996
 Content-Type: APPLICATION/PDF; name="Dynamic Credit Solutions.pdf"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="Dynamic Credit Solutions.pdf"; 
@@ -11603,5 +11602,5 @@ MzAyMw0KJSVFT0YNCnhyZWYNCjAgMA0KdHJhaWxlcg0KPDwvU2l6ZSA0NDcvUm9vdCAxIDAgUi9J
 bmZvIDQ4IDAgUi9JRFs8RDA2MDE2MTg4OUEzMUI0OUFFMEIwQkRGNEJBMENBRUM+PEQwNjAxNjE4
 ODlBMzFCNDlBRTBCMEJERjRCQTBDQUVDPl0gL1ByZXYgNDAzMDIzL1hSZWZTdG0gNDAxODczPj4N
 CnN0YXJ0eHJlZg0KNDEyMTIzDQolJUVPRg==
-------=_Part_1512_32556040.1600669513112--
+------=_Part_1518_26566886.1600669530996--
 
