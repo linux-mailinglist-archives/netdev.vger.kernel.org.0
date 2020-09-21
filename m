@@ -2,137 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B36342721FC
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 13:12:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F084227223C
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 13:23:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726620AbgIULMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 07:12:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39030 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726353AbgIULMm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 07:12:42 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 109BFC0613CF
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 04:12:42 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id u6so14878680iow.9
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 04:12:42 -0700 (PDT)
+        id S1726751AbgIULXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 07:23:22 -0400
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:9480 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726367AbgIULXW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 07:23:22 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XUYVwNlyQ9a2Um+ZV13wS982WbKUYf9s/Uj9Vkz9D4Q=;
-        b=Yde7QrYHzVe62EUIFRpCZ9aHp9D59yHcy5MTku5aWbubs6iccWQchRNTpC1ActEaZp
-         JUkAh7S0Fb/xIN8Ztex33vcUzq6zKGyfENvRvf0R6kOvDDzBeCZib5368E8VOq8KUdQN
-         sct270kzvIt1aumXM+Fzts/TXFmaR1clgSEkETXuujLXzoIKy8rQFHCCN31tFH2+hU1c
-         D7w/TV7Jv5qVYot3ln30OYDN+oABhIsLI0iKZKXHVdd/FpAOoyX0wmTS5t1apdgUWk30
-         vHU5raPaqVSkclcZLmNx1XIK1PRHu+9JTaZ2gSXMxVmZxfKMkLgKY0U1IJABEDjQj1JZ
-         jDlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XUYVwNlyQ9a2Um+ZV13wS982WbKUYf9s/Uj9Vkz9D4Q=;
-        b=ss/Rq7lx+bs2/gsHxATr5PF/5cX/G5abrAiIr18UdLNjKUScsjNkk+ESrd+R+r5A7A
-         HqjebdIekiLL9L+cg+heGUOmqpE9kXo2Sx0lidr40k2SltnAa1bRjHO1dE8HNrNvEn4h
-         kJnmFSjsROScu1FBNmbVruzYm7hSXIdLWwLQPMUbUL3grO1SJkZ4yZ0j5CWMcbAlV425
-         +DOBHyjP+rX3u8Y9VQX41YU+r+O26HyW9osXKxtuvN7zVPp3ni5WVPeKlfOTmU0+hdvH
-         SF+1prWimiUW547vmoi+GsvO/7T3g/Zy93IMeUdszDBDpdkGdPJQ1TqVyY28Awicr2mJ
-         a8gA==
-X-Gm-Message-State: AOAM531PBsWovWB/z1PkN38hioaDc16mgN38vYnAkfvWRHtTaqfLVqpb
-        EYv+xYZ2hj3yIsuk7zbquXcZI5FlFChcMgFoW7wuFyu82Ezp360g
-X-Google-Smtp-Source: ABdhPJxnUKyKl5acoPxK8RLk1Z2jF6RegSpyqpTa+qbbpKMENKMVscvrMmrNOx8Lxm4izkMJCfZ5LRQOSSeQSUGS+js=
-X-Received: by 2002:a02:a047:: with SMTP id f7mr38588064jah.31.1600686761273;
- Mon, 21 Sep 2020 04:12:41 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1600687402; x=1632223402;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=TwH9MzHRv79x/EUOe5/xNeRXZrG6bmMJIXJfLBWxxGQ=;
+  b=YF2wvJ1D6mpruSYmJ4xIQh+LGmjQime2fvQqIINAVFuttxQGz+J3jxow
+   VXVBi1UnVwi0ACZA8GuTOzurUJx3Y59PwAcQrq/rTDccEb9ZCg3Ha5gfr
+   gsw2q9yIy8uU6/pbI8Fnm0qonIEt6blprcKxJM8WQghlL5eviKgBBXtDY
+   8=;
+X-IronPort-AV: E=Sophos;i="5.77,286,1596499200"; 
+   d="scan'208";a="77900423"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-c7c08562.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 21 Sep 2020 11:23:02 +0000
+Received: from EX13D19EUB003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-1e-c7c08562.us-east-1.amazon.com (Postfix) with ESMTPS id D5CD3240FD9;
+        Mon, 21 Sep 2020 11:22:58 +0000 (UTC)
+Received: from 8c85908914bf.ant.amazon.com (10.43.161.85) by
+ EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 21 Sep 2020 11:22:50 +0000
+Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
+To:     Jason Gunthorpe <jgg@ziepe.ca>, Oded Gabbay <oded.gabbay@gmail.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, <izur@habana.ai>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, SW_Drivers <SW_Drivers@habana.ai>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        <linux-rdma@vger.kernel.org>, Olof Johansson <olof@lixom.net>
+References: <20200918125014.GR8409@ziepe.ca>
+ <CAFCwf12oK4RXYhgzXiN_YvXvjoW1Fwx1xBzR3Y5E4RLvzn_vhA@mail.gmail.com>
+ <20200918132645.GS8409@ziepe.ca>
+ <CAFCwf109t5=GuNvqTqLUCiYbjLC6o2xVoLY5C-SBqbN66f6wxg@mail.gmail.com>
+ <20200918135915.GT8409@ziepe.ca>
+ <CAFCwf13rJgb4=as7yW-2ZHvSnUd2NK1GP0UKKjyMfkB3vsnE5w@mail.gmail.com>
+ <20200918141909.GU8409@ziepe.ca>
+ <CAFCwf121_UNivhfPfO6uFoHbF+2Odeb1c3+482bOXeOZUsEnug@mail.gmail.com>
+ <20200918150735.GV8409@ziepe.ca>
+ <CAFCwf13y1VVy90zAoBPC-Gfj6mwMVbefh3fxKDVneuscp4esqA@mail.gmail.com>
+ <20200918152852.GW8409@ziepe.ca>
+From:   Gal Pressman <galpress@amazon.com>
+Message-ID: <b0721756-d323-b95e-b2d2-ca3ce8d4a660@amazon.com>
+Date:   Mon, 21 Sep 2020 14:22:02 +0300
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.2.2
 MIME-Version: 1.0
-References: <20200917135700.649909-1-luka.oreskovic@sartura.hr> <CAPhsuW4WXqiK-AFP6nU1L03yXGLLuz845mFP8W_rhbyaw=Ck=w@mail.gmail.com>
-In-Reply-To: <CAPhsuW4WXqiK-AFP6nU1L03yXGLLuz845mFP8W_rhbyaw=Ck=w@mail.gmail.com>
-From:   Luka Oreskovic <luka.oreskovic@sartura.hr>
-Date:   Mon, 21 Sep 2020 13:12:30 +0200
-Message-ID: <CA+XBgLWBDJbCgToWPW2FkRO_AkkaE8+DMnAk55vyT+KyLZv4Xg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: add support for other map types to bpf_map_lookup_and_delete_elem
-To:     Song Liu <song@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Juraj Vijtiuk <juraj.vijtiuk@sartura.hr>,
-        Luka Perkov <luka.perkov@sartura.hr>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200918152852.GW8409@ziepe.ca>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.43.161.85]
+X-ClientProxiedBy: EX13D30UWC002.ant.amazon.com (10.43.162.235) To
+ EX13D19EUB003.ant.amazon.com (10.43.166.69)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 18, 2020 at 1:21 AM Song Liu <song@kernel.org> wrote:
->
-> On Thu, Sep 17, 2020 at 7:16 AM Luka Oreskovic
-> <luka.oreskovic@sartura.hr> wrote:
-> >
-> [...]
->
-> > +++ b/kernel/bpf/syscall.c
-> > @@ -1475,6 +1475,9 @@ static int map_lookup_and_delete_elem(union bpf_attr *attr)
-> >         if (CHECK_ATTR(BPF_MAP_LOOKUP_AND_DELETE_ELEM))
-> >                 return -EINVAL;
-> >
-> > +       if (attr->flags & ~BPF_F_LOCK)
-> > +               return -EINVAL;
-> > +
->
-> Please explain (in comments for commit log) the use of BPF_F_LOCK in
-> the commit log,
-> as it is new for BPF_MAP_LOOKUP_AND_DELETE_ELEM.
->
-> >         f = fdget(ufd);
-> >         map = __bpf_map_get(f);
-> >         if (IS_ERR(map))
-> > @@ -1485,13 +1488,19 @@ static int map_lookup_and_delete_elem(union bpf_attr *attr)
-> >                 goto err_put;
-> >         }
-> >
-> > +       if ((attr->flags & BPF_F_LOCK) &&
-> > +           !map_value_has_spin_lock(map)) {
-> > +               err = -EINVAL;
-> > +               goto err_put;
-> > +       }
-> > +
-> >         key = __bpf_copy_key(ukey, map->key_size);
-> >         if (IS_ERR(key)) {
-> >                 err = PTR_ERR(key);
-> >                 goto err_put;
-> >         }
-> >
-> > -       value_size = map->value_size;
-> > +       value_size = bpf_map_value_size(map);
-> >
-> >         err = -ENOMEM;
-> >         value = kmalloc(value_size, GFP_USER | __GFP_NOWARN);
-> > @@ -1502,7 +1511,24 @@ static int map_lookup_and_delete_elem(union bpf_attr *attr)
-> >             map->map_type == BPF_MAP_TYPE_STACK) {
-> >                 err = map->ops->map_pop_elem(map, value);
-> >         } else {
-> > -               err = -ENOTSUPP;
-> > +               err = bpf_map_copy_value(map, key, value, attr->flags);
-> > +               if (err)
-> > +                       goto free_value;
->
-> IIUC, we cannot guarantee the value returned is the same as the value we
-> deleted. If this is true, I guess this may confuse the user with some
-> concurrency
-> bug.
->
-> Thanks,
-> Song
->
-> [...]
+On 18/09/2020 18:28, Jason Gunthorpe wrote:
+> On Fri, Sep 18, 2020 at 06:15:52PM +0300, Oded Gabbay wrote:
+> 
+>> I'm sorry, but you won't be able to convince me here that I need to
+>> "enslave" my entire code to RDMA, just because my ASIC "also" has some
+>> RDMA ports.
+> 
+> You can't recreate common shared subsystems in a driver just because
+> you don't want to work with the subsystem.
+> 
+> I don't care what else the ASIC has. In Linux the netdev part is
+> exposed through netdev, the RDMA part through RDMA, the
+> totally-not-a-GPU part through drivers/misc.
+> 
+> It is always been this way. Chelsio didn't get to rebuild the SCSI
+> stack in their driver just because "storage is a small part of their
+> device"
+> 
+> Drivers are not allowed to re-implement I2C/SPI/etc without re-using
+> the comon code for that just because "I2C is a small part of their
+> device"
+> 
+> Exposing to userspace the creation of RoCE QPs and their related
+> objects are unambiguously a RDMA subsystem task. I don't even know how
+> you think you can argue it is not. It is your company proudly claiming
+> the device has 100G RoCE ports in all the marketing literature, after
+> all.
+> 
+> It is too bad the device has a non-standards compliant implementation
+> of RoCE so this will be a bit hard for you. Oh well.
 
-Thank you very much for your review. This is my first time contributing
-to the linux community, so I am very grateful for any input.
+What is considered a RoCE port in this case if it's not compliant with RoCE?
+Sounds like it's an implementation of RDMA over ethernet, not RoCE.
+Does GAUDI support UD/RC/.. QPs? Is it using a proprietary wire protocol?
+(BTW, Oded claims it's similar to nvlink, how is nvlink's implementation
+exposed? Or is it closed source?)
 
-For the first point, you are correct, the commit message should
-have been more detailed. As for the second point, I see the problem,
-but I'm not sure how to resolve it. Maybe moving the
-bpf_disable_instrumentation call could work, but I'm not sure if
-that could create different problems. I'll try to find and acceptable
-solution and resubmit the patch.
-
-Best wishes,
-Luka Oreskovic
+Jason, how do you imagine GAUDI in the RDMA subsystem? Userspace control path
+verbs (used by hl-thunk?) and all data path verbs exposed as kverbs (used by
+habanalabs driver)?
+So neither any userspace verbs apps could use it nor kernel ULPs?
