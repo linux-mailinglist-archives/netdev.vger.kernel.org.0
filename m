@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B63273699
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 01:25:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F4FF27369B
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 01:26:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728794AbgIUXZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 19:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39534 "EHLO
+        id S1728809AbgIUX0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 19:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728704AbgIUXZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 19:25:22 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C451CC061755;
-        Mon, 21 Sep 2020 16:25:21 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id s19so11516830ybc.5;
-        Mon, 21 Sep 2020 16:25:21 -0700 (PDT)
+        with ESMTP id S1728704AbgIUX0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 19:26:16 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B1FC061755;
+        Mon, 21 Sep 2020 16:26:16 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id x10so11482790ybj.13;
+        Mon, 21 Sep 2020 16:26:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=/JvXjBAMGbXXV/PxSZdZ34blnYYJeWOBOrsXHHvxARg=;
-        b=VMDpWt/SCrxwrUcemyNiTiPAgV+njgvS9tZC/yuTh40WGQDL+QwvC+dRnhHpK3/F0L
-         rLoHehwGBGmknbPo/TtyE92ho8+oipIka76E8zt4yY+Lr3u9UH7R/Lq3Oiolyv+tr/z5
-         W1Si6OnTFifrxJFEL2U4Mxo9bi7vb1PKJxESZ66l9FbSPceYvFwsxyhwvKhLH8dEpIec
-         7bc5JLK/1/2NnuMFKQjJSN74Kpu5o32PVfQZ5xhYG/gBac96woPr0ysYwOBvD5zEfE4y
-         5Gv0jkpkhyVJc7vdAoN24N+Eq50c1+0gXq7vCjG9bBZbHCbhPfai4FjxVmI6xdNceEWx
-         6szw==
+        bh=OF+8FVJOcX0nhPnapCQtkAgPuZTioEJ95Qg1Q6KEc7E=;
+        b=cSREQmRfwhhvazC8M5eotFneglUwjLrY3gVkrI1yFVUk5AtNryw1J8cERbBdQDW3R5
+         q+rBR7QIspGxDv4D9i10KJRA1pQCHjgyIm6h1G4iYnB9m3pF+E3TpQTS0qZulRRCKgIW
+         C175p8zG62fniqa5/XawuYvZZ61indVqbCcBdlvX80ov4SviGOHExD8eUG5L43UxCMNK
+         7KboLIufZdWAJm8N96D3DMH7mM+/o1km1mOO3YYkKboa9KXhjzN1CdrAqK3rIzfQORv8
+         3Qn4EH5hFjcTaUxonlJtSr7I1UAyCBbklbwfhnAl43hEOmGohU3V1Kh2qTMFYW8J48Sd
+         aPWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/JvXjBAMGbXXV/PxSZdZ34blnYYJeWOBOrsXHHvxARg=;
-        b=EW8I80u4BfWCpHK4HzbrTgqsboo8kzoxRtd+yt5LNW4NTlJASp2WqJ+OSlBbGq7Bbr
-         IqYm/GBbSVz83IvuMVM8qoDUTHGZrVz1daBphdlfmWYiHQhOeDnGMup6NOSPMWJDoisR
-         ZtRyvyENX/i83Npc3/fZJ4a8kPZAwI7CYtGVCNqVNui6j5MIusSaZE8OyW0s3ZfZninE
-         IuJwKyX04LUZRVryslzNjjdwXNcbh03XH/4QkJ8aR/clAHFHhKbta57F4khzhpNngriU
-         V+PMzHclUaDtJ+vWP7FhZpNQZdqM0gOIyq0J87lm9r0vzQ1cCdZ/ry1nY4OzNRPNB3L1
-         V4Qg==
-X-Gm-Message-State: AOAM533v2YIwg4QNch7M+Zu6ebbzO2QSry96mrmRRafKE9BoRVFJuuD/
-        5CHpyxY3uhUTBPCviyeXVWPgMNP8yprjRmXK6V4=
-X-Google-Smtp-Source: ABdhPJwKa0kP/03+ETw5Ba5evR9emH2uvP6AEmzsarARr9U0AVIyCju7ohNN86J9TQCbgkF8UlFJ3ks9jRrtc/U6AZk=
-X-Received: by 2002:a25:4446:: with SMTP id r67mr3127767yba.459.1600730720964;
- Mon, 21 Sep 2020 16:25:20 -0700 (PDT)
+        bh=OF+8FVJOcX0nhPnapCQtkAgPuZTioEJ95Qg1Q6KEc7E=;
+        b=QRErZ6GmHCwnyJSDYA8l1iSEhMwnlSKfShQFQZoKe16dKWHAm+mrbHbU48pzEXh1i7
+         vM9HpJ0r5ZP9tBUkmrAKz2rdKf2FBAFNYexaO5hQYd8IP1J6uZfJUU3aM06Kc6CZJAwa
+         AvMyViLrGEoA3VqMFWdwhPiRWESLQ03qd4vqWmSvaeuDuTCGydA+rdAX2w2Ncx6Qxczo
+         ZHQlQAezrl9ev2Yp/q/o1f/uVe6eyVsvWIDiwj47V2T2/+zAuh4uYKouv+vdA/O4BS44
+         yTiSHBlhEIGuvIEv6JpQ0niOb4IHwz4MKtBaJiGuKtrM8fFSU5UNMsipNtQqOcARP7AH
+         +sJw==
+X-Gm-Message-State: AOAM530aJR8C/auXRtmSSh6iTSJPQBnOAqRj8rhI9+FM3uy/jj/rJpaA
+        1q3ouASJPw185mS94x1gmqxvQ7+lKP8xA6fHrvo=
+X-Google-Smtp-Source: ABdhPJxxd2c9q1eSl3BT+/O/uIVL+l6Hpby6TFYbtDke4mRAD5ArAp6RyXM46sWJH5idfY8AQm70k4hr5P0RGO1Ch5M=
+X-Received: by 2002:a25:8541:: with SMTP id f1mr2899621ybn.230.1600730775327;
+ Mon, 21 Sep 2020 16:26:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <160051618267.58048.2336966160671014012.stgit@toke.dk> <160051619397.58048.16822043567956571063.stgit@toke.dk>
-In-Reply-To: <160051619397.58048.16822043567956571063.stgit@toke.dk>
+References: <160051618267.58048.2336966160671014012.stgit@toke.dk>
+In-Reply-To: <160051618267.58048.2336966160671014012.stgit@toke.dk>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 21 Sep 2020 16:25:10 -0700
-Message-ID: <CAEf4BzZnAFtB4Zq8dxee=B=3Z46JR4dn9wA=DOeOURB77N4yRg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v7 10/10] selftests: Add selftest for disallowing
- modify_return attachment to freplace
+Date:   Mon, 21 Sep 2020 16:26:04 -0700
+Message-ID: <CAEf4BzZbUrTKS9utppKCiBqkeybBEQQgwjqJhSz8FJyiK32VHA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 00/10] bpf: Support multi-attach for freplace programs
 To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -71,109 +70,90 @@ X-Mailing-List: netdev@vger.kernel.org
 On Sat, Sep 19, 2020 at 4:50 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
 at.com> wrote:
 >
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> This series adds support attaching freplace BPF programs to multiple targ=
+ets.
+> This is needed to support incremental attachment of multiple XDP programs=
+ using
+> the libxdp dispatcher model.
 >
-> This adds a selftest that ensures that modify_return tracing programs
-> cannot be attached to freplace programs. The security_ prefix is added to
-> the freplace program because that would otherwise let it pass the check f=
-or
-> modify_return.
+> The first patch fixes an issue that came up in review: The verifier will
+> currently allow MODIFY_RETURN tracing functions to attach to other BPF pr=
+ograms,
+> even though it is pretty clear from the commit messages introducing the
+> functionality that this was not the intention. This patch is included in =
+the
+> serise because the subsequent refactoring patches touch the same code.
 >
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       |   68 ++++++++++++++=
-++++++
->  .../selftests/bpf/progs/fmod_ret_freplace.c        |   14 ++++
->  .../selftests/bpf/progs/freplace_get_constant.c    |    2 -
->  3 files changed, 83 insertions(+), 1 deletion(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/fmod_ret_freplace.c
+> The next three patches are refactoring patches: Patch 2 is a trivial chan=
+ge to
+> the logging in the verifier, split out to make the subsequent refactor ea=
+sier to
+> read. Patch 3 refactors check_attach_btf_id() so that the checks on progr=
+am and
+> target compatibility can be reused when attaching to a secondary location=
+.
 >
-> diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/too=
-ls/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-> index 27677e015730..6339d125ef9a 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-> @@ -233,6 +233,72 @@ static void test_func_replace_multi(void)
->                                   prog_name, true, test_second_attach);
->  }
+> Patch 4 moves prog_aux->linked_prog and the trampoline to be embedded in
+> bpf_tracing_link on attach, and freed by the link release logic, and intr=
+oduces
+> a mutex to protect the writing of the pointers in prog->aux.
 >
-> +static void test_fmod_ret_freplace(void)
-> +{
-> +       const char *tgt_name =3D "./test_pkt_access.o";
-> +       const char *freplace_name =3D "./freplace_get_constant.o";
-> +       const char *fmod_ret_name =3D "./fmod_ret_freplace.o";
-> +       struct bpf_link *freplace_link =3D NULL, *fmod_link =3D NULL;
-> +       struct bpf_object *freplace_obj =3D NULL, *pkt_obj, *fmod_obj =3D=
- NULL;
-> +       struct bpf_program *prog;
-> +       __u32 duration =3D 0;
-> +       int err, pkt_fd;
-> +
-> +       err =3D bpf_prog_load(tgt_name, BPF_PROG_TYPE_UNSPEC,
-> +                           &pkt_obj, &pkt_fd);
-> +       /* the target prog should load fine */
-> +       if (CHECK(err, "tgt_prog_load", "file %s err %d errno %d\n",
-> +                 tgt_name, err, errno))
-> +               return;
-> +       DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
-> +                           .attach_prog_fd =3D pkt_fd,
-> +                          );
+> Based on these refactorings, it becomes pretty straight-forward to suppor=
+t
+> multiple-attach for freplace programs (patch 5). This is simply a matter =
+of
+> creating a second bpf_tracing_link if a target is supplied. However, for =
+API
+> consistency with other types of link attach, this option is added to the
+> BPF_LINK_CREATE API instead of extending bpf_raw_tracepoint_open().
+>
+> Patch 6 is a port of Jiri Olsa's patch to support fentry/fexit on freplac=
+e
+> programs. His approach of getting the target type from the target program
+> reference no longer works after we've gotten rid of linked_prog (because =
+the
+> bpf_tracing_link reference disappears on attach). Instead, we used the sa=
+ved
+> reference to the target prog type that is also used to verify compatibili=
+ty on
+> secondary freplace attachment.
+>
+> Patches 7 is the accompanying libbpf update, and patches 8-10 are selftes=
+ts:
+> patch 8 tests for the multi-freplace functionality itself, patch 9 is Jir=
+i's
+> previous selftest for the fentry-to-freplace fix, and patch 10 is a test =
+for
+> the change introduced in patch 1, blocking MODIFY_RETURN functions from
+> attaching to other BPF programs.
+>
+> With this series, libxdp and xdp-tools can successfully attach multiple p=
+rograms
+> one at a time. To play with this, use the 'freplace-multi-attach' branch =
+of
+> xdp-tools:
+>
+> $ git clone --recurse-submodules --branch freplace-multi-attach https://g=
+ithub.com/xdp-project/xdp-tools
+> $ cd xdp-tools/xdp-loader
+> $ make
+> $ sudo ./xdp-loader load veth0 ../lib/testing/xdp_drop.o
+> $ sudo ./xdp-loader load veth0 ../lib/testing/xdp_pass.o
+> $ sudo ./xdp-loader status
+>
+> The series is also available here:
+> https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git/log/?h=3Db=
+pf-freplace-multi-attach-alt-07
+>
+> Changelog:
+>
+> v7:
+>   - Add back missing ptype =3D=3D prog->type check in link_create()
+>   - Use tracing_bpf_link_attach() instead of separate freplace_bpf_link_a=
+ttach()
+>   - Don't break attachment of bpf_iters in libbpf
 
-this is variable declaration, it has to be together with all the variables =
-above
+What was specifically the issue and the fix for bpf_iters?
 
-> +
-> +       freplace_obj =3D bpf_object__open_file(freplace_name, &opts);
-> +       if (CHECK(IS_ERR_OR_NULL(freplace_obj), "freplace_obj_open",
-> +                 "failed to open %s: %ld\n", freplace_name,
-> +                 PTR_ERR(freplace_obj)))
-> +               goto out;
-> +
-> +       err =3D bpf_object__load(freplace_obj);
-> +       if (CHECK(err, "freplace_obj_load", "err %d\n", err))
-> +               goto out;
-> +
-> +       prog =3D bpf_program__next(NULL, freplace_obj);
-> +       freplace_link =3D bpf_program__attach_trace(prog);
-> +       if (CHECK(IS_ERR(freplace_link), "freplace_attach_trace", "failed=
- to link\n"))
-> +               goto out;
-> +
-> +       opts.attach_prog_fd =3D bpf_program__fd(prog);
-> +       fmod_obj =3D bpf_object__open_file(fmod_ret_name, &opts);
-> +       if (CHECK(IS_ERR_OR_NULL(fmod_obj), "fmod_obj_open",
-> +                 "failed to open %s: %ld\n", fmod_ret_name,
-> +                 PTR_ERR(fmod_obj)))
-> +               goto out;
-> +
-> +       err =3D bpf_object__load(fmod_obj);
-> +       if (CHECK(err, "fmod_obj_load", "err %d\n", err))
-> +               goto out;
-> +
-> +       prog =3D bpf_program__next(NULL, fmod_obj);
-> +       fmod_link =3D bpf_program__attach_trace(prog);
-> +       if (CHECK(!IS_ERR(fmod_link), "fmod_attach_trace",
-> +                 "linking fmod_ret to freplace should fail\n"))
-> +               goto out;
-> +
-> +out:
-> +       if (!IS_ERR_OR_NULL(freplace_link))
-> +               bpf_link__destroy(freplace_link);
-> +       if (!IS_ERR_OR_NULL(fmod_link))
-> +               bpf_link__destroy(fmod_link);
-> +       if (!IS_ERR_OR_NULL(freplace_obj))
-> +               bpf_object__close(freplace_obj);
-> +       if (!IS_ERR_OR_NULL(fmod_obj))
-> +               bpf_object__close(fmod_obj);
-
-no need for all IS_ERR_OR_NULL checks
-
-> +       bpf_object__close(pkt_obj);
-> +}
-> +
-> +
 
 [...]
