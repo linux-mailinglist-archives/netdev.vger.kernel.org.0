@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAB48272C37
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 18:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A228272C38
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 18:30:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728132AbgIUQ2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 12:28:38 -0400
+        id S1728172AbgIUQ2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 12:28:41 -0400
 Received: from mail-eopbgr70078.outbound.protection.outlook.com ([40.107.7.78]:34958
         "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727323AbgIUQ2h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 12:28:37 -0400
+        id S1728026AbgIUQ2l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 12:28:41 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PJWk02lUZmb3s3Y7+9lj3vr2VDAxag0kZpcit9zX0mCULNGpSrd2yigXLMR1QeiqNnADNIqZfmcMncTnqmemv3bN5PYSsuzseZBBOO6829dyvZb8hMP0QSuFnN19lqXY0x7WwP3r8X32PIOAQcbu8ara28QNXiRbHgFjZCBuihB9yLWRJ+EMB6XifIJx/5qc0nfrZFbHmroDT4ebYWrqD+Yq0rWUq7DJv1hTlDmzHU4Ryx67pA4T45G8gxduMrZsHwqIBwCkpvxU2Eu2YxQ1Z5en3RBAoovV56218DLnsaVZrhfm0adf6hGfhVkYSDhJXgdXbbocxGYUfc+uknZadQ==
+ b=UByitFULri5FK+BfA51wBdOZh3/soNCOROOZuINLgKQc/sQ4YyWIlDcn4AeiSgnLS7AC0BKkO3cdWMa6eb4TS1jEaXiIbr4EBHwTUx9U0GhBfetoNKYgBXZl0Krdk/MR+AKRdZp2MJoKd2lDs4RbK/R8+Dbx3hdGnApQWdA67GeiTcZhk0AIRO2ebPDcS6FIULHjeNrrcY8Op5vniP10rwV73wyf949s6wWDl9GPdenka+mdBwUJD6Uclh02qcacVcapBIVUH2i7xphr7IcEOvFM8Yb56OMTQaQDGvU8rtGVtxc5YfLoskftO/Q5hLHo7yqJQNJUkkZnTo1cP2LRAQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MuI3t0NbsZ6TcJju2KzY7n/GSNH2Nx4dQfkBN/akVQc=;
- b=Sw3p4ZdxJm02YfIgY5LTptgzSP/QZ5WvNg5rF1LUMUq4Rw4HdyekWrMqiliGGWq5MieQjxC0kTP9NS+8Yvd4Hxj+FN2IJKyjfcThe/Ghf8hs/myNyB753IO1K90GhwEJYUGfVQ1ICkd863C3diUC9oCPbPonteRa+hzRogXuv9J4pawCIOhVBlNr5rDodeHWfW/omT9OSLXINGDQGSvDIyO94xQhpF5V+D98+m1qqOcWwUzfG/LvM0fxiZv4AIf2FDE/rv+V6/qIduwb1aauOlJNlxGN1olsDTed/6EicQAm60Z9sf1mf/IBXo9MdPtFcQ103rfeeq/XCZmMqyFJpQ==
+ bh=tZ9TDLnvGWIe4edWrDWXzRjMgegPkmS0Ci/t7QH2j00=;
+ b=aAaOSllkWBJKOFgTws+uvAr0dU5ATizFMVLN5dSN5mI8CCCHoV8S6bWj2Ylo/tc5J2W6B94NgKRmEawF6lDl+IACRKJ+N+WQVAIiRvF4imwlRosvxGlgaoVo+alIpGlS6AkNMW6esCDDe7vyysLWw2NSR2Me65sSQNUAx0OLk/4xx71TNU1cvE+/fvxbRFoMr0hHKW2kuSNRnpbhX3+q6Anmnwgz2tfS9VhKSRoxpQLqmhjv5E/pwIZtUairt40EL5XAchHgOhymUn21+K2vFKI5SrsHhaXLXuTeRJ0goM9/paMSk4qI/ZANmf4gzxqYZ1IungrD0nF4ig3BuZpKOg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MuI3t0NbsZ6TcJju2KzY7n/GSNH2Nx4dQfkBN/akVQc=;
- b=rvZZO++Xu47htO/tQShUIpaPFjhaHCQjc9Lh5rMGxlXPQCcmOD2IZon4LLcnkcYG38QkHuE1wd8CBSUgB5LIv4xDvIbUWgcfqtjsicDhk9hzIowH4GOhCmCGZLhfnxaSN97BP1DH5fhwIBJTh8BobgvpgeFdnkXCtKib8AHGtq4=
+ bh=tZ9TDLnvGWIe4edWrDWXzRjMgegPkmS0Ci/t7QH2j00=;
+ b=PauaNhKkrjuOeOE9b68XfJC6PdLyjTxH0VC7Z06gjYC3gCX1xCs/YXbBLhUYZWfiO4zfHdOX82Tk2fgeAM9ZIq5iSIq3ff7m5zoZqTHR/1karmKOuRilvoU6wzdhsN1xzCTJEBem/b2z/oqtbnZj6IqLJkc9BQS2qNGVtjzqJ+k=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
@@ -41,9 +41,9 @@ From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         kuba@kernel.org, cphealy@gmail.com, jiri@nvidia.com
-Subject: [PATCH net-next 1/2] net: dsa: sja1105: move devlink param code to sja1105_devlink.c
-Date:   Mon, 21 Sep 2020 19:27:40 +0300
-Message-Id: <20200921162741.4081710-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 2/2] net: dsa: sja1105: expose static config as devlink region
+Date:   Mon, 21 Sep 2020 19:27:41 +0300
+Message-Id: <20200921162741.4081710-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200921162741.4081710-1-vladimir.oltean@nxp.com>
 References: <20200921162741.4081710-1-vladimir.oltean@nxp.com>
@@ -54,344 +54,229 @@ X-ClientProxiedBy: VI1P18901CA0003.EURP189.PROD.OUTLOOK.COM
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.217.212) by VI1P18901CA0003.EURP189.PROD.OUTLOOK.COM (2603:10a6:801::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14 via Frontend Transport; Mon, 21 Sep 2020 16:28:29 +0000
+Received: from localhost.localdomain (188.25.217.212) by VI1P18901CA0003.EURP189.PROD.OUTLOOK.COM (2603:10a6:801::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14 via Frontend Transport; Mon, 21 Sep 2020 16:28:30 +0000
 X-Mailer: git-send-email 2.25.1
 X-Originating-IP: [188.25.217.212]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 3bfe4d59-27ed-4593-6930-08d85e4b6029
+X-MS-Office365-Filtering-Correlation-Id: d532da9d-bf2d-48ac-56cf-08d85e4b6077
 X-MS-TrafficTypeDiagnostic: VE1PR04MB7343:
-X-Microsoft-Antispam-PRVS: <VE1PR04MB73435FCEB09088DB8CB7C39DE03A0@VE1PR04MB7343.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB7343E9EEBB4E3E25C2B701EAE03A0@VE1PR04MB7343.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gRndmuFwM/OzY6bzEcaE9Zfw6Ky8sBBmAGvaZ2YXJgwmU1HAEi4+VnUoshActlgz+n+Kfr2PXeZgXhkB8m1CeeLQqgAvGSSMlRwW3SXEXw0WKTw82LLLM9HUxDhy8ZrajIjjz2pr+G7afIZHZsczRu+PmQZRIcOoAHUpL0ZOsO4UYjAIU1PDkg+TuaiVRRAucrYAjNQQWlVHW/6FfNDLsyM2PQzfe/JnyAELZ5m75f2ieG3L7w3aZG4d5Mg0OxsCX5tXj+1w+w9WVDwpI/aW+P8fpQ+ISV9KhDAoM+zXjYxLt9qeVSoHlMvC7gNj5ZiqvTz3jkcdZtE62Pn4Kh38hWVlcGnESx3+HbOEgXS1iz95wI2lLUuQsxLG0C0V+/Zi
+X-Microsoft-Antispam-Message-Info: 5ZQVPWpxlMCSXQfE2Q71+BAfYasCElF18sdB00DEqS599e3j93GFE1KcXM9ygUKVVZEBXlHBfiFWc6xtGXM1aZoXIeY1dNVSJRPHfH8JrwLChMWEDeGMjuqKj1fzYo5CCs+ao4Ix0rDtI3lnzp2lJiGN8Rf45vtFo+K/H6Yxv8ZjZy9Zq8bgGQpt+A/kyWV8CNgtfQVAFf/9oKXTYWmPFs/YdFwvwUgo3KB4pVDau9upFTjJC3BU/bZC807cO+ZLFoD2oiaCTFRk61wJsZFpdxUC3ZEZ9Adm4Rw2xwqpZRJuXoE75/MkA6MZ0BwiHPkH/Gc1GQl1AaOsvi93eK8LtmhjJq1X1/RbrK5qYd0KEgZrzlvk61JGoelW419hfvIR
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(136003)(396003)(39860400002)(346002)(8676002)(1076003)(16526019)(186003)(2906002)(26005)(66556008)(66476007)(6512007)(66946007)(5660300002)(8936002)(69590400008)(2616005)(956004)(316002)(86362001)(36756003)(44832011)(6506007)(83380400001)(6666004)(52116002)(6486002)(4326008)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: nHwcBvAQtaN8PcysnbS9Grs7SrWHyTKxPXtfjgxL5CmFnF0TDPIoOSXLPzeaT7WvcO3OHk/mK0y6RfamEkuIrlk8TVFMHDzFpDcxotA2JA11FmqWD+KyY7kUYCaItmmATS0/wkFOcHcZfzymC/JT/sKMS21AAepL4XHS2y469g77b45zqCt/lnCsN7IB2e3Sm8gRKbe+WGlW6BSu+bi7jpt7c6XlfwdQz8sPKqN1xC+9GCnl1n8N1a+M87DmewpQ3QVV2RM4EHw/3tmGOFZ5wp6mClY1JaF8wmbnO989HCBc0Sd8sdKYXGtjIyb7sZARpSRuTm3k0bkbCnLoLAv9AqTt9pO4NVtdSPo3a3bY5uZEPoyQfxBJmasfm5nlWt2Mxou4mj1kCOcW87+Lpw3A3Z7XvcqCc8T+Xk2MRQdwWVApYDqaQpo+MMW27p1PqHXP6REDlSUyvxBzviIn+SkkRlAI5hDc1pMMBa1scxzVke0FZagbOqnelyS3fNyg0hybhgVV73M9vS5XxVkO1OIJ1na9PvGOpmgrUXWe+ZwsVr29BxNuSOGqGtq9sHV1DlMsxaullWGqECNZaNaKm6qVGMysaIr3E6d1hrp3ixKVFKuD7+QXqw6NMyEXWGRmVLC0QYCHuQ2qukWVPsBv6IN29A==
+X-MS-Exchange-AntiSpam-MessageData: R3QRMxDYwmR3/Ftb1k44rBwzIwTmWU4vc08zJ2+W554FLg28QqTXGJanpG+cyQBKiuE4K/DwwcVcBgo/5r3sl3LFepbqCTOC5Gu4yvvh6IJU2MHaiHkYzaUsJz0jo7lb53AeerDDoUummbCXfe+0gVgKOu4KQ73gGimXZY45LT+/YTQ9L9JwHXMfEddGdFzPVpipKTAg8mib2FeofCZEksneXdmEJxlO910pspIJ+9/L/p3C5SjpsJ6OsvuNX2sGvGz621w3XGsppzD8AYHhoCc7Mxvp1EiFr21dr64F/P4X3tg1Vfzrbt5DwuktHgDay/iSZ+73fCHobnu67S8OjDangOUD+Vq3J6C4fu0YJLhJdf8pTrq2miCn8UgIoKotDBiIVmbPAGl325c1H3O2fDpJHcMzTwWCjaz1b+k2jAn7+yuyie59RyoFQo5fGslKhDYxdjYbnG+hgMifJ+Y8bv0YCvTdKN/nK2hTgQAICkNTdSGY+sW5ugAEENr10JLlw3cZVMVWyoWpiFqLdTVhL4mGqQOZWPKNXAngmYc5hT5jjHO97SKDpAVnzhKESmgG0RPV+GgqLdQuoMJbHNsxWxNf9ZBQVRTTbOFYSzIwHOiEGWsUBXrHHZDJfhUpPVk2O+BP60cDqGKE6dJQvpmRgw==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bfe4d59-27ed-4593-6930-08d85e4b6029
+X-MS-Exchange-CrossTenant-Network-Message-Id: d532da9d-bf2d-48ac-56cf-08d85e4b6077
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2020 16:28:30.3269
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2020 16:28:30.8246
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KVE2CeUA3lAcABWZao0BMfG5DOyYUzJqz4/nlYB8Y5jnfm7uTgaC+6mw/A/wBsLpYjdHOvb6Br86mtWUnKhZuQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: QrakLI0u+GA3zVJe9BQISokdLh3kDS6NWwKkeQzGhPkkdfn2HW1uuKdFnqGhFaUsmKNBuacK1kj6eO/70Mg+FA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7343
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We'll have more devlink code soon. Group it together in a separate
-translation object.
+As explained in Documentation/networking/dsa/sja1105.rst, this switch
+has a static config held in the driver's memory and re-uploaded from
+time to time into the device (after any major change).
+
+The format of this static config is in fact described in UM10944.pdf and
+it contains all the switch's settings (it also contains device ID, table
+CRCs, etc, just like in the manual). So it is a useful and universal
+devlink region to expose to user space, for debugging purposes.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/Makefile          |   1 +
- drivers/net/dsa/sja1105/sja1105.h         |  10 +-
- drivers/net/dsa/sja1105/sja1105_devlink.c | 119 ++++++++++++++++++++++
- drivers/net/dsa/sja1105/sja1105_main.c    | 105 +------------------
- 4 files changed, 132 insertions(+), 103 deletions(-)
- create mode 100644 drivers/net/dsa/sja1105/sja1105_devlink.c
+ drivers/net/dsa/sja1105/sja1105.h         |   3 +
+ drivers/net/dsa/sja1105/sja1105_devlink.c | 117 ++++++++++++++++++++++
+ drivers/net/dsa/sja1105/sja1105_spi.c     |   5 +-
+ 3 files changed, 122 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/Makefile b/drivers/net/dsa/sja1105/Makefile
-index c88e56a29db8..a860e3a910be 100644
---- a/drivers/net/dsa/sja1105/Makefile
-+++ b/drivers/net/dsa/sja1105/Makefile
-@@ -6,6 +6,7 @@ sja1105-objs := \
-     sja1105_main.o \
-     sja1105_flower.o \
-     sja1105_ethtool.o \
-+    sja1105_devlink.o \
-     sja1105_clocking.o \
-     sja1105_static_config.o \
-     sja1105_dynamic_config.o \
 diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index a93f580b558a..d043332cbc02 100644
+index d043332cbc02..4af70f619d8e 100644
 --- a/drivers/net/dsa/sja1105/sja1105.h
 +++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -244,9 +244,17 @@ enum sja1105_reset_reason {
- 
- int sja1105_static_config_reload(struct sja1105_private *priv,
- 				 enum sja1105_reset_reason reason);
--
-+int sja1105_vlan_filtering(struct dsa_switch *ds, int port, bool enabled);
- void sja1105_frame_memory_partitioning(struct sja1105_private *priv);
- 
-+/* From sja1105_devlink.c */
-+int sja1105_devlink_setup(struct dsa_switch *ds);
-+void sja1105_devlink_teardown(struct dsa_switch *ds);
-+int sja1105_devlink_param_get(struct dsa_switch *ds, u32 id,
-+			      struct devlink_param_gset_ctx *ctx);
-+int sja1105_devlink_param_set(struct dsa_switch *ds, u32 id,
-+			      struct devlink_param_gset_ctx *ctx);
-+
- /* From sja1105_spi.c */
- int sja1105_xfer_buf(const struct sja1105_private *priv,
- 		     sja1105_spi_rw_mode_t rw, u64 reg_addr,
+@@ -218,6 +218,7 @@ struct sja1105_private {
+ 	struct mutex mgmt_lock;
+ 	struct dsa_8021q_context *dsa_8021q_ctx;
+ 	enum sja1105_vlan_state vlan_state;
++	struct devlink_region **regions;
+ 	struct sja1105_cbs_entry *cbs;
+ 	struct sja1105_tagger_data tagger_data;
+ 	struct sja1105_ptp_data ptp_data;
+@@ -265,6 +266,8 @@ int sja1105_xfer_u32(const struct sja1105_private *priv,
+ int sja1105_xfer_u64(const struct sja1105_private *priv,
+ 		     sja1105_spi_rw_mode_t rw, u64 reg_addr, u64 *value,
+ 		     struct ptp_system_timestamp *ptp_sts);
++int static_config_buf_prepare_for_upload(struct sja1105_private *priv,
++					 void *config_buf, int buf_len);
+ int sja1105_static_config_upload(struct sja1105_private *priv);
+ int sja1105_inhibit_tx(const struct sja1105_private *priv,
+ 		       unsigned long port_bitmap, bool tx_inhibited);
 diff --git a/drivers/net/dsa/sja1105/sja1105_devlink.c b/drivers/net/dsa/sja1105/sja1105_devlink.c
-new file mode 100644
-index 000000000000..03454638c5a8
---- /dev/null
+index 03454638c5a8..ade88c82e11f 100644
+--- a/drivers/net/dsa/sja1105/sja1105_devlink.c
 +++ b/drivers/net/dsa/sja1105/sja1105_devlink.c
-@@ -0,0 +1,119 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2018-2019, Vladimir Oltean <olteanv@gmail.com>
-+ */
-+#include "sja1105.h"
-+
-+static int sja1105_best_effort_vlan_filtering_get(struct sja1105_private *priv,
-+						  bool *be_vlan)
-+{
-+	*be_vlan = priv->best_effort_vlan_filtering;
-+
-+	return 0;
-+}
-+
-+static int sja1105_best_effort_vlan_filtering_set(struct sja1105_private *priv,
-+						  bool be_vlan)
-+{
-+	struct dsa_switch *ds = priv->ds;
-+	bool vlan_filtering;
-+	int port;
-+	int rc;
-+
-+	priv->best_effort_vlan_filtering = be_vlan;
-+
-+	rtnl_lock();
-+	for (port = 0; port < ds->num_ports; port++) {
-+		struct dsa_port *dp;
-+
-+		if (!dsa_is_user_port(ds, port))
-+			continue;
-+
-+		dp = dsa_to_port(ds, port);
-+		vlan_filtering = dsa_port_is_vlan_filtering(dp);
-+
-+		rc = sja1105_vlan_filtering(ds, port, vlan_filtering);
-+		if (rc)
-+			break;
-+	}
-+	rtnl_unlock();
-+
-+	return rc;
-+}
-+
-+enum sja1105_devlink_param_id {
-+	SJA1105_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
-+	SJA1105_DEVLINK_PARAM_ID_BEST_EFFORT_VLAN_FILTERING,
-+};
-+
-+int sja1105_devlink_param_get(struct dsa_switch *ds, u32 id,
-+			      struct devlink_param_gset_ctx *ctx)
-+{
-+	struct sja1105_private *priv = ds->priv;
-+	int err;
-+
-+	switch (id) {
-+	case SJA1105_DEVLINK_PARAM_ID_BEST_EFFORT_VLAN_FILTERING:
-+		err = sja1105_best_effort_vlan_filtering_get(priv,
-+							     &ctx->val.vbool);
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+		break;
-+	}
-+
-+	return err;
-+}
-+
-+int sja1105_devlink_param_set(struct dsa_switch *ds, u32 id,
-+			      struct devlink_param_gset_ctx *ctx)
-+{
-+	struct sja1105_private *priv = ds->priv;
-+	int err;
-+
-+	switch (id) {
-+	case SJA1105_DEVLINK_PARAM_ID_BEST_EFFORT_VLAN_FILTERING:
-+		err = sja1105_best_effort_vlan_filtering_set(priv,
-+							     ctx->val.vbool);
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+		break;
-+	}
-+
-+	return err;
-+}
-+
-+static const struct devlink_param sja1105_devlink_params[] = {
-+	DSA_DEVLINK_PARAM_DRIVER(SJA1105_DEVLINK_PARAM_ID_BEST_EFFORT_VLAN_FILTERING,
-+				 "best_effort_vlan_filtering",
-+				 DEVLINK_PARAM_TYPE_BOOL,
-+				 BIT(DEVLINK_PARAM_CMODE_RUNTIME)),
-+};
-+
-+static int sja1105_setup_devlink_params(struct dsa_switch *ds)
-+{
-+	return dsa_devlink_params_register(ds, sja1105_devlink_params,
-+					   ARRAY_SIZE(sja1105_devlink_params));
-+}
-+
-+static void sja1105_teardown_devlink_params(struct dsa_switch *ds)
-+{
-+	dsa_devlink_params_unregister(ds, sja1105_devlink_params,
-+				      ARRAY_SIZE(sja1105_devlink_params));
-+}
-+
-+int sja1105_devlink_setup(struct dsa_switch *ds)
-+{
-+	int rc;
-+
-+	rc = sja1105_setup_devlink_params(ds);
-+	if (rc)
-+		return rc;
-+
-+	return 0;
-+}
-+
-+void sja1105_devlink_teardown(struct dsa_switch *ds)
-+{
-+	sja1105_teardown_devlink_params(ds);
-+}
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 4a298729937b..de4773e99549 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2634,7 +2634,7 @@ static int sja1105_vlan_prepare(struct dsa_switch *ds, int port,
-  * which can only be partially reconfigured at runtime (and not the TPID).
-  * So a switch reset is required.
+@@ -1,8 +1,120 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2018-2019, Vladimir Oltean <olteanv@gmail.com>
++ * Copyright 2020 NXP Semiconductors
   */
--static int sja1105_vlan_filtering(struct dsa_switch *ds, int port, bool enabled)
-+int sja1105_vlan_filtering(struct dsa_switch *ds, int port, bool enabled)
+ #include "sja1105.h"
+ 
++/* Since devlink regions have a fixed size and the static config has a variable
++ * size, we need to calculate the maximum possible static config size by
++ * creating a dummy config with all table entries populated to the max, and get
++ * its packed length. This is done dynamically as opposed to simply hardcoding
++ * a number, since currently not all static config tables are implemented, so
++ * we are avoiding a possible code desynchronization.
++ */
++static size_t sja1105_static_config_get_max_size(struct sja1105_private *priv)
++{
++	struct sja1105_static_config config;
++	enum sja1105_blk_idx blk_idx;
++	int rc;
++
++	rc = sja1105_static_config_init(&config,
++					priv->info->static_ops,
++					priv->info->device_id);
++	if (rc)
++		return 0;
++
++	for (blk_idx = 0; blk_idx < BLK_IDX_MAX; blk_idx++) {
++		struct sja1105_table *table = &config.tables[blk_idx];
++
++		table->entry_count = table->ops->max_entry_count;
++	}
++
++	return sja1105_static_config_get_length(&config);
++}
++
++static int
++sja1105_region_static_config_snapshot(struct devlink *dl,
++				      const struct devlink_region_ops *ops,
++				      struct netlink_ext_ack *extack,
++				      u8 **data)
++{
++	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
++	struct sja1105_private *priv = ds->priv;
++	size_t max_len, len;
++
++	len = sja1105_static_config_get_length(&priv->static_config);
++	max_len = sja1105_static_config_get_max_size(priv);
++
++	*data = kcalloc(max_len, sizeof(u8), GFP_KERNEL);
++	if (!*data)
++		return -ENOMEM;
++
++	return static_config_buf_prepare_for_upload(priv, *data, len);
++}
++
++static struct devlink_region_ops sja1105_region_static_config_ops = {
++	.name = "static-config",
++	.snapshot = sja1105_region_static_config_snapshot,
++	.destructor = kfree,
++};
++
++enum sja1105_region_id {
++	SJA1105_REGION_STATIC_CONFIG = 0,
++};
++
++struct sja1105_region {
++	const struct devlink_region_ops *ops;
++	size_t (*get_size)(struct sja1105_private *priv);
++};
++
++static struct sja1105_region sja1105_regions[] = {
++	[SJA1105_REGION_STATIC_CONFIG] = {
++		.ops = &sja1105_region_static_config_ops,
++		.get_size = sja1105_static_config_get_max_size,
++	},
++};
++
++static int sja1105_setup_devlink_regions(struct dsa_switch *ds)
++{
++	int i, num_regions = ARRAY_SIZE(sja1105_regions);
++	struct sja1105_private *priv = ds->priv;
++	const struct devlink_region_ops *ops;
++	struct devlink_region *region;
++	u64 size;
++
++	priv->regions = kcalloc(num_regions, sizeof(struct devlink_region *),
++				GFP_KERNEL);
++	if (!priv->regions)
++		return -ENOMEM;
++
++	for (i = 0; i < num_regions; i++) {
++		size = sja1105_regions[i].get_size(priv);
++		ops = sja1105_regions[i].ops;
++
++		region = dsa_devlink_region_create(ds, ops, 1, size);
++		if (IS_ERR(region)) {
++			while (i-- >= 0)
++				dsa_devlink_region_destroy(priv->regions[i]);
++			return PTR_ERR(region);
++		}
++
++		priv->regions[i] = region;
++	}
++
++	return 0;
++}
++
++static void sja1105_teardown_devlink_regions(struct dsa_switch *ds)
++{
++	int i, num_regions = ARRAY_SIZE(sja1105_regions);
++	struct sja1105_private *priv = ds->priv;
++
++	for (i = 0; i < num_regions; i++)
++		dsa_devlink_region_destroy(priv->regions[i]);
++
++	kfree(priv->regions);
++}
++
+ static int sja1105_best_effort_vlan_filtering_get(struct sja1105_private *priv,
+ 						  bool *be_vlan)
  {
- 	struct sja1105_l2_lookup_params_entry *l2_lookup_params;
- 	struct sja1105_general_params_entry *general_params;
-@@ -2864,105 +2864,6 @@ static const struct dsa_8021q_ops sja1105_dsa_8021q_ops = {
- 	.vlan_del	= sja1105_dsa_8021q_vlan_del,
- };
- 
--static int sja1105_best_effort_vlan_filtering_get(struct sja1105_private *priv,
--						  bool *be_vlan)
--{
--	*be_vlan = priv->best_effort_vlan_filtering;
--
--	return 0;
--}
--
--static int sja1105_best_effort_vlan_filtering_set(struct sja1105_private *priv,
--						  bool be_vlan)
--{
--	struct dsa_switch *ds = priv->ds;
--	bool vlan_filtering;
--	int port;
--	int rc;
--
--	priv->best_effort_vlan_filtering = be_vlan;
--
--	rtnl_lock();
--	for (port = 0; port < ds->num_ports; port++) {
--		struct dsa_port *dp;
--
--		if (!dsa_is_user_port(ds, port))
--			continue;
--
--		dp = dsa_to_port(ds, port);
--		vlan_filtering = dsa_port_is_vlan_filtering(dp);
--
--		rc = sja1105_vlan_filtering(ds, port, vlan_filtering);
--		if (rc)
--			break;
--	}
--	rtnl_unlock();
--
--	return rc;
--}
--
--enum sja1105_devlink_param_id {
--	SJA1105_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
--	SJA1105_DEVLINK_PARAM_ID_BEST_EFFORT_VLAN_FILTERING,
--};
--
--static int sja1105_devlink_param_get(struct dsa_switch *ds, u32 id,
--				     struct devlink_param_gset_ctx *ctx)
--{
--	struct sja1105_private *priv = ds->priv;
--	int err;
--
--	switch (id) {
--	case SJA1105_DEVLINK_PARAM_ID_BEST_EFFORT_VLAN_FILTERING:
--		err = sja1105_best_effort_vlan_filtering_get(priv,
--							     &ctx->val.vbool);
--		break;
--	default:
--		err = -EOPNOTSUPP;
--		break;
--	}
--
--	return err;
--}
--
--static int sja1105_devlink_param_set(struct dsa_switch *ds, u32 id,
--				     struct devlink_param_gset_ctx *ctx)
--{
--	struct sja1105_private *priv = ds->priv;
--	int err;
--
--	switch (id) {
--	case SJA1105_DEVLINK_PARAM_ID_BEST_EFFORT_VLAN_FILTERING:
--		err = sja1105_best_effort_vlan_filtering_set(priv,
--							     ctx->val.vbool);
--		break;
--	default:
--		err = -EOPNOTSUPP;
--		break;
--	}
--
--	return err;
--}
--
--static const struct devlink_param sja1105_devlink_params[] = {
--	DSA_DEVLINK_PARAM_DRIVER(SJA1105_DEVLINK_PARAM_ID_BEST_EFFORT_VLAN_FILTERING,
--				 "best_effort_vlan_filtering",
--				 DEVLINK_PARAM_TYPE_BOOL,
--				 BIT(DEVLINK_PARAM_CMODE_RUNTIME)),
--};
--
--static int sja1105_setup_devlink_params(struct dsa_switch *ds)
--{
--	return dsa_devlink_params_register(ds, sja1105_devlink_params,
--					   ARRAY_SIZE(sja1105_devlink_params));
--}
--
--static void sja1105_teardown_devlink_params(struct dsa_switch *ds)
--{
--	dsa_devlink_params_unregister(ds, sja1105_devlink_params,
--				      ARRAY_SIZE(sja1105_devlink_params));
--}
--
- /* The programming model for the SJA1105 switch is "all-at-once" via static
-  * configuration tables. Some of these can be dynamically modified at runtime,
-  * but not the xMII mode parameters table.
-@@ -3030,7 +2931,7 @@ static int sja1105_setup(struct dsa_switch *ds)
- 
- 	ds->configure_vlan_while_not_filtering = true;
- 
--	rc = sja1105_setup_devlink_params(ds);
-+	rc = sja1105_devlink_setup(ds);
- 	if (rc < 0)
+@@ -110,10 +222,15 @@ int sja1105_devlink_setup(struct dsa_switch *ds)
+ 	if (rc)
  		return rc;
  
-@@ -3061,7 +2962,7 @@ static void sja1105_teardown(struct dsa_switch *ds)
- 			kthread_destroy_worker(sp->xmit_worker);
- 	}
++	rc = sja1105_setup_devlink_regions(ds);
++	if (rc < 0)
++		return rc;
++
+ 	return 0;
+ }
  
--	sja1105_teardown_devlink_params(ds);
-+	sja1105_devlink_teardown(ds);
- 	sja1105_flower_teardown(ds);
- 	sja1105_tas_teardown(ds);
- 	sja1105_ptp_clock_unregister(ds);
+ void sja1105_devlink_teardown(struct dsa_switch *ds)
+ {
+ 	sja1105_teardown_devlink_params(ds);
++	sja1105_teardown_devlink_regions(ds);
+ }
+diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
+index 704dcf1d1c01..591c5734747d 100644
+--- a/drivers/net/dsa/sja1105/sja1105_spi.c
++++ b/drivers/net/dsa/sja1105/sja1105_spi.c
+@@ -302,9 +302,8 @@ static int sja1105_status_get(struct sja1105_private *priv,
+  * for upload requires the recalculation of table CRCs and updating the
+  * structures with these.
+  */
+-static int
+-static_config_buf_prepare_for_upload(struct sja1105_private *priv,
+-				     void *config_buf, int buf_len)
++int static_config_buf_prepare_for_upload(struct sja1105_private *priv,
++					 void *config_buf, int buf_len)
+ {
+ 	struct sja1105_static_config *config = &priv->static_config;
+ 	struct sja1105_table_header final_header;
 -- 
 2.25.1
 
