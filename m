@@ -2,55 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8396C272FB4
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 18:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A75E272FC5
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 19:00:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730297AbgIUQ7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 12:59:09 -0400
-Received: from mx3.wp.pl ([212.77.101.10]:44997 "EHLO mx3.wp.pl"
+        id S1730342AbgIUQ72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 12:59:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40096 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728632AbgIUQ6t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 12:58:49 -0400
-Received: (wp-smtpd smtp.wp.pl 13450 invoked from network); 21 Sep 2020 18:52:04 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1600707124; bh=pS0s86wtkZkGCWMQlTJztTBVhkWnFMCqOcJVff4yuvc=;
-          h=From:To:Cc:Subject;
-          b=UGtNTtqVtarl+XyGa2kB6cBeaa1BuI25AzUDueNTQn4DfiC1reVPXnlraaiDLYdr+
-           Mp8omSuKlE4ifX0O4Jiiqe8mTv+MN7VJqtyabyr7ALqCuG9atTQPpQSiXK8s6oYJyH
-           +dXpaI2dL/GQhV/9FxwiRa+lZLaUqcoWKiCFFLE0=
-Received: from unknown (HELO kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com) (kubakici@wp.pl@[163.114.132.4])
-          (envelope-sender <kubakici@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <miaoqinglang@huawei.com>; 21 Sep 2020 18:52:04 +0200
-Date:   Mon, 21 Sep 2020 09:51:57 -0700
-From:   Jakub Kicinski <kubakici@wp.pl>
-To:     Qinglang Miao <miaoqinglang@huawei.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH -next v2] mt7601u: Convert to DEFINE_SHOW_ATTRIBUTE
-Message-ID: <20200921095157.2cd0414e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200919024838.14172-1-miaoqinglang@huawei.com>
-References: <20200919024838.14172-1-miaoqinglang@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-WP-MailID: e1ebc130c8383d7528f1935eea539bf8
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000001 [gbJj]                               
+        id S1730308AbgIUQ7O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 12:59:14 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4CAA5235FD;
+        Mon, 21 Sep 2020 16:59:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600707553;
+        bh=ilYPXYXOrK02dbgWO785dFtleHl2+7nPjk6K0R/PBvw=;
+        h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+        b=yyPOpwzx1pKltzf4H+v0LidZoBubumrt/74zHAY5TzeAVoIQ8re/YX4A1pDxLKPo6
+         Vv1/tJnpF8BhoP6or7Ck079oNkAaG4N9D7DU/T8PUoATLp0KQqEJ2DLkYD20jr0P0O
+         GwH9D2LvhnnnkrNBzbXQKA7gy9dil44xEFwmKaEQ=
+Date:   Mon, 21 Sep 2020 17:58:21 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     linux-spi@vger.kernel.org, Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     linux-serial@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-block@vger.kernel.org,
+        Yossi Leybovich <sleybo@amazon.com>,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-pci@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-rdma@vger.kernel.org,
+        Dan Williams <dan.j.williams@intel.com>,
+        rds-devel@oss.oracle.com
+In-Reply-To: <1600601186-7420-1-git-send-email-Julia.Lawall@inria.fr>
+References: <1600601186-7420-1-git-send-email-Julia.Lawall@inria.fr>
+Subject: Re: [PATCH 00/14] drop double zeroing
+Message-Id: <160070750168.56292.17961674601916397869.b4-ty@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 19 Sep 2020 10:48:38 +0800 Qinglang Miao wrote:
-> Use DEFINE_SHOW_ATTRIBUTE macro to simplify the code.
-> 
-> Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
+On Sun, 20 Sep 2020 13:26:12 +0200, Julia Lawall wrote:
+> sg_init_table zeroes its first argument, so the allocation of that argument
+> doesn't have to.
 
-Acked-by: Jakub Kicinski <kubakici@wp.pl>
+Applied to
 
-You can keep my ack. 
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+
+Thanks!
+
+[1/1] spi/topcliff-pch: drop double zeroing
+      commit: ca03dba30f2b8ff45a2972c6691e4c96d8c52b3b
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
