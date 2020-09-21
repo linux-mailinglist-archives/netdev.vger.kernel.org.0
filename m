@@ -2,72 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DD96271BE2
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 09:32:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5205271C24
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 09:37:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726454AbgIUHcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 03:32:11 -0400
-Received: from kirsty.vergenet.net ([202.4.237.240]:51692 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726211AbgIUHcL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 03:32:11 -0400
-X-Greylist: delayed 447 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Sep 2020 03:32:10 EDT
-Received: from reginn.horms.nl (unknown [80.127.179.77])
-        by kirsty.vergenet.net (Postfix) with ESMTPA id C1DC425B7CE;
-        Mon, 21 Sep 2020 17:24:42 +1000 (AEST)
-Received: by reginn.horms.nl (Postfix, from userid 7100)
-        id 90EA89402DE; Mon, 21 Sep 2020 09:24:40 +0200 (CEST)
-Date:   Mon, 21 Sep 2020 09:24:40 +0200
-From:   Simon Horman <horms@verge.net.au>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     wensong@linux-vs.org, ja@ssi.bg, pablo@netfilter.org,
-        kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] ipvs: Remove unused macros
-Message-ID: <20200921072436.GA8437@vergenet.net>
-References: <20200918131656.46260-1-yuehaibing@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200918131656.46260-1-yuehaibing@huawei.com>
-Organisation: Horms Solutions BV
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726343AbgIUHhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 03:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33780 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726318AbgIUHhR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 03:37:17 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD9CC0613CE
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 00:37:17 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id k15so11584650wrn.10
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 00:37:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=N3NUdo+DwpnJaRzbu3ClRmdDKBhnsZkqlLToVcKy1Wc=;
+        b=eg8GQYRbCOsZtUi5Kl4zm67GzO6te2SL2d9mOpZjX8lyadDMcRNo7fsDUDxV+wuDn9
+         g0SzdglOGxuZsxrznxn1Ie0mOkNaFParV0nhuGit5gHihKOU/n3H6q7Z6cqFIiAhpeSv
+         wATs5JLfIUeSRNqdp4nDLCEEZQrc7H4i4lIfJrNBioqkumKHCqN56zv1jDAvKh5UkJv3
+         VdHHHiC2Yn5osWzJCAs5i+rzGO/vxe3pzwuFOB5HN8jdimyldYmxDRgje5U5OcMqq682
+         1gPyoX/TIOUh9Mb7I5IlA9iY0fGkLkNtASlHso4VYJKmoxNu5uAwiMeeeB54lXvtZZ+R
+         oCxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=N3NUdo+DwpnJaRzbu3ClRmdDKBhnsZkqlLToVcKy1Wc=;
+        b=S+9MU9jfO9AazEXm0pe0MAAn9DZRRinyVsFN0ptnhtOVmoErtOSTp1rTS8odloaRsL
+         IDekfN6NU/WeNwdAij3jS2DKkuee14zshkSB+Mg+rEJzsJRphLPx/2mDmPOQayl+563/
+         fgmH4RXl/lw/P6UyrsTLxDe9aVaFZPyNEQmfnDSQ6yKDgRJI3lkHG6Z4Y6pgvHfzwjCd
+         cHGG/opmeugUPGni38aALh7WqR46mT1q59vsGJLNCnxhTFJpML3ro0uuabQH8Cb5fnb+
+         a0E5hMurNUKsA4YoJUJGpuFkW1TzTysX2d5gGwVkaaURPmd9o+CUCeoe6t2yWhMRhjRO
+         Kq+g==
+X-Gm-Message-State: AOAM530BR0RCY6mVkTCOLIWVpaglDQE2GO7ZxggaBbjxQsKp5mgjZj9+
+        lOZoxcMy7PqW9lsB8WC4YBFt5Q==
+X-Google-Smtp-Source: ABdhPJzdhBhEeyzI9dWn6DZf412QQCk747FGLZw6+1cXqj1V/SmzBVdPTBP2oQPlXeeU7j+jmhA19w==
+X-Received: by 2002:adf:f10a:: with SMTP id r10mr48960861wro.86.1600673835750;
+        Mon, 21 Sep 2020 00:37:15 -0700 (PDT)
+Received: from localhost.localdomain ([2a01:e0a:490:8730:5875:9da3:b857:e7f4])
+        by smtp.gmail.com with ESMTPSA id v9sm19976761wrv.35.2020.09.21.00.37.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 21 Sep 2020 00:37:14 -0700 (PDT)
+From:   Loic Poulain <loic.poulain@linaro.org>
+To:     manivannan.sadhasivam@linaro.org, hemantk@codeaurora.org,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        bjorn.andersson@linaro.org, Loic Poulain <loic.poulain@linaro.org>
+Subject: [PATCH v2 1/2] bus: mhi: Remove auto-start option
+Date:   Mon, 21 Sep 2020 09:43:03 +0200
+Message-Id: <1600674184-3537-1-git-send-email-loic.poulain@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 18, 2020 at 09:16:56PM +0800, YueHaibing wrote:
-> They are not used since commit e4ff67513096 ("ipvs: add
-> sync_maxlen parameter for the sync daemon")
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+There is really no point having an auto-start for channels.
+This is confusing for the device drivers, some have to enable the
+channels, others don't have... and waste resources (e.g. pre allocated
+buffers) that may never be used.
 
-Thanks, this look good to me.
+This is really up to the MHI device(channel) driver to manage the state
+of its channels.
 
-Acked-by: Simon Horman <horms@verge.net.au>
+Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+---
+ v2: split MHI and qrtr changes in dedicated commits
 
-Pablo, please consider this for nf-next.
+ drivers/bus/mhi/core/init.c     | 9 ---------
+ drivers/bus/mhi/core/internal.h | 1 -
+ include/linux/mhi.h             | 2 --
+ 3 files changed, 12 deletions(-)
 
-> ---
->  net/netfilter/ipvs/ip_vs_sync.c | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/net/netfilter/ipvs/ip_vs_sync.c b/net/netfilter/ipvs/ip_vs_sync.c
-> index 2b8abbfe018c..16b48064f715 100644
-> --- a/net/netfilter/ipvs/ip_vs_sync.c
-> +++ b/net/netfilter/ipvs/ip_vs_sync.c
-> @@ -242,9 +242,6 @@ struct ip_vs_sync_thread_data {
->        |                    IPVS Sync Connection (1)                   |
->  */
->  
-> -#define SYNC_MESG_HEADER_LEN	4
-> -#define MAX_CONNS_PER_SYNCBUFF	255 /* nr_conns in ip_vs_sync_mesg is 8 bit */
-> -
->  /* Version 0 header */
->  struct ip_vs_sync_mesg_v0 {
->  	__u8                    nr_conns;
-> -- 
-> 2.17.1
-> 
+diff --git a/drivers/bus/mhi/core/init.c b/drivers/bus/mhi/core/init.c
+index dccc824..8798deb 100644
+--- a/drivers/bus/mhi/core/init.c
++++ b/drivers/bus/mhi/core/init.c
+@@ -721,7 +721,6 @@ static int parse_ch_cfg(struct mhi_controller *mhi_cntrl,
+ 		mhi_chan->offload_ch = ch_cfg->offload_channel;
+ 		mhi_chan->db_cfg.reset_req = ch_cfg->doorbell_mode_switch;
+ 		mhi_chan->pre_alloc = ch_cfg->auto_queue;
+-		mhi_chan->auto_start = ch_cfg->auto_start;
+ 
+ 		/*
+ 		 * If MHI host allocates buffers, then the channel direction
+@@ -1119,11 +1118,6 @@ static int mhi_driver_probe(struct device *dev)
+ 			goto exit_probe;
+ 
+ 		ul_chan->xfer_cb = mhi_drv->ul_xfer_cb;
+-		if (ul_chan->auto_start) {
+-			ret = mhi_prepare_channel(mhi_cntrl, ul_chan);
+-			if (ret)
+-				goto exit_probe;
+-		}
+ 	}
+ 
+ 	ret = -EINVAL;
+@@ -1157,9 +1151,6 @@ static int mhi_driver_probe(struct device *dev)
+ 	if (ret)
+ 		goto exit_probe;
+ 
+-	if (dl_chan && dl_chan->auto_start)
+-		mhi_prepare_channel(mhi_cntrl, dl_chan);
+-
+ 	mhi_device_put(mhi_dev);
+ 
+ 	return ret;
+diff --git a/drivers/bus/mhi/core/internal.h b/drivers/bus/mhi/core/internal.h
+index 5a81a42..73b52a0 100644
+--- a/drivers/bus/mhi/core/internal.h
++++ b/drivers/bus/mhi/core/internal.h
+@@ -563,7 +563,6 @@ struct mhi_chan {
+ 	bool configured;
+ 	bool offload_ch;
+ 	bool pre_alloc;
+-	bool auto_start;
+ 	bool wake_capable;
+ };
+ 
+diff --git a/include/linux/mhi.h b/include/linux/mhi.h
+index 811e686..0d277c7 100644
+--- a/include/linux/mhi.h
++++ b/include/linux/mhi.h
+@@ -214,7 +214,6 @@ enum mhi_db_brst_mode {
+  * @offload_channel: The client manages the channel completely
+  * @doorbell_mode_switch: Channel switches to doorbell mode on M0 transition
+  * @auto_queue: Framework will automatically queue buffers for DL traffic
+- * @auto_start: Automatically start (open) this channel
+  * @wake-capable: Channel capable of waking up the system
+  */
+ struct mhi_channel_config {
+@@ -232,7 +231,6 @@ struct mhi_channel_config {
+ 	bool offload_channel;
+ 	bool doorbell_mode_switch;
+ 	bool auto_queue;
+-	bool auto_start;
+ 	bool wake_capable;
+ };
+ 
+-- 
+2.7.4
+
