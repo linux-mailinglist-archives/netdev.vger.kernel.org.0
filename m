@@ -2,66 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFC74272620
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 15:46:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF932272657
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 15:52:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727599AbgIUNqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 09:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727486AbgIUNqc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 09:46:32 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99CBC0613BB
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 06:46:18 -0700 (PDT)
-Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kKM92-0003ED-SR; Mon, 21 Sep 2020 15:46:16 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Thomas Kopp <thomas.kopp@microchip.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 38/38] MAINTAINERS: Add reviewer entry for microchip mcp25xxfd SPI-CAN network driver
-Date:   Mon, 21 Sep 2020 15:45:57 +0200
-Message-Id: <20200921134557.2251383-39-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200921134557.2251383-1-mkl@pengutronix.de>
-References: <20200921134557.2251383-1-mkl@pengutronix.de>
+        id S1727220AbgIUNwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 09:52:06 -0400
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:3830 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726846AbgIUNwG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 09:52:06 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f68afa90001>; Mon, 21 Sep 2020 06:50:33 -0700
+Received: from localhost (10.124.1.5) by HQMAIL107.nvidia.com (172.20.187.13)
+ with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 21 Sep 2020 13:52:02
+ +0000
+Date:   Mon, 21 Sep 2020 16:51:58 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Qinglang Miao <miaoqinglang@huawei.com>
+CC:     Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH -next] mlxsw: spectrum_acl_tcam: simplify the return
+ expression of ishtp_cl_driver_register()
+Message-ID: <20200921135158.GC1072139@shredder>
+References: <20200921131039.92249-1-miaoqinglang@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200921131039.92249-1-miaoqinglang@huawei.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1600696233; bh=gE2fNCr4NwcEx9iSuQNwYxoJRE1QPBnOkOu1EucRaxI=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=pYkaNYaH3ueP6f5CncBswUwYqFIYVLP52hKGqfXFwzoWkdqfZcjdhtni5fSef8kpH
+         UPujLYwUCAT4BjrW1w7mDJ+p1IiKPgoqnYR3nYT4QbSHLiF/9wgtQx1lT7QBsOj3nB
+         V5rU8DNTGPdnLfiS4Rbhq1EtGKl1McquyJ9oVCxpV4cZGSlIVmUh5b92azR2XGOcFd
+         stki/nt1HClAhxnYo3u5k148LtcQtEk5FXRXaungN611N9F457bUfMVRR8QoF4Q6zC
+         L3YWlEtyccRk/uj/I2YEoFKy23tJL+UCk8/mwT5Z1hWe56S38Ei9XF/LH0Ja/NwxCO
+         8CKz1G4m3bX3Q==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Kopp <thomas.kopp@microchip.com>
+On Mon, Sep 21, 2020 at 09:10:39PM +0800, Qinglang Miao wrote:
+> Simplify the return expression.
+> 
+> Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c | 8 +-------
+>  1 file changed, 1 insertion(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
+> index 5c0204033..5b4313991 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
+> @@ -289,17 +289,11 @@ static int
+>  mlxsw_sp_acl_tcam_group_add(struct mlxsw_sp_acl_tcam *tcam,
+>  			    struct mlxsw_sp_acl_tcam_group *group)
+>  {
+> -	int err;
+> -
+>  	group->tcam = tcam;
+>  	mutex_init(&group->lock);
+>  	INIT_LIST_HEAD(&group->region_list);
+>  
+> -	err = mlxsw_sp_acl_tcam_group_id_get(tcam, &group->id);
+> -	if (err)
+> -		return err;
+> -
+> -	return 0;
+> +	return mlxsw_sp_acl_tcam_group_id_get(tcam, &group->id);
 
-This patch adds Thomas Kopp as a reviewer for the mcp25xxfd CAN driver.
+There is actually a problem here. We don't call mutex_destroy() on
+error. Should be:
 
-Signed-off-by: Thomas Kopp <thomas.kopp@microchip.com>
-Link: https://lore.kernel.org/r/20200916101334.1277-1-thomas.kopp@microchip.com
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
+index 5c020403342f..7cccc41dd69c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
+@@ -292,13 +292,14 @@ mlxsw_sp_acl_tcam_group_add(struct mlxsw_sp_acl_tcam *tcam,
+        int err;
+ 
+        group->tcam = tcam;
+-       mutex_init(&group->lock);
+        INIT_LIST_HEAD(&group->region_list);
+ 
+        err = mlxsw_sp_acl_tcam_group_id_get(tcam, &group->id);
+        if (err)
+                return err;
+ 
++       mutex_init(&group->lock);
++
+        return 0;
+ }
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fcb63f0c9635..e3c1c70057e4 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10674,6 +10674,7 @@ F:	drivers/hid/hid-mcp2221.c
- MCP25XXFD SPI-CAN NETWORK DRIVER
- M:	Marc Kleine-Budde <mkl@pengutronix.de>
- M:	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-+R:	Thomas Kopp <thomas.kopp@microchip.com>
- L:	linux-can@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/net/can/microchip,mcp25xxfd.yaml
--- 
-2.28.0
+Then it's symmetric with mlxsw_sp_acl_tcam_group_del(). Do you want to
+send this patch to 'net' or should I? If so, it should have this Fixes
+line:
 
+Fixes: 5ec2ee28d27b ("mlxsw: spectrum_acl: Introduce a mutex to guard region list updates")
+
+Thanks
+
+>  }
+>  
+>  static void mlxsw_sp_acl_tcam_group_del(struct mlxsw_sp_acl_tcam_group *group)
+> -- 
+> 2.23.0
+> 
