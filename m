@@ -2,83 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF5FF2732C6
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 21:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C828D2732E8
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 21:33:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728021AbgIUT1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 15:27:51 -0400
-Received: from www62.your-server.de ([213.133.104.62]:54382 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726395AbgIUT1v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 15:27:51 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kKRTU-00009P-OC; Mon, 21 Sep 2020 21:27:44 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kKRTU-000RPa-G4; Mon, 21 Sep 2020 21:27:44 +0200
-Subject: Re: [RFC PATCH] bpf: Fix potential call bpf_link_free() in atomic
- context
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Muchun Song <songmuchun@bytedance.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <20200917074453.20621-1-songmuchun@bytedance.com>
- <CAEf4Bzad2LDGH_qnE+Qumy=B0N9WXGrwaK5pAdhNm53Q-XzawA@mail.gmail.com>
- <CAEf4BzbbU-EmBQn_eTwNR-L1+XgwEgn9e5t8Z5ssVBmoLu-Uow@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c1d4c411-5536-0857-639e-1f66f30decfc@iogearbox.net>
-Date:   Mon, 21 Sep 2020 21:27:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728216AbgIUTdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 15:33:43 -0400
+Received: from mail.efficios.com ([167.114.26.124]:33714 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727197AbgIUTdn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 15:33:43 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id BD1732CE2C5;
+        Mon, 21 Sep 2020 15:33:41 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id oTjYbC3pBeDf; Mon, 21 Sep 2020 15:33:41 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 805DD2CDC6F;
+        Mon, 21 Sep 2020 15:33:41 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 805DD2CDC6F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1600716821;
+        bh=h88mv0FQ3OhKhiNjYOnq0mQrk0XSJtXcZ4X4L7aUy/s=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=olBRC4jFV81xtcGsuEpSQZPuSK3a4yxMPBCyFXDDjWdH7r9s26tWbSrYuK+BjS2fH
+         BrPDnw66cpY0V+UkdgJCTX3p9D69DsX11xCahblzALKpt8galWZbS6FwYrTq1fAtbw
+         Zn34D4iIEfnwRTAX0vSD3wpkqU6oeWWu8nBup8ucpADiKH8y9t8h7/sig1G0qYA3zj
+         5VMS14HgqjWv6k/pqBDNTLMST0EvQi4Gik8hYrXXZaNGtoBvT/rmgO2Ob9ZExovluI
+         ZK2fZt0J+hQ1Q74T2LAhs4WkXe7h9JBhTCrBCIKePatu6w8Ss6FklEwflRjMeZaXku
+         KOMPyNm4IYw0g==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id N3QvS-qFQ2BA; Mon, 21 Sep 2020 15:33:41 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 764462CE2C4;
+        Mon, 21 Sep 2020 15:33:41 -0400 (EDT)
+Date:   Mon, 21 Sep 2020 15:33:41 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Michael Jeanson <mjeanson@efficios.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Message-ID: <1383129694.37216.1600716821449.JavaMail.zimbra@efficios.com>
+In-Reply-To: <dd1caf15-2ef0-f557-b9a8-26c46739f20b@gmail.com>
+References: <20200918181801.2571-1-mathieu.desnoyers@efficios.com> <390b230b-629b-7f96-e7c9-b28f8b592102@gmail.com> <1453768496.36855.1600713879236.JavaMail.zimbra@efficios.com> <dd1caf15-2ef0-f557-b9a8-26c46739f20b@gmail.com>
+Subject: Re: [RFC PATCH v2 0/3] l3mdev icmp error route lookup fixes
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzbbU-EmBQn_eTwNR-L1+XgwEgn9e5t8Z5ssVBmoLu-Uow@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25934/Mon Sep 21 15:52:04 2020)
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_3965 (ZimbraWebClient - FF80 (Linux)/8.8.15_GA_3963)
+Thread-Topic: l3mdev icmp error route lookup fixes
+Thread-Index: oGKu+N8sth3SnnZ9IlBxnz5gbNJQTg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/21/20 8:31 PM, Andrii Nakryiko wrote:
-> On Mon, Sep 21, 2020 at 10:29 AM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
->>
->> On Thu, Sep 17, 2020 at 12:46 AM Muchun Song <songmuchun@bytedance.com> wrote:
+----- On Sep 21, 2020, at 3:11 PM, David Ahern dsahern@gmail.com wrote:
+
+> On 9/21/20 12:44 PM, Mathieu Desnoyers wrote:
+>> ----- On Sep 21, 2020, at 2:36 PM, David Ahern dsahern@gmail.com wrote:
+>> 
+>>> On 9/18/20 12:17 PM, Mathieu Desnoyers wrote:
+>>>> Hi,
+>>>>
+>>>> Here is an updated series of fixes for ipv4 and ipv6 which which ensure
+>>>> the route lookup is performed on the right routing table in VRF
+>>>> configurations when sending TTL expired icmp errors (useful for
+>>>> traceroute).
+>>>>
+>>>> It includes tests for both ipv4 and ipv6.
+>>>>
+>>>> These fixes address specifically address the code paths involved in
+>>>> sending TTL expired icmp errors. As detailed in the individual commit
+>>>> messages, those fixes do not address similar issues related to network
+>>>> namespaces and unreachable / fragmentation needed messages, which appear
+>>>> to use different code paths.
+>>>>
 >>>
->>> The in_atomic macro cannot always detect atomic context. In particular,
->>> it cannot know about held spinlocks in non-preemptible kernels. Although,
->>> there is no user call bpf_link_put() with holding spinlock now. Be the
->>> safe side, we can avoid this in the feature.
+>>> New selftests are failing:
+>>> TEST: Ping received ICMP frag needed                       [FAIL]
 >>>
->>> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
->>> ---
->>
->> This change seems unnecessary (or at least premature), as if we ever
->> get a use case that does bpf_link_put() from under held spinlock, we
->> should see a warning about that (and in that case I bet code can be
->> rewritten to not hold spinlock during bpf_link_put()). But on the
->> other hand it makes bpf_link_put() to follow the pattern of
->> bpf_map_put(), which always defers the work, so I'm ok with this. As
->> Song mentioned, this is not called from a performance-critical hot
->> path, so doesn't matter all that much.
->>
->> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>>> Both IPv4 and IPv6 versions are failing.
+>> 
+>> Indeed, this situation is discussed in each patch commit message:
+>> 
+>> ipv4:
+>> 
+>> [ It has also been pointed out that a similar issue exists with
+>>   unreachable / fragmentation needed messages, which can be triggered by
+>>   changing the MTU of eth1 in r1 to 1400 and running:
+>> 
+>>   ip netns exec h1 ping -s 1450 -Mdo -c1 172.16.2.2
+>> 
+>>   Some investigation points to raw_icmp_error() and raw_err() as being
+>>   involved in this last scenario. The focus of this patch is TTL expired
+>>   ICMP messages, which go through icmp_route_lookup.
+>>   Investigation of failure modes related to raw_icmp_error() is beyond
+>>   this investigation's scope. ]
+>> 
+>> ipv6:
+>> 
+>> [ Testing shows that similar issues exist with ipv6 unreachable /
+>>   fragmentation needed messages.  However, investigation of this
+>>   additional failure mode is beyond this investigation's scope. ]
+>> 
+>> I do not have the time to investigate further unfortunately, so I
+>> thought it best to post what I have.
+>> 
+> 
+> the test setup is bad. You have r1 dropping the MTU in VRF red, but not
+> telling VRF red how to send back the ICMP. e.g., for IPv4 add:
+> 
+>    ip -netns r1 ro add vrf red 172.16.1.0/24 dev blue
+> 
+> do the same for v6.
+> 
+> Also, I do not see a reason for r2; I suggest dropping it. What you are
+> testing is icmp crossing VRF with route leaking, so there should not be
+> a need for r2 which leads to asymmetrical routing (172.16.1.0 via r1 and
+> the return via r2).
 
-Agree, SGTM.
+CCing Michael Jeanson, author of the selftests patch.
 
-> btw, you probably need to resubmit this patch as a non-RFC one for it
-> to be applied?..
+Thanks for your feedback,
 
-Given first time BPF contributor & it has already several ACKs, I took it
-into bpf-next, thanks!
+Mathieu
+
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
