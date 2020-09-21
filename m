@@ -2,133 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B75E27328B
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 21:12:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 125442732B0
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 21:21:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbgIUTMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 15:12:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56948 "EHLO
+        id S1727870AbgIUTVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 15:21:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726969AbgIUTMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 15:12:00 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F05C061755;
-        Mon, 21 Sep 2020 12:12:00 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id x14so18189205oic.9;
-        Mon, 21 Sep 2020 12:11:59 -0700 (PDT)
+        with ESMTP id S1726810AbgIUTVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 15:21:31 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C495DC061755;
+        Mon, 21 Sep 2020 12:21:31 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id v60so11062850ybi.10;
+        Mon, 21 Sep 2020 12:21:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/y+LkHjWQTZUko9s0+CjWc8l1gB+JOW4CZS5IAT4wnM=;
-        b=P7al9HtzZyEWdlh510LGblrPQfQjscmVoDNeRTxPng6nwexTzcJwZNeBZs0lqOS5u+
-         lV/icK9G5ChiCcCTqTZFnuyuUBRy16ww3x2LOKSi79x+goLpty383gnAj6w9zGbZNjBO
-         zbgQ2X7ClJkJw0eHgrWgX3pc4wFwbMe377Vkw+yREpDXCrGu47beux4+sNJB4gvQ1az8
-         lyPBsRj/M4I7c7nfcbBBVoPsJZKlg5GshdZfuJxrR+KPmp8Ax+d6taeM0UspnTJlzz56
-         gbXFPqKMjd1EmRxn5WdhmDS73x2b3JYCOjOv4WgqdbwU99gH0b9z0wqvepfBGoyodCq3
-         S5jQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6zOCyCAt5dSOUkjchfsL4+jShYSEXRJ8JxFzICLYSbc=;
+        b=pUpEP6yzD4/KTspsufCfL+5j4vpzNWbIAyOommBjdlGk8bO3hD6g26YI+MUwsybCuH
+         Ou37eMjLXcZ+oluFV9m8E1Nbmka1h+6N6FzjPmCLCbL8zWF++x4h9mhJZOiIib0HCrGn
+         k/S5pDZsZ8rDAS0I0ksHGrnIlOWOWHLTdKjjDdKUJH+Ggy5B29qgQGyOg6giyCB562pf
+         0ArISdAwGbNW1dsXbGF9Zq0OYqbflDs+dZY39cAI+bZGautQRuAVIE8IKeczJvN63jcO
+         prkGJb1FkAJ2iWqASkuqryb0aKNaGK3BLG1tUlWPQQ084uu0AasbZCyymMid7NwCWj09
+         jxtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/y+LkHjWQTZUko9s0+CjWc8l1gB+JOW4CZS5IAT4wnM=;
-        b=pmMkBSDDk1o2opiJ519OWvZ6f0FaRIrmxsA9SXSH2n3UM3nv658X4cZIiGtl/j1gX0
-         eRnAXySPIExw+ygoMK97yq5Jje6cUHMALDACBfLSW6MWd/wFNkT+ZbBNdvCQi4jbkrOL
-         QIej6oeplCzQzGmjatxNr2vNve2ph6i/qju3lI0E+M+Euo86kt5sCxPyhv1DM/D/kLwq
-         umQIoSiXeUzUPoBskwMFm5Gko71xjmlPPessZSbJKv+JJ3UvEaRHgT2q3DLnCc9SD/Qg
-         lMct/NMF0Pc2l+6txPSn98APs5E3vYOP9MCWjHuj/dlNxftfmwPdPDP2u8mMyCNbEatp
-         rLaQ==
-X-Gm-Message-State: AOAM531YmrIjHP3VDGjpCfvJ59hd82KQX1LO7zSynscyijN3aa9Wwc4r
-        o/5Do09UVcniGyUFJueS/g6JnU2UrEwnyQ==
-X-Google-Smtp-Source: ABdhPJzKgpG7rjqi1AD6iI4rtY2Z5SWOwk5khwHidL1O1jr9w3YDTWMDQyHNNbvX9l2tGp2GfL6KFA==
-X-Received: by 2002:a05:6808:245:: with SMTP id m5mr520988oie.155.1600715519177;
-        Mon, 21 Sep 2020 12:11:59 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:284:8202:10b0:55c1:8bf2:4210:9084])
-        by smtp.googlemail.com with ESMTPSA id h28sm6503773ote.28.2020.09.21.12.11.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Sep 2020 12:11:58 -0700 (PDT)
-Subject: Re: [RFC PATCH v2 0/3] l3mdev icmp error route lookup fixes
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20200918181801.2571-1-mathieu.desnoyers@efficios.com>
- <390b230b-629b-7f96-e7c9-b28f8b592102@gmail.com>
- <1453768496.36855.1600713879236.JavaMail.zimbra@efficios.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <dd1caf15-2ef0-f557-b9a8-26c46739f20b@gmail.com>
-Date:   Mon, 21 Sep 2020 13:11:56 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6zOCyCAt5dSOUkjchfsL4+jShYSEXRJ8JxFzICLYSbc=;
+        b=M/rarK9kiN/JNI+FWA9W3+JzbrmaB/BNC5TLSOSZa5NukCBjI6FsfLOCrEa61HlxWD
+         pJmhYsinrFngk0TWioNHwDRJJlBk69zwabxpTwHKznSFsaXo/8qlCzHNqI4MPXYyld8U
+         Y0YgkoVeNfB/lgXkzf93/y8zkL21tdtafTGKaifcHrIV1BgiXcxR7x5DmrfqoXS1DKdq
+         wQfz4YFoHc9hWcwNxbafXa5nnFJFVGXbhlxXvd5nkrGr+At36I81g5WyeOx3ENuoRRRU
+         RY7FrBmy8CnNzRB4AFiwXWl/JCs3VdAggBeGXR5lesrZauw3TB5H1Fz3TyzwNU95kpTg
+         q+eQ==
+X-Gm-Message-State: AOAM5328UCQETWBlH+s2y3gy4gcmBgYxEy+WUrdqr3T7EQJHrQk2ZREp
+        0McFkMnwZ3bnKoIu+kQi18batbVPo0k0/b0cmGc=
+X-Google-Smtp-Source: ABdhPJzJsoyyEBkjBbzm0q/P9QGohlj9SxcCOn8bXiYSJZoi5o4o+1xUCF0+DrxVvnG/77aOROeFOjfsFfO4K/IilR0=
+X-Received: by 2002:a25:33c4:: with SMTP id z187mr1850240ybz.27.1600716090971;
+ Mon, 21 Sep 2020 12:21:30 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1453768496.36855.1600713879236.JavaMail.zimbra@efficios.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <cover.1600417359.git.Tony.Ambardar@gmail.com> <b38db205a66238f70823039a8c531535864eaac5.1600417359.git.Tony.Ambardar@gmail.com>
+In-Reply-To: <b38db205a66238f70823039a8c531535864eaac5.1600417359.git.Tony.Ambardar@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 21 Sep 2020 12:21:20 -0700
+Message-ID: <CAEf4BzYzVzWEePW6H=2NXY1egeYn4VFVWpnP9EZgqKd+ckZLeg@mail.gmail.com>
+Subject: Re: [PATCH bpf v1 1/3] bpf: fix sysfs export of empty BTF section
+To:     Tony Ambardar <tony.ambardar@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-arch@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/21/20 12:44 PM, Mathieu Desnoyers wrote:
-> ----- On Sep 21, 2020, at 2:36 PM, David Ahern dsahern@gmail.com wrote:
-> 
->> On 9/18/20 12:17 PM, Mathieu Desnoyers wrote:
->>> Hi,
->>>
->>> Here is an updated series of fixes for ipv4 and ipv6 which which ensure
->>> the route lookup is performed on the right routing table in VRF
->>> configurations when sending TTL expired icmp errors (useful for
->>> traceroute).
->>>
->>> It includes tests for both ipv4 and ipv6.
->>>
->>> These fixes address specifically address the code paths involved in
->>> sending TTL expired icmp errors. As detailed in the individual commit
->>> messages, those fixes do not address similar issues related to network
->>> namespaces and unreachable / fragmentation needed messages, which appear
->>> to use different code paths.
->>>
->>
->> New selftests are failing:
->> TEST: Ping received ICMP frag needed                       [FAIL]
->>
->> Both IPv4 and IPv6 versions are failing.
-> 
-> Indeed, this situation is discussed in each patch commit message:
-> 
-> ipv4:
-> 
-> [ It has also been pointed out that a similar issue exists with
->   unreachable / fragmentation needed messages, which can be triggered by
->   changing the MTU of eth1 in r1 to 1400 and running:
-> 
->   ip netns exec h1 ping -s 1450 -Mdo -c1 172.16.2.2
-> 
->   Some investigation points to raw_icmp_error() and raw_err() as being
->   involved in this last scenario. The focus of this patch is TTL expired
->   ICMP messages, which go through icmp_route_lookup.
->   Investigation of failure modes related to raw_icmp_error() is beyond
->   this investigation's scope. ]
-> 
-> ipv6:
-> 
-> [ Testing shows that similar issues exist with ipv6 unreachable /
->   fragmentation needed messages.  However, investigation of this
->   additional failure mode is beyond this investigation's scope. ]
-> 
-> I do not have the time to investigate further unfortunately, so I
-> thought it best to post what I have.
-> 
+On Sat, Sep 19, 2020 at 10:05 PM Tony Ambardar <tony.ambardar@gmail.com> wrote:
+>
+> If BTF data is missing or removed from the ELF section it is still exported
+> via sysfs as a zero-length file:
+>
+>   root@OpenWrt:/# ls -l /sys/kernel/btf/vmlinux
+>   -r--r--r--    1 root    root    0 Jul 18 02:59 /sys/kernel/btf/vmlinux
+>
+> Moreover, reads from this file succeed and leak kernel data:
+>
+>   root@OpenWrt:/# hexdump -C /sys/kernel/btf/vmlinux|head -10
+>   000000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 |................|
+>   *
+>   000cc0 00 00 00 00 00 00 00 00 00 00 00 00 80 83 b0 80 |................|
+>   000cd0 00 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00 |................|
+>   000ce0 00 00 00 00 00 00 00 00 00 00 00 00 57 ac 6e 9d |............W.n.|
+>   000cf0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 |................|
+>   *
+>   002650 00 00 00 00 00 00 00 10 00 00 00 01 00 00 00 01 |................|
+>   002660 80 82 9a c4 80 85 97 80 81 a9 51 68 00 00 00 02 |..........Qh....|
+>   002670 80 25 44 dc 80 85 97 80 81 a9 50 24 81 ab c4 60 |.%D.......P$...`|
+>
+> This situation was first observed with kernel 5.4.x, cross-compiled for a
+> MIPS target system. Fix by adding a sanity-check for export of zero-length
+> data sections.
+>
+> Fixes: 341dfcf8d78e ("btf: expose BTF info through sysfs")
+>
+> Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+> ---
 
-the test setup is bad. You have r1 dropping the MTU in VRF red, but not
-telling VRF red how to send back the ICMP. e.g., for IPv4 add:
+Apparently sysfs infrastructure doesn't validate read position and
+size when bin_attribute's size is 0, and just expects read callback to
+handle such situation explicitly. Preventing sysfs entry from
+registering seems like a good solution. Thanks!
 
-    ip -netns r1 ro add vrf red 172.16.1.0/24 dev blue
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-do the same for v6.
-
-Also, I do not see a reason for r2; I suggest dropping it. What you are
-testing is icmp crossing VRF with route leaking, so there should not be
-a need for r2 which leads to asymmetrical routing (172.16.1.0 via r1 and
-the return via r2).
+>  kernel/bpf/sysfs_btf.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/kernel/bpf/sysfs_btf.c b/kernel/bpf/sysfs_btf.c
+> index 3b495773de5a..11b3380887fa 100644
+> --- a/kernel/bpf/sysfs_btf.c
+> +++ b/kernel/bpf/sysfs_btf.c
+> @@ -30,15 +30,15 @@ static struct kobject *btf_kobj;
+>
+>  static int __init btf_vmlinux_init(void)
+>  {
+> -       if (!__start_BTF)
+> +       bin_attr_btf_vmlinux.size = __stop_BTF - __start_BTF;
+> +
+> +       if (!__start_BTF || bin_attr_btf_vmlinux.size == 0)
+>                 return 0;
+>
+>         btf_kobj = kobject_create_and_add("btf", kernel_kobj);
+>         if (!btf_kobj)
+>                 return -ENOMEM;
+>
+> -       bin_attr_btf_vmlinux.size = __stop_BTF - __start_BTF;
+> -
+>         return sysfs_create_bin_file(btf_kobj, &bin_attr_btf_vmlinux);
+>  }
+>
+> --
+> 2.25.1
+>
