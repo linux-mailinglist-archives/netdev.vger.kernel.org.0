@@ -2,116 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 974CD271A3D
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 06:56:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8422271A54
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 07:12:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgIUE4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 00:56:18 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:55907 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726011AbgIUE4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 00:56:17 -0400
-Received: by mail-il1-f199.google.com with SMTP id i12so3561963ill.22
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 21:56:16 -0700 (PDT)
+        id S1726422AbgIUFMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 01:12:22 -0400
+Received: from mail-io1-f78.google.com ([209.85.166.78]:51286 "EHLO
+        mail-io1-f78.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726211AbgIUFMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 01:12:22 -0400
+Received: by mail-io1-f78.google.com with SMTP id q12so9139686iob.18
+        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 22:12:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=w48ND6QxLlcNNCRQLDNljU9DcN5bOMpJULTX22AUa7k=;
-        b=na89Q9zZXVdloRrsJTdPvr+LhRx2ZmZsrubLxrV68aA3xv4xxce5aFDclLRAMzHBTS
-         AYp6y5akLE0nZe5FjLHsjzkxsvJihjYPSy9DbpPVkWj5ZD7fp4qyuZenAMncDs7YA4Ka
-         OiGAzlSLHQlB8ZuQtT4k9Jf/XwHx8ppOU8lPO457CcfkzlJ+XVyuqH/m7nt4ABNXlr40
-         WuKCxbiyMTOWX1AopaUfyZBvz2Ha7vcKBNoij8g7VQbY1CpPKnXlMyBRrxuyBeQucChQ
-         MV/EP9fJeoHo0GLsB+8vwtUZdp96/YGXpVA92MEYtW9WTPEMfQSvyKEHEiBtnjOGtxZh
-         saLA==
-X-Gm-Message-State: AOAM533BMrgzIfd9NXEhvlKO4kMG3jitwJ8s6w1AYEsqGMDBMJ/1o6AI
-        wqrV4sVjlTHwhHFgw/aLr+YjezQZ6q0Pg7Fv1F4m/P5x100H
-X-Google-Smtp-Source: ABdhPJwjPK3Ia7dVxW507ow7140TEUNC+mwQEA2rx4IbXFDS7Ewwi7hZNWcstLRJQX0Z7Dmizwfy8BGgmKrkxmASs+ND/9fpZMPd
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Ds3GkKEaOskN3v3iZHyWFgI5IXn4mwKM9v/O5vRR7ew=;
+        b=eJrzh/FeKR2VNMXOOkwBoZoYOhjOI/HxvSi+oBQQ1gXZLpIWvG27s0D1qvi8urYSOo
+         HxKRa9Z5GS2KiK0B+g2k/OnbZa9rJP+kbf8KYmE+WQrJQTTWl294YKmjlZwS7KNmTfD0
+         Jj3ZGkGchcbDv2SdJZ854q8KsBVa8a4fd8OQb2fsszWnjCm50QiXfAIV2txKwZrbE3BC
+         xG15ZxEFrM8jknJrCNbodPGgBsm5uwsFAvOktC7X1ICKY/yttW4RLN1TE5u71LBEAIE4
+         ml7z3em6t4PXZxpEkzvIaEsi2MXUIbXHsvnmdpmevom9xbZXRxeNpnnHy+d25ll6NORn
+         HoMw==
+X-Gm-Message-State: AOAM530/uRhy28WPbxpnFNwbtSdEuDz58BNw3d93Iv+NILnGmKisgBqj
+        YfriSsi+Sfj6y2XGkXQ6z+grVlSt9qwdWD3DvCvJ99zh1Q2u
+X-Google-Smtp-Source: ABdhPJz+F8J8NwBY2tAz5v72BRt9HldYud/npOCxSObZ0/VIVnPtUTjwJ7fAq4nkUtQT3P/8MkzG7djOAQoPkTBZF3vMFDlf142m
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:cdc:: with SMTP id e28mr38787100jak.100.1600664176316;
- Sun, 20 Sep 2020 21:56:16 -0700 (PDT)
-Date:   Sun, 20 Sep 2020 21:56:16 -0700
-In-Reply-To: <000000000000a6348d05a9234041@google.com>
+X-Received: by 2002:a5e:9419:: with SMTP id q25mr35583038ioj.205.1600665141281;
+ Sun, 20 Sep 2020 22:12:21 -0700 (PDT)
+Date:   Sun, 20 Sep 2020 22:12:21 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a256d405afcbabc3@google.com>
-Subject: Re: WARNING in tracepoint_add_func
-From:   syzbot <syzbot+721aa903751db87aa244@syzkaller.appspotmail.com>
-To:     corbet@lwn.net, davem@davemloft.net, dsahern@gmail.com,
-        frederic@kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mathieu.desnoyers@polymtl.ca,
-        mingo@elte.hu, netdev@vger.kernel.org, peterz@infradead.org,
-        rostedt@goodmis.org, syzkaller-bugs@googlegroups.com
+Message-ID: <00000000000026880b05afcbe562@google.com>
+Subject: KMSAN: uninit-value in hsr_fill_frame_info
+From:   syzbot <syzbot+e267bed19bfc5478fb33@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, m-karicheri2@ti.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+Hello,
 
-HEAD commit:    325d0eab Merge branch 'akpm' (patches from Andrew)
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16992c81900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b12e84189082991c
-dashboard link: https://syzkaller.appspot.com/bug?extid=721aa903751db87aa244
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17c797b5900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10569c03900000
+syzbot found the following issue on:
 
-The issue was bisected to:
-
-commit 58956317c8de52009d1a38a721474c24aef74fe7
-Author: David Ahern <dsahern@gmail.com>
-Date:   Fri Dec 7 20:24:57 2018 +0000
-
-    neighbor: Improve garbage collection
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=146ba853900000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=166ba853900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=126ba853900000
+HEAD commit:    c5a13b33 kmsan: clang-format core
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=13ef204b900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=20f149ad694ba4be
+dashboard link: https://syzkaller.appspot.com/bug?extid=e267bed19bfc5478fb33
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1015be73900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1185669b900000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+721aa903751db87aa244@syzkaller.appspotmail.com
-Fixes: 58956317c8de ("neighbor: Improve garbage collection")
+Reported-by: syzbot+e267bed19bfc5478fb33@syzkaller.appspotmail.com
 
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 6872 at kernel/tracepoint.c:243 tracepoint_add_func+0x254/0x880 kernel/tracepoint.c:243
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 6872 Comm: syz-executor482 Not tainted 5.9.0-rc5-syzkaller #0
+hsr0: VLAN not yet supported
+=====================================================
+BUG: KMSAN: uninit-value in hsr_fill_frame_info+0x3d3/0x570 net/hsr/hsr_forward.c:457
+CPU: 1 PID: 8700 Comm: syz-executor512 Not tainted 5.9.0-rc4-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x198/0x1fd lib/dump_stack.c:118
- panic+0x382/0x7fb kernel/panic.c:231
- __warn.cold+0x20/0x4b kernel/panic.c:600
- report_bug+0x1bd/0x210 lib/bug.c:198
- handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
- exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
- asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
-RIP: 0010:tracepoint_add_func+0x254/0x880 kernel/tracepoint.c:243
-Code: 44 24 20 48 8b 5b 08 80 38 00 0f 85 6b 05 00 00 48 8b 44 24 08 48 3b 58 08 0f 85 2d ff ff ff 41 bc ef ff ff ff e8 ec 62 fe ff <0f> 0b e8 e5 62 fe ff 44 89 e0 48 83 c4 38 5b 5d 41 5c 41 5d 41 5e
-RSP: 0000:ffffc900060f7ac0 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffffc90000e76000 RCX: ffffffff8177dc72
-RDX: ffff888096766000 RSI: ffffffff8177dcd4 RDI: ffff8880a6b2ec48
-RBP: ffffffff8213fae0 R08: 0000000000000000 R09: ffffffff8a0c176b
-R10: 000000000000000a R11: 0000000000000000 R12: 00000000ffffffef
-R13: 0000000000000002 R14: dffffc0000000000 R15: ffff8880a6b2ec10
- tracepoint_probe_register_prio kernel/tracepoint.c:315 [inline]
- tracepoint_probe_register+0x9c/0xe0 kernel/tracepoint.c:335
- __bpf_probe_register kernel/trace/bpf_trace.c:1950 [inline]
- bpf_probe_register+0x16c/0x1d0 kernel/trace/bpf_trace.c:1955
- bpf_raw_tracepoint_open+0x34e/0xb20 kernel/bpf/syscall.c:2741
- __do_sys_bpf+0x1b2f/0x4c60 kernel/bpf/syscall.c:4220
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ dump_stack+0x21c/0x280 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:122
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:219
+ hsr_fill_frame_info+0x3d3/0x570 net/hsr/hsr_forward.c:457
+ fill_frame_info net/hsr/hsr_forward.c:520 [inline]
+ hsr_forward_skb+0xc63/0x2610 net/hsr/hsr_forward.c:537
+ hsr_dev_xmit+0x133/0x230 net/hsr/hsr_device.c:220
+ __netdev_start_xmit include/linux/netdevice.h:4634 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4648 [inline]
+ xmit_one+0x3cf/0x750 net/core/dev.c:3561
+ dev_hard_start_xmit net/core/dev.c:3577 [inline]
+ __dev_queue_xmit+0x3aad/0x4470 net/core/dev.c:4136
+ dev_queue_xmit+0x4b/0x60 net/core/dev.c:4169
+ packet_snd net/packet/af_packet.c:2989 [inline]
+ packet_sendmsg+0x8542/0x9a80 net/packet/af_packet.c:3014
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg net/socket.c:671 [inline]
+ __sys_sendto+0x9dc/0xc80 net/socket.c:1992
+ __do_sys_sendto net/socket.c:2004 [inline]
+ __se_sys_sendto+0x107/0x130 net/socket.c:2000
+ __x64_sys_sendto+0x6e/0x90 net/socket.c:2000
+ do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x4415a9
-Code: e8 ac e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 8b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffc28dd5d08 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004415a9
-RDX: 0000000000000010 RSI: 0000000020000040 RDI: 0000000000000011
-RBP: 0000000000010308 R08: 00000000004002c8 R09: 00000000004002c8
-R10: 0000000000000004 R11: 0000000000000246 R12: 00000000004023c0
-R13: 0000000000402450 R14: 0000000000000000 R15: 0000000000000000
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+RIP: 0033:0x443d79
+Code: e8 8c 07 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 bb 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffdeb5a7c88 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443d79
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
+RBP: 00007ffdeb5a7ca0 R08: 0000000020000000 R09: 0000000000000014
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffdeb5a7cb0
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
 
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:143 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:126
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
+ slab_alloc_node mm/slub.c:2907 [inline]
+ __kmalloc_node_track_caller+0x9aa/0x12f0 mm/slub.c:4511
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0x35f/0xb30 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1094 [inline]
+ alloc_skb_with_frags+0x1f2/0xc10 net/core/skbuff.c:5771
+ sock_alloc_send_pskb+0xc83/0xe50 net/core/sock.c:2348
+ packet_alloc_skb net/packet/af_packet.c:2837 [inline]
+ packet_snd net/packet/af_packet.c:2932 [inline]
+ packet_sendmsg+0x6abb/0x9a80 net/packet/af_packet.c:3014
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg net/socket.c:671 [inline]
+ __sys_sendto+0x9dc/0xc80 net/socket.c:1992
+ __do_sys_sendto net/socket.c:2004 [inline]
+ __se_sys_sendto+0x107/0x130 net/socket.c:2000
+ __x64_sys_sendto+0x6e/0x90 net/socket.c:2000
+ do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+=====================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
