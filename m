@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73E1D27291D
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 16:51:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27EC3272936
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 16:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727815AbgIUOvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 10:51:24 -0400
-Received: from mail-io1-f79.google.com ([209.85.166.79]:54802 "EHLO
-        mail-io1-f79.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726456AbgIUOvY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 10:51:24 -0400
-Received: by mail-io1-f79.google.com with SMTP id q6so10062003iod.21
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 07:51:23 -0700 (PDT)
+        id S1727553AbgIUO4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 10:56:21 -0400
+Received: from mail-io1-f78.google.com ([209.85.166.78]:39824 "EHLO
+        mail-io1-f78.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726584AbgIUO4V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 10:56:21 -0400
+Received: by mail-io1-f78.google.com with SMTP id y16so10094692ioy.6
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 07:56:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=X82mpFSYNXw8KiQzwN46zmsn9KUcYuqFASM4Rm2vW3I=;
-        b=Uw762MnRzr/MABQ98+q9LkfAhLaD9AEDYgPtV1xtu6dec0qhfFGyi70IPIRBjUOrVA
-         FKH5kWHuwrTQ7opKvj31ppY9QPGKhKX5t8l9GPte25bjBh/uQVMB7qVn9JNKFODWOZZU
-         CFt419qM9pNS13sDp3iW+WKfMDX7kIe13f76aw/xgNbsvtYHxXTwCTa8ckEZ7tJI9n7S
-         /+z29i7nxFWsoXIaS06a7v3M5ZbwfwAmhBHYTQ/gjfE3HYzQTJ7ZRuUt2Ai/Gc7pMg2M
-         ZhsuKewaJwhB4IjOpfpsrtvTSj38dyWfHx1guSLYjH2zc20Evv+TRBtsAuM0uuyxTbfI
-         lsnQ==
-X-Gm-Message-State: AOAM531H7bJHPEr4+8ihwF7H6K2arfhEJBRd0VC/KTKTs5Fe5SbGa3bP
-        f6kSxmyeavEzRiSYSKdoI6V+xZhWV9ECuCQvdQCz9usrfdZp
-X-Google-Smtp-Source: ABdhPJx9GfnJQla92w2TYwa2GGE1k6o1j824dPE1UVO0QEVKZwifrmXxEYa0Fi95RKrtNmWIKJmwL7OJByfnvKHfqI3u2mZJEMmE
+        bh=X494KYDH9UJUyj96W5LQtORQMzd+WMrT10MmALrBCuk=;
+        b=lGJlTdnhHUgD7l6cxcjQGJOd78ptm3jT96XTrR52TCprJJjnHcKU4Z/qHMvEG4EX62
+         eHU6VUfDbbRmMe0SSZuXhvvLDBBtuTatcYgH31mg8S0xChOyHWncdFKYIKA4umnVrvfJ
+         kzP+HQqCPvZ+Na6iw8AfDCqME0OY+Uh5WJMnWTEjnFw3hS1hyubNQjGBxqVoy5OqviM6
+         kQaEJY9N0XQPQhXArKznbwmhzASQgi137ePUVXShvDzAdshwN1+1574oVoacIjkiJ3Jv
+         y2v62STTpNKZ14LeExp/+VKF11RMsyfQYRXyDQOxgebgZ6uj7h8a3+A/mCkVbDOXVJE7
+         hVXg==
+X-Gm-Message-State: AOAM531BW5krzvY+ERUw1cF5C1OCCl3ZdkM8PPTPTerivNyi1PkGm7bF
+        2gzEcYOszJ3sekXJkb7qpiuCG9sC4NNbxEx5bmIRVVj8WumS
+X-Google-Smtp-Source: ABdhPJx0BHqSrjQ0MKpr5g0u4KiHtoaqea2CXDOLFPmsTbEgZiYCW2oia/g9YAKq5Jx6CxAmJd1OR2rHoCwcRPm/iQzTQCAPNttY
 MIME-Version: 1.0
-X-Received: by 2002:a92:1a03:: with SMTP id a3mr228720ila.105.1600699881989;
- Mon, 21 Sep 2020 07:51:21 -0700 (PDT)
-Date:   Mon, 21 Sep 2020 07:51:21 -0700
+X-Received: by 2002:a6b:7017:: with SMTP id l23mr36545774ioc.120.1600700180053;
+ Mon, 21 Sep 2020 07:56:20 -0700 (PDT)
+Date:   Mon, 21 Sep 2020 07:56:20 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000dbab3a05afd3fb60@google.com>
-Subject: KMSAN: uninit-value in hci_event_packet (2)
-From:   syzbot <syzbot+54f68ac8e259a8af4f12@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, marcel@holtmann.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Message-ID: <0000000000009fc91605afd40d89@google.com>
+Subject: KASAN: stack-out-of-bounds Read in xfrm_selector_match (2)
+From:   syzbot <syzbot+577fbac3145a6eb2e7a5@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -48,65 +47,85 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    c5a13b33 kmsan: clang-format core
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=1622db65900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=20f149ad694ba4be
-dashboard link: https://syzkaller.appspot.com/bug?extid=54f68ac8e259a8af4f12
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-userspace arch: i386
+HEAD commit:    eb5f95f1 Merge tag 's390-5.9-6' of git://git.kernel.org/pu..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13996ad5900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ffe85b197a57c180
+dashboard link: https://syzkaller.appspot.com/bug?extid=577fbac3145a6eb2e7a5
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
 Unfortunately, I don't have any reproducer for this issue yet.
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+54f68ac8e259a8af4f12@syzkaller.appspotmail.com
+Reported-by: syzbot+577fbac3145a6eb2e7a5@syzkaller.appspotmail.com
 
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:960 [inline]
-BUG: KMSAN: uninit-value in hci_conn_complete_evt net/bluetooth/hci_event.c:2579 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x1438/0x39e30 net/bluetooth/hci_event.c:6058
-CPU: 1 PID: 8513 Comm: kworker/u5:1 Not tainted 5.9.0-rc4-syzkaller #0
+==================================================================
+BUG: KASAN: stack-out-of-bounds in xfrm_flowi_dport include/net/xfrm.h:877 [inline]
+BUG: KASAN: stack-out-of-bounds in __xfrm6_selector_match net/xfrm/xfrm_policy.c:216 [inline]
+BUG: KASAN: stack-out-of-bounds in xfrm_selector_match+0xf36/0xf60 net/xfrm/xfrm_policy.c:229
+Read of size 2 at addr ffffc9001914f55c by task syz-executor.4/15633
+
+CPU: 0 PID: 15633 Comm: syz-executor.4 Not tainted 5.9.0-rc5-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci4 hci_rx_work
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:122
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:219
- hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:960 [inline]
- hci_conn_complete_evt net/bluetooth/hci_event.c:2579 [inline]
- hci_event_packet+0x1438/0x39e30 net/bluetooth/hci_event.c:6058
- hci_rx_work+0x745/0xd20 net/bluetooth/hci_core.c:4889
- process_one_work+0x1688/0x2140 kernel/workqueue.c:2269
- worker_thread+0x10bc/0x2730 kernel/workqueue.c:2415
- kthread+0x551/0x590 kernel/kthread.c:293
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+ dump_stack+0x198/0x1fd lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0x5/0x497 mm/kasan/report.c:383
+ __kasan_report mm/kasan/report.c:513 [inline]
+ kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
+ xfrm_flowi_dport include/net/xfrm.h:877 [inline]
+ __xfrm6_selector_match net/xfrm/xfrm_policy.c:216 [inline]
+ xfrm_selector_match+0xf36/0xf60 net/xfrm/xfrm_policy.c:229
+ xfrm_state_look_at.constprop.0+0x144/0x3f0 net/xfrm/xfrm_state.c:1022
+ xfrm_state_find+0x1a16/0x4d50 net/xfrm/xfrm_state.c:1092
+ xfrm_tmpl_resolve_one net/xfrm/xfrm_policy.c:2384 [inline]
+ xfrm_tmpl_resolve+0x2f3/0xd40 net/xfrm/xfrm_policy.c:2429
+ xfrm_resolve_and_create_bundle+0x123/0x2590 net/xfrm/xfrm_policy.c:2719
+ xfrm_lookup_with_ifid+0x235/0x2130 net/xfrm/xfrm_policy.c:3053
+ xfrm_lookup net/xfrm/xfrm_policy.c:3177 [inline]
+ xfrm_lookup_route+0x36/0x1e0 net/xfrm/xfrm_policy.c:3188
+ ip_route_output_flow+0xa6/0xc0 net/ipv4/route.c:2769
+ udp_sendmsg+0x1a16/0x26c0 net/ipv4/udp.c:1201
+ udpv6_sendmsg+0x14dd/0x2b90 net/ipv6/udp.c:1344
+ inet6_sendmsg+0x99/0xe0 net/ipv6/af_inet6.c:638
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:671
+ ____sys_sendmsg+0x331/0x810 net/socket.c:2353
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
+ __sys_sendmmsg+0x195/0x480 net/socket.c:2497
+ __do_sys_sendmmsg net/socket.c:2526 [inline]
+ __se_sys_sendmmsg net/socket.c:2523 [inline]
+ __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2523
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45d5f9
+Code: 5d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 2b b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f8aa009cc78 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: ffffffffffffffda RBX: 0000000000027a40 RCX: 000000000045d5f9
+RDX: 00000000000005c3 RSI: 0000000020000240 RDI: 0000000000000004
+RBP: 000000000118cf88 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118cf4c
+R13: 000000000169fb6f R14: 00007f8aa009d9c0 R15: 000000000118cf4c
 
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:143 [inline]
- kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:126
- kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0x9aa/0x12f0 mm/slub.c:4511
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x35f/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1094 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x890 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1882 [inline]
- new_sync_write fs/read_write.c:503 [inline]
- vfs_write+0xfa8/0x1860 fs/read_write.c:578
- ksys_write+0x275/0x500 fs/read_write.c:631
- __do_sys_write fs/read_write.c:643 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:640
- __ia32_sys_write+0x4a/0x70 fs/read_write.c:640
- do_syscall_32_irqs_on arch/x86/entry/common.c:80 [inline]
- __do_fast_syscall_32+0x129/0x180 arch/x86/entry/common.c:139
- do_fast_syscall_32+0x6a/0xc0 arch/x86/entry/common.c:162
- do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:205
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-=====================================================
+
+addr ffffc9001914f55c is located in stack of task syz-executor.4/15633 at offset 220 in frame:
+ udp_sendmsg+0x0/0x26c0 net/ipv4/udp.c:2708
+
+this frame has 5 objects:
+ [32, 40) 'rt'
+ [64, 104) 'ipc'
+ [144, 200) 'fl4_stack'
+ [240, 296) 'cork'
+ [336, 408) 'opt_copy'
+
+Memory state around the buggy address:
+ ffffc9001914f400: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffffc9001914f480: f1 f1 f1 f1 00 f2 f2 f2 00 00 00 00 00 f2 f2 f2
+>ffffc9001914f500: f2 f2 00 00 00 00 00 00 00 f2 f2 f2 f2 f2 00 00
+                                                    ^
+ ffffc9001914f580: 00 00 00 00 00 f2 f2 f2 f2 f2 00 00 00 00 00 00
+ ffffc9001914f600: 00 00 00 f3 f3 f3 f3 f3 00 00 00 00 00 00 00 00
+==================================================================
 
 
 ---
