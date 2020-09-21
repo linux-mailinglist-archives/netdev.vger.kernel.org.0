@@ -2,133 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC92272430
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 14:50:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F31A2724CB
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 15:11:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726605AbgIUMu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 08:50:26 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:46366 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726436AbgIUMu0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 08:50:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600692623;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=y8FYoiLkZ3dhNRNCRps//s4ti79qQ2LdE4GQS/Ewevk=;
-        b=Jpxl/HrCJ5W41PuLBDbzz8D69vOpH5LTMNII8qP3/NHynAM5kA0544R6kMmRrfPZNIOR7d
-        8gsRmP3vkgIeo3nXR+b1y02EznWj1Seefev/ZrqFqkhgShZ2sgVbqir1qIHOrkmgLIt2gT
-        JUSKHmUn/BL5FJKovn/Rts1dGBUc7+s=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-363-2dfw4JwMMLeIDt5okIbtug-1; Mon, 21 Sep 2020 08:50:14 -0400
-X-MC-Unique: 2dfw4JwMMLeIDt5okIbtug-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1727561AbgIUNLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 09:11:33 -0400
+Received: from z5.mailgun.us ([104.130.96.5]:18156 "EHLO z5.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727461AbgIUNLb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 09:11:31 -0400
+X-Greylist: delayed 528 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Sep 2020 09:11:29 EDT
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1600693891; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=dvQ8g8G8ZMC0OoVSWlQmLxd3GM1eXbe/mOTaf9do3QU=;
+ b=YYW/fxR8B5LXk8DbYr2iowL7qvLPpSzMMGBs3KmIOoGTt8SWP3HtBbOI7V55QeO00V1OeFP3
+ 6QuWnDi98tZ5qIedVOYbgRGWnkOIPupbr3paCZyIY13PRJBd+8Zs9nNdLSTzvGM21XuFwmzI
+ jBu4M+khIYrZIcB734xrygfb3VM=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 5f68a4650915d303570f5e3c (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 21 Sep 2020 13:02:29
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 7C1E1C433CB; Mon, 21 Sep 2020 13:02:28 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0FABC802B6B;
-        Mon, 21 Sep 2020 12:50:12 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CBB5B5C1DC;
-        Mon, 21 Sep 2020 12:49:54 +0000 (UTC)
-Date:   Mon, 21 Sep 2020 14:49:53 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shaun Crampton <shaun@tigera.io>,
-        David Miller <davem@davemloft.net>,
-        Marek Majkowski <marek@cloudflare.com>, brouer@redhat.com
-Subject: Re: BPF redirect API design issue for BPF-prog MTU feedback?
-Message-ID: <20200921144953.6456d47d@carbon>
-In-Reply-To: <CACAyw9-v_o+gPUpC-R9SXsfzMywrdGsWV13Nk=tx2aS-fEBFYg@mail.gmail.com>
-References: <20200917143846.37ce43a0@carbon>
-        <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
-        <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org>
-        <20200918120016.7007f437@carbon>
-        <CANP3RGfUj-KKHHQtbggiZ4V-Xrr_sk+TWyN5FgYUGZS6rOX1yw@mail.gmail.com>
-        <CACAyw9-v_o+gPUpC-R9SXsfzMywrdGsWV13Nk=tx2aS-fEBFYg@mail.gmail.com>
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5804BC433F1;
+        Mon, 21 Sep 2020 13:02:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5804BC433F1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH net] net: wilc1000: clean up resource in error path of
+ init
+ mon interface
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200917123019.206382-1-huangguobin4@huawei.com>
+References: <20200917123019.206382-1-huangguobin4@huawei.com>
+To:     Huang Guobin <huangguobin4@huawei.com>
+Cc:     <ajay.kathat@microchip.com>, <claudiu.beznea@microchip.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <gregkh@linuxfoundation.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200921130228.7C1E1C433CB@smtp.codeaurora.org>
+Date:   Mon, 21 Sep 2020 13:02:28 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Sep 2020 11:37:18 +0100
-Lorenz Bauer <lmb@cloudflare.com> wrote:
+Huang Guobin <huangguobin4@huawei.com> wrote:
 
-> On Sat, 19 Sep 2020 at 00:06, Maciej =C5=BBenczykowski <maze@google.com> =
-wrote:
-> > =20
-> > > This is a good point.  As bpf_skb_adjust_room() can just be run after
-> > > bpf_redirect() call, then a MTU check in bpf_redirect() actually
-> > > doesn't make much sense.  As clever/bad BPF program can then avoid the
-> > > MTU check anyhow.  This basically means that we have to do the MTU
-> > > check (again) on kernel side anyhow to catch such clever/bad BPF
-> > > programs.  (And I don't like wasting cycles on doing the same check t=
-wo
-> > > times). =20
-> >
-> > If you get rid of the check in bpf_redirect() you might as well get
-> > rid of *all* the checks for excessive mtu in all the helpers that
-> > adjust packet size one way or another way.  They *all* then become
-> > useless overhead.
-> >
-> > I don't like that.  There may be something the bpf program could do to
-> > react to the error condition (for example in my case, not modify
-> > things and just let the core stack deal with things - which will
-> > probably just generate packet too big icmp error).
-> >
-> > btw. right now our forwarding programs first adjust the packet size
-> > then call bpf_redirect() and almost immediately return what it
-> > returned.
-> >
-> > but this could I think easily be changed to reverse the ordering, so
-> > we wouldn't increase packet size before the core stack was informed we
-> > would be forwarding via a different interface. =20
->=20
-> We do the same, except that we also use XDP_TX when appropriate. This
-> complicates the matter, because there is no helper call we could
-> return an error from.
+> The wilc_wfi_init_mon_int() forgets to clean up resource when
+> register_netdevice() failed. Add the missed call to fix it.
+> And the return value of netdev_priv can't be NULL, so remove
+> the unnecessary error handling.
+> 
+> Fixes: 588713006ea4 ("staging: wilc1000: avoid the use of 'wilc_wfi_mon' static variable")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
 
-Do notice that my MTU work is focused on TC-BPF.  For XDP-redirect the
-MTU check is done in xdp_ok_fwd_dev() via __xdp_enqueue(), which also
-happens too late to give BPF-prog knowledge/feedback.  For XDP_TX I
-audited the drivers when I implemented xdp_buff.frame_sz, and they
-handled (or I added) handling against max HW MTU. E.g. mlx5 [1].
+Patch applied to wireless-drivers-next.git, thanks.
 
-[1] https://elixir.bootlin.com/linux/v5.9-rc6/source/drivers/net/ethernet/m=
-ellanox/mlx5/core/en/xdp.c#L267
+55bd14997867 net: wilc1000: clean up resource in error path of init mon interface
 
+-- 
+https://patchwork.kernel.org/patch/11782369/
 
-
-> My preference would be to have three helpers: get MTU for a device,
-> redirect ctx to a device (with MTU check), resize ctx (without MTU
-> check) but that doesn't work with XDP_TX. Your idea of doing checks
-> in redirect and adjust_room is pragmatic and seems easier to
-> implement.
-=20
-I do like this plan/proposal (with 3 helpers), but it is not possible
-with current API.  The main problem is the current bpf_redirect API
-doesn't provide the ctx, so we cannot do the check in the BPF-helper.
-
-Are you saying we should create a new bpf_redirect API (that incl packet ct=
-x)?
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
