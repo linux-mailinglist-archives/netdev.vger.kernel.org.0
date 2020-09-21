@@ -2,179 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A238C272C0F
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 18:27:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 188B4272C36
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 18:30:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728289AbgIUQ1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 12:27:01 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:23805 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728468AbgIUQ1A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 12:27:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600705618;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z2+uwvEiNHa4aouNC9wNaWxR76qMrVPlLtc8ZKmzEB4=;
-        b=F4ZGPedA+jEUMlcQ/geC9P6A/AdRJaNWVW54Zd2eNjDwTzYDHiWWSrGNjBtZIPHlERIoMi
-        I+fooT3ExPrDs4CWs3FIcRs/cdWnBVSC1P4DnMGRGSVUHnlP2TY7BOoVhz3dvfIuqK2X74
-        r/3JF2sOUvT2DyAInbh7trc47m734hg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-588-xH5kqItFNx2NG482Spac9A-1; Mon, 21 Sep 2020 12:26:51 -0400
-X-MC-Unique: xH5kqItFNx2NG482Spac9A-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A674C393B5;
-        Mon, 21 Sep 2020 16:26:49 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6A8655D9CD;
-        Mon, 21 Sep 2020 16:26:40 +0000 (UTC)
-Date:   Mon, 21 Sep 2020 18:26:38 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>,
-        Maciej =?UTF-8?B?xbtlbmN6eWtvd3Nr?= =?UTF-8?B?aQ==?= 
-        <maze@google.com>, Saeed Mahameed <saeed@kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shaun Crampton <shaun@tigera.io>,
-        David Miller <davem@davemloft.net>,
-        Marek Majkowski <marek@cloudflare.com>, brouer@redhat.com
-Subject: Re: BPF redirect API design issue for BPF-prog MTU feedback?
-Message-ID: <20200921182638.5d8343fd@carbon>
-In-Reply-To: <340f209d-58d4-52a6-0804-7102d80c1468@iogearbox.net>
-References: <20200917143846.37ce43a0@carbon>
-        <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
-        <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org>
-        <20200918120016.7007f437@carbon>
-        <CANP3RGfUj-KKHHQtbggiZ4V-Xrr_sk+TWyN5FgYUGZS6rOX1yw@mail.gmail.com>
-        <CACAyw9-v_o+gPUpC-R9SXsfzMywrdGsWV13Nk=tx2aS-fEBFYg@mail.gmail.com>
-        <20200921144953.6456d47d@carbon>
-        <340f209d-58d4-52a6-0804-7102d80c1468@iogearbox.net>
+        id S1727557AbgIUQ2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 12:28:34 -0400
+Received: from mail-eopbgr70078.outbound.protection.outlook.com ([40.107.7.78]:34958
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726471AbgIUQ2e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 12:28:34 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=m0SoRiugr78Iblv1rrZ+GvLu1eUOyYNWwMtisvhYsAgrMJ7xjqkIO/2dqD3BY3ZcTl5xF8tlSVioQiVplfdoDAlvnig0gcyeNyHcq04V82SZwg5WNqn8jTE0W2hM0DLDofdWEtOsXEpOJSXk5x/yA2dJ9O7/CoLB8rIC8VqvCubLixRxnjS1cHGAzTEiJMQfCbtf/lCDLKUN/OrXIRedi1NTQ8Y6nowjn/JnmOIb9R10Yq0jBfWxjeqFYT4s6GdPzSV32e8ImndmO7om6AVCnaA4MTGcz+oPTpNN9h+XF1nq9SnbD2PMG5EJdGKH4JC9FTKNYWr1TTyP3sXr9Gm53g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JWevvGB1AIDSIcArzIJGmh9qUX7Qg+Sg03DGZdoLXAk=;
+ b=G8kr2lFVZpDepQ34Fy9ci5CAsTsIOkl4ZQtVhaELDt0dDtTu3qLuyKcCTdKoKvyb6b9h0jVHubUFVXWdTJYa80LmzYMoeLVRM4EgyIgXeUD2RQgI76ZojhKmk+3m2zQrrWSk2Nztcepc+Cbg39akA2z0KEnD3aS2cfxh9rZW2LPlsFYSRPBk01E8D6WR4BpULF05+Mg2jFO/1MNvDesrzOGEjcgfqn3KaqpZOgRSRF5EH2Xc2B8r6MjgodPIbgQJOJlZS21VJLKBR584yk3hwcwz6e5DxlRAlxgKQqUQkC9Ud6Yv33zDvSJ0Zqz8oGBzf2S7hz4UpxS3qsGRQM60TQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JWevvGB1AIDSIcArzIJGmh9qUX7Qg+Sg03DGZdoLXAk=;
+ b=c7wh2z/ju9Vb5aN8Qjr7CNEEGFE3KTg6aHVcMt+zqZRGdyNG+lYQNP8OvmyWj9GezbswLWNhgbnguCp60XQvcGRTU2mp/H3qMeluYIK/VHjOTAnmTQZSN/WSOzm24VP5fBp1xZX9MkeOCe9CxMTrv2iA7n6ebnUCtgY/9p6sF5A=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VE1PR04MB7343.eurprd04.prod.outlook.com (2603:10a6:800:1a2::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.19; Mon, 21 Sep
+ 2020 16:28:29 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3391.025; Mon, 21 Sep 2020
+ 16:28:29 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        kuba@kernel.org, cphealy@gmail.com, jiri@nvidia.com
+Subject: [PATCH net-next 0/2] Devlink regions for SJA1105 DSA driver
+Date:   Mon, 21 Sep 2020 19:27:39 +0300
+Message-Id: <20200921162741.4081710-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: VI1P18901CA0003.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:801::13) To VI1PR04MB5696.eurprd04.prod.outlook.com
+ (2603:10a6:803:e7::13)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.25.217.212) by VI1P18901CA0003.EURP189.PROD.OUTLOOK.COM (2603:10a6:801::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14 via Frontend Transport; Mon, 21 Sep 2020 16:28:29 +0000
+X-Mailer: git-send-email 2.25.1
+X-Originating-IP: [188.25.217.212]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 50f5dd73-298b-419e-d7b3-08d85e4b5fcc
+X-MS-TrafficTypeDiagnostic: VE1PR04MB7343:
+X-Microsoft-Antispam-PRVS: <VE1PR04MB734390DFEF61AB56F38EB834E03A0@VE1PR04MB7343.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XML+0kb3x4au01q/uotl60VF1lZbS3fHrjsBcwRnFowygUTcnYYHHf70xihjM0CvBoTqrFVFeVOKZn9iwA2dTqQEQwvqU5eP93y4PWQATquK0+78iaSvSGYkzdRLeyKaMNggjsYO9wMnH9WhP02/M5KG0VVvC0ayucBMpaqhfUzdQzZ6thbhQMUDoQPJ7ySnNvACYDGzpcI5eaV8NtrPPkoAPm4ePLgj0WYzrT5pl27UAc94JuhYZ9Jq9/a9jfqrdfnS105z7tAneEMtJ3oy7y+cb7ld89Xn7nxDMhmenwCUjerTMMJjkE+mmFNB891g6MtQze9n1NSLz9bDhY336IJV5/uAMRCEHAFbZJJQ4AIg4ywO731bhMVlEWwGRRTKBYe2lZSWIp9zdxq7hY95v+p6sIF5pK2sv5AWp2xMQO8XBFGn3Il3wB+0tEzSLJTXOyRnws18m6GA2pRueVwIGw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(136003)(396003)(39860400002)(346002)(8676002)(1076003)(16526019)(186003)(2906002)(26005)(66556008)(66476007)(6512007)(66946007)(5660300002)(8936002)(69590400008)(2616005)(956004)(316002)(86362001)(966005)(4744005)(36756003)(44832011)(6506007)(83380400001)(6666004)(52116002)(6486002)(4326008)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: mUGleQxvLPogLqZVSIIh6NhFTbjxNyKro8908WGL4XQSzzmBjQ/zEdaw6cTTgDDGxkXFoyfvf2Du0rXP5ycJZfRJk9mjMulKV+0xkOrwo8ireQ9r/lwxWPD+ntNu+Nfrlj0iHO4EWFmvTBH3QXkj7OCCGcshIaPyn22u1d4KMTfs+FrdHtn+MpHSKTX6i7U1E4zLZUQLHSSMQ2UdUh86q8rl0ViueY5HyVbu9EaXlkExh754epzz5myBTLQrV1hx8bREPeMSJPidgOKvxvEsQoa6NZipJ7UIxJiN/ZNKhPlv/aYETZVszcynkv5qWbGambH1Mpn+7AkjZvT2Apg8ZD3trcmEs2udYyzLDpfmICFM37kbkO4ap1LlDZfZS582I1q0Bo1MV8xr5y6YS/szTmVx09VhbCC/cZgf8goF1X8i6xoHwatxAhSWKq9lZJThVFjMaPCKLamufkeK7zv2yovBcAdKFDKStyQubZmm54xp88rz9Z5kmHB5XcxuzDOkfcasWH3+aRHM168hE8gkl/0PNeW5mYxu1iQvGp8OSY5N3u3wThy4uYbga2PkriHJdxwUM8PBSXlqVKIdckq62htyPU1Vuq2F4B+vhqR8h853yZ22RUeFTi51Wh6Ol9wgm3GEVvKIJdUGnVpSzIcDww==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50f5dd73-298b-419e-d7b3-08d85e4b5fcc
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2020 16:28:29.7662
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: L0y/tFXzSApkeNVYCEfs4vRqwN+W8s5jDmd24Ef49TvT7aHeog9txQew8bIdaLTjZfWkuTsELpFogmoBugtVdw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7343
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Sep 2020 17:08:17 +0200
-Daniel Borkmann <daniel@iogearbox.net> wrote:
+This series exposes the SJA1105 static config as a devlink region. This
+can be used for debugging, for example with the sja1105_dump user space
+program that I have derived from Andrew Lunn's mv88e6xxx_dump:
 
-> On 9/21/20 2:49 PM, Jesper Dangaard Brouer wrote:
-> > On Mon, 21 Sep 2020 11:37:18 +0100
-> > Lorenz Bauer <lmb@cloudflare.com> wrote: =20
-> >> On Sat, 19 Sep 2020 at 00:06, Maciej =C5=BBenczykowski <maze@google.co=
-m> wrote: =20
-> >>>    =20
-> >>>> This is a good point.  As bpf_skb_adjust_room() can just be run after
-> >>>> bpf_redirect() call, then a MTU check in bpf_redirect() actually
-> >>>> doesn't make much sense.  As clever/bad BPF program can then avoid t=
-he
-> >>>> MTU check anyhow.  This basically means that we have to do the MTU
-> >>>> check (again) on kernel side anyhow to catch such clever/bad BPF
-> >>>> programs.  (And I don't like wasting cycles on doing the same check =
-two
-> >>>> times). =20
-> >>>
-> >>> If you get rid of the check in bpf_redirect() you might as well get
-> >>> rid of *all* the checks for excessive mtu in all the helpers that
-> >>> adjust packet size one way or another way.  They *all* then become
-> >>> useless overhead.
-> >>>
-> >>> I don't like that.  There may be something the bpf program could do to
-> >>> react to the error condition (for example in my case, not modify
-> >>> things and just let the core stack deal with things - which will
-> >>> probably just generate packet too big icmp error).
-> >>>
-> >>> btw. right now our forwarding programs first adjust the packet size
-> >>> then call bpf_redirect() and almost immediately return what it
-> >>> returned.
-> >>>
-> >>> but this could I think easily be changed to reverse the ordering, so
-> >>> we wouldn't increase packet size before the core stack was informed we
-> >>> would be forwarding via a different interface. =20
-> >>
-> >> We do the same, except that we also use XDP_TX when appropriate. This
-> >> complicates the matter, because there is no helper call we could
-> >> return an error from. =20
-> >=20
-> > Do notice that my MTU work is focused on TC-BPF.  For XDP-redirect the
-> > MTU check is done in xdp_ok_fwd_dev() via __xdp_enqueue(), which also
-> > happens too late to give BPF-prog knowledge/feedback.  For XDP_TX I
-> > audited the drivers when I implemented xdp_buff.frame_sz, and they
-> > handled (or I added) handling against max HW MTU. E.g. mlx5 [1].
-> >=20
-> > [1] https://elixir.bootlin.com/linux/v5.9-rc6/source/drivers/net/ethern=
-et/mellanox/mlx5/core/en/xdp.c#L267
-> >  =20
-> >> My preference would be to have three helpers: get MTU for a device,
-> >> redirect ctx to a device (with MTU check), resize ctx (without MTU
-> >> check) but that doesn't work with XDP_TX. Your idea of doing checks
-> >> in redirect and adjust_room is pragmatic and seems easier to
-> >> implement. =20
-> >  =20
-> > I do like this plan/proposal (with 3 helpers), but it is not possible
-> > with current API.  The main problem is the current bpf_redirect API
-> > doesn't provide the ctx, so we cannot do the check in the BPF-helper.
-> >=20
-> > Are you saying we should create a new bpf_redirect API (that incl packe=
-t ctx)? =20
->=20
-> Sorry for jumping in late here... one thing that is not clear to me
-> is that if we are fully sure that skb is dropped by stack anyway due
-> to invalid MTU (redirect to ingress does this via dev_forward_skb(),
+https://github.com/vladimiroltean/mv88e6xxx_dump/tree/sja1105
 
-Yes, TC-redirecting to *INGRESS* have a slightly relaxed MTU check via
-is_skb_forwardable() called via ____dev_forward_skb().  This MTU check
-seems redundant as netstack will do MTU checks anyhow.
+Vladimir Oltean (2):
+  net: dsa: sja1105: move devlink param code to sja1105_devlink.c
+  net: dsa: sja1105: expose static config as devlink region
 
-> it's not fully clear to me whether it's also the case for the
-> dev_queue_xmit()),
+ drivers/net/dsa/sja1105/Makefile          |   1 +
+ drivers/net/dsa/sja1105/sja1105.h         |  13 +-
+ drivers/net/dsa/sja1105/sja1105_devlink.c | 236 ++++++++++++++++++++++
+ drivers/net/dsa/sja1105/sja1105_main.c    | 105 +---------
+ drivers/net/dsa/sja1105/sja1105_spi.c     |   5 +-
+ 5 files changed, 254 insertions(+), 106 deletions(-)
+ create mode 100644 drivers/net/dsa/sja1105/sja1105_devlink.c
 
-This seems the problematic case; TC-ingress redirect to netdev-egress,
-that basically calls dev_queue_xmit().  I tried to follow the code all
-the way into ixgbe driver, and I didn't see any MTU checks.
-
-We might have to add a MTU check here, as it could be considered a
-bug/problematic that we allow this. (e.g. netdev with large MTU can
-redirect frames larger than MTU of egress netdev).
-
-
-> then why not dropping all the MTU checks aside
-> from SKB_MAX_ALLOC sanity check for BPF helpers=20
-
-I agree, and think that the MTU checks in the BPF-helpers, make little
-sense, as we have found ways to circumvent these checks (as discussed
-in thread).
-
-> and have something like a device object (similar to e.g. TCP sockets)
-> exposed to BPF prog where we can retrieve the object and read
-> dev->mtu from the prog, so the BPF program could then do the
-> "exception" handling internally w/o extra prog needed (we also
-> already expose whether skb is GSO or not).
-
-I do think we need some BPF-helper that allows BPF-prog to lookup MTU
-of a netdev, so it can do proper ICMP exception handling.
-
-I looked at doing ICMP exception handling on kernel-side, but realized
-that this is not possible at the TC-redirect layer, as we have not
-decoded the L3 protocol at this point (e.g. cannot know if I need to
-call icmp_send or icmp6_send).
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+-- 
+2.25.1
 
