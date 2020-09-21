@@ -2,124 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC9B0272940
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 16:58:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5374E272951
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 17:02:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727690AbgIUO6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 10:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45944 "EHLO
+        id S1727472AbgIUPC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 11:02:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726830AbgIUO6S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 10:58:18 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F4BC061755
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 07:58:18 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id gx22so9129369ejb.5
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 07:58:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EJs4t9es9brS9byQpAuBOzkQpNdm2qyviSkYBbgWl2o=;
-        b=hXJAM8yDP7Dqi6R8iCao9nXatIh73hpixHgJlbXkNZlClzJTMS5uTw+NawbDadhq8G
-         Q7nPwwW61JWpKIg4KB0JYv8QIeoSyHzci2g8hhtueEJXuzenqzhz9/jR5VGJ0iCNBnbT
-         k8GZ1qB8bF5tYoDz+2dJwcnL05FNjyuqk7ppr2JRjYrmNdME9L7DLmhZpYPHFUR4F1pL
-         /0BM3hMQXDMP3Eb/9UnN3qA2LXhBxKJKYKayXb4D4u4JeFay1xDqDrYLV3hjV7oJhiol
-         6AGDEIyoWV8GqwkFZSeLHfzHvo3lujgje3dRULBPFg61tX1o29cnVFj+9hxZ+g/7ZJ4/
-         AeYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EJs4t9es9brS9byQpAuBOzkQpNdm2qyviSkYBbgWl2o=;
-        b=cXHdlZimVOMIIIeC33riBA4+ORSIbK3RzObC2S2x6PTEFhzAtxsnKoSxo1WnYibGlD
-         KUEr0UtBJfAlrkWWr32WsQoAhcTjZ7ISSbmm93hwvuK6MRBjG/lnpMkogYcQsiYWS06v
-         p+YUGJAtN270vzca2zy7Et0I0nhQvjjalBy+gSUR6xv7urIkTahfJcw4bsACnnlud4/S
-         H+JhDNkMFwn7SEXrssVmH7535ZwERJKTecQo+pyCPVdg50rz0qLajei9H4s+X72mVQ6T
-         CMcGAOHzwJerAJ8Cz/UJbt/LgTr6M5TgSSqvr3lH5FUa7WBLJZqYzxEFHBcuGHoI/Zxs
-         KORQ==
-X-Gm-Message-State: AOAM533pzpV4yZ9PseePgkYnymeTdp7fnGnodQqas9QSpeSeIveo+P9C
-        WJUVsWCL4hyNg5nvo8GMObGf6QyyRI2m0vLX
-X-Google-Smtp-Source: ABdhPJyts2iTXX1HfbKhySlIf+CV1hK2t7cj5hn6jcA6d4Akk3B6Sur9AHgwQ3bMyn20MD/6Q6AqbQ==
-X-Received: by 2002:a17:906:60d3:: with SMTP id f19mr52068017ejk.141.1600700297089;
-        Mon, 21 Sep 2020 07:58:17 -0700 (PDT)
-Received: from tsr-vdi-mbaerts.nix.tessares.net (static.23.216.130.94.clients.your-server.de. [94.130.216.23])
-        by smtp.gmail.com with ESMTPSA id d13sm8746714edu.54.2020.09.21.07.58.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2020 07:58:16 -0700 (PDT)
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3] mptcp: Wake up MPTCP worker when DATA_FIN found on a TCP FIN packet
-Date:   Mon, 21 Sep 2020 16:57:58 +0200
-Message-Id: <20200921145759.1302197-1-matthieu.baerts@tessares.net>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S1727231AbgIUPC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 11:02:26 -0400
+Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724C2C061755;
+        Mon, 21 Sep 2020 08:02:26 -0700 (PDT)
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kKNKV-003BjE-Jk; Mon, 21 Sep 2020 15:02:11 +0000
+Date:   Mon, 21 Sep 2020 16:02:11 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        David Laight <David.Laight@aculab.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-aio@kvack.org, io-uring@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH 02/11] mm: call import_iovec() instead of
+ rw_copy_check_uvector() in process_vm_rw()
+Message-ID: <20200921150211.GS3421308@ZenIV.linux.org.uk>
+References: <20200921143434.707844-1-hch@lst.de>
+ <20200921143434.707844-3-hch@lst.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200921143434.707844-3-hch@lst.de>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mat Martineau <mathew.j.martineau@linux.intel.com>
+On Mon, Sep 21, 2020 at 04:34:25PM +0200, Christoph Hellwig wrote:
+> From: David Laight <David.Laight@ACULAB.COM>
+> 
+> This is the only direct call of rw_copy_check_uvector().  Removing it
+> will allow rw_copy_check_uvector() to be inlined into import_iovec(),
+> while only paying a minor price by setting up an otherwise unused
+> iov_iter in the process_vm_readv/process_vm_writev syscalls that aren't
+> in a super hot path.
 
-When receiving a DATA_FIN MPTCP option on a TCP FIN packet, the DATA_FIN
-information would be stored but the MPTCP worker did not get
-scheduled. In turn, the MPTCP socket state would remain in
-TCP_ESTABLISHED and no blocked operations would be awakened.
+> @@ -443,7 +443,7 @@ void iov_iter_init(struct iov_iter *i, unsigned int direction,
+>  			const struct iovec *iov, unsigned long nr_segs,
+>  			size_t count)
+>  {
+> -	WARN_ON(direction & ~(READ | WRITE));
+> +	WARN_ON(direction & ~(READ | WRITE | CHECK_IOVEC_ONLY));
+>  	direction &= READ | WRITE;
 
-TCP FIN packets are seen by the MPTCP socket when moving skbs out of the
-subflow receive queues, so schedule the MPTCP worker when a skb with
-DATA_FIN but no data payload is moved from a subflow queue. Other cases
-(DATA_FIN on a bare TCP ACK or on a packet with data payload) are
-already handled.
+Ugh...
 
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/84
-Fixes: 43b54c6ee382 ("mptcp: Use full MPTCP-level disconnect state machine")
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
----
+> -	rc = rw_copy_check_uvector(CHECK_IOVEC_ONLY, rvec, riovcnt, UIO_FASTIOV,
+> -				   iovstack_r, &iov_r);
+> +	rc = import_iovec(CHECK_IOVEC_ONLY, rvec, riovcnt, UIO_FASTIOV, &iov_r,
+> +			  &iter_r);
+>  	if (rc <= 0)
+>  		goto free_iovecs;
+>  
+> -	rc = process_vm_rw_core(pid, &iter, iov_r, riovcnt, flags, vm_write);
+> +	rc = process_vm_rw_core(pid, &iter_l, iter_r.iov, iter_r.nr_segs,
+> +				flags, vm_write);
 
-Notes:
-    This is a resend of v1 and v2 with the same code modification. The
-    previous versions did not get delivered to vger.kernel.org but did go
-    to other recipients. There is a known issue with the SMTP server on
-    the Intel side. Sorry for the multiple versions.
-    
-    The only modifications compared to v1 and v2 are in the commit message:
-    - Paolo's ACK is back: it was accidentaly dropped.
-    - My SOB is at the end, being the new sender of this patch from Mat.
+... and ugh^2, since now you are not only setting a meaningless iov_iter,
+you are creating a new place that pokes directly into struct iov_iter
+guts.
 
- net/mptcp/subflow.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Sure, moving rw_copy_check_uvector() over to lib/iov_iter.c makes sense.
+But I would rather split the access_ok()-related checks out of that thing
+and bury CHECK_IOVEC_ONLY.
 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 34d6230df017..31316cfeb4d0 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -733,7 +733,7 @@ static enum mapping_status get_mapping_status(struct sock *ssk,
- 
- 	if (mpext->data_fin == 1) {
- 		if (data_len == 1) {
--			mptcp_update_rcv_data_fin(msk, mpext->data_seq);
-+			bool updated = mptcp_update_rcv_data_fin(msk, mpext->data_seq);
- 			pr_debug("DATA_FIN with no payload seq=%llu", mpext->data_seq);
- 			if (subflow->map_valid) {
- 				/* A DATA_FIN might arrive in a DSS
-@@ -744,6 +744,9 @@ static enum mapping_status get_mapping_status(struct sock *ssk,
- 				skb_ext_del(skb, SKB_EXT_MPTCP);
- 				return MAPPING_OK;
- 			} else {
-+				if (updated && schedule_work(&msk->work))
-+					sock_hold((struct sock *)msk);
-+
- 				return MAPPING_DATA_FIN;
- 			}
- 		} else {
--- 
-2.27.0
+Step 1: move the damn thing to lib/iov_iter.c (same as you do, but without
+making it static)
 
+Step 2: split it in two:
+
+ssize_t rw_copy_check_uvector(const struct iovec __user * uvector,
+                              unsigned long nr_segs, unsigned long fast_segs,
+                              struct iovec *fast_pointer,
+                              struct iovec **ret_pointer)
+{
+	unsigned long seg;
+	ssize_t ret;
+	struct iovec *iov = fast_pointer;
+
+	*ret_pointer = fast_pointer;
+	/*
+	 * SuS says "The readv() function *may* fail if the iovcnt argument
+	 * was less than or equal to 0, or greater than {IOV_MAX}.  Linux has
+	 * traditionally returned zero for zero segments, so...
+	 */
+	if (nr_segs == 0)
+		return 0;
+
+	/*
+	 * First get the "struct iovec" from user memory and
+	 * verify all the pointers
+	 */
+	if (nr_segs > UIO_MAXIOV)
+		return -EINVAL;
+
+	if (nr_segs > fast_segs) {
+		iov = kmalloc_array(nr_segs, sizeof(struct iovec), GFP_KERNEL);
+		if (!iov)
+			return -ENOMEM;
+		*ret_pointer = iov;
+	}
+	if (copy_from_user(iov, uvector, nr_segs*sizeof(*uvector)))
+		return -EFAULT;
+
+	/*
+	 * According to the Single Unix Specification we should return EINVAL
+	 * if an element length is < 0 when cast to ssize_t or if the
+	 * total length would overflow the ssize_t return value of the
+	 * system call.
+	 *
+	 * Linux caps all read/write calls to MAX_RW_COUNT, and avoids the
+	 * overflow case.
+	 */
+	ret = 0;
+	for (seg = 0; seg < nr_segs; seg++) {
+		void __user *buf = iov[seg].iov_base;
+		ssize_t len = (ssize_t)iov[seg].iov_len;
+
+		/* see if we we're about to use an invalid len or if
+		 * it's about to overflow ssize_t */
+		if (len < 0)
+			return -EINVAL;
+		if (len > MAX_RW_COUNT - ret) {
+			len = MAX_RW_COUNT - ret;
+			iov[seg].iov_len = len;
+		}
+		ret += len;
+	}
+	return ret;
+}
+
+/*
+ *  This is merely an early sanity check; we do _not_ rely upon
+ *  it when we get to the actual memory accesses.
+ */
+static bool check_iovecs(const struct iovec *iov, int nr_segs)
+{
+        for (seg = 0; seg < nr_segs; seg++) {
+                void __user *buf = iov[seg].iov_base;
+                ssize_t len = (ssize_t)iov[seg].iov_len;
+
+                if (unlikely(!access_ok(buf, len)))
+                        return false;
+        }
+	return true;
+}
+
+ssize_t import_iovec(int type, const struct iovec __user * uvector,
+                 unsigned nr_segs, unsigned fast_segs,
+                 struct iovec **iov, struct iov_iter *i)
+{
+	struct iovec *p;
+	ssize_t n;
+
+	n = rw_copy_check_uvector(uvector, nr_segs, fast_segs, *iov, &p);
+	if (n > 0 && !check_iovecs(p, nr_segs))
+		n = -EFAULT;
+	if (n < 0) {
+		if (p != *iov)
+			kfree(p);
+		*iov = NULL;
+		return n;
+	}
+	iov_iter_init(i, type, p, nr_segs, n);
+	*iov = p == *iov ? NULL : p;
+	return n;
+}
+
+kill CHECK_IOVEC_ONLY and use rw_copy_check_uvector() without the type
+argument in mm/process_vm_access.c
+
+Saner that way, IMO...
