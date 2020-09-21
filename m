@@ -2,155 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28055271D7A
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 10:09:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29BC3271D8B
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 10:10:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbgIUIJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 04:09:28 -0400
-Received: from mail-il1-f208.google.com ([209.85.166.208]:37319 "EHLO
-        mail-il1-f208.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726669AbgIUIIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 04:08:20 -0400
-Received: by mail-il1-f208.google.com with SMTP id c66so10429075ilf.4
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 01:08:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=h9pfpRslp+3AfQsET9z3oDwqPiab+eVh57GDZWwZu0c=;
-        b=PzAaleXa7kP6OHoIxvHwY2Ax8/NCAlA2bFDuVtGtdDLW35wSRVGXV+yyvW8/dhjqa5
-         Q4AJEj8QRrvdU34e6+gwP8ej/RTxy7pyqPSsInOqtyU3Wf8qhF+oYmZ16vOtYQiU8L8T
-         UktbS3y3/RBHmkjmeQ0/RORJ8AAw2HmbmHHd+vcyV4/13hy0PenD2wOShCPqh0wHuaOT
-         CtIIvwbdqU5IFm9aWEZkc5SbZs2erT8fGmuCPwR1dA/bktOWV3YVzOustcpyegNPPvII
-         z10zx0PY9kbzeazhiQOBvnCMQmzfysnWuo/afXLK90XlmwFJNDzKygTUe9iRWv5n1l8Q
-         SzNg==
-X-Gm-Message-State: AOAM530DnOmONxTyfzq1BkuYz/ENJu+W/kG30debw4I9Mx+xKn+or9u6
-        UC/KCR/nFkLLYLpTzLbp6zOwMJBtzwOYWwDC/hW74RTbvWqr
-X-Google-Smtp-Source: ABdhPJwlJt+9H47JyQD4TBNFrT86bTrvPVUWsM2zy9BDqnesUHSdvzM3SHjZlX6RjxUmTod3KHetQZTEizKPwfUdx9pZwFQIGJAY
+        id S1726982AbgIUIKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 04:10:11 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:13791 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726326AbgIUIKL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 04:10:11 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 3052A1CBE6215E844B8B;
+        Mon, 21 Sep 2020 16:10:08 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 21 Sep 2020 16:09:58 +0800
+Subject: Re: [PATCH net-next] net: use in_softirq() to indicate the NAPI
+ context in napi_consume_skb()
+To:     Eric Dumazet <edumazet@google.com>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linmiaohe <linmiaohe@huawei.com>, <martin.varghese@nokia.com>,
+        "Florian Westphal" <fw@strlen.de>,
+        Davide Caratti <dcaratti@redhat.com>,
+        "Steffen Klassert" <steffen.klassert@secunet.com>,
+        Paolo Abeni <pabeni@redhat.com>, <kyk.segfault@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
+References: <1600653893-206277-1-git-send-email-linyunsheng@huawei.com>
+ <CANn89iLHH=CRzz5tavy_KEg0mhgXkhD9DBfh9bhcqSkcZ2xaaA@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <2102eba1-eeea-bf95-2df5-7fcfa3141694@huawei.com>
+Date:   Mon, 21 Sep 2020 16:09:57 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3b5:: with SMTP id z21mr39136123jap.33.1600675699073;
- Mon, 21 Sep 2020 01:08:19 -0700 (PDT)
-Date:   Mon, 21 Sep 2020 01:08:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000071a5f305afce5a2f@google.com>
-Subject: general protection fault in debug_check_no_obj_freed (3)
-From:   syzbot <syzbot+06df86d7d68707715eec@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jmaloy@redhat.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CANn89iLHH=CRzz5tavy_KEg0mhgXkhD9DBfh9bhcqSkcZ2xaaA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 2020/9/21 15:19, Eric Dumazet wrote:
+> On Mon, Sep 21, 2020 at 4:08 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>
+>> When napi_consume_skb() is called in the tx desc cleaning process,
+>> it is usually in the softirq context(BH disabled, or are processing
+>> softirqs), but it may also be in the task context, such as in the
+>> netpoll or loopback selftest process.
+>>
+>> Currently napi_consume_skb() uses non-zero budget to indicate the
+>> NAPI context, the driver writer may provide the wrong budget when
+>> tx desc cleaning function is reused for both NAPI and non-NAPI
+>> context, see [1].
+>>
+>> So this patch uses in_softirq() to indicate the NAPI context, which
+>> doesn't necessarily mean in NAPI context, but it shouldn't care if
+>> NAPI context or not as long as it runs in softirq context or with BH
+>> disabled, then _kfree_skb_defer() will push the skb to the particular
+>> cpu' napi_alloc_cache atomically.
+>>
+>> [1] https://lkml.org/lkml/2020/9/15/38
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>> note that budget parameter is not removed in this patch because it
+>> involves many driver changes, we can remove it in separate patch if
+>> this patch is accepted.
+>> ---
+>>  net/core/skbuff.c | 6 ++++--
+>>  1 file changed, 4 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+>> index e077447..03d0d28 100644
+>> --- a/net/core/skbuff.c
+>> +++ b/net/core/skbuff.c
+>> @@ -895,8 +895,10 @@ void __kfree_skb_defer(struct sk_buff *skb)
+>>
+>>  void napi_consume_skb(struct sk_buff *skb, int budget)
+>>  {
+>> -       /* Zero budget indicate non-NAPI context called us, like netpoll */
+>> -       if (unlikely(!budget)) {
+>> +       /* called by non-softirq context, which usually means non-NAPI
+>> +        * context, like netpoll.
+>> +        */
+>> +       if (unlikely(!in_softirq())) {
+>>                 dev_consume_skb_any(skb);
+>>                 return;
+>>         }
+>> --
+> 
+> 
+> I do not think we should add this kind of fuzzy logic, just because
+> _one_ driver author made a mistake.
+> 
+> Add a disable_bh() in the driver slow path, and accept the _existing_
+> semantic, the one that was understood by dozens.
 
-syzbot found the following issue on:
+As my understanding, this patch did not change _existing_ semantic,
+it still only call _kfree_skb_defer() in softirq context. This patch
+just remove the requirement that a softirq context hint need to be
+provided to decide whether calling _kfree_skb_defer().
 
-HEAD commit:    ba4f184e Linux 5.9-rc6
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16200765900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5f4c828c9e3cef97
-dashboard link: https://syzkaller.appspot.com/bug?extid=06df86d7d68707715eec
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+Yes, we can add DEBUG_NET() clauses to catch this kind of error as
+you suggested.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+But why we need such a debug clauses, when we can decide if delaying
+skb freeing is possible in napi_consume_skb(), why not just use
+in_softirq() to make this API more easy to use? Just as __dev_kfree_skb_any()
+API use "in_irq() || irqs_disabled()" checking to handle the irq context
+and non-irq context.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+06df86d7d68707715eec@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000ee000e: 0000 [#1] PREEMPT SMP KASAN
-KASAN: probably user-memory-access in range [0x0000000007700070-0x0000000007700077]
-CPU: 1 PID: 6892 Comm: syz-executor.3 Not tainted 5.9.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__debug_check_no_obj_freed lib/debugobjects.c:956 [inline]
-RIP: 0010:debug_check_no_obj_freed+0x1d3/0x41c lib/debugobjects.c:998
-Code: 39 00 0f 85 0f 02 00 00 48 89 45 08 4d 89 30 4c 89 c7 4d 89 68 08 e8 bc c9 ff ff 48 85 ed 74 2c 49 89 e8 4c 89 c0 48 c1 e8 03 <42> 80 3c 38 00 0f 84 2e ff ff ff 4c 89 c7 4c 89 44 24 38 e8 c5 31
-RSP: 0018:ffffc90000da8bc0 EFLAGS: 00010003
-RAX: 0000000000ee000e RBX: ffff888048f37000 RCX: ffffffff815cf7b0
-RDX: 1ffffffff1adc084 RSI: 0000000000000004 RDI: ffff88800014f280
-RBP: 0000000007700077 R08: 0000000007700077 R09: ffffe8ffffb63c70
-R10: fffff520001b5166 R11: 0000000000000000 R12: 0000000000000003
-R13: dead000000000122 R14: dead000000000100 R15: dffffc0000000000
-FS:  00007f6a8cc2a700(0000) GS:ffff8880ae500000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000401e70 CR3: 000000020c219000 CR4: 00000000001526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <IRQ>
- kfree+0xfb/0x2b0 mm/slab.c:3755
- skb_free_head net/core/skbuff.c:590 [inline]
- skb_release_data+0x6d9/0x910 net/core/skbuff.c:610
- skb_release_all net/core/skbuff.c:664 [inline]
- __kfree_skb net/core/skbuff.c:678 [inline]
- consume_skb net/core/skbuff.c:838 [inline]
- consume_skb+0xc2/0x160 net/core/skbuff.c:832
- tipc_loopback_rcv_pkt+0x11/0x20 net/tipc/bearer.c:745
- __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5286
- __netif_receive_skb+0x27/0x1c0 net/core/dev.c:5400
- process_backlog+0x2e1/0x8e0 net/core/dev.c:6242
- napi_poll net/core/dev.c:6688 [inline]
- net_rx_action+0x50d/0xfc0 net/core/dev.c:6758
- __do_softirq+0x1f8/0xb23 kernel/softirq.c:298
- asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:706
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
- do_softirq_own_stack+0x9d/0xd0 arch/x86/kernel/irq_64.c:77
- do_softirq kernel/softirq.c:343 [inline]
- do_softirq+0x154/0x1b0 kernel/softirq.c:330
- netif_rx_ni+0x3c5/0x650 net/core/dev.c:4835
- tipc_clone_to_loopback+0x330/0x480 net/tipc/bearer.c:738
- tipc_loopback_trace net/tipc/bearer.h:249 [inline]
- tipc_node_xmit+0xb44/0xd00 net/tipc/node.c:1653
- tipc_node_xmit_skb net/tipc/node.c:1715 [inline]
- tipc_node_distr_xmit+0x15c/0x3a0 net/tipc/node.c:1730
- tipc_sk_backlog_rcv+0x155/0x1c0 net/tipc/socket.c:2381
- sk_backlog_rcv include/net/sock.h:1011 [inline]
- __release_sock+0x134/0x3a0 net/core/sock.c:2542
- release_sock+0x54/0x1b0 net/core/sock.c:3065
- tipc_release+0xbb1/0x1a70 net/tipc/socket.c:638
- __sock_release+0xcd/0x280 net/socket.c:596
- sock_close+0x18/0x20 net/socket.c:1277
- __fput+0x285/0x920 fs/file_table.c:281
- task_work_run+0xdd/0x190 kernel/task_work.c:141
- tracehook_notify_resume include/linux/tracehook.h:188 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:165 [inline]
- exit_to_user_mode_prepare+0x1e1/0x200 kernel/entry/common.c:192
- syscall_exit_to_user_mode+0x7e/0x2e0 kernel/entry/common.c:267
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45d5f9
-Code: 5d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 2b b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f6a8cc29c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000021
-RAX: 0000000000000004 RBX: 0000000000002a40 RCX: 000000000045d5f9
-RDX: 0000000000000000 RSI: 0000000000000004 RDI: 0000000000000006
-RBP: 000000000118d018 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118cfec
-R13: 000000000169fb6f R14: 00007f6a8cc2a9c0 R15: 000000000118cfec
-Modules linked in:
----[ end trace f5472acb007e885e ]---
-RIP: 0010:__debug_check_no_obj_freed lib/debugobjects.c:956 [inline]
-RIP: 0010:debug_check_no_obj_freed+0x1d3/0x41c lib/debugobjects.c:998
-Code: 39 00 0f 85 0f 02 00 00 48 89 45 08 4d 89 30 4c 89 c7 4d 89 68 08 e8 bc c9 ff ff 48 85 ed 74 2c 49 89 e8 4c 89 c0 48 c1 e8 03 <42> 80 3c 38 00 0f 84 2e ff ff ff 4c 89 c7 4c 89 44 24 38 e8 c5 31
-RSP: 0018:ffffc90000da8bc0 EFLAGS: 00010003
-RAX: 0000000000ee000e RBX: ffff888048f37000 RCX: ffffffff815cf7b0
-RDX: 1ffffffff1adc084 RSI: 0000000000000004 RDI: ffff88800014f280
-RBP: 0000000007700077 R08: 0000000007700077 R09: ffffe8ffffb63c70
-R10: fffff520001b5166 R11: 0000000000000000 R12: 0000000000000003
-R13: dead000000000122 R14: dead000000000100 R15: dffffc0000000000
-FS:  00007f6a8cc2a700(0000) GS:ffff8880ae500000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000401e70 CR3: 000000020c219000 CR4: 00000000001526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> .
+> 
