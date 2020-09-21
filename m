@@ -2,85 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D5372718ED
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 03:09:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A3252718F6
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 03:15:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbgIUBJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 21:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59178 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726126AbgIUBJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 21:09:26 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A10C0613CF
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 18:09:26 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id l191so7518349pgd.5
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 18:09:26 -0700 (PDT)
+        id S1726297AbgIUBO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 21:14:56 -0400
+Received: from mail-bn7nam10on2070.outbound.protection.outlook.com ([40.107.92.70]:23676
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726126AbgIUBO4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 20 Sep 2020 21:14:56 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gO1ohXaxMUhQx17sh5RqiHzGgxclNTct6jPWu+BR6Wp1HKdaknq+O1rJq12yOUOuWeullPwxMeoP9SdhVhvHMtrlshec5nBO80r9IaltQVvAVgedepc69rsNLiH8Q+vfT6Hlo2Kks2SEw5BqfIbCCNAtlG4G9PjERd73OtqYBU9UXELhXpM1JxhVNzo0DLK5vzkhNhs91QoyViMTEHVPEdKQcmlOrLVtDTRlEwlibMxBQqRrBuItoJ51Ykk0IlnJiMT2tO4qwdgtmjhrFaxEmzw94dHUWIG9ivlCFqWBZ/TrqsqKKFdICpGlpfEjYqzZDJClN1pvw00dr2zDpnEi7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WAKEvVNFerSkMGAQazu+pc9uib62Mx1apPzjuqDdTPg=;
+ b=UMzKQ4TQe9eaGONkcxZRPGMNZhAhsjZm6gMmjqQeVJ4cKvhozwqu9WIvA2yoq30PjMQXbjvjhYaJ5HEbLNNehb5Va3TTUGWrVc+nIvWx9fc40yMCzOqqJufp3rNtxnHsLQURvptmo443G3HCggHb6PIE1AEDrDEBTQH8XxyeWh8gJMmCHO4ase/wPQlt6vG7X3CMVCkahQWwAb1BPmOEo+rV6vPDlhW+OB0CB33AA0sZtCiYsjFs7CmZeCUXx+6oNtYlt+TXrMEusAPY3BI7G3uzCP2eXYnDN14DOdd1a2O/iRlPm4ZxAWeYi+OcQpgAb7Oc/jQ/KwNgrXH1lTI6/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=KxX++AHaKzTjXw7TwUS3IWSavzlkxgBJf3fj3bYWvEY=;
-        b=SWGqHguDVsB6raj3/CF7tcLNoScguKbNgv0zBGJ4914bg6X3U1/S3pXQsPXQxs5Tir
-         CVoixP9pHyTk9XGS9sCPcK3vzrTLwhKYa3gwiGJ1+TeQSh27I1Kw2EMjIAZbhpK4HI3l
-         FwoET6udegsveXCwibnShMclKgiCmFALerhrI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=KxX++AHaKzTjXw7TwUS3IWSavzlkxgBJf3fj3bYWvEY=;
-        b=ck2lUfnwB6zjK1wVcdnV0qrgL4fKzuEnPX92FCRxLYjtKdmL+wyL13tk3H+uwkoNIS
-         CXeFb6nDmaUQjLRahgPj5UUl8JijACyJ0Jo5Foivhpfm7uT97o/x8rDGd1oP39xCgxMu
-         /2qwXGSRzYL5K80KPmAq0cl1NGh74MEq2R7dfoKngYfcISkHiNX/BiG1F7gB+3YEdgD2
-         ZZ2zbCN3qZ8y1uv72YTRb5TSVgxBsD9pPIyynbNsAGk8tpmwU1/TkCPMxOQTwnhGW3YF
-         ECkW0S/9qKszbYdEifXY8nmIPwQxQaTKYUgUr/XICni6datCggQ6gdv6c3pwlW+MGluB
-         RZMQ==
-X-Gm-Message-State: AOAM531XZxjoJZ8ftA8I9ak9kXhG/X1OKPviQL5XTj9UOhIa1z3ZkVgz
-        bFw2uVk1HJeGCQUi7DxhaPXcaA==
-X-Google-Smtp-Source: ABdhPJw30LZQHqx2yXnsQrMt11GpqIZqu1cyCOuql7Y/SqzRundjr3hpPTKKgDnY/mB2d9CUOPuZQw==
-X-Received: by 2002:a63:4450:: with SMTP id t16mr35332258pgk.3.1600650565715;
-        Sun, 20 Sep 2020 18:09:25 -0700 (PDT)
-Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id bt13sm9098095pjb.23.2020.09.20.18.09.24
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 20 Sep 2020 18:09:25 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 6/6] bnxt_en: Fix wrong flag value passed to HWRM_PORT_QSTATS_EXT fw call.
-Date:   Sun, 20 Sep 2020 21:08:59 -0400
-Message-Id: <1600650539-19967-7-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1600650539-19967-1-git-send-email-michael.chan@broadcom.com>
-References: <1600650539-19967-1-git-send-email-michael.chan@broadcom.com>
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WAKEvVNFerSkMGAQazu+pc9uib62Mx1apPzjuqDdTPg=;
+ b=L528jfM11MtUJ0lMVwSaY7/Yr7CTa7Ew+0AG0vn3IZ3O0WVg5wwyPpmN9o52U9g1dcG8LbHYMo+o0k4wE0OsfWhPz9WuoMUY0t2SHXk3t4Afvy60Se/F9q75lSG15ZZJX8+2oy98gnGMsdVZvwbxUZj2t/aQqs94i34hf/3Iu9Y=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=synaptics.com;
+Received: from DM6PR03MB4555.namprd03.prod.outlook.com (2603:10b6:5:102::17)
+ by DM6PR03MB3802.namprd03.prod.outlook.com (2603:10b6:5:50::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.19; Mon, 21 Sep
+ 2020 01:14:53 +0000
+Received: from DM6PR03MB4555.namprd03.prod.outlook.com
+ ([fe80::e494:740f:155:4a38]) by DM6PR03MB4555.namprd03.prod.outlook.com
+ ([fe80::e494:740f:155:4a38%7]) with mapi id 15.20.3391.019; Mon, 21 Sep 2020
+ 01:14:52 +0000
+Date:   Mon, 21 Sep 2020 09:13:54 +0800
+From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net-next] net: phy: realtek: enable ALDPS to save power
+ for RTL8211F
+Message-ID: <20200921091354.2bf0a039@xhacker.debian>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TY1PR01CA0155.jpnprd01.prod.outlook.com
+ (2603:1096:402:1::31) To DM6PR03MB4555.namprd03.prod.outlook.com
+ (2603:10b6:5:102::17)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from xhacker.debian (124.74.246.114) by TY1PR01CA0155.jpnprd01.prod.outlook.com (2603:1096:402:1::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.11 via Frontend Transport; Mon, 21 Sep 2020 01:14:50 +0000
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+X-Originating-IP: [124.74.246.114]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 98081720-114a-41d8-40a3-08d85dcbbe33
+X-MS-TrafficTypeDiagnostic: DM6PR03MB3802:
+X-Microsoft-Antispam-PRVS: <DM6PR03MB3802D63D97D951849E551EF8ED3A0@DM6PR03MB3802.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:153;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UBn1YSW0+5I/bhceJXG6g3VokaY+lLRiyP/ZHDyb4tqZcjGfaBfNaMQ7GSX842kjXzlsPJZFEPKs6VzqtE5d5O+7BWgp1giI/vwrCvXKouNFB9Qy+Y3FqRWaqg7/yh7AorU8WzMd3rjWJXjdn2SNWwhRAy4ODz41th0eZeti/4DAL0dmfrD5bpvIndm7qEVmdd+tuKXs6qqUCutKtN8dd6cIhWt0y40Hpuca8RkyLm+TqtzYcTimgukHrACfBJbVeOeS0LsJPwr9Se9pHIFoZyYeq68YXSPG1Sa+JEkYzXs0xa84V1PI5wFS5iNz12UU51V4KtoljL4cXhW2cTfkTg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR03MB4555.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(136003)(376002)(396003)(39850400004)(366004)(26005)(8936002)(110136005)(4326008)(956004)(478600001)(8676002)(7696005)(186003)(16526019)(52116002)(9686003)(66556008)(86362001)(2906002)(55016002)(66946007)(1076003)(6506007)(66476007)(316002)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: wIZ9x8Eao3plOi2Moz4/Xj/XIM/qoS97GjMCy/8pnRE7eQKVhSuO0sdjR1iSE+vZHvKesG+rRlwyEl9jxeeC0s0P8gVlShfi1R9wrdoXnzYmE6Qy3VV1y5dQzvFTgnp/w0wp7+skxuvp5of8gH2D7zpJ7x6mpo8k0wnTVRqwY+5scMu9AvYnxNCzAMJbdloZnYLbIN0JtrdISKwpvxT/WUCAl2FTRWQ+JFTKh8MAwoS/KmVydg5E7lCtzR2rzM3fBNHB/QvU/tVlxz8cpmXdJ//ETBCxKlNRv56BcfCEtuXRCy/jwx26tkjDo9RnBZ+vf5dBOewB7Ui23Xbu9jwr++VzePVZlXwwQWaMc2qOtq8NfHrtiNQQgfaBX0stz+a/8GRctViuiCCDkl+JX6HOWsHZydqoXhlSg1sO62oE8eeo0T4QOeukpKZU+rGwTEGDylaUoVCWFKSLucP8uA1LraMa3yonmmQjPOLYY/REWSFGlWqbiuXCsEsDeFVu3xOf9G23GGUv8ONIcxDseKJHTXw6/vEFOvWxGCF0fMMR83AyliXEAjBq4iT+37w57djYbAEQ/8hOQjMrLfPKgDWMjB0o40VNuLwnW9yTtK8hBdNJm78UqC/8pz89PB3xsXV36wRs+7xMT26esLcBEGO1Tg==
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 98081720-114a-41d8-40a3-08d85dcbbe33
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR03MB4555.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2020 01:14:52.6937
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kU+3HucTwjUq00iVWjm26lSz59foh4yg2fk01hQYxL/8E+SzBxNsfC2WgNNDyQMdlFomXbym0SeJUQ1Ius/hnA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB3802
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrong flag value caused the firmware call to return actual port
-counters instead of the counter masks.  This messed up the counter
-overflow logic and caused erratic extended port counters to be
-displayed under ethtool -S.
+Enable ALDPS(Advanced Link Down Power Saving) to save power when
+link down.
 
-Fixes: 531d1d269c1d ("bnxt_en: Retrieve hardware masks for port counters.")
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Since v1:
+ - add what does ALDPS mean.
+ - replace magic number 0x18 with RTL8211F_PHYCR1 macro.
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index d527c9c..7b7e8b7 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3853,7 +3853,7 @@ static void bnxt_init_stats(struct bnxt *bp)
- 		tx_masks = stats->hw_masks;
- 		tx_count = sizeof(struct tx_port_stats_ext) / 8;
+ drivers/net/phy/realtek.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 95dbe5e8e1d8..4bf54cded48a 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -27,11 +27,16 @@
+ #define RTL821x_EXT_PAGE_SELECT			0x1e
+ #define RTL821x_PAGE_SELECT			0x1f
  
--		flags = FUNC_QSTATS_EXT_REQ_FLAGS_COUNTER_MASK;
-+		flags = PORT_QSTATS_EXT_REQ_FLAGS_COUNTER_MASK;
- 		rc = bnxt_hwrm_port_qstats_ext(bp, flags);
- 		if (rc) {
- 			mask = (1ULL << 40) - 1;
++#define RTL8211F_PHYCR1				0x18
+ #define RTL8211F_INSR				0x1d
+ 
+ #define RTL8211F_TX_DELAY			BIT(8)
+ #define RTL8211F_RX_DELAY			BIT(3)
+ 
++#define RTL8211F_ALDPS_PLL_OFF			BIT(1)
++#define RTL8211F_ALDPS_ENABLE			BIT(2)
++#define RTL8211F_ALDPS_XTAL_OFF			BIT(12)
++
+ #define RTL8211E_TX_DELAY			BIT(1)
+ #define RTL8211E_RX_DELAY			BIT(2)
+ #define RTL8211E_MODE_MII_GMII			BIT(3)
+@@ -178,8 +183,12 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
+ 	u16 val_txdly, val_rxdly;
++	u16 val;
+ 	int ret;
+ 
++	val = RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_XTAL_OFF;
++	phy_modify_paged_changed(phydev, 0xa43, RTL8211F_PHYCR1, val, val);
++
+ 	switch (phydev->interface) {
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 		val_txdly = 0;
 -- 
-1.8.3.1
+2.28.0
 
