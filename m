@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A4D52718C2
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 02:12:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99D572718BF
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 02:12:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726456AbgIUALj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 20:11:39 -0400
-Received: from mail-eopbgr130085.outbound.protection.outlook.com ([40.107.13.85]:17287
+        id S1726422AbgIUALe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 20:11:34 -0400
+Received: from mail-eopbgr130071.outbound.protection.outlook.com ([40.107.13.71]:15744
         "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726267AbgIUALg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Sep 2020 20:11:36 -0400
+        id S1726156AbgIUALe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 20 Sep 2020 20:11:34 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=efxlleZ9gWo+c36BUlU2roZi9UXeOr0Lf2QBrEQeCPB+KrQ8ISuMGkl1XfkS/O08yE6nh9KQinC7Iz/pwrD4qAaA+4yb+AzqvBdSnAczT7C2Ti58AI5KS+YWBsnIPgi3yYAr+komgHHVo/aciHxqygcm13P7TooqBf7v+7YjF+rRJteiL4NEcXiY+Vgr1ePCqPqwKT+3w3+A2xx+gLbkIoJ57a7WsmC85YZ8cZyq6vy9JNB6WzS3d9hKpqCkUjam9AmSjb408++nZB/BpIzQaeIFthRLPgVIr8rlBDrqYbkOxxdWvZq2bNoUf83vWyYpwcJ7tOf1JWgOUwmjo21L8w==
+ b=Y/huHnkrQyC1X9zozNOesnex2JnbbUruTAK58U+mxOh6advzwdmwcR744SdYIQzQvVd8YRxVrr1C4U2NiANIO6luXUnoXpg85K8dcAES0QljHpukyAPSq20dZWA5VEmAU0guIXrsUIqUgYNUocopYZxtUb6x/9t1hZSUOjv3gsVp5bJ3NOFTPzNy4FYF7FLLhpQegdCrp5OQnCvjE/tmVJdLP7HZlRxP+q56pwdXNkiWL+/MqEY7paD2yD73XSmakudFoJ4NLqnXV6MguZ8FrUgqZMrDnEXlLJJ8d2VzEQWP8U85QbyH4XELh/JjcYOIOOsxSXgijyPrzzmJne/sGg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hA/nmfbRVxGI/qm96vQG5wezV2nnzc5ZCHSMxMKKvbU=;
- b=FxRFMBGxGc+kD0MpNRR7idEignOIjD1oSEPwjE2CRDQwfRf0w6T/qN3RnnSFtKhWV25X00uin8QfJ8RH8Q/c01IuH85W2fO374H48rNGLDCJezWhQZf1YCkSatwXbUeyPsSy4emB6I44sL5qqENkHozp6/a0QfPuPiXuPdGc8GEZH4Zi6q7UY+V6Qusxmqqkmzg2hOS4IXYh+BLb1z4y8pSCb8ogdWbNco0SUG+8fbw6JCwFG8DXYOS6y76HzYGqNZAeaIjUGZRkwhjf80bSYnN4UGUyJYpU4Rm4yBvGmFCJ9qL5vph3x9Lf+TSd/zo531QCKKZhAcvoW14vG2o7Rg==
+ bh=sXBviH3y0ZPE+PoCsknT7iZcE3S0wbcSj3IcF6wAvjM=;
+ b=WIIqpYyX+2L6m01x5EzTWlIlo4aN/rI/0GejgnYollektc7xBrqZTO0Jw36AcWVG4kuWJ+ylUerrxGJsWkMi31hlWwBPVmRHuXnClwHVt+r3sgVAj7oYQzf68i8i15UD1j9qHnbFPPpOGFqRQ4qq1xWexyeaomsJYEXFIK2asXp1WOFG7gJ/LYU1RPJau0BA3TeMyqCs4AOe/JgtJam4luuT5mvwe2vA042/0UCxtm1snLihJl7ZFFOyu0YbWMTqPytnynGl+8izEvm5btRPnBIgBn7mv4m0C8rIlrx1QMcMehRzNLjvr8GcdycC4rPruJDV1aPWX5UtXu7k0UI7UQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hA/nmfbRVxGI/qm96vQG5wezV2nnzc5ZCHSMxMKKvbU=;
- b=dwEZQ40ZfNt1RYgd3i+JXJBqBFiptuVV2l9f4T7napM5ff1vTqupxpwqMYj00ovoSVLB1yKASK1gnOaCzMsIW8MvgBrl+P1oSPL1bQOdqwTqUkvCGIpjb4MleLrgBqNMUhtDsbXBS9j6uEQjY8auvA7TMSEM3G5e+4XqW+iDDH0=
+ bh=sXBviH3y0ZPE+PoCsknT7iZcE3S0wbcSj3IcF6wAvjM=;
+ b=KeZ2E8GbyqQXy3IcJ7Ev3vPjY45oYSxBL7DUW7gszeLT9Ku3qEtne4q+FpygPldxJrux2w8Zw12gdVs4iRLj9w9op8ZISh5geLKMC4LKLPm73Y4IgNgnagP/z939H1mkSomruvLoYM8Ki6IVqDVcc9BTuYxy88ElVvARNVSshoE=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VI1PR04MB5501.eurprd04.prod.outlook.com (2603:10a6:803:d3::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.15; Mon, 21 Sep
- 2020 00:10:50 +0000
+ 2020 00:10:51 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3391.014; Mon, 21 Sep 2020
- 00:10:50 +0000
+ 00:10:51 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         idosch@idosch.org, jiri@resnulli.us, kurt.kanzenbach@linutronix.de,
         kuba@kernel.org
-Subject: [PATCH v2 net-next 4/9] net: dsa: convert denying bridge VLAN with existing 8021q upper to PRECHANGEUPPER
-Date:   Mon, 21 Sep 2020 03:10:26 +0300
-Message-Id: <20200921001031.3650456-5-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 5/9] net: dsa: refuse configuration in prepare phase of dsa_port_vlan_filtering()
+Date:   Mon, 21 Sep 2020 03:10:27 +0300
+Message-Id: <20200921001031.3650456-6-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200921001031.3650456-1-vladimir.oltean@nxp.com>
 References: <20200921001031.3650456-1-vladimir.oltean@nxp.com>
@@ -60,175 +60,104 @@ X-Mailer: git-send-email 2.25.1
 X-Originating-IP: [188.25.217.212]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 3e675e1b-cab3-4e04-097c-08d85dc2cc24
+X-MS-Office365-Filtering-Correlation-Id: 0ae09184-7f00-45ad-e85d-08d85dc2cc89
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5501:
 X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-X-Microsoft-Antispam-PRVS: <VI1PR04MB550135EAD605111973B719C7E03A0@VI1PR04MB5501.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB55015E6B71331F4BF590D178E03A0@VI1PR04MB5501.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3173;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wbTJv80qzDp8c7G4m27FSiv0txd/MsfHou9w5NaPR7c43W2NiTELeAj3H3P1nKrIibVAG7kX9nnebpF3CW2M954yob0coYq50mBvQmUmFohMvuVZWETSn6OGwzLBs5WkmZ1ZS4MR9tzRdmhJcyoDT/Ms2wASdunenJpGN0CFDiCNlvaSS/YQwpKzlDV0u53YW1M/E/B5fZ9GYqm6h1wTQUIi5MmQtzyDYmLAgAHPcC0rieQR16iMtrTyVb5QtSjj859DbAOHAUroRyCGW2UEGOMS4/p039v82C2FIpm4735elOk8EcOCK2lf1hXlUl3RD9LIOj8ToIm+SGVnrk4rOp2Tav0uIdlthFXuQBJyq8M0xg9Ic+Sb1JNLxfFitdFz
+X-Microsoft-Antispam-Message-Info: +ksW+CLG/MyVZQNEto1w5J6mH4nTSThxCDyGqYzNnk4aRHKnRfsz6sX1VN9/tksIzPVtfcyc+vwfEKGZtzsfOIZ3bJ4iCuRUz/I9qXJ51UYbZwGz1lcsrNi46o+btmcuiraDjb7h9su5YR3TmJT0WXigTw6aaKnOzyvFQF1YYAsz4CTiolNl/zAl4ABPkS0lVK5Z6sbck9jWFw/sdaOuNslD88aa+2MJkCwUJujXe/v9o7t67xdnv1x+cMpTs6XjXQXpXcNxjuBH3Kpb5SeTsOunQMpcYicEwNWBlUY6qTz3HObbm2iHZvgtWkWIDmO/P4xLP//qMjepiP/ckQHIXqcpMXayA+slKEZCcxy27vIcvjVAz/aZHHJVk6ZePIUU
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(366004)(376002)(39860400002)(16526019)(26005)(6666004)(186003)(44832011)(316002)(8676002)(5660300002)(8936002)(1076003)(6512007)(83380400001)(66556008)(66476007)(66946007)(86362001)(4326008)(956004)(52116002)(6486002)(36756003)(2616005)(2906002)(6506007)(69590400008)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 1+UDVdnAFPkrzjRjXMlGzppBOJ4KulLKGyHPls08Y8NBor8eYMh5m/2CgdBoFpdaJWDKE8gdpcIWey+JkIbfsX/iUr4Ii+kMOpQCzLQ+7mo9NCBTOGZOmrGajr0mOF2R5rsKsnfNDz3FA1whuolXmxhRRmbdYiRM3rzisHkfHZjnyiwpu/c2ICN0CaFX+TEgCbuGNJ+P7tUmnwuoQ8cw/ARKmlH6bDrqEpoQZP1jcXb73osOU9TvOgPo+kai7BvSB7Yf1qNlEveL/59HCDgyEGUymOy4rl03S1ESdAHiYz1t965TwW0gk/9oP4RrmznoU96b/uMH4XdAfRm86BdIgFLr+g90foaUtNY9ZO0g6MOfuvAFKdANrFVwStplNpCmD1o/15amF4USz7K+jITvmDMMeHftU8/PQoG2Doge8gPfvQ9E6yJqXPcOYVR6Wc/W/DVasacCRZ+Y0LdF7psuMQkVKSapPGAgIf3wt+NwlEwgInFRsZd0huypP3V0bDL6FmLcfA82WFQgl9PMLYD+mi5T0Ol97t+uHU82tUtpCbL4mi9CJk2VUMdcWC8zSzswv0vbWKtMY+ye3xXMPAaJ2sr73KiLld8ySSO3L7njK69fVRvYqJBv9ArFJmrC9h2o9tecnD+etHO14VSZAVPnxg==
+X-MS-Exchange-AntiSpam-MessageData: 26SP5auhd4HPZFcl6kKyY9i44C1Aczo8qur5bL8cWMKjFEhTn2P0s08GsQIsbsK1VvZVF2Ebpehs8C4lkQYqFlllkEtDFTfYnnmEALddLfZ5MlvVHlbiH2md1qyMkRTYr/XtsXnPcCteUZdPEeXx8fmaeoRK8+NMxsN9NEhOLv5Wiu4+fZ5cUPaUqzNxk32pDrEdlvLsCXU3H5vXoqLzMUXuF54k88sow8My/eh4PCv+dxptHNTDm5wP6YFaLhKhQtE4cypV9PTV4rBFBEuuA6Qz9c79RrIT+WZEZ/mrYP9LJQPELqKcd0UQEeloJIxHi9kvFgLPn/IMxxTiL93gL7tcJVZK6umxnTZad9VMvVfydpxmQVccp0tUzHWQ2SochyXmLjlJdYCv92BaFMYomnmnFsd5+lRzD1CcnugwZvhHCFK2w0AuJKQ2JWGStZ/k+3HTf/OEsQKERd1UfGhkpylQ4zHakDNWVELHRZVdZgUFbOz/atCbFgZl3blXU5p43MAoioGhSI/fZnXtjP1m7bQv8GIvoGvwuO1aHvOxMeeBk7ZV7C43MjRS+RhmUeBZp7BuY/Xy+iERMMMDUawnvLkGeaQI+uLA+BlS6nkg4xLpRYyYvhhAfybVij0XexqqmSrTWBkH3PIx5HpC6X5TWQ==
 X-MS-Exchange-Transport-Forked: True
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3e675e1b-cab3-4e04-097c-08d85dc2cc24
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ae09184-7f00-45ad-e85d-08d85dc2cc89
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2020 00:10:50.4566
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2020 00:10:51.1462
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: n4IKx6YOZL6FsNg7dKT9bUOCpuLWw1ncy/oFEsFKRwDAWXjMUM7AbkWBSOLgiOjame/2vnu0RYkssQozcwbr3A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: zYzSg7/ugagSOU7wZebPLBRbM6WBOdOjocdVVFnqWqXQdSGuOdrQQV7X9Soo37ehPI/fNMJ9JX5kBo3qFwbaUA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5501
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is checking for the following order of operations, and makes sure
-to deny that configuration:
+The current logic beats me a little bit. The comment that "bridge skips
+-EOPNOTSUPP, so skip the prepare phase" was introduced in commit
+fb2dabad69f0 ("net: dsa: support VLAN filtering switchdev attr").
 
-ip link add link swp2 name swp2.100 type vlan id 100
-ip link add br0 type bridge vlan_filtering 1
+I'm not sure:
+(a) ok, the bridge skips -EOPNOTSUPP, but, so what, where are we
+    returning -EOPNOTSUPP?
+(b) even if we are, and I'm just not seeing it, what is the causality
+    relationship between the bridge skipping -EOPNOTSUPP and DSA
+    skipping the prepare phase, and just returning zero?
+
+One thing is certain beyond doubt though, and that is that DSA currently
+refuses VLAN filtering from the "commit" phase instead of "prepare", and
+that this is not a good thing:
+
+ip link add br0 type bridge
+ip link add br1 type bridge vlan_filtering 1
 ip link set swp2 master br0
-bridge vlan add dev swp2 vid 100
+ip link set swp3 master br1
+[ 3790.379389] 001: sja1105 spi0.1: VLAN filtering is a global setting
+[ 3790.379399] 001: ------------[ cut here ]------------
+[ 3790.379403] 001: WARNING: CPU: 1 PID: 515 at net/switchdev/switchdev.c:157 switchdev_port_attr_set_now+0x9c/0xa4
+[ 3790.379420] 001: swp3: Commit of attribute (id=6) failed.
+[ 3790.379533] 001: [<c11ff588>] (switchdev_port_attr_set_now) from [<c11b62e4>] (nbp_vlan_init+0x84/0x148)
+[ 3790.379544] 001: [<c11b62e4>] (nbp_vlan_init) from [<c11a2ff0>] (br_add_if+0x514/0x670)
+[ 3790.379554] 001: [<c11a2ff0>] (br_add_if) from [<c1031b5c>] (do_setlink+0x38c/0xab0)
+[ 3790.379565] 001: [<c1031b5c>] (do_setlink) from [<c1036fe8>] (__rtnl_newlink+0x44c/0x748)
+[ 3790.379573] 001: [<c1036fe8>] (__rtnl_newlink) from [<c1037328>] (rtnl_newlink+0x44/0x60)
+[ 3790.379580] 001: [<c1037328>] (rtnl_newlink) from [<c10315fc>] (rtnetlink_rcv_msg+0x124/0x2f8)
+[ 3790.379590] 001: [<c10315fc>] (rtnetlink_rcv_msg) from [<c10926b8>] (netlink_rcv_skb+0xb8/0x110)
+[ 3790.379806] 001: ---[ end trace 0000000000000002 ]---
+[ 3790.379819] 001: sja1105 spi0.1 swp3: failed to initialize vlan filtering on this port
 
-Instead of using vlan_for_each(), which looks at the VLAN filters
-installed with vlan_vid_add(), just track the 8021q uppers. This has the
-advantage of freeing up the vlan_vid_add() call for actual VLAN
-filtering.
-
-There is another change in this patch. The check is moved in slave.c,
-from switch.c. I don't think it makes sense to have this 8021q upper
-check for each switch port that gets notified of that VLAN addition
-(these include DSA links and CPU ports, we know those can't have 8021q
-uppers because they don't have a net_device registered for them), so
-just do it in slave.c, for that one slave interface.
+So move the current logic that may fail (except ds->ops->port_vlan_filtering,
+that is way harder) into the prepare stage of the switchdev transaction.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v2:
-Using:
-		if (vid >= vlan->vid_begin && vid <= vlan->vid_end)
-instead of:
-		if (vlan->vid_begin <= vid && vlan->vid_end >= vid)
+None.
 
- net/dsa/slave.c  | 33 +++++++++++++++++++++++++++++++++
- net/dsa/switch.c | 41 -----------------------------------------
- 2 files changed, 33 insertions(+), 41 deletions(-)
+ net/dsa/port.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 1940c2458f0f..a1b39c6ddf4d 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -303,6 +303,28 @@ static int dsa_slave_port_attr_set(struct net_device *dev,
- 	return ret;
- }
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 46c9bf709683..794a03718838 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -232,15 +232,15 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
+ 	struct dsa_switch *ds = dp->ds;
+ 	int err;
  
-+/* Must be called under rcu_read_lock() */
-+static int
-+dsa_slave_vlan_check_for_8021q_uppers(struct net_device *slave,
-+				      const struct switchdev_obj_port_vlan *vlan)
-+{
-+	struct net_device *upper_dev;
-+	struct list_head *iter;
-+
-+	netdev_for_each_upper_dev_rcu(slave, upper_dev, iter) {
-+		u16 vid;
-+
-+		if (!is_vlan_dev(upper_dev))
-+			continue;
-+
-+		vid = vlan_dev_vlan_id(upper_dev);
-+		if (vid >= vlan->vid_begin && vid <= vlan->vid_end)
-+			return -EBUSY;
+-	/* bridge skips -EOPNOTSUPP, so skip the prepare phase */
+-	if (switchdev_trans_ph_prepare(trans))
+-		return 0;
++	if (switchdev_trans_ph_prepare(trans)) {
++		if (!ds->ops->port_vlan_filtering)
++			return -EOPNOTSUPP;
+ 
+-	if (!ds->ops->port_vlan_filtering)
+-		return 0;
++		if (!dsa_port_can_apply_vlan_filtering(dp, vlan_filtering))
++			return -EINVAL;
+ 
+-	if (!dsa_port_can_apply_vlan_filtering(dp, vlan_filtering))
+-		return -EINVAL;
++		return 0;
 +	}
-+
-+	return 0;
-+}
-+
- static int dsa_slave_vlan_add(struct net_device *dev,
- 			      const struct switchdev_obj *obj,
- 			      struct switchdev_trans *trans)
-@@ -319,6 +341,17 @@ static int dsa_slave_vlan_add(struct net_device *dev,
  
- 	vlan = *SWITCHDEV_OBJ_PORT_VLAN(obj);
- 
-+	/* Deny adding a bridge VLAN when there is already an 802.1Q upper with
-+	 * the same VID.
-+	 */
-+	if (trans->ph_prepare) {
-+		rcu_read_lock();
-+		err = dsa_slave_vlan_check_for_8021q_uppers(dev, &vlan);
-+		rcu_read_unlock();
-+		if (err)
-+			return err;
-+	}
-+
- 	err = dsa_port_vlan_add(dp, &vlan, trans);
- 	if (err)
- 		return err;
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 86c8dc5c32a0..9afef6f0f9df 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -232,43 +232,6 @@ static int dsa_switch_mdb_del(struct dsa_switch *ds,
- 	return 0;
- }
- 
--static int dsa_port_vlan_device_check(struct net_device *vlan_dev,
--				      int vlan_dev_vid,
--				      void *arg)
--{
--	struct switchdev_obj_port_vlan *vlan = arg;
--	u16 vid;
--
--	for (vid = vlan->vid_begin; vid <= vlan->vid_end; ++vid) {
--		if (vid == vlan_dev_vid)
--			return -EBUSY;
--	}
--
--	return 0;
--}
--
--static int dsa_port_vlan_check(struct dsa_switch *ds, int port,
--			       const struct switchdev_obj_port_vlan *vlan)
--{
--	const struct dsa_port *dp = dsa_to_port(ds, port);
--	int err = 0;
--
--	/* Device is not bridged, let it proceed with the VLAN device
--	 * creation.
--	 */
--	if (!dp->bridge_dev)
--		return err;
--
--	/* dsa_slave_vlan_rx_{add,kill}_vid() cannot use the prepare phase and
--	 * already checks whether there is an overlapping bridge VLAN entry
--	 * with the same VID, so here we only need to check that if we are
--	 * adding a bridge VLAN entry there is not an overlapping VLAN device
--	 * claiming that VID.
--	 */
--	return vlan_for_each(dp->slave, dsa_port_vlan_device_check,
--			     (void *)vlan);
--}
--
- static bool dsa_switch_vlan_match(struct dsa_switch *ds, int port,
- 				  struct dsa_notifier_vlan_info *info)
- {
-@@ -291,10 +254,6 @@ static int dsa_switch_vlan_prepare(struct dsa_switch *ds,
- 
- 	for (port = 0; port < ds->num_ports; port++) {
- 		if (dsa_switch_vlan_match(ds, port, info)) {
--			err = dsa_port_vlan_check(ds, port, info->vlan);
--			if (err)
--				return err;
--
- 			err = ds->ops->port_vlan_prepare(ds, port, info->vlan);
- 			if (err)
- 				return err;
+ 	if (dsa_port_is_vlan_filtering(dp) == vlan_filtering)
+ 		return 0;
 -- 
 2.25.1
 
