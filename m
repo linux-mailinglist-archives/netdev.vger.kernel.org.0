@@ -2,256 +2,335 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CA5B2718B3
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 01:59:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02F122718B6
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 02:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726253AbgITX7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Sep 2020 19:59:33 -0400
-Received: from mail-eopbgr40076.outbound.protection.outlook.com ([40.107.4.76]:12512
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726156AbgITX7c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Sep 2020 19:59:32 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hvirCnZo1st+TfzBggn34li1lH1W/QZM9mH2wRTy7FH2zuWA24D9PWVwY4xFirZfU1y8V4IQORh+SGjuLoR/I+IeX5+QbV1AQRsEUWekhIkKi5YwDgqKS2uexEvOslnJ6JVbxChHKsc2DXqFjpmucb/BMnrGtenO8ES3NSP7XphzS4hZsATRA/xraYG4nVJFigNNbIpk8y18jt1MH+WExOH/nFNaxuOIw7e2VeijY5ZKCVQyjfKMqzmylQcrL+g2jPUDX8dbST80EVo8k7hSdwxntUbOnRJGeu8fpTsGJiRY7XUMxu6xn8LC19q+b+B/boKL/HykC/wGIjLuX8McfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OWTdo42zFxQedSnuw/VS7+7CEh8UoNDrnrj+y6z8lMU=;
- b=S8CY3mSORzwLfpyPZPMAiDOniNQOd+X+6pjugxEgmhhvHZo8fn28Sip2uICiSHaS9rIMCe5tJDK+D4RlDQtPLuh7uqvnLsOaXa4/IAaHwhAwqsmcS+x4r4YN3ZN0YzY4zfFQYnbspD2XZtBaH+unSDGsxcUuaXah4kQrEpeD8KhQwMrTj5cn3+/AbN/y9O9lnF/7ymTa9H5LszZNgw/bijVvX8FQpzuQ/rNP3OWMx997N49czStJ5PYLs9zSz5zYS57Zj5dHJwxv1N6oe9uLi8Sm7zXWBwq+AKRu5r6npeEyVEx7euoUUQjU79hvcQOHqGk479ziy+ESgnQH3KLbKA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OWTdo42zFxQedSnuw/VS7+7CEh8UoNDrnrj+y6z8lMU=;
- b=JVdaLpwMFP6mkqSo2bSZL6YIUnS/BxHui65NpC0AKx3wa6QntR6xO/pKwleBC+w03WEHI91EbGzUKRt15//Jtk5dS0gb2rQ7OFR/rsCQMqLTkBg6Zw4+u3C0TbU9hs4llFJ3DUQZWArlrlTmmh+uuT5OQIwD36ZTZRZIxueZ+n8=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VE1PR04MB7374.eurprd04.prod.outlook.com (2603:10a6:800:1ac::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.15; Sun, 20 Sep
- 2020 23:59:27 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3391.014; Sun, 20 Sep 2020
- 23:59:27 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        Chris Healy <cphealy@gmail.com>
-Subject: Re: [PATCH net-next RFC v1 4/4] net: dsa: mv88e6xxx: Add per port
- devlink regions
-Thread-Topic: [PATCH net-next RFC v1 4/4] net: dsa: mv88e6xxx: Add per port
- devlink regions
-Thread-Index: AQHWjpNQb2AbGJ/CwEa1iUSxmKzmF6lyNvwA
-Date:   Sun, 20 Sep 2020 23:59:26 +0000
-Message-ID: <20200920235926.66ijlyq5kvdr6ov5@skbuf>
-References: <20200919144332.3665538-1-andrew@lunn.ch>
- <20200919144332.3665538-5-andrew@lunn.ch>
-In-Reply-To: <20200919144332.3665538-5-andrew@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.217.212]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 2c3c5366-9a3f-4de5-5c75-08d85dc134e1
-x-ms-traffictypediagnostic: VE1PR04MB7374:
-x-microsoft-antispam-prvs: <VE1PR04MB7374E4CF89ADC54601D0EA91E03D0@VE1PR04MB7374.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1186;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SPxoGxa5wDTtCIJqvsKsMgZ9Bu/5K7fEjDejdmqzHNmxa8yHTlqy7Y6wwn3rEtV1BTvzwI5RGF6eWEfo6e+OwbFIuvoWOvgCPoYMnBrYCL+MNndbpiRkUt/NEbGAKp3B68JtNaxRbAii+xmPHtjs/d+CD0kxoSrXUTB5ItO9ub+26gj5d7irjyWGozq1wVcAzrxX3T1pShglILTMf0qFZ/jp8mr+suN61R3QtJvCZIC8yUl9bqqV5uCJx6GkCOrrEp9iNTmmCdFoPCYcEjBw1OUziuZPlo1+81CCbFIbil0wR2ho99/d8Pb3U3CcU+rLvV/v8RpRWAF4hzeBUiy1Mw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(39860400002)(366004)(376002)(136003)(396003)(346002)(66556008)(66476007)(64756008)(4326008)(2906002)(44832011)(6916009)(9686003)(6512007)(8936002)(1076003)(76116006)(8676002)(66946007)(71200400001)(478600001)(66446008)(54906003)(5660300002)(316002)(6506007)(83380400001)(6486002)(33716001)(186003)(26005)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: i1bAQSrEXTWgiz7poFH9dn6OBilcw16xgRCP+3y4IDe3BJvjJVO2m0gkBb8lS97R4hcX1B928mlNiS3T8XYGhCkDIJYN7I7U6VdTuxcqIWIfV+8VoU9HPZ68LJaDDrK5Y+dVSljzD3N81qPdhary7MozXS05RefmMxrCXROW6wahI5ZU4melYlTyaUDuKRoFySDjOsfuKX8Nxk4LVVxQ2onU1GLE7qdhQdbmtCThok5avTD4psc6Ku0Ik/Zf3zuoXdwm4A3MMWQgUa0fKBu4zswD4D+N5CgN33Q1R35CA9bH5vaVD6evvoKxTqmIvN9c6v8fhXGDokyEgwQqEUZaF3y7FRG75NI5wxM4wfTXOy6Wnuba0+e3XWS1qU5HVktMHt0zKt5BoRs4dOeOd4ZF2vghcuqVpGtaiGda8e+/TQAAKBnH5XXdzwU0V9fHDK7OzAO9dJMbzSVX5k09AzgbbAt9oKsZ3Tx0ZfFAX5PetOm8/s5fw1U3nWE5Fs/eornMzYIgYkzEtwqXygudopZpfTMwmHeWz1605MprM3r1djJf/LUonNtmCQB85q7AJqj5UXgO8kdzlYm5GQC+0T9De3vPFVBKYPOq0ECTXsncjQS/N6Os6E0SWyUqQ+uSD+ed0BAbLMgJTMKCNq6aWuOrqQ==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <064687EF694BAB4AAFEBB1F2D438459E@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726322AbgIUACX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Sep 2020 20:02:23 -0400
+Received: from mail-il1-f206.google.com ([209.85.166.206]:52630 "EHLO
+        mail-il1-f206.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726156AbgIUACX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Sep 2020 20:02:23 -0400
+Received: by mail-il1-f206.google.com with SMTP id m1so9796835iln.19
+        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 17:02:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=HS0K3xdS76R9AgZj0Oh3zJuLPvtOQkwKkABf3WHaO/4=;
+        b=TqEF44F4F+KMOocSC24Hb3SC6yYD7HjOSMO1vSaHvB6TKgm3gYmoxasQxQ9nXN2QjY
+         QTaY9vQeNw1lLq3ncHnOTkm863nbqPhhi/6JPFrY9D76IJNcq266CPpoQiMkjgbg5Rek
+         ldca+I/CQmnMg6v04i6CWvWMvsXmOkdh3N3/m1UVtcVkq5NY/PFhzrXEtr4vhPb179Ms
+         WOyahxu2w5Wg39X8NWkjIdr64aL3rf0IEuPMDrBOgU3fTXjSEnIQO8X25vY+UPZ8stGX
+         WKSHf8CF7g77bBXcLfoptHG6ZJtqU6t4lHyuGmTrroX+p/vpEvc+Svev7XfHtegqOdo9
+         Ya6Q==
+X-Gm-Message-State: AOAM531MyxHroZ8n4g7J9F7Wt7eq+FGR+fv6xqWuNqPXgWI8c6E0mGMi
+        z694wBjkhJzg0qaqAE3YTx/SXR8tmnFCWNMooz3xZYgxgDJF
+X-Google-Smtp-Source: ABdhPJxCKArnOZIQ+LLX6CadNqL4STklksJzKsF8O0mS0/8xtE9XCyOwo/wWyaqPxWm+Tv7V+GeacPLLm4imxccMu+KOFSv/4h4F
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c3c5366-9a3f-4de5-5c75-08d85dc134e1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2020 23:59:26.9911
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: OYWuuZWXKmc6mcGthv64iI5DmLCEAHP9tB2b+wxeLE0nfHQ1Rtpz1yeAAWXnFOe0WNbxAwOSJz8258WX1TqxbQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7374
+X-Received: by 2002:a05:6e02:4ca:: with SMTP id f10mr14042002ils.139.1600646541163;
+ Sun, 20 Sep 2020 17:02:21 -0700 (PDT)
+Date:   Sun, 20 Sep 2020 17:02:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007f44e005afc790bf@google.com>
+Subject: possible deadlock in xfrm_user_rcv_msg
+From:   syzbot <syzbot+537fc2e3dff863640cc1@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 19, 2020 at 04:43:32PM +0200, Andrew Lunn wrote:
-> Add a devlink region to return the per port registers.
->=20
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  drivers/net/dsa/mv88e6xxx/chip.c    |  8 ++++
->  drivers/net/dsa/mv88e6xxx/devlink.c | 61 +++++++++++++++++++++++++++++
->  drivers/net/dsa/mv88e6xxx/devlink.h |  6 ++-
->  3 files changed, 74 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx=
-/chip.c
-> index 9417412e5fce..3d2d813f7a79 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -2741,10 +2741,16 @@ static int mv88e6xxx_port_enable(struct dsa_switc=
-h *ds, int port,
->  	struct mv88e6xxx_chip *chip =3D ds->priv;
->  	int err;
-> =20
-> +	err =3D mv88e6xxx_setup_devlink_regions_port(ds, chip, port);
-> +	if (err)
-> +		return err;
-> +
->  	mv88e6xxx_reg_lock(chip);
->  	err =3D mv88e6xxx_serdes_power(chip, port, true);
->  	mv88e6xxx_reg_unlock(chip);
-> =20
-> +	if (err)
-> +		mv88e6xxx_teardown_devlink_regions_port(chip, port);
->  	return err;
->  }
-> =20
-> @@ -2752,6 +2758,8 @@ static void mv88e6xxx_port_disable(struct dsa_switc=
-h *ds, int port)
->  {
->  	struct mv88e6xxx_chip *chip =3D ds->priv;
-> =20
-> +	mv88e6xxx_teardown_devlink_regions_port(chip, port);
-> +
->  	mv88e6xxx_reg_lock(chip);
->  	if (mv88e6xxx_serdes_power(chip, port, false))
->  		dev_err(chip->dev, "failed to power off SERDES\n");
-> diff --git a/drivers/net/dsa/mv88e6xxx/devlink.c b/drivers/net/dsa/mv88e6=
-xxx/devlink.c
-> index 81e1560db206..dc8a244aa154 100644
-> --- a/drivers/net/dsa/mv88e6xxx/devlink.c
-> +++ b/drivers/net/dsa/mv88e6xxx/devlink.c
-> @@ -415,6 +415,36 @@ static int mv88e6xxx_region_atu_snapshot(struct devl=
-ink *dl,
->  	return err;
->  }
-> =20
-> +static int mv88e6xxx_region_port_snapshot(struct devlink_port *devlink_p=
-ort,
-> +					  const struct devlink_port_region_ops *ops,
-> +					  struct netlink_ext_ack *extack,
-> +					  u8 **data)
-> +{
-> +	struct dsa_switch *ds =3D dsa_devlink_port_to_ds(devlink_port);
-> +	int port =3D dsa_devlink_port_to_port(devlink_port);
-> +	struct mv88e6xxx_chip *chip =3D ds->priv;
-> +	u16 *registers;
-> +	int i, err;
-> +
-> +	registers =3D kmalloc_array(32, sizeof(u16), GFP_KERNEL);
-> +	if (!registers)
-> +		return -ENOMEM;
-> +
-> +	mv88e6xxx_reg_lock(chip);
-> +	for (i =3D 0; i < 32; i++) {
-> +		err =3D mv88e6xxx_port_read(chip, port, i, &registers[i]);
-> +		if (err) {
-> +			kfree(registers);
-> +			goto out;
-> +		}
-> +	}
-> +	*data =3D (u8 *)registers;
-> +out:
-> +	mv88e6xxx_reg_unlock(chip);
-> +
-> +	return err;
-> +}
-> +
->  static struct mv88e6xxx_region_priv mv88e6xxx_region_global1_priv =3D {
->  	.id =3D MV88E6XXX_REGION_GLOBAL1,
->  };
-> @@ -443,6 +473,12 @@ static struct devlink_region_ops mv88e6xxx_region_at=
-u_ops =3D {
->  	.destructor =3D kfree,
->  };
-> =20
-> +static const struct devlink_port_region_ops mv88e6xxx_region_port_ops =
-=3D {
-> +	.name =3D "port",
-> +	.snapshot =3D mv88e6xxx_region_port_snapshot,
-> +	.destructor =3D kfree,
-> +};
-> +
->  struct mv88e6xxx_region {
->  	struct devlink_region_ops *ops;
->  	u64 size;
-> @@ -478,6 +514,31 @@ void mv88e6xxx_teardown_devlink_regions(struct dsa_s=
-witch *ds)
->  	mv88e6xxx_teardown_devlink_regions_global(chip);
->  }
-> =20
-> +int mv88e6xxx_setup_devlink_regions_port(struct dsa_switch *ds,
-> +					 struct mv88e6xxx_chip *chip,
-> +					 int port)
+Hello,
 
-You probably don't need to pass both *ds and *chip here, since you can
-derive one from the other.
+syzbot found the following issue on:
 
-> +{
-> +	struct devlink_region *region;
-> +
-> +	region =3D dsa_devlink_port_region_create(ds,
-> +						port,
-> +						&mv88e6xxx_region_port_ops, 1,
-> +						32 * sizeof(u16));
-> +	if (IS_ERR(region))
-> +		return PTR_ERR(region);
-> +
-> +	chip->ports[port].region =3D region;
-> +
-> +	return 0;
-> +}
-> +
-> +void mv88e6xxx_teardown_devlink_regions_port(struct mv88e6xxx_chip *chip=
-,
-> +					     int port)
-> +{
-> +	if (chip->ports[port].region)
-> +		dsa_devlink_region_destroy(chip->ports[port].region);
-> +}
-> +
->  static int mv88e6xxx_setup_devlink_regions_global(struct dsa_switch *ds,
->  						  struct mv88e6xxx_chip *chip)
->  {
-> diff --git a/drivers/net/dsa/mv88e6xxx/devlink.h b/drivers/net/dsa/mv88e6=
-xxx/devlink.h
-> index 3d72db3dcf95..9302f0ee550d 100644
-> --- a/drivers/net/dsa/mv88e6xxx/devlink.h
-> +++ b/drivers/net/dsa/mv88e6xxx/devlink.h
-> @@ -14,7 +14,11 @@ int mv88e6xxx_devlink_param_set(struct dsa_switch *ds,=
- u32 id,
->  				struct devlink_param_gset_ctx *ctx);
->  int mv88e6xxx_setup_devlink_regions(struct dsa_switch *ds);
->  void mv88e6xxx_teardown_devlink_regions(struct dsa_switch *ds);
-> -
-> +int mv88e6xxx_setup_devlink_regions_port(struct dsa_switch *ds,
-> +					 struct mv88e6xxx_chip *chip,
-> +					 int port);
-> +void mv88e6xxx_teardown_devlink_regions_port(struct mv88e6xxx_chip *chip=
-,
-> +					     int port);
->  int mv88e6xxx_devlink_info_get(struct dsa_switch *ds,
->  			       struct devlink_info_req *req,
->  			       struct netlink_ext_ack *extack);
-> --=20
-> 2.28.0
->=20
+HEAD commit:    5fa35f24 Add linux-next specific files for 20200916
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=141e8701900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=619bde85d9eaaed5
+dashboard link: https://syzkaller.appspot.com/bug?extid=537fc2e3dff863640cc1
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-Thanks,
--Vladimir=
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+537fc2e3dff863640cc1@syzkaller.appspotmail.com
+
+========================================================
+WARNING: possible irq lock inversion dependency detected
+5.9.0-rc5-next-20200916-syzkaller #0 Not tainted
+--------------------------------------------------------
+syz-executor.1/16600 just changed the state of lock:
+ffff88809ec85750
+ (&s->seqcount#11){+.+.}-{0:0}, at: xfrm_user_rcv_msg+0x41e/0x720 net/xfrm/xfrm_user.c:2684
+but this lock was taken by another, SOFTIRQ-safe lock in the past:
+ (slock-AF_INET){+.-.}-{2:2}
+
+
+and interrupts could create inverse lock ordering between them.
+
+
+other info that might help us debug this:
+ Possible interrupt unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&s->seqcount#11);
+                               local_irq_disable();
+                               lock(slock-AF_INET);
+                               lock(&s->seqcount#11);
+  <Interrupt>
+    lock(slock-AF_INET);
+
+ *** DEADLOCK ***
+
+2 locks held by syz-executor.1/16600:
+ #0: ffff88809ec85ae8 (&net->xfrm.xfrm_cfg_mutex){+.+.}-{3:3}
+, at: xfrm_netlink_rcv+0x5c/0x90 net/xfrm/xfrm_user.c:2691
+ #1: ffff88809ec85798 (&(&net->xfrm.policy_hthresh.lock)->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
+ #1: ffff88809ec85798 (&(&net->xfrm.policy_hthresh.lock)->lock){+.+.}-{2:2}, at: write_seqlock include/linux/seqlock.h:882 [inline]
+ #1: ffff88809ec85798 (&(&net->xfrm.policy_hthresh.lock)->lock){+.+.}-{2:2}, at: xfrm_set_spdinfo+0x2b8/0x660 net/xfrm/xfrm_user.c:1185
+
+the shortest dependencies between 2nd lock and 1st lock:
+ -> (
+slock-AF_INET){+.-.}-{2:2} {
+    HARDIRQ-ON-W at:
+                      lock_acquire+0x1f2/0xaa0 kernel/locking/lockdep.c:5398
+                      __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+                      _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+                      spin_lock_bh include/linux/spinlock.h:359 [inline]
+                      lock_sock_nested+0x3b/0x110 net/core/sock.c:3034
+                      lock_sock include/net/sock.h:1581 [inline]
+                      inet_autobind+0x1a/0x190 net/ipv4/af_inet.c:180
+                      inet_dgram_connect+0x245/0x2d0 net/ipv4/af_inet.c:575
+                      __sys_connect_file+0x155/0x1a0 net/socket.c:1852
+                      __sys_connect+0x161/0x190 net/socket.c:1869
+                      __do_sys_connect net/socket.c:1879 [inline]
+                      __se_sys_connect net/socket.c:1876 [inline]
+                      __x64_sys_connect+0x6f/0xb0 net/socket.c:1876
+                      do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+                      entry_SYSCALL_64_after_hwframe+0x44/0xa9
+    IN-SOFTIRQ-W
+ at:
+                      lock_acquire+0x1f2/0xaa0 kernel/locking/lockdep.c:5398
+                      __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+                      _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+                      spin_lock include/linux/spinlock.h:354 [inline]
+                      sk_clone_lock+0x2a1/0x10b0 net/core/sock.c:1881
+                      inet_csk_clone_lock+0x21/0x480 net/ipv4/inet_connection_sock.c:830
+                      tcp_create_openreq_child+0x2d/0x1700 net/ipv4/tcp_minisocks.c:460
+                      tcp_v4_syn_recv_sock+0xb6/0x1370 net/ipv4/tcp_ipv4.c:1514
+                      tcp_check_req+0x607/0x17b0 net/ipv4/tcp_minisocks.c:773
+                      tcp_v4_rcv+0x21ba/0x3750 net/ipv4/tcp_ipv4.c:1973
+                      ip_protocol_deliver_rcu+0x5c/0x8a0 net/ipv4/ip_input.c:204
+                      ip_local_deliver_finish+0x20a/0x370 net/ipv4/ip_input.c:231
+                      NF_HOOK include/linux/netfilter.h:301 [inline]
+                      NF_HOOK include/linux/netfilter.h:295 [inline]
+                      ip_local_deliver+0x1b3/0x200 net/ipv4/ip_input.c:252
+                      dst_input include/net/dst.h:449 [inline]
+                      ip_sublist_rcv_finish+0x9a/0x2c0 net/ipv4/ip_input.c:550
+                      ip_list_rcv_finish.constprop.0+0x514/0x6e0 net/ipv4/ip_input.c:600
+                      ip_sublist_rcv net/ipv4/ip_input.c:608 [inline]
+                      ip_list_rcv+0x34e/0x490 net/ipv4/ip_input.c:643
+                      __netif_receive_skb_list_ptype net/core/dev.c:5330 [inline]
+                      __netif_receive_skb_list_core+0x549/0x8e0 net/core/dev.c:5378
+                      __netif_receive_skb_list net/core/dev.c:5430 [inline]
+                      netif_receive_skb_list_internal+0x777/0xd70 net/core/dev.c:5535
+                      gro_normal_list net/core/dev.c:5689 [inline]
+                      gro_normal_list net/core/dev.c:5685 [inline]
+                      napi_complete_done+0x1f1/0x940 net/core/dev.c:6414
+                      virtqueue_napi_complete+0x2c/0xc0 drivers/net/virtio_net.c:329
+                      virtnet_poll+0xae2/0xd90 drivers/net/virtio_net.c:1455
+                      napi_poll net/core/dev.c:6730 [inline]
+                      net_rx_action+0x587/0x1320 net/core/dev.c:6800
+                      __do_softirq+0x203/0xab6 kernel/softirq.c:298
+                      asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:786
+                      __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
+                      run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
+                      do_softirq_own_stack+0x9d/0xd0 arch/x86/kernel/irq_64.c:77
+                      invoke_softirq kernel/softirq.c:393 [inline]
+                      __irq_exit_rcu kernel/softirq.c:423 [inline]
+                      irq_exit_rcu+0x235/0x280 kernel/softirq.c:435
+                      common_interrupt+0xa3/0x1f0 arch/x86/kernel/irq.c:239
+                      asm_common_interrupt+0x1e/0x40 arch/x86/include/asm/idtentry.h:622
+                      x2apic_send_IPI+0x5f/0x120 arch/x86/kernel/apic/x2apic_phys.c:38
+                      __smp_call_single_queue kernel/smp.c:270 [inline]
+                      generic_exec_single+0x122/0x450 kernel/smp.c:303
+                      smp_call_function_single+0x186/0x500 kernel/smp.c:509
+                      smp_call_function_many_cond+0x1a4/0xa10 kernel/smp.c:648
+                      smp_call_function_many kernel/smp.c:711 [inline]
+                      smp_call_function kernel/smp.c:733 [inline]
+                      on_each_cpu+0x4c/0x1f0 kernel/smp.c:832
+                      text_poke_sync arch/x86/kernel/alternative.c:999 [inline]
+                      text_poke_bp_batch+0x1a7/0x550 arch/x86/kernel/alternative.c:1184
+                      text_poke_flush arch/x86/kernel/alternative.c:1338 [inline]
+                      text_poke_flush arch/x86/kernel/alternative.c:1335 [inline]
+                      text_poke_finish+0x16/0x30 arch/x86/kernel/alternative.c:1345
+                      arch_jump_label_transform_apply+0x13/0x20 arch/x86/kernel/jump_label.c:126
+                      jump_label_update kernel/jump_label.c:814 [inline]
+                      jump_label_update+0x1b3/0x3a0 kernel/jump_label.c:793
+                      static_key_disable_cpuslocked+0x152/0x1b0 kernel/jump_label.c:207
+                      static_key_disable+0x16/0x20 kernel/jump_label.c:215
+                      once_deferred+0x64/0x90 lib/once.c:18
+                      process_one_work+0x933/0x15a0 kernel/workqueue.c:2269
+                      worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+                      kthread+0x3af/0x4a0 kernel/kthread.c:292
+                      ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+    INITIAL USE at:
+                     lock_acquire+0x1f2/0xaa0 kernel/locking/lockdep.c:5398
+                     __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+                     _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+                     spin_lock_bh include/linux/spinlock.h:359 [inline]
+                     lock_sock_nested+0x3b/0x110 net/core/sock.c:3034
+                     lock_sock include/net/sock.h:1581 [inline]
+                     inet_autobind+0x1a/0x190 net/ipv4/af_inet.c:180
+                     inet_dgram_connect+0x245/0x2d0 net/ipv4/af_inet.c:575
+                     __sys_connect_file+0x155/0x1a0 net/socket.c:1852
+                     __sys_connect+0x161/0x190 net/socket.c:1869
+                     __do_sys_connect net/socket.c:1879 [inline]
+                     __se_sys_connect net/socket.c:1876 [inline]
+                     __x64_sys_connect+0x6f/0xb0 net/socket.c:1876
+                     do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+                     entry_SYSCALL_64_after_hwframe+0x44/0xa9
+  }
+  ... key      at: [<ffffffff8e18f900>] af_family_slock_keys+0x20/0x300
+  ... acquired at:
+   seqcount_lockdep_reader_access+0x139/0x1a0 include/linux/seqlock.h:103
+   xfrm_policy_lookup_inexact_addr+0x57/0x200 net/xfrm/xfrm_policy.c:1909
+   xfrm_policy_find_inexact_candidates+0xac/0x1d0 net/xfrm/xfrm_policy.c:1953
+   xfrm_policy_lookup_bytype+0x4b8/0xa40 net/xfrm/xfrm_policy.c:2108
+   xfrm_policy_lookup net/xfrm/xfrm_policy.c:2144 [inline]
+   xfrm_bundle_lookup net/xfrm/xfrm_policy.c:2944 [inline]
+   xfrm_lookup_with_ifid+0xab3/0x2130 net/xfrm/xfrm_policy.c:3085
+   xfrm_lookup net/xfrm/xfrm_policy.c:3177 [inline]
+   xfrm_lookup_route+0x36/0x1e0 net/xfrm/xfrm_policy.c:3188
+   ip_route_output_flow+0xa6/0xc0 net/ipv4/route.c:2771
+   ip_route_output_ports include/net/route.h:169 [inline]
+   ip4_datagram_release_cb+0x701/0xaa0 net/ipv4/datagram.c:119
+   release_sock+0xb4/0x1b0 net/core/sock.c:3057
+   ip4_datagram_connect+0x36/0x40 net/ipv4/datagram.c:91
+   inet_dgram_connect+0x14a/0x2d0 net/ipv4/af_inet.c:577
+   __sys_connect_file+0x155/0x1a0 net/socket.c:1852
+   __sys_connect+0x161/0x190 net/socket.c:1869
+   __do_sys_connect net/socket.c:1879 [inline]
+   __se_sys_connect net/socket.c:1876 [inline]
+   __x64_sys_connect+0x6f/0xb0 net/socket.c:1876
+   do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+   entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+-> (
+&s->seqcount
+#11){+.+.}-{0:0} {
+   HARDIRQ-ON-W at:
+                    lock_acquire+0x1f2/0xaa0 kernel/locking/lockdep.c:5398
+                    write_seqcount_t_begin_nested include/linux/seqlock.h:509 [inline]
+                    write_seqcount_t_begin include/linux/seqlock.h:535 [inline]
+                    __xfrm_policy_inexact_prune_bin+0xbc/0x1040 net/xfrm/xfrm_policy.c:1077
+                    xfrm_policy_inexact_insert+0x49b/0xbd0 net/xfrm/xfrm_policy.c:1205
+                    xfrm_policy_insert+0x502/0x870 net/xfrm/xfrm_policy.c:1572
+                    pfkey_spdadd+0xfb1/0x1550 net/key/af_key.c:2332
+                    pfkey_process+0x68b/0x800 net/key/af_key.c:2841
+                    pfkey_sendmsg+0x42d/0x800 net/key/af_key.c:3680
+                    sock_sendmsg_nosec net/socket.c:651 [inline]
+                    sock_sendmsg+0xcf/0x120 net/socket.c:671
+                    ____sys_sendmsg+0x6e8/0x810 net/socket.c:2362
+                    ___sys_sendmsg+0xf3/0x170 net/socket.c:2416
+                    __sys_sendmsg+0xe5/0x1b0 net/socket.c:2449
+                    do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+                    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+   SOFTIRQ-ON-W at:
+                    lock_acquire+0x1f2/0xaa0 kernel/locking/lockdep.c:5398
+                    write_seqcount_t_begin_nested include/linux/seqlock.h:509 [inline]
+                    write_seqcount_t_begin include/linux/seqlock.h:535 [inline]
+                    write_seqlock include/linux/seqlock.h:883 [inline]
+                    xfrm_set_spdinfo+0x302/0x660 net/xfrm/xfrm_user.c:1185
+                    xfrm_user_rcv_msg+0x41e/0x720 net/xfrm/xfrm_user.c:2684
+                    netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
+                    xfrm_netlink_rcv+0x6b/0x90 net/xfrm/xfrm_user.c:2692
+                    netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+                    netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+                    netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+                    sock_sendmsg_nosec net/socket.c:651 [inline]
+                    sock_sendmsg+0xcf/0x120 net/socket.c:671
+                    ____sys_sendmsg+0x6e8/0x810 net/socket.c:2362
+                    ___sys_sendmsg+0xf3/0x170 net/socket.c:2416
+                    __sys_sendmsg+0xe5/0x1b0 net/socket.c:2449
+                    do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+                    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+   INITIAL USE
+ at:
+                   lock_acquire+0x1f2/0xaa0 kernel/locking/lockdep.c:5398
+                   write_seqcount_t_begin_nested include/linux/seqlock.h:509 [inline]
+                   write_seqcount_t_begin include/linux/seqlock.h:535 [inline]
+                   __xfrm_policy_inexact_prune_bin+0xbc/0x1040 net/xfrm/xfrm_policy.c:1077
+                   xfrm_policy_inexact_insert+0x49b/0xbd0 net/xfrm/xfrm_policy.c:1205
+                   xfrm_policy_insert+0x502/0x870 net/xfrm/xfrm_policy.c:1572
+                   pfkey_spdadd+0xfb1/0x1550 net/key/af_key.c:2332
+                   pfkey_process+0x68b/0x800 net/key/af_key.c:2841
+                   pfkey_sendmsg+0x42d/0x800 net/key/af_key.c:3680
+                   sock_sendmsg_nosec net/socket.c:651 [inline]
+                   sock_sendmsg+0xcf/0x120 net/socket.c:671
+                   ____sys_sendmsg+0x6e8/0x810 net/socket.c:2362
+                   ___sys_sendmsg+0xf3/0x170 net/socket.c:2416
+                   __sys_sendmsg+0xe5/0x1b0 net/socket.c:2449
+                   do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+                   entry_SYSCALL_64_after_hwframe+0x44/0xa9
+   (null) at:
+================================================================================
+UBSAN: array-index-out-of-bounds in kernel/locking/lockdep.c:2240:40
+index 9 is out of range for type 'lock_trace *[9]'
+CPU: 1 PID: 16600 Comm: syz-executor.1 Not tainted 5.9.0-rc5-next-20200916-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x198/0x1fb lib/dump_stack.c:118
+ ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
+ __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:356
+ print_lock_class_header kernel/locking/lockdep.c:2240 [inline]
+ print_shortest_lock_dependencies.cold+0x11c/0x2e2 kernel/locking/lockdep.c:2263
+ print_irq_inversion_bug.part.0+0x2c6/0x2ee kernel/locking/lockdep.c:3769
+ print_irq_inversion_bug kernel/locking/lockdep.c:3694 [inline]
+ check_usage_backwards kernel/locking/lockdep.c:3838 [inline]
+ mark_lock_irq kernel/locking/lockdep.c:3928 [inline]
+ mark_lock.cold+0x1a/0x74 kernel/locking/lockdep.c:4375
+ mark_usage kernel/locking/lockdep.c:4278 [inline]
+ __lock_acquire+0x886/0x56d0 kernel/locking/lockdep.c:4750
+ lock_acquire+0x1f2/0xaa0 kernel/locking/lockdep.c:5398
+ write_seqcount_t_begin_nested include/linux/seqlock.h:509 [inline]
+ write_seqcount_t_begin include/linux/seqlock.h:535 [inline]
+ write_seqlock include/linux/seqlock.h:883 [inline]
+ xfrm_set_spdinfo+0x302/0x660 net/xfrm/xfrm_user.c:1185
+ xfrm_user_rcv_msg+0x41e/0x720 net/xfrm/xfrm_user.c:2684
+ netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
+ xfrm_netlink_rcv+0x6b/0x90 net/xfrm/xfrm_user.c:2692
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:671
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2362
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2416
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2449
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45d5f9
+Code: 5d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 2b b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fc0b86b3c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000002cf80 RCX: 000000000045d5f9
+RDX: 0000000000000000 RSI: 0000000020000100 RDI: 0000000000000003
+RBP: 000000000118cf80 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118cf4c
+R13: 00007ffd902a0b1f R14: 00007fc0b86b49c0 R15: 000000000118cf4c
+================================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
