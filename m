@@ -2,78 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98D8327299B
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 17:11:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 653D22729A7
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 17:12:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727441AbgIUPL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 11:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726413AbgIUPL0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 11:11:26 -0400
-Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5750C061755;
-        Mon, 21 Sep 2020 08:11:25 -0700 (PDT)
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kKNTL-003Byz-4d; Mon, 21 Sep 2020 15:11:19 +0000
-Date:   Mon, 21 Sep 2020 16:11:19 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Christoph Hellwig' <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-aio@kvack.org" <linux-aio@kvack.org>,
-        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        id S1727590AbgIUPMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 11:12:49 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47774 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726413AbgIUPMt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 11:12:49 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kKNUY-00Fbpb-9v; Mon, 21 Sep 2020 17:12:34 +0200
+Date:   Mon, 21 Sep 2020 17:12:34 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?utf-8?B?5YqJ5YGJ5qyK?= <willy.liu@realtek.com>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Kyle Evans <kevans@FreeBSD.org>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: Re: [PATCH 04/11] iov_iter: explicitly check for CHECK_IOVEC_ONLY in
- rw_copy_check_uvector
-Message-ID: <20200921151119.GU3421308@ZenIV.linux.org.uk>
-References: <20200921143434.707844-1-hch@lst.de>
- <20200921143434.707844-5-hch@lst.de>
- <7336624280b8444fb4cb00407317741b@AcuMS.aculab.com>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ryan Kao <ryankao@realtek.com>,
+        Joe Hershberger <joe.hershberger@ni.com>,
+        Peter Robinson <pbrobinson@gmail.com>
+Subject: Re: [PATCH] net: phy: realtek: fix rtl8211e rx/tx delay config
+Message-ID: <20200921151234.GC3717417@lunn.ch>
+References: <1600307253-3538-1-git-send-email-willy.liu@realtek.com>
+ <20200917101035.uwajg4m524g4lz5o@mobilestation>
+ <87c4ebf4b1fe48a7a10b27d0ba0b333c@realtek.com>
+ <20200918135403.GC3631014@lunn.ch>
+ <20200918153301.chwlvzh6a2bctbjw@mobilestation>
+ <e14a0e96ddf8480591f98677cdca5e77@realtek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <7336624280b8444fb4cb00407317741b@AcuMS.aculab.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e14a0e96ddf8480591f98677cdca5e77@realtek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 21, 2020 at 03:05:32PM +0000, David Laight wrote:
+On Mon, Sep 21, 2020 at 07:00:00AM +0000, 劉偉權 wrote:
+> Hi Andrew,
 
-> I've actually no idea:
-> 1) Why there is an access_ok() check here.
->    It will be repeated by the user copy functions.
+> I removed below register layout descriptions because these
+> descriptions did not match register definitions for rtl8211e
+> extension page 164 reg 0x1c at all.
+> 8:6 = PHY Address
+> 5:4 = Auto-Negotiation
+> 3 = Mode
+> 2 = RXD
+> 1 = TXD
+> 0 = SELRGV1
 
-Early sanity check.
+> I think it is a misunderstanding. These definitions are mapped from
+> datasheet rtl8211e table13" Configuration Register
+> Definition". However this table should be HW pin configurations not
+> register descriptions.
 
-> 2) Why it isn't done when called from mm/process_vm_access.c.
->    Ok, the addresses refer to a different process, but they
->    must still be valid user addresses.
-> 
-> Is 2 a legacy from when access_ok() actually checked that the
-> addresses were mapped into the process's address space?
+So these are just how the device is strapped. So lets add that to the
+description, rather than remove it.
 
-It never did.  2 is for the situation when a 32bit process
-accesses 64bit one; addresses that are perfectly legitimate
-for 64bit userland (and fitting into the first 4Gb of address
-space, so they can be represented by 32bit pointers just fine)
-might be rejected by access_ok() if the caller is 32bit.
+> Users can config RXD/TXD via register setting(extension page 164 reg
+> 0x1c). But bit map for these two settings should be below:
+> 13 = Force Tx RX Delay controlled by bit12 bit11,
+> 12 = RX Delay, 11 = TX Delay
+
+> Hi Sergey,
+
+> I saw the summary from https://reviews.freebsd.org/D13591. This
+> patch is to reconfigure the RTL8211E used to force off TXD/RXD (RXD
+> is defaulting to on, in my checks) and turn on some bits in the
+> configuration register for this PHY that are undocumented.
+
+> The default value for "extension pg 0xa4 reg 0x1c" is 0x8148, and
+> bit1-2 should be 0. In my opinion, this patch should be worked based
+> on the magic number (0xb400).
+
+Magic numbers are always bad. Please document what these bits mean.
+
+      Andrew
