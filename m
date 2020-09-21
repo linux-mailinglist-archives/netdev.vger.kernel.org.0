@@ -2,149 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF370271B30
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 09:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A72E2271B3B
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 09:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726417AbgIUHAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 03:00:43 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:38330 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726011AbgIUHAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 03:00:43 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.69 with qID 08L701420005130, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb05.realtek.com.tw[172.21.6.98])
-        by rtits2.realtek.com.tw (8.15.2/2.66/5.86) with ESMTPS id 08L701420005130
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 21 Sep 2020 15:00:01 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXMB05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Mon, 21 Sep 2020 15:00:01 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::3477:84c0:6ac8:dfee]) by
- RTEXMB04.realtek.com.tw ([fe80::3477:84c0:6ac8:dfee%3]) with mapi id
- 15.01.2044.006; Mon, 21 Sep 2020 15:00:01 +0800
-From:   =?utf-8?B?5YqJ5YGJ5qyK?= <willy.liu@realtek.com>
-To:     Serge Semin <fancer.lancer@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, "Kyle Evans" <kevans@FreeBSD.org>
-CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ryan Kao <ryankao@realtek.com>,
-        "Joe Hershberger" <joe.hershberger@ni.com>,
-        Peter Robinson <pbrobinson@gmail.com>
-Subject: RE: [PATCH] net: phy: realtek: fix rtl8211e rx/tx delay config
-Thread-Topic: [PATCH] net: phy: realtek: fix rtl8211e rx/tx delay config
-Thread-Index: AQHWjJSIgE9wGMLbJkqAPItOTw6viqlsFkuAgAHOTXCAAAJ4gIAAG6aAgARrxhA=
-Date:   Mon, 21 Sep 2020 07:00:00 +0000
-Message-ID: <e14a0e96ddf8480591f98677cdca5e77@realtek.com>
-References: <1600307253-3538-1-git-send-email-willy.liu@realtek.com>
- <20200917101035.uwajg4m524g4lz5o@mobilestation>
- <87c4ebf4b1fe48a7a10b27d0ba0b333c@realtek.com>
- <20200918135403.GC3631014@lunn.ch>
- <20200918153301.chwlvzh6a2bctbjw@mobilestation>
-In-Reply-To: <20200918153301.chwlvzh6a2bctbjw@mobilestation>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.179.211]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726336AbgIUHIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 03:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57506 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726011AbgIUHIA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 03:08:00 -0400
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5EB8C061755;
+        Mon, 21 Sep 2020 00:07:59 -0700 (PDT)
+Received: by mail-ot1-x343.google.com with SMTP id y5so11440274otg.5;
+        Mon, 21 Sep 2020 00:07:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=IBCwAKxPsT4wgI+ZKAQlpzARiGXtopA8o7THgl5POCk=;
+        b=XoTedSWX4WiOMYCFwMhra3sHUINJwbn4jF//5GOY9uXzaKsnIacovpii2d3q9LdXXg
+         vq2x/Ogm7s/I4TTr5WNCy/8Rb84ZMEcA/70bcXXyBwMrOEy02AMABecOEdBiF7IAd+8q
+         QGfMe9Z8U17aiF2P6cV7ApzSWc3r7H8Mff33qLg08mPRh19XdeUGMeAZ3VrFQqYMs6j/
+         HTlJuqAMTuN/jCIZNnB45QPoyOfnABwnmw4fKkJpiYqFLrsS1xwb2DkUJ4+oE+vFRkrp
+         jhH417RYFSt+0+Z3O4HmS+wqxrBYxtoN33Yyl7T9wE1YbNhAMJbGu6d/BODyVr6liwxh
+         uP3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=IBCwAKxPsT4wgI+ZKAQlpzARiGXtopA8o7THgl5POCk=;
+        b=mnEVjnErarTjA9izagf6QFwYfh7J6OJr0+Ge5NOwRX67IXGvng4r4x8Y7wwabArRFe
+         XbNWGnzsZjpBjffC6UnmBLzX7Lq2wwolfGmQHzDPmsDL1DIHDIILRCmRX9jSDXw3DiK2
+         /EDcfGYheu/PzWi5Uh54KGznXEUX873LitUqKj8HLlb+k/n7/5GC6N9DVrLPePI5SEaR
+         oxoAiiHr7vFpZSOJ9CbuA7FhvBoGPCWa7ev+1P1dxwiNGQ/0wlt4ypy/dNKh8jqDzxvg
+         vFPIjyfYjV2MiUltZoahb2CSaJi3ItiDloqdXzzdKIL1ilSAH550tNrdbXdPO4U+uq4H
+         IDxQ==
+X-Gm-Message-State: AOAM531+MFmEM+T3ZJS6Swg5x3HRlERkZW50UDTOLjYIEK2J2gY7ywxS
+        ocxa99NcCON5TOOcl1sXTOfSnm9P4vH3h6LJqXKrYYlwMQDZyg==
+X-Google-Smtp-Source: ABdhPJww/tVbXXelVSejpiDpu+OZVVFGY/8oYGkRg3Tnd25nA+NfnJs0C1EQEYw1zA4gG0oqrBozr33YQ5fnWMw9vYE=
+X-Received: by 2002:a9d:315:: with SMTP id 21mr32289208otv.278.1600672079022;
+ Mon, 21 Sep 2020 00:07:59 -0700 (PDT)
 MIME-Version: 1.0
+References: <20200904162154.GA24295@wunner.de> <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
+ <20200905052403.GA10306@wunner.de> <e8aecc2b-80cb-8ee5-8efe-7ae5c4eafc70@iogearbox.net>
+ <CAF90-Whc3HL9x-7TJ7m3tZp10RNmQxFD=wdQUJLCaUajL2RqXg@mail.gmail.com>
+ <8e991436-cb1c-1306-51ac-bb582bfaa8a7@iogearbox.net> <CAF90-Wh=wzjNtFWRv9bzn=-Dkg-Qc9G_cnyoq0jSypxQQgg3uA@mail.gmail.com>
+ <29b888f5-5e8e-73fe-18db-6c5dd57c6b4f@iogearbox.net> <CAF90-Wiof1aut-KoA=uA-T=UGmUpQvZx_ckwY7KnBbYB8Y3+PA@mail.gmail.com>
+ <b0989f93-e708-4a68-1622-ab3de629be77@iogearbox.net>
+In-Reply-To: <b0989f93-e708-4a68-1622-ab3de629be77@iogearbox.net>
+From:   =?UTF-8?Q?Laura_Garc=C3=ADa_Li=C3=A9bana?= <nevola@gmail.com>
+Date:   Mon, 21 Sep 2020 09:07:46 +0200
+Message-ID: <CAF90-Wg7-m0-5HMGJGnfK3VJ-SVSfRaju1gRnCP921FSxsnA6Q@mail.gmail.com>
+Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Netfilter Development Mailing list 
+        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>, David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgQW5kcmV3LA0KSSByZW1vdmVkIGJlbG93IHJlZ2lzdGVyIGxheW91dCBkZXNjcmlwdGlvbnMg
-YmVjYXVzZSB0aGVzZSBkZXNjcmlwdGlvbnMgZGlkIG5vdCBtYXRjaCByZWdpc3RlciBkZWZpbml0
-aW9ucyBmb3IgcnRsODIxMWUgZXh0ZW5zaW9uIHBhZ2UgMTY0IHJlZyAweDFjIGF0IGFsbC4NCjg6
-NiA9IFBIWSBBZGRyZXNzDQo1OjQgPSBBdXRvLU5lZ290aWF0aW9uDQozID0gTW9kZQ0KMiA9IFJY
-RA0KMSA9IFRYRA0KMCA9IFNFTFJHVjENCkkgdGhpbmsgaXQgaXMgYSBtaXN1bmRlcnN0YW5kaW5n
-LiBUaGVzZSBkZWZpbml0aW9ucyBhcmUgbWFwcGVkIGZyb20gZGF0YXNoZWV0IHJ0bDgyMTFlIHRh
-YmxlMTMiIENvbmZpZ3VyYXRpb24gUmVnaXN0ZXIgRGVmaW5pdGlvbiIuIEhvd2V2ZXIgdGhpcyB0
-YWJsZSBzaG91bGQgYmUgSFcgcGluIGNvbmZpZ3VyYXRpb25zIG5vdCByZWdpc3RlciBkZXNjcmlw
-dGlvbnMuIA0KDQpVc2VycyBjYW4gY29uZmlnIFJYRC9UWEQgdmlhIHJlZ2lzdGVyIHNldHRpbmco
-ZXh0ZW5zaW9uIHBhZ2UgMTY0IHJlZyAweDFjKS4gQnV0IGJpdCBtYXAgZm9yIHRoZXNlIHR3byBz
-ZXR0aW5ncyBzaG91bGQgYmUgYmVsb3c6IA0KMTMgPSBGb3JjZSBUeCBSWCBEZWxheSBjb250cm9s
-bGVkIGJ5IGJpdDEyIGJpdDExLA0KMTIgPSBSWCBEZWxheSwgMTEgPSBUWCBEZWxheQ0KDQpIaSBT
-ZXJnZXksDQpJIHNhdyB0aGUgc3VtbWFyeSBmcm9tIGh0dHBzOi8vcmV2aWV3cy5mcmVlYnNkLm9y
-Zy9EMTM1OTEuIFRoaXMgcGF0Y2ggaXMgdG8gcmVjb25maWd1cmUgdGhlIFJUTDgyMTFFIHVzZWQg
-dG8gZm9yY2Ugb2ZmIFRYRC9SWEQgKFJYRCBpcyBkZWZhdWx0aW5nIHRvIG9uLCBpbiBteSBjaGVj
-a3MpIGFuZCB0dXJuIG9uIHNvbWUgYml0cyBpbiB0aGUgY29uZmlndXJhdGlvbiByZWdpc3RlciBm
-b3IgdGhpcyBQSFkgdGhhdCBhcmUgdW5kb2N1bWVudGVkLg0KVGhlIGRlZmF1bHQgdmFsdWUgZm9y
-ICJleHRlbnNpb24gcGcgMHhhNCByZWcgMHgxYyIgaXMgMHg4MTQ4LCBhbmQgYml0MS0yIHNob3Vs
-ZCBiZSAwLiBJbiBteSBvcGluaW9uLCB0aGlzIHBhdGNoIHNob3VsZCBiZSB3b3JrZWQgYmFzZWQg
-b24gdGhlIG1hZ2ljIG51bWJlciAoMHhiNDAwKS4gSXQgc2VlbXMgUlggZGVsYXkgd2FzIHNldCBh
-bmQgcGFja2FnZSBkaWQgbm90IGxvc3QgZm9yIFNvbWUgcGluZTY0IG1vZGVscy4gSSBhbSBub3Qg
-c3VyZSBpZiBzb21lIG1vZGVscyBnb3QgZGlmZmVyZW50IGRlZmF1bHQgdmFsdWUobm90IDB4ODE0
-OCkgYmVjYXVzZSB0aGUgc3VtbWFyeSBzYXlzIChSWEQgaXMgZGVmYXVsdGluZyB0byBvbikuIFdo
-YXQgSSBtZWFuIGlzIHRoYXQgdGhpcyBwYXRjaCBpcyBhY3R1YWxseSB0dXJuIG9uIFJYIERlbGF5
-IG5vdCB0dXJuIG9mZiBSWCBkZWxheS4gSSBob3BlIHdlIGNhbiBjb3JyZWN0IHRoZSBtZWFuaW5n
-IG9mIHRoaXMgcmVnaXN0ZXIuIA0KDQpCLlIuDQpXaWxseQ0KDQotLS0tLU9yaWdpbmFsIE1lc3Nh
-Z2UtLS0tLQ0KRnJvbTogU2VyZ2UgU2VtaW4gPGZhbmNlci5sYW5jZXJAZ21haWwuY29tPiANClNl
-bnQ6IEZyaWRheSwgU2VwdGVtYmVyIDE4LCAyMDIwIDExOjMzIFBNDQpUbzogQW5kcmV3IEx1bm4g
-PGFuZHJld0BsdW5uLmNoPjsgS3lsZSBFdmFucyA8a2V2YW5zQEZyZWVCU0Qub3JnPjsg5YqJ5YGJ
-5qyKIDx3aWxseS5saXVAcmVhbHRlay5jb20+DQpDYzogaGthbGx3ZWl0MUBnbWFpbC5jb207IGxp
-bnV4QGFybWxpbnV4Lm9yZy51azsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsga3ViYUBrZXJuZWwub3Jn
-OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBS
-eWFuIEthbyA8cnlhbmthb0ByZWFsdGVrLmNvbT47IEpvZSBIZXJzaGJlcmdlciA8am9lLmhlcnNo
-YmVyZ2VyQG5pLmNvbT47IFBldGVyIFJvYmluc29uIDxwYnJvYmluc29uQGdtYWlsLmNvbT4NClN1
-YmplY3Q6IFJlOiBbUEFUQ0hdIG5ldDogcGh5OiByZWFsdGVrOiBmaXggcnRsODIxMWUgcngvdHgg
-ZGVsYXkgY29uZmlnDQoNCkhlbGxvIEFuZHJldy4NCg0KT24gRnJpLCBTZXAgMTgsIDIwMjAgYXQg
-MDM6NTQ6MDNQTSArMDIwMCwgQW5kcmV3IEx1bm4gd3JvdGU6DQo+IE9uIEZyaSwgU2VwIDE4LCAy
-MDIwIGF0IDA2OjU1OjE2QU0gKzAwMDAsIOWKieWBieasiiB3cm90ZToNCj4gPiBIaSBTZXJnZSwN
-Cj4gDQo+ID4gVGhhbmtzIGZvciB5b3VyIHJlcGx5LiBUaGVyZSBpcyBhIGNvbmZpZGVudGlhbCBp
-c3N1ZSB0aGF0IHJlYWx0ZWsgDQo+ID4gZG9lc24ndCBvZmZlciB0aGUgZGV0YWlsIG9mIGEgZnVs
-bCByZWdpc3RlciBsYXlvdXQgZm9yIGNvbmZpZ3VyYXRpb24gDQo+ID4gcmVnaXN0ZXIuDQo+IA0K
-PiAuLi4NCj4gDQo+ID4gPiAgCSAqIDB4YTQgZXh0ZW5zaW9uIHBhZ2UgKDB4NykgbGF5b3V0LiBJ
-dCBjYW4gYmUgdXNlZCB0byBkaXNhYmxlL2VuYWJsZQ0KPiA+ID4gIAkgKiB0aGUgUlgvVFggZGVs
-YXlzIG90aGVyd2lzZSBjb250cm9sbGVkIGJ5IFJYRExZL1RYRExZIHBpbnMuIEl0IGNhbg0KPiA+
-ID4gIAkgKiBhbHNvIGJlIHVzZWQgdG8gY3VzdG9taXplIHRoZSB3aG9sZSBjb25maWd1cmF0aW9u
-IHJlZ2lzdGVyOg0KPiA+IA0KPiA+ID4gLQkgKiA4OjYgPSBQSFkgQWRkcmVzcywgNTo0ID0gQXV0
-by1OZWdvdGlhdGlvbiwgMyA9IEludGVyZmFjZSBNb2RlIFNlbGVjdCwNCj4gPiA+IC0JICogMiA9
-IFJYIERlbGF5LCAxID0gVFggRGVsYXksIDAgPSBTRUxSR1YgKHNlZSBvcmlnaW5hbCBQSFkgZGF0
-YXNoZWV0DQo+ID4gPiAtCSAqIGZvciBkZXRhaWxzKS4NCj4gPiA+ICsJICogMTMgPSBGb3JjZSBU
-eCBSWCBEZWxheSBjb250cm9sbGVkIGJ5IGJpdDEyIGJpdDExLA0KPiA+ID4gKwkgKiAxMiA9IFJY
-IERlbGF5LCAxMSA9IFRYIERlbGF5DQo+ID4gDQo+IA0KPiA+IEhlcmUgeW91J3ZlIHJlbW92ZWQg
-dGhlIHJlZ2lzdGVyIGxheW91dCBkZXNjcmlwdGlvbiBhbmQgcmVwbGFjZWQgaXRxIA0KPiA+IHdp
-dGgganVzdCB0aHJlZSBiaXRzIGluZm8uIFNvIGZyb20gbm93IHRoZSB0ZXh0IGFib3ZlIGRvZXNu
-J3QgcmVhbGx5IA0KPiA+IGNvcnJlc3BvbmRzIHRvIHdoYXQgZm9sbG93cy4NCj4gDQo+ID4gSSBt
-aWdodCBoYXZlIGZvcmdvdHRlbiBzb21ldGhpbmcsIGJ1dCBBRkFJUiB0aGF0IHJlZ2lzdGVyIGJp
-dHMgDQo+ID4gc3RhdGVxIG1hcHBlZCB3ZWxsIHRvIHdoYXQgd2FzIGF2YWlsYWJsZSBvbiB0aGUg
-Y29ycmVzcG9uZGluZyANCj4gPiBleHRlcm5hbCBwaW5zLg0KPiANCj4gSGkgV2lsbHkNCj4gDQoN
-Cj4gU28gaXQgYXBwZWFycyBiaXRzIDMgdG8gOCBoYXZlIGJlZW4gcmV2ZXJzZSBlbmdpbmVlcmVk
-LiBVbmxlc3MgeW91IA0KPiBrbm93IGZyb20geW91ciBjb25maWRlbnRpYWwgZGF0YXNoZWV0IHRo
-YXQgdGhlc2UgYXJlIHdyb25nLCBwbGVhc2UgDQo+IGxlYXZlIHRoZSBjb21tZW50IGFsb25lLg0K
-PiANCj4gSWYgeW91IGNvbmZpZGVudGlhbCBkYXRhc2hlZXQgc2F5cyB0aGF0IHRoZSB1c2FnZSBv
-ZiBiaXRzIDAtMiBpcyANCj4gd3JvbmcsIHRoZW4gcGxlYXNlIGRvIGNvcnJlY3QgdGhhdCBwYXJ0
-Lg0KDQpJJ3ZlIGdvdCB0aGF0IGluZm8gZnJvbSBLeWxlIHBvc3QgaGVyZToNCmh0dHBzOi8vcmV2
-aWV3cy5mcmVlYnNkLm9yZy9EMTM1OTENCg0KTXkgd29yayB3aXRoIHRoYXQgcHJvYmxlbSBoYXMg
-YmVlbiBkb25lIG1vcmUgdGhhbiBhIHllYXIgYWdvLCBzbyBJIGRvbid0IHJlbWVtYmVyIGFsbCB0
-aGUgZGV0YWlscy4gQnV0IElJUkMgdGhlIHZlcnkgZmlyc3QgbmluZSBiaXRzIFs4OjBdIG11c3Qg
-YmUgYSBjb3B5IG9mIHdoYXQgaXMgc2V0IG9uIHRoZSBleHRlcm5hbCBjb25maWd1cmF0aW9uIHBp
-bnMgYXMgSSBkZXNjcmliZWQgaW4gdGhlIGNvbW1lbnQuDQpBRkFJUiBJIHRyaWVkIHRvIG1hbnVh
-bGx5IGNoYW5nZSB0aGVzZSBwaW5zIFsxXSBhbmQgZGV0ZWN0ZWQgdGhhdCBjaGFuZ2UgcmlnaHQg
-dGhlcmUgaW4gdGhlIHJlZ2lzdGVyLiBUaGF0IGZ1bGx5IGZpdHRlZCB0byB3aGF0IEt5bGUgd3Jv
-dGUgaW4gaGlzIHBvc3QuIEFsYXMgSSBjYW4ndCByZXBlYXQgaXQgdG8gYmUgY29tcGxldGVseSBz
-dXJlIGF0IHRoZSBtb21lbnQgZHVlIHRvIHRoZSBsYWNrIG9mIHRoZSBoYXJkd2FyZS4gU28gSSBt
-aWdodCBoYXZlIG1pc3NlZCBzb21ldGhpbmcsIGFuZCBXaWxseScgY29uZmlybWF0aW9uIGFib3V0
-IHRoYXQgd291bGQgaGF2ZSBiZWVuIG1vcmUgdGhhbiB3ZWxjb21lLiBXaGF0IHdlIGNhbiBzYXkg
-bm93IGZvciBzdXJlIEkgZGlkbid0IHVzZSB0aGUgbWFnaWMgbnVtYmVyIGluIG15IHBhdGNoLiBU
-aGF0IGNvdWxkIGhhdmUgYmVlbiBhIG1pc3Rha2UgZnJvbSB3aGF0IFdpbGx5IHNheXMgaW4gdGhl
-IGNvbW1pdC1sb2cuLi4NCg0KQW55d2F5IGFzaWRlIHdpdGggdGhlIE1hZ2ljIGJpdHMgc2V0dGlu
-Z3MgKHdoaWNoIGJ5IFdpbGx5JyBwYXRjaCBhcHBlYXJzIHRvIGJlIHRoZSBUeC9SeCBkZWxheXMg
-KyBGb3JjZSBUeC9SeCBkZWxheSBzZXR0aW5nKSBLeWxlIGFsc28gY2xlYXJzIHRoZSBiaXRzIDEt
-MiB3aXRoIGEgY29tbWVudCAiRW5zdXJlIGJvdGggaW50ZXJuYWwgZGVsYXlzIGFyZSB0dXJuZWQg
-b2ZmIi4gV2lsbHksIHdoYXQgY2FuIHlvdSBzYXkgYWJvdXQgdGhhdD8gQ2FuIHdlIHJlYWxseSBs
-ZWF2ZSB0aGVtIG91dCBmcm9tIHRoZSBjaGFuZ2U/IEt5bGUsIGNvdWxkIHlvdSBnaXZlIHVzIGEg
-Y29tbWVudCBhYm91dCB5b3VyIGV4cGVyaWVuY2Ugd2l0aCB0aGF0Pw0KDQpbMV0gUlRMODIxMUUt
-VkItQ0csIFJUTDgyMTFFLVZMLUNHLCBSVEw4MjExRS1WTC1DRywgIklOVEVHUkFURUQgMTAvMTAw
-LzEwMDBNIEVUSEVSTkVUDQogICAgVFJBTlNDRUlWRVIiIERhdGFzaGVldCwgVGFibGUgMTMuIENv
-bmZpZ3VyYXRpb24gUmVnaXN0ZXIgRGVmaW5pdGlvbiwgUmV2LiAxLjYsDQogICAgMDMgQXByaWwg
-MjAxMiwgVHJhY2sgSUQ6IEpBVFItMzM3NS0xNiwgcC4xNg0KDQotU2VyZ2V5DQoNCj4gDQo+ICAg
-ICAgICBBbmRyZXcNCg0KLS0tLS0tUGxlYXNlIGNvbnNpZGVyIHRoZSBlbnZpcm9ubWVudCBiZWZv
-cmUgcHJpbnRpbmcgdGhpcyBlLW1haWwuDQo=
+Hi Daniel,
+
+On Fri, Sep 18, 2020 at 10:31 PM Daniel Borkmann <daniel@iogearbox.net> wro=
+te:
+>
+> On 9/17/20 12:28 PM, Laura Garc=C3=ADa Li=C3=A9bana wrote:
+> > On Tue, Sep 15, 2020 at 12:02 AM Daniel Borkmann <daniel@iogearbox.net>=
+ wrote:
+> >> On 9/14/20 1:29 PM, Laura Garc=C3=ADa Li=C3=A9bana wrote:
+> >>> On Fri, Sep 11, 2020 at 6:28 PM Daniel Borkmann <daniel@iogearbox.net=
+> wrote:
+> >>>> On 9/11/20 9:42 AM, Laura Garc=C3=ADa Li=C3=A9bana wrote:
+> >>>>> On Tue, Sep 8, 2020 at 2:55 PM Daniel Borkmann <daniel@iogearbox.ne=
+t> wrote:
+> >>>>>> On 9/5/20 7:24 AM, Lukas Wunner wrote:
+> >>>>>>> On Fri, Sep 04, 2020 at 11:14:37PM +0200, Daniel Borkmann wrote:
+> >>>>>>>> On 9/4/20 6:21 PM, Lukas Wunner wrote:
+> >>>>>> [...]
+> >>>>>>>> The tc queueing layer which is below is not the tc egress hook; =
+the
+> >>>>>>>> latter is for filtering/mangling/forwarding or helping the lower=
+ tc
+> >>>>>>>> queueing layer to classify.
+> >>>>>>>
+> >>>>>>> People want to apply netfilter rules on egress, so either we need=
+ an
+> >>>>>>> egress hook in the xmit path or we'd have to teach tc to filter a=
+nd
+> >>>>>>> mangle based on netfilter rules.  The former seemed more straight=
+-forward
+> >>>>>>> to me but I'm happy to pursue other directions.
+> >>>>>>
+> >>>>>> I would strongly prefer something where nf integrates into existin=
+g tc hook,
+> >>>>>> not only due to the hook reuse which would be better, but also to =
+allow for a
+> >>>>>> more flexible interaction between tc/BPF use cases and nf, to name=
+ one
+> >>>>>
+> >>>>> That sounds good but I'm afraid that it would take too much back an=
+d
+> >>>>> forth discussions. We'll really appreciate it if this small patch c=
+an
+> >>>>> be unblocked and then rethink the refactoring of ingress/egress hoo=
+ks
+> >>>>> that you commented in another thread.
+> >>>>
+> >>>> I'm not sure whether your comment was serious or not, but nope, this=
+ needs
+> >>>> to be addressed as mentioned as otherwise this use case would regres=
+s. It
+> >>>
+> >>> This patch doesn't break anything. The tc redirect use case that you
+> >>> just commented on is the expected behavior and the same will happen
+> >>> with ingress. To be consistent, in the case that someone requires bot=
+h
+> >>> hooks, another tc redirect would be needed in the egress path. If you
+> >>> mean to bypass the nf egress if tc redirect in ingress is used, that
+> >>> would lead in a huge security concern.
+> >>
+> >> I'm not sure I parse what you're saying above ... today it is possible=
+ and
+> >> perfectly fine to e.g. redirect to a host-facing veth from tc ingress =
+which
+> >> then goes into container. Only traffic that goes up the host stack is =
+seen
+> >> by nf ingress hook in that case. Likewise, reply traffic can be redire=
+cted
+> >> from host-facing veth to phys dev for xmit w/o any netfilter interfere=
+nce.
+> >> This means netfilter in host ns really only sees traffic to/from host =
+as
+> >> intended. This is fine today, however, if 3rd party entities (e.g. dis=
+tro
+> >> side) start pushing down rules on the two nf hooks, then these use cas=
+es will
+> >> break on the egress one due to this asymmetric layering violation. Hen=
+ce my
+> >> ask that this needs to be configurable from a control plane perspectiv=
+e so
+> >> that both use cases can live next to each other w/o breakage. Most tri=
+vial
+> >
+> > Why does it should be symmetric? Fast-paths create "asymmetric
+> > layering" continuously, see: packet hit XDP to user space bypassing
+> > ingress, but in the response will hit egress. So the "breakage" is
+> > already there.
+>
+> Not quite sure what you mean exactly here or into which issue you ran. Ei=
+ther
+
+I don't really know, we were discussing about your issue :)
+
+> you push the xdp buffer back out from XDP layer for load balancer case so=
+ upper
+> stack never sees it, or you push it to upper stack, and it goes through t=
+he
+> ingress/egress hooks e.g. from tc side. AF_XDP will bypass either. If you=
+ mean
+> the redirect from XDP layer to the veth devs where they have XDP support,=
+ then
+> the reply path also needs to operate /below/ netfilter on tc layer exactl=
+y for
+> the reason /not/ to break, as otherwise we get potentially hard to debug =
+skb
+> drops on netfilter side when CT is involved and it figures it must drop d=
+ue to
+
+So, the "breakage" is about because it is difficult to debug CT drops,
+or maybe it creates asymmetric layering, or maybe problems with nf/tc
+interoperation? Sorry, this is so confusing. I suspect that the issue
+you're talking about is a consequence of having different hooks,
+nothing specifically related to this patch cause these use cases
+you're referring to are happening right now with XDP, tc and CT.
+
+The advantage is that with nf you only register the hooks required, so
+this won't be a problem. Also, we are having more and more mechanisms
+for ingress and CT interoperation, and this will be quite easy to
+extend to egress.
+
+> invalid CT state to name one example. That is if there is an opt-in to su=
+ch data
+> path being used, then it also needs to continue to work, which gets me ba=
+ck to
+> the earlier mentioned example with the interaction on the egress side wit=
+h that
+> hook that it needs to /interoperate/ with tc to avoid breakage of existin=
+g use
+> cases in the wild. Reuse of skb flag could be one option to move forward,=
+ or as
+> mentioned in earlier mails overall rework of ingress/egress side to be a =
+more
+> flexible pipeline (think of cont/ok actions as with tc filters or stackab=
+le LSMs
+> to process & delegate).
+
+Again, a flag is not needed as you can register and de-register nf
+hooks on demand.
+
+Thanks!
