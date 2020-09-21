@@ -2,146 +2,337 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CF73272BC9
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 18:23:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A2FB272BB4
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 18:21:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728233AbgIUQXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 12:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
+        id S1728011AbgIUQVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 12:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726419AbgIUQXR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 12:23:17 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C542EC061755;
-        Mon, 21 Sep 2020 09:23:16 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id a9so108514wmm.2;
-        Mon, 21 Sep 2020 09:23:16 -0700 (PDT)
+        with ESMTP id S1726795AbgIUQVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 12:21:51 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9C8C061755;
+        Mon, 21 Sep 2020 09:21:50 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id a15so11632667ljk.2;
+        Mon, 21 Sep 2020 09:21:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IvRIyYO3t2SUgu0arXiDBfv6J5V0f2K0pu+NF0qCX5w=;
-        b=Sc96S6lfmurSpfOzVka44PHPQYNuWoG7JxCB4XIUf9HPO88rqJ+GWaU7/Y9y20Ow8M
-         Di7TJYVba9SsbXwHrsQvQvoBR2Nnm2mDgusw9rNGcnvKI4lT7c8atlnPUkT8nbzGd/E7
-         MKgVHJkc+3wIQtro6A/DqbjOOTLY92BDRoYn0lM3n9CiOUzTJK/Gn2dgL4adn1jdQqgE
-         GNxDUaobxhydr/wUBBdueva2w+Wf6ylcpl7wzPsamNhCaU6uo6ck2Wb1uRgTUuOUO+bU
-         HGFzFO1HgQxb8gSQefH7PcwwxXwudPQ8DWavTZ9E2fjqDXcxcFOe//Zso6LpQiW58B+x
-         UucA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1Rr9hM5e6lCwZ+Wb7iVZ2d8auenimpqljkFmliukLTU=;
+        b=GdPlHZ3emy11C+0U4r6hITtJTVJP1ZNTv6uIUOsVePzNK4yvlkyvhaxzRJSd+pLTIT
+         gG4U0KZZa+DlsOlK5tI8p9gw2iKNCrpVrVblbaBR6w+auOGueo9Nnzc1RkIaCJkozK7m
+         PbGZB7yL+ndPO8wj066Sv52Y5g2A/8+0rpLofMyuAPHPYoLWGSnPe2afDAjEHyQJrU3t
+         Uhhc8yd945V4Jrqg2YGqZ4mRaqtwNiwF2M+js2yOjrthDE4WKjo/6s/p7hmnoNnOexCW
+         1oSoPQA26O3aGsZixD4hS/LwzleHJ8zH6gOdXMC0/IL4XYsvyDV2adQ/6cGedS/L/Vc2
+         4U8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=IvRIyYO3t2SUgu0arXiDBfv6J5V0f2K0pu+NF0qCX5w=;
-        b=A6MCYliyLky0CzdB8Kii9j37ZOqsCDPEuPs0dEOZNiRRJ8Ef9B9MinIzBPSiCa/4tY
-         Df04RlBDtnJ53fJz2iq8euZRRqVpcBcskoZpV3EF2IAGqRlrudQ7pHQ176UUQ8qyBLel
-         p+JGVxOF4iGiaDDw2aqcMLrG1ya2E3O7urXNZz53h51OnX8Rgsn5mcKtB7GnnAIA4c+Z
-         ido5Y1rpV0fYJ/+OxoniEL3In61ocTuqkqP1Ebxwlj6o0Ifo+k2Ayfk1gFKkqATFMb48
-         JRZMORs1SIlnX4/6o8G8yGyMUUtfTlCNCfyVla1/HrsgMCqnA/2bx21B19UFZyp14W+E
-         paTg==
-X-Gm-Message-State: AOAM531Vh1TjdyEvzt4EF36HhQwt59RDXCcaJrpsErNFlAK/Nzb+hlkY
-        TDqJkZUWxsHFguonU44VEjd+n10XT8YkQA==
-X-Google-Smtp-Source: ABdhPJyYfk+EzbFnRftaSb6O/4j5H92Q+rKsLnOqJxPSmwFSmKmQaK8gbExjV0xQhTxCqhQoZcucgw==
-X-Received: by 2002:a05:600c:4142:: with SMTP id h2mr184584wmm.128.1600705395307;
-        Mon, 21 Sep 2020 09:23:15 -0700 (PDT)
-Received: from [192.168.43.240] ([5.100.192.97])
-        by smtp.gmail.com with ESMTPSA id t6sm23571512wre.30.2020.09.21.09.23.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Sep 2020 09:23:14 -0700 (PDT)
-Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
-To:     William Kucharski <kucharsk@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
-References: <20200920151510.GS32101@casper.infradead.org>
- <76A432F3-4532-42A4-900E-16C0AC2D21D8@gmail.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-Autocrypt: addr=asml.silence@gmail.com; prefer-encrypt=mutual; keydata=
- mQINBFmKBOQBEAC76ZFxLAKpDw0bKQ8CEiYJRGn8MHTUhURL02/7n1t0HkKQx2K1fCXClbps
- bdwSHrhOWdW61pmfMbDYbTj6ZvGRvhoLWfGkzujB2wjNcbNTXIoOzJEGISHaPf6E2IQx1ik9
- 6uqVkK1OMb7qRvKH0i7HYP4WJzYbEWVyLiAxUj611mC9tgd73oqZ2pLYzGTqF2j6a/obaqha
- +hXuWTvpDQXqcOZJXIW43atprH03G1tQs7VwR21Q1eq6Yvy2ESLdc38EqCszBfQRMmKy+cfp
- W3U9Mb1w0L680pXrONcnlDBCN7/sghGeMHjGKfNANjPc+0hzz3rApPxpoE7HC1uRiwC4et83
- CKnncH1l7zgeBT9Oa3qEiBlaa1ZCBqrA4dY+z5fWJYjMpwI1SNp37RtF8fKXbKQg+JuUjAa9
- Y6oXeyEvDHMyJYMcinl6xCqCBAXPHnHmawkMMgjr3BBRzODmMr+CPVvnYe7BFYfoajzqzq+h
- EyXSl3aBf0IDPTqSUrhbmjj5OEOYgRW5p+mdYtY1cXeK8copmd+fd/eTkghok5li58AojCba
- jRjp7zVOLOjDlpxxiKhuFmpV4yWNh5JJaTbwCRSd04sCcDNlJj+TehTr+o1QiORzc2t+N5iJ
- NbILft19Izdn8U39T5oWiynqa1qCLgbuFtnYx1HlUq/HvAm+kwARAQABtDFQYXZlbCBCZWd1
- bmtvdiAoc2lsZW5jZSkgPGFzbWwuc2lsZW5jZUBnbWFpbC5jb20+iQJOBBMBCAA4FiEE+6Ju
- PTjTbx479o3OWt5b1Glr+6UFAlmKBOQCGwMFCwkIBwIGFQgJCgsCBBYCAwECHgECF4AACgkQ
- Wt5b1Glr+6WxZA//QueaKHzgdnOikJ7NA/Vq8FmhRlwgtP0+E+w93kL+ZGLzS/cUCIjn2f4Q
- Mcutj2Neg0CcYPX3b2nJiKr5Vn0rjJ/suiaOa1h1KzyNTOmxnsqE5fmxOf6C6x+NKE18I5Jy
- xzLQoktbdDVA7JfB1itt6iWSNoOTVcvFyvfe5ggy6FSCcP+m1RlR58XxVLH+qlAvxxOeEr/e
- aQfUzrs7gqdSd9zQGEZo0jtuBiB7k98t9y0oC9Jz0PJdvaj1NZUgtXG9pEtww3LdeXP/TkFl
- HBSxVflzeoFaj4UAuy8+uve7ya/ECNCc8kk0VYaEjoVrzJcYdKP583iRhOLlZA6HEmn/+Gh9
- 4orG67HNiJlbFiW3whxGizWsrtFNLsSP1YrEReYk9j1SoUHHzsu+ZtNfKuHIhK0sU07G1OPN
- 2rDLlzUWR9Jc22INAkhVHOogOcc5ajMGhgWcBJMLCoi219HlX69LIDu3Y34uIg9QPZIC2jwr
- 24W0kxmK6avJr7+n4o8m6sOJvhlumSp5TSNhRiKvAHB1I2JB8Q1yZCIPzx+w1ALxuoWiCdwV
- M/azguU42R17IuBzK0S3hPjXpEi2sK/k4pEPnHVUv9Cu09HCNnd6BRfFGjo8M9kZvw360gC1
- reeMdqGjwQ68o9x0R7NBRrtUOh48TDLXCANAg97wjPoy37dQE7e5Ag0EWYoE5AEQAMWS+aBV
- IJtCjwtfCOV98NamFpDEjBMrCAfLm7wZlmXy5I6o7nzzCxEw06P2rhzp1hIqkaab1kHySU7g
- dkpjmQ7Jjlrf6KdMP87mC/Hx4+zgVCkTQCKkIxNE76Ff3O9uTvkWCspSh9J0qPYyCaVta2D1
- Sq5HZ8WFcap71iVO1f2/FEHKJNz/YTSOS/W7dxJdXl2eoj3gYX2UZNfoaVv8OXKaWslZlgqN
- jSg9wsTv1K73AnQKt4fFhscN9YFxhtgD/SQuOldE5Ws4UlJoaFX/yCoJL3ky2kC0WFngzwRF
- Yo6u/KON/o28yyP+alYRMBrN0Dm60FuVSIFafSqXoJTIjSZ6olbEoT0u17Rag8BxnxryMrgR
- dkccq272MaSS0eOC9K2rtvxzddohRFPcy/8bkX+t2iukTDz75KSTKO+chce62Xxdg62dpkZX
- xK+HeDCZ7gRNZvAbDETr6XI63hPKi891GeZqvqQVYR8e+V2725w+H1iv3THiB1tx4L2bXZDI
- DtMKQ5D2RvCHNdPNcZeldEoJwKoA60yg6tuUquvsLvfCwtrmVI2rL2djYxRfGNmFMrUDN1Xq
- F3xozA91q3iZd9OYi9G+M/OA01husBdcIzj1hu0aL+MGg4Gqk6XwjoSxVd4YT41kTU7Kk+/I
- 5/Nf+i88ULt6HanBYcY/+Daeo/XFABEBAAGJAjYEGAEIACAWIQT7om49ONNvHjv2jc5a3lvU
- aWv7pQUCWYoE5AIbDAAKCRBa3lvUaWv7pfmcEACKTRQ28b1y5ztKuLdLr79+T+LwZKHjX++P
- 4wKjEOECCcB6KCv3hP+J2GCXDOPZvdg/ZYZafqP68Yy8AZqkfa4qPYHmIdpODtRzZSL48kM8
- LRzV8Rl7J3ItvzdBRxf4T/Zseu5U6ELiQdCUkPGsJcPIJkgPjO2ROG/ZtYa9DvnShNWPlp+R
- uPwPccEQPWO/NP4fJl2zwC6byjljZhW5kxYswGMLBwb5cDUZAisIukyAa8Xshdan6C2RZcNs
- rB3L7vsg/R8UCehxOH0C+NypG2GqjVejNZsc7bgV49EOVltS+GmGyY+moIzxsuLmT93rqyII
- 5rSbbcTLe6KBYcs24XEoo49Zm9oDA3jYvNpeYD8rDcnNbuZh9kTgBwFN41JHOPv0W2FEEWqe
- JsCwQdcOQ56rtezdCJUYmRAt3BsfjN3Jn3N6rpodi4Dkdli8HylM5iq4ooeb5VkQ7UZxbCWt
- UVMKkOCdFhutRmYp0mbv2e87IK4erwNHQRkHUkzbsuym8RVpAZbLzLPIYK/J3RTErL6Z99N2
- m3J6pjwSJY/zNwuFPs9zGEnRO4g0BUbwGdbuvDzaq6/3OJLKohr5eLXNU3JkT+3HezydWm3W
- OPhauth7W0db74Qd49HXK0xe/aPrK+Cp+kU1HRactyNtF8jZQbhMCC8vMGukZtWaAwpjWiiH bA==
-Message-ID: <2f2ee014-688e-8835-369b-61deb0688c73@gmail.com>
-Date:   Mon, 21 Sep 2020 19:20:42 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1Rr9hM5e6lCwZ+Wb7iVZ2d8auenimpqljkFmliukLTU=;
+        b=W9vByir3Mb1UFniXmCTthkpWRU1Ct8k9wEV+Pw1i03nroqSpXQT7BeGKhCIk21x0rC
+         2UR6tOlN2QyPDkiLXX73n3DuGS83OuTlnmRZPzLWLBPI/cVo9j6G79CorVjhsS553EZH
+         6LkIk2pDLC3563txjwptDxBSacQGP7BupsXv6BVc/hu1PsmrEzmbRTF2tjgL1RHxSD9h
+         HlkNgtDGmCsH682+qYNsPPuhaKLSfH5YwWKXUUZm6ERMpNl9JRgbZQbQDTIvqhEhaiAr
+         9tbAPBHOwsjLhqDxM6TVDLSXTtytwbwXz18ZtJuUlIYg6wSTZlkE9McmAHJenMwrcqJ9
+         frVQ==
+X-Gm-Message-State: AOAM5310NyjfXmqeI/VBJBHDeIpn+iPlMbCG1enzNESak5pmkgkD7rNA
+        gkJcKYtad3Wbfb5MWzlC+DKPbDBgYKG/6pIXZyY=
+X-Google-Smtp-Source: ABdhPJxnzzrXPkdCDLa0vUtCa7d5T9mvolZIWLu/3d3Dw2gX7azzVGqjfhIESA68u6vmml2hKOWyiNvJOJ/IucAu77E=
+X-Received: by 2002:a2e:760d:: with SMTP id r13mr141162ljc.67.1600705309083;
+ Mon, 21 Sep 2020 09:21:49 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <76A432F3-4532-42A4-900E-16C0AC2D21D8@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200917143846.37ce43a0@carbon> <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
+ <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org>
+ <20200918120016.7007f437@carbon> <CANP3RGfUj-KKHHQtbggiZ4V-Xrr_sk+TWyN5FgYUGZS6rOX1yw@mail.gmail.com>
+ <CACAyw9-v_o+gPUpC-R9SXsfzMywrdGsWV13Nk=tx2aS-fEBFYg@mail.gmail.com>
+ <20200921144953.6456d47d@carbon> <340f209d-58d4-52a6-0804-7102d80c1468@iogearbox.net>
+In-Reply-To: <340f209d-58d4-52a6-0804-7102d80c1468@iogearbox.net>
+From:   Marek Zavodsky <marek.zavodsky@gmail.com>
+Date:   Mon, 21 Sep 2020 18:21:41 +0200
+Message-ID: <CAG0p+LmqDXCJVygVtqvmsd2v4A=HRZdsGU3mSY0G=tGr2DoUvQ@mail.gmail.com>
+Subject: Re: BPF redirect API design issue for BPF-prog MTU feedback?
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shaun Crampton <shaun@tigera.io>,
+        David Miller <davem@davemloft.net>,
+        Marek Majkowski <marek@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/09/2020 18:55, William Kucharski wrote:
-> I really like that as it’s self-documenting and anyone debugging it can see what is actually being used at a glance.
+Hi guys,
 
-Also creates special cases for things that few people care about,
-and makes it a pain for cross-platform (cross-bitness) development.
+My kernel knowledge is small, but I experienced this (similar) issue
+with packet encapsulation (not a redirect), therefore modifying the
+redirect branch would not help in my case.
 
-> 
->> On Sep 20, 2020, at 09:15, Matthew Wilcox <willy@infradead.org> wrote:
->>
->> ﻿On Fri, Sep 18, 2020 at 02:45:25PM +0200, Christoph Hellwig wrote:
->>> Add a flag to force processing a syscall as a compat syscall.  This is
->>> required so that in_compat_syscall() works for I/O submitted by io_uring
->>> helper threads on behalf of compat syscalls.
->>
->> Al doesn't like this much, but my suggestion is to introduce two new
->> opcodes -- IORING_OP_READV32 and IORING_OP_WRITEV32.  The compat code
->> can translate IORING_OP_READV to IORING_OP_READV32 and then the core
->> code can know what that user pointer is pointing to.
+I'm working on a TC program to do GUE encap/decap (IP + UDP + GUE,
+outer header has extra 52B).
+There are no issues with small packets. But when I use curl to
+download big file HTTP server chunks data randomly. Some packets have
+MTU size, others are even bigger. Big packets are not an issue,
+however MTU sized packets fail on bpf_skb_adjust_room with -524
+(ENOTSUPP).
 
--- 
-Pavel Begunkov
+Below are some (annotated) logs for small, MTU-sized and beefy packets
+I collected from /sys/kernel/debug/tracing/trace.
+Log is produced by egress TC on server side (node1 TX)
+
+SMALL PACKET:
+            curl-14470 [000] .Ns1   402.561940: 0: PFC ifindex 52, len
+66                                            <- skb->ifindex,
+skb->len
+            curl-14470 [000] .Ns1   402.561940: 0:   gso_segs 1
+                                                   <- skb->gso_segs
+(no GSO)
+            curl-14470 [000] .Ns1   402.561941: 0:   gso_size 0
+                                                    <- skb->gso_size
+(5.7+) ... skb_is_gso(skb) -> "false"
+            curl-14470 [000] .Ns1   402.561941: 0: ID node1 TX
+                                                  <- serverside egress
+(GUE encap)
+            curl-14470 [000] .Ns1   402.561942: 0: DUMP:
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D            =
+          <- original packet
+            curl-14470 [000] .Ns1   402.561942: 0:   Size : 66 B
+                                                    <- skb->len
+            curl-14470 [000] .Ns1   402.561942: 0:   ETH  : ac010005
+-> ac010002, proto 800
+            curl-14470 [000] .Ns1   402.561943: 0:   IPv4 : 1010101 ->
+ac010002, id 62439
+            curl-14470 [000] .Ns1   402.561943: 0:     csum 0x98d7
+            curl-14470 [000] .Ns1   402.561944: 0:   TCP  : 4000 ->
+60296, Flags [A]
+            curl-14470 [000] .Ns1   402.561944: 0:     csum 0xae2b
+            curl-14470 [000] .Ns1   402.561944: 0: DUMP: =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+            curl-14470 [000] .Ns1   402.561946: 0: GUE Encap Tunnel:
+id 65636                               <- subject to encap...
+            curl-14470 [000] .Ns1   402.561947: 0:     FROM ac010005:6000
+            curl-14470 [000] .Ns1   402.561947: 0:     TO
+ac010003:5000       (ac010003)
+            curl-14470 [000] .Ns1   402.561948: 0: DUMP:
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D            =
+        <- encapsulated packet
+            curl-14470 [000] .Ns1   402.561948: 0:   Size : 118 B
+                                                  <- new skb->len
+            curl-14470 [000] .Ns1   402.561948: 0:   ETH  : ac010005
+-> ac010003, proto 800
+            curl-14470 [000] .Ns1   402.561949: 0:   IPv4 : ac010005
+-> ac010003, id 62439
+            curl-14470 [000] .Ns1   402.561949: 0:     csum 0xee92
+            curl-14470 [000] .Ns1   402.561949: 0:   UDP  : 6000 -> 5000
+            curl-14470 [000] .Ns1   402.561950: 0:     csum 0x0
+            curl-14470 [000] .Ns1   402.561950: 0: DUMP: =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+            curl-14470 [000] .Ns1   402.561950: 0: Action: TC_ACT_OK
+
+MTU-SIZED PACKET (orig-len <=3D MTU && orig-len + GUE-overhead > MTU):
+         systemd-1693  [000] .Ns.   408.640488: 0: PFC ifindex 52, len 1502
+         systemd-1693  [000] .Ns.   408.640540: 0:   gso_segs 1
+                                                 <- skb->gso_segs (no
+GSO)
+         systemd-1693  [000] .Ns.   408.640561: 0:   gso_size 0
+                                                  <- skb->gso_size
+(5.7+) ... skb_is_gso(skb) -> "false"
+         systemd-1693  [000] .Ns.   408.640582: 0: ID node1 TX
+         systemd-1693  [000] .Ns.   408.640601: 0: DUMP: =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+         systemd-1693  [000] .Ns.   408.640617: 0:   Size : 1502 B
+         systemd-1693  [000] .Ns.   408.640632: 0:   ETH  : ac010005
+-> ac010002, proto 800
+         systemd-1693  [000] .Ns.   408.640646: 0:   IPv4 : 1010101 ->
+ac010002, id 62737
+         systemd-1693  [000] .Ns.   408.640659: 0:     csum 0x9211
+         systemd-1693  [000] .Ns.   408.640670: 0:   TCP  : 4000 ->
+60296, Flags [A]
+         systemd-1693  [000] .Ns.   408.640681: 0:     csum 0xb3c7
+         systemd-1693  [000] .Ns.   408.640690: 0: DUMP: =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+         systemd-1693  [000] .Ns.   408.640729: 0: GUE Encap Tunnel: id 656=
+36
+         systemd-1693  [000] .Ns.   408.640735: 0:     FROM ac010005:6000
+         systemd-1693  [000] .Ns.   408.640740: 0:     TO
+ac010003:5000       (ac010003)
+         systemd-1693  [000] .Ns.   408.640746: 0:
+bpf_skb_adjust_room: -524                                    <- FAILED
+to enlarge skbuff
+         systemd-1693  [000] .Ns.   408.640750: 0: GUE Encap Failed!
+         systemd-1693  [000] .Ns.   408.640755: 0: Action: TC_ACT_SHOT
+
+HUGE PACKET:
+            curl-14470 [000] ..s1   402.566490: 0: PFC ifindex 52, len 6377=
+8
+            curl-14470 [000] ..s1   402.566491: 0:   gso_segs 44
+                                                  <- skb->gso_segs
+(GSO in progress)
+            curl-14470 [000] ..s1   402.566491: 0:   gso_size 1448
+                                                 <- skb->gso_size
+(5.7+) ... skb_is_gso(skb) -> "true"
+            curl-14470 [000] ..s1   402.566492: 0: ID node1 TX
+            curl-14470 [000] ..s1   402.566492: 0: DUMP: =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+            curl-14470 [000] ..s1   402.566493: 0:   Size : 63778 B
+            curl-14470 [000] ..s1   402.566493: 0:   ETH  : ac010005
+-> ac010002, proto 800
+            curl-14470 [000] ..s1   402.566493: 0:   IPv4 : 1010101 ->
+ac010002, id 62674
+            curl-14470 [000] ..s1   402.566494: 0:     csum 0x9f0b
+            curl-14470 [000] ..s1   402.566494: 0:   TCP  : 4000 ->
+60296, Flags [A]
+            curl-14470 [000] ..s1   402.566494: 0:     csum 0xa70c
+            curl-14470 [000] ..s1   402.566495: 0: DUMP: =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+            curl-14470 [000] ..s1   402.566497: 0: GUE Encap Tunnel: id 656=
+36
+            curl-14470 [000] ..s1   402.566497: 0:     FROM ac010005:6000
+            curl-14470 [000] ..s1   402.566497: 0:     TO
+ac010003:5000       (ac010003)
+            curl-14470 [000] ..s1   402.566498: 0: DUMP: =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+            curl-14470 [000] ..s1   402.566498: 0:   Size : 63830 B
+                                                      <- and it still
+works
+            curl-14470 [000] ..s1   402.566499: 0:   ETH  : ac010005
+-> ac010003, proto 800
+            curl-14470 [000] ..s1   402.566499: 0:   IPv4 : ac010005
+-> ac010003, id 62674
+            curl-14470 [000] ..s1   402.566499: 0:     csum 0xf4c6
+            curl-14470 [000] ..s1   402.566500: 0:   UDP  : 6000 -> 5000
+            curl-14470 [000] ..s1   402.566500: 0:     csum 0x0
+            curl-14470 [000] ..s1   402.566500: 0: DUMP: =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+            curl-14470 [000] ..s1   402.566500: 0: Action: TC_ACT_OK
+
+I tried kernels from 5.2 to 5.8 and they behave the same, only
+difference I noticed is skb->gso_size is supported by 5.7+.
+bpf_skb_net_grow should recompute GSO, but base on visual code check
+it not getting there because of:
+https://github.com/torvalds/linux/blob/9907ab371426da8b3cffa6cc3e4ae5482955=
+9207/net/core/filter.c
+  line: 3256
+    if ((shrink && (len_diff_abs >=3D len_cur ||
+            len_cur - len_diff_abs < len_min)) ||
+        (!shrink && (skb->len + len_diff_abs > len_max &&          <-
+enlarge && new-size-exceeds-MTU && gso-size is not set yet
+             !skb_is_gso(skb))))
+        return -ENOTSUPP;
+
+IMHO len_max could help, but I do not understand the
+"!skb_is_gso(skb)" check under current conditions. I'm probably
+missing something here, but if it was a "system wide" setting it would
+make sense (we can handle > MTU packets because GSO kicks in OR we
+can't because of no GSO). But it doesn't make sense to me why some
+packets in the same stream support GSO and others do not.
+
+https://github.com/torvalds/linux/blob/3e8d3bdc2a757cc6be5470297947799a7df4=
+45cc/include/linux/skbuff.h
+static inline bool skb_is_gso(const struct sk_buff *skb)
+{
+    return skb_shinfo(skb)->gso_size;
+}
+
+Regards,
+Marek
+
+On Mon, Sep 21, 2020 at 5:09 PM Daniel Borkmann <daniel@iogearbox.net> wrot=
+e:
+>
+> On 9/21/20 2:49 PM, Jesper Dangaard Brouer wrote:
+> > On Mon, 21 Sep 2020 11:37:18 +0100
+> > Lorenz Bauer <lmb@cloudflare.com> wrote:
+> >> On Sat, 19 Sep 2020 at 00:06, Maciej =C5=BBenczykowski <maze@google.co=
+m> wrote:
+> >>>
+> >>>> This is a good point.  As bpf_skb_adjust_room() can just be run afte=
+r
+> >>>> bpf_redirect() call, then a MTU check in bpf_redirect() actually
+> >>>> doesn't make much sense.  As clever/bad BPF program can then avoid t=
+he
+> >>>> MTU check anyhow.  This basically means that we have to do the MTU
+> >>>> check (again) on kernel side anyhow to catch such clever/bad BPF
+> >>>> programs.  (And I don't like wasting cycles on doing the same check =
+two
+> >>>> times).
+> >>>
+> >>> If you get rid of the check in bpf_redirect() you might as well get
+> >>> rid of *all* the checks for excessive mtu in all the helpers that
+> >>> adjust packet size one way or another way.  They *all* then become
+> >>> useless overhead.
+> >>>
+> >>> I don't like that.  There may be something the bpf program could do t=
+o
+> >>> react to the error condition (for example in my case, not modify
+> >>> things and just let the core stack deal with things - which will
+> >>> probably just generate packet too big icmp error).
+> >>>
+> >>> btw. right now our forwarding programs first adjust the packet size
+> >>> then call bpf_redirect() and almost immediately return what it
+> >>> returned.
+> >>>
+> >>> but this could I think easily be changed to reverse the ordering, so
+> >>> we wouldn't increase packet size before the core stack was informed w=
+e
+> >>> would be forwarding via a different interface.
+> >>
+> >> We do the same, except that we also use XDP_TX when appropriate. This
+> >> complicates the matter, because there is no helper call we could
+> >> return an error from.
+> >
+> > Do notice that my MTU work is focused on TC-BPF.  For XDP-redirect the
+> > MTU check is done in xdp_ok_fwd_dev() via __xdp_enqueue(), which also
+> > happens too late to give BPF-prog knowledge/feedback.  For XDP_TX I
+> > audited the drivers when I implemented xdp_buff.frame_sz, and they
+> > handled (or I added) handling against max HW MTU. E.g. mlx5 [1].
+> >
+> > [1] https://elixir.bootlin.com/linux/v5.9-rc6/source/drivers/net/ethern=
+et/mellanox/mlx5/core/en/xdp.c#L267
+> >
+> >> My preference would be to have three helpers: get MTU for a device,
+> >> redirect ctx to a device (with MTU check), resize ctx (without MTU
+> >> check) but that doesn't work with XDP_TX. Your idea of doing checks
+> >> in redirect and adjust_room is pragmatic and seems easier to
+> >> implement.
+> >
+> > I do like this plan/proposal (with 3 helpers), but it is not possible
+> > with current API.  The main problem is the current bpf_redirect API
+> > doesn't provide the ctx, so we cannot do the check in the BPF-helper.
+> >
+> > Are you saying we should create a new bpf_redirect API (that incl packe=
+t ctx)?
+>
+> Sorry for jumping in late here... one thing that is not clear to me is th=
+at if
+> we are fully sure that skb is dropped by stack anyway due to invalid MTU =
+(redirect
+> to ingress does this via dev_forward_skb(), it's not fully clear to me wh=
+ether it's
+> also the case for the dev_queue_xmiy()), then why not dropping all the MT=
+U checks
+> aside from SKB_MAX_ALLOC sanity check for BPF helpers and have something =
+like a
+> device object (similar to e.g. TCP sockets) exposed to BPF prog where we =
+can retrieve
+> the object and read dev->mtu from the prog, so the BPF program could then=
+ do the
+> "exception" handling internally w/o extra prog needed (we also already ex=
+pose whether
+> skb is GSO or not).
+>
+> Thanks,
+> Daniel
