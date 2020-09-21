@@ -2,28 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 455112729E5
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 17:21:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCAE12729FF
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 17:26:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726688AbgIUPVl convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Sep 2020 11:21:41 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:58431 "EHLO
+        id S1727626AbgIUP0r convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Sep 2020 11:26:47 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:55755 "EHLO
         eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726471AbgIUPVk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 11:21:40 -0400
+        by vger.kernel.org with ESMTP id S1727171AbgIUP0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 11:26:41 -0400
 Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
  TLS) by relay.mimecast.com with ESMTP id
- uk-mta-41-5DRnBW58M5Cy2UEM3fkX0w-1; Mon, 21 Sep 2020 16:21:36 +0100
-X-MC-Unique: 5DRnBW58M5Cy2UEM3fkX0w-1
+ uk-mta-128-o9XrdwUZOBmYoiJUKH50rg-1; Mon, 21 Sep 2020 16:26:37 +0100
+X-MC-Unique: o9XrdwUZOBmYoiJUKH50rg-1
 Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
  AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 21 Sep 2020 16:21:35 +0100
+ Server (TLS) id 15.0.1347.2; Mon, 21 Sep 2020 16:26:35 +0100
 Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
  AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 21 Sep 2020 16:21:35 +0100
+ Mon, 21 Sep 2020 16:26:35 +0100
 From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Al Viro' <viro@zeniv.linux.org.uk>, Christoph Hellwig <hch@lst.de>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
+To:     'Al Viro' <viro@zeniv.linux.org.uk>
+CC:     'Christoph Hellwig' <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
         David Howells <dhowells@redhat.com>,
         "linux-arm-kernel@lists.infradead.org" 
@@ -45,17 +46,18 @@ CC:     Andrew Morton <akpm@linux-foundation.org>,
         "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
         "linux-security-module@vger.kernel.org" 
         <linux-security-module@vger.kernel.org>
-Subject: RE: [PATCH 02/11] mm: call import_iovec() instead of
- rw_copy_check_uvector() in process_vm_rw()
-Thread-Topic: [PATCH 02/11] mm: call import_iovec() instead of
- rw_copy_check_uvector() in process_vm_rw()
-Thread-Index: AQHWkCg9ha58Xpw3RkmKZfc82fYDTKlzMiEw
-Date:   Mon, 21 Sep 2020 15:21:35 +0000
-Message-ID: <ef67787edb2f48548d69caaaff6997ba@AcuMS.aculab.com>
+Subject: RE: [PATCH 04/11] iov_iter: explicitly check for CHECK_IOVEC_ONLY in
+ rw_copy_check_uvector
+Thread-Topic: [PATCH 04/11] iov_iter: explicitly check for CHECK_IOVEC_ONLY in
+ rw_copy_check_uvector
+Thread-Index: AQHWkCRT6PkpgoAV6EexsDeYdekosqlzL1uQ///yg4CAABQ90A==
+Date:   Mon, 21 Sep 2020 15:26:35 +0000
+Message-ID: <99515e866c3e4e9c8140795352a62704@AcuMS.aculab.com>
 References: <20200921143434.707844-1-hch@lst.de>
- <20200921143434.707844-3-hch@lst.de>
- <20200921150211.GS3421308@ZenIV.linux.org.uk>
-In-Reply-To: <20200921150211.GS3421308@ZenIV.linux.org.uk>
+ <20200921143434.707844-5-hch@lst.de>
+ <7336624280b8444fb4cb00407317741b@AcuMS.aculab.com>
+ <20200921151119.GU3421308@ZenIV.linux.org.uk>
+In-Reply-To: <20200921151119.GU3421308@ZenIV.linux.org.uk>
 Accept-Language: en-GB, en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
@@ -74,109 +76,33 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Al Viro
-> Sent: 21 September 2020 16:02
+> Sent: 21 September 2020 16:11
+> On Mon, Sep 21, 2020 at 03:05:32PM +0000, David Laight wrote:
 > 
-> On Mon, Sep 21, 2020 at 04:34:25PM +0200, Christoph Hellwig wrote:
-> > From: David Laight <David.Laight@ACULAB.COM>
+> > I've actually no idea:
+> > 1) Why there is an access_ok() check here.
+> >    It will be repeated by the user copy functions.
+> 
+> Early sanity check.
+> 
+> > 2) Why it isn't done when called from mm/process_vm_access.c.
+> >    Ok, the addresses refer to a different process, but they
+> >    must still be valid user addresses.
 > >
-> > This is the only direct call of rw_copy_check_uvector().  Removing it
-> > will allow rw_copy_check_uvector() to be inlined into import_iovec(),
-> > while only paying a minor price by setting up an otherwise unused
-> > iov_iter in the process_vm_readv/process_vm_writev syscalls that aren't
-> > in a super hot path.
+> > Is 2 a legacy from when access_ok() actually checked that the
+> > addresses were mapped into the process's address space?
 > 
-> > @@ -443,7 +443,7 @@ void iov_iter_init(struct iov_iter *i, unsigned int direction,
-> >  			const struct iovec *iov, unsigned long nr_segs,
-> >  			size_t count)
-> >  {
-> > -	WARN_ON(direction & ~(READ | WRITE));
-> > +	WARN_ON(direction & ~(READ | WRITE | CHECK_IOVEC_ONLY));
-> >  	direction &= READ | WRITE;
-> 
-> Ugh...
-> 
-> > -	rc = rw_copy_check_uvector(CHECK_IOVEC_ONLY, rvec, riovcnt, UIO_FASTIOV,
-> > -				   iovstack_r, &iov_r);
-> > +	rc = import_iovec(CHECK_IOVEC_ONLY, rvec, riovcnt, UIO_FASTIOV, &iov_r,
-> > +			  &iter_r);
-> >  	if (rc <= 0)
-> >  		goto free_iovecs;
-> >
-> > -	rc = process_vm_rw_core(pid, &iter, iov_r, riovcnt, flags, vm_write);
-> > +	rc = process_vm_rw_core(pid, &iter_l, iter_r.iov, iter_r.nr_segs,
-> > +				flags, vm_write);
-> 
-> ... and ugh^2, since now you are not only setting a meaningless iov_iter,
-> you are creating a new place that pokes directly into struct iov_iter
-> guts.
-> 
-> Sure, moving rw_copy_check_uvector() over to lib/iov_iter.c makes sense.
-> But I would rather split the access_ok()-related checks out of that thing
-> and bury CHECK_IOVEC_ONLY.
-> 
-> Step 1: move the damn thing to lib/iov_iter.c (same as you do, but without
-> making it static)
-> 
-> Step 2: split it in two:
-> 
-> ssize_t rw_copy_check_uvector(const struct iovec __user * uvector,
->                               unsigned long nr_segs, unsigned long fast_segs,
->                               struct iovec *fast_pointer,
->                               struct iovec **ret_pointer)
-> {
-> 	unsigned long seg;
-...
-> 	ret = 0;
-> 	for (seg = 0; seg < nr_segs; seg++) {
-> 		void __user *buf = iov[seg].iov_base;
-> 		ssize_t len = (ssize_t)iov[seg].iov_len;
-> 
-> 		/* see if we we're about to use an invalid len or if
-> 		 * it's about to overflow ssize_t */
-> 		if (len < 0)
-> 			return -EINVAL;
-> 		if (len > MAX_RW_COUNT - ret) {
-> 			len = MAX_RW_COUNT - ret;
-> 			iov[seg].iov_len = len;
-> 		}
-> 		ret += len;
-> 	}
-> 	return ret;
-> }
-> 
-> /*
->  *  This is merely an early sanity check; we do _not_ rely upon
->  *  it when we get to the actual memory accesses.
->  */
-> static bool check_iovecs(const struct iovec *iov, int nr_segs)
-> {
->         for (seg = 0; seg < nr_segs; seg++) {
->                 void __user *buf = iov[seg].iov_base;
->                 ssize_t len = (ssize_t)iov[seg].iov_len;
-> 
->                 if (unlikely(!access_ok(buf, len)))
->                         return false;
->         }
-> 	return true;
-> }
+> It never did.  2 is for the situation when a 32bit process
+> accesses 64bit one; addresses that are perfectly legitimate
+> for 64bit userland (and fitting into the first 4Gb of address
+> space, so they can be represented by 32bit pointers just fine)
+> might be rejected by access_ok() if the caller is 32bit.
 
-You really don't want to be looping through the array twice.
-In fact you don't really want to be doing all those tests at all.
-This code makes a significant fraction of the not-insignificant
-difference between the 'costs' of send() and sendmsg().
-
-I think the 'length' check can be optimised to do something like:
-	for (...) {
-		ssize_t len = (ssize_t)iov[seg].iov_len;
-		ret += len;
-		len_hi += (unsigned long)len >> 20;
-	}
-	if (len_hi) {
-		/* Something potentially odd in the lengths.
-		 * Might just be a very long fragment.
-		 * Check the individial values. */
-		Add the exiting loop here.
-	}
+Can't 32 bit processes on a 64bit system access all the way to 4GB?
+Mapping things by default above 3GB will probably break things.
+But there is no reason to disallow explicit maps.
+And in any case access_ok() can use the same limit as it does for
+64bit processes - the page fault handler will sort it all out.
 
 	David
 
