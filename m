@@ -2,31 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF5102724EB
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 15:12:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3F392724FB
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 15:13:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727354AbgIUNKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 09:10:31 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:42712 "EHLO huawei.com"
+        id S1727699AbgIUNMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 09:12:54 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:13760 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727301AbgIUNK1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 09:10:27 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id ED9D4AE5DA830F33F2A2;
-        Mon, 21 Sep 2020 21:10:17 +0800 (CST)
+        id S1727321AbgIUNKa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 09:10:30 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 89A28D6836BD7941DF21;
+        Mon, 21 Sep 2020 21:10:21 +0800 (CST)
 Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 21 Sep 2020 21:10:10 +0800
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 21 Sep 2020 21:10:15 +0800
 From:   Qinglang Miao <miaoqinglang@huawei.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
 CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         Qinglang Miao <miaoqinglang@huawei.com>
-Subject: [PATCH -next] ice: simplify the return expression of ice_finalize_update()
-Date:   Mon, 21 Sep 2020 21:10:34 +0800
-Message-ID: <20200921131034.92063-1-miaoqinglang@huawei.com>
+Subject: [PATCH -next] mlxsw: spectrum_acl_tcam: simplify the return expression of ishtp_cl_driver_register()
+Date:   Mon, 21 Sep 2020 21:10:39 +0800
+Message-ID: <20200921131039.92249-1-miaoqinglang@huawei.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -41,29 +40,32 @@ Simplify the return expression.
 
 Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
 ---
- drivers/net/ethernet/intel/ice/ice_fw_update.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_fw_update.c b/drivers/net/ethernet/intel/ice/ice_fw_update.c
-index deaefe00c..292d87b99 100644
---- a/drivers/net/ethernet/intel/ice/ice_fw_update.c
-+++ b/drivers/net/ethernet/intel/ice/ice_fw_update.c
-@@ -608,14 +608,9 @@ static int ice_finalize_update(struct pldmfw *context)
- 	struct ice_fwu_priv *priv = container_of(context, struct ice_fwu_priv, context);
- 	struct netlink_ext_ack *extack = priv->extack;
- 	struct ice_pf *pf = priv->pf;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
+index 5c0204033..5b4313991 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
+@@ -289,17 +289,11 @@ static int
+ mlxsw_sp_acl_tcam_group_add(struct mlxsw_sp_acl_tcam *tcam,
+ 			    struct mlxsw_sp_acl_tcam_group *group)
+ {
 -	int err;
+-
+ 	group->tcam = tcam;
+ 	mutex_init(&group->lock);
+ 	INIT_LIST_HEAD(&group->region_list);
  
- 	/* Finally, notify firmware to activate the written NVM banks */
--	err = ice_switch_flash_banks(pf, priv->activate_flags, extack);
+-	err = mlxsw_sp_acl_tcam_group_id_get(tcam, &group->id);
 -	if (err)
 -		return err;
 -
 -	return 0;
-+	return ice_switch_flash_banks(pf, priv->activate_flags, extack);
++	return mlxsw_sp_acl_tcam_group_id_get(tcam, &group->id);
  }
  
- static const struct pldmfw_ops ice_fwu_ops = {
+ static void mlxsw_sp_acl_tcam_group_del(struct mlxsw_sp_acl_tcam_group *group)
 -- 
 2.23.0
 
