@@ -2,116 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F238D273178
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 20:07:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03918273184
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 20:11:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727821AbgIUSGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 14:06:39 -0400
-Received: from mail-eopbgr80055.outbound.protection.outlook.com ([40.107.8.55]:64982
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726915AbgIUSGi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 14:06:38 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oMcFsxxLAHa9TF4TpAYTuLymWZAaHo3iF0vvxXR06Jgwa85saIMJKNzpw03m5Vi/zDkLF7KyIFSx5JLrHDahpUMw+BlgFUmWhoYH6FPrPKYUPaew0MIrcxpnBx3OKyluXfKV3duQLj3a3qKEyzsZWU40cesxhPLScgQObKvrmoLofRzVpAHQSUrZSsuLaK64IsbwfB+bGplJyvEYe88di6B4iQex0s6/C50Ag1LmyF/NhL1Heue1HBZ9vKAX2VKtJjyrEFtewPVGQ0W512BFHXLWJ5RjZ+y6hH+a9LXtPn6oGb7buyOcQ8WUAZVWg26iKK9y2O4As0HoGjq2bnT9Ug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lHX1dX00b19irq/BaKzImtfZi4Cx7BYjIoSAepKJifM=;
- b=ksZYKie/XZl/LkTRJiUUpj0+HsLwgK7swwD1ROU1MPhVbtF7E5lPuCpzBarRtSAZt52DPyBMa/f/pOJ8KQJJjJ+Dr3c78o2GDYsJXQnld+X0NsCoDADQ7Cyj0vaYdbjUb4cNvFp8fe14Ywng3LDBHhnuWIlnmOBOsMFVirHxBv7G7vdwMDtgL35K9MWedrMkGcKFhfeGoYj4uMfRBT9MXMqbiwZZnswx6a0sV4bjaCkercK3WDXWpBQLSmui17ytvkqYrQ93JBcsevd8JTxCfWvkhb/sjvlV2cmYSVG3RPjt1qsoqm3HMoRKRSbhAzoyUFSxl3EQm3yihRSZa2PbFg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lHX1dX00b19irq/BaKzImtfZi4Cx7BYjIoSAepKJifM=;
- b=dJOFCJGAhUjDj0C6b7hcrMcFdgbUDNo+0k6JFMFrQzkJySLNy4l7EfuITBx/J+IRmLKSY1Q8ydWSh/v7hkCG+3lrl4jsEDyAQQicKBN+8ddgcz7R1sFVLhuxW5RtyA+syXNNLWR5lRalk3PpVT/4mPoqwixmwCMEL3fl5naGb8k=
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- (2603:10a6:803:16::14) by VI1PR04MB7102.eurprd04.prod.outlook.com
- (2603:10a6:800:124::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.15; Mon, 21 Sep
- 2020 18:06:34 +0000
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::3c18:4bf1:4da0:a3bf]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::3c18:4bf1:4da0:a3bf%3]) with mapi id 15.20.3391.023; Mon, 21 Sep 2020
- 18:06:34 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next 3/3] dpaa2-mac: add PCS support through the Lynx
- module
-Thread-Topic: [PATCH net-next 3/3] dpaa2-mac: add PCS support through the Lynx
- module
-Thread-Index: AQHWkDMnctnYMnw/FUSvaQ4sBRdvUKlzUu+AgAAQjAA=
-Date:   Mon, 21 Sep 2020 18:06:34 +0000
-Message-ID: <20200921180634.icsurl6qoz4nmz3n@skbuf>
-References: <20200921162031.12921-1-ioana.ciornei@nxp.com>
- <20200921162031.12921-4-ioana.ciornei@nxp.com>
- <20200921170721.GE3717417@lunn.ch>
-In-Reply-To: <20200921170721.GE3717417@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.217.212]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 14c8f892-33ca-4f66-238e-08d85e5913a0
-x-ms-traffictypediagnostic: VI1PR04MB7102:
-x-microsoft-antispam-prvs: <VI1PR04MB7102156B695FDC66BBC348CCE03A0@VI1PR04MB7102.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mjliYRemNQYfAEwpZNf2OkRxsf+kpGI3/Ustvcf0JB1YnP8Ej4PkUZVs1v+0tFFGsVwQD8ipdC2o40Ks+wU/KPEPD3yRkmH77fsqWTd3jDyWKQXy63qXGKsWeXrgb1XMCCa2IwX6qnoWO+bO7GtYeR3jPbo8WzChVGI85s+VBu7NOXQsOSVoS4SFaNS5RXwdlq6YSczX9a+sUJPJdQ2JvpR10BkPQGP9JHa6hQuwdjDl8saZjR5EVTLOAIHV4gmzIWzWZIg/ygD50zkizA9zKf/MA0pZGAH7B0TGtbqY+keZMwJUQt3Vu1GLOrqFR21sV/OkyAUD2CBm7mI/n+Qf5Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(136003)(39860400002)(396003)(376002)(366004)(346002)(6506007)(8936002)(186003)(76116006)(5660300002)(44832011)(8676002)(6512007)(66446008)(2906002)(66946007)(26005)(64756008)(66556008)(66476007)(9686003)(6486002)(4326008)(71200400001)(1076003)(6916009)(316002)(4744005)(33716001)(478600001)(86362001)(54906003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: DL8Kbf9q7fzMVqFzxmFvTk8DLBJCbRr8UtsYtUcpb+uzRoccYSIzcDtJEJtyBZsIYIxnTv3Nw+T3hoCv0huPm7PteYuwbrEFB3sywQqCb2W8obI8gxZfcY2y9tINHf1TwqztuseYNJIB83GkEpPl3UHBazDzugmnv9Tb4SNFH83UoJWSBExOk369iS5jsZG984Jt7agPs52ZrzDV8lIihSRJyqxST5WOoTRsF+QuXXJF9aGQs6uoGVv+yy2KtKFvXBD9iMw3MxWE39gu8c25g2tNqcwfsm8CZQVDpf3gzEak7yIe2wKRm/wTODFUJT7FrlfnQEWRtGqtriiyo459uHR11SRh2PUW5pnKS5Xq5+DjdARu4aT4UOL7NbmGll/n2ZGvJlcOtHgXMmc5ZwprDZ/pzGvqbSDlSVHHaH43GfrH7FRiFiIurV4cWZYGmAedJF7O0afrMPibktRpESYRKuc/iIn4swBl8QR32Bi/+NVCYBA1NR4rsuCLmal3K8688raj/+ArKBuUz6uo7Siikk/MuY903O/PikArdfCSW5iXkS0tg06+hGHQxXqYnOMAPdK7PbMJk5QXKbJlfIxkS9XvCroJyHcpE4rsxkNIu5RztzI+pELQo872XiqTz7WYtPONMa9bnYVIPOc0YxG3aQ==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <A96C6335BE87BB42A95E1010257296AB@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727567AbgIUSJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 14:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726436AbgIUSJD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 14:09:03 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F4DC061755;
+        Mon, 21 Sep 2020 11:09:03 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id x20so10948136ybs.8;
+        Mon, 21 Sep 2020 11:09:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QfbGCX6rqAMLLO8aYfzPvTkabfO3m4G1Ikaa+c1SMFA=;
+        b=I63BIIi2ifvm4BeL/sZ8GMRz2Mp1eeAloeKVVTDIlh1Q+9PU7cHSZK+vBbsGPhxW9I
+         y4/LIeiZQX59dqUIp/49lv6cimW1Trchwa3Fbm555mpL4NeXi2uOlDvil8hhbWq4igf0
+         f8c4rL/VCX9AkJ0GaqPDYksTuVmA8Tt6x3hTLPyuFhwJ5m3glhEPd/aRl2DB/W4d5siL
+         LAV52saBl52USloVnPWqKg0YUvYsiGW1tmurjYqtBZwDTfazr+oXkZdDOK7ssl/JdPOH
+         XYD7GKiUgkuXtqG9kY11dC8eHoljKep5hebFYpd1OqIe4+w9ego42GSzaFiwcdfPrydT
+         bOaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QfbGCX6rqAMLLO8aYfzPvTkabfO3m4G1Ikaa+c1SMFA=;
+        b=HuiyKg8BTGHy/I0g4HPclZs1RgIDFzXmcuJ8dhxNKUyqgiCYJ8lFtBY2HDAyL5rLkA
+         XQ8CDoS9Ufjbs4aX8kKz8xb8J6chdNnCJfzsvCNxjvgrgCi+CeECOhQeS+AhXxgrDYzP
+         T+Y5bSN/92UEXU3PGX0drlKCJBHHNnyA8L4hAzvegU6c0pNt5eDbdDbOsgb9gIEedVEh
+         krALhLRVOshgP80jk7/eNUQV7yIPhGHT30dOmjub+J6CNXZFAC3lsEmWPFWndr36uZ7C
+         P7JeX2OmMHGfd034BhMXS6UpOIZ2OXNgtoDG+EIPQsNRlA7j37RuvPt+QOcVGpn1/+ej
+         ucgg==
+X-Gm-Message-State: AOAM530BkQL1R9j2+2rDdxmvX1y3Ms+GR/PjHXLx9xJxuXnVhsLj2JPb
+        TfgTq3AYufDY04d9U6BIZ8NhhgHjG0XsAiSLofqpD6G9N9Q=
+X-Google-Smtp-Source: ABdhPJy5hPMYFdwvUUs9y7HP9iFro0OtSXFlPovkff0E8NtjsKQAA1topvkUtqkO9JS6VvFYUEWJUpTz+o+7NOCG4Hc=
+X-Received: by 2002:a25:4446:: with SMTP id r67mr1484677yba.459.1600711742376;
+ Mon, 21 Sep 2020 11:09:02 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 14c8f892-33ca-4f66-238e-08d85e5913a0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Sep 2020 18:06:34.6138
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +dJ9V/qfr1idRVz7/d6oY2do60gErJTjr8K5MKvtd8DpjhVQQGNio9Q9QyB6vPPyQvKuEgxhtmjVLu6phndeAQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7102
+References: <20200916223512.2885524-1-haoluo@google.com> <20200916223512.2885524-5-haoluo@google.com>
+In-Reply-To: <20200916223512.2885524-5-haoluo@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 21 Sep 2020 11:08:51 -0700
+Message-ID: <CAEf4BzbJFE+Yxsy+VEwr-2_JcACh+jbn4WyiS+ECnVVNjC=bnA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 4/6] bpf: Introduce bpf_per_cpu_ptr()
+To:     Hao Luo <haoluo@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 21, 2020 at 07:07:21PM +0200, Andrew Lunn wrote:
-> On Mon, Sep 21, 2020 at 07:20:31PM +0300, Ioana Ciornei wrote:
-> > +static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
-> > +{
-> > +	struct lynx_pcs *pcs =3D mac->pcs;
-> > +
-> > +	if (pcs) {
-> > +		put_device(&pcs->mdio->dev);
-> > +		lynx_pcs_destroy(pcs);
-> > +		mac->pcs =3D NULL;
->=20
-> Hi Ioana
->=20
-> Maybe the put_device() should come after the destroy? It is then the
-> reverse of the creation.
->=20
-> 	Andrew
+On Wed, Sep 16, 2020 at 3:39 PM Hao Luo <haoluo@google.com> wrote:
+>
+> Add bpf_per_cpu_ptr() to help bpf programs access percpu vars.
+> bpf_per_cpu_ptr() has the same semantic as per_cpu_ptr() in the kernel
+> except that it may return NULL. This happens when the cpu parameter is
+> out of range. So the caller must check the returned value.
+>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> Signed-off-by: Hao Luo <haoluo@google.com>
+> ---
+>  include/linux/bpf.h            |  4 +++
+>  include/linux/btf.h            | 11 ++++++
+>  include/uapi/linux/bpf.h       | 18 ++++++++++
+>  kernel/bpf/btf.c               | 10 ------
+>  kernel/bpf/helpers.c           | 18 ++++++++++
+>  kernel/bpf/verifier.c          | 64 ++++++++++++++++++++++++++++++++--
+>  kernel/trace/bpf_trace.c       |  2 ++
+>  tools/include/uapi/linux/bpf.h | 18 ++++++++++
+>  8 files changed, 132 insertions(+), 13 deletions(-)
+>
 
-Hi Andrew,
+I already acked this, but see my concern about O(N) look up for
+.data..percpu. Feel free to follow up on this with a separate patch.
+Thanks!
 
-The lynx_pcs_destroy() function doesn't do much with the pcs, just a
-kfree on it. I did it this way to avoid keeping the device in a
-temporary variable but if you think we should do this in a symetrical
-way, I can make the change.
+[...]
 
-Ioana=
+> @@ -4003,6 +4008,15 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+>                         if (type != expected_type)
+>                                 goto err_type;
+>                 }
+> +       } else if (arg_type == ARG_PTR_TO_PERCPU_BTF_ID) {
+> +               expected_type = PTR_TO_PERCPU_BTF_ID;
+> +               if (type != expected_type)
+> +                       goto err_type;
+> +               if (!reg->btf_id) {
+> +                       verbose(env, "Helper has invalid btf_id in R%d\n", regno);
+> +                       return -EACCES;
+> +               }
+> +               meta->ret_btf_id = reg->btf_id;
+
+FYI, this will conflict with Lorenz's refactoring, so you might need
+to rebase and solve the conflicts if his patch set lands first.
+
+>         } else if (arg_type == ARG_PTR_TO_BTF_ID) {
+>                 bool ids_match = false;
+>
+> @@ -5002,6 +5016,30 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
+>                 regs[BPF_REG_0].type = PTR_TO_MEM_OR_NULL;
+>                 regs[BPF_REG_0].id = ++env->id_gen;
+>                 regs[BPF_REG_0].mem_size = meta.mem_size;
+> +       } else if (fn->ret_type == RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL) {
+> +               const struct btf_type *t;
+> +
+> +               mark_reg_known_zero(env, regs, BPF_REG_0);
+> +               t = btf_type_skip_modifiers(btf_vmlinux, meta.ret_btf_id, NULL);
+> +               if (!btf_type_is_struct(t)) {
+> +                       u32 tsize;
+> +                       const struct btf_type *ret;
+> +                       const char *tname;
+> +
+> +                       /* resolve the type size of ksym. */
+> +                       ret = btf_resolve_size(btf_vmlinux, t, &tsize);
+> +                       if (IS_ERR(ret)) {
+> +                               tname = btf_name_by_offset(btf_vmlinux, t->name_off);
+> +                               verbose(env, "unable to resolve the size of type '%s': %ld\n",
+> +                                       tname, PTR_ERR(ret));
+> +                               return -EINVAL;
+> +                       }
+> +                       regs[BPF_REG_0].type = PTR_TO_MEM_OR_NULL;
+> +                       regs[BPF_REG_0].mem_size = tsize;
+> +               } else {
+> +                       regs[BPF_REG_0].type = PTR_TO_BTF_ID_OR_NULL;
+> +                       regs[BPF_REG_0].btf_id = meta.ret_btf_id;
+> +               }
+>         } else if (fn->ret_type == RET_PTR_TO_BTF_ID_OR_NULL) {
+>                 int ret_btf_id;
+>
+> @@ -7413,6 +7451,7 @@ static int check_ld_imm(struct bpf_verifier_env *env, struct bpf_insn *insn)
+>                         dst_reg->mem_size = aux->btf_var.mem_size;
+>                         break;
+>                 case PTR_TO_BTF_ID:
+> +               case PTR_TO_PERCPU_BTF_ID:
+>                         dst_reg->btf_id = aux->btf_var.btf_id;
+>                         break;
+>                 default:
+> @@ -9313,10 +9352,14 @@ static int check_pseudo_btf_id(struct bpf_verifier_env *env,
+>                                struct bpf_insn *insn,
+>                                struct bpf_insn_aux_data *aux)
+>  {
+> -       u32 type, id = insn->imm;
+> +       u32 datasec_id, type, id = insn->imm;
+> +       const struct btf_var_secinfo *vsi;
+> +       const struct btf_type *datasec;
+>         const struct btf_type *t;
+>         const char *sym_name;
+> +       bool percpu = false;
+>         u64 addr;
+> +       int i;
+>
+>         if (!btf_vmlinux) {
+>                 verbose(env, "kernel is missing BTF, make sure CONFIG_DEBUG_INFO_BTF=y is specified in Kconfig.\n");
+> @@ -9348,12 +9391,27 @@ static int check_pseudo_btf_id(struct bpf_verifier_env *env,
+>                 return -ENOENT;
+>         }
+>
+> +       datasec_id = btf_find_by_name_kind(btf_vmlinux, ".data..percpu",
+> +                                          BTF_KIND_DATASEC);
+
+this is a relatively expensive O(N) operation, it probably makes sense
+to cache it (there are about 80'000 types now in BTF for my typical
+kernel config, so iterating that much for every single ldimm64 for
+ksym is kind of expensive.
+
+> +       if (datasec_id > 0) {
+> +               datasec = btf_type_by_id(btf_vmlinux, datasec_id);
+> +               for_each_vsi(i, datasec, vsi) {
+> +                       if (vsi->type == id) {
+> +                               percpu = true;
+> +                               break;
+> +                       }
+> +               }
+> +       }
+> +
+
+[...]
