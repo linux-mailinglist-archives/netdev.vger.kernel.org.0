@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80BCC272647
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 15:48:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF3F1272636
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 15:47:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727436AbgIUNrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 09:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34618 "EHLO
+        id S1727686AbgIUNrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 09:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727441AbgIUNqb (ORCPT
+        with ESMTP id S1727451AbgIUNqb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 09:46:31 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49710C0613E3
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 06:46:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF0DC0613E8
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 06:46:13 -0700 (PDT)
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kKM8v-0003ED-Vb; Mon, 21 Sep 2020 15:46:10 +0200
+        id 1kKM8w-0003ED-DI; Mon, 21 Sep 2020 15:46:10 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        kernel@pengutronix.de,
+        Stephane Grosjean <s.grosjean@peak-system.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 20/38] can: pch_can: use generic power management
-Date:   Mon, 21 Sep 2020 15:45:39 +0200
-Message-Id: <20200921134557.2251383-21-mkl@pengutronix.de>
+Subject: [PATCH 21/38] can: pcan_usb: Document the commands sent to the device
+Date:   Mon, 21 Sep 2020 15:45:40 +0200
+Message-Id: <20200921134557.2251383-22-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200921134557.2251383-1-mkl@pengutronix.de>
 References: <20200921134557.2251383-1-mkl@pengutronix.de>
@@ -39,184 +40,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+From: Stephane Grosjean <s.grosjean@peak-system.com>
 
-Drivers using legacy power management .suspen()/.resume() callbacks have to
-manage PCI states and device's PM states themselves. They also need to take
-care of standard configuration registers.
+This patch documents the functions and numbers of the commands sent by the
+driver to the PCAN-USB CAN device from PEAK-System GmbH.
 
-Switch to generic power management framework using a single "struct dev_pm_ops"
-variable to take the unnecessary load from the driver. This also avoids the
-need for the driver to directly call most of the PCI helper functions and
-device power state control functions, as through the generic framework PCI Core
-takes care of the necessary operations, and drivers are required to do only
-device-specific jobs.
-
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
-Link: https://lore.kernel.org/r/20200728085757.888620-1-vaibhavgupta40@gmail.com
+Signed-off-by: Stephane Grosjean <s.grosjean@peak-system.com>
+Link: https://lore.kernel.org/r/20191206153803.17725-2-s.grosjean@peak-system.com
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/pch_can.c | 63 +++++++++++++--------------------------
- 1 file changed, 21 insertions(+), 42 deletions(-)
+ drivers/net/can/usb/peak_usb/pcan_usb.c | 33 +++++++++++++++++++------
+ 1 file changed, 26 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
-index af4fbd8f9077..5c180d2f3c3c 100644
---- a/drivers/net/can/pch_can.c
-+++ b/drivers/net/can/pch_can.c
-@@ -957,8 +957,7 @@ static void pch_can_remove(struct pci_dev *pdev)
- 	free_candev(priv->ndev);
- }
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb.c b/drivers/net/can/usb/peak_usb/pcan_usb.c
+index 66d0198e7834..76468250cabf 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb.c
+@@ -34,6 +34,22 @@ MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB adapter");
+ #define PCAN_USB_CMD_LEN		(PCAN_USB_CMD_ARGS + \
+ 					 PCAN_USB_CMD_ARGS_LEN)
  
--#ifdef CONFIG_PM
--static void pch_can_set_int_custom(struct pch_can_priv *priv)
-+static void __maybe_unused pch_can_set_int_custom(struct pch_can_priv *priv)
- {
- 	/* Clearing the IE, SIE and EIE bits of Can control register. */
- 	pch_can_bit_clear(&priv->regs->cont, PCH_CTRL_IE_SIE_EIE);
-@@ -969,14 +968,14 @@ static void pch_can_set_int_custom(struct pch_can_priv *priv)
- }
- 
- /* This function retrieves interrupt enabled for the CAN device. */
--static u32 pch_can_get_int_enables(struct pch_can_priv *priv)
-+static u32 __maybe_unused pch_can_get_int_enables(struct pch_can_priv *priv)
- {
- 	/* Obtaining the status of IE, SIE and EIE interrupt bits. */
- 	return (ioread32(&priv->regs->cont) & PCH_CTRL_IE_SIE_EIE) >> 1;
- }
- 
--static u32 pch_can_get_rxtx_ir(struct pch_can_priv *priv, u32 buff_num,
--			       enum pch_ifreg dir)
-+static u32 __maybe_unused pch_can_get_rxtx_ir(struct pch_can_priv *priv,
-+					      u32 buff_num, enum pch_ifreg dir)
- {
- 	u32 ie, enable;
- 
-@@ -997,8 +996,8 @@ static u32 pch_can_get_rxtx_ir(struct pch_can_priv *priv, u32 buff_num,
- 	return enable;
- }
- 
--static void pch_can_set_rx_buffer_link(struct pch_can_priv *priv,
--				       u32 buffer_num, int set)
-+static void __maybe_unused pch_can_set_rx_buffer_link(struct pch_can_priv *priv,
-+						      u32 buffer_num, int set)
- {
- 	iowrite32(PCH_CMASK_RX_TX_GET, &priv->regs->ifregs[0].cmask);
- 	pch_can_rw_msg_obj(&priv->regs->ifregs[0].creq, buffer_num);
-@@ -1013,7 +1012,8 @@ static void pch_can_set_rx_buffer_link(struct pch_can_priv *priv,
- 	pch_can_rw_msg_obj(&priv->regs->ifregs[0].creq, buffer_num);
- }
- 
--static u32 pch_can_get_rx_buffer_link(struct pch_can_priv *priv, u32 buffer_num)
-+static u32 __maybe_unused pch_can_get_rx_buffer_link(struct pch_can_priv *priv,
-+						     u32 buffer_num)
- {
- 	u32 link;
- 
-@@ -1027,20 +1027,19 @@ static u32 pch_can_get_rx_buffer_link(struct pch_can_priv *priv, u32 buffer_num)
- 	return link;
- }
- 
--static int pch_can_get_buffer_status(struct pch_can_priv *priv)
-+static int __maybe_unused pch_can_get_buffer_status(struct pch_can_priv *priv)
- {
- 	return (ioread32(&priv->regs->treq1) & 0xffff) |
- 	       (ioread32(&priv->regs->treq2) << 16);
- }
- 
--static int pch_can_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused pch_can_suspend(struct device *dev_d)
- {
- 	int i;
--	int retval;
- 	u32 buf_stat;	/* Variable for reading the transmit buffer status. */
- 	int counter = PCH_COUNTER_LIMIT;
- 
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct pch_can_priv *priv = netdev_priv(dev);
- 
- 	/* Stop the CAN controller */
-@@ -1058,7 +1057,7 @@ static int pch_can_suspend(struct pci_dev *pdev, pm_message_t state)
- 		udelay(1);
- 	}
- 	if (!counter)
--		dev_err(&pdev->dev, "%s -> Transmission time out.\n", __func__);
-+		dev_err(dev_d, "%s -> Transmission time out.\n", __func__);
- 
- 	/* Save interrupt configuration and then disable them */
- 	priv->int_enables = pch_can_get_int_enables(priv);
-@@ -1081,35 +1080,16 @@ static int pch_can_suspend(struct pci_dev *pdev, pm_message_t state)
- 
- 	/* Disable all Receive buffers */
- 	pch_can_set_rx_all(priv, 0);
--	retval = pci_save_state(pdev);
--	if (retval) {
--		dev_err(&pdev->dev, "pci_save_state failed.\n");
--	} else {
--		pci_enable_wake(pdev, PCI_D3hot, 0);
--		pci_disable_device(pdev);
--		pci_set_power_state(pdev, pci_choose_state(pdev, state));
--	}
- 
--	return retval;
-+	return 0;
- }
- 
--static int pch_can_resume(struct pci_dev *pdev)
-+static int __maybe_unused pch_can_resume(struct device *dev_d)
- {
- 	int i;
--	int retval;
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct pch_can_priv *priv = netdev_priv(dev);
- 
--	pci_set_power_state(pdev, PCI_D0);
--	pci_restore_state(pdev);
--	retval = pci_enable_device(pdev);
--	if (retval) {
--		dev_err(&pdev->dev, "pci_enable_device failed.\n");
--		return retval;
--	}
--
--	pci_enable_wake(pdev, PCI_D3hot, 0);
--
- 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
- 
- 	/* Disabling all interrupts. */
-@@ -1146,12 +1126,8 @@ static int pch_can_resume(struct pci_dev *pdev)
- 	/* Restore Run Mode */
- 	pch_can_set_run_mode(priv, PCH_CAN_RUN);
- 
--	return retval;
-+	return 0;
- }
--#else
--#define pch_can_suspend NULL
--#define pch_can_resume NULL
--#endif
- 
- static int pch_can_get_berr_counter(const struct net_device *dev,
- 				    struct can_berr_counter *bec)
-@@ -1252,13 +1228,16 @@ static int pch_can_probe(struct pci_dev *pdev,
- 	return rc;
- }
- 
-+static SIMPLE_DEV_PM_OPS(pch_can_pm_ops,
-+			 pch_can_suspend,
-+			 pch_can_resume);
++/* PCAN-USB commands */
++#define PCAN_USB_CMD_BITRATE	1
++#define PCAN_USB_CMD_SET_BUS	3
++#define PCAN_USB_CMD_DEVID	4
++#define PCAN_USB_CMD_SN		6
++#define PCAN_USB_CMD_REGISTER	9
++#define PCAN_USB_CMD_EXT_VCC	10
 +
- static struct pci_driver pch_can_pci_driver = {
- 	.name = "pch_can",
- 	.id_table = pch_pci_tbl,
- 	.probe = pch_can_probe,
- 	.remove = pch_can_remove,
--	.suspend = pch_can_suspend,
--	.resume = pch_can_resume,
-+	.driver.pm = &pch_can_pm_ops,
- };
++/* PCAN_USB_CMD_SET_BUS number arg */
++#define PCAN_USB_BUS_XCVER		2
++#define PCAN_USB_BUS_SILENT_MODE	3
++
++/* PCAN_USB_CMD_xxx functions */
++#define PCAN_USB_GET		1
++#define PCAN_USB_SET		2
++
+ /* PCAN-USB command timeout (ms.) */
+ #define PCAN_USB_COMMAND_TIMEOUT	1000
  
- module_pci_driver(pch_can_pci_driver);
+@@ -172,7 +188,8 @@ static int pcan_usb_set_sja1000(struct peak_usb_device *dev, u8 mode)
+ 		[1] = mode,
+ 	};
+ 
+-	return pcan_usb_send_cmd(dev, 9, 2, args);
++	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_REGISTER, PCAN_USB_SET,
++				 args);
+ }
+ 
+ static int pcan_usb_set_bus(struct peak_usb_device *dev, u8 onoff)
+@@ -181,7 +198,8 @@ static int pcan_usb_set_bus(struct peak_usb_device *dev, u8 onoff)
+ 		[0] = !!onoff,
+ 	};
+ 
+-	return pcan_usb_send_cmd(dev, 3, 2, args);
++	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_SET_BUS, PCAN_USB_BUS_XCVER,
++				 args);
+ }
+ 
+ static int pcan_usb_set_silent(struct peak_usb_device *dev, u8 onoff)
+@@ -190,7 +208,8 @@ static int pcan_usb_set_silent(struct peak_usb_device *dev, u8 onoff)
+ 		[0] = !!onoff,
+ 	};
+ 
+-	return pcan_usb_send_cmd(dev, 3, 3, args);
++	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_SET_BUS,
++				 PCAN_USB_BUS_SILENT_MODE, args);
+ }
+ 
+ static int pcan_usb_set_ext_vcc(struct peak_usb_device *dev, u8 onoff)
+@@ -199,7 +218,7 @@ static int pcan_usb_set_ext_vcc(struct peak_usb_device *dev, u8 onoff)
+ 		[0] = !!onoff,
+ 	};
+ 
+-	return pcan_usb_send_cmd(dev, 10, 2, args);
++	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_EXT_VCC, PCAN_USB_SET, args);
+ }
+ 
+ /*
+@@ -223,7 +242,7 @@ static int pcan_usb_set_bittiming(struct peak_usb_device *dev,
+ 	args[0] = btr1;
+ 	args[1] = btr0;
+ 
+-	return pcan_usb_send_cmd(dev, 1, 2, args);
++	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_BITRATE, PCAN_USB_SET, args);
+ }
+ 
+ /*
+@@ -307,7 +326,7 @@ static int pcan_usb_get_serial(struct peak_usb_device *dev, u32 *serial_number)
+ 	u8 args[PCAN_USB_CMD_ARGS_LEN];
+ 	int err;
+ 
+-	err = pcan_usb_wait_rsp(dev, 6, 1, args);
++	err = pcan_usb_wait_rsp(dev, PCAN_USB_CMD_SN, PCAN_USB_GET, args);
+ 	if (err) {
+ 		netdev_err(dev->netdev, "getting serial failure: %d\n", err);
+ 	} else if (serial_number) {
+@@ -328,7 +347,7 @@ static int pcan_usb_get_device_id(struct peak_usb_device *dev, u32 *device_id)
+ 	u8 args[PCAN_USB_CMD_ARGS_LEN];
+ 	int err;
+ 
+-	err = pcan_usb_wait_rsp(dev, 4, 1, args);
++	err = pcan_usb_wait_rsp(dev, PCAN_USB_CMD_DEVID, PCAN_USB_GET, args);
+ 	if (err)
+ 		netdev_err(dev->netdev, "getting device id failure: %d\n", err);
+ 	else if (device_id)
 -- 
 2.28.0
 
