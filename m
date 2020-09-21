@@ -2,127 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6142B272988
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 17:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98D8327299B
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 17:11:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727685AbgIUPIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 11:08:34 -0400
-Received: from www62.your-server.de ([213.133.104.62]:53726 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726584AbgIUPIe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 11:08:34 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kKNQQ-0003T9-Jo; Mon, 21 Sep 2020 17:08:18 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kKNQQ-000JkV-9z; Mon, 21 Sep 2020 17:08:18 +0200
-Subject: Re: BPF redirect API design issue for BPF-prog MTU feedback?
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Cc:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        BPF-dev-list <bpf@vger.kernel.org>,
+        id S1727441AbgIUPL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 11:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726413AbgIUPL0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 11:11:26 -0400
+Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5750C061755;
+        Mon, 21 Sep 2020 08:11:25 -0700 (PDT)
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kKNTL-003Byz-4d; Mon, 21 Sep 2020 15:11:19 +0000
+Date:   Mon, 21 Sep 2020 16:11:19 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Christoph Hellwig' <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shaun Crampton <shaun@tigera.io>,
-        David Miller <davem@davemloft.net>,
-        Marek Majkowski <marek@cloudflare.com>
-References: <20200917143846.37ce43a0@carbon>
- <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
- <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org>
- <20200918120016.7007f437@carbon>
- <CANP3RGfUj-KKHHQtbggiZ4V-Xrr_sk+TWyN5FgYUGZS6rOX1yw@mail.gmail.com>
- <CACAyw9-v_o+gPUpC-R9SXsfzMywrdGsWV13Nk=tx2aS-fEBFYg@mail.gmail.com>
- <20200921144953.6456d47d@carbon>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <340f209d-58d4-52a6-0804-7102d80c1468@iogearbox.net>
-Date:   Mon, 21 Sep 2020 17:08:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: Re: [PATCH 04/11] iov_iter: explicitly check for CHECK_IOVEC_ONLY in
+ rw_copy_check_uvector
+Message-ID: <20200921151119.GU3421308@ZenIV.linux.org.uk>
+References: <20200921143434.707844-1-hch@lst.de>
+ <20200921143434.707844-5-hch@lst.de>
+ <7336624280b8444fb4cb00407317741b@AcuMS.aculab.com>
 MIME-Version: 1.0
-In-Reply-To: <20200921144953.6456d47d@carbon>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25934/Mon Sep 21 15:52:04 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7336624280b8444fb4cb00407317741b@AcuMS.aculab.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/21/20 2:49 PM, Jesper Dangaard Brouer wrote:
-> On Mon, 21 Sep 2020 11:37:18 +0100
-> Lorenz Bauer <lmb@cloudflare.com> wrote:
->> On Sat, 19 Sep 2020 at 00:06, Maciej Żenczykowski <maze@google.com> wrote:
->>>   
->>>> This is a good point.  As bpf_skb_adjust_room() can just be run after
->>>> bpf_redirect() call, then a MTU check in bpf_redirect() actually
->>>> doesn't make much sense.  As clever/bad BPF program can then avoid the
->>>> MTU check anyhow.  This basically means that we have to do the MTU
->>>> check (again) on kernel side anyhow to catch such clever/bad BPF
->>>> programs.  (And I don't like wasting cycles on doing the same check two
->>>> times).
->>>
->>> If you get rid of the check in bpf_redirect() you might as well get
->>> rid of *all* the checks for excessive mtu in all the helpers that
->>> adjust packet size one way or another way.  They *all* then become
->>> useless overhead.
->>>
->>> I don't like that.  There may be something the bpf program could do to
->>> react to the error condition (for example in my case, not modify
->>> things and just let the core stack deal with things - which will
->>> probably just generate packet too big icmp error).
->>>
->>> btw. right now our forwarding programs first adjust the packet size
->>> then call bpf_redirect() and almost immediately return what it
->>> returned.
->>>
->>> but this could I think easily be changed to reverse the ordering, so
->>> we wouldn't increase packet size before the core stack was informed we
->>> would be forwarding via a different interface.
->>
->> We do the same, except that we also use XDP_TX when appropriate. This
->> complicates the matter, because there is no helper call we could
->> return an error from.
-> 
-> Do notice that my MTU work is focused on TC-BPF.  For XDP-redirect the
-> MTU check is done in xdp_ok_fwd_dev() via __xdp_enqueue(), which also
-> happens too late to give BPF-prog knowledge/feedback.  For XDP_TX I
-> audited the drivers when I implemented xdp_buff.frame_sz, and they
-> handled (or I added) handling against max HW MTU. E.g. mlx5 [1].
-> 
-> [1] https://elixir.bootlin.com/linux/v5.9-rc6/source/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c#L267
-> 
->> My preference would be to have three helpers: get MTU for a device,
->> redirect ctx to a device (with MTU check), resize ctx (without MTU
->> check) but that doesn't work with XDP_TX. Your idea of doing checks
->> in redirect and adjust_room is pragmatic and seems easier to
->> implement.
->   
-> I do like this plan/proposal (with 3 helpers), but it is not possible
-> with current API.  The main problem is the current bpf_redirect API
-> doesn't provide the ctx, so we cannot do the check in the BPF-helper.
-> 
-> Are you saying we should create a new bpf_redirect API (that incl packet ctx)?
+On Mon, Sep 21, 2020 at 03:05:32PM +0000, David Laight wrote:
 
-Sorry for jumping in late here... one thing that is not clear to me is that if
-we are fully sure that skb is dropped by stack anyway due to invalid MTU (redirect
-to ingress does this via dev_forward_skb(), it's not fully clear to me whether it's
-also the case for the dev_queue_xmiy()), then why not dropping all the MTU checks
-aside from SKB_MAX_ALLOC sanity check for BPF helpers and have something like a
-device object (similar to e.g. TCP sockets) exposed to BPF prog where we can retrieve
-the object and read dev->mtu from the prog, so the BPF program could then do the
-"exception" handling internally w/o extra prog needed (we also already expose whether
-skb is GSO or not).
+> I've actually no idea:
+> 1) Why there is an access_ok() check here.
+>    It will be repeated by the user copy functions.
 
-Thanks,
-Daniel
+Early sanity check.
+
+> 2) Why it isn't done when called from mm/process_vm_access.c.
+>    Ok, the addresses refer to a different process, but they
+>    must still be valid user addresses.
+> 
+> Is 2 a legacy from when access_ok() actually checked that the
+> addresses were mapped into the process's address space?
+
+It never did.  2 is for the situation when a 32bit process
+accesses 64bit one; addresses that are perfectly legitimate
+for 64bit userland (and fitting into the first 4Gb of address
+space, so they can be represented by 32bit pointers just fine)
+might be rejected by access_ok() if the caller is 32bit.
