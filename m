@@ -2,31 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A47DB27262F
+	by mail.lfdr.de (Postfix) with ESMTP id 37B5A27262E
 	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 15:47:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727674AbgIUNrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 09:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
+        id S1727404AbgIUNrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 09:47:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727474AbgIUNqc (ORCPT
+        with ESMTP id S1727476AbgIUNqc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 09:46:32 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD6FC0613AF
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 06:46:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16964C0613B1
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 06:46:16 -0700 (PDT)
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kKM8z-0003ED-NU; Mon, 21 Sep 2020 15:46:13 +0200
+        id 1kKM90-0003ED-18; Mon, 21 Sep 2020 15:46:14 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Zhang Changzhong <zhangchangzhong@huawei.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 31/38] can: mscan: simplify clock enable/disable
-Date:   Mon, 21 Sep 2020 15:45:50 +0200
-Message-Id: <20200921134557.2251383-32-mkl@pengutronix.de>
+        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 32/38] can: rx-offload: can_rx_offload_add_manual(): add new initialization function
+Date:   Mon, 21 Sep 2020 15:45:51 +0200
+Message-Id: <20200921134557.2251383-33-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200921134557.2251383-1-mkl@pengutronix.de>
 References: <20200921134557.2251383-1-mkl@pengutronix.de>
@@ -40,72 +38,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Changzhong <zhangchangzhong@huawei.com>
+This patch adds a new initialization function:
+can_rx_offload_add_manual()
 
-All the NULL checks are pointless, clk_*() routines already deal with
-NULL just fine.
+It should be used to add support rx-offload to a driver, if the callback
+mechanism should not be used. Use e.g. can_rx_offload_queue_sorted() to queue
+skbs into rx-offload.
 
-Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-Link: https://lore.kernel.org/r/1594972875-27631-1-git-send-email-zhangchangzhong@huawei.com
+Link: https://lore.kernel.org/r/20200915223527.1417033-33-mkl@pengutronix.de
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/mscan/mscan.c | 28 ++++++++++------------------
- 1 file changed, 10 insertions(+), 18 deletions(-)
+ drivers/net/can/rx-offload.c   | 11 +++++++++++
+ include/linux/can/rx-offload.h |  3 +++
+ 2 files changed, 14 insertions(+)
 
-diff --git a/drivers/net/can/mscan/mscan.c b/drivers/net/can/mscan/mscan.c
-index 0b3532dd50e2..640ba1b356ec 100644
---- a/drivers/net/can/mscan/mscan.c
-+++ b/drivers/net/can/mscan/mscan.c
-@@ -541,16 +541,12 @@ static int mscan_open(struct net_device *dev)
- 	struct mscan_priv *priv = netdev_priv(dev);
- 	struct mscan_regs __iomem *regs = priv->reg_base;
- 
--	if (priv->clk_ipg) {
--		ret = clk_prepare_enable(priv->clk_ipg);
--		if (ret)
--			goto exit_retcode;
--	}
--	if (priv->clk_can) {
--		ret = clk_prepare_enable(priv->clk_can);
--		if (ret)
--			goto exit_dis_ipg_clock;
--	}
-+	ret = clk_prepare_enable(priv->clk_ipg);
-+	if (ret)
-+		goto exit_retcode;
-+	ret = clk_prepare_enable(priv->clk_can);
-+	if (ret)
-+		goto exit_dis_ipg_clock;
- 
- 	/* common open */
- 	ret = open_candev(dev);
-@@ -584,11 +580,9 @@ static int mscan_open(struct net_device *dev)
- 	napi_disable(&priv->napi);
- 	close_candev(dev);
- exit_dis_can_clock:
--	if (priv->clk_can)
--		clk_disable_unprepare(priv->clk_can);
-+	clk_disable_unprepare(priv->clk_can);
- exit_dis_ipg_clock:
--	if (priv->clk_ipg)
--		clk_disable_unprepare(priv->clk_ipg);
-+	clk_disable_unprepare(priv->clk_ipg);
- exit_retcode:
- 	return ret;
+diff --git a/drivers/net/can/rx-offload.c b/drivers/net/can/rx-offload.c
+index e8328910a234..3b180269a92d 100644
+--- a/drivers/net/can/rx-offload.c
++++ b/drivers/net/can/rx-offload.c
+@@ -351,6 +351,17 @@ int can_rx_offload_add_fifo(struct net_device *dev,
  }
-@@ -607,10 +601,8 @@ static int mscan_close(struct net_device *dev)
- 	close_candev(dev);
- 	free_irq(dev->irq, dev);
+ EXPORT_SYMBOL_GPL(can_rx_offload_add_fifo);
  
--	if (priv->clk_can)
--		clk_disable_unprepare(priv->clk_can);
--	if (priv->clk_ipg)
--		clk_disable_unprepare(priv->clk_ipg);
-+	clk_disable_unprepare(priv->clk_can);
-+	clk_disable_unprepare(priv->clk_ipg);
- 
- 	return 0;
- }
++int can_rx_offload_add_manual(struct net_device *dev,
++			      struct can_rx_offload *offload,
++			      unsigned int weight)
++{
++	if (offload->mailbox_read)
++		return -EINVAL;
++
++	return can_rx_offload_init_queue(dev, offload, weight);
++}
++EXPORT_SYMBOL_GPL(can_rx_offload_add_manual);
++
+ void can_rx_offload_enable(struct can_rx_offload *offload)
+ {
+ 	napi_enable(&offload->napi);
+diff --git a/include/linux/can/rx-offload.h b/include/linux/can/rx-offload.h
+index 1b78a0cfb615..f1b38088b765 100644
+--- a/include/linux/can/rx-offload.h
++++ b/include/linux/can/rx-offload.h
+@@ -35,6 +35,9 @@ int can_rx_offload_add_timestamp(struct net_device *dev,
+ int can_rx_offload_add_fifo(struct net_device *dev,
+ 			    struct can_rx_offload *offload,
+ 			    unsigned int weight);
++int can_rx_offload_add_manual(struct net_device *dev,
++			      struct can_rx_offload *offload,
++			      unsigned int weight);
+ int can_rx_offload_irq_offload_timestamp(struct can_rx_offload *offload,
+ 					 u64 reg);
+ int can_rx_offload_irq_offload_fifo(struct can_rx_offload *offload);
 -- 
 2.28.0
 
