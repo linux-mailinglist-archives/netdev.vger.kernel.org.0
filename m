@@ -2,147 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0964B2735D0
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 00:31:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A9DA2735E1
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 00:39:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728583AbgIUWbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 18:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
+        id S1728488AbgIUWjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 18:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727447AbgIUWbk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 18:31:40 -0400
-Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E552C061755
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 15:31:40 -0700 (PDT)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4BwK1510fVzKmTj;
-        Tue, 22 Sep 2020 00:31:37 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
-        with ESMTP id KCgOXmbfBGBj; Tue, 22 Sep 2020 00:31:32 +0200 (CEST)
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        martin.blumenstingl@googlemail.com,
-        Hauke Mehrtens <hauke@hauke-m.de>
-Subject: [PATCH] net: lantiq: Add locking for TX DMA channel
-Date:   Tue, 22 Sep 2020 00:31:13 +0200
-Message-Id: <20200921223113.8750-1-hauke@hauke-m.de>
+        with ESMTP id S1726644AbgIUWji (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 18:39:38 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747A8C061755;
+        Mon, 21 Sep 2020 15:39:38 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id k2so11427375ybp.7;
+        Mon, 21 Sep 2020 15:39:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=MTgpZaEUVu6kw4q7DIocpZoFpDJ7k2hZvDPOxQF+RYE=;
+        b=OQai4T3aq5xMgt4Okwu55BQKVFWJSSRJX71HyJAnxCiEhHvVTVhjc85pD3l+MNSWG/
+         9WefO3e786Sqb6BPeS+DjagLwS2T7Odl0nLfo6wqjsmd92qCWuZEo0g41FeshBsWitkk
+         jQFd/fyoKs0Wss/Fmv7wrA6dCswmBN2bZd5qomCbBYN3U/82tmM1bpYOZS/j0TQDVQ3j
+         YjOZ64aWu44m0J1zfu0tE3U3r5rYFTgif+7CmuRUzejmY3YAevuMLjkajVrbljpuPWog
+         kFHM7c1iLQ557HgCYT4zFSTLgK/eeww9XYhZtgqO8Za76t8smMp02IP4eihrrWbYqz3+
+         90BA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=MTgpZaEUVu6kw4q7DIocpZoFpDJ7k2hZvDPOxQF+RYE=;
+        b=ItzbYHWI0EBmVvuCkfZMIYp9fOaJ6SGwA/AfxZFrDSYiSGnqc3vTGT7ovmK+dRu4BS
+         nF7lV1lpZWY0XTLwDXmjuugkxtMisadk+PeFhWPLK2nkXOgYL/wIUZza733/wjp8YZUl
+         xWhRkseTnyUU8rKDXn5BOe5RNCPaJBDSFW6T3cPQCxb0+0RKZE68pxAOt2ItujINMhMR
+         miziDE8o4/yrlYAuxOYtLXECVSsdptJE1oZxl/6dXuaLB/eY2gWFvM9ICHfcKMjfBR2N
+         Hd64jqY1crQLeYaKpfTo3cU4RL1ytrLf3ygXumBEs0d/37XmsFUjFL5h0OCFuxlFUali
+         TKug==
+X-Gm-Message-State: AOAM5300XerHAprkN9gLIuKYFlh508LcjRgrA1Mr6YfRe4lyOKIzLHjr
+        4HkhGIVjkJ4Uo/JNeoGbESM5qNZ2Qjr9MJih1xE=
+X-Google-Smtp-Source: ABdhPJxB5o8KlxMuPMl/axpG5ZW52JZukZAYMK/AT8rssYF45l4E1hsJ4zJOHZT25pRPx0fjoXNqMlcIa+Fctw8w8GU=
+X-Received: by 2002:a25:4446:: with SMTP id r67mr2919486yba.459.1600727977616;
+ Mon, 21 Sep 2020 15:39:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: **
-X-Rspamd-Score: 2.70 / 15.00 / 15.00
-X-Rspamd-Queue-Id: EB690274
-X-Rspamd-UID: 3d63d6
+References: <160051618267.58048.2336966160671014012.stgit@toke.dk> <160051618391.58048.12525358750568883938.stgit@toke.dk>
+In-Reply-To: <160051618391.58048.12525358750568883938.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 21 Sep 2020 15:39:26 -0700
+Message-ID: <CAEf4Bzbb5gt7KgmfXM6FiC750GjxL23XO4GPnVHFgCGaMTuDCg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 01/10] bpf: disallow attaching modify_return
+ tracing functions to other BPF programs
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TX DMA channel data is accessed by the xrx200_start_xmit() and the
-xrx200_tx_housekeeping() function from different threads. Make sure the
-accesses are synchronized by using locking around the accesses.
+On Sat, Sep 19, 2020 at 4:50 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>
+> From the checks and commit messages for modify_return, it seems it was
+> never the intention that it should be possible to attach a tracing progra=
+m
+> with expected_attach_type =3D=3D BPF_MODIFY_RETURN to another BPF program=
+.
+> However, check_attach_modify_return() will only look at the function name=
+,
+> so if the target function starts with "security_", the attach will be
+> allowed even for bpf2bpf attachment.
+>
+> Fix this oversight by also blocking the modification if a target program =
+is
+> supplied.
+>
+> Fixes: 18644cec714a ("bpf: Fix use-after-free in fmod_ret check")
+> Fixes: 6ba43b761c41 ("bpf: Attachment verification for BPF_MODIFY_RETURN"=
+)
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  kernel/bpf/verifier.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 4161b6c406bc..cb1b0f9fd770 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -11442,7 +11442,7 @@ static int check_attach_btf_id(struct bpf_verifie=
+r_env *env)
+>                                         prog->aux->attach_func_name);
+>                 } else if (prog->expected_attach_type =3D=3D BPF_MODIFY_R=
+ETURN) {
+>                         ret =3D check_attach_modify_return(prog, addr);
+> -                       if (ret)
+> +                       if (ret || tgt_prog)
 
-Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
----
- drivers/net/ethernet/lantiq_xrx200.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+can you please do it as a separate check with a more appropriate and
+meaningful message?
 
-diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
-index 635ff3a5dcfb..f4de09d1f582 100644
---- a/drivers/net/ethernet/lantiq_xrx200.c
-+++ b/drivers/net/ethernet/lantiq_xrx200.c
-@@ -59,6 +59,7 @@ struct xrx200_chan {
- 	struct ltq_dma_channel dma;
- 	struct sk_buff *skb[LTQ_DESC_NUM];
- 
-+	spinlock_t lock;
- 	struct xrx200_priv *priv;
- };
- 
-@@ -242,9 +243,11 @@ static int xrx200_tx_housekeeping(struct napi_struct *napi, int budget)
- 	struct xrx200_chan *ch = container_of(napi,
- 				struct xrx200_chan, napi);
- 	struct net_device *net_dev = ch->priv->net_dev;
-+	unsigned long flags;
- 	int pkts = 0;
- 	int bytes = 0;
- 
-+	spin_lock_irqsave(&ch->lock, flags);
- 	while (pkts < budget) {
- 		struct ltq_dma_desc *desc = &ch->dma.desc_base[ch->tx_free];
- 
-@@ -268,6 +271,8 @@ static int xrx200_tx_housekeeping(struct napi_struct *napi, int budget)
- 	net_dev->stats.tx_bytes += bytes;
- 	netdev_completed_queue(ch->priv->net_dev, pkts, bytes);
- 
-+	spin_unlock_irqrestore(&ch->lock, flags);
-+
- 	if (netif_queue_stopped(net_dev))
- 		netif_wake_queue(net_dev);
- 
-@@ -284,7 +289,8 @@ static netdev_tx_t xrx200_start_xmit(struct sk_buff *skb,
- {
- 	struct xrx200_priv *priv = netdev_priv(net_dev);
- 	struct xrx200_chan *ch = &priv->chan_tx;
--	struct ltq_dma_desc *desc = &ch->dma.desc_base[ch->dma.desc];
-+	struct ltq_dma_desc *desc;
-+	unsigned long flags;
- 	u32 byte_offset;
- 	dma_addr_t mapping;
- 	int len;
-@@ -297,8 +303,11 @@ static netdev_tx_t xrx200_start_xmit(struct sk_buff *skb,
- 
- 	len = skb->len;
- 
-+	spin_lock_irqsave(&ch->lock, flags);
-+	desc = &ch->dma.desc_base[ch->dma.desc];
- 	if ((desc->ctl & (LTQ_DMA_OWN | LTQ_DMA_C)) || ch->skb[ch->dma.desc]) {
- 		netdev_err(net_dev, "tx ring full\n");
-+		spin_unlock_irqrestore(&ch->lock, flags);
- 		netif_stop_queue(net_dev);
- 		return NETDEV_TX_BUSY;
- 	}
-@@ -306,8 +315,10 @@ static netdev_tx_t xrx200_start_xmit(struct sk_buff *skb,
- 	ch->skb[ch->dma.desc] = skb;
- 
- 	mapping = dma_map_single(priv->dev, skb->data, len, DMA_TO_DEVICE);
--	if (unlikely(dma_mapping_error(priv->dev, mapping)))
-+	if (unlikely(dma_mapping_error(priv->dev, mapping))) {
-+		spin_unlock_irqrestore(&ch->lock, flags);
- 		goto err_drop;
-+	}
- 
- 	/* dma needs to start on a 16 byte aligned address */
- 	byte_offset = mapping % 16;
-@@ -324,6 +335,8 @@ static netdev_tx_t xrx200_start_xmit(struct sk_buff *skb,
- 
- 	netdev_sent_queue(net_dev, len);
- 
-+	spin_unlock_irqrestore(&ch->lock, flags);
-+
- 	return NETDEV_TX_OK;
- 
- err_drop:
-@@ -367,6 +380,7 @@ static int xrx200_dma_init(struct xrx200_priv *priv)
- 	ch_rx->dma.nr = XRX200_DMA_RX;
- 	ch_rx->dma.dev = priv->dev;
- 	ch_rx->priv = priv;
-+	spin_lock_init(&ch_rx->lock);
- 
- 	ltq_dma_alloc_rx(&ch_rx->dma);
- 	for (ch_rx->dma.desc = 0; ch_rx->dma.desc < LTQ_DESC_NUM;
-@@ -387,6 +401,7 @@ static int xrx200_dma_init(struct xrx200_priv *priv)
- 	ch_tx->dma.nr = XRX200_DMA_TX;
- 	ch_tx->dma.dev = priv->dev;
- 	ch_tx->priv = priv;
-+	spin_lock_init(&ch_tx->lock);
- 
- 	ltq_dma_alloc_tx(&ch_tx->dma);
- 	ret = devm_request_irq(priv->dev, ch_tx->dma.irq, xrx200_dma_irq, 0,
--- 
-2.20.1
-
+>                                 verbose(env, "%s() is not modifiable\n",
+>                                         prog->aux->attach_func_name);
+>                 }
+>
