@@ -2,100 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2109272AED
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 18:02:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD7E9272B3E
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 18:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbgIUQCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 12:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726395AbgIUQCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 12:02:41 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D64C061755
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 09:02:41 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id w3so11560378ljo.5
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 09:02:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=rf85IIrYDoX56EbvJwzXLS38sc5yj7QH4axMImYh7js=;
-        b=YxB8v0hZxN72WeWDcFC/Yzt95xddMxFGeW/FXERZ9GlehuR/O442qY/ettTiD6Cjao
-         m+m/Dmue2w9uKvJgEVYz7+Qj+EH+l2fe8TBbd2Cq11pW1pdp+RDl72rYbk8GuNIlwAV6
-         +yzDn/O0rxixNROHkfCgx6zLNeYwqnD06fDNnx7XswwmmoIXBd8TobxG1A4grGEoVAUZ
-         4s832yi8XqMd+kRuUbm5+Ksbu3VODb5RoCkgN/uDYaM2Ob1lL+mL4XFahdLZlSY5waqj
-         DcyZhTuljk3/vf4vAWDBPHCwR8wX0CnnDKARoo3eW6VCjQ2WS68MebE+9jbBtvZdwpUU
-         UMoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=rf85IIrYDoX56EbvJwzXLS38sc5yj7QH4axMImYh7js=;
-        b=P8CEFXTtijw24PVsEAtQYgDqDURq25hG4ag0BXGg+JBZupRPun32S34w5Wed94TIfs
-         Tj+wQmHGeDcepA0upALsjVKqxbwxS6PVZ0SwVSyhAZo3WPXeqFUkk6YU8bOYLB41jFSE
-         pktf5zjHdfvebMr2PStNvEcoUluOzqOnxLhJTkCnN2cx7d0OUzaoH9QPEKuAyHNU4LCQ
-         96f0w6/ddNrhQwNBw2apHELLHMA+Bpd6y0dgZbUIQ7lqQ2dwB7SgWEyZSXCO9pBLOXUS
-         JFQpNI5V51nwZVboBpI4utZVHORfmss/HxC4lz8L1kW+aOr3Gp67g1vreyiXGLMooU3d
-         jA4A==
-X-Gm-Message-State: AOAM530p0UWhEUwvJ3UImlPqtjxc9+n+ulZZu/iSD+YMuRGE9R2kYkBw
-        9Q26dJLituKPCrWChldYGD2X8w6bMlb6ar6vE6A=
-X-Google-Smtp-Source: ABdhPJzEPqz6JULHoJUQrBYPPvzXCS7g/0z9VkQkiMmA7LMvzC3KPwlXih//kjHu6Ii7h4jfg3/kNd5sbF+AsTYaIK0=
-X-Received: by 2002:a05:651c:28b:: with SMTP id b11mr135869ljo.228.1600704159471;
- Mon, 21 Sep 2020 09:02:39 -0700 (PDT)
+        id S1728212AbgIUQMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 12:12:33 -0400
+Received: from mga05.intel.com ([192.55.52.43]:56281 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728201AbgIUQMc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 12:12:32 -0400
+IronPort-SDR: MqHtZHQzCNjjlesA7nhzk4+LuQ2szVY6xef3bCzBYXHvyg/1JypCqdnIxGFurhvwa3FUp/2gUe
+ JuEkSIP1XfDA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9751"; a="245261224"
+X-IronPort-AV: E=Sophos;i="5.77,287,1596524400"; 
+   d="scan'208";a="245261224"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2020 09:12:30 -0700
+IronPort-SDR: PFGD7cxLtx6JSmQh/9xzoRoxUT3dNwg1ZsCx6L//MdStBZ/1a6fjfDJblGVWT2k9Nvg+mJYmQl
+ i+wt/coDa7zA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,287,1596524400"; 
+   d="scan'208";a="454105387"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga004.jf.intel.com with ESMTP; 21 Sep 2020 09:12:28 -0700
+Date:   Mon, 21 Sep 2020 18:05:37 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH v8 bpf-next 0/7] bpf: tailcalls in BPF subprograms
+Message-ID: <20200921160537.GA31703@ranger.igk.intel.com>
+References: <20200916211010.3685-1-maciej.fijalkowski@intel.com>
+ <CAADnVQLEYHZLeu-d4nV5Px6t+tVtYEgg8AfPE5-GwAS1uizc0w@mail.gmail.com>
 MIME-Version: 1.0
-Received: by 2002:ab3:488b:0:0:0:0:0 with HTTP; Mon, 21 Sep 2020 09:02:39
- -0700 (PDT)
-Reply-To: mr.sawadogomichel1@gmail.com
-From:   "Mr.Sawadogo Michel" <sadiakipkalya1@gmail.com>
-Date:   Mon, 21 Sep 2020 09:02:39 -0700
-Message-ID: <CAOUBpbYBFeuW8fg3tMDYvEjF5C3bhuK+jgVCP_FQ_+3cUOT+Hw@mail.gmail.com>
-Subject: Hello Dear Friend
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQLEYHZLeu-d4nV5Px6t+tVtYEgg8AfPE5-GwAS1uizc0w@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear Friend,
+On Thu, Sep 17, 2020 at 08:26:34PM -0700, Alexei Starovoitov wrote:
+> On Wed, Sep 16, 2020 at 2:16 PM Maciej Fijalkowski
+> <maciej.fijalkowski@intel.com> wrote:
+> >
+> > Changelog:
+> >
+> > v7->v8:
+> > - teach bpf_patch_insn_data to adjust insn_idx of tailcall insn
+> > - address case of clearing tail call counter when bpf2bpf with tailcalls
+> >   are mixed
+> > - drop unnecessary checks against cbpf in JIT
+> > - introduce more tailcall_bpf2bpf[X] selftests that are making sure the
+> >   combination of tailcalls with bpf2bpf calls works correctly
+> > - add test cases to test_verifier to make sure logic from
+> >   check_max_stack_depth that limits caller's stack depth down to 256 is
+> >   correct
+> > - move the main patch to appear after the one that limits the caller's
+> >   stack depth so that 'has_tail_call' can be used by 'tail_call_reachable'
+> >   logic
+> 
+> Thanks a lot for your hard work on this set. 5 month effort!
 
-My name is Mr.Sawadogo Michel. I have decided to seek a confidential
-co-operation  with you in the execution of the deal described
-here-under for our both  mutual benefit and I hope you will keep it a
-top secret because of the nature  of the transaction, During the
-course of our bank year auditing, I discovered  an unclaimed/abandoned
-fund, sum total of {US$19.3 Million United State  Dollars} in the bank
-account that belongs to a Saudi Arabia businessman Who unfortunately
-lost his life and entire family in a Motor Accident.
+Thanks for the whole collaboration! It was quite a ride :)
 
-Now our bank has been waiting for any of the relatives to come-up for
-the claim but nobody has done that. I personally has been unsuccessful
-in locating any of the relatives, now, I sincerely seek your consent
-to present you as the next of kin / Will Beneficiary to the deceased
-so that the proceeds of this account valued at {US$19.3 Million United
-State Dollars} can be paid to you, which we will share in these
-percentages ratio, 60% to me and 40% to you. All I request is your
-utmost sincere co-operation; trust and maximum confidentiality to
-achieve this project successfully. I have carefully mapped out the
-moralities for execution of this transaction under a legitimate
-arrangement to protect you from any breach of the law both in your
-country and here in Burkina Faso when the fund is being transferred to
-your bank account.
+> I think it's a huge milestone that will enable cilium, cloudflare, katran to
+> use bpf functions. Removing always_inline will improve performance.
+> Switching to global functions with function-by-function verification
+> will drastically improve program load times.
+> libbpf has full support for subprogram composition and call relocations.
+> Until now these verifier and libbpf features were impossible to use in XDP
+> programs, since most of them use tail_calls.
+> It's great to see all these building blocks finally coming together.
+> 
+> I've applied the set with few changes.
+> In patch 4 I've removed ifdefs and redundant ().
+> In patch 5 removed redundant !tail_call_reachable check.
+> In patch 6 replaced CONFIG_JIT_ALWAYS_ON dependency with
+> jit_requested && IS_ENABLED(CONFIG_X86_64).
+> It's more user friendly.
+> I also added patch 7 that checks that ld_abs and tail_call are only
+> allowed in subprograms that return 'int'.
 
-I will have to provide all the relevant document that will be
-requested to indicate that you are the rightful beneficiary of this
-legacy and our bank will release the fund to you without any further
-delay, upon your consideration and acceptance of this offer, please
-send me the following information as stated below so we can proceed
-and get this fund transferred to your designated bank account
-immediately.
+Thank you for this last touch! I went through patches and I agree with the
+changes.
 
--Your Full Name:
--Your Contact Address:
--Your direct Mobile telephone Number:
--Your Date of Birth:
--Your occupation:
+> I felt that the fix is simple enough, so I just pushed it, since
+> without it the set is not safe. Please review it here:
+> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=09b28d76eac48e922dc293da1aa2b2b85c32aeee
 
-I await your swift response and re-assurance.
+LGTM.
 
-Best regards,
-Mr.Sawadogo Michel.
+> I'll address any issues in the followups.
+> Because of the above changes I tweaked patch 8 to increase test coverage
+> with ld_abs and combination of global/static subprogs.
+> Also did s/__attribute__((noinline))/__noinline/.
+> 
+> John and Daniel,
+> I wasn't able to test it on cilium programs.
+> When you have a chance please give it a thorough run.
+> tail_call poke logic is delicate.
+> 
+> Lorenz,
+> if you can test it on cloudflare progs would be awesome.
+> 
+> Thanks a lot everyone!
