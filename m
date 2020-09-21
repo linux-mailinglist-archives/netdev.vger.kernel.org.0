@@ -2,93 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA412721CA
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 13:05:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E937F272216
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 13:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726573AbgIULFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 07:05:08 -0400
-Received: from mx2.suse.de ([195.135.220.15]:48524 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726333AbgIULFI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 07:05:08 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1600686306;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JbHgBz0aomN5pIFfxuOnm8ox/XRaHVRuL/a8R/t+W4A=;
-        b=eL+FH/xVmyP8IdigcZ5a4u7kHJf6RwmLhlfQwsnfcss6tnGPYKb5I4tNsxdX5ShApxJwD4
-        PoNov/l7i+HWrjj4fhL8wEUmOToZ/ce5LA7BF7H9V+YAwudUts6p0uOo6Hor6UobHAXM0I
-        BZqmvLSBzfoozCfUeXbV/WJmM/GA+7M=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 71CDBAC23;
-        Mon, 21 Sep 2020 11:05:42 +0000 (UTC)
-Date:   Mon, 21 Sep 2020 13:05:05 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     zangchunxin@bytedance.com, Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tejun Heo <tj@kernel.org>, lizefan@huawei.com,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kafai@fb.com,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        andriin@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
-        Cgroups <cgroups@vger.kernel.org>, linux-doc@vger.kernel.org,
-        Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org
-Subject: Re: [PATCH] mm/memcontrol: Add the drop_cache interface for cgroup v2
-Message-ID: <20200921110505.GH12990@dhcp22.suse.cz>
-References: <20200921080255.15505-1-zangchunxin@bytedance.com>
- <20200921081200.GE12990@dhcp22.suse.cz>
- <CALOAHbDKvT58UFjxy770VDxO0VWABRYb7GVwgw+NiJp62mB06w@mail.gmail.com>
+        id S1726662AbgIULQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 07:16:15 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:60962 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726353AbgIULQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 07:16:15 -0400
+X-Greylist: delayed 424 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Sep 2020 07:16:14 EDT
+Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 677082F1B22;
+        Mon, 21 Sep 2020 11:09:10 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 2462160094;
+        Mon, 21 Sep 2020 11:09:10 +0000 (UTC)
+Received: from us4-mdac16-19.ut7.mdlocal (unknown [10.7.65.243])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 231E98009B;
+        Mon, 21 Sep 2020 11:09:10 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.198])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A534A280050;
+        Mon, 21 Sep 2020 11:09:09 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 480D480064;
+        Mon, 21 Sep 2020 11:09:09 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 21 Sep
+ 2020 12:09:03 +0100
+Subject: Re: [PATCH net] sfc: Fix error code in probe
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Solarflare linux maintainers <linux-net-drivers@solarflare.com>
+CC:     Martin Habets <mhabets@solarflare.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>
+References: <20200918143311.GD909725@mwanda>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <a65bcb6c-a0a0-eb9d-82f0-766cfb3fbc13@solarflare.com>
+Date:   Mon, 21 Sep 2020 12:09:00 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALOAHbDKvT58UFjxy770VDxO0VWABRYb7GVwgw+NiJp62mB06w@mail.gmail.com>
+In-Reply-To: <20200918143311.GD909725@mwanda>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25674.003
+X-TM-AS-Result: No-1.659200-8.000000-10
+X-TMASE-MatchedRID: lORh06tOiKiVvdyNUeenHvZvT2zYoYOwC/ExpXrHizxWm0JlHAu9AZv8
+        OBKGKGJryV4nwPo8PJ5bCKebpR3kAmohFAYfTz4engIgpj8eDcC063Wh9WVqgmWCfbzydb0giCF
+        ykZQ+I/rkwjHXXC/4I7I7zVffJqTz9MczSNkeYuFdAFp9PR8A620k9DEV75rzWrRC8SNfq4Ie+1
+        Y24ck3WtQ17CngTb9OBKmZVgZCVnezGTWRXUlrx+EijnvekEIH
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--1.659200-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25674.003
+X-MDID: 1600686550-7cbZsTNaApI7
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 21-09-20 18:55:40, Yafang Shao wrote:
-> On Mon, Sep 21, 2020 at 4:12 PM Michal Hocko <mhocko@suse.com> wrote:
-> >
-> > On Mon 21-09-20 16:02:55, zangchunxin@bytedance.com wrote:
-> > > From: Chunxin Zang <zangchunxin@bytedance.com>
-> > >
-> > > In the cgroup v1, we have 'force_mepty' interface. This is very
-> > > useful for userspace to actively release memory. But the cgroup
-> > > v2 does not.
-> > >
-> > > This patch reuse cgroup v1's function, but have a new name for
-> > > the interface. Because I think 'drop_cache' may be is easier to
-> > > understand :)
-> >
-> > This should really explain a usecase. Global drop_caches is a terrible
-> > interface and it has caused many problems in the past. People have
-> > learned to use it as a remedy to any problem they might see and cause
-> > other problems without realizing that. This is the reason why we even
-> > log each attempt to drop caches.
-> >
-> > I would rather not repeat the same mistake on the memcg level unless
-> > there is a very strong reason for it.
-> >
-> 
-> I think we'd better add these comments above the function
-> mem_cgroup_force_empty() to explain why we don't want to expose this
-> interface in cgroup2, otherwise people will continue to send this
-> proposal without any strong reason.
-
-I do not mind people sending this proposal.  "V1 used to have an
-interface, we need it in v2 as well" is not really viable without
-providing more reasoning on the specific usecase.
-
-_Any_ patch should have a proper justification. This is nothing really
-new to the process and I am wondering why this is coming as a surprise.
-
--- 
-Michal Hocko
-SUSE Labs
+On 18/09/2020 15:33, Dan Carpenter wrote:
+> This failure path should return a negative error code but it currently
+> returns success.
+>
+> Fixes: 51b35a454efd ("sfc: skeleton EF100 PF driver")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Edward Cree <ecree@solarflare.com>
+Thanks for catching this.
