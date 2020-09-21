@@ -2,211 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B74B8273549
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 23:55:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 690D3273554
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 23:55:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728475AbgIUVzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 17:55:06 -0400
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:55705 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726497AbgIUVzG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 17:55:06 -0400
+        id S1728531AbgIUVzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 17:55:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727059AbgIUVzi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 17:55:38 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799CCC0613CF;
+        Mon, 21 Sep 2020 14:55:38 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id a2so11395168ybj.2;
+        Mon, 21 Sep 2020 14:55:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1600725305; x=1632261305;
-  h=date:from:to:cc:message-id:references:mime-version:
-   in-reply-to:subject;
-  bh=cy4FgsFQDUy5Y1+aqmy2hGEsenO3XwWNSVG/Dz3WfcQ=;
-  b=hSZlFWcMq7aYTD6Op1bibK7vrJfxkbqEHe72jKyk+If6y2Iyb+C+e/gS
-   dWJPEn/EVs19xNfbfXhTyMOB2oikdg+TRSGUboYdbE90+u6RnqpIJfDJy
-   miPu5f/t6bLl28CTvyeEJzdLUgXvhgLwCJ/rnYUaHq6wuaczZlsnU6M0C
-   k=;
-X-IronPort-AV: E=Sophos;i="5.77,288,1596499200"; 
-   d="scan'208";a="56836143"
-Subject: Re: [PATCH v3 01/11] xen/manage: keep track of the on-going suspend mode
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-87a10be6.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 21 Sep 2020 21:54:56 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2c-87a10be6.us-west-2.amazon.com (Postfix) with ESMTPS id 5656EA17D9;
-        Mon, 21 Sep 2020 21:54:54 +0000 (UTC)
-Received: from EX13D10UWB001.ant.amazon.com (10.43.161.111) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 21 Sep 2020 21:54:47 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX13D10UWB001.ant.amazon.com (10.43.161.111) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 21 Sep 2020 21:54:47 +0000
-Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP
- Server id 15.0.1497.2 via Frontend Transport; Mon, 21 Sep 2020 21:54:47 +0000
-Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 637B64026B; Mon, 21 Sep 2020 21:54:47 +0000 (UTC)
-Date:   Mon, 21 Sep 2020 21:54:47 +0000
-From:   Anchal Agarwal <anchalag@amazon.com>
-To:     <boris.ostrovsky@oracle.com>
-CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <hpa@zytor.com>, <x86@kernel.org>, <jgross@suse.com>,
-        <linux-pm@vger.kernel.org>, <linux-mm@kvack.org>,
-        <kamatam@amazon.com>, <sstabellini@kernel.org>,
-        <konrad.wilk@oracle.com>, <roger.pau@citrix.com>,
-        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
-        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
-        <eduval@amazon.com>, <sblbir@amazon.com>,
-        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <dwmw@amazon.co.uk>, <benh@kernel.crashing.org>
-Message-ID: <20200921215447.GA28503@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-References: <cover.1598042152.git.anchalag@amazon.com>
- <9b970e12491107afda0c1d4a6f154b52d90346ac.1598042152.git.anchalag@amazon.com>
- <4b2bbc8b-7817-271a-4ff0-5ee5df956049@oracle.com>
- <20200914214754.GA19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <e9b94104-d20a-b6b2-cbe0-f79b1ed09c98@oracle.com>
- <20200915180055.GB19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <5f1e4772-7bd9-e6c0-3fe6-eef98bb72bd8@oracle.com>
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8grYpU7/gTNyX9FZs93OJvfovBLe0ola3M1YosR1fEo=;
+        b=gNstWBmMpmvyedGTSr3CzDxhzA0CztF0y5rSTkdfErqBb0JZhfwRZgMjp9a0pe063O
+         OzfCmfauvEDw5ex1ULZfkPB9pygoXoK0NToQbZnX98ThiCcSTUbMxQAWtzC1qGmF31pd
+         gYvwYwFtLFmc5BCu2EMmHMrlJgbivEXv5aJQmJgIokLX0V9PVhQalSIW6+H2Hq4b9ZAm
+         3HYqwa8Yqf5hOLk6D2xs3e1MyEufmjU+iM8J62X5t9eMAS6IH10NdfoA/ujBwsOF3BdT
+         OzPOY3KM92RHqrkASm5QDJWib461BbnDIr9aHxdPha2tA+rlTM7Lnsuxcw/lBvU4vwSV
+         h55w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8grYpU7/gTNyX9FZs93OJvfovBLe0ola3M1YosR1fEo=;
+        b=JN1lWuHjMPPl7ElsddziqMsAP4hw5UUWfWJiuz5SbpKIW952jep8O/X8fmDsW21oay
+         VHtsqawUEw0dfRUDpSEjn0RJ+Fuah9hao6UGGZoiTW+0y0wbj6N9TltU8HKtYeeeglT0
+         3qQ0GZlKaJgGPq/i5pSXz1UfzPMRGlcTIVh0R1lI6ahOUGJ0fhz5bGTcmaJmU/2kyrPM
+         MqKHuccgiayrMuHIaPzdDYctDmtNYWHr13AmgWzFEaGVgsiI7YYg8nnZ4sK9xIXWlKu1
+         1wB7nvF0Odr7mlTLi0ZP+ZKbr/wV2Y+bcYrERvKJMJ8WMNAug8tbIG3p8owumoB8ewUv
+         HGFg==
+X-Gm-Message-State: AOAM532kG4Xw336R5bHpb1yffBTzM8KbGHbvQ3Q9sj++tnci4tKAmO4z
+        XaPdlCMbOIDbquKDOlZt0HjYf9FIOrANjGnWksZubPylbDk=
+X-Google-Smtp-Source: ABdhPJy4sNrW87qbVpgcSxr/19syLbLrAYGgkUMuTJlM5OkrW2BnbyQg8GoRQ/ngzuQUXFy62J+n/gqwD1CLakFOa7k=
+X-Received: by 2002:a25:9d06:: with SMTP id i6mr2763641ybp.510.1600725337798;
+ Mon, 21 Sep 2020 14:55:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <5f1e4772-7bd9-e6c0-3fe6-eef98bb72bd8@oracle.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+References: <20200918122654.2625699-1-jolsa@kernel.org>
+In-Reply-To: <20200918122654.2625699-1-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 21 Sep 2020 14:55:27 -0700
+Message-ID: <CAEf4BzZc6DE85wUTGwE=2FKPuwuuH4480Fh+v63q8J=PRxjgEw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: Use --no-fail option if CONFIG_BPF is
+ not enabled
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Seth Forshee <seth.forshee@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 15, 2020 at 03:58:45PM -0400, boris.ostrovsky@oracle.com wrote:
-> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> 
-> 
-> 
-> >>
-> >>
-> >>>>> +
-> >>>>> +static int xen_setup_pm_notifier(void)
-> >>>>> +{
-> >>>>> +     if (!xen_hvm_domain() || xen_initial_domain())
-> >>>>> +             return -ENODEV;
-> >>>>
-> >>>> I don't think this works anymore.
-> >>> What do you mean?
-> >>> The first check is for xen domain types and other is for architecture support.
-> >>> The reason I put this check here is because I wanted to segregate the two.
-> >>> I do not want to register this notifier at all for !hmv guest and also if its
-> >>> an initial control domain.
-> >>> The arm check only lands in notifier because once hibernate() api is called ->
-> >>> calls pm_notifier_call_chain for PM_HIBERNATION_PREPARE this will fail for
-> >>> aarch64.
-> >>> Once we have support for aarch64 this notifier can go away altogether.
-> >>>
-> >>> Is there any other reason I may be missing why we should move this check to
-> >>> notifier?
-> >>
-> >>
-> >> Not registering this notifier is equivalent to having it return NOTIFY_OK.
-> >>
-> > How is that different from current behavior?
-> >>
-> >> In your earlier versions just returning NOTIFY_OK was not sufficient for
-> >> hibernation to proceed since the notifier would also need to set
-> >> suspend_mode appropriately. But now your notifier essentially filters
-> >> out unsupported configurations. And so if it is not called your
-> >> configuration (e.g. PV domain) will be considered supported.
-> >>
-> > I am sorry if I am having a bit of hard time understanding this.
-> > How will it be considered supported when its not even registered? My
-> > understanding is if its not registered, it will not land in notifier call chain
-> > which is invoked in pm_notifier_call_chain().
-> 
-> 
-> Returning an error from xen_setup_pm_notifier() doesn't have any effect
-> on whether hibernation will start. It's the notifier that can stop it.
+On Fri, Sep 18, 2020 at 5:30 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-I actually got that point where we have to return an error for certain scenarios
-to fail. 
-What I was trying to understand a scenario is if there is no notifier involved and
-xen_initial_domain() is true what should happen when hibernation is triggered on such domain?
-
-After my changes yes, it should not be able to proceed as you suggested below
-when hibernation is triggered from within Xen guest. 
-> >
-> > As Roger, mentioned in last series none of this should be a part of PVH dom0
-> > hibernation as its not tested but this series should also not break anything.
-> > If I register this notifier for PVH dom0 and return error later that will alter
-> > the current behavior right?
-> >
-> > If a pm_notifier for pvh dom0 is not registered then it will not land in the
-> > notifier call chain and system will work as before this series.
-> > If I look for unsupported configurations, then !hvm domain is also one but we
-> > filter that out at the beginning and don't even bother about it.
-> >
-> > Unless you mean guest running VMs itself? [Trying to read between the lines may
-> > not be the case though]
-> 
-> 
-> 
-> In hibernate():
-> 
->         error = __pm_notifier_call_chain(PM_HIBERNATION_PREPARE, -1,
-> &nr_calls);
->         if (error) {
->                 nr_calls--;
->                 goto Exit;
->         }
-> 
-> 
-> Is you don't have notifier registered (as will be the case with PV
-> domains and dom0) you won't get an error and proceed with hibernation.
-> (And now I actually suspect it didn't work even with your previous patches)
-> 
-> 
-> But something like this I think will do what you want:
-> 
-> 
-> static int xen_pm_notifier(struct notifier_block *notifier,
->         unsigned long pm_event, void *unused)
-> 
-> {
-> 
->        if (IS_ENABLED(CONFIG_ARM64) ||
->            !xen_hvm_domain() || xen_initial_domain() ||
->            (pm_event == PM_SUSPEND_PREPARE)) {
->                 if ((pm_event == PM_SUSPEND_PREPARE) || (pm_event ==
-> PM_HIBERNATION_PREPARE))
->                         pr_warn("%s is not supported for this guest",
->                                 (pm_event == PM_SUSPEND_PREPARE) ?
->                                 "Suspend" : "Hibernation");
->                 return NOTIFY_BAD;
-> 
->         return NOTIFY_OK;
-> 
-> }
-> 
-> static int xen_setup_pm_notifier(void)
-> {
->         return register_pm_notifier(&xen_pm_notifier_block);
-> }
-> 
-> 
-Thanks for the above suggestion. You are right I didn't find a way to declare
-a global state either. I just broke the above check in 2 so that once we have
-support for ARM we should be able to remove aarch64 condition easily. Let me
-know if I am missing nay corner cases with this one.
-
-static int xen_pm_notifier(struct notifier_block *notifier,
-	unsigned long pm_event, void *unused)
-{
-    int ret = NOTIFY_OK;
-    if (!xen_hvm_domain() || xen_initial_domain())
-	ret = NOTIFY_BAD;
-    if(IS_ENABLED(CONFIG_ARM64) && (pm_event == PM_SUSPEND_PREPARE || pm_event == HIBERNATION_PREPARE))
-	ret = NOTIFY_BAD;
-
-    return ret;
-}
-
-> I tried to see if there is a way to prevent hibernation without using
-> notifiers (like having a global flag or something) but didn't find
-> anything obvious. Perhaps others can point to a simpler way of doing this.
-> 
-> 
-> -boris
-> 
+> Currently all the resolve_btfids 'users' are under CONFIG_BPF
+> code, so if we have CONFIG_BPF disabled, resolve_btfids will
+> fail, because there's no data to resolve.
 >
--Anchal
+> In case CONFIG_BPF is disabled, using resolve_btfids --no-fail
+> option, that makes resolve_btfids leave quietly if there's no
+> data to resolve.
+>
+> Fixes: c9a0f3b85e09 ("bpf: Resolve BTF IDs in vmlinux image")
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+
+If no CONFIG_BTF is specified, there is no need to even run
+resolve_btfids. So why not do just that -- run resolve_btfids only
+if both CONFIG_BPF and CONFIG_DEBUG_INFO_BTF are specified?
+
+
+>  scripts/link-vmlinux.sh | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+>
+> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> index e6e2d9e5ff48..3173b8cf08cb 100755
+> --- a/scripts/link-vmlinux.sh
+> +++ b/scripts/link-vmlinux.sh
+> @@ -342,8 +342,13 @@ vmlinux_link vmlinux "${kallsymso}" ${btf_vmlinux_bin_o}
+>
+>  # fill in BTF IDs
+>  if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
+> -info BTFIDS vmlinux
+> -${RESOLVE_BTFIDS} vmlinux
+> +       info BTFIDS vmlinux
+> +       # Let's be more permissive if CONFIG_BPF is disabled
+> +       # and do not fail if there's no data to resolve.
+> +       if [ -z "${CONFIG_BPF}" ]; then
+> +         no_fail=--no-fail
+> +       fi
+> +       ${RESOLVE_BTFIDS} $no_fail vmlinux
+>  fi
+>
+>  if [ -n "${CONFIG_BUILDTIME_TABLE_SORT}" ]; then
+> --
+> 2.26.2
+>
