@@ -2,45 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EF432726E5
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 16:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D22F327269B
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 16:06:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726932AbgIUOZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 10:25:05 -0400
-Received: from mailout1.sll.se ([192.44.242.23]:10400 "EHLO mailout1.sll.se"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726496AbgIUOZF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 10:25:05 -0400
-X-Greylist: delayed 4318 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Sep 2020 10:25:04 EDT
-Received: from mail.tiohundra.se (ntsmail01.tiohundra.se [10.73.27.228])
-        by sllmail02.dc.sll.se (8.14.7/8.14.7) with ESMTP id 08I7rZNd032174;
-        Fri, 18 Sep 2020 09:55:26 +0200
-Received: from NTSMAIL01.nts.sll.se ([fe80::75eb:9728:7818:17a]) by
- NTSMAIL01.nts.sll.se ([fe80::75eb:9728:7818:17a%22]) with mapi id
- 14.03.0487.000; Fri, 18 Sep 2020 09:53:43 +0200
-From:   "Vega Navarro Rufina (TioHundra)" <Rufina.Vega.Navarro@tiohundra.se>
-To:     "Vega Navarro Rufina (TioHundra)" <Rufina.Vega.Navarro@tiohundra.se>
-Subject: SV: ICT Admin-helpdesk
-Thread-Topic: ICT Admin-helpdesk
-Thread-Index: AdaNjUWvmaqHph69SQmRSuycIwVGMwAAuKBH
-Date:   Fri, 18 Sep 2020 07:53:42 +0000
-Message-ID: <500DCF9D7BCE974286FD13EF894F3CBB032107E33F@NTSMAIL01.nts.sll.se>
-References: <500DCF9D7BCE974286FD13EF894F3CBB032107C656@NTSMAIL01.nts.sll.se>
-In-Reply-To: <500DCF9D7BCE974286FD13EF894F3CBB032107C656@NTSMAIL01.nts.sll.se>
-Accept-Language: sv-SE, en-US
-Content-Language: sv-SE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.73.27.237]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726899AbgIUOGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 10:06:10 -0400
+Received: from mail-il1-f206.google.com ([209.85.166.206]:55541 "EHLO
+        mail-il1-f206.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726430AbgIUOGK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 10:06:10 -0400
+Received: by mail-il1-f206.google.com with SMTP id i12so4518020ill.22
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 07:06:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=zoLX7gky58ekszpTA+zctgvOnx7l72/YhY5l3/zaOH0=;
+        b=ltifCkePUH0aSdA9YRkOSwOD/8qE0fNteNbeAwnEBg2fPaMSsgvEyl86M4TMgpj704
+         gyRTzKSm/4U+ZCsPHs8KF4FzhIafjLnNJjA/YslMzvgvuf1aw/PWcPl4pw2P+rpCci7R
+         OEy7fSBnQWnbnuEA4OQxXqhclbFIDfq6z5q2ywNkNAHauIw2adlovrprQjnu3xZs5fQd
+         TIrdg+cYIalZdHCLGb/JEWxcFUvh2WPRng0x1mzQdkA2jzCOWTZp4t857JW+w4UFOPE8
+         JeJ/bxY9sbFckeaUVvq6W2li1T5cyEVLpx+qLNliXSNTfFgOtyKcCYvGe6MFlRNj+/Wn
+         9p8w==
+X-Gm-Message-State: AOAM533Ju649mkPNIf4W76TMsuJJqaSCdIUqf9lZ+Dr6UvdzK4EZjAli
+        /kglGl4BeDdvFCfFV8wb2MNzoqJMk/m72FOFJqh65maV3YMZ
+X-Google-Smtp-Source: ABdhPJzzJPaQez24SwlyAPkieJHMX5Z4SiJLFgIX2+OPmF1xDAkrJvu+v6xUaCJUP2uWBpFFF3tZRQ/AEtmSH3wHuyRVeCRHglGh
 MIME-Version: 1.0
+X-Received: by 2002:a92:c7a2:: with SMTP id f2mr17628ilk.171.1600697169599;
+ Mon, 21 Sep 2020 07:06:09 -0700 (PDT)
+Date:   Mon, 21 Sep 2020 07:06:09 -0700
+In-Reply-To: <000000000000fb6bf305afcfca61@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000002fe19f05afd35a45@google.com>
+Subject: Re: WARNING: suspicious RCU usage in bond_ipsec_add_sa (2)
+From:   syzbot <syzbot+11dcfe6879155fbb6a4e@syzkaller.appspotmail.com>
+To:     andy@greyhouse.net, davem@davemloft.net, j.vosburgh@gmail.com,
+        jarod@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        vfalico@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCkRSSUZUU01FRERFTEFOREUNCg0KT2JzZXJ2ZXJhIGF0dCBkaXR0IGUtcG9zdGtvbnRvIGzD
-pXNlcyBvbSBkZXQgaW50ZSB2ZXJpZmllcmFzIGtvcnJla3QgYXYgTWljcm9zb2Z0cyB2ZXJpZmll
-cmluZ3N0ZWFtLg0KDQpLbGlja2EgaMOkciBmw7ZyIHZlcmlmaWVyaW5nPGh0dHBzOi8vc3dlZGVu
-LmNyZWF0b3JsaW5rLm5ldC8+DQoNCkNvcHlyaWdodCBNaWNyb3NvZnQgwqkg77iPIDIwMjAuIElu
-Yy4gTWVkIGVuc2FtcsOkdHQuDQo=
+syzbot has bisected this issue to:
+
+commit a3b658cfb66497525278cbf852913a04dbaae992
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Tue Jun 30 18:49:41 2020 +0000
+
+    bonding: allow xfrm offload setup post-module-load
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11eb70d3900000
+start commit:   f13d783a MAINTAINERS: Update ibmveth maintainer
+git tree:       net
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13eb70d3900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15eb70d3900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5ac0d21536db480b
+dashboard link: https://syzkaller.appspot.com/bug?extid=11dcfe6879155fbb6a4e
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17588ec5900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13db3281900000
+
+Reported-by: syzbot+11dcfe6879155fbb6a4e@syzkaller.appspotmail.com
+Fixes: a3b658cfb664 ("bonding: allow xfrm offload setup post-module-load")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
