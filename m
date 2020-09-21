@@ -2,198 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1747527316E
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 20:05:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F238D273178
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 20:07:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727174AbgIUSES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 14:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726436AbgIUSER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 14:04:17 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9EAC061755;
-        Mon, 21 Sep 2020 11:04:17 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id gf14so173810pjb.5;
-        Mon, 21 Sep 2020 11:04:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=V9rNnPQoAMI4NEIiklaqCcoHp0WL+M41f5UIEeXZuPk=;
-        b=nInBMP6Or4FOjSpV7OD0u32IG1Ipkfqr+mtKv9Ji1pH58MBn2Szngx6Ra0y1E30cWq
-         +XZAUwvtJo00pWANLfdzwT3OoUNOqTAb9Sovx50B2Opu9G8d38MbZ6KGeFdxaVDlOFOe
-         M9gAulDA7hL7TvS6F7+VH5vZfttz0pibyXMcDXfMJBR7waI60P8H9V8I5LuzOx7sfzoE
-         pksvRZWuS3aqIdtwRc+5O/oJDDWkNceHRPYpLfxzDMP80k4YHG5wGgRE52H39CizA2DQ
-         hPay26eL0mv082kT246Ze8xSqaqa7VjOidskPPVZbRZQTQNzwQ0TZle6wqzSvj25Ytny
-         cOSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=V9rNnPQoAMI4NEIiklaqCcoHp0WL+M41f5UIEeXZuPk=;
-        b=JN7WM9krAgHRUHEHOhxlurIT460Mr03SEJHDgXG+X/wx4HfUcveohOxVPjUMqFIALA
-         CZSL8YK1p96oCtr8xeD0k+iXewp9vLBAWagUkiZSPzGbbKWJU+uoVFz+wMlieQe4j/da
-         8H+KvSdlU5jRYwTbO/q8l0ZzxfsMSABuv2CEMGDcezHnpZiWSiEJMitP143rhJkdHGPb
-         KywK7FPeyl5lWnSz61xqbZDDF9TmV7Y5GAxk5lj4aJvNLG/j36Bw/WrfEIswMFrW/CUf
-         b1UgklbJJq376ZGt+K7d/n1J4i4hcHrho+G4YMLrxISExOYyWpaQ8OQHYOkRJxZtqwm2
-         rv1g==
-X-Gm-Message-State: AOAM5336o1JOmbvM15Rcu+kCJz2dYW3T/GehMOThb1bRCP21Boqeonq1
-        /GkxN+hHutetHIgs3FXswIA=
-X-Google-Smtp-Source: ABdhPJywv9uoqNpx3Zgj+Bhj8oA3JuOmUEW3VhKcMkplWJIm1B6l9nYvDNMFS7TyZMuFV6Qn9d772Q==
-X-Received: by 2002:a17:90a:9f8e:: with SMTP id o14mr464512pjp.103.1600711457216;
-        Mon, 21 Sep 2020 11:04:17 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id i187sm12160547pgd.82.2020.09.21.11.04.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2020 11:04:16 -0700 (PDT)
-Date:   Mon, 21 Sep 2020 11:04:09 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Cc:     =?UTF-8?B?TWFjaWVqIMW7ZW5jenlrb3dza2k=?= <maze@google.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        BPF-dev-list <bpf@vger.kernel.org>,
+        id S1727821AbgIUSGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 14:06:39 -0400
+Received: from mail-eopbgr80055.outbound.protection.outlook.com ([40.107.8.55]:64982
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726915AbgIUSGi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 14:06:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oMcFsxxLAHa9TF4TpAYTuLymWZAaHo3iF0vvxXR06Jgwa85saIMJKNzpw03m5Vi/zDkLF7KyIFSx5JLrHDahpUMw+BlgFUmWhoYH6FPrPKYUPaew0MIrcxpnBx3OKyluXfKV3duQLj3a3qKEyzsZWU40cesxhPLScgQObKvrmoLofRzVpAHQSUrZSsuLaK64IsbwfB+bGplJyvEYe88di6B4iQex0s6/C50Ag1LmyF/NhL1Heue1HBZ9vKAX2VKtJjyrEFtewPVGQ0W512BFHXLWJ5RjZ+y6hH+a9LXtPn6oGb7buyOcQ8WUAZVWg26iKK9y2O4As0HoGjq2bnT9Ug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lHX1dX00b19irq/BaKzImtfZi4Cx7BYjIoSAepKJifM=;
+ b=ksZYKie/XZl/LkTRJiUUpj0+HsLwgK7swwD1ROU1MPhVbtF7E5lPuCpzBarRtSAZt52DPyBMa/f/pOJ8KQJJjJ+Dr3c78o2GDYsJXQnld+X0NsCoDADQ7Cyj0vaYdbjUb4cNvFp8fe14Ywng3LDBHhnuWIlnmOBOsMFVirHxBv7G7vdwMDtgL35K9MWedrMkGcKFhfeGoYj4uMfRBT9MXMqbiwZZnswx6a0sV4bjaCkercK3WDXWpBQLSmui17ytvkqYrQ93JBcsevd8JTxCfWvkhb/sjvlV2cmYSVG3RPjt1qsoqm3HMoRKRSbhAzoyUFSxl3EQm3yihRSZa2PbFg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lHX1dX00b19irq/BaKzImtfZi4Cx7BYjIoSAepKJifM=;
+ b=dJOFCJGAhUjDj0C6b7hcrMcFdgbUDNo+0k6JFMFrQzkJySLNy4l7EfuITBx/J+IRmLKSY1Q8ydWSh/v7hkCG+3lrl4jsEDyAQQicKBN+8ddgcz7R1sFVLhuxW5RtyA+syXNNLWR5lRalk3PpVT/4mPoqwixmwCMEL3fl5naGb8k=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR04MB7102.eurprd04.prod.outlook.com
+ (2603:10a6:800:124::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.15; Mon, 21 Sep
+ 2020 18:06:34 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::3c18:4bf1:4da0:a3bf]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::3c18:4bf1:4da0:a3bf%3]) with mapi id 15.20.3391.023; Mon, 21 Sep 2020
+ 18:06:34 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shaun Crampton <shaun@tigera.io>,
-        David Miller <davem@davemloft.net>,
-        Marek Majkowski <marek@cloudflare.com>
-Message-ID: <5f68eb19cc0a2_17370208c9@john-XPS-13-9370.notmuch>
-In-Reply-To: <340f209d-58d4-52a6-0804-7102d80c1468@iogearbox.net>
-References: <20200917143846.37ce43a0@carbon>
- <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
- <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org>
- <20200918120016.7007f437@carbon>
- <CANP3RGfUj-KKHHQtbggiZ4V-Xrr_sk+TWyN5FgYUGZS6rOX1yw@mail.gmail.com>
- <CACAyw9-v_o+gPUpC-R9SXsfzMywrdGsWV13Nk=tx2aS-fEBFYg@mail.gmail.com>
- <20200921144953.6456d47d@carbon>
- <340f209d-58d4-52a6-0804-7102d80c1468@iogearbox.net>
-Subject: Re: BPF redirect API design issue for BPF-prog MTU feedback?
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next 3/3] dpaa2-mac: add PCS support through the Lynx
+ module
+Thread-Topic: [PATCH net-next 3/3] dpaa2-mac: add PCS support through the Lynx
+ module
+Thread-Index: AQHWkDMnctnYMnw/FUSvaQ4sBRdvUKlzUu+AgAAQjAA=
+Date:   Mon, 21 Sep 2020 18:06:34 +0000
+Message-ID: <20200921180634.icsurl6qoz4nmz3n@skbuf>
+References: <20200921162031.12921-1-ioana.ciornei@nxp.com>
+ <20200921162031.12921-4-ioana.ciornei@nxp.com>
+ <20200921170721.GE3717417@lunn.ch>
+In-Reply-To: <20200921170721.GE3717417@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.217.212]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 14c8f892-33ca-4f66-238e-08d85e5913a0
+x-ms-traffictypediagnostic: VI1PR04MB7102:
+x-microsoft-antispam-prvs: <VI1PR04MB7102156B695FDC66BBC348CCE03A0@VI1PR04MB7102.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mjliYRemNQYfAEwpZNf2OkRxsf+kpGI3/Ustvcf0JB1YnP8Ej4PkUZVs1v+0tFFGsVwQD8ipdC2o40Ks+wU/KPEPD3yRkmH77fsqWTd3jDyWKQXy63qXGKsWeXrgb1XMCCa2IwX6qnoWO+bO7GtYeR3jPbo8WzChVGI85s+VBu7NOXQsOSVoS4SFaNS5RXwdlq6YSczX9a+sUJPJdQ2JvpR10BkPQGP9JHa6hQuwdjDl8saZjR5EVTLOAIHV4gmzIWzWZIg/ygD50zkizA9zKf/MA0pZGAH7B0TGtbqY+keZMwJUQt3Vu1GLOrqFR21sV/OkyAUD2CBm7mI/n+Qf5Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(136003)(39860400002)(396003)(376002)(366004)(346002)(6506007)(8936002)(186003)(76116006)(5660300002)(44832011)(8676002)(6512007)(66446008)(2906002)(66946007)(26005)(64756008)(66556008)(66476007)(9686003)(6486002)(4326008)(71200400001)(1076003)(6916009)(316002)(4744005)(33716001)(478600001)(86362001)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: DL8Kbf9q7fzMVqFzxmFvTk8DLBJCbRr8UtsYtUcpb+uzRoccYSIzcDtJEJtyBZsIYIxnTv3Nw+T3hoCv0huPm7PteYuwbrEFB3sywQqCb2W8obI8gxZfcY2y9tINHf1TwqztuseYNJIB83GkEpPl3UHBazDzugmnv9Tb4SNFH83UoJWSBExOk369iS5jsZG984Jt7agPs52ZrzDV8lIihSRJyqxST5WOoTRsF+QuXXJF9aGQs6uoGVv+yy2KtKFvXBD9iMw3MxWE39gu8c25g2tNqcwfsm8CZQVDpf3gzEak7yIe2wKRm/wTODFUJT7FrlfnQEWRtGqtriiyo459uHR11SRh2PUW5pnKS5Xq5+DjdARu4aT4UOL7NbmGll/n2ZGvJlcOtHgXMmc5ZwprDZ/pzGvqbSDlSVHHaH43GfrH7FRiFiIurV4cWZYGmAedJF7O0afrMPibktRpESYRKuc/iIn4swBl8QR32Bi/+NVCYBA1NR4rsuCLmal3K8688raj/+ArKBuUz6uo7Siikk/MuY903O/PikArdfCSW5iXkS0tg06+hGHQxXqYnOMAPdK7PbMJk5QXKbJlfIxkS9XvCroJyHcpE4rsxkNIu5RztzI+pELQo872XiqTz7WYtPONMa9bnYVIPOc0YxG3aQ==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <A96C6335BE87BB42A95E1010257296AB@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 14c8f892-33ca-4f66-238e-08d85e5913a0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Sep 2020 18:06:34.6138
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +dJ9V/qfr1idRVz7/d6oY2do60gErJTjr8K5MKvtd8DpjhVQQGNio9Q9QyB6vPPyQvKuEgxhtmjVLu6phndeAQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7102
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann wrote:
-> On 9/21/20 2:49 PM, Jesper Dangaard Brouer wrote:
-> > On Mon, 21 Sep 2020 11:37:18 +0100
-> > Lorenz Bauer <lmb@cloudflare.com> wrote:
-> >> On Sat, 19 Sep 2020 at 00:06, Maciej =C5=BBenczykowski <maze@google.=
-com> wrote:
-> >>>   =
+On Mon, Sep 21, 2020 at 07:07:21PM +0200, Andrew Lunn wrote:
+> On Mon, Sep 21, 2020 at 07:20:31PM +0300, Ioana Ciornei wrote:
+> > +static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
+> > +{
+> > +	struct lynx_pcs *pcs =3D mac->pcs;
+> > +
+> > +	if (pcs) {
+> > +		put_device(&pcs->mdio->dev);
+> > +		lynx_pcs_destroy(pcs);
+> > +		mac->pcs =3D NULL;
+>=20
+> Hi Ioana
+>=20
+> Maybe the put_device() should come after the destroy? It is then the
+> reverse of the creation.
+>=20
+> 	Andrew
 
-> >>>> This is a good point.  As bpf_skb_adjust_room() can just be run af=
-ter
-> >>>> bpf_redirect() call, then a MTU check in bpf_redirect() actually
-> >>>> doesn't make much sense.  As clever/bad BPF program can then avoid=
- the
-> >>>> MTU check anyhow.  This basically means that we have to do the MTU=
+Hi Andrew,
 
-> >>>> check (again) on kernel side anyhow to catch such clever/bad BPF
-> >>>> programs.  (And I don't like wasting cycles on doing the same chec=
-k two
-> >>>> times).
-> >>>
-> >>> If you get rid of the check in bpf_redirect() you might as well get=
+The lynx_pcs_destroy() function doesn't do much with the pcs, just a
+kfree on it. I did it this way to avoid keeping the device in a
+temporary variable but if you think we should do this in a symetrical
+way, I can make the change.
 
-> >>> rid of *all* the checks for excessive mtu in all the helpers that
-> >>> adjust packet size one way or another way.  They *all* then become
-> >>> useless overhead.
-> >>>
-> >>> I don't like that.  There may be something the bpf program could do=
- to
-> >>> react to the error condition (for example in my case, not modify
-> >>> things and just let the core stack deal with things - which will
-> >>> probably just generate packet too big icmp error).
-> >>>
-> >>> btw. right now our forwarding programs first adjust the packet size=
-
-> >>> then call bpf_redirect() and almost immediately return what it
-> >>> returned.
-> >>>
-> >>> but this could I think easily be changed to reverse the ordering, s=
-o
-> >>> we wouldn't increase packet size before the core stack was informed=
- we
-> >>> would be forwarding via a different interface.
-> >>
-> >> We do the same, except that we also use XDP_TX when appropriate. Thi=
-s
-> >> complicates the matter, because there is no helper call we could
-> >> return an error from.
-> > =
-
-> > Do notice that my MTU work is focused on TC-BPF.  For XDP-redirect th=
-e
-> > MTU check is done in xdp_ok_fwd_dev() via __xdp_enqueue(), which also=
-
-> > happens too late to give BPF-prog knowledge/feedback.  For XDP_TX I
-> > audited the drivers when I implemented xdp_buff.frame_sz, and they
-> > handled (or I added) handling against max HW MTU. E.g. mlx5 [1].
-> > =
-
-> > [1] https://elixir.bootlin.com/linux/v5.9-rc6/source/drivers/net/ethe=
-rnet/mellanox/mlx5/core/en/xdp.c#L267
-> > =
-
-> >> My preference would be to have three helpers: get MTU for a device,
-> >> redirect ctx to a device (with MTU check), resize ctx (without MTU
-> >> check) but that doesn't work with XDP_TX. Your idea of doing checks
-> >> in redirect and adjust_room is pragmatic and seems easier to
-> >> implement.
-> >   =
-
-> > I do like this plan/proposal (with 3 helpers), but it is not possible=
-
-> > with current API.  The main problem is the current bpf_redirect API
-> > doesn't provide the ctx, so we cannot do the check in the BPF-helper.=
-
-> > =
-
-> > Are you saying we should create a new bpf_redirect API (that incl pac=
-ket ctx)?
-> =
-
-> Sorry for jumping in late here... one thing that is not clear to me is =
-that if
-> we are fully sure that skb is dropped by stack anyway due to invalid MT=
-U (redirect
-> to ingress does this via dev_forward_skb(), it's not fully clear to me =
-whether it's
-> also the case for the dev_queue_xmiy()), then why not dropping all the =
-MTU checks
-> aside from SKB_MAX_ALLOC sanity check for BPF helpers and have somethin=
-g like a
-> device object (similar to e.g. TCP sockets) exposed to BPF prog where w=
-e can retrieve
-> the object and read dev->mtu from the prog, so the BPF program could th=
-en do the
-> "exception" handling internally w/o extra prog needed (we also already =
-expose whether
-> skb is GSO or not).
-> =
-
-> Thanks,
-> Daniel
-
-My $.02 is MTU should only apply to transmitted packets so redirect to
-ingress should be OK. Then on transmit shouldn't the user know the MTU
-on their devices?
-
-I'm for dropping all the MTU checks and if a driver tosses a packet then
-the user should be more careful. Having a bpf helper to check MTU of a
-dev seems useful although the workaround would be a map the user could
-put the max MTU in. Of course that would be a bit fragile if the BPF prog=
-ram
-and person managing MTU are not in-sync.
-
-Thanks.=
+Ioana=
