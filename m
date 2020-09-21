@@ -2,111 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BDA1271AF5
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 08:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B09CF271B0B
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 08:47:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbgIUGgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 02:36:36 -0400
-Received: from verein.lst.de ([213.95.11.211]:38634 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726011AbgIUGge (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 02:36:34 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id B25CE68AFE; Mon, 21 Sep 2020 08:36:28 +0200 (CEST)
-Date:   Mon, 21 Sep 2020 08:36:28 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        iommu@lists.linux-foundation.org
-Cc:     alsa-devel@alsa-project.org, linux-samsung-soc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mm@kvack.org, Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        netdev@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
-Subject: Re: a saner API for allocating DMA addressable pages v3
-Message-ID: <20200921063628.GB18349@lst.de>
-References: <20200915155122.1768241-1-hch@lst.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200915155122.1768241-1-hch@lst.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+        id S1726359AbgIUGrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 02:47:13 -0400
+Received: from smtp21.cstnet.cn ([159.226.251.21]:36484 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726149AbgIUGrN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 02:47:13 -0400
+X-Greylist: delayed 482 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Sep 2020 02:47:12 EDT
+Received: from localhost (unknown [159.226.5.99])
+        by APP-01 (Coremail) with SMTP id qwCowABHXfCBSmhfvpqtAA--.58445S2;
+        Mon, 21 Sep 2020 14:38:58 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Xu Wang <vulab@iscas.ac.cn>
+Subject: [PATCH] ipv6: route: convert comma to semicolon
+Date:   Mon, 21 Sep 2020 06:38:56 +0000
+Message-Id: <20200921063856.26285-1-vulab@iscas.ac.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: qwCowABHXfCBSmhfvpqtAA--.58445S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrGrWfXF15ZF4UXrykuFyUJrb_yoWxXwc_JF
+        yDGrZ5uryYqrn29F4jyFs5JF9rt348AF4Ig3WSgrWkt348Xr1xArn3Wr9rC39Igryj9Fy5
+        uryDXFZFkayfKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbzxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWxJVW8Jr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxG
+        rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
+        vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IY
+        x2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26c
+        xKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x02
+        67AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU1fgA7UUUUU==
+X-Originating-IP: [159.226.5.99]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCwUGA1z4jc0QlQAAsq
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Any comments?
+Replace a comma between expression statements by a semicolon.
 
-Thomas: this should be identical to the git tree I gave you for mips
-testing, and you add your tested-by (and reviewd-by tags where
-applicable)?
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+---
+ net/ipv6/route.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Helge: for parisc this should effectively be the same as the first
-version, but I've dropped the tested-by tags due to the reshuffle,
-and chance you could retest it?
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 5e7e25e2523a..fb075d9545b9 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -4202,7 +4202,7 @@ static struct fib6_info *rt6_add_route_info(struct net *net,
+ 		.fc_nlinfo.nl_net = net,
+ 	};
+ 
+-	cfg.fc_table = l3mdev_fib_table(dev) ? : RT6_TABLE_INFO,
++	cfg.fc_table = l3mdev_fib_table(dev) ? : RT6_TABLE_INFO;
+ 	cfg.fc_dst = *prefix;
+ 	cfg.fc_gateway = *gwaddr;
+ 
+-- 
+2.17.1
 
-On Tue, Sep 15, 2020 at 05:51:04PM +0200, Christoph Hellwig wrote:
-> Hi all,
-> 
-> this series replaced the DMA_ATTR_NON_CONSISTENT flag to dma_alloc_attrs
-> with a separate new dma_alloc_pages API, which is available on all
-> platforms.  In addition to cleaning up the convoluted code path, this
-> ensures that other drivers that have asked for better support for
-> non-coherent DMA to pages with incurring bounce buffering over can finally
-> be properly supported.
-> 
-> As a follow up I plan to move the implementation of the
-> DMA_ATTR_NO_KERNEL_MAPPING flag over to this framework as well, given
-> that is also is a fundamentally non coherent allocation.  The replacement
-> for that flag would then return a struct page, as it is allowed to
-> actually return pages without a kernel mapping as the name suggested
-> (although most of the time they will actually have a kernel mapping..)
-> 
-> In addition to the conversions of the existing non-coherent DMA users,
-> I've also added a patch to convert the firewire ohci driver to use
-> the new dma_alloc_pages API.
-> 
-> The first patch is queued up for 5.9 in the media tree, but included here
-> for completeness.
-> 
-> 
-> A git tree is available here:
-> 
->     git://git.infradead.org/users/hch/misc.git dma_alloc_pages
-> 
-> Gitweb:
-> 
->     http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma_alloc_pages
-> 
-> 
-> Changes since v2:
->  - fix up the patch reshuffle which wasn't quite correct
->  - fix up a few commit messages
-> 
-> Changes since v1:
->  - rebased on the latests dma-mapping tree, which merged many of the
->    cleanups
->  - fix an argument passing typo in 53c700, caught by sparse
->  - rename a few macro arguments in 53c700
->  - pass the right device to the DMA API in the lib82596 drivers
->  - fix memory ownershiptransfers in sgiseeq
->  - better document what a page in the direct kernel mapping means
->  - split into dma_alloc_pages that returns a struct page and is in the
->    direct mapping vs dma_alloc_noncoherent that can be vmapped
->  - conver the firewire ohci driver to dma_alloc_pages
-> 
-> Diffstat:
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
----end quoted text---
