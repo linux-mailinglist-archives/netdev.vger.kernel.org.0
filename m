@@ -2,81 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE595273341
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 21:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A08862733A3
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 22:37:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728268AbgIUT4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 15:56:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35530 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728239AbgIUT4M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 15:56:12 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD57C0613D4
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 12:56:11 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id g4so14086948edk.0
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 12:56:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ePfeVlm/80CWVkmghscu2gSwV4r2AgMZxEiau81s7ns=;
-        b=L4iRpAsYqHN5tf9X4BhaFATQIhzzsEeeRm+YaP0AQN4ergC/SiuPPGNxDbA88Wh3j1
-         6iTxaflFhzDg9sVMztuWX4Jfjps5VnpS3KLi1lSxigjeSn7ik24urE5cf+aFUA5V39XG
-         8FhXRMyFkCqX9ixRdr80wf2PV9kIiZTxvY/vSYbi2GSYi5j508pxEa6ZZO1h/kqY972K
-         1MV1vx3Chx3FaytYBI6p4IGl1i8NI2fdRY6QvSkvLIq8SBTyJ+2RCpsBmZQdgz2b8a8B
-         TllfGTIvD9burT2tXQJIk8LWqE1gOCSdfB8osl1UgcyoPE28P7rOGxsVy/KE4e+gJ66T
-         qKnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ePfeVlm/80CWVkmghscu2gSwV4r2AgMZxEiau81s7ns=;
-        b=kXPpR9XAYBLaNg+ui1syFZWg5Kjo2YRpFVgKLDrx4/CeIXgK7KSWDIb9NvVM+8u219
-         Ket7iHdN+Ppewi5TG54uKj4ZhRYV9GymHVC2CW6sBB2yNFPet9zGSX1bRp5NhO8DNy1o
-         q/f4f0Hugb2Zgu6tH3KWBK7DYJh3x/7PqpF27TaTwBJjYh9ZDsckgcP1Ksyd5gqgjn6m
-         SYz640Y+c4RxiXyFFNlA/54sOynUHLYkflCfpvsJ0YhS4dG16N3+zol/xIZmbwwgFNrW
-         yaDSSTAe9J9ssp/OZceXy8KlLNXnyVaGfqs4lyYksZIIXb4mAVASW2ywhftwjgThwC+H
-         C2SA==
-X-Gm-Message-State: AOAM530p3botB9ER+jUMbZpZd5gOLEUj0YxLF41waxV8OT5Mr4KGREjh
-        5fnOHsUhYUhgqQ5vSQUHtxM=
-X-Google-Smtp-Source: ABdhPJx4C1U0bwPlvMRDAnxg86S3L6b6onK42TcMm/b4TMoC8gzOSVvCAtIik4VgbfQLLXVCMEwerg==
-X-Received: by 2002:aa7:cf0e:: with SMTP id a14mr553148edy.81.1600718170079;
-        Mon, 21 Sep 2020 12:56:10 -0700 (PDT)
-Received: from skbuf ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id p12sm9668135ejb.42.2020.09.21.12.56.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2020 12:56:09 -0700 (PDT)
-Date:   Mon, 21 Sep 2020 22:56:07 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH net-next] net: bridge: pop vlan from skb if filtering is
- disabled but it's a pvid
-Message-ID: <20200921195607.hb47f6lpk4wzpys4@skbuf>
-References: <20200911231619.2876486-1-olteanv@gmail.com>
- <ddfecf408d3d1b7e4af97cb3b1c1c63506e4218e.camel@nvidia.com>
- <cd25db58-8dff-cf5f-041a-268bf9a17789@gmail.com>
- <315a6f2a1cec945eb35e69c6fdeaf3c2ab3cb25d.camel@nvidia.com>
- <cc20face-ec67-d444-1cf8-f4257dbe1e1c@gmail.com>
- <a322976c-6d47-aae8-32eb-3593f8e3cc10@gmail.com>
+        id S1726991AbgIUUhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 16:37:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50710 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726451AbgIUUhG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 16:37:06 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2CDE8218AC;
+        Mon, 21 Sep 2020 20:37:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600720626;
+        bh=mYgL/JQmjG7CQaT2e4ziHwAF4I39s/w2BqoCXpVlhGs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HNxWEPVr9sSMbnoiye67XR9UePRETi/1637vol9JbB0xFjUwIdArkwgqCaY7ZCkNR
+         HtfyBKZ06780GnW2IdgM6R9edaG+bm5qP26KpNoVkQb7L3ePTOMfpLGKmZHlt0vgXl
+         xCe+PYNJJkGqFCL7BRZirs5Zaos3ykJQp18Ps+i0=
+Date:   Mon, 21 Sep 2020 13:37:04 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>, netdev@vger.kernel.org,
+        jiri@nvidia.com
+Subject: Re: Exposing device ACL setting through devlink
+Message-ID: <20200921133704.5ad64b6e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200920152136.GB2323@nanopsycho.orion>
+References: <e7f76581-8525-2b98-ec4d-e772db692318@linux.ibm.com>
+        <20200904083141.GE2997@nanopsycho.orion>
+        <20200904153751.17ad4b48@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <7e4c2c8f-a5b0-799c-3083-cfefcf37bf10@linux.ibm.com>
+        <20200910070016.GT2997@nanopsycho.orion>
+        <f4d3923c-958c-c0b4-6aa3-f2500d4967e9@linux.ibm.com>
+        <20200918072054.GA2323@nanopsycho.orion>
+        <0bdb48e1-171b-3ec6-c993-0499639d0fc4@linux.ibm.com>
+        <20200920152136.GB2323@nanopsycho.orion>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a322976c-6d47-aae8-32eb-3593f8e3cc10@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 21, 2020 at 12:44:43PM -0700, Florian Fainelli wrote:
-> Vladimir, let me know if you have a patch for DSA and I can give it a
-> try quickly. Thanks!
+On Sun, 20 Sep 2020 17:21:36 +0200 Jiri Pirko wrote:
+> >Yes, this the filtering is done on a virtual switch in Power firmware. I am
+> >really just trying to report the ACL list's configured at the firmware level
+> >to users on the guest OS.  
+> 
+> We have means to model switches properly in linux and offload to them.
+> I advise you to do that.
 
-Let me clean it up a little and send it, I need to export a wrapper over
-br_get_pvid() for external use, called under rcu_read_lock().
+I think it may have gotten lost in the conversation, but Tom is after
+exposing the information to the client side of the switch. AFAIU we
+don't have anything like that right now, perhaps the way to go is to
+expose enum devlink_port_function_attr on the client side?
+
+Still - it feels hacky when I think about it. 
+
+IMHO kernel device APIs are not the place to expose network config.
+It's not like MVRP results pop up as a netdev attribute. 
+
+Tomorrow Amazon, Google, and all other cloud providers will want to
+expose some other info, and we'll have to worry about how to make it
+common, drawing the lines, reviewing etc.
+
+Tom, is there no way higher layer (cloud) APIs can be used to
+communicate this information to the guest?
