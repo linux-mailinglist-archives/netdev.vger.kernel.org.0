@@ -2,110 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D1482730E1
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 19:30:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 192652730FA
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 19:44:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728153AbgIUR3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 13:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727459AbgIUR3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 13:29:42 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B97EC061755;
-        Mon, 21 Sep 2020 10:29:42 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id v60so10833403ybi.10;
-        Mon, 21 Sep 2020 10:29:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I2F1h/EWboNIp8fpoSSezX7MP2/UtK1ptSrD/DJjbvU=;
-        b=Mf4MPPUOUNvYq8l/gH/Te+S53Ojx820Ckjo3OMdSQG1WMwEyr2eBYHCgcktxpNsZ/z
-         UzVwLNzA9RNjuxHecSZTZLd7VqGyFG6DygSg2+6QZ3yzFHc7/GhDofN54wU4jNdMYpdb
-         Q/WUNOCTvAGZ9idlaRTL6Uw+eLQ0rS4efQyIY6TDbtzCk7o19NnyG1Mr70uSi+zs0h/o
-         g8obpsnpwloAu8orhfp93qlqXfPSUNqLXHq3MZPJZr/pXqB3v1d9CfIzO8kmVrzjLFu/
-         JnziWCt4yqBioR9L6EZ41hFtuUy3nwPJ1yVGq+4Nm9/TUSFfKA1wX50uSAvOzWfrBvk7
-         ALtA==
+        id S1726419AbgIURmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 13:42:25 -0400
+Received: from mail-il1-f206.google.com ([209.85.166.206]:43859 "EHLO
+        mail-il1-f206.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727229AbgIURmZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 13:42:25 -0400
+Received: by mail-il1-f206.google.com with SMTP id t11so11814002ilj.10
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 10:42:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I2F1h/EWboNIp8fpoSSezX7MP2/UtK1ptSrD/DJjbvU=;
-        b=iJGIlqn/GFu3RRDy59/gk14CqB7J08sYuK/jmA9dKWCBjDCGpKoCxY4+cCst7a30C9
-         vzJwagufUV8rCwyBcEt0ogG/5NSCVbYH76Sm/E8YpK21nqZejH+5HMY6Hh6x0g+biEew
-         BSqDDyuK223lJQAZ5ykDxJ3DZqDzwn1wjQzpJkI68hj7RYph2e2IVvaEL0V7S4G19Oz5
-         5tAdwpc+/Qz7Hoah7GhaWO7OQUJMS13aTLToDnUujj9U4fLGHbkCkONDCnQed3gA5WFx
-         XnMHTGvYJD168TxnSXeGduOCEdB3K1JpVTtjEIF4mEe1DqIzRYLCfL6LoJe4aoiXeWyY
-         hbRg==
-X-Gm-Message-State: AOAM530BojKAB49a5CZWqGDn09L+90PZDlyMnOQfk6dOsrHUtzobctuo
-        jVAxDumJUklHwP75IqxYeEWsHneyl68NOVIP6no=
-X-Google-Smtp-Source: ABdhPJwxCOkI7ZoiMGiiUJBkbWO/mO5coExoe/Gg36tUGW2E2LMl8gOWe2LjJwZFGgTyHnUfEKWChHwUXnDywc2pGME=
-X-Received: by 2002:a25:33c4:: with SMTP id z187mr1238355ybz.27.1600709381303;
- Mon, 21 Sep 2020 10:29:41 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=OOT5zNSorcLtf3oJqiHdjxxvNPttwz+YE7f126UcXTs=;
+        b=fxVennEBQz9HX5XdxGntXsrKl3i9IkFHOfzt5Vn/uY+AYaQDZ62B53MHSBOHBjrGK/
+         LTUBrD4u1tXsP63oyCEMtEdIDeiltBzvNmHOLsVWG75/iSMbQ/5tPgRwoKDFl4N7ezLb
+         CdeYyXKpLauLEQOekUB5rnuLAy+zkN2/1cITdPFb4r70Y+PyDoI8JAJXECDITQkAAoFU
+         +FzsRlN41PHaHDjSgpAQxHvqWHElsxdtS0kPdWcLkPVNMh9q36OQFVOzMB2TPIcG838i
+         gyiHsyXSi0+lUF5ga8DTu7jIqsCaM5lZB//7de4oUB6qifRyFa6yWW8QLHstAvZmml76
+         DmGA==
+X-Gm-Message-State: AOAM531Wky76B49GVtQajW1pU70tCBjx9p8r644kyUWHwnGwX6ulEirm
+        Dqc6qLCfwruc3ffKU8RkzJ1KkFqYRYRj8IQi2Kfx0STxabst
+X-Google-Smtp-Source: ABdhPJw90nB1dc1hMBHlOPxBXvQkmNoyCxcGsOYlAAG9SDlUGQHE7sYCXiQODBQMBjEOnnBtx4AJJ8Gi2kImRuYVC7LEh0abM3fP
 MIME-Version: 1.0
-References: <20200917074453.20621-1-songmuchun@bytedance.com>
-In-Reply-To: <20200917074453.20621-1-songmuchun@bytedance.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 21 Sep 2020 10:29:30 -0700
-Message-ID: <CAEf4Bzad2LDGH_qnE+Qumy=B0N9WXGrwaK5pAdhNm53Q-XzawA@mail.gmail.com>
-Subject: Re: [RFC PATCH] bpf: Fix potential call bpf_link_free() in atomic context
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+X-Received: by 2002:a05:6e02:dd3:: with SMTP id l19mr918971ilj.3.1600710144204;
+ Mon, 21 Sep 2020 10:42:24 -0700 (PDT)
+Date:   Mon, 21 Sep 2020 10:42:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000088a51d05afd65f93@google.com>
+Subject: KMSAN: uninit-value in gc_worker (3)
+From:   syzbot <syzbot+b3dbc715a0b6201346f4@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        glider@google.com, kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 17, 2020 at 12:46 AM Muchun Song <songmuchun@bytedance.com> wrote:
->
-> The in_atomic macro cannot always detect atomic context. In particular,
-> it cannot know about held spinlocks in non-preemptible kernels. Although,
-> there is no user call bpf_link_put() with holding spinlock now. Be the
-> safe side, we can avoid this in the feature.
->
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> ---
+Hello,
 
-This change seems unnecessary (or at least premature), as if we ever
-get a use case that does bpf_link_put() from under held spinlock, we
-should see a warning about that (and in that case I bet code can be
-rewritten to not hold spinlock during bpf_link_put()). But on the
-other hand it makes bpf_link_put() to follow the pattern of
-bpf_map_put(), which always defers the work, so I'm ok with this. As
-Song mentioned, this is not called from a performance-critical hot
-path, so doesn't matter all that much.
+syzbot found the following issue on:
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+HEAD commit:    6c24608b Update README.md
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=1292fd55900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ee5f7a0b2e48ed66
+dashboard link: https://syzkaller.appspot.com/bug?extid=b3dbc715a0b6201346f4
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
 
->  kernel/bpf/syscall.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
->
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 178c147350f5..6347be0a5c82 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -2345,12 +2345,8 @@ void bpf_link_put(struct bpf_link *link)
->         if (!atomic64_dec_and_test(&link->refcnt))
->                 return;
->
-> -       if (in_atomic()) {
-> -               INIT_WORK(&link->work, bpf_link_put_deferred);
-> -               schedule_work(&link->work);
-> -       } else {
-> -               bpf_link_free(link);
-> -       }
-> +       INIT_WORK(&link->work, bpf_link_put_deferred);
-> +       schedule_work(&link->work);
->  }
->
->  static int bpf_link_release(struct inode *inode, struct file *filp)
-> --
-> 2.20.1
->
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b3dbc715a0b6201346f4@syzkaller.appspotmail.com
+
+=====================================================
+BUG: KMSAN: uninit-value in gc_worker+0x953/0x1740 net/netfilter/nf_conntrack_core.c:1389
+CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.8.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events_power_efficient gc_worker
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x21c/0x280 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ gc_worker+0x953/0x1740 net/netfilter/nf_conntrack_core.c:1389
+ process_one_work+0x1688/0x2140 kernel/workqueue.c:2269
+ worker_thread+0x10bc/0x2730 kernel/workqueue.c:2415
+ kthread+0x551/0x590 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+
+Uninit was created at:
+ kmsan_save_stack_with_flags+0x3c/0x90 mm/kmsan/kmsan.c:144
+ kmsan_internal_alloc_meta_for_pages mm/kmsan/kmsan_shadow.c:269 [inline]
+ kmsan_alloc_page+0xc5/0x1a0 mm/kmsan/kmsan_shadow.c:293
+ __alloc_pages_nodemask+0xdf0/0x1030 mm/page_alloc.c:4889
+ alloc_pages_current+0x685/0xb50 mm/mempolicy.c:2292
+ alloc_pages include/linux/gfp.h:545 [inline]
+ alloc_slab_page+0x11c/0x1240 mm/slub.c:1560
+ allocate_slab mm/slub.c:1705 [inline]
+ new_slab+0x2bf/0x10c0 mm/slub.c:1771
+ new_slab_objects mm/slub.c:2528 [inline]
+ ___slab_alloc+0xcd3/0x18a0 mm/slub.c:2689
+ __slab_alloc mm/slub.c:2729 [inline]
+ slab_alloc_node mm/slub.c:2803 [inline]
+ slab_alloc mm/slub.c:2848 [inline]
+ kmem_cache_alloc+0xb70/0xc50 mm/slub.c:2853
+ __nf_conntrack_alloc+0x1a9/0x790 net/netfilter/nf_conntrack_core.c:1509
+ init_conntrack+0x3c2/0x2180 net/netfilter/nf_conntrack_core.c:1588
+ resolve_normal_ct net/netfilter/nf_conntrack_core.c:1686 [inline]
+ nf_conntrack_in+0x158a/0x2b10 net/netfilter/nf_conntrack_core.c:1846
+ ipv6_conntrack_local+0x68/0x80 net/netfilter/nf_conntrack_proto.c:398
+ nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+ nf_hook_slow+0x17b/0x460 net/netfilter/core.c:512
+ nf_hook include/linux/netfilter.h:262 [inline]
+ NF_HOOK include/linux/netfilter.h:305 [inline]
+ ip6_xmit+0x2301/0x2b40 net/ipv6/ip6_output.c:280
+ inet6_csk_xmit+0x47f/0x5a0 net/ipv6/inet6_connection_sock.c:135
+ __tcp_transmit_skb+0x4b9e/0x5d70 net/ipv4/tcp_output.c:1240
+ tcp_transmit_skb net/ipv4/tcp_output.c:1256 [inline]
+ tcp_connect+0x153f/0x3bb0 net/ipv4/tcp_output.c:3673
+ tcp_v6_connect+0x2be8/0x2d40 net/ipv6/tcp_ipv6.c:334
+ __inet_stream_connect+0x14fe/0x16f0 net/ipv4/af_inet.c:658
+ inet_stream_connect+0x101/0x180 net/ipv4/af_inet.c:722
+ rds_tcp_conn_path_connect+0x93d/0xcc0 net/rds/tcp_connect.c:172
+ rds_connect_worker+0x36b/0x550 net/rds/threads.c:176
+ process_one_work+0x1688/0x2140 kernel/workqueue.c:2269
+ worker_thread+0x10bc/0x2730 kernel/workqueue.c:2415
+ kthread+0x551/0x590 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+=====================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
