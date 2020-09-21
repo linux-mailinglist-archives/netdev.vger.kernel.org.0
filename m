@@ -2,122 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12E5C27323A
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 20:51:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CAE0273225
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 20:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727892AbgIUSuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 14:50:04 -0400
-Received: from mail.efficios.com ([167.114.26.124]:39944 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727059AbgIUSuE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 14:50:04 -0400
-X-Greylist: delayed 323 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Sep 2020 14:50:03 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id A31F52CDD80;
-        Mon, 21 Sep 2020 14:44:39 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id WBvPMP2SvqHB; Mon, 21 Sep 2020 14:44:39 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 5A6D22CD77F;
-        Mon, 21 Sep 2020 14:44:39 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 5A6D22CD77F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1600713879;
-        bh=GVyop2Bxa1u83OR49HR6MQZ3Oln7khuYox267XJGLIA=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=CuiHiBDsd1vmweBJ35jYBnwQqbUBu+d/tFcHJO2+uynaIBn0rMDTcLoaQwzGrFe/b
-         3P9HZka8NsGT6H67f0sEjOwxVnjSmShJjYLSvqTgcw8cyrl8vfwB8sv1Py5qtqT0Ao
-         +lfXcGrSIgFItqMmmWTODM+9sl1tG5FK/rvw0J0oGiOsTXNHPifkCEd1UGm/6dha9g
-         VlTV4d6H646/NMPno6plOftOskb+4DHNY6iJ/xiMEyC1t2+rlLV6O+hwNC0OH37p+d
-         FXSUaRKveGMZ3ruHuRh1g5GzwyoXj9diL7WLSef0Lz+3+mYXe7Cpag4OYjbh00utQ4
-         6B5zJMMueoiYg==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id qJk3hvE_jpDr; Mon, 21 Sep 2020 14:44:39 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 50B642CD77E;
-        Mon, 21 Sep 2020 14:44:39 -0400 (EDT)
-Date:   Mon, 21 Sep 2020 14:44:39 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Message-ID: <1453768496.36855.1600713879236.JavaMail.zimbra@efficios.com>
-In-Reply-To: <390b230b-629b-7f96-e7c9-b28f8b592102@gmail.com>
-References: <20200918181801.2571-1-mathieu.desnoyers@efficios.com> <390b230b-629b-7f96-e7c9-b28f8b592102@gmail.com>
-Subject: Re: [RFC PATCH v2 0/3] l3mdev icmp error route lookup fixes
+        id S1727987AbgIUSo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 14:44:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726973AbgIUSoz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 14:44:55 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E27C061755
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 11:44:55 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id x22so5242675pfo.12
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 11:44:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=bAnShkfG4gnm5UubEK683LJVRbpJh/eMW4fGqJ/Ituk=;
+        b=Uspcf/ZEVjMIFg1ne64vvrdD3JiPQoaoG1zx2U+lCRDh8S+RbUZnOrVXDd5CG9KZxS
+         Eaj0RNCqJ36DD2BlaZgZHZzBfmk6xIAUCZcoFn+NDk9Dv+yxpla1jokWzOK1oXwBlVwG
+         FSSKfRDEixLwe3ab32jkTAi4wvbF9PrEnhKgWM6PUQZpQh757FWEyWpO4l/nO9QaaHzL
+         BDx3shY78KKPg+Xlaw2SxWFeGh5KsfRztSc9Or4g2R12a8+HpkzH8jyt4VASLE70jUZ0
+         KBNsXkdtR4vYFx7r93PLEn8PpuJIy/YgQNKetYcFNq1rdiaFOy37h4s9buQxgWjdrRBa
+         IjKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=bAnShkfG4gnm5UubEK683LJVRbpJh/eMW4fGqJ/Ituk=;
+        b=ih7Iz+SA17bXdpFdAbiqBzmhicLFh7qmDs5NGJKWQjXByH0RngdbaVXC5LzQpN0efT
+         mElTiVwUTh/k/UYl99t4mLEM3eZhdbRjK8Qu6nd3sVgP+Zbd9bWM/7KXDCFpGeRYKn5m
+         ECS5rd8A4EXhn0mMJSXL2djYhNWoKdvPRxAd3G4rLMMBjinB1LeD461bGZ8YSZMk2zP8
+         qJHCpgimci8Pw54u7kuZwsRZcGoXt1qqK68NZiVUHilZraCLbQXQvvNqk5kJw6a6NJnO
+         6k5djvdwNxz+85PwgdiX1EItlsbhYi7oRZryfomOIJC5S3xGoo3o6lLVbnOCz4JxYUri
+         eM6g==
+X-Gm-Message-State: AOAM532exIb7wZQFNSBa2PEgHgATI0huzeKrFzlmLA6JFjQmQIXEF2DA
+        VxwwkDLj0jhXVUf6MNvnXxg=
+X-Google-Smtp-Source: ABdhPJw8XvZXuMsmx668jWg57tw6P+QK/3CUaKg7U+Ur9NmFdHeqV8iPrIo59FL9OzSn4QaLFfV9bw==
+X-Received: by 2002:a63:f70e:: with SMTP id x14mr737335pgh.407.1600713895073;
+        Mon, 21 Sep 2020 11:44:55 -0700 (PDT)
+Received: from [10.67.49.188] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id e13sm205617pjy.38.2020.09.21.11.44.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Sep 2020 11:44:54 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/2] Devlink regions for SJA1105 DSA driver
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "cphealy@gmail.com" <cphealy@gmail.com>,
+        "jiri@nvidia.com" <jiri@nvidia.com>
+References: <20200921162741.4081710-1-vladimir.oltean@nxp.com>
+ <20200921171232.GF3717417@lunn.ch> <20200921181218.7jui54ca3lywj4c2@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <df33c443-6a4c-537d-5c06-8e984ab3e0c7@gmail.com>
+Date:   Mon, 21 Sep 2020 11:44:41 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20200921181218.7jui54ca3lywj4c2@skbuf>
 Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_3965 (ZimbraWebClient - FF80 (Linux)/8.8.15_GA_3963)
-Thread-Topic: l3mdev icmp error route lookup fixes
-Thread-Index: 0yf8zWzCKvQf9eZ37AP1IEyfvMk3gQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On Sep 21, 2020, at 2:36 PM, David Ahern dsahern@gmail.com wrote:
-
-> On 9/18/20 12:17 PM, Mathieu Desnoyers wrote:
->> Hi,
->> 
->> Here is an updated series of fixes for ipv4 and ipv6 which which ensure
->> the route lookup is performed on the right routing table in VRF
->> configurations when sending TTL expired icmp errors (useful for
->> traceroute).
->> 
->> It includes tests for both ipv4 and ipv6.
->> 
->> These fixes address specifically address the code paths involved in
->> sending TTL expired icmp errors. As detailed in the individual commit
->> messages, those fixes do not address similar issues related to network
->> namespaces and unreachable / fragmentation needed messages, which appear
->> to use different code paths.
->> 
+On 9/21/20 11:12 AM, Vladimir Oltean wrote:
+> On Mon, Sep 21, 2020 at 07:12:32PM +0200, Andrew Lunn wrote:
+>> On Mon, Sep 21, 2020 at 07:27:39PM +0300, Vladimir Oltean wrote:
+>>> This series exposes the SJA1105 static config as a devlink region. This
+>>> can be used for debugging, for example with the sja1105_dump user space
+>>> program that I have derived from Andrew Lunn's mv88e6xxx_dump:
+>>>
+>>> https://github.com/vladimiroltean/mv88e6xxx_dump/tree/sja1105
+>>
+>> Maybe i should rename the project dsa_dump?
 > 
-> New selftests are failing:
-> TEST: Ping received ICMP frag needed                       [FAIL]
+> I was unsure if you want to maintain that as a larger project.
 > 
-> Both IPv4 and IPv6 versions are failing.
 
-Indeed, this situation is discussed in each patch commit message:
-
-ipv4:
-
-[ It has also been pointed out that a similar issue exists with
-  unreachable / fragmentation needed messages, which can be triggered by
-  changing the MTU of eth1 in r1 to 1400 and running:
-
-  ip netns exec h1 ping -s 1450 -Mdo -c1 172.16.2.2
-
-  Some investigation points to raw_icmp_error() and raw_err() as being
-  involved in this last scenario. The focus of this patch is TTL expired
-  ICMP messages, which go through icmp_route_lookup.
-  Investigation of failure modes related to raw_icmp_error() is beyond
-  this investigation's scope. ]
-
-ipv6:
-
-[ Testing shows that similar issues exist with ipv6 unreachable /
-  fragmentation needed messages.  However, investigation of this
-  additional failure mode is beyond this investigation's scope. ]
-
-I do not have the time to investigate further unfortunately, so I
-thought it best to post what I have.
-
-Note that network namespaces also probably have the same problem,
-but those are not covered by the test cases.
-
-Thanks,
-
-Mathieu
-
-
+Cannot this be part of ethtool or iproute2 at some point and we just
+have each driver author submit pretty printers for the registers?
 -- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+Florian
