@@ -2,203 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB619271B00
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 08:42:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF370271B30
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 09:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgIUGml (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 02:42:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726011AbgIUGmk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 02:42:40 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A03C061755
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 23:42:40 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id l126so8421294pfd.5
-        for <netdev@vger.kernel.org>; Sun, 20 Sep 2020 23:42:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=GtmVFQ4lCYTr0H7aswr1a1/HCrOvVgOEv9M4u4tYyRE=;
-        b=NgXFLUSxTp1WqAf/B4t6UOMbutcOJptTNmNuokc0CgHh9ZAQti+7knXoORBgp6LV23
-         ptkgOZmQTIxLf3wXRgLAha1i0RqgjhhZGF6BliwD0ne01kWW25e11lasIjodpQZL86d3
-         aGHpZ8/5oZhdpdcnzs7ujwdJUN0Kiir3evZo4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=GtmVFQ4lCYTr0H7aswr1a1/HCrOvVgOEv9M4u4tYyRE=;
-        b=DoPSlEsGX/5L/hmsIRqQ8m7sMT8qndGaE1ievhFU9jEU+0GCik/1kdyIyghPE7XQHc
-         3996f8ab1TyMft2FcorjenNBnSztyEwqykNyNpO7d1s7JPWvc3AIfkNvfTiTz0kyfW5n
-         lizoF2lJgBlYpsz3RhK1Wce2j+pdSsdJ8BmPLc/x36yWjh9SIuEnuYZTTFM2PYaLElNw
-         G5iVOWAG9sLStNInet24rLEsEspmepTqvPxqO78ePoaCHBPgdnxco+fUnJgF2sn7jpE5
-         zVLfdbJwWP+HgNfKD/ZkziGJGsKA0dsEgJ9XVbWZ0SiFDD5+M+NjjEm2RH/qjSUpVLt0
-         y/2w==
-X-Gm-Message-State: AOAM5327SNvGGNNUuVttncNUp39OpZ4BCH2tNmaC6+kPyGusK8MRKBTT
-        K+A08bM1yWyvw7sHgAm+qyie+g==
-X-Google-Smtp-Source: ABdhPJwVBe63WteEYxyhFV6W2xV4l2VQryk6TuG/MtOAB4ZTIYKAlDyH7Sw4k9vKTq0db3048+tzFQ==
-X-Received: by 2002:a63:e057:: with SMTP id n23mr34247120pgj.87.1600670559817;
-        Sun, 20 Sep 2020 23:42:39 -0700 (PDT)
-Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id l21sm9733548pjq.54.2020.09.20.23.42.36
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 20 Sep 2020 23:42:39 -0700 (PDT)
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-To:     mkubecek@suse.cz, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, michael.chan@broadcom.com,
-        edwin.peer@broadcom.com, andrew.gospodarek@broadcom.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH ethtool] bnxt: Add Broadcom driver support.
-Date:   Mon, 21 Sep 2020 12:09:51 +0530
-Message-Id: <1600670391-5533-1-git-send-email-vasundhara-v.volam@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1726417AbgIUHAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 03:00:43 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:38330 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726011AbgIUHAn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 03:00:43 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.69 with qID 08L701420005130, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb05.realtek.com.tw[172.21.6.98])
+        by rtits2.realtek.com.tw (8.15.2/2.66/5.86) with ESMTPS id 08L701420005130
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 21 Sep 2020 15:00:01 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMB05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Mon, 21 Sep 2020 15:00:01 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::3477:84c0:6ac8:dfee]) by
+ RTEXMB04.realtek.com.tw ([fe80::3477:84c0:6ac8:dfee%3]) with mapi id
+ 15.01.2044.006; Mon, 21 Sep 2020 15:00:01 +0800
+From:   =?utf-8?B?5YqJ5YGJ5qyK?= <willy.liu@realtek.com>
+To:     Serge Semin <fancer.lancer@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, "Kyle Evans" <kevans@FreeBSD.org>
+CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ryan Kao <ryankao@realtek.com>,
+        "Joe Hershberger" <joe.hershberger@ni.com>,
+        Peter Robinson <pbrobinson@gmail.com>
+Subject: RE: [PATCH] net: phy: realtek: fix rtl8211e rx/tx delay config
+Thread-Topic: [PATCH] net: phy: realtek: fix rtl8211e rx/tx delay config
+Thread-Index: AQHWjJSIgE9wGMLbJkqAPItOTw6viqlsFkuAgAHOTXCAAAJ4gIAAG6aAgARrxhA=
+Date:   Mon, 21 Sep 2020 07:00:00 +0000
+Message-ID: <e14a0e96ddf8480591f98677cdca5e77@realtek.com>
+References: <1600307253-3538-1-git-send-email-willy.liu@realtek.com>
+ <20200917101035.uwajg4m524g4lz5o@mobilestation>
+ <87c4ebf4b1fe48a7a10b27d0ba0b333c@realtek.com>
+ <20200918135403.GC3631014@lunn.ch>
+ <20200918153301.chwlvzh6a2bctbjw@mobilestation>
+In-Reply-To: <20200918153301.chwlvzh6a2bctbjw@mobilestation>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.179.211]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the initial support for parsing registers dumped
-by the Broadcom driver. Currently, PXP and PCIe registers are
-parsed.
-
-Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
----
- Makefile.am |  2 +-
- bnxt.c      | 86 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- ethtool.c   |  1 +
- internal.h  |  3 +++
- 4 files changed, 91 insertions(+), 1 deletion(-)
- create mode 100644 bnxt.c
-
-diff --git a/Makefile.am b/Makefile.am
-index 0e237d0..e3e311d 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -17,7 +17,7 @@ ethtool_SOURCES += \
- 		  smsc911x.c at76c50x-usb.c sfc.c stmmac.c	\
- 		  sff-common.c sff-common.h sfpid.c sfpdiag.c	\
- 		  ixgbevf.c tse.c vmxnet3.c qsfp.c qsfp.h fjes.c lan78xx.c \
--		  igc.c qsfp-dd.c qsfp-dd.h
-+		  igc.c qsfp-dd.c qsfp-dd.h bnxt.c
- endif
- 
- if ENABLE_BASH_COMPLETION
-diff --git a/bnxt.c b/bnxt.c
-new file mode 100644
-index 0000000..91ed819
---- /dev/null
-+++ b/bnxt.c
-@@ -0,0 +1,86 @@
-+/* Code to dump registers for NetXtreme-E/NetXtreme-C Broadcom devices.
-+ *
-+ * Copyright (c) 2020 Broadcom Inc.
-+ */
-+#include <stdio.h>
-+#include "internal.h"
-+
-+#define BNXT_PXP_REG_LEN	0x3110
-+#define BNXT_PCIE_STATS_LEN	(12 * sizeof(u64))
-+
-+struct bnxt_pcie_stat {
-+	const char *name;
-+	u16 offset;
-+	u8 size;
-+	const char *format;
-+};
-+
-+static const struct bnxt_pcie_stat bnxt_pcie_stats[] = {
-+	{ .name = "PL Signal integrity errors     ", .offset = 0, .size = 4, .format = "%lld" },
-+	{ .name = "DL Signal integrity errors     ", .offset = 4, .size = 4, .format = "%lld" },
-+	{ .name = "TLP Signal integrity errors    ", .offset = 8, .size = 4, .format = "%lld" },
-+	{ .name = "Link integrity                 ", .offset = 12, .size = 4, .format = "%lld" },
-+	{ .name = "TX TLP traffic rate            ", .offset = 16, .size = 4, .format = "%lld" },
-+	{ .name = "RX TLP traffic rate            ", .offset = 20, .size = 4, .format = "%lld" },
-+	{ .name = "TX DLLP traffic rate           ", .offset = 24, .size = 4, .format = "%lld" },
-+	{ .name = "RX DLLP traffic rate           ", .offset = 28, .size = 4, .format = "%lld" },
-+	{ .name = "Equalization Phase 0 time(ms)  ", .offset = 33, .size = 1, .format = "0x%lx" },
-+	{ .name = "Equalization Phase 1 time(ms)  ", .offset = 32, .size = 1, .format = "0x%lx" },
-+	{ .name = "Equalization Phase 2 time(ms)  ", .offset = 35, .size = 1, .format = "0x%lx" },
-+	{ .name = "Equalization Phase 3 time(ms)  ", .offset = 34, .size = 1, .format = "0x%lx" },
-+	{ .name = "PHY LTSSM Histogram 0          ", .offset = 36, .size = 2, .format = "0x%llx"},
-+	{ .name = "PHY LTSSM Histogram 1          ", .offset = 38, .size = 2, .format = "0x%llx"},
-+	{ .name = "PHY LTSSM Histogram 2          ", .offset = 40, .size = 2, .format = "0x%llx"},
-+	{ .name = "PHY LTSSM Histogram 3          ", .offset = 42, .size = 2, .format = "0x%llx"},
-+	{ .name = "Recovery Histogram 0           ", .offset = 44, .size = 2, .format = "0x%llx"},
-+	{ .name = "Recovery Histogram 1           ", .offset = 46, .size = 2, .format = "0x%llx"},
-+};
-+
-+int bnxt_dump_regs(struct ethtool_drvinfo *info __maybe_unused, struct ethtool_regs *regs)
-+{
-+	const struct bnxt_pcie_stat *stats = bnxt_pcie_stats;
-+	u16 *pcie_stats;
-+	u64 pcie_stat;
-+	u32 reg, i;
-+
-+	if (regs->len < BNXT_PXP_REG_LEN) {
-+		fprintf(stdout, "Length too short, expected atleast %x\n",
-+			BNXT_PXP_REG_LEN);
-+		return -1;
-+	}
-+
-+	fprintf(stdout, "PXP Registers\n");
-+	fprintf(stdout, "Offset\tValue\n");
-+	fprintf(stdout, "------\t-------\n");
-+	for (i = 0; i < BNXT_PXP_REG_LEN; i += sizeof(reg)) {
-+		memcpy(&reg, &regs->data[i], sizeof(reg));
-+		if (reg)
-+			fprintf(stdout, "0x%04x\t0x%08x\n", i, reg);
-+	}
-+	fprintf(stdout, "\n");
-+
-+	if (!regs->version)
-+		return 0;
-+
-+	if (regs->len < (BNXT_PXP_REG_LEN + BNXT_PCIE_STATS_LEN)) {
-+		fprintf(stdout, "Length is too short, expected %lx\n",
-+			BNXT_PXP_REG_LEN + BNXT_PCIE_STATS_LEN);
-+		return -1;
-+	}
-+
-+	pcie_stats = (u16 *)(regs->data + BNXT_PXP_REG_LEN);
-+	fprintf(stdout, "PCIe statistics:\n");
-+	fprintf(stdout, "----------------\n");
-+	for (i = 0; i < ARRAY_SIZE(bnxt_pcie_stats); i++) {
-+		pcie_stat = 0;
-+		memcpy(&pcie_stat, &pcie_stats[stats[i].offset],
-+		       stats[i].size * sizeof(u16));
-+
-+		fprintf(stdout, "%s", stats[i].name);
-+		fprintf(stdout, stats[i].format, pcie_stat);
-+		fprintf(stdout, "\n");
-+	}
-+
-+	fprintf(stdout, "\n");
-+	return 0;
-+}
-diff --git a/ethtool.c b/ethtool.c
-index ab9b457..89bd15c 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -1072,6 +1072,7 @@ static const struct {
- 	{ "dsa", dsa_dump_regs },
- 	{ "fec", fec_dump_regs },
- 	{ "igc", igc_dump_regs },
-+	{ "bnxt_en", bnxt_dump_regs },
- #endif
- };
- 
-diff --git a/internal.h b/internal.h
-index d096a28..935ebac 100644
---- a/internal.h
-+++ b/internal.h
-@@ -396,4 +396,7 @@ int fec_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs);
- /* Intel(R) Ethernet Controller I225-LM/I225-V adapter family */
- int igc_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs);
- 
-+/* Broadcom Ethernet Controller */
-+int bnxt_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs);
-+
- #endif /* ETHTOOL_INTERNAL_H__ */
--- 
-1.8.3.1
-
+SGkgQW5kcmV3LA0KSSByZW1vdmVkIGJlbG93IHJlZ2lzdGVyIGxheW91dCBkZXNjcmlwdGlvbnMg
+YmVjYXVzZSB0aGVzZSBkZXNjcmlwdGlvbnMgZGlkIG5vdCBtYXRjaCByZWdpc3RlciBkZWZpbml0
+aW9ucyBmb3IgcnRsODIxMWUgZXh0ZW5zaW9uIHBhZ2UgMTY0IHJlZyAweDFjIGF0IGFsbC4NCjg6
+NiA9IFBIWSBBZGRyZXNzDQo1OjQgPSBBdXRvLU5lZ290aWF0aW9uDQozID0gTW9kZQ0KMiA9IFJY
+RA0KMSA9IFRYRA0KMCA9IFNFTFJHVjENCkkgdGhpbmsgaXQgaXMgYSBtaXN1bmRlcnN0YW5kaW5n
+LiBUaGVzZSBkZWZpbml0aW9ucyBhcmUgbWFwcGVkIGZyb20gZGF0YXNoZWV0IHJ0bDgyMTFlIHRh
+YmxlMTMiIENvbmZpZ3VyYXRpb24gUmVnaXN0ZXIgRGVmaW5pdGlvbiIuIEhvd2V2ZXIgdGhpcyB0
+YWJsZSBzaG91bGQgYmUgSFcgcGluIGNvbmZpZ3VyYXRpb25zIG5vdCByZWdpc3RlciBkZXNjcmlw
+dGlvbnMuIA0KDQpVc2VycyBjYW4gY29uZmlnIFJYRC9UWEQgdmlhIHJlZ2lzdGVyIHNldHRpbmco
+ZXh0ZW5zaW9uIHBhZ2UgMTY0IHJlZyAweDFjKS4gQnV0IGJpdCBtYXAgZm9yIHRoZXNlIHR3byBz
+ZXR0aW5ncyBzaG91bGQgYmUgYmVsb3c6IA0KMTMgPSBGb3JjZSBUeCBSWCBEZWxheSBjb250cm9s
+bGVkIGJ5IGJpdDEyIGJpdDExLA0KMTIgPSBSWCBEZWxheSwgMTEgPSBUWCBEZWxheQ0KDQpIaSBT
+ZXJnZXksDQpJIHNhdyB0aGUgc3VtbWFyeSBmcm9tIGh0dHBzOi8vcmV2aWV3cy5mcmVlYnNkLm9y
+Zy9EMTM1OTEuIFRoaXMgcGF0Y2ggaXMgdG8gcmVjb25maWd1cmUgdGhlIFJUTDgyMTFFIHVzZWQg
+dG8gZm9yY2Ugb2ZmIFRYRC9SWEQgKFJYRCBpcyBkZWZhdWx0aW5nIHRvIG9uLCBpbiBteSBjaGVj
+a3MpIGFuZCB0dXJuIG9uIHNvbWUgYml0cyBpbiB0aGUgY29uZmlndXJhdGlvbiByZWdpc3RlciBm
+b3IgdGhpcyBQSFkgdGhhdCBhcmUgdW5kb2N1bWVudGVkLg0KVGhlIGRlZmF1bHQgdmFsdWUgZm9y
+ICJleHRlbnNpb24gcGcgMHhhNCByZWcgMHgxYyIgaXMgMHg4MTQ4LCBhbmQgYml0MS0yIHNob3Vs
+ZCBiZSAwLiBJbiBteSBvcGluaW9uLCB0aGlzIHBhdGNoIHNob3VsZCBiZSB3b3JrZWQgYmFzZWQg
+b24gdGhlIG1hZ2ljIG51bWJlciAoMHhiNDAwKS4gSXQgc2VlbXMgUlggZGVsYXkgd2FzIHNldCBh
+bmQgcGFja2FnZSBkaWQgbm90IGxvc3QgZm9yIFNvbWUgcGluZTY0IG1vZGVscy4gSSBhbSBub3Qg
+c3VyZSBpZiBzb21lIG1vZGVscyBnb3QgZGlmZmVyZW50IGRlZmF1bHQgdmFsdWUobm90IDB4ODE0
+OCkgYmVjYXVzZSB0aGUgc3VtbWFyeSBzYXlzIChSWEQgaXMgZGVmYXVsdGluZyB0byBvbikuIFdo
+YXQgSSBtZWFuIGlzIHRoYXQgdGhpcyBwYXRjaCBpcyBhY3R1YWxseSB0dXJuIG9uIFJYIERlbGF5
+IG5vdCB0dXJuIG9mZiBSWCBkZWxheS4gSSBob3BlIHdlIGNhbiBjb3JyZWN0IHRoZSBtZWFuaW5n
+IG9mIHRoaXMgcmVnaXN0ZXIuIA0KDQpCLlIuDQpXaWxseQ0KDQotLS0tLU9yaWdpbmFsIE1lc3Nh
+Z2UtLS0tLQ0KRnJvbTogU2VyZ2UgU2VtaW4gPGZhbmNlci5sYW5jZXJAZ21haWwuY29tPiANClNl
+bnQ6IEZyaWRheSwgU2VwdGVtYmVyIDE4LCAyMDIwIDExOjMzIFBNDQpUbzogQW5kcmV3IEx1bm4g
+PGFuZHJld0BsdW5uLmNoPjsgS3lsZSBFdmFucyA8a2V2YW5zQEZyZWVCU0Qub3JnPjsg5YqJ5YGJ
+5qyKIDx3aWxseS5saXVAcmVhbHRlay5jb20+DQpDYzogaGthbGx3ZWl0MUBnbWFpbC5jb207IGxp
+bnV4QGFybWxpbnV4Lm9yZy51azsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsga3ViYUBrZXJuZWwub3Jn
+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBS
+eWFuIEthbyA8cnlhbmthb0ByZWFsdGVrLmNvbT47IEpvZSBIZXJzaGJlcmdlciA8am9lLmhlcnNo
+YmVyZ2VyQG5pLmNvbT47IFBldGVyIFJvYmluc29uIDxwYnJvYmluc29uQGdtYWlsLmNvbT4NClN1
+YmplY3Q6IFJlOiBbUEFUQ0hdIG5ldDogcGh5OiByZWFsdGVrOiBmaXggcnRsODIxMWUgcngvdHgg
+ZGVsYXkgY29uZmlnDQoNCkhlbGxvIEFuZHJldy4NCg0KT24gRnJpLCBTZXAgMTgsIDIwMjAgYXQg
+MDM6NTQ6MDNQTSArMDIwMCwgQW5kcmV3IEx1bm4gd3JvdGU6DQo+IE9uIEZyaSwgU2VwIDE4LCAy
+MDIwIGF0IDA2OjU1OjE2QU0gKzAwMDAsIOWKieWBieasiiB3cm90ZToNCj4gPiBIaSBTZXJnZSwN
+Cj4gDQo+ID4gVGhhbmtzIGZvciB5b3VyIHJlcGx5LiBUaGVyZSBpcyBhIGNvbmZpZGVudGlhbCBp
+c3N1ZSB0aGF0IHJlYWx0ZWsgDQo+ID4gZG9lc24ndCBvZmZlciB0aGUgZGV0YWlsIG9mIGEgZnVs
+bCByZWdpc3RlciBsYXlvdXQgZm9yIGNvbmZpZ3VyYXRpb24gDQo+ID4gcmVnaXN0ZXIuDQo+IA0K
+PiAuLi4NCj4gDQo+ID4gPiAgCSAqIDB4YTQgZXh0ZW5zaW9uIHBhZ2UgKDB4NykgbGF5b3V0LiBJ
+dCBjYW4gYmUgdXNlZCB0byBkaXNhYmxlL2VuYWJsZQ0KPiA+ID4gIAkgKiB0aGUgUlgvVFggZGVs
+YXlzIG90aGVyd2lzZSBjb250cm9sbGVkIGJ5IFJYRExZL1RYRExZIHBpbnMuIEl0IGNhbg0KPiA+
+ID4gIAkgKiBhbHNvIGJlIHVzZWQgdG8gY3VzdG9taXplIHRoZSB3aG9sZSBjb25maWd1cmF0aW9u
+IHJlZ2lzdGVyOg0KPiA+IA0KPiA+ID4gLQkgKiA4OjYgPSBQSFkgQWRkcmVzcywgNTo0ID0gQXV0
+by1OZWdvdGlhdGlvbiwgMyA9IEludGVyZmFjZSBNb2RlIFNlbGVjdCwNCj4gPiA+IC0JICogMiA9
+IFJYIERlbGF5LCAxID0gVFggRGVsYXksIDAgPSBTRUxSR1YgKHNlZSBvcmlnaW5hbCBQSFkgZGF0
+YXNoZWV0DQo+ID4gPiAtCSAqIGZvciBkZXRhaWxzKS4NCj4gPiA+ICsJICogMTMgPSBGb3JjZSBU
+eCBSWCBEZWxheSBjb250cm9sbGVkIGJ5IGJpdDEyIGJpdDExLA0KPiA+ID4gKwkgKiAxMiA9IFJY
+IERlbGF5LCAxMSA9IFRYIERlbGF5DQo+ID4gDQo+IA0KPiA+IEhlcmUgeW91J3ZlIHJlbW92ZWQg
+dGhlIHJlZ2lzdGVyIGxheW91dCBkZXNjcmlwdGlvbiBhbmQgcmVwbGFjZWQgaXRxIA0KPiA+IHdp
+dGgganVzdCB0aHJlZSBiaXRzIGluZm8uIFNvIGZyb20gbm93IHRoZSB0ZXh0IGFib3ZlIGRvZXNu
+J3QgcmVhbGx5IA0KPiA+IGNvcnJlc3BvbmRzIHRvIHdoYXQgZm9sbG93cy4NCj4gDQo+ID4gSSBt
+aWdodCBoYXZlIGZvcmdvdHRlbiBzb21ldGhpbmcsIGJ1dCBBRkFJUiB0aGF0IHJlZ2lzdGVyIGJp
+dHMgDQo+ID4gc3RhdGVxIG1hcHBlZCB3ZWxsIHRvIHdoYXQgd2FzIGF2YWlsYWJsZSBvbiB0aGUg
+Y29ycmVzcG9uZGluZyANCj4gPiBleHRlcm5hbCBwaW5zLg0KPiANCj4gSGkgV2lsbHkNCj4gDQoN
+Cj4gU28gaXQgYXBwZWFycyBiaXRzIDMgdG8gOCBoYXZlIGJlZW4gcmV2ZXJzZSBlbmdpbmVlcmVk
+LiBVbmxlc3MgeW91IA0KPiBrbm93IGZyb20geW91ciBjb25maWRlbnRpYWwgZGF0YXNoZWV0IHRo
+YXQgdGhlc2UgYXJlIHdyb25nLCBwbGVhc2UgDQo+IGxlYXZlIHRoZSBjb21tZW50IGFsb25lLg0K
+PiANCj4gSWYgeW91IGNvbmZpZGVudGlhbCBkYXRhc2hlZXQgc2F5cyB0aGF0IHRoZSB1c2FnZSBv
+ZiBiaXRzIDAtMiBpcyANCj4gd3JvbmcsIHRoZW4gcGxlYXNlIGRvIGNvcnJlY3QgdGhhdCBwYXJ0
+Lg0KDQpJJ3ZlIGdvdCB0aGF0IGluZm8gZnJvbSBLeWxlIHBvc3QgaGVyZToNCmh0dHBzOi8vcmV2
+aWV3cy5mcmVlYnNkLm9yZy9EMTM1OTENCg0KTXkgd29yayB3aXRoIHRoYXQgcHJvYmxlbSBoYXMg
+YmVlbiBkb25lIG1vcmUgdGhhbiBhIHllYXIgYWdvLCBzbyBJIGRvbid0IHJlbWVtYmVyIGFsbCB0
+aGUgZGV0YWlscy4gQnV0IElJUkMgdGhlIHZlcnkgZmlyc3QgbmluZSBiaXRzIFs4OjBdIG11c3Qg
+YmUgYSBjb3B5IG9mIHdoYXQgaXMgc2V0IG9uIHRoZSBleHRlcm5hbCBjb25maWd1cmF0aW9uIHBp
+bnMgYXMgSSBkZXNjcmliZWQgaW4gdGhlIGNvbW1lbnQuDQpBRkFJUiBJIHRyaWVkIHRvIG1hbnVh
+bGx5IGNoYW5nZSB0aGVzZSBwaW5zIFsxXSBhbmQgZGV0ZWN0ZWQgdGhhdCBjaGFuZ2UgcmlnaHQg
+dGhlcmUgaW4gdGhlIHJlZ2lzdGVyLiBUaGF0IGZ1bGx5IGZpdHRlZCB0byB3aGF0IEt5bGUgd3Jv
+dGUgaW4gaGlzIHBvc3QuIEFsYXMgSSBjYW4ndCByZXBlYXQgaXQgdG8gYmUgY29tcGxldGVseSBz
+dXJlIGF0IHRoZSBtb21lbnQgZHVlIHRvIHRoZSBsYWNrIG9mIHRoZSBoYXJkd2FyZS4gU28gSSBt
+aWdodCBoYXZlIG1pc3NlZCBzb21ldGhpbmcsIGFuZCBXaWxseScgY29uZmlybWF0aW9uIGFib3V0
+IHRoYXQgd291bGQgaGF2ZSBiZWVuIG1vcmUgdGhhbiB3ZWxjb21lLiBXaGF0IHdlIGNhbiBzYXkg
+bm93IGZvciBzdXJlIEkgZGlkbid0IHVzZSB0aGUgbWFnaWMgbnVtYmVyIGluIG15IHBhdGNoLiBU
+aGF0IGNvdWxkIGhhdmUgYmVlbiBhIG1pc3Rha2UgZnJvbSB3aGF0IFdpbGx5IHNheXMgaW4gdGhl
+IGNvbW1pdC1sb2cuLi4NCg0KQW55d2F5IGFzaWRlIHdpdGggdGhlIE1hZ2ljIGJpdHMgc2V0dGlu
+Z3MgKHdoaWNoIGJ5IFdpbGx5JyBwYXRjaCBhcHBlYXJzIHRvIGJlIHRoZSBUeC9SeCBkZWxheXMg
+KyBGb3JjZSBUeC9SeCBkZWxheSBzZXR0aW5nKSBLeWxlIGFsc28gY2xlYXJzIHRoZSBiaXRzIDEt
+MiB3aXRoIGEgY29tbWVudCAiRW5zdXJlIGJvdGggaW50ZXJuYWwgZGVsYXlzIGFyZSB0dXJuZWQg
+b2ZmIi4gV2lsbHksIHdoYXQgY2FuIHlvdSBzYXkgYWJvdXQgdGhhdD8gQ2FuIHdlIHJlYWxseSBs
+ZWF2ZSB0aGVtIG91dCBmcm9tIHRoZSBjaGFuZ2U/IEt5bGUsIGNvdWxkIHlvdSBnaXZlIHVzIGEg
+Y29tbWVudCBhYm91dCB5b3VyIGV4cGVyaWVuY2Ugd2l0aCB0aGF0Pw0KDQpbMV0gUlRMODIxMUUt
+VkItQ0csIFJUTDgyMTFFLVZMLUNHLCBSVEw4MjExRS1WTC1DRywgIklOVEVHUkFURUQgMTAvMTAw
+LzEwMDBNIEVUSEVSTkVUDQogICAgVFJBTlNDRUlWRVIiIERhdGFzaGVldCwgVGFibGUgMTMuIENv
+bmZpZ3VyYXRpb24gUmVnaXN0ZXIgRGVmaW5pdGlvbiwgUmV2LiAxLjYsDQogICAgMDMgQXByaWwg
+MjAxMiwgVHJhY2sgSUQ6IEpBVFItMzM3NS0xNiwgcC4xNg0KDQotU2VyZ2V5DQoNCj4gDQo+ICAg
+ICAgICBBbmRyZXcNCg0KLS0tLS0tUGxlYXNlIGNvbnNpZGVyIHRoZSBlbnZpcm9ubWVudCBiZWZv
+cmUgcHJpbnRpbmcgdGhpcyBlLW1haWwuDQo=
