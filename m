@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6DB3271E23
-	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 10:39:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DDBE271E24
+	for <lists+netdev@lfdr.de>; Mon, 21 Sep 2020 10:39:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726547AbgIUIjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 04:39:15 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:64898 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726236AbgIUIjP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 04:39:15 -0400
+        id S1726556AbgIUIjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 04:39:24 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:20078 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbgIUIjX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 04:39:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1600677554; x=1632213554;
+  t=1600677563; x=1632213563;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=NPP63fdZ5LEC5L16o8EsLZT3LayBNEAZrV0KRJR728M=;
-  b=B1xNeWe6OAlB5XscdjwlFi78uBw2GvemyRTjvScAEM+4ENYQIeoMVpx7
-   +TPZHARAdexXE/XDvDZ5SXCmPSEBsSiZpEQx/Kj1SIol8RaPVRMWaVU0Q
-   Fk6zuAX/C8gniKjqAY53rO20GNNAP4E3rB1JYzPAc+h2Z6wbeax8uqdQV
-   A=;
+  bh=5A41ukSj9aF1KvKQoPIyJzfST6U+Ky+PgDpifhLqQ20=;
+  b=KC1Lbae8HD6dALD9qmNPyyxzcqrQuZfWTHInOpkJJ/1RpJF6jzYTEVIN
+   1TvGEls8vtBPl3upBTRR/wG9hHZphqHyCx08e1ckP1ANrhU6VjNrZkj6m
+   IO260flONkSou55kYX3axFH0rv+Fk3BNEpLmMYYOEJZ5WQfJZHSOKTzzR
+   w=;
 X-IronPort-AV: E=Sophos;i="5.77,286,1596499200"; 
-   d="scan'208";a="77823739"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-8cc5d68b.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 21 Sep 2020 08:39:14 +0000
-Received: from EX13D28EUC001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2b-8cc5d68b.us-west-2.amazon.com (Postfix) with ESMTPS id 909CAA1C23;
-        Mon, 21 Sep 2020 08:39:13 +0000 (UTC)
+   d="scan'208";a="55015137"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2a-69849ee2.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 21 Sep 2020 08:39:22 +0000
+Received: from EX13D28EUC001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-69849ee2.us-west-2.amazon.com (Postfix) with ESMTPS id 328E9A187D;
+        Mon, 21 Sep 2020 08:39:21 +0000 (UTC)
 Received: from u68c7b5b1d2d758.ant.amazon.com (10.43.162.38) by
  EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 21 Sep 2020 08:39:05 +0000
+ id 15.0.1497.2; Mon, 21 Sep 2020 08:39:12 +0000
 From:   Shay Agroskin <shayagr@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Shay Agroskin <shayagr@amazon.com>, <dwmw@amazon.com>,
@@ -38,10 +38,10 @@ CC:     Shay Agroskin <shayagr@amazon.com>, <dwmw@amazon.com>,
         <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
         <benh@amazon.com>, <akiyano@amazon.com>, <sameehj@amazon.com>,
-        <ndagan@amazon.com>, Amit Bernstein <amitbern@amazon.com>
-Subject: [PATCH V2 net-next 5/7] net: ena: Change RSS related macros and variables names
-Date:   Mon, 21 Sep 2020 11:37:40 +0300
-Message-ID: <20200921083742.6454-6-shayagr@amazon.com>
+        <ndagan@amazon.com>, Ido Segev <idose@amazon.com>
+Subject: [PATCH V2 net-next 6/7] net: ena: Fix all static chekers' warnings
+Date:   Mon, 21 Sep 2020 11:37:41 +0300
+Message-ID: <20200921083742.6454-7-shayagr@amazon.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200921083742.6454-1-shayagr@amazon.com>
 References: <20200921083742.6454-1-shayagr@amazon.com>
@@ -55,149 +55,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The formal name changes to "ENA_ADMIN_RSS_INDIRECTION_TABLE_CONFIG".
-Indirection is the ability to reference "something" using "something else"
-instead of the value itself.
-Indirection table, as the name implies, is the ability to reference
-CPU/Queue value using hash-to-CPU table instead of CPU/Queue itself.
+After running Sparse checker on the driver using
+    make C=1 M=drivers/net/ethernet/amazon/ena
 
-This patch renames the variable keys_num, which describes the number of
-words in the RSS hash key, to key_parts which makes its purpose clearer
-in RSS context.
+the only error that is thrown is:
+    sparse: sparse: Using plain integer as NULL pointer
+about the line
+    struct ena_calc_queue_size_ctx calc_queue_ctx = { 0 };
 
-Signed-off-by: Amit Bernstein <amitbern@amazon.com>
+This patch fixes this warning, thus making our driver free (for now) of
+Sparse errors/warnings.
+
+To make a more complete work, this patch also fixes all static warnings
+that were found using an internal static checker.
+
+Signed-off-by: Ido Segev <idose@amazon.com>
 Signed-off-by: Shay Agroskin <shayagr@amazon.com>
 ---
- .../device_drivers/ethernet/amazon/ena.rst    |  2 +-
- .../net/ethernet/amazon/ena/ena_admin_defs.h  |  7 +++---
- drivers/net/ethernet/amazon/ena/ena_com.c     | 22 +++++++++----------
- 3 files changed, 16 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_com.c     |  2 ++
+ drivers/net/ethernet/amazon/ena/ena_eth_com.c | 17 ++++++++++-------
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |  2 +-
+ 3 files changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
-index 11af6388ea87..a666913d9b5b 100644
---- a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
-+++ b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
-@@ -274,7 +274,7 @@ RSS
-   inputs for hash functions.
- - The driver configures RSS settings using the AQ SetFeature command
-   (ENA_ADMIN_RSS_HASH_FUNCTION, ENA_ADMIN_RSS_HASH_INPUT and
--  ENA_ADMIN_RSS_REDIRECTION_TABLE_CONFIG properties).
-+  ENA_ADMIN_RSS_INDIRECTION_TABLE_CONFIG properties).
- - If the NETIF_F_RXHASH flag is set, the 32-bit result of the hash
-   function delivered in the Rx CQ descriptor is set in the received
-   SKB.
-diff --git a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-index 9e6d1e28c909..4164eacc5c28 100644
---- a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-@@ -5,6 +5,7 @@
- #ifndef _ENA_ADMIN_H_
- #define _ENA_ADMIN_H_
- 
-+#define ENA_ADMIN_RSS_KEY_PARTS              10
- 
- enum ena_admin_aq_opcode {
- 	ENA_ADMIN_CREATE_SQ                         = 1,
-@@ -37,7 +38,7 @@ enum ena_admin_aq_feature_id {
- 	ENA_ADMIN_MAX_QUEUES_EXT                    = 7,
- 	ENA_ADMIN_RSS_HASH_FUNCTION                 = 10,
- 	ENA_ADMIN_STATELESS_OFFLOAD_CONFIG          = 11,
--	ENA_ADMIN_RSS_REDIRECTION_TABLE_CONFIG      = 12,
-+	ENA_ADMIN_RSS_INDIRECTION_TABLE_CONFIG      = 12,
- 	ENA_ADMIN_MTU                               = 14,
- 	ENA_ADMIN_RSS_HASH_INPUT                    = 18,
- 	ENA_ADMIN_INTERRUPT_MODERATION              = 20,
-@@ -716,11 +717,11 @@ enum ena_admin_hash_functions {
- };
- 
- struct ena_admin_feature_rss_flow_hash_control {
--	u32 keys_num;
-+	u32 key_parts;
- 
- 	u32 reserved;
- 
--	u32 key[10];
-+	u32 key[ENA_ADMIN_RSS_KEY_PARTS];
- };
- 
- struct ena_admin_feature_rss_flow_hash_function {
 diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index 065098e10582..2e2366d406f6 100644
+index 2e2366d406f6..34434c6b6000 100644
 --- a/drivers/net/ethernet/amazon/ena/ena_com.c
 +++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -1055,11 +1055,10 @@ static void ena_com_hash_key_fill_default_key(struct ena_com_dev *ena_dev)
- 		(ena_dev->rss).hash_key;
- 
- 	netdev_rss_key_fill(&hash_key->key, sizeof(hash_key->key));
--	/* The key is stored in the device in u32 array
--	 * as well as the API requires the key to be passed in this
--	 * format. Thus the size of our array should be divided by 4
-+	/* The key buffer is stored in the device in an array of
-+	 * uint32 elements.
- 	 */
--	hash_key->keys_num = sizeof(hash_key->key) / sizeof(u32);
-+	hash_key->key_parts = ENA_ADMIN_RSS_KEY_PARTS;
- }
- 
- static int ena_com_hash_key_allocate(struct ena_com_dev *ena_dev)
-@@ -1123,7 +1122,7 @@ static int ena_com_indirect_table_allocate(struct ena_com_dev *ena_dev,
- 	int ret;
- 
- 	ret = ena_com_get_feature(ena_dev, &get_resp,
--				  ENA_ADMIN_RSS_REDIRECTION_TABLE_CONFIG, 0);
-+				  ENA_ADMIN_RSS_INDIRECTION_TABLE_CONFIG, 0);
- 	if (unlikely(ret))
- 		return ret;
- 
-@@ -2335,7 +2334,7 @@ int ena_com_fill_hash_function(struct ena_com_dev *ena_dev,
- 			}
- 			memcpy(hash_key->key, key, key_len);
- 			rss->hash_init_val = init_val;
--			hash_key->keys_num = key_len >> 2;
-+			hash_key->key_parts = key_len / sizeof(hash_key->key[0]);
- 		}
- 		break;
- 	case ENA_ADMIN_CRC32:
-@@ -2390,7 +2389,8 @@ int ena_com_get_hash_key(struct ena_com_dev *ena_dev, u8 *key)
- 		ena_dev->rss.hash_key;
- 
- 	if (key)
--		memcpy(key, hash_key->key, (size_t)(hash_key->keys_num) << 2);
-+		memcpy(key, hash_key->key,
-+		       (size_t)(hash_key->key_parts) * sizeof(hash_key->key[0]));
- 
- 	return 0;
- }
-@@ -2585,9 +2585,9 @@ int ena_com_indirect_table_set(struct ena_com_dev *ena_dev)
- 	int ret;
- 
- 	if (!ena_com_check_supported_feature_id(
--		    ena_dev, ENA_ADMIN_RSS_REDIRECTION_TABLE_CONFIG)) {
-+		    ena_dev, ENA_ADMIN_RSS_INDIRECTION_TABLE_CONFIG)) {
- 		pr_debug("Feature %d isn't supported\n",
--			 ENA_ADMIN_RSS_REDIRECTION_TABLE_CONFIG);
-+			 ENA_ADMIN_RSS_INDIRECTION_TABLE_CONFIG);
- 		return -EOPNOTSUPP;
+@@ -513,6 +513,8 @@ static int ena_com_comp_status_to_errno(u8 comp_status)
+ 	case ENA_ADMIN_ILLEGAL_PARAMETER:
+ 	case ENA_ADMIN_UNKNOWN_ERROR:
+ 		return -EINVAL;
++	case ENA_ADMIN_RESOURCE_BUSY:
++		return -EAGAIN;
  	}
  
-@@ -2602,7 +2602,7 @@ int ena_com_indirect_table_set(struct ena_com_dev *ena_dev)
- 	cmd.aq_common_descriptor.opcode = ENA_ADMIN_SET_FEATURE;
- 	cmd.aq_common_descriptor.flags =
- 		ENA_ADMIN_AQ_COMMON_DESC_CTRL_DATA_INDIRECT_MASK;
--	cmd.feat_common.feature_id = ENA_ADMIN_RSS_REDIRECTION_TABLE_CONFIG;
-+	cmd.feat_common.feature_id = ENA_ADMIN_RSS_INDIRECTION_TABLE_CONFIG;
- 	cmd.u.ind_table.size = rss->tbl_log_size;
- 	cmd.u.ind_table.inline_index = 0xFFFFFFFF;
+ 	return -EINVAL;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_eth_com.c b/drivers/net/ethernet/amazon/ena/ena_eth_com.c
+index 8abaf3cbb5b9..ad30cacc1622 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_eth_com.c
++++ b/drivers/net/ethernet/amazon/ena/ena_eth_com.c
+@@ -266,6 +266,9 @@ static int ena_com_create_meta(struct ena_com_io_sq *io_sq,
+ 	struct ena_eth_io_tx_meta_desc *meta_desc = NULL;
  
-@@ -2640,7 +2640,7 @@ int ena_com_indirect_table_get(struct ena_com_dev *ena_dev, u32 *ind_tbl)
- 		sizeof(struct ena_admin_rss_ind_table_entry);
+ 	meta_desc = get_sq_desc(io_sq);
++	if (unlikely(!meta_desc))
++		return -EFAULT;
++
+ 	memset(meta_desc, 0x0, sizeof(struct ena_eth_io_tx_meta_desc));
  
- 	rc = ena_com_get_feature_ex(ena_dev, &get_resp,
--				    ENA_ADMIN_RSS_REDIRECTION_TABLE_CONFIG,
-+				    ENA_ADMIN_RSS_INDIRECTION_TABLE_CONFIG,
- 				    rss->rss_ind_tbl_dma_addr,
- 				    tbl_size, 0);
- 	if (unlikely(rc))
+ 	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_META_DESC_MASK;
+@@ -273,7 +276,7 @@ static int ena_com_create_meta(struct ena_com_io_sq *io_sq,
+ 	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_EXT_VALID_MASK;
+ 
+ 	/* bits 0-9 of the mss */
+-	meta_desc->word2 |= (ena_meta->mss <<
++	meta_desc->word2 |= ((u32)ena_meta->mss <<
+ 		ENA_ETH_IO_TX_META_DESC_MSS_LO_SHIFT) &
+ 		ENA_ETH_IO_TX_META_DESC_MSS_LO_MASK;
+ 	/* bits 10-13 of the mss */
+@@ -283,7 +286,7 @@ static int ena_com_create_meta(struct ena_com_io_sq *io_sq,
+ 
+ 	/* Extended meta desc */
+ 	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_ETH_META_TYPE_MASK;
+-	meta_desc->len_ctrl |= (io_sq->phase <<
++	meta_desc->len_ctrl |= ((u32)io_sq->phase <<
+ 		ENA_ETH_IO_TX_META_DESC_PHASE_SHIFT) &
+ 		ENA_ETH_IO_TX_META_DESC_PHASE_MASK;
+ 
+@@ -296,7 +299,7 @@ static int ena_com_create_meta(struct ena_com_io_sq *io_sq,
+ 		ENA_ETH_IO_TX_META_DESC_L3_HDR_OFF_SHIFT) &
+ 		ENA_ETH_IO_TX_META_DESC_L3_HDR_OFF_MASK;
+ 
+-	meta_desc->word2 |= (ena_meta->l4_hdr_len <<
++	meta_desc->word2 |= ((u32)ena_meta->l4_hdr_len <<
+ 		ENA_ETH_IO_TX_META_DESC_L4_HDR_LEN_IN_WORDS_SHIFT) &
+ 		ENA_ETH_IO_TX_META_DESC_L4_HDR_LEN_IN_WORDS_MASK;
+ 
+@@ -422,16 +425,16 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
+ 	if (!have_meta)
+ 		desc->len_ctrl |= ENA_ETH_IO_TX_DESC_FIRST_MASK;
+ 
+-	desc->buff_addr_hi_hdr_sz |= (header_len <<
++	desc->buff_addr_hi_hdr_sz |= ((u32)header_len <<
+ 		ENA_ETH_IO_TX_DESC_HEADER_LENGTH_SHIFT) &
+ 		ENA_ETH_IO_TX_DESC_HEADER_LENGTH_MASK;
+-	desc->len_ctrl |= (io_sq->phase << ENA_ETH_IO_TX_DESC_PHASE_SHIFT) &
++	desc->len_ctrl |= ((u32)io_sq->phase << ENA_ETH_IO_TX_DESC_PHASE_SHIFT) &
+ 		ENA_ETH_IO_TX_DESC_PHASE_MASK;
+ 
+ 	desc->len_ctrl |= ENA_ETH_IO_TX_DESC_COMP_REQ_MASK;
+ 
+ 	/* Bits 0-9 */
+-	desc->meta_ctrl |= (ena_tx_ctx->req_id <<
++	desc->meta_ctrl |= ((u32)ena_tx_ctx->req_id <<
+ 		ENA_ETH_IO_TX_DESC_REQ_ID_LO_SHIFT) &
+ 		ENA_ETH_IO_TX_DESC_REQ_ID_LO_MASK;
+ 
+@@ -477,7 +480,7 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
+ 
+ 			memset(desc, 0x0, sizeof(struct ena_eth_io_tx_desc));
+ 
+-			desc->len_ctrl |= (io_sq->phase <<
++			desc->len_ctrl |= ((u32)io_sq->phase <<
+ 				ENA_ETH_IO_TX_DESC_PHASE_SHIFT) &
+ 				ENA_ETH_IO_TX_DESC_PHASE_MASK;
+ 		}
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 97e701222226..e8131dadc22c 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -4149,7 +4149,7 @@ static int ena_calc_io_queue_size(struct ena_calc_queue_size_ctx *ctx)
+  */
+ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ {
+-	struct ena_calc_queue_size_ctx calc_queue_ctx = { 0 };
++	struct ena_calc_queue_size_ctx calc_queue_ctx = {};
+ 	struct ena_com_dev_get_features_ctx get_feat_ctx;
+ 	struct ena_com_dev *ena_dev = NULL;
+ 	struct ena_adapter *adapter;
 -- 
 2.17.1
 
