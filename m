@@ -2,124 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CA3D274259
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 14:46:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24DEB2742A6
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 15:07:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726609AbgIVMqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 08:46:51 -0400
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:20978 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726563AbgIVMqu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 08:46:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1600778810; x=1632314810;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=nziyF0gCHf+QbUZWkcNumlIIbcw7LDkmtCIhMVokIFM=;
-  b=TfEOQVNe2a5SEJoigXV06ZCR+NEP1ZuUl27rQCymWfl8DCwejcAq4FJ8
-   5bc57ErZ70/WjpfAJxPpRepwHb3ogep+EODSbgn9NJ+VJ39yw58T8+CL0
-   s3e5hFLbBYgfNQVtfxRNe9D3kSdT70BOzmUNYMYR/j8AsFDjNXlL/POsK
-   I=;
-X-IronPort-AV: E=Sophos;i="5.77,290,1596499200"; 
-   d="scan'208";a="56952007"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-a70de69e.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 22 Sep 2020 12:46:48 +0000
-Received: from EX13D19EUB003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-1e-a70de69e.us-east-1.amazon.com (Postfix) with ESMTPS id E7FC8A1869;
-        Tue, 22 Sep 2020 12:46:43 +0000 (UTC)
-Received: from 8c85908914bf.ant.amazon.com (10.43.161.237) by
- EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 22 Sep 2020 12:46:34 +0000
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-CC:     Oded Gabbay <oded.gabbay@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <izur@habana.ai>, Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, SW_Drivers <SW_Drivers@habana.ai>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        <linux-rdma@vger.kernel.org>, Olof Johansson <olof@lixom.net>
-References: <20200918132645.GS8409@ziepe.ca>
- <CAFCwf109t5=GuNvqTqLUCiYbjLC6o2xVoLY5C-SBqbN66f6wxg@mail.gmail.com>
- <20200918135915.GT8409@ziepe.ca>
- <CAFCwf13rJgb4=as7yW-2ZHvSnUd2NK1GP0UKKjyMfkB3vsnE5w@mail.gmail.com>
- <20200918141909.GU8409@ziepe.ca>
- <CAFCwf121_UNivhfPfO6uFoHbF+2Odeb1c3+482bOXeOZUsEnug@mail.gmail.com>
- <20200918150735.GV8409@ziepe.ca>
- <CAFCwf13y1VVy90zAoBPC-Gfj6mwMVbefh3fxKDVneuscp4esqA@mail.gmail.com>
- <20200918152852.GW8409@ziepe.ca>
- <b0721756-d323-b95e-b2d2-ca3ce8d4a660@amazon.com>
- <20200922114101.GE8409@ziepe.ca>
-From:   Gal Pressman <galpress@amazon.com>
-Message-ID: <a16802a2-4a36-e03d-a927-c5cb7c766b99@amazon.com>
-Date:   Tue, 22 Sep 2020 15:46:29 +0300
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.2.2
+        id S1726628AbgIVNHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 09:07:39 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:40734 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726573AbgIVNHj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 09:07:39 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08MD6RFQ021909;
+        Tue, 22 Sep 2020 06:07:38 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=RkFgvU4FnBJacFhRae2BQpZC3S9+grhDJkyO5+PHOjs=;
+ b=Aw/BuzaZC/cfPj5hY2bZct4kfetNkuEtZx+AH27/R0HLzSiaTQFfRpOPH1W/Kvm/T4vH
+ /SBy86edgA62uOv1MQugbq3S1XH0Io9rZBbBniJmy2aPSQSligcMWlKSXoWlwsLl9r14
+ uckkgHiaBRFqFxwUx1KsncKGLQ2RTU8msN1yEBevT+Aw3Kt/f7DxqFTfyVhS6TWzRJT1
+ L7wLZvpWuOiYuXSD5JwNaJFNtGl7NE5f05/B2PrkE328LY6uNmAVUdRjpVbL/Q5iWAtK
+ qTufmR1AyG4W0inuf72U7t20AM3MmsbxAJrYJA9PrhiqSZPKUqDDrLD2l98VL3RznMoU SQ== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 33nhgna5d9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 22 Sep 2020 06:07:38 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 22 Sep
+ 2020 06:07:36 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 22 Sep 2020 06:07:36 -0700
+Received: from hyd1584.caveonetworks.com (unknown [10.29.37.82])
+        by maili.marvell.com (Postfix) with ESMTP id 4BE503F703F;
+        Tue, 22 Sep 2020 06:07:35 -0700 (PDT)
+From:   George Cherian <george.cherian@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     George Cherian <george.cherian@marvell.com>
+Subject: [net-next PATCH 0/2] Add support for VLAN based flow distribution
+Date:   Tue, 22 Sep 2020 18:37:25 +0530
+Message-ID: <20200922130727.2350661-1-george.cherian@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20200922114101.GE8409@ziepe.ca>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.43.161.237]
-X-ClientProxiedBy: EX13D17UWB004.ant.amazon.com (10.43.161.132) To
- EX13D19EUB003.ant.amazon.com (10.43.166.69)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-22_12:2020-09-21,2020-09-22 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/09/2020 14:41, Jason Gunthorpe wrote:
-> On Mon, Sep 21, 2020 at 02:22:02PM +0300, Gal Pressman wrote:
-> 
->> What is considered a RoCE port in this case if it's not compliant with RoCE?
->> Sounds like it's an implementation of RDMA over ethernet, not RoCE.
->> Does GAUDI support UD/RC/.. QPs? Is it using a proprietary wire protocol?
->> (BTW, Oded claims it's similar to nvlink, how is nvlink's implementation
->> exposed? Or is it closed source?)
-> 
-> I think Oded was drawing a parallel to how nvlink is integral with the
-> compute element. From Oded's descriptions I don't think it is much
-> like nvlink at all.
-> 
->> Jason, how do you imagine GAUDI in the RDMA subsystem? Userspace control path
->> verbs (used by hl-thunk?) and all data path verbs exposed as kverbs (used by
->> habanalabs driver)?
->> So neither any userspace verbs apps could use it nor kernel ULPs?
-> 
-> Based on what Oded described it seems like a reasonable RDMA device
-> with some limitations around MR IOVA.
-> 
-> Looks like the desire is to create a RDMA WR and CQ ring in userspace,
-> and then co-mingle that with the compute side of the device.
-> 
-> So instead of doing the special IOCTL and mmap against the compute FD
-> it would create a RDMA QP and RDMA CQ, use dv to access the raw
-> internals, and the propritary stack would have exactly the same stuff
-> it would have had with the misc ioctl.
-> 
-> But, completely separately, they'd also have to implement some of
-> verbs which serves as the open source userspace showing how this HW
-> works. What that is depends largely on what their HW can do, and if
-> they want to connect to UCX/mpi/libfabric/etc
-> 
-> A bunch of ioctl stubs or a few tests is far below our standard in
-> RDMA.
-> 
-> There may have been some argument that the compute side of this device
-> has no industry standards so should be a drivers/misc, but HPC
-> networking *does* have extensive standards and extensive open source
-> software stacks. It is very hard for me to see how a device in this
-> market could be competitive without integrating with that stuff.
+This series add support for VLAN based flow distribution for octeontx2
+netdev driver. This adds support for configuring the same via ethtool.
 
-I agree, that makes sense.
-But assuming Oded actually goes and implements all the needed verbs to get a
-basic functional libibverbs provider (assuming their HW can do it somehow), is
-it really useful if no one is going to use it?
-It doesn't sound like habanalabs want people to use GAUDI as an RDMA adapter,
-and I'm assuming the only real world use case is going to be using the hl stack,
-which means we're left with a lot of dead code that's not used/tested by anyone.
+Following tests have been done.
+	- Multi VLAN flow with same SD
+	- Multi VLAN flow with same SDFN
+	- Single VLAN flow with multi SD
+	- Single VLAN flow with multi SDFN
+All tests done for udp/tcp both v4 and v6
 
-Genuine question, wouldn't it be better if they only implement what's actually
-going to be used and tested by their customers?
+
+George Cherian (2):
+  octeontx2-af: Add support for VLAN based RSS hashing
+  octeontx2-pf: Support to change VLAN based RSS hash options via
+    ethtool
+
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h       |  1 +
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 10 +++++++++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_common.c   |  2 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  7 +++++++
+ 4 files changed, 18 insertions(+), 2 deletions(-)
+
+-- 
+2.25.1
+
