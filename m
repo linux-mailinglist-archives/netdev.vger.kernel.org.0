@@ -2,114 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 447EB273BAE
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:24:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B61F273BCF
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:27:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729923AbgIVHYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 03:24:01 -0400
-Received: from mout.kundenserver.de ([212.227.126.187]:49235 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729735AbgIVHX7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 03:23:59 -0400
-Received: from mail-qv1-f46.google.com ([209.85.219.46]) by
- mrelayeu.kundenserver.de (mreue012 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1MgzWP-1kwjIH0sNp-00hNUS; Tue, 22 Sep 2020 09:23:56 +0200
-Received: by mail-qv1-f46.google.com with SMTP id cy2so9001474qvb.0;
-        Tue, 22 Sep 2020 00:23:54 -0700 (PDT)
-X-Gm-Message-State: AOAM530Ji4p6SqJlsqlAIhXa/mehEohMOm/qYFKdMQf1jU7KsXMjThoF
-        zhEaydElHAkD1HY8suM9/IFXSKaiuthCjdj0j8g=
-X-Google-Smtp-Source: ABdhPJx2+lYoTA/KUzOktg9GCEROrxWzhLaiei0nYKlXvAWkeVBXqnjogbknJct+KWfdqdHtsSEC4gKbjbjELvczheY=
-X-Received: by 2002:ad4:4594:: with SMTP id x20mr4471122qvu.4.1600759433835;
- Tue, 22 Sep 2020 00:23:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAK8P3a2Mi+1yttyGk4k7HxRVrMtmFqJewouVhynqUL0PJycmog@mail.gmail.com>
- <D0791499-1190-4C3F-A984-0A313ECA81C7@amacapital.net> <563138b5-7073-74bc-f0c5-b2bad6277e87@gmail.com>
- <486c92d0-0f2e-bd61-1ab8-302524af5e08@gmail.com> <CALCETrW3rwGsgfLNnu_0JAcL5jvrPVTLTWM3JpbB5P9Hye6Fdw@mail.gmail.com>
- <d5c6736a-2cb4-4e22-78da-a667bda5c05a@gmail.com> <CALCETrUEC81va8-fuUXG1uA5rbKxnKDYsDOXC70_HtKD4LAeAg@mail.gmail.com>
- <e0a1b4d1-ff47-18d1-d535-c62812cb3105@gmail.com>
-In-Reply-To: <e0a1b4d1-ff47-18d1-d535-c62812cb3105@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 22 Sep 2020 09:23:37 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2-6JNS38EbZcLrk=cTT526oP=Rf0aoqWNSJ-k4XTYehQ@mail.gmail.com>
-Message-ID: <CAK8P3a2-6JNS38EbZcLrk=cTT526oP=Rf0aoqWNSJ-k4XTYehQ@mail.gmail.com>
-Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
-To:     Pavel Begunkov <asml.silence@gmail.com>
-Cc:     Andy Lutomirski <luto@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        Al Viro <viro@zeniv.linux.org.uk>,
+        id S1729983AbgIVH1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 03:27:46 -0400
+Received: from mx2.suse.de ([195.135.220.15]:56506 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729748AbgIVH1p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Sep 2020 03:27:45 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1600759663;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Erw2OosUhNlUjJ/92tw/QfOb1ODXL2vdqOviv1OTGQE=;
+        b=SJu6HGOM7mmekNJl2WAqQ2Z0OqgE18sdv4bZEjSiRqgybbfl14iLBvSa882Sg+JSj+TZhl
+        UMLU1ibKgV/UqhrqCSyTiFlZ8zGyr3CeNw9z6X6gESLPqu69C9fKTiSuSmG4ObY2kuJbYo
+        T6QzgAjoDLcehxHPNXIOeQcatmJPSdI=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 50C8AAA35;
+        Tue, 22 Sep 2020 07:28:20 +0000 (UTC)
+Date:   Tue, 22 Sep 2020 09:27:33 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     zangchunxin@bytedance.com, Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        David Howells <dhowells@redhat.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        Linux SCSI List <linux-scsi@vger.kernel.org>,
-        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
-        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Network Development <netdev@vger.kernel.org>,
-        keyrings@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:AjHYUanKdOfbecE9w+B9Z4N6BZ2b/6C3GC/ZT1GJo80TVMT1TiT
- B7v2YHekGwErZe59Y8I5SN6nA+wzRAtAzQV1alKD4cIBzMUtp+uCtDl7yXziqEx66eHXl+8
- 5YaL/7KLJywdo7o6ruzdrm03FhbTCMOpxp+6Gjsv8I+DI1w9YYa5HKbByc2HjGMgB5rmpQw
- GI2KocTAr9puH1Zbmwgvw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:9U7HyB6Ug10=:7VkgnZRSuXPXxCph3JiICU
- vGLCkcH/ucwoA0af9e3nwxzDrSU4qHHl5LbVNZE9fwRlf3BxRnIxChhoUWY/pbGK9kbUMnPn6
- iOxC7987sYhrLc/wR5FOOl9AmSFlJBCSkq0ECTVJJpJ1zAxFuSujqohHO71ms6fcLmkaP+68S
- a0y2dx03p+yQJTxCFfxZOllLfzHK80WYos1HroZHejUrF2/VDsLfCxxtFN6y520PH/aUVeNvX
- l/r1mWP7DXSVu7yUeClrfFvYtyE6idWsIDiC+H5wv241L9aUyE9A1wYt26cS3oRTT1aDX3vMZ
- lF5PgAd9+uS16D5p+mk7jnRYYYSNrgwHLffuwCYE2JUBFqA2ujr4MluvOT2GRH9b6unq2dzUt
- 517RcTi/d6VNGTxLnkFU+xqDBgZ1yVXhchRfVaiepT1jCj8BgkHRkV9OoGDBdyP1nmyz0sll2
- VQ2xFLSS96OSw2POSPIhQsLbgTDcNO1bJhekhO3rGilcenA0dj9a+7SWVb/8O+ZUaB/SmF73C
- H3ua4oRbYBwYWG4ccj0SutXeHYh6UzX5exeOaMAbrFEBOHq90MPJxZr9OpBKopwpfZg7TSiRi
- zSapc09tG64gvk/y30gK+i9n1y1+Z0hVsj881DVR15Z8IRzOaiwsXHPRYtDWn/5Id1OXfXYUM
- GQLtid6DrtgYOV0t1yQLdUOtxCEHIcKjbkyzeUWon4rvW/O2PJ+LPGuX+cT3Y0mJX/3TaOO54
- m56BSGeq93F8uHja3JT2cGnNBOb+bVlrVofywZOAznpqgdVcbwKfyV9CySRC23EhkF1Ux3+P4
- ZUOrZnEIgtbSpmA2VFcNm2AcUo/kCY3kPrBkDXiWyRHUmv7uuCFJ1dmKR0zxr3hNe7SRSUTeV
- e6nWK/ehurPAIaliTaLQ6/+QvEa//1a77RtpYjE1Mq+j6mZVIEO8F7N+t+EVsiOGMFjG5zlvk
- 7US7In7QKaLgmPwktYFz4b9g/6ZdT94cvaUrc7hXk0N9in6iyc/wh
+        Tejun Heo <tj@kernel.org>, lizefan@huawei.com,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kafai@fb.com,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        andriin@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
+        Cgroups <cgroups@vger.kernel.org>, linux-doc@vger.kernel.org,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org
+Subject: Re: [PATCH] mm/memcontrol: Add the drop_cache interface for cgroup v2
+Message-ID: <20200922072733.GT12990@dhcp22.suse.cz>
+References: <20200921080255.15505-1-zangchunxin@bytedance.com>
+ <20200921081200.GE12990@dhcp22.suse.cz>
+ <CALOAHbDKvT58UFjxy770VDxO0VWABRYb7GVwgw+NiJp62mB06w@mail.gmail.com>
+ <20200921110505.GH12990@dhcp22.suse.cz>
+ <CALOAHbCDXwjN+WDSGVv+G3ho-YRRPjAAqMJBtyxeGHH6utb5ew@mail.gmail.com>
+ <20200921113646.GJ12990@dhcp22.suse.cz>
+ <CALOAHbCker64WEW9w4oq8=avA6oKf3-Jrn-vOOgkpqkV3g+CYA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALOAHbCker64WEW9w4oq8=avA6oKf3-Jrn-vOOgkpqkV3g+CYA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 22, 2020 at 8:32 AM Pavel Begunkov <asml.silence@gmail.com> wrote:
-> On 22/09/2020 03:58, Andy Lutomirski wrote:
-> > On Mon, Sep 21, 2020 at 5:24 PM Pavel Begunkov <asml.silence@gmail.com> wrote:
-> > I may be looking at a different kernel than you, but aren't you
-> > preventing creating an io_uring regardless of whether SQPOLL is
-> > requested?
+On Tue 22-09-20 12:20:52, Yafang Shao wrote:
+> On Mon, Sep 21, 2020 at 7:36 PM Michal Hocko <mhocko@suse.com> wrote:
+> >
+> > On Mon 21-09-20 19:23:01, Yafang Shao wrote:
+> > > On Mon, Sep 21, 2020 at 7:05 PM Michal Hocko <mhocko@suse.com> wrote:
+> > > >
+> > > > On Mon 21-09-20 18:55:40, Yafang Shao wrote:
+> > > > > On Mon, Sep 21, 2020 at 4:12 PM Michal Hocko <mhocko@suse.com> wrote:
+> > > > > >
+> > > > > > On Mon 21-09-20 16:02:55, zangchunxin@bytedance.com wrote:
+> > > > > > > From: Chunxin Zang <zangchunxin@bytedance.com>
+> > > > > > >
+> > > > > > > In the cgroup v1, we have 'force_mepty' interface. This is very
+> > > > > > > useful for userspace to actively release memory. But the cgroup
+> > > > > > > v2 does not.
+> > > > > > >
+> > > > > > > This patch reuse cgroup v1's function, but have a new name for
+> > > > > > > the interface. Because I think 'drop_cache' may be is easier to
+> > > > > > > understand :)
+> > > > > >
+> > > > > > This should really explain a usecase. Global drop_caches is a terrible
+> > > > > > interface and it has caused many problems in the past. People have
+> > > > > > learned to use it as a remedy to any problem they might see and cause
+> > > > > > other problems without realizing that. This is the reason why we even
+> > > > > > log each attempt to drop caches.
+> > > > > >
+> > > > > > I would rather not repeat the same mistake on the memcg level unless
+> > > > > > there is a very strong reason for it.
+> > > > > >
+> > > > >
+> > > > > I think we'd better add these comments above the function
+> > > > > mem_cgroup_force_empty() to explain why we don't want to expose this
+> > > > > interface in cgroup2, otherwise people will continue to send this
+> > > > > proposal without any strong reason.
+> > > >
+> > > > I do not mind people sending this proposal.  "V1 used to have an
+> > > > interface, we need it in v2 as well" is not really viable without
+> > > > providing more reasoning on the specific usecase.
+> > > >
+> > > > _Any_ patch should have a proper justification. This is nothing really
+> > > > new to the process and I am wondering why this is coming as a surprise.
+> > > >
+> > >
+> > > Container users always want to drop cache in a specific container,
+> > > because they used to use drop_caches to fix memory pressure issues.
+> >
+> > This is exactly the kind of problems we have seen in the past. There
+> > should be zero reason to addre potential reclaim problems by dropping
+> > page cache on the floor. There is a huge cargo cult about this
+> > procedure and I have seen numerous reports when people complained about
+> > performance afterwards just to learn that the dropped page cache was one
+> > of the resons for that.
+> >
+> > > Although drop_caches can cause some unexpected issues, it could also
+> > > fix some issues.
+> >
+> > "Some issues" is way too general. We really want to learn about those
+> > issues and address them properly.
+> >
+> 
+> One use case in our production environment is that some of our tasks
+> become very latency sensitive from 7am to 10am, so before these tasks
+> become active we will use drop_caches to drop page caches generated by
+> other tasks at night to avoid these tasks triggering direct reclaim.
 >
-> I diffed a not-saved file on a sleepy head, thanks for noticing.
-> As you said, there should be an SQPOLL check.
->
-> ...
-> if (ctx->compat && (p->flags & IORING_SETUP_SQPOLL))
->         goto err;
+> The best way to do it is to fix the latency in direct reclaim, but it
+> will take great effort.
 
-Wouldn't that mean that now 32-bit containers behave differently
-between compat and native execution?
+What is the latency triggered by the memory reclaim? It should be mostly
+a clean page cache right as drop_caches only drops clean pages. Or is
+this more about [id]cache? Do you have any profiles where is the time
+spent?
 
-I think if you want to prevent 32-bit applications from using SQPOLL,
-it needs to be done the same way on both to be consistent:
+> while drop_caches give us an easier way to achieve the same goal.
 
-   if ((!IS_ENABLED(CONFIG_64BIT) || ctx->compat) &&
-        (p->flags & IORING_SETUP_SQPOLL))
-            goto err;
+It papers over real problems and that is my earlier comment about.
 
-I don't really see how taking away SQPOLL from 32-bit tasks is
-any better than just preventing access to the known-broken files
-as Al suggested, or adding the hack to make it work as in
-Christoph's original patch.
+> IOW, drop_caches give the users an option to achieve their goal before
+> they find a better solution.
 
-Can we expect all existing and future user space to have a sane
-fallback when IORING_SETUP_SQPOLL fails?
+You can achieve the same by a different configuration already. You can
+isolate your page cache hungry overnight (likely a backup) workload into
+its own memcg. You can either use an aggressive high limit during the
+run or simply reduce the high/max limit after the work is done.
 
-      Arnd
+If you cannot isolate that easily then you can lower high limit
+temporarily before your peak workload.
+
+Really throwing all the page cache away just to prepare for a peak
+workload sounds like a bad idea to me. You are potentially throwing
+data that you have to spend time to refault again.
+-- 
+Michal Hocko
+SUSE Labs
