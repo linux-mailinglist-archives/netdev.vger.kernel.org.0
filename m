@@ -2,220 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AB172743EA
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 16:16:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D032743E6
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 16:15:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726657AbgIVOQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 10:16:23 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:36856 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726605AbgIVOQW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 10:16:22 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08MEEpho159552;
-        Tue, 22 Sep 2020 14:16:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2020-01-29; bh=6EaZpMApi/rzCh2z/QU+2Ap9ZSw0blrADAxeli20pKU=;
- b=zzmAK5jzIpqHO984CGEmz/uhhlK/0qUYzmsegScukUFVymq12JvcuaQC2EEsJPuLkHto
- ACAOM2Hk9ZGFfQ3xDoeuComEgyFfr8dabz+hv6+AIeAPGN2gX7//DnfdPW3EjBaWLa/E
- xvRgLowkIttGL0h75bj0lvpAy3WG9NSEiOjAxF+ZvCehUCUpIkt0eo0+at56rCmmgGwk
- RLtPeAbWr9RcqxfXcY7ox3WWpWOLDTyjBiFv1dvmCL6AKnMs2j21DMKbOWw/dLM9W0zu
- r3ugYQ+gFKzwtwA7G0Y45HLK350IDaf+utrJ0dN7TQ3WKmwFJx+cWVKIpoAZWgbxpSL/ iw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 33ndnud28e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 22 Sep 2020 14:16:10 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08MEBMBx055549;
-        Tue, 22 Sep 2020 14:14:10 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 33nuwydjdj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 22 Sep 2020 14:14:10 +0000
-Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08MEE4fu007720;
-        Tue, 22 Sep 2020 14:14:04 GMT
-Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 22 Sep 2020 07:14:04 -0700
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [PATCH] SUNRPC: Fix svc_flush_dcache()
-From:   Chuck Lever <chuck.lever@oracle.com>
-In-Reply-To: <07c27f89-187b-69a3-fd40-f9beef29da40@windriver.com>
-Date:   Tue, 22 Sep 2020 10:14:03 -0400
-Cc:     Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bruce Fields <bfields@fieldses.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <EFDE7D43-5E0D-4484-9B8C-CBED30EA4E04@oracle.com>
-References: <160063136387.1537.11599713172507546412.stgit@klimt.1015granger.net>
- <07c27f89-187b-69a3-fd40-f9beef29da40@windriver.com>
-To:     He Zhe <zhe.he@windriver.com>
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9751 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 adultscore=0
- bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009220112
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9752 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- lowpriorityscore=0 phishscore=0 adultscore=0 suspectscore=0 bulkscore=0
- clxscore=1015 impostorscore=0 mlxlogscore=999 mlxscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009220112
+        id S1726646AbgIVOPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 10:15:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726494AbgIVOPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 10:15:00 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65697C061755
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 07:15:00 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kKj4F-00044P-OQ; Tue, 22 Sep 2020 16:14:51 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:8d0c:cfd0:3f99:a545] (unknown [IPv6:2a03:f580:87bc:d400:8d0c:cfd0:3f99:a545])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 13073566FAC;
+        Tue, 22 Sep 2020 14:14:46 +0000 (UTC)
+Subject: Re: [PATCH -next] can: ti_hecc: use
+ devm_platform_ioremap_resource_byname
+To:     Wang Xiaojun <wangxiaojun11@huawei.com>, wg@grandegger.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org
+References: <20200917063634.2183792-1-wangxiaojun11@huawei.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <27afd562-cdf6-340e-6e65-e3586d482cd9@pengutronix.de>
+Date:   Tue, 22 Sep 2020 16:14:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
+MIME-Version: 1.0
+In-Reply-To: <20200917063634.2183792-1-wangxiaojun11@huawei.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="Wj1yoG4KcoAEQ2LgHXMcdHpkNhQviuIpa"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Wj1yoG4KcoAEQ2LgHXMcdHpkNhQviuIpa
+Content-Type: multipart/mixed; boundary="fowwTol7C0vp6R8EuoZAFQsG4Oc1EfDJp";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Wang Xiaojun <wangxiaojun11@huawei.com>, wg@grandegger.com,
+ davem@davemloft.net, kuba@kernel.org
+Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org
+Message-ID: <27afd562-cdf6-340e-6e65-e3586d482cd9@pengutronix.de>
+Subject: Re: [PATCH -next] can: ti_hecc: use
+ devm_platform_ioremap_resource_byname
+References: <20200917063634.2183792-1-wangxiaojun11@huawei.com>
+In-Reply-To: <20200917063634.2183792-1-wangxiaojun11@huawei.com>
 
+--fowwTol7C0vp6R8EuoZAFQsG4Oc1EfDJp
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-> On Sep 22, 2020, at 3:13 AM, He Zhe <zhe.he@windriver.com> wrote:
+On 9/17/20 8:36 AM, Wang Xiaojun wrote:
+> Use the devm_platform_ioremap_resource_byname() helper instead of
+> calling platform_get_resource_byname() and devm_ioremap_resource()
+> separately.
 >=20
->=20
->=20
-> On 9/21/20 3:51 AM, Chuck Lever wrote:
->> On platforms that implement flush_dcache_page(), a large NFS WRITE
->> triggers the WARN_ONCE in bvec_iter_advance():
->>=20
->> Sep 20 14:01:05 klimt.1015granger.net kernel: Attempted to advance =
-past end of bvec iter
->> Sep 20 14:01:05 klimt.1015granger.net kernel: WARNING: CPU: 0 PID: =
-1032 at include/linux/bvec.h:101 bvec_iter_advance.isra.0+0xa7/0x158 =
-[sunrpc]
->>=20
->> Sep 20 14:01:05 klimt.1015granger.net kernel: Call Trace:
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  =
-svc_tcp_recvfrom+0x60c/0x12c7 [sunrpc]
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  ? =
-bvec_iter_advance.isra.0+0x158/0x158 [sunrpc]
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  ? =
-del_timer_sync+0x4b/0x55
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  ? test_bit+0x1d/0x27 =
-[sunrpc]
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  svc_recv+0x1193/0x15e4 =
-[sunrpc]
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  ? =
-try_to_freeze.isra.0+0x6f/0x6f [sunrpc]
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  ? =
-refcount_sub_and_test.constprop.0+0x13/0x40 [sunrpc]
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  ? =
-svc_xprt_put+0x1e/0x29f [sunrpc]
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  ? svc_send+0x39f/0x3c1 =
-[sunrpc]
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  nfsd+0x282/0x345 =
-[nfsd]
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  ? =
-__kthread_parkme+0x74/0xba
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  kthread+0x2ad/0x2bc
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  ? =
-nfsd_destroy+0x124/0x124 [nfsd]
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  ? test_bit+0x1d/0x27
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  ? =
-kthread_mod_delayed_work+0x115/0x115
->> Sep 20 14:01:05 klimt.1015granger.net kernel:  =
-ret_from_fork+0x22/0x30
->>=20
->> Reported-by: He Zhe <zhe.he@windriver.com>
->> Fixes: ca07eda33e01 ("SUNRPC: Refactor svc_recvfrom()")
->> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
->> ---
->> net/sunrpc/svcsock.c |    2 +-
->> 1 file changed, 1 insertion(+), 1 deletion(-)
->>=20
->> Hi Zhe-
->>=20
->> If you confirm this fixes your issue and there are no other
->> objections or regressions, I can submit this for v5.9-rc.
->=20
-> I don't quite get why we add "seek" to "size". It seems this action =
-does not
-> reflect the actual scenario and forcedly neutralizes the WARN_ONCE =
-check in
-> bvec_iter_advance, so that it may "advance past end of bvec iter" and =
-thus
-> introduces overflow.
+> Signed-off-by: Wang Xiaojun <wangxiaojun11@huawei.com>
 
-> Why don't we avoid this problem at the very begginning like my v1? =
-That is, call
-> svc_flush_bvec only when we have received more than we want to seek.
->=20
->         len =3D sock_recvmsg(svsk->sk_sock, &msg, MSG_DONTWAIT);
-> -       if (len > 0)
-> +       if (len > 0 && (size_t)len > (seek & PAGE_MASK))
->                 svc_flush_bvec(bvec, len, seek);
+Dejin Zheng has sent similar patch, which was included in my latest pull =
+request.
 
-Because this doesn't fix the underlying bug that triggered the
-WARN_ONCE.
+Marc
 
-svc_tcp_recvfrom() attempts to assemble a possibly large RPC Call
-from a sequence of sock_recvmsg's.
-
-@seek is the running number of bytes that has been received so
-far for the RPC Call we are assembling. @size is the number of
-bytes that was just received in the most recent sock_recvmsg.
-
-We want svc_flush_bvec to flush just the area of @bvec that
-hasn't been flushed yet.
-
-Thus: the current size of the partial Call message in @bvec is
-@seek + @size. The starting location of the flush is
-@seek & PAGE_MASK. This aligns the flush so it starts on a page
-boundary.
-
-This:
-
- 230         struct bvec_iter bi =3D {
- 231                 .bi_size        =3D size + seek,
- 232         };
-
- 235         bvec_iter_advance(bvec, &bi, seek & PAGE_MASK);
-
-advances the bvec_iter to the part of @bvec that hasn't been
-flushed yet.
-
-This loop:
-
- 236         for_each_bvec(bv, bvec, bi, bi)
- 237                 flush_dcache_page(bv.bv_page);
-
-flushes each page starting at that point to the end of the bytes
-that have been received so far
-
-In other words, ca07eda33e01 was wrong because it always flushed
-the first section of @bvec, never the later parts of it.
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
-> Regards,
-> Zhe
->=20
->>=20
->>=20
->> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
->> index d5805fa1d066..c2752e2b9ce3 100644
->> --- a/net/sunrpc/svcsock.c
->> +++ b/net/sunrpc/svcsock.c
->> @@ -228,7 +228,7 @@ static int svc_one_sock_name(struct svc_sock =
-*svsk, char *buf, int remaining)
->> static void svc_flush_bvec(const struct bio_vec *bvec, size_t size, =
-size_t seek)
->> {
->> 	struct bvec_iter bi =3D {
->> -		.bi_size	=3D size,
->> +		.bi_size	=3D size + seek,
->> 	};
->> 	struct bio_vec bv;
+--fowwTol7C0vp6R8EuoZAFQsG4Oc1EfDJp--
 
---
-Chuck Lever
+--Wj1yoG4KcoAEQ2LgHXMcdHpkNhQviuIpa
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9qBtIACgkQqclaivrt
+76l74AgAjTeiwHTj4gZZP1BfqEY9tFN06KaLu5Je3CC+J8VcPsJ+leYCqBmEEtlx
+s+90IWLnilETe4Ya0Hy0gQLKRu2xu9AiXVoon9HRUDRe8UWtThaWBFki4JsHxaY6
+I3e5RN3GlADzuS/QPdwkJqXm1aghph+NSv/Pl96EUW+vG6Bq1A/DwbbhO5Mv2uQP
+CkMmdnlDtbXOSQQAy9hv9ii7cixta8nqktq9OsVxsfhmEMOQyEIJCy/fALD9lBHb
+UpU5KWpZ6OGf1YelDvehNfr0WjIg3ixZZAElLD1S22AuN2XzJOGxatdPc0F7IKzl
+gRXfDdTGFxaQYvQt1Qacr10jeGtlFg==
+=OiD4
+-----END PGP SIGNATURE-----
 
+--Wj1yoG4KcoAEQ2LgHXMcdHpkNhQviuIpa--
