@@ -2,136 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82733273C18
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:37:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1B0C273C79
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:48:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729966AbgIVHhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 03:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729634AbgIVHhO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 03:37:14 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4164EC0613CF
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:37:14 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id l15so1553332wmh.1
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f6NEte3lutGwCOE6JLOavb/M9H8I1XfzDGWcZi3Iq7Q=;
-        b=XNaPLn0t+kxDTIOfVoPVBX4FPKsDFUw4iGC5BV0MEuJKWj/BvrlvjgHDauwC0X3iri
-         klyOdAfM43Y3kMVpgvFWfFpwgIgy/4bLbHMv2iaKFjCSacJv5dHinCvYaGYW+H7Anrgo
-         DHcq25ogTZUd/m5pG0b1NjM6JTn/fFVJtDY1E6vPZ89HxAi8vGOVIFVxL7tlHk0Hznp3
-         FDoQs92XNxUgQ80msZD3Axv/B0hTL33ZPIga+06PWwEN4jw3bXdGUlhja3t6o6+NCzHF
-         /3q6zFTs5kMF70vvrisNhfHUbgH90fmb0A5Nz6HggmxQdyRPyUBYqQWE5ndgyOqCXGuP
-         azEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f6NEte3lutGwCOE6JLOavb/M9H8I1XfzDGWcZi3Iq7Q=;
-        b=Rxv+PSg94bs6Qy2tfA5c1sfVYiEPdEDdo0ep0mIwP6TvRS6b1Hji0an2YzMMZGTa3e
-         jBDtVdpAAK0tgD89RjcgQBNGXr/8zYoBUh7y1kwWRJUiD56H3Q9XEmp9oKykuxuxWgav
-         5o7qaT9WiOV+WRK/a65c1MKdHv4vprIzQ3mkEtPG2OyrRVV4BxBOfJKLkfCviVaLLysd
-         w6OnLFVGdpkmJ4hRRs235KbIfNRofPI1te8CsVZZzi9F1HwYioh4y+0Knrs1mU/32kqR
-         AwPlUI/5RYXqbpLtozcM+wyqdS1WUvqgz0jTLstSdReEmGjLHQlKdkDV9h3tCSsqUGOd
-         xFLA==
-X-Gm-Message-State: AOAM530O8O7PfWBaS9IsGWajsVRvDJiRZbV4YudAQCQ//JItmipR7eZ3
-        X2JIf9cIsCv1yWI+IOfYuqWSwRLyExYsFLXXdBR9zg==
-X-Google-Smtp-Source: ABdhPJzVWqCDtrVv7PLgmds+KflwVNovPQCQJ66ow/a2qlmcY4wT3p6qVfV9Z66NlM7m5l2WQeWjU4ZdmDud0sjo51k=
-X-Received: by 2002:a1c:7308:: with SMTP id d8mr3081805wmb.55.1600760232528;
- Tue, 22 Sep 2020 00:37:12 -0700 (PDT)
+        id S1730200AbgIVHsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 03:48:39 -0400
+Received: from m42-4.mailgun.net ([69.72.42.4]:44303 "EHLO m42-4.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730189AbgIVHsi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Sep 2020 03:48:38 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1600760918; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=Rfxtv9Yqw1QRGj0wRoKE/O0gMCC1Fe/USgacvyh9x54=;
+ b=WRpqB9dWwxqfRd19DaC+qQH88u0vBlh9JcTxSs69NmshTkeNRTzrdb05V+XOxy34UnoI8Cbt
+ MIh1G+u5sE5PNmSnaBeNYMAS8+hgsPyaUnnA50f7W5Uuk88mZB95z/ggspTBLCH7kR0Hilno
+ vUX9EHunRq0Icv5CTST0ngdhIgY=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 5f69abc08d7a44125d48ac82 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 22 Sep 2020 07:46:08
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id C8B15C433FF; Tue, 22 Sep 2020 07:46:07 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3285BC433CB;
+        Tue, 22 Sep 2020 07:46:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3285BC433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20200921163021.v1.1.Id3160295d33d44a59fa3f2a444d74f40d132ea5c@changeid>
- <CABBYNZJGfDoV+E-f6T=ZQ2RT0doXDdOB7tgVrt=4fpvKcpmH4w@mail.gmail.com>
-In-Reply-To: <CABBYNZJGfDoV+E-f6T=ZQ2RT0doXDdOB7tgVrt=4fpvKcpmH4w@mail.gmail.com>
-From:   Archie Pusaka <apusaka@google.com>
-Date:   Tue, 22 Sep 2020 15:37:01 +0800
-Message-ID: <CAJQfnxHcvm_-iCP-2Y6GR1vG4ZmMr==ZuMHBua8TeeiNbqAJgA@mail.gmail.com>
-Subject: Re: [PATCH v1] Bluetooth: Enforce key size of 16 bytes on FIPS level
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath11k: Remove unused function
+ ath11k_htc_restore_tx_skb()
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200918131242.24000-1-yuehaibing@huawei.com>
+References: <20200918131242.24000-1-yuehaibing@huawei.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <ath11k@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200922074607.C8B15C433FF@smtp.codeaurora.org>
+Date:   Tue, 22 Sep 2020 07:46:07 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Luiz,
+YueHaibing <yuehaibing@huawei.com> wrote:
 
-On Tue, 22 Sep 2020 at 01:13, Luiz Augusto von Dentz
-<luiz.dentz@gmail.com> wrote:
->
-> Hi Archie,
->
-> On Mon, Sep 21, 2020 at 1:31 AM Archie Pusaka <apusaka@google.com> wrote:
-> >
-> > From: Archie Pusaka <apusaka@chromium.org>
-> >
-> > According to the spec Ver 5.2, Vol 3, Part C, Sec 5.2.2.8:
-> > Device in security mode 4 level 4 shall enforce:
-> > 128-bit equivalent strength for link and encryption keys required
-> > using FIPS approved algorithms (E0 not allowed, SAFER+ not allowed,
-> > and P-192 not allowed; encryption key not shortened)
-> >
-> > This patch rejects connection with key size below 16 for FIPS level
-> > services.
-> >
-> > Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-> > Reviewed-by: Alain Michaud <alainm@chromium.org>
-> >
-> > ---
-> >
-> >  net/bluetooth/l2cap_core.c | 7 ++++++-
-> >  1 file changed, 6 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-> > index ade83e224567..306616ec26e6 100644
-> > --- a/net/bluetooth/l2cap_core.c
-> > +++ b/net/bluetooth/l2cap_core.c
-> > @@ -1515,8 +1515,13 @@ static bool l2cap_check_enc_key_size(struct hci_conn *hcon)
-> >          * that have no key size requirements. Ensure that the link is
-> >          * actually encrypted before enforcing a key size.
-> >          */
-> > +       int min_key_size = hcon->hdev->min_enc_key_size;
-> > +
-> > +       if (hcon->sec_level == BT_SECURITY_FIPS)
-> > +               min_key_size = 16;
-> > +
-> >         return (!test_bit(HCI_CONN_ENCRYPT, &hcon->flags) ||
-> > -               hcon->enc_key_size >= hcon->hdev->min_enc_key_size);
-> > +               hcon->enc_key_size >= min_key_size);
->
-> While this looks fine to me, it looks like this should be placed
-> elsewhere since it takes an hci_conn and it is not L2CAP specific.
+> There is no caller in tree, so can remove it.
+> 
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-From what I understood, it is permissible to use AES-CCM P-256
-encryption with key length < 16 when encrypting the link, but such a
-connection does not satisfy security level 4, and therefore must not
-be given access to level 4 services. However, I think it is
-permissible to give them access to level 3 services or below.
+Patch applied to ath-next branch of ath.git, thanks.
 
-Should I use l2cap chan->sec_level for this purpose? I'm kind of lost
-on the difference between hcon->sec_level and chan->sec_level.
+191e7f9f05c6 ath11k: Remove unused function ath11k_htc_restore_tx_skb()
 
->
-> >  }
-> >
-> >  static void l2cap_do_start(struct l2cap_chan *chan)
-> > --
-> > 2.28.0.681.g6f77f65b4e-goog
-> >
->
->
-> --
-> Luiz Augusto von Dentz
+-- 
+https://patchwork.kernel.org/patch/11785045/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
