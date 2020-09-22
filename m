@@ -2,85 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62E822749F4
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 22:16:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A8F8274A27
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 22:33:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726781AbgIVUQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 16:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34592 "EHLO
+        id S1726625AbgIVUdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 16:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726640AbgIVUQD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 16:16:03 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5499C061755;
-        Tue, 22 Sep 2020 13:16:03 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id u24so2069504pgi.1;
-        Tue, 22 Sep 2020 13:16:03 -0700 (PDT)
+        with ESMTP id S1726567AbgIVUdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 16:33:22 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6AF6C061755;
+        Tue, 22 Sep 2020 13:27:29 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id 133so6503199ybg.11;
+        Tue, 22 Sep 2020 13:27:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=l+thkMdwYNeUD83jZWCOal/nLtj+TLcykc7l4j9Wifo=;
-        b=NOKCHZd6LGy9JHVOhyuKk9S5/WlT3xLdpOkEA0vQZR8G6rAGOjgtHUjaF0dfYhhBNZ
-         O0KNpHS3mgjNuY7/UnZNspH0GIyMOu6wH4wUsBp1tmw+OFKIV8IJV6LXq7m49JArOlzJ
-         27MDx6JOUEzdqLy500TpQJ1ZIWNVeDgC9hoCvkZTP4mk822LI3/np2uVqwTN1n7MP2Wg
-         PBgp5m4N16cmLISTGhvuCGDQbLFwvifqkPvuhnPCmsX2iqekZf3sw9oTdjWIA1fr/4u0
-         eDHmJUO/MWzCP0TIWg/O5qvr6IOnXwuTr27D/Xxqx9PAtXmdWlBfHG0TTAROY0dWVoPq
-         xoVA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XYP3v/svhy0yYgmeKvK7dxWjOaVHz8DlAqzQlTiKAbw=;
+        b=ZHuovsbBBDK0iAZwGOh6s+6X7A66lMgiyr+Yey/7+QV5e+MDUYfzkDYAvpAJy/eISH
+         OrOdByNBr8X86AVMUqu3h2CnLCN0sKUnjqfMoG3T3hE7EbsUGTEh+EzS6ws341lvCeaf
+         6uGIP+vtOgquv0BBK7eN2cK79yq2NfaHe2zJKc1P7Sz4G/mB3Ule3kGxt8P/3Wd49LPO
+         sO5DiW+ddR35epWA3VyBR2NXZZzElOoXo2j122kccHTfUhOm5vauQQKE5agDI9ykr+pQ
+         dRR8sleqpoDelALPnbnvLxvK0Bv4CmrVCj0xz6/dcW4zDjZMy1NHDOeUBI3JXRt9xosr
+         ziWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=l+thkMdwYNeUD83jZWCOal/nLtj+TLcykc7l4j9Wifo=;
-        b=fbc5qT6ntys/X9spDoNf4A9ELCVV3FCyVqnMf6YSqdsB7SStKSGjCo1o5KFTKcCNQv
-         4kjKh2fCptsjqrhf38oUBLmPgxIDkaQAjml1neHfmTFJykKMFfd9mkSb322N6myw3Sxm
-         keh0GSMwZVO8FQU0I0BsMb8Wc9ItIWerVNuO8KU76SALnaR0QyjTuc/UK9GeD+cBWh6r
-         dcXP0sj7oGRN27PsPH9bMH3+B8sh7G1Kf5LEn0rXkNbGsY/gWvSPtC//MD+44RrNIU3t
-         Dn3yTDKKkeCvveTgUXrZ6H5vnXbR2k8emOWQE8PAhbCitUyhwCydjY0lbZDIbE7QXiel
-         wEwg==
-X-Gm-Message-State: AOAM531PHm5z2GdQr1UHIaDuVeS/0ovkG2QTQCYrfm6k6p3hJNjzLIB+
-        CUWiai52UQ+swiOGyYbwb3s=
-X-Google-Smtp-Source: ABdhPJy0fzDf0cJ1BR1b/dXueit0Gq/J157X8FOnbwGpD1mM04B4pjhgOcWzmoxGvo4B/ygZ0TOsPQ==
-X-Received: by 2002:a17:902:fe85:b029:d1:e598:3ff7 with SMTP id x5-20020a170902fe85b02900d1e5983ff7mr6095942plm.49.1600805763198;
-        Tue, 22 Sep 2020 13:16:03 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:f812])
-        by smtp.gmail.com with ESMTPSA id f4sm12407429pgr.68.2020.09.22.13.16.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2020 13:16:02 -0700 (PDT)
-Date:   Tue, 22 Sep 2020 13:16:00 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
-        Lorenz Bauer <lmb@cloudflare.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 bpf-next 11/11] bpf: selftest: Use
- bpf_skc_to_tcp_sock() in the sock_fields test
-Message-ID: <20200922201600.5cz6vslfiuw7hdkw@ast-mbp.dhcp.thefacebook.com>
-References: <20200922070409.1914988-1-kafai@fb.com>
- <20200922070518.1923618-1-kafai@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XYP3v/svhy0yYgmeKvK7dxWjOaVHz8DlAqzQlTiKAbw=;
+        b=ExzZlohlRuDcuAvuAkKebULDh3XZOjq4LXJBa04XDClIY8Ysy/Em40K43wH8FWRbP/
+         pljCwzgyk6hxhk7+PX8hw46BOlXcrGuQzRRSI8Hh6vlz9YdzcTZDlhBXR+PdyrUsrNVq
+         ZFj8NOm6Pksdk6I6JE5aHgdu87IA5iP1c4sbYM+8gJoOukvAqi/qOR2M4JKxtAmL70Xc
+         o08zt4xplHXUKdcKJcV8l0fU1+0tmjiDKDvLKRpHARSYyF3nZhM5fwiuHcwqCnTkj/qD
+         ULiskOrDhNTQRRqXpKPxe6MBe6fr4zx/BdWfDLPNWxN/Q8h0RJTgY321fJ4xzQvhxk1h
+         WRJQ==
+X-Gm-Message-State: AOAM530nbAk+hUVW+XdVU9bz7lSb1YIzEx5VziXi6tlmZcJCxKByCMRR
+        j+bAFw+WqL9Suf/p6H6LU4wEpX8GsfS5iIT6Dh8=
+X-Google-Smtp-Source: ABdhPJwqzlbFILVg5ZiOaRgJotMz0P9WC7C9BRzTWRwXrG6nSQVJTs5pPMv8tt8mzhSEQWne4I1ai3RaRRVezmNMvgU=
+X-Received: by 2002:a25:4446:: with SMTP id r67mr9219107yba.459.1600806448675;
+ Tue, 22 Sep 2020 13:27:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200922070518.1923618-1-kafai@fb.com>
+References: <20200918122654.2625699-1-jolsa@kernel.org> <CAEf4BzZc6DE85wUTGwE=2FKPuwuuH4480Fh+v63q8J=PRxjgEw@mail.gmail.com>
+ <20200922184755.GD2718767@krava>
+In-Reply-To: <20200922184755.GD2718767@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 22 Sep 2020 13:27:17 -0700
+Message-ID: <CAEf4BzZJaVkck7y_YH5Cd2rhx6M8T0trKmGz1dRnGCz2+Uh=bQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: Use --no-fail option if CONFIG_BPF is
+ not enabled
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Seth Forshee <seth.forshee@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 22, 2020 at 12:05:18AM -0700, Martin KaFai Lau wrote:
->  
-> @@ -165,9 +168,13 @@ int egress_read_sock_fields(struct __sk_buff *skb)
->  	tpcpy(tp_ret, tp);
->  
->  	if (sk_ret == &srv_sk) {
-> +		ktp = bpf_skc_to_tcp_sock(sk);
-> +		if (!ktp)
-> +			RET_LOG();
-> +		lsndtime = ktp->lsndtime;
+On Tue, Sep 22, 2020 at 11:48 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Mon, Sep 21, 2020 at 02:55:27PM -0700, Andrii Nakryiko wrote:
+> > On Fri, Sep 18, 2020 at 5:30 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > >
+> > > Currently all the resolve_btfids 'users' are under CONFIG_BPF
+> > > code, so if we have CONFIG_BPF disabled, resolve_btfids will
+> > > fail, because there's no data to resolve.
+> > >
+> > > In case CONFIG_BPF is disabled, using resolve_btfids --no-fail
+> > > option, that makes resolve_btfids leave quietly if there's no
+> > > data to resolve.
+> > >
+> > > Fixes: c9a0f3b85e09 ("bpf: Resolve BTF IDs in vmlinux image")
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
+> >
+> > If no CONFIG_BTF is specified, there is no need to even run
+> > resolve_btfids. So why not do just that -- run resolve_btfids only
+> > if both CONFIG_BPF and CONFIG_DEBUG_INFO_BTF are specified?
+>
+> we can have CONFIG_DEBUG_INFO_BTF without CONFIG_BPF being enabled,
+> so we could in theory have in future some BTF ID user outside bpf code,
+> but I guess we can enable that, when it actually happens
+>
 
-If I understood the patches correctly they extend the use cases significantly,
-but this test only covers cgroup/egress type with one particular helper.
-Could you please expand the test cases to cover more of things from earlier
-patches. Patch 7 covers some, but imo not enough.
-Similarly the case of sk_release(sk) in one place and sk_release(ktp)
-in another branch (one you mention in commit log) needs to have
-C based selftest as well.
+Right. Let's cross that bridge when we get there.
+
+> jirka
+>
+> >
+> >
+> > >  scripts/link-vmlinux.sh | 9 +++++++--
+> > >  1 file changed, 7 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> > > index e6e2d9e5ff48..3173b8cf08cb 100755
+> > > --- a/scripts/link-vmlinux.sh
+> > > +++ b/scripts/link-vmlinux.sh
+> > > @@ -342,8 +342,13 @@ vmlinux_link vmlinux "${kallsymso}" ${btf_vmlinux_bin_o}
+> > >
+> > >  # fill in BTF IDs
+> > >  if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
+> > > -info BTFIDS vmlinux
+> > > -${RESOLVE_BTFIDS} vmlinux
+> > > +       info BTFIDS vmlinux
+> > > +       # Let's be more permissive if CONFIG_BPF is disabled
+> > > +       # and do not fail if there's no data to resolve.
+> > > +       if [ -z "${CONFIG_BPF}" ]; then
+> > > +         no_fail=--no-fail
+> > > +       fi
+> > > +       ${RESOLVE_BTFIDS} $no_fail vmlinux
+> > >  fi
+> > >
+> > >  if [ -n "${CONFIG_BUILDTIME_TABLE_SORT}" ]; then
+> > > --
+> > > 2.26.2
+> > >
+> >
+>
