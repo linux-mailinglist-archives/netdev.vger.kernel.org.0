@@ -2,23 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75B7A274D46
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 01:23:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0C49274D4A
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 01:25:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726769AbgIVXXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 19:23:19 -0400
-Received: from mx2.suse.de ([195.135.220.15]:48016 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726614AbgIVXXT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Sep 2020 19:23:19 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id D7BEBAA55;
-        Tue, 22 Sep 2020 23:23:54 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 5923D60320; Wed, 23 Sep 2020 01:23:17 +0200 (CEST)
-Date:   Wed, 23 Sep 2020 01:23:17 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
+        id S1726837AbgIVXZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 19:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726629AbgIVXZI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 19:25:08 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C3BC061755
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 16:25:08 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id j7so5822669plk.11
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 16:25:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=RetUavQOIt57WfxMeCm4pX+acU/jkghzKkK6NLzs3ro=;
+        b=Vtw2iUAVLGa7zvVYRZMoItF5ZoUP10/9ShsNIkEUA9NUbdFi27UfemA5GJqyGhF7TW
+         Y4wJWUEkj8gfdPL80NwgY3808Oz9rrJDjVdCaZkfVxtJ0MSM+IVdjAJZumtvL2aAEmsQ
+         nGiLWHCEe2n7qigHx/Pwts3XzFafF4j+/Q/IWV8hSAsKrybLn1PbL3+qWVZsN86KtTsn
+         jKCu0VaJ+TBxjsgWL+Z3qETeCEmCOgxigcR19ocpxlZfv7535M36557ZvPcm1vYW/Ted
+         9cZmZGiHr0j1texpbZH5uPiqQYZ9Ymrrkup3L8N3cOxLGZSls1mr0LHqXzqJpWWU0rHW
+         tUfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=RetUavQOIt57WfxMeCm4pX+acU/jkghzKkK6NLzs3ro=;
+        b=jCm1DkgTKaF2V8f20Ki/KDLaThamP4DVgXc1WaGdYM0TGLetCdwqGtcxgzW+8R1yvR
+         Fc1p3QXBbGjMVYluMm03RtIedG8Gq3O5/MyPKtwP63blO+Xq861QdJ3KiIsZ4OMD/Ds9
+         8kQKBHC9zqT9flmuZxqYW8ZbEx5XeaObwVGFTf+LBMlkVgB7sg7F56I2JH9X95qJJgAV
+         nqlWsbc3F4H8nSz0nQrd5I2NtxwZmXBXuF5UruGUFuHKZPF/YH3ggopndS8aSad53GPH
+         iop497SO+3m+5rPdOdQ9gxdnT/B7KixBpBVe6d/NjPzOEogruhqIQWT3pwZQCMjkhBIL
+         wfgg==
+X-Gm-Message-State: AOAM53322JulQ5aJW8Zxdl86JPYDRbaJf+Iekuf0zgWRHW3seDszkS/9
+        v6nVl3L/RJmn12zQQY8oNO3rgg==
+X-Google-Smtp-Source: ABdhPJzn0uUoJaJ8ALwwXvEB7emz1aIfDqNy+IyBfoiUttzOkGxWKYX4JEsQFExgalgQstqLPG48GA==
+X-Received: by 2002:a17:902:eac2:b029:d1:e603:af72 with SMTP id p2-20020a170902eac2b02900d1e603af72mr6755369pld.48.1600817107728;
+        Tue, 22 Sep 2020 16:25:07 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id b15sm15874672pft.84.2020.09.22.16.25.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Sep 2020 16:25:07 -0700 (PDT)
+Date:   Tue, 22 Sep 2020 16:24:59 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     Jarod Wilson <jarod@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
         Veaceslav Falico <vfalico@gmail.com>,
@@ -26,21 +56,25 @@ Cc:     linux-kernel@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/5] bonding: rename slave to link where possible
-Message-ID: <20200922232317.jlbgpsy74q6tbx3a@lion.mk-sys.cz>
+Subject: Re: [PATCH net-next 4/5] bonding: make Kconfig toggle to disable
+ legacy interfaces
+Message-ID: <20200922162459.3f0cf0a8@hermes.lan>
+In-Reply-To: <20200922133731.33478-5-jarod@redhat.com>
 References: <20200922133731.33478-1-jarod@redhat.com>
- <20200922133731.33478-3-jarod@redhat.com>
+        <20200922133731.33478-5-jarod@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200922133731.33478-3-jarod@redhat.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 22, 2020 at 09:37:28AM -0400, Jarod Wilson wrote:
-> Getting rid of as much usage of "slave" as we can here, without breaking
-> any user-facing API.
+On Tue, 22 Sep 2020 09:37:30 -0400
+Jarod Wilson <jarod@redhat.com> wrote:
+
+> By default, enable retaining all user-facing API that includes the use of
+> master and slave, but add a Kconfig knob that allows those that wish to
+> remove it entirely do so in one shot.
 > 
 > Cc: Jay Vosburgh <j.vosburgh@gmail.com>
 > Cc: Veaceslav Falico <vfalico@gmail.com>
@@ -50,63 +84,10 @@ On Tue, Sep 22, 2020 at 09:37:28AM -0400, Jarod Wilson wrote:
 > Cc: Thomas Davis <tadavis@lbl.gov>
 > Cc: netdev@vger.kernel.org
 > Signed-off-by: Jarod Wilson <jarod@redhat.com>
-> ---
-[...]
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> index 1f602bcf10bd..8e2edebeb61a 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-[...]
-> @@ -143,12 +143,12 @@ MODULE_PARM_DESC(mode, "Mode of operation; 0 for balance-rr, "
->  module_param(primary, charp, 0);
->  MODULE_PARM_DESC(primary, "Primary network device to use");
->  module_param(primary_reselect, charp, 0);
-> -MODULE_PARM_DESC(primary_reselect, "Reselect primary slave "
-> +MODULE_PARM_DESC(primary_reselect, "Reselect primary link "
->  				   "once it comes up; "
->  				   "0 for always (default), "
->  				   "1 for only if speed of primary is "
->  				   "better, "
-> -				   "2 for only on active slave "
-> +				   "2 for only on active link "
->  				   "failure");
->  module_param(lacp_rate, charp, 0);
->  MODULE_PARM_DESC(lacp_rate, "LACPDU tx rate to request from 802.3ad partner; "
-> @@ -176,24 +176,24 @@ MODULE_PARM_DESC(arp_validate, "validate src/dst of ARP probes; "
->  module_param(arp_all_targets, charp, 0);
->  MODULE_PARM_DESC(arp_all_targets, "fail on any/all arp targets timeout; 0 for any (default), 1 for all");
->  module_param(fail_over_mac, charp, 0);
-> -MODULE_PARM_DESC(fail_over_mac, "For active-backup, do not set all slaves to "
-> +MODULE_PARM_DESC(fail_over_mac, "For active-backup, do not set all links to "
->  				"the same MAC; 0 for none (default), "
->  				"1 for active, 2 for follow");
-> -module_param(all_slaves_active, int, 0);
-> -MODULE_PARM_DESC(all_slaves_active, "Keep all frames received on an interface "
-> -				     "by setting active flag for all slaves; "
-> +module_param(all_links_active, int, 0);
-> +MODULE_PARM_DESC(all_links_active, "Keep all frames received on an interface "
-> +				     "by setting active flag for all links; "
->  				     "0 for never (default), 1 for always.");
->  module_param(resend_igmp, int, 0);
->  MODULE_PARM_DESC(resend_igmp, "Number of IGMP membership reports to send on "
->  			      "link failure");
-> -module_param(packets_per_slave, int, 0);
-> -MODULE_PARM_DESC(packets_per_slave, "Packets to send per slave in balance-rr "
-> -				    "mode; 0 for a random slave, 1 packet per "
-> -				    "slave (default), >1 packets per slave.");
-> +module_param(packets_per_link, int, 0);
-> +MODULE_PARM_DESC(packets_per_link, "Packets to send per link in balance-rr "
-> +				    "mode; 0 for a random link, 1 packet per "
-> +				    "link (default), >1 packets per link.");
->  module_param(lp_interval, uint, 0);
->  MODULE_PARM_DESC(lp_interval, "The number of seconds between instances where "
->  			      "the bonding driver sends learning packets to "
-> -			      "each slaves peer switch. The default is 1.");
-> +			      "each links peer switch. The default is 1.");
 
-Even if the module parameters are deprecated and extremely inconvenient
-as a mean of bonding configuration, I would say changing their names
-would still count as "breaking the userspace".
+Why not just have a config option to remove all the /proc and sysfs options
+in bonding (and bridging) and only use netlink? New tools should be only able
+to use netlink only.
 
-Michal
-
+Then you might convince maintainers to update documentation as well.
+Last I checked there were still references to ifenslave.
