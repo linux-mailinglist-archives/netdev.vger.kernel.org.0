@@ -2,120 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 782D62746FD
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 18:52:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1AE5274729
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 19:03:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726666AbgIVQwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 12:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59794 "EHLO
+        id S1726766AbgIVRDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 13:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726634AbgIVQwL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 12:52:11 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADAF0C0613D0
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 09:52:11 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id 16so19741980qkf.4
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 09:52:11 -0700 (PDT)
+        with ESMTP id S1726727AbgIVRDo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 13:03:44 -0400
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A79C061755;
+        Tue, 22 Sep 2020 10:03:44 -0700 (PDT)
+Received: by mail-oi1-x242.google.com with SMTP id n2so21813478oij.1;
+        Tue, 22 Sep 2020 10:03:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UW8UQhISUFkiKSe3z9186mRXQeii/XHHTh3pl00bIbE=;
-        b=S4S1yu+0DdwteB1gK8Vw7Sirfx6bWa/xLWIPsdLuX1Bps9wYPzDFiWdNH0kTjgN29M
-         TMvFXWvwsuK4mQntUtTNmNPqHcUp2Bt0UyAhSjDoR0w7I+1zs5PnGDwSjtvodQnfNSgu
-         Fi3MyXpKQBsUyQvcqnEnnVuMHA7RhVsOiRzzvzuoN7XkXcdZBi0WwhS6kHB+yw1YZ5hm
-         tL5kKLQRoVrbbjQRQu4OZ38NWMlSubrVENywqwisJ9uCPX4HoQYFXwV5wqv0PGaukqxI
-         WjfJYMlX8PWi2A5M23siDPT67CovWFKOTdrEvHKEqln4v3lFsvC1XgcqsIHiMfxvB67K
-         BX8Q==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Q/1noB1uoT0q1MEAyYLRUUrUwwNCmPj3LxtXlQWic5o=;
+        b=YVIEvxgn5fRl0Xc7++NnbeWpp9rLCTLN5PXSu6zneodfFyC61GSIJ02Pu1Jp96qIdb
+         ZouE2V73ARmGETS2+yiangAhtI7jXRAsqjNwoCqsg2v9QSF2hMz6CiGkQSrmQKrDUpsl
+         tGw0rnWCT2P4G067jGWVgHfh0qHnVnfBQqTfrGrUuPnm1QNhEvTt8CUeOUSATdGjjGHK
+         SMLEX8r3HuQJ2l3L/NuvagSrxFTS5WDSeyGuz5opVpwIHwphTFVc1qtaTvF7CtbEdQI6
+         WBijEm+Es89lqoyi1qlZeOkpzH4+uLN0cxuY/Ds12MJR8e0ADosWKYKQ0lMJoJr8KkoE
+         9AeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UW8UQhISUFkiKSe3z9186mRXQeii/XHHTh3pl00bIbE=;
-        b=HM2fBM+LrdnBQ71Q3OcEzr45f1GPZF8qyNbXsq3a09zFdRqHWNbPOTCEDMoyYmtF/U
-         gLW8+p/kVFf9gIWckKL+A3Fxd7jFVDvON2mrzpQsK3l2r1mfdAZsItz3WzYWb9NkB9v8
-         i4vij26ubLiTrsmDN3GDIqA8kVcoYd323gGif4y17Scr147KRlPxodYHguOFoKnlcCtz
-         Wsi8LVYYwisDS7WEzf9ut8uTd5AhkSHJEo/oLk+IjgLx46Td3aG02sGHK7Uj2F3GIJbg
-         rjF2dZOheFTtxd5dyTOJx2WDDBAu6DFKNR+t3S5orK4/ljm7wQetXmY84LCsG1aIGpe4
-         Xiyg==
-X-Gm-Message-State: AOAM533u7qyOCHeodt7R/uMPz7hL7UyJ78l36E+VqPXq6Bc6QOyCcy30
-        wQ/tI3RPcaRcYj2br/kxLk2HaLsa3oNZx/Jv
-X-Google-Smtp-Source: ABdhPJxmh2ODYVAVV5V1OHM0DbPqOPp70bzHRBRnt4lz3LGXVWYYfZGjCS0zSBO5X1zbygWZYdhOJA==
-X-Received: by 2002:a37:a2d2:: with SMTP id l201mr5772720qke.454.1600793530818;
-        Tue, 22 Sep 2020 09:52:10 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id k52sm13437898qtc.56.2020.09.22.09.52.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2020 09:52:10 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1kKlWT-003CDZ-Jn; Tue, 22 Sep 2020 13:52:09 -0300
-Date:   Tue, 22 Sep 2020 13:52:09 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Gal Pressman <galpress@amazon.com>
-Cc:     Oded Gabbay <oded.gabbay@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        izur@habana.ai, Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-rdma@vger.kernel.org, Olof Johansson <olof@lixom.net>
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-Message-ID: <20200922165209.GJ8409@ziepe.ca>
-References: <20200918141909.GU8409@ziepe.ca>
- <CAFCwf121_UNivhfPfO6uFoHbF+2Odeb1c3+482bOXeOZUsEnug@mail.gmail.com>
- <20200918150735.GV8409@ziepe.ca>
- <CAFCwf13y1VVy90zAoBPC-Gfj6mwMVbefh3fxKDVneuscp4esqA@mail.gmail.com>
- <20200918152852.GW8409@ziepe.ca>
- <b0721756-d323-b95e-b2d2-ca3ce8d4a660@amazon.com>
- <20200922114101.GE8409@ziepe.ca>
- <a16802a2-4a36-e03d-a927-c5cb7c766b99@amazon.com>
- <20200922161429.GI8409@ziepe.ca>
- <e06c573a-99a7-906c-8197-847a61fba44a@amazon.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Q/1noB1uoT0q1MEAyYLRUUrUwwNCmPj3LxtXlQWic5o=;
+        b=blkDf+meC0SD13a+XldVPXZo4RlyVCxIZiDTe8RNJFfg2YX4mekubJPfhNyuvpObVz
+         fyCiu3TsyOE7BI3ahkdyjAl/45pNecYBZ2zOMouqV4/YkzTUA/nkBnpWOdiJNeTZ+hUV
+         PhycGC8diHl1PNZbfA/A0EibRGuI6OyNrBxDmf8Hu4YtvELGCle+1wKXhMppIV8fObWX
+         x9lLTCEvrgedzKiCkfdvsx4aOn3uK7K3ChId1Pn70LkCha5b92SDyAaEzgyTx7YU+TcA
+         9zQMgycSdn6VpIlcrnqqBRnINFyUA8F19SoNA0LoUz5j5IEqj7CotJTrnfIarnv2XEDh
+         fh4g==
+X-Gm-Message-State: AOAM533QNt3lfLup1JAW39l37GW2TFq/pR+z4VaXTA8nIs+2WCg7+Bdc
+        db5Te2qCaCRs/U35PTA0UEzoVj9M+es8G00ad8g=
+X-Google-Smtp-Source: ABdhPJwnU01jlc8sgDyjiU4lgWFdsQURLkMJsTdCG+CUOHALcxnBr0/m39qct+e91SzH8hNn4klqCv6/4x90pnH6Y1Q=
+X-Received: by 2002:aca:38d7:: with SMTP id f206mr3035639oia.48.1600794223658;
+ Tue, 22 Sep 2020 10:03:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e06c573a-99a7-906c-8197-847a61fba44a@amazon.com>
+References: <20200921155004.v2.1.I67a8b8cd4def8166970ca37109db46d731b62bb6@changeid>
+ <CABBYNZLTZbwyL0ykmFezWrkNVnHoZt2KPtz+aQwo7TvhdC7TiQ@mail.gmail.com> <CAJQfnxFjL6RicwHyFgYzNp7WPrMePEOa2fgOX9TMju-z5AWsPg@mail.gmail.com>
+In-Reply-To: <CAJQfnxFjL6RicwHyFgYzNp7WPrMePEOa2fgOX9TMju-z5AWsPg@mail.gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Tue, 22 Sep 2020 10:03:31 -0700
+Message-ID: <CABBYNZJdY+QBiCk9nBhJ-gUm-K0ZF6U=03f+tqKvs7c+oG=axA@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: Check for encryption key size on connect
+To:     Archie Pusaka <apusaka@google.com>
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 22, 2020 at 07:30:32PM +0300, Gal Pressman wrote:
-> On 22/09/2020 19:14, Jason Gunthorpe wrote:
-> > On Tue, Sep 22, 2020 at 03:46:29PM +0300, Gal Pressman wrote:
-> > 
-> >> I agree, that makes sense.
-> >> But assuming Oded actually goes and implements all the needed verbs to get a
-> >> basic functional libibverbs provider (assuming their HW can do it somehow), is
-> >> it really useful if no one is going to use it?
-> >> It doesn't sound like habanalabs want people to use GAUDI as an RDMA adapter,
-> >> and I'm assuming the only real world use case is going to be using the hl stack,
-> >> which means we're left with a lot of dead code that's not used/tested by anyone.
-> >>
-> >> Genuine question, wouldn't it be better if they only implement what's actually
-> >> going to be used and tested by their customers?
-> > 
-> > The general standard for this 'accel' hardware, both in DRM and RDMA
-> > is to present an open source userspace. Companies are encouraged to
-> > use that as their main interface but I suppose are free to carry the
-> > cost of dual APIs, and the community's wrath if they want.
-> 
-> I didn't mean they should maintain two interfaces.
-> The question is whether they should implement libibverbs support that covers the
-> cases used by their stack, or should they implement all "mandatory" verbs so
-> they could be able to run libibverbs' examples/perftest/pyverbs as well, even
-> though these will likely be the only apps covering these verbs.
+Hi Archie,
 
-As I said, the minimum standard is an open source user space that will
-operate the NIC. For EFA we decided that was ibv_ud_pingpong, and now
-parts of pyverbs. A similar decision would be needed here too. It is a
-conversation that should start with a propsal from Oded.
+On Tue, Sep 22, 2020 at 12:48 AM Archie Pusaka <apusaka@google.com> wrote:
+>
+> Hi Luiz,
+>
+> On Tue, 22 Sep 2020 at 01:15, Luiz Augusto von Dentz
+> <luiz.dentz@gmail.com> wrote:
+> >
+> > Hi Archie,
+> >
+> >
+> > On Mon, Sep 21, 2020 at 12:56 AM Archie Pusaka <apusaka@google.com> wrote:
+> > >
+> > > From: Archie Pusaka <apusaka@chromium.org>
+> > >
+> > > When receiving connection, we only check whether the link has been
+> > > encrypted, but not the encryption key size of the link.
+> > >
+> > > This patch adds check for encryption key size, and reject L2CAP
+> > > connection which size is below the specified threshold (default 7)
+> > > with security block.
+> > >
+> > > Here is some btmon trace.
+> > > @ MGMT Event: New Link Key (0x0009) plen 26    {0x0001} [hci0] 5.847722
+> > >         Store hint: No (0x00)
+> > >         BR/EDR Address: 38:00:25:F7:F1:B0 (OUI 38-00-25)
+> > >         Key type: Unauthenticated Combination key from P-192 (0x04)
+> > >         Link key: 7bf2f68c81305d63a6b0ee2c5a7a34bc
+> > >         PIN length: 0
+> > > > HCI Event: Encryption Change (0x08) plen 4        #29 [hci0] 5.871537
+> > >         Status: Success (0x00)
+> > >         Handle: 256
+> > >         Encryption: Enabled with E0 (0x01)
+> > > < HCI Command: Read Encryp... (0x05|0x0008) plen 2  #30 [hci0] 5.871609
+> > >         Handle: 256
+> > > > HCI Event: Command Complete (0x0e) plen 7         #31 [hci0] 5.872524
+> > >       Read Encryption Key Size (0x05|0x0008) ncmd 1
+> > >         Status: Success (0x00)
+> > >         Handle: 256
+> > >         Key size: 3
+> > >
+> > > ////// WITHOUT PATCH //////
+> > > > ACL Data RX: Handle 256 flags 0x02 dlen 12        #42 [hci0] 5.895023
+> > >       L2CAP: Connection Request (0x02) ident 3 len 4
+> > >         PSM: 4097 (0x1001)
+> > >         Source CID: 64
+> > > < ACL Data TX: Handle 256 flags 0x00 dlen 16        #43 [hci0] 5.895213
+> > >       L2CAP: Connection Response (0x03) ident 3 len 8
+> > >         Destination CID: 64
+> > >         Source CID: 64
+> > >         Result: Connection successful (0x0000)
+> > >         Status: No further information available (0x0000)
+> > >
+> > > ////// WITH PATCH //////
+> > > > ACL Data RX: Handle 256 flags 0x02 dlen 12        #42 [hci0] 4.887024
+> > >       L2CAP: Connection Request (0x02) ident 3 len 4
+> > >         PSM: 4097 (0x1001)
+> > >         Source CID: 64
+> > > < ACL Data TX: Handle 256 flags 0x00 dlen 16        #43 [hci0] 4.887127
+> > >       L2CAP: Connection Response (0x03) ident 3 len 8
+> > >         Destination CID: 0
+> > >         Source CID: 64
+> > >         Result: Connection refused - security block (0x0003)
+> > >         Status: No further information available (0x0000)
+> > >
+> > > Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+> > > Reviewed-by: Alain Michaud <alainm@chromium.org>
+> > >
+> > > ---
+> > > Btw, it looks like the patch sent by Alex Lu with the title
+> > > [PATCH] Bluetooth: Fix the vulnerable issue on enc key size
+> > > also solves the exact same issue.
+> > >
+> > > Changes in v2:
+> > > * Add btmon trace to the commit message
+> > >
+> > >  net/bluetooth/l2cap_core.c | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+> > > index ade83e224567..b4fc0ad38aaa 100644
+> > > --- a/net/bluetooth/l2cap_core.c
+> > > +++ b/net/bluetooth/l2cap_core.c
+> > > @@ -4101,7 +4101,8 @@ static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
+> > >
+> > >         /* Check if the ACL is secure enough (if not SDP) */
+> > >         if (psm != cpu_to_le16(L2CAP_PSM_SDP) &&
+> > > -           !hci_conn_check_link_mode(conn->hcon)) {
+> > > +           (!hci_conn_check_link_mode(conn->hcon) ||
+> > > +           !l2cap_check_enc_key_size(conn->hcon))) {
+> >
+> > I wonder if we couldn't incorporate the check of key size into
+> > hci_conn_check_link_mode, like I said in the first patch checking the
+> > enc key size should not be specific to L2CAP.
+>
+> Yes, I could move the check into hci_conn_check_link_mode.
+> At first look, this function is also called by AMP which I am not
+> familiar with. In addition, I found this patch which moves this check
+> outside hci_conn, so I have my doubts there.
+> https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git/commit/?id=693cd8ce3f882524a5d06f7800dd8492411877b3
 
-The *point* is to have the open userspace, so I really don't care what
-their proprietary universe does, and shrinking the opensource side
-becuase it is "redundant" is completely backwards to what we want to
-see.
+Right, I think we can have it as part of the hci_conn_check_link_mode,
+that said it is perhaps better to have it as
+hci_conn_check_enc_key_size instead as it is not L2CAP expecific.
+Other than that it looks good to me.
 
-Jason
+> >
+> > >                 conn->disc_reason = HCI_ERROR_AUTH_FAILURE;
+> > >                 result = L2CAP_CR_SEC_BLOCK;
+> > >                 goto response;
+> > > --
+> > > 2.28.0.681.g6f77f65b4e-goog
+> > >
+> >
+> >
+> > --
+> > Luiz Augusto von Dentz
+>
+> Thanks,
+> Archie
+
+
+
+-- 
+Luiz Augusto von Dentz
