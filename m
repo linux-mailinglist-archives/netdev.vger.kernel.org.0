@@ -2,99 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BFCA274BD8
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 00:05:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D815A274BED
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 00:15:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726723AbgIVWFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 18:05:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43576 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726629AbgIVWFP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 18:05:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600812314;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1HuDu6VLipkoXjOvX2ydRAsRN46ZNECZq7n9nX0XdnI=;
-        b=K9YFCvRyRtZ+nAFcyjOo1zRHreHcjNEcMaoFHYrz4vMknwVSIZWS1XgM5QyUSdJnVVJXFI
-        Au9maU65hgc0OIXEaorDArlVSpUaBQaMDs214G7SRDuxZz5O+jxWiMYwJ32TNjin4T1t62
-        IpSlrh09aTIS2gghyeIEGaySS1KH2YU=
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
- [209.85.210.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-292-BN1CWey_PF67A3VcsB7tIg-1; Tue, 22 Sep 2020 18:05:12 -0400
-X-MC-Unique: BN1CWey_PF67A3VcsB7tIg-1
-Received: by mail-ot1-f71.google.com with SMTP id y12so4028848oto.22
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 15:05:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1HuDu6VLipkoXjOvX2ydRAsRN46ZNECZq7n9nX0XdnI=;
-        b=UMIwAQaBiD781GEVrmpJkdw9Qudwj1xmlS86oBaJvrXAgxj2THYrIClt/ukPWdGVyZ
-         t+WLHh8ev4pn4srWF5eoOtErNmyrck/mHHh/2O4SjT4m7YfHcYDqyOKLaO2I0CDFrGop
-         Y8dVnIRVSURbpcUUnY9K4CnOJvpHN9oGMMziFSJ9pOOFIbzn8iJ/nN62g5dyi6uAzDSm
-         q0SR2YnQwnnzRg/KopJqFsqt0VrR922Wwojec1wmJBG5fHAlR6UF6QpSCBqI1UBPC7s3
-         0dlGjKXxDsRJcdC/NpaIHVzaTjUcKp3Tp/MuO1mCFoCQpZSdLniRWRvMOp5FKbV+BEvD
-         2chA==
-X-Gm-Message-State: AOAM5331pV/a/me8y8OA4ffSKmGHDOBrwTXGEuZEixO0X6XnYwuauDO7
-        JVdI+eCUnFfq/LJXk+zpKuod3PkdbJ7ABlQLdKkXtuX6uWeA9XIm99KiNZZQqDdBJzE1JSsLRLl
-        1e7SucpekVTIhvUdbYRDUcMMZGsX2TD42
-X-Received: by 2002:a4a:a385:: with SMTP id s5mr4526256ool.8.1600812311423;
-        Tue, 22 Sep 2020 15:05:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyFQQl79LZqD9ewINDxufXtajraSG49Z623jpMmetiwrW8RQQFJ+ZMcncq7gan5aXrAJDcTlr/7rNTZ7uMT/Ok=
-X-Received: by 2002:a4a:a385:: with SMTP id s5mr4526237ool.8.1600812311133;
- Tue, 22 Sep 2020 15:05:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200922133731.33478-1-jarod@redhat.com> <20200922133731.33478-5-jarod@redhat.com>
-In-Reply-To: <20200922133731.33478-5-jarod@redhat.com>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Tue, 22 Sep 2020 18:05:00 -0400
-Message-ID: <CAKfmpSfv8L46MjYHfUCMcz+Wxed4EpO1FEu8NjqVU6W8_m9E=w@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/5] bonding: make Kconfig toggle to disable
- legacy interfaces
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726703AbgIVWPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 18:15:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54846 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726179AbgIVWPZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Sep 2020 18:15:25 -0400
+Subject: Re: [GIT] Networking
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600812924;
+        bh=FTbJVlukzgMDNF2QDjUwCsMpHzvC24Buc34PGrZri+o=;
+        h=From:In-Reply-To:References:Date:To:Cc:From;
+        b=Upi8wJtuVt9F3y9e3vScTkoRu4RczgoorHrvcRSMNJBe1DT1j9154Uv67cDSnR3AL
+         VEq4dGZuAPuBj83QIixIeJVx2J64loRmgkUdhVK0OhogPA2BaGO7o6MxtpveYi9/E4
+         dZl4WMQbu6fy80kBu1KwLy9v2zKdM/exHzFyTeFw=
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20200921184443.72952cb4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200921184443.72952cb4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20200921184443.72952cb4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
+X-PR-Tracked-Commit-Id: b334ec66d4554a0af0471b1f21c477575c8c175d
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: d3017135c43373b06eef1eb70dfeb948b8ae159f
+Message-Id: <160081292472.1950.9308616669578773827.pr-tracker-bot@kernel.org>
+Date:   Tue, 22 Sep 2020 22:15:24 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 22, 2020 at 9:38 AM Jarod Wilson <jarod@redhat.com> wrote:
->
-> By default, enable retaining all user-facing API that includes the use of
-> master and slave, but add a Kconfig knob that allows those that wish to
-> remove it entirely do so in one shot.
-> diff --git a/drivers/net/bonding/bond_procfs.c b/drivers/net/bonding/bond_procfs.c
-> index abd265d6e975..91ece68607b2 100644
-> --- a/drivers/net/bonding/bond_procfs.c
-> +++ b/drivers/net/bonding/bond_procfs.c
-> @@ -7,6 +7,12 @@
->
->  #include "bonding_priv.h"
->
-> +#ifdef CONFIG_BONDING_LEGACY_INTERFACES
-> +const char *linkdesc = "Slave";
-> +#else
-> +const char *linkdesc = "Link";
-> +#endif
+The pull request you sent on Mon, 21 Sep 2020 18:44:43 -0700:
 
-I've been asked if it would be okay to add extra lines to the
-/proc/net/bonding/<bond interface> output, so that for example, both
-"Slave Interface: <interface>" and "Link Interface: <interface>" are
-both in the default output, with the Slave bits then suppressed by the
-Kconfig option being unset, versus the Kconfig option currently
-swapping out Slave for Link when disabled. It would bloat the output
-by a fair number of lines, but all the same data would be there and
-parseable. Wasn't sure on this one, so I wanted to check on it. If it
-would be acceptable, I'll rework that bit of code.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/d3017135c43373b06eef1eb70dfeb948b8ae159f
+
+Thank you!
 
 -- 
-Jarod Wilson
-jarod@redhat.com
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
