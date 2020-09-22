@@ -2,149 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97BCB274840
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 20:38:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26C25274858
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 20:39:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbgIVSig (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 14:38:36 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:60194 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726526AbgIVSif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 14:38:35 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08MIUrsQ022380;
-        Tue, 22 Sep 2020 11:38:21 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=A8BLL8yAZGKjalkBs6Aec8RVsqCOuOUVetaOxCPLeYQ=;
- b=iK4JfkQJAiygMBilBUJEMrq7Zt1CKFbvbgfEBw0knI9i7La/+u9E6nPXkWhfjupi1AQM
- HycVXDtfCvIuzJe28LVKqMpbNY8cu3N3hY2n1gsV5iEfIo60+P5tlkasTqt9kBfpyCRH
- MbrbXgw3IVDtMK7dmVIFvbFlQWoSkBQwc1I= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33p1g9vhpp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 22 Sep 2020 11:38:21 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 22 Sep 2020 11:38:20 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TrrYqN+i2Wy5EtfJ9ZbKr/eBzJqNw4YaDhKfzNDV2Mz4IAu182EhlxfEIcMmmgIzOL61Zt1VkRbZPISMzU10M/kPv7WUsoyn6S7qcFxRS8QhiVvGg8XMuA2iV3MT61pjy95JzFsJSZwsXRICwXtSozKSk4T03wlA/R/hbDLIsDzvrXzx+JB3yhhVVdbLgnHO6AkhQEKpMi4nlwdIQV004PBW5z7/E+ri30Wtwh28QfFsgOJvC4HtNvUGqpX2Uy6SPa9kqw+tNTXCdu45anfekRo9NLzrIs0VLiiaTn/eQ5p06jFr9mrlKWHIpkt8TJKyWYoJ5PJFFNtJ08X2pLf20A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A8BLL8yAZGKjalkBs6Aec8RVsqCOuOUVetaOxCPLeYQ=;
- b=ScQNm41BavEM++n1Mgkv0TBmFyht//wHRwZwJfOnW1OVLeQZ2e+y/JM2tKpZmDOdp5QwTmbceQS7ZCSA2lcXeywYBmt2m5v5W72GCOnev6VuAFv9hHy6Hhkjpd5piXMT1ZsRTV0ysyem/w6eQQOqnlGWOYUfxRUxasB0n3cq8iWcG90nwEe+DOO5l3OGzfcN4VkbkRbm5IHiTprTGYyJONu8eI9l//qpYjgFQbymt/aZz4npUYu1jtaxuGuJDzUVb5p77e1RxnpFAzfm3Wk59u0Oq//m/JOpi+mF+K2ImC5uLa7Pzlgt4slJHU26QLaOijd2n/xZjBKOJ1E5LgeCdA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A8BLL8yAZGKjalkBs6Aec8RVsqCOuOUVetaOxCPLeYQ=;
- b=WqsBBnNZNULU24MGEGEeAbQNFZUWxhYBwP1XeOiIdSAF7B/8g5/MKp3ECmMKj92eUBEQAkeViwqmlxf62Y81OC17WxX+0cSDG0I6l6OqCooIXphfFARk7mO/tJTF25kgF5qKbO7hOjqylH7EfKlPuqn6+egdQYwUWYLuZbmNXGY=
-Authentication-Results: cloudflare.com; dkim=none (message not signed)
- header.d=none;cloudflare.com; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BYAPR15MB2583.namprd15.prod.outlook.com (2603:10b6:a03:156::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.19; Tue, 22 Sep
- 2020 18:38:12 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::c13c:fca9:5e04:9bfb]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::c13c:fca9:5e04:9bfb%3]) with mapi id 15.20.3391.026; Tue, 22 Sep 2020
- 18:38:12 +0000
-Date:   Tue, 22 Sep 2020 11:38:05 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 bpf-next 01/11] bpf: Move the PTR_TO_BTF_ID check to
- check_reg_type()
-Message-ID: <20200922183805.l2fjw462hukiel4n@kafai-mbp.dhcp.thefacebook.com>
-References: <20200922070409.1914988-1-kafai@fb.com>
- <20200922070415.1916194-1-kafai@fb.com>
- <CACAyw9_wEMFuymvUC0fsZVJCH0vsvbD9p=CWTZC1jV2gUiu3KA@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACAyw9_wEMFuymvUC0fsZVJCH0vsvbD9p=CWTZC1jV2gUiu3KA@mail.gmail.com>
-X-ClientProxiedBy: MW2PR2101CA0035.namprd21.prod.outlook.com
- (2603:10b6:302:1::48) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+        id S1726807AbgIVSjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 14:39:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32489 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726662AbgIVSir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 14:38:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600799924;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1ufYhZg07mVp/p55VuIHakTMZVtF1/iAU5XGfbdslF4=;
+        b=J8sYjJEyNTUI92V22Y+vmsGMncGQ8XiMSICmNE1Bp3XsC4FEMLC/QYDDSKBPvrCeoDsV4b
+        2x/viscDlD4NY4MjWqGVPngtouJeOp8MgRqadIChrTYsXdYetRiFaJksPMovWNDpg/NDaS
+        uKBm1iKbuJJas1RtIUK5ZDh+1CJtVvc=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-199-nCiF5r8iODeH1wtz7q-EJQ-1; Tue, 22 Sep 2020 14:38:41 -0400
+X-MC-Unique: nCiF5r8iODeH1wtz7q-EJQ-1
+Received: by mail-pg1-f198.google.com with SMTP id 26so11280429pgp.2
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 11:38:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=1ufYhZg07mVp/p55VuIHakTMZVtF1/iAU5XGfbdslF4=;
+        b=pYUf+PK4en978D5vugsbhylb/Bh1DIjYsDIwzy6m07nluG8kDK67gsQQYkaBz5Qrn/
+         YHH2D6y9sVpShxEGVH3Q/6sOY18g/AeNSoXffaEkloC/wN0KSOd0QnManWz6LnvVfwwi
+         ktHpKsz97Hq0QKPFT4PfXl5g5Hhb9c6BsM7BdwjE7/VmnkGsVVHSUFcqB+cFOD5e/u0T
+         KFpLXd8jTWeSjVRqwd3VeAVytLFs15c9yzuaV3tlO8pM47AA1pOq9+1Kv1sJpeRAlhUZ
+         Za379dxGuHMP4xioZ6ZPHNZJMGxSY9QUBfCAxvNyB+U4kbFPV8GcGWCUw+2vvshFmWZ2
+         Nu1w==
+X-Gm-Message-State: AOAM533bFA8SS5FarAT/iE+MzyJwdlc9XmtdvMkgGH/IuKqoLlUGn5X6
+        fzapkVZRJf3JUTzEw3NDkNye7y9Gc71b5oQp5r9KV5PhfzSroRiAfXXtFGHU+NATKkAG1VQlIAc
+        pdy5Fx8I/XPqTKZA6
+X-Received: by 2002:a63:4459:: with SMTP id t25mr2694106pgk.104.1600799920402;
+        Tue, 22 Sep 2020 11:38:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzlahJduRYzskcb7hU8ANN24M6Pmp2CE7YhqXKfGzU3JwaXKCB/Uk+xQ+1lyYFsovmXo6g+Ew==
+X-Received: by 2002:a63:4459:: with SMTP id t25mr2694072pgk.104.1600799919938;
+        Tue, 22 Sep 2020 11:38:39 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id v10sm2970061pjf.34.2020.09.22.11.38.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Sep 2020 11:38:39 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id D19C3183A8F; Tue, 22 Sep 2020 20:38:33 +0200 (CEST)
+Subject: [PATCH bpf-next v8 00/11] bpf: Support multi-attach for freplace
+ programs
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Date:   Tue, 22 Sep 2020 20:38:33 +0200
+Message-ID: <160079991372.8301.10648588027560707258.stgit@toke.dk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:7f66) by MW2PR2101CA0035.namprd21.prod.outlook.com (2603:10b6:302:1::48) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.7 via Frontend Transport; Tue, 22 Sep 2020 18:38:11 +0000
-X-Originating-IP: [2620:10d:c090:400::5:7f66]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 51af2b4b-6690-48fc-7eab-08d85f26a8de
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2583:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2583589E056F24F7304F55EAD53B0@BYAPR15MB2583.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GowDOuD/R2aNNScWmsRRS5GCA0uaaTAoYAfQ7ah4c6g42uf8yl/0PIp44CoNXUSfInKpw22ZzhLra9ilNQMrgtDd7lucXscjQuuC6R4vb+H3b5NXa+fbYeGdHARI46KpocD277jWuTplX+x9FRJqOsRjiu+6JsRjGmV5UbqaO4IKmQFkU7w1R2iD1EZMsE/Cjrejx1mnUiUeX6Ys2BUvSH0z+dOt6nIrRuS+r8BaI0FJNpfMpeiHqht+0bs1D9mvCPz94yBhBkSru+sQFBzliQnv5AEWXZtYszL0npbI76t0GJh1VMlKDUsk2hgk/UBn/+NFsfc6N3ULr+hGK/y5sg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39860400002)(136003)(366004)(376002)(346002)(6506007)(16526019)(2906002)(8936002)(5660300002)(1076003)(66476007)(66556008)(66946007)(55016002)(9686003)(86362001)(52116002)(83380400001)(316002)(6666004)(7696005)(478600001)(6916009)(4326008)(8676002)(54906003)(186003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: 3mwv7dLgQgZ+mk+yUZ7bwRQWyKkoh/UPS+Zf9v+jpp1Lr+X81paj0hOpuzmK2r8HadVf18r6MmqZ2aWVyPO5fuSAmaeMQVpngTCF1gK/vD7e+FA2OBveVzLIctLtWxRkyV4hk2aUyYhbFi5tv+Csnx9FzzFkhzWqMUY5JamBG5VnPLLb2zEbFywhvobJm8rPy4xYnvgvCMQYEsJXCG0gsqrS7l6Ot1c9MH1p2ATQpAkVvcZRTS50hZYrZ7dadYHiC9qXKSCkoFgpZKHtUsllBTEeQJTA6G2Cb3/2VOy8pojoUaAKrEP2T/V09Ec0i+0aHiLH6e6NGbs4VrpUk1TC1Eg269iPnXo7/teATulNBKW6UB/eEpSKSdiW/XKILUAUQhu2a8tlpFusOEGPY+h/779rO0Nd80jZeJNXZ9WFpFLSCjn4i/1kahKJY1Mfg0ufyxfOvgceVcW5OXd3ts280HZsQe4CpF3UFTxADukIfjFNwi0n9zDj78y5Jka0kDnwBaDJTHer6FzCbw0hAk7/eGehm3obsb7zk/7uO5neeXb5YAnuE52yIKHipDWkChJm7ZN2Aad5zWZlM0VdnPq7hr9tDNyLbu1/S4gXZGOXSRS0ayb/6qbIaKtylVusMO/oO5/2U4BIRyknSfbfU20GyS3JrhgsTbc85/UDxF53CN9875LZ6SVoM1DmoQ0OYF+r
-X-MS-Exchange-CrossTenant-Network-Message-Id: 51af2b4b-6690-48fc-7eab-08d85f26a8de
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2020 18:38:12.1813
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qGYmSyXc/dRRDIjZ/jn2Y6G/cHgVbapAmVJG1u27Axkznnt9V7FKcGCJtZBAyHRH
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2583
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-22_17:2020-09-21,2020-09-22 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- impostorscore=0 malwarescore=0 lowpriorityscore=0 bulkscore=0
- suspectscore=1 clxscore=1015 phishscore=0 mlxlogscore=999 adultscore=0
- priorityscore=1501 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2009220144
-X-FB-Internal: deliver
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 22, 2020 at 10:56:55AM +0100, Lorenz Bauer wrote:
-> On Tue, 22 Sep 2020 at 08:04, Martin KaFai Lau <kafai@fb.com> wrote:
-> >
-> > check_reg_type() checks whether a reg can be used as an arg of a
-> > func_proto.  For PTR_TO_BTF_ID, the check is actually not
-> > completely done until the reg->btf_id is pointing to a
-> > kernel struct that is acceptable by the func_proto.
-> >
-> > Thus, this patch moves the btf_id check into check_reg_type().
-> > The compatible_reg_types[] usage is localized in check_reg_type() now.
-> >
-> > The "if (!btf_id) verbose(...); " is also removed since it won't happen.
-> >
-> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> > ---
-> >  kernel/bpf/verifier.c | 65 +++++++++++++++++++++++--------------------
-> >  1 file changed, 35 insertions(+), 30 deletions(-)
-> >
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index 15ab889b0a3f..3ce61c412ea0 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -4028,20 +4028,29 @@ static const struct bpf_reg_types *compatible_reg_types[] = {
-> >         [__BPF_ARG_TYPE_MAX]            = NULL,
-> >  };
-> >
-> > -static int check_reg_type(struct bpf_verifier_env *env, u32 regno,
-> > -                         const struct bpf_reg_types *compatible)
-> > +static int check_reg_type(struct bpf_verifier_env *env, u32 arg,
-> > +                         enum bpf_arg_type arg_type,
-> > +                         const struct bpf_func_proto *fn)
-Yes. I think that works as good.
+This series adds support attaching freplace BPF programs to multiple targets.
+This is needed to support incremental attachment of multiple XDP programs using
+the libxdp dispatcher model.
 
-An idea for the mid term, I think this map helper's arg override logic
-should belong to a new map_ops and this new map_ops can return the whole
-"fn" instead of overriding on an arg-by-arg base.
+The first patch fixes an issue that came up in review: The verifier will
+currently allow MODIFY_RETURN tracing functions to attach to other BPF programs,
+even though it is pretty clear from the commit messages introducing the
+functionality that this was not the intention. This patch is included in the
+series because the subsequent refactoring patches touch the same code.
+
+The next three patches are refactoring patches: Patch 2 is a trivial change to
+the logging in the verifier, split out to make the subsequent refactor easier to
+read. Patch 3 refactors check_attach_btf_id() so that the checks on program and
+target compatibility can be reused when attaching to a secondary location.
+
+Patch 4 moves prog_aux->linked_prog and the trampoline to be embedded in
+bpf_tracing_link on attach, and freed by the link release logic, and introduces
+a mutex to protect the writing of the pointers in prog->aux.
+
+Based on these refactorings, it becomes pretty straight-forward to support
+multiple-attach for freplace programs (patch 5). This is simply a matter of
+creating a second bpf_tracing_link if a target is supplied. However, for API
+consistency with other types of link attach, this option is added to the
+BPF_LINK_CREATE API instead of extending bpf_raw_tracepoint_open().
+
+Patch 6 is a port of Jiri Olsa's patch to support fentry/fexit on freplace
+programs. His approach of getting the target type from the target program
+reference no longer works after we've gotten rid of linked_prog (because the
+bpf_tracing_link reference disappears on attach). Instead, we used the saved
+reference to the target prog type that is also used to verify compatibility on
+secondary freplace attachment.
+
+Patches 7 is the accompanying libbpf update, and patches 8-11 are selftests:
+patch 8 tests for the multi-freplace functionality itself; patch 9 is Jiri's
+previous selftest for the fentry-to-freplace fix; patch 10 is a test for the
+change introduced in patch 1, blocking MODIFY_RETURN functions from attaching to
+other BPF programs; and finally, patch 11 removes MODIFY_RETURN functions from
+the benchmark and test_overhead programs in selftests, as these were never
+supposed to work in the first place.
+
+With this series, libxdp and xdp-tools can successfully attach multiple programs
+one at a time. To play with this, use the 'freplace-multi-attach' branch of
+xdp-tools:
+
+$ git clone --recurse-submodules --branch freplace-multi-attach https://github.com/xdp-project/xdp-tools
+$ cd xdp-tools/xdp-loader
+$ make
+$ sudo ./xdp-loader load veth0 ../lib/testing/xdp_drop.o
+$ sudo ./xdp-loader load veth0 ../lib/testing/xdp_pass.o
+$ sudo ./xdp-loader status
+
+The series is also available here:
+https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git/log/?h=bpf-freplace-multi-attach-alt-08
+
+Changelog:
+
+v8:
+  - Add a separate error message when trying to attach FMOD_REPLACE to tgt_prog
+  - Better error messages in bpf_program__attach_freplace()
+  - Don't lock mutex when setting tgt_* pointers in prog create and verifier
+  - Remove fmod_ret programs from benchmarks in selftests (new patch 11)
+  - Fix a few other nits in selftests
+
+v7:
+  - Add back missing ptype == prog->type check in link_create()
+  - Use tracing_bpf_link_attach() instead of separate freplace_bpf_link_attach()
+  - Don't break attachment of bpf_iters in libbpf (by clobbering link_create.iter_info)
+
+v6:
+  - Rebase to latest bpf-next
+  - Simplify logic in bpf_tracing_prog_attach()
+  - Don't create a new attach_type for link_create(), disambiguate on prog->type
+    instead
+  - Use raw_tracepoint_open() in libbpf bpf_program__attach_ftrace() if called
+    with NULL target
+  - Switch bpf_program__attach_ftrace() to take function name as parameter
+    instead of btf_id
+  - Add a patch disallowing MODIFY_RETURN programs from attaching to other BPF
+    programs, and an accompanying selftest (patches 1 and 10)
+
+v5:
+  - Fix typo in inline function definition of bpf_trampoline_get()
+  - Don't put bpf_tracing_link in prog->aux, use a mutex to protect tgt_prog and
+    trampoline instead, and move them to the link on attach.
+  - Restore Jiri as author of the last selftest patch
+
+v4:
+  - Cleanup the refactored check_attach_btf_id() to make the logic easier to follow
+  - Fix cleanup paths for bpf_tracing_link
+  - Use xchg() for removing the bpf_tracing_link from prog->aux and restore on (some) failures
+  - Use BPF_LINK_CREATE operation to create link with target instead of extending raw_tracepoint_open
+  - Fold update of tools/ UAPI header into main patch
+  - Update arg dereference patch to use skeletons and set_attach_target()
+
+v3:
+  - Get rid of prog_aux->linked_prog entirely in favour of a bpf_tracing_link
+  - Incorporate Jiri's fix for attaching fentry to freplace programs
+
+v2:
+  - Drop the log arguments from bpf_raw_tracepoint_open
+  - Fix kbot errors
+  - Rebase to latest bpf-next
+
+---
+
+Jiri Olsa (1):
+      selftests/bpf: Adding test for arg dereference in extension trace
+
+Toke Høiland-Jørgensen (10):
+      bpf: disallow attaching modify_return tracing functions to other BPF programs
+      bpf: change logging calls from verbose() to bpf_log() and use log pointer
+      bpf: verifier: refactor check_attach_btf_id()
+      bpf: move prog->aux->linked_prog and trampoline into bpf_link on attach
+      bpf: support attaching freplace programs to multiple attach points
+      bpf: Fix context type resolving for extension programs
+      libbpf: add support for freplace attachment in bpf_link_create
+      selftests: add test for multiple attachments of freplace program
+      selftests: Add selftest for disallowing modify_return attachment to freplace
+      selftests: Remove fmod_ret from benchmarks and test_overhead
+
+
+ include/linux/bpf.h                           |  26 +-
+ include/linux/bpf_verifier.h                  |  14 +-
+ include/uapi/linux/bpf.h                      |   9 +-
+ kernel/bpf/btf.c                              |  21 +-
+ kernel/bpf/core.c                             |   9 +-
+ kernel/bpf/syscall.c                          | 135 ++++++++--
+ kernel/bpf/trampoline.c                       |  32 ++-
+ kernel/bpf/verifier.c                         | 250 ++++++++++--------
+ tools/include/uapi/linux/bpf.h                |   9 +-
+ tools/lib/bpf/bpf.c                           |  18 +-
+ tools/lib/bpf/bpf.h                           |   3 +-
+ tools/lib/bpf/libbpf.c                        |  44 ++-
+ tools/lib/bpf/libbpf.h                        |   3 +
+ tools/lib/bpf/libbpf.map                      |   1 +
+ tools/testing/selftests/bpf/bench.c           |   5 -
+ .../selftests/bpf/benchs/bench_rename.c       |  17 --
+ .../selftests/bpf/benchs/bench_trigger.c      |  17 --
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  | 212 ++++++++++++---
+ .../selftests/bpf/prog_tests/test_overhead.c  |  14 +-
+ .../selftests/bpf/prog_tests/trace_ext.c      | 111 ++++++++
+ .../selftests/bpf/progs/fmod_ret_freplace.c   |  14 +
+ .../bpf/progs/freplace_get_constant.c         |  15 ++
+ .../selftests/bpf/progs/test_overhead.c       |   6 -
+ .../selftests/bpf/progs/test_trace_ext.c      |  18 ++
+ .../bpf/progs/test_trace_ext_tracing.c        |  25 ++
+ .../selftests/bpf/progs/trigger_bench.c       |   7 -
+ 26 files changed, 771 insertions(+), 264 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_ext.c
+ create mode 100644 tools/testing/selftests/bpf/progs/fmod_ret_freplace.c
+ create mode 100644 tools/testing/selftests/bpf/progs/freplace_get_constant.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_trace_ext.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_trace_ext_tracing.c
+
