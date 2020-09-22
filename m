@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09A152747B4
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 19:48:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 861A42747BB
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 19:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726661AbgIVRsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 13:48:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40178 "EHLO
+        id S1726722AbgIVRuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 13:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726563AbgIVRsf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 13:48:35 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B57C061755
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 10:48:35 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id v123so19908656qkd.9
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 10:48:35 -0700 (PDT)
+        with ESMTP id S1726583AbgIVRuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 13:50:17 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527DEC0613CF
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 10:50:17 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id c18so16289322qtw.5
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 10:50:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=2aImMSnGp0pJrdFWOz26We7RBiEPBSUZx13H022GgJk=;
-        b=DxOBv3qoM3preiXZlTrA23F8KS/0dfsZzcwtKNzDnEDOfmu2QbYS9fb2M4dVe+VwJN
-         eIi4bm6z1Q32I9kCk6IouFlOV6onOMKllOQ4xmp6NiF+QMUj1sChrZFO2O13GJ2ZUGZj
-         1JttwgsLZ1FXynVclf1OMeyExGb50MUINaiA5aKtI4sWnJbh2+wsqAl9bnwjXGVcvDUV
-         ZOTMuTI6Yz8GZFtDOZi1keZ+JwijruT2uSo0W5y2QvNAG8IfmQ8oct/epenRAdJzn2ns
-         x5Cl10PYLDejc/HxDf2bwmtIfiHALn0xBI7OfA2k69P9X8IqH7Sy5GNgQbZQcJLGjdOn
-         vBLQ==
+        bh=qVqxL2owg2kDSpSts9aypi+G5FFY2GmKeEfU085U83Y=;
+        b=KSIMJ50P2g5c+zdsX3OlgRaXG4s9ZIitZhumJ4SRpbbXmLwqs/emuUBxlr5SP97yDg
+         WVeWpTL14BeASFSREXxjK1skzELOW8DhwBsV5po53MEjXLAJOeVaejuHTfC/BSut8j8x
+         7PMKst/YNnQ7LGgSIPPxx1GLygEuNgnDvvy0eLj8a8HCG0G39gB17mL/67FwX+mg1G3F
+         XayZDShHeAk5QkEXT3bcAMD8KklY/kKRT9RxzARRbWXuIyAzaWc7nWLqI/Ff0ZLUDd2P
+         AE0FriiMcabZApft3bx43BIR6GXQK3y5CS83rXr41VP5afBrWQYyYhiUjD5RFTjgLcmr
+         RYOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=2aImMSnGp0pJrdFWOz26We7RBiEPBSUZx13H022GgJk=;
-        b=LDMNd5C7N+YvBtzoT6XiWHI1bVfBueOJAmTb1AkQJAUxe9ZTue6Cn8zzDAnlA4Y1BB
-         /al2M8bFuiKEoyYnDf7E1X8lHp8mMKj9+cuV1XZDe6oadbMG5nHI4F5PpoSoMdlxHJvl
-         xb24NLRBtIB0aw6G8TUgStWkggfkXuxvoaOWHXy4qPXq/18zEWZKVH0EdqkQ9n0DF07o
-         IMu2gusMFGwwgFpoUHGG5uHocp8N6r404u6XVvPgMJrYp5JyPuTK4ZBGQkZipUHHMwz+
-         MlmjRpbsvv5NNufBhafRqr5a8bF2SKQ2snSTJEN4/+lzZnPrZZYZ4UTLbLDbU87O/lpd
-         b2CQ==
-X-Gm-Message-State: AOAM531jE41lmTyaBghKH65JIit3C0NRtYa8bqFSB1scrxTTTAMUZ653
-        fXI+TNf23S3TFA55Iieq8aZXzq1gtzzXWbo5ge09Eg==
-X-Google-Smtp-Source: ABdhPJxdVOTXA8JKluaF1GCiDQFNU/3UjvH0jLxyMa1niL5vqM7Q7sVsd4OQRFjZYcKclYl4XQXSEmIvjvQaWKMPjy8=
-X-Received: by 2002:a05:620a:2450:: with SMTP id h16mr6200692qkn.326.1600796914399;
- Tue, 22 Sep 2020 10:48:34 -0700 (PDT)
+        bh=qVqxL2owg2kDSpSts9aypi+G5FFY2GmKeEfU085U83Y=;
+        b=Tjuj/4CcaoArW2VTffV1XT5EkAqrcyaD6sf8c7JZg2NiKTAJvxsK2YOMxIFeGjxzaq
+         /pC9Ej3OriAfvzjXoMyG2vVAggZklU/BaAynDhpC0pW8x+U5jzPlNonFaZpV/zQgvuqI
+         RIk4JDo8nNHM28awFQKbDJPBz/qqMm05RfFlbFwbcLVQiyPZx8x3GuYkrozqkkyNQtn3
+         Rc+SO3O6iPDwj5k4WAm+wV4tlxtfY3GWQyjvV5E9KwQ4kFuXD4bLPGexOWcexiQOs+js
+         8X55XRKYQ7bpFTsL3crShgpNCLgj+oLeeuG5md/yTRAuKzMBUg/6D7YNnUYHkHduTmdY
+         jxmw==
+X-Gm-Message-State: AOAM533JPZg5iaYBNvYFjVGt9RmLjRwzgQ/Ys/lmN3rfQ3AsTbzM1O3L
+        t3OM3g4cCMZSKCOuypM+m7XHVsVFvSOzemElrjVRyA==
+X-Google-Smtp-Source: ABdhPJzcHCCx4i3x532DghjgMG9V9lFw0EQjpowLAmLV8FQ1OrArugK0rbakIqePo5op6GFYjtIeWUVm0gT5ceMbjU4=
+X-Received: by 2002:ac8:165d:: with SMTP id x29mr5734327qtk.117.1600797016466;
+ Tue, 22 Sep 2020 10:50:16 -0700 (PDT)
 MIME-Version: 1.0
 References: <cover.1600773619.git.mchehab+huawei@kernel.org> <dbe62eb5e9dda5a5ee145f866a24c4cfddbd754f.1600773619.git.mchehab+huawei@kernel.org>
 In-Reply-To: <dbe62eb5e9dda5a5ee145f866a24c4cfddbd754f.1600773619.git.mchehab+huawei@kernel.org>
 From:   Francesco Ruggeri <fruggeri@arista.com>
-Date:   Tue, 22 Sep 2020 10:48:23 -0700
-Message-ID: <CA+HUmGhDWTKfg9BKpwKpr5j=JATaWka54rh8chAnmyaOR+HAsA@mail.gmail.com>
+Date:   Tue, 22 Sep 2020 10:50:05 -0700
+Message-ID: <CA+HUmGhxP7HkhhQoqQ+wpM2V-qYTRq13aXntK6SGDyRLyVkCdQ@mail.gmail.com>
 Subject: Re: [PATCH 1/3] net: fix a new kernel-doc warning at dev.c
 To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
@@ -78,32 +78,7 @@ On Tue, Sep 22, 2020 at 4:22 AM Mauro Carvalho Chehab
 >
 > Fixes: 0e4be9e57e8c ("net: use exponential backoff in netdev_wait_allrefs")
 > Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->  net/core/dev.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index a268ff35ad38..873b50ac9668 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -10021,6 +10021,8 @@ int netdev_refcnt_read(const struct net_device *dev)
->  }
->  EXPORT_SYMBOL(netdev_refcnt_read);
->
-> +#define WAIT_REFS_MIN_MSECS 1
-> +#define WAIT_REFS_MAX_MSECS 250
->  /**
->   * netdev_wait_allrefs - wait until all references are gone.
->   * @dev: target net_device
-> @@ -10033,8 +10035,6 @@ EXPORT_SYMBOL(netdev_refcnt_read);
->   * We can get stuck here if buggy protocols don't correctly
->   * call dev_put.
->   */
-> -#define WAIT_REFS_MIN_MSECS 1
-> -#define WAIT_REFS_MAX_MSECS 250
->  static void netdev_wait_allrefs(struct net_device *dev)
->  {
->         unsigned long rebroadcast_time, warning_time;
-> --
-> 2.26.2
->
+
+Reviewed-by: Francesco Ruggeri <fruggeri@arista.com>
+
+Thanks for fixing this!
