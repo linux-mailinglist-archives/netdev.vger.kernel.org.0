@@ -2,163 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F9DE2747AF
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 19:48:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09A152747B4
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 19:48:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726631AbgIVRsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 13:48:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58710 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726563AbgIVRsL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 13:48:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600796889;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l4aKlfnMKe2hannLgSs/cK7bKvlb7YGrZQ7tCDYBs9I=;
-        b=KAqWyoKp42GLOjt5hyy0LpnFB/9aFvc+SsGfYVJ+uPsT1Zfiyvfhk7djMF9Q8Q+YsANgTf
-        Wer2URRcF02yu6DWPTNqrXmPk+ozluFxXaC9pdnbk9QnE6RqXf3h8juG9HIMpYUL4PAgjd
-        +cRzT6FGfhwkymgVsc/lSN7FU62X2z8=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-19-Jt0pNLArMC-J0FD3JLifOQ-1; Tue, 22 Sep 2020 13:48:07 -0400
-X-MC-Unique: Jt0pNLArMC-J0FD3JLifOQ-1
-Received: by mail-wr1-f72.google.com with SMTP id v12so7730109wrm.9
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 10:48:07 -0700 (PDT)
+        id S1726661AbgIVRsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 13:48:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40178 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726563AbgIVRsf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 13:48:35 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B57C061755
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 10:48:35 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id v123so19908656qkd.9
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 10:48:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=googlenew;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2aImMSnGp0pJrdFWOz26We7RBiEPBSUZx13H022GgJk=;
+        b=DxOBv3qoM3preiXZlTrA23F8KS/0dfsZzcwtKNzDnEDOfmu2QbYS9fb2M4dVe+VwJN
+         eIi4bm6z1Q32I9kCk6IouFlOV6onOMKllOQ4xmp6NiF+QMUj1sChrZFO2O13GJ2ZUGZj
+         1JttwgsLZ1FXynVclf1OMeyExGb50MUINaiA5aKtI4sWnJbh2+wsqAl9bnwjXGVcvDUV
+         ZOTMuTI6Yz8GZFtDOZi1keZ+JwijruT2uSo0W5y2QvNAG8IfmQ8oct/epenRAdJzn2ns
+         x5Cl10PYLDejc/HxDf2bwmtIfiHALn0xBI7OfA2k69P9X8IqH7Sy5GNgQbZQcJLGjdOn
+         vBLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=l4aKlfnMKe2hannLgSs/cK7bKvlb7YGrZQ7tCDYBs9I=;
-        b=kyqr4CgrDeX6fzA9z8+h7tIQwNsDEX6OKNEj4UMqEVSVkOYxI94NoD6UiaGGGwgx0F
-         M5mssl02xRNbc+6bwK/NbanzDRwCvw60ah8fzsYmhbo4mlrUWa1jcP0eNi43yQDmAloM
-         zwz6xhQDp9FJkNHg+eOoRB8k2GdKdjgH7xXY1TXUs16bWFIfEipDlgEftn98GSGkg/cW
-         AKfvI2LSWNOpxmvdhIYdFNRdDpP00XYLkkoSYCKUbQt73KUNbfBw8eeP5AQws5YF4BlX
-         8zvVqdqxT3LM40zf3jfIkbHDxML0nJdC5pShqtTcS9ky+wWgV2VqZsq/hzVeFbVU4+7y
-         Dx9Q==
-X-Gm-Message-State: AOAM530nRsHD7tPmFjb2PSIm1/zTI83SaGyvLriDy2LHdokUXh8F0TKp
-        AO+NDKBj83Q7Z63Iagpxs/M8ogrSIqNaP5pya2wCYzVnZQqUEC8eOlJYL4PMMsYCkFlrrwIDwSs
-        80t3lUkFMinycVJxI
-X-Received: by 2002:adf:ef48:: with SMTP id c8mr6755212wrp.370.1600796882530;
-        Tue, 22 Sep 2020 10:48:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz1bQt1Ju2SgqAHz7F277XKKzYha9ohMajA3u/z5Bc1E2QvMxzPXYS0N7WGqp2hkEaKAmR33w==
-X-Received: by 2002:adf:ef48:: with SMTP id c8mr6755184wrp.370.1600796882314;
-        Tue, 22 Sep 2020 10:48:02 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id z9sm5728975wmg.46.2020.09.22.10.48.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2020 10:48:01 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3B94F183A8F; Tue, 22 Sep 2020 19:48:01 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v7 04/10] bpf: move prog->aux->linked_prog and
- trampoline into bpf_link on attach
-In-Reply-To: <CAEf4BzYdBy0xOVBb3RSVqtrc9+XL459LjT9hNGfmTy=QYDQ+AQ@mail.gmail.com>
-References: <160051618267.58048.2336966160671014012.stgit@toke.dk>
- <160051618733.58048.1005452269573858636.stgit@toke.dk>
- <CAEf4BzYrc1j0i5qVKfyHA98C37D7xR6i4GL4BLeprNL=HfjCBg@mail.gmail.com>
- <87lfh2p12x.fsf@toke.dk>
- <CAEf4BzYdBy0xOVBb3RSVqtrc9+XL459LjT9hNGfmTy=QYDQ+AQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 22 Sep 2020 19:48:01 +0200
-Message-ID: <87y2l1g0tq.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2aImMSnGp0pJrdFWOz26We7RBiEPBSUZx13H022GgJk=;
+        b=LDMNd5C7N+YvBtzoT6XiWHI1bVfBueOJAmTb1AkQJAUxe9ZTue6Cn8zzDAnlA4Y1BB
+         /al2M8bFuiKEoyYnDf7E1X8lHp8mMKj9+cuV1XZDe6oadbMG5nHI4F5PpoSoMdlxHJvl
+         xb24NLRBtIB0aw6G8TUgStWkggfkXuxvoaOWHXy4qPXq/18zEWZKVH0EdqkQ9n0DF07o
+         IMu2gusMFGwwgFpoUHGG5uHocp8N6r404u6XVvPgMJrYp5JyPuTK4ZBGQkZipUHHMwz+
+         MlmjRpbsvv5NNufBhafRqr5a8bF2SKQ2snSTJEN4/+lzZnPrZZYZ4UTLbLDbU87O/lpd
+         b2CQ==
+X-Gm-Message-State: AOAM531jE41lmTyaBghKH65JIit3C0NRtYa8bqFSB1scrxTTTAMUZ653
+        fXI+TNf23S3TFA55Iieq8aZXzq1gtzzXWbo5ge09Eg==
+X-Google-Smtp-Source: ABdhPJxdVOTXA8JKluaF1GCiDQFNU/3UjvH0jLxyMa1niL5vqM7Q7sVsd4OQRFjZYcKclYl4XQXSEmIvjvQaWKMPjy8=
+X-Received: by 2002:a05:620a:2450:: with SMTP id h16mr6200692qkn.326.1600796914399;
+ Tue, 22 Sep 2020 10:48:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <cover.1600773619.git.mchehab+huawei@kernel.org> <dbe62eb5e9dda5a5ee145f866a24c4cfddbd754f.1600773619.git.mchehab+huawei@kernel.org>
+In-Reply-To: <dbe62eb5e9dda5a5ee145f866a24c4cfddbd754f.1600773619.git.mchehab+huawei@kernel.org>
+From:   Francesco Ruggeri <fruggeri@arista.com>
+Date:   Tue, 22 Sep 2020 10:48:23 -0700
+Message-ID: <CA+HUmGhDWTKfg9BKpwKpr5j=JATaWka54rh8chAnmyaOR+HAsA@mail.gmail.com>
+Subject: Re: [PATCH 1/3] net: fix a new kernel-doc warning at dev.c
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-
-> On Tue, Sep 22, 2020 at 3:17 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->>
->> > On Sat, Sep 19, 2020 at 4:50 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
-@redhat.com> wrote:
->> >>
->> >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> >>
->> >> In preparation for allowing multiple attachments of freplace programs=
-, move
->> >> the references to the target program and trampoline into the
->> >> bpf_tracing_link structure when that is created. To do this atomicall=
-y,
->> >> introduce a new mutex in prog->aux to protect writing to the two poin=
-ters
->> >> to target prog and trampoline, and rename the members to make it clea=
-r that
->> >> they are related.
->> >>
->> >> With this change, it is no longer possible to attach the same tracing
->> >> program multiple times (detaching in-between), since the reference fr=
-om the
->> >> tracing program to the target disappears on the first attach. However,
->> >> since the next patch will let the caller supply an attach target, tha=
-t will
->> >> also make it possible to attach to the same place multiple times.
->> >>
->> >> Acked-by: Andrii Nakryiko <andriin@fb.com>
->> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> >> ---
->> >>  include/linux/bpf.h     |   15 +++++++++-----
->> >>  kernel/bpf/btf.c        |    6 +++---
->> >>  kernel/bpf/core.c       |    9 ++++++---
->> >>  kernel/bpf/syscall.c    |   49 +++++++++++++++++++++++++++++++++++++=
-++--------
->> >>  kernel/bpf/trampoline.c |   12 ++++--------
->> >>  kernel/bpf/verifier.c   |    9 +++++----
->> >>  6 files changed, 68 insertions(+), 32 deletions(-)
->> >>
->> >
->> > [...]
->> >
->> >> @@ -741,7 +743,9 @@ struct bpf_prog_aux {
->> >>         u32 max_rdonly_access;
->> >>         u32 max_rdwr_access;
->> >>         const struct bpf_ctx_arg_aux *ctx_arg_info;
->> >> -       struct bpf_prog *linked_prog;
->> >> +       struct mutex tgt_mutex; /* protects writing of tgt_* pointers=
- below */
->> >
->> > nit: not just writing, "accessing" would be a better word
->>
->> Except it's not, really: the values are read without taking the mutex.
+On Tue, Sep 22, 2020 at 4:22 AM Mauro Carvalho Chehab
+<mchehab+huawei@kernel.org> wrote:
 >
-> Huh? So you are taking a mutex in bpf_tracing_prog_attach before
-> reading prog->aux->tgt_prog and prog->aux->tgt_trampoline just for
-> fun?.. Why don't you read those pointers outside of mutex and let's
-> have discussion about race conditions?
-
-No, of course not. What I meant was that not everywhere that accesses
-the field takes the lock; it's not just check_attach_btf_id(), it's also
-resolve_prog_type() which is called from several places.
-
-Of course, as you point out this is all technically part of the
-'constructor', as it's all inside the verifier. But you have to keep
-quite a lot of mental state to realise that, so I thought it would be
-confusing to have a comment that says the mutex protects all accesses to
-the field, and then have a bunch of places access the field without
-holding the mutex.
-
-However, just adding the "*after* prog becomes visible" bit to the
-comment helps with that, so I'm not arguing for keeping it, just
-explaining why I did it the way I did initially :)
-
--Toke
-
+> kernel-doc expects the function prototype to be just after
+> the kernel-doc markup, as otherwise it will get it all wrong:
+>
+>         ./net/core/dev.c:10036: warning: Excess function parameter 'dev' description in 'WAIT_REFS_MIN_MSECS'
+>
+> Fixes: 0e4be9e57e8c ("net: use exponential backoff in netdev_wait_allrefs")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> ---
+>  net/core/dev.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index a268ff35ad38..873b50ac9668 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -10021,6 +10021,8 @@ int netdev_refcnt_read(const struct net_device *dev)
+>  }
+>  EXPORT_SYMBOL(netdev_refcnt_read);
+>
+> +#define WAIT_REFS_MIN_MSECS 1
+> +#define WAIT_REFS_MAX_MSECS 250
+>  /**
+>   * netdev_wait_allrefs - wait until all references are gone.
+>   * @dev: target net_device
+> @@ -10033,8 +10035,6 @@ EXPORT_SYMBOL(netdev_refcnt_read);
+>   * We can get stuck here if buggy protocols don't correctly
+>   * call dev_put.
+>   */
+> -#define WAIT_REFS_MIN_MSECS 1
+> -#define WAIT_REFS_MAX_MSECS 250
+>  static void netdev_wait_allrefs(struct net_device *dev)
+>  {
+>         unsigned long rebroadcast_time, warning_time;
+> --
+> 2.26.2
+>
