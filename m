@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AEC727391E
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 05:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1889A27392B
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 05:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728000AbgIVDIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 23:08:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:40972 "EHLO
+        id S1728411AbgIVDRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 23:17:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59329 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726574AbgIVDIb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 23:08:31 -0400
+        by vger.kernel.org with ESMTP id S1728374AbgIVDRD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 23:17:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600744109;
+        s=mimecast20190719; t=1600744621;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-        bh=56SiaiFmcx0WZ7W7/RYC3m7L4WpINiOIKf5/ZUx5d1E=;
-        b=Ov5Dg5V8tSeZWzHwJ8/DNO1RtG26bnDHAX2kUU3f95jy16uH1L6NgxDGYko/G4Idc/iyYs
-        OTGuQFZxo/cl6Td01Vvlrvy29quuTFpEj6md78b2pIrFU4YQNJTPMcFPXxSUEw4QFsevzy
-        qAsvxRqURgIqRsdBfzKi/4scYl8EE90=
+        bh=E1FrgnT73f1I3GcchMDzc1CmjIu4+GPiYz+qAyIWjmw=;
+        b=VH+NxMZ13M4NnnYMDCHI5oU2jalvdKbesyqBMWFWKqa++m/jLLM/oDb28P4i9fFCnxtOuF
+        XMn8pNk0ZMYxBqxYPGOz9vFPU3yF67GoqBNP0SPjIgIo3Ll2PKqxvs1t4amPuxlKoKee0h
+        6arc2nIRiYxbDbUbL4BZyWifIKAxvDI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-144-xKMccpLTMruVsLaHcdSSZg-1; Mon, 21 Sep 2020 23:08:25 -0400
-X-MC-Unique: xKMccpLTMruVsLaHcdSSZg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+ us-mta-187-fgIzlDpnPpehmOU7BUzqww-1; Mon, 21 Sep 2020 23:16:58 -0400
+X-MC-Unique: fgIzlDpnPpehmOU7BUzqww-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BB680807333;
-        Tue, 22 Sep 2020 03:08:23 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 11EA01084C86;
+        Tue, 22 Sep 2020 03:16:56 +0000 (UTC)
 Received: from [10.10.115.46] (ovpn-115-46.rdu2.redhat.com [10.10.115.46])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 808602633C;
-        Tue, 22 Sep 2020 03:08:21 +0000 (UTC)
-Subject: Re: [RFC][Patch v1 2/3] i40e: limit msix vectors based on
- housekeeping CPUs
-To:     Frederic Weisbecker <frederic@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3E68378827;
+        Tue, 22 Sep 2020 03:16:53 +0000 (UTC)
+Subject: Re: [RFC][Patch v1 1/3] sched/isolation: API to get num of
+ hosekeeping CPUs
+To:     Frederic Weisbecker <frederic@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-pci@vger.kernel.org, mtosatti@redhat.com,
         sassmann@redhat.com, jeffrey.t.kirsher@intel.com,
@@ -44,8 +43,7 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
         jerinj@marvell.com, mathias.nyman@intel.com, jiri@nvidia.com
 References: <20200909150818.313699-1-nitesh@redhat.com>
- <20200909150818.313699-3-nitesh@redhat.com>
- <20200917112359.00006e10@intel.com> <20200921225834.GA30521@lenoir>
+ <20200909150818.313699-2-nitesh@redhat.com> <20200921234044.GA31047@lenoir>
 From:   Nitesh Narayan Lal <nitesh@redhat.com>
 Autocrypt: addr=nitesh@redhat.com; prefer-encrypt=mutual; keydata=
  mQINBFl4pQoBEADT/nXR2JOfsCjDgYmE2qonSGjkM1g8S6p9UWD+bf7YEAYYYzZsLtbilFTe
@@ -91,122 +89,111 @@ Autocrypt: addr=nitesh@redhat.com; prefer-encrypt=mutual; keydata=
  NK9ZhT0+qkiN7npFLtNtbzwqaqceq3XhafmCiw8xrtzCnlB/C4SiBr/93Ip4kihXJ0EuHSLn
  VujM7c/b4pps
 Organization: Red Hat Inc,
-Message-ID: <65513ee8-4678-1f96-1850-0e13dbf1810c@redhat.com>
-Date:   Mon, 21 Sep 2020 23:08:20 -0400
+Message-ID: <fd48e554-6a19-f799-b273-e814e5389db9@redhat.com>
+Date:   Mon, 21 Sep 2020 23:16:51 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200921225834.GA30521@lenoir>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <20200921234044.GA31047@lenoir>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Authentication-Results: relay.mimecast.com;
         auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=nitesh@redhat.com
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="oKDFpOFbxY7K0uJXqzOfR5adtfOqHM0cY"
+ boundary="rWMZpENy2JXtixdCR2Q8UXdNmnZ2CCR0V"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---oKDFpOFbxY7K0uJXqzOfR5adtfOqHM0cY
-Content-Type: multipart/mixed; boundary="0jeSKN7YbEcXkMb4OWyQ21AuKmUGsoZ1L"
+--rWMZpENy2JXtixdCR2Q8UXdNmnZ2CCR0V
+Content-Type: multipart/mixed; boundary="Yl9iv8fzA3hBXL78rnM0sgz9M6jEuIwcJ"
 
---0jeSKN7YbEcXkMb4OWyQ21AuKmUGsoZ1L
+--Yl9iv8fzA3hBXL78rnM0sgz9M6jEuIwcJ
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
 
 
-On 9/21/20 6:58 PM, Frederic Weisbecker wrote:
-> On Thu, Sep 17, 2020 at 11:23:59AM -0700, Jesse Brandeburg wrote:
->> Nitesh Narayan Lal wrote:
+On 9/21/20 7:40 PM, Frederic Weisbecker wrote:
+> On Wed, Sep 09, 2020 at 11:08:16AM -0400, Nitesh Narayan Lal wrote:
+>> +/*
+>> + * num_housekeeping_cpus() - Read the number of housekeeping CPUs.
+>> + *
+>> + * This function returns the number of available housekeeping CPUs
+>> + * based on __num_housekeeping_cpus which is of type atomic_t
+>> + * and is initialized at the time of the housekeeping setup.
+>> + */
+>> +unsigned int num_housekeeping_cpus(void)
+>> +{
+>> +=09unsigned int cpus;
+>> +
+>> +=09if (static_branch_unlikely(&housekeeping_overridden)) {
+>> +=09=09cpus =3D atomic_read(&__num_housekeeping_cpus);
+>> +=09=09/* We should always have at least one housekeeping CPU */
+>> +=09=09BUG_ON(!cpus);
+>> +=09=09return cpus;
+>> +=09}
+>> +=09return num_online_cpus();
+>> +}
+>> +EXPORT_SYMBOL_GPL(num_housekeeping_cpus);
+>> +
+>>  int housekeeping_any_cpu(enum hk_flags flags)
+>>  {
+>>  =09int cpu;
+>> @@ -131,6 +153,7 @@ static int __init housekeeping_setup(char *str, enum=
+ hk_flags flags)
+>> =20
+>>  =09housekeeping_flags |=3D flags;
+>> =20
+>> +=09atomic_set(&__num_housekeeping_cpus, cpumask_weight(housekeeping_mas=
+k));
+> So the problem here is that it takes the whole cpumask weight but you're =
+only
+> interested in the housekeepers who take the managed irq duties I guess
+> (HK_FLAG_MANAGED_IRQ ?).
+
+IMHO we should also consider the cases where we only have nohz_full.
+Otherwise, we may run into the same situation on those setups, do you agree=
+?
+
+>
+>>  =09free_bootmem_cpumask_var(non_housekeeping_mask);
+>> =20
+>>  =09return 1;
+>> --=20
+>> 2.27.0
 >>
->>> In a realtime environment, it is essential to isolate unwanted IRQs fro=
-m
->>> isolated CPUs to prevent latency overheads. Creating MSIX vectors only
->>> based on the online CPUs could lead to a potential issue on an RT setup
->>> that has several isolated CPUs but a very few housekeeping CPUs. This i=
-s
->>> because in these kinds of setups an attempt to move the IRQs to the
->>> limited housekeeping CPUs from isolated CPUs might fail due to the per
->>> CPU vector limit. This could eventually result in latency spikes becaus=
-e
->>> of the IRQ threads that we fail to move from isolated CPUs.
->>>
->>> This patch prevents i40e to add vectors only based on available
->>> housekeeping CPUs by using num_housekeeping_cpus().
->>>
->>> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
->> The driver changes are straightforward, but this isn't the only driver
->> with this issue, right?  I'm sure ixgbe and ice both have this problem
->> too, you should fix them as well, at a minimum, and probably other
->> vendors drivers:
->>
->> $ rg -c --stats num_online_cpus drivers/net/ethernet
->> ...
->> 50 files contained matches
-> Ouch, I was indeed surprised that these MSI vector allocations were done
-> at the driver level and not at some $SUBSYSTEM level.
->
-> The logic is already there in the driver so I wouldn't oppose to this ver=
-y patch
-> but would a shared infrastructure make sense for this? Something that wou=
-ld
-> also handle hotplug operations?
->
-> Does it possibly go even beyond networking drivers?
-
-From a generic solution perspective, I think it makes sense to come up with=
- a
-shared infrastructure.
-Something that can be consumed by all the drivers and maybe hotplug operati=
-ons
-as well (I will have to further explore the hotplug part).
-
-However, there are RT workloads that are getting affected because of this
-issue, so does it make sense to go ahead with this per-driver basis approac=
-h
-for now?
-
-Since a generic solution will require a fair amount of testing and
-understanding of different drivers. Having said that, I can definetly start
-looking in that direction.
-
-Thanks for reviewing.
-
-> Thanks.
->
->> for this patch i40e
->> Acked-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 --=20
+Thanks
 Nitesh
 
 
---0jeSKN7YbEcXkMb4OWyQ21AuKmUGsoZ1L--
+--Yl9iv8fzA3hBXL78rnM0sgz9M6jEuIwcJ--
 
---oKDFpOFbxY7K0uJXqzOfR5adtfOqHM0cY
+--rWMZpENy2JXtixdCR2Q8UXdNmnZ2CCR0V
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEkXcoRVGaqvbHPuAGo4ZA3AYyozkFAl9paqQACgkQo4ZA3AYy
-ozm5FA//Q0Z1C8cHYE+V2T9l32k2cMBP9lWb4o9X8NISq9YeLyWLNM8u22H/FzTm
-15TIcE7Ypv9WdrZkPM4iB1iHN3St7z9LxZs5QhFz1aMYonXG9W9GfyQ1YEs3hQHz
-obUAaOoPGGSttmgAwWz7AcxPiZ2tpZuPJ3Aq+3MZ3VWNGs14I79OyfKxT/GShg+w
-TTOiYXsW+BjFiz3ZUi4VKpGacCv83Qz603VBFIbxCQmTFh8OCIiWiRd6lDRrBdEr
-e/gU23GS+p/9IGrNjdjgFnRgKCHLp06xd6czVJK1OABNiJhdfETkQB3quKWCWcUF
-T0WTcSowqSNwhRXsMYD4uQnH/xdPGNGgg4Il/qjLkMnMsxTDerCJSGMPGGRW+/uK
-ipByG2Pp3kevLqtpu3tPKiq6sXojLLvPkslpjC8YEb/kRzCAlFtGOOJQoOmxa19A
-LtxJfN/pMXBIBL6X7vH7SHI7RzAlFr5EJud+n+2F8h/uPBKtCdTCdAcMkDhTl3P0
-SWXY7ufGbFrB/EzqJblJbB+4ceC7iHvcTq+A1u8SwF0vQ/4A+k9aS1AMD3QwW7LI
-xu7f077f7zz8IqclvQYvwoeO0EJlLaeKvfhcOrpKkIBK2e6aXXPgivFNhObs8ak3
-aIxSx831J4vuDbXwLKTL+t1CK0kpTy+TOGSkblnxT3BwpIdcWLQ=
-=CGoR
+iQIzBAEBCAAdFiEEkXcoRVGaqvbHPuAGo4ZA3AYyozkFAl9pbKMACgkQo4ZA3AYy
+ozlyJBAAsYZ6ty//fnP9eKkhSCXRPQa4F+TiKOYzDEE2rVLrGePTyFeL5myvmzCB
+tG5o16+rToTlx9SfwaxPUl5Auvc5moKwmRv9eX1+c1l+RF7SlD2gBO53GE+MipuK
+58kUg66GmZcc2eonYeJqTCVJCbYQSk24oA3m4nvy+YtzGcDUG6PWsRBrg6U3E55S
+YG61GlGuHGIURjYxXm2oBoU180B48k5EuR8dSAzz3Isr3TzNwrUHbkgDmlolPs0O
+myzBgbXDcE+KjRSYF5d1dSO4xUA7F7hTSnWwyKGiSAfHOLFA6omV4IGh1f7TYckA
+sMPvOWeF7h28TuZYN2N5LfcGu5lboXK+QHjWM0XxZBRVRdLopLTreURNO64yskt2
+fmZ1igQDxLRxSnkZSLR42hoGixk2FdPQ/opg/O8/m0SV+7ygphRIYBugFL+FTQiC
+VDSU5w3k3/mY69fSVDpVBB/KkMVls6VS6qhKYgWDxV2iiEW2Ze7TaUd8jIGNo5Le
+iz8TuoCQ5rMQB55BK48NOBoF/n9xnskMqhRYqYJqjFdfDghgLsxYtc8vUWSOXfeh
+DZn6mJ8fHF8KCGJWs5pyZ363QGafJ+V+Z3UBVG52cJBWjQwx+sV4mvrcoIRePOWW
+KBfLxoxwsec99FCGNJKI32ABYqJfgr1vKHk2IGQDMOxUDrh/WCU=
+=Hk2/
 -----END PGP SIGNATURE-----
 
---oKDFpOFbxY7K0uJXqzOfR5adtfOqHM0cY--
+--rWMZpENy2JXtixdCR2Q8UXdNmnZ2CCR0V--
 
