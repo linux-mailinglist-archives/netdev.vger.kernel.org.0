@@ -2,102 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6F612740BD
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 13:26:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C15E274176
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 13:49:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726566AbgIVLZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 07:25:28 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:13822 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726454AbgIVLZ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Sep 2020 07:25:27 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id A3E57DF062D1CF9B7B66;
-        Tue, 22 Sep 2020 19:25:24 +0800 (CST)
-Received: from localhost.localdomain (10.175.118.36) by
- DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 22 Sep 2020 19:25:15 +0800
-From:   Luo bin <luobin9@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
-        <chiqijun@huawei.com>, <zengweiliang.zengweiliang@huawei.com>
-Subject: [PATCH net] hinic: fix wrong return value of mac-set cmd
-Date:   Tue, 22 Sep 2020 19:26:43 +0800
-Message-ID: <20200922112643.15726-1-luobin9@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726980AbgIVLta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 07:49:30 -0400
+Received: from elvis.franken.de ([193.175.24.41]:51259 "EHLO elvis.franken.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726953AbgIVLtR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Sep 2020 07:49:17 -0400
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1kKfxr-000822-00; Tue, 22 Sep 2020 12:56:03 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id AF6B3C0FE6; Tue, 22 Sep 2020 10:48:48 +0200 (CEST)
+Date:   Tue, 22 Sep 2020 10:48:48 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        iommu@lists.linux-foundation.org,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        linux1394-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH 06/18] lib82596: move DMA allocation into the callers of
+ i82596_probe
+Message-ID: <20200922084848.GA8477@alpha.franken.de>
+References: <20200915155122.1768241-1-hch@lst.de>
+ <20200915155122.1768241-7-hch@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.118.36]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200915155122.1768241-7-hch@lst.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It should also be regarded as an error when hw return status=4 for PF's
-setting mac cmd. Only if PF return status=4 to VF should this cmd be
-taken special treatment.
+On Tue, Sep 15, 2020 at 05:51:10PM +0200, Christoph Hellwig wrote:
+> This allows us to get rid of the LIB82596_DMA_ATTR defined and prepare
+> for untangling the coherent vs non-coherent DMA allocation API.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  drivers/net/ethernet/i825xx/lasi_82596.c | 24 ++++++++++------
+>  drivers/net/ethernet/i825xx/lib82596.c   | 36 ++++++++----------------
+>  drivers/net/ethernet/i825xx/sni_82596.c  | 19 +++++++++----
+>  3 files changed, 40 insertions(+), 39 deletions(-)
 
-Signed-off-by: Luo bin <luobin9@huawei.com>
----
- drivers/net/ethernet/huawei/hinic/hinic_port.c  |  6 +++---
- drivers/net/ethernet/huawei/hinic/hinic_sriov.c | 12 ++----------
- 2 files changed, 5 insertions(+), 13 deletions(-)
+Tested-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de> (SNI part)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-index 02cd635d6914..eb97f2d6b1ad 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-@@ -58,9 +58,9 @@ static int change_mac(struct hinic_dev *nic_dev, const u8 *addr,
- 				 sizeof(port_mac_cmd),
- 				 &port_mac_cmd, &out_size);
- 	if (err || out_size != sizeof(port_mac_cmd) ||
--	    (port_mac_cmd.status  &&
--	    port_mac_cmd.status != HINIC_PF_SET_VF_ALREADY &&
--	    port_mac_cmd.status != HINIC_MGMT_STATUS_EXIST)) {
-+	    (port_mac_cmd.status &&
-+	     (port_mac_cmd.status != HINIC_PF_SET_VF_ALREADY || !HINIC_IS_VF(hwif)) &&
-+	     port_mac_cmd.status != HINIC_MGMT_STATUS_EXIST)) {
- 		dev_err(&pdev->dev, "Failed to change MAC, err: %d, status: 0x%x, out size: 0x%x\n",
- 			err, port_mac_cmd.status, out_size);
- 		return -EFAULT;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-index 4d63680f2143..f8a26459ff65 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-@@ -38,8 +38,7 @@ static int hinic_set_mac(struct hinic_hwdev *hwdev, const u8 *mac_addr,
- 	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_SET_MAC, &mac_info,
- 				 sizeof(mac_info), &mac_info, &out_size);
- 	if (err || out_size != sizeof(mac_info) ||
--	    (mac_info.status && mac_info.status != HINIC_PF_SET_VF_ALREADY &&
--	    mac_info.status != HINIC_MGMT_STATUS_EXIST)) {
-+	    (mac_info.status && mac_info.status != HINIC_MGMT_STATUS_EXIST)) {
- 		dev_err(&hwdev->func_to_io.hwif->pdev->dev, "Failed to set MAC, err: %d, status: 0x%x, out size: 0x%x\n",
- 			err, mac_info.status, out_size);
- 		return -EIO;
-@@ -503,8 +502,7 @@ struct hinic_sriov_info *hinic_get_sriov_info_by_pcidev(struct pci_dev *pdev)
- 
- static int hinic_check_mac_info(u8 status, u16 vlan_id)
- {
--	if ((status && status != HINIC_MGMT_STATUS_EXIST &&
--	     status != HINIC_PF_SET_VF_ALREADY) ||
-+	if ((status && status != HINIC_MGMT_STATUS_EXIST) ||
- 	    (vlan_id & CHECK_IPSU_15BIT &&
- 	     status == HINIC_MGMT_STATUS_EXIST))
- 		return -EINVAL;
-@@ -546,12 +544,6 @@ static int hinic_update_mac(struct hinic_hwdev *hwdev, u8 *old_mac,
- 		return -EINVAL;
- 	}
- 
--	if (mac_info.status == HINIC_PF_SET_VF_ALREADY) {
--		dev_warn(&hwdev->hwif->pdev->dev,
--			 "PF has already set VF MAC. Ignore update operation\n");
--		return HINIC_PF_SET_VF_ALREADY;
--	}
--
- 	if (mac_info.status == HINIC_MGMT_STATUS_EXIST)
- 		dev_warn(&hwdev->hwif->pdev->dev, "MAC is repeated. Ignore update operation\n");
- 
 -- 
-2.17.1
-
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
