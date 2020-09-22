@@ -2,75 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87D202740C1
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 13:26:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6F612740BD
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 13:26:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726601AbgIVLZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 07:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37700 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726454AbgIVLZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 07:25:55 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A390C061755;
-        Tue, 22 Sep 2020 04:25:55 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1600773954;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KbPR/HCKRHyAv5LTQZ0qDPTMbhu34/nFtP5pay1MXIE=;
-        b=4RDnNluOdohF63P9pPZrHwj1wDlIRBfjyDPphUeZ+gMiycbrE9qGozP86vvLQDznBLcWWw
-        E3JbF48GowdKJ+0KtrS6wp9zuKfPyuCGD9f3J97BB4VFEJZxNqENQ0ufNmGe4zESYpk+FE
-        V7yaEKtObrg6hgvTx4QC/Fw9iGukTXoFvmpmsbt/hp/7wJMU2frz884bjtxB8P/dIOdxdB
-        7qRd1thtPWbBRwOwqyX69CRb378VkaShhOW8tw2342dKJUbj2ZwcHmx3y7j/smkTL2Ylnp
-        ToJ5yrQoik5JJ7HNHboQAbD8kCfP4K4vro6U0Lhznx5Y7pEuhznsnhpkZJmHEg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1600773954;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KbPR/HCKRHyAv5LTQZ0qDPTMbhu34/nFtP5pay1MXIE=;
-        b=zD1mgRKFMrwiNzhJeBhRUMy6UoOF3ScfHKbU8u6UziFewfFMX7YJBqERAF+oK7eIypMqJu
-        pupIfA0KgQkeomBg==
-To:     Abdul Anshad Azeez <aazees@vmware.com>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "x86\@kernel.org" <x86@kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-fsdevel\@vger.kernel.org" <linux-fsdevel@vger.kernel.org>
-Cc:     "rostedt\@goodmis.org" <rostedt@goodmis.org>
-Subject: Re: Performance regressions in networking & storage benchmarks in Linux kernel 5.8
-In-Reply-To: <BYAPR05MB4839189DFC487A1529D6734CA63B0@BYAPR05MB4839.namprd05.prod.outlook.com>
-References: <BYAPR05MB4839189DFC487A1529D6734CA63B0@BYAPR05MB4839.namprd05.prod.outlook.com>
-Date:   Tue, 22 Sep 2020 13:25:53 +0200
-Message-ID: <87h7rqaw8u.fsf@nanos.tec.linutronix.de>
+        id S1726566AbgIVLZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 07:25:28 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:13822 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726454AbgIVLZ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Sep 2020 07:25:27 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id A3E57DF062D1CF9B7B66;
+        Tue, 22 Sep 2020 19:25:24 +0800 (CST)
+Received: from localhost.localdomain (10.175.118.36) by
+ DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 22 Sep 2020 19:25:15 +0800
+From:   Luo bin <luobin9@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
+        <chiqijun@huawei.com>, <zengweiliang.zengweiliang@huawei.com>
+Subject: [PATCH net] hinic: fix wrong return value of mac-set cmd
+Date:   Tue, 22 Sep 2020 19:26:43 +0800
+Message-ID: <20200922112643.15726-1-luobin9@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
+X-Originating-IP: [10.175.118.36]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Abdul,
+It should also be regarded as an error when hw return status=4 for PF's
+setting mac cmd. Only if PF return status=4 to VF should this cmd be
+taken special treatment.
 
-On Tue, Sep 22 2020 at 08:51, Abdul Anshad Azeez wrote:
-> Part of VMware's performance regression testing for Linux Kernel upstream rele
-> ases we compared Linux kernel 5.8 against 5.7. Our evaluation revealed perform
-> ance regressions mostly in networking latency/response-time benchmarks up to 6
-> 0%. Storage throughput & latency benchmarks were also up by 8%.
-> In order to find the fix commit, we bisected again between 5.8 and 5.9-rc4 and
->  identified that regressions were fixed from a commit made by the same author 
-> Thomas Gleixner, which unbreaks the interrupt affinity settings - "e027fffff79
-> 9cdd70400c5485b1a54f482255985(x86/irq: Unbreak interrupt affinity setting)".
->
-> We believe these findings would be useful to the Linux community and wanted to
->  document the same.
+Signed-off-by: Luo bin <luobin9@huawei.com>
+---
+ drivers/net/ethernet/huawei/hinic/hinic_port.c  |  6 +++---
+ drivers/net/ethernet/huawei/hinic/hinic_sriov.c | 12 ++----------
+ 2 files changed, 5 insertions(+), 13 deletions(-)
 
-thanks for letting us know, but the issue is known already and the fix
-has been backported to the stable kernel version 5.8.6 as of Sept. 3rd.
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+index 02cd635d6914..eb97f2d6b1ad 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+@@ -58,9 +58,9 @@ static int change_mac(struct hinic_dev *nic_dev, const u8 *addr,
+ 				 sizeof(port_mac_cmd),
+ 				 &port_mac_cmd, &out_size);
+ 	if (err || out_size != sizeof(port_mac_cmd) ||
+-	    (port_mac_cmd.status  &&
+-	    port_mac_cmd.status != HINIC_PF_SET_VF_ALREADY &&
+-	    port_mac_cmd.status != HINIC_MGMT_STATUS_EXIST)) {
++	    (port_mac_cmd.status &&
++	     (port_mac_cmd.status != HINIC_PF_SET_VF_ALREADY || !HINIC_IS_VF(hwif)) &&
++	     port_mac_cmd.status != HINIC_MGMT_STATUS_EXIST)) {
+ 		dev_err(&pdev->dev, "Failed to change MAC, err: %d, status: 0x%x, out size: 0x%x\n",
+ 			err, port_mac_cmd.status, out_size);
+ 		return -EFAULT;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
+index 4d63680f2143..f8a26459ff65 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
+@@ -38,8 +38,7 @@ static int hinic_set_mac(struct hinic_hwdev *hwdev, const u8 *mac_addr,
+ 	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_SET_MAC, &mac_info,
+ 				 sizeof(mac_info), &mac_info, &out_size);
+ 	if (err || out_size != sizeof(mac_info) ||
+-	    (mac_info.status && mac_info.status != HINIC_PF_SET_VF_ALREADY &&
+-	    mac_info.status != HINIC_MGMT_STATUS_EXIST)) {
++	    (mac_info.status && mac_info.status != HINIC_MGMT_STATUS_EXIST)) {
+ 		dev_err(&hwdev->func_to_io.hwif->pdev->dev, "Failed to set MAC, err: %d, status: 0x%x, out size: 0x%x\n",
+ 			err, mac_info.status, out_size);
+ 		return -EIO;
+@@ -503,8 +502,7 @@ struct hinic_sriov_info *hinic_get_sriov_info_by_pcidev(struct pci_dev *pdev)
+ 
+ static int hinic_check_mac_info(u8 status, u16 vlan_id)
+ {
+-	if ((status && status != HINIC_MGMT_STATUS_EXIST &&
+-	     status != HINIC_PF_SET_VF_ALREADY) ||
++	if ((status && status != HINIC_MGMT_STATUS_EXIST) ||
+ 	    (vlan_id & CHECK_IPSU_15BIT &&
+ 	     status == HINIC_MGMT_STATUS_EXIST))
+ 		return -EINVAL;
+@@ -546,12 +544,6 @@ static int hinic_update_mac(struct hinic_hwdev *hwdev, u8 *old_mac,
+ 		return -EINVAL;
+ 	}
+ 
+-	if (mac_info.status == HINIC_PF_SET_VF_ALREADY) {
+-		dev_warn(&hwdev->hwif->pdev->dev,
+-			 "PF has already set VF MAC. Ignore update operation\n");
+-		return HINIC_PF_SET_VF_ALREADY;
+-	}
+-
+ 	if (mac_info.status == HINIC_MGMT_STATUS_EXIST)
+ 		dev_warn(&hwdev->hwif->pdev->dev, "MAC is repeated. Ignore update operation\n");
+ 
+-- 
+2.17.1
 
-Please always check the latest stable version.
-
-Thanks,
-
-        tglx
