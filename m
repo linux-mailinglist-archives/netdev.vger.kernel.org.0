@@ -2,63 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8B662747DA
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 19:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C764327480D
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 20:22:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726709AbgIVRzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 13:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41214 "EHLO
+        id S1726629AbgIVSWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 14:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726573AbgIVRzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 13:55:22 -0400
-Received: from mail.aperture-lab.de (mail.aperture-lab.de [IPv6:2a01:4f8:171:314c::100:a1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6003C061755
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 10:55:21 -0700 (PDT)
-Date:   Tue, 22 Sep 2020 19:55:20 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c0d3.blue; s=2018;
-        t=1600797320;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WAT+1Bo7DvbvxFHYUbGR9cD0AOeb3oC01HODpW8Xb6A=;
-        b=TLH6Fo6N2Za+3cD+15QuafRAkWk1liFkrXfyRYyOW+pMMGuaZcKk6Dp87xpRdwtgnVt3fJ
-        qUKOHmPhFMnT6IGE4Rp4jaci5CQ2gj7PuWdtd+wWovffdk0SjbdZxjuJbzPBvFwn0eKK5c
-        fsyKQfsaGzU1rmrHayQmkepxiyY47kuxIUiI74zs8JEwpzNvGRKuVMS3fXjJ8O4/HqTSJy
-        bOIKoP6/l0uGYeFK5gi6/uPCPwwifdOxKNGUiFjFBXlrOTJ5apNC29T8cv7EZYGS/lmpFh
-        SNvqSqcnbb5mDlIfgBQWYYzbuvID+DGchz/fN/6o8cPYIwpMrWUX+VKS0bukzQ==
-From:   Linus =?utf-8?Q?L=C3=BCssing?= <linus.luessing@c0d3.blue>
-To:     The list for a Better Approach To Mobile Ad-hoc
-         Networking <b.a.t.m.a.n@lists.open-mesh.org>
-Cc:     netdev@vger.kernel.org, roopa@nvidia.com, davem@davemloft.net,
-        bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        Antonio Quartulli <a@unstable.cc>
-Subject: Re: [PATCH net-next v2 06/16] net: bridge: mcast: rename br_ip's u
- member to dst
-Message-ID: <20200922175519.GB10212@otheros>
-References: <20200922073027.1196992-1-razor@blackwall.org>
- <20200922073027.1196992-7-razor@blackwall.org>
- <20200922175119.GA10212@otheros>
+        with ESMTP id S1726526AbgIVSWE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 14:22:04 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA0CC061755;
+        Tue, 22 Sep 2020 11:22:04 -0700 (PDT)
+Received: from lwn.net (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 844492C0;
+        Tue, 22 Sep 2020 18:22:02 +0000 (UTC)
+Date:   Tue, 22 Sep 2020 12:22:00 -0600
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Ville =?UTF-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>
+Cc:     Lyude Paul <lyude@redhat.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Eric Dumazet <edumazet@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        dri-devel@lists.freedesktop.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/3] Fix Kernel-doc warnings introduced on next-20200921
+Message-ID: <20200922122200.149d8e96@lwn.net>
+In-Reply-To: <20200922175206.GY6112@intel.com>
+References: <cover.1600773619.git.mchehab+huawei@kernel.org>
+        <a2c0d1ac02fb4bef142196d837323bcde41e9427.camel@redhat.com>
+        <20200922175206.GY6112@intel.com>
+Organization: LWN.net
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200922175119.GA10212@otheros>
-Authentication-Results: ORIGINATING;
-        auth=pass smtp.auth=linus.luessing@c0d3.blue smtp.mailfrom=linus.luessing@c0d3.blue
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 22, 2020 at 07:51:19PM +0200, Linus Lüssing wrote:
-> I don't see a "src" in br_ip in net-next/master at the moment. Or
-> is that supposed to be added with your IGMPv3 implementation in
-> the future?
+On Tue, 22 Sep 2020 20:52:06 +0300
+Ville Syrjälä <ville.syrjala@linux.intel.com> wrote:
 
-Ah, sorry, found the according patch (*) it in my other inbox.
-Nevermind.
+> Mea culpa. My doc test build was foiled by the sphinx 2 vs. 3
+> regression and I was too lazy to start downgrading things.
+> Any ETA for getting that fixed btw?
 
-(*): [PATCH net-next v2 04/16] net: bridge: add src field to br_ip 
-https://patchwork.ozlabs.org/project/netdev/patch/20200922073027.1196992-5-razor@blackwall.org/
+There's a fix of sorts in docs-next (and thus linux-next) now, has been
+there for a few weeks.  Really fixing that problem properly requires more
+time than anybody seems to have at the moment.
+
+jon
