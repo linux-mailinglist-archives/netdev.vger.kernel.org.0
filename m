@@ -2,126 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEABC2740FF
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 13:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E63E274117
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 13:42:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726731AbgIVLgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 07:36:49 -0400
-Received: from mail-eopbgr80070.outbound.protection.outlook.com ([40.107.8.70]:27809
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726522AbgIVLgs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Sep 2020 07:36:48 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DmC+YfMGqwmHGaByYFyQzBNyi+BcFlpAF4CZNryPVkDj88AjTv8cpDPzl6/IGH0SDefdEPrp9rP94Ep8cJy3bMFwhAAb2LRg5kwy8MKQ+fWXEUOs17HrZfCpqD0DbYlKtWs23tkJgJTGeHLWyk6PUWUjH+zSZ9MUPp8XO0h62ghirUjUwi13gtdsEi6/hNtJfPrCYcopm/D5CRPrO9o4gwR6i7zKucMWYOMxpyvr0iI23RP+qTSZxzL6lP9ypKvZ1MMoZ4clQotG+34/cpYz96T7dMHu3t2Tg/0S4l4lmZRKp1YuVhiMmX6qAHKgnZxRayindewn5yfSLoiHd+zNGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l6NmHwsyBadnCBZkCdCRxgSTBPifc/8fHgQLl34HdwM=;
- b=cmUeHu20pxD83sUSec2AJNhuFxW/1EF3xrZ5UDoqOtWBrGDZLY+ZU/vzMnQxTUQdBuyJizXq/o2P7tWLo4K+Ow1IpJbdhMFa2bclWy9zqAG/mvYUoJbsb4BUMB884c6BZWKz0l+Yx5Pvzbf/yn5K6b5MhcTMtT9Bs4tDdYzFFuXYOaTbjjvOPKjowseazmByjf0/9jQGfk6RCfp/Yn+pQPdO1nByueTZsUMDD9xJJgXK+whbBwpyQcwxs+J8rIjOor4RppDwCJB8Yd5zsO4PSS50eXe5NGOEVo6mc61cb6ZApo4+J4voRtiX/j70DGbqJI+V7Kg5ae2hZOKCpduRzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l6NmHwsyBadnCBZkCdCRxgSTBPifc/8fHgQLl34HdwM=;
- b=nqcbd9wmK6IQ7pFNFWPo0+z7LZm1g/7yFhieXqApuD0UgN66T+D0+gH6ZmIk6WEOIj1wHvLaVw5frN+gCheNmcOFukj/ABi3YjkW5iuh4gZPpbzTteLAUX461Ju1lhCjKM3E/UaJE3uymd78c+tf3lw2FPxxtoACDyr5OCa9P1s=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VE1PR04MB7374.eurprd04.prod.outlook.com (2603:10a6:800:1ac::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.15; Tue, 22 Sep
- 2020 11:36:45 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3391.025; Tue, 22 Sep 2020
- 11:36:45 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
-        "joergen.andreasen@microchip.com" <joergen.andreasen@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Po Liu <po.liu@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Leo Li <leoyang.li@nxp.com>
-Subject: Re: [net-next] net: dsa: felix: convert TAS link speed based on
- phylink speed
-Thread-Topic: [net-next] net: dsa: felix: convert TAS link speed based on
- phylink speed
-Thread-Index: AQHWkM5TxPSfPwtzN0aAaqrvypiio6l0h64A
-Date:   Tue, 22 Sep 2020 11:36:45 +0000
-Message-ID: <20200922113644.h5vyxmdtg2dickpg@skbuf>
-References: <20200922104302.17662-1-xiaoliang.yang_1@nxp.com>
-In-Reply-To: <20200922104302.17662-1-xiaoliang.yang_1@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.217.212]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 7e74f436-ec8b-4c93-6a3b-08d85eebc935
-x-ms-traffictypediagnostic: VE1PR04MB7374:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB7374243CA6A00B8D50A89581E03B0@VE1PR04MB7374.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: CQNVYJp2LGDwB1YGVXTciwtCf6/DDj+mCkYyW98eBECs+DYDeqQDvauTOis/W7yMKasryu2LuncgWLxUUpWqaX9qUMV3HqsbtIHV7tiHvDbCKnL0VTrqLxEj/0rskARPqlrBDBAiOj8GIOUBlmUMuxv58rfgPlBVFSxC1Ql7+tjV2PJKKkwDvs1jO44WVND7OGkIuNysfFm9N83SMwVfm0cTaQsURJDSxmryp+kEx1xyQegCMcp1z1vkeFU5rfyI6WwSLqdjOhk5pFn84srfLZFvrzqE9YRE7A8kq7pNtpz3HtsnCyJ7iQxy1WTAr1bj
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(376002)(39860400002)(136003)(396003)(346002)(1076003)(66556008)(76116006)(8676002)(8936002)(4744005)(2906002)(4326008)(64756008)(66476007)(9686003)(6512007)(6636002)(44832011)(91956017)(66446008)(66946007)(71200400001)(478600001)(316002)(86362001)(83380400001)(6506007)(6486002)(5660300002)(6862004)(33716001)(186003)(26005)(54906003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: qycE9ONsO9G+1uvw5gyaMOFoDaiUcnvXqi0KalFria+Migl6EnoFeXQahCYKZ6CtNWL1NC6NpQJOVWVY2b/GVIpZSkfDyM6chxwYCCqkJQg2xQ3htSHz9x7sPMMbXIp86M5IxZkofusqHGmfaV8GFOx2VT8Zv8g9IvjC4mz1JQFkgwPyoiP9u2IfJqA6ndtL8fW7mCuXtPYv58pwnbrDY/TLUJp5A+bQT+ljF6xvm44ztbAqSksEVF6Ky/kMvr3iMmLTdNnMFJ9ZUHqsLDh4RoQE8VOYePQLg3d51BpxDFy+A+G64BoFQ5U3uVNyBZe/vM/LwQQCWgMzGI6BCGuudjQfTDI56fFjbfhZDY/brSyrTuL6kPUlAYnxMN9hhYvX4XuU7qOIi5IW7DTpua4KZm5Cq5eZslVGJceyNtU9WFqjVHCtObw7djAe33hKv4vnsVFWPgYyvVcH+WtHizw1KN8HKdmpYvD74ZFowUP9JhG8z3emwvScCmUDBeHNTbfBv+2F07i5pREJFCl7y78Ltv8qSMrHTRFc1HtLFENh/B/ANx/gMcuYS0hoGLTErQg1Z5OVP4EbUuHo/DjYsdMLGfOnbtMiKBwZHNauucPo4CfH+k4z++E226jjlVyybJH0odbtJIRLiNNKz8lsXPMLqg==
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <B85369DC1D064847A1B9792A27CCB895@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726522AbgIVLmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 07:42:13 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:28374 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726454AbgIVLlY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 07:41:24 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08MBVKZd029640;
+        Tue, 22 Sep 2020 04:40:21 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=date : from : to :
+ cc : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pfpt0220; bh=PP2BtTa35HsPOit2soWgIXbF5jpAsVLP7kOQ9lv+kro=;
+ b=LB9hdQsWrpRyQ5C0sn+4kjpbGcP4QfcSln3ekDbaK8c3ooeVuY7eTggcIcwNtrlI+tYf
+ lZzG1jkrsY/elOr9lSTgK4zJj+af7GsdWL6oCix7eHgm4Q7FMnGJBOEyJbE+9KD2R4IN
+ NNYfSFsEaQBjgqisIM+KK4AKdCppSAsJCyrZw00PC/nqbYdLV9z1+SrTIdn3dWFJg9yZ
+ KLDRKHNBc++UhhdtaWPlFlBglJo7ZJpvhhO43SG4HIKsCXiKKToRll26r2uYwmRIoMKi
+ YIzEaK4HGbPnbzy05z5oGNeQAFQeJt/f9CFH3W/I37z6Vgv8EMPFbBBmzahJD6d4kiEr BQ== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 33nfbpt7ea-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 22 Sep 2020 04:40:20 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 22 Sep
+ 2020 04:40:19 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 22 Sep
+ 2020 04:40:18 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 22 Sep 2020 04:40:18 -0700
+Received: from yoga (unknown [10.95.131.150])
+        by maili.marvell.com (Postfix) with ESMTP id E49BE3F7048;
+        Tue, 22 Sep 2020 04:40:16 -0700 (PDT)
+Date:   Tue, 22 Sep 2020 13:40:15 +0200
+From:   Stanislaw Kardach <skardach@marvell.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <sgoutham@marvell.com>,
+        <netdev@vger.kernel.org>, <kda@semihalf.com>
+Subject: Re: [PATCH net-next v2 3/3] octeontx2-af: add support for custom KPU
+ entries
+Message-ID: <20200922114014.rvdohzjwjvlukc3p@yoga>
+References: <20200921175442.16789-1-skardach@marvell.com>
+ <20200921175442.16789-4-skardach@marvell.com>
+ <20200921162643.6a52361d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7e74f436-ec8b-4c93-6a3b-08d85eebc935
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Sep 2020 11:36:45.7592
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: c6/2JXJgJEuylbB+R4gfd/HQw4aLnQVcjiNX5/7c0mvtf65WCAiOqjYEG44ASxqO7GiUCwmUUhnDmW0l+2oUdQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7374
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200921162643.6a52361d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: NeoMutt/20180716
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-22_09:2020-09-21,2020-09-22 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Xiaoliang,
+On Mon, Sep 21, 2020 at 04:26:43PM -0700, Jakub Kicinski wrote:
+> Date: Mon, 21 Sep 2020 16:26:43 -0700
+> From: Jakub Kicinski <kuba@kernel.org>
+> To: Stanislaw Kardach <skardach@marvell.com>
+> Cc: davem@davemloft.net, sgoutham@marvell.com, netdev@vger.kernel.org,
+>  kda@semihalf.com
+> Subject: Re: [PATCH net-next v2 3/3] octeontx2-af: add support for custom
+>  KPU entries
+> 
+> On Mon, 21 Sep 2020 19:54:42 +0200 Stanislaw Kardach wrote:
+> > Add ability to load a set of custom KPU entries via firmware APIs. This
+> > allows for flexible support for custom protocol parsing and CAM matching.
+> > 
+> > The firmware file name is specified by a module parameter (kpu_profile)
+> > to allow re-using the same kernel and initramfs package on nodes in
+> > different parts of the network where support for different protocols is
+> > required.
+> > 
+> > AF driver will attempt to load the profile from the firmware file and
+> > verify if it can fit hardware capabilities. If not, it will revert to
+> > the built-in profile.
+> > 
+> > Next it will read the maximum first KPU_MAX_CST_LT (2) custom entries
+> > from the firmware image. Those will be later programmed at the top of
+> > each KPU after the built-in profile entries have been programmed.
+> > The built-in profile is amended to always contain KPU_MAX_CSR_LT first
+> > no-match entries and AF driver will disable those in the KPU unless
+> > custom profile is loaded.
+> 
+> So the driver loads the firmware contents, interprets them and programs
+> the device appropriately?
+> 
+> Real firmware files are not usually interpreted or parsed by the driver.
 
-On Tue, Sep 22, 2020 at 06:43:02PM +0800, Xiaoliang Yang wrote:
-> state->speed holds a value of 10, 100, 1000 or 2500, but
-> QSYS_TAG_CONFIG_LINK_SPEED expects a value of 0, 1, 2, 3. So convert the
-> speed to a proper value.
->=20
-> Fixes: de143c0e274b ("net: dsa: felix: Configure Time-Aware Scheduler via
-> taprio offload")
->=20
-> Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-> ---
+Correct. I'm using the firmware file as a delivery method for a custom
+configuration. There are several reasons why I chose it:
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+1. The parsing engine (KPU) has to be configured fully at RVU AF device
+   probe, before any networking part of that or other RVU devices is
+   configured. So I think this rules out devlink, ioctl or sysfs.
+2. The configuration is rather extensive so cramping it into module
+   parameters doesn't seem right.
+3. Adding it to Device Tree in form of custom nodes makes update process
+   risky to some users (as opposed to switching firmware file on a
+   filesystem).
+4. The request_firmware API provides a nice abstraction for the blob data
+   source so I thought it might as well be used for fetching data of a
+   known structure. Especially that the full layout is visible in the
+   kernel and users might create those files themselves by hand.
 
-But next time keep in mind the following:
+That said all above might be because I'm unaware of a better interface to
+use in such situation. If there is, I would be obliged if you could point
+me in the right direction.
 
-- The Fixes: tag should never wrap on multiple lines, even if it exceeds
-  80 characters.
-- Patches that fix a problem in net-next only should go to David's
-  net-next tree. Patches that fix a problem on Linus Torvalds' tree
-  should go to David's "net" tree. This one should go to "net", not to
-  "net-next".
-- All tags (Fixes, Signed-off-by, etc) should be grouped together with
-  no empty lines between them.
-
-Actually due to the first issue I mentioned, could you please resend
-this?
-
-Thanks,
--Vladimir=
+Stanislaw Kardach
