@@ -2,169 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B86E92737A7
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 02:47:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 390602737C0
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 02:58:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728929AbgIVArN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 20:47:13 -0400
-Received: from mail-eopbgr50079.outbound.protection.outlook.com ([40.107.5.79]:54965
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726702AbgIVArN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 20:47:13 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I4ApzgsmpmvfhSP0WM9/F7Kwkq6wU104b1P723QwOMQFJt5yX6DdZKthC46qBMEb/UI5MPUgr5wWzkwBoioA8tq07g0ASMSiOdWgkf+7tip2WFTSf46Gv+s7ozhbPILKXlRMExa7sOaQmraHlaQAPfCFWHnPFhjjyfvwf+fXTep5+5STNaWQcWKtzhhz46VtbyNtONA4muc9uUw5CeV1ljn9AVEbruF+LOiHQR5Sg1oK+NjtmeNWx05BjcfL/XvGt0vH0YJYfGsEgqbFxFDYYy8eZ6fRauHPNtfQcrnhqq2gVL57tmKEOFqgv5nNpbB3Vgri9NIdlX3kk4Vuez0vIw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BuDkL4o4TG78Uttv6aJosp/yQu1t18uFw5Qb7b1X7Tw=;
- b=W9NSV31m1qNq/YnHuQLMWgVNpHCKy4niEk2ZlANpVtclMx6j1VbrP9Jwgx9/c0OaVsx08WsdCKHxO/CoumRQeuC2hp5K0A8IEeESy9RBiRRfFGa6froBoX6TMQVBcFMuLcKk7D1VYAdjqJEYDLuRYaGR2zZJpENJ2rR8sc23uJW4iyECQvzhY2dCXDG3oi9/iBkoI1vbCSXlF89Q7vGOeUW2812ZIXCecpoVqstB9UcXqlFRS6SCpidhXTf9F3tzNUOF9QA9uWQ6Ez86X9dY4/+pcxuG93hDVRpduXKJQWtzhBeI3wVfe2kGuRHmQ0JfGXtZcY7Rox68FqOYEmzPvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BuDkL4o4TG78Uttv6aJosp/yQu1t18uFw5Qb7b1X7Tw=;
- b=OUKKZ41qRy+TnGJhD6wp58Ngtn6ffcE1c5jmtEkztM4RNb19RvbA48I+YDwim5MIDVxr8qY0c5X5nfCk7uJDvePQ0lJw2tnaJc6Eykyl05eizVi12VGd5oTaPKxqKp9jIMsFszyUnuw5xP5BMVfXBKK1sS98Mkv1fu4yt9rPewo=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB4224.eurprd04.prod.outlook.com (2603:10a6:803:49::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.11; Tue, 22 Sep
- 2020 00:47:08 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3391.025; Tue, 22 Sep 2020
- 00:47:08 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
-        UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org
-Subject: [PATCH v2 net] net: mscc: ocelot: return error if VCAP filter is not found
-Date:   Tue, 22 Sep 2020 03:46:57 +0300
-Message-Id: <20200922004657.181282-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: VI1PR0902CA0034.eurprd09.prod.outlook.com
- (2603:10a6:802:1::23) To VI1PR04MB5696.eurprd04.prod.outlook.com
- (2603:10a6:803:e7::13)
+        id S1729422AbgIVA6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 20:58:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51068 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729404AbgIVA6g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 20:58:36 -0400
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D327823AC6
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:58:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600736315;
+        bh=mO4DYr7N0RLjWZa37eU/VgHJpvS4aRf2iPegAH0iEtc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=NcH2VkLBgDzvNIcwu92WQk4IAewPXtNoyAN5ZuO8pHvo1p+Rn1Ou8f+8UcnDfmQCh
+         RwG2NziW5jzt2iYAfirGZDU632aRajjo/G+x78cv/5v0WMOpY6g8gUKcWrozhHCxYh
+         Z9K4X8JU7DVwK0bapy70hqrLYXRdGWUnkheGMJIA=
+Received: by mail-wm1-f51.google.com with SMTP id q9so1607504wmj.2
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 17:58:34 -0700 (PDT)
+X-Gm-Message-State: AOAM530iq6fn8UxS+fz5LU3WkMRs/OwY9Op5aX14vR5ivucwRqODxHjN
+        yQzPIbiyBQ95/hhYhCM6kPUuiT6QmeDrvELo2b2r4g==
+X-Google-Smtp-Source: ABdhPJzzXZz8FGhOqJIy3SOg0uhFjle8bEWKILqBSG3M41u7cJLjsHkjpP4JLeSfHDUPrx8gGM2D3rP9PVKnU83D0i8=
+X-Received: by 2002:a1c:740c:: with SMTP id p12mr1761323wmc.176.1600736312695;
+ Mon, 21 Sep 2020 17:58:32 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.217.212) by VI1PR0902CA0034.eurprd09.prod.outlook.com (2603:10a6:802:1::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14 via Frontend Transport; Tue, 22 Sep 2020 00:47:07 +0000
-X-Mailer: git-send-email 2.25.1
-X-Originating-IP: [188.25.217.212]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 103ee2f4-04e5-46df-c8fb-08d85e9108b8
-X-MS-TrafficTypeDiagnostic: VI1PR04MB4224:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB422451017EF8C454A731E499E03B0@VI1PR04MB4224.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EZZQ3qdEaRcHVbg/6h/VZKVh0Dsp+hym8z085yqIJ7qcbMe50Z/ynVqiLyQz/3KOnX8a4Taqn6XY3VB9tBk184gFgeWVS+iCsQfFnK4GFFPHCgMsbMNPKVu1BMNsJ3zV+1gucaQSmYnVwCOj+FsOrwfci4UX92ofpZkpvVXXVCNVDz/MYls4Mg1anXG4TVoEhEYpGY9pkUZ6wPZVvLZmbTKBMYafOmdNLgwegSGU1CkbSyH5qen3LoU8H659ACo79UfQA/TyCzk44V+gUJ5lK4dD5TsJPKiqbr31Jsy6DXHtQvq76jgXn2en8EwLt6TmEUcXrym90CzRxqAxgBne/gZcRP+GE7p1rtLgiN/gnIydZ8n9jXxUrbtp2UhR3ql0
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(366004)(346002)(376002)(396003)(86362001)(44832011)(2616005)(956004)(6512007)(4326008)(6486002)(316002)(36756003)(2906002)(5660300002)(6506007)(16526019)(26005)(186003)(478600001)(52116002)(1076003)(83380400001)(66476007)(6666004)(66946007)(66574015)(66556008)(8936002)(8676002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: KmJclMw4dWFoIYkBKv9+BuGDzw0qFVch4/5RzyiYT620AAxOuefVLOX+B6UafBcRkr0ah/9JLBsYXasYJ0EkLWV8o9YDpnEvkZBNfVv7nR5FBKLJftCg+fDtSrCzFfQpTvROLpT+rFVDwOcx+bp7xbsSuC+ISCSg7lwCYbQe9HLoZo+i1kE9oQEx6VnOx3BRhiLeCBPGAxwsxytGKWoVZuSpX2Sjp6p/KaU4PKFvZ3tnExWxjtV7ZavMOvbTBpq/GgIqx0BE1HxLBU7aTMQu5Xw0rYK+AO3H4ZlmmDBAsy7KkGImbObHGY5uVzjT4zrt5lzISOYy3rhLNnIjvkQr0+q9/n7i6t5inQ90CpcOztfwNeOyFEFwHFrfiyWUnSO4ZnAyLnDEHg0vjTd5qekZP++AXO/JfHy74fR3Qbidm4L4h/PRTrvQFT0bB0/0SJGKUkwXBCRfFyPMbk+czzgesEZSNQG8f9MWX+kxCyhGuG5vL0DV3YGsTHMN7Dg4s/7bgHL/KcWOuo3yDDNmF//BjBUROi2p1IdiRaroHOZbXEOxSizcEnb6Ix8O8LC7yE4fkHyVKVGhFziaxzh3q2gTDKrrfUAIi4ibIwaGG37y8jRaZL9LtBbIIbazcI2tCrpuR+wo+CqVLqAn0f2jubMwBg==
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 103ee2f4-04e5-46df-c8fb-08d85e9108b8
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2020 00:47:08.5510
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4cbxwYDO31MRp7ODMrmp1/MX4Tx5YW9t8AutXxXExKzDpunvE3Y3y3uy96SMZMBqteY6g2MnucRpIoYdrp0CGA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4224
+References: <CAK8P3a2Mi+1yttyGk4k7HxRVrMtmFqJewouVhynqUL0PJycmog@mail.gmail.com>
+ <D0791499-1190-4C3F-A984-0A313ECA81C7@amacapital.net> <563138b5-7073-74bc-f0c5-b2bad6277e87@gmail.com>
+ <486c92d0-0f2e-bd61-1ab8-302524af5e08@gmail.com> <CALCETrW3rwGsgfLNnu_0JAcL5jvrPVTLTWM3JpbB5P9Hye6Fdw@mail.gmail.com>
+ <d5c6736a-2cb4-4e22-78da-a667bda5c05a@gmail.com>
+In-Reply-To: <d5c6736a-2cb4-4e22-78da-a667bda5c05a@gmail.com>
+From:   Andy Lutomirski <luto@kernel.org>
+Date:   Mon, 21 Sep 2020 17:58:20 -0700
+X-Gmail-Original-Message-ID: <CALCETrUEC81va8-fuUXG1uA5rbKxnKDYsDOXC70_HtKD4LAeAg@mail.gmail.com>
+Message-ID: <CALCETrUEC81va8-fuUXG1uA5rbKxnKDYsDOXC70_HtKD4LAeAg@mail.gmail.com>
+Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+To:     Pavel Begunkov <asml.silence@gmail.com>
+Cc:     Andy Lutomirski <luto@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Howells <dhowells@redhat.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        Linux SCSI List <linux-scsi@vger.kernel.org>,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Network Development <netdev@vger.kernel.org>,
+        keyrings@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+On Mon, Sep 21, 2020 at 5:24 PM Pavel Begunkov <asml.silence@gmail.com> wro=
+te:
+>
+>
+>
+> On 22/09/2020 02:51, Andy Lutomirski wrote:
+> > On Mon, Sep 21, 2020 at 9:15 AM Pavel Begunkov <asml.silence@gmail.com>=
+ wrote:
+> >>
+> >> On 21/09/2020 19:10, Pavel Begunkov wrote:
+> >>> On 20/09/2020 01:22, Andy Lutomirski wrote:
+> >>>>
+> >>>>> On Sep 19, 2020, at 2:16 PM, Arnd Bergmann <arnd@arndb.de> wrote:
+> >>>>>
+> >>>>> =EF=BB=BFOn Sat, Sep 19, 2020 at 6:21 PM Andy Lutomirski <luto@kern=
+el.org> wrote:
+> >>>>>>> On Fri, Sep 18, 2020 at 8:16 AM Christoph Hellwig <hch@lst.de> wr=
+ote:
+> >>>>>>> On Fri, Sep 18, 2020 at 02:58:22PM +0100, Al Viro wrote:
+> >>>>>>>> Said that, why not provide a variant that would take an explicit
+> >>>>>>>> "is it compat" argument and use it there?  And have the normal
+> >>>>>>>> one pass in_compat_syscall() to that...
+> >>>>>>>
+> >>>>>>> That would help to not introduce a regression with this series ye=
+s.
+> >>>>>>> But it wouldn't fix existing bugs when io_uring is used to access
+> >>>>>>> read or write methods that use in_compat_syscall().  One example =
+that
+> >>>>>>> I recently ran into is drivers/scsi/sg.c.
+> >>>>>
+> >>>>> Ah, so reading /dev/input/event* would suffer from the same issue,
+> >>>>> and that one would in fact be broken by your patch in the hypotheti=
+cal
+> >>>>> case that someone tried to use io_uring to read /dev/input/event on=
+ x32...
+> >>>>>
+> >>>>> For reference, I checked the socket timestamp handling that has a
+> >>>>> number of corner cases with time32/time64 formats in compat mode,
+> >>>>> but none of those appear to be affected by the problem.
+> >>>>>
+> >>>>>> Aside from the potentially nasty use of per-task variables, one th=
+ing
+> >>>>>> I don't like about PF_FORCE_COMPAT is that it's one-way.  If we're
+> >>>>>> going to have a generic mechanism for this, shouldn't we allow a f=
+ull
+> >>>>>> override of the syscall arch instead of just allowing forcing comp=
+at
+> >>>>>> so that a compat syscall can do a non-compat operation?
+> >>>>>
+> >>>>> The only reason it's needed here is that the caller is in a kernel
+> >>>>> thread rather than a system call. Are there any possible scenarios
+> >>>>> where one would actually need the opposite?
+> >>>>>
+> >>>>
+> >>>> I can certainly imagine needing to force x32 mode from a kernel thre=
+ad.
+> >>>>
+> >>>> As for the other direction: what exactly are the desired bitness/arc=
+h semantics of io_uring?  Is the operation bitness chosen by the io_uring c=
+reation or by the io_uring_enter() bitness?
+> >>>
+> >>> It's rather the second one. Even though AFAIR it wasn't discussed
+> >>> specifically, that how it works now (_partially_).
+> >>
+> >> Double checked -- I'm wrong, that's the former one. Most of it is base=
+d
+> >> on a flag that was set an creation.
+> >>
+> >
+> > Could we get away with making io_uring_enter() return -EINVAL (or
+> > maybe -ENOTTY?) if you try to do it with bitness that doesn't match
+> > the io_uring?  And disable SQPOLL in compat mode?
+>
+> Something like below. If PF_FORCE_COMPAT or any other solution
+> doesn't lend by the time, I'll take a look whether other io_uring's
+> syscalls need similar checks, etc.
+>
+>
+> diff --git a/fs/io_uring.c b/fs/io_uring.c
+> index 0458f02d4ca8..aab20785fa9a 100644
+> --- a/fs/io_uring.c
+> +++ b/fs/io_uring.c
+> @@ -8671,6 +8671,10 @@ SYSCALL_DEFINE6(io_uring_enter, unsigned int, fd, =
+u32, to_submit,
+>         if (ctx->flags & IORING_SETUP_R_DISABLED)
+>                 goto out;
+>
+> +       ret =3D -EINVAl;
+> +       if (ctx->compat !=3D in_compat_syscall())
+> +               goto out;
+> +
 
-There are 2 separate, but related, issues.
+This seems entirely reasonable to me.  Sharing an io_uring ring
+between programs with different ABIs seems a bit nutty.
 
-First, the ocelot_vcap_block_get_filter_index function, née
-ocelot_ace_rule_get_index_id prior to the aae4e500e106 ("net: mscc:
-ocelot: generalize the "ACE/ACL" names") rename, does not do what the
-author probably intended. If the desired filter entry is not present in
-the ACL block, this function returns an index equal to the total number
-of filters, instead of -1, which is maybe what was intended, judging
-from the curious initialization with -1, and the "++index" idioms.
-Either way, none of the callers seems to expect this behavior.
+>         /*
+>          * For SQ polling, the thread will do all submissions and complet=
+ions.
+>          * Just return the requested submit count, and wake the thread if
+> @@ -9006,6 +9010,10 @@ static int io_uring_create(unsigned entries, struc=
+t io_uring_params *p,
+>         if (ret)
+>                 goto err;
+>
+> +       ret =3D -EINVAL;
+> +       if (ctx->compat)
+> +               goto err;
+> +
 
-Second issue, the callers don't actually check the return value at all.
-So in case the filter is not found in the rule list, propagate the
-return code to avoid kernel panics.
+I may be looking at a different kernel than you, but aren't you
+preventing creating an io_uring regardless of whether SQPOLL is
+requested?
 
-So update the callers and also take the opportunity to get rid of the
-odd coding idioms that appear to work but don't.
-
-Fixes: b596229448dd ("net: mscc: ocelot: Add support for tcam")
-Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes in v2:
-Add Fixes tag.
-
- drivers/net/ethernet/mscc/ocelot_vcap.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-index 3ef620faf995..39edaaca836e 100644
---- a/drivers/net/ethernet/mscc/ocelot_vcap.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-@@ -726,14 +726,15 @@ static int ocelot_vcap_block_get_filter_index(struct ocelot_vcap_block *block,
- 					      struct ocelot_vcap_filter *filter)
- {
- 	struct ocelot_vcap_filter *tmp;
--	int index = -1;
-+	int index = 0;
- 
- 	list_for_each_entry(tmp, &block->rules, list) {
--		++index;
- 		if (filter->id == tmp->id)
- 			break;
-+		index++;
- 	}
--	return index;
-+
-+	return -ENOENT;
- }
- 
- static struct ocelot_vcap_filter*
-@@ -877,6 +878,8 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
- 
- 	/* Get the index of the inserted filter */
- 	index = ocelot_vcap_block_get_filter_index(block, filter);
-+	if (index < 0)
-+		return index;
- 
- 	/* Move down the rules to make place for the new filter */
- 	for (i = block->count - 1; i > index; i--) {
-@@ -924,6 +927,8 @@ int ocelot_vcap_filter_del(struct ocelot *ocelot,
- 
- 	/* Gets index of the filter */
- 	index = ocelot_vcap_block_get_filter_index(block, filter);
-+	if (index < 0)
-+		return index;
- 
- 	/* Delete filter */
- 	ocelot_vcap_block_remove_filter(ocelot, block, filter);
-@@ -950,6 +955,9 @@ int ocelot_vcap_filter_stats_update(struct ocelot *ocelot,
- 	int index;
- 
- 	index = ocelot_vcap_block_get_filter_index(block, filter);
-+	if (index < 0)
-+		return index;
-+
- 	is2_entry_get(ocelot, filter, index);
- 
- 	/* After we get the result we need to clear the counters */
--- 
-2.25.1
-
+>         /* Only gets the ring fd, doesn't install it in the file table */
+>         fd =3D io_uring_get_fd(ctx, &file);
+>         if (fd < 0) {
+> --
+> Pavel Begunkov
