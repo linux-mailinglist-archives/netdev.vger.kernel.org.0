@@ -2,376 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 069D22747E3
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 19:56:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F9DE2747AF
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 19:48:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726768AbgIVR4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 13:56:50 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:18438 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726652AbgIVR4q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 13:56:46 -0400
-X-Greylist: delayed 696 seconds by postgrey-1.27 at vger.kernel.org; Tue, 22 Sep 2020 13:56:46 EDT
-Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 08MHj2cV031036;
-        Tue, 22 Sep 2020 10:45:14 -0700
-From:   Rohit Maheshwari <rohitm@chelsio.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     kuba@kernel.org, secdev@chelsio.com,
-        Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [net-next 3/3] cxgb4/ch_ktls: ktls stats are added at port level
-Date:   Tue, 22 Sep 2020 23:15:01 +0530
-Message-Id: <20200922174501.14943-4-rohitm@chelsio.com>
-X-Mailer: git-send-email 2.18.1
-In-Reply-To: <20200922174501.14943-1-rohitm@chelsio.com>
-References: <20200922174501.14943-1-rohitm@chelsio.com>
+        id S1726631AbgIVRsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 13:48:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58710 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726563AbgIVRsL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 13:48:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600796889;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=l4aKlfnMKe2hannLgSs/cK7bKvlb7YGrZQ7tCDYBs9I=;
+        b=KAqWyoKp42GLOjt5hyy0LpnFB/9aFvc+SsGfYVJ+uPsT1Zfiyvfhk7djMF9Q8Q+YsANgTf
+        Wer2URRcF02yu6DWPTNqrXmPk+ozluFxXaC9pdnbk9QnE6RqXf3h8juG9HIMpYUL4PAgjd
+        +cRzT6FGfhwkymgVsc/lSN7FU62X2z8=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-19-Jt0pNLArMC-J0FD3JLifOQ-1; Tue, 22 Sep 2020 13:48:07 -0400
+X-MC-Unique: Jt0pNLArMC-J0FD3JLifOQ-1
+Received: by mail-wr1-f72.google.com with SMTP id v12so7730109wrm.9
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 10:48:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=l4aKlfnMKe2hannLgSs/cK7bKvlb7YGrZQ7tCDYBs9I=;
+        b=kyqr4CgrDeX6fzA9z8+h7tIQwNsDEX6OKNEj4UMqEVSVkOYxI94NoD6UiaGGGwgx0F
+         M5mssl02xRNbc+6bwK/NbanzDRwCvw60ah8fzsYmhbo4mlrUWa1jcP0eNi43yQDmAloM
+         zwz6xhQDp9FJkNHg+eOoRB8k2GdKdjgH7xXY1TXUs16bWFIfEipDlgEftn98GSGkg/cW
+         AKfvI2LSWNOpxmvdhIYdFNRdDpP00XYLkkoSYCKUbQt73KUNbfBw8eeP5AQws5YF4BlX
+         8zvVqdqxT3LM40zf3jfIkbHDxML0nJdC5pShqtTcS9ky+wWgV2VqZsq/hzVeFbVU4+7y
+         Dx9Q==
+X-Gm-Message-State: AOAM530nRsHD7tPmFjb2PSIm1/zTI83SaGyvLriDy2LHdokUXh8F0TKp
+        AO+NDKBj83Q7Z63Iagpxs/M8ogrSIqNaP5pya2wCYzVnZQqUEC8eOlJYL4PMMsYCkFlrrwIDwSs
+        80t3lUkFMinycVJxI
+X-Received: by 2002:adf:ef48:: with SMTP id c8mr6755212wrp.370.1600796882530;
+        Tue, 22 Sep 2020 10:48:02 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz1bQt1Ju2SgqAHz7F277XKKzYha9ohMajA3u/z5Bc1E2QvMxzPXYS0N7WGqp2hkEaKAmR33w==
+X-Received: by 2002:adf:ef48:: with SMTP id c8mr6755184wrp.370.1600796882314;
+        Tue, 22 Sep 2020 10:48:02 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id z9sm5728975wmg.46.2020.09.22.10.48.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Sep 2020 10:48:01 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 3B94F183A8F; Tue, 22 Sep 2020 19:48:01 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v7 04/10] bpf: move prog->aux->linked_prog and
+ trampoline into bpf_link on attach
+In-Reply-To: <CAEf4BzYdBy0xOVBb3RSVqtrc9+XL459LjT9hNGfmTy=QYDQ+AQ@mail.gmail.com>
+References: <160051618267.58048.2336966160671014012.stgit@toke.dk>
+ <160051618733.58048.1005452269573858636.stgit@toke.dk>
+ <CAEf4BzYrc1j0i5qVKfyHA98C37D7xR6i4GL4BLeprNL=HfjCBg@mail.gmail.com>
+ <87lfh2p12x.fsf@toke.dk>
+ <CAEf4BzYdBy0xOVBb3RSVqtrc9+XL459LjT9hNGfmTy=QYDQ+AQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 22 Sep 2020 19:48:01 +0200
+Message-ID: <87y2l1g0tq.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All the ktls stats were at adapter level, but now changing it
-to port level.
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-Fixes: 62370a4f346d ("cxgb4/chcr: Add ipv6 support and statistics")
-Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
----
- .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    | 35 ++++++-------
- .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    | 50 +++++++++++++------
- .../net/ethernet/chelsio/cxgb4/cxgb4_uld.h    | 21 +++++---
- .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c | 28 +++++++----
- 4 files changed, 80 insertions(+), 54 deletions(-)
+> On Tue, Sep 22, 2020 at 3:17 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>
+>> > On Sat, Sep 19, 2020 at 4:50 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
+@redhat.com> wrote:
+>> >>
+>> >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> >>
+>> >> In preparation for allowing multiple attachments of freplace programs=
+, move
+>> >> the references to the target program and trampoline into the
+>> >> bpf_tracing_link structure when that is created. To do this atomicall=
+y,
+>> >> introduce a new mutex in prog->aux to protect writing to the two poin=
+ters
+>> >> to target prog and trampoline, and rename the members to make it clea=
+r that
+>> >> they are related.
+>> >>
+>> >> With this change, it is no longer possible to attach the same tracing
+>> >> program multiple times (detaching in-between), since the reference fr=
+om the
+>> >> tracing program to the target disappears on the first attach. However,
+>> >> since the next patch will let the caller supply an attach target, tha=
+t will
+>> >> also make it possible to attach to the same place multiple times.
+>> >>
+>> >> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> >> ---
+>> >>  include/linux/bpf.h     |   15 +++++++++-----
+>> >>  kernel/bpf/btf.c        |    6 +++---
+>> >>  kernel/bpf/core.c       |    9 ++++++---
+>> >>  kernel/bpf/syscall.c    |   49 +++++++++++++++++++++++++++++++++++++=
+++--------
+>> >>  kernel/bpf/trampoline.c |   12 ++++--------
+>> >>  kernel/bpf/verifier.c   |    9 +++++----
+>> >>  6 files changed, 68 insertions(+), 32 deletions(-)
+>> >>
+>> >
+>> > [...]
+>> >
+>> >> @@ -741,7 +743,9 @@ struct bpf_prog_aux {
+>> >>         u32 max_rdonly_access;
+>> >>         u32 max_rdwr_access;
+>> >>         const struct bpf_ctx_arg_aux *ctx_arg_info;
+>> >> -       struct bpf_prog *linked_prog;
+>> >> +       struct mutex tgt_mutex; /* protects writing of tgt_* pointers=
+ below */
+>> >
+>> > nit: not just writing, "accessing" would be a better word
+>>
+>> Except it's not, really: the values are read without taking the mutex.
+>
+> Huh? So you are taking a mutex in bpf_tracing_prog_attach before
+> reading prog->aux->tgt_prog and prog->aux->tgt_trampoline just for
+> fun?.. Why don't you read those pointers outside of mutex and let's
+> have discussion about race conditions?
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-index 5491a41fd1be..0273f40b85f7 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-@@ -3527,6 +3527,10 @@ DEFINE_SHOW_ATTRIBUTE(meminfo);
- 
- static int chcr_stats_show(struct seq_file *seq, void *v)
- {
-+#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
-+	struct ch_ktls_port_stats_debug *ktls_port;
-+	int i = 0;
-+#endif
- 	struct adapter *adap = seq->private;
- 
- 	seq_puts(seq, "Chelsio Crypto Accelerator Stats \n");
-@@ -3557,18 +3561,6 @@ static int chcr_stats_show(struct seq_file *seq, void *v)
- 	seq_puts(seq, "\nChelsio KTLS Crypto Accelerator Stats\n");
- 	seq_printf(seq, "Tx TLS offload refcount:          %20u\n",
- 		   refcount_read(&adap->chcr_ktls.ktls_refcount));
--	seq_printf(seq, "Tx HW offload contexts added:     %20llu\n",
--		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_ctx));
--	seq_printf(seq, "Tx connection created:            %20llu\n",
--		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_connection_open));
--	seq_printf(seq, "Tx connection failed:             %20llu\n",
--		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_connection_fail));
--	seq_printf(seq, "Tx connection closed:             %20llu\n",
--		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_connection_close));
--	seq_printf(seq, "Packets passed for encryption :   %20llu\n",
--		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_encrypted_packets));
--	seq_printf(seq, "Bytes passed for encryption :     %20llu\n",
--		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_encrypted_bytes));
- 	seq_printf(seq, "Tx records send:                  %20llu\n",
- 		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_send_records));
- 	seq_printf(seq, "Tx partial start of records:      %20llu\n",
-@@ -3581,14 +3573,17 @@ static int chcr_stats_show(struct seq_file *seq, void *v)
- 		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_complete_pkts));
- 	seq_printf(seq, "TX trim pkts :                    %20llu\n",
- 		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_trimmed_pkts));
--	seq_printf(seq, "Tx out of order packets:          %20llu\n",
--		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_ooo));
--	seq_printf(seq, "Tx drop pkts before HW offload:   %20llu\n",
--		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_skip_no_sync_data));
--	seq_printf(seq, "Tx drop not synced packets:       %20llu\n",
--		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_drop_no_sync_data));
--	seq_printf(seq, "Tx drop bypass req:               %20llu\n",
--		   atomic64_read(&adap->ch_ktls_stats.ktls_tx_drop_bypass_req));
-+	while (i < MAX_NPORTS) {
-+		ktls_port = &adap->ch_ktls_stats.ktls_port[i];
-+		seq_printf(seq, "Port %d\n", i);
-+		seq_printf(seq, "Tx connection created:            %20llu\n",
-+			   atomic64_read(&ktls_port->ktls_tx_connection_open));
-+		seq_printf(seq, "Tx connection failed:             %20llu\n",
-+			   atomic64_read(&ktls_port->ktls_tx_connection_fail));
-+		seq_printf(seq, "Tx connection closed:             %20llu\n",
-+			   atomic64_read(&ktls_port->ktls_tx_connection_close));
-+		i++;
-+	}
- #endif
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-index 8c6c9bedcba1..61ea3ec5c3fc 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-@@ -117,14 +117,6 @@ static const char stats_strings[][ETH_GSTRING_LEN] = {
- 	"vlan_insertions        ",
- 	"gro_packets            ",
- 	"gro_merged             ",
--};
--
--static char adapter_stats_strings[][ETH_GSTRING_LEN] = {
--	"db_drop                ",
--	"db_full                ",
--	"db_empty               ",
--	"write_coal_success     ",
--	"write_coal_fail        ",
- #if  IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
- 	"tx_tls_encrypted_packets",
- 	"tx_tls_encrypted_bytes  ",
-@@ -136,6 +128,14 @@ static char adapter_stats_strings[][ETH_GSTRING_LEN] = {
- #endif
- };
- 
-+static char adapter_stats_strings[][ETH_GSTRING_LEN] = {
-+	"db_drop                ",
-+	"db_full                ",
-+	"db_empty               ",
-+	"write_coal_success     ",
-+	"write_coal_fail        ",
-+};
-+
- static char loopback_stats_strings[][ETH_GSTRING_LEN] = {
- 	"-------Loopback----------- ",
- 	"octets_ok              ",
-@@ -257,14 +257,6 @@ struct queue_port_stats {
- 	u64 vlan_ins;
- 	u64 gro_pkts;
- 	u64 gro_merged;
--};
--
--struct adapter_stats {
--	u64 db_drop;
--	u64 db_full;
--	u64 db_empty;
--	u64 wc_success;
--	u64 wc_fail;
- #if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
- 	u64 tx_tls_encrypted_packets;
- 	u64 tx_tls_encrypted_bytes;
-@@ -276,12 +268,23 @@ struct adapter_stats {
- #endif
- };
- 
-+struct adapter_stats {
-+	u64 db_drop;
-+	u64 db_full;
-+	u64 db_empty;
-+	u64 wc_success;
-+	u64 wc_fail;
-+};
-+
- static void collect_sge_port_stats(const struct adapter *adap,
- 				   const struct port_info *p,
- 				   struct queue_port_stats *s)
- {
- 	const struct sge_eth_txq *tx = &adap->sge.ethtxq[p->first_qset];
- 	const struct sge_eth_rxq *rx = &adap->sge.ethrxq[p->first_qset];
-+#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
-+	const struct ch_ktls_port_stats_debug *ktls_stats;
-+#endif
- 	struct sge_eohw_txq *eohw_tx;
- 	unsigned int i;
- 
-@@ -306,6 +309,21 @@ static void collect_sge_port_stats(const struct adapter *adap,
- 			s->vlan_ins += eohw_tx->vlan_ins;
- 		}
- 	}
-+#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
-+	ktls_stats = &adap->ch_ktls_stats.ktls_port[p->port_id];
-+	s->tx_tls_encrypted_packets =
-+		atomic64_read(&ktls_stats->ktls_tx_encrypted_packets);
-+	s->tx_tls_encrypted_bytes =
-+		atomic64_read(&ktls_stats->ktls_tx_encrypted_bytes);
-+	s->tx_tls_ctx = atomic64_read(&ktls_stats->ktls_tx_ctx);
-+	s->tx_tls_ooo = atomic64_read(&ktls_stats->ktls_tx_ooo);
-+	s->tx_tls_skip_no_sync_data =
-+		atomic64_read(&ktls_stats->ktls_tx_skip_no_sync_data);
-+	s->tx_tls_drop_no_sync_data =
-+		atomic64_read(&ktls_stats->ktls_tx_drop_no_sync_data);
-+	s->tx_tls_drop_bypass_req =
-+		atomic64_read(&ktls_stats->ktls_tx_drop_bypass_req);
-+#endif
- }
- 
- static void collect_adapter_stats(struct adapter *adap, struct adapter_stats *s)
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-index ea2fabbdd934..b169776ab484 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-@@ -44,6 +44,7 @@
- #include "cxgb4.h"
- 
- #define MAX_ULD_QSETS 16
-+#define MAX_ULD_NPORTS 4
- 
- /* CPL message priority levels */
- enum {
-@@ -365,17 +366,10 @@ struct cxgb4_virt_res {                      /* virtualized HW resources */
- };
- 
- #if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
--struct ch_ktls_stats_debug {
-+struct ch_ktls_port_stats_debug {
- 	atomic64_t ktls_tx_connection_open;
- 	atomic64_t ktls_tx_connection_fail;
- 	atomic64_t ktls_tx_connection_close;
--	atomic64_t ktls_tx_send_records;
--	atomic64_t ktls_tx_end_pkts;
--	atomic64_t ktls_tx_start_pkts;
--	atomic64_t ktls_tx_middle_pkts;
--	atomic64_t ktls_tx_retransmit_pkts;
--	atomic64_t ktls_tx_complete_pkts;
--	atomic64_t ktls_tx_trimmed_pkts;
- 	atomic64_t ktls_tx_encrypted_packets;
- 	atomic64_t ktls_tx_encrypted_bytes;
- 	atomic64_t ktls_tx_ctx;
-@@ -384,6 +378,17 @@ struct ch_ktls_stats_debug {
- 	atomic64_t ktls_tx_drop_no_sync_data;
- 	atomic64_t ktls_tx_drop_bypass_req;
- };
-+
-+struct ch_ktls_stats_debug {
-+	struct ch_ktls_port_stats_debug ktls_port[MAX_ULD_NPORTS];
-+	atomic64_t ktls_tx_send_records;
-+	atomic64_t ktls_tx_end_pkts;
-+	atomic64_t ktls_tx_start_pkts;
-+	atomic64_t ktls_tx_middle_pkts;
-+	atomic64_t ktls_tx_retransmit_pkts;
-+	atomic64_t ktls_tx_complete_pkts;
-+	atomic64_t ktls_tx_trimmed_pkts;
-+};
- #endif
- 
- struct chcr_stats_debug {
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-index f5709cca4a0f..70c113bb2dd7 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-@@ -337,6 +337,7 @@ static void chcr_ktls_dev_del(struct net_device *netdev,
- 	struct chcr_ktls_ofld_ctx_tx *tx_ctx =
- 				chcr_get_ktls_tx_context(tls_ctx);
- 	struct chcr_ktls_info *tx_info = tx_ctx->chcr_info;
-+	struct ch_ktls_port_stats_debug *port_stats;
- 
- 	if (!tx_info)
- 		return;
-@@ -365,7 +366,8 @@ static void chcr_ktls_dev_del(struct net_device *netdev,
- 				 tx_info->tid, tx_info->ip_family);
- 	}
- 
--	atomic64_inc(&tx_info->adap->ch_ktls_stats.ktls_tx_connection_close);
-+	port_stats = &tx_info->adap->ch_ktls_stats.ktls_port[tx_info->port_id];
-+	atomic64_inc(&port_stats->ktls_tx_connection_close);
- 	kvfree(tx_info);
- 	tx_ctx->chcr_info = NULL;
- 	/* release module refcount */
-@@ -387,6 +389,7 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
- 			     u32 start_offload_tcp_sn)
- {
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
-+	struct ch_ktls_port_stats_debug *port_stats;
- 	struct chcr_ktls_ofld_ctx_tx *tx_ctx;
- 	struct chcr_ktls_info *tx_info;
- 	struct dst_entry *dst;
-@@ -400,8 +403,9 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
- 
- 	pi = netdev_priv(netdev);
- 	adap = pi->adapter;
-+	port_stats = &adap->ch_ktls_stats.ktls_port[pi->port_id];
-+	atomic64_inc(&port_stats->ktls_tx_connection_open);
- 
--	atomic64_inc(&adap->ch_ktls_stats.ktls_tx_connection_open);
- 	if (direction == TLS_OFFLOAD_CTX_DIR_RX) {
- 		pr_err("not expecting for RX direction\n");
- 		goto out;
-@@ -514,7 +518,7 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
- 	if (!cxgb4_check_l2t_valid(tx_info->l2te))
- 		goto close_tcb;
- 
--	atomic64_inc(&adap->ch_ktls_stats.ktls_tx_ctx);
-+	atomic64_inc(&port_stats->ktls_tx_ctx);
- 	tx_ctx->chcr_info = tx_info;
- 
- 	spin_lock(&tx_info->lock);
-@@ -544,7 +548,7 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
- free_tx_info:
- 	kvfree(tx_info);
- out:
--	atomic64_inc(&adap->ch_ktls_stats.ktls_tx_connection_fail);
-+	atomic64_inc(&port_stats->ktls_tx_connection_fail);
- 	return -1;
- }
- 
-@@ -754,6 +758,7 @@ static int chcr_ktls_xmit_tcb_cpls(struct chcr_ktls_info *tx_info,
- 				   u64 tcp_ack, u64 tcp_win)
- {
- 	bool first_wr = ((tx_info->prev_ack == 0) && (tx_info->prev_win == 0));
-+	struct ch_ktls_port_stats_debug *port_stats;
- 	u32 len, cpl = 0, ndesc, wr_len;
- 	struct fw_ulptx_wr *wr;
- 	int credits;
-@@ -787,12 +792,14 @@ static int chcr_ktls_xmit_tcb_cpls(struct chcr_ktls_info *tx_info,
- 	/* reset snd una if it's a re-transmit pkt */
- 	if (tcp_seq != tx_info->prev_seq) {
- 		/* reset snd_una */
-+		port_stats =
-+			&tx_info->adap->ch_ktls_stats.ktls_port[tx_info->port_id];
- 		pos = chcr_write_cpl_set_tcb_ulp(tx_info, q, tx_info->tid, pos,
- 						 TCB_SND_UNA_RAW_W,
- 						 TCB_SND_UNA_RAW_V
- 						 (TCB_SND_UNA_RAW_M),
- 						 TCB_SND_UNA_RAW_V(0), 0);
--		atomic64_inc(&tx_info->adap->ch_ktls_stats.ktls_tx_ooo);
-+		atomic64_inc(&port_stats->ktls_tx_ooo);
- 		cpl++;
- 	}
- 	/* update ack */
-@@ -1825,6 +1832,7 @@ static int chcr_short_record_handler(struct chcr_ktls_info *tx_info,
- /* nic tls TX handler */
- static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
- {
-+	struct ch_ktls_port_stats_debug *port_stats;
- 	struct chcr_ktls_ofld_ctx_tx *tx_ctx;
- 	struct ch_ktls_stats_debug *stats;
- 	struct tcphdr *th = tcp_hdr(skb);
-@@ -1873,6 +1881,7 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	adap = tx_info->adap;
- 	stats = &adap->ch_ktls_stats;
-+	port_stats = &stats->ktls_port[tx_info->port_id];
- 
- 	qidx = skb->queue_mapping;
- 	q = &adap->sge.ethtxq[qidx + tx_info->first_qset];
-@@ -1918,13 +1927,13 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
- 		 */
- 		if (unlikely(!record)) {
- 			spin_unlock_irqrestore(&tx_ctx->base.lock, flags);
--			atomic64_inc(&stats->ktls_tx_drop_no_sync_data);
-+			atomic64_inc(&port_stats->ktls_tx_drop_no_sync_data);
- 			goto out;
- 		}
- 
- 		if (unlikely(tls_record_is_start_marker(record))) {
- 			spin_unlock_irqrestore(&tx_ctx->base.lock, flags);
--			atomic64_inc(&stats->ktls_tx_skip_no_sync_data);
-+			atomic64_inc(&port_stats->ktls_tx_skip_no_sync_data);
- 			goto out;
- 		}
- 
-@@ -1995,9 +2004,8 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
- 	} while (data_len > 0);
- 
- 	tx_info->prev_seq = ntohl(th->seq) + skb->data_len;
--
--	atomic64_inc(&stats->ktls_tx_encrypted_packets);
--	atomic64_add(skb->data_len, &stats->ktls_tx_encrypted_bytes);
-+	atomic64_inc(&port_stats->ktls_tx_encrypted_packets);
-+	atomic64_add(skb->data_len, &port_stats->ktls_tx_encrypted_bytes);
- 
- 	/* tcp finish is set, send a separate tcp msg including all the options
- 	 * as well.
--- 
-2.18.1
+No, of course not. What I meant was that not everywhere that accesses
+the field takes the lock; it's not just check_attach_btf_id(), it's also
+resolve_prog_type() which is called from several places.
+
+Of course, as you point out this is all technically part of the
+'constructor', as it's all inside the verifier. But you have to keep
+quite a lot of mental state to realise that, so I thought it would be
+confusing to have a comment that says the mutex protects all accesses to
+the field, and then have a bunch of places access the field without
+holding the mutex.
+
+However, just adding the "*after* prog becomes visible" bit to the
+comment helps with that, so I'm not arguing for keeping it, just
+explaining why I did it the way I did initially :)
+
+-Toke
 
