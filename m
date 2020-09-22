@@ -2,82 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EF61273777
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 02:31:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F092427376E
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 02:31:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729367AbgIVAbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 20:31:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60648 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729355AbgIVAbU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 20:31:20 -0400
-Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 37BDE23A9F;
-        Tue, 22 Sep 2020 00:31:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600734680;
-        bh=wlbjAv6fMP17XrzPZTReecH5K/caX6fXoIM/jGBO7y0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mmtko8zdYM6Gb7MzbPc97y1JGEzRSMajKMgKFoVIJqH+Lb3nLDpdj3TPeZP9WFEGS
-         wdcHik5tG94r9Jl2lzNIoCB5cOCeEaFNoR+LZ/XB4MuWgZpFUY9Y1mhr478+pLLeZ8
-         HC84q8lid3b5EDLYUDjQrUpFZFlyecx3fVg4ynrU=
-From:   saeed@kernel.org
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Moshe Shemesh <moshe@nvidia.com>, Aya Levin <ayal@nvidia.com>
-Subject: [net V2 15/15] net/mlx5e: mlx5e_fec_in_caps() returns a boolean
-Date:   Mon, 21 Sep 2020 17:31:01 -0700
-Message-Id: <20200922003101.529117-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200922003101.529117-1-saeed@kernel.org>
-References: <20200922003101.529117-1-saeed@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1728959AbgIVAbE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Sep 2020 20:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49640 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726913AbgIVAbE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 20:31:04 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34313C061755
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 17:31:04 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BF5F2127DB648;
+        Mon, 21 Sep 2020 17:14:15 -0700 (PDT)
+Date:   Mon, 21 Sep 2020 17:31:02 -0700 (PDT)
+Message-Id: <20200921.173102.2069908741483449991.davem@davemloft.net>
+To:     vladimir.oltean@nxp.com
+Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com,
+        xiaoliang.yang_1@nxp.com, UNGLinuxDriver@microchip.com,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        kuba@kernel.org
+Subject: Re: [PATCH net] net: mscc: ocelot: return error if VCAP filter is
+ not found
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200921233637.152646-1-vladimir.oltean@nxp.com>
+References: <20200921233637.152646-1-vladimir.oltean@nxp.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Mon, 21 Sep 2020 17:14:16 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date: Tue, 22 Sep 2020 02:36:37 +0300
 
-Returning errno is a bug, fix that.
+> From: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+> 
+> There are 2 separate, but related, issues.
+> 
+> First, the ocelot_vcap_block_get_filter_index function, née
+> ocelot_ace_rule_get_index_id prior to the aae4e500e106 ("net: mscc:
+> ocelot: generalize the "ACE/ACL" names") rename, does not do what the
+> author probably intended. If the desired filter entry is not present in
+> the ACL block, this function returns an index equal to the total number
+> of filters, instead of -1, which is maybe what was intended, judging
+> from the curious initialization with -1, and the "++index" idioms.
+> Either way, none of the callers seems to expect this behavior.
+> 
+> Second issue, the callers don't actually check the return value at all.
+> So in case the filter is not found in the rule list, propagate the
+> return code to avoid kernel panics.
+> 
+> So update the callers and also take the opportunity to get rid of the
+> odd coding idioms that appear to work but don't.
+> 
+> Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Also fixes smatch warnings:
-drivers/net/ethernet/mellanox/mlx5/core/en/port.c:453
-mlx5e_fec_in_caps() warn: signedness bug returning '(-95)'
+Please repost this with an appropriate Fixes: tag.
 
-Fixes: 2132b71f78d2 ("net/mlx5e: Advertise globaly supported FEC modes")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Aya Levin <ayal@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/port.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/port.c b/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
-index 5de1cb9f5330..96608dbb9314 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
-@@ -490,11 +490,8 @@ bool mlx5e_fec_in_caps(struct mlx5_core_dev *dev, int fec_policy)
- 	int err;
- 	int i;
- 
--	if (!MLX5_CAP_GEN(dev, pcam_reg))
--		return -EOPNOTSUPP;
--
--	if (!MLX5_CAP_PCAM_REG(dev, pplm))
--		return -EOPNOTSUPP;
-+	if (!MLX5_CAP_GEN(dev, pcam_reg) || !MLX5_CAP_PCAM_REG(dev, pplm))
-+		return false;
- 
- 	MLX5_SET(pplm_reg, in, local_port, 1);
- 	err =  mlx5_core_access_reg(dev, in, sz, out, sz, MLX5_REG_PPLM, 0, 0);
--- 
-2.26.2
-
+Thank you.
