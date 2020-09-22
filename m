@@ -2,68 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDBFE2740D9
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 13:31:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 313152740F7
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 13:36:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726610AbgIVLbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 07:31:01 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:56112 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726454AbgIVLbB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Sep 2020 07:31:01 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 24B7DA009396B05D645B;
-        Tue, 22 Sep 2020 19:30:56 +0800 (CST)
-Received: from huawei.com (10.175.104.57) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Tue, 22 Sep 2020
- 19:30:52 +0800
-From:   Li Heng <liheng40@huawei.com>
-To:     <ath9k-devel@qca.qualcomm.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] ath9k: Remove set but not used variable
-Date:   Tue, 22 Sep 2020 19:30:52 +0800
-Message-ID: <1600774252-48564-1-git-send-email-liheng40@huawei.com>
-X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.104.57]
-X-CFilter-Loop: Reflected
+        id S1726671AbgIVLfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 07:35:39 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45737 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726648AbgIVLfi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 07:35:38 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from ayal@mellanox.com)
+        with SMTP; 22 Sep 2020 14:35:35 +0300
+Received: from dev-l-vrt-210.mtl.labs.mlnx (dev-l-vrt-210.mtl.labs.mlnx [10.234.210.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 08MBZZXI014357;
+        Tue, 22 Sep 2020 14:35:35 +0300
+Received: from dev-l-vrt-210.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Debian-8ubuntu1) with ESMTP id 08MBZYTl009503;
+        Tue, 22 Sep 2020 14:35:34 +0300
+Received: (from ayal@localhost)
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 08MBZRCh009499;
+        Tue, 22 Sep 2020 14:35:27 +0300
+From:   Aya Levin <ayal@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        netdev <netdev@vger.kernel.org>
+Cc:     Moshe Shemesh <moshe@nvidia.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        <linux-kernel@vger.kernel.org>, Aya Levin <ayal@nvidia.com>
+Subject: [PATCH net-next RFC v2 repost 0/3] Add devlink traps in
+Date:   Tue, 22 Sep 2020 14:35:22 +0300
+Message-Id: <1600774525-9461-1-git-send-email-ayal@nvidia.com>
+X-Mailer: git-send-email 1.8.4.3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This addresses the following gcc warning with "make W=1":
+Implement support for devlink traps on per-port basis. Dropped
+packets in the RX flow are related to the Ethernet port and thus
+should be in port context. Traps per device should trap global
+configuration which may cause drops. Devlink traps is regard as a
+debug mode. Using traps per port enable debug which doesn't effect
+other ports on a device.
 
-drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h:1338:18: warning:
-‘ar9580_1p0_pcie_phy_clkreq_disable_L1’ defined but not used [-Wunused-const-variable=]
+Patchset:
+Patch 1: Refactors devlink trap for easier code re-use in the coming
+patches
+Patch 2: Adds devlink traps under devlink port context
+ports context. In a nutshell it allows enable/disable of a trap on
+all related ports which registered this trap.
+Patch 3: Display a use in devlink traps in port context in mlx5
+ethernet driver.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Li Heng <liheng40@huawei.com>
----
- drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h | 7 -------
- 1 file changed, 7 deletions(-)
+Changelog:
+Minor changes in cover letter
+v1->v2:
+Patch 1: 
+-Gather only the traps lists for future code reuse. Don't
+ try to reuse the traps ops.
+Ptach 2: 
+-Add traps lock in devlink_port
+-Add devlink_port ops and in it, add the trap ops
+-Add support onlty for traps and exclude groups and policy
+-Add separate netlink commands for port trap get and set 
+-Allow trap registration without a corresponding group
+Patch 3: removed
+Ptach 4: 
+-Is now patch 3
+-Minor changes in trap's definition
+-Adjustments to trap API and ops
 
-diff --git a/drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h b/drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h
-index f4c9bef..f67f537 100644
---- a/drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h
-+++ b/drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h
-@@ -1335,13 +1335,6 @@ static const u32 ar9580_1p0_pcie_phy_clkreq_enable_L1[][2] = {
- 	{0x00004044, 0x00000000},
- };
+Aya Levin (3):
+  devlink: Wrap trap related lists a trap_lists struct
+  devlink: Add devlink traps under devlink_ports context
+  net/mlx5e: Add devlink trap to catch oversize packets
 
--static const u32 ar9580_1p0_pcie_phy_clkreq_disable_L1[][2] = {
--	/* Addr      allmodes  */
--	{0x00004040, 0x0831365e},
--	{0x00004040, 0x0008003b},
--	{0x00004044, 0x00000000},
--};
--
- static const u32 ar9580_1p0_pcie_phy_pll_on_clkreq[][2] = {
- 	/* Addr      allmodes  */
- 	{0x00004040, 0x0831265e},
---
-2.7.4
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   2 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/traps.c |  38 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en/traps.h |  14 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  48 +++
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  11 +-
+ include/net/devlink.h                              |  54 ++-
+ include/uapi/linux/devlink.h                       |   5 +
+ net/core/devlink.c                                 | 453 ++++++++++++++++++---
+ 9 files changed, 556 insertions(+), 71 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/traps.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/traps.h
+
+-- 
+2.14.1
 
