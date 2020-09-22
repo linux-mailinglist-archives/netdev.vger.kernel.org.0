@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F8227377D
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 02:31:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3BF1273776
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 02:31:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729147AbgIVAbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 20:31:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60424 "EHLO mail.kernel.org"
+        id S1729369AbgIVAbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 20:31:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60454 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729051AbgIVAbT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 20:31:19 -0400
+        id S1729133AbgIVAbS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 20:31:18 -0400
 Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8F5FF23AA2;
-        Tue, 22 Sep 2020 00:31:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8835023A9B;
+        Tue, 22 Sep 2020 00:31:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600734676;
-        bh=AshaQjj2FPoN7AlF1OA03ob9oqXHSSZlsv3tTJ4o1/c=;
+        s=default; t=1600734677;
+        bh=Y2oFJpsXKuz9brmOv2nDm4K1ApXJ4gVoN8Gr0WY4Aew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Z2Sfx1VHYygGkJ/TcjIRkVTIcnVahhrR6OejLrpqVpEWMxKR06qqAGdcXU6y6ry2
-         EuoGD3TvWcabHzoXh1W8U4rsYWeg3eCCCxU3ZJrVDmyvpE9KH5IdpspcJiJ44pJwTn
-         gBy+s7QlWmegIEKRJT+NSru+M1oHs0XsnCLRlLS0=
+        b=Ve+7ZyotoNDN3fTvlA1oPhRL7Kg1dWxtgviz6CqJNj4OGGHKnsA5BXpNG2sFiZQv7
+         OIWhWs6v6IlBdxsRY5VJ4YxmWzv/Fs9YFpHkjt/whX/lszn8X32zLaQkR82Uc4XWJK
+         wGafA15+g9vEchw31WnaaougbcXvvtIp0cbO7Bbw=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Alaa Hleihel <alaa@nvidia.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@mellanox.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net V2 09/15] net/mlx5e: Fix using wrong stats_grps in mlx5e_update_ndo_stats()
-Date:   Mon, 21 Sep 2020 17:30:55 -0700
-Message-Id: <20200922003101.529117-10-saeed@kernel.org>
+Subject: [net V2 10/15] net/mlx5e: TLS, Do not expose FPGA TLS counter if not supported
+Date:   Mon, 21 Sep 2020 17:30:56 -0700
+Message-Id: <20200922003101.529117-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200922003101.529117-1-saeed@kernel.org>
 References: <20200922003101.529117-1-saeed@kernel.org>
@@ -42,146 +41,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alaa Hleihel <alaa@nvidia.com>
+From: Tariq Toukan <tariqt@mellanox.com>
 
-The cited commit started to reuse function mlx5e_update_ndo_stats() for
-the representors as well.
-However, the function is hard-coded to work on mlx5e_nic_stats_grps only.
-Due to this issue, the representors statistics were not updated in the
-output of "ip -s".
+The set of TLS TX global SW counters in mlx5e_tls_sw_stats_desc
+is updated from all rings by using atomic ops.
+This set of stats is used only in the FPGA TLS use case, not in
+the Connect-X TLS one, where regular per-ring counters are used.
 
-Fix it to work with the correct group by extracting it from the caller's
-profile.
+Do not expose them in the Connect-X use case, as this would cause
+counter duplication. For example, tx_tls_drop_no_sync_data would
+appear twice in the ethtool stats.
 
-Also, while at it and since this function became generic, move it to
-en_stats.c and rename it accordingly.
-
-Fixes: 8a236b15144b ("net/mlx5e: Convert rep stats to mlx5e_stats_grp-based infra")
-Signed-off-by: Alaa Hleihel <alaa@nvidia.com>
-Reviewed-by: Vlad Buslov <vladbu@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Fixes: d2ead1f360e8 ("net/mlx5e: Add kTLS TX HW offload support")
+Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h         |  1 -
- .../ethernet/mellanox/mlx5/core/en/monitor_stats.c   |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c    | 12 +-----------
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c     |  4 ++--
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c   | 12 ++++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.h   |  1 +
- 6 files changed, 17 insertions(+), 15 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en_accel/tls_stats.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 5d7b79518449..90d5caabd6af 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -1005,7 +1005,6 @@ int mlx5e_update_nic_rx(struct mlx5e_priv *priv);
- void mlx5e_update_carrier(struct mlx5e_priv *priv);
- int mlx5e_close(struct net_device *netdev);
- int mlx5e_open(struct net_device *netdev);
--void mlx5e_update_ndo_stats(struct mlx5e_priv *priv);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_stats.c
+index 01468ec27446..b949b9a7538b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_stats.c
+@@ -35,7 +35,6 @@
+ #include <net/sock.h>
  
- void mlx5e_queue_update_stats(struct mlx5e_priv *priv);
- int mlx5e_bits_invert(unsigned long a, int size);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/monitor_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en/monitor_stats.c
-index 8fe8b4d6ad1c..254c84739046 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/monitor_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/monitor_stats.c
-@@ -51,7 +51,7 @@ static void mlx5e_monitor_counters_work(struct work_struct *work)
- 					       monitor_counters_work);
+ #include "en.h"
+-#include "accel/tls.h"
+ #include "fpga/sdk.h"
+ #include "en_accel/tls.h"
  
- 	mutex_lock(&priv->state_lock);
--	mlx5e_update_ndo_stats(priv);
-+	mlx5e_stats_update_ndo_stats(priv);
- 	mutex_unlock(&priv->state_lock);
- 	mlx5e_monitor_counter_arm(priv);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index d46047235568..b3cda7b6e5e1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -158,16 +158,6 @@ static void mlx5e_update_carrier_work(struct work_struct *work)
- 	mutex_unlock(&priv->state_lock);
- }
+@@ -51,9 +50,14 @@ static const struct counter_desc mlx5e_tls_sw_stats_desc[] = {
  
--void mlx5e_update_ndo_stats(struct mlx5e_priv *priv)
--{
--	int i;
--
--	for (i = mlx5e_nic_stats_grps_num(priv) - 1; i >= 0; i--)
--		if (mlx5e_nic_stats_grps[i]->update_stats_mask &
--		    MLX5E_NDO_UPDATE_STATS)
--			mlx5e_nic_stats_grps[i]->update_stats(priv);
--}
--
- static void mlx5e_update_stats_work(struct work_struct *work)
- {
- 	struct mlx5e_priv *priv = container_of(work, struct mlx5e_priv,
-@@ -5187,7 +5177,7 @@ static const struct mlx5e_profile mlx5e_nic_profile = {
- 	.enable		   = mlx5e_nic_enable,
- 	.disable	   = mlx5e_nic_disable,
- 	.update_rx	   = mlx5e_update_nic_rx,
--	.update_stats	   = mlx5e_update_ndo_stats,
-+	.update_stats	   = mlx5e_stats_update_ndo_stats,
- 	.update_carrier	   = mlx5e_update_carrier,
- 	.rx_handlers       = &mlx5e_rx_handlers_nic,
- 	.max_tc		   = MLX5E_MAX_NUM_TC,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index e13e5d1b3eae..e979bff64c49 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -1171,7 +1171,7 @@ static const struct mlx5e_profile mlx5e_rep_profile = {
- 	.cleanup_tx		= mlx5e_cleanup_rep_tx,
- 	.enable		        = mlx5e_rep_enable,
- 	.update_rx		= mlx5e_update_rep_rx,
--	.update_stats           = mlx5e_update_ndo_stats,
-+	.update_stats           = mlx5e_stats_update_ndo_stats,
- 	.rx_handlers            = &mlx5e_rx_handlers_rep,
- 	.max_tc			= 1,
- 	.rq_groups		= MLX5E_NUM_RQ_GROUPS(REGULAR),
-@@ -1189,7 +1189,7 @@ static const struct mlx5e_profile mlx5e_uplink_rep_profile = {
- 	.enable		        = mlx5e_uplink_rep_enable,
- 	.disable	        = mlx5e_uplink_rep_disable,
- 	.update_rx		= mlx5e_update_rep_rx,
--	.update_stats           = mlx5e_update_ndo_stats,
-+	.update_stats           = mlx5e_stats_update_ndo_stats,
- 	.update_carrier	        = mlx5e_update_carrier,
- 	.rx_handlers            = &mlx5e_rx_handlers_rep,
- 	.max_tc			= MLX5E_MAX_NUM_TC,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-index e3b2f59408e6..f6383bc2bc3f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-@@ -54,6 +54,18 @@ unsigned int mlx5e_stats_total_num(struct mlx5e_priv *priv)
- 	return total;
- }
+ #define NUM_TLS_SW_COUNTERS ARRAY_SIZE(mlx5e_tls_sw_stats_desc)
  
-+void mlx5e_stats_update_ndo_stats(struct mlx5e_priv *priv)
++static bool is_tls_atomic_stats(struct mlx5e_priv *priv)
 +{
-+	mlx5e_stats_grp_t *stats_grps = priv->profile->stats_grps;
-+	const unsigned int num_stats_grps = stats_grps_num(priv);
-+	int i;
-+
-+	for (i = num_stats_grps - 1; i >= 0; i--)
-+		if (stats_grps[i]->update_stats &&
-+		    stats_grps[i]->update_stats_mask & MLX5E_NDO_UPDATE_STATS)
-+			stats_grps[i]->update_stats(priv);
++	return priv->tls && !mlx5_accel_is_ktls_device(priv->mdev);
 +}
 +
- void mlx5e_stats_update(struct mlx5e_priv *priv)
+ int mlx5e_tls_get_count(struct mlx5e_priv *priv)
  {
- 	mlx5e_stats_grp_t *stats_grps = priv->profile->stats_grps;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-index be7cda283781..562263d62141 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-@@ -103,6 +103,7 @@ unsigned int mlx5e_stats_total_num(struct mlx5e_priv *priv);
- void mlx5e_stats_update(struct mlx5e_priv *priv);
- void mlx5e_stats_fill(struct mlx5e_priv *priv, u64 *data, int idx);
- void mlx5e_stats_fill_strings(struct mlx5e_priv *priv, u8 *data);
-+void mlx5e_stats_update_ndo_stats(struct mlx5e_priv *priv);
+-	if (!priv->tls)
++	if (!is_tls_atomic_stats(priv))
+ 		return 0;
  
- /* Concrete NIC Stats */
+ 	return NUM_TLS_SW_COUNTERS;
+@@ -63,7 +67,7 @@ int mlx5e_tls_get_strings(struct mlx5e_priv *priv, uint8_t *data)
+ {
+ 	unsigned int i, idx = 0;
  
+-	if (!priv->tls)
++	if (!is_tls_atomic_stats(priv))
+ 		return 0;
+ 
+ 	for (i = 0; i < NUM_TLS_SW_COUNTERS; i++)
+@@ -77,7 +81,7 @@ int mlx5e_tls_get_stats(struct mlx5e_priv *priv, u64 *data)
+ {
+ 	int i, idx = 0;
+ 
+-	if (!priv->tls)
++	if (!is_tls_atomic_stats(priv))
+ 		return 0;
+ 
+ 	for (i = 0; i < NUM_TLS_SW_COUNTERS; i++)
 -- 
 2.26.2
 
