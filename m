@@ -2,95 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DE5C2746B0
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 18:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1808D2746C0
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 18:36:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726694AbgIVQay (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 12:30:54 -0400
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:56224 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726508AbgIVQay (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 12:30:54 -0400
+        id S1726601AbgIVQg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 12:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726558AbgIVQgZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 12:36:25 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979AEC061755
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 09:36:25 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id u4so14681054ljd.10
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 09:36:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1600792253; x=1632328253;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=K4HWuij3R4oEOk1m1Z6GT4wg3YqvVFj3qM8OdKI1HL8=;
-  b=hlVGyjSFPSWTXGPaZJaeFF45OCjpEWkfZFbJmI+1XCdQHL8TTxnINK8V
-   UO9O6hYpwO3/Okq1eWUhNNPy1/89S4DtGFp1XmDVVHOpFs5Bu4SCoSjhA
-   6NVZ/qVptJpCg3zbj9e16SZSTCKK6ZNs7RZs4RN37B9kfrlSepQOpMIJI
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.77,291,1596499200"; 
-   d="scan'208";a="57002667"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 22 Sep 2020 16:30:52 +0000
-Received: from EX13D19EUB003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com (Postfix) with ESMTPS id 37AAB281FDE;
-        Tue, 22 Sep 2020 16:30:47 +0000 (UTC)
-Received: from 8c85908914bf.ant.amazon.com (10.43.161.237) by
- EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 22 Sep 2020 16:30:39 +0000
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-CC:     Oded Gabbay <oded.gabbay@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <izur@habana.ai>, Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, SW_Drivers <SW_Drivers@habana.ai>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        <linux-rdma@vger.kernel.org>, Olof Johansson <olof@lixom.net>
-References: <20200918135915.GT8409@ziepe.ca>
- <CAFCwf13rJgb4=as7yW-2ZHvSnUd2NK1GP0UKKjyMfkB3vsnE5w@mail.gmail.com>
- <20200918141909.GU8409@ziepe.ca>
- <CAFCwf121_UNivhfPfO6uFoHbF+2Odeb1c3+482bOXeOZUsEnug@mail.gmail.com>
- <20200918150735.GV8409@ziepe.ca>
- <CAFCwf13y1VVy90zAoBPC-Gfj6mwMVbefh3fxKDVneuscp4esqA@mail.gmail.com>
- <20200918152852.GW8409@ziepe.ca>
- <b0721756-d323-b95e-b2d2-ca3ce8d4a660@amazon.com>
- <20200922114101.GE8409@ziepe.ca>
- <a16802a2-4a36-e03d-a927-c5cb7c766b99@amazon.com>
- <20200922161429.GI8409@ziepe.ca>
-From:   Gal Pressman <galpress@amazon.com>
-Message-ID: <e06c573a-99a7-906c-8197-847a61fba44a@amazon.com>
-Date:   Tue, 22 Sep 2020 19:30:32 +0300
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.2.2
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=Zvd0Ap6L4o6JZrVLV8y+IeTjkBA7X+C7BCxEgSrzsJE=;
+        b=QRg1i5yUY8Fic13ZFm2ITBqogdjSnpXFMgIYandW3TFTcXtMbdlh0Q0HUgf91r5jsN
+         2Ph+yQH6+qJ6TzwzXMCFrdyeB5CawBn9TaYSlGKw2IuxGDyyOcoQ43wSTu3Bc4Ntpuan
+         YS4c7mbRfTQyPOCJRzj3zpUXKNjUFTKsgtLq/efN+YvulKpAYOPMLNWSldI81eB0aTBU
+         +WawClhdiVzC2zEgVeY3ZA2VPbxtbi6miNBCEhOcYYex1ry6QxrmAguWm0KC0hwhbhux
+         cElBptk+IUT/BOlRYKvNM9b2CKxKNUtxD1jpcITKYEkweH+HgmCTWALL5D/Rcx/u6xWQ
+         D60Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=Zvd0Ap6L4o6JZrVLV8y+IeTjkBA7X+C7BCxEgSrzsJE=;
+        b=Dojsnm8qQJx+gCEerKH3xINOLjWZN+y2Vsum8eJIJ8lV0rfyKmdoZY2O8UNQ5dOEVL
+         ENWgk1EapZVY4OynZJn+dJK54XQpogeTOm9Xlz35hAiP8Xv40c0BhS5osTWSX2/R95Th
+         jnTsWy3C7pGxHvmqznwUcYrVKgPrOnsy4kXHQqM30VcDXdufsC2RJfVDb9LQsjNu6Ljb
+         2hhlMZXUwT/HSIgqsgzMCPFpWNfi5TAAkFInDQ2DWxvmXOp6+calNkhPD7PU5LjOOxTe
+         dTr/vP3eSClmtmx8yOJNrTDhzYnTGWIdwJ0JHajTZnetMZ2MIP4hNMpBZmMlt4jYDVJm
+         vl4g==
+X-Gm-Message-State: AOAM5326+v39dfhUpFH+wGdhbHkAGCGvgjBko7G+6JuSQE6k7CyVZqHA
+        Y4eqAiNkmmFYjpy04CS2vXhYNUljV+P7CiN4c5w=
+X-Google-Smtp-Source: ABdhPJworpk2pPxiR1dcw1rJqdq1+y1llVmFjmYXdZiOXwd8ALKdhnw8+GUdpcxnlT/I9iNNKne0g9JwHOlDgRwJqTc=
+X-Received: by 2002:a2e:b174:: with SMTP id a20mr1723484ljm.407.1600792583928;
+ Tue, 22 Sep 2020 09:36:23 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200922161429.GI8409@ziepe.ca>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.43.161.237]
-X-ClientProxiedBy: EX13D03UWA001.ant.amazon.com (10.43.160.141) To
- EX13D19EUB003.ant.amazon.com (10.43.166.69)
+Received: by 2002:ab3:7391:0:0:0:0:0 with HTTP; Tue, 22 Sep 2020 09:36:23
+ -0700 (PDT)
+Reply-To: owusup021@gmail.com
+From:   Marcus <powusujr5@gmail.com>
+Date:   Tue, 22 Sep 2020 17:36:23 +0100
+Message-ID: <CAMjcLWu8Sbswx=H7mRJ4JZLP_OMd1BXL5cjPzmwsDNODyJ6ToA@mail.gmail.com>
+Subject: REPLY
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/09/2020 19:14, Jason Gunthorpe wrote:
-> On Tue, Sep 22, 2020 at 03:46:29PM +0300, Gal Pressman wrote:
-> 
->> I agree, that makes sense.
->> But assuming Oded actually goes and implements all the needed verbs to get a
->> basic functional libibverbs provider (assuming their HW can do it somehow), is
->> it really useful if no one is going to use it?
->> It doesn't sound like habanalabs want people to use GAUDI as an RDMA adapter,
->> and I'm assuming the only real world use case is going to be using the hl stack,
->> which means we're left with a lot of dead code that's not used/tested by anyone.
->>
->> Genuine question, wouldn't it be better if they only implement what's actually
->> going to be used and tested by their customers?
-> 
-> The general standard for this 'accel' hardware, both in DRM and RDMA
-> is to present an open source userspace. Companies are encouraged to
-> use that as their main interface but I suppose are free to carry the
-> cost of dual APIs, and the community's wrath if they want.
-
-I didn't mean they should maintain two interfaces.
-The question is whether they should implement libibverbs support that covers the
-cases used by their stack, or should they implement all "mandatory" verbs so
-they could be able to run libibverbs' examples/perftest/pyverbs as well, even
-though these will likely be the only apps covering these verbs.
+My Greetings,
+I am a banker, the Chief Auditor in our bank. I have the ability to
+transfer unclaimed funds that belong to one of our late customer who
+died in a car crash along with his family and no one came to claim the
+funds, if left unclaimed the fund will be transferred to the state
+treasury in the bank so I invite you to a deal where we can facilitate
+the transfer of this fund and I promise to share it equal with you
+when it is transferred into your account.
+Let me know your interest to do this business with me for more details.
+I wait to hear from you soon.
+Best Regards,
+Marcus.
