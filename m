@@ -2,104 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64B0F274D2C
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 01:16:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC56B274D31
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 01:17:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726757AbgIVXQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 19:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726448AbgIVXQu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 19:16:50 -0400
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB533C061755
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 16:16:49 -0700 (PDT)
-Received: by mail-ot1-x342.google.com with SMTP id m13so12747157otl.9
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 16:16:49 -0700 (PDT)
+        id S1726808AbgIVXRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 19:17:53 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:49591 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726786AbgIVXRx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 19:17:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZqvQ2BJN+fxtbxTJ+f0dKXvswWsP77F104iJ+8/BjLE=;
-        b=BsnFk9Wasu2CYlnHTnoD+5Gu76wCuPmh8RAFdD3s/xNLIOjcd0A+5LsWIqAijhAYb+
-         WF4aSEmgUVMeRgVo0+sP8MzYJCnzo+cpT+q/Lk/LIw0Ugp0nNPepk+HWphG3fc1lCyal
-         rW2DO7jfMy2wVJgmSYos19mA4gzSBZpARIEU7hrG/yK6bYyqWrQ7396bsuGcxLwRtonM
-         b+xZdTsRtW8bg+4J5x9m4LfUJRgZiijQJ+qcYtNHCgHHXY+C0c0BMZLQhpLqRQh8g77H
-         MEWRY7tllb72kvtqndvPBsnnM40vfAJKDpNSJGI54+nSjI7ziHHTc5loaiitc/XDnosU
-         pPEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZqvQ2BJN+fxtbxTJ+f0dKXvswWsP77F104iJ+8/BjLE=;
-        b=RlHhaKjyi/He0EHRSSTfzskM+VDkPCFGmwBsrb1ArRPXiTOmbVguEV197G/HRtjm82
-         QN1IQjAbbKMY+O5/J4p4e5uZfPd8uLlRVjIxO/OPWVd4fDAMK7dkpwcwXQy7eVYNCELm
-         lN7XyShsYoad4z10vXFtSnluxgK6g9ZKv9SM1btJEjZQ00T3Aw8RDs438OyiBunTPr1U
-         TSOJ1YmQTQgaPHlLyaHmUR35326+6TMDA/9UA19xPE26tAGoSmLsY/wpi+fOuL5njf0V
-         6vtyy0uDszCqT79IGK9PidkDZCg/to8YpPWCmJqEtZdx784dTgViE7yhC516I83EtE0M
-         tU6Q==
-X-Gm-Message-State: AOAM531udZvSEqFUgdX/L9KfPH+c1k0yNCDziQa9wYTHXdspJqYl5ISj
-        E4yIPM5lt9il+XjQm8hmSZ53uAplrJTQgQ==
-X-Google-Smtp-Source: ABdhPJyzQ0qTaHuTO4+WbylhVEqRmNkdOgzuMv0Mh8iFz2dswOfTJSP8n73zzinwjWx4NFJEQIhmlg==
-X-Received: by 2002:a9d:4c01:: with SMTP id l1mr4426612otf.341.1600816609011;
-        Tue, 22 Sep 2020 16:16:49 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:1cd7:3896:e667:9e25])
-        by smtp.googlemail.com with ESMTPSA id x15sm8469014oor.33.2020.09.22.16.16.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Sep 2020 16:16:48 -0700 (PDT)
-Subject: Re: [PATCH iproute2] ip: do not exit if RTM_GETNSID failed
-To:     Jan Engelhardt <jengelh@inai.de>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-References: <20200921235318.14001-1-jengelh@inai.de>
- <20200921172232.7c51b6b7@hermes.lan>
- <nycvar.YFH.7.78.908.2009220817270.10964@n3.vanv.qr>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7214fc31-42f4-2a47-0f01-426bed14711d@gmail.com>
-Date:   Tue, 22 Sep 2020 17:16:46 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1600816673; x=1632352673;
+  h=date:from:to:cc:message-id:references:mime-version:
+   in-reply-to:subject;
+  bh=5R3Krtkzle1NhoP1m+0L88WAV6llnORnKP70Telk+cY=;
+  b=IJcFpl9QCXh26T5Vdj8LU31Kqbuf7YD4MU5ly6hdXCNM8ECbpQsJXwoo
+   FJ9MraRYqA5ozZYnIEWY6YPa/OVCefsdYceX/r+zRCHC7fhL+PuMcvMto
+   DC5/8KlrN1IAiOy0wLoQQesqBCuXq4heD/+pD/ar2w1xe8uyaQzVRYfnJ
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.77,292,1596499200"; 
+   d="scan'208";a="55658258"
+Subject: Re: [PATCH v3 01/11] xen/manage: keep track of the on-going suspend mode
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-168cbb73.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 22 Sep 2020 23:17:50 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2c-168cbb73.us-west-2.amazon.com (Postfix) with ESMTPS id 84C6DA1C30;
+        Tue, 22 Sep 2020 23:17:48 +0000 (UTC)
+Received: from EX13D10UWB003.ant.amazon.com (10.43.161.106) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 22 Sep 2020 23:17:36 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
+ EX13D10UWB003.ant.amazon.com (10.43.161.106) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 22 Sep 2020 23:17:36 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Tue, 22 Sep 2020 23:17:36 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id 81337408C3; Tue, 22 Sep 2020 23:17:36 +0000 (UTC)
+Date:   Tue, 22 Sep 2020 23:17:36 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     <boris.ostrovsky@oracle.com>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <hpa@zytor.com>, <x86@kernel.org>, <jgross@suse.com>,
+        <linux-pm@vger.kernel.org>, <linux-mm@kvack.org>,
+        <kamatam@amazon.com>, <sstabellini@kernel.org>,
+        <konrad.wilk@oracle.com>, <roger.pau@citrix.com>,
+        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
+        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
+        <eduval@amazon.com>, <sblbir@amazon.com>,
+        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dwmw@amazon.co.uk>, <benh@kernel.crashing.org>
+Message-ID: <20200922231736.GA24215@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <cover.1598042152.git.anchalag@amazon.com>
+ <9b970e12491107afda0c1d4a6f154b52d90346ac.1598042152.git.anchalag@amazon.com>
+ <4b2bbc8b-7817-271a-4ff0-5ee5df956049@oracle.com>
+ <20200914214754.GA19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <e9b94104-d20a-b6b2-cbe0-f79b1ed09c98@oracle.com>
+ <20200915180055.GB19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <5f1e4772-7bd9-e6c0-3fe6-eef98bb72bd8@oracle.com>
+ <20200921215447.GA28503@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <e3e447e5-2f7a-82a2-31c8-10c2ffcbfb2c@oracle.com>
 MIME-Version: 1.0
-In-Reply-To: <nycvar.YFH.7.78.908.2009220817270.10964@n3.vanv.qr>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <e3e447e5-2f7a-82a2-31c8-10c2ffcbfb2c@oracle.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/22/20 12:28 AM, Jan Engelhardt wrote:
-> 
-> On Tuesday 2020-09-22 02:22, Stephen Hemminger wrote:
->> Jan Engelhardt <jengelh@inai.de> wrote:
->>
->>> `ip addr` when run under qemu-user-riscv64, fails. This likely is
->>> due to qemu-5.1 not doing translation of RTM_GETNSID calls.
->>>
->>> 2: host0@if5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
->>>     link/ether 5a:44:da:1a:c4:0b brd ff:ff:ff:ff:ff:ff
->>> request send failed: Operation not supported
->>>
->>> Treat the situation similar to an absence of procfs.
->>>
->>> Signed-off-by: Jan Engelhardt <jengelh@inai.de>
->>
->> Not a good idea to hide a platform bug in ip command.
->> When you do this, you risk creating all sorts of issues for people that
->> run ip commands in container environments where the send is rejected (perhaps by SELinux)
->> and then things go off into a different failure.
-> 
-> In the very same function you do
-> 
->   fd = open("/proc/self/ns/net", O_RDONLY);
-> 
-> which equally hides a potential platform bug (namely, forgetting to
-> mount /proc in a chroot, or in case SELinux was improperly set-up).
-> Why is this measured two different ways?
+On Tue, Sep 22, 2020 at 12:18:05PM -0400, boris.ostrovsky@oracle.com wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
 > 
 > 
-
-I think checking for EOPNOTSUPP error is more appropriate than ignoring
-all errors.
-
+> 
+> On 9/21/20 5:54 PM, Anchal Agarwal wrote:
+> > Thanks for the above suggestion. You are right I didn't find a way to declare
+> > a global state either. I just broke the above check in 2 so that once we have
+> > support for ARM we should be able to remove aarch64 condition easily. Let me
+> > know if I am missing nay corner cases with this one.
+> >
+> > static int xen_pm_notifier(struct notifier_block *notifier,
+> >       unsigned long pm_event, void *unused)
+> > {
+> >     int ret = NOTIFY_OK;
+> >     if (!xen_hvm_domain() || xen_initial_domain())
+> >       ret = NOTIFY_BAD;
+> >     if(IS_ENABLED(CONFIG_ARM64) && (pm_event == PM_SUSPEND_PREPARE || pm_event == HIBERNATION_PREPARE))
+> >       ret = NOTIFY_BAD;
+> >
+> >     return ret;
+> > }
+> 
+> 
+> 
+> This will allow PM suspend to proceed on x86.
+Right!! Missed it.
+Also, wrt KASLR stuff, that issue is still seen sometimes but I haven't had
+bandwidth to dive deep into the issue and fix it. I seem to have lost your email
+in my inbox hence covering the question here.
+> 
+> 
+> -boris
+> 
