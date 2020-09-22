@@ -2,99 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 806DF27457E
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 17:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C48C72745BF
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 17:51:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726798AbgIVPjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 11:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
+        id S1726662AbgIVPvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 11:51:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726566AbgIVPjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 11:39:42 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B28C061755
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 08:39:41 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id c13so21496578oiy.6
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 08:39:41 -0700 (PDT)
+        with ESMTP id S1726632AbgIVPvE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 11:51:04 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F24C061755
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 08:51:04 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id b3so16615548ybg.23
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 08:51:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=A8kug25xx7LS28snVa7SqfoVO+k+aheKuzyDU8XP1HI=;
-        b=iNMVtuZZnb03bK+bz8kgA31hnTJAqcGJRFbACY9EzWnUF/Nc5KadLJH3gML9xSQG8o
-         Vheugbdo3YKdQqAx4+3XAVr+xY+dEwHN/TDjjfDjkDQBFnK+B3BF0Xu+2jU+FNjJuEy1
-         1MK2m/eDlz6n2gjULDBq7tarnOz0z1JMiKIYdRpwx21yUnfDMgaGBdPUoPaD1tDi665Y
-         kgGo2ABp6E3H9QjM51KsFa+Zq8GeCyGtupwkPzs0avfwncvbRONuskCJnmgEgRFqLzNB
-         7AJmCmInexTL6eUtqAlt5QdtsU1mltIFZvasoVRRtMXo9U81ZutOmz5+noEV69Gmly4d
-         sAXA==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=QduIUPI8M0Jyasp3rgQs27f0auOCJKur9ovSruhKBDE=;
+        b=lUupqbDXR3SdQaGCGoYuzxwEDK0oAo8uEqs8lJZQrC4Fgbcvf94XEMvwa6yRxcgZPh
+         Hc/iLq6xGinG8A9Q+tkOZ/nTf+UZVhza/B4NPe9gY5w57AXDSxXDqzzJPuchJR9mFTH2
+         7g4Rn99m1AZ4bLm3vpm/4weZax1fYTmetcxkoNmKkcXHSJLXwwupGVZyRva1EgFh1sHF
+         eXwnB+abCRLUdeINz6fdSAdocOqW0pIpcs/K5G7wioeZn5Ejc7ug5g3tU4HSUAe6w9in
+         iN6Uki91Y3m0So0DAfh1lidWoIndNZMt+H+7Zx+UgewFPeW5cGADxTtQ90uAklRwEKG0
+         A0dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=A8kug25xx7LS28snVa7SqfoVO+k+aheKuzyDU8XP1HI=;
-        b=Uf2XG8E86RH4OdojPdK8Qr9l3ZGzS4rS7r1xAJefzZx02RWe4KyaALDkYKpVrKLLBM
-         nf+l8PM/2AM4ImMiawklqPbpa9UP9fdWAyj9lpI/TFJohvx/f3aHLttpYT7lM0Jvnn1h
-         mQNGZUX7P5ahHkQx1gJ8cA0+vCu9Ifkokl/S3hwXxKUyH02lXpnHG1GKlN5S3Nyp90Xb
-         BuWOdteZ7BswHxsdNAT6yLn4xA/gMC6o9CILnTkJWaF+oa5hOhgHYNYXAMWDBQP0nXZL
-         mUxavREOfRvF5aFWUqKzQtrBdjTp7cukKYBTR865bTzR4jiE29WWuUoyFc2ShXdE01pr
-         eX6w==
-X-Gm-Message-State: AOAM531Fszsj3WE+L+lT6sBNn8WueQOQu315fQnAAcUTxLzqNVlKx16U
-        kmQEQ5pC3tA6Em5GEr/MMLUJdA/+yh8HhQ==
-X-Google-Smtp-Source: ABdhPJxMKIeneHrqao6uCOm2C5kCOZn0P3GaCtYzmm0wkJzSai4dSqg6OAAZLQo0+34ATda3iUKOfA==
-X-Received: by 2002:aca:5903:: with SMTP id n3mr3029458oib.159.1600789180984;
-        Tue, 22 Sep 2020 08:39:40 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:b4d9:d40c:35f4:2d4f])
-        by smtp.googlemail.com with ESMTPSA id l4sm7450555oie.25.2020.09.22.08.39.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Sep 2020 08:39:40 -0700 (PDT)
-Subject: Re: ip rule iif oif and vrf
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org
-References: <20200922131122.GB1601@ICIPI.localdomain>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2bea9311-e6b6-91ea-574a-4aa7838d53ea@gmail.com>
-Date:   Tue, 22 Sep 2020 09:39:36 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <20200922131122.GB1601@ICIPI.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=QduIUPI8M0Jyasp3rgQs27f0auOCJKur9ovSruhKBDE=;
+        b=s97Sp4c5IrNZHtrdkCxAmCwjO++ZHQyRGO4mv9NgtYwhtL3pf2x1wwPAd01MOHzUb6
+         zWeVebklHjOvw6FTVWrYGGe2vOsQRJTecrkTv0iUlkVlNMxFgCLhm/ReQh4gdrTvkY8E
+         1heiXcmq7O8nRM3gxHQkN8cjt1nY4/PC9IbKwQMdmD9InGH8RSbXSEpAZ5yRAse6GT8p
+         I9S7/mtkMJqkEK/+5GV/hJxx4TK7To8unj64yqxdZ1IjivRziGcEZRK43VxRcJo38TkD
+         myoYDbgWNGH/v/kdDAz6pWSL50LKsmB1DImIsZ7PUaC3ITjGXIWTO418ga5UQyBm8wDf
+         1TTQ==
+X-Gm-Message-State: AOAM5324dw8JSLRhl2F0jYBKD8lmIRA8BR0OdlOvhDFq8/kAFhwLsejQ
+        fI7+qTTdzVGTfng8+ZPlp+zmAiQiWlTNlteKhdzFcvbqG+LvE7iYT2nVUVGFXtK3JrYbDomqxkp
+        xygKGdQDI/yNvI+RtOF0BDOXgz8LjkyUZ9KKHeLKmYdLGn4YM4hJv7SC9CahjQIqECdH5/B3O
+X-Google-Smtp-Source: ABdhPJy4/1I9LUnvtpqT081zcDJwIex5EzJjAzXUNBSHKYoF142sb4igeNb7USkOFYgPcudlzvhZXyMbguWcPZG/
+Sender: "awogbemila via sendgmr" <awogbemila@awogbemila.sea.corp.google.com>
+X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:1ea0:b8ff:fe73:6cc0])
+ (user=awogbemila job=sendgmr) by 2002:a25:242:: with SMTP id
+ 63mr7851474ybc.478.1600789863629; Tue, 22 Sep 2020 08:51:03 -0700 (PDT)
+Date:   Tue, 22 Sep 2020 08:50:57 -0700
+Message-Id: <20200922155100.1624976-1-awogbemila@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
+Subject: [PATCH net-next v2 0/3] GVE Raw Addressing
+From:   David Awogbemila <awogbemila@google.com>
+To:     netdev@vger.kernel.org
+Cc:     David Awogbemila <awogbemila@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/22/20 7:11 AM, Stephen Suryaputra wrote:
-> Hi,
-> 
-> We have a use case where there are multiple user VRFs being leak routed
-> to and from tunnels that are on the core VRF. Traffic from user VRF to a
-> tunnel can be done the normal way by specifying the netdev directly on
-> the route entry on the user VRF route table:
-> 
-> ip route add <prefix> via <tunnel_end_point_addr> dev <tunnel_netdev>
-> 
-> But traffic received on the tunnel must be leak routed directly to the
-> respective a specific user VRF because multiple user VRFs can have
-> duplicate address spaces. I am thinking of using ip rule but when the
-> iif is an enslaved device, the rule doesn't get matched because the
-> ifindex in the skb is the master.
-> 
-> My question is: is this a bug, or is there anything else that can be
-> done to make sure that traffic from a tunnel being routed directly to a
-> user VRF? If it is the later, I can work on a patch.
-> 
+Changes from v1:
 
-Might be a side effect of the skb dev change. I would like to remove
-that but it is going to be challenge at this point.
+Patch 1: Remove incorrect indentation change in gve_adminq_describe_device.
 
-take a look at:
-perf record -a -e fib:* -g
-<packets through the tunnel>
-<Ctrl-C>
-perf script
+Catherine Sullivan (3):
+  gve: Add support for raw addressing device option
+  gve: Add support for raw addressing to the rx path
+  gve: Add support for raw addressing in the tx path
 
-What does it say for the lookups - input arguments, table, etc?
+ drivers/net/ethernet/google/gve/gve.h        |  40 ++-
+ drivers/net/ethernet/google/gve/gve_adminq.c |  65 +++-
+ drivers/net/ethernet/google/gve/gve_adminq.h |  15 +-
+ drivers/net/ethernet/google/gve/gve_desc.h   |  18 +-
+ drivers/net/ethernet/google/gve/gve_main.c   |  12 +-
+ drivers/net/ethernet/google/gve/gve_rx.c     | 342 ++++++++++++++-----
+ drivers/net/ethernet/google/gve/gve_tx.c     | 207 +++++++++--
+ 7 files changed, 552 insertions(+), 147 deletions(-)
 
-Any chance you can re-recreate this using namespaces as the different nodes?
+-- 
+2.28.0.681.g6f77f65b4e-goog
+
