@@ -2,113 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42F4B273EFC
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 11:54:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43302273F06
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 11:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726571AbgIVJyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 05:54:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45802 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726353AbgIVJyp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Sep 2020 05:54:45 -0400
-Received: from localhost (lfbn-ncy-1-588-162.w81-51.abo.wanadoo.fr [81.51.203.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 379F22388B;
-        Tue, 22 Sep 2020 09:54:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600768484;
-        bh=wVsuNscc6uO1wPqCG+l9fv4OFQ2ZNZAjEW/5B3rgRLw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cglr/Y6QgsCnfxxoYaxARk5NUazh3bvXU7+VXVr5xkaJVyKgewoev6uEEaZW6rNOD
-         nhVcDXt0qjUWUdWd4n2OuBHvAxf1kiaW9BpVPkOcBAqcYE1VZUz981BpJ1kUcDFrLD
-         bbk0oZfvCh/WzemWd9QF0N+5nwOS/zyRibOK7ZpQ=
-Date:   Tue, 22 Sep 2020 11:54:41 +0200
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Nitesh Narayan Lal <nitesh@redhat.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, mtosatti@redhat.com,
-        sassmann@redhat.com, jeffrey.t.kirsher@intel.com,
-        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
-        bhelgaas@google.com, mike.marciniszyn@intel.com,
-        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
-        jerinj@marvell.com, mathias.nyman@intel.com, jiri@nvidia.com
-Subject: Re: [RFC][Patch v1 2/3] i40e: limit msix vectors based on
- housekeeping CPUs
-Message-ID: <20200922095440.GA5217@lenoir>
-References: <20200909150818.313699-1-nitesh@redhat.com>
- <20200909150818.313699-3-nitesh@redhat.com>
- <20200917112359.00006e10@intel.com>
- <20200921225834.GA30521@lenoir>
- <65513ee8-4678-1f96-1850-0e13dbf1810c@redhat.com>
+        id S1726507AbgIVJ5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 05:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726353AbgIVJ5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 05:57:07 -0400
+Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97A7C061755
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 02:57:06 -0700 (PDT)
+Received: by mail-oi1-x241.google.com with SMTP id w16so20381328oia.2
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 02:57:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=stm1xuTsqpLJMTv8SV3qYFXEHsBh8qCH06mfO4/ZLJM=;
+        b=X3zLDnpTHxVNpnSeioEQ5e0Orn5gI12nN4tFUjfecIgB43UkZldAz6W+Kxsm18FaeP
+         xjDoFe3L7c6VWnvwBBcFGm+2EuKeiwAtrabjeGxv0irBwcEBoeApegLilDY79Z3aKtJU
+         HJi9A5lKCrSrRaWJq3LcCV+O92fyedNWtCRPo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=stm1xuTsqpLJMTv8SV3qYFXEHsBh8qCH06mfO4/ZLJM=;
+        b=rgNeE1AxSYMZR5PrNYt4Ki4dSTwDkj6/aBJa+CcuRtl3ieK0dxJBCcyEzvl3hXXCsW
+         piU562Gy7r4awL1GJscgo6HtZ0Ete6Hvt1MQsi2x50waDdUGk0FtgEhRfWHXly6KV4xV
+         YZ0pp0oJMEM7XJ7xW/wqKyWDL91Mcsq9+r4lA4rQyMV3PufdzQ30nyM6zXeOqPr3U0I5
+         siE9CcrzWiOx5wGQahPIffjroeTQvT18e+76ciboX2mjoTUUwYCySdaj7grRUEymFeJR
+         3Jh6NAb8fyAqpLJYn1ICTumFygs3iJ3wfmUyi0ePxDZS8udEBHh71zWYQ5ValwOgNirp
+         YomA==
+X-Gm-Message-State: AOAM530xNUxs/EH8H7d5xNSG3DyNCeHiHzUTAe45HU3sC4aY8jpn4vnl
+        Rm8S+V19qd7KajarId2OM8U/+yahbgcgsa33yo+VYg==
+X-Google-Smtp-Source: ABdhPJwRZ32H4B9USBBtsRdRpm5blzRVJ7B2k1rWTi/flHu1SbFFYQabeAY1VTSYqts8hVeWZDSqnDoT4bY6LPq5Bic=
+X-Received: by 2002:aca:3087:: with SMTP id w129mr2020496oiw.102.1600768626105;
+ Tue, 22 Sep 2020 02:57:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <65513ee8-4678-1f96-1850-0e13dbf1810c@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200922070409.1914988-1-kafai@fb.com> <20200922070415.1916194-1-kafai@fb.com>
+In-Reply-To: <20200922070415.1916194-1-kafai@fb.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Tue, 22 Sep 2020 10:56:55 +0100
+Message-ID: <CACAyw9_wEMFuymvUC0fsZVJCH0vsvbD9p=CWTZC1jV2gUiu3KA@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 01/11] bpf: Move the PTR_TO_BTF_ID check to check_reg_type()
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 21, 2020 at 11:08:20PM -0400, Nitesh Narayan Lal wrote:
-> 
-> On 9/21/20 6:58 PM, Frederic Weisbecker wrote:
-> > On Thu, Sep 17, 2020 at 11:23:59AM -0700, Jesse Brandeburg wrote:
-> >> Nitesh Narayan Lal wrote:
-> >>
-> >>> In a realtime environment, it is essential to isolate unwanted IRQs from
-> >>> isolated CPUs to prevent latency overheads. Creating MSIX vectors only
-> >>> based on the online CPUs could lead to a potential issue on an RT setup
-> >>> that has several isolated CPUs but a very few housekeeping CPUs. This is
-> >>> because in these kinds of setups an attempt to move the IRQs to the
-> >>> limited housekeeping CPUs from isolated CPUs might fail due to the per
-> >>> CPU vector limit. This could eventually result in latency spikes because
-> >>> of the IRQ threads that we fail to move from isolated CPUs.
-> >>>
-> >>> This patch prevents i40e to add vectors only based on available
-> >>> housekeeping CPUs by using num_housekeeping_cpus().
-> >>>
-> >>> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
-> >> The driver changes are straightforward, but this isn't the only driver
-> >> with this issue, right?  I'm sure ixgbe and ice both have this problem
-> >> too, you should fix them as well, at a minimum, and probably other
-> >> vendors drivers:
-> >>
-> >> $ rg -c --stats num_online_cpus drivers/net/ethernet
-> >> ...
-> >> 50 files contained matches
-> > Ouch, I was indeed surprised that these MSI vector allocations were done
-> > at the driver level and not at some $SUBSYSTEM level.
-> >
-> > The logic is already there in the driver so I wouldn't oppose to this very patch
-> > but would a shared infrastructure make sense for this? Something that would
-> > also handle hotplug operations?
-> >
-> > Does it possibly go even beyond networking drivers?
-> 
-> From a generic solution perspective, I think it makes sense to come up with a
-> shared infrastructure.
-> Something that can be consumed by all the drivers and maybe hotplug operations
-> as well (I will have to further explore the hotplug part).
+On Tue, 22 Sep 2020 at 08:04, Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> check_reg_type() checks whether a reg can be used as an arg of a
+> func_proto.  For PTR_TO_BTF_ID, the check is actually not
+> completely done until the reg->btf_id is pointing to a
+> kernel struct that is acceptable by the func_proto.
+>
+> Thus, this patch moves the btf_id check into check_reg_type().
+> The compatible_reg_types[] usage is localized in check_reg_type() now.
+>
+> The "if (!btf_id) verbose(...); " is also removed since it won't happen.
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
+>  kernel/bpf/verifier.c | 65 +++++++++++++++++++++++--------------------
+>  1 file changed, 35 insertions(+), 30 deletions(-)
+>
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 15ab889b0a3f..3ce61c412ea0 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -4028,20 +4028,29 @@ static const struct bpf_reg_types *compatible_reg_types[] = {
+>         [__BPF_ARG_TYPE_MAX]            = NULL,
+>  };
+>
+> -static int check_reg_type(struct bpf_verifier_env *env, u32 regno,
+> -                         const struct bpf_reg_types *compatible)
+> +static int check_reg_type(struct bpf_verifier_env *env, u32 arg,
+> +                         enum bpf_arg_type arg_type,
+> +                         const struct bpf_func_proto *fn)
 
-That would be great. I'm completely clueless about those MSI things and the
-actual needs of those drivers. Now it seems to me that if several CPUs become
-offline, or as is planned in the future, CPU isolation gets enabled/disabled
-through cpuset, then the vectors may need some reorganization.
+How about (env, regno, arg_type, expected_btf_id) instead? Otherwise
+implementing sockmap update from iter with your current approach is
+difficult for me. See resolve_map_arg_type, which now needs to resolve
+expected_bpf_id.
 
-But I don't also want to push toward a complicated solution to handle CPU hotplug
-if there is no actual problem to solve there. So I let you guys judge.
+See below for what I mean:
 
-> However, there are RT workloads that are getting affected because of this
-> issue, so does it make sense to go ahead with this per-driver basis approach
-> for now?
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 2468533bc4a1..3a238a295c37 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -3931,7 +3931,8 @@ static int int_ptr_type_to_size(enum bpf_arg_type type)
 
-Yep that sounds good.
+ static int resolve_map_arg_type(struct bpf_verifier_env *env,
+                  const struct bpf_call_arg_meta *meta,
+-                 enum bpf_arg_type *arg_type)
++                 enum bpf_arg_type *arg_type,
++                 u32 **expected_btf_id)
+ {
+     if (!meta->map_ptr) {
+         /* kernel subsystem misconfigured verifier */
+@@ -3943,7 +3944,8 @@ static int resolve_map_arg_type(struct
+bpf_verifier_env *env,
+     case BPF_MAP_TYPE_SOCKMAP:
+     case BPF_MAP_TYPE_SOCKHASH:
+         if (*arg_type == ARG_PTR_TO_MAP_VALUE) {
+-            *arg_type = ARG_PTR_TO_SOCKET;
++            *arg_type = ARG_PTR_TO_BTF_ID_SOCK_COMMON;
++            *expected_btf_id = &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON];
+         } else {
+             verbose(env, "invalid arg_type for sockmap/sockhash\n");
+             return -EINVAL;
+@@ -4044,11 +4046,9 @@ static const struct bpf_reg_types
+*compatible_reg_types[] = {
+     [__BPF_ARG_TYPE_MAX]        = NULL,
+ };
 
-> 
-> Since a generic solution will require a fair amount of testing and
-> understanding of different drivers. Having said that, I can definetly start
-> looking in that direction.
+-static int check_reg_type(struct bpf_verifier_env *env, u32 arg,
+-              enum bpf_arg_type arg_type,
+-              const struct bpf_func_proto *fn)
++static int check_reg_type(struct bpf_verifier_env *env, u32 regno,
++              enum bpf_arg_type arg_type, u32 *expected_btf_id)
+ {
+-    u32 regno = BPF_REG_1 + arg;
+     struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
+     enum bpf_reg_type expected, type = reg->type;
+     const struct bpf_reg_types *compatible;
+@@ -4077,8 +4077,6 @@ static int check_reg_type(struct
+bpf_verifier_env *env, u32 arg,
 
-Thanks a lot!
+ found:
+     if (type == PTR_TO_BTF_ID) {
+-        u32 *expected_btf_id = fn->arg_btf_id[arg];
+-
+         if (!btf_struct_ids_match(&env->log, reg->off, reg->btf_id,
+                       *expected_btf_id)) {
+             verbose(env, "R%d is of type %s but %s is expected\n",
+@@ -4105,6 +4103,7 @@ static int check_func_arg(struct
+bpf_verifier_env *env, u32 arg,
+     struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
+     enum bpf_arg_type arg_type = fn->arg_type[arg];
+     enum bpf_reg_type type = reg->type;
++    u32 *expected_btf_id = fn->arg_btf_id[arg];
+     int err = 0;
+
+     if (arg_type == ARG_DONTCARE)
+@@ -4132,7 +4131,7 @@ static int check_func_arg(struct
+bpf_verifier_env *env, u32 arg,
+     if (arg_type == ARG_PTR_TO_MAP_VALUE ||
+         arg_type == ARG_PTR_TO_UNINIT_MAP_VALUE ||
+         arg_type == ARG_PTR_TO_MAP_VALUE_OR_NULL) {
+-        err = resolve_map_arg_type(env, meta, &arg_type);
++        err = resolve_map_arg_type(env, meta, &arg_type, &expected_btf_id);
+         if (err)
+             return err;
+     }
+@@ -4143,7 +4142,7 @@ static int check_func_arg(struct
+bpf_verifier_env *env, u32 arg,
+          */
+         goto skip_type_check;
+
+-    err = check_reg_type(env, arg, arg_type, fn);
++    err = check_reg_type(env, regno, arg_type, expected_btf_id);
+     if (err)
+         return err;
+
+-- 
+2.25.1
+
+
+
+--
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
