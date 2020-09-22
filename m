@@ -2,120 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64AC3273E4F
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 11:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AB44273E5F
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 11:17:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbgIVJQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 05:16:03 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:58496 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726343AbgIVJQD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 05:16:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600766161;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RXaWK2ZBUKJSUlDfpRjcrlD7c53gbMCjN/Sb5CkQ9rY=;
-        b=QeBXFowHcDMW2x29Ne817J1uY4c36lTMleYQcJWQN06/ILNmaa/88S9aOrq4kKbpGemIkc
-        sCgufUi20P1/2zbI8yDXY+7OxGdhvqjWW0ECbKanDkQ6vXyxjeS2vG5vo3UVCZht6xmJ3H
-        YIcI9k6XAR6o2H+hrQe41xklpKLLh3Q=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-402-kYiF2OFyOVGVu7t60ytGig-1; Tue, 22 Sep 2020 05:15:56 -0400
-X-MC-Unique: kYiF2OFyOVGVu7t60ytGig-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DDFDFADC00;
-        Tue, 22 Sep 2020 09:15:54 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C57395577D;
-        Tue, 22 Sep 2020 09:15:44 +0000 (UTC)
-Date:   Tue, 22 Sep 2020 11:15:43 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Marek Zavodsky <marek.zavodsky@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shaun Crampton <shaun@tigera.io>,
-        David Miller <davem@davemloft.net>,
-        Marek Majkowski <marek@cloudflare.com>, brouer@redhat.com
-Subject: Re: BPF redirect API design issue for BPF-prog MTU feedback?
-Message-ID: <20200922111543.7cefb3b1@carbon>
-In-Reply-To: <CA+FuTSdx_a+DGG5dSFRB3wkowwNb1ZXHFed=qA3sj5y6U3VtiA@mail.gmail.com>
-References: <20200917143846.37ce43a0@carbon>
-        <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
-        <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org>
-        <20200918120016.7007f437@carbon>
-        <CANP3RGfUj-KKHHQtbggiZ4V-Xrr_sk+TWyN5FgYUGZS6rOX1yw@mail.gmail.com>
-        <CACAyw9-v_o+gPUpC-R9SXsfzMywrdGsWV13Nk=tx2aS-fEBFYg@mail.gmail.com>
-        <20200921144953.6456d47d@carbon>
-        <340f209d-58d4-52a6-0804-7102d80c1468@iogearbox.net>
-        <CAG0p+LmqDXCJVygVtqvmsd2v4A=HRZdsGU3mSY0G=tGr2DoUvQ@mail.gmail.com>
-        <CA+FuTSdx_a+DGG5dSFRB3wkowwNb1ZXHFed=qA3sj5y6U3VtiA@mail.gmail.com>
+        id S1726657AbgIVJRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 05:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46034 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726424AbgIVJRd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 05:17:33 -0400
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CBCC061755
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 02:17:32 -0700 (PDT)
+Received: by mail-oi1-x242.google.com with SMTP id w16so20281157oia.2
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 02:17:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7RXae/aOLNMnxlMYIGKwG05c4UMKJkn0dioq6hp9j5w=;
+        b=y2EgvZklRCT4oZaqKxrpjfur/PnS8PmSZ4Qq8XB6E80yo3uPbfWhA/u1I7Nkj8cryx
+         zT15fxmn+uS2tkZClaZL/SjDOx7wV9fqywYMylqosUP2XJXjAQTzCNTki4q0e4GChufj
+         8UEEAKsOEXhCBhE9AlTzwC6Sj0wRqi5NL7e+g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7RXae/aOLNMnxlMYIGKwG05c4UMKJkn0dioq6hp9j5w=;
+        b=dXoIA3oSkrNNtWHydUwLVLrRP9B9pbBiWuuk1sFIyojAQlsz+D2+nh6piIuoIJl3cj
+         NHf2YLzWgurYPTvOANvqhohfjrrnuq18eX71wUrWC8UyisMQSesr5/liedSQ3Plm7kap
+         H9bDwBsvbeU4MoR5w3merCGxOqbxl5cglGTZHUnkiyHUJUgYlm7reH7OV1RIKT8POdPV
+         Syq+cXv7AT4qW2/9YtvaV83MMktFmhkBdBCxLnhNvQnu3f21+Z9FAQfypvhnWmZPGo5Q
+         29yRaBBcn78nPDxnMzwoUcelmNzTcgpcFt0hiBRD2ZGzPGLGB61HkDjPfRc4t3zhFlaJ
+         DKNw==
+X-Gm-Message-State: AOAM532uvElVeGJ4tHo93EOjJmWeWhPupbVSg9jawqA4kL7GfqibPuVL
+        hGYNoJa4dJePtw+fedawbTiHyjDC3iki0NgsfabUItffDfA=
+X-Google-Smtp-Source: ABdhPJwxoiCqTJn47bYmsH5M5lqR1JRbxS6BeR3ZxxGjJGLL+fiuuueNz/1UphFA6M3RH0H9W25fqb16NzMqKm5NkO0=
+X-Received: by 2002:aca:f0a:: with SMTP id 10mr2116399oip.13.1600766252401;
+ Tue, 22 Sep 2020 02:17:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+References: <20200922070409.1914988-1-kafai@fb.com> <20200922070434.1919082-1-kafai@fb.com>
+In-Reply-To: <20200922070434.1919082-1-kafai@fb.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Tue, 22 Sep 2020 10:17:20 +0100
+Message-ID: <CACAyw98FbjdmaVQJcuVPSmb40fLG_QnrkMJ2pUaJPdSSTwLp5g@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 04/11] bpf: Change bpf_sk_storage_*() to
+ accept ARG_PTR_TO_BTF_ID_SOCK_COMMON
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Sep 2020 23:17:16 +0200
-Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+On Tue, 22 Sep 2020 at 08:04, Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> This patch changes the bpf_sk_storage_*() to take
+> ARG_PTR_TO_BTF_ID_SOCK_COMMON such that they will work with the pointer
+> returned by the bpf_skc_to_*() helpers also.
+>
+> A micro benchmark has been done on a "cgroup_skb/egress" bpf program
+> which does a bpf_sk_storage_get().  It was driven by netperf doing
+> a 4096 connected UDP_STREAM test with 64bytes packet.
+> The stats from "kernel.bpf_stats_enabled" shows no meaningful difference.
+>
+> The sk_storage_get_btf_proto, sk_storage_delete_btf_proto,
+> btf_sk_storage_get_proto, and btf_sk_storage_delete_proto are
+> no longer needed, so they are removed.
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 
-> On Mon, Sep 21, 2020 at 6:22 PM Marek Zavodsky <marek.zavodsky@gmail.com> wrote:
-> >
-> > Hi guys,
-> >
-> > My kernel knowledge is small, but I experienced this (similar) issue
-> > with packet encapsulation (not a redirect), therefore modifying the
-> > redirect branch would not help in my case.
-> >
-> > I'm working on a TC program to do GUE encap/decap (IP + UDP + GUE,
-> > outer header has extra 52B).
-> > There are no issues with small packets. But when I use curl to
-> > download big file HTTP server chunks data randomly. Some packets have
-> > MTU size, others are even bigger. Big packets are not an issue,
-> > however MTU sized packets fail on bpf_skb_adjust_room with -524
-> > (ENOTSUPP).  
-> 
-> This is a related, but different, unresolved issue at the boundary of
-> GSO packets. Packets that are not GSO, but would exceed MTU once
-> encapsulated, will cause adjust room to fail:
-> 
->             (!shrink && (skb->len + len_diff_abs > len_max &&
->                          !skb_is_gso(skb))))
->                 return -ENOTSUPP;
-> 
-> As admin, this can be addressed by setting a lower route MTU on routes
-> that may be encapsulated. But that is not very obvious or transparent.
+I like that we can get rid of the init code.
 
-Your issue is very much related, and even-though it is not related to
-redirect, I also want to address and allow your use-case (in the
-patchset that I'm collecting input for now).
+Acked-by: Lorenz Bauer <lmb@cloudflare.com>
 
-I do think this patch[1][2] will actually solve your problem.  Could
-you please try to apply and test this to make sure?  (as we have
-discussed on this list, that patch is not a 100% solution, and I will
-work on a better solution).
+--
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
-[1] https://lore.kernel.org/bpf/159921182827.1260200.9699352760916903781.stgit@firesoul
-[2] http://patchwork.ozlabs.org/project/netdev/patch/159921182827.1260200.9699352760916903781.stgit@firesoul/
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+www.cloudflare.com
