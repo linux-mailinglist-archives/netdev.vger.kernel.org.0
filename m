@@ -2,73 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC12A2739A1
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 06:20:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B4F82739A5
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 06:21:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727393AbgIVEUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 00:20:08 -0400
-Received: from mail-il1-f205.google.com ([209.85.166.205]:41396 "EHLO
-        mail-il1-f205.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726098AbgIVEUI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 00:20:08 -0400
-Received: by mail-il1-f205.google.com with SMTP id a16so13171652ilh.8
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 21:20:07 -0700 (PDT)
+        id S1728365AbgIVEV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 00:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56688 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726790AbgIVEV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 00:21:28 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD2DC061755;
+        Mon, 21 Sep 2020 21:21:28 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id y2so5319600ila.0;
+        Mon, 21 Sep 2020 21:21:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZNNbuALh04//uifYVPdDjh++fb2lT/Xqcs4an3gHVio=;
+        b=eF/EbBSe9yFBqTjdwzbFsunrkCPqbYXgfxHDSEkrckP5A1JHkh3XKpgKh1/IGo/vpm
+         PxlwoZMqDyyio84Vt96+iIDsRTiLJBgiQsTvGsDCpKt/pgm36IvvjTbwaqIKrGYde6Hi
+         0BHrqmtRg+GVQzDb9NRZEk/zfFZn8kaIVBnLwClJLRYsQc+uNdTo9V0vEmmil93p8bpC
+         gB9+qh4AB+tp0jmSgoo6Fcn9UmBpXDRPaykudNaQMqKbTqnFcAEL0jv3aGMx7vnanVue
+         GIlYCRrZPBKR9PHUH6u1kyqfeUZu/yQM1gKgTq9owy3HhmFOH2sUvEg8zRosVx5M7MpM
+         vbyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=0rHm8bXbukk50V2tgkQM0HsC/iM/PUt9OO0NuPfACHA=;
-        b=IHD/oStgHfKgSPbA7cV2wNCpFwY0ljvgU+usa/ZZhLNbZ5hwQmRoSMnZUDf8PY5Qpd
-         tGhkMBPykrqltESuUvVQZsytiDIb4vYqeLQ0SXtX5xoUHo9D4o8P0yGu2ec4HlAzRjj7
-         agRIn4UomDqChlRPHKhMbdt2i+zY1UAvPszmTr8YRxA7QHH9DabalSUXbvXbEOu39CkJ
-         lTYD2TTV9DWQA7oEbYoisBuDdTHWOHmVjYEm7WIud4ZkEs7Ir4FLUZUZM4IoR1t5KVo4
-         /mHyjCicAFoFI7CTL7Ns9Tvc8FQmD5ueMYb5fth/xq+4QetLLoqcRXlEdZqIj/pFmjxO
-         1kqQ==
-X-Gm-Message-State: AOAM531hD/sYPf2g+He2hYDn3wNsOZluSa7Tfwd68rAhSYX9XNFEk2++
-        wjtm/i7V/kdrkklRwjzB5tOrEG5+Zr61upgQ/xUalUtfvW5W
-X-Google-Smtp-Source: ABdhPJy53+Vstd8n28VPXTz7cOxvgyh0jXV9alO5jFC2ZI34K8SZzeOB6BRWrJQPKXyc1OsRfUJmrB7ijvnuooyvcrjNcJ7mVpx4
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZNNbuALh04//uifYVPdDjh++fb2lT/Xqcs4an3gHVio=;
+        b=ELqTN1ptjUZ0xy1YDpLE9z7r94uOTlGql3AEKLgPWcJXgJxfN5qBJI5wwUnzNN5+CK
+         F6F8WcjvtJ6qqGaxdqwMvfQIal0zB5TqIoeFxdP03h1px1mgZtrFM9DST+aHm2ggBqRf
+         IOGR9K1f/anaiHIZ+IMzg+DpSb5LpJ9o0sEZNvW+Fb+Ezv6dbZkmiV2vPBiKpJp14yNE
+         1VhxKOtYIG0ZQUGkHnTUlo30LabxAB2vKp0ISXefpHWkuhTF7kvDp3GqCXWqa7tjNP7Q
+         waA1ZvlQCjDtbUmX2HMx/dvOUiFkJIYshrms/VzlxyKF+AcmkNzQ1EWTCwWch4nMQHdj
+         NYXw==
+X-Gm-Message-State: AOAM532YZq5wlZa8xJvtykpux3TuSunX5IuatjMb46MZB0W4/dgqYZHe
+        peysrAANkkMyU6wUEk5fRXpopzv6nvwEgV1qlzc=
+X-Google-Smtp-Source: ABdhPJzDl8MdjPVNRJmS4FRLkv0hUY6IYs3el3g0ioVtIQKA0mfz3YZi4KUDwxEL6Q++VW2yZEYb9pNfWRlG4ObXVfo=
+X-Received: by 2002:a92:c7b0:: with SMTP id f16mr2847131ilk.137.1600748488148;
+ Mon, 21 Sep 2020 21:21:28 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a92:6e0f:: with SMTP id j15mr2749896ilc.299.1600748407016;
- Mon, 21 Sep 2020 21:20:07 -0700 (PDT)
-Date:   Mon, 21 Sep 2020 21:20:07 -0700
-In-Reply-To: <00000000000082559e05afc6b97a@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002cd54805afdf483f@google.com>
-Subject: Re: UBSAN: array-index-out-of-bounds in arch_uprobe_analyze_insn
-From:   syzbot <syzbot+9b64b619f10f19d19a7c@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, bp@alien8.de, coreteam@netfilter.org,
-        davem@davemloft.net, gustavoars@kernel.org, hpa@zytor.com,
-        john.stultz@linaro.org, kaber@trash.net, kadlec@blackhole.kfki.hu,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        mingo@redhat.com, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        torvalds@linux-foundation.org, wang.yi59@zte.com.cn, x86@kernel.org
+References: <20200921080255.15505-1-zangchunxin@bytedance.com>
+ <20200921081200.GE12990@dhcp22.suse.cz> <CALOAHbDKvT58UFjxy770VDxO0VWABRYb7GVwgw+NiJp62mB06w@mail.gmail.com>
+ <20200921110505.GH12990@dhcp22.suse.cz> <CALOAHbCDXwjN+WDSGVv+G3ho-YRRPjAAqMJBtyxeGHH6utb5ew@mail.gmail.com>
+ <20200921113646.GJ12990@dhcp22.suse.cz>
+In-Reply-To: <20200921113646.GJ12990@dhcp22.suse.cz>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Tue, 22 Sep 2020 12:20:52 +0800
+Message-ID: <CALOAHbCker64WEW9w4oq8=avA6oKf3-Jrn-vOOgkpqkV3g+CYA@mail.gmail.com>
+Subject: Re: [PATCH] mm/memcontrol: Add the drop_cache interface for cgroup v2
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     zangchunxin@bytedance.com, Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tejun Heo <tj@kernel.org>, lizefan@huawei.com,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kafai@fb.com,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        andriin@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
+        Cgroups <cgroups@vger.kernel.org>, linux-doc@vger.kernel.org,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Mon, Sep 21, 2020 at 7:36 PM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Mon 21-09-20 19:23:01, Yafang Shao wrote:
+> > On Mon, Sep 21, 2020 at 7:05 PM Michal Hocko <mhocko@suse.com> wrote:
+> > >
+> > > On Mon 21-09-20 18:55:40, Yafang Shao wrote:
+> > > > On Mon, Sep 21, 2020 at 4:12 PM Michal Hocko <mhocko@suse.com> wrote:
+> > > > >
+> > > > > On Mon 21-09-20 16:02:55, zangchunxin@bytedance.com wrote:
+> > > > > > From: Chunxin Zang <zangchunxin@bytedance.com>
+> > > > > >
+> > > > > > In the cgroup v1, we have 'force_mepty' interface. This is very
+> > > > > > useful for userspace to actively release memory. But the cgroup
+> > > > > > v2 does not.
+> > > > > >
+> > > > > > This patch reuse cgroup v1's function, but have a new name for
+> > > > > > the interface. Because I think 'drop_cache' may be is easier to
+> > > > > > understand :)
+> > > > >
+> > > > > This should really explain a usecase. Global drop_caches is a terrible
+> > > > > interface and it has caused many problems in the past. People have
+> > > > > learned to use it as a remedy to any problem they might see and cause
+> > > > > other problems without realizing that. This is the reason why we even
+> > > > > log each attempt to drop caches.
+> > > > >
+> > > > > I would rather not repeat the same mistake on the memcg level unless
+> > > > > there is a very strong reason for it.
+> > > > >
+> > > >
+> > > > I think we'd better add these comments above the function
+> > > > mem_cgroup_force_empty() to explain why we don't want to expose this
+> > > > interface in cgroup2, otherwise people will continue to send this
+> > > > proposal without any strong reason.
+> > >
+> > > I do not mind people sending this proposal.  "V1 used to have an
+> > > interface, we need it in v2 as well" is not really viable without
+> > > providing more reasoning on the specific usecase.
+> > >
+> > > _Any_ patch should have a proper justification. This is nothing really
+> > > new to the process and I am wondering why this is coming as a surprise.
+> > >
+> >
+> > Container users always want to drop cache in a specific container,
+> > because they used to use drop_caches to fix memory pressure issues.
+>
+> This is exactly the kind of problems we have seen in the past. There
+> should be zero reason to addre potential reclaim problems by dropping
+> page cache on the floor. There is a huge cargo cult about this
+> procedure and I have seen numerous reports when people complained about
+> performance afterwards just to learn that the dropped page cache was one
+> of the resons for that.
+>
+> > Although drop_caches can cause some unexpected issues, it could also
+> > fix some issues.
+>
+> "Some issues" is way too general. We really want to learn about those
+> issues and address them properly.
+>
 
-commit 4b2bd5fec007a4fd3fc82474b9199af25013de4c
-Author: John Stultz <john.stultz@linaro.org>
-Date:   Sat Oct 8 00:02:33 2016 +0000
+One use case in our production environment is that some of our tasks
+become very latency sensitive from 7am to 10am, so before these tasks
+become active we will use drop_caches to drop page caches generated by
+other tasks at night to avoid these tasks triggering direct reclaim.
+The best way to do it is to fix the latency in direct reclaim, but it
+will take great effort. while drop_caches give us an easier way to
+achieve the same goal.
+IOW, drop_caches give the users an option to achieve their goal before
+they find a better solution.
 
-    proc: fix timerslack_ns CAP_SYS_NICE check when adjusting self
+> > So container users want to use it in containers as
+> > well.
+> > If this feature is not implemented in cgroup, they will ask you why
+> > but there is no explanation in the kernel.
+>
+> There is no usecase that would really require it so far.
+>
+> > Regarding the memory.high, it is not perfect as well, because you have
+> > to set it to 0 to drop_caches, and the processes in the containers
+> > have to reclaim pages as well because they reach the memory.high, but
+> > memory.force_empty won't make other processes to reclaim.
+>
+> Since 536d3bf261a2 ("mm: memcontrol: avoid workload stalls when lowering
+> memory.high") the limit is set after the reclaim so the race window when
+> somebody would be pushed to high limit reclaim is reduced. But I do
+> agree this is just a workaround.
+>
+> > That doesn't mean I agree to add this interface, while I really mean
+> > that if we discard one feature we'd better explain why.
+>
+> We need to understand why somebody wants an interface because once it is
+> added it will have to be maintained for ever.
+> --
+> Michal Hocko
+> SUSE Labs
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1697348d900000
-start commit:   325d0eab Merge branch 'akpm' (patches from Andrew)
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1597348d900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1197348d900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b12e84189082991c
-dashboard link: https://syzkaller.appspot.com/bug?extid=9b64b619f10f19d19a7c
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1573a8ad900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=164ee6c5900000
 
-Reported-by: syzbot+9b64b619f10f19d19a7c@syzkaller.appspotmail.com
-Fixes: 4b2bd5fec007 ("proc: fix timerslack_ns CAP_SYS_NICE check when adjusting self")
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+-- 
+Thanks
+Yafang
