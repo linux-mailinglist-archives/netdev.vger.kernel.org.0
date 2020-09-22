@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 653D9273774
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 02:31:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BBA4273772
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 02:31:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729360AbgIVAbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 20:31:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60424 "EHLO mail.kernel.org"
+        id S1729347AbgIVAbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 20:31:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60442 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729090AbgIVAbO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 20:31:14 -0400
+        id S1729007AbgIVAbP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 20:31:15 -0400
 Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9D9AC23A9A;
-        Tue, 22 Sep 2020 00:31:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1DAF723AA8;
+        Tue, 22 Sep 2020 00:31:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600734673;
-        bh=G2GLGZMcYoKrTv8GFfETI4VWoIoRI7y6M0e+QAagpYI=;
+        s=default; t=1600734674;
+        bh=IZjJS/gRptaQdMqMmcmvqvtBT6B9IaaRZerJM5ULIvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jWDhYVLzZm2XjAifV7+oVVo2v0Cch4+8/sclfmJAcy50yaa3OitHKG/6kKelnthMq
-         68ZB46WnnnKBfI7LE54ZY0qNRWTwkPNQbrvQN92bxeFh4sAOxTwaAfEvNXTTB+t8Ie
-         N9/fGzWix8bTvd3Bvyf8g0Y6Hu5YqulKvAf8dPQ0=
+        b=QdyPdCN9kafGFgQqpgn4cQWVzLY6/6HpYQFTXJp7rb8pVRMYn7G8sA7xR5wZwo6x0
+         vYxADkYmw0Nu23iM35cSf/EVY2PjaZyj4pI92BrFW7fp8pfW0t5PXYg9qsqsPGKhA1
+         LvG8MEZAiywPlyl8cdff3GUIZi3DVSh+QZmYPnS4=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Roi Dayan <roid@mellanox.com>,
-        Eli Britstein <elibr@mellanox.com>,
+Cc:     netdev@vger.kernel.org, Maor Dickman <maord@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>, Raed Salem <raeds@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net V2 05/15] net/mlx5e: CT: Fix freeing ct_label mapping
-Date:   Mon, 21 Sep 2020 17:30:51 -0700
-Message-Id: <20200922003101.529117-6-saeed@kernel.org>
+Subject: [net V2 06/15] net/mlx5e: Enable adding peer miss rules only if merged eswitch is supported
+Date:   Mon, 21 Sep 2020 17:30:52 -0700
+Message-Id: <20200922003101.529117-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200922003101.529117-1-saeed@kernel.org>
 References: <20200922003101.529117-1-saeed@kernel.org>
@@ -42,133 +42,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@mellanox.com>
+From: Maor Dickman <maord@mellanox.com>
 
-Add missing mapping remove call when removing ct rule,
-as the mapping was allocated when ct rule was adding with ct_label.
-Also there is a missing mapping remove call in error flow.
+The cited commit creates peer miss group during switchdev mode
+initialization in order to handle miss packets correctly while in VF
+LAG mode. This is done regardless of FW support of such groups which
+could cause rules setups failure later on.
 
-Fixes: 54b154ecfb8c ("net/mlx5e: CT: Map 128 bits labels to 32 bit map ID")
-Signed-off-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Eli Britstein <elibr@mellanox.com>
+Fix by adding FW capability check before creating peer groups/rule.
+
+Fixes: ac004b832128 ("net/mlx5e: E-Switch, Add peer miss rules")
+Signed-off-by: Maor Dickman <maord@mellanox.com>
+Reviewed-by: Roi Dayan <roid@mellanox.com>
+Reviewed-by: Raed Salem <raeds@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 21 +++++++++++----
- .../ethernet/mellanox/mlx5/core/en/tc_ct.h    | 26 ++++++++++++-------
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   |  6 +++--
- 3 files changed, 36 insertions(+), 17 deletions(-)
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 52 ++++++++++---------
+ 1 file changed, 28 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index c6bc9224c3b1..bc5f72ec3623 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -699,6 +699,7 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
- err_rule:
- 	mlx5e_mod_hdr_detach(ct_priv->esw->dev,
- 			     &esw->offloads.mod_hdr, zone_rule->mh);
-+	mapping_remove(ct_priv->labels_mapping, attr->ct_attr.ct_labels_id);
- err_mod_hdr:
- 	kfree(spec);
- 	return err;
-@@ -958,12 +959,22 @@ mlx5_tc_ct_add_no_trk_match(struct mlx5e_priv *priv,
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index d2516922d867..1bcf2609dca8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -1219,35 +1219,37 @@ static int esw_create_offloads_fdb_tables(struct mlx5_eswitch *esw)
+ 	}
+ 	esw->fdb_table.offloads.send_to_vport_grp = g;
  
-+void mlx5_tc_ct_match_del(struct mlx5e_priv *priv, struct mlx5_ct_attr *ct_attr)
-+{
-+	struct mlx5_tc_ct_priv *ct_priv = mlx5_tc_ct_get_ct_priv(priv);
-+
-+	if (!ct_priv || !ct_attr->ct_labels_id)
-+		return;
-+
-+	mapping_remove(ct_priv->labels_mapping, ct_attr->ct_labels_id);
-+}
-+
- int
--mlx5_tc_ct_parse_match(struct mlx5e_priv *priv,
--		       struct mlx5_flow_spec *spec,
--		       struct flow_cls_offload *f,
--		       struct mlx5_ct_attr *ct_attr,
--		       struct netlink_ext_ack *extack)
-+mlx5_tc_ct_match_add(struct mlx5e_priv *priv,
-+		     struct mlx5_flow_spec *spec,
-+		     struct flow_cls_offload *f,
-+		     struct mlx5_ct_attr *ct_attr,
-+		     struct netlink_ext_ack *extack)
- {
- 	struct mlx5_tc_ct_priv *ct_priv = mlx5_tc_ct_get_ct_priv(priv);
- 	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-index 3baef917a677..708c216325d3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-@@ -87,12 +87,15 @@ mlx5_tc_ct_init(struct mlx5_rep_uplink_priv *uplink_priv);
- void
- mlx5_tc_ct_clean(struct mlx5_rep_uplink_priv *uplink_priv);
+-	/* create peer esw miss group */
+-	memset(flow_group_in, 0, inlen);
++	if (MLX5_CAP_ESW(esw->dev, merged_eswitch)) {
++		/* create peer esw miss group */
++		memset(flow_group_in, 0, inlen);
  
-+void
-+mlx5_tc_ct_match_del(struct mlx5e_priv *priv, struct mlx5_ct_attr *ct_attr);
-+
- int
--mlx5_tc_ct_parse_match(struct mlx5e_priv *priv,
--		       struct mlx5_flow_spec *spec,
--		       struct flow_cls_offload *f,
--		       struct mlx5_ct_attr *ct_attr,
--		       struct netlink_ext_ack *extack);
-+mlx5_tc_ct_match_add(struct mlx5e_priv *priv,
-+		     struct mlx5_flow_spec *spec,
-+		     struct flow_cls_offload *f,
-+		     struct mlx5_ct_attr *ct_attr,
-+		     struct netlink_ext_ack *extack);
- int
- mlx5_tc_ct_add_no_trk_match(struct mlx5e_priv *priv,
- 			    struct mlx5_flow_spec *spec);
-@@ -130,12 +133,15 @@ mlx5_tc_ct_clean(struct mlx5_rep_uplink_priv *uplink_priv)
- {
- }
+-	esw_set_flow_group_source_port(esw, flow_group_in);
++		esw_set_flow_group_source_port(esw, flow_group_in);
  
-+static inline void
-+mlx5_tc_ct_match_del(struct mlx5e_priv *priv, struct mlx5_ct_attr *ct_attr) {}
-+
- static inline int
--mlx5_tc_ct_parse_match(struct mlx5e_priv *priv,
--		       struct mlx5_flow_spec *spec,
--		       struct flow_cls_offload *f,
--		       struct mlx5_ct_attr *ct_attr,
--		       struct netlink_ext_ack *extack)
-+mlx5_tc_ct_match_add(struct mlx5e_priv *priv,
-+		     struct mlx5_flow_spec *spec,
-+		     struct flow_cls_offload *f,
-+		     struct mlx5_ct_attr *ct_attr,
-+		     struct netlink_ext_ack *extack)
- {
- 	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
+-	if (!mlx5_eswitch_vport_match_metadata_enabled(esw)) {
+-		match_criteria = MLX5_ADDR_OF(create_flow_group_in,
+-					      flow_group_in,
+-					      match_criteria);
++		if (!mlx5_eswitch_vport_match_metadata_enabled(esw)) {
++			match_criteria = MLX5_ADDR_OF(create_flow_group_in,
++						      flow_group_in,
++						      match_criteria);
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 7be282d2ddde..bf0c6f063941 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1312,6 +1312,8 @@ static void mlx5e_tc_del_fdb_flow(struct mlx5e_priv *priv,
- 		}
- 	kvfree(attr->parse_attr);
+-		MLX5_SET_TO_ONES(fte_match_param, match_criteria,
+-				 misc_parameters.source_eswitch_owner_vhca_id);
++			MLX5_SET_TO_ONES(fte_match_param, match_criteria,
++					 misc_parameters.source_eswitch_owner_vhca_id);
  
-+	mlx5_tc_ct_match_del(priv, &flow->esw_attr->ct_attr);
-+
- 	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR)
- 		mlx5e_detach_mod_hdr(priv, flow);
+-		MLX5_SET(create_flow_group_in, flow_group_in,
+-			 source_eswitch_owner_vhca_id_valid, 1);
+-	}
++			MLX5_SET(create_flow_group_in, flow_group_in,
++				 source_eswitch_owner_vhca_id_valid, 1);
++		}
  
-@@ -4399,8 +4401,8 @@ __mlx5e_add_fdb_flow(struct mlx5e_priv *priv,
- 		goto err_free;
+-	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, ix);
+-	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index,
+-		 ix + esw->total_vports - 1);
+-	ix += esw->total_vports;
++		MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, ix);
++		MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index,
++			 ix + esw->total_vports - 1);
++		ix += esw->total_vports;
  
- 	/* actions validation depends on parsing the ct matches first */
--	err = mlx5_tc_ct_parse_match(priv, &parse_attr->spec, f,
--				     &flow->esw_attr->ct_attr, extack);
-+	err = mlx5_tc_ct_match_add(priv, &parse_attr->spec, f,
-+				   &flow->esw_attr->ct_attr, extack);
- 	if (err)
- 		goto err_free;
+-	g = mlx5_create_flow_group(fdb, flow_group_in);
+-	if (IS_ERR(g)) {
+-		err = PTR_ERR(g);
+-		esw_warn(dev, "Failed to create peer miss flow group err(%d)\n", err);
+-		goto peer_miss_err;
++		g = mlx5_create_flow_group(fdb, flow_group_in);
++		if (IS_ERR(g)) {
++			err = PTR_ERR(g);
++			esw_warn(dev, "Failed to create peer miss flow group err(%d)\n", err);
++			goto peer_miss_err;
++		}
++		esw->fdb_table.offloads.peer_miss_grp = g;
+ 	}
+-	esw->fdb_table.offloads.peer_miss_grp = g;
  
+ 	/* create miss group */
+ 	memset(flow_group_in, 0, inlen);
+@@ -1281,7 +1283,8 @@ static int esw_create_offloads_fdb_tables(struct mlx5_eswitch *esw)
+ miss_rule_err:
+ 	mlx5_destroy_flow_group(esw->fdb_table.offloads.miss_grp);
+ miss_err:
+-	mlx5_destroy_flow_group(esw->fdb_table.offloads.peer_miss_grp);
++	if (MLX5_CAP_ESW(esw->dev, merged_eswitch))
++		mlx5_destroy_flow_group(esw->fdb_table.offloads.peer_miss_grp);
+ peer_miss_err:
+ 	mlx5_destroy_flow_group(esw->fdb_table.offloads.send_to_vport_grp);
+ send_vport_err:
+@@ -1305,7 +1308,8 @@ static void esw_destroy_offloads_fdb_tables(struct mlx5_eswitch *esw)
+ 	mlx5_del_flow_rules(esw->fdb_table.offloads.miss_rule_multi);
+ 	mlx5_del_flow_rules(esw->fdb_table.offloads.miss_rule_uni);
+ 	mlx5_destroy_flow_group(esw->fdb_table.offloads.send_to_vport_grp);
+-	mlx5_destroy_flow_group(esw->fdb_table.offloads.peer_miss_grp);
++	if (MLX5_CAP_ESW(esw->dev, merged_eswitch))
++		mlx5_destroy_flow_group(esw->fdb_table.offloads.peer_miss_grp);
+ 	mlx5_destroy_flow_group(esw->fdb_table.offloads.miss_grp);
+ 
+ 	mlx5_esw_chains_destroy(esw);
 -- 
 2.26.2
 
