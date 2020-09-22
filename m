@@ -2,222 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEEF9273C1F
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:38:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86CA8273BE0
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730019AbgIVHiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 03:38:13 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:14218 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729762AbgIVHiN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 03:38:13 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08M6xOQe024954
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:05:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=Y9WBsu0ZQEInfG22eS2/HVDRYywZidrRy7v8I1MbrjM=;
- b=TLUAEPUmcoEVE45iaYb2YXSwjBM+OSpiwHaoKxMeqUObwxLbuFlx27YTNV990zIVAe6M
- KQl/vtd9w1nCnYuELHqIafztpRxTPfivoi0qQdfSJgHeJl6c7iYtPKgz/QdxLTg2Wwh0
- eCc5UciQu0ls12PFl9w4sd/rTCJ8zwvZz1E= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 33nftgv5g5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:05:17 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 22 Sep 2020 00:05:16 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 1A3D8294641C; Tue, 22 Sep 2020 00:05:12 -0700 (PDT)
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>, <netdev@vger.kernel.org>
-Subject: [PATCH v3 bpf-next 10/11] bpf: selftest: Use network_helpers in the sock_fields test
-Date:   Tue, 22 Sep 2020 00:05:12 -0700
-Message-ID: <20200922070512.1923268-1-kafai@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200922070409.1914988-1-kafai@fb.com>
-References: <20200922070409.1914988-1-kafai@fb.com>
+        id S1729961AbgIVHap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 03:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57494 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729634AbgIVHap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 03:30:45 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B8AC061755
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:30:44 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id x14so15820196wrl.12
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:30:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R19e/SDIADEubNTx0GB7JVrebS4r/Vv0+kckFPzNBdM=;
+        b=XZf/UORQfsNsdhHrQ9JxV5JeS8sHGl6RKx1lCKdeA5DdRJghGDMBJ4WTtlix5RxQz6
+         6DdYma2rTK1/+v7ArRsQvrQBIYPegqZVMW8kRqjoW+xcI4A0u0mqJdKEvFtOiRWr7UGm
+         ZSmqdD6IU4QanGmK5SpgEbFvjnUDp9q2bXLlwwn+CNZeT8uH4GwfiOjgcKfLr+rRgjzJ
+         eEexh8w51DkLs9hCzZV1AcF3IhBHcIADOiuLlpMi25LAIxSr+oPatq6gicGV4vsR8F3b
+         3tSzV/Vhej+p4hBT9jX5Qx5O7A/QSJcZDLFjoED60hGaSuaip0+wQHN+XtJSjcVDm3kj
+         Lhug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R19e/SDIADEubNTx0GB7JVrebS4r/Vv0+kckFPzNBdM=;
+        b=JRWB6Z1RGW4ypq0FPFEQ/SbpHtk7L6mfUKJDJQBGodUWxQAP5i5xBerm2PrVOABt16
+         468eIXyMxgLxcDNBkrBhi/RcavauS8xm9SibIC43JBMsR5IEhXjYSv8f61FUL3pi41XC
+         ispHxJxNvKrm3G87rHB/3GVvZ7ZX6G8BPbtgeBT2xQerQx7Ry93HKa7dc01sABGv6iPJ
+         vyjxl4MEev7xqpuYgpkZQ9OgBwjoXTgfiSVWTloGfLIj4+NGE3FMVmwTRi8WIvRuUgN6
+         p/eMZ/IeWHSBs8NFvr6GyLnToqKV0X8fHaKW11MPdtb9uSlMcbdHS/nHS1ocTaHgLRG/
+         yRTw==
+X-Gm-Message-State: AOAM530FweQBuYW2htP0rJX/nuQojmEaZ1zWrufgH666tUjO5cxmjqko
+        HVJFCrjVMiHLa2zjEuwH9dTAfYTKtH2qN4YtFi5sgg==
+X-Google-Smtp-Source: ABdhPJyIE2KTIHDWHiNs3tsn5H708o50h8roFen93FtevElwixHhFsLn5DkDd4eKdztctlS92+C+wQ==
+X-Received: by 2002:a5d:510d:: with SMTP id s13mr3765431wrt.177.1600759842901;
+        Tue, 22 Sep 2020 00:30:42 -0700 (PDT)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id s26sm3258287wmh.44.2020.09.22.00.30.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Sep 2020 00:30:42 -0700 (PDT)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, davem@davemloft.net,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net-next v2 00/16] net: bridge: mcast: IGMPv3/MLDv2 fast-path (part 2)
+Date:   Tue, 22 Sep 2020 10:30:11 +0300
+Message-Id: <20200922073027.1196992-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-22_05:2020-09-21,2020-09-22 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 spamscore=0
- impostorscore=0 mlxscore=0 adultscore=0 malwarescore=0 priorityscore=1501
- suspectscore=15 lowpriorityscore=0 mlxlogscore=999 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009220056
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch uses start_server() and connect_to_fd() from network_helpers.h
-to remove the network testing boiler plate codes.  epoll is no longer
-needed also since the timeout has already been taken care of also.
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- .../selftests/bpf/prog_tests/sock_fields.c    | 86 ++-----------------
- 1 file changed, 9 insertions(+), 77 deletions(-)
+Hi,
+This is the second part of the IGMPv3/MLDv2 support which adds support
+for the fast-path. In order to be able to handle source entries we add
+mdb support for S,G entries (i.e. we add source address support to
+br_ip), that requires to extend the current mdb netlink API, fortunately
+we just add another attribute which will contain nested future mdb
+attributes, then we use it to add support for S,G user- add, del and
+dump. The lookup sequence is simple: when IGMPv3/MLDv2 are enabled do
+the S,G lookup first and if it fails fallback to *,G. The more complex
+part is when we begin handling source lists and auto-installing S,G entries
+and *,G filter mode transitions. We have the following cases:
+ 1) *,G INCLUDE -> EXCLUDE transition: we need to install the port in
+    all of *,G's installed S,G entries for proper replication (except
+    the ones explicitly blocked), this is also necessary when adding a
+    new *,G EXCLUDE port group
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sock_fields.c b/tools=
-/testing/selftests/bpf/prog_tests/sock_fields.c
-index cb6d41bc79a4..23d14e2d0d28 100644
---- a/tools/testing/selftests/bpf/prog_tests/sock_fields.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sock_fields.c
-@@ -12,7 +12,9 @@
-=20
- #include <bpf/bpf.h>
- #include <bpf/libbpf.h>
-+#include <linux/compiler.h>
-=20
-+#include "network_helpers.h"
- #include "cgroup_helpers.h"
- #include "test_progs.h"
- #include "bpf_rlimit.h"
-@@ -43,13 +45,6 @@ static __u32 duration;
- static __u32 egress_linum_idx =3D EGRESS_LINUM_IDX;
- static __u32 ingress_linum_idx =3D INGRESS_LINUM_IDX;
-=20
--static void init_loopback6(struct sockaddr_in6 *sa6)
--{
--	memset(sa6, 0, sizeof(*sa6));
--	sa6->sin6_family =3D AF_INET6;
--	sa6->sin6_addr =3D in6addr_loopback;
--}
--
- static void print_sk(const struct bpf_sock *sk, const char *prefix)
- {
- 	char src_ip4[24], dst_ip4[24];
-@@ -253,28 +248,14 @@ static int init_sk_storage(int sk_fd, __u32 pkt_out=
-_cnt)
-=20
- static void do_test(void)
- {
--	int listen_fd =3D -1, cli_fd =3D -1, accept_fd =3D -1, epfd, err, i;
--	struct epoll_event ev;
--	socklen_t addrlen;
-+	int listen_fd =3D -1, cli_fd =3D -1, accept_fd =3D -1, err, i;
-+	socklen_t addrlen =3D sizeof(struct sockaddr_in6);
- 	char buf[DATA_LEN];
-=20
--	addrlen =3D sizeof(struct sockaddr_in6);
--	ev.events =3D EPOLLIN;
--
--	epfd =3D epoll_create(1);
--	if (CHECK(epfd =3D=3D -1, "epoll_create()", "epfd:%d errno:%d\n",
--		  epfd, errno))
--		return;
--
- 	/* Prepare listen_fd */
--	listen_fd =3D socket(AF_INET6, SOCK_STREAM | SOCK_NONBLOCK, 0);
--	if (CHECK(listen_fd =3D=3D -1, "socket()", "listen_fd:%d errno:%d\n",
--		  listen_fd, errno))
--		goto done;
--
--	init_loopback6(&srv_sa6);
--	err =3D bind(listen_fd, (struct sockaddr *)&srv_sa6, sizeof(srv_sa6));
--	if (CHECK(err, "bind(listen_fd)", "err:%d errno:%d\n", err, errno))
-+	listen_fd =3D start_server(AF_INET6, SOCK_STREAM, "::1", 0, 0);
-+	/* start_server() has logged the error details */
-+	if (CHECK_FAIL(listen_fd =3D=3D -1))
- 		goto done;
-=20
- 	err =3D getsockname(listen_fd, (struct sockaddr *)&srv_sa6, &addrlen);
-@@ -283,19 +264,8 @@ static void do_test(void)
- 		goto done;
- 	memcpy(&skel->bss->srv_sa6, &srv_sa6, sizeof(srv_sa6));
-=20
--	err =3D listen(listen_fd, 1);
--	if (CHECK(err, "listen(listen_fd)", "err:%d errno:%d\n", err, errno))
--		goto done;
--
--	/* Prepare cli_fd */
--	cli_fd =3D socket(AF_INET6, SOCK_STREAM | SOCK_NONBLOCK, 0);
--	if (CHECK(cli_fd =3D=3D -1, "socket()", "cli_fd:%d errno:%d\n", cli_fd,
--		  errno))
--		goto done;
--
--	init_loopback6(&cli_sa6);
--	err =3D bind(cli_fd, (struct sockaddr *)&cli_sa6, sizeof(cli_sa6));
--	if (CHECK(err, "bind(cli_fd)", "err:%d errno:%d\n", err, errno))
-+	cli_fd =3D connect_to_fd(listen_fd, 0);
-+	if (CHECK_FAIL(cli_fd =3D=3D -1))
- 		goto done;
-=20
- 	err =3D getsockname(cli_fd, (struct sockaddr *)&cli_sa6, &addrlen);
-@@ -303,41 +273,12 @@ static void do_test(void)
- 		  err, errno))
- 		goto done;
-=20
--	/* Connect from cli_sa6 to srv_sa6 */
--	err =3D connect(cli_fd, (struct sockaddr *)&srv_sa6, addrlen);
--	printf("srv_sa6.sin6_port:%u cli_sa6.sin6_port:%u\n\n",
--	       ntohs(srv_sa6.sin6_port), ntohs(cli_sa6.sin6_port));
--	if (CHECK(err && errno !=3D EINPROGRESS,
--		  "connect(cli_fd)", "err:%d errno:%d\n", err, errno))
--		goto done;
--
--	ev.data.fd =3D listen_fd;
--	err =3D epoll_ctl(epfd, EPOLL_CTL_ADD, listen_fd, &ev);
--	if (CHECK(err, "epoll_ctl(EPOLL_CTL_ADD, listen_fd)",
--		  "err:%d errno:%d\n", err, errno))
--		goto done;
--
--	/* Accept the connection */
--	/* Have some timeout in accept(listen_fd). Just in case. */
--	err =3D epoll_wait(epfd, &ev, 1, 1000);
--	if (CHECK(err !=3D 1 || ev.data.fd !=3D listen_fd,
--		  "epoll_wait(listen_fd)",
--		  "err:%d errno:%d ev.data.fd:%d listen_fd:%d\n",
--		  err, errno, ev.data.fd, listen_fd))
--		goto done;
--
- 	accept_fd =3D accept(listen_fd, NULL, NULL);
- 	if (CHECK(accept_fd =3D=3D -1, "accept(listen_fd)",
- 		  "accept_fd:%d errno:%d\n",
- 		  accept_fd, errno))
- 		goto done;
-=20
--	ev.data.fd =3D cli_fd;
--	err =3D epoll_ctl(epfd, EPOLL_CTL_ADD, cli_fd, &ev);
--	if (CHECK(err, "epoll_ctl(EPOLL_CTL_ADD, cli_fd)",
--		  "err:%d errno:%d\n", err, errno))
--		goto done;
--
- 	if (init_sk_storage(accept_fd, 0xeB9F))
- 		goto done;
-=20
-@@ -350,14 +291,6 @@ static void do_test(void)
- 			  "err:%d errno:%d\n", err, errno))
- 			goto done;
-=20
--		/* Have some timeout in recv(cli_fd). Just in case. */
--		err =3D epoll_wait(epfd, &ev, 1, 1000);
--		if (CHECK(err !=3D 1 || ev.data.fd !=3D cli_fd,
--			  "epoll_wait(cli_fd)",
--			  "err:%d errno:%d ev.data.fd:%d cli_fd:%d\n",
--			  err, errno, ev.data.fd, cli_fd))
--			goto done;
--
- 		err =3D recv(cli_fd, buf, DATA_LEN, 0);
- 		if (CHECK(err !=3D DATA_LEN, "recv(cli_fd)", "err:%d errno:%d\n",
- 			  err, errno))
-@@ -384,7 +317,6 @@ static void do_test(void)
- 		close(cli_fd);
- 	if (listen_fd !=3D -1)
- 		close(listen_fd);
--	close(epfd);
- }
-=20
- void test_sock_fields(void)
---=20
-2.24.1
+ 2) *,G EXCLUDE -> INCLUDE transition: we need to remove the port from
+    all of *,G's installed S,G entries, this is also necessary when
+    removing a *,G port group
+
+ 3) New S,G port entry: we need to install all current *,G EXCLUDE ports
+
+ 4) Remove S,G port entry: if all other port groups were auto-installed we
+    can safely remove them and delete the whole S,G entry
+
+Currently we compute these operations from the available ports, their
+source lists and their filter mode. In the future we can extend the port
+group structure and reduce the running time of these ops. Also one
+current limitation is that host-joined S,G entries are not supported.
+I.e. one cannot add "dev bridge port bridge" mdb S,G entries. The host
+join is currently considered an EXCLUDE {} join, so it's reflected in
+all of *,G's installed S,G entries. If an S,G,port entry is added as
+temporary then the kernel can take it over if a source shows up from a
+report, permanent entries are skipped. In order to properly handle
+blocked sources we add a new port group blocked flag to avoid forwarding
+to that port group in the S,G. Finally when forwarding we use the port
+group filter mode (if it's INCLUDE and the port group is from a *,G then
+don't replicate to it, respectively if it's EXCLUDE then forward) and the
+blocked flag (obviously if it's set - skip that port unless it's a
+router port) to decide if the port should be skipped. Another limitation
+is that we can't do some of the above transitions without small traffic
+drop while installing/removing entries. That will be taken care of when
+we add atomic swap of port replication lists later.
+
+Patch break down:
+ patches 1-3: prepare the mdb code for better extack support which is
+              used in future patches to return a more meaningful error
+ patches 4-6: add the source address field to struct br_ip, and do minor
+              cleanups around it
+ patches 7-8: extend the mdb netlink API so we can send new mdb
+              attributes and uses the new API for S,G entry add/del/dump
+              support
+ patch     9: takes care of S,G entries when doing a lookup (first S,G
+              then *,G lookup)
+ patch    10: adds a new port group field and attribute for origin protocol
+              we use the already available RTPROT_ definitions,
+              currently user-space entries are added as RTPROT_STATIC and
+              kernel entries are added as RTPROT_KERNEL, we may allow
+              user-space to set custom values later (e.g. for FRR, clag)
+ patch    11: adds an internal S,G,port rhashtable to speed up filter
+              mode transitions
+ patch    12: initial automatic install of S,G entries based on port
+              groups' source lists
+ patch    13: handles port group modes on transitions or when new
+              port group entries are added
+ patch    14: self-explanatory - adds support for blocked port group
+              entries needed to stop forwarding to particular S,G,port
+              entries
+ patch    15: handles host-join/leave state changes, treats host-joins
+              as EXCLUDE {} groups (reflected in all *,G's S,G entries)
+ patch    16: finally adds the fast-path filter mode and block flag
+              support
+
+Here're the sets that will come next (in order):
+ - iproute2 support for IGMPv3/MLDv2
+ - selftests for all mode transitions and group flags
+ - explicit host tracking for proper fast-leave support
+ - atomic port replication lists (these are also needed for broadcast
+   forwarding optimizations)
+ - mode transition optimization and removal of open-coded sorted lists
+
+Not implemented yet:
+ - Host IGMPv3/MLDv2 filter support (currently we handle only join/leave
+   as before)
+ - Proper other querier source timer and value updates
+ - IGMPv3/v2 MLDv2/v1 compat (I have a few rough patches for this one)
+
+v2: fix build with CONFIG_BATMAN_ADV_MCAST in patch 6
+
+Thanks,
+ Nik
+
+
+Nikolay Aleksandrov (16):
+  net: bridge: mdb: use extack in br_mdb_parse()
+  net: bridge: mdb: move all port and bridge checks to br_mdb_add
+  net: bridge: mdb: use extack in br_mdb_add() and br_mdb_add_group()
+  net: bridge: add src field to br_ip
+  net: bridge: mcast: use br_ip's src for src groups and querier address
+  net: bridge: mcast: rename br_ip's u member to dst
+  net: bridge: mdb: add support to extend add/del commands
+  net: bridge: mdb: add support for add/del/dump of entries with source
+  net: bridge: mcast: when igmpv3/mldv2 are enabled lookup (S,G) first,
+    then (*,G)
+  net: bridge: mcast: add rt_protocol field to the port group struct
+  net: bridge: mcast: add sg_port rhashtable
+  net: bridge: mcast: install S,G entries automatically based on reports
+  net: bridge: mcast: handle port group filter modes
+  net: bridge: mcast: add support for blocked port groups
+  net: bridge: mcast: handle host state
+  net: bridge: mcast: when forwarding handle filter mode and blocked
+    flag
+
+ include/linux/if_bridge.h      |   8 +-
+ include/uapi/linux/if_bridge.h |  17 +
+ net/batman-adv/multicast.c     |  14 +-
+ net/bridge/br_forward.c        |  17 +-
+ net/bridge/br_mdb.c            | 371 +++++++++++++-----
+ net/bridge/br_multicast.c      | 678 +++++++++++++++++++++++++++------
+ net/bridge/br_private.h        |  49 ++-
+ 7 files changed, 916 insertions(+), 238 deletions(-)
+
+-- 
+2.25.4
 
