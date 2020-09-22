@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E541273BDF
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:30:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE0F0273BC4
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729928AbgIVHag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 03:30:36 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:3254 "EHLO
+        id S1729901AbgIVH0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 03:26:42 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38338 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729634AbgIVHag (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 03:30:36 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08M70Ssg027093
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:04:33 -0700
+        by vger.kernel.org with ESMTP id S1729748AbgIVH0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 03:26:41 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08M71MlP025782
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:04:39 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=b87LFKB9oXD1o+48K/Vts7Vqt8hDS99xVwCbZz5b+rE=;
- b=W0BytDzuLDq/ozYXafnTCLBF92/oq9RPLe96AVYy/8l++A0URtxusLaK/9gOtSSPxZiX
- 3LcTYH2njsSq0y8ZZ6/6sGnHKwMDvF7IyDdqrAlhhWrkjwZNuary9hFY55w2+c3vf/6/
- HUG2NqK7SW+40D1xMhmv5xAZAZSw0Z3/8Po= 
+ bh=ZFwgdL5Rn4+8Dp1i92WScd8mvmnt9RcB5gxi9akNFFU=;
+ b=Uo2GsOHqe7SXFT7sbJ72a6xO2uZB+2qKFkTdzW1oL1DpW1bIWA+rs+G1cq5tLt43SWna
+ nJssW/+qryJfyQQmcxQm43H1fvvF806r4JGKmL1CXwEGkNqGHPteuqw+T0vseIVhEztN
+ IuIn0kGf4m2sVBLyRRtjHMLkWjQpsu7n2Yk= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 33p1g9sc9u-2
+        by mx0a-00082601.pphosted.com with ESMTP id 33p226hbqj-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:04:33 -0700
-Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:04:39 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
  mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 22 Sep 2020 00:04:31 -0700
+ 15.1.1979.3; Tue, 22 Sep 2020 00:04:37 -0700
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 5D778294641C; Tue, 22 Sep 2020 00:04:28 -0700 (PDT)
+        id 9B34E294641C; Tue, 22 Sep 2020 00:04:34 -0700 (PDT)
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
         Lorenz Bauer <lmb@cloudflare.com>, <netdev@vger.kernel.org>
-Subject: [PATCH v3 bpf-next 03/11] bpf: Change bpf_sk_release and bpf_sk_*cgroup_id to accept ARG_PTR_TO_BTF_ID_SOCK_COMMON
-Date:   Tue, 22 Sep 2020 00:04:28 -0700
-Message-ID: <20200922070428.1917972-1-kafai@fb.com>
+Subject: [PATCH v3 bpf-next 04/11] bpf: Change bpf_sk_storage_*() to accept ARG_PTR_TO_BTF_ID_SOCK_COMMON
+Date:   Tue, 22 Sep 2020 00:04:34 -0700
+Message-ID: <20200922070434.1919082-1-kafai@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200922070409.1914988-1-kafai@fb.com>
 References: <20200922070409.1914988-1-kafai@fb.com>
@@ -48,160 +48,214 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-09-22_05:2020-09-21,2020-09-22 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- impostorscore=0 malwarescore=0 lowpriorityscore=0 bulkscore=0
- suspectscore=13 clxscore=1015 phishscore=0 mlxlogscore=933 adultscore=0
- priorityscore=1501 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2009220056
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015 mlxscore=0
+ phishscore=0 priorityscore=1501 adultscore=0 malwarescore=0
+ suspectscore=38 spamscore=0 impostorscore=0 bulkscore=0 mlxlogscore=999
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009220056
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The previous patch allows the networking bpf prog to use the
-bpf_skc_to_*() helpers to get a PTR_TO_BTF_ID socket pointer,
-e.g. "struct tcp_sock *".  It allows the bpf prog to read all the
-fields of the tcp_sock.
+This patch changes the bpf_sk_storage_*() to take
+ARG_PTR_TO_BTF_ID_SOCK_COMMON such that they will work with the pointer
+returned by the bpf_skc_to_*() helpers also.
 
-This patch changes the bpf_sk_release() and bpf_sk_*cgroup_id()
-to take ARG_PTR_TO_BTF_ID_SOCK_COMMON such that they will
-work with the pointer returned by the bpf_skc_to_*() helpers
-also.  For example, the following will work:
+A micro benchmark has been done on a "cgroup_skb/egress" bpf program
+which does a bpf_sk_storage_get().  It was driven by netperf doing
+a 4096 connected UDP_STREAM test with 64bytes packet.
+The stats from "kernel.bpf_stats_enabled" shows no meaningful difference.
 
-	sk =3D bpf_skc_lookup_tcp(skb, tuple, tuplen, BPF_F_CURRENT_NETNS, 0);
-	if (!sk)
-		return;
-	tp =3D bpf_skc_to_tcp_sock(sk);
-	if (!tp) {
-		bpf_sk_release(sk);
-		return;
-	}
-	lsndtime =3D tp->lsndtime;
-	/* Pass tp to bpf_sk_release() will also work */
-	bpf_sk_release(tp);
-
-Since PTR_TO_BTF_ID could be NULL, the helper taking
-ARG_PTR_TO_BTF_ID_SOCK_COMMON has to check for NULL at runtime.
-
-A btf_id of "struct sock" may not always mean a fullsock.  Regardless
-the helper's running context may get a non-fullsock or not,
-considering fullsock check/handling is pretty cheap, it is better to
-keep the same verifier expectation on helper that takes ARG_PTR_TO_BTF_ID=
-*
-will be able to handle the minisock situation.  In the bpf_sk_*cgroup_id(=
-)
-case,  it will try to get a fullsock by using sk_to_full_sk() as its
-skb variant bpf_sk"b"_*cgroup_id() has already been doing.
-
-bpf_sk_release can already handle minisock, so nothing special has to
-be done.
+The sk_storage_get_btf_proto, sk_storage_delete_btf_proto,
+btf_sk_storage_get_proto, and btf_sk_storage_delete_proto are
+no longer needed, so they are removed.
 
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- net/core/filter.c | 33 +++++++++++++++++----------------
- 1 file changed, 17 insertions(+), 16 deletions(-)
+ include/net/bpf_sk_storage.h   |  2 --
+ include/uapi/linux/bpf.h       |  1 +
+ kernel/bpf/bpf_lsm.c           |  4 ++--
+ net/core/bpf_sk_storage.c      | 31 ++++++++-----------------------
+ net/ipv4/bpf_tcp_ca.c          | 23 ++---------------------
+ tools/include/uapi/linux/bpf.h |  1 +
+ 6 files changed, 14 insertions(+), 48 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 54b338de4bb8..532a85894ce0 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4088,18 +4088,17 @@ static inline u64 __bpf_sk_cgroup_id(struct sock =
-*sk)
- {
- 	struct cgroup *cgrp;
+diff --git a/include/net/bpf_sk_storage.h b/include/net/bpf_sk_storage.h
+index 119f4c9c3a9c..3c516dd07caf 100644
+--- a/include/net/bpf_sk_storage.h
++++ b/include/net/bpf_sk_storage.h
+@@ -20,8 +20,6 @@ void bpf_sk_storage_free(struct sock *sk);
 =20
-+	sk =3D sk_to_full_sk(sk);
+ extern const struct bpf_func_proto bpf_sk_storage_get_proto;
+ extern const struct bpf_func_proto bpf_sk_storage_delete_proto;
+-extern const struct bpf_func_proto sk_storage_get_btf_proto;
+-extern const struct bpf_func_proto sk_storage_delete_btf_proto;
+=20
+ struct bpf_local_storage_elem;
+ struct bpf_sk_storage_diag;
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index a22812561064..1634ca9b752a 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -2861,6 +2861,7 @@ union bpf_attr {
+  *		0 on success.
+  *
+  *		**-ENOENT** if the bpf-local-storage cannot be found.
++ *		**-EINVAL** if sk is not a fullsock (e.g. a request_sock).
+  *
+  * long bpf_send_signal(u32 sig)
+  *	Description
+diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+index 9cd1428c7199..78ea8a7bd27f 100644
+--- a/kernel/bpf/bpf_lsm.c
++++ b/kernel/bpf/bpf_lsm.c
+@@ -56,9 +56,9 @@ bpf_lsm_func_proto(enum bpf_func_id func_id, const stru=
+ct bpf_prog *prog)
+ 	case BPF_FUNC_inode_storage_delete:
+ 		return &bpf_inode_storage_delete_proto;
+ 	case BPF_FUNC_sk_storage_get:
+-		return &sk_storage_get_btf_proto;
++		return &bpf_sk_storage_get_proto;
+ 	case BPF_FUNC_sk_storage_delete:
+-		return &sk_storage_delete_btf_proto;
++		return &bpf_sk_storage_delete_proto;
+ 	default:
+ 		return tracing_prog_func_proto(func_id, prog);
+ 	}
+diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+index 838efc682cff..aa39e9676050 100644
+--- a/net/core/bpf_sk_storage.c
++++ b/net/core/bpf_sk_storage.c
+@@ -269,7 +269,7 @@ BPF_CALL_4(bpf_sk_storage_get, struct bpf_map *, map,=
+ struct sock *, sk,
+ {
+ 	struct bpf_local_storage_data *sdata;
+=20
+-	if (flags > BPF_SK_STORAGE_GET_F_CREATE)
++	if (!sk || !sk_fullsock(sk) || flags > BPF_SK_STORAGE_GET_F_CREATE)
+ 		return (unsigned long)NULL;
+=20
+ 	sdata =3D sk_storage_lookup(sk, map, true);
+@@ -299,6 +299,9 @@ BPF_CALL_4(bpf_sk_storage_get, struct bpf_map *, map,=
+ struct sock *, sk,
+=20
+ BPF_CALL_2(bpf_sk_storage_delete, struct bpf_map *, map, struct sock *, =
+sk)
+ {
 +	if (!sk || !sk_fullsock(sk))
-+		return 0;
++		return -EINVAL;
 +
- 	cgrp =3D sock_cgroup_ptr(&sk->sk_cgrp_data);
- 	return cgroup_id(cgrp);
- }
+ 	if (refcount_inc_not_zero(&sk->sk_refcnt)) {
+ 		int err;
 =20
- BPF_CALL_1(bpf_skb_cgroup_id, const struct sk_buff *, skb)
- {
--	struct sock *sk =3D skb_to_full_sk(skb);
--
--	if (!sk || !sk_fullsock(sk))
--		return 0;
--
--	return __bpf_sk_cgroup_id(sk);
-+	return __bpf_sk_cgroup_id(skb->sk);
- }
-=20
- static const struct bpf_func_proto bpf_skb_cgroup_id_proto =3D {
-@@ -4115,6 +4114,10 @@ static inline u64 __bpf_sk_ancestor_cgroup_id(stru=
-ct sock *sk,
- 	struct cgroup *ancestor;
- 	struct cgroup *cgrp;
-=20
-+	sk =3D sk_to_full_sk(sk);
-+	if (!sk || !sk_fullsock(sk))
-+		return 0;
-+
- 	cgrp =3D sock_cgroup_ptr(&sk->sk_cgrp_data);
- 	ancestor =3D cgroup_ancestor(cgrp, ancestor_level);
- 	if (!ancestor)
-@@ -4126,12 +4129,7 @@ static inline u64 __bpf_sk_ancestor_cgroup_id(stru=
-ct sock *sk,
- BPF_CALL_2(bpf_skb_ancestor_cgroup_id, const struct sk_buff *, skb, int,
- 	   ancestor_level)
- {
--	struct sock *sk =3D skb_to_full_sk(skb);
--
--	if (!sk || !sk_fullsock(sk))
--		return 0;
--
--	return __bpf_sk_ancestor_cgroup_id(sk, ancestor_level);
-+	return __bpf_sk_ancestor_cgroup_id(skb->sk, ancestor_level);
- }
-=20
- static const struct bpf_func_proto bpf_skb_ancestor_cgroup_id_proto =3D =
-{
-@@ -4151,7 +4149,8 @@ static const struct bpf_func_proto bpf_sk_cgroup_id=
-_proto =3D {
- 	.func           =3D bpf_sk_cgroup_id,
- 	.gpl_only       =3D false,
- 	.ret_type       =3D RET_INTEGER,
--	.arg1_type      =3D ARG_PTR_TO_SOCKET,
-+	.arg1_type      =3D ARG_PTR_TO_BTF_ID_SOCK_COMMON,
-+	.arg1_btf_id	=3D &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
+@@ -355,7 +358,8 @@ const struct bpf_func_proto bpf_sk_storage_get_proto =
+=3D {
+ 	.gpl_only	=3D false,
+ 	.ret_type	=3D RET_PTR_TO_MAP_VALUE_OR_NULL,
+ 	.arg1_type	=3D ARG_CONST_MAP_PTR,
+-	.arg2_type	=3D ARG_PTR_TO_SOCKET,
++	.arg2_type	=3D ARG_PTR_TO_BTF_ID_SOCK_COMMON,
++	.arg2_btf_id	=3D &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
+ 	.arg3_type	=3D ARG_PTR_TO_MAP_VALUE_OR_NULL,
+ 	.arg4_type	=3D ARG_ANYTHING,
  };
-=20
- BPF_CALL_2(bpf_sk_ancestor_cgroup_id, struct sock *, sk, int, ancestor_l=
-evel)
-@@ -4163,7 +4162,8 @@ static const struct bpf_func_proto bpf_sk_ancestor_=
-cgroup_id_proto =3D {
- 	.func           =3D bpf_sk_ancestor_cgroup_id,
- 	.gpl_only       =3D false,
- 	.ret_type       =3D RET_INTEGER,
--	.arg1_type      =3D ARG_PTR_TO_SOCKET,
-+	.arg1_type      =3D ARG_PTR_TO_BTF_ID_SOCK_COMMON,
-+	.arg1_btf_id	=3D &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
- 	.arg2_type      =3D ARG_ANYTHING,
- };
- #endif
-@@ -5696,7 +5696,7 @@ static const struct bpf_func_proto bpf_sk_lookup_ud=
-p_proto =3D {
-=20
- BPF_CALL_1(bpf_sk_release, struct sock *, sk)
- {
--	if (sk_is_refcounted(sk))
-+	if (sk && sk_is_refcounted(sk))
- 		sock_gen_put(sk);
- 	return 0;
- }
-@@ -5705,7 +5705,8 @@ static const struct bpf_func_proto bpf_sk_release_p=
-roto =3D {
- 	.func		=3D bpf_sk_release,
+@@ -375,27 +379,8 @@ const struct bpf_func_proto bpf_sk_storage_delete_pr=
+oto =3D {
  	.gpl_only	=3D false,
  	.ret_type	=3D RET_INTEGER,
--	.arg1_type	=3D ARG_PTR_TO_SOCK_COMMON,
-+	.arg1_type	=3D ARG_PTR_TO_BTF_ID_SOCK_COMMON,
-+	.arg1_btf_id	=3D &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
+ 	.arg1_type	=3D ARG_CONST_MAP_PTR,
+-	.arg2_type	=3D ARG_PTR_TO_SOCKET,
+-};
+-
+-const struct bpf_func_proto sk_storage_get_btf_proto =3D {
+-	.func		=3D bpf_sk_storage_get,
+-	.gpl_only	=3D false,
+-	.ret_type	=3D RET_PTR_TO_MAP_VALUE_OR_NULL,
+-	.arg1_type	=3D ARG_CONST_MAP_PTR,
+-	.arg2_type	=3D ARG_PTR_TO_BTF_ID,
+-	.arg2_btf_id	=3D &btf_sock_ids[BTF_SOCK_TYPE_SOCK],
+-	.arg3_type	=3D ARG_PTR_TO_MAP_VALUE_OR_NULL,
+-	.arg4_type	=3D ARG_ANYTHING,
+-};
+-
+-const struct bpf_func_proto sk_storage_delete_btf_proto =3D {
+-	.func		=3D bpf_sk_storage_delete,
+-	.gpl_only	=3D false,
+-	.ret_type	=3D RET_INTEGER,
+-	.arg1_type	=3D ARG_CONST_MAP_PTR,
+-	.arg2_type	=3D ARG_PTR_TO_BTF_ID,
+-	.arg2_btf_id	=3D &btf_sock_ids[BTF_SOCK_TYPE_SOCK],
++	.arg2_type	=3D ARG_PTR_TO_BTF_ID_SOCK_COMMON,
++	.arg2_btf_id	=3D &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
  };
 =20
- BPF_CALL_5(bpf_xdp_sk_lookup_udp, struct xdp_buff *, ctx,
+ struct bpf_sk_storage_diag {
+diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
+index 74a2ef598c31..618954f82764 100644
+--- a/net/ipv4/bpf_tcp_ca.c
++++ b/net/ipv4/bpf_tcp_ca.c
+@@ -28,22 +28,6 @@ static u32 unsupported_ops[] =3D {
+ static const struct btf_type *tcp_sock_type;
+ static u32 tcp_sock_id, sock_id;
+=20
+-static struct bpf_func_proto btf_sk_storage_get_proto __read_mostly;
+-static struct bpf_func_proto btf_sk_storage_delete_proto __read_mostly;
+-
+-static void convert_sk_func_proto(struct bpf_func_proto *to, const struc=
+t bpf_func_proto *from)
+-{
+-	int i;
+-
+-	*to =3D *from;
+-	for (i =3D 0; i < ARRAY_SIZE(to->arg_type); i++) {
+-		if (to->arg_type[i] =3D=3D ARG_PTR_TO_SOCKET) {
+-			to->arg_type[i] =3D ARG_PTR_TO_BTF_ID;
+-			to->arg_btf_id[i] =3D &tcp_sock_id;
+-		}
+-	}
+-}
+-
+ static int bpf_tcp_ca_init(struct btf *btf)
+ {
+ 	s32 type_id;
+@@ -59,9 +43,6 @@ static int bpf_tcp_ca_init(struct btf *btf)
+ 	tcp_sock_id =3D type_id;
+ 	tcp_sock_type =3D btf_type_by_id(btf, tcp_sock_id);
+=20
+-	convert_sk_func_proto(&btf_sk_storage_get_proto, &bpf_sk_storage_get_pr=
+oto);
+-	convert_sk_func_proto(&btf_sk_storage_delete_proto, &bpf_sk_storage_del=
+ete_proto);
+-
+ 	return 0;
+ }
+=20
+@@ -188,9 +169,9 @@ bpf_tcp_ca_get_func_proto(enum bpf_func_id func_id,
+ 	case BPF_FUNC_tcp_send_ack:
+ 		return &bpf_tcp_send_ack_proto;
+ 	case BPF_FUNC_sk_storage_get:
+-		return &btf_sk_storage_get_proto;
++		return &bpf_sk_storage_get_proto;
+ 	case BPF_FUNC_sk_storage_delete:
+-		return &btf_sk_storage_delete_proto;
++		return &bpf_sk_storage_delete_proto;
+ 	default:
+ 		return bpf_base_func_proto(func_id);
+ 	}
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bp=
+f.h
+index a22812561064..1634ca9b752a 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -2861,6 +2861,7 @@ union bpf_attr {
+  *		0 on success.
+  *
+  *		**-ENOENT** if the bpf-local-storage cannot be found.
++ *		**-EINVAL** if sk is not a fullsock (e.g. a request_sock).
+  *
+  * long bpf_send_signal(u32 sig)
+  *	Description
 --=20
 2.24.1
 
