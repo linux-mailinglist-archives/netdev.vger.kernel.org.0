@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78579274197
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 13:50:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E022274164
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 13:49:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727035AbgIVLuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 07:50:21 -0400
-Received: from elvis.franken.de ([193.175.24.41]:51272 "EHLO elvis.franken.de"
+        id S1726919AbgIVLsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 07:48:55 -0400
+Received: from elvis.franken.de ([193.175.24.41]:51248 "EHLO elvis.franken.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727004AbgIVLuT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Sep 2020 07:50:19 -0400
+        id S1726778AbgIVLrq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Sep 2020 07:47:46 -0400
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1kKfxr-000822-06; Tue, 22 Sep 2020 12:56:03 +0200
+        id 1kKfxs-000822-00; Tue, 22 Sep 2020 12:56:04 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 4F214C0FFF; Tue, 22 Sep 2020 10:51:34 +0200 (CEST)
-Date:   Tue, 22 Sep 2020 10:51:34 +0200
+        id EA522C0FFF; Tue, 22 Sep 2020 10:52:52 +0200 (CEST)
+Date:   Tue, 22 Sep 2020 10:52:52 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 To:     Christoph Hellwig <hch@lst.de>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
@@ -36,28 +36,36 @@ Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
         linux-scsi@vger.kernel.org, linux-mm@kvack.org,
         alsa-devel@alsa-project.org
-Subject: Re: [PATCH 13/18] 53c700: convert to dma_alloc_noncoherent
-Message-ID: <20200922085134.GG8477@alpha.franken.de>
+Subject: Re: [PATCH 14/18] dma-mapping: remove dma_cache_sync
+Message-ID: <20200922085252.GH8477@alpha.franken.de>
 References: <20200915155122.1768241-1-hch@lst.de>
- <20200915155122.1768241-14-hch@lst.de>
+ <20200915155122.1768241-15-hch@lst.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200915155122.1768241-14-hch@lst.de>
+In-Reply-To: <20200915155122.1768241-15-hch@lst.de>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 15, 2020 at 05:51:17PM +0200, Christoph Hellwig wrote:
-> Use the new non-coherent DMA API including proper ownership transfers.
+On Tue, Sep 15, 2020 at 05:51:18PM +0200, Christoph Hellwig wrote:
+> All users are gone now, remove the API.
 > 
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->  drivers/scsi/53c700.c | 20 ++++++++++++++------
->  1 file changed, 14 insertions(+), 6 deletions(-)
+>  arch/mips/Kconfig               |  1 -
+>  arch/mips/jazz/jazzdma.c        |  1 -
+>  arch/mips/mm/dma-noncoherent.c  |  6 ------
+>  arch/parisc/Kconfig             |  1 -
+>  arch/parisc/kernel/pci-dma.c    |  6 ------
+>  include/linux/dma-mapping.h     |  8 --------
+>  include/linux/dma-noncoherent.h | 10 ----------
+>  kernel/dma/Kconfig              |  3 ---
+>  kernel/dma/mapping.c            | 14 --------------
+>  9 files changed, 50 deletions(-)
 
-Tested-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de> (MIPS part)
 
 -- 
 Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
