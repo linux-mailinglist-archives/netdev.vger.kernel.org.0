@@ -2,114 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E38F274661
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 18:19:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 384BA274671
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 18:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726597AbgIVQTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 12:19:09 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:39120 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726508AbgIVQTJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 12:19:09 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08MGFCef055413;
-        Tue, 22 Sep 2020 16:18:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=sEHjYHgpuV+AnxSztrrqp3lRmdzCrQ71bV6mXr0RVMU=;
- b=aVEU3mvLJ/ITw0VV2xKn7/NCGpGUFxAruRlqpDHa/L2rdiTooPqTZlL+AtHMIWVaVMk+
- NM5RqspUXUdS4+u92d3uZVICz1kFvKsatIOAyaZztQ2ZAbZqIbGGKbaPGE85Iq2jCKa8
- M1B2dg+7f7R/KWihI0S2unb4nUtUtwnJcilFnxAitc/vmFOtMuFeHPj0yIwZR5bAhXQt
- 2h3PZMTeeeeTIsW0dPCoAcbuGw6+c6+U8AHux+AJZ7Cc67InCxaYY5pYJOfxdf6V16n4
- EJQb0WZthhCKVdRRN9u26KCT+OTiJctOPCd0ems4pYIBByUawhs8waeDdg4kkZ24WEPN eQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 33q5rgc4ts-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 22 Sep 2020 16:18:22 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08MGFtHd143702;
-        Tue, 22 Sep 2020 16:18:22 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3020.oracle.com with ESMTP id 33nuw4b02s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 22 Sep 2020 16:18:21 +0000
-Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08MGIBWW018552;
-        Tue, 22 Sep 2020 16:18:11 GMT
-Received: from [10.74.86.236] (/10.74.86.236)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 22 Sep 2020 09:18:11 -0700
-Subject: Re: [PATCH v3 01/11] xen/manage: keep track of the on-going suspend
- mode
-To:     Anchal Agarwal <anchalag@amazon.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
-        x86@kernel.org, jgross@suse.com, linux-pm@vger.kernel.org,
-        linux-mm@kvack.org, kamatam@amazon.com, sstabellini@kernel.org,
-        konrad.wilk@oracle.com, roger.pau@citrix.com, axboe@kernel.dk,
-        davem@davemloft.net, rjw@rjwysocki.net, len.brown@intel.com,
-        pavel@ucw.cz, peterz@infradead.org, eduval@amazon.com,
-        sblbir@amazon.com, xen-devel@lists.xenproject.org,
-        vkuznets@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dwmw@amazon.co.uk,
-        benh@kernel.crashing.org
-References: <cover.1598042152.git.anchalag@amazon.com>
- <9b970e12491107afda0c1d4a6f154b52d90346ac.1598042152.git.anchalag@amazon.com>
- <4b2bbc8b-7817-271a-4ff0-5ee5df956049@oracle.com>
- <20200914214754.GA19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <e9b94104-d20a-b6b2-cbe0-f79b1ed09c98@oracle.com>
- <20200915180055.GB19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <5f1e4772-7bd9-e6c0-3fe6-eef98bb72bd8@oracle.com>
- <20200921215447.GA28503@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-From:   boris.ostrovsky@oracle.com
-Organization: Oracle Corporation
-Message-ID: <e3e447e5-2f7a-82a2-31c8-10c2ffcbfb2c@oracle.com>
-Date:   Tue, 22 Sep 2020 12:18:05 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.2.1
-MIME-Version: 1.0
-In-Reply-To: <20200921215447.GA28503@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+        id S1726719AbgIVQUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 12:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726655AbgIVQUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 12:20:14 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F35C061755
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 09:20:13 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id d6so12903116pfn.9
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 09:20:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:from:mime-version:subject:date:message-id
+         :references:cc:in-reply-to:to;
+        bh=OuYZ36WnxwIp9b6camA1INonBCd7PS5F7n5lbvDtQoE=;
+        b=vkrTbtOH4vHnR/84aYqVDHrQ5AGvI5gJZ+epaaRbPDginNWZ7IQOaHp0KiQGLoRIqK
+         lCtpCBfEppwh5xdm5Fg2E09yGBsQ1omUh0FsVnB0AGbc0KabsZevsMs5kdugIv8CVE5/
+         WA4g4A2X6yhuybhLsZ26G3b/9jK9koGpq3H8xumPWJXJrnSzbLUYbfDR++IgN0bKoBQq
+         n0DG/oDelKPnE35WpGCvEELD66Jz17cs7lC56sr6mITihQA1DVJ1mt9BGhniHUyWF6Lh
+         zzYPOu4uBf4nQ34xtWqSlA6XpnJ8NFviCNNpjE2H0nhrpatshwJ5hPmeTiRqtrX3VMpc
+         QmhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:content-transfer-encoding:from:mime-version
+         :subject:date:message-id:references:cc:in-reply-to:to;
+        bh=OuYZ36WnxwIp9b6camA1INonBCd7PS5F7n5lbvDtQoE=;
+        b=iA0Dou53LFcbj0pUdwdXkDKLZgmqcSd83nYFHOAt5o4NVuQv6Ivy2gyjXStgkzTbCH
+         IXS/RBh2cWxmsOWqowKv8oTUTQQwVChdy610QGtKSLK26nqpkF42vl88OXs6lvvf/g2X
+         jY6hWtL6AXp2yEe58X+sdbnS1pFFjXAvYxZ9clF2RDUxOW7rDM3KQ365myLl2xz6U5rd
+         3hxdzPBuh7LjYX6lEnpv/59Zjjgu9B+aS0r0i6zHrEWRpIThAXRU/vi8AtcEqpTq31bM
+         GkAdbagZw95p8XG9SbTKZqkkvf7+lxGBuDEZ6n42yMqlr27/5IYoom64Rh4QQ3z2COv5
+         t62Q==
+X-Gm-Message-State: AOAM531vVx/2L1o74k3oNZZgu230nys2NCN2PtKijbNiVN+TmUCESaWr
+        jC+vQdhqSNudLdL3jU5GJFVVSA==
+X-Google-Smtp-Source: ABdhPJzVdW+N5Ufbpna8vjsXyt2h2YPelrT15cDlhJa791IGnC+04vroQZTdEBrKNKjccVmTF6OthA==
+X-Received: by 2002:a17:902:fe88:b029:d2:2a16:254 with SMTP id x8-20020a170902fe88b02900d22a160254mr5598643plm.23.1600791613205;
+        Tue, 22 Sep 2020 09:20:13 -0700 (PDT)
+Received: from localhost.localdomain ([2601:646:c200:1ef2:f4bd:fe2:85ed:ea92])
+        by smtp.gmail.com with ESMTPSA id gk14sm2982522pjb.41.2020.09.22.09.20.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Sep 2020 09:20:12 -0700 (PDT)
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9752 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0 malwarescore=0
- mlxscore=0 suspectscore=0 adultscore=0 mlxlogscore=999 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009220124
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9752 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 impostorscore=0
- clxscore=1015 suspectscore=0 phishscore=0 malwarescore=0
- priorityscore=1501 mlxlogscore=999 adultscore=0 bulkscore=0 mlxscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009220124
+Content-Transfer-Encoding: quoted-printable
+From:   Andy Lutomirski <luto@amacapital.net>
+Mime-Version: 1.0 (1.0)
+Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+Date:   Tue, 22 Sep 2020 09:20:07 -0700
+Message-Id: <446566DF-ECBC-449C-92A1-A7D5AEBE9935@amacapital.net>
+References: <CAK8P3a39jN+t2hhLg0oKZnbYATQXmYE2-Z1JkmFyc1EPdg1HXw@mail.gmail.com>
+Cc:     Pavel Begunkov <asml.silence@gmail.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Howells <dhowells@redhat.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        Linux SCSI List <linux-scsi@vger.kernel.org>,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Network Development <netdev@vger.kernel.org>,
+        keyrings@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>
+In-Reply-To: <CAK8P3a39jN+t2hhLg0oKZnbYATQXmYE2-Z1JkmFyc1EPdg1HXw@mail.gmail.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+X-Mailer: iPhone Mail (18A373)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 9/21/20 5:54 PM, Anchal Agarwal wrote:
-> Thanks for the above suggestion. You are right I didn't find a way to declare
-> a global state either. I just broke the above check in 2 so that once we have
-> support for ARM we should be able to remove aarch64 condition easily. Let me
-> know if I am missing nay corner cases with this one.
->
-> static int xen_pm_notifier(struct notifier_block *notifier,
-> 	unsigned long pm_event, void *unused)
-> {
->     int ret = NOTIFY_OK;
->     if (!xen_hvm_domain() || xen_initial_domain())
-> 	ret = NOTIFY_BAD;
->     if(IS_ENABLED(CONFIG_ARM64) && (pm_event == PM_SUSPEND_PREPARE || pm_event == HIBERNATION_PREPARE))
-> 	ret = NOTIFY_BAD;
->
->     return ret;
-> }
 
+> On Sep 22, 2020, at 2:01 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+>=20
+> =EF=BB=BFOn Tue, Sep 22, 2020 at 9:59 AM Pavel Begunkov <asml.silence@gmai=
+l.com> wrote:
+>>> On 22/09/2020 10:23, Arnd Bergmann wrote:
+>>> On Tue, Sep 22, 2020 at 8:32 AM Pavel Begunkov <asml.silence@gmail.com> w=
+rote:
+>>>> On 22/09/2020 03:58, Andy Lutomirski wrote:
+>>>>> On Mon, Sep 21, 2020 at 5:24 PM Pavel Begunkov <asml.silence@gmail.com=
+> wrote:
+>>>>> I may be looking at a different kernel than you, but aren't you
+>>>>> preventing creating an io_uring regardless of whether SQPOLL is
+>>>>> requested?
+>>>>=20
+>>>> I diffed a not-saved file on a sleepy head, thanks for noticing.
+>>>> As you said, there should be an SQPOLL check.
+>>>>=20
+>>>> ...
+>>>> if (ctx->compat && (p->flags & IORING_SETUP_SQPOLL))
+>>>>        goto err;
+>>>=20
+>>> Wouldn't that mean that now 32-bit containers behave differently
+>>> between compat and native execution?
+>>>=20
+>>> I think if you want to prevent 32-bit applications from using SQPOLL,
+>>> it needs to be done the same way on both to be consistent:
+>>=20
+>> The intention was to disable only compat not native 32-bit.
+>=20
+> I'm not following why that would be considered a valid option,
+> as that clearly breaks existing users that update from a 32-bit
+> kernel to a 64-bit one.
+>=20
+> Taking away the features from users that are still on 32-bit kernels
+> already seems questionable to me, but being inconsistent
+> about it seems much worse, in particular when the regression
+> is on the upgrade path.
+>=20
+>>> Can we expect all existing and future user space to have a sane
+>>> fallback when IORING_SETUP_SQPOLL fails?
+>>=20
+>> SQPOLL has a few differences with non-SQPOLL modes, but it's easy
+>> to convert between them. Anyway, SQPOLL is a privileged special
+>> case that's here for performance/latency reasons, I don't think
+>> there will be any non-accidental users of it.
+>=20
+> Ok, so the behavior of 32-bit tasks would be the same as running
+> the same application as unprivileged 64-bit tasks, with applications
+> already having to implement that fallback, right?
+>=20
+>=20
 
+I don=E2=80=99t have any real preference wrt SQPOLL, and it may be that we h=
+ave a problem even without SQPOLL when IO gets punted without one of the fix=
+es discussed.
 
-This will allow PM suspend to proceed on x86.
-
-
--boris
-
+But banning the mismatched io_uring and io_uring_enter seems like it may be w=
+orthwhile regardless.=
