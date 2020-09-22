@@ -2,186 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5B80274BF8
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 00:19:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1A4E274C00
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 00:20:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726629AbgIVWTc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Sep 2020 18:19:32 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:58187 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726550AbgIVWTb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 18:19:31 -0400
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1kKqdA-0006tL-Mg; Tue, 22 Sep 2020 22:19:24 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 2BF3D5FED0; Tue, 22 Sep 2020 15:19:23 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 25D8A9FB5C;
-        Tue, 22 Sep 2020 15:19:23 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Jarod Wilson <jarod@redhat.com>
-cc:     linux-kernel@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/5] bonding: rename bond components
-In-reply-to: <20200922133731.33478-1-jarod@redhat.com>
-References: <20200922133731.33478-1-jarod@redhat.com>
-Comments: In-reply-to Jarod Wilson <jarod@redhat.com>
-   message dated "Tue, 22 Sep 2020 09:37:26 -0400."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1726784AbgIVWUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 18:20:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50274 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726732AbgIVWUr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 18:20:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600813245;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+        bh=2IT41UhBShTLrA7lcStqErZ4z64G6Nos1dY5P+BunVs=;
+        b=imJCGo3ej3hHQdFxPeha+rdMW8pIgYKFLRVAgFXitvBUMy0cN3iLWTgJnA2t4BBqIndnrm
+        HPgeP4vZzsEPjPqBx+wVCUggHatBp3AtDPCjzxg1oj3e0iLVqK2iT+pM7K2v2D2Zk0vgHq
+        GmYcU2GGyD8TCUs4hzD5+r/Qijglgec=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-369-tM0gRVhyPye4SaVdwkBIoA-1; Tue, 22 Sep 2020 18:20:41 -0400
+X-MC-Unique: tM0gRVhyPye4SaVdwkBIoA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7E4A5801AE8;
+        Tue, 22 Sep 2020 22:20:39 +0000 (UTC)
+Received: from [10.10.115.78] (ovpn-115-78.rdu2.redhat.com [10.10.115.78])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 470B978805;
+        Tue, 22 Sep 2020 22:20:36 +0000 (UTC)
+Subject: Re: [RFC][Patch v1 1/3] sched/isolation: API to get num of
+ hosekeeping CPUs
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Frederic Weisbecker <frederic@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, mtosatti@redhat.com,
+        sassmann@redhat.com, jeffrey.t.kirsher@intel.com,
+        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
+        bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jerinj@marvell.com, mathias.nyman@intel.com, jiri@nvidia.com
+References: <20200909150818.313699-1-nitesh@redhat.com>
+ <20200909150818.313699-2-nitesh@redhat.com> <20200921234044.GA31047@lenoir>
+ <fd48e554-6a19-f799-b273-e814e5389db9@redhat.com>
+ <20200922100817.GB5217@lenoir>
+ <b0608566-21c6-8fc9-4615-aa00099f6d04@redhat.com>
+ <20200922205805.GD5217@lenoir> <20200922212648.GA3764123@lunn.ch>
+From:   Nitesh Narayan Lal <nitesh@redhat.com>
+Autocrypt: addr=nitesh@redhat.com; prefer-encrypt=mutual; keydata=
+ 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
+ VujM7c/b4pps
+Organization: Red Hat Inc,
+Message-ID: <73f3a117-7617-4655-b286-29c1385011b3@redhat.com>
+Date:   Tue, 22 Sep 2020 18:20:35 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <14714.1600813163.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Tue, 22 Sep 2020 15:19:23 -0700
-Message-ID: <14715.1600813163@famine>
+In-Reply-To: <20200922212648.GA3764123@lunn.ch>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=nitesh@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="dC7dqyqLR1tpKpuFuqI0XbJiaqsa5tqXP"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jarod Wilson <jarod@redhat.com> wrote:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--dC7dqyqLR1tpKpuFuqI0XbJiaqsa5tqXP
+Content-Type: multipart/mixed; boundary="3sZ0xzUPCP6XHiGSxVFTtQfrAlcMESyEu"
 
->The bonding driver's use of master and slave, while largely understood
->in technical circles, poses a barrier for inclusion to some potential
->members of the development and user community, due to the historical
->context of masters and slaves, particularly in the United States. This
->is a first full pass at replacing those phrases with more socially
->inclusive ones, opting for aggregator to replace master and link to
->replace slave, as the bonding driver itself is a link aggregation
->driver.
+--3sZ0xzUPCP6XHiGSxVFTtQfrAlcMESyEu
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
 
-	First, I think there should be some direction from the kernel
-development leadership as to whether or not this type of large-scale
-search and replace of socially sensitive terms of art or other
-terminology is a task that should be undertaken, given the noted issues
-it will cause in stable release maintenance going forwards.
 
-	Second, on the merits of the proposed changes (presuming for the
-moment that this goes forward), I would prefer different nomenclature
-that does not reuse existing names for different purposes, i.e., "link"
-and "aggregator."
+On 9/22/20 5:26 PM, Andrew Lunn wrote:
+>> Subject: Re: [RFC][Patch v1 1/3] sched/isolation: API to get num of hose=
+keeping CPUs
+> Hosekeeping? Are these CPUs out gardening in the weeds?
 
-	Both of those have specific meanings in the current code, and
-old kernels will retain that meaning.  Changing them to have new
-meanings going forward will lead to confusion, in my opinion for no good
-reason, as there are other names suited that do not conflict.
+Bjorn has already highlighted the typo, so I will be fixing it in the next
+version.
+Do you find the commit message and body of this patch unclear?
 
-	For example, instead of "master" call everything a "bond," which
-matches common usage in discussion.  Changing "master" to "aggregator,"
-the replacement results in cumbersome descriptions like "the
-aggregator's active aggregator" in the context of LACP.
-
-	A replacement term for "slave" is trickier; my first choice
-would be "port," but that may make more churn from a code change point
-of view, although struct slave could become struct bond_port, and leave
-the existing struct port for its current LACP use.
-
->There are a few problems with this change. First up, "link" is used for
->link state already in the bonding driver, so the first step here is to
->rename link to link_state. Second, aggregator is already used in the
->802.3ad code, but I feel the usage is actually consistent with referring
->to the bonding aggregation virtual device as the aggregator. Third, we
->have the issue of not wanting to break any existing userspace, which I
->believe this patchset accomplishes, while also adding alternative
->interfaces using new terminology, and a Kconfig option that will let
->people make the conscious decision to break userspace and no longer
->expose the original master/slave interfaces, once their userspace is
->able to cope with their removal.
-
-	I'm opposed to the Kconfig option because it will lead to
-balkanization of the UAPI, which would be worse than a clean break
-(which I'm also opposed to).
-
->Lastly, we do still have the issue of ease of backporting fixes to
->-stable trees. I've not had a huge amount of time to spend on it, but
->brief forays into coccinelle didn't really pay off (since it's meant to
->operate on code, not patches), and the best solution I can come up with
->is providing a shell script someone could run over git-format-patch
->output before git-am'ing the result to a -stable tree, though scripting
->these changes in the first place turned out to be not the best thing to
->do anyway, due to subtle cases where use of master or slave can NOT yet
->be replaced, so a large amount of work was done by hand, inspection,
->trial and error, which is why this set is a lot longer in coming than
->I'd originally hoped. I don't expect -stable backports to be horrible to
->figure out one way or another though, and I don't believe that a bit of
->inconvenience on that front is enough to warrant not making these
->changes.
-
-	I'm skeptical that, given the scope of the changes involved,
-that it's really feasible to have effective automated massaging of
-patches.  I think the reality is that a large fraction of the bonding
-fixes in the future will have to be backported entirely by hand.  The
-only saving grace here is that the quantity of such patches is generally
-low (~40 in 2020 year to date).
-
-	-J
-
->See here for further details on Red Hat's commitment to this work:
->https://www.redhat.com/en/blog/making-open-source-more-inclusive-eradicating-problematic-language
 >
->As far as testing goes, I've manually operated on various bonds while
->working on this code, and have run it through multiple lnst test runs,
->which exercises the existing sysfs interfaces fairly extensively. As far
->as I can tell, there is no breakage of existing interfaces with this
->set, unless the user consciously opts to do so via Kconfig.
+> =09     Andrew
 >
->Jarod Wilson (5):
->  bonding: rename struct slave member link to link_state
->  bonding: rename slave to link where possible
->  bonding: rename master to aggregator where possible
->  bonding: make Kconfig toggle to disable legacy interfaces
->  bonding: update Documentation for link/aggregator terminology
->
->Cc: Jay Vosburgh <j.vosburgh@gmail.com>
->Cc: Veaceslav Falico <vfalico@gmail.com>
->Cc: Andy Gospodarek <andy@greyhouse.net>
->Cc: "David S. Miller" <davem@davemloft.net>
->Cc: Jakub Kicinski <kuba@kernel.org>
->Cc: Thomas Davis <tadavis@lbl.gov>
->Cc: netdev@vger.kernel.org
->
-> .clang-format                                 |    4 +-
-> Documentation/networking/bonding.rst          |  440 ++--
-> drivers/infiniband/core/cma.c                 |    2 +-
-> drivers/infiniband/core/lag.c                 |    2 +-
-> drivers/infiniband/core/roce_gid_mgmt.c       |   10 +-
-> drivers/infiniband/hw/mlx4/main.c             |    2 +-
-> drivers/net/Kconfig                           |   12 +
-> drivers/net/bonding/Makefile                  |    2 +-
-> drivers/net/bonding/bond_3ad.c                |  604 ++---
-> drivers/net/bonding/bond_alb.c                |  687 ++---
-> drivers/net/bonding/bond_debugfs.c            |    2 +-
-> drivers/net/bonding/bond_main.c               | 2336 +++++++++--------
-> drivers/net/bonding/bond_netlink.c            |  104 +-
-> drivers/net/bonding/bond_options.c            |  258 +-
-> drivers/net/bonding/bond_procfs.c             |   63 +-
-> drivers/net/bonding/bond_sysfs.c              |  249 +-
-> drivers/net/bonding/bond_sysfs_link.c         |  193 ++
-> drivers/net/bonding/bond_sysfs_slave.c        |  176 --
-> .../ethernet/chelsio/cxgb3/cxgb3_offload.c    |    2 +-
-> .../net/ethernet/mellanox/mlx4/en_netdev.c    |    4 +-
-> .../ethernet/mellanox/mlx5/core/en/rep/bond.c |    2 +-
-> .../net/ethernet/mellanox/mlx5/core/en_tc.c   |    2 +-
-> .../ethernet/netronome/nfp/flower/lag_conf.c  |    2 +-
-> .../ethernet/qlogic/netxen/netxen_nic_main.c  |   12 +-
-> include/linux/netdevice.h                     |   20 +-
-> include/net/bond_3ad.h                        |   20 +-
-> include/net/bond_alb.h                        |   31 +-
-> include/net/bond_options.h                    |   19 +-
-> include/net/bonding.h                         |  351 +--
-> include/net/lag.h                             |    2 +-
-> 30 files changed, 2902 insertions(+), 2711 deletions(-)
-> create mode 100644 drivers/net/bonding/bond_sysfs_link.c
-> delete mode 100644 drivers/net/bonding/bond_sysfs_slave.c
->
->-- 
->2.27.0
->
+--=20
+Nitesh
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+
+--3sZ0xzUPCP6XHiGSxVFTtQfrAlcMESyEu--
+
+--dC7dqyqLR1tpKpuFuqI0XbJiaqsa5tqXP
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEkXcoRVGaqvbHPuAGo4ZA3AYyozkFAl9qeLMACgkQo4ZA3AYy
+ozmgRxAAtVCi1syEHTZZTwuNdr2BDm5NqfGracBRsN0RBeqIlTRUGWr2khLqr7gC
+vgNxI3JXoE4eDFsYS6jbeovSPIi1TV3nP+CFUlqXT0gmLbFIUg2sgV324MOGcLg7
+5lixDHRySUUK5FJonykQal+it/9GABvhYW0Ty1PPugmKvR9J6f4Wv4JYoUXtQ5g+
+vjhPj8A8WP/nIs/bXUlQx4TkS6y8BcW6IVjL3nn4E5mPsjrmp/clgtdSi0Uq++SF
+suQyShHtu2MCjtc0RDPW2GaBHDNOTVlpp4ILAeKr4cnECWDTknJbWWwd41HBV+X+
+byTtNCYeRqv1yAoqYHDoL32YCCtaxU3nUv0xi9XyxPY/53wrZgTz1PtnGsOZzsYG
+eqzXF3XRRjkV2Jh+KFXdni9B9a8UgvPIiSf6VJIZbTEXZctZRcW6Sju0LjUKX6Ed
+I+zT5m14zJAsKXh/cbBzVguvRIgxKvfGSYZa4LBA8bvpP0S7+6LzEi0aF3ZSY2Qr
+uiqHKwFf3zeoTIw3VIc4qktl6ozoWhPkkyKiyD5y1Mmz0BLB4X4R17zcAyGKzDqq
+Dp5auFOxqhZeSAgT6gZAxqtefBZu9bJ6RiUFlIsBCmAvBueBN6Qj6hwOXN3A70PK
+YGSPU1C4cxZTM5dLcQE3lOgGZpiuaZIOOxcUU0HVett/QqfclsA=
+=nlWP
+-----END PGP SIGNATURE-----
+
+--dC7dqyqLR1tpKpuFuqI0XbJiaqsa5tqXP--
+
