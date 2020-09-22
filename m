@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01958273BFA
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:31:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E97E273BFD
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:31:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730123AbgIVHbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 03:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57556 "EHLO
+        id S1730111AbgIVHbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 03:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730065AbgIVHbA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 03:31:00 -0400
+        with ESMTP id S1730090AbgIVHbB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 03:31:01 -0400
 Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7C3C0613D0
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:30:59 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id x23so2227596wmi.3
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:30:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E7BC0613D1
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:31:01 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id y15so2234303wmi.0
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:31:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hfC5WQrBRXxEfIWBiW8wBg3L00Pa4/ZeG4/AgXLO3Fc=;
-        b=NRWyJUIvIw65gGoBj0MlrFEx5q+UEpqtlNeV7kU9d9YqB/bZSXLHkqmn9Gk1lqj6sx
-         rGw3tS/X75b1nIzncWJKiQA/8MIlPW+ROWwUt/QoNk/UfT7LclihGmkCt6t9uPwLVWEL
-         u94ZlI9FCHAN2AtVOyiRaZCGz9T4Rx9OXlm6meDSI3pKH8l92yNgFHGvMZ5hMAz37drS
-         hgEklRFiqu8Na8dWMAj2TWkSBdsR7RrQaUVGMwARFaPp+FiRkynL9NHdivb0PXnr1KmU
-         uvBPrOW9Mk5Fi/vTGgCpWXa8QsYjbMADALwY72TclKdnJKq0tWq0R+x7WrCoL2iitSns
-         +yWA==
+        bh=a2eErsYdK6krYgn30Vbo9aouigbIeTUlmqrfel5I2U8=;
+        b=TzDgn3Z0xiGuBUeknMgECMRCqKTC+sa65KxDw49wuoax372+d0hwBws78DWgsCkuNi
+         a880MGCOq/KcCmnbaMtFMwtO9qc8dhB/07v6U+8mbDowi0KMxqqzJD1tcLUXTwiQ9kLY
+         G7JCL5+v4BYs4Mn11JR7CSTiTEDbDRo+45upzhK+RVOBNFHWzc3sRvpkfDRf1EtP8Mft
+         FxHQYz7wLwMVFT11OB66bqbQSS45GwOmmXhiuRZiJe0GLZ6nM0SDMr9dXuABMPm/cSfX
+         xHlX7wPxbzp5/9NUyg/jRDIIwEYiuWr+eTHNv2lcupLdX5NtwMhPpOq41OFDbm4dNjyk
+         YS/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hfC5WQrBRXxEfIWBiW8wBg3L00Pa4/ZeG4/AgXLO3Fc=;
-        b=drinLl5VEwcajWasJJ+9W9TZlxpLSouiVQIhf8GGEMlg9aXcp3vOZyDv832kCvH/e6
-         g3Yg7i8uI8QW9Ov8hoUmYgVRzR49w89b8j3qsnrORpRkNF1ZOv0n0Y7cj4eWXipvOoXU
-         TWX7Ubav6M6oGnibUvkQ/r9O31Iy+k1Y2aKUysUKCw+WSpD1aWhP/cxf/5fDBfYHUUwn
-         tIPyWrpZjUpk3zErRpm3Eeu8AbdhEDFt8y8lCeER+vE4mmwLCEAfRlGgEBknlwahlLLs
-         Oj5aURc3Hbcc2pOSw5CAGA3NKOwapiyC1W9HTXB9pCk6di7xnVOfqte/yBMO8SDoIV4I
-         dCZA==
-X-Gm-Message-State: AOAM5312AkUAJiTvmBZ4aZABtY8gubv6A2C7jLtej74ApER3tldZUpvu
-        wI93DgfzL+7yG7bMVMdqWKj3dI83Y3/yJDoxakdfyQ==
-X-Google-Smtp-Source: ABdhPJyNX2mUBRt9828TnjD1g0gaJlvzKghyyQxhDCePJWeLoiRt7ZMd5K4ga9xzmoZoSPkuUQgKmA==
-X-Received: by 2002:a1c:6145:: with SMTP id v66mr3121045wmb.171.1600759857869;
-        Tue, 22 Sep 2020 00:30:57 -0700 (PDT)
+        bh=a2eErsYdK6krYgn30Vbo9aouigbIeTUlmqrfel5I2U8=;
+        b=Y/9qIN5mhqoeedjxTU6HBamUuVb+bn4QecRQdlmg5V6mqqMMmqLqhyMAG38dJH5hUg
+         Z0u5TrNZa/H7DxZTBOQowbNfQGw/b5VJAVkNJUfb0s2tRvZ8fh6FRSnsImJ3nM+Z1k/U
+         RD+LLaHtuAzjaHlNcC5iwUHoYeujoHxBW/YnT92Mwl6oLyS3/iE0FBkhxSfXNViPbhoa
+         LjR4PfgEMX/+IOzRC7JbYmStMvvtC1OKrohbG7U94xW49nU1m0exjjDm8qfZDWU+cC7E
+         FC91cBnguvHukBH7xhd/vbIK4/nUUOFUdxovDq3NZjq9qPIosxLpdUR1otkNgQhV951h
+         RFUg==
+X-Gm-Message-State: AOAM533vSIQEU99DVDz1aLEClHSyJgyk72bacodz7mIa8qgvM5JM69Yv
+        +NFYQYjOaCI9ef+7LogzBeNO3Sx9Dy0jqjLSSgAOPA==
+X-Google-Smtp-Source: ABdhPJypgucOoXXC0w2rIgpyP9SsJ92jqTQoUy5AaLcm8Tx7i6VPMmHz66iK6tRCXkjSd7/nl/oWzw==
+X-Received: by 2002:a05:600c:2118:: with SMTP id u24mr3017781wml.59.1600759859249;
+        Tue, 22 Sep 2020 00:30:59 -0700 (PDT)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id s26sm3258287wmh.44.2020.09.22.00.30.56
+        by smtp.gmail.com with ESMTPSA id s26sm3258287wmh.44.2020.09.22.00.30.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2020 00:30:57 -0700 (PDT)
+        Tue, 22 Sep 2020 00:30:58 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, davem@davemloft.net,
         bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next v2 12/16] net: bridge: mcast: install S,G entries automatically based on reports
-Date:   Tue, 22 Sep 2020 10:30:23 +0300
-Message-Id: <20200922073027.1196992-13-razor@blackwall.org>
+Subject: [PATCH net-next v2 13/16] net: bridge: mcast: handle port group filter modes
+Date:   Tue, 22 Sep 2020 10:30:24 +0300
+Message-Id: <20200922073027.1196992-14-razor@blackwall.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200922073027.1196992-1-razor@blackwall.org>
 References: <20200922073027.1196992-1-razor@blackwall.org>
@@ -66,351 +66,375 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-This patch adds support for automatic install of S,G mdb entries based
-on the port group's source list and the source entry's timer.
-Once installed the S,G will be used when forwarding packets if the
-approprate multicast/mld versions are set. A new source flag called
-BR_SGRP_F_INSTALLED denotes if the source has a forwarding mdb entry
-installed.
+We need to handle group filter mode transitions and initial state.
+To change a port group's INCLUDE -> EXCLUDE mode (or when we have added
+a new port group in EXCLUDE mode) we need to add that port to all of
+*,G ports' S,G entries for proper replication. When the EXCLUDE state is
+changed from IGMPv3 report, br_multicast_fwd_filter_exclude() must be
+called after the source list processing because the assumption is that
+all of the group's S,G entries will be created before transitioning to
+EXCLUDE mode, i.e. most importantly its blocked entries will already be
+added so it will not get automatically added to them.
+The transition EXCLUDE -> INCLUDE happens only when a port group timer
+expires, it requires us to remove that port from all of *,G ports' S,G
+entries where it was automatically added previously.
+Finally when we are adding a new S,G entry we must add all of *,G's
+EXCLUDE ports to it.
+In order to distinguish automatically added *,G EXCLUDE ports we have a
+new port group flag - MDB_PG_FLAGS_STAR_EXCL.
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- net/bridge/br_multicast.c | 176 +++++++++++++++++++++++++++++---------
- net/bridge/br_private.h   |   1 +
- 2 files changed, 138 insertions(+), 39 deletions(-)
+ include/uapi/linux/if_bridge.h |   1 +
+ net/bridge/br_mdb.c            |  25 ++++-
+ net/bridge/br_multicast.c      | 172 +++++++++++++++++++++++++++++++++
+ net/bridge/br_private.h        |  20 ++++
+ 4 files changed, 216 insertions(+), 2 deletions(-)
 
+diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+index 1054f151078d..e4bd30a25f6b 100644
+--- a/include/uapi/linux/if_bridge.h
++++ b/include/uapi/linux/if_bridge.h
+@@ -518,6 +518,7 @@ struct br_mdb_entry {
+ 	__u8 state;
+ #define MDB_FLAGS_OFFLOAD	(1 << 0)
+ #define MDB_FLAGS_FAST_LEAVE	(1 << 1)
++#define MDB_FLAGS_STAR_EXCL	(1 << 2)
+ 	__u8 flags;
+ 	__u16 vid;
+ 	struct {
+diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
+index 4e3a5cefc626..28cd35a9cf37 100644
+--- a/net/bridge/br_mdb.c
++++ b/net/bridge/br_mdb.c
+@@ -62,6 +62,8 @@ static void __mdb_entry_fill_flags(struct br_mdb_entry *e, unsigned char flags)
+ 		e->flags |= MDB_FLAGS_OFFLOAD;
+ 	if (flags & MDB_PG_FLAGS_FAST_LEAVE)
+ 		e->flags |= MDB_FLAGS_FAST_LEAVE;
++	if (flags & MDB_PG_FLAGS_STAR_EXCL)
++		e->flags |= MDB_FLAGS_STAR_EXCL;
+ }
+ 
+ static void __mdb_entry_to_br_ip(struct br_mdb_entry *entry, struct br_ip *ip,
+@@ -822,11 +824,11 @@ static int br_mdb_add_group(struct net_bridge *br, struct net_bridge_port *port,
+ 			    struct nlattr **mdb_attrs,
+ 			    struct netlink_ext_ack *extack)
+ {
+-	struct net_bridge_mdb_entry *mp;
++	struct net_bridge_mdb_entry *mp, *star_mp;
+ 	struct net_bridge_port_group *p;
+ 	struct net_bridge_port_group __rcu **pp;
++	struct br_ip group, star_group;
+ 	unsigned long now = jiffies;
+-	struct br_ip group;
+ 	u8 filter_mode;
+ 	int err;
+ 
+@@ -890,6 +892,25 @@ static int br_mdb_add_group(struct net_bridge *br, struct net_bridge_port *port,
+ 	if (entry->state == MDB_TEMPORARY)
+ 		mod_timer(&p->timer, now + br->multicast_membership_interval);
+ 	br_mdb_notify(br->dev, mp, p, RTM_NEWMDB);
++	/* if we are adding a new EXCLUDE port group (*,G) it needs to be also
++	 * added to all S,G entries for proper replication, if we are adding
++	 * a new INCLUDE port (S,G) then all of *,G EXCLUDE ports need to be
++	 * added to it for proper replication
++	 */
++	if (br_multicast_should_handle_mode(br, group.proto)) {
++		switch (filter_mode) {
++		case MCAST_EXCLUDE:
++			br_multicast_star_g_handle_mode(p, MCAST_EXCLUDE);
++			break;
++		case MCAST_INCLUDE:
++			star_group = p->key.addr;
++			memset(&star_group.src, 0, sizeof(star_group.src));
++			star_mp = br_mdb_ip_get(br, &star_group);
++			if (star_mp)
++				br_multicast_sg_add_exclude_ports(star_mp, p);
++			break;
++		}
++	}
+ 
+ 	return 0;
+ }
 diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 0fec9f38787c..ece8ac805e98 100644
+index ece8ac805e98..f39bbd733722 100644
 --- a/net/bridge/br_multicast.c
 +++ b/net/bridge/br_multicast.c
-@@ -66,6 +66,13 @@ static void br_ip6_multicast_leave_group(struct net_bridge *br,
- 					 const struct in6_addr *group,
- 					 __u16 vid, const unsigned char *src);
- #endif
-+static struct net_bridge_port_group *
-+__br_multicast_add_group(struct net_bridge *br,
-+			 struct net_bridge_port *port,
-+			 struct br_ip *group,
-+			 const unsigned char *src,
-+			 u8 filter_mode,
-+			 bool igmpv2_mldv1);
+@@ -73,6 +73,8 @@ __br_multicast_add_group(struct net_bridge *br,
+ 			 const unsigned char *src,
+ 			 u8 filter_mode,
+ 			 bool igmpv2_mldv1);
++static void br_multicast_find_del_pg(struct net_bridge *br,
++				     struct net_bridge_port_group *pg);
  
  static struct net_bridge_port_group *
  br_sg_port_find(struct net_bridge *br,
-@@ -175,6 +182,81 @@ struct net_bridge_mdb_entry *br_mdb_get(struct net_bridge *br,
- 	return br_mdb_ip_get_rcu(br, &ip);
+@@ -195,8 +197,163 @@ static bool br_port_group_equal(struct net_bridge_port_group *p,
+ 	return ether_addr_equal(src, p->eth_addr);
  }
  
-+static bool br_port_group_equal(struct net_bridge_port_group *p,
-+				struct net_bridge_port *port,
-+				const unsigned char *src)
++static void __fwd_add_star_excl(struct net_bridge_port_group *pg,
++				struct br_ip *sg_ip)
 +{
-+	if (p->key.port != port)
-+		return false;
++	struct net_bridge_port_group_sg_key sg_key;
++	struct net_bridge *br = pg->key.port->br;
++	struct net_bridge_port_group *src_pg;
 +
-+	if (!(port->flags & BR_MULTICAST_TO_UNICAST))
-+		return true;
++	memset(&sg_key, 0, sizeof(sg_key));
++	sg_key.port = pg->key.port;
++	sg_key.addr = *sg_ip;
++	if (br_sg_port_find(br, &sg_key))
++		return;
 +
-+	return ether_addr_equal(src, p->eth_addr);
++	src_pg = __br_multicast_add_group(br, pg->key.port, sg_ip, pg->eth_addr,
++					  MCAST_INCLUDE, false);
++	if (IS_ERR_OR_NULL(src_pg) ||
++	    src_pg->rt_protocol != RTPROT_KERNEL)
++		return;
++
++	src_pg->flags |= MDB_PG_FLAGS_STAR_EXCL;
 +}
 +
-+static void br_multicast_fwd_src_add(struct net_bridge_group_src *src)
++static void __fwd_del_star_excl(struct net_bridge_port_group *pg,
++				struct br_ip *sg_ip)
 +{
-+	struct net_bridge_port_group *sg;
-+	struct br_ip sg_ip;
++	struct net_bridge_port_group_sg_key sg_key;
++	struct net_bridge *br = pg->key.port->br;
++	struct net_bridge_port_group *src_pg;
 +
-+	if (src->flags & BR_SGRP_F_INSTALLED)
++	memset(&sg_key, 0, sizeof(sg_key));
++	sg_key.port = pg->key.port;
++	sg_key.addr = *sg_ip;
++	src_pg = br_sg_port_find(br, &sg_key);
++	if (!src_pg || !(src_pg->flags & MDB_PG_FLAGS_STAR_EXCL) ||
++	    src_pg->rt_protocol != RTPROT_KERNEL)
 +		return;
 +
-+	memset(&sg_ip, 0, sizeof(sg_ip));
-+	sg_ip = src->pg->key.addr;
-+	sg_ip.src = src->addr.src;
-+	sg = __br_multicast_add_group(src->br, src->pg->key.port, &sg_ip,
-+				      src->pg->eth_addr, MCAST_INCLUDE, false);
-+	if (IS_ERR_OR_NULL(sg))
-+		return;
-+	src->flags |= BR_SGRP_F_INSTALLED;
-+
-+	/* if it was added by user-space as perm we can skip next steps */
-+	if (sg->rt_protocol != RTPROT_KERNEL &&
-+	    (sg->flags & MDB_PG_FLAGS_PERMANENT))
-+		return;
-+
-+	/* the kernel is now responsible for removing this S,G */
-+	del_timer(&sg->timer);
++	br_multicast_find_del_pg(br, src_pg);
 +}
 +
-+static void br_multicast_fwd_src_remove(struct net_bridge_group_src *src)
++/* When a port group transitions to (or is added as) EXCLUDE we need to add it
++ * to all other ports' S,G entries which are not blocked by the current group
++ * for proper replication, the assumption is that any S,G blocked entries
++ * are already added so the S,G,port lookup should skip them.
++ * When a port group transitions from EXCLUDE -> INCLUDE mode or is being
++ * deleted we need to remove it from all ports' S,G entries where it was
++ * automatically installed before (i.e. where it's MDB_PG_FLAGS_STAR_EXCL).
++ */
++void br_multicast_star_g_handle_mode(struct net_bridge_port_group *pg,
++				     u8 filter_mode)
 +{
-+	struct net_bridge_port_group *p, *pg = src->pg;
-+	struct net_bridge_port_group __rcu **pp;
++	struct net_bridge *br = pg->key.port->br;
++	struct net_bridge_port_group *pg_lst;
 +	struct net_bridge_mdb_entry *mp;
 +	struct br_ip sg_ip;
 +
-+	memset(&sg_ip, 0, sizeof(sg_ip));
-+	sg_ip = pg->key.addr;
-+	sg_ip.src = src->addr.src;
++	if (WARN_ON(!br_multicast_is_star_g(&pg->key.addr)))
++		return;
 +
-+	mp = br_mdb_ip_get(src->br, &sg_ip);
++	mp = br_mdb_ip_get(br, &pg->key.addr);
 +	if (!mp)
 +		return;
 +
-+	for (pp = &mp->ports;
-+	     (p = mlock_dereference(*pp, src->br)) != NULL;
-+	     pp = &p->next) {
-+		if (!br_port_group_equal(p, pg->key.port, pg->eth_addr))
++	memset(&sg_ip, 0, sizeof(sg_ip));
++	sg_ip = pg->key.addr;
++	for (pg_lst = mlock_dereference(mp->ports, br);
++	     pg_lst;
++	     pg_lst = mlock_dereference(pg_lst->next, br)) {
++		struct net_bridge_group_src *src_ent;
++
++		if (pg_lst == pg)
++			continue;
++		hlist_for_each_entry(src_ent, &pg_lst->src_list, node) {
++			if (!(src_ent->flags & BR_SGRP_F_INSTALLED))
++				continue;
++			sg_ip.src = src_ent->addr.src;
++			switch (filter_mode) {
++			case MCAST_INCLUDE:
++				__fwd_del_star_excl(pg, &sg_ip);
++				break;
++			case MCAST_EXCLUDE:
++				__fwd_add_star_excl(pg, &sg_ip);
++				break;
++			}
++		}
++	}
++}
++
++static void br_multicast_sg_del_exclude_ports(struct net_bridge_mdb_entry *sgmp)
++{
++	struct net_bridge_port_group __rcu **pp;
++	struct net_bridge_port_group *p;
++
++	/* *,G exclude ports are only added to S,G entries */
++	if (WARN_ON(br_multicast_is_star_g(&sgmp->addr)))
++		return;
++
++	/* we need the STAR_EXCLUDE ports if there are non-STAR_EXCLUDE ports
++	 * we should ignore perm entries since they're managed by user-space
++	 */
++	for (pp = &sgmp->ports;
++	     (p = mlock_dereference(*pp, sgmp->br)) != NULL;
++	     pp = &p->next)
++		if (!(p->flags & (MDB_PG_FLAGS_STAR_EXCL |
++				  MDB_PG_FLAGS_PERMANENT)))
++			return;
++
++	for (pp = &sgmp->ports;
++	     (p = mlock_dereference(*pp, sgmp->br)) != NULL;) {
++		if (!(p->flags & MDB_PG_FLAGS_PERMANENT))
++			br_multicast_del_pg(sgmp, p, pp);
++		else
++			pp = &p->next;
++	}
++}
++
++void br_multicast_sg_add_exclude_ports(struct net_bridge_mdb_entry *star_mp,
++				       struct net_bridge_port_group *sg)
++{
++	struct net_bridge_port_group_sg_key sg_key;
++	struct net_bridge *br = star_mp->br;
++	struct net_bridge_port_group *pg;
++
++	if (WARN_ON(br_multicast_is_star_g(&sg->key.addr)))
++		return;
++	if (WARN_ON(!br_multicast_is_star_g(&star_mp->addr)))
++		return;
++
++	memset(&sg_key, 0, sizeof(sg_key));
++	sg_key.addr = sg->key.addr;
++	/* we need to add all exclude ports to the S,G */
++	for (pg = mlock_dereference(star_mp->ports, br);
++	     pg;
++	     pg = mlock_dereference(pg->next, br)) {
++		struct net_bridge_port_group *src_pg;
++
++		if (pg == sg || pg->filter_mode == MCAST_INCLUDE)
 +			continue;
 +
-+		if (p->rt_protocol != RTPROT_KERNEL &&
-+		    (p->flags & MDB_PG_FLAGS_PERMANENT))
-+			break;
++		sg_key.port = pg->key.port;
++		if (br_sg_port_find(br, &sg_key))
++			continue;
 +
-+		br_multicast_del_pg(mp, p, pp);
-+		break;
++		src_pg = __br_multicast_add_group(br, pg->key.port,
++						  &sg->key.addr,
++						  sg->eth_addr,
++						  MCAST_INCLUDE, false);
++		if (IS_ERR_OR_NULL(src_pg) ||
++		    src_pg->rt_protocol != RTPROT_KERNEL)
++			continue;
++		src_pg->flags |= MDB_PG_FLAGS_STAR_EXCL;
 +	}
-+	src->flags &= ~BR_SGRP_F_INSTALLED;
 +}
 +
-+static void br_multicast_fwd_src_handle(struct net_bridge_group_src *src)
-+{
-+	br_multicast_fwd_src_add(src);
-+}
+ static void br_multicast_fwd_src_add(struct net_bridge_group_src *src)
+ {
++	struct net_bridge_mdb_entry *star_mp;
+ 	struct net_bridge_port_group *sg;
+ 	struct br_ip sg_ip;
+ 
+@@ -211,6 +368,7 @@ static void br_multicast_fwd_src_add(struct net_bridge_group_src *src)
+ 	if (IS_ERR_OR_NULL(sg))
+ 		return;
+ 	src->flags |= BR_SGRP_F_INSTALLED;
++	sg->flags &= ~MDB_PG_FLAGS_STAR_EXCL;
+ 
+ 	/* if it was added by user-space as perm we can skip next steps */
+ 	if (sg->rt_protocol != RTPROT_KERNEL &&
+@@ -219,6 +377,11 @@ static void br_multicast_fwd_src_add(struct net_bridge_group_src *src)
+ 
+ 	/* the kernel is now responsible for removing this S,G */
+ 	del_timer(&sg->timer);
++	star_mp = br_mdb_ip_get(src->br, &src->pg->key.addr);
++	if (!star_mp)
++		return;
 +
- static void br_multicast_destroy_mdb_entry(struct net_bridge_mcast_gc *gc)
- {
- 	struct net_bridge_mdb_entry *mp;
-@@ -204,7 +286,8 @@ static void br_multicast_group_expired(struct timer_list *t)
- 	struct net_bridge *br = mp->br;
- 
- 	spin_lock(&br->multicast_lock);
--	if (!netif_running(br->dev) || timer_pending(&mp->timer))
-+	if (hlist_unhashed(&mp->mdb_node) || !netif_running(br->dev) ||
-+	    timer_pending(&mp->timer))
- 		goto out;
- 
- 	br_multicast_host_leave(mp, true);
-@@ -231,6 +314,7 @@ static void br_multicast_del_group_src(struct net_bridge_group_src *src)
- {
- 	struct net_bridge *br = src->pg->key.port->br;
- 
-+	br_multicast_fwd_src_remove(src);
- 	hlist_del_init_rcu(&src->node);
- 	src->pg->src_ents--;
- 	hlist_add_head(&src->mcast_gc.gc_node, &br->mcast_gc_list);
-@@ -851,19 +935,6 @@ struct net_bridge_port_group *br_multicast_new_port_group(
- 	return p;
++	br_multicast_sg_add_exclude_ports(star_mp, sg);
  }
  
--static bool br_port_group_equal(struct net_bridge_port_group *p,
--				struct net_bridge_port *port,
--				const unsigned char *src)
--{
--	if (p->key.port != port)
--		return false;
--
--	if (!(port->flags & BR_MULTICAST_TO_UNICAST))
--		return true;
--
--	return ether_addr_equal(src, p->eth_addr);
--}
--
- void br_multicast_host_join(struct net_bridge_mdb_entry *mp, bool notify)
- {
- 	if (!mp->host_joined) {
-@@ -884,28 +955,26 @@ void br_multicast_host_leave(struct net_bridge_mdb_entry *mp, bool notify)
- 		br_mdb_notify(mp->br->dev, mp, NULL, RTM_DELMDB);
- }
+ static void br_multicast_fwd_src_remove(struct net_bridge_group_src *src)
+@@ -349,6 +512,10 @@ void br_multicast_del_pg(struct net_bridge_mdb_entry *mp,
+ 	hlist_for_each_entry_safe(ent, tmp, &pg->src_list, node)
+ 		br_multicast_del_group_src(ent);
+ 	br_mdb_notify(br->dev, mp, pg, RTM_DELMDB);
++	if (!br_multicast_is_star_g(&mp->addr))
++		br_multicast_sg_del_exclude_ports(mp);
++	else
++		br_multicast_star_g_handle_mode(pg, MCAST_INCLUDE);
+ 	hlist_add_head(&pg->mcast_gc.gc_node, &br->mcast_gc_list);
+ 	queue_work(system_long_wq, &br->mcast_gc_work);
  
--static int br_multicast_add_group(struct net_bridge *br,
--				  struct net_bridge_port *port,
--				  struct br_ip *group,
--				  const unsigned char *src,
--				  u8 filter_mode,
--				  bool igmpv2_mldv1)
-+static struct net_bridge_port_group *
-+__br_multicast_add_group(struct net_bridge *br,
-+			 struct net_bridge_port *port,
-+			 struct br_ip *group,
-+			 const unsigned char *src,
-+			 u8 filter_mode,
-+			 bool igmpv2_mldv1)
- {
- 	struct net_bridge_port_group __rcu **pp;
--	struct net_bridge_port_group *p;
-+	struct net_bridge_port_group *p = NULL;
- 	struct net_bridge_mdb_entry *mp;
- 	unsigned long now = jiffies;
--	int err;
+@@ -407,6 +574,9 @@ static void br_multicast_port_group_expired(struct timer_list *t)
+ 	} else if (changed) {
+ 		struct net_bridge_mdb_entry *mp = br_mdb_ip_get(br, &pg->key.addr);
  
--	spin_lock(&br->multicast_lock);
- 	if (!netif_running(br->dev) ||
- 	    (port && port->state == BR_STATE_DISABLED))
- 		goto out;
- 
- 	mp = br_multicast_new_group(br, group);
--	err = PTR_ERR(mp);
- 	if (IS_ERR(mp))
--		goto err;
-+		return ERR_PTR(PTR_ERR(mp));
- 
- 	if (!port) {
- 		br_multicast_host_join(mp, true);
-@@ -923,8 +992,10 @@ static int br_multicast_add_group(struct net_bridge *br,
- 
- 	p = br_multicast_new_port_group(port, group, *pp, 0, src, filter_mode,
- 					RTPROT_KERNEL);
--	if (unlikely(!p))
--		goto err;
-+	if (unlikely(!p)) {
-+		p = ERR_PTR(-ENOMEM);
-+		goto out;
-+	}
- 	rcu_assign_pointer(*pp, p);
- 	br_mdb_notify(br->dev, mp, p, RTM_NEWMDB);
- 
-@@ -933,10 +1004,26 @@ static int br_multicast_add_group(struct net_bridge *br,
- 		mod_timer(&p->timer, now + br->multicast_membership_interval);
- 
- out:
--	err = 0;
-+	return p;
-+}
++		if (changed && br_multicast_is_star_g(&pg->key.addr))
++			br_multicast_star_g_handle_mode(pg, MCAST_INCLUDE);
 +
-+static int br_multicast_add_group(struct net_bridge *br,
-+				  struct net_bridge_port *port,
-+				  struct br_ip *group,
-+				  const unsigned char *src,
-+				  u8 filter_mode,
-+				  bool igmpv2_mldv1)
-+{
-+	struct net_bridge_port_group *pg;
-+	int err;
- 
--err:
-+	spin_lock(&br->multicast_lock);
-+	pg = __br_multicast_add_group(br, port, group, src, filter_mode,
-+				      igmpv2_mldv1);
-+	/* NULL is considered valid for host joined groups */
-+	err = IS_ERR(pg) ? PTR_ERR(pg) : 0;
- 	spin_unlock(&br->multicast_lock);
-+
- 	return err;
- }
- 
-@@ -1349,6 +1436,13 @@ static int __grp_src_delete_marked(struct net_bridge_port_group *pg)
- 	return deleted;
- }
- 
-+static void __grp_src_mod_timer(struct net_bridge_group_src *src,
-+				unsigned long expires)
-+{
-+	mod_timer(&src->timer, expires);
-+	br_multicast_fwd_src_handle(src);
-+}
-+
- static void __grp_src_query_marked_and_rexmit(struct net_bridge_port_group *pg)
- {
- 	struct bridge_mcast_other_query *other_query = NULL;
-@@ -1377,7 +1471,7 @@ static void __grp_src_query_marked_and_rexmit(struct net_bridge_port_group *pg)
- 				    other_query &&
- 				    !timer_pending(&other_query->timer))
- 					ent->src_query_rexmit_cnt = lmqc;
--				mod_timer(&ent->timer, lmqt);
-+				__grp_src_mod_timer(ent, lmqt);
- 			}
- 		}
- 	}
-@@ -1456,7 +1550,7 @@ static bool br_multicast_isinc_allow(struct net_bridge_port_group *pg,
- 		}
- 
- 		if (ent)
--			mod_timer(&ent->timer, now + br_multicast_gmi(br));
-+			__grp_src_mod_timer(ent, now + br_multicast_gmi(br));
- 		srcs += src_size;
- 	}
- 
-@@ -1486,7 +1580,9 @@ static void __grp_src_isexc_incl(struct net_bridge_port_group *pg,
- 		if (ent)
- 			ent->flags &= ~BR_SGRP_F_DELETE;
- 		else
--			br_multicast_new_group_src(pg, &src_ip);
-+			ent = br_multicast_new_group_src(pg, &src_ip);
-+		if (ent)
-+			br_multicast_fwd_src_handle(ent);
- 		srcs += src_size;
- 	}
- 
-@@ -1522,8 +1618,8 @@ static bool __grp_src_isexc_excl(struct net_bridge_port_group *pg,
- 		} else {
- 			ent = br_multicast_new_group_src(pg, &src_ip);
- 			if (ent) {
--				mod_timer(&ent->timer,
--					  now + br_multicast_gmi(br));
-+				__grp_src_mod_timer(ent,
-+						    now + br_multicast_gmi(br));
- 				changed = true;
- 			}
- 		}
-@@ -1589,7 +1685,7 @@ static bool __grp_src_toin_incl(struct net_bridge_port_group *pg,
- 				changed = true;
- 		}
- 		if (ent)
--			mod_timer(&ent->timer, now + br_multicast_gmi(br));
-+			__grp_src_mod_timer(ent, now + br_multicast_gmi(br));
- 		srcs += src_size;
- 	}
- 
-@@ -1634,7 +1730,7 @@ static bool __grp_src_toin_excl(struct net_bridge_port_group *pg,
- 				changed = true;
- 		}
- 		if (ent)
--			mod_timer(&ent->timer, now + br_multicast_gmi(br));
-+			__grp_src_mod_timer(ent, now + br_multicast_gmi(br));
- 		srcs += src_size;
- 	}
- 
-@@ -1689,8 +1785,10 @@ static void __grp_src_toex_incl(struct net_bridge_port_group *pg,
- 				     BR_SGRP_F_SEND;
- 			to_send++;
- 		} else {
--			br_multicast_new_group_src(pg, &src_ip);
-+			ent = br_multicast_new_group_src(pg, &src_ip);
- 		}
-+		if (ent)
-+			br_multicast_fwd_src_handle(ent);
- 		srcs += src_size;
- 	}
- 
-@@ -1727,7 +1825,7 @@ static bool __grp_src_toex_excl(struct net_bridge_port_group *pg,
- 		} else {
- 			ent = br_multicast_new_group_src(pg, &src_ip);
- 			if (ent) {
--				mod_timer(&ent->timer, pg->timer.expires);
-+				__grp_src_mod_timer(ent, pg->timer.expires);
- 				changed = true;
- 			}
- 		}
-@@ -1823,7 +1921,7 @@ static bool __grp_src_block_excl(struct net_bridge_port_group *pg,
- 		if (!ent) {
- 			ent = br_multicast_new_group_src(pg, &src_ip);
- 			if (ent) {
--				mod_timer(&ent->timer, pg->timer.expires);
-+				__grp_src_mod_timer(ent, pg->timer.expires);
- 				changed = true;
- 			}
- 		}
+ 		if (WARN_ON(!mp))
+ 			goto out;
+ 		br_mdb_notify(br->dev, mp, pg, RTM_NEWMDB);
+@@ -1641,6 +1811,7 @@ static bool br_multicast_isexc(struct net_bridge_port_group *pg,
+ 	switch (pg->filter_mode) {
+ 	case MCAST_INCLUDE:
+ 		__grp_src_isexc_incl(pg, srcs, nsrcs, src_size);
++		br_multicast_star_g_handle_mode(pg, MCAST_EXCLUDE);
+ 		changed = true;
+ 		break;
+ 	case MCAST_EXCLUDE:
+@@ -1853,6 +2024,7 @@ static bool br_multicast_toex(struct net_bridge_port_group *pg,
+ 	switch (pg->filter_mode) {
+ 	case MCAST_INCLUDE:
+ 		__grp_src_toex_incl(pg, srcs, nsrcs, src_size);
++		br_multicast_star_g_handle_mode(pg, MCAST_EXCLUDE);
+ 		changed = true;
+ 		break;
+ 	case MCAST_EXCLUDE:
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 55486b4956d3..93d76b3dfc35 100644
+index 93d76b3dfc35..128d2d0417a0 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -218,6 +218,7 @@ struct net_bridge_fdb_entry {
+@@ -213,6 +213,7 @@ struct net_bridge_fdb_entry {
+ #define MDB_PG_FLAGS_PERMANENT	BIT(0)
+ #define MDB_PG_FLAGS_OFFLOAD	BIT(1)
+ #define MDB_PG_FLAGS_FAST_LEAVE	BIT(2)
++#define MDB_PG_FLAGS_STAR_EXCL	BIT(3)
  
- #define BR_SGRP_F_DELETE	BIT(0)
- #define BR_SGRP_F_SEND		BIT(1)
-+#define BR_SGRP_F_INSTALLED	BIT(2)
+ #define PG_SRC_ENT_LIMIT	32
  
- struct net_bridge_mcast_gc {
- 	struct hlist_node		gc_node;
+@@ -833,6 +834,10 @@ void br_mdb_init(void);
+ void br_mdb_uninit(void);
+ void br_multicast_host_join(struct net_bridge_mdb_entry *mp, bool notify);
+ void br_multicast_host_leave(struct net_bridge_mdb_entry *mp, bool notify);
++void br_multicast_star_g_handle_mode(struct net_bridge_port_group *pg,
++				     u8 filter_mode);
++void br_multicast_sg_add_exclude_ports(struct net_bridge_mdb_entry *star_mp,
++				       struct net_bridge_port_group *sg);
+ 
+ #define mlock_dereference(X, br) \
+ 	rcu_dereference_protected(X, lockdep_is_held(&br->multicast_lock))
+@@ -895,6 +900,21 @@ static inline bool br_multicast_is_star_g(const struct br_ip *ip)
+ 	}
+ }
+ 
++static inline bool br_multicast_should_handle_mode(const struct net_bridge *br,
++						   __be16 proto)
++{
++	switch (proto) {
++	case htons(ETH_P_IP):
++		return !!(br->multicast_igmp_version == 3);
++#if IS_ENABLED(CONFIG_IPV6)
++	case htons(ETH_P_IPV6):
++		return !!(br->multicast_mld_version == 2);
++#endif
++	default:
++		return false;
++	}
++}
++
+ static inline int br_multicast_igmp_type(const struct sk_buff *skb)
+ {
+ 	return BR_INPUT_SKB_CB(skb)->igmp;
 -- 
 2.25.4
 
