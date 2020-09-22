@@ -2,218 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15EBC273AF3
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 08:32:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD668273B11
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 08:43:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729533AbgIVGcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 02:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726898AbgIVGcn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 02:32:43 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CE8C061755;
-        Mon, 21 Sep 2020 23:32:43 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id s12so15689127wrw.11;
-        Mon, 21 Sep 2020 23:32:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:autocrypt:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eDOz/JMLknkTw9g+y5dhApSm97qkVUEs/ZHTL0gz2fw=;
-        b=HaQCQALGHVNQEMfZjWIQPSNwZdZYY918PSJxIKXBtHGREzrfZs14l3A7EVqs2FMev/
-         IJEb11WYJ0Io7OvlAVv0yN7wti4dY6131+xDOqnq33+mYC8No5DoDKBA0p28miZblzSh
-         iNg4UEEi1t4FGDg7qM28k8HJWOiayhzucNTCXz50wqRizN5pQgGXudx9Eg67GPANhr56
-         mEa26Q61i7gAReMjuCfJwAh+HVaTrMT52kQoueu+Kbqdewu6qCadAh37ghukc7GFxD1C
-         O0B5pJecQysUZMJL8izt5QrVScpa7C7bG8FE9jy6GPyeF/acFygKkym3brbq6FgSx5HG
-         wh1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:autocrypt:subject
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=eDOz/JMLknkTw9g+y5dhApSm97qkVUEs/ZHTL0gz2fw=;
-        b=Axole8VmCQWtxzHLCme95aa2gjvpwCeAqQ/XplPdXWi9n9Fq8DufMbCjLqXf5ZfTtO
-         Ch8tlHpb2sL1gQXm58m21ZO/davJUmJDN0xo7DerDQBFswX3WiLct+Wkv6EFgFETfPRe
-         ELQ5iaTNhTj/TCCYdsvYubqWqMZ1EUMopOMgcxeLLrt9uNa95+0rAA1Bf685XRPVKlRz
-         q/gzLtocacn9F8pNtAvlwDQ+8XvEn0tydk+QGFiCejguPN7WJbLJfqPUNvjQm95wkaTc
-         enrT+GO9dL/RT3RD3IFYoFdFjWhDyCPjq/KyBtycJKFYE9JC2YRNUT6uVFYGlfgNwkPY
-         HaDg==
-X-Gm-Message-State: AOAM5319ax/wOO1qbckVBBZwPS6hA56KhtDH0tdIUbSZsXuL+6nVvtbY
-        kRevcHEenz3p2xAxeUBBOG08goVq8kIyog==
-X-Google-Smtp-Source: ABdhPJzC1rbzyPo53+fNSxXWPDaZOzMzgC1GT/88osu+za3TOCt7+Tr5Ya9aJiKtMy5iRtpQZlj3MQ==
-X-Received: by 2002:adf:fa52:: with SMTP id y18mr3532704wrr.264.1600756361855;
-        Mon, 21 Sep 2020 23:32:41 -0700 (PDT)
-Received: from [192.168.43.240] ([5.100.192.97])
-        by smtp.gmail.com with ESMTPSA id d83sm3167538wmf.23.2020.09.21.23.32.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Sep 2020 23:32:41 -0700 (PDT)
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        David Howells <dhowells@redhat.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        Linux SCSI List <linux-scsi@vger.kernel.org>,
-        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
-        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Network Development <netdev@vger.kernel.org>,
-        keyrings@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>
-References: <CAK8P3a2Mi+1yttyGk4k7HxRVrMtmFqJewouVhynqUL0PJycmog@mail.gmail.com>
- <D0791499-1190-4C3F-A984-0A313ECA81C7@amacapital.net>
- <563138b5-7073-74bc-f0c5-b2bad6277e87@gmail.com>
- <486c92d0-0f2e-bd61-1ab8-302524af5e08@gmail.com>
- <CALCETrW3rwGsgfLNnu_0JAcL5jvrPVTLTWM3JpbB5P9Hye6Fdw@mail.gmail.com>
- <d5c6736a-2cb4-4e22-78da-a667bda5c05a@gmail.com>
- <CALCETrUEC81va8-fuUXG1uA5rbKxnKDYsDOXC70_HtKD4LAeAg@mail.gmail.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-Autocrypt: addr=asml.silence@gmail.com; prefer-encrypt=mutual; keydata=
- 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 bA==
-Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
-Message-ID: <e0a1b4d1-ff47-18d1-d535-c62812cb3105@gmail.com>
-Date:   Tue, 22 Sep 2020 09:30:09 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1729220AbgIVGnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 02:43:49 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:60494 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726982AbgIVGns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 02:43:48 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.69 with qID 08M6gutA7012303, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb05.realtek.com.tw[172.21.6.98])
+        by rtits2.realtek.com.tw (8.15.2/2.66/5.86) with ESMTPS id 08M6gutA7012303
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 22 Sep 2020 14:42:56 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMB05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Tue, 22 Sep 2020 14:42:56 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::3477:84c0:6ac8:dfee]) by
+ RTEXMB04.realtek.com.tw ([fe80::3477:84c0:6ac8:dfee%3]) with mapi id
+ 15.01.2044.006; Tue, 22 Sep 2020 14:42:56 +0800
+From:   =?utf-8?B?5YqJ5YGJ5qyK?= <willy.liu@realtek.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Serge Semin <fancer.lancer@gmail.com>,
+        Kyle Evans <kevans@FreeBSD.org>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ryan Kao <ryankao@realtek.com>,
+        "Joe Hershberger" <joe.hershberger@ni.com>,
+        Peter Robinson <pbrobinson@gmail.com>
+Subject: RE: [PATCH] net: phy: realtek: fix rtl8211e rx/tx delay config
+Thread-Topic: [PATCH] net: phy: realtek: fix rtl8211e rx/tx delay config
+Thread-Index: AQHWjJSIgE9wGMLbJkqAPItOTw6viqlsFkuAgAHOTXCAAAJ4gIAAG6aAgARrxhCAAEWCAIABVN6Q
+Date:   Tue, 22 Sep 2020 06:42:55 +0000
+Message-ID: <0de78894c4104046a262531cbbc225f1@realtek.com>
+References: <1600307253-3538-1-git-send-email-willy.liu@realtek.com>
+ <20200917101035.uwajg4m524g4lz5o@mobilestation>
+ <87c4ebf4b1fe48a7a10b27d0ba0b333c@realtek.com>
+ <20200918135403.GC3631014@lunn.ch>
+ <20200918153301.chwlvzh6a2bctbjw@mobilestation>
+ <e14a0e96ddf8480591f98677cdca5e77@realtek.com>
+ <20200921151234.GC3717417@lunn.ch>
+In-Reply-To: <20200921151234.GC3717417@lunn.ch>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.179.211]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <CALCETrUEC81va8-fuUXG1uA5rbKxnKDYsDOXC70_HtKD4LAeAg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/09/2020 03:58, Andy Lutomirski wrote:
-> On Mon, Sep 21, 2020 at 5:24 PM Pavel Begunkov <asml.silence@gmail.com> wrote:
->>>>>>> Ah, so reading /dev/input/event* would suffer from the same issue,
->>>>>>> and that one would in fact be broken by your patch in the hypothetical
->>>>>>> case that someone tried to use io_uring to read /dev/input/event on x32...
->>>>>>>
->>>>>>> For reference, I checked the socket timestamp handling that has a
->>>>>>> number of corner cases with time32/time64 formats in compat mode,
->>>>>>> but none of those appear to be affected by the problem.
->>>>>>>
->>>>>>>> Aside from the potentially nasty use of per-task variables, one thing
->>>>>>>> I don't like about PF_FORCE_COMPAT is that it's one-way.  If we're
->>>>>>>> going to have a generic mechanism for this, shouldn't we allow a full
->>>>>>>> override of the syscall arch instead of just allowing forcing compat
->>>>>>>> so that a compat syscall can do a non-compat operation?
->>>>>>>
->>>>>>> The only reason it's needed here is that the caller is in a kernel
->>>>>>> thread rather than a system call. Are there any possible scenarios
->>>>>>> where one would actually need the opposite?
->>>>>>>
->>>>>>
->>>>>> I can certainly imagine needing to force x32 mode from a kernel thread.
->>>>>>
->>>>>> As for the other direction: what exactly are the desired bitness/arch semantics of io_uring?  Is the operation bitness chosen by the io_uring creation or by the io_uring_enter() bitness?
->>>>>
->>>>> It's rather the second one. Even though AFAIR it wasn't discussed
->>>>> specifically, that how it works now (_partially_).
->>>>
->>>> Double checked -- I'm wrong, that's the former one. Most of it is based
->>>> on a flag that was set an creation.
->>>>
->>>
->>> Could we get away with making io_uring_enter() return -EINVAL (or
->>> maybe -ENOTTY?) if you try to do it with bitness that doesn't match
->>> the io_uring?  And disable SQPOLL in compat mode?
->>
->> Something like below. If PF_FORCE_COMPAT or any other solution
->> doesn't lend by the time, I'll take a look whether other io_uring's
->> syscalls need similar checks, etc.
->>
->>
->> diff --git a/fs/io_uring.c b/fs/io_uring.c
->> index 0458f02d4ca8..aab20785fa9a 100644
->> --- a/fs/io_uring.c
->> +++ b/fs/io_uring.c
->> @@ -8671,6 +8671,10 @@ SYSCALL_DEFINE6(io_uring_enter, unsigned int, fd, u32, to_submit,
->>         if (ctx->flags & IORING_SETUP_R_DISABLED)
->>                 goto out;
->>
->> +       ret = -EINVAl;
->> +       if (ctx->compat != in_compat_syscall())
->> +               goto out;
->> +
-> 
-> This seems entirely reasonable to me.  Sharing an io_uring ring
-> between programs with different ABIs seems a bit nutty.
-> 
->>         /*
->>          * For SQ polling, the thread will do all submissions and completions.
->>          * Just return the requested submit count, and wake the thread if
->> @@ -9006,6 +9010,10 @@ static int io_uring_create(unsigned entries, struct io_uring_params *p,
->>         if (ret)
->>                 goto err;
->>
->> +       ret = -EINVAL;
->> +       if (ctx->compat)
->> +               goto err;
->> +
-> 
-> I may be looking at a different kernel than you, but aren't you
-> preventing creating an io_uring regardless of whether SQPOLL is
-> requested?
-
-I diffed a not-saved file on a sleepy head, thanks for noticing.
-As you said, there should be an SQPOLL check.
-
-...
-if (ctx->compat && (p->flags & IORING_SETUP_SQPOLL))
-	goto err;
-
--- 
-Pavel Begunkov
+SGkgQW5kcmV3LA0KSSBzdW1tYXJ5IHRhYmxlIDEyLDEzIGZyb20gUlRMODIxMUUtVkIgZGF0YXNo
+ZWV0IGFzIGJlbG93Lg0KW1RhYmxlIDEyXQ0KUlRMODIxMUUtVkIgUGluICAgICAgIFBpbiBOYW1l
+DQpMRUQwICAgICAgICAgICAgICAgICBQSFlBRFswXQ0KTEVEMSAgICAgICAgICAgICAgICAgUEhZ
+QURbMV0NClJYQ1RMICAgICAgICAgICAgICAgIFBIWUFEWzJdDQpSWEQyICAgICAgICAgICAgICAg
+ICBBTlswXQ0KUlhEMyAgICAgICAgICAgICAgICAgQU5bMV0NCiAtICAgICAgICAgICAgICAgICAg
+ICBNb2RlDQpMRUQyICAgICAgICAgICAgICAgICBSWCBEZWxheQ0KUlhEMSAgICAgICAgICAgICAg
+ICAgVFggRGVsYXkNClJYRDAgICAgICAgICAgICAgICAgIFNFTFJHVg0KVG8gc2V0IHRoZSBDT05G
+SUcgcGlucywgYW4gZXh0ZXJuYWwgcHVsbC1oaWdoIG9yIHB1bGwtbG93IHJlc2lzdG9yIGlzIHJl
+cXVpcmVkLg0KW1RhYmxlIDEzXQ0KUEhZQURbMjowXTogUEhZIEFkZHJlc3MNCkFOWzE6MF06IEF1
+dG8tbmVnb3RpYXRpb24gQ29uZmlndXJhdGlvbg0KTW9kZTogSW50ZXJmYWNlIE1vZGUgc2VsZWN0
+DQpSWCBEZWxheTogUkdNSUkgVHJhbnNtaXQgY2xvY2sgdGltaW5nIGNvbnRyb2wNCiAgICAxOiBB
+ZGQgMm5zIGRlbGF5IHRvIFJYQyBmb3IgUlhEIGxhdGNoaW5nKHZpYSA0LjdrLW9obSB0byAzLjNW
+KQ0KICAgIDA6IE5vIGRlbGF5KHZpYSA0LjdrLW9obSB0byBHTkQpDQpUWCBEZWxheTogUkdNSUkg
+VHJhbnNtaXQgY2xvY2sgdGltaW5nIGNvbnRyb2wNCiAgICAxOiBBZGQgMm5zIGRlbGF5IHRvIFRY
+QyBmb3IgVFhEIGxhdGNoaW5nKHZpYSA0LjdrLW9obSB0byAzLjNWKQ0KICAgIDA6IE5vIGRlbGF5
+KHZpYSA0LjdrLW9obSB0byBHTkQpDQpTRUxSR1Y6IDMuM1Ygb3IgMi41ViBSR01JSS9HTUlJIFNl
+bGVjdGlvbg0KDQpUaGVzZSB0d28gdGFibGVzIGRlc2NyaXB0IGhvdyB0byBjb25maWcgaXQgdmlh
+IGV4dGVybmFsIHB1bGwtaGlnaCBvciBwdWxsLWxvdyByZXNpc3RvciBvbiBQQ0IgY2lyY3VpdC4N
+Cg0KQmVsb3cgcGF0Y2ggZ2l2ZXMgdGFibGUgMTMgYW5vdGhlciBtZWFuaW5nIGFuZCBtYXBzIHRv
+IHJlZ2lzdGVyIHNldHRpbmcuDQpodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgv
+a2VybmVsL2dpdC9uZXRkZXYvbmV0LmdpdC9jb21taXQvP2lkPWY4MWRhZGJjZjdmZDA2DQo4OjYg
+PSBQSFkgQWRkcmVzcw0KNTo0ID0gQXV0by1OZWdvdGlhdGlvbg0KMyA9IEludGVyZmFjZSBNb2Rl
+IFNlbGVjdA0KMiA9IFJYIERlbGF5DQoxID0gVFggRGVsYXkNCjAgPSBTRUxSR1YNClN5bmMgZnJv
+bSBodHRwczovL3Jldmlld3MuZnJlZWJzZC5vcmcvRDEzNTkxDQoNClNob3VsZCBJIGFkZCBob3cg
+dG8gY29uZmlnIFJYL1RYIERlbGF5IHZpYSBwdWxsIGhpZ2gvZG93biByZXNpc3RvciBpbiBwYXRj
+aCBkZXNjcmlwdGlvbj8NCg0KV2lsbHkNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZy
+b206IEFuZHJldyBMdW5uIDxhbmRyZXdAbHVubi5jaD4gDQpTZW50OiBNb25kYXksIFNlcHRlbWJl
+ciAyMSwgMjAyMCAxMToxMyBQTQ0KVG86IOWKieWBieasiiA8d2lsbHkubGl1QHJlYWx0ZWsuY29t
+Pg0KQ2M6IFNlcmdlIFNlbWluIDxmYW5jZXIubGFuY2VyQGdtYWlsLmNvbT47IEt5bGUgRXZhbnMg
+PGtldmFuc0BGcmVlQlNELm9yZz47IGhrYWxsd2VpdDFAZ21haWwuY29tOyBsaW51eEBhcm1saW51
+eC5vcmcudWs7IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVsLm9yZzsgbmV0ZGV2QHZn
+ZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgUnlhbiBLYW8gPHJ5
+YW5rYW9AcmVhbHRlay5jb20+OyBKb2UgSGVyc2hiZXJnZXIgPGpvZS5oZXJzaGJlcmdlckBuaS5j
+b20+OyBQZXRlciBSb2JpbnNvbiA8cGJyb2JpbnNvbkBnbWFpbC5jb20+DQpTdWJqZWN0OiBSZTog
+W1BBVENIXSBuZXQ6IHBoeTogcmVhbHRlazogZml4IHJ0bDgyMTFlIHJ4L3R4IGRlbGF5IGNvbmZp
+Zw0KDQpPbiBNb24sIFNlcCAyMSwgMjAyMCBhdCAwNzowMDowMEFNICswMDAwLCDlionlgYnmrIog
+d3JvdGU6DQo+IEhpIEFuZHJldywNCg0KPiBJIHJlbW92ZWQgYmVsb3cgcmVnaXN0ZXIgbGF5b3V0
+IGRlc2NyaXB0aW9ucyBiZWNhdXNlIHRoZXNlIA0KPiBkZXNjcmlwdGlvbnMgZGlkIG5vdCBtYXRj
+aCByZWdpc3RlciBkZWZpbml0aW9ucyBmb3IgcnRsODIxMWUgZXh0ZW5zaW9uIA0KPiBwYWdlIDE2
+NCByZWcgMHgxYyBhdCBhbGwuDQo+IDg6NiA9IFBIWSBBZGRyZXNzDQo+IDU6NCA9IEF1dG8tTmVn
+b3RpYXRpb24NCj4gMyA9IE1vZGUNCj4gMiA9IFJYRA0KPiAxID0gVFhEDQo+IDAgPSBTRUxSR1Yx
+DQoNCj4gSSB0aGluayBpdCBpcyBhIG1pc3VuZGVyc3RhbmRpbmcuIFRoZXNlIGRlZmluaXRpb25z
+IGFyZSBtYXBwZWQgZnJvbSANCj4gZGF0YXNoZWV0IHJ0bDgyMTFlIHRhYmxlMTMiIENvbmZpZ3Vy
+YXRpb24gUmVnaXN0ZXIgRGVmaW5pdGlvbiIuIA0KPiBIb3dldmVyIHRoaXMgdGFibGUgc2hvdWxk
+IGJlIEhXIHBpbiBjb25maWd1cmF0aW9ucyBub3QgcmVnaXN0ZXIgDQo+IGRlc2NyaXB0aW9ucy4N
+Cg0KU28gdGhlc2UgYXJlIGp1c3QgaG93IHRoZSBkZXZpY2UgaXMgc3RyYXBwZWQuIFNvIGxldHMg
+YWRkIHRoYXQgdG8gdGhlIGRlc2NyaXB0aW9uLCByYXRoZXIgdGhhbiByZW1vdmUgaXQuDQoNCj4g
+VXNlcnMgY2FuIGNvbmZpZyBSWEQvVFhEIHZpYSByZWdpc3RlciBzZXR0aW5nKGV4dGVuc2lvbiBw
+YWdlIDE2NCByZWcgDQo+IDB4MWMpLiBCdXQgYml0IG1hcCBmb3IgdGhlc2UgdHdvIHNldHRpbmdz
+IHNob3VsZCBiZSBiZWxvdzoNCj4gMTMgPSBGb3JjZSBUeCBSWCBEZWxheSBjb250cm9sbGVkIGJ5
+IGJpdDEyIGJpdDExLA0KPiAxMiA9IFJYIERlbGF5LCAxMSA9IFRYIERlbGF5DQoNCj4gSGkgU2Vy
+Z2V5LA0KDQo+IEkgc2F3IHRoZSBzdW1tYXJ5IGZyb20gaHR0cHM6Ly9yZXZpZXdzLmZyZWVic2Qu
+b3JnL0QxMzU5MS4gVGhpcyBwYXRjaCANCj4gaXMgdG8gcmVjb25maWd1cmUgdGhlIFJUTDgyMTFF
+IHVzZWQgdG8gZm9yY2Ugb2ZmIFRYRC9SWEQgKFJYRCBpcyANCj4gZGVmYXVsdGluZyB0byBvbiwg
+aW4gbXkgY2hlY2tzKSBhbmQgdHVybiBvbiBzb21lIGJpdHMgaW4gdGhlIA0KPiBjb25maWd1cmF0
+aW9uIHJlZ2lzdGVyIGZvciB0aGlzIFBIWSB0aGF0IGFyZSB1bmRvY3VtZW50ZWQuDQoNCj4gVGhl
+IGRlZmF1bHQgdmFsdWUgZm9yICJleHRlbnNpb24gcGcgMHhhNCByZWcgMHgxYyIgaXMgMHg4MTQ4
+LCBhbmQNCj4gYml0MS0yIHNob3VsZCBiZSAwLiBJbiBteSBvcGluaW9uLCB0aGlzIHBhdGNoIHNo
+b3VsZCBiZSB3b3JrZWQgYmFzZWQgDQo+IG9uIHRoZSBtYWdpYyBudW1iZXIgKDB4YjQwMCkuDQoN
+Ck1hZ2ljIG51bWJlcnMgYXJlIGFsd2F5cyBiYWQuIFBsZWFzZSBkb2N1bWVudCB3aGF0IHRoZXNl
+IGJpdHMgbWVhbi4NCg0KICAgICAgQW5kcmV3DQoNCi0tLS0tLVBsZWFzZSBjb25zaWRlciB0aGUg
+ZW52aXJvbm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsLg0K
