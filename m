@@ -2,100 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6396F2738ED
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 04:54:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAD562738F9
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 04:57:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728870AbgIVCyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 22:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43336 "EHLO
+        id S1728517AbgIVC5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 22:57:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728501AbgIVCx7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 22:53:59 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9C8C061755
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 19:53:59 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id t13so15862357ile.9
-        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 19:53:59 -0700 (PDT)
+        with ESMTP id S1726537AbgIVC5X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Sep 2020 22:57:23 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C15C061755
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 19:57:23 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id x123so11104642pfc.7
+        for <netdev@vger.kernel.org>; Mon, 21 Sep 2020 19:57:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q5qFSNvUXZq+cK8xZChHWgOndBKOPeC3BQz4BQj4KVI=;
-        b=RrjIwWUPgjZaX7GJ2s3e9W61YlIb7Wj+fjjhkM6yjx6EqYpIXoN5KdmbndAt6Z1k0V
-         CXwTo9QvGH0mdQMNC31w7wrv+ZjSOuzwIMX7aMOQF4Ukbz29ItXwjGvl0DBUyEM2HuKi
-         urXrOE5zAFkIpLwjj9bBg6w8cgDxLKTa6rD3I5J/e2SKq/NB5LZwzjw8T3N9qvkkGttC
-         CYxpO57lCKMgae/yRl2cW+IQS3pBxM1w5dS5PYVsRqPcxEMDxy4CfedzVHx1h2ERN5ZW
-         KJlOKVwTepTd1JucRcj3kzcAm+aljh+euLLfAwDviyo8UhNXxCUCDlGdiY/OA+M8r0mj
-         BxsA==
+        h=from:to:cc:subject:date:message-id;
+        bh=SX0MD16g6As2uSb3prg8RGI6VNIsgIuzkxNzXyaHvWQ=;
+        b=NGNl6usJj9JrZersth/Z2WKrSz45Gh3jbrdSZX72zVUoWjwbBG20UKPGQvPl/ISyPn
+         uzXfl66NEw8QKhrFn1v8mG9HQV4rRFYcEjJzM3rwgDQYUPZPjm3DZwt3SCgGKgz0/E5y
+         9x9mnbbf901cZiCeHd5eCdwLUGvPvQJ2SpThPrKXWiMwtPIp0UbzbY2FzvTpi8H+FwOW
+         /2uZjz44asPLzoNy6b9gADD/6oseX/5jY4eHYUn97YgsbJqTMkmdyx2AXslg7qbTddji
+         zzP3t6qGtRMo8yYVfP141laf2rUj1e+rLITETWro5jZ+BNt0t6Y3mrGVMQLPdZt0CBc+
+         /SXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q5qFSNvUXZq+cK8xZChHWgOndBKOPeC3BQz4BQj4KVI=;
-        b=aCDomLYK8hvCoXyKB4IvEXJJoWu3F2Jsb/fOYl50mAzcQFlA35IVQQUCA9EYGIjpmx
-         UOZ5MVhZv95UteH1dHb8yvjAP98hzCEHpPERDphk3PMDmhsCujE7s1rr6Lw72CenU5s2
-         vXDz+YRJWxk9jQ+87S+SZyGPbIlDgNluWuPmjJLK4S/xaeREvJOr4ieFHZ2aLMvDsaqz
-         jBEwCV3fITKPHR8FW4yZbVGSYeCUFTt0FACo6EWPRM+3W4mDKAMRYtZNiuF0Bw7pPOGD
-         oidJDHXl05dKj6oz8VKV8nCSCzuBO60Nx431g8DfDfGx6OYu51iAiuLKh/8ig8ejMGEO
-         UZXg==
-X-Gm-Message-State: AOAM533th7O3IU0TD86zrwLuffaqPvTfTMPyPEe1ETxbPgYheFflQg9N
-        HhFecpGjtmcUW3hHzxDfyfBaxTLyGBi62e9IeNJjpLkDGYI=
-X-Google-Smtp-Source: ABdhPJzpxzEF+KH/UXFyf76mMXKCciEDC/x2xNnhXPJVMcXtxnSXkxWRRJYTBYobgIhNnRwe0LZKogKtbCqb5St7J58=
-X-Received: by 2002:a05:6e02:1411:: with SMTP id n17mr2539558ilo.211.1600743238824;
- Mon, 21 Sep 2020 19:53:58 -0700 (PDT)
-MIME-Version: 1.0
-References: <1600707762-24422-1-git-send-email-sundeep.lkml@gmail.com>
- <1600707762-24422-2-git-send-email-sundeep.lkml@gmail.com> <20200921161821.60c16a30@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200921161821.60c16a30@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   sundeep subbaraya <sundeep.lkml@gmail.com>
-Date:   Tue, 22 Sep 2020 08:23:47 +0530
-Message-ID: <CALHRZup3CU1O-pDTFO=jkXkHUC8191ovqYmJanhd0_na7ccRYw@mail.gmail.com>
-Subject: Re: [net-next v2 PATCH 1/2] octeontx2-af: Introduce tracepoints for mailbox
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=SX0MD16g6As2uSb3prg8RGI6VNIsgIuzkxNzXyaHvWQ=;
+        b=KwT9+NMt3pVCf6QADsIzK8iotZBUifksDpu1REOCU2ZsZxozNxFhwgqkczyzAObUFJ
+         Oq8unug91XQB3YdIB/i+dw61cXYtGHEStgsWHhBTCHm1WuLaHGcIK29R0crSlnyqeMI6
+         6L7PYx2wwbWvdCXief0l+wII9/zCdpOXIBYvVpUeI/VNMD6nqy36UVUfnkr9PjNys5lc
+         E1S4yiW4BEdG5Ddnc2lbhGn1ubXmN84aUc588q6B3hmd/uIixrhu0e41IlthvveLk+07
+         dRqFLLDKFoBCR+Pl1o7oRd2uPiVkbSIOCptBDiYKFH69Uw0j9SK+KJOh/JTKyFQlXPhH
+         0Nfg==
+X-Gm-Message-State: AOAM5318A46zqCKO584eZaShhe4NrRDNxV/Ncw6MvFdGu6JutQPwNF1L
+        im+KwX/S6UpwHTHSWP9TWAY=
+X-Google-Smtp-Source: ABdhPJzrb/HxumHP9e5KTeF5D9y39k7i4d4xb7kMzKdujhGyE5Cnt3LLLE0BwSrF8IvrmBekG/FUbA==
+X-Received: by 2002:a63:160b:: with SMTP id w11mr1916147pgl.110.1600743442752;
+        Mon, 21 Sep 2020 19:57:22 -0700 (PDT)
+Received: from hyd1358.caveonetworks.com ([1.6.215.26])
+        by smtp.googlemail.com with ESMTPSA id 64sm13425349pfg.98.2020.09.21.19.57.19
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 21 Sep 2020 19:57:22 -0700 (PDT)
+From:   sundeep.lkml@gmail.com
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sgoutham@marvell.com
+Cc:     jiri@resnulli.us, Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [net-next v3 PATCH 0/2] Introduce mbox tracepoints for Octeontx2
+Date:   Tue, 22 Sep 2020 08:27:03 +0530
+Message-Id: <1600743425-7851-1-git-send-email-sundeep.lkml@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-On Tue, Sep 22, 2020 at 4:48 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 21 Sep 2020 22:32:41 +0530 sundeep.lkml@gmail.com wrote:
-> > diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.c
-> > new file mode 100644
-> > index 0000000..f0b3f17
-> > --- /dev/null
-> > +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.c
-> > @@ -0,0 +1,14 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/* Marvell OcteonTx2 RVU Admin Function driver tracepoints
-> > + *
-> > + * Copyright (C) 2020 Marvell International Ltd.
-> > + */
-> > +
-> > +#define CREATE_TRACE_POINTS
-> > +#include "rvu_trace.h"
-> > +
-> > +EXPORT_TRACEPOINT_SYMBOL(otx2_msg_alloc);
-> > +EXPORT_TRACEPOINT_SYMBOL(otx2_msg_send);
-> > +EXPORT_TRACEPOINT_SYMBOL(otx2_msg_check);
->
-> I don't think you need to export send and check.
->
-> They are only used in the mbox module where they are defined.
->
-Agreed. I will remove those and send the next spin.
+This patchset adds tracepoints support for mailbox.
+In Octeontx2, PFs and VFs need to communicate with AF
+for allocating and freeing resources. Once all the
+configuration is done by AF for a PF/VF then packet I/O
+can happen on PF/VF queues. When an interface
+is brought up many mailbox messages are sent
+to AF for initializing queues. Say a VF is brought up
+then each message is sent to PF and PF forwards to
+AF and response also traverses from AF to PF and then VF.
+To aid debugging, tracepoints are added at places where
+messages are allocated, sent and message interrupts.
+Below is the trace of one of the messages from VF to AF
+and AF response back to VF:
 
-> Otherwise looks acceptable to me.
->
-Thanks
+~ # echo 1 > /sys/kernel/tracing/events/rvu/enable
+~ # ifconfig eth20 up
+[  279.379559] eth20 NIC Link is UP 10000 Mbps Full duplex
+~ # cat /sys/kernel/tracing/trace
+# tracer: nop
+#
+# entries-in-buffer/entries-written: 880/880   #P:4
+#
+#                              _-----=> irqs-off
+#                             / _----=> need-resched
+#                            | / _---=> hardirq/softirq
+#                            || / _--=> preempt-depth
+#                            ||| /     delay
+#           TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION
+#              | |       |   ||||       |         |
+        ifconfig-171   [000] ....   275.753345: otx2_msg_alloc: [0002:02:00.1] msg:(0x400) size:40
 
-> Please make sure you CC everyone who gave you feedback.
-Sure.
+        ifconfig-171   [000] ...1   275.753347: otx2_msg_send: [0002:02:00.1] sent 1 msg(s) of size:48
 
-Sundeep
+          <idle>-0     [001] dNh1   275.753356: otx2_msg_interrupt: [0002:02:00.0] mbox interrupt VF(s) to PF (0x1)
+
+    kworker/u9:1-90    [001] ...1   275.753364: otx2_msg_send: [0002:02:00.0] sent 1 msg(s) of size:48
+
+    kworker/u9:1-90    [001] d.h.   275.753367: otx2_msg_interrupt: [0002:01:00.0] mbox interrupt PF(s) to AF (0x2)
+
+    kworker/u9:2-167   [002] ....   275.753535: otx2_msg_process: [0002:01:00.0] msg:(0x400) error:0
+
+    kworker/u9:2-167   [002] ...1   275.753537: otx2_msg_send: [0002:01:00.0] sent 1 msg(s) of size:32
+
+          <idle>-0     [003] d.h1   275.753543: otx2_msg_interrupt: [0002:02:00.0] mbox interrupt AF to PF (0x1)
+
+          <idle>-0     [001] d.h2   275.754376: otx2_msg_interrupt: [0002:02:00.1] mbox interrupt PF to VF (0x1)
+
+
+v3 changes:
+ Removed EXPORT_TRACEPOINT_SYMBOLS of otx2_msg_send and otx2_msg_check
+ since they are called locally only
+
+v2 changes:
+ Removed otx2_msg_err tracepoint since it is similar to devlink_hwerr
+ and it will be used instead when devlink supported is added.
+
+
+
+Subbaraya Sundeep (2):
+  octeontx2-af: Introduce tracepoints for mailbox
+  octeontx2-pf: Add tracepoints for PF/VF mailbox
+
+ drivers/net/ethernet/marvell/octeontx2/af/Makefile |   3 +-
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.c   |  11 ++-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |   7 ++
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |   2 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_trace.c  |  12 +++
+ .../net/ethernet/marvell/octeontx2/af/rvu_trace.h  | 103 +++++++++++++++++++++
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   2 +
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |   6 ++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |   2 +
+ 9 files changed, 146 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.h
+
+-- 
+2.7.4
+
