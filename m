@@ -2,139 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 266B727485A
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 20:39:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 620B3274886
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 20:48:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgIVSjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 14:39:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:50038 "EHLO
+        id S1726608AbgIVSsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 14:48:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41892 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726526AbgIVSjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 14:39:40 -0400
+        by vger.kernel.org with ESMTP id S1726563AbgIVSsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 14:48:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600799979;
+        s=mimecast20190719; t=1600800485;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=0ybdXG74ST/H7YVIH/fOBujbQfC+uJlYyh/yfVB4O5s=;
-        b=QM6qkLjfQTmETPspwrczL/AGkBrUFoVdL4ATiZkHNNdFhqMBIodcVtMhYWcnFNX8bnXiU7
-        h0ePFheZB8WHxwYY1OhY3VV7a6nGH90NvJ8FOH/nv/CA0PWC2PkO1RNZ/8U5PpquEiTOl7
-        +8g2ggTlKBGeF9gd0zTZJib1BnJHQ0M=
+        bh=NStKfvdSaDzipTmnacc6wA+r35m8vaKo0v9bRG+6Mb0=;
+        b=dqSDrSYZjZS3ZJYL95/ms/RU66eWvxjnnv+depVjYRxIV9wXd4UXJFko4M6X8vl2OdPkAM
+        NqETNgQrU4bIDwDDrZAesSsTTCt+tJ4/4gZqKqsgcnBaMD+0+xV/h/yKMN7vmfwXf+xloG
+        3/4U0Ht0R41rxRaNLNZ4Ms1xcwSd3yY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-182-ICIgBxxAOpGyDiDX5ZiiWA-1; Tue, 22 Sep 2020 14:39:37 -0400
-X-MC-Unique: ICIgBxxAOpGyDiDX5ZiiWA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+ us-mta-39-cqOZFRcdMu-77F9_GdmAhQ-1; Tue, 22 Sep 2020 14:48:01 -0400
+X-MC-Unique: cqOZFRcdMu-77F9_GdmAhQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5E73B1882FA7;
-        Tue, 22 Sep 2020 18:39:35 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8539A6408B;
+        Tue, 22 Sep 2020 18:47:59 +0000 (UTC)
 Received: from krava (ovpn-112-28.ams2.redhat.com [10.36.112.28])
-        by smtp.corp.redhat.com (Postfix) with SMTP id DA23178828;
-        Tue, 22 Sep 2020 18:39:32 +0000 (UTC)
-Date:   Tue, 22 Sep 2020 20:39:32 +0200
+        by smtp.corp.redhat.com (Postfix) with SMTP id DC43A60BF4;
+        Tue, 22 Sep 2020 18:47:56 +0000 (UTC)
+Date:   Tue, 22 Sep 2020 20:47:55 +0200
 From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCHv2 bpf-next] selftests/bpf: Fix stat probe in d_path test
-Message-ID: <20200922183932.GC2718767@krava>
-References: <20200918112338.2618444-1-jolsa@kernel.org>
- <CAADnVQ+OmqycbKTewWPA9D5upP9Ri-yvS1=GKRN1nQs6AL_YVw@mail.gmail.com>
+        KP Singh <kpsingh@chromium.org>,
+        Seth Forshee <seth.forshee@canonical.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: Use --no-fail option if CONFIG_BPF is
+ not enabled
+Message-ID: <20200922184755.GD2718767@krava>
+References: <20200918122654.2625699-1-jolsa@kernel.org>
+ <CAEf4BzZc6DE85wUTGwE=2FKPuwuuH4480Fh+v63q8J=PRxjgEw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAADnVQ+OmqycbKTewWPA9D5upP9Ri-yvS1=GKRN1nQs6AL_YVw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <CAEf4BzZc6DE85wUTGwE=2FKPuwuuH4480Fh+v63q8J=PRxjgEw@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 21, 2020 at 04:32:13PM -0700, Alexei Starovoitov wrote:
-> On Fri, Sep 18, 2020 at 4:23 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Mon, Sep 21, 2020 at 02:55:27PM -0700, Andrii Nakryiko wrote:
+> On Fri, Sep 18, 2020 at 5:30 AM Jiri Olsa <jolsa@kernel.org> wrote:
 > >
-> > Some kernels builds might inline vfs_getattr call within fstat
-> > syscall code path, so fentry/vfs_getattr trampoline is not called.
+> > Currently all the resolve_btfids 'users' are under CONFIG_BPF
+> > code, so if we have CONFIG_BPF disabled, resolve_btfids will
+> > fail, because there's no data to resolve.
 > >
-> > Alexei suggested [1] we should use security_inode_getattr instead,
-> > because it's less likely to get inlined. Using this idea also for
-> > vfs_truncate (replaced with security_path_truncate) and vfs_fallocate
-> > (replaced with security_file_permission).
+> > In case CONFIG_BPF is disabled, using resolve_btfids --no-fail
+> > option, that makes resolve_btfids leave quietly if there's no
+> > data to resolve.
 > >
-> > Keeping dentry_open and filp_close, because they are in their own
-> > files, so unlikely to be inlined, but in case they are, adding
-> > security_file_open.
-> >
-> > Switching the d_path test stat trampoline to security_inode_getattr.
-> >
-> > Adding flags that indicate trampolines were called and failing
-> > the test if any of them got missed, so it's easier to identify
-> > the issue next time.
-> >
-> > Suggested-by: Alexei Starovoitov <ast@kernel.org>
-> > [1] https://lore.kernel.org/bpf/CAADnVQJ0FchoPqNWm+dEppyij-MOvvEG_trEfyrHdabtcEuZGg@mail.gmail.com/
-> > Fixes: e4d1af4b16f8 ("selftests/bpf: Add test for d_path helper")
-> > Signed-off-by: Jiri Olsa <jolsa@redhat.com>
+> > Fixes: c9a0f3b85e09 ("bpf: Resolve BTF IDs in vmlinux image")
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > > ---
-> > v2 changes:
-> >   - replaced vfs_* function with security_* in d_path allow list
-> >     vfs_truncate  -> security_path_truncate
-> >     vfs_fallocate -> security_file_permission
-> >     vfs_getattr   -> security_inode_getattr
-> >   - added security_file_open to d_path allow list
-> >   - split verbose output for trampoline flags
-> >
-> >  kernel/trace/bpf_trace.c                        |  7 ++++---
-> >  tools/testing/selftests/bpf/prog_tests/d_path.c | 10 ++++++++++
-> >  tools/testing/selftests/bpf/progs/test_d_path.c |  9 ++++++++-
-> >  3 files changed, 22 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index b2a5380eb187..e24323d72cac 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -1118,10 +1118,11 @@ BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
-> >  }
-> >
-> >  BTF_SET_START(btf_allowlist_d_path)
-> > -BTF_ID(func, vfs_truncate)
-> > -BTF_ID(func, vfs_fallocate)
-> > +BTF_ID(func, security_path_truncate)
-> > +BTF_ID(func, security_file_permission)
-> > +BTF_ID(func, security_inode_getattr)
-> > +BTF_ID(func, security_file_open)
-> >  BTF_ID(func, dentry_open)
-> > -BTF_ID(func, vfs_getattr)
-> >  BTF_ID(func, filp_close)
-> >  BTF_SET_END(btf_allowlist_d_path)
 > 
-> bpf CI system flagged the build error:
-> FAILED unresolved symbol security_path_truncate
-> because CONFIG_SECURITY_PATH wasn't set.
-> Which points to the issue with this patch that the above
-> security_* funcs have to be guarded with appropriate #ifdef.
+> If no CONFIG_BTF is specified, there is no need to even run
+> resolve_btfids. So why not do just that -- run resolve_btfids only
+> if both CONFIG_BPF and CONFIG_DEBUG_INFO_BTF are specified?
 
-ugh, sry
+we can have CONFIG_DEBUG_INFO_BTF without CONFIG_BPF being enabled,
+so we could in theory have in future some BTF ID user outside bpf code,
+but I guess we can enable that, when it actually happens
 
-> I don't have a use case for tracing vfs_truncate, but
-> security_path_unlink I would want to do in the future.
-> Unfortunately it's under the same SECURITY_PATH ifdef.
-> So my earlier desire to make it fool proof is not feasible at this point.
-> Adding 'was_probed_func_inlined' check to libbpftrace.a would
-> solve it eventually.
-> For now I think we have to live with this function probing fragility.
-> So I've modified the patch to add these few security_* funcs
-> and kept vfs_* equivalents.
-> Also reworded commit log and applied to bpf-next. Thanks
-> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=a8a717963fe5ecfd274eb93dd1285ee9428ffca7
-> 
-
-ok, looks good, thanks,
 jirka
+
+> 
+> 
+> >  scripts/link-vmlinux.sh | 9 +++++++--
+> >  1 file changed, 7 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> > index e6e2d9e5ff48..3173b8cf08cb 100755
+> > --- a/scripts/link-vmlinux.sh
+> > +++ b/scripts/link-vmlinux.sh
+> > @@ -342,8 +342,13 @@ vmlinux_link vmlinux "${kallsymso}" ${btf_vmlinux_bin_o}
+> >
+> >  # fill in BTF IDs
+> >  if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
+> > -info BTFIDS vmlinux
+> > -${RESOLVE_BTFIDS} vmlinux
+> > +       info BTFIDS vmlinux
+> > +       # Let's be more permissive if CONFIG_BPF is disabled
+> > +       # and do not fail if there's no data to resolve.
+> > +       if [ -z "${CONFIG_BPF}" ]; then
+> > +         no_fail=--no-fail
+> > +       fi
+> > +       ${RESOLVE_BTFIDS} $no_fail vmlinux
+> >  fi
+> >
+> >  if [ -n "${CONFIG_BUILDTIME_TABLE_SORT}" ]; then
+> > --
+> > 2.26.2
+> >
+> 
 
