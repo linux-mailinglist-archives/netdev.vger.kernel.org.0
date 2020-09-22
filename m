@@ -2,126 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE5E72742AA
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 15:08:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 362F62742B2
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 15:11:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726680AbgIVNIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 09:08:10 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:14032 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726573AbgIVNIK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 09:08:10 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08MD6TQB021917;
-        Tue, 22 Sep 2020 06:08:06 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=6wa6TQnds4To/blqpDE4MQd5qZXhirQSwikJ/CZLN/I=;
- b=YTOGnmoDrOi+D1K/jlBxpIJYvGdZLER6jJsqZWYkoAlfc8xQiPEffwDrZl1wjvBiH+1G
- u6RnM/FTht/ttgaSDDqp+rKOVd7XkhajXqEDh8ltntQBvx5uLLDKLJOytWXRlfqBGMy6
- iBcTxmfeNWqbOODTx7ES1AfdfGBayWpIE8utHjunftu0kvOT0uxz8JM83uJJA9CwWvVh
- 1Iwp61qg5wWty8DFn0Oi5UYN2Gv3oeing4QifsieFmENs+Fz2Q7aY8gea8omJ6ufuMwo
- HcajW/qxsRwfY9fcMCweWSxX8hKMQkSQWW/WUS9Yo5fjNxachf61pzO/XvzlskCWCVoP iA== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 33nhgna5es-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 22 Sep 2020 06:08:06 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 22 Sep
- 2020 06:08:05 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 22 Sep
- 2020 06:08:04 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 22 Sep 2020 06:08:04 -0700
-Received: from hyd1584.caveonetworks.com (unknown [10.29.37.82])
-        by maili.marvell.com (Postfix) with ESMTP id 0E1EB3F703F;
-        Tue, 22 Sep 2020 06:07:59 -0700 (PDT)
-From:   George Cherian <george.cherian@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     George Cherian <george.cherian@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Sunil Kovvuri Goutham" <Sunil.Goutham@cavium.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        "Tomasz Duszynski" <tduszynski@cavium.com>,
-        Aleksey Makarov <amakarov@marvell.com>,
-        Christina Jacob <cjacob@marvell.com>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        hariprasad <hari1219@gmail.com>
-Subject: [net-next PATCH 2/2] octeontx2-pf: Support to change VLAN based RSS hash options via ethtool
-Date:   Tue, 22 Sep 2020 18:37:27 +0530
-Message-ID: <20200922130727.2350661-3-george.cherian@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200922130727.2350661-1-george.cherian@marvell.com>
-References: <20200922130727.2350661-1-george.cherian@marvell.com>
+        id S1726603AbgIVNL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 09:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726566AbgIVNL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 09:11:27 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E75C061755
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 06:11:27 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id t138so18915389qka.0
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 06:11:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=wau+OGNuUG2bWR+5cFA/zIG3EpHkt6fsz1L8ujw+ilA=;
+        b=NzwqLu+snY6bp7o6n7IHv40Sh9ovlhl+iPNA/7x3KwOFRviWXbMraG/hEK+45zl5NS
+         YsBm3awGeW6lDwEkvRsN01AI3gi0bF9tppzq6JF+cMoiogaCX3bn8usYU4+ZLloK3WZi
+         895Hao2NE1d8W2YOAjZqAyAoOiO9mcNy0z9dd3trolW2WlUYMwbrqeAlHK1byO3keV9R
+         ACcQnB+ZCJbwQZ+8Lf2WA46oghLKm1V3idgTwl3k8pL+UY2ER9jqEY4SAhIIRCCRaV4M
+         Ezt990INCDDXd+K8ParOM45etYgu7XHzJyM5LIN4lKpL+AodeQukQv+JU7IZNtI67anw
+         TqTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=wau+OGNuUG2bWR+5cFA/zIG3EpHkt6fsz1L8ujw+ilA=;
+        b=sf5Bj0VdaMv5q0tlNBmrAoXMmDgFy7xjbhaEBM1/7an1iCqiW3EQL/qUKIbBAN5A4O
+         Nne5kuGy31+kM+TK1JGNQWW1jsWvroz+/X9Y+Ldopwxv0CueqJ8Ypyf1pwQ45v9aehbm
+         sO1ZiBXX0uAPO3rt39l7MNK9UGhbuQSD3On2u5ia68KmFMWjxR5cPxjphWcAspgtZunm
+         M9CM0lobxGoeBhvNk6oxJ5hnS84u+hOunPQBCb0TyQeqDB3//5kAtkVtWXGPQZ8yUIXP
+         u5yji3VDioTvu5MmBOCKL4LVeVYtImAUo6x2q3lxDg93PMII7muMILZWiz3ke5+A462A
+         pj6g==
+X-Gm-Message-State: AOAM530L299sX49u7p3+P4QJ/M3XUwkGdt+JiL0nmPFGyW5ixDGwR6wa
+        ZdpqIsbK4HXihWYDhpVlJXSul4pgzACo
+X-Google-Smtp-Source: ABdhPJyhF+5phep63X+baMEumcp5NssdgwVqSXbxG3IX+AqstiufUGs4nGynxZ0pUkwmZUi9zqL0Cw==
+X-Received: by 2002:a05:620a:13f9:: with SMTP id h25mr4354111qkl.283.1600780286671;
+        Tue, 22 Sep 2020 06:11:26 -0700 (PDT)
+Received: from ICIPI.localdomain ([136.56.89.69])
+        by smtp.gmail.com with ESMTPSA id d200sm11442595qkc.109.2020.09.22.06.11.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Sep 2020 06:11:26 -0700 (PDT)
+Date:   Tue, 22 Sep 2020 09:11:22 -0400
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     netdev@vger.kernel.org, dsahern@gmail.com
+Subject: ip rule iif oif and vrf
+Message-ID: <20200922131122.GB1601@ICIPI.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-22_12:2020-09-21,2020-09-22 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support to control rx-flow-hash based on VLAN.
-By default VLAN plus 4-tuple based hashing is enabled.
-Changes can be done runtime using ethtool
+Hi,
 
-To enable 2-tuple plus VLAN based flow distribution
-  # ethtool -N <intf> rx-flow-hash <prot> sdv
-To enable 4-tuple plus VLAN based flow distribution
-  # ethtool -N <intf> rx-flow-hash <prot> sdfnv
+We have a use case where there are multiple user VRFs being leak routed
+to and from tunnels that are on the core VRF. Traffic from user VRF to a
+tunnel can be done the normal way by specifying the netdev directly on
+the route entry on the user VRF route table:
 
-Signed-off-by: George Cherian <george.cherian@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c  | 2 +-
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c | 7 +++++++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ip route add <prefix> via <tunnel_end_point_addr> dev <tunnel_netdev>
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 820fc660de66..d2581090f9a4 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -355,7 +355,7 @@ int otx2_rss_init(struct otx2_nic *pfvf)
- 	rss->flowkey_cfg = rss->enable ? rss->flowkey_cfg :
- 			   NIX_FLOW_KEY_TYPE_IPV4 | NIX_FLOW_KEY_TYPE_IPV6 |
- 			   NIX_FLOW_KEY_TYPE_TCP | NIX_FLOW_KEY_TYPE_UDP |
--			   NIX_FLOW_KEY_TYPE_SCTP;
-+			   NIX_FLOW_KEY_TYPE_SCTP | NIX_FLOW_KEY_TYPE_VLAN;
- 
- 	ret = otx2_set_flowkey_cfg(pfvf);
- 	if (ret)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index 0341d9694e8b..662fb80dbb9d 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -428,6 +428,8 @@ static int otx2_get_rss_hash_opts(struct otx2_nic *pfvf,
- 
- 	/* Mimimum is IPv4 and IPv6, SIP/DIP */
- 	nfc->data = RXH_IP_SRC | RXH_IP_DST;
-+	if (rss->flowkey_cfg & NIX_FLOW_KEY_TYPE_VLAN)
-+		nfc->data |= RXH_VLAN;
- 
- 	switch (nfc->flow_type) {
- 	case TCP_V4_FLOW:
-@@ -477,6 +479,11 @@ static int otx2_set_rss_hash_opts(struct otx2_nic *pfvf,
- 	if (!(nfc->data & RXH_IP_SRC) || !(nfc->data & RXH_IP_DST))
- 		return -EINVAL;
- 
-+	if (nfc->data & RXH_VLAN)
-+		rss_cfg |=  NIX_FLOW_KEY_TYPE_VLAN;
-+	else
-+		rss_cfg &= ~NIX_FLOW_KEY_TYPE_VLAN;
-+
- 	switch (nfc->flow_type) {
- 	case TCP_V4_FLOW:
- 	case TCP_V6_FLOW:
--- 
-2.25.1
+But traffic received on the tunnel must be leak routed directly to the
+respective a specific user VRF because multiple user VRFs can have
+duplicate address spaces. I am thinking of using ip rule but when the
+iif is an enslaved device, the rule doesn't get matched because the
+ifindex in the skb is the master.
 
+My question is: is this a bug, or is there anything else that can be
+done to make sure that traffic from a tunnel being routed directly to a
+user VRF? If it is the later, I can work on a patch.
+
+Thank you,
+
+Stephen.
