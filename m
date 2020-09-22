@@ -2,130 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82643273EF0
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 11:52:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7758273EF7
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 11:53:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbgIVJw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 05:52:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:57674 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726548AbgIVJw1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 05:52:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600768346;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Nx9mv10dV8y4dzoFloRA6309JVx8lLnXd7Rnl/kRaH8=;
-        b=ZUBQQTJVF+jPdTF1QbaTlaRcZ7+WaIUlk6ObfA8qs+yuqmUIPcQ5b78VH/1R8GDcTrYzrD
-        mTxxy9ft0AlohYfbEaCupWRtvQdnYojg721J/C9xhprowBPhOIzkYLIVCRsRSs5CeDnfct
-        u6lBxN7EmpdhCMByiuvuNsqaM5oq1Ps=
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
- [209.85.215.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-142-ixxYuwJjO9ydVEjmmZapxg-1; Tue, 22 Sep 2020 05:52:25 -0400
-X-MC-Unique: ixxYuwJjO9ydVEjmmZapxg-1
-Received: by mail-pg1-f198.google.com with SMTP id e15so8542916pgl.16
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 02:52:24 -0700 (PDT)
+        id S1726544AbgIVJxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 05:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51714 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726353AbgIVJxr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 05:53:47 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213D0C061755;
+        Tue, 22 Sep 2020 02:53:47 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id c2so13574987ljj.12;
+        Tue, 22 Sep 2020 02:53:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+i7aBMoF6jV+rGnPKiYKPNmoc8geU7C4VPgWDVerolU=;
+        b=LitoGsUWcZ9QgkrF4+ZYNUL7eTogmiXT/i0lNCBMAROw0jOBbmza9EhQDack8OlEs8
+         CVK0uRy2bTFtmn1vXRFaD7flCqK5cbpBRmehnQOO0fa4pAYDt6AXhDuoOI4YQnUI5KSZ
+         ZMpkYkjFJ45EnP47g1FEad6oH7K4OeW9SYMTbh/qBDX2YWywmFKhsWKmWFL9Qd4B6UB+
+         flxrHj0QQ2oPjSJyUyWKR14qB1BE+y0QH2NH+6S3go3hbFRtYz3cY6D8i8k1xNg12YnN
+         HvMze7oFLcyExP+pG32JsyeI/l9C/Q1iNb7+Bt51XL32a6vVZLbuDcWLFr3t4laRvWSA
+         Ig5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Nx9mv10dV8y4dzoFloRA6309JVx8lLnXd7Rnl/kRaH8=;
-        b=NpsTzEVAbr2i/6VEMj9yfQkdXgSgt14TbG+c2tX44OYQezb/05bjcGysn40SdfGoZZ
-         W0JufAyTmvEpdCKlcs/7PWNeFjPG0GfsOAiRgrySLN1WCwhJlGBRQ648qnZ5bJRKI0tx
-         QSegyTJox/cUMKzm5FBtEqZtKVIwq7D1aDTHDTrwb4EBgtwkL0H8t4J7ogrbbL52CYD4
-         58RsX+txpM1OONUkoeu+hVo7uOWAiCDI/UsABcZ1kKFsfglGQ5tSiDgGogYTZgIIo01Q
-         J9qZ0aUm9GRWsvz+3OuoUdfGhwUwdvB/zJ/3AmuivrO1/4X8zLdmx4MrfgBW4d57I5lO
-         UMxg==
-X-Gm-Message-State: AOAM533B2ogqqb1W481iaDCrUTgo5xMOg9cEk3J4Ar2+da/HsWflLrHN
-        kPFj+WU+f8mVOA/wc+q7/tdV5nxpeFkHA/c3F5zcv9oRNue8b+kkMriR+h1QX/x816rsc9TWjgi
-        Y6SSGVbCTtiZNhrXz
-X-Received: by 2002:a17:90b:357:: with SMTP id fh23mr2968140pjb.221.1600768343816;
-        Tue, 22 Sep 2020 02:52:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwBm9x92QvsEvbQnDTGXDaepFv4G+EzNXVg9nsB0Uk3HD4gjqovWBAWyq8+HkgHhLhnoZWkVg==
-X-Received: by 2002:a17:90b:357:: with SMTP id fh23mr2968116pjb.221.1600768343597;
-        Tue, 22 Sep 2020 02:52:23 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id r15sm13900813pgg.17.2020.09.22.02.52.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2020 02:52:22 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id F18DC183A99; Tue, 22 Sep 2020 11:52:16 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v7 01/10] bpf: disallow attaching modify_return
- tracing functions to other BPF programs
-In-Reply-To: <CAEf4Bzbb5gt7KgmfXM6FiC750GjxL23XO4GPnVHFgCGaMTuDCg@mail.gmail.com>
-References: <160051618267.58048.2336966160671014012.stgit@toke.dk>
- <160051618391.58048.12525358750568883938.stgit@toke.dk>
- <CAEf4Bzbb5gt7KgmfXM6FiC750GjxL23XO4GPnVHFgCGaMTuDCg@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 22 Sep 2020 11:52:16 +0200
-Message-ID: <87r1qup29b.fsf@toke.dk>
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=+i7aBMoF6jV+rGnPKiYKPNmoc8geU7C4VPgWDVerolU=;
+        b=dULkrwX+ZXHVfoPCaCKaMAD0BcM0Jnrnbf4qnEIbC8M+agy8ZkEGDBIbMa6zY9Q5lZ
+         44XVrJqnIoAne7QEuJY3Vi8cZ2w0pIqtSNmxD75w4ihEGtYQ/t7lKBp11IlV1ZGxhsQ/
+         wK+iCuUPW9URg0JaDVWgzzMFoAy7UvN9NGdLUwBOke9PClrhsxpj/ysQX9mlOvRlhHUf
+         MCxpQnW24vpG8cKFc1VN8H04akv2pybbf7WKfH940pe4tO7vkhQPwFcUA5q1y2NOxhMR
+         FfT+VvsOLiheQP6b0V4UhdTMd5KSgbHvWZ3pg/+zU03rCBmBnzco+FA5OUwoe7UMdUef
+         dZmg==
+X-Gm-Message-State: AOAM530qxlbvHZBKj7Bfb9ZtI4f3w8wDqeQiad3P1GuSjsZhtUXZMXUC
+        +ofqe58p02BpPCIvhioMTCd0j5kXZhHs+A==
+X-Google-Smtp-Source: ABdhPJx9ANFk/Po7zdPjbuZB+cQsG9ryqzW4eACSlsLoTXtfZut5FzEHhjpvnqWEzOwyRoEcZNoQXw==
+X-Received: by 2002:a2e:a202:: with SMTP id h2mr1348967ljm.282.1600768425408;
+        Tue, 22 Sep 2020 02:53:45 -0700 (PDT)
+Received: from ?IPv6:2a00:1fa0:426e:8bbe:c99d:2ede:2a50:6604? ([2a00:1fa0:426e:8bbe:c99d:2ede:2a50:6604])
+        by smtp.gmail.com with ESMTPSA id r13sm3349330lfe.114.2020.09.22.02.53.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Sep 2020 02:53:44 -0700 (PDT)
+Subject: Re: [PATCH net] Revert "ravb: Fixed to be able to unload modules"
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+References: <20200922072931.2148-1-geert+renesas@glider.be>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Organization: Brain-dead Software
+Message-ID: <32351a6c-07ea-2a5c-0edd-4ef92dc38002@gmail.com>
+Date:   Tue, 22 Sep 2020 12:53:37 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200922072931.2148-1-geert+renesas@glider.be>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+On 22.09.2020 10:29, Geert Uytterhoeven wrote:
 
-> On Sat, Sep 19, 2020 at 4:50 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->>
->> From the checks and commit messages for modify_return, it seems it was
->> never the intention that it should be possible to attach a tracing progr=
-am
->> with expected_attach_type =3D=3D BPF_MODIFY_RETURN to another BPF progra=
-m.
->> However, check_attach_modify_return() will only look at the function nam=
-e,
->> so if the target function starts with "security_", the attach will be
->> allowed even for bpf2bpf attachment.
->>
->> Fix this oversight by also blocking the modification if a target program=
- is
->> supplied.
->>
->> Fixes: 18644cec714a ("bpf: Fix use-after-free in fmod_ret check")
->> Fixes: 6ba43b761c41 ("bpf: Attachment verification for BPF_MODIFY_RETURN=
-")
->> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> ---
->>  kernel/bpf/verifier.c |    2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
->> index 4161b6c406bc..cb1b0f9fd770 100644
->> --- a/kernel/bpf/verifier.c
->> +++ b/kernel/bpf/verifier.c
->> @@ -11442,7 +11442,7 @@ static int check_attach_btf_id(struct bpf_verifi=
-er_env *env)
->>                                         prog->aux->attach_func_name);
->>                 } else if (prog->expected_attach_type =3D=3D BPF_MODIFY_=
-RETURN) {
->>                         ret =3D check_attach_modify_return(prog, addr);
->> -                       if (ret)
->> +                       if (ret || tgt_prog)
->
-> can you please do it as a separate check with a more appropriate and
-> meaningful message?
+> This reverts commit 1838d6c62f57836639bd3d83e7855e0ee4f6defc.
+> 
+> This commit moved the ravb_mdio_init() call (and thus the
+> of_mdiobus_register() call) from the ravb_probe() to the ravb_open()
+> call.  This causes a regression during system resume (s2idle/s2ram), as
+> new PHY devices cannot be bound while suspended.
+> 
+> During boot, the Micrel PHY is detected like this:
+> 
+>      Micrel KSZ9031 Gigabit PHY e6800000.ethernet-ffffffff:00: attached PHY driver [Micrel KSZ9031 Gigabit PHY] (mii_bus:phy_addr=e6800000.ethernet-ffffffff:00, irq=228)
+>      ravb e6800000.ethernet eth0: Link is Up - 1Gbps/Full - flow control off
+> 
+> During system suspend, (A) defer_all_probes is set to true, and (B)
+> usermodehelper_disabled is set to UMH_DISABLED, to avoid drivers being
+> probed while suspended.
+> 
+>    A. If CONFIG_MODULES=n, phy_device_register() calling device_add()
+>       merely adds the device, but does not probe it yet, as
+>       really_probe() returns early due to defer_all_probes being set:
+> 
+>         dpm_resume+0x128/0x4f8
+> 	 device_resume+0xcc/0x1b0
+> 	   dpm_run_callback+0x74/0x340
+> 	     ravb_resume+0x190/0x1b8
+> 	       ravb_open+0x84/0x770
+> 		 of_mdiobus_register+0x1e0/0x468
+> 		   of_mdiobus_register_phy+0x1b8/0x250
+> 		     of_mdiobus_phy_device_register+0x178/0x1e8
+> 		       phy_device_register+0x114/0x1b8
+> 			 device_add+0x3d4/0x798
+> 			   bus_probe_device+0x98/0xa0
+> 			     device_initial_probe+0x10/0x18
+> 			       __device_attach+0xe4/0x140
+> 				 bus_for_each_drv+0x64/0xc8
+> 				   __device_attach_driver+0xb8/0xe0
+> 				     driver_probe_device.part.11+0xc4/0xd8
+> 				       really_probe+0x32c/0x3b8
+> 
+>       Later, phy_attach_direct() notices no PHY driver has been bound,
+>       and falls back to the Generic PHY, leading to degraded operation:
+> 
+>         Generic PHY e6800000.ethernet-ffffffff:00: attached PHY driver [Generic PHY] (mii_bus:phy_addr=e6800000.ethernet-ffffffff:00, irq=POLL)
+>         ravb e6800000.ethernet eth0: Link is Up - 1Gbps/Full - flow control off
+> 
+>    B. If CONFIG_MODULES=y, request_module() returns early with -EBUSY due
+>       to UMH_DISABLED, and MDIO initialization fails completely:
+> 
+>         mdio_bus e6800000.ethernet-ffffffff:00: error -16 loading PHY driver module for ID 0x00221622
+>         ravb e6800000.ethernet eth0: failed to initialize MDIO
+>         PM: dpm_run_callback(): ravb_resume+0x0/0x1b8 returns -16
+>         PM: Device e6800000.ethernet failed to resume: error -16
+> 
+>       Ignoring -EBUSY in phy_request_driver_module(), like was done for
+>       -ENOENT in commit 21e194425abd65b5 ("net: phy: fix issue with loading
+>       PHY driver w/o initramfs"), would makes it fall back to the Generic
+>       PHY, like in the CONFIG_MODULES=n case.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Cc: stable@vger.kernel.org
 
-Heh, okay, maybe I was being a bit too lazy here ;)
+Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
 
--Toke
+> ---
+> Commit 1838d6c62f578366 ("ravb: Fixed to be able to unload modules") was
+> already backported to stable v4.4, v4.9, v4.14, v4.19, v5.4, and v5.8),
+> and thus needs to be reverted there, too.
 
+    Ugh!
+    Sorry for not noticing the issue with the original patch... :-/
+
+MBR, Sergei
