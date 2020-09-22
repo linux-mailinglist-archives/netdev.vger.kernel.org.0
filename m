@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 001DB273BF0
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F8B1273BFF
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 09:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730085AbgIVHa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 03:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
+        id S1730099AbgIVHbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 03:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730065AbgIVHa4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 03:30:56 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C82C061755
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:30:55 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id c18so15855278wrm.9
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:30:55 -0700 (PDT)
+        with ESMTP id S1730081AbgIVHa5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 03:30:57 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278E4C061755
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:30:57 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id x14so15820850wrl.12
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 00:30:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=l5JzLPMeSD4caZ4wHfPPZr4JygseWiJe8yzApZMnhOA=;
-        b=FHJ5o9QNENRX/vsvOtojGOaoVX/ooBOjoqHqry4nKpc7kq8ydzuc59EmVnd1OHR4wi
-         x5hYswDm8A0SLY4X+0OpVCP2UEUQLzUTe8e3826LbFKlhKvmBbbb/ciywIh2rgioRl+D
-         OorDlqKIPRIe4Umj8lHlExCUBRviKjiW6CuM7O6lAT7PEjB/lIyfVbh+Vm4KVVGdxjhN
-         b0O5ZsCIGbSos+H1Pv3J1dwFTNzxqXd25hE84u2X7kc0LUcQFcAaWMGPdqXDpWgz6J8a
-         LVy24MhNeqksjawhhhBo++6cS/SeDfmPLXGJ/jhWdt03/L8vgAw0d4YsFEYEvGUO/Wtt
-         VYLQ==
+        bh=mzyAv1ylBdJBBskA/FLRvBG2U6MttLS1nRYeB0zExYs=;
+        b=uwAwCQVv9WJPm0/J6HK330KMa0/diE5RxCzSZzel8GewXvIg3DnFz10DIPrl17ng/p
+         Xw9KazTQyQV6yPZXwHtGQdRREegu/vgZsdF+6cHvf5Com4FEP2rXdpYSJy9EPpm0sJfw
+         1Gtk/7+E5uScVKvQjEFGvZdcGQUKOkMqBhu+dp0kk9zCT0Iv4b59RnN5oSmW/PGbzIpT
+         YW+yRHMaFu9INm4jDlyuqK3fFUHHXwTVEcpiWbJxvWlHjrbHDROBrsLKpQZu3fJk3hcn
+         qrVaRbZn0vdvyUH0x9cpVn0SWqHen4ckG4wbTGsGFTNKkannoyzHpPcl+qae68SQYHLl
+         YLrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=l5JzLPMeSD4caZ4wHfPPZr4JygseWiJe8yzApZMnhOA=;
-        b=LqD8U1xqR+wwyXQC6SIqSa0teIClbmx8vf1Z1+IGR/BEFHnPH2cufAbZ2crZJBqJqi
-         C1R8l15Gj98hhrRUvVb0kmjXEAY8oB8JCL3lXCKQ9rkS7Dn/TcOkz7xPMJgFpwlvvNHL
-         yyq0BEKidbo/toqeFoL70I93zIFWU9ZZSxXOjiAyUKXr4nFzT6wJYVV7G4medL2+Sono
-         C1lcOa3McpruRuW3/xAzTxQKOVKFBda6kZueetgbs8asUY3E1mVGMiUWHmkhQlP0nDxa
-         Ioa58KSh40yLxUUoWNrj5Ijoe+03KVEMUwUS2x06pvYsFSkW3TE/isVKKChiPnqyQ8iW
-         KaOA==
-X-Gm-Message-State: AOAM533wxnK0jsEEtgWyFtX95Lm1gEkQaY+SFyK0G7D5JBnbaPpDtUlN
-        9y/7qnBCGrthxIO/pU7tzP8w/0XRAV/rUR0dADslcQ==
-X-Google-Smtp-Source: ABdhPJxv8SwaPRlCqrTezQR9JsY948BSdSXuDIrm+dTnB5kIdZ0xtp/SV7eY5AlSa08hDMsuXEcNOA==
-X-Received: by 2002:a5d:52ca:: with SMTP id r10mr3510001wrv.195.1600759854467;
-        Tue, 22 Sep 2020 00:30:54 -0700 (PDT)
+        bh=mzyAv1ylBdJBBskA/FLRvBG2U6MttLS1nRYeB0zExYs=;
+        b=gSvI6pqytwgXeO39MtrWHzaAD/9sjtHV8K0A1AFQ79TEpg1cUpxz2ucnBi/QTO8nkA
+         5IABDHURVA5z7n2r6i881UEE4BRZRNA6uRoGK9+ukqiawzkgNyBm+Y8+hYrXQinAl/Tz
+         papFnJtzkBaks2SciHITa4oDK2T5DyuKZRiIt8pWaN3LKQL2cu0PvNjhqdjqQVxNbfEk
+         ekm9nxgByeRuWYcL8p2ZNHpAbExy53WJGH76cjBjzBY1oyUQB2n8qPRHVFlqLxYxD/VF
+         Athuw+odVAUZ7pGkhN/qMeAVtgAkUUXR4sMOBIHXad+jGYuVBcB3WbrP3pXrsNrj0GC+
+         iJmA==
+X-Gm-Message-State: AOAM530nMxubM/nVGN0CZ0s8w9yDFjLz9rOwM5PDCf2UCD/b7N+3fvPV
+        gOCLQRSnezb1Zuv9fmbmYmD5USVSozUiUTWXucC00w==
+X-Google-Smtp-Source: ABdhPJw7OVQmdejsJAsCMP5pr/l2lLU9tsv2Pt8peBZAMWlyQ/U439RAUmWKSVKMfxSZ6aOo6Q9AzA==
+X-Received: by 2002:adf:e289:: with SMTP id v9mr3787585wri.14.1600759855496;
+        Tue, 22 Sep 2020 00:30:55 -0700 (PDT)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id s26sm3258287wmh.44.2020.09.22.00.30.53
+        by smtp.gmail.com with ESMTPSA id s26sm3258287wmh.44.2020.09.22.00.30.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2020 00:30:54 -0700 (PDT)
+        Tue, 22 Sep 2020 00:30:55 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, davem@davemloft.net,
         bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next v2 09/16] net: bridge: mcast: when igmpv3/mldv2 are enabled lookup (S,G) first, then (*,G)
-Date:   Tue, 22 Sep 2020 10:30:20 +0300
-Message-Id: <20200922073027.1196992-10-razor@blackwall.org>
+Subject: [PATCH net-next v2 10/16] net: bridge: mcast: add rt_protocol field to the port group struct
+Date:   Tue, 22 Sep 2020 10:30:21 +0300
+Message-Id: <20200922073027.1196992-11-razor@blackwall.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200922073027.1196992-1-razor@blackwall.org>
 References: <20200922073027.1196992-1-razor@blackwall.org>
@@ -66,47 +66,201 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-If (S,G) entries are enabled (igmpv3/mldv2) then look them up first. If
-there isn't a present (S,G) entry then try to find (*,G).
+We need to be able to differentiate between pg entries created by
+user-space and the kernel when we start generating S,G entries for
+IGMPv3/MLDv2's fast path. User-space entries are created by default as
+RTPROT_STATIC and the kernel entries are RTPROT_KERNEL. Later we can
+allow user-space to provide the entry rt_protocol so we can
+differentiate between who added the entries specifically (e.g. clag,
+admin, frr etc).
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- net/bridge/br_multicast.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ include/uapi/linux/if_bridge.h |  1 +
+ net/bridge/br_mdb.c            | 42 +++++++++++++++++++++-------------
+ net/bridge/br_multicast.c      |  7 ++++--
+ net/bridge/br_private.h        |  3 ++-
+ 4 files changed, 34 insertions(+), 19 deletions(-)
 
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index e1fb822b9ddb..4fd690bc848f 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -127,10 +127,28 @@ struct net_bridge_mdb_entry *br_mdb_get(struct net_bridge *br,
- 	switch (skb->protocol) {
+diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+index 3e6377c865eb..1054f151078d 100644
+--- a/include/uapi/linux/if_bridge.h
++++ b/include/uapi/linux/if_bridge.h
+@@ -458,6 +458,7 @@ enum {
+ 	MDBA_MDB_EATTR_SRC_LIST,
+ 	MDBA_MDB_EATTR_GROUP_MODE,
+ 	MDBA_MDB_EATTR_SOURCE,
++	MDBA_MDB_EATTR_RTPROT,
+ 	__MDBA_MDB_EATTR_MAX
+ };
+ #define MDBA_MDB_EATTR_MAX (__MDBA_MDB_EATTR_MAX - 1)
+diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
+index 7f9ca5c20120..b386a5e07698 100644
+--- a/net/bridge/br_mdb.c
++++ b/net/bridge/br_mdb.c
+@@ -184,6 +184,7 @@ static int __mdb_fill_info(struct sk_buff *skb,
+ 			MDBA_MDB_EATTR_TIMER,
+ 			br_timer_value(mtimer)))
+ 		goto nest_err;
++
+ 	switch (mp->addr.proto) {
  	case htons(ETH_P_IP):
- 		ip.dst.ip4 = ip_hdr(skb)->daddr;
-+		if (br->multicast_igmp_version == 3) {
-+			struct net_bridge_mdb_entry *mdb;
-+
-+			ip.src.ip4 = ip_hdr(skb)->saddr;
-+			mdb = br_mdb_ip_get_rcu(br, &ip);
-+			if (mdb)
-+				return mdb;
-+			ip.src.ip4 = 0;
-+		}
- 		break;
- #if IS_ENABLED(CONFIG_IPV6)
- 	case htons(ETH_P_IPV6):
- 		ip.dst.ip6 = ipv6_hdr(skb)->daddr;
-+		if (br->multicast_mld_version == 2) {
-+			struct net_bridge_mdb_entry *mdb;
-+
-+			ip.src.ip6 = ipv6_hdr(skb)->saddr;
-+			mdb = br_mdb_ip_get_rcu(br, &ip);
-+			if (mdb)
-+				return mdb;
-+			memset(&ip.src.ip6, 0, sizeof(ip.src.ip6));
-+		}
+ 		dump_srcs_mode = !!(mp->br->multicast_igmp_version == 3);
+@@ -206,10 +207,15 @@ static int __mdb_fill_info(struct sk_buff *skb,
  		break;
  #endif
- 	default:
+ 	}
+-	if (p && dump_srcs_mode &&
+-	    (__mdb_fill_srcs(skb, p) ||
+-	     nla_put_u8(skb, MDBA_MDB_EATTR_GROUP_MODE, p->filter_mode)))
+-		goto nest_err;
++	if (p) {
++		if (nla_put_u8(skb, MDBA_MDB_EATTR_RTPROT, p->rt_protocol))
++			goto nest_err;
++		if (dump_srcs_mode &&
++		    (__mdb_fill_srcs(skb, p) ||
++		     nla_put_u8(skb, MDBA_MDB_EATTR_GROUP_MODE,
++				p->filter_mode)))
++			goto nest_err;
++	}
+ 	nla_nest_end(skb, nest_ent);
+ 
+ 	return 0;
+@@ -414,6 +420,9 @@ static size_t rtnl_mdb_nlmsg_size(struct net_bridge_port_group *pg)
+ 	if (!pg)
+ 		goto out;
+ 
++	/* MDBA_MDB_EATTR_RTPROT */
++	nlmsg_size += nla_total_size(sizeof(u8));
++
+ 	switch (pg->addr.proto) {
+ 	case htons(ETH_P_IP):
+ 		/* MDBA_MDB_EATTR_SOURCE */
+@@ -809,16 +818,20 @@ static int br_mdb_parse(struct sk_buff *skb, struct nlmsghdr *nlh,
+ }
+ 
+ static int br_mdb_add_group(struct net_bridge *br, struct net_bridge_port *port,
+-			    struct br_ip *group, struct br_mdb_entry *entry,
++			    struct br_mdb_entry *entry,
++			    struct nlattr **mdb_attrs,
+ 			    struct netlink_ext_ack *extack)
+ {
+ 	struct net_bridge_mdb_entry *mp;
+ 	struct net_bridge_port_group *p;
+ 	struct net_bridge_port_group __rcu **pp;
+ 	unsigned long now = jiffies;
++	struct br_ip group;
+ 	u8 filter_mode;
+ 	int err;
+ 
++	__mdb_entry_to_br_ip(entry, &group, mdb_attrs);
++
+ 	/* host join errors which can happen before creating the group */
+ 	if (!port) {
+ 		/* don't allow any flags for host-joined groups */
+@@ -826,15 +839,15 @@ static int br_mdb_add_group(struct net_bridge *br, struct net_bridge_port *port,
+ 			NL_SET_ERR_MSG_MOD(extack, "Flags are not allowed for host groups");
+ 			return -EINVAL;
+ 		}
+-		if (!br_multicast_is_star_g(group)) {
++		if (!br_multicast_is_star_g(&group)) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Groups with sources cannot be manually host joined");
+ 			return -EINVAL;
+ 		}
+ 	}
+ 
+-	mp = br_mdb_ip_get(br, group);
++	mp = br_mdb_ip_get(br, &group);
+ 	if (!mp) {
+-		mp = br_multicast_new_group(br, group);
++		mp = br_multicast_new_group(br, &group);
+ 		err = PTR_ERR_OR_ZERO(mp);
+ 		if (err)
+ 			return err;
+@@ -864,11 +877,11 @@ static int br_mdb_add_group(struct net_bridge *br, struct net_bridge_port *port,
+ 			break;
+ 	}
+ 
+-	filter_mode = br_multicast_is_star_g(group) ? MCAST_EXCLUDE :
+-						      MCAST_INCLUDE;
++	filter_mode = br_multicast_is_star_g(&group) ? MCAST_EXCLUDE :
++						       MCAST_INCLUDE;
+ 
+-	p = br_multicast_new_port_group(port, group, *pp, entry->state, NULL,
+-					filter_mode);
++	p = br_multicast_new_port_group(port, &group, *pp, entry->state, NULL,
++					filter_mode, RTPROT_STATIC);
+ 	if (unlikely(!p)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Couldn't allocate new port group");
+ 		return -ENOMEM;
+@@ -887,13 +900,10 @@ static int __br_mdb_add(struct net *net, struct net_bridge *br,
+ 			struct nlattr **mdb_attrs,
+ 			struct netlink_ext_ack *extack)
+ {
+-	struct br_ip ip;
+ 	int ret;
+ 
+-	__mdb_entry_to_br_ip(entry, &ip, mdb_attrs);
+-
+ 	spin_lock_bh(&br->multicast_lock);
+-	ret = br_mdb_add_group(br, p, &ip, entry, extack);
++	ret = br_mdb_add_group(br, p, entry, mdb_attrs, extack);
+ 	spin_unlock_bh(&br->multicast_lock);
+ 
+ 	return ret;
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index 4fd690bc848f..b6e7b0ece422 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -795,7 +795,8 @@ struct net_bridge_port_group *br_multicast_new_port_group(
+ 			struct net_bridge_port_group __rcu *next,
+ 			unsigned char flags,
+ 			const unsigned char *src,
+-			u8 filter_mode)
++			u8 filter_mode,
++			u8 rt_protocol)
+ {
+ 	struct net_bridge_port_group *p;
+ 
+@@ -807,6 +808,7 @@ struct net_bridge_port_group *br_multicast_new_port_group(
+ 	p->port = port;
+ 	p->flags = flags;
+ 	p->filter_mode = filter_mode;
++	p->rt_protocol = rt_protocol;
+ 	p->mcast_gc.destroy = br_multicast_destroy_port_group;
+ 	INIT_HLIST_HEAD(&p->src_list);
+ 	rcu_assign_pointer(p->next, next);
+@@ -892,7 +894,8 @@ static int br_multicast_add_group(struct net_bridge *br,
+ 			break;
+ 	}
+ 
+-	p = br_multicast_new_port_group(port, group, *pp, 0, src, filter_mode);
++	p = br_multicast_new_port_group(port, group, *pp, 0, src, filter_mode,
++					RTPROT_KERNEL);
+ 	if (unlikely(!p))
+ 		goto err;
+ 	rcu_assign_pointer(*pp, p);
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 0f54a7a7c186..dae7e3526fc7 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -246,6 +246,7 @@ struct net_bridge_port_group {
+ 	unsigned char			flags;
+ 	unsigned char			filter_mode;
+ 	unsigned char			grp_query_rexmit_cnt;
++	unsigned char			rt_protocol;
+ 
+ 	struct hlist_head		src_list;
+ 	unsigned int			src_ents;
+@@ -804,7 +805,7 @@ struct net_bridge_port_group *
+ br_multicast_new_port_group(struct net_bridge_port *port, struct br_ip *group,
+ 			    struct net_bridge_port_group __rcu *next,
+ 			    unsigned char flags, const unsigned char *src,
+-			    u8 filter_mode);
++			    u8 filter_mode, u8 rt_protocol);
+ int br_mdb_hash_init(struct net_bridge *br);
+ void br_mdb_hash_fini(struct net_bridge *br);
+ void br_mdb_notify(struct net_device *dev, struct net_bridge_mdb_entry *mp,
 -- 
 2.25.4
 
