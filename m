@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C324273779
-	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 02:31:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 653D9273774
+	for <lists+netdev@lfdr.de>; Tue, 22 Sep 2020 02:31:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729339AbgIVAbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Sep 2020 20:31:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60392 "EHLO mail.kernel.org"
+        id S1729360AbgIVAbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Sep 2020 20:31:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60424 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729032AbgIVAbN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Sep 2020 20:31:13 -0400
+        id S1729090AbgIVAbO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Sep 2020 20:31:14 -0400
 Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3407223AA7;
+        by mail.kernel.org (Postfix) with ESMTPSA id 9D9AC23A9A;
         Tue, 22 Sep 2020 00:31:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1600734673;
-        bh=FyBS1w7w6BDRvZdUON4OStsEK2rGR18u90f2mhP0YZY=;
+        bh=G2GLGZMcYoKrTv8GFfETI4VWoIoRI7y6M0e+QAagpYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y9vgMyHG7aorABvDTTR2GZL+aWbEr/iuH2wLm9rZLOPgAGvZnyBR4bnHEl1v+hLID
-         1GXVX8Va2gTmuWzxoB7XSJeBiPrEs/Dv0ThPbp+hQuhbjFz+GZJw31g2htOkcozfm5
-         T7uqiQYGIURf/eIPmnf/LpZGc7ZLmAHbPHUV38UA=
+        b=jWDhYVLzZm2XjAifV7+oVVo2v0Cch4+8/sclfmJAcy50yaa3OitHKG/6kKelnthMq
+         68ZB46WnnnKBfI7LE54ZY0qNRWTwkPNQbrvQN92bxeFh4sAOxTwaAfEvNXTTB+t8Ie
+         N9/fGzWix8bTvd3Bvyf8g0Y6Hu5YqulKvAf8dPQ0=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jianbo Liu <jianbol@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
+Cc:     netdev@vger.kernel.org, Roi Dayan <roid@mellanox.com>,
+        Eli Britstein <elibr@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net V2 04/15] net/mlx5e: Fix memory leak of tunnel info when rule under multipath not ready
-Date:   Mon, 21 Sep 2020 17:30:50 -0700
-Message-Id: <20200922003101.529117-5-saeed@kernel.org>
+Subject: [net V2 05/15] net/mlx5e: CT: Fix freeing ct_label mapping
+Date:   Mon, 21 Sep 2020 17:30:51 -0700
+Message-Id: <20200922003101.529117-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200922003101.529117-1-saeed@kernel.org>
 References: <20200922003101.529117-1-saeed@kernel.org>
@@ -42,37 +42,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jianbo Liu <jianbol@mellanox.com>
+From: Roi Dayan <roid@mellanox.com>
 
-When deleting vxlan flow rule under multipath, tun_info in parse_attr is
-not freed when the rule is not ready.
+Add missing mapping remove call when removing ct rule,
+as the mapping was allocated when ct rule was adding with ct_label.
+Also there is a missing mapping remove call in error flow.
 
-Fixes: ef06c9ee8933 ("net/mlx5e: Allow one failure when offloading tc encap rules under multipath")
-Signed-off-by: Jianbo Liu <jianbol@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
+Fixes: 54b154ecfb8c ("net/mlx5e: CT: Map 128 bits labels to 32 bit map ID")
+Signed-off-by: Roi Dayan <roid@mellanox.com>
+Reviewed-by: Eli Britstein <elibr@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 21 +++++++++++----
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.h    | 26 ++++++++++++-------
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   |  6 +++--
+ 3 files changed, 36 insertions(+), 17 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index c6bc9224c3b1..bc5f72ec3623 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -699,6 +699,7 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
+ err_rule:
+ 	mlx5e_mod_hdr_detach(ct_priv->esw->dev,
+ 			     &esw->offloads.mod_hdr, zone_rule->mh);
++	mapping_remove(ct_priv->labels_mapping, attr->ct_attr.ct_labels_id);
+ err_mod_hdr:
+ 	kfree(spec);
+ 	return err;
+@@ -958,12 +959,22 @@ mlx5_tc_ct_add_no_trk_match(struct mlx5e_priv *priv,
+ 	return 0;
+ }
+ 
++void mlx5_tc_ct_match_del(struct mlx5e_priv *priv, struct mlx5_ct_attr *ct_attr)
++{
++	struct mlx5_tc_ct_priv *ct_priv = mlx5_tc_ct_get_ct_priv(priv);
++
++	if (!ct_priv || !ct_attr->ct_labels_id)
++		return;
++
++	mapping_remove(ct_priv->labels_mapping, ct_attr->ct_labels_id);
++}
++
+ int
+-mlx5_tc_ct_parse_match(struct mlx5e_priv *priv,
+-		       struct mlx5_flow_spec *spec,
+-		       struct flow_cls_offload *f,
+-		       struct mlx5_ct_attr *ct_attr,
+-		       struct netlink_ext_ack *extack)
++mlx5_tc_ct_match_add(struct mlx5e_priv *priv,
++		     struct mlx5_flow_spec *spec,
++		     struct flow_cls_offload *f,
++		     struct mlx5_ct_attr *ct_attr,
++		     struct netlink_ext_ack *extack)
+ {
+ 	struct mlx5_tc_ct_priv *ct_priv = mlx5_tc_ct_get_ct_priv(priv);
+ 	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
+index 3baef917a677..708c216325d3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
+@@ -87,12 +87,15 @@ mlx5_tc_ct_init(struct mlx5_rep_uplink_priv *uplink_priv);
+ void
+ mlx5_tc_ct_clean(struct mlx5_rep_uplink_priv *uplink_priv);
+ 
++void
++mlx5_tc_ct_match_del(struct mlx5e_priv *priv, struct mlx5_ct_attr *ct_attr);
++
+ int
+-mlx5_tc_ct_parse_match(struct mlx5e_priv *priv,
+-		       struct mlx5_flow_spec *spec,
+-		       struct flow_cls_offload *f,
+-		       struct mlx5_ct_attr *ct_attr,
+-		       struct netlink_ext_ack *extack);
++mlx5_tc_ct_match_add(struct mlx5e_priv *priv,
++		     struct mlx5_flow_spec *spec,
++		     struct flow_cls_offload *f,
++		     struct mlx5_ct_attr *ct_attr,
++		     struct netlink_ext_ack *extack);
+ int
+ mlx5_tc_ct_add_no_trk_match(struct mlx5e_priv *priv,
+ 			    struct mlx5_flow_spec *spec);
+@@ -130,12 +133,15 @@ mlx5_tc_ct_clean(struct mlx5_rep_uplink_priv *uplink_priv)
+ {
+ }
+ 
++static inline void
++mlx5_tc_ct_match_del(struct mlx5e_priv *priv, struct mlx5_ct_attr *ct_attr) {}
++
+ static inline int
+-mlx5_tc_ct_parse_match(struct mlx5e_priv *priv,
+-		       struct mlx5_flow_spec *spec,
+-		       struct flow_cls_offload *f,
+-		       struct mlx5_ct_attr *ct_attr,
+-		       struct netlink_ext_ack *extack)
++mlx5_tc_ct_match_add(struct mlx5e_priv *priv,
++		     struct mlx5_flow_spec *spec,
++		     struct flow_cls_offload *f,
++		     struct mlx5_ct_attr *ct_attr,
++		     struct netlink_ext_ack *extack)
+ {
+ 	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
+ 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index fd53d101d8fd..7be282d2ddde 100644
+index 7be282d2ddde..bf0c6f063941 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1290,11 +1290,8 @@ static void mlx5e_tc_del_fdb_flow(struct mlx5e_priv *priv,
+@@ -1312,6 +1312,8 @@ static void mlx5e_tc_del_fdb_flow(struct mlx5e_priv *priv,
+ 		}
+ 	kvfree(attr->parse_attr);
  
- 	mlx5e_put_flow_tunnel_id(flow);
++	mlx5_tc_ct_match_del(priv, &flow->esw_attr->ct_attr);
++
+ 	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR)
+ 		mlx5e_detach_mod_hdr(priv, flow);
  
--	if (flow_flag_test(flow, NOT_READY)) {
-+	if (flow_flag_test(flow, NOT_READY))
- 		remove_unready_flow(flow);
--		kvfree(attr->parse_attr);
--		return;
--	}
+@@ -4399,8 +4401,8 @@ __mlx5e_add_fdb_flow(struct mlx5e_priv *priv,
+ 		goto err_free;
  
- 	if (mlx5e_is_offloaded_flow(flow)) {
- 		if (flow_flag_test(flow, SLOW))
+ 	/* actions validation depends on parsing the ct matches first */
+-	err = mlx5_tc_ct_parse_match(priv, &parse_attr->spec, f,
+-				     &flow->esw_attr->ct_attr, extack);
++	err = mlx5_tc_ct_match_add(priv, &parse_attr->spec, f,
++				   &flow->esw_attr->ct_attr, extack);
+ 	if (err)
+ 		goto err_free;
+ 
 -- 
 2.26.2
 
