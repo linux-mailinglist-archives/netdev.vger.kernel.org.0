@@ -2,71 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51590274F7D
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 05:21:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14A68274F87
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 05:25:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726753AbgIWDUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 23:20:54 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:35050 "EHLO huawei.com"
+        id S1726786AbgIWDZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 23:25:38 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:14263 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726709AbgIWDUx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Sep 2020 23:20:53 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id D5BA0A1DDCE5F48A8D1E;
-        Wed, 23 Sep 2020 11:20:50 +0800 (CST)
-Received: from ubuntu.network (10.175.138.68) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.487.0; Wed, 23 Sep 2020 11:20:44 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <bryan.whitehead@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        id S1726703AbgIWDZi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Sep 2020 23:25:38 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 68C6DBC5F24D1962E43F;
+        Wed, 23 Sep 2020 11:25:36 +0800 (CST)
+Received: from huawei.com (10.175.104.57) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Wed, 23 Sep 2020
+ 11:25:31 +0800
+From:   Li Heng <liheng40@huawei.com>
+To:     <ath9k-devel@qca.qualcomm.com>, <kvalo@codeaurora.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next v2] net: microchip: Make `lan743x_pm_suspend` function return right value
-Date:   Wed, 23 Sep 2020 11:21:40 +0800
-Message-ID: <20200923032140.16514-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.17.1
+Subject: [PATCH -next v2] ath9k: Remove set but not used variable
+Date:   Wed, 23 Sep 2020 11:25:31 +0800
+Message-ID: <1600831531-8573-1-git-send-email-liheng40@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.138.68]
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.104.57]
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/ethernet/microchip/lan743x_main.c: In function lan743x_pm_suspend:
+This addresses the following gcc warning with "make W=1":
 
-`ret` is set but not used. In fact, `pci_prepare_to_sleep` function value should
-be the right value of `lan743x_pm_suspend` function, therefore, fix it.
+drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h:1331:18: warning:
+‘ar9580_1p0_pcie_phy_clkreq_enable_L1’ defined but not used [-Wunused-const-variable=]
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h:1338:18: warning:
+‘ar9580_1p0_pcie_phy_clkreq_disable_L1’ defined but not used [-Wunused-const-variable=]
+
+drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h:1345:18: warning:
+‘ar9580_1p0_pcie_phy_pll_on_clkreq’ defined but not used [-Wunused-const-variable=]
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Li Heng <liheng40@huawei.com>
 ---
- drivers/net/ethernet/microchip/lan743x_main.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ .../net/wireless/ath/ath9k/ar9580_1p0_initvals.h    | 21 ---------------------
+ 1 file changed, 21 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index de93cc6ebc1a..7e236c9ee4b1 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -3038,7 +3038,6 @@ static int lan743x_pm_suspend(struct device *dev)
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct net_device *netdev = pci_get_drvdata(pdev);
- 	struct lan743x_adapter *adapter = netdev_priv(netdev);
--	int ret;
- 
- 	lan743x_pcidev_shutdown(pdev);
- 
-@@ -3051,9 +3050,7 @@ static int lan743x_pm_suspend(struct device *dev)
- 		lan743x_pm_set_wol(adapter);
- 
- 	/* Host sets PME_En, put D3hot */
--	ret = pci_prepare_to_sleep(pdev);
+diff --git a/drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h b/drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h
+index f4c9bef..fab14e0 100644
+--- a/drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h
++++ b/drivers/net/wireless/ath/ath9k/ar9580_1p0_initvals.h
+@@ -1328,27 +1328,6 @@ static const u32 ar9580_1p0_baseband_postamble[][5] = {
+ 	{0x0000c284, 0x00000000, 0x00000000, 0x00000150, 0x00000150},
+ };
+
+-static const u32 ar9580_1p0_pcie_phy_clkreq_enable_L1[][2] = {
+-	/* Addr      allmodes  */
+-	{0x00004040, 0x0835365e},
+-	{0x00004040, 0x0008003b},
+-	{0x00004044, 0x00000000},
+-};
 -
--	return 0;
-+	return pci_prepare_to_sleep(pdev);;
- }
- 
- static int lan743x_pm_resume(struct device *dev)
--- 
-2.17.1
+-static const u32 ar9580_1p0_pcie_phy_clkreq_disable_L1[][2] = {
+-	/* Addr      allmodes  */
+-	{0x00004040, 0x0831365e},
+-	{0x00004040, 0x0008003b},
+-	{0x00004044, 0x00000000},
+-};
+-
+-static const u32 ar9580_1p0_pcie_phy_pll_on_clkreq[][2] = {
+-	/* Addr      allmodes  */
+-	{0x00004040, 0x0831265e},
+-	{0x00004040, 0x0008003b},
+-	{0x00004044, 0x00000000},
+-};
+-
+ static const u32 ar9580_1p0_baseband_postamble_dfs_channel[][3] = {
+ 	/* Addr      5G          2G        */
+ 	{0x00009814, 0x3400c00f, 0x3400c00f},
+--
+2.7.4
 
