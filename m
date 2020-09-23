@@ -2,209 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65ED92764C6
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 01:54:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EE312764C7
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 01:54:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726665AbgIWXyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 19:54:16 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:60818 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726419AbgIWXyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 19:54:16 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08NNnFSN016749;
-        Wed, 23 Sep 2020 16:54:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=etkqvivN7GeiQswelnclqWnXeEL3G4gW/5wGMHRNQmw=;
- b=HLXf1kO7dk0+k42zwAmewG/lOEg/0usrlAuIOIQbSvLJVoNUlHElU8vcAlHwTC6xSBAk
- LY8yn15BHwu/j6JhR2noVYxaHlQ/NYU/t/4tlCUNif3DiAOcgQCjs7/antoEgY51aNTo
- KfjqGY/OWu76xnQqUy5KnFo6GehEyght+DE= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33qsp4xq64-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 23 Sep 2020 16:54:01 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.230) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 23 Sep 2020 16:54:01 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LmiO5fDIfLXtXnVMuWub46U4U5jsodYmTY5DIHOV611I94qTZqs302BqJoOemENKVcu8hgj3g/JlxVO9DqZ+zLWvU+VEnRW0ThluAxxeUICaYMIYiZAz+9Dfowi22CQvGOOLjI6476jRsqyTrzDN3WFby5wxwqwbjhMtHT7sbefxA8LKcXvIFj8Ci8hFoHr8lvJHUUc8/B1o6oxsLah1cx0awBlKgBybFiAGdcdtewvn2ZoKnfnATIDtQxu8pyy8U2G4+mCkrX1WZp0+s3S/BM/1Wp6m4ukvDp5d7hVJPc2dE8pS/gfn/wWojqSFJjHg/Lqf1F7Rz2mQXfbQzbEh9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=etkqvivN7GeiQswelnclqWnXeEL3G4gW/5wGMHRNQmw=;
- b=RiJZIZ1afFvNmgrwj5p0jHqQ404JemLMWuQk8CzwTkTCgfi1l6Mc+a/0K7IqoMyik4H5z1XNe4GygdOXV2IlKs2/soBxeCCHKP652pyUzqo5eOjARtE4sns5bL2z4y4JifIdJLmA1HhcsRK/rPD4VtVs/YhBFUmtqEewN4A8vodgHXInPp17sFMh3uq1Ixja/i11yJ+Cag0nN9hejmwbgFOhkUdQxMlBC7olOieFNQdOOlXUAghfAJe8iVgvYYpBN/x0IMwS8NR2SgsiQkgX7nYGytCjM7zq4WMYZNFz/YQIyqW0Zs0Wx3SfV2at40zSG+Rb/vJwmgwcfl12+r7N1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=etkqvivN7GeiQswelnclqWnXeEL3G4gW/5wGMHRNQmw=;
- b=Ks0WL5SgM//PDfrpTIl5yvuKwTqv96M1EQ8rpI4IxDcIgwHtytNJ1LsPh2E+u1/kpCcOmun9ov66rDuv0RP0lHM8GIFP02ZVELe0b3xCy6WvTclHBLMXcNYwxWs4jIeFuizdinDytw1tdHlX1jqkMdIBtf+QsqMUxfZwixiEABw=
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB2950.namprd15.prod.outlook.com (2603:10b6:a03:f6::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14; Wed, 23 Sep
- 2020 23:53:57 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::1400:be2f:8b3d:8f4d]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::1400:be2f:8b3d:8f4d%7]) with mapi id 15.20.3412.020; Wed, 23 Sep 2020
- 23:53:57 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Kernel Team" <Kernel-team@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCH v2 bpf-next 2/3] libbpf: introduce
- bpf_prog_test_run_xattr_opts
-Thread-Topic: [PATCH v2 bpf-next 2/3] libbpf: introduce
- bpf_prog_test_run_xattr_opts
-Thread-Index: AQHWkco0dkq2Yhl5xU64KxjjZzD8DKl2nMkAgABJOwA=
-Date:   Wed, 23 Sep 2020 23:53:57 +0000
-Message-ID: <540DD049-B544-4967-8300-E743940FD6FC@fb.com>
-References: <20200923165401.2284447-1-songliubraving@fb.com>
- <20200923165401.2284447-3-songliubraving@fb.com>
- <CAEf4BzZ-qPNjDEvviJKHfLD7t7YJ97PdGixGQ_f70AJEg5oVEg@mail.gmail.com>
-In-Reply-To: <CAEf4BzZ-qPNjDEvviJKHfLD7t7YJ97PdGixGQ_f70AJEg5oVEg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.120.23.2.1)
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [2620:10d:c090:400::5:cb37]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3d9facd9-9b07-4ad7-078a-08d8601befe4
-x-ms-traffictypediagnostic: BYAPR15MB2950:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB2950DDA24CF538DC30FA80DFB3380@BYAPR15MB2950.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: xxe73H8hhFco5lGvNpuR8js4kvOvZkpeaE+vF1lKgtDyQaSS8J8Q/mqF6ezqRv5f3nrG4Jg2BoPS1sA3W14hZJ3yDgFIPAR6ceWPS0ow7nguRFglS0i1pnRAuCvfjysMApL0f2ASiaCR0wiZ1xp6mVQ3UXgM8cijWMTjbxcp4wgHhPkEAj2+9STiV+cMooKGK/GAhBxrOqBjybpMmkmpXmo7poU0gJTQYMCXi9Rv3+d3E91R6Sp256I/n7alvNgh1wo7K+f+ci9L7ywMBaokAy95sg7Ynk07mDHzwOT6Q9aOL4/NCW9xYMlSmX7GUrDeRF6+NmKxBxjsT3fv7IKfmqQTdOLBpoyHC3/S+lqKiWS83hgMT+uxyFFBIMMBiQNT
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(136003)(396003)(376002)(366004)(39860400002)(66556008)(6512007)(6916009)(36756003)(83380400001)(53546011)(186003)(6506007)(2906002)(33656002)(64756008)(66446008)(66476007)(5660300002)(91956017)(76116006)(54906003)(66946007)(2616005)(8936002)(316002)(478600001)(71200400001)(8676002)(4326008)(6486002)(86362001)(21314003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: Vtp+TzlN+U3jFIFc6fOOIW/B38ewEkPsL9CsTmzfYnRhaYpLLRC02voJbbv3aB1Cn80suf0B6sUdA7WjjUw5KyEPrgZJ8gZXzylRrpiGZpC9kDaqCoU9j1h/Is8PonwLVJJtiM7grG3s6k8JXHZqmnWSyX/UB0udZr5l2FTUmcts4uenRMdyI7oAJ18JIBlTFd7mKnRn67W2NSb9AlfZq00sArSSu8Ryf/oeS3DP/daocCjlsvJ/2T9BPRFDoieWw1Q+0rxqQcYuFLpQP6lEHO+UIq9iYzen4S71S2FxruzaOQE2utlx6WCDgX1xu8alXPADD8SA/fq+1dK4Pf0J783SNQ3gtAay4CT9mjrHABdeEruym+Yw+/CL4ThE9TUYxGMvUki8WZ7Tgu6HLh40J8QngMtWwMJa816lzZqnmnlzp2Io/ZQ45zpoYBgySziBkuF0oaQS+FEUpkL524VtpSRw/5zJ3QsdYgpZiWtDnWBr3vWQhd3xbSi1ABEUtTcdBeWC/HZfI2doN37d8uFEdIuFwld6zvg6C6OnB7Ui+QSFyZEVln24yqteIhZIQlR3Bjyzz0Wq1dupJQXYf32kmyKRUqbWELKBzxcFaQWQhzbbsYRDpjbW8sVaNVgGmiFyQog2owA7cC9+pX9rrwQotOWYvHVOHX1gKkzTxgBWAq2JoAQWMZweHkOzujawisp5
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <163D3AD45C097E498EDA3E7B4C1B01F8@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726702AbgIWXyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 19:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35968 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726419AbgIWXyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 19:54:43 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC5FC0613CE;
+        Wed, 23 Sep 2020 16:54:43 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id jw11so582237pjb.0;
+        Wed, 23 Sep 2020 16:54:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=zvclOKBel47+J/CodBKVbxJC0ysdFRFSxr6Rq7511+M=;
+        b=jIv4YS5gE80rvHyzf7RxkEATH3MF/RHwybjjD1t5tckkG0nbiiuI26B7MoCnwf/Gu2
+         0oGSkqAv3ersGogoWBZCH/b1jchKhiH6b2E6L7MktYCpoIc2+J1Fitg+lPC58qt1a0S/
+         dHXWDMW7A8QzVPJMbHdmtzhuNiZVJ15aCiLx0HkM2mInaHFx8XhVr1eSaXT1JZX6hW8G
+         URPFO9dn8PxPkqS6bSHdGNHgYQJBi8HGNURfcTxnNIc4umPuzpxyRHZupDxnxhy/F4dr
+         qZ6p1ghSu7YHZSxZzEylfA1ZpJQkjyfwPBWa8fFgQXPzWLbu89GE1gW7lYgoQC31/JZL
+         w/5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=zvclOKBel47+J/CodBKVbxJC0ysdFRFSxr6Rq7511+M=;
+        b=Un2uj8f3PMaSnqHJK5O834IHbcH5p5gyats01Xsjd7OuDUPy/tphxiUTbcfIdkUs5b
+         hyJcuIffghhRlcfAAg+HvSZY/gB5CXsMMLaijWpZtm+4IDfam5PtcqvqzlUZHQnXq3tW
+         umAnhobIsWLG61z1tLOR1cMrfe1peLAqYqg6coTn3eQuN1FhDPHRLypt7eblexwLuy6J
+         COXmiFguKv1NzSM/fO0mlnRm61aKgQqUXKlcP3fTJXAQsicW/6SlRNMF0AXeZ19Id+if
+         dBsWeYIxTy2tVy95St3AYu5ITAMXlX96copjg/Cdt27puZGkxBtvxtmlM8s/7QEhu8A6
+         Sa1g==
+X-Gm-Message-State: AOAM530gRidIkQiXzc/fYLEkVPjbgi8n+C5iTFtRLVnt/rbDV58VVi4V
+        HItv3oR2hlk8aVWJCMVlEzE=
+X-Google-Smtp-Source: ABdhPJyxHfdkd1TBVMN6LiD8a+H3Kgpk4VV53bbxny/o1dwdCJyZ9HWlHAYL1/Tra5yvf8wyIdFBXw==
+X-Received: by 2002:a17:90a:f3d1:: with SMTP id ha17mr1484458pjb.231.1600905282665;
+        Wed, 23 Sep 2020 16:54:42 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:1807])
+        by smtp.gmail.com with ESMTPSA id n67sm858118pgn.14.2020.09.23.16.54.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Sep 2020 16:54:41 -0700 (PDT)
+Date:   Wed, 23 Sep 2020 16:54:39 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v8 03/11] bpf: verifier: refactor
+ check_attach_btf_id()
+Message-ID: <20200923235439.bdi43f3znff67o3n@ast-mbp.dhcp.thefacebook.com>
+References: <160079991372.8301.10648588027560707258.stgit@toke.dk>
+ <160079991702.8301.18141427563623823055.stgit@toke.dk>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d9facd9-9b07-4ad7-078a-08d8601befe4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2020 23:53:57.6598
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xr+9oz4z0EakeZGwtgj7HeJDvjr22bgG8Opi8KMohkNNY93JFl+I1bo1yD5R3wnfNCBbt6ehoJB2EJ25mSmLCg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2950
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-23_19:2020-09-23,2020-09-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- lowpriorityscore=0 priorityscore=1501 impostorscore=0 adultscore=0
- malwarescore=0 spamscore=0 mlxlogscore=999 suspectscore=0 bulkscore=0
- clxscore=1015 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009230181
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <160079991702.8301.18141427563623823055.stgit@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Sep 22, 2020 at 08:38:37PM +0200, Toke Høiland-Jørgensen wrote:
+> From: Toke Høiland-Jørgensen <toke@redhat.com>
+> 
+> The check_attach_btf_id() function really does three things:
+> 
+> 1. It performs a bunch of checks on the program to ensure that the
+>    attachment is valid.
+> 
+> 2. It stores a bunch of state about the attachment being requested in
+>    the verifier environment and struct bpf_prog objects.
+> 
+> 3. It allocates a trampoline for the attachment.
+> 
+> This patch splits out (1.) and (3.) into separate functions in preparation
+> for reusing them when the actual attachment is happening (in the
+> raw_tracepoint_open syscall operation), which will allow tracing programs
+> to have multiple (compatible) attachments.
 
+raw_tp_open part is no longer correct.
 
-> On Sep 23, 2020, at 12:31 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
- wrote:
->=20
-> On Wed, Sep 23, 2020 at 9:55 AM Song Liu <songliubraving@fb.com> wrote:
->>=20
->> This API supports new field cpu_plus in bpf_attr.test.
->>=20
->> Acked-by: John Fastabend <john.fastabend@gmail.com>
->> Signed-off-by: Song Liu <songliubraving@fb.com>
->> ---
->> tools/lib/bpf/bpf.c      | 13 ++++++++++++-
->> tools/lib/bpf/bpf.h      | 11 +++++++++++
->> tools/lib/bpf/libbpf.map |  1 +
->> 3 files changed, 24 insertions(+), 1 deletion(-)
->>=20
->> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
->> index 2baa1308737c8..3228dd60fa32f 100644
->> --- a/tools/lib/bpf/bpf.c
->> +++ b/tools/lib/bpf/bpf.c
->> @@ -684,7 +684,8 @@ int bpf_prog_test_run(int prog_fd, int repeat, void =
-*data, __u32 size,
->>        return ret;
->> }
->>=20
->> -int bpf_prog_test_run_xattr(struct bpf_prog_test_run_attr *test_attr)
->> +int bpf_prog_test_run_xattr_opts(struct bpf_prog_test_run_attr *test_at=
-tr,
->> +                                const struct bpf_prog_test_run_opts *op=
-ts)
->=20
-> opts are replacement for test_attr, not an addition to it. We chose to
-> use _xattr suffix for low-level APIs previously, but it's already
-> "taken". So I'd suggest to go with just  bpf_prog_test_run_ops and
-> have prog_fd as a first argument and then put all the rest of
-> test_run_attr into opts.
+Also could you re-phrase it that 'stores a bunch of state about the attechment'
+is still the case. It doesn't store into bpf_prog directly, but returns instead.
 
-One question on this: from the code, most (if not all) of these xxx_opts
-are used as input only. For example:
+> This also fixes a bug where a bunch of checks were skipped if a trampoline
+> already existed for the tracing target.
 
-LIBBPF_API int bpf_prog_bind_map(int prog_fd, int map_fd,
-                                 const struct bpf_prog_bind_opts *opts);
+This time we were lucky. When you see such selftests failures please debug
+them before submitting the patches. The reviewers should not be pointing out
+that the patch broke some tests.
+If anything breaks please mention it in the cover letter.
 
-However, bpf_prog_test_run_attr contains both input and output. Do you
-have any concern we use bpf_prog_test_run_opts for both input and output?
+> -static int check_attach_modify_return(struct bpf_prog *prog, unsigned long addr)
+> +static int check_attach_modify_return(const struct bpf_prog *prog, unsigned long addr,
+> +				      const char *func_name)
 
-Thanks,
-Song
+Since you're adding 'func_name' why keep 'prog' there? Pls drop it.
 
+>  {
+>  	if (within_error_injection_list(addr) ||
+> -	    !strncmp(SECURITY_PREFIX, prog->aux->attach_func_name,
+> -		     sizeof(SECURITY_PREFIX) - 1))
+> +	    !strncmp(SECURITY_PREFIX, func_name, sizeof(SECURITY_PREFIX) - 1))
+>  		return 0;
+>  
+>  	return -EINVAL;
+> @@ -11215,43 +11215,29 @@ static int check_non_sleepable_error_inject(u32 btf_id)
+>  	return btf_id_set_contains(&btf_non_sleepable_error_inject, btf_id);
+>  }
+>  
+> -static int check_attach_btf_id(struct bpf_verifier_env *env)
+> +int bpf_check_attach_target(struct bpf_verifier_log *log,
+> +			    const struct bpf_prog *prog,
+> +			    const struct bpf_prog *tgt_prog,
+> +			    u32 btf_id,
+> +			    struct btf_func_model *fmodel,
+> +			    long *tgt_addr,
+> +			    const char **tgt_name,
+> +			    const struct btf_type **tgt_type)
 
-> BTW, it's also probably overdue to have a higher-level
-> bpf_program__test_run(), which can re-use the same
-> bpf_prog_test_run_opts options struct. It would be more convenient to
-> use it with libbpf bpf_object/bpf_program APIs.
->=20
->> {
->>        union bpf_attr attr;
->>        int ret;
->> @@ -693,6 +694,11 @@ int bpf_prog_test_run_xattr(struct bpf_prog_test_ru=
-n_attr *test_attr)
->>                return -EINVAL;
->>=20
->>        memset(&attr, 0, sizeof(attr));
->> +       if (opts) {
->=20
-> you don't need to check opts for being not NULL, OPTS_VALID handle that a=
-lready.
->=20
->> +               if (!OPTS_VALID(opts, bpf_prog_test_run_opts))
->> +                       return -EINVAL;
->> +               attr.test.cpu_plus =3D opts->cpu_plus;
->=20
-> And here you should use OPTS_GET(), please see other examples in
-> libbpf for proper usage.
->=20
->=20
->> +       }
->>        attr.test.prog_fd =3D test_attr->prog_fd;
->>        attr.test.data_in =3D ptr_to_u64(test_attr->data_in);
->>        attr.test.data_out =3D ptr_to_u64(test_attr->data_out);
->> @@ -712,6 +718,11 @@ int bpf_prog_test_run_xattr(struct bpf_prog_test_ru=
-n_attr *test_attr)
->>        return ret;
->> }
->>=20
->=20
-> [...]
+How about grouping the return args into
+struct bpf_attach_target_info {
+ struct btf_func_model fmodel;
+ long tgt_addr;
+ const char *tgt_name;
+ const struct btf_type *tgt_type;
+};
+allocate it on stack in the caller and pass a pointer into this function?
 
+The same way pass the whole &bpf_attach_target_info into bpf_trampoline_get().
+It will use fmodel and tgt_addr out of it, but it doesn't hurt to pass
+the whole thing.
+
+Overall I like the refactoring, but this prototype and conditional
+if (tgt_name) *tgt_name =; and if (tgt_type) makes it harder to comprehend.
+
+>  		if (!tgt_prog->jited) {
+>  			bpf_log(log, "Can attach to only JITed progs\n");
+> @@ -11328,13 +11312,11 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+>  			bpf_log(log, "Cannot extend fentry/fexit\n");
+>  			return -EINVAL;
+>  		}
+> -		key = ((u64)aux->id) << 32 | btf_id;
+
+Could you please refactor key computation into a helper as well?
+Especially since it will be used out of verifier.c and from syscall.c.
+Something like this for bpf.h
+static inline u64 bpf_trampoline_compute_key(struct bpf_prog *tgt_prog, u32 btf_id)
+{
+        if (tgt_prog) {
+                return ((u64)tgt_prog->aux->id) << 32 | btf_id;
+        } else {
+                return btf_id;
+        }
+}
+
+> +	ret = bpf_check_attach_target(&env->log, prog, tgt_prog, btf_id,
+> +				      &fmodel, &addr, &tname, &t);
+> +	if (ret)
+>  		return ret;
+> +
+> +	if (tgt_prog) {
+> +		if (prog->type == BPF_PROG_TYPE_EXT) {
+> +			env->ops = bpf_verifier_ops[tgt_prog->type];
+> +			prog->expected_attach_type =
+> +				tgt_prog->expected_attach_type;
+> +		}
+> +		key = ((u64)tgt_prog->aux->id) << 32 | btf_id;
+> +	} else {
+> +		key = btf_id;
+>  	}
+
+and here it would be:
+if (tgt_prog && prog->type == BPF_PROG_TYPE_EXT) {
+	env->ops = bpf_verifier_ops[tgt_prog->type];
+	prog->expected_attach_type = tgt_prog->expected_attach_type;
+}
+key = bpf_trampoline_compute_key(tgt_prog, btf_id);
+
+otherwise above 'if' groups two separate things.
+It's not pretty in the existing code, no doubt, but since you're doing
+nice cleanup let's make it clean here too.
+
+> +
+> +	/* remember two read only pointers that are valid for
+> +	 * the life time of the kernel
+> +	 */
+
+Here this comment is not correct.
+It was correct in the place you copy-pasted it from, but not here.
+Please think it through and adjust accordingly.
