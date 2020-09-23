@@ -2,101 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFA0A275ED7
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 19:40:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B7E2275EFC
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 19:46:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726697AbgIWRkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 13:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34666 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726332AbgIWRkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 13:40:15 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B3DC0613CE;
-        Wed, 23 Sep 2020 10:40:15 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id a2so375785ybj.2;
-        Wed, 23 Sep 2020 10:40:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=PE8oC59I+omnrLmvy8a5LrNumqDXthYrSfqrC3yRXFs=;
-        b=uIwy4++VlNLiJxYLpulP8oZ4eHG/oqi2exm/nhdPhPJfvx6D2q84wGa8bhjjJspIWu
-         ALRgsqOSHf6gkT5EwuUTLLyaJM3a0R9/fGJxpZEdjPG/OLvGXobVhQgbCfj7dcFe8Tze
-         OtGCIEaJviju7wSobFf55S5oH7D5HdGCxB0yP43c1oWTWpyJkagtQxwv2/WyPJRDKNih
-         JXqHyMUNOitD9jFBAUbfBCqhxSZ7jtAQhZ7q0hdXajjavTLFQO5WHMu6093zrvP7uzlA
-         Y9ttKxtaU/etAosAa3DFvLygYo1nlWz397DmP2Ils++foJUbOFEirIfEChHj0YiaucCY
-         IAfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=PE8oC59I+omnrLmvy8a5LrNumqDXthYrSfqrC3yRXFs=;
-        b=dNIIRlal2Q5RA3uNy/gtmG681clkc3XQqJOKnptjS560tp6cYYSIq1MR0LHVoGVZOo
-         SgutZTj+duj1JJD+PS31BzirlUTt7gLKBD1Tq5JKFvK17PUWsyLJUOIH6PIOEI+8X4Dm
-         pAw1dDVpsB/QdEQ1n0bYT4DYVTXNQWRrkyCMODsDWy1EtL+dRJeQocI408j3yUbHkZIt
-         UYSszPM+JM8SeMXFH0HSPzCizcU8EjsfSri9bvOuCEOlKq2nmO9Fq/h35qZ8LAqIchXk
-         MCN69af9FYdoqGB/+xDvGKChADY9EigpAK5taO84DvSoXziUVcjH2Ow9jmr9wTZu4O4p
-         isXg==
-X-Gm-Message-State: AOAM533f6V+zSkDYNatH2BDh8OuegHDVGwgE0sLSZtGYtIRDn77yEEet
-        GM7ndpIlc3BP0JPK/vT322i8uVh7/10VB0ofbtg=
-X-Google-Smtp-Source: ABdhPJy9ljwOvf9UTAnurGZNQxy5N75aB3tVj/h2li27ttE+Ns2plCekMDFvL+lk5lusS0a0P1F/ca8FC9mKWYrEC0I=
-X-Received: by 2002:a25:8541:: with SMTP id f1mr1533541ybn.230.1600882814845;
- Wed, 23 Sep 2020 10:40:14 -0700 (PDT)
+        id S1726746AbgIWRqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 13:46:16 -0400
+Received: from verein.lst.de ([213.95.11.211]:49388 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726130AbgIWRqP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 13:46:15 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 5EA266736F; Wed, 23 Sep 2020 19:46:09 +0200 (CEST)
+Date:   Wed, 23 Sep 2020 19:46:09 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        David Laight <David.Laight@aculab.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-aio@kvack.org, io-uring@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH 5/9] fs: remove various compat readv/writev helpers
+Message-ID: <20200923174609.GA24379@lst.de>
+References: <20200923060547.16903-1-hch@lst.de> <20200923060547.16903-6-hch@lst.de> <20200923142549.GK3421308@ZenIV.linux.org.uk> <20200923143251.GA14062@lst.de> <20200923145901.GN3421308@ZenIV.linux.org.uk> <20200923163831.GO3421308@ZenIV.linux.org.uk> <20200923170527.GQ3421308@ZenIV.linux.org.uk>
 MIME-Version: 1.0
-References: <160079991372.8301.10648588027560707258.stgit@toke.dk> <160079992560.8301.11225602391403157558.stgit@toke.dk>
-In-Reply-To: <160079992560.8301.11225602391403157558.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 23 Sep 2020 10:40:04 -0700
-Message-ID: <CAEf4Bza8Omo6-f=ndMJiwxNma-G9EK6bnyHxTU0evCi=zSephg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v8 11/11] selftests: Remove fmod_ret from
- benchmarks and test_overhead
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200923170527.GQ3421308@ZenIV.linux.org.uk>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 22, 2020 at 11:39 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
-hat.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> The benchmark code and the test_overhead prog_test included fmod_ret
-> programs that attached to various functions in the kernel. However, these
-> functions were never listed as allowed for return modification, so this
-> only worked because of the verifier skipping tests when a trampoline
-> already existed for the attach point. Now that the verifier checks have
-> been fixed, remove fmod_ret from the affected tests so they all work agai=
-n.
->
-> Fixes: 4eaf0b5c5e04 ("selftest/bpf: Fmod_ret prog and implement test_over=
-head as part of bench")
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
+On Wed, Sep 23, 2020 at 06:05:27PM +0100, Al Viro wrote:
+> On Wed, Sep 23, 2020 at 05:38:31PM +0100, Al Viro wrote:
+> > On Wed, Sep 23, 2020 at 03:59:01PM +0100, Al Viro wrote:
+> > 
+> > > > That's a very good question.  But it does not just compile but actually
+> > > > works.  Probably because all the syscall wrappers mean that we don't
+> > > > actually generate the normal names.  I just tried this:
+> > > > 
+> > > > --- a/include/linux/syscalls.h
+> > > > +++ b/include/linux/syscalls.h
+> > > > @@ -468,7 +468,7 @@ asmlinkage long sys_lseek(unsigned int fd, off_t offset,
+> > > >  asmlinkage long sys_read(unsigned int fd, char __user *buf, size_t count);
+> > > >  asmlinkage long sys_write(unsigned int fd, const char __user *buf,
+> > > >                             size_t count);
+> > > > -asmlinkage long sys_readv(unsigned long fd,
+> > > > +asmlinkage long sys_readv(void *fd,
+> > > > 
+> > > > for fun, and the compiler doesn't care either..
+> > > 
+> > > Try to build it for sparc or ppc...
+> > 
+> > FWIW, declarations in syscalls.h used to serve 4 purposes:
+> > 	1) syscall table initializers needed symbols declared
+> > 	2) direct calls needed the same
+> > 	3) catching mismatches between the declarations and definitions
+> > 	4) centralized list of all syscalls
+> > 
+> > (2) has been (thankfully) reduced for some time; in any case, ksys_... is
+> > used for the remaining ones.
+> > 
+> > (1) and (3) are served by syscalls.h in architectures other than x86, arm64
+> > and s390.  On those 3 (1) is done otherwise (near the syscall table initializer)
+> > and (3) is not done at all.
+> > 
+> > I wonder if we should do something like
+> > 
+> > SYSCALL_DECLARE3(readv, unsigned long, fd, const struct iovec __user *, vec,
+> > 		 unsigned long, vlen);
+> > in syscalls.h instead, and not under that ifdef.
+> > 
+> > Let it expand to declaration of sys_...() in generic case and, on x86, into
+> > __do_sys_...() and __ia32_sys_...()/__x64_sys_...(), with types matching
+> > what SYSCALL_DEFINE ends up using.
+> > 
+> > Similar macro would cover compat_sys_...() declarations.  That would
+> > restore mismatch checking for x86 and friends.  AFAICS, the cost wouldn't
+> > be terribly high - cpp would have more to chew through in syscalls.h,
+> > but it shouldn't be all that costly.  Famous last words, of course...
+> > 
+> > Does anybody see fundamental problems with that?
+> 
+> Just to make it clear - I do not propose to fold that into this series;
+> there we just need to keep those declarations in sync with fs/read_write.c
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  tools/testing/selftests/bpf/bench.c                |    5 -----
->  tools/testing/selftests/bpf/benchs/bench_rename.c  |   17 --------------=
----
->  tools/testing/selftests/bpf/benchs/bench_trigger.c |   17 --------------=
----
->  .../selftests/bpf/prog_tests/test_overhead.c       |   14 +-------------
->  tools/testing/selftests/bpf/progs/test_overhead.c  |    6 ------
->  tools/testing/selftests/bpf/progs/trigger_bench.c  |    7 -------
->  6 files changed, 1 insertion(+), 65 deletions(-)
->
-
-[...]
+Agreed.  The above idea generally sounds sane to me.
