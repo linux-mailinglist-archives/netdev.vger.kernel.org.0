@@ -2,120 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B17BA275394
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 10:45:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1355C275398
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 10:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbgIWIpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 04:45:22 -0400
-Received: from mx2.suse.de ([195.135.220.15]:38156 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726130AbgIWIpT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 04:45:19 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 76627AC65;
-        Wed, 23 Sep 2020 08:45:53 +0000 (UTC)
-Subject: Re: [PATCH v7 1/6] net: introduce helper sendpage_ok() in
- include/linux/net.h
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, open-iscsi@googlegroups.com,
-        linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
-        Hannes Reinecke <hare@suse.de>, Jan Kara <jack@suse.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Vlastimil Babka <vbabka@suse.com>, stable@vger.kernel.org
-References: <20200818131227.37020-1-colyli@suse.de>
- <20200818131227.37020-2-colyli@suse.de> <20200818162404.GA27196@lst.de>
- <217ec0ec-3c5a-a8ed-27d9-c634f0b9a045@suse.de>
- <20200818194930.GA31966@lst.de>
- <04408ff6-f765-8f3e-ead9-aec55043e469@suse.de>
- <20200923084303.GA21657@lst.de>
-From:   Coly Li <colyli@suse.de>
-Autocrypt: addr=colyli@suse.de; keydata=
- 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
-Message-ID: <58455251-7d90-b890-17dc-abe0954715e1@suse.de>
-Date:   Wed, 23 Sep 2020 16:45:07 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1726332AbgIWIqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 04:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726130AbgIWIqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 04:46:54 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A05C061755
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 01:46:54 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id z4so20065950wrr.4
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 01:46:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MCuR1LyFiSzxfdFAfVVVzVgwVeTLoxVE83Zm8MIgQro=;
+        b=bBZy5YKClex0nUCK8kVURSk3YKexMAuz0I1yl/ahu0Y6SgPEgsywHKIeHjo/0pKK/b
+         ydQlMI2pLE5EUjFU30ya6Th4wJDmfvTFprgII1pDyxvs6kZY6cm1lFiHmuj08+8hJB5z
+         KLEt4BhUhQmQuB9Q0KmBdais4MR7QZOfdYL0z5YUlnEDctnaYoV9tMXWpdF7Z8pf42Di
+         HQTLX6LUyfyBQ4yUzOScKfEYeZlk3t/eu2F4SfM7hxEJzy8YLybUJdRZxtUFnAEVEezm
+         XH7mBv65hXUNghVmm/NgPz7hyKlNJn7NQbzl6hiz8B32wrjk6jBkSA4sXx74sfSPmOmp
+         M0HA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MCuR1LyFiSzxfdFAfVVVzVgwVeTLoxVE83Zm8MIgQro=;
+        b=e7VISuIy+3VeYCrLuPYqSyGNXsv/oFiLH/3IrutYIWge9BgPP3+dUrdBdRIlkj/om1
+         gYDHQCN0NnB8zIoO/rOXR0HQcIV9S4zQKuqMDt9fKvxkZb92L7fp0zbV9RexD6zfDeVP
+         FO6/7cgmKt+krL0BS48wEfo+moT7lWe/Bwp2s/iN4PovKdHbaDDtrNvwRASWZu8LlmoO
+         1PAswY6gPHZlrz1dtpGzH1c0+kmuwTUuDXbGdGcCMy7jW4OoOH98B1jORAnUEnsoidCj
+         xZ8kQS0ATKucuZJDu73gf9TimGAiuUC3QdZaxQfeSJJI711RAJSkUjn/mFSQTcuJhIh9
+         Vftw==
+X-Gm-Message-State: AOAM532j4aD44nDOryARR6OkagNfxZWFf4g84iGd2E8YqQDxFJxc4FHl
+        FJEHSMp8HY5KzHPi7FyFXpk=
+X-Google-Smtp-Source: ABdhPJy7srZrixyfXDmXwlUMgBYsQ+wsn+IMdsSbg9CPOa0vjppdWeQ7ysiTFbGXUryLgGu5lTVqBQ==
+X-Received: by 2002:adf:f290:: with SMTP id k16mr10467656wro.124.1600850813107;
+        Wed, 23 Sep 2020 01:46:53 -0700 (PDT)
+Received: from [192.168.8.147] ([37.164.220.209])
+        by smtp.gmail.com with ESMTPSA id a15sm31543784wrn.3.2020.09.23.01.46.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Sep 2020 01:46:52 -0700 (PDT)
+Subject: Re: [PATCH v2] net/ipv4: always honour route mtu during forwarding
+To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        Sunmeet Gill <sgill@quicinc.com>,
+        Vinay Paradkar <vparadka@qti.qualcomm.com>,
+        Tyler Wear <twear@quicinc.com>,
+        David Ahern <dsahern@kernel.org>
+References: <CANP3RGcTy5MyAyChUh7pTma60aLcBmOV4kKjh_OnGtBZag-gbg@mail.gmail.com>
+ <20200923045143.3755128-1-zenczykowski@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <10fbde1b-f852-2cc1-2e23-4c014931fed8@gmail.com>
+Date:   Wed, 23 Sep 2020 10:46:50 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200923084303.GA21657@lst.de>
+In-Reply-To: <20200923045143.3755128-1-zenczykowski@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/9/23 16:43, Christoph Hellwig wrote:
-> On Wed, Aug 19, 2020 at 12:22:05PM +0800, Coly Li wrote:
->> On 2020/8/19 03:49, Christoph Hellwig wrote:
->>> On Wed, Aug 19, 2020 at 12:33:37AM +0800, Coly Li wrote:
->>>> On 2020/8/19 00:24, Christoph Hellwig wrote:
->>>>> I think we should go for something simple like this instead:
->>>>
->>>> This idea is fine to me. Should a warning message be through here? IMHO
->>>> the driver still sends an improper page in, fix it in silence is too
->>>> kind or over nice to the buggy driver(s).
->>>
->>> I don't think a warning is a good idea.  An API that does the right
->>> thing underneath and doesn't require boiler plate code in most callers
->>> is the right API.
->>>
->>
->> Then I don't have more comment.
-> 
-> So given the feedback from Dave I suspect we should actually resurrect
-> this series, sorry for the noise.  And in this case I think we do need
-> the warning in kernel_sendpage.
-> 
 
-Copied, then I will post a v8 series, which adding a warning message in
-kernel_sendpage() if non-acceptible paage sent in.
 
-Coly Li
+On 9/23/20 6:51 AM, Maciej Żenczykowski wrote:
+> From: Maciej Żenczykowski <maze@google.com>
+> 
+> Documentation/networking/ip-sysctl.txt:46 says:
+>   ip_forward_use_pmtu - BOOLEAN
+>     By default we don't trust protocol path MTUs while forwarding
+>     because they could be easily forged and can lead to unwanted
+>     fragmentation by the router.
+>     You only need to enable this if you have user-space software
+>     which tries to discover path mtus by itself and depends on the
+>     kernel honoring this information. This is normally not the case.
+>     Default: 0 (disabled)
+>     Possible values:
+>     0 - disabled
+>     1 - enabled
+> 
+> Which makes it pretty clear that setting it to 1 is a potential
+> security/safety/DoS issue, and yet it is entirely reasonable to want
+> forwarded traffic to honour explicitly administrator configured
+> route mtus (instead of defaulting to device mtu).
+> 
+> Indeed, I can't think of a single reason why you wouldn't want to.
+> Since you configured a route mtu you probably know better...
+> 
+> It is pretty common to have a higher device mtu to allow receiving
+> large (jumbo) frames, while having some routes via that interface
+> (potentially including the default route to the internet) specify
+> a lower mtu.
+> 
+> Note that ipv6 forwarding uses device mtu unless the route is locked
+> (in which case it will use the route mtu).
+> 
+> This approach is not usable for IPv4 where an 'mtu lock' on a route
+> also has the side effect of disabling TCP path mtu discovery via
+> disabling the IPv4 DF (don't frag) bit on all outgoing frames.
+> 
+> I'm not aware of a way to lock a route from an IPv6 RA, so that also
+> potentially seems wrong.
+> 
+> Signed-off-by: Maciej Żenczykowski <maze@google.com>
+> Cc: Eric Dumazet <maze@google.com>
+
+Note that my email address is more like : <edumazet@google.com>
+
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: Lorenzo Colitti <lorenzo@google.com>
+> Cc: Sunmeet Gill (Sunny) <sgill@quicinc.com>
+> Cc: Vinay Paradkar <vparadka@qti.qualcomm.com>
+> Cc: Tyler Wear <twear@quicinc.com>
+> Cc: David Ahern <dsahern@kernel.org>
+> ---
+>  include/net/ip.h | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/include/net/ip.h b/include/net/ip.h
+> index b09c48d862cc..c2188bebbc54 100644
+> --- a/include/net/ip.h
+> +++ b/include/net/ip.h
+> @@ -436,12 +436,17 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
+>  						    bool forwarding)
+>  {
+>  	struct net *net = dev_net(dst->dev);
+> +	unsigned int mtu;
+>  
+>  	if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
+>  	    ip_mtu_locked(dst) ||
+>  	    !forwarding)
+>  		return dst_mtu(dst);
+>  
+> +	/* 'forwarding = true' case should always honour route mtu */
+> +	mtu = dst_metric_raw(dst, RTAX_MTU);
+> +	if (mtu) return mtu;
+
+
+        if (mtu)
+                return mtu;
+
+Apparently route mtu are capped to 65520, not sure where it is done exactly IP_MAX_MTU being 65535)
+
+# ip ro add 1.1.1.4 dev wlp2s0 mtu 100000
+# ip ro get 1.1.1.4
+1.1.1.4 dev wlp2s0 src 192.168.8.147 uid 0 
+    cache mtu 65520 
+
+
+
+
+> +
+>  	return min(READ_ONCE(dst->dev->mtu), IP_MAX_MTU);
+>  }
+>  
+> 
