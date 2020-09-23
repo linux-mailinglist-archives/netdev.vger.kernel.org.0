@@ -2,35 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C21C7275171
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 08:25:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A13727516F
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 08:25:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbgIWGZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 02:25:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37888 "EHLO mail.kernel.org"
+        id S1726900AbgIWGZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 02:25:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37948 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726641AbgIWGYp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726788AbgIWGYp (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 23 Sep 2020 02:24:45 -0400
 Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7418E23741;
+        by mail.kernel.org (Postfix) with ESMTPSA id D93D62376F;
         Wed, 23 Sep 2020 06:24:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600842284;
-        bh=EEU9ZARjOL75i5S/CFW09+HXgQvDmBrWHCHu0ocSO2U=;
+        s=default; t=1600842285;
+        bh=Ddv74RrWlNZDd4kNvUHrg7W/WrrS8zq3pNMSeQZQyzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O9oMIP4fdIIoac2Hsun1NXoCRg2gAQq5dRIILCRKWcBJ5LYOZgPRhFmUWSZ5MDUJQ
-         l4xdVe2STlGwmw/WIrEjNOcZffnC8kyxc4bWRBRc3rmGO+OAnAmDQjML7bLubc7dqz
-         WP+4OhxkRaEyuwVc8xPct35P5AQmjqMG4PhPLANs=
+        b=hppug2dGClbMra9KsTnVoAXrN9RSeiluXLuvKca8UnHlmTUiWCz2r7Lw1XM9SRwd2
+         mbNCPjByH6ni/eYq6ezdXeKNPWGr4Rb+GuIbWF2pPndlqSaDVg9Qu9I7pwsZBIL0W7
+         PPKTG7EX/PMSk376q0Eaw7kCyY12MHKoqG4KiE4c=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Oz Shlomo <ozsh@mellanox.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 09/15] net/mlx5e: CT: Use the same counter for both directions
-Date:   Tue, 22 Sep 2020 23:24:32 -0700
-Message-Id: <20200923062438.15997-10-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 10/15] net/mlx5e: TC: Remove unused parameter from mlx5_tc_ct_add_no_trk_match()
+Date:   Tue, 22 Sep 2020 23:24:33 -0700
+Message-Id: <20200923062438.15997-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200923062438.15997-1-saeed@kernel.org>
 References: <20200923062438.15997-1-saeed@kernel.org>
@@ -40,215 +39,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oz Shlomo <ozsh@mellanox.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-A connection is represented by two 5-tuple entries, one for each direction.
-Currently, each direction allocates its own hw counter, which is
-inefficient as ct aging is managed per connection.
+priv is never used in this function
 
-Share the counter that was allocated for the original direction with the
-reverse direction.
-
-Signed-off-by: Oz Shlomo <ozsh@mellanox.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Fixes: 7e36feeb0467 ("net/mlx5e: CT: Don't offload tuple rewrites for established tuples")
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 94 +++++++++++++++++--
- 1 file changed, 85 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 4 +---
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h | 7 ++-----
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 2 +-
+ 3 files changed, 4 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index 86afef459dc6..9a7bd681f8fe 100644
+index 9a7bd681f8fe..fe78de54179e 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -51,6 +51,7 @@ struct mlx5_tc_ct_priv {
- 	struct mlx5_flow_table *ct_nat;
- 	struct mlx5_flow_table *post_ct;
- 	struct mutex control_lock; /* guards parallel adds/dels */
-+	struct mutex shared_counter_lock;
- 	struct mapping_ctx *zone_mapping;
- 	struct mapping_ctx *labels_mapping;
- 	enum mlx5_flow_namespace_type ns_type;
-@@ -117,11 +118,16 @@ struct mlx5_ct_tuple {
- 	u16 zone;
- };
+@@ -1026,9 +1026,7 @@ mlx5_tc_ct_skb_to_tuple(struct sk_buff *skb, struct mlx5_ct_tuple *tuple,
+ 	return false;
+ }
  
-+struct mlx5_ct_shared_counter {
-+	struct mlx5_fc *counter;
-+	refcount_t refcount;
-+};
-+
- struct mlx5_ct_entry {
- 	struct rhash_head node;
- 	struct rhash_head tuple_node;
- 	struct rhash_head tuple_nat_node;
--	struct mlx5_fc *counter;
-+	struct mlx5_ct_shared_counter *shared_counter;
- 	unsigned long cookie;
- 	unsigned long restore_cookie;
- 	struct mlx5_ct_tuple tuple;
-@@ -385,6 +391,16 @@ mlx5_tc_ct_set_tuple_match(struct mlx5e_priv *priv, struct mlx5_flow_spec *spec,
+-int
+-mlx5_tc_ct_add_no_trk_match(struct mlx5e_priv *priv,
+-			    struct mlx5_flow_spec *spec)
++int mlx5_tc_ct_add_no_trk_match(struct mlx5_flow_spec *spec)
+ {
+ 	u32 ctstate = 0, ctstate_mask = 0;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
+index bab872b76a5a..6503b614337c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
+@@ -108,9 +108,7 @@ mlx5_tc_ct_match_add(struct mlx5_tc_ct_priv *priv,
+ 		     struct flow_cls_offload *f,
+ 		     struct mlx5_ct_attr *ct_attr,
+ 		     struct netlink_ext_ack *extack);
+-int
+-mlx5_tc_ct_add_no_trk_match(struct mlx5e_priv *priv,
+-			    struct mlx5_flow_spec *spec);
++int mlx5_tc_ct_add_no_trk_match(struct mlx5_flow_spec *spec);
+ int
+ mlx5_tc_ct_parse_action(struct mlx5_tc_ct_priv *priv,
+ 			struct mlx5_flow_attr *attr,
+@@ -167,8 +165,7 @@ mlx5_tc_ct_match_add(struct mlx5_tc_ct_priv *priv,
+ }
+ 
+ static inline int
+-mlx5_tc_ct_add_no_trk_match(struct mlx5e_priv *priv,
+-			    struct mlx5_flow_spec *spec)
++mlx5_tc_ct_add_no_trk_match(struct mlx5_flow_spec *spec)
+ {
  	return 0;
  }
- 
-+static void
-+mlx5_tc_ct_shared_counter_put(struct mlx5_tc_ct_priv *ct_priv, struct mlx5_ct_entry *entry)
-+{
-+	if (!refcount_dec_and_test(&entry->shared_counter->refcount))
-+		return;
-+
-+	mlx5_fc_destroy(ct_priv->esw->dev, entry->shared_counter->counter);
-+	kfree(entry->shared_counter);
-+}
-+
- static void
- mlx5_tc_ct_entry_del_rule(struct mlx5_tc_ct_priv *ct_priv,
- 			  struct mlx5_ct_entry *entry,
-@@ -409,7 +425,6 @@ mlx5_tc_ct_entry_del_rules(struct mlx5_tc_ct_priv *ct_priv,
- 	mlx5_tc_ct_entry_del_rule(ct_priv, entry, true);
- 	mlx5_tc_ct_entry_del_rule(ct_priv, entry, false);
- 
--	mlx5_fc_destroy(ct_priv->esw->dev, entry->counter);
- }
- 
- static struct flow_action_entry *
-@@ -683,7 +698,7 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
- 	attr->dest_ft = ct_priv->post_ct;
- 	attr->ft = nat ? ct_priv->ct_nat : ct_priv->ct;
- 	attr->outer_match_level = MLX5_MATCH_L4;
--	attr->counter = entry->counter;
-+	attr->counter = entry->shared_counter->counter;
- 	attr->flags |= MLX5_ESW_ATTR_FLAG_NO_IN_PORT;
- 
- 	mlx5_tc_ct_set_tuple_match(netdev_priv(ct_priv->netdev), spec, flow_rule);
-@@ -716,18 +731,73 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
- 	return err;
- }
- 
-+static struct mlx5_ct_shared_counter *
-+mlx5_tc_ct_shared_counter_get(struct mlx5_tc_ct_priv *ct_priv,
-+			      struct mlx5_ct_entry *entry)
-+{
-+	struct mlx5_ct_tuple rev_tuple = entry->tuple;
-+	struct mlx5_ct_shared_counter *shared_counter;
-+	struct mlx5_eswitch *esw = ct_priv->esw;
-+	struct mlx5_ct_entry *rev_entry;
-+	__be16 tmp_port;
-+
-+	/* get the reversed tuple */
-+	tmp_port = rev_tuple.port.src;
-+	rev_tuple.port.src = rev_tuple.port.dst;
-+	rev_tuple.port.dst = tmp_port;
-+
-+	if (rev_tuple.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
-+		__be32 tmp_addr = rev_tuple.ip.src_v4;
-+
-+		rev_tuple.ip.src_v4 = rev_tuple.ip.dst_v4;
-+		rev_tuple.ip.dst_v4 = tmp_addr;
-+	} else if (rev_tuple.addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
-+		struct in6_addr tmp_addr = rev_tuple.ip.src_v6;
-+
-+		rev_tuple.ip.src_v6 = rev_tuple.ip.dst_v6;
-+		rev_tuple.ip.dst_v6 = tmp_addr;
-+	} else {
-+		return ERR_PTR(-EOPNOTSUPP);
-+	}
-+
-+	/* Use the same counter as the reverse direction */
-+	mutex_lock(&ct_priv->shared_counter_lock);
-+	rev_entry = rhashtable_lookup_fast(&ct_priv->ct_tuples_ht, &rev_tuple,
-+					   tuples_ht_params);
-+	if (rev_entry) {
-+		if (refcount_inc_not_zero(&rev_entry->shared_counter->refcount)) {
-+			mutex_unlock(&ct_priv->shared_counter_lock);
-+			return rev_entry->shared_counter;
-+		}
-+	}
-+	mutex_unlock(&ct_priv->shared_counter_lock);
-+
-+	shared_counter = kzalloc(sizeof(*shared_counter), GFP_KERNEL);
-+	if (!shared_counter)
-+		return ERR_PTR(-ENOMEM);
-+
-+	shared_counter->counter = mlx5_fc_create(esw->dev, true);
-+	if (IS_ERR(shared_counter->counter)) {
-+		ct_dbg("Failed to create counter for ct entry");
-+		kfree(shared_counter);
-+		return ERR_PTR(PTR_ERR(shared_counter->counter));
-+	}
-+
-+	refcount_set(&shared_counter->refcount, 1);
-+	return shared_counter;
-+}
-+
- static int
- mlx5_tc_ct_entry_add_rules(struct mlx5_tc_ct_priv *ct_priv,
- 			   struct flow_rule *flow_rule,
- 			   struct mlx5_ct_entry *entry,
- 			   u8 zone_restore_id)
- {
--	struct mlx5_eswitch *esw = ct_priv->esw;
- 	int err;
- 
--	entry->counter = mlx5_fc_create(esw->dev, true);
--	if (IS_ERR(entry->counter)) {
--		err = PTR_ERR(entry->counter);
-+	entry->shared_counter = mlx5_tc_ct_shared_counter_get(ct_priv, entry);
-+	if (IS_ERR(entry->shared_counter)) {
-+		err = PTR_ERR(entry->shared_counter);
- 		ct_dbg("Failed to create counter for ct entry");
- 		return err;
- 	}
-@@ -747,7 +817,7 @@ mlx5_tc_ct_entry_add_rules(struct mlx5_tc_ct_priv *ct_priv,
- err_nat:
- 	mlx5_tc_ct_entry_del_rule(ct_priv, entry, false);
- err_orig:
--	mlx5_fc_destroy(esw->dev, entry->counter);
-+	mlx5_tc_ct_shared_counter_put(ct_priv, entry);
- 	return err;
- }
- 
-@@ -837,12 +907,16 @@ mlx5_tc_ct_del_ft_entry(struct mlx5_tc_ct_priv *ct_priv,
- 			struct mlx5_ct_entry *entry)
- {
- 	mlx5_tc_ct_entry_del_rules(ct_priv, entry);
-+	mutex_lock(&ct_priv->shared_counter_lock);
- 	if (entry->tuple_node.next)
- 		rhashtable_remove_fast(&ct_priv->ct_tuples_nat_ht,
- 				       &entry->tuple_nat_node,
- 				       tuples_nat_ht_params);
- 	rhashtable_remove_fast(&ct_priv->ct_tuples_ht, &entry->tuple_node,
- 			       tuples_ht_params);
-+	mutex_unlock(&ct_priv->shared_counter_lock);
-+	mlx5_tc_ct_shared_counter_put(ct_priv, entry);
-+
- }
- 
- static int
-@@ -879,7 +953,7 @@ mlx5_tc_ct_block_flow_offload_stats(struct mlx5_ct_ft *ft,
- 	if (!entry)
- 		return -ENOENT;
- 
--	mlx5_fc_query_cached(entry->counter, &bytes, &packets, &lastuse);
-+	mlx5_fc_query_cached(entry->shared_counter->counter, &bytes, &packets, &lastuse);
- 	flow_stats_update(&f->stats, bytes, packets, 0, lastuse,
- 			  FLOW_ACTION_HW_STATS_DELAYED);
- 
-@@ -1892,6 +1966,7 @@ mlx5_tc_ct_init(struct mlx5e_priv *priv, struct mlx5_fs_chains *chains,
- 
- 	idr_init(&ct_priv->fte_ids);
- 	mutex_init(&ct_priv->control_lock);
-+	mutex_init(&ct_priv->shared_counter_lock);
- 	rhashtable_init(&ct_priv->zone_ht, &zone_params);
- 	rhashtable_init(&ct_priv->ct_tuples_ht, &tuples_ht_params);
- 	rhashtable_init(&ct_priv->ct_tuples_nat_ht, &tuples_nat_ht_params);
-@@ -1934,6 +2009,7 @@ mlx5_tc_ct_clean(struct mlx5_tc_ct_priv *ct_priv)
- 	rhashtable_destroy(&ct_priv->ct_tuples_nat_ht);
- 	rhashtable_destroy(&ct_priv->zone_ht);
- 	mutex_destroy(&ct_priv->control_lock);
-+	mutex_destroy(&ct_priv->shared_counter_lock);
- 	idr_destroy(&ct_priv->fte_ids);
- 	kfree(ct_priv);
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 4084a293442d..f815b0c60a6c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -3233,7 +3233,7 @@ static bool modify_header_match_supported(struct mlx5e_priv *priv,
+ 	 *  we can't restore ct state
+ 	 */
+ 	if (!ct_clear && modify_tuple &&
+-	    mlx5_tc_ct_add_no_trk_match(priv, spec)) {
++	    mlx5_tc_ct_add_no_trk_match(spec)) {
+ 		NL_SET_ERR_MSG_MOD(extack,
+ 				   "can't offload tuple modify header with ct matches");
+ 		netdev_info(priv->netdev,
 -- 
 2.26.2
 
