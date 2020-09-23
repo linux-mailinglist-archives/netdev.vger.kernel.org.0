@@ -2,74 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B433727588D
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 15:23:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B442758E0
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 15:37:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbgIWNXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 09:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgIWNXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 09:23:08 -0400
-Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A9BC0613CE;
-        Wed, 23 Sep 2020 06:23:08 -0700 (PDT)
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kL4jW-004YbY-CV; Wed, 23 Sep 2020 13:22:54 +0000
-Date:   Wed, 23 Sep 2020 14:22:54 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Pavel Begunkov <asml.silence@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        David Howells <dhowells@redhat.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        Linux SCSI List <linux-scsi@vger.kernel.org>,
-        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
-        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Network Development <netdev@vger.kernel.org>,
-        keyrings@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>
-Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
-Message-ID: <20200923132254.GI3421308@ZenIV.linux.org.uk>
-References: <563138b5-7073-74bc-f0c5-b2bad6277e87@gmail.com>
- <486c92d0-0f2e-bd61-1ab8-302524af5e08@gmail.com>
- <CALCETrW3rwGsgfLNnu_0JAcL5jvrPVTLTWM3JpbB5P9Hye6Fdw@mail.gmail.com>
- <d5c6736a-2cb4-4e22-78da-a667bda5c05a@gmail.com>
- <CALCETrUEC81va8-fuUXG1uA5rbKxnKDYsDOXC70_HtKD4LAeAg@mail.gmail.com>
- <e0a1b4d1-ff47-18d1-d535-c62812cb3105@gmail.com>
- <CAK8P3a2-6JNS38EbZcLrk=cTT526oP=Rf0aoqWNSJ-k4XTYehQ@mail.gmail.com>
- <f25b4708-eba6-78d6-03f9-5bfb04e07627@gmail.com>
- <CAK8P3a39jN+t2hhLg0oKZnbYATQXmYE2-Z1JkmFyc1EPdg1HXw@mail.gmail.com>
- <91209170-dcb4-d9ee-afa0-a819f8877b86@gmail.com>
+        id S1726685AbgIWNg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 09:36:58 -0400
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:38393 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726498AbgIWNgz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 09:36:55 -0400
+X-Greylist: delayed 531 seconds by postgrey-1.27 at vger.kernel.org; Wed, 23 Sep 2020 09:36:54 EDT
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id CE1B220646235;
+        Wed, 23 Sep 2020 15:28:01 +0200 (CEST)
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Power cycle phy on PM resume
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20200923074751.10527-1-kai.heng.feng@canonical.com>
+Message-ID: <17092088-86ff-2d31-b3de-2469419136a3@molgen.mpg.de>
+Date:   Wed, 23 Sep 2020 15:28:01 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <91209170-dcb4-d9ee-afa0-a819f8877b86@gmail.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+In-Reply-To: <20200923074751.10527-1-kai.heng.feng@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 11:01:34AM +0300, Pavel Begunkov wrote:
+Dear Kai-Heng,
 
-> > I'm not following why that would be considered a valid option,
-> > as that clearly breaks existing users that update from a 32-bit
-> > kernel to a 64-bit one.
+
+Am 23.09.20 um 09:47 schrieb Kai-Heng Feng:
+> We are seeing the following error after S3 resume:
+> [  704.746874] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
+> [  704.844232] e1000e 0000:00:1f.6 eno1: MDI Write did not complete
+> [  704.902817] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
+> [  704.903075] e1000e 0000:00:1f.6 eno1: reading PHY page 769 (or 0x6020 shifted) reg 0x17
+> [  704.903281] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
+> [  704.903486] e1000e 0000:00:1f.6 eno1: writing PHY page 769 (or 0x6020 shifted) reg 0x17
+> [  704.943155] e1000e 0000:00:1f.6 eno1: MDI Error
+> ...
+> [  705.108161] e1000e 0000:00:1f.6 eno1: Hardware Error
 > 
-> Do you mean users who move 32-bit binaries (without recompiling) to a
-> new x64 kernel? Does the kernel guarantees that to work?
+> Since we don't know what platform firmware may do to the phy, so let's
+> power cycle the phy upon system resume to resolve the issue.
 
-Yes.
+Is there a bug report or list thread for this issue?
 
-No further (printable) comments for now...
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+>   drivers/net/ethernet/intel/e1000e/netdev.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+> index 664e8ccc88d2..c2a87a408102 100644
+> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+> @@ -6968,6 +6968,8 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
+>   	    !e1000e_check_me(hw->adapter->pdev->device))
+>   		e1000e_s0ix_exit_flow(adapter);
+>   
+> +	e1000_power_down_phy(adapter);
+> +
+>   	rc = __e1000_resume(pdev);
+>   	if (rc)
+>   		return rc;
+
+How much does this increase the resume time?
+
+
+Kind regards,
+
+Paul
+
