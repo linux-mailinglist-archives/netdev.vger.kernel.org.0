@@ -2,108 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EAE527634C
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 23:48:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F66227634F
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 23:49:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbgIWVsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 17:48:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44826 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726199AbgIWVsh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 17:48:37 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A80FC0613CE;
-        Wed, 23 Sep 2020 14:48:37 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id k18so844028ybh.1;
-        Wed, 23 Sep 2020 14:48:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oYpy6Y3dvNQYeEnKjK36BAueAYXhkMsnjV7+h87a38c=;
-        b=NcTdZzUb/8/H1vCSXMwZnJmR76EXcKd65XpHHSQNino6w46oGVuPAyTJztdYC9wiCX
-         rKUVDMcxMwjXscgr0Lclb+cJRBflymezFKXaSiEFrp9dy+ZCVv629NPSjEpA5RaN8Aok
-         HHgJZQjUzaYCu4LqY60DGcRe6prOVXcN6oQ0zFKIgcKgoz9n0iu/Xe/o9mT/aDJkOJJk
-         B9NPTAbwDUFNYuh9ETFYRlNIIZ0YR5+Ia0QTfW+ZYFDzTfkOwN0qJ2gGxkZHUBxOCjSx
-         c6mBTy/MTGJYsH04BaKsV5hyfc3/MIN7taf4MixV+8sFgtsH86LNUaDpUKccRL1IG9Tz
-         Mdtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oYpy6Y3dvNQYeEnKjK36BAueAYXhkMsnjV7+h87a38c=;
-        b=MqS+A5jfjead+iOHrHUTfarqk5Find4plhgfNWWDtSVWCWD4eElAm98Mjc5Ll6fgdC
-         b7jMgA1quDcrTRT9WaPy+kvLHbEevbFaHgNYRf6QeN6d2BisoKYYsrktVjMRZb1mIkdx
-         P/+yzXVbiz2B8NJ7AqESmotw5KprP3cgqgvXsJCJn+7U2OVeQKTRDXSv7Y8lg+eYrFA4
-         Lea37whQpDLCHlRORjYjMhxCBjFQLrEoi3xB6MUdDYCOr3oBo3C0bg4JbYJBEVL5QoSG
-         15mazECH/EQzCH82ErgSMEexyMemX5A7y5SqJE6kGza9Lcna87jm+D+toF2L6WiKaRVq
-         gVVA==
-X-Gm-Message-State: AOAM532QDmkafs5hXa45F3XoHHz78nIN5RqAMrgRf4ZqUKprVnoDenYt
-        gB5BHQeDxHOuQJBTApf4wk7XJNglOKWv4nvGCvo=
-X-Google-Smtp-Source: ABdhPJyNKrYaGysoCv+tgn7JSDpz0aoRSmkAtPOpg1jK2VSTWQsaoFiFyT2ZOd02Mxe7nMOVgNxM5RT96s3u4UEumzY=
-X-Received: by 2002:a25:730a:: with SMTP id o10mr3062527ybc.403.1600897715673;
- Wed, 23 Sep 2020 14:48:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAADnVQ+DQ9oLXXMfmH1_p7UjoG=p9x7y0GDr7sWhU=GD8pj_BA@mail.gmail.com>
-In-Reply-To: <CAADnVQ+DQ9oLXXMfmH1_p7UjoG=p9x7y0GDr7sWhU=GD8pj_BA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 23 Sep 2020 14:48:24 -0700
-Message-ID: <CAEf4BzbqXHQmwJstrxU3ji5Vrb0XVwp17b7bGjRAy=jCOtaUfQ@mail.gmail.com>
-Subject: Re: Keep bpf-next always open
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        id S1726613AbgIWVs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 17:48:58 -0400
+Received: from mail-eopbgr80042.outbound.protection.outlook.com ([40.107.8.42]:52241
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726265AbgIWVs5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 17:48:57 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QGk6F4i/efly3mi+H58D6N/jUHAgtp4UXVrgfEVaYMjlqmskqaxusL5ElTr6FKf39hAhedNfdHMok+Tg+LzcP+d8Rf9XxJNKeDplyrsi+TiKIl0QFNvvn7ff2I/4gobJYisTm42Zq4AdCJKw4K/zfCwAPOb92yeLZILyKjh6/RnP7PxvG/XNzXolDTj2UWpsbNYIVdYnh+rucFs+oQfElY+oCKTLEoo+ug5KQXUhcI9yGSbX0JgoownELzvusWQjMn6AmVsLYsemIxbwmBWqeAqIBcEaY83HC6s9viHUOlF4A+j0XvA4wD+fT2f9HtaTtA73DWI5DYwlTh5QuCmGnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l7Rf9wJ/u9yicnoJozD3UOOaVlemLcJeWt9zstcZJ5Q=;
+ b=i6KCnCP3yxUvrQzWjEVWUo0l5jd5oMOilTtgw1CmiOFwaQvudox/NLn9fiSm2dNbHBCMa3mC6ep6SqBA0raP8qyXc84Jg3M0CNaExr+ESkyveqQqC5FTB+sQWoEgDCeq600SLP1QLJhs7DiXD08UgPJ1JYBoy6BFyLloO6P+WX69pacgloY2lmbWqn9I7sdgrMUi+ibfGFVmjLEvHVaclTx1Nj8DDHuc7nChm5VxeM6ghAX8mnE/T1VAhxbCezInosj55ncJ6eL8UUiMixfDhKvZoVajwPAgfTs9liirSKutmZClbgxVt0o0cQmb3AVtSllGGImO7DmuYuQtmW/KRA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l7Rf9wJ/u9yicnoJozD3UOOaVlemLcJeWt9zstcZJ5Q=;
+ b=fPx/SlnVLvng8vPAX0xM/3LQReKfXPnvO+j2cz0wnwOUQVnRwxUrwsQ4R4bH+pUqFW9jvvB29qFpXcfFIOQPs9o3GcPJrzKllnU3SK9hPAW0dPUsKhqJ4KDIzUXrToFcrjqf/Ej6Q42UnynAnEof2px9EppCdC7aAne4aKLENhI=
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR04MB4815.eurprd04.prod.outlook.com (2603:10a6:803:5d::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.21; Wed, 23 Sep
+ 2020 21:48:54 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3412.020; Wed, 23 Sep 2020
+ 21:48:53 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "nikolay@nvidia.com" <nikolay@nvidia.com>
+Subject: Re: [PATCH net-next v3 1/2] net: dsa: untag the bridge pvid from rx
+ skbs
+Thread-Topic: [PATCH net-next v3 1/2] net: dsa: untag the bridge pvid from rx
+ skbs
+Thread-Index: AQHWkfI49n/dW6yWhUaSsyNzEyjVval2wsIA
+Date:   Wed, 23 Sep 2020 21:48:53 +0000
+Message-ID: <20200923214852.x2z5gb6pzaphpfvv@skbuf>
+References: <20200923214038.3671566-1-f.fainelli@gmail.com>
+ <20200923214038.3671566-2-f.fainelli@gmail.com>
+In-Reply-To: <20200923214038.3671566-2-f.fainelli@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.217.212]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 0e8b2325-394f-4498-4498-08d8600a772d
+x-ms-traffictypediagnostic: VI1PR04MB4815:
+x-microsoft-antispam-prvs: <VI1PR04MB4815C0DA64B7FA48C4B6C7A9E0380@VI1PR04MB4815.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: MnxhTEl25rpGOLu1eDess8kYgq8ZdGjX3nGVF9uGVFQPUGxogyiJqHi9lJ8xED3ScBcuDKZ99A+5CpWlWSmCpnFl73qeMH69FUIxGC06bLnh6tT4vyeo0NYPO1NOmDuibTjaeXG401VVhQsgDtfKjC2XizACUd0rDUurGgxag343u0yrF5uJAioXhQ8P2L6tP9WQlDUD9tO3GsXGDAkra9LlfrrTecLSwpsSEx7sYHl8xkqBQKeSHLCUf8nG3twWrEGre/WdRy7y23g2Bw6iOxbyGXl/goGjGeP50hM5ndLTBYtg/H4rk20egJWq92Dq
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(346002)(376002)(366004)(39860400002)(136003)(396003)(76116006)(66446008)(64756008)(66556008)(91956017)(66946007)(6916009)(186003)(71200400001)(86362001)(44832011)(2906002)(8936002)(6486002)(5660300002)(33716001)(1076003)(9686003)(66476007)(6512007)(316002)(6506007)(26005)(4326008)(54906003)(8676002)(478600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: Z40lRxGN7O4Ye3CmCiqGOJ0bnURgC5zeGeHJxYyD6faCMUqPh3br2vkUiQFK4A0ib9/jdUY001PHH1NvRdO62mGfhhcjYVbUExxEfsmu8DKN56RvfwnS83ZdY3altIoykRymvHKyiiDZ1IP9bONCa8nKUu91p0A2iP/1+qAhDb5avyLDGJXqPrpukD63uSxD5f38zWUQQ2MKJMA3f16kgmNewG5xTlBVMW9VbkAFHFBiSLJXUksgyX/6fBKDSw6NJWGJi+/j5S0MCTHQ7LYOVmjyjg4FwPrsLNsaIOwlfG0czPQJcYqP+N3UlYBAHISr02Pb4NeSPnEibrFE62UN52WA/WrTXMFyMlN2BwQ3RtQldROFXdSQ7IrWDcRJu5XdlzCTLmH7HocV8r+uYdVF6XygK/KHhuOGYa7Ybz0shqOto3psnN53S73SfPybGMRNHR9hLBB0aqE4yc26u7StFbAg02UEXTG2e/cwISXFCG1kOiIHHI/T3ZYCfcN1HQQQ5nJnfWODaYYZJgDLDijXl0g6xTxvKEIudmu0BY9WsxPAkrq4EmQsQ6sBTiO3Zak+3MFqizTeqhmQxXRLxNk2scM45V4YDWRQ7khQXPRjs2U3StEjWwMDLY6aDIwlEgPc/oTSXN+3fa4TYbYJ5zf2Ug==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <F2FC9259F1F94540A8635D51D808CAB1@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e8b2325-394f-4498-4498-08d8600a772d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2020 21:48:53.6890
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ePZ66szs6xzjmiELNOmRPNfaRJ+I2LF7NRcVzkzM+FWRERtQx5k2ox7ukaD0O5DH/aEoO7SXNbjEJgez0O8pgQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4815
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 2:20 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> BPF developers,
->
-> The merge window is 1.5 weeks away or 2.5 weeks if rc8 happens. In the past we
-> observed a rush of patches to get in before bpf-next closes for the duration of
-> the merge window. Then there is a flood of patches right after bpf-next
-> reopens. Both periods create unnecessary tension for developers and maintainers.
-> In order to mitigate these issues we're planning to keep bpf-next open
-> during upcoming merge window and if this experiment works out we will keep
-> doing it in the future. The problem that bpf-next cannot be fully open, since
-> during the merge window lots of trees get pulled by Linus with inevitable bugs
-> and conflicts. The merge window is the time to fix bugs that got exposed
-> because of merges and because more people test torvalds/linux.git than
-> bpf/bpf-next.git.
->
-> Hence starting roughly one week before the merge window few risky patches will
-> be applied to the 'next' branch in the bpf-next tree instead of
+On Wed, Sep 23, 2020 at 02:40:37PM -0700, Florian Fainelli wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> +	/* The sad part about attempting to untag from DSA is that we
+> +	 * don't know, unless we check, if the skb will end up in
+> +	 * the bridge's data path - br_allowed_ingress() - or not.
+> +	 * For example, there might be an 8021q upper for the
+> +	 * default_pvid of the bridge, which will steal VLAN-tagged traffic
+> +	 * from the bridge's data path. This is a configuration that DSA
+> +	 * supports because vlan_filtering is 0. In that case, we should
+> +	 * definitely keep the tag, to make sure it keeps working.
+> +	 */
+> +	netdev_for_each_upper_dev_rcu(dev, upper_dev, iter) {
+> +		if (!is_vlan_dev(upper_dev))
+> +			continue;
+> +
+> +		if (vid =3D=3D vlan_dev_vlan_id(upper_dev))
+> +			return skb;
+> +	}
 
-Riskiness would be up to maintainers to determine or should we mark
-patches with a different tag (bpf-next-next?) explicitly?
-
-> bpf-next/master. Then during the two weeks of the merge window the patches will
-> be reviewed as normal and will be applied to the 'next' branch as well. After
-> Linus cuts -rc1 and net-next reopens, we will fast forward bpf-next tree to
-> net-next tree and will try to merge the 'next' branch that accumulated the
-> patches over these three weeks. After fast-forward the bpf-next tree might look
-> very different vs its state before the merge window and there is a chance that
-> some of the patches in the 'next' branch will not apply. We will try to resolve
-> the conflicts as much as we can and apply them all. Essentially bpf-next/next
-> is a strong promise that the patches will land into bpf-next. This scheme will
-> allow developers to work on new features and post them for review and landing
-> regardless of the merge window or not. Having said that the bug fixing is
-> always a priority.
->
-> We've considered creating a bpf-next-next.git tree for this purpose, but decided
-> that bpf-next/next branch will be easier for everyone.
->
-> Thoughts and comments?
-
-I like more continuous mode, thanks! bpf-next/next branch still means
-that libbpf on Github is effectively frozen for the duration of the
-merge window (merging an extra branch automatically is too much pain,
-we have enough fun with bpf and bpf-next trees), but let's see how it
-goes.
+Argh...
+So I wanted to ask you how's performance with a few 8021q uppers, then I
+remembered that vlan_do_receive() probably does something more efficient
+here than a complete lookup, like hashing or something, then I found the
+vlan_find_dev() helper function.... Sorry for not noticing it in the
+first place.=
