@@ -2,161 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4C16276382
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 00:05:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA476276384
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 00:06:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbgIWWFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 18:05:16 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:44672 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726476AbgIWWFQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 18:05:16 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 08NM4vmx013735;
-        Wed, 23 Sep 2020 15:05:01 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=etQrMRXOz/8bJHashY2FIrv6TAHdtXAfXVFFeKvguWI=;
- b=L3FkZ89KjFu/6/rNcUncPvCG2WQm7MKOLU9c2HzOk6Z3ID4oETJ/k/nJIm0kCDKNE91o
- sAtSgkOCVXi9uQJvCvkfW/O641w7MWXk69lHYUJaXQ8SyoaE3vCfiGoFzSaZM52kVLGn
- CqymgpGQH1gv7Lcmakgi7PYiB0cxBpqmD5E= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 33qsp4xa6j-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 23 Sep 2020 15:05:01 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 23 Sep 2020 15:04:40 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m/1b3Xt///Cw3XDNJwIswHNPxVkqRAsdO3VU8P5vaZ+WbK+Tryzxmf//9yTOcNspRW8txBDhcqBfFJgHO+OSzFX7uOIDVfqxU5zhLB1xQTGhZg9EQJ8SredmGfxzk/GF0jpB6WifnnijIoAz4Ht7jLrdgfAAqxNRA4faifJNW7c53SlXjwt4MJEr6kocU3pTcAvYto/pHiBco6XAvSnj7v+cveCQ5ZU+CyODW/xJUulFzKRfgZ1x/j2ohxsG/x1R/0Vx9pMjboJWimzMKTeFARjWlSsHYujISA6zJMjfGL9WH59QlMlgnj9d/Cdo+wgcawFnfnA1prGVaM1i7K4qZg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=etQrMRXOz/8bJHashY2FIrv6TAHdtXAfXVFFeKvguWI=;
- b=YH7R5sNAXKW6t5J+rmOb5UVXpT6yaQjPe/cjQBKC+v7ptVBPiLnUxFF0DQ+TzdmAx+j0Blqbqc8XgWXaMz4aoysZPZqPuHYz0ZPDnAHwcVVxQvP+1enpG8KzNuFUtgAMm6KAAKk4wtUnwNccIhfkDbaJlwBxdhWID7wJSWWYtVF8FNY29Z4yYJR9Kh2Xys+z8bwsWdNGqlnuzP0cSIS8Vm+Uqb448I3mxMTm3NW3D5qH25JEJ/vDH55+aawgSZFcOZy3pOOlGd/83kCWIykOejLlVfGtvFYNYIssXV0B1PkWPpHp43S2ak7LGty+Xy6+17fMNqGqVYaB5gIgMPqD3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=etQrMRXOz/8bJHashY2FIrv6TAHdtXAfXVFFeKvguWI=;
- b=P0CcDMUA1AOkLEIHkFBLi7KEEtPIXITgn+BLvlC+tUEcC9JITVuOCkr78BX8QQTUXe8Mh2wgZpikvNP3XA0j4MXjiT/PSeOWy/RWLp3MjqTwznK8pWt9mT5kErfw3kSb5nKfLaZSOQrOHwBuJSJFZkU/uSeGWce0OgUuSo/pXIA=
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB2455.namprd15.prod.outlook.com (2603:10b6:a02:90::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20; Wed, 23 Sep
- 2020 22:04:37 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::1400:be2f:8b3d:8f4d]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::1400:be2f:8b3d:8f4d%7]) with mapi id 15.20.3412.020; Wed, 23 Sep 2020
- 22:04:37 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Kernel Team" <Kernel-team@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCH v2 bpf-next 2/3] libbpf: introduce
- bpf_prog_test_run_xattr_opts
-Thread-Topic: [PATCH v2 bpf-next 2/3] libbpf: introduce
- bpf_prog_test_run_xattr_opts
-Thread-Index: AQHWkco0dkq2Yhl5xU64KxjjZzD8DKl2nMkAgAAqrwA=
-Date:   Wed, 23 Sep 2020 22:04:37 +0000
-Message-ID: <3448307D-81E0-42F4-860A-DFD21736DC59@fb.com>
-References: <20200923165401.2284447-1-songliubraving@fb.com>
- <20200923165401.2284447-3-songliubraving@fb.com>
- <CAEf4BzZ-qPNjDEvviJKHfLD7t7YJ97PdGixGQ_f70AJEg5oVEg@mail.gmail.com>
-In-Reply-To: <CAEf4BzZ-qPNjDEvviJKHfLD7t7YJ97PdGixGQ_f70AJEg5oVEg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.120.23.2.1)
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [2620:10d:c090:400::5:cb37]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: de072733-ebb3-49db-ea07-08d8600ca97c
-x-ms-traffictypediagnostic: BYAPR15MB2455:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB2455DBFE67B81C95877F0FC6B3380@BYAPR15MB2455.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:4502;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: eYJNWZI7e+4WqZ9pVwHMekwikEtcGnPYKRvfEEYJlBrbYrzXRO4ywRX/rZZ2HPKUX5SNGPQu3dDYIFipTSi+WUerabmi+qSHCfIb84FEm4TkUxqG1GJYXZnc0WtpEZugi3wRj4Md5TF3/8UvRug3YHHZTrEsmoA7nCSMk2WLKkiGavjuzwa/7G0i9FTMxDh9vCOukUOLNC6ClMyAyKL8AdQIAZ7zSWYvEL19l0vPIUKFeSkYhH/6FT53OfITORH9uf5VCUH0PFlvFdfwfgA9IzgguloGl8ZIcQnjFSKERE681q3eOmXhRD2CpRFeOPIS9ul/SBCl1gB+eNjv6/yZvQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(346002)(376002)(366004)(39860400002)(136003)(86362001)(66446008)(186003)(316002)(64756008)(66476007)(53546011)(8936002)(71200400001)(2616005)(6506007)(66556008)(6916009)(54906003)(478600001)(2906002)(83380400001)(91956017)(33656002)(36756003)(76116006)(8676002)(4326008)(5660300002)(6512007)(66946007)(6486002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: LIKhnIglfoEtzhSrvsbpxYw6cdrQ0tthBnPc6C6BAAPObl6+3EZU/z38ZbqJv3JfO0CEZgLq+GigfGsdvVYfo9VvnE4JYP8EZzTEOOcOhzRGlYdfcPyefWWeo4wIDjQjc+d5XZJ2FHOab07ipjhxydc0HtvZ0/HME2b38L0jaXVqlm9FvGqxb9HL1B7cIodudbh8eOPFdxwx1wF5ThpKlZxHK+AoWGlR0cJTbaMmOkF+7GurcEZ1FrsFn7VEHFogmVrL8MIJYplLzhqC5P89opYy1mB3z61Y3U5PwUiBusxbx1p5wXtTQ4gc6w2nLoitKjic0GtyyfL3hikgWlzNeze9pYf1uVUURfauoLDLL7ZddqYYZDCJS0UyAF5KiOIw7gkMArypJEdOE6LR9WWFbxvpZOR1365sGE/C+VgbAjUGeiLh4R7MJtt6LbXQIM5qsOLr1kQFcJX/0D8f8BlJudgUGv9H6JpU3YbgRRjqHnm+rAlgzbSzZfUZ1D/sR8Qz/Jh+F8uuhWHgn/NN2Z5Y6dkcVcyJFSPqWEi1hHWNx0J+Fmx76s0BTI4/h3eqUupZmpqev/SHQ3qt5LVNO63uGl2PMRfzyyf/hCDVkJfD0eJ08/H1O+9uJJAxTEiloBMVvP3tMu3pDsCpo3w7E9NfYKaaEv1iZ4BGqqmSdRk3bDl0EDosc6nPQHq8zZOGnYyq
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <614ECF2E0FF668468447AA756F6B1521@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726643AbgIWWGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 18:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726381AbgIWWGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 18:06:41 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6128C0613CE;
+        Wed, 23 Sep 2020 15:06:41 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id t7so471059pjd.3;
+        Wed, 23 Sep 2020 15:06:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TLv53xOqz58aAq20k0lI6uWJm+oewqcfdLNDkldMM3Q=;
+        b=a28es5OLeBNIj9/na73nRuC3UdPSz1DU/Q8hudIha1gmvffwqZajzJvz4rslBvQa4+
+         nzVySb4n+lRnAg9+er7PRncxKqilzOlv7tUK4jPeKoj/+oUgYR0rwApvI9iGWJd37q0D
+         X55xiT6gk4jm2d4Hj044OTrMiBuxkC1qD4UkyRZfs4iYX9CU9r6mAuFGmSU+/+u/EdQ4
+         Osa3fhtjIhEtP5o6wYseQGLnUzUvXcNrZGC6KvbnLJ18EE3GbDEgzfg8u2TJtYATIDBL
+         KDa82eVg/VQD1MgKttoMQbXS7gNh86gWGNNRHV1odqwX+S+5BiF7fqvJdxl8hPV79snb
+         zf8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=TLv53xOqz58aAq20k0lI6uWJm+oewqcfdLNDkldMM3Q=;
+        b=sHpuSNJn8/SvMfwvqmhBlR/vp+LMVspl4CLscl/9bhBVbUJYvBOfoRsP+hnKnbLwdf
+         9fqzZOySIQUKIpWjQMlTAfK0LpFH5XP5kKGE878X7lRtLBKq7vVrbWaxlJze7rtTCfTy
+         2DibwbPHf1WFKxIhiYuLiagQXelADCtq8gr9zP7XLmdVUJxjoefJMtdgqHqj/x0KmFWF
+         f0Rx4OG/h3+msq6a/8XZBLZF9uO7pFzKo5DIb/eAsq+efrLCFcyg9iq239r+wajEYPLM
+         6YeRJUxatH7ACEHWtaUveY6NvzsYls95smXMDUbkGhE/d9H5C3wL2P+ASaFHtXUD0VKV
+         JtEw==
+X-Gm-Message-State: AOAM530Rjj2ZHc29tukrERfca/yq4zK0Fd87yOcgl7gvl8xRpmXJYshL
+        MjtL3V0KFAcNhB0Pafk6L2QRZRL7LAaT1Q==
+X-Google-Smtp-Source: ABdhPJwyz7ww3IQEVHa66ecGem8F/oZnzFWkAv26mG4VacFgAW9+QTDdKJ9KtTRbyr8BnC+Zw2bDmQ==
+X-Received: by 2002:a17:902:9006:b029:d2:341:6520 with SMTP id a6-20020a1709029006b02900d203416520mr1717526plp.37.1600898801336;
+        Wed, 23 Sep 2020 15:06:41 -0700 (PDT)
+Received: from [10.67.49.188] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id f3sm713500pgf.32.2020.09.23.15.06.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Sep 2020 15:06:40 -0700 (PDT)
+Subject: Re: [PATCH net-next v3 1/2] net: dsa: untag the bridge pvid from rx
+ skbs
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "nikolay@nvidia.com" <nikolay@nvidia.com>
+References: <20200923214038.3671566-1-f.fainelli@gmail.com>
+ <20200923214038.3671566-2-f.fainelli@gmail.com>
+ <20200923214852.x2z5gb6pzaphpfvv@skbuf>
+ <7fce7ddd-14a3-8301-d927-1dd4b4431ffb@gmail.com>
+ <20200923220121.phnctzovjkiw2qiz@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
+ WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
+ pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
+ hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
+ OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
+ Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
+ oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
+ 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
+ BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
+ +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
+ FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
+ 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
+ vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
+ WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
+ HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
+ HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
+ Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
+ kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
+ aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
+ y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
+ X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
+ HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
+ YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
+ PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
+ UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
+ iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
+ WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
+ UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
+ sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
+ KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
+ t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
+ AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
+ RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
+ e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
+ UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
+ 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
+ V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
+ xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
+ dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
+ pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
+ caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
+ 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <c8ca2861-44b2-4333-d63e-638dfe2f06a0@gmail.com>
+Date:   Wed, 23 Sep 2020 15:06:33 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: de072733-ebb3-49db-ea07-08d8600ca97c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2020 22:04:37.0476
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Jh2dfbR7Xo66sx11Ti9JffD3635ps6dJ6jeLjlRJAvvnuVPMRNM/o2U8GxHw4iit3qm4DOOxxSXMcgs1b+zZqA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2455
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-23_19:2020-09-23,2020-09-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- spamscore=0 lowpriorityscore=0 impostorscore=0 malwarescore=0
- clxscore=1015 mlxscore=0 mlxlogscore=999 bulkscore=0 adultscore=0
- priorityscore=1501 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2009230166
-X-FB-Internal: deliver
+In-Reply-To: <20200923220121.phnctzovjkiw2qiz@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 9/23/20 3:01 PM, Vladimir Oltean wrote:
+> On Wed, Sep 23, 2020 at 02:51:09PM -0700, Florian Fainelli wrote:
+>> Speaking of that part of the code, I was also wondering whether you
+>> wanted this to be netdev_for_each_upper_dev_rcu(br, upper_dev, iter) and
+>> catch a bridge device upper as opposed to a switch port upper? Either
+>> way is fine and there are possibly use cases for either.
+> 
+> So, yeah, both use cases are valid, and I did in fact mean uppers of the
+> bridge, but now that you're raising the point, do we actually support
+> properly the use case with an 8021q upper of a bridged port? My
+> understanding is that this VLAN-tagged traffic should not be switched on
+> RX. So without some ACL rule on ingress that the driver must install, I
+> don't see how that can work properly.
 
+Is not this a problem only if the DSA master does VLAN receive filtering
+though? In a bridge with vlan_filtering=0 the switch port is supposed to
+accept any VLAN tagged frames because it does not do ingress VLAN ID
+checking.
 
-> On Sep 23, 2020, at 12:31 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
- wrote:
->=20
-> On Wed, Sep 23, 2020 at 9:55 AM Song Liu <songliubraving@fb.com> wrote:
->>=20
->> This API supports new field cpu_plus in bpf_attr.test.
->>=20
->> Acked-by: John Fastabend <john.fastabend@gmail.com>
->> Signed-off-by: Song Liu <songliubraving@fb.com>
->> ---
->> tools/lib/bpf/bpf.c      | 13 ++++++++++++-
->> tools/lib/bpf/bpf.h      | 11 +++++++++++
->> tools/lib/bpf/libbpf.map |  1 +
->> 3 files changed, 24 insertions(+), 1 deletion(-)
->>=20
->> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
->> index 2baa1308737c8..3228dd60fa32f 100644
->> --- a/tools/lib/bpf/bpf.c
->> +++ b/tools/lib/bpf/bpf.c
->> @@ -684,7 +684,8 @@ int bpf_prog_test_run(int prog_fd, int repeat, void =
-*data, __u32 size,
->>        return ret;
->> }
->>=20
->> -int bpf_prog_test_run_xattr(struct bpf_prog_test_run_attr *test_attr)
->> +int bpf_prog_test_run_xattr_opts(struct bpf_prog_test_run_attr *test_at=
-tr,
->> +                                const struct bpf_prog_test_run_opts *op=
-ts)
->=20
-> opts are replacement for test_attr, not an addition to it. We chose to
-> use _xattr suffix for low-level APIs previously, but it's already
-> "taken". So I'd suggest to go with just  bpf_prog_test_run_ops and
-> have prog_fd as a first argument and then put all the rest of
-> test_run_attr into opts.
-
-Sounds good. I will update it this way.=20
-
-[...]=
+Prior to your patch, I would always install a br0.1 upper to pop the
+default_pvid and that would work fine because the underlying DSA master
+does not do VLAN filtering.
+-- 
+Florian
