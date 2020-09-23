@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B69275D5B
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 18:26:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F6ED275D64
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 18:27:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726764AbgIWQ0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 12:26:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
+        id S1726610AbgIWQ1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 12:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726419AbgIWQ0i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 12:26:38 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836A3C0613CE
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 09:26:38 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id q5so220678ilj.1
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 09:26:38 -0700 (PDT)
+        with ESMTP id S1726130AbgIWQ1a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 12:27:30 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4040C0613CE
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 09:27:30 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id h2so141653ilo.12
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 09:27:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/qVbJ+Q7S5rZYSgdPzyINzBlDbSl2uBRr2T5CsignpY=;
-        b=qJRGbH4FYNsW91IQdALPhHL9/n6ZRCxntu330WJrmBgRWSVs6jjnXOE1lCZ75qDb84
-         dg+cE2qGS1XQvk1+VJX/tMc5CUNboZtqc2QJqFErC3kXxSGaV54cPQviU5LRV5TyijR7
-         eFlxMw6Ndz0mGLdvAFTy/RXc1R/ESJOTfw8o9bze8A8Jc/sq6G7Gu3Hh4007vhBOKiMs
-         05jn9NLJyU3W7JAGpLM8cPolc6YSn/GbLeRe+WHzCfSr3TlkbaMb9NUXzl33ttTsb6sj
-         6IFXV03l9VCFKIBo5lBlsEPmuIA3rszcKB3KEzTehV9QpQ2kqzGZgIf2WpMpjyqAEcY2
-         AvzQ==
+        bh=l+Mi/4kyhkp8P/LlCQO7T7hv+jZ9yMvvlM+knwASzNU=;
+        b=MD9Mc+elmSI40WNylJSi2CPZcKiv/ufR6b9rm7IBwCJkkau1AoIGGol8cwJAsF9Rk/
+         09Q1NnVzfsJ8mRtZUCqyXpFA1wmnWes4THsB2u5eC5gICbKP7vN8lFa0HOCWTYHZFHDz
+         U3TjsIkA0OqD50yPO8ik8kdAG3SHcOmas0qzlTCRLPV64yK5yaAU7XVlisfQzX/ukQSv
+         cMGFMk79K/2/fDxDOu1R+tqV2WigV8iWWc94LnZPyur+trS44cOz+vUyXgOJPZhqGQCi
+         QlOSep5WhZoGC/HI8M70j0hl2D4nWDw6aiUd8RzsVkCWZqNs/A1wKmHuZurCmkYWRfdE
+         IRzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/qVbJ+Q7S5rZYSgdPzyINzBlDbSl2uBRr2T5CsignpY=;
-        b=SFLzgI/uIdT/A9u9mK8T3/bPlNLdSm6x0wiLTUwyUvMd7LBS7z2vIjbVn6Ts7LhNZG
-         nYZtMoYidyABh6vj3v/UalgM1LIrkrXipF52Yt799Ou2pGkRAqk2qgmEAWeA7ZSdVVhW
-         I/FDUe8ZfSsEu747Isv0PZ3guV1Q/64Qo7KV4JVPG+dhdx8VTodUhqzMOLnM0x+7iVMU
-         RL82WztHUaeFdoPrx3kXM1a+S5ZsnYbRDoaUL5WRZ3N78N4CUVNwJoM0yQGo6BW/uuc4
-         bOOmFtAkcu3iwqCF8inPWc7VbLoUInAvm2FTfBy5tcXif0KBHobcFbKYx4t9IHgl3MDd
-         hrhA==
-X-Gm-Message-State: AOAM532sXmrwgOvifnCkXQowhdVDIg86lE0CSODAoIgh/Y1G+YwVE1Gt
-        qQzYHciqjSzgu3B/wdjw295b7bBy2PqQ0Ng4fSIJBw==
-X-Google-Smtp-Source: ABdhPJzlFs0m4W6XgcSBxKoqzx4vM1Se6Xk7l+WYg1enGzGmvMyA04AWPwzo5F2x9Lr7mZmR5DkNBAMxYECM8GQR8fw=
-X-Received: by 2002:a05:6e02:df1:: with SMTP id m17mr499960ilj.276.1600878397101;
- Wed, 23 Sep 2020 09:26:37 -0700 (PDT)
+        bh=l+Mi/4kyhkp8P/LlCQO7T7hv+jZ9yMvvlM+knwASzNU=;
+        b=U/4bA700rB/lPkqqVqGgsmaeivk+qTIe7nz4b+jdu2bXossmd7OUnmObso2nFt+ndn
+         TXev/n5wzvXVGG0x2W10ol79gu6lkCuJ9p0AyqVWy9Yh9wgPuvyF8KzdGkRACIm5DUb6
+         c5cWeXzXn7/2aASO9V2XQvUkb1jeiBJoT7l/iQ4CmcpkJvBVZF8pt3BDjPzAb2AdXF5w
+         wmFdtr/PF36UA+Jvz/XvjRKR9iKlb9M5sB1hNVGoWptjDJFRr5009xBWv2sBAWyvxemk
+         RhO/BxYSMGsB/ebwLACQDSUYZto/wGGNdTbja4+9txS2TRenuoNZRrpmgA1QVf4mUyd7
+         p4Dw==
+X-Gm-Message-State: AOAM5301axD+FEzj3fie5rtDrmb+/0bL1GBjwz4PgD9ayU3OyrP+g4uM
+        YF0FIoO+o+6FcDAIDS12L00LZ/hePnNKNrG4+BFTag==
+X-Google-Smtp-Source: ABdhPJyh3dqToPMmq3yu9IONMkwnBdCM/3zUOGYkU9dv27I0FLgLYQZ6/XKjV8ZvFoEL0HX5PVSaOeJ+TkabcFse+VU=
+X-Received: by 2002:a92:d910:: with SMTP id s16mr516149iln.258.1600878449871;
+ Wed, 23 Sep 2020 09:27:29 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200922155100.1624976-1-awogbemila@google.com>
- <20200922155100.1624976-2-awogbemila@google.com> <20200922103226.1e8b90e8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200922103226.1e8b90e8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200922155100.1624976-3-awogbemila@google.com> <20200922103311.5db13ae1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200922103311.5db13ae1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   David Awogbemila <awogbemila@google.com>
-Date:   Wed, 23 Sep 2020 09:26:26 -0700
-Message-ID: <CAL9ddJdgZSktSBA+nDrM6R02Z1Gour+apEbuz+QOoZnFVtrKXg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/3] gve: Add support for raw addressing
- device option
+Date:   Wed, 23 Sep 2020 09:27:19 -0700
+Message-ID: <CAL9ddJf1hWt=Dm7K-w+io64H78tCZ04ueZ4-uriTDn3OrZAevg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/3] gve: Add support for raw addressing to
+ the rx path
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Catherine Sullivan <csully@google.com>,
         Yangchun Fu <yangchun@google.com>
@@ -60,15 +60,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 22, 2020 at 10:32 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Tue, Sep 22, 2020 at 10:33 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Tue, 22 Sep 2020 08:50:58 -0700 David Awogbemila wrote:
-> > +     dev_opt = (struct gve_device_option *)((void *)descriptor +
-> > +                                                     sizeof(*descriptor));
+> On Tue, 22 Sep 2020 08:50:59 -0700 David Awogbemila wrote:
+> > From: Catherine Sullivan <csully@google.com>
+> >
+> > Add support to use raw dma addresses in the rx path. Due to this new
+> > support we can alloc a new buffer instead of making a copy.
+> >
+> > RX buffers are handed to the networking stack and are then recycled or
+> > re-allocated as needed, avoiding the need to use
+> > skb_copy_to_linear_data() as in "qpl" mode.
 >
-> You don't need to cast void pointers to types.
->
-> The idiomatic way to get end of structure in C is: &descriptor[1] or
-> descriptor + 1.
+> Please separate page recycling into a separate commit.
 
-Ok, I'll adjust this, thanks.
+Ok, I'll separate them in v3.
