@@ -2,115 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8C27276058
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 20:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EB82276051
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 20:46:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727030AbgIWSqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 14:46:15 -0400
-Received: from mout.kundenserver.de ([212.227.126.131]:35555 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726665AbgIWSqO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 14:46:14 -0400
-Received: from mail-qt1-f182.google.com ([209.85.160.182]) by
- mrelayeu.kundenserver.de (mreue009 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1M89P1-1kOi931zbn-005Hlb; Wed, 23 Sep 2020 20:46:10 +0200
-Received: by mail-qt1-f182.google.com with SMTP id a4so831862qth.0;
-        Wed, 23 Sep 2020 11:46:09 -0700 (PDT)
-X-Gm-Message-State: AOAM531B6RKNkGQC/NDN1KVy6L7ZJDh/eTh8x/vyn/fCGays+viehdTH
-        kYMDsdGq5j5wMlrpbikXGrM/muVRkR5VaFZOmUo=
-X-Google-Smtp-Source: ABdhPJwsvaOBWtaZA0D/OVEHB/gCWu247kr3QZZFrdP10NBc4wqx9Hcp+T5ZYDolhQMYUd20W7JjEkRUKsdbgp0ivyQ=
-X-Received: by 2002:ac8:64a:: with SMTP id e10mr1527617qth.142.1600886767946;
- Wed, 23 Sep 2020 11:46:07 -0700 (PDT)
+        id S1726820AbgIWSqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 14:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44922 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726720AbgIWSqF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 14:46:05 -0400
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E689C0613CE;
+        Wed, 23 Sep 2020 11:46:04 -0700 (PDT)
+Received: by mail-oi1-x242.google.com with SMTP id u126so861060oif.13;
+        Wed, 23 Sep 2020 11:46:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Qeu6diIvIGDQEtJHRT7NOmhkxnH5ZSau7zHTeoPUrmE=;
+        b=TfVuiEs8CMG4jbaIJSsYs0qvkPFH2Piqa82M3zA7oS/BhFDKP9AvfgVQ0CfVVsmOY/
+         /rnOKzHo1kVjc1AKpBhpMe2WLy4kzs1ejL6nK+4Afw9x3P18DEUdWpasBDYVY9tFrdE9
+         Y03JOhjbdxUp4ekyBzzFW7JRAYML+74EMmV80kekfYrc3rfwkEAyUbOEM5O91Fe+y5ro
+         8yYjkR/olyVrHQ7wFomP31xvkjKVR6INX1cWLMORbH+oBSbP5ojRtDHSLU37N3pcflJ+
+         eKB5ODvgz1ch3WnuTqkn+4Nc4CRnLzwYZ2TRceZB56JHLroJctJF8qm7cAua3wRMOu3P
+         H49w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Qeu6diIvIGDQEtJHRT7NOmhkxnH5ZSau7zHTeoPUrmE=;
+        b=AXMznvHgn1BFzYEoEMmoIESysE5NPqzMP94fIggq8szJPX+rbIEg6Q7mMXzB/zWzK3
+         TFmiFGLDgilkOcl1mWVY/v1JHSt3aH6nvfMYxdfS9bro49G6V7HFhn69AcFJtm7d223B
+         N3Tq/wVHaODO7phnX0GHj5H08ITBX561wj9AFVHxR0YdmmPUMLOCKAuVOj7XqzYiitUj
+         6vJ2ZwdweugCkPitlEk7qsqg4BcLx8Ywur1c8kkG5EdBEn/H8qY38O79z2SJ/IncnGkN
+         qkX2dsJzbx5/+dtCi0/JKeqXyo/lIyY2qmgZKGMfLlHoaUzJ5wAOk/deBJWAu5wMUQ7h
+         TIQg==
+X-Gm-Message-State: AOAM53241JScHgzp+sLiWAuVROZbXoQSghz+Aju2LD6HK+WDFko6IBRq
+        Mtpcgt3dndslapmDfEAZ3Al7VaNGTFifWw==
+X-Google-Smtp-Source: ABdhPJzbkkC1hWeuXeuFYozqqiBH9Ss5TMRiTXN4dEHuXZOzXaDifiJwL0OZgmT8lPs7DFxZwNfEiQ==
+X-Received: by 2002:aca:8cb:: with SMTP id 194mr472350oii.37.1600886763650;
+        Wed, 23 Sep 2020 11:46:03 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:79d5:cf3d:ad8a:c85b])
+        by smtp.googlemail.com with ESMTPSA id d17sm197681oth.73.2020.09.23.11.46.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Sep 2020 11:46:02 -0700 (PDT)
+Subject: Re: [RFC PATCH v2 0/3] l3mdev icmp error route lookup fixes
+To:     Michael Jeanson <mjeanson@efficios.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     David <davem@davemloft.net>, netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20200918181801.2571-1-mathieu.desnoyers@efficios.com>
+ <390b230b-629b-7f96-e7c9-b28f8b592102@gmail.com>
+ <1453768496.36855.1600713879236.JavaMail.zimbra@efficios.com>
+ <dd1caf15-2ef0-f557-b9a8-26c46739f20b@gmail.com>
+ <1383129694.37216.1600716821449.JavaMail.zimbra@efficios.com>
+ <1135414696.37989.1600782730509.JavaMail.zimbra@efficios.com>
+ <4456259a-979a-7821-ef3d-aed5d330ed2b@gmail.com>
+ <730d8a09-7d3b-1033-4131-520dc42e8855@efficios.com>
+ <47175ae8-e7e8-473c-5103-90bf444db16c@efficios.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <cfdc41d9-cca1-7166-1a2e-778ac4bf8b73@gmail.com>
+Date:   Wed, 23 Sep 2020 12:46:01 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <20200923060547.16903-1-hch@lst.de> <20200923060547.16903-6-hch@lst.de>
- <20200923142549.GK3421308@ZenIV.linux.org.uk> <20200923143251.GA14062@lst.de>
- <20200923145901.GN3421308@ZenIV.linux.org.uk> <20200923163831.GO3421308@ZenIV.linux.org.uk>
-In-Reply-To: <20200923163831.GO3421308@ZenIV.linux.org.uk>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 23 Sep 2020 20:45:51 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3nkLUOkR+jwz2_2LcYTUTqdVf8JOtZqKWbtEDotNhFZA@mail.gmail.com>
-Message-ID: <CAK8P3a3nkLUOkR+jwz2_2LcYTUTqdVf8JOtZqKWbtEDotNhFZA@mail.gmail.com>
-Subject: Re: [PATCH 5/9] fs: remove various compat readv/writev helpers
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        David Howells <dhowells@redhat.com>,
-        David Laight <David.Laight@aculab.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
-        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Networking <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:mMkQRAJUWfdk4a4PEkmTkMjSEPbcbr4OqrN3fUr4LQ2AQqlPl0n
- bOWryggRLru9T6JJoTMuOGI9kvl/I6BtMLB/VbJVDYLH2lraHpn3UOgXAQiZMVZJ9Wt6/3q
- dgtI834LPxJGojFQwlbq6VqcE61sUtAzG9Asu4SnN3A1f/GYReptJqFvli47ZUGxJu1McD6
- wXqFv/2sZdtXtrzvqb6Gw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ARXrn3BJvHg=:OaZDrHRji4s3F+Z4R525Bn
- agD8Hjw3INq7irUQDHIrs31n4HiItPG1qRH9sCOQsBDzKfQ2GBPxOe8cQiCUK6etjcRZgS5uz
- ltu+yxAg8SdJB7S6UrMx8x4gZIRJZNx/h1Pd359G8hRQEWUkB77c3Uu7iX6+oWPogrXiRLcyE
- Ay+LH2roCsVe74rsugu9p8r/jxgEYoo6ke7HkJiyLsrJx77n+/GWpX9PQTbGXJGYCmPKo03Dx
- 7rZxQHvz4lzlsQGvZ22Lw1H85lBROKXGp/T1YCWt7CkiGs0Y/R3V3UonSnBX41Bf98v3feicD
- RYBnkyjEcAUUQRR5u9cw067xVVV2JdvUKInxkNdutFVn0CM66u/fDJxueg1uLRW9RPYp7DjVs
- Mx/HRUmO0wQonj6taqWhVCgSUthPIg1jpw3qykbSoDJ96MDdaz8DcUt+7qpkA5t/+tGOD+rWW
- Bn0ajxwLkORS0R61/JXIJExhw4SvyLBTVKDr7LI7QuYFV9tfgKH3fZzLZmBkdPEqiGd2kyAMe
- 0agELAyDb5Rehyc/3jcYzTGZyQ9nlXuD/YYv4vEmC1CRzjxWF4KIZFY6D3HWoeuUMlzvMCijI
- ue6FAYnnAerqxzrTow74a1x9I80VfvnWRTz0xYpnoiGRegiq0P5uWv1YSyriRyFortckburp8
- xW1/xnziTC/+/JUjrApbsItKfFZpj/Vffo23zPwOLXvOArj8zkutkvZ9h8hGYgo934l9OKJGu
- P5NJw1LlqSAdgmNcPhTbFVxjnCSs1G9+5tq34fiY8XA66+2tLlwvaAnYp+zv5HOWn5OOwlMar
- YndfSM38x1BkZ1kFiYikEr51lnNKUep3VIupblSMr1ljcWZWbNW0XzKu+xNzfuUJBnp9WMfFy
- 7T3ELZ0Iq8IWSMYb0u7TCVmN4B9t5+iKBzUQ+0CqaqKkDuOmWY7NnBHAU/IZ6fceZMEkzvN4O
- Id5+SP2sVY8Io6R5XqdC6M9inrRybKQ1OIWUL/7Bpv8x4eU8nqVGM
+In-Reply-To: <47175ae8-e7e8-473c-5103-90bf444db16c@efficios.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 6:38 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
->
-> I wonder if we should do something like
->
-> SYSCALL_DECLARE3(readv, unsigned long, fd, const struct iovec __user *, vec,
->                  unsigned long, vlen);
-> in syscalls.h instead, and not under that ifdef.
->
-> Let it expand to declaration of sys_...() in generic case and, on x86, into
-> __do_sys_...() and __ia32_sys_...()/__x64_sys_...(), with types matching
-> what SYSCALL_DEFINE ends up using.
->
-> Similar macro would cover compat_sys_...() declarations.  That would
-> restore mismatch checking for x86 and friends.  AFAICS, the cost wouldn't
-> be terribly high - cpp would have more to chew through in syscalls.h,
-> but it shouldn't be all that costly.  Famous last words, of course...
->
-> Does anybody see fundamental problems with that?
+On 9/23/20 11:03 AM, Michael Jeanson wrote:
+> On 2020-09-23 12 h 04, Michael Jeanson wrote:
+>>> It should work without asymmetric routing; adding the return route to
+>>> the second vrf as I mentioned above fixes the FRAG_NEEDED problem. It
+>>> should work for TTL as well.
+>>>
+>>> Adding a second pass on the tests with the return through r2 is fine,
+>>> but add a first pass for the more typical case.
+>>
+>> Hi,
+>>
+>> Before writing new tests I just want to make sure we are trying to fix
+>> the same issue. If I add a return route to the red VRF then we don't
+>> need this patchset because whether the ICMP error are routed using the
+>> table from the source or destination interface they will reach the
+>> source host.
+>>
+>> The issue for which this patchset was sent only happens when the
+>> destination interface's VRF doesn't have a route back to the source
+>> host. I guess we might question if this is actually a bug or not.
+>>
+>> So the question really is, when a packet is forwarded between VRFs
+>> through route leaking and an icmp error is generated, which table
+>> should be used for the route lookup? And does it depend on the type of
+>> icmp error? (e.g. TTL=1 happens before forwarding, but fragmentation
+>> needed happens after when on the destination interface)
+> 
+> As a side note, I don't mind reworking the tests as you requested even
+> if the patchset as a whole ends up not being needed and if you think
+> they are still useful. I just wanted to make sure we understood each other.
+> 
 
-I've had some ideas along those lines in the past and I think it should work.
+if you are leaking from VRF 1 to VRF 2 and you do not configure VRF 2
+with how to send to errors back to source - MTU or TTL - then I will
+argue that is a configuration problem, not a bug.
 
-As a variation of this, the SYSCALL_DEFINEx() macros could go away
-entirely, leaving only the macro instantiations from the header to
-require that syntax. It would require first changing the remaining
-architectures to build the syscall table from C code instead of
-assembler though.
+Now the TTL problem is interesting. You need the FIB lookup to know that
+the packet is forwarded, and by the time of the ttl check in ip_forward
+skb->dev points to the ingress VRF and dst points to the egress VRF. So
+I think the change is warranted.
 
-Regardless of that, another advantage of having the SYSCALL_DECLAREx()
-would be the ability to include that header file from elsewhere with a different
-macro definition to create a machine-readable version of the interface when
-combined with the syscall.tbl files. This could be used to create a user
-space stub for calling into the low-level syscall regardless of the
-libc interfaces,
-or for synchronizing the interfaces with strace, qemu-user, or anything that
-needs to deal with the low-level interface.
+Let's do this for the tests:
+1 pass through all of the tests (TTL and MTU, v4 and v6) with symmetric
+routing configured and make sure they all pass. ie., keep all of them
+and make sure all tests pass. No sense losing the tests and the thoughts
+behind them.
 
-      Arnd
+Add a second pass with the asymmetric routing per the customer setup
+since it motivated the investigation.
+
+Rename the test to something like vrf_route_leaking.sh. It can be
+expanded with more tests related to route leaking as they come up.
