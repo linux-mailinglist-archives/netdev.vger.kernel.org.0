@@ -2,189 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34547275DFD
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 18:55:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D01D275E08
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 18:55:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726706AbgIWQy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 12:54:59 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:48088 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726419AbgIWQy7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 12:54:59 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08NGpBXA004988
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 09:54:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=O2DHa9v7Fn2oWqx8AfN75GbEHt/XNf26bbWVnZhb+JE=;
- b=pQe+w1oa0NIpW/6FBCKXFFrfBJJx9PFRYwZLmT6hnhjI590JnceqvfnZvBC9wOOL6xDD
- CpsPqqNknnB+24Q4DYwEEzSwzMIDJa6tZLIpZ3fGEsTLOx5PFMHxt28MRK3LN4PB6mr5
- aYxq5pxEfkLbMnLbjh7BagE8s/SSKKzKJX4= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33qsp4vpj5-10
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 09:54:58 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 23 Sep 2020 09:54:31 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 02E5F62E4F4E; Wed, 23 Sep 2020 09:54:27 -0700 (PDT)
-From:   Song Liu <songliubraving@fb.com>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH v2 bpf-next 3/3] selftests/bpf: add raw_tp_test_run
-Date:   Wed, 23 Sep 2020 09:54:01 -0700
-Message-ID: <20200923165401.2284447-4-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200923165401.2284447-1-songliubraving@fb.com>
-References: <20200923165401.2284447-1-songliubraving@fb.com>
+        id S1726762AbgIWQzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 12:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726572AbgIWQzw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 12:55:52 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D6BC0613CE;
+        Wed, 23 Sep 2020 09:55:52 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id h9so275374ybm.4;
+        Wed, 23 Sep 2020 09:55:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sawJexAoDEM1MGGD6oqsAjFulSz+cyESCUcWECZZvIQ=;
+        b=uwpOD/I3MNsfFT26p0xCKV7tO+Hu2q6Tc/8dLiWi9090Md5jQAjfLVkEdSIorWXUUw
+         8wW8nWq7FzZ0mmzr+0K8/jmm4vxeOocJi0YTVwWH1IfZKlZSAZJVY58kIguXh7phlpf+
+         ALi/N39GS7JUrHdcGvWpFo/vPrKmU4RhQnZwdf72slDwdPck9yKDynppf14i+RKIElSc
+         8DHZzk3YtBpZ9HmyVNKmgN4W/RMhkGLMdRcT+l/8eiHLWKe9i06OryiCMmvgIm65cFSX
+         XF5Q0sJM4PyFeBoHCRsibTm8XDV9Lly3oQ2X9lDkMQVAAEMNTRHyDWpziFLkHCstE5Tk
+         AGRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sawJexAoDEM1MGGD6oqsAjFulSz+cyESCUcWECZZvIQ=;
+        b=HCGug89T9mDy0HBsmhLNAZgcbu2d0Z0fmQbbOzKmYKYKk5yC6Mqvv4tZtThQbGzjOC
+         xqOy9ioKD3VgvkFuprM7QTDXd0gwS2zUwnLCnD7lhUiIuSQdax8WryibeTS3QjUlgRrF
+         nbOx+upJfnNFm5VFrBRi/lI2A/s6R/tYvtZMggFI8d4K24C+vAggIjjwvcg9N4Ux72WP
+         Z9x3VTpBbsq9o5DpTWddKgWgIsUzZHhgiAHstap4cMEiCVdYkPy7AxbnZDfulImM58aK
+         Lih2b+B1799wKmpmaAegX6TaX0Wtj0XQt7gz/wjKlTypcDNHME9rv5a0oKkZer+mQ/tX
+         JK/Q==
+X-Gm-Message-State: AOAM532xFHEt+BX02Ddg2Thw27cC5+EuBqUXQApvdJKQrW4+6V5ejJn8
+        gBOWFjXKohaii3/cvAj4QqijbK9obC/KMejJdzE=
+X-Google-Smtp-Source: ABdhPJzmdIaT3Ywba7xMVhal40Lmb9l5YH65YrAFaZCmRwJR1nIY7cw/jP2mwHCI7ZgcLD8VUl2QIv49g3TDPaDPNc4=
+X-Received: by 2002:a25:9d06:: with SMTP id i6mr1294926ybp.510.1600880151567;
+ Wed, 23 Sep 2020 09:55:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-23_12:2020-09-23,2020-09-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- spamscore=0 bulkscore=0 impostorscore=0 malwarescore=0 phishscore=0
- clxscore=1015 priorityscore=1501 mlxscore=0 suspectscore=2 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009230130
-X-FB-Internal: deliver
+References: <20200916211010.3685-1-maciej.fijalkowski@intel.com>
+ <CAADnVQLEYHZLeu-d4nV5Px6t+tVtYEgg8AfPE5-GwAS1uizc0w@mail.gmail.com>
+ <CACAyw994v0BFpnGnboVVRCZt62+xjnWqdNDbSqqJHOD6C-cO0g@mail.gmail.com>
+ <CAEf4Bzakz65x0-MGa0ZBF8F=PvT23Sm0rtNDDCo3jo4VMOXgeg@mail.gmail.com> <CACAyw9_WkndmJiwBZTn+P8fQa6OFfxmxH7uCxi0RTNOonbCzww@mail.gmail.com>
+In-Reply-To: <CACAyw9_WkndmJiwBZTn+P8fQa6OFfxmxH7uCxi0RTNOonbCzww@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 23 Sep 2020 09:55:40 -0700
+Message-ID: <CAEf4BzaO5-XSXSqavvXWN-BhfBXHU4wwz1qu2kqY+nRGj8G9qg@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next 0/7] bpf: tailcalls in BPF subprograms
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test runs test_run for raw_tracepoint program. The test covers ctx
-input, retval output, and proper handling of cpu_plus field.
+On Wed, Sep 23, 2020 at 9:43 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> On Wed, 23 Sep 2020 at 17:24, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Wed, Sep 23, 2020 at 9:12 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+> > >
+> > > On Fri, 18 Sep 2020 at 04:26, Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > [...]
+> > > >
+> > > > Lorenz,
+> > > > if you can test it on cloudflare progs would be awesome.
+> > >
+> > > Our programs all bpf_tail_call from the topmost function, so no calls
+> > > from subprogs. I stripped out our FORCE_INLINE flag, recompiled and
+> > > ran our testsuite. cls_redirect.c (also in the kernel selftests) has a
+> > > test failure that I currently can't explain, but I don't have the time
+> > > to look at it in detail right now.
+> > >
+> >
+> > I've already converted test_cls_redirect.c in selftest to have
+> > __noinline variant. And it works fine. There are only 4 helper
+> > functions that can't be converted to a sub-program (pkt_parse_ipv4,
+> > pkt_parse_ipv6, and three buffer manipulation helpers) because they
+> > are accepting a pointer to a stack from a calling function, which
+> > won't work with subprograms. But all the other functions were
+> > trivially converted to __noinline and keep working.
+>
+> Yeah, that is very possible. Keep in mind though that our internal
+> version has since become more complex, and also has a more
+> comprehensive test suite. I wasn't sounding the alarms, it's just an
+> FYI that I appreciate the work that went into this and have taken a
+> look, but that I need to do some more digging :)
+>
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../bpf/prog_tests/raw_tp_test_run.c          | 73 +++++++++++++++++++
- .../bpf/progs/test_raw_tp_test_run.c          | 26 +++++++
- 2 files changed, 99 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/raw_tp_test_ru=
-n.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_raw_tp_test_ru=
-n.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c b/t=
-ools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
-new file mode 100644
-index 0000000000000..3c6523b61afc1
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
-@@ -0,0 +1,73 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2019 Facebook */
-+#include <test_progs.h>
-+#include "bpf/libbpf_internal.h"
-+#include "test_raw_tp_test_run.skel.h"
-+
-+static int duration;
-+
-+void test_raw_tp_test_run(void)
-+{
-+	struct bpf_prog_test_run_attr test_attr =3D {};
-+	__u64 args[2] =3D {0x1234ULL, 0x5678ULL};
-+	int comm_fd =3D -1, err, nr_online, i;
-+	int expected_retval =3D 0x1234 + 0x5678;
-+	struct test_raw_tp_test_run *skel;
-+	char buf[] =3D "new_name";
-+	bool *online =3D NULL;
-+
-+	err =3D parse_cpu_mask_file("/sys/devices/system/cpu/online", &online,
-+				  &nr_online);
-+	if (CHECK(err, "parse_cpu_mask_file", "err %d\n", err))
-+		return;
-+
-+	skel =3D test_raw_tp_test_run__open_and_load();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+		return;
-+	err =3D test_raw_tp_test_run__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	comm_fd =3D open("/proc/self/comm", O_WRONLY|O_TRUNC);
-+	if (CHECK(comm_fd < 0, "open /proc/self/comm", "err %d\n", errno))
-+		goto cleanup;
-+
-+	err =3D write(comm_fd, buf, sizeof(buf));
-+	CHECK(err < 0, "task rename", "err %d", errno);
-+
-+	CHECK(skel->bss->count =3D=3D 0, "check_count", "didn't increase\n");
-+	CHECK(skel->data->on_cpu !=3D 0xffffffff, "check_on_cpu", "got wrong va=
-lue\n");
-+
-+	test_attr.prog_fd =3D bpf_program__fd(skel->progs.rename);
-+	test_attr.ctx_in =3D args;
-+	test_attr.ctx_size_in =3D sizeof(__u64);
-+
-+	err =3D bpf_prog_test_run_xattr(&test_attr);
-+	CHECK(err =3D=3D 0, "test_run", "should fail for too small ctx\n");
-+
-+	test_attr.ctx_size_in =3D sizeof(args);
-+	err =3D bpf_prog_test_run_xattr(&test_attr);
-+	CHECK(err < 0, "test_run", "err %d\n", errno);
-+	CHECK(test_attr.retval !=3D expected_retval, "check_retval",
-+	      "expect 0x%x, got 0x%x\n", expected_retval, test_attr.retval);
-+
-+	for (i =3D 0; i < nr_online; i++)
-+		if (online[i]) {
-+			DECLARE_LIBBPF_OPTS(bpf_prog_test_run_opts, opts,
-+				.cpu_plus =3D i + 1,
-+			);
-+
-+			test_attr.retval =3D 0;
-+			err =3D bpf_prog_test_run_xattr_opts(&test_attr, &opts);
-+			CHECK(err < 0, "test_run_with_opts", "err %d\n", errno);
-+			CHECK(skel->data->on_cpu !=3D i, "check_on_cpu",
-+			      "got wrong value\n");
-+			CHECK(test_attr.retval !=3D expected_retval,
-+			      "check_retval", "expect 0x%x, got 0x%x\n",
-+			      expected_retval, test_attr.retval);
-+		}
-+cleanup:
-+	close(comm_fd);
-+	test_raw_tp_test_run__destroy(skel);
-+	free(online);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c b/t=
-ools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
-new file mode 100644
-index 0000000000000..9ceb648f096ea
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
-@@ -0,0 +1,26 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+#include <bpf/bpf_tracing.h>
-+
-+__u32 count =3D 0;
-+__u32 on_cpu =3D 0xffffffff;
-+
-+SEC("raw_tp/task_rename")
-+int BPF_PROG(rename, struct task_struct *task, char *comm)
-+{
-+
-+	count++;
-+	if ((unsigned long long) task =3D=3D 0x1234 &&
-+	    (unsigned long long) comm =3D=3D 0x5678) {
-+		on_cpu =3D bpf_get_smp_processor_id();
-+		return (int)task + (int)comm;
-+	}
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") =3D "GPL";
---=20
-2.24.1
+> cls_redirect.c (also in the kernel selftests) has a test failure that
 
+This sounded like there is a kernel selftest failure in cls_redirect.c
+after you removed FORCE_INLINE flag. So I was curious where the new
+failure is and whether it's in those 5 functions that just can't be
+not-always_inlined.
+
+
+> --
+> Lorenz Bauer  |  Systems Engineer
+> 6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+>
+> www.cloudflare.com
