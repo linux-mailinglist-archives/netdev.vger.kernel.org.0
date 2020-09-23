@@ -2,133 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BDA02754E2
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 11:55:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B15EA2754F9
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 11:58:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726504AbgIWJzW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 23 Sep 2020 05:55:22 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:23154 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726332AbgIWJzU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 05:55:20 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-226-PrpFg9T_NP-llOlZs_EZgQ-1; Wed, 23 Sep 2020 10:55:17 +0100
-X-MC-Unique: PrpFg9T_NP-llOlZs_EZgQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Wed, 23 Sep 2020 10:55:15 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Wed, 23 Sep 2020 10:55:15 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Julian Wiedmann' <jwi@linux.ibm.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
-Subject: RE: [PATCH net-next 3/9] s390/qeth: clean up string ops in
- qeth_l3_parse_ipatoe()
-Thread-Topic: [PATCH net-next 3/9] s390/qeth: clean up string ops in
- qeth_l3_parse_ipatoe()
-Thread-Index: AQHWkYS+KKE+2YxBK0+f9H+Mgs75S6l1+mkQ
-Date:   Wed, 23 Sep 2020 09:55:15 +0000
-Message-ID: <2e439abb31e942e2a441f28439d287fa@AcuMS.aculab.com>
-References: <20200923083700.44624-1-jwi@linux.ibm.com>
- <20200923083700.44624-4-jwi@linux.ibm.com>
-In-Reply-To: <20200923083700.44624-4-jwi@linux.ibm.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726710AbgIWJ5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 05:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726420AbgIWJ5s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 05:57:48 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6904DC0613CE
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 02:57:48 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id z22so26867555ejl.7
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 02:57:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5IRW0SMItHDhaS3u2lCvznRB0gRyx3WYvHHqGWqFwBs=;
+        b=FbMEs/oCfsI+4GzvqP5SqO6bxVoovY2pCX9LQimkyuI2lG5EfH94hoMM6ELBHX1WZE
+         ofsRMP9P/jTMsZeaNiYr6t6iSkLtNTwiCfuvY8+M48nHMrMmAc3Vc0VERoRfI5sk6DTW
+         EuN9erJtDUInfBBpzPb6ef9kfQky53a0Bhbz/zrWthhMfGqcuvh8swUKcwBGeLv9ijcE
+         ymTW1JjrD3mo2hOe0GRzFqkfcIG0rhDL+BjkguXYGw8JgUk/vj5Q60FSR47DSq89lxE7
+         F9WpeEJ7Z5+WQumMFM7RLajPDbBpeCKiblzb3D5J7gIWhT+SDz/xlwcv1XXLPCFP20W5
+         WFUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5IRW0SMItHDhaS3u2lCvznRB0gRyx3WYvHHqGWqFwBs=;
+        b=YJAYXhLFJEDu8zfjMMJTRtFXQoi0FYXaz96vIY4SzQ5p9icSH9SBLX3hdoNDHqqiFH
+         T6uxq9wjSmthx983vO9dTg9vepT9YKZ7PM183Np3c4WkIvP7rfWJDxVWRJ1O/2SlFexa
+         r+BQOtr6wpd+Ux7ouwq6KBPE2hIoO8MucboX0uQhIKQyhVI58hC9+Jb2M+loR/a50asd
+         cd9JJFuOkeWwrACdgkkD+GYOarZg4FFHVumxT+C7ia0OpWHq8pmYKlLXIMT4V6HoyXfr
+         Lw8F48t102Kgblzrofs/A2YDYr03L8cHphwtj07TxxScmGO8kmKbPDHvJAvFwBcqfMGX
+         f3Xw==
+X-Gm-Message-State: AOAM533XRSJ7jOdk3seIKL0HAiTC3xJlP0iFsW/dnNgQBvHfcUwy/OGA
+        xxKwrvLk/33E5fztV7Tjwhk7tlcgn04=
+X-Google-Smtp-Source: ABdhPJxwJOKk9mDW4c/FZwWQQrE3baKdAMHiaRxktgSoFxFY4xeXdx/fnLH1ijE+CUkvjNlmN/0riA==
+X-Received: by 2002:a17:906:7f06:: with SMTP id d6mr9192249ejr.553.1600855066820;
+        Wed, 23 Sep 2020 02:57:46 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:c43a:de91:4527:c1ba? (p200300ea8f235700c43ade914527c1ba.dip0.t-ipconnect.de. [2003:ea:8f23:5700:c43a:de91:4527:c1ba])
+        by smtp.googlemail.com with ESMTPSA id o92sm14081456edd.68.2020.09.23.02.57.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Sep 2020 02:57:46 -0700 (PDT)
+Subject: Re: RTL8402 stops working after hibernate/resume
+To:     Petr Tesarik <ptesarik@suse.cz>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        netdev@vger.kernel.org
+References: <20200715102820.7207f2f8@ezekiel.suse.cz>
+ <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
+ <20200716105835.32852035@ezekiel.suse.cz>
+ <e1c7a37f-d8d0-a773-925c-987b92f12694@gmail.com>
+ <20200903104122.1e90e03c@ezekiel.suse.cz>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <7e6bbb75-d8db-280d-ac5b-86013af39071@gmail.com>
+Date:   Wed, 23 Sep 2020 11:57:41 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200903104122.1e90e03c@ezekiel.suse.cz>
+Content-Type: text/plain; charset=windows-1252
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Julian Wiedmann
-> Sent: 23 September 2020 09:37
+On 03.09.2020 10:41, Petr Tesarik wrote:
+> Hi Heiner,
 > 
-> Indicate the max number of to-be-parsed characters, and avoid copying
-> the address sub-string.
+> this issue was on the back-burner for some time, but I've got some
+> interesting news now.
 > 
-> Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
-> ---
->  drivers/s390/net/qeth_l3_sys.c | 27 ++++++++++++++-------------
->  1 file changed, 14 insertions(+), 13 deletions(-)
+> On Sat, 18 Jul 2020 14:07:50 +0200
+> Heiner Kallweit <hkallweit1@gmail.com> wrote:
 > 
-> diff --git a/drivers/s390/net/qeth_l3_sys.c b/drivers/s390/net/qeth_l3_sys.c
-> index ca9c95b6bf35..05fa986e30fc 100644
-> --- a/drivers/s390/net/qeth_l3_sys.c
-> +++ b/drivers/s390/net/qeth_l3_sys.c
-> @@ -409,21 +409,22 @@ static ssize_t qeth_l3_dev_ipato_add4_show(struct device *dev,
->  static int qeth_l3_parse_ipatoe(const char *buf, enum qeth_prot_versions proto,
->  		  u8 *addr, int *mask_bits)
->  {
-> -	const char *start, *end;
-> -	char *tmp;
-> -	char buffer[40] = {0, };
-> +	const char *start;
-> +	char *sep, *tmp;
-> +	int rc;
+>> [...]
+>> Maybe the following gives us an idea:
+>> Please do "ethtool -d <if>" after boot and after resume from suspend,
+>> and check for differences.
 > 
-> -	start = buf;
-> -	/* get address string */
-> -	end = strchr(start, '/');
-> -	if (!end || (end - start >= 40)) {
-> +	/* Expected input pattern: %addr/%mask */
-> +	sep = strnchr(buf, 40, '/');
-> +	if (!sep)
->  		return -EINVAL;
-> -	}
-> -	strncpy(buffer, start, end - start);
-> -	if (qeth_l3_string_to_ipaddr(buffer, proto, addr)) {
-> -		return -EINVAL;
-> -	}
-> -	start = end + 1;
+> The register dump did not reveal anything of interest - the only
+> differences were in the physical addresses after a device reopen.
+> 
+> However, knowing that reloading the driver can fix the issue, I copied
+> the initialization sequence from init_one() to rtl8169_resume() and
+> gave it a try. That works!
+> 
+> Then I started removing the initialization calls one by one. This
+> exercise left me with a call to rtl_init_rxcfg(), which simply sets the
+> RxConfig register. In other words, these is the difference between
+> 5.8.4 and my working version:
+> 
+> --- linux-orig/drivers/net/ethernet/realtek/r8169_main.c	2020-09-02 22:43:09.361951750 +0200
+> +++ linux/drivers/net/ethernet/realtek/r8169_main.c	2020-09-03 10:36:23.915803703 +0200
+> @@ -4925,6 +4925,9 @@
+>  
+>  	clk_prepare_enable(tp->clk);
+>  
+> +	if (tp->mac_version == RTL_GIGA_MAC_VER_37)
+> +		RTL_W32(tp, RxConfig, RX128_INT_EN | RX_DMA_BURST);
 > +
-> +	/* Terminate the %addr sub-string, and parse it: */
-> +	*sep = '\0';
+>  	if (netif_running(tp->dev))
+>  		__rtl8169_resume(tp);
+>  
+> This is quite surprising, at least when the device is managed by
+> NetworkManager, because then it is closed on wakeup, and the open
+> method should call rtl_init_rxcfg() anyway. So, it might be a timing
+> issue, or incorrect order of register writes.
+> 
+Thanks for the analysis. If you manually bring down and up the
+interface, do you see the same issue?
+What is the value of RxConfig when entering the resume function?
 
-Is it valid to write into the input buffer here?
-
-> +	rc = qeth_l3_string_to_ipaddr(buf, proto, addr);
-> +	if (rc)
-> +		return rc;
-> +
-> +	start = sep + 1;
->  	*mask_bits = simple_strtoul(start, &tmp, 10);
-
-The use of strnchr() rather implies that the input
-buffer may not be '\0' terminated.
-If that is true then you've just run off the end of the
-input buffer.
-
->  	if (!strlen(start) ||
->  	    (tmp == start) ||
-
-Hmmm... delete the strlen() clause.
-It ought to test start[0], but the 'tmp == start' test
-covers that case.
-
-I don't understand why simple_strtoul() is deprecated.
-I don't recall any of the replacements returning the
-address of the terminating character.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+> Since I have no idea why the above change fixes my issue, I'm hesitant
+> to post it as a patch. It might break other people's systems...
+> 
+> Petr T
+> 
+Heiner
