@@ -2,196 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AF39276266
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 22:45:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDC30276267
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 22:45:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726785AbgIWUpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 16:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726749AbgIWUpj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 16:45:39 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA87BC0613D1;
-        Wed, 23 Sep 2020 13:45:38 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id u4so363928plr.4;
-        Wed, 23 Sep 2020 13:45:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eXYv5X8tjs0NHlmzc9aivkeUDJvNkRf/+n+TLaTZCbU=;
-        b=UQujlSywlGHQs7UvJ9utW/QwnTvMmtRJZIIF5N38H2nS+k83bInmuMY2yEhCHvmMzx
-         xGqIZnQvEq6gQGlBvoadOK5YWnSgFf+rogzN+xa5sEEybpGPEMCj5scO1ospoq6Ae6ii
-         D/Wu/QgU1FGgMbOtFjGmFr/knTV0SSGUCQpDUpHvRDrfvZrZtK+c1zNqPsJcd86t6ac1
-         oEV/Dpfc+5KbnWhQdxhZsj/FjNIXZYfhFF5juQZnj89iFMo27Bx9UX52KcL4gK9Zt2AE
-         c/fGdgHA+s3j/RyCDeTCZsvWgEo/erOtNlU5Dvj7YDn6GG3Zd6SQ/4DoaB3Zh9wsZlzu
-         TnEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eXYv5X8tjs0NHlmzc9aivkeUDJvNkRf/+n+TLaTZCbU=;
-        b=bdF6U59himerP9jSun9eExtmNloaEAWlJO3F5aVkYBiqUmAi4Rb5fXk2OzLrkr41SW
-         uBPv/fhSuVtciIyMv/GbSQ6XnujR2oweJhiN/yBRPNtbvg0eh7iO1SwETDzjSdtSxnTv
-         PW4gTWQHuPiX9lq9tVeKU1f6jq6NvjcGubOsY/aqaV7MmvyTZiRMyiDQCPvrhlTv5Jg+
-         6TPA79Qd7yOReOQ979mpwfgu4lsTXerYLAQAHvu4rjL+qQoVlLr9qNghMw4pC2hm2ts3
-         SL8ZGvZEdsYk0a/l9VdAQa98qyASKu68LZXvrosUbLV4PYqQFi1cLL9XKxJIM8wUoKPA
-         L6Lw==
-X-Gm-Message-State: AOAM530ZOzrhocxhnuPaJpaaOUi51qzKUVbmke4lgSdlM/hREepjIFoy
-        KXhZr14PeIBjcOgz46h4CC5rFdU3XDRIfw==
-X-Google-Smtp-Source: ABdhPJycviktBl1RnSLgo0FFz9w43sHvciYRgW6i0PCmhUzU+pByVgVIxlOcDWdi+HC2dDlslBY8Gg==
-X-Received: by 2002:a17:902:7281:b029:d2:2a0b:f050 with SMTP id d1-20020a1709027281b02900d22a0bf050mr1511614pll.42.1600893937956;
-        Wed, 23 Sep 2020 13:45:37 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u6sm330776pjy.37.2020.09.23.13.45.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Sep 2020 13:45:37 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel@vger.kernel.org (open list),
-        vladimir.oltean@nxp.com, olteanv@gmail.com, nikolay@nvidia.com
-Subject: [PATCH net-next v2 2/2] net: dsa: b53: Configure VLANs while not filtering
-Date:   Wed, 23 Sep 2020 13:45:14 -0700
-Message-Id: <20200923204514.3663635-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200923204514.3663635-1-f.fainelli@gmail.com>
-References: <20200923204514.3663635-1-f.fainelli@gmail.com>
+        id S1726821AbgIWUp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 16:45:56 -0400
+Received: from mail-vi1eur05on2040.outbound.protection.outlook.com ([40.107.21.40]:12001
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726134AbgIWUpx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 16:45:53 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UbVEkh6/0XhOHnRqiRT1p+KO2FvmNvz2knwRaMxAnO0ZdWyz3Rmkv9D34k6KeH0Ib6Q3d/KU9Zl1oHa1ZEaIBJKpOW5iADlzj455I+ERhecr3Q5gLJ2I5GUrk6C6OYHKrtFFN99BLN8i+/e8QJBULqwITkvXDiyb4xU+FQDwumAwxbUS2Zk44VJvgb2LvgLCykNU/s/q1edDYdnqR7ZvfaO0l6gmfyU4pUgShqQd//0hTMTRxnr0dgjflwsNvcC4LWs9hKZH6UTztO0z4EZZB4PGvOlE6hGZVG7zn5efem2HOoRIIK112hj4nsLHQYVid7cKJXtUKI8aRgI4jQAZXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FdyO/tAoWLB+4vmk0LZmvlf0rkSOVUZhzaMQM2IqSwk=;
+ b=iohEp5PTsuLRgrSyY01mPN/+Ig5dJn0J15/dPPtJsZAJwtkuqsDMhFPtx4DzhJqDRzXrZfW+OCMEP2/ypvjPmE63p1AhvTKTK0N9QxnZX/BC2vgIdIHC7EC+dZWGPt6ZZc7TSXFTN31XYV3eGxjOVwWJ6LhmDUPM9+OUgVOgM5aWF72CKtwWPOWrrfardsCak5DTc1SuJunp55SnjszLEDtq7gCHHkd1ud0yQDTQs0uy9IKBIPvtVxoHrgcVYvXXF9XO3aFoV17NfCwzzjCg2CKUFXzu0fxNEWoGnDEa5/9sCr53uExhPXnQwrLHD9n8kxu9DSw6xkzrb3aetJ56gg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FdyO/tAoWLB+4vmk0LZmvlf0rkSOVUZhzaMQM2IqSwk=;
+ b=hO9fjPfHyHoeUAgASpK1g/oKxAB7RsknjITc9vKImNQmZSml/5z6/SBdGJGY3Pq9yE+x7gU19mtKlVr1Bo+JGuMOTbmOfYVd1wP6Wu7TjuMtorrMbh8L5iyp83j9FNUHaFi+1Sw4hYQC2IMKHaVwzNraltNFA4ermRIqnaerVcg=
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR04MB4222.eurprd04.prod.outlook.com (2603:10a6:803:46::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.11; Wed, 23 Sep
+ 2020 20:45:49 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3412.020; Wed, 23 Sep 2020
+ 20:45:48 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next] net: mscc: ocelot: always pass skb clone to
+ ocelot_port_add_txtstamp_skb
+Thread-Topic: [PATCH net-next] net: mscc: ocelot: always pass skb clone to
+ ocelot_port_add_txtstamp_skb
+Thread-Index: AQHWkZwgfSWJjFtWWU2aMSGYdOEjdal2p0AAgAAEDoCAAAOhAIAAAuEA
+Date:   Wed, 23 Sep 2020 20:45:48 +0000
+Message-ID: <20200923204548.k2f44gjl7s4dwoim@skbuf>
+References: <20200923112420.2147806-1-vladimir.oltean@nxp.com>
+ <20200923200800.t7y47fagvgffw4ya@soft-dev3.localdomain>
+ <20200923202231.vr5ll2yu4gztqzwj@skbuf>
+ <20200923203530.lenv5jedwmtefwqu@soft-dev3.localdomain>
+In-Reply-To: <20200923203530.lenv5jedwmtefwqu@soft-dev3.localdomain>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: microchip.com; dkim=none (message not signed)
+ header.d=none;microchip.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.217.212]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: bf83fe14-5cf7-4017-4410-08d86001a73c
+x-ms-traffictypediagnostic: VI1PR04MB4222:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB4222100DEFEC0E985872984FE0380@VI1PR04MB4222.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hWJZoEmnsDD8MY1bFiVEOTRe1uFiVQxZKr2enP9Ww6LFbm8AYIqv8WoBtZKXhZ8R0apl16OGb9RwCayJWGq2GfVcC2ehXelde337W+cGoPCwEy0vp8V9YQLkd3P1XmTWmT1uma1tXpQFP+gEX7yOaFG+7YhoRLJVnfG/SohF+wWead1uoZFpB01iP3zJu+zTeTPuGhqnhJD+X9bVXFBOzaviN0yCXfJyeiBzZXtcSPujWHGSgfpKC7NhU4Z6l7JMz6I0Vh2USUouuE5ZFHxiHv8yJ8VY7EpNzppowI4dkZ67mXhZozw3JPuKMhYWqhBnAxq9XAWvOFQ1wriNjFTo7Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(136003)(396003)(346002)(376002)(366004)(39860400002)(6486002)(66946007)(1076003)(186003)(26005)(4326008)(6512007)(33716001)(6506007)(83380400001)(71200400001)(54906003)(9686003)(6916009)(316002)(76116006)(5660300002)(8676002)(8936002)(86362001)(478600001)(7416002)(91956017)(66556008)(44832011)(2906002)(66446008)(66476007)(64756008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: TE4SZUi9xUd8OK8nRFyie3BLjbfglUog8pLNHQUZzRnc1w4J0vWo+ijubsyqX1S1++2E5OHJA+sjgU8YZDkwkwv+1PHcGUhhgN1DOiqiI7iGKIEB3A10z0tA/SoFe6qJ5PZEcbBcofppeCOrw68W92zCPIoonPpW8x6AQYnwRcS8GDLcyRjVmaC67QBBNwBf6kwcIoSu7Z6BOZUGvpvnWnFtwTBUBxtK3ZPhWDw5GgFpiib7anmwXl4ORtfoOl6zyPIFLCkuzXAS0o/9osS6hux+zZzqYnS9dIQTB0mprGuhmmNtKqTHDX/5kiSTgv9dqcc4oglf4pnWL/L/ym237oeXd0UW5cml6VoXhuprByOj9u8tq0Umke+50SIU+3r71b8M6YWXrmpHXJw2t2bnJwaWdPAwuBSzb63EG/2egYdc3+d9HQatuhHWmElwoFO8CK3ORcmKDo/gO9FMdQFU39IgIpo9gSZDBiyUIRwBoBPGCYtMpCAqK5pKd3LlHQo/ACusFDXAxxBayPcrMkbA/+TJRyZUdqM1CIJxxSiRSaj99VVVrHiZQuO27a7lI8HCkoAD6Go1um+9C8WxQsQ1vJJI8qbt8JW7xWKRFh3OoEz95ffw71rtmvyzkGXDmBFHp6kXKu2qq1OXeWirGX3SjA==
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <953FCED5699B104CB187B509EDA03567@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bf83fe14-5cf7-4017-4410-08d86001a73c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2020 20:45:48.8734
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: DMp2F3z0TcVc0vx8c2H0cBPDdlm7K0CyRKTxrTZj/dw1Re9fa/lyZSesv4O9bfrXEp2oMKDqrRRxLKWQ5eaPzw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4222
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the B53 driver to support VLANs while not filtering. This
-requires us to enable VLAN globally within the switch upon driver
-initial configuration (dev->vlan_enabled).
+On Wed, Sep 23, 2020 at 10:35:30PM +0200, Horatiu Vultur wrote:
+> The 09/23/2020 20:22, Vladimir Oltean wrote:
+> > On Wed, Sep 23, 2020 at 10:08:00PM +0200, Horatiu Vultur wrote:
+> > > The 09/23/2020 14:24, Vladimir Oltean wrote:
+> > > > +               if (ocelot_port->ptp_cmd =3D=3D IFH_REW_OP_TWO_STEP=
+_PTP) {
+> > > > +                       struct sk_buff *clone;
+> > > > +
+> > > > +                       clone =3D skb_clone_sk(skb);
+> > > > +                       if (!clone) {
+> > > > +                               kfree_skb(skb);
+> > > > +                               return NETDEV_TX_OK;
+> > >
+> > > Why do you return NETDEV_TX_OK?
+> > > Because the frame is not sent yet.
+> >
+> > I suppose I _could_ increment the tx_dropped counters, if that's what
+> > you mean.
+>
+> Yeah, something like that I was thinking.
+>
+> Also I am just thinking, not sure if it is correct but, can you return
+> NETDEV_TX_BUSY and not free the skb?
+>
 
-We also need to remove the code that dealt with PVID re-configuration in
-b53_vlan_filtering() since that function worked under the assumption
-that it would only be called to make a bridge VLAN filtering, or not
-filtering, and we would attempt to move the port's PVID accordingly.
+Do you have a use case for NETDEV_TX_BUSY instead of plain dropping the
+skb, some situation where it would be better?
 
-Now that VLANs are programmed all the time, even in the case of a
-non-VLAN filtering bridge, we would be programming a default_pvid for
-the bridged switch ports.
+I admit I haven't tested this particular code path, but my intuition
+tells me that under OOM, the last thing you need is some networking
+driver just trying and trying again to send a packet.
 
-We need the DSA receive path to pop the VLAN tag if it is the bridge's
-default_pvid because the CPU port is always programmed tagged in the
-programmed VLANs. In order to do so we utilize the
-dsa_untag_bridge_pvid() helper introduced in the commit before by
-setting ds->untag_bridge_pvid to true.
+Documentation/networking/driver.rst:
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/dsa/b53/b53_common.c | 19 ++-----------------
- drivers/net/dsa/b53/b53_priv.h   |  1 -
- net/dsa/tag_brcm.c               | 16 ++++++++++++++--
- 3 files changed, 16 insertions(+), 20 deletions(-)
+1) The ndo_start_xmit method must not return NETDEV_TX_BUSY under
+   any normal circumstances.  It is considered a hard error unless
+   there is no way your device can tell ahead of time when it's
+   transmit function will become busy.
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 6a5796c32721..73507cff3bc4 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1377,23 +1377,6 @@ EXPORT_SYMBOL(b53_phylink_mac_link_up);
- int b53_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering)
- {
- 	struct b53_device *dev = ds->priv;
--	u16 pvid, new_pvid;
--
--	b53_read16(dev, B53_VLAN_PAGE, B53_VLAN_PORT_DEF_TAG(port), &pvid);
--	if (!vlan_filtering) {
--		/* Filtering is currently enabled, use the default PVID since
--		 * the bridge does not expect tagging anymore
--		 */
--		dev->ports[port].pvid = pvid;
--		new_pvid = b53_default_pvid(dev);
--	} else {
--		/* Filtering is currently disabled, restore the previous PVID */
--		new_pvid = dev->ports[port].pvid;
--	}
--
--	if (pvid != new_pvid)
--		b53_write16(dev, B53_VLAN_PAGE, B53_VLAN_PORT_DEF_TAG(port),
--			    new_pvid);
- 
- 	b53_enable_vlan(dev, dev->vlan_enabled, vlan_filtering);
- 
-@@ -2619,6 +2602,8 @@ struct b53_device *b53_switch_alloc(struct device *base,
- 	dev->priv = priv;
- 	dev->ops = ops;
- 	ds->ops = &b53_switch_ops;
-+	ds->configure_vlan_while_not_filtering = true;
-+	dev->vlan_enabled = ds->configure_vlan_while_not_filtering;
- 	mutex_init(&dev->reg_mutex);
- 	mutex_init(&dev->stats_mutex);
- 
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index c55c0a9f1b47..24893b592216 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -91,7 +91,6 @@ enum {
- struct b53_port {
- 	u16		vlan_ctl_mask;
- 	struct ethtool_eee eee;
--	u16		pvid;
- };
- 
- struct b53_vlan {
-diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
-index cc8512b5f9e2..703770161738 100644
---- a/net/dsa/tag_brcm.c
-+++ b/net/dsa/tag_brcm.c
-@@ -7,6 +7,7 @@
- 
- #include <linux/etherdevice.h>
- #include <linux/list.h>
-+#include <linux/if_vlan.h>
- #include <linux/slab.h>
- 
- #include "dsa_priv.h"
-@@ -140,6 +141,11 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
- 	/* Remove Broadcom tag and update checksum */
- 	skb_pull_rcsum(skb, BRCM_TAG_LEN);
- 
-+	/* Set the MAC header to where it should point for
-+	 * dsa_untag_bridge_pvid() to parse the correct VLAN header.
-+	 */
-+	skb_set_mac_header(skb, -ETH_HLEN);
-+
- 	skb->offload_fwd_mark = 1;
- 
- 	return skb;
-@@ -191,7 +197,7 @@ static struct sk_buff *brcm_tag_rcv(struct sk_buff *skb, struct net_device *dev,
- 		nskb->data - ETH_HLEN - BRCM_TAG_LEN,
- 		2 * ETH_ALEN);
- 
--	return nskb;
-+	return dsa_untag_bridge_pvid(nskb);
- }
- 
- static const struct dsa_device_ops brcm_netdev_ops = {
-@@ -219,8 +225,14 @@ static struct sk_buff *brcm_tag_rcv_prepend(struct sk_buff *skb,
- 					    struct net_device *dev,
- 					    struct packet_type *pt)
- {
-+	struct sk_buff *nskb;
-+
- 	/* tag is prepended to the packet */
--	return brcm_tag_rcv_ll(skb, dev, pt, ETH_HLEN);
-+	nskb = brcm_tag_rcv_ll(skb, dev, pt, ETH_HLEN);
-+	if (!nskb)
-+		return nskb;
-+
-+	return dsa_untag_bridge_pvid(nskb);
- }
- 
- static const struct dsa_device_ops brcm_prepend_netdev_ops = {
--- 
-2.25.1
+Looking up the uses of NETDEV_TX_BUSY, I see pretty much only congestion
+type of events.
 
+Thanks,
+-Vladimir=
