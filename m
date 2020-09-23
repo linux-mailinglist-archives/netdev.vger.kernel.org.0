@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 078F7276113
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 21:32:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 694AA276128
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 21:36:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726545AbgIWTcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 15:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52014 "EHLO
+        id S1726518AbgIWTgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 15:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726156AbgIWTcC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 15:32:02 -0400
+        with ESMTP id S1726156AbgIWTgZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 15:36:25 -0400
 Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27334C0613CE;
-        Wed, 23 Sep 2020 12:32:02 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id j76so594218ybg.3;
-        Wed, 23 Sep 2020 12:32:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8ADC0613CE;
+        Wed, 23 Sep 2020 12:36:25 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id k2so577322ybp.7;
+        Wed, 23 Sep 2020 12:36:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qvrywX009Zrhg1Nr4phrUNsg3bVBoco0YGtGDLFAUo4=;
-        b=ocqyLFjwQ9gjIu4tHIJF/JaXdG10fiOuvbbS4aKFESpHiEBE3K/qHV3bzw1D181jVb
-         NCpfDlIB/wKUoT9rV3pb8xXkEYcYK3jP13sWnMtk/9qJxEqjSJF8cAK5IxYdv/uBaeTm
-         aog/iekGqfTLoLub50nIA/SVdfVfNec497IhN8FXeAhG0X0vAoy8l1LdzzJWMRaI4Jb9
-         93b6QEGHgvVYFOaCeRqXwLMGt+g0JYdgDdqs55nl1VQ2hrZTVXajBlFH+3NcbpwkvSro
-         w58stcA2UxcnUNuMedmOVn59Pr88AuKONpFSFma8P0oQ+AlE64stbm0BotcdpMlsgX40
-         rEHg==
+        bh=3hTOlgzTl5hJRV97NQpy5QEUIjKm+U3ejE9GCIupaz8=;
+        b=KjScLvjv2844xRGXGn/zV7dYSzkYv+O5YQ73hbPbsQfKnuPMv6eFNjG4qq+3HNEPB5
+         +bKObDLcC6LmX3ACWdEO1wOFnkFtAmon9u1UbtyGVlkgb5rBdHtdfSfVXod1ro+7wVR0
+         x1zIj0SlN1s87zBQ7cGC50CMKNyHmznP6+zWSQXXWqx9AXjeY6ATsKJK64SfBNR14Crm
+         Ugoit+zWn2LgJv6/vxuQYmT+qcJtcgD9/RFpZHrjXRvsrSN77PbsdY+E/TC+U3aJBmvD
+         LnNdXw8K7+aCLrkaFJ6XJ7No4Ps/TIICHIXCSxW3qsl8X+uc3P/qkZ8wp+JJGvBvvcgi
+         O43A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qvrywX009Zrhg1Nr4phrUNsg3bVBoco0YGtGDLFAUo4=;
-        b=oESKNYqC0wxnWk8RBcMP6pGIAIi91gWV7WnfrnJ6UwkKF1s+yUK9CH2jU6R+DoKeLB
-         dM2Uo72GXmndo2kXTdZ1atEBZ2hHToyi5VEmUvRHWlBMlMZw9ciusFnJ2myWNLyxgvK5
-         Xdb+bqSQlYaEPnDaNyzdTzS0/8NZzdrbo+JM49NPClLzSAOnaRQbBcCjrjTIeVaEIGN5
-         MrGNfHXf5uXvlIjw4nWUxGsbMMGVQVVSiu8LXe5Krk50Y918uSybgewK8dqM6EAa1R8R
-         xDvRoQjfGtXokModMzBTZkKkbVk7vOpbZFIFogfxG41Yf/88EgBuRlfD0yd4Jtd9toCb
-         PeHg==
-X-Gm-Message-State: AOAM530LTYNBDzMDK1xPuS9gzNY2ZZbl5e3C3/1Xy9BKDq/iSrCojkfC
-        uN+RID836sZ6MiK1l8goAg4kb/mAJr6UKO6un60=
-X-Google-Smtp-Source: ABdhPJzc0VjcP8e6RN+G5m7UdQqry9I0fkF/9hWxwPfI4KONW1Nef3hZegJLMQeVqDtPNedZFu7NBwy4CNQ5b5S4CIU=
-X-Received: by 2002:a25:33c4:: with SMTP id z187mr2193926ybz.27.1600889521377;
- Wed, 23 Sep 2020 12:32:01 -0700 (PDT)
+        bh=3hTOlgzTl5hJRV97NQpy5QEUIjKm+U3ejE9GCIupaz8=;
+        b=K8Yokmpoh5bQ0nRyN+T8u87QvzJLS+pJmKROyYTW7HJvnX8FPZOcjUy+fv8NCM+lLo
+         FpcIH+Utrtbx87AO2hUbzoAdVif2qFRMlnH4TCLQLg0Oo7sGQp+m/GCGLp+sLZ5XAl9A
+         Rknp4yppgAKNqS7jGuAg66W8boP6N8KUP8nQlxUCuSHDSW2VinXk34si+/NRkJRVfYx/
+         sfFKS0zhYMvFbBLebcg/Ok/EMQqKjwxOBXbSGPET0VH5KnuFmXR/YaZyOXAXSsZTsYQt
+         XqR5DqfA3bk/5c95e4TaNMo1oV6ZStMmZ8Dda51n4JopdFCHo2EDjDnpXQOX0fiihiIR
+         t4UA==
+X-Gm-Message-State: AOAM531EFRPkVPAgRZqrTqTq2ups4Bl7S7ZQFM2pkM/np936omeInCd1
+        MYryYfRbDG1Lppnb4KD6LsXu7aJ+byHwvVz6lv0=
+X-Google-Smtp-Source: ABdhPJznHSeYzekj8iQlaJRt+Ay4uhcrHoEr/mhynAiJzVJP8XK+CMu8BJWnWJRIg7lJJRf/FcA5r1PFsYhjx+YK2Wc=
+X-Received: by 2002:a25:4446:: with SMTP id r67mr2118098yba.459.1600889784361;
+ Wed, 23 Sep 2020 12:36:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200923165401.2284447-1-songliubraving@fb.com> <20200923165401.2284447-3-songliubraving@fb.com>
-In-Reply-To: <20200923165401.2284447-3-songliubraving@fb.com>
+References: <20200923165401.2284447-1-songliubraving@fb.com> <20200923165401.2284447-2-songliubraving@fb.com>
+In-Reply-To: <20200923165401.2284447-2-songliubraving@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 23 Sep 2020 12:31:50 -0700
-Message-ID: <CAEf4BzZ-qPNjDEvviJKHfLD7t7YJ97PdGixGQ_f70AJEg5oVEg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 2/3] libbpf: introduce bpf_prog_test_run_xattr_opts
+Date:   Wed, 23 Sep 2020 12:36:12 -0700
+Message-ID: <CAEf4BzYfnhtZN9d6x2BnvktZk_BL=H6gfSxS_qeVTR5_QJAWqA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: enable BPF_PROG_TEST_RUN for raw_tracepoint
 To:     Song Liu <songliubraving@fb.com>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Kernel Team <kernel-team@fb.com>,
@@ -62,67 +62,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 9:55 AM Song Liu <songliubraving@fb.com> wrote:
+On Wed, Sep 23, 2020 at 9:54 AM Song Liu <songliubraving@fb.com> wrote:
 >
-> This API supports new field cpu_plus in bpf_attr.test.
+> Add .test_run for raw_tracepoint. Also, introduce a new feature that runs
+> the target program on a specific CPU. This is achieved by a new flag in
+> bpf_attr.test, cpu_plus. For compatibility, cpu_plus == 0 means run the
+> program on current cpu, cpu_plus > 0 means run the program on cpu with id
+> (cpu_plus - 1). This feature is needed for BPF programs that handle
+> perf_event and other percpu resources, as the program can access these
+> resource locally.
 >
 > Acked-by: John Fastabend <john.fastabend@gmail.com>
 > Signed-off-by: Song Liu <songliubraving@fb.com>
 > ---
->  tools/lib/bpf/bpf.c      | 13 ++++++++++++-
->  tools/lib/bpf/bpf.h      | 11 +++++++++++
->  tools/lib/bpf/libbpf.map |  1 +
->  3 files changed, 24 insertions(+), 1 deletion(-)
+>  include/linux/bpf.h            |  3 ++
+>  include/uapi/linux/bpf.h       |  5 ++
+>  kernel/bpf/syscall.c           |  2 +-
+>  kernel/trace/bpf_trace.c       |  1 +
+>  net/bpf/test_run.c             | 88 ++++++++++++++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h |  5 ++
+>  6 files changed, 103 insertions(+), 1 deletion(-)
 >
-> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-> index 2baa1308737c8..3228dd60fa32f 100644
-> --- a/tools/lib/bpf/bpf.c
-> +++ b/tools/lib/bpf/bpf.c
-> @@ -684,7 +684,8 @@ int bpf_prog_test_run(int prog_fd, int repeat, void *data, __u32 size,
->         return ret;
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index d7c5a6ed87e30..23758c282eb4b 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1376,6 +1376,9 @@ int bpf_prog_test_run_tracing(struct bpf_prog *prog,
+>  int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
+>                                      const union bpf_attr *kattr,
+>                                      union bpf_attr __user *uattr);
+> +int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
+> +                            const union bpf_attr *kattr,
+> +                            union bpf_attr __user *uattr);
+>  bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+>                     const struct bpf_prog *prog,
+>                     struct bpf_insn_access_aux *info);
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index a22812561064a..89acf41913e70 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -566,6 +566,11 @@ union bpf_attr {
+>                                                  */
+>                 __aligned_u64   ctx_in;
+>                 __aligned_u64   ctx_out;
+> +               __u32           cpu_plus;       /* run this program on cpu
+> +                                                * (cpu_plus - 1).
+> +                                                * If cpu_plus == 0, run on
+> +                                                * current cpu.
+> +                                                */
+
+the "_plus" part of the name is so confusing, just as off-by-one
+semantics.. Why not do what we do with BPF_PROG_ATTACH? I.e., we have
+flags field, and if the specific bit is set then we use extra field's
+value. In this case, you'd have:
+
+__u32 flags;
+__u32 cpu; /* naturally 0-based */
+
+cpu indexing will be natural without any offsets, and you'll have
+something like BPF_PROG_TEST_CPU flag, that needs to be specified.
+This will work well with backward/forward compatibility. If you need a
+special "current CPU" mode, you can achieve that by not specifying
+BPF_PROG_TEST_CPU flag, or we can designate (__u32)-1 as a special
+"current CPU" value.
+
+WDYT?
+
+
+>         } test;
+>
+>         struct { /* anonymous struct used by BPF_*_GET_*_ID */
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index ec68d3a23a2b7..4664531ff92ea 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -2975,7 +2975,7 @@ static int bpf_prog_query(const union bpf_attr *attr,
+>         }
 >  }
 >
-> -int bpf_prog_test_run_xattr(struct bpf_prog_test_run_attr *test_attr)
-> +int bpf_prog_test_run_xattr_opts(struct bpf_prog_test_run_attr *test_attr,
-> +                                const struct bpf_prog_test_run_opts *opts)
-
-opts are replacement for test_attr, not an addition to it. We chose to
-use _xattr suffix for low-level APIs previously, but it's already
-"taken". So I'd suggest to go with just  bpf_prog_test_run_ops and
-have prog_fd as a first argument and then put all the rest of
-test_run_attr into opts.
-
-BTW, it's also probably overdue to have a higher-level
-bpf_program__test_run(), which can re-use the same
-bpf_prog_test_run_opts options struct. It would be more convenient to
-use it with libbpf bpf_object/bpf_program APIs.
-
->  {
->         union bpf_attr attr;
->         int ret;
-> @@ -693,6 +694,11 @@ int bpf_prog_test_run_xattr(struct bpf_prog_test_run_attr *test_attr)
->                 return -EINVAL;
->
->         memset(&attr, 0, sizeof(attr));
-> +       if (opts) {
-
-you don't need to check opts for being not NULL, OPTS_VALID handle that already.
-
-> +               if (!OPTS_VALID(opts, bpf_prog_test_run_opts))
-> +                       return -EINVAL;
-> +               attr.test.cpu_plus = opts->cpu_plus;
-
-And here you should use OPTS_GET(), please see other examples in
-libbpf for proper usage.
-
-
-> +       }
->         attr.test.prog_fd = test_attr->prog_fd;
->         attr.test.data_in = ptr_to_u64(test_attr->data_in);
->         attr.test.data_out = ptr_to_u64(test_attr->data_out);
-> @@ -712,6 +718,11 @@ int bpf_prog_test_run_xattr(struct bpf_prog_test_run_attr *test_attr)
->         return ret;
->  }
+> -#define BPF_PROG_TEST_RUN_LAST_FIELD test.ctx_out
+> +#define BPF_PROG_TEST_RUN_LAST_FIELD test.cpu_plus
 >
 
 [...]
