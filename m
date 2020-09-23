@@ -2,87 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BF092757C8
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 14:18:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D768C275847
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 14:53:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726540AbgIWMSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 08:18:00 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51128 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726130AbgIWMR7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 08:17:59 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kL3iW-00FsW6-JS; Wed, 23 Sep 2020 14:17:48 +0200
-Date:   Wed, 23 Sep 2020 14:17:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     jeffrey.t.kirsher@intel.com,
+        id S1726689AbgIWMxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 08:53:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726605AbgIWMxO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 08:53:14 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A4FCC0613D1
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 05:53:14 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kL4Gf-0003nL-8o; Wed, 23 Sep 2020 14:53:05 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kL4Gd-0007RW-3w; Wed, 23 Sep 2020 14:53:03 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     mkl@pengutronix.de, Wolfgang Grandegger <wg@grandegger.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] e1000e: Power cycle phy on PM resume
-Message-ID: <20200923121748.GE3770354@lunn.ch>
-References: <20200923074751.10527-1-kai.heng.feng@canonical.com>
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, Thomas Kopp <thomas.kopp@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1] dt-binding: can: mcp25xxfd: documentation fixes
+Date:   Wed, 23 Sep 2020 14:53:01 +0200
+Message-Id: <20200923125301.27200-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200923074751.10527-1-kai.heng.feng@canonical.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 03:47:51PM +0800, Kai-Heng Feng wrote:
-> We are seeing the following error after S3 resume:
-> [  704.746874] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-> [  704.844232] e1000e 0000:00:1f.6 eno1: MDI Write did not complete
-> [  704.902817] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-> [  704.903075] e1000e 0000:00:1f.6 eno1: reading PHY page 769 (or 0x6020 shifted) reg 0x17
-> [  704.903281] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-> [  704.903486] e1000e 0000:00:1f.6 eno1: writing PHY page 769 (or 0x6020 shifted) reg 0x17
-> [  704.943155] e1000e 0000:00:1f.6 eno1: MDI Error
-> ...
-> [  705.108161] e1000e 0000:00:1f.6 eno1: Hardware Error
-> 
-> Since we don't know what platform firmware may do to the phy, so let's
-> power cycle the phy upon system resume to resolve the issue.
-> 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->  drivers/net/ethernet/intel/e1000e/netdev.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-> index 664e8ccc88d2..c2a87a408102 100644
-> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-> @@ -6968,6 +6968,8 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
->  	    !e1000e_check_me(hw->adapter->pdev->device))
->  		e1000e_s0ix_exit_flow(adapter);
->  
-> +	e1000_power_down_phy(adapter);
-> +
+Apply following fixes:
+- Use 'interrupts'. (interrupts-extended will automagically be supported
+  by the tools)
+- *-supply is always a single item. So, drop maxItems=1
+- add "additionalProperties: false" flag to detect unneeded properties.
 
-static void e1000_power_down_phy(struct e1000_adapter *adapter)
-{
-	struct e1000_hw *hw = &adapter->hw;
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ .../devicetree/bindings/net/can/microchip,mcp25xxfd.yaml  | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-	/* Power down the PHY so no link is implied when interface is down *
-	 * The PHY cannot be powered down if any of the following is true *
-	 * (a) WoL is enabled
-	 * (b) AMT is active
-	 * (c) SoL/IDER session is active
-	 */
-	if (!adapter->wol && hw->mac_type >= e1000_82540 &&
-	   hw->media_type == e1000_media_type_copper) {
+diff --git a/Documentation/devicetree/bindings/net/can/microchip,mcp25xxfd.yaml b/Documentation/devicetree/bindings/net/can/microchip,mcp25xxfd.yaml
+index aa2cad14d6d7..5beb00a614bf 100644
+--- a/Documentation/devicetree/bindings/net/can/microchip,mcp25xxfd.yaml
++++ b/Documentation/devicetree/bindings/net/can/microchip,mcp25xxfd.yaml
+@@ -24,7 +24,7 @@ properties:
+   reg:
+     maxItems: 1
+ 
+-  interrupts-extended:
++  interrupts:
+     maxItems: 1
+ 
+   clocks:
+@@ -32,11 +32,9 @@ properties:
+ 
+   vdd-supply:
+     description: Regulator that powers the CAN controller.
+-    maxItems: 1
+ 
+   xceiver-supply:
+     description: Regulator that powers the CAN transceiver.
+-    maxItems: 1
+ 
+   microchip,rx-int-gpios:
+     description:
+@@ -52,9 +50,11 @@ properties:
+ required:
+   - compatible
+   - reg
+-  - interrupts-extended
++  - interrupts
+   - clocks
+ 
++additionalProperties: false
++
+ examples:
+   - |
+     #include <dt-bindings/gpio/gpio.h>
+-- 
+2.28.0
 
-Could it be coming out of S3 because it just received a WoL?
-
-It seems unlikely that it is the MII_CR_POWER_DOWN which is helping,
-since that is an MDIO write itself. Do you actually know how this call
-to e1000_power_down_phy() fixes the issues?
-
-   Andrew
