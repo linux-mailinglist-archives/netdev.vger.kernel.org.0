@@ -2,75 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1B77275A87
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EADB9275A94
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726680AbgIWOoS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 23 Sep 2020 10:44:18 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:51941 "EHLO
+        id S1726774AbgIWOqf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 23 Sep 2020 10:46:35 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:52075 "EHLO
         youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgIWOoS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:44:18 -0400
-Received: from mail-pg1-f198.google.com ([209.85.215.198])
+        with ESMTP id S1726674AbgIWOqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:46:34 -0400
+Received: from mail-pg1-f200.google.com ([209.85.215.200])
         by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.86_2)
         (envelope-from <kai.heng.feng@canonical.com>)
-        id 1kL60F-00087t-SQ
-        for netdev@vger.kernel.org; Wed, 23 Sep 2020 14:44:16 +0000
-Received: by mail-pg1-f198.google.com with SMTP id x20so154728pgx.11
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 07:44:15 -0700 (PDT)
+        id 1kL62R-0008L8-Ey
+        for netdev@vger.kernel.org; Wed, 23 Sep 2020 14:46:31 +0000
+Received: by mail-pg1-f200.google.com with SMTP id e28so151172pgm.15
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 07:46:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
          :content-transfer-encoding:message-id:references:to;
-        bh=pLpsqwyAc34XRY67/IthHjRexsEe8HGW6p/p61VILpo=;
-        b=uLq1Wck5EWJzPTGuEtuCxXpDE0DyOo+XwviRo72CcixeOSgIswhAAXHXQ1tI7F3gBL
-         zTasDkFkJXPFmnSQ1aOUfIqdLP9XvNe7yek6Y7z5z3eQ70f181wGV5JR8+ErcEA4ahwG
-         7cka+4KQcEdYB4CRL4ASMr8aGDJ34xDaQPR6ZQWfGs4sbkxXJ3T4U/n39UkvQ6qpIoSk
-         jIst1O8VgKaSSnVe4hgZiCvbHE8WidOYOpZAUa4eJweJew5bOmnfOueLlejTugjgbBaU
-         BUWd5O2Qf4VDqTPtPl+FPKveFzKOrnXH3Q7UcZqSO1/iPvLJliNkP5G3oC+O1i+ZDHJ6
-         HFIA==
-X-Gm-Message-State: AOAM531K4FrtBJGfabi/ZskCYF4FmUYHWcOk2Zh2c39Yr8pF52VT8ZC8
-        oOH7vk/vXBIYYL/HIcRpSTk1moMhkD2oCn5Fsjs8rGhJdZDU0oa76QgkiWW37iEC1I/OkZOFfMZ
-        Vy9fm1lz1FVf64AItYPbgYSPIvBKXW3Eptw==
-X-Received: by 2002:a17:90a:e207:: with SMTP id a7mr9024635pjz.117.1600872254107;
-        Wed, 23 Sep 2020 07:44:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxwIIlGXDZa+VMJLNOd0CPYXdHbIh3zAqmGsa0AyAjb9Kn7ZGhqNeA+AcMSXkAZcadbGJc7UA==
-X-Received: by 2002:a17:90a:e207:: with SMTP id a7mr9024604pjz.117.1600872253706;
-        Wed, 23 Sep 2020 07:44:13 -0700 (PDT)
+        bh=IRV4DsqTHJS4UCf0ZaCBRMDHJJpdRDGlcpY0NuGhQ7g=;
+        b=X6jgmm8Ikhoy5HYSlLb7xFlc4EV9aHcqeuLc8rAvRjtezKDUTo++dA9yMIpx7sFO6D
+         MFikQeZwXTNWuLb8CZ+jxCfBI9XqJVbWq2XLlxucG7emGQ4wWwpQpU/Bqy5KkW2k7uEM
+         o1J66fCQrZf72CrgvTmzAAyeUtPgQI+G+I++rjXHqufQ9Sw1HqscdjU2AU1R+8juGNM2
+         rnSS2YaD984/Znz0o1oKgk6mrTHn6l8BkNYmHoAW0RI5VGAGnZM7lgKiku1Jtwlub2gG
+         lxK3bm5l/UDVsqo8W3I8WnfL76MWdUk9EwqWut9d1qpUpTmbFtsOdOd3xKFD5Uc2rJ1c
+         Te6g==
+X-Gm-Message-State: AOAM532KK9MooViwvrmNIq4XD71S/faTnkUpejad1MBY9lbSdhyrxSLb
+        +8zsa3vIGSi3Jr6xH7eEcDK+AcXjcCY8jEPlxAyTWnETZofXoOXNl/KZPM0F+5WVwRmi14r9Gnu
+        DeQpx0NCqSqQcmki2dOsuS+M9dP5I5/ILaQ==
+X-Received: by 2002:a63:7d5a:: with SMTP id m26mr66983pgn.373.1600872389147;
+        Wed, 23 Sep 2020 07:46:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzEca3T4aPQaV9RL6AocGE0yU0atcnRNqviEk4KyxvvK1PiNJGTRuAf0er4y9Q9pep6pePjdg==
+X-Received: by 2002:a63:7d5a:: with SMTP id m26mr66963pgn.373.1600872388857;
+        Wed, 23 Sep 2020 07:46:28 -0700 (PDT)
 Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net. [220.133.187.190])
-        by smtp.gmail.com with ESMTPSA id l141sm28777pfd.47.2020.09.23.07.44.11
+        by smtp.gmail.com with ESMTPSA id t10sm217313pgp.15.2020.09.23.07.46.27
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Sep 2020 07:44:13 -0700 (PDT)
+        Wed, 23 Sep 2020 07:46:28 -0700 (PDT)
 Content-Type: text/plain;
         charset=us-ascii
 Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [PATCH] e1000e: Power cycle phy on PM resume
+Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Power cycle phy on PM resume
 From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-In-Reply-To: <20200923121748.GE3770354@lunn.ch>
-Date:   Wed, 23 Sep 2020 22:44:10 +0800
-Cc:     jeffrey.t.kirsher@intel.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+In-Reply-To: <17092088-86ff-2d31-b3de-2469419136a3@molgen.mpg.de>
+Date:   Wed, 23 Sep 2020 22:46:25 +0800
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
         "moderated list:INTEL ETHERNET DRIVERS" 
         <intel-wired-lan@lists.osuosl.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
 Content-Transfer-Encoding: 8BIT
-Message-Id: <F6075687-7BC4-4348-86A8-29D83B7E5AAC@canonical.com>
+Message-Id: <AC6D77B8-244D-4816-8FFE-A4480378EC4C@canonical.com>
 References: <20200923074751.10527-1-kai.heng.feng@canonical.com>
- <20200923121748.GE3770354@lunn.ch>
-To:     Andrew Lunn <andrew@lunn.ch>
+ <17092088-86ff-2d31-b3de-2469419136a3@molgen.mpg.de>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
 X-Mailer: Apple Mail (2.3608.120.23.2.1)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Hi Paul,
 
-> On Sep 23, 2020, at 20:17, Andrew Lunn <andrew@lunn.ch> wrote:
+> On Sep 23, 2020, at 21:28, Paul Menzel <pmenzel@molgen.mpg.de> wrote:
 > 
-> On Wed, Sep 23, 2020 at 03:47:51PM +0800, Kai-Heng Feng wrote:
+> Dear Kai-Heng,
+> 
+> 
+> Am 23.09.20 um 09:47 schrieb Kai-Heng Feng:
 >> We are seeing the following error after S3 resume:
 >> [  704.746874] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
 >> [  704.844232] e1000e 0000:00:1f.6 eno1: MDI Write did not complete
@@ -81,75 +84,43 @@ Hi Andrew,
 >> [  704.943155] e1000e 0000:00:1f.6 eno1: MDI Error
 >> ...
 >> [  705.108161] e1000e 0000:00:1f.6 eno1: Hardware Error
->> 
 >> Since we don't know what platform firmware may do to the phy, so let's
 >> power cycle the phy upon system resume to resolve the issue.
->> 
+> 
+> Is there a bug report or list thread for this issue?
+
+No. That's why I sent a patch to start discussion :)
+
+> 
 >> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 >> ---
->> drivers/net/ethernet/intel/e1000e/netdev.c | 2 ++
->> 1 file changed, 2 insertions(+)
->> 
+>>  drivers/net/ethernet/intel/e1000e/netdev.c | 2 ++
+>>  1 file changed, 2 insertions(+)
 >> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
 >> index 664e8ccc88d2..c2a87a408102 100644
 >> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
 >> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
 >> @@ -6968,6 +6968,8 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
->> 	    !e1000e_check_me(hw->adapter->pdev->device))
->> 		e1000e_s0ix_exit_flow(adapter);
->> 
->> +	e1000_power_down_phy(adapter);
+>>  	    !e1000e_check_me(hw->adapter->pdev->device))
+>>  		e1000e_s0ix_exit_flow(adapter);
+>>  +	e1000_power_down_phy(adapter);
 >> +
+>>  	rc = __e1000_resume(pdev);
+>>  	if (rc)
+>>  		return rc;
 > 
-> static void e1000_power_down_phy(struct e1000_adapter *adapter)
-> {
-> 	struct e1000_hw *hw = &adapter->hw;
-> 
-> 	/* Power down the PHY so no link is implied when interface is down *
-> 	 * The PHY cannot be powered down if any of the following is true *
-> 	 * (a) WoL is enabled
-> 	 * (b) AMT is active
-> 	 * (c) SoL/IDER session is active
-> 	 */
-> 	if (!adapter->wol && hw->mac_type >= e1000_82540 &&
-> 	   hw->media_type == e1000_media_type_copper) {
+> How much does this increase the resume time?
 
-Looks like the the function comes from e1000, drivers/net/ethernet/intel/e1000/e1000_main.c.
-However, this patch is for e1000e, so the function with same name is different.
+I didn't measure it. Because for me it's more important to have a working device.
 
-> 
-> Could it be coming out of S3 because it just received a WoL?
-
-No, the issue can be reproduced by pressing keyboard or rtcwake.
-
-> 
-> It seems unlikely that it is the MII_CR_POWER_DOWN which is helping,
-> since that is an MDIO write itself. Do you actually know how this call
-> to e1000_power_down_phy() fixes the issues?
-
-I don't know from hardware's perspective, but I think the comment on e1000_power_down_phy_copper() can give us some insight:
-
-/**
- * e1000_power_down_phy_copper - Restore copper link in case of PHY power down
- * @hw: pointer to the HW structure
- *
- * In the case of a PHY power down to save power, or to turn off link during a
- * driver unload, or wake on lan is not enabled, restore the link to previous
- * settings.                       
- **/
-void e1000_power_down_phy_copper(struct e1000_hw *hw)
-{
-        u16 mii_reg = 0;
-
-        /* The PHY will retain its settings across a power down/up cycle */
-        e1e_rphy(hw, MII_BMCR, &mii_reg);
-        mii_reg |= BMCR_PDOWN;
-        e1e_wphy(hw, MII_BMCR, mii_reg);
-        usleep_range(1000, 2000);
-}
+Does it have a noticeable impact on your system's resume time?
 
 Kai-Heng
 
 > 
->   Andrew
+> 
+> Kind regards,
+> 
+> Paul
+> 
 
