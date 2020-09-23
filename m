@@ -2,80 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD0952759B3
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:17:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 235DB2759CC
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:21:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726701AbgIWORG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 10:17:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59662 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgIWORF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:17:05 -0400
-Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07F8C0613CE;
-        Wed, 23 Sep 2020 07:17:04 -0700 (PDT)
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kL5Zm-004aBB-Mq; Wed, 23 Sep 2020 14:16:54 +0000
-Date:   Wed, 23 Sep 2020 15:16:54 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        David Laight <David.Laight@aculab.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-aio@kvack.org, io-uring@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH 3/9] iov_iter: refactor rw_copy_check_uvector and
- import_iovec
-Message-ID: <20200923141654.GJ3421308@ZenIV.linux.org.uk>
-References: <20200923060547.16903-1-hch@lst.de>
- <20200923060547.16903-4-hch@lst.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200923060547.16903-4-hch@lst.de>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+        id S1726636AbgIWOVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 10:21:20 -0400
+Received: from mx2.suse.de ([195.135.220.15]:56154 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726130AbgIWOVU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 10:21:20 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1600870879;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tZWkBOW6OkyhpRIUicvESlEm1fQJupW4N/xDOD1gvLc=;
+        b=Th4XZjSPlywXH6zCrM7dRqvtQDp/fjEjNRk//qQhxhFDqdpwg8cWymJ+mAtRzt5503Jpwl
+        oqI/f5UQ1RzPm60+DU2G6I4H8HG/3tzW8mykBylZ2wrfIGGbT94h3014agaNVmMh+TVh+b
+        G8SR8D939WpImyI4CKO44vvds1G44Ok=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 6FBEAB29E;
+        Wed, 23 Sep 2020 14:21:56 +0000 (UTC)
+Message-ID: <1600870858.25088.1.camel@suse.com>
+Subject: Re: [PATCH 3/4] net: usb: rtl8150: use usb_control_msg_recv() and
+ usb_control_msg_send()
+From:   Oliver Neukum <oneukum@suse.com>
+To:     Himadri Pandya <himadrispandya@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        pankaj.laxminarayan.bharadiya@intel.com,
+        Kees Cook <keescook@chromium.org>, yuehaibing@huawei.com,
+        petkan@nucleusys.com, ogiannou@gmail.com,
+        USB list <linux-usb@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Greg KH <gregkh@linuxfoundation.org>
+Date:   Wed, 23 Sep 2020 16:20:58 +0200
+In-Reply-To: <CAOY-YVkHycXqem_Xr6nQLgKEunk3MNc7dBtZ=5Aym4Y06vs9xQ@mail.gmail.com>
+References: <20200923090519.361-1-himadrispandya@gmail.com>
+         <20200923090519.361-4-himadrispandya@gmail.com>
+         <1600856557.26851.6.camel@suse.com>
+         <CAOY-YVkHycXqem_Xr6nQLgKEunk3MNc7dBtZ=5Aym4Y06vs9xQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 08:05:41AM +0200, Christoph Hellwig wrote:
+Am Mittwoch, den 23.09.2020, 19:36 +0530 schrieb Himadri Pandya:
+> On Wed, Sep 23, 2020 at 3:52 PM Oliver Neukum <oneukum@suse.com> wrote:
+> > 
+> > Am Mittwoch, den 23.09.2020, 14:35 +0530 schrieb Himadri Pandya:
 
-> +struct iovec *iovec_from_user(const struct iovec __user *uvec,
-> +		unsigned long nr_segs, unsigned long fast_segs,
+> > GFP_NOIO is used here for a reason. You need to use this helper
+> > while in contexts of error recovery and runtime PM.
+> > 
+> 
+> Understood. Apologies for proposing such a stupid change.
 
-Hmm...  For fast_segs unsigned long had always been ridiculous
-(4G struct iovec on caller stack frame?), but that got me wondering about
-nr_segs and I wish I'd thought of that when introducing import_iovec().
+Hi,
 
-The thing is, import_iovec() takes unsigned int there.  Which is fine
-(hell, the maximal value that can be accepted in 1024), except that
-we do pass unsigned long syscall argument to it in some places.
+sorry if you concluded that the patch was stupid. That was not my
+intent. It was the best the API allowed for. If an API makes it
+easy to make a mistake, the problem is with the API, not the developer.
 
-E.g. vfs_readv() quietly truncates vlen to 32 bits, and vlen can
-come unchanged through sys_readv() -> do_readv() -> vfs_readv().
-With unsigned long passed by syscall glue.
+	Regards
+		Oliver
 
-AFAICS, passing 4G+1 as the third argument to readv(2) on 64bit box
-will be quietly treated as 1 these days.  Which would be fine, except
-that before "switch {compat_,}do_readv_writev() to {compat_,}import_iovec()"
-it used to fail with -EINVAL.
-
-Userland, BTW, describes readv(2) iovcnt as int; process_vm_readv(),
-OTOH, has these counts unsigned long from the userland POV...
-
-I suppose we ought to switch import_iovec() to unsigned long for nr_segs ;-/
-Strictly speaking that had been a userland ABI change, even though nothing
-except regression tests checking for expected errors would've been likely
-to notice.  And it looks like no regression tests covered that one...
-
-Linus, does that qualify for your "if no userland has noticed the change,
-it's not a breakage"?
