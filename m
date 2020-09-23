@@ -2,178 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 327A0275309
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 10:15:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE68627531F
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 10:21:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726460AbgIWIO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 04:14:56 -0400
-Received: from mail-am6eur05on2077.outbound.protection.outlook.com ([40.107.22.77]:4737
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726332AbgIWIO4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 04:14:56 -0400
+        id S1726516AbgIWIU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 04:20:59 -0400
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1908 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726178AbgIWIU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 04:20:59 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f6b053c0001>; Wed, 23 Sep 2020 01:20:12 -0700
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 23 Sep
+ 2020 08:20:54 +0000
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
+ by HQMAIL109.nvidia.com (172.20.187.15) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Wed, 23 Sep 2020 08:20:54 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ChlR2HokP1OSHtRgB9LvpWN8ejl6Z7rOq+VOFmsHmjGa2FkLM1PNm9Ub59X9kPEhVJnt/4/Jmhg5EZXEPQkVTlRB7Rbk8gctEiuHcg1q5s/znU78WjvA/GESprCfSAf4ROTm4+ef36AeK4IwB4VPQWkzVT8WnuL8gzDiUBsX7XfL1vERnKLQBM1HPonUXu5XMpuY3zatH17qY47+848qRHBbibNdKziQoVAsprhovsz/VHWC42vCf2wHJbkTQTPkpyFYoBr39O5qCrtDV4F5kR7HIfBJJ/bAaCBr2NwsyZwRpOtz4fYVWSsyI/Jck0HIr5sqjLdKW6I2VdxJaujTRw==
+ b=MBp6VdefvtGzYLnN0gjIHMqtvKQmU/tb2RJTvFX7QHVTQjgfAsA01t6FiKYkYCrHYe/e8ggb3vxoDTvusAk6T4Otb/ycCjXidUdmHC4sZFtRZQJRzNHjZQZGZe8rg6VdzqaSB2dwi1EsI4pqt5ViIa3f7i+EqglhN/YwL60V1ZAbVZnbotlFlTrslh+Dy5ImLiL9LP7G6PhFyXWsYFWl8mOqdW9moDs81Uxj6scbzpcsCQ1ierwSnwEJlSM2VYwSozLTmx4/7HYUZT07EqgntUZACaClzRrQnM4gRDA/3zZr1VzUJ5bAEVO+ykcF7qV31+Pa8op2djG6DuHJhvnUVQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QAZLN0lINzpkcuaEVG2Ae3K4V3KkAVhGlSKtBSRRPqI=;
- b=PFYPvTEoes/iFpRHlxluaJ2uxudQ2Um3ALgmfk1a9AjMdho2yXWxXxUrUuRMvSWna2cpqL0BH/f/rqgVQsqDvIxi0QvAFks/NJLAu8cX9SXo13ZyMcyqvy2o6F4vtmYfAnC0O0onE3tQSZatVV9C3uoQ3F617d3N6QIZC3AAqVHTmJj4+LLyPigTmLiujZzxLrZMa7K9WlkbJ0VeO86FAJhF+oLwA4w7+fz0NwF6iOTWaalj+aBzt1NqA58RvaFyyx6z+aslygxnfFE92OevrWSPa3nomNHgCPeraqBEe8MhPha9fC1/DN8tnSJIceZDtWHtrqdNuxFQi+UPXYUvFQ==
+ bh=4KUuACMDD6PBH+dEKYhQbAwOejlM0Ktxx6YNK/MWDbo=;
+ b=HHRAqsuUbEukob2CxQ7piqIVGx5r6bIiIhfvq946ZD69cnWcBO1wqRddT8EWZnX6xXOw9r2BLjLcSdM3wVaYwyXQixOcWqRT8X5VUidcCDzqdOzIx4bOeY2TrWRAbr3ilPsnmZsrbYO0qJUqxt0x9mcjARtHPVRLkO3hBovl+D8wNdXVQfvPcg5Ms8haSQ8caqo2Zh3Ves05AJDPE2uE7wDueT+pyLh+BDrbRoOKoxMiV4szq0OB3+Wturb9nwFXkCtA/noEUOXmmr9JH4vNpv4UyIX50MaV87Q3DDjh+w9ruyRy+rxMYx8vpPMboNHBzshFkV4xQxS0aihLydATqQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QAZLN0lINzpkcuaEVG2Ae3K4V3KkAVhGlSKtBSRRPqI=;
- b=YnKKNqhjMzLuT0JpMrTFAldCHhNVG//kedfdj9m5CR9NkEh6TAPxEtWGl3BQRrbH6RzOWZbdfzaB2MoDmSa387BY5sAMPQQcCD/2R0zfPoIwWVRmmtv7CgLcVHsqmjum0P110LMP84XGne9DmkoTIYTsTFWcZ0uZqxV5WUcwCug=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VE1PR04MB6701.eurprd04.prod.outlook.com (2603:10a6:803:124::17) with
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BYAPR12MB2823.namprd12.prod.outlook.com (2603:10b6:a03:96::33)
+ by BY5PR12MB4275.namprd12.prod.outlook.com (2603:10b6:a03:20a::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.11; Wed, 23 Sep
- 2020 08:14:51 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3412.020; Wed, 23 Sep 2020
- 08:14:51 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "nikolay@nvidia.com" <nikolay@nvidia.com>
-Subject: Re: [PATCH net-next 1/2] net: dsa: untag the bridge pvid from rx skbs
-Thread-Topic: [PATCH net-next 1/2] net: dsa: untag the bridge pvid from rx
- skbs
-Thread-Index: AQHWkVdQ8QBtwDGDZECVVPbKJwPzZ6l14IgA
-Date:   Wed, 23 Sep 2020 08:14:51 +0000
-Message-ID: <20200923081450.2ghr6am4vjci6cd4@skbuf>
-References: <20200923031155.2832348-1-f.fainelli@gmail.com>
- <20200923031155.2832348-2-f.fainelli@gmail.com>
-In-Reply-To: <20200923031155.2832348-2-f.fainelli@gmail.com>
+ 2020 08:20:52 +0000
+Received: from BYAPR12MB2823.namprd12.prod.outlook.com
+ ([fe80::7dd0:ad41:3d71:679b]) by BYAPR12MB2823.namprd12.prod.outlook.com
+ ([fe80::7dd0:ad41:3d71:679b%6]) with mapi id 15.20.3391.027; Wed, 23 Sep 2020
+ 08:20:52 +0000
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "lkp@intel.com" <lkp@intel.com>
+CC:     "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v2 12/16] net: bridge: mcast: install S,G entries
+ automatically based on reports
+Thread-Topic: [PATCH net-next v2 12/16] net: bridge: mcast: install S,G
+ entries automatically based on reports
+Thread-Index: AQHWkLJY7HGcSbvXrkyWm2Dfs8noZql14VYAgAACKoA=
+Date:   Wed, 23 Sep 2020 08:20:52 +0000
+Message-ID: <e3e9fec1ac857512ee37c6bbc8f67fa047778484.camel@nvidia.com>
+References: <20200922073027.1196992-13-razor@blackwall.org>
+         <202009231635.WjfHleMK%lkp@intel.com>
+In-Reply-To: <202009231635.WjfHleMK%lkp@intel.com>
+Reply-To: Nikolay Aleksandrov <nikolay@nvidia.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.217.212]
+user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+authentication-results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [84.238.136.197]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 3b609197-1c7c-422c-d483-08d85f98bf0f
-x-ms-traffictypediagnostic: VE1PR04MB6701:
-x-microsoft-antispam-prvs: <VE1PR04MB6701144803B682D2B48FFBCBE0380@VE1PR04MB6701.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3631;
+x-ms-office365-filtering-correlation-id: 473f164e-a953-4492-f6b7-08d85f99963c
+x-ms-traffictypediagnostic: BY5PR12MB4275:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR12MB4275E93CF4FA843F8A584118DF380@BY5PR12MB4275.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3968;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ZJT6mlITOcNLSJNVJxzhSquDrx3C2XQKoib7YA59+D5DpPERoTkCS1JqhickKlHnyECuM17LxiF8vGy0XZKD5zfgRCUpKIudeL/XX/mtemfInlXtpZm3ltwk/bgzLuRaEIbnymhJ4gJTjzyjLA55RjEbBkV2+XaPas4pKEw7JAZcsOiwrNMNvLyJWF4NwfIycMPL4THWcEV8GM24KsQXEX6Fy8ZqPLimJhBaGN8jpZqTDTQEHb47jpX3XqrLHvLbeXnyOEErXGLfwSfYHQPui4EbPvG35+6iJDNcOHP4VAEKa8FNvP/a1qB8UHTAIz5KiwN9E3BUBetzm38/2qabwSMpknJkfz3lsx2Deh0HbL58xCWtBvcyqr0arEek0mZn
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(136003)(39860400002)(396003)(346002)(376002)(366004)(9686003)(33716001)(6916009)(54906003)(44832011)(186003)(8676002)(5660300002)(8936002)(478600001)(6512007)(71200400001)(86362001)(6506007)(316002)(66556008)(66446008)(2906002)(66946007)(91956017)(76116006)(64756008)(1076003)(83380400001)(26005)(66476007)(6486002)(4326008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 542bPJHEKk9KXQjd0klOQbLHaTNrKUnraCwypou8ERzG8OXLjXAE2Cl2nPMgleJHKqg7lHhI4EJrqM6GA2mcLBzAjFXLsNnrUt4KoZLWlnhi67/O5IsAMGwc3QmhSlTzjx+nOEvCkMHpHgrFD3R3wZrgxRJqnTW4sWhsCg/taFGYSgBuu2dTs52TqDzRdXXKw0HMuBfAIBezBATsP/8tCAV6XAhne/il1MHZJhOHKRgSlGbL0j0y2lUwmZrvWvpBjQz+I7Hl/K/oJRxY/x/+iPKSeM/m67pHUNIdYxYkGfTR+FSFordeNUdPtur9KGYZOpmdSWPsaPfviBhaF+gMCr/Uo5V8Au1kt8vp4jm4nQF4tn4Nd5g53p8yR40eba9Jy39OH1m6PzbHPaTEopU6WRXSKGRkpbXooclVFoFeaXzHmHpJVaTj9JGC2Go06VYPGDlmX/q3gyZqMVybWP7f0y3g66rVA8D2fti9es1J0qZgIZ0GrsjxOf+k7/j/6ao8I7G2phewMn+bgw12MuXp42U3XbFnGrqQfqwMer38c4HKN3S7Ow/2Oc+9hZUkDinvtLreKU8PbmqUPyeg+eyc/h0FHl8otkIfMjoZSKSTBfWKSLtwVob7ibjlLbNNUCwiwuTBGCgeHDsgxTHINWdLlA==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <514A92A2362A2C42A8A648BC225AAA14@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: L2UunSWO6RLDt2CWKvne/phomyyMMq+wpVz3xW+I6ld8O8HrLWqfoHH8+TqARTOrO5r7KcBxKvofsNLyN04ASbkjNkPTcBU3ZgWFeVf297yIgyaY0r5+8QCYcDJ2GSyh24YckVHqa3DjRhO+cmPCo4zAko0DNVerjf5/Vkj3zEn29dQFEepKH+Nm8ydL/wsoP4eUjycRsYPu/3o4cSbnhCKJxCH3TyvtvffIUcnNplWxgrHA+Nay6d/H5M0FeWRt0QgqpSVYlD3/8fMsypyRVjuHB5xnzNQOML9GZGfM5s1XSFI+fBP6x2WbPEbHRLHvCyn6/MNgEYZ1jsW8sZ11jKLwR7mRPe1L99yuqgIkU7vyNb2Nk5PIdyXOtqlFIpeNP21F+7AZ875MzjUBZX8xPqcAtX0Zy9sOWJX4Lwck08Dg5Z/7kzuu0D5RcBJynJTomK7vlus1Z2TEnaV+jzasGztowxNUfH1evdfcQg+fPasjJtqFZNQRZl3h8X7wLL6i
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2823.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(396003)(376002)(136003)(346002)(966005)(5660300002)(3450700001)(478600001)(6512007)(36756003)(186003)(66446008)(64756008)(66556008)(66476007)(2616005)(8676002)(86362001)(76116006)(91956017)(6506007)(71200400001)(26005)(66946007)(2906002)(6486002)(8936002)(4326008)(54906003)(110136005)(316002)(83380400001)(142933001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: FsUgYL7Q92PJVDDIEJbTEYXY7lGcxrQQ87oD/44b7Uu/pEUkMrAxsm4Ybsb6XekObIs5jcXmYIKPPm161ufAjZYNA4CUzYTo6UaktIL5s4XU8S8YOCe5DwzI3f3jp0CH47vMtKVIEMANrCSis7IGR0ghd/xAvcUv97WgEkXxZRF2Z/jtVACk3R4PGwfHFuV0kRZbq0iZciYU+xfIl2pjKZOcBXKo/IYNd4WZEJsjZ6QuK7TzyLM4HDf+0k56rLk/v9tqoJlsYDcOGG/IEBJ2VtUaE2EtzKgE3RMph7s36GaArQO3Hg5N/Aqvo6WPIcOlLu1Kt66qHvz3gRl8tLIRAn17Jy4zv9Y/Xel+qHlpl+93tmIMLluCnQWGKX/wDOWOZ2Pz9pdg1qcO1lhXQWFwr4t860je+fC5QQmaB8FvMGcwFski3/rsns6o/yRvfYzcHsk+iXcQq6c1fSIjjGFrtXmbXr9W80luWypNvr6ROwvC+7Zav/TKflyAk8ldkJzewYLSnLptLHVHpjqxkacjnGFr99mjiP4+rr5COmXSRzAcCT+kibbpcLRBeQjQtNvlBY3g7SQaD5SlNZrsIRBXxhbhFfe5lqq6ubTjic6UIvlhdTekUBOOmO7trcxYB5jzzo7i7enA76PXTVrODm1rsA==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <332771DE6537A64D8F3A0CECE32C4953@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b609197-1c7c-422c-d483-08d85f98bf0f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2020 08:14:51.7229
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2823.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 473f164e-a953-4492-f6b7-08d85f99963c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2020 08:20:52.6046
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xCNeR52+3qGbrL/Zn6h5BIKYZSxEsLCAxi2CFREX//tILwpOWPfafoCfe7QhJbmSC8zU7Ianweo7NpxNtVXhIQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6701
+X-MS-Exchange-CrossTenant-userprincipalname: WSTTUjJw46+kq2qAPCIi/BO+obE+A4nJR9829IS3rdpJRpGfDCWbCaqqixLaJG8TKDmHtjP1tVKwpEPMNjdwww==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4275
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1600849212; bh=4KUuACMDD6PBH+dEKYhQbAwOejlM0Ktxx6YNK/MWDbo=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
+         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
+         In-Reply-To:Reply-To:Accept-Language:Content-Language:
+         X-MS-Has-Attach:X-MS-TNEF-Correlator:user-agent:
+         authentication-results:x-originating-ip:x-ms-publictraffictype:
+         x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
+         x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
+         x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
+         x-microsoft-antispam:x-microsoft-antispam-message-info:
+         x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
+         Content-Type:Content-ID:Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=mwx3Qmeg9Pq/UONgjxlfF1YFpiv0QOz2OmMPXwwGoaSRIHRnNk9s8YxnWHB3XhbD4
+         E1i+pyGIf0N/paeKw3O7GO5tZprBBzwguP2oEV4j9jkOFDrpQFpxmMXdIkkmZwJxvv
+         v9yLimDOLiGMQ1L+eb+vWrk8D9ZN95M2lsTsuoMqoSXmsznew/IiLo8+ZR8GwAVyXZ
+         yHc2ERN1FAsh7M/Uk4mU23qLOQ74uPLpMRtDAIZIKM2JD0HPlnejCJzcEE2v7O9rck
+         UiwbX+fczQXoqyAH/cZ5Lcm9Wt73hCyJgSD9fIRn8KLrbs21+v4CpDUV82jr2J3g2C
+         wnSel6YKGwokQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 22, 2020 at 08:11:54PM -0700, Florian Fainelli wrote:
-> diff --git a/include/net/dsa.h b/include/net/dsa.h
-> index d16057c5987a..b539241a7533 100644
-> --- a/include/net/dsa.h
-> +++ b/include/net/dsa.h
-> @@ -301,6 +301,14 @@ struct dsa_switch {
->  	 */
->  	bool			configure_vlan_while_not_filtering;
-> =20
-> +	/* If the switch driver always programs the CPU port as egress tagged
-> +	 * despite the VLAN configuration indicating otherwise, then setting
-> +	 * @untag_bridge_pvid will force the DSA receive path to pop the bridge=
-'s
-> +	 * default_pvid VLAN tagged frames to offer a consistent behavior
-> +	 * between a vlan_filtering=3D0 and vlan_filtering=3D1 bridge device.
-> +	 */
-> +	bool			untag_bridge_pvid;
-> +
->  	/* In case vlan_filtering_is_global is set, the VLAN awareness state
->  	 * should be retrieved from here and not from the per-port settings.
->  	 */
-> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-> index 5c18c0214aac..dec4ab59b7c4 100644
-> --- a/net/dsa/dsa.c
-> +++ b/net/dsa/dsa.c
-> @@ -225,6 +225,15 @@ static int dsa_switch_rcv(struct sk_buff *skb, struc=
-t net_device *dev,
->  	skb->pkt_type =3D PACKET_HOST;
->  	skb->protocol =3D eth_type_trans(skb, skb->dev);
-> =20
-> +	if (unlikely(cpu_dp->ds->untag_bridge_pvid)) {
-> +		nskb =3D dsa_untag_bridge_pvid(skb);
-> +		if (!nskb) {
-> +			kfree_skb(skb);
-> +			return 0;
-> +		}
-> +		skb =3D nskb;
-> +	}
-> +
->  	s =3D this_cpu_ptr(p->stats64);
->  	u64_stats_update_begin(&s->syncp);
->  	s->rx_packets++;
-
-I was thinking a lot simpler. Maybe you could just tail-call
-dsa_untag_bridge_pvid(skb) at the end of your .rcv function instead of
-putting it in the common receive path. I specifically wrote it to look
-at hdr->h_vlan_proto instead of skb->protocol, so it wouldn't depend on
-eth_type_trans().
-
-Something like:
-
-diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
-index 9c6c30649d13..118d253af5a7 100644
---- a/net/dsa/tag_brcm.c
-+++ b/net/dsa/tag_brcm.c
-@@ -192,7 +192,7 @@ static struct sk_buff *brcm_tag_rcv(struct sk_buff *skb=
-, struct net_device *dev,
- 		nskb->data - ETH_HLEN - BRCM_TAG_LEN,
- 		2 * ETH_ALEN);
-=20
--	return nskb;
-+	return dsa_untag_bridge_pvid(nskb);
- }
-=20
- static const struct dsa_device_ops brcm_netdev_ops =3D {
-@@ -220,8 +220,14 @@ static struct sk_buff *brcm_tag_rcv_prepend(struct sk_=
-buff *skb,
- 					    struct net_device *dev,
- 					    struct packet_type *pt)
- {
-+	struct sk_buff *nskb;
-+
- 	/* tag is prepended to the packet */
--	return brcm_tag_rcv_ll(skb, dev, pt, ETH_HLEN);
-+	nskb =3D brcm_tag_rcv_ll(skb, dev, pt, ETH_HLEN);
-+	if (!nskb)
-+		return nskb;
-+
-+	return dsa_untag_bridge_pvid(nskb);
- }
-=20
- static const struct dsa_device_ops brcm_prepend_netdev_ops =3D {
-
-Thanks,
--Vladimir=
+T24gV2VkLCAyMDIwLTA5LTIzIGF0IDE2OjEzICswODAwLCBrZXJuZWwgdGVzdCByb2JvdCB3cm90
+ZToNCj4gSGkgTmlrb2xheSwNCj4gDQo+IEkgbG92ZSB5b3VyIHBhdGNoISBQZXJoYXBzIHNvbWV0
+aGluZyB0byBpbXByb3ZlOg0KPiANCj4gW2F1dG8gYnVpbGQgdGVzdCBXQVJOSU5HIG9uIG5ldC1u
+ZXh0L21hc3Rlcl0NCj4gDQo+IHVybDogICAgaHR0cHM6Ly9naXRodWIuY29tLzBkYXktY2kvbGlu
+dXgvY29tbWl0cy9OaWtvbGF5LUFsZWtzYW5kcm92L25ldC1icmlkZ2UtbWNhc3QtSUdNUHYzLU1M
+RHYyLWZhc3QtcGF0aC1wYXJ0LTIvMjAyMDA5MjItMTUzMzIxDQo+IGJhc2U6ICAgaHR0cHM6Ly9n
+aXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvZGF2ZW0vbmV0LW5leHQuZ2l0
+IDkyZWM4MDRmM2RiZjBkOTg2ZjhlMTA4NTBiZmZmMTRmMzE2ZDdhYWYNCj4gY29uZmlnOiBpMzg2
+LXJhbmRjb25maWctbTAyMS0yMDIwMDkyMyAoYXR0YWNoZWQgYXMgLmNvbmZpZykNCj4gY29tcGls
+ZXI6IGdjYy05IChEZWJpYW4gOS4zLjAtMTUpIDkuMy4wDQo+IA0KPiBJZiB5b3UgZml4IHRoZSBp
+c3N1ZSwga2luZGx5IGFkZCBmb2xsb3dpbmcgdGFnIGFzIGFwcHJvcHJpYXRlDQo+IFJlcG9ydGVk
+LWJ5OiBrZXJuZWwgdGVzdCByb2JvdCA8bGtwQGludGVsLmNvbT4NCj4gDQo+IE5ldyBzbWF0Y2gg
+d2FybmluZ3M6DQo+IG5ldC9icmlkZ2UvYnJfbXVsdGljYXN0LmM6OTgwIF9fYnJfbXVsdGljYXN0
+X2FkZF9ncm91cCgpIGVycm9yOiBwb3RlbnRpYWwgbnVsbCBkZXJlZmVyZW5jZSAnbXAnLiAgKGJy
+X211bHRpY2FzdF9uZXdfZ3JvdXAgcmV0dXJucyBudWxsKQ0KPiANCj4gT2xkIHNtYXRjaCB3YXJu
+aW5nczoNCj4gaW5jbHVkZS9saW51eC91NjRfc3RhdHNfc3luYy5oOjEyOCB1NjRfc3RhdHNfdXBk
+YXRlX2JlZ2luKCkgd2Fybjogc3RhdGVtZW50IGhhcyBubyBlZmZlY3QgMzENCj4gDQoNClRoaXMg
+cmVwb3J0IGlzIHdyb25nLCBicl9tdWx0aWNhc3RfbmV3X2dyb3VwKCkgY2Fubm90IHJldHVybiBO
+VUxMLg0KSXQgYWx3YXlzIHJldHVybnMgRVJSX1BUUigpIG9mIHdoYXRldmVyIGVycm9yIGhhcHBl
+bmVkIGFuZCB0aGVyZQ0KaXMgYW4gSVNfRVJSKCkgY2hlY2sgYWZ0ZXJ3YXJkcy4NCg0KVGhhbmtz
+Lg0KDQo=
