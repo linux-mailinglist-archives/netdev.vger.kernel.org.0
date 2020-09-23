@@ -2,137 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19C81275009
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 06:41:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6726275011
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 06:47:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726882AbgIWElK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 00:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726802AbgIWElK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 00:41:10 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E42EC061755
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 21:41:10 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id f1so6155065plo.13
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 21:41:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o3L93kdyef2D+YSsF7K7mgBJhEirkZv97xi6h+iyNZU=;
-        b=QO5g40pJ3Vk7oFzQrsecWlSk42jxybkshU+HMKWYOIMitMjqepoazFXq6C2cK1QqOE
-         aePq0OGaA/HKFmC084kOvAW2SeTc7BPtbikhylbDNZwtY25sRATmMdcLVN6btx203NoE
-         5Zf3JQ8rDR9nqhpm90bJ5K/Oum55CDvkVzknywg3ZoqhITKVb0GZIAvfg01dCmf9Pade
-         /fmfuq5CcvJjSem+DUxwWnfUfTTAF3pSWW46i/Pf0Otn7UujQ2628A3IusbNVW8VgoKf
-         ruL7+BXmudmfyH/soYAoaMz+8S7yQxzW7IEsLXWODfnkwjugn1cupFKty1m7WSW0exWc
-         t5UQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o3L93kdyef2D+YSsF7K7mgBJhEirkZv97xi6h+iyNZU=;
-        b=VWGZwIPSlrYpwooe+qY4OhfRvR8dVZ1GjEoQWRX+9rMckg9YaTl6O40fzrgcVTT+W+
-         YFCkqA49EEDrT/WtfOa0hxkTBp3TBKAu30pt4sq9QDdx+jdX0nrKsmCwi5s9/7B5eQxd
-         aLo7b98oeL6e0LZJl37EI+UonY/acfZ3SevVNDVab3UixvCnjlk1VCMeaUbdOiaJK7wq
-         SJ/lciLcZgS05KsA9Xv06zMKNinsNoBd56vM8OMWP7HRr/kq+ylPOD7shtgx2/CrJ/4j
-         FT1YnfEJ/8R/Zym+4xGXkr1YTd7NT56DryCAjoxD6K4ZAlvoff/ChER6KhsRSoNoANye
-         GPbQ==
-X-Gm-Message-State: AOAM533E3JTovIaijFXyjWAScG+ndq8dQpFLCQsDaGcmeVNfaLKcs2jo
-        DsBQs9x7EJa4VvRAwhb5O+Y=
-X-Google-Smtp-Source: ABdhPJx7jCIuRMgaQV+XkL9znzI3RESXrdG/k7LkuHNdE+1jQiTRJ2065w9Hq9A+ZsoTScKGrSp12w==
-X-Received: by 2002:a17:902:6bc1:b029:d0:cbe1:e73d with SMTP id m1-20020a1709026bc1b02900d0cbe1e73dmr8091931plt.24.1600836069727;
-        Tue, 22 Sep 2020 21:41:09 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:a28c:fdff:fee1:f370])
-        by smtp.gmail.com with ESMTPSA id 22sm16595024pfw.17.2020.09.22.21.41.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2020 21:41:08 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Sunmeet Gill <sgill@quicinc.com>,
-        Vinay Paradkar <vparadka@qti.qualcomm.com>,
-        Tyler Wear <twear@quicinc.com>,
-        David Ahern <dsahern@kernel.org>
-Subject: [PATCH] net/ipv4: always honour route mtu during forwarding
-Date:   Tue, 22 Sep 2020 21:40:59 -0700
-Message-Id: <20200923044059.3442423-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
+        id S1726919AbgIWErU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 00:47:20 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:57052 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726198AbgIWErU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 00:47:20 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08N4l5Wb003702;
+        Tue, 22 Sep 2020 21:47:05 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=V5kHmvUyZgJgwyDdOLifODhpUZfJIuHePghYOL+KHlc=;
+ b=Z3Zq1pNHO6FffLmMS7e9YXEyMdHjUraywvEL8kh4anM2PpVgYVXErTtw1HtXkfdOjd+x
+ u/gHbeTlvSWYynZSVnP9arY59Q/BoEPAx0PxQY2Jr68/vnxbly/y83Kx/S1lBAxqwxF8
+ IBAxeF4dkTFSmW/iawIu58bkH6C/H+9ZbvE= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33qsp49k5t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 22 Sep 2020 21:47:04 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.230) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 22 Sep 2020 21:46:31 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CZtzeZwJ3ycZQGpEuzuD76KBuPIYraTRj9yuyUbJkcXFo3Az+YYDFvNutkfkkJNZ7DnMqv8vuqhb90ZKbkC3B6f75ETb7WeJuExfiuekFLYemhZNwyK14AmH+2/7adXhHlk3vtpovTFDZVHa/bG0iKq+FYKLh51CnntS0/ho9r/A7OsL6Qu1zpFqk7QUdjvOOjY8u3ozAO9cWupwGLEw2uUys1Ro11chTyM2FjNL2fRFs62P6C5btYDnKHPL7eS4tLfNbti4qjHahfgs3BActd+y+BsWMxm4hFPDDvd7OnaJ3q/ZrEow5eARcU+9QbC15q0bPjUiQlRp2JDdVzwWBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V5kHmvUyZgJgwyDdOLifODhpUZfJIuHePghYOL+KHlc=;
+ b=ZUdDzUAwBiptvP5Dhfz9DqVxfJLkfBcD1vWhZpav2TK1DcLbd38DuvewIHmtcZ4MJGff4vfe2XsHdXhEW0Dmvrkvgc2UPpm3mJFxNYo2pjwm9ynrpXxAKHqVP08LkiN0GbT1SFts0wkvcUHGJyra95e9jBpDqjWMJfMfdrWiTDr8Ms+M0UkerwL6ylEml+K3vKJaYcRRnTQ5VFTLA89CaqJMzabRgia3Py9qGcs9uEeXGAl6pYMHZNzhrm0YGuYvkB45Lcw2CrTXRqNylRrttmOl+ZtIZmh7YbbjwlKAnC5PNQ0meM77q7wMjpB8PlAgTQiamo55N7uZ4agWoVQkNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V5kHmvUyZgJgwyDdOLifODhpUZfJIuHePghYOL+KHlc=;
+ b=Jpu0tYahchK4DO04DJgNdzA1wc+U+aXT33Mt01TsZcdv6J4DR7QIdcYmQqVgwXmI8KNN8gsZqZvUfzUN2gm60Q+xPedznc7p/BilvGhqjiSqSA6RQoTQnuJ/P0Kb51ITwj+yDSbWxzU8mXB8poNNPOCqhR5Na01Ox1AWcn1K2bY=
+Authentication-Results: cloudflare.com; dkim=none (message not signed)
+ header.d=none;cloudflare.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2198.namprd15.prod.outlook.com (2603:10b6:a02:8d::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.11; Wed, 23 Sep
+ 2020 04:46:15 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c13c:fca9:5e04:9bfb]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c13c:fca9:5e04:9bfb%3]) with mapi id 15.20.3391.026; Wed, 23 Sep 2020
+ 04:46:14 +0000
+Date:   Tue, 22 Sep 2020 21:45:59 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 bpf-next 01/11] bpf: Move the PTR_TO_BTF_ID check to
+ check_reg_type()
+Message-ID: <20200923044559.ag7ifrqwhd6o27xr@kafai-mbp.dhcp.thefacebook.com>
+References: <20200922070409.1914988-1-kafai@fb.com>
+ <20200922070415.1916194-1-kafai@fb.com>
+ <CACAyw9_wEMFuymvUC0fsZVJCH0vsvbD9p=CWTZC1jV2gUiu3KA@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACAyw9_wEMFuymvUC0fsZVJCH0vsvbD9p=CWTZC1jV2gUiu3KA@mail.gmail.com>
+X-ClientProxiedBy: MWHPR1401CA0016.namprd14.prod.outlook.com
+ (2603:10b6:301:4b::26) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:95f1) by MWHPR1401CA0016.namprd14.prod.outlook.com (2603:10b6:301:4b::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14 via Frontend Transport; Wed, 23 Sep 2020 04:46:13 +0000
+X-Originating-IP: [2620:10d:c090:400::5:95f1]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a3deeb67-ebca-4daf-4808-08d85f7b9a2d
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2198:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB21986B2BD58B42207FFBF0B6D5380@BYAPR15MB2198.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eFPjtNEs/pNw0Am/sLKX2Fbr4Em5+VkLm+mRltMzLsLIvGanARjGVGF4ZJMQh1iUSc06Nzfs29/yjpOc0XGLB5S9Mv4N8hfqtG9hGjGGVcw7nSDvofRIFWRlTocKDrEQOc+yEXnA1104MspK7BYPmxTl03L+Bz3/58ymlD6yPxhNy1dxyBdPrCNBtOSS+BzpagMxq2aprU/N6cUixf1IQkzYFAIpAFpWI1P1xCcpeUnN+4BERooMcbUpE0/YlcCbXzelyZwyX9MaYuSw2HF/bTJ8VG9qGeKGMAy1jvXU3eamKHauZcd8VWU2GQ7MxE8tnQLHg9ivNwQEDm5rBcO0RCbv1H6UZ4j/My+Icj0MrvBPzFlRi8x0HmWwMd8JU7ts
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(396003)(366004)(376002)(39860400002)(136003)(52116002)(2906002)(6916009)(4326008)(86362001)(66556008)(55016002)(1076003)(478600001)(8676002)(9686003)(6666004)(8936002)(66476007)(54906003)(83380400001)(7696005)(16526019)(186003)(66946007)(6506007)(316002)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: 86QTXcyFhZb5FHW3/KbUHPNHltfN7zDJqMX2YCBjPHB/bMIEifj7cfdp4Buw2OpZfUXzIcfMmXJLXxXG+Qz3QUdl1YdyNQAPgkFPqimdcwCVm28Bup3vDfo8KIHFrOPGVbkHFyxTmiJZVW/EaynUNCoyqn4bK7q3eNk6FILjEtLSHkvPGAtsqQ6BG85RZUq/UEfU6DGmHCZu/xjJdPQekBSB5azyIdscxJniA4Zmlb46QkF+NYCoT+CPe02LEED3tWeMrw2Q2sCiHjwybZuNM3Ry3347T1lzcNd2l4bW4UajWz6CeIx1/BVLvC6PCS0VMYva7wG02kjfot/LfA4MrBY+YmzvgYclRrIZMFUhyP3Lzzhnq8zsPUU+lvZJJjx78oJGuHbMGarO3ZA9xfIUWuj9fSC43ajni/fEbofEFV6I39AuP64nWoet5m89ULzS9bz1p6UtocR1MlSlJYJ151aeqgJ50ziGZL1g8vbauw5DaAuBXvhiqzDrsDiQEh/AzhB56XyfcLt5Os90D3w5QTUeHEqR32myo9QK8T1TsWcyMg2J/yce3+YMdI14y2UYTFTRX5OCzQ2k8wVm7CJyq119YdElF9+dO0xZtCWp+Frt3icHg+/j4SaaVFfftiUWNEWvUX+Z2nnVKNR80R6nnjBkNq2g3yTlY/CDEHA4e4Q=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a3deeb67-ebca-4daf-4808-08d85f7b9a2d
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2020 04:46:14.8058
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Hpfef5yYEGM6VYcY5B6I+ekw0wgb1MiCiOx09UIhdDXPrORBLb5fbmTuV7oKtbCs
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2198
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-23_03:2020-09-21,2020-09-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ priorityscore=1501 lowpriorityscore=0 phishscore=0 mlxscore=0 adultscore=0
+ impostorscore=0 clxscore=1015 malwarescore=0 bulkscore=0 spamscore=0
+ suspectscore=1 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009230035
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
-
-Documentation/networking/ip-sysctl.txt:46 says:
-  ip_forward_use_pmtu - BOOLEAN
-    By default we don't trust protocol path MTUs while forwarding
-    because they could be easily forged and can lead to unwanted
-    fragmentation by the router.
-    You only need to enable this if you have user-space software
-    which tries to discover path mtus by itself and depends on the
-    kernel honoring this information. This is normally not the case.
-    Default: 0 (disabled)
-    Possible values:
-    0 - disabled
-    1 - enabled
-
-Which makes it pretty clear that setting it to 1 is a potential
-security/safety/DoS issue, and yet it is entirely reasonable to want
-forwarded traffic to honour explicitly administrator configured
-route mtus (instead of defaulting to device mtu).
-
-Indeed, I can't think of a single reason why you wouldn't want to.
-Since you configured a route mtu you probably know better...
-
-It is pretty common to have a higher device mtu to allow receiving
-large (jumbo) frames, while having some routes via that interface
-(potentially including the default route to the internet) specify
-a lower mtu.
-
-Note that ipv6 forwarding uses device mtu unless the route is locked
-(in which case it will use the route mtu).
-
-This approach is not usable for IPv4 where an 'mtu lock' on a route
-also has the side effect of disabling TCP path mtu discovery via
-disabling the IPv4 DF (don't frag) bit on all outgoing frames.
-
-I'm not aware of a way to lock a route from an IPv6 RA, so that also
-potentially seems wrong.
-
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
-Cc: Eric Dumazet <maze@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Cc: Lorenzo Colitti <lorenzo@google.com>
-Cc: Sunmeet Gill (Sunny) <sgill@quicinc.com>
-Cc: Vinay Paradkar <vparadka@qti.qualcomm.com>
-Cc: Tyler Wear <twear@quicinc.com>
-Cc: David Ahern <dsahern@kernel.org>
----
- include/net/ip.h | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/include/net/ip.h b/include/net/ip.h
-index b09c48d862cc..1262011d00b8 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -442,6 +442,10 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
- 	    !forwarding)
- 		return dst_mtu(dst);
- 
-+	/* 'forwarding = true' case should always honour route mtu */
-+	unsigned int mtu = dst_metric_raw(dst, RTAX_MTU);
-+	if (mtu) return mtu;
-+
- 	return min(READ_ONCE(dst->dev->mtu), IP_MAX_MTU);
- }
- 
--- 
-2.28.0.681.g6f77f65b4e-goog
-
+On Tue, Sep 22, 2020 at 10:56:55AM +0100, Lorenz Bauer wrote:
+> On Tue, 22 Sep 2020 at 08:04, Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > check_reg_type() checks whether a reg can be used as an arg of a
+> > func_proto.  For PTR_TO_BTF_ID, the check is actually not
+> > completely done until the reg->btf_id is pointing to a
+> > kernel struct that is acceptable by the func_proto.
+> >
+> > Thus, this patch moves the btf_id check into check_reg_type().
+> > The compatible_reg_types[] usage is localized in check_reg_type() now.
+> >
+> > The "if (!btf_id) verbose(...); " is also removed since it won't happen.
+> >
+> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > ---
+> >  kernel/bpf/verifier.c | 65 +++++++++++++++++++++++--------------------
+> >  1 file changed, 35 insertions(+), 30 deletions(-)
+> >
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 15ab889b0a3f..3ce61c412ea0 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -4028,20 +4028,29 @@ static const struct bpf_reg_types *compatible_reg_types[] = {
+> >         [__BPF_ARG_TYPE_MAX]            = NULL,
+> >  };
+> >
+> > -static int check_reg_type(struct bpf_verifier_env *env, u32 regno,
+> > -                         const struct bpf_reg_types *compatible)
+> > +static int check_reg_type(struct bpf_verifier_env *env, u32 arg,
+> > +                         enum bpf_arg_type arg_type,
+> > +                         const struct bpf_func_proto *fn)
+> 
+> How about (env, regno, arg_type, expected_btf_id) instead? Otherwise
+Last reply cut off in the wrong line.  I will make this change in v4.
