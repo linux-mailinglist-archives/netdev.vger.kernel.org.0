@@ -2,861 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC1CA2764B4
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 01:50:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65ED92764C6
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 01:54:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726694AbgIWXuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 19:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbgIWXuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 19:50:12 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3054FC0613CE
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 16:50:12 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id c18so1474623qtw.5
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 16:50:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rfZkQquYQAYvDLWHpIfQmNas6QeWYjzX2SfUisqykVI=;
-        b=hqZIEqckaH2ynvjVKXDIYOQ5vqqWrwkKr+h6bRrFwnXP5kAEAG0Gwnc1zwkwOv7anz
-         JJ0c/gIJ9UHy7gSqKMeoaI42LBw69HD5cvXo6Z/pjreVv0soyraoGVdohoQjuvOQ/Q/J
-         NVG/Ee7cwnj9C3KOWkx2ahJgNHIzzLMH3mbqlNogaIRG/i+A1s+Ouk75X6S3ZmB7E6K+
-         OSinL2qW+H4bOo2gTXn/NEQwvB09ai+TDt+5Za07VYTYAzz3LvnDfif4ml8Ca8JFezqc
-         8IJ3Qwhhoo49j3UGxtFquDozw6ilW+JYF1rdmgNF2EhtFOGnTMYchsaCwH9PY3y/0+9g
-         PeIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rfZkQquYQAYvDLWHpIfQmNas6QeWYjzX2SfUisqykVI=;
-        b=fPfMRa5VPhV7SNL4WYq0vc9PtBxIKc3Uaiic1k9aNa85Ux5N2V46pb8Os4my1/+na6
-         SqfVE8F/jwybemDZtYbIGJJki4560MyLyQIXORzngQHqJEXHQcfJUa7uihyJJfnBMsuq
-         WKOHzFzX6Cy9tEkbCzOF+bS/qtlH/epTOI0b39hBtF14AtsU7w1blNksRzjWDrtUTEkQ
-         PV8tlZxmtrAXsbyNQpH6m0YFfoGWhDoL3yGNkFtyo6oj1lKwK4ktPXUf8W0jkjDw5SiF
-         9L89WIsO3h1cLdB8gntLwCmOh1cwLxuUDgHQfT8FGzKQlpOVnbTrUtmeaiIjBhOpOQrk
-         E0YQ==
-X-Gm-Message-State: AOAM5305YgU5pRTnJ8voD4qRmXqjQ6K1gkrkG8zl/sSSFgqbmTJpIxDY
-        mk51gusmbSL0g/z2gRsv1Q==
-X-Google-Smtp-Source: ABdhPJyyyKIR0cVdQeTb/MP7cadNV0Ulw9/uBP1SWeI9q4tqUYJZsG7GF4XJZyF5oImHCvuV8QalpQ==
-X-Received: by 2002:aed:2fc5:: with SMTP id m63mr2660068qtd.313.1600905011314;
-        Wed, 23 Sep 2020 16:50:11 -0700 (PDT)
-Received: from ICIPI.localdomain ([136.56.89.69])
-        by smtp.gmail.com with ESMTPSA id 10sm1045638qkk.88.2020.09.23.16.50.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Sep 2020 16:50:10 -0700 (PDT)
-Date:   Wed, 23 Sep 2020 19:50:02 -0400
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: ip rule iif oif and vrf
-Message-ID: <20200923235002.GA25818@ICIPI.localdomain>
-References: <20200922131122.GB1601@ICIPI.localdomain>
- <2bea9311-e6b6-91ea-574a-4aa7838d53ea@gmail.com>
+        id S1726665AbgIWXyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 19:54:16 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:60818 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726419AbgIWXyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 19:54:16 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08NNnFSN016749;
+        Wed, 23 Sep 2020 16:54:02 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=etkqvivN7GeiQswelnclqWnXeEL3G4gW/5wGMHRNQmw=;
+ b=HLXf1kO7dk0+k42zwAmewG/lOEg/0usrlAuIOIQbSvLJVoNUlHElU8vcAlHwTC6xSBAk
+ LY8yn15BHwu/j6JhR2noVYxaHlQ/NYU/t/4tlCUNif3DiAOcgQCjs7/antoEgY51aNTo
+ KfjqGY/OWu76xnQqUy5KnFo6GehEyght+DE= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33qsp4xq64-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 23 Sep 2020 16:54:01 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.230) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 23 Sep 2020 16:54:01 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LmiO5fDIfLXtXnVMuWub46U4U5jsodYmTY5DIHOV611I94qTZqs302BqJoOemENKVcu8hgj3g/JlxVO9DqZ+zLWvU+VEnRW0ThluAxxeUICaYMIYiZAz+9Dfowi22CQvGOOLjI6476jRsqyTrzDN3WFby5wxwqwbjhMtHT7sbefxA8LKcXvIFj8Ci8hFoHr8lvJHUUc8/B1o6oxsLah1cx0awBlKgBybFiAGdcdtewvn2ZoKnfnATIDtQxu8pyy8U2G4+mCkrX1WZp0+s3S/BM/1Wp6m4ukvDp5d7hVJPc2dE8pS/gfn/wWojqSFJjHg/Lqf1F7Rz2mQXfbQzbEh9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=etkqvivN7GeiQswelnclqWnXeEL3G4gW/5wGMHRNQmw=;
+ b=RiJZIZ1afFvNmgrwj5p0jHqQ404JemLMWuQk8CzwTkTCgfi1l6Mc+a/0K7IqoMyik4H5z1XNe4GygdOXV2IlKs2/soBxeCCHKP652pyUzqo5eOjARtE4sns5bL2z4y4JifIdJLmA1HhcsRK/rPD4VtVs/YhBFUmtqEewN4A8vodgHXInPp17sFMh3uq1Ixja/i11yJ+Cag0nN9hejmwbgFOhkUdQxMlBC7olOieFNQdOOlXUAghfAJe8iVgvYYpBN/x0IMwS8NR2SgsiQkgX7nYGytCjM7zq4WMYZNFz/YQIyqW0Zs0Wx3SfV2at40zSG+Rb/vJwmgwcfl12+r7N1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=etkqvivN7GeiQswelnclqWnXeEL3G4gW/5wGMHRNQmw=;
+ b=Ks0WL5SgM//PDfrpTIl5yvuKwTqv96M1EQ8rpI4IxDcIgwHtytNJ1LsPh2E+u1/kpCcOmun9ov66rDuv0RP0lHM8GIFP02ZVELe0b3xCy6WvTclHBLMXcNYwxWs4jIeFuizdinDytw1tdHlX1jqkMdIBtf+QsqMUxfZwixiEABw=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB2950.namprd15.prod.outlook.com (2603:10b6:a03:f6::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14; Wed, 23 Sep
+ 2020 23:53:57 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::1400:be2f:8b3d:8f4d]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::1400:be2f:8b3d:8f4d%7]) with mapi id 15.20.3412.020; Wed, 23 Sep 2020
+ 23:53:57 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "Kernel Team" <Kernel-team@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCH v2 bpf-next 2/3] libbpf: introduce
+ bpf_prog_test_run_xattr_opts
+Thread-Topic: [PATCH v2 bpf-next 2/3] libbpf: introduce
+ bpf_prog_test_run_xattr_opts
+Thread-Index: AQHWkco0dkq2Yhl5xU64KxjjZzD8DKl2nMkAgABJOwA=
+Date:   Wed, 23 Sep 2020 23:53:57 +0000
+Message-ID: <540DD049-B544-4967-8300-E743940FD6FC@fb.com>
+References: <20200923165401.2284447-1-songliubraving@fb.com>
+ <20200923165401.2284447-3-songliubraving@fb.com>
+ <CAEf4BzZ-qPNjDEvviJKHfLD7t7YJ97PdGixGQ_f70AJEg5oVEg@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ-qPNjDEvviJKHfLD7t7YJ97PdGixGQ_f70AJEg5oVEg@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.120.23.2.1)
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+x-originating-ip: [2620:10d:c090:400::5:cb37]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3d9facd9-9b07-4ad7-078a-08d8601befe4
+x-ms-traffictypediagnostic: BYAPR15MB2950:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB2950DDA24CF538DC30FA80DFB3380@BYAPR15MB2950.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xxe73H8hhFco5lGvNpuR8js4kvOvZkpeaE+vF1lKgtDyQaSS8J8Q/mqF6ezqRv5f3nrG4Jg2BoPS1sA3W14hZJ3yDgFIPAR6ceWPS0ow7nguRFglS0i1pnRAuCvfjysMApL0f2ASiaCR0wiZ1xp6mVQ3UXgM8cijWMTjbxcp4wgHhPkEAj2+9STiV+cMooKGK/GAhBxrOqBjybpMmkmpXmo7poU0gJTQYMCXi9Rv3+d3E91R6Sp256I/n7alvNgh1wo7K+f+ci9L7ywMBaokAy95sg7Ynk07mDHzwOT6Q9aOL4/NCW9xYMlSmX7GUrDeRF6+NmKxBxjsT3fv7IKfmqQTdOLBpoyHC3/S+lqKiWS83hgMT+uxyFFBIMMBiQNT
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(136003)(396003)(376002)(366004)(39860400002)(66556008)(6512007)(6916009)(36756003)(83380400001)(53546011)(186003)(6506007)(2906002)(33656002)(64756008)(66446008)(66476007)(5660300002)(91956017)(76116006)(54906003)(66946007)(2616005)(8936002)(316002)(478600001)(71200400001)(8676002)(4326008)(6486002)(86362001)(21314003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: Vtp+TzlN+U3jFIFc6fOOIW/B38ewEkPsL9CsTmzfYnRhaYpLLRC02voJbbv3aB1Cn80suf0B6sUdA7WjjUw5KyEPrgZJ8gZXzylRrpiGZpC9kDaqCoU9j1h/Is8PonwLVJJtiM7grG3s6k8JXHZqmnWSyX/UB0udZr5l2FTUmcts4uenRMdyI7oAJ18JIBlTFd7mKnRn67W2NSb9AlfZq00sArSSu8Ryf/oeS3DP/daocCjlsvJ/2T9BPRFDoieWw1Q+0rxqQcYuFLpQP6lEHO+UIq9iYzen4S71S2FxruzaOQE2utlx6WCDgX1xu8alXPADD8SA/fq+1dK4Pf0J783SNQ3gtAay4CT9mjrHABdeEruym+Yw+/CL4ThE9TUYxGMvUki8WZ7Tgu6HLh40J8QngMtWwMJa816lzZqnmnlzp2Io/ZQ45zpoYBgySziBkuF0oaQS+FEUpkL524VtpSRw/5zJ3QsdYgpZiWtDnWBr3vWQhd3xbSi1ABEUtTcdBeWC/HZfI2doN37d8uFEdIuFwld6zvg6C6OnB7Ui+QSFyZEVln24yqteIhZIQlR3Bjyzz0Wq1dupJQXYf32kmyKRUqbWELKBzxcFaQWQhzbbsYRDpjbW8sVaNVgGmiFyQog2owA7cC9+pX9rrwQotOWYvHVOHX1gKkzTxgBWAq2JoAQWMZweHkOzujawisp5
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <163D3AD45C097E498EDA3E7B4C1B01F8@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="mP3DRpeJDSE+ciuQ"
-Content-Disposition: inline
-In-Reply-To: <2bea9311-e6b6-91ea-574a-4aa7838d53ea@gmail.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d9facd9-9b07-4ad7-078a-08d8601befe4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2020 23:53:57.6598
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xr+9oz4z0EakeZGwtgj7HeJDvjr22bgG8Opi8KMohkNNY93JFl+I1bo1yD5R3wnfNCBbt6ehoJB2EJ25mSmLCg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2950
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-23_19:2020-09-23,2020-09-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 priorityscore=1501 impostorscore=0 adultscore=0
+ malwarescore=0 spamscore=0 mlxlogscore=999 suspectscore=0 bulkscore=0
+ clxscore=1015 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009230181
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---mP3DRpeJDSE+ciuQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-On Tue, Sep 22, 2020 at 09:39:36AM -0600, David Ahern wrote:
-> > 
-> > We have a use case where there are multiple user VRFs being leak routed
-> > to and from tunnels that are on the core VRF. Traffic from user VRF to a
-> > tunnel can be done the normal way by specifying the netdev directly on
-> > the route entry on the user VRF route table:
-> > 
-> > ip route add <prefix> via <tunnel_end_point_addr> dev <tunnel_netdev>
-> > 
-> > But traffic received on the tunnel must be leak routed directly to the
-> > respective a specific user VRF because multiple user VRFs can have
-> > duplicate address spaces. I am thinking of using ip rule but when the
-> > iif is an enslaved device, the rule doesn't get matched because the
-> > ifindex in the skb is the master.
-> > 
-> > My question is: is this a bug, or is there anything else that can be
-> > done to make sure that traffic from a tunnel being routed directly to a
-> > user VRF? If it is the later, I can work on a patch.
-> > 
+> On Sep 23, 2020, at 12:31 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
+ wrote:
+>=20
+> On Wed, Sep 23, 2020 at 9:55 AM Song Liu <songliubraving@fb.com> wrote:
+>>=20
+>> This API supports new field cpu_plus in bpf_attr.test.
+>>=20
+>> Acked-by: John Fastabend <john.fastabend@gmail.com>
+>> Signed-off-by: Song Liu <songliubraving@fb.com>
+>> ---
+>> tools/lib/bpf/bpf.c      | 13 ++++++++++++-
+>> tools/lib/bpf/bpf.h      | 11 +++++++++++
+>> tools/lib/bpf/libbpf.map |  1 +
+>> 3 files changed, 24 insertions(+), 1 deletion(-)
+>>=20
+>> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+>> index 2baa1308737c8..3228dd60fa32f 100644
+>> --- a/tools/lib/bpf/bpf.c
+>> +++ b/tools/lib/bpf/bpf.c
+>> @@ -684,7 +684,8 @@ int bpf_prog_test_run(int prog_fd, int repeat, void =
+*data, __u32 size,
+>>        return ret;
+>> }
+>>=20
+>> -int bpf_prog_test_run_xattr(struct bpf_prog_test_run_attr *test_attr)
+>> +int bpf_prog_test_run_xattr_opts(struct bpf_prog_test_run_attr *test_at=
+tr,
+>> +                                const struct bpf_prog_test_run_opts *op=
+ts)
+>=20
+> opts are replacement for test_attr, not an addition to it. We chose to
+> use _xattr suffix for low-level APIs previously, but it's already
+> "taken". So I'd suggest to go with just  bpf_prog_test_run_ops and
+> have prog_fd as a first argument and then put all the rest of
+> test_run_attr into opts.
 
-Is there a better way to implement this use case? Seems that it's a
-common one for VRFs.
+One question on this: from the code, most (if not all) of these xxx_opts
+are used as input only. For example:
 
-> 
-> Might be a side effect of the skb dev change. I would like to remove
-> that but it is going to be challenge at this point.
-> 
-> take a look at:
-> perf record -a -e fib:* -g
-> <packets through the tunnel>
-> <Ctrl-C>
-> perf script
-> 
-> What does it say for the lookups - input arguments, table, etc?
-> 
-> Any chance you can re-recreate this using namespaces as the different nodes?
+LIBBPF_API int bpf_prog_bind_map(int prog_fd, int map_fd,
+                                 const struct bpf_prog_bind_opts *opts);
 
-I have a reproducer using namespaces attached in this email (gre_setup.sh).
-A ping is initiated from h0:
+However, bpf_prog_test_run_attr contains both input and output. Do you
+have any concern we use bpf_prog_test_run_opts for both input and output?
 
-ip netns exec h0 ping -c 1 11.0.0.2
+Thanks,
+Song
 
-As I have seen on our target platform, the iif is the VRF device. In
-this case it is the core VRF. Thus, the ip rule with iif equals to the
-GRE tunnel doesn't get hit.
 
-This is I think is the relevant perf script output. All the outputs are
-in the attached perf_script.txt.
+> BTW, it's also probably overdue to have a higher-level
+> bpf_program__test_run(), which can re-use the same
+> bpf_prog_test_run_opts options struct. It would be more convenient to
+> use it with libbpf bpf_object/bpf_program APIs.
+>=20
+>> {
+>>        union bpf_attr attr;
+>>        int ret;
+>> @@ -693,6 +694,11 @@ int bpf_prog_test_run_xattr(struct bpf_prog_test_ru=
+n_attr *test_attr)
+>>                return -EINVAL;
+>>=20
+>>        memset(&attr, 0, sizeof(attr));
+>> +       if (opts) {
+>=20
+> you don't need to check opts for being not NULL, OPTS_VALID handle that a=
+lready.
+>=20
+>> +               if (!OPTS_VALID(opts, bpf_prog_test_run_opts))
+>> +                       return -EINVAL;
+>> +               attr.test.cpu_plus =3D opts->cpu_plus;
+>=20
+> And here you should use OPTS_GET(), please see other examples in
+> libbpf for proper usage.
+>=20
+>=20
+>> +       }
+>>        attr.test.prog_fd =3D test_attr->prog_fd;
+>>        attr.test.data_in =3D ptr_to_u64(test_attr->data_in);
+>>        attr.test.data_out =3D ptr_to_u64(test_attr->data_out);
+>> @@ -712,6 +718,11 @@ int bpf_prog_test_run_xattr(struct bpf_prog_test_ru=
+n_attr *test_attr)
+>>        return ret;
+>> }
+>>=20
+>=20
+> [...]
 
-ksoftirqd/0     9 [000]  2933.555444: fib:fib_table_lookup: table 100 oif 0 iif 6 proto 0 10.0.0.2/0 -> 11.0.0.2/0 tos 0 scope 0 flags 4 ==> dev - gw 0.0.0.0/:: err -113
-        ffffffffbda04f2e fib_table_lookup+0x4ce ([kernel.kallsyms])
-        ffffffffbda04f2e fib_table_lookup+0x4ce ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9ac4de ip_route_input_slow+0x98e ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd935e55 netif_receive_skb_internal+0x45 ([kernel.kallsyms])
-        ffffffffbd9378af napi_gro_receive+0xff ([kernel.kallsyms])
-        ffffffffbd989bce gro_cell_poll+0x5e ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a809b run_ksoftirqd+0x2b ([kernel.kallsyms])
-        ffffffffbd0cf420 smpboot_thread_fn+0xd0 ([kernel.kallsyms])
-        ffffffffbd0c84a4 kthread+0x104 ([kernel.kallsyms])
-        ffffffffbdc00202 ret_from_fork+0x22 ([kernel.kallsyms])
-
-The r1 namespace has these netdevs:
-
-sudo ip netns exec r1 ip link show
-1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: gre0@NONE: <NOARP> mtu 1476 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/gre 0.0.0.0 brd 0.0.0.0
-3: gretap0@NONE: <BROADCAST,MULTICAST> mtu 1462 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
-4: erspan0@NONE: <BROADCAST,MULTICAST> mtu 1450 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
-5: vrf_r1t: <NOARP,MASTER,UP,LOWER_UP> mtu 65536 qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether ba:76:0d:e4:3b:93 brd ff:ff:ff:ff:ff:ff
-6: vrf_r1c: <NOARP,MASTER,UP,LOWER_UP> mtu 65536 qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 82:90:68:d3:e1:ff brd ff:ff:ff:ff:ff:ff
-7: gre10@vrf_r1c: <POINTOPOINT,NOARP,UP,LOWER_UP> mtu 65511 qdisc noqueue master vrf_r1c state UNKNOWN mode DEFAULT group default qlen 1000
-    link/gre 1.1.1.2 peer 1.1.1.1
-26: r1_v10@if27: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master vrf_r1c state UP mode DEFAULT group default qlen 1000
-    link/ether 12:00:73:33:bc:f2 brd ff:ff:ff:ff:ff:ff link-netns r0
-29: r1_v11@if28: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master vrf_r1t state UP mode DEFAULT group default qlen 1000
-    link/ether 8a:ff:65:ff:ba:58 brd ff:ff:ff:ff:ff:ff link-netns h1
-
-The iif when the fib is being looked up is the vrf_r1c (6). There is
-another error in the perf_script where the iif is the lo device and the
-oif is vrf_r1c.
-
-ping  4343 [000]  2933.554428: fib:fib_table_lookup: table 100 oif 6 iif 1 proto 1 10.0.0.2/0 -> 11.0.0.2/0 tos 0 scope 0 flags 4 ==> dev - gw 0.0.0.0/:: err -113
-
-Thanks.
-
---mP3DRpeJDSE+ciuQ
-Content-Type: application/x-sh
-Content-Disposition: attachment; filename="gre_setup.sh"
-Content-Transfer-Encoding: quoted-printable
-
-# +-------+     +----------+   +----------+   +-------+=0A# | h0    |     |=
-    r0    |   |    r1    |   |    h1 |=0A# |    v00+-----+v00    v01+---+v1=
-0    v11+---+v11    |=0A# |       |     |          |   |          |   |    =
-   |=0A# +-------+     +----------+   +----------+   +-------+=0A#         =
-         |    <=3D=3D=3Dgre=3D=3D=3D>    |=0A#                  | gre01    =
-   gre10 |=0A#                  |                   |=0A#          vrf_r0t =
-| vrf_r0c   vrf_r1c | vrf_r1t=0A#         (tenant)        (core)         (t=
-enant)=0A#=0A# h0_v00 10.0.0.2/24     r0_v00 10.0.0.1/24=0A# r0_v01 1.1.1.1=
-/24      r1_v10 1.1.1.2/24=0A# h1_v11 11.0.0.2/24     r1_v11 11.0.0.1/24=0A=
-# gre01 2.2.2.1/30       gre10 2.2.2.2/30=0A=0Aip netns add h0=0Aip netns a=
-dd r0=0Aip netns add h1=0Aip netns add r1=0A=0Aip link add h0_v00 type veth=
- peer name r0_v00=0Aip link set h0_v00 netns h0=0Aip link set r0_v00 netns =
-r0=0Aip link add r0_v01 type veth peer name r1_v10=0Aip link set r0_v01 net=
-ns r0=0Aip link set r1_v10 netns r1=0Aip link add r1_v11 type veth peer nam=
-e h1_v11=0Aip link set r1_v11 netns r1=0Aip link set h1_v11 netns h1=0A=0Ai=
-p netns exec r0 ip link add vrf_r0t type vrf table 10=0Aip netns exec r0 ip=
- addr add 127.0.0.1/8 dev vrf_r0t=0Aip netns exec r0 ip link set vrf_r0t up=
-=0Aip netns exec r0 ip link add vrf_r0c type vrf table 100=0Aip netns exec =
-r0 ip addr add 127.0.0.1/8 dev vrf_r0c=0Aip netns exec r0 ip link set vrf_r=
-0c up=0Aip netns exec r1 ip link add vrf_r1t type vrf table 10=0Aip netns e=
-xec r1 ip addr add 127.0.0.1/8 dev vrf_r1t=0Aip netns exec r1 ip link set v=
-rf_r1t up=0Aip netns exec r1 ip link add vrf_r1c type vrf table 100=0Aip ne=
-tns exec r1 ip addr add 127.0.0.1/8 dev vrf_r1c=0Aip netns exec r1 ip link =
-set vrf_r1c up=0A=0Aip netns exec r0 ip link set dev r0_v00 master vrf_r0t=
-=0Aip netns exec r0 ip link set dev r0_v01 master vrf_r0c=0Aip netns exec r=
-1 ip link set dev r1_v11 master vrf_r1t=0Aip netns exec r1 ip link set dev =
-r1_v10 master vrf_r1c=0A=0Aip netns exec h0 ip addr add 10.0.0.2/24 dev h0_=
-v00=0Aip netns exec r0 ip addr add 10.0.0.1/24 dev r0_v00=0Aip netns exec r=
-0 ip addr add 1.1.1.1/24 dev r0_v01=0Aip netns exec r1 ip addr add 1.1.1.2/=
-24 dev r1_v10=0Aip netns exec r1 ip addr add 11.0.0.1/24 dev r1_v11=0Aip ne=
-tns exec h1 ip addr add 11.0.0.2/24 dev h1_v11=0A=0Aip netns exec r0 ip tun=
-nel add gre01 mode gre local 1.1.1.1 remote 1.1.1.2 dev vrf_r0c=0Aip netns =
-exec r0 ip link set dev gre01 master vrf_r0c=0Aip netns exec r0 ip addr add=
- 2.2.2.1/24 dev gre01=0Aip netns exec r1 ip tunnel add gre10 mode gre local=
- 1.1.1.2 remote 1.1.1.1 dev vrf_r1c=0Aip netns exec r1 ip link set dev gre1=
-0 master vrf_r1c=0Aip netns exec r1 ip addr add 2.2.2.2/24 dev gre10=0A=0Ai=
-p netns exec h0 ip link set dev h0_v00 up=0Aip netns exec r0 ip link set de=
-v r0_v00 up=0Aip netns exec r0 ip link set dev r0_v01 up=0Aip netns exec r0=
- ip link set dev gre01 up=0Aip netns exec r1 ip link set dev r1_v10 up=0Aip=
- netns exec r1 ip link set dev r1_v11 up=0Aip netns exec r1 ip link set dev=
- gre10 up=0Aip netns exec h1 ip link set dev h1_v11 up=0A=0Aip netns exec r=
-0 sysctl -w net.ipv4.ip_forward=3D1 > /dev/null=0Aip netns exec r1 sysctl -=
-w net.ipv4.ip_forward=3D1 > /dev/null=0A=0Aip netns exec h0 ip route add de=
-fault via 10.0.0.1=0Aip netns exec h1 ip route add default via 11.0.0.1=0A=
-=0Aip netns exec r0 ip route add unreachable default metric 8192 table 10=
-=0Aip netns exec r0 ip route add unreachable default metric 8192 table 100=
-=0Aip netns exec r1 ip route add unreachable default metric 8192 table 10=
-=0Aip netns exec r1 ip route add unreachable default metric 8192 table 100=
-=0A=0Aip netns exec r0 ip route add 11.0.0.0/24 via 2.2.2.2 dev gre01 table=
- 10=0Aip netns exec r1 ip route add 10.0.0.0/24 via 2.2.2.1 dev gre10 table=
- 10=0A=0A# do this to match the config on the target platform=0Asudo ip net=
-ns exec r0 ip rule delete from all lookup local=0Asudo ip netns exec r0 ip =
-rule add from all lookup local pref 32765=0Asudo ip netns exec r1 ip rule d=
-elete from all lookup local=0Asudo ip netns exec r1 ip rule add from all lo=
-okup local pref 32765=0A=0A# packets out of the core vrf tunnel are leak-ro=
-uted to the tenant vrf=0Aip netns exec r0 ip rule add iif gre01 table 10 pr=
-ef 999=0Aip netns exec r1 ip rule add iif gre10 table 10 pref 999=0A
---mP3DRpeJDSE+ciuQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="perf_script.txt"
-
-ping  4343 [000]  2933.541770: fib:fib_table_lookup: table 254 oif 0 iif 1 proto 17 0.0.0.0/52259 -> 11.0.0.2/1025 tos 0 scope 0 flags 0 ==> dev h0_v00 gw 10.0.0.1/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9acd54 ip_route_output_key_hash_rcu+0x3c4 ([kernel.kallsyms])
-        ffffffffbd9ad292 ip_route_output_key_hash+0x62 ([kernel.kallsyms])
-        ffffffffbd9e2e1d __ip4_datagram_connect+0x24d ([kernel.kallsyms])
-        ffffffffbd9e2f1d ip4_datagram_connect+0x2d ([kernel.kallsyms])
-        ffffffffbd9f4c4f inet_dgram_connect+0x3f ([kernel.kallsyms])
-        ffffffffbd910ac1 __sys_connect+0xf1 ([kernel.kallsyms])
-        ffffffffbd910b1a __x64_sys_connect+0x1a ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fbbe2b27177 __libc_connect+0x17 (/lib/x86_64-linux-gnu/libc-2.31.so)
-
-ping  4343 [000]  2933.543615: fib:fib_table_lookup: table 254 oif 0 iif 1 proto 17 10.0.0.2/52259 -> 11.0.0.2/1025 tos 0 scope 0 flags 0 ==> dev h0_v00 gw 10.0.0.1/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9acd54 ip_route_output_key_hash_rcu+0x3c4 ([kernel.kallsyms])
-        ffffffffbd9ad292 ip_route_output_key_hash+0x62 ([kernel.kallsyms])
-        ffffffffbd9ad60f ip_route_output_flow+0x1f ([kernel.kallsyms])
-        ffffffffbd9e2d2b __ip4_datagram_connect+0x15b ([kernel.kallsyms])
-        ffffffffbd9e2f1d ip4_datagram_connect+0x2d ([kernel.kallsyms])
-        ffffffffbd9f4c4f inet_dgram_connect+0x3f ([kernel.kallsyms])
-        ffffffffbd910ac1 __sys_connect+0xf1 ([kernel.kallsyms])
-        ffffffffbd910b1a __x64_sys_connect+0x1a ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fbbe2b27177 __libc_connect+0x17 (/lib/x86_64-linux-gnu/libc-2.31.so)
-
-ping  4343 [000]  2933.552438: fib:fib_table_lookup: table 254 oif 0 iif 1 proto 1 0.0.0.0/0 -> 11.0.0.2/0 tos 0 scope 0 flags 0 ==> dev h0_v00 gw 10.0.0.1/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9acd54 ip_route_output_key_hash_rcu+0x3c4 ([kernel.kallsyms])
-        ffffffffbd9ad292 ip_route_output_key_hash+0x62 ([kernel.kallsyms])
-        ffffffffbd9ad60f ip_route_output_flow+0x1f ([kernel.kallsyms])
-        ffffffffbd9e450f raw_sendmsg+0x2cf ([kernel.kallsyms])
-        ffffffffbd9f66dc inet_sendmsg+0x6c ([kernel.kallsyms])
-        ffffffffbd90eefe sock_sendmsg+0x5e ([kernel.kallsyms])
-        ffffffffbd910e93 __sys_sendto+0x113 ([kernel.kallsyms])
-        ffffffffbd910f39 __x64_sys_sendto+0x29 ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fbbe2b2765a __libc_sendto+0x1a (/lib/x86_64-linux-gnu/libc-2.31.so)
-                5f6bd133 [unknown] ([unknown])
-
-ping  4343 [000]  2933.553178: fib:fib_table_lookup: table 10 oif 0 iif 5 proto 0 10.0.0.2/0 -> 11.0.0.2/0 tos 0 scope 0 flags 4 ==> dev gre01 gw 2.2.2.2/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9ac4de ip_route_input_slow+0x98e ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd936021 process_backlog+0xa1 ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbdc00f2a do_softirq_own_stack+0x2a ([kernel.kallsyms])
-        ffffffffbd0a7d16 do_softirq.part.0+0x46 ([kernel.kallsyms])
-        ffffffffbd0a7d70 __local_bh_enable_ip+0x50 ([kernel.kallsyms])
-        ffffffffbd9b382f ip_finish_output2+0x1af ([kernel.kallsyms])
-        ffffffffbd9b3ccf __ip_finish_output+0xbf ([kernel.kallsyms])
-        ffffffffbd9b3e0d ip_finish_output+0x2d ([kernel.kallsyms])
-        ffffffffbd9b56c5 ip_output+0x75 ([kernel.kallsyms])
-        ffffffffbd9b4d9d ip_local_out+0x3d ([kernel.kallsyms])
-        ffffffffbd9b6019 ip_send_skb+0x19 ([kernel.kallsyms])
-        ffffffffbd9b6073 ip_push_pending_frames+0x33 ([kernel.kallsyms])
-        ffffffffbd9e485c raw_sendmsg+0x61c ([kernel.kallsyms])
-        ffffffffbd9f66dc inet_sendmsg+0x6c ([kernel.kallsyms])
-        ffffffffbd90eefe sock_sendmsg+0x5e ([kernel.kallsyms])
-        ffffffffbd910e93 __sys_sendto+0x113 ([kernel.kallsyms])
-        ffffffffbd910f39 __x64_sys_sendto+0x29 ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fbbe2b2765a __libc_sendto+0x1a (/lib/x86_64-linux-gnu/libc-2.31.so)
-                5f6bd133 [unknown] ([unknown])
-
-ping  4343 [000]  2933.553402: fib:fib_table_lookup: table 10 oif 0 iif 5 proto 0 11.0.0.2/0 -> 10.0.0.2/0 tos 0 scope 0 flags 4 ==> dev r0_v00 gw 2.2.2.2/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9fd45d __fib_validate_source+0x32d ([kernel.kallsyms])
-        ffffffffbd9fda09 fib_validate_source+0x49 ([kernel.kallsyms])
-        ffffffffbd9abecd ip_route_input_slow+0x37d ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd936021 process_backlog+0xa1 ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbdc00f2a do_softirq_own_stack+0x2a ([kernel.kallsyms])
-        ffffffffbd0a7d16 do_softirq.part.0+0x46 ([kernel.kallsyms])
-        ffffffffbd0a7d70 __local_bh_enable_ip+0x50 ([kernel.kallsyms])
-        ffffffffbd9b382f ip_finish_output2+0x1af ([kernel.kallsyms])
-        ffffffffbd9b3ccf __ip_finish_output+0xbf ([kernel.kallsyms])
-        ffffffffbd9b3e0d ip_finish_output+0x2d ([kernel.kallsyms])
-        ffffffffbd9b56c5 ip_output+0x75 ([kernel.kallsyms])
-        ffffffffbd9b4d9d ip_local_out+0x3d ([kernel.kallsyms])
-        ffffffffbd9b6019 ip_send_skb+0x19 ([kernel.kallsyms])
-        ffffffffbd9b6073 ip_push_pending_frames+0x33 ([kernel.kallsyms])
-        ffffffffbd9e485c raw_sendmsg+0x61c ([kernel.kallsyms])
-        ffffffffbd9f66dc inet_sendmsg+0x6c ([kernel.kallsyms])
-        ffffffffbd90eefe sock_sendmsg+0x5e ([kernel.kallsyms])
-        ffffffffbd910e93 __sys_sendto+0x113 ([kernel.kallsyms])
-        ffffffffbd910f39 __x64_sys_sendto+0x29 ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fbbe2b2765a __libc_sendto+0x1a (/lib/x86_64-linux-gnu/libc-2.31.so)
-                5f6bd133 [unknown] ([unknown])
-
-ping  4343 [000]  2933.554428: fib:fib_table_lookup: table 100 oif 6 iif 1 proto 1 10.0.0.2/0 -> 11.0.0.2/0 tos 0 scope 0 flags 4 ==> dev - gw 0.0.0.0/:: err -113
-        ffffffffbda04f2e fib_table_lookup+0x4ce ([kernel.kallsyms])
-        ffffffffbda04f2e fib_table_lookup+0x4ce ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9aa6c6 __ip_rt_update_pmtu+0x1a6 ([kernel.kallsyms])
-        ffffffffbd9aa764 ip_rt_update_pmtu+0x84 ([kernel.kallsyms])
-        ffffffffc07bf69e drm_add_modes_noedid+0x53 ([kernel.kallsyms])
-        ffffffffc07c0195 do_established_modes+0x3a ([kernel.kallsyms])
-        ffffffffc07c73f1 drm_atomic_private_obj_init+0x36 ([kernel.kallsyms])
-        ffffffffc07c82b2 drm_atomic_check_only+0x27 ([kernel.kallsyms])
-        ffffffffbd934311 dev_hard_start_xmit+0x91 ([kernel.kallsyms])
-        ffffffffbd934c40 __dev_queue_xmit+0x720 ([kernel.kallsyms])
-        ffffffffbd934e10 dev_queue_xmit+0x10 ([kernel.kallsyms])
-        ffffffffbd942831 neigh_direct_output+0x11 ([kernel.kallsyms])
-        ffffffffbd9b381b ip_finish_output2+0x19b ([kernel.kallsyms])
-        ffffffffbd9b3ccf __ip_finish_output+0xbf ([kernel.kallsyms])
-        ffffffffbd9b3e0d ip_finish_output+0x2d ([kernel.kallsyms])
-        ffffffffbd9b56c5 ip_output+0x75 ([kernel.kallsyms])
-        ffffffffbd9b0b98 ip_forward_finish+0x58 ([kernel.kallsyms])
-        ffffffffbd9b0f6e ip_forward+0x39e ([kernel.kallsyms])
-        ffffffffbd9aefe5 ip_rcv_finish+0x85 ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd936021 process_backlog+0xa1 ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbdc00f2a do_softirq_own_stack+0x2a ([kernel.kallsyms])
-        ffffffffbd0a7d16 do_softirq.part.0+0x46 ([kernel.kallsyms])
-        ffffffffbd0a7d70 __local_bh_enable_ip+0x50 ([kernel.kallsyms])
-        ffffffffbd9b382f ip_finish_output2+0x1af ([kernel.kallsyms])
-        ffffffffbd9b3ccf __ip_finish_output+0xbf ([kernel.kallsyms])
-        ffffffffbd9b3e0d ip_finish_output+0x2d ([kernel.kallsyms])
-        ffffffffbd9b56c5 ip_output+0x75 ([kernel.kallsyms])
-        ffffffffbd9b4d9d ip_local_out+0x3d ([kernel.kallsyms])
-        ffffffffbd9b6019 ip_send_skb+0x19 ([kernel.kallsyms])
-        ffffffffbd9b6073 ip_push_pending_frames+0x33 ([kernel.kallsyms])
-        ffffffffbd9e485c raw_sendmsg+0x61c ([kernel.kallsyms])
-        ffffffffbd9f66dc inet_sendmsg+0x6c ([kernel.kallsyms])
-        ffffffffbd90eefe sock_sendmsg+0x5e ([kernel.kallsyms])
-        ffffffffbd910e93 __sys_sendto+0x113 ([kernel.kallsyms])
-        ffffffffbd910f39 __x64_sys_sendto+0x29 ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fbbe2b2765a __libc_sendto+0x1a (/lib/x86_64-linux-gnu/libc-2.31.so)
-                5f6bd133 [unknown] ([unknown])
-
-ping  4343 [000]  2933.554969: fib:fib_table_lookup: table 100 oif 0 iif 6 proto 0 1.1.1.1/0 -> 1.1.1.2/0 tos 0 scope 0 flags 4 ==> dev r1_v10 gw 0.0.0.0/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9ac4de ip_route_input_slow+0x98e ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd936021 process_backlog+0xa1 ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbdc00f2a do_softirq_own_stack+0x2a ([kernel.kallsyms])
-        ffffffffbd0a7d16 do_softirq.part.0+0x46 ([kernel.kallsyms])
-        ffffffffbd0a7d70 __local_bh_enable_ip+0x50 ([kernel.kallsyms])
-        ffffffffbd9b382f ip_finish_output2+0x1af ([kernel.kallsyms])
-        ffffffffbd9b3ccf __ip_finish_output+0xbf ([kernel.kallsyms])
-        ffffffffbd9b3e0d ip_finish_output+0x2d ([kernel.kallsyms])
-        ffffffffbd9b56c5 ip_output+0x75 ([kernel.kallsyms])
-        ffffffffbd9b4d9d ip_local_out+0x3d ([kernel.kallsyms])
-        ffffffffbd9b6019 ip_send_skb+0x19 ([kernel.kallsyms])
-        ffffffffbd9b6073 ip_push_pending_frames+0x33 ([kernel.kallsyms])
-        ffffffffbd9e485c raw_sendmsg+0x61c ([kernel.kallsyms])
-        ffffffffbd9f66dc inet_sendmsg+0x6c ([kernel.kallsyms])
-        ffffffffbd90eefe sock_sendmsg+0x5e ([kernel.kallsyms])
-        ffffffffbd910e93 __sys_sendto+0x113 ([kernel.kallsyms])
-        ffffffffbd910f39 __x64_sys_sendto+0x29 ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fbbe2b2765a __libc_sendto+0x1a (/lib/x86_64-linux-gnu/libc-2.31.so)
-                5f6bd133 [unknown] ([unknown])
-
-ping  4343 [000]  2933.555005: fib:fib_table_lookup: table 100 oif 0 iif 6 proto 0 1.1.1.2/0 -> 1.1.1.1/0 tos 0 scope 0 flags 4 ==> dev r1_v10 gw 0.0.0.0/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9fd45d __fib_validate_source+0x32d ([kernel.kallsyms])
-        ffffffffbd9fda09 fib_validate_source+0x49 ([kernel.kallsyms])
-        ffffffffbd9ac586 ip_route_input_slow+0xa36 ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd936021 process_backlog+0xa1 ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbdc00f2a do_softirq_own_stack+0x2a ([kernel.kallsyms])
-        ffffffffbd0a7d16 do_softirq.part.0+0x46 ([kernel.kallsyms])
-        ffffffffbd0a7d70 __local_bh_enable_ip+0x50 ([kernel.kallsyms])
-        ffffffffbd9b382f ip_finish_output2+0x1af ([kernel.kallsyms])
-        ffffffffbd9b3ccf __ip_finish_output+0xbf ([kernel.kallsyms])
-        ffffffffbd9b3e0d ip_finish_output+0x2d ([kernel.kallsyms])
-        ffffffffbd9b56c5 ip_output+0x75 ([kernel.kallsyms])
-        ffffffffbd9b4d9d ip_local_out+0x3d ([kernel.kallsyms])
-        ffffffffbd9b6019 ip_send_skb+0x19 ([kernel.kallsyms])
-        ffffffffbd9b6073 ip_push_pending_frames+0x33 ([kernel.kallsyms])
-        ffffffffbd9e485c raw_sendmsg+0x61c ([kernel.kallsyms])
-        ffffffffbd9f66dc inet_sendmsg+0x6c ([kernel.kallsyms])
-        ffffffffbd90eefe sock_sendmsg+0x5e ([kernel.kallsyms])
-        ffffffffbd910e93 __sys_sendto+0x113 ([kernel.kallsyms])
-        ffffffffbd910f39 __x64_sys_sendto+0x29 ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fbbe2b2765a __libc_sendto+0x1a (/lib/x86_64-linux-gnu/libc-2.31.so)
-                5f6bd133 [unknown] ([unknown])
-
-ksoftirqd/0     9 [000]  2933.555444: fib:fib_table_lookup: table 100 oif 0 iif 6 proto 0 10.0.0.2/0 -> 11.0.0.2/0 tos 0 scope 0 flags 4 ==> dev - gw 0.0.0.0/:: err -113
-        ffffffffbda04f2e fib_table_lookup+0x4ce ([kernel.kallsyms])
-        ffffffffbda04f2e fib_table_lookup+0x4ce ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9ac4de ip_route_input_slow+0x98e ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd935e55 netif_receive_skb_internal+0x45 ([kernel.kallsyms])
-        ffffffffbd9378af napi_gro_receive+0xff ([kernel.kallsyms])
-        ffffffffbd989bce gro_cell_poll+0x5e ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a809b run_ksoftirqd+0x2b ([kernel.kallsyms])
-        ffffffffbd0cf420 smpboot_thread_fn+0xd0 ([kernel.kallsyms])
-        ffffffffbd0c84a4 kthread+0x104 ([kernel.kallsyms])
-        ffffffffbdc00202 ret_from_fork+0x22 ([kernel.kallsyms])
-
-ksoftirqd/0     9 [000]  2933.557020: fib:fib_table_lookup: table 100 oif 6 iif 1 proto 1 0.0.0.0/0 -> 10.0.0.2/0 tos 0 scope 0 flags 4 ==> dev - gw 0.0.0.0/:: err -113
-        ffffffffbda04f2e fib_table_lookup+0x4ce ([kernel.kallsyms])
-        ffffffffbda04f2e fib_table_lookup+0x4ce ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9acf86 ip_route_output_key_hash_rcu+0x5f6 ([kernel.kallsyms])
-        ffffffffbd9ad292 ip_route_output_key_hash+0x62 ([kernel.kallsyms])
-        ffffffffbd9eef6e icmp_route_lookup.constprop.0+0xde ([kernel.kallsyms])
-        ffffffffbd9efa68 __icmp_send+0x428 ([kernel.kallsyms])
-        ffffffffbd9a89f8 ip_error+0x188 ([kernel.kallsyms])
-        ffffffffbd9aefe5 ip_rcv_finish+0x85 ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd935e55 netif_receive_skb_internal+0x45 ([kernel.kallsyms])
-        ffffffffbd9378af napi_gro_receive+0xff ([kernel.kallsyms])
-        ffffffffbd989bce gro_cell_poll+0x5e ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a809b run_ksoftirqd+0x2b ([kernel.kallsyms])
-        ffffffffbd0cf420 smpboot_thread_fn+0xd0 ([kernel.kallsyms])
-        ffffffffbd0c84a4 kthread+0x104 ([kernel.kallsyms])
-        ffffffffbdc00202 ret_from_fork+0x22 ([kernel.kallsyms])
-
-ksoftirqd/0     9 [000]  2938.674612: fib:fib_table_lookup: table 100 oif 0 iif 6 proto 0 1.1.1.1/0 -> 1.1.1.2/0 tos 0 scope 0 flags 4 ==> dev r1_v10 gw 0.0.0.0/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9ac4de ip_route_input_slow+0x98e ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9edb9a arp_process+0x49a ([kernel.kallsyms])
-        ffffffffbd9ee11a arp_rcv+0x18a ([kernel.kallsyms])
-        ffffffffbd935d7f __netif_receive_skb_one_core+0x8f ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd936021 process_backlog+0xa1 ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a809b run_ksoftirqd+0x2b ([kernel.kallsyms])
-        ffffffffbd0cf420 smpboot_thread_fn+0xd0 ([kernel.kallsyms])
-        ffffffffbd0c84a4 kthread+0x104 ([kernel.kallsyms])
-        ffffffffbdc00202 ret_from_fork+0x22 ([kernel.kallsyms])
-
-ksoftirqd/0     9 [000]  2938.674703: fib:fib_table_lookup: table 100 oif 0 iif 6 proto 0 1.1.1.2/0 -> 1.1.1.1/0 tos 0 scope 0 flags 4 ==> dev r1_v10 gw 0.0.0.0/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9fd45d __fib_validate_source+0x32d ([kernel.kallsyms])
-        ffffffffbd9fda09 fib_validate_source+0x49 ([kernel.kallsyms])
-        ffffffffbd9ac586 ip_route_input_slow+0xa36 ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9edb9a arp_process+0x49a ([kernel.kallsyms])
-        ffffffffbd9ee11a arp_rcv+0x18a ([kernel.kallsyms])
-        ffffffffbd935d7f __netif_receive_skb_one_core+0x8f ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd936021 process_backlog+0xa1 ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a809b run_ksoftirqd+0x2b ([kernel.kallsyms])
-        ffffffffbd0cf420 smpboot_thread_fn+0xd0 ([kernel.kallsyms])
-        ffffffffbd0c84a4 kthread+0x104 ([kernel.kallsyms])
-        ffffffffbdc00202 ret_from_fork+0x22 ([kernel.kallsyms])
-
-ksoftirqd/0     9 [000]  2938.674869: fib:fib_table_lookup: table 10 oif 0 iif 5 proto 0 10.0.0.2/0 -> 10.0.0.1/0 tos 0 scope 0 flags 4 ==> dev r0_v00 gw 0.0.0.0/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9ac4de ip_route_input_slow+0x98e ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9edb9a arp_process+0x49a ([kernel.kallsyms])
-        ffffffffbd9ee11a arp_rcv+0x18a ([kernel.kallsyms])
-        ffffffffbd935d7f __netif_receive_skb_one_core+0x8f ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd936021 process_backlog+0xa1 ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a809b run_ksoftirqd+0x2b ([kernel.kallsyms])
-        ffffffffbd0cf420 smpboot_thread_fn+0xd0 ([kernel.kallsyms])
-        ffffffffbd0c84a4 kthread+0x104 ([kernel.kallsyms])
-        ffffffffbdc00202 ret_from_fork+0x22 ([kernel.kallsyms])
-
-ksoftirqd/0     9 [000]  2938.674904: fib:fib_table_lookup: table 10 oif 0 iif 5 proto 0 10.0.0.1/0 -> 10.0.0.2/0 tos 0 scope 0 flags 4 ==> dev r0_v00 gw 0.0.0.0/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda0fbd6 fib4_rule_action+0x66 ([kernel.kallsyms])
-        ffffffffbd96cde3 fib_rules_lookup+0x133 ([kernel.kallsyms])
-        ffffffffbda0f6ea __fib_lookup+0x6a ([kernel.kallsyms])
-        ffffffffbd9fd45d __fib_validate_source+0x32d ([kernel.kallsyms])
-        ffffffffbd9fda09 fib_validate_source+0x49 ([kernel.kallsyms])
-        ffffffffbd9ac586 ip_route_input_slow+0xa36 ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9edb9a arp_process+0x49a ([kernel.kallsyms])
-        ffffffffbd9ee11a arp_rcv+0x18a ([kernel.kallsyms])
-        ffffffffbd935d7f __netif_receive_skb_one_core+0x8f ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd936021 process_backlog+0xa1 ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a809b run_ksoftirqd+0x2b ([kernel.kallsyms])
-        ffffffffbd0cf420 smpboot_thread_fn+0xd0 ([kernel.kallsyms])
-        ffffffffbd0c84a4 kthread+0x104 ([kernel.kallsyms])
-        ffffffffbdc00202 ret_from_fork+0x22 ([kernel.kallsyms])
-
-ntpd  1175 [000]  2942.573115: fib:fib_table_lookup: table 254 oif 0 iif 1 proto 17 10.0.2.15/123 -> 104.236.116.147/123 tos 24 scope 0 flags 0 ==> dev ens3 gw 10.0.2.2/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9acd54 ip_route_output_key_hash_rcu+0x3c4 ([kernel.kallsyms])
-        ffffffffbd9ad292 ip_route_output_key_hash+0x62 ([kernel.kallsyms])
-        ffffffffbd9ad60f ip_route_output_flow+0x1f ([kernel.kallsyms])
-        ffffffffbd9e696c udp_sendmsg+0x95c ([kernel.kallsyms])
-        ffffffffbd9f66d5 inet_sendmsg+0x65 ([kernel.kallsyms])
-        ffffffffbd90eefe sock_sendmsg+0x5e ([kernel.kallsyms])
-        ffffffffbd910e93 __sys_sendto+0x113 ([kernel.kallsyms])
-        ffffffffbd910f39 __x64_sys_sendto+0x29 ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fec109ae844 __libc_sendto+0x74 (/lib/x86_64-linux-gnu/libpthread-2.31.so)
-
-ntpd  1175 [000]  2942.573943: fib:fib_table_lookup: table 254 oif 0 iif 1 proto 17 10.0.2.15/123 -> 173.255.192.10/123 tos 24 scope 0 flags 0 ==> dev ens3 gw 10.0.2.2/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9acd54 ip_route_output_key_hash_rcu+0x3c4 ([kernel.kallsyms])
-        ffffffffbd9ad292 ip_route_output_key_hash+0x62 ([kernel.kallsyms])
-        ffffffffbd9ad60f ip_route_output_flow+0x1f ([kernel.kallsyms])
-        ffffffffbd9e696c udp_sendmsg+0x95c ([kernel.kallsyms])
-        ffffffffbd9f66d5 inet_sendmsg+0x65 ([kernel.kallsyms])
-        ffffffffbd90eefe sock_sendmsg+0x5e ([kernel.kallsyms])
-        ffffffffbd910e93 __sys_sendto+0x113 ([kernel.kallsyms])
-        ffffffffbd910f39 __x64_sys_sendto+0x29 ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fec109ae844 __libc_sendto+0x74 (/lib/x86_64-linux-gnu/libpthread-2.31.so)
-
-swapper     0 [000]  2942.591383: fib:fib_table_lookup: table 254 oif 0 iif 2 proto 0 104.236.116.147/0 -> 10.0.2.15/0 tos 0 scope 0 flags 0 ==> dev ens3 gw 0.0.0.0/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9abda5 ip_route_input_slow+0x255 ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd935e55 netif_receive_skb_internal+0x45 ([kernel.kallsyms])
-        ffffffffbd9378af napi_gro_receive+0xff ([kernel.kallsyms])
-        ffffffffc01bd5e0 receive_buf+0x190 ([kernel.kallsyms])
-        ffffffffc01bdadf virtnet_poll+0x15f ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a81ce irq_exit+0xae ([kernel.kallsyms])
-        ffffffffbdc01e7a do_IRQ+0x5a ([kernel.kallsyms])
-        ffffffffbdc00a0f ret_from_intr+0x0 ([kernel.kallsyms])
-        ffffffffbdad564e native_safe_halt+0xe ([kernel.kallsyms])
-        ffffffffbd03dd55 arch_cpu_idle+0x15 ([kernel.kallsyms])
-        ffffffffbdad57f3 default_idle_call+0x23 ([kernel.kallsyms])
-        ffffffffbd0e006b do_idle+0x1fb ([kernel.kallsyms])
-        ffffffffbd0e0270 cpu_startup_entry+0x20 ([kernel.kallsyms])
-        ffffffffbdac82ae rest_init+0xae ([kernel.kallsyms])
-        ffffffffbe89cc77 arch_call_rest_init+0xe ([kernel.kallsyms])
-        ffffffffbe89d1e3 start_kernel+0x549 ([kernel.kallsyms])
-        ffffffffbe89c44a x86_64_start_reservations+0x24 ([kernel.kallsyms])
-        ffffffffbe89c4c1 x86_64_start_kernel+0x75 ([kernel.kallsyms])
-        ffffffffbd0000d4 secondary_startup_64+0xa4 ([kernel.kallsyms])
-
-swapper     0 [000]  2942.591979: fib:fib_table_lookup: table 254 oif 0 iif 1 proto 0 10.0.2.15/0 -> 104.236.116.147/0 tos 0 scope 0 flags 0 ==> dev ens3 gw 10.0.2.2/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9fd299 __fib_validate_source+0x169 ([kernel.kallsyms])
-        ffffffffbd9fda09 fib_validate_source+0x49 ([kernel.kallsyms])
-        ffffffffbd9ac586 ip_route_input_slow+0xa36 ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd935e55 netif_receive_skb_internal+0x45 ([kernel.kallsyms])
-        ffffffffbd9378af napi_gro_receive+0xff ([kernel.kallsyms])
-        ffffffffc01bd5e0 receive_buf+0x190 ([kernel.kallsyms])
-        ffffffffc01bdadf virtnet_poll+0x15f ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a81ce irq_exit+0xae ([kernel.kallsyms])
-        ffffffffbdc01e7a do_IRQ+0x5a ([kernel.kallsyms])
-        ffffffffbdc00a0f ret_from_intr+0x0 ([kernel.kallsyms])
-        ffffffffbdad564e native_safe_halt+0xe ([kernel.kallsyms])
-        ffffffffbd03dd55 arch_cpu_idle+0x15 ([kernel.kallsyms])
-        ffffffffbdad57f3 default_idle_call+0x23 ([kernel.kallsyms])
-        ffffffffbd0e006b do_idle+0x1fb ([kernel.kallsyms])
-        ffffffffbd0e0270 cpu_startup_entry+0x20 ([kernel.kallsyms])
-        ffffffffbdac82ae rest_init+0xae ([kernel.kallsyms])
-        ffffffffbe89cc77 arch_call_rest_init+0xe ([kernel.kallsyms])
-        ffffffffbe89d1e3 start_kernel+0x549 ([kernel.kallsyms])
-        ffffffffbe89c44a x86_64_start_reservations+0x24 ([kernel.kallsyms])
-        ffffffffbe89c4c1 x86_64_start_kernel+0x75 ([kernel.kallsyms])
-        ffffffffbd0000d4 secondary_startup_64+0xa4 ([kernel.kallsyms])
-
-ntpd  1175 [000]  2942.623071: fib:fib_table_lookup: table 254 oif 0 iif 2 proto 0 173.255.192.10/0 -> 10.0.2.15/0 tos 0 scope 0 flags 0 ==> dev ens3 gw 10.0.2.2/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9abda5 ip_route_input_slow+0x255 ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd935e55 netif_receive_skb_internal+0x45 ([kernel.kallsyms])
-        ffffffffbd9378af napi_gro_receive+0xff ([kernel.kallsyms])
-        ffffffffc01bd5e0 receive_buf+0x190 ([kernel.kallsyms])
-        ffffffffc01bdadf virtnet_poll+0x15f ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a81ce irq_exit+0xae ([kernel.kallsyms])
-        ffffffffbdc01e7a do_IRQ+0x5a ([kernel.kallsyms])
-        ffffffffbdc00a0f ret_from_intr+0x0 ([kernel.kallsyms])
-        ffffffffbd2ea9a7 path_init+0x107 ([kernel.kallsyms])
-        ffffffffbd2ee99a path_openat+0x7a ([kernel.kallsyms])
-        ffffffffbd2f0021 do_filp_open+0x91 ([kernel.kallsyms])
-        ffffffffbd2d98be do_sys_open+0x17e ([kernel.kallsyms])
-        ffffffffbd2d9a50 __x64_sys_openat+0x20 ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fec108b8d94 __GI___libc_open+0xd4 (/lib/x86_64-linux-gnu/libc-2.31.so)
-        617473706f6f6c2f [unknown] ([unknown])
-
-ntpd  1175 [000]  2942.623206: fib:fib_table_lookup: table 254 oif 0 iif 1 proto 0 10.0.2.15/0 -> 173.255.192.10/0 tos 0 scope 0 flags 0 ==> dev ens3 gw 10.0.2.2/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9fd299 __fib_validate_source+0x169 ([kernel.kallsyms])
-        ffffffffbd9fda09 fib_validate_source+0x49 ([kernel.kallsyms])
-        ffffffffbd9ac586 ip_route_input_slow+0xa36 ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd935e55 netif_receive_skb_internal+0x45 ([kernel.kallsyms])
-        ffffffffbd9378af napi_gro_receive+0xff ([kernel.kallsyms])
-        ffffffffc01bd5e0 receive_buf+0x190 ([kernel.kallsyms])
-        ffffffffc01bdadf virtnet_poll+0x15f ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a81ce irq_exit+0xae ([kernel.kallsyms])
-        ffffffffbdc01e7a do_IRQ+0x5a ([kernel.kallsyms])
-        ffffffffbdc00a0f ret_from_intr+0x0 ([kernel.kallsyms])
-        ffffffffbd2ea9a7 path_init+0x107 ([kernel.kallsyms])
-        ffffffffbd2ee99a path_openat+0x7a ([kernel.kallsyms])
-        ffffffffbd2f0021 do_filp_open+0x91 ([kernel.kallsyms])
-        ffffffffbd2d98be do_sys_open+0x17e ([kernel.kallsyms])
-        ffffffffbd2d9a50 __x64_sys_openat+0x20 ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fec108b8d94 __GI___libc_open+0xd4 (/lib/x86_64-linux-gnu/libc-2.31.so)
-        617473706f6f6c2f [unknown] ([unknown])
-
-ntpd  1175 [000]  2944.573207: fib:fib_table_lookup: table 254 oif 0 iif 1 proto 17 10.0.2.15/123 -> 50.205.244.23/123 tos 24 scope 0 flags 0 ==> dev ens3 gw 10.0.2.2/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9acd54 ip_route_output_key_hash_rcu+0x3c4 ([kernel.kallsyms])
-        ffffffffbd9ad292 ip_route_output_key_hash+0x62 ([kernel.kallsyms])
-        ffffffffbd9ad60f ip_route_output_flow+0x1f ([kernel.kallsyms])
-        ffffffffbd9e696c udp_sendmsg+0x95c ([kernel.kallsyms])
-        ffffffffbd9f66d5 inet_sendmsg+0x65 ([kernel.kallsyms])
-        ffffffffbd90eefe sock_sendmsg+0x5e ([kernel.kallsyms])
-        ffffffffbd910e93 __sys_sendto+0x113 ([kernel.kallsyms])
-        ffffffffbd910f39 __x64_sys_sendto+0x29 ([kernel.kallsyms])
-        ffffffffbd0044c7 do_syscall_64+0x57 ([kernel.kallsyms])
-        ffffffffbdc0008c entry_SYSCALL_64_after_hwframe+0x44 ([kernel.kallsyms])
-            7fec109ae844 __libc_sendto+0x74 (/lib/x86_64-linux-gnu/libpthread-2.31.so)
-
-swapper     0 [000]  2944.595636: fib:fib_table_lookup: table 254 oif 0 iif 2 proto 0 50.205.244.23/0 -> 10.0.2.15/0 tos 0 scope 0 flags 0 ==> dev ens3 gw 10.0.2.2/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9abda5 ip_route_input_slow+0x255 ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd935e55 netif_receive_skb_internal+0x45 ([kernel.kallsyms])
-        ffffffffbd9378af napi_gro_receive+0xff ([kernel.kallsyms])
-        ffffffffc01bd5e0 receive_buf+0x190 ([kernel.kallsyms])
-        ffffffffc01bdadf virtnet_poll+0x15f ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a81ce irq_exit+0xae ([kernel.kallsyms])
-        ffffffffbdc01e7a do_IRQ+0x5a ([kernel.kallsyms])
-        ffffffffbdc00a0f ret_from_intr+0x0 ([kernel.kallsyms])
-        ffffffffbdad564e native_safe_halt+0xe ([kernel.kallsyms])
-        ffffffffbd03dd55 arch_cpu_idle+0x15 ([kernel.kallsyms])
-        ffffffffbdad57f3 default_idle_call+0x23 ([kernel.kallsyms])
-        ffffffffbd0e006b do_idle+0x1fb ([kernel.kallsyms])
-        ffffffffbd0e0270 cpu_startup_entry+0x20 ([kernel.kallsyms])
-        ffffffffbdac82ae rest_init+0xae ([kernel.kallsyms])
-        ffffffffbe89cc77 arch_call_rest_init+0xe ([kernel.kallsyms])
-        ffffffffbe89d1e3 start_kernel+0x549 ([kernel.kallsyms])
-        ffffffffbe89c44a x86_64_start_reservations+0x24 ([kernel.kallsyms])
-        ffffffffbe89c4c1 x86_64_start_kernel+0x75 ([kernel.kallsyms])
-        ffffffffbd0000d4 secondary_startup_64+0xa4 ([kernel.kallsyms])
-
-swapper     0 [000]  2944.595773: fib:fib_table_lookup: table 254 oif 0 iif 1 proto 0 10.0.2.15/0 -> 50.205.244.23/0 tos 0 scope 0 flags 0 ==> dev ens3 gw 10.0.2.2/:: err 0
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbda04e17 fib_table_lookup+0x3b7 ([kernel.kallsyms])
-        ffffffffbd9fd299 __fib_validate_source+0x169 ([kernel.kallsyms])
-        ffffffffbd9fda09 fib_validate_source+0x49 ([kernel.kallsyms])
-        ffffffffbd9ac586 ip_route_input_slow+0xa36 ([kernel.kallsyms])
-        ffffffffbd9ac81a ip_route_input_rcu+0x15a ([kernel.kallsyms])
-        ffffffffbd9ac978 ip_route_input_noref+0x28 ([kernel.kallsyms])
-        ffffffffbd9aec0b ip_rcv_finish_core.isra.0+0x6b ([kernel.kallsyms])
-        ffffffffbd9aefcb ip_rcv_finish+0x6b ([kernel.kallsyms])
-        ffffffffbd9af9fc ip_rcv+0xbc ([kernel.kallsyms])
-        ffffffffbd935d78 __netif_receive_skb_one_core+0x88 ([kernel.kallsyms])
-        ffffffffbd935dc8 __netif_receive_skb+0x18 ([kernel.kallsyms])
-        ffffffffbd935e55 netif_receive_skb_internal+0x45 ([kernel.kallsyms])
-        ffffffffbd9378af napi_gro_receive+0xff ([kernel.kallsyms])
-        ffffffffc01bd5e0 receive_buf+0x190 ([kernel.kallsyms])
-        ffffffffc01bdadf virtnet_poll+0x15f ([kernel.kallsyms])
-        ffffffffbd936eda net_rx_action+0x13a ([kernel.kallsyms])
-        ffffffffbde000e1 __softirqentry_text_start+0xe1 ([kernel.kallsyms])
-        ffffffffbd0a81ce irq_exit+0xae ([kernel.kallsyms])
-        ffffffffbdc01e7a do_IRQ+0x5a ([kernel.kallsyms])
-        ffffffffbdc00a0f ret_from_intr+0x0 ([kernel.kallsyms])
-        ffffffffbdad564e native_safe_halt+0xe ([kernel.kallsyms])
-        ffffffffbd03dd55 arch_cpu_idle+0x15 ([kernel.kallsyms])
-        ffffffffbdad57f3 default_idle_call+0x23 ([kernel.kallsyms])
-        ffffffffbd0e006b do_idle+0x1fb ([kernel.kallsyms])
-        ffffffffbd0e0270 cpu_startup_entry+0x20 ([kernel.kallsyms])
-        ffffffffbdac82ae rest_init+0xae ([kernel.kallsyms])
-        ffffffffbe89cc77 arch_call_rest_init+0xe ([kernel.kallsyms])
-        ffffffffbe89d1e3 start_kernel+0x549 ([kernel.kallsyms])
-        ffffffffbe89c44a x86_64_start_reservations+0x24 ([kernel.kallsyms])
-        ffffffffbe89c4c1 x86_64_start_kernel+0x75 ([kernel.kallsyms])
-        ffffffffbd0000d4 secondary_startup_64+0xa4 ([kernel.kallsyms])
-
---mP3DRpeJDSE+ciuQ--
