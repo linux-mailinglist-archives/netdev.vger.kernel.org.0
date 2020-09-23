@@ -2,95 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 539F627571F
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 13:28:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ECD1275729
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 13:30:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726634AbgIWL2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 07:28:18 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:53106 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726595AbgIWL2S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 07:28:18 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08NBOlTZ027355;
-        Wed, 23 Sep 2020 11:28:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=uEf9FWNukK8RgzNDp5y3BawUGVfjd90oZWpVO7yCEVY=;
- b=hxf+7l2v6hG1i3NGSfiS7kzr3V85RO2HEJCnIGiTaEzMv1InK8FB89LExG/rRQ6pL/wz
- tNw9PeSYeO+kcCM/AWcWYVRJBtGsOl05D7TxLCgApZyKL+1sRPBz+wb6CKPosEUcE6hi
- ggoBswwKdaKakvoxp4iLkVRFTl5pFBb0p6jryq7Hq0W1D/xqx/+Z0wNELjTUOg0BWeIP
- Hxk6+ewbZBAaf7yFu01Q3zWfTGoqzXHBCT9oA7Zea7NHGrW1f23oJ2zIx8Ke9lDpzTJS
- howSL1Ohf6+vlFSi1pPtESbc6yjO0G7+LsAbKIvLAfc0D3XdTzRHJz807RrtMHRbXR3Q 2Q== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 33ndnuhx8b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 23 Sep 2020 11:28:02 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08NBPP0t136367;
-        Wed, 23 Sep 2020 11:28:02 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 33nux0yvfr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Sep 2020 11:28:01 +0000
-Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08NBS0x9032204;
-        Wed, 23 Sep 2020 11:28:00 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 23 Sep 2020 04:27:59 -0700
-Date:   Wed, 23 Sep 2020 14:27:52 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Thomas Kopp <thomas.kopp@microchip.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] can: mcp25xxfd: fix a leak in mcp25xxfd_ring_free()
-Message-ID: <20200923112752.GA1473821@mwanda>
+        id S1726582AbgIWLaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 07:30:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26512 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726332AbgIWL35 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 07:29:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600860596;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=puu3LR6PBVkJbaIlQWrIFXp+CHL9X+avvkTO38uPYuA=;
+        b=EZ7OhJZhlTYZg3IoNnQGLg+QOThwXG8zJCD2OItgOuQeTBgH+5Pa/H9OqWI0xSradgO58x
+        HAx3IqmyMXrGMrYnqw0CaWf0I3A++ytPdC7/Lr6mo9pKvx4DxnGN0Je+uFQVq3Y3ltZ3g0
+        NIx5OKvHl7fMvhf5DrY+tg8eGKWeaTA=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-461-MsG3hq9APXGA-bvwoim9Dw-1; Wed, 23 Sep 2020 07:29:54 -0400
+X-MC-Unique: MsG3hq9APXGA-bvwoim9Dw-1
+Received: by mail-oo1-f70.google.com with SMTP id n16so10162489oov.17
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 04:29:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=puu3LR6PBVkJbaIlQWrIFXp+CHL9X+avvkTO38uPYuA=;
+        b=ki4r13nZpOS++Q8LFqVTF1uFnLM4kY3FyjNpFkMVjh4d+L7jPScdqbeihp3B5GwxZA
+         qzcCT2vP35yewLKzlZs57Ttw0nSCWTiJ92gdgxP9rxH8FjVAMtZpi8mkgdKpEf/guB9q
+         Hxzf02b+eDd21d3rSCO3ITDgw6NDHd91vkj8TIUzjWTNVoO3RGbpwYRM0NKRKscv2sw+
+         iqQSMBVCkykNXf022x1txOyHfunI+SVLVch75nnjXa6SjEavbLcl624sWVriv5OvtC0l
+         i10dDWpLv9bssGcjtaSQlFj3BVkKkgLbxZMmbK05gBDfUQ6Upm61xCAQlxG1I4cIFIMp
+         kviQ==
+X-Gm-Message-State: AOAM531pbvsdrg8CBq67hBW2Ctjg/RzDmcj5uj1F+xbzxwrNruuOs3yh
+        jBeIqpBBPyCEybAxQ4HIsKhkluZ6g1KRzdLN4igyqfjjJ3minyuZ3a7OJK+xZepJRd+fO/2ywRI
+        obOF4WEHeKAKd1Rh5xHXfGD23iyYuU5AU
+X-Received: by 2002:a9d:3ca:: with SMTP id f68mr5367784otf.330.1600860593957;
+        Wed, 23 Sep 2020 04:29:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxpHbmO/24vw0t0dO0Z48Fo9ja7x9xin6XTNYYbw55FKRewu8qtDKfTiW2oZqiFX3+OgoxgQGeq71niS4pG3qE=
+X-Received: by 2002:a9d:3ca:: with SMTP id f68mr5367775otf.330.1600860593748;
+ Wed, 23 Sep 2020 04:29:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9752 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 adultscore=0
- bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=2 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009230092
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9752 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- lowpriorityscore=0 phishscore=0 adultscore=0 suspectscore=2 bulkscore=0
- clxscore=1011 impostorscore=0 mlxlogscore=999 mlxscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009230092
+References: <20200922133731.33478-5-jarod@redhat.com> <20200923041337.GA29158@0b758a8b4a67>
+In-Reply-To: <20200923041337.GA29158@0b758a8b4a67>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Wed, 23 Sep 2020 07:29:43 -0400
+Message-ID: <CAKfmpScApsp7MXRdHS=V3LFVaJTPrhL7qmb4J_EKH=8KVDh-rA@mail.gmail.com>
+Subject: Re: [RFC PATCH] bonding: linkdesc can be static
+To:     kernel test robot <lkp@intel.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, kbuild-all@lists.01.org,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This loop doesn't free the first element of the array.  The "i > 0" has
-to be changed to "i >= 0".
+On Wed, Sep 23, 2020 at 12:15 AM kernel test robot <lkp@intel.com> wrote:
+>
+> Signed-off-by: kernel test robot <lkp@intel.com>
+> ---
+>  bond_procfs.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/bonding/bond_procfs.c b/drivers/net/bonding/bond_procfs.c
+> index 91ece68607b23..9b1b37a682728 100644
+> --- a/drivers/net/bonding/bond_procfs.c
+> +++ b/drivers/net/bonding/bond_procfs.c
+> @@ -8,7 +8,7 @@
+>  #include "bonding_priv.h"
+>
+>  #ifdef CONFIG_BONDING_LEGACY_INTERFACES
+> -const char *linkdesc = "Slave";
+> +static const char *linkdesc = "Slave";
+>  #else
+>  const char *linkdesc = "Link";
+>  #endif
 
-Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxFD SPI CAN")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/can/spi/mcp25xxfd/mcp25xxfd-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Good attempt, robot, but you missed the #else. Will fold a full
+version into my set.
 
-diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd-core.c b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd-core.c
-index bd2ba981ae36..7e094afaac04 100644
---- a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd-core.c
-+++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd-core.c
-@@ -377,7 +377,7 @@ static void mcp25xxfd_ring_free(struct mcp25xxfd_priv *priv)
- {
- 	int i;
- 
--	for (i = ARRAY_SIZE(priv->rx) - 1; i > 0; i--) {
-+	for (i = ARRAY_SIZE(priv->rx) - 1; i >= 0; i--) {
- 		kfree(priv->rx[i]);
- 		priv->rx[i] = NULL;
- 	}
 -- 
-2.28.0
+Jarod Wilson
+jarod@redhat.com
 
