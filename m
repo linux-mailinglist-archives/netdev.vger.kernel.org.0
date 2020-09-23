@@ -2,87 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1316F2753BD
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 10:54:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B19662753E1
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 10:56:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726665AbgIWIyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 04:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726634AbgIWIyd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 04:54:33 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10FC5C0613DC
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 01:54:33 -0700 (PDT)
-Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kL0Xn-0000uS-6l; Wed, 23 Sep 2020 10:54:31 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, michael@walle.cc, qiangqing.zhang@nxp.com,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 20/20] can: flexcan: add lx2160ar1 support
-Date:   Wed, 23 Sep 2020 10:54:18 +0200
-Message-Id: <20200923085418.2685858-21-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200923085418.2685858-1-mkl@pengutronix.de>
-References: <20200923085418.2685858-1-mkl@pengutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        id S1726787AbgIWI4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 04:56:18 -0400
+Received: from mga02.intel.com ([134.134.136.20]:30055 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726244AbgIWI4S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 04:56:18 -0400
+IronPort-SDR: OhDDZKWBhmGrz4R4FECwCEvhn5fQa8NxHeyDJ+rvlZ5M4HUFQF/T1HKtndPljmD4dPbXwSpwGK
+ nLMSQ2DtGWRg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9752"; a="148492030"
+X-IronPort-AV: E=Sophos;i="5.77,293,1596524400"; 
+   d="scan'208";a="148492030"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2020 01:56:17 -0700
+IronPort-SDR: ANRFrIrOS1XqWbh5ONAWDEfN8VLGno0Z8I0+1k51QtiGq4RV1eWTMpCc570TtrxINW/3wFG4AF
+ pw0IL5CEMvFA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,293,1596524400"; 
+   d="scan'208";a="338590656"
+Received: from unknown (HELO climb.png.intel.com) ([10.221.118.165])
+  by orsmga008.jf.intel.com with ESMTP; 23 Sep 2020 01:56:15 -0700
+From:   Voon Weifeng <weifeng.voon@intel.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Seow Chen Yong <chen.yong.seow@intel.com>,
+        Mark Gross <mgross@linux.intel.com>
+Subject: [PATCH v1 net] net: stmmac: removed enabling eee in EEE set callback
+Date:   Wed, 23 Sep 2020 16:56:14 +0800
+Message-Id: <20200923085614.8147-1-weifeng.voon@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Joakim Zhang <qiangqing.zhang@nxp.com>
+EEE should be only be enabled during stmmac_mac_link_up() when the
+link are up and being set up properly. set_eee should only do settings
+configuration and disabling the eee.
 
-The Flexcan on lx2160ar1 supports CAN FD protocol.
+Without this fix, turning on EEE using ethtool will return
+"Operation not supported". This is due to the driver is in a dead loop
+waiting for eee to be advertised in the for eee to be activated but the
+driver will only configure the EEE advertisement after the eee is
+activated.
 
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Link: https://lore.kernel.org/r/20190712075926.7357-9-qiangqing.zhang@nxp.com
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Ethtool should only return "Operation not supported" if there is no EEE
+capbility in the MAC controller.
+
+Fixes: 8a7493e58ad6 ("net: stmmac: Fix a race in EEE enable callback")
+
+Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
 ---
- drivers/net/can/flexcan.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c  | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index 5f778c961a0c..e86925134009 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -216,6 +216,7 @@
-  *   MX8QM FlexCAN3  03.00.23.00    yes       yes        no       no       yes          yes
-  *   VF610 FlexCAN3  ?               no       yes        no      yes       yes?          no
-  * LS1021A FlexCAN2  03.00.04.00     no       yes        no       no       yes           no
-+ * LX2160A FlexCAN3  03.00.23.00     no       yes        no       no       yes          yes
-  *
-  * Some SOCs do not have the RX_WARN & TX_WARN interrupt line connected.
-  */
-@@ -387,6 +388,12 @@ static const struct flexcan_devtype_data fsl_ls1021a_r2_devtype_data = {
- 		FLEXCAN_QUIRK_USE_OFF_TIMESTAMP,
- };
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index ac5e8cc5fb9f..430a4b32ec1e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -675,23 +675,16 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	int ret;
  
-+static const struct flexcan_devtype_data fsl_lx2160a_r1_devtype_data = {
-+	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
-+		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
-+		FLEXCAN_QUIRK_USE_OFF_TIMESTAMP | FLEXCAN_QUIRK_SUPPORT_FD,
-+};
+-	if (!edata->eee_enabled) {
++	if (!priv->dma_cap.eee)
++		return -EOPNOTSUPP;
 +
- static const struct can_bittiming_const flexcan_bittiming_const = {
- 	.name = DRV_NAME,
- 	.tseg1_min = 4,
-@@ -1846,6 +1853,7 @@ static const struct of_device_id flexcan_of_match[] = {
- 	{ .compatible = "fsl,p1010-flexcan", .data = &fsl_p1010_devtype_data, },
- 	{ .compatible = "fsl,vf610-flexcan", .data = &fsl_vf610_devtype_data, },
- 	{ .compatible = "fsl,ls1021ar2-flexcan", .data = &fsl_ls1021a_r2_devtype_data, },
-+	{ .compatible = "fsl,lx2160ar1-flexcan", .data = &fsl_lx2160a_r1_devtype_data, },
- 	{ /* sentinel */ },
- };
- MODULE_DEVICE_TABLE(of, flexcan_of_match);
++	if (!edata->eee_enabled)
+ 		stmmac_disable_eee_mode(priv);
+-	} else {
+-		/* We are asking for enabling the EEE but it is safe
+-		 * to verify all by invoking the eee_init function.
+-		 * In case of failure it will return an error.
+-		 */
+-		edata->eee_enabled = stmmac_eee_init(priv);
+-		if (!edata->eee_enabled)
+-			return -EOPNOTSUPP;
+-	}
+ 
+ 	ret = phylink_ethtool_set_eee(priv->phylink, edata);
+ 	if (ret)
+ 		return ret;
+ 
+-	priv->eee_enabled = edata->eee_enabled;
+ 	priv->tx_lpi_timer = edata->tx_lpi_timer;
+ 	return 0;
+ }
 -- 
-2.28.0
+2.17.1
 
