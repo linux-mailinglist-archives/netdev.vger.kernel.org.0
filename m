@@ -2,170 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0048827599D
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:14:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD0952759B3
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:17:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726715AbgIWOOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 10:14:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59222 "EHLO
+        id S1726701AbgIWORG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 10:17:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgIWOON (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:14:13 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B38BC0613CE;
-        Wed, 23 Sep 2020 07:14:13 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id y15so234934wmi.0;
-        Wed, 23 Sep 2020 07:14:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OwjrYT2cgYiXPXM5damUhK95qHZgYya6zZ6mXD0zFBE=;
-        b=obHtpepxuTTVBXFISitT+Nk85ES0huZDcdAzFAhmfmHMPjV4m156WAwF0U69K9wIGy
-         z7hfLvHdGReIh3bXPoJr2bWj2gowLyCvtCzn6jtQRFn2DzWLG3lF1uj1QupWHiy3N0ho
-         bxTXmzFhulvDsG2A3P20KAJxWDZpWxq/Xc4OkWsmJZVzVfNkgQ8rCP4OG41c+4pS058T
-         e1LIcYESpjcGsgW2MUCfgnisE2uidlu2+vJJeefwdJaUC3Zqo73pkITqT6ddgZXyhC20
-         OlfOzf7EGcycT2aX9p2h7hd6ENemBVb798fmdWFcsaqSxCDhUj4BtdY+13p4PGQVt1+9
-         DSgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OwjrYT2cgYiXPXM5damUhK95qHZgYya6zZ6mXD0zFBE=;
-        b=fbxqP2Z8MLK1LtqwBHwnqU0GGPWWX888WjKa6lmgAnYEzKpx4lGMPdK59nCQGOxLgg
-         Vjb3oE6mO7cLDEA6iV/Ba6QWbrTPNxibgASfkFPkCUvxjeSjRK6I6yCtuVY4dx5LYXEZ
-         1n3gDMwMehDNDZpEmNfdLSIXowmKh2sNlx9fNGrPu4LDxl7zOK7JGDsaEsfosD/CvTU5
-         RusJLpLtJ+nkIrwm76AGG2h9yX5wpmSKVu5AaGMJY9ozoVipWSpyOAn7v1QegFsQwY5v
-         2khOS/u//S2exArbC0U7EP2lyT5hAH+RJBxMpBGeePTz0dn3xRtehEy+Ka5c5ud7+sLm
-         lPLA==
-X-Gm-Message-State: AOAM532Pvn7nChBNkya78dS0RfrnqBNwLIMAEViERXGO7VlCRwRLefmI
-        lJPefH0xaOO4rEk1QoHAYTmKEQz09hmSUpjHMmI=
-X-Google-Smtp-Source: ABdhPJwdy6UD/UzHfr2IcuCNMK2z1a9fd/uvMgG9JscXgN32cCh6DM8001ZMYmM7ElTCq0gduZVIX3YihxNI3VPmGts=
-X-Received: by 2002:a1c:6341:: with SMTP id x62mr6771683wmb.70.1600870452134;
- Wed, 23 Sep 2020 07:14:12 -0700 (PDT)
+        with ESMTP id S1726130AbgIWORF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:17:05 -0400
+Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07F8C0613CE;
+        Wed, 23 Sep 2020 07:17:04 -0700 (PDT)
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kL5Zm-004aBB-Mq; Wed, 23 Sep 2020 14:16:54 +0000
+Date:   Wed, 23 Sep 2020 15:16:54 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        David Laight <David.Laight@aculab.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-aio@kvack.org, io-uring@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH 3/9] iov_iter: refactor rw_copy_check_uvector and
+ import_iovec
+Message-ID: <20200923141654.GJ3421308@ZenIV.linux.org.uk>
+References: <20200923060547.16903-1-hch@lst.de>
+ <20200923060547.16903-4-hch@lst.de>
 MIME-Version: 1.0
-References: <20200923090519.361-1-himadrispandya@gmail.com>
- <20200923090519.361-5-himadrispandya@gmail.com> <20200923102256.GA3154647@kroah.com>
-In-Reply-To: <20200923102256.GA3154647@kroah.com>
-From:   Himadri Pandya <himadrispandya@gmail.com>
-Date:   Wed, 23 Sep 2020 19:44:00 +0530
-Message-ID: <CAOY-YVnFtDMkRVVg4TZ-3rRxciRYwEQCf-ctbm9=KbF4=1FqMA@mail.gmail.com>
-Subject: Re: [PATCH 4/4] net: rndis_host: use usb_control_msg_recv() and usb_control_msg_send()
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        pankaj.laxminarayan.bharadiya@intel.com,
-        Kees Cook <keescook@chromium.org>, yuehaibing@huawei.com,
-        petkan@nucleusys.com, ogiannou@gmail.com,
-        USB list <linux-usb@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200923060547.16903-4-hch@lst.de>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 3:52 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Sep 23, 2020 at 02:35:19PM +0530, Himadri Pandya wrote:
-> > The new usb_control_msg_recv() and usb_control_msg_send() nicely wraps
-> > usb_control_msg() with proper error check. Hence use the wrappers
-> > instead of calling usb_control_msg() directly.
-> >
-> > Signed-off-by: Himadri Pandya <himadrispandya@gmail.com>
-> > ---
-> >  drivers/net/usb/rndis_host.c | 44 ++++++++++++++----------------------
-> >  1 file changed, 17 insertions(+), 27 deletions(-)
-> >
-> > diff --git a/drivers/net/usb/rndis_host.c b/drivers/net/usb/rndis_host.c
-> > index 6fa7a009a24a..30fc4a7183d3 100644
-> > --- a/drivers/net/usb/rndis_host.c
-> > +++ b/drivers/net/usb/rndis_host.c
-> > @@ -113,14 +113,13 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
-> >               buf->request_id = (__force __le32) xid;
-> >       }
-> >       master_ifnum = info->control->cur_altsetting->desc.bInterfaceNumber;
-> > -     retval = usb_control_msg(dev->udev,
-> > -             usb_sndctrlpipe(dev->udev, 0),
-> > -             USB_CDC_SEND_ENCAPSULATED_COMMAND,
-> > -             USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-> > -             0, master_ifnum,
-> > -             buf, le32_to_cpu(buf->msg_len),
-> > -             RNDIS_CONTROL_TIMEOUT_MS);
-> > -     if (unlikely(retval < 0 || xid == 0))
-> > +     retval = usb_control_msg_send(dev->udev, 0,
-> > +                                   USB_CDC_SEND_ENCAPSULATED_COMMAND,
-> > +                                   USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-> > +                                   0, master_ifnum, buf,
-> > +                                   le32_to_cpu(buf->msg_len),
-> > +                                   RNDIS_CONTROL_TIMEOUT_MS);
-> > +     if (unlikely(xid == 0))
-> >               return retval;
-> >
-> >       /* Some devices don't respond on the control channel until
-> > @@ -139,14 +138,11 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
-> >       /* Poll the control channel; the request probably completed immediately */
-> >       rsp = le32_to_cpu(buf->msg_type) | RNDIS_MSG_COMPLETION;
-> >       for (count = 0; count < 10; count++) {
-> > -             memset(buf, 0, CONTROL_BUFFER_SIZE);
-> > -             retval = usb_control_msg(dev->udev,
-> > -                     usb_rcvctrlpipe(dev->udev, 0),
-> > -                     USB_CDC_GET_ENCAPSULATED_RESPONSE,
-> > -                     USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-> > -                     0, master_ifnum,
-> > -                     buf, buflen,
-> > -                     RNDIS_CONTROL_TIMEOUT_MS);
-> > +             retval = usb_control_msg_recv(dev->udev, 0,
-> > +                                           USB_CDC_GET_ENCAPSULATED_RESPONSE,
-> > +                                           USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-> > +                                           0, master_ifnum, buf, buflen,
-> > +                                           RNDIS_CONTROL_TIMEOUT_MS);
-> >               if (likely(retval >= 8)) {
->
-> retval here is never going to be positive, right?  So I don't think this
-> patch is correct :(
->
+On Wed, Sep 23, 2020 at 08:05:41AM +0200, Christoph Hellwig wrote:
 
-Yes :(.
+> +struct iovec *iovec_from_user(const struct iovec __user *uvec,
+> +		unsigned long nr_segs, unsigned long fast_segs,
 
-> >                       msg_type = le32_to_cpu(buf->msg_type);
-> >                       msg_len = le32_to_cpu(buf->msg_len);
-> > @@ -178,17 +174,11 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
-> >                               msg->msg_type = cpu_to_le32(RNDIS_MSG_KEEPALIVE_C);
-> >                               msg->msg_len = cpu_to_le32(sizeof *msg);
-> >                               msg->status = cpu_to_le32(RNDIS_STATUS_SUCCESS);
-> > -                             retval = usb_control_msg(dev->udev,
-> > -                                     usb_sndctrlpipe(dev->udev, 0),
-> > -                                     USB_CDC_SEND_ENCAPSULATED_COMMAND,
-> > -                                     USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-> > -                                     0, master_ifnum,
-> > -                                     msg, sizeof *msg,
-> > -                                     RNDIS_CONTROL_TIMEOUT_MS);
-> > -                             if (unlikely(retval < 0))
-> > -                                     dev_dbg(&info->control->dev,
-> > -                                             "rndis keepalive err %d\n",
-> > -                                             retval);
-> > +                             retval = usb_control_msg_send(dev->udev, 0,
-> > +                                                           USB_CDC_SEND_ENCAPSULATED_COMMAND,
-> > +                                                           USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-> > +                                                           0, master_ifnum, msg, sizeof(*msg),
-> > +                                                           RNDIS_CONTROL_TIMEOUT_MS);
->
-> You lost the error message that the previous call had if something went
-> wrong.  Don't know if it's really needed, but there's no reason to
-> remove it here.
->
+Hmm...  For fast_segs unsigned long had always been ridiculous
+(4G struct iovec on caller stack frame?), but that got me wondering about
+nr_segs and I wish I'd thought of that when introducing import_iovec().
 
-The wrapper returns the error so thought that might work instead. But
-yes, the old msg is better.
+The thing is, import_iovec() takes unsigned int there.  Which is fine
+(hell, the maximal value that can be accepted in 1024), except that
+we do pass unsigned long syscall argument to it in some places.
 
-Anyways, this series is dropped :).
+E.g. vfs_readv() quietly truncates vlen to 32 bits, and vlen can
+come unchanged through sys_readv() -> do_readv() -> vfs_readv().
+With unsigned long passed by syscall glue.
 
-Thanks for the review,
-Himadri
+AFAICS, passing 4G+1 as the third argument to readv(2) on 64bit box
+will be quietly treated as 1 these days.  Which would be fine, except
+that before "switch {compat_,}do_readv_writev() to {compat_,}import_iovec()"
+it used to fail with -EINVAL.
 
-> thanks,
->
-> greg k-h
+Userland, BTW, describes readv(2) iovcnt as int; process_vm_readv(),
+OTOH, has these counts unsigned long from the userland POV...
+
+I suppose we ought to switch import_iovec() to unsigned long for nr_segs ;-/
+Strictly speaking that had been a userland ABI change, even though nothing
+except regression tests checking for expected errors would've been likely
+to notice.  And it looks like no regression tests covered that one...
+
+Linus, does that qualify for your "if no userland has noticed the change,
+it's not a breakage"?
