@@ -2,94 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2537A276402
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 00:42:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D80C276405
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 00:45:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726596AbgIWWmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 18:42:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42426 "EHLO mail.kernel.org"
+        id S1726599AbgIWWpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 18:45:12 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42202 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726265AbgIWWmT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 18:42:19 -0400
-Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 25661214F1;
-        Wed, 23 Sep 2020 22:42:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600900938;
-        bh=q/SyCKS4vWZifgLcAj3lUplkmU2OZSgulPabk0vf+Yo=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=WfR52Oeau2WY+H8mcf9hZKzBFLSuufUmtlhCDzFYG2VM+u2CI8NMxTI4WXeG8nmn/
-         cLIgZOj317nuScl3RobdZ8ro9cOTBoinmx76s1isxjiOiJ36TUpCZAGcO7FO55Z+Ti
-         M/PkWUFQZa7eIOGkCi4OuKicG/3r1MK1Jy4sEd4g=
-Message-ID: <a7ff1afd2e1fc2232103ceb9aa763064daf90212.camel@kernel.org>
-Subject: Re: [PATCH] Revert "net: linkwatch: add check for netdevice being
- present to linkwatch_do_dev"
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     geert+renesas@glider.be, f.fainelli@gmail.com, andrew@lunn.ch,
-        kuba@kernel.org, gaku.inami.xh@renesas.com,
-        yoshihiro.shimoda.uh@renesas.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 23 Sep 2020 15:42:17 -0700
-In-Reply-To: <e6f50a85-aa25-5fb7-7fd2-158668d55378@gmail.com>
-References: <3d9176a6-c93e-481c-5877-786f5e6aaef8@gmail.com>
-         <28da797abe486e783547c60a25db44be0c030d86.camel@kernel.org>
-         <14f41724-ce45-c2c0-a49c-1e379dba0cb5@gmail.com>
-         <20200923.131529.637266321442993059.davem@davemloft.net>
-         <e6f50a85-aa25-5fb7-7fd2-158668d55378@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1726199AbgIWWpM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 18:45:12 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id D698BAB9F;
+        Wed, 23 Sep 2020 22:45:47 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 0ABDE60320; Thu, 24 Sep 2020 00:45:10 +0200 (CEST)
+Date:   Thu, 24 Sep 2020 00:45:10 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool-next 5/5] pause: add support for dumping
+ statistics
+Message-ID: <20200923224510.h3kpgczd6wkpoitp@lion.mk-sys.cz>
+References: <20200915235259.457050-1-kuba@kernel.org>
+ <20200915235259.457050-6-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200915235259.457050-6-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-09-23 at 22:44 +0200, Heiner Kallweit wrote:
-> On 23.09.2020 22:15, David Miller wrote:
-> > From: Heiner Kallweit <hkallweit1@gmail.com>
-> > Date: Wed, 23 Sep 2020 21:58:59 +0200
-> > 
-> > > On 23.09.2020 20:35, Saeed Mahameed wrote:
-> > > > Why would a driver detach the device on ndo_stop() ?
-> > > > seems like this is the bug you need to be chasing ..
-> > > > which driver is doing this ? 
-> > > > 
-> > > Some drivers set the device to PCI D3hot at the end of ndo_stop()
-> > > to save power (using e.g. Runtime PM). Marking the device as
-> > > detached
-> > > makes clear to to the net core that the device isn't accessible
-> > > any
-> > > longer.
-> > 
-> > That being the case, the problem is that IFF_UP+!present is not a
-> > valid netdev state.
-> > 
-> If this combination is invalid, then netif_device_detach() should
-> clear IFF_UP? At a first glance this should be sufficient to avoid
-> the issue I was dealing with.
+On Tue, Sep 15, 2020 at 04:52:59PM -0700, Jakub Kicinski wrote:
+> Add support for requesting pause frame stats from the kernel.
 > 
+>  # ./ethtool -I -a eth0
+> Pause parameters for eth0:
+> Autonegotiate:	on
+> RX:		on
+> TX:		on
+> Statistics:
+>   tx_pause_frames: 1
+>   rx_pause_frames: 1
+> 
+>  # ./ethtool -I --json -a eth0
+> [ {
+>         "ifname": "eth0",
+>         "autonegotiate": true,
+>         "rx": true,
+>         "tx": true,
+>         "statistics": {
+>             "tx_pause_frames": 1,
+>             "rx_pause_frames": 1
+>         }
+>     } ]
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  netlink/pause.c | 66 ++++++++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 65 insertions(+), 1 deletion(-)
+> 
+> diff --git a/netlink/pause.c b/netlink/pause.c
+> index 30ecdccb15eb..f9dec9fe887a 100644
+> --- a/netlink/pause.c
+> +++ b/netlink/pause.c
+> @@ -5,6 +5,7 @@
+>   */
+>  
+>  #include <errno.h>
+> +#include <inttypes.h>
+>  #include <string.h>
+>  #include <stdio.h>
+>  
+> @@ -110,6 +111,62 @@ static int show_pause_autoneg_status(struct nl_context *nlctx)
+>  	return ret;
+>  }
+>  
+> +static int show_pause_stats(const struct nlattr *nest)
+> +{
+> +	const struct nlattr *tb[ETHTOOL_A_PAUSE_STAT_MAX + 1] = {};
+> +	DECLARE_ATTR_TB_INFO(tb);
+> +	static const struct {
+> +		unsigned int attr;
+> +		char *name;
+> +	} stats[] = {
+> +		{ ETHTOOL_A_PAUSE_STAT_TX_FRAMES, "tx_pause_frames" },
+> +		{ ETHTOOL_A_PAUSE_STAT_RX_FRAMES, "rx_pause_frames" },
+> +	};
+> +	bool header = false;
+> +	unsigned int i;
+> +	size_t n;
+> +	int ret;
+> +
+> +	ret = mnl_attr_parse_nested(nest, attr_cb, &tb_info);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	open_json_object("statistics");
+> +	for (i = 0; i < ARRAY_SIZE(stats); i++) {
+> +		char fmt[32];
+> +
+> +		if (!tb[stats[i].attr])
+> +			continue;
+> +
+> +		if (!header && !is_json_context()) {
+> +			printf("Statistics:\n");
+> +			header = true;
+> +		}
+> +
+> +		if (mnl_attr_validate(tb[stats[i].attr], MNL_TYPE_U64)) {
+> +			fprintf(stderr, "malformed netlink message (statistic)\n");
+> +			goto err_close_stats;
+> +		}
+> +
+> +		n = snprintf(fmt, sizeof(fmt), "  %s: %%" PRId64 "\n",
+> +			     stats[i].name);
 
-Feels like a work around and would conflict with the assumption that 
-netif_device_detach() should only be called when !IFF_UP
+The stats are unsigned so the format should be PRIu64 here.
 
-Maybe we need to clear IFF_UP before calling ops->ndo_stop(dev),
-instead of after on __dev_close_many(). Assuming no driver is checking
-IFF_UP state on its own ndo_stop(), other than this, the order
-shouldn't really matter, since clearing the flag and calling ndo_stop()
-should be considered as one atomic operation.
+> +		if (n >= sizeof(fmt)) {
+> +			fprintf(stderr, "internal error - malformed label\n");
+> +			goto err_close_stats;
+> +		}
+> +
+> +		print_u64(PRINT_ANY, stats[i].name, fmt,
+> +			  mnl_attr_get_u64(tb[stats[i].attr]));
+> +	}
+> +	close_json_object();
+> +
+> +	return 0;
+> +
+> +err_close_stats:
+> +	close_json_object();
+> +	return -1;
+> +}
+> +
+>  int pause_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+>  {
+>  	const struct nlattr *tb[ETHTOOL_A_PAUSE_MAX + 1] = {};
+> @@ -147,6 +204,11 @@ int pause_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+>  		if (ret < 0)
+>  			goto err_close_dev;
+>  	}
+> +	if (tb[ETHTOOL_A_PAUSE_STATS]) {
+> +		ret = show_pause_stats(tb[ETHTOOL_A_PAUSE_STATS]);
+> +		if (ret < 0)
+> +			goto err_close_dev;
+> +	}
+>  	if (!silent)
+>  		print_nl();
+>  
+> @@ -163,6 +225,7 @@ int nl_gpause(struct cmd_context *ctx)
+>  {
+>  	struct nl_context *nlctx = ctx->nlctx;
+>  	struct nl_socket *nlsk = nlctx->ethnl_socket;
+> +	u32 flags;
+>  	int ret;
+>  
+>  	if (netlink_cmd_check(ctx, ETHTOOL_MSG_PAUSE_GET, true))
+> @@ -173,8 +236,9 @@ int nl_gpause(struct cmd_context *ctx)
+>  		return 1;
+>  	}
+>  
+> +	flags = nlctx->ctx->show_stats ? ETHTOOL_FLAG_STATS : 0;
+>  	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_PAUSE_GET,
+> -				      ETHTOOL_A_PAUSE_HEADER, 0);
+> +				      ETHTOOL_A_PAUSE_HEADER, flags);
+>  	if (ret < 0)
+>  		return ret;
+>  
 
-> > Is it simply the issue that, upon resume, IFF_UP is marked true
-> > before
-> > the device is brought out from D3hot state and thus marked as
-> > present
-> > again?
-> > 
-> I can't really comment on that. The issue I was dealing with at the
-> time I submitted this change was about an async linkwatch event
-> (caused by powering down the PHY in ndo_stop) trying to access the
-> device when it was powered down already.
+When the stats are supported by kernel but not provided by a device,
+the request will succeed and usual output without stats will be shown.
+However, when stats are requested on a pre-5.10 kernel not recognizing
+ETHTOOL_FLAG_STATS, the request will fail:
 
+    mike@lion:~/work/git/ethtool> ./ethtool --debug 0x10 -I -a eth0
+    netlink error: unrecognized request flags
+    netlink error: Operation not supported
+    offending message and attribute:
+        ETHTOOL_MSG_PAUSE_GET
+            ETHTOOL_A_PAUSE_HEADER
+                ETHTOOL_A_HEADER_DEV_NAME = "eth0"
+    ===>        ETHTOOL_A_HEADER_FLAGS = 0x00000004
+
+We should probably repeat the request with flags=0 in this case but that
+would require keeping the offset of ETHTOOL_A_HEADER_FLAGS attribute and
+checking for -EOPNOTSUPP with this offset in nlsock_process_ack().
+
+Michal
