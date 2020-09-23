@@ -2,69 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3DF32761D7
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 22:17:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37C6B2761DB
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 22:18:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726594AbgIWURK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 16:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58970 "EHLO
+        id S1726515AbgIWUSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 16:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726515AbgIWURJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 16:17:09 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D9BC0613CE
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 13:17:09 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id F3BD111E3E4CA;
-        Wed, 23 Sep 2020 13:00:20 -0700 (PDT)
-Date:   Wed, 23 Sep 2020 13:17:07 -0700 (PDT)
-Message-Id: <20200923.131707.1724242419810377273.davem@davemloft.net>
-To:     horatiu.vultur@microchip.com
-Cc:     vladimir.oltean@nxp.com, netdev@vger.kernel.org, yangbo.lu@nxp.com,
-        xiaoliang.yang_1@nxp.com, UNGLinuxDriver@microchip.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        kuba@kernel.org, richardcochran@gmail.com
-Subject: Re: [PATCH net-next] net: mscc: ocelot: always pass skb clone to
- ocelot_port_add_txtstamp_skb
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200923200800.t7y47fagvgffw4ya@soft-dev3.localdomain>
-References: <20200923112420.2147806-1-vladimir.oltean@nxp.com>
-        <20200923200800.t7y47fagvgffw4ya@soft-dev3.localdomain>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Wed, 23 Sep 2020 13:00:21 -0700 (PDT)
+        with ESMTP id S1726381AbgIWUSY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 16:18:24 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D4EC0613CE
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 13:18:24 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id p16so384783pgi.9
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 13:18:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=boOIxhUxOHbOCqVTnoxAdSoDT3OVN0nOXlllUNKf4Lk=;
+        b=pO5v1itDUPv8ky0LzVzzyajNFBb1ypuvxZ9UUPxjvENEsnkgGwb6JjmrseFmh0mMWJ
+         nxAxqBswRWUruJY8lbw7WBjwiu36i8jw95C4E/o2U8yMD7Uo6Iy4HRfeMkQWcHEpkF+/
+         iXzr+N8tS/QnQXPeD1TQcYlpAElS3LVcfk0tZRCmi/ucHaTJ1MYqiyGUj5llAHUQmng1
+         0ja6WuyUAIRjzksB+wD30bQfeD1GP3NcxaXhNzurRmq6310gpBMx0851axLYx0Yy3vVe
+         Gn47gtDIM4x/P7hha2FbbXMcxZTbu3M0ujNEzMNF5V3HCQZlwmoBAkhs99vjdwNvwCKN
+         HpJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=boOIxhUxOHbOCqVTnoxAdSoDT3OVN0nOXlllUNKf4Lk=;
+        b=YAajc71Um/sk9dRcJEX1haMHeey63hHZgDFHwe0MsHMvB8LvcSPuRUtq7SH6NODjg/
+         qB5I82pVNajDW7kpKSmZpuvCyixLYKcFjQ2P1OWBT1FXjgytrCe6a2QkYRH7bHUJfJLE
+         sfyXOvsDTzxV25mxkx7hFPb18VX8gEhR9Byy60OXQTdZZ2qubCXDvarvZ1HlZvu+J4cI
+         XHoumn/hSNeDWM6QCQecMsJF0nMQUWkt3pqDRgAq9FpQtc/xSP9BQXQoXNF9o2zXFCTc
+         5SbKGSqVncjGrADRK9dSn5+4dbOPhAE5PWyDRhpnvh/ji+IcL/S2qz0dzYCXTjbB9OMm
+         /Wjw==
+X-Gm-Message-State: AOAM530Uoxw5wTghSv6ONTG5U2rnaXBL2KYZzjZuUW3YyFGFVmki2an4
+        mvTCGDFti2iH1f2LtPwhH8M=
+X-Google-Smtp-Source: ABdhPJy0Bq1y5NQbOvctNGDA8kb+sufrxVEtNfxErQjAHvvpiDfQXzSY0QONg7CsB4OcJqflAMN7pA==
+X-Received: by 2002:a63:ff07:: with SMTP id k7mr1193434pgi.39.1600892304324;
+        Wed, 23 Sep 2020 13:18:24 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:a28c:fdff:fee1:f370])
+        by smtp.gmail.com with ESMTPSA id e10sm311196pjj.32.2020.09.23.13.18.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Sep 2020 13:18:23 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        Sunmeet Gill <sgill@quicinc.com>,
+        Vinay Paradkar <vparadka@qti.qualcomm.com>,
+        Tyler Wear <twear@quicinc.com>,
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH v3] net/ipv4: always honour route mtu during forwarding
+Date:   Wed, 23 Sep 2020 13:18:15 -0700
+Message-Id: <20200923201815.388347-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
+In-Reply-To: <10fbde1b-f852-2cc1-2e23-4c014931fed8@gmail.com>
+References: <10fbde1b-f852-2cc1-2e23-4c014931fed8@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
-Date: Wed, 23 Sep 2020 22:08:00 +0200
+From: Maciej Żenczykowski <maze@google.com>
 
-> The 09/23/2020 14:24, Vladimir Oltean wrote:
->> @@ -345,7 +344,23 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
->>         info.vid = skb_vlan_tag_get(skb);
->> 
->>         /* Check if timestamping is needed */
->> -       do_tstamp = (ocelot_port_add_txtstamp_skb(ocelot_port, skb) == 0);
->> +       if (ocelot->ptp && (shinfo->tx_flags & SKBTX_HW_TSTAMP)) {
->> +               info.rew_op = ocelot_port->ptp_cmd;
->> +
->> +               if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
->> +                       struct sk_buff *clone;
->> +
->> +                       clone = skb_clone_sk(skb);
->> +                       if (!clone) {
->> +                               kfree_skb(skb);
->> +                               return NETDEV_TX_OK;
-> 
-> Why do you return NETDEV_TX_OK?
-> Because the frame is not sent yet.
+Documentation/networking/ip-sysctl.txt:46 says:
+  ip_forward_use_pmtu - BOOLEAN
+    By default we don't trust protocol path MTUs while forwarding
+    because they could be easily forged and can lead to unwanted
+    fragmentation by the router.
+    You only need to enable this if you have user-space software
+    which tries to discover path mtus by itself and depends on the
+    kernel honoring this information. This is normally not the case.
+    Default: 0 (disabled)
+    Possible values:
+    0 - disabled
+    1 - enabled
 
-Returning anything other than NETDEV_TX_OK will cause the networking stack
-to try and requeue 'skb'.
+Which makes it pretty clear that setting it to 1 is a potential
+security/safety/DoS issue, and yet it is entirely reasonable to want
+forwarded traffic to honour explicitly administrator configured
+route mtus (instead of defaulting to device mtu).
+
+Indeed, I can't think of a single reason why you wouldn't want to.
+Since you configured a route mtu you probably know better...
+
+It is pretty common to have a higher device mtu to allow receiving
+large (jumbo) frames, while having some routes via that interface
+(potentially including the default route to the internet) specify
+a lower mtu.
+
+Note that ipv6 forwarding uses device mtu unless the route is locked
+(in which case it will use the route mtu).
+
+This approach is not usable for IPv4 where an 'mtu lock' on a route
+also has the side effect of disabling TCP path mtu discovery via
+disabling the IPv4 DF (don't frag) bit on all outgoing frames.
+
+I'm not aware of a way to lock a route from an IPv6 RA, so that also
+potentially seems wrong.
+
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: Lorenzo Colitti <lorenzo@google.com>
+Cc: Sunmeet Gill (Sunny) <sgill@quicinc.com>
+Cc: Vinay Paradkar <vparadka@qti.qualcomm.com>
+Cc: Tyler Wear <twear@quicinc.com>
+Cc: David Ahern <dsahern@kernel.org>
+---
+ include/net/ip.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/include/net/ip.h b/include/net/ip.h
+index b09c48d862cc..2a52787db64a 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -436,12 +436,18 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
+ 						    bool forwarding)
+ {
+ 	struct net *net = dev_net(dst->dev);
++	unsigned int mtu;
+ 
+ 	if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
+ 	    ip_mtu_locked(dst) ||
+ 	    !forwarding)
+ 		return dst_mtu(dst);
+ 
++	/* 'forwarding = true' case should always honour route mtu */
++	mtu = dst_metric_raw(dst, RTAX_MTU);
++	if (mtu)
++		return mtu;
++
+ 	return min(READ_ONCE(dst->dev->mtu), IP_MAX_MTU);
+ }
+ 
+-- 
+2.28.0.681.g6f77f65b4e-goog
+
