@@ -2,107 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49377275CC2
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 18:05:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 669CD275CEB
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 18:08:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbgIWQFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 12:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48210 "EHLO
+        id S1726853AbgIWQIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 12:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726156AbgIWQFu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 12:05:50 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54943C0613CE;
-        Wed, 23 Sep 2020 09:05:50 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id h9so165524ybm.4;
-        Wed, 23 Sep 2020 09:05:50 -0700 (PDT)
+        with ESMTP id S1726732AbgIWQIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 12:08:51 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CBBC0613CE;
+        Wed, 23 Sep 2020 09:08:50 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id v60so142170ybi.10;
+        Wed, 23 Sep 2020 09:08:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=E41XMWZCyk157fAUcngXrYCkdtxC8XoEP2uzIyD60V0=;
-        b=KfXzm0cU0SR0OTLaMOeP8vx6n0pF5kOFGKxb9ltYsf9yibrrg3bbiguA5Hzkt5zdrO
-         NvLo3bljzH4fMQylbntazlSXJr27F+OEa+TEeDWQF53SH1co0JQyUCpVkdyZxpcflBQm
-         DoUoPiEX7CKGlPmhBxzAduxqtg4sfW7nD7jl8cukfwRVo02uwv55AWt++JLlEYHERBep
-         yiVLTf+ZoICYP37HjroOGiesoB3gcn2xReIiHNgReYkntS8d0YZk6tTeiS1wiuuzn1su
-         XNw/cIa5v20noeN1+PyfsYfrfm6f8avZqKsYsKVs8krqC2UnCeIJTzwdWnLhTvwGFb0w
-         u21g==
+        bh=yZqylZfBJaRy7Aj7DhGeHIodSDWRD2Dwb1QLbio1Mwc=;
+        b=IrfmCEEFxaA3n8vc2fHralCE5dM4TlHQgDNDDNllN7jQ82+440UDOHgiOHJBhe2vAK
+         wejkhW7mn4c1t+X/NADxzowsR8QJcQ0Z61kLv2dx/YR72CasoMjavK/IWPrNkUbejT4i
+         k3cf47kSxNtTRfTagWBVB5Uq9sgm0ao/h2M3JupwNeZQjeFZrnvIpDnmR6DRg82X2Qh/
+         un4lS5RtAZR+DbdmYnZ3fdNZ/dNMF6+xj4IAWIRAB7bHmClUB4fYIrcGh4wiSjXP0OS2
+         xtPXQxpNJ9xJOTKYuAJdB0z2WgBf5gnMfr2g1P5bpi1HO3l4R81lEgsC83VdkbHF3j/z
+         tlNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=E41XMWZCyk157fAUcngXrYCkdtxC8XoEP2uzIyD60V0=;
-        b=DXJYtirL5hX7RbpGinXABp2z+RQG3e9SF60ZNfW7Iq+K22COSlFclAG9XFDl3u6JN8
-         BXxes+8w57Hmu8IyNUXry5twCp24F0qyigy9NdHsYygV1+CK7J285dsmz5uwZhb338hg
-         2DG8n+ZawTiKZZGRYNRvFJGkzeiQ9mkNqzJSCCLd7jc4B5HJFOJUm2P0oz685Yu362h+
-         RnDuCuIqi1bsrcwLQ95mnfLjp35ZRSOo/S6xswyY5iymSJpvkyn+qQnBynrVBu/ypf9K
-         /PjLTdwqO0MBe94SNfqIVAlGTqV0aO0076NmRk34/0beRsb1uE3wNwLuZ96rqp5HqrkD
-         Zyug==
-X-Gm-Message-State: AOAM530+vkccn9jfrwukOipAJjXejZlJsztLsOeHux60ZtsaKaOio1zj
-        KkqFhPr8usZXLcbVnYqvoRRjjc3eVOjQBsPCdMo=
-X-Google-Smtp-Source: ABdhPJwu1pcne+ABMS5bp6qeTMixQEwwVPNS2BbreASfuOzLieRjm9a/GBCC0Zm8O6ljrXiNHWyPEZB6QPk16b4rbCs=
-X-Received: by 2002:a25:33c4:: with SMTP id z187mr976613ybz.27.1600877149599;
- Wed, 23 Sep 2020 09:05:49 -0700 (PDT)
+        bh=yZqylZfBJaRy7Aj7DhGeHIodSDWRD2Dwb1QLbio1Mwc=;
+        b=JVNT8IqSj2Lst064San1Qee4UNCtrk9rEzq2I4Y3qV5kwVptsFtJGuFTKfS1f/UX+z
+         mAtUH2zPg8Qtvw4ChG5yHPGriwUDG+cnQDpWfEUKmwU1yTmViiv7TArlrD3LxJKpZL57
+         xCLIJEaNhuob7i5G4gWBRQQh4RkZ72FmvgkGZ8hjv6eQ3El0ymtVWnHyCScmCLKC52MM
+         8H3oFdueK5zm5y+kB7flY1Lsngfa3g5C/obGYY2PrcWEpzISQnWTglVZI6yoErtkMYQE
+         cW1RaeQaGBSWN5f8zbTca5dKCSi+Byl76cXQOxOVsg8NsMewhnrIWx41XfjgpBb43vJ6
+         lv/g==
+X-Gm-Message-State: AOAM53364ey7uWv7PNWwoR2WgdOOVj5Uw+lxt2ilZIu145sYboCRFXpb
+        HRqSPO0qB+ecil7BSZrEAf+1gU/Mbg6TB2Fqu0Q=
+X-Google-Smtp-Source: ABdhPJwwp3pEXKvAFIcOXTC1fHA25TnTq+suQEfgnlwuNdcaz0D1Xowm0MYm8wA2AViwQf2ct5NCXHr0DiqIAd+WaW0=
+X-Received: by 2002:a25:4446:: with SMTP id r67mr933504yba.459.1600877330201;
+ Wed, 23 Sep 2020 09:08:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200923160156.80814-1-lmb@cloudflare.com>
-In-Reply-To: <20200923160156.80814-1-lmb@cloudflare.com>
+References: <20200923140459.3029213-1-jolsa@kernel.org> <20200923140459.3029213-2-jolsa@kernel.org>
+In-Reply-To: <20200923140459.3029213-2-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 23 Sep 2020 09:05:38 -0700
-Message-ID: <CAEf4BzZJQBdW72TRCuW7q0c3kke1Qan59fDzV0DKN_EOAgXGaw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: explicitly size compatible_reg_types
-To:     Lorenz Bauer <lmb@cloudflare.com>
+Date:   Wed, 23 Sep 2020 09:08:38 -0700
+Message-ID: <CAEf4BzbjmimSnpdKkg9M9NJ2PBttQ2x+5trifzQgJdcSczXR1A@mail.gmail.com>
+Subject: Re: [PATCHv2 bpf-next 2/2] tools resolve_btfids: Always force HOSTARCH
+To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-team <kernel-team@cloudflare.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Seth Forshee <seth.forshee@canonical.com>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 9:03 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+On Wed, Sep 23, 2020 at 7:06 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Arrays with designated initializers have an implicit length of the highest
-> initialized value plus one. I used this to ensure that newly added entries
-> in enum bpf_reg_type get a NULL entry in compatible_reg_types.
+> Seth reported problem with cross builds, that fail
+> on resolve_btfids build, because we are trying to
+> build it on cross build arch.
 >
-> This is difficult to understand since it requires knowledge of the
-> peculiarities of designated initializers. Use __BPF_ARG_TYPE_MAX to size
-> the array instead.
+> Fixing this by always forcing the host arch.
 >
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> Suggested-by: Alexei Starovoitov <ast@kernel.org>
+> Reported-by: Seth Forshee <seth.forshee@canonical.com>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
-
-I like this more as well.
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
->  kernel/bpf/verifier.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+>  tools/bpf/resolve_btfids/Makefile | 2 ++
+>  1 file changed, 2 insertions(+)
 >
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 15ab889b0a3f..d7c993ded26a 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -4002,7 +4002,7 @@ static const struct bpf_reg_types const_map_ptr_types = { .types = { CONST_PTR_T
->  static const struct bpf_reg_types btf_ptr_types = { .types = { PTR_TO_BTF_ID } };
->  static const struct bpf_reg_types spin_lock_types = { .types = { PTR_TO_MAP_VALUE } };
+> diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
+> index a88cd4426398..d3c818b8d8d3 100644
+> --- a/tools/bpf/resolve_btfids/Makefile
+> +++ b/tools/bpf/resolve_btfids/Makefile
+> @@ -1,5 +1,6 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  include ../../scripts/Makefile.include
+> +include ../../scripts/Makefile.arch
 >
-> -static const struct bpf_reg_types *compatible_reg_types[] = {
-> +static const struct bpf_reg_types *compatible_reg_types[__BPF_ARG_TYPE_MAX] = {
->         [ARG_PTR_TO_MAP_KEY]            = &map_key_value_types,
->         [ARG_PTR_TO_MAP_VALUE]          = &map_key_value_types,
->         [ARG_PTR_TO_UNINIT_MAP_VALUE]   = &map_key_value_types,
-> @@ -4025,7 +4025,6 @@ static const struct bpf_reg_types *compatible_reg_types[] = {
->         [ARG_PTR_TO_ALLOC_MEM_OR_NULL]  = &alloc_mem_types,
->         [ARG_PTR_TO_INT]                = &int_ptr_types,
->         [ARG_PTR_TO_LONG]               = &int_ptr_types,
-> -       [__BPF_ARG_TYPE_MAX]            = NULL,
->  };
+>  ifeq ($(srctree),)
+>  srctree := $(patsubst %/,%,$(dir $(CURDIR)))
+> @@ -29,6 +30,7 @@ endif
+>  AR       = $(HOSTAR)
+>  CC       = $(HOSTCC)
+>  LD       = $(HOSTLD)
+> +ARCH     = $(HOSTARCH)
 >
->  static int check_reg_type(struct bpf_verifier_env *env, u32 regno,
+>  OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
+>
 > --
-> 2.25.1
+> 2.26.2
 >
