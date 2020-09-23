@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B669F276422
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 00:48:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DD5027641F
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 00:48:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbgIWWsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 18:48:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46006 "EHLO mail.kernel.org"
+        id S1726823AbgIWWsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 18:48:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46048 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726662AbgIWWsi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 18:48:38 -0400
+        id S1726714AbgIWWsj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 18:48:39 -0400
 Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7C092235FC;
-        Wed, 23 Sep 2020 22:48:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 33AD5238A1;
+        Wed, 23 Sep 2020 22:48:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1600901318;
-        bh=w5AhULHWLCvSVqt25LwQUz6mSHBhxXEmQ9PP0itqRtY=;
+        bh=D+xLY9K355Fvf3dundDziARL0NdhZ2l7QUYskevftcs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L5PZeWbhEYA7yp41kaOFvx54U0p0haPJYK31wx2TCHBVDzFhN4hPcKlfHAuFT+n/i
-         miBDtcOm/+U+LbXKbpPfCDXcSZ4pmgInGaTcMdeJv+z10NZa6/iwwMdN0MdudXamAI
-         8B53HjOmrLRSsczd5fLZ9kHqyeFQAkz6M0xTffQM=
+        b=dmaXK7KZHp8LXR0WN4+6bWFVPwas43tNAgrGTounw2jSwJ50rSfLOE5n1lsIjcDfa
+         oZzYshrpce9BwR2dWqOnc473ttVsr7KsfTd1Q0/PeqAXZFF16b4sV81J97GXM+3CYQ
+         yNMAHU7Vbumh36IOY4qzey8mz8pnxhwS2fcU2LYI=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, Ariel Levkovich <lariel@mellanox.com>,
         Roi Dayan <roid@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V2 03/15] net/mlx5e: Tc nic flows to use mlx5_chains flow tables
-Date:   Wed, 23 Sep 2020 15:48:12 -0700
-Message-Id: <20200923224824.67340-4-saeed@kernel.org>
+Subject: [net-next V2 04/15] net/mlx5e: Split nic tc flow allocation and creation
+Date:   Wed, 23 Sep 2020 15:48:13 -0700
+Message-Id: <20200923224824.67340-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200923224824.67340-1-saeed@kernel.org>
 References: <20200923224824.67340-1-saeed@kernel.org>
@@ -44,220 +44,220 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ariel Levkovich <lariel@mellanox.com>
 
-Change nic tc flows offload path to use the chains and prios
-infrastructure for the flow table creation as a preparation to
-support tc multi chains and priorities for nic flows.
+For future support of CT offload with nic tc flows, where
+the flow rule is not created immediately but rather following
+a future event, the patch is splitting the nic rule creation
+and deletion into 2 parts:
+1. Creating/Deleting and setting the rule attributes.
+2. Creating/Deleting the flow table and flow rule itself.
 
-Adding an instance of the table chaining database to the nic tc struct
-and perform the root table creation and desctuction via the chains api
-while keeping the limit of a single chain (0) in nic tc mode.
-This will be extendable to supporting multiple chains in the following
-patches.
-
-The flow table sizes and default miss table parameters that are provided
-to the chains creation api are kept the same.
+This way the attributes can be prepared and stored in the
+flow handle when the tc flow is created but the rule can
+actually be created at any point in the future, using these
+pre allocated attributes.
 
 Signed-off-by: Ariel Levkovich <lariel@mellanox.com>
 Reviewed-by: Roi Dayan <roid@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/fs.h   |  5 +-
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 86 ++++++++++++-------
- 2 files changed, 60 insertions(+), 31 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 116 +++++++++++-------
+ .../net/ethernet/mellanox/mlx5/core/en_tc.h   |   7 ++
+ 2 files changed, 77 insertions(+), 46 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-index 6fdcd5e69476..ef3c9a165b1d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-@@ -12,9 +12,12 @@ enum {
- };
- 
- struct mlx5e_tc_table {
--	/* protects flow table */
-+	/* Protects the dynamic assignment of the t parameter
-+	 * which is the nic tc root table.
-+	 */
- 	struct mutex			t_lock;
- 	struct mlx5_flow_table		*t;
-+	struct mlx5_fs_chains           *chains;
- 
- 	struct rhashtable               ht;
- 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 557769c16393..0cc81f8d2f5e 100644
+index 0cc81f8d2f5e..4b810ad9d6d6 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -68,6 +68,7 @@
- #include "lib/fs_chains.h"
- #include "diag/en_tc_tracepoint.h"
+@@ -891,39 +891,31 @@ static void mlx5e_hairpin_flow_del(struct mlx5e_priv *priv,
+ 	flow->hpe = NULL;
+ }
  
-+#define nic_chains(priv) ((priv)->fs.tc.chains)
- #define MLX5_MH_ACT_SZ MLX5_UN_SZ_BYTES(set_add_copy_action_in_auto)
- 
- struct mlx5_nic_flow_attr {
-@@ -170,7 +171,7 @@ struct mlx5e_tc_flow_parse_attr {
- };
- 
- #define MLX5E_TC_TABLE_NUM_GROUPS 4
--#define MLX5E_TC_TABLE_MAX_GROUP_SIZE BIT(16)
-+#define MLX5E_TC_TABLE_MAX_GROUP_SIZE BIT(18)
- 
- struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[] = {
- 	[CHAIN_TO_REG] = {
-@@ -898,6 +899,7 @@ mlx5e_tc_add_nic_flow(struct mlx5e_priv *priv,
+-static int
+-mlx5e_tc_add_nic_flow(struct mlx5e_priv *priv,
+-		      struct mlx5e_tc_flow_parse_attr *parse_attr,
+-		      struct mlx5e_tc_flow *flow,
+-		      struct netlink_ext_ack *extack)
++struct mlx5_flow_handle *
++mlx5e_add_offloaded_nic_rule(struct mlx5e_priv *priv,
++			     struct mlx5_flow_spec *spec,
++			     struct mlx5_nic_flow_attr *attr)
  {
- 	struct mlx5_flow_context *flow_context = &parse_attr->spec.flow_context;
- 	struct mlx5_nic_flow_attr *attr = flow->nic_attr;
-+	struct mlx5e_tc_table *tc = &priv->fs.tc;
- 	struct mlx5_core_dev *dev = priv->mdev;
+-	struct mlx5_flow_context *flow_context = &parse_attr->spec.flow_context;
+-	struct mlx5_nic_flow_attr *attr = flow->nic_attr;
++	struct mlx5_flow_context *flow_context = &spec->flow_context;
+ 	struct mlx5e_tc_table *tc = &priv->fs.tc;
+-	struct mlx5_core_dev *dev = priv->mdev;
  	struct mlx5_flow_destination dest[2] = {};
  	struct mlx5_flow_act flow_act = {
-@@ -948,35 +950,19 @@ mlx5e_tc_add_nic_flow(struct mlx5e_priv *priv,
- 			return err;
+ 		.action = attr->action,
+ 		.flags    = FLOW_ACT_NO_APPEND,
+ 	};
+-	struct mlx5_fc *counter = NULL;
+-	int err, dest_ix = 0;
++	struct mlx5_flow_handle *rule;
++	int dest_ix = 0;
+ 
+ 	flow_context->flags |= FLOW_CONTEXT_HAS_TAG;
+ 	flow_context->flow_tag = attr->flow_tag;
+ 
+-	if (flow_flag_test(flow, HAIRPIN)) {
+-		err = mlx5e_hairpin_flow_add(priv, flow, parse_attr, extack);
+-		if (err)
+-			return err;
+-
+-		if (flow_flag_test(flow, HAIRPIN_RSS)) {
+-			dest[dest_ix].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
+-			dest[dest_ix].ft = attr->hairpin_ft;
+-		} else {
+-			dest[dest_ix].type = MLX5_FLOW_DESTINATION_TYPE_TIR;
+-			dest[dest_ix].tir_num = attr->hairpin_tirn;
+-		}
++	if (attr->hairpin_ft) {
++		dest[dest_ix].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
++		dest[dest_ix].ft = attr->hairpin_ft;
++		dest_ix++;
++	} else if (attr->hairpin_tirn) {
++		dest[dest_ix].type = MLX5_FLOW_DESTINATION_TYPE_TIR;
++		dest[dest_ix].tir_num = attr->hairpin_tirn;
+ 		dest_ix++;
+ 	} else if (attr->action & MLX5_FLOW_CONTEXT_ACTION_FWD_DEST) {
+ 		dest[dest_ix].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
+@@ -931,24 +923,14 @@ mlx5e_tc_add_nic_flow(struct mlx5e_priv *priv,
+ 		dest_ix++;
  	}
  
--	mutex_lock(&priv->fs.tc.t_lock);
--	if (IS_ERR_OR_NULL(priv->fs.tc.t)) {
--		struct mlx5_flow_table_attr ft_attr = {};
--		int tc_grp_size, tc_tbl_size, tc_num_grps;
--		u32 max_flow_counter;
+-	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_COUNT) {
+-		counter = mlx5_fc_create(dev, true);
+-		if (IS_ERR(counter))
+-			return PTR_ERR(counter);
 -
--		max_flow_counter = (MLX5_CAP_GEN(dev, max_flow_counter_31_16) << 16) |
--				    MLX5_CAP_GEN(dev, max_flow_counter_15_0);
--
--		tc_grp_size = min_t(int, max_flow_counter, MLX5E_TC_TABLE_MAX_GROUP_SIZE);
--
--		tc_tbl_size = min_t(int, tc_grp_size * MLX5E_TC_TABLE_NUM_GROUPS,
--				    BIT(MLX5_CAP_FLOWTABLE_NIC_RX(dev, log_max_ft_size)));
--		tc_num_grps = MLX5E_TC_TABLE_NUM_GROUPS;
--
--		ft_attr.prio = MLX5E_TC_PRIO;
--		ft_attr.max_fte = tc_tbl_size;
--		ft_attr.level = MLX5E_TC_FT_LEVEL;
--		ft_attr.autogroup.max_num_groups = tc_num_grps;
--		priv->fs.tc.t =
--			mlx5_create_auto_grouped_flow_table(priv->fs.ns,
--							    &ft_attr);
--		if (IS_ERR(priv->fs.tc.t)) {
--			mutex_unlock(&priv->fs.tc.t_lock);
-+	mutex_lock(&tc->t_lock);
-+	if (IS_ERR_OR_NULL(tc->t)) {
-+		/* Create the root table here if doesn't exist yet */
-+		tc->t =
-+			mlx5_chains_get_table(nic_chains(priv), 0, 1, MLX5E_TC_FT_LEVEL);
-+
-+		if (IS_ERR(tc->t)) {
-+			mutex_unlock(&tc->t_lock);
- 			NL_SET_ERR_MSG_MOD(extack,
- 					   "Failed to create tc offload table");
++	if (flow_act.action & MLX5_FLOW_CONTEXT_ACTION_COUNT) {
+ 		dest[dest_ix].type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
+-		dest[dest_ix].counter_id = mlx5_fc_id(counter);
++		dest[dest_ix].counter_id = mlx5_fc_id(attr->counter);
+ 		dest_ix++;
+-		attr->counter = counter;
+ 	}
+ 
+-	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR) {
+-		err = mlx5e_attach_mod_hdr(priv, flow, parse_attr);
++	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR)
+ 		flow_act.modify_hdr = attr->modify_hdr;
+-		dealloc_mod_hdr_actions(&parse_attr->mod_hdr_acts);
+-		if (err)
+-			return err;
+-	}
+ 
+ 	mutex_lock(&tc->t_lock);
+ 	if (IS_ERR_OR_NULL(tc->t)) {
+@@ -958,35 +940,77 @@ mlx5e_tc_add_nic_flow(struct mlx5e_priv *priv,
+ 
+ 		if (IS_ERR(tc->t)) {
+ 			mutex_unlock(&tc->t_lock);
+-			NL_SET_ERR_MSG_MOD(extack,
+-					   "Failed to create tc offload table");
  			netdev_err(priv->netdev,
  				   "Failed to create tc offload table\n");
--			return PTR_ERR(priv->fs.tc.t);
-+			return PTR_ERR(tc->t);
+-			return PTR_ERR(tc->t);
++			return ERR_CAST(tc->t);
  		}
  	}
++	mutex_unlock(&tc->t_lock);
  
-@@ -994,6 +980,7 @@ static void mlx5e_tc_del_nic_flow(struct mlx5e_priv *priv,
+ 	if (attr->match_level != MLX5_MATCH_NONE)
+-		parse_attr->spec.match_criteria_enable |= MLX5_MATCH_OUTER_HEADERS;
++		spec->match_criteria_enable |= MLX5_MATCH_OUTER_HEADERS;
+ 
+-	flow->rule[0] = mlx5_add_flow_rules(priv->fs.tc.t, &parse_attr->spec,
+-					    &flow_act, dest, dest_ix);
+-	mutex_unlock(&priv->fs.tc.t_lock);
++	rule = mlx5_add_flow_rules(tc->t, spec,
++				   &flow_act, dest, dest_ix);
++	if (IS_ERR(rule))
++		return ERR_CAST(rule);
++
++	return rule;
++}
++
++static int
++mlx5e_tc_add_nic_flow(struct mlx5e_priv *priv,
++		      struct mlx5e_tc_flow_parse_attr *parse_attr,
++		      struct mlx5e_tc_flow *flow,
++		      struct netlink_ext_ack *extack)
++{
++	struct mlx5_nic_flow_attr *attr = flow->nic_attr;
++	struct mlx5_core_dev *dev = priv->mdev;
++	struct mlx5_fc *counter = NULL;
++	int err;
++
++	if (flow_flag_test(flow, HAIRPIN)) {
++		err = mlx5e_hairpin_flow_add(priv, flow, parse_attr, extack);
++		if (err)
++			return err;
++	}
++
++	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_COUNT) {
++		counter = mlx5_fc_create(dev, true);
++		if (IS_ERR(counter))
++			return PTR_ERR(counter);
++
++		attr->counter = counter;
++	}
++
++	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR) {
++		err = mlx5e_attach_mod_hdr(priv, flow, parse_attr);
++		dealloc_mod_hdr_actions(&parse_attr->mod_hdr_acts);
++		if (err)
++			return err;
++	}
++
++	flow->rule[0] = mlx5e_add_offloaded_nic_rule(priv, &parse_attr->spec,
++						     attr);
+ 
+ 	return PTR_ERR_OR_ZERO(flow->rule[0]);
+ }
+ 
++void mlx5e_del_offloaded_nic_rule(struct mlx5e_priv *priv,
++				  struct mlx5_flow_handle *rule)
++{
++	mlx5_del_flow_rules(rule);
++}
++
+ static void mlx5e_tc_del_nic_flow(struct mlx5e_priv *priv,
  				  struct mlx5e_tc_flow *flow)
  {
  	struct mlx5_nic_flow_attr *attr = flow->nic_attr;
-+	struct mlx5e_tc_table *tc = &priv->fs.tc;
- 	struct mlx5_fc *counter = NULL;
+ 	struct mlx5e_tc_table *tc = &priv->fs.tc;
+-	struct mlx5_fc *counter = NULL;
  
- 	counter = attr->counter;
-@@ -1002,8 +989,9 @@ static void mlx5e_tc_del_nic_flow(struct mlx5e_priv *priv,
- 	mlx5_fc_destroy(priv->mdev, counter);
+-	counter = attr->counter;
+ 	if (!IS_ERR_OR_NULL(flow->rule[0]))
+-		mlx5_del_flow_rules(flow->rule[0]);
+-	mlx5_fc_destroy(priv->mdev, counter);
++		mlx5e_del_offloaded_nic_rule(priv, flow->rule[0]);
++	mlx5_fc_destroy(priv->mdev, attr->counter);
  
  	mutex_lock(&priv->fs.tc.t_lock);
--	if (!mlx5e_tc_num_filters(priv, MLX5_TC_FLAG(NIC_OFFLOAD)) && priv->fs.tc.t) {
--		mlx5_destroy_flow_table(priv->fs.tc.t);
-+	if (!mlx5e_tc_num_filters(priv, MLX5_TC_FLAG(NIC_OFFLOAD)) &&
-+	    !IS_ERR_OR_NULL(tc->t)) {
-+		mlx5_chains_put_table(nic_chains(priv), 0, 1, MLX5E_TC_FT_LEVEL);
- 		priv->fs.tc.t = NULL;
- 	}
- 	mutex_unlock(&priv->fs.tc.t_lock);
-@@ -4951,9 +4939,27 @@ static int mlx5e_tc_netdev_event(struct notifier_block *this,
- 	return NOTIFY_DONE;
- }
+ 	if (!mlx5e_tc_num_filters(priv, MLX5_TC_FLAG(NIC_OFFLOAD)) &&
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+index 437f680728fd..2d63a75a9326 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+@@ -181,6 +181,13 @@ void mlx5e_tc_nic_cleanup(struct mlx5e_priv *priv);
+ int mlx5e_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
+ 			    void *cb_priv);
  
-+static int mlx5e_tc_nic_get_ft_size(struct mlx5_core_dev *dev)
-+{
-+	int tc_grp_size, tc_tbl_size;
-+	u32 max_flow_counter;
-+
-+	max_flow_counter = (MLX5_CAP_GEN(dev, max_flow_counter_31_16) << 16) |
-+			    MLX5_CAP_GEN(dev, max_flow_counter_15_0);
-+
-+	tc_grp_size = min_t(int, max_flow_counter, MLX5E_TC_TABLE_MAX_GROUP_SIZE);
-+
-+	tc_tbl_size = min_t(int, tc_grp_size * MLX5E_TC_TABLE_NUM_GROUPS,
-+			    BIT(MLX5_CAP_FLOWTABLE_NIC_RX(dev, log_max_ft_size)));
-+
-+	return tc_tbl_size;
-+}
-+
- int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
- {
- 	struct mlx5e_tc_table *tc = &priv->fs.tc;
-+	struct mlx5_core_dev *dev = priv->mdev;
-+	struct mlx5_chains_attr attr = {};
- 	int err;
- 
- 	mlx5e_mod_hdr_tbl_init(&tc->mod_hdr);
-@@ -4965,6 +4971,17 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
- 	if (err)
- 		return err;
- 
-+	attr.ns = MLX5_FLOW_NAMESPACE_KERNEL;
-+	attr.max_ft_sz = mlx5e_tc_nic_get_ft_size(dev);
-+	attr.max_grp_num = MLX5E_TC_TABLE_NUM_GROUPS;
-+	attr.default_ft = priv->fs.vlan.ft.t;
-+
-+	tc->chains = mlx5_chains_create(dev, &attr);
-+	if (IS_ERR(tc->chains)) {
-+		err = PTR_ERR(tc->chains);
-+		goto err_chains;
-+	}
-+
- 	tc->netdevice_nb.notifier_call = mlx5e_tc_netdev_event;
- 	err = register_netdevice_notifier_dev_net(priv->netdev,
- 						  &tc->netdevice_nb,
-@@ -4972,8 +4989,15 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
- 	if (err) {
- 		tc->netdevice_nb.notifier_call = NULL;
- 		mlx5_core_warn(priv->mdev, "Failed to register netdev notifier\n");
-+		goto err_reg;
- 	}
- 
-+	return 0;
-+
-+err_reg:
-+	mlx5_chains_destroy(tc->chains);
-+err_chains:
-+	rhashtable_destroy(&tc->ht);
- 	return err;
- }
- 
-@@ -4998,13 +5022,15 @@ void mlx5e_tc_nic_cleanup(struct mlx5e_priv *priv)
- 	mlx5e_mod_hdr_tbl_destroy(&tc->mod_hdr);
- 	mutex_destroy(&tc->hairpin_tbl_lock);
- 
--	rhashtable_destroy(&tc->ht);
-+	rhashtable_free_and_destroy(&tc->ht, _mlx5e_tc_del_flow, NULL);
- 
- 	if (!IS_ERR_OR_NULL(tc->t)) {
--		mlx5_destroy_flow_table(tc->t);
-+		mlx5_chains_put_table(tc->chains, 0, 1, MLX5E_TC_FT_LEVEL);
- 		tc->t = NULL;
- 	}
- 	mutex_destroy(&tc->t_lock);
-+
-+	mlx5_chains_destroy(tc->chains);
- }
- 
- int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
++struct mlx5_nic_flow_attr;
++struct mlx5_flow_handle *
++mlx5e_add_offloaded_nic_rule(struct mlx5e_priv *priv,
++			     struct mlx5_flow_spec *spec,
++			     struct mlx5_nic_flow_attr *attr);
++void mlx5e_del_offloaded_nic_rule(struct mlx5e_priv *priv,
++				  struct mlx5_flow_handle *rule);
+ #else /* CONFIG_MLX5_CLS_ACT */
+ static inline int  mlx5e_tc_nic_init(struct mlx5e_priv *priv) { return 0; }
+ static inline void mlx5e_tc_nic_cleanup(struct mlx5e_priv *priv) {}
 -- 
 2.26.2
 
