@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA476276384
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 00:06:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E387276391
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 00:08:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726643AbgIWWGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 18:06:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47630 "EHLO
+        id S1726681AbgIWWIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 18:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbgIWWGl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 18:06:41 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6128C0613CE;
-        Wed, 23 Sep 2020 15:06:41 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id t7so471059pjd.3;
-        Wed, 23 Sep 2020 15:06:41 -0700 (PDT)
+        with ESMTP id S1726419AbgIWWIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 18:08:52 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31B2C0613CE;
+        Wed, 23 Sep 2020 15:08:51 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id mn7so434713pjb.5;
+        Wed, 23 Sep 2020 15:08:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+        h=subject:from:to:cc:references:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TLv53xOqz58aAq20k0lI6uWJm+oewqcfdLNDkldMM3Q=;
-        b=a28es5OLeBNIj9/na73nRuC3UdPSz1DU/Q8hudIha1gmvffwqZajzJvz4rslBvQa4+
-         nzVySb4n+lRnAg9+er7PRncxKqilzOlv7tUK4jPeKoj/+oUgYR0rwApvI9iGWJd37q0D
-         X55xiT6gk4jm2d4Hj044OTrMiBuxkC1qD4UkyRZfs4iYX9CU9r6mAuFGmSU+/+u/EdQ4
-         Osa3fhtjIhEtP5o6wYseQGLnUzUvXcNrZGC6KvbnLJ18EE3GbDEgzfg8u2TJtYATIDBL
-         KDa82eVg/VQD1MgKttoMQbXS7gNh86gWGNNRHV1odqwX+S+5BiF7fqvJdxl8hPV79snb
-         zf8Q==
+        bh=igkaoTq8Q4pa7MN7uFg0cs2HkDcYmRgjz4l9oYZBDqs=;
+        b=Ycfx0OJkD9y3KYmBiOGGerxmHyGjzbBLYDo/IQJG6E75urk35q5zKDSugwsTAVkVSv
+         P4o4JpQ0qXP1YXb1g4Y0TQfZNUFiZ1hckmk1rWSCRZOCh+hnNV1jz4Hob4YS4uhluMhg
+         NIC6MXTbbZhrbgNlGJZ9kwmW5L22FRf/s3aHZoaS+11UbTTj7A8o0OjwG1xyM+gaa4es
+         k2jHixUUxZLLf/DBB+vNCXp0/dcZQRiCLTNG64qpkcz68ybQdbt9SOoVm8z2dIMAvyor
+         vM3/BybJf+yoOo7Kjx57tYrwPw88HTn38L1hdGr19WwqELBhcRHZ73x2BSnG2ua8V3Vh
+         6u2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+        h=x-gm-message-state:subject:from:to:cc:references:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=TLv53xOqz58aAq20k0lI6uWJm+oewqcfdLNDkldMM3Q=;
-        b=sHpuSNJn8/SvMfwvqmhBlR/vp+LMVspl4CLscl/9bhBVbUJYvBOfoRsP+hnKnbLwdf
-         9fqzZOySIQUKIpWjQMlTAfK0LpFH5XP5kKGE878X7lRtLBKq7vVrbWaxlJze7rtTCfTy
-         2DibwbPHf1WFKxIhiYuLiagQXelADCtq8gr9zP7XLmdVUJxjoefJMtdgqHqj/x0KmFWF
-         f0Rx4OG/h3+msq6a/8XZBLZF9uO7pFzKo5DIb/eAsq+efrLCFcyg9iq239r+wajEYPLM
-         6YeRJUxatH7ACEHWtaUveY6NvzsYls95smXMDUbkGhE/d9H5C3wL2P+ASaFHtXUD0VKV
-         JtEw==
-X-Gm-Message-State: AOAM530Rjj2ZHc29tukrERfca/yq4zK0Fd87yOcgl7gvl8xRpmXJYshL
-        MjtL3V0KFAcNhB0Pafk6L2QRZRL7LAaT1Q==
-X-Google-Smtp-Source: ABdhPJwyz7ww3IQEVHa66ecGem8F/oZnzFWkAv26mG4VacFgAW9+QTDdKJ9KtTRbyr8BnC+Zw2bDmQ==
-X-Received: by 2002:a17:902:9006:b029:d2:341:6520 with SMTP id a6-20020a1709029006b02900d203416520mr1717526plp.37.1600898801336;
-        Wed, 23 Sep 2020 15:06:41 -0700 (PDT)
+        bh=igkaoTq8Q4pa7MN7uFg0cs2HkDcYmRgjz4l9oYZBDqs=;
+        b=JT9hS9oTKKdBqWp+c/s2RC98i7367WZY3GIRJPGWQF9XLBFdinvnH7IxkL8junn0sO
+         zY54XlCXlJ2VxCZLzZs4FREDgn6Ps6bD4By4eFOKFO+bkTIkL08yo6ukg9pWIVBvXED0
+         MeWVdqrF9Qk4ierNtlF73fuH9Z3P71wVf0sd25b/vw4nblqRsOFs4DXWBoSaakRTQ740
+         +sHtvy9rv2MoAdL2XsTEZD16XieY/TB3qC9ujPIiw+JrqJaNGz9jwxzCwgTzkKIElRze
+         c2lS5LlQWlG+mJR8p/Q/AYWN3NZENZ5rOLz60sS4R5mGtNxJ5OlSL9McoZonMWxsMf9z
+         TyZA==
+X-Gm-Message-State: AOAM533kiH+lB0AT53EbxwMOtxm1Mg2hiYiFSs26Ui80MnFcpwh0yGGB
+        avn3TIV51g+gpWuW0l2PQXYC3/6EIjPW4g==
+X-Google-Smtp-Source: ABdhPJyCwWdNbAgsAd0WVo0cdnqD+ufPfxRAs9+Nyuyobq6jgJ6tI56bnLcMqMD3BnlAF+r5AWnj1A==
+X-Received: by 2002:a17:902:6a89:b029:d1:f38b:3dbc with SMTP id n9-20020a1709026a89b02900d1f38b3dbcmr1690168plk.43.1600898931508;
+        Wed, 23 Sep 2020 15:08:51 -0700 (PDT)
 Received: from [10.67.49.188] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f3sm713500pgf.32.2020.09.23.15.06.36
+        by smtp.googlemail.com with ESMTPSA id 134sm695624pgf.55.2020.09.23.15.08.50
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Sep 2020 15:06:40 -0700 (PDT)
+        Wed, 23 Sep 2020 15:08:50 -0700 (PDT)
 Subject: Re: [PATCH net-next v3 1/2] net: dsa: untag the bridge pvid from rx
  skbs
+From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -64,7 +65,7 @@ References: <20200923214038.3671566-1-f.fainelli@gmail.com>
  <20200923214852.x2z5gb6pzaphpfvv@skbuf>
  <7fce7ddd-14a3-8301-d927-1dd4b4431ffb@gmail.com>
  <20200923220121.phnctzovjkiw2qiz@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
+ <c8ca2861-44b2-4333-d63e-638dfe2f06a0@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
  xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
@@ -119,12 +120,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <c8ca2861-44b2-4333-d63e-638dfe2f06a0@gmail.com>
-Date:   Wed, 23 Sep 2020 15:06:33 -0700
+Message-ID: <2601834a-2cf2-f0f4-3775-2a5ebccad40a@gmail.com>
+Date:   Wed, 23 Sep 2020 15:08:49 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200923220121.phnctzovjkiw2qiz@skbuf>
+In-Reply-To: <c8ca2861-44b2-4333-d63e-638dfe2f06a0@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -132,27 +133,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/23/20 3:01 PM, Vladimir Oltean wrote:
-> On Wed, Sep 23, 2020 at 02:51:09PM -0700, Florian Fainelli wrote:
->> Speaking of that part of the code, I was also wondering whether you
->> wanted this to be netdev_for_each_upper_dev_rcu(br, upper_dev, iter) and
->> catch a bridge device upper as opposed to a switch port upper? Either
->> way is fine and there are possibly use cases for either.
+On 9/23/20 3:06 PM, Florian Fainelli wrote:
+> On 9/23/20 3:01 PM, Vladimir Oltean wrote:
+>> On Wed, Sep 23, 2020 at 02:51:09PM -0700, Florian Fainelli wrote:
+>>> Speaking of that part of the code, I was also wondering whether you
+>>> wanted this to be netdev_for_each_upper_dev_rcu(br, upper_dev, iter) and
+>>> catch a bridge device upper as opposed to a switch port upper? Either
+>>> way is fine and there are possibly use cases for either.
+>>
+>> So, yeah, both use cases are valid, and I did in fact mean uppers of the
+>> bridge, but now that you're raising the point, do we actually support
+>> properly the use case with an 8021q upper of a bridged port? My
+>> understanding is that this VLAN-tagged traffic should not be switched on
+>> RX. So without some ACL rule on ingress that the driver must install, I
+>> don't see how that can work properly.
 > 
-> So, yeah, both use cases are valid, and I did in fact mean uppers of the
-> bridge, but now that you're raising the point, do we actually support
-> properly the use case with an 8021q upper of a bridged port? My
-> understanding is that this VLAN-tagged traffic should not be switched on
-> RX. So without some ACL rule on ingress that the driver must install, I
-> don't see how that can work properly.
+> Is not this a problem only if the DSA master does VLAN receive filtering
+> though? In a bridge with vlan_filtering=0 the switch port is supposed to
+> accept any VLAN tagged frames because it does not do ingress VLAN ID
+> checking.
+> 
+> Prior to your patch, I would always install a br0.1 upper to pop the
+> default_pvid and that would work fine because the underlying DSA master
+> does not do VLAN filtering.
 
-Is not this a problem only if the DSA master does VLAN receive filtering
-though? In a bridge with vlan_filtering=0 the switch port is supposed to
-accept any VLAN tagged frames because it does not do ingress VLAN ID
-checking.
-
-Prior to your patch, I would always install a br0.1 upper to pop the
-default_pvid and that would work fine because the underlying DSA master
-does not do VLAN filtering.
+This is kind of a bad example, because the switch port has been added to
+the default_pvid VLAN entry, but I believe the rest to be correct though.
 -- 
 Florian
