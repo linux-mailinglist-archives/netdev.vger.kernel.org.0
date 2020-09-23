@@ -2,86 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BE012764A5
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 01:37:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8407D2764A8
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 01:38:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbgIWXgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 19:36:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37232 "EHLO mail.kernel.org"
+        id S1726711AbgIWXh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 19:37:57 -0400
+Received: from mga11.intel.com ([192.55.52.93]:2728 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726784AbgIWXgf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 19:36:35 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4660F20C09;
-        Wed, 23 Sep 2020 23:36:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600904194;
-        bh=2Dla7xdUQwE4mECr9B60cS+Y7FYMXy1gICdGz9LO4zg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VcC0Pjoa0hR3SX8qefJyMl84/fYCMDieTzLgkVJzQK3oH8T7mhhOGP6eNyvXPl9/0
-         Pzph+eZTJ947UPohfPnUg8s9GA9TVwfgtsjE4YZeadJocNWaVinEWVSbDFGGeKMCep
-         QlklDMheQSrQ7z9iyZifOzWS+BTBMhs1xV+DbKQ0=
-Date:   Wed, 23 Sep 2020 16:36:32 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool-next 5/5] pause: add support for dumping
- statistics
-Message-ID: <20200923163632.43269739@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200923224510.h3kpgczd6wkpoitp@lion.mk-sys.cz>
-References: <20200915235259.457050-1-kuba@kernel.org>
-        <20200915235259.457050-6-kuba@kernel.org>
-        <20200923224510.h3kpgczd6wkpoitp@lion.mk-sys.cz>
+        id S1726419AbgIWXh5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 19:37:57 -0400
+IronPort-SDR: 28NqNpMJG/m5adPOJgcPoH/Wi/DWIsjXLrxREvyuBR3LyFsim7blEk7tYL9mR/OAlCoSMQITrz
+ xrr8nVrnRGnw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9753"; a="158399686"
+X-IronPort-AV: E=Sophos;i="5.77,295,1596524400"; 
+   d="scan'208";a="158399686"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2020 16:37:57 -0700
+IronPort-SDR: WdTdzfVzp3Lt4/dSGVRMHwVmN1s8WAVnIUCVfH5cqidBiXhfihNDyd5b8mtVi965r3q1WvMTHU
+ AgQ52VeEmwkg==
+X-IronPort-AV: E=Sophos;i="5.77,295,1596524400"; 
+   d="scan'208";a="511260588"
+Received: from smtp.ostc.intel.com ([10.54.29.231])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2020 16:37:57 -0700
+Received: from localhost (mtg-dev.jf.intel.com [10.54.74.10])
+        by smtp.ostc.intel.com (Postfix) with ESMTP id 20DE26369;
+        Wed, 23 Sep 2020 16:37:04 -0700 (PDT)
+Date:   Wed, 23 Sep 2020 16:37:04 -0700
+From:   mark gross <mgross@linux.intel.com>
+To:     Voon Weifeng <weifeng.voon@intel.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Seow Chen Yong <chen.yong.seow@intel.com>
+Subject: Re: [PATCH v1 net] net: stmmac: removed enabling eee in EEE set
+ callback
+Message-ID: <20200923233704.GE56905@mtg-dev.jf.intel.com>
+Reply-To: mgross@linux.intel.com
+References: <20200923085614.8147-1-weifeng.voon@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200923085614.8147-1-weifeng.voon@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Sep 2020 00:45:10 +0200 Michal Kubecek wrote:
-> > +		if (mnl_attr_validate(tb[stats[i].attr], MNL_TYPE_U64)) {
-> > +			fprintf(stderr, "malformed netlink message (statistic)\n");
-> > +			goto err_close_stats;
-> > +		}
-> > +
-> > +		n = snprintf(fmt, sizeof(fmt), "  %s: %%" PRId64 "\n",
-> > +			     stats[i].name);  
-> 
-> The stats are unsigned so the format should be PRIu64 here.
+Acked-by: Mark Gross <mgross@linux.intel.com>
 
-Good catch.
-
-> > @@ -173,8 +236,9 @@ int nl_gpause(struct cmd_context *ctx)
-> >  		return 1;
-> >  	}
-> >  
-> > +	flags = nlctx->ctx->show_stats ? ETHTOOL_FLAG_STATS : 0;
-> >  	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_PAUSE_GET,
-> > -				      ETHTOOL_A_PAUSE_HEADER, 0);
-> > +				      ETHTOOL_A_PAUSE_HEADER, flags);
-> >  	if (ret < 0)
-> >  		return ret;
-> >    
+On Wed, Sep 23, 2020 at 04:56:14PM +0800, Voon Weifeng wrote:
+> EEE should be only be enabled during stmmac_mac_link_up() when the
+> link are up and being set up properly. set_eee should only do settings
+> configuration and disabling the eee.
 > 
-> When the stats are supported by kernel but not provided by a device,
-> the request will succeed and usual output without stats will be shown.
-> However, when stats are requested on a pre-5.10 kernel not recognizing
-> ETHTOOL_FLAG_STATS, the request will fail:
+> Without this fix, turning on EEE using ethtool will return
+> "Operation not supported". This is due to the driver is in a dead loop
+> waiting for eee to be advertised in the for eee to be activated but the
+> driver will only configure the EEE advertisement after the eee is
+> activated.
 > 
->     mike@lion:~/work/git/ethtool> ./ethtool --debug 0x10 -I -a eth0  
->     netlink error: unrecognized request flags
->     netlink error: Operation not supported
->     offending message and attribute:
->         ETHTOOL_MSG_PAUSE_GET
->             ETHTOOL_A_PAUSE_HEADER
->                 ETHTOOL_A_HEADER_DEV_NAME = "eth0"
->     ===>        ETHTOOL_A_HEADER_FLAGS = 0x00000004  
+> Ethtool should only return "Operation not supported" if there is no EEE
+> capbility in the MAC controller.
 > 
-> We should probably repeat the request with flags=0 in this case but that
-> would require keeping the offset of ETHTOOL_A_HEADER_FLAGS attribute and
-> checking for -EOPNOTSUPP with this offset in nlsock_process_ack().
-
-Makes sense, will do.
+> Fixes: 8a7493e58ad6 ("net: stmmac: Fix a race in EEE enable callback")
+> 
+> Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+> ---
+>  .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c  | 15 ++++-----------
+>  1 file changed, 4 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+> index ac5e8cc5fb9f..430a4b32ec1e 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+> @@ -675,23 +675,16 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
+>  	struct stmmac_priv *priv = netdev_priv(dev);
+>  	int ret;
+>  
+> -	if (!edata->eee_enabled) {
+> +	if (!priv->dma_cap.eee)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (!edata->eee_enabled)
+>  		stmmac_disable_eee_mode(priv);
+> -	} else {
+> -		/* We are asking for enabling the EEE but it is safe
+> -		 * to verify all by invoking the eee_init function.
+> -		 * In case of failure it will return an error.
+> -		 */
+> -		edata->eee_enabled = stmmac_eee_init(priv);
+> -		if (!edata->eee_enabled)
+> -			return -EOPNOTSUPP;
+> -	}
+>  
+>  	ret = phylink_ethtool_set_eee(priv->phylink, edata);
+>  	if (ret)
+>  		return ret;
+>  
+> -	priv->eee_enabled = edata->eee_enabled;
+>  	priv->tx_lpi_timer = edata->tx_lpi_timer;
+>  	return 0;
+>  }
+> -- 
+> 2.17.1
+> 
