@@ -2,119 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F66227634F
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 23:49:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05FAA276359
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 23:51:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbgIWVs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 17:48:58 -0400
-Received: from mail-eopbgr80042.outbound.protection.outlook.com ([40.107.8.42]:52241
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726265AbgIWVs5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 17:48:57 -0400
+        id S1726694AbgIWVvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 17:51:09 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:48926 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726199AbgIWVvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 17:51:09 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08NLokAM000964;
+        Wed, 23 Sep 2020 14:50:53 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=RCBIyHZ+e7fOry9uYZ5UGcabKF1D6bUSXTKwgFt4WbY=;
+ b=B9X8Hvj7OT3IV8UfUZKTF9BAe+bg6xhexGT66GCRuoBVlaFNj9neXJd0usuAOZeCXu00
+ F6hTtc4Q8iC8ZCU5gKUyAqsiB+KdfqCLVTDAHMLK/RN59O2/aITEqLSPCrqzbwtxi4Ee
+ lfaNAx/CjZaC1wOC45oONF5chNrKCs6Hl1M= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33qsp6p8ja-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 23 Sep 2020 14:50:53 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 23 Sep 2020 14:50:37 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QGk6F4i/efly3mi+H58D6N/jUHAgtp4UXVrgfEVaYMjlqmskqaxusL5ElTr6FKf39hAhedNfdHMok+Tg+LzcP+d8Rf9XxJNKeDplyrsi+TiKIl0QFNvvn7ff2I/4gobJYisTm42Zq4AdCJKw4K/zfCwAPOb92yeLZILyKjh6/RnP7PxvG/XNzXolDTj2UWpsbNYIVdYnh+rucFs+oQfElY+oCKTLEoo+ug5KQXUhcI9yGSbX0JgoownELzvusWQjMn6AmVsLYsemIxbwmBWqeAqIBcEaY83HC6s9viHUOlF4A+j0XvA4wD+fT2f9HtaTtA73DWI5DYwlTh5QuCmGnQ==
+ b=k3rR8Fjphs6aN7iGP/kD4APFEiOl17Yq/q985ZTphWNWQAlC0F4zbpfidwvxu0XXnKYaMOrSmOHT5cKtdv9WUhAwGRMgpRB83k1tUrZsggS3zomd6bpKaYszWMO6dh3bYh5hhhgAmIb5b3woIyk9oZCBRnfjvgLN5xb27x4ACU5Zn0bKadUrttCniP7u4sqjeEYlAPvi8I4rVuVhURRlIP7FoDOk+2Gb0knSwWYBLcIqbcpki7ykzbrq3I0TgoXnHNiXlMAjyADbBXOEV/V6/xwuVHwCRrSITu9owpgDA5FsLI2I2/jOBLVwh+gjti3xy00dUSbT6OE438iwTZlyqQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l7Rf9wJ/u9yicnoJozD3UOOaVlemLcJeWt9zstcZJ5Q=;
- b=i6KCnCP3yxUvrQzWjEVWUo0l5jd5oMOilTtgw1CmiOFwaQvudox/NLn9fiSm2dNbHBCMa3mC6ep6SqBA0raP8qyXc84Jg3M0CNaExr+ESkyveqQqC5FTB+sQWoEgDCeq600SLP1QLJhs7DiXD08UgPJ1JYBoy6BFyLloO6P+WX69pacgloY2lmbWqn9I7sdgrMUi+ibfGFVmjLEvHVaclTx1Nj8DDHuc7nChm5VxeM6ghAX8mnE/T1VAhxbCezInosj55ncJ6eL8UUiMixfDhKvZoVajwPAgfTs9liirSKutmZClbgxVt0o0cQmb3AVtSllGGImO7DmuYuQtmW/KRA==
+ bh=RCBIyHZ+e7fOry9uYZ5UGcabKF1D6bUSXTKwgFt4WbY=;
+ b=hGEIsDTG75qavCe/mPhmxEMI9YLxVjsrizFZrftEShwEg4faKCoTV27P1yPeYvqzJ5Xstz/lNDoRFkCXJzuswTKDVBdklMZDlrpzZYSVxea1/8z9vj1e+9ukWJ2fuPASXPiWSEEO3SBPvmqEXNnQdsGzokUOyQWYTnjpGQjbXT7ZNB99paz8WsxNgJu98+OQPmkAsP342NTd+VBqILP0vonvu/zHpZfgMrWLlbWoVLY/r8JP/yEdYO7HwS/iCF1ekZqYpiirlg9Av19iIE7AQrjOH0Ye2G0bP5BNlQXm4HsEwYswDkow7zrAr/PMj95uHCau56LTHr1qdU+fBZqfYg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l7Rf9wJ/u9yicnoJozD3UOOaVlemLcJeWt9zstcZJ5Q=;
- b=fPx/SlnVLvng8vPAX0xM/3LQReKfXPnvO+j2cz0wnwOUQVnRwxUrwsQ4R4bH+pUqFW9jvvB29qFpXcfFIOQPs9o3GcPJrzKllnU3SK9hPAW0dPUsKhqJ4KDIzUXrToFcrjqf/Ej6Q42UnynAnEof2px9EppCdC7aAne4aKLENhI=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB4815.eurprd04.prod.outlook.com (2603:10a6:803:5d::23) with
+ bh=RCBIyHZ+e7fOry9uYZ5UGcabKF1D6bUSXTKwgFt4WbY=;
+ b=NvDjkeoEUB2gWIWy3g3aY62E4Wl9d10dZCjB1SkJsB1/B000BH4FvItn6gdxjyI0vt5rnvi/RYdSjIYrygZgpoTCREfA2erP4s51GbBpHW8r7rymOYVnPPZ3kwTwN9I2Bxr/wyb4x+pDGP9fDVj91W5RdEC98Rw43WIO5EkESy0=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB2200.namprd15.prod.outlook.com (2603:10b6:a02:89::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.21; Wed, 23 Sep
- 2020 21:48:54 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3412.020; Wed, 23 Sep 2020
- 21:48:53 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "nikolay@nvidia.com" <nikolay@nvidia.com>
-Subject: Re: [PATCH net-next v3 1/2] net: dsa: untag the bridge pvid from rx
- skbs
-Thread-Topic: [PATCH net-next v3 1/2] net: dsa: untag the bridge pvid from rx
- skbs
-Thread-Index: AQHWkfI49n/dW6yWhUaSsyNzEyjVval2wsIA
-Date:   Wed, 23 Sep 2020 21:48:53 +0000
-Message-ID: <20200923214852.x2z5gb6pzaphpfvv@skbuf>
-References: <20200923214038.3671566-1-f.fainelli@gmail.com>
- <20200923214038.3671566-2-f.fainelli@gmail.com>
-In-Reply-To: <20200923214038.3671566-2-f.fainelli@gmail.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.19; Wed, 23 Sep
+ 2020 21:50:36 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::1400:be2f:8b3d:8f4d]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::1400:be2f:8b3d:8f4d%7]) with mapi id 15.20.3412.020; Wed, 23 Sep 2020
+ 21:50:36 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+CC:     Kernel Team <Kernel-team@fb.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@chromium.org" <kpsingh@chromium.org>
+Subject: Re: [PATCH v3 bpf-next 0/3] enable BPF_PROG_TEST_RUN for raw_tp
+Thread-Topic: [PATCH v3 bpf-next 0/3] enable BPF_PROG_TEST_RUN for raw_tp
+Thread-Index: AQHWkfFCCtsFxzHz2UW7kvY68Z00g6l2wz+A
+Date:   Wed, 23 Sep 2020 21:50:36 +0000
+Message-ID: <E5742A1C-28F8-423F-8568-1025C9DF4431@fb.com>
+References: <20200923213337.3432472-1-songliubraving@fb.com>
+In-Reply-To: <20200923213337.3432472-1-songliubraving@fb.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.217.212]
+x-mailer: Apple Mail (2.3608.120.23.2.1)
+authentication-results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+x-originating-ip: [2620:10d:c090:400::5:cb37]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 0e8b2325-394f-4498-4498-08d8600a772d
-x-ms-traffictypediagnostic: VI1PR04MB4815:
-x-microsoft-antispam-prvs: <VI1PR04MB4815C0DA64B7FA48C4B6C7A9E0380@VI1PR04MB4815.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-office365-filtering-correlation-id: cec2fbbc-b0e5-47eb-bed5-08d8600ab44b
+x-ms-traffictypediagnostic: BYAPR15MB2200:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB22007BCC6A10C324D55C7C15B3380@BYAPR15MB2200.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MnxhTEl25rpGOLu1eDess8kYgq8ZdGjX3nGVF9uGVFQPUGxogyiJqHi9lJ8xED3ScBcuDKZ99A+5CpWlWSmCpnFl73qeMH69FUIxGC06bLnh6tT4vyeo0NYPO1NOmDuibTjaeXG401VVhQsgDtfKjC2XizACUd0rDUurGgxag343u0yrF5uJAioXhQ8P2L6tP9WQlDUD9tO3GsXGDAkra9LlfrrTecLSwpsSEx7sYHl8xkqBQKeSHLCUf8nG3twWrEGre/WdRy7y23g2Bw6iOxbyGXl/goGjGeP50hM5ndLTBYtg/H4rk20egJWq92Dq
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(346002)(376002)(366004)(39860400002)(136003)(396003)(76116006)(66446008)(64756008)(66556008)(91956017)(66946007)(6916009)(186003)(71200400001)(86362001)(44832011)(2906002)(8936002)(6486002)(5660300002)(33716001)(1076003)(9686003)(66476007)(6512007)(316002)(6506007)(26005)(4326008)(54906003)(8676002)(478600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: Z40lRxGN7O4Ye3CmCiqGOJ0bnURgC5zeGeHJxYyD6faCMUqPh3br2vkUiQFK4A0ib9/jdUY001PHH1NvRdO62mGfhhcjYVbUExxEfsmu8DKN56RvfwnS83ZdY3altIoykRymvHKyiiDZ1IP9bONCa8nKUu91p0A2iP/1+qAhDb5avyLDGJXqPrpukD63uSxD5f38zWUQQ2MKJMA3f16kgmNewG5xTlBVMW9VbkAFHFBiSLJXUksgyX/6fBKDSw6NJWGJi+/j5S0MCTHQ7LYOVmjyjg4FwPrsLNsaIOwlfG0czPQJcYqP+N3UlYBAHISr02Pb4NeSPnEibrFE62UN52WA/WrTXMFyMlN2BwQ3RtQldROFXdSQ7IrWDcRJu5XdlzCTLmH7HocV8r+uYdVF6XygK/KHhuOGYa7Ybz0shqOto3psnN53S73SfPybGMRNHR9hLBB0aqE4yc26u7StFbAg02UEXTG2e/cwISXFCG1kOiIHHI/T3ZYCfcN1HQQQ5nJnfWODaYYZJgDLDijXl0g6xTxvKEIudmu0BY9WsxPAkrq4EmQsQ6sBTiO3Zak+3MFqizTeqhmQxXRLxNk2scM45V4YDWRQ7khQXPRjs2U3StEjWwMDLY6aDIwlEgPc/oTSXN+3fa4TYbYJ5zf2Ug==
-x-ms-exchange-transport-forked: True
+x-microsoft-antispam-message-info: 0C8NOrAJbDQBweLNZznac1UpA1L0ewq39yBLt5iImxezti4JqyEmG3sJRm+WOJ8vwkduKTb7HIg+BMa3YUOL76D67tB/B187+ueYZEdB2KhZAqtpAz4B8ziWoa5goaT54cw1DuuheH5ZXwhXgPqBDM+KU/QUt9y/yk/+0EXqYWYnW5+9TqaW0cNuMiW+IAwzWYW1IEg2jm7Pl/hpbvr0s9W2bh1ujAzSqnsKTaTbEFYx+IiSh8TMVi+WBdHxthahNr+xHmNMyhWLCcrYpeAWXkjaGgZxG4cchRI+/bUGJSO0S+7j+YBo/S4ZY9Wpt0BGF+SPGza7pBoKeCLNwwyN8wX0OIhO9HRExjMcc/KVvh8ODngu1EjjHmxGfe4+iUCO
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(396003)(376002)(136003)(366004)(346002)(6486002)(36756003)(83380400001)(8936002)(8676002)(33656002)(110136005)(316002)(6512007)(54906003)(186003)(91956017)(2906002)(478600001)(86362001)(53546011)(66946007)(66476007)(64756008)(66446008)(71200400001)(66556008)(76116006)(5660300002)(6506007)(4744005)(2616005)(4326008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: 2eUnRla40+7bjl9MkfCiceGkVeDxn3U2NZ8e3iCq8accG6HyuuOjsgWYHM8KeDXGTgC2mPn82cC+YFklNqlU+FHCnl4KZTQmPuMRdn55f3qfDD12T2BJJfbGhwZy9QiYieXlv6jFbmWmXvLW28XBIqTF6GdnFze+4FCaVYFjaoq3WvIJtdrbJ+ZvcXe3uSlLQUugalubdr24UaI8xosSRNs9U3Y0nx5uQHTs++AAxaSE/F2LOm+lL5Ek4p6DjmAXRyNOlaqb8exojTMKkdHkUTRT/ChhCC4Pltm9H17/d3PvGTeCl+CgOliQl9sj5yvHZy9dtsK3VqzXhDM6/tmiXQK1uUha/IcB+MGDfkYihzbXG87qLoq3rXi4SM3pjbqdIz6hd4b7pfEw1YQwPx1s5P9/+sBio7z4UOVeFVdFTcxjgq3R3hT4KYssojDyXBsSg06axOTaTZjExAatcbApsRQc6sahg34KiGs2JhHIl7gV8oZq2/E8bGmuUnR4YmJP7ga4sElB80YSbfLyilxerjng1ugQcuLxqA+YiEjl5uGjfb32DSGspglPhyBgRTxOX4V/UKzx5cJbFJcvHE8METC+bR34vKAn6hC9V9YUY1UZGsF7q85tXh1bacUGvJ57nv0I+yolNw+2fzwWQtlb/GK59qp1PKrWrOQP187J/3tZYDZ0J12GVIe4U87mUEKy
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <F2FC9259F1F94540A8635D51D808CAB1@eurprd04.prod.outlook.com>
+Content-ID: <AFDB2CE0949A1A438AC57E18EA91B328@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e8b2325-394f-4498-4498-08d8600a772d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2020 21:48:53.6890
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cec2fbbc-b0e5-47eb-bed5-08d8600ab44b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2020 21:50:36.2028
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ePZ66szs6xzjmiELNOmRPNfaRJ+I2LF7NRcVzkzM+FWRERtQx5k2ox7ukaD0O5DH/aEoO7SXNbjEJgez0O8pgQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4815
+X-MS-Exchange-CrossTenant-userprincipalname: nnADnmsqH6Da1mqC71FS1HKODX6FxjLHO7MaXw5VVmvyfeNQL5lnx9XIrDHBwmQ52VL0cK/4FC3/yJMiNglnsQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2200
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-23_19:2020-09-23,2020-09-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 mlxscore=0
+ bulkscore=0 spamscore=0 priorityscore=1501 clxscore=1015 impostorscore=0
+ mlxlogscore=999 suspectscore=0 lowpriorityscore=0 malwarescore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009230164
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 02:40:37PM -0700, Florian Fainelli wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> +	/* The sad part about attempting to untag from DSA is that we
-> +	 * don't know, unless we check, if the skb will end up in
-> +	 * the bridge's data path - br_allowed_ingress() - or not.
-> +	 * For example, there might be an 8021q upper for the
-> +	 * default_pvid of the bridge, which will steal VLAN-tagged traffic
-> +	 * from the bridge's data path. This is a configuration that DSA
-> +	 * supports because vlan_filtering is 0. In that case, we should
-> +	 * definitely keep the tag, to make sure it keeps working.
-> +	 */
-> +	netdev_for_each_upper_dev_rcu(dev, upper_dev, iter) {
-> +		if (!is_vlan_dev(upper_dev))
-> +			continue;
-> +
-> +		if (vid =3D=3D vlan_dev_vlan_id(upper_dev))
-> +			return skb;
-> +	}
 
-Argh...
-So I wanted to ask you how's performance with a few 8021q uppers, then I
-remembered that vlan_do_receive() probably does something more efficient
-here than a complete lookup, like hashing or something, then I found the
-vlan_find_dev() helper function.... Sorry for not noticing it in the
-first place.=
+
+> On Sep 23, 2020, at 2:33 PM, Song Liu <songliubraving@fb.com> wrote:
+>=20
+> This set enables BPF_PROG_TEST_RUN for raw_tracepoint type programs. This
+> set also enables running the raw_tp program on a specific CPU. This featu=
+re
+> can be used by user space to trigger programs that access percpu resource=
+s,
+> e.g. perf_event, percpu variables.
+>=20
+> Changes v2 =3D> v3:
+> 1. Fix memory leak in the selftest. (Andrii)
+> 2. Use __u64 instead of unsigned long long. (Andrii)
+>=20
+> Changes v1 =3D> v2:
+> 1. More checks for retval in the selftest. (John)
+> 2. Remove unnecessary goto in bpf_prog_test_run_raw_tp. (John)
+
+I somehow missed Andrii's other comments and sent v3 too fast.=20
+
+Please ignore this version.=20
