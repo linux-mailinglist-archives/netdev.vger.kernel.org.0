@@ -2,151 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB0C2275903
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 15:44:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8448275955
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:05:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726687AbgIWNoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 09:44:30 -0400
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:19255 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726641AbgIWNoT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 09:44:19 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f6b51260002>; Wed, 23 Sep 2020 06:44:06 -0700
-Received: from [10.21.180.144] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 23 Sep
- 2020 13:44:11 +0000
-Subject: Re: [PATCH net-next RFC v5 00/15] Add devlink reload action and limit
- level options
-To:     Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
-From:   Moshe Shemesh <moshe@nvidia.com>
-Message-ID: <be630005-f2ab-1632-db6f-c40486325f27@nvidia.com>
-Date:   Wed, 23 Sep 2020 16:44:07 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726613AbgIWOFL convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 23 Sep 2020 10:05:11 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:46551 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726234AbgIWOFK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:05:10 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-105-qmzJdKWMMwKbHlz_ht9Psg-1; Wed, 23 Sep 2020 10:05:05 -0400
+X-MC-Unique: qmzJdKWMMwKbHlz_ht9Psg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BF3458ECE56;
+        Wed, 23 Sep 2020 14:05:03 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.40.192.120])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B011055777;
+        Wed, 23 Sep 2020 14:05:00 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Seth Forshee <seth.forshee@canonical.com>
+Subject: [PATCHv2 bpf-next 1/2] bpf: Use --no-fail option if CONFIG_BPF is not enabled
+Date:   Wed, 23 Sep 2020 16:04:58 +0200
+Message-Id: <20200923140459.3029213-1-jolsa@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1600868646; bh=ztM+dxNwC5iNzN7clw8B9GKxUG4Nljlrim7J50F26Tk=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-         Content-Language:X-Originating-IP:X-ClientProxiedBy;
-        b=NNCjJ+Bh0Du8t3VnF6bzeNSuGz3eEm80IYtyv0z79eGN6zKLYuKW9tQQmC9H5CZ2b
-         nQM2fOHKpDIxeQR3ZkYxqr6Igdilmpzi/tH2eXPU7PqPqp+2tskdJnclVCVygZ/x+7
-         k43iLEXEen/Eql6qMEg9WB4zvAM97zeisRuphmeeFIvUluucpYmcVKsJ97BWvw+VB+
-         oZB3H8GYGpHj6tvA83znbik2Yu1HY3wucUkIzWXYZcPEaaMa1WBr8haI4XzP6OARxR
-         djxlYoqn8AWPwwo/N1fRwNwXSamNgzAChRIV4d5pXLY3WhleOHdbj6zo5SfIdPLAXr
-         g5BmqZ77yrHxg==
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Currently all the resolve_btfids 'users' are under CONFIG_BPF
+code, so if we have CONFIG_BPF disabled, resolve_btfids will
+fail, because there's no data to resolve.
 
-I see no more comments, we reached consensus on API.
+Disabling resolve_btfids if there's CONFIG_BPF disabled,
+so we won't fail such builds.
 
-I will finalize my work and re-send as a feature to net-next.
+Suggested-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+v2 changes:
+  - disable resolve_btfids completely when CONFIG_BPF is not defined
 
+ Makefile                | 4 +++-
+ scripts/link-vmlinux.sh | 6 +++---
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-Thanks,
+diff --git a/Makefile b/Makefile
+index c4470a4e131f..b05682eea2c0 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1084,13 +1084,15 @@ ifdef CONFIG_STACK_VALIDATION
+   endif
+ endif
+ 
++ifdef CONFIG_BPF
+ ifdef CONFIG_DEBUG_INFO_BTF
+   ifeq ($(has_libelf),1)
+     resolve_btfids_target := tools/bpf/resolve_btfids FORCE
+   else
+     ERROR_RESOLVE_BTFIDS := 1
+   endif
+-endif
++endif # CONFIG_DEBUG_INFO_BTF
++endif # CONFIG_BPF
+ 
+ PHONY += prepare0
+ 
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index e6e2d9e5ff48..dbde59d343b1 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -341,9 +341,9 @@ fi
+ vmlinux_link vmlinux "${kallsymso}" ${btf_vmlinux_bin_o}
+ 
+ # fill in BTF IDs
+-if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
+-info BTFIDS vmlinux
+-${RESOLVE_BTFIDS} vmlinux
++if [ -n "${CONFIG_DEBUG_INFO_BTF}" -a -n "${CONFIG_BPF}" ]; then
++	info BTFIDS vmlinux
++	${RESOLVE_BTFIDS} vmlinux
+ fi
+ 
+ if [ -n "${CONFIG_BUILDTIME_TABLE_SORT}" ]; then
+-- 
+2.26.2
 
-Moshe.
-
-On 9/18/2020 7:06 PM, Moshe Shemesh wrote:
-> Introduce new options on devlink reload API to enable the user to select
-> the reload action required and contrains limits on these actions that he
-> may want to ensure. Complete support for reload actions in mlx5.
-> The following reload actions are supported:
->    driver_reinit: driver entities re-initialization, applying devlink-param
->                   and devlink-resource values.
->    fw_activate: firmware activate.
->
-> The uAPI is backward compatible, if the reload action option is omitted
-> from the reload command, the driver reinit action will be used.
-> Note that when required to do firmware activation some drivers may need
-> to reload the driver. On the other hand some drivers may need to reset
-> the firmware to reinitialize the driver entities. Therefore, the devlink
-> reload command returns the actions which were actually performed.
->
-> By default reload actions are not limited and driver implementation may
-> include reset or downtime as needed to perform the actions.
-> However, if limit_level is selected, the driver should perform only if
-> it can do it while keeping the limit level constrains.
-> Reload action limit level added:
->    no_reset: No reset allowed, no down time allowed, no link flap and no
->              configuration is lost.
->
-> Each driver which supports devlink reload command should expose the
-> reload actions and limit levels supported.
->
-> Add reload action stats to hold the history per reload action per limit
-> level. For example, the number of times fw_activate has been done on
-> this device since the driver module was added or if the firmware
-> activation was done with or without reset.
->
-> Patch 1-2 add the new API reload action and reload action limit level
->            option to devlink reload.
-> Patch 3 adds reload actions stats.
-> Patch 4 exposes the reload actions stats on devlink dev get.
-> Patches 5-10 add support on mlx5 for devlink reload action fw_activate
->              and handle the firmware reset events.
-> Patches 11-12 add devlink enable remote dev reset parameter and use it
->               in mlx5.
-> Patches 13-14 mlx5 add devlink reload action limit level no_reset
->                support for fw_activate reload action.
-> Patch 15 adds documentation file devlink-reload.rst
->
->
-> Moshe Shemesh (15):
->    devlink: Add reload action option to devlink reload command
->    devlink: Add reload action limit level
->    devlink: Add reload action stats
->    devlink: Add reload actions stats to dev get
->    net/mlx5: Add functions to set/query MFRL register
->    net/mlx5: Set cap for pci sync for fw update event
->    net/mlx5: Handle sync reset request event
->    net/mlx5: Handle sync reset now event
->    net/mlx5: Handle sync reset abort event
->    net/mlx5: Add support for devlink reload action fw activate
->    devlink: Add enable_remote_dev_reset generic parameter
->    net/mlx5: Add devlink param enable_remote_dev_reset support
->    net/mlx5: Add support for fw live patch event
->    net/mlx5: Add support for devlink reload action limit level no reset
->    devlink: Add Documentation/networking/devlink/devlink-reload.rst
->
->   .../networking/devlink/devlink-params.rst     |   6 +
->   .../networking/devlink/devlink-reload.rst     |  79 +++
->   Documentation/networking/devlink/index.rst    |   1 +
->   drivers/net/ethernet/mellanox/mlx4/main.c     |  16 +-
->   .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
->   .../net/ethernet/mellanox/mlx5/core/devlink.c | 122 ++++-
->   .../mellanox/mlx5/core/diag/fw_tracer.c       |  31 ++
->   .../mellanox/mlx5/core/diag/fw_tracer.h       |   1 +
->   .../ethernet/mellanox/mlx5/core/fw_reset.c    | 454 ++++++++++++++++++
->   .../ethernet/mellanox/mlx5/core/fw_reset.h    |  19 +
->   .../net/ethernet/mellanox/mlx5/core/health.c  |  35 +-
->   .../net/ethernet/mellanox/mlx5/core/main.c    |  13 +
->   .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
->   drivers/net/ethernet/mellanox/mlxsw/core.c    |  27 +-
->   drivers/net/netdevsim/dev.c                   |  17 +-
->   include/linux/mlx5/device.h                   |   1 +
->   include/linux/mlx5/driver.h                   |   4 +
->   include/net/devlink.h                         |  21 +-
->   include/uapi/linux/devlink.h                  |  41 ++
->   net/core/devlink.c                            | 339 ++++++++++++-
->   20 files changed, 1179 insertions(+), 52 deletions(-)
->   create mode 100644 Documentation/networking/devlink/devlink-reload.rst
->   create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
->   create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
->
