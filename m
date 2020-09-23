@@ -2,105 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC63B2754C0
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 11:48:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BDA02754E2
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 11:55:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbgIWJsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 05:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726338AbgIWJsD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 05:48:03 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540FEC0613D1
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 02:48:03 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id 185so24352085oie.11
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 02:48:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Kp9DB3yJ7n4fOK/Le2BJ41nn7yEKAT/fFpyjwGbKsMI=;
-        b=heQpS1w19H1RTHI6oZ7jzHtWgTjOZyjB+oHEUjaEO5MsegnRy6P9r4NBBf7M8gIuQj
-         ZPazzp642YTXlXdvscMv+G+KCF7OOkrG4g+giPfgeGbgSDGZZSNMSuTJVLdQteUFKWNf
-         nyBo9Yos1kscihElwDTU0Dof82hYkXY6o8l/Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Kp9DB3yJ7n4fOK/Le2BJ41nn7yEKAT/fFpyjwGbKsMI=;
-        b=GiJsGURSMYLq7ChG5HRDlSX0rU+XwMDl8dySFg5NbXlGC3IPjEAme8uLhLlVGxlI3L
-         /eHGI36Un1TfhZ8q3/uGYBK4Y+SDykR/tKCP+M3mEp3xQRLJE+2ASuZEoejIb1/LGiur
-         GMUhEClS87IQH0qyVk6sZwDNQ1qCftR9yqSrbzw08awF7yprdfBABXOSncTCFpYScdHH
-         uROsinefKAUAiQ+bgQravo4sbJqhSGaFAHsMI0HzsrGf63W3jyQcd6PT4KzFBLtVRpqh
-         JZ7TkddUoukzdbz6dFwcdLITBQ0qZKVygXBr5ugUHi3RKkhFFaR7vM5By8mP1LlSl9L0
-         7xkg==
-X-Gm-Message-State: AOAM533vLmLL46obyDbF7Sxxmmc6Lu8wtvlKdkh+7ngVzZE1rnX2Cyg5
-        2UwebZDpRTQVJP5N5eJJS/iXpEYpsxxhBM8MXKbxDg==
-X-Google-Smtp-Source: ABdhPJw3YAbMdYlUq9nhIyxrwRkQ+KL7befsxSwMfEZS1z9eQAjO1pJpmRqQKw3b6kcjcfvpWgVgYMavizM1/C7F0fM=
-X-Received: by 2002:aca:3087:: with SMTP id w129mr4959586oiw.102.1600854482691;
- Wed, 23 Sep 2020 02:48:02 -0700 (PDT)
+        id S1726504AbgIWJzW convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 23 Sep 2020 05:55:22 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:23154 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726332AbgIWJzU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 05:55:20 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-226-PrpFg9T_NP-llOlZs_EZgQ-1; Wed, 23 Sep 2020 10:55:17 +0100
+X-MC-Unique: PrpFg9T_NP-llOlZs_EZgQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 23 Sep 2020 10:55:15 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 23 Sep 2020 10:55:15 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Julian Wiedmann' <jwi@linux.ibm.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>
+Subject: RE: [PATCH net-next 3/9] s390/qeth: clean up string ops in
+ qeth_l3_parse_ipatoe()
+Thread-Topic: [PATCH net-next 3/9] s390/qeth: clean up string ops in
+ qeth_l3_parse_ipatoe()
+Thread-Index: AQHWkYS+KKE+2YxBK0+f9H+Mgs75S6l1+mkQ
+Date:   Wed, 23 Sep 2020 09:55:15 +0000
+Message-ID: <2e439abb31e942e2a441f28439d287fa@AcuMS.aculab.com>
+References: <20200923083700.44624-1-jwi@linux.ibm.com>
+ <20200923083700.44624-4-jwi@linux.ibm.com>
+In-Reply-To: <20200923083700.44624-4-jwi@linux.ibm.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-References: <20200922070409.1914988-1-kafai@fb.com> <20200922070415.1916194-1-kafai@fb.com>
- <CACAyw9_wEMFuymvUC0fsZVJCH0vsvbD9p=CWTZC1jV2gUiu3KA@mail.gmail.com> <20200922183805.l2fjw462hukiel4n@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200922183805.l2fjw462hukiel4n@kafai-mbp.dhcp.thefacebook.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Wed, 23 Sep 2020 10:47:51 +0100
-Message-ID: <CACAyw9_ZeCVTmF7XxTKEiK3aj47KaJ7Jb8JaTPTU2-XrXRutdw@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 01/11] bpf: Move the PTR_TO_BTF_ID check to check_reg_type()
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Sep 2020 at 19:38, Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Tue, Sep 22, 2020 at 10:56:55AM +0100, Lorenz Bauer wrote:
-> > On Tue, 22 Sep 2020 at 08:04, Martin KaFai Lau <kafai@fb.com> wrote:
-> > >
-> > > check_reg_type() checks whether a reg can be used as an arg of a
-> > > func_proto.  For PTR_TO_BTF_ID, the check is actually not
-> > > completely done until the reg->btf_id is pointing to a
-> > > kernel struct that is acceptable by the func_proto.
-> > >
-> > > Thus, this patch moves the btf_id check into check_reg_type().
-> > > The compatible_reg_types[] usage is localized in check_reg_type() now.
-> > >
-> > > The "if (!btf_id) verbose(...); " is also removed since it won't happen.
-> > >
-> > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> > > ---
-> > >  kernel/bpf/verifier.c | 65 +++++++++++++++++++++++--------------------
-> > >  1 file changed, 35 insertions(+), 30 deletions(-)
-> > >
-> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > > index 15ab889b0a3f..3ce61c412ea0 100644
-> > > --- a/kernel/bpf/verifier.c
-> > > +++ b/kernel/bpf/verifier.c
-> > > @@ -4028,20 +4028,29 @@ static const struct bpf_reg_types *compatible_reg_types[] = {
-> > >         [__BPF_ARG_TYPE_MAX]            = NULL,
-> > >  };
-> > >
-> > > -static int check_reg_type(struct bpf_verifier_env *env, u32 regno,
-> > > -                         const struct bpf_reg_types *compatible)
-> > > +static int check_reg_type(struct bpf_verifier_env *env, u32 arg,
-> > > +                         enum bpf_arg_type arg_type,
-> > > +                         const struct bpf_func_proto *fn)
-> Yes. I think that works as good.
->
-> An idea for the mid term, I think this map helper's arg override logic
-> should belong to a new map_ops and this new map_ops can return the whole
-> "fn" instead of overriding on an arg-by-arg base.
+From: Julian Wiedmann
+> Sent: 23 September 2020 09:37
+> 
+> Indicate the max number of to-be-parsed characters, and avoid copying
+> the address sub-string.
+> 
+> Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+> ---
+>  drivers/s390/net/qeth_l3_sys.c | 27 ++++++++++++++-------------
+>  1 file changed, 14 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/s390/net/qeth_l3_sys.c b/drivers/s390/net/qeth_l3_sys.c
+> index ca9c95b6bf35..05fa986e30fc 100644
+> --- a/drivers/s390/net/qeth_l3_sys.c
+> +++ b/drivers/s390/net/qeth_l3_sys.c
+> @@ -409,21 +409,22 @@ static ssize_t qeth_l3_dev_ipato_add4_show(struct device *dev,
+>  static int qeth_l3_parse_ipatoe(const char *buf, enum qeth_prot_versions proto,
+>  		  u8 *addr, int *mask_bits)
+>  {
+> -	const char *start, *end;
+> -	char *tmp;
+> -	char buffer[40] = {0, };
+> +	const char *start;
+> +	char *sep, *tmp;
+> +	int rc;
+> 
+> -	start = buf;
+> -	/* get address string */
+> -	end = strchr(start, '/');
+> -	if (!end || (end - start >= 40)) {
+> +	/* Expected input pattern: %addr/%mask */
+> +	sep = strnchr(buf, 40, '/');
+> +	if (!sep)
+>  		return -EINVAL;
+> -	}
+> -	strncpy(buffer, start, end - start);
+> -	if (qeth_l3_string_to_ipaddr(buffer, proto, addr)) {
+> -		return -EINVAL;
+> -	}
+> -	start = end + 1;
+> +
+> +	/* Terminate the %addr sub-string, and parse it: */
+> +	*sep = '\0';
 
-Yeah, agreed. I've had a similar idea, but no time to implement it yet.
+Is it valid to write into the input buffer here?
 
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+> +	rc = qeth_l3_string_to_ipaddr(buf, proto, addr);
+> +	if (rc)
+> +		return rc;
+> +
+> +	start = sep + 1;
+>  	*mask_bits = simple_strtoul(start, &tmp, 10);
 
-www.cloudflare.com
+The use of strnchr() rather implies that the input
+buffer may not be '\0' terminated.
+If that is true then you've just run off the end of the
+input buffer.
+
+>  	if (!strlen(start) ||
+>  	    (tmp == start) ||
+
+Hmmm... delete the strlen() clause.
+It ought to test start[0], but the 'tmp == start' test
+covers that case.
+
+I don't understand why simple_strtoul() is deprecated.
+I don't recall any of the replacements returning the
+address of the terminating character.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
