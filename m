@@ -2,181 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BF1F274F1A
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 04:41:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 224F3274F6E
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 05:12:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726728AbgIWClS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 22:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
+        id S1726731AbgIWDMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 23:12:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727276AbgIWClO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 22:41:14 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84920C0613D1
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 19:41:12 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id k25so15864013ljg.9
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 19:41:12 -0700 (PDT)
+        with ESMTP id S1726448AbgIWDMB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 23:12:01 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB055C061755;
+        Tue, 22 Sep 2020 20:12:01 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id d19so6099928pld.0;
+        Tue, 22 Sep 2020 20:12:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=jc8uPyWeA8lh2ZEVJXFhzEZM6SYIOAImDuM4KwfSrTg=;
-        b=D48LKiLW724RXEbvVDcCcvfb/bjfn6Fz7yz848goAqBzaGa96OEdXkzKjJWrEmtr2B
-         u1Ww6BlgX5m69XKUjtHN8FSlwIlBBUpYuv+Iprcmx2j45NU7WOcpX7v16h5UuMpNF38e
-         rsVxKDi8d64KgOP8GtIFzSYqLc0BiBaOMx2UDviVVwCnG96aL140S/UQe+emedYdhZEg
-         hLu/zoRv1FrpWJxCY41I5V0IOBitx8WcSRot3JvqOKnLgKIvj1M9XJRrffwtrDXr8TdH
-         22yXODro1beLbWdfHb8BQK9j1iuDsUBHVXXEoj11HOHfDNHMT70/R3FvWVOmVx7rcYUS
-         MoMw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/2ZgtPG1P/+XP2UNIOgD2YCw0VR4m0gAL+RLZGXeU4g=;
+        b=NBF+oorj+4Vxw8rGjtV6ihCGUmQyPVToBTfLc+RNk8MkW0LyoYkFpvHekJ+XU0AHhv
+         gErS9PsVvcA7+1gxi4bkZSOWQC6eIkJwM/KYGW+srkRdAXtgkOze5LxWvTqj/aTOo8bi
+         XBPW23qvzL5SJG+vBAXR47qF4h4r2h4tRVHTHMY/rOsBV5f4Ql92mQ76UNfN77WmSV3E
+         1f4z6TlH05IfsWM2Gu0WkhN7zgOUCQHsjnIbXdj8PG1DRjieYagNgucn8/oSge5OlsFC
+         doI7LbPx1kXI/oq8cp2yR5qvMwmJEreGr8PcTmux/nGuY07DB/zSPu95n2dF4Dunoant
+         Rg/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jc8uPyWeA8lh2ZEVJXFhzEZM6SYIOAImDuM4KwfSrTg=;
-        b=lAkZbay5CKvucvgQVYgHRwKR0ZNlzZ7MjVP8pl+ok5lCfWLMX0ZfUn/TRI4Q16E1Oo
-         oi/FmESUKZBHc6Y2+WFaHli7xK2txNQBscv8UIJnNMF9tw9PfQn+qflkni7WF6isrQKb
-         Q+yM+uTn/fRNjAnDjh1iRYRN7TNZhLnFcniAeqE++L/cVWSpAJrJqdBjnCoAR0moawGW
-         lcEQb7mnJ+XQkU+EYvZq80QZh4Z0HqgCNa5hvN4CiEKKXzrYFl1KqeH+iSeXMhs9wSBl
-         NeHZwv87DhhR5/3NwSEEZVYcaUC+fawcy1ddYtPC67Z6jrRD7D70xeeR7QBL7KVhgQ6y
-         pQXA==
-X-Gm-Message-State: AOAM532QDP8r6KZwhWwn4JOL5flEoM0hUa/FJCdOse8BzA/euDOz4snW
-        yl2raQYRNtZpbWfXckWyR0EXV6nd2CCWotJlkP0Znw==
-X-Google-Smtp-Source: ABdhPJwQf9C/dYCgdMs0kvxVPlQBoNh6rC23MBqQ+8aghqCHQkwJBsaQqfGzXUr350qTd1zXmvtw67PsWspk7HwJrUc=
-X-Received: by 2002:a2e:889a:: with SMTP id k26mr2388797lji.214.1600828870825;
- Tue, 22 Sep 2020 19:41:10 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/2ZgtPG1P/+XP2UNIOgD2YCw0VR4m0gAL+RLZGXeU4g=;
+        b=eyetvBprtyx3NXMWdhUv0NSzyWJZ0TlSm8Wk+9AAJLdenmDqNZkHs+65wAip6nvkm6
+         UdbHZgqjQeQUky7GwR0H3iHpVIJGk4FMAkp8zme1Du59G0hUoezNNgeJYClK3eq9OxNb
+         i4+l6cFwa/+DsWCMvhpxQE/yI0psop0zeHFfYUubS/3LpaOxsagWuRPz9Z4ehn2SzONP
+         jQTMmN+MJXmeXGSswuIjcJ56cSlGGqok6sxX9vjj7/igw+N/xsmTL+TusIAYimoIlbDk
+         sCAJG9OF3S2bqPajM7G5aPamX+i17pIeYJO9w+4tbqMo6vXT5fblt4tuvcwUx++pLWDk
+         MrBw==
+X-Gm-Message-State: AOAM532J7kBMsVmJB4KtWqg450D75ZQUtgprN/OcHQfaP5b1sY5bjctY
+        Jl6QkUspZ5Hd4t+OmTV4ZqHSL3aepVFzug==
+X-Google-Smtp-Source: ABdhPJxC+P1nUzqbCPHZZLqiO+uL1BOWV909dQ/CbSQTUOhm7gu/kPG6Jj9+BczhH32c2Lj6JNQvGg==
+X-Received: by 2002:a17:90b:707:: with SMTP id s7mr6482322pjz.25.1600830720794;
+        Tue, 22 Sep 2020 20:12:00 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id x185sm16520351pfc.188.2020.09.22.20.11.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Sep 2020 20:11:59 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel@vger.kernel.org (open list),
+        vladimir.oltean@nxp.com, olteanv@gmail.com, nikolay@nvidia.com
+Subject: [PATCH net-next 0/2] net: dsa: b53: Configure VLANs while not filtering
+Date:   Tue, 22 Sep 2020 20:11:53 -0700
+Message-Id: <20200923031155.2832348-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200921080255.15505-1-zangchunxin@bytedance.com>
- <20200921081200.GE12990@dhcp22.suse.cz> <CALOAHbDKvT58UFjxy770VDxO0VWABRYb7GVwgw+NiJp62mB06w@mail.gmail.com>
- <20200921110505.GH12990@dhcp22.suse.cz> <CAKRVAeN5U6S78jF1n8nCs5ioAdqvVn5f6GGTAnA93g_J0daOLw@mail.gmail.com>
- <20200922095136.GA9682@chrisdown.name> <CAKRVAePisoOg8QBz11gPqzEoUdwPiJ-9Z9MyFE2LHzR-r+PseQ@mail.gmail.com>
- <20200922104252.GB9682@chrisdown.name> <CAKRVAeOjST1vJsSXMgj91=tMf1MQTeNp_dz34z=DwL7Weh0bmg@mail.gmail.com>
- <CALvZod64Qwzjv3N2PO-EUtMkA4bs_PM=Tq4=cmuM0VO9P3BAjw@mail.gmail.com>
-In-Reply-To: <CALvZod64Qwzjv3N2PO-EUtMkA4bs_PM=Tq4=cmuM0VO9P3BAjw@mail.gmail.com>
-From:   Chunxin Zang <zangchunxin@bytedance.com>
-Date:   Wed, 23 Sep 2020 10:40:59 +0800
-Message-ID: <CAKRVAeOKWfdeupv9CAj09xxP5RjKq5ji7n+xVnxo+Q4wR0KzTg@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] mm/memcontrol: Add the drop_cache
- interface for cgroup v2
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Chris Down <chris@chrisdown.name>, Michal Hocko <mhocko@suse.com>,
-        Yafang Shao <laoar.shao@gmail.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tejun Heo <tj@kernel.org>, Li Zefan <lizefan@huawei.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kafai@fb.com,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        andriin@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
-        Cgroups <cgroups@vger.kernel.org>, linux-doc@vger.kernel.org,
-        Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 3:57 AM Shakeel Butt <shakeelb@google.com> wrote:
->
-> On Tue, Sep 22, 2020 at 5:37 AM Chunxin Zang <zangchunxin@bytedance.com> =
-wrote:
-> >
-> > On Tue, Sep 22, 2020 at 6:42 PM Chris Down <chris@chrisdown.name> wrote=
-:
-> > >
-> > > Chunxin Zang writes:
-> > > >On Tue, Sep 22, 2020 at 5:51 PM Chris Down <chris@chrisdown.name> wr=
-ote:
-> > > >>
-> > > >> Chunxin Zang writes:
-> > > >> >My usecase is that there are two types of services in one server.=
- They
-> > > >> >have difference
-> > > >> >priorities. Type_A has the highest priority, we need to ensure it=
-'s
-> > > >> >schedule latency=E3=80=81I/O
-> > > >> >latency=E3=80=81memory enough. Type_B has the lowest priority, we=
- expect it
-> > > >> >will not affect
-> > > >> >Type_A when executed.
-> > > >> >So Type_A could use memory without any limit. Type_B could use me=
-mory
-> > > >> >only when the
-> > > >> >memory is absolutely sufficient. But we cannot estimate how much
-> > > >> >memory Type_B should
-> > > >> >use. Because everything is dynamic. So we can't set Type_B's memo=
-ry.high.
-> > > >> >
-> > > >> >So we want to release the memory of Type_B when global memory is
-> > > >> >insufficient in order
-> > > >> >to ensure the quality of service of Type_A . In the past, we used=
- the
-> > > >> >'force_empty' interface
-> > > >> >of cgroup v1.
-> > > >>
-> > > >> This sounds like a perfect use case for memory.low on Type_A, and =
-it's pretty
-> > > >> much exactly what we invented it for. What's the problem with that=
-?
-> > > >
-> > > >But we cannot estimate how much memory Type_A uses at least.
-> > >
-> > > memory.low allows ballparking, you don't have to know exactly how muc=
-h it uses.
-> > > Any amount of protection biases reclaim away from that cgroup.
-> > >
-> > > >For example:
-> > > >total memory: 100G
-> > > >At the beginning, Type_A was in an idle state, and it only used 10G =
-of memory.
-> > > >The load is very low. We want to run Type_B to avoid wasting machine=
- resources.
-> > > >When Type_B runs for a while, it used 80G of memory.
-> > > >At this time Type_A is busy, it needs more memory.
-> > >
-> > > Ok, so set memory.low for Type_A close to your maximum expected value=
-.
-> >
-> > Please forgive me for not being able to understand why setting
-> > memory.low for Type_A can solve the problem.
-> > In my scene, Type_A is the most important, so I will set 100G to memory=
-.low.
-> > But 'memory.low' only takes effect passively when the kernel is
-> > reclaiming memory. It means that reclaim Type_B's memory only when
-> > Type_A  in alloc memory slow path. This will affect Type_A's
-> > performance.
-> > We want to reclaim Type_B's memory in advance when A is expected to be =
-busy.
-> >
->
-> How will you know when to reclaim from B? Are you polling /proc/meminfo?
->
+Hi David, Jakub,
 
-Monitor global memory usage through the daemon. If the memory is used
-80% or 90%, it will reclaim B's memory.
+These two patches allow the b53 driver which always configures its CPU
+port as egress tagged to behave correctly with VLANs being always
+configured whenever a port is added to a bridge.
 
-> From what I understand, you want to proactively reclaim from B, so
-> that A does not go into global reclaim and in the worst case kill B,
-> right?
+Vladimir provides a patch that aligns the bridge with vlan_filtering=0
+receive path to behave the same as vlan_filtering=1. Per discussion with
+Nikolay, this behavior is deemed to be too DSA specific to be done in
+the bridge proper.
 
-Yes, it is.
+This is a preliminary series for Vladimir to make
+configure_vlan_while_filtering the default behavior for all DSA drivers
+in the future.
 
->
-> BTW you can use memory.high to reclaim from B by setting it lower than
-> memory.current of B and reset it to 'max' once the reclaim is done.
-> Since 'B' is not high priority (I am assuming not a latency sensitive
-> workload), B hitting temporary memory.high should not be an issue.
-> Also I am assuming you don't much care about the amount of memory to
-> be reclaimed from B, so I think memory.high can fulfil your use-case.
-> However if in future you decide to proactively reclaim from all the
-> jobs based on their priority i.e. more aggressive reclaim from B and a
-> little bit reclaim from A then memory.high is not a good interface.
->
-> Shakeel
+Thanks!
 
-Thanks for these suggestions, I will give it a try.
+Florian Fainelli (1):
+  net: dsa: b53: Configure VLANs while not filtering
 
-Best wishes
-Chunxin
+Vladimir Oltean (1):
+  net: dsa: untag the bridge pvid from rx skbs
+
+ drivers/net/dsa/b53/b53_common.c | 20 ++--------
+ drivers/net/dsa/b53/b53_priv.h   |  1 -
+ include/net/dsa.h                |  8 ++++
+ net/dsa/dsa.c                    |  9 +++++
+ net/dsa/dsa_priv.h               | 66 ++++++++++++++++++++++++++++++++
+ 5 files changed, 86 insertions(+), 18 deletions(-)
+
+-- 
+2.25.1
+
