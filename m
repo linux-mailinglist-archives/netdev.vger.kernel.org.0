@@ -2,193 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D80C276405
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 00:45:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30EBB27641D
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 00:48:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbgIWWpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 18:45:12 -0400
-Received: from mx2.suse.de ([195.135.220.15]:42202 "EHLO mx2.suse.de"
+        id S1726620AbgIWWsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 18:48:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45968 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726199AbgIWWpM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 18:45:12 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id D698BAB9F;
-        Wed, 23 Sep 2020 22:45:47 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 0ABDE60320; Thu, 24 Sep 2020 00:45:10 +0200 (CEST)
-Date:   Thu, 24 Sep 2020 00:45:10 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool-next 5/5] pause: add support for dumping
- statistics
-Message-ID: <20200923224510.h3kpgczd6wkpoitp@lion.mk-sys.cz>
-References: <20200915235259.457050-1-kuba@kernel.org>
- <20200915235259.457050-6-kuba@kernel.org>
+        id S1726419AbgIWWsg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 18:48:36 -0400
+Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6CA1A208E4;
+        Wed, 23 Sep 2020 22:48:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600901315;
+        bh=nPPi5hUt89eRIJEHn2NULKtpqHxhFoc/Ln2e1dstRBw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=o4AsmmHnzBggw04w7B5nkwVr5sOcIiqqfQ3XCFbFanIvjQKfEbHgfztIOdBT22wJ7
+         4NAjiEn4LRZpvKStc+h0iLLZFC2M6OjjqbVhh53Tres9A0KuUhJ4+GpG6jReQUlkgL
+         oblPC9QGzOHYDtPoOSwFZYvpym+5eCliXfZeL2J0=
+From:   saeed@kernel.org
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next V2 00/15] mlx5 Connection Tracking in NIC mode 
+Date:   Wed, 23 Sep 2020 15:48:09 -0700
+Message-Id: <20200923224824.67340-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200915235259.457050-6-kuba@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 15, 2020 at 04:52:59PM -0700, Jakub Kicinski wrote:
-> Add support for requesting pause frame stats from the kernel.
-> 
->  # ./ethtool -I -a eth0
-> Pause parameters for eth0:
-> Autonegotiate:	on
-> RX:		on
-> TX:		on
-> Statistics:
->   tx_pause_frames: 1
->   rx_pause_frames: 1
-> 
->  # ./ethtool -I --json -a eth0
-> [ {
->         "ifname": "eth0",
->         "autonegotiate": true,
->         "rx": true,
->         "tx": true,
->         "statistics": {
->             "tx_pause_frames": 1,
->             "rx_pause_frames": 1
->         }
->     } ]
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  netlink/pause.c | 66 ++++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 65 insertions(+), 1 deletion(-)
-> 
-> diff --git a/netlink/pause.c b/netlink/pause.c
-> index 30ecdccb15eb..f9dec9fe887a 100644
-> --- a/netlink/pause.c
-> +++ b/netlink/pause.c
-> @@ -5,6 +5,7 @@
->   */
->  
->  #include <errno.h>
-> +#include <inttypes.h>
->  #include <string.h>
->  #include <stdio.h>
->  
-> @@ -110,6 +111,62 @@ static int show_pause_autoneg_status(struct nl_context *nlctx)
->  	return ret;
->  }
->  
-> +static int show_pause_stats(const struct nlattr *nest)
-> +{
-> +	const struct nlattr *tb[ETHTOOL_A_PAUSE_STAT_MAX + 1] = {};
-> +	DECLARE_ATTR_TB_INFO(tb);
-> +	static const struct {
-> +		unsigned int attr;
-> +		char *name;
-> +	} stats[] = {
-> +		{ ETHTOOL_A_PAUSE_STAT_TX_FRAMES, "tx_pause_frames" },
-> +		{ ETHTOOL_A_PAUSE_STAT_RX_FRAMES, "rx_pause_frames" },
-> +	};
-> +	bool header = false;
-> +	unsigned int i;
-> +	size_t n;
-> +	int ret;
-> +
-> +	ret = mnl_attr_parse_nested(nest, attr_cb, &tb_info);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	open_json_object("statistics");
-> +	for (i = 0; i < ARRAY_SIZE(stats); i++) {
-> +		char fmt[32];
-> +
-> +		if (!tb[stats[i].attr])
-> +			continue;
-> +
-> +		if (!header && !is_json_context()) {
-> +			printf("Statistics:\n");
-> +			header = true;
-> +		}
-> +
-> +		if (mnl_attr_validate(tb[stats[i].attr], MNL_TYPE_U64)) {
-> +			fprintf(stderr, "malformed netlink message (statistic)\n");
-> +			goto err_close_stats;
-> +		}
-> +
-> +		n = snprintf(fmt, sizeof(fmt), "  %s: %%" PRId64 "\n",
-> +			     stats[i].name);
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-The stats are unsigned so the format should be PRIu64 here.
+Hi Dave, Jakub,
 
-> +		if (n >= sizeof(fmt)) {
-> +			fprintf(stderr, "internal error - malformed label\n");
-> +			goto err_close_stats;
-> +		}
-> +
-> +		print_u64(PRINT_ANY, stats[i].name, fmt,
-> +			  mnl_attr_get_u64(tb[stats[i].attr]));
-> +	}
-> +	close_json_object();
-> +
-> +	return 0;
-> +
-> +err_close_stats:
-> +	close_json_object();
-> +	return -1;
-> +}
-> +
->  int pause_reply_cb(const struct nlmsghdr *nlhdr, void *data)
->  {
->  	const struct nlattr *tb[ETHTOOL_A_PAUSE_MAX + 1] = {};
-> @@ -147,6 +204,11 @@ int pause_reply_cb(const struct nlmsghdr *nlhdr, void *data)
->  		if (ret < 0)
->  			goto err_close_dev;
->  	}
-> +	if (tb[ETHTOOL_A_PAUSE_STATS]) {
-> +		ret = show_pause_stats(tb[ETHTOOL_A_PAUSE_STATS]);
-> +		if (ret < 0)
-> +			goto err_close_dev;
-> +	}
->  	if (!silent)
->  		print_nl();
->  
-> @@ -163,6 +225,7 @@ int nl_gpause(struct cmd_context *ctx)
->  {
->  	struct nl_context *nlctx = ctx->nlctx;
->  	struct nl_socket *nlsk = nlctx->ethnl_socket;
-> +	u32 flags;
->  	int ret;
->  
->  	if (netlink_cmd_check(ctx, ETHTOOL_MSG_PAUSE_GET, true))
-> @@ -173,8 +236,9 @@ int nl_gpause(struct cmd_context *ctx)
->  		return 1;
->  	}
->  
-> +	flags = nlctx->ctx->show_stats ? ETHTOOL_FLAG_STATS : 0;
->  	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_PAUSE_GET,
-> -				      ETHTOOL_A_PAUSE_HEADER, 0);
-> +				      ETHTOOL_A_PAUSE_HEADER, flags);
->  	if (ret < 0)
->  		return ret;
->  
+This series adds the support for connection tracking in NIC mode,
+and attached to this series some trivial cleanup patches.
+v1->v2:
+ - Remove "fixup!" comment from commit message (Jakub)
+ - More information and use case description in the tag message
+   (Cover-letter) (Jakub)
 
-When the stats are supported by kernel but not provided by a device,
-the request will succeed and usual output without stats will be shown.
-However, when stats are requested on a pre-5.10 kernel not recognizing
-ETHTOOL_FLAG_STATS, the request will fail:
+For more information please see tag log below.
 
-    mike@lion:~/work/git/ethtool> ./ethtool --debug 0x10 -I -a eth0
-    netlink error: unrecognized request flags
-    netlink error: Operation not supported
-    offending message and attribute:
-        ETHTOOL_MSG_PAUSE_GET
-            ETHTOOL_A_PAUSE_HEADER
-                ETHTOOL_A_HEADER_DEV_NAME = "eth0"
-    ===>        ETHTOOL_A_HEADER_FLAGS = 0x00000004
+Please pull and let me know if there is any problem.
 
-We should probably repeat the request with flags=0 in this case but that
-would require keeping the offset of ETHTOOL_A_HEADER_FLAGS attribute and
-checking for -EOPNOTSUPP with this offset in nlsock_process_ack().
+Thanks,
+Saeed.
 
-Michal
+---
+
+The following changes since commit 748d1c8a425ec529d541f082ee7a81f6a51fa120:
+
+  Merge branch 'devlink-Use-nla_policy-to-validate-range' (2020-09-22 17:38:42 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-09-22
+
+for you to fetch changes up to 987cd5f049a2b5ed46901f6a874040a08d21d31f:
+
+  net/mlx5: remove unreachable return (2020-09-23 15:44:39 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2020-09-22
+
+This series includes mlx5 updates
+
+1) Add support for Connection Tracking offload in NIC mode.
+   Supporting CT offload in NIC mode on Mellanox cards is useful for
+   scenarios where the dual port NIC serves as a gateway between 2
+   networks and forwards traffic between these networks.
+
+   Since the traffic is not terminated on the host in this case,
+   no use of SRIOV VFs and/or switchdev mode is required.
+
+   Today Mellanox NIC cards already support offloading of packet forwarding
+   between physical ports without going to the host so combining it with CT
+   offloading allows users to create a gateway with forwarding and CT
+   (Including NAT) offloading capabilities in non-switchdev mode.
+
+   To support connection tracking in non-Switchdev mode (Single NIC mode),
+   we need to make use of the current Connection tracking infrastructure
+   implemented on top of E-Switch and the mlx5 generic flow table chains
+   APIs, to make it work on non-Eswitch steering domain e.g. NIC RX domain,
+   the following was performed:
+
+ 1.1) Refactor current flow steering chains infrastructure and
+      updates TC nic mode implementation to use flow table chains.
+ 1.2) Refactor current Connection Tracking (CT) infrastructure to not
+      assume E-switch backend, and make the CT layer agnostic to
+      underlying steering mode (E-Switch/NIC)
+ 1.3) Plumbing to support CT offload in NIC mode.
+
+2) Trivial code cleanups.
+
+----------------------------------------------------------------
+Ariel Levkovich (9):
+      net/mlx5: Refactor multi chains and prios support
+      net/mlx5: Allow ft level ignore for nic rx tables
+      net/mlx5e: Tc nic flows to use mlx5_chains flow tables
+      net/mlx5e: Split nic tc flow allocation and creation
+      net/mlx5: Refactor tc flow attributes structure
+      net/mlx5e: Add tc chains offload support for nic flows
+      net/mlx5e: rework ct offload init messages
+      net/mlx5e: Support CT offload for tc nic flows
+      net/mlx5e: Keep direct reference to mlx5_core_dev in tc ct
+
+Denis Efremov (2):
+      net/mlx5e: IPsec: Use kvfree() for memory allocated with kvzalloc()
+      net/mlx5e: Use kfree() to free fd->g in accel_fs_tcp_create_groups()
+
+Oz Shlomo (1):
+      net/mlx5e: CT: Use the same counter for both directions
+
+Pavel Machek (CIP) (1):
+      net/mlx5: remove unreachable return
+
+Qinglang Miao (1):
+      net/mlx5: simplify the return expression of mlx5_ec_init()
+
+Saeed Mahameed (1):
+      net/mlx5e: TC: Remove unused parameter from mlx5_tc_ct_add_no_trk_match()
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/ecpf.c     |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/fs.h    |   7 +-
+ .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c    |  22 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 525 +++++++-----
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h |  75 +-
+ .../ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c  |   2 +-
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.c         |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |   1 -
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  10 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 865 +++++++++++++------
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |  97 +++
+ .../net/ethernet/mellanox/mlx5/core/esw/chains.c   | 944 ---------------------
+ .../net/ethernet/mellanox/mlx5/core/esw/chains.h   |  68 --
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  39 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 309 +++++--
+ .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   5 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/clock.c    |   2 -
+ .../ethernet/mellanox/mlx5/core/lib/fs_chains.c    | 911 ++++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/lib/fs_chains.h    |  93 ++
+ 21 files changed, 2339 insertions(+), 1658 deletions(-)
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/chains.c
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/chains.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.h
