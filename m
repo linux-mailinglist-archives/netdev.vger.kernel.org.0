@@ -2,133 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4E16275772
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 13:49:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BB8D275789
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 13:53:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726584AbgIWLtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 07:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
+        id S1726610AbgIWLxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 07:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726472AbgIWLtn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 07:49:43 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A00C0613CE;
-        Wed, 23 Sep 2020 04:49:42 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id y15so6801332wmi.0;
-        Wed, 23 Sep 2020 04:49:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=p4sMBWzXBxVz4HvD3n4l2QIDm0SxypO/fE8nCP81NYo=;
-        b=hVurwq/6/XhFXJ6RoPXK1EGdTYQ6vzFdgejDABeebl0RtKDkmGFD+KdNAxd8/A9JjX
-         ir1KTle+zPq8HVtGgHOCF1NbP340ypt9arNONJOVxUYZquWaqnxmcQ3gb8StBWVA8Dfx
-         v+Lh4dW0ZkzbMTMKpV1Ge813iSjzUYfYJkEl+r1GXJUIWNZxkwLL+CBWP8VYSRtATc/B
-         5aFvcuMf4SiOPuuhVdVTkUtv7Psy3nn1U3MarmiWquAVZX2jGZcyJ5wMdcqiRck5Yaqx
-         j9tHaigvMiCHJ2lEK5xbq4EFENaf/BSnFna2XopimZ0iURvIzc/UaOIbxIZrLsgIJLPJ
-         U06g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=p4sMBWzXBxVz4HvD3n4l2QIDm0SxypO/fE8nCP81NYo=;
-        b=I29Xphixsqtqa74TJL7gYYcJUlrpMsqKdGaGn4dPZbJUF9agfGbYsFJJ6snMU4cJHG
-         vXxnR7SNKjv4xuq5SA4w/KHto0MgG6+/FXuNDHSdVdVdssZRD9G8dwY06/0ETuGx2QCT
-         fjYY6gHbUGckREVu2PnasFyjxhbiae45Cchgb+OFaE5YtV+hYLO7M8LPZmayZH4Kg+Do
-         O5nLXH8vH+frQnDCdrF53NWjgy1J8eJ2F4YJKjUK+0KdZ55Ffjs9zqBbf9V8l4mAav47
-         YsDkLJ5cZt+ISkj/ogcYA4hjtqVYKuGL/Id3kMnjiwWGtyhQf+M+oFAJ+NRjj6fLyHmZ
-         DVCA==
-X-Gm-Message-State: AOAM531LbAa31uo288aFm+KKxM08G8WZb7/4T7wwlkQ2FgfrfC+WS7j2
-        ijiG0XTZM9es8N32G+1r3D8gpKZN2Js=
-X-Google-Smtp-Source: ABdhPJwSy8djRzattquH/FjML2gk62PklGKieE8AHEPIh5I6VIm/LdLDkYCYpQ99B8eNnnr/FZ2mRA==
-X-Received: by 2002:a7b:c4d9:: with SMTP id g25mr6072703wmk.15.1600861781360;
-        Wed, 23 Sep 2020 04:49:41 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:c43a:de91:4527:c1ba? (p200300ea8f235700c43ade914527c1ba.dip0.t-ipconnect.de. [2003:ea:8f23:5700:c43a:de91:4527:c1ba])
-        by smtp.googlemail.com with ESMTPSA id i14sm241690wml.24.2020.09.23.04.49.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Sep 2020 04:49:40 -0700 (PDT)
-Subject: Re: [PATCH] Revert "net: linkwatch: add check for netdevice being
- present to linkwatch_do_dev"
-To:     Saeed Mahameed <saeed@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Gaku Inami <gaku.inami.xh@renesas.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200901150237.15302-1-geert+renesas@glider.be>
- <7bfebfdc0d7345c4612124ff00e20eebb0ff6cd9.camel@kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <3d9176a6-c93e-481c-5877-786f5e6aaef8@gmail.com>
-Date:   Wed, 23 Sep 2020 13:49:35 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1726332AbgIWLxo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 07:53:44 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF89C0613CE
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 04:53:43 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kL3L4-0005r9-Db; Wed, 23 Sep 2020 13:53:34 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:8d0c:cfd0:3f99:a545] (unknown [IPv6:2a03:f580:87bc:d400:8d0c:cfd0:3f99:a545])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 501CC567BED;
+        Wed, 23 Sep 2020 11:53:30 +0000 (UTC)
+Subject: Re: [PATCH net-next] can: mcp25xxfd: fix a leak in
+ mcp25xxfd_ring_free()
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <20200923112752.GA1473821@mwanda>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <2688ed6b-e3cf-deaa-bc28-f1d6c75b13cd@pengutronix.de>
+Date:   Wed, 23 Sep 2020 13:53:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <7bfebfdc0d7345c4612124ff00e20eebb0ff6cd9.camel@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200923112752.GA1473821@mwanda>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="vmHZZpqxCKCTiS4ASsJw5QnsSDzrpHdki"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.09.2020 19:58, Saeed Mahameed wrote:
-> On Tue, 2020-09-01 at 17:02 +0200, Geert Uytterhoeven wrote:
->> This reverts commit 124eee3f6955f7aa19b9e6ff5c9b6d37cb3d1e2c.
->>
->> Inami-san reported that this commit breaks bridge support in a Xen
->> environment, and that reverting it fixes this.
->>
->> During system resume, bridge ports are no longer enabled, as that
->> relies
->> on the receipt of the NETDEV_CHANGE notification.  This notification
->> is
->> not sent, as netdev_state_change() is no longer called.
->>
->> Note that the condition this commit intended to fix never existed
->> upstream, as the patch triggering it and referenced in the commit was
->> never applied upstream.  Hence I can confirm s2ram on r8a73a4/ape6evm
->> and sh73a0/kzm9g works fine before/after this revert.
->>
->> Reported-by Gaku Inami <gaku.inami.xh@renesas.com>
->> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->> ---
->>  net/core/link_watch.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/net/core/link_watch.c b/net/core/link_watch.c
->> index 75431ca9300fb9c4..c24574493ecf95e6 100644
->> --- a/net/core/link_watch.c
->> +++ b/net/core/link_watch.c
->> @@ -158,7 +158,7 @@ static void linkwatch_do_dev(struct net_device
->> *dev)
->>  	clear_bit(__LINK_STATE_LINKWATCH_PENDING, &dev->state);
->>  
->>  	rfc2863_policy(dev);
->> -	if (dev->flags & IFF_UP && netif_device_present(dev)) {
->> +	if (dev->flags & IFF_UP) {
-> 
-> So with your issue the devices is both IFF_UP and !present ? how so ?
-> I think you should look into that.
-> 
-> I am ok with removing the "dev present" check from here just because we
-> shouldn't  be expecting IFF_UP && !present .. such thing must be a bug
-> somewhere else.
-> 
->>  		if (netif_carrier_ok(dev))
->>  			dev_activate(dev);
->>  		else
-> 
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--vmHZZpqxCKCTiS4ASsJw5QnsSDzrpHdki
+Content-Type: multipart/mixed; boundary="dqZJlXdrIUR8xIXR4FPVKU4KVmkUqWs0G";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+ Thomas Kopp <thomas.kopp@microchip.com>,
+ Wolfgang Grandegger <wg@grandegger.com>,
+ "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+ linux-can@vger.kernel.org, netdev@vger.kernel.org,
+ kernel-janitors@vger.kernel.org
+Message-ID: <2688ed6b-e3cf-deaa-bc28-f1d6c75b13cd@pengutronix.de>
+Subject: Re: [PATCH net-next] can: mcp25xxfd: fix a leak in
+ mcp25xxfd_ring_free()
+References: <20200923112752.GA1473821@mwanda>
+In-Reply-To: <20200923112752.GA1473821@mwanda>
+
+--dqZJlXdrIUR8xIXR4FPVKU4KVmkUqWs0G
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
+
+On 9/23/20 1:27 PM, Dan Carpenter wrote:
+> This loop doesn't free the first element of the array.  The "i > 0" has=
+
+> to be changed to "i >=3D 0".
+>=20
+> Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxF=
+D SPI CAN")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+
+Applied to linux-can-next
+
+Tnx,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
-In __dev_close_many() we call ndo_stop() whilst IFF_UP is still set.
-ndo_stop() may detach the device and bring down the PHY, resulting in an
-async link change event that calls dev_get_stats(). The latter call may
-have a problem if the device is detached. In a first place I'd consider
-such a case a network driver bug (ndo_get_stats/64 should check for
-device presence if depending on it).
-The additional check in linkwatch_do_dev() was meant to protect from such
-driver issues.
+--dqZJlXdrIUR8xIXR4FPVKU4KVmkUqWs0G--
+
+--vmHZZpqxCKCTiS4ASsJw5QnsSDzrpHdki
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9rNzMACgkQqclaivrt
+76m4Tgf9GcSWQWVcfoMu3yPaIhj4eopQl0yP4R3Tzqa4peGGt/jznseUVA+8kXKR
+YKbEntZ9E2te42gPNn7RoZ+zYxOIpOSNiLN/DHaiGp4tMYH9D265fVOi2JIaIFin
+5FyBykwScIeo9LahPY6W09Rd1DYNOWqjOK1rS0WvDWWOBlTnowmhfrsz7PXHbcXJ
+7qpa838y5tFQwtspjSQe1MtKFbK1hO2UJAkykNuP/tuS85zeVPWx6pVkcyTJG2UH
+XpaDiuKr7j85Ugk/WiuUJHDP+Ku37W8gKHwiwv9a9pEocDH5VDEzKPOasIjSCoLq
+jsEVrNXgJYYHoSUbRvdH9ajRUhDISQ==
+=V7cD
+-----END PGP SIGNATURE-----
+
+--vmHZZpqxCKCTiS4ASsJw5QnsSDzrpHdki--
