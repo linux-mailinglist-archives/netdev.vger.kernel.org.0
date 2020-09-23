@@ -2,263 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3961A275716
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 13:24:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 539F627571F
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 13:28:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726476AbgIWLYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 07:24:46 -0400
-Received: from mail-db8eur05on2046.outbound.protection.outlook.com ([40.107.20.46]:23932
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726332AbgIWLYp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 07:24:45 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lgMJK7/K7ni+/aaKzJ0UH+8JSHuSSGTqQBcnK1UU3zoXykNGnXzcPfbjDaNJbSP5IzAYlqKImOZisAsP8dRRXcTEo8z5ffl9B18CHRVGeemBPcishe0wG5HrQmvpnohAav1V9VHvTg6DnW+JiyhJ/ntPH7iOyzOaLNJEnAohNXdHFdcdAut9pO/qx1C6lRoXkj74rnJHxe9/BHzS4lYTbcOzl9Zz8OLmw4JGbuPuEYyYz7cPjAPIYMXkt91lih7BtacCx7q8mSizHce4FEeOq3kmWAF+a65JfXXcaxYmjEjV6RXASS0yi4MX0qhyIabwUdRC+aO9L4hlB5H9ajTvGw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3VmjchkMAj7z0dNgUHIkv+jCjhgp4DuRxhFJL8KqXrw=;
- b=R/YhMqC84wYijsj87q10IQOM8dOFcsL6Vm0+1XsExfoTypW9w5HXvYY8eKh9UuieVoQatPCHPGUaM+Tge4U1NH8nCoQIQDHpZG6qk2ivVOPFCcxkhW6+1wsu/65dPrdORPohr1fS48zD2zxrEOYhnr7Aku68jS4kQ6eOiqXQiWyuAwpRAVipkJnMpkEekUuky3TWCQhZvQBgUE0ujy/W48v+KWLqz9gVMvH3A0zo5aGCo0pEpQG3O3uNo4hH9bNx18i48I3iO1rNYqdIW1gLzhzaqV2FhRcfGWLsjXYe5xTRSTKattjQuIIirDaBtdr71PZTfg7EUIKfBsGF2jUbTQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3VmjchkMAj7z0dNgUHIkv+jCjhgp4DuRxhFJL8KqXrw=;
- b=D+xZBijsIWi5evNfVSsI9VtxrYUB9JOsgb/djYT5zPbxvfZs6R4B3Rx0BSQSqgtM2RTMcg1xXpM4aXkphDMM2YRnN0v0nGQLLileUFU2zMhhIXichCqH4pwf2E6z97kAVyxsafm0yTj+B8sdZmqoxPJokkEgwAi/CvGUZkdoUtk=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB6941.eurprd04.prod.outlook.com (2603:10a6:803:12e::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14; Wed, 23 Sep
- 2020 11:24:39 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3412.020; Wed, 23 Sep 2020
- 11:24:39 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
-        UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        richardcochran@gmail.com
-Subject: [PATCH net-next] net: mscc: ocelot: always pass skb clone to ocelot_port_add_txtstamp_skb
-Date:   Wed, 23 Sep 2020 14:24:20 +0300
-Message-Id: <20200923112420.2147806-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR05CA0074.eurprd05.prod.outlook.com
- (2603:10a6:208:136::14) To VI1PR04MB5696.eurprd04.prod.outlook.com
- (2603:10a6:803:e7::13)
+        id S1726634AbgIWL2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 07:28:18 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:53106 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726595AbgIWL2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 07:28:18 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08NBOlTZ027355;
+        Wed, 23 Sep 2020 11:28:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=uEf9FWNukK8RgzNDp5y3BawUGVfjd90oZWpVO7yCEVY=;
+ b=hxf+7l2v6hG1i3NGSfiS7kzr3V85RO2HEJCnIGiTaEzMv1InK8FB89LExG/rRQ6pL/wz
+ tNw9PeSYeO+kcCM/AWcWYVRJBtGsOl05D7TxLCgApZyKL+1sRPBz+wb6CKPosEUcE6hi
+ ggoBswwKdaKakvoxp4iLkVRFTl5pFBb0p6jryq7Hq0W1D/xqx/+Z0wNELjTUOg0BWeIP
+ Hxk6+ewbZBAaf7yFu01Q3zWfTGoqzXHBCT9oA7Zea7NHGrW1f23oJ2zIx8Ke9lDpzTJS
+ howSL1Ohf6+vlFSi1pPtESbc6yjO0G7+LsAbKIvLAfc0D3XdTzRHJz807RrtMHRbXR3Q 2Q== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2120.oracle.com with ESMTP id 33ndnuhx8b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 23 Sep 2020 11:28:02 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08NBPP0t136367;
+        Wed, 23 Sep 2020 11:28:02 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 33nux0yvfr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Sep 2020 11:28:01 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08NBS0x9032204;
+        Wed, 23 Sep 2020 11:28:00 GMT
+Received: from mwanda (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 23 Sep 2020 04:27:59 -0700
+Date:   Wed, 23 Sep 2020 14:27:52 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] can: mcp25xxfd: fix a leak in mcp25xxfd_ring_free()
+Message-ID: <20200923112752.GA1473821@mwanda>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.217.212) by AM0PR05CA0074.eurprd05.prod.outlook.com (2603:10a6:208:136::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.26 via Frontend Transport; Wed, 23 Sep 2020 11:24:38 +0000
-X-Mailer: git-send-email 2.25.1
-X-Originating-IP: [188.25.217.212]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: cf12058f-dabb-481c-cc6b-08d85fb342bb
-X-MS-TrafficTypeDiagnostic: VI1PR04MB6941:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB6941867D891147A7F25596DFE0380@VI1PR04MB6941.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MIBF6tlDJ1843+ICdP9BVRmJ+x2sm7ndV84tglMcAo3EJfMVnjXJ4UcqYripOnFZWLTLh0ZIgmEhrkEV84Vg+83Bp1HDa67LmSLywNFrLVgcmzwk15IAXA13wd58oZZ1fhiGRVKBqSiqJzNziT+g90nyvKEs/wocEj5W/koPivF5ICSOB/cfNh5iZSqP50mMB1ReHEnhn5ZXzgIAqFwHOXzFU5/csdtHoVVMLZVm+ZPsYgEs9Lguym+cIvW7vnBHp4CFFcn18Sjnc5HRMOb5V4JliwGUofmJF+8pzCE4IoIxxLGvaFZPmbhuSwNXmvbhtgn57mDgby0sWkJjJbU8gY9Zccw3FwFkEQMMokjA/rlctAx1McZs/GfxZIA2V8/J95W6zfrIjRt8l8sClEtwLFjB3TtekoNyVONpX8/tqy+Lnen4hi25l5Sxf7F7oUQu
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(39850400004)(136003)(376002)(366004)(6486002)(36756003)(83380400001)(6512007)(52116002)(8936002)(2906002)(5660300002)(1076003)(8676002)(66556008)(66476007)(478600001)(6666004)(186003)(6506007)(956004)(2616005)(69590400008)(44832011)(86362001)(16526019)(316002)(4326008)(66946007)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: KtSe4gB7u8CojQZkzGDwW1KEesoRjoGwV5OrqGbFXD5+5RgNu9vGAZoPzBI9QExnY/whK3NlRh64MyCnxtdAu10vX36THnw4DZdqURkAXd8h95cE/mCGJ4LJRL694IVKhQ42JAZYgPtuCPDJY1uEbABCqpryLkXYPbl+OXlvW2Ue0VtCPjQh+ZUHwQCB1bhKqSuWJ2R4npw1bM7aD9zkN3cmL6SgtijawkF9+bd96MKv5C3smC0GZlIHzw5eM/aMBvTlGQpsnhyNjNqcG68GPUtHOIPk4eQcCiQfJgztI7PwzlbkWEpB97xAW3umMYDrmlY3WeCP3QHahua135iO1CpmT+bDTXTsk5qKw5lGpiSgGouZxjOqgyLcKaHKRu8v0Z5cbf+YMiIGcaFaMwgdI4hqe4g/Mbv4/yg7yg8AmxrA1In4GF6ha7GJJIx6s+WWxZnCDpQ/IdLmRHcAtH+USkNmw3/hBO/S+azM0/y2L8wHZJG8GYm35+qYxKWlPTxGBy9H8Gsqw3D7cluqCnW0AQhNfAGkEZ2+kawICDFUpARrk2RPhCOOMVbzLGh/3MKIPM+1CqRrjkf8gUTf+OzRp8gNfAldQ7QKGJivIu797s9zUM3HEl2pk5b1yNiqXGH8lzsmTwAZWBaPkUyXtRyYEg==
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf12058f-dabb-481c-cc6b-08d85fb342bb
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2020 11:24:39.8332
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ritDRR42YHWz5zj4oq0owFoOJctv7K4yCrH3YlrzqGevdIKaDardU519HpvHaLa7f9otPg3KPWvvaAHyokbkaQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6941
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9752 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 adultscore=0
+ bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=2 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009230092
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9752 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ lowpriorityscore=0 phishscore=0 adultscore=0 suspectscore=2 bulkscore=0
+ clxscore=1011 impostorscore=0 mlxlogscore=999 mlxscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009230092
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, ocelot switchdev passes the skb directly to the function that
-enqueues it to the list of skb's awaiting a TX timestamp. Whereas the
-felix DSA driver first clones the skb, then passes the clone to this
-queue.
+This loop doesn't free the first element of the array.  The "i > 0" has
+to be changed to "i >= 0".
 
-This matters because in the case of felix, the common IRQ handler, which
-is ocelot_get_txtstamp(), currently clones the clone, and frees the
-original clone. This is useless and can be simplified by using
-skb_complete_tx_timestamp() instead of skb_tstamp_tx().
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxFD SPI CAN")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- drivers/net/dsa/ocelot/felix.c         |  5 ++++-
- drivers/net/ethernet/mscc/ocelot.c     | 30 ++++++++++----------------
- drivers/net/ethernet/mscc/ocelot_net.c | 22 +++++++++++++++----
- include/soc/mscc/ocelot.h              |  4 ++--
- net/dsa/tag_ocelot.c                   |  6 +++---
- 5 files changed, 38 insertions(+), 29 deletions(-)
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 0b2bb8d7325c..1ec4fea5a546 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -668,8 +668,11 @@ static bool felix_txtstamp(struct dsa_switch *ds, int port,
- 	struct ocelot *ocelot = ds->priv;
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 
--	if (!ocelot_port_add_txtstamp_skb(ocelot_port, clone))
-+	if (ocelot->ptp && (skb_shinfo(clone)->tx_flags & SKBTX_HW_TSTAMP) &&
-+	    ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
-+		ocelot_port_add_txtstamp_skb(ocelot, port, clone);
- 		return true;
-+	}
- 
- 	return false;
- }
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 977d2263cbe1..58b969b85643 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -413,26 +413,20 @@ void ocelot_port_disable(struct ocelot *ocelot, int port)
- }
- EXPORT_SYMBOL(ocelot_port_disable);
- 
--int ocelot_port_add_txtstamp_skb(struct ocelot_port *ocelot_port,
--				 struct sk_buff *skb)
-+void ocelot_port_add_txtstamp_skb(struct ocelot *ocelot, int port,
-+				  struct sk_buff *clone)
+diff --git a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd-core.c b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd-core.c
+index bd2ba981ae36..7e094afaac04 100644
+--- a/drivers/net/can/spi/mcp25xxfd/mcp25xxfd-core.c
++++ b/drivers/net/can/spi/mcp25xxfd/mcp25xxfd-core.c
+@@ -377,7 +377,7 @@ static void mcp25xxfd_ring_free(struct mcp25xxfd_priv *priv)
  {
--	struct skb_shared_info *shinfo = skb_shinfo(skb);
--	struct ocelot *ocelot = ocelot_port->ocelot;
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 	int i;
  
--	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP &&
--	    ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
--		spin_lock(&ocelot_port->ts_id_lock);
-+	spin_lock(&ocelot_port->ts_id_lock);
- 
--		shinfo->tx_flags |= SKBTX_IN_PROGRESS;
--		/* Store timestamp ID in cb[0] of sk_buff */
--		skb->cb[0] = ocelot_port->ts_id;
--		ocelot_port->ts_id = (ocelot_port->ts_id + 1) % 4;
--		skb_queue_tail(&ocelot_port->tx_skbs, skb);
-+	skb_shinfo(clone)->tx_flags |= SKBTX_IN_PROGRESS;
-+	/* Store timestamp ID in cb[0] of sk_buff */
-+	clone->cb[0] = ocelot_port->ts_id;
-+	ocelot_port->ts_id = (ocelot_port->ts_id + 1) % 4;
-+	skb_queue_tail(&ocelot_port->tx_skbs, clone);
- 
--		spin_unlock(&ocelot_port->ts_id_lock);
--		return 0;
--	}
--	return -ENODATA;
-+	spin_unlock(&ocelot_port->ts_id_lock);
- }
- EXPORT_SYMBOL(ocelot_port_add_txtstamp_skb);
- 
-@@ -511,9 +505,7 @@ void ocelot_get_txtstamp(struct ocelot *ocelot)
- 		/* Set the timestamp into the skb */
- 		memset(&shhwtstamps, 0, sizeof(shhwtstamps));
- 		shhwtstamps.hwtstamp = ktime_set(ts.tv_sec, ts.tv_nsec);
--		skb_tstamp_tx(skb_match, &shhwtstamps);
--
--		dev_kfree_skb_any(skb_match);
-+		skb_complete_tx_timestamp(skb_match, &shhwtstamps);
- 
- 		/* Next ts */
- 		ocelot_write(ocelot, SYS_PTP_NXT_PTP_NXT, SYS_PTP_NXT);
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index 8490e42e9e2d..028a0150f97d 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -330,7 +330,6 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 	u8 grp = 0; /* Send everything on CPU group 0 */
- 	unsigned int i, count, last;
- 	int port = priv->chip_port;
--	bool do_tstamp;
- 
- 	val = ocelot_read(ocelot, QS_INJ_STATUS);
- 	if (!(val & QS_INJ_STATUS_FIFO_RDY(BIT(grp))) ||
-@@ -345,7 +344,23 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 	info.vid = skb_vlan_tag_get(skb);
- 
- 	/* Check if timestamping is needed */
--	do_tstamp = (ocelot_port_add_txtstamp_skb(ocelot_port, skb) == 0);
-+	if (ocelot->ptp && (shinfo->tx_flags & SKBTX_HW_TSTAMP)) {
-+		info.rew_op = ocelot_port->ptp_cmd;
-+
-+		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
-+			struct sk_buff *clone;
-+
-+			clone = skb_clone_sk(skb);
-+			if (!clone) {
-+				kfree_skb(skb);
-+				return NETDEV_TX_OK;
-+			}
-+
-+			ocelot_port_add_txtstamp_skb(ocelot, port, clone);
-+
-+			info.rew_op |= clone->cb[0] << 3;
-+		}
-+	}
- 
- 	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP) {
- 		info.rew_op = ocelot_port->ptp_cmd;
-@@ -383,8 +398,7 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 	dev->stats.tx_packets++;
- 	dev->stats.tx_bytes += skb->len;
- 
--	if (!do_tstamp)
--		dev_kfree_skb_any(skb);
-+	kfree_skb(skb);
- 
- 	return NETDEV_TX_OK;
- }
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index df252c22f985..2ca7ba829c76 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -711,8 +711,8 @@ int ocelot_vlan_add(struct ocelot *ocelot, int port, u16 vid, bool pvid,
- int ocelot_vlan_del(struct ocelot *ocelot, int port, u16 vid);
- int ocelot_hwstamp_get(struct ocelot *ocelot, int port, struct ifreq *ifr);
- int ocelot_hwstamp_set(struct ocelot *ocelot, int port, struct ifreq *ifr);
--int ocelot_port_add_txtstamp_skb(struct ocelot_port *ocelot_port,
--				 struct sk_buff *skb);
-+void ocelot_port_add_txtstamp_skb(struct ocelot *ocelot, int port,
-+				  struct sk_buff *clone);
- void ocelot_get_txtstamp(struct ocelot *ocelot);
- void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu);
- int ocelot_get_max_mtu(struct ocelot *ocelot, int port);
-diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
-index b4fc05cafaa6..d1a7e224adff 100644
---- a/net/dsa/tag_ocelot.c
-+++ b/net/dsa/tag_ocelot.c
-@@ -137,6 +137,7 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
- 				   struct net_device *netdev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(netdev);
-+	struct sk_buff *clone = DSA_SKB_CB(skb)->clone;
- 	struct dsa_switch *ds = dp->ds;
- 	struct ocelot *ocelot = ds->priv;
- 	struct ocelot_port *ocelot_port;
-@@ -159,9 +160,8 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
- 	qos_class = skb->priority;
- 	packing(injection, &qos_class, 19,  17, OCELOT_TAG_LEN, PACK, 0);
- 
--	if (ocelot->ptp && (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
--		struct sk_buff *clone = DSA_SKB_CB(skb)->clone;
--
-+	/* TX timestamping was requested */
-+	if (clone) {
- 		rew_op = ocelot_port->ptp_cmd;
- 		/* Retrieve timestamp ID populated inside skb->cb[0] of the
- 		 * clone by ocelot_port_add_txtstamp_skb
+-	for (i = ARRAY_SIZE(priv->rx) - 1; i > 0; i--) {
++	for (i = ARRAY_SIZE(priv->rx) - 1; i >= 0; i--) {
+ 		kfree(priv->rx[i]);
+ 		priv->rx[i] = NULL;
+ 	}
 -- 
-2.25.1
+2.28.0
 
