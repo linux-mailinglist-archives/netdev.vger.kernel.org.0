@@ -2,99 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D768C275847
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 14:53:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B433727588D
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 15:23:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbgIWMxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 08:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
+        id S1726613AbgIWNXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 09:23:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726605AbgIWMxO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 08:53:14 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A4FCC0613D1
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 05:53:14 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kL4Gf-0003nL-8o; Wed, 23 Sep 2020 14:53:05 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kL4Gd-0007RW-3w; Wed, 23 Sep 2020 14:53:03 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     mkl@pengutronix.de, Wolfgang Grandegger <wg@grandegger.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, Thomas Kopp <thomas.kopp@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1] dt-binding: can: mcp25xxfd: documentation fixes
-Date:   Wed, 23 Sep 2020 14:53:01 +0200
-Message-Id: <20200923125301.27200-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.28.0
+        with ESMTP id S1726130AbgIWNXI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 09:23:08 -0400
+Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A9BC0613CE;
+        Wed, 23 Sep 2020 06:23:08 -0700 (PDT)
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kL4jW-004YbY-CV; Wed, 23 Sep 2020 13:22:54 +0000
+Date:   Wed, 23 Sep 2020 14:22:54 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Pavel Begunkov <asml.silence@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Howells <dhowells@redhat.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        Linux SCSI List <linux-scsi@vger.kernel.org>,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Network Development <netdev@vger.kernel.org>,
+        keyrings@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>
+Subject: Re: [PATCH 1/9] kernel: add a PF_FORCE_COMPAT flag
+Message-ID: <20200923132254.GI3421308@ZenIV.linux.org.uk>
+References: <563138b5-7073-74bc-f0c5-b2bad6277e87@gmail.com>
+ <486c92d0-0f2e-bd61-1ab8-302524af5e08@gmail.com>
+ <CALCETrW3rwGsgfLNnu_0JAcL5jvrPVTLTWM3JpbB5P9Hye6Fdw@mail.gmail.com>
+ <d5c6736a-2cb4-4e22-78da-a667bda5c05a@gmail.com>
+ <CALCETrUEC81va8-fuUXG1uA5rbKxnKDYsDOXC70_HtKD4LAeAg@mail.gmail.com>
+ <e0a1b4d1-ff47-18d1-d535-c62812cb3105@gmail.com>
+ <CAK8P3a2-6JNS38EbZcLrk=cTT526oP=Rf0aoqWNSJ-k4XTYehQ@mail.gmail.com>
+ <f25b4708-eba6-78d6-03f9-5bfb04e07627@gmail.com>
+ <CAK8P3a39jN+t2hhLg0oKZnbYATQXmYE2-Z1JkmFyc1EPdg1HXw@mail.gmail.com>
+ <91209170-dcb4-d9ee-afa0-a819f8877b86@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <91209170-dcb4-d9ee-afa0-a819f8877b86@gmail.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Apply following fixes:
-- Use 'interrupts'. (interrupts-extended will automagically be supported
-  by the tools)
-- *-supply is always a single item. So, drop maxItems=1
-- add "additionalProperties: false" flag to detect unneeded properties.
+On Wed, Sep 23, 2020 at 11:01:34AM +0300, Pavel Begunkov wrote:
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- .../devicetree/bindings/net/can/microchip,mcp25xxfd.yaml  | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> > I'm not following why that would be considered a valid option,
+> > as that clearly breaks existing users that update from a 32-bit
+> > kernel to a 64-bit one.
+> 
+> Do you mean users who move 32-bit binaries (without recompiling) to a
+> new x64 kernel? Does the kernel guarantees that to work?
 
-diff --git a/Documentation/devicetree/bindings/net/can/microchip,mcp25xxfd.yaml b/Documentation/devicetree/bindings/net/can/microchip,mcp25xxfd.yaml
-index aa2cad14d6d7..5beb00a614bf 100644
---- a/Documentation/devicetree/bindings/net/can/microchip,mcp25xxfd.yaml
-+++ b/Documentation/devicetree/bindings/net/can/microchip,mcp25xxfd.yaml
-@@ -24,7 +24,7 @@ properties:
-   reg:
-     maxItems: 1
- 
--  interrupts-extended:
-+  interrupts:
-     maxItems: 1
- 
-   clocks:
-@@ -32,11 +32,9 @@ properties:
- 
-   vdd-supply:
-     description: Regulator that powers the CAN controller.
--    maxItems: 1
- 
-   xceiver-supply:
-     description: Regulator that powers the CAN transceiver.
--    maxItems: 1
- 
-   microchip,rx-int-gpios:
-     description:
-@@ -52,9 +50,11 @@ properties:
- required:
-   - compatible
-   - reg
--  - interrupts-extended
-+  - interrupts
-   - clocks
- 
-+additionalProperties: false
-+
- examples:
-   - |
-     #include <dt-bindings/gpio/gpio.h>
--- 
-2.28.0
+Yes.
 
+No further (printable) comments for now...
