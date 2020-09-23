@@ -2,140 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0287D275337
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 10:31:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B670275354
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 10:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726267AbgIWIbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 04:31:06 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:52742 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726228AbgIWIbF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 04:31:05 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08N8TCPx005684;
-        Wed, 23 Sep 2020 08:30:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=LwWNEwdDLy+BwVf25VOLJQ7mq5JE6nvU0LL8xQOsN7Y=;
- b=x7PrreU9yuXBQEhOdghHiQSgGvgnU4u8SbYAAMBAE70WGBzqu9MOFmHvhnvqfqgxo1tB
- r5VhePQrdBRkWGfdDkk8hbuKFer+CAbVXMFeIvxfusFLblnhKTj/qCsWr0uafZiWrSSj
- wkgXVXSt2IHK9kVG3eI7uRq5FC0mU/MUsWJQo1WHTlm0j5/0fFyhF61olPpAmP3Puk/n
- XHo0pgrq6l08xUyGEw5t1vMF10fyfL/vGrYL4vp9P31QS32DzKdPGbELCyjRWB/wQv+c
- JDdqinsstz1qQ8IF486TEYzsY85eQy22hg4hd5fw5cQMBKCvi85H6O0quT1c3S1SlRfq vA== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 33q5rgfd4t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 23 Sep 2020 08:30:30 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08N8U1Lq016192;
-        Wed, 23 Sep 2020 08:30:30 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 33r28uu5b5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Sep 2020 08:30:30 +0000
-Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08N8UPfL024771;
-        Wed, 23 Sep 2020 08:30:25 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 23 Sep 2020 01:30:24 -0700
-Date:   Wed, 23 Sep 2020 11:30:17 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jon Maloy <jmaloy@redhat.com>
-Cc:     Ying Xue <ying.xue@windriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tuong Lien <tuong.t.lien@dektech.com.au>,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        kernel-janitors@vger.kernel.org,
-        Julia Lawall <Julia.Lawall@lip6.fr>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH net-next] tipc: potential memory corruption in
- tipc_crypto_key_rcv()
-Message-ID: <20200923083017.GA1454948@mwanda>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9752 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999
- suspectscore=0 adultscore=0 bulkscore=0 malwarescore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009230069
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9752 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 impostorscore=0
- clxscore=1011 suspectscore=0 phishscore=0 malwarescore=0
- priorityscore=1501 mlxlogscore=999 adultscore=0 bulkscore=0 mlxscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009230069
+        id S1726540AbgIWIhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 04:37:15 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:33986 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726359AbgIWIhN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 04:37:13 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08N8XZtm042752;
+        Wed, 23 Sep 2020 04:37:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=Kgzp/QAU8YLFSLQ2LlcsteMHNXfz8DE/rJu3ziEITeQ=;
+ b=QON1hMoQ9CYavrNHN1/9hlz0lGLXscOj5rSni7UX4fNzgLqvMKHbW1t99/YUOPfFiXj9
+ 7ymfQkQID5ik+JvJm0IEasNOT+B4U+Zhm04SOdTWMPy6mTh1vNTdgQUhucg/YRMk6gqa
+ gvYISu7/KsGPSZpvhg08/eGi3OyAVhCEYi1WCF4u8bqRUoKhYnqVl8DTCjVaTOX1LLBV
+ xEHMg25NTjgtuaDv+dyur5pqF7M08X45wmi+VDdqHlwnc3v5nu5RBvgr0xsAzH3D3bke
+ jz0/4cw6vng+yet7mawJRt2iDVALzHX5Ky5LvQubBRlKayCjIWTkqmgt6N4aRkNBwPNX iw== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33r27m1j7s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Sep 2020 04:37:07 -0400
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08N8Z0Ja012185;
+        Wed, 23 Sep 2020 08:37:06 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06fra.de.ibm.com with ESMTP id 33n98gt2a5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Sep 2020 08:37:06 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08N8b3co27263402
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Sep 2020 08:37:03 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1C79C11C052;
+        Wed, 23 Sep 2020 08:37:03 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C10CB11C04A;
+        Wed, 23 Sep 2020 08:37:02 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 23 Sep 2020 08:37:02 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next 0/9] s390/qeth: updates 2020-09-23
+Date:   Wed, 23 Sep 2020 10:36:51 +0200
+Message-Id: <20200923083700.44624-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-23_03:2020-09-23,2020-09-23 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 malwarescore=0
+ mlxscore=0 impostorscore=0 clxscore=1015 lowpriorityscore=0 adultscore=0
+ bulkscore=0 mlxlogscore=714 spamscore=0 priorityscore=1501 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009230069
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This code uses "skey->keylen" as an memcpy() size and then checks that
-it is valid on the next line.  The other problem is that the check has
-a potential integer overflow, it's better to use struct_size() for this.
+Hi Dave & Jakub,
 
-Fixes: 23700da29b83 ("tipc: add automatic rekeying for encryption key")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
-Hey Kees and Julia,
+please apply the following patch series for qeth to netdev's net-next tree.
 
-It would be nice to change tipc_aead_key_size() but I'm not sure how the
-UAPI stuff works.  My first attempt at to change it to
+This brings all sorts of cleanups. Highlights are more code sharing in
+the init/teardown paths, and more fine-grained rollback on errors during
+initialization (instead of a full-blown teardown).
 
-	return struct_size(key, key, key->keylen);
+Thanks,
+Julian
 
-broke the build.  I think you guys used Coccinelle to automatically
-update these calculations.  Probably this wasn't updated because you
-didn't want to break the build either?
+Julian Wiedmann (9):
+  s390/qeth: don't init refcount twice for mcast IPs
+  s390/qeth: relax locking for ipato config data
+  s390/qeth: clean up string ops in qeth_l3_parse_ipatoe()
+  s390/qeth: replace deprecated simple_stroul()
+  s390/qeth: tighten ucast IP locking
+  s390/qeth: cancel cmds earlier during teardown
+  s390/qeth: consolidate online code
+  s390/qeth: consolidate teardown code
+  s390/qeth: remove forward declarations in L2 code
 
- net/tipc/crypto.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/s390/net/qeth_core.h      |  22 +-
+ drivers/s390/net/qeth_core_main.c |  71 +++--
+ drivers/s390/net/qeth_core_sys.c  |  65 ++---
+ drivers/s390/net/qeth_l2.h        |   7 +
+ drivers/s390/net/qeth_l2_main.c   | 412 +++++++++++++-----------------
+ drivers/s390/net/qeth_l3.h        |   4 +-
+ drivers/s390/net/qeth_l3_main.c   |  88 ++-----
+ drivers/s390/net/qeth_l3_sys.c    |  64 ++---
+ 8 files changed, 338 insertions(+), 395 deletions(-)
 
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index 40c44101fe8e..291ba276b835 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -2281,6 +2281,7 @@ static bool tipc_crypto_key_rcv(struct tipc_crypto *rx, struct tipc_msg *hdr)
- 	u16 key_gen = msg_key_gen(hdr);
- 	u16 size = msg_data_sz(hdr);
- 	u8 *data = msg_data(hdr);
-+	u32 keylen;
- 
- 	spin_lock(&rx->lock);
- 	if (unlikely(rx->skey || (key_gen == rx->key_gen && rx->key.keys))) {
-@@ -2289,6 +2290,10 @@ static bool tipc_crypto_key_rcv(struct tipc_crypto *rx, struct tipc_msg *hdr)
- 		goto exit;
- 	}
- 
-+	keylen = ntohl(*((__be32 *)(data + TIPC_AEAD_ALG_NAME)));
-+	if (struct_size(skey, key, keylen) != size)
-+		goto exit;
-+
- 	/* Allocate memory for the key */
- 	skey = kmalloc(size, GFP_ATOMIC);
- 	if (unlikely(!skey)) {
-@@ -2297,18 +2302,11 @@ static bool tipc_crypto_key_rcv(struct tipc_crypto *rx, struct tipc_msg *hdr)
- 	}
- 
- 	/* Copy key from msg data */
--	skey->keylen = ntohl(*((__be32 *)(data + TIPC_AEAD_ALG_NAME)));
-+	skey->keylen = keylen;
- 	memcpy(skey->alg_name, data, TIPC_AEAD_ALG_NAME);
- 	memcpy(skey->key, data + TIPC_AEAD_ALG_NAME + sizeof(__be32),
- 	       skey->keylen);
- 
--	/* Sanity check */
--	if (unlikely(size != tipc_aead_key_size(skey))) {
--		kfree(skey);
--		skey = NULL;
--		goto exit;
--	}
--
- 	rx->key_gen = key_gen;
- 	rx->skey_mode = msg_key_mode(hdr);
- 	rx->skey = skey;
 -- 
-2.28.0
+2.17.1
 
