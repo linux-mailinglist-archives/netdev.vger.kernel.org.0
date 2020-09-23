@@ -2,241 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7942A275C31
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 17:41:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ECA5275C72
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 17:54:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726746AbgIWPll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 11:41:41 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:44450 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726498AbgIWPlh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 11:41:37 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 074072008D7;
-        Wed, 23 Sep 2020 17:41:36 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id EEE1120018D;
-        Wed, 23 Sep 2020 17:41:35 +0200 (CEST)
-Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id B226E2033F;
-        Wed, 23 Sep 2020 17:41:35 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, linux@armlinux.org.uk,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v2 3/3] dpaa2-mac: add PCS support through the Lynx module
-Date:   Wed, 23 Sep 2020 18:41:23 +0300
-Message-Id: <20200923154123.636-4-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200923154123.636-1-ioana.ciornei@nxp.com>
-References: <20200923154123.636-1-ioana.ciornei@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726634AbgIWPyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 11:54:43 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:31688 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726178AbgIWPyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 11:54:43 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08NFf1NM026263
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 08:54:41 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=lVz3rhjPqSRWAQ1eDlo4JvrHYsbEk2aNxjyOmclUnmY=;
+ b=HogHDQiYIzFJ3Egei1Dqsa+2RWUZSrrNxU4xZZf1N5kleY2Ga53jGv8Bxr4DGGknG5il
+ eubOieISw/AMreF+wmw2vfcLFKQEQUIr74DbUXC9ERTgsnNaMbxaJ3niGNEl7jLhgut7
+ KaSr3nJTyAlYtcBnVhoD3cTfr/sGT9k6MDs= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33qsp4vade-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 08:54:41 -0700
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 23 Sep 2020 08:54:40 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 855F62EC7442; Wed, 23 Sep 2020 08:54:37 -0700 (PDT)
+From:   Andrii Nakryiko <andriin@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH bpf-next 0/9] libbpf: BTF writer APIs
+Date:   Wed, 23 Sep 2020 08:54:27 -0700
+Message-ID: <20200923155436.2117661-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-23_12:2020-09-23,2020-09-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=421
+ spamscore=0 bulkscore=0 impostorscore=0 malwarescore=0 phishscore=0
+ clxscore=1015 priorityscore=1501 mlxscore=0 suspectscore=8 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009230125
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Include PCS support in the dpaa2-eth driver by integrating it with the
-new Lynx PCS module. There is not much to talk about in terms of changes
-needed in the dpaa2-eth driver since the only steps necessary are to
-find the MDIO device representing the PCS, register it to the Lynx PCS
-module and then let phylink know if its existence also.
-After this, the PCS callbacks will be treated directly by Lynx, without
-interraction from dpaa2-eth's part.
+This patch set introduces a new set of BTF APIs to libbpf that allow to
+conveniently produce BTF types and strings. Internals of struct btf were
+changed such that it can transparently and automatically switch to writab=
+le
+mode, which allows appending BTF types and strings. This will allow for l=
+ibbpf
+itself to do more intrusive modifications of program's BTF (by rewriting =
+it,
+at least as of right now), which is necessary for the upcoming libbpf sta=
+tic
+linking. But they are complete and generic, so can be adopted by anyone w=
+ho
+has a need to produce BTF type information.
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
-Changes in v2:
- - move put_device() after destroy
+One such example outside of libbpf is pahole, which was actually converte=
+d to
+these APIs (locally, pending landing of these changes in libbpf) complete=
+ly
+and shows reduction in amount of custom pahole code necessary and brings =
+nice
+savings in memory usage (about 370MB reduction at peak for my kernel
+configuration) and even BTF deduplication times (one second reduction,
+23.7s -> 22.7s). Memory savings are due to avoiding pahole's own copy of
+"uncompressed" raw BTF data. Time reduction comes from faster string
+search and deduplication by relying on hashmap instead of BST used by pah=
+ole's
+own code. Consequently, these APIs are already tested on real-world
+complicated kernel BTF, but there is also pretty extensive selftest doing
+extra validations.
 
- drivers/net/ethernet/freescale/dpaa2/Kconfig  |  1 +
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 89 ++++++++++++++++++-
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.h  |  2 +
- 3 files changed, 91 insertions(+), 1 deletion(-)
+Selftests in patch #9 add a set of generic ASSERT_{EQ,STREQ,ERR,OK} macro=
+s
+that are useful for writing shorter and less repretitive selftests. I dec=
+ided
+to keep them local to that selftest for now, but if they prove to be usef=
+ul in
+more contexts we should move them to test_progs.h. And few more (e.g.,
+inequality tests) macros are probably necessary to have a more complete s=
+et.
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/Kconfig b/drivers/net/ethernet/freescale/dpaa2/Kconfig
-index feea797cde02..cfd369cf4c8c 100644
---- a/drivers/net/ethernet/freescale/dpaa2/Kconfig
-+++ b/drivers/net/ethernet/freescale/dpaa2/Kconfig
-@@ -3,6 +3,7 @@ config FSL_DPAA2_ETH
- 	tristate "Freescale DPAA2 Ethernet"
- 	depends on FSL_MC_BUS && FSL_MC_DPIO
- 	select PHYLINK
-+	select PCS_LYNX
- 	help
- 	  This is the DPAA2 Ethernet driver supporting Freescale SoCs
- 	  with DPAA2 (DataPath Acceleration Architecture v2).
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index 3ee236c5fc37..6ff64dd1cf27 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -15,6 +15,18 @@ static int phy_mode(enum dpmac_eth_if eth_if, phy_interface_t *if_mode)
- 	case DPMAC_ETH_IF_RGMII:
- 		*if_mode = PHY_INTERFACE_MODE_RGMII;
- 		break;
-+	case DPMAC_ETH_IF_USXGMII:
-+		*if_mode = PHY_INTERFACE_MODE_USXGMII;
-+		break;
-+	case DPMAC_ETH_IF_QSGMII:
-+		*if_mode = PHY_INTERFACE_MODE_QSGMII;
-+		break;
-+	case DPMAC_ETH_IF_SGMII:
-+		*if_mode = PHY_INTERFACE_MODE_SGMII;
-+		break;
-+	case DPMAC_ETH_IF_XFI:
-+		*if_mode = PHY_INTERFACE_MODE_10GBASER;
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -67,6 +79,10 @@ static bool dpaa2_mac_phy_mode_mismatch(struct dpaa2_mac *mac,
- 					phy_interface_t interface)
- {
- 	switch (interface) {
-+	case PHY_INTERFACE_MODE_10GBASER:
-+	case PHY_INTERFACE_MODE_USXGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+	case PHY_INTERFACE_MODE_SGMII:
- 	case PHY_INTERFACE_MODE_RGMII:
- 	case PHY_INTERFACE_MODE_RGMII_ID:
- 	case PHY_INTERFACE_MODE_RGMII_RXID:
-@@ -95,6 +111,17 @@ static void dpaa2_mac_validate(struct phylink_config *config,
- 	phylink_set(mask, Asym_Pause);
- 
- 	switch (state->interface) {
-+	case PHY_INTERFACE_MODE_NA:
-+	case PHY_INTERFACE_MODE_10GBASER:
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		phylink_set(mask, 10000baseT_Full);
-+		if (state->interface == PHY_INTERFACE_MODE_10GBASER)
-+			break;
-+		phylink_set(mask, 5000baseT_Full);
-+		phylink_set(mask, 2500baseT_Full);
-+		fallthrough;
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
- 	case PHY_INTERFACE_MODE_RGMII:
- 	case PHY_INTERFACE_MODE_RGMII_ID:
- 	case PHY_INTERFACE_MODE_RGMII_RXID:
-@@ -227,6 +254,52 @@ bool dpaa2_mac_is_type_fixed(struct fsl_mc_device *dpmac_dev,
- 	return fixed;
- }
- 
-+static int dpaa2_pcs_create(struct dpaa2_mac *mac,
-+			    struct device_node *dpmac_node, int id)
-+{
-+	struct mdio_device *mdiodev;
-+	struct device_node *node;
-+
-+	node = of_parse_phandle(dpmac_node, "pcs-handle", 0);
-+	if (!node) {
-+		/* do not error out on old DTS files */
-+		netdev_warn(mac->net_dev, "pcs-handle node not found\n");
-+		return 0;
-+	}
-+
-+	if (!of_device_is_available(node) ||
-+	    !of_device_is_available(node->parent)) {
-+		netdev_err(mac->net_dev, "pcs-handle node not available\n");
-+		return -ENODEV;
-+	}
-+
-+	mdiodev = of_mdio_find_device(node);
-+	of_node_put(node);
-+	if (!mdiodev)
-+		return -EPROBE_DEFER;
-+
-+	mac->pcs = lynx_pcs_create(mdiodev);
-+	if (!mac->pcs) {
-+		netdev_err(mac->net_dev, "lynx_pcs_create() failed\n");
-+		put_device(&mdiodev->dev);
-+		return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
-+static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
-+{
-+	struct lynx_pcs *pcs = mac->pcs;
-+	struct device *dev = &pcs->mdio->dev;
-+
-+	if (pcs) {
-+		lynx_pcs_destroy(pcs);
-+		put_device(dev);
-+		mac->pcs = NULL;
-+	}
-+}
-+
- int dpaa2_mac_connect(struct dpaa2_mac *mac)
- {
- 	struct fsl_mc_device *dpmac_dev = mac->mc_dev;
-@@ -278,6 +351,13 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 		goto err_put_node;
- 	}
- 
-+	if (attr.link_type == DPMAC_LINK_TYPE_PHY &&
-+	    attr.eth_if != DPMAC_ETH_IF_RGMII) {
-+		err = dpaa2_pcs_create(mac, dpmac_node, attr.id);
-+		if (err)
-+			goto err_put_node;
-+	}
-+
- 	mac->phylink_config.dev = &net_dev->dev;
- 	mac->phylink_config.type = PHYLINK_NETDEV;
- 
-@@ -286,10 +366,13 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 				 &dpaa2_mac_phylink_ops);
- 	if (IS_ERR(phylink)) {
- 		err = PTR_ERR(phylink);
--		goto err_put_node;
-+		goto err_pcs_destroy;
- 	}
- 	mac->phylink = phylink;
- 
-+	if (mac->pcs)
-+		phylink_set_pcs(mac->phylink, &mac->pcs->pcs);
-+
- 	err = phylink_of_phy_connect(mac->phylink, dpmac_node, 0);
- 	if (err) {
- 		netdev_err(net_dev, "phylink_of_phy_connect() = %d\n", err);
-@@ -302,6 +385,8 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 
- err_phylink_destroy:
- 	phylink_destroy(mac->phylink);
-+err_pcs_destroy:
-+	dpaa2_pcs_destroy(mac);
- err_put_node:
- 	of_node_put(dpmac_node);
- err_close_dpmac:
-@@ -316,6 +401,8 @@ void dpaa2_mac_disconnect(struct dpaa2_mac *mac)
- 
- 	phylink_disconnect_phy(mac->phylink);
- 	phylink_destroy(mac->phylink);
-+	dpaa2_pcs_destroy(mac);
-+
- 	dpmac_close(mac->mc_io, 0, mac->mc_dev->mc_handle);
- }
- 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-index 2130d9c7d40e..955a52856210 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-@@ -7,6 +7,7 @@
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
- #include <linux/phylink.h>
-+#include <linux/pcs-lynx.h>
- 
- #include "dpmac.h"
- #include "dpmac-cmd.h"
-@@ -21,6 +22,7 @@ struct dpaa2_mac {
- 	struct phylink *phylink;
- 	phy_interface_t if_mode;
- 	enum dpmac_link_type if_link_type;
-+	struct lynx_pcs *pcs;
- };
- 
- bool dpaa2_mac_is_type_fixed(struct fsl_mc_device *dpmac_dev,
--- 
-2.25.1
+Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+
+Andrii Nakryiko (9):
+  libbpf: refactor internals of BTF type index
+  libbpf: remove assumption of single contiguous memory for BTF data
+  libbpf: generalize common logic for managing dynamically-sized arrays
+  libbpf: extract generic string hashing function for reuse
+  libbpf: allow modification of BTF and add btf__add_str API
+  libbpf: add btf__new_empty() to create an empty BTF object
+  libbpf: add BTF writing APIs
+  libbpf: add btf__str_by_offset() as a more generic variant of
+    name_by_offset
+  selftests/bpf: test BTF writing APIs
+
+ tools/lib/bpf/bpf.c                           |    2 +-
+ tools/lib/bpf/bpf.h                           |    2 +-
+ tools/lib/bpf/btf.c                           | 1311 +++++++++++++++--
+ tools/lib/bpf/btf.h                           |   41 +
+ tools/lib/bpf/btf_dump.c                      |    9 +-
+ tools/lib/bpf/hashmap.h                       |   12 +
+ tools/lib/bpf/libbpf.map                      |   22 +
+ tools/lib/bpf/libbpf_internal.h               |    3 +
+ .../selftests/bpf/prog_tests/btf_write.c      |  271 ++++
+ 9 files changed, 1553 insertions(+), 120 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/btf_write.c
+
+--=20
+2.24.1
 
