@@ -2,190 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BA3A276331
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 23:34:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF25227633C
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 23:39:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726697AbgIWVeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 17:34:04 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45102 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726672AbgIWVeE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 17:34:04 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08NLP3HR013413
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 14:34:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=c3k2PRa14yC1OOd+4W3VM+FzSbUrBfjmOe5TgW7cpo0=;
- b=WaQUDAGa6GlFbWLHBs82w1Zb1u3ywr8JIZ/9i+5QCkd3dlVKuqSFW+kaqPzNawm4hfwn
- K0xhTzqQDZtVr+sEM45d0ognkidpNr70Lvf2XTgxyXDXgS+6n5H3U3fSLOTDVMMjSGcT
- yuQUtUlrsfwkY+Bw9E5PYNW4wLwhVTSiwew= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33qsp4x4wa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 14:34:02 -0700
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 23 Sep 2020 14:34:01 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 9547862E5235; Wed, 23 Sep 2020 14:33:58 -0700 (PDT)
-From:   Song Liu <songliubraving@fb.com>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH v3 bpf-next 3/3] selftests/bpf: add raw_tp_test_run
-Date:   Wed, 23 Sep 2020 14:33:37 -0700
-Message-ID: <20200923213337.3432472-4-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200923213337.3432472-1-songliubraving@fb.com>
-References: <20200923213337.3432472-1-songliubraving@fb.com>
+        id S1726596AbgIWVjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 17:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726134AbgIWVjV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 17:39:21 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3F2C0613CE;
+        Wed, 23 Sep 2020 14:39:20 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id w7so482497pfi.4;
+        Wed, 23 Sep 2020 14:39:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1Wh3x2CtDoFB2eqD6SH4S1e6dq6OTRl/r6G/BQ8ykYo=;
+        b=bKrC3FE1jJWWmcwm9I39qxkDOAL9pS8Xtyjj5d+m4TxLaxLwjiFjEJdsKenfnpWjwz
+         4+uIKutFqq605sGWccUXuQFUGJe9DKdpY3D/if3wL7TVT6JyLiLprYMWoKVn2mMkm+oO
+         Xu9iJNhGMJ8GfuAYEwNURrqVOii/HUXu8YwC34IK9OhlGIxir5TBcRFqVfNuzDDgDBeB
+         4V0XjtwBwiL1HkwybKEMMp0jWubzRsTH2yq4EpkEWovx4j0pm0nHX3YxWl6H94JcSN3c
+         DJk4AG5IG5aC+wlk3n6JRMCG60UEBjTajux7k58oOdS7k+Oh3oVFvvCBzo33bSnK3VSv
+         4LQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=1Wh3x2CtDoFB2eqD6SH4S1e6dq6OTRl/r6G/BQ8ykYo=;
+        b=j5uiEdwsv/rD/koYxLVNpZPQSeN4GZHHqwE5LLYutz44xBAM8978EOqSV+xaz9HZ0T
+         xlwg+TIe5dbn1x5VakGteDqJlv+QlzD3tcpUV4wV8GU/XnnhTLL0dSFaNlk7DT94ZrgO
+         BPCG3eLOgmiKnDTZQnizRnVhH1Ctq8x4peT7j2aC5KKMunLoHB95KpC+50S/wRtmXtHH
+         G7F1kg5I/yuLtPlRxSCMjTot8J7aShRWYWK8jzGv2mhl+QrMJXMYyEdjk72UCxmLDeJi
+         jbuv4aHAJVA3PPuLcIA8oC4K+zezF2MAVqjPm57DsKgRGrWUjbTDr0tnvil3NKMBP0th
+         1NVQ==
+X-Gm-Message-State: AOAM532j8pPl2LGl4SaNbyyImN7odBJMZZc7yY2PXMQQQia7cPQjtDSS
+        G58T+M30DjEKzle/MeMA08E=
+X-Google-Smtp-Source: ABdhPJxO/O2uaW0pjHUmzdTH7LT7A04B3XCqs5AcCuLL7/A2rQNq4erTQ7QkCEAHkZMcEl6f4t7nhg==
+X-Received: by 2002:a63:f807:: with SMTP id n7mr1403150pgh.311.1600897160140;
+        Wed, 23 Sep 2020 14:39:20 -0700 (PDT)
+Received: from [10.67.49.188] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id z22sm5562584pjq.2.2020.09.23.14.39.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Sep 2020 14:39:19 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 0/2] net: dsa: b53: Configure VLANs while not
+ filtering
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "nikolay@nvidia.com" <nikolay@nvidia.com>
+References: <20200923204514.3663635-1-f.fainelli@gmail.com>
+ <bfccb4fd-0768-79e8-0085-df63ecc0d376@gmail.com>
+ <20200923205148.guukg3k7wanuua3c@skbuf>
+ <20200923213055.t7hqzuar2nivatzz@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <1e7bffdf-cb4d-5a31-aef7-4595ba3a8b64@gmail.com>
+Date:   Wed, 23 Sep 2020 14:39:13 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-23_16:2020-09-23,2020-09-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- spamscore=0 bulkscore=0 impostorscore=0 malwarescore=0 phishscore=0
- clxscore=1015 priorityscore=1501 mlxscore=0 suspectscore=2 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009230162
-X-FB-Internal: deliver
+In-Reply-To: <20200923213055.t7hqzuar2nivatzz@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test runs test_run for raw_tracepoint program. The test covers ctx
-input, retval output, and proper handling of cpu_plus field.
+On 9/23/20 2:30 PM, Vladimir Oltean wrote:
+> On Wed, Sep 23, 2020 at 11:51:48PM +0300, Vladimir Oltean wrote:
+>> On Wed, Sep 23, 2020 at 01:49:54PM -0700, Florian Fainelli wrote:
+>>> On 9/23/20 1:45 PM, Florian Fainelli wrote:
+>>>
+>>> David, Jakub, there is an unnecessary header inclusion in
+>>> net/dsa/tag_brcm.c in the second patch and the description at the end of
+>>> the commit was not updated, let me send a v3 right away.
+>>> --
+>>> Florian
+>>
+>> Wait a few minutes, I don't think anybody has had a chance to look at it..
+> 
+> So I studied a little bit the situation with the MAC header pointer in
+> the second patch, especially since there are 2 call paths, but it's ok,
+> since at that point the skb->data points to its final position already,
+> then the MAC header is naturally 14 bytes behind.
+> I've been testing with the ocelot driver which resets the MAC header
+> manually, that explains why I missed that. Anyway, if there are no other
+> comments I think you can resend.
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../bpf/prog_tests/raw_tp_test_run.c          | 75 +++++++++++++++++++
- .../bpf/progs/test_raw_tp_test_run.c          | 25 +++++++
- 2 files changed, 100 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/raw_tp_test_ru=
-n.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_raw_tp_test_ru=
-n.c
+Yes, I was looking at tag_ocelot.c as well for a reference. At some
+point I was considering adding a version that let the tagging driver
+specifying the struct vlan_ethhdr reference directly since the tagging
+driver knows, but using skb_set_mac_header() works equally well in a
+more portable way even.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c b/t=
-ools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
-new file mode 100644
-index 0000000000000..492cd8a8c0e00
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
-@@ -0,0 +1,75 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2019 Facebook */
-+#include <test_progs.h>
-+#include "bpf/libbpf_internal.h"
-+#include "test_raw_tp_test_run.skel.h"
-+
-+static int duration;
-+
-+void test_raw_tp_test_run(void)
-+{
-+	struct bpf_prog_test_run_attr test_attr =3D {};
-+	__u64 args[2] =3D {0x1234ULL, 0x5678ULL};
-+	int comm_fd =3D -1, err, nr_online, i;
-+	int expected_retval =3D 0x1234 + 0x5678;
-+	struct test_raw_tp_test_run *skel;
-+	char buf[] =3D "new_name";
-+	bool *online =3D NULL;
-+
-+	err =3D parse_cpu_mask_file("/sys/devices/system/cpu/online", &online,
-+				  &nr_online);
-+	if (CHECK(err, "parse_cpu_mask_file", "err %d\n", err))
-+		return;
-+
-+	skel =3D test_raw_tp_test_run__open_and_load();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n")) {
-+		free(online);
-+		return;
-+	}
-+	err =3D test_raw_tp_test_run__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	comm_fd =3D open("/proc/self/comm", O_WRONLY|O_TRUNC);
-+	if (CHECK(comm_fd < 0, "open /proc/self/comm", "err %d\n", errno))
-+		goto cleanup;
-+
-+	err =3D write(comm_fd, buf, sizeof(buf));
-+	CHECK(err < 0, "task rename", "err %d", errno);
-+
-+	CHECK(skel->bss->count =3D=3D 0, "check_count", "didn't increase\n");
-+	CHECK(skel->data->on_cpu !=3D 0xffffffff, "check_on_cpu", "got wrong va=
-lue\n");
-+
-+	test_attr.prog_fd =3D bpf_program__fd(skel->progs.rename);
-+	test_attr.ctx_in =3D args;
-+	test_attr.ctx_size_in =3D sizeof(__u64);
-+
-+	err =3D bpf_prog_test_run_xattr(&test_attr);
-+	CHECK(err =3D=3D 0, "test_run", "should fail for too small ctx\n");
-+
-+	test_attr.ctx_size_in =3D sizeof(args);
-+	err =3D bpf_prog_test_run_xattr(&test_attr);
-+	CHECK(err < 0, "test_run", "err %d\n", errno);
-+	CHECK(test_attr.retval !=3D expected_retval, "check_retval",
-+	      "expect 0x%x, got 0x%x\n", expected_retval, test_attr.retval);
-+
-+	for (i =3D 0; i < nr_online; i++)
-+		if (online[i]) {
-+			DECLARE_LIBBPF_OPTS(bpf_prog_test_run_opts, opts,
-+				.cpu_plus =3D i + 1,
-+			);
-+
-+			test_attr.retval =3D 0;
-+			err =3D bpf_prog_test_run_xattr_opts(&test_attr, &opts);
-+			CHECK(err < 0, "test_run_with_opts", "err %d\n", errno);
-+			CHECK(skel->data->on_cpu !=3D i, "check_on_cpu",
-+			      "got wrong value\n");
-+			CHECK(test_attr.retval !=3D expected_retval,
-+			      "check_retval", "expect 0x%x, got 0x%x\n",
-+			      expected_retval, test_attr.retval);
-+		}
-+cleanup:
-+	close(comm_fd);
-+	test_raw_tp_test_run__destroy(skel);
-+	free(online);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c b/t=
-ools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
-new file mode 100644
-index 0000000000000..6b356e003d16c
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
-@@ -0,0 +1,25 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+#include <bpf/bpf_tracing.h>
-+
-+__u32 count =3D 0;
-+__u32 on_cpu =3D 0xffffffff;
-+
-+SEC("raw_tp/task_rename")
-+int BPF_PROG(rename, struct task_struct *task, char *comm)
-+{
-+
-+	count++;
-+	if ((__u64) task =3D=3D 0x1234ULL && (__u64) comm =3D=3D 0x5678ULL) {
-+		on_cpu =3D bpf_get_smp_processor_id();
-+		return (int)task + (int)comm;
-+	}
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") =3D "GPL";
---=20
-2.24.1
-
+Thanks, v3 on its way with your A-b tag.
+-- 
+Florian
