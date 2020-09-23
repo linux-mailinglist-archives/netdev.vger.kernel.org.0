@@ -2,105 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E857C2762A2
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 22:58:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF17E2762A4
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 22:58:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726572AbgIWU60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 16:58:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:49487 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726460AbgIWU60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 16:58:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600894704;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CbvhTKklclsI9zCmQ1AhhPMI2tbrWk7sY+kWgVzvbmI=;
-        b=b48sP14k17wwn3D6MKTIrkJ7dAooxIhg/o2Kmz0Mw90+WrVCy4Ch/swE8xwxlhfLEnJ6Ac
-        84tnIohQeYQY9AW72jHpLw0UOemiWTA8IG7s8SSl6yopJNQUGFXPg7mUE/8GpuMgkTFWfg
-        kbOiscQR1mWtk9tTySiaIPBkng6V7GI=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-396-K8l5M8DTOgOIbZ1Z5zb9iw-1; Wed, 23 Sep 2020 16:58:22 -0400
-X-MC-Unique: K8l5M8DTOgOIbZ1Z5zb9iw-1
-Received: by mail-wr1-f71.google.com with SMTP id v5so306703wrs.17
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 13:58:22 -0700 (PDT)
+        id S1726668AbgIWU63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 16:58:29 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:33846 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726460AbgIWU61 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 16:58:27 -0400
+Received: by mail-io1-f66.google.com with SMTP id m17so1042228ioo.1;
+        Wed, 23 Sep 2020 13:58:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=CbvhTKklclsI9zCmQ1AhhPMI2tbrWk7sY+kWgVzvbmI=;
-        b=ZQgwqttIeDcR9RykzcTXMYLvssv9jV8dqChqFBc8klflh5ee6qlws6Uwh6Ue+kMoM6
-         2fKehJexM1AzUZHmQs68ldx1Aw+97YayvBUKWPuwT8jGXPnDL6ZcbGbV9Wi3p7tiZq3P
-         Bpf6GoJqfgIY9vVNn+qWI7yZxUJ43OhuquApBEAffNtk0a4Q4nB3lIxYL/JmzscRp/Ql
-         6dyPh1BhLmx8lJvT/sdb2FYf0+6lWAUEzqIeiQhR1Ose6CFP3XfsI1ON0HxSEL4XM0h1
-         qdH2ZsxlNGu7Pzrb4Q16igvMnKE2JnDVZSG6Q8eQJh7Eyems734YV8SzZmG+LltlDbbM
-         TB+Q==
-X-Gm-Message-State: AOAM533PjNQDdXIul2nKOdrGSO12E4Q55YRXxfGdcNOQe8ekikqSE4yv
-        II/ej1xFI0tJXNJ6JPz0C9qhd1u4bFZCd88tzgAGvG1elUO2DXIvoHcsSUlfzdXk4kpqvlWpfth
-        6fSsmmDEKa6fsJbwO
-X-Received: by 2002:adf:ec0a:: with SMTP id x10mr1445970wrn.47.1600894701140;
-        Wed, 23 Sep 2020 13:58:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwKIi4o1DnWBrnf7v3xh/SLjRJqh2QPYcFIZypc466O2I1YM5azEUnr24a+Og9abmTi1cOHfg==
-X-Received: by 2002:adf:ec0a:: with SMTP id x10mr1445938wrn.47.1600894700595;
-        Wed, 23 Sep 2020 13:58:20 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id u63sm947897wmb.13.2020.09.23.13.58.19
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DBI7yAxzhMeYdJxsj8BjmnEz5KxHDzBoWiYPr4XLc0w=;
+        b=ABz2SOJH7/U8SbtaA7wiD4ncqTsIWpfDI+LkHLY2mAonVWTQPgtIe9UjVmR5rvlGuh
+         hOyTfJB3QgJZCJQfKQhId7wvUw/2oz/UIdBn2kmmRgczITzIkbVG92Ydd06JlCEwV0HH
+         p5TIl4q0Ha17gJ3+9oVIUrbWK2AGFn2l4tSEVkHQJwSFp1bPW/5xWLITqD7c8RPBhU3K
+         oXqY5VAe1vpggtGZ4sv4tPmHeLpRVQB6l2KN3t/AS1DMa0TOU0PrESqBgnXqim8FY8Pi
+         pX3H0nU9TX7wsudEX445JI23r+bHgkafXituGBbdjU0Nx157bAzFCRP0l36x5u53R+V6
+         ahAQ==
+X-Gm-Message-State: AOAM530pXv+/eP3iiPNy9hl902cHh3LbpkpR5F0rXY6NSdigh6PxqKWt
+        jdX0T/kMeoBDocj0ZXynIA==
+X-Google-Smtp-Source: ABdhPJy0JbRbialOqZQgmgY+YuO73Raga2r31TBjNVrQd2QbuB7XuHqV35G5uICkoCqoeC4Y+1hpww==
+X-Received: by 2002:a02:a816:: with SMTP id f22mr1079416jaj.118.1600894706126;
+        Wed, 23 Sep 2020 13:58:26 -0700 (PDT)
+Received: from xps15 ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id v89sm435886ili.26.2020.09.23.13.58.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Sep 2020 13:58:20 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 8AF54183A90; Wed, 23 Sep 2020 22:58:19 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v8 07/11] libbpf: add support for freplace
- attachment in bpf_link_create
-In-Reply-To: <CAEf4BzZuMUA2B+Nz+7GfpoW2SGF3tyUpjRsjP2cX3VGH34OHgw@mail.gmail.com>
-References: <160079991372.8301.10648588027560707258.stgit@toke.dk>
- <160079992129.8301.9319405264647976548.stgit@toke.dk>
- <CAEf4BzZuMUA2B+Nz+7GfpoW2SGF3tyUpjRsjP2cX3VGH34OHgw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 23 Sep 2020 22:58:19 +0200
-Message-ID: <87ft78nrbo.fsf@toke.dk>
+        Wed, 23 Sep 2020 13:58:25 -0700 (PDT)
+Received: (nullmailer pid 1296317 invoked by uid 1000);
+        Wed, 23 Sep 2020 20:58:24 -0000
+Date:   Wed, 23 Sep 2020 14:58:24 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ath10k@lists.infradead.org
+Subject: Re: [PATCH v2 2/2] dt: bindings: ath10k: Document
+ qcom,ath10k-pre-calibration-data-mtd
+Message-ID: <20200923205824.GA1290651@bogus>
+References: <20200918181104.98-1-ansuelsmth@gmail.com>
+ <20200918181104.98-2-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200918181104.98-2-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+On Fri, Sep 18, 2020 at 08:11:03PM +0200, Ansuel Smith wrote:
+> Document use of qcom,ath10k-pre-calibration-data-mtd bindings used to
+> define from where the driver will load the pre-cal data in the defined
+> mtd partition.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  .../devicetree/bindings/net/wireless/qcom,ath10k.txt | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt b/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
+> index b61c2d5a0..568364243 100644
+> --- a/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
+> +++ b/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
+> @@ -15,9 +15,9 @@ and also uses most of the properties defined in this doc (except
+>  "qcom,ath10k-calibration-data"). It uses "qcom,ath10k-pre-calibration-data"
+>  to carry pre calibration data.
+>  
+> -In general, entry "qcom,ath10k-pre-calibration-data" and
+> -"qcom,ath10k-calibration-data" conflict with each other and only one
+> -can be provided per device.
+> +In general, entry "qcom,ath10k-pre-calibration-data",
+> +"qcom,ath10k-calibration-data-mtd" and "qcom,ath10k-calibration-data" conflict with
+> +each other and only one can be provided per device.
+>  
+>  SNOC based devices (i.e. wcn3990) uses compatible string "qcom,wcn3990-wifi".
+>  
+> @@ -63,6 +63,12 @@ Optional properties:
+>  				 hw versions.
+>  - qcom,ath10k-pre-calibration-data : pre calibration data as an array,
+>  				     the length can vary between hw versions.
+> +- qcom,ath10k-pre-calibration-data-mtd :
 
-> On Tue, Sep 22, 2020 at 11:39 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
-edhat.com> wrote:
->>
->> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->>
->> This adds support for supplying a target btf ID for the bpf_link_create()
->> operation, and adds a new bpf_program__attach_freplace() high-level API =
-for
->> attaching freplace functions with a target.
->>
->> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> ---
->
-> LGTM.
->
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
+mtd is a Linuxism.
 
-Awesome! Thanks again for your (as always) thorough review (for the
-whole series, of course) :)
+> +	Usage: optional
+> +	Value type: <phandle offset size>
+> +	Definition: pre calibration data read from mtd partition. Take 3 value, the
+> +		    mtd to read data from, the offset in the mtd partition and the
 
--Toke
+The phandle is the mtd or partition?
 
+Maybe you should be using nvmem binding here.
+
+> +		    size of data to read.
+>  - <supply-name>-supply: handle to the regulator device tree node
+>  			   optional "supply-name" are "vdd-0.8-cx-mx",
+>  			   "vdd-1.8-xo", "vdd-1.3-rfa", "vdd-3.3-ch0",
+> -- 
+> 2.27.0
+> 
