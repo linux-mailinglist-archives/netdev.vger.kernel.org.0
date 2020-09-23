@@ -2,159 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B8D627545E
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 11:23:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ABD8275488
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 11:27:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726768AbgIWJW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 05:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
+        id S1726573AbgIWJ1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 05:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726338AbgIWJWt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 05:22:49 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130D3C0613D1
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 02:22:49 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id c3so3714399pgj.5
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 02:22:49 -0700 (PDT)
+        with ESMTP id S1726504AbgIWJ1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 05:27:39 -0400
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9A21C0613D1
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 02:27:39 -0700 (PDT)
+Received: by mail-oi1-x244.google.com with SMTP id a3so24364186oib.4
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 02:27:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=u7Z83DLDrasY402Nxfc9qjNLJvZzmNwdhFfCA3B0FJM=;
-        b=QSLk/unrtSuMTNkb4x94DkM1UH5ttzeHlXRiV3zLnLMp0xuP9FNwce/+58fN+WhPHZ
-         vy0OdIcIbOa3b1s4ji9mfMm1oXHfZOFtu8WJjbhPYwScPv6zVGiv0gDTrwU01iNkDzKd
-         3uzEN2hB9x+OYMJOolUs20QkRqOpqZTXBYiaMEVNxMu95FG8qkxQBO9a/gkCtp5YL7/S
-         aUsRMwxqW/lyQU+rF/LC2vTzXDbuiDUy3uDKvdBof2KZqY2SiFsGUalNYeEDegURlbMM
-         +xTXWwdi7cOX0dqk9ILPaM4s/XlojQeJuUvuU4zciteOa31sXKlTJAqls2f2Vw4qRjUh
-         cbaA==
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cNeNmXFy6q6oPNP8cxafn8PrMKPD1PaSqbQeE0c9boM=;
+        b=FamzhStYU5yMdZY74sOLEqUGJ3pWRJEtY1dCgJdSleprc8N7gMDLoeP9jZd7IOwvrK
+         mHVNkASdKcuTLDaF363Ct+uMECY5kWPwL3UJns2M9DcVMDug4lQeptpuhgP7u29SzK/K
+         qHeKp90u2xIrLcKTP22dQdd18v29zvb+nUSH4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=u7Z83DLDrasY402Nxfc9qjNLJvZzmNwdhFfCA3B0FJM=;
-        b=LShKuu27Lv1QWR2Y0Zs+OVSOHjgT1XbQkBCtma4mVzvWdDToyyNm2twk1e3lsk7hR+
-         FVZAG3ChpYi8DA+PLLl/pCaOaCdDD8Go/EXzHqUH06kddoad9foaWmu2GxgjAAu7FOHB
-         WeiRUVrtNoyFXsb8z0EGWmx4ITgpqpUjNDMQZgr25XU4xlRp6K+fj08d0NBSyVFv1rko
-         QsTk9DEb9jp5BTCBrwvqUogWxgfg7GhsQj/HGVGVNrCMcqMupes1Emu0OIX2r8iE08nq
-         eEV4FtFncjrSPyosbc9cVSBNjj2zhrUQekTRgU/WMmL4wgRElRyiQAgi/Bq1j2cZOHRM
-         jjew==
-X-Gm-Message-State: AOAM531RaEYwI8bDwev7FTGlgDWxbjEV5fHjAT8tV9xb1pXZkMalAt8K
-        5sPUOAZ2gbKwu0Ya0ZT+mzy9C/UPfQatfJ/czQ==
-X-Google-Smtp-Source: ABdhPJy/dWhO3vnXwvNo0D+dQKNFhW0lwByxTvX6ctgRDLo0I+9tg61Cop7KCcLEcHJGCu+H4H3bkWftl7yG9DLGwg==
-Sender: "howardchung via sendgmr" 
-        <howardchung@howardchung-p920.tpe.corp.google.com>
-X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:10:f693:9fff:fef4:4e45])
- (user=howardchung job=sendgmr) by 2002:a17:902:bd90:b029:d2:439c:385a with
- SMTP id q16-20020a170902bd90b02900d2439c385amr5997037pls.35.1600852968539;
- Wed, 23 Sep 2020 02:22:48 -0700 (PDT)
-Date:   Wed, 23 Sep 2020 17:22:32 +0800
-In-Reply-To: <20200923172129.v5.1.Ib75f58e90c477f9b82c5598f00c59f0e95a1a352@changeid>
-Message-Id: <20200923172129.v5.4.I756c1fecc03bcc0cd94400b4992cd7e743f4b3e2@changeid>
-Mime-Version: 1.0
-References: <20200923172129.v5.1.Ib75f58e90c477f9b82c5598f00c59f0e95a1a352@changeid>
-X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
-Subject: [PATCH v5 4/4] Bluetooth: Add toggle to switch off interleave scan
-From:   Howard Chung <howardchung@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com
-Cc:     mmandlik@chromium.orgi, mcchou@chromium.org, alainm@chromium.org,
-        Howard Chung <howardchung@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cNeNmXFy6q6oPNP8cxafn8PrMKPD1PaSqbQeE0c9boM=;
+        b=qUyUImAD6cN39aVlaqqr9zgkS7ShyJSIt2UFb4km0nwZRADZYEKUv5QzgB0SaQiZ6J
+         EtnTiJCuxMipZRAKqK7XvRTtmkn2K/u413pfoy0rZsXK3tPHBDXAGR5uJ0sp1H/pnKMP
+         bkJeeO6y8RkurnLc69rbfc53Alun/7HFFeJroeNOoa6P3a/C3YC8W//7F0Zv5A8OC/Ye
+         kgpJPP3gOmFYbQo21v088pn7wINRGXTWc3+pnfl3qWKuRzXgvOD9EWwSKC9aRCaXhc6o
+         4g/4OJVTtBiEjoIWnfC9kl/5tWFx+dEGzjJ+jqGOAqf0k7FkxCVPA0VZ3jYF7sVDcT2e
+         turg==
+X-Gm-Message-State: AOAM532F0QTDgCgs0HABowzUSbGAURQBun3ifIaQvmQjcAK3UXAUdMUy
+        8asR+XtYq4OXre5xH7eBSOlETGGVThdoY7FGFZ5vbw==
+X-Google-Smtp-Source: ABdhPJxEcmbBuOZcdvGF5xvH51RhudPLfRfLNuwZ2Ad2OdY40SaAY+J6aOkEvhL67rfzW+xpXzgEDfFDmDqGW56qxq4=
+X-Received: by 2002:aca:3087:: with SMTP id w129mr4923074oiw.102.1600853259008;
+ Wed, 23 Sep 2020 02:27:39 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200922070409.1914988-1-kafai@fb.com> <20200922070422.1917351-1-kafai@fb.com>
+ <CACAyw9-LoKFuYxaMODtacJM-rOR0P5Y=j_yEm9bsFZe_j_9rYQ@mail.gmail.com> <20200922182622.zcrqwpzkouvlndbw@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200922182622.zcrqwpzkouvlndbw@kafai-mbp.dhcp.thefacebook.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Wed, 23 Sep 2020 10:27:27 +0100
+Message-ID: <CACAyw99xbeVyzUT+fhHtRQEGoef-9vvTfiOEFaJWX6aoVL+Z9A@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 02/11] bpf: Enable bpf_skc_to_* sock casting
+ helper to networking prog type
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add a configurable parameter to switch off the interleave
-scan feature.
+On Tue, 22 Sep 2020 at 19:26, Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Tue, Sep 22, 2020 at 10:46:41AM +0100, Lorenz Bauer wrote:
+> > On Tue, 22 Sep 2020 at 08:04, Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > There is a constant need to add more fields into the bpf_tcp_sock
+> > > for the bpf programs running at tc, sock_ops...etc.
+> > >
+> > > A current workaround could be to use bpf_probe_read_kernel().  However,
+> > > other than making another helper call for reading each field and missing
+> > > CO-RE, it is also not as intuitive to use as directly reading
+> > > "tp->lsndtime" for example.  While already having perfmon cap to do
+> > > bpf_probe_read_kernel(), it will be much easier if the bpf prog can
+> > > directly read from the tcp_sock.
+> > >
+> > > This patch tries to do that by using the existing casting-helpers
+> > > bpf_skc_to_*() whose func_proto returns a btf_id.  For example, the
+> > > func_proto of bpf_skc_to_tcp_sock returns the btf_id of the
+> > > kernel "struct tcp_sock".
+> > >
+> > > These helpers are also added to is_ptr_cast_function().
+> > > It ensures the returning reg (BPF_REF_0) will also carries the ref_obj_id.
+> > > That will keep the ref-tracking works properly.
+> > >
+> > > The bpf_skc_to_* helpers are made available to most of the bpf prog
+> > > types in filter.c. They are limited by perfmon cap.
+> > >
+> > > This patch adds a ARG_PTR_TO_BTF_ID_SOCK_COMMON.  The helper accepting
+> > > this arg can accept a btf-id-ptr (PTR_TO_BTF_ID + &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON])
+> > > or a legacy-ctx-convert-skc-ptr (PTR_TO_SOCK_COMMON).  The bpf_skc_to_*()
+> > > helpers are changed to take ARG_PTR_TO_BTF_ID_SOCK_COMMON such that
+> > > they will accept pointer obtained from skb->sk.
+> > >
+> > > PTR_TO_*_OR_NULL is not accepted as an ARG_PTR_TO_BTF_ID_SOCK_COMMON
+> > > at verification time.  All PTR_TO_*_OR_NULL reg has to do a NULL check
+> > > first before passing into the helper or else the bpf prog will be
+> > > rejected by the verifier.
+> > >
+> > > [ ARG_PTR_TO_SOCK_COMMON_OR_NULL was attempted earlier.  The _OR_NULL was
+> > >   needed because the PTR_TO_BTF_ID could be NULL but note that a could be NULL
+> > >   PTR_TO_BTF_ID is not a scalar NULL to the verifier.  "_OR_NULL" implicitly
+> > >   gives an expectation that the helper can take a scalar NULL which does
+> > >   not make sense in most (except one) helpers.  Passing scalar NULL
+> > >   should be rejected at the verification time.
+> >
+> > What is the benefit of requiring a !sk check from the user if all of
+> > the helpers know how to deal with a NULL pointer?
+> I don't see a reason why the verifier should not reject an incorrect
+> program at load time if it can.
+>
+> >
+> > >
+> > >   Thus, this patch uses ARG_PTR_TO_BTF_ID_SOCK_COMMON to specify that the
+> > >   helper can take both the btf-id ptr or the legacy PTR_TO_SOCK_COMMON but
+> > >   not scalar NULL.  It requires the func_proto to explicitly specify the
+> > >   arg_btf_id such that there is a very clear expectation that the helper
+> > >   can handle a NULL PTR_TO_BTF_ID. ]
+> >
+> > I think ARG_PTR_TO_BTF_ID_SOCK_COMMON is actually a misnomer, since
+> > nothing enforces that arg_btf_id is actually an ID for sock common.
+> > This is where ARG_PTR_TO_SOCK_COMMON_OR_NULL is much easier to
+> > understand, even though it's more permissive than it has to be. It
+> > communicates very clearly what values the argument can take.
+> _OR_NULL is incorrect which implies a scalar NULL as mentioned in
+> this commit message.  From verifier pov, _OR_NULL can take
+> a scalar NULL.
 
-Signed-off-by: Howard Chung <howardchung@google.com>
-Reviewed-by: Alain Michaud <alainm@chromium.org>
----
+Yes, I know. I'm saying that the distinction between scalar NULL and
+runtime NULL only makes sense after you understand how BTF pointers
+are implemented. It only clicked for me after I read the support code
+in the JIT that Yonghong pointed out. Should everybody that writes a
+helper need to read the JIT? In my opinion we shouldn't. I guess I
+don't even care about the verifier rejecting scalar NULL or not, I'd
+just like the types to have a name that conveys their NULLness.
 
-(no changes since v4)
+>
+> >
+> > If you're set on ARG_PTR_TO_BTF_ID_SOCK_COMMON I'd suggest forcing the
+> > btf_id in struct bpf_reg_types. This avoids the weird case where the
+> > btf_id doesn't actually point at sock_common, and it also makes my
+> I have considered the bpf_reg_types option.  I prefer all
+> arg info (arg_type and arg_btf_id) stay in the same one
+> place (i.e. func_proto) as much as possible for now
+> instead of introducing another place to specify/override it
+> which then depends on a particular arg_type that some arg_type may be
+> in func_proto while some may be in other places.
 
-Changes in v4:
-- Set EnableAdvMonInterleaveScan default to Disable
-- Fix 80 chars limit in mgmt_config.c
+In my opinion that ship sailed when we started aliasing arg_type to
+multiple reg_type, but OK.
 
- include/net/bluetooth/hci_core.h | 1 +
- net/bluetooth/hci_core.c         | 1 +
- net/bluetooth/hci_request.c      | 3 ++-
- net/bluetooth/mgmt_config.c      | 5 +++++
- 4 files changed, 9 insertions(+), 1 deletion(-)
+>
+> The arg_btf_id can be checked in check_btf_id_ok() if it would be a
+> big concern that it might slip through the review but I think the
+> chance is pretty low.
 
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index cfede18709d8f..b0225b80152cc 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -363,6 +363,7 @@ struct hci_dev {
- 	__u32		clock;
- 	__u16		advmon_allowlist_duration;
- 	__u16		advmon_no_filter_duration;
-+	__u16		enable_advmon_interleave_scan;
- 
- 	__u16		devid_source;
- 	__u16		devid_vendor;
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 6c8850149265a..d5769ae682893 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3595,6 +3595,7 @@ struct hci_dev *hci_alloc_dev(void)
- 	/* The default values will be chosen in the future */
- 	hdev->advmon_allowlist_duration = 300;
- 	hdev->advmon_no_filter_duration = 500;
-+	hdev->enable_advmon_interleave_scan = 0x0000;	/* Default to disable */
- 
- 	hdev->sniff_max_interval = 800;
- 	hdev->sniff_min_interval = 80;
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 4048c82d4257f..23381f263678b 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1057,7 +1057,8 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
- 				      &own_addr_type))
- 		return;
- 
--	if (__hci_update_interleaved_scan(hdev))
-+	if (hdev->enable_advmon_interleave_scan &&
-+	    __hci_update_interleaved_scan(hdev))
- 		return;
- 
- 	/* Adding or removing entries from the white list must
-diff --git a/net/bluetooth/mgmt_config.c b/net/bluetooth/mgmt_config.c
-index 2d3ad288c78ac..34585ab4680b5 100644
---- a/net/bluetooth/mgmt_config.c
-+++ b/net/bluetooth/mgmt_config.c
-@@ -69,6 +69,7 @@ int read_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 						def_le_autoconnect_timeout),
- 		HDEV_PARAM_U16(0x001d, advmon_allowlist_duration),
- 		HDEV_PARAM_U16(0x001e, advmon_no_filter_duration),
-+		HDEV_PARAM_U16(0x001f, enable_advmon_interleave_scan),
- 	};
- 	struct mgmt_rp_read_def_system_config *rp = (void *)params;
- 
-@@ -142,6 +143,7 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 		case 0x001b:
- 		case 0x001d:
- 		case 0x001e:
-+		case 0x001f:
- 			if (len != sizeof(u16)) {
- 				bt_dev_warn(hdev, "invalid length %d, exp %zu for type %d",
- 					    len, sizeof(u16), type);
-@@ -261,6 +263,9 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 		case 0x0001e:
- 			hdev->advmon_no_filter_duration = TLV_GET_LE16(buffer);
- 			break;
-+		case 0x0001f:
-+			hdev->enable_advmon_interleave_scan = TLV_GET_LE16(buffer);
-+			break;
- 		default:
- 			bt_dev_warn(hdev, "unsupported parameter %u", type);
- 			break;
+Why increase the burden on human reviewers? Why add code to check an
+invariant that we could get rid of in the first place?
+
 -- 
-2.28.0.681.g6f77f65b4e-goog
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
+www.cloudflare.com
