@@ -2,86 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B442758E0
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 15:37:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB0C2275903
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 15:44:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbgIWNg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 09:36:58 -0400
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:38393 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726498AbgIWNgz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 09:36:55 -0400
-X-Greylist: delayed 531 seconds by postgrey-1.27 at vger.kernel.org; Wed, 23 Sep 2020 09:36:54 EDT
-Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id CE1B220646235;
-        Wed, 23 Sep 2020 15:28:01 +0200 (CEST)
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Power cycle phy on PM resume
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20200923074751.10527-1-kai.heng.feng@canonical.com>
-Message-ID: <17092088-86ff-2d31-b3de-2469419136a3@molgen.mpg.de>
-Date:   Wed, 23 Sep 2020 15:28:01 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+        id S1726687AbgIWNoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 09:44:30 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:19255 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726641AbgIWNoT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 09:44:19 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f6b51260002>; Wed, 23 Sep 2020 06:44:06 -0700
+Received: from [10.21.180.144] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 23 Sep
+ 2020 13:44:11 +0000
+Subject: Re: [PATCH net-next RFC v5 00/15] Add devlink reload action and limit
+ level options
+To:     Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
+From:   Moshe Shemesh <moshe@nvidia.com>
+Message-ID: <be630005-f2ab-1632-db6f-c40486325f27@nvidia.com>
+Date:   Wed, 23 Sep 2020 16:44:07 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200923074751.10527-1-kai.heng.feng@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+In-Reply-To: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1600868646; bh=ztM+dxNwC5iNzN7clw8B9GKxUG4Nljlrim7J50F26Tk=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+         Content-Language:X-Originating-IP:X-ClientProxiedBy;
+        b=NNCjJ+Bh0Du8t3VnF6bzeNSuGz3eEm80IYtyv0z79eGN6zKLYuKW9tQQmC9H5CZ2b
+         nQM2fOHKpDIxeQR3ZkYxqr6Igdilmpzi/tH2eXPU7PqPqp+2tskdJnclVCVygZ/x+7
+         k43iLEXEen/Eql6qMEg9WB4zvAM97zeisRuphmeeFIvUluucpYmcVKsJ97BWvw+VB+
+         oZB3H8GYGpHj6tvA83znbik2Yu1HY3wucUkIzWXYZcPEaaMa1WBr8haI4XzP6OARxR
+         djxlYoqn8AWPwwo/N1fRwNwXSamNgzAChRIV4d5pXLY3WhleOHdbj6zo5SfIdPLAXr
+         g5BmqZ77yrHxg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Kai-Heng,
+
+I see no more comments, we reached consensus on API.
+
+I will finalize my work and re-send as a feature to net-next.
 
 
-Am 23.09.20 um 09:47 schrieb Kai-Heng Feng:
-> We are seeing the following error after S3 resume:
-> [  704.746874] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-> [  704.844232] e1000e 0000:00:1f.6 eno1: MDI Write did not complete
-> [  704.902817] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-> [  704.903075] e1000e 0000:00:1f.6 eno1: reading PHY page 769 (or 0x6020 shifted) reg 0x17
-> [  704.903281] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-> [  704.903486] e1000e 0000:00:1f.6 eno1: writing PHY page 769 (or 0x6020 shifted) reg 0x17
-> [  704.943155] e1000e 0000:00:1f.6 eno1: MDI Error
-> ...
-> [  705.108161] e1000e 0000:00:1f.6 eno1: Hardware Error
-> 
-> Since we don't know what platform firmware may do to the phy, so let's
-> power cycle the phy upon system resume to resolve the issue.
+Thanks,
 
-Is there a bug report or list thread for this issue?
+Moshe.
 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->   drivers/net/ethernet/intel/e1000e/netdev.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-> index 664e8ccc88d2..c2a87a408102 100644
-> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-> @@ -6968,6 +6968,8 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
->   	    !e1000e_check_me(hw->adapter->pdev->device))
->   		e1000e_s0ix_exit_flow(adapter);
->   
-> +	e1000_power_down_phy(adapter);
-> +
->   	rc = __e1000_resume(pdev);
->   	if (rc)
->   		return rc;
-
-How much does this increase the resume time?
-
-
-Kind regards,
-
-Paul
-
+On 9/18/2020 7:06 PM, Moshe Shemesh wrote:
+> Introduce new options on devlink reload API to enable the user to select
+> the reload action required and contrains limits on these actions that he
+> may want to ensure. Complete support for reload actions in mlx5.
+> The following reload actions are supported:
+>    driver_reinit: driver entities re-initialization, applying devlink-param
+>                   and devlink-resource values.
+>    fw_activate: firmware activate.
+>
+> The uAPI is backward compatible, if the reload action option is omitted
+> from the reload command, the driver reinit action will be used.
+> Note that when required to do firmware activation some drivers may need
+> to reload the driver. On the other hand some drivers may need to reset
+> the firmware to reinitialize the driver entities. Therefore, the devlink
+> reload command returns the actions which were actually performed.
+>
+> By default reload actions are not limited and driver implementation may
+> include reset or downtime as needed to perform the actions.
+> However, if limit_level is selected, the driver should perform only if
+> it can do it while keeping the limit level constrains.
+> Reload action limit level added:
+>    no_reset: No reset allowed, no down time allowed, no link flap and no
+>              configuration is lost.
+>
+> Each driver which supports devlink reload command should expose the
+> reload actions and limit levels supported.
+>
+> Add reload action stats to hold the history per reload action per limit
+> level. For example, the number of times fw_activate has been done on
+> this device since the driver module was added or if the firmware
+> activation was done with or without reset.
+>
+> Patch 1-2 add the new API reload action and reload action limit level
+>            option to devlink reload.
+> Patch 3 adds reload actions stats.
+> Patch 4 exposes the reload actions stats on devlink dev get.
+> Patches 5-10 add support on mlx5 for devlink reload action fw_activate
+>              and handle the firmware reset events.
+> Patches 11-12 add devlink enable remote dev reset parameter and use it
+>               in mlx5.
+> Patches 13-14 mlx5 add devlink reload action limit level no_reset
+>                support for fw_activate reload action.
+> Patch 15 adds documentation file devlink-reload.rst
+>
+>
+> Moshe Shemesh (15):
+>    devlink: Add reload action option to devlink reload command
+>    devlink: Add reload action limit level
+>    devlink: Add reload action stats
+>    devlink: Add reload actions stats to dev get
+>    net/mlx5: Add functions to set/query MFRL register
+>    net/mlx5: Set cap for pci sync for fw update event
+>    net/mlx5: Handle sync reset request event
+>    net/mlx5: Handle sync reset now event
+>    net/mlx5: Handle sync reset abort event
+>    net/mlx5: Add support for devlink reload action fw activate
+>    devlink: Add enable_remote_dev_reset generic parameter
+>    net/mlx5: Add devlink param enable_remote_dev_reset support
+>    net/mlx5: Add support for fw live patch event
+>    net/mlx5: Add support for devlink reload action limit level no reset
+>    devlink: Add Documentation/networking/devlink/devlink-reload.rst
+>
+>   .../networking/devlink/devlink-params.rst     |   6 +
+>   .../networking/devlink/devlink-reload.rst     |  79 +++
+>   Documentation/networking/devlink/index.rst    |   1 +
+>   drivers/net/ethernet/mellanox/mlx4/main.c     |  16 +-
+>   .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
+>   .../net/ethernet/mellanox/mlx5/core/devlink.c | 122 ++++-
+>   .../mellanox/mlx5/core/diag/fw_tracer.c       |  31 ++
+>   .../mellanox/mlx5/core/diag/fw_tracer.h       |   1 +
+>   .../ethernet/mellanox/mlx5/core/fw_reset.c    | 454 ++++++++++++++++++
+>   .../ethernet/mellanox/mlx5/core/fw_reset.h    |  19 +
+>   .../net/ethernet/mellanox/mlx5/core/health.c  |  35 +-
+>   .../net/ethernet/mellanox/mlx5/core/main.c    |  13 +
+>   .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
+>   drivers/net/ethernet/mellanox/mlxsw/core.c    |  27 +-
+>   drivers/net/netdevsim/dev.c                   |  17 +-
+>   include/linux/mlx5/device.h                   |   1 +
+>   include/linux/mlx5/driver.h                   |   4 +
+>   include/net/devlink.h                         |  21 +-
+>   include/uapi/linux/devlink.h                  |  41 ++
+>   net/core/devlink.c                            | 339 ++++++++++++-
+>   20 files changed, 1179 insertions(+), 52 deletions(-)
+>   create mode 100644 Documentation/networking/devlink/devlink-reload.rst
+>   create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+>   create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+>
