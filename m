@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65C4427596C
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0048827599D
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:14:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726704AbgIWOI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 10:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58338 "EHLO
+        id S1726715AbgIWOOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 10:14:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726526AbgIWOI0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:08:26 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9E2C0613CE;
-        Wed, 23 Sep 2020 07:08:26 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id j2so161571wrx.7;
-        Wed, 23 Sep 2020 07:08:26 -0700 (PDT)
+        with ESMTP id S1726130AbgIWOON (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:14:13 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B38BC0613CE;
+        Wed, 23 Sep 2020 07:14:13 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id y15so234934wmi.0;
+        Wed, 23 Sep 2020 07:14:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4uOSBvkeFCtt0jtghI6Iaa1Oo8+32MdaZFs6lvK60t8=;
-        b=hIsdByJzmuRZb2kuHY+GIbDpMgWlvIUBRMTXmdV1C4IB9eRgcQy/OMVs2LdsuXRALc
-         OPjiJGytcYJ+AqzYQ5+tx7xtLh+HPD1VxW1yvp/tZNOtCvSnydgapNZUVaFkMSapnkUV
-         dn9rUUzdxM28cMyXFHXi4gXE32x+JjKe7gj8YX07quIKnNYjNcsA1Hj71H1/YIqtk+An
-         vqMD9ip4rhlImUBqeu7EzMTx6OQe7a94hq6HBB21V+1x2Kk7PgLgb+t2XF8Njo6T8Qlv
-         QgC7XqKrVAt5bRwL5i4A/pXjwpHdnhvjfMKRd9HDdfGzo52JbJhYPkcUFq8/+7FfOHMB
-         7HJg==
+        bh=OwjrYT2cgYiXPXM5damUhK95qHZgYya6zZ6mXD0zFBE=;
+        b=obHtpepxuTTVBXFISitT+Nk85ES0huZDcdAzFAhmfmHMPjV4m156WAwF0U69K9wIGy
+         z7hfLvHdGReIh3bXPoJr2bWj2gowLyCvtCzn6jtQRFn2DzWLG3lF1uj1QupWHiy3N0ho
+         bxTXmzFhulvDsG2A3P20KAJxWDZpWxq/Xc4OkWsmJZVzVfNkgQ8rCP4OG41c+4pS058T
+         e1LIcYESpjcGsgW2MUCfgnisE2uidlu2+vJJeefwdJaUC3Zqo73pkITqT6ddgZXyhC20
+         OlfOzf7EGcycT2aX9p2h7hd6ENemBVb798fmdWFcsaqSxCDhUj4BtdY+13p4PGQVt1+9
+         DSgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4uOSBvkeFCtt0jtghI6Iaa1Oo8+32MdaZFs6lvK60t8=;
-        b=OXNimDKPLSN5JT13A7joN6I+TTlH7+Cggq0KGMe0t4tjaXjnNq9jLjQNm1ecqwRJcF
-         OE0ElszMFiSGwLJWUAi/AyxjMXXUMj9ukuj4EXXDDzTGEqjKLkP5ugO5AAhlltwj5XkX
-         DIf4NGI1QCCwb7wsrrMNM1HnRespiS63ylRAAOVCQvTae1kDubvzvBM0aqLSq2RzsoGl
-         rqRGkwbnxTVGtwsZD5CdBbqfhxua0FCWd1QY5gJS1vz9t4fs1clEADazd/4ikc90MElC
-         J/Az2r1kgkJyPtR9/aGauRBh8uUxvQE/cfZnLO8UXWOhONPk3+dEi+HABbQX9KMJDCXU
-         ztBw==
-X-Gm-Message-State: AOAM531KsiDWC6xcRThBmHyK6WaYeyWZ/rDNy62sLdOG87rWnXOA+/1o
-        RZbdVBH/Y+qDXsmJdSP/sd0wPc/S4KbkcouDE68=
-X-Google-Smtp-Source: ABdhPJwfifO44HBhduMMKEMbLd2291rc6s++c2z9Q98+xivVO3BJPwzCQSMyA1phXsZQ4fDrwn6LpOEPvUyk8VM1Cs4=
-X-Received: by 2002:adf:9b8b:: with SMTP id d11mr1141570wrc.71.1600870104795;
- Wed, 23 Sep 2020 07:08:24 -0700 (PDT)
+        bh=OwjrYT2cgYiXPXM5damUhK95qHZgYya6zZ6mXD0zFBE=;
+        b=fbxqP2Z8MLK1LtqwBHwnqU0GGPWWX888WjKa6lmgAnYEzKpx4lGMPdK59nCQGOxLgg
+         Vjb3oE6mO7cLDEA6iV/Ba6QWbrTPNxibgASfkFPkCUvxjeSjRK6I6yCtuVY4dx5LYXEZ
+         1n3gDMwMehDNDZpEmNfdLSIXowmKh2sNlx9fNGrPu4LDxl7zOK7JGDsaEsfosD/CvTU5
+         RusJLpLtJ+nkIrwm76AGG2h9yX5wpmSKVu5AaGMJY9ozoVipWSpyOAn7v1QegFsQwY5v
+         2khOS/u//S2exArbC0U7EP2lyT5hAH+RJBxMpBGeePTz0dn3xRtehEy+Ka5c5ud7+sLm
+         lPLA==
+X-Gm-Message-State: AOAM532Pvn7nChBNkya78dS0RfrnqBNwLIMAEViERXGO7VlCRwRLefmI
+        lJPefH0xaOO4rEk1QoHAYTmKEQz09hmSUpjHMmI=
+X-Google-Smtp-Source: ABdhPJwdy6UD/UzHfr2IcuCNMK2z1a9fd/uvMgG9JscXgN32cCh6DM8001ZMYmM7ElTCq0gduZVIX3YihxNI3VPmGts=
+X-Received: by 2002:a1c:6341:: with SMTP id x62mr6771683wmb.70.1600870452134;
+ Wed, 23 Sep 2020 07:14:12 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200923090519.361-1-himadrispandya@gmail.com>
- <20200923090519.361-2-himadrispandya@gmail.com> <20200923102425.GC3154647@kroah.com>
-In-Reply-To: <20200923102425.GC3154647@kroah.com>
+ <20200923090519.361-5-himadrispandya@gmail.com> <20200923102256.GA3154647@kroah.com>
+In-Reply-To: <20200923102256.GA3154647@kroah.com>
 From:   Himadri Pandya <himadrispandya@gmail.com>
-Date:   Wed, 23 Sep 2020 19:38:13 +0530
-Message-ID: <CAOY-YVk3Vio=jKndTMnn66h-dZAnFUpZU701KqvdYh51ZQFk+g@mail.gmail.com>
-Subject: Re: [PATCH 1/4] net: usbnet: use usb_control_msg_recv() and usb_control_msg_send()
+Date:   Wed, 23 Sep 2020 19:44:00 +0530
+Message-ID: <CAOY-YVnFtDMkRVVg4TZ-3rRxciRYwEQCf-ctbm9=KbF4=1FqMA@mail.gmail.com>
+Subject: Re: [PATCH 4/4] net: rndis_host: use usb_control_msg_recv() and usb_control_msg_send()
 To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -67,66 +67,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 3:54 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+On Wed, Sep 23, 2020 at 3:52 PM Greg KH <gregkh@linuxfoundation.org> wrote:
 >
-> On Wed, Sep 23, 2020 at 02:35:16PM +0530, Himadri Pandya wrote:
-> > Potential incorrect use of usb_control_msg() has resulted in new wrapper
-> > functions to enforce its correct usage with proper error check. Hence
-> > use these new wrapper functions instead of calling usb_control_msg()
-> > directly.
+> On Wed, Sep 23, 2020 at 02:35:19PM +0530, Himadri Pandya wrote:
+> > The new usb_control_msg_recv() and usb_control_msg_send() nicely wraps
+> > usb_control_msg() with proper error check. Hence use the wrappers
+> > instead of calling usb_control_msg() directly.
 > >
 > > Signed-off-by: Himadri Pandya <himadrispandya@gmail.com>
 > > ---
-> >  drivers/net/usb/usbnet.c | 46 ++++------------------------------------
-> >  1 file changed, 4 insertions(+), 42 deletions(-)
+> >  drivers/net/usb/rndis_host.c | 44 ++++++++++++++----------------------
+> >  1 file changed, 17 insertions(+), 27 deletions(-)
 > >
-> > diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-> > index 2b2a841cd938..a38a85bef46a 100644
-> > --- a/drivers/net/usb/usbnet.c
-> > +++ b/drivers/net/usb/usbnet.c
-> > @@ -1982,64 +1982,26 @@ EXPORT_SYMBOL(usbnet_link_change);
-> >  static int __usbnet_read_cmd(struct usbnet *dev, u8 cmd, u8 reqtype,
-> >                            u16 value, u16 index, void *data, u16 size)
-> >  {
-> > -     void *buf = NULL;
-> > -     int err = -ENOMEM;
-> > -
-> >       netdev_dbg(dev->net, "usbnet_read_cmd cmd=0x%02x reqtype=%02x"
-> >                  " value=0x%04x index=0x%04x size=%d\n",
-> >                  cmd, reqtype, value, index, size);
+> > diff --git a/drivers/net/usb/rndis_host.c b/drivers/net/usb/rndis_host.c
+> > index 6fa7a009a24a..30fc4a7183d3 100644
+> > --- a/drivers/net/usb/rndis_host.c
+> > +++ b/drivers/net/usb/rndis_host.c
+> > @@ -113,14 +113,13 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
+> >               buf->request_id = (__force __le32) xid;
+> >       }
+> >       master_ifnum = info->control->cur_altsetting->desc.bInterfaceNumber;
+> > -     retval = usb_control_msg(dev->udev,
+> > -             usb_sndctrlpipe(dev->udev, 0),
+> > -             USB_CDC_SEND_ENCAPSULATED_COMMAND,
+> > -             USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+> > -             0, master_ifnum,
+> > -             buf, le32_to_cpu(buf->msg_len),
+> > -             RNDIS_CONTROL_TIMEOUT_MS);
+> > -     if (unlikely(retval < 0 || xid == 0))
+> > +     retval = usb_control_msg_send(dev->udev, 0,
+> > +                                   USB_CDC_SEND_ENCAPSULATED_COMMAND,
+> > +                                   USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+> > +                                   0, master_ifnum, buf,
+> > +                                   le32_to_cpu(buf->msg_len),
+> > +                                   RNDIS_CONTROL_TIMEOUT_MS);
+> > +     if (unlikely(xid == 0))
+> >               return retval;
 > >
-> > -     if (size) {
-> > -             buf = kmalloc(size, GFP_KERNEL);
-> > -             if (!buf)
-> > -                     goto out;
-> > -     }
-> > -
-> > -     err = usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
-> > -                           cmd, reqtype, value, index, buf, size,
-> > +     return usb_control_msg_recv(dev->udev, 0,
-> > +                           cmd, reqtype, value, index, data, size,
-> >                             USB_CTRL_GET_TIMEOUT);
-> > -     if (err > 0 && err <= size) {
-> > -        if (data)
-> > -            memcpy(data, buf, err);
-> > -        else
-> > -            netdev_dbg(dev->net,
-> > -                "Huh? Data requested but thrown away.\n");
-> > -    }
-> > -     kfree(buf);
-> > -out:
-> > -     return err;
-> >  }
+> >       /* Some devices don't respond on the control channel until
+> > @@ -139,14 +138,11 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
+> >       /* Poll the control channel; the request probably completed immediately */
+> >       rsp = le32_to_cpu(buf->msg_type) | RNDIS_MSG_COMPLETION;
+> >       for (count = 0; count < 10; count++) {
+> > -             memset(buf, 0, CONTROL_BUFFER_SIZE);
+> > -             retval = usb_control_msg(dev->udev,
+> > -                     usb_rcvctrlpipe(dev->udev, 0),
+> > -                     USB_CDC_GET_ENCAPSULATED_RESPONSE,
+> > -                     USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+> > -                     0, master_ifnum,
+> > -                     buf, buflen,
+> > -                     RNDIS_CONTROL_TIMEOUT_MS);
+> > +             retval = usb_control_msg_recv(dev->udev, 0,
+> > +                                           USB_CDC_GET_ENCAPSULATED_RESPONSE,
+> > +                                           USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+> > +                                           0, master_ifnum, buf, buflen,
+> > +                                           RNDIS_CONTROL_TIMEOUT_MS);
+> >               if (likely(retval >= 8)) {
 >
-> Now there is no real need for these wrapper functions at all, except for
-> the debugging which I doubt anyone needs anymore.
->
-> So how about just deleting these and calling the real function instead?
+> retval here is never going to be positive, right?  So I don't think this
+> patch is correct :(
 >
 
-Yes, that would be a better thing to do.
+Yes :(.
 
-Thanks,
+> >                       msg_type = le32_to_cpu(buf->msg_type);
+> >                       msg_len = le32_to_cpu(buf->msg_len);
+> > @@ -178,17 +174,11 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
+> >                               msg->msg_type = cpu_to_le32(RNDIS_MSG_KEEPALIVE_C);
+> >                               msg->msg_len = cpu_to_le32(sizeof *msg);
+> >                               msg->status = cpu_to_le32(RNDIS_STATUS_SUCCESS);
+> > -                             retval = usb_control_msg(dev->udev,
+> > -                                     usb_sndctrlpipe(dev->udev, 0),
+> > -                                     USB_CDC_SEND_ENCAPSULATED_COMMAND,
+> > -                                     USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+> > -                                     0, master_ifnum,
+> > -                                     msg, sizeof *msg,
+> > -                                     RNDIS_CONTROL_TIMEOUT_MS);
+> > -                             if (unlikely(retval < 0))
+> > -                                     dev_dbg(&info->control->dev,
+> > -                                             "rndis keepalive err %d\n",
+> > -                                             retval);
+> > +                             retval = usb_control_msg_send(dev->udev, 0,
+> > +                                                           USB_CDC_SEND_ENCAPSULATED_COMMAND,
+> > +                                                           USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+> > +                                                           0, master_ifnum, msg, sizeof(*msg),
+> > +                                                           RNDIS_CONTROL_TIMEOUT_MS);
+>
+> You lost the error message that the previous call had if something went
+> wrong.  Don't know if it's really needed, but there's no reason to
+> remove it here.
+>
+
+The wrapper returns the error so thought that might work instead. But
+yes, the old msg is better.
+
+Anyways, this series is dropped :).
+
+Thanks for the review,
 Himadri
 
 > thanks,
