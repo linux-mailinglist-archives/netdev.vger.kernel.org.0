@@ -2,87 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63A5A275AE1
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:59:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E257E275B0D
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 17:02:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726703AbgIWO7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 10:59:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37958 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgIWO7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:59:12 -0400
-Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B643C0613CE;
-        Wed, 23 Sep 2020 07:59:12 -0700 (PDT)
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kL6EX-004bOc-Io; Wed, 23 Sep 2020 14:59:01 +0000
-Date:   Wed, 23 Sep 2020 15:59:01 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        David Laight <David.Laight@aculab.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-aio@kvack.org, io-uring@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH 5/9] fs: remove various compat readv/writev helpers
-Message-ID: <20200923145901.GN3421308@ZenIV.linux.org.uk>
-References: <20200923060547.16903-1-hch@lst.de>
- <20200923060547.16903-6-hch@lst.de>
- <20200923142549.GK3421308@ZenIV.linux.org.uk>
- <20200923143251.GA14062@lst.de>
+        id S1726680AbgIWPCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 11:02:22 -0400
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:58671 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726130AbgIWPCW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 11:02:22 -0400
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 5DB2320646201;
+        Wed, 23 Sep 2020 17:02:20 +0200 (CEST)
+Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Power cycle phy on PM resume
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20200923074751.10527-1-kai.heng.feng@canonical.com>
+ <17092088-86ff-2d31-b3de-2469419136a3@molgen.mpg.de>
+ <AC6D77B8-244D-4816-8FFE-A4480378EC4C@canonical.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Message-ID: <79f01082-c9b1-f80a-7af4-b61bdbf40c90@molgen.mpg.de>
+Date:   Wed, 23 Sep 2020 17:02:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200923143251.GA14062@lst.de>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+In-Reply-To: <AC6D77B8-244D-4816-8FFE-A4480378EC4C@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 04:32:51PM +0200, Christoph Hellwig wrote:
-> On Wed, Sep 23, 2020 at 03:25:49PM +0100, Al Viro wrote:
-> > On Wed, Sep 23, 2020 at 08:05:43AM +0200, Christoph Hellwig wrote:
-> > >  COMPAT_SYSCALL_DEFINE3(readv, compat_ulong_t, fd,
-> > > -		const struct compat_iovec __user *,vec,
-> > > +		const struct iovec __user *, vec,
-> > 
-> > Um...  Will it even compile?
-> > 
-> > >  #ifdef __ARCH_WANT_COMPAT_SYS_PREADV64
-> > >  COMPAT_SYSCALL_DEFINE4(preadv64, unsigned long, fd,
-> > > -		const struct compat_iovec __user *,vec,
-> > > +		const struct iovec __user *, vec,
-> > 
-> > Ditto.  Look into include/linux/compat.h and you'll see
-> > 
-> > asmlinkage long compat_sys_preadv64(unsigned long fd,
-> >                 const struct compat_iovec __user *vec,
-> >                 unsigned long vlen, loff_t pos);
-> > 
-> > How does that manage to avoid the compiler screaming bloody
-> > murder?
-> 
-> That's a very good question.  But it does not just compile but actually
-> works.  Probably because all the syscall wrappers mean that we don't
-> actually generate the normal names.  I just tried this:
-> 
-> --- a/include/linux/syscalls.h
-> +++ b/include/linux/syscalls.h
-> @@ -468,7 +468,7 @@ asmlinkage long sys_lseek(unsigned int fd, off_t offset,
->  asmlinkage long sys_read(unsigned int fd, char __user *buf, size_t count);
->  asmlinkage long sys_write(unsigned int fd, const char __user *buf,
->                             size_t count);
-> -asmlinkage long sys_readv(unsigned long fd,
-> +asmlinkage long sys_readv(void *fd,
-> 
-> for fun, and the compiler doesn't care either..
+Dear Kai-Heng,
 
-Try to build it for sparc or ppc...
+
+Am 23.09.20 um 16:46 schrieb Kai-Heng Feng:
+
+>> On Sep 23, 2020, at 21:28, Paul Menzel wrote:
+
+>> Am 23.09.20 um 09:47 schrieb Kai-Heng Feng:
+>>> We are seeing the following error after S3 resume:
+>>> [  704.746874] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
+>>> [  704.844232] e1000e 0000:00:1f.6 eno1: MDI Write did not complete
+>>> [  704.902817] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
+>>> [  704.903075] e1000e 0000:00:1f.6 eno1: reading PHY page 769 (or 0x6020 shifted) reg 0x17
+>>> [  704.903281] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
+>>> [  704.903486] e1000e 0000:00:1f.6 eno1: writing PHY page 769 (or 0x6020 shifted) reg 0x17
+>>> [  704.943155] e1000e 0000:00:1f.6 eno1: MDI Error
+>>> ...
+>>> [  705.108161] e1000e 0000:00:1f.6 eno1: Hardware Error
+>>> Since we don't know what platform firmware may do to the phy, so let's
+>>> power cycle the phy upon system resume to resolve the issue.
+>>
+>> Is there a bug report or list thread for this issue?
+> 
+> No. That's why I sent a patch to start discussion :)
+
+Then please add on what systems that is.
+
+>>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+>>> ---
+>>>   drivers/net/ethernet/intel/e1000e/netdev.c | 2 ++
+>>>   1 file changed, 2 insertions(+)
+>>> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+>>> index 664e8ccc88d2..c2a87a408102 100644
+>>> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+>>> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+>>> @@ -6968,6 +6968,8 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
+>>>   	    !e1000e_check_me(hw->adapter->pdev->device))
+>>>   		e1000e_s0ix_exit_flow(adapter);
+>>>   +	e1000_power_down_phy(adapter);
+>>> +
+>>>   	rc = __e1000_resume(pdev);
+>>>   	if (rc)
+>>>   		return rc;
+>>
+>> How much does this increase the resume time?
+> 
+> I didn't measure it. Because for me it's more important to have a working device.
+> 
+> Does it have a noticeable impact on your system's resume time?
+
+I am not able to test the patch right now. But resume time is important 
+to me. As I do not have the problem, nothing should be changed for my 
+system (Dell Latitude E7250).
+
+     00:19.0 Ethernet controller [0200]: Intel Corporation Ethernet 
+Connection (3) I218-LM [8086:15a2] (rev 03)
+
+
+Kind regards,
+
+Paul
