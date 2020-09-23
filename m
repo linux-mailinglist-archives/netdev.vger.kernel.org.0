@@ -2,172 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35370276181
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 21:59:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E0E2276185
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 21:59:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbgIWT7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 15:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
+        id S1726650AbgIWT7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 15:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726199AbgIWT7K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 15:59:10 -0400
+        with ESMTP id S1726265AbgIWT7m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 15:59:42 -0400
 Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C673C0613CE;
-        Wed, 23 Sep 2020 12:59:10 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id x14so1275926wrl.12;
-        Wed, 23 Sep 2020 12:59:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1DFDC0613D1
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 12:59:41 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id e16so1359603wrm.2
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 12:59:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wmckwTRXRvwQPVN9iH8EtFcdLmuwcKJsSJQfHvWc6QA=;
-        b=o84bTiU0vqCk8XXCH5L4VxLBL1T+vJsaC4axNiyRlTtxnhGFoJ6Zn6OW9PJpWWkVMM
-         /7KCWAkro1wKfRJtBI9RuTvp1vjAJ9v3Ov1/DZTqhlqaJa4l2OXpXy2B/zTwcYHalCGb
-         ACCiOmXDpXRZEbpdWtjJxtfHLYP0mCg/FJRlFvbG4zLKJCKqbX8JSY3G38ZVQ4KchUNw
-         KfYuwgMb1G7yd4Rp0q1KjPjD3LWn/jz7MYZbmx9FPwDiCISI1aPceUn0XbBr/yMwXnLK
-         TgihhXGO8OX/KUDlspz4F8n5aobr2BbGgCf+IgaM2kwTLYza1CJoOcclOLcLUlvD7d8L
-         MEGw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=omNgAU/l78x9UsZx+b4xR6QdpKVoCnKdDvnTd0n4YQI=;
+        b=rmzhewfMlVnWB+gyRCJ7IvGeu4ajHptWF+tiTKIDq5wYZuqAGKwdDXotYPvQQN4Aui
+         U12mzQ3WR7RmIev6GC3ZLZGp3V9wTyvv5vzbi+wSUdjYCVnFDRcv2ebHjJKUei0bOpzg
+         YZy3Ne0R84gwDUuXCiZnxGzwi+0EiQbPZCRUVuUw2yDkHAWSRgYNmD1cUP1FRZ/KZk91
+         7aa2XkvoKtXa9Z0Rc9OuhJ7lHEgcDlTxUZhyhDCQC+PXSxdTWib87r4C3CsDd67nOVCO
+         /REhNAY+rwEQMCqaFP+qaU5iJ/diloEtW6dMmbblj1siI0dDcJY0g/yh6c8rnnqzWrxX
+         BPLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wmckwTRXRvwQPVN9iH8EtFcdLmuwcKJsSJQfHvWc6QA=;
-        b=oIqQsVmrYxPWRLvsfLkTaMKeQqNcoaHIeiMzitp9WzqneGDKjCksGJX8keQzgSRSb5
-         1U+mJOLR3e+eE4ot8iyq123+SQ5bwTaVLtKEaQVQujbvmmBI2lADO50Y/ffndPeCuvu+
-         NRyigNKgZYhYXmB5+cNDq9Q+iyDKxBbzI84afH6pILxsS5rs2N5QiAxicrql2FbHoRq8
-         uZyI6tlmHgZRouPEqnPm9qTwscN6PrTCgqQhyKzWYVRmZLS/823tFTNqLDbpcQ9TsmL2
-         K+GuM2RsUXqXWex+rO02R3/PPKj/xJhRkeV2Ea4YuMc585j7CSSuJXK8honuDNVL4FvL
-         uZQg==
-X-Gm-Message-State: AOAM532W5Ave3/IwtHCnz5RwVoGAQ/O4WzklrgXkQ0iaSP32OMt9zr0U
-        ctsTFLFQrwzoZuNQP6Wj5vTMuh6RgWU=
-X-Google-Smtp-Source: ABdhPJy2z/Hrts/zKxyRH/xTHeWNyCPxMQZw5ecoJ/QD4Prcgxb8eBJLN8/cP/vkQSC9Z3I6ycjNAw==
-X-Received: by 2002:adf:fa52:: with SMTP id y18mr1339142wrr.264.1600891147751;
-        Wed, 23 Sep 2020 12:59:07 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:9dd1:2d79:8cda:7fd2? (p200300ea8f2357009dd12d798cda7fd2.dip0.t-ipconnect.de. [2003:ea:8f23:5700:9dd1:2d79:8cda:7fd2])
-        by smtp.googlemail.com with ESMTPSA id v17sm1044439wrc.23.2020.09.23.12.59.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Sep 2020 12:59:07 -0700 (PDT)
-Subject: Re: [PATCH] Revert "net: linkwatch: add check for netdevice being
- present to linkwatch_do_dev"
-To:     Saeed Mahameed <saeed@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Gaku Inami <gaku.inami.xh@renesas.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200901150237.15302-1-geert+renesas@glider.be>
- <7bfebfdc0d7345c4612124ff00e20eebb0ff6cd9.camel@kernel.org>
- <3d9176a6-c93e-481c-5877-786f5e6aaef8@gmail.com>
- <28da797abe486e783547c60a25db44be0c030d86.camel@kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <14f41724-ce45-c2c0-a49c-1e379dba0cb5@gmail.com>
-Date:   Wed, 23 Sep 2020 21:58:59 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=omNgAU/l78x9UsZx+b4xR6QdpKVoCnKdDvnTd0n4YQI=;
+        b=IQG2ISE8ZkgUbcDxTZK36/R8FH9M2IIjG6gCT+7KuDMXgMXrSkCYNcgvV2ciMpwsjC
+         hPCN148j1K97MoGJKR7JNqwUwZXJUb4B8LEgnVwsETyU/WbJwX5qOLd7ssPsPSwEOXxf
+         OyJul60qCg30L7tp1zDAhrU1zYRUfhqIwFxfR1Jk0YQI3Wop8UM3NRziKCAbnr/l1FCY
+         fSqnvxECtPA/GL7V2QhEs7uNRm0jSp4KXFbtaQLmMQe5v6E/jethn62A59oMAcy6NLOV
+         Vhda+zWyF7/3YCq5/+SdqFQM85JBIvIQvjwDsNlyXBSGm6xN0BXbQ1a1hGrrpYU57+Um
+         485g==
+X-Gm-Message-State: AOAM5335H3jin24QebP+5qH4qpLh3UrYr6vcntFH4ltB+YfLKhTYZ3Dy
+        39+QgInCjbixmjQCuIu5A3T9B/d3Q0ePsA8ok1Z4LQ==
+X-Google-Smtp-Source: ABdhPJxM0PgqFXZb8FmQir+7H/etiCWV9Sr4XWWqYNkEyoX5SokG5ZAHSUpGnT1mnxpwTJkKDVFkEPh/Q2995ETBVl4=
+X-Received: by 2002:adf:f88b:: with SMTP id u11mr1285857wrp.376.1600891180248;
+ Wed, 23 Sep 2020 12:59:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <28da797abe486e783547c60a25db44be0c030d86.camel@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200917190026.GB1426933@kernel.org> <20200917201807.4090224-1-irogers@google.com>
+ <20200917203953.GA1525630@kernel.org> <CAM9d7ciWo301cdQT7=MNB3XDrggjiR=4N4f-6CGaJfAiJO54Lw@mail.gmail.com>
+In-Reply-To: <CAM9d7ciWo301cdQT7=MNB3XDrggjiR=4N4f-6CGaJfAiJO54Lw@mail.gmail.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 23 Sep 2020 12:59:28 -0700
+Message-ID: <CAP-5=fVJMeMhjwbO=ms7k0GsM6L1-uTdHqXUOJSvS4cr8M-Org@mail.gmail.com>
+Subject: Re: [PATCH v4] perf metricgroup: Fix uncore metric expressions
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Stephane Eranian <eranian@google.com>,
+        Jin Yao <yao.jin@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23.09.2020 20:35, Saeed Mahameed wrote:
-> On Wed, 2020-09-23 at 13:49 +0200, Heiner Kallweit wrote:
->> On 18.09.2020 19:58, Saeed Mahameed wrote:
->>> On Tue, 2020-09-01 at 17:02 +0200, Geert Uytterhoeven wrote:
->>>> This reverts commit 124eee3f6955f7aa19b9e6ff5c9b6d37cb3d1e2c.
->>>>
->>>> Inami-san reported that this commit breaks bridge support in a
->>>> Xen
->>>> environment, and that reverting it fixes this.
->>>>
->>>> During system resume, bridge ports are no longer enabled, as that
->>>> relies
->>>> on the receipt of the NETDEV_CHANGE notification.  This
->>>> notification
->>>> is
->>>> not sent, as netdev_state_change() is no longer called.
->>>>
->>>> Note that the condition this commit intended to fix never existed
->>>> upstream, as the patch triggering it and referenced in the commit
->>>> was
->>>> never applied upstream.  Hence I can confirm s2ram on
->>>> r8a73a4/ape6evm
->>>> and sh73a0/kzm9g works fine before/after this revert.
->>>>
->>>> Reported-by Gaku Inami <gaku.inami.xh@renesas.com>
->>>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->>>> ---
->>>>  net/core/link_watch.c | 2 +-
->>>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/net/core/link_watch.c b/net/core/link_watch.c
->>>> index 75431ca9300fb9c4..c24574493ecf95e6 100644
->>>> --- a/net/core/link_watch.c
->>>> +++ b/net/core/link_watch.c
->>>> @@ -158,7 +158,7 @@ static void linkwatch_do_dev(struct
->>>> net_device
->>>> *dev)
->>>>  	clear_bit(__LINK_STATE_LINKWATCH_PENDING, &dev->state);
->>>>  
->>>>  	rfc2863_policy(dev);
->>>> -	if (dev->flags & IFF_UP && netif_device_present(dev)) {
->>>> +	if (dev->flags & IFF_UP) {
->>>
->>> So with your issue the devices is both IFF_UP and !present ? how so
->>> ?
->>> I think you should look into that.
->>>
->>> I am ok with removing the "dev present" check from here just
->>> because we
->>> shouldn't  be expecting IFF_UP && !present .. such thing must be a
->>> bug
->>> somewhere else.
->>>
->>>>  		if (netif_carrier_ok(dev))
->>>>  			dev_activate(dev);
->>>>  		else
->>
->> In __dev_close_many() we call ndo_stop() whilst IFF_UP is still set.
->> ndo_stop() may detach the device and bring down the PHY, resulting in
->> an
-> 
-> Why would a driver detach the device on ndo_stop() ?
-> seems like this is the bug you need to be chasing ..
-> which driver is doing this ? 
-> 
-Some drivers set the device to PCI D3hot at the end of ndo_stop()
-to save power (using e.g. Runtime PM). Marking the device as detached
-makes clear to to the net core that the device isn't accessible any
-longer.
+On Thu, Sep 17, 2020 at 6:47 PM Namhyung Kim <namhyung@kernel.org> wrote:
+>
+> Hi Arnaldo,
+>
+> On Fri, Sep 18, 2020 at 5:39 AM Arnaldo Carvalho de Melo
+> <acme@kernel.org> wrote:
+> >
+> > Em Thu, Sep 17, 2020 at 01:18:07PM -0700, Ian Rogers escreveu:
+> > > A metric like DRAM_BW_Use has on SkylakeX events uncore_imc/cas_count_read/
+> > > and uncore_imc/case_count_write/. These events open 6 events per socket
+> > > with pmu names of uncore_imc_[0-5]. The current metric setup code in
+> > > find_evsel_group assumes one ID will map to 1 event to be recorded in
+> > > metric_events. For events with multiple matches, the first event is
+> > > recorded in metric_events (avoiding matching >1 event with the same
+> > > name) and the evlist_used updated so that duplicate events aren't
+> > > removed when the evlist has unused events removed.
+> >
+> > Namhyung, please check if you still Acks this as you provided it for v3.
+>
+> Sure,
+>
+> Acked-by: Namhyung Kim <namhyung@kernel.org>
 
->> async link change event that calls dev_get_stats(). The latter call
->> may
->> have a problem if the device is detached. In a first place I'd
->> consider
->> such a case a network driver bug (ndo_get_stats/64 should check for
->> device presence if depending on it).
-> 
-> Device drivers should avoid presence check as much as possible
-> especially in ndo, this check must be performed by the stack.
-> 
-That's a question I also stumbled across. For the ethtool ops
-dev_ethtool() checks whether device is present.
-But for ndo that's not always the case, e.g. dev_get_stats()
-doesn't check for device presence before calling ndo_get_stats()
-or ndo_get_stats64().
-To a certain extent I can understand this behavior, because drivers
-may just use internal data structures in ndo ops instead of accessing
-the device.
+Thanks Namhyung and Arnaldo, could we merge this?
 
->> The additional check in linkwatch_do_dev() was meant to protect from
->> such
->> driver issues.
-> 
+Ian
 
+> Thanks
+> Namhyung
+>
+> >
+> > > Before this change:
+> > > $ /tmp/perf/perf stat -M DRAM_BW_Use -a -- sleep 1
+> > >
+> > >  Performance counter stats for 'system wide':
+> > >
+> > >              41.14 MiB  uncore_imc/cas_count_read/
+> > >      1,002,614,251 ns   duration_time
+> > >
+> > >        1.002614251 seconds time elapsed
+> > >
+> > > After this change:
+> > > $ /tmp/perf/perf stat -M DRAM_BW_Use -a -- sleep 1
+> > >
+> > >  Performance counter stats for 'system wide':
+> > >
+> > >             157.47 MiB  uncore_imc/cas_count_read/ #     0.00 DRAM_BW_Use
+> > >             126.97 MiB  uncore_imc/cas_count_write/
+> > >      1,003,019,728 ns   duration_time
+> > >
+> > > Erroneous duplication introduced in:
+> > > commit 2440689d62e9 ("perf metricgroup: Remove duped metric group events").
+> > >
+> > > Fixes: ded80bda8bc9 ("perf expr: Migrate expr ids table to a hashmap").
+> > > Reported-by: Jin Yao <yao.jin@linux.intel.com>
+> > > Signed-off-by: Ian Rogers <irogers@google.com>
+> > > ---
+> > >  tools/perf/util/metricgroup.c | 75 ++++++++++++++++++++++++++---------
+> > >  1 file changed, 56 insertions(+), 19 deletions(-)
+> > >
+> > > diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
+> > > index ab5030fcfed4..d948a7f910cf 100644
+> > > --- a/tools/perf/util/metricgroup.c
+> > > +++ b/tools/perf/util/metricgroup.c
+> > > @@ -150,6 +150,18 @@ static void expr_ids__exit(struct expr_ids *ids)
+> > >               free(ids->id[i].id);
+> > >  }
+> > >
+> > > +static bool contains_event(struct evsel **metric_events, int num_events,
+> > > +                     const char *event_name)
+> > > +{
+> > > +     int i;
+> > > +
+> > > +     for (i = 0; i < num_events; i++) {
+> > > +             if (!strcmp(metric_events[i]->name, event_name))
+> > > +                     return true;
+> > > +     }
+> > > +     return false;
+> > > +}
+> > > +
+> > >  /**
+> > >   * Find a group of events in perf_evlist that correpond to those from a parsed
+> > >   * metric expression. Note, as find_evsel_group is called in the same order as
+> > > @@ -180,7 +192,11 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
+> > >       int i = 0, matched_events = 0, events_to_match;
+> > >       const int idnum = (int)hashmap__size(&pctx->ids);
+> > >
+> > > -     /* duration_time is grouped separately. */
+> > > +     /*
+> > > +      * duration_time is always grouped separately, when events are grouped
+> > > +      * (ie has_constraint is false) then ignore it in the matching loop and
+> > > +      * add it to metric_events at the end.
+> > > +      */
+> > >       if (!has_constraint &&
+> > >           hashmap__find(&pctx->ids, "duration_time", (void **)&val_ptr))
+> > >               events_to_match = idnum - 1;
+> > > @@ -207,23 +223,20 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
+> > >                               sizeof(struct evsel *) * idnum);
+> > >                       current_leader = ev->leader;
+> > >               }
+> > > -             if (hashmap__find(&pctx->ids, ev->name, (void **)&val_ptr)) {
+> > > -                     if (has_constraint) {
+> > > -                             /*
+> > > -                              * Events aren't grouped, ensure the same event
+> > > -                              * isn't matched from two groups.
+> > > -                              */
+> > > -                             for (i = 0; i < matched_events; i++) {
+> > > -                                     if (!strcmp(ev->name,
+> > > -                                                 metric_events[i]->name)) {
+> > > -                                             break;
+> > > -                                     }
+> > > -                             }
+> > > -                             if (i != matched_events)
+> > > -                                     continue;
+> > > -                     }
+> > > +             /*
+> > > +              * Check for duplicate events with the same name. For example,
+> > > +              * uncore_imc/cas_count_read/ will turn into 6 events per socket
+> > > +              * on skylakex. Only the first such event is placed in
+> > > +              * metric_events. If events aren't grouped then this also
+> > > +              * ensures that the same event in different sibling groups
+> > > +              * aren't both added to metric_events.
+> > > +              */
+> > > +             if (contains_event(metric_events, matched_events, ev->name))
+> > > +                     continue;
+> > > +             /* Does this event belong to the parse context? */
+> > > +             if (hashmap__find(&pctx->ids, ev->name, (void **)&val_ptr))
+> > >                       metric_events[matched_events++] = ev;
+> > > -             }
+> > > +
+> > >               if (matched_events == events_to_match)
+> > >                       break;
+> > >       }
+> > > @@ -239,7 +252,7 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
+> > >       }
+> > >
+> > >       if (matched_events != idnum) {
+> > > -             /* Not whole match */
+> > > +             /* Not a whole match */
+> > >               return NULL;
+> > >       }
+> > >
+> > > @@ -247,8 +260,32 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
+> > >
+> > >       for (i = 0; i < idnum; i++) {
+> > >               ev = metric_events[i];
+> > > -             ev->metric_leader = ev;
+> > > +             /* Don't free the used events. */
+> > >               set_bit(ev->idx, evlist_used);
+> > > +             /*
+> > > +              * The metric leader points to the identically named event in
+> > > +              * metric_events.
+> > > +              */
+> > > +             ev->metric_leader = ev;
+> > > +             /*
+> > > +              * Mark two events with identical names in the same group (or
+> > > +              * globally) as being in use as uncore events may be duplicated
+> > > +              * for each pmu. Set the metric leader of such events to be the
+> > > +              * event that appears in metric_events.
+> > > +              */
+> > > +             evlist__for_each_entry_continue(perf_evlist, ev) {
+> > > +                     /*
+> > > +                      * If events are grouped then the search can terminate
+> > > +                      * when then group is left.
+> > > +                      */
+> > > +                     if (!has_constraint &&
+> > > +                         ev->leader != metric_events[i]->leader)
+> > > +                             break;
+> > > +                     if (!strcmp(metric_events[i]->name, ev->name)) {
+> > > +                             set_bit(ev->idx, evlist_used);
+> > > +                             ev->metric_leader = metric_events[i];
+> > > +                     }
+> > > +             }
+> > >       }
+> > >
+> > >       return metric_events[0];
+> > > --
+> > > 2.28.0.618.gf4bc123cb7-goog
+> > >
+> >
+> > --
+> >
+> > - Arnaldo
