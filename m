@@ -2,147 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 193EB27627A
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 22:50:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 061CC276284
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 22:51:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgIWUuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 16:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35792 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726419AbgIWUuC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 16:50:02 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90422C0613CE;
-        Wed, 23 Sep 2020 13:50:02 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id q12so342031plr.12;
-        Wed, 23 Sep 2020 13:50:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=55Mo2RUFmMKXjeUIBbEbJqouStuMsrVwGCJaKvcedeU=;
-        b=PIhIBDIogXXlUYKz+uiZ4OLcbRDf/ViBSISxrnU8kNHWW1c213QQB+k+GsUE/PIjyY
-         fVWe4tHMjUme19TR9u29cX3lJ6fJg7lfuBBIaOU4DTbyPUtQCO2BjWDuRL3WREvgy3Io
-         ybD7YY0LAz6mQc0JcpY8kCCAxz1wQA97/QPuk4X1+oRNAYTRY1zIU/dbG7AIbLMZY0uJ
-         y+54pFtJ/ulk559ajIRouaH+5GoEiI1NVOGGfDYh/RFQhmS9FYbvxI0FM5/acYncKMT3
-         7eRFfA1AI7jMDzVIRtKyw5p0cxmdT7OSv4vANTGzFZkApMEE6oFDLwrGanhTldFQUK/Z
-         +WAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=55Mo2RUFmMKXjeUIBbEbJqouStuMsrVwGCJaKvcedeU=;
-        b=lXLhJTJq6W9+Sow0v9or6nIp61BgrekybSha1QCEwYcuqz6p0nlRCEWdF9HskAJGdh
-         kUwEex19PxX+ryRUBTuqXq4bOyG0spnvLVD3ADiiHCSGX9fgNutORKLxEKN5v+xibp0u
-         /hNrUBdqUY7NUnWCyzcODiGKaKLFY20UT/dS8JUaXoUi0yizpLchEoNRP91RJlfhVECd
-         e4wNCpGxVqfF3CSFnIvKOkqIEYR0sKRQsO0vY20W5/uquwbXMuwEtpi05MpT0lkBOfH3
-         FQAl1cADngxTVRQSeAm9jwCzRQSWXdgbalfWz3mXpZnoDFXu08O97pVCovM6xpkxcQhu
-         wMuw==
-X-Gm-Message-State: AOAM533PEqqXYiK532pz+tfcQkR24DUaYxmwO7rtDFA6irGwU6XL32vM
-        KkgjbFOyXXge8qj2QynNIKk=
-X-Google-Smtp-Source: ABdhPJzHYaA1krgpv1mXTLwy1TFUmSMVQ+7GDM5ogfvv+vnl2qBYxOHZnfcsycG6AJ60wMyhnrfT0Q==
-X-Received: by 2002:a17:90a:6701:: with SMTP id n1mr1061583pjj.87.1600894202109;
-        Wed, 23 Sep 2020 13:50:02 -0700 (PDT)
-Received: from [10.67.49.188] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id q11sm622664pgj.92.2020.09.23.13.49.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Sep 2020 13:50:01 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 0/2] net: dsa: b53: Configure VLANs while not
- filtering
-To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        id S1726634AbgIWUvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 16:51:55 -0400
+Received: from mail-eopbgr70040.outbound.protection.outlook.com ([40.107.7.40]:41151
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726265AbgIWUvy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Sep 2020 16:51:54 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TgRpUcmLf757aiHghGXFftaqeyzCLd70gDwkETJWWtrvPvsrekCsMfO2lvESGXS3xDJ8BSlTiHdtiDvGknxO0wrPk6yMzaAQO1U2a8xqrbRQMVy88OxyzMpCl5Z/NCrJK+H1p6ehxA3NTUByoD1YoXdTDCGgggfLkxHn1F3LaUY0Y2jNuf9oSmyQ0GGfOuMgB6qSfMkQRMfWWU2mgKA2WGKlt72ctwPn9s/arIbG+LHE2PtZUr34ZkZ8+W5/MbHgsRqcKjYWWW1WbtzomonASNMFlrSibb0kvftoQcM+XD0ULUiCwQMdGJ8aUM9yZt1rvQfIndwY+nOQwRNYbqJiDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=49e7YB9OjsqESSwvGeSLQJAqwvG4aoEyW9GZqPy8lgw=;
+ b=jpyfp+ZXI93tP4ejqx50bTYoQTELFljS4YswUkw3azN6E+7dOJtlYRMyLiDX89G43earfbzcIanFhho19A27z0siGWBlLfu68OnhcCP5UgGnaMuEv51ow1GWFEo+Q+9DMTAfO4LESQ5c0T3zC7HL93RM5zzfhA+ORlAYI5sBNbas2saZzHIHfV7S/Vm7d9OXRBZmbI0X9rvBz/d6TRd3MDf1E3pO+ol3u74j9JDdjHfvuuowFb5RJJrKCEBQTNcub/WSxfmgjzC15YSBU4gf8yytku9u/HIKaT3r/Ir0QLUQtQQqKR+vx2czfJyI6duj6LW8e+4wxRwynt4ckziTqA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=49e7YB9OjsqESSwvGeSLQJAqwvG4aoEyW9GZqPy8lgw=;
+ b=VaUxxc7qOm3jypO2iIclHXS4tkGGz4nCg23hA+vlwSDtd3WPnTZEN75RJIwlWCDJnenu6rJu6pGiGBKy8BtPl9tzFIg1hXmeMKJZCBr6wIitettMpl0pSCjaiuiFzKlW0mxkFjY+PI2XS+kgQc7z81REUgqZm9dr7z/ygoGNskM=
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR04MB6269.eurprd04.prod.outlook.com (2603:10a6:803:fa::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14; Wed, 23 Sep
+ 2020 20:51:49 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3412.020; Wed, 23 Sep 2020
+ 20:51:49 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         open list <linux-kernel@vger.kernel.org>,
-        vladimir.oltean@nxp.com, olteanv@gmail.com, nikolay@nvidia.com
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "nikolay@nvidia.com" <nikolay@nvidia.com>
+Subject: Re: [PATCH net-next v2 0/2] net: dsa: b53: Configure VLANs while not
+ filtering
+Thread-Topic: [PATCH net-next v2 0/2] net: dsa: b53: Configure VLANs while not
+ filtering
+Thread-Index: AQHWkep9slBbVOU5dkCcJWZHJ5RCvKl2slgAgAAAiAA=
+Date:   Wed, 23 Sep 2020 20:51:49 +0000
+Message-ID: <20200923205148.guukg3k7wanuua3c@skbuf>
 References: <20200923204514.3663635-1-f.fainelli@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
- xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
- X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
- AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
- ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
- SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
- nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
- qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
- YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
- FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
- 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
- WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
- pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
- hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
- OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
- Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
- oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
- 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
- BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
- +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
- FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
- 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
- vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
- WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
- HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
- HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
- Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
- kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
- aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
- y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
- X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
- HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
- YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
- PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
- UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
- iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
- WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
- UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
- sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
- KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
- t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
- AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
- RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
- e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
- UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
- 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
- V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
- xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
- dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
- pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
- caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
- 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <bfccb4fd-0768-79e8-0085-df63ecc0d376@gmail.com>
-Date:   Wed, 23 Sep 2020 13:49:54 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <20200923204514.3663635-1-f.fainelli@gmail.com>
-Content-Type: text/plain; charset=utf-8
+ <bfccb4fd-0768-79e8-0085-df63ecc0d376@gmail.com>
+In-Reply-To: <bfccb4fd-0768-79e8-0085-df63ecc0d376@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.217.212]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 05e968a9-8498-4245-1aaf-08d860027e5b
+x-ms-traffictypediagnostic: VI1PR04MB6269:
+x-microsoft-antispam-prvs: <VI1PR04MB6269310EC41E5C4A0E68DCB5E0380@VI1PR04MB6269.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2512;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: JbnIWzBYPFeQYC+nPHXqTCjePn9utTXpmp4ZG73gyZoGdUvjPBNtStSpcnTIKl3XEnyqv+0rGhtt46EOPItVxSa58mHWklOuBwxnH6TTAuH4iMSFUUIVO7K2vAVamV6a4nUWTj6kKwn+qmUk/713aGTA4Bs6KJ+g2RDodLNocOCoiAP3gl4ZGoDbry26yTzhkKICG7fKjjSJtn36WeLBNtKHvSTZ/Y8h+SOF+reGiMvYldVeXMQ0G8TE6tlrbz0inpqKeaQaGNDcqbWpK2RBJcbf/a3mmAATbbRqwunTAG7HEaXCj4ubkymzszxWWkgyfIr6a6jSIJ1DD8kcYBTAlq10puxz4t1d8mQURtHnIlCYnpo/siiW5dE2VAeyNqw5
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(396003)(346002)(366004)(376002)(136003)(39860400002)(4744005)(4326008)(44832011)(6486002)(26005)(8936002)(186003)(316002)(33716001)(54906003)(91956017)(86362001)(76116006)(71200400001)(9686003)(83380400001)(66476007)(2906002)(66946007)(64756008)(6512007)(8676002)(1076003)(66556008)(478600001)(5660300002)(66446008)(6506007)(53546011)(6916009);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: ce7xt4SCidkn542RwEI3iwyLyYVq9vWRLr+yAdwV/Afc+xzOt1rvzf1WIAdXGF5oQYDCStewTBix6IlIsnYtjHBQNCD/eTILxIAE4a+nqIdF+qCpKin0pfjQ+OSuTqTy6aVNyLktkRu6XtIjeZFY2R7bIozLNVRYYBGVin2+b2k8sLH9Hw0IJu/P/1WpO4YXZTKq4+YPVZCYFUNohoSdKHOTNVcDptR1S4LuFCKX1kqt7923AVZ1+3TrZ+7nLpHtSNdxnd2L7O4esZe+l0d0Sn4vXMuVCU8uocx6EFf4Dr+3GKax0oniOeNkyD99z0mvcq16+GJLKz6jAYDmlSSehBexoxzXAysEgWDf/pLav0xyG/mB2LRk5UkXgKmwgAKFMqVNqT5SThP/ktMzAwYORPvgo2kSy3uxl1cne3rdo+a3nKus8HmYPpnorQhaU9hwQ5zqmS8c+omUkw37A0BRvRizKE/1axmPYIzkJLAfVgnXxDfJkDdsiHQmEhSF8UrQp1il8+nqti1M9zZnfrM8I30KLDTchBoSiVcgUVQM6JfjysLYwHPLHP6Kx+UwMg2ySaMt/8b0nZaK5ZpEaZKOjHQlODETg0KHg452VBmBaKayha+GSmlnTAVA3eXk9D8ED+nRsnV1yCOizlwyJwnQQA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <FF5DB39E0678CF4CB03891EAC3533730@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 05e968a9-8498-4245-1aaf-08d860027e5b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2020 20:51:49.8106
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QDdL4BopwbtiLqbHdVFs3crJrA1u0GXHVB0YQq24Y4dzanf1gHCPjeOVrYWnvG5Iq3qyRJg0JN1iqRp64yAhWA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6269
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/23/20 1:45 PM, Florian Fainelli wrote:
-> Hi David, Jakub,
-> 
-> These two patches allow the b53 driver which always configures its CPU
-> port as egress tagged to behave correctly with VLANs being always
-> configured whenever a port is added to a bridge.
-> 
-> Vladimir provides a patch that aligns the bridge with vlan_filtering=0
-> receive path to behave the same as vlan_filtering=1. Per discussion with
-> Nikolay, this behavior is deemed to be too DSA specific to be done in
-> the bridge proper.
-> 
-> This is a preliminary series for Vladimir to make
-> configure_vlan_while_filtering the default behavior for all DSA drivers
-> in the future.
+On Wed, Sep 23, 2020 at 01:49:54PM -0700, Florian Fainelli wrote:
+> On 9/23/20 1:45 PM, Florian Fainelli wrote:
+>=20
+> David, Jakub, there is an unnecessary header inclusion in
+> net/dsa/tag_brcm.c in the second patch and the description at the end of
+> the commit was not updated, let me send a v3 right away.
+> --=20
+> Florian
 
-David, Jakub, there is an unnecessary header inclusion in
-net/dsa/tag_brcm.c in the second patch and the description at the end of
-the commit was not updated, let me send a v3 right away.
--- 
-Florian
+Wait a few minutes, I don't think anybody has had a chance to look at it..
+
+Thanks,
+-Vladimir=
