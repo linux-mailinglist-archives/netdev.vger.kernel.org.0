@@ -2,125 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EADB9275A94
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:46:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83B4B275A9C
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:48:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726774AbgIWOqf convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 23 Sep 2020 10:46:35 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:52075 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726674AbgIWOqe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:46:34 -0400
-Received: from mail-pg1-f200.google.com ([209.85.215.200])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1kL62R-0008L8-Ey
-        for netdev@vger.kernel.org; Wed, 23 Sep 2020 14:46:31 +0000
-Received: by mail-pg1-f200.google.com with SMTP id e28so151172pgm.15
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 07:46:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=IRV4DsqTHJS4UCf0ZaCBRMDHJJpdRDGlcpY0NuGhQ7g=;
-        b=X6jgmm8Ikhoy5HYSlLb7xFlc4EV9aHcqeuLc8rAvRjtezKDUTo++dA9yMIpx7sFO6D
-         MFikQeZwXTNWuLb8CZ+jxCfBI9XqJVbWq2XLlxucG7emGQ4wWwpQpU/Bqy5KkW2k7uEM
-         o1J66fCQrZf72CrgvTmzAAyeUtPgQI+G+I++rjXHqufQ9Sw1HqscdjU2AU1R+8juGNM2
-         rnSS2YaD984/Znz0o1oKgk6mrTHn6l8BkNYmHoAW0RI5VGAGnZM7lgKiku1Jtwlub2gG
-         lxK3bm5l/UDVsqo8W3I8WnfL76MWdUk9EwqWut9d1qpUpTmbFtsOdOd3xKFD5Uc2rJ1c
-         Te6g==
-X-Gm-Message-State: AOAM532KK9MooViwvrmNIq4XD71S/faTnkUpejad1MBY9lbSdhyrxSLb
-        +8zsa3vIGSi3Jr6xH7eEcDK+AcXjcCY8jEPlxAyTWnETZofXoOXNl/KZPM0F+5WVwRmi14r9Gnu
-        DeQpx0NCqSqQcmki2dOsuS+M9dP5I5/ILaQ==
-X-Received: by 2002:a63:7d5a:: with SMTP id m26mr66983pgn.373.1600872389147;
-        Wed, 23 Sep 2020 07:46:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzEca3T4aPQaV9RL6AocGE0yU0atcnRNqviEk4KyxvvK1PiNJGTRuAf0er4y9Q9pep6pePjdg==
-X-Received: by 2002:a63:7d5a:: with SMTP id m26mr66963pgn.373.1600872388857;
-        Wed, 23 Sep 2020 07:46:28 -0700 (PDT)
-Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net. [220.133.187.190])
-        by smtp.gmail.com with ESMTPSA id t10sm217313pgp.15.2020.09.23.07.46.27
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Sep 2020 07:46:28 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Power cycle phy on PM resume
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-In-Reply-To: <17092088-86ff-2d31-b3de-2469419136a3@molgen.mpg.de>
-Date:   Wed, 23 Sep 2020 22:46:25 +0800
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <AC6D77B8-244D-4816-8FFE-A4480378EC4C@canonical.com>
-References: <20200923074751.10527-1-kai.heng.feng@canonical.com>
- <17092088-86ff-2d31-b3de-2469419136a3@molgen.mpg.de>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
+        id S1726634AbgIWOs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 10:48:56 -0400
+Received: from lan.nucleusys.com ([92.247.61.126]:60634 "EHLO
+        zztop.nucleusys.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726504AbgIWOs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:48:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=nucleusys.com; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
+        Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=4DYJKE8l8EdESOXVwsp+gos89esEsmURD8s5B4Bsfec=; b=RSQ+DQS4PaLen4FanX1zUpusmC
+        OHWXejqIFItnVTGDp+b/dg12zVaDRxod2M2lHqBTd1wuU9VdN4tAlPOYuXIbLyW6webaKVGsHb4sU
+        +Zv3/lgtW70dj7YK6MLfjmP/UtcK+EgPmtQCn+YK7eXj64c571iIXke3Ne1v7OP9dCYU=;
+Received: from [94.26.108.4] (helo=karbon)
+        by zztop.nucleusys.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <petkan@nucleusys.com>)
+        id 1kL64P-0005m4-T2; Wed, 23 Sep 2020 17:48:34 +0300
+Date:   Wed, 23 Sep 2020 17:48:32 +0300
+From:   Petko Manolov <petkan@nucleusys.com>
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     Himadri Pandya <himadrispandya@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, pankaj.laxminarayan.bharadiya@intel.com,
+        keescook@chromium.org, yuehaibing@huawei.com, ogiannou@gmail.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        gregkh@linuxfoundation.org
+Subject: Re: [PATCH 3/4] net: usb: rtl8150: use usb_control_msg_recv() and
+ usb_control_msg_send()
+Message-ID: <20200923144832.GA11151@karbon>
+References: <20200923090519.361-1-himadrispandya@gmail.com>
+ <20200923090519.361-4-himadrispandya@gmail.com>
+ <1600856557.26851.6.camel@suse.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1600856557.26851.6.camel@suse.com>
+X-Spam-Score: -1.0 (-)
+X-Spam-Report: Spam detection software, running on the system "zztop.nucleusys.com",
+ has NOT identified this incoming email as spam.  The original
+ message has been attached to this so you can view it or label
+ similar future email.  If you have any questions, see
+ the administrator of that system for details.
+ Content preview:  On 20-09-23 12:22:37, Oliver Neukum wrote: > Am Mittwoch,
+   den 23.09.2020, 14:35 +0530 schrieb Himadri Pandya: > > Hi, > > > Many usage
+    of usb_control_msg() do not have proper error check on return > > [...] 
+ Content analysis details:   (-1.0 points, 5.0 required)
+  pts rule name              description
+ ---- ---------------------- --------------------------------------------------
+ -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paul,
+On 20-09-23 12:22:37, Oliver Neukum wrote:
+> Am Mittwoch, den 23.09.2020, 14:35 +0530 schrieb Himadri Pandya:
+> 
+> Hi,
+> 
+> > Many usage of usb_control_msg() do not have proper error check on return
+> > value leaving scope for bugs on short reads. New usb_control_msg_recv()
+> > and usb_control_msg_send() nicely wraps usb_control_msg() with proper
+> > error check. Hence use the wrappers instead of calling usb_control_msg()
+> > directly.
+> > 
+> > Signed-off-by: Himadri Pandya <himadrispandya@gmail.com>
+> Nacked-by: Oliver Neukum <oneukum@suse.com>
+> 
+> > ---
+> >  drivers/net/usb/rtl8150.c | 32 ++++++--------------------------
+> >  1 file changed, 6 insertions(+), 26 deletions(-)
+> > 
+> > diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
+> > index 733f120c852b..e3002b675921 100644
+> > --- a/drivers/net/usb/rtl8150.c
+> > +++ b/drivers/net/usb/rtl8150.c
+> > @@ -152,36 +152,16 @@ static const char driver_name [] = "rtl8150";
+> >  */
+> >  static int get_registers(rtl8150_t * dev, u16 indx, u16 size, void *data)
+> >  {
+> > -	void *buf;
+> > -	int ret;
+> > -
+> > -	buf = kmalloc(size, GFP_NOIO);
+> 
+> GFP_NOIO is used here for a reason. You need to use this helper
+> while in contexts of error recovery and runtime PM.
+> 
+> > -	if (!buf)
+> > -		return -ENOMEM;
+> > -
+> > -	ret = usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
+> > -			      RTL8150_REQ_GET_REGS, RTL8150_REQT_READ,
+> > -			      indx, 0, buf, size, 500);
+> > -	if (ret > 0 && ret <= size)
+> > -		memcpy(data, buf, ret);
+> > -	kfree(buf);
+> > -	return ret;
+> > +	return usb_control_msg_recv(dev->udev, 0, RTL8150_REQ_GET_REGS,
+> > +				    RTL8150_REQT_READ, indx, 0, data,
+> > +				    size, 500);
+> 
+> This internally uses kmemdup() with GFP_KERNEL.
+> You cannot make this change. The API does not support it.
+> I am afraid we will have to change the API first, before more
+> such changes are done.
 
-> On Sep 23, 2020, at 21:28, Paul Menzel <pmenzel@molgen.mpg.de> wrote:
-> 
-> Dear Kai-Heng,
-> 
-> 
-> Am 23.09.20 um 09:47 schrieb Kai-Heng Feng:
->> We are seeing the following error after S3 resume:
->> [  704.746874] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
->> [  704.844232] e1000e 0000:00:1f.6 eno1: MDI Write did not complete
->> [  704.902817] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
->> [  704.903075] e1000e 0000:00:1f.6 eno1: reading PHY page 769 (or 0x6020 shifted) reg 0x17
->> [  704.903281] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
->> [  704.903486] e1000e 0000:00:1f.6 eno1: writing PHY page 769 (or 0x6020 shifted) reg 0x17
->> [  704.943155] e1000e 0000:00:1f.6 eno1: MDI Error
->> ...
->> [  705.108161] e1000e 0000:00:1f.6 eno1: Hardware Error
->> Since we don't know what platform firmware may do to the phy, so let's
->> power cycle the phy upon system resume to resolve the issue.
-> 
-> Is there a bug report or list thread for this issue?
+One possible fix is to add yet another argument to usb_control_msg_recv(), which 
+would be the GFP_XYZ flag to pass on to kmemdup().  Up to Greg, of course.
 
-No. That's why I sent a patch to start discussion :)
 
-> 
->> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
->> ---
->>  drivers/net/ethernet/intel/e1000e/netdev.c | 2 ++
->>  1 file changed, 2 insertions(+)
->> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
->> index 664e8ccc88d2..c2a87a408102 100644
->> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
->> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
->> @@ -6968,6 +6968,8 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
->>  	    !e1000e_check_me(hw->adapter->pdev->device))
->>  		e1000e_s0ix_exit_flow(adapter);
->>  +	e1000_power_down_phy(adapter);
->> +
->>  	rc = __e1000_resume(pdev);
->>  	if (rc)
->>  		return rc;
-> 
-> How much does this increase the resume time?
-
-I didn't measure it. Because for me it's more important to have a working device.
-
-Does it have a noticeable impact on your system's resume time?
-
-Kai-Heng
-
-> 
-> 
-> Kind regards,
-> 
-> Paul
-> 
-
+cheers,
+Petko
