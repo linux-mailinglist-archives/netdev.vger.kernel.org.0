@@ -2,126 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CB24275A41
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4586275A45
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 16:38:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbgIWOgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 10:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34502 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726156AbgIWOgx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:36:53 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2110FC0613CE
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 07:36:53 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id u25so19179247otq.6
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 07:36:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qAnQ7INjdEc26304V05U/cX4MW85UayWuqBGgYign/c=;
-        b=L9+XfPur1DpTXlCM5JhCVSSfxYRxQaUqSSbwcOuepYtxzryUfpbPCj7qlsqJTwtQwO
-         c49nBlH8hfRGQVUo+AtbryTp/np0agbaDU5+hm5L7AVZEa3DDtu38zs1HE/Nl7aaPfMK
-         PiKoJTw62lR/Jm8kprgAJP4Akcy+ZttvEWSRNHu7Bd7vFXk5iqLuGOs4ihrZzfId2y43
-         Phb8J+Cz4CgWl35kPYt1N0LVigIBIdViPrLl6YfLijlYIwfEeH5NbTGqtGkpul/nB75S
-         4B8mgErCNj7H6kE2YeRy3cwC4EKrxoZCB4oROoeN1IyOZ4MZQQ/Xe6L33YV+8I4lMARJ
-         HTMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qAnQ7INjdEc26304V05U/cX4MW85UayWuqBGgYign/c=;
-        b=cHoioSoknJfaaquiOb2FZoXBQzp19e+D9GwaL/wAd9Bgq7PSEquDkg8q99CqwZu8o4
-         AHxgt20ESB8tVf8gE+yl5X1y70Y2CGy0fJ+8szZE9Wv7Iyea83QtEmJGXNl24M9V7+IE
-         O9Dtgkh3eZoy8bEXVIrGDmra3AdahNyDLGF6gdzWCc+/74UhlHmzwdDbaHkVSSw4cShq
-         AQAOO4KS32Mprd61A5deOwmWu5RbBfeSOrDgwpimsnK8EQO54bTomZrvvtHJXKDBvIC2
-         HwBNASA/D0Zb92eJi8qNImZ3PBa4RLxAqwZUnAiMnLH5PYwTek5BoxazDZK2RsMyDUnQ
-         mVbA==
-X-Gm-Message-State: AOAM5339yhqxTyJH/BRywYIjW+jVhxdkzlmQgj7UjtxMjG/Bd38iMKau
-        WtxXh1uUsZ5svhht6C2VRa4=
-X-Google-Smtp-Source: ABdhPJx1dKK3AahPadHjfW60Mu+PdPFAWkaHVqnCIm5YUIVE2zCtswVVdYT7ayl8cO3DfPOpnBdm9A==
-X-Received: by 2002:a05:6830:10d5:: with SMTP id z21mr6631786oto.292.1600871812586;
-        Wed, 23 Sep 2020 07:36:52 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:c57c:d249:9ad:da9f])
-        by smtp.googlemail.com with ESMTPSA id w7sm9422766oon.2.2020.09.23.07.36.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Sep 2020 07:36:51 -0700 (PDT)
-Subject: Re: [PATCH v2] net/ipv4: always honour route mtu during forwarding
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Sunmeet Gill <sgill@quicinc.com>,
-        Vinay Paradkar <vparadka@qti.qualcomm.com>,
-        Tyler Wear <twear@quicinc.com>,
-        David Ahern <dsahern@kernel.org>
-References: <CANP3RGcTy5MyAyChUh7pTma60aLcBmOV4kKjh_OnGtBZag-gbg@mail.gmail.com>
- <20200923045143.3755128-1-zenczykowski@gmail.com>
- <10fbde1b-f852-2cc1-2e23-4c014931fed8@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e5c28c89-0022-69d2-8538-74c2c842a2fc@gmail.com>
-Date:   Wed, 23 Sep 2020 08:36:50 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1726710AbgIWOia convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 23 Sep 2020 10:38:30 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:28248 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726504AbgIWOi3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 10:38:29 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-165-Nw6nj9OTOPCDM2jdlTcJwQ-1; Wed, 23 Sep 2020 15:38:25 +0100
+X-MC-Unique: Nw6nj9OTOPCDM2jdlTcJwQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 23 Sep 2020 15:38:24 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 23 Sep 2020 15:38:24 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Al Viro' <viro@zeniv.linux.org.uk>, Christoph Hellwig <hch@lst.de>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: RE: [PATCH 3/9] iov_iter: refactor rw_copy_check_uvector and
+ import_iovec
+Thread-Topic: [PATCH 3/9] iov_iter: refactor rw_copy_check_uvector and
+ import_iovec
+Thread-Index: AQHWkbQ2JliFoXXebU2Mp2qBncEZ86l2SGTw
+Date:   Wed, 23 Sep 2020 14:38:24 +0000
+Message-ID: <200cf2b9ce5e408f8838948fda7ce9a0@AcuMS.aculab.com>
+References: <20200923060547.16903-1-hch@lst.de>
+ <20200923060547.16903-4-hch@lst.de>
+ <20200923141654.GJ3421308@ZenIV.linux.org.uk>
+In-Reply-To: <20200923141654.GJ3421308@ZenIV.linux.org.uk>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <10fbde1b-f852-2cc1-2e23-4c014931fed8@gmail.com>
-Content-Type: text/plain; charset=utf-8
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/23/20 2:46 AM, Eric Dumazet wrote:
->> diff --git a/include/net/ip.h b/include/net/ip.h
->> index b09c48d862cc..c2188bebbc54 100644
->> --- a/include/net/ip.h
->> +++ b/include/net/ip.h
->> @@ -436,12 +436,17 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
->>  						    bool forwarding)
->>  {
->>  	struct net *net = dev_net(dst->dev);
->> +	unsigned int mtu;
->>  
->>  	if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
->>  	    ip_mtu_locked(dst) ||
->>  	    !forwarding)
->>  		return dst_mtu(dst);
->>  
->> +	/* 'forwarding = true' case should always honour route mtu */
->> +	mtu = dst_metric_raw(dst, RTAX_MTU);
->> +	if (mtu) return mtu;
+From: Al Viro
+> Sent: 23 September 2020 15:17
 > 
+> On Wed, Sep 23, 2020 at 08:05:41AM +0200, Christoph Hellwig wrote:
 > 
->         if (mtu)
->                 return mtu;
+> > +struct iovec *iovec_from_user(const struct iovec __user *uvec,
+> > +		unsigned long nr_segs, unsigned long fast_segs,
 > 
-> Apparently route mtu are capped to 65520, not sure where it is done exactly IP_MAX_MTU being 65535)
+> Hmm...  For fast_segs unsigned long had always been ridiculous
+> (4G struct iovec on caller stack frame?), but that got me wondering about
+> nr_segs and I wish I'd thought of that when introducing import_iovec().
+> 
+> The thing is, import_iovec() takes unsigned int there.  Which is fine
+> (hell, the maximal value that can be accepted in 1024), except that
+> we do pass unsigned long syscall argument to it in some places.
 
-ip_metrics_convert seems to be the place"
-                if (type == RTAX_MTU && val > 65535 - 15)
-                        val = 65535 - 15;
+It will make diddly-squit difference.
+The parameters end up in registers on most calling conventions.
+Plausibly you get an extra 'REX' byte on x86 for the 64bit value.
+What you want to avoid is explicit sign/zero extension and value
+masking after arithmetic.
 
-going back through the code moves, and it was added by Dave with
-710ab6c03122c
+On x86-64 the 'horrid' type is actually 'signed int'.
+It often needs sign extending to 64bits (eg when being
+used as an array subscript).
 
-> 
-> # ip ro add 1.1.1.4 dev wlp2s0 mtu 100000
-> # ip ro get 1.1.1.4
-> 1.1.1.4 dev wlp2s0 src 192.168.8.147 uid 0 
->     cache mtu 65520 
-> 
-> 
-> 
-> 
->> +
->>  	return min(READ_ONCE(dst->dev->mtu), IP_MAX_MTU);
->>  }
->>  
->>
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
