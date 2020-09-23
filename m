@@ -2,143 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0ACC276135
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 21:41:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB546276152
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 21:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726545AbgIWTlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 15:41:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53426 "EHLO
+        id S1726711AbgIWTsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 15:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726156AbgIWTlC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 15:41:02 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3F8C0613CE;
-        Wed, 23 Sep 2020 12:41:02 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id s19so595467ybc.5;
-        Wed, 23 Sep 2020 12:41:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e/G1ZifA23tGD+rmBUvIw0j4DCLnW+G64Yu4Sv+ViCE=;
-        b=JG6VlsmZi7MWIJLQ/feMRwUhGzWobnorf3O6s22HroNZpQC2jIkSjRjt28rAsvfRck
-         TOta0Qd1a7d3qkSHigmUTYykrkzQYV+rA7rdlqHG9F1z2Z9oWRK0RF6+v2AkGgsJKCBa
-         oIqRz3En3knGLACxd99NCs7xd/p9aSZ7Nczoxb2ie4Qq2UaVTrCzDGbr4JXxbJhZ0MWT
-         P1lraTB2aIUJZ8ddXPhUx3PXP96UEve5FSMJnKMo8A05L0uyCC5XHwcqrvsEbeGVdupG
-         TJsclB3l8K4DLCMSetT12OVqmsQUg3Ex9JteU2IbKroYI/BV5qt7Fnosd6TAnX2C2Gyw
-         jzZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e/G1ZifA23tGD+rmBUvIw0j4DCLnW+G64Yu4Sv+ViCE=;
-        b=pPG1hzyPee0a4YhiQWPbsglKgc23opfaatkvgzyLRVZsCJlJXNIbTcqj8G+66Is40E
-         NylOfyccz0yuoWEmHeU47fIhbRUDs33evZD6dcy5r3ZNbd3RO96UOuUSTcjiwhNJPPzK
-         8u7i1kgog4vuZlzwIMXtbRDnyW6Dj6U0wIw89IR3Ho5T/lPkVel3FOkypX2UNp+jXDJr
-         ZkPsbwe7p+mrcdYUFc+51TFIcRZE4czik6ALXEa7T8C4HWDDdCJODj5syldZX1ZnRthe
-         KWNrs1mPA38jY2EShRyAzeRXadfutxw5+7+sr26SBCYcdHxq4yVVoks75kiqmHCmX4Aj
-         xZNg==
-X-Gm-Message-State: AOAM530B/wMaxvYUZ0vsaerI+AobEzvzYrIQOOP5ZGuVSmy7/PWEskxW
-        rBULdmJfWaCidEZ5f4mUI06nHYZjSfeL2s6gRPM=
-X-Google-Smtp-Source: ABdhPJxB2fsMG7C4v5a2QMLn1NWLY4SblMVNKsnGaIPyuYSKqmzzBRzj0ZPaabl+p4SURkiXnQqgArB16j40XUbU2qA=
-X-Received: by 2002:a25:6644:: with SMTP id z4mr2366269ybm.347.1600890061803;
- Wed, 23 Sep 2020 12:41:01 -0700 (PDT)
+        with ESMTP id S1726381AbgIWTsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 15:48:07 -0400
+Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18231C0613CE;
+        Wed, 23 Sep 2020 12:48:07 -0700 (PDT)
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kLAk7-004l0B-Ms; Wed, 23 Sep 2020 19:47:55 +0000
+Date:   Wed, 23 Sep 2020 20:47:55 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Howells <dhowells@redhat.com>,
+        David Laight <David.Laight@aculab.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
+        linux-aio <linux-aio@kvack.org>, io-uring@vger.kernel.org,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Networking <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>
+Subject: Re: [PATCH 5/9] fs: remove various compat readv/writev helpers
+Message-ID: <20200923194755.GR3421308@ZenIV.linux.org.uk>
+References: <20200923060547.16903-1-hch@lst.de>
+ <20200923060547.16903-6-hch@lst.de>
+ <20200923142549.GK3421308@ZenIV.linux.org.uk>
+ <20200923143251.GA14062@lst.de>
+ <20200923145901.GN3421308@ZenIV.linux.org.uk>
+ <20200923163831.GO3421308@ZenIV.linux.org.uk>
+ <CAK8P3a3nkLUOkR+jwz2_2LcYTUTqdVf8JOtZqKWbtEDotNhFZA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200923165401.2284447-1-songliubraving@fb.com> <20200923165401.2284447-4-songliubraving@fb.com>
-In-Reply-To: <20200923165401.2284447-4-songliubraving@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 23 Sep 2020 12:40:51 -0700
-Message-ID: <CAEf4Bzb2KdA3m6-hfH96HxwCvPeOyNQ59LRm0rW8OWs+7zyMHQ@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 3/3] selftests/bpf: add raw_tp_test_run
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a3nkLUOkR+jwz2_2LcYTUTqdVf8JOtZqKWbtEDotNhFZA@mail.gmail.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 9:55 AM Song Liu <songliubraving@fb.com> wrote:
->
-> This test runs test_run for raw_tracepoint program. The test covers ctx
-> input, retval output, and proper handling of cpu_plus field.
->
-> Signed-off-by: Song Liu <songliubraving@fb.com>
-> ---
->  .../bpf/prog_tests/raw_tp_test_run.c          | 73 +++++++++++++++++++
->  .../bpf/progs/test_raw_tp_test_run.c          | 26 +++++++
->  2 files changed, 99 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c b/tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
-> new file mode 100644
-> index 0000000000000..3c6523b61afc1
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
-> @@ -0,0 +1,73 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright (c) 2019 Facebook */
-> +#include <test_progs.h>
-> +#include "bpf/libbpf_internal.h"
-> +#include "test_raw_tp_test_run.skel.h"
-> +
-> +static int duration;
-> +
-> +void test_raw_tp_test_run(void)
-> +{
-> +       struct bpf_prog_test_run_attr test_attr = {};
-> +       __u64 args[2] = {0x1234ULL, 0x5678ULL};
-> +       int comm_fd = -1, err, nr_online, i;
-> +       int expected_retval = 0x1234 + 0x5678;
-> +       struct test_raw_tp_test_run *skel;
-> +       char buf[] = "new_name";
-> +       bool *online = NULL;
-> +
-> +       err = parse_cpu_mask_file("/sys/devices/system/cpu/online", &online,
-> +                                 &nr_online);
-> +       if (CHECK(err, "parse_cpu_mask_file", "err %d\n", err))
-> +               return;
-> +
-> +       skel = test_raw_tp_test_run__open_and_load();
-> +       if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-> +               return;
+On Wed, Sep 23, 2020 at 08:45:51PM +0200, Arnd Bergmann wrote:
+> On Wed, Sep 23, 2020 at 6:38 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+> >
+> > I wonder if we should do something like
+> >
+> > SYSCALL_DECLARE3(readv, unsigned long, fd, const struct iovec __user *, vec,
+> >                  unsigned long, vlen);
+> > in syscalls.h instead, and not under that ifdef.
+> >
+> > Let it expand to declaration of sys_...() in generic case and, on x86, into
+> > __do_sys_...() and __ia32_sys_...()/__x64_sys_...(), with types matching
+> > what SYSCALL_DEFINE ends up using.
+> >
+> > Similar macro would cover compat_sys_...() declarations.  That would
+> > restore mismatch checking for x86 and friends.  AFAICS, the cost wouldn't
+> > be terribly high - cpp would have more to chew through in syscalls.h,
+> > but it shouldn't be all that costly.  Famous last words, of course...
+> >
+> > Does anybody see fundamental problems with that?
+> 
+> I've had some ideas along those lines in the past and I think it should work.
+> 
+> As a variation of this, the SYSCALL_DEFINEx() macros could go away
+> entirely, leaving only the macro instantiations from the header to
+> require that syntax. It would require first changing the remaining
+> architectures to build the syscall table from C code instead of
+> assembler though.
+> 
+> Regardless of that, another advantage of having the SYSCALL_DECLAREx()
+> would be the ability to include that header file from elsewhere with a different
+> macro definition to create a machine-readable version of the interface when
+> combined with the syscall.tbl files. This could be used to create a user
+> space stub for calling into the low-level syscall regardless of the
+> libc interfaces,
+> or for synchronizing the interfaces with strace, qemu-user, or anything that
+> needs to deal with the low-level interface.
 
-leaking memory here
+FWIW, after playing with that for a while...  Do we really want the
+compat_sys_...() declarations to live in linux/compat.h?  Most of
+the users of that file don't want those; why not move them to
+linux/syscalls.h?
 
-> +       err = test_raw_tp_test_run__attach(skel);
-> +       if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-> +               goto cleanup;
-> +
-> +       comm_fd = open("/proc/self/comm", O_WRONLY|O_TRUNC);
-> +       if (CHECK(comm_fd < 0, "open /proc/self/comm", "err %d\n", errno))
-> +               goto cleanup;
-> +
-
-[...]
-
-> +SEC("raw_tp/task_rename")
-> +int BPF_PROG(rename, struct task_struct *task, char *comm)
-> +{
-> +
-> +       count++;
-> +       if ((unsigned long long) task == 0x1234 &&
-> +           (unsigned long long) comm == 0x5678) {
-
-you can use shorter __u64?
-
-> +               on_cpu = bpf_get_smp_processor_id();
-> +               return (int)task + (int)comm;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +char _license[] SEC("license") = "GPL";
-> --
-> 2.24.1
->
+Reason: there's a lot more users of linux/compat.h than those of
+linux/syscalls.h - it's pulled by everything in the networking stack,
+for starters...
