@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 302F62753D3
+	by mail.lfdr.de (Postfix) with ESMTP id 9DEB82753D4
 	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 10:55:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726746AbgIWIy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 04:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38340 "EHLO
+        id S1726751AbgIWIy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 04:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726513AbgIWIy2 (ORCPT
+        with ESMTP id S1726515AbgIWIy2 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 04:54:28 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C610C061755
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606B6C0613D1
         for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 01:54:28 -0700 (PDT)
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kL0Xi-0000uS-4J; Wed, 23 Sep 2020 10:54:26 +0200
+        id 1kL0Xi-0000uS-HS; Wed, 23 Sep 2020 10:54:26 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
         kernel@pengutronix.de, michael@walle.cc, qiangqing.zhang@nxp.com,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 09/20] can: flexcan: add correctable errors correction when HW supports ECC
-Date:   Wed, 23 Sep 2020 10:54:07 +0200
-Message-Id: <20200923085418.2685858-10-mkl@pengutronix.de>
+Subject: [PATCH 10/20] can: flexcan: flexcan_chip_stop(): add error handling and propagate error value
+Date:   Wed, 23 Sep 2020 10:54:08 +0200
+Message-Id: <20200923085418.2685858-11-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200923085418.2685858-1-mkl@pengutronix.de>
 References: <20200923085418.2685858-1-mkl@pengutronix.de>
@@ -41,101 +41,87 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Joakim Zhang <qiangqing.zhang@nxp.com>
 
-commit cdce844865be ("can: flexcan: add vf610 support for FlexCAN")
-From above commit by Stefan Agner, the patch just disables
-non-correctable errors interrupt and freeze mode. It still can correct
-the correctable errors since ECC enabled by default after reset (MECR[ECCDIS]=0,
-enable memory error correct) if HW supports ECC.
+This patch implements error handling and propagates the error value of
+flexcan_chip_stop(). This function will be called from flexcan_suspend()
+in an upcoming patch in some SoCs which support LPSR mode.
 
-commit 5e269324db5a ("can: flexcan: disable completely the ECC mechanism")
-From above commit by Joakim Zhang, the patch disables ECC completely (assert
-MECR[ECCDIS]) according to the explanation of FLEXCAN_QUIRK_DISABLE_MECR that
-disable memory error detection. This cause correctable errors cannot be
-corrected even HW supports ECC.
-
-The error correction mechanism ensures that in this 13-bit word, errors
-in one bit can be corrected (correctable errors) and errors in two bits can
-be detected but not corrected (non-correctable errors). Errors in more than
-two bits may not be detected.
-
-If HW supports ECC, we can use this to correct the correctable errors detected
-from FlexCAN memory. Then disable non-correctable errors interrupt and freeze
-mode to avoid that put FlexCAN in freeze mode.
-
-This patch adds correctable errors correction when HW supports ECC, and
-modify explanation for FLEXCAN_QUIRK_DISABLE_MECR.
+Add a new function flexcan_chip_stop_disable_on_error() that tries to
+disable the chip even in case of errors.
 
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Link: https://lore.kernel.org/r/20200416093126.15242-1-qiangqing.zhang@nxp.com
+[mkl: introduce flexcan_chip_stop_disable_on_error() and use it in flexcan_close()]
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/r/20200922144429.2613631-11-mkl@pengutronix.de
 ---
- drivers/net/can/flexcan.c | 31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ drivers/net/can/flexcan.c | 34 ++++++++++++++++++++++++++++------
+ 1 file changed, 28 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index 5c6903e23c01..52d73115c7fd 100644
+index 52d73115c7fd..4be73ce7518e 100644
 --- a/drivers/net/can/flexcan.c
 +++ b/drivers/net/can/flexcan.c
-@@ -190,7 +190,7 @@
- #define FLEXCAN_QUIRK_DISABLE_RXFG BIT(2)
- /* Enable EACEN and RRS bit in ctrl2 */
- #define FLEXCAN_QUIRK_ENABLE_EACEN_RRS  BIT(3)
--/* Disable Memory error detection */
-+/* Disable non-correctable errors interrupt and freeze mode */
- #define FLEXCAN_QUIRK_DISABLE_MECR BIT(4)
- /* Use timestamp based offloading */
- #define FLEXCAN_QUIRK_USE_OFF_TIMESTAMP BIT(5)
-@@ -1221,28 +1221,43 @@ static int flexcan_chip_start(struct net_device *dev)
- 	for (i = 0; i < priv->mb_count; i++)
- 		priv->write(0, &regs->rximr[i]);
+@@ -1292,18 +1292,23 @@ static int flexcan_chip_start(struct net_device *dev)
+ 	return err;
+ }
  
--	/* On Vybrid, disable memory error detection interrupts
--	 * and freeze mode.
--	 * This also works around errata e5295 which generates
--	 * false positive memory errors and put the device in
--	 * freeze mode.
-+	/* On Vybrid, disable non-correctable errors interrupt and
-+	 * freeze mode. It still can correct the correctable errors
-+	 * when HW supports ECC.
-+	 *
-+	 * This also works around errata e5295 which generates false
-+	 * positive memory errors and put the device in freeze mode.
- 	 */
- 	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_DISABLE_MECR) {
- 		/* Follow the protocol as described in "Detection
- 		 * and Correction of Memory Errors" to write to
--		 * MECR register
-+		 * MECR register (step 1 - 5)
-+		 *
-+		 * 1. By default, CTRL2[ECRWRE] = 0, MECR[ECRWRDIS] = 1
-+		 * 2. set CTRL2[ECRWRE]
- 		 */
- 		reg_ctrl2 = priv->read(&regs->ctrl2);
- 		reg_ctrl2 |= FLEXCAN_CTRL2_ECRWRE;
- 		priv->write(reg_ctrl2, &regs->ctrl2);
+-/* flexcan_chip_stop
++/* __flexcan_chip_stop
+  *
+- * this functions is entered with clocks enabled
++ * this function is entered with clocks enabled
+  */
+-static void flexcan_chip_stop(struct net_device *dev)
++static int __flexcan_chip_stop(struct net_device *dev, bool disable_on_error)
+ {
+ 	struct flexcan_priv *priv = netdev_priv(dev);
+ 	struct flexcan_regs __iomem *regs = priv->regs;
++	int err;
  
-+		/* 3. clear MECR[ECRWRDIS] */
- 		reg_mecr = priv->read(&regs->mecr);
- 		reg_mecr &= ~FLEXCAN_MECR_ECRWRDIS;
- 		priv->write(reg_mecr, &regs->mecr);
--		reg_mecr |= FLEXCAN_MECR_ECCDIS;
-+
-+		/* 4. all writes to MECR must keep MECR[ECRWRDIS] cleared */
- 		reg_mecr &= ~(FLEXCAN_MECR_NCEFAFRZ | FLEXCAN_MECR_HANCEI_MSK |
- 			      FLEXCAN_MECR_FANCEI_MSK);
- 		priv->write(reg_mecr, &regs->mecr);
-+
-+		/* 5. after configuration done, lock MECR by either
-+		 * setting MECR[ECRWRDIS] or clearing CTRL2[ECRWRE]
-+		 */
-+		reg_mecr |= FLEXCAN_MECR_ECRWRDIS;
-+		priv->write(reg_mecr, &regs->mecr);
-+
-+		reg_ctrl2 &= ~FLEXCAN_CTRL2_ECRWRE;
-+		priv->write(reg_ctrl2, &regs->ctrl2);
- 	}
+ 	/* freeze + disable module */
+-	flexcan_chip_freeze(priv);
+-	flexcan_chip_disable(priv);
++	err = flexcan_chip_freeze(priv);
++	if (err && !disable_on_error)
++		return err;
++	err = flexcan_chip_disable(priv);
++	if (err && !disable_on_error)
++		goto out_chip_unfreeze;
  
- 	err = flexcan_transceiver_enable(priv);
+ 	/* Disable all interrupts */
+ 	priv->write(0, &regs->imask2);
+@@ -1313,6 +1318,23 @@ static void flexcan_chip_stop(struct net_device *dev)
+ 
+ 	flexcan_transceiver_disable(priv);
+ 	priv->can.state = CAN_STATE_STOPPED;
++
++	return 0;
++
++ out_chip_unfreeze:
++	flexcan_chip_unfreeze(priv);
++
++	return err;
++}
++
++static inline int flexcan_chip_stop_disable_on_error(struct net_device *dev)
++{
++	return __flexcan_chip_stop(dev, true);
++}
++
++static inline int flexcan_chip_stop(struct net_device *dev)
++{
++	return __flexcan_chip_stop(dev, false);
+ }
+ 
+ static int flexcan_open(struct net_device *dev)
+@@ -1394,7 +1416,7 @@ static int flexcan_close(struct net_device *dev)
+ 
+ 	netif_stop_queue(dev);
+ 	can_rx_offload_disable(&priv->offload);
+-	flexcan_chip_stop(dev);
++	flexcan_chip_stop_disable_on_error(dev);
+ 
+ 	can_rx_offload_del(&priv->offload);
+ 	free_irq(dev->irq, dev);
 -- 
 2.28.0
 
