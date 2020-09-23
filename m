@@ -2,93 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ECD1275729
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 13:30:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4E16275772
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 13:49:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbgIWLaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 07:30:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26512 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726332AbgIWL35 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 07:29:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600860596;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=puu3LR6PBVkJbaIlQWrIFXp+CHL9X+avvkTO38uPYuA=;
-        b=EZ7OhJZhlTYZg3IoNnQGLg+QOThwXG8zJCD2OItgOuQeTBgH+5Pa/H9OqWI0xSradgO58x
-        HAx3IqmyMXrGMrYnqw0CaWf0I3A++ytPdC7/Lr6mo9pKvx4DxnGN0Je+uFQVq3Y3ltZ3g0
-        NIx5OKvHl7fMvhf5DrY+tg8eGKWeaTA=
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
- [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-461-MsG3hq9APXGA-bvwoim9Dw-1; Wed, 23 Sep 2020 07:29:54 -0400
-X-MC-Unique: MsG3hq9APXGA-bvwoim9Dw-1
-Received: by mail-oo1-f70.google.com with SMTP id n16so10162489oov.17
-        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 04:29:54 -0700 (PDT)
+        id S1726584AbgIWLtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 07:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726472AbgIWLtn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 07:49:43 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A00C0613CE;
+        Wed, 23 Sep 2020 04:49:42 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id y15so6801332wmi.0;
+        Wed, 23 Sep 2020 04:49:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=p4sMBWzXBxVz4HvD3n4l2QIDm0SxypO/fE8nCP81NYo=;
+        b=hVurwq/6/XhFXJ6RoPXK1EGdTYQ6vzFdgejDABeebl0RtKDkmGFD+KdNAxd8/A9JjX
+         ir1KTle+zPq8HVtGgHOCF1NbP340ypt9arNONJOVxUYZquWaqnxmcQ3gb8StBWVA8Dfx
+         v+Lh4dW0ZkzbMTMKpV1Ge813iSjzUYfYJkEl+r1GXJUIWNZxkwLL+CBWP8VYSRtATc/B
+         5aFvcuMf4SiOPuuhVdVTkUtv7Psy3nn1U3MarmiWquAVZX2jGZcyJ5wMdcqiRck5Yaqx
+         j9tHaigvMiCHJ2lEK5xbq4EFENaf/BSnFna2XopimZ0iURvIzc/UaOIbxIZrLsgIJLPJ
+         U06g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=puu3LR6PBVkJbaIlQWrIFXp+CHL9X+avvkTO38uPYuA=;
-        b=ki4r13nZpOS++Q8LFqVTF1uFnLM4kY3FyjNpFkMVjh4d+L7jPScdqbeihp3B5GwxZA
-         qzcCT2vP35yewLKzlZs57Ttw0nSCWTiJ92gdgxP9rxH8FjVAMtZpi8mkgdKpEf/guB9q
-         Hxzf02b+eDd21d3rSCO3ITDgw6NDHd91vkj8TIUzjWTNVoO3RGbpwYRM0NKRKscv2sw+
-         iqQSMBVCkykNXf022x1txOyHfunI+SVLVch75nnjXa6SjEavbLcl624sWVriv5OvtC0l
-         i10dDWpLv9bssGcjtaSQlFj3BVkKkgLbxZMmbK05gBDfUQ6Upm61xCAQlxG1I4cIFIMp
-         kviQ==
-X-Gm-Message-State: AOAM531pbvsdrg8CBq67hBW2Ctjg/RzDmcj5uj1F+xbzxwrNruuOs3yh
-        jBeIqpBBPyCEybAxQ4HIsKhkluZ6g1KRzdLN4igyqfjjJ3minyuZ3a7OJK+xZepJRd+fO/2ywRI
-        obOF4WEHeKAKd1Rh5xHXfGD23iyYuU5AU
-X-Received: by 2002:a9d:3ca:: with SMTP id f68mr5367784otf.330.1600860593957;
-        Wed, 23 Sep 2020 04:29:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxpHbmO/24vw0t0dO0Z48Fo9ja7x9xin6XTNYYbw55FKRewu8qtDKfTiW2oZqiFX3+OgoxgQGeq71niS4pG3qE=
-X-Received: by 2002:a9d:3ca:: with SMTP id f68mr5367775otf.330.1600860593748;
- Wed, 23 Sep 2020 04:29:53 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=p4sMBWzXBxVz4HvD3n4l2QIDm0SxypO/fE8nCP81NYo=;
+        b=I29Xphixsqtqa74TJL7gYYcJUlrpMsqKdGaGn4dPZbJUF9agfGbYsFJJ6snMU4cJHG
+         vXxnR7SNKjv4xuq5SA4w/KHto0MgG6+/FXuNDHSdVdVdssZRD9G8dwY06/0ETuGx2QCT
+         fjYY6gHbUGckREVu2PnasFyjxhbiae45Cchgb+OFaE5YtV+hYLO7M8LPZmayZH4Kg+Do
+         O5nLXH8vH+frQnDCdrF53NWjgy1J8eJ2F4YJKjUK+0KdZ55Ffjs9zqBbf9V8l4mAav47
+         YsDkLJ5cZt+ISkj/ogcYA4hjtqVYKuGL/Id3kMnjiwWGtyhQf+M+oFAJ+NRjj6fLyHmZ
+         DVCA==
+X-Gm-Message-State: AOAM531LbAa31uo288aFm+KKxM08G8WZb7/4T7wwlkQ2FgfrfC+WS7j2
+        ijiG0XTZM9es8N32G+1r3D8gpKZN2Js=
+X-Google-Smtp-Source: ABdhPJwSy8djRzattquH/FjML2gk62PklGKieE8AHEPIh5I6VIm/LdLDkYCYpQ99B8eNnnr/FZ2mRA==
+X-Received: by 2002:a7b:c4d9:: with SMTP id g25mr6072703wmk.15.1600861781360;
+        Wed, 23 Sep 2020 04:49:41 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:c43a:de91:4527:c1ba? (p200300ea8f235700c43ade914527c1ba.dip0.t-ipconnect.de. [2003:ea:8f23:5700:c43a:de91:4527:c1ba])
+        by smtp.googlemail.com with ESMTPSA id i14sm241690wml.24.2020.09.23.04.49.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Sep 2020 04:49:40 -0700 (PDT)
+Subject: Re: [PATCH] Revert "net: linkwatch: add check for netdevice being
+ present to linkwatch_do_dev"
+To:     Saeed Mahameed <saeed@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Gaku Inami <gaku.inami.xh@renesas.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200901150237.15302-1-geert+renesas@glider.be>
+ <7bfebfdc0d7345c4612124ff00e20eebb0ff6cd9.camel@kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <3d9176a6-c93e-481c-5877-786f5e6aaef8@gmail.com>
+Date:   Wed, 23 Sep 2020 13:49:35 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <20200922133731.33478-5-jarod@redhat.com> <20200923041337.GA29158@0b758a8b4a67>
-In-Reply-To: <20200923041337.GA29158@0b758a8b4a67>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Wed, 23 Sep 2020 07:29:43 -0400
-Message-ID: <CAKfmpScApsp7MXRdHS=V3LFVaJTPrhL7qmb4J_EKH=8KVDh-rA@mail.gmail.com>
-Subject: Re: [RFC PATCH] bonding: linkdesc can be static
-To:     kernel test robot <lkp@intel.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, kbuild-all@lists.01.org,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <7bfebfdc0d7345c4612124ff00e20eebb0ff6cd9.camel@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 12:15 AM kernel test robot <lkp@intel.com> wrote:
->
-> Signed-off-by: kernel test robot <lkp@intel.com>
-> ---
->  bond_procfs.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/bonding/bond_procfs.c b/drivers/net/bonding/bond_procfs.c
-> index 91ece68607b23..9b1b37a682728 100644
-> --- a/drivers/net/bonding/bond_procfs.c
-> +++ b/drivers/net/bonding/bond_procfs.c
-> @@ -8,7 +8,7 @@
->  #include "bonding_priv.h"
->
->  #ifdef CONFIG_BONDING_LEGACY_INTERFACES
-> -const char *linkdesc = "Slave";
-> +static const char *linkdesc = "Slave";
->  #else
->  const char *linkdesc = "Link";
->  #endif
+On 18.09.2020 19:58, Saeed Mahameed wrote:
+> On Tue, 2020-09-01 at 17:02 +0200, Geert Uytterhoeven wrote:
+>> This reverts commit 124eee3f6955f7aa19b9e6ff5c9b6d37cb3d1e2c.
+>>
+>> Inami-san reported that this commit breaks bridge support in a Xen
+>> environment, and that reverting it fixes this.
+>>
+>> During system resume, bridge ports are no longer enabled, as that
+>> relies
+>> on the receipt of the NETDEV_CHANGE notification.  This notification
+>> is
+>> not sent, as netdev_state_change() is no longer called.
+>>
+>> Note that the condition this commit intended to fix never existed
+>> upstream, as the patch triggering it and referenced in the commit was
+>> never applied upstream.  Hence I can confirm s2ram on r8a73a4/ape6evm
+>> and sh73a0/kzm9g works fine before/after this revert.
+>>
+>> Reported-by Gaku Inami <gaku.inami.xh@renesas.com>
+>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>> ---
+>>  net/core/link_watch.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/net/core/link_watch.c b/net/core/link_watch.c
+>> index 75431ca9300fb9c4..c24574493ecf95e6 100644
+>> --- a/net/core/link_watch.c
+>> +++ b/net/core/link_watch.c
+>> @@ -158,7 +158,7 @@ static void linkwatch_do_dev(struct net_device
+>> *dev)
+>>  	clear_bit(__LINK_STATE_LINKWATCH_PENDING, &dev->state);
+>>  
+>>  	rfc2863_policy(dev);
+>> -	if (dev->flags & IFF_UP && netif_device_present(dev)) {
+>> +	if (dev->flags & IFF_UP) {
+> 
+> So with your issue the devices is both IFF_UP and !present ? how so ?
+> I think you should look into that.
+> 
+> I am ok with removing the "dev present" check from here just because we
+> shouldn't  be expecting IFF_UP && !present .. such thing must be a bug
+> somewhere else.
+> 
+>>  		if (netif_carrier_ok(dev))
+>>  			dev_activate(dev);
+>>  		else
+> 
 
-Good attempt, robot, but you missed the #else. Will fold a full
-version into my set.
 
--- 
-Jarod Wilson
-jarod@redhat.com
-
+In __dev_close_many() we call ndo_stop() whilst IFF_UP is still set.
+ndo_stop() may detach the device and bring down the PHY, resulting in an
+async link change event that calls dev_get_stats(). The latter call may
+have a problem if the device is detached. In a first place I'd consider
+such a case a network driver bug (ndo_get_stats/64 should check for
+device presence if depending on it).
+The additional check in linkwatch_do_dev() was meant to protect from such
+driver issues.
