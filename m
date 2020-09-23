@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23201275F29
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 19:50:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64420275F2C
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 19:50:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726799AbgIWRuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 13:50:12 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:57756 "EHLO
+        id S1726627AbgIWRue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 13:50:34 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:58102 "EHLO
         aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726413AbgIWRuK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 13:50:10 -0400
+        with ESMTP id S1726332AbgIWRue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 13:50:34 -0400
 Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08NHdJ2T078113;
-        Wed, 23 Sep 2020 17:49:18 GMT
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08NHdKi5078131;
+        Wed, 23 Sep 2020 17:49:24 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=W65ZGoHediW1tGKJ28cfVTH/mnDXnEiOgdsTF56G2So=;
- b=FEaIJX0tanQZizkq46C9qey7G0Lh+B364o8nIr4gmjvMMZ0C/7I54aDZd0x0K5nKR4Zu
- 2tzMmpU5CFNS1SeqN4lv4g6D+dk+n+mBk3QrQmW5dyt9xd3Zq4kyg0FK5cMHMoagYAGX
- YIuhqKIliI43orXhGBiwJ2fGbZUAOrX8iki4x2hegTV4snVl/bHe2ah0W09Z0ClqkVpv
- ViXkeNbc3NWaiiAD+A6GtrNLXrG5VNoltBvNVPqksFQ61Y1f2w8V4b6R3HkhLeNLb3tg
- PAeaWYu2HowiAPrB7LeNlxCNRHdyGUvsiyaJmf3rKdPCpXgJ2aaSV4LSVAXnOfgjak5c tQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 33q5rgja2j-1
+ bh=3aMQBdXYDmmkEC7YyOk/oFsIJ0s7lzVZ46/gyCWmTGA=;
+ b=ESt4PH2enSUovvABbcXIdH5rFG4fJf6rQ4XNQEPqD3a7nRb1Peu0cStmOCaiWby+bsxl
+ fyl77nIkNAWNsbiQY30wRXhQ+/wiUXEOnK1BpTDS2BflfdVrzWyHpSSJmS0RdKp+EADB
+ MjimxP4ft8ORWOlMTxjl/qDJtF5wu2Nu0oLGmxGSrZWB16ST2do0nW+dczFw5Ex+fT4Q
+ 87VEUzbQDw/Ik5LY6Ri8G/frbtxMKAwk1P/6izx5HWqdHn1+ZpthN68rGbpBw8ib6tsu
+ 3NvBadq+pvS93Y2P41sXi1aHF1XTyvZF2pkDqaehaZDU9Kd8KKwUJFAvf9Mnf2DAoMbu Jg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 33q5rgja2x-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 23 Sep 2020 17:49:17 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08NHfQfL039965;
-        Wed, 23 Sep 2020 17:47:17 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 33nux1gepb-1
+        Wed, 23 Sep 2020 17:49:24 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08NHeRAd042991;
+        Wed, 23 Sep 2020 17:47:24 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 33nurv0xa5-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Sep 2020 17:47:17 +0000
+        Wed, 23 Sep 2020 17:47:23 +0000
 Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08NHlF2x001008;
-        Wed, 23 Sep 2020 17:47:15 GMT
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08NHlL9V001564;
+        Wed, 23 Sep 2020 17:47:21 GMT
 Received: from localhost.uk.oracle.com (/10.175.195.80)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 23 Sep 2020 10:47:15 -0700
+        with ESMTP ; Wed, 23 Sep 2020 10:47:21 -0700
 From:   Alan Maguire <alan.maguire@oracle.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andriin@fb.com, yhs@fb.com
 Cc:     linux@rasmusvillemoes.dk, andriy.shevchenko@linux.intel.com,
@@ -49,20 +49,20 @@ Cc:     linux@rasmusvillemoes.dk, andriy.shevchenko@linux.intel.com,
         rostedt@goodmis.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
         acme@kernel.org, Alan Maguire <alan.maguire@oracle.com>
-Subject: [PATCH v6 bpf-next 5/6] bpf: add bpf_seq_printf_btf helper
-Date:   Wed, 23 Sep 2020 18:46:27 +0100
-Message-Id: <1600883188-4831-6-git-send-email-alan.maguire@oracle.com>
+Subject: [PATCH v6 bpf-next 6/6] selftests/bpf: add test for bpf_seq_printf_btf helper
+Date:   Wed, 23 Sep 2020 18:46:28 +0100
+Message-Id: <1600883188-4831-7-git-send-email-alan.maguire@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1600883188-4831-1-git-send-email-alan.maguire@oracle.com>
 References: <1600883188-4831-1-git-send-email-alan.maguire@oracle.com>
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9753 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 adultscore=0
- bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009230135
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
+ phishscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0 suspectscore=2
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009230135
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9753 signatures=668680
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 impostorscore=0
- clxscore=1015 suspectscore=0 phishscore=0 malwarescore=0
+ clxscore=1015 suspectscore=2 phishscore=0 malwarescore=0
  priorityscore=1501 mlxlogscore=999 adultscore=0 bulkscore=0 mlxscore=0
  lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2006250000 definitions=main-2009230135
@@ -70,181 +70,165 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A helper is added to allow seq file writing of kernel data
-structures using vmlinux BTF.  Its signature is
-
-long bpf_seq_printf_btf(struct seq_file *m, struct btf_ptr *ptr,
-			u32 btf_ptr_size, u64 flags);
-
-Flags and struct btf_ptr definitions/use are identical to the
-bpf_snprintf_btf helper, and the helper returns 0 on success
-or a negative error value.
+Add a test verifying iterating over tasks and displaying BTF
+representation of data succeeds.  Note here that we do not display
+the task_struct itself, as it will overflow the PAGE_SIZE limit on seq
+data; instead we write task->fs (a struct fs_struct).
 
 Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 ---
- include/linux/btf.h            |  2 ++
- include/uapi/linux/bpf.h       | 10 ++++++++++
- kernel/bpf/btf.c               |  4 ++--
- kernel/bpf/core.c              |  1 +
- kernel/trace/bpf_trace.c       | 33 +++++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h | 10 ++++++++++
- 6 files changed, 58 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/bpf_iter.c  | 66 ++++++++++++++++++++++
+ .../selftests/bpf/progs/bpf_iter_task_btf.c        | 49 ++++++++++++++++
+ 2 files changed, 115 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task_btf.c
 
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index 3e5cdc2..024e16f 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -68,6 +68,8 @@ const struct btf_type *btf_type_id_size(const struct btf *btf,
- 
- void btf_type_seq_show(const struct btf *btf, u32 type_id, void *obj,
- 		       struct seq_file *m);
-+int btf_type_seq_show_flags(const struct btf *btf, u32 type_id, void *obj,
-+			    struct seq_file *m, u64 flags);
- 
- /*
-  * Copy len bytes of string representation of obj of BTF type_id into buf.
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index c1675ad..c3231a8 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3621,6 +3621,15 @@ struct bpf_stack_build_id {
-  *		The number of bytes that were written (or would have been
-  *		written if output had to be truncated due to string size),
-  *		or a negative error in cases of failure.
-+ *
-+ * long bpf_seq_printf_btf(struct seq_file *m, struct btf_ptr *ptr, u32 ptr_size, u64 flags)
-+ *	Description
-+ *		Use BTF to write to seq_write a string representation of
-+ *		*ptr*->ptr, using *ptr*->type name or *ptr*->type_id as per
-+ *		bpf_snprintf_btf() above.  *flags* are identical to those
-+ *		used for bpf_snprintf_btf.
-+ *	Return
-+ *		0 on success or a negative error in case of failure.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3773,6 +3782,7 @@ struct bpf_stack_build_id {
- 	FN(d_path),			\
- 	FN(copy_from_user),		\
- 	FN(snprintf_btf),		\
-+	FN(seq_printf_btf),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 94190ec..dfc8654 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -5316,8 +5316,8 @@ static __printf(2, 3) void btf_seq_show(struct btf_show *show, const char *fmt,
- 	va_end(args);
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+index fe1a83b9..323c48a 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+@@ -7,6 +7,7 @@
+ #include "bpf_iter_task.skel.h"
+ #include "bpf_iter_task_stack.skel.h"
+ #include "bpf_iter_task_file.skel.h"
++#include "bpf_iter_task_btf.skel.h"
+ #include "bpf_iter_tcp4.skel.h"
+ #include "bpf_iter_tcp6.skel.h"
+ #include "bpf_iter_udp4.skel.h"
+@@ -167,6 +168,69 @@ static void test_task_file(void)
+ 	bpf_iter_task_file__destroy(skel);
  }
  
--static int btf_type_seq_show_flags(const struct btf *btf, u32 type_id,
--				   void *obj, struct seq_file *m, u64 flags)
-+int btf_type_seq_show_flags(const struct btf *btf, u32 type_id,
-+			    void *obj, struct seq_file *m, u64 flags)
- {
- 	struct btf_show sseq;
- 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 403fb23..c4ba45f 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2217,6 +2217,7 @@ void bpf_user_rnd_init_once(void)
- const struct bpf_func_proto bpf_get_local_storage_proto __weak;
- const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto __weak;
- const struct bpf_func_proto bpf_snprintf_btf_proto __weak;
-+const struct bpf_func_proto bpf_seq_printf_btf_proto __weak;
- 
- const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
- {
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 61c274f8..e8fa1c0 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -71,6 +71,10 @@ static struct bpf_raw_event_map *bpf_get_raw_tracepoint_module(const char *name)
- u64 bpf_get_stackid(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
- u64 bpf_get_stack(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
- 
-+static int bpf_btf_printf_prepare(struct btf_ptr *ptr, u32 btf_ptr_size,
-+				  u64 flags, const struct btf **btf,
-+				  s32 *btf_id);
++#define FSBUFSZ		8192
 +
- /**
-  * trace_call_bpf - invoke BPF program
-  * @call: tracepoint event
-@@ -776,6 +780,31 @@ struct bpf_seq_printf_buf {
- 	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-+BPF_CALL_4(bpf_seq_printf_btf, struct seq_file *, m, struct btf_ptr *, ptr,
-+	   u32, btf_ptr_size, u64, flags)
++static char fsbuf[FSBUFSZ];
++
++static void do_btf_read(struct bpf_program *prog)
 +{
-+	const struct btf *btf;
-+	s32 btf_id;
-+	int ret;
++	int iter_fd = -1, len = 0, bufleft = FSBUFSZ;
++	struct bpf_link *link;
++	char *buf = fsbuf;
 +
-+	ret = bpf_btf_printf_prepare(ptr, btf_ptr_size, flags, &btf, &btf_id);
-+	if (ret)
-+		return ret;
++	link = bpf_program__attach_iter(prog, NULL);
++	if (CHECK(IS_ERR(link), "attach_iter", "attach_iter failed\n"))
++		return;
 +
-+	return btf_type_seq_show_flags(btf, btf_id, ptr->ptr, m, flags);
++	iter_fd = bpf_iter_create(bpf_link__fd(link));
++	if (CHECK(iter_fd < 0, "create_iter", "create_iter failed\n"))
++		goto free_link;
++
++	do {
++		len = read(iter_fd, buf, bufleft);
++		if (len > 0) {
++			buf += len;
++			bufleft -= len;
++		}
++	} while (len > 0);
++
++	if (CHECK(len < 0, "read", "read failed: %s\n", strerror(errno)))
++		goto free_link;
++
++	CHECK(strstr(fsbuf, "(struct fs_struct)") == NULL,
++	      "check for btf representation of fs_struct in iter data",
++	      "struct fs_struct not found");
++free_link:
++	if (iter_fd > 0)
++		close(iter_fd);
++	bpf_link__destroy(link);
 +}
 +
-+static const struct bpf_func_proto bpf_seq_printf_btf_proto = {
-+	.func		= bpf_seq_printf_btf,
-+	.gpl_only	= true,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_BTF_ID,
-+	.arg1_btf_id	= &btf_seq_file_ids[0],
-+	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
-+	.arg4_type	= ARG_ANYTHING,
-+};
++static void test_task_btf(void)
++{
++	struct bpf_iter_task_btf__bss *bss;
++	struct bpf_iter_task_btf *skel;
 +
- static __always_inline int
- get_map_perf_counter(struct bpf_map *map, u64 flags,
- 		     u64 *value, u64 *enabled, u64 *running)
-@@ -1731,6 +1760,10 @@ static void put_bpf_raw_tp_regs(void)
- 		return prog->expected_attach_type == BPF_TRACE_ITER ?
- 		       &bpf_seq_write_proto :
- 		       NULL;
-+	case BPF_FUNC_seq_printf_btf:
-+		return prog->expected_attach_type == BPF_TRACE_ITER ?
-+		       &bpf_seq_printf_btf_proto :
-+		       NULL;
- 	case BPF_FUNC_d_path:
- 		return &bpf_d_path_proto;
- 	default:
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index c1675ad..c3231a8 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -3621,6 +3621,15 @@ struct bpf_stack_build_id {
-  *		The number of bytes that were written (or would have been
-  *		written if output had to be truncated due to string size),
-  *		or a negative error in cases of failure.
-+ *
-+ * long bpf_seq_printf_btf(struct seq_file *m, struct btf_ptr *ptr, u32 ptr_size, u64 flags)
-+ *	Description
-+ *		Use BTF to write to seq_write a string representation of
-+ *		*ptr*->ptr, using *ptr*->type name or *ptr*->type_id as per
-+ *		bpf_snprintf_btf() above.  *flags* are identical to those
-+ *		used for bpf_snprintf_btf.
-+ *	Return
-+ *		0 on success or a negative error in case of failure.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3773,6 +3782,7 @@ struct bpf_stack_build_id {
- 	FN(d_path),			\
- 	FN(copy_from_user),		\
- 	FN(snprintf_btf),		\
-+	FN(seq_printf_btf),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
++	skel = bpf_iter_task_btf__open_and_load();
++	if (CHECK(!skel, "bpf_iter_task_btf__open_and_load",
++		  "skeleton open_and_load failed\n"))
++		return;
++
++	bss = skel->bss;
++
++	do_btf_read(skel->progs.dump_task_fs_struct);
++
++	if (CHECK(bss->tasks == 0, "check if iterated over tasks",
++		  "no task iteration, did BPF program run?\n"))
++		goto cleanup;
++
++	CHECK(bss->seq_err != 0, "check for unexpected err",
++	      "bpf_seq_printf_btf returned %ld", bss->seq_err);
++
++cleanup:
++	bpf_iter_task_btf__destroy(skel);
++}
++
+ static void test_tcp4(void)
+ {
+ 	struct bpf_iter_tcp4 *skel;
+@@ -957,6 +1021,8 @@ void test_bpf_iter(void)
+ 		test_task_stack();
+ 	if (test__start_subtest("task_file"))
+ 		test_task_file();
++	if (test__start_subtest("task_btf"))
++		test_task_btf();
+ 	if (test__start_subtest("tcp4"))
+ 		test_tcp4();
+ 	if (test__start_subtest("tcp6"))
+diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_task_btf.c b/tools/testing/selftests/bpf/progs/bpf_iter_task_btf.c
+new file mode 100644
+index 0000000..88631a8
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bpf_iter_task_btf.c
+@@ -0,0 +1,49 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020, Oracle and/or its affiliates. */
++#include "bpf_iter.h"
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++#include <errno.h>
++
++char _license[] SEC("license") = "GPL";
++
++long tasks = 0;
++long seq_err = 0;
++
++/* struct task_struct's BTF representation will overflow PAGE_SIZE so cannot
++ * be used here; instead dump a structure associated with each task.
++ */
++SEC("iter/task")
++int dump_task_fs_struct(struct bpf_iter__task *ctx)
++{
++	static const char fs_type[] = "struct fs_struct";
++	struct seq_file *seq = ctx->meta->seq;
++	struct task_struct *task = ctx->task;
++	struct fs_struct *fs = (void *)0;
++	static struct btf_ptr ptr = { };
++	long ret;
++
++	if (task)
++		fs = task->fs;
++
++	ptr.type = fs_type;
++	ptr.ptr = fs;
++
++	if (ctx->meta->seq_num == 0)
++		BPF_SEQ_PRINTF(seq, "Raw BTF fs_struct per task\n");
++
++	ret = bpf_seq_printf_btf(seq, &ptr, sizeof(ptr), 0);
++	switch (ret) {
++	case 0:
++		tasks++;
++		break;
++	case -ERANGE:
++		/* NULL task or task->fs, don't count it as an error. */
++		break;
++	default:
++		seq_err = ret;
++		break;
++	}
++
++	return 0;
++}
 -- 
 1.8.3.1
 
