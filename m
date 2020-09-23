@@ -2,85 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19193276068
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 20:48:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AAC5276072
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 20:49:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726803AbgIWSr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 14:47:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59868 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726687AbgIWSr4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 14:47:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600886875;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2WMp1T0DVJXN4WDrQu1JxkLpRzKFw+3Wie7j16J+0+g=;
-        b=bE0MnqKWAcJ6MKS8PglqeQiKpIIjtzXUrbq5kui5PpBow6tt+mKzf7CYEoUMjbHmRJq7Z6
-        /3SdFpFnSP8yzi96DaHxsx9pqaUsAQKbu9A9WeMeuKnRzLjwGLIE77tgjOKnnnYzttbcQv
-        7BjYxcF+1BeCOZcZMc74HYUR7rfXhLU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-596-VyZEbt_rMuqI3zgDwT8h8Q-1; Wed, 23 Sep 2020 14:47:53 -0400
-X-MC-Unique: VyZEbt_rMuqI3zgDwT8h8Q-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 310B3800493;
-        Wed, 23 Sep 2020 18:47:51 +0000 (UTC)
-Received: from krava (ovpn-112-117.ams2.redhat.com [10.36.112.117])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 8ECB15DE86;
-        Wed, 23 Sep 2020 18:47:47 +0000 (UTC)
-Date:   Wed, 23 Sep 2020 20:47:46 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Seth Forshee <seth.forshee@canonical.com>
-Subject: Re: [PATCHv2 bpf-next 1/2] bpf: Use --no-fail option if CONFIG_BPF
- is not enabled
-Message-ID: <20200923184746.GP2893484@krava>
-References: <20200923140459.3029213-1-jolsa@kernel.org>
- <CAEf4BzZM8UOZ4x_uDtbzMbpmYGcLSo5h-7miPMAd+wDzMuG7Aw@mail.gmail.com>
+        id S1726808AbgIWStX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 14:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726460AbgIWStX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 14:49:23 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF128C0613CE;
+        Wed, 23 Sep 2020 11:49:22 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id u4so501396ljd.10;
+        Wed, 23 Sep 2020 11:49:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FbK+j42dWRK2s1x0oaQhi9+BRDAcyqnHMQWrUaVkakI=;
+        b=pxc702TVV231b7p2aL4oSu3UqURyE2IucXBJdE0cFp1S9cLk62cjI12AtE9FGhF+xY
+         dAM5vm5GIwLBZZafN/Capt0djv9hzrrfyBv4an1mIowfTj0YNNyBM3DGgqFZWyAJqJu8
+         L8gC9SKYsWuyf1iXkE58PO9qVl0DMP/A3MdP3dV4JMIet8VRwrTupmDJGnZ9D3+7aB/6
+         65kFdhFikXHJiJM3OgLDQ7at/xQ3njRllnV0vKj9vV9FfRDgkrjj71X59owhG5XuvNO5
+         ny4Pf+/WlM4dVRDmwqD6kl9s2SAQGXfJ7BnFxjBRBa5Wt/6F/35YzSw6xJ5kd4LELfE6
+         e8jQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FbK+j42dWRK2s1x0oaQhi9+BRDAcyqnHMQWrUaVkakI=;
+        b=pYLhDvcQg8h+t19XRaGPwnMB+Rq9HYITG6FNQk6s/80CgJdUG7VBuyjocKrR3TBOux
+         mSEP9apNwGxKI+dUAIPU9g1AHlJf6WwzNQhY5doTxIS0UVTXj55nfwQCv9kaY/GZzd7N
+         oWTMRfDSxFWoWkUtpO1yNnbFQ8SZfaP+nCpDKCQMWAT8LgGkvzCTcyGm2675LfCveGGq
+         wTFESPTRCOAwFHi20WEuDstvUqqTeZh4dYshjzKJVs/p6/W4Q7UhRZMWe3Q8VpLpxrSc
+         f9uL4k0gi68pXMW6jwaXHyKrxgTCadFjXsxveVcHGXKmLg+cFPrK5OYP5z2E2cDr5t/+
+         lg2Q==
+X-Gm-Message-State: AOAM532IsT4rOfseFqXg7G3u2o4DBePINZ0L+8VhpucUAAcJTAY01QQg
+        rMTNAiScPQy7TFzxF8cp8y7mPJr9nyo1O3biQik=
+X-Google-Smtp-Source: ABdhPJx9ba2vvV0ptXmwQCajVB185yIhjs+5/IVdOR63X4tOvdDDL/i4APGlb0Hyd7AuhWu3FqfAVP4Ofcm7Xsn3bks=
+X-Received: by 2002:a05:651c:cb:: with SMTP id 11mr419441ljr.2.1600886961295;
+ Wed, 23 Sep 2020 11:49:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZM8UOZ4x_uDtbzMbpmYGcLSo5h-7miPMAd+wDzMuG7Aw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <20200923160156.80814-1-lmb@cloudflare.com> <CAEf4BzZJQBdW72TRCuW7q0c3kke1Qan59fDzV0DKN_EOAgXGaw@mail.gmail.com>
+In-Reply-To: <CAEf4BzZJQBdW72TRCuW7q0c3kke1Qan59fDzV0DKN_EOAgXGaw@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 23 Sep 2020 11:49:09 -0700
+Message-ID: <CAADnVQ+m+b5GKxk+sw-R+374vQRbQn59MP4g1uKPghnSWt6pVw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: explicitly size compatible_reg_types
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 09:09:17AM -0700, Andrii Nakryiko wrote:
-> On Wed, Sep 23, 2020 at 7:06 AM Jiri Olsa <jolsa@kernel.org> wrote:
-
-damn I'm blind this week.. will send v3 with proper subject :-\
-
-jirka
-
+On Wed, Sep 23, 2020 at 9:05 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Sep 23, 2020 at 9:03 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
 > >
-> > Currently all the resolve_btfids 'users' are under CONFIG_BPF
-> > code, so if we have CONFIG_BPF disabled, resolve_btfids will
-> > fail, because there's no data to resolve.
+> > Arrays with designated initializers have an implicit length of the highest
+> > initialized value plus one. I used this to ensure that newly added entries
+> > in enum bpf_reg_type get a NULL entry in compatible_reg_types.
 > >
-> > Disabling resolve_btfids if there's CONFIG_BPF disabled,
-> > so we won't fail such builds.
+> > This is difficult to understand since it requires knowledge of the
+> > peculiarities of designated initializers. Use __BPF_ARG_TYPE_MAX to size
+> > the array instead.
 > >
-> > Suggested-by: Andrii Nakryiko <andriin@fb.com>
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> > Suggested-by: Alexei Starovoitov <ast@kernel.org>
 > > ---
-> > v2 changes:
-> >   - disable resolve_btfids completely when CONFIG_BPF is not defined
-> 
+>
+> I like this more as well.
+>
 > Acked-by: Andrii Nakryiko <andriin@fb.com>
-> 
-> [...]
-> 
 
+Applied. Thanks
