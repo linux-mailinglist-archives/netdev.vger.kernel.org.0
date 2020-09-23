@@ -2,116 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2FCC274EFA
-	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 04:24:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E80E1274F0E
+	for <lists+netdev@lfdr.de>; Wed, 23 Sep 2020 04:35:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727195AbgIWCYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Sep 2020 22:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
+        id S1727243AbgIWCfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Sep 2020 22:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726893AbgIWCYS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 22:24:18 -0400
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58663C061755
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 19:24:18 -0700 (PDT)
-Received: by mail-ot1-x342.google.com with SMTP id u25so17584263otq.6
-        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 19:24:18 -0700 (PDT)
+        with ESMTP id S1727217AbgIWCfm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Sep 2020 22:35:42 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2E3C0613D2
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 19:35:42 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id q8so20290878lfb.6
+        for <netdev@vger.kernel.org>; Tue, 22 Sep 2020 19:35:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zEeW/h7pOyo5hn5MRCsofV8r0d0ASDNXot2m7VHsi+4=;
-        b=TFcZWnfR3T+1M1rkcHBDRmCqcAlxRlIgB/0ELW8gJbA8BovfhEol4dVjYsBkQ8Hhad
-         0N81koySxsGz4KqKusNAIa0y1H9ZFNrdjPOwBYXjyrRENVF+xRH1/vxNkNmLlqPufszR
-         C8kkapmajrAHD2KjmvbvwE7jtySHnObqvhX1Y37h/e0M00fgrvLXmLyLk2jy7/EvojPO
-         dKQAzXcoFbaf2Er/N6at6otrjxas6ARBp+aJ8aDPS7iP3Zlj0kl75zS0Md+6qwXVVONf
-         5QHbMNiUboHiOGIkcfl63tSuPRef4swbA2O6vqQ/DRrn/0sqw2MhNJx1FtBKbTPkfXCE
-         dHKg==
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HNLILPO9KGBr2EiE7fPnteeqqVFqeTm0/utbd5V0UfM=;
+        b=gpENJad7aIY/S5kBL5o8YVttNP6P373hhEXKz6ErBwsU/D+zf22imm1nkW4ERBaSHD
+         zpAbAVk6UoSZYDLYJDZkFGLPhDVWGMO30j0pUcW7h49Tryqf3NzJu4RZcL1iD02GoqA6
+         MG4REMrV1LplGXzEGHcMfLHjAQZ1DpNK4aAMFIQctSZ6kzBGbm0dg2ZTVSIvvckdxqRX
+         A8p1DU39WBmIgc/L4nnjM4X9tMLRq8LvlGdaeOQbqxSz6Ff+SemO4COh6UTnhUpLf6VS
+         txktKu+z0qVosUhE2kp0VE8x0/fTRFl8/cXeYa/Z0ziyNv7xI9D9QFTcZQvRCBscssRC
+         /Uug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=zEeW/h7pOyo5hn5MRCsofV8r0d0ASDNXot2m7VHsi+4=;
-        b=HBQx9G48aznvXBum6R5xAEKFYSBUaA4W94zNPTTJnuXA7V+3NU6a1qonZsACu/fhiF
-         knxx+uRRXVCuDI/Zs86YNpf1KKQJsgdqc0FQ0YlLgrRNu4eSRlKaKT6zghQ2UWAj0Ca3
-         P1kTxchfSBjdRmEqJd1MPPc6ECQ24Hq7uIQsMqh28zFz1/3WDzL9s7we3vEhFtZo0JYc
-         GwycLRZcjDhPOkBp+hcgPENNs46HI1msLPWdzeDUsMqYqOjMCPc6zvBDpcTsDyXHcIv+
-         Zur4OJojLYtFXRy6ECxTUPtOezuMjdtA+o/zFJf7KdG1pfghshEF+fcEZeCQHg7F3Bbl
-         zjCQ==
-X-Gm-Message-State: AOAM533fUUbyHrA3h6AIwL9NBed+a5OElNeB3nRCe5dNzccW0IQt8VRi
-        HNsEFZ3GuYeoBrsvODiRlTItMUIYj3nQeQ==
-X-Google-Smtp-Source: ABdhPJwi6WNYpEvMs606fyWjgXREwu4RHRoJ6lXt09rf5Y+lfDG5ROl9CR1cZbIsAYR7sLZ+OQlX9Q==
-X-Received: by 2002:a05:6830:1d9a:: with SMTP id y26mr3905888oti.168.1600827857674;
-        Tue, 22 Sep 2020 19:24:17 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:9c91:44fa:d629:96cc])
-        by smtp.googlemail.com with ESMTPSA id l4sm7850278oie.25.2020.09.22.19.24.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Sep 2020 19:24:16 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next] ip: promote missed packets to the -s row
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     stephen@networkplumber.org, netdev@vger.kernel.org
-References: <20200916194249.505389-1-kuba@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <fcf01759-febb-9794-b323-e762eaef6896@gmail.com>
-Date:   Tue, 22 Sep 2020 20:24:14 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HNLILPO9KGBr2EiE7fPnteeqqVFqeTm0/utbd5V0UfM=;
+        b=DnPEdMHD+ECdfMzr68uq5trKTLn8ZyCt+2nSKC/YzfEazqczDWXmcs1qUzcYFo9m2Q
+         6/XSb0kl6mSiJxIQrNwTVqyhNGUD1yvQoWHmY5rw+ngGfGQW+2OIjXQtps9TSDJDz4vR
+         MLr8JZCPhXzdAzYCFDrwgSyKGCp5kfIPiDN+uGjkKwv0gJ3FwEx2OH6N0d1tiSv4ZqZ9
+         G3TSbj/X8c1nhSQBJXCCLQ4dQ8mPv7rFkEzordiHksLo1UWkbwjZmt9wHI7nVgSv0w1M
+         GaxX71rAkIJ91/kC/NdukM5XS8fd0TTr8G5UiXyETmdxtsT0mwMfpI16EWE2ENqAyls0
+         8w5g==
+X-Gm-Message-State: AOAM531BUnKvTskOPfH6I0JtbhUK60y2sfscXyC0LBZ7ixdHHA2bFywS
+        XFtAcRWG0/iUQ1oW0tHqoD8aCw8lAGgAqrKs82r7fw==
+X-Google-Smtp-Source: ABdhPJxyzcM22PrIegi03Dy1GMhdk2CcQ8TxOfp4CD5IlwC/YoSTAHHbEzvDZ3zvZGe7TGoUuOqs4yQ/LKXQgaUQgH8=
+X-Received: by 2002:a19:8789:: with SMTP id j131mr2439699lfd.90.1600828540307;
+ Tue, 22 Sep 2020 19:35:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200916194249.505389-1-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200921080255.15505-1-zangchunxin@bytedance.com>
+ <20200921081200.GE12990@dhcp22.suse.cz> <CALOAHbDKvT58UFjxy770VDxO0VWABRYb7GVwgw+NiJp62mB06w@mail.gmail.com>
+ <20200921110505.GH12990@dhcp22.suse.cz> <CAKRVAeN5U6S78jF1n8nCs5ioAdqvVn5f6GGTAnA93g_J0daOLw@mail.gmail.com>
+ <20200922095136.GA9682@chrisdown.name> <CAKRVAePisoOg8QBz11gPqzEoUdwPiJ-9Z9MyFE2LHzR-r+PseQ@mail.gmail.com>
+ <20200922104252.GB9682@chrisdown.name> <CAKRVAeOjST1vJsSXMgj91=tMf1MQTeNp_dz34z=DwL7Weh0bmg@mail.gmail.com>
+ <20200922124344.GA34296@chrisdown.name>
+In-Reply-To: <20200922124344.GA34296@chrisdown.name>
+From:   Chunxin Zang <zangchunxin@bytedance.com>
+Date:   Wed, 23 Sep 2020 10:35:29 +0800
+Message-ID: <CAKRVAeNCAVN4qOc57AU_-2dJ8sOT7p6JSO578aD0Seveuv0Rog@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH] mm/memcontrol: Add the drop_cache
+ interface for cgroup v2
+To:     Chris Down <chris@chrisdown.name>
+Cc:     Michal Hocko <mhocko@suse.com>, Yafang Shao <laoar.shao@gmail.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tejun Heo <tj@kernel.org>, lizefan@huawei.com,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kafai@fb.com,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        andriin@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
+        Cgroups <cgroups@vger.kernel.org>, linux-doc@vger.kernel.org,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/16/20 1:42 PM, Jakub Kicinski wrote:
-> missed_packet_errors are much more commonly reported:
-> 
-> linux$ git grep -c '[.>]rx_missed_errors ' -- drivers/ | wc -l
-> 64
-> linux$ git grep -c '[.>]rx_over_errors ' -- drivers/ | wc -l
-> 37
-> 
-> Plus those drivers are generally more modern than those
-> using rx_over_errors.
-> 
-> Since recently merged kernel documentation makes this
-> preference official, let's make ip -s output more informative
-> and let rx_missed_errors take the place of rx_over_errors.
-> 
-> Before:
-> 
-> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
->     link/ether 00:0a:f7:c1:4d:38 brd ff:ff:ff:ff:ff:ff
->     RX: bytes  packets  errors  dropped overrun mcast
->     6.04T      4.67G    0       0       0       67.7M
->     RX errors: length   crc     frame   fifo    missed
->                0        0       0       0       7
->     TX: bytes  packets  errors  dropped carrier collsns
->     3.13T      2.76G    0       0       0       0
->     TX errors: aborted  fifo   window heartbeat transns
->                0        0       0       0       6
-> 
-> After:
-> 
-> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
->     link/ether 00:0a:f7:c1:4d:38 brd ff:ff:ff:ff:ff:ff
->     RX: bytes  packets  errors  dropped missed  mcast
->     6.04T      4.67G    0       0       7       67.7M
->     RX errors: length   crc     frame   fifo    overrun
->                0        0       0       0       0
->     TX: bytes  packets  errors  dropped carrier collsns
->     3.13T      2.76G    0       0       0       0
->     TX errors: aborted  fifo   window heartbeat transns
->                0        0       0       0       6
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  ip/ipaddress.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
+On Tue, Sep 22, 2020 at 8:43 PM Chris Down <chris@chrisdown.name> wrote:
+>
+> Chunxin Zang writes:
+> >Please forgive me for not being able to understand why setting
+> >memory.low for Type_A can solve the problem.
+> >In my scene, Type_A is the most important, so I will set 100G to memory.low.
+> >But 'memory.low' only takes effect passively when the kernel is
+> >reclaiming memory. It means that reclaim Type_B's memory only when
+> >Type_A  in alloc memory slow path. This will affect Type_A's
+> >performance.
+> >We want to reclaim Type_B's memory in advance when A is expected to be busy.
+>
+> That's what kswapd reclaim is for, so this distinction is meaningless without
+> measurements :-)
 
-applied to iproute2-next
+Thanks for these suggestions, I will give it a try.
 
+Best wishes
+Chunxin
