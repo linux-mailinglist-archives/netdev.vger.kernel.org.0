@@ -2,84 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7007C276B55
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 10:02:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2D62276BDF
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 10:28:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727220AbgIXICJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 04:02:09 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:45656 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727013AbgIXICJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Sep 2020 04:02:09 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 0EDFC2054D;
-        Thu, 24 Sep 2020 10:02:07 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id N2Hha3N5lro5; Thu, 24 Sep 2020 10:02:06 +0200 (CEST)
-Received: from mail-essen-02.secunet.de (unknown [10.53.40.205])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        id S1727293AbgIXI2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 04:28:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60748 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726849AbgIXI2k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 04:28:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600936119;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JTY1j3OmhHbXJbAzmk77hPlarzC+ZBGY2AfyiVFzjX8=;
+        b=RivIQyflKbi3hH1bgSl5S3UoDUuMD7mkTvBjYGTs+zEUFb3k60U+AeE6TJcU1Y19aF3CVu
+        0aytNNOeDdxo60coQFoVryyR7zGyeT8yl/SlRba7PybDgCHN6QZC29J/YcVVh9TAbnWcVc
+        GOW2s784IdCopmqQLHRNnAqz7XEyBUY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-263-vMCWz1n0OkGl2bM0e4eECw-1; Thu, 24 Sep 2020 04:28:35 -0400
+X-MC-Unique: vMCWz1n0OkGl2bM0e4eECw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 94CD62026E;
-        Thu, 24 Sep 2020 10:02:06 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Thu, 24 Sep 2020 10:02:06 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Thu, 24 Sep
- 2020 10:02:06 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 0ADA23180126;
- Thu, 24 Sep 2020 10:02:06 +0200 (CEST)
-Date:   Thu, 24 Sep 2020 10:02:05 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-CC:     syzbot <syzbot+577fbac3145a6eb2e7a5@syzkaller.appspotmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <syzkaller-bugs@googlegroups.com>
-Subject: Re: KASAN: stack-out-of-bounds Read in xfrm_selector_match (2)
-Message-ID: <20200924080205.GD20687@gauss3.secunet.de>
-References: <0000000000009fc91605afd40d89@google.com>
- <20200924074026.GC20687@gauss3.secunet.de>
- <20200924074351.GB9879@gondor.apana.org.au>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F3CAE800462;
+        Thu, 24 Sep 2020 08:28:33 +0000 (UTC)
+Received: from [10.72.13.193] (ovpn-13-193.pek2.redhat.com [10.72.13.193])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9AC0C5D993;
+        Thu, 24 Sep 2020 08:28:19 +0000 (UTC)
+Subject: Re: [RFC PATCH 01/24] vhost-vdpa: fix backend feature ioctls
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     lulu@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rob.miller@broadcom.com,
+        lingshan.zhu@intel.com, eperezma@redhat.com, hanand@xilinx.com,
+        mhabets@solarflare.com, eli@mellanox.com, amorenoz@redhat.com,
+        maxime.coquelin@redhat.com, stefanha@redhat.com,
+        sgarzare@redhat.com, Eli Cohen <elic@nvidia.com>
+References: <20200924032125.18619-1-jasowang@redhat.com>
+ <20200924032125.18619-2-jasowang@redhat.com>
+ <20200924034940-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <bebb65cd-732f-58b5-56f0-55ce61cde61f@redhat.com>
+Date:   Thu, 24 Sep 2020 16:28:17 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200924074351.GB9879@gondor.apana.org.au>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <20200924034940-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 05:43:51PM +1000, Herbert Xu wrote:
-> On Thu, Sep 24, 2020 at 09:40:26AM +0200, Steffen Klassert wrote:
-> >
-> > This is yet another ipv4 mapped ipv6 address with IPsec socket policy
-> > combination bug, and I'm sure it is not the last one. We could fix this
-> > one by adding another check to match the address family of the policy
-> > and the SA selector, but maybe it is better to think about how this
-> > should work at all.
-> > 
-> > We can have only one socket policy for each direction and that
-> > policy accepts either ipv4 or ipv6. We treat this ipv4 mapped ipv6
-> > address as ipv4 and pass it down the ipv4 stack, so this dual usage
-> > will not work with a socket policy. Maybe we can require IPV6_V6ONLY
-> > for sockets with policy attached. Thoughts?
-> 
-> I'm looking at the history of this and it used to work at the start
-> because you'd always interpret the flow object with a family.  This
-> appears to have been lost with 8444cf712c5f71845cba9dc30d8f530ff0d5ff83. 
 
-I'm sure it can be fixed to work with either ipv4 or ipv6.
-If I understand that right, it should be possible to talk
-ipv4 and ipv6 through that socket, but the policy will
-accept only one address family.
+On 2020/9/24 下午3:50, Michael S. Tsirkin wrote:
+> On Thu, Sep 24, 2020 at 11:21:02AM +0800, Jason Wang wrote:
+>> Commit 653055b9acd4 ("vhost-vdpa: support get/set backend features")
+>> introduces two malfunction backend features ioctls:
+>>
+>> 1) the ioctls was blindly added to vring ioctl instead of vdpa device
+>>     ioctl
+>> 2) vhost_set_backend_features() was called when dev mutex has already
+>>     been held which will lead a deadlock
+>>
+>> This patch fixes the above issues.
+>>
+>> Cc: Eli Cohen<elic@nvidia.com>
+>> Reported-by: Zhu Lingshan<lingshan.zhu@intel.com>
+>> Fixes: 653055b9acd4 ("vhost-vdpa: support get/set backend features")
+>> Signed-off-by: Jason Wang<jasowang@redhat.com>
+> Don't we want the fixes queued right now, as opposed to the rest of the
+> RFC?
 
-> I'm working on a fix.
 
-Thanks!
+Yes, actually I've posted in before[1].
+
+Adding the patch here is to simplify the work for the guys that want to 
+do the work on top. E.g for Cindy to start the Qemu prototype.
+
+Thanks
+
+[1] https://www.spinics.net/lists/netdev/msg681247.html
+
+
