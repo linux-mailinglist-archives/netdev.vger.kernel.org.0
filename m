@@ -2,174 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6795277A9A
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:41:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FAF5277AA8
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:45:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726662AbgIXUlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 16:41:23 -0400
-Received: from mga09.intel.com ([134.134.136.24]:62367 "EHLO mga09.intel.com"
+        id S1726444AbgIXUpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 16:45:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44084 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726185AbgIXUlW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Sep 2020 16:41:22 -0400
-IronPort-SDR: OTjOVCGgMEyjn+JXxVmuDrkFew55ePTWfLSGA6D2aYJuBnr7EOfpjwZ5OEt5awz4is8qH/ellP
- fmT6QSFpr6Ig==
-X-IronPort-AV: E=McAfee;i="6000,8403,9754"; a="162237599"
-X-IronPort-AV: E=Sophos;i="5.77,299,1596524400"; 
-   d="scan'208";a="162237599"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2020 13:41:21 -0700
-IronPort-SDR: VfUjpJKf6eFZKkZBW5v6uTbUxACJi1IlBRK3cgAnro/7+yxvKfmEQmTQt7kVrqOS9/GO6aMgBE
- oSmoItzFUpNA==
-X-IronPort-AV: E=Sophos;i="5.77,299,1596524400"; 
-   d="scan'208";a="413455588"
-Received: from dpcastro-mobl1.amr.corp.intel.com (HELO [10.212.140.81]) ([10.212.140.81])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2020 13:41:21 -0700
-Subject: Re: [PATCH ethtool-next 2/5] pause: add --json support
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     mkubecek@suse.cz, netdev@vger.kernel.org
-References: <20200915235259.457050-1-kuba@kernel.org>
- <20200915235259.457050-3-kuba@kernel.org>
- <3edc444e-ac89-a17b-3092-f91e8523cfa3@intel.com>
- <20200924083627.613e5c59@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <110b6abf-8317-0a60-56e7-a8d9473d04e6@intel.com>
-Date:   Thu, 24 Sep 2020 13:41:18 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
+        id S1725208AbgIXUph (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Sep 2020 16:45:37 -0400
+Received: from localhost (52.sub-72-107-123.myvzw.com [72.107.123.52])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A2B72239CF;
+        Thu, 24 Sep 2020 20:45:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600980337;
+        bh=CSiygoRkkeEiJ5Dg4g8lESgmoDARtWg5wsRqboDJATg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=lbvEvN+hi7Xe6uDbbh0duG3bBFI4mlVC2eLJrkDrq0bm+QX7ibnnVWghVPjb8tcG0
+         YuJ+SGj7QBP8e0C3IlVs85IP5aYMRgjvFPdd5lkXT1H90pXt715BN77X7Al+8maXGt
+         XDHdgpcD74XDD+iMJSb18S06YsjZkz/XA9eYamuE=
+Date:   Thu, 24 Sep 2020 15:45:35 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Nitesh Narayan Lal <nitesh@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
+        jlelli@redhat.com, hch@infradead.org, bhelgaas@google.com,
+        mike.marciniszyn@intel.com, dennis.dalessandro@intel.com,
+        thomas.lendacky@amd.com, jerinj@marvell.com,
+        mathias.nyman@intel.com, jiri@nvidia.com, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org
+Subject: Re: [PATCH v2 4/4] PCI: Limit pci_alloc_irq_vectors as per
+ housekeeping CPUs
+Message-ID: <20200924204535.GA2337207@bjorn-Precision-5520>
 MIME-Version: 1.0
-In-Reply-To: <20200924083627.613e5c59@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200923181126.223766-5-nitesh@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Possible subject:
 
+  PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
 
-On 9/24/2020 8:36 AM, Jakub Kicinski wrote:
-> On Wed, 23 Sep 2020 17:10:30 -0700 Jacob Keller wrote:
->>> -	printf("RX negotiated: %s\nTX negotiated: %s\n",
->>> -	       rx_status ? "on" : "off", tx_status ? "on" : "off");
->>> +
->>> +	if (is_json_context()) {
->>> +		open_json_object("negotiated");
->>> +		print_bool(PRINT_JSON, "rx", NULL, rx_status);
->>> +		print_bool(PRINT_JSON, "tx", NULL, tx_status);
->>> +		close_json_object();
->>> +	} else {
->>> +		printf("RX negotiated: %s\nTX negotiated: %s\n",
->>> +		       rx_status ? "on" : "off", tx_status ? "on" : "off");
->>> +	}
->>
->> Why not use print_string here like show_bool did?
+On Wed, Sep 23, 2020 at 02:11:26PM -0400, Nitesh Narayan Lal wrote:
+> This patch limits the pci_alloc_irq_vectors, max_vecs argument that is
+> passed on by the caller based on the housekeeping online CPUs (that are
+> meant to perform managed IRQ jobs).
+>
+> A minimum of the max_vecs passed and housekeeping online CPUs is derived
+> to ensure that we don't create excess vectors as that can be problematic
+> specifically in an RT environment. In cases where the min_vecs exceeds the
+> housekeeping online CPUs, max vecs is restricted based on the min_vecs
+> instead. The proposed change is required because for an RT environment
+> unwanted IRQs are moved to the housekeeping CPUs from isolated CPUs to
+> keep the latency overhead to a minimum. If the number of housekeeping CPUs
+> is significantly lower than that of the isolated CPUs we can run into
+> failures while moving these IRQs to housekeeping CPUs due to per CPU
+> vector limit.
+
+Does this capture enough of the log?
+
+  If we have isolated CPUs dedicated for use by real-time tasks, we
+  try to move IRQs to housekeeping CPUs to reduce overhead on the
+  isolated CPUs.
+
+  If we allocate too many IRQ vectors, moving them all to housekeeping
+  CPUs may exceed per-CPU vector limits.
+
+  When we have isolated CPUs, limit the number of vectors allocated by
+  pci_alloc_irq_vectors() to the minimum number required by the
+  driver, or to one per housekeeping CPU if that is larger.
+
+> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
+> ---
+>  include/linux/pci.h | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
 > 
-> Yeah.. I did not come up with a good way of reusing the show_bool code
-> so I gave up. Taking another swing at it - how does this look?
-> 
-> diff --git a/netlink/coalesce.c b/netlink/coalesce.c
-> index 65f75cf9a8dd..07a92d04b7a1 100644
-> --- a/netlink/coalesce.c
-> +++ b/netlink/coalesce.c
-> @@ -36,9 +36,9 @@ int coalesce_reply_cb(const struct nlmsghdr *nlhdr, void *data)
->  	if (silent)
->  		putchar('\n');
->  	printf("Coalesce parameters for %s:\n", nlctx->devname);
-> -	printf("Adaptive RX: %s  TX: %s\n",
-> -	       u8_to_bool(tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_RX]),
-> -	       u8_to_bool(tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_TX]));
-> +	show_bool("rx", "Adaptive RX: %s  ",
-> +		  tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_RX]);
-> +	show_bool("tx", "TX: %s\n", tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_TX]);
->  	show_u32(tb[ETHTOOL_A_COALESCE_STATS_BLOCK_USECS],
->  		 "stats-block-usecs: ");
->  	show_u32(tb[ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL],
-> diff --git a/netlink/netlink.h b/netlink/netlink.h
-> index 4916d25ed5c0..1012e8e32cd8 100644
-> --- a/netlink/netlink.h
-> +++ b/netlink/netlink.h
-> @@ -98,27 +98,30 @@ static inline void show_u32(const struct nlattr *attr, const char *label)
->  		printf("%sn/a\n", label);
->  }
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 835530605c0d..cf9ca9410213 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -38,6 +38,7 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/resource_ext.h>
+> +#include <linux/sched/isolation.h>
+>  #include <uapi/linux/pci.h>
 >  
-> -static inline const char *u8_to_bool(const struct nlattr *attr)
-> +static inline const char *u8_to_bool(const uint8_t *val)
+>  #include <linux/pci_ids.h>
+> @@ -1797,6 +1798,20 @@ static inline int
+>  pci_alloc_irq_vectors(struct pci_dev *dev, unsigned int min_vecs,
+>  		      unsigned int max_vecs, unsigned int flags)
 >  {
-> -	if (attr)
-> -		return mnl_attr_get_u8(attr) ? "on" : "off";
-> +	if (val)
-> +		return *val ? "on" : "off";
->  	else
->  		return "n/a";
->  }
->  
-> -static inline void show_bool(const char *key, const char *fmt,
-> -			     const struct nlattr *attr)
-> +static inline void show_bool_val(const char *key, const char *fmt, uint8_t *val)
->  {
->  	if (is_json_context()) {
-> -		if (attr) {
-> -			print_bool(PRINT_JSON, key, NULL,
-> -				   mnl_attr_get_u8(attr));
-> -		}
-> +		if (val)
-> +			print_bool(PRINT_JSON, key, NULL, val);
->  	} else {
-> -		print_string(PRINT_FP, NULL, fmt, u8_to_bool(attr));
-> +		print_string(PRINT_FP, NULL, fmt, u8_to_bool(val));
->  	}
->  }
->  
-> +static inline void show_bool(const char *key, const char *fmt,
-> +			     const struct nlattr *attr)
-> +{
-> +	show_bool_val(key, fmt, attr ? mnl_attr_get_payload(attr) : NULL);
-> +}
+> +	unsigned int hk_cpus = hk_num_online_cpus();
 > +
->  /* misc */
->  
->  static inline void copy_devname(char *dst, const char *src)
-> diff --git a/netlink/pause.c b/netlink/pause.c
-> index f9dec9fe887a..5395398ba948 100644
-> --- a/netlink/pause.c
-> +++ b/netlink/pause.c
-> @@ -41,8 +41,8 @@ static int pause_autoneg_cb(const struct nlmsghdr *nlhdr, void *data)
->  	struct pause_autoneg_status ours = {};
->  	struct pause_autoneg_status peer = {};
->  	struct nl_context *nlctx = data;
-> -	bool rx_status = false;
-> -	bool tx_status = false;
-> +	uint8_t rx_status = false;
-> +	uint8_t tx_status = false;
->  	bool silent;
->  	int err_ret;
->  	int ret;
-> @@ -74,15 +74,10 @@ static int pause_autoneg_cb(const struct nlmsghdr *nlhdr, void *data)
->  			tx_status = true;
->  	}
->  
-> -	if (is_json_context()) {
-> -		open_json_object("negotiated");
-> -		print_bool(PRINT_JSON, "rx", NULL, rx_status);
-> -		print_bool(PRINT_JSON, "tx", NULL, tx_status);
-> -		close_json_object();
-> -	} else {
-> -		printf("RX negotiated: %s\nTX negotiated: %s\n",
-> -		       rx_status ? "on" : "off", tx_status ? "on" : "off");
-> -	}
-> +	open_json_object("negotiated");
-> +	show_bool_val("rx", "RX negotiated: %s\n", &rx_status);
-> +	show_bool_val("tx", "TX negotiated: %s\n", &tx_status);
-> +	close_json_object();
->  
->  	return MNL_CB_OK;
+> +	/*
+> +	 * For a real-time environment, try to be conservative and at max only
+> +	 * ask for the same number of vectors as there are housekeeping online
+> +	 * CPUs. In case, the min_vecs requested exceeds the housekeeping
+> +	 * online CPUs, restrict the max_vecs based on the min_vecs instead.
+> +	 */
+> +	if (hk_cpus != num_online_cpus()) {
+> +		if (min_vecs > hk_cpus)
+> +			max_vecs = min_vecs;
+> +		else
+> +			max_vecs = min_t(int, max_vecs, hk_cpus);
+> +	}
+
+Is the below basically the same?
+
+	/*
+	 * If we have isolated CPUs for use by real-time tasks,
+	 * minimize overhead on those CPUs by moving IRQs to the
+	 * remaining "housekeeping" CPUs.  Limit vector usage to keep
+	 * housekeeping CPUs from running out of IRQ vectors.
+	 */
+	if (housekeeping_cpus < num_online_cpus()) {
+		if (housekeeping_cpus < min_vecs)
+			max_vecs = min_vecs;
+		else if (housekeeping_cpus < max_vecs)
+			max_vecs = housekeeping_cpus;
+	}
+
+My comment isn't quite right because this patch only limits the number
+of vectors; it doesn't actually *move* IRQs to the housekeeping CPUs.
+I don't know where the move happens (or maybe you just avoid assigning
+IRQs to isolated CPUs, and I don't know how that happens either).
+
+>  	return pci_alloc_irq_vectors_affinity(dev, min_vecs, max_vecs, flags,
+>  					      NULL);
 >  }
+> -- 
+> 2.18.2
 > 
-
-This looks good!
-
-Thanks,
-Jake
