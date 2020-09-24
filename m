@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4D76276727
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 05:25:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8722C27672B
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 05:25:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbgIXDZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 23:25:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56491 "EHLO
+        id S1727094AbgIXDZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 23:25:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27377 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726581AbgIXDZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 23:25:28 -0400
+        by vger.kernel.org with ESMTP id S1726764AbgIXDZl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 23:25:41 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600917927;
+        s=mimecast20190719; t=1600917940;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=9psWaDxNL/UvQAVMZCeYFOLQp2sEajeDUsbC1DgyKkE=;
-        b=VIUYDTACei9KU2TWOFGL0OLXKBBozJgtZKb1RpmmzlhVu6yY9vB+/l9QRGoKTqS/qUbexk
-        uOulg3sEt5cwywbz6TTCVECrgSyoz+HRmzfXXiW/HBgal0WMUAHl0HZBT7ZRVrPlwOYMcu
-        MebMvl3dnnMJ7TJowQPaPd+nZfoUvLo=
+        bh=9JjDz5I+JlXV5OkcQPnYHfpYpW55ZyPxuGBbeeuU1mY=;
+        b=P1uG7sJPUQqmtwlDrhGBFZdsA+7Eg9TkG0KjjeUuaHP2ZKBZ7l9bsgaAlkToztRmTEV9s4
+        vMaK3fh6y6ykIzNVyCjQRcnIxpBMxU6Nj6NC+Wj762Hs7CBJikC1dpZ0RLu2mt0GZ86Xlk
+        WbxL0IZ/llCu2R+kDhAuieIYaK1pUlI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-416-oI5ymqXIOkOLEDooY4epbA-1; Wed, 23 Sep 2020 23:25:25 -0400
-X-MC-Unique: oI5ymqXIOkOLEDooY4epbA-1
+ us-mta-412-FpMlv3VaPOW1LfK_QsZGoA-1; Wed, 23 Sep 2020 23:25:38 -0400
+X-MC-Unique: FpMlv3VaPOW1LfK_QsZGoA-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D26581008548;
-        Thu, 24 Sep 2020 03:25:23 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6F51781CAFC;
+        Thu, 24 Sep 2020 03:25:36 +0000 (UTC)
 Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-13-193.pek2.redhat.com [10.72.13.193])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C3F663782;
-        Thu, 24 Sep 2020 03:25:11 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 70FFD3782;
+        Thu, 24 Sep 2020 03:25:24 +0000 (UTC)
 From:   Jason Wang <jasowang@redhat.com>
 To:     mst@redhat.com, jasowang@redhat.com
 Cc:     lulu@redhat.com, kvm@vger.kernel.org,
@@ -42,9 +42,9 @@ Cc:     lulu@redhat.com, kvm@vger.kernel.org,
         mhabets@solarflare.com, eli@mellanox.com, amorenoz@redhat.com,
         maxime.coquelin@redhat.com, stefanha@redhat.com,
         sgarzare@redhat.com
-Subject: [RFC PATCH 19/24] vdpa_sim: use separated iov for reading and writing
-Date:   Thu, 24 Sep 2020 11:21:20 +0800
-Message-Id: <20200924032125.18619-20-jasowang@redhat.com>
+Subject: [RFC PATCH 20/24] vdpa_sim: advertise VIRTIO_NET_F_MTU
+Date:   Thu, 24 Sep 2020 11:21:21 +0800
+Message-Id: <20200924032125.18619-21-jasowang@redhat.com>
 In-Reply-To: <20200924032125.18619-1-jasowang@redhat.com>
 References: <20200924032125.18619-1-jasowang@redhat.com>
 MIME-Version: 1.0
@@ -54,60 +54,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to support control virtqueue whose commands have both in and
-out descriptors, we need to use separated iov for reading and writing
-in vdpa_sim.
+We've already reported maximum mtu via config space, so let's
+advertise the feature.
 
 Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/vdpa/vdpa_sim/vdpa_sim.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/vdpa/vdpa_sim/vdpa_sim.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-index 5dc04ec271bb..d1764a64578d 100644
+index d1764a64578d..4b2d0d3fbc87 100644
 --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
 +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-@@ -40,7 +40,8 @@ MODULE_PARM_DESC(batch_mapping, "Batched mapping 1 -Enable; 0 - Disable");
+@@ -61,7 +61,8 @@ struct vdpasim_virtqueue {
  
- struct vdpasim_virtqueue {
- 	struct vringh vring;
--	struct vringh_kiov iov;
-+	struct vringh_kiov riov;
-+	struct vringh_kiov wiov;
- 	unsigned short head;
- 	bool ready;
- 	u64 desc_addr;
-@@ -173,12 +174,12 @@ static void vdpasim_work(struct work_struct *work)
+ static u64 vdpasim_features = (1ULL << VIRTIO_F_ANY_LAYOUT) |
+ 			      (1ULL << VIRTIO_F_VERSION_1)  |
+-			      (1ULL << VIRTIO_F_ACCESS_PLATFORM);
++			      (1ULL << VIRTIO_F_ACCESS_PLATFORM) |
++			      (1ULL << VIRTIO_NET_F_MTU);
  
- 	while (true) {
- 		total_write = 0;
--		err = vringh_getdesc_iotlb(&txq->vring, &txq->iov, NULL,
-+		err = vringh_getdesc_iotlb(&txq->vring, &txq->riov, NULL,
- 					   &txq->head, GFP_ATOMIC);
- 		if (err <= 0)
- 			break;
- 
--		err = vringh_getdesc_iotlb(&rxq->vring, NULL, &rxq->iov,
-+		err = vringh_getdesc_iotlb(&rxq->vring, NULL, &rxq->wiov,
- 					   &rxq->head, GFP_ATOMIC);
- 		if (err <= 0) {
- 			vringh_complete_iotlb(&txq->vring, txq->head, 0);
-@@ -186,13 +187,13 @@ static void vdpasim_work(struct work_struct *work)
- 		}
- 
- 		while (true) {
--			read = vringh_iov_pull_iotlb(&txq->vring, &txq->iov,
-+			read = vringh_iov_pull_iotlb(&txq->vring, &txq->riov,
- 						     vdpasim->buffer,
- 						     PAGE_SIZE);
- 			if (read <= 0)
- 				break;
- 
--			write = vringh_iov_push_iotlb(&rxq->vring, &rxq->iov,
-+			write = vringh_iov_push_iotlb(&rxq->vring, &rxq->wiov,
- 						      vdpasim->buffer, read);
- 			if (write <= 0)
- 				break;
+ /* State of each vdpasim device */
+ struct vdpasim {
 -- 
 2.20.1
 
