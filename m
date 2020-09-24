@@ -2,178 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25193277A85
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF21B277A99
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:41:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726239AbgIXUi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 16:38:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40912 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725208AbgIXUi1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Sep 2020 16:38:27 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 96AEA21D7F;
-        Thu, 24 Sep 2020 20:38:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600979906;
-        bh=i5iUU92lMRTTto/ol9MCYB2GbieyfMfeaDb9LBG6iGc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=2IyXtoPeBUkfVwfxxRaC0UFQk15jy3HlTqX8BN81fCJM9zv+vWThN0OJ08UNZ14BM
-         SyGOdPmvnXet7nEAtkQWKUr6wk6ua/POw7PzHtqLdGnwpOwtELX4Tzxe4AuhMFEgJZ
-         oAyXGlah5CYMhKRAp5ExRQ0RMwaHz5CvRf76gh1I=
-Date:   Thu, 24 Sep 2020 13:38:24 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Moshe Shemesh <moshe@nvidia.com>
-Cc:     Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next RFC v5 01/15] devlink: Add reload action option
- to devlink reload command
-Message-ID: <20200924133824.206b6308@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <9bdd7d82-aed2-aa0a-f167-eaae237d658c@nvidia.com>
-References: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
-        <1600445211-31078-2-git-send-email-moshe@mellanox.com>
-        <20200923112543.4dc12600@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <9bdd7d82-aed2-aa0a-f167-eaae237d658c@nvidia.com>
+        id S1726655AbgIXUlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 16:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726037AbgIXUlF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 16:41:05 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6689C0613CE;
+        Thu, 24 Sep 2020 13:41:04 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id 133so382348ybg.11;
+        Thu, 24 Sep 2020 13:41:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=LuBsiJGWhXaa9Z1xegLqAKn7DmusjrmOo8BYb2r+KsQ=;
+        b=JkXFn/ehP3D4eF5eH9ZNxvLZUrCTdM2JYXnwdIfYVfurU5+eiXFMhZdmG3hj/Fedri
+         pxASktyl/kA4eFwhYYdlF1CW5UM7Tq2wY9yMWs0+YYYF/ZdDGGYmnAUjFi5vv2H3PxL8
+         tRnf/C7kpN3UkBfic2hqvFfUW2dAEUOd/Nf1UsaSMakYRF0pnLnZfFePDY3/RpDcXgu1
+         EO/g4ne/xTaH+FW+NmZvYGALskNkFeEinShaoVxlLglZy/4JcNoL3cIScuxJXLTFaX0q
+         3lsBacaOXFp5LnoZXw0w8jNcNItlsVggvBkHUtiElrqSOlIn/uSSyouBlr4G5BQdmnFn
+         dm6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LuBsiJGWhXaa9Z1xegLqAKn7DmusjrmOo8BYb2r+KsQ=;
+        b=bvi1vtkKcGlJupiXTaYrbL5UFBX9p6FZXMC1HjgeCWve7aaMNVtlYWenxdKFhTae+h
+         b8HBMOdsIgyj3CFiWtypXMHW7vwrqczg10d/T4wgOHyRm1ysaXokLgpCdTOLRtxFnaN/
+         9vQCXRmuYdRWCkM4zRs/gwvGB+8tOwzAzF25FzRZgrsseCoK2p90Xziy5sDpPuuYluu/
+         qG7xgXnXaQf9lxc/jeXEjal833BBYDztxwKcm+s28ujkJ2yJjJ1CoxGFx1AHnqDqQV9e
+         cwoE5GX7j0mn+1vE962xx73sUdG5f+kKlVgvlbnStBF2Y6wweoUUmjqnfoAcq1i3QloE
+         Ohww==
+X-Gm-Message-State: AOAM531DmBRhMi0y7quG39iKKhMP4S2EBJ0AZpYrEQXNgM+wVXCnqAzS
+        99U4lBTAf0OjF4LrSKEcIPpChVay9HFG6pnwvJ4=
+X-Google-Smtp-Source: ABdhPJyDBUyTK99K4bkK5qk54JrmnuC6QX4fyZba8yrwdVZxKhRe9eWbLSn8nqnBUjAIGa8bbgEPuA2daDqln8tAzYY=
+X-Received: by 2002:a25:2687:: with SMTP id m129mr804101ybm.425.1600980064144;
+ Thu, 24 Sep 2020 13:41:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <160079991372.8301.10648588027560707258.stgit@toke.dk>
+ <160079991808.8301.6462172487971110332.stgit@toke.dk> <20200924001439.qitbu5tmzz55ck4z@ast-mbp.dhcp.thefacebook.com>
+ <874knn1bw4.fsf@toke.dk>
+In-Reply-To: <874knn1bw4.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 24 Sep 2020 13:40:53 -0700
+Message-ID: <CAEf4BzaBvvZdgekg13T3e4uj5Q9Rf1RTFP__ZPsU-NMp2fVXxw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v8 04/11] bpf: move prog->aux->linked_prog and
+ trampoline into bpf_link on attach
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Sep 2020 22:01:42 +0300 Moshe Shemesh wrote:
-> On 9/23/2020 9:25 PM, Jakub Kicinski wrote:
-> >> Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
-> >> @@ -3971,15 +3972,19 @@ static int mlx4_devlink_reload_up(struct devlink *devlink,
-> >>        int err;
-> >>
-> >>        err = mlx4_restart_one_up(persist->pdev, true, devlink);
-> >> -     if (err)
-> >> +     if (err) {
-> >>                mlx4_err(persist->dev, "mlx4_restart_one_up failed, ret=%d\n",
-> >>                         err);
-> >> +             return err;
-> >> +     }
-> >> +     *actions_performed = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);  
-> > FWIW I think drivers should be able to assign this even if they return
-> > an error. On error there is no certainty what actions were actually
-> > performed (e.g. when timeout happened but the device did the reset a
-> > little later) so this argument should not be interpreted in presence of
-> > errors, anyway.  
-> 
-> Not sure I got it. Do you mean driver can assign it anyway and devlink 
-> should ignore in case of failure ?
+On Thu, Sep 24, 2020 at 7:36 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>
+> > On Tue, Sep 22, 2020 at 08:38:38PM +0200, Toke H=C3=83=C6=92=C3=82=C2=
+=B8iland-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote:
+> >> @@ -746,7 +748,9 @@ struct bpf_prog_aux {
+> >>      u32 max_rdonly_access;
+> >>      u32 max_rdwr_access;
+> >>      const struct bpf_ctx_arg_aux *ctx_arg_info;
+> >> -    struct bpf_prog *linked_prog;
+> >
+> > This change breaks bpf_preload and selftests test_bpffs.
+> > There is really no excuse not to run the selftests.
+>
+> I did run the tests, and saw no more breakages after applying my patches
+> than before. Which didn't catch this, because this is the current state
+> of bpf-next selftests:
+>
+> # ./test_progs  | grep FAIL
+> test_lookup_update:FAIL:map1_leak inner_map1 leaked!
+> #10/1 lookup_update:FAIL
+> #10 btf_map_in_map:FAIL
 
-Yup.
+this failure suggests you are not running the latest kernel, btw
 
-> As I implemented here devlink already ignores actions_performed in case 
-> driver returns with error.
 
-Right, but you're changing all bunch of drivers like this:
+> configure_stack:FAIL:BPF load failed; run with -vv for more info
+> #72 sk_assign:FAIL
+> test_test_bpffs:FAIL:bpffs test  failed 255
+> #96 test_bpffs:FAIL
+> Summary: 113/844 PASSED, 14 SKIPPED, 4 FAILED
+>
+> The test_bpffs failure happens because the umh is missing from the
+> .config; and when I tried to fix this I ended up with:
 
- static void reload()
- {		
--	return do_it();
-+	int err;
-+
-+	err = do_it();
-+	if (err)
-+		return err;
-+
-+	*actions_performed = SOMETHING;
-+	return 0;
- }
+yeah, seems like selftests/bpf/config needs to be updated to mention
+UMH-related config values:
 
-When you can instead:
+CONFIG_BPF_PRELOAD=3Dy
+CONFIG_BPF_PRELOAD_UMD=3Dm|y
 
- static void reload()
- {		
-+	*actions_performed = SOMETHING;
- 	return do_it();
- }
+with that test_bpffs shouldn't fail on master
 
-> >> @@ -3011,12 +3064,43 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
-> >>                        return PTR_ERR(dest_net);
-> >>        }
-> >>
-> >> -     err = devlink_reload(devlink, dest_net, info->extack);
-> >> +     if (info->attrs[DEVLINK_ATTR_RELOAD_ACTION])
-> >> +             action = nla_get_u8(info->attrs[DEVLINK_ATTR_RELOAD_ACTION]);
-> >> +     else
-> >> +             action = DEVLINK_RELOAD_ACTION_DRIVER_REINIT;
-> >> +
-> >> +     if (action == DEVLINK_RELOAD_ACTION_UNSPEC) {
-> >> +             NL_SET_ERR_MSG_MOD(info->extack, "Invalid reload action");
-> >> +             return -EINVAL;
-> >> +     } else if (!devlink_reload_action_is_supported(devlink, action)) {
-> >> +             NL_SET_ERR_MSG_MOD(info->extack, "Requested reload action is not supported by the driver");
-> >> +             return -EOPNOTSUPP;
-> >> +     }
-> >> +
-> >> +     err = devlink_reload(devlink, dest_net, action, info->extack, &actions_performed);  
-> > Perhaps we can pass the requested action to the driver via
-> > actions_performed already, and then all the drivers which
-> > only do what they're asked to don't have to touch it?  
-> 
-> Not sure about it. Note that in the next patch I add here limit_level 
-> and that has only input param, so I think it would be confusing.
+>
+> [..]
+>   CC [M]  kernel/bpf/preload/bpf_preload_kern.o
+>
+> Auto-detecting system features:
+> ...                        libelf: [ OFF ]
+> ...                          zlib: [ OFF ]
+> ...                           bpf: [ OFF ]
+>
+> No libelf found
 
-I don't think it'd be, but don't feel strongly either.
+might be worthwhile to look into why detection fails, might be
+something with Makefiles or your environment
 
-> >>        if (dest_net)
-> >>                put_net(dest_net);
-> >>
-> >> -     return err;
-> >> +     if (err)
-> >> +             return err;
-> >> +     /* For backward compatibility generate reply only if attributes used by user */
-> >> +     if (!info->attrs[DEVLINK_ATTR_RELOAD_ACTION])
-> >> +             return 0;
-> >> +
-> >> +     msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-> >> +     if (!msg)
-> >> +             return -ENOMEM;
-> >> +
-> >> +     err = devlink_nl_reload_actions_performed_fill(msg, devlink, actions_performed,
-> >> +                                                    DEVLINK_CMD_RELOAD, info->snd_portid,
-> >> +                                                    info->snd_seq, 0);
-> >> +     if (err) {
-> >> +             nlmsg_free(msg);
-> >> +             return err;
-> >> +     }
-> >> +
-> >> +     return genlmsg_reply(msg, info);  
-> > Are you using devlink_nl_reload_actions_performed_fill() somewhere else?  
-> No
-> > I'd move the nlmsg_new() / genlmsg_reply() into the helper.  
-> 
-> Can do it, but there are many _fill() functions in devlink.c code to 
-> fill the data, none of them include nlmsg_new() and genlmsg_reply() 
-> that's always in the calling function, even if the calling function adds 
-> only that. So I guess I will leave it for consistency.
+>
+> ...which I just put down to random breakage, turned off the umh and
+> continued on my way (ignoring the failed test). Until you wrote this I
+> did not suspect this would be something I needed to pay attention to.
+> Now that you did mention it, I'll obviously go investigate some more, my
+> point is just that in this instance it's not accurate to assume I just
+> didn't run the tests... :)
 
-Don't call the helper _fill() and you'll be good.
+Don't just assume some tests are always broken. Either ask or
+investigate on your own. Such cases do happen from time to time while
+we wait for a fix in bpf to get merged into bpf-next or vice versa,
+but it's rare. We now have two different CI systems running selftests
+all the time, in addition to running them locally as well, so any
+permanent test failure is very apparent and annoying, so we fix them
+quickly. So, when in doubt - ask or fix.
 
-> >>   }
-> >>
-> >>   static int devlink_nl_flash_update_fill(struct sk_buff *msg,
-> >> @@ -7069,6 +7153,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
-> >>        [DEVLINK_ATTR_TRAP_POLICER_RATE] = { .type = NLA_U64 },
-> >>        [DEVLINK_ATTR_TRAP_POLICER_BURST] = { .type = NLA_U64 },
-> >>        [DEVLINK_ATTR_PORT_FUNCTION] = { .type = NLA_NESTED },
-> >> +     [DEVLINK_ATTR_RELOAD_ACTION] = { .type = NLA_U8 },  
-> > Why not just range validation here?  
-> 
-> All devlink attributes that pass here go through devlink_nl_poicy this 
-> way, including other enums.
-> 
-> I think changing that should be in a different patch for all, not in 
-> this patchset.
+>
+> > I think I will just start marking patches as changes-requested when I s=
+ee that
+> > they break tests without replying and without reviewing.
+> > Please respect reviewer's time.
+>
+> That is completely fine if the tests are working in the first place. And
 
-I don't think this is on purpose. Please use range validation in new
-code from the start. We support dumping policies to user space, it's
-useful to know the range of parameters from the policy.
+They are and hopefully moving forward that would be your assumption.
+
+> even when they're not (like in this case), pointing it out is fine, and
+> I'll obviously go investigate. But please at least reply to the email,
+> not all of us watch patchwork regularly.
+>
+> (I'll fix all your other comments and respin; thanks!)
+>
+> -Toke
+>
