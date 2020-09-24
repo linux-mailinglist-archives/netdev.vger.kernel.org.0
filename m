@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 707A5277C16
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 01:02:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D49A3277C1D
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 01:03:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726722AbgIXXC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 19:02:26 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:14470 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726557AbgIXXCZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 19:02:25 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08OMxP6S005513
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 16:02:25 -0700
+        id S1726740AbgIXXDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 19:03:09 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:34242 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726704AbgIXXDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 19:03:08 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 08ON2rd4026803
+        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 16:03:07 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=BTNUi+RKid/OnBuaQqcR9EJBzpDgCXQaDGTJnydXqFI=;
- b=P5Klilfrmrj1pzVlplUdmF8l7t4/M2zJaF/FwpoS58uni/py8AT2AbaW6/r3J7+9HBi9
- doUGGO+VkBOhudyOC630eM3te+H/TWNeCv2Vouc+YTmZsTS12/vvW1pEcszC1VEyVdGn
- /oDcPmGp10LLTsg/F3hDtzx2qdZWcYkFkvI= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33qsp54k4w-2
+ bh=BNmy/GHPThnlKx1netK5oCSDUBSMKw/V+zBkR+CLIbk=;
+ b=m0oKr2ddmUhLimjCJVhX1HgBFgTJ0dtS0lUQsX3HOAHJ+cfO5hHSxtg09mCBNlSwQgNs
+ l8RkopVaPkGduh0BCJ8VfASPsarp7w9tASdpgn6VKsH2KWeXtPp8woJAXz0z/TJZ/lGG
+ Nns/hMkwf7CIy6bgCXvADmucW9ghgEdhkww= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 33qsp7mnqc-17
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 16:02:25 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 16:03:07 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 24 Sep 2020 16:02:24 -0700
+ 15.1.1979.3; Thu, 24 Sep 2020 16:02:30 -0700
 Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id A2F8E62E542E; Thu, 24 Sep 2020 16:02:22 -0700 (PDT)
+        id C53ED62E542E; Thu, 24 Sep 2020 16:02:27 -0700 (PDT)
 From:   Song Liu <songliubraving@fb.com>
 To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
 CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
         <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
         Song Liu <songliubraving@fb.com>
-Subject: [PATCH v5 bpf-next 2/3] libbpf: support test run of raw tracepoint programs
-Date:   Thu, 24 Sep 2020 16:02:08 -0700
-Message-ID: <20200924230209.2561658-3-songliubraving@fb.com>
+Subject: [PATCH v5 bpf-next 3/3] selftests/bpf: add raw_tp_test_run
+Date:   Thu, 24 Sep 2020 16:02:09 -0700
+Message-ID: <20200924230209.2561658-4-songliubraving@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200924230209.2561658-1-songliubraving@fb.com>
 References: <20200924230209.2561658-1-songliubraving@fb.com>
@@ -48,139 +48,166 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-09-24_18:2020-09-24,2020-09-24 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- lowpriorityscore=0 priorityscore=1501 impostorscore=0 adultscore=0
- malwarescore=0 spamscore=0 mlxlogscore=999 suspectscore=0 bulkscore=0
- clxscore=1015 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009240166
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ phishscore=0 adultscore=0 clxscore=1015 priorityscore=1501 spamscore=0
+ mlxlogscore=999 lowpriorityscore=0 bulkscore=0 impostorscore=0 mlxscore=0
+ suspectscore=2 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009240167
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add bpf_prog_test_run_opts() with support of new fields in bpf_attr.test,
-namely, flags and cpu. Also extend _opts operations to support outputs vi=
-a
-opts.
+This test runs test_run for raw_tracepoint program. The test covers ctx
+input, retval output, and running on correct cpu.
 
 Signed-off-by: Song Liu <songliubraving@fb.com>
 ---
- tools/lib/bpf/bpf.c             | 31 +++++++++++++++++++++++++++++++
- tools/lib/bpf/bpf.h             | 26 ++++++++++++++++++++++++++
- tools/lib/bpf/libbpf.map        |  1 +
- tools/lib/bpf/libbpf_internal.h |  5 +++++
- 4 files changed, 63 insertions(+)
+ .../bpf/prog_tests/raw_tp_test_run.c          | 98 +++++++++++++++++++
+ .../bpf/progs/test_raw_tp_test_run.c          | 24 +++++
+ 2 files changed, 122 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/raw_tp_test_ru=
+n.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_raw_tp_test_ru=
+n.c
 
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index 2baa1308737c8..c5a4d8444bf68 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -712,6 +712,37 @@ int bpf_prog_test_run_xattr(struct bpf_prog_test_run=
-_attr *test_attr)
- 	return ret;
- }
-=20
-+int bpf_prog_test_run_opts(int prog_fd, struct bpf_test_run_opts *opts)
+diff --git a/tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c b/t=
+ools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
+new file mode 100644
+index 0000000000000..5b07259781610
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
+@@ -0,0 +1,98 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (c) 2019 Facebook */
++#include <test_progs.h>
++#include <linux/bpf.h>
++#include "bpf/libbpf_internal.h"
++#include "test_raw_tp_test_run.skel.h"
++
++static int duration;
++
++void test_raw_tp_test_run(void)
 +{
-+	union bpf_attr attr;
-+	int ret;
++	struct bpf_prog_test_run_attr test_attr =3D {};
++	int comm_fd =3D -1, err, nr_online, i, prog_fd;
++	__u64 args[2] =3D {0x1234ULL, 0x5678ULL};
++	int expected_retval =3D 0x1234 + 0x5678;
++	struct test_raw_tp_test_run *skel;
++	char buf[] =3D "new_name";
++	bool *online =3D NULL;
 +
-+	if (!OPTS_VALID(opts, bpf_test_run_opts))
-+		return -EINVAL;
++	err =3D parse_cpu_mask_file("/sys/devices/system/cpu/online", &online,
++				  &nr_online);
++	if (CHECK(err, "parse_cpu_mask_file", "err %d\n", err))
++		return;
 +
-+	memset(&attr, 0, sizeof(attr));
-+	attr.test.prog_fd =3D prog_fd;
-+	attr.test.cpu =3D OPTS_GET(opts, cpu, 0);
-+	attr.test.flags =3D OPTS_GET(opts, flags, 0);
-+	attr.test.repeat =3D OPTS_GET(opts, repeat, 0);
-+	attr.test.duration =3D OPTS_GET(opts, duration, 0);
-+	attr.test.ctx_size_in =3D OPTS_GET(opts, ctx_size_in, 0);
-+	attr.test.ctx_size_out =3D OPTS_GET(opts, ctx_size_out, 0);
-+	attr.test.data_size_in =3D OPTS_GET(opts, data_size_in, 0);
-+	attr.test.data_size_out =3D OPTS_GET(opts, data_size_out, 0);
-+	attr.test.ctx_in =3D ptr_to_u64(OPTS_GET(opts, ctx_in, NULL));
-+	attr.test.ctx_out =3D ptr_to_u64(OPTS_GET(opts, ctx_out, NULL));
-+	attr.test.data_in =3D ptr_to_u64(OPTS_GET(opts, data_in, NULL));
-+	attr.test.data_out =3D ptr_to_u64(OPTS_GET(opts, data_out, NULL));
++	skel =3D test_raw_tp_test_run__open_and_load();
++	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
++		goto cleanup;
 +
-+	ret =3D sys_bpf(BPF_PROG_TEST_RUN, &attr, sizeof(attr));
-+	OPTS_SET(opts, data_size_out, attr.test.data_size_out);
-+	OPTS_SET(opts, ctx_size_out, attr.test.ctx_size_out);
-+	OPTS_SET(opts, duration, attr.test.duration);
-+	OPTS_SET(opts, retval, attr.test.retval);
-+	return ret;
++	err =3D test_raw_tp_test_run__attach(skel);
++	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
++		goto cleanup;
++
++	comm_fd =3D open("/proc/self/comm", O_WRONLY|O_TRUNC);
++	if (CHECK(comm_fd < 0, "open /proc/self/comm", "err %d\n", errno))
++		goto cleanup;
++
++	err =3D write(comm_fd, buf, sizeof(buf));
++	CHECK(err < 0, "task rename", "err %d", errno);
++
++	CHECK(skel->bss->count =3D=3D 0, "check_count", "didn't increase\n");
++	CHECK(skel->data->on_cpu !=3D 0xffffffff, "check_on_cpu", "got wrong va=
+lue\n");
++
++	prog_fd =3D bpf_program__fd(skel->progs.rename);
++	test_attr.prog_fd =3D prog_fd;
++	test_attr.ctx_in =3D args;
++	test_attr.ctx_size_in =3D sizeof(__u64);
++
++	err =3D bpf_prog_test_run_xattr(&test_attr);
++	CHECK(err =3D=3D 0, "test_run", "should fail for too small ctx\n");
++
++	test_attr.ctx_size_in =3D sizeof(args);
++	err =3D bpf_prog_test_run_xattr(&test_attr);
++	CHECK(err < 0, "test_run", "err %d\n", errno);
++	CHECK(test_attr.retval !=3D expected_retval, "check_retval",
++	      "expect 0x%x, got 0x%x\n", expected_retval, test_attr.retval);
++
++	for (i =3D 0; i < nr_online; i++) {
++		if (online[i]) {
++			DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts,
++				.ctx_in =3D args,
++				.ctx_size_in =3D sizeof(args),
++				.flags =3D BPF_F_TEST_RUN_ON_CPU,
++				.retval =3D 0,
++				.cpu =3D i,
++			);
++
++			err =3D bpf_prog_test_run_opts(prog_fd, &opts);
++			CHECK(err < 0, "test_run_opts", "err %d\n", errno);
++			CHECK(skel->data->on_cpu !=3D i, "check_on_cpu",
++			      "expect %d got %d\n", i, skel->data->on_cpu);
++			CHECK(opts.retval !=3D expected_retval,
++			      "check_retval", "expect 0x%x, got 0x%x\n",
++			      expected_retval, opts.retval);
++
++			if (i =3D=3D 0) {
++				/* invalid cpu ID should fail with ENXIO */
++				opts.cpu =3D 0xffffffff;
++				err =3D bpf_prog_test_run_opts(prog_fd, &opts);
++				CHECK(err !=3D -1 || errno !=3D ENXIO,
++				      "test_run_opts_fail",
++				      "should failed with ENXIO\n");
++			} else {
++				/* non-zero cpu w/o BPF_F_TEST_RUN_ON_CPU
++				 * should fail with EINVAL
++				 */
++				opts.flags =3D 0;
++				err =3D bpf_prog_test_run_opts(prog_fd, &opts);
++				CHECK(err !=3D -1 || errno !=3D EINVAL,
++				      "test_run_opts_fail",
++				      "should failed with EINVAL\n");
++			}
++		}
++	}
++cleanup:
++	close(comm_fd);
++	test_raw_tp_test_run__destroy(skel);
++	free(online);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c b/t=
+ools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
+new file mode 100644
+index 0000000000000..1521853597d70
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020 Facebook */
++
++#include "vmlinux.h"
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++__u32 count =3D 0;
++__u32 on_cpu =3D 0xffffffff;
++
++SEC("raw_tp/task_rename")
++int BPF_PROG(rename, struct task_struct *task, char *comm)
++{
++
++	count++;
++	if ((__u64) task =3D=3D 0x1234ULL && (__u64) comm =3D=3D 0x5678ULL) {
++		on_cpu =3D bpf_get_smp_processor_id();
++		return (int)task + (int)comm;
++	}
++
++	return 0;
 +}
 +
- static int bpf_obj_get_next_id(__u32 start_id, __u32 *next_id, int cmd)
- {
- 	union bpf_attr attr;
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index 8c1ac4b42f908..4f3568e55527c 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -251,6 +251,32 @@ struct bpf_prog_bind_opts {
-=20
- LIBBPF_API int bpf_prog_bind_map(int prog_fd, int map_fd,
- 				 const struct bpf_prog_bind_opts *opts);
-+
-+struct bpf_test_run_opts {
-+	size_t sz; /* size of this struct for forward/backward compatibility */
-+	const void *data_in; /* optional */
-+	void *data_out;      /* optional */
-+	__u32 data_size_in;
-+	__u32 data_size_out; /* in: max length of data_out
-+			      * out: length of data_out
-+			      */
-+	const void *ctx_in; /* optional */
-+	void *ctx_out;      /* optional */
-+	__u32 ctx_size_in;
-+	__u32 ctx_size_out; /* in: max length of ctx_out
-+			     * out: length of cxt_out
-+			     */
-+	__u32 retval;        /* out: return code of the BPF program */
-+	int repeat;
-+	__u32 duration;      /* out: average per repetition in ns */
-+	__u32 flags;
-+	__u32 cpu;
-+};
-+#define bpf_test_run_opts__last_field cpu
-+
-+LIBBPF_API int bpf_prog_test_run_opts(int prog_fd,
-+				      struct bpf_test_run_opts *opts);
-+
- #ifdef __cplusplus
- } /* extern "C" */
- #endif
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 5f054dadf0829..0623e7a99b1ec 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -303,6 +303,7 @@ LIBBPF_0.1.0 {
- LIBBPF_0.2.0 {
- 	global:
- 		bpf_prog_bind_map;
-+		bpf_prog_test_run_opts;
- 		bpf_program__section_name;
- 		perf_buffer__buffer_cnt;
- 		perf_buffer__buffer_fd;
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_inter=
-nal.h
-index 4d1c366fca2ca..d2fff18f4cd12 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -136,6 +136,11 @@ static inline bool libbpf_validate_opts(const char *=
-opts,
- 	((opts) && opts->sz >=3D offsetofend(typeof(*(opts)), field))
- #define OPTS_GET(opts, field, fallback_value) \
- 	(OPTS_HAS(opts, field) ? (opts)->field : fallback_value)
-+#define OPTS_SET(opts, field, value)		\
-+	do {					\
-+		if (OPTS_HAS(opts, field))	\
-+			(opts)->field =3D value;	\
-+	} while (0)
-=20
- int parse_cpu_mask_str(const char *s, bool **mask, int *mask_sz);
- int parse_cpu_mask_file(const char *fcpu, bool **mask, int *mask_sz);
++char _license[] SEC("license") =3D "GPL";
 --=20
 2.24.1
 
