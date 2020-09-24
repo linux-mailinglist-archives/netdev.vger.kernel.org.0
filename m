@@ -2,102 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07774277B8F
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 00:15:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92334277B92
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 00:17:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726631AbgIXWPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 18:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45100 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726205AbgIXWPZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 18:15:25 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C26CC0613CE;
-        Thu, 24 Sep 2020 15:15:25 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id s66so461680otb.2;
-        Thu, 24 Sep 2020 15:15:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6X1D7CAuSpwgwAh0duUap99z61sTcof5jqH1venAV7Q=;
-        b=U7K+b/k6R6F8eOPDKqyqgSsneBYtTdirJ3OIE5FJQlFv47vr7D6zedCwX2SuNep0+8
-         q2OxULG1Ts8hGlGPwQk6qJTLmHXdFO+/NPF07O1484iLFVRutXcKskzXGaHfbky999kp
-         b809SR0lUtJ55XTitZ5AQOskuPNafwOZwHXW18UN/m8q8pgKGn3fAjia/UraVuTFDYK/
-         f/EAds8qVWb69LAwrRvaqrgasktj4XZ5tPCilbQ5vATH8B3pun79Z0CfPlgvJ334kvD9
-         OoMssMNkb/tUH409CcJn95EXQ6ILDvAnb/7td9T6H1qCabVr+RbbLT7+kwn2TT8MOHND
-         R5uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6X1D7CAuSpwgwAh0duUap99z61sTcof5jqH1venAV7Q=;
-        b=KPs5tAcFhUxBaJEjTZLmo3q/IWuhoekbOesgDuYtRKoihyReB0oJVcfij92QavvzAO
-         8LpDQwuA2lZiOI7RZtHvWfMnO37Din7KNlV2HWI/TuXB1sECnrcxWHEWK9K7PDkOrxOx
-         O+fUN56PV/NdJwSHHupWlDWbFopXp+iblSowGuHK9vyDLKABkPVi6c4+HtFlJv9lchbT
-         BYJvqBuXiu3GzIZM8iiU8kbq3hG0wN+35llQ2kOltqp7np9AXqDsUfRFMfrloerOwAIQ
-         ThiytcJy1fMwtEW24nVFqSleo57ntHrHLaUaW7fA0RblNAuubSSpvDA31v9nXw4uPN06
-         rFdw==
-X-Gm-Message-State: AOAM531/7MGoaPrEJHv3KmRU6h7Md16weu9P01VQV/eU83llWpWX08xF
-        dPlsuapSk7TjmLFuRGvjDdA=
-X-Google-Smtp-Source: ABdhPJyR7R2EpKR/olTRn0CCY16Jgay6QTr5Vx5PXEWWItEZuQiWrDfaTDc652nSLxKxi3RpwkiicQ==
-X-Received: by 2002:a05:6830:1241:: with SMTP id s1mr838373otp.219.1600985723230;
-        Thu, 24 Sep 2020 15:15:23 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:f921:c3fe:6d94:b608])
-        by smtp.googlemail.com with ESMTPSA id b1sm193755oop.47.2020.09.24.15.15.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Sep 2020 15:15:22 -0700 (PDT)
-Subject: Re: [PATCH bpf-next v5] bpf: Add bpf_ktime_get_real_ns
-To:     bimmy.pujari@intel.com, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, mchehab@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, maze@google.com,
-        ashkan.nikravesh@intel.com
-References: <20200924220736.23002-1-bimmy.pujari@intel.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <42da4525-d09e-4be9-7d3c-a4662276b721@gmail.com>
-Date:   Thu, 24 Sep 2020 16:15:21 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1726626AbgIXWRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 18:17:39 -0400
+Received: from www62.your-server.de ([213.133.104.62]:51230 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726205AbgIXWRj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 18:17:39 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kLZYW-0005Rj-Op; Fri, 25 Sep 2020 00:17:36 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kLZYW-000DK0-JU; Fri, 25 Sep 2020 00:17:36 +0200
+Subject: Re: [PATCH bpf-next 4/6] bpf, libbpf: add bpf_tail_call_static helper
+ for bpf programs
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <cover.1600967205.git.daniel@iogearbox.net>
+ <ae48d5b3c4b6b7ee1285c3167c3aa38ae3fdc093.1600967205.git.daniel@iogearbox.net>
+ <CAEf4BzZ4kFGeUgpJV9MgE1iJ6Db=E-TXoF73z3Rae5zgp5LLZA@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5f3850b2-7346-02d7-50f5-f63355115f35@iogearbox.net>
+Date:   Fri, 25 Sep 2020 00:17:36 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200924220736.23002-1-bimmy.pujari@intel.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAEf4BzZ4kFGeUgpJV9MgE1iJ6Db=E-TXoF73z3Rae5zgp5LLZA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25937/Thu Sep 24 15:53:11 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/24/20 4:07 PM, bimmy.pujari@intel.com wrote:
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index a22812561064..198e69a6508d 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3586,6 +3586,13 @@ union bpf_attr {
->   * 		the data in *dst*. This is a wrapper of **copy_from_user**\ ().
->   * 	Return
->   * 		0 on success, or a negative error in case of failure.
-> + *
-> + * u64 bpf_ktime_get_real_ns(void)
-> + *	Description
-> + *		Return the real time in nanoseconds.
-> + *		See: **clock_gettime**\ (**CLOCK_REALTIME**)
+On 9/24/20 10:53 PM, Andrii Nakryiko wrote:
+> On Thu, Sep 24, 2020 at 11:22 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>
+>> Port of tail_call_static() helper function from Cilium's BPF code base [0]
+>> to libbpf, so others can easily consume it as well. We've been using this
+>> in production code for some time now. The main idea is that we guarantee
+>> that the kernel's BPF infrastructure and JIT (here: x86_64) can patch the
+>> JITed BPF insns with direct jumps instead of having to fall back to using
+>> expensive retpolines. By using inline asm, we guarantee that the compiler
+>> won't merge the call from different paths with potentially different
+>> content of r2/r3.
+>>
+>> We're also using __throw_build_bug() macro in different places as a neat
+>> trick to trigger compilation errors when compiler does not remove code at
+>> compilation time. This works for the BPF backend as it does not implement
+>> the __builtin_trap().
+>>
+>>    [0] https://github.com/cilium/cilium/commit/f5537c26020d5297b70936c6b7d03a1e412a1035
+>>
+>> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+>> ---
+>>   tools/lib/bpf/bpf_helpers.h | 32 ++++++++++++++++++++++++++++++++
+>>   1 file changed, 32 insertions(+)
+>>
+>> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+>> index 1106777df00b..18b75a4c82e6 100644
+>> --- a/tools/lib/bpf/bpf_helpers.h
+>> +++ b/tools/lib/bpf/bpf_helpers.h
+>> @@ -53,6 +53,38 @@
+>>          })
+>>   #endif
+>>
+>> +/*
+>> + * Misc useful helper macros
+>> + */
+>> +#ifndef __throw_build_bug
+>> +# define __throw_build_bug()   __builtin_trap()
+>> +#endif
+> 
+> this will become part of libbpf stable API, do we want/need to expose
+> it? If we want to expose it, then we should probably provide a better
+> description.
+> 
+> But also curious, how is it better than _Static_assert() (see
+> test_cls_redirect.c), which also allows to provide a better error
+> message?
 
-This should be a little more explicit -- something like "See the caveats
-regarding use of CLOCK_REALTIME in clock_gettime man page."
+Need to get back to you whether that has same semantics. We use the __throw_build_bug()
+also in __bpf_memzero() and friends [0] as a way to trigger a hard build bug if we hit
+a default switch-case [0], so we detect unsupported sizes which are not covered by the
+implementation yet. If _Static_assert (0, "foo") does the trick, we could also use that;
+will check with our code base.
 
+   [0] https://github.com/cilium/cilium/blob/master/bpf/include/bpf/builtins.h
 
-> + *	Return
-> + *		Current *ktime*.
->   */
->  #define __BPF_FUNC_MAPPER(FN)		\
->  	FN(unspec),			\
-> @@ -3737,6 +3744,7 @@ union bpf_attr {
->  	FN(inode_storage_delete),	\
->  	FN(d_path),			\
->  	FN(copy_from_user),		\
-> +	FN(ktime_get_real_ns),		\
->  	/* */
->  
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>> +static __always_inline void
+>> +bpf_tail_call_static(void *ctx, const void *map, const __u32 slot)
+>> +{
+>> +       if (!__builtin_constant_p(slot))
+>> +               __throw_build_bug();
+>> +
+>> +       /*
+>> +        * Don't gamble, but _guarantee_ that LLVM won't optimize setting
+>> +        * r2 and r3 from different paths ending up at the same call insn as
+>> +        * otherwise we won't be able to use the jmpq/nopl retpoline-free
+>> +        * patching by the x86-64 JIT in the kernel.
+>> +        *
+> 
+> So the clobbering comment below is completely clear. But this one is
+> less clear without some sort of example situation in which bad things
+> happen. Do you mind providing some pseudo-C example in which the
+> compiler will optimize things in such a way that the tail call
+> patching won't happen?
+
+The details are pretty much here [1] and mentioned at plumbers, so if we end up from
+different paths with different map or const key at the same tail-call call insn, then
+the record_func_key() will determine that we need to emit retpoline instead of patching
+which could have occured with two tail-call call insns, for example. This helper is just
+to guarantee that the latter will always happen.
+
+   [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d2e4c1e6c2947269346054ac8937ccfe9e0bcc6b
+
+>> +        * Note on clobber list: we need to stay in-line with BPF calling
+>> +        * convention, so even if we don't end up using r0, r4, r5, we need
+>> +        * to mark them as clobber so that LLVM doesn't end up using them
+>> +        * before / after the call.
+>> +        */
+>> +       asm volatile("r1 = %[ctx]\n\t"
+>> +                    "r2 = %[map]\n\t"
+>> +                    "r3 = %[slot]\n\t"
+>> +                    "call 12\n\t"
+>> +                    :: [ctx]"r"(ctx), [map]"r"(map), [slot]"i"(slot)
+>> +                    : "r0", "r1", "r2", "r3", "r4", "r5");
+>> +}
+>> +
+>>   /*
+>>    * Helper structure used by eBPF C program
+>>    * to describe BPF map attributes to libbpf loader
+>> --
+>> 2.21.0
+>>
 
