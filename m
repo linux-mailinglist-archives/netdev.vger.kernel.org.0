@@ -2,105 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1291E2773DD
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 16:26:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93975277401
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 16:32:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728213AbgIXO0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 10:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727859AbgIXO0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 10:26:02 -0400
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B255C0613CE
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 07:26:02 -0700 (PDT)
-Received: by mail-oi1-x244.google.com with SMTP id z26so3787471oih.12
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 07:26:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PsRplXrcrp4vuGXjzx0lobgf5oy1yJOyhOffJwhM/uU=;
-        b=Aj8GS1bZqKjdkYI6p+ctzqfxDLXUiSnEh7PCr7fe+mLAVbnj91zwK9BCD8aG2ly53u
-         oVfG6ExJrV+iPjgAjKVrd4rOzcZlZUfiOhjgEGtqW/5ABpOFyvP6D79Cl8ypDh6ChXk+
-         ycjW/85v0XhRfu3VtQBdn3oqtOFK4/6oKIfz79w0asMQ8nCogi3ORpOw5QSAUplW4RWi
-         OrDqFrmKKHMo1yvGDdF1/RLk+lF2RPPEBaaruvs1l4JCUvToOWn3xq5lNGiBihIqy6pQ
-         BTuLcwmT4lP/+YMAEcW9eMSZrV/a7qi3xqbT3hKGK+D/AQXZAVQTt3WFVu5AMf670en5
-         4whg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PsRplXrcrp4vuGXjzx0lobgf5oy1yJOyhOffJwhM/uU=;
-        b=BR284+g6g4abuDm5WIMauMCFxaDLnhE3atc2UQypKLbkpsJPvRrdJO3TF4jw28+6iH
-         fVRz92mzu2ZUzVmNeVyZ7G4f2WCDTyLgzso8C0/JHVJFanBDNcGWwq1ONfRJ0Bz69CP1
-         89gfz+GDcbdFhoJiqiwHr0vG9Wdc5QmEOj6jSkXoaNY85nJvvAQIAdRTDU2QGtHT6k3h
-         5gg6O72dZ0MRe1AKg4oBECLhBMSZ7sfE5I/u+uIkgKD9d+buctL0E4qF0S+PxPgvSOzd
-         r7IBKxOQXFik48L0qu7Ot6TuwBT8NTopnWKR028mWdtUaDtlRC3W8FppjN5M702UeNyz
-         oeyA==
-X-Gm-Message-State: AOAM533FKONhTojkONXTXA73MWy5b0VO9jdcze5xhcE9b7jy7KdBfF0d
-        ahS9ER9Fsa/23g6xRArAglnqKQ==
-X-Google-Smtp-Source: ABdhPJyZfo7HHzknUMJO7v9as9lU3hFfKxErDpk0EZaNx9IPZWZc5CexTTR+cCEJ4uVVuNI65zwGbA==
-X-Received: by 2002:aca:72d0:: with SMTP id p199mr2495848oic.140.1600957561902;
-        Thu, 24 Sep 2020 07:26:01 -0700 (PDT)
-Received: from yoga (99-135-181-32.lightspeed.austtx.sbcglobal.net. [99.135.181.32])
-        by smtp.gmail.com with ESMTPSA id q24sm663236oij.19.2020.09.24.07.26.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Sep 2020 07:26:01 -0700 (PDT)
-Date:   Thu, 24 Sep 2020 09:25:59 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Loic Poulain <loic.poulain@linaro.org>, clew@codeaurora.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        manivannan.sadhasivam@linaro.org
-Subject: Re: [PATCH] net: qrtr: Fix port ID for control messages
-Message-ID: <20200924142559.GD40811@yoga>
-References: <1600941239-19435-1-git-send-email-loic.poulain@linaro.org>
+        id S1728288AbgIXOci (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 10:32:38 -0400
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:5786 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728088AbgIXOci (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 10:32:38 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f6cada50000>; Thu, 24 Sep 2020 07:31:01 -0700
+Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 24 Sep
+ 2020 14:32:35 +0000
+Date:   Thu, 24 Sep 2020 17:32:31 +0300
+From:   Eli Cohen <elic@nvidia.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>,
+        <virtualization@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <eli@nvidia.com>
+Subject: [PATCH V1 vhost-next] vdpa/mlx5: Make vdpa core driver a distinct
+ module
+Message-ID: <20200924143231.GA186492@mtl-vdi-166.wap.labs.mlnx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <1600941239-19435-1-git-send-email-loic.poulain@linaro.org>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1600957862; bh=nc2vNiYTrqyZAVfOBX+/N1PhV107Mq0CuuADPzerkwA=;
+        h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
+         Content-Disposition:User-Agent:X-Originating-IP:X-ClientProxiedBy;
+        b=C2+HY/jHQmA3V0wnnGb9jUchWPBfllMmy6N4w28X6W/X4u53yjS3eTvLusqH1Tphj
+         NO6umwaCq5eaKwfAkhJT2wJafZGoHglWqOHuCi3emtbp/nrGYsZBj+/TDz44KyQDl1
+         rKWK+0Zo5aIoHO4Jq5AuzGyxFs1l/epHu2u4hedrmowwxD33+Op2FAHjULur5jTHdj
+         uNch/lgKSpIQlnHtOqz1KBjjUNhPvTQnrfCADL7A0Cak3HkP6TBKeAwR3ZkeItwqce
+         /7qDgFmtLUtvl8ShhfUjS84e8HXydX9vLWpGtnetnXNk2VAj5ghjf0EmNqHcCULw9I
+         74xNOfwsORXwQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu 24 Sep 04:53 CDT 2020, Loic Poulain wrote:
+Change core vdpa functionality into a loadbale module such that upcoming
+block implementation will be able to use it.
 
-> The port ID for control messages was uncorrectly set with broadcast
-> node ID value, causing message to be dropped on remote side since
-> not passing packet filtering (cb->dst_port != QRTR_PORT_CTRL).
-> 
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+---
+V0 --> V1:
+Removed "default n" for configu options as 'n' is the default
 
-This does indeed make more sense. Unfortunately after reading the
-documentation a few times I do believe that it doesn't actually specify
-the expected port (only the node id) - and that the recipient shall
-ignore "the field"...
+ drivers/vdpa/Kconfig               |  8 +++-----
+ drivers/vdpa/Makefile              |  2 +-
+ drivers/vdpa/mlx5/Makefile         |  7 +++++--
+ drivers/vdpa/mlx5/core/core_main.c | 20 ++++++++++++++++++++
+ drivers/vdpa/mlx5/core/mr.c        |  3 +++
+ drivers/vdpa/mlx5/core/resources.c | 10 ++++++++++
+ 6 files changed, 42 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/vdpa/mlx5/core/core_main.c
 
-Chris, can you please let us know what the actual expectation of the
-modem is? (SDX55 in this case, but Arun must have tested this on
-something with more lax expectations?)
+diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
+index 4271c408103e..57ff6a7f7401 100644
+--- a/drivers/vdpa/Kconfig
++++ b/drivers/vdpa/Kconfig
+@@ -29,10 +29,9 @@ config IFCVF
+ 	  To compile this driver as a module, choose M here: the module will
+ 	  be called ifcvf.
+ 
+-config MLX5_VDPA
+-	bool "MLX5 VDPA support library for ConnectX devices"
++config MLX5_VDPA_CORE
++	tristate "MLX5 VDPA support library for ConnectX devices"
+ 	depends on MLX5_CORE
+-	default n
+ 	help
+ 	  Support library for Mellanox VDPA drivers. Provides code that is
+ 	  common for all types of VDPA drivers. The following drivers are planned:
+@@ -40,8 +39,7 @@ config MLX5_VDPA
+ 
+ config MLX5_VDPA_NET
+ 	tristate "vDPA driver for ConnectX devices"
+-	depends on MLX5_VDPA
+-	default n
++	depends on MLX5_VDPA_CORE
+ 	help
+ 	  VDPA network driver for ConnectX6 and newer. Provides offloading
+ 	  of virtio net datapath such that descriptors put on the ring will
+diff --git a/drivers/vdpa/Makefile b/drivers/vdpa/Makefile
+index d160e9b63a66..07353bbb9f8b 100644
+--- a/drivers/vdpa/Makefile
++++ b/drivers/vdpa/Makefile
+@@ -2,4 +2,4 @@
+ obj-$(CONFIG_VDPA) += vdpa.o
+ obj-$(CONFIG_VDPA_SIM) += vdpa_sim/
+ obj-$(CONFIG_IFCVF)    += ifcvf/
+-obj-$(CONFIG_MLX5_VDPA) += mlx5/
++obj-$(CONFIG_MLX5_VDPA_CORE) += mlx5/
+diff --git a/drivers/vdpa/mlx5/Makefile b/drivers/vdpa/mlx5/Makefile
+index 89a5bededc9f..9f50f7e8d889 100644
+--- a/drivers/vdpa/mlx5/Makefile
++++ b/drivers/vdpa/mlx5/Makefile
+@@ -1,4 +1,7 @@
+ subdir-ccflags-y += -I$(srctree)/drivers/vdpa/mlx5/core
+ 
+-obj-$(CONFIG_MLX5_VDPA_NET) += mlx5_vdpa.o
+-mlx5_vdpa-$(CONFIG_MLX5_VDPA_NET) += net/main.o net/mlx5_vnet.o core/resources.o core/mr.o
++obj-$(CONFIG_MLX5_VDPA_CORE) += mlx5_vdpa_core.o
++mlx5_vdpa_core-$(CONFIG_MLX5_VDPA_CORE) += core/resources.o core/mr.o core/core_main.o
++
++obj-$(CONFIG_MLX5_VDPA_NET) += mlx5_vdpa_net.o
++mlx5_vdpa_net-$(CONFIG_MLX5_VDPA_NET) += net/main.o net/mlx5_vnet.o
+diff --git a/drivers/vdpa/mlx5/core/core_main.c b/drivers/vdpa/mlx5/core/core_main.c
+new file mode 100644
+index 000000000000..4b39b55f57ab
+--- /dev/null
++++ b/drivers/vdpa/mlx5/core/core_main.c
+@@ -0,0 +1,20 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2020 Mellanox Technologies Ltd. */
++
++#include <linux/module.h>
++
++MODULE_AUTHOR("Eli Cohen <elic@nvidia.com>");
++MODULE_DESCRIPTION("Mellanox VDPA core driver");
++MODULE_LICENSE("Dual BSD/GPL");
++
++static int __init mlx5_vdpa_core_init(void)
++{
++	return 0;
++}
++
++static void __exit mlx5_vdpa_core_exit(void)
++{
++}
++
++module_init(mlx5_vdpa_core_init);
++module_exit(mlx5_vdpa_core_exit);
+diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/mr.c
+index ef1c550f8266..c093eab6c714 100644
+--- a/drivers/vdpa/mlx5/core/mr.c
++++ b/drivers/vdpa/mlx5/core/mr.c
+@@ -434,6 +434,7 @@ int mlx5_vdpa_create_mr(struct mlx5_vdpa_dev *mvdev, struct vhost_iotlb *iotlb)
+ 	mutex_unlock(&mr->mkey_mtx);
+ 	return err;
+ }
++EXPORT_SYMBOL(mlx5_vdpa_create_mr);
+ 
+ void mlx5_vdpa_destroy_mr(struct mlx5_vdpa_dev *mvdev)
+ {
+@@ -456,6 +457,7 @@ void mlx5_vdpa_destroy_mr(struct mlx5_vdpa_dev *mvdev)
+ out:
+ 	mutex_unlock(&mr->mkey_mtx);
+ }
++EXPORT_SYMBOL(mlx5_vdpa_destroy_mr);
+ 
+ static bool map_empty(struct vhost_iotlb *iotlb)
+ {
+@@ -484,3 +486,4 @@ int mlx5_vdpa_handle_set_map(struct mlx5_vdpa_dev *mvdev, struct vhost_iotlb *io
+ 
+ 	return err;
+ }
++EXPORT_SYMBOL(mlx5_vdpa_handle_set_map);
+diff --git a/drivers/vdpa/mlx5/core/resources.c b/drivers/vdpa/mlx5/core/resources.c
+index 96e6421c5d1c..89606a18e286 100644
+--- a/drivers/vdpa/mlx5/core/resources.c
++++ b/drivers/vdpa/mlx5/core/resources.c
+@@ -98,6 +98,7 @@ int mlx5_vdpa_create_tis(struct mlx5_vdpa_dev *mvdev, void *in, u32 *tisn)
+ 
+ 	return err;
+ }
++EXPORT_SYMBOL(mlx5_vdpa_create_tis);
+ 
+ void mlx5_vdpa_destroy_tis(struct mlx5_vdpa_dev *mvdev, u32 tisn)
+ {
+@@ -108,6 +109,7 @@ void mlx5_vdpa_destroy_tis(struct mlx5_vdpa_dev *mvdev, u32 tisn)
+ 	MLX5_SET(destroy_tis_in, in, tisn, tisn);
+ 	mlx5_cmd_exec_in(mvdev->mdev, destroy_tis, in);
+ }
++EXPORT_SYMBOL(mlx5_vdpa_destroy_tis);
+ 
+ int mlx5_vdpa_create_rqt(struct mlx5_vdpa_dev *mvdev, void *in, int inlen, u32 *rqtn)
+ {
+@@ -121,6 +123,7 @@ int mlx5_vdpa_create_rqt(struct mlx5_vdpa_dev *mvdev, void *in, int inlen, u32 *
+ 
+ 	return err;
+ }
++EXPORT_SYMBOL(mlx5_vdpa_create_rqt);
+ 
+ void mlx5_vdpa_destroy_rqt(struct mlx5_vdpa_dev *mvdev, u32 rqtn)
+ {
+@@ -131,6 +134,7 @@ void mlx5_vdpa_destroy_rqt(struct mlx5_vdpa_dev *mvdev, u32 rqtn)
+ 	MLX5_SET(destroy_rqt_in, in, rqtn, rqtn);
+ 	mlx5_cmd_exec_in(mvdev->mdev, destroy_rqt, in);
+ }
++EXPORT_SYMBOL(mlx5_vdpa_destroy_rqt);
+ 
+ int mlx5_vdpa_create_tir(struct mlx5_vdpa_dev *mvdev, void *in, u32 *tirn)
+ {
+@@ -144,6 +148,7 @@ int mlx5_vdpa_create_tir(struct mlx5_vdpa_dev *mvdev, void *in, u32 *tirn)
+ 
+ 	return err;
+ }
++EXPORT_SYMBOL(mlx5_vdpa_create_tir);
+ 
+ void mlx5_vdpa_destroy_tir(struct mlx5_vdpa_dev *mvdev, u32 tirn)
+ {
+@@ -154,6 +159,7 @@ void mlx5_vdpa_destroy_tir(struct mlx5_vdpa_dev *mvdev, u32 tirn)
+ 	MLX5_SET(destroy_tir_in, in, tirn, tirn);
+ 	mlx5_cmd_exec_in(mvdev->mdev, destroy_tir, in);
+ }
++EXPORT_SYMBOL(mlx5_vdpa_destroy_tir);
+ 
+ int mlx5_vdpa_alloc_transport_domain(struct mlx5_vdpa_dev *mvdev, u32 *tdn)
+ {
+@@ -170,6 +176,7 @@ int mlx5_vdpa_alloc_transport_domain(struct mlx5_vdpa_dev *mvdev, u32 *tdn)
+ 
+ 	return err;
+ }
++EXPORT_SYMBOL(mlx5_vdpa_alloc_transport_domain);
+ 
+ void mlx5_vdpa_dealloc_transport_domain(struct mlx5_vdpa_dev *mvdev, u32 tdn)
+ {
+@@ -180,6 +187,7 @@ void mlx5_vdpa_dealloc_transport_domain(struct mlx5_vdpa_dev *mvdev, u32 tdn)
+ 	MLX5_SET(dealloc_transport_domain_in, in, transport_domain, tdn);
+ 	mlx5_cmd_exec_in(mvdev->mdev, dealloc_transport_domain, in);
+ }
++EXPORT_SYMBOL(mlx5_vdpa_dealloc_transport_domain);
+ 
+ int mlx5_vdpa_create_mkey(struct mlx5_vdpa_dev *mvdev, struct mlx5_core_mkey *mkey, u32 *in,
+ 			  int inlen)
+@@ -266,6 +274,7 @@ int mlx5_vdpa_alloc_resources(struct mlx5_vdpa_dev *mvdev)
+ 	mutex_destroy(&mvdev->mr.mkey_mtx);
+ 	return err;
+ }
++EXPORT_SYMBOL(mlx5_vdpa_alloc_resources);
+ 
+ void mlx5_vdpa_free_resources(struct mlx5_vdpa_dev *mvdev)
+ {
+@@ -282,3 +291,4 @@ void mlx5_vdpa_free_resources(struct mlx5_vdpa_dev *mvdev)
+ 	mutex_destroy(&mvdev->mr.mkey_mtx);
+ 	res->valid = false;
+ }
++EXPORT_SYMBOL(mlx5_vdpa_free_resources);
+-- 
+2.27.0
 
-Regards,
-Bjorn
-
-> Fixes: d27e77a3de28 ("net: qrtr: Reset the node and port ID of broadcast messages")
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> ---
->  net/qrtr/qrtr.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> index b4c0db0..e09154b 100644
-> --- a/net/qrtr/qrtr.c
-> +++ b/net/qrtr/qrtr.c
-> @@ -348,7 +348,7 @@ static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
->  	hdr->src_port_id = cpu_to_le32(from->sq_port);
->  	if (to->sq_port == QRTR_PORT_CTRL) {
->  		hdr->dst_node_id = cpu_to_le32(node->nid);
-> -		hdr->dst_port_id = cpu_to_le32(QRTR_NODE_BCAST);
-> +		hdr->dst_port_id = cpu_to_le32(QRTR_PORT_CTRL);
->  	} else {
->  		hdr->dst_node_id = cpu_to_le32(to->sq_node);
->  		hdr->dst_port_id = cpu_to_le32(to->sq_port);
-> -- 
-> 2.7.4
-> 
