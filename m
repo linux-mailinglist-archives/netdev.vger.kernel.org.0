@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 115C0276597
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 03:06:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DFA72765AA
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 03:08:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbgIXBGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 21:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
+        id S1726865AbgIXBIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 21:08:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726466AbgIXBGC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 21:06:02 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25137C0613CE;
-        Wed, 23 Sep 2020 18:06:02 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id e4so698542pln.10;
-        Wed, 23 Sep 2020 18:06:02 -0700 (PDT)
+        with ESMTP id S1726466AbgIXBIR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 21:08:17 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501FFC0613CE;
+        Wed, 23 Sep 2020 18:08:17 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id d13so828872pgl.6;
+        Wed, 23 Sep 2020 18:08:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=AtzU9j2IVKPI1js+HfqCYbfNPkUBuxHykiGDefT3GX4=;
-        b=tlGitdO2MdhbIvIfljqNkujgc77+mZ/rDuACm9Pw+TDpnga+QqD58kEGNEcC+7J+DW
-         iCGzb0YwBIISAouUMK9OVbp9dFTMJARdNZwchjhhezUgvyquOjNc2KhelP6aSXxHQSqW
-         bulNiXbjqj6pg6/nCiOioL77TDowQs17hJhGrmgVB0Nsv6C2BaND6rkdT+rO3Y1vR7J3
-         S8+khNZAgmVKLAHnBrITnfmID6w0UlhSWM9zN5Pv8FtHuNtUydd+VZxIKRC0xusdWPDb
-         C3RS+Qb5RISTu01JOItRWFR9Os57gVMlWJhASKYwSGD+imJC9XrDBjA5NEqF/KuRDYO5
-         wl5Q==
+        bh=D44zEIzkJpGFZZHwFr0DZrJnGZo5Lqy+h+Ivlhe8vL8=;
+        b=UPLyAaVJzCX4A5plAF0MuUyw+wfWz+m0IwbUEUq19QwoE7QOsvllmxML77tovPIkYL
+         g/Se4U/xP2rdovEIkRUTOu0WN8uo2Hckhm/Ufgmm/uW3F3hljekH0lskKOJ1kxzcixe5
+         1X139BTlnptzmw1/BD8pItELiEJpGYjP0ZcZdmDCueJgJjh58tT7gCdd9y4ZWJ3M9aKu
+         WhC5C40TljFO2/iCmO4Ajc2aqygN26gltVmd1YRADnMzX6jIjSxOO1u9xvcZZRnG9gzd
+         Ko7As07bS/4eWr87AFUp4aNHysT45YwOMteQS3qrD2zSfOqETYOjmUX2h4lhXl0E1Awa
+         SJ4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=AtzU9j2IVKPI1js+HfqCYbfNPkUBuxHykiGDefT3GX4=;
-        b=DQMriBOLK5YayClYNSHDS5ziX0GM+f6DBYTq3+vAfAeaPYKu0388v6kpN592aJqhrs
-         n5hEQou7QwcCwmSLrBeAsztKgOZK75T3swvrYBH5gyeifZ4p7RBddXn+iqU/7HE3kT7l
-         x95oy5T7XaDL1pbmik8ZboEjX7E8kU4UQJIOxN8EuhnG3fBvl1UDzf1w5c24sM+JoXGm
-         t6JeEkEbVzHdG1XzgExj4X1EvB0DGqGzGaQ3QwGUjsASpPemjgmYDXWUf8pB3/GyPj/w
-         GyYT8kEWGSBc1dSGMYVeiQLN7joWMLMoS8dVsE/iKTZ4QuY02gMFbi3PHgt8ug3MUIB9
-         zGuw==
-X-Gm-Message-State: AOAM53308hMzHycb9NslhigNv7hoeg+jlv2BxsTBbuCROdvnj0KCiqLo
-        PvCXbQU+EOLX4XlXwu2inIo=
-X-Google-Smtp-Source: ABdhPJyo6OpepoJlMUCbN2XSI5tTuyT0Xagp3lfHxVXSPr7rHuOqq2RztKxn3n2+i9B5OHAE3JvlaQ==
-X-Received: by 2002:a17:90b:510:: with SMTP id r16mr1707948pjz.75.1600909561763;
-        Wed, 23 Sep 2020 18:06:01 -0700 (PDT)
+        bh=D44zEIzkJpGFZZHwFr0DZrJnGZo5Lqy+h+Ivlhe8vL8=;
+        b=M6P33/Xxq7ooba9XXirW21fpYRIlnkTbqDb6WJCzTMebMQHHWULxA31USYutxRSxiB
+         cuDYgzdhL0p6IZCxFzTY3ttxmXjkjiX/CRLQu0+i17Qj4EznGmZypodh+nRGsROSx3cr
+         X1kVy8S5iRNbIIC9pUuNF2XDIWFi95J2f4+rSWt2jOb6UQHHHvhOKfvbuSpyGeClGXSj
+         ZEWlaLmAJ0QgQlAtsBD9SnOyNOeZm+3lyVrjpfkWbCswgjUGF9KZIIJZDrNpsAkiOQ3j
+         euzro2docqiBLVHGMv2abR6qZ4yqrPMdH3f0UtZttJQ903xmID0S1kvx9GfMf5VmBBFw
+         Mc9Q==
+X-Gm-Message-State: AOAM533a21rehhztqb6PA/Sh4fIep/RnoPq9ldfO8RmlbnBHvaTs41hw
+        0hyrMP0B/rSz/lTkksOmAXs=
+X-Google-Smtp-Source: ABdhPJxNVVu5rHR7b34jG+uQyoEy2O8dv8zadxyQWxfDDdrH0jyltgSBvfCy/Nq83S8t3Fc+UPQpDg==
+X-Received: by 2002:a62:545:0:b029:142:2501:35db with SMTP id 66-20020a6205450000b0290142250135dbmr2254828pff.59.1600909696874;
+        Wed, 23 Sep 2020 18:08:16 -0700 (PDT)
 Received: from localhost ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id n21sm901910pgl.7.2020.09.23.18.06.00
+        by smtp.gmail.com with ESMTPSA id h31sm871129pgh.71.2020.09.23.18.08.15
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Sep 2020 18:06:01 -0700 (PDT)
+        Wed, 23 Sep 2020 18:08:16 -0700 (PDT)
 From:   Geliang Tang <geliangtang@gmail.com>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
@@ -54,13 +54,13 @@ To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
         mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [MPTCP][PATCH net-next 15/16] mptcp: add sk_stop_timer_sync helper
-Date:   Thu, 24 Sep 2020 08:30:01 +0800
-Message-Id: <31247220b62d6759de9eb91b841be449714b9d69.1600853093.git.geliangtang@gmail.com>
+Subject: [MPTCP][PATCH net-next 16/16] mptcp: retransmit ADD_ADDR when timeout
+Date:   Thu, 24 Sep 2020 08:30:02 +0800
+Message-Id: <8d5db133c22f03ed112b13fdc2a36ed4168295d8.1600853093.git.geliangtang@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1600853093.git.geliangtang@gmail.com>
 References: <cover.1600853093.git.geliangtang@gmail.com>
-In-Reply-To: <26617b54898c115de8d916633b8e42055ed5c678.1600853093.git.geliangtang@gmail.com>
+In-Reply-To: <31247220b62d6759de9eb91b841be449714b9d69.1600853093.git.geliangtang@gmail.com>
 References: <cover.1600853093.git.geliangtang@gmail.com> <bfecdd638bb74a02de1c3f1c84239911e304fcc3.1600853093.git.geliangtang@gmail.com>
  <e3c9ab612d773465ddf78cef0482208c73a0ca07.1600853093.git.geliangtang@gmail.com>
  <bf7aca2bee20de148728e30343734628aee6d779.1600853093.git.geliangtang@gmail.com>
@@ -75,51 +75,234 @@ References: <cover.1600853093.git.geliangtang@gmail.com> <bfecdd638bb74a02de1c3f
  <aa4ffb8cb7f8c135e5704eb11cfce7cb0bf7ecd4.1600853093.git.geliangtang@gmail.com>
  <e0f074f2764382c6aa1e901f3003455261a33da3.1600853093.git.geliangtang@gmail.com>
  <26617b54898c115de8d916633b8e42055ed5c678.1600853093.git.geliangtang@gmail.com>
+ <31247220b62d6759de9eb91b841be449714b9d69.1600853093.git.geliangtang@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch added a new helper sk_stop_timer_sync, it deactivates a timer
-like sk_stop_timer, but waits for the handler to finish.
+This patch implemented the retransmition of ADD_ADDR when no ADD_ADDR echo
+is received. It added a timer with the announced address. When timeout
+occurs, ADD_ADDR will be retransmitted.
 
+Suggested-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Suggested-by: Paolo Abeni <pabeni@redhat.com>
 Acked-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 ---
- include/net/sock.h | 2 ++
- net/core/sock.c    | 7 +++++++
- 2 files changed, 9 insertions(+)
+ net/mptcp/options.c    |   1 +
+ net/mptcp/pm_netlink.c | 109 ++++++++++++++++++++++++++++++++++-------
+ net/mptcp/protocol.h   |   3 ++
+ 3 files changed, 96 insertions(+), 17 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index eaa5cac5e836..a5c6ae78df77 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2195,6 +2195,8 @@ void sk_reset_timer(struct sock *sk, struct timer_list *timer,
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index 171039cbe9c4..14a290fae767 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -893,6 +893,7 @@ void mptcp_incoming_options(struct sock *sk, struct sk_buff *skb,
+ 			mptcp_pm_add_addr_received(msk, &addr);
+ 			MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_ADDADDR);
+ 		} else {
++			mptcp_pm_del_add_timer(msk, &addr);
+ 			MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_ECHOADD);
+ 		}
+ 		mp_opt.add_addr = 0;
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 701972b55a45..5a0e4d11bcc3 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -31,6 +31,9 @@ struct mptcp_pm_addr_entry {
+ struct mptcp_pm_add_entry {
+ 	struct list_head	list;
+ 	struct mptcp_addr_info	addr;
++	struct timer_list	add_timer;
++	struct mptcp_sock	*sock;
++	u8			retrans_times;
+ };
  
- void sk_stop_timer(struct sock *sk, struct timer_list *timer);
+ struct pm_nl_pernet {
+@@ -46,6 +49,7 @@ struct pm_nl_pernet {
+ };
  
-+void sk_stop_timer_sync(struct sock *sk, struct timer_list *timer);
-+
- int __sk_queue_drop_skb(struct sock *sk, struct sk_buff_head *sk_queue,
- 			struct sk_buff *skb, unsigned int flags,
- 			void (*destructor)(struct sock *sk,
-diff --git a/net/core/sock.c b/net/core/sock.c
-index ba9e7d91e2ef..d9a537e6876a 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2947,6 +2947,13 @@ void sk_stop_timer(struct sock *sk, struct timer_list* timer)
+ #define MPTCP_PM_ADDR_MAX	8
++#define ADD_ADDR_RETRANS_MAX	3
+ 
+ static bool addresses_equal(const struct mptcp_addr_info *a,
+ 			    struct mptcp_addr_info *b, bool use_port)
+@@ -183,23 +187,83 @@ static void check_work_pending(struct mptcp_sock *msk)
+ 		WRITE_ONCE(msk->pm.work_pending, false);
  }
- EXPORT_SYMBOL(sk_stop_timer);
  
-+void sk_stop_timer_sync(struct sock *sk, struct timer_list *timer)
-+{
-+	if (del_timer_sync(timer))
-+		__sock_put(sk);
-+}
-+EXPORT_SYMBOL(sk_stop_timer_sync);
-+
- void sock_init_data(struct socket *sock, struct sock *sk)
+-static bool lookup_anno_list_by_saddr(struct mptcp_sock *msk,
+-				      struct mptcp_addr_info *addr)
++static struct mptcp_pm_add_entry *
++lookup_anno_list_by_saddr(struct mptcp_sock *msk,
++			  struct mptcp_addr_info *addr)
  {
- 	sk_init_common(sk);
+ 	struct mptcp_pm_add_entry *entry;
+ 
+ 	list_for_each_entry(entry, &msk->pm.anno_list, list) {
+ 		if (addresses_equal(&entry->addr, addr, false))
+-			return true;
++			return entry;
+ 	}
+ 
+-	return false;
++	return NULL;
++}
++
++static void mptcp_pm_add_timer(struct timer_list *timer)
++{
++	struct mptcp_pm_add_entry *entry = from_timer(entry, timer, add_timer);
++	struct mptcp_sock *msk = entry->sock;
++	struct sock *sk = (struct sock *)msk;
++
++	pr_debug("msk=%p", msk);
++
++	if (!msk)
++		return;
++
++	if (inet_sk_state_load(sk) == TCP_CLOSE)
++		return;
++
++	if (!entry->addr.id)
++		return;
++
++	if (mptcp_pm_should_add_signal(msk)) {
++		sk_reset_timer(sk, timer, jiffies + TCP_RTO_MAX / 8);
++		goto out;
++	}
++
++	spin_lock_bh(&msk->pm.lock);
++
++	if (!mptcp_pm_should_add_signal(msk)) {
++		pr_debug("retransmit ADD_ADDR id=%d", entry->addr.id);
++		mptcp_pm_announce_addr(msk, &entry->addr, false);
++		entry->retrans_times++;
++	}
++
++	if (entry->retrans_times < ADD_ADDR_RETRANS_MAX)
++		sk_reset_timer(sk, timer, jiffies + TCP_RTO_MAX);
++
++	spin_unlock_bh(&msk->pm.lock);
++
++out:
++	__sock_put(sk);
++}
++
++struct mptcp_pm_add_entry *
++mptcp_pm_del_add_timer(struct mptcp_sock *msk,
++		       struct mptcp_addr_info *addr)
++{
++	struct mptcp_pm_add_entry *entry;
++	struct sock *sk = (struct sock *)msk;
++
++	spin_lock_bh(&msk->pm.lock);
++	entry = lookup_anno_list_by_saddr(msk, addr);
++	if (entry)
++		entry->retrans_times = ADD_ADDR_RETRANS_MAX;
++	spin_unlock_bh(&msk->pm.lock);
++
++	if (entry)
++		sk_stop_timer_sync(sk, &entry->add_timer);
++
++	return entry;
+ }
+ 
+ static bool mptcp_pm_alloc_anno_list(struct mptcp_sock *msk,
+ 				     struct mptcp_pm_addr_entry *entry)
+ {
+ 	struct mptcp_pm_add_entry *add_entry = NULL;
++	struct sock *sk = (struct sock *)msk;
+ 
+ 	if (lookup_anno_list_by_saddr(msk, &entry->addr))
+ 		return false;
+@@ -210,21 +274,32 @@ static bool mptcp_pm_alloc_anno_list(struct mptcp_sock *msk,
+ 
+ 	list_add(&add_entry->list, &msk->pm.anno_list);
+ 
++	add_entry->addr = entry->addr;
++	add_entry->sock = msk;
++	add_entry->retrans_times = 0;
++
++	timer_setup(&add_entry->add_timer, mptcp_pm_add_timer, 0);
++	sk_reset_timer(sk, &add_entry->add_timer, jiffies + TCP_RTO_MAX);
++
+ 	return true;
+ }
+ 
+ void mptcp_pm_free_anno_list(struct mptcp_sock *msk)
+ {
+ 	struct mptcp_pm_add_entry *entry, *tmp;
++	struct sock *sk = (struct sock *)msk;
++	LIST_HEAD(free_list);
+ 
+ 	pr_debug("msk=%p", msk);
+ 
+ 	spin_lock_bh(&msk->pm.lock);
+-	list_for_each_entry_safe(entry, tmp, &msk->pm.anno_list, list) {
+-		list_del(&entry->list);
++	list_splice_init(&msk->pm.anno_list, &free_list);
++	spin_unlock_bh(&msk->pm.lock);
++
++	list_for_each_entry_safe(entry, tmp, &free_list, list) {
++		sk_stop_timer_sync(sk, &entry->add_timer);
+ 		kfree(entry);
+ 	}
+-	spin_unlock_bh(&msk->pm.lock);
+ }
+ 
+ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
+@@ -659,14 +734,13 @@ __lookup_addr_by_id(struct pm_nl_pernet *pernet, unsigned int id)
+ static bool remove_anno_list_by_saddr(struct mptcp_sock *msk,
+ 				      struct mptcp_addr_info *addr)
+ {
+-	struct mptcp_pm_add_entry *entry, *tmp;
++	struct mptcp_pm_add_entry *entry;
+ 
+-	list_for_each_entry_safe(entry, tmp, &msk->pm.anno_list, list) {
+-		if (addresses_equal(&entry->addr, addr, false)) {
+-			list_del(&entry->list);
+-			kfree(entry);
+-			return true;
+-		}
++	entry = mptcp_pm_del_add_timer(msk, addr);
++	if (entry) {
++		list_del(&entry->list);
++		kfree(entry);
++		return true;
+ 	}
+ 
+ 	return false;
+@@ -678,11 +752,12 @@ static bool mptcp_pm_remove_anno_addr(struct mptcp_sock *msk,
+ {
+ 	bool ret;
+ 
+-	spin_lock_bh(&msk->pm.lock);
+ 	ret = remove_anno_list_by_saddr(msk, addr);
+-	if (ret || force)
++	if (ret || force) {
++		spin_lock_bh(&msk->pm.lock);
+ 		mptcp_pm_remove_addr(msk, addr->id);
+-	spin_unlock_bh(&msk->pm.lock);
++		spin_unlock_bh(&msk->pm.lock);
++	}
+ 	return ret;
+ }
+ 
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index db1e5de2fee7..7cfe52aeb2b8 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -444,6 +444,9 @@ void mptcp_pm_add_addr_received(struct mptcp_sock *msk,
+ 				const struct mptcp_addr_info *addr);
+ void mptcp_pm_rm_addr_received(struct mptcp_sock *msk, u8 rm_id);
+ void mptcp_pm_free_anno_list(struct mptcp_sock *msk);
++struct mptcp_pm_add_entry *
++mptcp_pm_del_add_timer(struct mptcp_sock *msk,
++		       struct mptcp_addr_info *addr);
+ 
+ int mptcp_pm_announce_addr(struct mptcp_sock *msk,
+ 			   const struct mptcp_addr_info *addr,
 -- 
 2.17.1
 
