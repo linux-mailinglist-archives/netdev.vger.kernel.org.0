@@ -2,78 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5CED27700A
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 13:36:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66D212770A1
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 14:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727437AbgIXLg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 07:36:29 -0400
-Received: from mx2.suse.de ([195.135.220.15]:38472 "EHLO mx2.suse.de"
+        id S1727721AbgIXMKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 08:10:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44402 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726701AbgIXLg3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Sep 2020 07:36:29 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1600947387;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MZyvBg20qT73QpwIVlDigtRjVhnHdUuTkqO7GvwSeIE=;
-        b=e6W4eeYUCdmzKdxQ7xtoWbgJ9qdgvwr2lNlDirzA5K8Wrebqf2M3M/HUEs+GFMz86GkDnO
-        +SYxT7FpIuIZB1snPQ5GEuM7p9YxWimxBNYh3XwHLw5J+Y/O8gOgEZTtlGoi1WAQufifHL
-        TGzb/bqFAm2cN/kjrzhCyCG1l4fajns=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 7D634AC65;
-        Thu, 24 Sep 2020 11:36:27 +0000 (UTC)
-Message-ID: <7f9e20b2eab783303c4e5f5c3244366fa88a6567.camel@suse.com>
-Subject: Re: [PATCH 3/4] net: usb: rtl8150: use usb_control_msg_recv() and
- usb_control_msg_send()
-From:   Oliver Neukum <oneukum@suse.com>
-To:     Himadri Pandya <himadrispandya@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        pankaj.laxminarayan.bharadiya@intel.com,
-        Kees Cook <keescook@chromium.org>, yuehaibing@huawei.com,
-        petkan@nucleusys.com, ogiannou@gmail.com,
-        USB list <linux-usb@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Greg KH <gregkh@linuxfoundation.org>
-Date:   Thu, 24 Sep 2020 13:13:56 +0200
-In-Reply-To: <CAOY-YVkciMUgtS7USbBh_Uy_=fVWwMMDeHv=Ub_H3GaY0FKZyQ@mail.gmail.com>
-References: <20200923090519.361-1-himadrispandya@gmail.com>
-         <20200923090519.361-4-himadrispandya@gmail.com>
-         <1600856557.26851.6.camel@suse.com>
-         <CAOY-YVkHycXqem_Xr6nQLgKEunk3MNc7dBtZ=5Aym4Y06vs9xQ@mail.gmail.com>
-         <1600870858.25088.1.camel@suse.com>
-         <CAOY-YVkciMUgtS7USbBh_Uy_=fVWwMMDeHv=Ub_H3GaY0FKZyQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
+        id S1727478AbgIXMKA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Sep 2020 08:10:00 -0400
+Received: from localhost (lfbn-ncy-1-588-162.w81-51.abo.wanadoo.fr [81.51.203.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5105223787;
+        Thu, 24 Sep 2020 12:09:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600949399;
+        bh=Q2Pyd20nkzH5RcR2DXUGrcfyCzRdQdQbglCmLc8qUHQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gKRsq62RWwZyvuQF9n7kPBbr0UmaFfJr73oCx2/4Kz08aFhC+e3DMZHcGVDVE6vH2
+         a9a3lQkRM+MEX43LoXWqicdZDOssTQ0BcaAuESV55tke8rRH5sJw87/hS6VlVB2gOL
+         v4MSRtMxJ5FkvmDWAQEK7nQS/9uWn5xc030slumQ=
+Date:   Thu, 24 Sep 2020 14:09:57 +0200
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     peterz@infradead.org
+Cc:     Nitesh Narayan Lal <nitesh@redhat.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        mtosatti@redhat.com, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        helgaas@kernel.org, jeffrey.t.kirsher@intel.com,
+        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
+        bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jerinj@marvell.com, mathias.nyman@intel.com, jiri@nvidia.com,
+        mingo@redhat.com, juri.lelli@redhat.com, vincent.guittot@linaro.org
+Subject: Re: [PATCH v2 1/4] sched/isolation: API to get housekeeping online
+ CPUs
+Message-ID: <20200924120956.GA19346@lenoir>
+References: <20200923181126.223766-1-nitesh@redhat.com>
+ <20200923181126.223766-2-nitesh@redhat.com>
+ <20200924084029.GC1362448@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200924084029.GC1362448@hirez.programming.kicks-ass.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Mittwoch, den 23.09.2020, 20:02 +0530 schrieb Himadri Pandya:
-
-> I meant that it was stupid to change it without properly understanding
-> the significance of GFP_NOIO in this context.
+On Thu, Sep 24, 2020 at 10:40:29AM +0200, peterz@infradead.org wrote:
+> On Wed, Sep 23, 2020 at 02:11:23PM -0400, Nitesh Narayan Lal wrote:
+> > Introduce a new API hk_num_online_cpus(), that can be used to
+> > retrieve the number of online housekeeping CPUs that are meant to handle
+> > managed IRQ jobs.
+> > 
+> > This API is introduced for the drivers that were previously relying only
+> > on num_online_cpus() to determine the number of MSIX vectors to create.
+> > In an RT environment with large isolated but fewer housekeeping CPUs this
+> > was leading to a situation where an attempt to move all of the vectors
+> > corresponding to isolated CPUs to housekeeping CPUs were failing due to
+> > per CPU vector limit.
+> > 
+> > Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
+> > ---
+> >  include/linux/sched/isolation.h | 13 +++++++++++++
+> >  1 file changed, 13 insertions(+)
+> > 
+> > diff --git a/include/linux/sched/isolation.h b/include/linux/sched/isolation.h
+> > index cc9f393e2a70..2e96b626e02e 100644
+> > --- a/include/linux/sched/isolation.h
+> > +++ b/include/linux/sched/isolation.h
+> > @@ -57,4 +57,17 @@ static inline bool housekeeping_cpu(int cpu, enum hk_flags flags)
+> >  	return true;
+> >  }
+> >  
+> > +static inline unsigned int hk_num_online_cpus(void)
 > 
-> So now, do we re-write the wrapper functions with flag passed as a parameter?
+> This breaks with the established naming of that header.
 
-Hi,
-
-I hope I set you in CC for a patch set doing exactly that.
-
-Do not let me or other maintainers discourage you from writing patches.
-Look at it this way. Had you not written this patch, I would not have
-looked into the matter. Patches are supposed to be reviewed.
-If you want additional information, just ask. We do not want
-people discouraged from writing substantial patches.
-
-	Regards
-		Oliver
-
-
+I guess we can make it housekeeping_num_online_cpus() ?
