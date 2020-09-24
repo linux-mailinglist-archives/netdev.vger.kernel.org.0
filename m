@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5801276590
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 03:03:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 115C0276597
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 03:06:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726731AbgIXBDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 21:03:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
+        id S1726718AbgIXBGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 21:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726562AbgIXBDq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 21:03:46 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA4BC0613CE;
-        Wed, 23 Sep 2020 18:03:46 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id j7so691847plk.11;
-        Wed, 23 Sep 2020 18:03:46 -0700 (PDT)
+        with ESMTP id S1726466AbgIXBGC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 21:06:02 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25137C0613CE;
+        Wed, 23 Sep 2020 18:06:02 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id e4so698542pln.10;
+        Wed, 23 Sep 2020 18:06:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=GDo7ywuW16yTRIPjlkiYS4kR39FyUMOrSMyJsiSy7mo=;
-        b=AxBV5nz2LOn1ed183HSV1njzhM67P9iKERd/NXi9hoCS84L6DB4RR5ADpMxWIaOVUg
-         o+pI9AeLifXWoom/WpptRrcfSGZhRDTK9JkBmxAYIWguIW/DWTtUyJwf8a9SG5w9BpXV
-         Acz6Mvp1K6dm2hUzubCbmpk+3D1Z/Mm2XVgASYJoqtsBkXi7vgtx7i0KQTKxABNOvXjg
-         JK5NVZ+FH93FuKmKxBaWdBPK+ey79tHczZ1qwifB/gMS15HXpeoixIHvWb2CmCoDb1sd
-         GjdvPUQKByRvvE1nN1xyEOQ5hgwz5VxxHR6aqneJ03GCXyh1eDPTrwZ4RQ/lcexmI43D
-         cDDQ==
+        bh=AtzU9j2IVKPI1js+HfqCYbfNPkUBuxHykiGDefT3GX4=;
+        b=tlGitdO2MdhbIvIfljqNkujgc77+mZ/rDuACm9Pw+TDpnga+QqD58kEGNEcC+7J+DW
+         iCGzb0YwBIISAouUMK9OVbp9dFTMJARdNZwchjhhezUgvyquOjNc2KhelP6aSXxHQSqW
+         bulNiXbjqj6pg6/nCiOioL77TDowQs17hJhGrmgVB0Nsv6C2BaND6rkdT+rO3Y1vR7J3
+         S8+khNZAgmVKLAHnBrITnfmID6w0UlhSWM9zN5Pv8FtHuNtUydd+VZxIKRC0xusdWPDb
+         C3RS+Qb5RISTu01JOItRWFR9Os57gVMlWJhASKYwSGD+imJC9XrDBjA5NEqF/KuRDYO5
+         wl5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=GDo7ywuW16yTRIPjlkiYS4kR39FyUMOrSMyJsiSy7mo=;
-        b=QjwN0gi/pYuWdbxnk3Pufs8vYQfufM9y66b9FIFetvYdIOdLttuajPtxtlIXOK6y/p
-         XXwGXppx93SM/H/UqVE+7t9iJb/qyvYvYKmuglGhQdzj/uQBt2qVLfZpv/S57ZMduCSJ
-         oVHbrT6mbJ4a6idsokx485011gqus8RHX2qNu8XfovFp7baXq++/G2AEwDwxFu+TIfnd
-         rlWTr/8QrHz5NhqIA9C66B1Di/r6bWK+Ej/JUDmaZbuDStrX+1JlY7nlF0LWqemAs2lf
-         4rLf4kNQUUT9lxHAsBVB0ucElqgvQo6cOzlryanqDc9eiHyhyAOqD2SwRDkDnfFL/p19
-         kqPQ==
-X-Gm-Message-State: AOAM533tpYyARcFPY4Fev9WjU7KWq8Vx1Rc3Mp3mfI561rAfSe0PmB2N
-        /KDqPNH4Ao5r/hheP1zhEc8=
-X-Google-Smtp-Source: ABdhPJxS6fb1EoP4wTqbwtkI8wNS8yo9woG+hiXkzF63S1UFb6UxqATcl6yqjZS9beteZq2RLNLmKA==
-X-Received: by 2002:a17:902:c3d3:b029:d1:e5e7:c4da with SMTP id j19-20020a170902c3d3b02900d1e5e7c4damr2366861plj.46.1600909426138;
-        Wed, 23 Sep 2020 18:03:46 -0700 (PDT)
+        bh=AtzU9j2IVKPI1js+HfqCYbfNPkUBuxHykiGDefT3GX4=;
+        b=DQMriBOLK5YayClYNSHDS5ziX0GM+f6DBYTq3+vAfAeaPYKu0388v6kpN592aJqhrs
+         n5hEQou7QwcCwmSLrBeAsztKgOZK75T3swvrYBH5gyeifZ4p7RBddXn+iqU/7HE3kT7l
+         x95oy5T7XaDL1pbmik8ZboEjX7E8kU4UQJIOxN8EuhnG3fBvl1UDzf1w5c24sM+JoXGm
+         t6JeEkEbVzHdG1XzgExj4X1EvB0DGqGzGaQ3QwGUjsASpPemjgmYDXWUf8pB3/GyPj/w
+         GyYT8kEWGSBc1dSGMYVeiQLN7joWMLMoS8dVsE/iKTZ4QuY02gMFbi3PHgt8ug3MUIB9
+         zGuw==
+X-Gm-Message-State: AOAM53308hMzHycb9NslhigNv7hoeg+jlv2BxsTBbuCROdvnj0KCiqLo
+        PvCXbQU+EOLX4XlXwu2inIo=
+X-Google-Smtp-Source: ABdhPJyo6OpepoJlMUCbN2XSI5tTuyT0Xagp3lfHxVXSPr7rHuOqq2RztKxn3n2+i9B5OHAE3JvlaQ==
+X-Received: by 2002:a17:90b:510:: with SMTP id r16mr1707948pjz.75.1600909561763;
+        Wed, 23 Sep 2020 18:06:01 -0700 (PDT)
 Received: from localhost ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id g26sm762856pfr.105.2020.09.23.18.03.45
+        by smtp.gmail.com with ESMTPSA id n21sm901910pgl.7.2020.09.23.18.06.00
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Sep 2020 18:03:45 -0700 (PDT)
+        Wed, 23 Sep 2020 18:06:01 -0700 (PDT)
 From:   Geliang Tang <geliangtang@gmail.com>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
@@ -54,13 +54,13 @@ To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
         mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [MPTCP][PATCH net-next 14/16] mptcp: add struct mptcp_pm_add_entry
-Date:   Thu, 24 Sep 2020 08:30:00 +0800
-Message-Id: <26617b54898c115de8d916633b8e42055ed5c678.1600853093.git.geliangtang@gmail.com>
+Subject: [MPTCP][PATCH net-next 15/16] mptcp: add sk_stop_timer_sync helper
+Date:   Thu, 24 Sep 2020 08:30:01 +0800
+Message-Id: <31247220b62d6759de9eb91b841be449714b9d69.1600853093.git.geliangtang@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1600853093.git.geliangtang@gmail.com>
 References: <cover.1600853093.git.geliangtang@gmail.com>
-In-Reply-To: <e0f074f2764382c6aa1e901f3003455261a33da3.1600853093.git.geliangtang@gmail.com>
+In-Reply-To: <26617b54898c115de8d916633b8e42055ed5c678.1600853093.git.geliangtang@gmail.com>
 References: <cover.1600853093.git.geliangtang@gmail.com> <bfecdd638bb74a02de1c3f1c84239911e304fcc3.1600853093.git.geliangtang@gmail.com>
  <e3c9ab612d773465ddf78cef0482208c73a0ca07.1600853093.git.geliangtang@gmail.com>
  <bf7aca2bee20de148728e30343734628aee6d779.1600853093.git.geliangtang@gmail.com>
@@ -74,81 +74,52 @@ References: <cover.1600853093.git.geliangtang@gmail.com> <bfecdd638bb74a02de1c3f
  <fcebccadfa3127e0f55103cc7ee4cd00841e2ea0.1600853093.git.geliangtang@gmail.com>
  <aa4ffb8cb7f8c135e5704eb11cfce7cb0bf7ecd4.1600853093.git.geliangtang@gmail.com>
  <e0f074f2764382c6aa1e901f3003455261a33da3.1600853093.git.geliangtang@gmail.com>
+ <26617b54898c115de8d916633b8e42055ed5c678.1600853093.git.geliangtang@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new struct mptcp_pm_add_entry to describe add_addr's entry.
+This patch added a new helper sk_stop_timer_sync, it deactivates a timer
+like sk_stop_timer, but waits for the handler to finish.
 
 Acked-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 ---
- net/mptcp/pm_netlink.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ include/net/sock.h | 2 ++
+ net/core/sock.c    | 7 +++++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index b33aebd85bd5..701972b55a45 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -28,6 +28,11 @@ struct mptcp_pm_addr_entry {
- 	struct rcu_head		rcu;
- };
+diff --git a/include/net/sock.h b/include/net/sock.h
+index eaa5cac5e836..a5c6ae78df77 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2195,6 +2195,8 @@ void sk_reset_timer(struct sock *sk, struct timer_list *timer,
  
-+struct mptcp_pm_add_entry {
-+	struct list_head	list;
-+	struct mptcp_addr_info	addr;
-+};
+ void sk_stop_timer(struct sock *sk, struct timer_list *timer);
+ 
++void sk_stop_timer_sync(struct sock *sk, struct timer_list *timer);
 +
- struct pm_nl_pernet {
- 	/* protects pernet updates */
- 	spinlock_t		lock;
-@@ -181,7 +186,7 @@ static void check_work_pending(struct mptcp_sock *msk)
- static bool lookup_anno_list_by_saddr(struct mptcp_sock *msk,
- 				      struct mptcp_addr_info *addr)
- {
--	struct mptcp_pm_addr_entry *entry;
-+	struct mptcp_pm_add_entry *entry;
- 
- 	list_for_each_entry(entry, &msk->pm.anno_list, list) {
- 		if (addresses_equal(&entry->addr, addr, false))
-@@ -194,23 +199,23 @@ static bool lookup_anno_list_by_saddr(struct mptcp_sock *msk,
- static bool mptcp_pm_alloc_anno_list(struct mptcp_sock *msk,
- 				     struct mptcp_pm_addr_entry *entry)
- {
--	struct mptcp_pm_addr_entry *clone = NULL;
-+	struct mptcp_pm_add_entry *add_entry = NULL;
- 
- 	if (lookup_anno_list_by_saddr(msk, &entry->addr))
- 		return false;
- 
--	clone = kmemdup(entry, sizeof(*entry), GFP_ATOMIC);
--	if (!clone)
-+	add_entry = kmalloc(sizeof(*add_entry), GFP_ATOMIC);
-+	if (!add_entry)
- 		return false;
- 
--	list_add(&clone->list, &msk->pm.anno_list);
-+	list_add(&add_entry->list, &msk->pm.anno_list);
- 
- 	return true;
+ int __sk_queue_drop_skb(struct sock *sk, struct sk_buff_head *sk_queue,
+ 			struct sk_buff *skb, unsigned int flags,
+ 			void (*destructor)(struct sock *sk,
+diff --git a/net/core/sock.c b/net/core/sock.c
+index ba9e7d91e2ef..d9a537e6876a 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2947,6 +2947,13 @@ void sk_stop_timer(struct sock *sk, struct timer_list* timer)
  }
+ EXPORT_SYMBOL(sk_stop_timer);
  
- void mptcp_pm_free_anno_list(struct mptcp_sock *msk)
++void sk_stop_timer_sync(struct sock *sk, struct timer_list *timer)
++{
++	if (del_timer_sync(timer))
++		__sock_put(sk);
++}
++EXPORT_SYMBOL(sk_stop_timer_sync);
++
+ void sock_init_data(struct socket *sock, struct sock *sk)
  {
--	struct mptcp_pm_addr_entry *entry, *tmp;
-+	struct mptcp_pm_add_entry *entry, *tmp;
- 
- 	pr_debug("msk=%p", msk);
- 
-@@ -654,7 +659,7 @@ __lookup_addr_by_id(struct pm_nl_pernet *pernet, unsigned int id)
- static bool remove_anno_list_by_saddr(struct mptcp_sock *msk,
- 				      struct mptcp_addr_info *addr)
- {
--	struct mptcp_pm_addr_entry *entry, *tmp;
-+	struct mptcp_pm_add_entry *entry, *tmp;
- 
- 	list_for_each_entry_safe(entry, tmp, &msk->pm.anno_list, list) {
- 		if (addresses_equal(&entry->addr, addr, false)) {
+ 	sk_init_common(sk);
 -- 
 2.17.1
 
