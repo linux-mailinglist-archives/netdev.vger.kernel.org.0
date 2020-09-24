@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35EB62779E5
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:07:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A1D92779F2
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbgIXUHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 16:07:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53612 "EHLO
+        id S1726325AbgIXUJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 16:09:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725208AbgIXUHH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 16:07:07 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6696C0613DB;
-        Thu, 24 Sep 2020 13:07:06 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id 133so319411ybg.11;
-        Thu, 24 Sep 2020 13:07:06 -0700 (PDT)
+        with ESMTP id S1726037AbgIXUJc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 16:09:32 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5542C0613CE;
+        Thu, 24 Sep 2020 13:09:32 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id h9so351757ybm.4;
+        Thu, 24 Sep 2020 13:09:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hxxs+CqXcjzm9/10GBg9XlC9NqGhBburIqZkxr+CoV8=;
-        b=jkfFyBy5F7W6SajVgcBWXvhYr0siwPrZDyQTul52gwHaJSpDujlWFcyfnTRcxfK7Zl
-         k/ZoFiZn2T77LnBPFYuRlRMSitk7QjurNG5AbvXdd1gt0j6ZJn+PaLUMLcurYeNAo5ZT
-         i8P1udJVPuWUFchTpoYIr8Lj8wtrZBreTJqDCKGl1FzkYHbQ1z3Ni+gWJWovM36i5Slr
-         DoXlZGPsXywGDB/Mum59MY5ilKuyFpw8gLLS4+eZ+9dpOjAxx/EUyRWCF+VAkEQ5CrUY
-         myKYwOVlJexRtJrgZ7+oPTU8rciCSVO4axVcR3Qn+hoXDMctjUeG4kuSm9ubBnvmOrYx
-         gNng==
+        bh=7J41NLfAQ7GGWFlQfsQEAm0BJem7+QZ5TkgJ5oKJ9Yw=;
+        b=jA7OFjlVQbEWru2KFbx3QXi3b2CE69ugcLLmLv6kXBTmABuJ7uuEJgyvLJw26wQbG1
+         kdA1PygW1rjOZYUW/02nl1qN5gmXQhsqotYiPhH7eqNpvwQ2CtekAS9n27Jhf2KFMmAI
+         e5Dp+WnkJKcrFYOnj0x4XsySenoPmkSvZ/G2MbNUH0yQAH4KVUmJoyY8RVwdKIcU9D+t
+         +3/FkmsARrmOzPhRT7CqbOohktEIygrA6ONYyOICDEbIwsIqg8jN4GU+yPkQ2lAcy2He
+         fxuHDoid7uSaav1PiR0kto8M2nVzlCUDuNyoTPJXXCcKTY3iVf2Z8vxMlPrtrD0YQqSS
+         caVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hxxs+CqXcjzm9/10GBg9XlC9NqGhBburIqZkxr+CoV8=;
-        b=M+Hd9T75STE0ikO0E1g5hjFZw264bps0dazpk2zAzyQeVs+r8iEwtWX4Ed42t3dkFB
-         H8t+PR6Ht/tyI8ynqHZluZdWUx2XcnzcGl4Eh49iGPZY9lLzWaOmlQEtmUnakqZ+WtIY
-         rImL0vqF+BwMfl+bsC5bcaMpGPeABuhivKDOSFPw6zZzeRFcydLaxliLVB/v8IggYqj2
-         IpIbH8NPSlA+aut7D5+gd7BniepM5GUvI2UmKdmQJ7ALu4P7kjPS01lUanijOB2itAfN
-         KoHYkVtZIuxBzdJtVwP1ja5jGAh0PmGJXUU1wIKGXyjDrr2nxFnchx+rFzA8moYLCemF
-         URlw==
-X-Gm-Message-State: AOAM533EPQwxI/k2RWfO/SE9Xv7fNgmGOBqGQM5hH1eZo7cHheqsXN1i
-        yyC9Ev0CCDdVeH+rKFJCuHi3ZKI/lfUKpd4HoapUld99+sJHnQ==
-X-Google-Smtp-Source: ABdhPJx/XbdBBOZH2228ESnVTc9FrG455E/cvUwJSbWLsxMkwlh+/YWOCAId8ErvGtmCiTlnRPfrVdBrKwaXRAlzvtA=
-X-Received: by 2002:a25:cbc4:: with SMTP id b187mr704368ybg.260.1600978026182;
- Thu, 24 Sep 2020 13:07:06 -0700 (PDT)
+        bh=7J41NLfAQ7GGWFlQfsQEAm0BJem7+QZ5TkgJ5oKJ9Yw=;
+        b=HWnrQx1zdxhExx958mZC7PAaOehuYRZCl6llnygheVc/gqe/3jlCxct8LBSvS12fV8
+         Zk0IKt7cIdlG1qfDD4hUyLEGDj+ZEV6H2QY336NedxeMzFYhGP5dcWcPe9QwyW5nteru
+         A+zAlQ+aIv9JzdM+Ww4hQZpKgWXiEP+AB+ONLJ9sLCAIcDxE8elCLmcKXQGZbOB4FpAT
+         qPACKUjjgJVXF8jeR2ZqyADp+GeOJ/e8vFegrPKSdrSU6kheLme/6AgcccKGCLEc/g1x
+         njJe6DqGQAl/xwGQRec05P3kuK3qcN0PaaChHjSpWksdkrhK9y8Hm8A4giBnJGsh8zaE
+         eiAA==
+X-Gm-Message-State: AOAM5311x2mLC3CSt3c269AH8G2mMXhNp1j26fgwFqMBCexmKQTm7BLx
+        hkY+oqrkJhEbFmtJjchuifl6E2898Px68htPB1Y=
+X-Google-Smtp-Source: ABdhPJxI8ZqRkLvOx3Uj6iRUIfuQcmxaHU/pH3vAV/2faSzxRfsopM1BBpjUPpzbir4pHbABcsG68EjE0Y9ZeSnI/tE=
+X-Received: by 2002:a25:33c4:: with SMTP id z187mr647390ybz.27.1600978171951;
+ Thu, 24 Sep 2020 13:09:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200924011951.408313-1-songliubraving@fb.com> <20200924011951.408313-3-songliubraving@fb.com>
-In-Reply-To: <20200924011951.408313-3-songliubraving@fb.com>
+References: <20200924011951.408313-1-songliubraving@fb.com> <20200924011951.408313-4-songliubraving@fb.com>
+In-Reply-To: <20200924011951.408313-4-songliubraving@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 24 Sep 2020 13:06:55 -0700
-Message-ID: <CAEf4BzZqQ3EA8Po7Jjash3hAjT_e-u2QmfjsQqoC+obZXLakrw@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 2/3] libbpf: support test run of raw
- tracepoint programs
+Date:   Thu, 24 Sep 2020 13:09:21 -0700
+Message-ID: <CAEf4BzYtq3X3kma2Hd-OfkK=D9DeaxhD77dq2V73gj9aOWOrMQ@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 3/3] selftests/bpf: add raw_tp_test_run
 To:     Song Liu <songliubraving@fb.com>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Kernel Team <kernel-team@fb.com>,
@@ -63,86 +62,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 6:45 PM Song Liu <songliubraving@fb.com> wrote:
+On Wed, Sep 23, 2020 at 6:55 PM Song Liu <songliubraving@fb.com> wrote:
 >
-> Add bpf_prog_test_run_opts() with support of new fields in bpf_attr.test,
-> namely, flags and cpu. Also extend _opts operations to support outputs via
-> opts.
+> This test runs test_run for raw_tracepoint program. The test covers ctx
+> input, retval output, and running on correct cpu.
 >
 > Signed-off-by: Song Liu <songliubraving@fb.com>
 > ---
->  tools/lib/bpf/bpf.c             | 31 +++++++++++++++++++++++++++++++
->  tools/lib/bpf/bpf.h             | 26 ++++++++++++++++++++++++++
->  tools/lib/bpf/libbpf.map        |  1 +
->  tools/lib/bpf/libbpf_internal.h |  5 +++++
->  4 files changed, 63 insertions(+)
+>  .../bpf/prog_tests/raw_tp_test_run.c          | 79 +++++++++++++++++++
+>  .../bpf/progs/test_raw_tp_test_run.c          | 25 ++++++
+>  2 files changed, 104 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
 >
 
 [...]
 
->  static int bpf_obj_get_next_id(__u32 start_id, __u32 *next_id, int cmd)
->  {
->         union bpf_attr attr;
-> diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-> index 8c1ac4b42f908..4f13ec4323aff 100644
-> --- a/tools/lib/bpf/bpf.h
-> +++ b/tools/lib/bpf/bpf.h
-> @@ -251,6 +251,32 @@ struct bpf_prog_bind_opts {
+> +       test_attr.ctx_size_in = sizeof(args);
+> +       err = bpf_prog_test_run_xattr(&test_attr);
+> +       CHECK(err < 0, "test_run", "err %d\n", errno);
+> +       CHECK(test_attr.retval != expected_retval, "check_retval",
+> +             "expect 0x%x, got 0x%x\n", expected_retval, test_attr.retval);
+> +
+> +       for (i = 0; i < nr_online; i++)
+
+nit: this for loop is so multi-line that it deserves {}
+
+> +               if (online[i]) {
+> +                       DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts,
+> +                               .ctx_in = args,
+> +                               .ctx_size_in = sizeof(args),
+> +                               .flags = BPF_F_TEST_RUN_ON_CPU,
+> +                               .retval = 0,
+> +                               .cpu = i,
+> +                       );
+> +
+> +                       err = bpf_prog_test_run_opts(
+> +                               bpf_program__fd(skel->progs.rename), &opts);
+> +                       CHECK(err < 0, "test_run_opts", "err %d\n", errno);
+> +                       CHECK(skel->data->on_cpu != i, "check_on_cpu",
+> +                             "expect %d got %d\n", i, skel->data->on_cpu);
+> +                       CHECK(opts.retval != expected_retval,
+> +                             "check_retval", "expect 0x%x, got 0x%x\n",
+> +                             expected_retval, opts.retval);
+> +               }
+
+as I mentioned in the first patch, let's have a test specifying
+ridiculous CPU and see if it properly fails and doesn't cause any
+kernel warning
+
+> +cleanup:
+> +       close(comm_fd);
+> +       test_raw_tp_test_run__destroy(skel);
+> +       free(online);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c b/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
+> new file mode 100644
+> index 0000000000000..6b356e003d16c
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
+> @@ -0,0 +1,25 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Facebook */
+> +
+> +#include "vmlinux.h"
+> +#include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_endian.h>
+
+nit: you don't need bpf_endian.h here, do you?
+
+> +#include <bpf/bpf_tracing.h>
+> +
+> +__u32 count = 0;
+> +__u32 on_cpu = 0xffffffff;
+> +
+> +SEC("raw_tp/task_rename")
+> +int BPF_PROG(rename, struct task_struct *task, char *comm)
+> +{
+> +
+> +       count++;
+> +       if ((__u64) task == 0x1234ULL && (__u64) comm == 0x5678ULL) {
+> +               on_cpu = bpf_get_smp_processor_id();
+> +               return (int)task + (int)comm;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +char _license[] SEC("license") = "GPL";
+> --
+> 2.24.1
 >
->  LIBBPF_API int bpf_prog_bind_map(int prog_fd, int map_fd,
->                                  const struct bpf_prog_bind_opts *opts);
-> +
-> +struct bpf_test_run_opts {
-> +       size_t sz; /* size of this struct for forward/backward compatibility */
-> +       int repeat;
-> +       const void *data_in;
-> +       __u32 data_size_in;
-> +       void *data_out;      /* optional */
-> +       __u32 data_size_out; /* in: max length of data_out
-> +                             * out: length of data_out
-> +                             */
-> +       __u32 retval;        /* out: return code of the BPF program */
-> +       __u32 duration;      /* out: average per repetition in ns */
-> +       const void *ctx_in; /* optional */
-> +       __u32 ctx_size_in;
-> +       void *ctx_out;      /* optional */
-> +       __u32 ctx_size_out; /* in: max length of ctx_out
-> +                            * out: length of cxt_out
-> +                            */
-> +       __u32 flags;
-> +       __u32 cpu;
-> +};
-
-lots of holes in there, let's reorder (it doesn't have to match the
-order in bpf_attr):
-
-      size_t sz; /* size of this struct for forward/backward compatibility */
-
-      const void *data_in;
-      void *data_out;
-      __u32 data_size_in;
-      __u32 data_size_out;
-
-      const void *ctx_in;
-      void *ctx_out;
-      __u32 ctx_size_in;
-      __u32 ctx_size_out;
-
-      __u32 retval;
-      int repeat;
-      __u32 duration;
-      __u32 flags;
-      __u32 cpu;
-
-?
-
-> +#define bpf_test_run_opts__last_field cpu
-> +
-> +LIBBPF_API int bpf_prog_test_run_opts(int prog_fd,
-> +                                     struct bpf_test_run_opts *opts);
-> +
->  #ifdef __cplusplus
->  } /* extern "C" */
->  #endif
-
-[...]
