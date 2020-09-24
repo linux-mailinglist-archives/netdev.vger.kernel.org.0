@@ -2,185 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E985D2779F6
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:12:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08DB7277A19
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:22:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726185AbgIXUMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 16:12:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54462 "EHLO
+        id S1726458AbgIXUWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 16:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725208AbgIXUMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 16:12:33 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FA9C0613CE
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 13:12:33 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id gx22so530951ejb.5
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 13:12:33 -0700 (PDT)
+        with ESMTP id S1725208AbgIXUWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 16:22:13 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF34CC0613CE;
+        Thu, 24 Sep 2020 13:22:13 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id k18so388128ybh.1;
+        Thu, 24 Sep 2020 13:22:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qhrA+da5XYB4J1xUmP5mP0DDfDH6xLZkG83CjthZrPo=;
-        b=EnRmlu2AA6nEJvPXBKke6rpLiHb+p+E5DQ36k4pNXWq2W/Aze8sE/NhuFtooiXouCO
-         yx0fqAHqs1txGt6TUVngRfBJCvnN+nyNEnY0nhcHvK3naob91qxK4Ct6lE6QrlWYQlLa
-         jlz7d6h8EqGlZrQhOfakyH5HTK7wKVXiGQvPklPEMydo9vXv0B0/P4wNoDyhWhguOfZJ
-         ey817F3n9ylA3AV5dA1qBMmA328PwsoCmdbUHIvbWqp92npfii279Ru8GAXmEBgGUfAK
-         96rwYcgboIIaXl8STxwyLcYCNcSVSxLtzM1l/RGphWdr17bxdPsXdHwEJNmXCTz1Q7RH
-         iHRw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5wJrUIfsuskPuQFMQCCUj+xN+JyZhp2lIK2HyGhVyUY=;
+        b=dL/WIYLVJbUe/52KTyIKBkxLfKuTK/dUBW7KhstJPiocpZChxzuXbG/u7tIkQDBJcW
+         C3iviQXnJsuDGCTUA9EemXVRGc0K+Ub1/tEFS15lPRzaB1vNdNWtJXs38b3AuM3FUjG5
+         G9hPV49h8IOjnYvlLZemLUNgsKJBbO39d9hD66mQqxd1nv8h0or/Aaok4g87Z1IYEc8x
+         X6WgHLu2V5z7Z3H6MXn6flw2PWn4CPd1SOP1MJNNuxH7FjMPn8RGGm95mRvNnn/tBcap
+         8P2wl/RYAAOFoTWytnhaHhSqXkZJDAy6f7NwU98fzlPVYodkzq8+TAfR0e/sIXGWmn9b
+         8t7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qhrA+da5XYB4J1xUmP5mP0DDfDH6xLZkG83CjthZrPo=;
-        b=BmOB62ZUNTU+xJP7DNMGQeneARee5YZonoodiXvb1z+983MspageCPeOsZ9aKyuzZP
-         1IZsKWpGQAC6/S/z33kfIvkcVgpDlnyIUeHWrxdbSFP/Le8t1PoWz/QHWslDs6qP5JLH
-         WVkLkCRAeDrcOmQ9Mg0fjLEkCe0FvZ4dVpfUrsjXKJ4i6iRlyts7BaucjFSZxZmVSuR3
-         ZXyJe/umw1NtKeHta0TzmJa3XQwA0SIxsil1ZTI5UuR36GIUhQrxr5eic7SQ3jBJqeha
-         ja++i5a0L25lRNWV/bOpBEEan7NjputfappfpJvW5R+zSDMy0Csj1398VIISoDdr7iMY
-         HnXw==
-X-Gm-Message-State: AOAM533l79aUH6kcOSIa8jXpJfox0thp2Wf0JFq2ccrvLPQ4oF/gsCUL
-        TgCkAipNMTNb/UrnaO86jvg3suPwcj8=
-X-Google-Smtp-Source: ABdhPJxRDnuc57HNnWId7AYTOOHN2zwG6hbkjFPypzcVtlY6O2BvdmyuGhfBlq2pcSaAV24LdOlrZg==
-X-Received: by 2002:a17:906:b04a:: with SMTP id bj10mr321136ejb.303.1600978351820;
-        Thu, 24 Sep 2020 13:12:31 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:218d:aa9:b244:cdab? (p200300ea8f235700218d0aa9b244cdab.dip0.t-ipconnect.de. [2003:ea:8f23:5700:218d:aa9:b244:cdab])
-        by smtp.googlemail.com with ESMTPSA id b20sm331559ejv.9.2020.09.24.13.12.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Sep 2020 13:12:31 -0700 (PDT)
-Subject: Re: RTL8402 stops working after hibernate/resume
-To:     Petr Tesarik <ptesarik@suse.cz>
-Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        netdev@vger.kernel.org
-References: <20200715102820.7207f2f8@ezekiel.suse.cz>
- <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
- <20200716105835.32852035@ezekiel.suse.cz>
- <e1c7a37f-d8d0-a773-925c-987b92f12694@gmail.com>
- <20200903104122.1e90e03c@ezekiel.suse.cz>
- <7e6bbb75-d8db-280d-ac5b-86013af39071@gmail.com>
- <20200924211444.3ba3874b@ezekiel.suse.cz>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <a10f658b-7fdf-2789-070a-83ad5549191a@gmail.com>
-Date:   Thu, 24 Sep 2020 22:12:24 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5wJrUIfsuskPuQFMQCCUj+xN+JyZhp2lIK2HyGhVyUY=;
+        b=GXFLLP3OM9WSJTwTwsDdotj9taoI8rw/iZZVp8c/PXsxZYh70+Zen839FfWVj7MsUV
+         d3TeuG/OgTbC4CtJSr9TEW5UuPQMVn36n6loSrApakGrT38LWbmOy6yrGDuctSIa9YSa
+         k1kbSgZva4Mln7EhcYfr8M9Kj9NGy5V3mJaD5Q2gv3eANclWojEiSmEHrDc1Q++yh8/6
+         /9EfYkrydrNOxZVBzhfJursh357ah2aueTvSXJOF+p8rox+m/GT3rUgX841PVUncAXlk
+         SlJmQkafyKHyV7kLfaT29XwdxPVMk2SWApTgWU6ZlO+0x8rHAKSs83Pxz3bhck1Rq9Rl
+         NusQ==
+X-Gm-Message-State: AOAM530fkUgdBA6MQLC+/akUxNNLb4okfRBRqn1PvB2RWOFKuDKOAs/B
+        mHmT6cYgEDbHAMyW0/fWu2WufNXqf6jAzhsXTiI=
+X-Google-Smtp-Source: ABdhPJzrRdstStRLbaQ3WwbDyUTv8ro9BBlbdrsbXuv+M0vI0C0SXjWqUG9IToHW1KjbCjx7DKZRxtfjeWqyJndhfTg=
+X-Received: by 2002:a25:2687:: with SMTP id m129mr698485ybm.425.1600978932997;
+ Thu, 24 Sep 2020 13:22:12 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200924211444.3ba3874b@ezekiel.suse.cz>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200924022557.16561-1-bimmy.pujari@intel.com> <20200924022557.16561-2-bimmy.pujari@intel.com>
+In-Reply-To: <20200924022557.16561-2-bimmy.pujari@intel.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 24 Sep 2020 13:22:02 -0700
+Message-ID: <CAEf4BzZ7Srd2k5a_t6JKW9_=cUQVqvxXhd+4rvbpMHKRJAQbiw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 2/2] selftests/bpf: Verifying real time helper function
+To:     "Pujari, Bimmy" <bimmy.pujari@intel.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        mchehab@kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        "Nikravesh, Ashkan" <ashkan.nikravesh@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24.09.2020 21:14, Petr Tesarik wrote:
-> On Wed, 23 Sep 2020 11:57:41 +0200
-> Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> 
->> On 03.09.2020 10:41, Petr Tesarik wrote:
->>> Hi Heiner,
->>>
->>> this issue was on the back-burner for some time, but I've got some
->>> interesting news now.
->>>
->>> On Sat, 18 Jul 2020 14:07:50 +0200
->>> Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>>   
->>>> [...]
->>>> Maybe the following gives us an idea:
->>>> Please do "ethtool -d <if>" after boot and after resume from suspend,
->>>> and check for differences.  
->>>
->>> The register dump did not reveal anything of interest - the only
->>> differences were in the physical addresses after a device reopen.
->>>
->>> However, knowing that reloading the driver can fix the issue, I copied
->>> the initialization sequence from init_one() to rtl8169_resume() and
->>> gave it a try. That works!
->>>
->>> Then I started removing the initialization calls one by one. This
->>> exercise left me with a call to rtl_init_rxcfg(), which simply sets the
->>> RxConfig register. In other words, these is the difference between
->>> 5.8.4 and my working version:
->>>
->>> --- linux-orig/drivers/net/ethernet/realtek/r8169_main.c	2020-09-02 22:43:09.361951750 +0200
->>> +++ linux/drivers/net/ethernet/realtek/r8169_main.c	2020-09-03 10:36:23.915803703 +0200
->>> @@ -4925,6 +4925,9 @@
->>>  
->>>  	clk_prepare_enable(tp->clk);
->>>  
->>> +	if (tp->mac_version == RTL_GIGA_MAC_VER_37)
->>> +		RTL_W32(tp, RxConfig, RX128_INT_EN | RX_DMA_BURST);
->>> +
->>>  	if (netif_running(tp->dev))
->>>  		__rtl8169_resume(tp);
->>>  
->>> This is quite surprising, at least when the device is managed by
->>> NetworkManager, because then it is closed on wakeup, and the open
->>> method should call rtl_init_rxcfg() anyway. So, it might be a timing
->>> issue, or incorrect order of register writes.
->>>   
->> Thanks for the analysis. If you manually bring down and up the
->> interface, do you see the same issue?
-> 
-> I'm not quite sure what you mean, but if the interface is configured
-> (and NetworkManager is stopped), I can do 'ip link set eth0 down' and
-> then 'ip link set eth0 up', and the interface is fully functional.
-> 
->> What is the value of RxConfig when entering the resume function?
-> 
-> I added a dev_info() to rtl8169_resume(). First with NetworkManager
-> active (i.e. interface down on suspend):
-> 
-> [  525.956675] r8169 0000:03:00.2: RxConfig after resume: 0x0002400f
-> 
-> Then I re-tried with NetworkManager stopped (i.e. interface up on
-> suspend). Same result:
-> 
-> [  785.413887] r8169 0000:03:00.2: RxConfig after resume: 0x0002400f
-> 
-> I hope that's what you were asking for...
-> 
-> Petr T
-> 
+On Wed, Sep 23, 2020 at 7:26 PM <bimmy.pujari@intel.com> wrote:
+>
+> From: Bimmy Pujari <bimmy.pujari@intel.com>
+>
+> Test xdping measures RTT from xdp using monotonic time helper.
+> Extending xdping test to use real time helper function in order
+> to verify this helper function.
+>
+> Signed-off-by: Bimmy Pujari <bimmy.pujari@intel.com>
+> ---
 
-rtl8169_resume() has been changed in 5.9, therefore the patch doesn't
-apply cleanly on older kernel versions. Can you test the following
-on a 5.9-rc version or linux-next?
+This is exactly the use of REALTIME clock that I was arguing against,
+and yet you are actually creating an example of how to use it for such
+case. CLOCK_REALTIME should not be used to measuring time elapsed (not
+within the same machine, at least), there are strictly better
+alternatives.
 
-Thanks, Heiner
+So if you want to write a test for a new helper (assuming everyone
+else thinks it's a good idea), then do just that - write a separate
+minimal test that tests just your new functionality. Don't couple it
+with a massive XDP program. And also don't create unnecessarily almost
+400 lines of code churn.
 
+>  .../testing/selftests/bpf/progs/xdping_kern.c | 183 +----------------
+>  .../testing/selftests/bpf/progs/xdping_kern.h | 193 ++++++++++++++++++
+>  .../bpf/progs/xdping_realtime_kern.c          |   4 +
+>  tools/testing/selftests/bpf/test_xdping.sh    |  44 +++-
+>  4 files changed, 235 insertions(+), 189 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/progs/xdping_kern.h
+>  create mode 100644 tools/testing/selftests/bpf/progs/xdping_realtime_kern.c
+>
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 9e4e6a883..4fb49fd0d 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4837,6 +4837,10 @@ static int rtl8169_resume(struct device *device)
- 
- 	rtl_rar_set(tp, tp->dev->dev_addr);
- 
-+	/* Reportedly at least Asus X453MA corrupts packets otherwise */
-+	if (tp->mac_version == RTL_GIGA_MAC_VER_37)
-+		rtl_init_rxcfg(tp);
-+
- 	if (tp->TxDescArray)
- 		rtl8169_up(tp);
- 
--- 
-2.28.0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+[...]
