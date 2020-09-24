@@ -2,112 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6B542768DF
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 08:27:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEB08276908
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 08:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726943AbgIXG1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 02:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39696 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726119AbgIXG1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 02:27:32 -0400
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D80C0613CE;
-        Wed, 23 Sep 2020 23:27:32 -0700 (PDT)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4BxlTD12DVzQl8x;
-        Thu, 24 Sep 2020 08:27:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
-        content-disposition:content-type:content-type:mime-version
-        :message-id:subject:subject:from:from:date:date:received; s=
-        mail20150812; t=1600928845; bh=7B4yQBLdUFDs9feFHdCThn3G16i3rfICn
-        JryaWCFccU=; b=i19K6hvxv0JeNYWCbFto+jzpY/6dvgTDvKpOCZHwx1Goj7TQ2
-        0lgDTYsxJ0UwRWBaxDWcZv5ksXBoEg4iQrFquFuJL+80DAA0okODsrNJj/9Ghn0T
-        eCTrX/qW8iAsfbJ7eoxjnF/8U9LW7E+bZ4jBqDhMY2/As+uFf7sKzGE+UR325hzG
-        U8aY7dDJYMsZbOdaGDpK6Q7LEyqvM1zVjxS3XmkQEkpgFIt/uG+GgCpourd4+NXb
-        4w69Xs0bZIrV8eWzxxvAe4Ly/USnSBYtO4fyEIxr0YRxXaelKcHOGS8VXsACqCLV
-        ZkNwxe3Qll7MiFxcK3b3fQwVNcsaSaVdyTr0Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-        t=1600928846;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=MLYLXufmHm+IPMon/KMutx5OLmK1QEFqDnmoQOhlCkU=;
-        b=ffkSfaqNfJ/SvVmOpe2CktybseFDO+p5W5LNLp+smcwuJO+1zv0Ep/sR8m5vn6ByGTKQsQ
-        nxAbDevxUS9axGTYXhzcAZt5mWkpoFpYOht0tcojBqBhwLF7Yz0jotJLR3k6KN+DZnCUAO
-        gABpfY4UtyU5ux75c+E5ZbkkMQXDE6rZjSRe3PCdzX7GTfnCsUQGmFRI2IyOQjZe6AUKFl
-        YvteErxpz6d6s8SDzoIgU0rcp9Rfn3UJEdSxaNxLlP55xcOH9Fmu5WzsyRInDzbwrlPoci
-        GQaqYQoUMPdGxvwsmkE82cvn1klJNiSRk/dDIngYtqaLYwUZ+sDu2+J68qYdRg==
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter06.heinlein-hosting.de (spamfilter06.heinlein-hosting.de [80.241.56.125]) (amavisd-new, port 10030)
-        with ESMTP id KC95yWCztS8c; Thu, 24 Sep 2020 08:27:25 +0200 (CEST)
-Date:   Thu, 24 Sep 2020 08:27:22 +0200
-From:   Wilken Gottwalt <wilken.gottwalt@mailbox.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH] net: usb: ax88179_178a: add Toshiba usb 3.0 adapter
-Message-ID: <20200924062722.GA20280@monster.powergraphx.local>
+        id S1727029AbgIXGga (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 02:36:30 -0400
+Received: from mail-eopbgr10064.outbound.protection.outlook.com ([40.107.1.64]:34469
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726883AbgIXGg2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Sep 2020 02:36:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Des6GC92Zmb0QXgGdm6speyqFWD9RYT2NefuimfqlLDtSAJXyQCu2Z6OqxfaR3L/z4pfIzEDb4Fqo4tBnZ/KQLtnbOdyjpAJHFnCfr9DLmMvOwoboR28EtEv8kjCbYg0a9tEUnqiLkisn3EDvvQu8V266pePkHguL1iPiXZt1orWIqgia5gh7+tSwdR77pos5UhUA08hTM/eLOwEPi7w78cXlnRopZNMISvnQB6rIGnnMvM2TWyMBPepqglqJ6lR+qcGzTVB8FZXu+o1RqkzNOLfL4Vujbfy1vltv7eZiHd68kC9EZ9uN+JNlQxwL25NC6anUr842XPyG7ASTCkH/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5LWMfHw2H6XWIGPMGs1NHqKL2t5/48/X0u6ZR235v6k=;
+ b=j6LGnEd7xZIjYFM6LTtstshHqaFCoerJoMNniq6LSJjPESgTdtjHnlF9usApbwwuQBjhibOd8yX2L4V9Nx+zWTwpuF1YjWgntAUarlNQBOPH9W9ce2qf6E6aIZzDGqMQVeoJGXuagLrQ8ab/zbfrsJVZPm4fsMs/ktKTNvUuQdu4GnhSyuwX363DV8+nIn9stRGy4Y5didt8dMbbV1dmDNmyMVTCgLqLP6TbrO9S1gih8zrlYkqOEQ3ethzm3frMspd+85xTkJ3SSUUwQ8HISI4YwFm4BNYlrsXRdWotqqeX1C55GmYmwQVqiiPC0Pp8DbL5MCzpzN4AiOrZBkyKJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5LWMfHw2H6XWIGPMGs1NHqKL2t5/48/X0u6ZR235v6k=;
+ b=oe8dqcsgsEltZt6VwStbaRXeDrIS+q+p6/rHN7riujUqeNEuO7BaQ6BZUKJcg2/yinevO5xAARzgxXmefz1+KZSmT688614oPyBuCnPSULF+DDkwazzfhPWIU/zYp7XVZbPtEUSe942DBu50lQhHlAS2nX7mKG79ytcBNh8I+Y8=
+Received: from AM8PR04MB7315.eurprd04.prod.outlook.com (2603:10a6:20b:1d4::7)
+ by AM0PR04MB5300.eurprd04.prod.outlook.com (2603:10a6:208:ce::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20; Thu, 24 Sep
+ 2020 06:36:24 +0000
+Received: from AM8PR04MB7315.eurprd04.prod.outlook.com
+ ([fe80::11e6:d413:2d3d:d271]) by AM8PR04MB7315.eurprd04.prod.outlook.com
+ ([fe80::11e6:d413:2d3d:d271%6]) with mapi id 15.20.3391.027; Thu, 24 Sep 2020
+ 06:36:24 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     David Miller <davem@davemloft.net>,
+        "s.riedmueller@phytec.de" <s.riedmueller@phytec.de>
+CC:     "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "c.hemp@phytec.de" <C.Hemp@phytec.de>
+Subject: RE: [EXT] Re: [PATCH] net: fec: Keep device numbering consistent with
+ datasheet
+Thread-Topic: [EXT] Re: [PATCH] net: fec: Keep device numbering consistent
+ with datasheet
+Thread-Index: AQHWkeiSkXIST9DqEkyz5X1b6oJps6l3VTrw
+Date:   Thu, 24 Sep 2020 06:36:23 +0000
+Message-ID: <AM8PR04MB73153F8A9E3A4DB0F7AA8003FF390@AM8PR04MB7315.eurprd04.prod.outlook.com>
+References: <20200923142528.303730-1-s.riedmueller@phytec.de>
+ <20200923.133147.842604978902817779.davem@davemloft.net>
+In-Reply-To: <20200923.133147.842604978902817779.davem@davemloft.net>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.67]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 47d3a35b-cadd-4faf-f611-08d860542832
+x-ms-traffictypediagnostic: AM0PR04MB5300:
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+x-microsoft-antispam-prvs: <AM0PR04MB5300077CA6206B9F859E818FFF390@AM0PR04MB5300.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:287;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vTm+lNkWv5MKUK5u1qCcCoTQsPVvwJ1hnimlIcby3HmTEsThMICX9yHUmwEO3O/p6KkyhbuAHCNseAkhMVrgoF/EfINIvk/He70jUZLBcUKmZ5XHN1ZCaQp0mqomP+0DN1uMMl67MJH8XZFQItqjyva23xn1PeMd4sYNcPOyL4fp/qe/gVWZvXTMPa6bZgteyBN7tSrwOqhtIZufiaG/TBa+FrZDmq6V0AOFvHQ8q42pF7+YKuArnmn5VOR7l44V9e66TGTdFQroI8dvm0cNXFMAzwWfhU7ab6fKd4Drr59ZTd5+EH0st2KrXTWbXh2Y2bWL4ZExjtJnldHe4L1BTQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7315.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(39860400002)(396003)(136003)(366004)(6506007)(4326008)(26005)(52536014)(64756008)(186003)(71200400001)(54906003)(316002)(110136005)(7696005)(8936002)(8676002)(76116006)(66446008)(5660300002)(66946007)(66556008)(33656002)(478600001)(66476007)(83380400001)(9686003)(86362001)(2906002)(55016002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 7Bv/iXOE/CKLfFdA4O02srAfUmrtVvXKZTRdJ9I0HaJISJbuGnCxLUrSgJ2TPjPq+kt1vMQcv/jbQHxKF+RMDOMd+D+kzWWuZeXrTLJZxhxjxUQojvgfyExq4qxSb2jagb96BGLm2/SgKdAMNo0y/F3SIkB13bTbeu+5GfcCw8rbcr5Af9dn8nuqem6S7Dio6gF4idRYSv0UUlgayi32kI3/lDWlCZdvYIbhPdY58JUGyrh/FnY+6fU1T12czQ9tz/8TAcf8havKPtB4lGnfCvNRAVnujlHckxRTQw8D2u3Jq4uidS9Y53NLXVwvGUp6XdpqgCyyp22ThGKzlMDzsf4fOLQxXkSSY+Q7wG3eUpOhS5gbG381A0z7G08QTSlrzlpiRDW1yWEI+R7dyyMbKsxAktv2NGCxpC2qJ+KslKh3XUn48XY2aoIjo4zXHmdaIxLlIA7ZZuDdX5JJnER6WZ2CbkCQ4q+KGtH5QWdPo6O0TcDGM67CsTOBnlbGms5gIjRIt9cQpgJew1ht8+hAGFDkF0hPqT8N5XMs3Sqk0xFlslPMfefri3NZ3+j0xdLGebTMLBC/11CMaQ+oqcM7I9yhJa2VYQ1cvNITavm3f+ALTnHf0lkuKtin1rUpjoFVvk3xkTyaViryBGL4IyTuqA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -4.58 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 21E39170A
-X-Rspamd-UID: 37bc61
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7315.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47d3a35b-cadd-4faf-f611-08d860542832
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Sep 2020 06:36:23.9598
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gfI3fvLH9TIIBMxFoGnHXFoLGc8DXTFlpqjdUdpZ0zL4+S2BLceT/F4/JdwaWRVVay25rqyMspluoeCs/FFZHA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5300
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reposted and added netdev as suggested by Jakub Kicinski.
+From: David Miller <davem@davemloft.net> Sent: Thursday, September 24, 2020=
+ 4:32 AM
+> From: Stefan Riedmueller <s.riedmueller@phytec.de>
+> Date: Wed, 23 Sep 2020 16:25:28 +0200
+>=20
+> > From: Christian Hemp <c.hemp@phytec.de>
+> >
+> > Make use of device tree alias for device enumeration to keep the
+> > device order consistent with the naming in the datasheet.
+> >
+> > Otherwise for the i.MX 6UL/ULL the ENET1 interface is enumerated as
+> > eth1 and ENET2 as eth0.
+> >
+> > Signed-off-by: Christian Hemp <c.hemp@phytec.de>
+> > Signed-off-by: Stefan Riedmueller <s.riedmueller@phytec.de>
+>=20
+> Device naming and ordering for networking devices was never, ever,
+> guaranteed.
+>=20
+> Use udev or similar.
+>=20
+> > @@ -3691,6 +3692,10 @@ fec_probe(struct platform_device *pdev)
+> >
+> >       ndev->max_mtu =3D PKT_MAXBUF_SIZE - ETH_HLEN - ETH_FCS_LEN;
+> >
+> > +     eth_id =3D of_alias_get_id(pdev->dev.of_node, "ethernet");
+> > +     if (eth_id >=3D 0)
+> > +             sprintf(ndev->name, "eth%d", eth_id);
+>=20
+> You can't ever just write into ndev->name, what if another networking dev=
+ice is
+> already using that name?
+>=20
+> This change is incorrect on many levels.
 
----
-Adds the driver_info and usb ids of the AX88179 based Toshiba USB 3.0
-ethernet adapter.
+David is correct.
 
-Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
----
- drivers/net/usb/ax88179_178a.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+For example, imx8DXL has ethernet0 is EQOS TSN, ethernet1 is FEC.
+EQOS TSN is andother driver and is registered early, the dev->name is eth0.
+So the patch will bring conflict in such case.
 
-diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index ac7bc436da33..ed078e5a3629 100644
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1829,6 +1829,19 @@ static const struct driver_info belkin_info = {
- 	.tx_fixup = ax88179_tx_fixup,
- };
- 
-+static const struct driver_info toshiba_info = {
-+	.description = "Toshiba USB Ethernet Adapter",
-+	.bind	= ax88179_bind,
-+	.unbind = ax88179_unbind,
-+	.status = ax88179_status,
-+	.link_reset = ax88179_link_reset,
-+	.reset	= ax88179_reset,
-+	.stop = ax88179_stop,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
-+	.rx_fixup = ax88179_rx_fixup,
-+	.tx_fixup = ax88179_tx_fixup,
-+};
-+
- static const struct usb_device_id products[] = {
- {
- 	/* ASIX AX88179 10/100/1000 */
-@@ -1862,6 +1875,10 @@ static const struct usb_device_id products[] = {
- 	/* Belkin B2B128 USB 3.0 Hub + Gigabit Ethernet Adapter */
- 	USB_DEVICE(0x050d, 0x0128),
- 	.driver_info = (unsigned long)&belkin_info,
-+}, {
-+	/* Toshiba USB 3.0 GBit Ethernet Adapter */
-+	USB_DEVICE(0x0930, 0x0a13),
-+	.driver_info = (unsigned long)&toshiba_info,
- },
- 	{ },
- };
--- 
-2.28.0
-
+Andy
