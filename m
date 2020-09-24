@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A3BB27655B
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 02:45:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0E90276563
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 02:48:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbgIXApt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 20:45:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43832 "EHLO
+        id S1726684AbgIXAsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 20:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726466AbgIXApt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 20:45:49 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6F4C0613CE;
-        Wed, 23 Sep 2020 17:45:49 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id fa1so700617pjb.0;
-        Wed, 23 Sep 2020 17:45:49 -0700 (PDT)
+        with ESMTP id S1726466AbgIXAsB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 20:48:01 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D674CC0613CE;
+        Wed, 23 Sep 2020 17:48:00 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id d13so798803pgl.6;
+        Wed, 23 Sep 2020 17:48:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=Y06geVnFRAlUGD0zw0ngZdWLQoShuSNreoopx4iDaRc=;
-        b=PfXmuC13aPVXNA1iRVre4IrM0VOK2SiZBQIeb8pFGwyeqMTZahbw3gim2Qjea+sb3I
-         8pYhYONXbCowuJSryWXxxcJ4Tg37bdlh839BagkAxOIET+EGdq88DWdAc/dF1vb5Hr7P
-         +645rfdwNDE964whh+cFd/kLrdRetavp+oiSEwkUDLU9miO2y+VDBFs1GutktntPhO40
-         OW21SGcarxfnrMo9gtZHeeNtZJRA6VCY65Or+vGCzmadIwdi42kJ9QYrRZB5BsvmZSfq
-         wk1CKMVMkSTsrAsxcZlW78ebcDSjXvh0pJHZzWlAL8ZvAFM7DgAqiUG166Z6GupzTRl6
-         VKFQ==
+        bh=IeSXMBVcVqOJv+ick5hpJlRuUlPUh1dEBXZ1ahX+5iQ=;
+        b=qazrzgmEz80xNxddpR8Ymwev6mBT9p1Gd//S9xmd/LufiF1CERFfGj5PtdccwRv78S
+         1sP3FOfQWXHM4Wt9V+qFTib5icZjrlDuKUeqFXGgfwDjpqy53DIHwm3taMwi1tUXN3aR
+         EXCPBtVQgDBVhn7p+jnj2C5Tn//tntVHn5YSmNMPl8CgmocUlufQk0+L4EU8oeAi08xf
+         WN1q9ZEz570rnwvv8+nyeLjlJNdf24x2n68udhYpRECVn/6+syTGiyz7euVG2Y/jQT4W
+         CbwC0MPjz4KqHRwKcGKgRP2l0Pv3cvj6+iw6TZc2hx7XksY9YHZpWmtLme4957hBRfG0
+         WXYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=Y06geVnFRAlUGD0zw0ngZdWLQoShuSNreoopx4iDaRc=;
-        b=oMySjse313qKcSQjSoxHfXAfiwwawa2jmzc72scXpiC3MYyNwzqfG+p3JhOpELvvTI
-         /sTEv42KYbJI9JeDbS7P66wo93Y9rgOKQB/fPQQKRacSIo7ECYyiNXpt48V64ljFW58r
-         uQgHNYD1uNouMBsIa2ofRKqcdrxTmkwmWSv+/ThjOKcFCVk6BjAu8HjMi7fL6nC+7JIO
-         UwnqnSj1uX/1xYM7DVxrs1TYd+YB7yKyISNSlwB9CkqQbTgb9YVSQs14yWtjN8mLtReY
-         OcDhu/nG9LO6PR8bbuVhmjEE3CboNLucKsP5+yT9KvM6eKwFAa9xa1w5sl82yM0/LlCp
-         HypA==
-X-Gm-Message-State: AOAM531G12tNM3OwiMHuREAvcScXFFIYtbbz2RGtUi19wvLX8IF8UhH/
-        HEBHroMl1Vas1ZXsw8SLIKw=
-X-Google-Smtp-Source: ABdhPJwVkW6xQEQD3QLU8Emj495pJ636kOj3j0Wia4vysl72iRbz/mBst+4HL5AFtGH8yftc+aPghA==
-X-Received: by 2002:a17:902:8e86:b029:d2:4276:1abf with SMTP id bg6-20020a1709028e86b02900d242761abfmr2069028plb.64.1600908348819;
-        Wed, 23 Sep 2020 17:45:48 -0700 (PDT)
+        bh=IeSXMBVcVqOJv+ick5hpJlRuUlPUh1dEBXZ1ahX+5iQ=;
+        b=s8B3/ZApwoj5312790VdcAyI9uxXQznyGA7jpbzkwQqQRK+upDpv8dcTIx5zypYdHd
+         F95Su+UlgfLuxQujfrMmjZkwo++AiwVSRvoBArc9/m4zDUjqkVWvia1hH+g6HZy7vZTr
+         Njtf4aV0XIZq5IZnYEHDJQsKqMAR/2NsRMLg5gBmISSEjo71cQB5/bDkxZPLiNI8fmjS
+         TrSKntjJgMKsAaRTmPaWJtL0e1ssi5F3XNECMv8Ov01GcXd7bKCjBjtsCu5vRzjkiidN
+         3+sMcXcxgYW4RIKTSoOazkEqNlRUyq4Ab7dOn2zVr5oBTUw9yHfehSiRLuUp8v2ZNM7l
+         EJQA==
+X-Gm-Message-State: AOAM533B/MP8pajzu/1gd4OtjR5kniMavHLAqPA4pbmnLolEsgK6Kr74
+        yveVb2g2cBWbgSE3Cj4Qdz0=
+X-Google-Smtp-Source: ABdhPJwTXwvZmpuuH0Dohsw8+m3zb/qXZWYKtOXMNtxNyDebN16JVnpjXeNu6RXcgz8x+zxpLvk3cA==
+X-Received: by 2002:a62:3706:0:b029:142:2501:39e5 with SMTP id e6-20020a6237060000b0290142250139e5mr2346642pfa.52.1600908480415;
+        Wed, 23 Sep 2020 17:48:00 -0700 (PDT)
 Received: from localhost ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id c7sm752732pfj.100.2020.09.23.17.45.47
+        by smtp.gmail.com with ESMTPSA id v1sm5724363pjn.1.2020.09.23.17.47.59
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Sep 2020 17:45:48 -0700 (PDT)
+        Wed, 23 Sep 2020 17:47:59 -0700 (PDT)
 From:   Geliang Tang <geliangtang@gmail.com>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
@@ -54,144 +54,56 @@ To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
         mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [MPTCP][PATCH net-next 06/16] selftests: mptcp: add ADD_ADDR mibs check function
-Date:   Thu, 24 Sep 2020 08:29:52 +0800
-Message-Id: <7b0898eff793dde434464b5fac2629739d9546fd.1600853093.git.geliangtang@gmail.com>
+Subject: [MPTCP][PATCH net-next 07/16] mptcp: add accept_subflow re-check
+Date:   Thu, 24 Sep 2020 08:29:53 +0800
+Message-Id: <98bcc56283c482c294bd6ae9ce1476821ddc6837.1600853093.git.geliangtang@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1600853093.git.geliangtang@gmail.com>
 References: <cover.1600853093.git.geliangtang@gmail.com>
-In-Reply-To: <430dd4f9c241ae990a5cfa6809276b36993ce91b.1600853093.git.geliangtang@gmail.com>
-References: <cover.1600853093.git.geliangtang@gmail.com> <bfecdd638bb74a02de1c3f1c84239911e304fcc3.1600853093.git.geliangtang@gmail.com> <e3c9ab612d773465ddf78cef0482208c73a0ca07.1600853093.git.geliangtang@gmail.com> <bf7aca2bee20de148728e30343734628aee6d779.1600853093.git.geliangtang@gmail.com> <f9b7f06f71698c2e78366da929a7fef173d01856.1600853093.git.geliangtang@gmail.com> <430dd4f9c241ae990a5cfa6809276b36993ce91b.1600853093.git.geliangtang@gmail.com>
+In-Reply-To: <7b0898eff793dde434464b5fac2629739d9546fd.1600853093.git.geliangtang@gmail.com>
+References: <cover.1600853093.git.geliangtang@gmail.com> <bfecdd638bb74a02de1c3f1c84239911e304fcc3.1600853093.git.geliangtang@gmail.com> <e3c9ab612d773465ddf78cef0482208c73a0ca07.1600853093.git.geliangtang@gmail.com> <bf7aca2bee20de148728e30343734628aee6d779.1600853093.git.geliangtang@gmail.com> <f9b7f06f71698c2e78366da929a7fef173d01856.1600853093.git.geliangtang@gmail.com> <430dd4f9c241ae990a5cfa6809276b36993ce91b.1600853093.git.geliangtang@gmail.com> <7b0898eff793dde434464b5fac2629739d9546fd.1600853093.git.geliangtang@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch added the ADD_ADDR related mibs counter check function
-chk_add_nr(). This function check both ADD_ADDR and ADD_ADDR with
-echo flag.
+The re-check of pm->accept_subflow with pm->lock held was missing, this
+patch fixed it.
 
-The output looks like this:
-
- 07 unused signal address             syn[ ok ] - synack[ ok ] - ack[ ok ]
-                                      add[ ok ] - echo  [ ok ]
- 08 signal address                    syn[ ok ] - synack[ ok ] - ack[ ok ]
-                                      add[ ok ] - echo  [ ok ]
- 09 subflow and signal                syn[ ok ] - synack[ ok ] - ack[ ok ]
-                                      add[ ok ] - echo  [ ok ]
- 10 multiple subflows and signal      syn[ ok ] - synack[ ok ] - ack[ ok ]
-                                      add[ ok ] - echo  [ ok ]
- 11 remove subflow and signal         syn[ ok ] - synack[ ok ] - ack[ ok ]
-                                      add[ ok ] - echo  [ ok ]
-
+Suggested-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 ---
- .../testing/selftests/net/mptcp/mptcp_join.sh | 44 +++++++++++++++++++
- 1 file changed, 44 insertions(+)
+ net/mptcp/pm.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index c2943e4dfcfe..9d64abdde146 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -276,6 +276,43 @@ chk_join_nr()
- 	fi
- }
+diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
+index 39a76620d0a5..be4157279e15 100644
+--- a/net/mptcp/pm.c
++++ b/net/mptcp/pm.c
+@@ -48,7 +48,7 @@ void mptcp_pm_new_connection(struct mptcp_sock *msk, int server_side)
+ bool mptcp_pm_allow_new_subflow(struct mptcp_sock *msk)
+ {
+ 	struct mptcp_pm_data *pm = &msk->pm;
+-	int ret;
++	int ret = 0;
  
-+chk_add_nr()
-+{
-+	local add_nr=$1
-+	local echo_nr=$2
-+	local count
-+	local dump_stats
-+
-+	printf "%-39s %s" " " "add"
-+	count=`ip netns exec $ns2 nstat -as | grep MPTcpExtAddAddr | awk '{print $2}'`
-+	[ -z "$count" ] && count=0
-+	if [ "$count" != "$add_nr" ]; then
-+		echo "[fail] got $count ADD_ADDR[s] expected $add_nr"
-+		ret=1
-+		dump_stats=1
-+	else
-+		echo -n "[ ok ]"
-+	fi
-+
-+	echo -n " - echo  "
-+	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtEchoAdd | awk '{print $2}'`
-+	[ -z "$count" ] && count=0
-+	if [ "$count" != "$echo_nr" ]; then
-+		echo "[fail] got $count ADD_ADDR echo[s] expected $echo_nr"
-+		ret=1
-+		dump_stats=1
-+	else
-+		echo "[ ok ]"
-+	fi
-+
-+	if [ "${dump_stats}" = 1 ]; then
-+		echo Server ns stats
-+		ip netns exec $ns1 nstat -as | grep MPTcp
-+		echo Client ns stats
-+		ip netns exec $ns2 nstat -as | grep MPTcp
-+	fi
-+}
-+
- sin=$(mktemp)
- sout=$(mktemp)
- cin=$(mktemp)
-@@ -332,6 +369,7 @@ reset
- ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
- run_tests $ns1 $ns2 10.0.1.1
- chk_join_nr "unused signal address" 0 0 0
-+chk_add_nr 1 1
+ 	pr_debug("msk=%p subflows=%d max=%d allow=%d", msk, pm->subflows,
+ 		 pm->subflows_max, READ_ONCE(pm->accept_subflow));
+@@ -58,9 +58,11 @@ bool mptcp_pm_allow_new_subflow(struct mptcp_sock *msk)
+ 		return false;
  
- # accept and use add_addr
- reset
-@@ -340,6 +378,7 @@ ip netns exec $ns2 ./pm_nl_ctl limits 1 1
- ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
- run_tests $ns1 $ns2 10.0.1.1
- chk_join_nr "signal address" 1 1 1
-+chk_add_nr 1 1
+ 	spin_lock_bh(&pm->lock);
+-	ret = pm->subflows < pm->subflows_max;
+-	if (ret && ++pm->subflows == pm->subflows_max)
+-		WRITE_ONCE(pm->accept_subflow, false);
++	if (READ_ONCE(pm->accept_subflow)) {
++		ret = pm->subflows < pm->subflows_max;
++		if (ret && ++pm->subflows == pm->subflows_max)
++			WRITE_ONCE(pm->accept_subflow, false);
++	}
+ 	spin_unlock_bh(&pm->lock);
  
- # accept and use add_addr with an additional subflow
- # note: signal address in server ns and local addresses in client ns must
-@@ -352,6 +391,7 @@ ip netns exec $ns2 ./pm_nl_ctl limits 1 2
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
- run_tests $ns1 $ns2 10.0.1.1
- chk_join_nr "subflow and signal" 2 2 2
-+chk_add_nr 1 1
- 
- # accept and use add_addr with additional subflows
- reset
-@@ -362,6 +402,7 @@ ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.4.2 flags subflow
- run_tests $ns1 $ns2 10.0.1.1
- chk_join_nr "multiple subflows and signal" 3 3 3
-+chk_add_nr 1 1
- 
- # single subflow, syncookies
- reset_with_cookies
-@@ -396,6 +437,7 @@ ip netns exec $ns2 ./pm_nl_ctl limits 1 1
- ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
- run_tests $ns1 $ns2 10.0.1.1
- chk_join_nr "signal address with syn cookies" 1 1 1
-+chk_add_nr 1 1
- 
- # test cookie with subflow and signal
- reset_with_cookies
-@@ -405,6 +447,7 @@ ip netns exec $ns2 ./pm_nl_ctl limits 1 2
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
- run_tests $ns1 $ns2 10.0.1.1
- chk_join_nr "subflow and signal w cookies" 2 2 2
-+chk_add_nr 1 1
- 
- # accept and use add_addr with additional subflows
- reset_with_cookies
-@@ -415,5 +458,6 @@ ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.4.2 flags subflow
- run_tests $ns1 $ns2 10.0.1.1
- chk_join_nr "subflows and signal w. cookies" 3 3 3
-+chk_add_nr 1 1
- 
- exit $ret
+ 	return ret;
 -- 
 2.17.1
 
