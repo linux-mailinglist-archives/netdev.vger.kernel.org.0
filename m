@@ -2,143 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7064277613
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 17:59:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95233277618
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 18:00:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728540AbgIXP7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 11:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728381AbgIXP7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 11:59:48 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A505C0613CE;
-        Thu, 24 Sep 2020 08:59:48 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id t76so4153991oif.7;
-        Thu, 24 Sep 2020 08:59:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=qYYqLO5rrBj3F3Lv6FQhtSM3fobUZEnBhC277ef4YHM=;
-        b=t/PJ4N38sRhSTRDCCaRn2eSpVrvp0fTsAwGzojlNMPMma7XF/vIlwrW/mQET4aeHuV
-         t9L4WYS0nPnb7VSK1Onnb8XSKtLSJM4Ee2S10XW5fOjB2HwA3TU39oxohLV9WNUUq2Dp
-         pt4jL7Z+uZJ49r1v7x2rvSkn/oBRQYEVwK1vcqKl683t4YZ9+KECLnvFE9K+dLQD3J5K
-         EzgTAe9P5wZIEEv7VR1MIYhjC3vsyntt4bfAs46DaCaYwWWDkSHC9g+/FSPL7tWwrFOn
-         vfas7Ja4S/JKxCO9jfAMViBQeJW9A+V7nsUeBFhlBsJPu2Br+6/NbQilWYjZFbYFOuoh
-         kDXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=qYYqLO5rrBj3F3Lv6FQhtSM3fobUZEnBhC277ef4YHM=;
-        b=GPh3iviQ064uUpg2Hd1+h076i5pa6bxCRi41gDcWX0VpPU4tOIPczbRBYiwjVOmjdd
-         nLfw1sDVBxvcLPbEnn1Bt7WDddodlBKXeWZ25aXS9cPJxoGvR+S8+QFUwmuM78iDHNKL
-         bx6fTsHb2Un8dVg3zRiT/B5eFhvhtWT/hQcQevzTXEKjNgNTx0BJmCpNtBXV7BNk24lD
-         UhGmfI6TYJ+XN5rMuEJD7YdfFCekYEu6itDww7ybHhebAQ57q6LAFqyTJHaKuXwaiEbW
-         G5JAdkXCdV2HAfjJ4H+VC28vHTenmFe/Hdhj47gxAbwPhOYCvHRh9Xu6Co5G/l3Ie8jO
-         vPmw==
-X-Gm-Message-State: AOAM532oMGEZ7t45H+3mQ0ENKM9Aqlz5r/D7mX0KC2z/SDjRyKrwa8fQ
-        Yik1Nb5AJxuH9sfVh/gDRFU=
-X-Google-Smtp-Source: ABdhPJx/u7tHF+kfbGG7uOOUSXFS59f4Bkime7I6rhLUjG5ZeLluBDECDmPThKFGYnC5I/wn7bRnPg==
-X-Received: by 2002:aca:dcd7:: with SMTP id t206mr55498oig.134.1600963187574;
-        Thu, 24 Sep 2020 08:59:47 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id h14sm888819otr.21.2020.09.24.08.59.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Sep 2020 08:59:46 -0700 (PDT)
-Date:   Thu, 24 Sep 2020 08:59:40 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        Andrii Nakryiko <andriin@fb.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Message-ID: <5f6cc26c7f500_4939c20811@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200923155436.2117661-8-andriin@fb.com>
-References: <20200923155436.2117661-1-andriin@fb.com>
- <20200923155436.2117661-8-andriin@fb.com>
-Subject: RE: [PATCH bpf-next 7/9] libbpf: add BTF writing APIs
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1728565AbgIXQAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 12:00:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32952 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728381AbgIXQAv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Sep 2020 12:00:51 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6ADA3235FD;
+        Thu, 24 Sep 2020 16:00:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600963251;
+        bh=r67kiC0WjaNVmOhYLjf6JYjUJqRLU6Z2/EyBhfyzyvU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AwScAfRx9Njhn+CsDf0vIPl1vMTCryCGmJiCCir1LBP2pGPpRObRPiwsIoyRYH6N/
+         xUCfZrh4aCjPZwNIHlxf0aMfv2SW539VKPcmv4ErcMaOcXInPHNESLWt4RHU02/Yyp
+         fForhBgGlJDyPOtPYa/UHZ89hPiCuqNi9WgX4ljA=
+Date:   Thu, 24 Sep 2020 18:01:07 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Petko Manolov <petkan@nucleusys.com>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Himadri Pandya <himadrispandya@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, pankaj.laxminarayan.bharadiya@intel.com,
+        keescook@chromium.org, yuehaibing@huawei.com, ogiannou@gmail.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH 3/4] net: usb: rtl8150: use usb_control_msg_recv() and
+ usb_control_msg_send()
+Message-ID: <20200924160107.GA1174357@kroah.com>
+References: <20200923090519.361-1-himadrispandya@gmail.com>
+ <20200923090519.361-4-himadrispandya@gmail.com>
+ <1600856557.26851.6.camel@suse.com>
+ <20200923144832.GA11151@karbon>
+ <2f997848ed05c1f060125f7567f6bc3fae7410bb.camel@suse.com>
+ <20200924154026.GA9761@carbon.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200924154026.GA9761@carbon.lan>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko wrote:
-> Add APIs for appending new BTF types at the end of BTF object.
+On Thu, Sep 24, 2020 at 06:40:26PM +0300, Petko Manolov wrote:
+> On 20-09-24 13:09:05, Oliver Neukum wrote:
+> > Am Mittwoch, den 23.09.2020, 17:48 +0300 schrieb Petko Manolov:
+> > 
+> > > One possible fix is to add yet another argument to usb_control_msg_recv(), 
+> > > which would be the GFP_XYZ flag to pass on to kmemdup().  Up to Greg, of 
+> > > course.
+> > 
+> > submitted. The problem is those usages that are very hard to trace. I'd 
+> > dislike to just slab GFP_NOIO on them for no obvious reason.
 > 
-> Each BTF kind has either one API of the form btf__append_<kind>(). For types
-> that have variable amount of additional items (struct/union, enum, func_proto,
-> datasec), additional API is provided to emit each such item. E.g., for
-> emitting a struct, one would use the following sequence of API calls:
-> 
-> btf__append_struct(...);
-> btf__append_field(...);
-> ...
-> btf__append_field(...);
-> 
-> Each btf__append_field() will ensure that the last BTF type is of STRUCT or
-> UNION kind and will automatically increment that type's vlen field.
-> 
-> All the strings are provided as C strings (const char *), not a string offset.
-> This significantly improves usability of BTF writer APIs. All such strings
-> will be automatically appended to string section or existing string will be
-> re-used, if such string was already added previously.
-> 
-> Each API attempts to do all the reasonable validations, like enforcing
-> non-empty names for entities with required names, proper value bounds, various
-> bit offset restrictions, etc.
-> 
-> Type ID validation is minimal because it's possible to emit a type that refers
-> to type that will be emitted later, so libbpf has no way to enforce such
-> cases. User must be careful to properly emit all the necessary types and
-> specify type IDs that will be valid in the finally generated BTF.
-> 
-> Each of btf__append_<kind>() APIs return new type ID on success or negative
-> value on error. APIs like btf__append_field() that emit additional items
-> return zero on success and negative value on error.
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
+> Do you mean you submitted a patch for usb_control_msg_recv() (because i don't 
+> see it on linux-netdev) or i'm reading this all wrong?
 
-[...]
-
-> +	/* deconstruct BTF, if necessary, and invalidate raw_data */
-> +	if (btf_ensure_modifiable(btf))
-> +		return -ENOMEM;
-> +
-> +	sz = sizeof(struct btf_type) + sizeof(int);
-> +	t = btf_add_type_mem(btf, sz);
-> +	if (!t)
-> +		return -ENOMEM;
-> +
-> +	/* if something goes wrong later, we might end up with extra an string,
-
-nit typo, 'with an extra string'
-
-> +	 * but that shouldn't be a problem, because BTF can't be constructed
-> +	 * completely anyway and will most probably be just discarded
-> +	 */
-> +	name_off = btf__add_str(btf, name);
-> +	if (name_off < 0)
-> +		return name_off;
-> +
-> +	t->name_off = name_off;
-> +	t->info = btf_type_info(BTF_KIND_INT, 0, 0);
-> +	t->size = byte_sz;
-> +	/* set INT info, we don't allow setting legacy bit offset/size */
-> +	*(__u32 *)(t + 1) = (encoding << 24) | (byte_sz * 8);
-> +
-> +	err = btf_add_type_idx_entry(btf, btf->hdr->type_len);
-> +	if (err)
-> +		return err;
-> +
-> +	btf->hdr->type_len += sz;
-> +	btf->hdr->str_off += sz;
-> +	btf->nr_types++;
-> +	return btf->nr_types;
-> +}
-> +
+It's on the linux-usb list:
+	https://lore.kernel.org/r/20200923134348.23862-1-oneukum@suse.com
