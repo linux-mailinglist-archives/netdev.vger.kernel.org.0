@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09F8427786E
+	by mail.lfdr.de (Postfix) with ESMTP id C007427786F
 	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 20:21:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728781AbgIXSVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 14:21:47 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39330 "EHLO
+        id S1728772AbgIXSVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 14:21:45 -0400
+Received: from www62.your-server.de ([213.133.104.62]:39336 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728707AbgIXSVj (ORCPT
+        with ESMTP id S1728715AbgIXSVj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 14:21:39 -0400
 Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1kLVs9-00040E-9E; Thu, 24 Sep 2020 20:21:37 +0200
+        id 1kLVs9-00040S-L2; Thu, 24 Sep 2020 20:21:37 +0200
 From:   Daniel Borkmann <daniel@iogearbox.net>
 To:     ast@kernel.org
 Cc:     daniel@iogearbox.net, john.fastabend@gmail.com,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next 3/6] bpf: add redirect_neigh helper as redirect drop-in
-Date:   Thu, 24 Sep 2020 20:21:24 +0200
-Message-Id: <721fd3f8d5cf55169561e59fdec5fad2e0bf6115.1600967205.git.daniel@iogearbox.net>
+Subject: [PATCH bpf-next 4/6] bpf, libbpf: add bpf_tail_call_static helper for bpf programs
+Date:   Thu, 24 Sep 2020 20:21:25 +0200
+Message-Id: <ae48d5b3c4b6b7ee1285c3167c3aa38ae3fdc093.1600967205.git.daniel@iogearbox.net>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <cover.1600967205.git.daniel@iogearbox.net>
 References: <cover.1600967205.git.daniel@iogearbox.net>
@@ -34,420 +34,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a redirect_neigh() helper as redirect() drop-in replacement
-for the xmit side. Main idea for the helper is to be very similar
-in semantics to the latter just that the skb gets injected into
-the neighboring subsystem in order to let the stack do the work
-it knows best anyway to populate the L2 addresses of the packet
-and then hand over to dev_queue_xmit() as redirect() does.
+Port of tail_call_static() helper function from Cilium's BPF code base [0]
+to libbpf, so others can easily consume it as well. We've been using this
+in production code for some time now. The main idea is that we guarantee
+that the kernel's BPF infrastructure and JIT (here: x86_64) can patch the
+JITed BPF insns with direct jumps instead of having to fall back to using
+expensive retpolines. By using inline asm, we guarantee that the compiler
+won't merge the call from different paths with potentially different
+content of r2/r3.
 
-This solves two bigger items: i) skbs don't need to go up to the
-stack on the host facing veth ingress side for traffic egressing
-the container to achieve the same for populating L2 which also
-has the huge advantage that ii) the skb->sk won't get orphaned in
-ip_rcv_core() when entering the IP routing layer on the host stack.
+We're also using __throw_build_bug() macro in different places as a neat
+trick to trigger compilation errors when compiler does not remove code at
+compilation time. This works for the BPF backend as it does not implement
+the __builtin_trap().
 
-Given that skb->sk neither gets orphaned when crossing the netns
-as per 9c4c325252c5 ("skbuff: preserve sock reference when scrubbing
-the skb.") the helper can then push the skbs directly to the phys
-device where FQ scheduler can do its work and TCP stack gets proper
-back-pressure given we hold on to skb->sk as long as skb is still
-residing in queues.
-
-With the helper used in BPF data path to then push the skb to the
-phys device, I observed a stable/consistent TCP_STREAM improvement
-on veth devices for traffic going container -> host -> host ->
-container from ~10Gbps to ~15Gbps for a single stream in my test
-environment.
+  [0] https://github.com/cilium/cilium/commit/f5537c26020d5297b70936c6b7d03a1e412a1035
 
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 ---
- include/linux/skbuff.h         |   5 +
- include/uapi/linux/bpf.h       |  14 ++
- net/core/filter.c              | 256 +++++++++++++++++++++++++++++++--
- tools/include/uapi/linux/bpf.h |  14 ++
- 4 files changed, 276 insertions(+), 13 deletions(-)
+ tools/lib/bpf/bpf_helpers.h | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 46881d902124..ec3254acca77 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2539,6 +2539,11 @@ static inline int skb_mac_header_was_set(const struct sk_buff *skb)
- 	return skb->mac_header != (typeof(skb->mac_header))~0U;
- }
+diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+index 1106777df00b..18b75a4c82e6 100644
+--- a/tools/lib/bpf/bpf_helpers.h
++++ b/tools/lib/bpf/bpf_helpers.h
+@@ -53,6 +53,38 @@
+ 	})
+ #endif
  
-+static inline void skb_unset_mac_header(struct sk_buff *skb)
++/*
++ * Misc useful helper macros
++ */
++#ifndef __throw_build_bug
++# define __throw_build_bug()	__builtin_trap()
++#endif
++
++static __always_inline void
++bpf_tail_call_static(void *ctx, const void *map, const __u32 slot)
 +{
-+	skb->mac_header = (typeof(skb->mac_header))~0U;
++	if (!__builtin_constant_p(slot))
++		__throw_build_bug();
++
++	/*
++	 * Don't gamble, but _guarantee_ that LLVM won't optimize setting
++	 * r2 and r3 from different paths ending up at the same call insn as
++	 * otherwise we won't be able to use the jmpq/nopl retpoline-free
++	 * patching by the x86-64 JIT in the kernel.
++	 *
++	 * Note on clobber list: we need to stay in-line with BPF calling
++	 * convention, so even if we don't end up using r0, r4, r5, we need
++	 * to mark them as clobber so that LLVM doesn't end up using them
++	 * before / after the call.
++	 */
++	asm volatile("r1 = %[ctx]\n\t"
++		     "r2 = %[map]\n\t"
++		     "r3 = %[slot]\n\t"
++		     "call 12\n\t"
++		     :: [ctx]"r"(ctx), [map]"r"(map), [slot]"i"(slot)
++		     : "r0", "r1", "r2", "r3", "r4", "r5");
 +}
 +
- static inline void skb_reset_mac_header(struct sk_buff *skb)
- {
- 	skb->mac_header = skb->data - skb->head;
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 48ecf246d047..95337b650d7f 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3595,6 +3595,19 @@ union bpf_attr {
-  * 		associated socket instead of the current process.
-  * 	Return
-  * 		The id is returned or 0 in case the id could not be retrieved.
-+ *
-+ * long bpf_redirect_neigh(u32 ifindex, u64 flags)
-+ * 	Description
-+ * 		Redirect the packet to another net device of index *ifindex*
-+ * 		and fill in L2 addresses from neighboring subsystem. This helper
-+ * 		is somewhat similar to **bpf_redirect**\ (), except that it
-+ * 		fills in e.g. MAC addresses based on the L3 information from
-+ * 		the packet. This helper is supported for IPv4 and IPv6 protocols.
-+ * 		The *flags* argument is reserved and must be 0. The helper is
-+ * 		currently only supported for tc BPF program types.
-+ * 	Return
-+ * 		The helper returns **TC_ACT_REDIRECT** on success or
-+ * 		**TC_ACT_SHOT** on error.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3747,6 +3760,7 @@ union bpf_attr {
- 	FN(d_path),			\
- 	FN(copy_from_user),		\
- 	FN(skb_cgroup_classid),		\
-+	FN(redirect_neigh),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 0f913755bcba..19caa2fc21e8 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2160,6 +2160,205 @@ static int __bpf_redirect(struct sk_buff *skb, struct net_device *dev,
- 		return __bpf_redirect_no_mac(skb, dev, flags);
- }
- 
-+#if IS_ENABLED(CONFIG_IPV6)
-+static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb)
-+{
-+	struct dst_entry *dst = skb_dst(skb);
-+	struct net_device *dev = dst->dev;
-+	const struct in6_addr *nexthop;
-+	struct neighbour *neigh;
-+
-+	if (dev_xmit_recursion())
-+		goto out_rec;
-+	skb->dev = dev;
-+	rcu_read_lock_bh();
-+	nexthop = rt6_nexthop((struct rt6_info *)dst, &ipv6_hdr(skb)->daddr);
-+	neigh = __ipv6_neigh_lookup_noref_stub(dev, nexthop);
-+	if (unlikely(!neigh))
-+		neigh = __neigh_create(ipv6_stub->nd_tbl, nexthop, dev, false);
-+	if (likely(!IS_ERR(neigh))) {
-+		int ret;
-+
-+		sock_confirm_neigh(skb, neigh);
-+		dev_xmit_recursion_inc();
-+		ret = neigh_output(neigh, skb, false);
-+		dev_xmit_recursion_dec();
-+		rcu_read_unlock_bh();
-+		return ret;
-+	}
-+	rcu_read_unlock_bh();
-+	IP6_INC_STATS(dev_net(dst->dev),
-+		      ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
-+out_drop:
-+	kfree_skb(skb);
-+	return -EINVAL;
-+out_rec:
-+	net_crit_ratelimited("bpf: recursion limit reached on datapath, buggy bpf program?\n");
-+	goto out_drop;
-+}
-+
-+static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev)
-+{
-+	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
-+	struct net *net = dev_net(dev);
-+	int err, ret = NET_XMIT_DROP;
-+	struct flowi6 fl6 = {
-+		.flowi6_flags	= FLOWI_FLAG_ANYSRC,
-+		.flowi6_mark	= skb->mark,
-+		.flowlabel	= ip6_flowinfo(ip6h),
-+		.flowi6_proto	= ip6h->nexthdr,
-+		.flowi6_oif	= dev->ifindex,
-+		.daddr		= ip6h->daddr,
-+		.saddr		= ip6h->saddr,
-+	};
-+	struct dst_entry *dst;
-+
-+	skb->dev = dev;
-+	skb->tstamp = 0;
-+
-+	dst = ipv6_stub->ipv6_dst_lookup_flow(net, NULL, &fl6, NULL);
-+	if (IS_ERR(dst))
-+		goto out_drop;
-+
-+	skb_dst_set(skb, dst);
-+
-+	err = bpf_out_neigh_v6(net, skb);
-+	if (unlikely(net_xmit_eval(err)))
-+		dev->stats.tx_errors++;
-+	else
-+		ret = NET_XMIT_SUCCESS;
-+	goto out_xmit;
-+out_drop:
-+	dev->stats.tx_errors++;
-+	kfree_skb(skb);
-+out_xmit:
-+	return ret;
-+}
-+#else
-+static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev)
-+{
-+	kfree_skb(skb);
-+	return NET_XMIT_DROP;
-+}
-+#endif /* CONFIG_IPV6 */
-+
-+#if IS_ENABLED(CONFIG_INET)
-+static int bpf_out_neigh_v4(struct net *net, struct sk_buff *skb)
-+{
-+	struct dst_entry *dst = skb_dst(skb);
-+	struct rtable *rt = (struct rtable *)dst;
-+	struct net_device *dev = dst->dev;
-+	u32 hh_len = LL_RESERVED_SPACE(dev);
-+	struct neighbour *neigh;
-+	bool is_v6gw = false;
-+
-+	if (dev_xmit_recursion())
-+		goto out_rec;
-+	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
-+		struct sk_buff *skb2;
-+
-+		skb2 = skb_realloc_headroom(skb, hh_len);
-+		if (!skb2) {
-+			kfree_skb(skb);
-+			return -ENOMEM;
-+		}
-+		if (skb->sk)
-+			skb_set_owner_w(skb2, skb->sk);
-+		consume_skb(skb);
-+		skb = skb2;
-+	}
-+	rcu_read_lock_bh();
-+	neigh = ip_neigh_for_gw(rt, skb, &is_v6gw);
-+	if (likely(!IS_ERR(neigh))) {
-+		int ret;
-+
-+		sock_confirm_neigh(skb, neigh);
-+		dev_xmit_recursion_inc();
-+		ret = neigh_output(neigh, skb, is_v6gw);
-+		dev_xmit_recursion_dec();
-+		rcu_read_unlock_bh();
-+		return ret;
-+	}
-+	rcu_read_unlock_bh();
-+out_drop:
-+	kfree_skb(skb);
-+	return -EINVAL;
-+out_rec:
-+	net_crit_ratelimited("bpf: recursion limit reached on datapath, buggy bpf program?\n");
-+	goto out_drop;
-+}
-+
-+static int __bpf_redirect_neigh_v4(struct sk_buff *skb, struct net_device *dev)
-+{
-+	const struct iphdr *ip4h = ip_hdr(skb);
-+	struct net *net = dev_net(dev);
-+	int err, ret = NET_XMIT_DROP;
-+	struct flowi4 fl4 = {
-+		.flowi4_flags	= FLOWI_FLAG_ANYSRC,
-+		.flowi4_mark	= skb->mark,
-+		.flowi4_tos	= RT_TOS(ip4h->tos),
-+		.flowi4_oif	= dev->ifindex,
-+		.daddr		= ip4h->daddr,
-+		.saddr		= ip4h->saddr,
-+	};
-+	struct rtable *rt;
-+
-+	skb->dev = dev;
-+	skb->tstamp = 0;
-+
-+	rt = ip_route_output_flow(net, &fl4, NULL);
-+	if (IS_ERR(rt))
-+		goto out_drop;
-+	if (rt->rt_type != RTN_UNICAST && rt->rt_type != RTN_LOCAL) {
-+		ip_rt_put(rt);
-+		goto out_drop;
-+	}
-+
-+	skb_dst_set(skb, &rt->dst);
-+
-+	err = bpf_out_neigh_v4(net, skb);
-+	if (unlikely(net_xmit_eval(err)))
-+		dev->stats.tx_errors++;
-+	else
-+		ret = NET_XMIT_SUCCESS;
-+	goto out_xmit;
-+out_drop:
-+	dev->stats.tx_errors++;
-+	kfree_skb(skb);
-+out_xmit:
-+	return ret;
-+}
-+#else
-+static int __bpf_redirect_neigh_v4(struct sk_buff *skb, struct net_device *dev)
-+{
-+	kfree_skb(skb);
-+	return NET_XMIT_DROP;
-+}
-+#endif /* CONFIG_INET */
-+
-+static int __bpf_redirect_neigh(struct sk_buff *skb, struct net_device *dev)
-+{
-+	struct ethhdr *ethh = eth_hdr(skb);
-+
-+	if (unlikely(skb->mac_header >= skb->network_header))
-+		goto out;
-+	bpf_push_mac_rcsum(skb);
-+	if (is_multicast_ether_addr(ethh->h_dest))
-+		goto out;
-+
-+	skb_pull(skb, sizeof(*ethh));
-+	skb_unset_mac_header(skb);
-+	skb_reset_network_header(skb);
-+
-+	if (skb->protocol == htons(ETH_P_IP))
-+		return __bpf_redirect_neigh_v4(skb, dev);
-+	else if (skb->protocol == htons(ETH_P_IPV6))
-+		return __bpf_redirect_neigh_v6(skb, dev);
-+out:
-+	kfree_skb(skb);
-+	return -ENOTSUPP;
-+}
-+
- BPF_CALL_3(bpf_clone_redirect, struct sk_buff *, skb, u32, ifindex, u64, flags)
- {
- 	struct net_device *dev;
-@@ -2203,23 +2402,16 @@ static const struct bpf_func_proto bpf_clone_redirect_proto = {
- DEFINE_PER_CPU(struct bpf_redirect_info, bpf_redirect_info);
- EXPORT_PER_CPU_SYMBOL_GPL(bpf_redirect_info);
- 
--BPF_CALL_2(bpf_redirect, u32, ifindex, u64, flags)
--{
--	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
--
--	if (unlikely(flags & ~(BPF_F_INGRESS)))
--		return TC_ACT_SHOT;
--
--	ri->flags = flags;
--	ri->tgt_index = ifindex;
--
--	return TC_ACT_REDIRECT;
--}
-+/* Internal, non-exposed redirect flags. */
-+enum {
-+	BPF_F_NEIGH = (1ULL << 1),
-+};
- 
- int skb_do_redirect(struct sk_buff *skb)
- {
- 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
- 	struct net_device *dev;
-+	u32 flags = ri->flags;
- 
- 	dev = dev_get_by_index_rcu(dev_net(skb->dev), ri->tgt_index);
- 	ri->tgt_index = 0;
-@@ -2228,7 +2420,22 @@ int skb_do_redirect(struct sk_buff *skb)
- 		return -EINVAL;
- 	}
- 
--	return __bpf_redirect(skb, dev, ri->flags);
-+	return flags & BPF_F_NEIGH ?
-+	       __bpf_redirect_neigh(skb, dev) :
-+	       __bpf_redirect(skb, dev, flags);
-+}
-+
-+BPF_CALL_2(bpf_redirect, u32, ifindex, u64, flags)
-+{
-+	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-+
-+	if (unlikely(flags & ~(BPF_F_INGRESS)))
-+		return TC_ACT_SHOT;
-+
-+	ri->flags = flags;
-+	ri->tgt_index = ifindex;
-+
-+	return TC_ACT_REDIRECT;
- }
- 
- static const struct bpf_func_proto bpf_redirect_proto = {
-@@ -2239,6 +2446,27 @@ static const struct bpf_func_proto bpf_redirect_proto = {
- 	.arg2_type      = ARG_ANYTHING,
- };
- 
-+BPF_CALL_2(bpf_redirect_neigh, u32, ifindex, u64, flags)
-+{
-+	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-+
-+	if (unlikely(flags))
-+		return TC_ACT_SHOT;
-+
-+	ri->flags = BPF_F_NEIGH;
-+	ri->tgt_index = ifindex;
-+
-+	return TC_ACT_REDIRECT;
-+}
-+
-+static const struct bpf_func_proto bpf_redirect_neigh_proto = {
-+	.func		= bpf_redirect_neigh,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_ANYTHING,
-+	.arg2_type	= ARG_ANYTHING,
-+};
-+
- BPF_CALL_2(bpf_msg_apply_bytes, struct sk_msg *, msg, u32, bytes)
- {
- 	msg->apply_bytes = bytes;
-@@ -6757,6 +6985,8 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return bpf_get_skb_set_tunnel_proto(func_id);
- 	case BPF_FUNC_redirect:
- 		return &bpf_redirect_proto;
-+	case BPF_FUNC_redirect_neigh:
-+		return &bpf_redirect_neigh_proto;
- 	case BPF_FUNC_get_route_realm:
- 		return &bpf_get_route_realm_proto;
- 	case BPF_FUNC_get_hash_recalc:
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 48ecf246d047..95337b650d7f 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -3595,6 +3595,19 @@ union bpf_attr {
-  * 		associated socket instead of the current process.
-  * 	Return
-  * 		The id is returned or 0 in case the id could not be retrieved.
-+ *
-+ * long bpf_redirect_neigh(u32 ifindex, u64 flags)
-+ * 	Description
-+ * 		Redirect the packet to another net device of index *ifindex*
-+ * 		and fill in L2 addresses from neighboring subsystem. This helper
-+ * 		is somewhat similar to **bpf_redirect**\ (), except that it
-+ * 		fills in e.g. MAC addresses based on the L3 information from
-+ * 		the packet. This helper is supported for IPv4 and IPv6 protocols.
-+ * 		The *flags* argument is reserved and must be 0. The helper is
-+ * 		currently only supported for tc BPF program types.
-+ * 	Return
-+ * 		The helper returns **TC_ACT_REDIRECT** on success or
-+ * 		**TC_ACT_SHOT** on error.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3747,6 +3760,7 @@ union bpf_attr {
- 	FN(d_path),			\
- 	FN(copy_from_user),		\
- 	FN(skb_cgroup_classid),		\
-+	FN(redirect_neigh),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+ /*
+  * Helper structure used by eBPF C program
+  * to describe BPF map attributes to libbpf loader
 -- 
 2.21.0
 
