@@ -2,108 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1499427730F
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 15:49:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAE19277315
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 15:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728055AbgIXNs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 09:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51666 "EHLO
+        id S1728119AbgIXNu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 09:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727835AbgIXNs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 09:48:57 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7B5C0613CE
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 06:48:56 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id n133so3241143qkn.11
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 06:48:56 -0700 (PDT)
+        with ESMTP id S1728032AbgIXNu0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 09:50:26 -0400
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E56CC0613CE;
+        Thu, 24 Sep 2020 06:50:26 -0700 (PDT)
+Received: by mail-oi1-x242.google.com with SMTP id 26so3718691ois.5;
+        Thu, 24 Sep 2020 06:50:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OZuoxi4EqplAFCHk3ahbjllhqfwDqYp3LSNyZOe3ca4=;
-        b=n9Axtkm0l142PghTMs5nXqMaBF/Pyo+UCcNLUfOEvsNAfzt4Z1lfxk/ZDxo7Shx4Fv
-         oKUJxk/hUeaNtit+t6/76Nu/O/VUMVfYnaXP+QJ6LzjH8XcErSepzrBQibWHF9ph0zq+
-         bHMFtBrIPHgjtygfXh58zm8wsvaEN1LPMkVpruW8HMpTyi8esHjuVGR270lxdLjpcutb
-         5IUFlqjQ4hKar7yn8ZdN6U5NO+O/6P7Kd97aLxQPca3sudkRBLyTlDLWFHr9wcRlA4oh
-         SSL4KXrwSP/Iy55Q9S5v/xan4lNovRB1Nra+bl5rxRQU5tmzvCHXL8VNgF9/qOByKneI
-         TuCA==
+        h=mime-version:reply-to:from:date:message-id:subject:to:cc;
+        bh=wL0LIGpBgsROOKg0cQ18bWeg7cLHfTfL2bP6kCHNnGk=;
+        b=jPfURQzn1/RwPgOLLUMsEbewe78lussA/XIB/WjGJqwgPTKy65BHc7Hjm6CqQP2NDp
+         Bi/ZQiwCLq5SKnMB7UaJEPHn/yyd7tlrP923UOqzaDAjsA0/XQvXqQrDfoR6o6nn/wOp
+         32HKty/cRkYkOSqRGMqF/tTtFauAEI6Yzxc1n7iLrfEOAzeF2EPQyFRrMnIdf8Orr98p
+         8KQm7JkI5ywS69gKBmMAfuhMoLdEwVixmX/ZpZM9/Bu1qUbd6OMS2AvtJo7Gn6X8pdz0
+         5C/PGHPpkGO67Lz3TOJcRh9nWqrXShOdmhM5S5L8TKLGR8kpcxE5TNA+t1bLAOr5Fhmq
+         B6+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OZuoxi4EqplAFCHk3ahbjllhqfwDqYp3LSNyZOe3ca4=;
-        b=Tyfgf3sMLm1KGyPvIXokZBXzLuOcCxfS+GZu5DPMBWaOehNziKALUvjD4BRSNBCQrd
-         hVCWll5LK1Odtiews/atmQJSrJeqPBrRyk5e2vBevu3SiA7qK5SXrM5eitD/Ocjy712i
-         ZMXuDZf3AoTputiLkVuqnJaV+CGTpwA8UuoGiQW1FXfgCjnsNEC0JNTh9/UOliP2vQwR
-         bYRXKB+JEkh3oPQjY2ONuLDQt03CHtsLUUCuRuNvgxYOoxpoNVSaW3Z6YUTa7oEf3QgP
-         GJbT6OOA1QKgxI/k0VRFwGnNsTTF7sVUhFCKc/curLY2REn95AtXsddpm7Bw1XrsAfUZ
-         wURQ==
-X-Gm-Message-State: AOAM533+2Q1mjlVCT7KT8VLHN4fv2CWDKD1PGWMpxsAK/sYVvlZUHHnV
-        Z+6V9OlOkEycZPFhPhXC5YA28UMpUa6s
-X-Google-Smtp-Source: ABdhPJwEdUdPq3PHEVQhQxPe+1D1P1q4rKbQ8d2opskmeXa7JBvDNOkbsB1OlrBOHfFaUFbFl1oGRg==
-X-Received: by 2002:a05:620a:2055:: with SMTP id d21mr5035481qka.202.1600955335338;
-        Thu, 24 Sep 2020 06:48:55 -0700 (PDT)
-Received: from ICIPI.localdomain ([136.56.89.69])
-        by smtp.gmail.com with ESMTPSA id z37sm2354030qtz.67.2020.09.24.06.48.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Sep 2020 06:48:54 -0700 (PDT)
-Date:   Thu, 24 Sep 2020 09:48:45 -0400
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: ip rule iif oif and vrf
-Message-ID: <20200924134845.GA3688@ICIPI.localdomain>
-References: <20200922131122.GB1601@ICIPI.localdomain>
- <2bea9311-e6b6-91ea-574a-4aa7838d53ea@gmail.com>
- <20200923235002.GA25818@ICIPI.localdomain>
- <ccba2d59-58ad-40ca-0a09-b55c90e9145e@gmail.com>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=wL0LIGpBgsROOKg0cQ18bWeg7cLHfTfL2bP6kCHNnGk=;
+        b=KDThqy5rhObPgNZKcwgcouXA+oZFM2kCbzfv+/azliVOeQaK6zUxzwMfzhtcFpcF2A
+         7I+l8+SqPNwNN4uZ+D6Hol4kPX5HJe1E9c4MXXra50Mr8URoEUSCWBOgQ3wtwL0Rlqq6
+         9g7Xfo772T9hy51QINyzeuttHm6prSghXj8lcw63DLGvzhC+MaoYBEXN78PO/GM7nW/Z
+         83/JFIXwCayBUEqMGWwdw78mLAH1Tzbq0QeAZLKekJb0GqdVy9piNwBf2uITpPR7P6v9
+         WaN1JvemECl6q6fK2BD9w0usFOlWAl7Edf0H9GHcIzXKh894wmdU7c+SDAnwIenWgTKE
+         R3/Q==
+X-Gm-Message-State: AOAM5323VdXG6vWMWbh8V14ImlE9SZs1E9xu40JiI43Fl7NlCTMTsURc
+        mY0x3z8CB1dl38oOZAIs/FEQnIMZh924R01f+H4=
+X-Google-Smtp-Source: ABdhPJxWSx3js4JIJytEMhCdDZZXBKrFuQsJLM+aEKuvpYqfcZ4NT/WistOQLrEJryBzw+V83sj1e5z5ORCTAyBidB0=
+X-Received: by 2002:aca:d409:: with SMTP id l9mr2379815oig.70.1600955425693;
+ Thu, 24 Sep 2020 06:50:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ccba2d59-58ad-40ca-0a09-b55c90e9145e@gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Thu, 24 Sep 2020 15:50:14 +0200
+Message-ID: <CA+icZUX+AX4GAG0z2PAnvJSEmKozYLa7oHjxGkjv2_9Rcs0J7A@mail.gmail.com>
+Subject: [PATCH] kbuild: explicitly specify the build id style
+To:     Bill Wendling <morbo@google.com>
+Cc:     Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Will Deacon <will@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        sparclinux@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Sami Tolvanen <samitolvanen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 07:47:16PM -0600, David Ahern wrote:
-> If I remove the fib rules and add VRF route leaking from core to tenant
-> it works. Why is that not an option? Overlapping tenant addresses?
+[ Please CC me I am not subscribed to all MLs ]
+[ CC Sami ]
 
-Exactly.
+Hi Bill,
 
-> One thought to get around it is adding support for a new FIB rule type
-> -- say l3mdev_port. That rule can look at the real ingress device which
-> is saved in the skb->cb as IPCB(skb)->iif.
+I have tested your patch on top of Sami's latest clang-cfi Git branch.
 
-OK. Just to ensure that the existing ip rule behavior isn't considered a
-bug.
+Feel free to add...
 
-We have multiple options on the table right now. One that can be done
-without writing any code is to use an nft prerouting rule to mark
-the packet with iif equals the tunnel and use ip rule fwmark to lookup
-the right table.
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # LLVM toolchain
+version 11.0.0-rc3 on x86-64
 
-ip netns exec r0 nft add table ip c2t
-ip netns exec r0 nft add chain ip c2t prerouting '{ type filter hook prerouting priority 0; policy accept; }'
-ip netns exec r0 nft rule ip c2t prerouting iif gre01 mark set 101 counter
-ip netns exec r0 ip rule add fwmark 101 table 10 pref 999
+Thanks for the patch.
 
-ip netns exec r1 nft add table ip c2t
-ip netns exec r1 nft add chain ip c2t prerouting '{ type filter hook prerouting priority 0; policy accept; }'
-ip netns exec r1 nft rule ip c2t prerouting iif gre10 mark set 101 counter
-ip netns exec r1 ip rule add fwmark 101 table 10 pref 999
-
-But this doesn't seem to work on my Ubuntu VM with the namespaces
-script, i.e. pinging from h0 to h1. The packet doesn't egress r1_v11. It
-does work on our target, based on 4.14 kernel.
-
-We also notice though in on the target platform that the ip rule fwmark
-doesn't seem to change the skb->dev to the vrf of the lookup table.
-E.g., ping from 10.0.0.1 to 11.0.0.1. With net.ipv4.fwmark_reflect set,
-the reply is generated but the originating ping application doesn't get
-the packet.  I suspect it is caused by the socket is bound to the tenant
-vrf. I haven't been able to repro this because of the problem with the
-nft approach above.
-
-Thanks,
-Stephen.
+Regards,
+- Sedat -
