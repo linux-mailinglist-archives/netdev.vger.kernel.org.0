@@ -2,109 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B382327693E
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 08:50:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80C272769DE
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 08:59:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727040AbgIXGuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 02:50:37 -0400
-Received: from m17618.mail.qiye.163.com ([59.111.176.18]:24949 "EHLO
-        m17618.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726119AbgIXGuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 02:50:37 -0400
-Received: from vivo-HP-ProDesk-680-G4-PCI-MT.vivo.xyz (unknown [58.251.74.231])
-        by m17618.mail.qiye.163.com (Hmail) with ESMTPA id 05ABC4E1010;
-        Thu, 24 Sep 2020 14:50:31 +0800 (CST)
-From:   Wang Qing <wangqing@vivo.com>
-To:     Ariel Elior <aelior@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-everest-linux-l2@marvell.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Wang Qing <wangqing@vivo.com>
-Subject: [PATCH] net/ethernet/broadcom: fix spelling typo
-Date:   Thu, 24 Sep 2020 14:50:24 +0800
-Message-Id: <1600930226-31320-1-git-send-email-wangqing@vivo.com>
-X-Mailer: git-send-email 2.7.4
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZHk1NT0tLTRhKQkxMVkpNS0tCSEtJSElITUlVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKTFVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MQg6GCo*SD8aMANWOgtKAzMh
-        EU5PCSNVSlVKTUtLQkhLSUhJQ0tNVTMWGhIXVQwaFRwKEhUcOw0SDRRVGBQWRVlXWRILWUFZTkNV
-        SU5KVUxPVUlISllXWQgBWUFPTkNONwY+
-X-HM-Tid: 0a74bee0b7d99376kuws05abc4e1010
+        id S1727004AbgIXG7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 02:59:07 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:35800 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726902AbgIXG7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 02:59:07 -0400
+Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 08O6wpZY003518;
+        Wed, 23 Sep 2020 23:58:52 -0700
+From:   Rohit Maheshwari <rohitm@chelsio.com>
+To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
+Cc:     vakul.garg@nxp.com, secdev@chelsio.com,
+        Rohit Maheshwari <rohitm@chelsio.com>
+Subject: [PATCH] net/tls: race causes kernel panic
+Date:   Thu, 24 Sep 2020 12:28:45 +0530
+Message-Id: <20200924065845.30594-1-rohitm@chelsio.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modify the comment typo: "compliment" -> "complement".
+BUG: kernel NULL pointer dereference, address: 00000000000000b8
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0000) - not-present page
+ PGD 80000008b6fef067 P4D 80000008b6fef067 PUD 8b6fe6067 PMD 0
+ Oops: 0000 [#1] SMP PTI
+ CPU: 12 PID: 23871 Comm: kworker/12:80 Kdump: loaded Tainted: G S
+ 5.9.0-rc3+ #1
+ Hardware name: Supermicro X10SRA-F/X10SRA-F, BIOS 2.1 03/29/2018
+ Workqueue: events tx_work_handler [tls]
+ RIP: 0010:tx_work_handler+0x1b/0x70 [tls]
+ Code: dc fe ff ff e8 16 d4 a3 f6 66 0f 1f 44 00 00 0f 1f 44 00 00 55 53 48 8b
+ 6f 58 48 8b bd a0 04 00 00 48 85 ff 74 1c 48 8b 47 28 <48> 8b 90 b8 00 00 00 83
+ e2 02 75 0c f0 48 0f ba b0 b8 00 00 00 00
+ RSP: 0018:ffffa44ace61fe88 EFLAGS: 00010286
+ RAX: 0000000000000000 RBX: ffff91da9e45cc30 RCX: dead000000000122
+ RDX: 0000000000000001 RSI: ffff91da9e45cc38 RDI: ffff91d95efac200
+ RBP: ffff91da133fd780 R08: 0000000000000000 R09: 000073746e657665
+ R10: 8080808080808080 R11: 0000000000000000 R12: ffff91dad7d30700
+ R13: ffff91dab6561080 R14: 0ffff91dad7d3070 R15: ffff91da9e45cc38
+ FS:  0000000000000000(0000) GS:ffff91dad7d00000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 00000000000000b8 CR3: 0000000906478003 CR4: 00000000003706e0
+ DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ Call Trace:
+  process_one_work+0x1a7/0x370
+  worker_thread+0x30/0x370
+  ? process_one_work+0x370/0x370
+  kthread+0x114/0x130
+  ? kthread_park+0x80/0x80
+  ret_from_fork+0x22/0x30
 
-Signed-off-by: Wang Qing <wangqing@vivo.com>
+tls_sw_release_resources_tx() waits for encrypt_pending, which
+can have race, so we need similar changes as in commit
+0cada33241d9de205522e3858b18e506ca5cce2c here as well.
+
+Fixes: a42055e8d2c3 ("net/tls: Add support for async encryption of records for performance")
+Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ net/tls/tls_sw.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h
-index bfc0e45..5caa75b
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h
-@@ -284,12 +284,12 @@
- #define CCM_REG_GR_ARB_TYPE					 0xd015c
- /* [RW 2] Load (FIC0) channel group priority. The lowest priority is 0; the
-    highest priority is 3. It is supposed; that the Store channel priority is
--   the compliment to 4 of the rest priorities - Aggregation channel; Load
-+   the complement to 4 of the rest priorities - Aggregation channel; Load
-    (FIC0) channel and Load (FIC1). */
- #define CCM_REG_GR_LD0_PR					 0xd0164
- /* [RW 2] Load (FIC1) channel group priority. The lowest priority is 0; the
-    highest priority is 3. It is supposed; that the Store channel priority is
--   the compliment to 4 of the rest priorities - Aggregation channel; Load
-+   the complement to 4 of the rest priorities - Aggregation channel; Load
-    (FIC0) channel and Load (FIC1). */
- #define CCM_REG_GR_LD1_PR					 0xd0168
- /* [RW 2] General flags index. */
-@@ -4489,11 +4489,11 @@
- #define TCM_REG_GR_ARB_TYPE					 0x50114
- /* [RW 2] Load (FIC0) channel group priority. The lowest priority is 0; the
-    highest priority is 3. It is supposed that the Store channel is the
--   compliment of the other 3 groups. */
-+   complement of the other 3 groups. */
- #define TCM_REG_GR_LD0_PR					 0x5011c
- /* [RW 2] Load (FIC1) channel group priority. The lowest priority is 0; the
-    highest priority is 3. It is supposed that the Store channel is the
--   compliment of the other 3 groups. */
-+   complement of the other 3 groups. */
- #define TCM_REG_GR_LD1_PR					 0x50120
- /* [RW 4] The number of double REG-pairs; loaded from the STORM context and
-    sent to STORM; for a specific connection type. The double REG-pairs are
-@@ -5020,11 +5020,11 @@
- #define UCM_REG_GR_ARB_TYPE					 0xe0144
- /* [RW 2] Load (FIC0) channel group priority. The lowest priority is 0; the
-    highest priority is 3. It is supposed that the Store channel group is
--   compliment to the others. */
-+   complement to the others. */
- #define UCM_REG_GR_LD0_PR					 0xe014c
- /* [RW 2] Load (FIC1) channel group priority. The lowest priority is 0; the
-    highest priority is 3. It is supposed that the Store channel group is
--   compliment to the others. */
-+   complement to the others. */
- #define UCM_REG_GR_LD1_PR					 0xe0150
- /* [RW 2] The queue index for invalidate counter flag decision. */
- #define UCM_REG_INV_CFLG_Q					 0xe00e4
-@@ -5523,11 +5523,11 @@
- #define XCM_REG_GR_ARB_TYPE					 0x2020c
- /* [RW 2] Load (FIC0) channel group priority. The lowest priority is 0; the
-    highest priority is 3. It is supposed that the Channel group is the
--   compliment of the other 3 groups. */
-+   complement of the other 3 groups. */
- #define XCM_REG_GR_LD0_PR					 0x20214
- /* [RW 2] Load (FIC1) channel group priority. The lowest priority is 0; the
-    highest priority is 3. It is supposed that the Channel group is the
--   compliment of the other 3 groups. */
-+   complement of the other 3 groups. */
- #define XCM_REG_GR_LD1_PR					 0x20218
- /* [RW 1] Input nig0 Interface enable. If 0 - the valid input is
-    disregarded; acknowledge output is deasserted; all other signals are
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 9a3d9fedd7aa..95ab5545a931 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -2143,10 +2143,15 @@ void tls_sw_release_resources_tx(struct sock *sk)
+ 	struct tls_context *tls_ctx = tls_get_ctx(sk);
+ 	struct tls_sw_context_tx *ctx = tls_sw_ctx_tx(tls_ctx);
+ 	struct tls_rec *rec, *tmp;
++	int pending;
+ 
+ 	/* Wait for any pending async encryptions to complete */
+-	smp_store_mb(ctx->async_notify, true);
+-	if (atomic_read(&ctx->encrypt_pending))
++	spin_lock_bh(&ctx->encrypt_compl_lock);
++	ctx->async_notify = true;
++	pending = atomic_read(&ctx->encrypt_pending);
++	spin_unlock_bh(&ctx->encrypt_compl_lock);
++
++	if (pending)
+ 		crypto_wait_req(-EINPROGRESS, &ctx->async_wait);
+ 
+ 	tls_tx_records(sk, -1);
 -- 
-2.7.4
+2.18.1
 
