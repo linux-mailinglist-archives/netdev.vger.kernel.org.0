@@ -2,81 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FF36276AF5
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 09:38:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAA5B276B02
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 09:40:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727201AbgIXHif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 03:38:35 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:17935 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727109AbgIXHie (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 03:38:34 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f6c4c9a0000>; Thu, 24 Sep 2020 00:36:58 -0700
-Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 24 Sep
- 2020 07:38:14 +0000
-Date:   Thu, 24 Sep 2020 10:38:10 +0300
-From:   Eli Cohen <elic@nvidia.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     <mst@redhat.com>, <lulu@redhat.com>, <kvm@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <rob.miller@broadcom.com>, <lingshan.zhu@intel.com>,
-        <eperezma@redhat.com>, <hanand@xilinx.com>,
-        <mhabets@solarflare.com>, <eli@mellanox.com>,
-        <amorenoz@redhat.com>, <maxime.coquelin@redhat.com>,
-        <stefanha@redhat.com>, <sgarzare@redhat.com>
-Subject: Re: [RFC PATCH 01/24] vhost-vdpa: fix backend feature ioctls
-Message-ID: <20200924073810.GB170403@mtl-vdi-166.wap.labs.mlnx>
-References: <20200924032125.18619-1-jasowang@redhat.com>
- <20200924032125.18619-2-jasowang@redhat.com>
- <20200924071609.GA170403@mtl-vdi-166.wap.labs.mlnx>
- <042dc3f9-40f0-f740-7ffc-611d315bc150@redhat.com>
+        id S1727211AbgIXHke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 03:40:34 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:44452 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727151AbgIXHke (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Sep 2020 03:40:34 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id B34E42056D;
+        Thu, 24 Sep 2020 09:40:32 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id KxvJixmP7KwB; Thu, 24 Sep 2020 09:40:27 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (unknown [10.53.40.204])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id DAC35201AA;
+        Thu, 24 Sep 2020 09:40:27 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Thu, 24 Sep 2020 09:40:27 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Thu, 24 Sep
+ 2020 09:40:27 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 04C0C3180126;
+ Thu, 24 Sep 2020 09:40:26 +0200 (CEST)
+Date:   Thu, 24 Sep 2020 09:40:26 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     syzbot <syzbot+577fbac3145a6eb2e7a5@syzkaller.appspotmail.com>
+CC:     <davem@davemloft.net>, <herbert@gondor.apana.org.au>,
+        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <syzkaller-bugs@googlegroups.com>
+Subject: Re: KASAN: stack-out-of-bounds Read in xfrm_selector_match (2)
+Message-ID: <20200924074026.GC20687@gauss3.secunet.de>
+References: <0000000000009fc91605afd40d89@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <042dc3f9-40f0-f740-7ffc-611d315bc150@redhat.com>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1600933019; bh=+eY8+fXvngYj7XnYGCkUG8jrRpVijqI96ZMj1LGmxWE=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:Content-Transfer-Encoding:
-         In-Reply-To:User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=WnvFZcXfAFVVIByiIYbR+uKmdmmTlMOmyJvEJc7hCQzIVGcGXGJpD+Dr8/YQNWcGg
-         LOq+tR9i0Kn2gD+iaqawryJBcoNJcj0c+vW76jzqg3upQD2YeqCQTbXCK4MIWhA3PI
-         lDpNIHqe+WIjBtzCHb/k1rKcunqeiKFw/mXkCAjFuMITzH1bgwKpaDH79HQmpfXH7q
-         Pn93V4GsDH+6iYuiV3nRBeysiY2jNruBumG9wFHncs53dFH1sCAH3WhFhyjlvn6U8D
-         RayV6/I9+AKyi4lgpDVV1YdjlCyRr+DTl2/pLDiZ4Y3TIj+SiMJrf2EHOamqFvw+0w
-         biH0TccDh6mQA==
+In-Reply-To: <0000000000009fc91605afd40d89@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 03:26:08PM +0800, Jason Wang wrote:
->=20
-> On 2020/9/24 =E4=B8=8B=E5=8D=883:16, Eli Cohen wrote:
-> > On Thu, Sep 24, 2020 at 11:21:02AM +0800, Jason Wang wrote:
-> > > Commit 653055b9acd4 ("vhost-vdpa: support get/set backend features")
-> > > introduces two malfunction backend features ioctls:
-> > >=20
-> > > 1) the ioctls was blindly added to vring ioctl instead of vdpa device
-> > >     ioctl
-> > > 2) vhost_set_backend_features() was called when dev mutex has already
-> > >     been held which will lead a deadlock
-> > >=20
-> > I assume this patch requires some patch in qemu as well. Do you have
-> > such patch?
-> >=20
->=20
-> It's this series: [PATCH 0/3] Vhost-vDPA: batch IOTLB updating.
->=20
-> You were copied.
->=20
+On Mon, Sep 21, 2020 at 07:56:20AM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    eb5f95f1 Merge tag 's390-5.9-6' of git://git.kernel.org/pu..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=13996ad5900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=ffe85b197a57c180
+> dashboard link: https://syzkaller.appspot.com/bug?extid=577fbac3145a6eb2e7a5
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+577fbac3145a6eb2e7a5@syzkaller.appspotmail.com
+> 
+> ==================================================================
+> BUG: KASAN: stack-out-of-bounds in xfrm_flowi_dport include/net/xfrm.h:877 [inline]
+> BUG: KASAN: stack-out-of-bounds in __xfrm6_selector_match net/xfrm/xfrm_policy.c:216 [inline]
+> BUG: KASAN: stack-out-of-bounds in xfrm_selector_match+0xf36/0xf60 net/xfrm/xfrm_policy.c:229
+> Read of size 2 at addr ffffc9001914f55c by task syz-executor.4/15633
 
-Right, I miss those.
-Thanks.
+This is yet another ipv4 mapped ipv6 address with IPsec socket policy
+combination bug, and I'm sure it is not the last one. We could fix this
+one by adding another check to match the address family of the policy
+and the SA selector, but maybe it is better to think about how this
+should work at all.
+
+We can have only one socket policy for each direction and that
+policy accepts either ipv4 or ipv6. We treat this ipv4 mapped ipv6
+address as ipv4 and pass it down the ipv4 stack, so this dual usage
+will not work with a socket policy. Maybe we can require IPV6_V6ONLY
+for sockets with policy attached. Thoughts?
+
