@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A35B27656D
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 02:52:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BBF3276572
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 02:54:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbgIXAwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 20:52:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44858 "EHLO
+        id S1726691AbgIXAyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 20:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726537AbgIXAwa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 20:52:30 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DF0C0613CE;
-        Wed, 23 Sep 2020 17:52:30 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id f1so668593plo.13;
-        Wed, 23 Sep 2020 17:52:30 -0700 (PDT)
+        with ESMTP id S1726537AbgIXAyq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 20:54:46 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17DBC0613CE;
+        Wed, 23 Sep 2020 17:54:45 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id u3so650795pjr.3;
+        Wed, 23 Sep 2020 17:54:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=sNAZchgd5OvG1GcGF+GODBoLJmoZ1bnk2rZ2FrG1Cfk=;
-        b=pPDjcriqt8lA4Z1uNyxMsyR/Y/j3JAwh8u05hXW1NzTZ8OTPpqL2aXSrU8uGl8C3rf
-         R+OCqvAlHJCpH5U+dFo3InNVmYDB01TV7gXiJlBipS1EQUKAT20mImNSgrQpbKtUkm/E
-         9MN8dvs/o6OjZB1KJKsGXthP2MOgB9a/zB89P7XFqsxpjnAbfWwvOVbGaIGN3NDwFGmP
-         GaxJCyX3LRAXfCuLUkyQV315D4xSpEHK/L9zcdfifhZHdoNTpKyBrGNhy9F48ZjhET/l
-         bFedrSShQZ+vDNzWYiVGfY2Teb2L0Tll/pJFVBuHWkQcZ46NXyPFh79pIK+0joAR19YL
-         qMFg==
+        bh=h+H677fkWThjqWv2k9jNPc3lZ9kp0KrAb1xLKLcz9BA=;
+        b=nogsSSOCdMjFc+PToVlsGPxrG2nVDj10fZT+0VlxtD5cG8yHeHti53rneht0xkgFXG
+         wv5fFgsDEXCs8eJbe8zvFowZe/2oGnz6Vq7+FmBIPA6ysZyRLlr6yADru/LdVJcjZnW3
+         X516h6RfP6YOJwn5v1X4dVqucD5u2SUNbgib3JlGQ4W2RjPKayAdlMeRoZo/PPfg0aqR
+         JR74cnFn2On2ZbpYx2/9yzO828uFMOmm5mR1DFiSzLKZk6/Y8YWPZd5NEZbpyhf5b1Pw
+         YbQaQdSoQt9rSV59chUmWRHZK2TDbPXE3U5HI32ZDOSQUwdF0cs9BgDpipBmbxBVbn8d
+         f+Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=sNAZchgd5OvG1GcGF+GODBoLJmoZ1bnk2rZ2FrG1Cfk=;
-        b=YobWhLcPh15bfvoA/826F9JQvVQqpcrBMEfn0wgpca5nWzMfzXwJwaHJnpy6oITLfw
-         bnbu1f/XKg17YcGeISgVFjd1JCRcd8DU4djWlI1PEM3qYmkgdAg+yInkSpQkQIGfKLuA
-         fBmSfzKM9UQrpJvBJsdpBqXdfsc77Fw+nUZbblsBhEnL7C2SA/SnU+ArCDLUkure6Kyn
-         9S/2R+maklDmqpUNQckq/LMecbcXlUL1hWsRBbLQFBPck67tmCuzSG2XgpE2X3jMpA/E
-         fft2zlNnyWHRpzTMGM2PcITwfaWfbKQOuuZxg3zy9Zsd439nDdPIYDWsY61bi59AmC5t
-         g6kQ==
-X-Gm-Message-State: AOAM530ngSzzmJfoaC2pZkYc+e7t6PCfoy1yZ4xhlzb7mUpOyFycUwmF
-        ODdt12cWulh6v51aKRsnLyw=
-X-Google-Smtp-Source: ABdhPJz4Z3m6YLE4n4xpQqADzyOlhYcIC2IX1RvGi9O/0aqQHjvjwqV8UyHZ6HVjOjn3i3V6dQQSRg==
-X-Received: by 2002:a17:90b:3841:: with SMTP id nl1mr1556075pjb.99.1600908750320;
-        Wed, 23 Sep 2020 17:52:30 -0700 (PDT)
+        bh=h+H677fkWThjqWv2k9jNPc3lZ9kp0KrAb1xLKLcz9BA=;
+        b=hkaypzBLdmVWUJcVS49RLXLb2WXbtkxSUVSN9dqa5MfpORJNkrdSgl6f/df3Y3nyFh
+         8gJC6iM5Lm5oL8U6Ah4bYZcDIA0eQdcUEWuilBRZtkJFxcSvXS+eXY0kaCEFJKWZixNn
+         AlH8IWa6N1ws/7KKbJNLQRzU6AJAZ93xbtMCptHn79VR2KS6F7A4CzUHkf1yIB/BY8+a
+         Hh1dTgJXh8sgwdCwujbIVRS3uvvMWmU9+uMIVuKLJY4IlsupbNyg1qXOkUOEiFwytXiI
+         bfCQbXEI/re1qZQGwp+cSBVckqvQdle0nlYnMluSYIAw8YaeE+5HXBWs8PbPk6Hv1Vhx
+         agYg==
+X-Gm-Message-State: AOAM533YXvl1HuT4ipNuxWCl8QKFnU79aNcIpiqpODiy1PFFi97L40qz
+        Leoa1SrSpIpPrM+kLRo4rTQ=
+X-Google-Smtp-Source: ABdhPJzwTqKFjG9yq7G0NjnVK48XB1bjfHCLpowt1E9AvBVyhNuDgX3eXiWUDAYYkJMMTN9h7zd3+Q==
+X-Received: by 2002:a17:90b:905:: with SMTP id bo5mr1599772pjb.73.1600908885602;
+        Wed, 23 Sep 2020 17:54:45 -0700 (PDT)
 Received: from localhost ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id n7sm749840pfq.114.2020.09.23.17.52.29
+        by smtp.gmail.com with ESMTPSA id r1sm876431pgl.66.2020.09.23.17.54.44
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Sep 2020 17:52:29 -0700 (PDT)
+        Wed, 23 Sep 2020 17:54:44 -0700 (PDT)
 From:   Geliang Tang <geliangtang@gmail.com>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
@@ -54,124 +54,90 @@ To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
         mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [MPTCP][PATCH net-next 09/16] mptcp: implement mptcp_pm_remove_subflow
-Date:   Thu, 24 Sep 2020 08:29:55 +0800
-Message-Id: <5018fd495529e058ea866e8d8edbe0bb98ec733a.1600853093.git.geliangtang@gmail.com>
+Subject: [MPTCP][PATCH net-next 10/16] mptcp: add RM_ADDR related mibs
+Date:   Thu, 24 Sep 2020 08:29:56 +0800
+Message-Id: <644420f22ba6f0b9f9f3509c081d8d639ff4bbf3.1600853093.git.geliangtang@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1600853093.git.geliangtang@gmail.com>
 References: <cover.1600853093.git.geliangtang@gmail.com>
-In-Reply-To: <37f2befac450fb46367f62446a4bb2c9d0a5986a.1600853093.git.geliangtang@gmail.com>
-References: <cover.1600853093.git.geliangtang@gmail.com> <bfecdd638bb74a02de1c3f1c84239911e304fcc3.1600853093.git.geliangtang@gmail.com> <e3c9ab612d773465ddf78cef0482208c73a0ca07.1600853093.git.geliangtang@gmail.com> <bf7aca2bee20de148728e30343734628aee6d779.1600853093.git.geliangtang@gmail.com> <f9b7f06f71698c2e78366da929a7fef173d01856.1600853093.git.geliangtang@gmail.com> <430dd4f9c241ae990a5cfa6809276b36993ce91b.1600853093.git.geliangtang@gmail.com> <7b0898eff793dde434464b5fac2629739d9546fd.1600853093.git.geliangtang@gmail.com> <98bcc56283c482c294bd6ae9ce1476821ddc6837.1600853093.git.geliangtang@gmail.com> <37f2befac450fb46367f62446a4bb2c9d0a5986a.1600853093.git.geliangtang@gmail.com>
+In-Reply-To: <5018fd495529e058ea866e8d8edbe0bb98ec733a.1600853093.git.geliangtang@gmail.com>
+References: <cover.1600853093.git.geliangtang@gmail.com> <bfecdd638bb74a02de1c3f1c84239911e304fcc3.1600853093.git.geliangtang@gmail.com> <e3c9ab612d773465ddf78cef0482208c73a0ca07.1600853093.git.geliangtang@gmail.com> <bf7aca2bee20de148728e30343734628aee6d779.1600853093.git.geliangtang@gmail.com> <f9b7f06f71698c2e78366da929a7fef173d01856.1600853093.git.geliangtang@gmail.com> <430dd4f9c241ae990a5cfa6809276b36993ce91b.1600853093.git.geliangtang@gmail.com> <7b0898eff793dde434464b5fac2629739d9546fd.1600853093.git.geliangtang@gmail.com> <98bcc56283c482c294bd6ae9ce1476821ddc6837.1600853093.git.geliangtang@gmail.com> <37f2befac450fb46367f62446a4bb2c9d0a5986a.1600853093.git.geliangtang@gmail.com> <5018fd495529e058ea866e8d8edbe0bb98ec733a.1600853093.git.geliangtang@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch implemented the local subflow removing function,
-mptcp_pm_remove_subflow, it simply called mptcp_pm_nl_rm_subflow_received
-under the PM spin lock.
-
-We use mptcp_pm_remove_subflow to remove a local subflow, so change it's
-argument from remote_id to local_id.
-
-We check subflow->local_id in mptcp_pm_nl_rm_subflow_received to remove
-a subflow.
+This patch added two new mibs for RM_ADDR, named MPTCP_MIB_RMADDR and
+MPTCP_MIB_RMSUBFLOW, when the RM_ADDR suboption is received, increase
+the first mib counter, when the local subflow is removed, increase the
+second mib counter.
 
 Suggested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Suggested-by: Paolo Abeni <pabeni@redhat.com>
 Suggested-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Acked-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 ---
- net/mptcp/pm.c         |  9 +++++++--
- net/mptcp/pm_netlink.c | 33 +++++++++++++++++++++++++++++++++
- net/mptcp/protocol.h   |  3 ++-
- 3 files changed, 42 insertions(+), 3 deletions(-)
+ net/mptcp/mib.c        | 2 ++
+ net/mptcp/mib.h        | 2 ++
+ net/mptcp/pm_netlink.c | 5 +++++
+ 3 files changed, 9 insertions(+)
 
-diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
-index f450bf0d49aa..7e81f53d1e5d 100644
---- a/net/mptcp/pm.c
-+++ b/net/mptcp/pm.c
-@@ -33,9 +33,14 @@ int mptcp_pm_remove_addr(struct mptcp_sock *msk, u8 local_id)
- 	return 0;
- }
+diff --git a/net/mptcp/mib.c b/net/mptcp/mib.c
+index a33bf719ce6f..84d119436b22 100644
+--- a/net/mptcp/mib.c
++++ b/net/mptcp/mib.c
+@@ -29,6 +29,8 @@ static const struct snmp_mib mptcp_snmp_list[] = {
+ 	SNMP_MIB_ITEM("DuplicateData", MPTCP_MIB_DUPDATA),
+ 	SNMP_MIB_ITEM("AddAddr", MPTCP_MIB_ADDADDR),
+ 	SNMP_MIB_ITEM("EchoAdd", MPTCP_MIB_ECHOADD),
++	SNMP_MIB_ITEM("RmAddr", MPTCP_MIB_RMADDR),
++	SNMP_MIB_ITEM("RmSubflow", MPTCP_MIB_RMSUBFLOW),
+ 	SNMP_MIB_SENTINEL
+ };
  
--int mptcp_pm_remove_subflow(struct mptcp_sock *msk, u8 remote_id)
-+int mptcp_pm_remove_subflow(struct mptcp_sock *msk, u8 local_id)
- {
--	return -ENOTSUPP;
-+	pr_debug("msk=%p, local_id=%d", msk, local_id);
-+
-+	spin_lock_bh(&msk->pm.lock);
-+	mptcp_pm_nl_rm_subflow_received(msk, local_id);
-+	spin_unlock_bh(&msk->pm.lock);
-+	return 0;
- }
+diff --git a/net/mptcp/mib.h b/net/mptcp/mib.h
+index cdeea3732ddf..47bcecce1106 100644
+--- a/net/mptcp/mib.h
++++ b/net/mptcp/mib.h
+@@ -22,6 +22,8 @@ enum linux_mptcp_mib_field {
+ 	MPTCP_MIB_DUPDATA,		/* Segments discarded due to duplicate DSS */
+ 	MPTCP_MIB_ADDADDR,		/* Received ADD_ADDR with echo-flag=0 */
+ 	MPTCP_MIB_ECHOADD,		/* Received ADD_ADDR with echo-flag=1 */
++	MPTCP_MIB_RMADDR,		/* Received RM_ADDR */
++	MPTCP_MIB_RMSUBFLOW,		/* Remove a subflow */
+ 	__MPTCP_MIB_MAX
+ };
  
- /* path manager event handlers */
 diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 97f9280f83fb..9064c8098521 100644
+index 9064c8098521..b33aebd85bd5 100644
 --- a/net/mptcp/pm_netlink.c
 +++ b/net/mptcp/pm_netlink.c
-@@ -350,6 +350,39 @@ void mptcp_pm_nl_rm_addr_received(struct mptcp_sock *msk)
+@@ -15,6 +15,7 @@
+ #include <uapi/linux/mptcp.h>
+ 
+ #include "protocol.h"
++#include "mib.h"
+ 
+ /* forward declaration */
+ static struct genl_family mptcp_genl_family;
+@@ -346,6 +347,8 @@ void mptcp_pm_nl_rm_addr_received(struct mptcp_sock *msk)
+ 		msk->pm.subflows--;
+ 		WRITE_ONCE(msk->pm.accept_addr, true);
+ 
++		__MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_RMADDR);
++
+ 		break;
  	}
  }
+@@ -379,6 +382,8 @@ void mptcp_pm_nl_rm_subflow_received(struct mptcp_sock *msk, u8 rm_id)
+ 		msk->pm.local_addr_used--;
+ 		msk->pm.subflows--;
  
-+void mptcp_pm_nl_rm_subflow_received(struct mptcp_sock *msk, u8 rm_id)
-+{
-+	struct mptcp_subflow_context *subflow, *tmp;
-+	struct sock *sk = (struct sock *)msk;
++		__MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_RMSUBFLOW);
 +
-+	pr_debug("subflow rm_id %d", rm_id);
-+
-+	if (!rm_id)
-+		return;
-+
-+	if (list_empty(&msk->conn_list))
-+		return;
-+
-+	list_for_each_entry_safe(subflow, tmp, &msk->conn_list, node) {
-+		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
-+		int how = RCV_SHUTDOWN | SEND_SHUTDOWN;
-+		long timeout = 0;
-+
-+		if (rm_id != subflow->local_id)
-+			continue;
-+
-+		spin_unlock_bh(&msk->pm.lock);
-+		mptcp_subflow_shutdown(sk, ssk, how);
-+		__mptcp_close_ssk(sk, ssk, subflow, timeout);
-+		spin_lock_bh(&msk->pm.lock);
-+
-+		msk->pm.local_addr_used--;
-+		msk->pm.subflows--;
-+
-+		break;
-+	}
-+}
-+
- static bool address_use_port(struct mptcp_pm_addr_entry *entry)
- {
- 	return (entry->addr.flags &
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index d1b1416797f8..df6cc94df1f7 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -448,7 +448,7 @@ int mptcp_pm_announce_addr(struct mptcp_sock *msk,
- 			   const struct mptcp_addr_info *addr,
- 			   bool echo);
- int mptcp_pm_remove_addr(struct mptcp_sock *msk, u8 local_id);
--int mptcp_pm_remove_subflow(struct mptcp_sock *msk, u8 remote_id);
-+int mptcp_pm_remove_subflow(struct mptcp_sock *msk, u8 local_id);
- 
- static inline bool mptcp_pm_should_add_signal(struct mptcp_sock *msk)
- {
-@@ -479,6 +479,7 @@ void mptcp_pm_nl_fully_established(struct mptcp_sock *msk);
- void mptcp_pm_nl_subflow_established(struct mptcp_sock *msk);
- void mptcp_pm_nl_add_addr_received(struct mptcp_sock *msk);
- void mptcp_pm_nl_rm_addr_received(struct mptcp_sock *msk);
-+void mptcp_pm_nl_rm_subflow_received(struct mptcp_sock *msk, u8 rm_id);
- int mptcp_pm_nl_get_local_id(struct mptcp_sock *msk, struct sock_common *skc);
- 
- static inline struct mptcp_ext *mptcp_get_ext(struct sk_buff *skb)
+ 		break;
+ 	}
+ }
 -- 
 2.17.1
 
