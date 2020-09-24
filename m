@@ -2,82 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC6F5276AC1
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 09:26:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 401F9276AC7
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 09:30:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727149AbgIXH0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 03:26:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31921 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726993AbgIXH03 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 03:26:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600932388;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=K3pWzi6XBSxvJ/VWL3fyEt5ORCYjFGoEK4Nlb2X8zSM=;
-        b=VLnnEKPDupyXUk1qvUQmVTa1qNw6SyhYZTfJYNcvG0uQdJ5rKul+aHMTwMorN9t8fgzHP4
-        6WldMnAASIThjln4lhcYbbo7++63mvbjlNB1X4IM0TQWNaRIruZSb0AzJHdCVRTk4tLG2i
-        2AWEMrO0kEiEFYZzsZaTIToeZ8bRNuE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-57-KhdlLsU5M-qlpT4HD7pE3w-1; Thu, 24 Sep 2020 03:26:26 -0400
-X-MC-Unique: KhdlLsU5M-qlpT4HD7pE3w-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DC2AD186DD33;
-        Thu, 24 Sep 2020 07:26:24 +0000 (UTC)
-Received: from [10.72.13.193] (ovpn-13-193.pek2.redhat.com [10.72.13.193])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CD64A60C15;
-        Thu, 24 Sep 2020 07:26:10 +0000 (UTC)
-Subject: Re: [RFC PATCH 01/24] vhost-vdpa: fix backend feature ioctls
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     mst@redhat.com, lulu@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rob.miller@broadcom.com,
-        lingshan.zhu@intel.com, eperezma@redhat.com, hanand@xilinx.com,
-        mhabets@solarflare.com, eli@mellanox.com, amorenoz@redhat.com,
-        maxime.coquelin@redhat.com, stefanha@redhat.com,
-        sgarzare@redhat.com
-References: <20200924032125.18619-1-jasowang@redhat.com>
- <20200924032125.18619-2-jasowang@redhat.com>
- <20200924071609.GA170403@mtl-vdi-166.wap.labs.mlnx>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <042dc3f9-40f0-f740-7ffc-611d315bc150@redhat.com>
-Date:   Thu, 24 Sep 2020 15:26:08 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727089AbgIXHaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 03:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726655AbgIXHaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 03:30:21 -0400
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98ABAC0613CE;
+        Thu, 24 Sep 2020 00:30:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=XgcGJ4sjIBTMAlJ2aTWqRW+QA3vpY8W+uIP1Muzktyc=; b=S1BVR9KRk5gwMpGsS4TSkkHnYV
+        GDdeP+4hzqnOLjmkgTQF3vDuegYsLCixunemrnJ8KmIxgsRHnP6pob4AX3L/eUO6stS//0ww54+he
+        2hpf9yMmqGDJwm8+OnURJ8c8auXCyRm99AOuuUnnsxtlsEoOsFiJyjBLqFZpO36BK8CqjmZMK9Tlx
+        dZqKOsjIwjGlyvpyLH0+gZhlhpAWGbdMIMAURyV8BGEHMk6c+1ExazZEo0eooHv4MUcfj1iqUSxcO
+        u0jL061DHP2DkQXaofjA1MUvSXt8c0zPc4LpbLUKBiXf/EPDqGD0Qm1Pf70N9PNSwEQYHTZXQhJtm
+        fudIAkVA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kLLhe-00064O-Bp; Thu, 24 Sep 2020 07:30:06 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id EB37D300455;
+        Thu, 24 Sep 2020 09:30:03 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id AA1F82BC0B6AD; Thu, 24 Sep 2020 09:30:03 +0200 (CEST)
+Date:   Thu, 24 Sep 2020 09:30:03 +0200
+From:   peterz@infradead.org
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        syzbot <syzbot+c32502fd255cb3a44048@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
+Subject: Re: possible deadlock in xfrm_policy_delete
+Message-ID: <20200924073003.GZ1362448@hirez.programming.kicks-ass.net>
+References: <00000000000056c1dc05afc47ddb@google.com>
+ <20200924043554.GA9443@gondor.apana.org.au>
+ <CACT4Y+aw+Z_7JwDiu65hL7K99f1oBfRFavZz4Pr4o8Us5peH4g@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200924071609.GA170403@mtl-vdi-166.wap.labs.mlnx>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACT4Y+aw+Z_7JwDiu65hL7K99f1oBfRFavZz4Pr4o8Us5peH4g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Sep 24, 2020 at 06:44:12AM +0200, Dmitry Vyukov wrote:
+> On Thu, Sep 24, 2020 at 6:36 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+> > >  (k-slock-AF_INET6){+.-.}-{2:2}
 
-On 2020/9/24 下午3:16, Eli Cohen wrote:
-> On Thu, Sep 24, 2020 at 11:21:02AM +0800, Jason Wang wrote:
->> Commit 653055b9acd4 ("vhost-vdpa: support get/set backend features")
->> introduces two malfunction backend features ioctls:
->>
->> 1) the ioctls was blindly added to vring ioctl instead of vdpa device
->>     ioctl
->> 2) vhost_set_backend_features() was called when dev mutex has already
->>     been held which will lead a deadlock
->>
-> I assume this patch requires some patch in qemu as well. Do you have
-> such patch?
->
+That's a seqlock.
 
-It's this series: [PATCH 0/3] Vhost-vDPA: batch IOTLB updating.
+> > What's going on with all these bogus lockdep reports?
+> >
+> > These are two completely different locks, one is for TCP and the
+> > other is for SCTP.  Why is lockdep suddenly beoming confused about
+> > this?
+> >
+> > FWIW this flood of bogus reports started on 16/Sep.
+> 
+> 
+> FWIW one of the dups of this issue was bisected to:
+> 
+> commit 1909760f5fc3f123e47b4e24e0ccdc0fc8f3f106
+> Author: Ahmed S. Darwish <a.darwish@linutronix.de>
+> Date:   Fri Sep 4 15:32:31 2020 +0000
+> 
+>     seqlock: PREEMPT_RT: Do not starve seqlock_t writers
+> 
+> Can it be related?
 
-You were copied.
-
-Thanks
-
+Did that tree you're testing include 267580db047e ("seqlock: Unbreak
+lockdep") ?
