@@ -2,100 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CA272775A5
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 17:43:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 468CF2775B2
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 17:46:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728423AbgIXPnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 11:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41210 "EHLO
+        id S1728443AbgIXPp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 11:45:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728285AbgIXPnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 11:43:39 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A43C0613D3;
-        Thu, 24 Sep 2020 08:43:38 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id q8so4448841lfb.6;
-        Thu, 24 Sep 2020 08:43:38 -0700 (PDT)
+        with ESMTP id S1728356AbgIXPp3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 11:45:29 -0400
+Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8AB3C0613D3
+        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 08:45:28 -0700 (PDT)
+Received: by mail-qv1-xf4a.google.com with SMTP id h9so2385346qvr.3
+        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 08:45:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=DHCvK2vCMj9Av+BIZ0E8U7AElH6avY5LDEpUV+Neh3E=;
-        b=axdDe2+aLvLUU+DBLQEdremX6Ihphk9P6EpX/+CXLCVmTx/fYX2Kwz5l/AFCkrw79L
-         OhOXKMeimtniSL+yA7W90u+LcehFuHzM8B4Qbb15dToXoDG1HQaGQD3FMA3r8IijkZuS
-         Z4Ctt98xiVIbkTXnvPKC4i35l3qSD5p1wkADYuGZeOIMnqdpNFpsOIy4s3bWv+CyzQxA
-         e1vPHGSZGdRtqAaUBw5AXZO9+BviRZX6FpF2U82RTTPJZPvKWZ6ZQD+ufRieyH3TSyL8
-         knt5BwKJv3/lmbXf892IOaDea82ezBJKPaa7mstaHJ6CoNAe12YO/s3JyJYp0e7RpGFq
-         Qy2g==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=IPIdIz5OhfOKSKcHOSaPSxaObhox3VIBNFJW0Bv678o=;
+        b=GC41UOarc4WKhNYnxvEW/4WUAlLIVnDiP96nIWBJWBZKSCqNVAq3etCfs00XVAU6AJ
+         qKGVXR+SNJhdjWGZ84xvp0BXMqbuDUl/dXEHJTxwV5wC/0hF9icow2DrQBwQDXIwUQws
+         HWrIA4EUxWsmD9VX/BXuLORjybycNkDeU3XfJ6mYiSffPLnmFpCuy8wYzKAdozQOBAL+
+         4YBRt47erpnQgKRPMfC4Fguks/j/NLzvUsQsyBE+MTIBWmq6vUVCW1QXp+oD+C4CceNB
+         tmG6ldsoxxNvykMMEEscD5BOfHBPidaT2DCmO2hUUE/+AszVU7IbSF/zgjSKkf98o4ou
+         ALtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=DHCvK2vCMj9Av+BIZ0E8U7AElH6avY5LDEpUV+Neh3E=;
-        b=P9XPYnkNvyO6QFNxWqakUB8atA/GGiIqpse1o6cMjL4Ijft1YNvJjkZgTclbjKglje
-         FKpQmB36ng+XANvIcuvT6AYub8loLCE/IJG8n+qCfZ8Z9UJqtgVCr0hUb5kN1/J/TDK+
-         fz4C/iB+PPJDr13Y/3KyazqeZ5htiH5Xo0mLD8/P1e1+kHV0GqtgwZdz3aoou2UG9ERX
-         66W1gfpjXRrhxEFKPBrLGpOxut6BjxpgP5QnGT6fgteQPAJc3P3yzvGtHRipomSvOe5k
-         htoZJuVd92wVhvq5ToCkPdNDQPs73TC3a1KiSn5Gbn0JsIPT6F/6tIbknNcFT1P18Jp/
-         pZUw==
-X-Gm-Message-State: AOAM531V/0shuQupmquyZWjdGdd8cUlkrn8ivBAOWno0HMfIR3P4RonR
-        oNxjStGuXYmUfnWQz8+u+7WFRnNcgGfnCp9gd9g=
-X-Google-Smtp-Source: ABdhPJyLGVPLMTDRG7N8HKyB+9HidFKYkd3IT/B/TCnGDHIGvZvW+ZdNLId/Jd4IOW/bTEo88OM9sC/mY8CNx2aOSDc=
-X-Received: by 2002:a19:8089:: with SMTP id b131mr21111lfd.390.1600962216779;
- Thu, 24 Sep 2020 08:43:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <160079991372.8301.10648588027560707258.stgit@toke.dk>
- <160079991808.8301.6462172487971110332.stgit@toke.dk> <20200924001439.qitbu5tmzz55ck4z@ast-mbp.dhcp.thefacebook.com>
- <874knn1bw4.fsf@toke.dk>
-In-Reply-To: <874knn1bw4.fsf@toke.dk>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 24 Sep 2020 08:43:25 -0700
-Message-ID: <CAADnVQJmYosGXCnAY4UmhLE+xdQHb1DVOSC5yaZJh7OHzJcUvw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v8 04/11] bpf: move prog->aux->linked_prog and
- trampoline into bpf_link on attach
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=IPIdIz5OhfOKSKcHOSaPSxaObhox3VIBNFJW0Bv678o=;
+        b=euz1Cd+MnwIToKX6oOHvJRMSbIIYScPFZA508sK2EIJjtbsvZWGgqlDE1SD7fjXpk4
+         +mM5fi/ACRFYLx1aFKsGCWPkZc59d9uaGSEeMUGBUZ0zX4twNpATC5j2nlbjNhU1Ot4b
+         YWpYDXJaGFzhjbMl+ZStrIZjJno5KxlCaN9a1J5hrVQ3D1+ViHmKubdBXNDh4S4ny+7h
+         p8ht5dtPvDMLxYUhRXES8d1AK0dv/baR/taJEAmqrIt5BMjJaug0ZrZuWU8cjjJ/yYUI
+         HQCDnDXjd4W8NA081LMVYVvpxdHNyFhSY+ZkxtvxOFzRuCDH6T1gLOHwVT1CoPXw0UMa
+         fmDA==
+X-Gm-Message-State: AOAM533NdID+uuD8i+InHfZHfEWDdnGgwg3+M8gZf23q0dZ2PKAY6IYc
+        w58I8ZBccJD2/2JD9qxUkE6UA8yyqQbI
+X-Google-Smtp-Source: ABdhPJyY5JZ0S9e/owclSjTYngJe2UFwWvvVt9uCChNotfeqC5Yqdv/aynxsmCjHsAiVtJNANInw5H+phbuZ
+Sender: "apusaka via sendgmr" <apusaka@apusaka-p920.tpe.corp.google.com>
+X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:10:f693:9fff:fef4:2347])
+ (user=apusaka job=sendgmr) by 2002:a0c:8001:: with SMTP id
+ 1mr5750424qva.21.1600962327869; Thu, 24 Sep 2020 08:45:27 -0700 (PDT)
+Date:   Thu, 24 Sep 2020 23:45:01 +0800
+Message-Id: <20200924234422.v1.1.Id1d24a896cd1d20f9ce7a4eb74523fe7896af89d@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
+Subject: [PATCH v1] Bluetooth: send proper config param to unknown config request
+From:   Archie Pusaka <apusaka@google.com>
+To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>
+Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 7:34 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> ...which I just put down to random breakage, turned off the umh and
-> continued on my way (ignoring the failed test). Until you wrote this I
-> did not suspect this would be something I needed to pay attention to.
-> Now that you did mention it, I'll obviously go investigate some more, my
-> point is just that in this instance it's not accurate to assume I just
-> didn't run the tests... :)
+From: Archie Pusaka <apusaka@chromium.org>
 
-Ignoring failures is the same as not running them.
-I expect all developers to confirm that they see "0 FAILED" before
-sending any patches.
+When receiving an L2CAP_CONFIGURATION_REQ with an unknown config
+type, currently we will reply with L2CAP_CONFIGURATION_RSP with
+a list of unknown types as the config param. However, this is not
+a correct format of config param.
 
->
-> > I think I will just start marking patches as changes-requested when I s=
-ee that
-> > they break tests without replying and without reviewing.
-> > Please respect reviewer's time.
->
-> That is completely fine if the tests are working in the first place. And
-> even when they're not (like in this case), pointing it out is fine, and
-> I'll obviously go investigate. But please at least reply to the email,
-> not all of us watch patchwork regularly.
+As described in the bluetooth spec v5.2, Vol 3, Part A, Sec 5,
+the config param should consists of type, length, and optionally
+data.
 
-Please see Documentation/bpf/bpf_devel_QA.rst.
-patchwork status is the way we communicate the intent.
-If the patch is not in the queue it won't be acted upon.
+This patch copies the length and data from the received
+L2CAP_CONFIGURATION_REQ and also appends them to the config param
+of the corresponding L2CAP_CONFIGURATION_RSP to match the format
+of the config param according to the spec.
+
+Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+Reviewed-by: Alain Michaud <alainm@chromium.org>
+
+---
+
+ net/bluetooth/l2cap_core.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index ade83e224567..2f3ddd4f0f4c 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -3627,7 +3627,8 @@ static int l2cap_parse_conf_req(struct l2cap_chan *chan, void *data, size_t data
+ 			if (hint)
+ 				break;
+ 			result = L2CAP_CONF_UNKNOWN;
+-			*((u8 *) ptr++) = type;
++			l2cap_add_conf_opt(&ptr, type, olen, val,
++					   endptr - ptr);
+ 			break;
+ 		}
+ 	}
+@@ -3658,7 +3659,7 @@ static int l2cap_parse_conf_req(struct l2cap_chan *chan, void *data, size_t data
+ 	}
+ 
+ done:
+-	if (chan->mode != rfc.mode) {
++	if (chan->mode != rfc.mode && result != L2CAP_CONF_UNKNOWN) {
+ 		result = L2CAP_CONF_UNACCEPT;
+ 		rfc.mode = chan->mode;
+ 
+-- 
+2.28.0.681.g6f77f65b4e-goog
+
