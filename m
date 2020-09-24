@@ -2,80 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B6832775A0
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 17:41:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CA272775A5
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 17:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728456AbgIXPk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 11:40:56 -0400
-Received: from lan.nucleusys.com ([92.247.61.126]:32904 "EHLO
-        zztop.nucleusys.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728139AbgIXPk4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 11:40:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=nucleusys.com; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
-        Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Q/o5cuCHNMfZCC5DXURaTMfkvGumctmEhF5/EQbiobo=; b=bcW/P9rAhkU6dQ/Y+qika/Jg25
-        ECxp3eVyEuMkpAf9XsRDNWEZKhx3qRYj3Z2ZZZfQdIafBMGmLaBgbGOM/uKEXifVGoiqk4whfC9ld
-        9XywUqHm1tgliViap8mdaLSrl2EjqaqPD88EO4NwYqd5j6nfohlGOq8xmMkwbAGlybc0=;
-Received: from [94.26.108.4] (helo=carbon.lan)
-        by zztop.nucleusys.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <petkan@nucleusys.com>)
-        id 1kLTMC-0000QU-Sy; Thu, 24 Sep 2020 18:40:29 +0300
-Date:   Thu, 24 Sep 2020 18:40:26 +0300
-From:   Petko Manolov <petkan@nucleusys.com>
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     Himadri Pandya <himadrispandya@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, pankaj.laxminarayan.bharadiya@intel.com,
-        keescook@chromium.org, yuehaibing@huawei.com, ogiannou@gmail.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        gregkh@linuxfoundation.org
-Subject: Re: [PATCH 3/4] net: usb: rtl8150: use usb_control_msg_recv() and
- usb_control_msg_send()
-Message-ID: <20200924154026.GA9761@carbon.lan>
-References: <20200923090519.361-1-himadrispandya@gmail.com>
- <20200923090519.361-4-himadrispandya@gmail.com>
- <1600856557.26851.6.camel@suse.com>
- <20200923144832.GA11151@karbon>
- <2f997848ed05c1f060125f7567f6bc3fae7410bb.camel@suse.com>
+        id S1728423AbgIXPnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 11:43:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41210 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728285AbgIXPnj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 11:43:39 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A43C0613D3;
+        Thu, 24 Sep 2020 08:43:38 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id q8so4448841lfb.6;
+        Thu, 24 Sep 2020 08:43:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DHCvK2vCMj9Av+BIZ0E8U7AElH6avY5LDEpUV+Neh3E=;
+        b=axdDe2+aLvLUU+DBLQEdremX6Ihphk9P6EpX/+CXLCVmTx/fYX2Kwz5l/AFCkrw79L
+         OhOXKMeimtniSL+yA7W90u+LcehFuHzM8B4Qbb15dToXoDG1HQaGQD3FMA3r8IijkZuS
+         Z4Ctt98xiVIbkTXnvPKC4i35l3qSD5p1wkADYuGZeOIMnqdpNFpsOIy4s3bWv+CyzQxA
+         e1vPHGSZGdRtqAaUBw5AXZO9+BviRZX6FpF2U82RTTPJZPvKWZ6ZQD+ufRieyH3TSyL8
+         knt5BwKJv3/lmbXf892IOaDea82ezBJKPaa7mstaHJ6CoNAe12YO/s3JyJYp0e7RpGFq
+         Qy2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DHCvK2vCMj9Av+BIZ0E8U7AElH6avY5LDEpUV+Neh3E=;
+        b=P9XPYnkNvyO6QFNxWqakUB8atA/GGiIqpse1o6cMjL4Ijft1YNvJjkZgTclbjKglje
+         FKpQmB36ng+XANvIcuvT6AYub8loLCE/IJG8n+qCfZ8Z9UJqtgVCr0hUb5kN1/J/TDK+
+         fz4C/iB+PPJDr13Y/3KyazqeZ5htiH5Xo0mLD8/P1e1+kHV0GqtgwZdz3aoou2UG9ERX
+         66W1gfpjXRrhxEFKPBrLGpOxut6BjxpgP5QnGT6fgteQPAJc3P3yzvGtHRipomSvOe5k
+         htoZJuVd92wVhvq5ToCkPdNDQPs73TC3a1KiSn5Gbn0JsIPT6F/6tIbknNcFT1P18Jp/
+         pZUw==
+X-Gm-Message-State: AOAM531V/0shuQupmquyZWjdGdd8cUlkrn8ivBAOWno0HMfIR3P4RonR
+        oNxjStGuXYmUfnWQz8+u+7WFRnNcgGfnCp9gd9g=
+X-Google-Smtp-Source: ABdhPJyLGVPLMTDRG7N8HKyB+9HidFKYkd3IT/B/TCnGDHIGvZvW+ZdNLId/Jd4IOW/bTEo88OM9sC/mY8CNx2aOSDc=
+X-Received: by 2002:a19:8089:: with SMTP id b131mr21111lfd.390.1600962216779;
+ Thu, 24 Sep 2020 08:43:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2f997848ed05c1f060125f7567f6bc3fae7410bb.camel@suse.com>
-X-Spam-Score: -1.0 (-)
-X-Spam-Report: Spam detection software, running on the system "zztop.nucleusys.com",
- has NOT identified this incoming email as spam.  The original
- message has been attached to this so you can view it or label
- similar future email.  If you have any questions, see
- the administrator of that system for details.
- Content preview:  On 20-09-24 13:09:05, Oliver Neukum wrote: > Am Mittwoch,
-   den 23.09.2020, 17:48 +0300 schrieb Petko Manolov: > > > One possible fix
-   is to add yet another argument to usb_control_msg_recv(), > > which [...] 
- Content analysis details:   (-1.0 points, 5.0 required)
-  pts rule name              description
- ---- ---------------------- --------------------------------------------------
- -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
+References: <160079991372.8301.10648588027560707258.stgit@toke.dk>
+ <160079991808.8301.6462172487971110332.stgit@toke.dk> <20200924001439.qitbu5tmzz55ck4z@ast-mbp.dhcp.thefacebook.com>
+ <874knn1bw4.fsf@toke.dk>
+In-Reply-To: <874knn1bw4.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 24 Sep 2020 08:43:25 -0700
+Message-ID: <CAADnVQJmYosGXCnAY4UmhLE+xdQHb1DVOSC5yaZJh7OHzJcUvw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v8 04/11] bpf: move prog->aux->linked_prog and
+ trampoline into bpf_link on attach
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20-09-24 13:09:05, Oliver Neukum wrote:
-> Am Mittwoch, den 23.09.2020, 17:48 +0300 schrieb Petko Manolov:
-> 
-> > One possible fix is to add yet another argument to usb_control_msg_recv(), 
-> > which would be the GFP_XYZ flag to pass on to kmemdup().  Up to Greg, of 
-> > course.
-> 
-> submitted. The problem is those usages that are very hard to trace. I'd 
-> dislike to just slab GFP_NOIO on them for no obvious reason.
+On Thu, Sep 24, 2020 at 7:34 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> ...which I just put down to random breakage, turned off the umh and
+> continued on my way (ignoring the failed test). Until you wrote this I
+> did not suspect this would be something I needed to pay attention to.
+> Now that you did mention it, I'll obviously go investigate some more, my
+> point is just that in this instance it's not accurate to assume I just
+> didn't run the tests... :)
 
-Do you mean you submitted a patch for usb_control_msg_recv() (because i don't 
-see it on linux-netdev) or i'm reading this all wrong?
+Ignoring failures is the same as not running them.
+I expect all developers to confirm that they see "0 FAILED" before
+sending any patches.
 
+>
+> > I think I will just start marking patches as changes-requested when I s=
+ee that
+> > they break tests without replying and without reviewing.
+> > Please respect reviewer's time.
+>
+> That is completely fine if the tests are working in the first place. And
+> even when they're not (like in this case), pointing it out is fine, and
+> I'll obviously go investigate. But please at least reply to the email,
+> not all of us watch patchwork regularly.
 
-		Petko
+Please see Documentation/bpf/bpf_devel_QA.rst.
+patchwork status is the way we communicate the intent.
+If the patch is not in the queue it won't be acted upon.
