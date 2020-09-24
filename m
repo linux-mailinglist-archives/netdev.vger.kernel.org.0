@@ -2,140 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAD632767D6
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 06:27:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 267852767E8
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 06:36:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726799AbgIXE1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 00:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726466AbgIXE1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 00:27:39 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492E1C0613CE;
-        Wed, 23 Sep 2020 21:27:39 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id bw23so973840pjb.2;
-        Wed, 23 Sep 2020 21:27:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pdfEazDp+agLl7HQcta1riwD62sJSmywvu4uw6QPifc=;
-        b=vDywTJgUzAM4gacg69P9qMa3Lymmb4fe5DrEizJtsUJVYlT8QQNPvbpiWHTNEH+zW6
-         u59NbPUCS+cBPInRLuoziYiwxOSvu/HLf3K5P7WfbWryRPZqL5FiG6C1xs0w7pd+x9s0
-         No6r1X19NoUDlRBPyLytPjsziggUnBg/x0C0ePiUwZIEyRdLuraFoSSrm7xrJsef0rZJ
-         sJ8LfvkbHuBOhjTvhIaS9+V+SWFcxZ20w0yCjqUWmXVQhQGwckp6fxSK28OtT8GUYekz
-         Fh3KgAu7cpIRCJLD0+wxPDXHUQgp9aW0+xOCu64Zz4GgplA6ZSr9/X2lLsvuhyG6llct
-         oShg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pdfEazDp+agLl7HQcta1riwD62sJSmywvu4uw6QPifc=;
-        b=hhqceZlYPsBNI+gcpaTbf/n/pCZDcmWMWhkWknU2lXHPNhJrAQTgGOm1Mv+iGYcHqd
-         dqgEJmC7j3aHG/j+62H0MPkurEi8yVpy9SFGlYt8OnA4f8/yglpiDkOCT7JIVYA1kiFl
-         n9hprtr/XF1RNhE8F+9h/Jwte/IfzSlyLLurRqldQYlNH1cwektyC7IFvR7iSQjThHdj
-         rZEbWakLFpImsrmNGKPnKfjMta0PuZE129BE4u4gOdRpaQs9fXVSevsQlCMhKsHJKEB/
-         EO2m8Lhj9Znd6MBDOrqC87V1YUJvvc2tSMflUY6ZinuPNHUlSQBt6C1qo9r92kvXCCra
-         pfTQ==
-X-Gm-Message-State: AOAM532sBHTuions2B4FQYCxzlrCNITDmgiNuxHlz3U6wIkeryqixa83
-        Tk+MYVJ6lbp38ETiRfpLWXU=
-X-Google-Smtp-Source: ABdhPJxmsk1ZywZgo4jXmVQxoMddIp1q0672UrCFNgKLDLo+3mJYSgRtqsaoNYI0itYRGoigIqsDeQ==
-X-Received: by 2002:a17:90a:d315:: with SMTP id p21mr2382182pju.88.1600921658742;
-        Wed, 23 Sep 2020 21:27:38 -0700 (PDT)
-Received: from [10.230.28.160] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u14sm1121112pfm.80.2020.09.23.21.27.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Sep 2020 21:27:38 -0700 (PDT)
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "nikolay@nvidia.com" <nikolay@nvidia.com>
-References: <20200923214038.3671566-1-f.fainelli@gmail.com>
- <20200923214038.3671566-2-f.fainelli@gmail.com>
- <20200923214852.x2z5gb6pzaphpfvv@skbuf>
- <e5f1d482-1b4f-20da-a55b-a953bf52ce8c@gmail.com>
- <20200923225802.vjwwjmw7mh2ru3so@skbuf>
- <a573b81e-d4cc-98ad-31a8-beb37eade1f3@gmail.com>
- <20200923230821.s4v4xda732ah3cxy@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next v3 1/2] net: dsa: untag the bridge pvid from rx
- skbs
-Message-ID: <623b6091-aa87-dc1b-e3ed-d5d22000ccba@gmail.com>
-Date:   Wed, 23 Sep 2020 21:27:36 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.2
+        id S1726685AbgIXEgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 00:36:04 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:48908 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726466AbgIXEgE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Sep 2020 00:36:04 -0400
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1kLIz6-000260-1l; Thu, 24 Sep 2020 14:35:57 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 24 Sep 2020 14:35:55 +1000
+Date:   Thu, 24 Sep 2020 14:35:55 +1000
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     syzbot <syzbot+c32502fd255cb3a44048@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, steffen.klassert@secunet.com,
+        syzkaller-bugs@googlegroups.com,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
+Subject: Re: possible deadlock in xfrm_policy_delete
+Message-ID: <20200924043554.GA9443@gondor.apana.org.au>
+References: <00000000000056c1dc05afc47ddb@google.com>
 MIME-Version: 1.0
-In-Reply-To: <20200923230821.s4v4xda732ah3cxy@skbuf>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <00000000000056c1dc05afc47ddb@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/23/2020 4:08 PM, Vladimir Oltean wrote:
-> On Wed, Sep 23, 2020 at 03:59:46PM -0700, Florian Fainelli wrote:
->> On 9/23/20 3:58 PM, Vladimir Oltean wrote:
->>> On Wed, Sep 23, 2020 at 03:54:59PM -0700, Florian Fainelli wrote:
->>>> Not having much luck with using  __vlan_find_dev_deep_rcu() for a reason
->>>> I don't understand we trip over the proto value being neither of the two
->>>> support Ethertype and hit the BUG().
->>>>
->>>> +       upper_dev = __vlan_find_dev_deep_rcu(br, htons(proto), vid);
->>>> +       if (upper_dev)
->>>> +               return skb;
->>>>
->>>> Any ideas?
->>>
->>> Damn...
->>> Yes, of course, the skb->protocol is still ETH_P_XDSA which is where
->>> eth_type_trans() on the master left it.
->>
->> proto was obtained from br_vlan_get_proto() a few lines above, and
->> br_vlan_get_proto() just returns br->vlan_proto which defaults to
->> htons(ETH_P_8021Q) from br_vlan_init().
->>
->> This is not skb->protocol that we are looking at AFAICT.
+On Sun, Sep 20, 2020 at 01:22:14PM -0700, syzbot wrote:
+> Hello,
 > 
-> Ok, my mistake. So what is the value of proto in vlan_proto_idx when it
-> fails? To me, the call path looks pretty pass-through for vlan_proto.
+> syzbot found the following issue on:
+> 
+> HEAD commit:    5fa35f24 Add linux-next specific files for 20200916
+> git tree:       linux-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1122e2d9900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=6bdb7e39caf48f53
+> dashboard link: https://syzkaller.appspot.com/bug?extid=c32502fd255cb3a44048
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+c32502fd255cb3a44048@syzkaller.appspotmail.com
+> 
+> =====================================================
+> WARNING: SOFTIRQ-safe -> SOFTIRQ-unsafe lock order detected
+> 5.9.0-rc5-next-20200916-syzkaller #0 Not tainted
+> -----------------------------------------------------
+> syz-executor.1/13775 [HC0[0]:SC0[4]:HE1:SE0] is trying to acquire:
+> ffff88805ee15a58 (&net->xfrm.xfrm_policy_lock){+...}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:359 [inline]
+> ffff88805ee15a58 (&net->xfrm.xfrm_policy_lock){+...}-{2:2}, at: xfrm_policy_delete+0x3a/0x90 net/xfrm/xfrm_policy.c:2236
+> 
+> and this task is already holding:
+> ffff8880a811b1e0 (k-slock-AF_INET6){+.-.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
+> ffff8880a811b1e0 (k-slock-AF_INET6){+.-.}-{2:2}, at: tcp_close+0x6e3/0x1200 net/ipv4/tcp.c:2503
+> which would create a new lock dependency:
+>  (k-slock-AF_INET6){+.-.}-{2:2} -> (&net->xfrm.xfrm_policy_lock){+...}-{2:2}
+> 
+> but this new dependency connects a SOFTIRQ-irq-safe lock:
+>  (k-slock-AF_INET6){+.-.}-{2:2}
+> 
+> ... which became SOFTIRQ-irq-safe at:
+>   lock_acquire+0x1f2/0xaa0 kernel/locking/lockdep.c:5398
+>   __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+>   _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+>   spin_lock include/linux/spinlock.h:354 [inline]
+>   sctp_rcv+0xd96/0x2d50 net/sctp/input.c:231
 
-At the time we crash the proto value is indeed ETH_P_XDSA, but it is not 
-because of the __vlan_find_dev_deep_rcu() call as I was mislead by the 
-traces I was looking it (on ARMv7 the LR was pointing not where I was 
-expecting it to), it is because of the following call trace:
+What's going on with all these bogus lockdep reports?
 
-netif_receive_skb_list_internal
-   -> __netif_receive_skb_list_core
-     -> __netif_receive_skb_core
-       -> vlan_do_receive()
+These are two completely different locks, one is for TCP and the
+other is for SCTP.  Why is lockdep suddenly beoming confused about
+this?
 
-That function does use skb->vlan_proto to determine the VLAN group, at 
-that point we have not set it but we did inherit skb->protocol instead 
-which is ETH_P_XDSA.
+FWIW this flood of bogus reports started on 16/Sep.
 
-The following does work though, tested with both br0 and a br0.1 upper:
-
-+       upper_dev = __vlan_find_dev_deep_rcu(br, htons(proto), vid);
-+       if (upper_dev) {
-+               skb->vlan_proto = vlan_dev_vlan_proto(upper_dev);
-+               return skb;
-         }
-
-I should have re-tested v2 and v3 with a bridge upper but I did not 
-otherwise I would have caught that. If that sounds acceptable to you as 
-well, I will submit that tomorrow.
-
-Let me know what you think about the 802.1Q upper of a physical switch 
-port in the other email.
+Cheers,
 -- 
-Florian
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
