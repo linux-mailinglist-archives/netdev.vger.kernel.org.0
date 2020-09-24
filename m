@@ -2,131 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07685276A20
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 09:11:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D980276A54
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 09:14:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727115AbgIXHLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 03:11:25 -0400
-Received: from mickerik.phytec.de ([195.145.39.210]:55128 "EHLO
-        mickerik.phytec.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727089AbgIXHLQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 03:11:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; d=phytec.de; s=a1; c=relaxed/simple;
-        q=dns/txt; i=@phytec.de; t=1600931474; x=1603523474;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=OMthT7YUyFnK+E3+Gi8XWgeSHho8uppt/CoxlwcYZxA=;
-        b=CYXmttNUWPi/coMUHaDLYOJfNlI2v9DmehSyge3T8euQVPHCMQW4w/dcoOR+Fcad
-        uAyHtxQuIME+Npmv7D8g/GzdyK9QjbqQN6FIpFOSxpET5AY6LRW1TCxleGX9w88H
-        FhdOaT84sDScJ5JxwPbG2lk4foU5cIstlH/yC6oeirw=;
-X-AuditID: c39127d2-253ff70000001c25-ef-5f6c469251b7
-Received: from idefix.phytec.de (Unknown_Domain [172.16.0.10])
-        by mickerik.phytec.de (PHYTEC Mail Gateway) with SMTP id 00.80.07205.2964C6F5; Thu, 24 Sep 2020 09:11:14 +0200 (CEST)
-Received: from [172.16.23.108] ([172.16.23.108])
-          by idefix.phytec.de (IBM Domino Release 9.0.1FP7)
-          with ESMTP id 2020092409111413-487872 ;
-          Thu, 24 Sep 2020 09:11:14 +0200 
-Subject: Re: [EXT] Re: [PATCH] net: fec: Keep device numbering consistent with
- datasheet
-To:     Andy Duan <fugang.duan@nxp.com>,
-        David Miller <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "c.hemp@phytec.de" <C.Hemp@phytec.de>
-References: <20200923142528.303730-1-s.riedmueller@phytec.de>
- <20200923.133147.842604978902817779.davem@davemloft.net>
- <AM8PR04MB73153F8A9E3A4DB0F7AA8003FF390@AM8PR04MB7315.eurprd04.prod.outlook.com>
-From:   =?UTF-8?Q?Stefan_Riedm=c3=bcller?= <s.riedmueller@phytec.de>
-Message-ID: <6a4e3e6e-4371-f0ad-4150-4fffc0739901@phytec.de>
-Date:   Thu, 24 Sep 2020 09:11:14 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727145AbgIXHOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 03:14:40 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:36564 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726929AbgIXHOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 03:14:39 -0400
+Received: by mail-ot1-f65.google.com with SMTP id 60so2261102otw.3;
+        Thu, 24 Sep 2020 00:14:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SOTk4Z9rO9P6kIOtsBeNWrY1r58eD/VU9uBVBOrzix4=;
+        b=rnp1aBsLoLM5nT0MqXCQsyGpriZLgRyQvLqyp3ZDecu+hL/g9klGT52W9ElXRGsnta
+         kibba+jvOmUwwnOVNAPcPnW909gl91b2opaLMt/FhFJoFi7PCyLpsqULz//Yf0+L4IEC
+         C27bGwuVF+JlzvIDf4rxcEZbdjg1y+IGBL7hCzxw5cRTtXQd6laUzzz6XZjeKtguXYtm
+         KFQHiIrL3cQQ5KA8cJ05CndsBGYNdu+yjU9xAv0rh6T7LSRkWecIZ9pK0fQa+ZLUJ5no
+         Q4IBwWZchMczN9PDLs930k2v7+E+IkO0I13qihSSCPlZKwYYm0xzyQeS8aCReUGLikUY
+         mG1g==
+X-Gm-Message-State: AOAM530eNZC7iKTxsHwhMRIY/mLpmS6lFkbxX2H3Hn/cJ2AYNA251Ra1
+        MsOh/eCE0UB7cilyWSzB0ebBazA2CrJ2n6wLJww=
+X-Google-Smtp-Source: ABdhPJwMDvciWihRneO23XLKC32PiddZkEgi4IuEEkGy7I0hvtGdo46FZO/RXon3HQ571YDnqIV4IZvedG6MU6A9iGA=
+X-Received: by 2002:a05:6830:1008:: with SMTP id a8mr2046599otp.107.1600931678828;
+ Thu, 24 Sep 2020 00:14:38 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <AM8PR04MB73153F8A9E3A4DB0F7AA8003FF390@AM8PR04MB7315.eurprd04.prod.outlook.com>
-X-MIMETrack: Itemize by SMTP Server on Idefix/Phytec(Release 9.0.1FP7|August  17, 2016) at
- 24.09.2020 09:11:14,
-        Serialize by Router on Idefix/Phytec(Release 9.0.1FP7|August  17, 2016) at
- 24.09.2020 09:11:14,
-        Serialize complete at 24.09.2020 09:11:14
-X-TNEFEvaluated: 1
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrELMWRmVeSWpSXmKPExsWyRoCBS3eSW068wb2rQhbn7x5itphzvoXF
-        YuXzu+wWF7b1sVpsenyN1eLyrjlsFscWiDmwe2xZeZPJY9OqTjaPzUvqPXbu+MzksfHdDiaP
-        z5vkAtiiuGxSUnMyy1KL9O0SuDKOT9/BWnCNr+Jzv28D4wXuLkZODgkBE4kfD34wdjFycQgJ
-        bGOUaPizkwnCOcMo0bpxBwtIlbBAlMTiE5OYQWwRgVSJlyvWgsWZBfqZJNb0qUM0nGaUmH37
-        HTtIgk3ASWLx+Q42EJtXwEZiyvcnYDaLgKpEw8I/QIM4OEQFIiV27rCEKBGUODnzCdhMToFY
-        iWldH8AukhBoZJJobd/ICHGqkMTpxWeZIRbLS2x/OwfKNpOYt/khlC0ucevJfKYJjEKzkMyd
-        haRlFpKWWUhaFjCyrGIUys1Mzk4tyszWK8ioLElN1ktJ3cQIjJfDE9Uv7WDsm+NxiJGJg/EQ
-        owQHs5II7w217Hgh3pTEyqrUovz4otKc1OJDjNIcLErivBt4S8KEBNITS1KzU1MLUotgskwc
-        nFINjIvE7np8tbjgeOHIqYdahzm3zLV0KXdRdspY5jszyUY5rfjK5ocTahM8DmvP5uGd5/Xb
-        bJuAb9jSvYYdhxNXBU5r2pJ5qu3DtmDhQIMv3/yPdy3/uWbxV4UOef7ll65dOvp+/2+dZ6WM
-        PgauE4/vO5z1tliz78DmD+ylfKHmVzoCT/69nvb70kElluKMREMt5qLiRAC1AbhWhQIAAA==
+References: <20200922072931.2148-1-geert+renesas@glider.be> <20200923.174004.2129776473634492661.davem@davemloft.net>
+In-Reply-To: <20200923.174004.2129776473634492661.davem@davemloft.net>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 24 Sep 2020 09:14:27 +0200
+Message-ID: <CAMuHMdU+2KXZ86f_PK8v2Kr08XsECp-YH586aW5WCDpkq07K-g@mail.gmail.com>
+Subject: Re: [PATCH net] Revert "ravb: Fixed to be able to unload modules"
+To:     David Miller <davem@davemloft.net>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yusuke Ashiduka <ashiduka@fujitsu.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andy, David and Andrew,
+Hi David,
 
-first of all, thanks for your review. I really appreciate it!
+On Thu, Sep 24, 2020 at 2:40 AM David Miller <davem@davemloft.net> wrote:
+> From: Geert Uytterhoeven <geert+renesas@glider.be>
+> Date: Tue, 22 Sep 2020 09:29:31 +0200
+>
+> > This reverts commit 1838d6c62f57836639bd3d83e7855e0ee4f6defc.
+> >
+> > This commit moved the ravb_mdio_init() call (and thus the
+> > of_mdiobus_register() call) from the ravb_probe() to the ravb_open()
+> > call.  This causes a regression during system resume (s2idle/s2ram), as
+> > new PHY devices cannot be bound while suspended.
+>  ...
+> >
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > Cc: stable@vger.kernel.org
+>
+> I noticed this too late, but please don't CC: stable on networking
+> patches.  We have our own workflow as per the netdev FAQ.
 
-On 24.09.20 08:36, Andy Duan wrote:
-> From: David Miller <davem@davemloft.net> Sent: Thursday, September 24, 2020 4:32 AM
->> From: Stefan Riedmueller <s.riedmueller@phytec.de>
->> Date: Wed, 23 Sep 2020 16:25:28 +0200
->>
->>> From: Christian Hemp <c.hemp@phytec.de>
->>>
->>> Make use of device tree alias for device enumeration to keep the
->>> device order consistent with the naming in the datasheet.
->>>
->>> Otherwise for the i.MX 6UL/ULL the ENET1 interface is enumerated as
->>> eth1 and ENET2 as eth0.
->>>
->>> Signed-off-by: Christian Hemp <c.hemp@phytec.de>
->>> Signed-off-by: Stefan Riedmueller <s.riedmueller@phytec.de>
->>
->> Device naming and ordering for networking devices was never, ever,
->> guaranteed.
->>
->> Use udev or similar.
->>
->>> @@ -3691,6 +3692,10 @@ fec_probe(struct platform_device *pdev)
->>>
->>>        ndev->max_mtu = PKT_MAXBUF_SIZE - ETH_HLEN - ETH_FCS_LEN;
->>>
->>> +     eth_id = of_alias_get_id(pdev->dev.of_node, "ethernet");
->>> +     if (eth_id >= 0)
->>> +             sprintf(ndev->name, "eth%d", eth_id);
->>
->> You can't ever just write into ndev->name, what if another networking device is
->> already using that name?
->>
->> This change is incorrect on many levels.
-> 
-> David is correct.
-> 
-> For example, imx8DXL has ethernet0 is EQOS TSN, ethernet1 is FEC.
-> EQOS TSN is andother driver and is registered early, the dev->name is eth0.
-> So the patch will bring conflict in such case.
+OK, will try to remember.
+I wanted to give a heads-up to stable that they've backported early a
+patch which turned out to have issues.
 
-I was not aware of that conflict, but now that you mention it it makes total 
-sense.
+> I've applied this but the inability to remove a module is an
+> extremely serious bug and should be fixed properly.
 
-I wanted to make life a little easier for myself but underestimated the 
-global context. I will try to find a solution with udev or something similar.
+Sure. As you stated in
+https://lore.kernel.org/linux-renesas-soc/20200820.165244.540878641387937530.davem@davemloft.net/
+that will need some rework in the MDIO subsystem...
 
-So please drop this patch and sorry for the noise.
+Thanks!
 
-Stefan
+Gr{oetje,eeting}s,
 
-> 
-> Andy
-> 
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
