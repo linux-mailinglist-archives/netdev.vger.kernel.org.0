@@ -2,198 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A07D1277B7F
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 00:07:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C15F277B84
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 00:12:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726702AbgIXWHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 18:07:40 -0400
-Received: from mga06.intel.com ([134.134.136.31]:46750 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726280AbgIXWHk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Sep 2020 18:07:40 -0400
-IronPort-SDR: V8MR3WtFMFxN5oYu6Oa1IKNnBVbc6LkhcEyIcmYKHYI6B9NY2dV+uXN8H8b39tab4X8lf3tUJS
- hcgJS5Ozkvng==
-X-IronPort-AV: E=McAfee;i="6000,8403,9754"; a="222953222"
-X-IronPort-AV: E=Sophos;i="5.77,299,1596524400"; 
-   d="scan'208";a="222953222"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2020 15:07:39 -0700
-IronPort-SDR: pv/hAisJv4x08MoK2fEGrqHKsRSEz/rnBUJiPRqXpuXzsIhfAdW4NfCGOk8ZGeNlkkMYcF1kp8
- jZrjfALbf4Ig==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,299,1596524400"; 
-   d="scan'208";a="339229731"
-Received: from bpujari-bxdsw.sc.intel.com ([10.232.14.242])
-  by orsmga008.jf.intel.com with ESMTP; 24 Sep 2020 15:07:38 -0700
-From:   bimmy.pujari@intel.com
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, mchehab@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, maze@google.com,
-        bimmy.pujari@intel.com, ashkan.nikravesh@intel.com
-Subject: [PATCH bpf-next v5] bpf: Add bpf_ktime_get_real_ns
-Date:   Thu, 24 Sep 2020 15:07:36 -0700
-Message-Id: <20200924220736.23002-1-bimmy.pujari@intel.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726637AbgIXWME (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 18:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726205AbgIXWMD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 18:12:03 -0400
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B258C0613CE;
+        Thu, 24 Sep 2020 15:12:03 -0700 (PDT)
+Received: by mail-ot1-x343.google.com with SMTP id s66so454429otb.2;
+        Thu, 24 Sep 2020 15:12:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=o5cO6tbzjzTN48Ge74/ijT3b4ZdZsLxt0NyWmKNGPIg=;
+        b=J+/PBBVyu+YBMOlpeIJ5Mu2t+IeKKBEq78c6OWQFjzsGWQ6HwAR0Lys0oI/a3V0Vhc
+         WS/LZ/3JEFvYnYsvMoqYWiFRtO85bi+gmMR4jc4zlx1IWBjLCRDoiuJMf3Sd10rzdC8m
+         kI5ZMlFUWIVbn33jwmVDj6tEOY8Led6o1UgLweMU5LjG9R3ifJ+ccPLZBJQuovDtA9WF
+         JzTCwyAI4vYU61sGmn/fn9l+PYAxIv63bioS3b0rexxDHl18fJcqJJTfbpC7vVk+mjgE
+         1f7my9vSnefKTplyNBg40G7obTrNgNfulEJbW59mvSXqPF8WPnwnGUGUSwM9BEWTz04i
+         BRqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=o5cO6tbzjzTN48Ge74/ijT3b4ZdZsLxt0NyWmKNGPIg=;
+        b=YjrZnBst2WEKCf1LCSfH3Qo54y9QN3gU0PchteJXq6+OaPKv0CZrRoQ82rL0XHibd/
+         EYXTyNcDSJK+CSLQV/RJrP+5RTZi+yGsiI3tTK+YQarhSg69hndFPMkHgHfa+u0CD8j3
+         e1IlkYUm8wD9TLuZvmcTSa/988imv3qIjTlEgbGvCqm1R2tsocpQosUxaWEqXTc8yhud
+         5Z7HUY8vOwW8N/xLGZIKmmv2ZYSeCsxSy99Y3Q+hEppU+jYGLeCQ8fNW7AqdTaAe3aPJ
+         tH2JLFYwyyHKir1HwQqJRflYbdcueIu6mHsSzua2l5gkYZj1BRzPxr8T2gdqK0qLVX32
+         XPOw==
+X-Gm-Message-State: AOAM530wJvekygltdH8CrETpX+OjB1+XXzLpkMjf3CJOCe2Xd83g1Ws/
+        Wde5HHIVlCdcL/0qQNt98AzePVg2PuOR6A==
+X-Google-Smtp-Source: ABdhPJxVpWUfNHO2KfStJKiq5O1fGn2RUdONBQKFBeqra67vtglY5H69w9EzjvhCZijZo1CPks20jg==
+X-Received: by 2002:a9d:5d2:: with SMTP id 76mr808973otd.99.1600985522785;
+        Thu, 24 Sep 2020 15:12:02 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:f921:c3fe:6d94:b608])
+        by smtp.googlemail.com with ESMTPSA id c19sm194948ooq.35.2020.09.24.15.12.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Sep 2020 15:12:02 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 3/6] bpf: add redirect_neigh helper as redirect
+ drop-in
+To:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org
+Cc:     john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <cover.1600967205.git.daniel@iogearbox.net>
+ <721fd3f8d5cf55169561e59fdec5fad2e0bf6115.1600967205.git.daniel@iogearbox.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <09aedc04-ee19-e72d-9a8d-aa4be7551a53@gmail.com>
+Date:   Thu, 24 Sep 2020 16:12:01 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
+MIME-Version: 1.0
+In-Reply-To: <721fd3f8d5cf55169561e59fdec5fad2e0bf6115.1600967205.git.daniel@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bimmy Pujari <bimmy.pujari@intel.com>
+On 9/24/20 12:21 PM, Daniel Borkmann wrote:
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 0f913755bcba..19caa2fc21e8 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -2160,6 +2160,205 @@ static int __bpf_redirect(struct sk_buff *skb, struct net_device *dev,
+>  		return __bpf_redirect_no_mac(skb, dev, flags);
+>  }
+>  
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb)
+> +{
+> +	struct dst_entry *dst = skb_dst(skb);
+> +	struct net_device *dev = dst->dev;
+> +	const struct in6_addr *nexthop;
+> +	struct neighbour *neigh;
+> +
+> +	if (dev_xmit_recursion())
+> +		goto out_rec;
+> +	skb->dev = dev;
+> +	rcu_read_lock_bh();
+> +	nexthop = rt6_nexthop((struct rt6_info *)dst, &ipv6_hdr(skb)->daddr);
+> +	neigh = __ipv6_neigh_lookup_noref_stub(dev, nexthop);
+> +	if (unlikely(!neigh))
+> +		neigh = __neigh_create(ipv6_stub->nd_tbl, nexthop, dev, false);
 
-The existing bpf helper functions to get timestamp return the time
-elapsed since system boot. This timestamp is not particularly useful
-where epoch timestamp is required or more than one server is involved
-and time sync is required. Instead, you want to use CLOCK_REALTIME,
-which provides epoch timestamp. Hence adding a new helper function
-bfp_ktime_get_real_ns() based around CLOCK_REALTIME.
+the last 3 lines can be replaced with ip_neigh_gw6.
 
-Signed-off-by: Ashkan Nikravesh <ashkan.nikravesh@intel.com>
-Signed-off-by: Bimmy Pujari <bimmy.pujari@intel.com>
----
- drivers/media/rc/bpf-lirc.c    |  2 ++
- include/linux/bpf.h            |  1 +
- include/uapi/linux/bpf.h       |  8 ++++++++
- kernel/bpf/core.c              |  1 +
- kernel/bpf/helpers.c           | 13 +++++++++++++
- kernel/trace/bpf_trace.c       |  2 ++
- tools/include/uapi/linux/bpf.h |  8 ++++++++
- 7 files changed, 35 insertions(+)
+> +	if (likely(!IS_ERR(neigh))) {
+> +		int ret;
+> +
+> +		sock_confirm_neigh(skb, neigh);
+> +		dev_xmit_recursion_inc();
+> +		ret = neigh_output(neigh, skb, false);
+> +		dev_xmit_recursion_dec();
+> +		rcu_read_unlock_bh();
+> +		return ret;
+> +	}
+> +	rcu_read_unlock_bh();
+> +	IP6_INC_STATS(dev_net(dst->dev),
+> +		      ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
+> +out_drop:
+> +	kfree_skb(skb);
+> +	return -EINVAL;
+> +out_rec:
+> +	net_crit_ratelimited("bpf: recursion limit reached on datapath, buggy bpf program?\n");
+> +	goto out_drop;
+> +}
+> +
 
-diff --git a/drivers/media/rc/bpf-lirc.c b/drivers/media/rc/bpf-lirc.c
-index 3fe3edd80876..fe0fd07a473f 100644
---- a/drivers/media/rc/bpf-lirc.c
-+++ b/drivers/media/rc/bpf-lirc.c
-@@ -105,6 +105,8 @@ lirc_mode2_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_ktime_get_ns_proto;
- 	case BPF_FUNC_ktime_get_boot_ns:
- 		return &bpf_ktime_get_boot_ns_proto;
-+	case BPF_FUNC_ktime_get_real_ns:
-+		return &bpf_ktime_get_real_ns_proto;
- 	case BPF_FUNC_tail_call:
- 		return &bpf_tail_call_proto;
- 	case BPF_FUNC_get_prandom_u32:
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index fc5c901c7542..18c4fdce65c8 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1757,6 +1757,7 @@ extern const struct bpf_func_proto bpf_get_numa_node_id_proto;
- extern const struct bpf_func_proto bpf_tail_call_proto;
- extern const struct bpf_func_proto bpf_ktime_get_ns_proto;
- extern const struct bpf_func_proto bpf_ktime_get_boot_ns_proto;
-+extern const struct bpf_func_proto bpf_ktime_get_real_ns_proto;
- extern const struct bpf_func_proto bpf_get_current_pid_tgid_proto;
- extern const struct bpf_func_proto bpf_get_current_uid_gid_proto;
- extern const struct bpf_func_proto bpf_get_current_comm_proto;
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index a22812561064..198e69a6508d 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3586,6 +3586,13 @@ union bpf_attr {
-  * 		the data in *dst*. This is a wrapper of **copy_from_user**\ ().
-  * 	Return
-  * 		0 on success, or a negative error in case of failure.
-+ *
-+ * u64 bpf_ktime_get_real_ns(void)
-+ *	Description
-+ *		Return the real time in nanoseconds.
-+ *		See: **clock_gettime**\ (**CLOCK_REALTIME**)
-+ *	Return
-+ *		Current *ktime*.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3737,6 +3744,7 @@ union bpf_attr {
- 	FN(inode_storage_delete),	\
- 	FN(d_path),			\
- 	FN(copy_from_user),		\
-+	FN(ktime_get_real_ns),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index c4811b139caa..0dbbda9b743b 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2208,6 +2208,7 @@ const struct bpf_func_proto bpf_get_smp_processor_id_proto __weak;
- const struct bpf_func_proto bpf_get_numa_node_id_proto __weak;
- const struct bpf_func_proto bpf_ktime_get_ns_proto __weak;
- const struct bpf_func_proto bpf_ktime_get_boot_ns_proto __weak;
-+const struct bpf_func_proto bpf_ktime_get_real_ns_proto __weak;
- 
- const struct bpf_func_proto bpf_get_current_pid_tgid_proto __weak;
- const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index 5cc7425ee476..300db9269996 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -166,6 +166,17 @@ const struct bpf_func_proto bpf_ktime_get_boot_ns_proto = {
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
- };
-+BPF_CALL_0(bpf_ktime_get_real_ns)
-+{
-+	/* NMI safe access to clock realtime */
-+	return ktime_get_real_fast_ns();
-+}
-+
-+const struct bpf_func_proto bpf_ktime_get_real_ns_proto = {
-+	.func		= bpf_ktime_get_real_ns,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+};
- 
- BPF_CALL_0(bpf_get_current_pid_tgid)
- {
-@@ -657,6 +668,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
- 		return &bpf_ktime_get_ns_proto;
- 	case BPF_FUNC_ktime_get_boot_ns:
- 		return &bpf_ktime_get_boot_ns_proto;
-+	case BPF_FUNC_ktime_get_real_ns:
-+		return &bpf_ktime_get_real_ns_proto;
- 	case BPF_FUNC_ringbuf_output:
- 		return &bpf_ringbuf_output_proto;
- 	case BPF_FUNC_ringbuf_reserve:
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 36508f46a8db..8ea2a0e50041 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1167,6 +1167,8 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_ktime_get_ns_proto;
- 	case BPF_FUNC_ktime_get_boot_ns:
- 		return &bpf_ktime_get_boot_ns_proto;
-+	case BPF_FUNC_ktime_get_real_ns:
-+		return &bpf_ktime_get_real_ns_proto;
- 	case BPF_FUNC_tail_call:
- 		return &bpf_tail_call_proto;
- 	case BPF_FUNC_get_current_pid_tgid:
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index a22812561064..198e69a6508d 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -3586,6 +3586,13 @@ union bpf_attr {
-  * 		the data in *dst*. This is a wrapper of **copy_from_user**\ ().
-  * 	Return
-  * 		0 on success, or a negative error in case of failure.
-+ *
-+ * u64 bpf_ktime_get_real_ns(void)
-+ *	Description
-+ *		Return the real time in nanoseconds.
-+ *		See: **clock_gettime**\ (**CLOCK_REALTIME**)
-+ *	Return
-+ *		Current *ktime*.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3737,6 +3744,7 @@ union bpf_attr {
- 	FN(inode_storage_delete),	\
- 	FN(d_path),			\
- 	FN(copy_from_user),		\
-+	FN(ktime_get_real_ns),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
--- 
-2.17.1
+...
 
+> +
+> +#if IS_ENABLED(CONFIG_INET)
+> +static int bpf_out_neigh_v4(struct net *net, struct sk_buff *skb)
+> +{
+> +	struct dst_entry *dst = skb_dst(skb);
+> +	struct rtable *rt = (struct rtable *)dst;
+
+please use container_of here; I'd like to see the typecasts get removed.
+
+> +	struct net_device *dev = dst->dev;
+> +	u32 hh_len = LL_RESERVED_SPACE(dev);
+> +	struct neighbour *neigh;
+> +	bool is_v6gw = false;
+> +
+> +	if (dev_xmit_recursion())
+> +		goto out_rec;
