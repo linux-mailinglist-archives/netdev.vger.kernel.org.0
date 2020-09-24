@@ -2,95 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 360DF2777FA
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 19:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0468277816
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 19:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728669AbgIXRml (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 13:42:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59560 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726477AbgIXRml (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 13:42:41 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E575C0613CE;
-        Thu, 24 Sep 2020 10:42:41 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id b142so39643ybg.9;
-        Thu, 24 Sep 2020 10:42:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RYnRJZLmHY5BkI28RkDFaACHcPCPE4zBTInCCbWdZOI=;
-        b=iYfVBby4US7BbmDvzdsRy3A30i8CbX4dCDv26Qxu6yZClnmXOC7C5xaVY86iuO/Qjt
-         Jzwzx5G0cm0hwvmmeWIMz+9M8qvhKMooHnta1fyCwneD1yrmhvb00dywlStXVEgbqVyK
-         ISnK8c7Ys3nfgDqp3wVJmEvLf6VD5pMMAR0vQZZv3U9p/Nr61z4dkCwH7w92ua34QZfI
-         eHqfoMt9Sj/13YcN06BxCjDASz5Jib40A3q+7Rf1nogt5jwQZafha+sgSEdrs9Tm+1TS
-         prxzskZsTYeSq1dRH6lrE6EAuDJjbnhP+X559CcZZLS2QRVychLFYvhiZmIMAHI5dmZI
-         3vZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RYnRJZLmHY5BkI28RkDFaACHcPCPE4zBTInCCbWdZOI=;
-        b=dldCFZcRNw46IpDhgVraYMFgxfO0tbzwxN/uxy9N3DrIkhv+EBHOfTe5v6CVf2d5LA
-         QAMg1OphoHCJ1HmZlY+8N1XctaEoG2DNT3Id0w1UTC67STSokjjDnL0mFwHgbx03rArL
-         GX92VecjoPSifm/JZFeHpratAqtG5npfRkX9yJl2O6usgEhO5jsFkFgk83JUmS+D7gMa
-         izIcPcpciU2N/Yav8yau50Q1SX8LW8T3CvKdAMsEcmkurNvx8BWTMa8082gYa1tvC1tr
-         q7N6fbdSKnqBEvLl9spTh9C8haGVxPcs2RdPhvy0MjIk10lAVolRB18SOyXEGIU1lKsU
-         Nixw==
-X-Gm-Message-State: AOAM532iZlhHLHmd7Cenm5e/cw/4tfFCtiVB3P50IrMGF76YWkNhomOx
-        k2/zJfQ2eTVgWBb2tQ7FLzBmESaDhP9BuTFxRcvynVVni8Q=
-X-Google-Smtp-Source: ABdhPJwTzccitMB0XpTfYZxA2KL0qjMuE79D2SeAN+jKBVS3lxI4vndC501/VF34ZlHdN7jLHm0TX0k6BNatwX+8h+A=
-X-Received: by 2002:a25:4446:: with SMTP id r67mr916659yba.459.1600969360304;
- Thu, 24 Sep 2020 10:42:40 -0700 (PDT)
+        id S1728621AbgIXR4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 13:56:19 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:39492 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726915AbgIXR4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 13:56:19 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08OHuH7h005726;
+        Thu, 24 Sep 2020 12:56:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1600970177;
+        bh=4PDDHe8YAddwmsgT2I2nO59jg0/pGqD5FvTJwjbJtIU=;
+        h=From:To:CC:Subject:Date;
+        b=AtMD4OvJdrO55i5RqAi5ibwUw3lQeYAx45VfO6idQBlsCx+Lip1fZAopaV1uxGBva
+         bKnSHgiXixpiry0hqvnEUFAeqnGOY7RFbhC8Ay8xDK7tjzRG4fM9GELX4tLMaeO3/Q
+         GxqCllN7M9d9iKPT71HmA0nMoyfaxV7KodXucOHc=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08OHuHbM054963
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 24 Sep 2020 12:56:17 -0500
+Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 24
+ Sep 2020 12:56:16 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 24 Sep 2020 12:56:16 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08OHuG0c051545;
+        Thu, 24 Sep 2020 12:56:16 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <mkubecek@suse.cz>
+CC:     <netdev@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH ethtool v2 1/2] update UAPI header copies
+Date:   Thu, 24 Sep 2020 12:56:09 -0500
+Message-ID: <20200924175610.22381-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20200924171705.3803628-1-andriin@fb.com> <CAADnVQLtxtMOsuBvt0U_UTLVuX-X__AWuih8t-CuGu67GbZJ_w@mail.gmail.com>
-In-Reply-To: <CAADnVQLtxtMOsuBvt0U_UTLVuX-X__AWuih8t-CuGu67GbZJ_w@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 24 Sep 2020 10:42:29 -0700
-Message-ID: <CAEf4Bza1qPfKjmbhLwZzBtGvg19Q3vps3-F6-nfvQb9vLhg-hA@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: fix XDP program load regression for old kernels
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Nikita Shirokov <tehnerd@tehnerd.com>,
-        Udip Pant <udippant@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 10:34 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Sep 24, 2020 at 10:18 AM Andrii Nakryiko <andriin@fb.com> wrote:
-> >
-> > Fix regression in libbpf, introduced by XDP link change, which causes XDP
-> > programs to fail to be loaded into kernel due to specified BPF_XDP
-> > expected_attach_type. While kernel doesn't enforce expected_attach_type for
-> > BPF_PROG_TYPE_XDP, some old kernels already support XDP program, but they
-> > don't yet recognize expected_attach_type field in bpf_attr, so setting it to
-> > non-zero value causes program load to fail.
-> >
-> > Luckily, libbpf already has a mechanism to deal with such cases, so just make
-> > expected_attach_type optional for XDP programs.
-> >
-> > Reported-by: Nikita Shirokov <tehnerd@tehnerd.com>
-> > Reported-by: Udip Pant <udippant@fb.com>
-> > Fixes: dc8698cac7aa ("libbpf: Add support for BPF XDP link")
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->
-> Applied. Thanks
+Update to kernel commit 55f13311785c
 
-Thanks!
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
+---
+ uapi/linux/ethtool.h         |  2 ++
+ uapi/linux/ethtool_netlink.h | 19 ++++++++++++++++++-
+ 2 files changed, 20 insertions(+), 1 deletion(-)
 
->
-> Looks like libbpf CI needs to add a few old kernels.
+diff --git a/uapi/linux/ethtool.h b/uapi/linux/ethtool.h
+index 847ccd0b1fce..052689bcc90c 100644
+--- a/uapi/linux/ethtool.h
++++ b/uapi/linux/ethtool.h
+@@ -1615,6 +1615,8 @@ enum ethtool_link_mode_bit_indices {
+ 	ETHTOOL_LINK_MODE_400000baseLR4_ER4_FR4_Full_BIT = 87,
+ 	ETHTOOL_LINK_MODE_400000baseDR4_Full_BIT	 = 88,
+ 	ETHTOOL_LINK_MODE_400000baseCR4_Full_BIT	 = 89,
++	ETHTOOL_LINK_MODE_100baseFX_Half_BIT		 = 90,
++	ETHTOOL_LINK_MODE_100baseFX_Full_BIT		 = 91,
+ 	/* must be last entry */
+ 	__ETHTOOL_LINK_MODE_MASK_NBITS
+ };
+diff --git a/uapi/linux/ethtool_netlink.h b/uapi/linux/ethtool_netlink.h
+index cebdb52e6a05..c022883cdb22 100644
+--- a/uapi/linux/ethtool_netlink.h
++++ b/uapi/linux/ethtool_netlink.h
+@@ -79,6 +79,7 @@ enum {
+ 	ETHTOOL_MSG_TSINFO_GET_REPLY,
+ 	ETHTOOL_MSG_CABLE_TEST_NTF,
+ 	ETHTOOL_MSG_CABLE_TEST_TDR_NTF,
++	ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_KERNEL_CNT,
+@@ -91,9 +92,12 @@ enum {
+ #define ETHTOOL_FLAG_COMPACT_BITSETS	(1 << 0)
+ /* provide optional reply for SET or ACT requests */
+ #define ETHTOOL_FLAG_OMIT_REPLY	(1 << 1)
++/* request statistics, if supported by the driver */
++#define ETHTOOL_FLAG_STATS		(1 << 2)
+ 
+ #define ETHTOOL_FLAG_ALL (ETHTOOL_FLAG_COMPACT_BITSETS | \
+-			  ETHTOOL_FLAG_OMIT_REPLY)
++			  ETHTOOL_FLAG_OMIT_REPLY | \
++			  ETHTOOL_FLAG_STATS)
+ 
+ enum {
+ 	ETHTOOL_A_HEADER_UNSPEC,
+@@ -376,12 +380,25 @@ enum {
+ 	ETHTOOL_A_PAUSE_AUTONEG,			/* u8 */
+ 	ETHTOOL_A_PAUSE_RX,				/* u8 */
+ 	ETHTOOL_A_PAUSE_TX,				/* u8 */
++	ETHTOOL_A_PAUSE_STATS,				/* nest - _PAUSE_STAT_* */
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_A_PAUSE_CNT,
+ 	ETHTOOL_A_PAUSE_MAX = (__ETHTOOL_A_PAUSE_CNT - 1)
+ };
+ 
++enum {
++	ETHTOOL_A_PAUSE_STAT_UNSPEC,
++	ETHTOOL_A_PAUSE_STAT_PAD,
++
++	ETHTOOL_A_PAUSE_STAT_TX_FRAMES,
++	ETHTOOL_A_PAUSE_STAT_RX_FRAMES,
++
++	/* add new constants above here */
++	__ETHTOOL_A_PAUSE_STAT_CNT,
++	ETHTOOL_A_PAUSE_STAT_MAX = (__ETHTOOL_A_PAUSE_STAT_CNT - 1)
++};
++
+ /* EEE */
+ 
+ enum {
+-- 
+2.28.0.585.ge1cfff676549
 
-Yeah. We have 4.9 which is very old and only a few selftests can even
-succeed there. Then we jump to 5.5, which is too recent to detect this
-issue. This issue happened on 4.15, would that be a good version to
-stick to? Any opinions?
