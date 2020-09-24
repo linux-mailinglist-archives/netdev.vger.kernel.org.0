@@ -2,144 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FAF5277AA8
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:45:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FE97277AAA
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:45:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726444AbgIXUpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 16:45:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44084 "EHLO mail.kernel.org"
+        id S1726607AbgIXUpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 16:45:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44228 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725208AbgIXUph (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Sep 2020 16:45:37 -0400
-Received: from localhost (52.sub-72-107-123.myvzw.com [72.107.123.52])
+        id S1725208AbgIXUpl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Sep 2020 16:45:41 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A2B72239CF;
-        Thu, 24 Sep 2020 20:45:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9AEEF239EC;
+        Thu, 24 Sep 2020 20:45:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600980337;
-        bh=CSiygoRkkeEiJ5Dg4g8lESgmoDARtWg5wsRqboDJATg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=lbvEvN+hi7Xe6uDbbh0duG3bBFI4mlVC2eLJrkDrq0bm+QX7ibnnVWghVPjb8tcG0
-         YuJ+SGj7QBP8e0C3IlVs85IP5aYMRgjvFPdd5lkXT1H90pXt715BN77X7Al+8maXGt
-         XDHdgpcD74XDD+iMJSb18S06YsjZkz/XA9eYamuE=
-Date:   Thu, 24 Sep 2020 15:45:35 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Nitesh Narayan Lal <nitesh@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
-        jlelli@redhat.com, hch@infradead.org, bhelgaas@google.com,
-        mike.marciniszyn@intel.com, dennis.dalessandro@intel.com,
-        thomas.lendacky@amd.com, jerinj@marvell.com,
-        mathias.nyman@intel.com, jiri@nvidia.com, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org
-Subject: Re: [PATCH v2 4/4] PCI: Limit pci_alloc_irq_vectors as per
- housekeeping CPUs
-Message-ID: <20200924204535.GA2337207@bjorn-Precision-5520>
+        s=default; t=1600980340;
+        bh=TTUD3mp29SDOqlb14S/9NEvYQH7a/ui/4mXy2anRnfI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=za27fgq9EL2F81s27VN+E67BZEFM0jmf/fsli8SQVGUeTOckC5//fHZMVwc4gpUXo
+         YPfOsvmFkOrD20QhJ2SI2pr4I6omX6zfF+E7dQrIW6dS2K8ioWiGEY8CBj9clRBwuR
+         cWl9iW86tNLr/oaweHWYXfCakERLi0FG6jVWKz7A=
+Date:   Thu, 24 Sep 2020 13:45:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next RFC v5 02/15] devlink: Add reload action limit
+ level
+Message-ID: <20200924134538.1b13f6db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <13ff51f8-10d8-df3a-048e-cfd8563dc2de@nvidia.com>
+References: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
+        <1600445211-31078-3-git-send-email-moshe@mellanox.com>
+        <20200923113648.7398276d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <13ff51f8-10d8-df3a-048e-cfd8563dc2de@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200923181126.223766-5-nitesh@redhat.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Possible subject:
-
-  PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
-
-On Wed, Sep 23, 2020 at 02:11:26PM -0400, Nitesh Narayan Lal wrote:
-> This patch limits the pci_alloc_irq_vectors, max_vecs argument that is
-> passed on by the caller based on the housekeeping online CPUs (that are
-> meant to perform managed IRQ jobs).
->
-> A minimum of the max_vecs passed and housekeeping online CPUs is derived
-> to ensure that we don't create excess vectors as that can be problematic
-> specifically in an RT environment. In cases where the min_vecs exceeds the
-> housekeeping online CPUs, max vecs is restricted based on the min_vecs
-> instead. The proposed change is required because for an RT environment
-> unwanted IRQs are moved to the housekeeping CPUs from isolated CPUs to
-> keep the latency overhead to a minimum. If the number of housekeeping CPUs
-> is significantly lower than that of the isolated CPUs we can run into
-> failures while moving these IRQs to housekeeping CPUs due to per CPU
-> vector limit.
-
-Does this capture enough of the log?
-
-  If we have isolated CPUs dedicated for use by real-time tasks, we
-  try to move IRQs to housekeeping CPUs to reduce overhead on the
-  isolated CPUs.
-
-  If we allocate too many IRQ vectors, moving them all to housekeeping
-  CPUs may exceed per-CPU vector limits.
-
-  When we have isolated CPUs, limit the number of vectors allocated by
-  pci_alloc_irq_vectors() to the minimum number required by the
-  driver, or to one per housekeeping CPU if that is larger.
-
-> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
-> ---
->  include/linux/pci.h | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
+On Thu, 24 Sep 2020 22:29:55 +0300 Moshe Shemesh wrote:
+> >> @@ -3964,6 +3965,7 @@ static int mlx4_devlink_reload_down(struct devlink *devlink, bool netns_change,
+> >>   }
+> >>
+> >>   static int mlx4_devlink_reload_up(struct devlink *devlink, enum devlink_reload_action action,
+> >> +                               enum devlink_reload_action_limit_level limit_level,
+> >>                                  struct netlink_ext_ack *extack, unsigned long *actions_performed)
+> >>   {
+> >>        struct mlx4_priv *priv = devlink_priv(devlink);
+> >> @@ -3985,6 +3987,7 @@ static int mlx4_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
+> >>   static const struct devlink_ops mlx4_devlink_ops = {
+> >>        .port_type_set  = mlx4_devlink_port_type_set,
+> >>        .supported_reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
+> >> +     .supported_reload_action_limit_levels = BIT(DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE),  
+> > Please cut down the name lenghts, this is just lazy.
+> >
+> > 'supported_reload_limits' or 'cap_reload_limits' is perfectly
+> > sufficient.
+> >
+> > 'reload_limits' would be even better. Cause what else would it be if
+> > not a capability.  
 > 
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 835530605c0d..cf9ca9410213 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -38,6 +38,7 @@
->  #include <linux/interrupt.h>
->  #include <linux/io.h>
->  #include <linux/resource_ext.h>
-> +#include <linux/sched/isolation.h>
->  #include <uapi/linux/pci.h>
->  
->  #include <linux/pci_ids.h>
-> @@ -1797,6 +1798,20 @@ static inline int
->  pci_alloc_irq_vectors(struct pci_dev *dev, unsigned int min_vecs,
->  		      unsigned int max_vecs, unsigned int flags)
->  {
-> +	unsigned int hk_cpus = hk_num_online_cpus();
-> +
-> +	/*
-> +	 * For a real-time environment, try to be conservative and at max only
-> +	 * ask for the same number of vectors as there are housekeeping online
-> +	 * CPUs. In case, the min_vecs requested exceeds the housekeeping
-> +	 * online CPUs, restrict the max_vecs based on the min_vecs instead.
-> +	 */
-> +	if (hk_cpus != num_online_cpus()) {
-> +		if (min_vecs > hk_cpus)
-> +			max_vecs = min_vecs;
-> +		else
-> +			max_vecs = min_t(int, max_vecs, hk_cpus);
-> +	}
-
-Is the below basically the same?
-
-	/*
-	 * If we have isolated CPUs for use by real-time tasks,
-	 * minimize overhead on those CPUs by moving IRQs to the
-	 * remaining "housekeeping" CPUs.  Limit vector usage to keep
-	 * housekeeping CPUs from running out of IRQ vectors.
-	 */
-	if (housekeeping_cpus < num_online_cpus()) {
-		if (housekeeping_cpus < min_vecs)
-			max_vecs = min_vecs;
-		else if (housekeeping_cpus < max_vecs)
-			max_vecs = housekeeping_cpus;
-	}
-
-My comment isn't quite right because this patch only limits the number
-of vectors; it doesn't actually *move* IRQs to the housekeeping CPUs.
-I don't know where the move happens (or maybe you just avoid assigning
-IRQs to isolated CPUs, and I don't know how that happens either).
-
->  	return pci_alloc_irq_vectors_affinity(dev, min_vecs, max_vecs, flags,
->  					      NULL);
->  }
-> -- 
-> 2.18.2
+> Sounds good.
 > 
+> So instead of supported_reload_actions_limit_levels will have reload_limits.
+> 
+> Instead of supported_reload_actions will have reload_actions, OK ?
+
+Sounds good.
+
+> May also use reload_limit_level instead of reload_action_limit_level 
+> everywhere if its clear enough.
+
+I think reload_limits is clear. I'd also cut down the length of the
+defines / enum names.
+
+> > Besides I don't think drivers should have to fill negative attributes
+> > (that they don't support something). Everyone is always going to
+> > support NONE, since it's "unspecified" / "pick your favorite", right?  
+> 
+> Good point, will remove it.
+> 
+> >>        .reload_down    = mlx4_devlink_reload_down,
+> >>        .reload_up      = mlx4_devlink_reload_up,
+> >>   };
+> >> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+> >> index fdba7ab58a79..0c5d942dcbd5 100644
+> >> --- a/include/uapi/linux/devlink.h
+> >> +++ b/include/uapi/linux/devlink.h
+> >> @@ -289,6 +289,22 @@ enum devlink_reload_action {
+> >>        DEVLINK_RELOAD_ACTION_MAX = __DEVLINK_RELOAD_ACTION_MAX - 1
+> >>   };
+> >>
+> >> +/**
+> >> + * enum devlink_reload_action_limit_level - Reload action limit level.
+> >> + * @DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE: No constrains on action. Action may include
+> >> + *                                          reset or downtime as needed.
+> >> + * @DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET: No reset allowed, no down time allowed,
+> >> + *                                              no link flap and no configuration is lost.
+> >> + */
+> >> +enum devlink_reload_action_limit_level {  
+> > You reserved UNSPEC for actions but not for limit level?  
+> 
+> 
+> Yes, I used LIMIT_LEVEL_NONE = 0 as no limit needed, so I skipped UNSPEC.
+> 
+> Maybe should add UNSPEC and use UNSPEC as no limit needed. But UNSPEC is 
+> kind of invalid.
+
+Yeah, if we have UNSPEC then it should be invalid.
+
+I'm mostly asking for consistency, either have UNSPEC for both actions
+and limits or for neither.
+
+> >> +     DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE,
+> >> +     DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET,
+> >> +
+> >> +     /* Add new reload actions limit level above */
+> >> +     __DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX,
+> >> +     DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX = __DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX - 1
+> >> +};
+> >> +
+> >>   enum devlink_attr {
+> >>        /* don't change the order or add anything between, this is ABI! */
+> >>        DEVLINK_ATTR_UNSPEC,
+> >> @@ -480,6 +496,7 @@ enum devlink_attr {
+> >>
+> >>        DEVLINK_ATTR_RELOAD_ACTION,             /* u8 */
+> >>        DEVLINK_ATTR_RELOAD_ACTIONS_PERFORMED,  /* nested */
+> >> +     DEVLINK_ATTR_RELOAD_ACTION_LIMIT_LEVEL, /* u8 */
+> >>
+> >>        /* add new attributes above here, update the policy in devlink.c */
+> >>
+> >> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> >> index 318ef29f81f2..fee6fcc7dead 100644
+> >> --- a/net/core/devlink.c
+> >> +++ b/net/core/devlink.c
+> >> @@ -462,12 +462,45 @@ static int devlink_nl_put_handle(struct sk_buff *msg, struct devlink *devlink)
+> >>        return 0;
+> >>   }
+> >>
+> >> +struct devlink_reload_combination {
+> >> +     enum devlink_reload_action action;
+> >> +     enum devlink_reload_action_limit_level limit_level;
+> >> +};
+> >> +
+> >> +static const struct devlink_reload_combination devlink_reload_invalid_combinations[] = {
+> >> +     {
+> >> +             /* can't reinitialize driver with no down time */
+> >> +             .action = DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
+> >> +             .limit_level = DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET,
+> >> +     },
+> >> +};
+> >> +
+> >> +static bool
+> >> +devlink_reload_combination_is_invalid(enum devlink_reload_action action,
+> >> +                                   enum devlink_reload_action_limit_level limit_level)
+> >> +{
+> >> +     int i;
+> >> +
+> >> +     for (i = 0 ; i <  ARRAY_SIZE(devlink_reload_invalid_combinations) ; i++)  
+> > Whitespace. Did you checkpatch?  
+> 
+> 
+> Yes, checked it again now, it still pass. I think checkpatch doesn't see 
+> double space.
+
+And the spaces before semicolons? It's sad if checkpatch misses such
+basic stuff :(
+
+> But anyway, I missed it, I will fix.
