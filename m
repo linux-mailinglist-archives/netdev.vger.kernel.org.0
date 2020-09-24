@@ -2,123 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF67B276D84
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 11:32:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF46B276DC9
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 11:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727369AbgIXJbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 05:31:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:33122 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727351AbgIXJbv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 05:31:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600939910;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IivbX2PeE0RzW/9tWIJCPda1plSHGjAQvAPPVLRLJpk=;
-        b=JwtkIEv82m8D5mbXzCLCSNpao7dJkjolNmTiqUaEZ3NWGU/Wh5iTpXwGIKzLvOuFmPPMWF
-        xopS9jnJX80nztXJYYHmS/7Eh0/YUYWnhT3hMctl6orEMMbWDI598J4YTXRvF39oi8Hb+J
-        NrgzOjlZ1uquOYwzQM8/KgVco5Jrgt4=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-484-ZoDXV5MhOqShoYmXojpIJQ-1; Thu, 24 Sep 2020 05:31:48 -0400
-X-MC-Unique: ZoDXV5MhOqShoYmXojpIJQ-1
-Received: by mail-wm1-f72.google.com with SMTP id m19so1005229wmg.6
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 02:31:47 -0700 (PDT)
+        id S1727333AbgIXJsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 05:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727314AbgIXJsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 05:48:14 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FCFC0613CE
+        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 02:48:14 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id k18so2884605wmj.5
+        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 02:48:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=qiZHU813rW8xg+F+YCWBIt/KpRIOcYYppQ2O/7ZYftw=;
+        b=OQ290OLyt539y9R1cpo2NlkpP1DwrY8lN/v3xhoy8ROoHGd25EckJx8GEvnBoIEQ2y
+         uLX8ELe/Um1GMTUBq4s+/hAr460I/ch0hK56TweI49yydg9nJWP3yHBtZWBZvgA906lb
+         AdPi8Kp8muZOMmdqC4GY72+tyB7jVDMTf2tPXJakVu+2f28Gi0GFvDt8tlckVMoat87O
+         p196TuEYtLrDh5Jo1CrNj4T9pvIJPe0dn+6fASYW4mBTClR3B3hyN1LyBgHBcbg9jbrc
+         oNtJcmp2ftQcG4G45A1UYiq/fbsCUO/3tYnHrh1K4jAkoiD/IjcdMyk8AmengbRsjeuh
+         05dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IivbX2PeE0RzW/9tWIJCPda1plSHGjAQvAPPVLRLJpk=;
-        b=E7OO+Z+RZIw/qFPrNwv+kpFbLazxfx+Rj/OLNahd/wnzJuHMcszj11CRnmHzotr8wG
-         xI8Wln8VqcfOzIVkhM6G1u5xf7DRtkI+CksvzmOSPqePKKu7Ptiwzuei/3VDtMqVPnDi
-         Szvz4XMJGCQrQMe+3V8QiC9fb0wZJAxKqGJM1pvLkO5pFKFuIxUPF1M718jvibLziJa9
-         nEE3W9epf52H2/AMceupFB/ng6cjItUSseCOI6w5J3RMYTsVCwPvFHIubLtC7PZq+Wcz
-         WXcoB8MTUQvzvLF6yONyC/euE6qSt0eJRdMMPo0hivlHaMZ8ZfBN0PkJts7Fll5V8vHm
-         xRbw==
-X-Gm-Message-State: AOAM530zUjkVVnmNuwJJ/Z+6OZu6UL83Dmy85Fr3QMdGP++w4iIIUMdk
-        Gg3tCK93L+8jjo/SyT+9FVmTWYGA/xbnW/VppkX7SuU7d+fRxBITVcmgjePwl09vpRO0SyCAoP9
-        BWzWn3EyThSvnQ2nh
-X-Received: by 2002:adf:ec90:: with SMTP id z16mr3884968wrn.145.1600939906694;
-        Thu, 24 Sep 2020 02:31:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz692FbM28SSNAgRM+pmYBV1x3+0U+/VUYbSIXGAG9tNcRIQZ9ScUUpWmMjwo9LJkxBth6P1g==
-X-Received: by 2002:adf:ec90:: with SMTP id z16mr3884952wrn.145.1600939906533;
-        Thu, 24 Sep 2020 02:31:46 -0700 (PDT)
-Received: from redhat.com (bzq-79-179-71-128.red.bezeqint.net. [79.179.71.128])
-        by smtp.gmail.com with ESMTPSA id v17sm3144042wrc.23.2020.09.24.02.31.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Sep 2020 02:31:45 -0700 (PDT)
-Date:   Thu, 24 Sep 2020 05:31:42 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     lulu@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rob.miller@broadcom.com,
-        lingshan.zhu@intel.com, eperezma@redhat.com, hanand@xilinx.com,
-        mhabets@solarflare.com, eli@mellanox.com, amorenoz@redhat.com,
-        maxime.coquelin@redhat.com, stefanha@redhat.com,
-        sgarzare@redhat.com
-Subject: Re: [RFC PATCH 02/24] vhost-vdpa: fix vqs leak in vhost_vdpa_open()
-Message-ID: <20200924053119-mutt-send-email-mst@kernel.org>
-References: <20200924032125.18619-1-jasowang@redhat.com>
- <20200924032125.18619-3-jasowang@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200924032125.18619-3-jasowang@redhat.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=qiZHU813rW8xg+F+YCWBIt/KpRIOcYYppQ2O/7ZYftw=;
+        b=bBlh/GOQh5v0ja67hBdYV8mDavSad11MiNxwKYeNCAFJlNe5NUaud/kkfGdzJoCDS4
+         2jGSBIDBT1v/Iw/E+RokdW6imCgHwVL7NXRNMRTe2v/e535YiWCPZ1lWO2TsAkcXjJV0
+         P7xQ18XcO07C0rBGQ+bBxDc7cBSGREnO33FEJq7lCaLE3HTAlnTjFHRKFWGaYYmuY8br
+         4vuNeFwYOpSWD9E9h0vH4cpdnqn0lDj8DtOnpceObfGKxfH4cxI5MUgFAtNVDHl4ABWl
+         JRQ+vGolPcAdaopcW8GmfVU1WJCEK6D3SUq1DSkSwII2U9q4UUFQiDIan1ZSfSlpTdp9
+         5yMQ==
+X-Gm-Message-State: AOAM5311vA37IQ4OSH6OGFO8SChtkdlWpOBwmVDzmHt9kpmkLeKbk+lm
+        SnX2SRvd5t8OkBxyeEIZ8LH7mw==
+X-Google-Smtp-Source: ABdhPJzKFGbjfvw2rjA/4/do+owLiLDXBFpo9OCustuBGjkOoAf82koymELZrAeZJtcv1jdzih3XPw==
+X-Received: by 2002:a7b:ca42:: with SMTP id m2mr3938931wml.145.1600940892915;
+        Thu, 24 Sep 2020 02:48:12 -0700 (PDT)
+Received: from localhost.localdomain ([88.122.66.28])
+        by smtp.gmail.com with ESMTPSA id c4sm3039859wrp.85.2020.09.24.02.48.12
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 24 Sep 2020 02:48:12 -0700 (PDT)
+From:   Loic Poulain <loic.poulain@linaro.org>
+To:     bjorn.andersson@linaro.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        Loic Poulain <loic.poulain@linaro.org>
+Subject: [PATCH] net: qrtr: Fix port ID for control messages
+Date:   Thu, 24 Sep 2020 11:53:59 +0200
+Message-Id: <1600941239-19435-1-git-send-email-loic.poulain@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 11:21:03AM +0800, Jason Wang wrote:
-> We need to free vqs during the err path after it has been allocated
-> since vhost won't do that for us.
-> 
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
+The port ID for control messages was uncorrectly set with broadcast
+node ID value, causing message to be dropped on remote side since
+not passing packet filtering (cb->dst_port != QRTR_PORT_CTRL).
 
-This is a bugfix too right? I don't see it posted separately ...
+Fixes: d27e77a3de28 ("net: qrtr: Reset the node and port ID of broadcast messages")
+Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+---
+ net/qrtr/qrtr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
->  drivers/vhost/vdpa.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 796fe979f997..9c641274b9f3 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -764,6 +764,12 @@ static void vhost_vdpa_free_domain(struct vhost_vdpa *v)
->  	v->domain = NULL;
->  }
->  
-> +static void vhost_vdpa_cleanup(struct vhost_vdpa *v)
-> +{
-> +	vhost_dev_cleanup(&v->vdev);
-> +	kfree(v->vdev.vqs);
-> +}
-> +
->  static int vhost_vdpa_open(struct inode *inode, struct file *filep)
->  {
->  	struct vhost_vdpa *v;
-> @@ -809,7 +815,7 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
->  	return 0;
->  
->  err_init_iotlb:
-> -	vhost_dev_cleanup(&v->vdev);
-> +	vhost_vdpa_cleanup(v);
->  err:
->  	atomic_dec(&v->opened);
->  	return r;
-> @@ -840,8 +846,7 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
->  	vhost_vdpa_free_domain(v);
->  	vhost_vdpa_config_put(v);
->  	vhost_vdpa_clean_irq(v);
-> -	vhost_dev_cleanup(&v->vdev);
-> -	kfree(v->vdev.vqs);
-> +	vhost_vdpa_cleanup(v);
->  	mutex_unlock(&d->mutex);
->  
->  	atomic_dec(&v->opened);
-> -- 
-> 2.20.1
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index b4c0db0..e09154b 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -348,7 +348,7 @@ static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+ 	hdr->src_port_id = cpu_to_le32(from->sq_port);
+ 	if (to->sq_port == QRTR_PORT_CTRL) {
+ 		hdr->dst_node_id = cpu_to_le32(node->nid);
+-		hdr->dst_port_id = cpu_to_le32(QRTR_NODE_BCAST);
++		hdr->dst_port_id = cpu_to_le32(QRTR_PORT_CTRL);
+ 	} else {
+ 		hdr->dst_node_id = cpu_to_le32(to->sq_node);
+ 		hdr->dst_port_id = cpu_to_le32(to->sq_port);
+-- 
+2.7.4
 
