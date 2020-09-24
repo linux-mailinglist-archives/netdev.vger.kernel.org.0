@@ -2,96 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08DB7277A19
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:22:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DE08277A27
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 22:25:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726458AbgIXUWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 16:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
+        id S1726376AbgIXUZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 16:25:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725208AbgIXUWN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 16:22:13 -0400
+        with ESMTP id S1726037AbgIXUZd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 16:25:33 -0400
 Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF34CC0613CE;
-        Thu, 24 Sep 2020 13:22:13 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id k18so388128ybh.1;
-        Thu, 24 Sep 2020 13:22:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4004EC0613CE;
+        Thu, 24 Sep 2020 13:25:33 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id c17so399259ybe.0;
+        Thu, 24 Sep 2020 13:25:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5wJrUIfsuskPuQFMQCCUj+xN+JyZhp2lIK2HyGhVyUY=;
-        b=dL/WIYLVJbUe/52KTyIKBkxLfKuTK/dUBW7KhstJPiocpZChxzuXbG/u7tIkQDBJcW
-         C3iviQXnJsuDGCTUA9EemXVRGc0K+Ub1/tEFS15lPRzaB1vNdNWtJXs38b3AuM3FUjG5
-         G9hPV49h8IOjnYvlLZemLUNgsKJBbO39d9hD66mQqxd1nv8h0or/Aaok4g87Z1IYEc8x
-         X6WgHLu2V5z7Z3H6MXn6flw2PWn4CPd1SOP1MJNNuxH7FjMPn8RGGm95mRvNnn/tBcap
-         8P2wl/RYAAOFoTWytnhaHhSqXkZJDAy6f7NwU98fzlPVYodkzq8+TAfR0e/sIXGWmn9b
-         8t7Q==
+        bh=iylEi7Ra5waA1AGePpjrrWiu+33+FxmMQwPUwXf82Eo=;
+        b=H87VT+Xf21uO6xFPitD8pIstdQ/Vlexufj5sWS4qQ9Wh33ZtA6mPoCWDOhF3q0BV7w
+         iLRLOiBphrq/B81KEcODLcRh0NwYFKgWLsyPO2Fq5LECWCuLTBEvDnbOGR5bEfqSL4hY
+         qp2xc9+02ntyymZ29TE2Oj4ezgorc+zhS3ZlSiceQfQiURu6+XU+Rg7eJek+/ehsORxC
+         p1AKbbA6VZuRVlbpHRjs8+i+N04CKWNE7wZk8nRU1WdyrMAnZDi3v84L8Fs2Kbyv7cIK
+         fZt2jm5EWixzY3pMvTMT0Lm/xNnBsgs3IM6IXJrr5CfSiAZyAKiDsKy+4Z0PcE4mtYSN
+         /UpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5wJrUIfsuskPuQFMQCCUj+xN+JyZhp2lIK2HyGhVyUY=;
-        b=GXFLLP3OM9WSJTwTwsDdotj9taoI8rw/iZZVp8c/PXsxZYh70+Zen839FfWVj7MsUV
-         d3TeuG/OgTbC4CtJSr9TEW5UuPQMVn36n6loSrApakGrT38LWbmOy6yrGDuctSIa9YSa
-         k1kbSgZva4Mln7EhcYfr8M9Kj9NGy5V3mJaD5Q2gv3eANclWojEiSmEHrDc1Q++yh8/6
-         /9EfYkrydrNOxZVBzhfJursh357ah2aueTvSXJOF+p8rox+m/GT3rUgX841PVUncAXlk
-         SlJmQkafyKHyV7kLfaT29XwdxPVMk2SWApTgWU6ZlO+0x8rHAKSs83Pxz3bhck1Rq9Rl
-         NusQ==
-X-Gm-Message-State: AOAM530fkUgdBA6MQLC+/akUxNNLb4okfRBRqn1PvB2RWOFKuDKOAs/B
-        mHmT6cYgEDbHAMyW0/fWu2WufNXqf6jAzhsXTiI=
-X-Google-Smtp-Source: ABdhPJzrRdstStRLbaQ3WwbDyUTv8ro9BBlbdrsbXuv+M0vI0C0SXjWqUG9IToHW1KjbCjx7DKZRxtfjeWqyJndhfTg=
-X-Received: by 2002:a25:2687:: with SMTP id m129mr698485ybm.425.1600978932997;
- Thu, 24 Sep 2020 13:22:12 -0700 (PDT)
+        bh=iylEi7Ra5waA1AGePpjrrWiu+33+FxmMQwPUwXf82Eo=;
+        b=bzQzF+Zb+2YBAOCLo4DSZ0ooqdp6l5s404FEeHsDtOkZF/0gxohEOxXTQfES0XhVoN
+         Gd5vaFPmSrAr6bBjHXdMYFwe8YXMYFAHyNzpVoRiS/Mkgtx/EClnpP9cJ/clW3iJf5X8
+         fhg/DPODjsJEAav4xKIuBOHpHRomWnC6rB5JKpTOkHCH2QmXA7IYu14hOEYYo02qAPwR
+         yaOUyCuU3lz702IUqJiYrZHd+Ck2KppqO5DpHLoe+CWvjvljMAM0ZO/f+AnyTIrFRIv+
+         XFysOkAcGdJQwKbqPUvZ2FHmxrARWNcXHFxvUtfcK7VRTPzUd5Rxm2LhLL44L0rsJRCV
+         CM1g==
+X-Gm-Message-State: AOAM532r6Om314f157xKM0MzwzSJ81bCH97y9qvgUPMAZb2dpB4oe+ZY
+        OGg1HQOyC9W4QYest1yXANQIGr6bafxMVUDW0jM=
+X-Google-Smtp-Source: ABdhPJz2ROQke/w3oZQ7WRb6R0DBfTw5cw5RzTX6IOa79McU8bMmFnbitC8LkJic+eTwJgvFq+5wLNlc679zOTo25gw=
+X-Received: by 2002:a25:33c4:: with SMTP id z187mr736403ybz.27.1600979132497;
+ Thu, 24 Sep 2020 13:25:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200924022557.16561-1-bimmy.pujari@intel.com> <20200924022557.16561-2-bimmy.pujari@intel.com>
-In-Reply-To: <20200924022557.16561-2-bimmy.pujari@intel.com>
+References: <20200923155436.2117661-1-andriin@fb.com> <20200923155436.2117661-3-andriin@fb.com>
+ <5f6cb9778cbd7_4939c208b8@john-XPS-13-9370.notmuch>
+In-Reply-To: <5f6cb9778cbd7_4939c208b8@john-XPS-13-9370.notmuch>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 24 Sep 2020 13:22:02 -0700
-Message-ID: <CAEf4BzZ7Srd2k5a_t6JKW9_=cUQVqvxXhd+4rvbpMHKRJAQbiw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/2] selftests/bpf: Verifying real time helper function
-To:     "Pujari, Bimmy" <bimmy.pujari@intel.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        mchehab@kernel.org, Alexei Starovoitov <ast@kernel.org>,
+Date:   Thu, 24 Sep 2020 13:25:21 -0700
+Message-ID: <CAEf4BzYV+f2JXJDMvbNL0f6GQDPMaOOmsM7M=pO=f4mF2RfUig@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/9] libbpf: remove assumption of single
+ contiguous memory for BTF data
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        "Nikravesh, Ashkan" <ashkan.nikravesh@intel.com>
+        Kernel Team <kernel-team@fb.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 23, 2020 at 7:26 PM <bimmy.pujari@intel.com> wrote:
+On Thu, Sep 24, 2020 at 8:21 AM John Fastabend <john.fastabend@gmail.com> wrote:
 >
-> From: Bimmy Pujari <bimmy.pujari@intel.com>
+> Andrii Nakryiko wrote:
+> > Refactor internals of struct btf to remove assumptions that BTF header, type
+> > data, and string data are layed out contiguously in a memory in a single
+> > memory allocation. Now we have three separate pointers pointing to the start
+> > of each respective are: header, types, strings. In the next patches, these
+> > pointers will be re-assigned to point to independently allocated memory areas,
+> > if BTF needs to be modified.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
 >
-> Test xdping measures RTT from xdp using monotonic time helper.
-> Extending xdping test to use real time helper function in order
-> to verify this helper function.
+> [...]
 >
-> Signed-off-by: Bimmy Pujari <bimmy.pujari@intel.com>
-> ---
-
-This is exactly the use of REALTIME clock that I was arguing against,
-and yet you are actually creating an example of how to use it for such
-case. CLOCK_REALTIME should not be used to measuring time elapsed (not
-within the same machine, at least), there are strictly better
-alternatives.
-
-So if you want to write a test for a new helper (assuming everyone
-else thinks it's a good idea), then do just that - write a separate
-minimal test that tests just your new functionality. Don't couple it
-with a massive XDP program. And also don't create unnecessarily almost
-400 lines of code churn.
-
->  .../testing/selftests/bpf/progs/xdping_kern.c | 183 +----------------
->  .../testing/selftests/bpf/progs/xdping_kern.h | 193 ++++++++++++++++++
->  .../bpf/progs/xdping_realtime_kern.c          |   4 +
->  tools/testing/selftests/bpf/test_xdping.sh    |  44 +++-
->  4 files changed, 235 insertions(+), 189 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/xdping_kern.h
->  create mode 100644 tools/testing/selftests/bpf/progs/xdping_realtime_kern.c
+> > --- a/tools/lib/bpf/btf.c
+> > +++ b/tools/lib/bpf/btf.c
+> > @@ -27,18 +27,37 @@
+> >  static struct btf_type btf_void;
+> >
+> >  struct btf {
+> > -     union {
+> > -             struct btf_header *hdr;
+> > -             void *data;
+> > -     };
+> > +     void *raw_data;
+> > +     __u32 raw_size;
+> > +
+> > +     /*
+> > +      * When BTF is loaded from ELF or raw memory it is stored
+> > +      * in contiguous memory block, pointed to by raw_data pointer, and
+> > +      * hdr, types_data, and strs_data point inside that memory region to
+> > +      * respective parts of BTF representation:
+>
+> I find the above comment a bit confusing. The picture though is great. How
+> about something like,
+>
+>   When BTF is loaded from an ELF or raw memory it is stored
+>   in a continguous memory block. The hdr, type_data, and strs_data
+>   point inside that memory region to their respective parts of BTF
+>   representation
 >
 
-[...]
+Had to do a mental diff to find the part you didn't like :) I'll
+update the comment as you suggested.
+
+> > +      *
+> > +      * +--------------------------------+
+> > +      * |  Header  |  Types  |  Strings  |
+> > +      * +--------------------------------+
+> > +      * ^          ^         ^
+> > +      * |          |         |
+> > +      * hdr        |         |
+> > +      * types_data-+         |
+> > +      * strs_data------------+
+> > +      */
+> > +     struct btf_header *hdr;
+> > +     void *types_data;
+> > +     void *strs_data;
+> > +
+> > +     /* type ID to `struct btf_type *` lookup index */
+> >       __u32 *type_offs;
+> >       __u32 type_offs_cap;
+> > -     const char *strings;
+> > -     void *nohdr_data;
+> > -     void *types_data;
+> >       __u32 nr_types;
+> > -     __u32 data_size;
+> > +
+> > +     /* BTF object FD, if loaded into kernel */
+> >       int fd;
+> > +
+> > +     /* Pointer size (in bytes) for a target architecture of this BTF */
+> >       int ptr_sz;
+> >  };
+> >
+>
+> Thanks,
+> John
