@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25BBD277960
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 21:31:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69767277968
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 21:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728797AbgIXTbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 15:31:49 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:1501 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726841AbgIXTbt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 15:31:49 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f6cf3c50000>; Thu, 24 Sep 2020 12:30:13 -0700
+        id S1728790AbgIXTee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 15:34:34 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:11482 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726841AbgIXTee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 15:34:34 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f6cf4bd0000>; Thu, 24 Sep 2020 12:34:21 -0700
 Received: from [10.21.180.144] (10.124.1.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 24 Sep
- 2020 19:31:39 +0000
-Subject: Re: [PATCH net-next RFC v5 03/15] devlink: Add reload action stats
+ 2020 19:34:26 +0000
+Subject: Re: [PATCH net-next RFC v5 04/15] devlink: Add reload actions stats
+ to dev get
 To:     Jakub Kicinski <kuba@kernel.org>,
         Moshe Shemesh <moshe@mellanox.com>
 CC:     "David S. Miller" <davem@davemloft.net>,
         Jiri Pirko <jiri@mellanox.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 References: <1600445211-31078-1-git-send-email-moshe@mellanox.com>
- <1600445211-31078-4-git-send-email-moshe@mellanox.com>
- <20200923114235.6c54f726@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <1600445211-31078-5-git-send-email-moshe@mellanox.com>
+ <20200923115004.2392fae6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   Moshe Shemesh <moshe@nvidia.com>
-Message-ID: <f7734877-a4be-a98c-81da-47aebb8c98fb@nvidia.com>
-Date:   Thu, 24 Sep 2020 22:31:35 +0300
+Message-ID: <b9867778-ff66-7f80-8f89-c63ed90a94e5@nvidia.com>
+Date:   Thu, 24 Sep 2020 22:34:23 +0300
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200923114235.6c54f726@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200923115004.2392fae6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
@@ -39,172 +40,231 @@ X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1600975813; bh=740j2AAnQn+HzWseCC7B1A6E3BEAJv60FeU/q3RU5ek=;
+        t=1600976061; bh=vSCckPrlVvrfevaHWYf6u0YDQjZttmUMb9n2QgZlJ8M=;
         h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
          MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
          Content-Language:X-Originating-IP:X-ClientProxiedBy;
-        b=FovL6aNFOcs76kvxKVlcu5VbuaIWwPpEnaht0tOxj/sa7FaheighdWbnNf/FDsmnh
-         LbetWLhRP0k5pgXjeYaZPldRFPhn7AsRx+m23WipryA3jXbIsUgLR2j6silaILRBQd
-         pkdRJshLf31WuPrv9rxIJIRYoDH/AZ7z4YwK590VglQhCEHOUhIiP+off64Z5p57tq
-         6Idb8vQBnqXD8dAx00TXxQiTn18/Lc/ACS4QwonVJC4+L1HioXLILN2920kAu1Vw3A
-         vvmAvaOeU1AX7+KofIGWhEaK0Qtglr4yhnJqN1Z7ryy97FMotwK9WyP9wlAD5ZT67a
-         4W39sbovLEUjQ==
+        b=ENuD78nFqexKoJh4tWcjw5wEK/b73ao4Z/f9zQbbK9g6EDyWRQOZYrl8t5yD5Mcpn
+         SXp8fVjM+ITHf4fjvtLk3wCcYXf1SO3xMWsbj5PBx0KN7XYU+H7LiKMFMVtBxTU3DR
+         BQDXizrST6kdwsfwnf5TAm8em4tkQzFv4YrDcJ9aUXPGePDqhCxCWVuAu2PzzL+Izm
+         QLkrRryQWD+hbAXRnfLZVAcxFk+/RIbF8+Punb9cGHVpQQxJ0/9MA7+jYJSY0rKp39
+         hP8yA3ciz0yIR8i1QZ3czk7v6S5/WUHd1jymShKU+YmBawQmSgda9qrmTSNFLv2M84
+         9TXWlSUdSGzHA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 9/23/2020 9:42 PM, Jakub Kicinski wrote:
-> External email: Use caution opening links or attachments
->
->
-> On Fri, 18 Sep 2020 19:06:39 +0300 Moshe Shemesh wrote:
->> Add reload action stats to hold the history per reload action type and
->> limit level.
+On 9/23/2020 9:50 PM, Jakub Kicinski wrote:
+> On Fri, 18 Sep 2020 19:06:40 +0300 Moshe Shemesh wrote:
+>> Expose devlink reload actions stats to the user through devlink dev
+>> get command.
 >>
->> For example, the number of times fw_activate has been performed on this
->> device since the driver module was added or if the firmware activation
->> was performed with or without reset.
+>> Examples:
+>> $ devlink dev show
+>> pci/0000:82:00.0:
+>>    stats:
+>>        reload_action_stats:
+>>          driver_reinit 2
+>>          fw_activate 1
+>>          fw_activate_no_reset 0
+>>          remote_driver_reinit 0
+>>          remote_fw_activate 0
+>>          remote_fw_activate_no_reset 0
+>> pci/0000:82:00.1:
+>>    stats:
+>>        reload_action_stats:
+>>          driver_reinit 0
+>>          fw_activate 0
+>>          fw_activate_no_reset 0
+>>          remote_driver_reinit 1
+>>          remote_fw_activate 1
+>>          remote_fw_activate_no_reset 0
 >>
->> The function devlink_remote_reload_actions_performed() is exported to
->> enable also drivers update on reload actions performed, for example in
->> case firmware activation with reset finished successfully but was
->> initiated by remote host.
->>
->> Add devlink notification on stats update.
+>> $ devlink dev show -jp
+>> {
+>>      "dev": {
+>>          "pci/0000:82:00.0": {
+>>              "stats": {
+>>                  "reload_action_stats": [ {
+>>                          "driver_reinit": 2
+>>                      },{
+>>                          "fw_activate": 1
+>>                      },{
+>>                          "fw_activate_no_reset": 0
+>>                      },{
+>>                          "remote_driver_reinit": 0
+>>                      },{
+>>                          "remote_fw_activate": 0
+>>                      },{
+>>                          "remote_fw_activate_no_reset": 0
+>>                      } ]
+>>              }
+>>          },
+>>          "pci/0000:82:00.1": {
+>>              "stats": {
+>>                  "reload_action_stats": [ {
+>>                          "driver_reinit": 0
+>>                      },{
+>>                          "fw_activate": 0
+>>                      },{
+>>                          "fw_activate_no_reset": 0
+>>                      },{
+>>                          "remote_driver_reinit": 1
+>>                      },{
+>>                          "remote_fw_activate": 1
+>>                      },{
+>>                          "remote_fw_activate_no_reset": 0
+>>                      } ]
+>>              }
+>>          }
+>>      }
+>> }
 >>
 >> Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
-> I'd split this and the next patch by stat type (remote vs local).
-> Rather than split them by collect / report.
+>> ---
+>> v4 -> v5:
+>> - Add remote actions stats
+>> - If devlink reload is not supported, show only remote_stats
+>> v3 -> v4:
+>> - Renamed DEVLINK_ATTR_RELOAD_ACTION_CNT to
+>>    DEVLINK_ATTR_RELOAD_ACTION_STAT
+>> - Add stats per action per limit level
+>> v2 -> v3:
+>> - Add reload actions counters instead of supported reload actions
+>>    (reload actions counters are only for supported action so no need for
+>>     both)
+>> v1 -> v2:
+>> - Removed DEVLINK_ATTR_RELOAD_DEFAULT_LEVEL
+>> - Removed DEVLINK_ATTR_RELOAD_LEVELS_INFO
+>> - Have actions instead of levels
+>> ---
+>>   include/uapi/linux/devlink.h |  5 +++
+>>   net/core/devlink.c           | 70 ++++++++++++++++++++++++++++++++++++
+>>   2 files changed, 75 insertions(+)
+>>
+>> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+>> index 0c5d942dcbd5..648d53be691e 100644
+>> --- a/include/uapi/linux/devlink.h
+>> +++ b/include/uapi/linux/devlink.h
+>> @@ -497,7 +497,12 @@ enum devlink_attr {
+>>   	DEVLINK_ATTR_RELOAD_ACTION,		/* u8 */
+>>   	DEVLINK_ATTR_RELOAD_ACTIONS_PERFORMED,	/* nested */
+>>   	DEVLINK_ATTR_RELOAD_ACTION_LIMIT_LEVEL,	/* u8 */
+>> +	DEVLINK_ATTR_RELOAD_ACTION_STATS,	/* nested */
+>> +	DEVLINK_ATTR_RELOAD_ACTION_STAT,	/* nested */
+>> +	DEVLINK_ATTR_RELOAD_ACTION_STAT_REMOTE,	/* flag */
+>> +	DEVLINK_ATTR_RELOAD_ACTION_STAT_VALUE,	/* u32 */
+>>   
+>> +	DEVLINK_ATTR_DEV_STATS,			/* nested */
+>>   	/* add new attributes above here, update the policy in devlink.c */
+> I'd propose this nesting:
+>
+> 	[DEV_STATS]
+> 		[RELOAD_STATS]
+> 			[DEV_STATS_ENTRY]
+> 				[ACTION]
+> 				[LIMIT]
+> 				[VALUE]
+> 			[DEV_STATS_ENTRY]
+> 				[...]
+> 		[REMOTE_RELOAD_STATS]
+> 			[DEV_STATS_ENTRY]
+> 				[ACTION]
+> 				[LIMIT]
+> 				[VALUE]
+> 			[DEV_STATS_ENTRY]
+> 				[...]
+>
+> Then you can fill in the inside of the [REMOTE_]RELOAD_STATS nests with
+> a helper, and similarly user space can separate the two in JSON more
+> cleanly than string concat.
 
 
-OK.
+Right, will fix, thanks.
 
->> diff --git a/include/net/devlink.h b/include/net/devlink.h
->> index d8c62d605381..f09f55a47d09 100644
->> --- a/include/net/devlink.h
->> +++ b/include/net/devlink.h
->> @@ -20,6 +20,9 @@
->>   #include <uapi/linux/devlink.h>
->>   #include <linux/xarray.h>
->>
->> +#define DEVLINK_RELOAD_ACTION_STATS_ARRAY_SIZE \
->> +     (__DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX * __DEVLINK_RELOAD_ACTION_MAX)
->> +
->>   struct devlink_ops;
->>
->>   struct devlink {
->> @@ -38,6 +41,8 @@ struct devlink {
->>        struct list_head trap_policer_list;
->>        const struct devlink_ops *ops;
->>        struct xarray snapshot_ids;
->> +     u32 reload_action_stats[DEVLINK_RELOAD_ACTION_STATS_ARRAY_SIZE];
->> +     u32 remote_reload_action_stats[DEVLINK_RELOAD_ACTION_STATS_ARRAY_SIZE];
->>        struct device *dev;
->>        possible_net_t _net;
->>        struct mutex lock; /* Serializes access to devlink instance specific objects such as
->> @@ -1400,6 +1405,9 @@ void
->>   devlink_health_reporter_recovery_done(struct devlink_health_reporter *reporter);
->>
->>   bool devlink_is_reload_failed(const struct devlink *devlink);
->> +void devlink_remote_reload_actions_performed(struct devlink *devlink,
->> +                                          enum devlink_reload_action_limit_level limit_level,
->> +                                          unsigned long actions_performed);
->>
->>   void devlink_flash_update_begin_notify(struct devlink *devlink);
->>   void devlink_flash_update_end_notify(struct devlink *devlink);
+>>   	__DEVLINK_ATTR_MAX,
 >> diff --git a/net/core/devlink.c b/net/core/devlink.c
->> index fee6fcc7dead..1509c2ffb98b 100644
+>> index 1509c2ffb98b..71aeda259e6a 100644
 >> --- a/net/core/devlink.c
 >> +++ b/net/core/devlink.c
->> @@ -3007,16 +3007,74 @@ bool devlink_is_reload_failed(const struct devlink *devlink)
+>> @@ -501,10 +501,39 @@ devlink_reload_action_limit_level_is_supported(struct devlink *devlink,
+>>   	return test_bit(limit_level, &devlink->ops->supported_reload_action_limit_levels);
 >>   }
->>   EXPORT_SYMBOL_GPL(devlink_is_reload_failed);
->>
->> +static void
->> +__devlink_reload_action_stats_update(struct devlink *devlink,
->> +                                  u32 *reload_action_stats,
->> +                                  enum devlink_reload_action_limit_level limit_level,
->> +                                  unsigned long actions_performed)
+>>   
+>> +static int devlink_reload_action_stat_put(struct sk_buff *msg, enum devlink_reload_action action,
+>> +					  enum devlink_reload_action_limit_level limit_level,
+>> +					  bool is_remote, u32 value)
 >> +{
->> +     int stat_idx;
->> +     int action;
+>> +	struct nlattr *reload_action_stat;
 >> +
->> +     if (!actions_performed)
->> +             return;
+>> +	reload_action_stat = nla_nest_start(msg, DEVLINK_ATTR_RELOAD_ACTION_STAT);
+>> +	if (!reload_action_stat)
+>> +		return -EMSGSIZE;
 >> +
->> +     if (WARN_ON(limit_level > DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX))
->> +             return;
->> +     for (action = 0; action <= DEVLINK_RELOAD_ACTION_MAX; action++) {
->> +             if (!test_bit(action, &actions_performed))
->> +                     continue;
->> +             stat_idx = limit_level * __DEVLINK_RELOAD_ACTION_MAX + action;
->> +             reload_action_stats[stat_idx]++;
->> +     }
->> +     devlink_notify(devlink, DEVLINK_CMD_NEW);
+>> +	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_ACTION, action))
+>> +		goto nla_put_failure;
+>> +	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_ACTION_LIMIT_LEVEL, limit_level))
+>> +		goto nla_put_failure;
+>> +	if (is_remote && nla_put_flag(msg, DEVLINK_ATTR_RELOAD_ACTION_STAT_REMOTE))
+>> +		goto nla_put_failure;
+>> +	if (nla_put_u32(msg, DEVLINK_ATTR_RELOAD_ACTION_STAT_VALUE, value))
+>> +		goto nla_put_failure;
+>> +	nla_nest_end(msg, reload_action_stat);
+>> +	return 0;
+>> +
+>> +nla_put_failure:
+>> +	nla_nest_cancel(msg, reload_action_stat);
+>> +	return -EMSGSIZE;
 >> +}
 >> +
->> +static void
->> +devlink_reload_action_stats_update(struct devlink *devlink,
->> +                                enum devlink_reload_action_limit_level limit_level,
->> +                                unsigned long actions_performed)
->> +{
->> +     __devlink_reload_action_stats_update(devlink, devlink->reload_action_stats,
->> +                                          limit_level, actions_performed);
->> +}
->> +
->> +/**
->> + *   devlink_remote_reload_actions_performed - Update devlink on reload actions
->> + *     performed which are not a direct result of devlink reload call.
->> + *
->> + *   This should be called by a driver after performing reload actions in case it was not
->> + *   a result of devlink reload call. For example fw_activate was performed as a result
->> + *   of devlink reload triggered fw_activate on another host.
->> + *   The motivation for this function is to keep data on reload actions performed on this
->> + *   function whether it was done due to direct devlink reload call or not.
->> + *
->> + *   @devlink: devlink
->> + *   @limit_level: reload action limit level
->> + *   @actions_performed: bitmask of actions performed
->> + */
->> +void devlink_remote_reload_actions_performed(struct devlink *devlink,
->> +                                          enum devlink_reload_action_limit_level limit_level,
->> +                                          unsigned long actions_performed)
->> +{
->> +     __devlink_reload_action_stats_update(devlink, devlink->remote_reload_action_stats,
->> +                                          limit_level, actions_performed);
->> +}
->> +EXPORT_SYMBOL_GPL(devlink_remote_reload_actions_performed);
->> +
->>   static int devlink_reload(struct devlink *devlink, struct net *dest_net,
->>                          enum devlink_reload_action action,
->>                          enum devlink_reload_action_limit_level limit_level,
->>                          struct netlink_ext_ack *extack, unsigned long *actions_performed)
+>>   static int devlink_nl_fill(struct sk_buff *msg, struct devlink *devlink,
+>>   			   enum devlink_command cmd, u32 portid,
+>>   			   u32 seq, int flags)
 >>   {
->> +     u32 remote_reload_action_stats[DEVLINK_RELOAD_ACTION_STATS_ARRAY_SIZE];
->>        int err;
->>
->>        if (!devlink->reload_enabled)
->>                return -EOPNOTSUPP;
->>
->> +     memcpy(remote_reload_action_stats, devlink->remote_reload_action_stats,
->> +            sizeof(remote_reload_action_stats));
->>        err = devlink->ops->reload_down(devlink, !!dest_net, action, limit_level, extack);
->>        if (err)
->>                return err;
->> @@ -3030,6 +3088,10 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
->>                return err;
->>
->>        WARN_ON(!test_bit(action, actions_performed));
->> +     /* protect from driver updating the remote action within devlink reload */
-> s/protect from/catch/
-
-
+>> +	struct nlattr *dev_stats, *reload_action_stats;
+>> +	int i, j, stat_idx;
+>> +	u32 value;
+>>   	void *hdr;
+>>   
+>>   	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
+>> @@ -516,9 +545,50 @@ static int devlink_nl_fill(struct sk_buff *msg, struct devlink *devlink,
+>>   	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_FAILED, devlink->reload_failed))
+>>   		goto nla_put_failure;
+>>   
+>> +	dev_stats = nla_nest_start(msg, DEVLINK_ATTR_DEV_STATS);
+>> +	if (!dev_stats)
+>> +		goto nla_put_failure;
+>> +	reload_action_stats = nla_nest_start(msg, DEVLINK_ATTR_RELOAD_ACTION_STATS);
+>> +	if (!reload_action_stats)
+>> +		goto dev_stats_nest_cancel;
+>> +
+>> +	for (j = 0; j <= DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX; j++) {
+>> +		if (!devlink_reload_action_limit_level_is_supported(devlink, j))
+>> +			continue;
+>> +		for (i = 0; i <= DEVLINK_RELOAD_ACTION_MAX; i++) {
+>> +			if (!devlink_reload_action_is_supported(devlink, i) ||
+>> +			    devlink_reload_combination_is_invalid(i, j))
+>> +				continue;
+>> +
+>> +			stat_idx = j * __DEVLINK_RELOAD_ACTION_MAX + i;
+>> +			value = devlink->reload_action_stats[stat_idx];
+>> +			if (devlink_reload_action_stat_put(msg, i, j, false, value))
+>> +				goto reload_action_stats_nest_cancel;
+>> +		}
+>> +	}
+>> +
+>> +	for (j = 0; j <= DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_MAX; j++) {
+>> +		for (i = 0; i <= DEVLINK_RELOAD_ACTION_MAX; i++) {
+>> +			if (i == DEVLINK_RELOAD_ACTION_UNSPEC ||
+>> +			    devlink_reload_combination_is_invalid(i, j))
+>> +				continue;
+>> +
+>> +			stat_idx = j * __DEVLINK_RELOAD_ACTION_MAX + i;
+>> +			value = devlink->remote_reload_action_stats[stat_idx];
+>> +			if (devlink_reload_action_stat_put(msg, i, j, true, value))
+>> +				goto reload_action_stats_nest_cancel;
+>> +		}
+>> +	}
+> This calls for a helper.
 Ack.
-
->> +     WARN_ON(memcmp(remote_reload_action_stats, devlink->remote_reload_action_stats,
->> +                    sizeof(remote_reload_action_stats)));
->> +     devlink_reload_action_stats_update(devlink, limit_level, *actions_performed);
->>        return 0;
->>   }
->>
