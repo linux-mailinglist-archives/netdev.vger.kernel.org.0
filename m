@@ -2,239 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 798F22776B6
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 18:27:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59EF02776BB
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 18:27:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728381AbgIXQ1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 12:27:32 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:37522 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726658AbgIXQ1a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 12:27:30 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08OGROBe089205;
-        Thu, 24 Sep 2020 11:27:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1600964844;
-        bh=qYbwMiWF7dfG3g/2X0e19GXSsWrCkMUqvHLRs+EyGIs=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=l7GbradXWLwXq/wp4gtaLG7HT/+YgOasndLRLj8rAMBmZ2rRCaOfTfqjPzKBsoAwF
-         vCX9UDDON8Q2sbCVwI1uP4c12YCywiru+u/IUKKHW6bdEnxiR7IhNi0gE+xXCw3A8h
-         zl2H3WsRzpnCDxh/130FDyopqfgTxMvGk6GJh69Q=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08OGROeq002344;
-        Thu, 24 Sep 2020 11:27:24 -0500
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 24
- Sep 2020 11:27:23 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 24 Sep 2020 11:27:23 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08OGRNV2023526;
-        Thu, 24 Sep 2020 11:27:23 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
-        <hkallweit1@gmail.com>
-CC:     <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v4 2/2] net: phy: dp83869: Add speed optimization feature
-Date:   Thu, 24 Sep 2020 11:27:07 -0500
-Message-ID: <20200924162707.14093-3-dmurphy@ti.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200924162707.14093-1-dmurphy@ti.com>
-References: <20200924162707.14093-1-dmurphy@ti.com>
+        id S1728602AbgIXQ1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 12:27:52 -0400
+Received: from m42-4.mailgun.net ([69.72.42.4]:40774 "EHLO m42-4.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728583AbgIXQ1o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Sep 2020 12:27:44 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1600964863; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=H7xOaaB817aiULShu/d8nxmq9YAErkwo2R+VMgY3kb4=; b=oKFAVSI33lHC8MB1kCm9lPNXydrP78baE3OQEHdN9TErdDMR2q+19hrQ4cbbLpcLPEY9/Df4
+ 0tMoUUhhRCFCav6ykjLS50ApAEMCzmbwt7ufEUR0HZ7+5dAfDb+GKsxPPvfEBQMYhj6F5er/
+ uGV7bOU364xkc6Rz2Pf0C4iaCHg=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 5f6cc8ff89f51cb4f12ab145 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 24 Sep 2020 16:27:43
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 7FAC3C433A0; Thu, 24 Sep 2020 16:27:42 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id F2382C433FF;
+        Thu, 24 Sep 2020 16:27:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org F2382C433FF
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Julian Calaby <julian.calaby@gmail.com>
+Cc:     Alex Dewar <alex.dewar90@gmail.com>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, ath10k@lists.infradead.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v2] ath10k: sdio: remove redundant check in for loop
+References: <c2987351e3bdad16510dd35847991c2412a9db6b.camel@nvidia.com>
+        <20200916165748.20927-1-alex.dewar90@gmail.com>
+        <CAGRGNgWoFfCnK9FcWTf_f0b57JNEjsm6ZNQB5X_AMf8L3FyNcQ@mail.gmail.com>
+Date:   Thu, 24 Sep 2020 19:27:36 +0300
+In-Reply-To: <CAGRGNgWoFfCnK9FcWTf_f0b57JNEjsm6ZNQB5X_AMf8L3FyNcQ@mail.gmail.com>
+        (Julian Calaby's message of "Thu, 17 Sep 2020 10:45:33 +1000")
+Message-ID: <87h7rnnnrb.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set the speed optimization bit on the DP83869 PHY.
+Julian Calaby <julian.calaby@gmail.com> writes:
 
-Speed optimization, also known as link downshift, enables fallback to 100M
-operation after multiple consecutive failed attempts at Gigabit link
-establishment. Such a case could occur if cabling with only four wires
-(two twisted pairs) were connected instead of the standard cabling with
-eight wires (four twisted pairs).
+> On Thu, Sep 17, 2020 at 3:09 AM Alex Dewar <alex.dewar90@gmail.com> wrote:
+>>
+>> The for loop checks whether cur_section is NULL on every iteration, but
+>> we know it can never be NULL as there is another check towards the
+>> bottom of the loop body. Refactor to avoid this unnecessary check.
+>>
+>> Also, increment the variable i inline for clarity
+>
+> Comments below.
+>
+>> Addresses-Coverity: 1496984 ("Null pointer dereferences)
+>> Suggested-by: Saeed Mahameed <saeedm@nvidia.com>
+>> Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
+>> ---
+>> v2: refactor in the manner suggested by Saeed
+>>
+>>  drivers/net/wireless/ath/ath10k/sdio.c | 12 +++---------
+>>  1 file changed, 3 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
+>> index 81ddaafb6721..486886c74e6a 100644
+>> --- a/drivers/net/wireless/ath/ath10k/sdio.c
+>> +++ b/drivers/net/wireless/ath/ath10k/sdio.c
+>> @@ -2307,8 +2307,8 @@ static int ath10k_sdio_dump_memory_section(struct ath10k *ar,
+>>         }
+>>
+>>         count = 0;
+>> -
+>> -       for (i = 0; cur_section; i++) {
+>> +       i = 0;
+>> +       for (; cur_section; cur_section = next_section) {
+>
+> You can have multiple statements in each section of a for() if you need to, e.g.
+>
+> for (i = 1; cur_section; cur_section = next_section, i++) {
+>
+> which means that the increment of i isn't hidden deep in the function body.
 
-The number of failed link attempts before falling back to 100M operation is
-configurable. By default, four failed link attempts are required before
-falling back to 100M.
+Yeah, I was thinking the same. But I'll apply this patch anyway, it's
+still an improvement.
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
-v4 - Fixed error from E2BIG to EINVAL
+> That said, this function is a mess. Something (approximately) like
+> this might be more readable:
+>
+> prev_end = memregion->start;
+> for (i = 0; i < mem_region->section_table.size; i++) {
+>     cur_section = &mem_region->section_table.sections[i];
+>
+>     // fail if prev_end is greater than cur_section->start - message
+> from line 2329 and 2294
+>     // check section size - from line 2315
+>
+>     skip_size = cur_section->start - prev_end;
+>
+>     // check buffer size - from line 2339 - needs to account for the
+> skip size too.
+>     // fill in the skip size amount - from line 2358 and 2304
+>     // ath10k_sdio_read_mem - from line 2346
+>
+>     prev_end = cur_section->end;
+> }
 
- drivers/net/phy/dp83869.c | 116 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 116 insertions(+)
+I agree. Anyone can come up with a patch?
 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index 975b64b4b6c4..8d4440326432 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -11,6 +11,7 @@
- #include <linux/of.h>
- #include <linux/phy.h>
- #include <linux/delay.h>
-+#include <linux/bitfield.h>
- 
- #include <dt-bindings/net/ti-dp83869.h>
- 
-@@ -20,6 +21,7 @@
- #define MII_DP83869_PHYCTRL	0x10
- #define MII_DP83869_MICR	0x12
- #define MII_DP83869_ISR		0x13
-+#define DP83869_CFG2		0x14
- #define DP83869_CTRL		0x1f
- #define DP83869_CFG4		0x1e
- 
-@@ -120,6 +122,18 @@
- #define DP83869_WOL_SEC_EN		BIT(5)
- #define DP83869_WOL_ENH_MAC		BIT(7)
- 
-+/* CFG2 bits */
-+#define DP83869_DOWNSHIFT_EN		(BIT(8) | BIT(9))
-+#define DP83869_DOWNSHIFT_ATTEMPT_MASK	(BIT(10) | BIT(11))
-+#define DP83869_DOWNSHIFT_1_COUNT_VAL	0
-+#define DP83869_DOWNSHIFT_2_COUNT_VAL	1
-+#define DP83869_DOWNSHIFT_4_COUNT_VAL	2
-+#define DP83869_DOWNSHIFT_8_COUNT_VAL	3
-+#define DP83869_DOWNSHIFT_1_COUNT	1
-+#define DP83869_DOWNSHIFT_2_COUNT	2
-+#define DP83869_DOWNSHIFT_4_COUNT	4
-+#define DP83869_DOWNSHIFT_8_COUNT	8
-+
- enum {
- 	DP83869_PORT_MIRRORING_KEEP,
- 	DP83869_PORT_MIRRORING_EN,
-@@ -350,6 +364,99 @@ static void dp83869_get_wol(struct phy_device *phydev,
- 		wol->wolopts = 0;
- }
- 
-+static int dp83869_get_downshift(struct phy_device *phydev, u8 *data)
-+{
-+	int val, cnt, enable, count;
-+
-+	val = phy_read(phydev, DP83869_CFG2);
-+	if (val < 0)
-+		return val;
-+
-+	enable = FIELD_GET(DP83869_DOWNSHIFT_EN, val);
-+	cnt = FIELD_GET(DP83869_DOWNSHIFT_ATTEMPT_MASK, val);
-+
-+	switch (cnt) {
-+	case DP83869_DOWNSHIFT_1_COUNT_VAL:
-+		count = DP83869_DOWNSHIFT_1_COUNT;
-+		break;
-+	case DP83869_DOWNSHIFT_2_COUNT_VAL:
-+		count = DP83869_DOWNSHIFT_2_COUNT;
-+		break;
-+	case DP83869_DOWNSHIFT_4_COUNT_VAL:
-+		count = DP83869_DOWNSHIFT_4_COUNT;
-+		break;
-+	case DP83869_DOWNSHIFT_8_COUNT_VAL:
-+		count = DP83869_DOWNSHIFT_8_COUNT;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	*data = enable ? count : DOWNSHIFT_DEV_DISABLE;
-+
-+	return 0;
-+}
-+
-+static int dp83869_set_downshift(struct phy_device *phydev, u8 cnt)
-+{
-+	int val, count;
-+
-+	if (cnt > DP83869_DOWNSHIFT_8_COUNT)
-+		return -EINVAL;
-+
-+	if (!cnt)
-+		return phy_clear_bits(phydev, DP83869_CFG2,
-+				      DP83869_DOWNSHIFT_EN);
-+
-+	switch (cnt) {
-+	case DP83869_DOWNSHIFT_1_COUNT:
-+		count = DP83869_DOWNSHIFT_1_COUNT_VAL;
-+		break;
-+	case DP83869_DOWNSHIFT_2_COUNT:
-+		count = DP83869_DOWNSHIFT_2_COUNT_VAL;
-+		break;
-+	case DP83869_DOWNSHIFT_4_COUNT:
-+		count = DP83869_DOWNSHIFT_4_COUNT_VAL;
-+		break;
-+	case DP83869_DOWNSHIFT_8_COUNT:
-+		count = DP83869_DOWNSHIFT_8_COUNT_VAL;
-+		break;
-+	default:
-+		phydev_err(phydev,
-+			   "Downshift count must be 1, 2, 4 or 8\n");
-+		return -EINVAL;
-+	}
-+
-+	val = DP83869_DOWNSHIFT_EN;
-+	val |= FIELD_PREP(DP83869_DOWNSHIFT_ATTEMPT_MASK, count);
-+
-+	return phy_modify(phydev, DP83869_CFG2,
-+			  DP83869_DOWNSHIFT_EN | DP83869_DOWNSHIFT_ATTEMPT_MASK,
-+			  val);
-+}
-+
-+static int dp83869_get_tunable(struct phy_device *phydev,
-+			       struct ethtool_tunable *tuna, void *data)
-+{
-+	switch (tuna->id) {
-+	case ETHTOOL_PHY_DOWNSHIFT:
-+		return dp83869_get_downshift(phydev, data);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int dp83869_set_tunable(struct phy_device *phydev,
-+			       struct ethtool_tunable *tuna, const void *data)
-+{
-+	switch (tuna->id) {
-+	case ETHTOOL_PHY_DOWNSHIFT:
-+		return dp83869_set_downshift(phydev, *(const u8 *)data);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static int dp83869_config_port_mirroring(struct phy_device *phydev)
- {
- 	struct dp83869_private *dp83869 = phydev->priv;
-@@ -642,6 +749,12 @@ static int dp83869_config_init(struct phy_device *phydev)
- 	struct dp83869_private *dp83869 = phydev->priv;
- 	int ret, val;
- 
-+	/* Force speed optimization for the PHY even if it strapped */
-+	ret = phy_modify(phydev, DP83869_CFG2, DP83869_DOWNSHIFT_EN,
-+			 DP83869_DOWNSHIFT_EN);
-+	if (ret)
-+		return ret;
-+
- 	ret = dp83869_configure_mode(phydev, dp83869);
- 	if (ret)
- 		return ret;
-@@ -741,6 +854,9 @@ static struct phy_driver dp83869_driver[] = {
- 		.config_intr	= dp83869_config_intr,
- 		.read_status	= dp83869_read_status,
- 
-+		.get_tunable	= dp83869_get_tunable,
-+		.set_tunable	= dp83869_set_tunable,
-+
- 		.get_wol	= dp83869_get_wol,
- 		.set_wol	= dp83869_set_wol,
- 
 -- 
-2.28.0
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
