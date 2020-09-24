@@ -2,250 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93975277401
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 16:32:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2A8827741A
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 16:34:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728288AbgIXOci (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 10:32:38 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:5786 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728088AbgIXOci (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 10:32:38 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f6cada50000>; Thu, 24 Sep 2020 07:31:01 -0700
-Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 24 Sep
- 2020 14:32:35 +0000
-Date:   Thu, 24 Sep 2020 17:32:31 +0300
-From:   Eli Cohen <elic@nvidia.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <eli@nvidia.com>
-Subject: [PATCH V1 vhost-next] vdpa/mlx5: Make vdpa core driver a distinct
- module
-Message-ID: <20200924143231.GA186492@mtl-vdi-166.wap.labs.mlnx>
+        id S1728234AbgIXOe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 10:34:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43392 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728088AbgIXOe5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 10:34:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600958095;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3HqrxwHoOSHrlwkdSsVQFFgcglebPJHiA/TqTJru7b8=;
+        b=Y9C9T1JEXYyNdtw2hjnpEbSUP6moiGDQK4XGPGskoWyPggd2Br5iHV/OJ6WAFoF1xXdStT
+        qmUBXLxskBKEAfLbNbvu+DLwawrEhTrq7hcmPC/Od3eCgFliEt3vnbGHdjkHZC6mSzofWC
+        PZa/SkdbIydchx9DKU+JylVMvXr10oo=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-27-zIUm1CKQODynO2-tf750fg-1; Thu, 24 Sep 2020 10:34:54 -0400
+X-MC-Unique: zIUm1CKQODynO2-tf750fg-1
+Received: by mail-wr1-f70.google.com with SMTP id r16so1299707wrm.18
+        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 07:34:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=3HqrxwHoOSHrlwkdSsVQFFgcglebPJHiA/TqTJru7b8=;
+        b=qA6pWyE0eItItPK+rZFpT0akxN+KqjgZioK8Kjdsr75hxjXuO4vbbw7dlOupoOaKHd
+         mL+boudn26V1zNwUQu9DjQA6I7Gc90z0wFqTmDgxwXLebadUcBoMlkOPQhTBEgbFHRZZ
+         iaUNLtQwYczTLBx3zlRN3IN7Vz5iVRm2OeSxydiMSdwPHkjYYs0kp+P8am+LUx07yVg+
+         mgLkJcsCEUFiB5JrNsnAVrmBIpN/m2r/HOeRI4RypyQqNU9hSyI5C4O72jqm8o0M1snU
+         rI0R2QKl8OTUsRXEKnEDrGe624nrMfYfgCl6wWSe7TyBVbrE05ru8KAkH3q30UhtZ1T/
+         kF0w==
+X-Gm-Message-State: AOAM530H2dB1ejKXfjRw2I0h4Eewn7BaQ7ltHWB060tDCQL4h66rnHVT
+        REbX9mJBWX4gLVV9t2qU+naZ+atLK2FzllOKTQTiWO3Hh4MkLfZuwvMBAU5BgNsCYejAKhj332f
+        jUOgZK1iwd7PaKHY1
+X-Received: by 2002:adf:e690:: with SMTP id r16mr63504wrm.15.1600958092878;
+        Thu, 24 Sep 2020 07:34:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxov5wA5+uFn87KgQIxTqy6jBHTt3Q+u5yphyU1YoqfXrDp8sCS7h83YiRgzwvTLW4lQw/bGw==
+X-Received: by 2002:adf:e690:: with SMTP id r16mr63478wrm.15.1600958092640;
+        Thu, 24 Sep 2020 07:34:52 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id 9sm3644568wmf.7.2020.09.24.07.34.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Sep 2020 07:34:51 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 71B2E183A90; Thu, 24 Sep 2020 16:34:51 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v8 04/11] bpf: move prog->aux->linked_prog and
+ trampoline into bpf_link on attach
+In-Reply-To: <20200924001439.qitbu5tmzz55ck4z@ast-mbp.dhcp.thefacebook.com>
+References: <160079991372.8301.10648588027560707258.stgit@toke.dk>
+ <160079991808.8301.6462172487971110332.stgit@toke.dk>
+ <20200924001439.qitbu5tmzz55ck4z@ast-mbp.dhcp.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 24 Sep 2020 16:34:51 +0200
+Message-ID: <874knn1bw4.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1600957862; bh=nc2vNiYTrqyZAVfOBX+/N1PhV107Mq0CuuADPzerkwA=;
-        h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-         Content-Disposition:User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=C2+HY/jHQmA3V0wnnGb9jUchWPBfllMmy6N4w28X6W/X4u53yjS3eTvLusqH1Tphj
-         NO6umwaCq5eaKwfAkhJT2wJafZGoHglWqOHuCi3emtbp/nrGYsZBj+/TDz44KyQDl1
-         rKWK+0Zo5aIoHO4Jq5AuzGyxFs1l/epHu2u4hedrmowwxD33+Op2FAHjULur5jTHdj
-         uNch/lgKSpIQlnHtOqz1KBjjUNhPvTQnrfCADL7A0Cak3HkP6TBKeAwR3ZkeItwqce
-         /7qDgFmtLUtvl8ShhfUjS84e8HXydX9vLWpGtnetnXNk2VAj5ghjf0EmNqHcCULw9I
-         74xNOfwsORXwQ==
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change core vdpa functionality into a loadbale module such that upcoming
-block implementation will be able to use it.
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
-V0 --> V1:
-Removed "default n" for configu options as 'n' is the default
+> On Tue, Sep 22, 2020 at 08:38:38PM +0200, Toke H=C3=83=C6=92=C3=82=C2=B8i=
+land-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote:
+>> @@ -746,7 +748,9 @@ struct bpf_prog_aux {
+>>  	u32 max_rdonly_access;
+>>  	u32 max_rdwr_access;
+>>  	const struct bpf_ctx_arg_aux *ctx_arg_info;
+>> -	struct bpf_prog *linked_prog;
+>
+> This change breaks bpf_preload and selftests test_bpffs.
+> There is really no excuse not to run the selftests.
 
- drivers/vdpa/Kconfig               |  8 +++-----
- drivers/vdpa/Makefile              |  2 +-
- drivers/vdpa/mlx5/Makefile         |  7 +++++--
- drivers/vdpa/mlx5/core/core_main.c | 20 ++++++++++++++++++++
- drivers/vdpa/mlx5/core/mr.c        |  3 +++
- drivers/vdpa/mlx5/core/resources.c | 10 ++++++++++
- 6 files changed, 42 insertions(+), 8 deletions(-)
- create mode 100644 drivers/vdpa/mlx5/core/core_main.c
+I did run the tests, and saw no more breakages after applying my patches
+than before. Which didn't catch this, because this is the current state
+of bpf-next selftests:
 
-diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
-index 4271c408103e..57ff6a7f7401 100644
---- a/drivers/vdpa/Kconfig
-+++ b/drivers/vdpa/Kconfig
-@@ -29,10 +29,9 @@ config IFCVF
- 	  To compile this driver as a module, choose M here: the module will
- 	  be called ifcvf.
- 
--config MLX5_VDPA
--	bool "MLX5 VDPA support library for ConnectX devices"
-+config MLX5_VDPA_CORE
-+	tristate "MLX5 VDPA support library for ConnectX devices"
- 	depends on MLX5_CORE
--	default n
- 	help
- 	  Support library for Mellanox VDPA drivers. Provides code that is
- 	  common for all types of VDPA drivers. The following drivers are planned:
-@@ -40,8 +39,7 @@ config MLX5_VDPA
- 
- config MLX5_VDPA_NET
- 	tristate "vDPA driver for ConnectX devices"
--	depends on MLX5_VDPA
--	default n
-+	depends on MLX5_VDPA_CORE
- 	help
- 	  VDPA network driver for ConnectX6 and newer. Provides offloading
- 	  of virtio net datapath such that descriptors put on the ring will
-diff --git a/drivers/vdpa/Makefile b/drivers/vdpa/Makefile
-index d160e9b63a66..07353bbb9f8b 100644
---- a/drivers/vdpa/Makefile
-+++ b/drivers/vdpa/Makefile
-@@ -2,4 +2,4 @@
- obj-$(CONFIG_VDPA) += vdpa.o
- obj-$(CONFIG_VDPA_SIM) += vdpa_sim/
- obj-$(CONFIG_IFCVF)    += ifcvf/
--obj-$(CONFIG_MLX5_VDPA) += mlx5/
-+obj-$(CONFIG_MLX5_VDPA_CORE) += mlx5/
-diff --git a/drivers/vdpa/mlx5/Makefile b/drivers/vdpa/mlx5/Makefile
-index 89a5bededc9f..9f50f7e8d889 100644
---- a/drivers/vdpa/mlx5/Makefile
-+++ b/drivers/vdpa/mlx5/Makefile
-@@ -1,4 +1,7 @@
- subdir-ccflags-y += -I$(srctree)/drivers/vdpa/mlx5/core
- 
--obj-$(CONFIG_MLX5_VDPA_NET) += mlx5_vdpa.o
--mlx5_vdpa-$(CONFIG_MLX5_VDPA_NET) += net/main.o net/mlx5_vnet.o core/resources.o core/mr.o
-+obj-$(CONFIG_MLX5_VDPA_CORE) += mlx5_vdpa_core.o
-+mlx5_vdpa_core-$(CONFIG_MLX5_VDPA_CORE) += core/resources.o core/mr.o core/core_main.o
-+
-+obj-$(CONFIG_MLX5_VDPA_NET) += mlx5_vdpa_net.o
-+mlx5_vdpa_net-$(CONFIG_MLX5_VDPA_NET) += net/main.o net/mlx5_vnet.o
-diff --git a/drivers/vdpa/mlx5/core/core_main.c b/drivers/vdpa/mlx5/core/core_main.c
-new file mode 100644
-index 000000000000..4b39b55f57ab
---- /dev/null
-+++ b/drivers/vdpa/mlx5/core/core_main.c
-@@ -0,0 +1,20 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2020 Mellanox Technologies Ltd. */
-+
-+#include <linux/module.h>
-+
-+MODULE_AUTHOR("Eli Cohen <elic@nvidia.com>");
-+MODULE_DESCRIPTION("Mellanox VDPA core driver");
-+MODULE_LICENSE("Dual BSD/GPL");
-+
-+static int __init mlx5_vdpa_core_init(void)
-+{
-+	return 0;
-+}
-+
-+static void __exit mlx5_vdpa_core_exit(void)
-+{
-+}
-+
-+module_init(mlx5_vdpa_core_init);
-+module_exit(mlx5_vdpa_core_exit);
-diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/mr.c
-index ef1c550f8266..c093eab6c714 100644
---- a/drivers/vdpa/mlx5/core/mr.c
-+++ b/drivers/vdpa/mlx5/core/mr.c
-@@ -434,6 +434,7 @@ int mlx5_vdpa_create_mr(struct mlx5_vdpa_dev *mvdev, struct vhost_iotlb *iotlb)
- 	mutex_unlock(&mr->mkey_mtx);
- 	return err;
- }
-+EXPORT_SYMBOL(mlx5_vdpa_create_mr);
- 
- void mlx5_vdpa_destroy_mr(struct mlx5_vdpa_dev *mvdev)
- {
-@@ -456,6 +457,7 @@ void mlx5_vdpa_destroy_mr(struct mlx5_vdpa_dev *mvdev)
- out:
- 	mutex_unlock(&mr->mkey_mtx);
- }
-+EXPORT_SYMBOL(mlx5_vdpa_destroy_mr);
- 
- static bool map_empty(struct vhost_iotlb *iotlb)
- {
-@@ -484,3 +486,4 @@ int mlx5_vdpa_handle_set_map(struct mlx5_vdpa_dev *mvdev, struct vhost_iotlb *io
- 
- 	return err;
- }
-+EXPORT_SYMBOL(mlx5_vdpa_handle_set_map);
-diff --git a/drivers/vdpa/mlx5/core/resources.c b/drivers/vdpa/mlx5/core/resources.c
-index 96e6421c5d1c..89606a18e286 100644
---- a/drivers/vdpa/mlx5/core/resources.c
-+++ b/drivers/vdpa/mlx5/core/resources.c
-@@ -98,6 +98,7 @@ int mlx5_vdpa_create_tis(struct mlx5_vdpa_dev *mvdev, void *in, u32 *tisn)
- 
- 	return err;
- }
-+EXPORT_SYMBOL(mlx5_vdpa_create_tis);
- 
- void mlx5_vdpa_destroy_tis(struct mlx5_vdpa_dev *mvdev, u32 tisn)
- {
-@@ -108,6 +109,7 @@ void mlx5_vdpa_destroy_tis(struct mlx5_vdpa_dev *mvdev, u32 tisn)
- 	MLX5_SET(destroy_tis_in, in, tisn, tisn);
- 	mlx5_cmd_exec_in(mvdev->mdev, destroy_tis, in);
- }
-+EXPORT_SYMBOL(mlx5_vdpa_destroy_tis);
- 
- int mlx5_vdpa_create_rqt(struct mlx5_vdpa_dev *mvdev, void *in, int inlen, u32 *rqtn)
- {
-@@ -121,6 +123,7 @@ int mlx5_vdpa_create_rqt(struct mlx5_vdpa_dev *mvdev, void *in, int inlen, u32 *
- 
- 	return err;
- }
-+EXPORT_SYMBOL(mlx5_vdpa_create_rqt);
- 
- void mlx5_vdpa_destroy_rqt(struct mlx5_vdpa_dev *mvdev, u32 rqtn)
- {
-@@ -131,6 +134,7 @@ void mlx5_vdpa_destroy_rqt(struct mlx5_vdpa_dev *mvdev, u32 rqtn)
- 	MLX5_SET(destroy_rqt_in, in, rqtn, rqtn);
- 	mlx5_cmd_exec_in(mvdev->mdev, destroy_rqt, in);
- }
-+EXPORT_SYMBOL(mlx5_vdpa_destroy_rqt);
- 
- int mlx5_vdpa_create_tir(struct mlx5_vdpa_dev *mvdev, void *in, u32 *tirn)
- {
-@@ -144,6 +148,7 @@ int mlx5_vdpa_create_tir(struct mlx5_vdpa_dev *mvdev, void *in, u32 *tirn)
- 
- 	return err;
- }
-+EXPORT_SYMBOL(mlx5_vdpa_create_tir);
- 
- void mlx5_vdpa_destroy_tir(struct mlx5_vdpa_dev *mvdev, u32 tirn)
- {
-@@ -154,6 +159,7 @@ void mlx5_vdpa_destroy_tir(struct mlx5_vdpa_dev *mvdev, u32 tirn)
- 	MLX5_SET(destroy_tir_in, in, tirn, tirn);
- 	mlx5_cmd_exec_in(mvdev->mdev, destroy_tir, in);
- }
-+EXPORT_SYMBOL(mlx5_vdpa_destroy_tir);
- 
- int mlx5_vdpa_alloc_transport_domain(struct mlx5_vdpa_dev *mvdev, u32 *tdn)
- {
-@@ -170,6 +176,7 @@ int mlx5_vdpa_alloc_transport_domain(struct mlx5_vdpa_dev *mvdev, u32 *tdn)
- 
- 	return err;
- }
-+EXPORT_SYMBOL(mlx5_vdpa_alloc_transport_domain);
- 
- void mlx5_vdpa_dealloc_transport_domain(struct mlx5_vdpa_dev *mvdev, u32 tdn)
- {
-@@ -180,6 +187,7 @@ void mlx5_vdpa_dealloc_transport_domain(struct mlx5_vdpa_dev *mvdev, u32 tdn)
- 	MLX5_SET(dealloc_transport_domain_in, in, transport_domain, tdn);
- 	mlx5_cmd_exec_in(mvdev->mdev, dealloc_transport_domain, in);
- }
-+EXPORT_SYMBOL(mlx5_vdpa_dealloc_transport_domain);
- 
- int mlx5_vdpa_create_mkey(struct mlx5_vdpa_dev *mvdev, struct mlx5_core_mkey *mkey, u32 *in,
- 			  int inlen)
-@@ -266,6 +274,7 @@ int mlx5_vdpa_alloc_resources(struct mlx5_vdpa_dev *mvdev)
- 	mutex_destroy(&mvdev->mr.mkey_mtx);
- 	return err;
- }
-+EXPORT_SYMBOL(mlx5_vdpa_alloc_resources);
- 
- void mlx5_vdpa_free_resources(struct mlx5_vdpa_dev *mvdev)
- {
-@@ -282,3 +291,4 @@ void mlx5_vdpa_free_resources(struct mlx5_vdpa_dev *mvdev)
- 	mutex_destroy(&mvdev->mr.mkey_mtx);
- 	res->valid = false;
- }
-+EXPORT_SYMBOL(mlx5_vdpa_free_resources);
--- 
-2.27.0
+# ./test_progs  | grep FAIL
+test_lookup_update:FAIL:map1_leak inner_map1 leaked!
+#10/1 lookup_update:FAIL
+#10 btf_map_in_map:FAIL
+configure_stack:FAIL:BPF load failed; run with -vv for more info
+#72 sk_assign:FAIL
+test_test_bpffs:FAIL:bpffs test  failed 255
+#96 test_bpffs:FAIL
+Summary: 113/844 PASSED, 14 SKIPPED, 4 FAILED
+
+The test_bpffs failure happens because the umh is missing from the
+.config; and when I tried to fix this I ended up with:
+
+[..]
+  CC [M]  kernel/bpf/preload/bpf_preload_kern.o
+
+Auto-detecting system features:
+...                        libelf: [ OFF ]
+...                          zlib: [ OFF ]
+...                           bpf: [ OFF ]
+
+No libelf found
+
+...which I just put down to random breakage, turned off the umh and
+continued on my way (ignoring the failed test). Until you wrote this I
+did not suspect this would be something I needed to pay attention to.
+Now that you did mention it, I'll obviously go investigate some more, my
+point is just that in this instance it's not accurate to assume I just
+didn't run the tests... :)
+
+> I think I will just start marking patches as changes-requested when I see=
+ that
+> they break tests without replying and without reviewing.
+> Please respect reviewer's time.
+
+That is completely fine if the tests are working in the first place. And
+even when they're not (like in this case), pointing it out is fine, and
+I'll obviously go investigate. But please at least reply to the email,
+not all of us watch patchwork regularly.
+
+(I'll fix all your other comments and respin; thanks!)
+
+-Toke
 
