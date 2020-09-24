@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B60E6276514
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 02:32:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C748027652B
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 02:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726734AbgIXAcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 20:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41730 "EHLO
+        id S1726702AbgIXAee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 20:34:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726466AbgIXAcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 20:32:19 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A559C0613CE;
-        Wed, 23 Sep 2020 17:32:19 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id k13so769540pfg.1;
-        Wed, 23 Sep 2020 17:32:19 -0700 (PDT)
+        with ESMTP id S1726599AbgIXAee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 20:34:34 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B7FC0613CE;
+        Wed, 23 Sep 2020 17:34:34 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id mn7so619961pjb.5;
+        Wed, 23 Sep 2020 17:34:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=9ug8usfNa3PZfFmZ6RI3mDJxlzqOuryqqA4P0VKGvHk=;
-        b=WUQQ34Q9Dhou2GG6rUi7tMwz0VGa7TigMXck6Lu7H8qiD0/44OKCZbAUi3n7cgIhpn
-         VTnH31LraN098C0jojeN93uiNcjyIeMAOeEwSNpT1BQpU9JtEvTve12ec5tR97TIVN0P
-         ZXRYrgwVDr9mZfvDSSXb0vXrWtc/2p/YHv1wVvjUfIB4Eniedg4v0Q2wPnpcvl+4focd
-         glAxMqjfLYEo56rgMxxkqDmOQn/vezLMj6WCJpUzkYTIKYPCa3xMutY3iU8CyGzcm4fN
-         bJrd0QX6wfXPs45DS1pwSEAvU0rUwJmvtFjxrhlp1Yn9VSitXg5EC51rGRpGLHvpATkH
-         htlQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :in-reply-to:references;
+        bh=jwJY9t7OliSFB0U6GDnxprcCnX6XVnxIKRMKuh9wJlw=;
+        b=cP7H0eSLlRQkpf/xIelNn2PqyFBSdrPbsr0QmrUEmiFydRC8OO1D6svI1b81zpHZOP
+         GjbuuqB5TvTUAdHpnLHAlOBgyeqOqYZAczyb1d1IH5pA2TDRSGD59xPBL/eWrEiIoUcB
+         vZ/XW5xN6t1+Ribi3YOdRbFi0ppSBftqX/vliy4c9G6EuFycFyP2zmQi0uVl0N2SZFju
+         DHcNLI4RzyU93RL9Ft0ZtiKo+LyOOTdNfhPuBmnoSBxQJuW3//JiEmMCw00zxorDFOza
+         vNhVZThuaS31YMQEdF7/R09cXAu1pF80EJ/wr3i1GcmbIG5E1cLJiGyFTI+ozoA1tgbt
+         N2CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=9ug8usfNa3PZfFmZ6RI3mDJxlzqOuryqqA4P0VKGvHk=;
-        b=m8fGVEOIXmeLipt6/zGFXveNuKn76lyVshxni5WEupONojfQkoA8MydO6areF4xGmG
-         SkQdr6yWEW7D1RV8Nk7cVBs2m3/iaiGGN2jXtXcKnlfKBiB90cp8YqKPuSc0Nja1sezg
-         UqfU68XlUxuj6QDfNa19WW0wVbaTLpYkhLPfomx/LeLhBLlixHnetNcQQzhpDSWantNl
-         Tgdws1t5+YTFbKeVHnnI8IYZApohJrgUzhiEC9AVupDa11eajDgJXKNcYGBIgICuVLuX
-         g+icCA2wZyHzZ0XutWj1HBaYEdnPv/dAElzyS+3G+422tCWIgmaySbaZL/AB0d2ddP4F
-         sOiQ==
-X-Gm-Message-State: AOAM530krDe+gaH/erVKP2XcPfHBIyyFyDNM54jmEAwpyT5xMN4djUkT
-        jipalOqcs3ZUTgpLKKeTR0U=
-X-Google-Smtp-Source: ABdhPJwAVP9o34+72rUsOd+wOddOPKkW8SxV/W6C169LuF/es914/a6cpu3NtSlrb0F4g4bEhw9Wtw==
-X-Received: by 2002:a63:5119:: with SMTP id f25mr1793883pgb.351.1600907538503;
-        Wed, 23 Sep 2020 17:32:18 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:in-reply-to:references;
+        bh=jwJY9t7OliSFB0U6GDnxprcCnX6XVnxIKRMKuh9wJlw=;
+        b=DijbJgaiZGkk/Je840FepReIBThv25zRFRqxScnSxr5u8OZuwKJFYQoVqfSH+DNklv
+         2pCBOXTEXpoeLylaKmShLByZFLYIeeh4S3EiXeHufxDPKrQY2BcIxagv4RKdqkZNHYJf
+         bBxx6CNmbP3IVV+NEPdPEHAwFC9eCo07fI156puGFm5YF6YnMWF2bRGNAsGpwNxlOfe3
+         5mX78YWMu1BHaT1aZN1nhYq/O3LqXer7odYFTrU6YOZI+yv77bxMKxvjTWcfrG8xT/JH
+         m9gKl1aoHyYHMpzz9pAW8Qy8YfkE/WoqyVWBnl7CEm1iu17NDTygCW5mH/l4wbaxJ8ed
+         R0/w==
+X-Gm-Message-State: AOAM530xHcQqE3tT4Bow+H/Bnbh6hkKZ8imBaSWACZzvHLyE2N3uVWaP
+        3pF7l5FbH8WRjiP+2YRpv5Q=
+X-Google-Smtp-Source: ABdhPJwyLn4p45Re8sPvLgoWFqR9oyhktroVFR1hMRtPj0O7D5UTgfphkLbljRXEl8KdkofUV+9QPQ==
+X-Received: by 2002:a17:90b:4b82:: with SMTP id lr2mr1635424pjb.184.1600907673922;
+        Wed, 23 Sep 2020 17:34:33 -0700 (PDT)
 Received: from localhost ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id z8sm828757pgr.70.2020.09.23.17.32.17
+        by smtp.gmail.com with ESMTPSA id gq14sm504787pjb.44.2020.09.23.17.34.32
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Sep 2020 17:32:17 -0700 (PDT)
+        Wed, 23 Sep 2020 17:34:32 -0700 (PDT)
 From:   Geliang Tang <geliangtang@gmail.com>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
@@ -52,78 +54,153 @@ To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
         mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [MPTCP][PATCH net-next 00/16] mptcp: RM_ADDR/ADD_ADDR enhancements
-Date:   Thu, 24 Sep 2020 08:29:46 +0800
-Message-Id: <cover.1600853093.git.geliangtang@gmail.com>
+Subject: [MPTCP][PATCH net-next 01/16] mptcp: rename addr_signal and the related functions
+Date:   Thu, 24 Sep 2020 08:29:47 +0800
+Message-Id: <bfecdd638bb74a02de1c3f1c84239911e304fcc3.1600853093.git.geliangtang@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1600853093.git.geliangtang@gmail.com>
+References: <cover.1600853093.git.geliangtang@gmail.com>
+In-Reply-To: <cover.1600853093.git.geliangtang@gmail.com>
+References: <cover.1600853093.git.geliangtang@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series include two enhancements for the MPTCP path management,
-namely RM_ADDR support and ADD_ADDR echo support, as specified by RFC
-sections 3.4.1 and 3.4.2.
+This patch renamed addr_signal and the related functions with the explicit
+word "add".
 
-1 RM_ADDR support include 9 patches (1-3 and 8-13):
+Suggested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Suggested-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+---
+ net/mptcp/options.c  | 14 +++++++-------
+ net/mptcp/pm.c       | 12 ++++++------
+ net/mptcp/protocol.h | 10 +++++-----
+ 3 files changed, 18 insertions(+), 18 deletions(-)
 
-Patch 1 is the helper for patch 2, these two patches add the RM_ADDR
-outgoing functions, which are derived from ADD_ADDR's corresponding
-functions.
-
-Patch 3 adds the RM_ADDR incoming logic, when RM_ADDR suboption is
-received, close the subflow matching the rm_id, and update PM counter.
-
-Patch 8 is the main remove routine. When the PM netlink removes an address,
-we traverse all the existing msk sockets to find the relevant sockets. Then
-trigger the RM_ADDR signal and remove the subflow which using this local
-address, this subflow removing functions has been implemented in patch 9.
-
-Finally, patches 10-13 are the self-tests for RM_ADDR.
-
-2 ADD_ADDR echo support include 7 patches (4-7 and 14-16).
-
-Patch 4 adds the ADD_ADDR echo logic, when the ADD_ADDR suboption has been
-received, send out the same ADD_ADDR suboption with echo-flag, and no HMAC
-included.
-
-Patches 5 and 6 are the self-tests for ADD_ADDR echo. Patch 7 is a little
-cleaning up.
-
-Patch 14 and 15 are the helpers for patch 16. These three patches add
-the ADD_ADDR retransmition when no ADD_ADDR echo is received.
-
-Geliang Tang (16):
-  mptcp: rename addr_signal and the related functions
-  mptcp: add the outgoing RM_ADDR support
-  mptcp: add the incoming RM_ADDR support
-  mptcp: send out ADD_ADDR with echo flag
-  mptcp: add ADD_ADDR related mibs
-  selftests: mptcp: add ADD_ADDR mibs check function
-  mptcp: add accept_subflow re-check
-  mptcp: remove addr and subflow in PM netlink
-  mptcp: implement mptcp_pm_remove_subflow
-  mptcp: add RM_ADDR related mibs
-  mptcp: add mptcp_destroy_common helper
-  selftests: mptcp: add remove cfg in mptcp_connect
-  selftests: mptcp: add remove addr and subflow test cases
-  mptcp: add struct mptcp_pm_add_entry
-  mptcp: add sk_stop_timer_sync helper
-  mptcp: retransmit ADD_ADDR when timeout
-
- include/net/sock.h                            |   2 +
- net/core/sock.c                               |   7 +
- net/mptcp/mib.c                               |   4 +
- net/mptcp/mib.h                               |   4 +
- net/mptcp/options.c                           |  81 +++--
- net/mptcp/pm.c                                |  91 ++++--
- net/mptcp/pm_netlink.c                        | 276 +++++++++++++++++-
- net/mptcp/protocol.c                          |  30 +-
- net/mptcp/protocol.h                          |  39 ++-
- net/mptcp/subflow.c                           |   3 +-
- .../selftests/net/mptcp/mptcp_connect.c       |  18 +-
- .../testing/selftests/net/mptcp/mptcp_join.sh | 189 +++++++++++-
- 12 files changed, 674 insertions(+), 70 deletions(-)
-
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index 7fa822b55c34..ee0cb0546324 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -571,18 +571,18 @@ static u64 add_addr6_generate_hmac(u64 key1, u64 key2, u8 addr_id,
+ }
+ #endif
+ 
+-static bool mptcp_established_options_addr(struct sock *sk,
+-					   unsigned int *size,
+-					   unsigned int remaining,
+-					   struct mptcp_out_options *opts)
++static bool mptcp_established_options_add_addr(struct sock *sk,
++					       unsigned int *size,
++					       unsigned int remaining,
++					       struct mptcp_out_options *opts)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+ 	struct mptcp_sock *msk = mptcp_sk(subflow->conn);
+ 	struct mptcp_addr_info saddr;
+ 	int len;
+ 
+-	if (!mptcp_pm_should_signal(msk) ||
+-	    !(mptcp_pm_addr_signal(msk, remaining, &saddr)))
++	if (!mptcp_pm_should_add_signal(msk) ||
++	    !(mptcp_pm_add_addr_signal(msk, remaining, &saddr)))
+ 		return false;
+ 
+ 	len = mptcp_add_addr_len(saddr.family);
+@@ -640,7 +640,7 @@ bool mptcp_established_options(struct sock *sk, struct sk_buff *skb,
+ 
+ 	*size += opt_size;
+ 	remaining -= opt_size;
+-	if (mptcp_established_options_addr(sk, &opt_size, remaining, opts)) {
++	if (mptcp_established_options_add_addr(sk, &opt_size, remaining, opts)) {
+ 		*size += opt_size;
+ 		remaining -= opt_size;
+ 		ret = true;
+diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
+index a8ad20559aaa..ce12b8b26ad2 100644
+--- a/net/mptcp/pm.c
++++ b/net/mptcp/pm.c
+@@ -18,7 +18,7 @@ int mptcp_pm_announce_addr(struct mptcp_sock *msk,
+ 	pr_debug("msk=%p, local_id=%d", msk, addr->id);
+ 
+ 	msk->pm.local = *addr;
+-	WRITE_ONCE(msk->pm.addr_signal, true);
++	WRITE_ONCE(msk->pm.add_addr_signal, true);
+ 	return 0;
+ }
+ 
+@@ -151,22 +151,22 @@ void mptcp_pm_add_addr_received(struct mptcp_sock *msk,
+ 
+ /* path manager helpers */
+ 
+-bool mptcp_pm_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
+-			  struct mptcp_addr_info *saddr)
++bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
++			      struct mptcp_addr_info *saddr)
+ {
+ 	int ret = false;
+ 
+ 	spin_lock_bh(&msk->pm.lock);
+ 
+ 	/* double check after the lock is acquired */
+-	if (!mptcp_pm_should_signal(msk))
++	if (!mptcp_pm_should_add_signal(msk))
+ 		goto out_unlock;
+ 
+ 	if (remaining < mptcp_add_addr_len(msk->pm.local.family))
+ 		goto out_unlock;
+ 
+ 	*saddr = msk->pm.local;
+-	WRITE_ONCE(msk->pm.addr_signal, false);
++	WRITE_ONCE(msk->pm.add_addr_signal, false);
+ 	ret = true;
+ 
+ out_unlock:
+@@ -186,7 +186,7 @@ void mptcp_pm_data_init(struct mptcp_sock *msk)
+ 	msk->pm.local_addr_used = 0;
+ 	msk->pm.subflows = 0;
+ 	WRITE_ONCE(msk->pm.work_pending, false);
+-	WRITE_ONCE(msk->pm.addr_signal, false);
++	WRITE_ONCE(msk->pm.add_addr_signal, false);
+ 	WRITE_ONCE(msk->pm.accept_addr, false);
+ 	WRITE_ONCE(msk->pm.accept_subflow, false);
+ 	msk->pm.status = 0;
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 493bd2c13bc6..91adc9a19757 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -162,7 +162,7 @@ struct mptcp_pm_data {
+ 
+ 	spinlock_t	lock;		/*protects the whole PM data */
+ 
+-	bool		addr_signal;
++	bool		add_addr_signal;
+ 	bool		server_side;
+ 	bool		work_pending;
+ 	bool		accept_addr;
+@@ -438,9 +438,9 @@ int mptcp_pm_announce_addr(struct mptcp_sock *msk,
+ int mptcp_pm_remove_addr(struct mptcp_sock *msk, u8 local_id);
+ int mptcp_pm_remove_subflow(struct mptcp_sock *msk, u8 remote_id);
+ 
+-static inline bool mptcp_pm_should_signal(struct mptcp_sock *msk)
++static inline bool mptcp_pm_should_add_signal(struct mptcp_sock *msk)
+ {
+-	return READ_ONCE(msk->pm.addr_signal);
++	return READ_ONCE(msk->pm.add_addr_signal);
+ }
+ 
+ static inline unsigned int mptcp_add_addr_len(int family)
+@@ -450,8 +450,8 @@ static inline unsigned int mptcp_add_addr_len(int family)
+ 	return TCPOLEN_MPTCP_ADD_ADDR6;
+ }
+ 
+-bool mptcp_pm_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
+-			  struct mptcp_addr_info *saddr);
++bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
++			      struct mptcp_addr_info *saddr);
+ int mptcp_pm_get_local_id(struct mptcp_sock *msk, struct sock_common *skc);
+ 
+ void __init mptcp_pm_nl_init(void);
 -- 
 2.17.1
 
