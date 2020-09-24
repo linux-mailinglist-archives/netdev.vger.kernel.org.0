@@ -2,103 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67DA82778A7
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 20:45:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9398E2778D3
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 20:58:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728752AbgIXSpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 14:45:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41054 "EHLO
+        id S1728420AbgIXS6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 14:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728605AbgIXSpe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 14:45:34 -0400
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5536C0613CE
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 11:45:34 -0700 (PDT)
-Received: by mail-ot1-x342.google.com with SMTP id n61so4124512ota.10
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 11:45:34 -0700 (PDT)
+        with ESMTP id S1726681AbgIXS6y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 14:58:54 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A38DBC0613CE;
+        Thu, 24 Sep 2020 11:58:53 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id s13so106849wmh.4;
+        Thu, 24 Sep 2020 11:58:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=Pp99UhxGop9ixvcK8ljKNI/v9IifEBTq/Hj5ua1ja8o=;
-        b=hUbijHWPMqA4Mx1oDxYfYRGwVKGcxzjr3XAU4EdsA5pUMR8GGAj9chb7JpDtprkvKf
-         BWpphlAsSo4aeJITPu5DAuO7voKCefm3CXIp7og+mW5QQ7/qy9f8WxhDcniIHheIH7dV
-         5NLCaNFYpzf7Z76ZCTnrHXtbIjpQNLtdR4xPQ4/HcNwPJk2joXGbog9VG0ZwEqYMkUCG
-         ujqXBijUhq7z1qMATABL//Os7qJVOFyqSSP1vltMvZb7bdKgN5+a6QmHCmZ2Gr1FZGK7
-         hLl5w9FEyWIWYIgQXc6ZjJQD7uuKrgt/q9MwiK767qpcuaUSwdQuZgOYBtvnH110hsXv
-         pHtQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=whVWU1G0Rf6aOrTmjuAQq7Qed/+App25DvdLdv5TIOw=;
+        b=J5VvsV6T+xNuTTn6TFx5ulvFBfEGLwV/KpEmgJ8YRi1ld3sMbflUlCvxVE6+TiTGVL
+         N4iM3HIQcRLhPz/4teEybKkwcbZaxVUdWz5UwwxO5Jv1UZ5tEmcdXXa6KXOEE39qzeYZ
+         ikvxYdetFLNAapEc1HBknUF4lduRE9PFILnHqr6IrwwgXalcjkGkcs/wA/uO9UdO1ltg
+         3VPmanQtPT3yPN5i4pRcIYnUsVeq4Hsd3YP9vanuL8yfcQAlcCkF2NpN4PnNl+NRBPl0
+         3OxUzi4K7uWJktsNCk4hDokD4AvnZY8bU3frkCUsPqTono8PsXwh5En8tbDzXoOTNhDl
+         NQuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=Pp99UhxGop9ixvcK8ljKNI/v9IifEBTq/Hj5ua1ja8o=;
-        b=pDdqbCiE4IqbtM4XFuZTkdlcKI3WwmTe9AMdaxhotKs0+pSIAhlD1HSEsgBnxckfUn
-         4ZIyB7wU7z05j8FF9eRE2EFnOM+R2rE7fIl3kxy0hDNQxj+NoXf376eVzqnXD1HqfZeX
-         9bcw1/MnN4bu3GXJnXz1oiHQC4p1OwoDWOvQt/lBOWxpSpRir/knIlB5INvFBESCC9Hs
-         Zeb1Ltq8LptJI7AiDH/M7BQLOIjPNx//BeI9hH786hFtsgAE6lHW0rdnoiQHTC2REgX4
-         8Uqa+1iddbRxc7ZOwWtfT4oVJyZwyvPurCZGBXKuldZDfGsxivvWZ2QF21FSlNBMVN62
-         TT4A==
-X-Gm-Message-State: AOAM533qbWTwIIJEU/xOl68N6xnfKULRjivCWjrGPmdZorRvpmHiVK7z
-        1+HTXgoNlRcVvaSy8pB5RHje7B+L9BA1LA==
-X-Google-Smtp-Source: ABdhPJzG/EoFi72TruqVW1+Ncc8nkce6ePClNFjyGyvwdk+mKh2+znkd4X398/PCOm3mc0lXXL7SXg==
-X-Received: by 2002:a9d:4e1a:: with SMTP id p26mr388350otf.197.1600973133349;
-        Thu, 24 Sep 2020 11:45:33 -0700 (PDT)
-Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id j10sm25945oif.36.2020.09.24.11.45.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Sep 2020 11:45:32 -0700 (PDT)
-Subject: [bpf-next PATCH 2/2] bpf: Add AND verifier test case where 32bit
- and 64bit bounds differ
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net
-Cc:     netdev@vger.kernel.org, john.fastabend@gmail.com
-Date:   Thu, 24 Sep 2020 11:45:22 -0700
-Message-ID: <160097312263.12106.17437529842919754724.stgit@john-Precision-5820-Tower>
-In-Reply-To: <160097310597.12106.6191783180902126213.stgit@john-Precision-5820-Tower>
-References: <160097310597.12106.6191783180902126213.stgit@john-Precision-5820-Tower>
-User-Agent: StGit/0.17.1-dirty
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=whVWU1G0Rf6aOrTmjuAQq7Qed/+App25DvdLdv5TIOw=;
+        b=mNQf1zyubDW5V0wcX8dBL/hsaDO/fr58GFimoiUYwUT1aXD/tc1Hf3OPjVDZV37b3b
+         53sRUMDCHp777TBwbCYhf7EPfjXBUCjhkcYf9NbJz7AwohW73rZUYw5fTKrM+FShdT++
+         fbCpJ9alZbTwwA6ddWA11DVDQgDDqs3KQXhiyI4SkLaJj9sum728vrm5bph42hdjhOOq
+         CBRg2UZ0gMvgo5S+u8dd+DaT5gyEVwlKi40ijM5I15oe34L37RD6I0tfw0LZCM3ekrIA
+         bZs5gYAhrbggNcrX7Uig/K4RHyxogPxm0UrCPS/tUSTzuCnslgxeUactoIHNv15qpI/d
+         y17Q==
+X-Gm-Message-State: AOAM530N5e2iUnTjxbiDclL+pgHLjKMbXh3OX7seq16eyQufPDXVbKiq
+        qQliuQmvulnOPaIbjJN6K/dYoa6gUk4=
+X-Google-Smtp-Source: ABdhPJy5pDn2aAO5m6cClMO/dZT0eGyg4CWDTAlV7V3sEahSsNSFr2c24eAdg5CQ1/zNYuDpeyIYKA==
+X-Received: by 2002:a7b:c095:: with SMTP id r21mr82558wmh.133.1600973932150;
+        Thu, 24 Sep 2020 11:58:52 -0700 (PDT)
+Received: from [192.168.8.147] ([37.171.124.168])
+        by smtp.gmail.com with ESMTPSA id n4sm61340wrp.61.2020.09.24.11.58.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Sep 2020 11:58:51 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 2/6] bpf, net: rework cookie generator as per-cpu
+ one
+To:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org
+Cc:     john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <cover.1600967205.git.daniel@iogearbox.net>
+ <d4150caecdbef4205178753772e3bc301e908355.1600967205.git.daniel@iogearbox.net>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <e854149f-f3a6-a736-9d33-08b2f60eb3a2@gmail.com>
+Date:   Thu, 24 Sep 2020 20:58:50 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <d4150caecdbef4205178753772e3bc301e908355.1600967205.git.daniel@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If we AND two values together that are known in the 32bit subregs, but not
-known in the 64bit registers we rely on the tnum value to report the 32bit
-subreg is known. And do not use mark_reg_known() directly from
-scalar32_min_max_and()
 
-Add an AND test to cover the case with known 32bit subreg, but unknown
-64bit reg.
 
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- tools/testing/selftests/bpf/verifier/and.c |   16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+On 9/24/20 8:21 PM, Daniel Borkmann wrote:
+> With its use in BPF the cookie generator can be called very frequently
+> in particular when used out of cgroup v2 hooks (e.g. connect / sendmsg)
+> and attached to the root cgroup, for example, when used in v1/v2 mixed
+> environments. In particular when there's a high churn on sockets in the
+> system there can be many parallel requests to the bpf_get_socket_cookie()
+> and bpf_get_netns_cookie() helpers which then cause contention on the
+> shared atomic counter. As similarly done in f991bd2e1421 ("fs: introduce
+> a per-cpu last_ino allocator"), add a small helper library that both can
+> then use for the 64 bit counters.
+> 
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+>  include/linux/cookie.h   | 41 ++++++++++++++++++++++++++++++++++++++++
+>  net/core/net_namespace.c |  5 +++--
+>  net/core/sock_diag.c     |  7 ++++---
+>  3 files changed, 48 insertions(+), 5 deletions(-)
+>  create mode 100644 include/linux/cookie.h
+> 
+> diff --git a/include/linux/cookie.h b/include/linux/cookie.h
+> new file mode 100644
+> index 000000000000..2488203dc004
+> --- /dev/null
+> +++ b/include/linux/cookie.h
+> @@ -0,0 +1,41 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef __LINUX_COOKIE_H
+> +#define __LINUX_COOKIE_H
+> +
+> +#include <linux/atomic.h>
+> +#include <linux/percpu.h>
+> +
+> +struct gen_cookie {
+> +	u64 __percpu	*local_last;
+> +	atomic64_t	 shared_last ____cacheline_aligned_in_smp;
+> +};
+> +
+> +#define COOKIE_LOCAL_BATCH	4096
+> +
+> +#define DEFINE_COOKIE(name)					\
+> +	static DEFINE_PER_CPU(u64, __##name);			\
+> +	static struct gen_cookie name = {			\
+> +		.local_last	= &__##name,			\
+> +		.shared_last	= ATOMIC64_INIT(0),		\
+> +	}
+> +
+> +static inline u64 gen_cookie_next(struct gen_cookie *gc)
+> +{
+> +	u64 *local_last = &get_cpu_var(*gc->local_last);
+> +	u64 val = *local_last;
+> +
+> +	if (__is_defined(CONFIG_SMP) &&
+> +	    unlikely((val & (COOKIE_LOCAL_BATCH - 1)) == 0)) {
+> +		s64 next = atomic64_add_return(COOKIE_LOCAL_BATCH,
+> +					       &gc->shared_last);
+> +		val = next - COOKIE_LOCAL_BATCH;
+> +	}
+> +	val++;
+> +	if (unlikely(!val))
+> +		val++;
+> +	*local_last = val;
+> +	put_cpu_var(local_last);
+> +	return val;
 
-diff --git a/tools/testing/selftests/bpf/verifier/and.c b/tools/testing/selftests/bpf/verifier/and.c
-index d781bc86e100..ca8fdb1b3f01 100644
---- a/tools/testing/selftests/bpf/verifier/and.c
-+++ b/tools/testing/selftests/bpf/verifier/and.c
-@@ -48,3 +48,19 @@
- 	.result = REJECT,
- 	.flags = F_NEEDS_EFFICIENT_UNALIGNED_ACCESS,
- },
-+{
-+	"check known subreg with unknown reg",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_ALU64_IMM(BPF_LSH, BPF_REG_0, 32),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, 1),
-+	BPF_ALU64_IMM(BPF_AND, BPF_REG_0, 0xFFFF1234),
-+	/* Upper bits are unknown but AND above masks out 1 zero'ing lower bits */
-+	BPF_JMP32_IMM(BPF_JLT, BPF_REG_0, 1, 1),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1, 512),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0
-+},
+
+This is not interrupt safe.
+
+I think sock_gen_cookie() can be called from interrupt context.
+
+get_next_ino() is only called from process context, that is what I used get_cpu_var()
+and put_cpu_var()
 
