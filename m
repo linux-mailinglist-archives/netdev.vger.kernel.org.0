@@ -2,90 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12F36277218
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 15:25:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 548682772EB
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 15:45:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727974AbgIXNZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 09:25:47 -0400
-Received: from mailgw02.mediatek.com ([216.200.240.185]:22843 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727846AbgIXNZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 09:25:46 -0400
-X-UUID: b3e13f1d512a445aa0a2469b08f363b8-20200924
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=13CQbbbCVICRMofyq52vrwixbhSdHJNGZxZmv9+sfFk=;
-        b=uKdAiTCcp84WiecPLMb8VJ4qqgSK3b1CbHzaTPHk0YiSpmKIGNFrmX4OcU4sb+/ZcX0SOgBPTo0kaB0+v/DIeCLXJUQltLi9kDrzY2FEaiqj/yMdAE2Y2Tr/219fqF6b9R+x/NBpNNZELXZmqS5Xy5FDbZI9uljg0j0rSUcgsck=;
-X-UUID: b3e13f1d512a445aa0a2469b08f363b8-20200924
-Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by mailgw02.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (musrelay.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1637863272; Thu, 24 Sep 2020 05:25:44 -0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- MTKMBS62N1.mediatek.inc (172.29.193.41) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 24 Sep 2020 06:25:41 -0700
-Received: from [172.21.84.99] (172.21.84.99) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 24 Sep 2020 21:25:32 +0800
-Message-ID: <1600953934.19244.2.camel@mtksdccf07>
-Subject: Re: [PATCH v2] net: dsa: mt7530: Add some return-value checks
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     Alex Dewar <alex.dewar90@gmail.com>
-CC:     Sean Wang <Sean.Wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
-        "Vivien Didelot" <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Thu, 24 Sep 2020 21:25:34 +0800
-In-Reply-To: <9db38be8-9926-b74b-c860-018486b17f3a@gmail.com>
-References: <1600327978.11746.22.camel@mtksdccf07>
-         <20200919192809.29120-1-alex.dewar90@gmail.com>
-         <1600949604.11746.27.camel@mtksdccf07>
-         <9db38be8-9926-b74b-c860-018486b17f3a@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
+        id S1728104AbgIXNp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 09:45:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:48458 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727859AbgIXNp1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 09:45:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600955125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+        bh=K9Z9F7RxcgQ9rPtNPeSxeVDvP+GWh1Rt0q8Ee+GXEDM=;
+        b=WUmButUhuGWFGgl4Zz1vQQqvfoNBdpdX7S1yxcJF6zPjEqZl7kAbm08DlYiB9gYnC0R1iJ
+        daWyOaESwR0UkWnEo59PDz/GIxAcFnykwQQK9Qo323yeqaW2syAqpuHLE+tGOUAuP+YJ7H
+        YFU/3spoKFNou0U+Umu6ArRXeIoV2eU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-42-c2v8abAmOdK17kNELYu4qg-1; Thu, 24 Sep 2020 09:45:22 -0400
+X-MC-Unique: c2v8abAmOdK17kNELYu4qg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B7D561008552;
+        Thu, 24 Sep 2020 13:45:19 +0000 (UTC)
+Received: from [10.10.115.120] (ovpn-115-120.rdu2.redhat.com [10.10.115.120])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CA34B1002C07;
+        Thu, 24 Sep 2020 13:45:12 +0000 (UTC)
+Subject: Re: [PATCH v2 1/4] sched/isolation: API to get housekeeping online
+ CPUs
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        helgaas@kernel.org, jeffrey.t.kirsher@intel.com,
+        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
+        bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jerinj@marvell.com, mathias.nyman@intel.com, jiri@nvidia.com,
+        mingo@redhat.com, juri.lelli@redhat.com, vincent.guittot@linaro.org
+References: <20200923181126.223766-1-nitesh@redhat.com>
+ <20200923181126.223766-2-nitesh@redhat.com>
+ <20200924124619.GL2628@hirez.programming.kicks-ass.net>
+From:   Nitesh Narayan Lal <nitesh@redhat.com>
+Autocrypt: addr=nitesh@redhat.com; prefer-encrypt=mutual; keydata=
+ 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
+ VujM7c/b4pps
+Organization: Red Hat Inc,
+Message-ID: <6243a4b7-9a43-a7f4-0386-0370449ddc8d@redhat.com>
+Date:   Thu, 24 Sep 2020 09:45:10 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+In-Reply-To: <20200924124619.GL2628@hirez.programming.kicks-ass.net>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=nitesh@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="HKrLwWXCgkXOOpskHrwX5Q48mH8JpbM50"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTA5LTI0IGF0IDE0OjExICswMTAwLCBBbGV4IERld2FyIHdyb3RlOg0KPiBP
-biAyMDIwLTA5LTI0IDEzOjEzLCBMYW5kZW4gQ2hhbyB3cm90ZToNCj4gPiBIaSBBbGV4LA0KPiA+
-DQo+ID4gVGhhbmtzIGZvciB5b3VyIHBhdGNoLiBCeSBsaW51eC9zY3JpcHRzL2NoZWNrcGF0Y2gu
-cGwNCj4gPg0KPiA+IE9uIFN1biwgMjAyMC0wOS0yMCBhdCAwMzoyOCArMDgwMCwgQWxleCBEZXdh
-ciB3cm90ZToNCj4gPiBbLi5dDQo+ID4+IEBAIC0xNjMxLDkgKzE2MzUsMTEgQEAgbXQ3NTMwX3Nl
-dHVwKHN0cnVjdCBkc2Ffc3dpdGNoICpkcykNCj4gPj4gICAJCW10NzUzMF9ybXcocHJpdiwgTVQ3
-NTMwX1BDUl9QKGkpLCBQQ1JfTUFUUklYX01BU0ssDQo+ID4+ICAgCQkJICAgUENSX01BVFJJWF9D
-TFIpOw0KPiA+PiAgIA0KPiA+PiAtCQlpZiAoZHNhX2lzX2NwdV9wb3J0KGRzLCBpKSkNCj4gPj4g
-LQkJCW10NzUzeF9jcHVfcG9ydF9lbmFibGUoZHMsIGkpOw0KPiA+PiAtCQllbHNlDQo+ID4+ICsJ
-CWlmIChkc2FfaXNfY3B1X3BvcnQoZHMsIGkpKSB7DQo+ID4+ICsJCQlyZXQgPSBtdDc1M3hfY3B1
-X3BvcnRfZW5hYmxlKGRzLCBpKTsNCj4gPj4gKwkJCWlmIChyZXQpDQo+ID4+ICsJCQkJcmV0dXJu
-IHJldDsNCj4gPj4gKwkJfSBlbHNlDQo+ID4+ICAgCQkJbXQ3NTMwX3BvcnRfZGlzYWJsZShkcywg
-aSk7DQo+ID4gQ0hFQ0s6IGJyYWNlcyB7fSBzaG91bGQgYmUgdXNlZCBvbiBhbGwgYXJtcyBvZiB0
-aGlzIHN0YXRlbWVudA0KPiA+IENIRUNLOiBVbmJhbGFuY2VkIGJyYWNlcyBhcm91bmQgZWxzZSBz
-dGF0ZW1lbnQNCj4gPj4gICANCj4gPj4gICAJCS8qIEVuYWJsZSBjb25zaXN0ZW50IGVncmVzcyB0
-YWcgKi8NCj4gPj4gQEAgLTE3ODUsOSArMTc5MSwxMSBAQCBtdDc1MzFfc2V0dXAoc3RydWN0IGRz
-YV9zd2l0Y2ggKmRzKQ0KPiA+PiAgIA0KPiA+PiAgIAkJbXQ3NTMwX3NldChwcml2LCBNVDc1MzFf
-REJHX0NOVChpKSwgTVQ3NTMxX0RJU19DTFIpOw0KPiA+PiAgIA0KPiA+PiAtCQlpZiAoZHNhX2lz
-X2NwdV9wb3J0KGRzLCBpKSkNCj4gPj4gLQkJCW10NzUzeF9jcHVfcG9ydF9lbmFibGUoZHMsIGkp
-Ow0KPiA+PiAtCQllbHNlDQo+ID4+ICsJCWlmIChkc2FfaXNfY3B1X3BvcnQoZHMsIGkpKSB7DQo+
-ID4+ICsJCQlyZXQgPSBtdDc1M3hfY3B1X3BvcnRfZW5hYmxlKGRzLCBpKTsNCj4gPj4gKwkJCWlm
-IChyZXQpDQo+ID4+ICsJCQkJcmV0dXJuIHJldDsNCj4gPj4gKwkJfSBlbHNlDQo+ID4+ICAgCQkJ
-bXQ3NTMwX3BvcnRfZGlzYWJsZShkcywgaSk7DQo+ID4gQ0hFQ0s6IGJyYWNlcyB7fSBzaG91bGQg
-YmUgdXNlZCBvbiBhbGwgYXJtcyBvZiB0aGlzIHN0YXRlbWVudA0KPiA+IENIRUNLOiBVbmJhbGFu
-Y2VkIGJyYWNlcyBhcm91bmQgZWxzZSBzdGF0ZW1lbnQNCj4gPg0KPiA+IFsuLl0NCj4gPiByZWdh
-cmRzIGxhbmRlbg0KPiBIaSBMYW5kZW4sDQo+IA0KPiBTb3JyeSBhYm91dCB0aGlzLi4uIEkgdXN1
-YWxseSBydW4gY2hlY2twYXRjaCBvdmVyIG15IHBhdGNoZXMuIFdvdWxkIHlvdSANCj4gbGlrZSBt
-ZSB0byBzZW5kIGEgc2VwYXJhdGUgZml4IG9yIGEgdjM/DQo+IA0KPiBCZXN0LA0KPiBBbGV4DQpI
-aSBBbGV4LA0KDQpCZWNhdXNlIHYyIGhhcyBub3QgYmVlbiBtZXJnZWQgeWV0LCBjb3VsZCB5b3Ug
-aGVscCB0byBmaXggaXQgaW4gdjM/DQoNCnJlZ2FyZHMgbGFuZGVuDQoNCg==
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--HKrLwWXCgkXOOpskHrwX5Q48mH8JpbM50
+Content-Type: multipart/mixed; boundary="QbZeJQShDXeeE7B2zk7P2QOND28FmFuhJ"
+
+--QbZeJQShDXeeE7B2zk7P2QOND28FmFuhJ
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+
+
+On 9/24/20 8:46 AM, Peter Zijlstra wrote:
+>
+> FWIW, cross-posting to moderated lists is annoying. I don't know why we
+> allow them in MAINTAINERS :-(
+
+Yeah, it sends out an acknowledgment for every email.
+I had to include it because sending the patches to it apparently allows the=
+m
+to get tested by Intel folks.
+
+>
+--=20
+Nitesh
+
+
+--QbZeJQShDXeeE7B2zk7P2QOND28FmFuhJ--
+
+--HKrLwWXCgkXOOpskHrwX5Q48mH8JpbM50
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEkXcoRVGaqvbHPuAGo4ZA3AYyozkFAl9souYACgkQo4ZA3AYy
+ozleKQ//aOYjmqwRTP1nJU8udLJGHJPYhjlV3zFwyKbhaDjPKmPoG8B3yGrGIM0r
+hUepl4fCkHY4RcqgXcVC2xNNQQIpQ4J3Kre3l0agESKZD1evhFGyAcSDK80/W61b
+Eycz8Vqix4jLiK3JalIhoMMCwYr7HXUDAxdqnVLWB3ynoY8rPp0dAEJh64wqhhoH
+LHeb2j4RL4FY3l0ewIbnC60VuBJMeVT5JKKUaw0Ds3X9eV1jIGXZ/lI2R3z+ttov
+zOjIwfwYJY17ByeASizYvmm1FhTwgZGUG5yZbAyJE6anrKt3CHxvazWnTpNgdmQk
+GfyPi+20aArQcv/O8CcO+ip/fW2HZBccyO08UhaKIW39/qkpwcsq/xGeorrikSGi
+Gr2E3iQaGo+jeGEZYIvnWY0pnu2rwpyMZKvJrN+QNttUOXETomVsoTaaU6hkql8J
+CjDszAtb20ZbLmyEbdqOetw/pgP6X3a13rUXVp5LpT7wD+jkW7vj20Rp5nd5Fctp
+klhN+QEItoxLEdo9p9GrkeLjoIEbRw7Lt6u+/x2zKxVKMU1/Twt/+NKnK9zwmFTo
+XE9TG0WdW0vCZI2wLc/G9Dci1dhazjnhXMTobpjeC+BePcx41zCu0l94D9NdGfT7
+dzStjRzb/UUFpfpI6Rfo+rg/E6hvgn/hXoHMfARdbm6zQmx6PL4=
+=IEMl
+-----END PGP SIGNATURE-----
+
+--HKrLwWXCgkXOOpskHrwX5Q48mH8JpbM50--
 
