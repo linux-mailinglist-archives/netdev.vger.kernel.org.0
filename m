@@ -2,103 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A95272765DE
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 03:30:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F231127660A
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 03:50:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726358AbgIXBac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 21:30:32 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:14266 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725273AbgIXBac (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 21:30:32 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id A5CBDF4800612618B408;
-        Thu, 24 Sep 2020 09:30:29 +0800 (CST)
-Received: from localhost.localdomain (10.175.118.36) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 24 Sep 2020 09:30:23 +0800
-From:   Luo bin <luobin9@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
-        <chiqijun@huawei.com>, <zengweiliang.zengweiliang@huawei.com>
-Subject: [PATCH net] hinic: fix wrong return value of mac-set cmd
-Date:   Thu, 24 Sep 2020 09:31:51 +0800
-Message-ID: <20200924013151.25754-1-luobin9@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726265AbgIXBuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 21:50:01 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54380 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725208AbgIXBuA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 21:50:00 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08O1JqNn022575
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 18:20:04 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=AkCqPZr91SmqckdCfsq4yzXPiVRrgGIzdA1H0KFySSQ=;
+ b=QfrVURb9U1yhobl3lyxWN3EtSf7O4Yj69GG/lAOjTzYJMZVVj1DXMHjWtfwtPZggmO44
+ sw2qze11ugI/XrAWcrfkTUh/93DJhcrSSmmf9+LcnN5uKUtjpIJJhj/empspA46fqjOg
+ RhTvBvAJViWMtJ8Pc3x3Te67E3+ELZFa/F8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 33qsp5y5g5-9
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 18:20:04 -0700
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 23 Sep 2020 18:19:58 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 5CFC962E54C3; Wed, 23 Sep 2020 18:19:56 -0700 (PDT)
+From:   Song Liu <songliubraving@fb.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH v4 bpf-next 0/3] enable BPF_PROG_TEST_RUN for raw_tp
+Date:   Wed, 23 Sep 2020 18:19:48 -0700
+Message-ID: <20200924011951.408313-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
 Content-Type: text/plain
-X-Originating-IP: [10.175.118.36]
-X-CFilter-Loop: Reflected
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-23_19:2020-09-23,2020-09-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ mlxlogscore=801 clxscore=1015 suspectscore=0 impostorscore=0 adultscore=0
+ lowpriorityscore=0 bulkscore=0 phishscore=0 spamscore=0 priorityscore=1501
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009240007
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It should also be regarded as an error when hw return status=4 for PF's
-setting mac cmd. Only if PF return status=4 to VF should this cmd be
-taken special treatment.
+This set enables BPF_PROG_TEST_RUN for raw_tracepoint type programs. This
+set also enables running the raw_tp program on a specific CPU. This featu=
+re
+can be used by user space to trigger programs that access percpu resource=
+s,
+e.g. perf_event, percpu variables.
 
-Fixes: 7dd29ee12865 ("hinic: add sriov feature support")
-Signed-off-by: Luo bin <luobin9@huawei.com>
----
- drivers/net/ethernet/huawei/hinic/hinic_port.c  |  6 +++---
- drivers/net/ethernet/huawei/hinic/hinic_sriov.c | 12 ++----------
- 2 files changed, 5 insertions(+), 13 deletions(-)
+Changes v3 =3D> v4:
+1. Use cpu+flags instead of cpu_plus. (Andrii)
+2. Rework libbpf support. (Andrii)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-index 02cd635d6914..eb97f2d6b1ad 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-@@ -58,9 +58,9 @@ static int change_mac(struct hinic_dev *nic_dev, const u8 *addr,
- 				 sizeof(port_mac_cmd),
- 				 &port_mac_cmd, &out_size);
- 	if (err || out_size != sizeof(port_mac_cmd) ||
--	    (port_mac_cmd.status  &&
--	    port_mac_cmd.status != HINIC_PF_SET_VF_ALREADY &&
--	    port_mac_cmd.status != HINIC_MGMT_STATUS_EXIST)) {
-+	    (port_mac_cmd.status &&
-+	     (port_mac_cmd.status != HINIC_PF_SET_VF_ALREADY || !HINIC_IS_VF(hwif)) &&
-+	     port_mac_cmd.status != HINIC_MGMT_STATUS_EXIST)) {
- 		dev_err(&pdev->dev, "Failed to change MAC, err: %d, status: 0x%x, out size: 0x%x\n",
- 			err, port_mac_cmd.status, out_size);
- 		return -EFAULT;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-index 4d63680f2143..f8a26459ff65 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-@@ -38,8 +38,7 @@ static int hinic_set_mac(struct hinic_hwdev *hwdev, const u8 *mac_addr,
- 	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_SET_MAC, &mac_info,
- 				 sizeof(mac_info), &mac_info, &out_size);
- 	if (err || out_size != sizeof(mac_info) ||
--	    (mac_info.status && mac_info.status != HINIC_PF_SET_VF_ALREADY &&
--	    mac_info.status != HINIC_MGMT_STATUS_EXIST)) {
-+	    (mac_info.status && mac_info.status != HINIC_MGMT_STATUS_EXIST)) {
- 		dev_err(&hwdev->func_to_io.hwif->pdev->dev, "Failed to set MAC, err: %d, status: 0x%x, out size: 0x%x\n",
- 			err, mac_info.status, out_size);
- 		return -EIO;
-@@ -503,8 +502,7 @@ struct hinic_sriov_info *hinic_get_sriov_info_by_pcidev(struct pci_dev *pdev)
- 
- static int hinic_check_mac_info(u8 status, u16 vlan_id)
- {
--	if ((status && status != HINIC_MGMT_STATUS_EXIST &&
--	     status != HINIC_PF_SET_VF_ALREADY) ||
-+	if ((status && status != HINIC_MGMT_STATUS_EXIST) ||
- 	    (vlan_id & CHECK_IPSU_15BIT &&
- 	     status == HINIC_MGMT_STATUS_EXIST))
- 		return -EINVAL;
-@@ -546,12 +544,6 @@ static int hinic_update_mac(struct hinic_hwdev *hwdev, u8 *old_mac,
- 		return -EINVAL;
- 	}
- 
--	if (mac_info.status == HINIC_PF_SET_VF_ALREADY) {
--		dev_warn(&hwdev->hwif->pdev->dev,
--			 "PF has already set VF MAC. Ignore update operation\n");
--		return HINIC_PF_SET_VF_ALREADY;
--	}
--
- 	if (mac_info.status == HINIC_MGMT_STATUS_EXIST)
- 		dev_warn(&hwdev->hwif->pdev->dev, "MAC is repeated. Ignore update operation\n");
- 
--- 
-2.17.1
+Changes v2 =3D> v3:
+1. Fix memory leak in the selftest. (Andrii)
+2. Use __u64 instead of unsigned long long. (Andrii)
 
+Changes v1 =3D> v2:
+1. More checks for retval in the selftest. (John)
+2. Remove unnecessary goto in bpf_prog_test_run_raw_tp. (John)
+
+Song Liu (3):
+  bpf: enable BPF_PROG_TEST_RUN for raw_tracepoint
+  libbpf: introduce bpf_prog_test_run_xattr_opts
+  selftests/bpf: add raw_tp_test_run
+
+Song Liu (3):
+  bpf: enable BPF_PROG_TEST_RUN for raw_tracepoint
+  libbpf: support test run of raw tracepoint programs
+  selftests/bpf: add raw_tp_test_run
+
+ include/linux/bpf.h                           |  3 +
+ include/uapi/linux/bpf.h                      |  7 ++
+ kernel/bpf/syscall.c                          |  2 +-
+ kernel/trace/bpf_trace.c                      |  1 +
+ net/bpf/test_run.c                            | 89 +++++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  7 ++
+ tools/lib/bpf/bpf.c                           | 31 +++++++
+ tools/lib/bpf/bpf.h                           | 26 ++++++
+ tools/lib/bpf/libbpf.map                      |  1 +
+ tools/lib/bpf/libbpf_internal.h               |  5 ++
+ .../bpf/prog_tests/raw_tp_test_run.c          | 80 +++++++++++++++++
+ .../bpf/progs/test_raw_tp_test_run.c          | 25 ++++++
+ 12 files changed, 276 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/raw_tp_test_ru=
+n.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_raw_tp_test_ru=
+n.c
+
+--
+2.24.1
