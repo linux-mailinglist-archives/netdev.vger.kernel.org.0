@@ -2,286 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8320277C15
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 01:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03B25277C17
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 01:02:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbgIXXA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 19:00:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34020 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726205AbgIXXA6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Sep 2020 19:00:58 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B041D2344C;
-        Thu, 24 Sep 2020 23:00:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600988457;
-        bh=DQzpuoYZUfKk+jPO2SjXA0gkIztwNug3jrzIWT5GVhc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EGkh+tVbXFJugm5RL/1Y7nhjl867DCCHV70Zc4W+rfzEH8dMveDvc7M1dpi9uI8bo
-         hP4XELESxKxD9aJY5RuPm1BH0Sv+geL/laLE/FF80sPrxdhsye+cou6x1wrLpDDn32
-         hvXw1+ZScsjuJMPDbcXhFrmmOpemmqGhqrOPh+8I=
-Date:   Thu, 24 Sep 2020 16:00:55 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Awogbemila <awogbemila@google.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 3/4] gve: Rx Buffer Recycling
-Message-ID: <20200924160055.1e7be259@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200924010104.3196839-4-awogbemila@google.com>
-References: <20200924010104.3196839-1-awogbemila@google.com>
-        <20200924010104.3196839-4-awogbemila@google.com>
+        id S1726662AbgIXXCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 19:02:25 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38236 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726205AbgIXXCZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 19:02:25 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08OMxP6R005513
+        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 16:02:25 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=nTyej35x+vQc0suiILaFyXO+N4NlgC9CbfcA7q2vywA=;
+ b=Xi8u0BH6vBmD3l0o73VoBFBY14sjlNdJS2IZnBtWYoKDSPmdSrNwZxY2xfPGBomRsZ00
+ uZv/9npzYi/FamTCUIhJZr6cP606cP/cZWWwJu5VQEZhk6AxgXNmC6l6DtuYxuYH0Owo
+ bb5eI1AN4JgPZ9+d9cfJV2h7uoWCyrKGTMU= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33qsp54k4w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 16:02:25 -0700
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 24 Sep 2020 16:02:24 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 4FBFD62E542E; Thu, 24 Sep 2020 16:02:12 -0700 (PDT)
+From:   Song Liu <songliubraving@fb.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH v5 bpf-next 0/3] enable BPF_PROG_TEST_RUN for raw_tp
+Date:   Thu, 24 Sep 2020 16:02:06 -0700
+Message-ID: <20200924230209.2561658-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-24_18:2020-09-24,2020-09-24 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 priorityscore=1501 impostorscore=0 adultscore=0
+ malwarescore=0 spamscore=0 mlxlogscore=672 suspectscore=0 bulkscore=0
+ clxscore=1015 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009240166
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Sep 2020 18:01:03 -0700 David Awogbemila wrote:
-> This patch lets the driver reuse buffers that have been freed by the
-> networking stack.
-> 
-> In the raw addressing case, this allows the driver avoid allocating new
-> buffers.
-> In the qpl case, the driver can avoid copies.
-> 
-> Signed-off-by: David Awogbemila <awogbemila@google.com>
-> ---
->  drivers/net/ethernet/google/gve/gve.h    |  10 +-
->  drivers/net/ethernet/google/gve/gve_rx.c | 197 +++++++++++++++--------
->  2 files changed, 133 insertions(+), 74 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-> index b853efb0b17f..9cce2b356235 100644
-> --- a/drivers/net/ethernet/google/gve/gve.h
-> +++ b/drivers/net/ethernet/google/gve/gve.h
-> @@ -50,6 +50,7 @@ struct gve_rx_slot_page_info {
->  	struct page *page;
->  	void *page_address;
->  	u32 page_offset; /* offset to write to in page */
-> +	bool can_flip;
->  };
->  
->  /* A list of pages registered with the device during setup and used by a queue
-> @@ -505,15 +506,6 @@ static inline enum dma_data_direction gve_qpl_dma_dir(struct gve_priv *priv,
->  		return DMA_FROM_DEVICE;
->  }
->  
-> -/* Returns true if the max mtu allows page recycling */
-> -static inline bool gve_can_recycle_pages(struct net_device *dev)
-> -{
-> -	/* We can't recycle the pages if we can't fit a packet into half a
-> -	 * page.
-> -	 */
-> -	return dev->max_mtu <= PAGE_SIZE / 2;
-> -}
-> -
->  /* buffers */
->  int gve_alloc_page(struct gve_priv *priv, struct device *dev,
->  		   struct page **page, dma_addr_t *dma,
-> diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-> index ae76d2547d13..bea483db28f5 100644
-> --- a/drivers/net/ethernet/google/gve/gve_rx.c
-> +++ b/drivers/net/ethernet/google/gve/gve_rx.c
-> @@ -263,8 +263,7 @@ static enum pkt_hash_types gve_rss_type(__be16 pkt_flags)
->  	return PKT_HASH_TYPE_L2;
->  }
->  
-> -static struct sk_buff *gve_rx_copy(struct gve_rx_ring *rx,
-> -				   struct net_device *dev,
-> +static struct sk_buff *gve_rx_copy(struct net_device *dev,
->  				   struct napi_struct *napi,
->  				   struct gve_rx_slot_page_info *page_info,
->  				   u16 len)
-> @@ -282,10 +281,6 @@ static struct sk_buff *gve_rx_copy(struct gve_rx_ring *rx,
->  
->  	skb->protocol = eth_type_trans(skb, dev);
->  
-> -	u64_stats_update_begin(&rx->statss);
-> -	rx->rx_copied_pkt++;
-> -	u64_stats_update_end(&rx->statss);
-> -
->  	return skb;
->  }
->  
-> @@ -331,22 +326,91 @@ static void gve_rx_flip_buff(struct gve_rx_slot_page_info *page_info,
->  {
->  	u64 addr = be64_to_cpu(data_ring->addr);
->  
-> +	/* "flip" to other packet buffer on this page */
->  	page_info->page_offset ^= PAGE_SIZE / 2;
->  	addr ^= PAGE_SIZE / 2;
->  	data_ring->addr = cpu_to_be64(addr);
->  }
->  
-> +static bool gve_rx_can_flip_buffers(struct net_device *netdev)
-> +{
-> +#if PAGE_SIZE == 4096
-> +	/* We can't flip a buffer if we can't fit a packet
-> +	 * into half a page.
-> +	 */
-> +	if (netdev->max_mtu + GVE_RX_PAD + ETH_HLEN  > PAGE_SIZE / 2)
+This set enables BPF_PROG_TEST_RUN for raw_tracepoint type programs. This
+set also enables running the raw_tp program on a specific CPU. This featu=
+re
+can be used by user space to trigger programs that access percpu resource=
+s,
+e.g. perf_event, percpu variables.
 
-double space
+Changes v4 =3D> v5:
+1.Fail test_run with non-zero test.cpu but no BPF_F_TEST_RUN_ON_CPU.
+  (Andrii)
+2. Add extra check for invalid test.cpu value. (Andrii)
+3. Shuffle bpf_test_run_opts to remove holes. (Andrii)
+4. Fixes in selftests. (Andrii)
 
-> +		return false;
-> +	return true;
+Changes v3 =3D> v4:
+1. Use cpu+flags instead of cpu_plus. (Andrii)
+2. Rework libbpf support. (Andrii)
 
-Flip the condition and just return it.
+Changes v2 =3D> v3:
+1. Fix memory leak in the selftest. (Andrii)
+2. Use __u64 instead of unsigned long long. (Andrii)
 
-return netdev->max_mtu + GVE_RX_PAD + ETH_HLEN <= PAGE_SIZE / 2
+Changes v1 =3D> v2:
+1. More checks for retval in the selftest. (John)
+2. Remove unnecessary goto in bpf_prog_test_run_raw_tp. (John)
 
-Also you should probably look at mtu not max_mtu. More likely to be in
-cache.
+Song Liu (3):
+  bpf: enable BPF_PROG_TEST_RUN for raw_tracepoint
+  libbpf: support test run of raw tracepoint programs
+  selftests/bpf: add raw_tp_test_run
 
-> +#else
-> +	/* PAGE_SIZE != 4096 - don't try to reuse */
-> +	return false;
-> +#endif
-> +}
-> +
-> +static int gve_rx_can_recycle_buffer(struct page *page)
-> +{
-> +	int pagecount = page_count(page);
-> +
-> +	/* This page is not being used by any SKBs - reuse */
-> +	if (pagecount == 1) {
-> +		return 1;
-> +	/* This page is still being used by an SKB - we can't reuse */
-> +	} else if (pagecount >= 2) {
-> +		return 0;
-> +	}
+ include/linux/bpf.h                           |  3 +
+ include/uapi/linux/bpf.h                      |  7 ++
+ kernel/bpf/syscall.c                          |  2 +-
+ kernel/trace/bpf_trace.c                      |  1 +
+ net/bpf/test_run.c                            | 91 +++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  7 ++
+ tools/lib/bpf/bpf.c                           | 31 ++++++
+ tools/lib/bpf/bpf.h                           | 26 +++++
+ tools/lib/bpf/libbpf.map                      |  1 +
+ tools/lib/bpf/libbpf_internal.h               |  5 +
+ .../bpf/prog_tests/raw_tp_test_run.c          | 98 +++++++++++++++++++
+ .../bpf/progs/test_raw_tp_test_run.c          | 24 +++++
+ 12 files changed, 295 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/raw_tp_test_ru=
+n.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_raw_tp_test_ru=
+n.c
 
-parenthesis not necessary around single line statements.
-
-> +	WARN(pagecount < 1, "Pagecount should never be < 1");
-> +	return -1;
-> +}
-> +
->  static struct sk_buff *
->  gve_rx_raw_addressing(struct device *dev, struct net_device *netdev,
->  		      struct gve_rx_slot_page_info *page_info, u16 len,
->  		      struct napi_struct *napi,
-> -		      struct gve_rx_data_slot *data_slot)
-> +		      struct gve_rx_data_slot *data_slot, bool can_flip)
->  {
->  	struct sk_buff *skb = gve_rx_add_frags(napi, page_info, len);
-
-IMHO it looks weird when a function is called on variable init and then
-error checking is done after an empty line.
-
->  	if (!skb)
->  		return NULL;
->  
-> +	/* Optimistically stop the kernel from freeing the page by increasing
-> +	 * the page bias. We will check the refcount in refill to determine if
-> +	 * we need to alloc a new page.
-> +	 */
-> +	get_page(page_info->page);
-> +	page_info->can_flip = can_flip;
-> +
-> +	return skb;
-> +}
-> +
-> +static struct sk_buff *
-> +gve_rx_qpl(struct device *dev, struct net_device *netdev,
-> +	   struct gve_rx_ring *rx, struct gve_rx_slot_page_info *page_info,
-> +	   u16 len, struct napi_struct *napi,
-> +	   struct gve_rx_data_slot *data_slot, bool recycle)
-> +{
-> +	struct sk_buff *skb;
-
-empty line here
-
-> +	/* if raw_addressing mode is not enabled gvnic can only receive into
-> +	 * registered segmens. If the buffer can't be recycled, our only
-
-segments?
-
-> +	 * choice is to copy the data out of it so that we can return it to the
-> +	 * device.
-> +	 */
-> +	if (recycle) {
-> +		skb = gve_rx_add_frags(napi, page_info, len);
-> +		/* No point in recycling if we didn't get the skb */
-> +		if (skb) {
-> +			/* Make sure the networking stack can't free the page */
-> +			get_page(page_info->page);
-> +			gve_rx_flip_buff(page_info, data_slot);
-> +		}
-> +	} else {
-> +		skb = gve_rx_copy(netdev, napi, page_info, len);
-> +		if (skb) {
-> +			u64_stats_update_begin(&rx->statss);
-> +			rx->rx_copied_pkt++;
-> +			u64_stats_update_end(&rx->statss);
-> +		}
-> +	}
->  	return skb;
->  }
-
-> @@ -490,14 +525,46 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
->  
->  	while ((fill_cnt & rx->mask) != (rx->cnt & rx->mask)) {
->  		u32 idx = fill_cnt & rx->mask;
-> -		struct gve_rx_slot_page_info *page_info = &rx->data.page_info[idx];
-> -		struct gve_rx_data_slot *data_slot = &rx->data.data_ring[idx];
-> -		struct device *dev = &priv->pdev->dev;
-> +		struct gve_rx_slot_page_info *page_info =
-> +						&rx->data.page_info[idx];
->  
-> -		gve_rx_free_buffer(dev, page_info, data_slot);
-> -		page_info->page = NULL;
-> -		if (gve_rx_alloc_buffer(priv, dev, page_info, data_slot, rx))
-> -			break;
-> +		if (page_info->can_flip) {
-> +			/* The other half of the page is free because it was
-> +			 * free when we processed the descriptor. Flip to it.
-> +			 */
-> +			struct gve_rx_data_slot *data_slot =
-> +						&rx->data.data_ring[idx];
-> +
-> +			gve_rx_flip_buff(page_info, data_slot);
-> +			page_info->can_flip = false;
-> +		} else {
-> +			/* It is possible that the networking stack has already
-> +			 * finished processing all outstanding packets in the buffer
-> +			 * and it can be reused.
-> +			 * Flipping is unnecessary here - if the networking stack still
-> +			 * owns half the page it is impossible to tell which half. Either
-> +			 * the whole page is free or it needs to be replaced.
-> +			 */
-> +			int recycle = gve_rx_can_recycle_buffer(page_info->page);
-> +
-> +			if (recycle < 0) {
-> +				gve_schedule_reset(priv);
-> +				return false;
-> +			}
-> +			if (!recycle) {
-> +				/* We can't reuse the buffer - alloc a new one*/
-> +				struct gve_rx_data_slot *data_slot =
-> +						&rx->data.data_ring[idx];
-> +				struct device *dev = &priv->pdev->dev;
-> +
-> +				gve_rx_free_buffer(dev, page_info, data_slot);
-> +				page_info->page = NULL;
-> +				if (gve_rx_alloc_buffer(priv, dev, page_info,
-> +							data_slot, rx)) {
-> +					break;
-
-What if the queue runs completely dry during memory shortage? 
-You need some form of delayed work to periodically refill 
-the free buffers, right?
-
-> +				}
-
-parens unnecessary
-
-> +			}
-> +		}
->  		fill_cnt++;
->  	}
->  	rx->fill_cnt = fill_cnt;
-
+--
+2.24.1
