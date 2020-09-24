@@ -2,209 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF467277C10
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 00:59:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8320277C15
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 01:01:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726662AbgIXW7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 18:59:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33514 "EHLO mail.kernel.org"
+        id S1726718AbgIXXA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 19:00:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34020 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726205AbgIXW7L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Sep 2020 18:59:11 -0400
-Received: from localhost (52.sub-72-107-123.myvzw.com [72.107.123.52])
+        id S1726205AbgIXXA6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Sep 2020 19:00:58 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EED182344C;
-        Thu, 24 Sep 2020 22:59:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B041D2344C;
+        Thu, 24 Sep 2020 23:00:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600988350;
-        bh=lvsTiRX9MRyqiIaTRVynMwfGHPPFwZX9ut7maU5MkAU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Hl/Vlvmo1E7oAa1BexBNa8RKAX9MOEA8uUVVhQxoCXhlOI/SlZGSV5PN2ycFhhB4m
-         VOcpgQfsTu2KXTYCGlNl2zxDGU0ZXDrpIWPRrFdiwfrCraM4slePzKQp87kJ/drQWz
-         R8Ou2aVDStw2jjJ5rE3uFHTuPeC/tQFVIwYwoBjc=
-Date:   Thu, 24 Sep 2020 17:59:08 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Nitesh Narayan Lal <nitesh@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
-        jlelli@redhat.com, hch@infradead.org, bhelgaas@google.com,
-        mike.marciniszyn@intel.com, dennis.dalessandro@intel.com,
-        thomas.lendacky@amd.com, jerinj@marvell.com,
-        mathias.nyman@intel.com, jiri@nvidia.com, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org
-Subject: Re: [PATCH v2 4/4] PCI: Limit pci_alloc_irq_vectors as per
- housekeeping CPUs
-Message-ID: <20200924225908.GA2367591@bjorn-Precision-5520>
+        s=default; t=1600988457;
+        bh=DQzpuoYZUfKk+jPO2SjXA0gkIztwNug3jrzIWT5GVhc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EGkh+tVbXFJugm5RL/1Y7nhjl867DCCHV70Zc4W+rfzEH8dMveDvc7M1dpi9uI8bo
+         hP4XELESxKxD9aJY5RuPm1BH0Sv+geL/laLE/FF80sPrxdhsye+cou6x1wrLpDDn32
+         hvXw1+ZScsjuJMPDbcXhFrmmOpemmqGhqrOPh+8I=
+Date:   Thu, 24 Sep 2020 16:00:55 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Awogbemila <awogbemila@google.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 3/4] gve: Rx Buffer Recycling
+Message-ID: <20200924160055.1e7be259@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200924010104.3196839-4-awogbemila@google.com>
+References: <20200924010104.3196839-1-awogbemila@google.com>
+        <20200924010104.3196839-4-awogbemila@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <493a6fe5-f33f-85b2-6149-809f3cb4390f@redhat.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 05:39:07PM -0400, Nitesh Narayan Lal wrote:
+On Wed, 23 Sep 2020 18:01:03 -0700 David Awogbemila wrote:
+> This patch lets the driver reuse buffers that have been freed by the
+> networking stack.
 > 
-> On 9/24/20 4:45 PM, Bjorn Helgaas wrote:
-> > Possible subject:
-> >
-> >   PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
+> In the raw addressing case, this allows the driver avoid allocating new
+> buffers.
+> In the qpl case, the driver can avoid copies.
 > 
-> Will switch to this.
+> Signed-off-by: David Awogbemila <awogbemila@google.com>
+> ---
+>  drivers/net/ethernet/google/gve/gve.h    |  10 +-
+>  drivers/net/ethernet/google/gve/gve_rx.c | 197 +++++++++++++++--------
+>  2 files changed, 133 insertions(+), 74 deletions(-)
 > 
-> > On Wed, Sep 23, 2020 at 02:11:26PM -0400, Nitesh Narayan Lal wrote:
-> >> This patch limits the pci_alloc_irq_vectors, max_vecs argument that is
-> >> passed on by the caller based on the housekeeping online CPUs (that are
-> >> meant to perform managed IRQ jobs).
-> >>
-> >> A minimum of the max_vecs passed and housekeeping online CPUs is derived
-> >> to ensure that we don't create excess vectors as that can be problematic
-> >> specifically in an RT environment. In cases where the min_vecs exceeds the
-> >> housekeeping online CPUs, max vecs is restricted based on the min_vecs
-> >> instead. The proposed change is required because for an RT environment
-> >> unwanted IRQs are moved to the housekeeping CPUs from isolated CPUs to
-> >> keep the latency overhead to a minimum. If the number of housekeeping CPUs
-> >> is significantly lower than that of the isolated CPUs we can run into
-> >> failures while moving these IRQs to housekeeping CPUs due to per CPU
-> >> vector limit.
-> > Does this capture enough of the log?
-> >
-> >   If we have isolated CPUs dedicated for use by real-time tasks, we
-> >   try to move IRQs to housekeeping CPUs to reduce overhead on the
-> >   isolated CPUs.
-> 
-> How about:
-> "
-> If we have isolated CPUs or CPUs running in nohz_full mode for the purpose
-> of real-time, we try to move IRQs to housekeeping CPUs to reduce latency
-> overhead on these real-time CPUs.
-> "
-> 
-> What do you think?
+> diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+> index b853efb0b17f..9cce2b356235 100644
+> --- a/drivers/net/ethernet/google/gve/gve.h
+> +++ b/drivers/net/ethernet/google/gve/gve.h
+> @@ -50,6 +50,7 @@ struct gve_rx_slot_page_info {
+>  	struct page *page;
+>  	void *page_address;
+>  	u32 page_offset; /* offset to write to in page */
+> +	bool can_flip;
+>  };
+>  
+>  /* A list of pages registered with the device during setup and used by a queue
+> @@ -505,15 +506,6 @@ static inline enum dma_data_direction gve_qpl_dma_dir(struct gve_priv *priv,
+>  		return DMA_FROM_DEVICE;
+>  }
+>  
+> -/* Returns true if the max mtu allows page recycling */
+> -static inline bool gve_can_recycle_pages(struct net_device *dev)
+> -{
+> -	/* We can't recycle the pages if we can't fit a packet into half a
+> -	 * page.
+> -	 */
+> -	return dev->max_mtu <= PAGE_SIZE / 2;
+> -}
+> -
+>  /* buffers */
+>  int gve_alloc_page(struct gve_priv *priv, struct device *dev,
+>  		   struct page **page, dma_addr_t *dma,
+> diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
+> index ae76d2547d13..bea483db28f5 100644
+> --- a/drivers/net/ethernet/google/gve/gve_rx.c
+> +++ b/drivers/net/ethernet/google/gve/gve_rx.c
+> @@ -263,8 +263,7 @@ static enum pkt_hash_types gve_rss_type(__be16 pkt_flags)
+>  	return PKT_HASH_TYPE_L2;
+>  }
+>  
+> -static struct sk_buff *gve_rx_copy(struct gve_rx_ring *rx,
+> -				   struct net_device *dev,
+> +static struct sk_buff *gve_rx_copy(struct net_device *dev,
+>  				   struct napi_struct *napi,
+>  				   struct gve_rx_slot_page_info *page_info,
+>  				   u16 len)
+> @@ -282,10 +281,6 @@ static struct sk_buff *gve_rx_copy(struct gve_rx_ring *rx,
+>  
+>  	skb->protocol = eth_type_trans(skb, dev);
+>  
+> -	u64_stats_update_begin(&rx->statss);
+> -	rx->rx_copied_pkt++;
+> -	u64_stats_update_end(&rx->statss);
+> -
+>  	return skb;
+>  }
+>  
+> @@ -331,22 +326,91 @@ static void gve_rx_flip_buff(struct gve_rx_slot_page_info *page_info,
+>  {
+>  	u64 addr = be64_to_cpu(data_ring->addr);
+>  
+> +	/* "flip" to other packet buffer on this page */
+>  	page_info->page_offset ^= PAGE_SIZE / 2;
+>  	addr ^= PAGE_SIZE / 2;
+>  	data_ring->addr = cpu_to_be64(addr);
+>  }
+>  
+> +static bool gve_rx_can_flip_buffers(struct net_device *netdev)
+> +{
+> +#if PAGE_SIZE == 4096
+> +	/* We can't flip a buffer if we can't fit a packet
+> +	 * into half a page.
+> +	 */
+> +	if (netdev->max_mtu + GVE_RX_PAD + ETH_HLEN  > PAGE_SIZE / 2)
 
-It's OK, but from the PCI core perspective, "nohz_full mode" doesn't
-really mean anything.  I think it's a detail that should be inside the
-"housekeeping CPU" abstraction.
+double space
 
-> >   If we allocate too many IRQ vectors, moving them all to housekeeping
-> >   CPUs may exceed per-CPU vector limits.
-> >
-> >   When we have isolated CPUs, limit the number of vectors allocated by
-> >   pci_alloc_irq_vectors() to the minimum number required by the
-> >   driver, or to one per housekeeping CPU if that is larger
-> 
-> I think this is good, I can adopt this.
-> 
-> > .
-> >
-> >> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
-> >> ---
-> >>  include/linux/pci.h | 15 +++++++++++++++
-> >>  1 file changed, 15 insertions(+)
-> >>
-> >> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> >> index 835530605c0d..cf9ca9410213 100644
-> >> --- a/include/linux/pci.h
-> >> +++ b/include/linux/pci.h
-> >> @@ -38,6 +38,7 @@
-> >>  #include <linux/interrupt.h>
-> >>  #include <linux/io.h>
-> >>  #include <linux/resource_ext.h>
-> >> +#include <linux/sched/isolation.h>
-> >>  #include <uapi/linux/pci.h>
-> >>  
-> >>  #include <linux/pci_ids.h>
-> >> @@ -1797,6 +1798,20 @@ static inline int
-> >>  pci_alloc_irq_vectors(struct pci_dev *dev, unsigned int min_vecs,
-> >>  		      unsigned int max_vecs, unsigned int flags)
-> >>  {
-> >> +	unsigned int hk_cpus = hk_num_online_cpus();
-> >> +
-> >> +	/*
-> >> +	 * For a real-time environment, try to be conservative and at max only
-> >> +	 * ask for the same number of vectors as there are housekeeping online
-> >> +	 * CPUs. In case, the min_vecs requested exceeds the housekeeping
-> >> +	 * online CPUs, restrict the max_vecs based on the min_vecs instead.
-> >> +	 */
-> >> +	if (hk_cpus != num_online_cpus()) {
-> >> +		if (min_vecs > hk_cpus)
-> >> +			max_vecs = min_vecs;
-> >> +		else
-> >> +			max_vecs = min_t(int, max_vecs, hk_cpus);
-> >> +	}
-> > Is the below basically the same?
-> >
-> > 	/*
-> > 	 * If we have isolated CPUs for use by real-time tasks,
-> > 	 * minimize overhead on those CPUs by moving IRQs to the
-> > 	 * remaining "housekeeping" CPUs.  Limit vector usage to keep
-> > 	 * housekeeping CPUs from running out of IRQ vectors.
-> > 	 */
-> 
-> How about the following as a comment:
-> 
-> "
-> If we have isolated CPUs or CPUs running in nohz_full mode for real-time,
-> latency overhead is minimized on those CPUs by moving the IRQ vectors to
-> the housekeeping CPUs. Limit the number of vectors to keep housekeeping
-> CPUs from running out of IRQ vectors.
-> 
-> "
-> 
-> > 	if (housekeeping_cpus < num_online_cpus()) {
-> > 		if (housekeeping_cpus < min_vecs)
-> > 			max_vecs = min_vecs;
-> > 		else if (housekeeping_cpus < max_vecs)
-> > 			max_vecs = housekeeping_cpus;
-> > 	}
-> 
-> The only reason I went with hk_cpus instead of housekeeping_cpus is because
-> at other places in the kernel I found a similar naming convention (eg.
-> hk_mask, hk_flags etc.).
-> But if housekeeping_cpus makes things more clear, I can switch to that
-> instead.
-> 
-> Although after Frederic and Peter's suggestion the previous call will change
-> to something like:
-> 
-> "
-> housekeeping_cpus = housekeeping_num_online_cpus(HK_FLAG_MANAGED_IRQ);
-> "
-> 
-> Which should still falls in the that 80 chars per line limit.
+> +		return false;
+> +	return true;
 
-I don't really care whether it's "hk_cpus" or "housekeeping_cpus" as
-long as "housekeeping" appears in the code somewhere.  If we call
-"housekeeping_num_online_cpus()" that should be enough.
+Flip the condition and just return it.
 
-> > My comment isn't quite right because this patch only limits the number
-> > of vectors; it doesn't actually *move* IRQs to the housekeeping CPUs.
-> 
-> Yeap it doesn't move IRQs to the housekeeping CPUs.
-> 
-> > I don't know where the move happens (or maybe you just avoid assigning
-> > IRQs to isolated CPUs, and I don't know how that happens either).
-> 
-> This can happen in the userspace, either manually or by some application
-> such as tuned.
+return netdev->max_mtu + GVE_RX_PAD + ETH_HLEN <= PAGE_SIZE / 2
 
-Some brief hint about this might be helpful.
+Also you should probably look at mtu not max_mtu. More likely to be in
+cache.
 
-> >>  	return pci_alloc_irq_vectors_affinity(dev, min_vecs, max_vecs, flags,
-> >>  					      NULL);
-> >>  }
-> >> -- 
-> >> 2.18.2
-> >>
-> -- 
-> Thanks
-> Nitesh
-> 
+> +#else
+> +	/* PAGE_SIZE != 4096 - don't try to reuse */
+> +	return false;
+> +#endif
+> +}
+> +
+> +static int gve_rx_can_recycle_buffer(struct page *page)
+> +{
+> +	int pagecount = page_count(page);
+> +
+> +	/* This page is not being used by any SKBs - reuse */
+> +	if (pagecount == 1) {
+> +		return 1;
+> +	/* This page is still being used by an SKB - we can't reuse */
+> +	} else if (pagecount >= 2) {
+> +		return 0;
+> +	}
 
+parenthesis not necessary around single line statements.
 
+> +	WARN(pagecount < 1, "Pagecount should never be < 1");
+> +	return -1;
+> +}
+> +
+>  static struct sk_buff *
+>  gve_rx_raw_addressing(struct device *dev, struct net_device *netdev,
+>  		      struct gve_rx_slot_page_info *page_info, u16 len,
+>  		      struct napi_struct *napi,
+> -		      struct gve_rx_data_slot *data_slot)
+> +		      struct gve_rx_data_slot *data_slot, bool can_flip)
+>  {
+>  	struct sk_buff *skb = gve_rx_add_frags(napi, page_info, len);
+
+IMHO it looks weird when a function is called on variable init and then
+error checking is done after an empty line.
+
+>  	if (!skb)
+>  		return NULL;
+>  
+> +	/* Optimistically stop the kernel from freeing the page by increasing
+> +	 * the page bias. We will check the refcount in refill to determine if
+> +	 * we need to alloc a new page.
+> +	 */
+> +	get_page(page_info->page);
+> +	page_info->can_flip = can_flip;
+> +
+> +	return skb;
+> +}
+> +
+> +static struct sk_buff *
+> +gve_rx_qpl(struct device *dev, struct net_device *netdev,
+> +	   struct gve_rx_ring *rx, struct gve_rx_slot_page_info *page_info,
+> +	   u16 len, struct napi_struct *napi,
+> +	   struct gve_rx_data_slot *data_slot, bool recycle)
+> +{
+> +	struct sk_buff *skb;
+
+empty line here
+
+> +	/* if raw_addressing mode is not enabled gvnic can only receive into
+> +	 * registered segmens. If the buffer can't be recycled, our only
+
+segments?
+
+> +	 * choice is to copy the data out of it so that we can return it to the
+> +	 * device.
+> +	 */
+> +	if (recycle) {
+> +		skb = gve_rx_add_frags(napi, page_info, len);
+> +		/* No point in recycling if we didn't get the skb */
+> +		if (skb) {
+> +			/* Make sure the networking stack can't free the page */
+> +			get_page(page_info->page);
+> +			gve_rx_flip_buff(page_info, data_slot);
+> +		}
+> +	} else {
+> +		skb = gve_rx_copy(netdev, napi, page_info, len);
+> +		if (skb) {
+> +			u64_stats_update_begin(&rx->statss);
+> +			rx->rx_copied_pkt++;
+> +			u64_stats_update_end(&rx->statss);
+> +		}
+> +	}
+>  	return skb;
+>  }
+
+> @@ -490,14 +525,46 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
+>  
+>  	while ((fill_cnt & rx->mask) != (rx->cnt & rx->mask)) {
+>  		u32 idx = fill_cnt & rx->mask;
+> -		struct gve_rx_slot_page_info *page_info = &rx->data.page_info[idx];
+> -		struct gve_rx_data_slot *data_slot = &rx->data.data_ring[idx];
+> -		struct device *dev = &priv->pdev->dev;
+> +		struct gve_rx_slot_page_info *page_info =
+> +						&rx->data.page_info[idx];
+>  
+> -		gve_rx_free_buffer(dev, page_info, data_slot);
+> -		page_info->page = NULL;
+> -		if (gve_rx_alloc_buffer(priv, dev, page_info, data_slot, rx))
+> -			break;
+> +		if (page_info->can_flip) {
+> +			/* The other half of the page is free because it was
+> +			 * free when we processed the descriptor. Flip to it.
+> +			 */
+> +			struct gve_rx_data_slot *data_slot =
+> +						&rx->data.data_ring[idx];
+> +
+> +			gve_rx_flip_buff(page_info, data_slot);
+> +			page_info->can_flip = false;
+> +		} else {
+> +			/* It is possible that the networking stack has already
+> +			 * finished processing all outstanding packets in the buffer
+> +			 * and it can be reused.
+> +			 * Flipping is unnecessary here - if the networking stack still
+> +			 * owns half the page it is impossible to tell which half. Either
+> +			 * the whole page is free or it needs to be replaced.
+> +			 */
+> +			int recycle = gve_rx_can_recycle_buffer(page_info->page);
+> +
+> +			if (recycle < 0) {
+> +				gve_schedule_reset(priv);
+> +				return false;
+> +			}
+> +			if (!recycle) {
+> +				/* We can't reuse the buffer - alloc a new one*/
+> +				struct gve_rx_data_slot *data_slot =
+> +						&rx->data.data_ring[idx];
+> +				struct device *dev = &priv->pdev->dev;
+> +
+> +				gve_rx_free_buffer(dev, page_info, data_slot);
+> +				page_info->page = NULL;
+> +				if (gve_rx_alloc_buffer(priv, dev, page_info,
+> +							data_slot, rx)) {
+> +					break;
+
+What if the queue runs completely dry during memory shortage? 
+You need some form of delayed work to periodically refill 
+the free buffers, right?
+
+> +				}
+
+parens unnecessary
+
+> +			}
+> +		}
+>  		fill_cnt++;
+>  	}
+>  	rx->fill_cnt = fill_cnt;
 
