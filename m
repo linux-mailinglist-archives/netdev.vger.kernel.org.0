@@ -2,373 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D94027786C
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 20:21:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFD2D27789E
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 20:45:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728768AbgIXSVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 14:21:44 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39356 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728691AbgIXSVm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 14:21:42 -0400
-Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kLVsA-00040z-Ec; Thu, 24 Sep 2020 20:21:38 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     ast@kernel.org
-Cc:     daniel@iogearbox.net, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next 6/6] bpf, selftests: add redirect_neigh selftest
-Date:   Thu, 24 Sep 2020 20:21:27 +0200
-Message-Id: <4bcd4235ff9174a381d598939209b0967155ba35.1600967205.git.daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <cover.1600967205.git.daniel@iogearbox.net>
-References: <cover.1600967205.git.daniel@iogearbox.net>
+        id S1728733AbgIXSpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 14:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728605AbgIXSpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 14:45:17 -0400
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2000EC0613CE
+        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 11:45:17 -0700 (PDT)
+Received: by mail-oi1-x242.google.com with SMTP id i17so35058oig.10
+        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 11:45:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=MuxPIm0lhtfPHdY4f32KjCf9K32XfoZ0wHk8KFObcAE=;
+        b=qL0qf05zTzY1QjT4FB5dZpkpN51S4FetA/WGD897r2wxWP0NFh/ghwaSjeQ8YqmtfR
+         jxJrvdZ1gvziPHz9LRSlCsbeVEkBIURW5kAuSAkQlchiBlv/SFZfzNh5JYfpS8GTt8+Q
+         5PnQA7hjxEZ2cmKgaDU2+Dnl9aG+ODJ1gD037fxJOYfG1s454hGbYIQjyhHpNaDmqulf
+         auE099v3Igmz1B1w2bExjzsuMUqdCjJIdsih5bCDAc/8JnVBa+jOBoaevJXcb/WQPI8/
+         MybuTi+ugQSPko2mvdRLqUYyTTIYVm606daNrRjY6uGzGWfpyuHjxREc/A1Hw0wOyETJ
+         IcEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=MuxPIm0lhtfPHdY4f32KjCf9K32XfoZ0wHk8KFObcAE=;
+        b=MXrYMP30SpdsDovZkVgf1xk/Slv8/32JO8EY5RTH9KGDxX+lk0UjtOYIxZ/Dp0/hgE
+         q6ThKrbl4kNiTUiiP/pGlX9KNaZiACuilJzKr8Z736HCaAdCkW331lVNDGIpEGsPc6ar
+         eo9U/5NMjJD9Bfe0TM6XfzeTTdloIG7HrJM32tygfXYvhBWQZ5ZMFPZX6lYSQ5nmdtgX
+         2izbdG7XGGWUZ+72fMWtkOivZM9P7E+rH4OLcWWqBQSiSs76LQi68xr1kmfc8umvpWux
+         b/M6QlmuqnTsoc/bInNnyujqGzzaeBWrdk7LHUM725xGtbLqAxGYEkUOHkGnnMiN6jXw
+         O1cQ==
+X-Gm-Message-State: AOAM531KXhM5sKEydHtuOGa+YwhtolzWeUkKmpw0/JRZ7yj6SZF0W01z
+        r1cXoYOV1nNexIBW9F67DRAhZccSy343QA==
+X-Google-Smtp-Source: ABdhPJzk4CceBiiVrbOk9Io0VVL0A1nj1DiFKh0sITMXrGreuxEiOsQqU1ZT54w4QfgWx71KQbbH9g==
+X-Received: by 2002:aca:d549:: with SMTP id m70mr106388oig.49.1600973116259;
+        Thu, 24 Sep 2020 11:45:16 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id l23sm20163otk.79.2020.09.24.11.45.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Sep 2020 11:45:15 -0700 (PDT)
+Subject: [bpf-next PATCH 1/2] bpf,
+ verifier: Remove redundant var_off.value ops in scalar known reg
+ cases
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, john.fastabend@gmail.com
+Date:   Thu, 24 Sep 2020 11:45:06 -0700
+Message-ID: <160097310597.12106.6191783180902126213.stgit@john-Precision-5820-Tower>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25937/Thu Sep 24 15:53:11 2020)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a small test that excercises the new redirect_neigh() helper for the
-IPv4 and IPv6 case.
+In BPF_AND and BPF_OR alu cases we have this pattern when the src and dst
+tnum is a constant.
 
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+ 1 dst_reg->var_off = tnum_[op](dst_reg->var_off, src_reg.var_off)
+ 2 scalar32_min_max_[op]
+ 3       if (known) return
+ 4 scalar_min_max_[op]
+ 5       if (known)
+ 6          __mark_reg_known(dst_reg,
+                   dst_reg->var_off.value [op] src_reg.var_off.value)
+
+The result is in 1 we calculate the var_off value and store it in the
+dst_reg. Then in 6 we duplicate this logic doing the op again on the
+value.
+
+The duplication comes from the the tnum_[op] handlers because they have
+already done the value calcuation. For example this is tnum_and().
+
+ struct tnum tnum_and(struct tnum a, struct tnum b)
+ {
+	u64 alpha, beta, v;
+
+	alpha = a.value | a.mask;
+	beta = b.value | b.mask;
+	v = a.value & b.value;
+	return TNUM(v, alpha & beta & ~v);
+ }
+
+So lets remove the redundant op calculation. Its confusing for readers
+and unnecessary. Its also not harmful because those ops have the
+property, r1 & r1 = r1 and r1 | r1 = r1.
+
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- .../selftests/bpf/progs/test_tc_neigh.c       | 144 +++++++++++++++
- tools/testing/selftests/bpf/test_tc_neigh.sh  | 168 ++++++++++++++++++
- 2 files changed, 312 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/test_tc_neigh.c
- create mode 100755 tools/testing/selftests/bpf/test_tc_neigh.sh
+ kernel/bpf/verifier.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/test_tc_neigh.c b/tools/testing/selftests/bpf/progs/test_tc_neigh.c
-new file mode 100644
-index 000000000000..889a72c3024f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_tc_neigh.c
-@@ -0,0 +1,144 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <stdint.h>
-+#include <stdbool.h>
-+
-+#include <linux/bpf.h>
-+#include <linux/stddef.h>
-+#include <linux/pkt_cls.h>
-+#include <linux/if_ether.h>
-+#include <linux/in.h>
-+#include <linux/ip.h>
-+#include <linux/ipv6.h>
-+
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+
-+#ifndef barrier_data
-+# define barrier_data(ptr)	asm volatile("": :"r"(ptr) :"memory")
-+#endif
-+
-+#ifndef ctx_ptr
-+# define ctx_ptr(field)		(void *)(long)(field)
-+#endif
-+
-+#define dst_to_src_tmp		0xeeddddeeU
-+#define src_to_dst_tmp		0xeeffffeeU
-+
-+#define ip4_src			0xac100164 /* 172.16.1.100 */
-+#define ip4_dst			0xac100264 /* 172.16.2.100 */
-+
-+#define ip6_src			{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
-+				  0x00, 0x01, 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe }
-+#define ip6_dst			{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
-+				  0x00, 0x02, 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe }
-+
-+#ifndef v6_equal
-+# define v6_equal(a, b)		(a.s6_addr32[0] == b.s6_addr32[0] && \
-+				 a.s6_addr32[1] == b.s6_addr32[1] && \
-+				 a.s6_addr32[2] == b.s6_addr32[2] && \
-+				 a.s6_addr32[3] == b.s6_addr32[3])
-+#endif
-+
-+static __always_inline bool is_remote_ep_v4(struct __sk_buff *skb,
-+					    __be32 addr)
-+{
-+	void *data_end = ctx_ptr(skb->data_end);
-+	void *data = ctx_ptr(skb->data);
-+	struct iphdr *ip4h;
-+
-+	if (data + sizeof(struct ethhdr) > data_end)
-+		return false;
-+
-+	ip4h = (struct iphdr *)(data + sizeof(struct ethhdr));
-+	if ((void *)(ip4h + 1) > data_end)
-+		return false;
-+
-+	return ip4h->daddr == addr;
-+}
-+
-+static __always_inline bool is_remote_ep_v6(struct __sk_buff *skb,
-+					    struct in6_addr addr)
-+{
-+	void *data_end = ctx_ptr(skb->data_end);
-+	void *data = ctx_ptr(skb->data);
-+	struct ipv6hdr *ip6h;
-+
-+	if (data + sizeof(struct ethhdr) > data_end)
-+		return false;
-+
-+	ip6h = (struct ipv6hdr *)(data + sizeof(struct ethhdr));
-+	if ((void *)(ip6h + 1) > data_end)
-+		return false;
-+
-+	return v6_equal(ip6h->daddr, addr);
-+}
-+
-+SEC("chk_neigh") int tc_chk(struct __sk_buff *skb)
-+{
-+	void *data_end = ctx_ptr(skb->data_end);
-+	void *data = ctx_ptr(skb->data);
-+	__u32 *raw = data;
-+
-+	if (data + sizeof(struct ethhdr) > data_end)
-+		return TC_ACT_SHOT;
-+
-+	return !raw[0] && !raw[1] && !raw[2] ? TC_ACT_SHOT : TC_ACT_OK;
-+}
-+
-+SEC("dst_ingress") int tc_dst(struct __sk_buff *skb)
-+{
-+	int idx = dst_to_src_tmp;
-+	__u8 zero[ETH_ALEN * 2];
-+	bool redirect = false;
-+
-+	switch (skb->protocol) {
-+	case __bpf_constant_htons(ETH_P_IP):
-+		redirect = is_remote_ep_v4(skb, __bpf_constant_htonl(ip4_src));
-+		break;
-+	case __bpf_constant_htons(ETH_P_IPV6):
-+		redirect = is_remote_ep_v6(skb, (struct in6_addr)ip6_src);
-+		break;
-+	}
-+
-+	if (!redirect)
-+		return TC_ACT_OK;
-+
-+	barrier_data(&idx);
-+	idx = bpf_ntohl(idx);
-+
-+	__builtin_memset(&zero, 0, sizeof(zero));
-+	if (bpf_skb_store_bytes(skb, 0, &zero, sizeof(zero), 0) < 0)
-+		return TC_ACT_SHOT;
-+
-+	return bpf_redirect_neigh(idx, 0);
-+}
-+
-+SEC("src_ingress") int tc_src(struct __sk_buff *skb)
-+{
-+	int idx = src_to_dst_tmp;
-+	__u8 zero[ETH_ALEN * 2];
-+	bool redirect = false;
-+
-+	switch (skb->protocol) {
-+	case __bpf_constant_htons(ETH_P_IP):
-+		redirect = is_remote_ep_v4(skb, __bpf_constant_htonl(ip4_dst));
-+		break;
-+	case __bpf_constant_htons(ETH_P_IPV6):
-+		redirect = is_remote_ep_v6(skb, (struct in6_addr)ip6_dst);
-+		break;
-+	}
-+
-+	if (!redirect)
-+		return TC_ACT_OK;
-+
-+	barrier_data(&idx);
-+	idx = bpf_ntohl(idx);
-+
-+	__builtin_memset(&zero, 0, sizeof(zero));
-+	if (bpf_skb_store_bytes(skb, 0, &zero, sizeof(zero), 0) < 0)
-+		return TC_ACT_SHOT;
-+
-+	return bpf_redirect_neigh(idx, 0);
-+}
-+
-+char __license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/test_tc_neigh.sh b/tools/testing/selftests/bpf/test_tc_neigh.sh
-new file mode 100755
-index 000000000000..31d8c3df8b24
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_tc_neigh.sh
-@@ -0,0 +1,168 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# This test sets up 3 netns (src <-> fwd <-> dst). There is no direct veth link
-+# between src and dst. The netns fwd has veth links to each src and dst. The
-+# client is in src and server in dst. The test installs a TC BPF program to each
-+# host facing veth in fwd which calls into bpf_redirect_peer() to perform the
-+# neigh addr population and redirect; it also installs a dropper prog on the
-+# egress side to drop skbs if neigh addrs were not populated.
-+
-+if [[ $EUID -ne 0 ]]; then
-+	echo "This script must be run as root"
-+	echo "FAIL"
-+	exit 1
-+fi
-+
-+# check that nc, dd, ping, ping6 and timeout are present
-+command -v nc >/dev/null 2>&1 || \
-+	{ echo >&2 "nc is not available"; exit 1; }
-+command -v dd >/dev/null 2>&1 || \
-+	{ echo >&2 "dd is not available"; exit 1; }
-+command -v timeout >/dev/null 2>&1 || \
-+	{ echo >&2 "timeout is not available"; exit 1; }
-+command -v ping >/dev/null 2>&1 || \
-+	{ echo >&2 "ping is not available"; exit 1; }
-+command -v ping6 >/dev/null 2>&1 || \
-+	{ echo >&2 "ping6 is not available"; exit 1; }
-+
-+readonly GREEN='\033[0;92m'
-+readonly RED='\033[0;31m'
-+readonly NC='\033[0m' # No Color
-+
-+readonly PING_ARG="-c 3 -w 10 -q"
-+
-+readonly TIMEOUT=10
-+
-+readonly NS_SRC="ns-src-$(mktemp -u XXXXXX)"
-+readonly NS_FWD="ns-fwd-$(mktemp -u XXXXXX)"
-+readonly NS_DST="ns-dst-$(mktemp -u XXXXXX)"
-+
-+readonly IP4_SRC="172.16.1.100"
-+readonly IP4_DST="172.16.2.100"
-+
-+readonly IP6_SRC="::1:dead:beef:cafe"
-+readonly IP6_DST="::2:dead:beef:cafe"
-+
-+readonly IP4_SLL="169.254.0.1"
-+readonly IP4_DLL="169.254.0.2"
-+readonly IP4_NET="169.254.0.0"
-+
-+cleanup()
-+{
-+	ip netns del ${NS_SRC}
-+	ip netns del ${NS_FWD}
-+	ip netns del ${NS_DST}
-+}
-+
-+trap cleanup EXIT
-+
-+set -e
-+
-+ip netns add "${NS_SRC}"
-+ip netns add "${NS_FWD}"
-+ip netns add "${NS_DST}"
-+
-+ip link add veth_src type veth peer name veth_src_fwd
-+ip link add veth_dst type veth peer name veth_dst_fwd
-+
-+ip link set veth_src netns ${NS_SRC}
-+ip link set veth_src_fwd netns ${NS_FWD}
-+
-+ip link set veth_dst netns ${NS_DST}
-+ip link set veth_dst_fwd netns ${NS_FWD}
-+
-+ip -netns ${NS_SRC} addr add ${IP4_SRC}/32 dev veth_src
-+ip -netns ${NS_DST} addr add ${IP4_DST}/32 dev veth_dst
-+
-+# The fwd netns automatically get a v6 LL address / routes, but also needs v4
-+# one in order to start ARP probing. IP4_NET route is added to the endpoints
-+# so that the ARP processing will reply.
-+
-+ip -netns ${NS_FWD} addr add ${IP4_SLL}/32 dev veth_src_fwd
-+ip -netns ${NS_FWD} addr add ${IP4_DLL}/32 dev veth_dst_fwd
-+
-+ip -netns ${NS_SRC} addr add ${IP6_SRC}/128 dev veth_src nodad
-+ip -netns ${NS_DST} addr add ${IP6_DST}/128 dev veth_dst nodad
-+
-+ip -netns ${NS_SRC} link set dev veth_src up
-+ip -netns ${NS_FWD} link set dev veth_src_fwd up
-+
-+ip -netns ${NS_DST} link set dev veth_dst up
-+ip -netns ${NS_FWD} link set dev veth_dst_fwd up
-+
-+ip -netns ${NS_SRC} route add ${IP4_DST}/32 dev veth_src scope global
-+ip -netns ${NS_SRC} route add ${IP4_NET}/16 dev veth_src scope global
-+ip -netns ${NS_FWD} route add ${IP4_SRC}/32 dev veth_src_fwd scope global
-+
-+ip -netns ${NS_SRC} route add ${IP6_DST}/128 dev veth_src scope global
-+ip -netns ${NS_FWD} route add ${IP6_SRC}/128 dev veth_src_fwd scope global
-+
-+ip -netns ${NS_DST} route add ${IP4_SRC}/32 dev veth_dst scope global
-+ip -netns ${NS_DST} route add ${IP4_NET}/16 dev veth_dst scope global
-+ip -netns ${NS_FWD} route add ${IP4_DST}/32 dev veth_dst_fwd scope global
-+
-+ip -netns ${NS_DST} route add ${IP6_SRC}/128 dev veth_dst scope global
-+ip -netns ${NS_FWD} route add ${IP6_DST}/128 dev veth_dst_fwd scope global
-+
-+fmac_src=$(ip netns exec ${NS_FWD} cat /sys/class/net/veth_src_fwd/address)
-+fmac_dst=$(ip netns exec ${NS_FWD} cat /sys/class/net/veth_dst_fwd/address)
-+
-+ip -netns ${NS_SRC} neigh add ${IP4_DST} dev veth_src lladdr $fmac_src
-+ip -netns ${NS_DST} neigh add ${IP4_SRC} dev veth_dst lladdr $fmac_dst
-+
-+ip -netns ${NS_SRC} neigh add ${IP6_DST} dev veth_src lladdr $fmac_src
-+ip -netns ${NS_DST} neigh add ${IP6_SRC} dev veth_dst lladdr $fmac_dst
-+
-+veth_dst=$(ip netns exec ${NS_FWD} cat /sys/class/net/veth_dst_fwd/ifindex | awk '{printf "%08x\n", $1}')
-+veth_src=$(ip netns exec ${NS_FWD} cat /sys/class/net/veth_src_fwd/ifindex | awk '{printf "%08x\n", $1}')
-+
-+xxd -p < test_tc_neigh.o   | sed "s/eeddddee/$veth_src/g" | xxd -r -p > test_tc_neigh.x.o
-+xxd -p < test_tc_neigh.x.o | sed "s/eeffffee/$veth_dst/g" | xxd -r -p > test_tc_neigh.y.o
-+
-+ip netns exec ${NS_FWD} tc qdisc add dev veth_src_fwd clsact
-+ip netns exec ${NS_FWD} tc filter add dev veth_src_fwd ingress bpf da obj test_tc_neigh.y.o sec src_ingress
-+ip netns exec ${NS_FWD} tc filter add dev veth_src_fwd egress  bpf da obj test_tc_neigh.y.o sec chk_neigh
-+
-+ip netns exec ${NS_FWD} tc qdisc add dev veth_dst_fwd clsact
-+ip netns exec ${NS_FWD} tc filter add dev veth_dst_fwd ingress bpf da obj test_tc_neigh.y.o sec dst_ingress
-+ip netns exec ${NS_FWD} tc filter add dev veth_dst_fwd egress  bpf da obj test_tc_neigh.y.o sec chk_neigh
-+
-+rm -f test_tc_neigh.x.o test_tc_neigh.y.o
-+
-+ip netns exec ${NS_DST} bash -c "nc -4 -l -p 9004 &"
-+ip netns exec ${NS_DST} bash -c "nc -6 -l -p 9006 &"
-+
-+set +e
-+
-+TEST="TCPv4 connectivity test"
-+ip netns exec ${NS_SRC} bash -c "timeout ${TIMEOUT} dd if=/dev/zero bs=1000 count=100 > /dev/tcp/${IP4_DST}/9004"
-+if [ $? -ne 0 ]; then
-+	echo -e "${TEST}: ${RED}FAIL${NC}"
-+	exit 1
-+fi
-+echo -e "${TEST}: ${GREEN}PASS${NC}"
-+
-+TEST="TCPv6 connectivity test"
-+ip netns exec ${NS_SRC} bash -c "timeout ${TIMEOUT} dd if=/dev/zero bs=1000 count=100 > /dev/tcp/${IP6_DST}/9006"
-+if [ $? -ne 0 ]; then
-+	echo -e "${TEST}: ${RED}FAIL${NC}"
-+	exit 1
-+fi
-+echo -e "${TEST}: ${GREEN}PASS${NC}"
-+
-+TEST="ICMPv4 connectivity test"
-+ip netns exec ${NS_SRC} ping  $PING_ARG ${IP4_DST}
-+if [ $? -ne 0 ]; then
-+	echo -e "${TEST}: ${RED}FAIL${NC}"
-+	exit 1
-+fi
-+echo -e "${TEST}: ${GREEN}PASS${NC}"
-+
-+TEST="ICMPv6 connectivity test"
-+ip netns exec ${NS_SRC} ping6 $PING_ARG ${IP6_DST}
-+if [ $? -ne 0 ]; then
-+	echo -e "${TEST}: ${RED}FAIL${NC}"
-+	exit 1
-+fi
-+echo -e "${TEST}: ${GREEN}PASS${NC}"
--- 
-2.21.0
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 15ab889b0a3f..33fcc18fdd39 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5818,8 +5818,7 @@ static void scalar_min_max_and(struct bpf_reg_state *dst_reg,
+ 	u64 umax_val = src_reg->umax_value;
+ 
+ 	if (src_known && dst_known) {
+-		__mark_reg_known(dst_reg, dst_reg->var_off.value &
+-					  src_reg->var_off.value);
++		__mark_reg_known(dst_reg, dst_reg->var_off.value);
+ 		return;
+ 	}
+ 
+@@ -5889,8 +5888,7 @@ static void scalar_min_max_or(struct bpf_reg_state *dst_reg,
+ 	u64 umin_val = src_reg->umin_value;
+ 
+ 	if (src_known && dst_known) {
+-		__mark_reg_known(dst_reg, dst_reg->var_off.value |
+-					  src_reg->var_off.value);
++		__mark_reg_known(dst_reg, dst_reg->var_off.value);
+ 		return;
+ 	}
+ 
 
