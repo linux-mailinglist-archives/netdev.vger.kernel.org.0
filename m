@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0CFF2776AF
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 18:27:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E361E2776B1
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 18:27:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727353AbgIXQ1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 12:27:23 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:37484 "EHLO
+        id S1728227AbgIXQ12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 12:27:28 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:37494 "EHLO
         fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726658AbgIXQ1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 12:27:22 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08OGRDpD089144;
-        Thu, 24 Sep 2020 11:27:13 -0500
+        with ESMTP id S1726658AbgIXQ1Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 12:27:25 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08OGRIZW089173;
+        Thu, 24 Sep 2020 11:27:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1600964833;
-        bh=4Q3CyoqtJO8AKENo6GVo6YheNISKLUd1oQPIyIsHMhI=;
-        h=From:To:CC:Subject:Date;
-        b=Qih9bck52RVy83K26xqw5J67iuyIjr/3+MqteBcPsk3+wM7n6mcoBM24KnjIw9J8K
-         OxC3I15IUKiAj1nCoeVxKVzXAmiT5KrnDpQMnRpHW4epzFKndaGmIVyCOrYc6DX+gz
-         AKU/Qcqaa/f2HVe68W/A8Jp5NS5BBUfPfeLcCn7w=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08OGRDcG059717
+        s=ti-com-17Q1; t=1600964838;
+        bh=ub9vnnKoHrf9ffhYXylXmXW9vAUzeRUtUhC4p2Zt1x8=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=I1EdffJl1Os7CQNtEwRaOyhiBNJ8V3wmeYK0Uiaamb6okeMYDDHZobdjVS4/lLHLx
+         lkG4sVERNFzBP5Mhpa8ICp4tzxoY1KuSxuXZBqPc5hJADxJR5l8TvQ6SI+V3/jmyFz
+         8PXShx4toPrJkXd7u7kPdDrcc6GGk09j/l8CylQE=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08OGRIRo030704
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 24 Sep 2020 11:27:13 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 24 Sep 2020 11:27:18 -0500
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 24
- Sep 2020 11:27:13 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ Sep 2020 11:27:18 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 24 Sep 2020 11:27:13 -0500
+ Frontend Transport; Thu, 24 Sep 2020 11:27:18 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08OGRDGK072758;
-        Thu, 24 Sep 2020 11:27:13 -0500
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08OGRI5I129411;
+        Thu, 24 Sep 2020 11:27:18 -0500
 From:   Dan Murphy <dmurphy@ti.com>
 To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
         <hkallweit1@gmail.com>
 CC:     <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v4 0/2] DP83869 WoL and Speed optimization
-Date:   Thu, 24 Sep 2020 11:27:05 -0500
-Message-ID: <20200924162707.14093-1-dmurphy@ti.com>
+Subject: [PATCH net-next v4 1/2] net: phy: dp83869: support Wake on LAN
+Date:   Thu, 24 Sep 2020 11:27:06 -0500
+Message-ID: <20200924162707.14093-2-dmurphy@ti.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20200924162707.14093-1-dmurphy@ti.com>
+References: <20200924162707.14093-1-dmurphy@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -53,20 +55,232 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+This adds WoL support on TI DP83869 for magic, magic secure, unicast and
+broadcast.
 
-Add the WoL and Speed Optimization (aka downshift) support for the DP83869
-Ethernet PHY.
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
+---
 
-Dan
+v4 - Added checking error on phy_read
 
-Dan Murphy (2):
-  net: phy: dp83869: support Wake on LAN
-  net: phy: dp83869: Add speed optimization feature
+ drivers/net/phy/dp83869.c | 176 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 176 insertions(+)
 
- drivers/net/phy/dp83869.c | 292 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 292 insertions(+)
-
+diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+index 81899bc99add..975b64b4b6c4 100644
+--- a/drivers/net/phy/dp83869.c
++++ b/drivers/net/phy/dp83869.c
+@@ -4,6 +4,7 @@
+  */
+ 
+ #include <linux/ethtool.h>
++#include <linux/etherdevice.h>
+ #include <linux/kernel.h>
+ #include <linux/mii.h>
+ #include <linux/module.h>
+@@ -27,6 +28,13 @@
+ #define DP83869_RGMIICTL	0x0032
+ #define DP83869_STRAP_STS1	0x006e
+ #define DP83869_RGMIIDCTL	0x0086
++#define DP83869_RXFCFG		0x0134
++#define DP83869_RXFPMD1		0x0136
++#define DP83869_RXFPMD2		0x0137
++#define DP83869_RXFPMD3		0x0138
++#define DP83869_RXFSOP1		0x0139
++#define DP83869_RXFSOP2		0x013A
++#define DP83869_RXFSOP3		0x013B
+ #define DP83869_IO_MUX_CFG	0x0170
+ #define DP83869_OP_MODE		0x01df
+ #define DP83869_FX_CTRL		0x0c00
+@@ -104,6 +112,14 @@
+ #define DP83869_OP_MODE_MII			BIT(5)
+ #define DP83869_SGMII_RGMII_BRIDGE		BIT(6)
+ 
++/* RXFCFG bits*/
++#define DP83869_WOL_MAGIC_EN		BIT(0)
++#define DP83869_WOL_PATTERN_EN		BIT(1)
++#define DP83869_WOL_BCAST_EN		BIT(2)
++#define DP83869_WOL_UCAST_EN		BIT(4)
++#define DP83869_WOL_SEC_EN		BIT(5)
++#define DP83869_WOL_ENH_MAC		BIT(7)
++
+ enum {
+ 	DP83869_PORT_MIRRORING_KEEP,
+ 	DP83869_PORT_MIRRORING_EN,
+@@ -177,6 +193,163 @@ static int dp83869_config_intr(struct phy_device *phydev)
+ 	return phy_write(phydev, MII_DP83869_MICR, micr_status);
+ }
+ 
++static int dp83869_set_wol(struct phy_device *phydev,
++			   struct ethtool_wolinfo *wol)
++{
++	struct net_device *ndev = phydev->attached_dev;
++	u16 val_rxcfg, val_micr;
++	u8 *mac;
++	int ret;
++
++	val_rxcfg = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RXFCFG);
++	if (val_rxcfg < 0)
++		return val_rxcfg;
++
++	val_micr = phy_read(phydev, MII_DP83869_MICR);
++	if (val_micr < 0)
++		return val_micr;
++
++	if (wol->wolopts & (WAKE_MAGIC | WAKE_MAGICSECURE | WAKE_UCAST |
++			    WAKE_BCAST)) {
++		val_rxcfg |= DP83869_WOL_ENH_MAC;
++		val_micr |= MII_DP83869_MICR_WOL_INT_EN;
++
++		if (wol->wolopts & WAKE_MAGIC ||
++		    wol->wolopts & WAKE_MAGICSECURE) {
++			mac = (u8 *)ndev->dev_addr;
++
++			if (!is_valid_ether_addr(mac))
++				return -EINVAL;
++
++			ret = phy_write_mmd(phydev, DP83869_DEVADDR,
++					    DP83869_RXFPMD1,
++					    mac[1] << 8 | mac[0]);
++			if (ret)
++				return ret;
++
++			ret = phy_write_mmd(phydev, DP83869_DEVADDR,
++					    DP83869_RXFPMD2,
++					    mac[3] << 8 | mac[2]);
++			if (ret)
++				return ret;
++
++			ret = phy_write_mmd(phydev, DP83869_DEVADDR,
++					    DP83869_RXFPMD3,
++					    mac[5] << 8 | mac[4]);
++			if (ret)
++				return ret;
++
++			val_rxcfg |= DP83869_WOL_MAGIC_EN;
++		} else {
++			val_rxcfg &= ~DP83869_WOL_MAGIC_EN;
++		}
++
++		if (wol->wolopts & WAKE_MAGICSECURE) {
++			ret = phy_write_mmd(phydev, DP83869_DEVADDR,
++					    DP83869_RXFSOP1,
++					    (wol->sopass[1] << 8) | wol->sopass[0]);
++			if (ret)
++				return ret;
++
++			ret = phy_write_mmd(phydev, DP83869_DEVADDR,
++					    DP83869_RXFSOP2,
++					    (wol->sopass[3] << 8) | wol->sopass[2]);
++			if (ret)
++				return ret;
++			ret = phy_write_mmd(phydev, DP83869_DEVADDR,
++					    DP83869_RXFSOP3,
++					    (wol->sopass[5] << 8) | wol->sopass[4]);
++			if (ret)
++				return ret;
++
++			val_rxcfg |= DP83869_WOL_SEC_EN;
++		} else {
++			val_rxcfg &= ~DP83869_WOL_SEC_EN;
++		}
++
++		if (wol->wolopts & WAKE_UCAST)
++			val_rxcfg |= DP83869_WOL_UCAST_EN;
++		else
++			val_rxcfg &= ~DP83869_WOL_UCAST_EN;
++
++		if (wol->wolopts & WAKE_BCAST)
++			val_rxcfg |= DP83869_WOL_BCAST_EN;
++		else
++			val_rxcfg &= ~DP83869_WOL_BCAST_EN;
++	} else {
++		val_rxcfg &= ~DP83869_WOL_ENH_MAC;
++		val_micr &= ~MII_DP83869_MICR_WOL_INT_EN;
++	}
++
++	ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RXFCFG, val_rxcfg);
++	if (ret)
++		return ret;
++
++	return phy_write(phydev, MII_DP83869_MICR, val_micr);
++}
++
++static void dp83869_get_wol(struct phy_device *phydev,
++			    struct ethtool_wolinfo *wol)
++{
++	u16 value, sopass_val;
++
++	wol->supported = (WAKE_UCAST | WAKE_BCAST | WAKE_MAGIC |
++			WAKE_MAGICSECURE);
++	wol->wolopts = 0;
++
++	value = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RXFCFG);
++	if (value < 0) {
++		phydev_err(phydev, "Failed to read RX CFG\n");
++		return;
++	}
++
++	if (value & DP83869_WOL_UCAST_EN)
++		wol->wolopts |= WAKE_UCAST;
++
++	if (value & DP83869_WOL_BCAST_EN)
++		wol->wolopts |= WAKE_BCAST;
++
++	if (value & DP83869_WOL_MAGIC_EN)
++		wol->wolopts |= WAKE_MAGIC;
++
++	if (value & DP83869_WOL_SEC_EN) {
++		sopass_val = phy_read_mmd(phydev, DP83869_DEVADDR,
++					  DP83869_RXFSOP1);
++		if (sopass_val < 0) {
++			phydev_err(phydev, "Failed to read RX SOP 1\n");
++			return;
++		}
++
++		wol->sopass[0] = (sopass_val & 0xff);
++		wol->sopass[1] = (sopass_val >> 8);
++
++		sopass_val = phy_read_mmd(phydev, DP83869_DEVADDR,
++					  DP83869_RXFSOP2);
++		if (sopass_val < 0) {
++			phydev_err(phydev, "Failed to read RX SOP 2\n");
++			return;
++		}
++
++		wol->sopass[2] = (sopass_val & 0xff);
++		wol->sopass[3] = (sopass_val >> 8);
++
++		sopass_val = phy_read_mmd(phydev, DP83869_DEVADDR,
++					  DP83869_RXFSOP3);
++		if (sopass_val < 0) {
++			phydev_err(phydev, "Failed to read RX SOP 3\n");
++			return;
++		}
++
++		wol->sopass[4] = (sopass_val & 0xff);
++		wol->sopass[5] = (sopass_val >> 8);
++
++		wol->wolopts |= WAKE_MAGICSECURE;
++	}
++
++	if (!(value & DP83869_WOL_ENH_MAC))
++		wol->wolopts = 0;
++}
++
+ static int dp83869_config_port_mirroring(struct phy_device *phydev)
+ {
+ 	struct dp83869_private *dp83869 = phydev->priv;
+@@ -568,6 +741,9 @@ static struct phy_driver dp83869_driver[] = {
+ 		.config_intr	= dp83869_config_intr,
+ 		.read_status	= dp83869_read_status,
+ 
++		.get_wol	= dp83869_get_wol,
++		.set_wol	= dp83869_set_wol,
++
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 	},
 -- 
 2.28.0
 
