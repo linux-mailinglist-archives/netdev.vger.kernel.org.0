@@ -2,94 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80C272769DE
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 08:59:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAAAF276AC3
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 09:28:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727004AbgIXG7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 02:59:07 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:35800 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726902AbgIXG7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 02:59:07 -0400
-Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 08O6wpZY003518;
-        Wed, 23 Sep 2020 23:58:52 -0700
-From:   Rohit Maheshwari <rohitm@chelsio.com>
-To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
-Cc:     vakul.garg@nxp.com, secdev@chelsio.com,
-        Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [PATCH] net/tls: race causes kernel panic
-Date:   Thu, 24 Sep 2020 12:28:45 +0530
-Message-Id: <20200924065845.30594-1-rohitm@chelsio.com>
-X-Mailer: git-send-email 2.18.1
+        id S1727024AbgIXH2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 03:28:41 -0400
+Received: from mga07.intel.com ([134.134.136.100]:12504 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726655AbgIXH2l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Sep 2020 03:28:41 -0400
+IronPort-SDR: 3et7oN3Ef9p9yfBUztsFqnHmmlfA9goc2DhdrfWy1JcQevpmcUUYMUtJWkQ0N5+1T8JwwZJxVB
+ jJPE9NxfE8/Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9753"; a="225266295"
+X-IronPort-AV: E=Sophos;i="5.77,296,1596524400"; 
+   d="scan'208";a="225266295"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2020 00:28:39 -0700
+IronPort-SDR: CmxRrJmT622dnpjeKoa98mzwPCEFk9eR1X/qyZ8uo5D90CEPCE8QelkekNOni+3W2jRhLkUMgz
+ qoFPvUKnk+hg==
+X-IronPort-AV: E=Sophos;i="5.77,296,1596524400"; 
+   d="scan'208";a="291948177"
+Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2020 00:28:37 -0700
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     bjorn.topel@intel.com, Ciara Loftus <ciara.loftus@intel.com>
+Subject: [PATCH iproute2-next] ss: add support for xdp statistics
+Date:   Thu, 24 Sep 2020 07:03:27 +0000
+Message-Id: <20200924070327.28182-1-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BUG: kernel NULL pointer dereference, address: 00000000000000b8
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 80000008b6fef067 P4D 80000008b6fef067 PUD 8b6fe6067 PMD 0
- Oops: 0000 [#1] SMP PTI
- CPU: 12 PID: 23871 Comm: kworker/12:80 Kdump: loaded Tainted: G S
- 5.9.0-rc3+ #1
- Hardware name: Supermicro X10SRA-F/X10SRA-F, BIOS 2.1 03/29/2018
- Workqueue: events tx_work_handler [tls]
- RIP: 0010:tx_work_handler+0x1b/0x70 [tls]
- Code: dc fe ff ff e8 16 d4 a3 f6 66 0f 1f 44 00 00 0f 1f 44 00 00 55 53 48 8b
- 6f 58 48 8b bd a0 04 00 00 48 85 ff 74 1c 48 8b 47 28 <48> 8b 90 b8 00 00 00 83
- e2 02 75 0c f0 48 0f ba b0 b8 00 00 00 00
- RSP: 0018:ffffa44ace61fe88 EFLAGS: 00010286
- RAX: 0000000000000000 RBX: ffff91da9e45cc30 RCX: dead000000000122
- RDX: 0000000000000001 RSI: ffff91da9e45cc38 RDI: ffff91d95efac200
- RBP: ffff91da133fd780 R08: 0000000000000000 R09: 000073746e657665
- R10: 8080808080808080 R11: 0000000000000000 R12: ffff91dad7d30700
- R13: ffff91dab6561080 R14: 0ffff91dad7d3070 R15: ffff91da9e45cc38
- FS:  0000000000000000(0000) GS:ffff91dad7d00000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 00000000000000b8 CR3: 0000000906478003 CR4: 00000000003706e0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- Call Trace:
-  process_one_work+0x1a7/0x370
-  worker_thread+0x30/0x370
-  ? process_one_work+0x370/0x370
-  kthread+0x114/0x130
-  ? kthread_park+0x80/0x80
-  ret_from_fork+0x22/0x30
+The patch exposes statistics for XDP sockets which can be useful for
+debugging purposes.
 
-tls_sw_release_resources_tx() waits for encrypt_pending, which
-can have race, so we need similar changes as in commit
-0cada33241d9de205522e3858b18e506ca5cce2c here as well.
+The stats exposed are:
+    rx dropped
+    rx invalid
+    rx queue full
+    rx fill ring empty
+    tx invalid
+    tx ring empty
 
-Fixes: a42055e8d2c3 ("net/tls: Add support for async encryption of records for performance")
-Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
 ---
- net/tls/tls_sw.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ misc/ss.c | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 9a3d9fedd7aa..95ab5545a931 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -2143,10 +2143,15 @@ void tls_sw_release_resources_tx(struct sock *sk)
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	struct tls_sw_context_tx *ctx = tls_sw_ctx_tx(tls_ctx);
- 	struct tls_rec *rec, *tmp;
-+	int pending;
+diff --git a/misc/ss.c b/misc/ss.c
+index 458e381f..77e1847e 100644
+--- a/misc/ss.c
++++ b/misc/ss.c
+@@ -4536,6 +4536,21 @@ static void xdp_show_umem(struct xdp_diag_umem *umem, struct xdp_diag_ring *fr,
+ 		xdp_show_ring("cr", cr);
+ }
  
- 	/* Wait for any pending async encryptions to complete */
--	smp_store_mb(ctx->async_notify, true);
--	if (atomic_read(&ctx->encrypt_pending))
-+	spin_lock_bh(&ctx->encrypt_compl_lock);
-+	ctx->async_notify = true;
-+	pending = atomic_read(&ctx->encrypt_pending);
-+	spin_unlock_bh(&ctx->encrypt_compl_lock);
++static void xdp_show_stats(struct xdp_diag_stats *stats)
++{
++	if (oneline)
++		out(" stats(");
++	else
++		out("\n\tstats(");
++	out("rx dropped:%llu", stats->n_rx_dropped);
++	out(",rx invalid:%llu", stats->n_rx_invalid);
++	out(",rx queue full:%llu", stats->n_rx_full);
++	out(",rx fill ring empty:%llu", stats->n_fill_ring_empty);
++	out(",tx invalid:%llu", stats->n_tx_invalid);
++	out(",tx ring empty:%llu", stats->n_tx_ring_empty);
++	out(")");
++}
 +
-+	if (pending)
- 		crypto_wait_req(-EINPROGRESS, &ctx->async_wait);
+ static int xdp_show_sock(struct nlmsghdr *nlh, void *arg)
+ {
+ 	struct xdp_diag_ring *rx = NULL, *tx = NULL, *fr = NULL, *cr = NULL;
+@@ -4543,6 +4558,7 @@ static int xdp_show_sock(struct nlmsghdr *nlh, void *arg)
+ 	struct rtattr *tb[XDP_DIAG_MAX + 1];
+ 	struct xdp_diag_info *info = NULL;
+ 	struct xdp_diag_umem *umem = NULL;
++	struct xdp_diag_stats *stats = NULL;
+ 	const struct filter *f = arg;
+ 	struct sockstat stat = {};
  
- 	tls_tx_records(sk, -1);
+@@ -4577,6 +4593,8 @@ static int xdp_show_sock(struct nlmsghdr *nlh, void *arg)
+ 
+ 		stat.rq = skmeminfo[SK_MEMINFO_RMEM_ALLOC];
+ 	}
++	if (tb[XDP_DIAG_STATS])
++		stats = RTA_DATA(tb[XDP_DIAG_STATS]);
+ 
+ 	if (xdp_stats_print(&stat, f))
+ 		return 0;
+@@ -4588,6 +4606,8 @@ static int xdp_show_sock(struct nlmsghdr *nlh, void *arg)
+ 			xdp_show_ring("tx", tx);
+ 		if (umem)
+ 			xdp_show_umem(umem, fr, cr);
++		if (stats)
++			xdp_show_stats(stats);
+ 	}
+ 
+ 	if (show_mem)
+@@ -4606,7 +4626,7 @@ static int xdp_show(struct filter *f)
+ 
+ 	req.r.sdiag_family = AF_XDP;
+ 	req.r.xdiag_show = XDP_SHOW_INFO | XDP_SHOW_RING_CFG | XDP_SHOW_UMEM |
+-			   XDP_SHOW_MEMINFO;
++			   XDP_SHOW_MEMINFO | XDP_SHOW_STATS;
+ 
+ 	return handle_netlink_request(f, &req.nlh, sizeof(req), xdp_show_sock);
+ }
 -- 
-2.18.1
+2.17.1
 
