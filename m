@@ -2,544 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F3F127665B
-	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 04:26:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D113D276691
+	for <lists+netdev@lfdr.de>; Thu, 24 Sep 2020 04:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726350AbgIXC0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Sep 2020 22:26:02 -0400
-Received: from mga03.intel.com ([134.134.136.65]:22737 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726262AbgIXC0C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Sep 2020 22:26:02 -0400
-IronPort-SDR: Y2fSEclunDvyl8EpShrehyyqVSvmj+2/p9UfkrOc5bblRzbpYX5Y29plLkM74kozxP60fuHcAR
- QDIJhYvulb2Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9753"; a="161139383"
-X-IronPort-AV: E=Sophos;i="5.77,296,1596524400"; 
-   d="scan'208";a="161139383"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2020 19:26:01 -0700
-IronPort-SDR: CikwBmpHjsxibG6U5kiJP3I4RopC5G5ENgCNrmeOL1/wuK6aCKUpmWCmN+T+wLk7CR2/PAMF2a
- eNFCLL5DpDVw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,296,1596524400"; 
-   d="scan'208";a="511347252"
-Received: from bpujari-bxdsw.sc.intel.com ([10.232.14.242])
-  by fmsmga006.fm.intel.com with ESMTP; 23 Sep 2020 19:26:00 -0700
-From:   bimmy.pujari@intel.com
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, mchehab@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, maze@google.com,
-        bimmy.pujari@intel.com, ashkan.nikravesh@intel.com
-Subject: [PATCH bpf-next v3 2/2] selftests/bpf: Verifying real time helper function
-Date:   Wed, 23 Sep 2020 19:25:57 -0700
-Message-Id: <20200924022557.16561-2-bimmy.pujari@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200924022557.16561-1-bimmy.pujari@intel.com>
+        id S1726350AbgIXCmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Sep 2020 22:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726281AbgIXCmD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Sep 2020 22:42:03 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF39C0613CE
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 19:42:02 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id z25so1690822iol.10
+        for <netdev@vger.kernel.org>; Wed, 23 Sep 2020 19:42:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Eg84LwRtp3d1sbQSPErNoEZ19NchOftM6zwgElSj2CY=;
+        b=BjXOR3NsaC3c1u6IOc1vApsSF1stkvNQIyH5Z3b3jZjP2xu4rFa91WG2TnNQ/mglNn
+         EvHce5vUQWYSt11LH561kStXfKpkM9WP9OzaVRNTORBDB5m5aeZTcXrP+k4qScf52m4V
+         h1OB5k+HY7C/RUNwwjoB5B91/qVNa5JUcvXYIMrezQWM5Br+VI+yy5kP9sMfEA7T6r5Y
+         Az7ScfGWXYotK7OiQw5syl/Kb4ob6zk6l8KQWBvX+zzgNbl9j0wvVEZYjlbP4rq5WOev
+         XFWhhD9//FUK1244m1TMVcyyQT2RWAKIWHxEUZ8uhsqFieYYn9Zmj+3plp6nH/riBX5S
+         C2rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Eg84LwRtp3d1sbQSPErNoEZ19NchOftM6zwgElSj2CY=;
+        b=Z2gOZ9GCjwjzZrdNb9wfgc9cfJek54uDw0f3QqZHmm/F4dk2gzlWGGRVl0MjZCZJI2
+         fU8g94DonU63Dx7BqGECpFYB395xA/Xv5xsY8sj5UmsplS1u8jMm5s+goYKIhYX4OeNm
+         QAia/U/wufEpzFnoe6JXaU4Qs0hawPrVzHJNexFBuL6RgeymClN7a3ZWGgJuHsAZSseh
+         aFshIE/PQJQKhirTFtpmRxwCAkHYY3PuCnzfoh1vWy3ebw8O2PbR8IzYW6MeyS9HWBb5
+         jC9U/SCgam28/5TRJh8OOveM0XVEZG5eLO+bzovuN6QAkY/WSPVMgBdxtk6ARqYiIAeM
+         loWg==
+X-Gm-Message-State: AOAM533s8KZN0VWZiaVdBfkPTeSJEfFJ64bYytjceAVtPPXWxu2tT1Ao
+        DXomij4KhdMbJerySpGXwdzELHQn17rJvuCasMXiXA==
+X-Google-Smtp-Source: ABdhPJwRbMvtoAsBULzmZC7W1QHwQ7akF61ejeD8Uo6BCz3vsaJMZRFQ7oSX5Tc2oyzzmb+ewxm3T56JJYdtZM/umwg=
+X-Received: by 2002:a02:b70c:: with SMTP id g12mr1905063jam.62.1600915321181;
+ Wed, 23 Sep 2020 19:42:01 -0700 (PDT)
+MIME-Version: 1.0
 References: <20200924022557.16561-1-bimmy.pujari@intel.com>
+In-Reply-To: <20200924022557.16561-1-bimmy.pujari@intel.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Wed, 23 Sep 2020 19:41:48 -0700
+Message-ID: <CANP3RGc7HjqydxF5vBQtzqUe72Ag1KvxVF5kHft0ceZRnjAbQQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/2] bpf: Add bpf_ktime_get_real_ns
+To:     bimmy.pujari@intel.com
+Cc:     bpf <bpf@vger.kernel.org>, Linux NetDev <netdev@vger.kernel.org>,
+        mchehab@kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, ashkan.nikravesh@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bimmy Pujari <bimmy.pujari@intel.com>
+On Wed, Sep 23, 2020 at 7:26 PM <bimmy.pujari@intel.com> wrote:
+>
+> From: Bimmy Pujari <bimmy.pujari@intel.com>
+>
+> The existing bpf helper functions to get timestamp return the time
+> elapsed since system boot. This timestamp is not particularly useful
+> where epoch timestamp is required or more than one server is involved
+> and time sync is required. Instead, you want to use CLOCK_REALTIME,
+> which provides epoch timestamp.
+> Hence add bfp_ktime_get_real_ns() based around CLOCK_REALTIME.
+>
+> Signed-off-by: Ashkan Nikravesh <ashkan.nikravesh@intel.com>
+> Signed-off-by: Bimmy Pujari <bimmy.pujari@intel.com>
+> ---
+>  drivers/media/rc/bpf-lirc.c    |  2 ++
+>  include/linux/bpf.h            |  1 +
+>  include/uapi/linux/bpf.h       |  8 ++++++++
+>  kernel/bpf/core.c              |  1 +
+>  kernel/bpf/helpers.c           | 13 +++++++++++++
+>  kernel/trace/bpf_trace.c       |  2 ++
+>  tools/include/uapi/linux/bpf.h |  8 ++++++++
+>  7 files changed, 35 insertions(+)
+>
+> diff --git a/drivers/media/rc/bpf-lirc.c b/drivers/media/rc/bpf-lirc.c
+> index 5bb144435c16..649015fef3c1 100644
+> --- a/drivers/media/rc/bpf-lirc.c
+> +++ b/drivers/media/rc/bpf-lirc.c
+> @@ -105,6 +105,8 @@ lirc_mode2_func_proto(enum bpf_func_id func_id, const=
+ struct bpf_prog *prog)
+>                 return &bpf_ktime_get_ns_proto;
+>         case BPF_FUNC_ktime_get_boot_ns:
+>                 return &bpf_ktime_get_boot_ns_proto;
+> +       case BPF_FUNC_ktime_get_real_ns:
+> +               return &bpf_ktime_get_real_ns_proto;
+>         case BPF_FUNC_tail_call:
+>                 return &bpf_tail_call_proto;
+>         case BPF_FUNC_get_prandom_u32:
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index fc5c901c7542..18c4fdce65c8 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1757,6 +1757,7 @@ extern const struct bpf_func_proto bpf_get_numa_nod=
+e_id_proto;
+>  extern const struct bpf_func_proto bpf_tail_call_proto;
+>  extern const struct bpf_func_proto bpf_ktime_get_ns_proto;
+>  extern const struct bpf_func_proto bpf_ktime_get_boot_ns_proto;
+> +extern const struct bpf_func_proto bpf_ktime_get_real_ns_proto;
+>  extern const struct bpf_func_proto bpf_get_current_pid_tgid_proto;
+>  extern const struct bpf_func_proto bpf_get_current_uid_gid_proto;
+>  extern const struct bpf_func_proto bpf_get_current_comm_proto;
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index a22812561064..198e69a6508d 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3586,6 +3586,13 @@ union bpf_attr {
+>   *             the data in *dst*. This is a wrapper of **copy_from_user*=
+*\ ().
+>   *     Return
+>   *             0 on success, or a negative error in case of failure.
+> + *
+> + * u64 bpf_ktime_get_real_ns(void)
+> + *     Description
+> + *             Return the real time in nanoseconds.
+> + *             See: **clock_gettime**\ (**CLOCK_REALTIME**)
+> + *     Return
+> + *             Current *ktime*.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3737,6 +3744,7 @@ union bpf_attr {
+>         FN(inode_storage_delete),       \
+>         FN(d_path),                     \
+>         FN(copy_from_user),             \
+> +       FN(ktime_get_real_ns),          \
+>         /* */
+>
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which he=
+lper
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index c4811b139caa..0dbbda9b743b 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -2208,6 +2208,7 @@ const struct bpf_func_proto bpf_get_smp_processor_i=
+d_proto __weak;
+>  const struct bpf_func_proto bpf_get_numa_node_id_proto __weak;
+>  const struct bpf_func_proto bpf_ktime_get_ns_proto __weak;
+>  const struct bpf_func_proto bpf_ktime_get_boot_ns_proto __weak;
+> +const struct bpf_func_proto bpf_ktime_get_real_ns_proto __weak;
+>
+>  const struct bpf_func_proto bpf_get_current_pid_tgid_proto __weak;
+>  const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+> diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> index 5cc7425ee476..300db9269996 100644
+> --- a/kernel/bpf/helpers.c
+> +++ b/kernel/bpf/helpers.c
+> @@ -166,6 +166,17 @@ const struct bpf_func_proto bpf_ktime_get_boot_ns_pr=
+oto =3D {
+>         .gpl_only       =3D false,
+>         .ret_type       =3D RET_INTEGER,
+>  };
+> +BPF_CALL_0(bpf_ktime_get_real_ns)
+> +{
+> +       /* NMI safe access to clock realtime */
+> +       return ktime_get_real_fast_ns();
+> +}
+> +
+> +const struct bpf_func_proto bpf_ktime_get_real_ns_proto =3D {
+> +       .func           =3D bpf_ktime_get_real_ns,
+> +       .gpl_only       =3D false,
+> +       .ret_type       =3D RET_INTEGER,
+> +};
+>
+>  BPF_CALL_0(bpf_get_current_pid_tgid)
+>  {
+> @@ -657,6 +668,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+>                 return &bpf_ktime_get_ns_proto;
+>         case BPF_FUNC_ktime_get_boot_ns:
+>                 return &bpf_ktime_get_boot_ns_proto;
+> +       case BPF_FUNC_ktime_get_real_ns:
+> +               return &bpf_ktime_get_real_ns_proto;
+>         case BPF_FUNC_ringbuf_output:
+>                 return &bpf_ringbuf_output_proto;
+>         case BPF_FUNC_ringbuf_reserve:
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index 36508f46a8db..8ea2a0e50041 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -1167,6 +1167,8 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, co=
+nst struct bpf_prog *prog)
+>                 return &bpf_ktime_get_ns_proto;
+>         case BPF_FUNC_ktime_get_boot_ns:
+>                 return &bpf_ktime_get_boot_ns_proto;
+> +       case BPF_FUNC_ktime_get_real_ns:
+> +               return &bpf_ktime_get_real_ns_proto;
+>         case BPF_FUNC_tail_call:
+>                 return &bpf_tail_call_proto;
+>         case BPF_FUNC_get_current_pid_tgid:
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bp=
+f.h
+> index a22812561064..198e69a6508d 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -3586,6 +3586,13 @@ union bpf_attr {
+>   *             the data in *dst*. This is a wrapper of **copy_from_user*=
+*\ ().
+>   *     Return
+>   *             0 on success, or a negative error in case of failure.
+> + *
+> + * u64 bpf_ktime_get_real_ns(void)
+> + *     Description
+> + *             Return the real time in nanoseconds.
+> + *             See: **clock_gettime**\ (**CLOCK_REALTIME**)
+> + *     Return
+> + *             Current *ktime*.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3737,6 +3744,7 @@ union bpf_attr {
+>         FN(inode_storage_delete),       \
+>         FN(d_path),                     \
+>         FN(copy_from_user),             \
+> +       FN(ktime_get_real_ns),          \
+>         /* */
+>
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which he=
+lper
+> --
+> 2.17.1
 
-Test xdping measures RTT from xdp using monotonic time helper.
-Extending xdping test to use real time helper function in order
-to verify this helper function.
-
-Signed-off-by: Bimmy Pujari <bimmy.pujari@intel.com>
----
- .../testing/selftests/bpf/progs/xdping_kern.c | 183 +----------------
- .../testing/selftests/bpf/progs/xdping_kern.h | 193 ++++++++++++++++++
- .../bpf/progs/xdping_realtime_kern.c          |   4 +
- tools/testing/selftests/bpf/test_xdping.sh    |  44 +++-
- 4 files changed, 235 insertions(+), 189 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/xdping_kern.h
- create mode 100644 tools/testing/selftests/bpf/progs/xdping_realtime_kern.c
-
-diff --git a/tools/testing/selftests/bpf/progs/xdping_kern.c b/tools/testing/selftests/bpf/progs/xdping_kern.c
-index 6b9ca40bd1f4..0a152f6835fe 100644
---- a/tools/testing/selftests/bpf/progs/xdping_kern.c
-+++ b/tools/testing/selftests/bpf/progs/xdping_kern.c
-@@ -1,184 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
--/* Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved. */
-+#undef REALTIME
- 
--#define KBUILD_MODNAME "foo"
--#include <stddef.h>
--#include <string.h>
--#include <linux/bpf.h>
--#include <linux/icmp.h>
--#include <linux/in.h>
--#include <linux/if_ether.h>
--#include <linux/if_packet.h>
--#include <linux/if_vlan.h>
--#include <linux/ip.h>
-+#include "xdping_kern.h"
- 
--#include <bpf/bpf_helpers.h>
--#include <bpf/bpf_endian.h>
--
--#include "xdping.h"
--
--struct {
--	__uint(type, BPF_MAP_TYPE_HASH);
--	__uint(max_entries, 256);
--	__type(key, __u32);
--	__type(value, struct pinginfo);
--} ping_map SEC(".maps");
--
--static __always_inline void swap_src_dst_mac(void *data)
--{
--	unsigned short *p = data;
--	unsigned short dst[3];
--
--	dst[0] = p[0];
--	dst[1] = p[1];
--	dst[2] = p[2];
--	p[0] = p[3];
--	p[1] = p[4];
--	p[2] = p[5];
--	p[3] = dst[0];
--	p[4] = dst[1];
--	p[5] = dst[2];
--}
--
--static __always_inline __u16 csum_fold_helper(__wsum sum)
--{
--	sum = (sum & 0xffff) + (sum >> 16);
--	return ~((sum & 0xffff) + (sum >> 16));
--}
--
--static __always_inline __u16 ipv4_csum(void *data_start, int data_size)
--{
--	__wsum sum;
--
--	sum = bpf_csum_diff(0, 0, data_start, data_size, 0);
--	return csum_fold_helper(sum);
--}
--
--#define ICMP_ECHO_LEN		64
--
--static __always_inline int icmp_check(struct xdp_md *ctx, int type)
--{
--	void *data_end = (void *)(long)ctx->data_end;
--	void *data = (void *)(long)ctx->data;
--	struct ethhdr *eth = data;
--	struct icmphdr *icmph;
--	struct iphdr *iph;
--
--	if (data + sizeof(*eth) + sizeof(*iph) + ICMP_ECHO_LEN > data_end)
--		return XDP_PASS;
--
--	if (eth->h_proto != bpf_htons(ETH_P_IP))
--		return XDP_PASS;
--
--	iph = data + sizeof(*eth);
--
--	if (iph->protocol != IPPROTO_ICMP)
--		return XDP_PASS;
--
--	if (bpf_ntohs(iph->tot_len) - sizeof(*iph) != ICMP_ECHO_LEN)
--		return XDP_PASS;
--
--	icmph = data + sizeof(*eth) + sizeof(*iph);
--
--	if (icmph->type != type)
--		return XDP_PASS;
--
--	return XDP_TX;
--}
--
--SEC("xdpclient")
--int xdping_client(struct xdp_md *ctx)
--{
--	void *data_end = (void *)(long)ctx->data_end;
--	void *data = (void *)(long)ctx->data;
--	struct pinginfo *pinginfo = NULL;
--	struct ethhdr *eth = data;
--	struct icmphdr *icmph;
--	struct iphdr *iph;
--	__u64 recvtime;
--	__be32 raddr;
--	__be16 seq;
--	int ret;
--	__u8 i;
--
--	ret = icmp_check(ctx, ICMP_ECHOREPLY);
--
--	if (ret != XDP_TX)
--		return ret;
--
--	iph = data + sizeof(*eth);
--	icmph = data + sizeof(*eth) + sizeof(*iph);
--	raddr = iph->saddr;
--
--	/* Record time reply received. */
--	recvtime = bpf_ktime_get_ns();
--	pinginfo = bpf_map_lookup_elem(&ping_map, &raddr);
--	if (!pinginfo || pinginfo->seq != icmph->un.echo.sequence)
--		return XDP_PASS;
--
--	if (pinginfo->start) {
--#pragma clang loop unroll(full)
--		for (i = 0; i < XDPING_MAX_COUNT; i++) {
--			if (pinginfo->times[i] == 0)
--				break;
--		}
--		/* verifier is fussy here... */
--		if (i < XDPING_MAX_COUNT) {
--			pinginfo->times[i] = recvtime -
--					     pinginfo->start;
--			pinginfo->start = 0;
--			i++;
--		}
--		/* No more space for values? */
--		if (i == pinginfo->count || i == XDPING_MAX_COUNT)
--			return XDP_PASS;
--	}
--
--	/* Now convert reply back into echo request. */
--	swap_src_dst_mac(data);
--	iph->saddr = iph->daddr;
--	iph->daddr = raddr;
--	icmph->type = ICMP_ECHO;
--	seq = bpf_htons(bpf_ntohs(icmph->un.echo.sequence) + 1);
--	icmph->un.echo.sequence = seq;
--	icmph->checksum = 0;
--	icmph->checksum = ipv4_csum(icmph, ICMP_ECHO_LEN);
--
--	pinginfo->seq = seq;
--	pinginfo->start = bpf_ktime_get_ns();
--
--	return XDP_TX;
--}
--
--SEC("xdpserver")
--int xdping_server(struct xdp_md *ctx)
--{
--	void *data_end = (void *)(long)ctx->data_end;
--	void *data = (void *)(long)ctx->data;
--	struct ethhdr *eth = data;
--	struct icmphdr *icmph;
--	struct iphdr *iph;
--	__be32 raddr;
--	int ret;
--
--	ret = icmp_check(ctx, ICMP_ECHO);
--
--	if (ret != XDP_TX)
--		return ret;
--
--	iph = data + sizeof(*eth);
--	icmph = data + sizeof(*eth) + sizeof(*iph);
--	raddr = iph->saddr;
--
--	/* Now convert request into echo reply. */
--	swap_src_dst_mac(data);
--	iph->saddr = iph->daddr;
--	iph->daddr = raddr;
--	icmph->type = ICMP_ECHOREPLY;
--	icmph->checksum = 0;
--	icmph->checksum = ipv4_csum(icmph, ICMP_ECHO_LEN);
--
--	return XDP_TX;
--}
--
--char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/xdping_kern.h b/tools/testing/selftests/bpf/progs/xdping_kern.h
-new file mode 100644
-index 000000000000..ca4b62214808
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/xdping_kern.h
-@@ -0,0 +1,193 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved. */
-+
-+#define KBUILD_MODNAME "foo"
-+#include <stddef.h>
-+#include <string.h>
-+#include <linux/bpf.h>
-+#include <linux/icmp.h>
-+#include <linux/in.h>
-+#include <linux/if_ether.h>
-+#include <linux/if_packet.h>
-+#include <linux/if_vlan.h>
-+#include <linux/ip.h>
-+
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+
-+#include "xdping.h"
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 256);
-+	__type(key, __u32);
-+	__type(value, struct pinginfo);
-+} ping_map SEC(".maps");
-+
-+static __always_inline void swap_src_dst_mac(void *data)
-+{
-+	unsigned short *p = data;
-+	unsigned short dst[3];
-+
-+	dst[0] = p[0];
-+	dst[1] = p[1];
-+	dst[2] = p[2];
-+	p[0] = p[3];
-+	p[1] = p[4];
-+	p[2] = p[5];
-+	p[3] = dst[0];
-+	p[4] = dst[1];
-+	p[5] = dst[2];
-+}
-+
-+static __always_inline __u16 csum_fold_helper(__wsum sum)
-+{
-+	sum = (sum & 0xffff) + (sum >> 16);
-+	return ~((sum & 0xffff) + (sum >> 16));
-+}
-+
-+static __always_inline __u16 ipv4_csum(void *data_start, int data_size)
-+{
-+	__wsum sum;
-+
-+	sum = bpf_csum_diff(0, 0, data_start, data_size, 0);
-+	return csum_fold_helper(sum);
-+}
-+
-+#define ICMP_ECHO_LEN		64
-+
-+static __always_inline int icmp_check(struct xdp_md *ctx, int type)
-+{
-+	void *data_end = (void *)(long)ctx->data_end;
-+	void *data = (void *)(long)ctx->data;
-+	struct ethhdr *eth = data;
-+	struct icmphdr *icmph;
-+	struct iphdr *iph;
-+
-+	if (data + sizeof(*eth) + sizeof(*iph) + ICMP_ECHO_LEN > data_end)
-+		return XDP_PASS;
-+
-+	if (eth->h_proto != bpf_htons(ETH_P_IP))
-+		return XDP_PASS;
-+
-+	iph = data + sizeof(*eth);
-+
-+	if (iph->protocol != IPPROTO_ICMP)
-+		return XDP_PASS;
-+
-+	if (bpf_ntohs(iph->tot_len) - sizeof(*iph) != ICMP_ECHO_LEN)
-+		return XDP_PASS;
-+
-+	icmph = data + sizeof(*eth) + sizeof(*iph);
-+
-+	if (icmph->type != type)
-+		return XDP_PASS;
-+
-+	return XDP_TX;
-+}
-+
-+SEC("xdpclient")
-+int xdping_client(struct xdp_md *ctx)
-+{
-+	void *data_end = (void *)(long)ctx->data_end;
-+	void *data = (void *)(long)ctx->data;
-+	struct pinginfo *pinginfo = NULL;
-+	struct ethhdr *eth = data;
-+	struct icmphdr *icmph;
-+	struct iphdr *iph;
-+	__u64 recvtime;
-+	__be32 raddr;
-+	__be16 seq;
-+	int ret;
-+	__u8 i;
-+
-+	ret = icmp_check(ctx, ICMP_ECHOREPLY);
-+
-+	if (ret != XDP_TX)
-+		return ret;
-+
-+	iph = data + sizeof(*eth);
-+	icmph = data + sizeof(*eth) + sizeof(*iph);
-+	raddr = iph->saddr;
-+
-+	/* Record time reply received. */
-+#ifdef REALTIME
-+	recvtime = bpf_ktime_get_real_ns();
-+#else
-+	recvtime = bpf_ktime_get_ns();
-+#endif
-+	pinginfo = bpf_map_lookup_elem(&ping_map, &raddr);
-+	if (!pinginfo || pinginfo->seq != icmph->un.echo.sequence)
-+		return XDP_PASS;
-+
-+	if (pinginfo->start) {
-+#pragma clang loop unroll(full)
-+		for (i = 0; i < XDPING_MAX_COUNT; i++) {
-+			if ((pinginfo->times[i] == 0) ||
-+					(pinginfo->start >= recvtime))
-+				break;
-+		}
-+		/* verifier is fussy here... */
-+		if (i < XDPING_MAX_COUNT) {
-+			pinginfo->times[i] = recvtime -
-+					     pinginfo->start;
-+			pinginfo->start = 0;
-+			i++;
-+		}
-+		/* No more space for values? */
-+		if (i == pinginfo->count || i == XDPING_MAX_COUNT)
-+			return XDP_PASS;
-+	}
-+
-+	/* Now convert reply back into echo request. */
-+	swap_src_dst_mac(data);
-+	iph->saddr = iph->daddr;
-+	iph->daddr = raddr;
-+	icmph->type = ICMP_ECHO;
-+	seq = bpf_htons(bpf_ntohs(icmph->un.echo.sequence) + 1);
-+	icmph->un.echo.sequence = seq;
-+	icmph->checksum = 0;
-+	icmph->checksum = ipv4_csum(icmph, ICMP_ECHO_LEN);
-+
-+	pinginfo->seq = seq;
-+#ifdef REALTIME
-+	pinginfo->start = bpf_ktime_get_real_ns();
-+#else
-+	pinginfo->start = bpf_ktime_get_ns();
-+#endif
-+
-+	return XDP_TX;
-+}
-+
-+SEC("xdpserver")
-+int xdping_server(struct xdp_md *ctx)
-+{
-+	void *data_end = (void *)(long)ctx->data_end;
-+	void *data = (void *)(long)ctx->data;
-+	struct ethhdr *eth = data;
-+	struct icmphdr *icmph;
-+	struct iphdr *iph;
-+	__be32 raddr;
-+	int ret;
-+
-+	ret = icmp_check(ctx, ICMP_ECHO);
-+
-+	if (ret != XDP_TX)
-+		return ret;
-+
-+	iph = data + sizeof(*eth);
-+	icmph = data + sizeof(*eth) + sizeof(*iph);
-+	raddr = iph->saddr;
-+
-+	/* Now convert request into echo reply. */
-+	swap_src_dst_mac(data);
-+	iph->saddr = iph->daddr;
-+	iph->daddr = raddr;
-+	icmph->type = ICMP_ECHOREPLY;
-+	icmph->checksum = 0;
-+	icmph->checksum = ipv4_csum(icmph, ICMP_ECHO_LEN);
-+
-+	return XDP_TX;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/xdping_realtime_kern.c b/tools/testing/selftests/bpf/progs/xdping_realtime_kern.c
-new file mode 100644
-index 000000000000..85f9d9bfc5b7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/xdping_realtime_kern.c
-@@ -0,0 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#define REALTIME
-+
-+#include "xdping_kern.h"
-diff --git a/tools/testing/selftests/bpf/test_xdping.sh b/tools/testing/selftests/bpf/test_xdping.sh
-index c2f0ddb45531..3e357755b279 100755
---- a/tools/testing/selftests/bpf/test_xdping.sh
-+++ b/tools/testing/selftests/bpf/test_xdping.sh
-@@ -42,11 +42,13 @@ setup()
- 	ip addr add ${LOCAL_IP}/24 dev veth1
- 	ip netns exec $TARGET_NS ip link set veth0 up
- 	ip link set veth1 up
-+	ln -s xdping xdping_realtime
- }
- 
- cleanup()
- {
- 	set +e
-+	rm xdping_realtime
- 	ip netns delete $TARGET_NS 2>/dev/null
- 	ip link del veth1 2>/dev/null
- 	if [[ $server_pid -ne 0 ]]; then
-@@ -54,7 +56,7 @@ cleanup()
- 	fi
- }
- 
--test()
-+test1()
- {
- 	client_args="$1"
- 	server_args="$2"
-@@ -77,6 +79,28 @@ test()
- 	echo "Test client args '$client_args'; server args '$server_args': PASS"
- }
- 
-+test2()
-+{
-+	client_args="$1"
-+        server_args="$2"
-+
-+        echo "Test client args '$client_args'; server args '$server_args'"
-+
-+        server_pid=0
-+        if [[ -n "$server_args" ]]; then
-+                ip netns exec $TARGET_NS ./xdping_realtime $server_args &
-+                server_pid=$!
-+                sleep 10
-+        fi
-+        ./xdping_realtime $client_args $TARGET_IP
-+
-+        if [[ $server_pid -ne 0 ]]; then
-+                kill -TERM $server_pid
-+                server_pid=0
-+        fi
-+
-+        echo "Test client args '$client_args'; server args '$server_args': PASS"
-+}
- set -e
- 
- server_pid=0
-@@ -85,14 +109,18 @@ trap cleanup EXIT
- 
- setup
- 
--for server_args in "" "-I veth0 -s -S" ; do
--	# client in skb mode
--	client_args="-I veth1 -S"
--	test "$client_args" "$server_args"
-+for tests in test1 test2; do
-+	echo "Running ${tests}:"
-+	for server_args in "" "-I veth0 -s -S" ; do
-+		# client in skb mode
-+		client_args="-I veth1 -S"
-+		${tests} "$client_args" "$server_args"
-+
-+		# client with count of 10 RTT measurements.
-+		client_args="-I veth1 -S -c 10"
-+		${tests} "$client_args" "$server_args"
-+	done
- 
--	# client with count of 10 RTT measurements.
--	client_args="-I veth1 -S -c 10"
--	test "$client_args" "$server_args"
- done
- 
- echo "OK. All tests passed"
--- 
-2.17.1
-
+Reviewed-by: Maciej =C5=BBenczykowski <maze@google.com>
