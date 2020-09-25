@@ -2,125 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CD172785C6
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 13:27:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02BC92785D1
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 13:29:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727132AbgIYL1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 07:27:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:48110 "EHLO
+        id S1728136AbgIYL3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 07:29:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:47192 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726255AbgIYL1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 07:27:41 -0400
+        by vger.kernel.org with ESMTP id S1728042AbgIYL3M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 07:29:12 -0400
 Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601033255;
+        s=mimecast20190719; t=1601033350;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=OIYjG/eOf0A02Qd+6Up4W+Jt7X/3F3zVaDbUU4OQaQY=;
-        b=Q+S1EPK0lsQMmRlut3qUcYdf0X48B4SgW5ds+P5+VH7ZXjCKU8+AXkN0R/bx5MHUOABSZy
-        XhUYs5pWyq+N65gg5MNQzxpbL+NOk+6T3HapKPgQ85AAbnkIBT8Cg/O5ubvQ9JdOsDdk2N
-        PFzfxWZnFgKpt/8kmN9tukqvzzKRu10=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-460-z4Vu6R3RNealyVJDGYbeXg-1; Fri, 25 Sep 2020 07:27:33 -0400
-X-MC-Unique: z4Vu6R3RNealyVJDGYbeXg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AD02A88EF0E;
-        Fri, 25 Sep 2020 11:27:31 +0000 (UTC)
-Received: from [10.72.12.44] (ovpn-12-44.pek2.redhat.com [10.72.12.44])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 930765D9F7;
-        Fri, 25 Sep 2020 11:27:15 +0000 (UTC)
-Subject: Re: [RFC PATCH 02/24] vhost-vdpa: fix vqs leak in vhost_vdpa_open()
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     lulu@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rob.miller@broadcom.com,
-        lingshan.zhu@intel.com, eperezma@redhat.com, hanand@xilinx.com,
-        mhabets@solarflare.com, eli@mellanox.com, amorenoz@redhat.com,
-        maxime.coquelin@redhat.com, stefanha@redhat.com,
-        sgarzare@redhat.com
-References: <20200924032125.18619-1-jasowang@redhat.com>
- <20200924032125.18619-3-jasowang@redhat.com>
- <20200924053119-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c2f3c4a3-604f-ad27-d34d-a829446a3c7e@redhat.com>
-Date:   Fri, 25 Sep 2020 19:27:13 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        bh=a+xXYhaz3xJWD2NJ87xvS9BgiZ1yx0Uuztf4SpTLz3M=;
+        b=FWXrLG0eo2rTa0ymrZR5ZopX6Uf+isIVBuvjp//1DDIRJuh9nGAIrGE1KeWC261R7Iv9+O
+        bEFwGI0+u5JdrcSlkKPExWp/EbZO2BiOmx9Bc0k487rovljMGcS89GHJrIJYXfdvrcrrMK
+        e72btdqE2Kr5D1K+yQlgPyzyrqxcCtI=
+Received: from mail-vs1-f72.google.com (mail-vs1-f72.google.com
+ [209.85.217.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-286-JupkV1AZOEGxRLgKE8eoFQ-1; Fri, 25 Sep 2020 07:29:07 -0400
+X-MC-Unique: JupkV1AZOEGxRLgKE8eoFQ-1
+Received: by mail-vs1-f72.google.com with SMTP id s68so592509vss.3
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 04:29:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=a+xXYhaz3xJWD2NJ87xvS9BgiZ1yx0Uuztf4SpTLz3M=;
+        b=EIY82hRUFwO1YuGXJKnMAFFf0tYvWlQtUQwNpy8EaTOZeWIW3Tmnqnlq4Ebzqx5wMd
+         UrM0vd1J/gXmMfHtwMFKQca70THMWB/zKHpyhKz2quPC/8ckikJxflvngHu/HzQBO+D7
+         Ia8oLZOu+0nmZs2+nBsklcXCuYhnnV5gZvmZ4felIt8N5Ef4h8yovVo4RfP4NJ934R5B
+         vGfWGhpXfHQydfgXG0+1m83okJE8zNzW0TU9rqMCfyiL9VM89z3YIWGKAxg9Hpq/8EDm
+         qqDHaseeHr6TCbd1ackfcDwqze7FguzU2KtPWHQ6e3QKM0KN3h+MDIEGRXi4xD17/xQy
+         scxQ==
+X-Gm-Message-State: AOAM530Ij7vZPKkku5Ta+PzPCIQ+dRgq3ydk2kO4ddt0WE6t+tHDUfYR
+        26z5GF21RacpIk5yLChGuD3qx/Nl9K33Rq8xPSUIKk56ya0Lwi2pgP7Z5qY53FXu8XBs1HDUwth
+        +5D9Yxp3ldXZL8syUHjs0PmxWeUu0KrKG
+X-Received: by 2002:a1f:2508:: with SMTP id l8mr2265581vkl.20.1601033346876;
+        Fri, 25 Sep 2020 04:29:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxPkKiRWHQ4PB/IdF1x7g6G+M7Gyb9ARITIqMUZkNWh3Qz54zK8XTm/ONdoSgk8HeMRJIxcARiPBzmx5KHKNsE=
+X-Received: by 2002:a1f:2508:: with SMTP id l8mr2265568vkl.20.1601033346546;
+ Fri, 25 Sep 2020 04:29:06 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200924053119-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <4f6602e98fdaef1610e948acec19a5de51fb136e.1601027617.git.lorenzo@kernel.org>
+ <20200925125213.4981cff8@carbon>
+In-Reply-To: <20200925125213.4981cff8@carbon>
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Date:   Fri, 25 Sep 2020 13:29:00 +0200
+Message-ID: <CAJ0CqmV8OJoERhYktLNP7gYDwURs97JAmbsXq2jqKHhMoHk-pg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: mvneta: try to use in-irq pp cache in mvneta_txq_bufs_free
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        thomas.petazzoni@bootlin.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+>
+> On Fri, 25 Sep 2020 12:01:32 +0200
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> > Try to recycle the xdp tx buffer into the in-irq page_pool cache if
+> > mvneta_txq_bufs_free is executed in the NAPI context.
+>
+> NACK - I don't think this is safe.  That is also why I named the
+> function postfix rx_napi.  The page pool->alloc.cache is associated
+> with the drivers RX-queue.  The xdp_frame's that gets freed could be
+> coming from a remote driver that use page_pool. This remote drivers
+> RX-queue processing can run concurrently on a different CPU, than this
+> drivers TXQ-cleanup.
 
-On 2020/9/24 下午5:31, Michael S. Tsirkin wrote:
-> On Thu, Sep 24, 2020 at 11:21:03AM +0800, Jason Wang wrote:
->> We need to free vqs during the err path after it has been allocated
->> since vhost won't do that for us.
->>
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> This is a bugfix too right? I don't see it posted separately ...
+ack, right. What about if we do it just XDP_TX use case? Like:
 
+if (napi && buf->type == MVNETA_TYPE_XDP_TX)
+   xdp_return_frame_rx_napi(buf->xdpf);
+else
+   xdp_return_frame(buf->xdpf);
 
-A patch that is functional equivalent is posted here:
+In this way we are sure the packet is coming from local page_pool.
 
-https://www.mail-archive.com/virtualization@lists.linux-foundation.org/msg42558.html
+>
+> If you want to speedup this, I instead suggest that you add a
+> xdp_return_frame_bulk API.
 
-I'm a little bit lazy to use that one since this patch is probably wrote 
-before that one.
+I will look at it
 
-Thanks
+Regards,
+Lorenzo
 
 
 >
->> ---
->>   drivers/vhost/vdpa.c | 11 ++++++++---
->>   1 file changed, 8 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
->> index 796fe979f997..9c641274b9f3 100644
->> --- a/drivers/vhost/vdpa.c
->> +++ b/drivers/vhost/vdpa.c
->> @@ -764,6 +764,12 @@ static void vhost_vdpa_free_domain(struct vhost_vdpa *v)
->>   	v->domain = NULL;
->>   }
->>   
->> +static void vhost_vdpa_cleanup(struct vhost_vdpa *v)
->> +{
->> +	vhost_dev_cleanup(&v->vdev);
->> +	kfree(v->vdev.vqs);
->> +}
->> +
->>   static int vhost_vdpa_open(struct inode *inode, struct file *filep)
->>   {
->>   	struct vhost_vdpa *v;
->> @@ -809,7 +815,7 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
->>   	return 0;
->>   
->>   err_init_iotlb:
->> -	vhost_dev_cleanup(&v->vdev);
->> +	vhost_vdpa_cleanup(v);
->>   err:
->>   	atomic_dec(&v->opened);
->>   	return r;
->> @@ -840,8 +846,7 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
->>   	vhost_vdpa_free_domain(v);
->>   	vhost_vdpa_config_put(v);
->>   	vhost_vdpa_clean_irq(v);
->> -	vhost_dev_cleanup(&v->vdev);
->> -	kfree(v->vdev.vqs);
->> +	vhost_vdpa_cleanup(v);
->>   	mutex_unlock(&d->mutex);
->>   
->>   	atomic_dec(&v->opened);
->> -- 
->> 2.20.1
+>
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  drivers/net/ethernet/marvell/mvneta.c | 11 +++++++----
+> >  1 file changed, 7 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> > index 14df3aec285d..646fbf4ed638 100644
+> > --- a/drivers/net/ethernet/marvell/mvneta.c
+> > +++ b/drivers/net/ethernet/marvell/mvneta.c
+> > @@ -1831,7 +1831,7 @@ static struct mvneta_tx_queue *mvneta_tx_done_policy(struct mvneta_port *pp,
+> >  /* Free tx queue skbuffs */
+> >  static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+> >                                struct mvneta_tx_queue *txq, int num,
+> > -                              struct netdev_queue *nq)
+> > +                              struct netdev_queue *nq, bool napi)
+> >  {
+> >       unsigned int bytes_compl = 0, pkts_compl = 0;
+> >       int i;
+> > @@ -1854,7 +1854,10 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+> >                       dev_kfree_skb_any(buf->skb);
+> >               } else if (buf->type == MVNETA_TYPE_XDP_TX ||
+> >                          buf->type == MVNETA_TYPE_XDP_NDO) {
+> > -                     xdp_return_frame(buf->xdpf);
+> > +                     if (napi)
+> > +                             xdp_return_frame_rx_napi(buf->xdpf);
+> > +                     else
+> > +                             xdp_return_frame(buf->xdpf);
+> >               }
+> >       }
+> >
+> > @@ -1872,7 +1875,7 @@ static void mvneta_txq_done(struct mvneta_port *pp,
+> >       if (!tx_done)
+> >               return;
+> >
+> > -     mvneta_txq_bufs_free(pp, txq, tx_done, nq);
+> > +     mvneta_txq_bufs_free(pp, txq, tx_done, nq, true);
+> >
+> >       txq->count -= tx_done;
+> >
+> > @@ -2859,7 +2862,7 @@ static void mvneta_txq_done_force(struct mvneta_port *pp,
+> >       struct netdev_queue *nq = netdev_get_tx_queue(pp->dev, txq->id);
+> >       int tx_done = txq->count;
+> >
+> > -     mvneta_txq_bufs_free(pp, txq, tx_done, nq);
+> > +     mvneta_txq_bufs_free(pp, txq, tx_done, nq, false);
+> >
+> >       /* reset txq */
+> >       txq->count = 0;
+>
+>
+>
+> --
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>
 
