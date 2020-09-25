@@ -2,128 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F02F279525
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 01:51:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B2A727952A
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 01:52:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729520AbgIYXvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 19:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726316AbgIYXvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 19:51:08 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCD6C0613CE
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 16:51:08 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id a19so4019985ilq.10
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 16:51:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mwPCpvlGEXVCK7abPyNGQgzEOxvQF6kh//0Vu7ozBOM=;
-        b=E1CX1pGk1a07LptIb63J06QU7s0JzfJhGzlUXQfjmcR4pfo7brKv17sqYk1XsLwpXX
-         NTw/3qruitwiVC2aGvrxnZYyobBVy8jyfUuXjRhLF8j7TFLa9SkiSwV4KQXFq9TgIYK3
-         ChDslzSoAzj0K4cLXUS0JodA80zXWwP2JiK3Xfhs9Hiamki4mKuKRaD2ZXTXvV22RlCX
-         jiXrN7UfYYQ6VKBK9/WHMD7PfSpb+rOlLtA9uo7KEf2N0hW7LjOkXOT0A5v/d9YS/R52
-         ltM5yAq/jRKtXRv+iJZRVsrF5vpUe3mtVbLTCdc9gziYv7rCJGOUJCVNveMpPkHpj6aU
-         0Btg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mwPCpvlGEXVCK7abPyNGQgzEOxvQF6kh//0Vu7ozBOM=;
-        b=Dib4v+odI+ROl1jFiBR9hkQOLw8QJRm6crwrB84KlVi3aVZYCf4vYBLWfHpdWZ/kvH
-         Y/oui2qckDpMXNZ7bxhwh4AF8O/T1VnjUiIO1Md/pqJdd6Vr+ung/z2a5Eu5b2aQHJQj
-         Tk0iE3kFpPwUZcuCkGnkXapEl/swbU0cLAa7CMQuWX6VCrtFrIk3RSnoLhIP97UZT3bk
-         8PCL4ZOSAwToX5yD/6tPLoo/JSu9dngGev/in2Dh4kY0LHsxeAZjNoGe6k92sfCXOvNy
-         NyzWOdsyT88BMB8Xu1EAOcb16dmqoEH6vcYA+HylcJt4RMG+mKZ0dB+Db6EgmafUYyox
-         kQDg==
-X-Gm-Message-State: AOAM532gTqWKsyHT2ME+buGEOgIwxCcwblK+89Q8qK+0OSazoe9hZsEU
-        2mXOEf91EXlnzCsRo5YbuABf0Eo4NEmvkKNfuMKcR4ZBNwU2Fg==
-X-Google-Smtp-Source: ABdhPJxg5p0MTScwNTu3ngP6gAGVQ00KrJunhK5l8Rij3uOxfplU8/t0oTVimtXhH0V7rmUTEcz2i8VqBl/43Iuyv4s=
-X-Received: by 2002:a92:d645:: with SMTP id x5mr2305547ilp.79.1601077867314;
- Fri, 25 Sep 2020 16:51:07 -0700 (PDT)
+        id S1726587AbgIYXwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 19:52:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55030 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725208AbgIYXwi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 19:52:38 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5103B2086A;
+        Fri, 25 Sep 2020 23:52:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601077957;
+        bh=SDaHKPEaoOPbZdNx7obJYhdLykIb7flYAjyLRHg2vA8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=L+Lb9NHfaMJb7DXhUnzcClZUZJ8bPWeHm98xEVJ4BBLXMXmD+GnP6GZV7Z1BU9J54
+         OSeZcUIPsU1qKIQCjH+ruRnJ76PqDZSlhUO0sEUF2MK+RsBQiT/gB1nO0M636SA+D7
+         COUT3LGATj+Ao0f93mzQqZc0YNhQw35ydlhiyT9M=
+Date:   Fri, 25 Sep 2020 16:52:35 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     rohit maheshwari <rohitm@chelsio.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vakul.garg@nxp.com, secdev <secdev@chelsio.com>
+Subject: Re: [PATCH net] net/tls: sendfile fails with ktls offload
+Message-ID: <20200925165235.5dba5d7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <d0ff72b0-6d1f-d71e-5fe6-3b145fefacc5@chelsio.com>
+References: <20200924075025.11626-1-rohitm@chelsio.com>
+        <20200924145714.761f7c6e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BY5PR12MB40041504C9BB0C49546C9CE6EE360@BY5PR12MB4004.namprd12.prod.outlook.com>
+        <d0ff72b0-6d1f-d71e-5fe6-3b145fefacc5@chelsio.com>
 MIME-Version: 1.0
-References: <20200914172453.1833883-1-weiwan@google.com> <20200914172453.1833883-2-weiwan@google.com>
- <2ab7cdc1-b9e1-48c7-89b2-a10cd5e19545@www.fastmail.com>
-In-Reply-To: <2ab7cdc1-b9e1-48c7-89b2-a10cd5e19545@www.fastmail.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Fri, 25 Sep 2020 16:50:56 -0700
-Message-ID: <CAEA6p_DyU7jyHEeRiWFtNZfMPQjJJEV2jN1MV-+5txumC5nmZg@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 1/6] net: implement threaded-able napi poll
- loop support
-To:     Hannes Frederic Sowa <hannes@stressinduktion.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Felix Fietkau <nbd@nbd.name>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 25, 2020 at 12:46 PM Hannes Frederic Sowa
-<hannes@stressinduktion.org> wrote:
->
-> Hello,
->
-> Happy to see this work being resurrected (in case it is useful). :)
->
-> On Mon, Sep 14, 2020, at 19:24, Wei Wang wrote:
+On Fri, 25 Sep 2020 19:32:23 +0530 rohit maheshwari wrote:
+> > -----Original Message-----
+> > From: Jakub Kicinski <kuba@kernel.org>
+> > Sent: Friday, September 25, 2020 3:27 AM
+> > To: Rohit Maheshwari <rohitm@chelsio.com>
+> > Cc: netdev@vger.kernel.org; davem@davemloft.net; vakul.garg@nxp.com; secdev <secdev@chelsio.com>
+> > Subject: Re: [PATCH net] net/tls: sendfile fails with ktls offload
 > >
-> > [...]
-> >
-> > +static void napi_thread_start(struct napi_struct *n)
-> > +{
-> > +     if (test_bit(NAPI_STATE_THREADED, &n->state) && !n->thread)
-> > +             n->thread = kthread_create(napi_threaded_poll, n, "%s-%d",
-> > +                                        n->dev->name, n->napi_id);
-> > +}
-> > +
->
-> The format string is only based on variable strings. To ease a quick
-> grep for napi threads with ps I would propose to use "napi-%s-%d" or
-> something alike to distinguish all threads created that way.
->
+> > On Thu, 24 Sep 2020 13:20:25 +0530 Rohit Maheshwari wrote:  
+> >> At first when sendpage gets called, if there is more data, 'more' in
+> >> tls_push_data() gets set which later sets pending_open_record_frags,
+> >> but when there is no more data in file left, and last time
+> >> tls_push_data() gets called, pending_open_record_frags doesn't get
+> >> reset. And later when
+> >> 2 bytes of encrypted alert comes as sendmsg, it first checks for
+> >> pending_open_record_frags, and since this is set, it creates a record
+> >> with
+> >> 0 data bytes to encrypt, meaning record length is prepend_size +
+> >> tag_size only, which causes problem.  
+> > Agreed, looks like the value in pending_open_record_frags may be stale.
+> >  
+> >>   We should set/reset pending_open_record_frags based on more bit.  
+> > I think you implementation happens to work because there is always left over data when more is set, but I don't think that has to be the case.  
+> Yes, with small file size, more bit won't be set, and so the existing code
+> works there. If more is not set, which means this should be the overall
+> record and so, we can continue putting header and TAG to make it a
+> complete record.
 
-Ack. Will add this in the next version.
+Okay.
 
-> Some other comments and questions:
->
-> Back then my plan was to get this somewhat integrated with the
-> `threadirqs` kernel boot option because triggering the softirq from
-> threaded context (if this option is set) seemed wrong to me. Maybe in
-> theory the existing interrupt thread could already be used in this case.
-> This would also allow for fine tuning the corresponding threads as in
-> this patch series.
->
-> Maybe the whole approach of threaded irqs plus the already existing
-> infrastructure could also be used for this series if it wouldn't be an
-> all or nothing opt-in based on the kernel cmd line parameter? napi would
-> then be able to just poll directly inline in the interrupt thread.
->
+> > Also shouldn't we update this field or destroy the record before the break on line 478?  
+> If more is set, and payload is lesser than the max size, then we need to
+> hold on to get next sendpage and continue adding frags in the same record.
+> So I don't think we need to do any update or destroy the record. Please
+> correct me if I am wrong here.
 
-I took a look at the current "threadirqs" implementation. From my
-understanding, the kthread used there is to handle irq from the
-driver, and needs driver-specific thread_fn to be used. It is not as
-generic as in the napi layer where a common napi_poll() related
-function could be used as the thread handler. Or did I misunderstand
-your point?
+Agreed, if more is set we should continue appending.
 
+What I'm saying is that we may exit the loop on line 478 or 525 without
+updating pending_open_record_frags. So if pending_open_record_frags is
+set, we'd be in a position where there is no data in the record, yet
+pending_open_record_frags is set. Won't subsequent cmsg send not cause 
+a zero length record to be generated?
 
-> The difference for those kthreads and the extra threads created here
-> would be that fifo scheduling policy is set by default and they seem to
-> automatically get steered to the appropriate CPUs via the IRQTF_AFFINITY
-> mechanism. Maybe this approach is useful here as well?
->
-> I hadn't had a look at the code for a while thus my memories might be
-> wrong here.
+> >> Fixes: d829e9c4112b ("tls: convert to generic sk_msg interface")
+> >> Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
+> >> ---
+> >>   net/tls/tls_device.c | 8 ++++----
+> >>   1 file changed, 4 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c index
+> >> b74e2741f74f..a02aadefd86e 100644
+> >> --- a/net/tls/tls_device.c
+> >> +++ b/net/tls/tls_device.c
+> >> @@ -492,11 +492,11 @@ static int tls_push_data(struct sock *sk,
+> >>   		if (!size) {
+> >>   last_record:
+> >>   			tls_push_record_flags = flags;
+> >> -			if (more) {
+> >> -				tls_ctx->pending_open_record_frags =
+> >> -						!!record->num_frags;
+> >> +			/* set/clear pending_open_record_frags based on more */
+> >> +			tls_ctx->pending_open_record_frags = !!more;
+> >> +
+> >> +			if (more)
+> >>   				break;
+> >> -			}
+> >>   
+> >>   			done = true;
+> >>   		}  
 
-Yes. Using a higher priority thread policy and doing pinning could be
-beneficial in certain workloads. But I think this should be left to
-the user/admin to do the tuning accordingly.
-
->
-> Thanks,
-> Hannes
