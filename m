@@ -2,69 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53F972794A5
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 01:22:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA352794A9
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 01:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727067AbgIYXW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 19:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52088 "EHLO
+        id S1729281AbgIYXYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 19:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbgIYXW1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 19:22:27 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A294FC0613CE;
-        Fri, 25 Sep 2020 16:22:26 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id c2so3732232ljj.12;
-        Fri, 25 Sep 2020 16:22:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AKOXnEeFOMUE3ch8rT/xlTlm/6EVmPeM5M9iFVJv2jM=;
-        b=AAGnNQ8zkyqOB24ooJ4LPaojGGuLmspdthqv4WOQfOMsU4Wbi4rQBaJxJovLkVmKg9
-         sQffaw+n5q9hJnuoqHzKeewAavIWL5lCdIKk/q67Ai4/FCckhHzuEOEuZ66yh/W8d55h
-         tiIOkpl5KEZqkCYxSLf+uFoUglmzQnhYvGhKJR8ZgXLM7lWctP8EXKeabTKMseMr/43Z
-         rNLmDUl7LIijkCE29qAigUFp7yMkKYRqEdXm7rKZPS6F6gDnTqzG8CE0/4VTm7XXtR8s
-         dICV+f/LEVJLVBWhMt33MmkREfLAOI5iMxouVl3tCXoaYp8vuUDTiTeOOjQOWpFLVNVD
-         KOwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AKOXnEeFOMUE3ch8rT/xlTlm/6EVmPeM5M9iFVJv2jM=;
-        b=VRx2n3YBjxW5j46aUXvr/Vg/etqIUpt3RBSl00nTYVSzZetIeyQglqOD2Oz48pYSDz
-         7J/wmbRpDDhjq7ccK2zQHVH2+moAZyjYKZOyufO/2bYTqXG8t/5ZzaI/mPKLN0L+UWR2
-         kF8WKtSLHvhBOvsQdC+/E4u/6RLMoXIYknj/kXfkJ16/xp8ZG6Cs0lfSYOhu7F5mI2sV
-         z3SctJ17KMU6Rbr/QESFfNQQijba/CzNCj/7EM21c7zOpkX+znVNRUBeOq87e9VmcSA0
-         AnIyoR3hTIrU4U5Os2ASFF7SjQI6Tj5y0Fxw4jP5o6ugNrJ0MgWGMbNqqSnJaoXWdgUO
-         0l8A==
-X-Gm-Message-State: AOAM531hx/EiagOLB1nH4Cw3sHXKt6LP7EOUMJnIGBg/Z6vnkyIr49s8
-        Wxlv2nYIE1qvjB3qh+sT4845Ho67vePWfLYtPvs=
-X-Google-Smtp-Source: ABdhPJwXLqJ6CuyToPH/sLheIX5NjiRNQmQIAz2VcwfAIAQbDbgxnCqb+htCshnQ8D/qw4ph8+d63sp7usQo51bWVoI=
-X-Received: by 2002:a2e:8593:: with SMTP id b19mr1929741lji.290.1601076144956;
- Fri, 25 Sep 2020 16:22:24 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200925000337.3853598-1-kafai@fb.com>
-In-Reply-To: <20200925000337.3853598-1-kafai@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 25 Sep 2020 16:22:13 -0700
-Message-ID: <CAADnVQ+X53PGyu43gjMu8kmCzD3iqO2oWzEM1AOhrcA1x9sMWw@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 00/13] bpf: Enable bpf_skc_to_* sock casting
- helper to networking prog type
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S1726689AbgIYXYl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 19:24:41 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88665C0613CE
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 16:24:41 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id F34FA13B9D498;
+        Fri, 25 Sep 2020 16:07:51 -0700 (PDT)
+Date:   Fri, 25 Sep 2020 16:24:36 -0700 (PDT)
+Message-Id: <20200925.162436.1039753774581438405.davem@davemloft.net>
+To:     anthony.l.nguyen@intel.com
+Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com
+Subject: Re: [net v2 0/4][pull request] Intel Wired LAN Driver Updates
+ 2020-09-25
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200925210930.4049734-1-anthony.l.nguyen@intel.com>
+References: <20200925210930.4049734-1-anthony.l.nguyen@intel.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 25 Sep 2020 16:07:52 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 5:03 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> This set allows networking prog type to directly read fields from
-> the in-kernel socket type, e.g. "struct tcp_sock".
+From: Tony Nguyen <anthony.l.nguyen@intel.com>
+Date: Fri, 25 Sep 2020 14:09:26 -0700
 
-Applied. Thanks
+> This series contains updates to the iavf and ice driver.
+> 
+> Sylwester fixes a crash with iavf resume due to getting the wrong pointers.
+> 
+> Ani fixes a call trace in ice resume by calling pci_save_state().
+> 
+> Jakes fixes memory leaks in case of register_netdev() failure or
+> ice_cfg_vsi_lan() failure for the ice driver.
+> 
+> v2: Rebased; no other changes
+
+Pulled, thanks Tony.
