@@ -2,78 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEB0F27859B
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 13:15:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD6622785B0
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 13:24:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728124AbgIYLPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 07:15:44 -0400
-Received: from foss.arm.com ([217.140.110.172]:42402 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727132AbgIYLPn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 07:15:43 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 34B1D101E;
-        Fri, 25 Sep 2020 04:15:42 -0700 (PDT)
-Received: from [10.57.48.76] (unknown [10.57.48.76])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 986323F70D;
-        Fri, 25 Sep 2020 04:15:38 -0700 (PDT)
-Subject: Re: [PATCH 08/18] dma-mapping: add a new dma_alloc_noncoherent API
-To:     Christoph Hellwig <hch@lst.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        iommu@lists.linux-foundation.org
-Cc:     alsa-devel@alsa-project.org, linux-samsung-soc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mm@kvack.org, Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        netdev@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
-References: <20200915155122.1768241-1-hch@lst.de>
- <20200915155122.1768241-9-hch@lst.de>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <c8ea4023-3e19-d63b-d936-46a04f502a61@arm.com>
-Date:   Fri, 25 Sep 2020 12:15:37 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
+        id S1728155AbgIYLYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 07:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726255AbgIYLYC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 07:24:02 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBACC0613CE;
+        Fri, 25 Sep 2020 04:24:01 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id s12so3159682wrw.11;
+        Fri, 25 Sep 2020 04:24:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SFWcfeS5wxuI7eAUUDEBe0a+as5YNy5FGHPEInpElA8=;
+        b=YwusCQb4BNAs2qNa8S3uQAN1XOHgiKuS/bWyodzx+julOIpF8cMM+ULqoTh70csgmu
+         Tg7LuB4jVQLF7thah9OEj3nFW152KXkekpYFu35kCOSdxD+ycnC44LKNN3PIqZLfOl12
+         aW3JvhopCsNsu/CIHKE65qLtfjGq90wIacSzLzBjKAV0wAJC9AhL8sWSXQNlOJPH7J9j
+         lfRJJFWnMLq13GfmwodEF09YeJRX0pOsxDuzkN5zxlbQ1ebIFdWAhShHm6aJt+HZyykP
+         nJju+fVztQNgTUUzR07a17dNJyr8qTR0WIYQYGRBiNjxDWq7CL02l6imoZj4NOGBeysf
+         Wmjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SFWcfeS5wxuI7eAUUDEBe0a+as5YNy5FGHPEInpElA8=;
+        b=fzB1MNT8PVYxgxRD/8ZwS/Ol7j9Snu3BnMcwwwsCRJ0pVKhkXHPVusyVcXJkdBjddm
+         mGUsZ0ffzE6CNEgXEk/wd734BJjOM/JErLQZyPyR8HyPJaferNNBIwuKBu1YGJ1yoUKz
+         WjgCPzNr68j5tkgwh85ewgvaBWdHevOENTbWm+T9RQbGL+DE4p4tS/pz5R8IaT/pBQyW
+         If4Xe1e8/V2WWOKtta8SLaNmi4oIbfeX1eOR4DN3I+/yLmaxlBZhPy71JAcIz+vcMmcr
+         imJJAg/SfolqBx4oq7Tf6vZqBxU4ITn5gO67+sR1d906Gg3qqNpgdNTYQGte5vuCRwPC
+         5MbA==
+X-Gm-Message-State: AOAM531BhLih2FrnuvFJq04Xo7Xe6cApULKGMgLA9M2FmYHiTStPT/7q
+        ZpLgS147XWy5XVuXdT8zO3D3ByRYY6TgxHeNIm8=
+X-Google-Smtp-Source: ABdhPJzm9ewJSK7s1bAh20TjRk7fbdnLc3xpXegODgfo/yRdDK42Rrpg+9Cj7gBDCvmWeHhsbWumnOO3fGV9uaN0Ffk=
+X-Received: by 2002:adf:dcc7:: with SMTP id x7mr4036971wrm.203.1601033040375;
+ Fri, 25 Sep 2020 04:24:00 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200915155122.1768241-9-hch@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <20200923090519.361-1-himadrispandya@gmail.com>
+ <20200923090519.361-4-himadrispandya@gmail.com> <1600856557.26851.6.camel@suse.com>
+ <CAOY-YVkHycXqem_Xr6nQLgKEunk3MNc7dBtZ=5Aym4Y06vs9xQ@mail.gmail.com>
+ <1600870858.25088.1.camel@suse.com> <CAOY-YVkciMUgtS7USbBh_Uy_=fVWwMMDeHv=Ub_H3GaY0FKZyQ@mail.gmail.com>
+ <7f9e20b2eab783303c4e5f5c3244366fa88a6567.camel@suse.com>
+In-Reply-To: <7f9e20b2eab783303c4e5f5c3244366fa88a6567.camel@suse.com>
+From:   Himadri Pandya <himadrispandya@gmail.com>
+Date:   Fri, 25 Sep 2020 16:53:48 +0530
+Message-ID: <CAOY-YVmBW52bXF95pTM3fNVUyRt=PNXZ5iGyq6mYsW2_iopnoQ@mail.gmail.com>
+Subject: Re: [PATCH 3/4] net: usb: rtl8150: use usb_control_msg_recv() and usb_control_msg_send()
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        pankaj.laxminarayan.bharadiya@intel.com,
+        Kees Cook <keescook@chromium.org>, yuehaibing@huawei.com,
+        petkan@nucleusys.com, ogiannou@gmail.com,
+        USB list <linux-usb@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Greg KH <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-09-15 16:51, Christoph Hellwig wrote:
-[...]
-> +These APIs allow to allocate pages in the kernel direct mapping that are
-> +guaranteed to be DMA addressable.  This means that unlike dma_alloc_coherent,
-> +virt_to_page can be called on the resulting address, and the resulting
+On Thu, Sep 24, 2020 at 5:06 PM Oliver Neukum <oneukum@suse.com> wrote:
+>
+> Am Mittwoch, den 23.09.2020, 20:02 +0530 schrieb Himadri Pandya:
+>
+> > I meant that it was stupid to change it without properly understanding
+> > the significance of GFP_NOIO in this context.
+> >
+> > So now, do we re-write the wrapper functions with flag passed as a parameter?
+>
+> Hi,
+>
+> I hope I set you in CC for a patch set doing exactly that.
+>
 
-Nit: if we explicitly describe this as if it's a guarantee that can be 
-relied upon...
+Yes.
 
-> +struct page can be used for everything a struct page is suitable for.
+> Do not let me or other maintainers discourage you from writing patches.
+> Look at it this way. Had you not written this patch, I would not have
+> looked into the matter. Patches are supposed to be reviewed.
+> If you want additional information, just ask. We do not want
+> people discouraged from writing substantial patches.
+>
 
-[...]
-> +This routine allocates a region of <size> bytes of consistent memory.  It
-> +returns a pointer to the allocated region (in the processor's virtual address
-> +space) or NULL if the allocation failed.  The returned memory may or may not
-> +be in the kernels direct mapping.  Drivers must not call virt_to_page on
-> +the returned memory region.
+Understood :).
 
-...then forbid this document's target audience from relying on it, 
-something seems off. At the very least it's unhelpfully unclear :/
+I'll send v2 after the update in API is merged.
 
-Given patch #17, I suspect that the first paragraph is the one that's no 
-longer true.
+Thanks,
+Himadri
 
-Robin.
+>         Regards
+>                 Oliver
+>
+>
