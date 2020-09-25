@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0397727892D
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 15:16:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9E9F278932
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 15:16:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728834AbgIYNQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 09:16:25 -0400
-Received: from mailrelay112.isp.belgacom.be ([195.238.20.139]:52973 "EHLO
+        id S1728878AbgIYNQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 09:16:42 -0400
+Received: from mailrelay112.isp.belgacom.be ([195.238.20.139]:53006 "EHLO
         mailrelay112.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728814AbgIYNQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 09:16:25 -0400
-IronPort-SDR: lAsdkI1iOSoCmuM1HFCdnPuFg7TJRwX3a9KTEHcvv3zdaRl2DgzapcT6xq2oVoAWc948leSeRQ
- ina3g2yhvB7TE7TQgwcvkTQJPgYlzjS3LYhzHX8uvKz4cHZvy1dJfzOJHO1t7RjFvrRq4Qeo2q
- BOWL3c8iwlPpXm0++t9yeFP5LbzM38RfyO04rKxAOaXSI+ZrEfyMXaOLdO0rzco/cSeJJVkofz
- Zfk3iLDLPWdETU5arxysClA0+JRSHFjSiYg1e2Sb5/rvh+8wX8CuTO9spqAxUQQAYk3ABXEaoS
- Gow=
+        by vger.kernel.org with ESMTP id S1728121AbgIYNQl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 09:16:41 -0400
+IronPort-SDR: pvB6/BqLSD6nCV6jzNQwttKSF6G2Cfouh+/UZue2RMLukfsYpc+4BX4hl+AhZF/BUMWj91w21+
+ Yd753wYr0m5ERCRZLY1BYwpZoN5sbPVFltK+7V+WbEEHWlaGn+H1Naf195fZHHztoHxQLN4Z5a
+ pAu2HCZajpdpsmi/o5m3admjrioVrME0n+ZIFL6f+CnHv2ZIxM7FOAiID7R4aWrISwvFr+u425
+ O3LRKuSfaLWJ6jgjWoUOXCDEiFNO9EnRRGATCtmNNVN+HKZBlm9wneL+k3dNB8EQi4rQX0iLif
+ RVQ=
 X-Belgacom-Dynamic: yes
-IronPort-PHdr: =?us-ascii?q?9a23=3AnZ/nNBOWH1jaD7Gxbv0l6mtUPXoX/o7sNwtQ0K?=
+IronPort-PHdr: =?us-ascii?q?9a23=3ADpaXJBMzJh/VqhcVQtQl6mtUPXoX/o7sNwtQ0K?=
  =?us-ascii?q?IMzox0K/z8pMbcNUDSrc9gkEXOFd2Cra4d1KyM6+u9CCQp2tWoiDg6aptCVh?=
  =?us-ascii?q?sI2409vjcLJ4q7M3D9N+PgdCcgHc5PBxdP9nC/NlVJSo6lPwWB6nK94iQPFR?=
  =?us-ascii?q?rhKAF7Ovr6GpLIj8Swyuu+54Dfbx9HiTagY75+Ngu6oRneusQWhYZpN7o8xA?=
@@ -47,22 +47,22 @@ X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2ASEgDD7G1f/xCltltfHAEBATwBAQQ?=
  =?us-ascii?q?EAQECAQEHAQEcgUqBHCACAQGCLV+NPpJikgQLAQEBAQEBAQEBNQECBAEBhEu?=
  =?us-ascii?q?CMSU4EwIDAQEBAwIFAQEGAQEBAQEBBQQBhg9Fgjcig0cLASMjgT8SgyaCWCm?=
- =?us-ascii?q?4PzOEEIURgUKBNgIBAQEBiCuFGoFBP4RfijQEtz2CcYMThGmSTA8ioRCTCKI?=
- =?us-ascii?q?YgXpNIBiDJFAZDY5WjhJCMDcCBgoBAQMJVwE9AY4fAQE?=
+ =?us-ascii?q?4PzOEEIURgUKBNgIBAQEBiCuFGoFBP4RfhASGMAS3PYJxgxOEaZJMDyKhEC2?=
+ =?us-ascii?q?SW6IYgXpNIBiDJFAZDZxoQjA3AgYKAQEDCVcBPQGLWYJGAQE?=
 X-IPAS-Result: =?us-ascii?q?A2ASEgDD7G1f/xCltltfHAEBATwBAQQEAQECAQEHAQEcg?=
  =?us-ascii?q?UqBHCACAQGCLV+NPpJikgQLAQEBAQEBAQEBNQECBAEBhEuCMSU4EwIDAQEBA?=
  =?us-ascii?q?wIFAQEGAQEBAQEBBQQBhg9Fgjcig0cLASMjgT8SgyaCWCm4PzOEEIURgUKBN?=
- =?us-ascii?q?gIBAQEBiCuFGoFBP4RfijQEtz2CcYMThGmSTA8ioRCTCKIYgXpNIBiDJFAZD?=
- =?us-ascii?q?Y5WjhJCMDcCBgoBAQMJVwE9AY4fAQE?=
+ =?us-ascii?q?gIBAQEBiCuFGoFBP4RfhASGMAS3PYJxgxOEaZJMDyKhEC2SW6IYgXpNIBiDJ?=
+ =?us-ascii?q?FAZDZxoQjA3AgYKAQEDCVcBPQGLWYJGAQE?=
 Received: from 16.165-182-91.adsl-dyn.isp.belgacom.be (HELO localhost.localdomain) ([91.182.165.16])
-  by relay.skynet.be with ESMTP; 25 Sep 2020 15:16:23 +0200
+  by relay.skynet.be with ESMTP; 25 Sep 2020 15:16:39 +0200
 From:   Fabian Frederick <fabf@skynet.be>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     mkubecek@suse.cz, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Fabian Frederick <fabf@skynet.be>
-Subject: [PATCH V2 1/5 net-next] vxlan: don't collect metadata if remote checksum is wrong
-Date:   Fri, 25 Sep 2020 15:16:02 +0200
-Message-Id: <20200925131602.56461-1-fabf@skynet.be>
+Subject: [PATCH V2 2/5 net-next] vxlan: add unlikely to vxlan_remcsum check
+Date:   Fri, 25 Sep 2020 15:16:18 +0200
+Message-Id: <20200925131618.56512-1-fabf@skynet.be>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -70,38 +70,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-call vxlan_remcsum() before md filling in vxlan_rcv()
+small optimization around checking as it's being done in all
+receptions
 
 Signed-off-by: Fabian Frederick <fabf@skynet.be>
 ---
- drivers/net/vxlan.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/vxlan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index b9fefe27e3e89..47c762f7f5b11 100644
+index 47c762f7f5b11..cc904f003f158 100644
 --- a/drivers/net/vxlan.c
 +++ b/drivers/net/vxlan.c
-@@ -1875,6 +1875,10 @@ static int vxlan_rcv(struct sock *sk, struct sk_buff *skb)
- 				   !net_eq(vxlan->net, dev_net(vxlan->dev))))
+@@ -1876,7 +1876,7 @@ static int vxlan_rcv(struct sock *sk, struct sk_buff *skb)
  		goto drop;
  
-+	if (vs->flags & VXLAN_F_REMCSUM_RX)
-+		if (!vxlan_remcsum(&unparsed, skb, vs->flags))
-+			goto drop;
-+
- 	if (vxlan_collect_metadata(vs)) {
- 		struct metadata_dst *tun_dst;
- 
-@@ -1891,9 +1895,6 @@ static int vxlan_rcv(struct sock *sk, struct sk_buff *skb)
- 		memset(md, 0, sizeof(*md));
- 	}
- 
--	if (vs->flags & VXLAN_F_REMCSUM_RX)
+ 	if (vs->flags & VXLAN_F_REMCSUM_RX)
 -		if (!vxlan_remcsum(&unparsed, skb, vs->flags))
--			goto drop;
- 	if (vs->flags & VXLAN_F_GBP)
- 		vxlan_parse_gbp_hdr(&unparsed, skb, vs->flags, md);
- 	/* Note that GBP and GPE can never be active together. This is
++		if (unlikely(!vxlan_remcsum(&unparsed, skb, vs->flags)))
+ 			goto drop;
+ 
+ 	if (vxlan_collect_metadata(vs)) {
 -- 
 2.27.0
 
