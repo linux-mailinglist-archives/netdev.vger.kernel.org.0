@@ -2,975 +2,611 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0D1627901E
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 20:13:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7ECA27901F
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 20:13:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729726AbgIYSNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 14:13:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60426 "EHLO
+        id S1729729AbgIYSNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 14:13:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726990AbgIYSNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 14:13:21 -0400
+        with ESMTP id S1727495AbgIYSNh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 14:13:37 -0400
 Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2164C0613CE
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 11:13:20 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id u3so2129292pjr.3
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 11:13:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ADC9C0613CE
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 11:13:37 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id b17so2137237pji.1
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 11:13:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=5y5k2iJW7etser7l+i+ZMrDbJ/plifZq1iRNQeUn82U=;
-        b=BbLAE8I4CCaW5ep7otyk5rMBMKfwo/pLs9kGIbPWWufZv98qV6w7oSvDQuTebCzXNQ
-         sJyuRpraNY5HFR2wD1Lb2+WJxiAEJpAHmpVXWOeN0wLjb2o+ePk15lbr+AWEZZ84Wtxp
-         bJQW5VdrAzHuMToaIaXR2HuxhABmmEiqpaGuI1wq/hfXZcNBgMybjz/Y3WoHBM8VqAUk
-         ustlkTcxepoCdxFvwG19TgQPPJh+QCZMrhg7qXf1Ncfys8SggWx2aj8Vv/Hqt+exAf6L
-         4lchfBBZUXMcFbMpe2nDB4I91yecJeE8X/RUwrqxwo5jUIBuU9p6tGUZ67738bOn/Os0
-         93Jg==
+        bh=dmrrI6hA8rqLLdoIyKYOn7OyD0r3xAzRz/h2DV9AWwY=;
+        b=vbIBpu42ufSXxHLP7x5lscpU0dVwajWcHSeaSUjGvuvRsOaVjiGKH9HqVs6PrH/2ur
+         q+FNcXwTcmABubRcN8hr9pL1TqH+OtGl18TWLKOt3tvdQBzfoYj+sR7BFL7rN78WBwLz
+         Z2sJAmS4QDDWvpW+UBh3Gcb1xJxtgowpsQHHYZBh6+eK81PW0tezBo2BpjxNfsgiTZuz
+         gpOC9p01CYWeeUjTndNTpldqTXka3TAmBzXelljd/eqZ7o5Gx+z3tPDY5UDxShDEm+8/
+         XPAwU9YB9XzHfqrncJOHGdNxmTQHFkJrVs+8FOVuEcoFwA2AvweAQyUyFOaXcbFZpKkV
+         pFZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=5y5k2iJW7etser7l+i+ZMrDbJ/plifZq1iRNQeUn82U=;
-        b=YeQlexpBjqs+n0H4kSCq5F5+0hTc2Yn5at7otBWpqp+yqEHyQh8wnwgAJMlEzIEB6W
-         iwMWhz9Fipw8OQfhvc+078SlnDH0UhxgxMadRoGB40diIix9aetmJs6GF+nz27S/saij
-         ZBQPJMQxVN7R9SUUks+prE1rHLLkD5JVm1+6qCR9gKsUyFDCWFhTV26jGOMx3TeFH8aA
-         dvATL4jWN0CKsRwftKFJFir7tCq6qjKSJ+0mcv4NBtvVSq2wdleMLAe86KdQ3elxo5j7
-         /IeSlTYnmi5EBdxZYCUjqHKo3Y4E+7ZEMu2WD5esJPojTBKJ2aj1StpF7bKc/sD/ZVGI
-         IxLg==
-X-Gm-Message-State: AOAM533BrUEWwKSucnCI4TaANBaPDHFeG94rYQKAm1LSGVSQ2J+8iAQx
-        TkrTx77f9LoPk7Q9QIz6aFc=
-X-Google-Smtp-Source: ABdhPJx/zJyb8y3f5FhqbDBTBheqtI3ffSh78RXA1vwgsYphpi8RM1hJSoYRtC2HMhvaFMhn74CxAg==
-X-Received: by 2002:a17:90a:e609:: with SMTP id j9mr688000pjy.129.1601057600160;
-        Fri, 25 Sep 2020 11:13:20 -0700 (PDT)
+        bh=dmrrI6hA8rqLLdoIyKYOn7OyD0r3xAzRz/h2DV9AWwY=;
+        b=VyOIjZCgDUVAVD7p4YoPIcCls7DB4TVYKJOMqcZMcUGXYxbOdSfgFo6qNlsPSVPOwv
+         8jeRcB/b7chNw0ljtujGDK2AddvTSSdEutU4YONzRiHoAp1NwTghvAbnEjyuD7+KHUvI
+         8nQgneEZRV86Vm2X8ILh3Cyvee83yCrMdkqyvh3cx7Ee3+t8qUXnbAUlr4EM2YJPxkfA
+         gDLwGeiXgs3hQQkYNm0cWRZlnknjPdbp+S2L+gaFh661Gu9AIRsmx8bpOMYxpFSpZuzk
+         r8CiG5ceB1p8hp3cmudznSrn2iYNSVjc7lIZEuTm3eYocFACT0bj45BTkSKx/4naTUHP
+         q+/w==
+X-Gm-Message-State: AOAM533vMJNkryHtdBPmezlb7WAc50uMPlZLF6a9yNYghpmEylbkOvwh
+        Bz9eUmpVbUA+Cp7B5po/m1c=
+X-Google-Smtp-Source: ABdhPJyRwTC8hFgfb3V/8NVkQIa4nDYwwsxzrL1H53hKrLTDE8bmhi4ZOjZ4z2shF6EJDE9VTY0fiw==
+X-Received: by 2002:a17:90b:793:: with SMTP id l19mr768955pjz.154.1601057616763;
+        Fri, 25 Sep 2020 11:13:36 -0700 (PDT)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id v128sm3079579pgv.72.2020.09.25.11.13.17
+        by smtp.gmail.com with ESMTPSA id n9sm2820858pgi.2.2020.09.25.11.13.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Sep 2020 11:13:19 -0700 (PDT)
+        Fri, 25 Sep 2020 11:13:35 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com, xiyou.wangcong@gmail.com
-Subject: [PATCH net 2/3] net: core: introduce struct netdev_nested_priv for nested interface infrastructure
-Date:   Fri, 25 Sep 2020 18:13:12 +0000
-Message-Id: <20200925181313.25201-1-ap420073@gmail.com>
+Subject: [PATCH net 3/3] net: core: add nested_level variable in net_device
+Date:   Fri, 25 Sep 2020 18:13:29 +0000
+Message-Id: <20200925181329.25303-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Functions related to nested interface infrastructure such as
-netdev_walk_all_{ upper | lower }_dev() pass both private functions
-and "data" pointer to handle their own things.
-At this point, the data pointer type is void *.
-In order to make it easier to expand common variables and functions,
-this new netdev_nested_priv structure is added.
+This patch is to add a new variable 'nested_level' into the net_device
+structure.
+This variable will be used as a parameter of spin_lock_nested() of
+dev->addr_list_lock.
 
-In the following patch, a new member variable will be added into this
-struct to fix the lockdep issue.
+netif_addr_lock() can be called recursively so spin_lock_nested() is
+used instead of spin_lock() and dev->lower_level is used as a parameter
+of spin_lock_nested().
+But, dev->lower_level value can be updated while it is being used.
+So, lockdep would warn a possible deadlock scenario.
 
+When a stacked interface is deleted, netif_{uc | mc}_sync() is
+called recursively.
+So, spin_lock_nested() is called recursively too.
+At this moment, the dev->lower_level variable is used as a parameter of it.
+dev->lower_level value is updated when interfaces are being unlinked/linked
+immediately.
+Thus, After unlinking, dev->lower_level shouldn't be a parameter of
+spin_lock_nested().
+
+    A (macvlan)
+    |
+    B (vlan)
+    |
+    C (bridge)
+    |
+    D (macvlan)
+    |
+    E (vlan)
+    |
+    F (bridge)
+
+    A->lower_level : 6
+    B->lower_level : 5
+    C->lower_level : 4
+    D->lower_level : 3
+    E->lower_level : 2
+    F->lower_level : 1
+
+When an interface 'A' is removed, it releases resources.
+At this moment, netif_addr_lock() would be called.
+Then, netdev_upper_dev_unlink() is called recursively.
+Then dev->lower_level is updated.
+There is no problem.
+
+But, when the bridge module is removed, 'C' and 'F' interfaces
+are removed at once.
+If 'F' is removed first, a lower_level value is like below.
+    A->lower_level : 5
+    B->lower_level : 4
+    C->lower_level : 3
+    D->lower_level : 2
+    E->lower_level : 1
+    F->lower_level : 1
+
+Then, 'C' is removed. at this moment, netif_addr_lock() is called
+recursively.
+The ordering is like this.
+C(3)->D(2)->E(1)->F(1)
+At this moment, the lower_level value of 'E' and 'F' are the same.
+So, lockdep warns a possible deadlock scenario.
+
+In order to avoid this problem, a new variable 'nested_level' is added.
+This value is the same as dev->lower_level - 1.
+But this value is updated in rtnl_unlock().
+So, this variable can be used as a parameter of spin_lock_nested() safely
+in the rtnl context.
+
+Test commands:
+   ip link add br0 type bridge vlan_filtering 1
+   ip link add vlan1 link br0 type vlan id 10
+   ip link add macvlan2 link vlan1 type macvlan
+   ip link add br3 type bridge vlan_filtering 1
+   ip link set macvlan2 master br3
+   ip link add vlan4 link br3 type vlan id 10
+   ip link add macvlan5 link vlan4 type macvlan
+   ip link add br6 type bridge vlan_filtering 1
+   ip link set macvlan5 master br6
+   ip link add vlan7 link br6 type vlan id 10
+   ip link add macvlan8 link vlan7 type macvlan
+
+   ip link set br0 up
+   ip link set vlan1 up
+   ip link set macvlan2 up
+   ip link set br3 up
+   ip link set vlan4 up
+   ip link set macvlan5 up
+   ip link set br6 up
+   ip link set vlan7 up
+   ip link set macvlan8 up
+   modprobe -rv bridge
+
+Splat looks like:
+[   36.057436][  T744] WARNING: possible recursive locking detected
+[   36.058848][  T744] 5.9.0-rc6+ #728 Not tainted
+[   36.059959][  T744] --------------------------------------------
+[   36.061391][  T744] ip/744 is trying to acquire lock:
+[   36.062590][  T744] ffff8c4767509280 (&vlan_netdev_addr_lock_key){+...}-{2:2}, at: dev_set_rx_mode+0x19/0x30
+[   36.064922][  T744]
+[   36.064922][  T744] but task is already holding lock:
+[   36.066626][  T744] ffff8c4767769280 (&vlan_netdev_addr_lock_key){+...}-{2:2}, at: dev_uc_add+0x1e/0x60
+[   36.068851][  T744]
+[   36.068851][  T744] other info that might help us debug this:
+[   36.070731][  T744]  Possible unsafe locking scenario:
+[   36.070731][  T744]
+[   36.072497][  T744]        CPU0
+[   36.073238][  T744]        ----
+[   36.074007][  T744]   lock(&vlan_netdev_addr_lock_key);
+[   36.075290][  T744]   lock(&vlan_netdev_addr_lock_key);
+[   36.076590][  T744]
+[   36.076590][  T744]  *** DEADLOCK ***
+[   36.076590][  T744]
+[   36.078515][  T744]  May be due to missing lock nesting notation
+[   36.078515][  T744]
+[   36.080491][  T744] 3 locks held by ip/744:
+[   36.081471][  T744]  #0: ffffffff98571df0 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x236/0x490
+[   36.083614][  T744]  #1: ffff8c4767769280 (&vlan_netdev_addr_lock_key){+...}-{2:2}, at: dev_uc_add+0x1e/0x60
+[   36.085942][  T744]  #2: ffff8c476c8da280 (&bridge_netdev_addr_lock_key/4){+...}-{2:2}, at: dev_uc_sync+0x39/0x80
+[   36.088400][  T744]
+[   36.088400][  T744] stack backtrace:
+[   36.089772][  T744] CPU: 6 PID: 744 Comm: ip Not tainted 5.9.0-rc6+ #728
+[   36.091364][  T744] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+[   36.093630][  T744] Call Trace:
+[   36.094416][  T744]  dump_stack+0x77/0x9b
+[   36.095385][  T744]  __lock_acquire+0xbc3/0x1f40
+[   36.096522][  T744]  lock_acquire+0xb4/0x3b0
+[   36.097540][  T744]  ? dev_set_rx_mode+0x19/0x30
+[   36.098657][  T744]  ? rtmsg_ifinfo+0x1f/0x30
+[   36.099711][  T744]  ? __dev_notify_flags+0xa5/0xf0
+[   36.100874][  T744]  ? rtnl_is_locked+0x11/0x20
+[   36.101967][  T744]  ? __dev_set_promiscuity+0x7b/0x1a0
+[   36.103230][  T744]  _raw_spin_lock_bh+0x38/0x70
+[   36.104348][  T744]  ? dev_set_rx_mode+0x19/0x30
+[   36.105461][  T744]  dev_set_rx_mode+0x19/0x30
+[   36.106532][  T744]  dev_set_promiscuity+0x36/0x50
+[   36.107692][  T744]  __dev_set_promiscuity+0x123/0x1a0
+[   36.108929][  T744]  dev_set_promiscuity+0x1e/0x50
+[   36.110093][  T744]  br_port_set_promisc+0x1f/0x40 [bridge]
+[   36.111415][  T744]  br_manage_promisc+0x8b/0xe0 [bridge]
+[   36.112728][  T744]  __dev_set_promiscuity+0x123/0x1a0
+[   36.113967][  T744]  ? __hw_addr_sync_one+0x23/0x50
+[   36.115135][  T744]  __dev_set_rx_mode+0x68/0x90
+[   36.116249][  T744]  dev_uc_sync+0x70/0x80
+[   36.117244][  T744]  dev_uc_add+0x50/0x60
+[   36.118223][  T744]  macvlan_open+0x18e/0x1f0 [macvlan]
+[   36.119470][  T744]  __dev_open+0xd6/0x170
+[   36.120470][  T744]  __dev_change_flags+0x181/0x1d0
+[   36.121644][  T744]  dev_change_flags+0x23/0x60
+[   36.122741][  T744]  do_setlink+0x30a/0x11e0
+[   36.123778][  T744]  ? __lock_acquire+0x92c/0x1f40
+[   36.124929][  T744]  ? __nla_validate_parse.part.6+0x45/0x8e0
+[   36.126309][  T744]  ? __lock_acquire+0x92c/0x1f40
+[   36.127457][  T744]  __rtnl_newlink+0x546/0x8e0
+[   36.128560][  T744]  ? lock_acquire+0xb4/0x3b0
+[   36.129623][  T744]  ? deactivate_slab.isra.85+0x6a1/0x850
+[   36.130946][  T744]  ? __lock_acquire+0x92c/0x1f40
+[   36.132102][  T744]  ? lock_acquire+0xb4/0x3b0
+[   36.133176][  T744]  ? is_bpf_text_address+0x5/0xe0
+[   36.134364][  T744]  ? rtnl_newlink+0x2e/0x70
+[   36.135445][  T744]  ? rcu_read_lock_sched_held+0x32/0x60
+[   36.136771][  T744]  ? kmem_cache_alloc_trace+0x2d8/0x380
+[   36.138070][  T744]  ? rtnl_newlink+0x2e/0x70
+[   36.139164][  T744]  rtnl_newlink+0x47/0x70
+[ ... ]
+
+Fixes: 845e0ebb4408 ("net: change addr_list_lock back to static key")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- drivers/infiniband/core/cache.c               | 10 +++-
- drivers/infiniband/core/cma.c                 |  9 ++-
- drivers/infiniband/core/roce_gid_mgmt.c       |  9 ++-
- drivers/infiniband/ulp/ipoib/ipoib_main.c     |  9 ++-
- drivers/net/bonding/bond_alb.c                |  9 ++-
- drivers/net/bonding/bond_main.c               | 10 +++-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 37 ++++++++----
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 24 ++++----
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 11 +++-
- .../mellanox/mlxsw/spectrum_switchdev.c       | 10 +++-
- drivers/net/ethernet/rocker/rocker_main.c     |  9 ++-
- drivers/net/wireless/quantenna/qtnfmac/core.c | 10 +++-
- include/linux/netdevice.h                     | 16 +++--
- net/bridge/br_arp_nd_proxy.c                  | 26 +++++---
- net/bridge/br_vlan.c                          | 20 ++++---
- net/core/dev.c                                | 59 ++++++++++++-------
- 16 files changed, 183 insertions(+), 95 deletions(-)
+ include/linux/netdevice.h | 52 ++++++++++++++++++++----
+ net/core/dev.c            | 85 +++++++++++++++++++++++++++++++++------
+ net/core/dev_addr_lists.c | 12 +++---
+ 3 files changed, 122 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/infiniband/core/cache.c b/drivers/infiniband/core/cache.c
-index ffad73bb40ff..5a76611e684a 100644
---- a/drivers/infiniband/core/cache.c
-+++ b/drivers/infiniband/core/cache.c
-@@ -1320,9 +1320,10 @@ struct net_device *rdma_read_gid_attr_ndev_rcu(const struct ib_gid_attr *attr)
- }
- EXPORT_SYMBOL(rdma_read_gid_attr_ndev_rcu);
- 
--static int get_lower_dev_vlan(struct net_device *lower_dev, void *data)
-+static int get_lower_dev_vlan(struct net_device *lower_dev,
-+			      struct netdev_nested_priv *priv)
- {
--	u16 *vlan_id = data;
-+	u16 *vlan_id = (u16 *)priv->data;
- 
- 	if (is_vlan_dev(lower_dev))
- 		*vlan_id = vlan_dev_vlan_id(lower_dev);
-@@ -1348,6 +1349,9 @@ static int get_lower_dev_vlan(struct net_device *lower_dev, void *data)
- int rdma_read_gid_l2_fields(const struct ib_gid_attr *attr,
- 			    u16 *vlan_id, u8 *smac)
- {
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)vlan_id,
-+	};
- 	struct net_device *ndev;
- 
- 	rcu_read_lock();
-@@ -1368,7 +1372,7 @@ int rdma_read_gid_l2_fields(const struct ib_gid_attr *attr,
- 			 * the lower vlan device for this gid entry.
- 			 */
- 			netdev_walk_all_lower_dev_rcu(attr->ndev,
--					get_lower_dev_vlan, vlan_id);
-+					get_lower_dev_vlan, &priv);
- 		}
- 	}
- 	rcu_read_unlock();
-diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
-index 7f0e91e92968..5888311b2119 100644
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -2865,9 +2865,10 @@ struct iboe_prio_tc_map {
- 	bool found;
- };
- 
--static int get_lower_vlan_dev_tc(struct net_device *dev, void *data)
-+static int get_lower_vlan_dev_tc(struct net_device *dev,
-+				 struct netdev_nested_priv *priv)
- {
--	struct iboe_prio_tc_map *map = data;
-+	struct iboe_prio_tc_map *map = (struct iboe_prio_tc_map *)priv->data;
- 
- 	if (is_vlan_dev(dev))
- 		map->output_tc = get_vlan_ndev_tc(dev, map->input_prio);
-@@ -2886,16 +2887,18 @@ static int iboe_tos_to_sl(struct net_device *ndev, int tos)
- {
- 	struct iboe_prio_tc_map prio_tc_map = {};
- 	int prio = rt_tos2priority(tos);
-+	struct netdev_nested_priv priv;
- 
- 	/* If VLAN device, get it directly from the VLAN netdev */
- 	if (is_vlan_dev(ndev))
- 		return get_vlan_ndev_tc(ndev, prio);
- 
- 	prio_tc_map.input_prio = prio;
-+	priv.data = (void *)&prio_tc_map;
- 	rcu_read_lock();
- 	netdev_walk_all_lower_dev_rcu(ndev,
- 				      get_lower_vlan_dev_tc,
--				      &prio_tc_map);
-+				      &priv);
- 	rcu_read_unlock();
- 	/* If map is found from lower device, use it; Otherwise
- 	 * continue with the current netdevice to get priority to tc map.
-diff --git a/drivers/infiniband/core/roce_gid_mgmt.c b/drivers/infiniband/core/roce_gid_mgmt.c
-index 2860def84f4d..6b8364bb032d 100644
---- a/drivers/infiniband/core/roce_gid_mgmt.c
-+++ b/drivers/infiniband/core/roce_gid_mgmt.c
-@@ -531,10 +531,11 @@ struct upper_list {
- 	struct net_device *upper;
- };
- 
--static int netdev_upper_walk(struct net_device *upper, void *data)
-+static int netdev_upper_walk(struct net_device *upper,
-+			     struct netdev_nested_priv *priv)
- {
- 	struct upper_list *entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
--	struct list_head *upper_list = data;
-+	struct list_head *upper_list = (struct list_head *)priv->data;
- 
- 	if (!entry)
- 		return 0;
-@@ -553,12 +554,14 @@ static void handle_netdev_upper(struct ib_device *ib_dev, u8 port,
- 						      struct net_device *ndev))
- {
- 	struct net_device *ndev = cookie;
-+	struct netdev_nested_priv priv;
- 	struct upper_list *upper_iter;
- 	struct upper_list *upper_temp;
- 	LIST_HEAD(upper_list);
- 
-+	priv.data = &upper_list;
- 	rcu_read_lock();
--	netdev_walk_all_upper_dev_rcu(ndev, netdev_upper_walk, &upper_list);
-+	netdev_walk_all_upper_dev_rcu(ndev, netdev_upper_walk, &priv);
- 	rcu_read_unlock();
- 
- 	handle_netdev(ib_dev, port, ndev);
-diff --git a/drivers/infiniband/ulp/ipoib/ipoib_main.c b/drivers/infiniband/ulp/ipoib/ipoib_main.c
-index ab75b7f745d4..f772fe8c5b66 100644
---- a/drivers/infiniband/ulp/ipoib/ipoib_main.c
-+++ b/drivers/infiniband/ulp/ipoib/ipoib_main.c
-@@ -342,9 +342,10 @@ struct ipoib_walk_data {
- 	struct net_device *result;
- };
- 
--static int ipoib_upper_walk(struct net_device *upper, void *_data)
-+static int ipoib_upper_walk(struct net_device *upper,
-+			    struct netdev_nested_priv *priv)
- {
--	struct ipoib_walk_data *data = _data;
-+	struct ipoib_walk_data *data = (struct ipoib_walk_data *)priv->data;
- 	int ret = 0;
- 
- 	if (ipoib_is_dev_match_addr_rcu(data->addr, upper)) {
-@@ -368,10 +369,12 @@ static int ipoib_upper_walk(struct net_device *upper, void *_data)
- static struct net_device *ipoib_get_net_dev_match_addr(
- 		const struct sockaddr *addr, struct net_device *dev)
- {
-+	struct netdev_nested_priv priv;
- 	struct ipoib_walk_data data = {
- 		.addr = addr,
- 	};
- 
-+	priv.data = (void *)&data;
- 	rcu_read_lock();
- 	if (ipoib_is_dev_match_addr_rcu(addr, dev)) {
- 		dev_hold(dev);
-@@ -379,7 +382,7 @@ static struct net_device *ipoib_get_net_dev_match_addr(
- 		goto out;
- 	}
- 
--	netdev_walk_all_upper_dev_rcu(dev, ipoib_upper_walk, &data);
-+	netdev_walk_all_upper_dev_rcu(dev, ipoib_upper_walk, &priv);
- out:
- 	rcu_read_unlock();
- 	return data.result;
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index 4e1b7deb724b..c3091e00dd5f 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -942,9 +942,10 @@ struct alb_walk_data {
- 	bool strict_match;
- };
- 
--static int alb_upper_dev_walk(struct net_device *upper, void *_data)
-+static int alb_upper_dev_walk(struct net_device *upper,
-+			      struct netdev_nested_priv *priv)
- {
--	struct alb_walk_data *data = _data;
-+	struct alb_walk_data *data = (struct alb_walk_data *)priv->data;
- 	bool strict_match = data->strict_match;
- 	struct bonding *bond = data->bond;
- 	struct slave *slave = data->slave;
-@@ -983,6 +984,7 @@ static void alb_send_learning_packets(struct slave *slave, u8 mac_addr[],
- 				      bool strict_match)
- {
- 	struct bonding *bond = bond_get_bond_by_slave(slave);
-+	struct netdev_nested_priv priv;
- 	struct alb_walk_data data = {
- 		.strict_match = strict_match,
- 		.mac_addr = mac_addr,
-@@ -990,6 +992,7 @@ static void alb_send_learning_packets(struct slave *slave, u8 mac_addr[],
- 		.bond = bond,
- 	};
- 
-+	priv.data = (void *)&data;
- 	/* send untagged */
- 	alb_send_lp_vid(slave, mac_addr, 0, 0);
- 
-@@ -997,7 +1000,7 @@ static void alb_send_learning_packets(struct slave *slave, u8 mac_addr[],
- 	 * for that device.
- 	 */
- 	rcu_read_lock();
--	netdev_walk_all_upper_dev_rcu(bond->dev, alb_upper_dev_walk, &data);
-+	netdev_walk_all_upper_dev_rcu(bond->dev, alb_upper_dev_walk, &priv);
- 	rcu_read_unlock();
- }
- 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 42ef25ec0af5..d1c94cdeb8d7 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -2510,22 +2510,26 @@ static void bond_mii_monitor(struct work_struct *work)
- 	}
- }
- 
--static int bond_upper_dev_walk(struct net_device *upper, void *data)
-+static int bond_upper_dev_walk(struct net_device *upper,
-+			       struct netdev_nested_priv *priv)
- {
--	__be32 ip = *((__be32 *)data);
-+	__be32 ip = *(__be32 *)priv->data;
- 
- 	return ip == bond_confirm_addr(upper, 0, ip);
- }
- 
- static bool bond_has_this_ip(struct bonding *bond, __be32 ip)
- {
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)&ip,
-+	};
- 	bool ret = false;
- 
- 	if (ip == bond_confirm_addr(bond->dev, 0, ip))
- 		return true;
- 
- 	rcu_read_lock();
--	if (netdev_walk_all_upper_dev_rcu(bond->dev, bond_upper_dev_walk, &ip))
-+	if (netdev_walk_all_upper_dev_rcu(bond->dev, bond_upper_dev_walk, &priv))
- 		ret = true;
- 	rcu_read_unlock();
- 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 2f8a4cfc5fa1..86ca8b9ea1b8 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -5396,9 +5396,10 @@ static int ixgbe_fwd_ring_up(struct ixgbe_adapter *adapter,
- 	return err;
- }
- 
--static int ixgbe_macvlan_up(struct net_device *vdev, void *data)
-+static int ixgbe_macvlan_up(struct net_device *vdev,
-+			    struct netdev_nested_priv *priv)
- {
--	struct ixgbe_adapter *adapter = data;
-+	struct ixgbe_adapter *adapter = (struct ixgbe_adapter *)priv->data;
- 	struct ixgbe_fwd_adapter *accel;
- 
- 	if (!netif_is_macvlan(vdev))
-@@ -5415,8 +5416,12 @@ static int ixgbe_macvlan_up(struct net_device *vdev, void *data)
- 
- static void ixgbe_configure_dfwd(struct ixgbe_adapter *adapter)
- {
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)adapter,
-+	};
-+
- 	netdev_walk_all_upper_dev_rcu(adapter->netdev,
--				      ixgbe_macvlan_up, adapter);
-+				      ixgbe_macvlan_up, &priv);
- }
- 
- static void ixgbe_configure(struct ixgbe_adapter *adapter)
-@@ -9023,9 +9028,10 @@ static void ixgbe_set_prio_tc_map(struct ixgbe_adapter *adapter)
- }
- 
- #endif /* CONFIG_IXGBE_DCB */
--static int ixgbe_reassign_macvlan_pool(struct net_device *vdev, void *data)
-+static int ixgbe_reassign_macvlan_pool(struct net_device *vdev,
-+				       struct netdev_nested_priv *priv)
- {
--	struct ixgbe_adapter *adapter = data;
-+	struct ixgbe_adapter *adapter = (struct ixgbe_adapter *)priv->data;
- 	struct ixgbe_fwd_adapter *accel;
- 	int pool;
- 
-@@ -9062,13 +9068,16 @@ static int ixgbe_reassign_macvlan_pool(struct net_device *vdev, void *data)
- static void ixgbe_defrag_macvlan_pools(struct net_device *dev)
- {
- 	struct ixgbe_adapter *adapter = netdev_priv(dev);
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)adapter,
-+	};
- 
- 	/* flush any stale bits out of the fwd bitmask */
- 	bitmap_clear(adapter->fwd_bitmask, 1, 63);
- 
- 	/* walk through upper devices reassigning pools */
- 	netdev_walk_all_upper_dev_rcu(dev, ixgbe_reassign_macvlan_pool,
--				      adapter);
-+				      &priv);
- }
- 
- /**
-@@ -9242,14 +9251,18 @@ struct upper_walk_data {
- 	u8 queue;
- };
- 
--static int get_macvlan_queue(struct net_device *upper, void *_data)
-+static int get_macvlan_queue(struct net_device *upper,
-+			     struct netdev_nested_priv *priv)
- {
- 	if (netif_is_macvlan(upper)) {
- 		struct ixgbe_fwd_adapter *vadapter = macvlan_accel_priv(upper);
--		struct upper_walk_data *data = _data;
--		struct ixgbe_adapter *adapter = data->adapter;
--		int ifindex = data->ifindex;
-+		struct ixgbe_adapter *adapter;
-+		struct upper_walk_data *data;
-+		int ifindex;
- 
-+		data = (struct upper_walk_data *)priv->data;
-+		ifindex = data->ifindex;
-+		adapter = data->adapter;
- 		if (vadapter && upper->ifindex == ifindex) {
- 			data->queue = adapter->rx_ring[vadapter->rx_base_queue]->reg_idx;
- 			data->action = data->queue;
-@@ -9265,6 +9278,7 @@ static int handle_redirect_action(struct ixgbe_adapter *adapter, int ifindex,
- {
- 	struct ixgbe_ring_feature *vmdq = &adapter->ring_feature[RING_F_VMDQ];
- 	unsigned int num_vfs = adapter->num_vfs, vf;
-+	struct netdev_nested_priv priv;
- 	struct upper_walk_data data;
- 	struct net_device *upper;
- 
-@@ -9284,8 +9298,9 @@ static int handle_redirect_action(struct ixgbe_adapter *adapter, int ifindex,
- 	data.ifindex = ifindex;
- 	data.action = 0;
- 	data.queue = 0;
-+	priv.data = (void *)&data;
- 	if (netdev_walk_all_upper_dev_rcu(adapter->netdev,
--					  get_macvlan_queue, &data)) {
-+					  get_macvlan_queue, &priv)) {
- 		*action = data.action;
- 		*queue = data.queue;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 4186e29119c2..f3c0e241e1b4 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -3690,13 +3690,13 @@ bool mlxsw_sp_port_dev_check(const struct net_device *dev)
- 	return dev->netdev_ops == &mlxsw_sp_port_netdev_ops;
- }
- 
--static int mlxsw_sp_lower_dev_walk(struct net_device *lower_dev, void *data)
-+static int mlxsw_sp_lower_dev_walk(struct net_device *lower_dev,
-+				   struct netdev_nested_priv *priv)
- {
--	struct mlxsw_sp_port **p_mlxsw_sp_port = data;
- 	int ret = 0;
- 
- 	if (mlxsw_sp_port_dev_check(lower_dev)) {
--		*p_mlxsw_sp_port = netdev_priv(lower_dev);
-+		priv->data = (void *)netdev_priv(lower_dev);
- 		ret = 1;
- 	}
- 
-@@ -3705,15 +3705,16 @@ static int mlxsw_sp_lower_dev_walk(struct net_device *lower_dev, void *data)
- 
- struct mlxsw_sp_port *mlxsw_sp_port_dev_lower_find(struct net_device *dev)
- {
--	struct mlxsw_sp_port *mlxsw_sp_port;
-+	struct netdev_nested_priv priv = {
-+		.data = NULL,
-+	};
- 
- 	if (mlxsw_sp_port_dev_check(dev))
- 		return netdev_priv(dev);
- 
--	mlxsw_sp_port = NULL;
--	netdev_walk_all_lower_dev(dev, mlxsw_sp_lower_dev_walk, &mlxsw_sp_port);
-+	netdev_walk_all_lower_dev(dev, mlxsw_sp_lower_dev_walk, &priv);
- 
--	return mlxsw_sp_port;
-+	return (struct mlxsw_sp_port *)priv.data;
- }
- 
- struct mlxsw_sp *mlxsw_sp_lower_get(struct net_device *dev)
-@@ -3726,16 +3727,17 @@ struct mlxsw_sp *mlxsw_sp_lower_get(struct net_device *dev)
- 
- struct mlxsw_sp_port *mlxsw_sp_port_dev_lower_find_rcu(struct net_device *dev)
- {
--	struct mlxsw_sp_port *mlxsw_sp_port;
-+	struct netdev_nested_priv priv = {
-+		.data = NULL,
-+	};
- 
- 	if (mlxsw_sp_port_dev_check(dev))
- 		return netdev_priv(dev);
- 
--	mlxsw_sp_port = NULL;
- 	netdev_walk_all_lower_dev_rcu(dev, mlxsw_sp_lower_dev_walk,
--				      &mlxsw_sp_port);
-+				      &priv);
- 
--	return mlxsw_sp_port;
-+	return (struct mlxsw_sp_port *)priv.data;
- }
- 
- struct mlxsw_sp_port *mlxsw_sp_port_lower_dev_hold(struct net_device *dev)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 24f1fd1f8d56..460cb523312f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -7351,9 +7351,10 @@ int mlxsw_sp_netdevice_vrf_event(struct net_device *l3_dev, unsigned long event,
- 	return err;
- }
- 
--static int __mlxsw_sp_rif_macvlan_flush(struct net_device *dev, void *data)
-+static int __mlxsw_sp_rif_macvlan_flush(struct net_device *dev,
-+					struct netdev_nested_priv *priv)
- {
--	struct mlxsw_sp_rif *rif = data;
-+	struct mlxsw_sp_rif *rif = (struct mlxsw_sp_rif *)priv->data;
- 
- 	if (!netif_is_macvlan(dev))
- 		return 0;
-@@ -7364,12 +7365,16 @@ static int __mlxsw_sp_rif_macvlan_flush(struct net_device *dev, void *data)
- 
- static int mlxsw_sp_rif_macvlan_flush(struct mlxsw_sp_rif *rif)
- {
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)rif,
-+	};
-+
- 	if (!netif_is_macvlan_port(rif->dev))
- 		return 0;
- 
- 	netdev_warn(rif->dev, "Router interface is deleted. Upper macvlans will not work\n");
- 	return netdev_walk_all_upper_dev_rcu(rif->dev,
--					     __mlxsw_sp_rif_macvlan_flush, rif);
-+					     __mlxsw_sp_rif_macvlan_flush, &priv);
- }
- 
- static void mlxsw_sp_rif_subport_setup(struct mlxsw_sp_rif *rif,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 72912afa6f72..6501ce94ace5 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -136,9 +136,9 @@ bool mlxsw_sp_bridge_device_is_offloaded(const struct mlxsw_sp *mlxsw_sp,
- }
- 
- static int mlxsw_sp_bridge_device_upper_rif_destroy(struct net_device *dev,
--						    void *data)
-+						    struct netdev_nested_priv *priv)
- {
--	struct mlxsw_sp *mlxsw_sp = data;
-+	struct mlxsw_sp *mlxsw_sp = priv->data;
- 
- 	mlxsw_sp_rif_destroy_by_dev(mlxsw_sp, dev);
- 	return 0;
-@@ -147,10 +147,14 @@ static int mlxsw_sp_bridge_device_upper_rif_destroy(struct net_device *dev,
- static void mlxsw_sp_bridge_device_rifs_destroy(struct mlxsw_sp *mlxsw_sp,
- 						struct net_device *dev)
- {
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)mlxsw_sp,
-+	};
-+
- 	mlxsw_sp_rif_destroy_by_dev(mlxsw_sp, dev);
- 	netdev_walk_all_upper_dev_rcu(dev,
- 				      mlxsw_sp_bridge_device_upper_rif_destroy,
--				      mlxsw_sp);
-+				      &priv);
- }
- 
- static int mlxsw_sp_bridge_device_vxlan_init(struct mlxsw_sp_bridge *bridge,
-diff --git a/drivers/net/ethernet/rocker/rocker_main.c b/drivers/net/ethernet/rocker/rocker_main.c
-index 42458a46ffaf..9cc31f7e0df1 100644
---- a/drivers/net/ethernet/rocker/rocker_main.c
-+++ b/drivers/net/ethernet/rocker/rocker_main.c
-@@ -3099,9 +3099,10 @@ struct rocker_walk_data {
- 	struct rocker_port *port;
- };
- 
--static int rocker_lower_dev_walk(struct net_device *lower_dev, void *_data)
-+static int rocker_lower_dev_walk(struct net_device *lower_dev,
-+				 struct netdev_nested_priv *priv)
- {
--	struct rocker_walk_data *data = _data;
-+	struct rocker_walk_data *data = (struct rocker_walk_data *)priv->data;
- 	int ret = 0;
- 
- 	if (rocker_port_dev_check_under(lower_dev, data->rocker)) {
-@@ -3115,6 +3116,7 @@ static int rocker_lower_dev_walk(struct net_device *lower_dev, void *_data)
- struct rocker_port *rocker_port_dev_lower_find(struct net_device *dev,
- 					       struct rocker *rocker)
- {
-+	struct netdev_nested_priv priv;
- 	struct rocker_walk_data data;
- 
- 	if (rocker_port_dev_check_under(dev, rocker))
-@@ -3122,7 +3124,8 @@ struct rocker_port *rocker_port_dev_lower_find(struct net_device *dev,
- 
- 	data.rocker = rocker;
- 	data.port = NULL;
--	netdev_walk_all_lower_dev(dev, rocker_lower_dev_walk, &data);
-+	priv.data = (void *)&data;
-+	netdev_walk_all_lower_dev(dev, rocker_lower_dev_walk, &priv);
- 
- 	return data.port;
- }
-diff --git a/drivers/net/wireless/quantenna/qtnfmac/core.c b/drivers/net/wireless/quantenna/qtnfmac/core.c
-index 6aafff9d4231..e013ebe3079c 100644
---- a/drivers/net/wireless/quantenna/qtnfmac/core.c
-+++ b/drivers/net/wireless/quantenna/qtnfmac/core.c
-@@ -671,9 +671,10 @@ bool qtnf_netdev_is_qtn(const struct net_device *ndev)
- 	return ndev->netdev_ops == &qtnf_netdev_ops;
- }
- 
--static int qtnf_check_br_ports(struct net_device *dev, void *data)
-+static int qtnf_check_br_ports(struct net_device *dev,
-+			       struct netdev_nested_priv *priv)
- {
--	struct net_device *ndev = data;
-+	struct net_device *ndev = (struct net_device *)priv->data;
- 
- 	if (dev != ndev && netdev_port_same_parent_id(dev, ndev))
- 		return -ENOTSUPP;
-@@ -686,6 +687,9 @@ static int qtnf_core_netdevice_event(struct notifier_block *nb,
- {
- 	struct net_device *ndev = netdev_notifier_info_to_dev(ptr);
- 	const struct netdev_notifier_changeupper_info *info;
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)ndev,
-+	};
- 	struct net_device *brdev;
- 	struct qtnf_vif *vif;
- 	struct qtnf_bus *bus;
-@@ -725,7 +729,7 @@ static int qtnf_core_netdevice_event(struct notifier_block *nb,
- 		} else {
- 			ret = netdev_walk_all_lower_dev(brdev,
- 							qtnf_check_br_ports,
--							ndev);
-+							&priv);
- 		}
- 
- 		break;
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 7bd4fcdd0738..313803d6c781 100644
+index 313803d6c781..9fdb3ebef306 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -4455,6 +4455,10 @@ extern int		dev_rx_weight;
+@@ -1955,6 +1955,7 @@ struct net_device {
+ 	unsigned short		type;
+ 	unsigned short		hard_header_len;
+ 	unsigned char		min_header_len;
++	unsigned char		name_assign_type;
+ 
+ 	unsigned short		needed_headroom;
+ 	unsigned short		needed_tailroom;
+@@ -1965,21 +1966,28 @@ struct net_device {
+ 	unsigned char		addr_len;
+ 	unsigned char		upper_level;
+ 	unsigned char		lower_level;
++
+ 	unsigned short		neigh_priv_len;
+ 	unsigned short          dev_id;
+ 	unsigned short          dev_port;
+ 	spinlock_t		addr_list_lock;
+-	unsigned char		name_assign_type;
+-	bool			uc_promisc;
++
+ 	struct netdev_hw_addr_list	uc;
+ 	struct netdev_hw_addr_list	mc;
+ 	struct netdev_hw_addr_list	dev_addrs;
+ 
+ #ifdef CONFIG_SYSFS
+ 	struct kset		*queues_kset;
++#endif
++#ifdef CONFIG_LOCKDEP
++	struct list_head	unlink_list;
+ #endif
+ 	unsigned int		promiscuity;
+ 	unsigned int		allmulti;
++	bool			uc_promisc;
++#ifdef CONFIG_LOCKDEP
++	unsigned char		nested_level;
++#endif
+ 
+ 
+ 	/* Protocol-specific pointers */
+@@ -4260,17 +4268,23 @@ static inline void netif_tx_disable(struct net_device *dev)
+ 
+ static inline void netif_addr_lock(struct net_device *dev)
+ {
+-	spin_lock(&dev->addr_list_lock);
+-}
++	unsigned char nest_level = 0;
+ 
+-static inline void netif_addr_lock_nested(struct net_device *dev)
+-{
+-	spin_lock_nested(&dev->addr_list_lock, dev->lower_level);
++#ifdef CONFIG_LOCKDEP
++	nest_level = dev->nested_level;
++#endif
++	spin_lock_nested(&dev->addr_list_lock, nest_level);
+ }
+ 
+ static inline void netif_addr_lock_bh(struct net_device *dev)
+ {
+-	spin_lock_bh(&dev->addr_list_lock);
++	unsigned char nest_level = 0;
++
++#ifdef CONFIG_LOCKDEP
++	nest_level = dev->nested_level;
++#endif
++	local_bh_disable();
++	spin_lock_nested(&dev->addr_list_lock, nest_level);
+ }
+ 
+ static inline void netif_addr_unlock(struct net_device *dev)
+@@ -4455,7 +4469,19 @@ extern int		dev_rx_weight;
  extern int		dev_tx_weight;
  extern int		gro_normal_batch;
  
-+struct netdev_nested_priv {
-+	void *data;
++enum {
++	NESTED_SYNC_IMM_BIT,
++	NESTED_SYNC_TODO_BIT,
 +};
 +
- bool netdev_has_upper_dev(struct net_device *dev, struct net_device *upper_dev);
- struct net_device *netdev_upper_get_next_dev_rcu(struct net_device *dev,
++#define __NESTED_SYNC_BIT(bit)	((u32)1 << (bit))
++#define __NESTED_SYNC(name)	__NESTED_SYNC_BIT(NESTED_SYNC_ ## name ## _BIT)
++
++#define NESTED_SYNC_IMM		__NESTED_SYNC(IMM)
++#define NESTED_SYNC_TODO	__NESTED_SYNC(TODO)
++
+ struct netdev_nested_priv {
++	unsigned char flags;
+ 	void *data;
+ };
+ 
+@@ -4465,6 +4491,16 @@ struct net_device *netdev_upper_get_next_dev_rcu(struct net_device *dev,
+ struct net_device *netdev_all_upper_get_next_dev_rcu(struct net_device *dev,
  						     struct list_head **iter);
-@@ -4470,8 +4474,8 @@ struct net_device *netdev_all_upper_get_next_dev_rcu(struct net_device *dev,
  
- int netdev_walk_all_upper_dev_rcu(struct net_device *dev,
- 				  int (*fn)(struct net_device *upper_dev,
--					    void *data),
--				  void *data);
-+					    struct netdev_nested_priv *priv),
-+				  struct netdev_nested_priv *priv);
- 
- bool netdev_has_upper_dev_all_rcu(struct net_device *dev,
- 				  struct net_device *upper_dev);
-@@ -4508,12 +4512,12 @@ struct net_device *netdev_next_lower_dev_rcu(struct net_device *dev,
- 					     struct list_head **iter);
- int netdev_walk_all_lower_dev(struct net_device *dev,
- 			      int (*fn)(struct net_device *lower_dev,
--					void *data),
--			      void *data);
-+					struct netdev_nested_priv *priv),
-+			      struct netdev_nested_priv *priv);
- int netdev_walk_all_lower_dev_rcu(struct net_device *dev,
- 				  int (*fn)(struct net_device *lower_dev,
--					    void *data),
--				  void *data);
-+					    struct netdev_nested_priv *priv),
-+				  struct netdev_nested_priv *priv);
- 
- void *netdev_adjacent_get_private(struct list_head *adj_list);
- void *netdev_lower_get_first_private_rcu(struct net_device *dev);
-diff --git a/net/bridge/br_arp_nd_proxy.c b/net/bridge/br_arp_nd_proxy.c
-index b18cdf03edb3..dfec65eca8a6 100644
---- a/net/bridge/br_arp_nd_proxy.c
-+++ b/net/bridge/br_arp_nd_proxy.c
-@@ -88,9 +88,10 @@ static void br_arp_send(struct net_bridge *br, struct net_bridge_port *p,
- 	}
- }
- 
--static int br_chk_addr_ip(struct net_device *dev, void *data)
-+static int br_chk_addr_ip(struct net_device *dev,
-+			  struct netdev_nested_priv *priv)
- {
--	__be32 ip = *(__be32 *)data;
-+	__be32 ip = *(__be32 *)priv->data;
- 	struct in_device *in_dev;
- 	__be32 addr = 0;
- 
-@@ -107,11 +108,15 @@ static int br_chk_addr_ip(struct net_device *dev, void *data)
- 
- static bool br_is_local_ip(struct net_device *dev, __be32 ip)
- {
--	if (br_chk_addr_ip(dev, &ip))
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)&ip,
-+	};
++#ifdef CONFIG_LOCKDEP
++static LIST_HEAD(net_unlink_list);
 +
-+	if (br_chk_addr_ip(dev, &priv))
- 		return true;
- 
- 	/* check if ip is configured on upper dev */
--	if (netdev_walk_all_upper_dev_rcu(dev, br_chk_addr_ip, &ip))
-+	if (netdev_walk_all_upper_dev_rcu(dev, br_chk_addr_ip, &priv))
- 		return true;
- 
- 	return false;
-@@ -361,9 +366,10 @@ static void br_nd_send(struct net_bridge *br, struct net_bridge_port *p,
- 	}
- }
- 
--static int br_chk_addr_ip6(struct net_device *dev, void *data)
-+static int br_chk_addr_ip6(struct net_device *dev,
-+			   struct netdev_nested_priv *priv)
- {
--	struct in6_addr *addr = (struct in6_addr *)data;
-+	struct in6_addr *addr = (struct in6_addr *)priv->data;
- 
- 	if (ipv6_chk_addr(dev_net(dev), addr, dev, 0))
- 		return 1;
-@@ -374,11 +380,15 @@ static int br_chk_addr_ip6(struct net_device *dev, void *data)
- static bool br_is_local_ip6(struct net_device *dev, struct in6_addr *addr)
- 
- {
--	if (br_chk_addr_ip6(dev, addr))
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)addr,
-+	};
++static inline void net_unlink_todo(struct net_device *dev)
++{
++	if (list_empty(&dev->unlink_list))
++		list_add_tail(&dev->unlink_list, &net_unlink_list);
++}
++#endif
 +
-+	if (br_chk_addr_ip6(dev, &priv))
- 		return true;
- 
- 	/* check if ip is configured on upper dev */
--	if (netdev_walk_all_upper_dev_rcu(dev, br_chk_addr_ip6, addr))
-+	if (netdev_walk_all_upper_dev_rcu(dev, br_chk_addr_ip6, &priv))
- 		return true;
- 
- 	return false;
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 61c94cefa843..ee8780080be5 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -1360,7 +1360,7 @@ static int br_vlan_is_bind_vlan_dev(const struct net_device *dev)
- }
- 
- static int br_vlan_is_bind_vlan_dev_fn(struct net_device *dev,
--				       __always_unused void *data)
-+			       __always_unused struct netdev_nested_priv *priv)
- {
- 	return br_vlan_is_bind_vlan_dev(dev);
- }
-@@ -1383,9 +1383,9 @@ struct br_vlan_bind_walk_data {
- };
- 
- static int br_vlan_match_bind_vlan_dev_fn(struct net_device *dev,
--					  void *data_in)
-+					  struct netdev_nested_priv *priv)
- {
--	struct br_vlan_bind_walk_data *data = data_in;
-+	struct br_vlan_bind_walk_data *data = priv->data;
- 	int found = 0;
- 
- 	if (br_vlan_is_bind_vlan_dev(dev) &&
-@@ -1403,10 +1403,13 @@ br_vlan_get_upper_bind_vlan_dev(struct net_device *dev, u16 vid)
- 	struct br_vlan_bind_walk_data data = {
- 		.vid = vid,
- 	};
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)&data,
-+	};
- 
- 	rcu_read_lock();
- 	netdev_walk_all_upper_dev_rcu(dev, br_vlan_match_bind_vlan_dev_fn,
--				      &data);
-+				      &priv);
- 	rcu_read_unlock();
- 
- 	return data.result;
-@@ -1487,9 +1490,9 @@ struct br_vlan_link_state_walk_data {
- };
- 
- static int br_vlan_link_state_change_fn(struct net_device *vlan_dev,
--					void *data_in)
-+					struct netdev_nested_priv *priv)
- {
--	struct br_vlan_link_state_walk_data *data = data_in;
-+	struct br_vlan_link_state_walk_data *data = priv->data;
- 
- 	if (br_vlan_is_bind_vlan_dev(vlan_dev))
- 		br_vlan_set_vlan_dev_state(data->br, vlan_dev);
-@@ -1503,10 +1506,13 @@ static void br_vlan_link_state_change(struct net_device *dev,
- 	struct br_vlan_link_state_walk_data data = {
- 		.br = br
- 	};
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)&data,
-+	};
- 
- 	rcu_read_lock();
- 	netdev_walk_all_upper_dev_rcu(dev, br_vlan_link_state_change_fn,
--				      &data);
-+				      &priv);
- 	rcu_read_unlock();
- }
- 
+ /* iterate through upper list, must be called under RCU read lock */
+ #define netdev_for_each_upper_dev_rcu(dev, updev, iter) \
+ 	for (iter = &(dev)->adj_list.upper, \
 diff --git a/net/core/dev.c b/net/core/dev.c
-index b7b3d6e15cda..a4a1fa806c5c 100644
+index a4a1fa806c5c..4906b44af850 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -6812,9 +6812,10 @@ static struct netdev_adjacent *__netdev_find_adj(struct net_device *adj_dev,
- 	return NULL;
- }
- 
--static int ____netdev_has_upper_dev(struct net_device *upper_dev, void *data)
-+static int ____netdev_has_upper_dev(struct net_device *upper_dev,
-+				    struct netdev_nested_priv *priv)
- {
--	struct net_device *dev = data;
-+	struct net_device *dev = (struct net_device *)priv->data;
- 
- 	return upper_dev == dev;
- }
-@@ -6831,10 +6832,14 @@ static int ____netdev_has_upper_dev(struct net_device *upper_dev, void *data)
- bool netdev_has_upper_dev(struct net_device *dev,
- 			  struct net_device *upper_dev)
- {
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)upper_dev,
-+	};
-+
- 	ASSERT_RTNL();
- 
- 	return netdev_walk_all_upper_dev_rcu(dev, ____netdev_has_upper_dev,
--					     upper_dev);
-+					     &priv);
- }
- EXPORT_SYMBOL(netdev_has_upper_dev);
- 
-@@ -6851,8 +6856,12 @@ EXPORT_SYMBOL(netdev_has_upper_dev);
- bool netdev_has_upper_dev_all_rcu(struct net_device *dev,
- 				  struct net_device *upper_dev)
- {
-+	struct netdev_nested_priv priv = {
-+		.data = (void *)upper_dev,
-+	};
-+
- 	return !!netdev_walk_all_upper_dev_rcu(dev, ____netdev_has_upper_dev,
--					       upper_dev);
-+					       &priv);
- }
- EXPORT_SYMBOL(netdev_has_upper_dev_all_rcu);
- 
-@@ -6997,8 +7006,8 @@ static struct net_device *netdev_next_upper_dev_rcu(struct net_device *dev,
- 
- static int __netdev_walk_all_upper_dev(struct net_device *dev,
- 				       int (*fn)(struct net_device *dev,
--						 void *data),
--				       void *data)
-+					 struct netdev_nested_priv *priv),
-+				       struct netdev_nested_priv *priv)
- {
- 	struct net_device *udev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
- 	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
-@@ -7010,7 +7019,7 @@ static int __netdev_walk_all_upper_dev(struct net_device *dev,
- 
- 	while (1) {
- 		if (now != dev) {
--			ret = fn(now, data);
-+			ret = fn(now, priv);
- 			if (ret)
- 				return ret;
- 		}
-@@ -7046,8 +7055,8 @@ static int __netdev_walk_all_upper_dev(struct net_device *dev,
- 
- int netdev_walk_all_upper_dev_rcu(struct net_device *dev,
- 				  int (*fn)(struct net_device *dev,
--					    void *data),
--				  void *data)
-+					    struct netdev_nested_priv *priv),
-+				  struct netdev_nested_priv *priv)
- {
- 	struct net_device *udev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
- 	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
-@@ -7058,7 +7067,7 @@ int netdev_walk_all_upper_dev_rcu(struct net_device *dev,
- 
- 	while (1) {
- 		if (now != dev) {
--			ret = fn(now, data);
-+			ret = fn(now, priv);
- 			if (ret)
- 				return ret;
- 		}
-@@ -7094,10 +7103,14 @@ EXPORT_SYMBOL_GPL(netdev_walk_all_upper_dev_rcu);
- static bool __netdev_has_upper_dev(struct net_device *dev,
+@@ -7104,6 +7104,7 @@ static bool __netdev_has_upper_dev(struct net_device *dev,
  				   struct net_device *upper_dev)
  {
+ 	struct netdev_nested_priv priv = {
++		.flags = 0,
+ 		.data = (void *)upper_dev,
+ 	};
+ 
+@@ -7385,9 +7386,19 @@ static int __netdev_update_upper_level(struct net_device *dev,
+ }
+ 
+ static int __netdev_update_lower_level(struct net_device *dev,
+-				       struct netdev_nested_priv *__unused)
++				       struct netdev_nested_priv *priv)
+ {
+ 	dev->lower_level = __netdev_lower_depth(dev) + 1;
++
++#ifdef CONFIG_LOCKDEP
++	if (!priv)
++		return 0;
++
++	if (priv->flags & NESTED_SYNC_IMM)
++		dev->nested_level = dev->lower_level - 1;
++	if (priv->flags & NESTED_SYNC_TODO)
++		net_unlink_todo(dev);
++#endif
+ 	return 0;
+ }
+ 
+@@ -7665,6 +7676,7 @@ static void __netdev_adjacent_dev_unlink_neighbour(struct net_device *dev,
+ static int __netdev_upper_dev_link(struct net_device *dev,
+ 				   struct net_device *upper_dev, bool master,
+ 				   void *upper_priv, void *upper_info,
++				   struct netdev_nested_priv *priv,
+ 				   struct netlink_ext_ack *extack)
+ {
+ 	struct netdev_notifier_changeupper_info changeupper_info = {
+@@ -7721,9 +7733,9 @@ static int __netdev_upper_dev_link(struct net_device *dev,
+ 	__netdev_update_upper_level(dev, NULL);
+ 	__netdev_walk_all_lower_dev(dev, __netdev_update_upper_level, NULL);
+ 
+-	__netdev_update_lower_level(upper_dev, NULL);
++	__netdev_update_lower_level(upper_dev, priv);
+ 	__netdev_walk_all_upper_dev(upper_dev, __netdev_update_lower_level,
+-				    NULL);
++				    priv);
+ 
+ 	return 0;
+ 
+@@ -7748,8 +7760,13 @@ int netdev_upper_dev_link(struct net_device *dev,
+ 			  struct net_device *upper_dev,
+ 			  struct netlink_ext_ack *extack)
+ {
 +	struct netdev_nested_priv priv = {
-+		.data = (void *)upper_dev,
++		.flags = NESTED_SYNC_IMM | NESTED_SYNC_TODO,
++		.data = NULL,
 +	};
 +
- 	ASSERT_RTNL();
+ 	return __netdev_upper_dev_link(dev, upper_dev, false,
+-				       NULL, NULL, extack);
++				       NULL, NULL, &priv, extack);
+ }
+ EXPORT_SYMBOL(netdev_upper_dev_link);
  
- 	return __netdev_walk_all_upper_dev(dev, ____netdev_has_upper_dev,
--					   upper_dev);
-+					   &priv);
+@@ -7772,13 +7789,19 @@ int netdev_master_upper_dev_link(struct net_device *dev,
+ 				 void *upper_priv, void *upper_info,
+ 				 struct netlink_ext_ack *extack)
+ {
++	struct netdev_nested_priv priv = {
++		.flags = NESTED_SYNC_IMM | NESTED_SYNC_TODO,
++		.data = NULL,
++	};
++
+ 	return __netdev_upper_dev_link(dev, upper_dev, true,
+-				       upper_priv, upper_info, extack);
++				       upper_priv, upper_info, &priv, extack);
+ }
+ EXPORT_SYMBOL(netdev_master_upper_dev_link);
+ 
+ static void __netdev_upper_dev_unlink(struct net_device *dev,
+-				      struct net_device *upper_dev)
++				      struct net_device *upper_dev,
++				      struct netdev_nested_priv *priv)
+ {
+ 	struct netdev_notifier_changeupper_info changeupper_info = {
+ 		.info = {
+@@ -7803,9 +7826,9 @@ static void __netdev_upper_dev_unlink(struct net_device *dev,
+ 	__netdev_update_upper_level(dev, NULL);
+ 	__netdev_walk_all_lower_dev(dev, __netdev_update_upper_level, NULL);
+ 
+-	__netdev_update_lower_level(upper_dev, NULL);
++	__netdev_update_lower_level(upper_dev, priv);
+ 	__netdev_walk_all_upper_dev(upper_dev, __netdev_update_lower_level,
+-				    NULL);
++				    priv);
  }
  
  /**
-@@ -7215,8 +7228,8 @@ static struct net_device *__netdev_next_lower_dev(struct net_device *dev,
- 
- int netdev_walk_all_lower_dev(struct net_device *dev,
- 			      int (*fn)(struct net_device *dev,
--					void *data),
--			      void *data)
-+					struct netdev_nested_priv *priv),
-+			      struct netdev_nested_priv *priv)
+@@ -7819,7 +7842,12 @@ static void __netdev_upper_dev_unlink(struct net_device *dev,
+ void netdev_upper_dev_unlink(struct net_device *dev,
+ 			     struct net_device *upper_dev)
  {
- 	struct net_device *ldev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
- 	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
-@@ -7227,7 +7240,7 @@ int netdev_walk_all_lower_dev(struct net_device *dev,
- 
- 	while (1) {
- 		if (now != dev) {
--			ret = fn(now, data);
-+			ret = fn(now, priv);
- 			if (ret)
- 				return ret;
- 		}
-@@ -7262,8 +7275,8 @@ EXPORT_SYMBOL_GPL(netdev_walk_all_lower_dev);
- 
- static int __netdev_walk_all_lower_dev(struct net_device *dev,
- 				       int (*fn)(struct net_device *dev,
--						 void *data),
--				       void *data)
-+					 struct netdev_nested_priv *priv),
-+				       struct netdev_nested_priv *priv)
- {
- 	struct net_device *ldev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
- 	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
-@@ -7275,7 +7288,7 @@ static int __netdev_walk_all_lower_dev(struct net_device *dev,
- 
- 	while (1) {
- 		if (now != dev) {
--			ret = fn(now, data);
-+			ret = fn(now, priv);
- 			if (ret)
- 				return ret;
- 		}
-@@ -7364,13 +7377,15 @@ static u8 __netdev_lower_depth(struct net_device *dev)
- 	return max_depth;
+-	__netdev_upper_dev_unlink(dev, upper_dev);
++	struct netdev_nested_priv priv = {
++		.flags = NESTED_SYNC_TODO,
++		.data = NULL,
++	};
++
++	__netdev_upper_dev_unlink(dev, upper_dev, &priv);
  }
+ EXPORT_SYMBOL(netdev_upper_dev_unlink);
  
--static int __netdev_update_upper_level(struct net_device *dev, void *data)
-+static int __netdev_update_upper_level(struct net_device *dev,
-+				       struct netdev_nested_priv *__unused)
+@@ -7855,6 +7883,10 @@ int netdev_adjacent_change_prepare(struct net_device *old_dev,
+ 				   struct net_device *dev,
+ 				   struct netlink_ext_ack *extack)
  {
- 	dev->upper_level = __netdev_upper_depth(dev) + 1;
- 	return 0;
++	struct netdev_nested_priv priv = {
++		.flags = 0,
++		.data = NULL,
++	};
+ 	int err;
+ 
+ 	if (!new_dev)
+@@ -7862,8 +7894,8 @@ int netdev_adjacent_change_prepare(struct net_device *old_dev,
+ 
+ 	if (old_dev && new_dev != old_dev)
+ 		netdev_adjacent_dev_disable(dev, old_dev);
+-
+-	err = netdev_upper_dev_link(new_dev, dev, extack);
++	err = __netdev_upper_dev_link(new_dev, dev, false, NULL, NULL, &priv,
++				      extack);
+ 	if (err) {
+ 		if (old_dev && new_dev != old_dev)
+ 			netdev_adjacent_dev_enable(dev, old_dev);
+@@ -7878,6 +7910,11 @@ void netdev_adjacent_change_commit(struct net_device *old_dev,
+ 				   struct net_device *new_dev,
+ 				   struct net_device *dev)
+ {
++	struct netdev_nested_priv priv = {
++		.flags = NESTED_SYNC_IMM | NESTED_SYNC_TODO,
++		.data = NULL,
++	};
++
+ 	if (!new_dev || !old_dev)
+ 		return;
+ 
+@@ -7885,7 +7922,7 @@ void netdev_adjacent_change_commit(struct net_device *old_dev,
+ 		return;
+ 
+ 	netdev_adjacent_dev_enable(dev, old_dev);
+-	netdev_upper_dev_unlink(old_dev, dev);
++	__netdev_upper_dev_unlink(old_dev, dev, &priv);
  }
+ EXPORT_SYMBOL(netdev_adjacent_change_commit);
  
--static int __netdev_update_lower_level(struct net_device *dev, void *data)
-+static int __netdev_update_lower_level(struct net_device *dev,
-+				       struct netdev_nested_priv *__unused)
+@@ -7893,13 +7930,18 @@ void netdev_adjacent_change_abort(struct net_device *old_dev,
+ 				  struct net_device *new_dev,
+ 				  struct net_device *dev)
  {
- 	dev->lower_level = __netdev_lower_depth(dev) + 1;
- 	return 0;
-@@ -7378,8 +7393,8 @@ static int __netdev_update_lower_level(struct net_device *dev, void *data)
++	struct netdev_nested_priv priv = {
++		.flags = 0,
++		.data = NULL,
++	};
++
+ 	if (!new_dev)
+ 		return;
  
- int netdev_walk_all_lower_dev_rcu(struct net_device *dev,
- 				  int (*fn)(struct net_device *dev,
--					    void *data),
--				  void *data)
-+					    struct netdev_nested_priv *priv),
-+				  struct netdev_nested_priv *priv)
+ 	if (old_dev && new_dev != old_dev)
+ 		netdev_adjacent_dev_enable(dev, old_dev);
+ 
+-	netdev_upper_dev_unlink(new_dev, dev);
++	__netdev_upper_dev_unlink(new_dev, dev, &priv);
+ }
+ EXPORT_SYMBOL(netdev_adjacent_change_abort);
+ 
+@@ -10083,6 +10125,19 @@ static void netdev_wait_allrefs(struct net_device *dev)
+ void netdev_run_todo(void)
  {
- 	struct net_device *ldev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
- 	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
-@@ -7390,7 +7405,7 @@ int netdev_walk_all_lower_dev_rcu(struct net_device *dev,
+ 	struct list_head list;
++#ifdef CONFIG_LOCKDEP
++	struct list_head unlink_list;
++
++	list_replace_init(&net_unlink_list, &unlink_list);
++
++	while (!list_empty(&unlink_list)) {
++		struct net_device *dev = list_first_entry(&unlink_list,
++							  struct net_device,
++							  unlink_list);
++		list_del(&dev->unlink_list);
++		dev->nested_level = dev->lower_level - 1;
++	}
++#endif
  
- 	while (1) {
- 		if (now != dev) {
--			ret = fn(now, data);
-+			ret = fn(now, priv);
- 			if (ret)
- 				return ret;
- 		}
+ 	/* Snapshot list, allow later requests */
+ 	list_replace_init(&net_todo_list, &list);
+@@ -10295,6 +10350,10 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+ 	dev->gso_max_segs = GSO_MAX_SEGS;
+ 	dev->upper_level = 1;
+ 	dev->lower_level = 1;
++#ifdef CONFIG_LOCKDEP
++	dev->nested_level = 0;
++	INIT_LIST_HEAD(&dev->unlink_list);
++#endif
+ 
+ 	INIT_LIST_HEAD(&dev->napi_list);
+ 	INIT_LIST_HEAD(&dev->unreg_list);
+diff --git a/net/core/dev_addr_lists.c b/net/core/dev_addr_lists.c
+index 54cd568e7c2f..fa1c37ec40c9 100644
+--- a/net/core/dev_addr_lists.c
++++ b/net/core/dev_addr_lists.c
+@@ -637,7 +637,7 @@ int dev_uc_sync(struct net_device *to, struct net_device *from)
+ 	if (to->addr_len != from->addr_len)
+ 		return -EINVAL;
+ 
+-	netif_addr_lock_nested(to);
++	netif_addr_lock(to);
+ 	err = __hw_addr_sync(&to->uc, &from->uc, to->addr_len);
+ 	if (!err)
+ 		__dev_set_rx_mode(to);
+@@ -667,7 +667,7 @@ int dev_uc_sync_multiple(struct net_device *to, struct net_device *from)
+ 	if (to->addr_len != from->addr_len)
+ 		return -EINVAL;
+ 
+-	netif_addr_lock_nested(to);
++	netif_addr_lock(to);
+ 	err = __hw_addr_sync_multiple(&to->uc, &from->uc, to->addr_len);
+ 	if (!err)
+ 		__dev_set_rx_mode(to);
+@@ -700,7 +700,7 @@ void dev_uc_unsync(struct net_device *to, struct net_device *from)
+ 	 * larger.
+ 	 */
+ 	netif_addr_lock_bh(from);
+-	netif_addr_lock_nested(to);
++	netif_addr_lock(to);
+ 	__hw_addr_unsync(&to->uc, &from->uc, to->addr_len);
+ 	__dev_set_rx_mode(to);
+ 	netif_addr_unlock(to);
+@@ -867,7 +867,7 @@ int dev_mc_sync(struct net_device *to, struct net_device *from)
+ 	if (to->addr_len != from->addr_len)
+ 		return -EINVAL;
+ 
+-	netif_addr_lock_nested(to);
++	netif_addr_lock(to);
+ 	err = __hw_addr_sync(&to->mc, &from->mc, to->addr_len);
+ 	if (!err)
+ 		__dev_set_rx_mode(to);
+@@ -897,7 +897,7 @@ int dev_mc_sync_multiple(struct net_device *to, struct net_device *from)
+ 	if (to->addr_len != from->addr_len)
+ 		return -EINVAL;
+ 
+-	netif_addr_lock_nested(to);
++	netif_addr_lock(to);
+ 	err = __hw_addr_sync_multiple(&to->mc, &from->mc, to->addr_len);
+ 	if (!err)
+ 		__dev_set_rx_mode(to);
+@@ -922,7 +922,7 @@ void dev_mc_unsync(struct net_device *to, struct net_device *from)
+ 
+ 	/* See the above comments inside dev_uc_unsync(). */
+ 	netif_addr_lock_bh(from);
+-	netif_addr_lock_nested(to);
++	netif_addr_lock(to);
+ 	__hw_addr_unsync(&to->mc, &from->mc, to->addr_len);
+ 	__dev_set_rx_mode(to);
+ 	netif_addr_unlock(to);
 -- 
 2.17.1
 
