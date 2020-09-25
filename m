@@ -2,89 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B602278A53
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 16:07:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00316278A70
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 16:09:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728854AbgIYOHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 10:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726990AbgIYOHU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 10:07:20 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8C8FC0613CE
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 07:07:19 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id e17so3189361wme.0
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 07:07:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=SDYuxl6P5MmFVHNoRCXiUclDzzcJxN4Z9cpUKPgKZDY=;
-        b=eoK7LZc7ZwFs8utNOoQ3MKksf8wRFOw7b67PcrbGxFOuJK7AXMFp4LRp8x9/Zn0Yo4
-         mZoCH6GKicFkpLQxeqzWmKo8ODGzErlWlYq5PMqlGbUfA9CVy16vXbcGMCrZGrE0xc4s
-         QbXrbc08BIz/6+gJkQrbAgoUmzy30w1r8mbaS+65cdrAPHE7XgnQgKoVs5tJnkTA6eiS
-         rmmWUIt3+ohZ9rTlCLZw8HpwdlcQQvnost6a01cSN26s7h3ec1Lb0IbSJFYSXoJnslhu
-         7RW+xwrrQAYgf25ImDt5GN39MOqBp2JMnllMfP4tv6GNUjBV/jgKxfVwbjEOmpFcEmQU
-         T3aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=SDYuxl6P5MmFVHNoRCXiUclDzzcJxN4Z9cpUKPgKZDY=;
-        b=NNOQpYkIjx8E+73zU6TcTVxEss4WeWCmDqslkSprG84Y7XodRXWOLzYplfqhp8YvKr
-         cnjs/0wXaP4H/2UYa5LOiLx4ZR5UP+UhFhtFuXSXqvTDkL8kQ7uAFiFHEHdBi+GOxyfS
-         0VxYc7jCUBiEA5t6pWtc/ZY6exK+9xpJZP1bGsp4o4L1WF/2Pmju+Fm0ZXajVV3laF8+
-         BMVzjZTdoIYJ+KAxP8RCA+Uoo5l/tuUDtmRy/vZ1adkW7A3RV9mlBeUoq/BFv/CzSl0X
-         2YGgkQLajcDXAqbWu+X4evOedkqtExQPdQtUkONQvOyx9WDtymjxwrJlAhKOHYkmwBfU
-         LU5Q==
-X-Gm-Message-State: AOAM530iwglWK+MDHBi5NUtjeNUWsNx9S5dazL/xegTtd5lnmMdNfW43
-        TCU3+qrI6DG2JzVJ15sTGek6diRxM++nBl0pjTE=
-X-Google-Smtp-Source: ABdhPJwj+emcQlTpFm1+LJSgcM3ee5IVjvWKbhW7O5AP1x1Hk6d474n/qM6acwyn9Jfm5wCra+M/rkm7CAvmPQ5pqPI=
-X-Received: by 2002:a1c:2e17:: with SMTP id u23mr3562128wmu.73.1601042838517;
- Fri, 25 Sep 2020 07:07:18 -0700 (PDT)
+        id S1729034AbgIYOJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 10:09:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45998 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728466AbgIYOJZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 10:09:25 -0400
+Received: from lore-desk.redhat.com (unknown [151.66.98.27])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4FDD1208A9;
+        Fri, 25 Sep 2020 14:09:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601042964;
+        bh=x46ZxXXAbuoXn4xaE8AKhV7/n/wHF76Ca3nxs64Ign4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=0TGgbShoieFz/DAmHLyaDPpo7bQ6DSMbVw7jaI9WEWrP+72EuFO00BFN70hPRwZCU
+         oMYJNE6IkFjYr/hk188d1LkKegEs7JbqEnVGt5+Nx1H5e5owmXwwxP5KcA6EU33G72
+         uGbv6HKC93WmqfDvQPqE6XEAEXAgO4q+nA2VIAgk=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, lorenzo.bianconi@redhat.com,
+        brouer@redhat.com, echaudro@redhat.com,
+        thomas.petazzoni@bootlin.com
+Subject: [PATCH v2 net-next] net: mvneta: try to use in-irq pp cache in mvneta_txq_bufs_free
+Date:   Fri, 25 Sep 2020 16:09:11 +0200
+Message-Id: <d1fd2d8908c949c7469b78d0d6b6a4b9ac43aa94.1601042644.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Received: by 2002:adf:f990:0:0:0:0:0 with HTTP; Fri, 25 Sep 2020 07:07:18
- -0700 (PDT)
-Reply-To: mrs.esthernicolas@yahoo.com
-From:   "Mrs. Esther Nicolas" <elizabethjohnson184@gmail.com>
-Date:   Fri, 25 Sep 2020 07:07:18 -0700
-Message-ID: <CAFDOM0Zp_zDgocA-zHFOYVUeHOSLWzwssV8Vervyc4wC7Oz5DQ@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TmVqZHJhxb7FocOtIHYgS3Jpc3R1LA0KUyBuw6FsZcW+aXRvdSDDumN0b3UgYSBsaWRza29zdMOt
-IGpzZW0gYnlsIHDFmWludWNlbiB2w6FtIG5hcHNhdCBodW1hbml0w6FybsOtDQpwxa9kdS4gSm1l
-bnVqaSBzZSBwYW7DrSBFc3RoZXIgTmljb2xhcy4gTmFyb2RpbCBqc2VtIHNlIHYgQXJpem9uxJsg
-dmUNClBob2VuaXh1LiBKc2VtIMW+ZW5hdMO9IHMgcGFuZW0gSmFjb2IgTmljb2xhcywgxZllZGl0
-ZWxlbSBKYWNvbiBJbmR1c3RyeQ0KVG9nby4gQnlsaSBqc21lIG1hbsW+ZWzDqSB0xZlpY2V0IMWh
-ZXN0IGxldCBiZXogZMOtdMSbdGUuIFplbcWZZWwgcG8gb3BlcmFjaQ0Kc3JkZcSNbsOtY2ggdGVw
-ZW4uIEEgbmVkw6F2bm8gbWkgZG9rdG9yIMWZZWtsLCDFvmUgbmV2eWRyxb7DrW0gZGFsxaHDrWNo
-IMWhZXN0DQptxJtzw61jxa8ga3bFr2xpIG3DqW11IHByb2Jsw6ltdSBzIHJha292aW5vdSAocmFr
-b3ZpbmEgamF0ZXIgYSBjw6l2bsOtIG1vemtvdsOpDQpwxZnDrWhvZHkpLiBOZcW+IG3Fr2ogbWFu
-xb5lbCBsb25pIHplbcWZZWwsIGplIHR1IMSNw6FzdGthIGR2YSBtaWxpb255IG9zbSBzZXQNCnRp
-c8OtYyBkb2xhcsWvLCBrdGVyw6kgdWxvxb5pbCB2IGJhbmNlIHpkZSB2IFRvZ3UuIFYgc291xI1h
-c27DqSBkb2LEmyBqc291DQp0eXRvIHBlbsOtemUgc3TDoWxlIHYgYmFuY2UuIEtkecW+IGpzZW0g
-dsSbZMSbbCBvIHN2w6ltIHN0YXZ1LCByb3pob2RsIGpzZW0NCnNlIGRhcm92YXQgdGVudG8gZm9u
-ZCBqYWvDqW11a29saSBkb2Jyw6ltdSBicmF0cm92aSBuZWJvIHNlc3TFmWUgdiBvYmF2xJsNCnDF
-mWVkIEJvaGVtLCBrdGVyw70gdGVudG8gZm9uZCB2eXXFvmlqZSB6cMWvc29iZW0sIGt0ZXLDvW0g
-emRlIGJ1ZHUNCmluc3RydW92YXQuIENoY2kgbsSba29obywga2RvIHRlbnRvIGZvbmQgcG91xb5p
-amUgcG9kbGUgcMWZw6Fuw60gbcOpaG8NCnplc251bMOpaG8gTWFuxb5lbGEsIGFieSBwb21vaGwg
-bcOpbsSbIHByaXZpbGVnb3ZhbsO9bSBsaWRlbSwgc2lyb3TEjWluY8WvbSwNCnZkb3bDoW0gYSDF
-ocOtxZlpbCBCb8W+w60gc2xvdm8uIFJvemhvZGwganNlbSBzZSBwcm90bywgxb5lIG5lbcOhbSDF
-vsOhZG7DqSBkw610xJssDQprdGVyw6kgYnkgemTEm2RpbG8gdGVudG8gZm9uZC4gQSBuZWNoY2kg
-enDFr3NvYiwgamFrIGJ1ZG91IHR5dG8gcGVuw616ZQ0KcG91xb5pdHkgYmV6Ym/Fvm7DvW0genDF
-r3NvYmVtLiBQcm90byBwxZlpasOtbcOhbSB0b3RvIHJvemhvZG51dMOtIHDFmWVkYXQgdsOhbQ0K
-dGVudG8gZm9uZC4gTmVib2rDrW0gc2Ugc21ydGksIHByb3RvIHbDrW0sIGthbSBqZHUuIENoY2ks
-IGFieXN0ZSBuYSBtxJsNCnZlIHN2w71jaCBrYcW+ZG9kZW5uw61jaCBtb2RsaXRiw6FjaCB2xb5k
-eSBwYW1hdG92YWxpIGt2xa9saSBtw6kgbmFkY2jDoXplasOtY8OtDQpjaGlydXJnaWNrw6kgbMOp
-xI1ixJsgcmFrb3ZpbnkuIE9kZXBpxaF0ZSBjbyBuZWpkxZnDrXZlIGpha8Opa29saSB6cG/FvmTE
-m27DrSB2ZQ0KdmHFocOtIG9kcG92xJtkaSBtaSBkw6EgcHJvc3RvciBwcm8gesOtc2vDoW7DrSBq
-aW7DqSBvc29ieSBwcm8gc3Rlam7DvSDDusSNZWwgdg0KbmFkxJtqaSwgxb5lIG9kIHbDoXMgYnVk
-dSDEjcOtc3QgY28gbmVqZMWZw612ZS4gQsWvaCB2w6FtIMW+ZWhuZWosIGtkecW+DQpwb3Nsb3Vj
-aMOhdGUgaGxhcyB1dmHFvm92w6Fuw60sIHBhbsOtIEVzdGhlciBOaWNvbGFzLg0K
+Try to recycle the xdp tx buffer into the in-irq page_pool cache if
+mvneta_txq_bufs_free is executed in the NAPI context for XDP_TX use case
+
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+Changes since v1:
+- run xdp_return_frame_rx_napi for XDP_TX only
+---
+ drivers/net/ethernet/marvell/mvneta.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 14df3aec285d..bb485745b72a 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -1831,7 +1831,7 @@ static struct mvneta_tx_queue *mvneta_tx_done_policy(struct mvneta_port *pp,
+ /* Free tx queue skbuffs */
+ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+ 				 struct mvneta_tx_queue *txq, int num,
+-				 struct netdev_queue *nq)
++				 struct netdev_queue *nq, bool napi)
+ {
+ 	unsigned int bytes_compl = 0, pkts_compl = 0;
+ 	int i;
+@@ -1854,7 +1854,10 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+ 			dev_kfree_skb_any(buf->skb);
+ 		} else if (buf->type == MVNETA_TYPE_XDP_TX ||
+ 			   buf->type == MVNETA_TYPE_XDP_NDO) {
+-			xdp_return_frame(buf->xdpf);
++			if (napi && buf->type == MVNETA_TYPE_XDP_TX)
++				xdp_return_frame_rx_napi(buf->xdpf);
++			else
++				xdp_return_frame(buf->xdpf);
+ 		}
+ 	}
+ 
+@@ -1872,7 +1875,7 @@ static void mvneta_txq_done(struct mvneta_port *pp,
+ 	if (!tx_done)
+ 		return;
+ 
+-	mvneta_txq_bufs_free(pp, txq, tx_done, nq);
++	mvneta_txq_bufs_free(pp, txq, tx_done, nq, true);
+ 
+ 	txq->count -= tx_done;
+ 
+@@ -2859,7 +2862,7 @@ static void mvneta_txq_done_force(struct mvneta_port *pp,
+ 	struct netdev_queue *nq = netdev_get_tx_queue(pp->dev, txq->id);
+ 	int tx_done = txq->count;
+ 
+-	mvneta_txq_bufs_free(pp, txq, tx_done, nq);
++	mvneta_txq_bufs_free(pp, txq, tx_done, nq, false);
+ 
+ 	/* reset txq */
+ 	txq->count = 0;
+-- 
+2.26.2
+
