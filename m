@@ -2,179 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63CBC278BBB
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 17:02:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD5D1278BBE
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 17:02:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729202AbgIYPBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 11:01:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58694 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726368AbgIYPBS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 11:01:18 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA4CC0613CE;
-        Fri, 25 Sep 2020 08:01:18 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id n14so3448017pff.6;
-        Fri, 25 Sep 2020 08:01:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9SapnTkN1pVv9pY0ehp3UOR6C6TcWwI6L3FgoHPm9oY=;
-        b=lNuY5wIinVeT4XEufmi5XK5E7qz/4K/6f0XJ9PGvrSsg/kBAC0Dcj1NEquhIeCHxUd
-         zuK4ijDClRtArN307YONM9ve1QDW7j2emhovfF77Gk9Xd7xItPLbpm3wpzUNfIdMmeno
-         KO7N+SycM0eKMSIQmS1lQGbKjDgat3e7mbZvyRiMHbi96VP0hRbngTRnhT9OBD8CdXKa
-         K8hKF+F+aQbdBkQpINZHO46YBsAZmTAKENegcEOEnjMqrNX+IkDgMPHUWzD10MO0xQ25
-         0+/QPjGBroO/X/z/fpprtBuy2aoUl78p+nIibXiIofcGPmtx275aFeJzMvCNOg3R/30D
-         +Zug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9SapnTkN1pVv9pY0ehp3UOR6C6TcWwI6L3FgoHPm9oY=;
-        b=FgsO6W9ZRoVBRmGBm4PZ/4Nydoufb6GATJtDfVi10Aj9Lx8UJgcwrkTn5GvgSaeyIR
-         GbClAytjkazEQsnlluRmiM9GO1JpeImJKH3QL7SoupFPuY4Zc5+wheWd/tIbd3jE1xMg
-         dypRUKncUPY52YSyKGknTpXowgepDoWrTrJn/Po7VlTMghddVOlQsLuOvgxc36T6BvKx
-         YFv8tKm3vJSZWYJQh5TXeUhR1lBhpJ06Btw0JBPGFy+HYpSklEF69mmdHdrpfjggg+mh
-         8954h/yI6Q2LDtHBg3KMH0ukDO5BLikBsHL4/HLU69iH8IXAW4YgnbzvscbRBBVczqDR
-         fGmg==
-X-Gm-Message-State: AOAM531NWP1yRPsS34D4cw1UMOKSXikST45aQVZ0LrUxQGqwEHzJaekf
-        Ie8+9g9farI4d0+L3r3eVlCBo8hd0enPxRNcHSk=
-X-Google-Smtp-Source: ABdhPJwO85jJfFdM8Un00PE4z/GUPCaggR0e5D8oat743cFWTiB+DR37c4jQIgM5E2EE3pZJGQNJWfaX2+xt51RKhsY=
-X-Received: by 2002:a63:2e42:: with SMTP id u63mr403875pgu.292.1601046077984;
- Fri, 25 Sep 2020 08:01:17 -0700 (PDT)
+        id S1729247AbgIYPBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 11:01:41 -0400
+Received: from mx2.suse.de ([195.135.220.15]:33914 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728693AbgIYPBk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 11:01:40 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id AD492B02E;
+        Fri, 25 Sep 2020 15:01:38 +0000 (UTC)
+From:   Coly Li <colyli@suse.de>
+To:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, open-iscsi@googlegroups.com,
+        linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Coly Li <colyli@suse.de>,
+        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
+        Chris Leech <cleech@redhat.com>,
+        Christoph Hellwig <hch@lst.de>, Cong Wang <amwang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.com>,
+        Jeff Layton <jlayton@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Lee Duncan <lduncan@suse.com>,
+        Mike Christie <michaelc@cs.wisc.edu>,
+        Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Vlastimil Babka <vbabka@suse.com>
+Subject: [PATCH v8 0/7] Introduce sendpage_ok() to detect misused sendpage in network related drivers
+Date:   Fri, 25 Sep 2020 23:01:12 +0800
+Message-Id: <20200925150119.112016-1-colyli@suse.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <000000000000a821aa05b0246452@google.com>
-In-Reply-To: <000000000000a821aa05b0246452@google.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Fri, 25 Sep 2020 17:01:06 +0200
-Message-ID: <CAJ8uoz0uGupnd8dqu_X17QE5iV-81n7-CLkL5xES7zkvS_eHdQ@mail.gmail.com>
-Subject: Re: general protection fault in xsk_release
-To:     syzbot <syzbot+ddc7b4944bc61da19b81@syzkaller.appspotmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>, hawk@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, kpsingh@chromium.org,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs@googlegroups.com, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 25, 2020 at 4:47 PM syzbot
-<syzbot+ddc7b4944bc61da19b81@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    3fc826f1 Merge branch 'net-dsa-bcm_sf2-Additional-DT-chang..
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=158f8009900000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=51fb40e67d1e3dec
-> dashboard link: https://syzkaller.appspot.com/bug?extid=ddc7b4944bc61da19b81
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16372c81900000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=100bd2c3900000
->
-> The issue was bisected to:
->
-> commit 1c1efc2af158869795d3334a12fed2afd9c51539
-> Author: Magnus Karlsson <magnus.karlsson@intel.com>
-> Date:   Fri Aug 28 08:26:17 2020 +0000
->
->     xsk: Create and free buffer pool independently from umem
+This series was original by a bug fix in nvme-over-tcp driver which only
+checked whether a page was allocated from slab allcoator, but forgot to
+check its page_count: The page handled by sendpage should be neither a
+Slab page nor 0 page_count page.
 
-Thanks. On it.
+As Sagi Grimberg suggested, the original fix is refind to a more common
+inline routine:
+    static inline bool sendpage_ok(struct page *page)
+    {
+        return  (!PageSlab(page) && page_count(page) >= 1);
+    }
+If sendpage_ok() returns true, the checking page can be handled by the
+concrete zero-copy sendpage method in network layer.
 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=157a3103900000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=177a3103900000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=137a3103900000
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+ddc7b4944bc61da19b81@syzkaller.appspotmail.com
-> Fixes: 1c1efc2af158 ("xsk: Create and free buffer pool independently from umem")
->
-> RAX: ffffffffffffffda RBX: 00007fff675613c0 RCX: 0000000000443959
-> RDX: 0000000000000030 RSI: 0000000020000000 RDI: 0000000000000003
-> RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000001bbbbbb
-> R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
-> R13: 0000000000000007 R14: 0000000000000000 R15: 0000000000000000
-> general protection fault, probably for non-canonical address 0xdffffc00000000ad: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x0000000000000568-0x000000000000056f]
-> CPU: 0 PID: 6888 Comm: syz-executor811 Not tainted 5.9.0-rc6-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:dev_put include/linux/netdevice.h:3899 [inline]
-> RIP: 0010:xsk_unbind_dev net/xdp/xsk.c:521 [inline]
-> RIP: 0010:xsk_release+0x63f/0x7d0 net/xdp/xsk.c:591
-> Code: 00 00 48 c7 85 c8 04 00 00 00 00 00 00 e8 29 a0 47 fe 48 8d bb 68 05 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 66 01 00 00 48 8b 83 68 05 00 00 65 ff 08 e9 54
-> RSP: 0018:ffffc90005707c90 EFLAGS: 00010202
-> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff815b9de2
-> RDX: 00000000000000ad RSI: ffffffff882d2317 RDI: 0000000000000568
-> RBP: ffff888091aae000 R08: 0000000000000001 R09: ffffffff8d0ffaaf
-> R10: fffffbfff1a1ff55 R11: 0000000000000000 R12: ffff888091aae5f8
-> R13: ffff888091aae4c8 R14: dffffc0000000000 R15: 1ffff11012355cb5
-> FS:  0000000000000000(0000) GS:ffff8880ae400000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00000000004c8b88 CR3: 0000000093ea3000 CR4: 00000000001506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  __sock_release+0xcd/0x280 net/socket.c:596
->  sock_close+0x18/0x20 net/socket.c:1277
->  __fput+0x285/0x920 fs/file_table.c:281
->  task_work_run+0xdd/0x190 kernel/task_work.c:141
->  exit_task_work include/linux/task_work.h:25 [inline]
->  do_exit+0xb7d/0x29f0 kernel/exit.c:806
->  do_group_exit+0x125/0x310 kernel/exit.c:903
->  __do_sys_exit_group kernel/exit.c:914 [inline]
->  __se_sys_exit_group kernel/exit.c:912 [inline]
->  __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:912
->  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x442588
-> Code: Bad RIP value.
-> RSP: 002b:00007fff67561328 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-> RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 0000000000442588
-> RDX: 0000000000000001 RSI: 000000000000003c RDI: 0000000000000001
-> RBP: 00000000004c8b50 R08: 00000000000000e7 R09: ffffffffffffffd0
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
-> R13: 00000000006dd280 R14: 0000000000000000 R15: 0000000000000000
-> Modules linked in:
-> ---[ end trace 9742ad575ae08359 ]---
-> RIP: 0010:dev_put include/linux/netdevice.h:3899 [inline]
-> RIP: 0010:xsk_unbind_dev net/xdp/xsk.c:521 [inline]
-> RIP: 0010:xsk_release+0x63f/0x7d0 net/xdp/xsk.c:591
-> Code: 00 00 48 c7 85 c8 04 00 00 00 00 00 00 e8 29 a0 47 fe 48 8d bb 68 05 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 66 01 00 00 48 8b 83 68 05 00 00 65 ff 08 e9 54
-> RSP: 0018:ffffc90005707c90 EFLAGS: 00010202
-> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff815b9de2
-> RDX: 00000000000000ad RSI: ffffffff882d2317 RDI: 0000000000000568
-> RBP: ffff888091aae000 R08: 0000000000000001 R09: ffffffff8d0ffaaf
-> R10: fffffbfff1a1ff55 R11: 0000000000000000 R12: ffff888091aae5f8
-> R13: ffff888091aae4c8 R14: dffffc0000000000 R15: 1ffff11012355cb5
-> FS:  0000000000000000(0000) GS:ffff8880ae400000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00000000004c8b88 CR3: 0000000093ea3000 CR4: 00000000001506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
+The v8 series has 7 patches,
+- The 1st patch in this series introduces sendpage_ok() in header file
+  include/linux/net.h.
+- The 2nd patch adds WARN_ONCE() for improper zero-copy send in
+  kernel_sendpage().
+- The 3rd patch fixes the page checking issue in nvme-over-tcp driver.
+- The 4th patch adds page_count check by using sendpage_ok() in
+  do_tcp_sendpages() as Eric Dumazet suggested.
+- The 5th and 6th patches just replace existing open coded checks with
+  the inline sendpage_ok() routine.
+
+Coly Li
+
+Cc: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
+Cc: Chris Leech <cleech@redhat.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Cong Wang <amwang@redhat.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Eric Dumazet <eric.dumazet@gmail.com>
+Cc: Hannes Reinecke <hare@suse.de>
+Cc: Ilya Dryomov <idryomov@gmail.com>
+Cc: Jan Kara <jack@suse.com>
+Cc: Jeff Layton <jlayton@kernel.org>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: Lee Duncan <lduncan@suse.com>
+Cc: Mike Christie <michaelc@cs.wisc.edu>
+Cc: Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>
+Cc: Philipp Reisner <philipp.reisner@linbit.com>
+Cc: Sagi Grimberg <sagi@grimberg.me>
+Cc: Vasily Averin <vvs@virtuozzo.com>
+Cc: Vlastimil Babka <vbabka@suse.com>
+---
+Changelog:
+v8: add WARN_ONCE() in kernel_sendpage() as Christoph suggested.
+v7: remove outer brackets from the return line of sendpage_ok() as
+    Eric Dumazet suggested.
+v6: fix page check in do_tcp_sendpages(), as Eric Dumazet suggested.
+    replace other open coded checks with sendpage_ok() in libceph,
+    iscsi drivers.
+v5, include linux/mm.h in include/linux/net.h
+v4, change sendpage_ok() as an inline helper, and post it as
+    separate patch, as Christoph Hellwig suggested.
+v3, introduce a more common sendpage_ok() as Sagi Grimberg suggested.
+v2, fix typo in patch subject
+v1, the initial version.
+
+Coly Li (7):
+  net: introduce helper sendpage_ok() in include/linux/net.h
+  net: add WARN_ONCE in kernel_sendpage() for improper zero-copy send
+  nvme-tcp: check page by sendpage_ok() before calling kernel_sendpage()
+  tcp: use sendpage_ok() to detect misused .sendpage
+  drbd: code cleanup by using sendpage_ok() to check page for
+    kernel_sendpage()
+  scsi: libiscsi: use sendpage_ok() in iscsi_tcp_segment_map()
+  libceph: use sendpage_ok() in ceph_tcp_sendpage()
+
+ drivers/block/drbd/drbd_main.c |  2 +-
+ drivers/nvme/host/tcp.c        |  7 +++----
+ drivers/scsi/libiscsi_tcp.c    |  2 +-
+ include/linux/net.h            | 16 ++++++++++++++++
+ net/ceph/messenger.c           |  2 +-
+ net/ipv4/tcp.c                 |  3 ++-
+ net/socket.c                   |  6 ++++--
+ 7 files changed, 28 insertions(+), 10 deletions(-)
+
+-- 
+2.26.2
+
