@@ -2,188 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4195627846E
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:52:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E345C27846D
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:52:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727925AbgIYJwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 05:52:49 -0400
-Received: from mx2.suse.de ([195.135.220.15]:38344 "EHLO mx2.suse.de"
+        id S1727668AbgIYJwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 05:52:12 -0400
+Received: from mga07.intel.com ([134.134.136.100]:23483 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727519AbgIYJws (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 05:52:48 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 6BC4BADEC;
-        Fri, 25 Sep 2020 09:52:47 +0000 (UTC)
-Date:   Fri, 25 Sep 2020 11:52:41 +0200
-From:   Petr Tesarik <ptesarik@suse.cz>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        netdev@vger.kernel.org
-Subject: Re: RTL8402 stops working after hibernate/resume
-Message-ID: <20200925115241.3709caf6@ezekiel.suse.cz>
-In-Reply-To: <aa997635-a5b5-75e3-8a30-a77acb2adf35@gmail.com>
-References: <20200715102820.7207f2f8@ezekiel.suse.cz>
-        <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
-        <20200716105835.32852035@ezekiel.suse.cz>
-        <e1c7a37f-d8d0-a773-925c-987b92f12694@gmail.com>
-        <20200903104122.1e90e03c@ezekiel.suse.cz>
-        <7e6bbb75-d8db-280d-ac5b-86013af39071@gmail.com>
-        <20200924211444.3ba3874b@ezekiel.suse.cz>
-        <a10f658b-7fdf-2789-070a-83ad5549191a@gmail.com>
-        <20200925093037.0fac65b7@ezekiel.suse.cz>
-        <20200925105455.50d4d1cc@ezekiel.suse.cz>
-        <aa997635-a5b5-75e3-8a30-a77acb2adf35@gmail.com>
-Organization: SUSE Linux, s.r.o.
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/B61oU+ULySD+7yi7I.OL88Y";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S1727290AbgIYJwM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 05:52:12 -0400
+IronPort-SDR: AdVpkIc18TDQ0M8k1F1q9824CYU2UfG+aSdKw3TVkHEU7AHkGiy2ruqEz8ESHRQnJEfni0dobA
+ 0mdJtX7WsjLA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9754"; a="225634026"
+X-IronPort-AV: E=Sophos;i="5.77,301,1596524400"; 
+   d="scan'208";a="225634026"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2020 02:52:11 -0700
+IronPort-SDR: TrybvGWJmcvbbP21dLsqR2BSOs49k6JaoNa9vpYaiLY29F8SLJYjDkqXQDDJdcByDDf7zA40Ti
+ xge0rwy/6tRg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,301,1596524400"; 
+   d="scan'208";a="487402522"
+Received: from glass.png.intel.com ([172.30.181.92])
+  by orsmga005.jf.intel.com with ESMTP; 25 Sep 2020 02:52:07 -0700
+From:   Wong Vee Khee <vee.khee.wong@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Wei Feng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Vijaya Balan Sadhishkhanna 
+        <sadhishkhanna.vijaya.balan@intel.com>,
+        Seow Chen Yong <chen.yong.seow@intel.com>,
+        Mark Gross <mgross@linux.intel.com>
+Subject: [PATCH net 1/1] net: stmmac: Fix clock handling on remove path
+Date:   Fri, 25 Sep 2020 17:54:06 +0800
+Message-Id: <20200925095406.27834-1-vee.khee.wong@intel.com>
+X-Mailer: git-send-email 2.17.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/B61oU+ULySD+7yi7I.OL88Y
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+While unloading the dwmac-intel driver, clk_disable_unprepare() is
+being called twice in stmmac_dvr_remove() and
+intel_eth_pci_remove(). This causes kernel panic on the second call.
 
-On Fri, 25 Sep 2020 11:44:09 +0200
-Heiner Kallweit <hkallweit1@gmail.com> wrote:
+Removing the second call of clk_disable_unprepare() in
+intel_eth_pci_remove().
 
-> On 25.09.2020 10:54, Petr Tesarik wrote:
-> > On Fri, 25 Sep 2020 09:30:37 +0200
-> > Petr Tesarik <ptesarik@suse.cz> wrote:
-> >  =20
-> >> On Thu, 24 Sep 2020 22:12:24 +0200
-> >> Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> >> =20
-> >>> On 24.09.2020 21:14, Petr Tesarik wrote:   =20
-> >>>> On Wed, 23 Sep 2020 11:57:41 +0200
-> >>>> Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> >>>>    =20
-> >>>>> On 03.09.2020 10:41, Petr Tesarik wrote:   =20
-> >>>>>> Hi Heiner,
-> >>>>>>
-> >>>>>> this issue was on the back-burner for some time, but I've got some
-> >>>>>> interesting news now.
-> >>>>>>
-> >>>>>> On Sat, 18 Jul 2020 14:07:50 +0200
-> >>>>>> Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> >>>>>>      =20
-> >>>>>>> [...]
-> >>>>>>> Maybe the following gives us an idea:
-> >>>>>>> Please do "ethtool -d <if>" after boot and after resume from susp=
-end,
-> >>>>>>> and check for differences.     =20
-> >>>>>>
-> >>>>>> The register dump did not reveal anything of interest - the only
-> >>>>>> differences were in the physical addresses after a device reopen.
-> >>>>>>
-> >>>>>> However, knowing that reloading the driver can fix the issue, I co=
-pied
-> >>>>>> the initialization sequence from init_one() to rtl8169_resume() and
-> >>>>>> gave it a try. That works!
-> >>>>>>
-> >>>>>> Then I started removing the initialization calls one by one. This
-> >>>>>> exercise left me with a call to rtl_init_rxcfg(), which simply set=
-s the
-> >>>>>> RxConfig register. In other words, these is the difference between
-> >>>>>> 5.8.4 and my working version:
-> >>>>>>
-> >>>>>> --- linux-orig/drivers/net/ethernet/realtek/r8169_main.c	2020-09-0=
-2 22:43:09.361951750 +0200
-> >>>>>> +++ linux/drivers/net/ethernet/realtek/r8169_main.c	2020-09-03 10:=
-36:23.915803703 +0200
-> >>>>>> @@ -4925,6 +4925,9 @@
-> >>>>>> =20
-> >>>>>>  	clk_prepare_enable(tp->clk);
-> >>>>>> =20
-> >>>>>> +	if (tp->mac_version =3D=3D RTL_GIGA_MAC_VER_37)
-> >>>>>> +		RTL_W32(tp, RxConfig, RX128_INT_EN | RX_DMA_BURST);
-> >>>>>> +
-> >>>>>>  	if (netif_running(tp->dev))
-> >>>>>>  		__rtl8169_resume(tp);
-> >>>>>> =20
-> >>>>>> This is quite surprising, at least when the device is managed by
-> >>>>>> NetworkManager, because then it is closed on wakeup, and the open
-> >>>>>> method should call rtl_init_rxcfg() anyway. So, it might be a timi=
-ng
-> >>>>>> issue, or incorrect order of register writes.
-> >>>>>>      =20
-> >>>>> Thanks for the analysis. If you manually bring down and up the
-> >>>>> interface, do you see the same issue?   =20
-> >>>>
-> >>>> I'm not quite sure what you mean, but if the interface is configured
-> >>>> (and NetworkManager is stopped), I can do 'ip link set eth0 down' and
-> >>>> then 'ip link set eth0 up', and the interface is fully functional.
-> >>>>    =20
-> >>>>> What is the value of RxConfig when entering the resume function?   =
-=20
-> >>>>
-> >>>> I added a dev_info() to rtl8169_resume(). First with NetworkManager
-> >>>> active (i.e. interface down on suspend):
-> >>>>
-> >>>> [  525.956675] r8169 0000:03:00.2: RxConfig after resume: 0x0002400f
-> >>>>
-> >>>> Then I re-tried with NetworkManager stopped (i.e. interface up on
-> >>>> suspend). Same result:
-> >>>>
-> >>>> [  785.413887] r8169 0000:03:00.2: RxConfig after resume: 0x0002400f
-> >>>>
-> >>>> I hope that's what you were asking for...
-> >>>>
-> >>>> Petr T
-> >>>>    =20
-> >>>
-> >>> rtl8169_resume() has been changed in 5.9, therefore the patch doesn't
-> >>> apply cleanly on older kernel versions. Can you test the following
-> >>> on a 5.9-rc version or linux-next?   =20
-> >>
-> >> I tried installing 5.9-rc6, but it freezes hard at boot, last message =
-is:
-> >>
-> >> [   14.916259] libphy: r8169: probed
-> >> =20
->=20
-> This doesn't necessarily mean that the r8169 driver crashes the system.
-> Other things could run in parallel. It freezes w/o any message?
+Fixes: 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove paths")
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-The system freezes hard. I have already encountered a similar freeze
-with the alternative r8169 driver, so it's quite likely related.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 2ac9dfb3462c..9e6d60e75f85 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -653,7 +653,6 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
+ 
+ 	pci_free_irq_vectors(pdev);
+ 
+-	clk_disable_unprepare(priv->plat->stmmac_clk);
+ 	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
+ 
+ 	pcim_iounmap_regions(pdev, BIT(0));
+-- 
+2.17.0
 
-> >> At this point, I suspect you're right that the BIOS is seriously buggy.
-> >> Let me check if ASUSTek has released any update for this model. =20
-> >=20
->[...]
-> > Does it make sense to bisect the change that broke the driver for me, o=
-r should I rather dispose of this waste^Wlaptop in an environmentally frien=
-dly manner? I mean, would you eventually accept a workaround for a few mach=
-ines with a broken BIOS?
-> >  =20
-> If the workaround is small and there's little chance to break other stuff=
-: then usually yes.
-> If you can spend the effort to bisect the issue, this would be appreciate=
-d.
-
-OK, then I'm going to give it a try.
-
-Stay tuned,
-Petr T
-
---Sig_/B61oU+ULySD+7yi7I.OL88Y
-Content-Type: application/pgp-signature
-Content-Description: Digitální podpis OpenPGP
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEHl2YIZkIo5VO2MxYqlA7ya4PR6cFAl9tveoACgkQqlA7ya4P
-R6cm9ggAjKDsyI260d98tBbwieJmFC+o+L+uhOncSPTaIuxnds2nIvAK1SvlecZE
-dXxFRizEt2HsJ0gjdzsR183rKRYGCakyPegStP92Rp83ImbO/zvrhqo2gpytvNWT
-oK+CTxcYr1+CD2u8tJ5HDrLLK4TUBTfU3+naaI2OrBgkP6aqPFomv9d0w3WmRL4l
-sbHHXJmQnY6Us/eoL44yfa2YlovANHfrT24hrnUk9jiMmpz6pJBeK10OVaI9rB9b
-6HmBamszM+ZsxDIgX1MXFL66XRCZ0CeFjQDRIqF84CIQxt3l75k1Eeym1HpNVZ1Z
-8VXHYTISgarNQh69XRGhiEUok6aNQg==
-=XrX9
------END PGP SIGNATURE-----
-
---Sig_/B61oU+ULySD+7yi7I.OL88Y--
