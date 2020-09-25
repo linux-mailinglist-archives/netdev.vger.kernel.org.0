@@ -2,473 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D74EC27948B
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 01:12:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 103832794A2
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 01:18:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729286AbgIYXMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 19:12:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729154AbgIYXM3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 19:12:29 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD94DC0613CE
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 16:12:29 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id q4so249417pjh.5
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 16:12:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=A+onII+/r9IiW++tMMxMEWI4PuRnGp0PoK8WrPTW9tA=;
-        b=Q68hfXXSA311F8EKRNq1LHDPM6IoW0L7jIQSzESKceppWiwZ/HvlBzWiXcpMeb4F/w
-         i7xbGwsIQNHA6FA4ucUObTexi9qTLAwWgU2lA8Yyu9j+mlqd3pWzNwKiXjd3J+UXVl6a
-         GIxyo4x63OV8j5XP9321aWws1ICs3f07XmNNkwT297G1Kn7Qj/ZKeGlDQ4fMzBZ+PyAU
-         kcaXnFa2AErwjCot9Y9hlnpb3CI4RKp/cGBlxRCQWJd9jF3hQEmPNI5uBSS4krvjPJ2d
-         L6qHkMXvCpuJJMjeCrJc1NZl62WsrDpqLqqg586srY8VA1WDMp6nDcuruTa2oj55ZxZY
-         wp3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=A+onII+/r9IiW++tMMxMEWI4PuRnGp0PoK8WrPTW9tA=;
-        b=JVK3G2eXMMp6zlfDmwuiZEVNFBp/8GgRJXTLeDo8xmfRMJDT43sKRC6Zdyzjy6YVXP
-         cVK5MmyOchB6oKFz8rbEvpkYrCpjLqgtfLyOjBj63O5hJILqelwMP8Hb4DbUnb1l9dWP
-         f1gcwW9v2KpI21xtiX3G/1UKx6ehWSgS3H0U9qpxGDe+2CzRefp6jLwA5zLoW90SKLGU
-         j1qzk0oxR202PbSJZTuHZMNC5RbkVn3Zuq88BfFMzoP7Mbe/LTiY6FyiRKNmqMZpX6vJ
-         APeuj46z/ZJu95kJ0T5dlWMtBvhTdUyiD1qK1Pwplp1rXxLkr1CEuBP81jt1a9s4tyZI
-         dBOA==
-X-Gm-Message-State: AOAM533LjDj1dpoNPBqkLvkydaNtjUY5ySnlxqxWMNLKsReCmQMdpqKR
-        QhzHcq7qSU7YYl+AL9PoNZaIq4lNEVfwPQ==
-X-Google-Smtp-Source: ABdhPJwlaksWld3NTvsSkelWt+OqJhjkvXYZtNIQUzdwds+ffN0rJnVFa3YFKXqN4JYkkz1hiFt7sQ==
-X-Received: by 2002:a17:90b:a4b:: with SMTP id gw11mr726242pjb.37.1601075548842;
-        Fri, 25 Sep 2020 16:12:28 -0700 (PDT)
-Received: from harryc-og.bne.opengear.com (brisbane.opengear.com. [60.241.24.90])
-        by smtp.gmail.com with ESMTPSA id q190sm3916417pfq.99.2020.09.25.16.12.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Sep 2020 16:12:28 -0700 (PDT)
-From:   Qingtao Cao <qingtao.cao.au@gmail.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, corbet@lwn.net
-Cc:     Qingtao Cao <qingtao.cao@digi.com>,
-        David Leonard <david.leonard@digi.com>
-Subject: [PATCH 1/1] Network: support default route metric per interface
-Date:   Sat, 26 Sep 2020 09:11:59 +1000
-Message-Id: <20200925231159.945-2-qingtao.cao.au@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200925231159.945-1-qingtao.cao.au@gmail.com>
-References: <20200925231159.945-1-qingtao.cao.au@gmail.com>
+        id S1729391AbgIYXSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 19:18:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:42245 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726636AbgIYXS2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 19:18:28 -0400
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601075906;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+        bh=THHG60vVT2GrAMP4Wtzq9pBcwfnDrl5OpJNjgCkwxb4=;
+        b=L0aacAbAtOeeCMgDboNuzE3ztO6d/s+gS50zIzOWBMwWj0Di5VpVSatoGUZ+CAa+1CrNkH
+        KSbUr4iRvhK/mDeU4FHODo5xADnJFxN6lsfdayr0vsJdpaejdHeGe4tjv2/NqApSFY2Qay
+        6y1etOZbb3hk8wYOEZ8qED1Chsjd8DY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-480-ByX51aD8NXaT2E6DKsI_FQ-1; Fri, 25 Sep 2020 19:18:22 -0400
+X-MC-Unique: ByX51aD8NXaT2E6DKsI_FQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A64901074642;
+        Fri, 25 Sep 2020 23:18:19 +0000 (UTC)
+Received: from [10.10.114.192] (ovpn-114-192.rdu2.redhat.com [10.10.114.192])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A17A555785;
+        Fri, 25 Sep 2020 23:18:12 +0000 (UTC)
+Subject: Re: [PATCH v3 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping
+ CPUs
+From:   Nitesh Narayan Lal <nitesh@redhat.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
+        jlelli@redhat.com, hch@infradead.org, bhelgaas@google.com,
+        mike.marciniszyn@intel.com, dennis.dalessandro@intel.com,
+        thomas.lendacky@amd.com, jiri@nvidia.com, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, lgoncalv@redhat.com
+References: <20200925202307.GA2456332@bjorn-Precision-5520>
+ <256490f0-0762-447c-a7be-0e5a6bb04fc4@redhat.com>
+Autocrypt: addr=nitesh@redhat.com; prefer-encrypt=mutual; keydata=
+ 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
+ VujM7c/b4pps
+Organization: Red Hat Inc,
+Message-ID: <0f19925c-a6f7-fbab-46c9-f3af389708d2@redhat.com>
+Date:   Fri, 25 Sep 2020 19:18:11 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
+MIME-Version: 1.0
+In-Reply-To: <256490f0-0762-447c-a7be-0e5a6bb04fc4@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=nitesh@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="UJPvCisAnydiZtsGTUWqZIh1xD57XzX70"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qingtao Cao <qingtao.cao@digi.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--UJPvCisAnydiZtsGTUWqZIh1xD57XzX70
+Content-Type: multipart/mixed; boundary="bWcCaigCe4GqbWScTss64HNyTUxSRnz7g"
 
-Add /proc/sys/net/ipv[4|6]/conf/<device>/def_rt_metric sysfs attribute
-file for each network interface so that userspace programs can specify
-different default route metrics for each interface, which will also be
-applied by the kernel when new routes are automatically created for
-relevant interfaces, when userspace programs may have not specified
-metrics via relevant netlink messages for example.
+--bWcCaigCe4GqbWScTss64HNyTUxSRnz7g
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
 
-Signed-off-by: Qingtao Cao <qingtao.cao@digi.com>
-Signed-off-by: David Leonard <david.leonard@digi.com>
----
- Documentation/networking/ip-sysctl.rst |  8 +++++
- include/linux/inetdevice.h             |  4 +++
- include/linux/ipv6.h                   |  3 ++
- include/net/ip6_route.h                | 15 ++++++++
- include/uapi/linux/ip.h                |  1 +
- include/uapi/linux/ipv6.h              |  1 +
- net/ipv4/Kconfig                       | 13 +++++++
- net/ipv4/devinet.c                     |  3 ++
- net/ipv4/fib_frontend.c                | 27 ++++++++++++++
- net/ipv6/addrconf.c                    | 30 ++++++++++++++--
- net/ipv6/route.c                       | 50 ++++++++++++++++++++++++--
- 11 files changed, 150 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 837d51f9e1fa..b3252591fc31 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1591,6 +1591,10 @@ igmp_link_local_mcast_reports - BOOLEAN
- 
- 	Default TRUE
- 
-+def_rt_metric - INTEGER
-+	Default metric used for routes when no metric is specified.
-+	0 to use system default
-+
- Alexey Kuznetsov.
- kuznet@ms2.inr.ac.ru
- 
-@@ -2264,6 +2268,10 @@ enhanced_dad - BOOLEAN
- 
- 	Default: TRUE
- 
-+def_rt_metric - INTEGER
-+	Default metric used for routes when no metric is specified.
-+	0 to use system default
-+
- ``icmp/*``:
- ===========
- 
-diff --git a/include/linux/inetdevice.h b/include/linux/inetdevice.h
-index 3515ca64e638..2904f158e048 100644
---- a/include/linux/inetdevice.h
-+++ b/include/linux/inetdevice.h
-@@ -119,6 +119,10 @@ static inline void ipv4_devconf_setall(struct in_device *in_dev)
- #define IN_DEV_NET_ROUTE_LOCALNET(in_dev, net)	\
- 	IN_DEV_NET_ORCONF(in_dev, net, ROUTE_LOCALNET)
- 
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+#define IN_DEV_DEF_RT_METRIC(in_dev)	IN_DEV_CONF_GET((in_dev), DEF_RT_METRIC)
-+#endif
-+
- #define IN_DEV_RX_REDIRECTS(in_dev) \
- 	((IN_DEV_FORWARD(in_dev) && \
- 	  IN_DEV_ANDCONF((in_dev), ACCEPT_REDIRECTS)) \
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index a44789d027cc..be399c74c8b2 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -75,6 +75,9 @@ struct ipv6_devconf {
- 	__s32		disable_policy;
- 	__s32           ndisc_tclass;
- 	__s32		rpl_seg_enabled;
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	__s32           def_rt_metric;
-+#endif
- 
- 	struct ctl_table_header *sysctl_header;
- };
-diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
-index 2a5277758379..ca470729d5b9 100644
---- a/include/net/ip6_route.h
-+++ b/include/net/ip6_route.h
-@@ -336,4 +336,19 @@ u32 ip6_mtu_from_fib6(const struct fib6_result *res,
- struct neighbour *ip6_neigh_lookup(const struct in6_addr *gw,
- 				   struct net_device *dev, struct sk_buff *skb,
- 				   const void *daddr);
-+
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+static inline void rt6_get_dev_dflt_metric(struct net_device *dev, struct fib6_config *cfg)
-+{
-+	struct inet6_dev *idev = NULL;
-+
-+	idev = in6_dev_get(dev);
-+	if (idev) {
-+		if (idev->cnf.def_rt_metric)
-+			cfg->fc_metric = idev->cnf.def_rt_metric;
-+		in6_dev_put(idev);
-+	}
-+}
-+#endif
-+
- #endif
-diff --git a/include/uapi/linux/ip.h b/include/uapi/linux/ip.h
-index e42d13b55cf3..de97706b900c 100644
---- a/include/uapi/linux/ip.h
-+++ b/include/uapi/linux/ip.h
-@@ -169,6 +169,7 @@ enum
- 	IPV4_DEVCONF_DROP_UNICAST_IN_L2_MULTICAST,
- 	IPV4_DEVCONF_DROP_GRATUITOUS_ARP,
- 	IPV4_DEVCONF_BC_FORWARDING,
-+	IPV4_DEVCONF_DEF_RT_METRIC,
- 	__IPV4_DEVCONF_MAX
- };
- 
-diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
-index 13e8751bf24a..c4ba9ce53756 100644
---- a/include/uapi/linux/ipv6.h
-+++ b/include/uapi/linux/ipv6.h
-@@ -189,6 +189,7 @@ enum {
- 	DEVCONF_ACCEPT_RA_RT_INFO_MIN_PLEN,
- 	DEVCONF_NDISC_TCLASS,
- 	DEVCONF_RPL_SEG_ENABLED,
-+	DEVCONF_DEF_RT_METRIC,
- 	DEVCONF_MAX
- };
- 
-diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
-index 87983e70f03f..529cd5a26e9a 100644
---- a/net/ipv4/Kconfig
-+++ b/net/ipv4/Kconfig
-@@ -457,6 +457,19 @@ config INET_DIAG_DESTROY
- 	  had been disconnected.
- 	  If unsure, say N.
- 
-+config IP_DEF_RT_METRIC
-+	bool "IP: default route metrics support"
-+	help
-+	  Allow userspace to specify the default metric for routes per network
-+	  interfaces when no metric is explicitly provided. When userspace
-+	  programs change routes' metrics, if they save the new metric value
-+	  into relevant network interface's def_rt_metric sysfs attribute file,
-+	  the kernel will also apply it whenever new routes are created for
-+	  that interface, unless the metric is explicitly specified. Leave 0
-+	  to use the system default values.
-+
-+	  If unsure, say N.
-+
- menuconfig TCP_CONG_ADVANCED
- 	bool "TCP: advanced congestion control"
- 	help
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index 123a6d39438f..775a358e5466 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -2538,6 +2538,9 @@ static struct devinet_sysctl_table {
- 					"ignore_routes_with_linkdown"),
- 		DEVINET_SYSCTL_RW_ENTRY(DROP_GRATUITOUS_ARP,
- 					"drop_gratuitous_arp"),
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+		DEVINET_SYSCTL_RW_ENTRY(DEF_RT_METRIC, "def_rt_metric"),
-+#endif
- 
- 		DEVINET_SYSCTL_FLUSHING_ENTRY(NOXFRM, "disable_xfrm"),
- 		DEVINET_SYSCTL_FLUSHING_ENTRY(NOPOLICY, "disable_policy"),
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 86a23e4a6a50..459fdc507d50 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -724,6 +724,10 @@ static int rtm_to_fib_config(struct net *net, struct sk_buff *skb,
- 	struct nlattr *attr;
- 	int err, remaining;
- 	struct rtmsg *rtm;
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	struct net_device *dev = NULL;
-+	struct in_device *in_dev = NULL;
-+#endif
- 
- 	err = nlmsg_validate_deprecated(nlh, sizeof(*rtm), RTA_MAX,
- 					rtm_ipv4_policy, extack);
-@@ -828,6 +832,21 @@ static int rtm_to_fib_config(struct net *net, struct sk_buff *skb,
- 		goto errout;
- 	}
- 
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	/* Apply the default route metric of the out interface if needed */
-+	if (cfg->fc_priority == 0 && cfg->fc_oif) {
-+		dev = dev_get_by_index(net, cfg->fc_oif);
-+		if (dev) {
-+			in_dev = in_dev_get(dev);
-+			if (in_dev) {
-+				cfg->fc_priority = IN_DEV_DEF_RT_METRIC(in_dev);
-+				in_dev_put(in_dev);
-+			}
-+			dev_put(dev);
-+		}
-+	}
-+#endif
-+
- 	return 0;
- errout:
- 	return err;
-@@ -1081,6 +1100,14 @@ static void fib_magic(int cmd, int type, __be32 dst, int dst_len,
- 	else
- 		cfg.fc_scope = RT_SCOPE_HOST;
- 
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	/* If the netlink message doesn't have the IFA_RT_PRIORITY attribute,
-+	 * fall back on the interface's default route metric
-+	 */
-+	if (cfg.fc_priority == 0)
-+		cfg.fc_priority = IN_DEV_DEF_RT_METRIC(ifa->ifa_dev);
-+#endif
-+
- 	if (cmd == RTM_NEWROUTE)
- 		fib_table_insert(net, tb, &cfg, NULL);
- 	else
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 01146b66d666..6480da7ae885 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -2388,7 +2388,7 @@ addrconf_prefix_route(struct in6_addr *pfx, int plen, u32 metric,
- {
- 	struct fib6_config cfg = {
- 		.fc_table = l3mdev_fib_table(dev) ? : RT6_TABLE_PREFIX,
--		.fc_metric = metric ? : IP6_RT_PRIO_ADDRCONF,
-+		.fc_metric = metric,
- 		.fc_ifindex = dev->ifindex,
- 		.fc_expires = expires,
- 		.fc_dst_len = plen,
-@@ -2400,6 +2400,14 @@ addrconf_prefix_route(struct in6_addr *pfx, int plen, u32 metric,
- 
- 	cfg.fc_dst = *pfx;
- 
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	if (cfg.fc_metric == 0)
-+		rt6_get_dev_dflt_metric(dev, &cfg);
-+#endif
-+
-+	if (cfg.fc_metric == 0)
-+		cfg.fc_metric = IP6_RT_PRIO_ADDRCONF;
-+
- 	/* Prevent useless cloning on PtP SIT.
- 	   This thing is done here expecting that the whole
- 	   class of non-broadcast devices need not cloning.
-@@ -2462,7 +2470,6 @@ static void addrconf_add_mroute(struct net_device *dev)
- {
- 	struct fib6_config cfg = {
- 		.fc_table = l3mdev_fib_table(dev) ? : RT6_TABLE_LOCAL,
--		.fc_metric = IP6_RT_PRIO_ADDRCONF,
- 		.fc_ifindex = dev->ifindex,
- 		.fc_dst_len = 8,
- 		.fc_flags = RTF_UP,
-@@ -2472,6 +2479,13 @@ static void addrconf_add_mroute(struct net_device *dev)
- 
- 	ipv6_addr_set(&cfg.fc_dst, htonl(0xFF000000), 0, 0, 0);
- 
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	rt6_get_dev_dflt_metric(dev, &cfg);
-+#endif
-+
-+	if (cfg.fc_metric == 0)
-+		cfg.fc_metric = IP6_RT_PRIO_ADDRCONF;
-+
- 	ip6_route_add(&cfg, GFP_KERNEL, NULL);
- }
- 
-@@ -5512,6 +5526,9 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
- 	array[DEVCONF_DISABLE_POLICY] = cnf->disable_policy;
- 	array[DEVCONF_NDISC_TCLASS] = cnf->ndisc_tclass;
- 	array[DEVCONF_RPL_SEG_ENABLED] = cnf->rpl_seg_enabled;
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	array[DEVCONF_DEF_RT_METRIC] = cnf->def_rt_metric;
-+#endif
- }
- 
- static inline size_t inet6_ifla6_size(void)
-@@ -6892,6 +6909,15 @@ static const struct ctl_table addrconf_sysctl[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
- 	},
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	{
-+		.procname	= "def_rt_metric",
-+		.data		= &ipv6_devconf.def_rt_metric,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec,
-+	},
-+#endif
- 	{
- 		/* sentinel */
- 	}
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index fb075d9545b9..f3d74e0f6434 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -4190,7 +4190,6 @@ static struct fib6_info *rt6_add_route_info(struct net *net,
- 					   unsigned int pref)
- {
- 	struct fib6_config cfg = {
--		.fc_metric	= IP6_RT_PRIO_USER,
- 		.fc_ifindex	= dev->ifindex,
- 		.fc_dst_len	= prefixlen,
- 		.fc_flags	= RTF_GATEWAY | RTF_ADDRCONF | RTF_ROUTEINFO |
-@@ -4202,6 +4201,13 @@ static struct fib6_info *rt6_add_route_info(struct net *net,
- 		.fc_nlinfo.nl_net = net,
- 	};
- 
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	rt6_get_dev_dflt_metric(dev, &cfg);
-+#endif
-+
-+	if (cfg.fc_metric == 0)
-+		cfg.fc_metric = IP6_RT_PRIO_USER;
-+
- 	cfg.fc_table = l3mdev_fib_table(dev) ? : RT6_TABLE_INFO;
- 	cfg.fc_dst = *prefix;
- 	cfg.fc_gateway = *gwaddr;
-@@ -4255,7 +4261,6 @@ struct fib6_info *rt6_add_dflt_router(struct net *net,
- {
- 	struct fib6_config cfg = {
- 		.fc_table	= l3mdev_fib_table(dev) ? : RT6_TABLE_DFLT,
--		.fc_metric	= IP6_RT_PRIO_USER,
- 		.fc_ifindex	= dev->ifindex,
- 		.fc_flags	= RTF_GATEWAY | RTF_ADDRCONF | RTF_DEFAULT |
- 				  RTF_UP | RTF_EXPIRES | RTF_PREF(pref),
-@@ -4266,6 +4271,13 @@ struct fib6_info *rt6_add_dflt_router(struct net *net,
- 		.fc_nlinfo.nl_net = net,
- 	};
- 
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	rt6_get_dev_dflt_metric(dev, &cfg);
-+#endif
-+
-+	if (cfg.fc_metric == 0)
-+		cfg.fc_metric = IP6_RT_PRIO_USER;
-+
- 	cfg.fc_gateway = *gwaddr;
- 
- 	if (!ip6_route_add(&cfg, GFP_ATOMIC, NULL)) {
-@@ -4326,11 +4338,15 @@ static void rtmsg_to_fib6_config(struct net *net,
- 				 struct in6_rtmsg *rtmsg,
- 				 struct fib6_config *cfg)
- {
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	struct net_device *dev = NULL;
-+#endif
-+
- 	*cfg = (struct fib6_config){
- 		.fc_table = l3mdev_fib_table_by_index(net, rtmsg->rtmsg_ifindex) ?
- 			 : RT6_TABLE_MAIN,
- 		.fc_ifindex = rtmsg->rtmsg_ifindex,
--		.fc_metric = rtmsg->rtmsg_metric ? : IP6_RT_PRIO_USER,
-+		.fc_metric = rtmsg->rtmsg_metric,
- 		.fc_expires = rtmsg->rtmsg_info,
- 		.fc_dst_len = rtmsg->rtmsg_dst_len,
- 		.fc_src_len = rtmsg->rtmsg_src_len,
-@@ -4343,6 +4359,19 @@ static void rtmsg_to_fib6_config(struct net *net,
- 		.fc_src = rtmsg->rtmsg_src,
- 		.fc_gateway = rtmsg->rtmsg_gateway,
- 	};
-+
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	if (cfg->fc_metric == 0 && cfg->fc_ifindex) {
-+		dev = dev_get_by_index_rcu(net, cfg->fc_ifindex);
-+		if (dev) {
-+			rt6_get_dev_dflt_metric(dev, cfg);
-+			dev_put(dev);
-+		}
-+	}
-+#endif
-+
-+	if (cfg->fc_metric == 0)
-+		cfg->fc_metric = IP6_RT_PRIO_USER;
- }
- 
- int ipv6_route_ioctl(struct net *net, unsigned int cmd, struct in6_rtmsg *rtmsg)
-@@ -4886,6 +4915,10 @@ static int rtm_to_fib6_config(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	struct nlattr *tb[RTA_MAX+1];
- 	unsigned int pref;
- 	int err;
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	struct net *net = NULL;
-+	struct net_device *dev = NULL;
-+#endif
- 
- 	err = nlmsg_parse_deprecated(nlh, sizeof(*rtm), tb, RTA_MAX,
- 				     rtm_ipv6_policy, extack);
-@@ -5014,6 +5047,17 @@ static int rtm_to_fib6_config(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		}
- 	}
- 
-+#ifdef CONFIG_IP_DEF_RT_METRIC
-+	if (cfg->fc_metric == 0 && cfg->fc_ifindex) {
-+		net = dev_net(skb->dev);
-+		dev = dev_get_by_index_rcu(net, cfg->fc_ifindex);
-+		if (dev) {
-+			rt6_get_dev_dflt_metric(dev, cfg);
-+			dev_put(dev);
-+		}
-+	}
-+#endif
-+
- 	err = 0;
- errout:
- 	return err;
--- 
-2.17.1
+On 9/25/20 5:38 PM, Nitesh Narayan Lal wrote:
+> On 9/25/20 4:23 PM, Bjorn Helgaas wrote:
+
+[...]
+
+>>> +=09/*
+>>> +=09 * If we have isolated CPUs for use by real-time tasks, to keep the
+>>> +=09 * latency overhead to a minimum, device-specific IRQ vectors are m=
+oved
+>>> +=09 * to the housekeeping CPUs from the userspace by changing their
+>>> +=09 * affinity mask. Limit the vector usage to keep housekeeping CPUs =
+from
+>>> +=09 * running out of IRQ vectors.
+>>> +=09 */
+>>> +=09if (hk_cpus < num_online_cpus()) {
+>>> +=09=09if (hk_cpus < min_vecs)
+>>> +=09=09=09max_vecs =3D min_vecs;
+>>> +=09=09else if (hk_cpus < max_vecs)
+>>> +=09=09=09max_vecs =3D hk_cpus;
+>>> +=09}
+>> It seems like you'd want to do this inside
+>> pci_alloc_irq_vectors_affinity() since that's an exported interface,
+>> and drivers that use it will bypass the limiting you're doing here.
+> Good point, few drivers directly use this.
+> I took a quick look and it seems I may also have to take the pre and the
+> post vectors into consideration.
+>
+
+It seems my initial interpretation was incorrect, reserved vecs (pre+post)
+should always be less than the min_vecs.
+So, FWIU we should be fine in limiting the max_vecs.
+
+I can make this change and do a repost.
+
+Do you have any other concerns with this patch or with any of the other
+patches?
+
+[...]
+
+--=20
+Nitesh
+
+
+--bWcCaigCe4GqbWScTss64HNyTUxSRnz7g--
+
+--UJPvCisAnydiZtsGTUWqZIh1xD57XzX70
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEkXcoRVGaqvbHPuAGo4ZA3AYyozkFAl9uerMACgkQo4ZA3AYy
+oznGGRAAyAHwz4liALwOOlzRaFHJir9F5v1Y1ky1fAOxjJS8K5aAxhXZFeG+ipp0
+vh6SBwUeMv12J9+qqzqLr81Sjg46qT9YVacJdUms8pPL54mJ6W78cYtl0+1dhLh8
+8Wjq6t4i89/yEoneFkRcCGejHSIwyZkEwPcSI9h/+TgUo4T3H8WFDvqu3BBNgssl
+BcDZMpFxNPhH9rkezDzi3MzTzCLlt+9Gno51HsDmd/cyBNna38/0jwxY4E1VsvJV
+LU36sp6flfkrVny3QvwsJLyAIubRBWHFQX0oDvgwI4Gfx3N5dafM0JbEPN9cHNEU
+hWiBn27+m1GxMsvGHH6/4iJ2/58bNV1xyuuiyXYp1319nar3x6oIhpAU+b5I+nMV
+vqqCorsWjWb3VFZnuTRsHpntqPFGIFMWO+OKBpvszh3ntobDHvZGuneqTOEXp/HA
+jfUvDNxtvK913hO51VkHUuAraoMGx8B7uF5XTpm2xavm7GzrS+BTUyxdhP7CrjhO
+YTnqucbXkIyIjXyY8b9uRPv8NyfM7FM7mFxe8WUQYYmRIrWr5q4mm67fHSxOrRwD
+WLvehhTVeMus7Qa+j+e3GJ1yPKOhMCEy57Wq/1nvSzFMMVBWF/uyFKaO+Y32Mg5K
+/YcfFN+06t8aNe2U18mkKqEnsmUEl4LQAC6BYru0o421AaKJNH8=
+=iSBU
+-----END PGP SIGNATURE-----
+
+--UJPvCisAnydiZtsGTUWqZIh1xD57XzX70--
 
