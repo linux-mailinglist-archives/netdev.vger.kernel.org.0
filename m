@@ -2,105 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD6622785B0
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 13:24:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CD172785C6
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 13:27:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728155AbgIYLYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 07:24:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726255AbgIYLYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 07:24:02 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBACC0613CE;
-        Fri, 25 Sep 2020 04:24:01 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id s12so3159682wrw.11;
-        Fri, 25 Sep 2020 04:24:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SFWcfeS5wxuI7eAUUDEBe0a+as5YNy5FGHPEInpElA8=;
-        b=YwusCQb4BNAs2qNa8S3uQAN1XOHgiKuS/bWyodzx+julOIpF8cMM+ULqoTh70csgmu
-         Tg7LuB4jVQLF7thah9OEj3nFW152KXkekpYFu35kCOSdxD+ycnC44LKNN3PIqZLfOl12
-         aW3JvhopCsNsu/CIHKE65qLtfjGq90wIacSzLzBjKAV0wAJC9AhL8sWSXQNlOJPH7J9j
-         lfRJJFWnMLq13GfmwodEF09YeJRX0pOsxDuzkN5zxlbQ1ebIFdWAhShHm6aJt+HZyykP
-         nJju+fVztQNgTUUzR07a17dNJyr8qTR0WIYQYGRBiNjxDWq7CL02l6imoZj4NOGBeysf
-         Wmjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SFWcfeS5wxuI7eAUUDEBe0a+as5YNy5FGHPEInpElA8=;
-        b=fzB1MNT8PVYxgxRD/8ZwS/Ol7j9Snu3BnMcwwwsCRJ0pVKhkXHPVusyVcXJkdBjddm
-         mGUsZ0ffzE6CNEgXEk/wd734BJjOM/JErLQZyPyR8HyPJaferNNBIwuKBu1YGJ1yoUKz
-         WjgCPzNr68j5tkgwh85ewgvaBWdHevOENTbWm+T9RQbGL+DE4p4tS/pz5R8IaT/pBQyW
-         If4Xe1e8/V2WWOKtta8SLaNmi4oIbfeX1eOR4DN3I+/yLmaxlBZhPy71JAcIz+vcMmcr
-         imJJAg/SfolqBx4oq7Tf6vZqBxU4ITn5gO67+sR1d906Gg3qqNpgdNTYQGte5vuCRwPC
-         5MbA==
-X-Gm-Message-State: AOAM531BhLih2FrnuvFJq04Xo7Xe6cApULKGMgLA9M2FmYHiTStPT/7q
-        ZpLgS147XWy5XVuXdT8zO3D3ByRYY6TgxHeNIm8=
-X-Google-Smtp-Source: ABdhPJzm9ewJSK7s1bAh20TjRk7fbdnLc3xpXegODgfo/yRdDK42Rrpg+9Cj7gBDCvmWeHhsbWumnOO3fGV9uaN0Ffk=
-X-Received: by 2002:adf:dcc7:: with SMTP id x7mr4036971wrm.203.1601033040375;
- Fri, 25 Sep 2020 04:24:00 -0700 (PDT)
+        id S1727132AbgIYL1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 07:27:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:48110 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726255AbgIYL1l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 07:27:41 -0400
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601033255;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OIYjG/eOf0A02Qd+6Up4W+Jt7X/3F3zVaDbUU4OQaQY=;
+        b=Q+S1EPK0lsQMmRlut3qUcYdf0X48B4SgW5ds+P5+VH7ZXjCKU8+AXkN0R/bx5MHUOABSZy
+        XhUYs5pWyq+N65gg5MNQzxpbL+NOk+6T3HapKPgQ85AAbnkIBT8Cg/O5ubvQ9JdOsDdk2N
+        PFzfxWZnFgKpt/8kmN9tukqvzzKRu10=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-460-z4Vu6R3RNealyVJDGYbeXg-1; Fri, 25 Sep 2020 07:27:33 -0400
+X-MC-Unique: z4Vu6R3RNealyVJDGYbeXg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AD02A88EF0E;
+        Fri, 25 Sep 2020 11:27:31 +0000 (UTC)
+Received: from [10.72.12.44] (ovpn-12-44.pek2.redhat.com [10.72.12.44])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 930765D9F7;
+        Fri, 25 Sep 2020 11:27:15 +0000 (UTC)
+Subject: Re: [RFC PATCH 02/24] vhost-vdpa: fix vqs leak in vhost_vdpa_open()
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     lulu@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rob.miller@broadcom.com,
+        lingshan.zhu@intel.com, eperezma@redhat.com, hanand@xilinx.com,
+        mhabets@solarflare.com, eli@mellanox.com, amorenoz@redhat.com,
+        maxime.coquelin@redhat.com, stefanha@redhat.com,
+        sgarzare@redhat.com
+References: <20200924032125.18619-1-jasowang@redhat.com>
+ <20200924032125.18619-3-jasowang@redhat.com>
+ <20200924053119-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <c2f3c4a3-604f-ad27-d34d-a829446a3c7e@redhat.com>
+Date:   Fri, 25 Sep 2020 19:27:13 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20200923090519.361-1-himadrispandya@gmail.com>
- <20200923090519.361-4-himadrispandya@gmail.com> <1600856557.26851.6.camel@suse.com>
- <CAOY-YVkHycXqem_Xr6nQLgKEunk3MNc7dBtZ=5Aym4Y06vs9xQ@mail.gmail.com>
- <1600870858.25088.1.camel@suse.com> <CAOY-YVkciMUgtS7USbBh_Uy_=fVWwMMDeHv=Ub_H3GaY0FKZyQ@mail.gmail.com>
- <7f9e20b2eab783303c4e5f5c3244366fa88a6567.camel@suse.com>
-In-Reply-To: <7f9e20b2eab783303c4e5f5c3244366fa88a6567.camel@suse.com>
-From:   Himadri Pandya <himadrispandya@gmail.com>
-Date:   Fri, 25 Sep 2020 16:53:48 +0530
-Message-ID: <CAOY-YVmBW52bXF95pTM3fNVUyRt=PNXZ5iGyq6mYsW2_iopnoQ@mail.gmail.com>
-Subject: Re: [PATCH 3/4] net: usb: rtl8150: use usb_control_msg_recv() and usb_control_msg_send()
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        pankaj.laxminarayan.bharadiya@intel.com,
-        Kees Cook <keescook@chromium.org>, yuehaibing@huawei.com,
-        petkan@nucleusys.com, ogiannou@gmail.com,
-        USB list <linux-usb@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Greg KH <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200924053119-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 5:06 PM Oliver Neukum <oneukum@suse.com> wrote:
->
-> Am Mittwoch, den 23.09.2020, 20:02 +0530 schrieb Himadri Pandya:
->
-> > I meant that it was stupid to change it without properly understanding
-> > the significance of GFP_NOIO in this context.
-> >
-> > So now, do we re-write the wrapper functions with flag passed as a parameter?
->
-> Hi,
->
-> I hope I set you in CC for a patch set doing exactly that.
->
 
-Yes.
+On 2020/9/24 下午5:31, Michael S. Tsirkin wrote:
+> On Thu, Sep 24, 2020 at 11:21:03AM +0800, Jason Wang wrote:
+>> We need to free vqs during the err path after it has been allocated
+>> since vhost won't do that for us.
+>>
+>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> This is a bugfix too right? I don't see it posted separately ...
 
-> Do not let me or other maintainers discourage you from writing patches.
-> Look at it this way. Had you not written this patch, I would not have
-> looked into the matter. Patches are supposed to be reviewed.
-> If you want additional information, just ask. We do not want
-> people discouraged from writing substantial patches.
+
+A patch that is functional equivalent is posted here:
+
+https://www.mail-archive.com/virtualization@lists.linux-foundation.org/msg42558.html
+
+I'm a little bit lazy to use that one since this patch is probably wrote 
+before that one.
+
+Thanks
+
+
 >
+>> ---
+>>   drivers/vhost/vdpa.c | 11 ++++++++---
+>>   1 file changed, 8 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+>> index 796fe979f997..9c641274b9f3 100644
+>> --- a/drivers/vhost/vdpa.c
+>> +++ b/drivers/vhost/vdpa.c
+>> @@ -764,6 +764,12 @@ static void vhost_vdpa_free_domain(struct vhost_vdpa *v)
+>>   	v->domain = NULL;
+>>   }
+>>   
+>> +static void vhost_vdpa_cleanup(struct vhost_vdpa *v)
+>> +{
+>> +	vhost_dev_cleanup(&v->vdev);
+>> +	kfree(v->vdev.vqs);
+>> +}
+>> +
+>>   static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+>>   {
+>>   	struct vhost_vdpa *v;
+>> @@ -809,7 +815,7 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+>>   	return 0;
+>>   
+>>   err_init_iotlb:
+>> -	vhost_dev_cleanup(&v->vdev);
+>> +	vhost_vdpa_cleanup(v);
+>>   err:
+>>   	atomic_dec(&v->opened);
+>>   	return r;
+>> @@ -840,8 +846,7 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
+>>   	vhost_vdpa_free_domain(v);
+>>   	vhost_vdpa_config_put(v);
+>>   	vhost_vdpa_clean_irq(v);
+>> -	vhost_dev_cleanup(&v->vdev);
+>> -	kfree(v->vdev.vqs);
+>> +	vhost_vdpa_cleanup(v);
+>>   	mutex_unlock(&d->mutex);
+>>   
+>>   	atomic_dec(&v->opened);
+>> -- 
+>> 2.20.1
 
-Understood :).
-
-I'll send v2 after the update in API is merged.
-
-Thanks,
-Himadri
-
->         Regards
->                 Oliver
->
->
