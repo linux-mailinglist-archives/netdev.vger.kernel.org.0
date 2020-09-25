@@ -2,83 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E345C27846D
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:52:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D206327847E
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:56:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727668AbgIYJwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 05:52:12 -0400
-Received: from mga07.intel.com ([134.134.136.100]:23483 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727290AbgIYJwM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 05:52:12 -0400
-IronPort-SDR: AdVpkIc18TDQ0M8k1F1q9824CYU2UfG+aSdKw3TVkHEU7AHkGiy2ruqEz8ESHRQnJEfni0dobA
- 0mdJtX7WsjLA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9754"; a="225634026"
-X-IronPort-AV: E=Sophos;i="5.77,301,1596524400"; 
-   d="scan'208";a="225634026"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2020 02:52:11 -0700
-IronPort-SDR: TrybvGWJmcvbbP21dLsqR2BSOs49k6JaoNa9vpYaiLY29F8SLJYjDkqXQDDJdcByDDf7zA40Ti
- xge0rwy/6tRg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,301,1596524400"; 
-   d="scan'208";a="487402522"
-Received: from glass.png.intel.com ([172.30.181.92])
-  by orsmga005.jf.intel.com with ESMTP; 25 Sep 2020 02:52:07 -0700
-From:   Wong Vee Khee <vee.khee.wong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Vijaya Balan Sadhishkhanna 
-        <sadhishkhanna.vijaya.balan@intel.com>,
-        Seow Chen Yong <chen.yong.seow@intel.com>,
-        Mark Gross <mgross@linux.intel.com>
-Subject: [PATCH net 1/1] net: stmmac: Fix clock handling on remove path
-Date:   Fri, 25 Sep 2020 17:54:06 +0800
-Message-Id: <20200925095406.27834-1-vee.khee.wong@intel.com>
-X-Mailer: git-send-email 2.17.0
+        id S1728072AbgIYJ4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 05:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726990AbgIYJ4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 05:56:46 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E5CC0613CE
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:56:46 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id a9so2608520wmm.2
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:56:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bzDm8G/cn3qy5MEO2xEcUhRgUy+JqIMCV/2pYJenhxE=;
+        b=j57yctE04pTbklVxzB1rVHqqrGAGeD8r7eWPn69BC4pO8Zz/iYrmwvYRy1xBIZp5wM
+         iJ/KHAB4qnqdlfE37IfW7xT8NC1D/hpJQFHA6fh5Y75vKuh9b2ddamN2cuo3bVf8b5Xj
+         N8CM6J2mOk7AhjSwlYsCF5W7g8/VaA5oVZOxs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bzDm8G/cn3qy5MEO2xEcUhRgUy+JqIMCV/2pYJenhxE=;
+        b=cXRT2JxO/Q7FVl9v/XFmvgbIWulCNjJ1ahHXC4zc/i0KWGimK6lYYKj6KwXifJgujW
+         exLJ0DPu8Y0Jx/J+7wtX9xF5I4E7Zt81i3MwmPADwZxB0pBu4Q0JtSo54gJWC/mEBto2
+         N5ciYMDJoT4N3M0vTrekeJwlkUBREeV+uTBSn0eyKErL7W5hLzvoK0o1uaZdQyiuWN6M
+         +VaIjmwfl96P9c/Jf/JfSwzOODa9N1qhidsf2YKuWMQao0ZXxIdICS7M9q+VWZLajU1v
+         dB6cACrsZ/Gcydse5kpJmjjVhlKhI17IcyGn7e1ym5NWz2f9wtq00HZ6ZfQYff+Bsa44
+         imNQ==
+X-Gm-Message-State: AOAM533VSkk9974OAL4GKN6CfEkaxAn3+5sHi/R0b+phj4qG7JwZ7evJ
+        opfWfOIs9ZixPbKzDyTjxZ+DSQ==
+X-Google-Smtp-Source: ABdhPJz9peTJYuOZKo0Imiu3pbOUxg3owyK8cqVjQVI1uU6qy9mMykUgIybrXiS635H7BlFISQnSzA==
+X-Received: by 2002:a1c:1f08:: with SMTP id f8mr2232547wmf.168.1601027805131;
+        Fri, 25 Sep 2020 02:56:45 -0700 (PDT)
+Received: from antares.lan (e.0.c.6.b.e.c.e.a.c.9.7.c.2.1.0.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:12c:79ca:eceb:6c0e])
+        by smtp.gmail.com with ESMTPSA id l10sm2225084wru.59.2020.09.25.02.56.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2020 02:56:44 -0700 (PDT)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH bpf-next 0/4] Sockmap copying
+Date:   Fri, 25 Sep 2020 10:56:26 +0100
+Message-Id: <20200925095630.49207-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While unloading the dwmac-intel driver, clk_disable_unprepare() is
-being called twice in stmmac_dvr_remove() and
-intel_eth_pci_remove(). This causes kernel panic on the second call.
+Enable calling map_update_elem on sockmaps from bpf_iter context. This
+in turn allows us to copy a sockmap by iterating its elements.
 
-Removing the second call of clk_disable_unprepare() in
-intel_eth_pci_remove().
+The change itself is tiny, all thanks to the ground work from Martin,
+whose series [1] this patch is based on. I updated the tests to do some
+copying, and also included two cleanups.
 
-Fixes: 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove paths")
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 -
- 1 file changed, 1 deletion(-)
+I'm sending this out now rather than when Martin's series has landed
+because I hope this can get in before the merge window (potentially)
+closes this weekend.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 2ac9dfb3462c..9e6d60e75f85 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -653,7 +653,6 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
- 
- 	pci_free_irq_vectors(pdev);
- 
--	clk_disable_unprepare(priv->plat->stmmac_clk);
- 	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
- 
- 	pcim_iounmap_regions(pdev, BIT(0));
+1: https://lore.kernel.org/bpf/20200925000337.3853598-1-kafai@fb.com/
+
+Lorenz Bauer (4):
+  bpf: sockmap: enable map_update_elem from bpf_iter
+  selftests: bpf: Add helper to compare socket cookies
+  bpf: selftests: remove shared header from sockmap iter test
+  selftest: bpf: Test copying a sockmap and sockhash
+
+ kernel/bpf/verifier.c                         |   2 +-
+ net/core/sock_map.c                           |   3 +
+ .../selftests/bpf/prog_tests/sockmap_basic.c  | 100 +++++++++++-------
+ .../selftests/bpf/progs/bpf_iter_sockmap.c    |  32 ++++--
+ .../selftests/bpf/progs/bpf_iter_sockmap.h    |   3 -
+ 5 files changed, 90 insertions(+), 50 deletions(-)
+ delete mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_sockmap.h
+
 -- 
-2.17.0
+2.25.1
 
