@@ -2,104 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E945727850C
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 12:25:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E6A4278566
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 12:52:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728150AbgIYKZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 06:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727925AbgIYKZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 06:25:55 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED2FC0613CE
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 03:25:55 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id y15so2712222wmi.0
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 03:25:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/bSXHNtdU+eEhzycYVit0PPbYq40mXuagPAzmTwFhXc=;
-        b=uAHSdiWaP3q78YXDSbkvEyYy9k/VwxAC2Z9ITTrMvZ9VOj4FEjwkgcprsNBzLSC9ae
-         N7tp9gnZSzunQ+kmGYqGNgGOTcNgDT42pYAocl0crhCbhEqhX03kWeIoudh5b2Cq4hYN
-         1e6RROvVfDvfijmhyfTtRlpHENORCIH/u8Gvnj+5+reepo+J8sBPhdtXDxAPE9HPvOTc
-         UnpWNGCzdPdjYtFQWuJvo0JcWsesui7JTZ9uMb6CPam5YNDHi7iR2e5g523g3EIbBYo9
-         20wpaBe2nmuUoOxwJL48aM5+xfat5r/BnpyrxPnFfg3y45FPOUQkmjqAVxxwpWVQWTHL
-         ypAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/bSXHNtdU+eEhzycYVit0PPbYq40mXuagPAzmTwFhXc=;
-        b=h72EGAy9eRzef42/lEh4UbDdk/COdAAJ4x4nSbb0HmJpFlwrqBtaQ6/qi96qd/Tlix
-         h0c9Kr1c03/IM7+kNLa9MQZPNpTMDZ6Cugwih0mjEDedDwGS1LDKhbC+0SCg1R+oHZVh
-         Cg7GFdT/UcET4AKH81UlV49zLmdVJdPgGJJcvfp87fSsFcGavrHhuqpg7wPKGPtcU8gm
-         A9ixFDt2OivZhg2fTZfvSjFJJ6raQAtJ8PXIi0g/j96cPKd8sLZVCqBnYmOnoIK01tAI
-         kv+B1gP/SIXd70vp+g1YjD63cc2ftV3hJHWSQHCtiVmryHo2WCyKI3VqhN6UlbMByUhS
-         tVIA==
-X-Gm-Message-State: AOAM530BdGWKfM0cK7JKLHfduGXiQm1b4YhrNRYXo/daNrMdpP4cSfIA
-        stlzj8LLrJaYs+iYYAFzIIglZHi9Y/tWgLdjSgs=
-X-Google-Smtp-Source: ABdhPJwYkAg6wiYQE/kiFTwGRHyIiOS5zag+H4OguIXfa0N+21fcrPr3n3Pr11DlnHUNcTu6o4O+pA==
-X-Received: by 2002:a05:600c:210c:: with SMTP id u12mr2523261wml.185.1601029553549;
-        Fri, 25 Sep 2020 03:25:53 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id f14sm2543557wrt.53.2020.09.25.03.25.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Sep 2020 03:25:52 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        davem@davemloft.net, Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next] net: bridge: mcast: remove only S,G port groups from sg_port hash
-Date:   Fri, 25 Sep 2020 13:25:49 +0300
-Message-Id: <20200925102549.1704905-1-razor@blackwall.org>
-X-Mailer: git-send-email 2.25.4
+        id S1727720AbgIYKw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 06:52:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59800 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727044AbgIYKw2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 06:52:28 -0400
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601031147;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dieT+Ca9pKnYdBmJINGnKiDMU0fSqIZ9el8V16JMejw=;
+        b=f65xly0ttacJ0juv1NKLHgatyeIdf7tOi9Vj5Munz8ekw1zR637KZizOzueOIfP1QfFUYk
+        3RpInK/LpsNgZSO8O+w40g2+y0y56KGNkz9AyrCZlRMCtfdUXOQxn4a4XbffoMp+7uGlRU
+        DP1qUGwj754mv9x2AwAKLzppW2AQwpw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-200-NjCLE60VNZOq3kgRrJ9bLg-1; Fri, 25 Sep 2020 06:52:23 -0400
+X-MC-Unique: NjCLE60VNZOq3kgRrJ9bLg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 61460106B81D;
+        Fri, 25 Sep 2020 10:52:22 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.30])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 587DC1002382;
+        Fri, 25 Sep 2020 10:52:14 +0000 (UTC)
+Date:   Fri, 25 Sep 2020 12:52:13 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        lorenzo.bianconi@redhat.com, echaudro@redhat.com,
+        thomas.petazzoni@bootlin.com, brouer@redhat.com
+Subject: Re: [PATCH net-next] net: mvneta: try to use in-irq pp cache in
+ mvneta_txq_bufs_free
+Message-ID: <20200925125213.4981cff8@carbon>
+In-Reply-To: <4f6602e98fdaef1610e948acec19a5de51fb136e.1601027617.git.lorenzo@kernel.org>
+References: <4f6602e98fdaef1610e948acec19a5de51fb136e.1601027617.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+On Fri, 25 Sep 2020 12:01:32 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-We should remove a group from the sg_port hash only if it's an S,G
-entry. This makes it correct and more symmetric with group add. Also
-since *,G groups are not added to that hash we can hide a bug.
+> Try to recycle the xdp tx buffer into the in-irq page_pool cache if
+> mvneta_txq_bufs_free is executed in the NAPI context.
 
-Fixes: 085b53c8beab ("net: bridge: mcast: add sg_port rhashtable")
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
- net/bridge/br_multicast.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+NACK - I don't think this is safe.  That is also why I named the
+function postfix rx_napi.  The page pool->alloc.cache is associated
+with the drivers RX-queue.  The xdp_frame's that gets freed could be
+coming from a remote driver that use page_pool. This remote drivers
+RX-queue processing can run concurrently on a different CPU, than this
+drivers TXQ-cleanup.
 
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 66eb62ded192..eae898c3cff7 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -590,17 +590,18 @@ void br_multicast_del_pg(struct net_bridge_mdb_entry *mp,
- 	struct net_bridge_group_src *ent;
- 	struct hlist_node *tmp;
- 
--	rhashtable_remove_fast(&br->sg_port_tbl, &pg->rhnode,
--			       br_sg_port_rht_params);
- 	rcu_assign_pointer(*pp, pg->next);
- 	hlist_del_init(&pg->mglist);
- 	hlist_for_each_entry_safe(ent, tmp, &pg->src_list, node)
- 		br_multicast_del_group_src(ent);
- 	br_mdb_notify(br->dev, mp, pg, RTM_DELMDB);
--	if (!br_multicast_is_star_g(&mp->addr))
-+	if (!br_multicast_is_star_g(&mp->addr)) {
-+		rhashtable_remove_fast(&br->sg_port_tbl, &pg->rhnode,
-+				       br_sg_port_rht_params);
- 		br_multicast_sg_del_exclude_ports(mp);
--	else
-+	} else {
- 		br_multicast_star_g_handle_mode(pg, MCAST_INCLUDE);
-+	}
- 	hlist_add_head(&pg->mcast_gc.gc_node, &br->mcast_gc_list);
- 	queue_work(system_long_wq, &br->mcast_gc_work);
- 
+If you want to speedup this, I instead suggest that you add a
+xdp_return_frame_bulk API.
+
+
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/marvell/mvneta.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index 14df3aec285d..646fbf4ed638 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -1831,7 +1831,7 @@ static struct mvneta_tx_queue *mvneta_tx_done_policy(struct mvneta_port *pp,
+>  /* Free tx queue skbuffs */
+>  static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+>  				 struct mvneta_tx_queue *txq, int num,
+> -				 struct netdev_queue *nq)
+> +				 struct netdev_queue *nq, bool napi)
+>  {
+>  	unsigned int bytes_compl = 0, pkts_compl = 0;
+>  	int i;
+> @@ -1854,7 +1854,10 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+>  			dev_kfree_skb_any(buf->skb);
+>  		} else if (buf->type == MVNETA_TYPE_XDP_TX ||
+>  			   buf->type == MVNETA_TYPE_XDP_NDO) {
+> -			xdp_return_frame(buf->xdpf);
+> +			if (napi)
+> +				xdp_return_frame_rx_napi(buf->xdpf);
+> +			else
+> +				xdp_return_frame(buf->xdpf);
+>  		}
+>  	}
+>  
+> @@ -1872,7 +1875,7 @@ static void mvneta_txq_done(struct mvneta_port *pp,
+>  	if (!tx_done)
+>  		return;
+>  
+> -	mvneta_txq_bufs_free(pp, txq, tx_done, nq);
+> +	mvneta_txq_bufs_free(pp, txq, tx_done, nq, true);
+>  
+>  	txq->count -= tx_done;
+>  
+> @@ -2859,7 +2862,7 @@ static void mvneta_txq_done_force(struct mvneta_port *pp,
+>  	struct netdev_queue *nq = netdev_get_tx_queue(pp->dev, txq->id);
+>  	int tx_done = txq->count;
+>  
+> -	mvneta_txq_bufs_free(pp, txq, tx_done, nq);
+> +	mvneta_txq_bufs_free(pp, txq, tx_done, nq, false);
+>  
+>  	/* reset txq */
+>  	txq->count = 0;
+
+
+
 -- 
-2.25.4
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
