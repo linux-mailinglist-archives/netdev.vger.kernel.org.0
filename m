@@ -2,221 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC24278A09
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 15:53:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FB87278A2D
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 15:59:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728952AbgIYNxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 09:53:30 -0400
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:34759 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726990AbgIYNxa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 09:53:30 -0400
-X-Originating-IP: 90.65.88.165
-Received: from localhost (lfbn-lyo-1-1908-165.w90-65.abo.wanadoo.fr [90.65.88.165])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 5815EE0013;
-        Fri, 25 Sep 2020 13:53:27 +0000 (UTC)
-Date:   Fri, 25 Sep 2020 15:53:27 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, horatiu.vultur@microchip.com,
-        joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
-Subject: Re: [RFC PATCH net-next 07/14] net: mscc: ocelot: introduce
- conversion helpers between port and netdev
-Message-ID: <20200925135327.GB9675@piout.net>
-References: <20200925121855.370863-1-vladimir.oltean@nxp.com>
- <20200925121855.370863-8-vladimir.oltean@nxp.com>
+        id S1728875AbgIYN7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 09:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49000 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728451AbgIYN7J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 09:59:09 -0400
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4ABC0613CE;
+        Fri, 25 Sep 2020 06:59:08 -0700 (PDT)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4ByYRq2gLNzKm5Y;
+        Fri, 25 Sep 2020 15:59:03 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
+        content-disposition:content-type:content-type:mime-version
+        :message-id:subject:subject:from:from:date:date:received; s=
+        mail20150812; t=1601042339; bh=yRSamacUl5zOBDZnMxEDI6efGi+UbqCon
+        TJ3n+9gU4U=; b=BMoXsh/GZryw4BcyZPoAR7wdYAFMPpALMfrOY2fr2U9E/pSI6
+        DODQfMuoZ+00imc1H2ljMdsrbp5nWEkZXifajj+n7VxdoxSDPmMZZyDqyc8HKloV
+        g/Wiqco4ZTV2gMNg5NrbrGYuXf0I66n0X+R2plF8fIE0R087Q3npr1aKBNlFFnEj
+        augRBIiNwsU8MeBSvxM3GsqReL3rHR8vqqlJwB1D/Yh2t5QQraM0JzPW6x8QS+5/
+        PRz87YK57bas/7aNHL1dGo07LVnZ6mNyt4JqiFCX9E46vz3T72JkZdsSaqQhctzo
+        fehpYCQsbCh1Eddj9DHi++dRiZS0ySZkCU3jg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1601042341;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=qAInf77RnkgHLLay4aTkAXh67lv5i0lXxPM9EKg/cl4=;
+        b=nM30oCQ7Vdkr8933DTd6hQdiHewjGyQht+04ByE1FbMUUOvsgDTpnVKVRcULMZ0gbp8RE1
+        O3eyMfXKnFcKzfD2HR0I7EH+TvSz19tUEUTAAOoVbjD0+2wfZejTvOje8bJE6ctEZs/Ev7
+        KY6oWjMdDQG/bcr8vfx5DuV2ldgu0mmAcAzyugI7kngnVo7ZPmCwLeObKR68zObcl3xVJX
+        SF7dyWq1SXywqzdKM3PAtl/6Kj/b4js5U8b4oJoujDd3wxW9mvCtQWlHQRSYwzAXUMdPQQ
+        2YH261QkNf0nnl9sf4JzcH1Z3cb2ft8dmaPThsNSkh8NA13+hDaLwW5IMoY/hw==
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by hefe.heinlein-support.de (hefe.heinlein-support.de [91.198.250.172]) (amavisd-new, port 10030)
+        with ESMTP id NULZPqP4Rsji; Fri, 25 Sep 2020 15:58:59 +0200 (CEST)
+Date:   Fri, 25 Sep 2020 15:58:57 +0200
+From:   Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH v2] net: usb: ax88179_178a: add Toshiba usb 3.0 adapter
+Message-ID: <20200925135857.GA102845@monster.powergraphx.local>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200925121855.370863-8-vladimir.oltean@nxp.com>
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -4.58 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 5FB3F108B
+X-Rspamd-UID: 92a39d
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/09/2020 15:18:48+0300, Vladimir Oltean wrote:
-> Since the mscc_ocelot_switch_lib is common between a pure switchdev and
-> a DSA driver, the procedure of retrieving a net_device for a certain
-> port index differs, as those are registered by their individual
-> front-ends.
-> 
-> Up to now that has been dealt with by always passing the port index to
-> the switch library, but now, we're going to need to work with net_device
-> pointers from the tc-flower offload, for things like indev, or mirred.
-> It is not desirable to refactor that, so let's make sure that the flower
-> offload core has the ability to translate between a net_device and a
-> port index properly.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Adds the driver_info and usb ids of the AX88179 based Toshiba USB 3.0
+ethernet adapter.
 
-> ---
->  drivers/net/dsa/ocelot/felix.c             | 22 ++++++++++++++++
->  drivers/net/dsa/ocelot/felix.h             |  3 +++
->  drivers/net/dsa/ocelot/felix_vsc9959.c     |  2 ++
->  drivers/net/dsa/ocelot/seville_vsc9953.c   |  2 ++
->  drivers/net/ethernet/mscc/ocelot.h         |  2 ++
->  drivers/net/ethernet/mscc/ocelot_net.c     | 30 ++++++++++++++++++++++
->  drivers/net/ethernet/mscc/ocelot_vsc7514.c |  2 ++
->  include/soc/mscc/ocelot.h                  |  2 ++
->  8 files changed, 65 insertions(+)
-> 
-> diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-> index 8ebdebc44c72..a0b803fdbac8 100644
-> --- a/drivers/net/dsa/ocelot/felix.c
-> +++ b/drivers/net/dsa/ocelot/felix.c
-> @@ -810,3 +810,25 @@ const struct dsa_switch_ops felix_switch_ops = {
->  	.cls_flower_stats	= felix_cls_flower_stats,
->  	.port_setup_tc		= felix_port_setup_tc,
->  };
-> +
-> +struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port)
-> +{
-> +	struct felix *felix = ocelot_to_felix(ocelot);
-> +	struct dsa_switch *ds = felix->ds;
-> +
-> +	if (!dsa_is_user_port(ds, port))
-> +		return NULL;
-> +
-> +	return dsa_to_port(ds, port)->slave;
-> +}
-> +
-> +int felix_netdev_to_port(struct net_device *dev)
-> +{
-> +	struct dsa_port *dp;
-> +
-> +	dp = dsa_port_from_netdev(dev);
-> +	if (IS_ERR(dp))
-> +		return -EINVAL;
-> +
-> +	return dp->index;
-> +}
-> diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-> index 6f6383904cc9..83bab486c61a 100644
-> --- a/drivers/net/dsa/ocelot/felix.h
-> +++ b/drivers/net/dsa/ocelot/felix.h
-> @@ -51,4 +51,7 @@ struct felix {
->  	resource_size_t			imdio_base;
->  };
->  
-> +struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port);
-> +int felix_netdev_to_port(struct net_device *dev);
-> +
->  #endif
-> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> index 601853e05754..66e991ab9df5 100644
-> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> @@ -867,6 +867,8 @@ static u16 vsc9959_wm_enc(u16 value)
->  static const struct ocelot_ops vsc9959_ops = {
->  	.reset			= vsc9959_reset,
->  	.wm_enc			= vsc9959_wm_enc,
-> +	.port_to_netdev		= felix_port_to_netdev,
-> +	.netdev_to_port		= felix_netdev_to_port,
->  };
->  
->  static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
-> diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> index b921ad98e90a..87ca36c77606 100644
-> --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-> +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> @@ -920,6 +920,8 @@ static u16 vsc9953_wm_enc(u16 value)
->  static const struct ocelot_ops vsc9953_ops = {
->  	.reset			= vsc9953_reset,
->  	.wm_enc			= vsc9953_wm_enc,
-> +	.port_to_netdev		= felix_port_to_netdev,
-> +	.netdev_to_port		= felix_netdev_to_port,
->  };
->  
->  static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
-> diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-> index dc29e05103a1..abb407dff93c 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.h
-> +++ b/drivers/net/ethernet/mscc/ocelot.h
-> @@ -98,6 +98,8 @@ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
->  			 struct net_device *bond);
->  void ocelot_port_lag_leave(struct ocelot *ocelot, int port,
->  			   struct net_device *bond);
-> +struct net_device *ocelot_port_to_netdev(struct ocelot *ocelot, int port);
-> +int ocelot_netdev_to_port(struct net_device *dev);
->  
->  u32 ocelot_port_readl(struct ocelot_port *port, u32 reg);
->  void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg);
-> diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-> index 028a0150f97d..64e619f0f5b2 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_net.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-> @@ -656,6 +656,36 @@ static const struct net_device_ops ocelot_port_netdev_ops = {
->  	.ndo_do_ioctl			= ocelot_ioctl,
->  };
->  
-> +struct net_device *ocelot_port_to_netdev(struct ocelot *ocelot, int port)
-> +{
-> +	struct ocelot_port *ocelot_port = ocelot->ports[port];
-> +	struct ocelot_port_private *priv;
-> +
-> +	if (!ocelot_port)
-> +		return NULL;
-> +
-> +	priv = container_of(ocelot_port, struct ocelot_port_private, port);
-> +
-> +	return priv->dev;
-> +}
-> +
-> +static bool ocelot_port_dev_check(const struct net_device *dev)
-> +{
-> +	return dev->netdev_ops == &ocelot_port_netdev_ops;
-> +}
-> +
-> +int ocelot_netdev_to_port(struct net_device *dev)
-> +{
-> +	struct ocelot_port_private *priv;
-> +
-> +	if (!dev || !ocelot_port_dev_check(dev))
-> +		return -EINVAL;
-> +
-> +	priv = netdev_priv(dev);
-> +
-> +	return priv->chip_port;
-> +}
-> +
->  static void ocelot_port_get_strings(struct net_device *netdev, u32 sset,
->  				    u8 *data)
->  {
-> diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> index 5a93f7a76ade..a7f53fc6f746 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> @@ -757,6 +757,8 @@ static u16 ocelot_wm_enc(u16 value)
->  static const struct ocelot_ops ocelot_ops = {
->  	.reset			= ocelot_reset,
->  	.wm_enc			= ocelot_wm_enc,
-> +	.port_to_netdev		= ocelot_port_to_netdev,
-> +	.netdev_to_port		= ocelot_netdev_to_port,
->  };
->  
->  static const struct vcap_field vsc7514_vcap_is2_keys[] = {
-> diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-> index 45c7dc7b54b6..9706206125a7 100644
-> --- a/include/soc/mscc/ocelot.h
-> +++ b/include/soc/mscc/ocelot.h
-> @@ -546,6 +546,8 @@ enum ocelot_tag_prefix {
->  struct ocelot;
->  
->  struct ocelot_ops {
-> +	struct net_device *(*port_to_netdev)(struct ocelot *ocelot, int port);
-> +	int (*netdev_to_port)(struct net_device *dev);
->  	int (*reset)(struct ocelot *ocelot);
->  	u16 (*wm_enc)(u16 value);
->  };
-> -- 
-> 2.25.1
-> 
+Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+---
+Changes in v2:
+    - reposted to proper mailing list with correct commit message as
+      suggested by Jakub Kicinski
+---
+ drivers/net/usb/ax88179_178a.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
+diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
+index ac7bc436da33..ed078e5a3629 100644
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1829,6 +1829,19 @@ static const struct driver_info belkin_info = {
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+ 
++static const struct driver_info toshiba_info = {
++	.description = "Toshiba USB Ethernet Adapter",
++	.bind	= ax88179_bind,
++	.unbind = ax88179_unbind,
++	.status = ax88179_status,
++	.link_reset = ax88179_link_reset,
++	.reset	= ax88179_reset,
++	.stop = ax88179_stop,
++	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
++	.rx_fixup = ax88179_rx_fixup,
++	.tx_fixup = ax88179_tx_fixup,
++};
++
+ static const struct usb_device_id products[] = {
+ {
+ 	/* ASIX AX88179 10/100/1000 */
+@@ -1862,6 +1875,10 @@ static const struct usb_device_id products[] = {
+ 	/* Belkin B2B128 USB 3.0 Hub + Gigabit Ethernet Adapter */
+ 	USB_DEVICE(0x050d, 0x0128),
+ 	.driver_info = (unsigned long)&belkin_info,
++}, {
++	/* Toshiba USB 3.0 GBit Ethernet Adapter */
++	USB_DEVICE(0x0930, 0x0a13),
++	.driver_info = (unsigned long)&toshiba_info,
+ },
+ 	{ },
+ };
 -- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.28.0
+
