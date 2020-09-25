@@ -2,30 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E109E278BE8
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 17:03:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 753FA278BD4
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 17:02:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729419AbgIYPCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 11:02:06 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34474 "EHLO mx2.suse.de"
+        id S1729447AbgIYPCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 11:02:10 -0400
+Received: from mx2.suse.de ([195.135.220.15]:34556 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728693AbgIYPCE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 11:02:04 -0400
+        id S1729431AbgIYPCJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 11:02:09 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id E9A8CB036;
-        Fri, 25 Sep 2020 15:02:02 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id A357BB036;
+        Fri, 25 Sep 2020 15:02:07 +0000 (UTC)
 From:   Coly Li <colyli@suse.de>
 To:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
         netdev@vger.kernel.org, open-iscsi@googlegroups.com,
         linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Coly Li <colyli@suse.de>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        "David S . Miller" <davem@davemloft.net>, stable@vger.kernel.org
-Subject: [PATCH v8 4/7] tcp: use sendpage_ok() to detect misused .sendpage
-Date:   Fri, 25 Sep 2020 23:01:16 +0800
-Message-Id: <20200925150119.112016-5-colyli@suse.de>
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Sagi Grimberg <sagi@grimberg.me>
+Subject: [PATCH v8 5/7] drbd: code cleanup by using sendpage_ok() to check page for kernel_sendpage()
+Date:   Fri, 25 Sep 2020 23:01:17 +0800
+Message-Id: <20200925150119.112016-6-colyli@suse.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200925150119.112016-1-colyli@suse.de>
 References: <20200925150119.112016-1-colyli@suse.de>
@@ -35,42 +34,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit a10674bf2406 ("tcp: detecting the misuse of .sendpage for Slab
-objects") adds the checks for Slab pages, but the pages don't have
-page_count are still missing from the check.
+In _drbd_send_page() a page is checked by following code before sending
+it by kernel_sendpage(),
+        (page_count(page) < 1) || PageSlab(page)
+If the check is true, this page won't be send by kernel_sendpage() and
+handled by sock_no_sendpage().
 
-Network layer's sendpage method is not designed to send page_count 0
-pages neither, therefore both PageSlab() and page_count() should be
-both checked for the sending page. This is exactly what sendpage_ok()
-does.
+This kind of check is exactly what macro sendpage_ok() does, which is
+introduced into include/linux/net.h to solve a similar send page issue
+in nvme-tcp code.
 
-This patch uses sendpage_ok() in do_tcp_sendpages() to detect misused
-.sendpage, to make the code more robust.
+This patch uses macro sendpage_ok() to replace the open coded checks to
+page type and refcount in _drbd_send_page(), as a code cleanup.
 
-Fixes: a10674bf2406 ("tcp: detecting the misuse of .sendpage for Slab objects")
-Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
 Signed-off-by: Coly Li <colyli@suse.de>
-Cc: Vasily Averin <vvs@virtuozzo.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: stable@vger.kernel.org
+Cc: Philipp Reisner <philipp.reisner@linbit.com>
+Cc: Sagi Grimberg <sagi@grimberg.me>
 ---
- net/ipv4/tcp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/block/drbd/drbd_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 31f3b858db81..2135ee7c806d 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -970,7 +970,8 @@ ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
- 	long timeo = sock_sndtimeo(sk, flags & MSG_DONTWAIT);
+diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
+index 04b6bde9419d..573dbf6f0c31 100644
+--- a/drivers/block/drbd/drbd_main.c
++++ b/drivers/block/drbd/drbd_main.c
+@@ -1553,7 +1553,7 @@ static int _drbd_send_page(struct drbd_peer_device *peer_device, struct page *pa
+ 	 * put_page(); and would cause either a VM_BUG directly, or
+ 	 * __page_cache_release a page that would actually still be referenced
+ 	 * by someone, leading to some obscure delayed Oops somewhere else. */
+-	if (drbd_disable_sendpage || (page_count(page) < 1) || PageSlab(page))
++	if (drbd_disable_sendpage || !sendpage_ok(page))
+ 		return _drbd_no_send_page(peer_device, page, offset, size, msg_flags);
  
- 	if (IS_ENABLED(CONFIG_DEBUG_VM) &&
--	    WARN_ONCE(PageSlab(page), "page must not be a Slab one"))
-+	    WARN_ONCE(!sendpage_ok(page),
-+		      "page must not be a Slab one and have page_count > 0"))
- 		return -EINVAL;
- 
- 	/* Wait for a connection to finish. One exception is TCP Fast Open
+ 	msg_flags |= MSG_NOSIGNAL;
 -- 
 2.26.2
 
