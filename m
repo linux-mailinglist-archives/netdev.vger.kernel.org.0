@@ -2,88 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59DF5278C52
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 17:15:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFBAB278C59
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 17:18:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729138AbgIYPP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 11:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728858AbgIYPP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 11:15:27 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E3FC0613CE;
-        Fri, 25 Sep 2020 08:15:26 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id c18so3972749wrm.9;
-        Fri, 25 Sep 2020 08:15:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JVxu4r2WfZ7y1LJf1lPXgUWmvqhhajFSJ/ifVaATdHo=;
-        b=DdSHe4i1OVUn7d80PT6kX2GPcvaa0zGrPv9fqjlAXJQ45zybYqzYVBdnPI+V2eq7Yn
-         gj1fsEJuUyC6HEXsj8DH6rjm5k8bUD+rZfS6jr1ki8d25N0Z41x8Cjf09/CnDT/bvgPq
-         UOwl9+GnCLzuyHMkgPhpyJa2avgRJVheKfUqueeEvK8DX4jKCQ6saat6IznEOKSxfhwo
-         OVuzDjhTlLqCluB5qNOTbW6XRiT8N7TGyfiLNavImH5upmbSQtRFwCztmAz2JtoDPBAa
-         him6IHWzexRUyClABTEKywmEka62PNAWOqA63ebNwZelgVRoj3dGZrpd1KZLaXCbn8b0
-         zCkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JVxu4r2WfZ7y1LJf1lPXgUWmvqhhajFSJ/ifVaATdHo=;
-        b=t5uVDo3buMR0ge20H5xvmu06PDTBM85Y+X2McBcBNCctJ0sQs6z7YD6FWZ9ypTTXdy
-         acJyz5N0IhoJE9kULOvIY6VGfjsOAqtEZ65VAVjMkAjkpIe9OiZWwLnru/9Q9GQif1RC
-         C98oanxB/r0PEO3NCwDII7dGqv46qCeW7W1KqponfVza/uEzHshN/8y8tmB0TsHQudpJ
-         gev4WFaboc8jfyqNj4FAVwELpjnBnelS2aGzYzxVPYFiE7BiM3+vHT/MtleUsXnPXBR/
-         /74WSqtkOmtS07JAKGOXO1UA14+sU6jd/Jm8IjhXMozH0RVmDm7IlEYbzHrI1DHeaQsC
-         b9lw==
-X-Gm-Message-State: AOAM530fKHdNSUtTLmgutmu5MXheNtQck/b3ynSqv+sbur+ySjU4lTl0
-        ys4hVgSUNNNlnWWP1+FGws+TKH+ay2Q=
-X-Google-Smtp-Source: ABdhPJxpDkuiyFrjZGYvg4PEXQxV5HKOA8Mnu7I3KFbeTGgh2b8LDngftD3yoNpNKnMPjYnegx560g==
-X-Received: by 2002:adf:eb04:: with SMTP id s4mr5412634wrn.81.1601046925503;
-        Fri, 25 Sep 2020 08:15:25 -0700 (PDT)
-Received: from [192.168.8.147] ([37.173.173.126])
-        by smtp.gmail.com with ESMTPSA id h186sm3258995wmf.24.2020.09.25.08.15.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Sep 2020 08:15:24 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 2/6] bpf, net: rework cookie generator as per-cpu
- one
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>, ast@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <cover.1600967205.git.daniel@iogearbox.net>
- <d4150caecdbef4205178753772e3bc301e908355.1600967205.git.daniel@iogearbox.net>
- <e854149f-f3a6-a736-9d33-08b2f60eb3a2@gmail.com>
- <dc5dd027-256d-598a-2f89-a45bb30208f8@iogearbox.net>
- <20200925080020.013165a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <c9fee768-4f35-e596-001b-2e2a0e4f48a1@gmail.com>
-Date:   Fri, 25 Sep 2020 17:15:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1729123AbgIYPR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 11:17:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52162 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728818AbgIYPR7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 11:17:59 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B44E920878;
+        Fri, 25 Sep 2020 15:17:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601047078;
+        bh=Memmat2QMSKm4nwC6E/N+LYsT2VSLAWg4jqrX9rOxRc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=0I0jvTv72ihg9+bzMure3BX1lc+87CO5bL9392leVtXnedqMSe5ygE5G4jcX2w1qW
+         xoHSyqw+O8y4wGORU/iFtjKf17BUhMzTBzKdn1CSNW/QQG4RWwA0fbFWc2yeKlC8z5
+         AE3L4akyOt44u/YxCsUo0F4LAURd4D62LpCDsAXE=
+Date:   Fri, 25 Sep 2020 17:18:12 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Coly Li <colyli@suse.de>
+Cc:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, open-iscsi@googlegroups.com,
+        linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
+        Christoph Hellwig <hch@lst.de>, Hannes Reinecke <hare@suse.de>,
+        Jan Kara <jack@suse.com>, Jens Axboe <axboe@kernel.dk>,
+        Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Vlastimil Babka <vbabka@suse.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v8 1/7] net: introduce helper sendpage_ok() in
+ include/linux/net.h
+Message-ID: <20200925151812.GA3182427@kroah.com>
+References: <20200925150119.112016-1-colyli@suse.de>
+ <20200925150119.112016-2-colyli@suse.de>
 MIME-Version: 1.0
-In-Reply-To: <20200925080020.013165a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200925150119.112016-2-colyli@suse.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/25/20 5:00 PM, Jakub Kicinski wrote:
-                    unlikely((val & (COOKIE_LOCAL_BATCH - 1)) == 0)) {
+On Fri, Sep 25, 2020 at 11:01:13PM +0800, Coly Li wrote:
+> The original problem was from nvme-over-tcp code, who mistakenly uses
+> kernel_sendpage() to send pages allocated by __get_free_pages() without
+> __GFP_COMP flag. Such pages don't have refcount (page_count is 0) on
+> tail pages, sending them by kernel_sendpage() may trigger a kernel panic
+> from a corrupted kernel heap, because these pages are incorrectly freed
+> in network stack as page_count 0 pages.
 > 
-> Can we reasonably assume we won't have more than 4k CPUs and just
-> statically divide this space by encoding CPU id in top bits?
+> This patch introduces a helper sendpage_ok(), it returns true if the
+> checking page,
+> - is not slab page: PageSlab(page) is false.
+> - has page refcount: page_count(page) is not zero
+> 
+> All drivers who want to send page to remote end by kernel_sendpage()
+> may use this helper to check whether the page is OK. If the helper does
+> not return true, the driver should try other non sendpage method (e.g.
+> sock_no_sendpage()) to handle the page.
+> 
+> Signed-off-by: Coly Li <colyli@suse.de>
+> Cc: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Hannes Reinecke <hare@suse.de>
+> Cc: Jan Kara <jack@suse.com>
+> Cc: Jens Axboe <axboe@kernel.dk>
+> Cc: Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>
+> Cc: Philipp Reisner <philipp.reisner@linbit.com>
+> Cc: Sagi Grimberg <sagi@grimberg.me>
+> Cc: Vlastimil Babka <vbabka@suse.com>
+> Cc: stable@vger.kernel.org
+> ---
+>  include/linux/net.h | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/include/linux/net.h b/include/linux/net.h
+> index d48ff1180879..05db8690f67e 100644
+> --- a/include/linux/net.h
+> +++ b/include/linux/net.h
+> @@ -21,6 +21,7 @@
+>  #include <linux/rcupdate.h>
+>  #include <linux/once.h>
+>  #include <linux/fs.h>
+> +#include <linux/mm.h>
+>  #include <linux/sockptr.h>
+>  
+>  #include <uapi/linux/net.h>
+> @@ -286,6 +287,21 @@ do {									\
+>  #define net_get_random_once_wait(buf, nbytes)			\
+>  	get_random_once_wait((buf), (nbytes))
+>  
+> +/*
+> + * E.g. XFS meta- & log-data is in slab pages, or bcache meta
+> + * data pages, or other high order pages allocated by
+> + * __get_free_pages() without __GFP_COMP, which have a page_count
+> + * of 0 and/or have PageSlab() set. We cannot use send_page for
+> + * those, as that does get_page(); put_page(); and would cause
+> + * either a VM_BUG directly, or __page_cache_release a page that
+> + * would actually still be referenced by someone, leading to some
+> + * obscure delayed Oops somewhere else.
+> + */
+> +static inline bool sendpage_ok(struct page *page)
+> +{
+> +	return  !PageSlab(page) && page_count(page) >= 1;
 
-This might give some food to side channel attacks, since this would
-give an indication of cpu that allocated the id.
+Do you have one extra ' ' after "return" there?
 
-Also, I hear that some distros enabled 8K cpus.
+And this feels like a mm thing, why put it in net.h and not mm.h?
 
+thanks,
+
+greg k-h
