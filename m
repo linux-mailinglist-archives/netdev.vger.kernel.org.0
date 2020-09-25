@@ -2,95 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 029022790FE
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 20:43:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B3127910A
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 20:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729741AbgIYSnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 14:43:12 -0400
-Received: from mout.kundenserver.de ([217.72.192.75]:45403 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726401AbgIYSnM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 14:43:12 -0400
-Received: from mail-qt1-f173.google.com ([209.85.160.173]) by
- mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1Mg6uW-1kvk802eT8-00hd38; Fri, 25 Sep 2020 20:43:10 +0200
-Received: by mail-qt1-f173.google.com with SMTP id b2so2779322qtp.8;
-        Fri, 25 Sep 2020 11:43:10 -0700 (PDT)
-X-Gm-Message-State: AOAM532o+L7Mb4uL/JSLLaQ8Wb8e2gOvXUSPa8qDfBBYOCIETQNtJtbu
-        OGZLL2/UJ2nH+i8r3KinS+WPt47GwPsC5KPFMBE=
-X-Google-Smtp-Source: ABdhPJznPyzhYwuux+BthxpNuMrUe2I5Rfkhf/t2FbB44iCpFkSn8WqpsjOfIjdo1kNhkQFYN+TvhoVRJnZgTystfms=
-X-Received: by 2002:aed:2ce5:: with SMTP id g92mr1049652qtd.204.1601059389412;
- Fri, 25 Sep 2020 11:43:09 -0700 (PDT)
+        id S1729752AbgIYSq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 14:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729670AbgIYSq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 14:46:26 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07116C0613D3
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 11:46:25 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id g4so4752371wrs.5
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 11:46:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AlDiV2I2Pb3l4Sw1FS8MXXmwraDk5F1rgxliXh5N5CM=;
+        b=hNVaqgoiF4i4BUKziRlpXfyKzDqaE2Y0RasEA7QnYZaUqmrhYmxmR65VR3QsZGT0/N
+         elfdI2ZtE21gOt8NsKBS76ANRONmfTntZIUBb37OAepaErQ4mHfX26H/avNX5Om2F5Th
+         iF/y4L9RdXJwUeLTzBdv6H/xNDzBbfk+2GMdQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AlDiV2I2Pb3l4Sw1FS8MXXmwraDk5F1rgxliXh5N5CM=;
+        b=Vn+KzgnVM2sbW8ebcDPNhmHGjp0BOQ/XlXjEAWEfpaWyqtb9aADoKj59ZhBHjkRc56
+         3Wzq41xG5KSiW6RN8Daa0LvSv2/XDEQYPY6J//tSFuAddaXMKy5be4fPjvg8VFH2kPZC
+         ywW8P6nib1EHiMn/EQN7q0ynf+oiKUNTE2TkuobY2+SRQQGspeBi8aiyrJ/duSLtx6Eq
+         csLhMhTixppRU3kUOvJnkON3Lz9FkJJ7T4MeRThKxkCM9LzDCYV6Q/6eG2AJmvVsklrY
+         aJSKK1Mi4e8+HmBBXxQaB2icuhvQ0Tov1Kj5JUGTaVMVH6LGxZnQTVk9l/c91g0VoLQl
+         WIXQ==
+X-Gm-Message-State: AOAM533BtQPS6CK/7JNYli5qGfzKytkPZ7WnbtYz4vsK0aTbxOOo5hif
+        HeG04kApRoIbcrXkGOEEPHQrDg==
+X-Google-Smtp-Source: ABdhPJywG75RJx/fVTLzqgivIcRb/Gp708YyNw5VwVyHEf689ET8en+rXMvfgfeOwhu5XQytInH4aQ==
+X-Received: by 2002:a5d:56cd:: with SMTP id m13mr5730549wrw.261.1601059584552;
+        Fri, 25 Sep 2020 11:46:24 -0700 (PDT)
+Received: from chromium.org (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
+        by smtp.gmail.com with ESMTPSA id z8sm3728264wrl.11.2020.09.25.11.46.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2020 11:46:23 -0700 (PDT)
+Date:   Fri, 25 Sep 2020 18:46:22 +0000
+From:   Tomasz Figa <tfiga@chromium.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        iommu@lists.linux-foundation.org,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        linux1394-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH 17/18] dma-iommu: implement ->alloc_noncoherent
+Message-ID: <20200925184622.GB3607091@chromium.org>
+References: <20200915155122.1768241-1-hch@lst.de>
+ <20200915155122.1768241-18-hch@lst.de>
 MIME-Version: 1.0
-References: <20200925132237.2748992-1-arnd@arndb.de>
-In-Reply-To: <20200925132237.2748992-1-arnd@arndb.de>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 25 Sep 2020 20:42:53 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1zBgFbx8ZeqFUXok2WsOha+72zXpFZ60Sv+9=wwaqe4w@mail.gmail.com>
-Message-ID: <CAK8P3a1zBgFbx8ZeqFUXok2WsOha+72zXpFZ60Sv+9=wwaqe4w@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/2] ethtool: improve compat ioctl handling
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Christoph Hellwig <hch@lst.de>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:UGeDIC9Ve8/SQxcTVPMfaaKeQQHqZHycgVFm6Byx+nIV7cQu/OK
- yJiY2UG6YWbgdhiqnhLWZzKo5pvFAly47/wnoEpr8PfZoHYYQ4oitxNlZfGngF3jloiOMtY
- d2IR96b6Xv2pVlTYWSJncUeMvHxlpaMqJTcslug5vfdjQiZkxNIMI9GYJIaKzy77Zm354KO
- W+s2pSWjo/65Nj9nxtGTQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:LEPOD2Jfl/k=:2P4vTXkVtzM77b/6pEj8iE
- fAd7VttGxihOFWiPBNdPFS9B/yDDxFhH393zDU4qp1r4GmvASyajREKMFVjaVwDFMtqb+ugwy
- YZMaLjQj2S0E7/xkTpblp8AAlzRFrr9S+iRqwNWnsWwrIjiweV0F3ZIZjaIjGT83xvJ6LG8Vx
- AFlXh417vtouL6OuyAHgb1EyRnQ/Um6BqiuIm1QF8vz6vkFjmByx/I87Zf/QbG4+QWN+PtWdb
- QMYHs1o0XciFjgxFwxZrhalJ+Ll9GoJp+tyLcjODhuyRKIPlYMCh3JkRsdpc/pfqgyNfabrOz
- BEz1k4zAlFFlBSKoxEIVMYJHIFQwlrAv6kefBIN8crBuJURnsLDGW/Wrl+yO8VEvsruNy+O7j
- onQO6jWSHrKrEgs7n7LM9h6gAp/zqEzz9z2GdLvVQR76xqtaHLI1kaXSPXX1xYFZADKYqoRNQ
- iSw1MZ4cINyagyTH3j068cDD3ExCQPNjWIoi1mGpUZJCIbn53/fNdygM3ys28i1QsR/pUvPzh
- hnpKWuhEROzRkl7lzro1LldFDBkQY4Dswq6rPlZCnGAwLOtgbMKPVhXWCBUaJomAtMBbXrvgH
- nF6B9IwmPf4VmENZSwR+8kX3AfktKzrs+Nmh6fwGENDvA5MEEYKm6ZkPJIfFut/EkmrtaNLnf
- JyPV7O1j0O7v32H8AxY345ALNxZKvd/CjD8XcwedB4eFSLeEftmy/ecHcQMXhl3VDY7IDNN09
- 1KsDLzSMJR91DR6tyo1QOibIx3A56M0c2gFmHkTza5E7MmYR82DPLXDip8ThS6qNGZKXt9+JS
- G9f67Jcn3lu3+aKA3iA0Z4M7++H4U5LmNFMbt4EYwMd9e5s4gyLHin6MpUl7Y47f3ZAbpi3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200915155122.1768241-18-hch@lst.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 25, 2020 at 3:22 PM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> The ethtool compat ioctl handling is hidden away in net/socket.c,
-> which introduces a couple of minor oddities:
->
-> - The implementation may end up diverging, as seen in the RXNFC
->   extension in commit 84a1d9c48200 ("net: ethtool: extend RXNFC
->   API to support RSS spreading of filter matches") that does not work
->   in compat mode.
->
-> - Most architectures do not need the compat handling at all
->   because u64 and compat_u64 have the same alignment.
->
-> - On x86, the conversion is done for both x32 and i386 user space,
->   but it's actually wrong to do it for x32 and cannot work there.
->
-> - On 32-bit Arm, it never worked for compat oabi user space, since
->   that needs to do the same conversion but does not.
->
-> - It would be nice to get rid of both compat_alloc_user_space()
->   and copy_in_user() throughout the kernel.
->
-> None of these actually seems to be a serious problem that real
-> users are likely to encounter, but fixing all of them actually
-> leads to code that is both shorter and more readable.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
+Hi Christoph,
 
-The kbuild bot found another dependency on a patch that I had in my
-testing tree (moving compat_u64). Let's drop both patches for now, I'll
-resend once that has been merged.
+On Tue, Sep 15, 2020 at 05:51:21PM +0200, Christoph Hellwig wrote:
+> Implement the alloc_noncoherent method to provide memory that is neither
+> coherent not contiguous.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  drivers/iommu/dma-iommu.c | 41 +++++++++++++++++++++++++++++++++++----
+>  1 file changed, 37 insertions(+), 4 deletions(-)
+> 
 
-      Arnd
+Sorry for being late to the party and thanks a lot for the patch. Please see my
+comments inline.
+
+[snip]
+> @@ -1052,6 +1055,34 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+>  	return cpu_addr;
+>  }
+>  
+> +#ifdef CONFIG_DMA_REMAP
+> +static void *iommu_dma_alloc_noncoherent(struct device *dev, size_t size,
+> +		dma_addr_t *handle, enum dma_data_direction dir, gfp_t gfp)
+> +{
+> +	if (!gfpflags_allow_blocking(gfp)) {
+> +		struct page *page;
+> +
+> +		page = dma_common_alloc_pages(dev, size, handle, dir, gfp);
+> +		if (!page)
+> +			return NULL;
+> +		return page_address(page);
+> +	}
+> +
+> +	return iommu_dma_alloc_remap(dev, size, handle, gfp | __GFP_ZERO,
+> +				     PAGE_KERNEL, 0);
+
+iommu_dma_alloc_remap() makes use of the DMA_ATTR_ALLOC_SINGLE_PAGES attribute
+to optimize the allocations for devices which don't care about how contiguous
+the backing memory is. Do you think we could add an attrs argument to this
+function and pass it there?
+
+As ARM is being moved to the common iommu-dma layer as well, we'll probably
+make use of the argument to support the DMA_ATTR_NO_KERNEL_MAPPING attribute to
+conserve the vmalloc area.
+
+Best regards,
+Tomasz
