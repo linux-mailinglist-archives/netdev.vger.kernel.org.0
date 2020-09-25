@@ -2,91 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B924278164
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 09:20:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ADD327817E
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 09:26:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727268AbgIYHUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 03:20:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43128 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727067AbgIYHUK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 03:20:10 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2F54122211;
-        Fri, 25 Sep 2020 07:20:08 +0000 (UTC)
-Date:   Fri, 25 Sep 2020 10:20:05 +0300
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Randy Dunlap <rdunlap@infradead.org>, Eli Cohen <elic@nvidia.com>,
-        virtualization@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH v3 -next] vdpa: mlx5: change Kconfig depends to fix build
- errors
-Message-ID: <20200925072005.GB2280698@unreal>
-References: <73f7e48b-8d16-6b20-07d3-41dee0e3d3bd@infradead.org>
- <20200918082245.GP869610@unreal>
- <20200924052932-mutt-send-email-mst@kernel.org>
- <20200924102413.GD170403@mtl-vdi-166.wap.labs.mlnx>
- <079c831e-214d-22c1-028e-05d84e3b7f04@infradead.org>
- <20200924120217-mutt-send-email-mst@kernel.org>
+        id S1727451AbgIYH0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 03:26:31 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:51512 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727132AbgIYH0b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 03:26:31 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.69 with qID 08P7PU6j8009167, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb04.realtek.com.tw[172.21.6.97])
+        by rtits2.realtek.com.tw (8.15.2/2.66/5.86) with ESMTPS id 08P7PU6j8009167
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 25 Sep 2020 15:25:30 +0800
+Received: from localhost.localdomain (172.21.179.130) by
+ RTEXMB04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Fri, 25 Sep 2020 15:25:29 +0800
+From:   Willy Liu <willy.liu@realtek.com>
+To:     <andrew@lunn.ch>
+CC:     <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <fancer.lancer@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <ryankao@realtek.com>,
+        <kevans@FreeBSD.org>, Willy Liu <willy.liu@realtek.com>
+Subject: [PATCH net] net: phy: realtek: fix rtl8211e rx/tx delay config
+Date:   Fri, 25 Sep 2020 15:25:15 +0800
+Message-ID: <1601018715-952-1-git-send-email-willy.liu@realtek.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200924120217-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain
+X-Originating-IP: [172.21.179.130]
+X-ClientProxiedBy: RTEXMB01.realtek.com.tw (172.21.6.94) To
+ RTEXMB04.realtek.com.tw (172.21.6.97)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 12:02:43PM -0400, Michael S. Tsirkin wrote:
-> On Thu, Sep 24, 2020 at 08:47:05AM -0700, Randy Dunlap wrote:
-> > On 9/24/20 3:24 AM, Eli Cohen wrote:
-> > > On Thu, Sep 24, 2020 at 05:30:55AM -0400, Michael S. Tsirkin wrote:
-> > >>>> --- linux-next-20200917.orig/drivers/vdpa/Kconfig
-> > >>>> +++ linux-next-20200917/drivers/vdpa/Kconfig
-> > >>>> @@ -31,7 +31,7 @@ config IFCVF
-> > >>>>
-> > >>>>  config MLX5_VDPA
-> > >>>>  	bool "MLX5 VDPA support library for ConnectX devices"
-> > >>>> -	depends on MLX5_CORE
-> > >>>> +	depends on VHOST_IOTLB && MLX5_CORE
-> > >>>>  	default n
-> > >>>
-> > >>> While we are here, can anyone who apply this patch delete the "default n" line?
-> > >>> It is by default "n".
-> > >
-> > > I can do that
-> > >
-> > >>>
-> > >>> Thanks
-> > >>
-> > >> Hmm other drivers select VHOST_IOTLB, why not do the same?
-> >
-> > v1 used select, but Saeed requested use of depends instead because
-> > select can cause problems.
-> >
-> > > I can't see another driver doing that. Perhaps I can set dependency on
-> > > VHOST which by itself depends on VHOST_IOTLB?
-> > >>
-> > >>
-> > >>>>  	help
-> > >>>>  	  Support library for Mellanox VDPA drivers. Provides code that is
-> > >>>>
-> > >>
-> >
->
-> Saeed what kind of problems? It's used with select in other places,
-> isn't it?
+There are two chip pins named TXDLY and RXDLY which actually adds the 2ns
+delays to TXC and RXC for TXD/RXD latching. These two pins can config via
+4.7k-ohm resistor to 3.3V hw setting, but also config via software setting
+(extension page 0xa4 register 0x1c bit13 12 and 11).
 
-IMHO, "depends" is much more explicit than "select".
+The configuration register definitions from table 13 official PHY datasheet:
+PHYAD[2:0] = PHY Address
+AN[1:0] = Auto-Negotiation
+Mode = Interface Mode Select
+RX Delay = RX Delay
+TX Delay = TX Delay
+SELRGV = RGMII/GMII Selection
 
-Thanks
+This table describes how to config these hw pins via external pull-high or pull-
+low resistor.
 
->
-> > --
-> > ~Randy
->
+It is a misunderstanding that mapping it as register bits below:
+8:6 = PHY Address
+5:4 = Auto-Negotiation
+3 = Interface Mode Select
+2 = RX Delay
+1 = TX Delay
+0 = SELRGV
+So I removed these descriptions above and add related settings as below:
+14 = reserved
+13 = force Tx RX Delay controlled by bit12 bit11
+12 = Tx Delay
+11 = Rx Delay
+10:0 = Test && debug settings reserved by realtek
+
+Test && debug settings are not recommend to modify by default.
+
+Fixes: f81dadbcf7fd ("net: phy: realtek: Add rtl8211e rx/tx delays config")
+Signed-off-by: Willy Liu <willy.liu@realtek.com>
+---
+ drivers/net/phy/realtek.c | 26 ++++++++++++++------------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
+ mode change 100644 => 100755 drivers/net/phy/realtek.c
+
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+old mode 100644
+new mode 100755
+index 95dbe5e..f5fce80
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -32,9 +32,9 @@
+ #define RTL8211F_TX_DELAY			BIT(8)
+ #define RTL8211F_RX_DELAY			BIT(3)
+ 
+-#define RTL8211E_TX_DELAY			BIT(1)
+-#define RTL8211E_RX_DELAY			BIT(2)
+-#define RTL8211E_MODE_MII_GMII			BIT(3)
++#define RTL8211E_CTRL_DELAY			BIT(13)
++#define RTL8211E_TX_DELAY			BIT(12)
++#define RTL8211E_RX_DELAY			BIT(11)
+ 
+ #define RTL8201F_ISR				0x1e
+ #define RTL8201F_IER				0x13
+@@ -249,13 +249,13 @@ static int rtl8211e_config_init(struct phy_device *phydev)
+ 		val = 0;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+-		val = RTL8211E_TX_DELAY | RTL8211E_RX_DELAY;
++		val = RTL8211E_CTRL_DELAY | RTL8211E_TX_DELAY | RTL8211E_RX_DELAY;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII_RXID:
+-		val = RTL8211E_RX_DELAY;
++		val = RTL8211E_CTRL_DELAY | RTL8211E_RX_DELAY;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII_TXID:
+-		val = RTL8211E_TX_DELAY;
++		val = RTL8211E_CTRL_DELAY | RTL8211E_TX_DELAY;
+ 		break;
+ 	default: /* the rest of the modes imply leaving delays as is. */
+ 		return 0;
+@@ -263,11 +263,12 @@ static int rtl8211e_config_init(struct phy_device *phydev)
+ 
+ 	/* According to a sample driver there is a 0x1c config register on the
+ 	 * 0xa4 extension page (0x7) layout. It can be used to disable/enable
+-	 * the RX/TX delays otherwise controlled by RXDLY/TXDLY pins. It can
+-	 * also be used to customize the whole configuration register:
+-	 * 8:6 = PHY Address, 5:4 = Auto-Negotiation, 3 = Interface Mode Select,
+-	 * 2 = RX Delay, 1 = TX Delay, 0 = SELRGV (see original PHY datasheet
+-	 * for details).
++	 * the RX/TX delays otherwise controlled by RXDLY/TXDLY pins. 
++	 * The configuration register definition:
++	 * 14 = reserved
++	 * 13 = Force Tx RX Delay controlled by bit12 bit11,
++	 * 12 = RX Delay, 11 = TX Delay
++	 * 10:0 = Test && debug settings reserved by realtek
+ 	 */
+ 	oldpage = phy_select_page(phydev, 0x7);
+ 	if (oldpage < 0)
+@@ -277,7 +278,8 @@ static int rtl8211e_config_init(struct phy_device *phydev)
+ 	if (ret)
+ 		goto err_restore_page;
+ 
+-	ret = __phy_modify(phydev, 0x1c, RTL8211E_TX_DELAY | RTL8211E_RX_DELAY,
++	ret = __phy_modify(phydev, 0x1c, RTL8211E_CTRL_DELAY
++			   | RTL8211E_TX_DELAY | RTL8211E_RX_DELAY,
+ 			   val);
+ 
+ err_restore_page:
+-- 
+1.9.1
+
