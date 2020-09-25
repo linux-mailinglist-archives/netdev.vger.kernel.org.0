@@ -2,115 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42967279113
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 20:47:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40228279141
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 21:00:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729814AbgIYSrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 14:47:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
+        id S1729686AbgIYTAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 15:00:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729754AbgIYSrQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 14:47:16 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 068C1C0613D7
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 11:47:16 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id w2so4100633wmi.1
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 11:47:15 -0700 (PDT)
+        with ESMTP id S1727201AbgIYTAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 15:00:37 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A05C0C0613CE
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 12:00:37 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id 197so3354202pge.8
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 12:00:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=g/BH1U9GUunsIrnO/GbdPQWxTeH46s0MtJm8Rv2PmQg=;
-        b=dRgYAI+Il/XnGvkuGcGG/lsBUKoJIpFGsPVq7bdfwYbSWBuKZWhEyZ/C6V2T06d7l+
-         MlGVte7aAMEe5kn/Xzgvbo6wkmehHB6utltBuTWLjuy10bgK9jfUtimOpRmqNVZ/PDb7
-         pPEsfddSQturiPpnwk/9j/tF8/GG+ViphzAqQ=
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Q6yEZ87hbqUHFRRkw2yL30bTDWYndLrXdIaxUDaFXRg=;
+        b=jyXBuC2gJtov3ebkeT04oAcOH5j1Zmjf0r6cZgbWIl65F5CHVkrMoP+SBlEdHL2Ptz
+         w4Sewvkc8ZaAnNB1TDLFS7Kc29iy5pPaYgsCgJbIdKaC4w0P8vznKd55gZhzCOcw4Dvk
+         S+JMGdGl7BoZms4AZsWeiyJG2hS/Pqak+qCaaVvUjadqSZ6BCTo6dlQyg8vJJEASPNrX
+         pNVEUTEpr5ODGylzBSlk6XTqzA4DmOGAiaLLVmpsl492mtYw9kcFCBPqvPy4FC3/cLtO
+         fMJC33NbtlfeLprLQglG08FvSyF41k6vRI2UPqzJK8RH9GBIRidia4nKzEmi18L+IIlV
+         mCAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=g/BH1U9GUunsIrnO/GbdPQWxTeH46s0MtJm8Rv2PmQg=;
-        b=F04GptM12m8zMuLLcbQWKJddsLmIzQJZD9CaQlJV4ZzRg3FUSYE1vxDxcrb3UvR4af
-         qtq680KpcgNB3Oc08IbNNlf3DSoV22uo66YuMGTpxnamz1auwIPdwnkztUWHbQ2EiTug
-         Qu+diB2RS6JwQdTQ8gQKsHvYpyLIigQDZkWNgpjvoAytQv1isgY47DbGK3qseJ6dkEy+
-         gqoo0Z7PVtcm8PHG646112TKq3dinnK5+WJsphw55n0/zGKg3vnNRaAtHpIq0CfJWMpF
-         AU07L9T8C1GrKf3LbRomE14muoEbjI9cX+v9Tb/idTU0dFcrPU45RV4TTs4ZT0QzAntW
-         IIkw==
-X-Gm-Message-State: AOAM5304vq1b7N3d10KEcT0Rn42wLgCYYjD5iBw8T2OV+aeI9j+orOjX
-        O2ucFp9Oko9NlYqpgpc0qis/kw==
-X-Google-Smtp-Source: ABdhPJwizv9lDNCgaSezSHmDHMwhCyQSsePLifiuaYRBnBvcSMHXRWloRU3D/0rZv64JO/qSChFcJg==
-X-Received: by 2002:a1c:2d86:: with SMTP id t128mr4754086wmt.189.1601059634661;
-        Fri, 25 Sep 2020 11:47:14 -0700 (PDT)
-Received: from chromium.org (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
-        by smtp.gmail.com with ESMTPSA id w15sm3841044wro.46.2020.09.25.11.47.13
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Q6yEZ87hbqUHFRRkw2yL30bTDWYndLrXdIaxUDaFXRg=;
+        b=TRaqxO0sn2wNgrazmF50uEhUTPhcpmnAcHuHPCxIr5VK/4/KVbmurU7/Qhuho6lu2U
+         dgywuFTkEH1CIs5QHzViKI4BhoP90tN6c8geS6wRBj+7gOu0ma7bzQYCIsGaQ5UP6spM
+         oQZ8Kkg+CGX8EI/TZFbuQxu0T4Kxf299xTwoGu6w8qK1EXRubOBPI5PtkK9UVC+h57Rd
+         rR7iR6TcuOXfbCdbnVfpgvGnIFXU80KxvHhunuyTEjccrLZCYVpSSqgY44Mc1OyNJxeI
+         G2pDqACcFIwXApHwYJYSpAqR7l9olOi5joslKlb1fpHLvvAEGnqMx5LqRWhUgblju8pz
+         p9qg==
+X-Gm-Message-State: AOAM532YbNoOPk2M1bTq9pDQRTaw7ryGwUG/bH/F5AI2KLogcAT8LW+K
+        s4Cke+dzD2LQZHbDvN3aPqdfIrSSZCiWGA==
+X-Google-Smtp-Source: ABdhPJzG/RWEX3HZdOccQnD6YEI05uOYIuAN1XiLC3pTVRxxOAVUjtXIgH6r34X87pqRWAiQ3K9otQ==
+X-Received: by 2002:a63:f90d:: with SMTP id h13mr294653pgi.227.1601060437129;
+        Fri, 25 Sep 2020 12:00:37 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id q10sm2684911pja.48.2020.09.25.12.00.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Sep 2020 11:47:13 -0700 (PDT)
-Date:   Fri, 25 Sep 2020 18:47:12 +0000
-From:   Tomasz Figa <tfiga@chromium.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        iommu@lists.linux-foundation.org,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        linux1394-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
-        alsa-devel@alsa-project.org,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Subject: Re: [PATCH 01/18] media/v4l2: remove V4L2-FLAG-MEMORY-NON-CONSISTENT
- flag
-Message-ID: <20200925184712.GC3607091@chromium.org>
-References: <20200915155122.1768241-1-hch@lst.de>
- <20200915155122.1768241-2-hch@lst.de>
+        Fri, 25 Sep 2020 12:00:36 -0700 (PDT)
+Date:   Fri, 25 Sep 2020 12:00:28 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Wei Wang <weiwan@google.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Subject: Re: [RFC PATCH net-next 0/6] implement kthread based napi poll
+Message-ID: <20200925120028.65b5cd6d@hermes.lan>
+In-Reply-To: <CANn89iKAaKnZb3+RdMkK+Lx+5BBs=0Lnzwhe_jkzP4A8qHFZTg@mail.gmail.com>
+References: <20200914172453.1833883-1-weiwan@google.com>
+        <CAJ8uoz30afXpbn+RXwN5BNMwrLAcW0Cn8tqP502oCLaKH0+kZg@mail.gmail.com>
+        <CAEA6p_BBaSQJjTPicgjoDh17BxS9aFMb-o6ddqW3wDvPAMyrGQ@mail.gmail.com>
+        <20200925111627.047f5ed2@hermes.lan>
+        <CANn89iKAaKnZb3+RdMkK+Lx+5BBs=0Lnzwhe_jkzP4A8qHFZTg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200915155122.1768241-2-hch@lst.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christoph,
+On Fri, 25 Sep 2020 20:23:37 +0200
+Eric Dumazet <edumazet@google.com> wrote:
 
-On Tue, Sep 15, 2020 at 05:51:05PM +0200, Christoph Hellwig wrote:
-> From: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+> On Fri, Sep 25, 2020 at 8:16 PM Stephen Hemminger
+> <stephen@networkplumber.org> wrote:
+> >
+> > On Fri, 25 Sep 2020 10:15:25 -0700
+> > Wei Wang <weiwan@google.com> wrote:
+> >  
+> > > > > In terms of performance, I ran tcp_rr tests with 1000 flows with
+> > > > > various request/response sizes, with RFS/RPS disabled, and compared
+> > > > > performance between softirq vs kthread. Host has 56 hyper threads and
+> > > > > 100Gbps nic.  
+> >
+> > It would be good to similar tests on othere hardware. Not everyone has
+> > server class hardware. There are people running web servers on untuned
+> > servers over 10 years old; this may cause a regression there.
+> >
+> > Not to mention the slower CPU's in embedded systems. How would this
+> > impact OpenWrt or Android?  
 > 
-> The patch partially reverts some of the UAPI bits of the buffer
-> cache management hints. Namely, the queue consistency (memory
-> coherency) user-space hint because, as it turned out, the kernel
-> implementation of this feature was misusing DMA_ATTR_NON_CONSISTENT.
+> Most probably you won't notice a significant difference.
 > 
-> The patch revers both kernel and user space parts: removes the
-> DMA consistency attr functions, rollbacks changes to v4l2_requestbuffers,
-> v4l2_create_buffers structures and corresponding UAPI functions
-> (plus compat32 layer) and cleanups the documentation.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  .../userspace-api/media/v4l/buffer.rst        | 17 -------
->  .../media/v4l/vidioc-create-bufs.rst          |  6 +--
->  .../media/v4l/vidioc-reqbufs.rst              | 12 +----
->  .../media/common/videobuf2/videobuf2-core.c   | 46 +++----------------
->  .../common/videobuf2/videobuf2-dma-contig.c   | 19 --------
->  .../media/common/videobuf2/videobuf2-dma-sg.c |  3 +-
->  .../media/common/videobuf2/videobuf2-v4l2.c   | 18 +-------
->  drivers/media/v4l2-core/v4l2-compat-ioctl32.c | 10 +---
->  drivers/media/v4l2-core/v4l2-ioctl.c          |  5 +-
->  include/media/videobuf2-core.h                |  7 +--
->  include/uapi/linux/videodev2.h                | 13 +-----
->  11 files changed, 22 insertions(+), 134 deletions(-)
+> Switching to a kthread is quite cheap, since you have no MMU games to play with.
 
-Acked-by: Tomasz Figa <tfiga@chromium.org>
+That makes sense, and in the past when doing stress tests the napi
+work was mostly on the kthread already.
 
-Best regards,
-Tomasz
+> >
+> > Another potential problem is that if you run real time (SCH_FIFO)
+> > threads they have higher priority than kthread. So for that use
+> > case, moving networking to kthread would break them.  
+> 
+> Sure, playing with FIFO threads is dangerous.
+> 
+> Note that our plan is still to have softirqs by default.
+> 
+> If an admin chose to use kthreads, it is its choice, not ours.
+> 
+> This is also why I very much prefer the kthread approach to the work
+> queue, since the work queue could not be fine tuned.
+
+Agree with you, best to keep this as opt-in.
