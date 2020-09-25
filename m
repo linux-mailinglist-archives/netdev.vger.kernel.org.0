@@ -2,116 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BBEF2784F7
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 12:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E945727850C
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 12:25:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728060AbgIYKWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 06:22:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
+        id S1728150AbgIYKZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 06:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727520AbgIYKWL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 06:22:11 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD36C0613CE;
-        Fri, 25 Sep 2020 03:22:11 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id z19so2719765pfn.8;
-        Fri, 25 Sep 2020 03:22:11 -0700 (PDT)
+        with ESMTP id S1727925AbgIYKZz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 06:25:55 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED2FC0613CE
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 03:25:55 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id y15so2712222wmi.0
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 03:25:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2lbFg3EfTPubbbEXQCNv75JEtnNzJ5GMo5FQjXXg9gA=;
-        b=LSfij8cmE3SRXNOnYNmnoAglcEmSbiz26Yt8p3PrMrnltuSQMEETYBvnz2dbFpghvt
-         AqCs5GPJklKK/M1+st7P0ufNsiWQA0W1DLTTli3fHd8cF2PxThflC3I5x7fhxs53HZx/
-         zeyiwKAPpDDrCdOshiLl7/CNwimYcxJCi/gf1AMqIQv4RMVsCGXyR1x8f0ko78aYEorx
-         5h+wz6H6JdDA/GL2/A2b9lrMahTR5nD2vice+RxkSR7vyveSymLn3YrkLHGHWaOygIwO
-         6GmXGHCJT7L6+ZLPyhfeOp1zsiogdSDdEvEPWbpRrgYX1BxJEG8RQqLhzl0SBbhWM1Kr
-         P7EA==
+        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/bSXHNtdU+eEhzycYVit0PPbYq40mXuagPAzmTwFhXc=;
+        b=uAHSdiWaP3q78YXDSbkvEyYy9k/VwxAC2Z9ITTrMvZ9VOj4FEjwkgcprsNBzLSC9ae
+         N7tp9gnZSzunQ+kmGYqGNgGOTcNgDT42pYAocl0crhCbhEqhX03kWeIoudh5b2Cq4hYN
+         1e6RROvVfDvfijmhyfTtRlpHENORCIH/u8Gvnj+5+reepo+J8sBPhdtXDxAPE9HPvOTc
+         UnpWNGCzdPdjYtFQWuJvo0JcWsesui7JTZ9uMb6CPam5YNDHi7iR2e5g523g3EIbBYo9
+         20wpaBe2nmuUoOxwJL48aM5+xfat5r/BnpyrxPnFfg3y45FPOUQkmjqAVxxwpWVQWTHL
+         ypAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2lbFg3EfTPubbbEXQCNv75JEtnNzJ5GMo5FQjXXg9gA=;
-        b=j3Rv4pOwt2Hdlm7Gf7Mp0fvw4SvectYZ/91nfa5vebfjfjZ9vOr/4Cvl0c8xSh3rOR
-         LsWdOj69gz/XQI/B7EKfr32FIERW7NJPXTYegWBHILMVSNAbb3/9Aewi3obAzHORUvxM
-         E8Xn9RwF3LQx1F0jS1jzE7xe7T1vcoBSpF5TOB4vboarz1/dKRH1+72/Hq7xiGXv0YiP
-         qh5rO4vDCbDuum8JvPBZQVbQqU4LaCNgoXQTXBPNsDemOyz5RjMPD+o72X3UGazJgssH
-         A8YvbljZLam1vDWec0GVcJUwC6o1MRhvKqt0lsa04ytnN03zPkBeVHKmPcvzPX1AtF6L
-         cWLg==
-X-Gm-Message-State: AOAM531vTM3FnwSBwaabSKE6meRednFnnDYZXMvAHkZLhdP5hJjBJpyh
-        EBM+X64woW44nhowMV7wBtGlPzTvji6RS6CdONs=
-X-Google-Smtp-Source: ABdhPJzYlM8hV0nt13kMb7p2rnKTLsPzywseTL+BVDG3rpzy9n7kySSls2sU3iDbAEm+9utxauJoCMzVwRpkG/6HZLg=
-X-Received: by 2002:aa7:9201:0:b029:13e:d13d:a10c with SMTP id
- 1-20020aa792010000b029013ed13da10cmr3305770pfo.40.1601029330528; Fri, 25 Sep
- 2020 03:22:10 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/bSXHNtdU+eEhzycYVit0PPbYq40mXuagPAzmTwFhXc=;
+        b=h72EGAy9eRzef42/lEh4UbDdk/COdAAJ4x4nSbb0HmJpFlwrqBtaQ6/qi96qd/Tlix
+         h0c9Kr1c03/IM7+kNLa9MQZPNpTMDZ6Cugwih0mjEDedDwGS1LDKhbC+0SCg1R+oHZVh
+         Cg7GFdT/UcET4AKH81UlV49zLmdVJdPgGJJcvfp87fSsFcGavrHhuqpg7wPKGPtcU8gm
+         A9ixFDt2OivZhg2fTZfvSjFJJ6raQAtJ8PXIi0g/j96cPKd8sLZVCqBnYmOnoIK01tAI
+         kv+B1gP/SIXd70vp+g1YjD63cc2ftV3hJHWSQHCtiVmryHo2WCyKI3VqhN6UlbMByUhS
+         tVIA==
+X-Gm-Message-State: AOAM530BdGWKfM0cK7JKLHfduGXiQm1b4YhrNRYXo/daNrMdpP4cSfIA
+        stlzj8LLrJaYs+iYYAFzIIglZHi9Y/tWgLdjSgs=
+X-Google-Smtp-Source: ABdhPJwYkAg6wiYQE/kiFTwGRHyIiOS5zag+H4OguIXfa0N+21fcrPr3n3Pr11DlnHUNcTu6o4O+pA==
+X-Received: by 2002:a05:600c:210c:: with SMTP id u12mr2523261wml.185.1601029553549;
+        Fri, 25 Sep 2020 03:25:53 -0700 (PDT)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id f14sm2543557wrt.53.2020.09.25.03.25.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2020 03:25:52 -0700 (PDT)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
+        davem@davemloft.net, Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net-next] net: bridge: mcast: remove only S,G port groups from sg_port hash
+Date:   Fri, 25 Sep 2020 13:25:49 +0300
+Message-Id: <20200925102549.1704905-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-References: <20200925095406.27834-1-vee.khee.wong@intel.com>
-In-Reply-To: <20200925095406.27834-1-vee.khee.wong@intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 25 Sep 2020 13:21:52 +0300
-Message-ID: <CAHp75VeMJXRhx2FrsRur4e9OLXodmXh5Krj_n6PosuJx6MD=Zg@mail.gmail.com>
-Subject: Re: [PATCH net 1/1] net: stmmac: Fix clock handling on remove path
-To:     Wong Vee Khee <vee.khee.wong@intel.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Wei Feng <weifeng.voon@intel.com>,
-        Vijaya Balan Sadhishkhanna 
-        <sadhishkhanna.vijaya.balan@intel.com>,
-        Seow Chen Yong <chen.yong.seow@intel.com>,
-        Mark Gross <mgross@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 25, 2020 at 12:54 PM Wong Vee Khee <vee.khee.wong@intel.com> wrote:
->
-> While unloading the dwmac-intel driver, clk_disable_unprepare() is
-> being called twice in stmmac_dvr_remove() and
-> intel_eth_pci_remove(). This causes kernel panic on the second call.
->
-> Removing the second call of clk_disable_unprepare() in
-> intel_eth_pci_remove().
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Thanks! I'm not sure how I missed this...
+We should remove a group from the sg_port hash only if it's an S,G
+entry. This makes it correct and more symmetric with group add. Also
+since *,G groups are not added to that hash we can hide a bug.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Fixes: 085b53c8beab ("net: bridge: mcast: add sg_port rhashtable")
+Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+---
+ net/bridge/br_multicast.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-> Fixes: 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove paths")
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
-> Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-> index 2ac9dfb3462c..9e6d60e75f85 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-> @@ -653,7 +653,6 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
->
->         pci_free_irq_vectors(pdev);
->
-> -       clk_disable_unprepare(priv->plat->stmmac_clk);
->         clk_unregister_fixed_rate(priv->plat->stmmac_clk);
->
->         pcim_iounmap_regions(pdev, BIT(0));
-> --
-> 2.17.0
->
-
-
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index 66eb62ded192..eae898c3cff7 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -590,17 +590,18 @@ void br_multicast_del_pg(struct net_bridge_mdb_entry *mp,
+ 	struct net_bridge_group_src *ent;
+ 	struct hlist_node *tmp;
+ 
+-	rhashtable_remove_fast(&br->sg_port_tbl, &pg->rhnode,
+-			       br_sg_port_rht_params);
+ 	rcu_assign_pointer(*pp, pg->next);
+ 	hlist_del_init(&pg->mglist);
+ 	hlist_for_each_entry_safe(ent, tmp, &pg->src_list, node)
+ 		br_multicast_del_group_src(ent);
+ 	br_mdb_notify(br->dev, mp, pg, RTM_DELMDB);
+-	if (!br_multicast_is_star_g(&mp->addr))
++	if (!br_multicast_is_star_g(&mp->addr)) {
++		rhashtable_remove_fast(&br->sg_port_tbl, &pg->rhnode,
++				       br_sg_port_rht_params);
+ 		br_multicast_sg_del_exclude_ports(mp);
+-	else
++	} else {
+ 		br_multicast_star_g_handle_mode(pg, MCAST_INCLUDE);
++	}
+ 	hlist_add_head(&pg->mcast_gc.gc_node, &br->mcast_gc_list);
+ 	queue_work(system_long_wq, &br->mcast_gc_work);
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.4
+
