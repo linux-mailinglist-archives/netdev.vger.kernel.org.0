@@ -2,83 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8579527922C
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:35:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B006B279241
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:37:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728930AbgIYUdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 16:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727258AbgIYU2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 16:28:35 -0400
-Received: from mail.buslov.dev (mail.buslov.dev [IPv6:2001:19f0:5001:2e3f:5400:1ff:feed:a259])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7DEFC0613B5
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 12:50:14 -0700 (PDT)
-Received: from vlad-x1g6.mellanox.com (unknown [IPv6:2a0b:2bc3:193f:1:a5fe:a7d6:6345:fe8d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.buslov.dev (Postfix) with ESMTPSA id F1CC520B4F;
-        Fri, 25 Sep 2020 22:45:11 +0300 (EEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=buslov.dev; s=2019;
-        t=1601063112;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=byEbDwzk5WHU4FygOZ8muKPjI0PrrXeInFq+yfTsF0A=;
-        b=KHTgSAACBr8CjcReRiWRDgaCKlHhGvHqKHfhGGk9+ud+ETFcVzicu3dFOh4SvpgQoTgnRZ
-        TP5RzIO8cYeMRVcH5x/Y+ascqLwYOGx5gpOI9tH2k80WDv/f9qybCQ1WzSrpy08fQzUfjk
-        9466FXzL/yFQ8HNF+eCwXd9dvJ5l/UMIcB2yQzpJWgXjtEn5YHAr6qXZ1jeXvXGkICa+1X
-        ASnuSAW7dgh97ehueAJTlgnNWZOm4LjpPupbGeErZrwBJPu9kljICzvUpgNXqd6V/KCaGB
-        +sgpzXoAitb6JLvK4ZU75U6BbfiEqWdtobc6Cx++wu0iNTf0+ILWZr1Ua8iMlw==
-References: <20200923035624.7307-1-xiyou.wangcong@gmail.com> <20200923035624.7307-2-xiyou.wangcong@gmail.com> <877dsh98wq.fsf@buslov.dev> <CAM_iQpXy4GuHidnLAL+euBaNaJGju6KFXBZ67WS_Pws58sD6+g@mail.gmail.com>
-User-agent: mu4e 1.4.13; emacs 26.3
-From:   Vlad Buslov <vlad@buslov.dev>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [Patch net 1/2] net_sched: defer tcf_idr_insert() in tcf_action_init_1()
-In-reply-to: <CAM_iQpXy4GuHidnLAL+euBaNaJGju6KFXBZ67WS_Pws58sD6+g@mail.gmail.com>
-Message-ID: <8736358wu0.fsf@buslov.dev>
-Date:   Fri, 25 Sep 2020 22:45:11 +0300
-MIME-Version: 1.0
+        id S1728088AbgIYUg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 16:36:26 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:35731 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726149AbgIYUgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 16:36:19 -0400
+X-Greylist: delayed 1200 seconds by postgrey-1.27 at vger.kernel.org; Fri, 25 Sep 2020 16:36:19 EDT
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id E8CCB8C2;
+        Fri, 25 Sep 2020 15:46:15 -0400 (EDT)
+Received: from imap2 ([10.202.2.52])
+  by compute4.internal (MEProxy); Fri, 25 Sep 2020 15:46:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        stressinduktion.org; h=mime-version:message-id:in-reply-to
+        :references:date:from:to:cc:subject:content-type; s=fm1; bh=qCuo
+        QpCgvJl5FFBZqJAbGwHxALLtScR9/aZbYtT+lJs=; b=g03MUGsi0X/YTAdHVV5D
+        9Wj8i0O2QfIeceOXKF2iU/NApN8ni8mpM/0+XAaEHYz0z/x3BTWxqLADqk8e118f
+        3K/oMq4pLznM2cA3cN/9n5ZYaryjGu3oDncpLcgPqyJFjdc6NLUtKCA7fXMqzERS
+        wlJHuELVv/Ks/y9epufGqOP83zqXiQYM1UZUwS5pzPfNfSJuod449fZAmZRYu2NI
+        pSIKo7RgnoV3Y/oRvTJh95jlldjCmYMHfDtKdkFjY/gUmrbVd9IFtgHb449YBP65
+        5qFUvU47iVOvrDaYFQFCiSDoUsCKrsrsubgmDZ2cc7Wil+qWeSX3nK3Pp422ESG5
+        2w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=qCuoQp
+        CgvJl5FFBZqJAbGwHxALLtScR9/aZbYtT+lJs=; b=mNF8GoFSR3DWsu51nlSP4Q
+        +MToIQ9jyC/c/n8SGuAhwxnqcIFJGZHgdw5qAeBn+gud00ud1W/6txhlu6NrcN/E
+        4GBZZ3cAfJBg+rmeP7DiUz7ktj/35bXwmenCuqjus2ZD7Orj7ArsEgVrl6rYFiEl
+        pozIvDU/7RL6Ixq546rIxGkKBTq9Ict/ukmxmlnTpVEa5O+wXep91H5noTTJaiL5
+        L40FaFceKuFjG+lGC0kSOn94KyU6ZU9WMR4Op9R4BKMISnJ44OOxqvLGE1AIEBNW
+        1JVaqzzrfKdNH8pknGgBzylHhbpVMRmYAszVJgZ1uMnaJWB0CugWLPik3mC4Lbhw
+        ==
+X-ME-Sender: <xms:BkluX0Gldusylu6wyPzDmldtaZy37GvE15gsBNfmxeuBDP-soabqtA>
+    <xme:BkluX9Xe3teYZPqcjhQlehk0AohC-Qi4ZICZbEngIngF7YhoGtnz-CVAiesP3PRyT
+    EL9D7X595sy692p1Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvddtgddufeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreerjeenucfhrhhomhepfdfjrghn
+    nhgvshcuhfhrvgguvghrihgtucfuohifrgdfuceohhgrnhhnvghssehsthhrvghsshhinh
+    guuhhkthhiohhnrdhorhhgqeenucggtffrrghtthgvrhhnpedvfffgieffvddtkeffffef
+    ueelhfeivedvhfejgeeigfegtefghfeikeehheevudenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehhrghnnhgvshesshhtrhgvshhsihhnughu
+    khhtihhonhdrohhrgh
+X-ME-Proxy: <xmx:BkluX-KW1D_Im9SH6h8UZ7KCo5q8KRgiVE02wn0rprlHjeO0FswiwQ>
+    <xmx:BkluX2G2Toa_W9-Q88b6Lb75-35EUM7a58S1gJy_f-kpyolI6znslA>
+    <xmx:BkluX6WRDmPh3VAZJjEqnS4ZbvVGOP1Uj5jM3qMw1zaezQnCk4fuSA>
+    <xmx:B0luX4zwujt86Sn6YdvxMyPO9ZMpHwUXvyFRKiTAdsMUjX93Zpl2AA>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id C7337E00ED; Fri, 25 Sep 2020 15:46:13 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.3.0-355-g3ece53b-fm-20200922.004-g3ece53b9
+Mime-Version: 1.0
+Message-Id: <2ab7cdc1-b9e1-48c7-89b2-a10cd5e19545@www.fastmail.com>
+In-Reply-To: <20200914172453.1833883-2-weiwan@google.com>
+References: <20200914172453.1833883-1-weiwan@google.com>
+ <20200914172453.1833883-2-weiwan@google.com>
+Date:   Fri, 25 Sep 2020 21:45:53 +0200
+From:   "Hannes Frederic Sowa" <hannes@stressinduktion.org>
+To:     "Wei Wang" <weiwan@google.com>,
+        "David Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     "Jakub Kicinski" <kuba@kernel.org>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Paolo Abeni" <pabeni@redhat.com>, "Felix Fietkau" <nbd@nbd.name>
+Subject: =?UTF-8?Q?Re:_[RFC_PATCH_net-next_1/6]_net:_implement_threaded-able_napi?=
+ =?UTF-8?Q?_poll_loop_support?=
 Content-Type: text/plain
-Authentication-Results: ORIGINATING;
-        auth=pass smtp.auth=vlad@buslov.dev smtp.mailfrom=vlad@buslov.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri 25 Sep 2020 at 22:22, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> On Fri, Sep 25, 2020 at 8:24 AM Vlad Buslov <vlad@buslov.dev> wrote:
->> > +     if (TC_ACT_EXT_CMP(a->tcfa_action, TC_ACT_GOTO_CHAIN) &&
->> > +         !rcu_access_pointer(a->goto_chain)) {
->> > +             tcf_action_destroy_1(a, bind);
->> > +             NL_SET_ERR_MSG(extack, "can't use goto chain with NULL chain");
->> > +             return ERR_PTR(-EINVAL);
->> > +     }
->>
->> I don't think calling tcf_action_destoy_1() is enough here. Since you
->> moved this block before assigning cookie and releasing the module, you
->> also need to release them manually in addition to destroying the action
->> instance.
->>
->
-> tcf_action_destoy_1() eventually calls free_tcf() which frees cookie and
-> tcf_action_destroy() which releases module refcnt.
->
-> What am I missing here?
->
-> Thanks.
+Hello,
 
-The memory referenced by the function local pointer "cookie" hasn't been
-assigned yet to the a->act_cookie because in your patch you moved
-goto_chain validation code before the cookie change. That means that if
-user overwrites existing action, then action old a->act_cookie will be
-freed by tcf_action_destroy_1() but new cookie that was allocated by
-nla_memdup_cookie() will leak.
+Happy to see this work being resurrected (in case it is useful). :)
 
-Regards,
-Vlad
+On Mon, Sep 14, 2020, at 19:24, Wei Wang wrote:
+>
+> [...]
+>
+> +static void napi_thread_start(struct napi_struct *n)
+> +{
+> +	if (test_bit(NAPI_STATE_THREADED, &n->state) && !n->thread)
+> +		n->thread = kthread_create(napi_threaded_poll, n, "%s-%d",
+> +					   n->dev->name, n->napi_id);
+> +}
+> +
 
+The format string is only based on variable strings. To ease a quick
+grep for napi threads with ps I would propose to use "napi-%s-%d" or
+something alike to distinguish all threads created that way.
+
+Some other comments and questions:
+
+Back then my plan was to get this somewhat integrated with the
+`threadirqs` kernel boot option because triggering the softirq from
+threaded context (if this option is set) seemed wrong to me. Maybe in
+theory the existing interrupt thread could already be used in this case.
+This would also allow for fine tuning the corresponding threads as in
+this patch series.
+
+Maybe the whole approach of threaded irqs plus the already existing
+infrastructure could also be used for this series if it wouldn't be an
+all or nothing opt-in based on the kernel cmd line parameter? napi would
+then be able to just poll directly inline in the interrupt thread.
+
+The difference for those kthreads and the extra threads created here
+would be that fifo scheduling policy is set by default and they seem to
+automatically get steered to the appropriate CPUs via the IRQTF_AFFINITY
+mechanism. Maybe this approach is useful here as well?
+
+I hadn't had a look at the code for a while thus my memories might be
+wrong here.
+
+Thanks,
+Hannes
