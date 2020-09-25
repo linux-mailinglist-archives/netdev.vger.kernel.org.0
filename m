@@ -2,43 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2FFF278380
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:03:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C606278389
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:05:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727782AbgIYJD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 05:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59874 "EHLO
+        id S1727762AbgIYJFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 05:05:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727044AbgIYJDZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 05:03:25 -0400
+        with ESMTP id S1727346AbgIYJFG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 05:05:06 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F58C0613CE
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:03:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1D2C0613D3
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:05:05 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kLjdS-0004uw-GK; Fri, 25 Sep 2020 11:03:22 +0200
+        id 1kLjf4-00054T-7l; Fri, 25 Sep 2020 11:05:02 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953] (unknown [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 417EF56A304;
-        Fri, 25 Sep 2020 09:03:21 +0000 (UTC)
-Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
- flexcan memory for ECC function
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 2DB1D56A30C;
+        Fri, 25 Sep 2020 09:05:01 +0000 (UTC)
+Subject: Re: [PATCH linux-can-next/flexcan 2/4] can: flexcan: add flexcan
+ driver for i.MX8MP
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
+Cc:     linux-imx@nxp.com, netdev@vger.kernel.org
 References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
- <20200925151028.11004-2-qiangqing.zhang@nxp.com>
- <b4960a59-a864-d6f8-cef6-7223a6351dae@pengutronix.de>
- <DB8PR04MB6795BB0D5F2FFEEC3D384A96E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <a4a57849-fc34-0bc5-f35e-13347f6585dd@pengutronix.de>
- <DB8PR04MB6795BAB5714106474A06FD81E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20200925151028.11004-3-qiangqing.zhang@nxp.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -100,15 +94,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <ec1fc3c2-9879-8df5-c1ab-35fe1705c99c@pengutronix.de>
-Date:   Fri, 25 Sep 2020 11:03:17 +0200
+Message-ID: <bdb05b08-b60c-c3f9-2b01-3a8606d304f9@pengutronix.de>
+Date:   Fri, 25 Sep 2020 11:04:57 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <DB8PR04MB6795BAB5714106474A06FD81E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <20200925151028.11004-3-qiangqing.zhang@nxp.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="h9FkjaBPeTX1lLkYYspiFKNSoezrD0nQ1"
+ boundary="LKS4DIAsLE6eho7LBS8mXKDv92XgK7HmY"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -118,62 +112,47 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---h9FkjaBPeTX1lLkYYspiFKNSoezrD0nQ1
-Content-Type: multipart/mixed; boundary="40FtdDoIXMFxQz2wBEfPIplVWzGgHxia5";
+--LKS4DIAsLE6eho7LBS8mXKDv92XgK7HmY
+Content-Type: multipart/mixed; boundary="9Ihx6wFF3Wfna1giFuTuR93EWeR6fH3yh";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>,
- "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc: dl-linux-imx <linux-imx@nxp.com>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <ec1fc3c2-9879-8df5-c1ab-35fe1705c99c@pengutronix.de>
-Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
- flexcan memory for ECC function
+To: Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
+Cc: linux-imx@nxp.com, netdev@vger.kernel.org
+Message-ID: <bdb05b08-b60c-c3f9-2b01-3a8606d304f9@pengutronix.de>
+Subject: Re: [PATCH linux-can-next/flexcan 2/4] can: flexcan: add flexcan
+ driver for i.MX8MP
 References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
- <20200925151028.11004-2-qiangqing.zhang@nxp.com>
- <b4960a59-a864-d6f8-cef6-7223a6351dae@pengutronix.de>
- <DB8PR04MB6795BB0D5F2FFEEC3D384A96E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <a4a57849-fc34-0bc5-f35e-13347f6585dd@pengutronix.de>
- <DB8PR04MB6795BAB5714106474A06FD81E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
-In-Reply-To: <DB8PR04MB6795BAB5714106474A06FD81E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20200925151028.11004-3-qiangqing.zhang@nxp.com>
+In-Reply-To: <20200925151028.11004-3-qiangqing.zhang@nxp.com>
 
---40FtdDoIXMFxQz2wBEfPIplVWzGgHxia5
+--9Ihx6wFF3Wfna1giFuTuR93EWeR6fH3yh
 Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
+Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
 
-On 9/25/20 10:51 AM, Joakim Zhang wrote:
->>> I notice it just now, seems lack of patch for imx firmware in
->>> upstream, that will always export scu symbols.
->>> include/linux/firmware/imx/svc/misc.h
->>
->> That will affect "can: flexcan: add CAN wakeup function for i.MX8" not=
- this
->> patch, right?
+On 9/25/20 5:10 PM, Joakim Zhang wrote:
+> Add flexcan driver for i.MX8MP, which supports CAN FD and ECC.
 >=20
-> Yes, only affect "can: flexcan: add CAN wakeup function for i.MX8", I w=
-ill
-> remove this patch first.
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> ---
+>  drivers/net/can/flexcan.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+>=20
+> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+> index f02f1de2bbca..8c8753f77764 100644
+> --- a/drivers/net/can/flexcan.c
+> +++ b/drivers/net/can/flexcan.c
+> @@ -214,6 +214,7 @@
+>   *   MX53  FlexCAN2  03.00.00.00    yes        no        no       no  =
+      no           no
+>   *   MX6s  FlexCAN3  10.00.12.00    yes       yes        no       no  =
+     yes           no
+>   *  MX8QM  FlexCAN3  03.00.23.00    yes       yes        no       no  =
+     yes          yes
+> + *  MX8MP  FlexCAN3  03.00.17.01    yes       yes        no      yes  =
+     yes          yes
 
-ok
-
-> Sorry, I replied in a wrong place.
-
-np
-
-> "can: flexcan: initialize all flexcan memory for ECC function" for this=
-
-> patch, I find this issue in i.MX8MP, which is the first SoC implements =
-ECC
-> for i.MX
-
-What about the mx7?
-
-> I think this patch should compatible with others which has ECC support,=
- but I
-> don't have one to have a test.
-
-What about the mx7?
+This doesn't apply to net-next/master. The MX8QM indented differently.
 
 Marc
 
@@ -184,23 +163,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---40FtdDoIXMFxQz2wBEfPIplVWzGgHxia5--
+--9Ihx6wFF3Wfna1giFuTuR93EWeR6fH3yh--
 
---h9FkjaBPeTX1lLkYYspiFKNSoezrD0nQ1
+--LKS4DIAsLE6eho7LBS8mXKDv92XgK7HmY
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9tslUACgkQqclaivrt
-76k3oAf/RlPRP3MXIyOYUPoC3MqwWKkTYD7oIeXlXxx4UrLzCkmV+GgswhxycMk7
-Dbs1TelcX0fAqGgN0HjaS3cz4IilL97eRF1CqXwo43AV33rfo92aVCXxYfmHSYJu
-9WysWHpiqk66fAkTdm2rwjhiOg7ulaA79fh0z+x7DzMDSvqv1wiPRN3R4dQCozV+
-3v850XXHG/Bi62r/K0TZ58ik24po7wdUhpx90/UjvfH7twA+phJM+DL37PuUgo3s
-n2uGKHigSzawQ4dViLzY2h1KsSN5O1my4og2E5rewjerDgbxLvESMPHx4uYMzk0n
-tUzao+an66G8H7i7hb2kebP4yWRjYA==
-=ZJ8w
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9tsrkACgkQqclaivrt
+76m0Uwf9GUguBMloxfcvlXNDpwbRhP6MSQtfly772eXH6/Jo2On797arXI4WCebB
+/prfEJ8323y3+la3aR8ed+mHLQoPKDlFmOe7l0m2OZK1qAxufBx57bO+VvWrksiI
+ifI/vPoccfR0ajhD/gpbUljOIirZoeekfn7NpWF8PvNDYWyevNFyi53z03mK6uJj
+lWUD28mnVNiwPIJ6rPi2A6L02LvemNgcSdBX6dwSG44OhF73Jd7+t+15FUvpEv/X
+C3FH08JtMQL7m12huskxPkZwg9ZkHu9zb5gwRu4k29u1WZ9G0W1t6C4VKqLdY8R5
+Fp4CpIT/qSJ1qL/ALRyy9UCc65ZJKg==
+=cmcE
 -----END PGP SIGNATURE-----
 
---h9FkjaBPeTX1lLkYYspiFKNSoezrD0nQ1--
+--LKS4DIAsLE6eho7LBS8mXKDv92XgK7HmY--
