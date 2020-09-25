@@ -2,168 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 571E927848B
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:57:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1CB0278493
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728178AbgIYJ5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 05:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39974 "EHLO
+        id S1728235AbgIYJ57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 05:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728147AbgIYJ44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 05:56:56 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541ECC0613D9
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:56:55 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id y15so2611204wmi.0
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:56:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7RJH7pZMCVV5iroyiFLpiFRNTiQn0SSX+69PgDO+op4=;
-        b=Z5Tay6EcQTWazV7dTKt9RehYD/4epP7kRU3Ga/PrUGWrecnu5q/y5u3cYUdQDXeJ9c
-         Tyz/nwhilwMzR4ntbwLfx6EoZ16+hl0EzUT8i/ih1BZiBOcm/WzdG1KAcIMWDxNltI6s
-         e+yJCM3wjpKF1BppOv7Dp6OVp7eTZLCqSO4w8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7RJH7pZMCVV5iroyiFLpiFRNTiQn0SSX+69PgDO+op4=;
-        b=dTdHjFxh/gmLTSR+FEsFq6lK4JNGvlwZAyFkL+saT1psKs0vytBPxMsmcKAKWC0Ebj
-         pdqSfz9NSoRk+PD0Y46AeRrRh9yHGVqx1gEKfnzRjgAv/0dAR8UR8agrY8IVqe5lIN9z
-         HOimfH2lwsJ+diDNV1AEBKrsGQmftfNed1fv9VMmuq1V0e0yxP9uCeCXRmymV+IQQc54
-         ABF0O+TEtjcCw4gVU5/CxrxO4x1BRMp4+LhTfGQp249Kqunqz6WhML96qU1JJ09U8ETI
-         dHzWtVNch1WrDqDvjjrGtsGgne2F6nUF4kGJJGsfXubJuAPji/8V9bc32PmxAVNQcdAu
-         9ceg==
-X-Gm-Message-State: AOAM533unsatfwEaXM07YWDVNDYrcSnEHzksoDeZHhF9gVKUpKkwvcwG
-        LuGPbEGaeq5b497USjrZLoCqoA==
-X-Google-Smtp-Source: ABdhPJyXHCb7Koa9bhkkDBnbpeFU8UXjBvkZiVeQ6G92Q1rH+QgQoM9tP3HlGHJwhr+7X2lyLuGuKQ==
-X-Received: by 2002:a7b:cc17:: with SMTP id f23mr2095213wmh.166.1601027813944;
-        Fri, 25 Sep 2020 02:56:53 -0700 (PDT)
-Received: from antares.lan (e.0.c.6.b.e.c.e.a.c.9.7.c.2.1.0.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:12c:79ca:eceb:6c0e])
-        by smtp.gmail.com with ESMTPSA id l10sm2225084wru.59.2020.09.25.02.56.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Sep 2020 02:56:53 -0700 (PDT)
-From:   Lorenz Bauer <lmb@cloudflare.com>
-To:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next 4/4] selftest: bpf: Test copying a sockmap and sockhash
-Date:   Fri, 25 Sep 2020 10:56:30 +0100
-Message-Id: <20200925095630.49207-5-lmb@cloudflare.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200925095630.49207-1-lmb@cloudflare.com>
-References: <20200925095630.49207-1-lmb@cloudflare.com>
+        with ESMTP id S1728223AbgIYJ57 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 05:57:59 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7FDCC0613D3
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:57:58 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kLkUG-0003cZ-2O; Fri, 25 Sep 2020 11:57:56 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953] (2a03-f580-87bc-d400-bb52-8761-ee49-c953.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id EA80756A3DA;
+        Fri, 25 Sep 2020 09:57:54 +0000 (UTC)
+Subject: Re: [PATCH linux-can-next/flexcan 2/4] can: flexcan: add flexcan
+ driver for i.MX8MP
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-3-qiangqing.zhang@nxp.com>
+ <bdb05b08-b60c-c3f9-2b01-3a8606d304f9@pengutronix.de>
+ <DB8PR04MB6795D438EB4D6C6F9CF4F096E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <e1a7eebd-e36c-cd96-1b9f-7300faee40dd@pengutronix.de>
+ <DB8PR04MB67952A5BEC6A4A91050CA45BE6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <37d296dc-2366-3a35-79a9-accd990a7e4d@pengutronix.de>
+Date:   Fri, 25 Sep 2020 11:57:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <DB8PR04MB67952A5BEC6A4A91050CA45BE6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="Hrsl9WOxalc0bRAKudw4EhPs6GxiPQhmA"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since we can now call map_update_elem(sockmap) from bpf_iter context
-it's possible to copy a sockmap or sockhash in the kernel. Add a
-selftest which exercises this.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Hrsl9WOxalc0bRAKudw4EhPs6GxiPQhmA
+Content-Type: multipart/mixed; boundary="bxcuvuS5iAxjkAAcDe10B7jgNw9HeMBP2";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>,
+ "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <37d296dc-2366-3a35-79a9-accd990a7e4d@pengutronix.de>
+Subject: Re: [PATCH linux-can-next/flexcan 2/4] can: flexcan: add flexcan
+ driver for i.MX8MP
+References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-3-qiangqing.zhang@nxp.com>
+ <bdb05b08-b60c-c3f9-2b01-3a8606d304f9@pengutronix.de>
+ <DB8PR04MB6795D438EB4D6C6F9CF4F096E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <e1a7eebd-e36c-cd96-1b9f-7300faee40dd@pengutronix.de>
+ <DB8PR04MB67952A5BEC6A4A91050CA45BE6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <DB8PR04MB67952A5BEC6A4A91050CA45BE6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
 
-Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
----
- .../selftests/bpf/prog_tests/sockmap_basic.c  | 14 +++++-----
- .../selftests/bpf/progs/bpf_iter_sockmap.c    | 27 +++++++++++++++----
- 2 files changed, 30 insertions(+), 11 deletions(-)
+--bxcuvuS5iAxjkAAcDe10B7jgNw9HeMBP2
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-index e8a4bfb4d9f4..854a508e81ce 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-@@ -194,7 +194,7 @@ static void test_sockmap_invalid_update(void)
- 		test_sockmap_invalid_update__destroy(skel);
- }
- 
--static void test_sockmap_iter(enum bpf_map_type map_type)
-+static void test_sockmap_copy(enum bpf_map_type map_type)
- {
- 	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
- 	int err, len, src_fd, iter_fd, duration = 0;
-@@ -242,7 +242,7 @@ static void test_sockmap_iter(enum bpf_map_type map_type)
- 	linfo.map.map_fd = src_fd;
- 	opts.link_info = &linfo;
- 	opts.link_info_len = sizeof(linfo);
--	link = bpf_program__attach_iter(skel->progs.count_elems, &opts);
-+	link = bpf_program__attach_iter(skel->progs.copy, &opts);
- 	if (CHECK(IS_ERR(link), "attach_iter", "attach_iter failed\n"))
- 		goto out;
- 
-@@ -265,6 +265,8 @@ static void test_sockmap_iter(enum bpf_map_type map_type)
- 		  skel->bss->socks, num_sockets))
- 		goto close_iter;
- 
-+	compare_cookies(src, skel->maps.dst);
-+
- close_iter:
- 	close(iter_fd);
- free_link:
-@@ -294,8 +296,8 @@ void test_sockmap_basic(void)
- 		test_sockmap_update(BPF_MAP_TYPE_SOCKHASH);
- 	if (test__start_subtest("sockmap update in unsafe context"))
- 		test_sockmap_invalid_update();
--	if (test__start_subtest("sockmap iter"))
--		test_sockmap_iter(BPF_MAP_TYPE_SOCKMAP);
--	if (test__start_subtest("sockhash iter"))
--		test_sockmap_iter(BPF_MAP_TYPE_SOCKHASH);
-+	if (test__start_subtest("sockmap copy"))
-+		test_sockmap_copy(BPF_MAP_TYPE_SOCKMAP);
-+	if (test__start_subtest("sockhash copy"))
-+		test_sockmap_copy(BPF_MAP_TYPE_SOCKHASH);
- }
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.c b/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.c
-index 1af7555f6057..f3af0e30cead 100644
---- a/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.c
-@@ -22,21 +22,38 @@ struct {
- 	__type(value, __u64);
- } sockhash SEC(".maps");
- 
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKHASH);
-+	__uint(max_entries, 64);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} dst SEC(".maps");
-+
- __u32 elems = 0;
- __u32 socks = 0;
- 
- SEC("iter/sockmap")
--int count_elems(struct bpf_iter__sockmap *ctx)
-+int copy(struct bpf_iter__sockmap *ctx)
- {
- 	struct sock *sk = ctx->sk;
- 	__u32 tmp, *key = ctx->key;
- 	int ret;
- 
--	if (key)
--		elems++;
-+	if (!key)
-+		return 0;
- 
--	if (sk)
-+	elems++;
-+
-+	/* We need a temporary buffer on the stack, since the verifier doesn't
-+	 * let us use the pointer from the context as an argument to the helper.
-+	 */
-+	tmp = *key;
-+
-+	if (sk) {
- 		socks++;
-+		return bpf_map_update_elem(&dst, &tmp, sk, 0) != 0;
-+	}
- 
--	return 0;
-+	ret = bpf_map_delete_elem(&dst, &tmp);
-+	return ret && ret != -ENOENT;
- }
--- 
-2.25.1
+On 9/25/20 11:48 AM, Joakim Zhang wrote:
+>>> Need I rebase on net-next/master in next version? This patch set is
+>>> made from linux-can-next/flexcan branch.
+>> Yes, the flexcan patches are already in David's tree, so please base o=
+n
+>> net-next/master.
+>=20
+> Ok, another I want to indicate is that, i.MX8MP RM has not released to
+> public, I only have internal review version and specific RM of i.MX8MP
+> generated by IP owners.
 
+> So I am unable to give a website link for this, just add the name, vers=
+ion,
+> section.
+
+No problem, we can change the section if needed once the datasheet is pub=
+lic.
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--bxcuvuS5iAxjkAAcDe10B7jgNw9HeMBP2--
+
+--Hrsl9WOxalc0bRAKudw4EhPs6GxiPQhmA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9tvxgACgkQqclaivrt
+76mUPAf+IWeVpnM6wjMbThH1r7jxhKjFYc2qLk+pPGd04oWNGqtt58RzH6Fphto7
+HnivMwJHMzgn/KCxEy/YX+nWeD2bYVevqPryurNvSITBUGiNTKGoSdWwxuB59Obn
+SZi+5EWX8AjuYBBjfMsZ+RG+lg/1p4K+SQXbD64FsmRZ00Eb8TfdXkvKVWSJc+Zw
+CnQp2+cvb3wkatXOAYsA4asqXpLHeTsAsKeqUXm6iuH/zIh7YAdNSMb8j3UbvvNr
+UouWdTU7iQgTP+bZCdp8zf3bwSvDxIKULAqVRWkTrTgwaxVpH10zwKU1xrm5S6G5
+otRYU94mbBMx20Rm8/CIwTDPE8EhCg==
+=z/7v
+-----END PGP SIGNATURE-----
+
+--Hrsl9WOxalc0bRAKudw4EhPs6GxiPQhmA--
