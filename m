@@ -2,112 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1187E278B23
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 16:44:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BD0D278B27
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 16:46:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729123AbgIYOon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 10:44:43 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:46416 "EHLO inva020.nxp.com"
+        id S1728933AbgIYOqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 10:46:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59874 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729021AbgIYOol (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 10:44:41 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 2120E1A0921;
-        Fri, 25 Sep 2020 16:44:39 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1457D1A0917;
-        Fri, 25 Sep 2020 16:44:39 +0200 (CEST)
-Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id D479A2030E;
-        Fri, 25 Sep 2020 16:44:38 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Ionut-robert Aron <ionut-robert.aron@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 3/3] dpaa2-eth: install a single steering rule when SHARED_FS is enabled
-Date:   Fri, 25 Sep 2020 17:44:21 +0300
-Message-Id: <20200925144421.7811-4-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200925144421.7811-1-ioana.ciornei@nxp.com>
-References: <20200925144421.7811-1-ioana.ciornei@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1728436AbgIYOqX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 10:46:23 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7EB122074B;
+        Fri, 25 Sep 2020 14:46:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601045182;
+        bh=3w5NNqc7jT6JaZYPF4bZ4mg4V5ds7q+TVD2DX8grWiY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=G7/fA8Y9vYqD0QHIrh+ypvz+Lt/wfPe5lwSL0+TK28bfKmah6wyA1QBdT96N6VvXF
+         pERfjbHC+hNmqvDuRHg6xbGAyOihsBv8P2qabuF+qDPEyUfwmG8/RDrcdaSsVWSqNt
+         1UemJLaOVZOVVaSpDrI/6gsSml2bPdYcXAOwHyBo=
+Date:   Fri, 25 Sep 2020 07:46:20 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     ast@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next 1/6] bpf: add classid helper only based on
+ skb->sk
+Message-ID: <20200925074620.4ad50dcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <2e761d23d591a9536eaa3ecd4be8d78c99f00964.1600967205.git.daniel@iogearbox.net>
+References: <cover.1600967205.git.daniel@iogearbox.net>
+        <2e761d23d591a9536eaa3ecd4be8d78c99f00964.1600967205.git.daniel@iogearbox.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ionut-robert Aron <ionut-robert.aron@nxp.com>
+On Thu, 24 Sep 2020 20:21:22 +0200 Daniel Borkmann wrote:
+> Similarly to 5a52ae4e32a6 ("bpf: Allow to retrieve cgroup v1 classid
+> from v2 hooks"), add a helper to retrieve cgroup v1 classid solely
+> based on the skb->sk, so it can be used as key as part of BPF map
+> lookups out of tc from host ns, in particular given the skb->sk is
+> retained these days when crossing net ns thanks to 9c4c325252c5
+> ("skbuff: preserve sock reference when scrubbing the skb."). This
+> is similar to bpf_skb_cgroup_id() which implements the same for v2.
+> Kubernetes ecosystem is still operating on v1 however, hence net_cls
+> needs to be used there until this can be dropped in with the v2
+> helper of bpf_skb_cgroup_id().
+> 
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 
-When SHARED_FS is enabled on a DPNI object the flow steering tables are
-shared between all the traffic classes. Modify the driver so that we
-only add a new flow steering entry on the TC#0 when this new option is
-enabled.
-
-Signed-off-by: Ionut-robert Aron <ionut-robert.aron@nxp.com>
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c     | 12 ++++++++++++
- drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c |  2 +-
- drivers/net/ethernet/freescale/dpaa2/dpni.h          |  4 ++++
- 3 files changed, 17 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index a29c102b94f5..5ea309c9867d 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -3454,6 +3454,12 @@ static int dpaa2_eth_config_hash_key(struct dpaa2_eth_priv *priv, dma_addr_t key
- 			dev_err(dev, "dpni_set_rx_hash_dist failed\n");
- 			break;
- 		}
-+
-+		/* If the flow steering / hashing key is shared between all
-+		 * traffic classes, install it just once
-+		 */
-+		if (priv->dpni_attrs.options & DPNI_OPT_SHARED_FS)
-+			break;
- 	}
- 
- 	return err;
-@@ -3480,6 +3486,12 @@ static int dpaa2_eth_config_cls_key(struct dpaa2_eth_priv *priv, dma_addr_t key)
- 			dev_err(dev, "dpni_set_rx_fs_dist failed\n");
- 			break;
- 		}
-+
-+		/* If the flow steering / hashing key is shared between all
-+		 * traffic classes, install it just once
-+		 */
-+		if (priv->dpni_attrs.options & DPNI_OPT_SHARED_FS)
-+			break;
- 	}
- 
- 	return err;
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
-index 11e0c047dbd2..f981a523e13a 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
-@@ -618,7 +618,7 @@ static int dpaa2_eth_do_cls_rule(struct net_device *net_dev,
- 			err = dpni_remove_fs_entry(priv->mc_io, 0,
- 						   priv->mc_token, i,
- 						   &rule_cfg);
--		if (err)
-+		if (err || priv->dpni_attrs.options & DPNI_OPT_SHARED_FS)
- 			break;
- 	}
- 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.h b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-index 74456a37a997..e7b9e195b534 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpni.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-@@ -75,6 +75,10 @@ struct fsl_mc_io;
-  * Disables the flow steering table.
-  */
- #define DPNI_OPT_NO_FS				0x000020
-+/**
-+ * Flow steering table is shared between all traffic classes
-+ */
-+#define DPNI_OPT_SHARED_FS			0x001000
- 
- int dpni_open(struct fsl_mc_io	*mc_io,
- 	      u32		cmd_flags,
--- 
-2.25.1
-
+FWIW lot's of whitespace warnings from checkpatch --strict about
+comments having spaces before tabs here.
