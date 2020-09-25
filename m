@@ -2,45 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B1072791E5
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:18:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F12727922A
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:35:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728406AbgIYUSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 16:18:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727520AbgIYUQx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 16:16:53 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1247C05BD0A;
-        Fri, 25 Sep 2020 13:16:53 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id ECF0D1366538E;
-        Fri, 25 Sep 2020 13:00:05 -0700 (PDT)
-Date:   Fri, 25 Sep 2020 13:16:52 -0700 (PDT)
-Message-Id: <20200925.131652.1276316850791788198.davem@davemloft.net>
-To:     kvalo@codeaurora.org
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: Re: pull-request: wireless-drivers-next-2020-09-25
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200925163621.D90BDC433FF@smtp.codeaurora.org>
-References: <20200925163621.D90BDC433FF@smtp.codeaurora.org>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1728913AbgIYUdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 16:33:20 -0400
+Received: from mail.hanmingtech.com ([122.193.27.132]:57793 "EHLO
+        mail.hanmingtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726980AbgIYU2b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 16:28:31 -0400
+Received: from User (unknown [64.235.38.47])
+        by mail.hanmingtech.com (Postfix) with ESMTPA id 765C54541130;
+        Sat, 26 Sep 2020 01:47:44 +0800 (CST)
+Reply-To: <marcarmenguty@yandex.com>
+From:   "Mariacarmen Gutierrez" <fernrodyup12@gmx.es>
+Subject: This is nice one!
+Date:   Fri, 25 Sep 2020 10:52:20 -0700
+MIME-Version: 1.0
+Content-Type: text/plain;
+        charset="Windows-1251"
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 25 Sep 2020 13:00:06 -0700 (PDT)
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
+Message-Id: <20200925174744.765C54541130@mail.hanmingtech.com>
+To:     undisclosed-recipients:;
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kalle Valo <kvalo@codeaurora.org>
-Date: Fri, 25 Sep 2020 16:36:21 +0000 (UTC)
+Hello friend!
 
-> here's a pull request to net-next tree, more info below. Please let me know if
-> there are any problems.
+I would like to contact you personally for an important proposal that could of interest to you.
+I send this email only to know if this email address is functional.
+I have something very important to discuss with you. Contact me for details by:  Email: fernrodyup1215@aol.com with your direct contacts.
 
-Also pulled, thank you.
+Kind regards.
+Maria Carmen Gutierrez
