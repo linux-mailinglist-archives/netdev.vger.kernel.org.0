@@ -2,204 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90B122791F3
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:20:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C99F2791F1
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:19:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728804AbgIYUTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 16:19:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43082 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727734AbgIYURc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 16:17:32 -0400
-Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BF51E23998;
-        Fri, 25 Sep 2020 19:38:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601062706;
-        bh=D0JT5gZXn9Hj+gBZull7e7n/MVlwvenCLKEr/APldRM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=voeP8coa7Ui5MMOP0Q5mqIcV3LlJHp9OQhBMPRkWsO56OPr1bcRUPDWc38kT0TV+p
-         L10V2k6BqX5HtYtgY4CPwFSEG6U4oGglO57WRQ72UPcCaL+FSF6pjxVhhKCXeSsi8c
-         hl73PgfXWMTcejhD3dDSb1shBunqzmTyVseMdeQE=
-From:   saeed@kernel.org
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Hamdan Igbaria <hamdani@nvidia.com>,
-        Alex Vesker <valex@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 15/15] net/mlx5: DR, Add support for rule creation with flow source hint
-Date:   Fri, 25 Sep 2020 12:38:09 -0700
-Message-Id: <20200925193809.463047-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200925193809.463047-1-saeed@kernel.org>
-References: <20200925193809.463047-1-saeed@kernel.org>
+        id S1728794AbgIYUTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 16:19:51 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:57890 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727419AbgIYURu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 16:17:50 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08PJnJ76011143;
+        Fri, 25 Sep 2020 12:49:54 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=+ayJmmwWmbAGVeMoMcZ+j15rp6oygJjURbNlCkzxRBI=;
+ b=YDs2vhCisMmTecOFhjeW84kVjKKMw3cbQUlzGYBdnyO2SpSPQ3TIYhBe7cNvmRZpK+5s
+ /jIJM8Af+zcISB3U7ZGGrlRekhntTpMZ/UcsOKQFBdamYVlgO0a75O6oNwzdSqe4LR2i
+ zIvsBDSL8wMZ0SzvVGG3ZmmpgEzmQ0weFyw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 33s8su40ds-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 25 Sep 2020 12:49:54 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 25 Sep 2020 12:49:53 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eD0I8ahJg10puzhBYa/kjbBuBRVfCz7pZ8yerELCUHj2kkzcTFC+6z7e1EPwBJKT/hV0FxeQfXi1vFZgToAsxn1PXgWGOWdQ4/qpcdj2KJXggIV8aSWifZTN/nhcAT1I0RfHEOFtG+jsI2WoiYbRUzPAT+LCHDuwqLVesFskMim34S5Txii8CAL45SZ+7eKBrzTfLgky6V6oWDuOwFDsL7PQHAz+UGHsDjnFBbGaNcY2gPj9nj4pDq6eetnfmsuKxMxkTseR1D1/0G0nL00wT9aRbXhuIbmkpfFP2ngf3EhuzPnwGKjudFW1B3Wl8NGa4LHCH+vC/TY50hfkD4pSeQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+ayJmmwWmbAGVeMoMcZ+j15rp6oygJjURbNlCkzxRBI=;
+ b=kdqbL8RYcVbSNCn7GIvoIot9wNvbvOXc/SEau1hCE6GH75aEqeAUQ36fdOJ5YSmOW/+TlzTcWWaV8ccJUIYnXofNdFpIvyaq51mKtlCupf2AHq+YmC9EYWkvYjvfbO8A6F8mCUwmmv1dPpC2IXyTIoAmggHpjH2ewmdeiEv2Id/VXvGO5F8ZF94RUlILrALyE3rjKfJpfW3M8vfqZ57E//9+cN2nZUjRsI3a0yARLkhyPJ4K2oKWSD0t+HZSCtu9popGIPGt7gyZ6pFNQlQesHcujqLSgMpG0b1WZ3EZ+zAGLMAaf25IoDu7jBTeWzuDAMeuwYycyV22TrI+B30hyA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+ayJmmwWmbAGVeMoMcZ+j15rp6oygJjURbNlCkzxRBI=;
+ b=fppbxbLsJ6SD9iBCHB9/wAeaB0s0qT0GR5gut3yYsdjX1SOScTOsqo6pGMXJ2z/hPvI9jjIKIktEBucysJV2ao4FuduF57YPoGW6cItkQzOkinzPiLyoZF8mDEomlJIB+BJZlzEWL8XV1SYYe/YVTzm6ZZe/u6j3ntU5fmJ4jKE=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB2952.namprd15.prod.outlook.com (2603:10b6:a03:f9::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.14; Fri, 25 Sep
+ 2020 19:49:52 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::1400:be2f:8b3d:8f4d]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::1400:be2f:8b3d:8f4d%7]) with mapi id 15.20.3412.024; Fri, 25 Sep 2020
+ 19:49:52 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "Kernel Team" <Kernel-team@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCH v5 bpf-next 3/3] selftests/bpf: add raw_tp_test_run
+Thread-Topic: [PATCH v5 bpf-next 3/3] selftests/bpf: add raw_tp_test_run
+Thread-Index: AQHWksbKGhOXDee81UOLFQzQJhghE6l5ndmAgAAmqYA=
+Date:   Fri, 25 Sep 2020 19:49:52 +0000
+Message-ID: <F1899B9F-ED7A-4556-A370-67A66AAEB83C@fb.com>
+References: <20200924230209.2561658-1-songliubraving@fb.com>
+ <20200924230209.2561658-4-songliubraving@fb.com>
+ <CAEf4BzaD9=+paLnFnnCzyyFsrknyBZPfAZiF=9t6s56RL6Dhsg@mail.gmail.com>
+In-Reply-To: <CAEf4BzaD9=+paLnFnnCzyyFsrknyBZPfAZiF=9t6s56RL6Dhsg@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.120.23.2.1)
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+x-originating-ip: [2620:10d:c090:400::5:cb37]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5a1abc38-40ca-485c-0339-08d8618c2b7f
+x-ms-traffictypediagnostic: BYAPR15MB2952:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB2952A610AE2C7A6435E89661B3360@BYAPR15MB2952.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9mFkLaXRC5nCipk9bNy4POP3pRmWjLKwLWsqUN9U/KK6/aBcVmKB61tkfOvAqoKgb1s+eX7tTdIjqy83KMqEPiPiivURpJ8oCRTKa5JUiYJqAG9e2FZC5W1ZXCWJu6vYMzW79LoHw92/RetgApxndSk39KCez3BQRgdv1MXsZ2QdqCZhA5U35vsdPFruqCW3x9Xuk7mSvFcK0y6/Pvm0INxkAvopvRDB9faYM+vgvYoRssF6NpHIWXfGu6KulFeH+ORSRnv5b9ivdGV6bNKKapklQqq/uyTCFnSaQ4bTYyc98byigtTTB8T/shkdjqjWiIVWyupNZm6MXmGdWsE+K4FKEtPdFwX3Fg/eMXHhzUuidewc1crV/OtHLIztmJWj
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(136003)(366004)(376002)(346002)(396003)(54906003)(8936002)(2906002)(71200400001)(186003)(316002)(36756003)(6512007)(33656002)(66446008)(2616005)(86362001)(83380400001)(4326008)(76116006)(91956017)(53546011)(6506007)(66476007)(66946007)(6916009)(478600001)(5660300002)(64756008)(6486002)(8676002)(66556008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: RLFmsxwmeMM2IEwZzVc8NJWdglb0X254URIWwSyC+hpgJ/jcbM9jQ7N4RN5caObA9vkXntMP/wwS4GDj3dZch5NiwVZDwHXS+ci6ZTqgUvHjvEzv7rfkpzxDVR1JC49pL6JTc/u3EkcrnPn+96ZJEgCTYTWcMNOI7UU9/cZU5BhP+VjMt6s2+SNbWoFi+G5divqvTM6OqVU01XJ928p2ZZ/3dvPr65BTpaZsXnkTEb3+210Or595H7SAepM5GBytin/gYpSjBYnZ4fSuVgfGlhK/0wwPN373n0IlXP1C4up4NygliNFZ+rEsKOQ+sWR4xGSUGp867nLR5Fd8i7WBfKZMD5j5p4WiMQWqSxBkTY+BTHI77Aa7terJeslUHwIYLqwA07gHp52YCyXz5HXiKRJzzLqbpChpuJy9EYc4T1YxC98lmFnNJsjWVy0hKF9VTPIWvmDIm9suXMKDpqFzgh34skwhksw07Rjhw0qKrBF33G5CioumRT5YtUDLrfUL30JfGlwDq3pxVJVw++a4MkGqRzrjwEu6IOLh819wOuFAOuHzbE8NRqTTdsdI1vG8V0yfJWyxKLZfZM8Ol/jS9jMzGcuU27rW0lFQJ95QT18kSXaewsaqP4i70vKhhj5fCnBHsHLNZBmegcl0gfAOHoEn2xkJiuuuH9wYm472/Om+X2LLQhDCwoaLzBE/k53T
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <507089399741FE4AAF2465ED1A8F3ED0@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5a1abc38-40ca-485c-0339-08d8618c2b7f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Sep 2020 19:49:52.4136
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LvdrOOj5XjRrP1kOAAnSkydrn7b/HBpN4yX4+lwnSv7DC6iwss6NMQ2Nsrh1YT5TQfw0hEXXJKpNVuiroP+JrQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2952
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-25_17:2020-09-24,2020-09-25 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
+ mlxscore=0 clxscore=1015 mlxlogscore=999 bulkscore=0 lowpriorityscore=0
+ malwarescore=0 priorityscore=1501 phishscore=0 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009250139
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hamdan Igbaria <hamdani@nvidia.com>
 
-Skip the rule according to flow arrival source, in case of RX and the
-source is local port skip and in case of TX and the source is uplink
-skip, we get this info according to the flow source hint we get from
-upper layers when creating the rule.
-This is needed because for example in case of FDB table which has a TX
-and RX tables and we are inserting a rule with an encap action which
-is only a TX action, in this case rule will fail on RX, so we can rely
-on the flow source hint and skip RX in such case.
-Until now we relied on metadata regc_0 that upper layer mapped the
-port in the regc_0, but the problem is that upper layer did not always
-use regc_0 for port mapping, so now we added support to flow source
-hint which upper layers will pass to SW steering when creating a rule.
 
-Signed-off-by: Alex Vesker <valex@nvidia.com>
-Signed-off-by: Hamdan Igbaria <hamdani@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../mellanox/mlx5/core/steering/dr_rule.c     | 41 ++++++++++---------
- .../mellanox/mlx5/core/steering/dr_types.h    |  1 +
- .../mellanox/mlx5/core/steering/fs_dr.c       |  3 +-
- .../mellanox/mlx5/core/steering/mlx5dr.h      |  3 +-
- 4 files changed, 26 insertions(+), 22 deletions(-)
+> On Sep 25, 2020, at 10:31 AM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
+ wrote:
+>=20
+> On Thu, Sep 24, 2020 at 4:03 PM Song Liu <songliubraving@fb.com> wrote:
+>>=20
+>> This test runs test_run for raw_tracepoint program. The test covers ctx
+>> input, retval output, and running on correct cpu.
+>>=20
+>> Signed-off-by: Song Liu <songliubraving@fb.com>
+>> ---
+>=20
+> Few suggestions below, but overall looks good to me:
+>=20
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>=20
+>> .../bpf/prog_tests/raw_tp_test_run.c          | 98 +++++++++++++++++++
+>> .../bpf/progs/test_raw_tp_test_run.c          | 24 +++++
+>> 2 files changed, 122 insertions(+)
+>> create mode 100644 tools/testing/selftests/bpf/prog_tests/raw_tp_test_ru=
+n.c
+>> create mode 100644 tools/testing/selftests/bpf/progs/test_raw_tp_test_ru=
+n.c
+>>=20
+>=20
+> [...]
+>=20
+>> +
+>> +       err =3D bpf_prog_test_run_xattr(&test_attr);
+>> +       CHECK(err =3D=3D 0, "test_run", "should fail for too small ctx\n=
+");
+>> +
+>> +       test_attr.ctx_size_in =3D sizeof(args);
+>> +       err =3D bpf_prog_test_run_xattr(&test_attr);
+>> +       CHECK(err < 0, "test_run", "err %d\n", errno);
+>> +       CHECK(test_attr.retval !=3D expected_retval, "check_retval",
+>> +             "expect 0x%x, got 0x%x\n", expected_retval, test_attr.retv=
+al);
+>> +
+>> +       for (i =3D 0; i < nr_online; i++) {
+>> +               if (online[i]) {
+>=20
+> if (!online[i])
+>    continue;
+>=20
+> That will reduce nestedness by one level
+>=20
+>> +                       DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts,
+>> +                               .ctx_in =3D args,
+>> +                               .ctx_size_in =3D sizeof(args),
+>> +                               .flags =3D BPF_F_TEST_RUN_ON_CPU,
+>> +                               .retval =3D 0,
+>> +                               .cpu =3D i,
+>> +                       );
+>=20
+> this declares variable, so should be at the top of the lexical scope
+>=20
+>=20
+>> +
+>> +                       err =3D bpf_prog_test_run_opts(prog_fd, &opts);
+>> +                       CHECK(err < 0, "test_run_opts", "err %d\n", errn=
+o);
+>> +                       CHECK(skel->data->on_cpu !=3D i, "check_on_cpu",
+>> +                             "expect %d got %d\n", i, skel->data->on_cp=
+u);
+>> +                       CHECK(opts.retval !=3D expected_retval,
+>> +                             "check_retval", "expect 0x%x, got 0x%x\n",
+>> +                             expected_retval, opts.retval);
+>> +
+>> +                       if (i =3D=3D 0) {
+>=20
+> I agree that this looks a bit obscure. You can still re-use
+> DECLARE_LIBBPF_OPTS, just move it outside the loop. And then you can
+> just modify it in place to adjust to a particular case. And in log
+> output, we'll see 30+ similar success messages for the else branch,
+> which is indeed unnecessary.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-index 17577181ce8f..b3c9dc032026 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-@@ -985,31 +985,28 @@ static enum mlx5dr_ipv dr_rule_get_ipv(struct mlx5dr_match_spec *spec)
- static bool dr_rule_skip(enum mlx5dr_domain_type domain,
- 			 enum mlx5dr_ste_entry_type ste_type,
- 			 struct mlx5dr_match_param *mask,
--			 struct mlx5dr_match_param *value)
-+			 struct mlx5dr_match_param *value,
-+			 u32 flow_source)
- {
-+	bool rx = ste_type == MLX5DR_STE_TYPE_RX;
-+
- 	if (domain != MLX5DR_DOMAIN_TYPE_FDB)
- 		return false;
- 
- 	if (mask->misc.source_port) {
--		if (ste_type == MLX5DR_STE_TYPE_RX)
--			if (value->misc.source_port != WIRE_PORT)
--				return true;
-+		if (rx && value->misc.source_port != WIRE_PORT)
-+			return true;
- 
--		if (ste_type == MLX5DR_STE_TYPE_TX)
--			if (value->misc.source_port == WIRE_PORT)
--				return true;
-+		if (!rx && value->misc.source_port == WIRE_PORT)
-+			return true;
- 	}
- 
--	/* Metadata C can be used to describe the source vport */
--	if (mask->misc2.metadata_reg_c_0) {
--		if (ste_type == MLX5DR_STE_TYPE_RX)
--			if ((value->misc2.metadata_reg_c_0 & WIRE_PORT) != WIRE_PORT)
--				return true;
-+	if (rx && flow_source == MLX5_FLOW_CONTEXT_FLOW_SOURCE_LOCAL_VPORT)
-+		return true;
-+
-+	if (!rx && flow_source == MLX5_FLOW_CONTEXT_FLOW_SOURCE_UPLINK)
-+		return true;
- 
--		if (ste_type == MLX5DR_STE_TYPE_TX)
--			if ((value->misc2.metadata_reg_c_0 & WIRE_PORT) == WIRE_PORT)
--				return true;
--	}
- 	return false;
- }
- 
-@@ -1038,7 +1035,8 @@ dr_rule_create_rule_nic(struct mlx5dr_rule *rule,
- 
- 	INIT_LIST_HEAD(&nic_rule->rule_members_list);
- 
--	if (dr_rule_skip(dmn->type, nic_dmn->ste_type, &matcher->mask, param))
-+	if (dr_rule_skip(dmn->type, nic_dmn->ste_type, &matcher->mask, param,
-+			 rule->flow_source))
- 		return 0;
- 
- 	hw_ste_arr = kzalloc(DR_RULE_MAX_STE_CHAIN * DR_STE_SIZE, GFP_KERNEL);
-@@ -1173,7 +1171,8 @@ static struct mlx5dr_rule *
- dr_rule_create_rule(struct mlx5dr_matcher *matcher,
- 		    struct mlx5dr_match_parameters *value,
- 		    size_t num_actions,
--		    struct mlx5dr_action *actions[])
-+		    struct mlx5dr_action *actions[],
-+		    u32 flow_source)
- {
- 	struct mlx5dr_domain *dmn = matcher->tbl->dmn;
- 	struct mlx5dr_match_param param = {};
-@@ -1188,6 +1187,7 @@ dr_rule_create_rule(struct mlx5dr_matcher *matcher,
- 		return NULL;
- 
- 	rule->matcher = matcher;
-+	rule->flow_source = flow_source;
- 	INIT_LIST_HEAD(&rule->rule_actions_list);
- 
- 	ret = dr_rule_add_action_members(rule, num_actions, actions);
-@@ -1232,13 +1232,14 @@ dr_rule_create_rule(struct mlx5dr_matcher *matcher,
- struct mlx5dr_rule *mlx5dr_rule_create(struct mlx5dr_matcher *matcher,
- 				       struct mlx5dr_match_parameters *value,
- 				       size_t num_actions,
--				       struct mlx5dr_action *actions[])
-+				       struct mlx5dr_action *actions[],
-+				       u32 flow_source)
- {
- 	struct mlx5dr_rule *rule;
- 
- 	refcount_inc(&matcher->refcount);
- 
--	rule = dr_rule_create_rule(matcher, value, num_actions, actions);
-+	rule = dr_rule_create_rule(matcher, value, num_actions, actions, flow_source);
- 	if (!rule)
- 		refcount_dec(&matcher->refcount);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 3086a44f7e7f..3e423c8ed22f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -796,6 +796,7 @@ struct mlx5dr_rule {
- 	struct mlx5dr_rule_rx_tx rx;
- 	struct mlx5dr_rule_rx_tx tx;
- 	struct list_head rule_actions_list;
-+	u32 flow_source;
- };
- 
- void mlx5dr_rule_update_rule_member(struct mlx5dr_ste *new_ste,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-index 9b08eb557a31..96c39a17d026 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-@@ -487,7 +487,8 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
- 	rule = mlx5dr_rule_create(group->fs_dr_matcher.dr_matcher,
- 				  &params,
- 				  num_actions,
--				  actions);
-+				  actions,
-+				  fte->flow_context.flow_source);
- 	if (!rule) {
- 		err = -EINVAL;
- 		goto free_actions;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-index 0aaba0ae9cf7..726c4cfcc399 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-@@ -67,7 +67,8 @@ struct mlx5dr_rule *
- mlx5dr_rule_create(struct mlx5dr_matcher *matcher,
- 		   struct mlx5dr_match_parameters *value,
- 		   size_t num_actions,
--		   struct mlx5dr_action *actions[]);
-+		   struct mlx5dr_action *actions[],
-+		   u32 flow_source);
- 
- int mlx5dr_rule_destroy(struct mlx5dr_rule *rule);
- 
--- 
-2.26.2
+OK.. 2:1, I will change this in v6.=20
+
+Thanks,
+Song
 
