@@ -2,102 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8547D279035
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 20:23:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1367E279037
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 20:24:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729121AbgIYSXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 14:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33816 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726990AbgIYSXv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 14:23:51 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E6AC0613CE
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 11:23:50 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id c5so3234640ilk.11
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 11:23:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=om4hwkkxY33Mnt6ZUcdQDw0K8aNnONhgEqgzopLy+bA=;
-        b=CfUV5x0YkKA3oHzSmvasfNvWDorbiKoAtGfkL2T1TSQ1S+kVfMvhC1q9OwNgiZDSvc
-         0FHpLejaTLmOCzB21Bz8GiMGHAe75C5DPM1kxiv96V/gP5Maxv9I1K6T3uI7sRG+Hw0h
-         hc9qm4+7JGP+32BIv81WKR+Pp+twd8MuXaxJe11Ys7HHbA2KFmaFw6EvRYx+lMOh64u5
-         6orBnjmR7AG/io70sxforn2daL1LdQUUSGCHibC4vBB5Cv8PHnqoyr6TE6BD76AVzXIK
-         qFpiW7CzGN//++El3x/d04Qb0cdPY2azAma1nMwbVyuaao6/ekL2EUmyF0KpHViCCYV4
-         leuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=om4hwkkxY33Mnt6ZUcdQDw0K8aNnONhgEqgzopLy+bA=;
-        b=EXQKNbwBIwnbbTqwWztdqF1HpFH4b3cVpAc1kjDy+1Z9kKS+monLGtfWTNT52ZhTXM
-         nqfs6r33EgcvwP2pfUiAkWE4XFB1GzNkmjTXLhLXWl7DDb5QY86bWXjWyFH6NTHnwxfX
-         dZdY4kanqOq3vjBThe06nRS35WjKQTbVaqsKOVa6VlXuscgIrHTh7/rQLurYSfTLeMZQ
-         xJcAxBJIn8rqq7BseJz7vShVl0k6AXBAOTMrgBhwQaa/a68MAxwNXNijfgVk8oarfgxL
-         eQInfZZmMV43S2Fx97yDI0/7dYWR/MrfCGf7zbxmvovXpM+pkn2gbzK4OYfLURdNLh0C
-         bMfA==
-X-Gm-Message-State: AOAM532GFL33KPxh8iMjUVvsLaOGj53TMFs7cFNrTkomzJ1Z8yejt4Zr
-        GsDVc14wovUYdYL2Ku1N9qW8e3pR9l7H7H4Tl/Sb4w==
-X-Google-Smtp-Source: ABdhPJzQZR9nhsI5iPyX0RWy4ZuZELge6cQ24pK8cCNQpP0Ol2tF0Mk6XKaCA7jnXWg5htG5bPAKLe1/X4bisEYjqvE=
-X-Received: by 2002:a92:d48b:: with SMTP id p11mr1290378ilg.69.1601058229903;
- Fri, 25 Sep 2020 11:23:49 -0700 (PDT)
+        id S1729697AbgIYSYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 14:24:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35174 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729593AbgIYSYZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 14:24:25 -0400
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 73FEC2344C;
+        Fri, 25 Sep 2020 18:24:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601058264;
+        bh=3+UjR32phag7o0qtGDIn18Bhp3Te2gJhkXo8qfae49I=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=gYZyZw6q1BO+3QxLi6Yhxa52YdvWOGP6Bwynz1IgdeP4AoQ8O9LACjSjJq9kUdPAQ
+         2A9gwH2FC9gAFJD9v+rsBafSLadQqFs4m/Wfn1Ng9uYeWn8xQWdC+TallzF6jFqiCs
+         Engcd77zB1U31bxCR0JWjkmiWHv0KP9rxXqaifVg=
+Received: by mail-ot1-f48.google.com with SMTP id g96so3163099otb.12;
+        Fri, 25 Sep 2020 11:24:24 -0700 (PDT)
+X-Gm-Message-State: AOAM532wevVVVtVHP55vKKTUjCeACz7kwAnMOk4H8MCS/NVQQEjuB6TD
+        NnA+hQfddiZvFZknBAajlSaMBlVRXJZH3+GP+A==
+X-Google-Smtp-Source: ABdhPJzHcLMNb6xVVlodE5OyqgAY19wIaDZiXPKwHOA40n53jDTNUtNA3wjcwjLHWn8v5JC2xFhuQcSVkjaR6rPxT5I=
+X-Received: by 2002:a9d:6b0d:: with SMTP id g13mr1190401otp.129.1601058263764;
+ Fri, 25 Sep 2020 11:24:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200914172453.1833883-1-weiwan@google.com> <CAJ8uoz30afXpbn+RXwN5BNMwrLAcW0Cn8tqP502oCLaKH0+kZg@mail.gmail.com>
- <CAEA6p_BBaSQJjTPicgjoDh17BxS9aFMb-o6ddqW3wDvPAMyrGQ@mail.gmail.com> <20200925111627.047f5ed2@hermes.lan>
-In-Reply-To: <20200925111627.047f5ed2@hermes.lan>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 25 Sep 2020 20:23:37 +0200
-Message-ID: <CANn89iKAaKnZb3+RdMkK+Lx+5BBs=0Lnzwhe_jkzP4A8qHFZTg@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 0/6] implement kthread based napi poll
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Wei Wang <weiwan@google.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+References: <20200920095724.8251-1-ansuelsmth@gmail.com> <20200920095724.8251-4-ansuelsmth@gmail.com>
+In-Reply-To: <20200920095724.8251-4-ansuelsmth@gmail.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Fri, 25 Sep 2020 12:24:12 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKhyeh2=pJcpBKkh+s3FM__DY+VoYSYJLRUErrujTLn9A@mail.gmail.com>
+Message-ID: <CAL_JsqKhyeh2=pJcpBKkh+s3FM__DY+VoYSYJLRUErrujTLn9A@mail.gmail.com>
+Subject: Re: [PATCH v3 3/4] of_net: add mac-address-increment support
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 25, 2020 at 8:16 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
+On Sun, Sep 20, 2020 at 3:57 AM Ansuel Smith <ansuelsmth@gmail.com> wrote:
 >
-> On Fri, 25 Sep 2020 10:15:25 -0700
-> Wei Wang <weiwan@google.com> wrote:
->
-> > > > In terms of performance, I ran tcp_rr tests with 1000 flows with
-> > > > various request/response sizes, with RFS/RPS disabled, and compared
-> > > > performance between softirq vs kthread. Host has 56 hyper threads and
-> > > > 100Gbps nic.
->
-> It would be good to similar tests on othere hardware. Not everyone has
-> server class hardware. There are people running web servers on untuned
-> servers over 10 years old; this may cause a regression there.
->
-> Not to mention the slower CPU's in embedded systems. How would this
-> impact OpenWrt or Android?
+> Lots of embedded devices use the mac-address of other interface
+> extracted from nvmem cells and increments it by one or two. Add two
+> bindings to integrate this and directly use the right mac-address for
+> the interface. Some example are some routers that use the gmac
+> mac-address stored in the art partition and increments it by one for the
+> wifi. mac-address-increment-byte bindings is used to tell what byte of
+> the mac-address has to be increased (if not defined the last byte is
+> increased) and mac-address-increment tells how much the byte decided
+> early has to be increased.
 
-Most probably you won't notice a significant difference.
+I'm inclined to say if there's a platform specific way to transform
+MAC addresses, then there should be platform specific code to do that
+which then stuffs the DT using standard properties. Otherwise, we have
+a never ending stream of 'generic' properties to try to handle
+different platforms' cases.
 
-Switching to a kthread is quite cheap, since you have no MMU games to play with.
-
->
-> Another potential problem is that if you run real time (SCH_FIFO)
-> threads they have higher priority than kthread. So for that use
-> case, moving networking to kthread would break them.
-
-Sure, playing with FIFO threads is dangerous.
-
-Note that our plan is still to have softirqs by default.
-
-If an admin chose to use kthreads, it is its choice, not ours.
-
-This is also why I very much prefer the kthread approach to the work
-queue, since the work queue could not be fine tuned.
+Rob
