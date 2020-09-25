@@ -2,183 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 762B4278449
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:44:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DC3C278455
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:48:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727948AbgIYJoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 05:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727520AbgIYJoh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 05:44:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2447C0613D3
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:44:37 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kLkHL-0001zc-C2; Fri, 25 Sep 2020 11:44:35 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953] (unknown [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id F3C9356A39B;
-        Fri, 25 Sep 2020 09:44:33 +0000 (UTC)
-Subject: Re: [PATCH linux-can-next/flexcan 3/4] can: flexcan: add CAN wakeup
- function for i.MX8
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
-Cc:     linux-imx@nxp.com, netdev@vger.kernel.org
+        id S1727901AbgIYJsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 05:48:11 -0400
+Received: from mail-eopbgr60058.outbound.protection.outlook.com ([40.107.6.58]:62731
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727795AbgIYJsK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 05:48:10 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WZIO1tWM2uPIEzn05UAaMMwpWxGbBDZZb6UIvrLIAJir+1DJKUn6quTYR5TZhbB4yTaYRaQHYoM/rmpAntgmHEYwHoIces2dSKGbDHmo1DZn1Uba/NJYgP0r8ZoAkeXSLJ2YxMG4rdE2AtzbUIhySMhj1tccvkDoSXCsYI0Htol/MwMyM37tosBSptqPRH/FBtvzZFpBl65AV4kYLoPt3rszibH6b7XSDPNdJ5nSqdu6z0Sm6dsURuOeXRC+xkZHiU+eWBXtBfjIF0zxc0j/1zYA+7aS7+ZvMVrVA7w8iggmrQgEykAkP/p8qvVbEATus/NuEY2zEXBQeC9ftFpEQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+ciSIz6lX9jW5giUlQGM/8XY4zlmJthB46v06dMrH/M=;
+ b=Kn3kkLiU4xCF5L06SGF0Qk6MU4mJt8jpiZq16dJSBG8BYEk6C4SiNi8m1SfQewAa/lEuTQxjCFTYpuq48noEOwXMy/OlK36rrSdpNKX1TFMUyKq3dc8YMDtdCuIc8lwT7FYNLPzUmYBpzB3tfzjGNL9OskYtUN129n/r13tmDSgRT+8af26mwNK+ByLm8BdKyXmXhwF1pHlAJ75fhlti9Vzuevvh+lYtE/eERIwtOJqJW91nozO8dZW9B0UwKPDOBYzKSVPN6JrUQ5vy6NCjxMOXTNhrAZPK4NX5Q4WG5vaeJj51/0/zNAiX8BqwqaAbLUOOUeq/or1WsOO/u1QXOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+ciSIz6lX9jW5giUlQGM/8XY4zlmJthB46v06dMrH/M=;
+ b=dh0RJNBxk0Ys+WsD2ejNb++RZa2fpV4gfR5Jls9rinC02Ural9DQO/2WspOQqUh+d8XCu3cPIIBhkn5D7Yk6qcR3Z4/enY+m4dFp4C7aW0pumXl/4xOl1taWK2mkWJGXn/DCSew/NTCsVWxjr3eC0HB0VDZ1AaYYF/x38voaM1U=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DBAPR04MB7205.eurprd04.prod.outlook.com (2603:10a6:10:1b3::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.22; Fri, 25 Sep
+ 2020 09:48:07 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::d12e:689a:169:fd68]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::d12e:689a:169:fd68%8]) with mapi id 15.20.3412.022; Fri, 25 Sep 2020
+ 09:48:07 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH linux-can-next/flexcan 2/4] can: flexcan: add flexcan
+ driver for i.MX8MP
+Thread-Topic: [PATCH linux-can-next/flexcan 2/4] can: flexcan: add flexcan
+ driver for i.MX8MP
+Thread-Index: AQHWkwryw5CNKh5rmUaMkhxmNi/0xql5D8uAgAABQbCAAAdQgIAAAfbg
+Date:   Fri, 25 Sep 2020 09:48:07 +0000
+Message-ID: <DB8PR04MB67952A5BEC6A4A91050CA45BE6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
 References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
- <20200925151028.11004-4-qiangqing.zhang@nxp.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <f26c1dc3-f5f7-9a5a-ae2f-07cc2da6803e@pengutronix.de>
-Date:   Fri, 25 Sep 2020 11:44:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+ <20200925151028.11004-3-qiangqing.zhang@nxp.com>
+ <bdb05b08-b60c-c3f9-2b01-3a8606d304f9@pengutronix.de>
+ <DB8PR04MB6795D438EB4D6C6F9CF4F096E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <e1a7eebd-e36c-cd96-1b9f-7300faee40dd@pengutronix.de>
+In-Reply-To: <e1a7eebd-e36c-cd96-1b9f-7300faee40dd@pengutronix.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: pengutronix.de; dkim=none (message not signed)
+ header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 32da209c-ed74-4fa9-1072-08d861381b38
+x-ms-traffictypediagnostic: DBAPR04MB7205:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DBAPR04MB720586E0DC2B64F432DBD40DE6360@DBAPR04MB7205.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vgXTlJ/wUu+zFWgXJapthyQtOXlGgSDFv/5I1zXSOt5/dW0NTWw6lBREncDG0u6VGXDu3O7OvKz4hd4xlgebnQM3AKBUNu2Q901JT6nTWm9IaZkKUt+XrlDgoZbT3U5JlJlEX7a5AQh66JARA5vXRC/NoonjpxNyXZoLI+76WpHfOVq2n8ZPB0gCVMWGdkMv8VOThSAR05zZdCmFsygXT8LPjaBOMbimQ+VPAtVhxh8TrLyBF+nbfebSraGp2cNihLeVyhZ2Pfh9jeoQIs6cerbyXsBtdmZBXoysATKelrGewnGuMOTqupJZVcEGV/1umcARDFq9/X4IeS4w1PLAWpgdsUhcT+k9afpi4OggO7oiZsdJmlyUe9ydmc18l8+GAoTcqWTB70u6x/Pm2vV8SIlWX8kkEjZLNaXK8GIE9aX86jdFyZZDrVZ9Xf0/aXKg7K/a469DJPPkax7t51M4UQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(396003)(366004)(136003)(26005)(53546011)(5660300002)(54906003)(186003)(66476007)(76116006)(83380400001)(110136005)(316002)(6506007)(33656002)(83080400001)(478600001)(71200400001)(4326008)(66446008)(9686003)(7696005)(66946007)(55016002)(2906002)(86362001)(8676002)(8936002)(966005)(64756008)(66556008)(52536014);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: QVQEDYZlqkuaCk9NylYwM7Ehdaol/31Eltfr8oV30ApLDIz/VjgmzEiLPJXnY1NhCfb/c5sNEMDXS2nMl1VirwSQJmCrP9FFngqrGCObUxaNOtRzWCXg5PAm8RL7RmrKLq39sGUh9uOgBIWWd6Agjcb3KJgqRhQReRpRAwpkjDO2cjkiswH3A6eVwVXG6RTSQZoVz22rykVLJ34SeB6i0E+9+RiRDAwND/SfA8dUJWTCj7lZ+MCUvthd4ntxzo12/euRmIs8aK4YGsEMrep6K962Ht+oLxam4nzKNE4gFmI4DHIS2BUpuKq9JfeSz53M9tL3/P98wlgr680MXKSk8O0nTmVa8MMZ2DjK0bNnceQh3ELWuZ1J4xEssBnPHwcMy21CmqE5oYTJXEX7CxY2O9U+6crz9se+FUXK1AAmrDVkiACaTRP3ROoa/Y9AKGPTBzDjMwg7NNjmkbKt84l/sn81nGKg6wWZSFCLPyUyG0abE1goIYu0sNdng3L0b6KdSsQJYHa2hYgoFdPTYtGz/M7JMHzYBAhJjdOw+i09hnR9+BHj5nQWZh1JDf8F/0tVqb6Jr+BKqFl1akQ61au/ffw/m3TPRe3v5gaJ11ZIKOR3G5JY3nPcB3V4KoqScRAvm5ck1yIEnzns3RbdNd5nVw==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20200925151028.11004-4-qiangqing.zhang@nxp.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="04TGKo4793Thaii56OP5l4U4ppA4bAY82"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32da209c-ed74-4fa9-1072-08d861381b38
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Sep 2020 09:48:07.4532
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: x5N43OBKOTMfEf3grHPWfb0NrMCyA7CgoeGzYqrBqoHdjLWtqdUqe8DLRNE4ptuZECe2+EN3EPppQBSG+25fqg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7205
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---04TGKo4793Thaii56OP5l4U4ppA4bAY82
-Content-Type: multipart/mixed; boundary="MVPCVJF8chAfehdbE3ysvabP7XiCiU9fy";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
-Cc: linux-imx@nxp.com, netdev@vger.kernel.org
-Message-ID: <f26c1dc3-f5f7-9a5a-ae2f-07cc2da6803e@pengutronix.de>
-Subject: Re: [PATCH linux-can-next/flexcan 3/4] can: flexcan: add CAN wakeup
- function for i.MX8
-References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
- <20200925151028.11004-4-qiangqing.zhang@nxp.com>
-In-Reply-To: <20200925151028.11004-4-qiangqing.zhang@nxp.com>
-
---MVPCVJF8chAfehdbE3ysvabP7XiCiU9fy
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
-
-On 9/25/20 5:10 PM, Joakim Zhang wrote:
-> The System Controller Firmware (SCFW) is a low-level system function
-> which runs on a dedicated Cortex-M core to provide power, clock, and
-> resource management. It exists on some i.MX8 processors. e.g. i.MX8QM
-> (QM, QP), and i.MX8QX (QXP, DX).
->=20
-> SCU driver manages the IPC interface between host CPU and the
-> SCU firmware running on M4.
->=20
-> For i.MX8, stop mode request is controlled by System Controller Unit(SC=
-U)
-> firmware.
->=20
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-> ---
-
-Just for reference, this fails to build with:
-
-ERROR: modpost: "imx_scu_get_handle" [drivers/net/can/flexcan.ko] undefin=
-ed!
-ERROR: modpost: "imx_sc_misc_set_control" [drivers/net/can/flexcan.ko] un=
-defined!
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---MVPCVJF8chAfehdbE3ysvabP7XiCiU9fy--
-
---04TGKo4793Thaii56OP5l4U4ppA4bAY82
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9tu/0ACgkQqclaivrt
-76kYJgf9GpWmR0w/nSizZHAGKI11AsxaojbHrG9+sZHDokA+TnBOaQUoUKzAPkop
-kSoZxlj6iUDzmze83xj5FofORSmjcHHHj2XVwze8HDi41XsjbVBg6Nzou+Y44j5O
-+UnvOEutTS+xItWYWf3oS/02vldTnlO04gAgUxSk7lT5tFPeeL6gVyKnr+d11asL
-iwPgEa2zPznEaaVzCbBXrDtsKHBEhMTmcWhlY/qpV0hnmD69nxZyols34pc9PYbG
-4NVamr+5j+dRBo2rEpJ6+Y3oQnrWgJC0464Db0H8FNAgkG/YRzpFcKGee0KRPXpg
-P2p//9iMjtV1GINp+XoZD8RgSVAYzQ==
-=aMYz
------END PGP SIGNATURE-----
-
---04TGKo4793Thaii56OP5l4U4ppA4bAY82--
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1hcmMgS2xlaW5lLUJ1ZGRl
+IDxta2xAcGVuZ3V0cm9uaXguZGU+DQo+IFNlbnQ6IDIwMjDlubQ55pyIMjXml6UgMTc6MzYNCj4g
+VG86IEpvYWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+OyBsaW51eC1jYW5Admdl
+ci5rZXJuZWwub3JnDQo+IENjOiBkbC1saW51eC1pbXggPGxpbnV4LWlteEBueHAuY29tPjsgbmV0
+ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIIGxpbnV4LWNhbi1uZXh0
+L2ZsZXhjYW4gMi80XSBjYW46IGZsZXhjYW46IGFkZCBmbGV4Y2FuIGRyaXZlcg0KPiBmb3IgaS5N
+WDhNUA0KPiANCj4gT24gOS8yNS8yMCAxMToxMSBBTSwgSm9ha2ltIFpoYW5nIHdyb3RlOg0KPiA+
+PiBUaGlzIGRvZXNuJ3QgYXBwbHkgdG8gbmV0LW5leHQvbWFzdGVyLiBUaGUgTVg4UU0gaW5kZW50
+ZWQgZGlmZmVyZW50bHkuDQo+ID4NCj4gPiBOZWVkIEkgcmViYXNlIG9uIG5ldC1uZXh0L21hc3Rl
+ciBpbiBuZXh0IHZlcnNpb24/IFRoaXMgcGF0Y2ggc2V0IGlzDQo+ID4gbWFkZSBmcm9tIGxpbnV4
+LWNhbi1uZXh0L2ZsZXhjYW4gYnJhbmNoLg0KPiBZZXMsIHRoZSBmbGV4Y2FuIHBhdGNoZXMgYXJl
+IGFscmVhZHkgaW4gRGF2aWQncyB0cmVlLCBzbyBwbGVhc2UgYmFzZSBvbg0KPiBuZXQtbmV4dC9t
+YXN0ZXIuDQoNCk9rLCBhbm90aGVyIEkgd2FudCB0byBpbmRpY2F0ZSBpcyB0aGF0LCBpLk1YOE1Q
+IFJNIGhhcyBub3QgcmVsZWFzZWQgdG8gcHVibGljLCBJIG9ubHkgaGF2ZSBpbnRlcm5hbCByZXZp
+ZXcgdmVyc2lvbiBhbmQgc3BlY2lmaWMgUk0gb2YgaS5NWDhNUCBnZW5lcmF0ZWQgYnkgSVAgb3du
+ZXJzLg0KDQpTbyBJIGFtIHVuYWJsZSB0byBnaXZlIGEgd2Vic2l0ZSBsaW5rIGZvciB0aGlzLCBq
+dXN0IGFkZCB0aGUgbmFtZSwgdmVyc2lvbiwgc2VjdGlvbi4NCg0KQmVzdCBSZWdhcmRzLA0KSm9h
+a2ltIFpoYW5nDQo+IE1hcmMNCj4gDQo+IC0tDQo+IFBlbmd1dHJvbml4IGUuSy4gICAgICAgICAg
+ICAgICAgIHwgTWFyYyBLbGVpbmUtQnVkZGUgICAgICAgICAgIHwNCj4gRW1iZWRkZWQgTGludXgg
+ICAgICAgICAgICAgICAgICAgfCBodHRwczovL3d3dy5wZW5ndXRyb25peC5kZSAgfA0KPiBWZXJ0
+cmV0dW5nIFdlc3QvRG9ydG11bmQgICAgICAgICB8IFBob25lOiArNDktMjMxLTI4MjYtOTI0ICAg
+ICB8DQo+IEFtdHNnZXJpY2h0IEhpbGRlc2hlaW0sIEhSQSAyNjg2IHwgRmF4OiAgICs0OS01MTIx
+LTIwNjkxNy01NTU1IHwNCg0K
