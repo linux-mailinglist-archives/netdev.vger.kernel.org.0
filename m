@@ -2,134 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B88327835C
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 10:56:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2FFF278380
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:03:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727648AbgIYI4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 04:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58776 "EHLO
+        id S1727782AbgIYJD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 05:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726990AbgIYI4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 04:56:20 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6395BC0613CE
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 01:56:20 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id m13so1598667otl.9
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 01:56:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FB7t6ED/jnfRp/WWE+Uf20Xlr4Bf0WcN1ZTT/JNoDp0=;
-        b=OkqZQyLSpm2BFcmX3BKpRZHcC5Up/n7KOiShD6Wy9SnzehkGjXoqQ85DpcDItuCc2W
-         ASlpP5rhKJ4kGvRArHfJYf0krRlj3JAVJDGINDv7LCUzljtZiDA3pKbBrRWjcoRF4m/W
-         AhEPZpX44afMbY6zG6I6iH3UbOV+HDngbC6LU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FB7t6ED/jnfRp/WWE+Uf20Xlr4Bf0WcN1ZTT/JNoDp0=;
-        b=PlsORBTk/SOLa3tX7gJi9LCD/s2vb1Sqh+Jp4L6kEcsy1P5pdQxvu/zVRFPfD9bTkl
-         oSW8obBVNJSiDBTzkXhbVaiux8LogfnamY8IHt7m9AuzcGMgWgT02j/vmNhYFFfEa7nH
-         fyuWPSuoJT5qg9RWq8l/sDARRePFFTpx+ETQ/d2g3ZF+3yWSRIrI4X58UBknS7ZeJ7ND
-         pHKoJHnFnc1XuFPCfUhmvx9wjfFMZWwAy+oJStKz3L3NA9x4kbjbhB8lDnmHdowkuPiN
-         zRqWZjheCVfI7uGfjNS64tW28aWVq1QFIsaYkq5lLSOcZg1QSkWMzj9q8J/b5oUHWxs9
-         g2CQ==
-X-Gm-Message-State: AOAM532BQFwllvGpH+yc3xuiQxlJ3MF1AMgfQXGWuoL90vOiyvVq5Bjl
-        6QmD0oymaXukK5ZkTndC7atZ++0nBWsE876eRPVsDg==
-X-Google-Smtp-Source: ABdhPJzXhRHbXp7/MqUFTmGFztnj0j5darnr+4M82u76LoSyY6ISvUt1aOWxX3qG7RKR0/8jwhO06mJsCZdN4BeXyUo=
-X-Received: by 2002:a9d:6e90:: with SMTP id a16mr2111658otr.132.1601024179755;
- Fri, 25 Sep 2020 01:56:19 -0700 (PDT)
+        with ESMTP id S1727044AbgIYJDZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 05:03:25 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F58C0613CE
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:03:25 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kLjdS-0004uw-GK; Fri, 25 Sep 2020 11:03:22 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953] (unknown [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 417EF56A304;
+        Fri, 25 Sep 2020 09:03:21 +0000 (UTC)
+Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
+ flexcan memory for ECC function
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-2-qiangqing.zhang@nxp.com>
+ <b4960a59-a864-d6f8-cef6-7223a6351dae@pengutronix.de>
+ <DB8PR04MB6795BB0D5F2FFEEC3D384A96E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <a4a57849-fc34-0bc5-f35e-13347f6585dd@pengutronix.de>
+ <DB8PR04MB6795BAB5714106474A06FD81E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJfEWX4BQkQo2czAAoJECte4hHF
+ iupUvfMP/iNtiysSr5yU4tbMBzRkGov1/FjurfH1kPweLVHDwiQJOGBz9HgM5+n8boduRv36
+ 0lU32g3PehN0UHZdHWhygUd6J09YUi2mJo1l2Fz1fQ8elUGUOXpT/xoxNQjslZjJGItCjza8
+ +D1DO+0cNFgElcNPa7DFBnglatOCZRiMjo4Wx0i8njEVRU+4ySRU7rCI36KPts+uVmZAMD7V
+ 3qiR1buYklJaPCJsnXURXYsilBIE9mZRmQjTDVqjLWAit++flqUVmDjaD/pj2AQe2Jcmd2gm
+ sYW5P1moz7ACA1GzMjLDmeFtpJOIB7lnDX0F/vvsG3V713/701aOzrXqBcEZ0E4aWeZJzaXw
+ n1zVIrl/F3RKrWDhMKTkjYy7HA8hQ9SJApFXsgP334Vo0ea82H3dOU755P89+Eoj0y44MbQX
+ 7xUy4UTRAFydPl4pJskveHfg4dO6Yf0PGIvVWOY1K04T1C5dpnHAEMvVNBrfTA8qcahRN82V
+ /iIGB+KSC2xR79q1kv1oYn0GOnWkvZmMhqGLhxIqHYitwH4Jn5uRfanKYWBk12LicsjRiTyW
+ Z9cJf2RgAtQgvMPvmaOL8vB3U4ava48qsRdgxhXMagU618EszVdYRNxGLCqsKVYIDySTrVzu
+ ZGs2ibcRhN4TiSZjztWBAe1MaaGk05Ce4h5IdDLbOOxhuQENBF8SDLABCADohJLQ5yffd8Sq
+ 8Lo9ymzgaLcWboyZ46pY4CCCcAFDRh++QNOJ8l4mEJMNdEa/yrW4lDQDhBWV75VdBuapYoal
+ LFrSzDzrqlHGG4Rt4/XOqMo6eSeSLipYBu4Xhg59S9wZOWbHVT/6vZNmiTa3d40+gBg68dQ8
+ iqWSU5NhBJCJeLYdG6xxeUEtsq/25N1erxmhs/9TD0sIeX36rFgWldMwKmZPe8pgZEv39Sdd
+ B+ykOlRuHag+ySJxwovfdVoWT0o0LrGlHzAYo6/ZSi/Iraa9R/7A1isWOBhw087BMNkRYx36
+ B77E4KbyBPx9h3wVyD/R6T0Q3ZNPu6SQLnsWojMzABEBAAGJAjwEGAEKACYWIQTBQAugs5ie
+ b7x9W1wrXuIRxYrqVAUCXxIMsAIbDAUJAucGAAAKCRArXuIRxYrqVOu0D/48xSLyVZ5NN2Bb
+ yqo3zxdv/PMGJSzM3JqSv7hnMZPQGy9XJaTc5Iz/hyXaNRwpH5X0UNKqhQhlztChuAKZ7iu+
+ 2VKzq4JJe9qmydRUwylluc4HmGwlIrDNvE0N66pRvC3h8tOVIsippAQlt5ciH74bJYXr0PYw
+ Aksw1jugRxMbNRzgGECg4O6EBNaHwDzsVPX1tDj0d9t/7ClzJUy20gg8r9Wm/I/0rcNkQOpV
+ RJLDtSbGSusKxor2XYmVtHGauag4YO6Vdq+2RjArB3oNLgSOGlYVpeqlut+YYHjWpaX/cTf8
+ /BHtIQuSAEu/WnycpM3Z9aaLocYhbp5lQKL6/bcWQ3udd0RfFR/Gv7eR7rn3evfqNTtQdo4/
+ YNmd7P8TS7ALQV/5bNRe+ROLquoAZvhaaa6SOvArcmFccnPeyluX8+o9K3BCdXPwONhsrxGO
+ wrPI+7XKMlwWI3O076NqNshh6mm8NIC0mDUr7zBUITa67P3Q2VoPoiPkCL9RtsXdQx5BI9iI
+ h/6QlzDxcBdw2TVWyGkVTCdeCBpuRndOMVmfjSWdCXXJCLXO6sYeculJyPkuNvumxgwUiK/H
+ AqqdUfy1HqtzP2FVhG5Ce0TeMJepagR2CHPXNg88Xw3PDjzdo+zNpqPHOZVKpLUkCvRv1p1q
+ m1qwQVWtAwMML/cuPga78rkBDQRfEXGWAQgAt0Cq8SRiLhWyTqkf16Zv/GLkUgN95RO5ntYM
+ fnc2Tr3UlRq2Cqt+TAvB928lN3WHBZx6DkuxRM/Y/iSyMuhzL5FfhsICuyiBs5f3QG70eZx+
+ Bdj4I7LpnIAzmBdNWxMHpt0m7UnkNVofA0yH6rcpCsPrdPRJNOLFI6ZqXDQk9VF+AB4HVAJY
+ BDU3NAHoyVGdMlcxev0+gEXfBQswEcysAyvzcPVTAqmrDsupnIB2f0SDMROQCLO6F+/cLG4L
+ Stbz+S6YFjESyXblhLckTiPURvDLTywyTOxJ7Mafz6ZCene9uEOqyd/h81nZOvRd1HrXjiTE
+ 1CBw+Dbvbch1ZwGOTQARAQABiQNyBBgBCgAmFiEEwUALoLOYnm+8fVtcK17iEcWK6lQFAl8R
+ cZYCGwIFCQLnoRoBQAkQK17iEcWK6lTAdCAEGQEKAB0WIQQreQhYm33JNgw/d6GpyVqK+u3v
+ qQUCXxFxlgAKCRCpyVqK+u3vqatQCAC3QIk2Y0g/07xNLJwhWcD7JhIqfe7Qc5Vz9kf8ZpWr
+ +6w4xwRfjUSmrXz3s6e/vrQsfdxjVMDFOkyG8c6DWJo0TVm6Ucrf9G06fsjjE/6cbE/gpBkk
+ /hOVz/a7UIELT+HUf0zxhhu+C9hTSl8Nb0bwtm6JuoY5AW0LP2KoQ6LHXF9KNeiJZrSzG6WE
+ h7nf3KRFS8cPKe+trbujXZRb36iIYUfXKiUqv5xamhohy1hw+7Sy8nLmw8rZPa40bDxX0/Gi
+ 98eVyT4/vi+nUy1gF1jXgNBSkbTpbVwNuldBsGJsMEa8lXnYuLzn9frLdtufUjjCymdcV/iT
+ sFKziU9AX7TLZ5AP/i1QMP9OlShRqERH34ufA8zTukNSBPIBfmSGUe6G2KEWjzzNPPgcPSZx
+ Do4jfQ/m/CiiibM6YCa51Io72oq43vMeBwG9/vLdyev47bhSfMLTpxdlDJ7oXU9e8J61iAF7
+ vBwerBZL94I3QuPLAHptgG8zPGVzNKoAzxjlaxI1MfqAD9XUM80MYBVjunIQlkU/AubdvmMY
+ X7hY1oMkTkC5hZNHLgIsDvWUG0g3sACfqF6gtMHY2lhQ0RxgxAEx+ULrk/svF6XGDe6iveyc
+ z5Mg5SUggw3rMotqgjMHHRtB3nct6XqgPXVDGYR7nAkXitG+nyG5zWhbhRDglVZ0mLlW9hij
+ z3Emwa94FaDhN2+1VqLFNZXhLwrNC5mlA6LUjCwOL+zb9a07HyjekLyVAdA6bZJ5BkSXJ1CO
+ 5YeYolFjr4YU7GXcSVfUR6fpxrb8N+yH+kJhY3LmS9vb2IXxneE/ESkXM6a2YAZWfW8sgwTm
+ 0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
+ HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
+ xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
+Message-ID: <ec1fc3c2-9879-8df5-c1ab-35fe1705c99c@pengutronix.de>
+Date:   Fri, 25 Sep 2020 11:03:17 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <160097751992.13115.10446086919232254389.stgit@john-Precision-5820-Tower>
-In-Reply-To: <160097751992.13115.10446086919232254389.stgit@john-Precision-5820-Tower>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Fri, 25 Sep 2020 09:56:08 +0100
-Message-ID: <CACAyw9_norMfT3pdNG=Qm5e-cWbBwZTYZEmgYR7j+9-aoVfCag@mail.gmail.com>
-Subject: Re: [bpf-next PATCH] bpf: Add comment to document BTF type PTR_TO_BTF_ID_OR_NULL
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, Martin Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <DB8PR04MB6795BAB5714106474A06FD81E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="h9FkjaBPeTX1lLkYYspiFKNSoezrD0nQ1"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Sep 2020 at 20:58, John Fastabend <john.fastabend@gmail.com> wrote:
->
-> The meaning of PTR_TO_BTF_ID_OR_NULL differs slightly from other types
-> denoted with the *_OR_NULL type. For example the types PTR_TO_SOCKET
-> and PTR_TO_SOCKET_OR_NULL can be used for branch analysis because the
-> type PTR_TO_SOCKET is guaranteed to _not_ have a null value.
->
-> In contrast PTR_TO_BTF_ID and BTF_TO_BTF_ID_OR_NULL have slightly
-> different meanings. A PTR_TO_BTF_TO_ID may be a pointer to NULL value,
-> but it is safe to read this pointer in the program context because
-> the program context will handle any faults. The fallout is for
-> PTR_TO_BTF_ID the verifier can assume reads are safe, but can not
-> use the type in branch analysis. Additionally, authors need to be
-> extra careful when passing PTR_TO_BTF_ID into helpers. In general
-> helpers consuming type PTR_TO_BTF_ID will need to assume it may
-> be null.
->
-> Seeing the above is not obvious to readers without the back knowledge
-> lets add a comment in the type definition.
->
-> Editorial comment, as networking and tracing programs get closer
-> and more tightly merged we may need to consider a new type that we
-> can ensure is non-null for branch analysis and also passing into
-> helpers.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--h9FkjaBPeTX1lLkYYspiFKNSoezrD0nQ1
+Content-Type: multipart/mixed; boundary="40FtdDoIXMFxQz2wBEfPIplVWzGgHxia5";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>,
+ "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <ec1fc3c2-9879-8df5-c1ab-35fe1705c99c@pengutronix.de>
+Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
+ flexcan memory for ECC function
+References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-2-qiangqing.zhang@nxp.com>
+ <b4960a59-a864-d6f8-cef6-7223a6351dae@pengutronix.de>
+ <DB8PR04MB6795BB0D5F2FFEEC3D384A96E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <a4a57849-fc34-0bc5-f35e-13347f6585dd@pengutronix.de>
+ <DB8PR04MB6795BAB5714106474A06FD81E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <DB8PR04MB6795BAB5714106474A06FD81E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
 
-Yeah, I was going back and forth with Martin on this as well. I think
-we need better descriptions for possibly-NULL-at-runtime for the
-purpose of helper call invariants, and possibly-NULL-at-verification
-time.
+--40FtdDoIXMFxQz2wBEfPIplVWzGgHxia5
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
->
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+On 9/25/20 10:51 AM, Joakim Zhang wrote:
+>>> I notice it just now, seems lack of patch for imx firmware in
+>>> upstream, that will always export scu symbols.
+>>> include/linux/firmware/imx/svc/misc.h
+>>
+>> That will affect "can: flexcan: add CAN wakeup function for i.MX8" not=
+ this
+>> patch, right?
+>=20
+> Yes, only affect "can: flexcan: add CAN wakeup function for i.MX8", I w=
+ill
+> remove this patch first.
 
-Acked-by: Lorenz Bauer <lmb@cloudflare.com>
+ok
 
-> ---
->  include/linux/bpf.h |   18 ++++++++++++++++--
->  1 file changed, 16 insertions(+), 2 deletions(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index fc5c901c7542..dd765ba1c730 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -382,8 +382,22 @@ enum bpf_reg_type {
->         PTR_TO_TCP_SOCK_OR_NULL, /* reg points to struct tcp_sock or NULL */
->         PTR_TO_TP_BUFFER,        /* reg points to a writable raw tp's buffer */
->         PTR_TO_XDP_SOCK,         /* reg points to struct xdp_sock */
-> -       PTR_TO_BTF_ID,           /* reg points to kernel struct */
-> -       PTR_TO_BTF_ID_OR_NULL,   /* reg points to kernel struct or NULL */
-> +       /* PTR_TO_BTF_ID points to a kernel struct that does not need
-> +        * to be null checked by the BPF program. This does not imply the
-> +        * pointer is _not_ null and in practice this can easily be a null
-> +        * pointer when reading pointer chains. The assumption is program
-> +        * context will handle null pointer dereference typically via fault
-> +        * handling. The verifier must keep this in mind and can make no
-> +        * assumptions about null or non-null when doing branch analysis.
-> +        * Further, when passed into helpers the helpers can not, without
-> +        * additional context, assume the value is non-null.
-> +        */
-> +       PTR_TO_BTF_ID,
-> +       /* PTR_TO_BTF_ID_OR_NULL points to a kernel struct that has not
-> +        * been checked for null. Used primarily to inform the verifier
-> +        * an explicit null check is required for this struct.
-> +        */
-> +       PTR_TO_BTF_ID_OR_NULL,
->         PTR_TO_MEM,              /* reg points to valid memory region */
->         PTR_TO_MEM_OR_NULL,      /* reg points to valid memory region or NULL */
->         PTR_TO_RDONLY_BUF,       /* reg points to a readonly buffer */
->
+> Sorry, I replied in a wrong place.
+
+np
+
+> "can: flexcan: initialize all flexcan memory for ECC function" for this=
+
+> patch, I find this issue in i.MX8MP, which is the first SoC implements =
+ECC
+> for i.MX
+
+What about the mx7?
+
+> I think this patch should compatible with others which has ECC support,=
+ but I
+> don't have one to have a test.
+
+What about the mx7?
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+--40FtdDoIXMFxQz2wBEfPIplVWzGgHxia5--
 
-www.cloudflare.com
+--h9FkjaBPeTX1lLkYYspiFKNSoezrD0nQ1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9tslUACgkQqclaivrt
+76k3oAf/RlPRP3MXIyOYUPoC3MqwWKkTYD7oIeXlXxx4UrLzCkmV+GgswhxycMk7
+Dbs1TelcX0fAqGgN0HjaS3cz4IilL97eRF1CqXwo43AV33rfo92aVCXxYfmHSYJu
+9WysWHpiqk66fAkTdm2rwjhiOg7ulaA79fh0z+x7DzMDSvqv1wiPRN3R4dQCozV+
+3v850XXHG/Bi62r/K0TZ58ik24po7wdUhpx90/UjvfH7twA+phJM+DL37PuUgo3s
+n2uGKHigSzawQ4dViLzY2h1KsSN5O1my4og2E5rewjerDgbxLvESMPHx4uYMzk0n
+tUzao+an66G8H7i7hb2kebP4yWRjYA==
+=ZJ8w
+-----END PGP SIGNATURE-----
+
+--h9FkjaBPeTX1lLkYYspiFKNSoezrD0nQ1--
