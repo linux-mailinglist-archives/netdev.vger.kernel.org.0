@@ -2,136 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82DA227944A
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 00:39:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0073279458
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 00:46:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729044AbgIYWj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 18:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45474 "EHLO
+        id S1729184AbgIYWqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 18:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726807AbgIYWj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 18:39:27 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48EEC0613CE;
-        Fri, 25 Sep 2020 15:39:26 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id i26so681687ejb.12;
-        Fri, 25 Sep 2020 15:39:26 -0700 (PDT)
+        with ESMTP id S1726348AbgIYWqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 18:46:20 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA19C0613CE;
+        Fri, 25 Sep 2020 15:46:20 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id lo4so738761ejb.8;
+        Fri, 25 Sep 2020 15:46:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zqcW3rl891dr3qudKSLhS4tM1nPfMjp/6k/SFPe8aho=;
-        b=rX5DrMgl45l4foK7sUE7lDf1V4ef0f/JWh2cBca7Eg9SfMIt9B6IzyokAhBP4qxsWq
-         W8nojKscvzMqKBkOb/KfvVzK1y3wg3w4qzAXy3mkXeagrLF/X+ih8t+adz3pWMEfA5K3
-         go118JTDfgio6nvFtY/0Cw/RQiaYrlzn8xcUlduyu2WcImRls2t5v91UmcCxlCbY+aOZ
-         eKokjTkFno08KvKc4DjaiwejdCHgC2/+LfszJHvEStNijjxaDXXNK9bssJkuDdAsFfK7
-         /otOJFfZ9vWQf+FdYyqtF2hpy3jI9syz917xlAXIOA0+/86psRguFOBN8lDBEJGeiPOQ
-         Zl7Q==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lrVKWzlDcGFhCrWgMifQZRLCGQ0NtpunSOEi48viSH8=;
+        b=aNXJTlRNvZq5vFI7352QqBShKwE+D0YCXNgufsf0zU5cxvnSadfe/RttWPBqBdSjlp
+         w7VrhUPHAKSQmmFMTjSWmwUmsg9ZqoB1kdhzk3b5mIrhaLtdXNKyH+U20iyfTpYtSmim
+         wcI/e7JPqPPaVYOTaiNfGgNSb9ff2rts5FTpbkhH5h+V72M6z4A3mhDT2HjGBdvAlY3g
+         6y09YGie1G8Irk6wf5/Rzf3QCU5vwdQPzLDi/GWWgurYpYPUGMATQGC+C+09GUtcEglQ
+         VhRnwgl8GCw1VPbqasMr0TjfEsA+6ajnzoeF3SDlwZJVQj+VdVAFvwQFzK1XXdAJlO5B
+         k+Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zqcW3rl891dr3qudKSLhS4tM1nPfMjp/6k/SFPe8aho=;
-        b=cfmE144kAWUEOu6ds1w3oJT3VQzfbp42eSlW8HTGv1SNw+WN3tuigBRPpqyKHupVJA
-         E3fmQSVwEFjZGsirkk5GwBY2DpmdRObKQ4q5ODvDr+Yh+pnT9y9bsd61tbqrAlSILfqD
-         SiBYFwfWB/C7Xynyb0yG0Jo4fiFhNPmwNX7HYIXqPsRSbKgMn++V4OVpO0KZEl2gzR8s
-         k4Gyu5MBW+4KYoleoKV+Bq7PXyMu2AmFF3JofP/Hl23wgBmvATvJSGXrVdEIrg47/jIo
-         GUCoU62w8VxPH+k9QXjQ2jF6fieeWUbuhKUbwRMbMtNUzJQ9H/NnTkybtEKO6w++wwuy
-         tL+g==
-X-Gm-Message-State: AOAM530FtFkWMEfcN2NGYLdgX4fnENvK7NTvSzxZQw5WeTpcYnNbIRdz
-        41J952LktmhY+MHzhg2qb/2ONfuTUmo8FrBQWk0=
-X-Google-Smtp-Source: ABdhPJwBDw1ys7C5G/etJuJ74bio79gE0vxTaamvelT5Kj77dUcSW09e2b0vXr1hy05/QOK1InVs9GRY7IMSc+Grlts=
-X-Received: by 2002:a17:906:7b87:: with SMTP id s7mr1062698ejo.328.1601073565571;
- Fri, 25 Sep 2020 15:39:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAFBinCATt4Hi9rigj52nMf3oygyFbnopZcsakGL=KyWnsjY3JA@mail.gmail.com>
- <20200925221403.GE3856392@lunn.ch>
-In-Reply-To: <20200925221403.GE3856392@lunn.ch>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sat, 26 Sep 2020 00:39:14 +0200
-Message-ID: <CAFBinCC4VuLJDLqQb+m+h+qnh6fAK2aBLVtQaE15Tc-zQq=KSg@mail.gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lrVKWzlDcGFhCrWgMifQZRLCGQ0NtpunSOEi48viSH8=;
+        b=eo8wCvVt6j+M+t55xIO7IMR32PhAVCwfsJ4a/gdJtI3BbRxOJX4158KVfaJpRPJG3G
+         HbSGOWCrPdRBOUq3Rufm2Y8tGQCy1DwXkAJXVTP2ZXk9IKY/m5cqJp7AzajP6nGkmdEX
+         fFTm0Ma183//LdZSlXSoBIuZ59DHJ9He2x3YPPrhERYLg5rp7rzjPOAy8MfX0aQGmHfP
+         U0etxuuOSSK59qT5t91MDf2QqLkLXIu3jw4RWi4Fgdufl4igxILz0M0Kfya00xwiWkw6
+         7eL5u75KyHGdrC1MLXAF/LlSShpDJReQKfvLhAqb0qRdh076ExMOps3g9suZQjCrXsy6
+         MKQg==
+X-Gm-Message-State: AOAM531DOY2PJAznQtkKVSXBtz4yO7Fg6bSiFkyus12GOUuVoYCGw1k7
+        AzRSyzjhPelRABut1AKgDGY=
+X-Google-Smtp-Source: ABdhPJwVwZ0jezDaQdRB6TwC5/deAJ5D6Lv5vjVPupgSdS91PARaHHgvQ06C6wY5XEH+1quAeU52Ug==
+X-Received: by 2002:a17:906:1f42:: with SMTP id d2mr4816511ejk.407.1601073979139;
+        Fri, 25 Sep 2020 15:46:19 -0700 (PDT)
+Received: from skbuf ([188.25.217.212])
+        by smtp.gmail.com with ESMTPSA id s7sm2744100ejd.103.2020.09.25.15.46.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2020 15:46:18 -0700 (PDT)
+Date:   Sat, 26 Sep 2020 01:46:16 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     f.fainelli@gmail.com, netdev@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org
 Subject: Re: RGMII timing calibration (on 12nm Amlogic SoCs) - integration
  into dwmac-meson8b
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        alexandre.torgue@st.com, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, joabreu@synopsys.com, kuba@kernel.org,
-        peppe.cavallaro@st.com, davem@davemloft.net,
-        linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <20200925224616.fetyq4aiiwpspe7g@skbuf>
+References: <CAFBinCATt4Hi9rigj52nMf3oygyFbnopZcsakGL=KyWnsjY3JA@mail.gmail.com>
+ <20200925220329.wdnrqeauto55vdao@skbuf>
+ <CAFBinCB4woR1sZfT3tvCkHiR2eRgQfXg3jsD+KO0iMzyQRAGDQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFBinCB4woR1sZfT3tvCkHiR2eRgQfXg3jsD+KO0iMzyQRAGDQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On Sat, Sep 26, 2020 at 12:15:59AM +0200, Martin Blumenstingl wrote:
+> I do not need the auto-detection of the phy-mode nor any RX/TX delay
+> (these are fixed values)
+> however, from that patch-set I would need most of
+> phy_rgmii_probe_interface() (and all of the helpers it's using)
 
-On Sat, Sep 26, 2020 at 12:14 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Fri, Sep 25, 2020 at 11:47:18PM +0200, Martin Blumenstingl wrote:
-> > Hello,
-> >
-> > Amlogic's 12nm SoC generation requires some RGMII timing calibration
-> > within the Ethernet controller glue registers.
-> > This calibration is only needed for the RGMII modes, not for the
-> > (internal) RMII PHY.
-> > With "incorrect" calibration settings Ethernet speeds up to 100Mbit/s
-> > will still work fine, but no data is flowing on 1Gbit/s connections
-> > (similar to when RX or TX delay settings are incorrect).
->
-> Hi Martin
->
-> Is this trying to detect the correct RGMII interface mode:
->         PHY_INTERFACE_MODE_RGMII,
->         PHY_INTERFACE_MODE_RGMII_ID,
->         PHY_INTERFACE_MODE_RGMII_RXID,
->         PHY_INTERFACE_MODE_RGMII_TXID,
->
-> In general, we recommend the MAC does not insert any delay, we leave
-> it up to the PHY. In DT, you then set the correct phy-mode value,
-> which gets passed to the PHY when the MAC calls the connect function.
-yes and no.
-The reference code I linked tries to detect the RGMII interface mode.
-However, for each board we know the phy-mode as well as the RX and TX
-delay - so I'm not trying to port the RGMII interface detection part
-to the mainline driver.
+So if it's not clock skews and it probably isn't equalization either,
+since to my knowledge RGMII MACs won't have because they are parallel
+and relatively low-speed interfaces, then we need to know what exactly
+it is that you calibrate.
 
-on X96 Air (which I'm using for testing) Amlogic configures phy-mode
-"rgmii" with a 2ns TX delay provided by the MAC and 0ns RX delay
-anywhere (so I'm assuming that the board adds the 2ns RX delay)
-I am aware that the recommendation is to let the PHY generate the delay.
-For now I'm trying to get the same configuration working which is used
-by Amlogic's vendor kernel and u-boot.
+As you know, in a serial interface you are likely to find a BIST
+function implemented in the SERDES, this would basically offload to
+hardware the task of sending and decoding test patterns such as PRBS-11.
+With RGMII, you are less likely to see a BIST in hardware, hence the
+manual injection of packets that you need to do from software. Whatever
+solution you end up choosing, it would be nice if it created a nicely
+structured UAPI that could be extended in the future for other types of
+electrical interface selftests.
 
-> Is there any documentation as to what the calibration values mean?  I
-> would just hard code it to whatever means 0uS delay, and be done. The
-> only time the MAC needs to add delays is when the PHY is not capable
-> of doing it, and generally, they all are.
-This calibration is not the RGMII RX or TX delay - we have other
-registers for that and already know how to program these.
+> also I'm wondering if the "protocol" 0x0808 is recommended over ETH_P_EDSA
 
-This new calibration only exists on 12nm SoCs so I assume (but have no
-proof) that they need to solve some challenge that comes with the
-advanced node (previous SoCs were manufactured using a 28nm process).
-In the old days the vendors put calibration data into the eFuse.
-However I think for mass-production of cheap boards this is not nice
-for the manufacturers (because they need this eFuse programming step).
-So I think Amlogic added a calibration circuit to handle tolerances
-within the SoC manufacturing as well as the "environment" of the SoC
-(there are some TI SoCs where the MMC controller's clock calibration
-depends on the SoC temperature for example. For these Amlogic SoCs I
-don't know the factors that influence this calibration though - one
-guess however is cost-cutting).
-
-All of that said: I don't have any scope that's fast enough to see the
-clock-skew on such high-speed signals so I cannot tell for sure what
-problem they are solving.
-What I can say is that u-boot programs calibration value 0xf (the
-maximum value) on my X96 Air board. With this I cannot get Ethernet
-working - regardless of how I change the RX or TX delays.
-If I leave everything as-is (2ns TX delay generated by the MAC, 0ns RX
-delay, ...) and change the calibration value to 0x0 or 0x3 (the latter
-is set by the vendor kernel) then Ethernet starts working.
-
-
-Best regards,
-Martin
+It probably doesn't make any difference.
