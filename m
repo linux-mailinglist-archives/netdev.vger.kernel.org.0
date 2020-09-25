@@ -2,108 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24E39278892
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 14:57:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B83C5278903
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 15:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729516AbgIYM4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 08:56:17 -0400
-Received: from mx2.suse.de ([195.135.220.15]:50524 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728968AbgIYM4P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 08:56:15 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 0AB59AB9F;
-        Fri, 25 Sep 2020 12:56:13 +0000 (UTC)
-Date:   Fri, 25 Sep 2020 14:56:08 +0200
-From:   Petr Tesarik <ptesarik@suse.cz>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        netdev@vger.kernel.org
-Subject: Re: RTL8402 stops working after hibernate/resume
-Message-ID: <20200925145608.66a89e73@ezekiel.suse.cz>
-In-Reply-To: <20200925115241.3709caf6@ezekiel.suse.cz>
-References: <20200715102820.7207f2f8@ezekiel.suse.cz>
-        <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
-        <20200716105835.32852035@ezekiel.suse.cz>
-        <e1c7a37f-d8d0-a773-925c-987b92f12694@gmail.com>
-        <20200903104122.1e90e03c@ezekiel.suse.cz>
-        <7e6bbb75-d8db-280d-ac5b-86013af39071@gmail.com>
-        <20200924211444.3ba3874b@ezekiel.suse.cz>
-        <a10f658b-7fdf-2789-070a-83ad5549191a@gmail.com>
-        <20200925093037.0fac65b7@ezekiel.suse.cz>
-        <20200925105455.50d4d1cc@ezekiel.suse.cz>
-        <aa997635-a5b5-75e3-8a30-a77acb2adf35@gmail.com>
-        <20200925115241.3709caf6@ezekiel.suse.cz>
-Organization: SUSE Linux, s.r.o.
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+        id S1728577AbgIYNFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 09:05:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43641 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728121AbgIYNFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 09:05:54 -0400
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601039152;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xhe5KxfKkK3aUjIYs2cWP5cnri5+HS/g/0mzyZIrbQA=;
+        b=EUgAScP1yN+sD6aHfdNeKTBnAebSV6imQRRtz8fhdOLF6BRKimmEsb4UsbG/BJtzhSR/ly
+        2AKd+2gjUxbXBohqXzvvnUnt8ICCQHYnCUqDNHUT3o1I6Q5SA3b6PvfO8ERRnjhEFCCnT1
+        1oJWDtafWpvtsdeo563XwpglmjkOngo=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-196-nMGFx1_hP_KvP-xMFYh27g-1; Fri, 25 Sep 2020 09:05:50 -0400
+X-MC-Unique: nMGFx1_hP_KvP-xMFYh27g-1
+Received: by mail-wm1-f72.google.com with SMTP id m10so814204wmf.5
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 06:05:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Xhe5KxfKkK3aUjIYs2cWP5cnri5+HS/g/0mzyZIrbQA=;
+        b=rmvgMgx1tG3NdeNSjrYZLy4tS+a0q8j4UiK8JDy05JErv1a7bWoOV8tUTCxT5sOzyH
+         K6B/JkyUbuvwGlBS2rO3I/ESvap43JOmf5MCzgC6urx9/Yzh+rOSNIHpML6bU6HxIBIs
+         y3gnTberL30TcGUzeru6MVeVaQLSynpsSQAcvfB4rojb7i8ON4ta/g68zuECXik1fQ80
+         HGQUT45pSzo/35cBZbs0UH6Ukt1hlD87t8fwXqmUcvcQCo6+tBhTgHzApgpHls19qmmd
+         LcSFtzvZDavI5ENSv1JVg0LttrZG5QLee23ZkoO98rXI+LNRpDCSo3SdcbxMyof9F65m
+         EVXw==
+X-Gm-Message-State: AOAM533/uE2GcIcSjUciTXq64vqwJimvjbq4d/bt41vvbwFYb7XNu8M0
+        L4hy0x2Zg32TAukj6hyRoPx9jX0l26NHRjqa1bzo0aG1VQCFikWnSbzamQXfDQAZegun+T3DS7f
+        npf1YxYVSm1WzxTOD
+X-Received: by 2002:adf:ef4f:: with SMTP id c15mr4776057wrp.390.1601039148010;
+        Fri, 25 Sep 2020 06:05:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxjIUu+AqvdMvawTD89gHBSPDwwgP99Xel2vwLPcja/DDn/CM1AMK4Vq/fJA/OfBc1P4RKZow==
+X-Received: by 2002:adf:ef4f:: with SMTP id c15mr4776024wrp.390.1601039147686;
+        Fri, 25 Sep 2020 06:05:47 -0700 (PDT)
+Received: from localhost ([151.66.98.27])
+        by smtp.gmail.com with ESMTPSA id c25sm2754758wml.31.2020.09.25.06.05.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2020 06:05:46 -0700 (PDT)
+Date:   Fri, 25 Sep 2020 15:05:43 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        thomas.petazzoni@bootlin.com
+Subject: Re: [PATCH net-next] net: mvneta: try to use in-irq pp cache in
+ mvneta_txq_bufs_free
+Message-ID: <20200925130543.GC32064@lore-desk>
+References: <4f6602e98fdaef1610e948acec19a5de51fb136e.1601027617.git.lorenzo@kernel.org>
+ <20200925125213.4981cff8@carbon>
+ <CAJ0CqmV8OJoERhYktLNP7gYDwURs97JAmbsXq2jqKHhMoHk-pg@mail.gmail.com>
+ <20200925140920.47bec9cf@carbon>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/b8LGBPor=EJGIBwVHH63w9T";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="bAmEntskrkuBymla"
+Content-Disposition: inline
+In-Reply-To: <20200925140920.47bec9cf@carbon>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/b8LGBPor=EJGIBwVHH63w9T
-Content-Type: text/plain; charset=US-ASCII
+
+--bAmEntskrkuBymla
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 25 Sep 2020 11:52:41 +0200
-Petr Tesarik <ptesarik@suse.cz> wrote:
-
-> On Fri, 25 Sep 2020 11:44:09 +0200
-> Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> On Fri, 25 Sep 2020 13:29:00 +0200
+> Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
 >=20
-> > On 25.09.2020 10:54, Petr Tesarik wrote: =20
->[...]
-> > > Does it make sense to bisect the change that broke the driver for me,=
- or should I rather dispose of this waste^Wlaptop in an environmentally fri=
-endly manner? I mean, would you eventually accept a workaround for a few ma=
-chines with a broken BIOS?
-> > >    =20
-> > If the workaround is small and there's little chance to break other stu=
-ff: then usually yes.
-> > If you can spend the effort to bisect the issue, this would be apprecia=
-ted. =20
+> > >
+> > > On Fri, 25 Sep 2020 12:01:32 +0200
+> > > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> > > =20
+> > > > Try to recycle the xdp tx buffer into the in-irq page_pool cache if
+> > > > mvneta_txq_bufs_free is executed in the NAPI context. =20
+> > >
+> > > NACK - I don't think this is safe.  That is also why I named the
+> > > function postfix rx_napi.  The page pool->alloc.cache is associated
+> > > with the drivers RX-queue.  The xdp_frame's that gets freed could be
+> > > coming from a remote driver that use page_pool. This remote drivers
+> > > RX-queue processing can run concurrently on a different CPU, than this
+> > > drivers TXQ-cleanup. =20
+> >=20
+> > ack, right. What about if we do it just XDP_TX use case? Like:
+> >=20
+> > if (napi && buf->type =3D=3D MVNETA_TYPE_XDP_TX)
+> >    xdp_return_frame_rx_napi(buf->xdpf);
+> > else
+> >    xdp_return_frame(buf->xdpf);
+> >=20
+> > In this way we are sure the packet is coming from local page_pool.
 >=20
-> OK, then I'm going to give it a try.
+> Yes, that case XDP_TX should be safe.
+>=20
+> > >
+> > > If you want to speedup this, I instead suggest that you add a
+> > > xdp_return_frame_bulk API. =20
+> >=20
+> > I will look at it
+>=20
+> Great!
+>=20
+> Notice that bulk return should be easy/obvious in most drivers, as they
+> (like mvneta in mvneta_txq_bufs_free()) have a loop that process
+> several TXQ completions.
+>=20
+> I did a quick tests on mlx5 with xdp_redirect_map and perf report shows
+> __xdp_return calls at the top#1 overhead.
+>=20
+> # Overhead  CPU  Symbol                             =20
+> # ........  ...  ....................................
+> #
+>      8.46%  003  [k] __xdp_return                   =20
+>      6.41%  003  [k] dma_direct_map_page            =20
+>      4.65%  003  [k] bpf_xdp_redirect_map           =20
+>      4.58%  003  [k] dma_direct_unmap_page          =20
+>      4.04%  003  [k] xdp_do_redirect                =20
+>      3.53%  003  [k] __page_pool_put_page           =20
+>      3.27%  003  [k] dma_direct_sync_single_for_cpu =20
+>      2.63%  003  [k] dev_map_enqueue                =20
+>      2.28%  003  [k] page_pool_refill_alloc_cache   =20
+>      1.69%  003  [k] bq_enqueue.isra.0              =20
+>      1.15%  003  [k] _raw_spin_lock                 =20
+>      0.92%  003  [k] xdp_return_frame               =20
+>=20
+> Thus, there will be a benefit from implementing a bulk return.  Also
+> for your XDP_TX case, as the overhead in __xdp_return also exist for
+> rx_napi variant.
 
-Done. The system freezes when this commit is applied:
+ack, I will post a v2 limiting the xdp_return_frame_rx_napi just for XDP_TX
+use-case and then I will look at implementing a xdp bulk return.
 
-commit 9f0b54cd167219266bd3864570ae8f4987b57520
-Author: Heiner Kallweit <hkallweit1@gmail.com>
-Date:   Wed Jun 17 22:55:40 2020 +0200
+Regards,
+Lorenzo
 
-    r8169: move switching optional clock on/off to pll power functions
-   =20
-    Relevant chip clocks are disabled in rtl_pll_power_down(), therefore
-    move calling clk_disable_unprepare() there. Similar for enabling the
-    clock.
-   =20
-    Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
+>=20
+>=20
+> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > > ---
+> > > >  drivers/net/ethernet/marvell/mvneta.c | 11 +++++++----
+> > > >  1 file changed, 7 insertions(+), 4 deletions(-)
+> > > >
+> > > > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/et=
+hernet/marvell/mvneta.c
+> > > > index 14df3aec285d..646fbf4ed638 100644
+> > > > --- a/drivers/net/ethernet/marvell/mvneta.c
+> > > > +++ b/drivers/net/ethernet/marvell/mvneta.c
+> > > > @@ -1831,7 +1831,7 @@ static struct mvneta_tx_queue *mvneta_tx_done=
+_policy(struct mvneta_port *pp,
+> > > >  /* Free tx queue skbuffs */
+> > > >  static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+> > > >                                struct mvneta_tx_queue *txq, int num,
+> > > > -                              struct netdev_queue *nq)
+> > > > +                              struct netdev_queue *nq, bool napi)
+> > > >  {
+> > > >       unsigned int bytes_compl =3D 0, pkts_compl =3D 0;
+> > > >       int i;
+> > > > @@ -1854,7 +1854,10 @@ static void mvneta_txq_bufs_free(struct mvne=
+ta_port *pp,
+> > > >                       dev_kfree_skb_any(buf->skb);
+> > > >               } else if (buf->type =3D=3D MVNETA_TYPE_XDP_TX ||
+> > > >                          buf->type =3D=3D MVNETA_TYPE_XDP_NDO) {
+> > > > -                     xdp_return_frame(buf->xdpf);
+> > > > +                     if (napi)
+> > > > +                             xdp_return_frame_rx_napi(buf->xdpf);
+> > > > +                     else
+> > > > +                             xdp_return_frame(buf->xdpf);
+> > > >               }
+> > > >       }
+> > > >
+> > > > @@ -1872,7 +1875,7 @@ static void mvneta_txq_done(struct mvneta_por=
+t *pp,
+> > > >       if (!tx_done)
+> > > >               return;
+> > > >
+> > > > -     mvneta_txq_bufs_free(pp, txq, tx_done, nq);
+> > > > +     mvneta_txq_bufs_free(pp, txq, tx_done, nq, true);
+> > > >
+> > > >       txq->count -=3D tx_done;
+> > > >
+> > > > @@ -2859,7 +2862,7 @@ static void mvneta_txq_done_force(struct mvne=
+ta_port *pp,
+> > > >       struct netdev_queue *nq =3D netdev_get_tx_queue(pp->dev, txq-=
+>id);
+> > > >       int tx_done =3D txq->count;
+> > > >
+> > > > -     mvneta_txq_bufs_free(pp, txq, tx_done, nq);
+> > > > +     mvneta_txq_bufs_free(pp, txq, tx_done, nq, false);
+> > > >
+> > > >       /* reset txq */
+> > > >       txq->count =3D 0; =20
+>=20
+> --=20
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>=20
 
-I cannot be sure this is related to the malfunction after resume reported e=
-arlier, but it again touches the suspend/resume path...
-
-Anything else I should try?
-
-Petr T
-
---Sig_/b8LGBPor=EJGIBwVHH63w9T
-Content-Type: application/pgp-signature
-Content-Description: Digitální podpis OpenPGP
+--bAmEntskrkuBymla
+Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEHl2YIZkIo5VO2MxYqlA7ya4PR6cFAl9t6OgACgkQqlA7ya4P
-R6f6Jwf+OYYjG9d0GqcIPETy5IMvFCl47Tnl61MWxOR58sGTaPo6RRZuisVR/bDQ
-NwmDp86CQsFATRftz+BWyxjU751zlpW7EIGvFWAGQ5hi/pbF3Pac+FRH87T3fMJC
-/0g1Cznz6E/c9zlt98MYyVjmyrEAwWvdAddWNdtYFaGt0gWSwFWitCN7Bhc5DTlw
-tmaPJ6TjFKs8FhVKZXAurVy0MjWRn2T5ER9VeaCA163DlJyIm3hxDYynaIuSaLqP
-pXYNrXjxvhJmej9jCnaiR0NRje9nd1XhOEelM0PX+1adZG/SQMKqJ+E1KlMx4Opp
-3l1DBFb4/cRRtIVSmDJUiXAvu6y0OQ==
-=gefK
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX23rJAAKCRA6cBh0uS2t
+rNbYAP0QukQ2dzh+MpXJIOws/Xmmh3wb5mzAiCzMAbrYavOx5gD/cV7PjPKVFIgh
+GAkbvWQg7yiVYn/B0Lxwwwo1wnIxnAk=
+=FIq6
 -----END PGP SIGNATURE-----
 
---Sig_/b8LGBPor=EJGIBwVHH63w9T--
+--bAmEntskrkuBymla--
+
