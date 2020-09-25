@@ -2,211 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3899277D13
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 02:40:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34F68277D1A
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 02:42:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726998AbgIYAkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Sep 2020 20:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
+        id S1727029AbgIYAme (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Sep 2020 20:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726953AbgIYAkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 20:40:32 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4D5C0613D9
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 17:40:32 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id h31so186384qtd.14
-        for <netdev@vger.kernel.org>; Thu, 24 Sep 2020 17:40:32 -0700 (PDT)
+        with ESMTP id S1726694AbgIYAme (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Sep 2020 20:42:34 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB51CC0613CE;
+        Thu, 24 Sep 2020 17:42:33 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id x22so1407235pfo.12;
+        Thu, 24 Sep 2020 17:42:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=ym8U+dwqfwoXbaZ4eGDN89zEbFIj2x2Xco/pSegZvU8=;
-        b=qAda9XVdrKcfYMQhfPlM8CzSUlmPqDPoZbQDU3d6MNXtiQqYbHgJ1ztsc3xEsHmhPq
-         USutwJe5qnTB2r/MX1glKTpiTa7UnQfnklh+vmgKDrSaaiiS0nDJ1cp7bffo5Mh3q1ST
-         aTnpAmXxYuWfF0j6k9ZEmIGK6ikctUrchJt1ZtO2EJYTJhNSek5LHiEx04nZYEigFJBJ
-         DJfe7EqTnlw2nl36OjLgq/OYnINKOYf56cQlL5U6/Y42R960LuZ4FuUqT0xqx1y6QoL+
-         E8fb30kz9KISUERvV3h9zFK39A6vJRv+dXSmNr7W6wsKpzRlWtABF0wZArXIxIFZaSSg
-         76xA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+powH/NZMvQuXjnBMTSajRNp+zvL8Zx326js1nzMJMY=;
+        b=pgWhZiYHP6aKFn9msBnbnfp5w3TUkGvZ1CIF7N+uRE6hYTPaFP+gLjc+myLaRL7ROj
+         5WbKXasafJcu3NaLbnEvv/KMxrVVIWvOYVyNDG9bOxKp3yfEaEdc6EoG2Msk+IgcKlC7
+         5foJveBhrcXk1OsKIeUFsA3oJoDKCWBFoDP8reppLd1Yxb/NJJGCW1bNo9PJ7wUjY5mf
+         DdXV8M5HFxMtH1Cos/8C3EcMdIulfMKOczaEgsyH3Bw/XU5mxIa1TxGWCj7bF6yZ/ZCG
+         uuiY0JM6i7aXoqBZHiugQJXm7TIM1ZX5I0tqFvFmRUa9iaB0rcEf8F2CLZBwRLrLhLOw
+         oFRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=ym8U+dwqfwoXbaZ4eGDN89zEbFIj2x2Xco/pSegZvU8=;
-        b=feLhOf8NczVKJmVs8SouNN+nxpgtP82Q+agZ8MVDZgu2ci7J0EA2hrKSU8FGRFXy1M
-         lwJG6Asb4nZ81emnnM62H8yZKfxIn7rNnfml7UQR2YQ1VfMNa26/Xs62tXchvjPfSfn4
-         v/kclhcbr0OhyL0wwdTRH8FpBLKPD+9jwPXXj3ID91787DuffeOHkoN2J1DrT8zaxf8T
-         3Glun6rHyR9QrGjpAKvJcmgzqJnJqp7xrP/RfXwcocigJCZZCPeuJAI03q4qi7OVuVSP
-         MU4ePXqoFSZQ2UkLLRKSjUK5CwxZvocJ6eTWi1WyvJCKDbnG+pylVqb4EKYoP8al9+Ht
-         /7lg==
-X-Gm-Message-State: AOAM532Ta1Vr6AzhWgzlls+BXwY4rmX4mII0sIcCrT+/2vyquKIRd2ww
-        11Ie0qEaACwPFtY2n5AJat1BhgMGJwrJ9iCsQZ6x
-X-Google-Smtp-Source: ABdhPJxCvkd8bpMZshJUQOwHsBojF327K1ufob/lxs13aaYhWVJpooN1G020XYNMkfGHrP5m/sFXpV0lVA16me/8nzJR
-Sender: "danielwinkler via sendgmr" 
-        <danielwinkler@danielwinkler-linux.mtv.corp.google.com>
-X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:f693:9fff:fef4:4e59])
- (user=danielwinkler job=sendgmr) by 2002:a0c:8091:: with SMTP id
- 17mr1944004qvb.19.1600994431147; Thu, 24 Sep 2020 17:40:31 -0700 (PDT)
-Date:   Thu, 24 Sep 2020 17:40:07 -0700
-In-Reply-To: <20200925004007.2378410-1-danielwinkler@google.com>
-Message-Id: <20200924173752.v3.5.I5068c01cae3cea674a96e103a0cf4d8c81425a4f@changeid>
-Mime-Version: 1.0
-References: <20200925004007.2378410-1-danielwinkler@google.com>
-X-Mailer: git-send-email 2.28.0.709.gb0816b6eb0-goog
-Subject: [PATCH v3 5/5] Bluetooth: Change MGMT security info CMD to be more generic
-From:   Daniel Winkler <danielwinkler@google.com>
-To:     marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        linux-bluetooth@vger.kernel.org,
-        Daniel Winkler <danielwinkler@google.com>,
-        Sonny Sasaka <sonnysasaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+powH/NZMvQuXjnBMTSajRNp+zvL8Zx326js1nzMJMY=;
+        b=uDjtRzWGLJ3PbcL/AduLQlfMJIs0uKEZ5tekgQb8e01v101kB/rheZhWmZjPvhHjYj
+         ddZ4+d3FcGHtsolUBZ4o/vFileZqqcJlSeFmy95v7/KUiAuW5weEZO0VOjmQ6lx6F76g
+         tRycsIlSDaFw9toNO/1n5DxhQZMC+qjog01Pjzedt22tc+Q+HcUmezAXRBegLHDBaBMO
+         IifyK45yQ8Nj3tyqrdRqZj/idxjHNtYs1bJO98hqig29CmU6FDVs4GhEwiXu5dMIy8eC
+         HEE3NpWYCOEHpgxlE8vZBZBl6J+/L8Sr2ySLwVhopHoJiqu1AhAqSmF5Vq/KUTAS8flp
+         xcqg==
+X-Gm-Message-State: AOAM533353mvD8gGc2nhyAqiXyzmZJ2iO3xWLC4iTTALjt8vyTGNoKiY
+        4BC3jomm/YkKKBhYnZ+qvpM=
+X-Google-Smtp-Source: ABdhPJzIQMgfdCv1Hybed7eHSxZ/ZnIzeyJ3+9YDxi6wvp8cgLMLUcO1ihhQu+hfrmiO253i2vYwoQ==
+X-Received: by 2002:a17:902:7144:b029:d1:e5e7:be22 with SMTP id u4-20020a1709027144b02900d1e5e7be22mr1659323plm.85.1600994553413;
+        Thu, 24 Sep 2020 17:42:33 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:49ed])
+        by smtp.gmail.com with ESMTPSA id 126sm582972pfg.192.2020.09.24.17.42.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Sep 2020 17:42:32 -0700 (PDT)
+Date:   Thu, 24 Sep 2020 17:42:29 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andriin@fb.com, yhs@fb.com,
+        linux@rasmusvillemoes.dk, andriy.shevchenko@linux.intel.com,
+        pmladek@suse.com, kafai@fb.com, songliubraving@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org, shuah@kernel.org,
+        rdna@fb.com, scott.branden@broadcom.com, quentin@isovalent.com,
+        cneirabustos@gmail.com, jakub@cloudflare.com, mingo@redhat.com,
+        rostedt@goodmis.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        acme@kernel.org
+Subject: Re: [PATCH v6 bpf-next 3/6] bpf: add bpf_snprintf_btf helper
+Message-ID: <20200925004229.memxz26rt4jkzd4m@ast-mbp.dhcp.thefacebook.com>
+References: <1600883188-4831-1-git-send-email-alan.maguire@oracle.com>
+ <1600883188-4831-4-git-send-email-alan.maguire@oracle.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1600883188-4831-4-git-send-email-alan.maguire@oracle.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For advertising, we wish to know the LE tx power capabilities of the
-controller in userspace, so this patch edits the Security Info MGMT
-command to be more generic, such that other various controller
-capabilities can be included in the EIR data. This change also includes
-the LE min and max tx power into this newly-named command.
+On Wed, Sep 23, 2020 at 06:46:25PM +0100, Alan Maguire wrote:
+> +
+> +static int bpf_btf_printf_prepare(struct btf_ptr *ptr, u32 btf_ptr_size,
+> +				  u64 flags, const struct btf **btf,
+> +				  s32 *btf_id)
+> +{
+> +	u8 btf_kind = BTF_KIND_TYPEDEF;
+> +	char type_name[KSYM_NAME_LEN];
+> +	const struct btf_type *t;
+> +	const char *btf_type;
+> +	int ret;
+> +
+> +	if (unlikely(flags & ~(BTF_F_ALL)))
+> +		return -EINVAL;
+> +
+> +	if (btf_ptr_size != sizeof(struct btf_ptr))
+> +		return -EINVAL;
+> +
+> +	*btf = bpf_get_btf_vmlinux();
+> +
+> +	if (IS_ERR_OR_NULL(*btf))
+> +		return PTR_ERR(*btf);
+> +
+> +	if (ptr->type != NULL) {
+> +		ret = copy_from_kernel_nofault(type_name, ptr->type,
+> +					       sizeof(type_name));
 
-The change was tested by manually verifying that the MGMT command
-returns the tx power range as expected in userspace.
+nofault copy from bpf program global data... hmm...
+I guess that works, but...
 
-Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
-Signed-off-by: Daniel Winkler <danielwinkler@google.com>
----
+> +		if (ret)
+> +			return ret;
+> +
+> +		btf_type = type_name;
+> +
+> +		if (strncmp(btf_type, "struct ", strlen("struct ")) == 0) {
+> +			btf_kind = BTF_KIND_STRUCT;
+> +			btf_type += strlen("struct ");
+> +		} else if (strncmp(btf_type, "union ", strlen("union ")) == 0) {
+> +			btf_kind = BTF_KIND_UNION;
+> +			btf_type += strlen("union ");
+> +		} else if (strncmp(btf_type, "enum ", strlen("enum ")) == 0) {
+> +			btf_kind = BTF_KIND_ENUM;
+> +			btf_type += strlen("enum ");
+> +		}
+> +
+> +		if (strlen(btf_type) == 0)
+> +			return -EINVAL;
+> +
+> +		/* Assume type specified is a typedef as there's not much
+> +		 * benefit in specifying int types other than wasting time
+> +		 * on BTF lookups; we optimize for the most useful path.
+> +		 *
+> +		 * Fall back to BTF_KIND_INT if this fails.
+> +		 */
+> +		*btf_id = btf_find_by_name_kind(*btf, btf_type, btf_kind);
+> +		if (*btf_id < 0)
+> +			*btf_id = btf_find_by_name_kind(*btf, btf_type,
+> +							BTF_KIND_INT);
 
-Changes in v3:
-- Re-using security info MGMT command to carry controller capabilities
+with all that fragility...
 
-Changes in v2:
-- Fixed sparse error in Capabilities MGMT command
+> +	} else if (ptr->type_id > 0)
+> +		*btf_id = ptr->type_id;
 
- include/net/bluetooth/mgmt.h | 16 ++++++++++-----
- net/bluetooth/mgmt.c         | 38 +++++++++++++++++++++++-------------
- 2 files changed, 35 insertions(+), 19 deletions(-)
+since __builtin_btf_type_id() landed in llvm in February and it works
+may be support type_id only?
 
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 83f684af3ae843..1f7dbecae21a76 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -682,11 +682,17 @@ struct mgmt_cp_set_blocked_keys {
- 
- #define MGMT_OP_SET_WIDEBAND_SPEECH	0x0047
- 
--#define MGMT_OP_READ_SECURITY_INFO	0x0048
--#define MGMT_READ_SECURITY_INFO_SIZE	0
--struct mgmt_rp_read_security_info {
--	__le16   sec_len;
--	__u8     sec[];
-+#define MGMT_CAP_SEC_FLAGS		0x01
-+#define MGMT_CAP_MAX_ENC_KEY_SIZE	0x02
-+#define MGMT_CAP_SMP_MAX_ENC_KEY_SIZE	0x03
-+#define MGMT_CAP_LE_TX_PWR_MIN		0x04
-+#define MGMT_CAP_LE_TX_PWR_MAX		0x05
-+
-+#define MGMT_OP_READ_CONTROLLER_CAP	0x0048
-+#define MGMT_READ_CONTROLLER_CAP_SIZE	0
-+struct mgmt_rp_read_controller_cap {
-+	__le16   cap_len;
-+	__u8     cap[0];
- } __packed;
- 
- #define MGMT_OP_READ_EXP_FEATURES_INFO	0x0049
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index c92b809a5e086d..eefd60fe624320 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -110,7 +110,7 @@ static const u16 mgmt_commands[] = {
- 	MGMT_OP_SET_APPEARANCE,
- 	MGMT_OP_SET_BLOCKED_KEYS,
- 	MGMT_OP_SET_WIDEBAND_SPEECH,
--	MGMT_OP_READ_SECURITY_INFO,
-+	MGMT_OP_READ_CONTROLLER_CAP,
- 	MGMT_OP_READ_EXP_FEATURES_INFO,
- 	MGMT_OP_SET_EXP_FEATURE,
- 	MGMT_OP_READ_DEF_SYSTEM_CONFIG,
-@@ -176,7 +176,7 @@ static const u16 mgmt_untrusted_commands[] = {
- 	MGMT_OP_READ_CONFIG_INFO,
- 	MGMT_OP_READ_EXT_INDEX_LIST,
- 	MGMT_OP_READ_EXT_INFO,
--	MGMT_OP_READ_SECURITY_INFO,
-+	MGMT_OP_READ_CONTROLLER_CAP,
- 	MGMT_OP_READ_EXP_FEATURES_INFO,
- 	MGMT_OP_READ_DEF_SYSTEM_CONFIG,
- 	MGMT_OP_READ_DEF_RUNTIME_CONFIG,
-@@ -3705,12 +3705,12 @@ static int set_wideband_speech(struct sock *sk, struct hci_dev *hdev,
- 	return err;
- }
- 
--static int read_security_info(struct sock *sk, struct hci_dev *hdev,
--			      void *data, u16 data_len)
-+static int read_controller_cap(struct sock *sk, struct hci_dev *hdev,
-+			       void *data, u16 data_len)
- {
--	char buf[16];
--	struct mgmt_rp_read_security_info *rp = (void *)buf;
--	u16 sec_len = 0;
-+	char buf[20];
-+	struct mgmt_rp_read_controller_cap *rp = (void *)buf;
-+	u16 cap_len = 0;
- 	u8 flags = 0;
- 
- 	bt_dev_dbg(hdev, "sock %p", sk);
-@@ -3735,23 +3735,33 @@ static int read_security_info(struct sock *sk, struct hci_dev *hdev,
- 
- 	flags |= 0x08;		/* Encryption key size enforcement (LE) */
- 
--	sec_len = eir_append_data(rp->sec, sec_len, 0x01, &flags, 1);
-+	cap_len = eir_append_data(rp->cap, cap_len, MGMT_CAP_SEC_FLAGS,
-+				  &flags, 1);
- 
- 	/* When the Read Simple Pairing Options command is supported, then
- 	 * also max encryption key size information is provided.
- 	 */
- 	if (hdev->commands[41] & 0x08)
--		sec_len = eir_append_le16(rp->sec, sec_len, 0x02,
-+		cap_len = eir_append_le16(rp->cap, cap_len,
-+					  MGMT_CAP_MAX_ENC_KEY_SIZE,
- 					  hdev->max_enc_key_size);
- 
--	sec_len = eir_append_le16(rp->sec, sec_len, 0x03, SMP_MAX_ENC_KEY_SIZE);
-+	cap_len = eir_append_le16(rp->cap, cap_len,
-+				  MGMT_CAP_SMP_MAX_ENC_KEY_SIZE,
-+				  SMP_MAX_ENC_KEY_SIZE);
-+
-+	/* Append the min/max LE tx power parameters */
-+	cap_len = eir_append_data(rp->cap, cap_len, MGMT_CAP_LE_TX_PWR_MIN,
-+				  &hdev->min_le_tx_power, 1);
-+	cap_len = eir_append_data(rp->cap, cap_len, MGMT_CAP_LE_TX_PWR_MAX,
-+				  &hdev->max_le_tx_power, 1);
- 
--	rp->sec_len = cpu_to_le16(sec_len);
-+	rp->cap_len = cpu_to_le16(cap_len);
- 
- 	hci_dev_unlock(hdev);
- 
--	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_READ_SECURITY_INFO, 0,
--				 rp, sizeof(*rp) + sec_len);
-+	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_READ_CONTROLLER_CAP, 0,
-+				 rp, sizeof(*rp) + cap_len);
- }
- 
- #ifdef CONFIG_BT_FEATURE_DEBUG
-@@ -8175,7 +8185,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ set_blocked_keys,	   MGMT_OP_SET_BLOCKED_KEYS_SIZE,
- 						HCI_MGMT_VAR_LEN },
- 	{ set_wideband_speech,	   MGMT_SETTING_SIZE },
--	{ read_security_info,      MGMT_READ_SECURITY_INFO_SIZE,
-+	{ read_controller_cap,     MGMT_READ_CONTROLLER_CAP_SIZE,
- 						HCI_MGMT_UNTRUSTED },
- 	{ read_exp_features_info,  MGMT_READ_EXP_FEATURES_INFO_SIZE,
- 						HCI_MGMT_UNTRUSTED |
--- 
-2.28.0.709.gb0816b6eb0-goog
-
+Manually specifying type name as a string is error prone.
+Plus that copy_from_kernel... which is doing copy from bpf prog.
+I slept on it, but still feels unclean.
+May be do type_id only for now and if we really really need string types
+we can add it later after initial patches land?
