@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4751B2781B2
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 09:33:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E987B2781BD
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 09:37:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727489AbgIYHd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 03:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45966 "EHLO
+        id S1727346AbgIYHg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 03:36:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727345AbgIYHd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 03:33:27 -0400
+        with ESMTP id S1727233AbgIYHg7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 03:36:59 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871A5C0613D3
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 00:33:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4761CC0613D3
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 00:36:59 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kLiEO-00036C-SS; Fri, 25 Sep 2020 09:33:24 +0200
+        id 1kLiHo-0003ee-Db; Fri, 25 Sep 2020 09:36:56 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953] (2a03-f580-87bc-d400-bb52-8761-ee49-c953.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id C57D256A1EB;
-        Fri, 25 Sep 2020 07:33:23 +0000 (UTC)
-Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
- flexcan memory for ECC function
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 0235556A216;
+        Fri, 25 Sep 2020 07:36:54 +0000 (UTC)
 To:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
 Cc:     linux-imx@nxp.com, netdev@vger.kernel.org
 References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
- <20200925151028.11004-2-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-3-qiangqing.zhang@nxp.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -94,15 +92,17 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <b4960a59-a864-d6f8-cef6-7223a6351dae@pengutronix.de>
-Date:   Fri, 25 Sep 2020 09:33:20 +0200
+Subject: Re: [PATCH linux-can-next/flexcan 2/4] can: flexcan: add flexcan
+ driver for i.MX8MP
+Message-ID: <0729c592-8b2c-3bc5-4529-5a45b9c5186f@pengutronix.de>
+Date:   Fri, 25 Sep 2020 09:36:51 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200925151028.11004-2-qiangqing.zhang@nxp.com>
+In-Reply-To: <20200925151028.11004-3-qiangqing.zhang@nxp.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="oN0OGl8zkgKemfQyvkNRkpZchzQf3gKD6"
+ boundary="PEy9Irjy8w7OF4aRVRedyiiKvzYSwMgms"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -112,51 +112,85 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---oN0OGl8zkgKemfQyvkNRkpZchzQf3gKD6
-Content-Type: multipart/mixed; boundary="YCT2rcRBk3EqKCqTJiqKGy7lg4AwqUpC9";
+--PEy9Irjy8w7OF4aRVRedyiiKvzYSwMgms
+Content-Type: multipart/mixed; boundary="hMXaVXLvDTO1EiJxiVMKC1LsXOHNYnoVc";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
 Cc: linux-imx@nxp.com, netdev@vger.kernel.org
-Message-ID: <b4960a59-a864-d6f8-cef6-7223a6351dae@pengutronix.de>
-Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
- flexcan memory for ECC function
+Message-ID: <0729c592-8b2c-3bc5-4529-5a45b9c5186f@pengutronix.de>
+Subject: Re: [PATCH linux-can-next/flexcan 2/4] can: flexcan: add flexcan
+ driver for i.MX8MP
 References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
- <20200925151028.11004-2-qiangqing.zhang@nxp.com>
-In-Reply-To: <20200925151028.11004-2-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-3-qiangqing.zhang@nxp.com>
+In-Reply-To: <20200925151028.11004-3-qiangqing.zhang@nxp.com>
 
---YCT2rcRBk3EqKCqTJiqKGy7lg4AwqUpC9
+--hMXaVXLvDTO1EiJxiVMKC1LsXOHNYnoVc
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
 On 9/25/20 5:10 PM, Joakim Zhang wrote:
-> There is a NOTE at the section "Detection and correction of memory erro=
-rs":
-> All FlexCAN memory must be initialized before starting its operation in=
-
-> order to have the parity bits in memory properly updated. CTRL2[WRMFRZ]=
-
-> grants write access to all memory positions that require initialization=
-,
-> ranging from 0x080 to 0xADF and from 0xF28 to 0xFFF when the CAN FD fea=
-ture
-> is enabled. The RXMGMASK, RX14MASK, RX15MASK, and RXFGMASK registers ne=
-ed to
-> be initialized as well. MCR[RFEN] must not be set during memory initial=
-ization.
->=20
-> Memory range from 0x080 to 0xADF, there are reserved memory (unimplemen=
-ted
-> by hardware), these memory can be initialized or not.
->=20
-> Initialize all FlexCAN memory before accessing them, otherwise, memory
-> errors may be detected. The internal region cannot be initialized when
-> the hardware does not support ECC.
+> Add flexcan driver for i.MX8MP, which supports CAN FD and ECC.
 >=20
 > Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> ---
+>  drivers/net/can/flexcan.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+>=20
+> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+> index f02f1de2bbca..8c8753f77764 100644
+> --- a/drivers/net/can/flexcan.c
+> +++ b/drivers/net/can/flexcan.c
+> @@ -214,6 +214,7 @@
+>   *   MX53  FlexCAN2  03.00.00.00    yes        no        no       no  =
+      no           no
+>   *   MX6s  FlexCAN3  10.00.12.00    yes       yes        no       no  =
+     yes           no
+>   *  MX8QM  FlexCAN3  03.00.23.00    yes       yes        no       no  =
+     yes          yes
+> + *  MX8MP  FlexCAN3  03.00.17.01    yes       yes        no      yes  =
+     yes          yes
+>   *   VF610 FlexCAN3  ?               no       yes        no      yes  =
+     yes?          no
+>   * LS1021A FlexCAN2  03.00.04.00     no       yes        no       no  =
+     yes           no
+>   * LX2160A FlexCAN3  03.00.23.00     no       yes        no       no  =
+     yes          yes
+> @@ -389,6 +390,13 @@ static const struct flexcan_devtype_data fsl_imx8q=
+m_devtype_data =3D {
+>  		FLEXCAN_QUIRK_SUPPORT_FD,
+>  };
+> =20
+> +static struct flexcan_devtype_data fsl_imx8mp_devtype_data =3D {
+> +	.quirks =3D FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_R=
+RS |
+> +		FLEXCAN_QUIRK_USE_OFF_TIMESTAMP | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
+> +		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SETUP_STOP_MODE |
+> +		FLEXCAN_QUIRK_DISABLE_MECR,
 
-Is this whole patch valid/compatible with the mx7,too?
+Can you sort the order of the quirks by their value?
+
+> +};
+> +
+>  static const struct flexcan_devtype_data fsl_vf610_devtype_data =3D {
+>  	.quirks =3D FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_R=
+RS |
+>  		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_OFF_TIMESTAMP |
+> @@ -1932,6 +1940,7 @@ static int flexcan_setup_stop_mode(struct platfor=
+m_device *pdev)
+>  }
+> =20
+>  static const struct of_device_id flexcan_of_match[] =3D {
+> +	{ .compatible =3D "fsl,imx8mp-flexcan", .data =3D &fsl_imx8mp_devtype=
+_data, },
+>  	{ .compatible =3D "fsl,imx8qm-flexcan", .data =3D &fsl_imx8qm_devtype=
+_data, },
+>  	{ .compatible =3D "fsl,imx6q-flexcan", .data =3D &fsl_imx6q_devtype_d=
+ata, },
+>  	{ .compatible =3D "fsl,imx28-flexcan", .data =3D &fsl_imx28_devtype_d=
+ata, },
+>=20
 
 Marc
 
@@ -167,23 +201,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---YCT2rcRBk3EqKCqTJiqKGy7lg4AwqUpC9--
+--hMXaVXLvDTO1EiJxiVMKC1LsXOHNYnoVc--
 
---oN0OGl8zkgKemfQyvkNRkpZchzQf3gKD6
+--PEy9Irjy8w7OF4aRVRedyiiKvzYSwMgms
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9tnUAACgkQqclaivrt
-76kAAwf/atTj9ZGWH7UjxhEZUdXOL4+ZKWmupfPrzb2KjTAykTitTeU5FMww9dAd
-Fzkdu26hnYqbpv5IEoaazGtVgQP+RsfiCbhDxFvSKSAs/feys+nQRcg11QtFVxJ5
-OA7VXSDrVZSCQQMexCeK28g3fcbDzfhC86e6xZ8YvH8J4DvnSRNkIdFuJEvGPEqO
-Kj/u6ZUPN61TqRKlHTI9wbKS+tbwnLsdG1oPLKBdf1RHNhGFo8P0IrNwu4xlAs/Q
-S54FNgb5GQ3bVkis0B9d5/JcfSdYCpEh9C4GmM+Tc7VNo/ks0cBBYsNW6VlQ8nBb
-glr4yBrwepBLvQFEVCxGLTWnhi+XlQ==
-=GPE9
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9tnhQACgkQqclaivrt
+76nVEgf9HJJAjdUqo+zyJ6gv7e3QOEmdZX1hBkuKqU6PX70zt7VPe0Zo4rkDivk6
+9V2sxCGV2Z/bSks4ZNJgxMnKohpgQpQLKYahrEbBdCehb7PIqlqjrj9DPGxWgCJi
+/KG6Wa3c62n5hhNcXOmIubK/T69pq9nGUuEyEq8QldzU2Ekn1yBPVoYvL7K+8Io6
+7G0Z1iCzUUN4tpZ4Er8c7FWE9ZPxfla4I7K3DCohx66BkiqNQHk12EPJmURtZakl
+hKRHj1KwtSu54aEX6L1pE27RP6ncS//ho12Qz8V//mp/cPAYNVbLyWTUMeDPIyvv
+I+oDqjnE1HjMl0GI1yuYjT8rXPy3Jw==
+=oXFx
 -----END PGP SIGNATURE-----
 
---oN0OGl8zkgKemfQyvkNRkpZchzQf3gKD6--
+--PEy9Irjy8w7OF4aRVRedyiiKvzYSwMgms--
