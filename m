@@ -2,149 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 311002790DE
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 20:39:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 029022790FE
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 20:43:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729786AbgIYSjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 14:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727201AbgIYSjg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 14:39:36 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF600C0613CE;
-        Fri, 25 Sep 2020 11:39:35 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id p15so1896235qvk.5;
-        Fri, 25 Sep 2020 11:39:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:references:in-reply-to:subject:date:message-id
-         :mime-version:content-transfer-encoding:content-language
-         :thread-index;
-        bh=dUf435LeWetQI7T/0I6jtCo+Jj+pjMiRIhsGBhL9+Ks=;
-        b=Syf7hE4/NbuBopE4fj6R7YVeAw1e4pC/XFomn9rGC5Ic4Bh3BmIc7Zc/UekYCw1o93
-         Dm+HkmALXxcv5YP8ZaMqGfeKvNBhSiCn+iUtJj0Ep3jYIKs76Hcmxo3+3fgpxhs4nBrn
-         bv0dMWeZmnnCRhJqZAql9w2z4SXxuLEx+hh7WxFxoiIUOVj7TImZIVO3viYDiBSlq479
-         2hlCSo59GqQs/gdzdRyHR+EztEPckFxKLOC4rbC9ddTLL0HdLGewAi4SB3B04SNcfBAQ
-         s3/e2ZATvE1MSNVzS+kmjMoyXqpVY8+IE7Je5CeREbCohS232UOb2uNaGbIyKQzLeYzq
-         k/nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:references:in-reply-to:subject:date
-         :message-id:mime-version:content-transfer-encoding:content-language
-         :thread-index;
-        bh=dUf435LeWetQI7T/0I6jtCo+Jj+pjMiRIhsGBhL9+Ks=;
-        b=lqYvbUEAshwrZOqw9cf1dsKIzCk0smgu7KJo1wBF3umDN4rAuNJxnWfrkRUIpq3kwN
-         WQASy6rWfm6tOgBEdgpt2bpBkhE6eA7TBuOPrJE0jSNcZTAxVK9JnFIQN8mU8wzaloew
-         5rsXU2Vw/BPdW18hnAVL+gGaJiSz46CKf/yYbB8ZjDhKs7bMeGuOjPeck6yEPKn0NMaj
-         uByI0+hUnXLWuW7YGufh1g2apBs37XkWcPaNtbsnpPv2tDwPnho/rZ5nB4JBQGI6VXNQ
-         mc59Gv/ev7kY7zgMryj3YBXzzGYbPBufCaYO2j0JhnsPGdmhKnzRfMJR9EQt95u3kZR+
-         pemg==
-X-Gm-Message-State: AOAM531j8glFrCjUZ89mqB4XXfAi7Ywci1Ez+83RVVJXHOFeuTpxcbt0
-        fWUSBkf6YS9fLZlsIa325Eo=
-X-Google-Smtp-Source: ABdhPJxDhaiOVjVfIGD8RWeyXsIunrWwPzE9wLn+BAfnkudkko5iSAi6Y/tH4RMK/XBVIPZAxiNCkA==
-X-Received: by 2002:a0c:b251:: with SMTP id k17mr799820qve.53.1601059174715;
-        Fri, 25 Sep 2020 11:39:34 -0700 (PDT)
-Received: from AnsuelXPS (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
-        by smtp.gmail.com with ESMTPSA id g19sm2208622qka.84.2020.09.25.11.39.31
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 25 Sep 2020 11:39:33 -0700 (PDT)
-From:   <ansuelsmth@gmail.com>
-To:     "'Rob Herring'" <robh+dt@kernel.org>
-Cc:     "'Miquel Raynal'" <miquel.raynal@bootlin.com>,
-        "'Richard Weinberger'" <richard@nod.at>,
-        "'Vignesh Raghavendra'" <vigneshr@ti.com>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        "'Jakub Kicinski'" <kuba@kernel.org>,
-        "'Andrew Lunn'" <andrew@lunn.ch>,
-        "'Heiner Kallweit'" <hkallweit1@gmail.com>,
-        "'Russell King'" <linux@armlinux.org.uk>,
-        "'Frank Rowand'" <frowand.list@gmail.com>,
-        "'Boris Brezillon'" <bbrezillon@kernel.org>,
-        "'MTD Maling List'" <linux-mtd@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "'netdev'" <netdev@vger.kernel.org>
-References: <20200920095724.8251-1-ansuelsmth@gmail.com> <20200920095724.8251-4-ansuelsmth@gmail.com> <CAL_JsqKhyeh2=pJcpBKkh+s3FM__DY+VoYSYJLRUErrujTLn9A@mail.gmail.com>
-In-Reply-To: <CAL_JsqKhyeh2=pJcpBKkh+s3FM__DY+VoYSYJLRUErrujTLn9A@mail.gmail.com>
-Subject: RE: [PATCH v3 3/4] of_net: add mac-address-increment support
-Date:   Fri, 25 Sep 2020 20:39:30 +0200
-Message-ID: <00f801d6936b$36551e20$a2ff5a60$@gmail.com>
+        id S1729741AbgIYSnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 14:43:12 -0400
+Received: from mout.kundenserver.de ([217.72.192.75]:45403 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726401AbgIYSnM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 14:43:12 -0400
+Received: from mail-qt1-f173.google.com ([209.85.160.173]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1Mg6uW-1kvk802eT8-00hd38; Fri, 25 Sep 2020 20:43:10 +0200
+Received: by mail-qt1-f173.google.com with SMTP id b2so2779322qtp.8;
+        Fri, 25 Sep 2020 11:43:10 -0700 (PDT)
+X-Gm-Message-State: AOAM532o+L7Mb4uL/JSLLaQ8Wb8e2gOvXUSPa8qDfBBYOCIETQNtJtbu
+        OGZLL2/UJ2nH+i8r3KinS+WPt47GwPsC5KPFMBE=
+X-Google-Smtp-Source: ABdhPJznPyzhYwuux+BthxpNuMrUe2I5Rfkhf/t2FbB44iCpFkSn8WqpsjOfIjdo1kNhkQFYN+TvhoVRJnZgTystfms=
+X-Received: by 2002:aed:2ce5:: with SMTP id g92mr1049652qtd.204.1601059389412;
+ Fri, 25 Sep 2020 11:43:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: it
-Thread-Index: AQKM5RC4rgXeqQ5LopEy1q5Nkk2f7gIPbdkoAY21rs6n8B/RMA==
+References: <20200925132237.2748992-1-arnd@arndb.de>
+In-Reply-To: <20200925132237.2748992-1-arnd@arndb.de>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 25 Sep 2020 20:42:53 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1zBgFbx8ZeqFUXok2WsOha+72zXpFZ60Sv+9=wwaqe4w@mail.gmail.com>
+Message-ID: <CAK8P3a1zBgFbx8ZeqFUXok2WsOha+72zXpFZ60Sv+9=wwaqe4w@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/2] ethtool: improve compat ioctl handling
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Christoph Hellwig <hch@lst.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Jens Axboe <axboe@kernel.dk>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:UGeDIC9Ve8/SQxcTVPMfaaKeQQHqZHycgVFm6Byx+nIV7cQu/OK
+ yJiY2UG6YWbgdhiqnhLWZzKo5pvFAly47/wnoEpr8PfZoHYYQ4oitxNlZfGngF3jloiOMtY
+ d2IR96b6Xv2pVlTYWSJncUeMvHxlpaMqJTcslug5vfdjQiZkxNIMI9GYJIaKzy77Zm354KO
+ W+s2pSWjo/65Nj9nxtGTQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:LEPOD2Jfl/k=:2P4vTXkVtzM77b/6pEj8iE
+ fAd7VttGxihOFWiPBNdPFS9B/yDDxFhH393zDU4qp1r4GmvASyajREKMFVjaVwDFMtqb+ugwy
+ YZMaLjQj2S0E7/xkTpblp8AAlzRFrr9S+iRqwNWnsWwrIjiweV0F3ZIZjaIjGT83xvJ6LG8Vx
+ AFlXh417vtouL6OuyAHgb1EyRnQ/Um6BqiuIm1QF8vz6vkFjmByx/I87Zf/QbG4+QWN+PtWdb
+ QMYHs1o0XciFjgxFwxZrhalJ+Ll9GoJp+tyLcjODhuyRKIPlYMCh3JkRsdpc/pfqgyNfabrOz
+ BEz1k4zAlFFlBSKoxEIVMYJHIFQwlrAv6kefBIN8crBuJURnsLDGW/Wrl+yO8VEvsruNy+O7j
+ onQO6jWSHrKrEgs7n7LM9h6gAp/zqEzz9z2GdLvVQR76xqtaHLI1kaXSPXX1xYFZADKYqoRNQ
+ iSw1MZ4cINyagyTH3j068cDD3ExCQPNjWIoi1mGpUZJCIbn53/fNdygM3ys28i1QsR/pUvPzh
+ hnpKWuhEROzRkl7lzro1LldFDBkQY4Dswq6rPlZCnGAwLOtgbMKPVhXWCBUaJomAtMBbXrvgH
+ nF6B9IwmPf4VmENZSwR+8kX3AfktKzrs+Nmh6fwGENDvA5MEEYKm6ZkPJIfFut/EkmrtaNLnf
+ JyPV7O1j0O7v32H8AxY345ALNxZKvd/CjD8XcwedB4eFSLeEftmy/ecHcQMXhl3VDY7IDNN09
+ 1KsDLzSMJR91DR6tyo1QOibIx3A56M0c2gFmHkTza5E7MmYR82DPLXDip8ThS6qNGZKXt9+JS
+ G9f67Jcn3lu3+aKA3iA0Z4M7++H4U5LmNFMbt4EYwMd9e5s4gyLHin6MpUl7Y47f3ZAbpi3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Sep 25, 2020 at 3:22 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> The ethtool compat ioctl handling is hidden away in net/socket.c,
+> which introduces a couple of minor oddities:
+>
+> - The implementation may end up diverging, as seen in the RXNFC
+>   extension in commit 84a1d9c48200 ("net: ethtool: extend RXNFC
+>   API to support RSS spreading of filter matches") that does not work
+>   in compat mode.
+>
+> - Most architectures do not need the compat handling at all
+>   because u64 and compat_u64 have the same alignment.
+>
+> - On x86, the conversion is done for both x32 and i386 user space,
+>   but it's actually wrong to do it for x32 and cannot work there.
+>
+> - On 32-bit Arm, it never worked for compat oabi user space, since
+>   that needs to do the same conversion but does not.
+>
+> - It would be nice to get rid of both compat_alloc_user_space()
+>   and copy_in_user() throughout the kernel.
+>
+> None of these actually seems to be a serious problem that real
+> users are likely to encounter, but fixing all of them actually
+> leads to code that is both shorter and more readable.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
 
+The kbuild bot found another dependency on a patch that I had in my
+testing tree (moving compat_u64). Let's drop both patches for now, I'll
+resend once that has been merged.
 
-> -----Original Message-----
-> From: Rob Herring <robh+dt@kernel.org>
-> Sent: Friday, September 25, 2020 8:24 PM
-> To: Ansuel Smith <ansuelsmth@gmail.com>
-> Cc: Miquel Raynal <miquel.raynal@bootlin.com>; Richard Weinberger
-> <richard@nod.at>; Vignesh Raghavendra <vigneshr@ti.com>; David S.
-> Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>;
-> Andrew Lunn <andrew@lunn.ch>; Heiner Kallweit
-> <hkallweit1@gmail.com>; Russell King <linux@armlinux.org.uk>; Frank
-> Rowand <frowand.list@gmail.com>; Boris Brezillon
-> <bbrezillon@kernel.org>; MTD Maling List =
-<linux-mtd@lists.infradead.org>;
-> devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; netdev
-> <netdev@vger.kernel.org>
-> Subject: Re: [PATCH v3 3/4] of_net: add mac-address-increment support
->=20
-> On Sun, Sep 20, 2020 at 3:57 AM Ansuel Smith <ansuelsmth@gmail.com>
-> wrote:
-> >
-> > Lots of embedded devices use the mac-address of other interface
-> > extracted from nvmem cells and increments it by one or two. Add two
-> > bindings to integrate this and directly use the right mac-address =
-for
-> > the interface. Some example are some routers that use the gmac
-> > mac-address stored in the art partition and increments it by one for =
-the
-> > wifi. mac-address-increment-byte bindings is used to tell what byte =
-of
-> > the mac-address has to be increased (if not defined the last byte is
-> > increased) and mac-address-increment tells how much the byte decided
-> > early has to be increased.
->=20
-> I'm inclined to say if there's a platform specific way to transform
-> MAC addresses, then there should be platform specific code to do that
-> which then stuffs the DT using standard properties. Otherwise, we have
-> a never ending stream of 'generic' properties to try to handle
-> different platforms' cases.
->=20
-> Rob
-
-I agree about the 'never ending stream'... But I think the increment =
-feature
-is not that platform specific. I will quote some number by another patch
-that tried to implement the same feature in a different way, [1]
-
-* mtd-mac-address                used 497 times in 357 device tree files
-* mtd-mac-address-increment      used  74 times in  58 device tree files
-* mtd-mac-address-increment-byte used   1 time  in   1 device tree file
-
-The mtd-mac-address is what this patchset is trying to fix with the =
-nvmem
-support. The increment is much more than 74 times since it doesn't count
-SoC that have wifi integrated (it's common practice for SoC with =
-integrated
-wifi to take the switch mac and use it to set the wifi mac)
-Actually what is really specific is the increment-byte that can be =
-dropped
-if we really want to.
-I still think the increment feature would be very useful to add full =
-support
-for mac-address extracted from nvmem cell.
-
-[1] =
-https://patchwork.ozlabs.org/project/netdev/patch/1555445100-30936-1-git-=
-send-email-ynezz@true.cz/
-
+      Arnd
