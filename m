@@ -2,121 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF799278D08
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 17:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1CFC278D0A
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 17:45:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729009AbgIYPpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 11:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37344 "EHLO
+        id S1729092AbgIYPpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 11:45:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728693AbgIYPpS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 11:45:18 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44217C0613CE;
-        Fri, 25 Sep 2020 08:45:18 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id y2so3289164lfy.10;
-        Fri, 25 Sep 2020 08:45:18 -0700 (PDT)
+        with ESMTP id S1728693AbgIYPpl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 11:45:41 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E70C0613CE;
+        Fri, 25 Sep 2020 08:45:41 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id e16so4135009wrm.2;
+        Fri, 25 Sep 2020 08:45:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=g2lMtapjDej6Scyz1khiHbUwhcQffu/af+JLS3CefPk=;
-        b=cJJxyx3ta5SSHr6U8WwlSBLGWmls7prHrARXa3V9n5XaqtOa7S6CmZCLg2pv8E5J6s
-         VEx7jm1ej2zkdYmIbk4L5RBo35z9RV9xVRSP5cN7hkqQYCbqWZQ/tOG9pZGad3BIYAy3
-         YpOKzH2NXDwkXKZyIh8GtZf/2mbaqJxS/O5XUlDF5u6/8Yd8/aw85GE9bSS99OtFSkRk
-         ZFSoJ8tfZTsF60RJydifRYu4Ubbs7lLmWkOZXkxO8FDLwZUaT9DJ/QZGN76KuRNYNMq0
-         RET3XROtMSZM5aXpdwgPsqIyxcE71XSTbUecl7XHB7jESv8yfNig4Imfti4/4X7mxabX
-         XFAw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BvkZ3u069LXTTvpatriU/ectTjzDb+6EutCCzwbP+Lo=;
+        b=O1e50yxYQHZm0fC2+ENNL1jFvaO0OPNbI9DgkROEt8MYbiUDMioK/oOYlru/S9DHju
+         kqykW1Esv7EWOU+OAaWu4Z5x21oHaeqKOP9nQpQrBNSzwMroAKXzLxI7G4ZeiFe6UeN3
+         9iqtFddaS3HumsQUY33guIhobhZeha8txP4vGM1S4swHWyL5fVXXYRkA+TVtvVltSia5
+         Tgq/AeAcL+OsR/cheC6btoLv9jpEFwuAQliUuII2TM9XW5gG3kfPHc1ZhBkTF+GIMOwz
+         X2mG6cooEPulIOe24c1+CY3vOj8B5dYyaPEfM0bQ+kMNml+4YBnZeBF6lZdMD4PCj25T
+         7VVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=g2lMtapjDej6Scyz1khiHbUwhcQffu/af+JLS3CefPk=;
-        b=Unpip4TU3nA0fvskeke+n1sz40jgeYgY2G5U4U0yNn2ZSzIz7BM9MCQT77QYlepmhk
-         RE4C5CCEMDTH3dMUR4sz3P5X3vGD5kGqxyeq0N/jnAWfqJD57EBEKuUrB9gYEE+/7NA5
-         i3rQD5TIwFbiOVVi/LuPm72xCpore5h6hO9Ieqbi2ACbD/fZk8EmngTCpwBXA9Za2Z8l
-         2JaFOItyKEhNUhXQlZ44HRQB880234iIS4+J6DwO4NEaqvdmwHeYP3wKjUmp3WmtuXLE
-         4TiS8emPumz4Z+P8pGFPLy54U75uHTARHGYpGRKbUiGqMflCLX0Jjyl6NGaRzRZrcRPh
-         ptEQ==
-X-Gm-Message-State: AOAM533+iXHnDgOg2Lk841p+BrWru1XN3OT4JsSybAvalXL8t/FCdqng
-        97Ri+0tCRWKZnuNF7EFWNk769e0OXZE+wgAF9VA=
-X-Google-Smtp-Source: ABdhPJwwVPrSeaEcHh51MtJHvq7Y3p/DdgXvKIpoA6hxrY/MSh68L9Eu8sJZo5IHV0FqDiTr+duTmjFs0i8IwaLr6eU=
-X-Received: by 2002:a19:8089:: with SMTP id b131mr1460992lfd.390.1601048716485;
- Fri, 25 Sep 2020 08:45:16 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BvkZ3u069LXTTvpatriU/ectTjzDb+6EutCCzwbP+Lo=;
+        b=CpPQ7DO4Jk7ViCFFtlvRGMAvIQsesZ50Nq11Bi38uRs6pUhiE1vbZ3Dknx+CFKQ7pk
+         BJQWSA40bOhj8v/+LUDwsTLZCBNXNyBFed170xgD4b8zl6Q6JNKMXHTj+WtGQRvce96B
+         zCEPSquNI8QUXqQFPVzMniORRhUn5SDSXSHCZsYQvJdVC3NMy8lkqUUzTCwchUNqG6yG
+         lh2WJDB4fivDOxr7icinX1Jre7Wj0H+otgtbegqwjlkxTQuIPjY8M65JYrE4HxqTb9Zr
+         yvm1ip6oR1geUb4XIoJR0+yCocKyFm84DhQxPwBvZD/e1FTYjGD97mIJIcLKAOZKziOK
+         PA8A==
+X-Gm-Message-State: AOAM530oBE8rsRGiErH1btsFF0O3emgPJ+tVJSDjWdnOMpCKhT6Ax3Ls
+        YKhH3YHsdCWZ4TW5Lr8it44Pzv8bRsYk3L8giuw=
+X-Google-Smtp-Source: ABdhPJwWBBcgsFIcg/t7xtb/qyl0s/i4zFC7G1Z50ynCFVPk9mIqxEP+iWcu1ukkGe7fUCq7uqv+aA==
+X-Received: by 2002:a5d:5702:: with SMTP id a2mr5062483wrv.284.1601048739759;
+        Fri, 25 Sep 2020 08:45:39 -0700 (PDT)
+Received: from [192.168.8.147] ([37.173.173.126])
+        by smtp.gmail.com with ESMTPSA id a10sm3363378wmb.23.2020.09.25.08.45.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Sep 2020 08:45:38 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 2/6] bpf, net: rework cookie generator as per-cpu
+ one
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
+        john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <cover.1600967205.git.daniel@iogearbox.net>
+ <d4150caecdbef4205178753772e3bc301e908355.1600967205.git.daniel@iogearbox.net>
+ <e854149f-f3a6-a736-9d33-08b2f60eb3a2@gmail.com>
+ <dc5dd027-256d-598a-2f89-a45bb30208f8@iogearbox.net>
+ <20200925080020.013165a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <c9fee768-4f35-e596-001b-2e2a0e4f48a1@gmail.com>
+ <20200925083157.21df654d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <95dc174c-2ab9-b82c-0102-abba9b1c177a@gmail.com>
+Date:   Fri, 25 Sep 2020 17:45:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-References: <160079991372.8301.10648588027560707258.stgit@toke.dk>
- <160079991808.8301.6462172487971110332.stgit@toke.dk> <20200924001439.qitbu5tmzz55ck4z@ast-mbp.dhcp.thefacebook.com>
- <87tuvmbztw.fsf@toke.dk>
-In-Reply-To: <87tuvmbztw.fsf@toke.dk>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 25 Sep 2020 08:45:04 -0700
-Message-ID: <CAADnVQLMBKAYsbS4PO87yVrPWJEf9H3qzpsL-p+gFQpcomDw2w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v8 04/11] bpf: move prog->aux->linked_prog and
- trampoline into bpf_link on attach
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200925083157.21df654d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 3:00 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->
-> >> +    struct mutex tgt_mutex; /* protects tgt_* pointers below, *after*=
- prog becomes visible */
-> >> +    struct bpf_prog *tgt_prog;
-> >> +    struct bpf_trampoline *tgt_trampoline;
-> >>      bool verifier_zext; /* Zero extensions has been inserted by verif=
-ier. */
-> >>      bool offload_requested;
-> >>      bool attach_btf_trace; /* true if attaching to BTF-enabled raw tp=
- */
-> > ...
-> >>  struct bpf_tracing_link {
-> >>      struct bpf_link link;
-> >>      enum bpf_attach_type attach_type;
-> >> +    struct bpf_trampoline *trampoline;
-> >> +    struct bpf_prog *tgt_prog;
-> >
-> > imo it's confusing to have 'tgt_prog' to mean two different things.
-> > In prog->aux->tgt_prog it means target prog to attach to in the future.
-> > Whereas here it means the existing prog that was used to attached to.
-> > They kinda both 'target progs' but would be good to disambiguate.
-> > May be keep it as 'tgt_prog' here and
-> > rename to 'dest_prog' and 'dest_trampoline' in prog->aux ?
->
-> I started changing this as you suggested, but I think it actually makes
-> the code weirder. We'll end up with a lot of 'tgt_prog =3D
-> prog->aux->dest_prog' assignments in the verifier, unless we also rename
-> all of the local variables, which I think is just code churn for very
-> little gain (the existing 'target' meaning is quite clear, I think).
 
-you mean "churn" just for this patch. that's fine.
-But it will make names more accurate for everyone reading it afterwards.
-Hence I prefer distinct and specific names where possible.
 
-> I also think it's quite natural that the target moves; I mean, it's
-> literally the same pointer being re-assigned from prog->aux to the link.
-> We could rename the link member to 'attached_tgt_prog' or something like
-> that, but I'm not sure it helps (and I don't see much of a problem in
-> the first place).
+On 9/25/20 5:31 PM, Jakub Kicinski wrote:
+> On Fri, 25 Sep 2020 17:15:17 +0200 Eric Dumazet wrote:
+>> On 9/25/20 5:00 PM, Jakub Kicinski wrote:
+>>> Is this_cpu_inc() in itself atomic?
+> 
+> To answer my own question - it is :)
+> 
+>>>                     unlikely((val & (COOKIE_LOCAL_BATCH - 1)) == 0))
+>>>
+>>> Can we reasonably assume we won't have more than 4k CPUs and just
+>>> statically divide this space by encoding CPU id in top bits?  
+>>
+>> This might give some food to side channel attacks, since this would
+>> give an indication of cpu that allocated the id.
+>>
+>> Also, I hear that some distros enabled 8K cpus.
+> 
+> Ok :(
+> 
 
-'attached_tgt_prog' will not be the correct name.
-There is 'prog' inside the link already. That's 'attached' prog.
-Not this one. This one is the 'attached_to' prog.
-But such name would be too long.
-imo calling it 'dest_prog' in aux is shorter and more obvious.
+I was not really serious about the side channel attacks, just some
+thought about possible implications :)
+
+Even with 8192 max cpus, splitting space into 2^(64-13) blocks would be fine I think.
