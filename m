@@ -2,92 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFC63278B1A
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 16:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 254E4278B20
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 16:44:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729047AbgIYOnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 10:43:15 -0400
-Received: from m42-4.mailgun.net ([69.72.42.4]:32072 "EHLO m42-4.mailgun.net"
+        id S1729094AbgIYOok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 10:44:40 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:46390 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728148AbgIYOnP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 10:43:15 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1601044994; h=Date: Message-Id: Cc: To: Subject: From:
- Content-Transfer-Encoding: MIME-Version: Content-Type: Sender;
- bh=ISR6+Y5t1rmd7F2tL+mdzWI0qmu/3ZZOcbPmtJ79P2I=; b=Kr5gnCz9qaOkZynjBxQ0rsMD424v9nHX613lBVjuwfmNeyiv+7B0VPu81CGuYPhWgYVotty/
- yzQqjDe8qKu9O+yRah/dmXFzr3qVo+8QHbIMpFIfTQWo1FOgQalRiwl9rmbauqZgoBNplglL
- UhWnSXQQ6DnyQDgm46JmZ6SveeY=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 5f6e0202ebb17452ba8c30f5 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 25 Sep 2020 14:43:14
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 8E1D1C433C8; Fri, 25 Sep 2020 14:43:13 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9EC11C433CA;
-        Fri, 25 Sep 2020 14:43:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9EC11C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-From:   Kalle Valo <kvalo@codeaurora.org>
-Subject: pull-request: wireless-drivers-2020-09-25
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20200925144313.8E1D1C433C8@smtp.codeaurora.org>
-Date:   Fri, 25 Sep 2020 14:43:13 +0000 (UTC)
+        id S1728148AbgIYOoj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 10:44:39 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 580CE1A0925;
+        Fri, 25 Sep 2020 16:44:38 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 4B0DB1A0921;
+        Fri, 25 Sep 2020 16:44:38 +0200 (CEST)
+Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 158CE2030E;
+        Fri, 25 Sep 2020 16:44:38 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next 0/3] dpaa2-eth: small updates
+Date:   Fri, 25 Sep 2020 17:44:18 +0300
+Message-Id: <20200925144421.7811-1-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This patch set is just a collection of small updates to the dpaa2-eth
+driver.
 
-here's a pull request to net tree, more info below. Please let me know if there
-are any problems.
+First, we only need to check the availability of the DTS child node, not
+both child and parent node. Then remove a call to
+dpaa2_eth_link_state_update() which is now just a leftover and it's not
+useful in how are things working now in the PHY integration. Lastly,
+modify how the driver is behaving when the the flow steering table is
+used between all the traffic classes.
 
-Kalle
+Ioana Ciornei (2):
+  dpaa2-mac: do not check for both child and parent DTS nodes
+  dpaa2-eth: no need to check link state right after ndo_open
 
-The following changes since commit 1264c1e0cfe55e2d6c35e869244093195529af37:
+Ionut-robert Aron (1):
+  dpaa2-eth: install a single steering rule when SHARED_FS is enabled
 
-  Revert "wlcore: Adding suppoprt for IGTK key in wlcore driver" (2020-09-07 11:39:32 +0300)
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 25 ++++++++++---------
+ .../ethernet/freescale/dpaa2/dpaa2-ethtool.c  |  2 +-
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  |  3 +--
+ drivers/net/ethernet/freescale/dpaa2/dpni.h   |  4 +++
+ 4 files changed, 19 insertions(+), 15 deletions(-)
 
-are available in the git repository at:
+-- 
+2.25.1
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-2020-09-25
-
-for you to fetch changes up to efb1676306f664625c0c546dd10d18d33c75e3fc:
-
-  mt76: mt7615: reduce maximum VHT MPDU length to 7991 (2020-09-24 16:12:22 +0300)
-
-----------------------------------------------------------------
-wireless-drivers fixes for v5.9
-
-Second, and last, set of fixes for v5.9. Only one important regression
-fix for mt76.
-
-mt76
-
-* fix a regression in aggregation which appeared after mac80211 changes
-
-----------------------------------------------------------------
-Felix Fietkau (1):
-      mt76: mt7615: reduce maximum VHT MPDU length to 7991
-
- drivers/net/wireless/mediatek/mt76/mt7615/init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
