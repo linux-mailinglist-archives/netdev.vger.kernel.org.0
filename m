@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCBEC278944
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 15:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C1FA278948
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 15:17:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728923AbgIYNRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 09:17:22 -0400
-Received: from mailrelay112.isp.belgacom.be ([195.238.20.139]:53084 "EHLO
+        id S1728937AbgIYNRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 09:17:40 -0400
+Received: from mailrelay112.isp.belgacom.be ([195.238.20.139]:53128 "EHLO
         mailrelay112.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728171AbgIYNRW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 09:17:22 -0400
-IronPort-SDR: USMfB1R/kPsaPPtMKtrw6y4KpdXbRn9yttPoAEjW98AUBN5H/7t9qQLV9gnatcQMyQEfL8HqRI
- JisXZ7sgVHzp6zaIAm8o1ASnzPywfSEnnIxb/5pFqcz/hbaoeRbKBZ1Y9cp0Ve2b8LP0jG0P2P
- k1EgUT0YEkp0qZBaK/uP7g6HKcwM68ApyNsUpFCU9/k8E5Xw6PT+okmfR4JvW1PTc9ZPC+Px0g
- vT4pQ8TQFTiG26FdkC8s8mxdu1MFUk8TXHwR3gWY5P8X/GNoeT5iS0mBFiT7C51I5qDx+6axi4
- GK8=
+        by vger.kernel.org with ESMTP id S1728148AbgIYNRk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 09:17:40 -0400
+IronPort-SDR: iSyu2GFpLieY1mj/lx1m2Sc+lTimUv4gFxSXnKLXQydqZA2k7O1NjPL26a9DF/h9gnYhuw0lEj
+ BIf09xKVANJUrxD6DcOWqaI50DwTE/iwusuKSe2RhBExQlQO8zMOJ7NOrpS0U4yRrg3Vepzhv+
+ BYltoYR7ToUvMnqFXjB3x93RyV2hGSkDzHU8e0qRewzxfa+kdfPRVYpCPGjHnki4UwmBCP3gJx
+ NhbxdWPHubO9o23c7Lrlx3QEtgCUVZTN2uaqmI475TCd5mnV2S5zCfiSyYpJ+96W5AVxQk9pKH
+ Lso=
 X-Belgacom-Dynamic: yes
-IronPort-PHdr: =?us-ascii?q?9a23=3AqocG0xK5Wts6YGvlj9mcpTZWNBhigK39O0sv0r?=
- =?us-ascii?q?FitYgXKvv4rarrMEGX3/hxlliBBdydt6sbzbCO+P2xEUU7or+5+EgYd5JNUx?=
- =?us-ascii?q?JXwe43pCcHRPC/NEvgMfTxZDY7FskRHHVs/nW8LFQHUJ2mPw6arXK99yMdFQ?=
- =?us-ascii?q?viPgRpOOv1BpTSj8Oq3Oyu5pHfeQpFiCe/bL9oMhm6sQrdu8kSjIB/Nqs/1x?=
- =?us-ascii?q?zFr2dSde9L321oP1WTnxj95se04pFu9jlbtuwi+cBdT6j0Zrw0QrNEAjsoNW?=
- =?us-ascii?q?A1/9DrugLYTQST/HscU34ZnQRODgPY8Rz1RJbxsi/9tupgxCmXOND9QL4oVT?=
- =?us-ascii?q?i+6apgVRnlgzoFOTEk6mHaksx+grxGrhyvpBJxxIHbbo6OOfZifa7QZ88WSH?=
- =?us-ascii?q?BdUspNUSFKH4Oyb5EID+oEJetWr5PyqEAPrRSkAwmnGePhyiVWiXDrw6I6ye?=
- =?us-ascii?q?UhHh3F3Ac9GN8Ovm7bo877NKoJSuC1z6nJzTPdYPNKwzvy85bHfwknrPqRUr?=
- =?us-ascii?q?1+bdDfxlMzFwPZkFqQs4rlMiub2OkOt2WV7+ttWOKxh2Mpqw98vySjytowho?=
- =?us-ascii?q?TIiYwbxU3J+CtnzYsoJdC1SlB2b9G4HJVeuC+XM4t4TMM8T2xsvisx174IuY?=
- =?us-ascii?q?ajcSUO1Zgr3QPTZv+Zf4SS/x7uVeacLS1liH9kfr+0mgy8/lK6yuLmU8m5yF?=
- =?us-ascii?q?NKri1YndbSrn0NzBnT6tSfSvt640ehxS6D1wDN5eFAJkA5ja7bK5k9zbEqkp?=
- =?us-ascii?q?oTsUPDHjTqmEnsiK+WcVkr9fKs6+v6ZbXmo4WTN45yig3mM6QunNKwAfggPw?=
- =?us-ascii?q?UKQmSX4/mw2b798UHjXblHj/07nrPEvJ3bPcgbo7S2Aw5R0oYt8Ra/CDKm3c?=
- =?us-ascii?q?wWnXYdN11FdgmKj5PqO1DOJvD3E+u/j063nzh13/zGJKHuAo3RLnjfl7fsZa?=
- =?us-ascii?q?ty5FRCyAUtyNBS/I9bBasfIP3tX0/xsNvYDhElMwCuxeboFsl93JsEWW2TGq?=
- =?us-ascii?q?+ZLL/SsViQ6+IsPumDf5UatS3+K/c7/f7ui2E2mVsHcamux5sXZ2iyHu56LE?=
- =?us-ascii?q?WBfXrsntABHH8Pvgo9Uezlk0ONXiJNaHaxRK88/Sw7CJm4AovZWo+sgaSL3D?=
- =?us-ascii?q?2nEZ1OemBGFleMHG/ud4qaR/cDdTydItF6nzwaWriuVZUh2QuttADk0bpnKP?=
- =?us-ascii?q?Tb+ikCuZLkzth16PXZlQsu+jxsE8Sdz2aNQnlwnmMJQT82wa9+rVV+ylidy6?=
- =?us-ascii?q?h4heJXFdhI6vNXXQc1K4Tcw/Z5C9/sQALBeMmGSFK8TtWhGzExQco7w8USbE?=
- =?us-ascii?q?ZlB9WikhfD0jKkA7APjLOLCoc58rnf33nxIcZy1WrG2LM6gFY4EYNzMjiqj7?=
- =?us-ascii?q?By8iDfDpDElkGembrsc6kAmGbO6W2K5WmDpkdVVEh3S6qWc2oYYx74pN7470?=
- =?us-ascii?q?WKYaWjBbk9MwBCgZqMI6FEQsbqnFNLWLHpNYKNMCqKh26sCEPQlfu3Z43wdj?=
- =?us-ascii?q?BF0Q=3D=3D?=
+IronPort-PHdr: =?us-ascii?q?9a23=3AtYWiKh+zboh1E/9uRHKM819IXTAuvvDOBiVQ1K?=
+ =?us-ascii?q?B+0+0VIJqq85mqBkHD//Il1AaPAdyEragcwLeH+4nbGkU4qa6bt34DdJEeHz?=
+ =?us-ascii?q?Qksu4x2zIaPcieFEfgJ+TrZSFpVO5LVVti4m3peRMNQJW2aFLduGC94iAPER?=
+ =?us-ascii?q?vjKwV1Ov71GonPhMiryuy+4ZLebxhKiTanf79+MBq6oAXVu8ILnYZsN6E9xw?=
+ =?us-ascii?q?fTrHBVYepW32RoJVySnxb4+Mi9+YNo/jpTtfw86cNOSL32cKskQ7NWCjQmKH?=
+ =?us-ascii?q?0169bwtRbfVwuP52ATXXsQnxFVHgXK9hD6XpP2sivnqupw3TSRMMPqQbwoXz?=
+ =?us-ascii?q?mp8qFmQwLqhigaLT406GHZhNJtgqxVoxyvoBNwzYHPbY2JN/dzZL/RcMkGSW?=
+ =?us-ascii?q?ZdWMtaSixPApm7b4sKF+cPPfxXoJL8p1QUqxu1GAmiBPnxxTBVmHD2x6w63P?=
+ =?us-ascii?q?giEQrb2wEgEcgBv2/arNjuL6cSUuC0zK/WwjXfdf9Zwiny5ZHOfxs8rv6CQa?=
+ =?us-ascii?q?h+ftDNyUkzCQzFlFOQpJTrMT6W0ukDs2mW4up+We+hi2Aqth19riWzysothY?=
+ =?us-ascii?q?fHiZ8Yx17a+ChkwIs4J8O1RkFnbdCqH5VdsyGUOYtoTs4mRWxjpSU0yqUetJ?=
+ =?us-ascii?q?O/YSQG0okryh3BZ/CdboSF4xLuWPyMLTp5gn9uZaixiAyo8Ue6z+3xTsy00F?=
+ =?us-ascii?q?FXoSVbitTMrXUN1wDL6siAV/t94l+t2TaR2ADX7eFJOUQ0la3HJJE7xr4wlp?=
+ =?us-ascii?q?0TsV/fHiPsnEX2i7OZeV8g+ue17OTnZ6/ppp6aN4NsiwH+NLohmtCnDOk8Lw?=
+ =?us-ascii?q?QCRXWX9Oei2LH54EH0QbVHgucrnqTYqJzaIN4Upq+9Aw9byIYj7BO/Ai+o0N?=
+ =?us-ascii?q?sChnYHIklIeAmEj4npPVHBPuz4Ae2kjFuyiDtr3ezJPqX9ApXRKXjOiKrucq?=
+ =?us-ascii?q?xj60FCzQo+1s1Q6IhKCr4fJfLzXkjxtNLEDhMjNQy73frnAs1n1owCQWKPHr?=
+ =?us-ascii?q?OZMKTKvF+L++IgOPODaZQWuDnjMfgl4eDhjXsjlV8aZ6mp0oMdaGqkEfR+P0?=
+ =?us-ascii?q?WZfX3sj88EEWcJowoxV/Llh0GcXj5QfHuyRL885iolB468EYjCR5ingKad0y?=
+ =?us-ascii?q?ejAp1WemdGB0iKEXj2a4WLRukDaDyJL89/nTwLS6KhR5Ui1R6wrg/6zaRoLu?=
+ =?us-ascii?q?7O9i0fr5Lj28B/5/fPmhEq6Tx0E8Od3nmJT2F1mGMIWjA30Ll8oUNj0FeD17?=
+ =?us-ascii?q?Z3g/hDGNxN6PNGTB06OYTfz+NkEdDyXBzOftOTRFahWNWmDik7TsgtzN8Wf0?=
+ =?us-ascii?q?Z9B9KigwjN3yWwGLAVmaeGBIc38qPc2Xj+Odp9x2zd26Y/3BEaRZ5DPHOrg4?=
+ =?us-ascii?q?Zz/hbeAorOnVnfkau2MewfwSTE3GSO12yDuAdfSgEjf7/CWCUxb0HXpNKxyF?=
+ =?us-ascii?q?nPQ7K0CL8kel9PwMSMArBJe9vkkRNMSaGwa5zlf2utljLoVl6zzbSWYd+ydg?=
+ =?us-ascii?q?=3D=3D?=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2ASEgDD7G1f/xCltltfHAEBATwBAQQ?=
- =?us-ascii?q?EAQECAQEHAQEcgUqBHCACAQGCLV+NPpJiiliHLAsBAQEBAQEBAQE1AQIEAQG?=
- =?us-ascii?q?ES4IxJTgTAgMBAQEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDUgEjI4E/EoMmglg?=
- =?us-ascii?q?puHKEEIURgUKBNgIBAQEBiCuFGoFBP4ERg06EBIYwBLc9gnGDE4RpkkwPIoJ?=
- =?us-ascii?q?7nhUtkluiGIF6TSAYgyRQGQ2caEIwNwIGCgEBAwlXAT0Bi1mCRgEB?=
+ =?us-ascii?q?EAQECAQEHAQEcgUqBHCACAQGCLV+NPpJikgQLAQEBAQEBAQEBNQECBAEBhEu?=
+ =?us-ascii?q?CMSU4EwIDAQEBAwIFAQEGAQEBAQEBBQQBhg9Fgjcig0cLASMjgT8SgyaCWCm?=
+ =?us-ascii?q?4PzOEEIURgUKBNgIBAQEBiCuFGoFBP4RfihIiBLc9gnGDE4RpkkwPIqEQLZJ?=
+ =?us-ascii?q?bm1SGRIF6TSAYO4JpUBkNnGhCMDcCBgoBAQMJVwE9AY4fAQE?=
 X-IPAS-Result: =?us-ascii?q?A2ASEgDD7G1f/xCltltfHAEBATwBAQQEAQECAQEHAQEcg?=
- =?us-ascii?q?UqBHCACAQGCLV+NPpJiiliHLAsBAQEBAQEBAQE1AQIEAQGES4IxJTgTAgMBA?=
- =?us-ascii?q?QEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDUgEjI4E/EoMmglgpuHKEEIURgUKBN?=
- =?us-ascii?q?gIBAQEBiCuFGoFBP4ERg06EBIYwBLc9gnGDE4RpkkwPIoJ7nhUtkluiGIF6T?=
- =?us-ascii?q?SAYgyRQGQ2caEIwNwIGCgEBAwlXAT0Bi1mCRgEB?=
+ =?us-ascii?q?UqBHCACAQGCLV+NPpJikgQLAQEBAQEBAQEBNQECBAEBhEuCMSU4EwIDAQEBA?=
+ =?us-ascii?q?wIFAQEGAQEBAQEBBQQBhg9Fgjcig0cLASMjgT8SgyaCWCm4PzOEEIURgUKBN?=
+ =?us-ascii?q?gIBAQEBiCuFGoFBP4RfihIiBLc9gnGDE4RpkkwPIqEQLZJbm1SGRIF6TSAYO?=
+ =?us-ascii?q?4JpUBkNnGhCMDcCBgoBAQMJVwE9AY4fAQE?=
 Received: from 16.165-182-91.adsl-dyn.isp.belgacom.be (HELO localhost.localdomain) ([91.182.165.16])
-  by relay.skynet.be with ESMTP; 25 Sep 2020 15:17:20 +0200
+  by relay.skynet.be with ESMTP; 25 Sep 2020 15:17:37 +0200
 From:   Fabian Frederick <fabf@skynet.be>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     mkubecek@suse.cz, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Fabian Frederick <fabf@skynet.be>
-Subject: [PATCH V2 4/5 net-next] vxlan: check rtnl_configure_link return code correctly
-Date:   Fri, 25 Sep 2020 15:16:59 +0200
-Message-Id: <20200925131659.56615-1-fabf@skynet.be>
+Subject: [PATCH V2 5/5 net-next] vxlan: fix vxlan_find_sock() documentation for l3mdev
+Date:   Fri, 25 Sep 2020 15:17:17 +0200
+Message-Id: <20200925131717.56666-1-fabf@skynet.be>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -70,26 +70,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rtnl_configure_link is always checked if < 0 for error code.
+Since commit aab8cc3630e32
+("vxlan: add support for underlay in non-default VRF")
+
+vxlan_find_sock() also checks if socket is assigned to the right
+level 3 master device when lower device is not in the default VRF.
 
 Signed-off-by: Fabian Frederick <fabf@skynet.be>
 ---
- drivers/net/vxlan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/vxlan.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 14f903d09c010..1e9ab1002281c 100644
+index 1e9ab1002281c..fa21d62aa79c9 100644
 --- a/drivers/net/vxlan.c
 +++ b/drivers/net/vxlan.c
-@@ -3890,7 +3890,7 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
- 	}
+@@ -190,8 +190,9 @@ static inline struct vxlan_rdst *first_remote_rtnl(struct vxlan_fdb *fdb)
+ 	return list_first_entry(&fdb->remotes, struct vxlan_rdst, list);
+ }
  
- 	err = rtnl_configure_link(dev, NULL);
--	if (err)
-+	if (err < 0)
- 		goto unlink;
- 
- 	if (f) {
+-/* Find VXLAN socket based on network namespace, address family and UDP port
+- * and enabled unshareable flags.
++/* Find VXLAN socket based on network namespace, address family, UDP port,
++ * enabled unshareable flags and socket device binding (see l3mdev with
++ * non-default VRF).
+  */
+ static struct vxlan_sock *vxlan_find_sock(struct net *net, sa_family_t family,
+ 					  __be16 port, u32 flags, int ifindex)
 -- 
 2.27.0
 
