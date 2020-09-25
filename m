@@ -2,161 +2,400 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BED22791E0
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:17:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 957802791EE
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:19:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727895AbgIYURd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 16:17:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42732 "EHLO mail.kernel.org"
+        id S1728733AbgIYUTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 16:19:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43072 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726687AbgIYUPb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 16:15:31 -0400
+        id S1727709AbgIYURc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 16:17:32 -0400
 Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CAEA522211;
-        Fri, 25 Sep 2020 19:38:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 52FFD235FD;
+        Fri, 25 Sep 2020 19:38:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1601062697;
-        bh=CMi6bD5XzVGRVxBvmk69Ffarb+46/nlaaCNuUvc4DpU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DKLPJo6zMWAR/Q25f6SfDUoHqqHDYF57M+MjyQUN6pk6AGG+EtKkH2QQNwarjITqJ
-         onOsYEyPmlmybZN+BrZgLQ2ME7L9TFjV7lUMtzU8OVMYNQwH6xKE/hBOVRUHWgnv8O
-         njS5llbBr99RYt9kcFbXBfJMb+EWg+Ivfx3Raq18=
+        bh=3ayZ2mCwYpS+cGBhyQeNrGrVmK4jQ49pkx0by9Qlg3w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VEQQePEy+XfWN9B0Ii9Nztq+RFLj1yyNJ8YuvuKQXD7Y83DBIcWlueIWaQBJdnDe8
+         6B5jY6DVLZ981tgcmaiYEVdz7b69xVTnp09ltGSsSx37ccUw+o1NgB1rDZTZZ5MUA6
+         SSo5+jcWA3FS4Jf75ih+dHd+S4tbI9+lN0aPeDtk=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next 00/15] mlx5 SW steering updates 2020-09-25
-Date:   Fri, 25 Sep 2020 12:37:54 -0700
-Message-Id: <20200925193809.463047-1-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Erez Shitrit <erezsh@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 01/15] net/mlx5: DR, Add buddy allocator utilities
+Date:   Fri, 25 Sep 2020 12:37:55 -0700
+Message-Id: <20200925193809.463047-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200925193809.463047-1-saeed@kernel.org>
+References: <20200925193809.463047-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Hi Dave/Jakub,
+Add implementation of SW Steering variation of buddy allocator.
 
-This series makes some updates to mlx5 software steering.
-For more information please see tag log below.
+The buddy system for ICM memory uses 2 main data structures:
+  - Bitmap per order, that keeps the current state of allocated
+    blocks for this order
+  - Indicator for the number of available blocks per each order
 
-Please pull and let me know if there is any problem.
+In addition, there is one more hierarchy of searching in the bitmaps
+in order to accelerate the search of the next free block which done
+via find-first function:
+The buddy system spends lots of its time in searching the next free
+space using function find_first_bit, which scans a big array of long
+values in order to find the first bit. We added one more array of
+longs, where each bit indicates a long value in the original array,
+that way there is a need for much less searches for the next free area.
 
-Thanks,
-Saeed.
+For example, for the following bits array of 128 bits where all
+bits are zero except for the last bit  :  0000........00001
+the corresponding bits-per-long array is:  0001
 
+The search will be done over the bits-per-long array first, and after
+the first bit is found, we will use it as a start pointer in the
+bigger array (bits array).
+
+Signed-off-by: Erez Shitrit <erezsh@nvidia.com>
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-The following changes since commit aafe8853f5e2bcbdd231411aec218b8c5dc78437:
-
-  Merge branch 'hns3-next' (2020-09-24 20:19:25 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-09-25
-
-for you to fetch changes up to d2bbdbfbdbbeed34a15228990654f4d796fb6323:
-
-  net/mlx5: DR, Add support for rule creation with flow source hint (2020-09-25 12:35:45 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2020-09-25
-
-This series includes updates to mlx5 software steering component.
-
-1) DR, Memory management improvements
-
-This patch series contains SW Steering memory management improvements:
-using buddy allocator instead of an existing bucket allocator, and
-several other optimizations.
-
-The buddy system is a memory allocation and management algorithm
-that manages memory in power of two increments.
-
-The algorithm is well-known and well-described, such as here:
-https://en.wikipedia.org/wiki/Buddy_memory_allocation
-
-Linux uses this algorithm for managing and allocating physical pages,
-as described here:
-https://www.kernel.org/doc/gorman/html/understand/understand009.html
-
-In our case, although the algorithm in principal is similar to the
-Linux physical page allocator, the "building blocks" and the circumstances
-are different: in SW steering, buddy allocator doesn't really allocates
-a memory, but rather manages ICM (Interconnect Context Memory) that was
-previously allocated and registered.
-
-The ICM memory that is used in SW steering is always power
-of 2 (order), so buddy system is a good fit for this.
-
-Patches in this series:
-
-[PATH 1/5] net/mlx5: DR, Add buddy allocator utilities
-  This patch adds a modified implementation of a well-known buddy allocator,
-  adjusted for SW steering needs: the algorithm in principal is similar to
-  the Linux physical page allocator, but in our case buddy allocator doesn't
-  really allocate a memory, but rather manages ICM memory that was previously
-  allocated and registered.
-
-[PATH 2/5] net/mlx5: DR, Handle ICM memory via buddy allocation instead of bucket management
-  This patch changes ICM management of SW steering to use buddy-system mechanism
-  Instead of the previous bucket management.
-
-[PATH 3/5] net/mlx5: DR, Sync chunks only during free
-  This patch makes syncing happen only when freeing memory chunks.
-
-[PATH 4/5] net/mlx5: DR, ICM memory pools sync optimization
-  This patch adds tracking of pool's "hot" memory and makes the
-  check whether steering sync is required much shorter and faster.
-
-[PATH 5/5] net/mlx5: DR, Free buddy ICM memory if it is unused
-  This patch adds tracking buddy's used ICM memory,
-  and frees the buddy if all its memory becomes unused.
-
-2) Few improvements in the DR area, such as removing unneeded checks,
-  renaming to better general names, refactor in some places, etc.
-
-3) Create SW steering rules with flow source hint, needed to determine
- rule direction (TX,RX) based on this hint rather than the meta data
- from Reg-C0.
-
-----------------------------------------------------------------
-Hamdan Igbaria (1):
-      net/mlx5: DR, Add support for rule creation with flow source hint
-
-Yevgeny Kliteynik (13):
-      net/mlx5: DR, Add buddy allocator utilities
-      net/mlx5: DR, Handle ICM memory via buddy allocation instead of bucket management
-      net/mlx5: DR, Sync chunks only during free
-      net/mlx5: DR, ICM memory pools sync optimization
-      net/mlx5: DR, Free buddy ICM memory if it is unused
-      net/mlx5: DR, Replace the check for valid STE entry
-      net/mlx5: DR, Remove unneeded check from source port builder
-      net/mlx5: DR, Remove unneeded vlan check from L2 builder
-      net/mlx5: DR, Remove unneeded local variable
-      net/mlx5: DR, Call ste_builder directly with tag pointer
-      net/mlx5: DR, Remove unused member of action struct
-      net/mlx5: DR, Rename builders HW specific names
-      net/mlx5: DR, Rename matcher functions to be more HW agnostic
-
-sunils (1):
-      net/mlx5: E-switch, Use PF num in metadata reg c0
-
- drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  36 +-
- .../mellanox/mlx5/core/steering/dr_buddy.c         | 255 +++++++++++
- .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |   4 +-
- .../mellanox/mlx5/core/steering/dr_icm_pool.c      | 501 ++++++++-------------
- .../mellanox/mlx5/core/steering/dr_matcher.c       | 123 ++---
- .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  47 +-
- .../ethernet/mellanox/mlx5/core/steering/dr_send.c |   4 +-
- .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  | 223 +++------
- .../mellanox/mlx5/core/steering/dr_types.h         | 101 +++--
- .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |   3 +-
- .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |  36 +-
- include/linux/mlx5/eswitch.h                       |  15 +-
- 13 files changed, 728 insertions(+), 622 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
+ .../mellanox/mlx5/core/steering/dr_buddy.c    | 255 ++++++++++++++++++
+ .../mellanox/mlx5/core/steering/mlx5dr.h      |  34 +++
+ 3 files changed, 290 insertions(+), 1 deletion(-)
  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_buddy.c
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+index 9826a041e407..132786e853aa 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+@@ -80,7 +80,7 @@ mlx5_core-$(CONFIG_MLX5_EN_TLS) += en_accel/tls.o en_accel/tls_rxtx.o en_accel/t
+ 
+ mlx5_core-$(CONFIG_MLX5_SW_STEERING) += steering/dr_domain.o steering/dr_table.o \
+ 					steering/dr_matcher.o steering/dr_rule.o \
+-					steering/dr_icm_pool.o \
++					steering/dr_icm_pool.o steering/dr_buddy.o \
+ 					steering/dr_ste.o steering/dr_send.o \
+ 					steering/dr_cmd.o steering/dr_fw.o \
+ 					steering/dr_action.o steering/fs_dr.o
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_buddy.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_buddy.c
+new file mode 100644
+index 000000000000..9cabf968ac11
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_buddy.c
+@@ -0,0 +1,255 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2004 Topspin Communications. All rights reserved.
++ * Copyright (c) 2005 - 2008 Mellanox Technologies. All rights reserved.
++ * Copyright (c) 2006 - 2007 Cisco Systems, Inc. All rights reserved.
++ * Copyright (c) 2020 NVIDIA CORPORATION. All rights reserved.
++ */
++
++#include "dr_types.h"
++
++static unsigned long dr_find_first_bit(const unsigned long *bitmap_per_long,
++				       const unsigned long *bitmap,
++				       unsigned long size)
++{
++	unsigned int bit_per_long_size = DIV_ROUND_UP(size, BITS_PER_LONG);
++	unsigned int bitmap_idx;
++
++	/* find the first free in the first level */
++	bitmap_idx = find_first_bit(bitmap_per_long, bit_per_long_size);
++	/* find the next level */
++	return find_next_bit(bitmap, size, bitmap_idx * BITS_PER_LONG);
++}
++
++int mlx5dr_buddy_init(struct mlx5dr_icm_buddy_mem *buddy,
++		      unsigned int max_order)
++{
++	int i;
++
++	buddy->max_order = max_order;
++
++	INIT_LIST_HEAD(&buddy->list_node);
++	INIT_LIST_HEAD(&buddy->used_list);
++	INIT_LIST_HEAD(&buddy->hot_list);
++
++	buddy->bitmap = kcalloc(buddy->max_order + 1,
++				sizeof(*buddy->bitmap),
++				GFP_KERNEL);
++	buddy->num_free = kcalloc(buddy->max_order + 1,
++				  sizeof(*buddy->num_free),
++				  GFP_KERNEL);
++	buddy->bitmap_per_long = kcalloc(buddy->max_order + 1,
++					 sizeof(*buddy->bitmap_per_long),
++					 GFP_KERNEL);
++
++	if (!buddy->bitmap || !buddy->num_free || !buddy->bitmap_per_long)
++		goto err_free_all;
++
++	/* Allocating max_order bitmaps, one for each order */
++
++	for (i = 0; i <= buddy->max_order; ++i) {
++		unsigned int size = 1 << (buddy->max_order - i);
++
++		buddy->bitmap[i] = bitmap_zalloc(size, GFP_KERNEL);
++		if (!buddy->bitmap[i])
++			goto err_out_free_each_bit_per_order;
++	}
++
++	for (i = 0; i <= buddy->max_order; ++i) {
++		unsigned int size = BITS_TO_LONGS(1 << (buddy->max_order - i));
++
++		buddy->bitmap_per_long[i] = bitmap_zalloc(size, GFP_KERNEL);
++		if (!buddy->bitmap_per_long[i])
++			goto err_out_free_set;
++	}
++
++	/* In the beginning, we have only one order that is available for
++	 * use (the biggest one), so mark the first bit in both bitmaps.
++	 */
++
++	bitmap_set(buddy->bitmap[buddy->max_order], 0, 1);
++	bitmap_set(buddy->bitmap_per_long[buddy->max_order], 0, 1);
++
++	buddy->num_free[buddy->max_order] = 1;
++
++	return 0;
++
++err_out_free_set:
++	for (i = 0; i <= buddy->max_order; ++i)
++		bitmap_free(buddy->bitmap_per_long[i]);
++
++err_out_free_each_bit_per_order:
++	kfree(buddy->bitmap_per_long);
++
++	for (i = 0; i <= buddy->max_order; ++i)
++		bitmap_free(buddy->bitmap[i]);
++
++err_free_all:
++	kfree(buddy->bitmap_per_long);
++	kfree(buddy->num_free);
++	kfree(buddy->bitmap);
++	return -ENOMEM;
++}
++
++void mlx5dr_buddy_cleanup(struct mlx5dr_icm_buddy_mem *buddy)
++{
++	int i;
++
++	list_del(&buddy->list_node);
++
++	for (i = 0; i <= buddy->max_order; ++i) {
++		bitmap_free(buddy->bitmap[i]);
++		bitmap_free(buddy->bitmap_per_long[i]);
++	}
++
++	kfree(buddy->bitmap_per_long);
++	kfree(buddy->num_free);
++	kfree(buddy->bitmap);
++}
++
++/**
++ * dr_buddy_get_seg_borders() - Find the borders of specific segment.
++ * @seg: Segment number.
++ * @low: Pointer to hold the low border of the provided segment.
++ * @high: Pointer to hold the high border of the provided segment.
++ *
++ * Find the borders (high and low) of specific seg (segment location)
++ * of the lower level of the bitmap in order to mark the upper layer
++ * of bitmap.
++ */
++static void dr_buddy_get_seg_borders(unsigned int seg,
++				     unsigned int *low,
++				     unsigned int *high)
++{
++	*low = (seg / BITS_PER_LONG) * BITS_PER_LONG;
++	*high = ((seg / BITS_PER_LONG) + 1) * BITS_PER_LONG;
++}
++
++/**
++ * dr_buddy_update_upper_bitmap() - Update second level bitmap.
++ * @buddy: Buddy to update.
++ * @seg: Segment number.
++ * @order: Order of the buddy to update.
++ *
++ * We have two layers of searching in the bitmaps, so when
++ * needed update the second layer of search.
++ */
++static void dr_buddy_update_upper_bitmap(struct mlx5dr_icm_buddy_mem *buddy,
++					 unsigned long seg,
++					 unsigned int order)
++{
++	unsigned int h, l, m;
++
++	/* clear upper layer of search if needed */
++	dr_buddy_get_seg_borders(seg, &l, &h);
++	m = find_next_bit(buddy->bitmap[order], h, l);
++	if (m == h) /* nothing in the long that includes seg */
++		bitmap_clear(buddy->bitmap_per_long[order],
++			     seg / BITS_PER_LONG, 1);
++}
++
++static int dr_buddy_find_free_seg(struct mlx5dr_icm_buddy_mem *buddy,
++				  unsigned int start_order,
++				  unsigned int *segment,
++				  unsigned int *order)
++{
++	unsigned int seg, order_iter, m;
++
++	for (order_iter = start_order;
++	     order_iter <= buddy->max_order; ++order_iter) {
++		if (!buddy->num_free[order_iter])
++			continue;
++
++		m = 1 << (buddy->max_order - order_iter);
++		seg = dr_find_first_bit(buddy->bitmap_per_long[order_iter],
++					buddy->bitmap[order_iter], m);
++
++		if (WARN(seg >= m,
++			 "ICM Buddy: failed finding free mem for order %d\n",
++			 order_iter))
++			return -ENOMEM;
++
++		break;
++	}
++
++	if (order_iter > buddy->max_order)
++		return -ENOMEM;
++
++	*segment = seg;
++	*order = order_iter;
++	return 0;
++}
++
++/**
++ * mlx5dr_buddy_alloc_mem() - Update second level bitmap.
++ * @buddy: Buddy to update.
++ * @order: Order of the buddy to update.
++ * @segment: Segment number.
++ *
++ * This function finds the first area of the ICM memory managed by this buddy.
++ * It uses the data structures of the buddy system in order to find the first
++ * area of free place, starting from the current order till the maximum order
++ * in the system.
++ *
++ * Return: 0 when segment is set, non-zero error status otherwise.
++ *
++ * The function returns the location (segment) in the whole buddy ICM memory
++ * area - the index of the memory segment that is available for use.
++ */
++int mlx5dr_buddy_alloc_mem(struct mlx5dr_icm_buddy_mem *buddy,
++			   unsigned int order,
++			   unsigned int *segment)
++{
++	unsigned int seg, order_iter;
++	int err;
++
++	err = dr_buddy_find_free_seg(buddy, order, &seg, &order_iter);
++	if (err)
++		return err;
++
++	bitmap_clear(buddy->bitmap[order_iter], seg, 1);
++	/* clear upper layer of search if needed */
++	dr_buddy_update_upper_bitmap(buddy, seg, order_iter);
++	--buddy->num_free[order_iter];
++
++	/* If we found free memory in some order that is bigger than the
++	 * required order, we need to split every order between the required
++	 * order and the order that we found into two parts, and mark accordingly.
++	 */
++	while (order_iter > order) {
++		--order_iter;
++		seg <<= 1;
++		bitmap_set(buddy->bitmap[order_iter], seg ^ 1, 1);
++		bitmap_set(buddy->bitmap_per_long[order_iter],
++			   (seg ^ 1) / BITS_PER_LONG, 1);
++
++		++buddy->num_free[order_iter];
++	}
++
++	seg <<= order;
++	*segment = seg;
++
++	return 0;
++}
++
++void mlx5dr_buddy_free_mem(struct mlx5dr_icm_buddy_mem *buddy,
++			   unsigned int seg, unsigned int order)
++{
++	seg >>= order;
++
++	/* Whenever a segment is free,
++	 * the mem is added to the buddy that gave it.
++	 */
++	while (test_bit(seg ^ 1, buddy->bitmap[order])) {
++		bitmap_clear(buddy->bitmap[order], seg ^ 1, 1);
++		dr_buddy_update_upper_bitmap(buddy, seg ^ 1, order);
++		--buddy->num_free[order];
++		seg >>= 1;
++		++order;
++	}
++	bitmap_set(buddy->bitmap[order], seg, 1);
++	bitmap_set(buddy->bitmap_per_long[order],
++		   seg / BITS_PER_LONG, 1);
++
++	++buddy->num_free[order];
++}
++
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+index 7deaca9ade3b..40bdbdc6e3f2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+@@ -126,4 +126,38 @@ mlx5dr_is_supported(struct mlx5_core_dev *dev)
+ 	return MLX5_CAP_ESW_FLOWTABLE_FDB(dev, sw_owner);
+ }
+ 
++/* buddy functions & structure */
++
++struct mlx5dr_icm_mr;
++
++struct mlx5dr_icm_buddy_mem {
++	unsigned long		**bitmap;
++	unsigned int		*num_free;
++	unsigned long		**bitmap_per_long;
++	u32			max_order;
++	struct list_head	list_node;
++	struct mlx5dr_icm_mr	*icm_mr;
++	struct mlx5dr_icm_pool	*pool;
++
++	/* This is the list of used chunks. HW may be accessing this memory */
++	struct list_head	used_list;
++
++	/* Hardware may be accessing this memory but at some future,
++	 * undetermined time, it might cease to do so.
++	 * sync_ste command sets them free.
++	 */
++	struct list_head	hot_list;
++	/* indicates the byte size of hot mem */
++	unsigned int		hot_memory_size;
++};
++
++int mlx5dr_buddy_init(struct mlx5dr_icm_buddy_mem *buddy,
++		      unsigned int max_order);
++void mlx5dr_buddy_cleanup(struct mlx5dr_icm_buddy_mem *buddy);
++int mlx5dr_buddy_alloc_mem(struct mlx5dr_icm_buddy_mem *buddy,
++			   unsigned int order,
++			   unsigned int *segment);
++void mlx5dr_buddy_free_mem(struct mlx5dr_icm_buddy_mem *buddy,
++			   unsigned int seg, unsigned int order);
++
+ #endif /* _MLX5DR_H_ */
+-- 
+2.26.2
+
