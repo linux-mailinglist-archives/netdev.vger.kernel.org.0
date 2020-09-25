@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 492A22791EC
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:19:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90B122791F3
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:20:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728703AbgIYUTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 16:19:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43076 "EHLO mail.kernel.org"
+        id S1728804AbgIYUTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 16:19:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43082 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727713AbgIYURc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727734AbgIYURc (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 25 Sep 2020 16:17:32 -0400
 Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3208623977;
+        by mail.kernel.org (Postfix) with ESMTPSA id BF51E23998;
         Fri, 25 Sep 2020 19:38:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601062705;
-        bh=BzgF/21M0aOnOyTWvG/YSuMvro/2vJ/a16KWYkFXp+M=;
+        s=default; t=1601062706;
+        bh=D0JT5gZXn9Hj+gBZull7e7n/MVlwvenCLKEr/APldRM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hdg3/Fdqzjn355Iquq5OsgkA5qKUQDZdhSjG2boedsQ3VNJpVULLUTFkGGpHQ6xEa
-         RuqxTQjl8fjwc61apzZy2BARm+dAk3l4ibwUTACQnpLyyXR174oOr68RYDJD8skdoz
-         uy8rFAypzDBw48HvdhbAVG+f163MFw7OvQ2Pheww=
+        b=voeP8coa7Ui5MMOP0Q5mqIcV3LlJHp9OQhBMPRkWsO56OPr1bcRUPDWc38kT0TV+p
+         L10V2k6BqX5HtYtgY4CPwFSEG6U4oGglO57WRQ72UPcCaL+FSF6pjxVhhKCXeSsi8c
+         hl73PgfXWMTcejhD3dDSb1shBunqzmTyVseMdeQE=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Hamdan Igbaria <hamdani@nvidia.com>,
         Alex Vesker <valex@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 14/15] net/mlx5: DR, Rename matcher functions to be more HW agnostic
-Date:   Fri, 25 Sep 2020 12:38:08 -0700
-Message-Id: <20200925193809.463047-15-saeed@kernel.org>
+Subject: [net-next 15/15] net/mlx5: DR, Add support for rule creation with flow source hint
+Date:   Fri, 25 Sep 2020 12:38:09 -0700
+Message-Id: <20200925193809.463047-16-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200925193809.463047-1-saeed@kernel.org>
 References: <20200925193809.463047-1-saeed@kernel.org>
@@ -41,179 +41,165 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+From: Hamdan Igbaria <hamdani@nvidia.com>
 
-Remove flex parser from the matcher function names since
-the matcher should not be aware of such HW specific details.
+Skip the rule according to flow arrival source, in case of RX and the
+source is local port skip and in case of TX and the source is uplink
+skip, we get this info according to the flow source hint we get from
+upper layers when creating the rule.
+This is needed because for example in case of FDB table which has a TX
+and RX tables and we are inserting a rule with an encap action which
+is only a TX action, in this case rule will fail on RX, so we can rely
+on the flow source hint and skip RX in such case.
+Until now we relied on metadata regc_0 that upper layer mapped the
+port in the regc_0, but the problem is that upper layer did not always
+use regc_0 for port mapping, so now we added support to flow source
+hint which upper layers will pass to SW steering when creating a rule.
 
 Signed-off-by: Alex Vesker <valex@nvidia.com>
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Signed-off-by: Hamdan Igbaria <hamdani@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_cmd.c      |  4 +-
- .../mellanox/mlx5/core/steering/dr_matcher.c  | 54 +++++++++++--------
- .../mellanox/mlx5/core/steering/dr_types.h    | 12 -----
- 3 files changed, 33 insertions(+), 37 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_rule.c     | 41 ++++++++++---------
+ .../mellanox/mlx5/core/steering/dr_types.h    |  1 +
+ .../mellanox/mlx5/core/steering/fs_dr.c       |  3 +-
+ .../mellanox/mlx5/core/steering/mlx5dr.h      |  3 +-
+ 4 files changed, 26 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-index 6bd34b293007..ebc879052e42 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-@@ -93,12 +93,12 @@ int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
- 	caps->gvmi		= MLX5_CAP_GEN(mdev, vhca_id);
- 	caps->flex_protocols	= MLX5_CAP_GEN(mdev, flex_parser_protocols);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+index 17577181ce8f..b3c9dc032026 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+@@ -985,31 +985,28 @@ static enum mlx5dr_ipv dr_rule_get_ipv(struct mlx5dr_match_spec *spec)
+ static bool dr_rule_skip(enum mlx5dr_domain_type domain,
+ 			 enum mlx5dr_ste_entry_type ste_type,
+ 			 struct mlx5dr_match_param *mask,
+-			 struct mlx5dr_match_param *value)
++			 struct mlx5dr_match_param *value,
++			 u32 flow_source)
+ {
++	bool rx = ste_type == MLX5DR_STE_TYPE_RX;
++
+ 	if (domain != MLX5DR_DOMAIN_TYPE_FDB)
+ 		return false;
  
--	if (mlx5dr_matcher_supp_flex_parser_icmp_v4(caps)) {
-+	if (caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V4_ENABLED) {
- 		caps->flex_parser_id_icmp_dw0 = MLX5_CAP_GEN(mdev, flex_parser_id_icmp_dw0);
- 		caps->flex_parser_id_icmp_dw1 = MLX5_CAP_GEN(mdev, flex_parser_id_icmp_dw1);
+ 	if (mask->misc.source_port) {
+-		if (ste_type == MLX5DR_STE_TYPE_RX)
+-			if (value->misc.source_port != WIRE_PORT)
+-				return true;
++		if (rx && value->misc.source_port != WIRE_PORT)
++			return true;
+ 
+-		if (ste_type == MLX5DR_STE_TYPE_TX)
+-			if (value->misc.source_port == WIRE_PORT)
+-				return true;
++		if (!rx && value->misc.source_port == WIRE_PORT)
++			return true;
  	}
  
--	if (mlx5dr_matcher_supp_flex_parser_icmp_v6(caps)) {
-+	if (caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V6_ENABLED) {
- 		caps->flex_parser_id_icmpv6_dw0 =
- 			MLX5_CAP_GEN(mdev, flex_parser_id_icmpv6_dw0);
- 		caps->flex_parser_id_icmpv6_dw1 =
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-index 752afdb20e23..cb5202e17856 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-@@ -103,7 +103,7 @@ static bool dr_mask_is_tnl_gre_set(struct mlx5dr_match_misc *misc)
- 	DR_MASK_IS_OUTER_MPLS_OVER_GRE_UDP_SET((_misc2), udp))
- 
- static bool
--dr_mask_is_misc3_vxlan_gpe_set(struct mlx5dr_match_misc3 *misc3)
-+dr_mask_is_vxlan_gpe_set(struct mlx5dr_match_misc3 *misc3)
- {
- 	return (misc3->outer_vxlan_gpe_vni ||
- 		misc3->outer_vxlan_gpe_next_protocol ||
-@@ -111,21 +111,20 @@ dr_mask_is_misc3_vxlan_gpe_set(struct mlx5dr_match_misc3 *misc3)
- }
- 
- static bool
--dr_matcher_supp_flex_parser_vxlan_gpe(struct mlx5dr_cmd_caps *caps)
-+dr_matcher_supp_vxlan_gpe(struct mlx5dr_cmd_caps *caps)
- {
--	return caps->flex_protocols &
--	       MLX5_FLEX_PARSER_VXLAN_GPE_ENABLED;
-+	return caps->flex_protocols & MLX5_FLEX_PARSER_VXLAN_GPE_ENABLED;
- }
- 
- static bool
--dr_mask_is_flex_parser_tnl_vxlan_gpe_set(struct mlx5dr_match_param *mask,
--					 struct mlx5dr_domain *dmn)
-+dr_mask_is_tnl_vxlan_gpe(struct mlx5dr_match_param *mask,
-+			 struct mlx5dr_domain *dmn)
- {
--	return dr_mask_is_misc3_vxlan_gpe_set(&mask->misc3) &&
--	       dr_matcher_supp_flex_parser_vxlan_gpe(&dmn->info.caps);
-+	return dr_mask_is_vxlan_gpe_set(&mask->misc3) &&
-+	       dr_matcher_supp_vxlan_gpe(&dmn->info.caps);
- }
- 
--static bool dr_mask_is_misc_geneve_set(struct mlx5dr_match_misc *misc)
-+static bool dr_mask_is_tnl_geneve_set(struct mlx5dr_match_misc *misc)
- {
- 	return misc->geneve_vni ||
- 	       misc->geneve_oam ||
-@@ -134,18 +133,27 @@ static bool dr_mask_is_misc_geneve_set(struct mlx5dr_match_misc *misc)
- }
- 
- static bool
--dr_matcher_supp_flex_parser_geneve(struct mlx5dr_cmd_caps *caps)
-+dr_matcher_supp_tnl_geneve(struct mlx5dr_cmd_caps *caps)
- {
--	return caps->flex_protocols &
--	       MLX5_FLEX_PARSER_GENEVE_ENABLED;
-+	return caps->flex_protocols & MLX5_FLEX_PARSER_GENEVE_ENABLED;
- }
- 
- static bool
--dr_mask_is_flex_parser_tnl_geneve_set(struct mlx5dr_match_param *mask,
--				      struct mlx5dr_domain *dmn)
-+dr_mask_is_tnl_geneve(struct mlx5dr_match_param *mask,
-+		      struct mlx5dr_domain *dmn)
- {
--	return dr_mask_is_misc_geneve_set(&mask->misc) &&
--	       dr_matcher_supp_flex_parser_geneve(&dmn->info.caps);
-+	return dr_mask_is_tnl_geneve_set(&mask->misc) &&
-+	       dr_matcher_supp_tnl_geneve(&dmn->info.caps);
-+}
+-	/* Metadata C can be used to describe the source vport */
+-	if (mask->misc2.metadata_reg_c_0) {
+-		if (ste_type == MLX5DR_STE_TYPE_RX)
+-			if ((value->misc2.metadata_reg_c_0 & WIRE_PORT) != WIRE_PORT)
+-				return true;
++	if (rx && flow_source == MLX5_FLOW_CONTEXT_FLOW_SOURCE_LOCAL_VPORT)
++		return true;
 +
-+static int dr_matcher_supp_icmp_v4(struct mlx5dr_cmd_caps *caps)
-+{
-+	return caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V4_ENABLED;
-+}
-+
-+static int dr_matcher_supp_icmp_v6(struct mlx5dr_cmd_caps *caps)
-+{
-+	return caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V6_ENABLED;
- }
++	if (!rx && flow_source == MLX5_FLOW_CONTEXT_FLOW_SOURCE_UPLINK)
++		return true;
  
- static bool dr_mask_is_icmpv6_set(struct mlx5dr_match_misc3 *misc3)
-@@ -154,13 +162,13 @@ static bool dr_mask_is_icmpv6_set(struct mlx5dr_match_misc3 *misc3)
- 		misc3->icmpv6_header_data);
- }
- 
--static bool dr_mask_is_flex_parser_icmp_set(struct mlx5dr_match_param *mask,
--					    struct mlx5dr_domain *dmn)
-+static bool dr_mask_is_icmp(struct mlx5dr_match_param *mask,
-+			    struct mlx5dr_domain *dmn)
- {
- 	if (DR_MASK_IS_ICMPV4_SET(&mask->misc3))
--		return mlx5dr_matcher_supp_flex_parser_icmp_v4(&dmn->info.caps);
-+		return dr_matcher_supp_icmp_v4(&dmn->info.caps);
- 	else if (dr_mask_is_icmpv6_set(&mask->misc3))
--		return mlx5dr_matcher_supp_flex_parser_icmp_v6(&dmn->info.caps);
-+		return dr_matcher_supp_icmp_v6(&dmn->info.caps);
- 
+-		if (ste_type == MLX5DR_STE_TYPE_TX)
+-			if ((value->misc2.metadata_reg_c_0 & WIRE_PORT) == WIRE_PORT)
+-				return true;
+-	}
  	return false;
  }
-@@ -300,10 +308,10 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
- 								  inner, rx);
- 		}
  
--		if (dr_mask_is_flex_parser_tnl_vxlan_gpe_set(&mask, dmn))
-+		if (dr_mask_is_tnl_vxlan_gpe(&mask, dmn))
- 			mlx5dr_ste_build_tnl_vxlan_gpe(&sb[idx++], &mask,
- 						       inner, rx);
--		else if (dr_mask_is_flex_parser_tnl_geneve_set(&mask, dmn))
-+		else if (dr_mask_is_tnl_geneve(&mask, dmn))
- 			mlx5dr_ste_build_tnl_geneve(&sb[idx++], &mask,
- 						    inner, rx);
+@@ -1038,7 +1035,8 @@ dr_rule_create_rule_nic(struct mlx5dr_rule *rule,
  
-@@ -316,7 +324,7 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
- 		if (DR_MASK_IS_TNL_MPLS_SET(mask.misc2))
- 			mlx5dr_ste_build_tnl_mpls(&sb[idx++], &mask, inner, rx);
+ 	INIT_LIST_HEAD(&nic_rule->rule_members_list);
  
--		if (dr_mask_is_flex_parser_icmp_set(&mask, dmn)) {
-+		if (dr_mask_is_icmp(&mask, dmn)) {
- 			ret = mlx5dr_ste_build_icmp(&sb[idx++],
- 						    &mask, &dmn->info.caps,
- 						    inner, rx);
+-	if (dr_rule_skip(dmn->type, nic_dmn->ste_type, &matcher->mask, param))
++	if (dr_rule_skip(dmn->type, nic_dmn->ste_type, &matcher->mask, param,
++			 rule->flow_source))
+ 		return 0;
+ 
+ 	hw_ste_arr = kzalloc(DR_RULE_MAX_STE_CHAIN * DR_STE_SIZE, GFP_KERNEL);
+@@ -1173,7 +1171,8 @@ static struct mlx5dr_rule *
+ dr_rule_create_rule(struct mlx5dr_matcher *matcher,
+ 		    struct mlx5dr_match_parameters *value,
+ 		    size_t num_actions,
+-		    struct mlx5dr_action *actions[])
++		    struct mlx5dr_action *actions[],
++		    u32 flow_source)
+ {
+ 	struct mlx5dr_domain *dmn = matcher->tbl->dmn;
+ 	struct mlx5dr_match_param param = {};
+@@ -1188,6 +1187,7 @@ dr_rule_create_rule(struct mlx5dr_matcher *matcher,
+ 		return NULL;
+ 
+ 	rule->matcher = matcher;
++	rule->flow_source = flow_source;
+ 	INIT_LIST_HEAD(&rule->rule_actions_list);
+ 
+ 	ret = dr_rule_add_action_members(rule, num_actions, actions);
+@@ -1232,13 +1232,14 @@ dr_rule_create_rule(struct mlx5dr_matcher *matcher,
+ struct mlx5dr_rule *mlx5dr_rule_create(struct mlx5dr_matcher *matcher,
+ 				       struct mlx5dr_match_parameters *value,
+ 				       size_t num_actions,
+-				       struct mlx5dr_action *actions[])
++				       struct mlx5dr_action *actions[],
++				       u32 flow_source)
+ {
+ 	struct mlx5dr_rule *rule;
+ 
+ 	refcount_inc(&matcher->refcount);
+ 
+-	rule = dr_rule_create_rule(matcher, value, num_actions, actions);
++	rule = dr_rule_create_rule(matcher, value, num_actions, actions, flow_source);
+ 	if (!rule)
+ 		refcount_dec(&matcher->refcount);
+ 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 5d0ae664aac0..3086a44f7e7f 100644
+index 3086a44f7e7f..3e423c8ed22f 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -843,18 +843,6 @@ static inline void mlx5dr_domain_unlock(struct mlx5dr_domain *dmn)
- 	mlx5dr_domain_nic_unlock(&dmn->info.rx);
- }
+@@ -796,6 +796,7 @@ struct mlx5dr_rule {
+ 	struct mlx5dr_rule_rx_tx rx;
+ 	struct mlx5dr_rule_rx_tx tx;
+ 	struct list_head rule_actions_list;
++	u32 flow_source;
+ };
  
--static inline int
--mlx5dr_matcher_supp_flex_parser_icmp_v4(struct mlx5dr_cmd_caps *caps)
--{
--	return caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V4_ENABLED;
--}
--
--static inline int
--mlx5dr_matcher_supp_flex_parser_icmp_v6(struct mlx5dr_cmd_caps *caps)
--{
--	return caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V6_ENABLED;
--}
--
- int mlx5dr_matcher_select_builders(struct mlx5dr_matcher *matcher,
- 				   struct mlx5dr_matcher_rx_tx *nic_matcher,
- 				   enum mlx5dr_ipv outer_ipv,
+ void mlx5dr_rule_update_rule_member(struct mlx5dr_ste *new_ste,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+index 9b08eb557a31..96c39a17d026 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+@@ -487,7 +487,8 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
+ 	rule = mlx5dr_rule_create(group->fs_dr_matcher.dr_matcher,
+ 				  &params,
+ 				  num_actions,
+-				  actions);
++				  actions,
++				  fte->flow_context.flow_source);
+ 	if (!rule) {
+ 		err = -EINVAL;
+ 		goto free_actions;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+index 0aaba0ae9cf7..726c4cfcc399 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+@@ -67,7 +67,8 @@ struct mlx5dr_rule *
+ mlx5dr_rule_create(struct mlx5dr_matcher *matcher,
+ 		   struct mlx5dr_match_parameters *value,
+ 		   size_t num_actions,
+-		   struct mlx5dr_action *actions[]);
++		   struct mlx5dr_action *actions[],
++		   u32 flow_source);
+ 
+ int mlx5dr_rule_destroy(struct mlx5dr_rule *rule);
+ 
 -- 
 2.26.2
 
