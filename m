@@ -2,171 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7B46278355
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 10:55:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B88327835C
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 10:56:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727692AbgIYIzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 04:55:04 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60622 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726990AbgIYIzE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 04:55:04 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 00FF5ADCA;
-        Fri, 25 Sep 2020 08:55:03 +0000 (UTC)
-Date:   Fri, 25 Sep 2020 10:54:55 +0200
-From:   Petr Tesarik <ptesarik@suse.cz>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        netdev@vger.kernel.org
-Subject: Re: RTL8402 stops working after hibernate/resume
-Message-ID: <20200925105455.50d4d1cc@ezekiel.suse.cz>
-In-Reply-To: <20200925093037.0fac65b7@ezekiel.suse.cz>
-References: <20200715102820.7207f2f8@ezekiel.suse.cz>
-        <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
-        <20200716105835.32852035@ezekiel.suse.cz>
-        <e1c7a37f-d8d0-a773-925c-987b92f12694@gmail.com>
-        <20200903104122.1e90e03c@ezekiel.suse.cz>
-        <7e6bbb75-d8db-280d-ac5b-86013af39071@gmail.com>
-        <20200924211444.3ba3874b@ezekiel.suse.cz>
-        <a10f658b-7fdf-2789-070a-83ad5549191a@gmail.com>
-        <20200925093037.0fac65b7@ezekiel.suse.cz>
-Organization: SUSE Linux, s.r.o.
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+        id S1727648AbgIYI4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 04:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58776 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726990AbgIYI4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 04:56:20 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6395BC0613CE
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 01:56:20 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id m13so1598667otl.9
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 01:56:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FB7t6ED/jnfRp/WWE+Uf20Xlr4Bf0WcN1ZTT/JNoDp0=;
+        b=OkqZQyLSpm2BFcmX3BKpRZHcC5Up/n7KOiShD6Wy9SnzehkGjXoqQ85DpcDItuCc2W
+         ASlpP5rhKJ4kGvRArHfJYf0krRlj3JAVJDGINDv7LCUzljtZiDA3pKbBrRWjcoRF4m/W
+         AhEPZpX44afMbY6zG6I6iH3UbOV+HDngbC6LU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FB7t6ED/jnfRp/WWE+Uf20Xlr4Bf0WcN1ZTT/JNoDp0=;
+        b=PlsORBTk/SOLa3tX7gJi9LCD/s2vb1Sqh+Jp4L6kEcsy1P5pdQxvu/zVRFPfD9bTkl
+         oSW8obBVNJSiDBTzkXhbVaiux8LogfnamY8IHt7m9AuzcGMgWgT02j/vmNhYFFfEa7nH
+         fyuWPSuoJT5qg9RWq8l/sDARRePFFTpx+ETQ/d2g3ZF+3yWSRIrI4X58UBknS7ZeJ7ND
+         pHKoJHnFnc1XuFPCfUhmvx9wjfFMZWwAy+oJStKz3L3NA9x4kbjbhB8lDnmHdowkuPiN
+         zRqWZjheCVfI7uGfjNS64tW28aWVq1QFIsaYkq5lLSOcZg1QSkWMzj9q8J/b5oUHWxs9
+         g2CQ==
+X-Gm-Message-State: AOAM532BQFwllvGpH+yc3xuiQxlJ3MF1AMgfQXGWuoL90vOiyvVq5Bjl
+        6QmD0oymaXukK5ZkTndC7atZ++0nBWsE876eRPVsDg==
+X-Google-Smtp-Source: ABdhPJzXhRHbXp7/MqUFTmGFztnj0j5darnr+4M82u76LoSyY6ISvUt1aOWxX3qG7RKR0/8jwhO06mJsCZdN4BeXyUo=
+X-Received: by 2002:a9d:6e90:: with SMTP id a16mr2111658otr.132.1601024179755;
+ Fri, 25 Sep 2020 01:56:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/PmTxwrOMJoLGsLynIiMVBOH";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <160097751992.13115.10446086919232254389.stgit@john-Precision-5820-Tower>
+In-Reply-To: <160097751992.13115.10446086919232254389.stgit@john-Precision-5820-Tower>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Fri, 25 Sep 2020 09:56:08 +0100
+Message-ID: <CACAyw9_norMfT3pdNG=Qm5e-cWbBwZTYZEmgYR7j+9-aoVfCag@mail.gmail.com>
+Subject: Re: [bpf-next PATCH] bpf: Add comment to document BTF type PTR_TO_BTF_ID_OR_NULL
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, Martin Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/PmTxwrOMJoLGsLynIiMVBOH
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, 24 Sep 2020 at 20:58, John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> The meaning of PTR_TO_BTF_ID_OR_NULL differs slightly from other types
+> denoted with the *_OR_NULL type. For example the types PTR_TO_SOCKET
+> and PTR_TO_SOCKET_OR_NULL can be used for branch analysis because the
+> type PTR_TO_SOCKET is guaranteed to _not_ have a null value.
+>
+> In contrast PTR_TO_BTF_ID and BTF_TO_BTF_ID_OR_NULL have slightly
+> different meanings. A PTR_TO_BTF_TO_ID may be a pointer to NULL value,
+> but it is safe to read this pointer in the program context because
+> the program context will handle any faults. The fallout is for
+> PTR_TO_BTF_ID the verifier can assume reads are safe, but can not
+> use the type in branch analysis. Additionally, authors need to be
+> extra careful when passing PTR_TO_BTF_ID into helpers. In general
+> helpers consuming type PTR_TO_BTF_ID will need to assume it may
+> be null.
+>
+> Seeing the above is not obvious to readers without the back knowledge
+> lets add a comment in the type definition.
+>
+> Editorial comment, as networking and tracing programs get closer
+> and more tightly merged we may need to consider a new type that we
+> can ensure is non-null for branch analysis and also passing into
+> helpers.
 
-On Fri, 25 Sep 2020 09:30:37 +0200
-Petr Tesarik <ptesarik@suse.cz> wrote:
+Yeah, I was going back and forth with Martin on this as well. I think
+we need better descriptions for possibly-NULL-at-runtime for the
+purpose of helper call invariants, and possibly-NULL-at-verification
+time.
 
-> On Thu, 24 Sep 2020 22:12:24 +0200
-> Heiner Kallweit <hkallweit1@gmail.com> wrote:
->=20
-> > On 24.09.2020 21:14, Petr Tesarik wrote: =20
-> > > On Wed, 23 Sep 2020 11:57:41 +0200
-> > > Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> > >  =20
-> > >> On 03.09.2020 10:41, Petr Tesarik wrote: =20
-> > >>> Hi Heiner,
-> > >>>
-> > >>> this issue was on the back-burner for some time, but I've got some
-> > >>> interesting news now.
-> > >>>
-> > >>> On Sat, 18 Jul 2020 14:07:50 +0200
-> > >>> Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> > >>>    =20
-> > >>>> [...]
-> > >>>> Maybe the following gives us an idea:
-> > >>>> Please do "ethtool -d <if>" after boot and after resume from suspe=
-nd,
-> > >>>> and check for differences.   =20
-> > >>>
-> > >>> The register dump did not reveal anything of interest - the only
-> > >>> differences were in the physical addresses after a device reopen.
-> > >>>
-> > >>> However, knowing that reloading the driver can fix the issue, I cop=
-ied
-> > >>> the initialization sequence from init_one() to rtl8169_resume() and
-> > >>> gave it a try. That works!
-> > >>>
-> > >>> Then I started removing the initialization calls one by one. This
-> > >>> exercise left me with a call to rtl_init_rxcfg(), which simply sets=
- the
-> > >>> RxConfig register. In other words, these is the difference between
-> > >>> 5.8.4 and my working version:
-> > >>>
-> > >>> --- linux-orig/drivers/net/ethernet/realtek/r8169_main.c	2020-09-02=
- 22:43:09.361951750 +0200
-> > >>> +++ linux/drivers/net/ethernet/realtek/r8169_main.c	2020-09-03 10:3=
-6:23.915803703 +0200
-> > >>> @@ -4925,6 +4925,9 @@
-> > >>> =20
-> > >>>  	clk_prepare_enable(tp->clk);
-> > >>> =20
-> > >>> +	if (tp->mac_version =3D=3D RTL_GIGA_MAC_VER_37)
-> > >>> +		RTL_W32(tp, RxConfig, RX128_INT_EN | RX_DMA_BURST);
-> > >>> +
-> > >>>  	if (netif_running(tp->dev))
-> > >>>  		__rtl8169_resume(tp);
-> > >>> =20
-> > >>> This is quite surprising, at least when the device is managed by
-> > >>> NetworkManager, because then it is closed on wakeup, and the open
-> > >>> method should call rtl_init_rxcfg() anyway. So, it might be a timing
-> > >>> issue, or incorrect order of register writes.
-> > >>>    =20
-> > >> Thanks for the analysis. If you manually bring down and up the
-> > >> interface, do you see the same issue? =20
-> > >=20
-> > > I'm not quite sure what you mean, but if the interface is configured
-> > > (and NetworkManager is stopped), I can do 'ip link set eth0 down' and
-> > > then 'ip link set eth0 up', and the interface is fully functional.
-> > >  =20
-> > >> What is the value of RxConfig when entering the resume function? =20
-> > >=20
-> > > I added a dev_info() to rtl8169_resume(). First with NetworkManager
-> > > active (i.e. interface down on suspend):
-> > >=20
-> > > [  525.956675] r8169 0000:03:00.2: RxConfig after resume: 0x0002400f
-> > >=20
-> > > Then I re-tried with NetworkManager stopped (i.e. interface up on
-> > > suspend). Same result:
-> > >=20
-> > > [  785.413887] r8169 0000:03:00.2: RxConfig after resume: 0x0002400f
-> > >=20
-> > > I hope that's what you were asking for...
-> > >=20
-> > > Petr T
-> > >  =20
-> >=20
-> > rtl8169_resume() has been changed in 5.9, therefore the patch doesn't
-> > apply cleanly on older kernel versions. Can you test the following
-> > on a 5.9-rc version or linux-next? =20
->=20
-> I tried installing 5.9-rc6, but it freezes hard at boot, last message is:
->=20
-> [   14.916259] libphy: r8169: probed
->=20
-> At this point, I suspect you're right that the BIOS is seriously buggy.
-> Let me check if ASUSTek has released any update for this model.
+>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 
-Hm, it took me about an hour wondering why I cannot flash the 314 update, b=
-ut then I finally noticed that this was for X543, while mine is an X453... =
-*sigh*
+Acked-by: Lorenz Bauer <lmb@cloudflare.com>
 
-So, I'm at BIOS version 214, released in 2015, and that's the latest versio=
-n. There are some older versions available, but the BIOS Flash utility won'=
-t let me downgrade.
+> ---
+>  include/linux/bpf.h |   18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index fc5c901c7542..dd765ba1c730 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -382,8 +382,22 @@ enum bpf_reg_type {
+>         PTR_TO_TCP_SOCK_OR_NULL, /* reg points to struct tcp_sock or NULL */
+>         PTR_TO_TP_BUFFER,        /* reg points to a writable raw tp's buffer */
+>         PTR_TO_XDP_SOCK,         /* reg points to struct xdp_sock */
+> -       PTR_TO_BTF_ID,           /* reg points to kernel struct */
+> -       PTR_TO_BTF_ID_OR_NULL,   /* reg points to kernel struct or NULL */
+> +       /* PTR_TO_BTF_ID points to a kernel struct that does not need
+> +        * to be null checked by the BPF program. This does not imply the
+> +        * pointer is _not_ null and in practice this can easily be a null
+> +        * pointer when reading pointer chains. The assumption is program
+> +        * context will handle null pointer dereference typically via fault
+> +        * handling. The verifier must keep this in mind and can make no
+> +        * assumptions about null or non-null when doing branch analysis.
+> +        * Further, when passed into helpers the helpers can not, without
+> +        * additional context, assume the value is non-null.
+> +        */
+> +       PTR_TO_BTF_ID,
+> +       /* PTR_TO_BTF_ID_OR_NULL points to a kernel struct that has not
+> +        * been checked for null. Used primarily to inform the verifier
+> +        * an explicit null check is required for this struct.
+> +        */
+> +       PTR_TO_BTF_ID_OR_NULL,
+>         PTR_TO_MEM,              /* reg points to valid memory region */
+>         PTR_TO_MEM_OR_NULL,      /* reg points to valid memory region or NULL */
+>         PTR_TO_RDONLY_BUF,       /* reg points to a readonly buffer */
+>
 
-Does it make sense to bisect the change that broke the driver for me, or sh=
-ould I rather dispose of this waste^Wlaptop in an environmentally friendly =
-manner? I mean, would you eventually accept a workaround for a few machines=
- with a broken BIOS?
 
-Petr T
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
---Sig_/PmTxwrOMJoLGsLynIiMVBOH
-Content-Type: application/pgp-signature
-Content-Description: Digitální podpis OpenPGP
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEHl2YIZkIo5VO2MxYqlA7ya4PR6cFAl9tsGAACgkQqlA7ya4P
-R6dZnAgAk7F+38ift1QVY7b1q5meA1ash//fqGi9DKB89EpT2bIWhE4KomGrZQmm
-UfbaBlttawdD3pnCieYWdu9xqY4y5be3xDFdqib9DMNlrMsYojI/cTAe8GGZteJb
-XSsy4ozVTTTIzvCkAbFZBVyBrGE2+mf/TKz3aWdA/ZNXnPEcHlOX+TS/Ztv9O6mv
-/ISnIeCQC/HtOMF112XoVkSmaHpmEP7xC8EzbJ2ih54H01kcACJx29jfBLxemiFM
-xwYCsqeCP2SpMWMS2zjGnJmWFcAHyrme7TPd6eUpPBGgYjrrsZTeDvIoRaI0YY2C
-wkkbM56tHsfixHW7gd+Q6CpAAvaFkg==
-=eNlK
------END PGP SIGNATURE-----
-
---Sig_/PmTxwrOMJoLGsLynIiMVBOH--
+www.cloudflare.com
