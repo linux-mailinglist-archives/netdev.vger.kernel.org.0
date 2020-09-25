@@ -2,110 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F7B9277FD7
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 07:16:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F22B27809D
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 08:26:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727112AbgIYFQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 01:16:43 -0400
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:57575 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726925AbgIYFQn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 01:16:43 -0400
-Received: from [192.168.0.3] (ip5f5af1e7.dynamic.kabel-deutschland.de [95.90.241.231])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id D68B22064620A;
-        Fri, 25 Sep 2020 07:16:38 +0200 (CEST)
-Subject: Re: [Intel-wired-lan] [PATCH v3] e1000e: Increase iteration on
- polling MDIC ready bit
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        id S1727164AbgIYG0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 02:26:47 -0400
+Received: from ex13-edg-ou-001.vmware.com ([208.91.0.189]:57931 "EHLO
+        EX13-EDG-OU-001.vmware.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726925AbgIYG0r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 02:26:47 -0400
+X-Greylist: delayed 900 seconds by postgrey-1.27 at vger.kernel.org; Fri, 25 Sep 2020 02:26:46 EDT
+Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
+ EX13-EDG-OU-001.vmware.com (10.113.208.155) with Microsoft SMTP Server id
+ 15.0.1156.6; Thu, 24 Sep 2020 23:11:41 -0700
+Received: from ubuntu.eng.vmware.com (unknown [10.20.113.240])
+        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id C95B42026A;
+        Thu, 24 Sep 2020 23:11:45 -0700 (PDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        "VMware, Inc." <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20200924150958.18016-1-kai.heng.feng@canonical.com>
- <20200924164542.19906-1-kai.heng.feng@canonical.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <1497f846-40d2-ddc8-60be-ffd117ffc0b7@molgen.mpg.de>
-Date:   Fri, 25 Sep 2020 07:16:38 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] vmxnet3: fix cksum offload issues for non-udp tunnels
+Date:   Thu, 24 Sep 2020 23:11:29 -0700
+Message-ID: <20200925061130.9017-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200924164542.19906-1-kai.heng.feng@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+Received-SPF: None (EX13-EDG-OU-001.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Kai-Heng,
+Commit dacce2be3312 ("vmxnet3: add geneve and vxlan tunnel offload
+support") added support for encapsulation offload. However, the inner
+offload capability is to be restrictued to UDP tunnels.
 
+This patch fixes the issue for non-udp tunnels by adding features
+check capability and filtering appropriate features for non-udp tunnels.
 
-Thank you for patch version 3.
+Fixes: dacce2be3312 ("vmxnet3: add geneve and vxlan tunnel offload support")
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c     |  5 ++---
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 28 ++++++++++++++++++++++++++++
+ drivers/net/vmxnet3/vmxnet3_int.h     |  4 ++++
+ 3 files changed, 34 insertions(+), 3 deletions(-)
 
-Am 24.09.20 um 18:45 schrieb Kai-Heng Feng:
-> We are seeing the following error after S3 resume:
-> [  704.746874] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-> [  704.844232] e1000e 0000:00:1f.6 eno1: MDI Write did not complete
-> [  704.902817] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-> [  704.903075] e1000e 0000:00:1f.6 eno1: reading PHY page 769 (or 0x6020 shifted) reg 0x17
-> [  704.903281] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-> [  704.903486] e1000e 0000:00:1f.6 eno1: writing PHY page 769 (or 0x6020 shifted) reg 0x17
-> [  704.943155] e1000e 0000:00:1f.6 eno1: MDI Error
-> ...
-> [  705.108161] e1000e 0000:00:1f.6 eno1: Hardware Error
-> 
-> As Andrew Lunn pointed out, MDIO has nothing to do with phy, and indeed
-> increase polling iteration can resolve the issue.
-> 
-> The root cause is quite likely Intel ME, since it's a blackbox to the
-> kernel so the only approach we can take is to be patient and wait
-> longer.
-> 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
-> v3:
->   - Moving delay to end of loop doesn't save anytime, move it back.
->   - Point out this is quitely likely caused by Intel ME.
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 2818015324b8..336504b7531d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1032,7 +1032,6 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 	/* Use temporary descriptor to avoid touching bits multiple times */
+ 	union Vmxnet3_GenericDesc tempTxDesc;
+ #endif
+-	struct udphdr *udph;
+ 
+ 	count = txd_estimate(skb);
+ 
+@@ -1135,8 +1134,7 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 			gdesc->txd.om = VMXNET3_OM_ENCAP;
+ 			gdesc->txd.msscof = ctx.mss;
+ 
+-			udph = udp_hdr(skb);
+-			if (udph->check)
++			if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_TUNNEL_CSUM)
+ 				gdesc->txd.oco = 1;
+ 		} else {
+ 			gdesc->txd.hlen = ctx.l4_offset + ctx.l4_hdr_size;
+@@ -3371,6 +3369,7 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		.ndo_change_mtu = vmxnet3_change_mtu,
+ 		.ndo_fix_features = vmxnet3_fix_features,
+ 		.ndo_set_features = vmxnet3_set_features,
++		.ndo_features_check = vmxnet3_features_check,
+ 		.ndo_get_stats64 = vmxnet3_get_stats64,
+ 		.ndo_tx_timeout = vmxnet3_tx_timeout,
+ 		.ndo_set_rx_mode = vmxnet3_set_mc,
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index 1014693a5ceb..7ec8652f2c26 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -267,6 +267,34 @@ netdev_features_t vmxnet3_fix_features(struct net_device *netdev,
+ 	return features;
+ }
+ 
++netdev_features_t vmxnet3_features_check(struct sk_buff *skb,
++					 struct net_device *netdev,
++					 netdev_features_t features)
++{
++	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
++
++	/* Validate if the tunneled packet is being offloaded by the device */
++	if (VMXNET3_VERSION_GE_4(adapter) &&
++	    skb->encapsulation && skb->ip_summed == CHECKSUM_PARTIAL) {
++		u8 l4_proto = 0;
++
++		switch (vlan_get_protocol(skb)) {
++		case htons(ETH_P_IP):
++			l4_proto = ip_hdr(skb)->protocol;
++			break;
++		case htons(ETH_P_IPV6):
++			l4_proto = ipv6_hdr(skb)->nexthdr;
++			break;
++		default:
++			return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
++		}
++
++		if (l4_proto != IPPROTO_UDP)
++			return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
++	}
++	return features;
++}
++
+ static void vmxnet3_enable_encap_offloads(struct net_device *netdev)
+ {
+ 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index 5d2b062215a2..d958b92c9429 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -470,6 +470,10 @@ vmxnet3_rq_destroy_all(struct vmxnet3_adapter *adapter);
+ netdev_features_t
+ vmxnet3_fix_features(struct net_device *netdev, netdev_features_t features);
+ 
++netdev_features_t
++vmxnet3_features_check(struct sk_buff *skb,
++		       struct net_device *netdev, netdev_features_t features);
++
+ int
+ vmxnet3_set_features(struct net_device *netdev, netdev_features_t features);
+ 
+-- 
+2.11.0
 
-quietly
-
-You seem to have missed my comments regarding patch version 3. It’d be 
-great if you improved the commit message with my suggestions.
-
-Without knowing what hardware this happened on, nobody, even later 
-getting the hardware, can reproduce the your results. If you say the ME 
-is involved, please also document the ME firmware version, which is used 
-here.
-
-> v2:
->   - Increase polling iteration instead of powering down the phy.
-> 
->   drivers/net/ethernet/intel/e1000e/phy.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/e1000e/phy.c b/drivers/net/ethernet/intel/e1000e/phy.c
-> index e11c877595fb..e6d4acd90937 100644
-> --- a/drivers/net/ethernet/intel/e1000e/phy.c
-> +++ b/drivers/net/ethernet/intel/e1000e/phy.c
-> @@ -203,7 +203,7 @@ s32 e1000e_write_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 data)
->   	 * Increasing the time out as testing showed failures with
->   	 * the lower time out
->   	 */
-> -	for (i = 0; i < (E1000_GEN_POLL_TIMEOUT * 3); i++) {
-> +	for (i = 0; i < (E1000_GEN_POLL_TIMEOUT * 10); i++) {
->   		udelay(50);
->   		mdic = er32(MDIC);
->   		if (mdic & E1000_MDIC_READY)
-
-In the PCI subsystem, a warning is shown, when something takes more then 
-100 ms. As you increase it to over 320 ms, a warning should be printed 
-to talk to the firmware folks, when it passes 100 ms.
-
-
-Kind regards,
-
-Paul
