@@ -2,72 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 334EA278F33
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 18:58:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A19B278F4C
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 19:04:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728416AbgIYQ5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 12:57:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57276 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727733AbgIYQ5x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 12:57:53 -0400
-Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9DB2A208B6;
-        Fri, 25 Sep 2020 16:57:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601053072;
-        bh=7dNt/8FQKvUj5BjdWGO36+5DnvecefTSUeRuVhPdjrw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=lX1mHURY1ELTf01OULb8EsoXdHRZxC0fobcDbot6ZDfwQulaDdUl2+K/Su/s+HHlC
-         hXG4HLsonS4+BhgLc0vBDve05ITWET0v6SpFiKXhXa2tJDuzNBs7Y2OXBIeGRL3v5a
-         XS4fp6Dqeb7WfqimftRUztcElVjP6CkDZypuUn0A=
-Date:   Fri, 25 Sep 2020 12:03:23 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH][next] dpaa2-mac: Fix potential null pointer dereference
-Message-ID: <20200925170323.GA20546@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1729577AbgIYREi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 13:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49768 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729477AbgIYREi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 13:04:38 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F71C0613CE
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 10:04:37 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 140so3283720ybf.2
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 10:04:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=Ebilc4DY3Vyd6ZRYopWeA/UmKzd5DTCHvPamWycxxTc=;
+        b=v2+3vv9LEtVIhQTNfhoBJy0Vf97GtW1LGsa8xsVwrTke+nHpnIm3eUF3I6E75gKGs0
+         hXRWY4dAduhQV45psn8qiVFQDuHhaQJjvN1FN4Y0K8OzY9Gcg3BcFG0xIGPe4cXOiwBY
+         g7kE5K48aO3tDJQC9Q+l1N9MRSUFG7j0EaOb06L2zGoGn8e1D+8dVHPYyQc4XrCZIZt3
+         80eufFalHsM752XXJGCAXYLoT0PVO5HSI5gaAqb6G2JqxJtRaPepUaoCNvtioTLb0cg6
+         KEMAM7jj4m9iMjDzxi2adnvFP2QLNAMoOOKKGU/0diE8KiLUU5LrcedwbN7cKMrA2kPC
+         bBWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=Ebilc4DY3Vyd6ZRYopWeA/UmKzd5DTCHvPamWycxxTc=;
+        b=jCIwRWwSgIzOtjhuj0b8VH9kwA8W0WoirnaYNeU9iLx3xGeNwb4ufyzDH4mMZ3bC90
+         IEYfS22LMkh1xsbQAD73WoSqeKzhWBNyrZlFGnMUCAXD9pNr9qE8ZkpeciTe81ssV1Bf
+         +AAllcjt3XhQj76UNRZpI5GNYeDvQs1EBXAvj/q1+vLGVxpMeHYp5kCLJ6R3wk8y5Elr
+         W58Z+4kOynTmGiRSntpyuGSLt4UNMaaGnGEvrbiosmHRMYpRiygVEU6lCZ8yUbGlkQNP
+         HI74gtfRbrkN0TYV7T0H0wIy2XcwMF8lqPgEJI4r193De8BOosLBEHjKRV4V8bNXLCB5
+         d/IA==
+X-Gm-Message-State: AOAM5327GoDicoO0YRVYNkhvuqlIFFUkcRMJeHBJ4neqi2CPVBMtpX1j
+        g5xsxrr6ZcCdX0D5o3ujJ9iWVoa1mRM=
+X-Google-Smtp-Source: ABdhPJwiZaOYZ9BDjP7Lgr/RawuPPSaJukryLan0UQBnbRPfrJcmznFkMOJ9Y2LvFEf66m9ps3pQ+bXpuNs=
+Sender: "ycheng via sendgmr" <ycheng@ycheng.svl.corp.google.com>
+X-Received: from ycheng.svl.corp.google.com ([2620:15c:2c4:201:f693:9fff:fef4:fc76])
+ (user=ycheng job=sendgmr) by 2002:a25:e4c5:: with SMTP id b188mr217129ybh.79.1601053477030;
+ Fri, 25 Sep 2020 10:04:37 -0700 (PDT)
+Date:   Fri, 25 Sep 2020 10:04:27 -0700
+Message-Id: <20200925170431.1099943-1-ycheng@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
+Subject: [PATCH net-next 0/4] simplify TCP loss marking code
+From:   Yuchung Cheng <ycheng@google.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, ncardwell@google.com,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a null-check for _pcs_, but it is being dereferenced
-prior to this null-check. So, if _pcs_ can actually be null,
-then there is a potential null pointer dereference that should
-be fixed by null-checking _pcs_ before being dereferenced.
+The TCP loss marking is implemented by a set of intertwined
+subroutines. TCP has several loss detection algorithms
+(RACK, RFC6675/FACK, NewReno, etc) each calls a subset of
+these routines to mark a packet lost. This has led to
+various bugs (and fixes and fixes of fixes).
 
-Addresses-Coverity-ID: 1497159 ("Dereference before null check")
-Fixes: 94ae899b2096 ("dpaa2-mac: add PCS support through the Lynx module")
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch set is to consolidate the loss marking code so
+all detection algorithms call the same routine tcp_mark_skb_lost().
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index 6ff64dd1cf27..283c5b1dbaad 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -291,9 +291,9 @@ static int dpaa2_pcs_create(struct dpaa2_mac *mac,
- static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
- {
- 	struct lynx_pcs *pcs = mac->pcs;
--	struct device *dev = &pcs->mdio->dev;
- 
- 	if (pcs) {
-+		struct device *dev = &pcs->mdio->dev;
- 		lynx_pcs_destroy(pcs);
- 		put_device(dev);
- 		mac->pcs = NULL;
+Yuchung Cheng (4):
+  tcp: consistently check retransmit hint
+  tcp: move tcp_mark_skb_lost
+  tcp: simplify tcp_mark_skb_lost
+  tcp: consolidate tcp_mark_skb_lost and tcp_skb_mark_lost
+
+ net/ipv4/tcp_input.c    | 60 +++++++++++++++--------------------------
+ net/ipv4/tcp_recovery.c | 16 +----------
+ 2 files changed, 23 insertions(+), 53 deletions(-)
+
 -- 
-2.27.0
+2.28.0.681.g6f77f65b4e-goog
 
