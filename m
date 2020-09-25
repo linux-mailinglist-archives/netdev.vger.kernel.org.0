@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC547279047
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 20:27:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D4CF27904C
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 20:27:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729753AbgIYS1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 14:27:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51091 "EHLO
+        id S1729785AbgIYS1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 14:27:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60341 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727495AbgIYS1M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 14:27:12 -0400
+        by vger.kernel.org with ESMTP id S1729724AbgIYS1O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 14:27:14 -0400
 Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601058431;
+        s=mimecast20190719; t=1601058433;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:in-reply-to:in-reply-to:references:references;
-        bh=yrgq/KDevcEQJ6jt8mLwCRUIhO0cbeAMHgxfCLcgTj0=;
-        b=eQucHJhxTzAFYrMf126p7iHOFLiqel4bOiWljTGYahNvmgWIZWac9RLXFaY5dYQuGfUpDf
-        5JIHtumHIrL8qeV0gaC63dljdmgB3isr07y8dFEfItRkyuEiaoKqaXckW8kWyIV4JV17pg
-        13/X59VDCZUNEye3CfhNE7rmEEoFJ7g=
+        bh=qD7K+UDAAPv7p1xhR7GsE6Qr4qBNVKTkChHI2rSdLN0=;
+        b=h6hBl2TpouAZ70pSN4pyGrBAsdzzPCtc/v29FvuKmeYCk7LVqK1Me7h8r/Sb6v5v/YqSHc
+        HCA8/NrdQ49bYcnvXSPwLuRX+QaXxfTNk4AlgDLcD6Fv2i3IhW6rl6YhrZqrbX8nzX0mxk
+        pIc46Mf2J73e1W2/12hCV3FJ87oCCW0=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-274-tQ7tu0ImMQCu12jq-NJWBw-1; Fri, 25 Sep 2020 14:27:09 -0400
-X-MC-Unique: tQ7tu0ImMQCu12jq-NJWBw-1
+ us-mta-501-deZDjWaiMCqrv1ZQexTisA-1; Fri, 25 Sep 2020 14:27:12 -0400
+X-MC-Unique: deZDjWaiMCqrv1ZQexTisA-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 363341084C96;
-        Fri, 25 Sep 2020 18:27:07 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0216D1007474;
+        Fri, 25 Sep 2020 18:27:09 +0000 (UTC)
 Received: from virtlab719.virt.lab.eng.bos.redhat.com (virtlab719.virt.lab.eng.bos.redhat.com [10.19.153.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 849337882D;
-        Fri, 25 Sep 2020 18:27:05 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4FE1078810;
+        Fri, 25 Sep 2020 18:27:07 +0000 (UTC)
 From:   Nitesh Narayan Lal <nitesh@redhat.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
@@ -43,9 +43,9 @@ To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         jiri@nvidia.com, mingo@redhat.com, peterz@infradead.org,
         juri.lelli@redhat.com, vincent.guittot@linaro.org,
         lgoncalv@redhat.com
-Subject: [PATCH v3 2/4] sched/isolation: Extend nohz_full to isolate managed IRQs
-Date:   Fri, 25 Sep 2020 14:26:52 -0400
-Message-Id: <20200925182654.224004-3-nitesh@redhat.com>
+Subject: [PATCH v3 3/4] i40e: Limit msix vectors to housekeeping CPUs
+Date:   Fri, 25 Sep 2020 14:26:53 -0400
+Message-Id: <20200925182654.224004-4-nitesh@redhat.com>
 In-Reply-To: <20200925182654.224004-1-nitesh@redhat.com>
 References: <20200925182654.224004-1-nitesh@redhat.com>
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
@@ -53,29 +53,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend nohz_full feature set to include isolation from managed IRQS. This
-is required specifically for setups that only uses nohz_full and still
-requires isolation for maintaining lower latency for the listed CPUs.
+If we have isolated CPUs designated to perform real-time tasks, to keep the
+latency overhead to a minimum for real-time CPUs IRQ vectors are moved to
+housekeeping CPUs from the userspace. Creating MSIX vectors only based on
+the online CPUs could lead to exhaustion of housekeeping CPU IRQ vectors in
+such environments.
 
-Suggested-by: Frederic Weisbecker <frederic@kernel.org>
+This patch prevents i40e to create vectors only based on online CPUs by
+retrieving the online housekeeping CPUs that are designated to perform
+managed IRQ jobs.
+
 Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
+Reviewed-by: Marcelo Tosatti <mtosatti@redhat.com>
+Acked-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 ---
- kernel/sched/isolation.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sched/isolation.c b/kernel/sched/isolation.c
-index 5a6ea03f9882..9df9598a9e39 100644
---- a/kernel/sched/isolation.c
-+++ b/kernel/sched/isolation.c
-@@ -141,7 +141,7 @@ static int __init housekeeping_nohz_full_setup(char *str)
- 	unsigned int flags;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 2e433fdbf2c3..370b581cd48c 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -5,6 +5,7 @@
+ #include <linux/of_net.h>
+ #include <linux/pci.h>
+ #include <linux/bpf.h>
++#include <linux/sched/isolation.h>
+ #include <generated/utsrelease.h>
  
- 	flags = HK_FLAG_TICK | HK_FLAG_WQ | HK_FLAG_TIMER | HK_FLAG_RCU |
--		HK_FLAG_MISC | HK_FLAG_KTHREAD;
-+		HK_FLAG_MISC | HK_FLAG_KTHREAD | HK_FLAG_MANAGED_IRQ;
+ /* Local includes */
+@@ -11002,7 +11003,7 @@ static int i40e_init_msix(struct i40e_pf *pf)
+ 	 * will use any remaining vectors to reach as close as we can to the
+ 	 * number of online CPUs.
+ 	 */
+-	cpus = num_online_cpus();
++	cpus = housekeeping_num_online_cpus(HK_FLAG_MANAGED_IRQ);
+ 	pf->num_lan_msix = min_t(int, cpus, vectors_left / 2);
+ 	vectors_left -= pf->num_lan_msix;
  
- 	return housekeeping_setup(str, flags);
- }
 -- 
 2.18.2
 
