@@ -2,118 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40228279141
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 21:00:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BED22791E0
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:17:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729686AbgIYTAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 15:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727201AbgIYTAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 15:00:37 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A05C0C0613CE
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 12:00:37 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id 197so3354202pge.8
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 12:00:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Q6yEZ87hbqUHFRRkw2yL30bTDWYndLrXdIaxUDaFXRg=;
-        b=jyXBuC2gJtov3ebkeT04oAcOH5j1Zmjf0r6cZgbWIl65F5CHVkrMoP+SBlEdHL2Ptz
-         w4Sewvkc8ZaAnNB1TDLFS7Kc29iy5pPaYgsCgJbIdKaC4w0P8vznKd55gZhzCOcw4Dvk
-         S+JMGdGl7BoZms4AZsWeiyJG2hS/Pqak+qCaaVvUjadqSZ6BCTo6dlQyg8vJJEASPNrX
-         pNVEUTEpr5ODGylzBSlk6XTqzA4DmOGAiaLLVmpsl492mtYw9kcFCBPqvPy4FC3/cLtO
-         fMJC33NbtlfeLprLQglG08FvSyF41k6vRI2UPqzJK8RH9GBIRidia4nKzEmi18L+IIlV
-         mCAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Q6yEZ87hbqUHFRRkw2yL30bTDWYndLrXdIaxUDaFXRg=;
-        b=TRaqxO0sn2wNgrazmF50uEhUTPhcpmnAcHuHPCxIr5VK/4/KVbmurU7/Qhuho6lu2U
-         dgywuFTkEH1CIs5QHzViKI4BhoP90tN6c8geS6wRBj+7gOu0ma7bzQYCIsGaQ5UP6spM
-         oQZ8Kkg+CGX8EI/TZFbuQxu0T4Kxf299xTwoGu6w8qK1EXRubOBPI5PtkK9UVC+h57Rd
-         rR7iR6TcuOXfbCdbnVfpgvGnIFXU80KxvHhunuyTEjccrLZCYVpSSqgY44Mc1OyNJxeI
-         G2pDqACcFIwXApHwYJYSpAqR7l9olOi5joslKlb1fpHLvvAEGnqMx5LqRWhUgblju8pz
-         p9qg==
-X-Gm-Message-State: AOAM532YbNoOPk2M1bTq9pDQRTaw7ryGwUG/bH/F5AI2KLogcAT8LW+K
-        s4Cke+dzD2LQZHbDvN3aPqdfIrSSZCiWGA==
-X-Google-Smtp-Source: ABdhPJzG/RWEX3HZdOccQnD6YEI05uOYIuAN1XiLC3pTVRxxOAVUjtXIgH6r34X87pqRWAiQ3K9otQ==
-X-Received: by 2002:a63:f90d:: with SMTP id h13mr294653pgi.227.1601060437129;
-        Fri, 25 Sep 2020 12:00:37 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id q10sm2684911pja.48.2020.09.25.12.00.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Sep 2020 12:00:36 -0700 (PDT)
-Date:   Fri, 25 Sep 2020 12:00:28 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Wei Wang <weiwan@google.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Subject: Re: [RFC PATCH net-next 0/6] implement kthread based napi poll
-Message-ID: <20200925120028.65b5cd6d@hermes.lan>
-In-Reply-To: <CANn89iKAaKnZb3+RdMkK+Lx+5BBs=0Lnzwhe_jkzP4A8qHFZTg@mail.gmail.com>
-References: <20200914172453.1833883-1-weiwan@google.com>
-        <CAJ8uoz30afXpbn+RXwN5BNMwrLAcW0Cn8tqP502oCLaKH0+kZg@mail.gmail.com>
-        <CAEA6p_BBaSQJjTPicgjoDh17BxS9aFMb-o6ddqW3wDvPAMyrGQ@mail.gmail.com>
-        <20200925111627.047f5ed2@hermes.lan>
-        <CANn89iKAaKnZb3+RdMkK+Lx+5BBs=0Lnzwhe_jkzP4A8qHFZTg@mail.gmail.com>
+        id S1727895AbgIYURd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 16:17:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42732 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726687AbgIYUPb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 16:15:31 -0400
+Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CAEA522211;
+        Fri, 25 Sep 2020 19:38:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601062697;
+        bh=CMi6bD5XzVGRVxBvmk69Ffarb+46/nlaaCNuUvc4DpU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DKLPJo6zMWAR/Q25f6SfDUoHqqHDYF57M+MjyQUN6pk6AGG+EtKkH2QQNwarjITqJ
+         onOsYEyPmlmybZN+BrZgLQ2ME7L9TFjV7lUMtzU8OVMYNQwH6xKE/hBOVRUHWgnv8O
+         njS5llbBr99RYt9kcFbXBfJMb+EWg+Ivfx3Raq18=
+From:   saeed@kernel.org
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/15] mlx5 SW steering updates 2020-09-25
+Date:   Fri, 25 Sep 2020 12:37:54 -0700
+Message-Id: <20200925193809.463047-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 25 Sep 2020 20:23:37 +0200
-Eric Dumazet <edumazet@google.com> wrote:
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-> On Fri, Sep 25, 2020 at 8:16 PM Stephen Hemminger
-> <stephen@networkplumber.org> wrote:
-> >
-> > On Fri, 25 Sep 2020 10:15:25 -0700
-> > Wei Wang <weiwan@google.com> wrote:
-> >  
-> > > > > In terms of performance, I ran tcp_rr tests with 1000 flows with
-> > > > > various request/response sizes, with RFS/RPS disabled, and compared
-> > > > > performance between softirq vs kthread. Host has 56 hyper threads and
-> > > > > 100Gbps nic.  
-> >
-> > It would be good to similar tests on othere hardware. Not everyone has
-> > server class hardware. There are people running web servers on untuned
-> > servers over 10 years old; this may cause a regression there.
-> >
-> > Not to mention the slower CPU's in embedded systems. How would this
-> > impact OpenWrt or Android?  
-> 
-> Most probably you won't notice a significant difference.
-> 
-> Switching to a kthread is quite cheap, since you have no MMU games to play with.
+Hi Dave/Jakub,
 
-That makes sense, and in the past when doing stress tests the napi
-work was mostly on the kthread already.
+This series makes some updates to mlx5 software steering.
+For more information please see tag log below.
 
-> >
-> > Another potential problem is that if you run real time (SCH_FIFO)
-> > threads they have higher priority than kthread. So for that use
-> > case, moving networking to kthread would break them.  
-> 
-> Sure, playing with FIFO threads is dangerous.
-> 
-> Note that our plan is still to have softirqs by default.
-> 
-> If an admin chose to use kthreads, it is its choice, not ours.
-> 
-> This is also why I very much prefer the kthread approach to the work
-> queue, since the work queue could not be fine tuned.
+Please pull and let me know if there is any problem.
 
-Agree with you, best to keep this as opt-in.
+Thanks,
+Saeed.
+
+---
+The following changes since commit aafe8853f5e2bcbdd231411aec218b8c5dc78437:
+
+  Merge branch 'hns3-next' (2020-09-24 20:19:25 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-09-25
+
+for you to fetch changes up to d2bbdbfbdbbeed34a15228990654f4d796fb6323:
+
+  net/mlx5: DR, Add support for rule creation with flow source hint (2020-09-25 12:35:45 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2020-09-25
+
+This series includes updates to mlx5 software steering component.
+
+1) DR, Memory management improvements
+
+This patch series contains SW Steering memory management improvements:
+using buddy allocator instead of an existing bucket allocator, and
+several other optimizations.
+
+The buddy system is a memory allocation and management algorithm
+that manages memory in power of two increments.
+
+The algorithm is well-known and well-described, such as here:
+https://en.wikipedia.org/wiki/Buddy_memory_allocation
+
+Linux uses this algorithm for managing and allocating physical pages,
+as described here:
+https://www.kernel.org/doc/gorman/html/understand/understand009.html
+
+In our case, although the algorithm in principal is similar to the
+Linux physical page allocator, the "building blocks" and the circumstances
+are different: in SW steering, buddy allocator doesn't really allocates
+a memory, but rather manages ICM (Interconnect Context Memory) that was
+previously allocated and registered.
+
+The ICM memory that is used in SW steering is always power
+of 2 (order), so buddy system is a good fit for this.
+
+Patches in this series:
+
+[PATH 1/5] net/mlx5: DR, Add buddy allocator utilities
+  This patch adds a modified implementation of a well-known buddy allocator,
+  adjusted for SW steering needs: the algorithm in principal is similar to
+  the Linux physical page allocator, but in our case buddy allocator doesn't
+  really allocate a memory, but rather manages ICM memory that was previously
+  allocated and registered.
+
+[PATH 2/5] net/mlx5: DR, Handle ICM memory via buddy allocation instead of bucket management
+  This patch changes ICM management of SW steering to use buddy-system mechanism
+  Instead of the previous bucket management.
+
+[PATH 3/5] net/mlx5: DR, Sync chunks only during free
+  This patch makes syncing happen only when freeing memory chunks.
+
+[PATH 4/5] net/mlx5: DR, ICM memory pools sync optimization
+  This patch adds tracking of pool's "hot" memory and makes the
+  check whether steering sync is required much shorter and faster.
+
+[PATH 5/5] net/mlx5: DR, Free buddy ICM memory if it is unused
+  This patch adds tracking buddy's used ICM memory,
+  and frees the buddy if all its memory becomes unused.
+
+2) Few improvements in the DR area, such as removing unneeded checks,
+  renaming to better general names, refactor in some places, etc.
+
+3) Create SW steering rules with flow source hint, needed to determine
+ rule direction (TX,RX) based on this hint rather than the meta data
+ from Reg-C0.
+
+----------------------------------------------------------------
+Hamdan Igbaria (1):
+      net/mlx5: DR, Add support for rule creation with flow source hint
+
+Yevgeny Kliteynik (13):
+      net/mlx5: DR, Add buddy allocator utilities
+      net/mlx5: DR, Handle ICM memory via buddy allocation instead of bucket management
+      net/mlx5: DR, Sync chunks only during free
+      net/mlx5: DR, ICM memory pools sync optimization
+      net/mlx5: DR, Free buddy ICM memory if it is unused
+      net/mlx5: DR, Replace the check for valid STE entry
+      net/mlx5: DR, Remove unneeded check from source port builder
+      net/mlx5: DR, Remove unneeded vlan check from L2 builder
+      net/mlx5: DR, Remove unneeded local variable
+      net/mlx5: DR, Call ste_builder directly with tag pointer
+      net/mlx5: DR, Remove unused member of action struct
+      net/mlx5: DR, Rename builders HW specific names
+      net/mlx5: DR, Rename matcher functions to be more HW agnostic
+
+sunils (1):
+      net/mlx5: E-switch, Use PF num in metadata reg c0
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  36 +-
+ .../mellanox/mlx5/core/steering/dr_buddy.c         | 255 +++++++++++
+ .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |   4 +-
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c      | 501 ++++++++-------------
+ .../mellanox/mlx5/core/steering/dr_matcher.c       | 123 ++---
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  47 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_send.c |   4 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  | 223 +++------
+ .../mellanox/mlx5/core/steering/dr_types.h         | 101 +++--
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |   3 +-
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |  36 +-
+ include/linux/mlx5/eswitch.h                       |  15 +-
+ 13 files changed, 728 insertions(+), 622 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_buddy.c
