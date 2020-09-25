@@ -2,97 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8D202792B6
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:54:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8E842792BC
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:55:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727511AbgIYUyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 16:54:38 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:44806 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725272AbgIYUyh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 16:54:37 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08PKn2cc039197;
-        Fri, 25 Sep 2020 20:54:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
- from : message-id : references : date : in-reply-to : mime-version :
- content-type; s=corp-2020-01-29;
- bh=KE/6frUW0qLJ4yGqJjxsOBztcMMvJKPi7N6S9765s1A=;
- b=t0qzyxZi0dl+YKzXtuDuHrMGqOKgH5fIMmpwIJWVMm/U3dTu+P1SS3kJTlx79mD5uwMC
- A2Edf31HXh7Zjrho5JXRQeOv1ImV1hVmEUYsbtNFLoJL4bYLIxAyhjP+J/0Zp7ifDQzk
- 3Nx9/VbQNAqiGj7LS7WXYR2mfogIVEGEDnYRbjzFJkRbq3WNPTTAj2pLS3zagmxoYMTV
- iw0TWXITzP/XF5OpedI74kVNFQzbK4Xkz4lunnpJPRW1Rg6Stg2474URqb04tp+XNqiJ
- CwLxCCi7uoZ8T0Vakvb3aUzZrxZh3Nt0KvQ9mrqnvOxELTIQV/CUCoVWCkaNPXyc2d99 Xw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 33ndnuysne-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 25 Sep 2020 20:54:14 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08PKoEmv040658;
-        Fri, 25 Sep 2020 20:54:13 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 33r28yufem-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Sep 2020 20:54:13 +0000
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08PKsBj6030876;
-        Fri, 25 Sep 2020 20:54:11 GMT
-Received: from ca-mkp.ca.oracle.com (/10.159.214.123)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 25 Sep 2020 13:54:10 -0700
-To:     Coly Li <colyli@suse.de>
-Cc:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, open-iscsi@googlegroups.com,
-        linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Vasily Averin <vvs@virtuozzo.com>,
-        Cong Wang <amwang@redhat.com>,
-        Mike Christie <michaelc@cs.wisc.edu>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        Christoph Hellwig <hch@lst.de>, Hannes Reinecke <hare@suse.de>
-Subject: Re: [PATCH v8 6/7] scsi: libiscsi: use sendpage_ok() in
- iscsi_tcp_segment_map()
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <yq18scxinmw.fsf@ca-mkp.ca.oracle.com>
-References: <20200925150119.112016-1-colyli@suse.de>
-        <20200925150119.112016-7-colyli@suse.de>
-Date:   Fri, 25 Sep 2020 16:54:07 -0400
-In-Reply-To: <20200925150119.112016-7-colyli@suse.de> (Coly Li's message of
-        "Fri, 25 Sep 2020 23:01:18 +0800")
+        id S1728410AbgIYUzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 16:55:03 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:63466 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726980AbgIYUzC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 16:55:02 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08PKt1nv024523
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 13:55:02 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=NMnuUTo/+rViCmLQINiUgI6x9ZFI7TS7t+YGGzs0aw4=;
+ b=NUc6qep0WVtp8L0lmk4pO+QN23v50/RUIMfm5zi+l5oFz4JYxdULH/2D1HUbN2OHBmEL
+ RGKTRk6eVnr4WLxqHQHMwl7FHX1n+lIzW90XfLsZw9eTDJ9Kn3J3Xeek0oo1NdkSOl+a
+ fluPpnU7xiapltJ1XbQpowAjMdyL2T/DrGw= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33qsp7humd-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 13:55:02 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 25 Sep 2020 13:54:42 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 6D64762E54A2; Fri, 25 Sep 2020 13:54:34 -0700 (PDT)
+From:   Song Liu <songliubraving@fb.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH v6 bpf-next 0/3] enable BPF_PROG_TEST_RUN for raw_tp
+Date:   Fri, 25 Sep 2020 13:54:28 -0700
+Message-ID: <20200925205432.1777-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9755 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=845
- suspectscore=1 adultscore=0 bulkscore=0 malwarescore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009250150
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9755 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- lowpriorityscore=0 phishscore=0 adultscore=0 suspectscore=1 bulkscore=0
- clxscore=1011 impostorscore=0 mlxlogscore=827 mlxscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009250150
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-25_19:2020-09-24,2020-09-25 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ mlxlogscore=647 impostorscore=0 bulkscore=0 adultscore=0
+ priorityscore=1501 mlxscore=0 malwarescore=0 spamscore=0 suspectscore=0
+ clxscore=1015 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009250151
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This set enables BPF_PROG_TEST_RUN for raw_tracepoint type programs. This
+set also enables running the raw_tp program on a specific CPU. This featu=
+re
+can be used by user space to trigger programs that access percpu resource=
+s,
+e.g. perf_event, percpu variables.
 
-Coly,
+---
 
-> In iscsci driver, iscsi_tcp_segment_map() uses the following code to
-> check whether the page should or not be handled by sendpage:
->     if (!recv && page_count(sg_page(sg)) >= 1 && !PageSlab(sg_page(sg)))
->
-> The "page_count(sg_page(sg)) >= 1 && !PageSlab(sg_page(sg)" part is to
-> make sure the page can be sent to network layer's zero copy path. This
-> part is exactly what sendpage_ok() does.
->
-> This patch uses  use sendpage_ok() in iscsi_tcp_segment_map() to replace
-> the original open coded checks.
+Changes v5 =3D> v6:
+1. Optimize the selftest. (John, Andrii)
 
-Looks fine to me.
+Changes v4 =3D> v5:
+1.Fail test_run with non-zero test.cpu but no BPF_F_TEST_RUN_ON_CPU.
+  (Andrii)
+2. Add extra check for invalid test.cpu value. (Andrii)
+3. Shuffle bpf_test_run_opts to remove holes. (Andrii)
+4. Fixes in selftests. (Andrii)
 
-Acked-by: Martin K. Petersen <martin.petersen@oracle.com>
+Changes v3 =3D> v4:
+1. Use cpu+flags instead of cpu_plus. (Andrii)
+2. Rework libbpf support. (Andrii)
 
--- 
-Martin K. Petersen	Oracle Linux Engineering
+Changes v2 =3D> v3:
+1. Fix memory leak in the selftest. (Andrii)
+2. Use __u64 instead of unsigned long long. (Andrii)
+
+Changes v1 =3D> v2:
+1. More checks for retval in the selftest. (John)
+2. Remove unnecessary goto in bpf_prog_test_run_raw_tp. (John)
+
+Song Liu (3):
+  bpf: enable BPF_PROG_TEST_RUN for raw_tracepoint
+  libbpf: support test run of raw tracepoint programs
+  selftests/bpf: add raw_tp_test_run
+
+ include/linux/bpf.h                           |  3 +
+ include/uapi/linux/bpf.h                      |  7 ++
+ kernel/bpf/syscall.c                          |  2 +-
+ kernel/trace/bpf_trace.c                      |  1 +
+ net/bpf/test_run.c                            | 91 ++++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  7 ++
+ tools/lib/bpf/bpf.c                           | 31 ++++++
+ tools/lib/bpf/bpf.h                           | 26 +++++
+ tools/lib/bpf/libbpf.map                      |  1 +
+ tools/lib/bpf/libbpf_internal.h               |  5 +
+ .../bpf/prog_tests/raw_tp_test_run.c          | 96 +++++++++++++++++++
+ .../bpf/progs/test_raw_tp_test_run.c          | 24 +++++
+ 12 files changed, 293 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/raw_tp_test_ru=
+n.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_raw_tp_test_ru=
+n.c
+
+--
+2.24.1
