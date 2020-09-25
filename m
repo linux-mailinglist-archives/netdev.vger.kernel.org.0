@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACA182791E9
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:19:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D7B12791DE
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:17:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728471AbgIYUTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 16:19:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43068 "EHLO mail.kernel.org"
+        id S1728150AbgIYURe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 16:17:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42744 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726281AbgIYURb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 16:17:31 -0400
+        id S1727402AbgIYUPb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 16:15:31 -0400
 Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7DD12238A0;
-        Fri, 25 Sep 2020 19:38:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 237B1238D6;
+        Fri, 25 Sep 2020 19:38:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601062700;
-        bh=mHYOk50c8aOGswdyk0HcBDNP7edkmNZJz1ITJcM+vtw=;
+        s=default; t=1601062701;
+        bh=7ogmpV378h+F06NIkCYNrd4xk1dRAqKNHMbRxZ46aOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hbpJuSuX+EPssJsoxEVntqHigOGpd5f35CT38o1uWyPmkyrJsNJqTNGcq21u7u3zK
-         pb7AdcSTNUmCnxsdQy6lt5776Hz7mpFJ8ohkq0zLaW3k53FYT/6lWhqfZ/aXBfD1c6
-         3c0OanN4+XcTz5Bz1M416iJaUjrhUZcEYnbttUlE=
+        b=WmQaHYuaeL1QB3QlYpBPUYzncKb0eLORdP+4b5PHXvy4+lguj959Gp8Rc/KOQ+X1M
+         tUXmzmiqyoMrGcj1yCNxQi0l/uQxQgC84NiLiX0dYD+YTfjPLU9JQy9t41Am9nvYu8
+         pGgCvS5e49+LZ3UdAgmk4xv9jTJCoO8bQNqXQwv8=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, sunils <sunils@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 06/15] net/mlx5: E-switch, Use PF num in metadata reg c0
-Date:   Fri, 25 Sep 2020 12:38:00 -0700
-Message-Id: <20200925193809.463047-7-saeed@kernel.org>
+Subject: [net-next 07/15] net/mlx5: DR, Replace the check for valid STE entry
+Date:   Fri, 25 Sep 2020 12:38:01 -0700
+Message-Id: <20200925193809.463047-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200925193809.463047-1-saeed@kernel.org>
 References: <20200925193809.463047-1-saeed@kernel.org>
@@ -41,107 +41,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: sunils <sunils@nvidia.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Currently only 256 vports can be supported as only 8 bits are
-reserved for them and 8 bits are reserved for vhca_ids in
-metadata reg c0. To support more than 256 vports, replace
-vhca_id with a unique shorter 4-bit PF number which covers
-upto 16 PF's. Use remaining 12 bits for vports ranging 1-4095.
-This will continue to generate unique metadata even if
-multiple PCI devices have same switch_id.
+Validity check is done by reading the next lu_type from the STE,
+this check can be replaced by checking the refcount.
+This will make the check independent on internal STE structure.
 
-Signed-off-by: sunils <sunils@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Vu Pham <vuhuong@nvidia.com>
+Signed-off-by: Alex Vesker <valex@nvidia.com>
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/eswitch_offloads.c     | 36 +++++++++----------
- include/linux/mlx5/eswitch.h                  | 15 ++++----
- 2 files changed, 26 insertions(+), 25 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_rule.c     |  6 +++---
+ .../mellanox/mlx5/core/steering/dr_send.c     |  4 ++--
+ .../mellanox/mlx5/core/steering/dr_ste.c      | 19 -------------------
+ .../mellanox/mlx5/core/steering/dr_types.h    |  7 +++++--
+ 4 files changed, 10 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index ffd5d540a19e..6b49c0d59099 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2019,31 +2019,31 @@ esw_check_vport_match_metadata_supported(const struct mlx5_eswitch *esw)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+index 6ec5106bc472..17577181ce8f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+@@ -242,7 +242,7 @@ dr_rule_rehash_copy_ste(struct mlx5dr_matcher *matcher,
+ 	new_idx = mlx5dr_ste_calc_hash_index(hw_ste, new_htbl);
+ 	new_ste = &new_htbl->ste_arr[new_idx];
  
- u32 mlx5_esw_match_metadata_alloc(struct mlx5_eswitch *esw)
- {
--	u32 num_vports = GENMASK(ESW_VPORT_BITS - 1, 0) - 1;
--	u32 vhca_id_mask = GENMASK(ESW_VHCA_ID_BITS - 1, 0);
--	u32 vhca_id = MLX5_CAP_GEN(esw->dev, vhca_id);
--	u32 start;
--	u32 end;
-+	u32 vport_end_ida = (1 << ESW_VPORT_BITS) - 1;
-+	u32 max_pf_num = (1 << ESW_PFNUM_BITS) - 1;
-+	u32 pf_num;
- 	int id;
+-	if (mlx5dr_ste_not_used_ste(new_ste)) {
++	if (mlx5dr_ste_is_not_used(new_ste)) {
+ 		mlx5dr_htbl_get(new_htbl);
+ 		list_add_tail(&new_ste->miss_list_node,
+ 			      mlx5dr_ste_get_miss_list(new_ste));
+@@ -335,7 +335,7 @@ static int dr_rule_rehash_copy_htbl(struct mlx5dr_matcher *matcher,
  
--	/* Make sure the vhca_id fits the ESW_VHCA_ID_BITS */
--	WARN_ON_ONCE(vhca_id >= BIT(ESW_VHCA_ID_BITS));
--
--	/* Trim vhca_id to ESW_VHCA_ID_BITS */
--	vhca_id &= vhca_id_mask;
--
--	start = (vhca_id << ESW_VPORT_BITS);
--	end = start + num_vports;
--	if (!vhca_id)
--		start += 1; /* zero is reserved/invalid metadata */
--	id = ida_alloc_range(&esw->offloads.vport_metadata_ida, start, end, GFP_KERNEL);
-+	/* Only 4 bits of pf_num */
-+	pf_num = PCI_FUNC(esw->dev->pdev->devfn);
-+	if (pf_num > max_pf_num)
-+		return 0;
+ 	for (i = 0; i < cur_entries; i++) {
+ 		cur_ste = &cur_htbl->ste_arr[i];
+-		if (mlx5dr_ste_not_used_ste(cur_ste)) /* Empty, nothing to copy */
++		if (mlx5dr_ste_is_not_used(cur_ste)) /* Empty, nothing to copy */
+ 			continue;
  
--	return (id < 0) ? 0 : id;
-+	/* Metadata is 4 bits of PFNUM and 12 bits of unique id */
-+	/* Use only non-zero vport_id (1-4095) for all PF's */
-+	id = ida_alloc_range(&esw->offloads.vport_metadata_ida, 1, vport_end_ida, GFP_KERNEL);
-+	if (id < 0)
-+		return 0;
-+	id = (pf_num << ESW_VPORT_BITS) | id;
-+	return id;
+ 		err = dr_rule_rehash_copy_miss_list(matcher,
+@@ -791,7 +791,7 @@ dr_rule_handle_ste_branch(struct mlx5dr_rule *rule,
+ 	miss_list = &cur_htbl->chunk->miss_list[index];
+ 	ste = &cur_htbl->ste_arr[index];
+ 
+-	if (mlx5dr_ste_not_used_ste(ste)) {
++	if (mlx5dr_ste_is_not_used(ste)) {
+ 		if (dr_rule_handle_empty_entry(matcher, nic_matcher, cur_htbl,
+ 					       ste, ste_location,
+ 					       hw_ste, miss_list,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
+index 2ca79b9bde1f..3d77f7d9fbdf 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
+@@ -466,10 +466,10 @@ int mlx5dr_send_postsend_htbl(struct mlx5dr_domain *dmn,
+ 		 * need to add the bit_mask
+ 		 */
+ 		for (j = 0; j < num_stes_per_iter; j++) {
+-			u8 *hw_ste = htbl->ste_arr[ste_index + j].hw_ste;
++			struct mlx5dr_ste *ste = &htbl->ste_arr[ste_index + j];
+ 			u32 ste_off = j * DR_STE_SIZE;
+ 
+-			if (mlx5dr_ste_is_not_valid_entry(hw_ste)) {
++			if (mlx5dr_ste_is_not_used(ste)) {
+ 				memcpy(data + ste_off,
+ 				       formatted_ste, DR_STE_SIZE);
+ 			} else {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+index 00c2f598f034..053e63844bd2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+@@ -549,25 +549,6 @@ void mlx5dr_ste_always_miss_addr(struct mlx5dr_ste *ste, u64 miss_addr)
+ 	dr_ste_set_always_miss((struct dr_hw_ste_format *)ste->hw_ste);
  }
  
- void mlx5_esw_match_metadata_free(struct mlx5_eswitch *esw, u32 metadata)
- {
--	ida_free(&esw->offloads.vport_metadata_ida, metadata);
-+	u32 vport_bit_mask = (1 << ESW_VPORT_BITS) - 1;
+-/* The assumption here is that we don't update the ste->hw_ste if it is not
+- * used ste, so it will be all zero, checking the next_lu_type.
+- */
+-bool mlx5dr_ste_is_not_valid_entry(u8 *p_hw_ste)
+-{
+-	struct dr_hw_ste_format *hw_ste = (struct dr_hw_ste_format *)p_hw_ste;
+-
+-	if (MLX5_GET(ste_general, hw_ste, next_lu_type) ==
+-	    MLX5DR_STE_LU_TYPE_NOP)
+-		return true;
+-
+-	return false;
+-}
+-
+-bool mlx5dr_ste_not_used_ste(struct mlx5dr_ste *ste)
+-{
+-	return !ste->refcount;
+-}
+-
+ /* Init one ste as a pattern for ste data array */
+ void mlx5dr_ste_set_formatted_ste(u16 gvmi,
+ 				  struct mlx5dr_domain_rx_tx *nic_dmn,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+index f71ca74f96fd..07cf24a38d47 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+@@ -227,7 +227,6 @@ void mlx5dr_ste_set_hit_gvmi(u8 *hw_ste_p, u16 gvmi);
+ void mlx5dr_ste_set_hit_addr(u8 *hw_ste, u64 icm_addr, u32 ht_size);
+ void mlx5dr_ste_always_miss_addr(struct mlx5dr_ste *ste, u64 miss_addr);
+ void mlx5dr_ste_set_bit_mask(u8 *hw_ste_p, u8 *bit_mask);
+-bool mlx5dr_ste_not_used_ste(struct mlx5dr_ste *ste);
+ bool mlx5dr_ste_is_last_in_rule(struct mlx5dr_matcher_rx_tx *nic_matcher,
+ 				u8 ste_location);
+ void mlx5dr_ste_rx_set_flow_tag(u8 *hw_ste_p, u32 flow_tag);
+@@ -266,6 +265,11 @@ static inline void mlx5dr_ste_get(struct mlx5dr_ste *ste)
+ 	ste->refcount++;
+ }
+ 
++static inline bool mlx5dr_ste_is_not_used(struct mlx5dr_ste *ste)
++{
++	return !ste->refcount;
++}
 +
-+	/* Metadata contains only 12 bits of actual ida id */
-+	ida_free(&esw->offloads.vport_metadata_ida, metadata & vport_bit_mask);
- }
- 
- static int esw_offloads_vport_metadata_setup(struct mlx5_eswitch *esw,
-diff --git a/include/linux/mlx5/eswitch.h b/include/linux/mlx5/eswitch.h
-index c16827eeba9c..b0ae8020f13e 100644
---- a/include/linux/mlx5/eswitch.h
-+++ b/include/linux/mlx5/eswitch.h
-@@ -74,15 +74,16 @@ bool mlx5_eswitch_reg_c1_loopback_enabled(const struct mlx5_eswitch *esw);
- bool mlx5_eswitch_vport_match_metadata_enabled(const struct mlx5_eswitch *esw);
- 
- /* Reg C0 usage:
-- * Reg C0 = < ESW_VHCA_ID_BITS(8) | ESW_VPORT BITS(8) | ESW_CHAIN_TAG(16) >
-+ * Reg C0 = < ESW_PFNUM_BITS(4) | ESW_VPORT BITS(12) | ESW_CHAIN_TAG(16) >
-  *
-- * Highest 8 bits of the reg c0 is the vhca_id, next 8 bits is vport_num,
-- * the rest (lowest 16 bits) is left for tc chain tag restoration.
-- * VHCA_ID + VPORT comprise the SOURCE_PORT matching.
-+ * Highest 4 bits of the reg c0 is the PF_NUM (range 0-15), 12 bits of
-+ * unique non-zero vport id (range 1-4095). The rest (lowest 16 bits) is left
-+ * for tc chain tag restoration.
-+ * PFNUM + VPORT comprise the SOURCE_PORT matching.
-  */
--#define ESW_VHCA_ID_BITS 8
--#define ESW_VPORT_BITS 8
--#define ESW_SOURCE_PORT_METADATA_BITS (ESW_VHCA_ID_BITS + ESW_VPORT_BITS)
-+#define ESW_VPORT_BITS 12
-+#define ESW_PFNUM_BITS 4
-+#define ESW_SOURCE_PORT_METADATA_BITS (ESW_PFNUM_BITS + ESW_VPORT_BITS)
- #define ESW_SOURCE_PORT_METADATA_OFFSET (32 - ESW_SOURCE_PORT_METADATA_BITS)
- #define ESW_CHAIN_TAG_METADATA_BITS (32 - ESW_SOURCE_PORT_METADATA_BITS)
- #define ESW_CHAIN_TAG_METADATA_MASK GENMASK(ESW_CHAIN_TAG_METADATA_BITS - 1,\
+ void mlx5dr_ste_set_hit_addr_by_next_htbl(u8 *hw_ste,
+ 					  struct mlx5dr_ste_htbl *next_htbl);
+ bool mlx5dr_ste_equal_tag(void *src, void *dst);
+@@ -1001,7 +1005,6 @@ struct mlx5dr_icm_chunk *
+ mlx5dr_icm_alloc_chunk(struct mlx5dr_icm_pool *pool,
+ 		       enum mlx5dr_icm_chunk_size chunk_size);
+ void mlx5dr_icm_free_chunk(struct mlx5dr_icm_chunk *chunk);
+-bool mlx5dr_ste_is_not_valid_entry(u8 *p_hw_ste);
+ int mlx5dr_ste_htbl_init_and_postsend(struct mlx5dr_domain *dmn,
+ 				      struct mlx5dr_domain_rx_tx *nic_dmn,
+ 				      struct mlx5dr_ste_htbl *htbl,
 -- 
 2.26.2
 
