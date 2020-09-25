@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05FFE277F54
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 06:52:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 376D6277F4E
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 06:52:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727306AbgIYEwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 00:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
+        id S1727330AbgIYEwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 00:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727044AbgIYEwB (ORCPT
+        with ESMTP id S1727063AbgIYEwB (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 00:52:01 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA23C0613D5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE87C0613D6;
         Thu, 24 Sep 2020 21:52:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=A+T/x3ppYi6QNsP2t+QiJ1AjmOgx9xWo2H6NAG0/aPM=; b=k9BJO212aIGjTM67lCOkTpCrht
-        B20Wf2zjNYR87uLFP2BRrzt5cCrEk0KFpOMk3+io62CblpW7Y77IqzHPhNFZqwDnVNpJgjcOWkhrs
-        Z8GRxpu7FjGxV+hNEbHeKyL912gkvTLvP4DBne8Te3c43Bttle2gfOVWfy6MwqIsof1MCTX4rxO24
-        Kx+lnKnrKhrsYvG/2XpbtSvE8DYXDyXxSwaM81JHTOVvJu9V5Jarcs/1LeXw6G549Mxci7m54zzCp
-        f1etRanliNQK8rGzJ9PmD1VPBy0Rci2ZVjpscKDGnzDGoBasw11g0MfksMIslOR+W3JyKfkaf/KsM
-        BhKY/8wQ==;
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description;
+        bh=tfXqHGtFwgmM6UcSRx58+EM7ODTSdMOtwKoRg1u1yAY=; b=Pu6N7lQCb1Rzn/vuEAM+5KPGjX
+        BkFo8T9dzxv/0bLMSXXve2AJx7GLCk5CC3R4Ai3QXXAsQD0Esc5mldBbPrIULY45pPbpDbvoDrrU5
+        0y/rZt3NdsMe0g/YSE/jtyenAi2xicarompLKMm3oxiJQBJl3sVJebhfDzjP4rb2MDDW6NJFyk043
+        bn005DtQkC0IcvqnCKWfSkFaGle8WWvJyIl1xKl1G7YhMMOzx5EoA1Ngf8NCwxfsbgxynDDaCVTgh
+        BNKEdqs8oHltVqpj2BB8Ry/WCaQYj1FyeT/89FBsvMGDD1Te4BzMLY8sgN68ceoHuYqHSSvbf9L6H
+        RjKlFFzQ==;
 Received: from p4fdb0c34.dip0.t-ipconnect.de ([79.219.12.52] helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kLfi0-0002pf-1s; Fri, 25 Sep 2020 04:51:48 +0000
+        id 1kLfi1-0002pi-5S; Fri, 25 Sep 2020 04:51:49 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Alexander Viro <viro@zeniv.linux.org.uk>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -42,10 +42,12 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         linux-arch@vger.kernel.org, linux-mm@kvack.org,
         netdev@vger.kernel.org, keyrings@vger.kernel.org,
         linux-security-module@vger.kernel.org
-Subject: let import_iovec deal with compat_iovecs as well v4
-Date:   Fri, 25 Sep 2020 06:51:37 +0200
-Message-Id: <20200925045146.1283714-1-hch@lst.de>
+Subject: [PATCH 1/9] compat.h: fix a spelling error in <linux/compat.h>
+Date:   Fri, 25 Sep 2020 06:51:38 +0200
+Message-Id: <20200925045146.1283714-2-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200925045146.1283714-1-hch@lst.de>
+References: <20200925045146.1283714-1-hch@lst.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
@@ -53,54 +55,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Al,
+There is no compat_sys_readv64v2 syscall, only a compat_sys_preadv64v2
+one.
 
-this series changes import_iovec to transparently deal with compat iovec
-structures, and then cleanups up a lot of code dupliation.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ include/linux/compat.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes since v3:
- - fix up changed prototypes in compat.h as well
+diff --git a/include/linux/compat.h b/include/linux/compat.h
+index b354ce58966e2d..654c1ec36671a4 100644
+--- a/include/linux/compat.h
++++ b/include/linux/compat.h
+@@ -812,7 +812,7 @@ asmlinkage ssize_t compat_sys_pwritev2(compat_ulong_t fd,
+ 		const struct compat_iovec __user *vec,
+ 		compat_ulong_t vlen, u32 pos_low, u32 pos_high, rwf_t flags);
+ #ifdef __ARCH_WANT_COMPAT_SYS_PREADV64V2
+-asmlinkage long  compat_sys_readv64v2(unsigned long fd,
++asmlinkage long  compat_sys_preadv64v2(unsigned long fd,
+ 		const struct compat_iovec __user *vec,
+ 		unsigned long vlen, loff_t pos, rwf_t flags);
+ #endif
+-- 
+2.28.0
 
-Changes since v2:
- - revert the switch of the access process vm sysclls to iov_iter
- - refactor the import_iovec internals differently
- - switch aio to use __import_iovec
-
-Changes since v1:
- - improve a commit message
- - drop a pointless unlikely
- - drop the PF_FORCE_COMPAT flag
- - add a few more cleanups (including two from David Laight)
-
-Diffstat:
- arch/arm64/include/asm/unistd32.h                  |   10 
- arch/mips/kernel/syscalls/syscall_n32.tbl          |   10 
- arch/mips/kernel/syscalls/syscall_o32.tbl          |   10 
- arch/parisc/kernel/syscalls/syscall.tbl            |   10 
- arch/powerpc/kernel/syscalls/syscall.tbl           |   10 
- arch/s390/kernel/syscalls/syscall.tbl              |   10 
- arch/sparc/kernel/syscalls/syscall.tbl             |   10 
- arch/x86/entry/syscall_x32.c                       |    5 
- arch/x86/entry/syscalls/syscall_32.tbl             |   10 
- arch/x86/entry/syscalls/syscall_64.tbl             |   10 
- block/scsi_ioctl.c                                 |   12 
- drivers/scsi/sg.c                                  |    9 
- fs/aio.c                                           |   38 --
- fs/io_uring.c                                      |   20 -
- fs/read_write.c                                    |  362 +--------------------
- fs/splice.c                                        |   57 ---
- include/linux/compat.h                             |   24 -
- include/linux/fs.h                                 |   11 
- include/linux/uio.h                                |   10 
- include/uapi/asm-generic/unistd.h                  |   12 
- lib/iov_iter.c                                     |  161 +++++++--
- mm/process_vm_access.c                             |   85 ----
- net/compat.c                                       |    4 
- security/keys/compat.c                             |   37 --
- security/keys/internal.h                           |    5 
- security/keys/keyctl.c                             |    2 
- tools/include/uapi/asm-generic/unistd.h            |   12 
- tools/perf/arch/powerpc/entry/syscalls/syscall.tbl |   10 
- tools/perf/arch/s390/entry/syscalls/syscall.tbl    |   10 
- tools/perf/arch/x86/entry/syscalls/syscall_64.tbl  |   10 
- 30 files changed, 280 insertions(+), 706 deletions(-)
