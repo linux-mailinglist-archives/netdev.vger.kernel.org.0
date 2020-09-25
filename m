@@ -2,124 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C127279223
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:35:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 659EC279253
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728827AbgIYUdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 16:33:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44250 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726587AbgIYUZb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 16:25:31 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 71B4A21D7A;
-        Fri, 25 Sep 2020 19:06:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601060814;
-        bh=ByEl/atmqPjM0xo8PM58ivXS5lqwmPuLd3moFyUQA08=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IW+b0MeitugJLEoqZZp1YKe5uAcWE/xjC/7d3l4fTuzZiQTJLYIhKMkF8uCdc+PcY
-         BvtdodvetOVL+A+AU61EKnVUHSTvcb1/G5+hAUMkwJjC1UOg3W1JSMl0Xxq5XS9jgC
-         AnyeLccqawXgMPqzC50ySEJmexKLMPShS152Os8I=
-Date:   Fri, 25 Sep 2020 12:06:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Wei Wang <weiwan@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Subject: Re: [RFC PATCH net-next 0/6] implement kthread based napi poll
-Message-ID: <20200925120652.10b8d7c5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAJ8uoz30afXpbn+RXwN5BNMwrLAcW0Cn8tqP502oCLaKH0+kZg@mail.gmail.com>
-References: <20200914172453.1833883-1-weiwan@google.com>
-        <CAJ8uoz30afXpbn+RXwN5BNMwrLAcW0Cn8tqP502oCLaKH0+kZg@mail.gmail.com>
+        id S1728842AbgIYUig (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 16:38:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54732 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727302AbgIYUif (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 16:38:35 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91051C0613E3
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 12:22:27 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id z13so4069800iom.8
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 12:22:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y+kALFykLu8zvTdOpO/UTtYd/UaYMq/ScljyGEcNrbU=;
+        b=axuM5WDolCZR2+dKP+bs+LRg96uFMB5pjall6lNGGooT1nmGKEKojuE81gOeWE6Inv
+         HU9o3ux5tIQU4w1cgx41UQnMJ0jwejY7MUl+FoI0I1FAzlFseRT3dfz3tBtC9Iyzkjmw
+         PaI0rCJmLrJlfAKERSdp+X2o8l91wmG7Pgp5/7BXMagVYDeol3P7x2AchACOMZxG1sdz
+         OkWUu5Six4amLiWPscEe12wVTs4VxlT5rCkp2cpxpGrv4CCjjmvdpvHl2vN2wNMDYnEZ
+         EgRZXvPqZy3+enoX/JGpZfX1aOCozGY0KgK9LJmMt6PFk91qqrFOS6zyWZ6kqjFf33bT
+         Ipqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y+kALFykLu8zvTdOpO/UTtYd/UaYMq/ScljyGEcNrbU=;
+        b=VZ2M3p01Bgr8tttQvUjeUaYPQ1Hlsx829sROt9v75JjET9h0z5AkxfL30fs6D1GDov
+         lMVzXYnxpE5EY0KqkPXcpQ2Cncz3pw/ivZoBeFlgRW6Stiv0K6ffy75kXxK0Vh5vw5PX
+         m9gwMM0QWAb8s65cr5ulv8V5TTLSLR6GeDGxclxRGGcHXjcoMz+IRt6SbJ2I9l9W1Bjg
+         d5bosW2yUiQV5ND4HsMyypcGQwo/LOtj+ygJl/GFnMAQb/m65YTW5dN8DlXFVPMHrCC+
+         oom2n53DG8QIB6Q0zq20Vk3t4YOLmtJ4xiCrGZ5h9gMOx/LRZg5Q1QvWuYmlHxFehxH9
+         5VZg==
+X-Gm-Message-State: AOAM532Vd2KnYG4csyA6JXJmBjehqL98VuotSSJ2j5o+xLDQTYfQcYiN
+        x28bCfe7iwOZpAZahoQaGlcGSHUPypIFGU7VcRc=
+X-Google-Smtp-Source: ABdhPJxRueJGpRVJvkgSvJhDw+aOR2qmh3ZTcDptcAYWkRXo+YE9tvhrKUte2u8Hijn1Vsx0nr5HgOHn6bOr/cXdU0I=
+X-Received: by 2002:a02:b199:: with SMTP id t25mr482431jah.124.1601061746783;
+ Fri, 25 Sep 2020 12:22:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200923035624.7307-1-xiyou.wangcong@gmail.com>
+ <20200923035624.7307-2-xiyou.wangcong@gmail.com> <877dsh98wq.fsf@buslov.dev>
+In-Reply-To: <877dsh98wq.fsf@buslov.dev>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 25 Sep 2020 12:22:15 -0700
+Message-ID: <CAM_iQpXy4GuHidnLAL+euBaNaJGju6KFXBZ67WS_Pws58sD6+g@mail.gmail.com>
+Subject: Re: [Patch net 1/2] net_sched: defer tcf_idr_insert() in tcf_action_init_1()
+To:     Vlad Buslov <vlad@buslov.dev>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 25 Sep 2020 15:48:35 +0200 Magnus Karlsson wrote:
-> I really like this RFC and would encourage you to submit it as a
-> patch. Would love to see it make it into the kernel.
-> 
-> I see the same positive effects as you when trying it out with AF_XDP
-> sockets. Made some simple experiments where I sent 64-byte packets to
-> a single AF_XDP socket. Have not managed to figure out how to do
-> percentiles on my load generator, so this is going to be min, avg and
-> max only. The application using the AF_XDP socket just performs a mac
-> swap on the packet and sends it back to the load generator that then
-> measures the round trip latency. The kthread is taskset to the same
-> core as ksoftirqd would run on. So in each experiment, they always run
-> on the same core id (which is not the same as the application).
-> 
-> Rate 12 Mpps with 0% loss.
->               Latencies (us)         Delay Variation between packets
->           min    avg    max      avg   max
-> sofirq  11.0  17.1   78.4      0.116  63.0
-> kthread 11.2  17.1   35.0     0.116  20.9
-> 
-> Rate ~58 Mpps (Line rate at 40 Gbit/s) with substantial loss
->               Latencies (us)         Delay Variation between packets
->           min    avg    max      avg   max
-> softirq  87.6  194.9  282.6    0.062  25.9
-> kthread  86.5  185.2  271.8    0.061  22.5
-> 
-> For the last experiment, I also get 1.5% to 2% higher throughput with
-> your kthread approach. Moreover, just from the per-second throughput
-> printouts from my application, I can see that the kthread numbers are
-> more stable. The softirq numbers can vary quite a lot between each
-> second, around +-3%. But for the kthread approach, they are nice and
-> stable. Have not examined why.
+On Fri, Sep 25, 2020 at 8:24 AM Vlad Buslov <vlad@buslov.dev> wrote:
+> > +     if (TC_ACT_EXT_CMP(a->tcfa_action, TC_ACT_GOTO_CHAIN) &&
+> > +         !rcu_access_pointer(a->goto_chain)) {
+> > +             tcf_action_destroy_1(a, bind);
+> > +             NL_SET_ERR_MSG(extack, "can't use goto chain with NULL chain");
+> > +             return ERR_PTR(-EINVAL);
+> > +     }
+>
+> I don't think calling tcf_action_destoy_1() is enough here. Since you
+> moved this block before assigning cookie and releasing the module, you
+> also need to release them manually in addition to destroying the action
+> instance.
+>
 
-Sure, it's better than status quo for AF_XDP but it's going to be far
-inferior to well implemented busy polling.
+tcf_action_destoy_1() eventually calls free_tcf() which frees cookie and
+tcf_action_destroy() which releases module refcnt.
 
-We already discussed the potential scheme with Bjorn, since you prompted
-me again, let me shoot some code from the hip at ya:
+What am I missing here?
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 74ce8b253ed6..8dbdfaeb0183 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6668,6 +6668,7 @@ static struct napi_struct *napi_by_id(unsigned int napi_id)
- 
- static void busy_poll_stop(struct napi_struct *napi, void *have_poll_lock)
- {
-+       unsigned long to;
-        int rc;
- 
-        /* Busy polling means there is a high chance device driver hard irq
-@@ -6682,6 +6683,13 @@ static void busy_poll_stop(struct napi_struct *napi, void *have_poll_lock)
-        clear_bit(NAPI_STATE_MISSED, &napi->state);
-        clear_bit(NAPI_STATE_IN_BUSY_POLL, &napi->state);
- 
-+       if (READ_ONCE(napi->dev->napi_defer_hard_irqs)) {
-+               netpoll_poll_unlock(have_poll_lock);
-+               to = ns_to_ktime(READ_ONCE(napi->dev->gro_flush_timeout));
-+               hrtimer_start(&n->timer, to, HRTIMER_MODE_REL_PINNED);
-+               return;
-+       }
-+
-        local_bh_disable();
- 
-        /* All we really want here is to re-enable device interrupts.
-
-
-With basic busy polling implemented for AF_XDP this is all** you need
-to make busy polling work very well.
-
-** once bugs are fixed :D I haven't even compiled this
-
-Eric & co. already implemented hard IRQ deferral. All we need to do is
-push the timer away when application picks up frames. I think.
-
-Please, no loose threads for AF_XDP apps (or other busy polling apps).
-Let the application burn 100% of the core :(
+Thanks.
