@@ -2,212 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5C612792BE
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:55:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 175CA2792C8
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:57:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728606AbgIYUzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 16:55:15 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:28884 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726980AbgIYUzO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 16:55:14 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08PKsA7F014836
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 13:55:14 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=9FoxGNmt0l80dPBqmmEMu9amF2HkYuE/ikSDpJSYISc=;
- b=XJWceLv8yoS89g3FR0Il2kj/uR7OmDD39J6Dj+Jaay92VlCQq07yZHzoDgiczr3HMycO
- k8KRnxneUABniDQ5UrGZGybf5SzzC4bqfaq5hI6eiNsjpw03QDyaRIVngWyzKkQeLfm4
- XCxEW4u2/VXHSYMMYzmTqT4wNfPbcBZatfM= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 33qsp69x05-8
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 13:55:14 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 25 Sep 2020 13:54:52 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id F410062E54A2; Fri, 25 Sep 2020 13:54:49 -0700 (PDT)
-From:   Song Liu <songliubraving@fb.com>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: [PATCH v6 bpf-next 3/3] selftests/bpf: add raw_tp_test_run
-Date:   Fri, 25 Sep 2020 13:54:31 -0700
-Message-ID: <20200925205432.1777-4-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200925205432.1777-1-songliubraving@fb.com>
-References: <20200925205432.1777-1-songliubraving@fb.com>
+        id S1727324AbgIYU5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 16:57:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22423 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726037AbgIYU5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 16:57:17 -0400
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601067436;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EiL2XllvQB2LfKSShysemCAoHS0xuIwlKbztT1dTxBk=;
+        b=ZfJ+igNU1ISS1PR+pSjRI5eCs+3PxzoHvKC7aTPzHOsJxuLLqNTyfLUTFIo6W9HJK9qm8v
+        Yq3tnuoI0YTtvjf8NZRF/7qlRqupIouzgzb3eh5KR43iExHlw2Cp4H4n2+zM2jOHU8LEMA
+        oRzAIzF9/yeIFIUnOteJ+KC8OwcD2VQ=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-11-3QK2u0BpPdag9YrkqGp1jw-1; Fri, 25 Sep 2020 16:57:14 -0400
+X-MC-Unique: 3QK2u0BpPdag9YrkqGp1jw-1
+Received: by mail-wm1-f71.google.com with SMTP id w3so97188wmg.4
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 13:57:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=EiL2XllvQB2LfKSShysemCAoHS0xuIwlKbztT1dTxBk=;
+        b=bjR5CPflsz6oaxTXrg/irdbBw0tc0C9BjhvsjxYQmvygJBkPioh7xe08lgF5PxrsPW
+         RJBjj+hC/WEIJ9d2RRVbcNkrF4MvYVexaoOd58I8VD06/aO4Ynnzz61Y6YQKFtAOcO5o
+         cO/C9YWQKHPuhwqpfOY/ukcRSr7OIKhYJN4b4A/vOwuuSF1ORN5vjs5kHozaJ6wMubDn
+         Wv61pCcBWprAy4LhNT2V0oVJpyqVJC0KvezoVDZBbxzMEktAPtV3Bw90ZQbLSiCeMCdK
+         WTHCRItMc6hk2WgHiunmr1oHFNe8GH1fnM8kezNTYzaCpeRY3wRniwbwVsq1avn2Ftoz
+         v+hg==
+X-Gm-Message-State: AOAM530RGmq5r2K24ouUJb7Xy+Pualf/NQC4BaSZFQKoIhyint61h6uo
+        yMuyQqvfWtpx15z3/5THerUUgzQllblI22pPcQ+rv+h3KqQo1FRZwD8HGom1KdpP8JiKXujPWWw
+        vd9obQazaWTqOVmv2
+X-Received: by 2002:adf:dbc3:: with SMTP id e3mr6376744wrj.1.1601067433547;
+        Fri, 25 Sep 2020 13:57:13 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyZfFA8ey5Qyk+yQKrYbWllg18SZYqXB51nWXG9iuDFjMRWMmI/xMmHWanoHvg+YD5hac8VxA==
+X-Received: by 2002:adf:dbc3:: with SMTP id e3mr6376726wrj.1.1601067433293;
+        Fri, 25 Sep 2020 13:57:13 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id 92sm4524389wra.19.2020.09.25.13.57.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2020 13:57:12 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2E8FC183C5B; Fri, 25 Sep 2020 22:57:12 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v8 04/11] bpf: move prog->aux->linked_prog and
+ trampoline into bpf_link on attach
+In-Reply-To: <CAADnVQLMBKAYsbS4PO87yVrPWJEf9H3qzpsL-p+gFQpcomDw2w@mail.gmail.com>
+References: <160079991372.8301.10648588027560707258.stgit@toke.dk>
+ <160079991808.8301.6462172487971110332.stgit@toke.dk>
+ <20200924001439.qitbu5tmzz55ck4z@ast-mbp.dhcp.thefacebook.com>
+ <87tuvmbztw.fsf@toke.dk>
+ <CAADnVQLMBKAYsbS4PO87yVrPWJEf9H3qzpsL-p+gFQpcomDw2w@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 25 Sep 2020 22:57:12 +0200
+Message-ID: <878scx60d3.fsf@toke.dk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-25_19:2020-09-24,2020-09-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- mlxlogscore=999 clxscore=1015 suspectscore=2 impostorscore=0 adultscore=0
- lowpriorityscore=0 bulkscore=0 phishscore=0 spamscore=0 priorityscore=1501
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009250151
-X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test runs test_run for raw_tracepoint program. The test covers ctx
-input, retval output, and running on correct cpu.
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../bpf/prog_tests/raw_tp_test_run.c          | 96 +++++++++++++++++++
- .../bpf/progs/test_raw_tp_test_run.c          | 24 +++++
- 2 files changed, 120 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/raw_tp_test_ru=
-n.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_raw_tp_test_ru=
-n.c
+> On Thu, Sep 24, 2020 at 3:00 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>>
+>> >> +    struct mutex tgt_mutex; /* protects tgt_* pointers below, *after=
+* prog becomes visible */
+>> >> +    struct bpf_prog *tgt_prog;
+>> >> +    struct bpf_trampoline *tgt_trampoline;
+>> >>      bool verifier_zext; /* Zero extensions has been inserted by veri=
+fier. */
+>> >>      bool offload_requested;
+>> >>      bool attach_btf_trace; /* true if attaching to BTF-enabled raw t=
+p */
+>> > ...
+>> >>  struct bpf_tracing_link {
+>> >>      struct bpf_link link;
+>> >>      enum bpf_attach_type attach_type;
+>> >> +    struct bpf_trampoline *trampoline;
+>> >> +    struct bpf_prog *tgt_prog;
+>> >
+>> > imo it's confusing to have 'tgt_prog' to mean two different things.
+>> > In prog->aux->tgt_prog it means target prog to attach to in the future.
+>> > Whereas here it means the existing prog that was used to attached to.
+>> > They kinda both 'target progs' but would be good to disambiguate.
+>> > May be keep it as 'tgt_prog' here and
+>> > rename to 'dest_prog' and 'dest_trampoline' in prog->aux ?
+>>
+>> I started changing this as you suggested, but I think it actually makes
+>> the code weirder. We'll end up with a lot of 'tgt_prog =3D
+>> prog->aux->dest_prog' assignments in the verifier, unless we also rename
+>> all of the local variables, which I think is just code churn for very
+>> little gain (the existing 'target' meaning is quite clear, I think).
+>
+> you mean "churn" just for this patch. that's fine.
+> But it will make names more accurate for everyone reading it afterwards.
+> Hence I prefer distinct and specific names where possible.
+>
+>> I also think it's quite natural that the target moves; I mean, it's
+>> literally the same pointer being re-assigned from prog->aux to the link.
+>> We could rename the link member to 'attached_tgt_prog' or something like
+>> that, but I'm not sure it helps (and I don't see much of a problem in
+>> the first place).
+>
+> 'attached_tgt_prog' will not be the correct name.
+> There is 'prog' inside the link already. That's 'attached' prog.
+> Not this one. This one is the 'attached_to' prog.
+> But such name would be too long.
+> imo calling it 'dest_prog' in aux is shorter and more obvious.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c b/t=
-ools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
-new file mode 100644
-index 0000000000000..c5fb191874acf
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/raw_tp_test_run.c
-@@ -0,0 +1,96 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2019 Facebook */
-+#include <test_progs.h>
-+#include <linux/bpf.h>
-+#include "bpf/libbpf_internal.h"
-+#include "test_raw_tp_test_run.skel.h"
-+
-+static int duration;
-+
-+void test_raw_tp_test_run(void)
-+{
-+	struct bpf_prog_test_run_attr test_attr =3D {};
-+	int comm_fd =3D -1, err, nr_online, i, prog_fd;
-+	__u64 args[2] =3D {0x1234ULL, 0x5678ULL};
-+	int expected_retval =3D 0x1234 + 0x5678;
-+	struct test_raw_tp_test_run *skel;
-+	char buf[] =3D "new_name";
-+	bool *online =3D NULL;
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts,
-+			    .ctx_in =3D args,
-+			    .ctx_size_in =3D sizeof(args),
-+			    .flags =3D BPF_F_TEST_RUN_ON_CPU,
-+		);
-+
-+	err =3D parse_cpu_mask_file("/sys/devices/system/cpu/online", &online,
-+				  &nr_online);
-+	if (CHECK(err, "parse_cpu_mask_file", "err %d\n", err))
-+		return;
-+
-+	skel =3D test_raw_tp_test_run__open_and_load();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+		goto cleanup;
-+
-+	err =3D test_raw_tp_test_run__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	comm_fd =3D open("/proc/self/comm", O_WRONLY|O_TRUNC);
-+	if (CHECK(comm_fd < 0, "open /proc/self/comm", "err %d\n", errno))
-+		goto cleanup;
-+
-+	err =3D write(comm_fd, buf, sizeof(buf));
-+	CHECK(err < 0, "task rename", "err %d", errno);
-+
-+	CHECK(skel->bss->count =3D=3D 0, "check_count", "didn't increase\n");
-+	CHECK(skel->data->on_cpu !=3D 0xffffffff, "check_on_cpu", "got wrong va=
-lue\n");
-+
-+	prog_fd =3D bpf_program__fd(skel->progs.rename);
-+	test_attr.prog_fd =3D prog_fd;
-+	test_attr.ctx_in =3D args;
-+	test_attr.ctx_size_in =3D sizeof(__u64);
-+
-+	err =3D bpf_prog_test_run_xattr(&test_attr);
-+	CHECK(err =3D=3D 0, "test_run", "should fail for too small ctx\n");
-+
-+	test_attr.ctx_size_in =3D sizeof(args);
-+	err =3D bpf_prog_test_run_xattr(&test_attr);
-+	CHECK(err < 0, "test_run", "err %d\n", errno);
-+	CHECK(test_attr.retval !=3D expected_retval, "check_retval",
-+	      "expect 0x%x, got 0x%x\n", expected_retval, test_attr.retval);
-+
-+	for (i =3D 0; i < nr_online; i++) {
-+		if (!online[i])
-+			continue;
-+
-+		opts.cpu =3D i;
-+		opts.retval =3D 0;
-+		err =3D bpf_prog_test_run_opts(prog_fd, &opts);
-+		CHECK(err < 0, "test_run_opts", "err %d\n", errno);
-+		CHECK(skel->data->on_cpu !=3D i, "check_on_cpu",
-+		      "expect %d got %d\n", i, skel->data->on_cpu);
-+		CHECK(opts.retval !=3D expected_retval,
-+		      "check_retval", "expect 0x%x, got 0x%x\n",
-+		      expected_retval, opts.retval);
-+	}
-+
-+	/* invalid cpu ID should fail with ENXIO */
-+	opts.cpu =3D 0xffffffff;
-+	err =3D bpf_prog_test_run_opts(prog_fd, &opts);
-+	CHECK(err !=3D -1 || errno !=3D ENXIO,
-+	      "test_run_opts_fail",
-+	      "should failed with ENXIO\n");
-+
-+	/* non-zero cpu w/o BPF_F_TEST_RUN_ON_CPU should fail with EINVAL */
-+	opts.cpu =3D 1;
-+	opts.flags =3D 0;
-+	err =3D bpf_prog_test_run_opts(prog_fd, &opts);
-+	CHECK(err !=3D -1 || errno !=3D EINVAL,
-+	      "test_run_opts_fail",
-+	      "should failed with EINVAL\n");
-+
-+cleanup:
-+	close(comm_fd);
-+	test_raw_tp_test_run__destroy(skel);
-+	free(online);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c b/t=
-ools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
-new file mode 100644
-index 0000000000000..1521853597d70
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_raw_tp_test_run.c
-@@ -0,0 +1,24 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+__u32 count =3D 0;
-+__u32 on_cpu =3D 0xffffffff;
-+
-+SEC("raw_tp/task_rename")
-+int BPF_PROG(rename, struct task_struct *task, char *comm)
-+{
-+
-+	count++;
-+	if ((__u64) task =3D=3D 0x1234ULL && (__u64) comm =3D=3D 0x5678ULL) {
-+		on_cpu =3D bpf_get_smp_processor_id();
-+		return (int)task + (int)comm;
-+	}
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") =3D "GPL";
---=20
-2.24.1
+Meh, don't really see how it helps ('destination' and 'target' are
+literally synonyms). But I don't care enough to bikeshed about it
+either, so I'll just do a search/replace...
+
+-Toke
 
