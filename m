@@ -2,238 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB3BF2789C8
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 15:39:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 962E02789E9
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 15:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728902AbgIYNjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 09:39:53 -0400
-Received: from mail-eopbgr80047.outbound.protection.outlook.com ([40.107.8.47]:43129
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727982AbgIYNjw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 09:39:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rVtBas8mSZe2iCjM1xWYLfJ/tqCFJswkuDof+eB9oiA=;
- b=SqvFi5o+NB235xcjMvCeZPWgWIFjj7x2Vm1Bn+hOEqAOuQkpwi5IHM/zEPbr2+pGhmOou2Jidw7g6BD6EJfOJOYarkxd70FK+2KDJ9z9Qd2Zxus5dAkb7O87c/XOoZJZSp54HyEPYmAxDDQKv577ll1ubMb8EwiMMYkk1w8f75Y=
-Received: from DB6PR0301CA0070.eurprd03.prod.outlook.com (2603:10a6:6:30::17)
- by DB8PR08MB5113.eurprd08.prod.outlook.com (2603:10a6:10:e1::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.23; Fri, 25 Sep
- 2020 13:39:47 +0000
-Received: from DB5EUR03FT050.eop-EUR03.prod.protection.outlook.com
- (2603:10a6:6:30:cafe::44) by DB6PR0301CA0070.outlook.office365.com
- (2603:10a6:6:30::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20 via Frontend
- Transport; Fri, 25 Sep 2020 13:39:47 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
- smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
- header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=bestguesspass
- action=none header.from=arm.com;
-Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
- 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
- client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
-Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
- DB5EUR03FT050.mail.protection.outlook.com (10.152.21.128) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3412.21 via Frontend Transport; Fri, 25 Sep 2020 13:39:47 +0000
-Received: ("Tessian outbound a0bffebca527:v64"); Fri, 25 Sep 2020 13:39:47 +0000
-X-CheckRecipientChecked: true
-X-CR-MTA-CID: d6ae85a50d3a67a9
-X-CR-MTA-TID: 64aa7808
-Received: from adf3257a317e.2
-        by 64aa7808-outbound-1.mta.getcheckrecipient.com id C685E10C-3691-47DE-9B9D-354B26F3CA93.1;
-        Fri, 25 Sep 2020 13:39:27 +0000
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com
-    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id adf3257a317e.2
-    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
-    Fri, 25 Sep 2020 13:39:27 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XNzFXOwpSXwblNVwMrG7VFSoNCXWvW+rn1nW5sEgvOqieB5DyYO3/AXVdUU2FkLb/9NmUjLA/jyyPybvQsi4MkNU1bC3kIHzy3pmwEIM6oHfC1fSoO9FwkQmOx454u7XCeitZC6/bJ/6p/ONG3AuA3vPxzAfYq+l6ofcNS+PyR9KxwOPyd61+BKf+vsIiJZeU4PJXkXXFqBkWERr5b59Y4OoF8MCwQsiwnArLS20HMP9bLJdJvZJWFpFTsWEAhAgVUqFdTx8bK7TYQwcgHnP5pUQU6FxqrC7F5vdVubYqZJ04pWnJSNXBr7CmPQ0Z3og+kiHgISUvBPq0q4FlY5LtA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rVtBas8mSZe2iCjM1xWYLfJ/tqCFJswkuDof+eB9oiA=;
- b=Bd73NOMXOx6Qm41lbvXhLR3XNe4ZlQ53GYBkg4Pcwiax/ltkFUMfs8FNN65yuji1VdTQc6oOGZmxkPBakFpAF/AORdml1+ElEgUb5M8BH+EApBr9FbQDD0o3JEqlcreqD+kbyWEmigmPS6tcErDQWWk0JTPUaUJbt74Bsi70tUdls+bZ0iy3NwnkrrdB3o6nNDYOIDPvQVlrSIPjqPay9WEp9xMWuGuN94DAw7IN7ku8wdmIADzp9fX6S3QvJn4CBFugVXxQApru1UcTCOvR4T5c//8nO1PBjKDxWq47gMvB8l/FnSlRi6rpxe7NYjs7Y3n7AgG//H418umINPQLqg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rVtBas8mSZe2iCjM1xWYLfJ/tqCFJswkuDof+eB9oiA=;
- b=SqvFi5o+NB235xcjMvCeZPWgWIFjj7x2Vm1Bn+hOEqAOuQkpwi5IHM/zEPbr2+pGhmOou2Jidw7g6BD6EJfOJOYarkxd70FK+2KDJ9z9Qd2Zxus5dAkb7O87c/XOoZJZSp54HyEPYmAxDDQKv577ll1ubMb8EwiMMYkk1w8f75Y=
-Authentication-Results-Original: arm.com; dkim=none (message not signed)
- header.d=none;arm.com; dmarc=none action=none header.from=arm.com;
-Received: from AM6PR08MB4007.eurprd08.prod.outlook.com (2603:10a6:20b:a1::29)
- by AM6PR08MB4568.eurprd08.prod.outlook.com (2603:10a6:20b:ac::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.22; Fri, 25 Sep
- 2020 13:39:25 +0000
-Received: from AM6PR08MB4007.eurprd08.prod.outlook.com
- ([fe80::9904:4b6c:dfa2:e49f]) by AM6PR08MB4007.eurprd08.prod.outlook.com
- ([fe80::9904:4b6c:dfa2:e49f%6]) with mapi id 15.20.3412.022; Fri, 25 Sep 2020
- 13:39:25 +0000
-Subject: Re: [net-next PATCH v7 0/6] ACPI support for dpaa2 MAC driver.
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>
-Cc:     netdev@vger.kernel.org, linux.cj@gmail.com,
-        linux-acpi@vger.kernel.org, nd <nd@arm.com>
-References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
-From:   Grant Likely <grant.likely@arm.com>
-Message-ID: <cb465245-8691-c051-3d04-0eaa97532a27@arm.com>
-Date:   Fri, 25 Sep 2020 14:39:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-In-Reply-To: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO2P265CA0205.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:9e::25) To AM6PR08MB4007.eurprd08.prod.outlook.com
- (2603:10a6:20b:a1::29)
+        id S1728635AbgIYNss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 09:48:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728121AbgIYNsr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 09:48:47 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478DEC0613CE
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 06:48:47 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id bw23so1890005pjb.2
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 06:48:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6xi7l2Bwv0IuJbYNmOCbiDWmMdu8+cEQSuu40wuaof0=;
+        b=HlfxXxLnbVyB5DY/teSlwzkTroZy/p8kavMm90cfuo+tT9ImS//J0FNYmo9oUETzZc
+         3Ttqvj9AN9D7+S8NSk8kAe93MrMQNDJhxh6unnlEH7QeiakbEv4wl6QOC5vxTT3j4MAb
+         qxGr0Duw0HGtlrnO9kQR9T9rvBicHhaCjItCdNvWveNdvfSBJXr02TSZWt1+XHx+J0Di
+         a3Zd+77RrcsYirpXEO3xkSs6WrXhTxEs60313PElnm4S8kxwcBiAk8YSqbHaDZgONzks
+         EoKmj69hgwkdYk3gm3MmBUNjYuooDLIvXnhivUx7m2FPKLSX1DgoVDta3jOhAf3BJceZ
+         kGWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6xi7l2Bwv0IuJbYNmOCbiDWmMdu8+cEQSuu40wuaof0=;
+        b=JDn0eNiWUsk28DuvyAA4xciSj8+v/xoUiXwfpSCk+uoFUMJ8Tpo+7QrTIRWLSOrk2J
+         nQe8kMC0h6R0pwQapNRpsrgBNKq9Z4xNR7UYCGKGEuSTfx9sV4hWP6Y54cWZ35JIFwiB
+         49Da2j2y6pOGfV6obHzaGNsnQ7hW8av5MnzMAjmRPuSKvM5Bk65RTY50sj2iNrSOLloR
+         YEJikmvmxvIk+7Glh56nD4R5eFh0QiTQK2O7NcinOxzExl/SCAMGhsYdeTwj1z3FlXRs
+         K9g1h76D00HRtivG7/LeUIRZAd6iHH+YnujbmXB10ktkFY4ZqdeQigDZ/DUy2oBtfxtV
+         HEIA==
+X-Gm-Message-State: AOAM532z8u8d2YHrlEFsYdxlb3vIC2qZ+EGdpVwMK8xUWEUOId1r+4E2
+        dMRqUI0DaHunK/waMsX9+YKcnR4lCv0tfFHg6E0=
+X-Google-Smtp-Source: ABdhPJz2FYVvRaqytr69buFHRIaDcHrfCuaFd6Pn0iKd6SUAo4FZuqfM9F+iuOuHMmXESsEYmzDRHDUS/dWZHzlr6LM=
+X-Received: by 2002:a17:90a:e207:: with SMTP id a7mr412825pjz.117.1601041726668;
+ Fri, 25 Sep 2020 06:48:46 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.16.147] (188.28.154.24) by LO2P265CA0205.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:9e::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20 via Frontend Transport; Fri, 25 Sep 2020 13:39:22 +0000
-X-Originating-IP: [188.28.154.24]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 568099b6-4e8a-48c2-759c-08d861587868
-X-MS-TrafficTypeDiagnostic: AM6PR08MB4568:|DB8PR08MB5113:
-X-LD-Processed: f34e5979-57d9-4aaa-ad4d-b122a662184d,ExtAddr
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB8PR08MB5113A055D8840AC2033BF1EF95360@DB8PR08MB5113.eurprd08.prod.outlook.com>
-x-checkrecipientrouted: true
-NoDisclaimer: true
-X-MS-Oob-TLC-OOBClassifiers: OLM:2201;OLM:2201;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original: Dum2pcCSgnL7ZRmTCfbwSqdlToUXHMgSRjTuSeqey0tcvuLRPe8lnCXHzCZFWtUSEDTXTV/3iHnmx3cLku9fzw/O9Wsm12jnbzX6Mo5YK1XN7q1vsH/H2p7fkEPkUYdHk/aPDnrukZKUZlPc1D/6x+eivXfrigj6Ywuh37WMvJ7Ik/ZF6qOiihRM+ZryJx5mXyqw2nfnGI39MVSHEh8A+1+/o+564NTmkr8P51jjImqZ+HxTknaQ0iO4Rt0U+EjUXE/x5BhaTI8Kzvhrbi7aOrngYdoQSF5te80IDTGLVrOayZIBnsp12tT8yWnSpFG/RJua29GuJvmWpuqiBprUoW3+henGwE7nkJrrI4z9u7b8XmWzKwHwLT30htnZYFoIwPuVkGJ4ouCwa/eXWSqr1SbMGBsRVMlYk+5a5osE9Z95Z/xFUBVgEPEDMZRmjPkBTIrISt04yF+l/BIP5ey6PmRfnFA/kvVOD2aeGM6Kgn0=
-X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR08MB4007.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(346002)(136003)(39860400002)(396003)(16526019)(478600001)(956004)(31696002)(2616005)(7416002)(31686004)(966005)(44832011)(110136005)(4326008)(6486002)(16576012)(53546011)(316002)(86362001)(5660300002)(8936002)(8676002)(186003)(66476007)(36756003)(83380400001)(2906002)(52116002)(55236004)(66556008)(66946007)(26005)(921003)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 8O7EIQGGZoyQFVJopifdUHW6JDETG12T1XadWvJBzwQkDZkaRZJRFUi5fSOdFL7YOtJiINJsc3a8Thuc1dVokuGRnqFyZTrEIfYAKS6hF5CBjGl6EuVlINwb/CO8yhpndY34K9SyJ4P1o/wTffm2q9SdCmZHJZc8QBQXn7HLksUblX6Z7MIaH9vuEuWFT0aDmr4IWtKwyqMGgp3lrgLkE6jaoVQHdrv2iU7KN6g4ptr1FnAMwrl2B0Lsylb0B94tPKgaDpoxDj+I1NKipvSjcywSKu1oazcbz5pMhccIhcX3eJ19Fu0bnO5Fzo4A08t6Lcq5J0XKI45uOYBGfj0zHRdMe298UQc73LvtxOqLaXn20/Miihq0ddNHMA1YZb/Rp7lMRh1smeyGaFW+KHtLaD+9sBbjQCznWli51rl7nc3BgDUXdxXz9wGuy05T/L8MroksXxdIuogQXieQr/HHrlaQ7o3mrtsEcT5zdWFqVaL4B3ALMcDW1FPHLDQxcJplP3c+IyziAbg6R0WKmbZby8BXI6CSa87TPln2MkrCSsPl1TRnJnEUb97B0TFilPtrfTKlXEFD/9Jknrcd4VUGXkRZr1oz8RpB0GMhpPCVg1XkvEvvNsDmL8bfEWoaQW+xcYiwprbZWJCeN8j7G+TOwg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR08MB4568
-Original-Authentication-Results: arm.com; dkim=none (message not signed)
- header.d=none;arm.com; dmarc=none action=none header.from=arm.com;
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: DB5EUR03FT050.eop-EUR03.prod.protection.outlook.com
-X-MS-Office365-Filtering-Correlation-Id-Prvs: 030d89ab-91ee-4f6b-32ef-08d861586b2f
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ehp/O8EKb933UaYfGtP9Srzb9DSmk6A6QymS00XGsd8Dh1dYI/46yzUrzj04mNmhIoeLPs/FmksN0PhHtsIjfbNuwmFQIglHHbKzsxCSFSJPxR06cKVezo4pB1yu5nldUWO5sh3cQYBjKTUE7wAtZoEQSASSlo06RFxcmjSf7gxe5SvPf2nuMwh7EePSIqmTvAjuFz6d/v9Wz0xCb/Uuhffe+Oia9tTtmF3FlEDioR2TjVJgfGmmEbvhmrFY89R+v9qSbA1LC2Rn14DKgVed3PlkGkywwRwIKsAI8Ksb5P0vcfKaZi2/c3E05x7Qm6DgsBNumpygFKTkMBHI68wMuBlgOa1eIJ7aLOfCK1Sr6lZ7wFtyDMBvurqz+8H/AwhCMpVZxsKATk75tafvJXjO7uU1JOT//265s0kxE4I8gl8tn6cA9xrN1L4ns3XfgNnIDvCoQWMx9Q3bdcL8CL/F1pQMLNQoeG51479ygZ3JFXeC59ZDl3DGz6bKGtf1thEn040/eJ540ZyqRevptWtEjmCk77snboz3MGhxFCJuXrlvH7BosXGhgDoyYaaxyS26X/W80f6zqVtpHbJzbZKwoA==
-X-Forefront-Antispam-Report: CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFS:(4636009)(136003)(376002)(346002)(396003)(39860400002)(46966005)(966005)(86362001)(5660300002)(8676002)(36756003)(82740400003)(81166007)(356005)(47076004)(82310400003)(83380400001)(31696002)(2616005)(110136005)(31686004)(316002)(16576012)(956004)(70206006)(336012)(70586007)(6486002)(8936002)(450100002)(478600001)(4326008)(44832011)(186003)(53546011)(16526019)(2906002)(55236004)(26005)(921003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2020 13:39:47.7733
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 568099b6-4e8a-48c2-759c-08d861587868
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
-X-MS-Exchange-CrossTenant-AuthSource: DB5EUR03FT050.eop-EUR03.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR08MB5113
+References: <20200914172453.1833883-1-weiwan@google.com>
+In-Reply-To: <20200914172453.1833883-1-weiwan@google.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Fri, 25 Sep 2020 15:48:35 +0200
+Message-ID: <CAJ8uoz30afXpbn+RXwN5BNMwrLAcW0Cn8tqP502oCLaKH0+kZg@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 0/6] implement kthread based napi poll
+To:     Wei Wang <weiwan@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/07/2020 10:03, Calvin Johnson wrote:
->   This patch series provides ACPI support for dpaa2 MAC driver.
->   This also introduces ACPI mechanism to get PHYs registered on a
->   MDIO bus and provide them to be connected to MAC.
-> 
->   Patch "net: dpaa2-mac: Add ACPI support for DPAA2 MAC driver" depends on
->   https://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git/commit/?h=acpi/for-next&id=c279c4cf5bcd3c55b4fb9709d9036cd1bfe3beb8
->   Remaining patches are independent of the above patch and can be applied without
->   any issues.
-> 
->   Device Tree can be tested on LX2160A-RDB with the below change which is also
-> available in the above referenced patches:
+On Mon, Sep 14, 2020 at 7:26 PM Wei Wang <weiwan@google.com> wrote:
+>
+> The idea of moving the napi poll process out of softirq context to a
+> kernel thread based context is not new.
+> Paolo Abeni and Hannes Frederic Sowa has proposed patches to move napi
+> poll to kthread back in 2016. And Felix Fietkau has also proposed
+> patches of similar ideas to use workqueue to process napi poll just a
+> few weeks ago.
+>
+> The main reason we'd like to push forward with this idea is that the
+> scheduler has poor visibility into cpu cycles spent in softirq context,
+> and is not able to make optimal scheduling decisions of the user threads.
+> For example, we see in one of the application benchmark where network
+> load is high, the CPUs handling network softirqs has ~80% cpu util. And
+> user threads are still scheduled on those CPUs, despite other more idle
+> cpus available in the system. And we see very high tail latencies. In this
+> case, we have to explicitly pin away user threads from the CPUs handling
+> network softirqs to ensure good performance.
+> With napi poll moved to kthread, scheduler is in charge of scheduling both
+> the kthreads handling network load, and the user threads, and is able to
+> make better decisions. In the previous benchmark, if we do this and we
+> pin the kthreads processing napi poll to specific CPUs, scheduler is
+> able to schedule user threads away from these CPUs automatically.
+>
+> And the reason we prefer 1 kthread per napi, instead of 1 workqueue
+> entity per host, is that kthread is more configurable than workqueue,
+> and we could leverage existing tuning tools for threads, like taskset,
+> chrt, etc to tune scheduling class and cpu set, etc. Another reason is
+> if we eventually want to provide busy poll feature using kernel threads
+> for napi poll, kthread seems to be more suitable than workqueue.
+>
+> In this patch series, I revived Paolo and Hannes's patch in 2016 and
+> left them as the first 2 patches. Then there are changes proposed by
+> Felix, Jakub, Paolo and myself on top of those, with suggestions from
+> Eric Dumazet.
+>
+> In terms of performance, I ran tcp_rr tests with 1000 flows with
+> various request/response sizes, with RFS/RPS disabled, and compared
+> performance between softirq vs kthread. Host has 56 hyper threads and
+> 100Gbps nic.
+>
+>         req/resp   QPS   50%tile    90%tile    99%tile    99.9%tile
+> softirq   1B/1B   2.19M   284us       987us      1.1ms      1.56ms
+> kthread   1B/1B   2.14M   295us       987us      1.0ms      1.17ms
+>
+> softirq 5KB/5KB   1.31M   869us      1.06ms     1.28ms      2.38ms
+> kthread 5KB/5KB   1.32M   878us      1.06ms     1.26ms      1.66ms
+>
+> softirq 1MB/1MB  10.78K   84ms       166ms      234ms       294ms
+> kthread 1MB/1MB  10.83K   82ms       173ms      262ms       320ms
+>
+> I also ran one application benchmark where the user threads have more
+> work to do. We do see good amount of tail latency reductions with the
+> kthread model.
 
-Hi Calvin,
+I really like this RFC and would encourage you to submit it as a
+patch. Would love to see it make it into the kernel.
 
-In principle, I agree with adding PHY linkage to ACPI, and I sent a 
-comment about how the PHYs should be referenced. Unfortunately changing 
-that details requires pretty much the entire series to be rewritten 
-(sorry!). I won't do any detailed review on patches 2-6 until I see the 
-next version.
+I see the same positive effects as you when trying it out with AF_XDP
+sockets. Made some simple experiments where I sent 64-byte packets to
+a single AF_XDP socket. Have not managed to figure out how to do
+percentiles on my load generator, so this is going to be min, avg and
+max only. The application using the AF_XDP socket just performs a mac
+swap on the packet and sends it back to the load generator that then
+measures the round trip latency. The kthread is taskset to the same
+core as ksoftirqd would run on. So in each experiment, they always run
+on the same core id (which is not the same as the application).
 
-g.
+Rate 12 Mpps with 0% loss.
+              Latencies (us)         Delay Variation between packets
+          min    avg    max      avg   max
+sofirq  11.0  17.1   78.4      0.116  63.0
+kthread 11.2  17.1   35.0     0.116  20.9
+
+Rate ~58 Mpps (Line rate at 40 Gbit/s) with substantial loss
+              Latencies (us)         Delay Variation between packets
+          min    avg    max      avg   max
+softirq  87.6  194.9  282.6    0.062  25.9
+kthread  86.5  185.2  271.8    0.061  22.5
+
+For the last experiment, I also get 1.5% to 2% higher throughput with
+your kthread approach. Moreover, just from the per-second throughput
+printouts from my application, I can see that the kthread numbers are
+more stable. The softirq numbers can vary quite a lot between each
+second, around +-3%. But for the kthread approach, they are nice and
+stable. Have not examined why.
+
+One thing I noticed though, and I do not know if this is an issue, is
+that the switching between the two modes does not occur at high packet
+rates. I have to lower the packet rate to something that makes the
+core work less than 100% for it to switch between ksoftirqd to kthread
+and vice versa. They just seem too busy to switch at 100% load when
+changing the "threaded" sysfs variable.
+
+Thank you for working on this feature.
 
 
-> 
-> --- a/drivers/bus/fsl-mc/fsl-mc-bus.c
-> +++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
-> @@ -931,6 +931,7 @@ static int fsl_mc_bus_probe(struct platform_device *pdev)
->          if (error < 0)
->                  goto error_cleanup_mc_io;
-> 
-> +       mc_bus_dev->dev.fwnode = pdev->dev.fwnode;
->          mc->root_mc_bus_dev = mc_bus_dev;
->          return 0;
-> 
-> 
-> Changes in v7:
-> - remove unnecessary -ve check for u32 var
-> - assign flags to phy_dev
-> 
-> Changes in v6:
-> - change device_mdiobus_register() parameter position
-> - improve documentation
-> - change device_mdiobus_register() parameter position
-> - clean up phylink_fwnode_phy_connect()
-> 
-> Changes in v5:
-> - add description
-> - clean up if else
-> - rename phy_find_by_fwnode() to phy_find_by_mdio_handle()
-> - add docment for phy_find_by_mdio_handle()
-> - error out DT in phy_find_by_mdio_handle()
-> - clean up err return
-> - return -EINVAL for invalid fwnode
-> 
-> Changes in v4:
-> - release fwnode_mdio after use
-> - return ERR_PTR instead of NULL
-> - introduce device_mdiobus_register()
-> 
-> Changes in v3:
-> - cleanup based on v2 comments
-> - Added description for more properties
-> - Added MDIO node DSDT entry
-> - introduce fwnode_mdio_find_bus()
-> - renamed and improved phy_find_by_fwnode()
-> - cleanup based on v2 comments
-> - move code into phylink_fwnode_phy_connect()
-> 
-> Changes in v2:
-> - clean up dpaa2_mac_get_node()
-> - introduce find_phy_device()
-> - use acpi_find_child_device()
-> 
-> Calvin Johnson (6):
->    Documentation: ACPI: DSD: Document MDIO PHY
->    net: phy: introduce device_mdiobus_register()
->    net/fsl: use device_mdiobus_register()
->    net: phy: introduce phy_find_by_mdio_handle()
->    phylink: introduce phylink_fwnode_phy_connect()
->    net: dpaa2-mac: Add ACPI support for DPAA2 MAC driver
-> 
->   Documentation/firmware-guide/acpi/dsd/phy.rst | 90 +++++++++++++++++++
->   .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 70 ++++++++-------
->   drivers/net/ethernet/freescale/xgmac_mdio.c   |  3 +-
->   drivers/net/phy/mdio_bus.c                    | 51 +++++++++++
->   drivers/net/phy/phy_device.c                  | 40 +++++++++
->   drivers/net/phy/phylink.c                     | 32 +++++++
->   include/linux/mdio.h                          |  1 +
->   include/linux/phy.h                           |  2 +
->   include/linux/phylink.h                       |  3 +
->   9 files changed, 260 insertions(+), 32 deletions(-)
->   create mode 100644 Documentation/firmware-guide/acpi/dsd/phy.rst
-> 
+/Magnus
+
+
+> Paolo Abeni (2):
+>   net: implement threaded-able napi poll loop support
+>   net: add sysfs attribute to control napi threaded mode
+> Felix Fietkau (1):
+>   net: extract napi poll functionality to __napi_poll()
+> Jakub Kicinski (1):
+>   net: modify kthread handler to use __napi_poll()
+> Paolo Abeni (1):
+>   net: process RPS/RFS work in kthread context
+> Wei Wang (1):
+>   net: improve napi threaded config
+>
+>  include/linux/netdevice.h |   6 ++
+>  net/core/dev.c            | 146 +++++++++++++++++++++++++++++++++++---
+>  net/core/net-sysfs.c      |  99 ++++++++++++++++++++++++++
+>  3 files changed, 242 insertions(+), 9 deletions(-)
+>
+> --
+> 2.28.0.618.gf4bc123cb7-goog
+>
