@@ -2,183 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DB91278447
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:44:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 762B4278449
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 11:44:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727932AbgIYJoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 05:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
+        id S1727948AbgIYJoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 05:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727402AbgIYJoQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 05:44:16 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD837C0613CE
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:44:15 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id a9so2564401wmm.2
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:44:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZepJRzFEZ7iYRbekeVSxptlgge8xWwLfBOKpjwT+Ea0=;
-        b=gk3/SuP07nK2Wn+HtIi3BjM0+XQSfnbU8Z5MbTqpgvmOwqqiXmeLg8NcZguQwnqFM6
-         zvFsvZ/Y5Zua+GHJf94UgpeulFzrwBX2qhRd8Sfsm37jrH6+aew5GvCT2HJchwhBwPrD
-         GBNnzx223ZjZ8zfVpM4RPFKiCO36xj0fwyVaAsZ/2jMmEAEAk1Q9y79TY+gbnTgJyRrR
-         NCyRQ/bucjb+AU4aKHLxhfbI+7xChA61MkwgElgSbEVqAKgk7xlMkCIJfFWD28ykWTvG
-         Kmmt8cC1UCeROlJBsjKWzxvTBARHhGpHRSSce1wJ7MVBfrbXWdfOPWyKbJtvSmDumI01
-         Heow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZepJRzFEZ7iYRbekeVSxptlgge8xWwLfBOKpjwT+Ea0=;
-        b=DyOOPw65ILpY3Y8toxtPgMu6k7Ks+qpsBRZExxBwNxbjh7t52cGmO+s4ZAL2RkO9/C
-         +BIJd6zHnugobxtIl/wA9DdXg4++WeYVGTdReGx8aqlgoiSDM8MZ+N+xpOCSx1ctFMHm
-         L1Sczk0gYySNxzP1Y2izF+NMFhtUceVBkVtY9RDP/LyHF0ZMNVKPXdOKAsxGtiee01la
-         R4s3a3l5CDJwDDC9V5VFiyvQzLD704OCyh3x8GlE3vXHZU0dZ3FDveeKgqOuKQ6e3zRc
-         3xLneItpZqvnLrduvbBA1Sp2y0U0kzM7DzO9etVvWcZALyV/BscayBFt5fpOMpTxX0Cr
-         ++hw==
-X-Gm-Message-State: AOAM5302efr175Y1tpTSW9iXnpazp8KTn6QzombD9ejGHDPj+ak8LDmt
-        dOKCL0a3IjJUOMBEeJ9w2Ey5OrulTas=
-X-Google-Smtp-Source: ABdhPJwpjiGdClpVGxL1ZhGb4MX9oALnHb7R/yaaM2M2ifXtjMY72OtIOvJsX3t4lzT9n31yWTc6EA==
-X-Received: by 2002:a1c:2e4b:: with SMTP id u72mr2193447wmu.69.1601027054254;
-        Fri, 25 Sep 2020 02:44:14 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:4d7a:f898:eecc:8621? (p200300ea8f2357004d7af898eecc8621.dip0.t-ipconnect.de. [2003:ea:8f23:5700:4d7a:f898:eecc:8621])
-        by smtp.googlemail.com with ESMTPSA id z13sm2202122wro.97.2020.09.25.02.44.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Sep 2020 02:44:13 -0700 (PDT)
-Subject: Re: RTL8402 stops working after hibernate/resume
-To:     Petr Tesarik <ptesarik@suse.cz>
-Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        netdev@vger.kernel.org
-References: <20200715102820.7207f2f8@ezekiel.suse.cz>
- <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
- <20200716105835.32852035@ezekiel.suse.cz>
- <e1c7a37f-d8d0-a773-925c-987b92f12694@gmail.com>
- <20200903104122.1e90e03c@ezekiel.suse.cz>
- <7e6bbb75-d8db-280d-ac5b-86013af39071@gmail.com>
- <20200924211444.3ba3874b@ezekiel.suse.cz>
- <a10f658b-7fdf-2789-070a-83ad5549191a@gmail.com>
- <20200925093037.0fac65b7@ezekiel.suse.cz>
- <20200925105455.50d4d1cc@ezekiel.suse.cz>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <aa997635-a5b5-75e3-8a30-a77acb2adf35@gmail.com>
-Date:   Fri, 25 Sep 2020 11:44:09 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+        with ESMTP id S1727520AbgIYJoh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 05:44:37 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2447C0613D3
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 02:44:37 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kLkHL-0001zc-C2; Fri, 25 Sep 2020 11:44:35 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953] (unknown [IPv6:2a03:f580:87bc:d400:bb52:8761:ee49:c953])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id F3C9356A39B;
+        Fri, 25 Sep 2020 09:44:33 +0000 (UTC)
+Subject: Re: [PATCH linux-can-next/flexcan 3/4] can: flexcan: add CAN wakeup
+ function for i.MX8
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
+Cc:     linux-imx@nxp.com, netdev@vger.kernel.org
+References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-4-qiangqing.zhang@nxp.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <f26c1dc3-f5f7-9a5a-ae2f-07cc2da6803e@pengutronix.de>
+Date:   Fri, 25 Sep 2020 11:44:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200925105455.50d4d1cc@ezekiel.suse.cz>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200925151028.11004-4-qiangqing.zhang@nxp.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="04TGKo4793Thaii56OP5l4U4ppA4bAY82"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25.09.2020 10:54, Petr Tesarik wrote:
-> On Fri, 25 Sep 2020 09:30:37 +0200
-> Petr Tesarik <ptesarik@suse.cz> wrote:
-> 
->> On Thu, 24 Sep 2020 22:12:24 +0200
->> Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>
->>> On 24.09.2020 21:14, Petr Tesarik wrote:  
->>>> On Wed, 23 Sep 2020 11:57:41 +0200
->>>> Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>>>   
->>>>> On 03.09.2020 10:41, Petr Tesarik wrote:  
->>>>>> Hi Heiner,
->>>>>>
->>>>>> this issue was on the back-burner for some time, but I've got some
->>>>>> interesting news now.
->>>>>>
->>>>>> On Sat, 18 Jul 2020 14:07:50 +0200
->>>>>> Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>>>>>     
->>>>>>> [...]
->>>>>>> Maybe the following gives us an idea:
->>>>>>> Please do "ethtool -d <if>" after boot and after resume from suspend,
->>>>>>> and check for differences.    
->>>>>>
->>>>>> The register dump did not reveal anything of interest - the only
->>>>>> differences were in the physical addresses after a device reopen.
->>>>>>
->>>>>> However, knowing that reloading the driver can fix the issue, I copied
->>>>>> the initialization sequence from init_one() to rtl8169_resume() and
->>>>>> gave it a try. That works!
->>>>>>
->>>>>> Then I started removing the initialization calls one by one. This
->>>>>> exercise left me with a call to rtl_init_rxcfg(), which simply sets the
->>>>>> RxConfig register. In other words, these is the difference between
->>>>>> 5.8.4 and my working version:
->>>>>>
->>>>>> --- linux-orig/drivers/net/ethernet/realtek/r8169_main.c	2020-09-02 22:43:09.361951750 +0200
->>>>>> +++ linux/drivers/net/ethernet/realtek/r8169_main.c	2020-09-03 10:36:23.915803703 +0200
->>>>>> @@ -4925,6 +4925,9 @@
->>>>>>  
->>>>>>  	clk_prepare_enable(tp->clk);
->>>>>>  
->>>>>> +	if (tp->mac_version == RTL_GIGA_MAC_VER_37)
->>>>>> +		RTL_W32(tp, RxConfig, RX128_INT_EN | RX_DMA_BURST);
->>>>>> +
->>>>>>  	if (netif_running(tp->dev))
->>>>>>  		__rtl8169_resume(tp);
->>>>>>  
->>>>>> This is quite surprising, at least when the device is managed by
->>>>>> NetworkManager, because then it is closed on wakeup, and the open
->>>>>> method should call rtl_init_rxcfg() anyway. So, it might be a timing
->>>>>> issue, or incorrect order of register writes.
->>>>>>     
->>>>> Thanks for the analysis. If you manually bring down and up the
->>>>> interface, do you see the same issue?  
->>>>
->>>> I'm not quite sure what you mean, but if the interface is configured
->>>> (and NetworkManager is stopped), I can do 'ip link set eth0 down' and
->>>> then 'ip link set eth0 up', and the interface is fully functional.
->>>>   
->>>>> What is the value of RxConfig when entering the resume function?  
->>>>
->>>> I added a dev_info() to rtl8169_resume(). First with NetworkManager
->>>> active (i.e. interface down on suspend):
->>>>
->>>> [  525.956675] r8169 0000:03:00.2: RxConfig after resume: 0x0002400f
->>>>
->>>> Then I re-tried with NetworkManager stopped (i.e. interface up on
->>>> suspend). Same result:
->>>>
->>>> [  785.413887] r8169 0000:03:00.2: RxConfig after resume: 0x0002400f
->>>>
->>>> I hope that's what you were asking for...
->>>>
->>>> Petr T
->>>>   
->>>
->>> rtl8169_resume() has been changed in 5.9, therefore the patch doesn't
->>> apply cleanly on older kernel versions. Can you test the following
->>> on a 5.9-rc version or linux-next?  
->>
->> I tried installing 5.9-rc6, but it freezes hard at boot, last message is:
->>
->> [   14.916259] libphy: r8169: probed
->>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--04TGKo4793Thaii56OP5l4U4ppA4bAY82
+Content-Type: multipart/mixed; boundary="MVPCVJF8chAfehdbE3ysvabP7XiCiU9fy";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
+Cc: linux-imx@nxp.com, netdev@vger.kernel.org
+Message-ID: <f26c1dc3-f5f7-9a5a-ae2f-07cc2da6803e@pengutronix.de>
+Subject: Re: [PATCH linux-can-next/flexcan 3/4] can: flexcan: add CAN wakeup
+ function for i.MX8
+References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-4-qiangqing.zhang@nxp.com>
+In-Reply-To: <20200925151028.11004-4-qiangqing.zhang@nxp.com>
 
-This doesn't necessarily mean that the r8169 driver crashes the system.
-Other things could run in parallel. It freezes w/o any message?
+--MVPCVJF8chAfehdbE3ysvabP7XiCiU9fy
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
->> At this point, I suspect you're right that the BIOS is seriously buggy.
->> Let me check if ASUSTek has released any update for this model.
-> 
-> Hm, it took me about an hour wondering why I cannot flash the 314 update, but then I finally noticed that this was for X543, while mine is an X453... *sigh*
-> 
-> So, I'm at BIOS version 214, released in 2015, and that's the latest version. There are some older versions available, but the BIOS Flash utility won't let me downgrade.
-> 
-> Does it make sense to bisect the change that broke the driver for me, or should I rather dispose of this waste^Wlaptop in an environmentally friendly manner? I mean, would you eventually accept a workaround for a few machines with a broken BIOS?
-> 
-If the workaround is small and there's little chance to break other stuff: then usually yes.
-If you can spend the effort to bisect the issue, this would be appreciated.
+On 9/25/20 5:10 PM, Joakim Zhang wrote:
+> The System Controller Firmware (SCFW) is a low-level system function
+> which runs on a dedicated Cortex-M core to provide power, clock, and
+> resource management. It exists on some i.MX8 processors. e.g. i.MX8QM
+> (QM, QP), and i.MX8QX (QXP, DX).
+>=20
+> SCU driver manages the IPC interface between host CPU and the
+> SCU firmware running on M4.
+>=20
+> For i.MX8, stop mode request is controlled by System Controller Unit(SC=
+U)
+> firmware.
+>=20
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> ---
+
+Just for reference, this fails to build with:
+
+ERROR: modpost: "imx_scu_get_handle" [drivers/net/can/flexcan.ko] undefin=
+ed!
+ERROR: modpost: "imx_sc_misc_set_control" [drivers/net/can/flexcan.ko] un=
+defined!
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
-> Petr T
-> 
-Heiner
+--MVPCVJF8chAfehdbE3ysvabP7XiCiU9fy--
+
+--04TGKo4793Thaii56OP5l4U4ppA4bAY82
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9tu/0ACgkQqclaivrt
+76kYJgf9GpWmR0w/nSizZHAGKI11AsxaojbHrG9+sZHDokA+TnBOaQUoUKzAPkop
+kSoZxlj6iUDzmze83xj5FofORSmjcHHHj2XVwze8HDi41XsjbVBg6Nzou+Y44j5O
++UnvOEutTS+xItWYWf3oS/02vldTnlO04gAgUxSk7lT5tFPeeL6gVyKnr+d11asL
+iwPgEa2zPznEaaVzCbBXrDtsKHBEhMTmcWhlY/qpV0hnmD69nxZyols34pc9PYbG
+4NVamr+5j+dRBo2rEpJ6+Y3oQnrWgJC0464Db0H8FNAgkG/YRzpFcKGee0KRPXpg
+P2p//9iMjtV1GINp+XoZD8RgSVAYzQ==
+=aMYz
+-----END PGP SIGNATURE-----
+
+--04TGKo4793Thaii56OP5l4U4ppA4bAY82--
