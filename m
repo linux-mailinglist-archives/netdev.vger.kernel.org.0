@@ -2,93 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F9922784A8
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 12:02:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D4CC2784EA
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 12:20:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727723AbgIYKCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 06:02:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42062 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726255AbgIYKCV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 06:02:21 -0400
-Received: from lore-desk.redhat.com (unknown [151.66.98.27])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 30AD720BED;
-        Fri, 25 Sep 2020 10:02:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601028140;
-        bh=e8/Q+UIY7zzX9mq9zwfBe5UpqsZBr0KiAslth0//+4I=;
-        h=From:To:Cc:Subject:Date:From;
-        b=d1yr7AqWQBhv6fj/C3YbS68coziOV5OhOVu7FFyUXI1jj4MMmfAavlcTCZ8OShAbJ
-         ndeonpMrpT3GQV8IkkkO3Q3jgLJ7ppobIv/n7j4DSfH7oUE9BF1Yn5xTbSyUfi/JnP
-         ELLnP47pg8LYiIOComkBbai0RGqPRGelGsNMn0os=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, lorenzo.bianconi@redhat.com,
-        brouer@redhat.com, echaudro@redhat.com,
-        thomas.petazzoni@bootlin.com
-Subject: [PATCH net-next] net: mvneta: try to use in-irq pp cache in mvneta_txq_bufs_free
-Date:   Fri, 25 Sep 2020 12:01:32 +0200
-Message-Id: <4f6602e98fdaef1610e948acec19a5de51fb136e.1601027617.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1728093AbgIYKTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 06:19:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35163 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727290AbgIYKTj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 06:19:39 -0400
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601029178;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=P26OWL3+8b1prUkCt7qDotBrREGjXGjJKCeLvVKhHiw=;
+        b=Zpvffw5eBL12N5/U4yskXrqzyniknqzcQKFBfxD1AVjfDvQl/mcRvw37V6FzkXbr0NF9u9
+        kbZbxkmBdDx0Qo57eYKLm/eDdvLjQ9qWy08MP/J1KBr6x16soBWgSR88DAd4AI9aOsMvAd
+        luigpYUPInLzaNGaihXE+ylhs2N8+f8=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-553-RWhHmXANNOu7Ne3GItNatw-1; Fri, 25 Sep 2020 06:19:36 -0400
+X-MC-Unique: RWhHmXANNOu7Ne3GItNatw-1
+Received: by mail-wr1-f69.google.com with SMTP id y3so880854wrl.21
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 03:19:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=P26OWL3+8b1prUkCt7qDotBrREGjXGjJKCeLvVKhHiw=;
+        b=LHHauwTQD5VuIxskkDyImm4Y+iJM7x9VW3d5V3q98K5sqNbhpKB04GtwpWCHc675y0
+         Gic91zWFf+niOH1Qr0lmYig8MF7nbnc2fBEfbzbi1bFSWBJmR4wTpjunRzdgVzqPQeoe
+         MlUz3zoWM0xXfM0SI6WjHBpzeBKliFemA/ko2RUX/gCiZBjM9wMzSaLtMul4YXQD35Ja
+         azVQVdRrFoUNdpZL2S1446X274Kfq7QDirKNyqrf/PSUhjDd9a9aKQCwvYqh8wD7KTjW
+         fZ+gTIuBXTWjPzIrsDOdvHvTJAF6Z2CNzU3COtKkVWQIyS4j7VxeRsbjUoWT9waiINhr
+         cQzA==
+X-Gm-Message-State: AOAM533Y7Op2ZnhTT7dWwXGrsWTMfK7XJWSKbuTLNGIFEb7vJo3k9fbc
+        pLhxYxdPhZPhyqLRqljFlNn7JmM7DoCKz46G9r4afZWkOGq5y9wR/dDx7OMnKua+uAo0Mrk4Iux
+        bKbGWEyFR9R8MGkKA
+X-Received: by 2002:a5d:470f:: with SMTP id y15mr3625815wrq.420.1601029175427;
+        Fri, 25 Sep 2020 03:19:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwLSbI9jm2XMOk+32xte7rC7OY1SRWmEug56SJmm4FkGi+zaNWLZhe1WA4eNqffhuABgGE01g==
+X-Received: by 2002:a5d:470f:: with SMTP id y15mr3625796wrq.420.1601029175219;
+        Fri, 25 Sep 2020 03:19:35 -0700 (PDT)
+Received: from redhat.com (bzq-79-179-71-128.red.bezeqint.net. [79.179.71.128])
+        by smtp.gmail.com with ESMTPSA id u126sm2972203wmu.9.2020.09.25.03.19.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2020 03:19:34 -0700 (PDT)
+Date:   Fri, 25 Sep 2020 06:19:30 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Leon Romanovsky <leonro@nvidia.com>
+Cc:     Randy Dunlap <rdunlap@infradead.org>, Eli Cohen <elic@nvidia.com>,
+        virtualization@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH v3 -next] vdpa: mlx5: change Kconfig depends to fix build
+ errors
+Message-ID: <20200925061847-mutt-send-email-mst@kernel.org>
+References: <73f7e48b-8d16-6b20-07d3-41dee0e3d3bd@infradead.org>
+ <20200918082245.GP869610@unreal>
+ <20200924052932-mutt-send-email-mst@kernel.org>
+ <20200924102413.GD170403@mtl-vdi-166.wap.labs.mlnx>
+ <079c831e-214d-22c1-028e-05d84e3b7f04@infradead.org>
+ <20200924120217-mutt-send-email-mst@kernel.org>
+ <20200925072005.GB2280698@unreal>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200925072005.GB2280698@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Try to recycle the xdp tx buffer into the in-irq page_pool cache if
-mvneta_txq_bufs_free is executed in the NAPI context.
+On Fri, Sep 25, 2020 at 10:20:05AM +0300, Leon Romanovsky wrote:
+> On Thu, Sep 24, 2020 at 12:02:43PM -0400, Michael S. Tsirkin wrote:
+> > On Thu, Sep 24, 2020 at 08:47:05AM -0700, Randy Dunlap wrote:
+> > > On 9/24/20 3:24 AM, Eli Cohen wrote:
+> > > > On Thu, Sep 24, 2020 at 05:30:55AM -0400, Michael S. Tsirkin wrote:
+> > > >>>> --- linux-next-20200917.orig/drivers/vdpa/Kconfig
+> > > >>>> +++ linux-next-20200917/drivers/vdpa/Kconfig
+> > > >>>> @@ -31,7 +31,7 @@ config IFCVF
+> > > >>>>
+> > > >>>>  config MLX5_VDPA
+> > > >>>>  	bool "MLX5 VDPA support library for ConnectX devices"
+> > > >>>> -	depends on MLX5_CORE
+> > > >>>> +	depends on VHOST_IOTLB && MLX5_CORE
+> > > >>>>  	default n
+> > > >>>
+> > > >>> While we are here, can anyone who apply this patch delete the "default n" line?
+> > > >>> It is by default "n".
+> > > >
+> > > > I can do that
+> > > >
+> > > >>>
+> > > >>> Thanks
+> > > >>
+> > > >> Hmm other drivers select VHOST_IOTLB, why not do the same?
+> > >
+> > > v1 used select, but Saeed requested use of depends instead because
+> > > select can cause problems.
+> > >
+> > > > I can't see another driver doing that. Perhaps I can set dependency on
+> > > > VHOST which by itself depends on VHOST_IOTLB?
+> > > >>
+> > > >>
+> > > >>>>  	help
+> > > >>>>  	  Support library for Mellanox VDPA drivers. Provides code that is
+> > > >>>>
+> > > >>
+> > >
+> >
+> > Saeed what kind of problems? It's used with select in other places,
+> > isn't it?
+> 
+> IMHO, "depends" is much more explicit than "select".
+> 
+> Thanks
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/marvell/mvneta.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+This is now how VHOST_IOTLB has been designed though.
+If you want to change VHOST_IOTLB to depends I think
+we should do it consistently all over.
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 14df3aec285d..646fbf4ed638 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1831,7 +1831,7 @@ static struct mvneta_tx_queue *mvneta_tx_done_policy(struct mvneta_port *pp,
- /* Free tx queue skbuffs */
- static void mvneta_txq_bufs_free(struct mvneta_port *pp,
- 				 struct mvneta_tx_queue *txq, int num,
--				 struct netdev_queue *nq)
-+				 struct netdev_queue *nq, bool napi)
- {
- 	unsigned int bytes_compl = 0, pkts_compl = 0;
- 	int i;
-@@ -1854,7 +1854,10 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
- 			dev_kfree_skb_any(buf->skb);
- 		} else if (buf->type == MVNETA_TYPE_XDP_TX ||
- 			   buf->type == MVNETA_TYPE_XDP_NDO) {
--			xdp_return_frame(buf->xdpf);
-+			if (napi)
-+				xdp_return_frame_rx_napi(buf->xdpf);
-+			else
-+				xdp_return_frame(buf->xdpf);
- 		}
- 	}
- 
-@@ -1872,7 +1875,7 @@ static void mvneta_txq_done(struct mvneta_port *pp,
- 	if (!tx_done)
- 		return;
- 
--	mvneta_txq_bufs_free(pp, txq, tx_done, nq);
-+	mvneta_txq_bufs_free(pp, txq, tx_done, nq, true);
- 
- 	txq->count -= tx_done;
- 
-@@ -2859,7 +2862,7 @@ static void mvneta_txq_done_force(struct mvneta_port *pp,
- 	struct netdev_queue *nq = netdev_get_tx_queue(pp->dev, txq->id);
- 	int tx_done = txq->count;
- 
--	mvneta_txq_bufs_free(pp, txq, tx_done, nq);
-+	mvneta_txq_bufs_free(pp, txq, tx_done, nq, false);
- 
- 	/* reset txq */
- 	txq->count = 0;
--- 
-2.26.2
+
+config VHOST_IOTLB
+        tristate
+        help
+          Generic IOTLB implementation for vhost and vringh.
+          This option is selected by any driver which needs to support
+          an IOMMU in software.
+
+
+> >
+> > > --
+> > > ~Randy
+> >
 
