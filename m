@@ -2,114 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0309D2784F0
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 12:20:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BBEF2784F7
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 12:22:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728126AbgIYKUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 06:20:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53178 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728108AbgIYKUx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 06:20:53 -0400
-Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601029252;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=48xx0Uut3LVoJnoZFThGUUKIIpJdqctVHSD98zIttUE=;
-        b=f9Z6KwH8tLKCPioErGuyPA/oceXVYdvqpKA32NfhlpZMthnTyYf5F6fy8RIBbrbpzCPhms
-        J54tYsGr22pz4oD3d3RHmBUPgDpTVpA59QwBj8iWE7mY4AFtuxneZ8SXx9aPf5vMoFI5hY
-        E9wTUgtfWVaMCLHH3SE5qr2AQAuHGU0=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-391-VuM0sAC6PPyYiije_Bj0kw-1; Fri, 25 Sep 2020 06:20:50 -0400
-X-MC-Unique: VuM0sAC6PPyYiije_Bj0kw-1
-Received: by mail-wr1-f72.google.com with SMTP id s8so885286wrb.15
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 03:20:50 -0700 (PDT)
+        id S1728060AbgIYKWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 06:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727520AbgIYKWL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 06:22:11 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD36C0613CE;
+        Fri, 25 Sep 2020 03:22:11 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id z19so2719765pfn.8;
+        Fri, 25 Sep 2020 03:22:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2lbFg3EfTPubbbEXQCNv75JEtnNzJ5GMo5FQjXXg9gA=;
+        b=LSfij8cmE3SRXNOnYNmnoAglcEmSbiz26Yt8p3PrMrnltuSQMEETYBvnz2dbFpghvt
+         AqCs5GPJklKK/M1+st7P0ufNsiWQA0W1DLTTli3fHd8cF2PxThflC3I5x7fhxs53HZx/
+         zeyiwKAPpDDrCdOshiLl7/CNwimYcxJCi/gf1AMqIQv4RMVsCGXyR1x8f0ko78aYEorx
+         5h+wz6H6JdDA/GL2/A2b9lrMahTR5nD2vice+RxkSR7vyveSymLn3YrkLHGHWaOygIwO
+         6GmXGHCJT7L6+ZLPyhfeOp1zsiogdSDdEvEPWbpRrgYX1BxJEG8RQqLhzl0SBbhWM1Kr
+         P7EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=48xx0Uut3LVoJnoZFThGUUKIIpJdqctVHSD98zIttUE=;
-        b=KuFfjUw3DK65h05+9254/UuaaeeZBexMgFj0r9hK7kXAjSByOy4Q4OjIdkKZaapx6P
-         CP9qj6etkfu5PbTVGF7NrnKXNe9lo80n5/u9VRDoIOO3et1TbsHA0Bs2q7Br9WjhndWj
-         wFPiYKYgAy3IhosI6mOVSYPi+okUfF3SouWgL7ZlYmLyUD3+9BkdMBe0/lL4qAdbpM7b
-         xC5GoyoDRxPGxb++WHjFolm3C0j96uLJXMz6ld+l8DkeYmBpaWJ28jjSbWtcTQbIffyK
-         pZrXI4jJF2ZOjSD6wLynzENDbKflxeD4Gle4THrlMvRzQ0dK5Jbz2CslfWQoy7cl6S/P
-         AvnQ==
-X-Gm-Message-State: AOAM532Q/nvDrl2UvGsSml59+8spnoxqXGuQE8OpEX0n4XKJlUBhBTUj
-        kYn8dkw2SG1Hc55xMzq7WsoH2QYqqG5CXlQKNVy3cKrl4FnsSpHtX4NA4qXv1poTInUlbnBnrDV
-        HcLzTQNuVh2SxYO1N
-X-Received: by 2002:adf:f852:: with SMTP id d18mr3656012wrq.245.1601029249079;
-        Fri, 25 Sep 2020 03:20:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxfMtavSYQxA31Pq1uMCBQpG6U2aRGi/O/F7xWqzFa0O7KFif6IR4vB7jEML7xD/6dY5K4Wow==
-X-Received: by 2002:adf:f852:: with SMTP id d18mr3655999wrq.245.1601029248922;
-        Fri, 25 Sep 2020 03:20:48 -0700 (PDT)
-Received: from redhat.com (bzq-79-179-71-128.red.bezeqint.net. [79.179.71.128])
-        by smtp.gmail.com with ESMTPSA id v4sm2244377wml.46.2020.09.25.03.20.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Sep 2020 03:20:48 -0700 (PDT)
-Date:   Fri, 25 Sep 2020 06:20:45 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        virtualization@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH v3 -next] vdpa: mlx5: change Kconfig depends to fix build
- errors
-Message-ID: <20200925061959-mutt-send-email-mst@kernel.org>
-References: <73f7e48b-8d16-6b20-07d3-41dee0e3d3bd@infradead.org>
- <20200918082245.GP869610@unreal>
- <20200924052932-mutt-send-email-mst@kernel.org>
- <20200924102413.GD170403@mtl-vdi-166.wap.labs.mlnx>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2lbFg3EfTPubbbEXQCNv75JEtnNzJ5GMo5FQjXXg9gA=;
+        b=j3Rv4pOwt2Hdlm7Gf7Mp0fvw4SvectYZ/91nfa5vebfjfjZ9vOr/4Cvl0c8xSh3rOR
+         LsWdOj69gz/XQI/B7EKfr32FIERW7NJPXTYegWBHILMVSNAbb3/9Aewi3obAzHORUvxM
+         E8Xn9RwF3LQx1F0jS1jzE7xe7T1vcoBSpF5TOB4vboarz1/dKRH1+72/Hq7xiGXv0YiP
+         qh5rO4vDCbDuum8JvPBZQVbQqU4LaCNgoXQTXBPNsDemOyz5RjMPD+o72X3UGazJgssH
+         A8YvbljZLam1vDWec0GVcJUwC6o1MRhvKqt0lsa04ytnN03zPkBeVHKmPcvzPX1AtF6L
+         cWLg==
+X-Gm-Message-State: AOAM531vTM3FnwSBwaabSKE6meRednFnnDYZXMvAHkZLhdP5hJjBJpyh
+        EBM+X64woW44nhowMV7wBtGlPzTvji6RS6CdONs=
+X-Google-Smtp-Source: ABdhPJzYlM8hV0nt13kMb7p2rnKTLsPzywseTL+BVDG3rpzy9n7kySSls2sU3iDbAEm+9utxauJoCMzVwRpkG/6HZLg=
+X-Received: by 2002:aa7:9201:0:b029:13e:d13d:a10c with SMTP id
+ 1-20020aa792010000b029013ed13da10cmr3305770pfo.40.1601029330528; Fri, 25 Sep
+ 2020 03:22:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200924102413.GD170403@mtl-vdi-166.wap.labs.mlnx>
+References: <20200925095406.27834-1-vee.khee.wong@intel.com>
+In-Reply-To: <20200925095406.27834-1-vee.khee.wong@intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 25 Sep 2020 13:21:52 +0300
+Message-ID: <CAHp75VeMJXRhx2FrsRur4e9OLXodmXh5Krj_n6PosuJx6MD=Zg@mail.gmail.com>
+Subject: Re: [PATCH net 1/1] net: stmmac: Fix clock handling on remove path
+To:     Wong Vee Khee <vee.khee.wong@intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Wei Feng <weifeng.voon@intel.com>,
+        Vijaya Balan Sadhishkhanna 
+        <sadhishkhanna.vijaya.balan@intel.com>,
+        Seow Chen Yong <chen.yong.seow@intel.com>,
+        Mark Gross <mgross@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 01:24:13PM +0300, Eli Cohen wrote:
-> On Thu, Sep 24, 2020 at 05:30:55AM -0400, Michael S. Tsirkin wrote:
-> > > > --- linux-next-20200917.orig/drivers/vdpa/Kconfig
-> > > > +++ linux-next-20200917/drivers/vdpa/Kconfig
-> > > > @@ -31,7 +31,7 @@ config IFCVF
-> > > >
-> > > >  config MLX5_VDPA
-> > > >  	bool "MLX5 VDPA support library for ConnectX devices"
-> > > > -	depends on MLX5_CORE
-> > > > +	depends on VHOST_IOTLB && MLX5_CORE
-> > > >  	default n
-> > > 
-> > > While we are here, can anyone who apply this patch delete the "default n" line?
-> > > It is by default "n".
-> 
-> I can do that
-> 
-> > > 
-> > > Thanks
-> > 
-> > Hmm other drivers select VHOST_IOTLB, why not do the same?
-> 
-> I can't see another driver doing that.
+On Fri, Sep 25, 2020 at 12:54 PM Wong Vee Khee <vee.khee.wong@intel.com> wrote:
+>
+> While unloading the dwmac-intel driver, clk_disable_unprepare() is
+> being called twice in stmmac_dvr_remove() and
+> intel_eth_pci_remove(). This causes kernel panic on the second call.
+>
+> Removing the second call of clk_disable_unprepare() in
+> intel_eth_pci_remove().
 
-Well grep VHOST_IOTLB and you will see some examples.
+Thanks! I'm not sure how I missed this...
 
-> Perhaps I can set dependency on
-> VHOST which by itself depends on VHOST_IOTLB?
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-VHOST is processing virtio in the kernel. You don't really need that
-for mlx, do you?
+> Fixes: 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove paths")
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
+> Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> index 2ac9dfb3462c..9e6d60e75f85 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> @@ -653,7 +653,6 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
+>
+>         pci_free_irq_vectors(pdev);
+>
+> -       clk_disable_unprepare(priv->plat->stmmac_clk);
+>         clk_unregister_fixed_rate(priv->plat->stmmac_clk);
+>
+>         pcim_iounmap_regions(pdev, BIT(0));
+> --
+> 2.17.0
+>
 
-> > 
-> > 
-> > > >  	help
-> > > >  	  Support library for Mellanox VDPA drivers. Provides code that is
-> > > >
-> > 
 
+-- 
+With Best Regards,
+Andy Shevchenko
