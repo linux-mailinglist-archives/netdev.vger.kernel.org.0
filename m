@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A27B2791DF
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:17:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACA182791E9
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 22:19:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728169AbgIYURf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 16:17:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42746 "EHLO mail.kernel.org"
+        id S1728471AbgIYUTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 16:19:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43068 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727419AbgIYUPb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 16:15:31 -0400
+        id S1726281AbgIYURb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 16:17:31 -0400
 Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DDED7235FA;
-        Fri, 25 Sep 2020 19:38:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7DD12238A0;
+        Fri, 25 Sep 2020 19:38:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1601062700;
-        bh=E6/TQjHLvzV+eX5nZGd4y3WgQeenVPzhKnKOn+PsjRY=;
+        bh=mHYOk50c8aOGswdyk0HcBDNP7edkmNZJz1ITJcM+vtw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W4HmHRnexHgBHwPIK9Wyha/4fcoVhkoJBpJjtaarCbWR9nEAPWjF+LsEHJTsC6Djz
-         cR17385Fnj5bSX+Hvt3Bf131RjZV7QQfYXHDt8kbqZFdE2JycgICEZwmMJnczLn5RO
-         DV85Y7+kz0ti3a+vjDitHTZScij56ZFr87r2v7AQ=
+        b=hbpJuSuX+EPssJsoxEVntqHigOGpd5f35CT38o1uWyPmkyrJsNJqTNGcq21u7u3zK
+         pb7AdcSTNUmCnxsdQy6lt5776Hz7mpFJ8ohkq0zLaW3k53FYT/6lWhqfZ/aXBfD1c6
+         3c0OanN4+XcTz5Bz1M416iJaUjrhUZcEYnbttUlE=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Alex Vesker <valex@nvidia.com>, Mark Bloch <mbloch@nvidia.com>,
+Cc:     netdev@vger.kernel.org, sunils <sunils@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 05/15] net/mlx5: DR, Free buddy ICM memory if it is unused
-Date:   Fri, 25 Sep 2020 12:37:59 -0700
-Message-Id: <20200925193809.463047-6-saeed@kernel.org>
+Subject: [net-next 06/15] net/mlx5: E-switch, Use PF num in metadata reg c0
+Date:   Fri, 25 Sep 2020 12:38:00 -0700
+Message-Id: <20200925193809.463047-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200925193809.463047-1-saeed@kernel.org>
 References: <20200925193809.463047-1-saeed@kernel.org>
@@ -41,90 +41,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+From: sunils <sunils@nvidia.com>
 
-Track buddy's used ICM memory, and free it if all
-of the buddy's memory bacame unused.
-Do this only for STEs.
-MODIFY_ACTION buddies are much smaller, so in case there
-is a large amount of modify_header actions, which result
-in large amount of MODIFY_ACTION buddies, doing this
-cleanup during sync will result in performance hit while
-not freeing significant amount of memory.
+Currently only 256 vports can be supported as only 8 bits are
+reserved for them and 8 bits are reserved for vhca_ids in
+metadata reg c0. To support more than 256 vports, replace
+vhca_id with a unique shorter 4-bit PF number which covers
+upto 16 PF's. Use remaining 12 bits for vports ranging 1-4095.
+This will continue to generate unique metadata even if
+multiple PCI devices have same switch_id.
 
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Reviewed-by: Alex Vesker <valex@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Signed-off-by: sunils <sunils@nvidia.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Vu Pham <vuhuong@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_icm_pool.c      | 14 ++++++++++----
- .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |  1 +
- 2 files changed, 11 insertions(+), 4 deletions(-)
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 36 +++++++++----------
+ include/linux/mlx5/eswitch.h                  | 15 ++++----
+ 2 files changed, 26 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-index c49f8e86f3bc..66c24767e3b0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-@@ -175,10 +175,12 @@ get_chunk_icm_type(struct mlx5dr_icm_chunk *chunk)
- 	return chunk->buddy_mem->pool->icm_type;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index ffd5d540a19e..6b49c0d59099 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -2019,31 +2019,31 @@ esw_check_vport_match_metadata_supported(const struct mlx5_eswitch *esw)
+ 
+ u32 mlx5_esw_match_metadata_alloc(struct mlx5_eswitch *esw)
+ {
+-	u32 num_vports = GENMASK(ESW_VPORT_BITS - 1, 0) - 1;
+-	u32 vhca_id_mask = GENMASK(ESW_VHCA_ID_BITS - 1, 0);
+-	u32 vhca_id = MLX5_CAP_GEN(esw->dev, vhca_id);
+-	u32 start;
+-	u32 end;
++	u32 vport_end_ida = (1 << ESW_VPORT_BITS) - 1;
++	u32 max_pf_num = (1 << ESW_PFNUM_BITS) - 1;
++	u32 pf_num;
+ 	int id;
+ 
+-	/* Make sure the vhca_id fits the ESW_VHCA_ID_BITS */
+-	WARN_ON_ONCE(vhca_id >= BIT(ESW_VHCA_ID_BITS));
+-
+-	/* Trim vhca_id to ESW_VHCA_ID_BITS */
+-	vhca_id &= vhca_id_mask;
+-
+-	start = (vhca_id << ESW_VPORT_BITS);
+-	end = start + num_vports;
+-	if (!vhca_id)
+-		start += 1; /* zero is reserved/invalid metadata */
+-	id = ida_alloc_range(&esw->offloads.vport_metadata_ida, start, end, GFP_KERNEL);
++	/* Only 4 bits of pf_num */
++	pf_num = PCI_FUNC(esw->dev->pdev->devfn);
++	if (pf_num > max_pf_num)
++		return 0;
+ 
+-	return (id < 0) ? 0 : id;
++	/* Metadata is 4 bits of PFNUM and 12 bits of unique id */
++	/* Use only non-zero vport_id (1-4095) for all PF's */
++	id = ida_alloc_range(&esw->offloads.vport_metadata_ida, 1, vport_end_ida, GFP_KERNEL);
++	if (id < 0)
++		return 0;
++	id = (pf_num << ESW_VPORT_BITS) | id;
++	return id;
  }
  
--static void dr_icm_chunk_destroy(struct mlx5dr_icm_chunk *chunk)
-+static void dr_icm_chunk_destroy(struct mlx5dr_icm_chunk *chunk,
-+				 struct mlx5dr_icm_buddy_mem *buddy)
+ void mlx5_esw_match_metadata_free(struct mlx5_eswitch *esw, u32 metadata)
  {
- 	enum mlx5dr_icm_type icm_type = get_chunk_icm_type(chunk);
- 
-+	buddy->used_memory -= chunk->byte_size;
- 	list_del(&chunk->chunk_list);
- 
- 	if (icm_type == DR_ICM_TYPE_STE)
-@@ -223,10 +225,10 @@ static void dr_icm_buddy_destroy(struct mlx5dr_icm_buddy_mem *buddy)
- 	struct mlx5dr_icm_chunk *chunk, *next;
- 
- 	list_for_each_entry_safe(chunk, next, &buddy->hot_list, chunk_list)
--		dr_icm_chunk_destroy(chunk);
-+		dr_icm_chunk_destroy(chunk, buddy);
- 
- 	list_for_each_entry_safe(chunk, next, &buddy->used_list, chunk_list)
--		dr_icm_chunk_destroy(chunk);
-+		dr_icm_chunk_destroy(chunk, buddy);
- 
- 	dr_icm_pool_mr_destroy(buddy->icm_mr);
- 
-@@ -267,6 +269,7 @@ dr_icm_chunk_create(struct mlx5dr_icm_pool *pool,
- 		goto out_free_chunk;
- 	}
- 
-+	buddy_mem_pool->used_memory += chunk->byte_size;
- 	chunk->buddy_mem = buddy_mem_pool;
- 	INIT_LIST_HEAD(&chunk->chunk_list);
- 
-@@ -306,8 +309,11 @@ static int dr_icm_pool_sync_all_buddy_pools(struct mlx5dr_icm_pool *pool)
- 			mlx5dr_buddy_free_mem(buddy, chunk->seg,
- 					      ilog2(chunk->num_of_entries));
- 			pool->hot_memory_size -= chunk->byte_size;
--			dr_icm_chunk_destroy(chunk);
-+			dr_icm_chunk_destroy(chunk, buddy);
- 		}
+-	ida_free(&esw->offloads.vport_metadata_ida, metadata);
++	u32 vport_bit_mask = (1 << ESW_VPORT_BITS) - 1;
 +
-+		if (!buddy->used_memory && pool->icm_type == DR_ICM_TYPE_STE)
-+			dr_icm_buddy_destroy(buddy);
- 	}
++	/* Metadata contains only 12 bits of actual ida id */
++	ida_free(&esw->offloads.vport_metadata_ida, metadata & vport_bit_mask);
+ }
  
- 	return 0;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-index 93ddb9c3e6b6..0aaba0ae9cf7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-@@ -141,6 +141,7 @@ struct mlx5dr_icm_buddy_mem {
+ static int esw_offloads_vport_metadata_setup(struct mlx5_eswitch *esw,
+diff --git a/include/linux/mlx5/eswitch.h b/include/linux/mlx5/eswitch.h
+index c16827eeba9c..b0ae8020f13e 100644
+--- a/include/linux/mlx5/eswitch.h
++++ b/include/linux/mlx5/eswitch.h
+@@ -74,15 +74,16 @@ bool mlx5_eswitch_reg_c1_loopback_enabled(const struct mlx5_eswitch *esw);
+ bool mlx5_eswitch_vport_match_metadata_enabled(const struct mlx5_eswitch *esw);
  
- 	/* This is the list of used chunks. HW may be accessing this memory */
- 	struct list_head	used_list;
-+	u64			used_memory;
- 
- 	/* Hardware may be accessing this memory but at some future,
- 	 * undetermined time, it might cease to do so.
+ /* Reg C0 usage:
+- * Reg C0 = < ESW_VHCA_ID_BITS(8) | ESW_VPORT BITS(8) | ESW_CHAIN_TAG(16) >
++ * Reg C0 = < ESW_PFNUM_BITS(4) | ESW_VPORT BITS(12) | ESW_CHAIN_TAG(16) >
+  *
+- * Highest 8 bits of the reg c0 is the vhca_id, next 8 bits is vport_num,
+- * the rest (lowest 16 bits) is left for tc chain tag restoration.
+- * VHCA_ID + VPORT comprise the SOURCE_PORT matching.
++ * Highest 4 bits of the reg c0 is the PF_NUM (range 0-15), 12 bits of
++ * unique non-zero vport id (range 1-4095). The rest (lowest 16 bits) is left
++ * for tc chain tag restoration.
++ * PFNUM + VPORT comprise the SOURCE_PORT matching.
+  */
+-#define ESW_VHCA_ID_BITS 8
+-#define ESW_VPORT_BITS 8
+-#define ESW_SOURCE_PORT_METADATA_BITS (ESW_VHCA_ID_BITS + ESW_VPORT_BITS)
++#define ESW_VPORT_BITS 12
++#define ESW_PFNUM_BITS 4
++#define ESW_SOURCE_PORT_METADATA_BITS (ESW_PFNUM_BITS + ESW_VPORT_BITS)
+ #define ESW_SOURCE_PORT_METADATA_OFFSET (32 - ESW_SOURCE_PORT_METADATA_BITS)
+ #define ESW_CHAIN_TAG_METADATA_BITS (32 - ESW_SOURCE_PORT_METADATA_BITS)
+ #define ESW_CHAIN_TAG_METADATA_MASK GENMASK(ESW_CHAIN_TAG_METADATA_BITS - 1,\
 -- 
 2.26.2
 
