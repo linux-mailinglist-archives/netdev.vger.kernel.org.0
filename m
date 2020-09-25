@@ -2,66 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBF89278571
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 12:57:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEB0F27859B
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 13:15:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727733AbgIYK5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 06:57:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59458 "EHLO mail.kernel.org"
+        id S1728124AbgIYLPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 07:15:44 -0400
+Received: from foss.arm.com ([217.140.110.172]:42402 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726255AbgIYK5P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 06:57:15 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BD45E21D91;
-        Fri, 25 Sep 2020 10:57:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601031435;
-        bh=7b1lo3BUiiQw0PSLZhJ2CISK6gXAvCQzhFUyeJ0sssQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WD3u8k12q2ovIgPXUruIhJi0xXpoSHh0X4RkXVhFNjmH/h+iVf74uKkJCG3JETCto
-         3rImDm6a3qo8KkZMJSqGVbyqghhrfQman+qJd0541C1brPGzgF2kSi8fDf2vdowoYT
-         Zz0ap5y6vs6XipCacJBtlI2vM6X5/D/CGjrQi0+4=
-Date:   Fri, 25 Sep 2020 12:57:29 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Priyaranjan Jha <priyarjha.kernel@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Priyaranjan Jha <priyarjha@google.com>
-Subject: Re: [PATCH linux-4.19.y 0/2] tcp_bbr: Improving TCP BBR performance
- for WiFi and cellular networks
-Message-ID: <20200925105729.GA2573626@kroah.com>
-References: <20200922192735.3976618-1-priyarjha.kernel@gmail.com>
+        id S1727132AbgIYLPn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 07:15:43 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 34B1D101E;
+        Fri, 25 Sep 2020 04:15:42 -0700 (PDT)
+Received: from [10.57.48.76] (unknown [10.57.48.76])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 986323F70D;
+        Fri, 25 Sep 2020 04:15:38 -0700 (PDT)
+Subject: Re: [PATCH 08/18] dma-mapping: add a new dma_alloc_noncoherent API
+To:     Christoph Hellwig <hch@lst.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        iommu@lists.linux-foundation.org
+Cc:     alsa-devel@alsa-project.org, linux-samsung-soc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mm@kvack.org, Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        netdev@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
+        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+References: <20200915155122.1768241-1-hch@lst.de>
+ <20200915155122.1768241-9-hch@lst.de>
+From:   Robin Murphy <robin.murphy@arm.com>
+Message-ID: <c8ea4023-3e19-d63b-d936-46a04f502a61@arm.com>
+Date:   Fri, 25 Sep 2020 12:15:37 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200922192735.3976618-1-priyarjha.kernel@gmail.com>
+In-Reply-To: <20200915155122.1768241-9-hch@lst.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 22, 2020 at 12:27:33PM -0700, Priyaranjan Jha wrote:
-> From: Priyaranjan Jha <priyarjha@google.com>
-> 
-> Ack aggregation is quite prevalent with wifi, cellular and cable modem
-> link tchnologies, ACK decimation in middleboxes, and common offloading
-> techniques such as TSO and GRO, at end hosts. Previously, BBR was often
-> cwnd-limited in the presence of severe ACK aggregation, which resulted in
-> low throughput due to insufficient data in flight.
-> 
-> To achieve good throughput for wifi and other paths with aggregation, this
-> patch series implements an ACK aggregation estimator for BBR, which
-> estimates the maximum recent degree of ACK aggregation and adapts cwnd
-> based on it. The algorithm is further described by the following
-> presentation:
-> https://datatracker.ietf.org/meeting/101/materials/slides-101-iccrg-an-update-on-bbr-work-at-google-00
-> 
-> (1) A preparatory patch, which refactors bbr_target_cwnd for generic
->     inflight provisioning.
-> 
-> (2) Implements BBR ack aggregation estimator and adapts cwnd based
->     on measured degree of ACK aggregation.
+On 2020-09-15 16:51, Christoph Hellwig wrote:
+[...]
+> +These APIs allow to allocate pages in the kernel direct mapping that are
+> +guaranteed to be DMA addressable.  This means that unlike dma_alloc_coherent,
+> +virt_to_page can be called on the resulting address, and the resulting
 
-Both now queued up, thanks.
+Nit: if we explicitly describe this as if it's a guarantee that can be 
+relied upon...
 
-greg k-h
+> +struct page can be used for everything a struct page is suitable for.
+
+[...]
+> +This routine allocates a region of <size> bytes of consistent memory.  It
+> +returns a pointer to the allocated region (in the processor's virtual address
+> +space) or NULL if the allocation failed.  The returned memory may or may not
+> +be in the kernels direct mapping.  Drivers must not call virt_to_page on
+> +the returned memory region.
+
+...then forbid this document's target audience from relying on it, 
+something seems off. At the very least it's unhelpfully unclear :/
+
+Given patch #17, I suspect that the first paragraph is the one that's no 
+longer true.
+
+Robin.
