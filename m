@@ -2,214 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08BF02781F3
-	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 09:49:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2040F2781F5
+	for <lists+netdev@lfdr.de>; Fri, 25 Sep 2020 09:49:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727403AbgIYHt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 03:49:26 -0400
-Received: from mail-eopbgr130074.outbound.protection.outlook.com ([40.107.13.74]:20321
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727044AbgIYHt0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 03:49:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PDwZa23gVfg66mM9A1gKPpQlQernSgl/7yTJW2yEgGLZpmhpeJOzpPqSF11canxkY+CFXEn7M437dRQ4Kp7jiClkjiapOl2AcHXbHmtlz7zySyLRm1tXz9IxjZboGmmkZCILyesGeZdk8zE6kn4Tn2sFzMZFFTRMJjh1GEnNnx/G6VcnuY7peM+CXJpLZ5idTrSwuYkULHSDAb2Mw6JF9zYZ9PqEjOA1DoxwoMXM87VTchmuDK/Tr4efhUYhOknCDqJIeAGWe4D40clqF5wV68c6od/F5z4G9q6uv4AFZYyCzXAkEq4+rVgB1j0WJR9rxWnjVyDeePICDFpdAE1PvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GIGB+HWRUjqcjhUMSKG2jDPzOCQTZekSo7mVaCxzAtQ=;
- b=Fa86U3lt4ZzzIAr2Kpdqw9VF1hOh3y5LyZkRlgPQQHMwDPcyLQvjW5Kj9IKZedONzQ+GV12DOC+1IJlg5xU75WnoWTcF9p/lklwC5cq59TzsFgPqkpHO6cJbxWSCUFknf8+mnHxQRmwW1w2UqvdfffysRmvTNf1bY1jpCkE0FB0J4Wd+dWI/wNgndVPA6L+0PnsK/2Jg9AhVibngG+TJ/DW+vZ9LgN6eOXJXQd93SKQmT44rWwaTgcNqV/TiO0MMNVRo8e9GIBc0oqOI7ZE4jNDikr0AEghHfgMu1wiMBp1sLoo1yl8SblH7JsbmYVJTiZ0MPQg0cP5JG7crrodf0Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GIGB+HWRUjqcjhUMSKG2jDPzOCQTZekSo7mVaCxzAtQ=;
- b=aIP44ltqId5UBwdfpE6FdIQaz0peEEazeWlA3XY3tzGP8cXeS1lrNxyRavC+s0gHOVHJvcQpeKpk9cq/olzyk45mRO2SNCJhI7VTQX64KCEbxvfbgaIYlSOKr8+CZINaxl3YjwBUsNPZTcy5QvLjZPq9yJCqBzUosJ7rXtr3OMo=
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB7PR04MB3962.eurprd04.prod.outlook.com (2603:10a6:5:1a::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.21; Fri, 25 Sep
- 2020 07:49:21 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::d12e:689a:169:fd68]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::d12e:689a:169:fd68%8]) with mapi id 15.20.3412.022; Fri, 25 Sep 2020
- 07:49:21 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
- flexcan memory for ECC function
-Thread-Topic: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
- flexcan memory for ECC function
-Thread-Index: AQHWkwrxc33Q4pOyMEiSJX13xMzIVal49QgAgAAEZZA=
-Date:   Fri, 25 Sep 2020 07:49:21 +0000
-Message-ID: <DB8PR04MB6795542B72516B7381AAB393E6360@DB8PR04MB6795.eurprd04.prod.outlook.com>
-References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
- <20200925151028.11004-2-qiangqing.zhang@nxp.com>
- <f98dcb18-19f9-9721-a191-481983158daa@pengutronix.de>
-In-Reply-To: <f98dcb18-19f9-9721-a191-481983158daa@pengutronix.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: pengutronix.de; dkim=none (message not signed)
- header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 304ccd47-8760-4d98-1e1a-08d8612783e4
-x-ms-traffictypediagnostic: DB7PR04MB3962:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB3962C8168D3C5326CE4B5E3BE6360@DB7PR04MB3962.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KUye/oTfzzgVGUWw6IYeb1us+qD5RGcRgM0zSpxzeoRDNLr+7HqM3RFhxXs68UI87+wruuf32BEhy8S99o9ZqXCS2XwRsQ9X34sakzwIu4gliFOb1IOn14rPnWKkT3HOQJw+PlEu0+uTN0/pBRkYwOKXE2o8rFwJ00JKr4Xa6uCpyER9fpuD1JHx2yP52fZFstz8Y3yYKCcDvdDnjdQsfwkN8jsh9daRJxrP4TvzDYb+Ab9py2nFZtwbNUWrw4llZLeo+1lUMRcVceSHM9qRFxFcH7wAzskBNA4DKY+JJJTv8rcUUuyHMQu/63B+cYiiTIOp87rzojHtw0ePlFvY7ESLrCSPS4EKoNbcFxef9fHq1UycN6YCIOeUQhj4sUJWlTbEUNCtbCK4qAJyfUE5emS1nWAMine4a+CCwDMKOuqXxiub4KGBn7Ai8j3wOZLsC7iOMmOiKCxo27uIT93YQw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(376002)(346002)(396003)(39860400002)(5660300002)(52536014)(66556008)(66476007)(64756008)(66946007)(66446008)(76116006)(71200400001)(8676002)(8936002)(83380400001)(9686003)(478600001)(86362001)(4326008)(33656002)(53546011)(6506007)(186003)(26005)(7696005)(966005)(110136005)(54906003)(2906002)(55016002)(316002)(83080400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 0PyQMQg6X+RuQbOD4ESGuE5VRvHza8v738LTIBBnCjZpI+M7ulv/uL0kMi2k4bwJyPixo03zPA/sbrQZVcOtgpS3iws4GOilyGjORw3vQSNavJY3VbgJ7oR9CXyRjdqXSKk7/GEK3FU3oSEi399nAOawzIHFs9fSjp00JvsYVKZrUW7S+dTxPOIDVeXAdMp/BFk0OIa1zftw9ilIFzowexz5281M3igzxHf296lktYpHND8WBbGU/Q5ck5rvo2ppMh0/NfEU3sLbfQ2xwVQkpuBUhx+m45R9VuKatL4BaptCxd7y1sWC30ULG11ygGd+gyU8rolwwOK0dhauRvI2RcjwYcVZ2fmLb8XvHZ2y13tYu2naSZ1q/CHiaOlhreS9n3eDeKlwpnYusjmuQ3ivsGzydApHxLxAwc9c9dZaAj7+2CJwK8JoOqVkqDcMtMD9vWq5ATBQmpXZ45m7TVNS8uLEP7vvc3wvogmIp1Wsej+jILUb05wRJIoLSI6Bh+roS8teegfHg7BuVUQVzhJAIHB1mr2z3T3uFCtXFJM4eKylOPN/bc4uq6Xu8EQURGasDQJ/3brOF+r7mD2x/S8l1wW6VtVz2R1BpfYHXi8ela9v8SH1VOk+9/7rMLST+C4fwOz80tDRZFnrzX3Ze1S3yA==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727435AbgIYHti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 03:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727044AbgIYHti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 03:49:38 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09315C0613CE;
+        Fri, 25 Sep 2020 00:49:38 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id z1so2493515wrt.3;
+        Fri, 25 Sep 2020 00:49:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qcup0n0Kbbar3GfFMOaxKCrWneqO730ge7ejBLQFsSw=;
+        b=JynSupAsPIxyM0tHSq+I6BS9ERtnR1QGjR+6bKFi+uZNkl80guzf8BhYZMLEfqo/tE
+         NzU3ngLifZ0aj7Y6je/bqPJWN0vvB/C7MNioXEONFGgpSUCEkZ9iej7QMQwjmTyaJA3H
+         /7FhMcSOPhwbQBvr12PEGjkDLl6wv8K/O0oGKQEIX1GvqZtTd2ETXfQgCssS2RyzyAnM
+         wPWCveLU+0pAp+y5jHCsS4pxH5kgXjse4jkEYHzBfIvFPxB4byE2uGG+iEo8Ytv13MsF
+         JbMqqh26OslGAW1u0YnETFAPCMUQdGcHnJv+xeer/W4jJ+77HQO3Vel38+soXX1hiSAg
+         X3ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qcup0n0Kbbar3GfFMOaxKCrWneqO730ge7ejBLQFsSw=;
+        b=NmKlTryWotGEvc0hhq/Q//EB2+TbOAGqBaqskE+dyRXzYQO9k8wIduuqKJrTqhj8ZS
+         xWQGK+TslO0Las7VPvgldRXVBnnKPI27x2cf6CoeQvFhFN82yJK7KEPh0l5s9xVSgEiQ
+         MOibznS0r7CD6rvVoAyFOXX/hWhW9tA8lQk6Md7pPLCg4AkkfP8n1LI0+JMmMAqlaI7X
+         HveTa2XHubqya9h5KwzmC3scyF0EoQNTY45a/4BG2CPL9gj3JO/Tb1x5m9G4zefudnuc
+         cd1j1Xj1T5fZ8Xkk+00v8qO24jBGSc+sM/L+cJ7Ky7Nw1fpVTRq3yMeswpsxoqHvx6YJ
+         2XKw==
+X-Gm-Message-State: AOAM5308dBdgGWMQbuAs+SRCtN+zm79ae3iZy86Zu1cvcwEKgN95NIfz
+        JnrK5LSb9zVz0Gi+HrJUO7vdkA3ej9A=
+X-Google-Smtp-Source: ABdhPJxwFm66hjCZtWCDMIe431jHpYL45Ee/LOTh9Y1AeX1i7uxIiN3Cedz65FyKh11i0dAGLOyDgw==
+X-Received: by 2002:adf:a418:: with SMTP id d24mr3062067wra.80.1601020176552;
+        Fri, 25 Sep 2020 00:49:36 -0700 (PDT)
+Received: from [192.168.8.147] ([37.173.202.225])
+        by smtp.gmail.com with ESMTPSA id c14sm1858788wrm.64.2020.09.25.00.49.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Sep 2020 00:49:35 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 2/6] bpf, net: rework cookie generator as per-cpu
+ one
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>, ast@kernel.org
+Cc:     john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <cover.1600967205.git.daniel@iogearbox.net>
+ <d4150caecdbef4205178753772e3bc301e908355.1600967205.git.daniel@iogearbox.net>
+ <e854149f-f3a6-a736-9d33-08b2f60eb3a2@gmail.com>
+ <dc5dd027-256d-598a-2f89-a45bb30208f8@iogearbox.net>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <b1d5d93a-3846-ae35-7ea6-4bc31e98ef30@gmail.com>
+Date:   Fri, 25 Sep 2020 09:49:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 304ccd47-8760-4d98-1e1a-08d8612783e4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Sep 2020 07:49:21.6960
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: i6Q5LAQYg0szwDLyT0Wvzt0MtTYD6PFEQsQYmYHCGZPzpEicjO99ggKekbHoltoBNhxecS/3/Vdx37tgpn1Faw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB3962
+In-Reply-To: <dc5dd027-256d-598a-2f89-a45bb30208f8@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1hcmMgS2xlaW5lLUJ1ZGRl
-IDxta2xAcGVuZ3V0cm9uaXguZGU+DQo+IFNlbnQ6IDIwMjDlubQ55pyIMjXml6UgMTU6MjkNCj4g
-VG86IEpvYWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+OyBsaW51eC1jYW5Admdl
-ci5rZXJuZWwub3JnDQo+IENjOiBkbC1saW51eC1pbXggPGxpbnV4LWlteEBueHAuY29tPjsgbmV0
-ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIIGxpbnV4LWNhbi1uZXh0
-L2ZsZXhjYW4gMS80XSBjYW46IGZsZXhjYW46IGluaXRpYWxpemUgYWxsIGZsZXhjYW4NCj4gbWVt
-b3J5IGZvciBFQ0MgZnVuY3Rpb24NCj4gDQo+IE9uIDkvMjUvMjAgNToxMCBQTSwgSm9ha2ltIFpo
-YW5nIHdyb3RlOg0KPiA+IFRoZXJlIGlzIGEgTk9URSBhdCB0aGUgc2VjdGlvbiAiRGV0ZWN0aW9u
-IGFuZCBjb3JyZWN0aW9uIG9mIG1lbW9yeSBlcnJvcnMiOg0KPiANCj4gQ2FuIHlvdSBhZGQgYSBy
-ZWZlcmVuY2UgdG8gb25lIGRhdGFzaGVldCBpbmNsdWRpbmcgbmFtZSwgcmV2aXNpb24gYW5kDQo+
-IHNlY3Rpb24/DQoNCk9rLg0KDQo+ID4gQWxsIEZsZXhDQU4gbWVtb3J5IG11c3QgYmUgaW5pdGlh
-bGl6ZWQgYmVmb3JlIHN0YXJ0aW5nIGl0cyBvcGVyYXRpb24NCj4gPiBpbiBvcmRlciB0byBoYXZl
-IHRoZSBwYXJpdHkgYml0cyBpbiBtZW1vcnkgcHJvcGVybHkgdXBkYXRlZC4NCj4gPiBDVFJMMltX
-Uk1GUlpdIGdyYW50cyB3cml0ZSBhY2Nlc3MgdG8gYWxsIG1lbW9yeSBwb3NpdGlvbnMgdGhhdCBy
-ZXF1aXJlDQo+ID4gaW5pdGlhbGl6YXRpb24sIHJhbmdpbmcgZnJvbSAweDA4MCB0byAweEFERiBh
-bmQgZnJvbSAweEYyOCB0byAweEZGRg0KPiA+IHdoZW4gdGhlIENBTiBGRCBmZWF0dXJlIGlzIGVu
-YWJsZWQuIFRoZSBSWE1HTUFTSywgUlgxNE1BU0ssDQo+IFJYMTVNQVNLLA0KPiA+IGFuZCBSWEZH
-TUFTSyByZWdpc3RlcnMgbmVlZCB0byBiZSBpbml0aWFsaXplZCBhcyB3ZWxsLiBNQ1JbUkZFTl0g
-bXVzdCBub3QNCj4gYmUgc2V0IGR1cmluZyBtZW1vcnkgaW5pdGlhbGl6YXRpb24uDQo+ID4NCj4g
-PiBNZW1vcnkgcmFuZ2UgZnJvbSAweDA4MCB0byAweEFERiwgdGhlcmUgYXJlIHJlc2VydmVkIG1l
-bW9yeQ0KPiA+ICh1bmltcGxlbWVudGVkIGJ5IGhhcmR3YXJlKSwgdGhlc2UgbWVtb3J5IGNhbiBi
-ZSBpbml0aWFsaXplZCBvciBub3QuDQo+ID4NCj4gPiBJbml0aWFsaXplIGFsbCBGbGV4Q0FOIG1l
-bW9yeSBiZWZvcmUgYWNjZXNzaW5nIHRoZW0sIG90aGVyd2lzZSwgbWVtb3J5DQo+ID4gZXJyb3Jz
-IG1heSBiZSBkZXRlY3RlZC4gVGhlIGludGVybmFsIHJlZ2lvbiBjYW5ub3QgYmUgaW5pdGlhbGl6
-ZWQgd2hlbg0KPiA+IHRoZSBoYXJkd2FyZSBkb2VzIG5vdCBzdXBwb3J0IEVDQy4NCj4gPg0KPiA+
-IFNpZ25lZC1vZmYtYnk6IEpvYWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+DQo+
-ID4gLS0tDQo+ID4gIGRyaXZlcnMvbmV0L2Nhbi9mbGV4Y2FuLmMgfCA5Mg0KPiA+ICsrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgOTAg
-aW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2
-ZXJzL25ldC9jYW4vZmxleGNhbi5jIGIvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYw0KPiA+IGlu
-ZGV4IDI4NmM2NzE5NjU5Mi4uZjAyZjFkZTJiYmNhIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMv
-bmV0L2Nhbi9mbGV4Y2FuLmMNCj4gPiArKysgYi9kcml2ZXJzL25ldC9jYW4vZmxleGNhbi5jDQo+
-ID4gQEAgLTI5Miw3ICsyOTIsMTYgQEAgc3RydWN0IGZsZXhjYW5fcmVncyB7DQo+ID4gIAl1MzIg
-cnhpbXJbNjRdOwkJLyogMHg4ODAgLSBOb3QgYWZmZWN0ZWQgYnkgU29mdCBSZXNldCAqLw0KPiA+
-ICAJdTMyIF9yZXNlcnZlZDVbMjRdOwkvKiAweDk4MCAqLw0KPiA+ICAJdTMyIGdmd3JfbXg2OwkJ
-LyogMHg5ZTAgLSBNWDYgKi8NCj4gPiAtCXUzMiBfcmVzZXJ2ZWQ2WzYzXTsJLyogMHg5ZTQgKi8N
-Cj4gPiArCXUzMiBfcmVzZXJ2ZWQ2WzM5XTsJLyogMHg5ZTQgKi8NCj4gPiArCXUzMiBfcnhmaXJb
-Nl07CQkvKiAweGE4MCAqLw0KPiA+ICsJdTMyIF9yZXNlcnZlZDhbMl07CS8qIDB4YTk4ICovDQo+
-ID4gKwl1MzIgX3J4bWdtYXNrOwkJLyogMHhhYTAgKi8NCj4gPiArCXUzMiBfcnhmZ21hc2s7CQkv
-KiAweGFhNCAqLw0KPiA+ICsJdTMyIF9yeDE0bWFzazsJCS8qIDB4YWE4ICovDQo+ID4gKwl1MzIg
-X3J4MTVtYXNrOwkJLyogMHhhYWMgKi8NCj4gPiArCXUzMiB0eF9zbWJbNF07CQkvKiAweGFiMCAq
-Lw0KPiA+ICsJdTMyIHJ4X3NtYjBbNF07CQkvKiAweGFjMCAqLw0KPiA+ICsJdTMyIHJ4X3NtYjFb
-NF07CQkvKiAweGFkMCAqLw0KPiA+ICAJdTMyIG1lY3I7CQkvKiAweGFlMCAqLw0KPiA+ICAJdTMy
-IGVycmlhcjsJCS8qIDB4YWU0ICovDQo+ID4gIAl1MzIgZXJyaWRwcjsJCS8qIDB4YWU4ICovDQo+
-ID4gQEAgLTMwNSw5ICszMTQsMTMgQEAgc3RydWN0IGZsZXhjYW5fcmVncyB7DQo+ID4gIAl1MzIg
-ZmRjdHJsOwkJLyogMHhjMDAgLSBOb3QgYWZmZWN0ZWQgYnkgU29mdCBSZXNldCAqLw0KPiA+ICAJ
-dTMyIGZkY2J0OwkJLyogMHhjMDQgLSBOb3QgYWZmZWN0ZWQgYnkgU29mdCBSZXNldCAqLw0KPiA+
-ICAJdTMyIGZkY3JjOwkJLyogMHhjMDggKi8NCj4gPiArCXUzMiBfcmVzZXJ2ZWQ5WzE5OV07CS8q
-IDB4YzBjICovDQo+ID4gKwl1MzIgdHhfc21iX2ZkWzE4XTsJLyogMHhmMjggKi8NCj4gPiArCXUz
-MiByeF9zbWIwX2ZkWzE4XTsJLyogMHhmNzAgKi8NCj4gPiArCXUzMiByeF9zbWIxX2ZkWzE4XTsJ
-LyogMHhmYjggKi8NCj4gPiAgfTsNCj4gPg0KPiA+IC1zdGF0aWNfYXNzZXJ0KHNpemVvZihzdHJ1
-Y3QgZmxleGNhbl9yZWdzKSA9PSAweDQgKyAweGMwOCk7DQo+ID4gK3N0YXRpY19hc3NlcnQoc2l6
-ZW9mKHN0cnVjdCBmbGV4Y2FuX3JlZ3MpID09IDB4NCAqIDE4ICsgMHhmYjgpOw0KPiA+DQo+ID4g
-IHN0cnVjdCBmbGV4Y2FuX2RldnR5cGVfZGF0YSB7DQo+ID4gIAl1MzIgcXVpcmtzOwkJLyogcXVp
-cmtzIG5lZWRlZCBmb3IgZGlmZmVyZW50IElQIGNvcmVzICovDQo+ID4gQEAgLTEyOTIsNiArMTMw
-NSw3OCBAQCBzdGF0aWMgdm9pZCBmbGV4Y2FuX3NldF9iaXR0aW1pbmcoc3RydWN0DQo+IG5ldF9k
-ZXZpY2UgKmRldikNCj4gPiAgCQlyZXR1cm4gZmxleGNhbl9zZXRfYml0dGltaW5nX2N0cmwoZGV2
-KTsgIH0NCj4gPg0KPiA+ICtzdGF0aWMgdm9pZCBmbGV4Y2FuX2luaXRfcmFtKHN0cnVjdCBuZXRf
-ZGV2aWNlICpkZXYpIHsNCj4gPiArCXN0cnVjdCBmbGV4Y2FuX3ByaXYgKnByaXYgPSBuZXRkZXZf
-cHJpdihkZXYpOw0KPiA+ICsJc3RydWN0IGZsZXhjYW5fcmVncyBfX2lvbWVtICpyZWdzID0gcHJp
-di0+cmVnczsNCj4gPiArCXUzMiByZWdfY3RybDI7DQo+ID4gKwlpbnQgaSwgc2l6ZTsNCj4gPiAr
-DQo+ID4gKwkvKiBDVFJMMltXUk1GUlpdIGdyYW50cyB3cml0ZSBhY2Nlc3MgdG8gYWxsIG1lbW9y
-eSBwb3NpdGlvbnMgdGhhdA0KPiA+ICsJICogcmVxdWlyZSBpbml0aWFsaXphdGlvbi4gTUNSW1JG
-RU5dIG11c3Qgbm90IGJlIHNldCBkdXJpbmcgRmxleENBTg0KPiA+ICsJICogbWVtb3J5IGluaXRp
-YWxpemF0aW9uLg0KPiANCj4gUGxlYXNlIGFkZCBoZXJlIHRoZSByZWZlcmVuY2UgdG8gdGhlIGRh
-dGFzaGVldCBhc3dlbGwuDQoNCk9LLg0KDQo+ID4gKwkgKi8NCj4gPiArCXJlZ19jdHJsMiA9IHBy
-aXYtPnJlYWQoJnJlZ3MtPmN0cmwyKTsNCj4gPiArCXJlZ19jdHJsMiB8PSBGTEVYQ0FOX0NUUkwy
-X1dSTUZSWjsNCj4gPiArCXByaXYtPndyaXRlKHJlZ19jdHJsMiwgJnJlZ3MtPmN0cmwyKTsNCj4g
-PiArDQo+ID4gKwkvKiBpbml0aWFsaXplIE1CcyBSQU0gKi8NCj4gPiArCXNpemUgPSBzaXplb2Yo
-cmVncy0+bWIpIC8gc2l6ZW9mKHUzMik7DQo+ID4gKwlmb3IgKGkgPSAwOyBpIDwgc2l6ZTsgaSsr
-KQ0KPiA+ICsJCXByaXYtPndyaXRlKDAsICZyZWdzLT5tYlswXVswXSArIHNpemVvZih1MzIpICog
-aSk7DQo+IA0KPiBDYW4geW91IGNyZWF0ZSBhICJzdGF0aWMgY29uc3Qgc3RydWN0IiBob2xkaW5n
-IHRoZSByZWcgKG9yIG9mZnNldCkgKyBsZW4gYW5kIGxvb3ANCj4gb3ZlciBpdC4gU29tZXRoaW5n
-IGxpbmtlIHRoaXM/DQo+IA0KPiBjb25zdCBzdHJ1Y3Qgc3RydWN0IGZsZXhjYW5fcmFtX2luaXQg
-cmFtX2luaXRbXSB7DQo+IAl2b2lkIF9faW9tZW0gKnJlZzsNCj4gCXUxNiBsZW47DQo+IH0gPSB7
-DQo+IAl7DQo+IAkJLnJlZyA9IHJlZ3MtPm1iLAkvKiBNQiBSQU0gKi8NCj4gCQkubGVuID0gc2l6
-ZW9mKHJlZ3MtPm1iKSwgLyBzaXplb2YodTMyKSwNCj4gCX0sIHsNCj4gCQkucmVnID0gcmVncy0+
-cnhpbXIsCS8qIFJYSU1SIFJBTSAqLw0KPiAJCS5sZW4gPSBzaXplb2YocmVncy0+cnhpbXIpLA0K
-PiAJfSwgew0KPiAJCS4uLg0KPiAJfSwNCj4gfTsNCg0KQmV0dGVyIHNvbHV0aW9uLCBJIHdpbGwg
-Y2hhbmdlIGludG8gdGhpcyB3YXkuIFRoYW5rcy4NCg0KPiANCj4gPiArDQo+ID4gKwkvKiBpbml0
-aWFsaXplIFJYSU1ScyBSQU0gKi8NCj4gPiArCXNpemUgPSBzaXplb2YocmVncy0+cnhpbXIpIC8g
-c2l6ZW9mKHUzMik7DQo+ID4gKwlmb3IgKGkgPSAwOyBpIDwgc2l6ZTsgaSsrKQ0KPiA+ICsJCXBy
-aXYtPndyaXRlKDAsICZyZWdzLT5yeGltcltpXSk7DQo+ID4gKw0KPiA+ICsJLyogaW5pdGlhbGl6
-ZSBSWEZJUnMgUkFNICovDQo+ID4gKwlzaXplID0gc2l6ZW9mKHJlZ3MtPl9yeGZpcikgLyBzaXpl
-b2YodTMyKTsNCj4gPiArCWZvciAoaSA9IDA7IGkgPCBzaXplOyBpKyspDQo+ID4gKwkJcHJpdi0+
-d3JpdGUoMCwgJnJlZ3MtPl9yeGZpcltpXSk7DQo+ID4gKw0KPiA+ICsJLyogaW5pdGlhbGl6ZSBS
-WE1HTUFTSywgUlhGR01BU0ssIFJYMTRNQVNLLCBSWDE1TUFTSyBSQU0gKi8NCj4gPiArCXByaXYt
-PndyaXRlKDAsICZyZWdzLT5fcnhtZ21hc2spOw0KPiA+ICsJcHJpdi0+d3JpdGUoMCwgJnJlZ3Mt
-Pl9yeGZnbWFzayk7DQo+ID4gKwlwcml2LT53cml0ZSgwLCAmcmVncy0+X3J4MTRtYXNrKTsNCj4g
-PiArCXByaXYtPndyaXRlKDAsICZyZWdzLT5fcngxNW1hc2spOw0KPiA+ICsNCj4gPiArCS8qIGlu
-aXRpYWxpemUgVFhfU01CIFJBTSAqLw0KPiA+ICsJc2l6ZSA9IHNpemVvZihyZWdzLT50eF9zbWIp
-IC8gc2l6ZW9mKHUzMik7DQo+ID4gKwlmb3IgKGkgPSAwOyBpIDwgc2l6ZTsgaSsrKQ0KPiA+ICsJ
-CXByaXYtPndyaXRlKDAsICZyZWdzLT50eF9zbWJbaV0pOw0KPiA+ICsNCj4gPiArCS8qIGluaXRp
-YWxpemUgUlhfU01CMCBSQU0gKi8NCj4gPiArCXNpemUgPSBzaXplb2YocmVncy0+cnhfc21iMCkg
-LyBzaXplb2YodTMyKTsNCj4gPiArCWZvciAoaSA9IDA7IGkgPCBzaXplOyBpKyspDQo+ID4gKwkJ
-cHJpdi0+d3JpdGUoMCwgJnJlZ3MtPnJ4X3NtYjBbaV0pOw0KPiA+ICsNCj4gPiArCS8qIGluaXRp
-YWxpemUgUlhfU01CMSBSQU0gKi8NCj4gPiArCXNpemUgPSBzaXplb2YocmVncy0+cnhfc21iMSkg
-LyBzaXplb2YodTMyKTsNCj4gPiArCWZvciAoaSA9IDA7IGkgPCBzaXplOyBpKyspDQo+ID4gKwkJ
-cHJpdi0+d3JpdGUoMCwgJnJlZ3MtPnJ4X3NtYjFbaV0pOw0KPiA+ICsNCj4gPiArCWlmIChwcml2
-LT5jYW4uY3RybG1vZGUgJiBDQU5fQ1RSTE1PREVfRkQpIHsNCj4gPiArCQkvKiBpbml0aWFsaXpl
-IFRYX1NNQl9GRCBSQU0gKi8NCj4gDQo+IGFuZCB0aGUgc2FtZSBmb3IgdGhlIGZkLW1vZGUNCg0K
-T0suDQoNCkJlc3QgUmVnYXJkcywNCkpvYWtpbSBaaGFuZw0KPiA+ICsJCXNpemUgPSBzaXplb2Yo
-cmVncy0+dHhfc21iX2ZkKSAvIHNpemVvZih1MzIpOw0KPiA+ICsJCWZvciAoaSA9IDA7IGkgPCBz
-aXplOyBpKyspDQo+ID4gKwkJCXByaXYtPndyaXRlKDAsICZyZWdzLT50eF9zbWJfZmRbaV0pOw0K
-PiA+ICsNCj4gPiArCQkvKiBpbml0aWFsaXplIFJYX1NNQjBfRkQgUkFNICovDQo+ID4gKwkJc2l6
-ZSA9IHNpemVvZihyZWdzLT5yeF9zbWIwX2ZkKSAvIHNpemVvZih1MzIpOw0KPiA+ICsJCWZvciAo
-aSA9IDA7IGkgPCBzaXplOyBpKyspDQo+ID4gKwkJCXByaXYtPndyaXRlKDAsICZyZWdzLT5yeF9z
-bWIwX2ZkW2ldKTsNCj4gPiArDQo+ID4gKwkJLyogaW5pdGlhbGl6ZSBSWF9TTUIxX0ZEIFJBTSAq
-Lw0KPiA+ICsJCXNpemUgPSBzaXplb2YocmVncy0+cnhfc21iMV9mZCkgLyBzaXplb2YodTMyKTsN
-Cj4gPiArCQlmb3IgKGkgPSAwOyBpIDwgc2l6ZTsgaSsrKQ0KPiA+ICsJCQlwcml2LT53cml0ZSgw
-LCAmcmVncy0+cnhfc21iMF9mZFtpXSk7DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICsJcmVnX2N0cmwy
-ICY9IH5GTEVYQ0FOX0NUUkwyX1dSTUZSWjsNCj4gPiArCXByaXYtPndyaXRlKHJlZ19jdHJsMiwg
-JnJlZ3MtPmN0cmwyKTsgfQ0KPiA+ICsNCj4gPiAgLyogZmxleGNhbl9jaGlwX3N0YXJ0DQo+ID4g
-ICAqDQo+ID4gICAqIHRoaXMgZnVuY3Rpb25zIGlzIGVudGVyZWQgd2l0aCBjbG9ja3MgZW5hYmxl
-ZCBAQCAtMTMxNiw2ICsxNDAxLDkNCj4gPiBAQCBzdGF0aWMgaW50IGZsZXhjYW5fY2hpcF9zdGFy
-dChzdHJ1Y3QgbmV0X2RldmljZSAqZGV2KQ0KPiA+ICAJaWYgKGVycikNCj4gPiAgCQlnb3RvIG91
-dF9jaGlwX2Rpc2FibGU7DQo+ID4NCj4gPiArCWlmIChwcml2LT5kZXZ0eXBlX2RhdGEtPnF1aXJr
-cyAmIEZMRVhDQU5fUVVJUktfRElTQUJMRV9NRUNSKQ0KPiA+ICsJCWZsZXhjYW5faW5pdF9yYW0o
-ZGV2KTsNCj4gPiArDQo+ID4gIAlmbGV4Y2FuX3NldF9iaXR0aW1pbmcoZGV2KTsNCj4gPg0KPiA+
-ICAJLyogTUNSDQo+ID4NCj4gDQo+IHJlZ2FyZHMsDQo+IE1hcmMNCj4gDQo+IC0tDQo+IFBlbmd1
-dHJvbml4IGUuSy4gICAgICAgICAgICAgICAgIHwgTWFyYyBLbGVpbmUtQnVkZGUgICAgICAgICAg
-IHwNCj4gRW1iZWRkZWQgTGludXggICAgICAgICAgICAgICAgICAgfCBodHRwczovL3d3dy5wZW5n
-dXRyb25peC5kZSAgfA0KPiBWZXJ0cmV0dW5nIFdlc3QvRG9ydG11bmQgICAgICAgICB8IFBob25l
-OiArNDktMjMxLTI4MjYtOTI0ICAgICB8DQo+IEFtdHNnZXJpY2h0IEhpbGRlc2hlaW0sIEhSQSAy
-Njg2IHwgRmF4OiAgICs0OS01MTIxLTIwNjkxNy01NTU1IHwNCg0K
+
+
+On 9/25/20 12:03 AM, Daniel Borkmann wrote:
+> On 9/24/20 8:58 PM, Eric Dumazet wrote:
+>> On 9/24/20 8:21 PM, Daniel Borkmann wrote:
+> [...]
+>>> diff --git a/include/linux/cookie.h b/include/linux/cookie.h
+>>> new file mode 100644
+>>> index 000000000000..2488203dc004
+>>> --- /dev/null
+>>> +++ b/include/linux/cookie.h
+>>> @@ -0,0 +1,41 @@
+>>> +/* SPDX-License-Identifier: GPL-2.0 */
+>>> +#ifndef __LINUX_COOKIE_H
+>>> +#define __LINUX_COOKIE_H
+>>> +
+>>> +#include <linux/atomic.h>
+>>> +#include <linux/percpu.h>
+>>> +
+>>> +struct gen_cookie {
+>>> +    u64 __percpu    *local_last;
+>>> +    atomic64_t     shared_last ____cacheline_aligned_in_smp;
+>>> +};
+>>> +
+>>> +#define COOKIE_LOCAL_BATCH    4096
+>>> +
+>>> +#define DEFINE_COOKIE(name)                    \
+>>> +    static DEFINE_PER_CPU(u64, __##name);            \
+>>> +    static struct gen_cookie name = {            \
+>>> +        .local_last    = &__##name,            \
+>>> +        .shared_last    = ATOMIC64_INIT(0),        \
+>>> +    }
+>>> +
+>>> +static inline u64 gen_cookie_next(struct gen_cookie *gc)
+>>> +{
+>>> +    u64 *local_last = &get_cpu_var(*gc->local_last);
+>>> +    u64 val = *local_last;
+>>> +
+>>> +    if (__is_defined(CONFIG_SMP) &&
+>>> +        unlikely((val & (COOKIE_LOCAL_BATCH - 1)) == 0)) {
+>>> +        s64 next = atomic64_add_return(COOKIE_LOCAL_BATCH,
+>>> +                           &gc->shared_last);
+>>> +        val = next - COOKIE_LOCAL_BATCH;
+>>> +    }
+>>> +    val++;
+>>> +    if (unlikely(!val))
+>>> +        val++;
+>>> +    *local_last = val;
+>>> +    put_cpu_var(local_last);
+>>> +    return val;
+>>
+>> This is not interrupt safe.
+>>
+>> I think sock_gen_cookie() can be called from interrupt context.
+>>
+>> get_next_ino() is only called from process context, that is what I used get_cpu_var()
+>> and put_cpu_var()
+> 
+> Hmm, agree, good point. Need to experiment a bit more .. initial thinking
+> potentially something like the below could do where we fall back to atomic
+> counter iff we encounter nesting (which should be an extremely rare case
+> normally).
+> 
+> BPF progs where this can be called from are non-preemptible, so we could
+> actually move the temp preempt_disable/enable() from get/put_cpu_var() into
+> a wrapper func for slow path non-BPF users as well.
+> 
+> static inline u64 gen_cookie_next(struct gen_cookie *gc)
+> {
+>         u64 val;
+> 
+
+I presume you would use a single structure to hold level_nesting and local_last
+in the same cache line.
+
+struct pcpu_gen_cookie {
+    int level_nesting;
+    u64 local_last;
+} __aligned(16);
+
+    
+
+>         if (likely(this_cpu_inc_return(*gc->level_nesting) == 1)) {
+>                 u64 *local_last = this_cpu_ptr(gc->local_last);
+> 
+>                 val = *local_last;
+>                 if (__is_defined(CONFIG_SMP) &&
+>                     unlikely((val & (COOKIE_LOCAL_BATCH - 1)) == 0)) {
+>                         s64 next = atomic64_add_return(COOKIE_LOCAL_BATCH,
+>                                                        &gc->shared_last);
+>                         val = next - COOKIE_LOCAL_BATCH;
+>                 }
+>                 val++;
+
+
+
+>                 if (unlikely(!val))
+>                         val++;
+
+Note that we really expect this wrapping will never happen, with 64bit value.
+(We had to take care of the wrapping in get_next_ino() as it was dealing with 32bit values)
+
+>                 *local_last = val;
+>         } else {
+>                 val = atomic64_add_return(COOKIE_LOCAL_BATCH,
+>                                           &gc->shared_last);
+
+Or val = atomic64_dec_return(&reverse_counter)
+
+With reverse_counter initial value set to ATOMIC64_INIT(0) ? 
+
+This will start sending 'big cookies like 0xFFFFFFFFxxxxxxxx' to make sure applications
+are not breaking with them, after few months of uptime.
+
+This would also not consume COOKIE_LOCAL_BATCH units per value,
+but this seems minor based on the available space.
+
+
+>         }
+>         this_cpu_dec(*gc->level_nesting);
+>         return val;
+> }
+> 
+> Thanks,
+> Daniel
