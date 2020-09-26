@@ -2,193 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2B7C27979C
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 09:43:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3513C2797A3
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 09:50:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729184AbgIZHnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 03:43:40 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:29738 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729123AbgIZHnk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 03:43:40 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08Q7c1q6025192;
-        Sat, 26 Sep 2020 00:43:39 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=0bUIzYtcSw12b6u56jYJ+C9dPwj7iu0JGooFrQWqNYI=;
- b=AH5N8mFigfhwBqvep1GAJlQUtKeEzvtsri1KBIibNt3q1ardyNOwN0PsKv78XBuVu9eV
- wmPMiGKXB9w22/0LdmkaeUwebk5boi6lQTUjGthXRG96a3Ws8Q5Kd+/bxtPVGScqqK2o
- R4PgL/pzf0M53dYgDV+UwNtWw/CTv+cJsxSIb4LOlm9rX7aSoOtEAfaLrwrgYQxQJe47
- 6Y0YapF21JcUigvRu1/hftEKp3EzBsTYYoJMFf9CAscOOJzfOeC2D3Amk6lG+sZ9l3Yj
- D9VgNxZ0IEEBPN7ozr13U0AkXdyeVNoTBLyADfbYaCwuyUUeYWKkB8FUUVS7yzDrZWgr Cg== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 33nfbqga6d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sat, 26 Sep 2020 00:43:39 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 26 Sep
- 2020 00:43:38 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 26 Sep 2020 00:43:38 -0700
-Received: from cavium.com.marvell.com (unknown [10.29.8.35])
-        by maili.marvell.com (Postfix) with ESMTP id 0CD4D3F703F;
-        Sat, 26 Sep 2020 00:43:35 -0700 (PDT)
-From:   Geetha sowjanya <gakula@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <jerinj@marvell.com>, <davem@davemloft.net>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>
-Subject: [net PATCH] octeontx2-pf: Fix synchnorization issue in mbox
-Date:   Sat, 26 Sep 2020 12:37:54 +0530
-Message-ID: <1601104074-1847-1-git-send-email-gakula@marvell.com>
-X-Mailer: git-send-email 1.7.1
+        id S1729146AbgIZHup (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 03:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726149AbgIZHup (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 03:50:45 -0400
+Received: from mail-oo1-xc42.google.com (mail-oo1-xc42.google.com [IPv6:2607:f8b0:4864:20::c42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F05BC0613CE
+        for <netdev@vger.kernel.org>; Sat, 26 Sep 2020 00:50:45 -0700 (PDT)
+Received: by mail-oo1-xc42.google.com with SMTP id y25so1327455oog.4
+        for <netdev@vger.kernel.org>; Sat, 26 Sep 2020 00:50:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=brBkfPJsDlO8CeO7NdrZLGFHoAC35/ypCCvWn/hrLWA=;
+        b=SuuXSZAxUqkiV8FKoMmV3BTIvCAqL/ZmekRwiImpfsv9bdd3Qno+DqXrj+X8emjr2n
+         qIYggLO9n2rIEgr6RZ1G+QHMI889YYousu6bQ7z5dey84wfI0bXfnLeW8xlViSWXXjEO
+         eNVGiqLcmEQEqT86QC5z+IRV/EJqyCYNlwUl8IRmAO9jN5lMdY/P6rWulMBn7b2DD/c2
+         9nn0xh6Z7/HfodRIZ3v8X11k/crRraWnpi4asZSHfxsJLlgqkq2tcHtyLzpIqIB6QbqC
+         +KKqN1hhUS/I4Gtw1R+iLjvoq4HPJPtQEPxubpE6rCsx7o0jP1or3SpKz6Z6aSE/nuvG
+         qb+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=brBkfPJsDlO8CeO7NdrZLGFHoAC35/ypCCvWn/hrLWA=;
+        b=W1nPCnNMfm/tJNwKJpp3kqRWLa9/lTA3y479oRaMEgSVY9d1HaY8r0o22QK6nA/gAS
+         j5jdr8wTkd2hqqqhCr51WLl1C3a9i/a2doS22GeHvyYrJCQRpRAtJ9SRxc85/MxqAfre
+         EitCtLTJmO9sKLMS8sTgzaSfjxr3igYi3vKRRjiP0huF+si9Jr2UasN92eVCnSHBkiaS
+         yBZlbqlJqpqRARn3TZqpLNydBePZNQLzS6asuRzhkiNqrByGar3WrBnl/EF2trx2YVhL
+         I4BTvdYwQpm5V9TrJB03PHzhxEwgUhMuZqwjvJcgrANtY40lqe+MuOhHF6HuUF4DX5xO
+         MHnQ==
+X-Gm-Message-State: AOAM531xh93erSIDcrdCc8H5wbvFu8I3jkRIZdVL763MFkrXzVyndRRD
+        fVmtkDyifpDoIWkAQCBzlLGEgxHtARABh9MbNt0=
+X-Google-Smtp-Source: ABdhPJzPl3Z142z4hUagN11fDtUOGdZEviNWqtcLV6R03Pqi0oOF6ACp6Gofg2hkGGufNEur+Hjm9V5cYZEjdznDPXE=
+X-Received: by 2002:a4a:2c02:: with SMTP id o2mr3339656ooo.24.1601106644675;
+ Sat, 26 Sep 2020 00:50:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-26_06:2020-09-24,2020-09-26 signatures=0
+Received: by 2002:a05:6838:b97c:0:0:0:0 with HTTP; Sat, 26 Sep 2020 00:50:43
+ -0700 (PDT)
+Reply-To: afringawa6@gmail.com
+From:   Afrin Gawa <mlouisabesson@gmail.com>
+Date:   Sat, 26 Sep 2020 07:50:43 +0000
+Message-ID: <CADkod8UFjCJi7byPrJ-mu=jXhJnAjXR5D7ukrQ3FMXCqoUWYMQ@mail.gmail.com>
+Subject: Please respond urgently
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hariprasad Kelam <hkelam@marvell.com>
+Greetings,
 
-Mbox implementation in octeontx2 driver has three states
-alloc, send and reset in mbox response. VF allocate and
-sends message to PF for processing, PF ACKs them back and
-reset the mbox memory. In some case we see synchronization
-issue where after msgs_acked is incremented and before
-mbox_reset API is called, if current execution is scheduled
-out and a different thread is scheduled in which checks for
-msgs_acked. Since the new thread sees msgs_acked == msgs_sent
-it will try to allocate a new message and to send a new mbox
-message to PF.Now if mbox_reset is scheduled in, PF will see
-'0' in msgs_send.
-This patch fixes the issue by calling mbox_reset before
-incrementing msgs_acked flag for last processing message and
-checks for valid message size.
+I know that this mail will come to you as a surprise as we have never
+met before, but need not to worry as I am contacting you independently
+of my investigation and no one is informed of this communication. I
+need your urgent assistance in transferring the sum of $11,300,000.00
+USD immediately to your private account.The money has been here in our
+Bank lying dormant for years now without anybody coming for the claim
+of it.
 
-Fixes: d424b6c02
-("octeontx2-pf: Enable SRIOV and added VF mbox handling")
+I want to release the money to you as the relative to our deceased
+customer (the account owner) who died along with his supposed NEXT OF
+KIN since 16th October 2005. The Banking laws here does not allow such
+money to stay more than 15 years, because the money will be recalled
+to the Bank treasury account as an unclaimed fund.
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/mbox.c     | 12 ++++++++++--
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h     |  1 +
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 11 ++++++-----
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c |  4 ++--
- 4 files changed, 19 insertions(+), 9 deletions(-)
+By indicating your interest I will send you the full details on how
+the business will be executed.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.c b/drivers/net/ethernet/marvell/octeontx2/af/mbox.c
-index 387e33f..2718fe2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.c
-@@ -17,7 +17,7 @@
- 
- static const u16 msgs_offset = ALIGN(sizeof(struct mbox_hdr), MBOX_MSG_ALIGN);
- 
--void otx2_mbox_reset(struct otx2_mbox *mbox, int devid)
-+void __otx2_mbox_reset(struct otx2_mbox *mbox, int devid)
- {
- 	void *hw_mbase = mbox->hwbase + (devid * MBOX_SIZE);
- 	struct otx2_mbox_dev *mdev = &mbox->dev[devid];
-@@ -26,13 +26,21 @@ void otx2_mbox_reset(struct otx2_mbox *mbox, int devid)
- 	tx_hdr = hw_mbase + mbox->tx_start;
- 	rx_hdr = hw_mbase + mbox->rx_start;
- 
--	spin_lock(&mdev->mbox_lock);
- 	mdev->msg_size = 0;
- 	mdev->rsp_size = 0;
- 	tx_hdr->num_msgs = 0;
- 	tx_hdr->msg_size = 0;
- 	rx_hdr->num_msgs = 0;
- 	rx_hdr->msg_size = 0;
-+}
-+EXPORT_SYMBOL(__otx2_mbox_reset);
-+
-+void otx2_mbox_reset(struct otx2_mbox *mbox, int devid)
-+{
-+	struct otx2_mbox_dev *mdev = &mbox->dev[devid];
-+
-+	spin_lock(&mdev->mbox_lock);
-+	__otx2_mbox_reset(mbox, devid);
- 	spin_unlock(&mdev->mbox_lock);
- }
- EXPORT_SYMBOL(otx2_mbox_reset);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 6dfd0f9..ab43378 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -93,6 +93,7 @@ struct mbox_msghdr {
- };
- 
- void otx2_mbox_reset(struct otx2_mbox *mbox, int devid);
-+void __otx2_mbox_reset(struct otx2_mbox *mbox, int devid);
- void otx2_mbox_destroy(struct otx2_mbox *mbox);
- int otx2_mbox_init(struct otx2_mbox *mbox, void __force *hwbase,
- 		   struct pci_dev *pdev, void __force *reg_base,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 5d620a3..2fb4567 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -370,8 +370,8 @@ static int otx2_forward_vf_mbox_msgs(struct otx2_nic *pf,
- 		dst_mbox = &pf->mbox;
- 		dst_size = dst_mbox->mbox.tx_size -
- 				ALIGN(sizeof(*mbox_hdr), MBOX_MSG_ALIGN);
--		/* Check if msgs fit into destination area */
--		if (mbox_hdr->msg_size > dst_size)
-+		/* Check if msgs fit into destination area and has valid size */
-+		if (mbox_hdr->msg_size > dst_size || !mbox_hdr->msg_size)
- 			return -EINVAL;
- 
- 		dst_mdev = &dst_mbox->mbox.dev[0];
-@@ -526,10 +526,10 @@ static void otx2_pfvf_mbox_up_handler(struct work_struct *work)
- 
- end:
- 		offset = mbox->rx_start + msg->next_msgoff;
-+		if (mdev->msgs_acked == (vf_mbox->up_num_msgs - 1))
-+			__otx2_mbox_reset(mbox, 0);
- 		mdev->msgs_acked++;
- 	}
--
--	otx2_mbox_reset(mbox, vf_idx);
- }
- 
- static irqreturn_t otx2_pfvf_mbox_intr_handler(int irq, void *pf_irq)
-@@ -803,10 +803,11 @@ static void otx2_pfaf_mbox_handler(struct work_struct *work)
- 		msg = (struct mbox_msghdr *)(mdev->mbase + offset);
- 		otx2_process_pfaf_mbox_msg(pf, msg);
- 		offset = mbox->rx_start + msg->next_msgoff;
-+		if (mdev->msgs_acked == (af_mbox->num_msgs - 1))
-+			__otx2_mbox_reset(mbox, 0);
- 		mdev->msgs_acked++;
- 	}
- 
--	otx2_mbox_reset(mbox, 0);
- }
- 
- static void otx2_handle_link_event(struct otx2_nic *pf)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-index 92a3db6..2f90f17 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-@@ -99,10 +99,10 @@ static void otx2vf_vfaf_mbox_handler(struct work_struct *work)
- 		msg = (struct mbox_msghdr *)(mdev->mbase + offset);
- 		otx2vf_process_vfaf_mbox_msg(af_mbox->pfvf, msg);
- 		offset = mbox->rx_start + msg->next_msgoff;
-+		if (mdev->msgs_acked == (af_mbox->num_msgs - 1))
-+			__otx2_mbox_reset(mbox, 0);
- 		mdev->msgs_acked++;
- 	}
--
--	otx2_mbox_reset(mbox, 0);
- }
- 
- static int otx2vf_process_mbox_msg_up(struct otx2_nic *vf,
--- 
-2.7.4
+Please respond urgently and delete if you are not interested.
 
+Best Regards,
+Mr. Afrin Gawa
