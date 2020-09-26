@@ -2,112 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC94A279C6E
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 22:49:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BFAF279C7E
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 22:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726900AbgIZUty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 16:49:54 -0400
-Received: from mail-eopbgr80041.outbound.protection.outlook.com ([40.107.8.41]:47008
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726311AbgIZUtx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Sep 2020 16:49:53 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SdlDaNgCqCbMVAR45rxsgWJQfdHuBHPLhKjg/LM/3tvR+ztYXMdEz4/Ik5mmeA3oqMrXj1V1TG/BH1HCJQLyr8Ia9zLiEqS/LnC7YdyafxBDfoiH4LP2c1dtzDdzDjecj7av4jm7NYjt8+kWr14Tek8DI97FnYZH0miQHG9m2sEk3r8XGjvOXHUHy5H4r3jpq+nSgOmEsjoWuY2Yd/xAM5tP4PjJ/HearC3eBU77Of9B19NCOZz53039Iayv3uwVa2Jug9iJwweJVqUiEJOsOi3zoX1OtSsgpVJTLYClcIP1lV1Pn/imRBpJbNXGurEQ3utb55xSao47i5xyjMd9NA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5JRT8Qxb84sfGD7chQzTGP8PrQOc1ke271zV9ul7UDc=;
- b=hqJlG9MFe0+5d+BLI6kMlt+J3QMDjMS4rLwn1fPIsMcstO6cLwbF7TxtoMyu9E7V7RDm5+cpDTDLT+fykbaLkiAf5aGAFaotRhIl4MCgWIg2LIhnY+n0P1zfSlaSLAFglveNj1RqPERaLQOB0F3nxLNzrNEyIF6d5jEhLH75WWYgPc/46g5WExco+PVmhmPxHnD9ou9r7b2xbaGOSu5PiAgO1e0wNF9tUO32fOfxI7bXoeggNTq+LtFjTKrkTkzjwITrVLLwHSjJ8rn9n9CE6OUtyKL23EZWuPhHdfbEdicu1NcoE06YYjwPxIHMyziE3fDu8gQ3mztdllzqaBhRmA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5JRT8Qxb84sfGD7chQzTGP8PrQOc1ke271zV9ul7UDc=;
- b=bJKAGIAJNtudwLuzfCCzJSLqIj4hKcOSOHVFAXT6/oeaUlALMRMk+CeNEp0cRHq1ufa1xjxaNcUpKj1+smyOoIv2RszShbhH06hS3aPPL4aMAOWpw0Hbs3RrrkQ40S/bRoehBN7G3kR+lD4HU6m6EkFt7QL2zMR3mUQhQPEHcIs=
-Received: from AM6PR04MB5685.eurprd04.prod.outlook.com (2603:10a6:20b:a4::30)
- by AM7PR04MB6887.eurprd04.prod.outlook.com (2603:10a6:20b:10a::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.21; Sat, 26 Sep
- 2020 20:49:49 +0000
-Received: from AM6PR04MB5685.eurprd04.prod.outlook.com
- ([fe80::c62:742e:bcca:e226]) by AM6PR04MB5685.eurprd04.prod.outlook.com
- ([fe80::c62:742e:bcca:e226%4]) with mapi id 15.20.3412.028; Sat, 26 Sep 2020
- 20:49:49 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: Re: [PATCH v3 net-next 06/15] net: dsa: add a generic procedure for
- the flow dissector
-Thread-Topic: [PATCH v3 net-next 06/15] net: dsa: add a generic procedure for
- the flow dissector
-Thread-Index: AQHWlDvaJb5CrrbqDUi8J9FFhi8if6l7X/sAgAAEsgA=
-Date:   Sat, 26 Sep 2020 20:49:49 +0000
-Message-ID: <20200926204948.zu6zvj2yqrv4733t@skbuf>
-References: <20200926193215.1405730-1-vladimir.oltean@nxp.com>
- <20200926193215.1405730-7-vladimir.oltean@nxp.com>
- <20200926203300.GE3887691@lunn.ch>
-In-Reply-To: <20200926203300.GE3887691@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.217.212]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 210c15db-4e46-4e0e-4111-08d8625db5e0
-x-ms-traffictypediagnostic: AM7PR04MB6887:
-x-microsoft-antispam-prvs: <AM7PR04MB68870A83F5F1A056788CB62FE0370@AM7PR04MB6887.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1332;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zn3/SLgkvOrCFNbOJYgj4G3j56z2lRHRR3pNCd7nQFcKOFXD1m3+tKSoqzIIIWIqnWm/T/PSU4sXFUWQTTxniVKXGXjz9JgF44urkhZF5IZdhmhXKfrx2ZDcnbtPYbikRwfV2Vb2a/bxnNJgBPrKZmVE1neXn3fwkLQweqxSdL8ApZCW+Tws2y7Jr55IIOfiqCptDALRNytQjVz6STHj+jHFCPW3xa+wknagdy0G+KGykam4qSldqVmVK/8PWUrkSaVte2gjYyGks3xnBRwZRAUmx6rkSMDmdVTIiGus9DuVK9X2qaqN0dexqJ0t/ZQ9OTooASLJpIzhwvKh9+oXljv5a0w/RUqpjndgbXNPJQoLnqBgo07ZEqvuM8Oi/d1KBQABQL2zghS30GKelNE1KhZsHZYNyxEIA4uPIDxRGwM=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB5685.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(39860400002)(396003)(366004)(346002)(136003)(376002)(6506007)(86362001)(478600001)(54906003)(186003)(4326008)(26005)(8676002)(6512007)(9686003)(44832011)(2906002)(8936002)(66946007)(76116006)(91956017)(66446008)(64756008)(66556008)(66476007)(71200400001)(6916009)(316002)(6486002)(4744005)(5660300002)(33716001)(1076003)(41533002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: qey//xuh5sEdM95ywZ0V3Qk0/8xBjJv0QnTSnMwyApZTw59f5qJ31aMYIxNai+hyTLwMp2E52w1Jg3HoPFAaMfQYqo0FJzrSZvtSNlPeOWk2hUbaj2QX7+7JX1vKxWcYekR5MkugKAfAkWNuNiVR3YjU9oUFF9Vk4ztfkxFOwzLTs8p22Ro9BOZ0c185zLhuua/InfLx1ZTzx/Tacoksdb8AwLFRVyPtzasvOrs19ZHRtOHR3xVYq+px+Q9WCOcxUBjWgkIaHg76AonUb3/SvBrXUBZgOmo5qWbGKZQIzqCOIoeWMLp0m0N4iExDwSnKcAGq6Y8YusUlpirTXabKYQIfzdylO0WHK6bF/NjwwLgzlDlaGEBLN21pEWNCjtT9JdqVIuSyZfXs1O3H0MNy9mGKEa95V0bbCFVo61Hr7CnzTbvbZ2EyDrn6erIXyJeqB7nvmC/Cb5DTS34JWRBluCJ8krES7RA+CxTxOoxapE7Ij4wHjGomT5YOIzogTkk5GWIBetDN2VUiGwvtOIaDnBOknglA8T0UfcqVnGKrUZy7ZVvCOMmHKseooSW4E5vDqef0Hm7fCvm+jzXUtqTYY72tr/+PfaNVSzY/kkvcaBNHt7HAkZimMXRCBvz69l/v0pA9jCq6aCrid1+oKVPTgw==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6D331010A839204AB3694D7FF4BA19B4@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726900AbgIZU4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 16:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726311AbgIZU4O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 16:56:14 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7434BC0613CE;
+        Sat, 26 Sep 2020 13:56:14 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id m15so1224797pls.8;
+        Sat, 26 Sep 2020 13:56:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J/6oAVp4TO+xMGiQqzzGIk3iSntp+7SFWtJVxbuliV8=;
+        b=cE8UmjwGB7w9uS6HqnZDzVS2yzA3ib2Zx7vPmS/JELxQ80sPeUdmLaUlW19814fsiA
+         jDi+avjDsOWcYLfm5Pr6fMRgFYmmwIXL9G0uahOx3RFwccUfsIthANW0L57ZGgMdiXo4
+         P9yH6/jm5cB7jvrpeMaiqymueA7AaJe8/G3NhMVIhTHo9txGajSZaFX0DkmGjH6Z2YNA
+         geAtxJwGUbS5C42rWwg95axt7itGqMmoBkdHBmZewD24KLuhkTV+IhUwr9jqId01wpPc
+         0zk8hYCscTEsw/Rubge68BvXV6xcv81unuvhxudFYk6qaZBimK2I6IWMzIMZNUoyanFv
+         k+nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J/6oAVp4TO+xMGiQqzzGIk3iSntp+7SFWtJVxbuliV8=;
+        b=T7jaym+sW8EnKpLdjvPJCB+kZMb6UXSbC4l3lwkuoFiViou1L5DylwwpfHIAwqELsi
+         kzL139KPEAzHylQnHpxBtY2upKTWJyJx9/QJFq0aNMtCpt09thE2rVMhPACHRKfYQ9vk
+         V/cK3KzXDsTu9QY3xlo7epwIwAXJ0Jw8D/ySFw5UaFt7FMNRW2qa8VVNlWsE/slnQ39+
+         r9Yd2zytE19hDIbvTAkACzsskYqyT2xmF5oam06ge7jNlYFWPzBpcbVVECeFUb2qqvbr
+         iOkglc042jLENNmFqtQsRMavRqCaMTNd44CXJ75FIN1LWU+7bc4nKPiaCW9lkuz3pns6
+         2HpA==
+X-Gm-Message-State: AOAM532j5m1I5s8p6hnkcLfhdZXuwYbWg18Xzh4gb3Xwg9bVyuN++Snt
+        NJE3AlToT/4Kyhygvb3Q4JLgbHRqVuc=
+X-Google-Smtp-Source: ABdhPJyFjh+piDL1JEPuZI20DX+uTqkRi26FY2O695A2DXyFgWFZowJ6OWWLa91IFE2m7KwAfaeJaw==
+X-Received: by 2002:a17:90a:1f43:: with SMTP id y3mr3149102pjy.28.1601153773974;
+        Sat, 26 Sep 2020 13:56:13 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:199b:cbb5:5d7c:eb8d])
+        by smtp.gmail.com with ESMTPSA id g206sm6397530pfb.178.2020.09.26.13.56.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Sep 2020 13:56:13 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net] drivers/net/wan/x25_asy: Keep the ldisc running even when netif is down
+Date:   Sat, 26 Sep 2020 13:56:10 -0700
+Message-Id: <20200926205610.21045-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB5685.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 210c15db-4e46-4e0e-4111-08d8625db5e0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Sep 2020 20:49:49.4529
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: X53Wut6qZjRC2AH6Kqlanfe1jGx2JRKKHDKp41pp3b2O1QjVDnV8z48ThgFx/PTy7gMr+7Lzi8smwAzo/CW7tQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6887
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU2F0LCBTZXAgMjYsIDIwMjAgYXQgMTA6MzM6MDBQTSArMDIwMCwgQW5kcmV3IEx1bm4gd3Jv
-dGU6DQo+ID4gK3N0YXRpYyBpbmxpbmUgdm9pZCBkc2FfdGFnX2dlbmVyaWNfZmxvd19kaXNzZWN0
-KGNvbnN0IHN0cnVjdCBza19idWZmICpza2IsDQo+ID4gKwkJCQkJCV9fYmUxNiAqcHJvdG8sIGlu
-dCAqb2Zmc2V0KQ0KPiA+ICt7DQo+ID4gKyNpZiBJU19FTkFCTEVEKENPTkZJR19ORVRfRFNBKQ0K
-PiA+ICsJY29uc3Qgc3RydWN0IGRzYV9kZXZpY2Vfb3BzICpvcHMgPSBza2ItPmRldi0+ZHNhX3B0
-ci0+dGFnX29wczsNCj4gPiArCWludCB0YWdfbGVuID0gb3BzLT5vdmVyaGVhZDsNCj4gPiArDQo+
-ID4gKwkqb2Zmc2V0ID0gdGFnX2xlbjsNCj4gPiArCSpwcm90byA9ICgoX19iZTE2ICopc2tiLT5k
-YXRhKVsodGFnX2xlbiAvIDIpIC0gMV07DQo+ID4gKyNlbmRpZg0KPiA+ICt9DQo+ID4gKw0KPg0K
-PiBEbyB5b3UgYWN0dWFsbHkgbmVlZCB0aGUgSVNfRU5BQkxFRCgpPyBUaGVyZSBpcyBvbmx5IG9u
-ZSBjYWxsZXIgb2YNCj4gdGhpcyBmdW5jdGlvbiwgYW5kIGl0IGlzIGFscmVhZHkgcHJvdGVjdGVk
-IGJ5DQo+IElTX0VOQUJMRUQoQ09ORklHX05FVF9EU0EpLiBTbyBpIGRvbid0IHRoaW5rIGl0IGFk
-ZHMgYW55dGhpbmcuDQoNCkl0IGRvZXNuJ3QgbWF0dGVyIGhvdyBtYW55IGNhbGxlcnMgaXQgaGFz
-LCBpdCBkb2Vzbid0IGNvbXBpbGUgd2hlbg0KTkVUX0RTQT1uOg0KDQouL2luY2x1ZGUvbmV0L2Rz
-YS5oOiBJbiBmdW5jdGlvbiDigJhkc2FfdGFnX2dlbmVyaWNfZmxvd19kaXNzZWN04oCZOg0KLi9p
-bmNsdWRlL25ldC9kc2EuaDo3MzI6NDc6IGVycm9yOiDigJhzdHJ1Y3QgbmV0X2RldmljZeKAmSBo
-YXMgbm8gbWVtYmVyIG5hbWVkIOKAmGRzYV9wdHLigJk7IGRpZCB5b3UgbWVhbiDigJhpcF9wdHLi
-gJk/DQogIGNvbnN0IHN0cnVjdCBkc2FfZGV2aWNlX29wcyAqb3BzID0gc2tiLT5kZXYtPmRzYV9w
-dHItPnRhZ19vcHM7DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIF5+fn5+fn4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgaXBfcHRy
+I believe it is necessary to keep the N_X25 line discipline running even
+when the upper network interface is down, because otherwise, the last
+frame transmitted before the interface going down may be incompletely
+transmitted, and the first frame received after the interface going up
+may be incompletely received.
+
+By allowing the line discipline to continue doing R/W on the TTY, we can
+ensure that the last frame before the interface goes down is completely
+transmitted, and the first frame after the interface goes up is completely
+received.
+
+To achieve this, I did these changes:
+
+1. Postpone the netif_running check in x25_asy_write_wakeup until the
+transmission of data is complete.
+
+2. Postpone the netif_running check in x25_asy_receive_buf until a
+complete frame is received (in x25_asy_bump).
+
+3. Move x25_asy_close from x25_asy_close_dev to x25_asy_close_tty,
+so that when closing the interface, TTY transmission will not stop and
+the line discipline's read buffer and write buffer will not be cleared.
+(Do these only when the line discipline is closing.)
+
+(Also add FIXME comments because the netif_running checks may race with
+the closing of the netif. Currently there's no locking to prevent this.
+This needs to be fixed.)
+
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/x25_asy.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/wan/x25_asy.c b/drivers/net/wan/x25_asy.c
+index c418767a890a..22fcc0dd4b57 100644
+--- a/drivers/net/wan/x25_asy.c
++++ b/drivers/net/wan/x25_asy.c
+@@ -192,6 +192,10 @@ static void x25_asy_bump(struct x25_asy *sl)
+ 	int count;
+ 	int err;
+ 
++	/* FIXME: The netif may go down after netif_running returns true */
++	if (!netif_running(dev))
++		return;
++
+ 	count = sl->rcount;
+ 	dev->stats.rx_bytes += count;
+ 
+@@ -257,7 +261,7 @@ static void x25_asy_write_wakeup(struct tty_struct *tty)
+ 	struct x25_asy *sl = tty->disc_data;
+ 
+ 	/* First make sure we're connected. */
+-	if (!sl || sl->magic != X25_ASY_MAGIC || !netif_running(sl->dev))
++	if (!sl || sl->magic != X25_ASY_MAGIC)
+ 		return;
+ 
+ 	if (sl->xleft <= 0) {
+@@ -265,7 +269,9 @@ static void x25_asy_write_wakeup(struct tty_struct *tty)
+ 		 * transmission of another packet */
+ 		sl->dev->stats.tx_packets++;
+ 		clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
+-		x25_asy_unlock(sl);
++		/* FIXME: The netif may go down after netif_running returns */
++		if (netif_running(sl->dev))
++			x25_asy_unlock(sl);
+ 		return;
+ 	}
+ 
+@@ -529,7 +535,7 @@ static void x25_asy_receive_buf(struct tty_struct *tty,
+ {
+ 	struct x25_asy *sl = tty->disc_data;
+ 
+-	if (!sl || sl->magic != X25_ASY_MAGIC || !netif_running(sl->dev))
++	if (!sl || sl->magic != X25_ASY_MAGIC)
+ 		return;
+ 
+ 
+@@ -605,6 +611,7 @@ static void x25_asy_close_tty(struct tty_struct *tty)
+ 		dev_close(sl->dev);
+ 	rtnl_unlock();
+ 
++	x25_asy_close(sl->dev);
+ 	tty->disc_data = NULL;
+ 	sl->tty = NULL;
+ 	x25_asy_free(sl);
+@@ -732,8 +739,6 @@ static int x25_asy_close_dev(struct net_device *dev)
+ 		pr_err("%s: lapb_unregister error: %d\n",
+ 		       __func__, err);
+ 
+-	x25_asy_close(dev);
+-
+ 	return 0;
+ }
+ 
+-- 
+2.25.1
+
