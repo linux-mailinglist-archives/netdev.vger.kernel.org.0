@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A9A4279C26
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 21:33:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A80BE279C27
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 21:33:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730204AbgIZTdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 15:33:10 -0400
-Received: from mail-eopbgr130053.outbound.protection.outlook.com ([40.107.13.53]:17545
+        id S1730211AbgIZTdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 15:33:13 -0400
+Received: from mail-eopbgr130057.outbound.protection.outlook.com ([40.107.13.57]:60485
         "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730184AbgIZTdJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Sep 2020 15:33:09 -0400
+        id S1730184AbgIZTdM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Sep 2020 15:33:12 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SDhAQ2t4FwO9tIThwK035rWOVEVXdn1NWrz2PMUHBF8bSiYuCBsydD9VyT6co1M/cMNuKxvbiJxOZ2SLo0UQQ6LNdL02odoruM3mp7yIdrWuNjaNRvHZ0rwDvIQz7IWKAmt9ludJ6uOvuOz4V1XkaTpqhuIpiJy9xY/wp2wZYA/faUlN9iqnb+NJR8G2/r6miODSmzEOWM0hjaNBoKw75k1FiUJfuQ7HN04mywkPQ84Y7NUvflMDpCGzC67IFVRXhk9DoFFJT0AFS1FfQ2e1Ywi/V3265tMot28+T9dX16ugsCah3r604hopKW622WGVwRTMzQPehEQXq6Hom0v8ag==
+ b=kvGQGlJ3jF/v3gxHP+LNGvvoiP3fQjdLxDTfj1RRd9WzCxCpfzGs0F27p+KHAKqJL8BApVD9l4eOrYqnQJ8Rl6y+1LEt9CsOq94FcCS8Hs7eFerDxuwmEin0liBzLpBTsgw8Fp0TZ0yL6Pj9PQSbezf5nGjo08jlAy3eqOD9hmaoqoVCS1huyyuCKp28zOeM+mKwWuUOHilnNWR9t/QYx4FRFH8GYAw2oIhE96CEi4L6P3gj8AL0Y/EQ+WQhKDhroYukacgv/VIrhHh7tQoneyp9XpkxdQnhYEH07aReuKY/+HOD2XKfN+O3fQ6E1Sci6GHLyRSDhOxrF/BxV0X/jA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c8Ifn74g0xoyrTSSLWN6zKDt9g3sxHQ3l0S+E13P7kM=;
- b=gxsQ2FxTAtCD0PdCFenu9f1Al+R5IwzrvYX0cwf1dZ+Q8PI9PWlqbI7Rk0CANiqoaIaoYlbGSLaj/vGqu768ac0JwP1p27tYVco4c41ehloX51qMyelzq6Q1luo4xJ8HVBLlhaiWhgZv6eULDlL2EqwnuEodBq/Q40nhEsKe7TXig4gTmWzri/r0gQ8w8iKpeluMWUl5QMmiQgOMvtGYUW6g7XjpcoDOJMxVAPh0lq1r/aGdkZEGOpjWN+YelJcYhSSKgULLBnfxl9BHrDThGgW7VoRrwGFZsEmlNIqi7TjACukhQ6ahPqT/9F76cjd2alTqDgLEqrMuJO9PmWXsug==
+ bh=Dtp8z1ZislxVZrBgOgqO/XBH86iahfxyQrq93zBH2zI=;
+ b=g6FXBxK4kj1aoTNG9UJtZfw/5uopYI1zIYqiU0oODgP1CrUuQannbe4O85ozOCHT4PxwNLZDeFtL6VIzFQidlP6AU/7oo4P6etM9DYHf+BPCLUYh2p3KD6NmZVp2yQAWXojCeS+M4vP3e4icoASTkxn4SMJSCJTBKKU1A3KgPr2sBOqXieWzgJHOnWhq60z54FJ9S4FabmQZTNvw0sx+bBrf23UPSrLrBTXCaEb3Y/foTUk3fov/90ZKmoJ8GbiYdpKdmvd4BoWoDlP+dIYlxTGbn7KaYMBt0CJYk/r825Xes4xgdxkCRfTWiIeK9rt/xK1EM81LO/PYLb3+yJHihA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c8Ifn74g0xoyrTSSLWN6zKDt9g3sxHQ3l0S+E13P7kM=;
- b=Ypwp5MYaOaxnSR6rGssPUrIYBli48zdHnhDTPkviVn6hAqL6bMqcqr79mXQcl2Icv90TtUlYvZAkBG1IBGIOU0EnKo2mkbeREpaWhmfOm1GYxFf4baO23MbtIEz5FP0qZF4tHw9nC7DVyMBMam5eTF2/sOZ34uXtaACjzd2nWhk=
+ bh=Dtp8z1ZislxVZrBgOgqO/XBH86iahfxyQrq93zBH2zI=;
+ b=BBsxKsp5bT2oR/5owMQCAYcwUYhwIvWE3hBMT11eMs9vIkUUOmQJzqH4X+jw4n6yIwFq+7cXEXHeVVYFqW6QD0wSfbwficYTGRc80+qxz4Bpu9jywZTlBZY7suF+CUeQBtpK1mA7jJVhzcn6XFXnrAwPv9svkXF6+v8v/SiQnR8=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VI1PR04MB5295.eurprd04.prod.outlook.com (2603:10a6:803:59::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.22; Sat, 26 Sep
- 2020 19:33:00 +0000
+ 2020 19:33:01 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3412.024; Sat, 26 Sep 2020
- 19:33:00 +0000
+ 19:33:01 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         kuba@kernel.org
-Subject: [PATCH v3 net-next 02/15] net: dsa: allow drivers to request promiscuous mode on master
-Date:   Sat, 26 Sep 2020 22:32:02 +0300
-Message-Id: <20200926193215.1405730-3-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 03/15] net: dsa: tag_sja1105: request promiscuous mode for master
+Date:   Sat, 26 Sep 2020 22:32:03 +0300
+Message-Id: <20200926193215.1405730-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200926193215.1405730-1-vladimir.oltean@nxp.com>
 References: <20200926193215.1405730-1-vladimir.oltean@nxp.com>
@@ -54,128 +54,90 @@ X-ClientProxiedBy: AM4P190CA0017.EURP190.PROD.OUTLOOK.COM
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.217.212) by AM4P190CA0017.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:56::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.21 via Frontend Transport; Sat, 26 Sep 2020 19:32:59 +0000
+Received: from localhost.localdomain (188.25.217.212) by AM4P190CA0017.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:56::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.21 via Frontend Transport; Sat, 26 Sep 2020 19:33:00 +0000
 X-Mailer: git-send-email 2.25.1
 X-Originating-IP: [188.25.217.212]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: d652801f-f381-40b2-910a-08d86252fa67
+X-MS-Office365-Filtering-Correlation-Id: 4c4d5dc6-0d98-4d76-6d14-08d86252fafa
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5295:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5295318047EEFB59F4A6EA14E0370@VI1PR04MB5295.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR04MB5295D5D4241A00BDFF959BF3E0370@VI1PR04MB5295.eurprd04.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: q+cbec6hnEdVAw37PV0hODwNmnd79XvVays7IrXM3M0yDuu7I56RsmRlPfXL3BM2fTYkGTiuIIZTQqIObxdksubtoE3pNYnZRwcXvrkOpO4VXSG+nd94GaoKDnZ+OZs1Qa4JjRth1reZL/cO9foVtyVCJqOFOj2Cb/vQbSED8GvIn5GofVITWmOr7A3iZr72O95NIvteJgwb3w5TCSlJdQbLHVN+5zMqsxiap2XCqmxTm7U1c42qTMVU2FMPEZ0iXPsr61N6su5ca0FzfVPzSWYPbAq5VzyDEpxJjITnshUEsGRJFWpU17HOc7ub+LQbiB5qaqDbQJKRJT2gndWvU6ZcIav4rFn1ki3tLWBFJVmthF4e3CMKYCJ+1QYn1GARL9it4sbroiSfCW+qidtOEf1Af6yrjSnn4bdVWhsUlanL6JW3E4VocLsF0/Z12Y8Y
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(366004)(376002)(346002)(136003)(66476007)(6486002)(52116002)(66556008)(2616005)(956004)(8676002)(44832011)(6512007)(26005)(2906002)(478600001)(16526019)(186003)(6506007)(36756003)(86362001)(8936002)(1076003)(83380400001)(4326008)(69590400008)(66946007)(6666004)(316002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: cWmYohUcpC4Jv9X+ZSiZidcc2c9gT41s5qfbQx8SmA+NZDsT55HjQyzZ9RJWBV++5//TMwwNbPPiqcr9W5o4IofA1oaAUXaInNZ22Tq97LM1auIXY7DKeheKofPeyJA4KFY7sCikb1F1yZv2JiuMOiVW5AQTIoauVO0VWDkRSjPHacbKLjE6GK+m3uv4Q6wJakUDsUjdFzC54NwyE5E9GHE9qDyO9nJLffPDS61hZ0TYyDFM10x9gUecfhK7pN8H5svl6/xCYyS3zOMff6fLJmwJgP4LTuNGYYLQEWhy5v3KlBpC4jnx9goiLMYfHsWpYPvUmrNvJ8ReMrS6uWAVuCluvJUK773AcLZ+V2Rtp9PeWJBiVuoGscs5agULnY3wOqc0l3TI/UXAWSiMCiGBlcV4yyH1JY9CV+5GNNKBCJ6Td7OAUHdG+nF7jXoS10CuDOe+GCkb3pcsHhdzesJns5BeanVqnK1ImAJLXf10rAla6Swps55D5ZNrX2+XdjMrUA6clSvfyYcnRhFb6n11FRgOAOWWgJbVMAY2Od9kpcLWHKs3icYPFN4Z95lCZFjeyw8nB4pNjjghldvwoP9AhtKq+EoMHMhD5QZKhmkfvbd+na6fhbNkpBl3jCS4MsOEU+jPo3DxQg/LWHL7lqFD9A==
+X-Microsoft-Antispam-Message-Info: /UtNwnOtcnEzXi7Md+fllJRVtuohysW2Iz2WGYhES+oQbnCFxzVe9RQsxkaCP2oyAZzbhR/C/PbYuyLTYict8tn3VNXWhyUjxYfa1AHRUo75MDP3pvw3WIkm4PyDk8negWF8oN/eCa7Hps/SVf/bbPG7ZN8PN4LMLLgplkP3GoZLP5Zzq+RPK5ePtrn39LOaxVmDg8JeASC14IGc1DzJ3NmQTBmy3z5GcM8QYVHEx4iuQyNz99h0pgtgFz9yAbE4qSvKZH28L9APcck627Epq+wd2PcD/3NZaFbZEr4Cze2wRpY/Q8LBY+ZsrilIrUD6ZMR0Gyd1toCVS6XcIjCeqYpzGt0FN6Vv2Ijs3Ph40n7qo52wHY5yNzbQ71tBRHkhA7LXdsCpT2Kd/0NKqe7pAxegqGlJa/E36gaimFP3WgSV8wqQLJD++7YJ/PW1LOsQ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(366004)(376002)(346002)(136003)(66476007)(6486002)(52116002)(66556008)(2616005)(956004)(8676002)(44832011)(6512007)(26005)(2906002)(478600001)(16526019)(186003)(6506007)(36756003)(86362001)(8936002)(1076003)(83380400001)(4326008)(69590400008)(66946007)(316002)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: skEjSWT2i+w7sRUyibu7LDvn7usUjU//RHqAlceijrdiD3Vkke30zgi7NvNEf1V4juoUuhP32LA0ZnmeqHeWmmFpBC6YHh/glPimxi6VeMwlU7hf7Boog7q1DOWRjk9SqJl/v8JG0F2mimujLIC9UujAIdf+da3x1oVSNxGyKcSjX41kIVJMbORBskgBlTO9S6fqJhv47Poq95kaPU+UWAuQdjhXsndMhq/FTxVB+fPlCWpDqMICy/5ste2edqQsZ2HOcxBCjdoqvmHJyJotfns7fGGOJp32IupleukCqnTqNUVE/IMCe+aK4v7R3mS5Ru20BOQ7TrVWdOvEh/YPcQahnzUJrQzf0XLYMdF6lL+PYczMStKFpB5pvxUY9fG5zHjdYDiWhggVcd6BcCQo+ANayTYEzlTXYHTW/XxymMIM+VBIVe7j/B61FaQti/wL3n8Mk3OVY9sgtWvnqG4UdAVTe47HmkKtgjk3QxqffHTHdUZlYXorrnLprjP+U7AAUOvHjjftHHYhhANpPb92dDYVf33glkxYJ5SOx4Wat8BfOGUyUrK0LQIYPEetJ4PK2qPGW3uMc7Tn2UoqPebuzMMW1xi9kdEXNYfo0ayr1YuW/c83eAgjFBQLQBarJX64eb7NceXipCv87zeyoWPiww==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d652801f-f381-40b2-910a-08d86252fa67
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4c4d5dc6-0d98-4d76-6d14-08d86252fafa
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2020 19:33:00.2565
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2020 19:33:01.2720
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /N9fmjDJL4yfzyQnWSHWglcdRdd1Xt4O+4bwcqVo7KYB5Fvls3OjLWbC5syLV5qaP3r17g3KqT9TOUSh9EsSIg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: J7f9BUQW0BDjxlYtDS/A7db2lMLjZLIHJocfaK78moySRu4wIjmLLEV4nQ15EODsrXV2zIWYxwJ5ASbsl5kYvw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5295
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently DSA assumes that taggers don't mess with the destination MAC
-address of the frames on RX. That is not always the case. Some DSA
-headers are placed before the Ethernet header (ocelot), and others
-simply mangle random bytes from the destination MAC address (sja1105
-with its incl_srcpt option).
+Currently PTP is broken when ports are in standalone mode (the tagger
+keeps printing this message):
 
-Currently the DSA master goes to promiscuous mode automatically when the
-slave devices go too (such as when enslaved to a bridge), but in
-standalone mode this is a problem that needs to be dealt with.
+sja1105 spi0.1: Expected meta frame, is 01-80-c2-00-00-0e in the DSA master multicast filter?
 
-So give drivers the possibility to signal that their tagging protocol
-will get randomly dropped otherwise, and let DSA deal with fixing that.
+Sure, one might say "simply add 01-80-c2-00-00-0e to the master's RX
+filter" but things become more complicated because:
+
+- Actually all frames in the 01-80-c2-xx-xx-xx and 01-1b-19-xx-xx-xx
+  range are trapped to the CPU automatically
+- The switch mangles bytes 3 and 4 of the MAC address via the incl_srcpt
+  ("include source port [in the DMAC]") option, which is how source port
+  and switch id identification is done for link-local traffic on RX. But
+  this means that an address installed to the RX filter would, at the
+  end of the day, not correspond to the final address seen by the DSA
+  master.
+
+Assume RX filtering lists on DSA masters are typically too small to
+include all necessary addresses for PTP to work properly on sja1105, and
+just request promiscuous mode unconditionally.
+
+Just an example:
+Assuming the following addresses are trapped to the CPU:
+01-80-c2-00-00-00 to 01-80-c2-00-00-ff
+01-1b-19-00-00-00 to 01-1b-19-00-00-ff
+
+These are 512 addresses.
+Now let's say this is a board with 3 switches, and 4 ports per switch.
+The 512 addresses become 6144 addresses that must be managed by the DSA
+master's RX filtering lists.
+
+This may be refined in the future, but for now, it is simply not worth
+it to add the additional addresses to the master's RX filter, so simply
+request it to become promiscuous as soon as the driver probes.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v3:
-Make "promisc_on_master" a tagger property.
+Move this setting from the driver code to the tagger code.
 
- include/net/dsa.h |  6 ++++++
- net/dsa/master.c  | 20 +++++++++++++++++++-
- 2 files changed, 25 insertions(+), 1 deletion(-)
+ net/dsa/tag_sja1105.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index d16057c5987a..46019edc32cb 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -84,6 +84,12 @@ struct dsa_device_ops {
- 	unsigned int overhead;
- 	const char *name;
- 	enum dsa_tag_protocol proto;
-+	/* Some tagging protocols either mangle or shift the destination MAC
-+	 * address, in which case the DSA master would drop packets on ingress
-+	 * if what it understands out of the destination MAC address is not in
-+	 * its RX filter.
-+	 */
-+	bool promisc_on_master;
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index 3710f9daa46d..36ebd5878061 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -353,6 +353,7 @@ static const struct dsa_device_ops sja1105_netdev_ops = {
+ 	.rcv = sja1105_rcv,
+ 	.filter = sja1105_filter,
+ 	.overhead = VLAN_HLEN,
++	.promisc_on_master = true,
  };
  
- /* This structure defines the control interfaces that are overlayed by the
-diff --git a/net/dsa/master.c b/net/dsa/master.c
-index 61615ebc70e9..c91de041a91d 100644
---- a/net/dsa/master.c
-+++ b/net/dsa/master.c
-@@ -259,6 +259,18 @@ static void dsa_netdev_ops_set(struct net_device *dev,
- 	dev->dsa_ptr->netdev_ops = ops;
- }
- 
-+static void dsa_master_set_promiscuity(struct net_device *dev, int inc)
-+{
-+	const struct dsa_device_ops *ops = dev->dsa_ptr->tag_ops;
-+
-+	if (!ops->promisc_on_master)
-+		return;
-+
-+	rtnl_lock();
-+	dev_set_promiscuity(dev, inc);
-+	rtnl_unlock();
-+}
-+
- static ssize_t tagging_show(struct device *d, struct device_attribute *attr,
- 			    char *buf)
- {
-@@ -314,9 +326,12 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
- 	dev->dsa_ptr = cpu_dp;
- 	lockdep_set_class(&dev->addr_list_lock,
- 			  &dsa_master_addr_list_lock_key);
-+
-+	dsa_master_set_promiscuity(dev, 1);
-+
- 	ret = dsa_master_ethtool_setup(dev);
- 	if (ret)
--		return ret;
-+		goto out_err_reset_promisc;
- 
- 	dsa_netdev_ops_set(dev, &dsa_netdev_ops);
- 
-@@ -329,6 +344,8 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
- out_err_ndo_teardown:
- 	dsa_netdev_ops_set(dev, NULL);
- 	dsa_master_ethtool_teardown(dev);
-+out_err_reset_promisc:
-+	dsa_master_set_promiscuity(dev, -1);
- 	return ret;
- }
- 
-@@ -338,6 +355,7 @@ void dsa_master_teardown(struct net_device *dev)
- 	dsa_netdev_ops_set(dev, NULL);
- 	dsa_master_ethtool_teardown(dev);
- 	dsa_master_reset_mtu(dev);
-+	dsa_master_set_promiscuity(dev, -1);
- 
- 	dev->dsa_ptr = NULL;
- 
+ MODULE_LICENSE("GPL v2");
 -- 
 2.25.1
 
