@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA6F6279882
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 12:46:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 232F5279883
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 12:46:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729106AbgIZKpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 06:45:02 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:34496 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726935AbgIZKoy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 06:44:54 -0400
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08QAWYot045122;
+        id S1729178AbgIZKpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 06:45:05 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:31606 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727001AbgIZKoz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 06:44:55 -0400
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08QAVMOU063285;
         Sat, 26 Sep 2020 06:44:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references; s=pp1;
- bh=7nav4aXpjbPdur/PdDJwEUODjYG9WIzvjBtrmUgh0ao=;
- b=tgEc0/AKrdigOzoiVt4gJ5jdr6gSCo7heqK76JtjEk/teFdtuwBV3A8qpEeagBbK3a9X
- Ln2dM7LWuu67cwlobZV03YhhgkK+1vwN0104/EPLQ5NYb23WKLdAFXUPK4Hqu+csEyFY
- j8kzqs7njZubBaOz14jkXZgkONg3/rwHQYdqhdOgpZjMPBF7ffB/sVkYowOLwh6ca09t
- pdTCxSGJNr+G0f+7fmqfk6OyepUcTss6APoH7nL8OsRV41tiACtuWfyMaUvXRoTgzPSQ
- tYTVaQSrLOd1dck7UvkckO+L4OOb7m5szCIUbgC/ASEnvqo/TTzEUopBxtJcLikR4GBT Ag== 
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33t33j120u-1
+ bh=IXzN/4Hxk3wLI8l3WmC0dJarSV2hHW8+Bzx2nrMkZ74=;
+ b=X8nBmBzHvx49jDw27FaDMZ7dFu02K+xJVnP0cBKlER0mTek9dPboTCXxvvRfQLRs9vew
+ hUn1uLSCXPJO7eqfBoHyAYc/VbfnP/c2Q8N1bM8P4t+IikjAxysEZpinzcBSCaGeTQzI
+ IiMYWf4yJ+kyco+HLQDSIu0yO2sXM1CVxZGHUaOAYaG6E34s0r4wDTqfAiacY5/Om2HU
+ sMwyQCuMe3ljBP6WBD9aJPnLMIZv/sbrEo5Pp5DbT30DXcZKwkAyyzbJn6rPRT+PT2l1
+ X+NQfJH4JnkUcG5IiZBjSTEb+BCxGMgX0Yv1u95z54mKCczavDdJhu2v1jIpK5LskSOg 7w== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33t3p6geaq-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 26 Sep 2020 06:44:50 -0400
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08QAghIk013194;
-        Sat, 26 Sep 2020 10:44:48 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma02fra.de.ibm.com with ESMTP id 33sw9804qr-1
+        Sat, 26 Sep 2020 06:44:51 -0400
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08QAhEKq002923;
+        Sat, 26 Sep 2020 10:44:49 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma03ams.nl.ibm.com with ESMTP id 33sw98097b-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 26 Sep 2020 10:44:48 +0000
+        Sat, 26 Sep 2020 10:44:49 +0000
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08QAijSs29360524
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08QAikPg18874824
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 26 Sep 2020 10:44:45 GMT
+        Sat, 26 Sep 2020 10:44:46 GMT
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A53D8A4054;
+        by IMSVA (Postfix) with ESMTP id EB27FA4054;
         Sat, 26 Sep 2020 10:44:45 +0000 (GMT)
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6109DA4060;
+        by IMSVA (Postfix) with ESMTP id B1637A405B;
         Sat, 26 Sep 2020 10:44:45 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
@@ -51,271 +51,112 @@ To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
         ubraun@linux.ibm.com
-Subject: [PATCH net-next 03/14] net/smc: separate find device functions
-Date:   Sat, 26 Sep 2020 12:44:21 +0200
-Message-Id: <20200926104432.74293-4-kgraul@linux.ibm.com>
+Subject: [PATCH net-next 04/14] net/smc: split CLC confirm/accept data to be sent
+Date:   Sat, 26 Sep 2020 12:44:22 +0200
+Message-Id: <20200926104432.74293-5-kgraul@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200926104432.74293-1-kgraul@linux.ibm.com>
 References: <20200926104432.74293-1-kgraul@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-09-26_06:2020-09-24,2020-09-26 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1
- mlxlogscore=999 lowpriorityscore=0 impostorscore=0 spamscore=0 mlxscore=0
- adultscore=0 phishscore=0 priorityscore=1501 clxscore=1015 bulkscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009260096
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ adultscore=0 clxscore=1015 spamscore=0 malwarescore=0 mlxlogscore=999
+ phishscore=0 lowpriorityscore=0 priorityscore=1501 impostorscore=0
+ suspectscore=1 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009260091
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Ursula Braun <ubraun@linux.ibm.com>
 
-This patch provides better separation of device determinations
-in function smc_listen_work(). No functional change.
+When sending CLC confirm and CLC accept, separate the trailing
+part of the message from the initial part (to be prepared for
+future first contact extension).
 
 Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
 Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
 ---
- net/smc/af_smc.c  | 111 ++++++++++++++++++++++++++++------------------
- net/smc/smc_clc.c |   6 +--
- net/smc/smc_clc.h |  13 +++++-
- 3 files changed, 84 insertions(+), 46 deletions(-)
+ net/smc/smc_clc.c | 21 ++++++++++++++-------
+ net/smc/smc_clc.h |  6 +-----
+ 2 files changed, 15 insertions(+), 12 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 1a02d3665c46..911482741224 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1188,7 +1188,6 @@ static int smc_listen_rdma_init(struct smc_sock *new_smc,
- 
- /* listen worker: initialize connection and buffers for SMC-D */
- static int smc_listen_ism_init(struct smc_sock *new_smc,
--			       struct smc_clc_msg_proposal *pclc,
- 			       struct smc_init_info *ini)
- {
- 	int rc;
-@@ -1211,6 +1210,26 @@ static int smc_listen_ism_init(struct smc_sock *new_smc,
- 	return 0;
- }
- 
-+static void smc_find_ism_device_serv(struct smc_sock *new_smc,
-+				     struct smc_clc_msg_proposal *pclc,
-+				     struct smc_init_info *ini)
-+{
-+	struct smc_clc_msg_smcd *pclc_smcd = smc_get_clc_msg_smcd(pclc);
-+
-+	if (!smcd_indicated(pclc->hdr.typev1))
-+		goto not_found;
-+	ini->is_smcd = true; /* prepare ISM check */
-+	ini->ism_peer_gid = pclc_smcd->gid;
-+	if (smc_find_ism_device(new_smc, ini))
-+		goto not_found;
-+	if (!smc_listen_ism_init(new_smc, ini))
-+		return;		/* ISM device found */
-+
-+not_found:
-+	ini->ism_dev = NULL;
-+	ini->is_smcd = false;
-+}
-+
- /* listen worker: register buffers */
- static int smc_listen_rdma_reg(struct smc_sock *new_smc, bool local_first)
- {
-@@ -1225,6 +1244,47 @@ static int smc_listen_rdma_reg(struct smc_sock *new_smc, bool local_first)
- 	return 0;
- }
- 
-+static int smc_find_rdma_device_serv(struct smc_sock *new_smc,
-+				     struct smc_clc_msg_proposal *pclc,
-+				     struct smc_init_info *ini)
-+{
-+	int rc;
-+
-+	if (!smcr_indicated(pclc->hdr.typev1))
-+		return SMC_CLC_DECL_NOSMCDEV;
-+
-+	/* prepare RDMA check */
-+	ini->ib_lcl = &pclc->lcl;
-+	rc = smc_find_rdma_device(new_smc, ini);
-+	if (rc) {
-+		/* no RDMA device found */
-+		if (pclc->hdr.typev1 == SMC_TYPE_B)
-+			/* neither ISM nor RDMA device found */
-+			rc = SMC_CLC_DECL_NOSMCDEV;
-+		return rc;
-+	}
-+	rc = smc_listen_rdma_init(new_smc, ini);
-+	if (rc)
-+		return rc;
-+	return smc_listen_rdma_reg(new_smc, ini->first_contact_local);
-+}
-+
-+/* determine the local device matching to proposal */
-+static int smc_listen_find_device(struct smc_sock *new_smc,
-+				  struct smc_clc_msg_proposal *pclc,
-+				  struct smc_init_info *ini)
-+{
-+	/* check if ISM is available */
-+	smc_find_ism_device_serv(new_smc, pclc, ini);
-+	if (ini->is_smcd)
-+		return 0;
-+	if (pclc->hdr.typev1 == SMC_TYPE_D)
-+		return SMC_CLC_DECL_NOSMCDDEV; /* skip RDMA and decline */
-+
-+	/* check if RDMA is available */
-+	return smc_find_rdma_device_serv(new_smc, pclc, ini);
-+}
-+
- /* listen worker: finish RDMA setup */
- static int smc_listen_rdma_finish(struct smc_sock *new_smc,
- 				  struct smc_clc_msg_accept_confirm *cclc,
-@@ -1250,7 +1310,7 @@ static int smc_listen_rdma_finish(struct smc_sock *new_smc,
- 	return reason_code;
- }
- 
--/* setup for RDMA connection of server */
-+/* setup for connection of server */
- static void smc_listen_work(struct work_struct *work)
- {
- 	struct smc_sock *new_smc = container_of(work, struct smc_sock,
-@@ -1260,7 +1320,6 @@ static void smc_listen_work(struct work_struct *work)
- 	struct smc_clc_msg_proposal_area *buf;
- 	struct smc_clc_msg_proposal *pclc;
- 	struct smc_init_info ini = {0};
--	bool ism_supported = false;
- 	int rc = 0;
- 
- 	if (new_smc->listen_smc->sk.sk_state != SMC_LISTEN)
-@@ -1315,42 +1374,10 @@ static void smc_listen_work(struct work_struct *work)
- 	smc_rx_init(new_smc);
- 	smc_tx_init(new_smc);
- 
--	/* check if ISM is available */
--	if (pclc->hdr.typev1 == SMC_TYPE_D || pclc->hdr.typev1 == SMC_TYPE_B) {
--		struct smc_clc_msg_smcd *pclc_smcd = smc_get_clc_msg_smcd(pclc);
--
--		ini.is_smcd = true; /* prepare ISM check */
--		ini.ism_peer_gid = pclc_smcd->gid;
--		rc = smc_find_ism_device(new_smc, &ini);
--		if (!rc)
--			rc = smc_listen_ism_init(new_smc, pclc, &ini);
--		if (!rc)
--			ism_supported = true;
--		else if (pclc->hdr.typev1 == SMC_TYPE_D)
--			goto out_unlock; /* skip RDMA and decline */
--	}
--
--	/* check if RDMA is available */
--	if (!ism_supported) { /* SMC_TYPE_R or SMC_TYPE_B */
--		/* prepare RDMA check */
--		ini.is_smcd = false;
--		ini.ism_dev = NULL;
--		ini.ib_lcl = &pclc->lcl;
--		rc = smc_find_rdma_device(new_smc, &ini);
--		if (rc) {
--			/* no RDMA device found */
--			if (pclc->hdr.typev1 == SMC_TYPE_B)
--				/* neither ISM nor RDMA device found */
--				rc = SMC_CLC_DECL_NOSMCDEV;
--			goto out_unlock;
--		}
--		rc = smc_listen_rdma_init(new_smc, &ini);
--		if (rc)
--			goto out_unlock;
--		rc = smc_listen_rdma_reg(new_smc, ini.first_contact_local);
--		if (rc)
--			goto out_unlock;
--	}
-+	/* determine ISM or RoCE device used for connection */
-+	rc = smc_listen_find_device(new_smc, pclc, &ini);
-+	if (rc)
-+		goto out_unlock;
- 
- 	/* send SMC Accept CLC message */
- 	rc = smc_clc_send_accept(new_smc, ini.first_contact_local);
-@@ -1358,20 +1385,20 @@ static void smc_listen_work(struct work_struct *work)
- 		goto out_unlock;
- 
- 	/* SMC-D does not need this lock any more */
--	if (ism_supported)
-+	if (ini.is_smcd)
- 		mutex_unlock(&smc_server_lgr_pending);
- 
- 	/* receive SMC Confirm CLC message */
- 	rc = smc_clc_wait_msg(new_smc, &cclc, sizeof(cclc),
- 			      SMC_CLC_CONFIRM, CLC_WAIT_TIME);
- 	if (rc) {
--		if (!ism_supported)
-+		if (!ini.is_smcd)
- 			goto out_unlock;
- 		goto out_decl;
- 	}
- 
- 	/* finish worker */
--	if (!ism_supported) {
-+	if (!ini.is_smcd) {
- 		rc = smc_listen_rdma_finish(new_smc, &cclc,
- 					    ini.first_contact_local);
- 		if (rc)
 diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
-index 524d2b225640..85b41c125368 100644
+index 85b41c125368..8ad0bbaac846 100644
 --- a/net/smc/smc_clc.c
 +++ b/net/smc/smc_clc.c
-@@ -450,7 +450,7 @@ int smc_clc_send_proposal(struct smc_sock *smc, int smc_type,
- 	pclc_base->hdr.type = SMC_CLC_PROPOSAL;
- 	pclc_base->hdr.version = SMC_V1;		/* SMC version */
- 	pclc_base->hdr.typev1 = smc_type;
--	if (smc_type == SMC_TYPE_R || smc_type == SMC_TYPE_B) {
-+	if (smcr_indicated(smc_type)) {
- 		/* add SMC-R specifics */
- 		memcpy(pclc_base->lcl.id_for_peer, local_systemid,
- 		       sizeof(local_systemid));
-@@ -459,7 +459,7 @@ int smc_clc_send_proposal(struct smc_sock *smc, int smc_type,
- 		       ETH_ALEN);
- 		pclc_base->iparea_offset = htons(0);
+@@ -505,8 +505,10 @@ static int smc_clc_send_confirm_accept(struct smc_sock *smc,
+ 				       int first_contact)
+ {
+ 	struct smc_connection *conn = &smc->conn;
++	struct smc_clc_msg_trail trl;
++	struct kvec vec[2];
+ 	struct msghdr msg;
+-	struct kvec vec;
++	int i;
+ 
+ 	/* send SMC Confirm CLC msg */
+ 	clc->hdr.version = SMC_V1;		/* SMC version */
+@@ -523,7 +525,7 @@ static int smc_clc_send_confirm_accept(struct smc_sock *smc,
+ 		clc->d0.dmbe_size = conn->rmbe_size_short;
+ 		clc->d0.dmbe_idx = 0;
+ 		memcpy(&clc->d0.linkid, conn->lgr->id, SMC_LGR_ID_SIZE);
+-		memcpy(clc->d0.smcd_trl.eyecatcher, SMCD_EYECATCHER,
++		memcpy(trl.eyecatcher, SMCD_EYECATCHER,
+ 		       sizeof(SMCD_EYECATCHER));
+ 	} else {
+ 		struct smc_link *link = conn->lnk;
+@@ -556,14 +558,19 @@ static int smc_clc_send_confirm_accept(struct smc_sock *smc,
+ 		clc->r0.rmb_dma_addr = cpu_to_be64((u64)sg_dma_address
+ 				(conn->rmb_desc->sgt[link->link_idx].sgl));
+ 		hton24(clc->r0.psn, link->psn_initial);
+-		memcpy(clc->r0.smcr_trl.eyecatcher, SMC_EYECATCHER,
+-		       sizeof(SMC_EYECATCHER));
++		memcpy(trl.eyecatcher, SMC_EYECATCHER, sizeof(SMC_EYECATCHER));
  	}
--	if (smc_type == SMC_TYPE_D || smc_type == SMC_TYPE_B) {
-+	if (smcd_indicated(smc_type)) {
- 		/* add SMC-D specifics */
- 		plen += sizeof(*pclc_smcd);
- 		pclc_base->iparea_offset = htons(sizeof(*pclc_smcd));
-@@ -472,7 +472,7 @@ int smc_clc_send_proposal(struct smc_sock *smc, int smc_type,
- 	i = 0;
- 	vec[i].iov_base = pclc_base;
- 	vec[i++].iov_len = sizeof(*pclc_base);
--	if (smc_type == SMC_TYPE_D || smc_type == SMC_TYPE_B) {
-+	if (smcd_indicated(smc_type)) {
- 		vec[i].iov_base = pclc_smcd;
- 		vec[i++].iov_len = sizeof(*pclc_smcd);
- 	}
-diff --git a/net/smc/smc_clc.h b/net/smc/smc_clc.h
-index 5b2d0582886e..5f9fda15f7ff 100644
---- a/net/smc/smc_clc.h
-+++ b/net/smc/smc_clc.h
-@@ -180,11 +180,22 @@ smc_clc_proposal_get_prefix(struct smc_clc_msg_proposal *pclc)
- 	       ((u8 *)pclc + sizeof(*pclc) + ntohs(pclc->iparea_offset));
+ 
+ 	memset(&msg, 0, sizeof(msg));
+-	vec.iov_base = clc;
+-	vec.iov_len = ntohs(clc->hdr.length);
+-	return kernel_sendmsg(smc->clcsock, &msg, &vec, 1,
++	i = 0;
++	vec[i].iov_base = clc;
++	vec[i++].iov_len = (clc->hdr.typev1 == SMC_TYPE_D ?
++			    SMCD_CLC_ACCEPT_CONFIRM_LEN :
++			    SMCR_CLC_ACCEPT_CONFIRM_LEN) -
++			   sizeof(trl);
++	vec[i].iov_base = &trl;
++	vec[i++].iov_len = sizeof(trl);
++	return kernel_sendmsg(smc->clcsock, &msg, vec, 1,
+ 			      ntohs(clc->hdr.length));
  }
  
-+static inline bool smcr_indicated(int smc_type)
-+{
-+	return smc_type == SMC_TYPE_R || smc_type == SMC_TYPE_B;
-+}
-+
-+static inline bool smcd_indicated(int smc_type)
-+{
-+	return smc_type == SMC_TYPE_D || smc_type == SMC_TYPE_B;
-+}
-+
- /* get SMC-D info from proposal message */
- static inline struct smc_clc_msg_smcd *
- smc_get_clc_msg_smcd(struct smc_clc_msg_proposal *prop)
- {
--	if (ntohs(prop->iparea_offset) != sizeof(struct smc_clc_msg_smcd))
-+	if (smcd_indicated(prop->hdr.type) &&
-+	    ntohs(prop->iparea_offset) != sizeof(struct smc_clc_msg_smcd))
- 		return NULL;
+diff --git a/net/smc/smc_clc.h b/net/smc/smc_clc.h
+index 5f9fda15f7ff..c4644d14beae 100644
+--- a/net/smc/smc_clc.h
++++ b/net/smc/smc_clc.h
+@@ -134,8 +134,6 @@ struct smcr_clc_msg_accept_confirm {	/* SMCR accept/confirm */
+ 	__be64 rmb_dma_addr;	/* RMB virtual address */
+ 	u8 reserved2;
+ 	u8 psn[3];		/* packet sequence number */
+-	struct smc_clc_msg_trail smcr_trl;
+-				/* eye catcher "SMCR" EBCDIC */
+ } __packed;
  
- 	return (struct smc_clc_msg_smcd *)(prop + 1);
+ struct smcd_clc_msg_accept_confirm {	/* SMCD accept/confirm */
+@@ -150,10 +148,8 @@ struct smcd_clc_msg_accept_confirm {	/* SMCD accept/confirm */
+ 	   dmbe_size : 4;
+ #endif
+ 	u16 reserved4;
+-	u32 linkid;		/* Link identifier */
++	__be32 linkid;		/* Link identifier */
+ 	u32 reserved5[3];
+-	struct smc_clc_msg_trail smcd_trl;
+-				/* eye catcher "SMCD" EBCDIC */
+ } __packed;
+ 
+ struct smc_clc_msg_accept_confirm {	/* clc accept / confirm message */
 -- 
 2.17.1
 
