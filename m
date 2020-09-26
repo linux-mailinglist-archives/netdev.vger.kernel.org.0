@@ -2,49 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93626279586
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 02:21:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69CC62795A3
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 02:41:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729654AbgIZAVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 20:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729495AbgIZAVO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 20:21:14 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606F4C0613CE
-        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 17:21:14 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id CE8FD13BA5224;
-        Fri, 25 Sep 2020 17:04:25 -0700 (PDT)
-Date:   Fri, 25 Sep 2020 17:21:12 -0700 (PDT)
-Message-Id: <20200925.172112.681809111177302365.davem@davemloft.net>
-To:     jacob.e.keller@intel.com
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, kuba@kernel.org,
-        corbet@lwn.net, michael.chan@broadcom.com, luobin9@huawei.com,
-        saeedm@mellanox.com, leon@kernel.org, idosch@mellanox.com,
-        danieller@mellanox.com, snelson@pensando.io
-Subject: Re: [net-next v9 0/5] devlink flash update overwrite mask
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200925204609.1929800-1-jacob.e.keller@intel.com>
-References: <20200925204609.1929800-1-jacob.e.keller@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 25 Sep 2020 17:04:26 -0700 (PDT)
+        id S1729793AbgIZAle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 20:41:34 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56296 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725208AbgIZAle (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 20:41:34 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kLyHJ-00GE3z-Mg; Sat, 26 Sep 2020 02:41:29 +0200
+Date:   Sat, 26 Sep 2020 02:41:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        alexandre.torgue@st.com, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, joabreu@synopsys.com, kuba@kernel.org,
+        peppe.cavallaro@st.com, davem@davemloft.net,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: RGMII timing calibration (on 12nm Amlogic SoCs) - integration
+ into dwmac-meson8b
+Message-ID: <20200926004129.GC3850848@lunn.ch>
+References: <CAFBinCATt4Hi9rigj52nMf3oygyFbnopZcsakGL=KyWnsjY3JA@mail.gmail.com>
+ <20200925221403.GE3856392@lunn.ch>
+ <CAFBinCC4VuLJDLqQb+m+h+qnh6fAK2aBLVtQaE15Tc-zQq=KSg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFBinCC4VuLJDLqQb+m+h+qnh6fAK2aBLVtQaE15Tc-zQq=KSg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
-Date: Fri, 25 Sep 2020 13:46:04 -0700
+> The reference code I linked tries to detect the RGMII interface mode.
+> However, for each board we know the phy-mode as well as the RX and TX
+> delay - so I'm not trying to port the RGMII interface detection part
+> to the mainline driver.
+> 
+> on X96 Air (which I'm using for testing) Amlogic configures phy-mode
+> "rgmii" with a 2ns TX delay provided by the MAC and 0ns RX delay
+> anywhere (so I'm assuming that the board adds the 2ns RX delay)
 
-> This series introduces support for a new attribute to the flash update
-> command: DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK.
- ...
+Hi Martin
 
-Series applied, thanks.
+It would be unusual to have an asymmetric design in the PCB. So i
+would try to prove that assumption. It could be the PHY driver is
+broken, and although it is configured to use RGMII, it is actually
+inserting a delay on RX. Also check if the PHY has any strapping.
+
+> I am aware that the recommendation is to let the PHY generate the delay.
+> For now I'm trying to get the same configuration working which is used
+> by Amlogic's vendor kernel and u-boot.
+> 
+> > Is there any documentation as to what the calibration values mean?  I
+> > would just hard code it to whatever means 0uS delay, and be done. The
+> > only time the MAC needs to add delays is when the PHY is not capable
+> > of doing it, and generally, they all are.
+
+> This calibration is not the RGMII RX or TX delay - we have other
+> registers for that and already know how to program these.
+
+O.K. so maybe this is just fine tuning. Some PHYs also allow this.
+
+> What I can say is that u-boot programs calibration value 0xf (the
+> maximum value) on my X96 Air board. With this I cannot get Ethernet
+> working - regardless of how I change the RX or TX delays.
+> If I leave everything as-is (2ns TX delay generated by the MAC, 0ns RX
+> delay, ...) and change the calibration value to 0x0 or 0x3 (the latter
+> is set by the vendor kernel) then Ethernet starts working.
+
+So there is just one calibration value? So it assumes the calibration
+is symmetric for both RX and TX.
+
+What PHY is it using?
+
+https://dpaste.com/2WJF9EN suggests it is a RTL8211F.
+
+This device does have stripping to set the default delay. Can you
+check if there are pull ups on pins 24 and 25?
+
+What i find interesting is in the driver is:
+
+        ret = phy_modify_paged_changed(phydev, 0xd08, 0x11, RTL8211F_TX_DELAY,
+                                       val_txdly);
+
+        ret = phy_modify_paged_changed(phydev, 0xd08, 0x15, RTL8211F_RX_DELAY,
+                                       val_rxdly);
+
+Different registers, 0x11 vs 0x15. In the datasheets i found with
+google, none describe any of these bits, but at least register 0x15 is
+mentioned, where as register 0x11 is not.
+
+Git blame shows you added this! Are you sure about this? It seems odd
+they are in different registers.
+
+     Andrew
