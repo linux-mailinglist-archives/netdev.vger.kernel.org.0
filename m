@@ -2,105 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D07DA279BF7
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 20:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5082279BF9
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 20:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730132AbgIZSwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 14:52:32 -0400
-Received: from mail-out.m-online.net ([212.18.0.10]:60206 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729291AbgIZSwb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 14:52:31 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4BzHvw2S13z1rsMZ;
-        Sat, 26 Sep 2020 20:52:19 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4BzHvl2lQDz1qsnR;
-        Sat, 26 Sep 2020 20:52:19 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id P1Ben1uK5Tsa; Sat, 26 Sep 2020 20:52:17 +0200 (CEST)
-X-Auth-Info: +qdsg+whkXZW7y/EEf3l9j7opLfCoWlczkiMXG01Vi0=
-Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Sat, 26 Sep 2020 20:52:17 +0200 (CEST)
-Subject: Re: [PATCH] net: fec: Fix PHY init after phy_reset_after_clk_enable()
-To:     Richard Leitner <richard.leitner@skidata.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>
-References: <20200903210011.GD3112546@lunn.ch>
- <b6397b39-c897-6e0a-6bf7-b6b24908de1a@denx.de>
- <20200903215331.GG3112546@lunn.ch>
- <02ce2afb-7b9f-ba35-63a5-7496c7a39e6e@denx.de>
- <20200903220847.GI3112546@lunn.ch>
- <c67eb631-a16d-0b52-c2f8-92d017e39258@denx.de>
- <20200904140245.GO3112546@lunn.ch>
- <b305a989-d9c3-f02a-6935-81c6bcc084c5@denx.de>
- <20200904190228.GG81961@pcleri>
- <dce19310-edbd-e26b-77cd-f03f3350a477@denx.de>
- <20200909083813.GI81961@pcleri>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <581e5db1-9aac-458d-ed0c-2784ad28b3cc@denx.de>
-Date:   Sat, 26 Sep 2020 20:52:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1730090AbgIZSzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 14:55:39 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:23100 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726183AbgIZSzj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 14:55:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1601146539; x=1632682539;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qiNRRaZGj9M0RYTlbddOnswZSAg6tm2yi+VCCw5to/E=;
+  b=AY1VcwmQUlP5TYbx9m42hR2XYx2LoMiMfW0malXxeW9sLQerSGBsouBb
+   Z3KQWkdQeqHpquIqD3aVd5dqNiilvMkBNcm5jVO/n0Y6mZ87GlceKPy8X
+   OKdftpv0lx+pFSXKJEMk/ZT3EPrmOJ3S53/bJ/EXb2uy56nQ62hHdCuFl
+   4tGrpyi1Mg4EzqhJ5Xv6RjE5g9iqmIkH50YXFllf/uKr6mkyXPUPJSd7B
+   QXdSHp1GI/dGPXiNIwZ7/aMMxYyfTOJ43M943HTDuXk7FtIc+70w136o+
+   lB6HrwTWiKfYdlDw8FMZnOlPXGKRj+FUGk6oVTgWIZ9j9URjhxH8D2Sdq
+   A==;
+IronPort-SDR: rKFG5D3XqR9In++T3wJcbsDdSPeE6TO7w3pEB5xkYnjE9K9YnJhjtsoeL5u8h2YvL8RtdxmN3k
+ jmrEPLMhOEOb6/E5+FasxqcxKbbAl9Yl/9rMmz8JyGWbly9MZe9IrQNdKhgdE/asC1vg3m6RTV
+ qP0GOH/2oR5RAp7IM24mmvGD/YjpLOqJLWIRO9QZBdMXVmXbDI/wFhof/+MK+ubChi2PmeQptD
+ Mi/b7QuGyPkREYTjb7fMIaMVlRcFhDOZKsq3AMH3mpkGR3wUSjgNXp/8DWvWQVhuLdyTTeEM7E
+ QX4=
+X-IronPort-AV: E=Sophos;i="5.77,307,1596524400"; 
+   d="scan'208";a="92492262"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Sep 2020 11:55:38 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Sat, 26 Sep 2020 11:54:55 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Sat, 26 Sep 2020 11:55:37 -0700
+Date:   Sat, 26 Sep 2020 20:55:36 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "Ralf Baechle" <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        "James Hogan" <jhogan@kernel.org>, <linux-mips@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        <hongbo.wang@nxp.com>
+Subject: Re: [PATCH net-next v3 1/2] net: mscc: ocelot: Add support for tcam
+Message-ID: <20200926185536.ac3nr6faxwvcaese@soft-dev3.localdomain>
+References: <1559287017-32397-1-git-send-email-horatiu.vultur@microchip.com>
+ <1559287017-32397-2-git-send-email-horatiu.vultur@microchip.com>
+ <CA+h21hprXnOYWExg7NxVZEX9Vjd=Y7o52ifKuAJqLwFuvDjaiw@mail.gmail.com>
+ <20200423082948.t7sgq4ikrbm4cbnt@soft-dev3.microsemi.net>
+ <20200924233949.lof7iduyfgjdxajv@skbuf>
+ <20200926112002.i6zpwi26ong2hu4q@soft-dev3.localdomain>
+ <20200926123716.5n7mvvn4tmj2sdol@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20200909083813.GI81961@pcleri>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20200926123716.5n7mvvn4tmj2sdol@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/9/20 10:38 AM, Richard Leitner wrote:
-> On Fri, Sep 04, 2020 at 09:23:26PM +0200, Marek Vasut wrote:
->> On 9/4/20 9:02 PM, Richard Leitner wrote:
->>> On Fri, Sep 04, 2020 at 05:26:14PM +0200, Marek Vasut wrote:
->>>> On 9/4/20 4:02 PM, Andrew Lunn wrote:
->>>>> On Fri, Sep 04, 2020 at 12:45:44AM +0200, Marek Vasut wrote:
->>>>>> On 9/4/20 12:08 AM, Andrew Lunn wrote:
->>>>>>>>> b4 am 20200903043947.3272453-1-f.fainelli@gmail.com
->>>>>>>>
->>>>>>>> That might be a fix for the long run, but I doubt there's any chance to
->>>>>>>> backport it all to stable, is there ?
->>>>>>>
->>>>>>> No. For stable we need something simpler.
->>>>>>
->>>>>> Like this patch ?
->>>>>
->>>>> Yes.
->>>>>
->>>>> But i would like to see a Tested-By: or similar from Richard
->>>>> Leitner. Why does the current code work for his system? Does your
->>>>> change break it?
->>>>
->>>> I have the IRQ line connected and described in DT. The reset clears the
->>>> IRQ settings done by the SMSC PHY driver. The PHY works fine if I use
->>>> polling, because then even if no IRQs are generated by the PHY, the PHY
->>>> framework reads the status updates from the PHY periodically and the
->>>> default settings of the PHY somehow work (even if they are slightly
->>>> incorrect). I suspect that's how Richard had it working.
->>>
->>> I have different PHYs on different PCBs in use, but IIRC none of them
->>> has the IRQ line defined in the DT.
->>> I will take a look at it, test your patch and give feedback ASAP.
->>> Unfortunately it's unlikely that this will be before monday 😕
->>> Hope that's ok.
->>
->> That's totally fine, thanks !
+The 09/26/2020 15:37, Vladimir Oltean wrote:
 > 
-> Hi, sorry for the delay.
-> I've applied the patch to our kernel and did some basic tests on
-> different custom imx6 PCBs. As everything seems to work fine for our
-> "non-irq configuration" please feel free to add
-> 
-> Tested-by: Richard Leitner <richard.leitner@skidata.com>
+> Hi Horatiu,
 
-So can this fix be applied ?
+Hi Vladimir,
+
+> 
+> On Sat, Sep 26, 2020 at 01:20:02PM +0200, Horatiu Vultur wrote:
+> > To be honest, I don't remember precisely. I will need to setup a board
+> > and see exactly. But from what I remember:
+> > - according to this[1] in chapter 3.8.6, table 71. It says that the full
+> >   entry of IS2 is 384. And this 384 represent a full entry. In this row,
+> >   can be also sub entries like: half entry and quater entries. And each
+> >   entry has 2 bits that describes the entry type. So if you have 2 bits
+> >   for each possible entry then you have 8 bits describing each type. One
+> >   observation is even if you have a full entry each pair of 2 bits
+> >   describing the type needs to be set that is a full entry.
+> 
+> But if I have a single entry per row, I have a single Type-Group value,
+> so I only need to subtract 2, no?
+
+No, you will always have 4 Type-Group values regardless of number of
+entries per row(1, 2 or 4). If you have a full key, then you need to set
+all 4 Type-Group to be full key. If you have only a half key, you need
+to set only the 2 Type-Group values of the half key. So the other 2 can
+be used for another key. The same is for quater key.
+For example. If you have a quater key on column 0 and one on column 3,
+then the type group will have the valux 0bXX0000XX. (I forgot what is
+the Type-Group for quater keys).
+If you have a full key, then you need to replicate the value of type
+group for full key for all 4 type-groups in the row. So if type group
+for full entry is 0x1, then type group will look like this: 0b01010101.
+
+> 
+> >   Maybe if you have a look at Figure 30, it would be a little bit more
+> >   clear. Even there is a register called VCAP_TG_DAT that information
+> >   is storred internally in the VCAP_ENTRY_DAT.
+> 
+> See, this is what I don't understand. You're saying that the Type-Group
+> is stored as part of the entry inside the TCAM, even if you're accessing
+> it through a different set of cache registers? What else is stored in a
+> TCAM row sub-word? The key + mask + Type-Group are stored in the same
+> sub-word, I assume?
+
+I am not sure how is store the mask. But regarding the key and the type
+group you can see it like this.
+
+| subword 3 | TG 3 | subwork 2 | TG 2 | subword 1 | TG 1 | subword 0 | TG 0 |
+
+Where subwork is 96 bits and TG is 2 bits.
+So when you access VCAP_ENTRY_DAT you access only the subwords, when you
+access VCAP_TG_DAT you access TG. When you set the VCAP_ENTRY_DAT you
+don't need to take in consideration that after 96 bits you start to
+shift everything to left by 2. The internal implementation does that.
+And that is the reason why the VCAP_CONST_ENTRY_WIDTH is 384 and
+VCAP_IS2_ENTRY_WIDTH is 376.
+
+> 
+> > - so having those in mind, then VCAP_IS2_ENTRY_WIDTH is the full entry
+> >   length - 8 bits. 384 - 8 = 376.
+> 
+> But there are 4 Type-Group (and therefore 4 entries per row) only if the
+> entries are for quarter keys, am I not correct? And the IS2 code
+> currently uses half keys. Does this variable need to be set differently
+> according to the key size?
+
+I think what I wrote above answer these questions.
+
+> 
+> > - then if I remember correctly then VCAP_CONST_ENTRY_WIDTH should be
+> >   384? or 12 if it is counting the words.
+> 
+> Yes, it is 384 and the VCAP core version is 0.
+
+Well, I still remember it :)
+> 
+> > Does it make sense or am I completly off?
+> 
+> So, in simple words, what is the physical significance of
+> (VCAP_CONST_ENTRY_WIDTH - VCAP_CONST_ENTRY_TG_WIDTH * VCAP_CONST_ENTRY_SWCNT)?
+
+I am not sure that I understand what you want to achive with this or
+something is still wrong.
+
+> To my understanding, it means the size used by all key+mask entries
+> within a TCAM row (therefore without the length of Type-Group fields)
+> when that row contains 4 quarter keys. Divide this number by 2, you get
+> the length of the key, or the length of the mask, for a single sub-word,
+> BUT only assuming that quarter keys are used.
+> So, why does this value have any significance to a driver that is not
+> using quarter keys?
+> 
+> Am _I_ completely off? This is so confusing.
+
+I hope the first part explain a little bit better this. Maybe we should
+ignore the internal representation and try to see it like this. Each
+quater key has a type-group, then a full key is composed of 4 quater
+keys therefore it has 4 type-groups. In case of a full key then all 4
+type-groups in VCAP_TG_DAT needs to have the same value. In case of quater
+key you need to set only the bits in VCAP_TG_DAT of the column where is
+the quater key. In case of half entry then only first or last 4 bits in
+VCAP_TG_DAT needs to be set.
+
+> 
+> Thanks,
+> -Vladimir
+
+-- 
+/Horatiu
