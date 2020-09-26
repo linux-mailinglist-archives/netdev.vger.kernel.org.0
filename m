@@ -2,301 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82EC72798BA
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 13:50:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E3512798C2
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 14:13:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727408AbgIZLuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 07:50:20 -0400
-Received: from esa4.microchip.iphmx.com ([68.232.154.123]:63135 "EHLO
-        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbgIZLuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 07:50:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1601121019; x=1632657019;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=v5AneH4/bSvtOhqkbIOMHS6SIlIZqYFh+fCf0+11W4s=;
-  b=s2fe/X/C1rRrxxbYVaivdLByuDhP7Czff7mi2jBVwjDQNczvQdEePhSq
-   uz0GsaxKy0idWH8kA9b0/9TYiJLG0laaR/8BGYEJ0fNlMHoXofmzMfTxb
-   DCzFmEp47rdkInncNA2+lg0h2lTaw5lV92ydebQPaI1Te9CNqqS10OUwR
-   ZMIis+HuyoNRWU1IyUoiPo9BQB8o85UKTqAPE1KRLg5cr3oP2mMB0IAZz
-   Gonn07JUuvH0AMnzFZwxUNO3H40Se+K/LjpPD0bI2lMPR2k+ZQGB+gW08
-   QYJpx/TDR0lMKsQ3D1Z3YS3c+2qwMdcOoGaGY/8OdOl7rgJFIcFOPW+qk
-   w==;
-IronPort-SDR: PA9HH5WU9+iVa5Sf03NY2iSU7mSSMsvVFSeUQG+Xz8DcA3BgAoahJdQf4SgHzLWESaUXfN5tGB
- 5YxLfnZ4Km8rVxBYLMp333fTnqfaCYMOID691TBWNdJQDJf316XWSxZwctnG1MJZNmfWXtoP8y
- rXLU9gFf6GjW2WOcu65HCDBiiy2V7NBgrWMVPuOwCYr1Jw0KgqAaiFvyhlnSspuzGyapxunksA
- SsZlrglBBW7pigihdQ5onI3qtmLorr7SSWorOLuCg/T34RMDzojxXxv/smk6YPwf1u6/dcdi7Q
- /7I=
-X-IronPort-AV: E=Sophos;i="5.77,305,1596524400"; 
-   d="scan'208";a="88238027"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Sep 2020 04:50:18 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Sat, 26 Sep 2020 04:49:38 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Sat, 26 Sep 2020 04:50:18 -0700
-Date:   Sat, 26 Sep 2020 13:50:17 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     <davem@davemloft.net>, <alexandre.belloni@bootlin.com>,
-        <andrew@lunn.ch>, <f.fainelli@gmail.com>,
-        <vivien.didelot@gmail.com>, <joergen.andreasen@microchip.com>,
-        <allan.nielsen@microchip.com>, <alexandru.marginean@nxp.com>,
-        <claudiu.manoil@nxp.com>, <netdev@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [RFC PATCH net-next 03/14] net: mscc: ocelot: offload multiple
- tc-flower actions in same rule
-Message-ID: <20200926115017.s34t76xptsa5wdlq@soft-dev3.localdomain>
-References: <20200925121855.370863-1-vladimir.oltean@nxp.com>
- <20200925121855.370863-4-vladimir.oltean@nxp.com>
+        id S1728739AbgIZMJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 08:09:24 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:35385 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727072AbgIZMJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 08:09:24 -0400
+Received: by mail-il1-f198.google.com with SMTP id f10so2116272ilq.2
+        for <netdev@vger.kernel.org>; Sat, 26 Sep 2020 05:09:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=G3CO8apcR3uPwIt5d5uUeceIwwic8mBs/bCybEWaLjQ=;
+        b=HzhdOkme8X/Vj1TIljCGpJj8GZi0OJYFROw3wKUzjwK//YYc3KGZ41FimoIR04gT0O
+         cLlk3LbIE3OTiJVKUip3+dNgQmpCXuu14Ca6Anv8hOjUSFHrQoo/A3HgkGUrouWQGPSC
+         p017EaTvfJyR+DwhqrTf7H4fkHhuFbmMpkT93M30FW/7/E43beGR+SPIMiRnOlJ+irNp
+         BQX/GFI9wP2fWhy/Lg84kwhy3CAXWU4+qtvkOj22+anxFmHCkQaj3iWsNntYeZR0T+Ja
+         jdKm3y/gCczzYGB8on6HPchqoAZ5BQqH9tQ6wOk2yTeNFet76+81JQphkSHi+7gz7y11
+         SzIA==
+X-Gm-Message-State: AOAM530NgeX7d3LsYU4+2yxZWGZklqEz3hfXURLPhYyM8p6j2l73fVuV
+        vRKvG8wLDaKpKJUhonAyCkYKKivEQ88OtCIUyCgb+g/x2rRD
+X-Google-Smtp-Source: ABdhPJyaN0zdQONqlEleLweGjbzzZCTrnYKNOLsHlWl9PmaS7iWCpDyfSApiqGSD9t1I8LMoNU1tXmAzYISojgu1u8g4NQb20RFl
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20200925121855.370863-4-vladimir.oltean@nxp.com>
+X-Received: by 2002:a05:6e02:de8:: with SMTP id m8mr3745524ilj.299.1601122163373;
+ Sat, 26 Sep 2020 05:09:23 -0700 (PDT)
+Date:   Sat, 26 Sep 2020 05:09:23 -0700
+In-Reply-To: <00000000000088b1f405b00bcbb8@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ca3fdb05b0364d1a@google.com>
+Subject: Re: WARNING in __cfg80211_ibss_joined (2)
+From:   syzbot <syzbot+7f064ba1704c2466e36d@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 09/25/2020 15:18, Vladimir Oltean wrote:
+syzbot has found a reproducer for the following issue on:
 
-Hi Vladimir,
+HEAD commit:    7c7ec322 Merge tag 'for-linus' of git://git.kernel.org/pub..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10f42f9b900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6184b75aa6d48d66
+dashboard link: https://syzkaller.appspot.com/bug?extid=7f064ba1704c2466e36d
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1757b773900000
 
-> 
-> At this stage, the tc-flower offload of mscc_ocelot can only delegate
-> rules to the VCAP IS2 security enforcement block. These rules have, in
-> hardware, separate bits for policing and for overriding the destination
-> port mask and/or copying to the CPU. So it makes sense that we attempt
-> to expose some more of that low-level complexity instead of simply
-> choosing between a single type of action.
-> 
-> Something similar happens with the VCAP IS1 block, where the same action
-> can contain enable bits for VLAN classification and for QoS
-> classification at the same time.
-> 
-> So model the action structure after the hardware description, and let
-> the high-level ocelot_flower.c construct an action vector from multiple
-> tc actions.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/ethernet/mscc/ocelot_flower.c | 17 +++----
->  drivers/net/ethernet/mscc/ocelot_vcap.c   | 57 +++++++----------------
->  drivers/net/ethernet/mscc/ocelot_vcap.h   | 30 +++++++++---
->  3 files changed, 50 insertions(+), 54 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-> index ec1b6e2572ba..ffd66966b0b7 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_flower.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-> @@ -15,9 +15,6 @@ static int ocelot_flower_parse_action(struct flow_cls_offload *f,
->         u64 rate;
->         int i;
-> 
-> -       if (!flow_offload_has_one_action(&f->rule->action))
-> -               return -EOPNOTSUPP;
-> -
->         if (!flow_action_basic_hw_stats_check(&f->rule->action,
->                                               f->common.extack))
->                 return -EOPNOTSUPP;
-> @@ -25,16 +22,20 @@ static int ocelot_flower_parse_action(struct flow_cls_offload *f,
->         flow_action_for_each(i, a, &f->rule->action) {
->                 switch (a->id) {
->                 case FLOW_ACTION_DROP:
-> -                       filter->action = OCELOT_VCAP_ACTION_DROP;
-> +                       filter->action.mask_mode = OCELOT_MASK_MODE_PERMIT_DENY;
-> +                       filter->action.port_mask = 0;
-> +                       filter->action.police_ena = true;
-> +                       filter->action.pol_ix = OCELOT_POLICER_DISCARD;
->                         break;
->                 case FLOW_ACTION_TRAP:
-> -                       filter->action = OCELOT_VCAP_ACTION_TRAP;
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7f064ba1704c2466e36d@syzkaller.appspotmail.com
 
-You should set also:
-filter->action.mask_mode = OCELOT_MASK_MODE_PERMIT_DENY;
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 8356 at net/wireless/ibss.c:36 __cfg80211_ibss_joined+0x3fe/0x480 net/wireless/ibss.c:36
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 8356 Comm: kworker/u4:7 Not tainted 5.9.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: cfg80211 cfg80211_event_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1d6/0x29e lib/dump_stack.c:118
+ panic+0x2c0/0x800 kernel/panic.c:231
+ __warn+0x227/0x250 kernel/panic.c:600
+ report_bug+0x1b1/0x2e0 lib/bug.c:198
+ handle_bug+0x42/0x80 arch/x86/kernel/traps.c:234
+ exc_invalid_op+0x16/0x40 arch/x86/kernel/traps.c:254
+ asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
+RIP: 0010:__cfg80211_ibss_joined+0x3fe/0x480 net/wireless/ibss.c:36
+Code: 00 00 48 3b 44 24 30 0f 85 8d 00 00 00 48 83 c4 38 5b 41 5c 41 5d 41 5e 41 5f 5d c3 e8 bb 54 9a f9 0f 0b eb d4 e8 b2 54 9a f9 <0f> 0b eb cb e8 a9 54 9a f9 0f 0b e9 82 fd ff ff e8 9d 54 9a f9 0f
+RSP: 0018:ffffc9000a197bd8 EFLAGS: 00010293
+RAX: ffffffff87daa87e RBX: 1ffff11012e3a182 RCX: ffff8880953ae080
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000006 R08: dffffc0000000000 R09: fffffbfff16c80a4
+R10: fffffbfff16c80a4 R11: 0000000000000000 R12: ffff8880971d0c10
+R13: ffff88808ddde418 R14: ffff888077e23350 R15: ffff8880971d0000
+ cfg80211_process_wdev_events+0x3b5/0x4d0 net/wireless/util.c:910
+ cfg80211_process_rdev_events+0x79/0xe0 net/wireless/util.c:936
+ cfg80211_event_work+0x1d/0x30 net/wireless/core.c:320
+ process_one_work+0x789/0xfc0 kernel/workqueue.c:2269
+ worker_thread+0xaa4/0x1460 kernel/workqueue.c:2415
+ kthread+0x37e/0x3a0 drivers/block/aoe/aoecmd.c:1234
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
-> +                       filter->action.cpu_copy_ena = true;
-> +                       filter->action.cpu_qu_num = 0;
->                         break;
->                 case FLOW_ACTION_POLICE:
-> -                       filter->action = OCELOT_VCAP_ACTION_POLICE;
-> +                       filter->action.police_ena = true;
->                         rate = a->police.rate_bytes_ps;
-> -                       filter->pol.rate = div_u64(rate, 1000) * 8;
-> -                       filter->pol.burst = a->police.burst;
-> +                       filter->action.pol.rate = div_u64(rate, 1000) * 8;
-> +                       filter->action.pol.burst = a->police.burst;
->                         break;
->                 default:
->                         return -EOPNOTSUPP;
-> diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-> index 1755979e3f36..e9629a20971c 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_vcap.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-> @@ -10,7 +10,6 @@
->  #include "ocelot_police.h"
->  #include "ocelot_vcap.h"
-> 
-> -#define OCELOT_POLICER_DISCARD 0x17f
->  #define ENTRY_WIDTH 32
-> 
->  enum vcap_sel {
-> @@ -315,35 +314,14 @@ static void is2_action_set(struct ocelot *ocelot, struct vcap_data *data,
->                            struct ocelot_vcap_filter *filter)
->  {
->         const struct vcap_props *vcap = &ocelot->vcap[VCAP_IS2];
-> +       struct ocelot_vcap_action *a = &filter->action;
-> 
-> -       switch (filter->action) {
-> -       case OCELOT_VCAP_ACTION_DROP:
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_PORT_MASK, 0);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_MASK_MODE, 1);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_ENA, 1);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_IDX,
-> -                               OCELOT_POLICER_DISCARD);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_QU_NUM, 0);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_COPY_ENA, 0);
-> -               break;
-> -       case OCELOT_VCAP_ACTION_TRAP:
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_PORT_MASK, 0);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_MASK_MODE, 1);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_ENA, 0);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_IDX, 0);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_QU_NUM, 0);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_COPY_ENA, 1);
-> -               break;
-> -       case OCELOT_VCAP_ACTION_POLICE:
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_PORT_MASK, 0);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_MASK_MODE, 0);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_ENA, 1);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_IDX,
-> -                               filter->pol_ix);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_QU_NUM, 0);
-> -               vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_COPY_ENA, 0);
-> -               break;
-> -       }
-> +       vcap_action_set(vcap, data, VCAP_IS2_ACT_MASK_MODE, a->mask_mode);
-> +       vcap_action_set(vcap, data, VCAP_IS2_ACT_PORT_MASK, a->port_mask);
-> +       vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_ENA, a->police_ena);
-> +       vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_IDX, a->pol_ix);
-> +       vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_QU_NUM, a->cpu_qu_num);
-> +       vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_COPY_ENA, a->cpu_copy_ena);
->  }
-> 
->  static void is2_entry_set(struct ocelot *ocelot, int ix,
-> @@ -693,11 +671,11 @@ static void ocelot_vcap_policer_del(struct ocelot *ocelot,
-> 
->         list_for_each_entry(filter, &block->rules, list) {
->                 index++;
-> -               if (filter->action == OCELOT_VCAP_ACTION_POLICE &&
-> -                   filter->pol_ix < pol_ix) {
-> -                       filter->pol_ix += 1;
-> -                       ocelot_vcap_policer_add(ocelot, filter->pol_ix,
-> -                                               &filter->pol);
-> +               if (filter->action.police_ena &&
-> +                   filter->action.pol_ix < pol_ix) {
-> +                       filter->action.pol_ix += 1;
-> +                       ocelot_vcap_policer_add(ocelot, filter->action.pol_ix,
-> +                                               &filter->action.pol);
->                         is2_entry_set(ocelot, index, filter);
->                 }
->         }
-> @@ -715,10 +693,11 @@ static void ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
->         struct ocelot_vcap_filter *tmp;
->         struct list_head *pos, *n;
-> 
-> -       if (filter->action == OCELOT_VCAP_ACTION_POLICE) {
-> +       if (filter->action.police_ena) {
->                 block->pol_lpr--;
-> -               filter->pol_ix = block->pol_lpr;
-> -               ocelot_vcap_policer_add(ocelot, filter->pol_ix, &filter->pol);
-> +               filter->action.pol_ix = block->pol_lpr;
-> +               ocelot_vcap_policer_add(ocelot, filter->action.pol_ix,
-> +                                       &filter->action.pol);
->         }
-> 
->         block->count++;
-> @@ -918,9 +897,9 @@ static void ocelot_vcap_block_remove_filter(struct ocelot *ocelot,
->         list_for_each_safe(pos, q, &block->rules) {
->                 tmp = list_entry(pos, struct ocelot_vcap_filter, list);
->                 if (tmp->id == filter->id) {
-> -                       if (tmp->action == OCELOT_VCAP_ACTION_POLICE)
-> +                       if (tmp->action.police_ena)
->                                 ocelot_vcap_policer_del(ocelot, block,
-> -                                                       tmp->pol_ix);
-> +                                                       tmp->action.pol_ix);
-> 
->                         list_del(pos);
->                         kfree(tmp);
-> diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.h b/drivers/net/ethernet/mscc/ocelot_vcap.h
-> index 0dfbfc011b2e..b1e77fd874b4 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_vcap.h
-> +++ b/drivers/net/ethernet/mscc/ocelot_vcap.h
-> @@ -11,6 +11,8 @@
->  #include <net/sch_generic.h>
->  #include <net/pkt_cls.h>
-> 
-> +#define OCELOT_POLICER_DISCARD 0x17f
-> +
->  struct ocelot_ipv4 {
->         u8 addr[4];
->  };
-> @@ -174,10 +176,26 @@ struct ocelot_vcap_key_ipv6 {
->         enum ocelot_vcap_bit seq_zero;       /* TCP sequence number is zero */
->  };
-> 
-> -enum ocelot_vcap_action {
-> -       OCELOT_VCAP_ACTION_DROP,
-> -       OCELOT_VCAP_ACTION_TRAP,
-> -       OCELOT_VCAP_ACTION_POLICE,
-> +enum ocelot_mask_mode {
-> +       OCELOT_MASK_MODE_NONE,
-> +       OCELOT_MASK_MODE_PERMIT_DENY,
-> +       OCELOT_MASK_MODE_POLICY,
-> +       OCELOT_MASK_MODE_REDIRECT,
-> +};
-> +
-> +struct ocelot_vcap_action {
-> +       union {
-> +               /* VCAP IS2 */
-> +               struct {
-> +                       bool cpu_copy_ena;
-> +                       u8 cpu_qu_num;
-> +                       enum ocelot_mask_mode mask_mode;
-> +                       unsigned long port_mask;
-> +                       bool police_ena;
-> +                       struct ocelot_policer pol;
-> +                       u32 pol_ix;
-> +               };
-> +       };
->  };
-> 
->  struct ocelot_vcap_stats {
-> @@ -192,7 +210,7 @@ struct ocelot_vcap_filter {
->         u16 prio;
->         u32 id;
-> 
-> -       enum ocelot_vcap_action action;
-> +       struct ocelot_vcap_action action;
->         struct ocelot_vcap_stats stats;
->         unsigned long ingress_port_mask;
-> 
-> @@ -210,8 +228,6 @@ struct ocelot_vcap_filter {
->                 struct ocelot_vcap_key_ipv4 ipv4;
->                 struct ocelot_vcap_key_ipv6 ipv6;
->         } key;
-> -       struct ocelot_policer pol;
-> -       u32 pol_ix;
->  };
-> 
->  int ocelot_vcap_filter_add(struct ocelot *ocelot,
-> --
-> 2.25.1
-> 
-
--- 
-/Horatiu
