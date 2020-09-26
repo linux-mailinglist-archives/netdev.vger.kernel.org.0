@@ -2,204 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B390127976B
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 09:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF6FE279788
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 09:33:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728869AbgIZHAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 03:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbgIZHAz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 03:00:55 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE03C0613CE;
-        Sat, 26 Sep 2020 00:00:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=mdoBXcUze/cqT71aPHoAXg3dd9H5/KKyjvdFROrGqRc=; b=TW6GPMhI+/EkWCbPjwHWeE1G/o
-        X1nAEdYLxAKcYIYSbbdAVNIsb9IbIMZW0sLwHfvz4OnxLd2S3ZGADHz6vK4TfQ9HmwTnYatxeUKl2
-        iVS5hZWXaU5WzTKk0EEbIoxgNoUCQ8tLxo1oaNktlRTqlBGLElcT1rzIIER7y2QdRqGFyDjksvyYh
-        lIewstKX5e4eW0okeKt59Ndsrt8ULVfX7rbNtYUJThBKSOjQMyoYpPRGK+CXvBj30bcchkxluaPV3
-        bs40JLA4irMswidlsFS41v1vqNrdBMCO8wtSJyN1c5uS2zL0akBzywW6growufM9BH2PWrvuHj5n0
-        kry6zRXg==;
-Received: from [46.189.67.162] (helo=localhost)
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kM4CP-0003m3-PE; Sat, 26 Sep 2020 07:00:49 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     viro@zeniv.linux.org.uk, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH] fs: remove ->sendpage
-Date:   Sat, 26 Sep 2020 09:00:49 +0200
-Message-Id: <20200926070049.11513-1-hch@lst.de>
-X-Mailer: git-send-email 2.28.0
+        id S1729021AbgIZHdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 03:33:18 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:21090 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726149AbgIZHdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 03:33:17 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08Q7U93O013751;
+        Sat, 26 Sep 2020 00:33:15 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=gg+ODcnfgXjJnOI1WEG9pWspGjaFMPYqxd78nofyjJw=;
+ b=fCnxI64X3cHDaAJ+ZTeTTAnOOBomWZ2Q7Y0wHUfDvxhEGgXU9icP59JaPUhBtj1ArY6u
+ STzkBMaNBOORYy2lFf7kVPNpYNfVJOIWwSXTJzSw6EyqQiLxzMmMrkYVYxd0elanSDe7
+ BIGFHDFBGLO/k3bs8uIxQifNkNu8C2ZaxhX+VPAfl9UR66EcMJ3BdZpt/tADGTuPqFey
+ kE8M6v1DrJbgxK7ADhev2vLgQRipatqEVgbjeEURSKmifhWrMyR8HWbulhTVPaOieJbQ
+ lz4xn6wanz017cw1OVRSzPE0Dr5idRdnED9wHE4EGbEJSBWJkY6pePmmcl9sI60FvngQ mg== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 33nhgnydc9-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sat, 26 Sep 2020 00:33:15 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 26 Sep
+ 2020 00:33:14 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 26 Sep
+ 2020 00:33:13 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 26 Sep 2020 00:33:13 -0700
+Received: from cavium.com.marvell.com (unknown [10.29.8.35])
+        by maili.marvell.com (Postfix) with ESMTP id CD0513F7040;
+        Sat, 26 Sep 2020 00:33:10 -0700 (PDT)
+From:   Geetha sowjanya <gakula@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <sgoutham@marvell.com>, <lcherian@marvell.com>,
+        <jerinj@marvell.com>, <davem@davemloft.net>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        "Geetha sowjanya" <gakula@marvell.com>
+Subject: [net PATCH] octeontx2-af: Fix enable/disable of default NPC entries
+Date:   Sat, 26 Sep 2020 12:27:00 +0530
+Message-ID: <1601103420-1591-1-git-send-email-gakula@marvell.com>
+X-Mailer: git-send-email 1.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-26_06:2020-09-24,2020-09-26 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-->sendpage is only called from generic_splice_sendpage.  The only user of
-generic_splice_sendpage is socket_file_ops, which is also the only
-instance that actually implements ->sendpage.  Remove the ->sendpage file
-operation and just open code the logic in the socket code.
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Packet replication feature present in Octeontx2
+is a hardware linked list of PF and its VF
+interfaces so that broadcast packets are sent
+to all interfaces present in the list. It is
+driver job to add and delete a PF/VF interface
+to/from the list when the interface is brought
+up and down. This patch fixes the
+npc_enadis_default_entries function to handle
+broadcast replication properly if packet replication
+feature is present.
+
+Fixes: 40df309e4166
+("octeontx2-af: Support to enable/disable default MCAM entries")
+
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- fs/splice.c        | 45 ---------------------------------------------
- include/linux/fs.h |  3 ---
- net/socket.c       | 33 ++++++++++++++++++++-------------
- 3 files changed, 20 insertions(+), 61 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  3 ++-
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |  5 ++---
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    | 26 ++++++++++++++++------
+ 3 files changed, 23 insertions(+), 11 deletions(-)
 
-diff --git a/fs/splice.c b/fs/splice.c
-index d7c8a7c4db07ff..f644e293098dac 100644
---- a/fs/splice.c
-+++ b/fs/splice.c
-@@ -425,30 +425,6 @@ static ssize_t default_file_splice_read(struct file *in, loff_t *ppos,
- 	return res;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index dcf25a0..b89dde2 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -463,6 +463,7 @@ void rvu_nix_freemem(struct rvu *rvu);
+ int rvu_get_nixlf_count(struct rvu *rvu);
+ void rvu_nix_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int npalf);
+ int nix_get_nixlf(struct rvu *rvu, u16 pcifunc, int *nixlf, int *nix_blkaddr);
++int nix_update_bcast_mce_list(struct rvu *rvu, u16 pcifunc, bool add);
+ 
+ /* NPC APIs */
+ int rvu_npc_init(struct rvu *rvu);
+@@ -477,7 +478,7 @@ void rvu_npc_disable_promisc_entry(struct rvu *rvu, u16 pcifunc, int nixlf);
+ void rvu_npc_enable_promisc_entry(struct rvu *rvu, u16 pcifunc, int nixlf);
+ void rvu_npc_install_bcast_match_entry(struct rvu *rvu, u16 pcifunc,
+ 				       int nixlf, u64 chan);
+-void rvu_npc_disable_bcast_entry(struct rvu *rvu, u16 pcifunc);
++void rvu_npc_enable_bcast_entry(struct rvu *rvu, u16 pcifunc, bool enable);
+ int rvu_npc_update_rxvlan(struct rvu *rvu, u16 pcifunc, int nixlf);
+ void rvu_npc_disable_mcam_entries(struct rvu *rvu, u16 pcifunc, int nixlf);
+ void rvu_npc_disable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 01a7931..0fc7082 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -17,7 +17,6 @@
+ #include "npc.h"
+ #include "cgx.h"
+ 
+-static int nix_update_bcast_mce_list(struct rvu *rvu, u16 pcifunc, bool add);
+ static int rvu_nix_get_bpid(struct rvu *rvu, struct nix_bp_cfg_req *req,
+ 			    int type, int chan_id);
+ 
+@@ -2020,7 +2019,7 @@ static int nix_update_mce_list(struct nix_mce_list *mce_list,
+ 	return 0;
  }
  
--/*
-- * Send 'sd->len' bytes to socket from 'sd->file' at position 'sd->pos'
-- * using sendpage(). Return the number of bytes sent.
-- */
--static int pipe_to_sendpage(struct pipe_inode_info *pipe,
--			    struct pipe_buffer *buf, struct splice_desc *sd)
--{
--	struct file *file = sd->u.file;
--	loff_t pos = sd->pos;
--	int more;
--
--	if (!likely(file->f_op->sendpage))
--		return -EINVAL;
--
--	more = (sd->flags & SPLICE_F_MORE) ? MSG_MORE : 0;
--
--	if (sd->len < sd->total_len &&
--	    pipe_occupancy(pipe->head, pipe->tail) > 1)
--		more |= MSG_SENDPAGE_NOTLAST;
--
--	return file->f_op->sendpage(file, buf->page, buf->offset,
--				    sd->len, &pos, more);
--}
--
- static void wakeup_pipe_writers(struct pipe_inode_info *pipe)
+-static int nix_update_bcast_mce_list(struct rvu *rvu, u16 pcifunc, bool add)
++int nix_update_bcast_mce_list(struct rvu *rvu, u16 pcifunc, bool add)
  {
- 	smp_mb();
-@@ -815,27 +791,6 @@ static ssize_t default_file_splice_write(struct pipe_inode_info *pipe,
- 	return ret;
+ 	int err = 0, idx, next_idx, last_idx;
+ 	struct nix_mce_list *mce_list;
+@@ -2065,7 +2064,7 @@ static int nix_update_bcast_mce_list(struct rvu *rvu, u16 pcifunc, bool add)
+ 
+ 	/* Disable MCAM entry in NPC */
+ 	if (!mce_list->count) {
+-		rvu_npc_disable_bcast_entry(rvu, pcifunc);
++		rvu_npc_enable_bcast_entry(rvu, pcifunc, false);
+ 		goto end;
+ 	}
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+index 0a21408..fbaf9bc 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -530,7 +530,7 @@ void rvu_npc_install_bcast_match_entry(struct rvu *rvu, u16 pcifunc,
+ 			      NIX_INTF_RX, &entry, true);
  }
  
--/**
-- * generic_splice_sendpage - splice data from a pipe to a socket
-- * @pipe:	pipe to splice from
-- * @out:	socket to write to
-- * @ppos:	position in @out
-- * @len:	number of bytes to splice
-- * @flags:	splice modifier flags
-- *
-- * Description:
-- *    Will send @len bytes from the pipe to a network socket. No data copying
-- *    is involved.
-- *
-- */
--ssize_t generic_splice_sendpage(struct pipe_inode_info *pipe, struct file *out,
--				loff_t *ppos, size_t len, unsigned int flags)
--{
--	return splice_from_pipe(pipe, out, ppos, len, flags, pipe_to_sendpage);
--}
--
--EXPORT_SYMBOL(generic_splice_sendpage);
--
- /*
-  * Attempt to initiate a splice from pipe to file.
-  */
-diff --git a/include/linux/fs.h b/include/linux/fs.h
-index 7519ae003a082c..1133b71417d28a 100644
---- a/include/linux/fs.h
-+++ b/include/linux/fs.h
-@@ -1819,7 +1819,6 @@ struct file_operations {
- 	int (*fsync) (struct file *, loff_t, loff_t, int datasync);
- 	int (*fasync) (int, struct file *, int);
- 	int (*lock) (struct file *, int, struct file_lock *);
--	ssize_t (*sendpage) (struct file *, struct page *, int, size_t, loff_t *, int);
- 	unsigned long (*get_unmapped_area)(struct file *, unsigned long, unsigned long, unsigned long, unsigned long);
- 	int (*check_flags)(int);
- 	int (*flock) (struct file *, int, struct file_lock *);
-@@ -3045,8 +3044,6 @@ extern ssize_t generic_file_splice_read(struct file *, loff_t *,
- 		struct pipe_inode_info *, size_t, unsigned int);
- extern ssize_t iter_file_splice_write(struct pipe_inode_info *,
- 		struct file *, loff_t *, size_t, unsigned int);
--extern ssize_t generic_splice_sendpage(struct pipe_inode_info *pipe,
--		struct file *out, loff_t *, size_t len, unsigned int flags);
- extern long do_splice_direct(struct file *in, loff_t *ppos, struct file *out,
- 		loff_t *opos, size_t len, unsigned int flags);
- 
-diff --git a/net/socket.c b/net/socket.c
-index 0c0144604f818a..dd93bbd61c22d3 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -123,8 +123,8 @@ static long compat_sock_ioctl(struct file *file,
- 			      unsigned int cmd, unsigned long arg);
- #endif
- static int sock_fasync(int fd, struct file *filp, int on);
--static ssize_t sock_sendpage(struct file *file, struct page *page,
--			     int offset, size_t size, loff_t *ppos, int more);
-+static ssize_t sock_splice_write(struct pipe_inode_info *pipe,
-+		struct file *out, loff_t *ppos, size_t len, unsigned int flags);
- static ssize_t sock_splice_read(struct file *file, loff_t *ppos,
- 				struct pipe_inode_info *pipe, size_t len,
- 				unsigned int flags);
-@@ -159,8 +159,7 @@ static const struct file_operations socket_file_ops = {
- 	.mmap =		sock_mmap,
- 	.release =	sock_close,
- 	.fasync =	sock_fasync,
--	.sendpage =	sock_sendpage,
--	.splice_write = generic_splice_sendpage,
-+	.splice_write = sock_splice_write,
- 	.splice_read =	sock_splice_read,
- 	.show_fdinfo =	sock_show_fdinfo,
- };
-@@ -929,19 +928,27 @@ int kernel_recvmsg(struct socket *sock, struct msghdr *msg,
- }
- EXPORT_SYMBOL(kernel_recvmsg);
- 
--static ssize_t sock_sendpage(struct file *file, struct page *page,
--			     int offset, size_t size, loff_t *ppos, int more)
-+static int pipe_to_sendpage(struct pipe_inode_info *pipe,
-+			    struct pipe_buffer *buf, struct splice_desc *sd)
+-void rvu_npc_disable_bcast_entry(struct rvu *rvu, u16 pcifunc)
++void rvu_npc_enable_bcast_entry(struct rvu *rvu, u16 pcifunc, bool enable)
  {
--	struct socket *sock;
--	int flags;
-+	struct socket *sock = sd->u.file->private_data;
-+	int flags = 0;
+ 	struct npc_mcam *mcam = &rvu->hw->mcam;
+ 	int blkaddr, index;
+@@ -543,7 +543,7 @@ void rvu_npc_disable_bcast_entry(struct rvu *rvu, u16 pcifunc)
+ 	pcifunc = pcifunc & ~RVU_PFVF_FUNC_MASK;
  
--	sock = file->private_data;
-+	if (sd->u.file->f_flags & O_NONBLOCK)
-+		flags |= MSG_DONTWAIT;
-+	if (sd->flags & SPLICE_F_MORE)
-+		flags |= MSG_MORE;
-+	if (sd->len < sd->total_len &&
-+	    pipe_occupancy(pipe->head, pipe->tail) > 1)
-+		flags |= MSG_SENDPAGE_NOTLAST;
- 
--	flags = (file->f_flags & O_NONBLOCK) ? MSG_DONTWAIT : 0;
--	/* more is a combination of MSG_MORE and MSG_SENDPAGE_NOTLAST */
--	flags |= more;
-+	return kernel_sendpage(sock, buf->page, buf->offset, sd->len, flags);
-+}
- 
--	return kernel_sendpage(sock, page, offset, size, flags);
-+static ssize_t sock_splice_write(struct pipe_inode_info *pipe,
-+		struct file *out, loff_t *ppos, size_t len, unsigned int flags)
-+{
-+	return splice_from_pipe(pipe, out, ppos, len, flags, pipe_to_sendpage);
+ 	index = npc_get_nixlf_mcam_index(mcam, pcifunc, 0, NIXLF_BCAST_ENTRY);
+-	npc_enable_mcam_entry(rvu, mcam, blkaddr, index, false);
++	npc_enable_mcam_entry(rvu, mcam, blkaddr, index, enable);
  }
  
- static ssize_t sock_splice_read(struct file *file, loff_t *ppos,
+ void rvu_npc_update_flowkey_alg_idx(struct rvu *rvu, u16 pcifunc, int nixlf,
+@@ -622,23 +622,35 @@ static void npc_enadis_default_entries(struct rvu *rvu, u16 pcifunc,
+ 					 nixlf, NIXLF_UCAST_ENTRY);
+ 	npc_enable_mcam_entry(rvu, mcam, blkaddr, index, enable);
+ 
+-	/* For PF, ena/dis promisc and bcast MCAM match entries */
+-	if (pcifunc & RVU_PFVF_FUNC_MASK)
++	/* For PF, ena/dis promisc and bcast MCAM match entries.
++	 * For VFs add/delete from bcast list when RX multicast
++	 * feature is present.
++	 */
++	if (pcifunc & RVU_PFVF_FUNC_MASK && !rvu->hw->cap.nix_rx_multicast)
+ 		return;
+ 
+ 	/* For bcast, enable/disable only if it's action is not
+ 	 * packet replication, incase if action is replication
+-	 * then this PF's nixlf is removed from bcast replication
++	 * then this PF/VF's nixlf is removed from bcast replication
+ 	 * list.
+ 	 */
+-	index = npc_get_nixlf_mcam_index(mcam, pcifunc,
++	index = npc_get_nixlf_mcam_index(mcam, pcifunc & ~RVU_PFVF_FUNC_MASK,
+ 					 nixlf, NIXLF_BCAST_ENTRY);
+ 	bank = npc_get_bank(mcam, index);
+ 	*(u64 *)&action = rvu_read64(rvu, blkaddr,
+ 	     NPC_AF_MCAMEX_BANKX_ACTION(index & (mcam->banksize - 1), bank));
+-	if (action.op != NIX_RX_ACTIONOP_MCAST)
++
++	/* VFs will not have BCAST entry */
++	if (action.op != NIX_RX_ACTIONOP_MCAST &&
++	    !(pcifunc & RVU_PFVF_FUNC_MASK)) {
+ 		npc_enable_mcam_entry(rvu, mcam,
+ 				      blkaddr, index, enable);
++	} else {
++		nix_update_bcast_mce_list(rvu, pcifunc, enable);
++		/* Enable PF's BCAST entry for packet replication */
++		rvu_npc_enable_bcast_entry(rvu, pcifunc, enable);
++	}
++
+ 	if (enable)
+ 		rvu_npc_enable_promisc_entry(rvu, pcifunc, nixlf);
+ 	else
 -- 
-2.28.0
+2.7.4
 
