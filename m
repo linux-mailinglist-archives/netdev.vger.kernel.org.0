@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED884279B64
+	by mail.lfdr.de (Postfix) with ESMTP id 591D5279B63
 	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 19:31:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729527AbgIZRbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729587AbgIZRbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 26 Sep 2020 13:31:33 -0400
 Received: from mail-eopbgr50080.outbound.protection.outlook.com ([40.107.5.80]:18948
         "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726183AbgIZRbb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Sep 2020 13:31:31 -0400
+        id S1729412AbgIZRbc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Sep 2020 13:31:32 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i7BENRrTbEnHgfzmYQO2j+pY8bjsRrEK1b7uMw+S9yuNoV7HXkvsfC5j+0cedrbjPq+pScw/QjSgQDQJcFC+PdMZXauZbRZywHDW7tMJYhkxLjKqqU4rqCloZU0S3pY72tZRSDLbkiLQqtBJ/soadZWAgNTD1clr2ilbCsaS4y4YfdRUeeG6zi3j+EQo+gxUQ+OLJPsAgMcn91p0j7Sw0worpXd3l8/G3I8wt3bedWagk1cg1kp0/IIDKxLbEGW8jqfrE1318GcorsgrIZUPsIINPGp65yMyaxux7xtJxi7W+le4gYsDMNA2M706j67Zf8IzoIHgTLn72gXGr/cSbA==
+ b=UZaWU+BK1PSl3Io23sqwj0SKIkEFYkZGER3YiACafPg8pumKPOU+qrJtUHQgAZ/XnZm7dBKGpkp3dIT++forDHST7F+d+FHbxERAEoabh53U6zrzIT+FAa6GyHt1/kd8KkD3iY61sy0VNhMZx1mkClXA011aYd5MwDgcrZF9rEsAQGwj2Zc1xMkYYtOC8JcXljnzME5RPhYWRQdXx6GqnoCbY7Exki9H/s86fAHt6DzxQS+Obx/XDhpMVdpzBUOdphA8fqXzwCSnvSaVNstEkx/jDMQMuu4tQMR3uOpU+Ufnmud/2i5BEtV9d//2MZZpiYPHuk5ZkHJuDAcqXCCwEg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0RIcxaxmFJdBGAMiaDyTTjJVY6fc+FBB4x/rbbjqpFU=;
- b=GmxryNasaa08g0nHJETzVXFnD2xS/XiSFWoGOksKIn2JxdXB6TW024z3HvSd76tEvswGILRwPENfwUV75coIVL1CC2/gjiWk4AHxdodgwVICBEHwi3JFR4xZByDfkHbBfuEZAWA4zD9LQHk+LRmWe4sn/nf7t7UCDLq/D4iOQbcYW/oSm/iUlWuNpngYRH3UBWXmX4fOcU2bARUyvOmKZA4xxLSeWfaeZCRKiZFSzGNPVZqydU8vYoMI865r9QHXrjGHsQKTzLgqIVK4XgmsF7i54ZjV7u7cPEg+ahKctKGNochOrmq1YDkk1l26rnpUqr6u/c6UGa3yVmEy30bSAg==
+ bh=aN8rHFXz6ElyD9GdMYjuJo8YIJudH4T6Zp6WxH11Ngs=;
+ b=fbpMbjFZBNaYvqpWiqEE5RSfmpKeJgMfJZQRkIw78U4r9v+88QR/ndmGzzHQBKPA/TvXnOm+U0J0egTBgmBCyUM5tDBvcn0CCPkCOESLdjEPqxHDF8Vy65nV8YATjTFhypxAfXPgvwH5eMSAQ4xbpPvAMWxQ1bqR5u4Rq+tAxXm5huMBFA0TwwpdgIqrLzeiIWrqvYx2KYev/vTBRZft9B/1OwIQwKMeOCoT7dPTlD13Jzn532dPozos1wcBBCh/Fm6nO6VFE9v0QyI739ZvmvmRnddtmMqGrxeX6uQC1yBIAN4gqXBXwd+5n0kzlZES6ggfqDPyDf65P09yIF8+sA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0RIcxaxmFJdBGAMiaDyTTjJVY6fc+FBB4x/rbbjqpFU=;
- b=YkYkzZJB4s/6jMDMgqr7xm4GjHL9uHHV2akzif/cPRgPCTZ2WI8ceZCZzM3kpIhRDWbsGfykOWq7Ixi9CKFJtko0iRk2aPmjiNRU5zFI8S1kHz39gJX8J7gCan5KO9n/TZHCUvkL7KuUqrkFuxxrNkOU9OKTsf0VhMA7jglS2gM=
+ bh=aN8rHFXz6ElyD9GdMYjuJo8YIJudH4T6Zp6WxH11Ngs=;
+ b=jAha6KCLzfSMg6ZyVXZ3+Coblu1KnOL7EB/2sMJ9AxeuZvYUeDLUx3tlUwvGKitdTv6Kw71njSchMFjJV8aMBHaUcmOQP4yVfNb1TE38m6S4TAlTwj3+m8GpSX1jT74vsRdJr5n97irf8tL79Sh8QWenMXBI+78mA+yQ/m0iEFY=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VI1PR04MB4813.eurprd04.prod.outlook.com (2603:10a6:803:51::28) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20; Sat, 26 Sep
- 2020 17:31:27 +0000
+ 2020 17:31:28 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3412.024; Sat, 26 Sep 2020
- 17:31:27 +0000
+ 17:31:28 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         kuba@kernel.org
-Subject: [PATCH v2 net-next 07/16] net: dsa: tag_ar8331: use generic flow dissector procedure
-Date:   Sat, 26 Sep 2020 20:30:59 +0300
-Message-Id: <20200926173108.1230014-8-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 08/16] net: dsa: tag_brcm: use generic flow dissector procedure
+Date:   Sat, 26 Sep 2020 20:31:00 +0300
+Message-Id: <20200926173108.1230014-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200926173108.1230014-1-vladimir.oltean@nxp.com>
 References: <20200926173108.1230014-1-vladimir.oltean@nxp.com>
@@ -54,58 +54,117 @@ X-ClientProxiedBy: AM0PR01CA0095.eurprd01.prod.exchangelabs.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.217.212) by AM0PR01CA0095.eurprd01.prod.exchangelabs.com (2603:10a6:208:10e::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.22 via Frontend Transport; Sat, 26 Sep 2020 17:31:26 +0000
+Received: from localhost.localdomain (188.25.217.212) by AM0PR01CA0095.eurprd01.prod.exchangelabs.com (2603:10a6:208:10e::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.22 via Frontend Transport; Sat, 26 Sep 2020 17:31:27 +0000
 X-Mailer: git-send-email 2.25.1
 X-Originating-IP: [188.25.217.212]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 0e18c5be-9272-4af6-defa-08d86241ff60
+X-MS-Office365-Filtering-Correlation-Id: fdd2e5d8-b911-446b-6e4d-08d862420015
 X-MS-TrafficTypeDiagnostic: VI1PR04MB4813:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB4813BEECBFF6525DA528A958E0370@VI1PR04MB4813.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB48136DDC5001CEF4EF9DFB0BE0370@VI1PR04MB4813.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 13/xM1ilsRSgTjme3Sit6PC/x9O4JlK19klLI/KcYei9FL2SpTaH1at0woA9lh5mUy5wEFlEg32lQHlIsWCHUbz6ExMM/gmB0OnJRnHoHYG1eqrplXPt8XSiSTrzVoBMD+LeWcl+CV+KxlGHkgDkbNJH5xpZnqRj/QMJ72HZsiWeu28Amhxam1Dj9kP7t7ecoT8rpK9S4kMANXoWnvXQZf4SWKGJ4M3m04DYJ9T6xbz4pRQ9pjuiWOCVAZBh36TH25URNdPWGLRS6of5H0y5QCYLwxb3heLVtlsUXQi8p0rsTb1crpTym9YU6pQrBe+BTM6oESNNSVF9ah0oz1yVIlSOLsx5ySq5+kW4dhDgXiZ7hUeyIS2qJwWaOsEWJhlrrpI+GQ0pUgmSulYHkHegNAaQYF6XSxizhBupaIuzoVGEpBbeesICq5vC53iK7et6HqTbUkUhXPcy0gQwmmm7EQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(136003)(39860400002)(396003)(366004)(6666004)(316002)(4744005)(2906002)(6512007)(956004)(26005)(6486002)(2616005)(478600001)(8676002)(52116002)(83380400001)(8936002)(5660300002)(4326008)(86362001)(44832011)(6506007)(69590400008)(66476007)(66946007)(66556008)(1076003)(16526019)(36756003)(186003)(41533002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: zK7/xIKea5jW+JYl7tUBM8oGUZ5FgBHsnFDvwQSplXTNWZHsd9Fi8S08eG4yG1JCsMYA5QW7YDXCIorvkojXXrOyUAPm/mpQbD40W0lGrcW/hJPeUilzJivMK1sHHxoT6YNqPYWWYTiFA1n08+/wGy/44ClLC+IZHnuznj3EiMbaiENydsgW77GYp1e6k9CP23rgxjHgUHAhUaaeejtpB318uMw23i8FiwtvlRHykEhFfgxSktDEU0t2RSwfPAw1dDCIgW6cWhQ5OS6j59M3kHpUySKVMLZi/JS61RusVPnJXWJjzESYAZtOA0x2qwkT1oPcbMZD+ggh2hPCGTAkZtDd8hOFN67vzotDXRU0hbd1SVnWxXeqwH6we+uXB0R9EJuxqxs53AIxc3uSNF79qwVyNvqM2rJY+AY3HiVcyas3aDb4EfSup0M4acpJEf7xLZ+1lN1WUsjrvKIcYV8dRu4IExxtJ5KEwdOSN3RRGZeXVeaI7J08IyVeFUiRxZndm/KHsrbQ9cHYWwV3vRcSmbnhzCFW5vHgEpFxVJl/vFPEQ38JnKjGZAYhwnWrkmS3J0X3a+w1pUOACbgCYlJVPEQbIBDQhKDOLLzB5bCgKoV4YVa3zB24QIbLyZDRk4B8/C+Wd5ZFup1835+42LVphg==
+X-Microsoft-Antispam-Message-Info: G2KBnkz2K3ih3PWw/XU2kw/rhi7raq33zK4ZAa/3YSTtFHC7Ey07XRxsreJjMo/acMhKqjcT7zsoReHS6YN0sVloXmrt6kpgfO47mgnRerLMt5JfaK4OBj2eelZkVWX8wFkVbqjmcSkBNOkcYpc0+y7zNhNznBEH+R80KmoutGbv82AGbksjASbUV9KxCJp5IJCe+ez9BopSrvjkqA7tlvgPvB1gKHSJ4TOlE8gTp9i06BoVZqfJLxL77jp+8JI6GIEq0UzzIt/jaqkVRUVSZmXdAsaGLGjGYsyDm5/7u+tJos2cz4GwfKvWhs6aqR9sT3Oo4tHaIRh8eJfwZJh4Rf6WbaF5JKg2mjSqXCoNHNx+5ivI+wJeCHqGqVMKywmpO4sBBHmDOLhhpx72NrDJWvJXngpK2A1N4WcUxAsbDNqmP9628YDtR2Mi6Q6xx43nka1E9LlPZOSCht9FaSULxA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(136003)(39860400002)(396003)(366004)(6666004)(316002)(2906002)(6512007)(956004)(26005)(6486002)(2616005)(478600001)(8676002)(52116002)(83380400001)(8936002)(5660300002)(4326008)(86362001)(44832011)(6506007)(69590400008)(66476007)(66946007)(66556008)(1076003)(16526019)(36756003)(186003)(41533002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: jjlKHF0m+BRaPYASgyg7qMmYumnLPZeqZ2rChpp1pMIFD5VMiTQVUmFLadPMPwQSd69bqDqN7cwwdZX4mDOcr7iXlSOaso4M2RgrAgP8cuEqPIVTBCEV1ZbFyI+x8u5hDcfey9kg41a6hkotWbmdF7VJiBm2jX6aPdtwc02UjeqfDPP+JXB+YPSXsbyH+OLH4bLWlr+jkf/YkgUpSnBAkN19FD+yOg8Fso5qsjUcxPml65GtAxzllKtf/xv/QbEsgdtxIR4RkJAb48ThsAJL3NgUmntVaPnmYDP8PfbCYlmWWtfV3JgMFmB/ieznh0uknEQRafdyw4Z5zs2XHl2ZsrPvRtYYsKTN58mN3bqoVlxMJv69/ClfwVzSvzCgXkPbZWO7KzDj5Hcrh5l3F4IW7hcwn802JiTxWmW08qLMDOvaKW9BfNEZcswUPfSfnS7gK+CpJPx1mjGgxiognP3l61C1Wd46ql3/o0NjC5AjmmfWjwmpEouRMYEQYWjA+vtdrMVIFmcK/kysMJ1muTRTTaL6XLNfSRxk3sPHTev2Go0u7iYfHEGthBzx01ChR+9Lxm+LECHCK6pvsp4T5V8odTc1NXDEtEuvmnes4wWEj+GVzgdPKYiA+Gx351jhaxL0LGQY6IjX1pNxdHfchK9jPg==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e18c5be-9272-4af6-defa-08d86241ff60
+X-MS-Exchange-CrossTenant-Network-Message-Id: fdd2e5d8-b911-446b-6e4d-08d862420015
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2020 17:31:27.3008
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2020 17:31:28.3762
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rlsGICYq0oVrWaS3qpZ3JOjpS6KDjs81+MiXHFuZzpHDmUO2ob0LHz39kejhExeDFAvfzLC6YJVAIIwzTRYaBg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1kTdWlU61OB+QV2dCIfESUCWJpA9J9+2oIod2L2LugAGdJaVYUz+ypqNxB8cBAVU0rwQ6cTJPT785TtyVcfDCg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4813
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The switch inside these Atheros chips seems to place the DSA tag before
-the Ethernet destination MAC address, so it can use the generic flow
-dissector procedure which accounts for a header displacement equal with
-the tag length.
+There are 2 Broadcom tags in use, one places the DSA tag before the
+Ethernet destination MAC address, and the other before the EtherType.
+Nonetheless, both displace the rest of the headers, so this tagger can
+use the generic flow dissector procedure which accounts for that.
 
-Cc: Oleksij Rempel <linux@rempel-privat.de>
+The ASCII art drawing is a good reference though, so keep it but move it
+somewhere else.
+
+Cc: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/tag_ar9331.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/dsa/tag_brcm.c | 36 ++++++++++++++----------------------
+ 1 file changed, 14 insertions(+), 22 deletions(-)
 
-diff --git a/net/dsa/tag_ar9331.c b/net/dsa/tag_ar9331.c
-index 55b00694cdba..5a7e13e36aa7 100644
---- a/net/dsa/tag_ar9331.c
-+++ b/net/dsa/tag_ar9331.c
-@@ -89,6 +89,7 @@ static const struct dsa_device_ops ar9331_netdev_ops = {
- 	.xmit	= ar9331_tag_xmit,
- 	.rcv	= ar9331_tag_rcv,
- 	.overhead = AR9331_HDR_LEN,
+diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
+index 610bc7469667..880736e39d3a 100644
+--- a/net/dsa/tag_brcm.c
++++ b/net/dsa/tag_brcm.c
+@@ -107,6 +107,18 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
+ 	return skb;
+ }
+ 
++/* Frames with this tag have one of these two layouts:
++ * -----------------------------------
++ * | MAC DA | MAC SA | 4b tag | Type | DSA_TAG_PROTO_BRCM
++ * -----------------------------------
++ * -----------------------------------
++ * | 4b tag | MAC DA | MAC SA | Type | DSA_TAG_PROTO_BRCM_PREPEND
++ * -----------------------------------
++ * In both cases, at receive time, skb->data points 2 bytes before the actual
++ * Ethernet type field and we have an offset of 4bytes between where skb->data
++ * and where the payload starts. So the same low-level receive function can be
++ * used.
++ */
+ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
+ 				       struct net_device *dev,
+ 				       struct packet_type *pt,
+@@ -149,26 +161,6 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
+ 
+ 	return skb;
+ }
+-
+-static void brcm_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
+-				  int *offset)
+-{
+-	/* We have been called on the DSA master network device after
+-	 * eth_type_trans() which pulled the Ethernet header already.
+-	 * Frames have one of these two layouts:
+-	 * -----------------------------------
+-	 * | MAC DA | MAC SA | 4b tag | Type | DSA_TAG_PROTO_BRCM
+-	 * -----------------------------------
+-	 * -----------------------------------
+-	 * | 4b tag | MAC DA | MAC SA | Type | DSA_TAG_PROTO_BRCM_PREPEND
+-	 * -----------------------------------
+-	 * skb->data points 2 bytes before the actual Ethernet type field and
+-	 * we have an offset of 4bytes between where skb->data and where the
+-	 * payload starts.
+-	 */
+-	*offset = BRCM_TAG_LEN;
+-	*proto = ((__be16 *)skb->data)[1];
+-}
+ #endif
+ 
+ #if IS_ENABLED(CONFIG_NET_DSA_TAG_BRCM)
+@@ -204,7 +196,7 @@ static const struct dsa_device_ops brcm_netdev_ops = {
+ 	.xmit	= brcm_tag_xmit,
+ 	.rcv	= brcm_tag_rcv,
+ 	.overhead = BRCM_TAG_LEN,
+-	.flow_dissect = brcm_tag_flow_dissect,
 +	.flow_dissect = dsa_tag_generic_flow_dissect,
  };
  
- MODULE_LICENSE("GPL v2");
+ DSA_TAG_DRIVER(brcm_netdev_ops);
+@@ -239,7 +231,7 @@ static const struct dsa_device_ops brcm_prepend_netdev_ops = {
+ 	.xmit	= brcm_tag_xmit_prepend,
+ 	.rcv	= brcm_tag_rcv_prepend,
+ 	.overhead = BRCM_TAG_LEN,
+-	.flow_dissect = brcm_tag_flow_dissect,
++	.flow_dissect = dsa_tag_generic_flow_dissect,
+ };
+ 
+ DSA_TAG_DRIVER(brcm_prepend_netdev_ops);
 -- 
 2.25.1
 
