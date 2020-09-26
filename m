@@ -2,139 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B91F427983B
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 12:09:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C15F127987E
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 12:45:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726382AbgIZKIy convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 26 Sep 2020 06:08:54 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:33932 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726149AbgIZKIx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 06:08:53 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-239-y59-RWZIOgO1ecIgUYA2Aw-1; Sat, 26 Sep 2020 11:08:48 +0100
-X-MC-Unique: y59-RWZIOgO1ecIgUYA2Aw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Sat, 26 Sep 2020 11:08:47 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Sat, 26 Sep 2020 11:08:47 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Andrew Lunn' <andrew@lunn.ch>
-CC:     'Kai-Heng Feng' <kai.heng.feng@canonical.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2] e1000e: Increase iteration on polling MDIC ready bit
-Thread-Topic: [PATCH v2] e1000e: Increase iteration on polling MDIC ready bit
-Thread-Index: AQHWkox4cI4WCPtPmUq6IlIoeEXohal5Cn3AgAA/UYCAAWddMA==
-Date:   Sat, 26 Sep 2020 10:08:47 +0000
-Message-ID: <1b4fadba2e204f6abd4ef6e02d84beed@AcuMS.aculab.com>
-References: <20200923074751.10527-1-kai.heng.feng@canonical.com>
- <20200924150958.18016-1-kai.heng.feng@canonical.com>
- <20200924155355.GC3821492@lunn.ch>
- <8A08B3A7-8368-48EC-A2DD-B5D5F3EA94C5@canonical.com>
- <2f48175dce974ea689bfd26b9fc2245a@AcuMS.aculab.com>
- <20200925132903.GB3850848@lunn.ch>
-In-Reply-To: <20200925132903.GB3850848@lunn.ch>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S1728861AbgIZKo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 06:44:57 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:64468 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726849AbgIZKox (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 06:44:53 -0400
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08QAO97I074351;
+        Sat, 26 Sep 2020 06:44:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=iDELbzXbzEsXXcVFgko5fSvNKFL+f7Dld8fkBhIjkH8=;
+ b=oNwqPBkVjpH3TFIRLf/iZFHEJ4vXdk/Jk/OBIpLQVTOW8hQ1i019m3hdOehH4qhjVFFb
+ tbCeAbwr/J78aDCY3j/tQpWt1qnAwE8P4h69Glpc0J+qbK0WMFAJOXhlThJGOBDUA1Hz
+ bGrEFPRqURhZv3SQPwq/U3w+tjdFQeT4kr98E36SRHjLmhn6nkUXxD8tu5XGIslCL3lz
+ c2sSyQv/7A6NENjquBnFluiql9LAx/s1SMcJLSHf3JbCxvCmlGx5UorsEahXb1umXpjt
+ 4uKJ6B+4rAnm6Vt49mvZwcsnLacn9z5cLmCY3WX6Xk0QujjMVVxtNy57o8WyVfWtljLM 7g== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33t3uyg9wv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 26 Sep 2020 06:44:49 -0400
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08QAg5xW023007;
+        Sat, 26 Sep 2020 10:44:47 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma01fra.de.ibm.com with ESMTP id 33sw9884nv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 26 Sep 2020 10:44:47 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08QAiiZn32768286
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 26 Sep 2020 10:44:44 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B1434A4054;
+        Sat, 26 Sep 2020 10:44:44 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 75D4EA405B;
+        Sat, 26 Sep 2020 10:44:44 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Sat, 26 Sep 2020 10:44:44 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net-next 00/14] net/smc: introduce SMC-Dv2 support
+Date:   Sat, 26 Sep 2020 12:44:18 +0200
+Message-Id: <20200926104432.74293-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-26_06:2020-09-24,2020-09-26 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 adultscore=0
+ lowpriorityscore=0 spamscore=0 malwarescore=0 bulkscore=0
+ priorityscore=1501 mlxscore=0 mlxlogscore=255 impostorscore=0 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009260091
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn
-> Sent: 25 September 2020 14:29
-> On Fri, Sep 25, 2020 at 08:50:30AM +0000, David Laight wrote:
-> > From: Kai-Heng Feng
-> > > Sent: 24 September 2020 17:04
-> > ...
-> > > > I also don't fully understand the fix. You are now looping up to 6400
-> > > > times, each with a delay of 50uS. So that is around 12800 times more
-> > > > than it actually needs to transfer the 64 bits! I've no idea how this
-> > > > hardware works, but my guess would be, something is wrong with the
-> > > > clock setup?
-> > >
-> > > It's probably caused by Intel ME. This is not something new, you can find many polling codes in
-> e1000e
-> > > driver are for ME, especially after S3 resume.
-> > >
-> > > Unless Intel is willing to open up ME, being patient and wait for a longer while is the best
-> approach
-> > > we got.
-> >
-> > There is some really broken code in the e1000e driver that affect my
-> > Ivy bridge platform were it is trying to avoid hardware bugs in
-> > the ME interface.
-> >
-> > It seems that before EVERY write to a MAC register it must check
-> > that the ME isn't using the interface - and spin until it isn't.
-> > This causes massive delays in the TX path because it includes
-> > the write that tells the MAC engine about a new packet.
-> 
-> Hi David
-> 
-> Thanks for the information. This however does not really explain the
-> issue.
-> 
-> The code busy loops waiting for the MDIO transaction to complete. If
-> read/writes to the MAC are getting blocked, that just means less
-> iterations of the loop are needed, not more, since the time to
-> complete the transaction should be fixed.
-> 
-> If ME really is to blame, it means ME is completely hijacking the
-> hardware? Stopping the clocks? Maybe doing its own MDIO transactions?
-> How can you write a PHY driver if something else is also programming
-> the PHY.
-> 
-> We don't understand what is going on here. We are just papering over
-> the cracks. The commit message should say this, that the change fixes
-> the symptoms but probably not the cause.
+Please apply the following patch series for smc to netdev's net-next tree.
 
-You may not have the same broken hardware as I have...
+SMC-Dv2 support (see https://www.ibm.com/support/pages/node/6326337)
+provides multi-subnet support for SMC-D, eliminating the current
+same-subnet restriction. The new version detects if any of the virtual
+ISM devices are on the same system and can therefore be used for an
+SMC-Dv2 connection. Furthermore, SMC-Dv2 eliminates the need for
+PNET IDs on s390.
 
-From what I could infer from the code and guess from the behaviour
-I got the impression that if the ME was accessing any of the MAC
-registers it was likely that writes from the kernel just got discarded.
+Karsten Graul (1):
+  net/smc: remove constant and introduce helper to check for a pnet id
 
-I got the impression that a bug in the hardware was being worked
-around by the ME setting a status bit before and access, waiting
-a bit for the kernel to finish anything it was doing, then
-doing its access and clearing the bit.
+Ursula Braun (13):
+  net/smc: CLC header fields renaming
+  net/smc: separate find device functions
+  net/smc: split CLC confirm/accept data to be sent
+  net/smc: prepare for more proposed ISM devices
+  net/smc: introduce System Enterprise ID (SEID)
+  net/smc: introduce CHID callback for ISM devices
+  net/smc: introduce list of pnetids for Ethernet devices
+  net/smc: determine proposed ISM devices
+  net/smc: build and send V2 CLC proposal
+  net/smc: determine accepted ISM devices
+  net/smc: CLC accept / confirm V2
+  net/smc: introduce CLC first contact extension
+  net/smc: CLC decline - V2 enhancements
 
-The kernel keeps having to wait for the bit to be clear.
-These delays were long; sub ms - but far longer than
-the rest of the code path for sending a packet.
-But the code didn't check/disable pre-emption or interrupts
-so the check was actually broken.
-(If I removed it completely my system wouldn't boot!)
+ drivers/s390/net/ism.h     |   7 +
+ drivers/s390/net/ism_drv.c |  47 +++
+ include/net/smc.h          |   4 +
+ net/smc/af_smc.c           | 613 +++++++++++++++++++++++++++++--------
+ net/smc/smc.h              |  12 +
+ net/smc/smc_clc.c          | 337 +++++++++++++++-----
+ net/smc/smc_clc.h          | 179 +++++++++--
+ net/smc/smc_core.c         |  25 +-
+ net/smc/smc_core.h         |  15 +-
+ net/smc/smc_ism.c          |  32 +-
+ net/smc/smc_ism.h          |   8 +-
+ net/smc/smc_netns.h        |   1 +
+ net/smc/smc_pnet.c         | 173 +++++++++--
+ net/smc/smc_pnet.h         |  15 +
+ 14 files changed, 1206 insertions(+), 262 deletions(-)
 
-Thing is I don't want the ME.
-I don't need the ME on that system.
-The ME might be a security hole.
-The ME breaks my system.
-But I can't disable it at all.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+-- 
+2.17.1
 
