@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BF46279C8D
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 23:07:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00B92279C8B
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 23:07:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727308AbgIZVHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 17:07:18 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57300 "EHLO vps0.lunn.ch"
+        id S1727556AbgIZVHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 17:07:22 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57274 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727203AbgIZVHR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Sep 2020 17:07:17 -0400
+        id S1726382AbgIZVHQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Sep 2020 17:07:16 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kMHPU-00GJhD-3s; Sat, 26 Sep 2020 23:07:12 +0200
+        id 1kMHPU-00GJhG-56; Sat, 26 Sep 2020 23:07:12 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -21,9 +21,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v2 6/7] net: dsa: Add helper for converting devlink port to ds and port
-Date:   Sat, 26 Sep 2020 23:06:31 +0200
-Message-Id: <20200926210632.3888886-7-andrew@lunn.ch>
+Subject: [PATCH net-next v2 7/7] net: dsa: mv88e6xxx: Add per port devlink regions
+Date:   Sat, 26 Sep 2020 23:06:32 +0200
+Message-Id: <20200926210632.3888886-8-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200926210632.3888886-1-andrew@lunn.ch>
 References: <20200926210632.3888886-1-andrew@lunn.ch>
@@ -33,38 +33,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hide away from DSA drivers how devlink works.
+Add a devlink region to return the per port registers.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- include/net/dsa.h | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/dsa/mv88e6xxx/devlink.c | 109 +++++++++++++++++++++++++++-
+ 1 file changed, 105 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index f0bb64e5002f..24c925c192ec 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -686,6 +686,20 @@ static inline struct dsa_switch *dsa_devlink_to_ds(struct devlink *dl)
- 	return dl_priv->ds;
+diff --git a/drivers/net/dsa/mv88e6xxx/devlink.c b/drivers/net/dsa/mv88e6xxx/devlink.c
+index 81e1560db206..ed74b075de84 100644
+--- a/drivers/net/dsa/mv88e6xxx/devlink.c
++++ b/drivers/net/dsa/mv88e6xxx/devlink.c
+@@ -415,6 +415,36 @@ static int mv88e6xxx_region_atu_snapshot(struct devlink *dl,
+ 	return err;
  }
  
-+static inline
-+struct dsa_switch *dsa_devlink_port_to_ds(struct devlink_port *port)
++static int mv88e6xxx_region_port_snapshot(struct devlink_port *devlink_port,
++					  const struct devlink_port_region_ops *ops,
++					  struct netlink_ext_ack *extack,
++					  u8 **data)
 +{
-+	struct devlink *dl = port->devlink;
-+	struct dsa_devlink_priv *dl_priv = devlink_priv(dl);
++	struct dsa_switch *ds = dsa_devlink_port_to_ds(devlink_port);
++	int port = dsa_devlink_port_to_port(devlink_port);
++	struct mv88e6xxx_chip *chip = ds->priv;
++	u16 *registers;
++	int i, err;
 +
-+	return dl_priv->ds;
++	registers = kmalloc_array(32, sizeof(u16), GFP_KERNEL);
++	if (!registers)
++		return -ENOMEM;
++
++	mv88e6xxx_reg_lock(chip);
++	for (i = 0; i < 32; i++) {
++		err = mv88e6xxx_port_read(chip, port, i, &registers[i]);
++		if (err) {
++			kfree(registers);
++			goto out;
++		}
++	}
++	*data = (u8 *)registers;
++out:
++	mv88e6xxx_reg_unlock(chip);
++
++	return err;
 +}
 +
-+static inline int dsa_devlink_port_to_port(struct devlink_port *port)
+ static struct mv88e6xxx_region_priv mv88e6xxx_region_global1_priv = {
+ 	.id = MV88E6XXX_REGION_GLOBAL1,
+ };
+@@ -443,6 +473,12 @@ static struct devlink_region_ops mv88e6xxx_region_atu_ops = {
+ 	.destructor = kfree,
+ };
+ 
++static const struct devlink_port_region_ops mv88e6xxx_region_port_ops = {
++	.name = "port",
++	.snapshot = mv88e6xxx_region_port_snapshot,
++	.destructor = kfree,
++};
++
+ struct mv88e6xxx_region {
+ 	struct devlink_region_ops *ops;
+ 	u64 size;
+@@ -471,11 +507,59 @@ mv88e6xxx_teardown_devlink_regions_global(struct mv88e6xxx_chip *chip)
+ 		dsa_devlink_region_destroy(chip->regions[i]);
+ }
+ 
+-void mv88e6xxx_teardown_devlink_regions(struct dsa_switch *ds)
++static void
++mv88e6xxx_teardown_devlink_regions_port(struct mv88e6xxx_chip *chip,
++					int port)
+ {
+-	struct mv88e6xxx_chip *chip = ds->priv;
++	dsa_devlink_region_destroy(chip->ports[port].region);
++}
+ 
+-	mv88e6xxx_teardown_devlink_regions_global(chip);
++static int mv88e6xxx_setup_devlink_regions_port(struct dsa_switch *ds,
++						struct mv88e6xxx_chip *chip,
++						int port)
 +{
-+	return port->index;
++	struct devlink_region *region;
++
++	region = dsa_devlink_port_region_create(ds,
++						port,
++						&mv88e6xxx_region_port_ops, 1,
++						32 * sizeof(u16));
++	if (IS_ERR(region))
++		return PTR_ERR(region);
++
++	chip->ports[port].region = region;
++
++	return 0;
 +}
 +
- struct dsa_switch_driver {
- 	struct list_head	list;
- 	const struct dsa_switch_ops *ops;
++static void
++mv88e6xxx_teardown_devlink_regions_ports(struct mv88e6xxx_chip *chip)
++{
++	int port;
++
++	for (port = 0; port < mv88e6xxx_num_ports(chip); port++)
++		mv88e6xxx_teardown_devlink_regions_port(chip, port);
++}
++
++static int mv88e6xxx_setup_devlink_regions_ports(struct dsa_switch *ds,
++						 struct mv88e6xxx_chip *chip)
++{
++	int port, port_err;
++	int err;
++
++	for (port = 0; port < mv88e6xxx_num_ports(chip); port++) {
++		err = mv88e6xxx_setup_devlink_regions_port(ds, chip, port);
++		if (err)
++			goto out;
++	}
++
++	return 0;
++
++out:
++	for (port_err = 0; port_err < port; port_err++)
++		mv88e6xxx_teardown_devlink_regions_port(chip, port_err);
++
++	return err;
+ }
+ 
+ static int mv88e6xxx_setup_devlink_regions_global(struct dsa_switch *ds,
+@@ -511,8 +595,25 @@ static int mv88e6xxx_setup_devlink_regions_global(struct dsa_switch *ds,
+ int mv88e6xxx_setup_devlink_regions(struct dsa_switch *ds)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
++	int err;
++
++	err = mv88e6xxx_setup_devlink_regions_global(ds, chip);
++	if (err)
++		return err;
++
++	err = mv88e6xxx_setup_devlink_regions_ports(ds, chip);
++	if (err)
++		mv88e6xxx_teardown_devlink_regions_global(chip);
+ 
+-	return mv88e6xxx_setup_devlink_regions_global(ds, chip);
++	return err;
++}
++
++void mv88e6xxx_teardown_devlink_regions(struct dsa_switch *ds)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++
++	mv88e6xxx_teardown_devlink_regions_ports(chip);
++	mv88e6xxx_teardown_devlink_regions_global(chip);
+ }
+ 
+ int mv88e6xxx_devlink_info_get(struct dsa_switch *ds,
 -- 
 2.28.0
 
