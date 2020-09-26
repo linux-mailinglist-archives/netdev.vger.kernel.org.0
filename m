@@ -2,68 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FAB0279C33
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 21:35:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A83B279C52
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 22:23:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730102AbgIZTfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 15:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729291AbgIZTfV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 15:35:21 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37F2C0613CE
-        for <netdev@vger.kernel.org>; Sat, 26 Sep 2020 12:35:20 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E088C129A349C;
-        Sat, 26 Sep 2020 12:18:32 -0700 (PDT)
-Date:   Sat, 26 Sep 2020 12:35:19 -0700 (PDT)
-Message-Id: <20200926.123519.1489325826604036131.davem@davemloft.net>
-To:     kuba@kernel.org
-Cc:     netdev@vger.kernel.org, fabf@skynet.be
-Subject: Re: [PATCH net-next] Revert "vxlan: move encapsulation warning"
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200926015604.3363358-1-kuba@kernel.org>
-References: <20200926015604.3363358-1-kuba@kernel.org>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Sat, 26 Sep 2020 12:18:33 -0700 (PDT)
+        id S1726487AbgIZUWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 16:22:32 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57176 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726242AbgIZUWc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Sep 2020 16:22:32 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kMGiB-00GJNw-Nq; Sat, 26 Sep 2020 22:22:27 +0200
+Date:   Sat, 26 Sep 2020 22:22:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, kuba@kernel.org
+Subject: Re: [PATCH v3 net-next 02/15] net: dsa: allow drivers to request
+ promiscuous mode on master
+Message-ID: <20200926202227.GA3887691@lunn.ch>
+References: <20200926193215.1405730-1-vladimir.oltean@nxp.com>
+ <20200926193215.1405730-3-vladimir.oltean@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200926193215.1405730-3-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Fri, 25 Sep 2020 18:56:04 -0700
+On Sat, Sep 26, 2020 at 10:32:02PM +0300, Vladimir Oltean wrote:
+> Currently DSA assumes that taggers don't mess with the destination MAC
+> address of the frames on RX. That is not always the case. Some DSA
+> headers are placed before the Ethernet header (ocelot), and others
+> simply mangle random bytes from the destination MAC address (sja1105
+> with its incl_srcpt option).
+> 
+> Currently the DSA master goes to promiscuous mode automatically when the
+> slave devices go too (such as when enslaved to a bridge), but in
+> standalone mode this is a problem that needs to be dealt with.
+> 
+> So give drivers the possibility to signal that their tagging protocol
+> will get randomly dropped otherwise, and let DSA deal with fixing that.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> This reverts commit 546c044c9651e81a16833806feff6b369bb5de33.
-> 
-> Nothing prevents user from sending frames to "external" VxLAN devices.
-> In fact kernel itself may generate icmp chatter.
-> 
-> This is fine, such frames should be dropped.
-> 
-> The point of the "missing encapsulation" warning was that
-> frames with missing encap should not make it into vxlan_xmit_one().
-> And vxlan_xmit() drops them cleanly, so let it just do that.
-> 
-> Without this revert the warning is triggered by the udp_tunnel_nic.sh
-> test, but the minimal repro is:
-> 
-> $ ip link add vxlan0 type vxlan \
->      	      	     group 239.1.1.1 \
-> 		     dev lo \
-> 		     dstport 1234 \
-> 		     external
-> $ ip li set dev vxlan0 up
-> 
-> [  419.165981] vxlan0: Missing encapsulation instructions
-> [  419.166551] WARNING: CPU: 0 PID: 1041 at drivers/net/vxlan.c:2889 vxlan_xmit+0x15c0/0x1fc0 [vxlan]
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Applied, thanks Jakub.
+    Andrew
