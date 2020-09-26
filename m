@@ -2,102 +2,357 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 903CA279CE0
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 01:29:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BF64279CE2
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 01:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728339AbgIZX3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 19:29:10 -0400
-Received: from mail-eopbgr150109.outbound.protection.outlook.com ([40.107.15.109]:37535
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726382AbgIZX3K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Sep 2020 19:29:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TuwVJVHwOFtqdldYyKSHlUedZc2LO6uieAhWyJdDqClLYgSjTqoPnftC7cM0hggU3O4V02xlhB5kC5i9n8xjDCcglWGTtMTprNkYVsXOMqS05gEUyWJvWIHltiu+zVig0I04a4xtqZHqVb8ZrmPU6kTue2VCg1Qo+exFpeNbUc2LkvTz3jHFH3bW2QEtAj5jkYC9w61rK0r0lDixSeiyWk/8OEMzhMicBIOd044o+FPITdabmqxkqSoybgomqm02tl5BevezW6GrZ9n4MWMWuciF+K/DvYiTooFJYSHFtvm2WxM/t4PPAbafv6UkPbrfhkVvSsW9hHfiALTSy/j1eQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pBDEpOizTekhT1+QVXTc2l0/jzu/zRaZfVpO3+hkQlE=;
- b=aBXD88wVed2fGVtVO6RA6XZ1N6TtsCaPS6Wi4aMXhe8l3KtKV17RVjLmjQq6P+933y5qmpgxi5HaRMG+cyVUi1JNPWhhGF4+8a1eW3UEqxrrZlCbaXyFnnIjIRu9LPtO12V4P3Qg8QPncmWGMjVrABbIC+DEUOxfhOc4OcOvxs5vFxNNgxjBW8wbNMM8Ke3e1HRcgyNyicvM6caEpC2zB0iMBcWuGIc4/3pP40pgvPP6hOX02eMQ4oVsN/adZNVqtKpkPhS9OpawOVWs73DysX9tqpL4Au/YYoQe4qr/BpBMKOXnxn/o5uRODKH+r6GV+RkQv9HSCe/3C/QvX41YfA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pBDEpOizTekhT1+QVXTc2l0/jzu/zRaZfVpO3+hkQlE=;
- b=ThgvqiWnucTUoZuKle79b/zeKttLvatSLY9SYS0qwB6JA/pPESyF7UpNx0q8OMtm5GgPOf2y9uXkKm/cqg6mH/skg534ILTa8GIcujRHw4MdkFz+LrvyWFM/2sMBuT8iC8BaGBXwHuVc3cjeeKvlILM75wKDvXrLfMsq4xyPNyU=
-Received: from VI1PR83MB0477.EURPRD83.prod.outlook.com (2603:10a6:800:194::5)
- by VI1PR83MB0205.EURPRD83.prod.outlook.com (2603:10a6:821:7::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.7; Sat, 26 Sep
- 2020 23:28:58 +0000
-Received: from VI1PR83MB0477.EURPRD83.prod.outlook.com
- ([fe80::a4d5:60e0:398e:74b7]) by VI1PR83MB0477.EURPRD83.prod.outlook.com
- ([fe80::a4d5:60e0:398e:74b7%6]) with mapi id 15.20.3433.028; Sat, 26 Sep 2020
- 23:28:57 +0000
-From:   Matteo Croce <mcroce@microsoft.com>
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-CC:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: Re: [PATCH net-next] net: marvell: mvpp2: Fix W=1 warning with
- !CONFIG_ACPI
-Thread-Topic: [PATCH net-next] net: marvell: mvpp2: Fix W=1 warning with
- !CONFIG_ACPI
-Thread-Index: AQHWlFzOu9Co4U3Cf0GSXJkcud0n6Q==
-Date:   Sat, 26 Sep 2020 23:28:57 +0000
-Message-ID: <PR3PR83MB0475DE959C4C67541960B685D4370@PR3PR83MB0475.EURPRD83.prod.outlook.com>
-References: <20200926212603.3889748-1-andrew@lunn.ch>
-In-Reply-To: <20200926212603.3889748-1-andrew@lunn.ch>
-Accept-Language: en-US, it-IT
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-09-26T23:28:55.408Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [5.95.179.222]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: c2db3e32-6c18-442a-7063-08d86273f0dd
-x-ms-traffictypediagnostic: VI1PR83MB0205:
-x-microsoft-antispam-prvs: <VI1PR83MB020599119BF17B1CDEBA756DD4370@VI1PR83MB0205.EURPRD83.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1107;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: CVUJl7ofaHlvbP2BAOHdsthc4wnWXiUT8ycC5ahmedG9iFFT0kiz48i2YUNj1J3eC53VaJeKymr7BjFQ7BVgaNnzetW18jmUdFPfww9C4ELNPv1YWBa/gIlZLUkTkDNB1thAVrDPFyf5Kuyo3cDGVqIwppBYkDH2mOUEoWV40h9WGn4FKCYGP1cl17DZ6FA4fYVMk+tjjTzmFYK5qfeLG/C/gZFW1R8J9nv4on10pWnyLZMzutub0VFK9McUdaDorp1yqRhX7mXdDyFkHcn7FQyJMHlsybYzRJhLcM9Qy1d4F89tKidNwRemm2CsMROeveD0vzD95gn3Yi3JtvRnVQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR83MB0477.EURPRD83.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(39860400002)(396003)(366004)(136003)(83380400001)(33656002)(6506007)(2906002)(5660300002)(8936002)(478600001)(8676002)(9686003)(186003)(316002)(26005)(6512007)(10290500003)(110136005)(52536014)(86362001)(8990500004)(71200400001)(82950400001)(6486002)(91956017)(4326008)(66446008)(66556008)(558084003)(64756008)(54906003)(82960400001)(76116006)(66946007)(66476007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: etfh1OX0VKd9H2as8gnvBfp9NEs2nytHQ8ZUP1x0fD9QgfyNvrAtyVD+7Z+raAdcrxY9TxY74h2LvK2ZCjH1qxPwKlKQOOSBU81rsk0NmYYMIkagTbJpC7VtzAtYLmWiKcnZdzfkKXgNMtJoLWOY05YU9p28Knhpgwa+4JM4rRqROQCGjwsCWaBATWWKXTYrKm3lhX77WnbajmGcl5GD2HkpPC0NcqzjIXs8OEhQuDFoyfUazmRyup1l6OCp0FOrqE3nnDQpqfZak6Xwm7R+adMi8Jd5+/F/rqmBC5UYh/1yKrbAK/v/fLhPZXgYhh71atkEpKzwpp6pJGXDyT0SI4ToeyTa+U421G1qzUnJCf/DlkZC/OKi84FHUuwmGc2GdP4Aod17axfPJ2Dc2mMcuOW9KBf+hIf5FRikgwIwvUkPs/XuSZrCxoNLhF5riLtWxKByNY9HegFE1dOA9t2252zgv/HDs6oD+aCMhojKUKs8TZK9HAFLW56zKH3KZfHZo7JsGR8W2lz/w1rZE01R6D3n4qEr5GpRHGWK41oNST83QqFLRna7g6no543/FVCCJTK18X1oxF86+N9ssOxYxA==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1727369AbgIZXha (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 19:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726242AbgIZXh3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 19:37:29 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 681DFC0613CE
+        for <netdev@vger.kernel.org>; Sat, 26 Sep 2020 16:37:29 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id l17so6197329edq.12
+        for <netdev@vger.kernel.org>; Sat, 26 Sep 2020 16:37:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BbwnYnWC0cCXGwH/gAFdJLc+PzVzKl1UUj0YTgWDF5w=;
+        b=YVVbPOo+Q0u0GlfKgcanhJrGNwrfpP/ZPQbejU5/8uwO7WpBo9a6I4JIp/iKF8uhcO
+         NHmvUCnBcB9t7Lnn6A8DAUWcbp3+ZpA0OsMaOlzOmw3Z/Yasb2YHWfrTg9XSaIr/kSj3
+         GAdm2epwhuiETB21rdbsB3dBirBSbDNMaj5Khx/T+eqoCu9vo8ogJJ+biocj7wa/leUg
+         LbPB440owQLoLVlYa0G3qAwmwUFa/OIsZ0WGg2xMEapGx67qlcFo6pc+O+qsqhD2rW0C
+         uI/rgfg883qEpmQQx9qXtvlQZLMFjXrJdXcloJ7jmLjngZoY3Khb6L2S5CFYBxis62QB
+         4zqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BbwnYnWC0cCXGwH/gAFdJLc+PzVzKl1UUj0YTgWDF5w=;
+        b=LvM9QjC+0CneyGHOLHr/QgRo5mkb5ZHAkoYK97SGauQHwnhv3bocg+oz8YAf2Eg5Sd
+         bWx4e28EC0VNPIodaOxXQsfeyp0cWVJjUunckk4LQozVI2MRjX6VoCa5TlZaBYojUQTQ
+         VomU4D7cz1CWv19n43cBF+ioLbljv7UnHSEoieemFGDgFpm0oASDZ9j67BBDcwbXI5Bc
+         9IV4FiLN/wSgNv8Z3u0KmJBEurokGx4IC7esmI1Fs9fNBadhG2MeUYdNhwHIvafrutT/
+         PN3qX9Loo5dkTmWXl2avFmLbAQ/EaWvOpxFJyQs7g8+XKgymSXVKkS1AakzBanbxUeZ3
+         mo0A==
+X-Gm-Message-State: AOAM533HXv8ePiYDrU3K+tg54RULbsiTXBcXrZORZ3dG9xNtUaw9utfi
+        OdPgdeQKKzY1G4JfMsIjsmk=
+X-Google-Smtp-Source: ABdhPJyR0isdLTrXEngmXDK2o6r+EgYfRFfZmP3gtUR2Njz4kdNbdr7RvX35h46PoA9eH2dGBN9/Xw==
+X-Received: by 2002:a05:6402:1353:: with SMTP id y19mr8708093edw.71.1601163447923;
+        Sat, 26 Sep 2020 16:37:27 -0700 (PDT)
+Received: from skbuf ([188.25.217.212])
+        by smtp.gmail.com with ESMTPSA id k19sm5001761ejo.40.2020.09.26.16.37.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Sep 2020 16:37:27 -0700 (PDT)
+Date:   Sun, 27 Sep 2020 02:37:25 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v2 3/7] net: dsa: Register devlink ports before
+ calling DSA driver setup()
+Message-ID: <20200926233725.fagc4znatjpufu6q@skbuf>
+References: <20200926210632.3888886-1-andrew@lunn.ch>
+ <20200926210632.3888886-4-andrew@lunn.ch>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR83MB0477.EURPRD83.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c2db3e32-6c18-442a-7063-08d86273f0dd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Sep 2020 23:28:57.2052
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rSm1s86nIFN6p9drHVLv+wkrc0L4oGoxGxcG+/gat+ySa9nb/nlMv3V1izgRD+8FdTGGGdx7LHHKwvYm2fU95A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR83MB0205
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200926210632.3888886-4-andrew@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Andrew Lunn <andrew@lunn.ch>=0A=
-> Subject: [PATCH net-next] net: marvell: mvpp2: Fix W=3D1 warning with !CO=
-NFIG_ACPI =0A=
-> =0A=
-> Wrap the definition inside #ifdef/#endif.=0A=
-> =0A=
-> Compile tested only.=0A=
-> =0A=
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>=0A=
-=0A=
-Looks good, ACPI_PTR() should be NULL if !CONFIG_ACPI=0A=
-=0A=
--- =0A=
-per aspera ad upstream=
+On Sat, Sep 26, 2020 at 11:06:28PM +0200, Andrew Lunn wrote:
+> DSA drivers want to create regions on devlink ports as well as the
+> devlink device instance, in order to export registers and other tables
+> per port. To keep all this code together in the drivers, have the
+> devlink ports registered early, so the setup() method can setup both
+> device and port devlink regions.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+>  include/net/dsa.h |   1 +
+>  net/dsa/dsa2.c    | 133 ++++++++++++++++++++++++++++------------------
+>  2 files changed, 83 insertions(+), 51 deletions(-)
+> 
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index d16057c5987a..9aa44dc8ecdb 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -208,6 +208,7 @@ struct dsa_port {
+>  	u8			stp_state;
+>  	struct net_device	*bridge_dev;
+>  	struct devlink_port	devlink_port;
+> +	bool			devlink_port_setup;
+>  	struct phylink		*pl;
+>  	struct phylink_config	pl_config;
+>  
+> diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+> index 2c149fb36928..90cc70bd7c22 100644
+> --- a/net/dsa/dsa2.c
+> +++ b/net/dsa/dsa2.c
+> @@ -251,47 +251,19 @@ static void dsa_tree_teardown_default_cpu(struct dsa_switch_tree *dst)
+>  
+>  static int dsa_port_setup(struct dsa_port *dp)
+>  {
+> -	struct dsa_switch *ds = dp->ds;
+> -	struct dsa_switch_tree *dst = ds->dst;
+> -	const unsigned char *id = (const unsigned char *)&dst->index;
+> -	const unsigned char len = sizeof(dst->index);
+>  	struct devlink_port *dlp = &dp->devlink_port;
+>  	bool dsa_port_link_registered = false;
+> -	bool devlink_port_registered = false;
+> -	struct devlink_port_attrs attrs = {};
+> -	struct devlink *dl = ds->devlink;
+>  	bool dsa_port_enabled = false;
+>  	int err = 0;
+>  
+> -	attrs.phys.port_number = dp->index;
+> -	memcpy(attrs.switch_id.id, id, len);
+> -	attrs.switch_id.id_len = len;
+> -
+>  	if (dp->setup)
+>  		return 0;
+>  
+>  	switch (dp->type) {
+>  	case DSA_PORT_TYPE_UNUSED:
+> -		memset(dlp, 0, sizeof(*dlp));
+> -		attrs.flavour = DEVLINK_PORT_FLAVOUR_UNUSED;
+> -		devlink_port_attrs_set(dlp, &attrs);
+> -		err = devlink_port_register(dl, dlp, dp->index);
+> -		if (err)
+> -			break;
+> -
+> -		devlink_port_registered = true;
+> -
+>  		dsa_port_disable(dp);
+>  		break;
+>  	case DSA_PORT_TYPE_CPU:
+> -		memset(dlp, 0, sizeof(*dlp));
+> -		attrs.flavour = DEVLINK_PORT_FLAVOUR_CPU;
+> -		devlink_port_attrs_set(dlp, &attrs);
+> -		err = devlink_port_register(dl, dlp, dp->index);
+> -		if (err)
+> -			break;
+> -		devlink_port_registered = true;
+> -
+>  		err = dsa_port_link_register_of(dp);
+>  		if (err)
+>  			break;
+> @@ -304,14 +276,6 @@ static int dsa_port_setup(struct dsa_port *dp)
+>  
+>  		break;
+>  	case DSA_PORT_TYPE_DSA:
+> -		memset(dlp, 0, sizeof(*dlp));
+> -		attrs.flavour = DEVLINK_PORT_FLAVOUR_DSA;
+> -		devlink_port_attrs_set(dlp, &attrs);
+> -		err = devlink_port_register(dl, dlp, dp->index);
+> -		if (err)
+> -			break;
+> -		devlink_port_registered = true;
+> -
+>  		err = dsa_port_link_register_of(dp);
+>  		if (err)
+>  			break;
+> @@ -324,14 +288,6 @@ static int dsa_port_setup(struct dsa_port *dp)
+>  
+>  		break;
+>  	case DSA_PORT_TYPE_USER:
+> -		memset(dlp, 0, sizeof(*dlp));
+> -		attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
+> -		devlink_port_attrs_set(dlp, &attrs);
+> -		err = devlink_port_register(dl, dlp, dp->index);
+> -		if (err)
+> -			break;
+> -		devlink_port_registered = true;
+> -
+>  		dp->mac = of_get_mac_address(dp->dn);
+>  		err = dsa_slave_create(dp);
+>  		if (err)
+> @@ -345,8 +301,6 @@ static int dsa_port_setup(struct dsa_port *dp)
+>  		dsa_port_disable(dp);
+>  	if (err && dsa_port_link_registered)
+>  		dsa_port_link_unregister_of(dp);
+> -	if (err && devlink_port_registered)
+> -		devlink_port_unregister(dlp);
+>  	if (err)
+>  		return err;
+>  
+> @@ -355,30 +309,77 @@ static int dsa_port_setup(struct dsa_port *dp)
+>  	return 0;
+>  }
+>  
+> -static void dsa_port_teardown(struct dsa_port *dp)
+> +static int dsa_port_devlink_setup(struct dsa_port *dp)
+>  {
+>  	struct devlink_port *dlp = &dp->devlink_port;
+> +	struct dsa_switch_tree *dst = dp->ds->dst;
+> +	struct devlink_port_attrs attrs = {};
+> +	struct devlink *dl = dp->ds->devlink;
+> +	const unsigned char *id;
+> +	unsigned char len;
+> +	int err;
+> +
+> +	id = (const unsigned char *)&dst->index;
+> +	len = sizeof(dst->index);
+> +
+> +	attrs.phys.port_number = dp->index;
+> +	memcpy(attrs.switch_id.id, id, len);
+> +	attrs.switch_id.id_len = len;
+> +
+> +	if (dp->setup)
+> +		return 0;
+>  
+
+I wonder what this is protecting against? I ran on a multi-switch tree
+without these 2 lines and I didn't get anything like multiple
+registration or things like that. What is the call path that would call
+dsa_port_devlink_setup twice?
+
+> +	switch (dp->type) {
+> +	case DSA_PORT_TYPE_UNUSED:
+> +		memset(dlp, 0, sizeof(*dlp));
+> +		attrs.flavour = DEVLINK_PORT_FLAVOUR_UNUSED;
+
+> +		devlink_port_attrs_set(dlp, &attrs);
+> +		err = devlink_port_register(dl, dlp, dp->index);
+
+These 2 lines are common everywhere. Could you move them out of the
+switch-case statement?
+
+> +		break;
+> +	case DSA_PORT_TYPE_CPU:
+> +		memset(dlp, 0, sizeof(*dlp));
+> +		attrs.flavour = DEVLINK_PORT_FLAVOUR_CPU;
+> +		devlink_port_attrs_set(dlp, &attrs);
+> +		err = devlink_port_register(dl, dlp, dp->index);
+> +		break;
+> +	case DSA_PORT_TYPE_DSA:
+> +		memset(dlp, 0, sizeof(*dlp));
+> +		attrs.flavour = DEVLINK_PORT_FLAVOUR_DSA;
+> +		devlink_port_attrs_set(dlp, &attrs);
+> +		err = devlink_port_register(dl, dlp, dp->index);
+> +		break;
+> +	case DSA_PORT_TYPE_USER:
+> +		memset(dlp, 0, sizeof(*dlp));
+> +		attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
+> +		devlink_port_attrs_set(dlp, &attrs);
+> +		err = devlink_port_register(dl, dlp, dp->index);
+> +		break;
+> +	}
+> +
+> +	if (!err)
+> +		dp->devlink_port_setup = true;
+> +
+> +	return err;
+> +}
+> +
+> +static void dsa_port_teardown(struct dsa_port *dp)
+> +{
+>  	if (!dp->setup)
+>  		return;
+>  
+>  	switch (dp->type) {
+>  	case DSA_PORT_TYPE_UNUSED:
+> -		devlink_port_unregister(dlp);
+>  		break;
+>  	case DSA_PORT_TYPE_CPU:
+>  		dsa_port_disable(dp);
+>  		dsa_tag_driver_put(dp->tag_ops);
+> -		devlink_port_unregister(dlp);
+>  		dsa_port_link_unregister_of(dp);
+>  		break;
+>  	case DSA_PORT_TYPE_DSA:
+>  		dsa_port_disable(dp);
+> -		devlink_port_unregister(dlp);
+>  		dsa_port_link_unregister_of(dp);
+>  		break;
+>  	case DSA_PORT_TYPE_USER:
+> -		devlink_port_unregister(dlp);
+>  		if (dp->slave) {
+>  			dsa_slave_destroy(dp->slave);
+>  			dp->slave = NULL;
+> @@ -389,6 +390,15 @@ static void dsa_port_teardown(struct dsa_port *dp)
+>  	dp->setup = false;
+>  }
+>  
+> +static void dsa_port_devlink_teardown(struct dsa_port *dp)
+> +{
+> +	struct devlink_port *dlp = &dp->devlink_port;
+> +
+> +	if (dp->devlink_port_setup)
+> +		devlink_port_unregister(dlp);
+> +	dp->devlink_port_setup = false;
+> +}
+> +
+>  static int dsa_devlink_info_get(struct devlink *dl,
+>  				struct devlink_info_req *req,
+>  				struct netlink_ext_ack *extack)
+> @@ -408,6 +418,7 @@ static const struct devlink_ops dsa_devlink_ops = {
+>  static int dsa_switch_setup(struct dsa_switch *ds)
+>  {
+>  	struct dsa_devlink_priv *dl_priv;
+> +	struct dsa_port *dp;
+>  	int err;
+>  
+>  	if (ds->setup)
+> @@ -433,6 +444,17 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+>  	if (err)
+>  		goto free_devlink;
+>  
+> +	/* Setup devlink port instances now, so that the switch
+> +	 * setup() can register regions etc, against the ports
+> +	 */
+> +	list_for_each_entry(dp, &ds->dst->ports, list) {
+> +		if (dp->ds == ds) {
+> +			err = dsa_port_devlink_setup(dp);
+> +			if (err)
+> +				goto unregister_devlink_ports;
+> +		}
+> +	}
+> +
+>  	err = dsa_switch_register_notifier(ds);
+>  	if (err)
+>  		goto unregister_devlink;
+
+Need to use goto unregister_devlink_ports here.
+
+> @@ -463,6 +485,10 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+>  
+>  unregister_notifier:
+>  	dsa_switch_unregister_notifier(ds);
+> +unregister_devlink_ports:
+> +	list_for_each_entry(dp, &ds->dst->ports, list)
+> +		if (dp->ds == ds)
+> +			dsa_port_devlink_teardown(dp);
+>  unregister_devlink:
+>  	devlink_unregister(ds->devlink);
+>  free_devlink:
+> @@ -474,6 +500,8 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+>  
+>  static void dsa_switch_teardown(struct dsa_switch *ds)
+>  {
+> +	struct dsa_port *dp;
+> +
+>  	if (!ds->setup)
+>  		return;
+>  
+> @@ -486,6 +514,9 @@ static void dsa_switch_teardown(struct dsa_switch *ds)
+>  		ds->ops->teardown(ds);
+>  
+>  	if (ds->devlink) {
+> +		list_for_each_entry(dp, &ds->dst->ports, list)
+> +			if (dp->ds == ds)
+> +				dsa_port_devlink_teardown(dp);
+>  		devlink_unregister(ds->devlink);
+>  		devlink_free(ds->devlink);
+>  		ds->devlink = NULL;
+> -- 
+> 2.28.0
+> 
