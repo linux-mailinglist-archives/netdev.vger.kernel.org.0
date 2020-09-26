@@ -2,92 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E3512798C2
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 14:13:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C6A82798D9
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 14:37:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728739AbgIZMJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 08:09:24 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:35385 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727072AbgIZMJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 08:09:24 -0400
-Received: by mail-il1-f198.google.com with SMTP id f10so2116272ilq.2
-        for <netdev@vger.kernel.org>; Sat, 26 Sep 2020 05:09:23 -0700 (PDT)
+        id S1729047AbgIZMhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 08:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725208AbgIZMhV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 08:37:21 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA305C0613CE;
+        Sat, 26 Sep 2020 05:37:20 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id t16so5249476edw.7;
+        Sat, 26 Sep 2020 05:37:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UsD2oc+XQsKozUmXOuq/VQfKAHLA2ozlfJCrCJ6m2RU=;
+        b=WO0xLM9/knOKumJ+ooHoRYFr3Mwnqofl343/vGHS95H+c/VgYp1iq1+jtEn2X0bixh
+         lpQA1KzweVMRJhp697NxSCfjteZ3ALlwmoxyBBHvVkiJ76Hebpkx1jhu1pF/pEj9cOJA
+         ItXP+cmaqCjLd/K97eq77bDg1JHm8ErRRusZ2p5EC05Nr3l/JQy6d/DgmCunJqjFVW98
+         e3VUbUFc/upSiP4yrUuHjzsoxJRmeOnNDS8yxQDrj7HreuPAqF1FvUI5TP3G89R1m+jN
+         5M6FSFdQ+G5Id6JvPkaDoOZt8rlh7kpHp1ArR1uhzcAxPPGiBRkDWauoj6OkxCcAqmhi
+         lggw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=G3CO8apcR3uPwIt5d5uUeceIwwic8mBs/bCybEWaLjQ=;
-        b=HzhdOkme8X/Vj1TIljCGpJj8GZi0OJYFROw3wKUzjwK//YYc3KGZ41FimoIR04gT0O
-         cLlk3LbIE3OTiJVKUip3+dNgQmpCXuu14Ca6Anv8hOjUSFHrQoo/A3HgkGUrouWQGPSC
-         p017EaTvfJyR+DwhqrTf7H4fkHhuFbmMpkT93M30FW/7/E43beGR+SPIMiRnOlJ+irNp
-         BQX/GFI9wP2fWhy/Lg84kwhy3CAXWU4+qtvkOj22+anxFmHCkQaj3iWsNntYeZR0T+Ja
-         jdKm3y/gCczzYGB8on6HPchqoAZ5BQqH9tQ6wOk2yTeNFet76+81JQphkSHi+7gz7y11
-         SzIA==
-X-Gm-Message-State: AOAM530NgeX7d3LsYU4+2yxZWGZklqEz3hfXURLPhYyM8p6j2l73fVuV
-        vRKvG8wLDaKpKJUhonAyCkYKKivEQ88OtCIUyCgb+g/x2rRD
-X-Google-Smtp-Source: ABdhPJyaN0zdQONqlEleLweGjbzzZCTrnYKNOLsHlWl9PmaS7iWCpDyfSApiqGSD9t1I8LMoNU1tXmAzYISojgu1u8g4NQb20RFl
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UsD2oc+XQsKozUmXOuq/VQfKAHLA2ozlfJCrCJ6m2RU=;
+        b=K0StoXK11HarKkbIY37PkKfXQRAzSzAUETD+bmSj20uN230SJr4ZUWgfvhwToZ0yEL
+         flwvIQBqB7J3ChZWml3o/Jxm6YrYB/uxRml19wHHlka6ut1I2OK7sSfZfjOtUWp/m2/D
+         F0ZzrLBbnMVyZx1RFhcyx74XuF3ye/m0AyZF+1pcbUvcwraP0/+18OuU4gv7amTDF9J7
+         aiHnXEciedRguoGq0NoHKA49yn2wf/blSrqHyJBtcTYVtximAG2nC6ae4nEeBjaWjDY4
+         CSVeOQxim5GO9yPSjm+nlWHIZk7p0ytXK5k3hH31QCYMgtw/xgz1MyJqbKujUBAfMcCb
+         5Smg==
+X-Gm-Message-State: AOAM5321xvp1WR7ICr5No2q+IDzp+BzW1VVzVVBTi4yxxPGSCJ5nabaR
+        /LAFrjOOWF74BOULRSZ0+rs=
+X-Google-Smtp-Source: ABdhPJxVNThrYku1JriS7wvr6X88AU5LfKDMCxeSO02VOYMClWEea5i16ESkFkbKh7fQvhbjXiw9Ew==
+X-Received: by 2002:a50:ef0c:: with SMTP id m12mr6280247eds.264.1601123839478;
+        Sat, 26 Sep 2020 05:37:19 -0700 (PDT)
+Received: from skbuf ([188.25.217.212])
+        by smtp.gmail.com with ESMTPSA id a26sm3970526ejk.66.2020.09.26.05.37.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Sep 2020 05:37:18 -0700 (PDT)
+Date:   Sat, 26 Sep 2020 15:37:16 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>, linux-mips@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, hongbo.wang@nxp.com
+Subject: Re: [PATCH net-next v3 1/2] net: mscc: ocelot: Add support for tcam
+Message-ID: <20200926123716.5n7mvvn4tmj2sdol@skbuf>
+References: <1559287017-32397-1-git-send-email-horatiu.vultur@microchip.com>
+ <1559287017-32397-2-git-send-email-horatiu.vultur@microchip.com>
+ <CA+h21hprXnOYWExg7NxVZEX9Vjd=Y7o52ifKuAJqLwFuvDjaiw@mail.gmail.com>
+ <20200423082948.t7sgq4ikrbm4cbnt@soft-dev3.microsemi.net>
+ <20200924233949.lof7iduyfgjdxajv@skbuf>
+ <20200926112002.i6zpwi26ong2hu4q@soft-dev3.localdomain>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:de8:: with SMTP id m8mr3745524ilj.299.1601122163373;
- Sat, 26 Sep 2020 05:09:23 -0700 (PDT)
-Date:   Sat, 26 Sep 2020 05:09:23 -0700
-In-Reply-To: <00000000000088b1f405b00bcbb8@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ca3fdb05b0364d1a@google.com>
-Subject: Re: WARNING in __cfg80211_ibss_joined (2)
-From:   syzbot <syzbot+7f064ba1704c2466e36d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200926112002.i6zpwi26ong2hu4q@soft-dev3.localdomain>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+Hi Horatiu,
 
-HEAD commit:    7c7ec322 Merge tag 'for-linus' of git://git.kernel.org/pub..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10f42f9b900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6184b75aa6d48d66
-dashboard link: https://syzkaller.appspot.com/bug?extid=7f064ba1704c2466e36d
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1757b773900000
+On Sat, Sep 26, 2020 at 01:20:02PM +0200, Horatiu Vultur wrote:
+> To be honest, I don't remember precisely. I will need to setup a board
+> and see exactly. But from what I remember:
+> - according to this[1] in chapter 3.8.6, table 71. It says that the full
+>   entry of IS2 is 384. And this 384 represent a full entry. In this row,
+>   can be also sub entries like: half entry and quater entries. And each
+>   entry has 2 bits that describes the entry type. So if you have 2 bits
+>   for each possible entry then you have 8 bits describing each type. One
+>   observation is even if you have a full entry each pair of 2 bits
+>   describing the type needs to be set that is a full entry.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7f064ba1704c2466e36d@syzkaller.appspotmail.com
+But if I have a single entry per row, I have a single Type-Group value,
+so I only need to subtract 2, no?
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 8356 at net/wireless/ibss.c:36 __cfg80211_ibss_joined+0x3fe/0x480 net/wireless/ibss.c:36
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 8356 Comm: kworker/u4:7 Not tainted 5.9.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: cfg80211 cfg80211_event_work
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1d6/0x29e lib/dump_stack.c:118
- panic+0x2c0/0x800 kernel/panic.c:231
- __warn+0x227/0x250 kernel/panic.c:600
- report_bug+0x1b1/0x2e0 lib/bug.c:198
- handle_bug+0x42/0x80 arch/x86/kernel/traps.c:234
- exc_invalid_op+0x16/0x40 arch/x86/kernel/traps.c:254
- asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
-RIP: 0010:__cfg80211_ibss_joined+0x3fe/0x480 net/wireless/ibss.c:36
-Code: 00 00 48 3b 44 24 30 0f 85 8d 00 00 00 48 83 c4 38 5b 41 5c 41 5d 41 5e 41 5f 5d c3 e8 bb 54 9a f9 0f 0b eb d4 e8 b2 54 9a f9 <0f> 0b eb cb e8 a9 54 9a f9 0f 0b e9 82 fd ff ff e8 9d 54 9a f9 0f
-RSP: 0018:ffffc9000a197bd8 EFLAGS: 00010293
-RAX: ffffffff87daa87e RBX: 1ffff11012e3a182 RCX: ffff8880953ae080
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000006 R08: dffffc0000000000 R09: fffffbfff16c80a4
-R10: fffffbfff16c80a4 R11: 0000000000000000 R12: ffff8880971d0c10
-R13: ffff88808ddde418 R14: ffff888077e23350 R15: ffff8880971d0000
- cfg80211_process_wdev_events+0x3b5/0x4d0 net/wireless/util.c:910
- cfg80211_process_rdev_events+0x79/0xe0 net/wireless/util.c:936
- cfg80211_event_work+0x1d/0x30 net/wireless/core.c:320
- process_one_work+0x789/0xfc0 kernel/workqueue.c:2269
- worker_thread+0xaa4/0x1460 kernel/workqueue.c:2415
- kthread+0x37e/0x3a0 drivers/block/aoe/aoecmd.c:1234
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+>   Maybe if you have a look at Figure 30, it would be a little bit more
+>   clear. Even there is a register called VCAP_TG_DAT that information
+>   is storred internally in the VCAP_ENTRY_DAT.
 
+See, this is what I don't understand. You're saying that the Type-Group
+is stored as part of the entry inside the TCAM, even if you're accessing
+it through a different set of cache registers? What else is stored in a
+TCAM row sub-word? The key + mask + Type-Group are stored in the same
+sub-word, I assume?
+
+> - so having those in mind, then VCAP_IS2_ENTRY_WIDTH is the full entry
+>   length - 8 bits. 384 - 8 = 376.
+
+But there are 4 Type-Group (and therefore 4 entries per row) only if the
+entries are for quarter keys, am I not correct? And the IS2 code
+currently uses half keys. Does this variable need to be set differently
+according to the key size?
+
+> - then if I remember correctly then VCAP_CONST_ENTRY_WIDTH should be
+>   384? or 12 if it is counting the words.
+
+Yes, it is 384 and the VCAP core version is 0.
+
+> Does it make sense or am I completly off?
+
+So, in simple words, what is the physical significance of
+(VCAP_CONST_ENTRY_WIDTH - VCAP_CONST_ENTRY_TG_WIDTH * VCAP_CONST_ENTRY_SWCNT)?
+To my understanding, it means the size used by all key+mask entries
+within a TCAM row (therefore without the length of Type-Group fields)
+when that row contains 4 quarter keys. Divide this number by 2, you get
+the length of the key, or the length of the mask, for a single sub-word,
+BUT only assuming that quarter keys are used.
+So, why does this value have any significance to a driver that is not
+using quarter keys?
+
+Am _I_ completely off? This is so confusing.
+
+Thanks,
+-Vladimir
