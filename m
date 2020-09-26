@@ -2,100 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69CC62795A3
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 02:41:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5031F2795B7
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 02:56:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729793AbgIZAle (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 20:41:34 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56296 "EHLO vps0.lunn.ch"
+        id S1729811AbgIZA44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 20:56:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47328 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725208AbgIZAle (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Sep 2020 20:41:34 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kLyHJ-00GE3z-Mg; Sat, 26 Sep 2020 02:41:29 +0200
-Date:   Sat, 26 Sep 2020 02:41:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        alexandre.torgue@st.com, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, joabreu@synopsys.com, kuba@kernel.org,
-        peppe.cavallaro@st.com, davem@davemloft.net,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: RGMII timing calibration (on 12nm Amlogic SoCs) - integration
- into dwmac-meson8b
-Message-ID: <20200926004129.GC3850848@lunn.ch>
-References: <CAFBinCATt4Hi9rigj52nMf3oygyFbnopZcsakGL=KyWnsjY3JA@mail.gmail.com>
- <20200925221403.GE3856392@lunn.ch>
- <CAFBinCC4VuLJDLqQb+m+h+qnh6fAK2aBLVtQaE15Tc-zQq=KSg@mail.gmail.com>
+        id S1726316AbgIZA44 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Sep 2020 20:56:56 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9F34D20809;
+        Sat, 26 Sep 2020 00:56:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601081815;
+        bh=amLa4k0PPAkQKg9ijKa8+pv8GQn7HB7WjSCLSH+TdGg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Mr1dazX9E8DR91wwwdQVleiXspDniwL2fnshWXkxzha4tHdV6NMuQZ9dnc5uRFjjH
+         gz5j0K6/rf8zeAdDG9/Z8jObVMRfFqW4Fpx2xE4vq1NDsyAidPMDrzi1aL2ETgqxg2
+         yxLPTN5UKwfCZtc3pTsz0Pc/XNtuZeBdAUs8RrFE=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 00/10] udp_tunnel: convert Intel drivers with shared tables
+Date:   Fri, 25 Sep 2020 17:56:39 -0700
+Message-Id: <20200926005649.3285089-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFBinCC4VuLJDLqQb+m+h+qnh6fAK2aBLVtQaE15Tc-zQq=KSg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The reference code I linked tries to detect the RGMII interface mode.
-> However, for each board we know the phy-mode as well as the RX and TX
-> delay - so I'm not trying to port the RGMII interface detection part
-> to the mainline driver.
-> 
-> on X96 Air (which I'm using for testing) Amlogic configures phy-mode
-> "rgmii" with a 2ns TX delay provided by the MAC and 0ns RX delay
-> anywhere (so I'm assuming that the board adds the 2ns RX delay)
+This set converts Intel drivers which have the ability to spawn
+multiple netdevs, but have only one UDP tunnel port table.
 
-Hi Martin
+Appropriate support is added to the core infra in patch 1,
+followed by netdevsim support and a selftest.
 
-It would be unusual to have an asymmetric design in the PCB. So i
-would try to prove that assumption. It could be the PHY driver is
-broken, and although it is configured to use RGMII, it is actually
-inserting a delay on RX. Also check if the PHY has any strapping.
+The table sharing works by core attaching the same table
+structure to all devices sharing the table. This means the
+reference count has to accommodate potentially large values.
 
-> I am aware that the recommendation is to let the PHY generate the delay.
-> For now I'm trying to get the same configuration working which is used
-> by Amlogic's vendor kernel and u-boot.
-> 
-> > Is there any documentation as to what the calibration values mean?  I
-> > would just hard code it to whatever means 0uS delay, and be done. The
-> > only time the MAC needs to add delays is when the PHY is not capable
-> > of doing it, and generally, they all are.
+Once core is ready i40e and ice are converted. These are
+complex drivers, but we got a tested-by from Aaron, so we
+should be good :)
 
-> This calibration is not the RGMII RX or TX delay - we have other
-> registers for that and already know how to program these.
+Compared to v1 I've made sure the selftest is executable.
 
-O.K. so maybe this is just fine tuning. Some PHYs also allow this.
+Other than that patches 8 and 9 are actually from the Mellanox
+conversion series were kept out to avoid Mellanox vs Intel
+conflicts.
 
-> What I can say is that u-boot programs calibration value 0xf (the
-> maximum value) on my X96 Air board. With this I cannot get Ethernet
-> working - regardless of how I change the RX or TX delays.
-> If I leave everything as-is (2ns TX delay generated by the MAC, 0ns RX
-> delay, ...) and change the calibration value to 0x0 or 0x3 (the latter
-> is set by the vendor kernel) then Ethernet starts working.
+Last patch is new, some docs to let users knows ethtool
+can now display UDP tunnel info.
 
-So there is just one calibration value? So it assumes the calibration
-is symmetric for both RX and TX.
+Jakub Kicinski (10):
+  udp_tunnel: add the ability to share port tables
+  netdevsim: add warnings on unexpected UDP tunnel port errors
+  netdevsim: shared UDP tunnel port table support
+  selftests: net: add a test for shared UDP tunnel info tables
+  i40e: convert to new udp_tunnel infrastructure
+  ice: remove unused args from ice_get_open_tunnel_port()
+  ice: convert to new udp_tunnel infrastructure
+  netdevsim: support the static IANA VXLAN port flag
+  selftests: net: add a test for static UDP tunnel ports
+  docs: vxlan: add info about device features
 
-What PHY is it using?
+ Documentation/networking/vxlan.rst            |  28 ++
+ drivers/net/ethernet/intel/i40e/i40e.h        |   6 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 264 ++++--------------
+ .../net/ethernet/intel/ice/ice_ethtool_fdir.c |   6 +-
+ drivers/net/ethernet/intel/ice/ice_fdir.c     |   2 +-
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    | 231 +++++++--------
+ .../net/ethernet/intel/ice/ice_flex_pipe.h    |  11 +-
+ .../net/ethernet/intel/ice/ice_flex_type.h    |   5 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |  97 ++-----
+ drivers/net/ethernet/intel/ice/ice_type.h     |   3 +
+ drivers/net/netdevsim/netdevsim.h             |   8 +-
+ drivers/net/netdevsim/udp_tunnels.c           |  34 ++-
+ include/net/udp_tunnel.h                      |  24 ++
+ net/ipv4/udp_tunnel_nic.c                     |  96 ++++++-
+ .../drivers/net/netdevsim/udp_tunnel_nic.sh   | 167 +++++++++++
+ 15 files changed, 531 insertions(+), 451 deletions(-)
+ mode change 100644 => 100755 tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh
 
-https://dpaste.com/2WJF9EN suggests it is a RTL8211F.
+-- 
+2.26.2
 
-This device does have stripping to set the default delay. Can you
-check if there are pull ups on pins 24 and 25?
-
-What i find interesting is in the driver is:
-
-        ret = phy_modify_paged_changed(phydev, 0xd08, 0x11, RTL8211F_TX_DELAY,
-                                       val_txdly);
-
-        ret = phy_modify_paged_changed(phydev, 0xd08, 0x15, RTL8211F_RX_DELAY,
-                                       val_rxdly);
-
-Different registers, 0x11 vs 0x15. In the datasheets i found with
-google, none describe any of these bits, but at least register 0x15 is
-mentioned, where as register 0x11 is not.
-
-Git blame shows you added this! Are you sure about this? It seems odd
-they are in different registers.
-
-     Andrew
