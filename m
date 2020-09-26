@@ -2,102 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8589127982C
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 11:26:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B91F427983B
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 12:09:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729021AbgIZJ01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 05:26:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725208AbgIZJ00 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 05:26:26 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD84AC0613CE;
-        Sat, 26 Sep 2020 02:26:26 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id kk9so736083pjb.2;
-        Sat, 26 Sep 2020 02:26:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=EoXTg89vWulktaKV9WUf5FA5R7Hxe2mYsOu9pJnZ92Y=;
-        b=mona7MExxElD46h3dsWgHtnjpOtE/bWLDT+DMc/vOavno0lgMekwKiWOeLyDjkk7n4
-         NBltTXvnSMpxxsCx+htM46j9mjmPE72bLki+STrpFhHj3kRubiD6nOYLn2dIbnnt89xM
-         lOI11IGJWFQXf4iTqtGE88RMgdd8NWUA9M8jhxHSVJNScMGlQr8L/Vt/3ZWxbcLnbSgc
-         iY9XVhvymouOgc8ASbANycfRAgv+7vzKACd2jOvcNHyciB/eTIpzLmZ6dxBHCzN5swg1
-         E1s+UE2wsJpcZK03PKZPNVZzFKkvEO7xnOpWFmQ4wpXjY5284tUR3JrjOD0qRN+nPzRK
-         uRGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=EoXTg89vWulktaKV9WUf5FA5R7Hxe2mYsOu9pJnZ92Y=;
-        b=GIBwYa8MmIx+eItH43wLufZ4cZGbHQr4PmybsZj/3aBUwHVj2fazPltxMQ+q/iZko4
-         xiThf29PWuCoGP/xRVik4ST+/wiiiRXlHXbuT867rNjqPR7NHQpDRNQ1qrR99CjaoXxn
-         CwDnbJY0bBGiMfSS+UgapsK5AsEtDsPeINBj/OczR4WKzxeXxBdXiih8LV3g3+Ph25rw
-         o0Q7Sg+HBCtKFkTxZ/QATBT6IZGPmXT0Ky5m47OE9Eqw7Bb1PUV3+WyD63NrDSM+1KFw
-         6z6BfMOFIUDEFbGbit2SD1kHjhhn5I50Nna1UP+6+B+2atPlP4Mkbfv+fWsOubkq48m/
-         /VyQ==
-X-Gm-Message-State: AOAM533sHc0Idaph0IHMDqPEzd4V365EvtLDQFcdhZ3YHtmY40zLah+F
-        /KpztrXda16JbO4nbSHiR2A=
-X-Google-Smtp-Source: ABdhPJxVin+kg3Bl9BPzaY3B3kIFsVlKig91jO1lzlI/FEDRWrVbeqb0xbThgeg0z4WdwHNpWoU3CA==
-X-Received: by 2002:a17:90a:a78d:: with SMTP id f13mr1465833pjq.69.1601112386296;
-        Sat, 26 Sep 2020 02:26:26 -0700 (PDT)
-Received: from localhost.localdomain (fmdmzpr03-ext.fm.intel.com. [192.55.54.38])
-        by smtp.gmail.com with ESMTPSA id l14sm1314765pjy.1.2020.09.26.02.26.23
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 26 Sep 2020 02:26:25 -0700 (PDT)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com
-Cc:     bpf@vger.kernel.org
-Subject: [PATCH bpf-next] xsk: fix possible crash in socket_release when out-of-memory
-Date:   Sat, 26 Sep 2020 11:26:13 +0200
-Message-Id: <1601112373-10595-1-git-send-email-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1726382AbgIZKIy convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 26 Sep 2020 06:08:54 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:33932 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726149AbgIZKIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 06:08:53 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-239-y59-RWZIOgO1ecIgUYA2Aw-1; Sat, 26 Sep 2020 11:08:48 +0100
+X-MC-Unique: y59-RWZIOgO1ecIgUYA2Aw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Sat, 26 Sep 2020 11:08:47 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Sat, 26 Sep 2020 11:08:47 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Andrew Lunn' <andrew@lunn.ch>
+CC:     'Kai-Heng Feng' <kai.heng.feng@canonical.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2] e1000e: Increase iteration on polling MDIC ready bit
+Thread-Topic: [PATCH v2] e1000e: Increase iteration on polling MDIC ready bit
+Thread-Index: AQHWkox4cI4WCPtPmUq6IlIoeEXohal5Cn3AgAA/UYCAAWddMA==
+Date:   Sat, 26 Sep 2020 10:08:47 +0000
+Message-ID: <1b4fadba2e204f6abd4ef6e02d84beed@AcuMS.aculab.com>
+References: <20200923074751.10527-1-kai.heng.feng@canonical.com>
+ <20200924150958.18016-1-kai.heng.feng@canonical.com>
+ <20200924155355.GC3821492@lunn.ch>
+ <8A08B3A7-8368-48EC-A2DD-B5D5F3EA94C5@canonical.com>
+ <2f48175dce974ea689bfd26b9fc2245a@AcuMS.aculab.com>
+ <20200925132903.GB3850848@lunn.ch>
+In-Reply-To: <20200925132903.GB3850848@lunn.ch>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+From: Andrew Lunn
+> Sent: 25 September 2020 14:29
+> On Fri, Sep 25, 2020 at 08:50:30AM +0000, David Laight wrote:
+> > From: Kai-Heng Feng
+> > > Sent: 24 September 2020 17:04
+> > ...
+> > > > I also don't fully understand the fix. You are now looping up to 6400
+> > > > times, each with a delay of 50uS. So that is around 12800 times more
+> > > > than it actually needs to transfer the 64 bits! I've no idea how this
+> > > > hardware works, but my guess would be, something is wrong with the
+> > > > clock setup?
+> > >
+> > > It's probably caused by Intel ME. This is not something new, you can find many polling codes in
+> e1000e
+> > > driver are for ME, especially after S3 resume.
+> > >
+> > > Unless Intel is willing to open up ME, being patient and wait for a longer while is the best
+> approach
+> > > we got.
+> >
+> > There is some really broken code in the e1000e driver that affect my
+> > Ivy bridge platform were it is trying to avoid hardware bugs in
+> > the ME interface.
+> >
+> > It seems that before EVERY write to a MAC register it must check
+> > that the ME isn't using the interface - and spin until it isn't.
+> > This causes massive delays in the TX path because it includes
+> > the write that tells the MAC engine about a new packet.
+> 
+> Hi David
+> 
+> Thanks for the information. This however does not really explain the
+> issue.
+> 
+> The code busy loops waiting for the MDIO transaction to complete. If
+> read/writes to the MAC are getting blocked, that just means less
+> iterations of the loop are needed, not more, since the time to
+> complete the transaction should be fixed.
+> 
+> If ME really is to blame, it means ME is completely hijacking the
+> hardware? Stopping the clocks? Maybe doing its own MDIO transactions?
+> How can you write a PHY driver if something else is also programming
+> the PHY.
+> 
+> We don't understand what is going on here. We are just papering over
+> the cracks. The commit message should say this, that the change fixes
+> the symptoms but probably not the cause.
 
-Fix possible crash in socket_release when an out-of-memory error has
-occurred in the bind call. If a socket using the XDP_SHARED_UMEM flag
-encountered an error in xp_create_and_assign_umem, the bind code
-jumped to the exit routine but erroneously forgot to set the err value
-before jumping. This meant that the exit routine thought the setup
-went well and set the state of the socket to XSK_BOUND. The xsk socket
-release code will then, at application exit, think that this is a
-properly setup socket, when it is not, leading to a crash when all
-fields in the socket have in fact not been initialized properly. Fix
-this by setting the err variable in xsk_bind so that the socket is not
-set to XSK_BOUND which leads to the clean-up in xsk_release not being
-triggered.
+You may not have the same broken hardware as I have...
 
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Reported-by: syzbot+ddc7b4944bc61da19b81@syzkaller.appspotmail.com
-Fixes: 1c1efc2af158 ("xsk: Create and free buffer pool independently from umem")
----
-I have not been able to reproduce this issue using the syzkaller
-config and reproducer, so I cannot guarantee it fixes it. But this bug
-is real and it is triggered by an out-of-memory in
-xp_create_and_assign_umem, just like syzcaller injects, and would lead
-to the same crash in dev_hold in xsk_release.
----
- net/xdp/xsk.c | 1 +
- 1 file changed, 1 insertion(+)
+From what I could infer from the code and guess from the behaviour
+I got the impression that if the ME was accessing any of the MAC
+registers it was likely that writes from the kernel just got discarded.
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 3895697..ba4dfb1 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -703,6 +703,7 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
- 			xs->pool = xp_create_and_assign_umem(xs,
- 							     umem_xs->umem);
- 			if (!xs->pool) {
-+				err = -ENOMEM;
- 				sockfd_put(sock);
- 				goto out_unlock;
- 			}
--- 
-2.7.4
+I got the impression that a bug in the hardware was being worked
+around by the ME setting a status bit before and access, waiting
+a bit for the kernel to finish anything it was doing, then
+doing its access and clearing the bit.
+
+The kernel keeps having to wait for the bit to be clear.
+These delays were long; sub ms - but far longer than
+the rest of the code path for sending a packet.
+But the code didn't check/disable pre-emption or interrupts
+so the check was actually broken.
+(If I removed it completely my system wouldn't boot!)
+
+Thing is I don't want the ME.
+I don't need the ME on that system.
+The ME might be a security hole.
+The ME breaks my system.
+But I can't disable it at all.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
