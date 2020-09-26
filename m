@@ -2,74 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F758279BEE
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 20:43:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D07DA279BF7
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 20:52:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730151AbgIZSnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 14:43:42 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:30433 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726309AbgIZSnm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 14:43:42 -0400
-Received: from [10.193.177.145] (ashwini.asicdesigners.com [10.193.177.145] (may be forged))
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 08QIhWCq000338;
-        Sat, 26 Sep 2020 11:43:33 -0700
-Subject: Re: Re: [PATCH net] net/tls: sendfile fails with ktls offload
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20200925165235.5dba5d7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <b7afc12f-92a5-c2a9-087e-b826eb74194f@chelsio.com>
-From:   rohit maheshwari <rohitm@chelsio.com>
-Cc:     vakul.garg@nxp.com, secdev <secdev@chelsio.com>
-Message-ID: <439f7a6f-fdbd-8c6e-129d-c25f803e3e5e@chelsio.com>
-Date:   Sun, 27 Sep 2020 00:13:31 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.2.1
+        id S1730132AbgIZSwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 14:52:32 -0400
+Received: from mail-out.m-online.net ([212.18.0.10]:60206 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729291AbgIZSwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 14:52:31 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4BzHvw2S13z1rsMZ;
+        Sat, 26 Sep 2020 20:52:19 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4BzHvl2lQDz1qsnR;
+        Sat, 26 Sep 2020 20:52:19 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id P1Ben1uK5Tsa; Sat, 26 Sep 2020 20:52:17 +0200 (CEST)
+X-Auth-Info: +qdsg+whkXZW7y/EEf3l9j7opLfCoWlczkiMXG01Vi0=
+Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Sat, 26 Sep 2020 20:52:17 +0200 (CEST)
+Subject: Re: [PATCH] net: fec: Fix PHY init after phy_reset_after_clk_enable()
+To:     Richard Leitner <richard.leitner@skidata.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>
+References: <20200903210011.GD3112546@lunn.ch>
+ <b6397b39-c897-6e0a-6bf7-b6b24908de1a@denx.de>
+ <20200903215331.GG3112546@lunn.ch>
+ <02ce2afb-7b9f-ba35-63a5-7496c7a39e6e@denx.de>
+ <20200903220847.GI3112546@lunn.ch>
+ <c67eb631-a16d-0b52-c2f8-92d017e39258@denx.de>
+ <20200904140245.GO3112546@lunn.ch>
+ <b305a989-d9c3-f02a-6935-81c6bcc084c5@denx.de>
+ <20200904190228.GG81961@pcleri>
+ <dce19310-edbd-e26b-77cd-f03f3350a477@denx.de>
+ <20200909083813.GI81961@pcleri>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <581e5db1-9aac-458d-ed0c-2784ad28b3cc@denx.de>
+Date:   Sat, 26 Sep 2020 20:52:17 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <b7afc12f-92a5-c2a9-087e-b826eb74194f@chelsio.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200909083813.GI81961@pcleri>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 9/9/20 10:38 AM, Richard Leitner wrote:
+> On Fri, Sep 04, 2020 at 09:23:26PM +0200, Marek Vasut wrote:
+>> On 9/4/20 9:02 PM, Richard Leitner wrote:
+>>> On Fri, Sep 04, 2020 at 05:26:14PM +0200, Marek Vasut wrote:
+>>>> On 9/4/20 4:02 PM, Andrew Lunn wrote:
+>>>>> On Fri, Sep 04, 2020 at 12:45:44AM +0200, Marek Vasut wrote:
+>>>>>> On 9/4/20 12:08 AM, Andrew Lunn wrote:
+>>>>>>>>> b4 am 20200903043947.3272453-1-f.fainelli@gmail.com
+>>>>>>>>
+>>>>>>>> That might be a fix for the long run, but I doubt there's any chance to
+>>>>>>>> backport it all to stable, is there ?
+>>>>>>>
+>>>>>>> No. For stable we need something simpler.
+>>>>>>
+>>>>>> Like this patch ?
+>>>>>
+>>>>> Yes.
+>>>>>
+>>>>> But i would like to see a Tested-By: or similar from Richard
+>>>>> Leitner. Why does the current code work for his system? Does your
+>>>>> change break it?
+>>>>
+>>>> I have the IRQ line connected and described in DT. The reset clears the
+>>>> IRQ settings done by the SMSC PHY driver. The PHY works fine if I use
+>>>> polling, because then even if no IRQs are generated by the PHY, the PHY
+>>>> framework reads the status updates from the PHY periodically and the
+>>>> default settings of the PHY somehow work (even if they are slightly
+>>>> incorrect). I suspect that's how Richard had it working.
+>>>
+>>> I have different PHYs on different PCBs in use, but IIRC none of them
+>>> has the IRQ line defined in the DT.
+>>> I will take a look at it, test your patch and give feedback ASAP.
+>>> Unfortunately it's unlikely that this will be before monday 😕
+>>> Hope that's ok.
+>>
+>> That's totally fine, thanks !
+> 
+> Hi, sorry for the delay.
+> I've applied the patch to our kernel and did some basic tests on
+> different custom imx6 PCBs. As everything seems to work fine for our
+> "non-irq configuration" please feel free to add
+> 
+> Tested-by: Richard Leitner <richard.leitner@skidata.com>
 
->> > -----Original Message-----
->> > From: Jakub Kicinski <kuba@kernel.org>
->> > Sent: Friday, September 25, 2020 3:27 AM
->> > To: Rohit Maheshwari <rohitm@chelsio.com>
->> > Cc: netdev@vger.kernel.org; davem@davemloft.net; 
->> vakul.garg@nxp.com; secdev <secdev@chelsio.com>
->> > Subject: Re: [PATCH net] net/tls: sendfile fails with ktls offload
->> >
->
->> > Also shouldn't we update this field or destroy the record before 
->> the break on line 478? If more is set, and payload is lesser than the 
->> max size, then we need to
->> hold on to get next sendpage and continue adding frags in the same 
->> record.
->> So I don't think we need to do any update or destroy the record. Please
->> correct me if I am wrong here.
->
-> Agreed, if more is set we should continue appending.
->
-> What I'm saying is that we may exit the loop on line 478 or 525 without
-> updating pending_open_record_frags. So if pending_open_record_frags is
-> set, we'd be in a position where there is no data in the record, yet
-> pending_open_record_frags is set. Won't subsequent cmsg send not cause 
-> a zero length record to be generated?
-> Exit on line 478 can get triggered if sk_page_frag_refill() fails, and 
-> then by
-Exit on line 478 can get triggered if sk_page_frag_refill() fails,
-and then by exiting, it will hit line 529 and will return 'rc =
-orig_size - size', so I am sure we don't need to do anything else
-there. Exit on line 525 will be, due to do_tcp_sendpage(), and I
-think pending_open_record_frags won't be set if this is the last
-record. And if it is not the last record, do_tcp_sendpage will be
-failing for a complete and correct record, that doesn't need to be
-destroyed and at this very moment pending_open_record_frags
-will suggest that there is more data (unrelated to current failing
-record), which actually is correct. I think, there won't be cmsg if
-pending_open_record_frags is set.
+So can this fix be applied ?
