@@ -2,138 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCE7D2795CC
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 03:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4052C2795D8
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 03:14:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729913AbgIZBCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Sep 2020 21:02:38 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:36186 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729493AbgIZBCf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 21:02:35 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08PJwrTW138022;
-        Fri, 25 Sep 2020 20:03:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=Nq0+GVuXX49BrrGR5jVT3CHPb2ZHAO9+Zi+Yc3edtOU=;
- b=nG47WxTzvgzNcv0/dJ9QM1jrSr5sXyQg3yX5btqU38Y3xmikKnSSQ9CrdEjiTEV/2vNl
- M5PDfLIejBZshLaFF9eswImFQ0Le85iiSj7a0zrO3sFzZH9h4UFe5nOYOkhMyA0/xaY5
- xfHh06M2Oa18uRv0sTs+N3kNS+w332OsmCw5WJGUiu4z6BvPyChCDF+pnv5saydGsWSI
- Jj35oBTnSz+b8NA9I674BKjW6n6hGBn0vT03xQu5olExBqbxu7UZEPg5SGHimMQIGQr9
- pBXkw0N2LLnLjxtdtcvdgcuOhqpBfi1s4a9whJqlvWcX4K2sYWwcIXWcAd4dFKbLR8gs zA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 33ndnuym2k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 25 Sep 2020 20:03:12 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08PK0Ytn033521;
-        Fri, 25 Sep 2020 20:03:11 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 33nury86hg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Sep 2020 20:03:11 +0000
-Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08PK34fC007803;
-        Fri, 25 Sep 2020 20:03:04 GMT
-Received: from [10.74.86.146] (/10.74.86.146)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 25 Sep 2020 13:03:04 -0700
-Subject: Re: [PATCH v3 01/11] xen/manage: keep track of the on-going suspend
- mode
-To:     Anchal Agarwal <anchalag@amazon.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
-        x86@kernel.org, jgross@suse.com, linux-pm@vger.kernel.org,
-        linux-mm@kvack.org, kamatam@amazon.com, sstabellini@kernel.org,
-        konrad.wilk@oracle.com, roger.pau@citrix.com, axboe@kernel.dk,
-        davem@davemloft.net, rjw@rjwysocki.net, len.brown@intel.com,
-        pavel@ucw.cz, peterz@infradead.org, eduval@amazon.com,
-        sblbir@amazon.com, xen-devel@lists.xenproject.org,
-        vkuznets@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dwmw@amazon.co.uk,
-        benh@kernel.crashing.org
-References: <cover.1598042152.git.anchalag@amazon.com>
- <9b970e12491107afda0c1d4a6f154b52d90346ac.1598042152.git.anchalag@amazon.com>
- <4b2bbc8b-7817-271a-4ff0-5ee5df956049@oracle.com>
- <20200914214754.GA19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <e9b94104-d20a-b6b2-cbe0-f79b1ed09c98@oracle.com>
- <20200915180055.GB19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <5f1e4772-7bd9-e6c0-3fe6-eef98bb72bd8@oracle.com>
- <20200921215447.GA28503@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <e3e447e5-2f7a-82a2-31c8-10c2ffcbfb2c@oracle.com>
- <20200922231736.GA24215@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <20200925190423.GA31885@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-From:   boris.ostrovsky@oracle.com
-Organization: Oracle Corporation
-Message-ID: <274ddc57-5c98-5003-c850-411eed1aea4c@oracle.com>
-Date:   Fri, 25 Sep 2020 16:02:58 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.2.2
+        id S1729883AbgIZBOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Sep 2020 21:14:35 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:13828 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729874AbgIZBOe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Sep 2020 21:14:34 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 08Q16Rsx008821
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 18:14:33 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=5nkWAVkFufaH2PSMQ+FABwS1UCoQwNF3XepkyUdFiQ4=;
+ b=Q0XX7pCuWTZmXbj8QELeER+k7KoK6sR+aZ3QCq3HJmdFsKnGjXZwvR+Ow/cXcC0VGxQP
+ LoCm3Y/iaY0A6JPql2GFz79xpueyzdC94C98NGaXMOnrLEv6AgUiJ48/AQzBv9vhZ/tE
+ MUySXZW4VYlVKeMfdX+xvahxfe2omY/7pzU= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 33qsp5aq5w-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 25 Sep 2020 18:14:33 -0700
+Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 25 Sep 2020 18:14:31 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 844142EC75B0; Fri, 25 Sep 2020 18:14:23 -0700 (PDT)
+From:   Andrii Nakryiko <andriin@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH v2 bpf-next 0/9] libbpf: BTF writer APIs
+Date:   Fri, 25 Sep 2020 18:13:48 -0700
+Message-ID: <20200926011357.2366158-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20200925190423.GA31885@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9755 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
- phishscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0 suspectscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009250141
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9755 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- lowpriorityscore=0 phishscore=0 adultscore=0 suspectscore=0 bulkscore=0
- clxscore=1015 impostorscore=0 mlxlogscore=999 mlxscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009250141
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-25_19:2020-09-24,2020-09-25 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
+ spamscore=0 lowpriorityscore=0 impostorscore=0 malwarescore=0
+ clxscore=1015 mlxscore=0 mlxlogscore=506 bulkscore=0 adultscore=0
+ priorityscore=1501 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009260005
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch set introduces a new set of BTF APIs to libbpf that allow to
+conveniently produce BTF types and strings. Internals of struct btf were
+changed such that it can transparently and automatically switch to writab=
+le
+mode, which allows appending BTF types and strings. This will allow for l=
+ibbpf
+itself to do more intrusive modifications of program's BTF (by rewriting =
+it,
+at least as of right now), which is necessary for the upcoming libbpf sta=
+tic
+linking. But they are complete and generic, so can be adopted by anyone w=
+ho
+has a need to produce BTF type information.
 
-On 9/25/20 3:04 PM, Anchal Agarwal wrote:
-> On Tue, Sep 22, 2020 at 11:17:36PM +0000, Anchal Agarwal wrote:
->> On Tue, Sep 22, 2020 at 12:18:05PM -0400, boris.ostrovsky@oracle.com wrote:
->>> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
->>>
->>>
->>>
->>> On 9/21/20 5:54 PM, Anchal Agarwal wrote:
->>>> Thanks for the above suggestion. You are right I didn't find a way to declare
->>>> a global state either. I just broke the above check in 2 so that once we have
->>>> support for ARM we should be able to remove aarch64 condition easily. Let me
->>>> know if I am missing nay corner cases with this one.
->>>>
->>>> static int xen_pm_notifier(struct notifier_block *notifier,
->>>>       unsigned long pm_event, void *unused)
->>>> {
->>>>     int ret = NOTIFY_OK;
->>>>     if (!xen_hvm_domain() || xen_initial_domain())
->>>>       ret = NOTIFY_BAD;
->>>>     if(IS_ENABLED(CONFIG_ARM64) && (pm_event == PM_SUSPEND_PREPARE || pm_event == HIBERNATION_PREPARE))
->>>>       ret = NOTIFY_BAD;
->>>>
->>>>     return ret;
->>>> }
->>>
->>>
->>> This will allow PM suspend to proceed on x86.
->> Right!! Missed it.
->> Also, wrt KASLR stuff, that issue is still seen sometimes but I haven't had
->> bandwidth to dive deep into the issue and fix it.
+One such example outside of libbpf is pahole, which was actually converte=
+d to
+these APIs (locally, pending landing of these changes in libbpf) complete=
+ly
+and shows reduction in amount of custom pahole code necessary and brings =
+nice
+savings in memory usage (about 370MB reduction at peak for my kernel
+configuration) and even BTF deduplication times (one second reduction,
+23.7s -> 22.7s). Memory savings are due to avoiding pahole's own copy of
+"uncompressed" raw BTF data. Time reduction comes from faster string
+search and deduplication by relying on hashmap instead of BST used by pah=
+ole's
+own code. Consequently, these APIs are already tested on real-world
+complicated kernel BTF, but there is also pretty extensive selftest doing
+extra validations.
 
+Selftests in patch #9 add a set of generic ASSERT_{EQ,STREQ,ERR,OK} macro=
+s
+that are useful for writing shorter and less repretitive selftests. I dec=
+ided
+to keep them local to that selftest for now, but if they prove to be usef=
+ul in
+more contexts we should move them to test_progs.h. And few more (e.g.,
+inequality tests) macros are probably necessary to have a more complete s=
+et.
 
-So what's the plan there? You first mentioned this issue early this year and judged by your response it is not clear whether you will ever spend time looking at it.
+Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
 
+v1->v2:
+  - fixed comments (John);
+  - renamed btf__append_xxx() into btf__add_xxx() (Alexei);
+  - added btf__find_str() in addition to btf__add_str();
+  - btf__new_empty() now sets kernel FD to -1 initially.
 
->>  I seem to have lost your email
->> in my inbox hence covering the question here.
->>>
-> Can I add your Reviewed-by or Signed-off-by to it?
+Andrii Nakryiko (9):
+  libbpf: refactor internals of BTF type index
+  libbpf: remove assumption of single contiguous memory for BTF data
+  libbpf: generalize common logic for managing dynamically-sized arrays
+  libbpf: extract generic string hashing function for reuse
+  libbpf: allow modification of BTF and add btf__add_str API
+  libbpf: add btf__new_empty() to create an empty BTF object
+  libbpf: add BTF writing APIs
+  libbpf: add btf__str_by_offset() as a more generic variant of
+    name_by_offset
+  selftests/bpf: test BTF writing APIs
 
+ tools/lib/bpf/bpf.c                           |    2 +-
+ tools/lib/bpf/bpf.h                           |    2 +-
+ tools/lib/bpf/btf.c                           | 1343 +++++++++++++++--
+ tools/lib/bpf/btf.h                           |   44 +
+ tools/lib/bpf/btf_dump.c                      |    9 +-
+ tools/lib/bpf/hashmap.h                       |   12 +
+ tools/lib/bpf/libbpf.map                      |   23 +
+ tools/lib/bpf/libbpf_internal.h               |    3 +
+ .../selftests/bpf/prog_tests/btf_write.c      |  278 ++++
+ 9 files changed, 1596 insertions(+), 120 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/btf_write.c
 
-Are you asking me to add my R-b to the broken code above?
-
-
--boris
+--=20
+2.24.1
 
