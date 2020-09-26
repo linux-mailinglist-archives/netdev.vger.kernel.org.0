@@ -2,90 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DB6C279B84
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 19:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4562D279B88
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 19:46:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726305AbgIZRpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 13:45:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52258 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726183AbgIZRpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 13:45:17 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A15C0613CE
-        for <netdev@vger.kernel.org>; Sat, 26 Sep 2020 10:45:17 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id z23so2802507ejr.13
-        for <netdev@vger.kernel.org>; Sat, 26 Sep 2020 10:45:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JUhppgIecogjJ2wLkwWrjPNDFhCDSFKJXyRHlSS4b3I=;
-        b=UP4ao2R0NINF0hDr3ZYnj8rtHgyZiTHjNTZkxye5QuSeF3RFmM7Aj4Uji6xIygoaz9
-         9z15op4zDHNVX6DfSy2PP5JGutpTIv+emxo6YsGbYbYNc9CiDJhywtIYBzkygPHJ0dVe
-         3CDn6Gi6ijL1kFLaGatcT0cl30UJ6gdb3yoEs5VpNsjgvq8amuAOwL0GW4YuhoMaJHpQ
-         CgyrLNS4Lk2Km7VMEQutv3MKtOqZ338FZBWHjqmXF6eTy5IOsoRTE8jVVV6YiVlndiRM
-         83wHH19SsfRkNaP9S0iOfuAjKJ3PKDD2G5anWVMx5xaAxODFRo5NvshsCaDVXNK6cN9+
-         zIYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JUhppgIecogjJ2wLkwWrjPNDFhCDSFKJXyRHlSS4b3I=;
-        b=AxDMxO4ON9T9cRmS4nDOIbP0bprAGK5HgdRckWysDKHnbcZ1IKRxzMVXXXmyM9AzQh
-         w7MfNs0v7wu6ct3gDc8Ndp0NeRAsuIq0EIBYVWoyYLQhSz2WtCFyF/blnuizVbFXborv
-         G3Ise2Vh8s0JxK97tWUfGNVywyotTgRoFm8X9OvmGYycLlwdqKiJTHzdJMkRuZD1Vu0Y
-         xhTbRGLCC/ueEAGYA0PO2vjjq0HvPEgmI8aqAfHQ1WedSQ2bJyIRqaM2VI4bWHvFEgwC
-         OVyKGRuA/lNhduKQhM1IfwbmJqLK6Ru34+Rrv80dgo2TZI4NFK2nmqEdcrQuroMs+UT4
-         uAcQ==
-X-Gm-Message-State: AOAM532sNFTc8Ur4RhDny8lvSgbkltspt7aM2kp54s8xjdN6G8qUpTwX
-        +f74/1iVZJM8A8MCG9Zpx5c=
-X-Google-Smtp-Source: ABdhPJzVZxEkcP6NIrJCLVqsBaI+DtDjAFRwA1yomRaJ8HSn+t7RMp7L1/nsrCnMw/72gZ9BM+/b6A==
-X-Received: by 2002:a17:906:344e:: with SMTP id d14mr8592625ejb.42.1601142316275;
-        Sat, 26 Sep 2020 10:45:16 -0700 (PDT)
-Received: from skbuf ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id qu9sm4573430ejb.24.2020.09.26.10.45.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Sep 2020 10:45:15 -0700 (PDT)
-Date:   Sat, 26 Sep 2020 20:45:13 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        Chris Healy <cphealy@gmail.com>
-Subject: Re: [PATCH net-next RFC v1 3/4] net: dsa: Add helper for converting
- devlink port to ds and port
-Message-ID: <20200926174513.6nxpbmd3imaj6dwx@skbuf>
-References: <20200919144332.3665538-1-andrew@lunn.ch>
- <20200919144332.3665538-4-andrew@lunn.ch>
- <20200920235203.5r4srjqyjl5lutan@skbuf>
- <20200926172826.GA3883417@lunn.ch>
+        id S1729680AbgIZRqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 13:46:09 -0400
+Received: from smtp11.smtpout.orange.fr ([80.12.242.133]:42097 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726309AbgIZRqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 13:46:08 -0400
+Received: from tomoyo.flets-east.jp ([153.230.197.127])
+        by mwinf5d89 with ME
+        id Yhlm230082lQRaH03hm34K; Sat, 26 Sep 2020 19:46:06 +0200
+X-ME-Helo: tomoyo.flets-east.jp
+X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 26 Sep 2020 19:46:06 +0200
+X-ME-IP: 153.230.197.127
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/6] can: dev: can_get_echo_skb(): prevent call to kfree_skb() in hard IRQ context
+Date:   Sun, 27 Sep 2020 02:45:31 +0900
+Message-Id: <20200926174542.278166-2-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200926174542.278166-1-mailhol.vincent@wanadoo.fr>
+References: <20200926174542.278166-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200926172826.GA3883417@lunn.ch>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 26, 2020 at 07:28:26PM +0200, Andrew Lunn wrote:
-> Hi Vladimir
->
-> Just finishing off the next version of these patches, and i looped
-> back to check i addressed all the comments.
->
-> This one i tend to disagree with. If you look at DSA drivers, a port
-> variable is always an integer index. dp is used to refer to a
-> dsa_port.
->
-> If anything, i would suggest we rename dsa_to_port() to dsa_to_dp(),
-> and dsa_port_from_netdev to dsa_dp_from_netdev() or maybe
-> dsa_netdev_to_dp().
+If a driver calls can_get_echo_skb() during a hardware IRQ (which is
+often, but not always, the case), the 'WARN_ON(in_irq)' in
+net/core/skbuff.c#skb_release_head_state() might be triggered, under
+network congestion circumstances, together with the potential risk of
+a NULL pointer dereference.
 
-Maybe it's just me, but I don't like the "dp" name too much, and I think
-all conversions of those functions sound worse with the new names.
-But you do have a point with the inconsistency, so I suppose you could
-leave the name as it is? Or maybe dsa_dlp_to_port() if you fancy that
-abbreviation for a devlink port?
+The root cause of this issue is the call to kfree_skb() instead of
+dev_kfree_skb_irq() in net/core/dev.c#enqueue_to_backlog().
+
+This patch prevents the skb to be freed within the call to netif_rx()
+by incrementing its reference count with skb_get(). The skb is finally
+freed by one of the in-irq-context safe functions:
+dev_consume_skb_any() or dev_kfree_skb_any().  The "any" version is
+used because some drivers might call can_get_echo_skb() in a normal
+context.
+
+The reason for this issue to occur is that initially, in the core
+network stack, loopback skb were not supposed to be received in
+hardware IRQ context. The CAN stack is an exeption.
+
+This bug is exactly what is described in
+https://patchwork.ozlabs.org/patch/835236/
+
+While above link proposes a patch that directly modifies
+net/core/dev.c, we try to propose here a smoother modification local
+to CAN network stack (the assumption behind is that only CAN devices
+are affected by this issue).
+
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+ drivers/net/can/dev.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
+index 68834a2853c9..e291fda395a0 100644
+--- a/drivers/net/can/dev.c
++++ b/drivers/net/can/dev.c
+@@ -512,7 +512,11 @@ unsigned int can_get_echo_skb(struct net_device *dev, unsigned int idx)
+ 	if (!skb)
+ 		return 0;
+ 
+-	netif_rx(skb);
++	skb_get(skb);
++	if (netif_rx(skb) == NET_RX_SUCCESS)
++		dev_consume_skb_any(skb);
++	else
++		dev_kfree_skb_any(skb);
+ 
+ 	return len;
+ }
+-- 
+2.26.2
+
