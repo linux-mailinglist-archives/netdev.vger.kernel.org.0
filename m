@@ -2,90 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 157C2279CC1
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 00:17:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C7D6279CCD
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 00:40:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726478AbgIZWPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 18:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726242AbgIZWPn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 18:15:43 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2F5C0613CE
-        for <netdev@vger.kernel.org>; Sat, 26 Sep 2020 15:15:43 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9B5E312A190CF;
-        Sat, 26 Sep 2020 14:58:55 -0700 (PDT)
-Date:   Sat, 26 Sep 2020 15:15:40 -0700 (PDT)
-Message-Id: <20200926.151540.1383303857229218158.davem@davemloft.net>
-To:     saeed@kernel.org
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, kliteyn@nvidia.com,
-        erezsh@nvidia.com, mbloch@nvidia.com, saeedm@nvidia.com
-Subject: Re: [net-next 01/15] net/mlx5: DR, Add buddy allocator utilities
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200925193809.463047-2-saeed@kernel.org>
-References: <20200925193809.463047-1-saeed@kernel.org>
-        <20200925193809.463047-2-saeed@kernel.org>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727709AbgIZWka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 18:40:30 -0400
+Received: from lists.nic.cz ([217.31.204.67]:35100 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726382AbgIZWk3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Sep 2020 18:40:29 -0400
+X-Greylist: delayed 2288 seconds by postgrey-1.27 at vger.kernel.org; Sat, 26 Sep 2020 18:40:29 EDT
+Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
+        by mail.nic.cz (Postfix) with ESMTPSA id 240DA1405E6;
+        Sun, 27 Sep 2020 00:40:26 +0200 (CEST)
+Date:   Sun, 27 Sep 2020 00:40:25 +0200
+From:   Marek Behun <marek.behun@nic.cz>
+To:     netdev <netdev@vger.kernel.org>
+Cc:     linux-leds@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Request for Comment: LED device naming for netdev LEDs
+Message-ID: <20200927004025.33c6cfce@nic.cz>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Sat, 26 Sep 2020 14:58:55 -0700 (PDT)
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: saeed@kernel.org
-Date: Fri, 25 Sep 2020 12:37:55 -0700
+Hi,
 
-> From: Yevgeny Kliteynik <kliteyn@nvidia.com>
-> 
-> Add implementation of SW Steering variation of buddy allocator.
-> 
-> The buddy system for ICM memory uses 2 main data structures:
->   - Bitmap per order, that keeps the current state of allocated
->     blocks for this order
->   - Indicator for the number of available blocks per each order
-> 
-> In addition, there is one more hierarchy of searching in the bitmaps
-> in order to accelerate the search of the next free block which done
-> via find-first function:
-> The buddy system spends lots of its time in searching the next free
-> space using function find_first_bit, which scans a big array of long
-> values in order to find the first bit. We added one more array of
-> longs, where each bit indicates a long value in the original array,
-> that way there is a need for much less searches for the next free area.
-> 
-> For example, for the following bits array of 128 bits where all
-> bits are zero except for the last bit  :  0000........00001
-> the corresponding bits-per-long array is:  0001
-> 
-> The search will be done over the bits-per-long array first, and after
-> the first bit is found, we will use it as a start pointer in the
-> bigger array (bits array).
-> 
-> Signed-off-by: Erez Shitrit <erezsh@nvidia.com>
-> Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-> Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+linux-leds is trying to create a consistent naming mechanism for LEDs
+The schema is:
+  device:color:function
+for example
+  system:green:power
+  keyboard0:green:capslock
 
-Instead of a bits-per-long array, it seems so much simpler and more
-cache friendly to maintain instead just a "lowest set bit" value.
+But we are not there yet.
 
-In the initial state it is zero for all values, remember this is just
-a hint.
+LEDs are often dedicated to specific function by manufacturers, for
+example there can be an icon or a text next to the LED on the case of a
+router, indicating that the LED should blink on activity on a specific
+ethernet port.
 
-When you allocate, if num_free is non-zero of course, you start the
-bit scan from the "lowest set bit" value.  When the set bit is found,
-update the "lowest set bit" cache to the set bit plus one (or zero if
-the new value exceeds the bitmap size).
+This can be specified in device tree via the trigger-sources property.
 
-Then on free you update "lowest set bit" to the bit being set if it is
-smaller than the current "lowest set bit" value for that order.
+We therefore want to select the device part of the LED name to
+correspond to the device it should trigger to according to the
+manufacturer.
 
-No double scanning of bitmap arrays, just a single bitmap search with
-a variable start point.
+What I am wondering is how should we select a name for the device part
+of the LED for network devices, when network namespaces are enabled.
+
+a) We could just use the interface name (eth0:yellow:activity). The
+   problem is what should happen when the interface is renamed, or
+   moved to another network namespace.
+   Pavel doesn't want to complicate the LED subsystem with LED device
+   renaming, nor, I think, with namespace mechanism. I, for my part, am
+   not opposed to LED renaming, but do not know what should happen when
+   the interface is moved to another namespace.
+
+b) We could use the device name, as in struct device *. But these names
+   are often too long and may contain characters that we do not want in
+   LED name (':', or '/', for example).
+
+c) We could create a new naming mechanism, something like
+   device_pretty_name(dev), which some classes may implement somehow.
+
+What are your ideas about this problem?
+
+Marek
