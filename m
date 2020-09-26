@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3366427988C
-	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 12:46:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1EA1279894
+	for <lists+netdev@lfdr.de>; Sat, 26 Sep 2020 12:46:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729286AbgIZKp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Sep 2020 06:45:28 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:6388 "EHLO
+        id S1729366AbgIZKpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Sep 2020 06:45:52 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:7540 "EHLO
         mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727017AbgIZKo4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 06:44:56 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08QAWTwT158888;
+        by vger.kernel.org with ESMTP id S1727321AbgIZKoz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Sep 2020 06:44:55 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08QAgtAu052713;
         Sat, 26 Sep 2020 06:44:52 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references; s=pp1;
- bh=+0MjIOYXRx6vZdOdvFqxFMndWDnnhLrNbhPwSl4G4qg=;
- b=VmGIPWMB1QSztMp5rpGoqevIKHWB4F/eD9aegMFW7fkjF5gzrQTb1xYwKlqBJ2ljQKSd
- qQrE4RmCqQUtfk/w2l5a/IoRvVtPmF1XAQWuKVEXQazIxacIyz1q3cHNg/UqO5S3QcyE
- S3SY2ZA97ZqDpDdHCuYnV0b6IBzuKGMbxo//pbbnUcMxm5edGCbAUFRSLUTM1vQB11bv
- 7BNO9FQs8fWDovZ6W+0nDWyjxZUenaneg1d0gCn1TH4wr1t1kpfjYJEHbZ/LcetDFTvE
- K9wWNZiEnCpOmdySZc23BB1FyKbmt7kAEtL7HqfSdrmSqPsVFlbIizjxxTQtcdD2t5M/ sw== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 33t3xqr6jb-1
+ bh=zc+JvPl6f8MbGrfYoeDoRgEHmwgZqnLImI5bt9anyh8=;
+ b=KZC60/h4sdJm+Q4bx/YGBfqOFajppicMX4JCFRl2jowHHk3slssdXcYGB4oxuMVJdbg8
+ Q7eCbPA8Xuwj+SNNydMECvQFbcp50dMQ5R3p7021QRU1d0NhWoQqKjVZZr/7vEEayNJ/
+ icbxW+rZX+Ftm2qfmHXv2aCCSWippc2B+K4sOs7TRfKRf/93nGpglDm+ako9CGqOSZKD
+ 7vLBEwSwuLnkw4+tFOEcm/zh4SZmrOXzptP0s6zwbzXfr/BtE+d3J4eTOw/Y4+So3PAU
+ PVxH0tIK8aFCwCho6IX5Lij4WiY2TPw2XVVAxvY+UlNewYGAx7aNiWMFP/gXR7f5mUR9 CA== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 33t44pr0j8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 26 Sep 2020 06:44:51 -0400
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08QAgvn4016081;
+        Sat, 26 Sep 2020 06:44:52 -0400
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08QAgjMn015718;
         Sat, 26 Sep 2020 10:44:50 GMT
 Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06fra.de.ibm.com with ESMTP id 33svwgr52t-1
+        by ppma06ams.nl.ibm.com with ESMTP id 33svwgra04-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Sat, 26 Sep 2020 10:44:50 +0000
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08QAilPd29753712
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08QAilqK25821678
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Sat, 26 Sep 2020 10:44:47 GMT
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2A854A4054;
+        by IMSVA (Postfix) with ESMTP id 7577CA405B;
         Sat, 26 Sep 2020 10:44:47 +0000 (GMT)
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DB1D4A405B;
-        Sat, 26 Sep 2020 10:44:46 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 368FDA405C;
+        Sat, 26 Sep 2020 10:44:47 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Sat, 26 Sep 2020 10:44:46 +0000 (GMT)
+        Sat, 26 Sep 2020 10:44:47 +0000 (GMT)
 From:   Karsten Graul <kgraul@linux.ibm.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
         ubraun@linux.ibm.com
-Subject: [PATCH net-next 08/14] net/smc: introduce list of pnetids for Ethernet devices
-Date:   Sat, 26 Sep 2020 12:44:26 +0200
-Message-Id: <20200926104432.74293-9-kgraul@linux.ibm.com>
+Subject: [PATCH net-next 09/14] net/smc: determine proposed ISM devices
+Date:   Sat, 26 Sep 2020 12:44:27 +0200
+Message-Id: <20200926104432.74293-10-kgraul@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200926104432.74293-1-kgraul@linux.ibm.com>
 References: <20200926104432.74293-1-kgraul@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-09-26_06:2020-09-24,2020-09-26 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 suspectscore=1 bulkscore=0 mlxlogscore=999
- clxscore=1015 impostorscore=0 priorityscore=1501 phishscore=0 mlxscore=0
- spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
+ phishscore=0 spamscore=0 clxscore=1015 adultscore=0 suspectscore=1
+ impostorscore=0 malwarescore=0 lowpriorityscore=0 bulkscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2006250000 definitions=main-2009260091
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -71,281 +71,388 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ursula Braun <ubraun@linux.ibm.com>
 
-SMCD version 2 allows usage of ISM devices with hardware PNETID
-only, if an Ethernet net_device exists with the same hardware PNETID.
-This requires to maintain a list of pnetids belonging to
-Ethernet net_devices, which is covered by this patch.
+SMCD Version 2 allows to propose up to 8 additional ISM devices
+offered to the peer as candidates for SMCD communication.
+This patch covers determination of the ISM devices to be proposed.
+ISM devices without PNETID are preferred, since ISM devices with
+PNETID are a V1 leftover and will disappear over the time.
 
 Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
 Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
 ---
- net/smc/smc_netns.h |   1 +
- net/smc/smc_pnet.c  | 145 +++++++++++++++++++++++++++++++++++++++++---
- net/smc/smc_pnet.h  |  14 +++++
- 3 files changed, 153 insertions(+), 7 deletions(-)
+ net/smc/af_smc.c   | 165 ++++++++++++++++++++++++++++++++-------------
+ net/smc/smc.h      |   1 +
+ net/smc/smc_clc.c  |  11 ++-
+ net/smc/smc_clc.h  |   3 +-
+ net/smc/smc_core.h |   4 ++
+ net/smc/smc_ism.c  |   6 +-
+ net/smc/smc_pnet.c |   2 +-
+ net/smc/smc_pnet.h |   1 +
+ 8 files changed, 135 insertions(+), 58 deletions(-)
 
-diff --git a/net/smc/smc_netns.h b/net/smc/smc_netns.h
-index e7a8fc4ae02f..0f4f35aa43ad 100644
---- a/net/smc/smc_netns.h
-+++ b/net/smc/smc_netns.h
-@@ -16,5 +16,6 @@ extern unsigned int smc_net_id;
- /* per-network namespace private data */
- struct smc_net {
- 	struct smc_pnettable pnettable;
-+	struct smc_pnetids_ndev pnetids_ndev;
- };
- #endif
-diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
-index 0b0f2704026f..8a91ca22712f 100644
---- a/net/smc/smc_pnet.c
-+++ b/net/smc/smc_pnet.c
-@@ -29,6 +29,7 @@
- #include "smc_ism.h"
- #include "smc_core.h"
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index f02ed74a28e6..1d01a01c7fd5 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -571,6 +571,41 @@ static int smc_find_ism_device(struct smc_sock *smc, struct smc_init_info *ini)
+ 	return 0;
+ }
  
-+static struct net_device *__pnet_find_base_ndev(struct net_device *ndev);
- static struct net_device *pnet_find_base_ndev(struct net_device *ndev);
- 
- static const struct nla_policy smc_pnet_policy[SMC_PNETID_MAX + 1] = {
-@@ -712,10 +713,115 @@ static struct genl_family smc_pnet_nl_family __ro_after_init = {
- 	.n_ops =  ARRAY_SIZE(smc_pnet_ops)
- };
- 
-+bool smc_pnet_is_ndev_pnetid(struct net *net, u8 *pnetid)
++/* determine possible V2 ISM devices (either without PNETID or with PNETID plus
++ * PNETID matching net_device)
++ */
++static int smc_find_ism_v2_device_clnt(struct smc_sock *smc,
++				       struct smc_init_info *ini)
 +{
-+	struct smc_net *sn = net_generic(net, smc_net_id);
-+	struct smc_pnetids_ndev_entry *pe;
-+	bool rc = false;
++	int rc = SMC_CLC_DECL_NOSMCDDEV;
++	struct smcd_dev *smcd;
++	int i = 1;
 +
-+	read_lock(&sn->pnetids_ndev.lock);
-+	list_for_each_entry(pe, &sn->pnetids_ndev.list, list) {
-+		if (smc_pnet_match(pnetid, pe->pnetid)) {
-+			rc = true;
-+			goto unlock;
++	if (smcd_indicated(ini->smc_type_v1))
++		rc = 0;		/* already initialized for V1 */
++	mutex_lock(&smcd_dev_list.mutex);
++	list_for_each_entry(smcd, &smcd_dev_list.list, list) {
++		if (smcd->going_away || smcd == ini->ism_dev[0])
++			continue;
++		if (!smc_pnet_is_pnetid_set(smcd->pnetid) ||
++		    smc_pnet_is_ndev_pnetid(sock_net(&smc->sk), smcd->pnetid)) {
++			ini->ism_dev[i] = smcd;
++			ini->ism_chid[i] = smc_ism_get_chid(ini->ism_dev[i]);
++			ini->is_smcd = true;
++			rc = 0;
++			i++;
++			if (i > SMC_MAX_ISM_DEVS)
++				break;
 +		}
 +	}
++	mutex_unlock(&smcd_dev_list.mutex);
++	ini->ism_offered_cnt = i - 1;
++	if (!ini->ism_dev[0] && !ini->ism_dev[1])
++		ini->smcd_version = 0;
 +
-+unlock:
-+	read_unlock(&sn->pnetids_ndev.lock);
 +	return rc;
 +}
 +
-+static int smc_pnet_add_pnetid(struct net *net, u8 *pnetid)
+ /* Check for VLAN ID and register it on ISM device just for CLC handshake */
+ static int smc_connect_ism_vlan_setup(struct smc_sock *smc,
+ 				      struct smc_init_info *ini)
+@@ -580,13 +615,45 @@ static int smc_connect_ism_vlan_setup(struct smc_sock *smc,
+ 	return 0;
+ }
+ 
++static int smc_find_proposal_devices(struct smc_sock *smc,
++				     struct smc_init_info *ini)
 +{
-+	struct smc_net *sn = net_generic(net, smc_net_id);
-+	struct smc_pnetids_ndev_entry *pe, *pi;
++	int rc = 0;
 +
-+	pe = kzalloc(sizeof(*pe), GFP_KERNEL);
-+	if (!pe)
-+		return -ENOMEM;
-+
-+	write_lock(&sn->pnetids_ndev.lock);
-+	list_for_each_entry(pi, &sn->pnetids_ndev.list, list) {
-+		if (smc_pnet_match(pnetid, pe->pnetid)) {
-+			refcount_inc(&pi->refcnt);
-+			kfree(pe);
-+			goto unlock;
-+		}
++	/* check if there is an ism device available */
++	if (ini->smcd_version & SMC_V1) {
++		if (smc_find_ism_device(smc, ini) ||
++		    smc_connect_ism_vlan_setup(smc, ini)) {
++			if (ini->smc_type_v1 == SMC_TYPE_B)
++				ini->smc_type_v1 = SMC_TYPE_R;
++			else
++				ini->smc_type_v1 = SMC_TYPE_N;
++		} /* else ISM V1 is supported for this connection */
++		if (smc_find_rdma_device(smc, ini)) {
++			if (ini->smc_type_v1 == SMC_TYPE_B)
++				ini->smc_type_v1 = SMC_TYPE_D;
++			else
++				ini->smc_type_v1 = SMC_TYPE_N;
++		} /* else RDMA is supported for this connection */
 +	}
-+	refcount_set(&pe->refcnt, 1);
-+	memcpy(pe->pnetid, pnetid, SMC_MAX_PNETID_LEN);
-+	list_add_tail(&pe->list, &sn->pnetids_ndev.list);
++	if (smc_ism_v2_capable && smc_find_ism_v2_device_clnt(smc, ini))
++		ini->smc_type_v2 = SMC_TYPE_N;
 +
-+unlock:
-+	write_unlock(&sn->pnetids_ndev.lock);
++	/* if neither ISM nor RDMA are supported, fallback */
++	if (!smcr_indicated(ini->smc_type_v1) &&
++	    ini->smc_type_v1 == SMC_TYPE_N && ini->smc_type_v2 == SMC_TYPE_N)
++		rc = SMC_CLC_DECL_NOSMCDEV;
++
++	return rc;
++}
++
+ /* cleanup temporary VLAN ID registration used for CLC handshake. If ISM is
+  * used, the VLAN ID will be registered again during the connection setup.
+  */
+-static int smc_connect_ism_vlan_cleanup(struct smc_sock *smc, bool is_smcd,
++static int smc_connect_ism_vlan_cleanup(struct smc_sock *smc,
+ 					struct smc_init_info *ini)
+ {
+-	if (!is_smcd)
++	if (!smcd_indicated(ini->smc_type_v1))
+ 		return 0;
+ 	if (ini->vlan_id && smc_ism_put_vlan(ini->ism_dev[0], ini->vlan_id))
+ 		return SMC_CLC_DECL_CNFERR;
+@@ -594,14 +661,14 @@ static int smc_connect_ism_vlan_cleanup(struct smc_sock *smc, bool is_smcd,
+ }
+ 
+ /* CLC handshake during connect */
+-static int smc_connect_clc(struct smc_sock *smc, int smc_type,
++static int smc_connect_clc(struct smc_sock *smc,
+ 			   struct smc_clc_msg_accept_confirm *aclc,
+ 			   struct smc_init_info *ini)
+ {
+ 	int rc = 0;
+ 
+ 	/* do inband token exchange */
+-	rc = smc_clc_send_proposal(smc, smc_type, ini);
++	rc = smc_clc_send_proposal(smc, ini);
+ 	if (rc)
+ 		return rc;
+ 	/* receive SMC Accept CLC message */
+@@ -751,13 +818,24 @@ static int smc_connect_ism(struct smc_sock *smc,
+ 	return 0;
+ }
+ 
++/* check if received accept type and version matches a proposed one */
++static int smc_connect_check_aclc(struct smc_init_info *ini,
++				  struct smc_clc_msg_accept_confirm *aclc)
++{
++	if ((aclc->hdr.typev1 == SMC_TYPE_R &&
++	     !smcr_indicated(ini->smc_type_v1)) ||
++	    (aclc->hdr.typev1 == SMC_TYPE_D &&
++	     !smcd_indicated(ini->smc_type_v1)))
++		return SMC_CLC_DECL_MODEUNSUPP;
++
 +	return 0;
 +}
 +
-+static void smc_pnet_remove_pnetid(struct net *net, u8 *pnetid)
-+{
-+	struct smc_net *sn = net_generic(net, smc_net_id);
-+	struct smc_pnetids_ndev_entry *pe, *pe2;
-+
-+	write_lock(&sn->pnetids_ndev.lock);
-+	list_for_each_entry_safe(pe, pe2, &sn->pnetids_ndev.list, list) {
-+		if (smc_pnet_match(pnetid, pe->pnetid)) {
-+			if (refcount_dec_and_test(&pe->refcnt)) {
-+				list_del(&pe->list);
-+				kfree(pe);
-+			}
-+			break;
-+		}
-+	}
-+	write_unlock(&sn->pnetids_ndev.lock);
-+}
-+
-+static void smc_pnet_add_base_pnetid(struct net *net, struct net_device *dev,
-+				     u8 *ndev_pnetid)
-+{
-+	struct net_device *base_dev;
-+
-+	base_dev = __pnet_find_base_ndev(dev);
-+	if (base_dev->flags & IFF_UP &&
-+	    !smc_pnetid_by_dev_port(base_dev->dev.parent, base_dev->dev_port,
-+				    ndev_pnetid)) {
-+		/* add to PNETIDs list */
-+		smc_pnet_add_pnetid(net, ndev_pnetid);
-+	}
-+}
-+
-+/* create initial list of netdevice pnetids */
-+static void smc_pnet_create_pnetids_list(struct net *net)
-+{
-+	u8 ndev_pnetid[SMC_MAX_PNETID_LEN];
-+	struct net_device *dev;
-+
-+	rtnl_lock();
-+	for_each_netdev(net, dev)
-+		smc_pnet_add_base_pnetid(net, dev, ndev_pnetid);
-+	rtnl_unlock();
-+}
-+
-+/* clean up list of netdevice pnetids */
-+static void smc_pnet_destroy_pnetids_list(struct net *net)
-+{
-+	struct smc_net *sn = net_generic(net, smc_net_id);
-+	struct smc_pnetids_ndev_entry *pe, *temp_pe;
-+
-+	write_lock(&sn->pnetids_ndev.lock);
-+	list_for_each_entry_safe(pe, temp_pe, &sn->pnetids_ndev.list, list) {
-+		list_del(&pe->list);
-+		kfree(pe);
-+	}
-+	write_unlock(&sn->pnetids_ndev.lock);
-+}
-+
- static int smc_pnet_netdev_event(struct notifier_block *this,
- 				 unsigned long event, void *ptr)
+ /* perform steps before actually connecting */
+ static int __smc_connect(struct smc_sock *smc)
  {
- 	struct net_device *event_dev = netdev_notifier_info_to_dev(ptr);
-+	struct net *net = dev_net(event_dev);
-+	u8 ndev_pnetid[SMC_MAX_PNETID_LEN];
+-	bool ism_supported = false, rdma_supported = false;
+ 	struct smc_clc_msg_accept_confirm aclc;
+ 	struct smc_init_info *ini = NULL;
+-	int smc_type;
+ 	int rc = 0;
  
- 	switch (event) {
- 	case NETDEV_REBOOT:
-@@ -725,6 +831,17 @@ static int smc_pnet_netdev_event(struct notifier_block *this,
- 	case NETDEV_REGISTER:
- 		smc_pnet_add_by_ndev(event_dev);
- 		return NOTIFY_OK;
-+	case NETDEV_UP:
-+		smc_pnet_add_base_pnetid(net, event_dev, ndev_pnetid);
-+		return NOTIFY_OK;
-+	case NETDEV_DOWN:
-+		event_dev = __pnet_find_base_ndev(event_dev);
-+		if (!smc_pnetid_by_dev_port(event_dev->dev.parent,
-+					    event_dev->dev_port, ndev_pnetid)) {
-+			/* remove from PNETIDs list */
-+			smc_pnet_remove_pnetid(net, ndev_pnetid);
+ 	if (smc->use_fallback)
+@@ -775,61 +853,52 @@ static int __smc_connect(struct smc_sock *smc)
+ 	if (!ini)
+ 		return smc_connect_decline_fallback(smc, SMC_CLC_DECL_MEM);
+ 
++	ini->smcd_version = SMC_V1;
++	ini->smcd_version |= smc_ism_v2_capable ? SMC_V2 : 0;
++	ini->smc_type_v1 = SMC_TYPE_B;
++	ini->smc_type_v2 = smc_ism_v2_capable ? SMC_TYPE_D : SMC_TYPE_N;
++
+ 	/* get vlan id from IP device */
+ 	if (smc_vlan_by_tcpsk(smc->clcsock, ini)) {
+-		kfree(ini);
+-		return smc_connect_decline_fallback(smc,
+-						    SMC_CLC_DECL_GETVLANERR);
+-	}
+-
+-	/* check if there is an ism device available */
+-	if (!smc_find_ism_device(smc, ini) &&
+-	    !smc_connect_ism_vlan_setup(smc, ini)) {
+-		/* ISM is supported for this connection */
+-		ism_supported = true;
+-		smc_type = SMC_TYPE_D;
+-	}
+-
+-	/* check if there is a rdma device available */
+-	if (!smc_find_rdma_device(smc, ini)) {
+-		/* RDMA is supported for this connection */
+-		rdma_supported = true;
+-		if (ism_supported)
+-			smc_type = SMC_TYPE_B; /* both */
+-		else
+-			smc_type = SMC_TYPE_R; /* only RDMA */
++		ini->smcd_version &= ~SMC_V1;
++		ini->smc_type_v1 = SMC_TYPE_N;
++		if (!ini->smcd_version) {
++			rc = SMC_CLC_DECL_GETVLANERR;
++			goto fallback;
 +		}
-+		return NOTIFY_OK;
- 	default:
- 		return NOTIFY_DONE;
  	}
-@@ -739,9 +856,14 @@ int smc_pnet_net_init(struct net *net)
- {
- 	struct smc_net *sn = net_generic(net, smc_net_id);
- 	struct smc_pnettable *pnettable = &sn->pnettable;
-+	struct smc_pnetids_ndev *pnetids_ndev = &sn->pnetids_ndev;
  
- 	INIT_LIST_HEAD(&pnettable->pnetlist);
- 	rwlock_init(&pnettable->lock);
-+	INIT_LIST_HEAD(&pnetids_ndev->list);
-+	rwlock_init(&pnetids_ndev->lock);
+-	/* if neither ISM nor RDMA are supported, fallback */
+-	if (!rdma_supported && !ism_supported) {
+-		kfree(ini);
+-		return smc_connect_decline_fallback(smc, SMC_CLC_DECL_NOSMCDEV);
+-	}
++	rc = smc_find_proposal_devices(smc, ini);
++	if (rc)
++		goto fallback;
+ 
+ 	/* perform CLC handshake */
+-	rc = smc_connect_clc(smc, smc_type, &aclc, ini);
+-	if (rc) {
+-		smc_connect_ism_vlan_cleanup(smc, ism_supported, ini);
+-		kfree(ini);
+-		return smc_connect_decline_fallback(smc, rc);
+-	}
++	rc = smc_connect_clc(smc, &aclc, ini);
++	if (rc)
++		goto vlan_cleanup;
 +
-+	smc_pnet_create_pnetids_list(net);
++	/* check if smc modes and versions of CLC proposal and accept match */
++	rc = smc_connect_check_aclc(ini, &aclc);
++	if (rc)
++		goto vlan_cleanup;
  
+ 	/* depending on previous steps, connect using rdma or ism */
+-	if (rdma_supported && aclc.hdr.typev1 == SMC_TYPE_R)
++	if (aclc.hdr.typev1 == SMC_TYPE_R)
+ 		rc = smc_connect_rdma(smc, &aclc, ini);
+-	else if (ism_supported && aclc.hdr.typev1 == SMC_TYPE_D)
++	else if (aclc.hdr.typev1 == SMC_TYPE_D)
+ 		rc = smc_connect_ism(smc, &aclc, ini);
+-	else
+-		rc = SMC_CLC_DECL_MODEUNSUPP;
+-	if (rc) {
+-		smc_connect_ism_vlan_cleanup(smc, ism_supported, ini);
+-		kfree(ini);
+-		return smc_connect_decline_fallback(smc, rc);
+-	}
++	if (rc)
++		goto vlan_cleanup;
+ 
+-	smc_connect_ism_vlan_cleanup(smc, ism_supported, ini);
++	smc_connect_ism_vlan_cleanup(smc, ini);
+ 	kfree(ini);
  	return 0;
- }
-@@ -756,6 +878,7 @@ int __init smc_pnet_init(void)
- 	rc = register_netdevice_notifier(&smc_netdev_notifier);
- 	if (rc)
- 		genl_unregister_family(&smc_pnet_nl_family);
 +
- 	return rc;
++vlan_cleanup:
++	smc_connect_ism_vlan_cleanup(smc, ini);
++fallback:
++	kfree(ini);
++	return smc_connect_decline_fallback(smc, rc);
  }
  
-@@ -764,6 +887,7 @@ void smc_pnet_net_exit(struct net *net)
+ static void smc_connect_work(struct work_struct *work)
+diff --git a/net/smc/smc.h b/net/smc/smc.h
+index 6c89cb80860b..0b9c904e2282 100644
+--- a/net/smc/smc.h
++++ b/net/smc/smc.h
+@@ -19,6 +19,7 @@
+ #include "smc_ib.h"
+ 
+ #define SMC_V1		1		/* SMC version V1 */
++#define SMC_V2		2		/* SMC version V2 */
+ 
+ #define SMCPROTO_SMC		0	/* SMC protocol, IPv4 */
+ #define SMCPROTO_SMC6		1	/* SMC protocol, IPv6 */
+diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
+index fca718836ec1..26f1cdd35cb1 100644
+--- a/net/smc/smc_clc.c
++++ b/net/smc/smc_clc.c
+@@ -410,8 +410,7 @@ int smc_clc_send_decline(struct smc_sock *smc, u32 peer_diag_info)
+ }
+ 
+ /* send CLC PROPOSAL message across internal TCP socket */
+-int smc_clc_send_proposal(struct smc_sock *smc, int smc_type,
+-			  struct smc_init_info *ini)
++int smc_clc_send_proposal(struct smc_sock *smc, struct smc_init_info *ini)
  {
- 	/* flush pnet table */
- 	smc_pnet_remove_by_pnetid(net, NULL);
-+	smc_pnet_destroy_pnetids_list(net);
- }
- 
- void smc_pnet_exit(void)
-@@ -772,16 +896,11 @@ void smc_pnet_exit(void)
- 	genl_unregister_family(&smc_pnet_nl_family);
- }
- 
--/* Determine one base device for stacked net devices.
-- * If the lower device level contains more than one devices
-- * (for instance with bonding slaves), just the first device
-- * is used to reach a base device.
-- */
--static struct net_device *pnet_find_base_ndev(struct net_device *ndev)
-+static struct net_device *__pnet_find_base_ndev(struct net_device *ndev)
- {
- 	int i, nest_lvl;
- 
--	rtnl_lock();
-+	ASSERT_RTNL();
- 	nest_lvl = ndev->lower_level;
- 	for (i = 0; i < nest_lvl; i++) {
- 		struct list_head *lower = &ndev->adj_list.lower;
-@@ -791,6 +910,18 @@ static struct net_device *pnet_find_base_ndev(struct net_device *ndev)
- 		lower = lower->next;
- 		ndev = netdev_lower_get_next(ndev, &lower);
+ 	struct smc_clc_msg_proposal_prefix *pclc_prfx;
+ 	struct smc_clc_msg_proposal *pclc_base;
+@@ -449,8 +448,8 @@ int smc_clc_send_proposal(struct smc_sock *smc, int smc_type,
+ 	       sizeof(SMC_EYECATCHER));
+ 	pclc_base->hdr.type = SMC_CLC_PROPOSAL;
+ 	pclc_base->hdr.version = SMC_V1;		/* SMC version */
+-	pclc_base->hdr.typev1 = smc_type;
+-	if (smcr_indicated(smc_type)) {
++	pclc_base->hdr.typev1 = ini->smc_type_v1;
++	if (smcr_indicated(ini->smc_type_v1)) {
+ 		/* add SMC-R specifics */
+ 		memcpy(pclc_base->lcl.id_for_peer, local_systemid,
+ 		       sizeof(local_systemid));
+@@ -459,7 +458,7 @@ int smc_clc_send_proposal(struct smc_sock *smc, int smc_type,
+ 		       ETH_ALEN);
+ 		pclc_base->iparea_offset = htons(0);
  	}
-+	return ndev;
-+}
-+
-+/* Determine one base device for stacked net devices.
-+ * If the lower device level contains more than one devices
-+ * (for instance with bonding slaves), just the first device
-+ * is used to reach a base device.
-+ */
-+static struct net_device *pnet_find_base_ndev(struct net_device *ndev)
-+{
-+	rtnl_lock();
-+	ndev = __pnet_find_base_ndev(ndev);
- 	rtnl_unlock();
- 	return ndev;
- }
-diff --git a/net/smc/smc_pnet.h b/net/smc/smc_pnet.h
-index 811a65986691..677a47ac158e 100644
---- a/net/smc/smc_pnet.h
-+++ b/net/smc/smc_pnet.h
-@@ -12,6 +12,8 @@
- #ifndef _SMC_PNET_H
- #define _SMC_PNET_H
+-	if (smcd_indicated(smc_type)) {
++	if (smcd_indicated(ini->smc_type_v1)) {
+ 		/* add SMC-D specifics */
+ 		plen += sizeof(*pclc_smcd);
+ 		pclc_base->iparea_offset = htons(sizeof(*pclc_smcd));
+@@ -472,7 +471,7 @@ int smc_clc_send_proposal(struct smc_sock *smc, int smc_type,
+ 	i = 0;
+ 	vec[i].iov_base = pclc_base;
+ 	vec[i++].iov_len = sizeof(*pclc_base);
+-	if (smcd_indicated(smc_type)) {
++	if (smcd_indicated(ini->smc_type_v1)) {
+ 		vec[i].iov_base = pclc_smcd;
+ 		vec[i++].iov_len = sizeof(*pclc_smcd);
+ 	}
+diff --git a/net/smc/smc_clc.h b/net/smc/smc_clc.h
+index c4644d14beae..a3aa90bf4ad7 100644
+--- a/net/smc/smc_clc.h
++++ b/net/smc/smc_clc.h
+@@ -205,8 +205,7 @@ int smc_clc_prfx_match(struct socket *clcsock,
+ int smc_clc_wait_msg(struct smc_sock *smc, void *buf, int buflen,
+ 		     u8 expected_type, unsigned long timeout);
+ int smc_clc_send_decline(struct smc_sock *smc, u32 peer_diag_info);
+-int smc_clc_send_proposal(struct smc_sock *smc, int smc_type,
+-			  struct smc_init_info *ini);
++int smc_clc_send_proposal(struct smc_sock *smc, struct smc_init_info *ini);
+ int smc_clc_send_confirm(struct smc_sock *smc);
+ int smc_clc_send_accept(struct smc_sock *smc, bool srv_first_contact);
  
-+#include <net/smc.h>
-+
- #if IS_ENABLED(CONFIG_HAVE_PNETID)
- #include <asm/pnet.h>
- #endif
-@@ -31,6 +33,17 @@ struct smc_pnettable {
- 	struct list_head pnetlist;
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index d33bcbc3238f..39a5e2156694 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -291,6 +291,8 @@ struct smc_clc_msg_local;
+ 
+ struct smc_init_info {
+ 	u8			is_smcd;
++	u8			smc_type_v1;
++	u8			smc_type_v2;
+ 	u8			first_contact_peer;
+ 	u8			first_contact_local;
+ 	unsigned short		vlan_id;
+@@ -304,6 +306,8 @@ struct smc_init_info {
+ 	u64			ism_peer_gid[SMC_MAX_ISM_DEVS + 1];
+ 	struct smcd_dev		*ism_dev[SMC_MAX_ISM_DEVS + 1];
+ 	u16			ism_chid[SMC_MAX_ISM_DEVS + 1];
++	u8			ism_offered_cnt; /* # of ISM devices offered */
++	u8			smcd_version;
  };
  
-+struct smc_pnetids_ndev {	/* list of pnetids for net devices in UP state*/
-+	struct list_head	list;
-+	rwlock_t		lock;
-+};
-+
-+struct smc_pnetids_ndev_entry {
-+	struct list_head	list;
-+	u8			pnetid[SMC_MAX_PNETID_LEN];
-+	refcount_t		refcnt;
-+};
-+
- static inline int smc_pnetid_by_dev_port(struct device *dev,
- 					 unsigned short port, u8 *pnetid)
+ /* Find the connection associated with the given alert token in the link group.
+diff --git a/net/smc/smc_ism.c b/net/smc/smc_ism.c
+index c5a5b70251b6..e9a6487a42cb 100644
+--- a/net/smc/smc_ism.c
++++ b/net/smc/smc_ism.c
+@@ -338,7 +338,11 @@ int smcd_register_dev(struct smcd_dev *smcd)
+ 		if ((*system_eid) + 24 != '0' || (*system_eid) + 28 != '0')
+ 			smc_ism_v2_capable = true;
+ 	}
+-	list_add_tail(&smcd->list, &smcd_dev_list.list);
++	/* sort list: devices without pnetid before devices with pnetid */
++	if (smcd->pnetid[0])
++		list_add_tail(&smcd->list, &smcd_dev_list.list);
++	else
++		list_add(&smcd->list, &smcd_dev_list.list);
+ 	mutex_unlock(&smcd_dev_list.mutex);
+ 
+ 	pr_warn_ratelimited("smc: adding smcd device %s with pnetid %.16s%s\n",
+diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
+index 8a91ca22712f..9df82ed3bb06 100644
+--- a/net/smc/smc_pnet.c
++++ b/net/smc/smc_pnet.c
+@@ -73,7 +73,7 @@ struct smc_pnetentry {
+ };
+ 
+ /* Check if the pnetid is set */
+-static bool smc_pnet_is_pnetid_set(u8 *pnetid)
++bool smc_pnet_is_pnetid_set(u8 *pnetid)
  {
-@@ -52,4 +65,5 @@ int smc_pnetid_by_table_smcd(struct smcd_dev *smcd);
- void smc_pnet_find_alt_roce(struct smc_link_group *lgr,
+ 	if (pnetid[0] == 0 || pnetid[0] == _S)
+ 		return false;
+diff --git a/net/smc/smc_pnet.h b/net/smc/smc_pnet.h
+index 677a47ac158e..14039272f7e4 100644
+--- a/net/smc/smc_pnet.h
++++ b/net/smc/smc_pnet.h
+@@ -66,4 +66,5 @@ void smc_pnet_find_alt_roce(struct smc_link_group *lgr,
  			    struct smc_init_info *ini,
  			    struct smc_ib_device *known_dev);
-+bool smc_pnet_is_ndev_pnetid(struct net *net, u8 *pnetid);
+ bool smc_pnet_is_ndev_pnetid(struct net *net, u8 *pnetid);
++bool smc_pnet_is_pnetid_set(u8 *pnetid);
  #endif
 -- 
 2.17.1
