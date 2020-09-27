@@ -2,72 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C694279E8A
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 07:52:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6EF0279EF8
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 08:42:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730360AbgI0Fwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 01:52:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49778 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727614AbgI0Fwa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Sep 2020 01:52:30 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 530A623A03;
-        Sun, 27 Sep 2020 05:52:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601185950;
-        bh=kHKLO/+ZkO726T7hWNZVIANgTTKBLmXVn8k2Klhf0Zw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=0QJbvrqkmJolxgy2wlwYrkXJSfOpp/og/5ZVx9+anRgZ17PT4bEX+h1bh+mkvDula
-         dsn2uBIaT4C0FjpS/jIlPXPMMy0yrcOuQaRoHVL4bFqyepdL5o4YOXDZFaRR9HcOUe
-         pt8mW37ZeCYOi1VSzPikgqk2N18RtZx7Ip+EBPg4=
-Date:   Sun, 27 Sep 2020 07:52:26 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 6/6] USB: cdc-acm: blacklist ETAS ES58X device
-Message-ID: <20200927055226.GA701624@kroah.com>
-References: <20200926175810.278529-1-mailhol.vincent@wanadoo.fr>
- <20200926175810.278529-7-mailhol.vincent@wanadoo.fr>
- <20200927054520.GB699448@kroah.com>
+        id S1730378AbgI0Gmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 02:42:36 -0400
+Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:57013 "EHLO
+        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726840AbgI0Gmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 02:42:36 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 42E6D489;
+        Sun, 27 Sep 2020 02:42:35 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sun, 27 Sep 2020 02:42:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=4qJgCanZkGcqvMfCA
+        iWWU5v7M/z8hJRqPRiYoSPRU+I=; b=K261SEQ4VLOE1ZlVWM7JPmrL4XCMBBHw/
+        Qrglab6G0orgj4P7FLEarR3SEJoC0JzyTo5q2tawv7CInor9Z1juAPdLYZBiSW7H
+        oBpNO+g+IjLYlnQzZbMfKFGHmFWmRZlbyxdQmKxrhpIRl5OuJRuI5UjkHmXzPvh9
+        tjZEovRJsLS8LZzdA3dnMjDua6CZHkl/Bu5p7R1MsYLnmZg81CLTSYrC36QlKlPy
+        MdtPdDmcp++QDZ2j99vc1n2wU9udIdEFuzhkGz1jGvLpFt4bdJR3U7OjY5B/6cJU
+        UjTLigSBkMmeRDIAr4TgyKXUqg8VBFEENRCiEdPGXkBO/5MJrpHrA==
+X-ME-Sender: <xms:WjRwX0WC4ElPUtqdzQ-zoREf07OdsVEoaStUDpdVnCVGcFqwJtg7Pg>
+    <xme:WjRwX4mRM1-EQvIGn2q54M7O7SGoe0pQQrtHn8lpGJr54JoViVvtoR7RBCfeTKPs7
+    jLgjObhmSbaZAc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdefgddutdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrfeejrddugeeknecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:WjRwX4ZlYs0mCEeGKxS90eZXehMKjivOG7ZzFEKL3jsS4FizqCsClg>
+    <xmx:WjRwXzUKh-qJNJoakYK7pvyZVVwUhj1t73BDwoKuGN_UxXO7ffGhww>
+    <xmx:WjRwX-m6ysmx2PPJSFGPYvvvfL2kYptpGiJItBwRYpaci-9JqlWmdw>
+    <xmx:WjRwXzzcsGTS3YyKu1eMOU37tw-FSEUhZMWdxyv7_U-1UjE38lX_nQ>
+Received: from shredder.mtl.com (igld-84-229-37-148.inter.net.il [84.229.37.148])
+        by mail.messagingengine.com (Postfix) with ESMTPA id C9FA9328005A;
+        Sun, 27 Sep 2020 02:42:32 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net] mlxsw: spectrum_acl: Fix mlxsw_sp_acl_tcam_group_add()'s error path
+Date:   Sun, 27 Sep 2020 09:42:11 +0300
+Message-Id: <20200927064211.1412383-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200927054520.GB699448@kroah.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 27, 2020 at 07:45:20AM +0200, Greg Kroah-Hartman wrote:
-> On Sun, Sep 27, 2020 at 02:57:56AM +0900, Vincent Mailhol wrote:
-> > The ES58X devices are incorrectly recognized as USB Modem (CDC ACM),
-> > preventing the etas-es58x module to load.
-> > 
-> > Thus, these have been added
-> > to the ignore list in drivers/usb/class/cdc-acm.c
-> > 
-> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> > ---
-> >  drivers/usb/class/cdc-acm.c | 11 +++++++++++
-> >  1 file changed, 11 insertions(+)
-> 
-> Did you mean to send this twice?
-> 
-> And where are the 5 other patches in this series?
-> 
-> And finally, it's a good idea to include the output of 'lsusb -v' for
-> devices that need quirks so we can figure things out later on, can you
-> fix up your changelog to include that information?
+From: Ido Schimmel <idosch@nvidia.com>
 
-Also, why is the device saying it is a cdc-acm compliant device when it
-is not?  Why lie to the operating system like that?
+If mlxsw_sp_acl_tcam_group_id_get() fails, the mutex initialized earlier
+is not destroyed.
 
-thanks,
+Fix this by initializing the mutex after calling the function. This is
+symmetric to mlxsw_sp_acl_tcam_group_del().
 
-greg k-h
+Fixes: 5ec2ee28d27b ("mlxsw: spectrum_acl: Introduce a mutex to guard region list updates")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
+index 5c020403342f..7cccc41dd69c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
+@@ -292,13 +292,14 @@ mlxsw_sp_acl_tcam_group_add(struct mlxsw_sp_acl_tcam *tcam,
+ 	int err;
+ 
+ 	group->tcam = tcam;
+-	mutex_init(&group->lock);
+ 	INIT_LIST_HEAD(&group->region_list);
+ 
+ 	err = mlxsw_sp_acl_tcam_group_id_get(tcam, &group->id);
+ 	if (err)
+ 		return err;
+ 
++	mutex_init(&group->lock);
++
+ 	return 0;
+ }
+ 
+-- 
+2.26.2
+
