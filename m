@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55F4B27A33F
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC13E27A344
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbgI0T6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 15:58:03 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:40792 "EHLO
+        id S1727214AbgI0T6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 15:58:06 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:41714 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726931AbgI0T5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:57:20 -0400
-Message-Id: <20200927194920.824108021@linutronix.de>
+        with ESMTP id S1727078AbgI0T5b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:57:31 -0400
+Message-Id: <20200927194921.639274921@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601236638;
+        s=2020; t=1601236648;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=83qDvGuLXzUs/9fusW5YkDt4paS3sBnoEIk7Nou3kd0=;
-        b=qDV71a+1GCvWhc9lufX4zEQV7QRn9/bZHT8FQITekgxUS3UAIr0pogPAdA1ExY69S+jY/y
-        fkbAjNZifsS1uaBZ56OIZlb/i3fbugRM4FDd4AfJ2FXShvtx00KA5Db9UVXjW6mUGqUgfg
-        rinNQlXj5sEvgqNILV8BDzifz0AdiMlUsSB1znzPo1Q6Pmi+re17ux1P+Oi4e3ZiLtwaIg
-        Bsr9UzJiR/me2V1yYQ6eX720Q8Itoag1PNITz/wjwjbcca850NRUnYK12EbcnOuGtOvg5Z
-        7iEEqlEw6MUfb6qe7q0AmBk4MYMjT4fHF9lFdtOJUh92ScVj2MbYTXe8t+QmQg==
+        bh=ZLebWG85y+lfZEscB172xr+yUv6gjKFl/pP0A1z7yUY=;
+        b=nhYIaX41QlWLTB0HhbCQbyoLlS7e6/PqbqIyu4P0N9B01PYahN3AMWkhj7/VDx9v60EJ7Z
+        zM81SWL3RHJvyUznq5uVoiQnbu9Vv3arPTvOD5+q44KBrkngR2+su/eE7Ji9FGsD+P/aNn
+        ugnJqfuVcKFk2rv2IEshDade5mSMsk3kKvWUT4Mc8pIvT/8XNfBJPvhpzmEcemwOUMZQgw
+        6mM5mrfI6CeLeftmKmhBSMg5hgJQJKuO4boQ0Fp2/xX3XRw9y3K/qCMOxhzsxIOafbx/Wc
+        ec/XJFqccCGTtEXNCEOYlQups2n2IStZuOLfmfRNJBYodsj8+VbX8yCwYq0q2w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601236638;
+        s=2020e; t=1601236648;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=83qDvGuLXzUs/9fusW5YkDt4paS3sBnoEIk7Nou3kd0=;
-        b=VP4vqOvBpurOsdqBLfFebJsD1S6lOmeXln+fiJ3timSPl/o5O/7c6kKdrszLlbgNceW6o4
-        F9IPNZN2VRbcQUDg==
-Date:   Sun, 27 Sep 2020 21:48:56 +0200
+        bh=ZLebWG85y+lfZEscB172xr+yUv6gjKFl/pP0A1z7yUY=;
+        b=7fGheggQN+nN+jjiLG1/4PqQ5OiaQeTM6pt16LT5wSQq+5BKZ5hf08HjCYMDWAN7+LRg3K
+        3SxbEKtPPc1yuyBg==
+Date:   Sun, 27 Sep 2020 21:49:04 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -39,7 +39,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Paul McKenney <paulmck@kernel.org>,
         Matthew Wilcox <willy@infradead.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jon Mason <jdmason@kudzu.us>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Christian Benvenuti <benve@cisco.com>,
@@ -52,6 +52,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Jay Cliburn <jcliburn@gmail.com>,
         Chris Snook <chris.snook@gmail.com>,
         Vishal Kulkarni <vishal@chelsio.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         intel-wired-lan@lists.osuosl.org,
         Shannon Nelson <snelson@pensando.io>,
         Pensando Drivers <drivers@pensando.io>,
@@ -62,7 +63,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
         Edward Cree <ecree@solarflare.com>,
         Martin Habets <mhabets@solarflare.com>,
-        Jon Mason <jdmason@kudzu.us>, Daniel Drake <dsd@gentoo.org>,
+        Daniel Drake <dsd@gentoo.org>,
         Ulrich Kunitz <kune@deine-taler.de>,
         Kalle Valo <kvalo@codeaurora.org>,
         linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
@@ -87,7 +88,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch 10/35] net: intel: Remove in_interrupt() warnings
+Subject: [patch 18/35] net: vxge: Remove in_interrupt() conditionals
 References: <20200927194846.045411263@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -98,130 +99,80 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-in_interrupt() is ill defined and does not provide what the name
-suggests. The usage especially in driver code is deprecated and a tree wide
-effort to clean up and consolidate the (ab)usage of in_interrupt() and
-related checks is happening.
+vxge_os_dma_malloc() and vxge_os_dma_malloc_async() are both called from
+callchains which use GFP_KERNEL allocations unconditionally or have other
+requirements to be called from fully preemptible task context..
 
-In this case the checks cover only parts of the contexts in which these
-functions cannot be called. They fail to detect preemption or interrupt
-disabled invocations.
+vxge_os_dma_malloc():
+  1)  __vxge_hw_blockpool_create() <- GFP_KERNEL
+	
+  2)  __vxge_hw_mempool_grow() <- vzalloc()
+        __vxge_hw_blockpool_malloc()
 
-As the functions which are invoked from the various places contain already
-a broad variety of checks (always enabled or debug option dependent) cover
-all invalid conditions already, there is no point in having inconsistent
-warnings in those drivers.
+vxge_os_dma_malloc_async():
+  1  __vxge_hw_mempool_grow() <- vzalloc()
+      __vxge_hw_blockpool_malloc()
+	__vxge_hw_blockpool_blocks_add()
 
-Just remove them.
+  2)  vxge_hw_vpath_open()	<- vzalloc()
+	__vxge_hw_blockpool_block_allocate()
+
+That means neither of these functions needs a conditional allocation mode.
+
+Remove the in_interrupt() conditional and use GFP_KERNEL.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc: Jon Mason <jdmason@kudzu.us>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: netdev@vger.kernel.org
 
 ---
- drivers/net/ethernet/intel/e1000/e1000_main.c     |    1 -
- drivers/net/ethernet/intel/fm10k/fm10k_pci.c      |    2 --
- drivers/net/ethernet/intel/i40e/i40e_main.c       |    4 ----
- drivers/net/ethernet/intel/ice/ice_main.c         |    1 -
- drivers/net/ethernet/intel/igb/igb_main.c         |    1 -
- drivers/net/ethernet/intel/igc/igc_main.c         |    1 -
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c     |    1 -
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c |    2 --
- 8 files changed, 13 deletions(-)
+ drivers/net/ethernet/neterion/vxge/vxge-config.c |    9 +--------
+ drivers/net/ethernet/neterion/vxge/vxge-config.h |    7 +------
+ 2 files changed, 2 insertions(+), 14 deletions(-)
 
---- a/drivers/net/ethernet/intel/e1000/e1000_main.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-@@ -534,7 +534,6 @@ void e1000_down(struct e1000_adapter *ad
- 
- void e1000_reinit_locked(struct e1000_adapter *adapter)
+--- a/drivers/net/ethernet/neterion/vxge/vxge-config.c
++++ b/drivers/net/ethernet/neterion/vxge/vxge-config.c
+@@ -2303,16 +2303,9 @@ static void vxge_hw_blockpool_block_add(
+ static inline void
+ vxge_os_dma_malloc_async(struct pci_dev *pdev, void *devh, unsigned long size)
  {
--	WARN_ON(in_interrupt());
- 	while (test_and_set_bit(__E1000_RESETTING, &adapter->flags))
- 		msleep(1);
+-	gfp_t flags;
+ 	void *vaddr;
  
---- a/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
-@@ -221,8 +221,6 @@ static bool fm10k_prepare_for_reset(stru
- {
- 	struct net_device *netdev = interface->netdev;
- 
--	WARN_ON(in_interrupt());
+-	if (in_interrupt())
+-		flags = GFP_ATOMIC | GFP_DMA;
+-	else
+-		flags = GFP_KERNEL | GFP_DMA;
 -
- 	/* put off any impending NetWatchDogTimeout */
- 	netif_trans_update(netdev);
- 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -6689,7 +6689,6 @@ static void i40e_vsi_reinit_locked(struc
- {
- 	struct i40e_pf *pf = vsi->back;
- 
--	WARN_ON(in_interrupt());
- 	while (test_and_set_bit(__I40E_CONFIG_BUSY, pf->state))
- 		usleep_range(1000, 2000);
- 	i40e_down(vsi);
-@@ -8462,9 +8461,6 @@ void i40e_do_reset(struct i40e_pf *pf, u
- {
- 	u32 val;
- 
--	WARN_ON(in_interrupt());
+-	vaddr = kmalloc((size), flags);
 -
--
- 	/* do the biggest reset indicated */
- 	if (reset_flags & BIT_ULL(__I40E_GLOBAL_RESET_REQUESTED)) {
++	vaddr = kmalloc(size, GFP_KERNEL | GFP_DMA);
+ 	vxge_hw_blockpool_block_add(devh, vaddr, size, pdev, pdev);
+ }
  
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -486,7 +486,6 @@ static void ice_do_reset(struct ice_pf *
- 	struct ice_hw *hw = &pf->hw;
- 
- 	dev_dbg(dev, "reset_type 0x%x requested\n", reset_type);
--	WARN_ON(in_interrupt());
- 
- 	ice_prepare_for_reset(pf);
- 
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -2220,7 +2220,6 @@ void igb_down(struct igb_adapter *adapte
- 
- void igb_reinit_locked(struct igb_adapter *adapter)
+--- a/drivers/net/ethernet/neterion/vxge/vxge-config.h
++++ b/drivers/net/ethernet/neterion/vxge/vxge-config.h
+@@ -1899,18 +1899,13 @@ static inline void *vxge_os_dma_malloc(s
+ 			struct pci_dev **p_dmah,
+ 			struct pci_dev **p_dma_acch)
  {
--	WARN_ON(in_interrupt());
- 	while (test_and_set_bit(__IGB_RESETTING, &adapter->state))
- 		usleep_range(1000, 2000);
- 	igb_down(adapter);
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -3831,7 +3831,6 @@ void igc_down(struct igc_adapter *adapte
+-	gfp_t flags;
+ 	void *vaddr;
+ 	unsigned long misaligned = 0;
+ 	int realloc_flag = 0;
+ 	*p_dma_acch = *p_dmah = NULL;
  
- void igc_reinit_locked(struct igc_adapter *adapter)
- {
--	WARN_ON(in_interrupt());
- 	while (test_and_set_bit(__IGC_RESETTING, &adapter->state))
- 		usleep_range(1000, 2000);
- 	igc_down(adapter);
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -5677,7 +5677,6 @@ static void ixgbe_up_complete(struct ixg
- 
- void ixgbe_reinit_locked(struct ixgbe_adapter *adapter)
- {
--	WARN_ON(in_interrupt());
- 	/* put off any impending NetWatchDogTimeout */
- 	netif_trans_update(adapter->netdev);
- 
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -2526,8 +2526,6 @@ void ixgbevf_down(struct ixgbevf_adapter
- 
- void ixgbevf_reinit_locked(struct ixgbevf_adapter *adapter)
- {
--	WARN_ON(in_interrupt());
--
- 	while (test_and_set_bit(__IXGBEVF_RESETTING, &adapter->state))
- 		msleep(1);
- 
+-	if (in_interrupt())
+-		flags = GFP_ATOMIC | GFP_DMA;
+-	else
+-		flags = GFP_KERNEL | GFP_DMA;
+ realloc:
+-	vaddr = kmalloc((size), flags);
++	vaddr = kmalloc(size, GFP_KERNEL | GFP_DMA);
+ 	if (vaddr == NULL)
+ 		return vaddr;
+ 	misaligned = (unsigned long)VXGE_ALIGN((unsigned long)vaddr,
 
