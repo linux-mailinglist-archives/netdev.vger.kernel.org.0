@@ -2,129 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71EEF27A214
+	by mail.lfdr.de (Postfix) with ESMTP id E9AE527A215
 	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 19:42:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbgI0Rmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 13:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        id S1726466AbgI0Rmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 13:42:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726321AbgI0Rmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 13:42:47 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9E7C0613D3
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:47 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id t18so1960276plo.1
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:47 -0700 (PDT)
+        with ESMTP id S1726460AbgI0Rmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 13:42:49 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2D2C0613CE
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:49 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id k13so7202496pfg.1
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=54IxSqK54h8ftvWavuwNFlDxVAjveMJx4K2FncD++Kk=;
-        b=cTibLTaR+mB3fQTBARlhElP9nja2ZpxPW5fSmFcJjlPXH0EzMTyLA+gclViNQ97sQw
-         m/e1QlLNNDCuFRZSf0s29/5InHFWT+iWyV6jCxDjEqOLRS6mxr4KB52HPdb2bttO3JrR
-         yCT5BzZ71zugoPS17sWk2mKJqrTNVSrYGAOg8=
+        bh=vKQNi/8vMqi+uOb0XbfWK4EhmKrw4Wn+WrxCP7CP8Xc=;
+        b=F08AjgZHDQzGjq2bdD+JumWjuc5yidRCzY9Z3rgUeTq3zzRMSlU+4h7rhuVW/xr0zP
+         8yhka1vwBkoXYGvGlKZjs459dRfwIfrgKfWNXsPN0iarhIM7XpbusPCAvOpvTcI+LdBT
+         LM4g8RAS05oJ4U/s11uKlXvyRPWFPrJHbd4tQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=54IxSqK54h8ftvWavuwNFlDxVAjveMJx4K2FncD++Kk=;
-        b=GPJM84I5Fya/wosMBCsKbMkkc30x6FLt+p36sIevXjmRsJdQBKc8TUV8XKAiV7ThEJ
-         etM0SmM3fHgW6yhoNPZE5QoeBa4zJobKFG8Ic1IzuIdgOnaigDZboCusBpWYrH3Jw033
-         UsvxL42hUnxUlkFd9s8pgJ44CnelHpuFKrBOdBvfkdJ1ldtqatvXBIQn5NNhWO4S0uZn
-         Yswsy5zXFQXvVLep50gBAf+RJFcWhCO7cgVpov56E+KE2a/i7DLOzCIrjeRzRJtoJvWT
-         7BcuS6t58iXPzarm2ZdHZSJSQY1WefHGqavjmVzzJxeeaoR8t+8h5L/q8QGZYGJqQcIB
-         0BzA==
-X-Gm-Message-State: AOAM530MEHDisQLc2cpKf3z5HRSK9yd2ufdhLzktbo2KlycOoKMK2PBC
-        h+1oLsGitE8Q5dHW+0loybhG9A==
-X-Google-Smtp-Source: ABdhPJxW1Wlw/Sda3EoawOiTU7/w5MLrjBtrFveqbttV8yHszPuoavczB/vx5sa/djw3yy7kaX4J5w==
-X-Received: by 2002:a17:902:8f8f:b029:d2:4276:1b2d with SMTP id z15-20020a1709028f8fb02900d242761b2dmr8093596plo.17.1601228567044;
-        Sun, 27 Sep 2020 10:42:47 -0700 (PDT)
+        bh=vKQNi/8vMqi+uOb0XbfWK4EhmKrw4Wn+WrxCP7CP8Xc=;
+        b=TiiNCN8k9PGhJG8P6o5x5rVvcevZgMlGNvdD+cGme1UkkOf1KZPmM6TV4soe3TnkuT
+         zxMH8Ghp2WZKVFfATJj7TWAazQkTPf2AcWTO1FcWuUXHITjgfUFiH2n2ZLfClI4JPfbA
+         ViME1aXXtK+a468a4YzIdBOzPJoewRXwOGzuwICB6p83PtpVwuzhyj5kd7Zlziha+A7i
+         +VvXl171ILyCBKUG2w/fmgyyI4oGtAg3ZW+UuUUeeqYbYKGqqyAyg6nZpdDBEJOKasGe
+         eimtrha+TRpPDcOT8XYg2PWiWFWqBbkacvmW0Rrx9zmh7e8KDItj6D8bOycn2kuQnQpK
+         VIZg==
+X-Gm-Message-State: AOAM531pw+aa9y2Ja5Gk+ji2t5UezfeiIAVmwcby3e5jlzdBYPJrNZ7i
+        bT5eTMIHxLu8a4R6pi1kYKCLhbkGUwJ8kA==
+X-Google-Smtp-Source: ABdhPJyVPhnmpNuUSqHIxU/4P9wdk2HURR8KsHHTdhvliB7a5Kt/gqCTRpZrgeokOLbcf+UwldSTYg==
+X-Received: by 2002:a62:26c1:0:b029:142:2501:35ef with SMTP id m184-20020a6226c10000b0290142250135efmr7494860pfm.79.1601228568489;
+        Sun, 27 Sep 2020 10:42:48 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o19sm8765570pfp.64.2020.09.27.10.42.45
+        by smtp.gmail.com with ESMTPSA id o19sm8765570pfp.64.2020.09.27.10.42.47
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 27 Sep 2020 10:42:46 -0700 (PDT)
+        Sun, 27 Sep 2020 10:42:47 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org,
         Edwin Peer <edwin.peer@broadcom.com>
-Subject: [PATCH net-next 02/11] bnxt_en: refactor code to limit speed advertising
-Date:   Sun, 27 Sep 2020 13:42:11 -0400
-Message-Id: <1601228540-20852-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 03/11] bnxt_en: refactor bnxt_get_fw_speed()
+Date:   Sun, 27 Sep 2020 13:42:12 -0400
+Message-Id: <1601228540-20852-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1601228540-20852-1-git-send-email-michael.chan@broadcom.com>
 References: <1601228540-20852-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000f9527805b04f136c"
+        boundary="0000000000000dd08505b04f1465"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000f9527805b04f136c
+--0000000000000dd08505b04f1465
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-Extract the code for determining an advertised speed is no longer
-supported into a separate function. This will avoid some code
-duplication in a later patch when supporting PAM4 speeds, since
-these speeds are specified in a separate field.
+It will be necessary to update more than one field in the link_info
+structure when PAM4 speeds are added in a later patch. Instead of
+merely translating ethtool speed values to firmware speed values,
+change the responsiblity of this function to update all the necessary
+link_info fields required to force the speed change to the desired
+ethtool value. This also reduces code duplication somewhat at the two
+call sites, which otherwise both have to independently update link_info
+fields to turn off auto negotiation advertisements.
+
+Also use the appropriate REQ_FORCE_LINK_SPEED definitions. These happen
+to have the same values, but req_link_speed is utilimately passed as
+force_link_speed in HWRM_PORT_PHY_CFG which is not defined in terms of
+REQ_AUTO_LINK_SPEED.
 
 Reviewed-by: Scott Branden <scott.branden@broadcom.com>
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 47 ++++++++++---------
+ 1 file changed, 24 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index b57f28d2e716..0ca4f7a78c5d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8835,6 +8835,13 @@ static int bnxt_hwrm_phy_qcaps(struct bnxt *bp)
- 	return rc;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 9703ff48f2ab..ad6a5967ac21 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -1636,55 +1636,63 @@ static int bnxt_get_link_ksettings(struct net_device *dev,
+ 	return 0;
  }
  
-+static bool bnxt_support_dropped(u16 advertising, u16 supported)
-+{
-+	u16 diff = advertising ^ supported;
-+
-+	return ((supported | diff) != supported);
-+}
-+
- static int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
+-static u32 bnxt_get_fw_speed(struct net_device *dev, u32 ethtool_speed)
++static int bnxt_force_link_speed(struct net_device *dev, u32 ethtool_speed)
  {
- 	int rc = 0;
-@@ -8842,7 +8849,6 @@ static int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
- 	struct hwrm_port_phy_qcfg_input req = {0};
- 	struct hwrm_port_phy_qcfg_output *resp = bp->hwrm_cmd_resp_addr;
- 	u8 link_up = link_info->link_up;
--	u16 diff;
+ 	struct bnxt *bp = netdev_priv(dev);
+ 	struct bnxt_link_info *link_info = &bp->link_info;
+ 	u16 support_spds = link_info->support_speeds;
+-	u32 fw_speed = 0;
++	u16 fw_speed = 0;
  
- 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PORT_PHY_QCFG, -1, -1);
+ 	switch (ethtool_speed) {
+ 	case SPEED_100:
+ 		if (support_spds & BNXT_LINK_SPEED_MSK_100MB)
+-			fw_speed = PORT_PHY_CFG_REQ_AUTO_LINK_SPEED_100MB;
++			fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_100MB;
+ 		break;
+ 	case SPEED_1000:
+ 		if (support_spds & BNXT_LINK_SPEED_MSK_1GB)
+-			fw_speed = PORT_PHY_CFG_REQ_AUTO_LINK_SPEED_1GB;
++			fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_1GB;
+ 		break;
+ 	case SPEED_2500:
+ 		if (support_spds & BNXT_LINK_SPEED_MSK_2_5GB)
+-			fw_speed = PORT_PHY_CFG_REQ_AUTO_LINK_SPEED_2_5GB;
++			fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_2_5GB;
+ 		break;
+ 	case SPEED_10000:
+ 		if (support_spds & BNXT_LINK_SPEED_MSK_10GB)
+-			fw_speed = PORT_PHY_CFG_REQ_AUTO_LINK_SPEED_10GB;
++			fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_10GB;
+ 		break;
+ 	case SPEED_20000:
+ 		if (support_spds & BNXT_LINK_SPEED_MSK_20GB)
+-			fw_speed = PORT_PHY_CFG_REQ_AUTO_LINK_SPEED_20GB;
++			fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_20GB;
+ 		break;
+ 	case SPEED_25000:
+ 		if (support_spds & BNXT_LINK_SPEED_MSK_25GB)
+-			fw_speed = PORT_PHY_CFG_REQ_AUTO_LINK_SPEED_25GB;
++			fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_25GB;
+ 		break;
+ 	case SPEED_40000:
+ 		if (support_spds & BNXT_LINK_SPEED_MSK_40GB)
+-			fw_speed = PORT_PHY_CFG_REQ_AUTO_LINK_SPEED_40GB;
++			fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_40GB;
+ 		break;
+ 	case SPEED_50000:
+ 		if (support_spds & BNXT_LINK_SPEED_MSK_50GB)
+-			fw_speed = PORT_PHY_CFG_REQ_AUTO_LINK_SPEED_50GB;
++			fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_50GB;
+ 		break;
+ 	case SPEED_100000:
+ 		if (support_spds & BNXT_LINK_SPEED_MSK_100GB)
+-			fw_speed = PORT_PHY_CFG_REQ_AUTO_LINK_SPEED_100GB;
++			fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_100GB;
+ 		break;
+-	default:
++	}
++
++	if (!fw_speed) {
+ 		netdev_err(dev, "unsupported speed!\n");
+-		break;
++		return -EINVAL;
+ 	}
+-	return fw_speed;
++
++	link_info->req_link_speed = fw_speed;
++	link_info->req_duplex = BNXT_LINK_DUPLEX_FULL;
++	link_info->autoneg = 0;
++	link_info->advertising = 0;
++
++	return 0;
+ }
  
-@@ -8941,13 +8947,11 @@ static int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
- 	if (!BNXT_PHY_CFG_ABLE(bp))
- 		return 0;
+ u16 bnxt_get_fw_auto_link_speeds(u32 advertising)
+@@ -1737,7 +1745,6 @@ static int bnxt_set_link_ksettings(struct net_device *dev,
+ 		 */
+ 		set_pause = true;
+ 	} else {
+-		u16 fw_speed;
+ 		u8 phy_type = link_info->phy_type;
  
--	diff = link_info->support_auto_speeds ^ link_info->advertising;
--	if ((link_info->support_auto_speeds | diff) !=
--	    link_info->support_auto_speeds) {
--		/* An advertised speed is no longer supported, so we need to
--		 * update the advertisement settings.  Caller holds RTNL
--		 * so we can modify link settings.
--		 */
-+	/* Check if any advertised speeds are no longer supported. The caller
-+	 * holds the link_lock mutex, so we can modify link_info settings.
-+	 */
-+	if (bnxt_support_dropped(link_info->advertising,
-+				 link_info->support_auto_speeds)) {
- 		link_info->advertising = link_info->support_auto_speeds;
- 		if (link_info->autoneg & BNXT_AUTONEG_SPEED)
- 			bnxt_hwrm_set_link_setting(bp, true, false);
+ 		if (phy_type == PORT_PHY_QCFG_RESP_PHY_TYPE_BASET  ||
+@@ -1753,15 +1760,9 @@ static int bnxt_set_link_ksettings(struct net_device *dev,
+ 			goto set_setting_exit;
+ 		}
+ 		speed = base->speed;
+-		fw_speed = bnxt_get_fw_speed(dev, speed);
+-		if (!fw_speed) {
+-			rc = -EINVAL;
++		rc = bnxt_force_link_speed(dev, speed);
++		if (rc)
+ 			goto set_setting_exit;
+-		}
+-		link_info->req_link_speed = fw_speed;
+-		link_info->req_duplex = BNXT_LINK_DUPLEX_FULL;
+-		link_info->autoneg = 0;
+-		link_info->advertising = 0;
+ 	}
+ 
+ 	if (netif_running(dev))
 -- 
 2.18.1
 
 
---000000000000f9527805b04f136c
+--0000000000000dd08505b04f1465
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -194,14 +266,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg3vMNYC/t752U
-ZAa302yGbfkNJ2JsTZYyavnkmu1Ota4wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAwOTI3MTc0MjQ3WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgf9oJJAb6EvrN
+bqYAg0NTpIJMOPJOl1StHDanW5/oCD4wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAwOTI3MTc0MjQ4WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAGF9j5eL50+kjQyS9hHnH0E/tUYpQUmQ
-8udVvZ6vEQS7R2MueFdUInWpfUL4fVNkNQNdsp0/Y29qCV1hX8w6NRTW5ZI8goLXDMz/log8ZUeo
-jM2njKFHwem0CG3EDgYNkm64xBFOqgFxzSF/8xdGe69NomlqMn7jjd9wkmMiBklSuol8pHwWi/Qz
-Kqu1gZHMOgsTpPKcWNMEkhsiFCNikewAIy63ekmJDHQpUJbwP7dem+SJ71SYC075APelMGult7H3
-3rdhJYVcS2J/2+lxiusWS+wlfc4Ol7XgObYUqujxSIMsSgXd95ss/fQ68eZj+Mm2Ea1kromR3b/M
-6+VmDP8=
---000000000000f9527805b04f136c--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBADDkzEGm6FUy64Scm2jYMHnfcq6JNf1c
+nSeLBo7Kw1IQvay6rbvhElpwTaMAqzJEV0dA3mHgqpKhw59e4dvPWM1KdL4Omp6ajeWHtGHsKAIE
+guojIx5ULMzEy3n6fnC9j5UOuw6uVmAmYQMhIQrDxLXfd8/ufg1i8bSUCT9TslCdkpV/QUvFK69T
+2vPPocs8xU762IvyPsG1XVEzUKS3Dq07GVXIX0sLj6UO6A6g2bKBIasmUPDwtfGRjhblro48pGeH
+Jh70sPtrgEHhGi0r6d4eugA2+jUBfsmW3gk57AIBkvqAsEoG7gOk6E4IaXzPCFIxMch3vkVtH8F0
+wtZQ+aI=
+--0000000000000dd08505b04f1465--
