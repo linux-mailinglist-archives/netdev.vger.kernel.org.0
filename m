@@ -2,197 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC54D27A290
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 21:25:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2163027A2BE
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 21:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726461AbgI0TZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 15:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33650 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbgI0TZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:25:26 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D803C0613CE;
-        Sun, 27 Sep 2020 12:25:26 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id k15so9481618wrn.10;
-        Sun, 27 Sep 2020 12:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Fj+MqTYC2iAIS+M4K2lQDTVvuS3lB9CWfLhIHCjPtgo=;
-        b=Y9sVAaoeGa0WsUiyIrpAozyW1HjT50dHQRSgxJ9iEx2LORKlf/MCPTGO5gHwkA9+o2
-         L0Bt3H8F8wCAxqHKLMzeHoOIAnxr/Ka4ueyWwDBS8feKPbG1+/hLXVmURoK3yV5d4rYb
-         AvKTn+9YJbAXNTUzr/bYNykUXeZmpmkXUBPR1Vah7jOLQACS87+169Ow2OeJRyUP0+iE
-         pIYxMbLWWYhkxBUq5xzInjxJh00fcEKa6BwqwAO+qys5hXPx9hAju1behnUWvWQM4MU6
-         g/n/+gkdtQrKvKP09mXC5M3Y4O2C+pwgkJ4oZfHJkQQQybrdpsHBG6Qy35U75104xi6s
-         DvLA==
+        id S1726801AbgI0Ta1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 15:30:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31222 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726477AbgI0TaY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:30:24 -0400
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601235022;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=F8YPfe0pB7pttwaqfzziE+JMy4Da3EM0z4SpEHDuX4c=;
+        b=ATCNBYspBNwEL+adMtDfqxDkgVkAupmBHTfD8Bzira32nk5Xx2hyX6Y7W/o6PJ5KjM2k3C
+        IH+bhJLY/wSJfH+XckqjBJqxw/9O+FBoAcsz8lVaUgWvKG7cC8nYrejApI0BkVKMOG5Mwx
+        +Id0M+pHA49F6301vKzMYgIpeZAuuSY=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-209-OAbB_GB4Nm6kNlAuOoNBYw-1; Sun, 27 Sep 2020 15:30:20 -0400
+X-MC-Unique: OAbB_GB4Nm6kNlAuOoNBYw-1
+Received: by mail-oo1-f72.google.com with SMTP id z75so4449965ooa.21
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 12:30:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Fj+MqTYC2iAIS+M4K2lQDTVvuS3lB9CWfLhIHCjPtgo=;
-        b=PB/3TxWTnRKaI3pfeGpEa3IuzagCcYlUqkMciKOTFrxEZf2GdjulSHxcqDbwBHPdQt
-         HrL0q0naLUjNBczhoV9DSyK+NVzcmT4PPsneHgPypd4dUY2jGX2yOl3d5MZPEZKE/wk6
-         yrDggJ2ktbOBPjF5BbHz3Wdib7S7sJQz9FGXvCci0yP3StReoqI9C4D1rq42FIV9oq7s
-         gMuduNuP4KFayvlEHzLK8xd1Dfy9XMlla6sN2yaqlZORemdVvXrI6qDRGl+GGtyj1iDc
-         ZVQ753bl0JLMQv8OoxsP/eRSNb7mfZ2usS1uj/YeKnUYiosPn0aF2SX13T/mizzmBP55
-         NiQA==
-X-Gm-Message-State: AOAM531MIMJEO9b/6QYiJl6AI0cLOH7YE1hBAQ4ROuoYDuwzyRXJoVHl
-        x+cFZvYCaXEB3bFeTLi0vPY=
-X-Google-Smtp-Source: ABdhPJztFmpDvpI3aRkkIdSznkGAV72myWBuX/0vmVtKZgeNuymlmR/GrI/gMu+xnRoky9GFyVMiSQ==
-X-Received: by 2002:a5d:60cc:: with SMTP id x12mr14995784wrt.84.1601234724930;
-        Sun, 27 Sep 2020 12:25:24 -0700 (PDT)
-Received: from Ansuel-XPS.localdomain (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
-        by smtp.googlemail.com with ESMTPSA id w21sm6398106wmk.34.2020.09.27.12.25.23
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F8YPfe0pB7pttwaqfzziE+JMy4Da3EM0z4SpEHDuX4c=;
+        b=IqWTi/eiZ2sdtSabRdgkOkWIWZFuu49+yFSHOS0lnIIUIyYULquBC/OcjMJWyru6vP
+         gWZFJlVPKSRXuMo5Q5nfdv1RWaMpP/218lmz3xp9ulyc0T10F8KabD+9SXdWSll4H54U
+         5LEjO4o0CMo8dXYHyIryQYTfTDh1QUbStIUEFNdlZQJm9P/dtFdzluvJubLqp8ghq7Bh
+         alfwt1oNl/3ckFV1NdqaWA1s5lm2mK2C7Hn7BfoPGG9ZZZtkIByMttyahEfgp8ypYmS/
+         tTPiG+fkVujqVZcXLxpLxCKmzODLhDxDb3wdjgUxG+Lwce5L5hgDijEYWaW6NAl7F8O+
+         iS7A==
+X-Gm-Message-State: AOAM532O8g/4RXC5x8zxH262okJjiLqiSX8btDZ5UImaLnrPcNJmXdLn
+        K4yX/GTM/anff5dU4odzimWMoHh2mM+o412HESr7fk2AvH/67134Vpw506TvTTLe1mie/azFDSa
+        ywaLXdsJHfS3DTwfW
+X-Received: by 2002:a54:4413:: with SMTP id k19mr3870978oiw.99.1601235019958;
+        Sun, 27 Sep 2020 12:30:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyhMfHlnktI/H8l8W2NHAHbIzvYQaA+JpsCtebgm3/8addT7JwxOQ6O7iu1zQlgZBClObCubA==
+X-Received: by 2002:a54:4413:: with SMTP id k19mr3870966oiw.99.1601235019591;
+        Sun, 27 Sep 2020 12:30:19 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id w20sm2323387otk.24.2020.09.27.12.30.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Sep 2020 12:25:24 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     "0001-ath10k-Try-to-get-mac-address-from-dts . patchKalle Valo" 
-        <kvalo@codeaurora.org>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] ath10k: Try to download pre-cal using nvmem api
-Date:   Sun, 27 Sep 2020 21:25:14 +0200
-Message-Id: <20200927192515.86-2-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200927192515.86-1-ansuelsmth@gmail.com>
-References: <20200927192515.86-1-ansuelsmth@gmail.com>
+        Sun, 27 Sep 2020 12:30:19 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 02EED183C5B; Sun, 27 Sep 2020 21:30:16 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     daniel@iogearbox.net, ast@fb.com
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH bpf-next] bpf/preload: make sure Makefile cleans up after itself, and add .gitignore
+Date:   Sun, 27 Sep 2020 21:30:05 +0200
+Message-Id: <20200927193005.8459-1-toke@redhat.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Most of routers that have the ath10k wifi chip integrated in the Soc
-have the pre-cal data stored in a dedicated nvmem partition.
-Introduce a new function to directly extract and use it if a nvmem with
-the name 'pre-cal' is defined and available.
-Pre-cal file have still priority to everything else.
+The Makefile in bpf/preload builds a local copy of libbpf, but does not
+properly clean up after itself. This can lead to subsequent compilation
+failures, since the feature detection cache is kept around which can lead
+subsequent detection to fail.
 
-Tested-on: QCA9984 hw1.0 PCI 10.4
+Fix this by properly setting clean-files, and while we're at it, also add a
+.gitignore for the directory to ignore the build artifacts.
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Fixes: d71fa5c9763c ("bpf: Add kernel module with user mode driver that populates bpffs.")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- drivers/net/wireless/ath/ath10k/core.c | 52 +++++++++++++++++++++++++-
- drivers/net/wireless/ath/ath10k/core.h |  3 ++
- 2 files changed, 53 insertions(+), 2 deletions(-)
+ kernel/bpf/preload/.gitignore | 4 ++++
+ kernel/bpf/preload/Makefile   | 2 ++
+ 2 files changed, 6 insertions(+)
+ create mode 100644 kernel/bpf/preload/.gitignore
 
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index 9ed7b9883..dd509a4a8 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -15,6 +15,7 @@
- #include <linux/ctype.h>
- #include <linux/pm_qos.h>
- #include <asm/byteorder.h>
-+#include <linux/nvmem-consumer.h>
+diff --git a/kernel/bpf/preload/.gitignore b/kernel/bpf/preload/.gitignore
+new file mode 100644
+index 000000000000..856a4c5ad0dd
+--- /dev/null
++++ b/kernel/bpf/preload/.gitignore
+@@ -0,0 +1,4 @@
++/FEATURE-DUMP.libbpf
++/bpf_helper_defs.h
++/feature
++/bpf_preload_umd
+diff --git a/kernel/bpf/preload/Makefile b/kernel/bpf/preload/Makefile
+index 12c7b62b9b6e..23ee310b6eb4 100644
+--- a/kernel/bpf/preload/Makefile
++++ b/kernel/bpf/preload/Makefile
+@@ -12,6 +12,8 @@ userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi \
  
- #include "core.h"
- #include "mac.h"
-@@ -920,7 +921,8 @@ static int ath10k_core_get_board_id_from_otp(struct ath10k *ar)
- 	}
+ userprogs := bpf_preload_umd
  
- 	if (ar->cal_mode == ATH10K_PRE_CAL_MODE_DT ||
--	    ar->cal_mode == ATH10K_PRE_CAL_MODE_FILE)
-+	    ar->cal_mode == ATH10K_PRE_CAL_MODE_FILE ||
-+	    ar->cal_mode == ATH10K_PRE_CAL_MODE_NVMEM)
- 		bmi_board_id_param = BMI_PARAM_GET_FLASH_BOARD_ID;
- 	else
- 		bmi_board_id_param = BMI_PARAM_GET_EEPROM_BOARD_ID;
-@@ -1682,7 +1684,8 @@ static int ath10k_download_and_run_otp(struct ath10k *ar)
++clean-files := $(userprogs) bpf_helper_defs.h FEATURE-DUMP.libbpf staticobjs/ feature/
++
+ bpf_preload_umd-objs := iterators/iterators.o
+ bpf_preload_umd-userldlibs := $(LIBBPF_A) -lelf -lz
  
- 	/* As of now pre-cal is valid for 10_4 variants */
- 	if (ar->cal_mode == ATH10K_PRE_CAL_MODE_DT ||
--	    ar->cal_mode == ATH10K_PRE_CAL_MODE_FILE)
-+	    ar->cal_mode == ATH10K_PRE_CAL_MODE_FILE ||
-+	    ar->cal_mode == ATH10K_PRE_CAL_MODE_NVMEM)
- 		bmi_otp_exe_param = BMI_PARAM_FLASH_SECTION_ALL;
- 
- 	ret = ath10k_bmi_execute(ar, address, bmi_otp_exe_param, &result);
-@@ -1703,6 +1706,41 @@ static int ath10k_download_and_run_otp(struct ath10k *ar)
- 	return 0;
- }
- 
-+static int ath10k_download_cal_nvmem(struct ath10k *ar)
-+{
-+	int ret;
-+	size_t len;
-+	const void *file;
-+	struct nvmem_cell *cell;
-+	struct platform_device *pdev = of_find_device_by_node(ar->dev->of_node);
-+
-+	if (!pdev)
-+		return -ENODEV;
-+
-+	cell = nvmem_cell_get(ar->dev, "pre-cal");
-+	if (IS_ERR(cell))
-+		return PTR_ERR(cell);
-+
-+	file = nvmem_cell_read(cell, &len);
-+	nvmem_cell_put(cell);
-+
-+	if (IS_ERR(file))
-+		return PTR_ERR(file);
-+
-+	ret = ath10k_download_board_data(ar, file, len);
-+	if (ret) {
-+		ath10k_err(ar, "failed to download cal_file data: %d\n", ret);
-+		goto err;
-+	}
-+
-+	ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot cal file downloaded\n");
-+
-+	return 0;
-+err:
-+	kfree(file);
-+	return ret;
-+}
-+
- static int ath10k_download_cal_file(struct ath10k *ar,
- 				    const struct firmware *file)
- {
-@@ -2049,6 +2087,16 @@ static int ath10k_core_pre_cal_download(struct ath10k *ar)
- 		goto success;
- 	}
- 
-+	ath10k_dbg(ar, ATH10K_DBG_BOOT,
-+		   "boot did not find a pre calibration file, try NVMEM next: %d\n",
-+		   ret);
-+
-+	ret = ath10k_download_cal_nvmem(ar);
-+	if (ret == 0) {
-+		ar->cal_mode = ATH10K_PRE_CAL_MODE_NVMEM;
-+		goto success;
-+	}
-+
- 	ath10k_dbg(ar, ATH10K_DBG_BOOT,
- 		   "boot did not find a pre calibration file, try DT next: %d\n",
- 		   ret);
-diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
-index 4cf5bd489..186aba73a 100644
---- a/drivers/net/wireless/ath/ath10k/core.h
-+++ b/drivers/net/wireless/ath/ath10k/core.h
-@@ -864,6 +864,7 @@ enum ath10k_cal_mode {
- 	ATH10K_CAL_MODE_OTP,
- 	ATH10K_CAL_MODE_DT,
- 	ATH10K_PRE_CAL_MODE_FILE,
-+	ATH10K_PRE_CAL_MODE_NVMEM,
- 	ATH10K_PRE_CAL_MODE_DT,
- 	ATH10K_CAL_MODE_EEPROM,
- };
-@@ -886,6 +887,8 @@ static inline const char *ath10k_cal_mode_str(enum ath10k_cal_mode mode)
- 		return "dt";
- 	case ATH10K_PRE_CAL_MODE_FILE:
- 		return "pre-cal-file";
-+	case ATH10K_PRE_CAL_MODE_NVMEM:
-+		return "pre-cal-nvmem";
- 	case ATH10K_PRE_CAL_MODE_DT:
- 		return "pre-cal-dt";
- 	case ATH10K_CAL_MODE_EEPROM:
 -- 
-2.27.0
+2.28.0
 
