@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5564F279F35
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 09:18:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46DCD279F39
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 09:18:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730432AbgI0HPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 03:15:44 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:14244 "EHLO huawei.com"
+        id S1730531AbgI0HQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 03:16:08 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:14246 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726840AbgI0HPn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Sep 2020 03:15:43 -0400
+        id S1730412AbgI0HPp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Sep 2020 03:15:45 -0400
 Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 6C72534911D9A984CB76;
+        by Forcepoint Email with ESMTP id 7B6AE5537E4206FB9A06;
         Sun, 27 Sep 2020 15:15:41 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.487.0; Sun, 27 Sep 2020 15:15:32 +0800
+ 14.3.487.0; Sun, 27 Sep 2020 15:15:33 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
@@ -24,9 +24,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
         Guangbin Huang <huangguangbin2@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 03/10] net: hns3: add support to query device capability
-Date:   Sun, 27 Sep 2020 15:12:41 +0800
-Message-ID: <1601190768-50075-4-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 04/10] net: hns3: use capability flag to indicate FEC
+Date:   Sun, 27 Sep 2020 15:12:42 +0800
+Message-ID: <1601190768-50075-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1601190768-50075-1-git-send-email-tanhuazhong@huawei.com>
 References: <1601190768-50075-1-git-send-email-tanhuazhong@huawei.com>
@@ -40,167 +40,106 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Guangbin Huang <huangguangbin2@huawei.com>
 
-In order to improve code maintainability and compatibility,
-add support to query the device capability by expanding the
-existing version query command. The device capability refers
-to the features supported by the device.
+Currently, the revision of the pci device is used to identify
+whether FEC is supported, which is not good for maintainability
+and compatibility. So use a capability flag to do that.
 
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c          | 10 ----------
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c   | 15 ++++++++++++---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h   |  4 +++-
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c | 14 +++++++++++---
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h |  4 +++-
- 5 files changed, 29 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h             | 4 ++++
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c      | 6 ++++--
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c  | 1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 4 ++--
+ 4 files changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index c44a685..1c4e820e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2076,15 +2076,6 @@ static void hns3_disable_sriov(struct pci_dev *pdev)
- 	pci_disable_sriov(pdev);
- }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index e5835ee..7a6a17d 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -63,6 +63,7 @@
+ #define HNAE3_ROCE_CLIENT_INITED_B		0x5
+ #define HNAE3_DEV_SUPPORT_FD_B			0x6
+ #define HNAE3_DEV_SUPPORT_GRO_B			0x7
++#define HNAE3_DEV_SUPPORT_FEC_B			0x9
  
--static void hns3_get_dev_capability(struct pci_dev *pdev,
--				    struct hnae3_ae_dev *ae_dev)
--{
--	if (pdev->revision >= 0x21) {
--		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_SUPPORT_FD_B, 1);
--		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_SUPPORT_GRO_B, 1);
--	}
--}
--
- /* hns3_probe - Device initialization routine
-  * @pdev: PCI device information struct
-  * @ent: entry in hns3_pci_tbl
-@@ -2106,7 +2097,6 @@ static int hns3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ #define HNAE3_DEV_SUPPORT_ROCE_DCB_BITS (BIT(HNAE3_DEV_SUPPORT_DCB_B) |\
+ 		BIT(HNAE3_DEV_SUPPORT_ROCE_B))
+@@ -79,6 +80,9 @@
+ #define hnae3_dev_gro_supported(hdev) \
+ 	hnae3_get_bit((hdev)->ae_dev->flag, HNAE3_DEV_SUPPORT_GRO_B)
  
- 	ae_dev->pdev = pdev;
- 	ae_dev->flag = ent->driver_data;
--	hns3_get_dev_capability(pdev, ae_dev);
- 	pci_set_drvdata(pdev, ae_dev);
++#define hnae3_dev_fec_supported(hdev) \
++	hnae3_get_bit((hdev)->ae_dev->flag, HNAE3_DEV_SUPPORT_FEC_B)
++
+ #define ring_ptr_move_fw(ring, p) \
+ 	((ring)->p = ((ring)->p + 1) % (ring)->desc_num)
+ #define ring_ptr_move_bw(ring, p) \
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 96b4d97..c57ec5e 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -1363,11 +1363,12 @@ static int hns3_get_fecparam(struct net_device *netdev,
+ 			     struct ethtool_fecparam *fec)
+ {
+ 	struct hnae3_handle *handle = hns3_get_handle(netdev);
++	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(handle->pdev);
+ 	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
+ 	u8 fec_ability;
+ 	u8 fec_mode;
  
- 	ret = hnae3_register_ae_dev(ae_dev);
+-	if (handle->pdev->revision == 0x20)
++	if (!hnae3_get_bit(ae_dev->flag, HNAE3_DEV_SUPPORT_FEC_B))
+ 		return -EOPNOTSUPP;
+ 
+ 	if (!ops->get_fec)
+@@ -1385,10 +1386,11 @@ static int hns3_set_fecparam(struct net_device *netdev,
+ 			     struct ethtool_fecparam *fec)
+ {
+ 	struct hnae3_handle *handle = hns3_get_handle(netdev);
++	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(handle->pdev);
+ 	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
+ 	u32 fec_mode;
+ 
+-	if (handle->pdev->revision == 0x20)
++	if (!hnae3_get_bit(ae_dev->flag, HNAE3_DEV_SUPPORT_FEC_B))
+ 		return -EOPNOTSUPP;
+ 
+ 	if (!ops->set_fec)
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-index 03b7a96..9f6b1a6 100644
+index 9f6b1a6..127f693 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-@@ -330,7 +330,8 @@ int hclge_cmd_send(struct hclge_hw *hw, struct hclge_desc *desc, int num)
- 	return retval;
- }
+@@ -355,6 +355,7 @@ hclge_cmd_query_version_and_capability(struct hclge_dev *hdev)
+ 	    ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V2) {
+ 		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_SUPPORT_FD_B, 1);
+ 		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_SUPPORT_GRO_B, 1);
++		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_SUPPORT_FEC_B, 1);
+ 	}
  
--static enum hclge_cmd_status hclge_cmd_query_version(struct hclge_dev *hdev)
-+static enum hclge_cmd_status
-+hclge_cmd_query_version_and_capability(struct hclge_dev *hdev)
- {
- 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
- 	struct hclge_query_version_cmd *resp;
-@@ -350,6 +351,12 @@ static enum hclge_cmd_status hclge_cmd_query_version(struct hclge_dev *hdev)
- 					 HNAE3_PCI_REVISION_BIT_SIZE;
- 	ae_dev->dev_version |= hdev->pdev->revision;
- 
-+	if (!resp->caps[0] &&
-+	    ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V2) {
-+		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_SUPPORT_FD_B, 1);
-+		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_SUPPORT_GRO_B, 1);
-+	}
-+
  	return ret;
- }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index cc6d347..871632a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -1157,7 +1157,7 @@ static void hclge_parse_fiber_link_mode(struct hclge_dev *hdev,
+ 	hclge_convert_setting_sr(mac, speed_ability);
+ 	hclge_convert_setting_lr(mac, speed_ability);
+ 	hclge_convert_setting_cr(mac, speed_ability);
+-	if (hdev->pdev->revision >= 0x21)
++	if (hnae3_dev_fec_supported(hdev))
+ 		hclge_convert_setting_fec(mac);
  
-@@ -436,10 +443,12 @@ int hclge_cmd_init(struct hclge_dev *hdev)
- 		goto err_cmd_init;
- 	}
+ 	linkmode_set_bit(ETHTOOL_LINK_MODE_FIBRE_BIT, mac->supported);
+@@ -1171,7 +1171,7 @@ static void hclge_parse_backplane_link_mode(struct hclge_dev *hdev,
+ 	struct hclge_mac *mac = &hdev->hw.mac;
  
--	ret = hclge_cmd_query_version(hdev);
-+	/* get version and device capabilities */
-+	ret = hclge_cmd_query_version_and_capability(hdev);
- 	if (ret) {
- 		dev_err(&hdev->pdev->dev,
--			"failed to query version ret=%d\n", ret);
-+			"failed to query version and capabilities, ret = %d\n",
-+			ret);
- 		goto err_cmd_init;
- 	}
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index de73463..1252e88 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -362,10 +362,12 @@ struct hclge_rx_priv_buff_cmd {
- 	u8 rsv[6];
- };
- 
-+#define HCLGE_QUERY_CAP_LENGTH		3
- struct hclge_query_version_cmd {
- 	__le32 firmware;
- 	__le32 hardware;
--	__le32 rsv[4];
-+	__le32 rsv;
-+	__le32 caps[HCLGE_QUERY_CAP_LENGTH]; /* capabilities of device */
- };
- 
- #define HCLGE_RX_PRIV_EN_B	15
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-index b323756..3a1f7b5 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-@@ -313,7 +313,7 @@ int hclgevf_cmd_send(struct hclgevf_hw *hw, struct hclgevf_desc *desc, int num)
- 	return status;
- }
- 
--static int hclgevf_cmd_query_version(struct hclgevf_dev *hdev)
-+static int hclgevf_cmd_query_version_and_capability(struct hclgevf_dev *hdev)
- {
- 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
- 	struct hclgevf_query_version_cmd *resp;
-@@ -333,6 +333,12 @@ static int hclgevf_cmd_query_version(struct hclgevf_dev *hdev)
- 				 HNAE3_PCI_REVISION_BIT_SIZE;
- 	ae_dev->dev_version |= hdev->pdev->revision;
- 
-+	if (!resp->caps[0] &&
-+	    ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V2) {
-+		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_SUPPORT_FD_B, 1);
-+		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_SUPPORT_GRO_B, 1);
-+	}
-+
- 	return status;
- }
- 
-@@ -400,9 +406,11 @@ int hclgevf_cmd_init(struct hclgevf_dev *hdev)
- 		goto err_cmd_init;
- 	}
- 
--	ret = hclgevf_cmd_query_version(hdev);
-+	/* get version and device capabilities */
-+	ret = hclgevf_cmd_query_version_and_capability(hdev);
- 	if (ret) {
--		dev_err(&hdev->pdev->dev, "failed(%d) to query version\n", ret);
-+		dev_err(&hdev->pdev->dev,
-+			"failed to query version and capabilities, ret = %d\n", ret);
- 		goto err_cmd_init;
- 	}
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-index 0601df6..52e7651 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-@@ -141,10 +141,12 @@ struct hclgevf_ctrl_vector_chain {
- 	u8 resv;
- };
- 
-+#define HCLGEVF_QUERY_CAP_LENGTH		3
- struct hclgevf_query_version_cmd {
- 	__le32 firmware;
- 	__le32 hardware;
--	__le32 rsv[4];
-+	__le32 rsv;
-+	__le32 caps[HCLGEVF_QUERY_CAP_LENGTH]; /* capabilities of device */
- };
- 
- #define HCLGEVF_MSIX_OFT_ROCEE_S       0
+ 	hclge_convert_setting_kr(mac, speed_ability);
+-	if (hdev->pdev->revision >= 0x21)
++	if (hnae3_dev_fec_supported(hdev))
+ 		hclge_convert_setting_fec(mac);
+ 	linkmode_set_bit(ETHTOOL_LINK_MODE_Backplane_BIT, mac->supported);
+ 	linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT, mac->supported);
 -- 
 2.7.4
 
