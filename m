@@ -2,136 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 009AA27A0D9
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 14:21:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D08E427A103
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 14:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726516AbgI0MVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 08:21:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36964 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726185AbgI0MVG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Sep 2020 08:21:06 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 74316208FE;
-        Sun, 27 Sep 2020 12:21:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601209265;
-        bh=FdSjEiIOfosty1A1hNpYjx+LCe0c93peV/xVsFD6r/o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FtJG2gRJohbsXmjTGZLvssQG1XF1/EDPa+Sxt7uDN386HN/YFfrvpzrv4+5S2OGee
-         WwgbRJn5W6gVfWdvXi4OwSNypTgoQvpwd2ypZNN7rw+jr66jN5W1yoJ984HbBn313O
-         5EwO+4+ECjBUiIjNR1+7fPf+BlbKDjiL9nYij4XI=
-Date:   Sun, 27 Sep 2020 14:21:15 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Coly Li <colyli@suse.de>
-Cc:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, open-iscsi@googlegroups.com,
-        linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org,
+        id S1726534AbgI0Mj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 08:39:56 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:34270 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726149AbgI0Mj4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 08:39:56 -0400
+X-Greylist: delayed 303 seconds by postgrey-1.27 at vger.kernel.org; Sun, 27 Sep 2020 08:39:56 EDT
+X-IronPort-AV: E=Sophos;i="5.77,310,1596466800"; 
+   d="scan'208";a="58260505"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 27 Sep 2020 21:34:52 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 297DB40062C5;
+        Sun, 27 Sep 2020 21:34:49 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
         linux-kernel@vger.kernel.org,
-        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
-        Christoph Hellwig <hch@lst.de>, Hannes Reinecke <hare@suse.de>,
-        Jan Kara <jack@suse.com>, Jens Axboe <axboe@kernel.dk>,
-        Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Vlastimil Babka <vbabka@suse.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v8 1/7] net: introduce helper sendpage_ok() in
- include/linux/net.h
-Message-ID: <20200927122115.GA178781@kroah.com>
-References: <20200925150119.112016-1-colyli@suse.de>
- <20200925150119.112016-2-colyli@suse.de>
- <20200925151812.GA3182427@kroah.com>
- <7b0d4f63-2fe5-9032-3b88-97619d8c5081@suse.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7b0d4f63-2fe5-9032-3b88-97619d8c5081@suse.de>
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Marian-Cristian Rotariu 
+        <marian-cristian.rotariu.rb@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [RESEND PATCH] dt-bindings: net: renesas,ravb: Add support for r8a774e1 SoC
+Date:   Sun, 27 Sep 2020 13:34:39 +0100
+Message-Id: <20200927123439.29300-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 26, 2020 at 09:28:03PM +0800, Coly Li wrote:
-> On 2020/9/25 23:18, Greg KH wrote:
-> > On Fri, Sep 25, 2020 at 11:01:13PM +0800, Coly Li wrote:
-> >> The original problem was from nvme-over-tcp code, who mistakenly uses
-> >> kernel_sendpage() to send pages allocated by __get_free_pages() without
-> >> __GFP_COMP flag. Such pages don't have refcount (page_count is 0) on
-> >> tail pages, sending them by kernel_sendpage() may trigger a kernel panic
-> >> from a corrupted kernel heap, because these pages are incorrectly freed
-> >> in network stack as page_count 0 pages.
-> >>
-> >> This patch introduces a helper sendpage_ok(), it returns true if the
-> >> checking page,
-> >> - is not slab page: PageSlab(page) is false.
-> >> - has page refcount: page_count(page) is not zero
-> >>
-> >> All drivers who want to send page to remote end by kernel_sendpage()
-> >> may use this helper to check whether the page is OK. If the helper does
-> >> not return true, the driver should try other non sendpage method (e.g.
-> >> sock_no_sendpage()) to handle the page.
-> >>
-> >> Signed-off-by: Coly Li <colyli@suse.de>
-> >> Cc: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
-> >> Cc: Christoph Hellwig <hch@lst.de>
-> >> Cc: Hannes Reinecke <hare@suse.de>
-> >> Cc: Jan Kara <jack@suse.com>
-> >> Cc: Jens Axboe <axboe@kernel.dk>
-> >> Cc: Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>
-> >> Cc: Philipp Reisner <philipp.reisner@linbit.com>
-> >> Cc: Sagi Grimberg <sagi@grimberg.me>
-> >> Cc: Vlastimil Babka <vbabka@suse.com>
-> >> Cc: stable@vger.kernel.org
-> >> ---
-> >>  include/linux/net.h | 16 ++++++++++++++++
-> >>  1 file changed, 16 insertions(+)
-> >>
-> >> diff --git a/include/linux/net.h b/include/linux/net.h
-> >> index d48ff1180879..05db8690f67e 100644
-> >> --- a/include/linux/net.h
-> >> +++ b/include/linux/net.h
-> >> @@ -21,6 +21,7 @@
-> >>  #include <linux/rcupdate.h>
-> >>  #include <linux/once.h>
-> >>  #include <linux/fs.h>
-> >> +#include <linux/mm.h>
-> >>  #include <linux/sockptr.h>
-> >>  
-> >>  #include <uapi/linux/net.h>
-> >> @@ -286,6 +287,21 @@ do {									\
-> >>  #define net_get_random_once_wait(buf, nbytes)			\
-> >>  	get_random_once_wait((buf), (nbytes))
-> >>  
-> >> +/*
-> >> + * E.g. XFS meta- & log-data is in slab pages, or bcache meta
-> >> + * data pages, or other high order pages allocated by
-> >> + * __get_free_pages() without __GFP_COMP, which have a page_count
-> >> + * of 0 and/or have PageSlab() set. We cannot use send_page for
-> >> + * those, as that does get_page(); put_page(); and would cause
-> >> + * either a VM_BUG directly, or __page_cache_release a page that
-> >> + * would actually still be referenced by someone, leading to some
-> >> + * obscure delayed Oops somewhere else.
-> >> + */
-> >> +static inline bool sendpage_ok(struct page *page)
-> >> +{
-> >> +	return  !PageSlab(page) && page_count(page) >= 1;
-> > 
-> > Do you have one extra ' ' after "return" there?
-> 
-> It should be fixed in next version.
-> 
-> > 
-> > And this feels like a mm thing, why put it in net.h and not mm.h?
-> 
-> This check is specific for kernel_sendpage(), so I want to place it
-> closer to where kernel_sendpage() is declared.
-> 
-> And indeed there was similar discussion about why this helper is not in
-> mm code in v5 series. Christoph supported to place sendpage_ok() in
-> net.h, an uncompleted piece of his opinion was "It is not a mm bug, it
-> is a networking quirk."
+From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 
-Ah, nevermind then, sorry for the noise :)
+Document RZ/G2H (R8A774E1) SoC bindings.
 
-greg k-h
+Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+Hi David,
+
+This patch is part of series [1] and is Acked the DT maintainers,
+while rest of the patches have been picked up by the respective
+maintainers, could you please pick this patch.
+
+[1] https://www.spinics.net/lists/dmaengine/msg22887.html
+
+Cheers,
+Prabhakar
+---
+ Documentation/devicetree/bindings/net/renesas,ravb.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/net/renesas,ravb.txt b/Documentation/devicetree/bindings/net/renesas,ravb.txt
+index 032b76f14f4f..9119f1caf391 100644
+--- a/Documentation/devicetree/bindings/net/renesas,ravb.txt
++++ b/Documentation/devicetree/bindings/net/renesas,ravb.txt
+@@ -21,6 +21,7 @@ Required properties:
+       - "renesas,etheravb-r8a774a1" for the R8A774A1 SoC.
+       - "renesas,etheravb-r8a774b1" for the R8A774B1 SoC.
+       - "renesas,etheravb-r8a774c0" for the R8A774C0 SoC.
++      - "renesas,etheravb-r8a774e1" for the R8A774E1 SoC.
+       - "renesas,etheravb-r8a7795" for the R8A7795 SoC.
+       - "renesas,etheravb-r8a7796" for the R8A77960 SoC.
+       - "renesas,etheravb-r8a77961" for the R8A77961 SoC.
+-- 
+2.17.1
+
