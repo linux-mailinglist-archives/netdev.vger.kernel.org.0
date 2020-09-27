@@ -2,95 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD96E27A13B
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 15:31:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9A6327A141
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 15:38:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726316AbgI0Nbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 09:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35534 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbgI0Nbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 09:31:34 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABD9C0613CE;
-        Sun, 27 Sep 2020 06:31:33 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id m6so8842825wrn.0;
-        Sun, 27 Sep 2020 06:31:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QK+CNqV2RawiQsdUjO+AkwK+0EE8a7HDH6rwLCEoY2M=;
-        b=t0scRr8J/uICsLm0njOEG5K2sdZBfDOfD6UT8OCdYSaHAQhbrBzy+x3Qd+kaswZgGU
-         LxaC2hkS4ZtMTn0qy0ER7y2SmIsU+a7OQVer6A4z2Z1VnDRXAYOeNELs3JgpGseJU1GK
-         YqD3oasX1RCjcs0E/frUbzcg69OQk8XHnFXux/EB82i2OtUx1yZxvLlB5GeMHASaKc3/
-         1UX/wotUFmNgj984S1+z7eNoYnBm+5UZQ/7EdtAmco+jobr+e5goHqIsoAaw0w5gxTtP
-         C4jk57QM+Ml8ifPf7AgcpCnwBjfeEOF2KSAJoJYesRdZNvZmJwmQaecFz2XzLtx3nfaT
-         L8sQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QK+CNqV2RawiQsdUjO+AkwK+0EE8a7HDH6rwLCEoY2M=;
-        b=ctZXBSWohKg7x/5PYFA6E2Jiuhrcr2IOx7RMGs4MuNWFDN8YpSm0rVb5yfiedpUoQS
-         lsGl8n1GkOaG0SiOwx7WCvRqey0tJMrV84pQbUV5JKuaxcU6g6sOBF411S5Hq/hSB7vp
-         nq6zBdUMRXitWG6g1+n1ALSkmHJpNG4llhP7v7P1e5Y6DyeDFk15LgT631mblO/ETTP4
-         /Ktu++vmu9u6nCryOkm6KSJ/WrK/n2XWeMg2LEF9GIgVWNp4XUTe1Xf11k1OqepJk+hU
-         lu4NR0ypZ5ULWknrV544XLOGzZenNSZdTsXlb+GBKnM6JpfYhHMCFyn7nBDWrnaE0B29
-         c4Yg==
-X-Gm-Message-State: AOAM530lQT7e8IyOLsQ6HUzIxOWPIhD337km+H/WMYqnuARhEnDvqh1R
-        R8ng0Ux9Tyvsg+eu2yFnMSQ=
-X-Google-Smtp-Source: ABdhPJxcf+fIszPWUO6Fg2on0jlCjY3+yQhOROMCyjbDppnvgplBLT5v9KgtEVhrHWvCoxfQ5L0dWw==
-X-Received: by 2002:a5d:570b:: with SMTP id a11mr14325249wrv.139.1601213492561;
-        Sun, 27 Sep 2020 06:31:32 -0700 (PDT)
-Received: from localhost.localdomain (cpc83661-brig20-2-0-cust443.3-3.cable.virginm.net. [82.28.105.188])
-        by smtp.gmail.com with ESMTPSA id e13sm9637805wre.60.2020.09.27.06.31.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Sep 2020 06:31:32 -0700 (PDT)
-From:   Alex Dewar <alex.dewar90@gmail.com>
-Cc:     Alex Dewar <alex.dewar90@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
+        id S1726309AbgI0Nh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 09:37:56 -0400
+Received: from mg.ssi.bg ([178.16.128.9]:52658 "EHLO mg.ssi.bg"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726149AbgI0Nh4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Sep 2020 09:37:56 -0400
+X-Greylist: delayed 330 seconds by postgrey-1.27 at vger.kernel.org; Sun, 27 Sep 2020 09:37:55 EDT
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id 266001371C;
+        Sun, 27 Sep 2020 16:32:24 +0300 (EEST)
+Received: from ink.ssi.bg (ink.ssi.bg [178.16.128.7])
+        by mg.ssi.bg (Proxmox) with ESMTP id 8535C136D6;
+        Sun, 27 Sep 2020 16:32:23 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 207613C0332;
+        Sun, 27 Sep 2020 16:32:18 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 08RDWDP7035896;
+        Sun, 27 Sep 2020 16:32:16 +0300
+Date:   Sun, 27 Sep 2020 16:32:13 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     "longguang.yue" <bigclouds@163.com>
+cc:     yuelongguang@gmail.com, Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dpaa2-mac: Fix potential null pointer dereference
-Date:   Sun, 27 Sep 2020 14:31:20 +0100
-Message-Id: <20200927133119.586083-1-alex.dewar90@gmail.com>
-X-Mailer: git-send-email 2.28.0
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:IPVS" <netdev@vger.kernel.org>,
+        "open list:IPVS" <lvs-devel@vger.kernel.org>,
+        "open list:NETFILTER" <netfilter-devel@vger.kernel.org>,
+        "open list:NETFILTER" <coreteam@netfilter.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4] ipvs: adjust the debug info in function
+ set_tcp_state
+In-Reply-To: <20200927120756.75676-1-bigclouds@163.com>
+Message-ID: <alpine.LFD.2.23.451.2009271625160.35554@ja.home.ssi.bg>
+References: <20200927120756.75676-1-bigclouds@163.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In dpaa2_pcs_destroy, variable pcs is dereference before it is
-null-checked. Fix this.
 
-Addresses-Coverity: CID 1497159: Null pointer dereferences (REVERSE_INULL)
-Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+	Hello,
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index 6ff64dd1cf27..09bf4fec1172 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -291,11 +291,10 @@ static int dpaa2_pcs_create(struct dpaa2_mac *mac,
- static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
- {
- 	struct lynx_pcs *pcs = mac->pcs;
--	struct device *dev = &pcs->mdio->dev;
- 
- 	if (pcs) {
- 		lynx_pcs_destroy(pcs);
--		put_device(dev);
-+		put_device(&pcs->mdio->dev);
- 		mac->pcs = NULL;
- 	}
- }
--- 
-2.28.0
+On Sun, 27 Sep 2020, longguang.yue wrote:
+
+>         outputting client,virtual,dst addresses info when tcp state changes,
+>         which makes the connection debug more clear
+> 
+> Signed-off-by: longguang.yue <bigclouds@163.com>
+
+	Looks good to me, thanks!
+
+Acked-by: Julian Anastasov <ja@ssi.bg>
+
+	Simon, Pablo, may be commit description should not
+be indented...
+
+> ---
+>  net/netfilter/ipvs/ip_vs_proto_tcp.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/netfilter/ipvs/ip_vs_proto_tcp.c b/net/netfilter/ipvs/ip_vs_proto_tcp.c
+> index dc2e7da2742a..7da51390cea6 100644
+> --- a/net/netfilter/ipvs/ip_vs_proto_tcp.c
+> +++ b/net/netfilter/ipvs/ip_vs_proto_tcp.c
+> @@ -539,8 +539,8 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
+>  	if (new_state != cp->state) {
+>  		struct ip_vs_dest *dest = cp->dest;
+>  
+> -		IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] %s:%d->"
+> -			      "%s:%d state: %s->%s conn->refcnt:%d\n",
+> +		IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] c:%s:%d v:%s:%d "
+> +			      "d:%s:%d state: %s->%s conn->refcnt:%d\n",
+>  			      pd->pp->name,
+>  			      ((state_off == TCP_DIR_OUTPUT) ?
+>  			       "output " : "input "),
+> @@ -548,10 +548,12 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
+>  			      th->fin ? 'F' : '.',
+>  			      th->ack ? 'A' : '.',
+>  			      th->rst ? 'R' : '.',
+> -			      IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
+> -			      ntohs(cp->dport),
+>  			      IP_VS_DBG_ADDR(cp->af, &cp->caddr),
+>  			      ntohs(cp->cport),
+> +			      IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
+> +			      ntohs(cp->vport),
+> +			      IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
+> +			      ntohs(cp->dport),
+>  			      tcp_state_name(cp->state),
+>  			      tcp_state_name(new_state),
+>  			      refcount_read(&cp->refcnt));
+> -- 
+> 2.20.1 (Apple Git-117)
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
 
