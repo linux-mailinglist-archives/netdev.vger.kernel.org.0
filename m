@@ -2,127 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7ED27A21D
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 19:43:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15FC127A218
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 19:43:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726574AbgI0RnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 13:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
+        id S1726566AbgI0RnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 13:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726380AbgI0Rm6 (ORCPT
+        with ESMTP id S1726328AbgI0Rm6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 13:42:58 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18491C0613D7
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:56 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id d6so7169243pfn.9
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:56 -0700 (PDT)
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D242C0613D8
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:57 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a9so2312705pjg.1
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=y48lpbWX+36nHg/T7M+Z2Os7Td4iT8jDf2VvhuOgCd4=;
-        b=EpKDL9FWkMp/riyHQK/dxcUe0V44pDZKrplyUZ/19hKo+Pac1cugVqad/fyzxUUueC
-         b58XC6+ljmEx0gXvuzUrPf/XbOeR27h1du09f4GoWGeTr2l7E4GUsf/QgZ33n3eNpXvR
-         tqd/VGZBWzQkijAnoo236CG7wwDDM/mEBRbCo=
+        bh=P8moafohodvgUhgB227QeMXFdVJ1CEl9bGhUi/mqvgo=;
+        b=IgX1OUS7hBrUu+eBGdEYfcjX30gfWNV6MaS4+xTMMsHBvp4t9Xdgt2bfPh3UAi6VfK
+         icamnfViJdHqqG/BNobpPKwgfHLoF8FwxjPdKXQWVyUz4yjJO4Z5vIHVyst0HDTb5rAD
+         ApMpQqH57A8+UpFQj+IDjVdMlN1/Vg72G+dRw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=y48lpbWX+36nHg/T7M+Z2Os7Td4iT8jDf2VvhuOgCd4=;
-        b=HqX78pXQA25EE9lurkYlw8Al3mouvoNqK5MQRxkPDWmoT4o71dbt8H7lbm6YJUqeIO
-         dO7OoGVe0FFQEt8p6l7rvfDjn4voFx5xdHqws4qKzr+fYkUy/l9KZTKKZ7dAzAaXJGwp
-         nh58yJZfaP6Hkzs0bthircv3PvO6+jcG4x2FuuVzfM8GxcOg9CLe6wSkhygF1hWujoi2
-         lNWE3PdRIA8V8Y7WghGhWjj6h18HqXPtD2dAl6GuDeoBe6K+VIPZYFwL75nhyr4LFHoe
-         QszHOFFRHlrB6s1nsUdGsyBzecpdTLwLhXCUyP20PX0hoZI58BNit2UOqfGkggm2puuv
-         QQmw==
-X-Gm-Message-State: AOAM530niCl+f0JyOMKyJl/jwaLrOQOkyFIG6CMAR8bUcUwdmnK2Ktr8
-        XUEThWzJHO3zP1Ifb5wIyG/qRQ==
-X-Google-Smtp-Source: ABdhPJwZuTp3qA7MT+IudEGvZOFDM6/4hs182N4HsqYG7BWoENugGBB/vYrMkm1wSns6qv9cp3cwhQ==
-X-Received: by 2002:aa7:8434:0:b029:142:2501:34d8 with SMTP id q20-20020aa784340000b0290142250134d8mr7517883pfn.49.1601228575403;
-        Sun, 27 Sep 2020 10:42:55 -0700 (PDT)
+        bh=P8moafohodvgUhgB227QeMXFdVJ1CEl9bGhUi/mqvgo=;
+        b=XxPrxYtUzvbRZpbEwiCryKXuVojE4tpRl/Kns+b+VK6aVkptn/TfCZScFPCdKtOMIM
+         xQgsqIL49AyOLaIVWSOpZnamyWkJSIkDtFJQdEwQKQs160feD+mm+1PNpL31W3jdSMio
+         A9kmYjumvudXInKS9FvpLboHDGYVzDlrGqkizLEQxg1IW8mMbUTijLOzGVuy/G341Icz
+         eq+Sqi/yvIYrWxEvD8l9m7RiAiNQ41+dGZAO6Qt6EpkYjJY+/a/1NtDThS2HbJxMSBO5
+         +23as/6GMIGlloQaSvD3XlZJWhw7iSXOWPp/uzjaZbC6zpH5dPC9FiUih0xbBFj2DGNN
+         dCCQ==
+X-Gm-Message-State: AOAM533E4MFG3PM6C0jx16SYA5Ub+EhdyyL0YGZfOhAP87e+X3YXhGTO
+        QU8F4KB4ae8XlY1iru1hYE2YWEmu3OhhDg==
+X-Google-Smtp-Source: ABdhPJw25TdbHHJOUpKIeYxsRqkC9xxZYdzZcQN+ga1QSmMmauhqy75BOY0TV5SFmpKUr+2pY53jng==
+X-Received: by 2002:a17:902:59c1:b029:d2:6392:3b76 with SMTP id d1-20020a17090259c1b02900d263923b76mr8248900plj.39.1601228576441;
+        Sun, 27 Sep 2020 10:42:56 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o19sm8765570pfp.64.2020.09.27.10.42.54
+        by smtp.gmail.com with ESMTPSA id o19sm8765570pfp.64.2020.09.27.10.42.55
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 27 Sep 2020 10:42:54 -0700 (PDT)
+        Sun, 27 Sep 2020 10:42:56 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 09/11] bnxt_en: Report Active FEC encoding during link up.
-Date:   Sun, 27 Sep 2020 13:42:18 -0400
-Message-Id: <1601228540-20852-10-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 10/11] bnxt_en: Implement ethtool set_fec_param() method.
+Date:   Sun, 27 Sep 2020 13:42:19 -0400
+Message-Id: <1601228540-20852-11-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1601228540-20852-1-git-send-email-michael.chan@broadcom.com>
 References: <1601228540-20852-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000077ee9f05b04f14fb"
+        boundary="00000000000087ddd705b04f147f"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000077ee9f05b04f14fb
+--00000000000087ddd705b04f147f
 
-The current code is reporting the FEC configured settings during link up.
-Change it to report the more useful active FEC encoding that may be
-negotiated or auto detected.
+This feature allows the user to set the different FEC modes on the NIC
+port.  Any new setting will take effect immediately after a link toggle.
 
 Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 29 ++++++++++++++++++++---
- 1 file changed, 26 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     | 44 +++++++++++++
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 62 +++++++++++++++++++
+ 3 files changed, 107 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index ab3b36deaf66..834f64f5f4d6 100644
+index 834f64f5f4d6..38bbd7631fca 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8737,6 +8737,30 @@ void bnxt_tx_enable(struct bnxt *bp)
- 		netif_carrier_on(bp->dev);
+@@ -8890,7 +8890,7 @@ static bool bnxt_support_dropped(u16 advertising, u16 supported)
+ 	return ((supported | diff) != supported);
  }
  
-+static char *bnxt_report_fec(struct bnxt_link_info *link_info)
-+{
-+	u8 active_fec = link_info->active_fec_sig_mode &
-+			PORT_PHY_QCFG_RESP_ACTIVE_FEC_MASK;
+-static int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
++int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
+ {
+ 	int rc = 0;
+ 	struct bnxt_link_info *link_info = &bp->link_info;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 8a4c842ad06d..74387259e1c6 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1259,6 +1259,49 @@ struct bnxt_link_info {
+ 	struct hwrm_port_phy_qcfg_output phy_qcfg_resp;
+ };
+ 
++#define BNXT_FEC_RS544_ON					\
++	 (PORT_PHY_CFG_REQ_FLAGS_FEC_RS544_1XN_ENABLE |		\
++	  PORT_PHY_CFG_REQ_FLAGS_FEC_RS544_IEEE_ENABLE)
 +
-+	switch (active_fec) {
-+	default:
-+	case PORT_PHY_QCFG_RESP_ACTIVE_FEC_FEC_NONE_ACTIVE:
-+		return "None";
-+	case PORT_PHY_QCFG_RESP_ACTIVE_FEC_FEC_CLAUSE74_ACTIVE:
-+		return "Clause 74 BaseR";
-+	case PORT_PHY_QCFG_RESP_ACTIVE_FEC_FEC_CLAUSE91_ACTIVE:
-+		return "Clause 91 RS(528,514)";
-+	case PORT_PHY_QCFG_RESP_ACTIVE_FEC_FEC_RS544_1XN_ACTIVE:
-+		return "Clause 91 RS544_1XN";
-+	case PORT_PHY_QCFG_RESP_ACTIVE_FEC_FEC_RS544_IEEE_ACTIVE:
-+		return "Clause 91 RS(544,514)";
-+	case PORT_PHY_QCFG_RESP_ACTIVE_FEC_FEC_RS272_1XN_ACTIVE:
-+		return "Clause 91 RS272_1XN";
-+	case PORT_PHY_QCFG_RESP_ACTIVE_FEC_FEC_RS272_IEEE_ACTIVE:
-+		return "Clause 91 RS(272,257)";
-+	}
++#define BNXT_FEC_RS544_OFF					\
++	 (PORT_PHY_CFG_REQ_FLAGS_FEC_RS544_1XN_DISABLE |	\
++	  PORT_PHY_CFG_REQ_FLAGS_FEC_RS544_IEEE_DISABLE)
++
++#define BNXT_FEC_RS272_ON					\
++	 (PORT_PHY_CFG_REQ_FLAGS_FEC_RS272_1XN_ENABLE |		\
++	  PORT_PHY_CFG_REQ_FLAGS_FEC_RS272_IEEE_ENABLE)
++
++#define BNXT_FEC_RS272_OFF					\
++	 (PORT_PHY_CFG_REQ_FLAGS_FEC_RS272_1XN_DISABLE |	\
++	  PORT_PHY_CFG_REQ_FLAGS_FEC_RS272_IEEE_DISABLE)
++
++#define BNXT_PAM4_SUPPORTED(link_info)				\
++	((link_info)->support_pam4_speeds)
++
++#define BNXT_FEC_RS_ON(link_info)				\
++	(PORT_PHY_CFG_REQ_FLAGS_FEC_CLAUSE91_ENABLE |		\
++	 PORT_PHY_CFG_REQ_FLAGS_FEC_CLAUSE74_DISABLE |		\
++	 (BNXT_PAM4_SUPPORTED(link_info) ?			\
++	  (BNXT_FEC_RS544_ON | BNXT_FEC_RS272_OFF) : 0))
++
++#define BNXT_FEC_LLRS_ON					\
++	(PORT_PHY_CFG_REQ_FLAGS_FEC_CLAUSE91_ENABLE |		\
++	 PORT_PHY_CFG_REQ_FLAGS_FEC_CLAUSE74_DISABLE |		\
++	 BNXT_FEC_RS272_ON | BNXT_FEC_RS544_OFF)
++
++#define BNXT_FEC_RS_OFF(link_info)				\
++	(PORT_PHY_CFG_REQ_FLAGS_FEC_CLAUSE91_DISABLE |		\
++	 (BNXT_PAM4_SUPPORTED(link_info) ?			\
++	  (BNXT_FEC_RS544_OFF | BNXT_FEC_RS272_OFF) : 0))
++
++#define BNXT_FEC_BASE_R_ON(link_info)				\
++	(PORT_PHY_CFG_REQ_FLAGS_FEC_CLAUSE74_ENABLE |		\
++	 BNXT_FEC_RS_OFF(link_info))
++
++#define BNXT_FEC_ALL_OFF(link_info)				\
++	(PORT_PHY_CFG_REQ_FLAGS_FEC_CLAUSE74_DISABLE |		\
++	 BNXT_FEC_RS_OFF(link_info))
++
+ #define BNXT_MAX_QUEUE	8
+ 
+ struct bnxt_queue_info {
+@@ -2125,6 +2168,7 @@ int bnxt_get_avail_msix(struct bnxt *bp, int num);
+ int bnxt_reserve_rings(struct bnxt *bp, bool irq_re_init);
+ void bnxt_tx_disable(struct bnxt *bp);
+ void bnxt_tx_enable(struct bnxt *bp);
++int bnxt_update_link(struct bnxt *bp, bool chng_link_state);
+ int bnxt_hwrm_set_pause(struct bnxt *);
+ int bnxt_hwrm_set_link_setting(struct bnxt *, bool, bool);
+ int bnxt_hwrm_alloc_wol_fltr(struct bnxt *bp);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 3dc5d084db35..0d9fe14646f7 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -1924,6 +1924,67 @@ static int bnxt_get_fecparam(struct net_device *dev,
+ 	return 0;
+ }
+ 
++static u32 bnxt_ethtool_forced_fec_to_fw(struct bnxt_link_info *link_info,
++					 u32 fec)
++{
++	u32 fw_fec = PORT_PHY_CFG_REQ_FLAGS_FEC_AUTONEG_DISABLE;
++
++	if (fec & ETHTOOL_FEC_BASER)
++		fw_fec |= BNXT_FEC_BASE_R_ON(link_info);
++	else if (fec & ETHTOOL_FEC_RS)
++		fw_fec |= BNXT_FEC_RS_ON(link_info);
++	else if (fec & ETHTOOL_FEC_LLRS)
++		fw_fec |= BNXT_FEC_LLRS_ON;
++	return fw_fec;
 +}
 +
- static void bnxt_report_link(struct bnxt *bp)
++static int bnxt_set_fecparam(struct net_device *dev,
++			     struct ethtool_fecparam *fecparam)
++{
++	struct hwrm_port_phy_cfg_input req = {0};
++	struct bnxt *bp = netdev_priv(dev);
++	struct bnxt_link_info *link_info;
++	u32 new_cfg, fec = fecparam->fec;
++	u16 fec_cfg;
++	int rc;
++
++	link_info = &bp->link_info;
++	fec_cfg = link_info->fec_cfg;
++	if (fec_cfg & BNXT_FEC_NONE)
++		return -EOPNOTSUPP;
++
++	if (fec & ETHTOOL_FEC_OFF) {
++		new_cfg = PORT_PHY_CFG_REQ_FLAGS_FEC_AUTONEG_DISABLE |
++			  BNXT_FEC_ALL_OFF(link_info);
++		goto apply_fec;
++	}
++	if (((fec & ETHTOOL_FEC_AUTO) && !(fec_cfg & BNXT_FEC_AUTONEG_CAP)) ||
++	    ((fec & ETHTOOL_FEC_RS) && !(fec_cfg & BNXT_FEC_ENC_RS_CAP)) ||
++	    ((fec & ETHTOOL_FEC_LLRS) && !(fec_cfg & BNXT_FEC_ENC_LLRS_CAP)) ||
++	    ((fec & ETHTOOL_FEC_BASER) && !(fec_cfg & BNXT_FEC_ENC_BASE_R_CAP)))
++		return -EINVAL;
++
++	if (fec & ETHTOOL_FEC_AUTO) {
++		if (!link_info->autoneg)
++			return -EINVAL;
++		new_cfg = PORT_PHY_CFG_REQ_FLAGS_FEC_AUTONEG_ENABLE;
++	} else {
++		new_cfg = bnxt_ethtool_forced_fec_to_fw(link_info, fec);
++	}
++
++apply_fec:
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PORT_PHY_CFG, -1, -1);
++	req.flags = cpu_to_le32(new_cfg | PORT_PHY_CFG_REQ_FLAGS_RESET_PHY);
++	rc = hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++	/* update current settings */
++	if (!rc) {
++		mutex_lock(&bp->link_lock);
++		bnxt_update_link(bp, false);
++		mutex_unlock(&bp->link_lock);
++	}
++	return rc;
++}
++
+ static void bnxt_get_pauseparam(struct net_device *dev,
+ 				struct ethtool_pauseparam *epause)
  {
- 	if (bp->link_info.link_up) {
-@@ -8767,10 +8791,9 @@ static void bnxt_report_link(struct bnxt *bp)
- 							 "not active");
- 		fec = bp->link_info.fec_cfg;
- 		if (!(fec & PORT_PHY_QCFG_RESP_FEC_CFG_FEC_NONE_SUPPORTED))
--			netdev_info(bp->dev, "FEC autoneg %s encodings: %s\n",
-+			netdev_info(bp->dev, "FEC autoneg %s encoding: %s\n",
- 				    (fec & BNXT_FEC_AUTONEG) ? "on" : "off",
--				    (fec & BNXT_FEC_ENC_BASE_R) ? "BaseR" :
--				     (fec & BNXT_FEC_ENC_RS) ? "RS" : "None");
-+				    bnxt_report_fec(&bp->link_info));
- 	} else {
- 		netif_carrier_off(bp->dev);
- 		netdev_err(bp->dev, "NIC Link is Down\n");
+@@ -3830,6 +3891,7 @@ const struct ethtool_ops bnxt_ethtool_ops = {
+ 	.get_link_ksettings	= bnxt_get_link_ksettings,
+ 	.set_link_ksettings	= bnxt_set_link_ksettings,
+ 	.get_fecparam		= bnxt_get_fecparam,
++	.set_fecparam		= bnxt_set_fecparam,
+ 	.get_pause_stats	= bnxt_get_pause_stats,
+ 	.get_pauseparam		= bnxt_get_pauseparam,
+ 	.set_pauseparam		= bnxt_set_pauseparam,
 -- 
 2.18.1
 
 
---00000000000077ee9f05b04f14fb
+--00000000000087ddd705b04f147f
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -192,14 +300,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgL8TSBpM+pYIc
-ZIHO/65eS/u81SL/k/KmHOC9v+KnwhkwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAwOTI3MTc0MjU1WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgaEAqHAZ2UZmW
+MxTp68wB+6dbASVLKkPIU+j1eG/rvEUwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAwOTI3MTc0MjU2WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBADele1iJ8/bR/Eh0ukr/ssWmpDqk3GJU
-i+ha0tG+n9uT3T1dFWUeCy8WVeD3CZ8aVm4OnirwwY8CKKBYN4Ruxch1CfK7ZB2AdUohppfP3AlR
-3LxhE4+cZLYUnpN1vN/TgtVU81H4GG5cWY7weWgneGCKoBolFKPpfv0QvtM9i+oLs4cBYqcO1FZW
-xNSkY5yIfUQqM0M5wFWNpuVBmez6AaNyFFghWcfCg98HuFtV6yacvquFucZ+/8M1Z6Cz6BYS8919
-rE9L2kQtlPwAmGkqwUDdOXjTUQcMbaUJwmSgxgW7BbXKq/oz+fw6o8m4j7mB/+gm7EhnVXxH2PkB
-t7I0CVs=
---00000000000077ee9f05b04f14fb--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAGJD6EfaMdCqoWZZR8QuqEO9IkAagumy
+WLI8lwZvU9YB3dcRQ/+8mw3TAP5QUzV85jEfKl3wLDmtfGC/84YnOgxzcCXDZOF7QUwajCydWOXy
+SCzQR0Q7eQ5MRyrucwEw48xL5TsEpNvd+kYZl439vet+lXjoBZPao8wPn9JvzabHhVlO6AWZpzPR
+gJDgUI0oxcLwoGZpb5CZ9gy1t/Bn9ihtnbVDoVCWt8YwIfcSDkYna4ZUWruKTn5ZZpv+v0lwxI6z
+aaDjomCiZLqwThYu/tv6kjGQAZJmYwLaBOAgGSggbYdrn09Y9cKEMWIXNoQoshbFWi7N/jr2Rbmf
+4XMA5Go=
+--00000000000087ddd705b04f147f--
