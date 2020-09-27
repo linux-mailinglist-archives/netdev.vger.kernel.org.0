@@ -2,79 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2151E279FB5
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 10:38:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 637B5279FC5
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 10:47:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730536AbgI0IiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 04:38:19 -0400
-Received: from mail-il1-f207.google.com ([209.85.166.207]:53375 "EHLO
-        mail-il1-f207.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730438AbgI0IiT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 04:38:19 -0400
-Received: by mail-il1-f207.google.com with SMTP id v5so6193146ilj.20
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 01:38:18 -0700 (PDT)
+        id S1726262AbgI0Irw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 04:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726185AbgI0Irw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 04:47:52 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 435C6C0613D3
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 01:47:52 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id z18so3869699qvp.6
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 01:47:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ODwlzQWcOfaqDNZSpV1mqnAk6uRjiK8SnzSar44eRbw=;
+        b=LvJAamSv+7BvcBWAMydenJG/DaSx+cw58grRAYkFa6ySCNBMKQrxTz+JLuz0iqeyL/
+         0yVd0d2OBeWJMM2dgxk++Rm53k+7ywqv+XSV3W9TWZoa4MgFlvcVuquXlVgZKFVM5Pt9
+         2PA/INI8zcKAA2Mtg0478T7Yqzd5aqF3goaGfmi49MvTZyeGk7BA9G/MSKSTqZlnFrX8
+         cpod1pqaKLquWpBUjoGXfliynuDys33Lab42TIyh+BX8OPvBkWq4697LzFQYlBXeGXkO
+         OA73oJeUNKNXQNQWWvvuMcCbsJSV5MUuyoA9DWVFYE4Kqip+lN4Oudcw9POrw1fbpzOU
+         kUUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=D+7925BAuFy5JUJyqqoXH/AXv+NZQdbjeyCkWAqT2zg=;
-        b=teN2EsYOHRcAFKEQS2d8Sr9iXDCSD4PWSjvgepjBbn3MgmE2ASTcxL/e/00qAvGqWu
-         V7OjkGsF1PSoa7iMFTr6rcMgq3MLl8ROSYk5GpZRLrLtO0ixFn3h0kZLda5hQVqkM4HS
-         Lm9flIeJMFLuiPUwr4vYtcY9FdVlW3LHrftAqheYrxYaa7hdAYGvnSAJEg0wfOA5Rhxg
-         gskd0kGHC+z4xf/sYmRKyh6B23ONGH3tgPWm/OHLfwjhbDi8Ka6R5QRgcKCTNvpD7CDV
-         Nzd7oX8XHuG/5u/KGjt8hdMVZcXKdzLmH2Zai6qW418iqRx9K1IrzMShgcieEDn5IN9f
-         +Rqg==
-X-Gm-Message-State: AOAM531BJnE4bBYH5L+2BrwiDsU7vhKeE1o2MZqdnI1VPdU2uYp9oSiS
-        xJJVc79J1aNnWTGJq9dTJdegnH9CGqHJaLs2XrpQgskPW5mv
-X-Google-Smtp-Source: ABdhPJy8iDWafPGNK7L+w8Gub4YgC1m1YGqnT9hnSu6/YN5gTC+CHpX//MO6pX46YDRz0dX7sHmu9QGqkoeIkPH8WYqASxfiXyB/
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ODwlzQWcOfaqDNZSpV1mqnAk6uRjiK8SnzSar44eRbw=;
+        b=m4RzBV/hz9v+JTk89IyLiM53T60DO1cHdUr1+ET4moWC1peLjvIyGFJiWK6HBPRxQf
+         zcXViXFKXvaZCpLr5x7Fq08cDTzToEeCkGQCB+Mqj2alb6GGlmfr+UHY7spwuWQNpTO3
+         K9hxLVLngfpElwrbic/hfugUwxnluiCFaA1LJYOB3mf0PgD0Ay9gNkjVwadi0Ny4ghD2
+         3JYXA9w9GYUEB9Ssvx65mSlOgIPcQwQXyEoubAyXpejJVKYslBFDHhZLCDlUO7EK36Ed
+         KWjG/xyxnvNeJpLFClojGbfyESTzBolE24UirjmOwDmZqF4EPXqRf3/S+F4EYeiIG6Bk
+         K8bQ==
+X-Gm-Message-State: AOAM533ICJtflMK1yL6MJSslwJBV6ZpuyoIq7zq0oQtIY79MLeayZfTR
+        XfIlonQRGdmjKBAm9dbPaAHZoAx7WtoVh07iGy8EJg==
+X-Google-Smtp-Source: ABdhPJw188JTXwzSAN/+U/mG0jI4jTVdudWEMyvmSDGiYPDH8EF4khjhEXu/Ik4+q9lbQY7nWcOizKPwvcgDYFC/kqM=
+X-Received: by 2002:a05:6214:222:: with SMTP id j2mr6991968qvt.32.1601196470804;
+ Sun, 27 Sep 2020 01:47:50 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:f87:: with SMTP id v7mr6136361ilo.212.1601195898295;
- Sun, 27 Sep 2020 01:38:18 -0700 (PDT)
-Date:   Sun, 27 Sep 2020 01:38:18 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bbdb3b05b0477890@google.com>
-Subject: WARNING: CPU: 1
-From:   syzbot <syzbot+3640e696903873858f7e@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+References: <000000000000bbdb3b05b0477890@google.com>
+In-Reply-To: <000000000000bbdb3b05b0477890@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Sun, 27 Sep 2020 10:47:39 +0200
+Message-ID: <CACT4Y+arc_qxVnb1+FZUzEM32eDBe7zYgZhcSCgyMUMwKkkeDw@mail.gmail.com>
+Subject: Re: WARNING: CPU: 1
+To:     syzbot <syzbot+3640e696903873858f7e@syzkaller.appspotmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless <linux-wireless@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, Sep 27, 2020 at 10:38 AM syzbot
+<syzbot+3640e696903873858f7e@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    748d1c8a Merge branch 'devlink-Use-nla_policy-to-validate-..
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=13ac3ec3900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=51fb40e67d1e3dec
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3640e696903873858f7e
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1599be03900000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=149fd44b900000
 
-syzbot found the following issue on:
+Based on the reproducer, this looks like some wireless bug.
++net/wireless maintainers.
 
-HEAD commit:    748d1c8a Merge branch 'devlink-Use-nla_policy-to-validate-..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=13ac3ec3900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=51fb40e67d1e3dec
-dashboard link: https://syzkaller.appspot.com/bug?extid=3640e696903873858f7e
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1599be03900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=149fd44b900000
-
-Bisection is inconclusive: the issue happens on the oldest tested release.
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1474aaad900000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1674aaad900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1274aaad900000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+3640e696903873858f7e@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 1 
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+> Bisection is inconclusive: the issue happens on the oldest tested release.
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1474aaad900000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=1674aaad900000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1274aaad900000
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+3640e696903873858f7e@syzkaller.appspotmail.com
+>
+> ------------[ cut here ]------------
+> WARNING: CPU: 1
+>
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000bbdb3b05b0477890%40google.com.
