@@ -2,99 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 741A927A21E
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 19:44:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 416DB27A28D
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 21:25:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726426AbgI0Roj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 13:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46270 "EHLO
+        id S1726380AbgI0TZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 15:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726280AbgI0Roj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 13:44:39 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF37C0613CE
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:44:38 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id i26so5145008ejb.12
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:44:38 -0700 (PDT)
+        with ESMTP id S1726239AbgI0TZZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:25:25 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFAFC0613CE;
+        Sun, 27 Sep 2020 12:25:24 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id m6so9578445wrn.0;
+        Sun, 27 Sep 2020 12:25:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=FSQgkiyM3Izc5D+Pe8hInjJPMV4ZWjpx2nsXWCjBQR4=;
-        b=dt01rDajtk+QgmTYgGCpmV/4k9VbpXPhoQHT6garUzbWY3HuElW8MdIEDsqmCXJdQZ
-         Z0bg25RqrY6GU585jbn4JbPbUgH5aucKn1ow0tuUBOdq9pNn/Yx7BN0IYs77ZWDtK7XZ
-         s7tEgH/P7fa/nt5j1YXol4HCSFJgzLxYhEq8K8X3HbDFx3ViJzyFZa/XpvJ0dznYRlZ0
-         RPeq2FTeHjzeYQ3gN5Z2ItcneZvPt9P9uaU8+UlFnaTYJ7hkqKzgur9w1ibqhAcZjRTm
-         wag/qj7OL43jy0Y0rg2nEq3QVOE26KsT45vRE9WQ0PMgNzzrlCQjOLlWY7va3/At4cHK
-         hc7w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ib+m1upj1my5VACm4oUnf3b2Tj68EgFVrf7eXMZTHfA=;
+        b=UREkh7q3a8XqC4vMjYLUHU5B32+ZhtSg5kKiGrLc07GE7sLvYFIdVIlJeBSqeeuTls
+         0T780VdBWvd35udo+spI2djY5UoRW1Xd5Y/9ARKtP5WnutErh9Vt6ThsxUPJFftqVjJ4
+         /VMcOxAzbZz0Nr4r+5XESrhhujkB5RUdyPZcj1GfWkCnmQzJC+o1AR3AbdpiWBqT2uXg
+         Wx5Ct3l9T2bzfQGB4pQoVCQaTwaGePQiW4bT85Ba05n1HpeljR7EwZzXV+Xelztm4h5v
+         JLeB2gc1K0zy94ik6bFrc0qBmZPoVDvkZX4dt70xmAneufhgVy9SCytuGIFeMfET8HeZ
+         mPsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=FSQgkiyM3Izc5D+Pe8hInjJPMV4ZWjpx2nsXWCjBQR4=;
-        b=R79KhG5LxVXPztK1cZV4kZNdwDpuvnY48Tfj1O9Pyg12gbOUB+QVM68sqjfFEnAxwE
-         9A+Jo8J5NnsXTGrk2K7GN/GFDvz5k86f7eTQVqNddBMFD3ac8bPLPlMM8gdrjSDB6VgP
-         Hmu2XS8jcfYNVdt0jg85OQ/vMPSYLW0Z4S9oaVlrSyx1JU0o2AdHZC35v0iPynnsi2hH
-         Ywz5Q9G7mAG71j4zq2Pps5pqQn0i3ZVFk9/ARFz6Grdp6TCMtTjxrJQzibLCEwckW+Im
-         2in3PYhgsWCriYv+euQO5zcUIrjd3nuHNJj/X7OX5Wc3oUcpTV1AuSKkJPPTBVN9d7sl
-         g3rg==
-X-Gm-Message-State: AOAM533gXkn30LXilskvje/sHg5maahArHFf3a1TcCq8FaYLXbbEjFzn
-        6EXlrdR5Mqmwm68S6D/m4BIw2Aj7LWE=
-X-Google-Smtp-Source: ABdhPJxyyZxgKYd7CpTe3yCSL6clJsGsQJZDFKhdLaQTmLt50+PKcrwMV7lAFvIjy3xd2O+dNvWNZA==
-X-Received: by 2002:a17:906:e88:: with SMTP id p8mr12855109ejf.134.1601228677216;
-        Sun, 27 Sep 2020 10:44:37 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f00:6a00:e966:e5f6:832b:42f1? (p200300ea8f006a00e966e5f6832b42f1.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:e966:e5f6:832b:42f1])
-        by smtp.googlemail.com with ESMTPSA id k9sm7776155edr.3.2020.09.27.10.44.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Sep 2020 10:44:36 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net] r8169: fix RTL8168f/RTL8411 EPHY config
-Message-ID: <9a059f0d-4865-3f21-be39-49a2b711d0bf@gmail.com>
-Date:   Sun, 27 Sep 2020 19:44:29 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ib+m1upj1my5VACm4oUnf3b2Tj68EgFVrf7eXMZTHfA=;
+        b=IE7Dbiyv2p4vgaI41EtrFPWXw1bUSti2VHYlg47ZwuGcZqZ3j8ssOjrdi0EElbTwOT
+         dfVgjEGlzQ0JmogZaEjjVi92vkJzEqg/ZcvRl3MmajZufrEpvg1TX6n2k327qy2h5m4k
+         1q8U6Y0IvXWhT88J9jb3le+ukzw2hB1adq9QrQ86Oejke3EGAZXWZCQYw+5TAF48w9e/
+         G6+rM81vQgVXq28RxblqhXRvO06dNwvI0lnt7urzf8vuVOqKxg+HeCXDOvxEzQ2MQwgn
+         Wi/etJI69sqg6Yu9IMngdsA/fpMgzkudPAk5Qoq8HRvpoyaWFMrOiGFY9ArAm37KSbP+
+         HDFA==
+X-Gm-Message-State: AOAM532QMdH1HJrpiWfSsy8aswsaDonTUyMKmjcbyAIC7+A/wRahc8tZ
+        6QnTVMA13HojXCszuBub/48=
+X-Google-Smtp-Source: ABdhPJwUUM/a/0bM09qKLhuI3meVRyIGzKoPK8GfrgyIMYu0sDQyWDYEeuVS+sSDhGeI1KsJ1SCC6w==
+X-Received: by 2002:adf:9043:: with SMTP id h61mr3933615wrh.237.1601234723236;
+        Sun, 27 Sep 2020 12:25:23 -0700 (PDT)
+Received: from Ansuel-XPS.localdomain (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
+        by smtp.googlemail.com with ESMTPSA id w21sm6398106wmk.34.2020.09.27.12.25.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 27 Sep 2020 12:25:22 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     "0001-ath10k-Try-to-get-mac-address-from-dts . patchKalle Valo" 
+        <kvalo@codeaurora.org>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] ath10k: Try to get mac-address from dts
+Date:   Sun, 27 Sep 2020 21:25:13 +0200
+Message-Id: <20200927192515.86-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mistakenly bit 2 was set instead of bit 3 as in the vendor driver.
+Most of embedded device that have the ath10k wifi integrated store the
+mac-address in nvmem partitions. Try to fetch the mac-address using the
+standard 'of_get_mac_address' than in all the check also try to fetch the
+address using the nvmem api searching for a defined 'mac-address' cell.
+Mac-address defined in the dts have priority than any other address found.
 
-Fixes: a7a92cf81589 ("r8169: sync PCIe PHY init with vendor driver 8.047.01")
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Tested-on: QCA9984 hw1.0 PCI 10.4
+
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath10k/core.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 9e4e6a883..6c7c004c2 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2901,7 +2901,7 @@ static void rtl_hw_start_8168f_1(struct rtl8169_private *tp)
- 		{ 0x08, 0x0001,	0x0002 },
- 		{ 0x09, 0x0000,	0x0080 },
- 		{ 0x19, 0x0000,	0x0224 },
--		{ 0x00, 0x0000,	0x0004 },
-+		{ 0x00, 0x0000,	0x0008 },
- 		{ 0x0c, 0x3df0,	0x0200 },
- 	};
+diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
+index 5f4e12196..9ed7b9883 100644
+--- a/drivers/net/wireless/ath/ath10k/core.c
++++ b/drivers/net/wireless/ath/ath10k/core.c
+@@ -8,6 +8,8 @@
+ #include <linux/module.h>
+ #include <linux/firmware.h>
+ #include <linux/of.h>
++#include <linux/of_net.h>
++#include <linux/property.h>
+ #include <linux/property.h>
+ #include <linux/dmi.h>
+ #include <linux/ctype.h>
+@@ -2961,8 +2963,12 @@ EXPORT_SYMBOL(ath10k_core_stop);
+ static int ath10k_core_probe_fw(struct ath10k *ar)
+ {
+ 	struct bmi_target_info target_info;
++	const char *mac;
+ 	int ret = 0;
  
-@@ -2918,7 +2918,7 @@ static void rtl_hw_start_8411(struct rtl8169_private *tp)
- 		{ 0x06, 0x00c0,	0x0020 },
- 		{ 0x0f, 0xffff,	0x5200 },
- 		{ 0x19, 0x0000,	0x0224 },
--		{ 0x00, 0x0000,	0x0004 },
-+		{ 0x00, 0x0000,	0x0008 },
- 		{ 0x0c, 0x3df0,	0x0200 },
- 	};
++	/* register the platform to be found by the of api */
++	of_platform_device_create(ar->dev->of_node, NULL, NULL);
++
+ 	ret = ath10k_hif_power_up(ar, ATH10K_FIRMWARE_MODE_NORMAL);
+ 	if (ret) {
+ 		ath10k_err(ar, "could not power on hif bus (%d)\n", ret);
+@@ -3062,6 +3068,10 @@ static int ath10k_core_probe_fw(struct ath10k *ar)
  
+ 	device_get_mac_address(ar->dev, ar->mac_addr, sizeof(ar->mac_addr));
+ 
++	mac = of_get_mac_address(ar->dev->of_node);
++	if (!IS_ERR(mac))
++		ether_addr_copy(ar->mac_addr, mac);
++
+ 	ret = ath10k_core_init_firmware_features(ar);
+ 	if (ret) {
+ 		ath10k_err(ar, "fatal problem with firmware features: %d\n",
 -- 
-2.28.0
+2.27.0
 
