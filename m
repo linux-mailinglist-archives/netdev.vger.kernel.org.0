@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C41E4279F36
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 09:18:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C5CC279F3D
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 09:18:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730457AbgI0HPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 03:15:46 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:14249 "EHLO huawei.com"
+        id S1730564AbgI0HQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 03:16:21 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:14242 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730433AbgI0HPp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Sep 2020 03:15:45 -0400
+        id S1730310AbgI0HPo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Sep 2020 03:15:44 -0400
 Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 84F9161C29FCD6CB7378;
+        by Forcepoint Email with ESMTP id 61ABA4FD80E013EC7EF5;
         Sun, 27 Sep 2020 15:15:41 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.487.0; Sun, 27 Sep 2020 15:15:34 +0800
+ 14.3.487.0; Sun, 27 Sep 2020 15:15:35 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
@@ -24,9 +24,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
         Guangbin Huang <huangguangbin2@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 07/10] net: hns3: add support to query device specifications
-Date:   Sun, 27 Sep 2020 15:12:45 +0800
-Message-ID: <1601190768-50075-8-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 08/10] net: hns3: replace the macro of max tm rate with the queried specification
+Date:   Sun, 27 Sep 2020 15:12:46 +0800
+Message-ID: <1601190768-50075-9-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1601190768-50075-1-git-send-email-tanhuazhong@huawei.com>
 References: <1601190768-50075-1-git-send-email-tanhuazhong@huawei.com>
@@ -40,280 +40,221 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Guangbin Huang <huangguangbin2@huawei.com>
 
-To improve code maintainability and compatibility, new commands
-HCLGE_OPC_QUERY_DEV_SPECS for PF and HCLGEVF_OPC_QUERY_DEV_SPECS
-for VF are introduced to query device specifications, instead of
-statically defining specifications by checking the hardware version
-or other methods.
+The max tm rate is a fixed value(100Gb/s) now as it is defined by a
+macro. In order to support other rates in different kinds of device,
+it is better to use specification queried from firmware to replace
+this macro.
+
+As function hclge_shaper_para_calc() has too many arguments to add
+more, so encapsulate its three arguments ir_b, ir_u, ir_s into a
+structure.
 
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        | 11 ++++
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h | 16 +++++-
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 62 +++++++++++++++++++++
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h   | 15 +++++
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 64 ++++++++++++++++++++++
- 5 files changed, 167 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  3 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  2 ++
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  | 34 ++++++++++++++--------
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h  |  2 ++
+ 5 files changed, 29 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 32f0cce..cc48221 100644
+index cc48221..f6d0702 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -267,6 +267,16 @@ struct hnae3_ring_chain_node {
- #define HNAE3_IS_TX_RING(node) \
- 	(((node)->flag & (1 << HNAE3_RING_TYPE_B)) == HNAE3_RING_TYPE_TX)
- 
-+/* device specification info from firmware */
-+struct hnae3_dev_specs {
-+	u32 mac_entry_num; /* number of mac-vlan table entry */
-+	u32 mng_entry_num; /* number of manager table entry */
-+	u16 rss_ind_tbl_size;
-+	u16 rss_key_size;
-+	u16 int_ql_max; /* max value of interrupt coalesce based on INT_QL */
-+	u8 max_non_tso_bd_num; /* max BD number of one non-TSO packet */
-+};
-+
- struct hnae3_client_ops {
- 	int (*init_instance)(struct hnae3_handle *handle);
- 	void (*uninit_instance)(struct hnae3_handle *handle, bool reset);
-@@ -294,6 +304,7 @@ struct hnae3_ae_dev {
- 	struct list_head node;
- 	u32 flag;
- 	unsigned long hw_err_reset_req;
-+	struct hnae3_dev_specs dev_specs;
- 	u32 dev_version;
- 	unsigned long caps[BITS_TO_LONGS(HNAE3_DEV_CAPS_MAX_NUM)];
- 	void *priv;
+@@ -271,6 +271,7 @@ struct hnae3_ring_chain_node {
+ struct hnae3_dev_specs {
+ 	u32 mac_entry_num; /* number of mac-vlan table entry */
+ 	u32 mng_entry_num; /* number of manager table entry */
++	u32 max_tm_rate;
+ 	u16 rss_ind_tbl_size;
+ 	u16 rss_key_size;
+ 	u16 int_ql_max; /* max value of interrupt coalesce based on INT_QL */
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index 3489c75..d37066a 100644
+index d37066a..096e26a 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -115,7 +115,8 @@ enum hclge_opcode_type {
- 	HCLGE_OPC_DFX_RCB_REG		= 0x004D,
- 	HCLGE_OPC_DFX_TQP_REG		= 0x004E,
- 	HCLGE_OPC_DFX_SSU_REG_2		= 0x004F,
--	HCLGE_OPC_DFX_QUERY_CHIP_CAP	= 0x0050,
-+
-+	HCLGE_OPC_QUERY_DEV_SPECS	= 0x0050,
- 
- 	/* MAC command */
- 	HCLGE_OPC_CONFIG_MAC_MODE	= 0x0301,
-@@ -1088,6 +1089,19 @@ struct hclge_sfp_info_bd0_cmd {
- 	u8 data[HCLGE_SFP_INFO_BD0_LEN];
+@@ -1099,7 +1099,8 @@ struct hclge_dev_specs_0_cmd {
+ 	__le16 rss_key_size;
+ 	__le16 int_ql_max;
+ 	u8 max_non_tso_bd_num;
+-	u8 rsv1[5];
++	u8 rsv1;
++	__le32 max_tm_rate;
  };
  
-+#define HCLGE_QUERY_DEV_SPECS_BD_NUM		4
-+
-+struct hclge_dev_specs_0_cmd {
-+	__le32 rsv0;
-+	__le32 mac_entry_num;
-+	__le32 mng_entry_num;
-+	__le16 rss_ind_tbl_size;
-+	__le16 rss_key_size;
-+	__le16 int_ql_max;
-+	u8 max_non_tso_bd_num;
-+	u8 rsv1[5];
-+};
-+
  int hclge_cmd_init(struct hclge_dev *hdev);
- static inline void hclge_write_reg(void __iomem *base, u32 reg, u32 value)
- {
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 871632a..7825864 100644
+index 7825864..34b2932 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1356,6 +1356,61 @@ static int hclge_get_cfg(struct hclge_dev *hdev, struct hclge_cfg *hcfg)
- 	return 0;
+@@ -1365,6 +1365,7 @@ static void hclge_set_default_dev_specs(struct hclge_dev *hdev)
+ 	ae_dev->dev_specs.max_non_tso_bd_num = HCLGE_MAX_NON_TSO_BD_NUM;
+ 	ae_dev->dev_specs.rss_ind_tbl_size = HCLGE_RSS_IND_TBL_SIZE;
+ 	ae_dev->dev_specs.rss_key_size = HCLGE_RSS_KEY_SIZE;
++	ae_dev->dev_specs.max_tm_rate = HCLGE_ETHER_MAX_RATE;
  }
  
-+static void hclge_set_default_dev_specs(struct hclge_dev *hdev)
-+{
-+#define HCLGE_MAX_NON_TSO_BD_NUM			8U
-+
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
-+
-+	ae_dev->dev_specs.max_non_tso_bd_num = HCLGE_MAX_NON_TSO_BD_NUM;
-+	ae_dev->dev_specs.rss_ind_tbl_size = HCLGE_RSS_IND_TBL_SIZE;
-+	ae_dev->dev_specs.rss_key_size = HCLGE_RSS_KEY_SIZE;
-+}
-+
-+static void hclge_parse_dev_specs(struct hclge_dev *hdev,
-+				  struct hclge_desc *desc)
-+{
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
-+	struct hclge_dev_specs_0_cmd *req0;
-+
-+	req0 = (struct hclge_dev_specs_0_cmd *)desc[0].data;
-+
-+	ae_dev->dev_specs.max_non_tso_bd_num = req0->max_non_tso_bd_num;
-+	ae_dev->dev_specs.rss_ind_tbl_size =
-+		le16_to_cpu(req0->rss_ind_tbl_size);
-+	ae_dev->dev_specs.rss_key_size = le16_to_cpu(req0->rss_key_size);
-+}
-+
-+static int hclge_query_dev_specs(struct hclge_dev *hdev)
-+{
-+	struct hclge_desc desc[HCLGE_QUERY_DEV_SPECS_BD_NUM];
-+	int ret;
-+	int i;
-+
-+	/* set default specifications as devices lower than version V3 do not
-+	 * support querying specifications from firmware.
-+	 */
-+	if (hdev->ae_dev->dev_version < HNAE3_DEVICE_VERSION_V3) {
-+		hclge_set_default_dev_specs(hdev);
-+		return 0;
-+	}
-+
-+	for (i = 0; i < HCLGE_QUERY_DEV_SPECS_BD_NUM - 1; i++) {
-+		hclge_cmd_setup_basic_desc(&desc[i], HCLGE_OPC_QUERY_DEV_SPECS,
-+					   true);
-+		desc[i].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
-+	}
-+	hclge_cmd_setup_basic_desc(&desc[i], HCLGE_OPC_QUERY_DEV_SPECS, true);
-+
-+	ret = hclge_cmd_send(&hdev->hw, desc, HCLGE_QUERY_DEV_SPECS_BD_NUM);
-+	if (ret)
-+		return ret;
-+
-+	hclge_parse_dev_specs(hdev, desc);
-+
-+	return 0;
-+}
-+
- static int hclge_get_cap(struct hclge_dev *hdev)
+ static void hclge_parse_dev_specs(struct hclge_dev *hdev,
+@@ -1379,6 +1380,7 @@ static void hclge_parse_dev_specs(struct hclge_dev *hdev,
+ 	ae_dev->dev_specs.rss_ind_tbl_size =
+ 		le16_to_cpu(req0->rss_ind_tbl_size);
+ 	ae_dev->dev_specs.rss_key_size = le16_to_cpu(req0->rss_key_size);
++	ae_dev->dev_specs.max_tm_rate = le32_to_cpu(req0->max_tm_rate);
+ }
+ 
+ static int hclge_query_dev_specs(struct hclge_dev *hdev)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index 19742f9..eb98a72 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -23,14 +23,13 @@ enum hclge_shaper_level {
+ #define HCLGE_SHAPER_BS_U_DEF	5
+ #define HCLGE_SHAPER_BS_S_DEF	20
+ 
+-#define HCLGE_ETHER_MAX_RATE	100000
+-
+ /* hclge_shaper_para_calc: calculate ir parameter for the shaper
+  * @ir: Rate to be config, its unit is Mbps
+  * @shaper_level: the shaper level. eg: port, pg, priority, queueset
+  * @ir_b: IR_B parameter of IR shaper
+  * @ir_u: IR_U parameter of IR shaper
+  * @ir_s: IR_S parameter of IR shaper
++ * @max_tm_rate: max tm rate is available to config
+  *
+  * the formula:
+  *
+@@ -41,7 +40,8 @@ enum hclge_shaper_level {
+  * @return: 0: calculate sucessful, negative: fail
+  */
+ static int hclge_shaper_para_calc(u32 ir, u8 shaper_level,
+-				  u8 *ir_b, u8 *ir_u, u8 *ir_s)
++				  u8 *ir_b, u8 *ir_u, u8 *ir_s,
++				  u32 max_tm_rate)
  {
+ #define DIVISOR_CLK		(1000 * 8)
+ #define DIVISOR_IR_B_126	(126 * DIVISOR_CLK)
+@@ -59,7 +59,7 @@ static int hclge_shaper_para_calc(u32 ir, u8 shaper_level,
+ 
+ 	/* Calc tick */
+ 	if (shaper_level >= HCLGE_SHAPER_LVL_CNT ||
+-	    ir > HCLGE_ETHER_MAX_RATE)
++	    ir > max_tm_rate)
+ 		return -EINVAL;
+ 
+ 	tick = tick_array[shaper_level];
+@@ -407,7 +407,8 @@ static int hclge_tm_port_shaper_cfg(struct hclge_dev *hdev)
+ 
+ 	ret = hclge_shaper_para_calc(hdev->hw.mac.speed,
+ 				     HCLGE_SHAPER_LVL_PORT,
+-				     &ir_b, &ir_u, &ir_s);
++				     &ir_b, &ir_u, &ir_s,
++				     hdev->ae_dev->dev_specs.max_tm_rate);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -522,10 +523,11 @@ int hclge_tm_qs_shaper_cfg(struct hclge_vport *vport, int max_tx_rate)
+ 	int ret, i;
+ 
+ 	if (!max_tx_rate)
+-		max_tx_rate = HCLGE_ETHER_MAX_RATE;
++		max_tx_rate = hdev->ae_dev->dev_specs.max_tm_rate;
+ 
+ 	ret = hclge_shaper_para_calc(max_tx_rate, HCLGE_SHAPER_LVL_QSET,
+-				     &ir_b, &ir_u, &ir_s);
++				     &ir_b, &ir_u, &ir_s,
++				     hdev->ae_dev->dev_specs.max_tm_rate);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -668,7 +670,8 @@ static void hclge_tm_pg_info_init(struct hclge_dev *hdev)
+ 		hdev->tm_info.pg_info[i].pg_id = i;
+ 		hdev->tm_info.pg_info[i].pg_sch_mode = HCLGE_SCH_MODE_DWRR;
+ 
+-		hdev->tm_info.pg_info[i].bw_limit = HCLGE_ETHER_MAX_RATE;
++		hdev->tm_info.pg_info[i].bw_limit =
++					hdev->ae_dev->dev_specs.max_tm_rate;
+ 
+ 		if (i != 0)
+ 			continue;
+@@ -729,6 +732,7 @@ static int hclge_tm_pg_to_pri_map(struct hclge_dev *hdev)
+ 
+ static int hclge_tm_pg_shaper_cfg(struct hclge_dev *hdev)
+ {
++	u32 max_tm_rate = hdev->ae_dev->dev_specs.max_tm_rate;
+ 	u8 ir_u, ir_b, ir_s;
+ 	u32 shaper_para;
  	int ret;
-@@ -9990,6 +10045,13 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
- 	if (ret)
- 		goto err_cmd_uninit;
+@@ -744,7 +748,8 @@ static int hclge_tm_pg_shaper_cfg(struct hclge_dev *hdev)
+ 		ret = hclge_shaper_para_calc(
+ 					hdev->tm_info.pg_info[i].bw_limit,
+ 					HCLGE_SHAPER_LVL_PG,
+-					&ir_b, &ir_u, &ir_s);
++					&ir_b, &ir_u, &ir_s,
++					max_tm_rate);
+ 		if (ret)
+ 			return ret;
  
-+	ret = hclge_query_dev_specs(hdev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to query dev specifications, ret = %d.\n",
-+			ret);
-+		goto err_cmd_uninit;
-+	}
-+
- 	ret = hclge_configure(hdev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Configure dev error, ret = %d.\n", ret);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-index 326f3cb..9460c12 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-@@ -91,6 +91,8 @@ enum hclgevf_opcode_type {
- 	/* Generic command */
- 	HCLGEVF_OPC_QUERY_FW_VER	= 0x0001,
- 	HCLGEVF_OPC_QUERY_VF_RSRC	= 0x0024,
-+	HCLGEVF_OPC_QUERY_DEV_SPECS	= 0x0050,
-+
- 	/* TQP command */
- 	HCLGEVF_OPC_QUERY_TX_STATUS	= 0x0B03,
- 	HCLGEVF_OPC_QUERY_RX_STATUS	= 0x0B13,
-@@ -270,6 +272,19 @@ struct hclgevf_cfg_tx_queue_pointer_cmd {
- #define HCLGEVF_NIC_CMQ_DESC_NUM_S	3
- #define HCLGEVF_NIC_CMDQ_INT_SRC_REG	0x27100
+@@ -861,6 +866,7 @@ static int hclge_tm_pri_q_qs_cfg(struct hclge_dev *hdev)
  
-+#define HCLGEVF_QUERY_DEV_SPECS_BD_NUM		4
-+
-+struct hclgevf_dev_specs_0_cmd {
-+	__le32 rsv0;
-+	__le32 mac_entry_num;
-+	__le32 mng_entry_num;
-+	__le16 rss_ind_tbl_size;
-+	__le16 rss_key_size;
-+	__le16 int_ql_max;
-+	u8 max_non_tso_bd_num;
-+	u8 rsv1[5];
-+};
-+
- static inline void hclgevf_write_reg(void __iomem *base, u32 reg, u32 value)
+ static int hclge_tm_pri_tc_base_shaper_cfg(struct hclge_dev *hdev)
  {
- 	writel(value, base + reg);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 9a6f355..b64fa0b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -2939,6 +2939,63 @@ static int hclgevf_query_vf_resource(struct hclgevf_dev *hdev)
- 	return 0;
- }
++	u32 max_tm_rate = hdev->ae_dev->dev_specs.max_tm_rate;
+ 	u8 ir_u, ir_b, ir_s;
+ 	u32 shaper_para;
+ 	int ret;
+@@ -870,7 +876,8 @@ static int hclge_tm_pri_tc_base_shaper_cfg(struct hclge_dev *hdev)
+ 		ret = hclge_shaper_para_calc(
+ 					hdev->tm_info.tc_info[i].bw_limit,
+ 					HCLGE_SHAPER_LVL_PRI,
+-					&ir_b, &ir_u, &ir_s);
++					&ir_b, &ir_u, &ir_s,
++					max_tm_rate);
+ 		if (ret)
+ 			return ret;
  
-+static void hclgevf_set_default_dev_specs(struct hclgevf_dev *hdev)
-+{
-+#define HCLGEVF_MAX_NON_TSO_BD_NUM			8U
-+
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
-+
-+	ae_dev->dev_specs.max_non_tso_bd_num =
-+					HCLGEVF_MAX_NON_TSO_BD_NUM;
-+	ae_dev->dev_specs.rss_ind_tbl_size = HCLGEVF_RSS_IND_TBL_SIZE;
-+	ae_dev->dev_specs.rss_key_size = HCLGEVF_RSS_KEY_SIZE;
-+}
-+
-+static void hclgevf_parse_dev_specs(struct hclgevf_dev *hdev,
-+				    struct hclgevf_desc *desc)
-+{
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
-+	struct hclgevf_dev_specs_0_cmd *req0;
-+
-+	req0 = (struct hclgevf_dev_specs_0_cmd *)desc[0].data;
-+
-+	ae_dev->dev_specs.max_non_tso_bd_num = req0->max_non_tso_bd_num;
-+	ae_dev->dev_specs.rss_ind_tbl_size =
-+					le16_to_cpu(req0->rss_ind_tbl_size);
-+	ae_dev->dev_specs.rss_key_size = le16_to_cpu(req0->rss_key_size);
-+}
-+
-+static int hclgevf_query_dev_specs(struct hclgevf_dev *hdev)
-+{
-+	struct hclgevf_desc desc[HCLGEVF_QUERY_DEV_SPECS_BD_NUM];
-+	int ret;
-+	int i;
-+
-+	/* set default specifications as devices lower than version V3 do not
-+	 * support querying specifications from firmware.
-+	 */
-+	if (hdev->ae_dev->dev_version < HNAE3_DEVICE_VERSION_V3) {
-+		hclgevf_set_default_dev_specs(hdev);
-+		return 0;
-+	}
-+
-+	for (i = 0; i < HCLGEVF_QUERY_DEV_SPECS_BD_NUM - 1; i++) {
-+		hclgevf_cmd_setup_basic_desc(&desc[i],
-+					     HCLGEVF_OPC_QUERY_DEV_SPECS, true);
-+		desc[i].flag |= cpu_to_le16(HCLGEVF_CMD_FLAG_NEXT);
-+	}
-+	hclgevf_cmd_setup_basic_desc(&desc[i], HCLGEVF_OPC_QUERY_DEV_SPECS,
-+				     true);
-+
-+	ret = hclgevf_cmd_send(&hdev->hw, desc, HCLGEVF_QUERY_DEV_SPECS_BD_NUM);
-+	if (ret)
-+		return ret;
-+
-+	hclgevf_parse_dev_specs(hdev, desc);
-+
-+	return 0;
-+}
-+
- static int hclgevf_pci_reset(struct hclgevf_dev *hdev)
- {
- 	struct pci_dev *pdev = hdev->pdev;
-@@ -3047,6 +3104,13 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
+@@ -902,7 +909,8 @@ static int hclge_tm_pri_vnet_base_shaper_pri_cfg(struct hclge_vport *vport)
+ 	int ret;
+ 
+ 	ret = hclge_shaper_para_calc(vport->bw_limit, HCLGE_SHAPER_LVL_VF,
+-				     &ir_b, &ir_u, &ir_s);
++				     &ir_b, &ir_u, &ir_s,
++				     hdev->ae_dev->dev_specs.max_tm_rate);
  	if (ret)
- 		goto err_cmd_init;
+ 		return ret;
  
-+	ret = hclgevf_query_dev_specs(hdev);
-+	if (ret) {
-+		dev_err(&pdev->dev,
-+			"failed to query dev specifications, ret = %d\n", ret);
-+		goto err_cmd_init;
-+	}
+@@ -929,6 +937,7 @@ static int hclge_tm_pri_vnet_base_shaper_qs_cfg(struct hclge_vport *vport)
+ {
+ 	struct hnae3_knic_private_info *kinfo = &vport->nic.kinfo;
+ 	struct hclge_dev *hdev = vport->back;
++	u32 max_tm_rate = hdev->ae_dev->dev_specs.max_tm_rate;
+ 	u8 ir_u, ir_b, ir_s;
+ 	u32 i;
+ 	int ret;
+@@ -937,7 +946,8 @@ static int hclge_tm_pri_vnet_base_shaper_qs_cfg(struct hclge_vport *vport)
+ 		ret = hclge_shaper_para_calc(
+ 					hdev->tm_info.tc_info[i].bw_limit,
+ 					HCLGE_SHAPER_LVL_QSET,
+-					&ir_b, &ir_u, &ir_s);
++					&ir_b, &ir_u, &ir_s,
++					max_tm_rate);
+ 		if (ret)
+ 			return ret;
+ 	}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+index 45bcb67..3c3bb3c 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+@@ -19,6 +19,8 @@
+ #define HCLGE_TM_TX_SCHD_DWRR_MSK	BIT(0)
+ #define HCLGE_TM_TX_SCHD_SP_MSK		(0xFE)
+ 
++#define HCLGE_ETHER_MAX_RATE	100000
 +
- 	ret = hclgevf_init_msi(hdev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed(%d) to init MSI/MSI-X\n", ret);
+ struct hclge_pg_to_pri_link_cmd {
+ 	u8 pg_id;
+ 	u8 rsvd1[3];
 -- 
 2.7.4
 
