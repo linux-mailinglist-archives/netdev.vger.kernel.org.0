@@ -2,98 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0D5327A0A8
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 13:33:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D10C827A0B9
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 14:07:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726469AbgI0Ld0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 07:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45720 "EHLO
+        id S1726460AbgI0MHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 08:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726440AbgI0LdX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 07:33:23 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A08CC0613D3;
-        Sun, 27 Sep 2020 04:33:23 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id x14so8567593wrl.12;
-        Sun, 27 Sep 2020 04:33:23 -0700 (PDT)
+        with ESMTP id S1726252AbgI0MHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 08:07:13 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B497BC0613CE;
+        Sun, 27 Sep 2020 05:07:12 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id l15so2520922wmh.1;
+        Sun, 27 Sep 2020 05:07:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0SaoC8kG8C3/x0IiW1U1E/6eFnvfrg3HY2k89yqprS0=;
-        b=GNTMvVNIIJGVkMvMl8sdVQ+i0xAZayQussBef54oU8jeNjR7ls9MXmCis8muScpmhq
-         Y0Z2y4/CjRjQK6pIPWFs/2PQLM2rcWc/Hi8gNiwUrAvBiQwkkimL+i6wFe+kuJRTGmg6
-         4U6vujGH/IEBJL6CS/FnW7QA3DJ2XOiPS7dVZmxTzGkGRO0leoyC/UI7f8N6l4KTHCN6
-         yrkSZYU5OUTe1HDJ8p5ZKb2OYLP4qLTomlsbI6ZNUsjWl6BfwZiACJlPXu8yDYk+ipcF
-         dvg/NKDxIrIZIp9OufmasO4FCKKYC1VfBgI2tCyPvTsryVJm/6QwIyDRrO+V58u2/bVm
-         lFMA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nDmKV7013veZvVuahc4G29gqLknkysXOsrMcq3LEcO4=;
+        b=DaiRw7sfVvtpjqCofuLmOcd9mW/ja1GwGWcdVoDNY00SrxCueRKCYGUVoG5XzuK7TR
+         ObwPrtO4RnyJwfxkUFzYfIqR6VUmJ/Fpkm447FMcy/fKbH30qNEOjSLy4C3Bjv2DaJcc
+         QvBG+UKMxcNBq05mCQTCCdAmvdR2qBiPy887yXzK04TTY8uX5sa9RpQS3C6F/UTL89PU
+         LAx9juT8QgxVmuSpPGbrGl9KWateH5ggZEfhf8hSLoPmZ7BFVEKiFZlqD5ziK5peKMnI
+         1TILycdReqV+a/JxZDCP3f6Ps2wmaH4AJcfqyEdECjXvrKtXfrqQHu0L/iIWIM4M3JCf
+         Adtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0SaoC8kG8C3/x0IiW1U1E/6eFnvfrg3HY2k89yqprS0=;
-        b=D6KhVa57J8WVv1gInEQkSS3z4JHYVpJFTyUxzADUtOKObYBPnv8WLS04IvUdqH3xpR
-         Vh8gTg8nNQoN00bXW3AO9hSQvOM+d87YGCFyXzZO2+KWwDELB+55FBpM1GtQH8XCIQKm
-         13pKS56axlQ1qPbiDQ635Ugb1Ei5KyOqges6qsb9nRUEPMqQCLFc531Ed7DqczeQmv8o
-         eSFfNcME1TU0ko0guURH2JdMQDegu77Z5cLRYo3nwOgHbqs4WW4Blh3pWu43NpEkF4lb
-         FPU4jsW5oKldl256pStQ2hMqOBZ+yzkQXx5iVcJND/P2r/2Ms8th8FpC6PZvZy1vr1LT
-         GMNg==
-X-Gm-Message-State: AOAM530boEZOZ3G7FKiSGwLU92NbfKoxvEpvnA5G2tFMrFbdFV3hSIpu
-        d2gXdfjSKS8fu0uD+AtaHuE=
-X-Google-Smtp-Source: ABdhPJyi7ecSTXBvW2qpOwmSJeg3xZWDMWJ0EgIQZNtnvvLKzklASMrH8x44OfKNosYNIlHpNLFkDg==
-X-Received: by 2002:adf:f78c:: with SMTP id q12mr13868290wrp.6.1601206401830;
-        Sun, 27 Sep 2020 04:33:21 -0700 (PDT)
-Received: from localhost.localdomain (cpc83661-brig20-2-0-cust443.3-3.cable.virginm.net. [82.28.105.188])
-        by smtp.gmail.com with ESMTPSA id d83sm5671565wmf.23.2020.09.27.04.33.21
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nDmKV7013veZvVuahc4G29gqLknkysXOsrMcq3LEcO4=;
+        b=r6lnCNqpCOrBfLOLXHviLwNtM2DavwQsi9ZPALD0FgXVKdEzpfgRFl/W+3hd7CwyQp
+         bbijeUGDMm0gYdMj//MqQ/ZoxZ/fqVAuLNHZuMPC8quTPrBiw6pRLZKDTMkurACY/Vuq
+         OgpScoi+Bp+MEJz8WW82tGI5IVc06Ml6r1IUom4JEXD/Pdpw+dLrvwAZDy4ay9wNNMgL
+         GSnz5HBrv4RhPMdL316pvpKfO/ISy3kxLh7vpPCe0SNfdeeXs5rATGNx39wWAj+kSE0v
+         czRza4ViCpIOyDgbim1alH3YCEf3ybDh7cXiq0XU52ugO0LORqGpf60hIK3dkSs3zqrI
+         3LtA==
+X-Gm-Message-State: AOAM532+LMctp2liZhNWm5EkUpgnrV+qvEa0AKIcQIAFVmeyjw7VEkxH
+        2OGbp4CuiaVADAwjLXzapK4+eGrmHMI=
+X-Google-Smtp-Source: ABdhPJx+0c+7xc9iH6P5KTzPn7Prp4NdWYRXn7bPUs0+KBTopBABS5EW9y6fFoUEjWye3VIMO5xDdw==
+X-Received: by 2002:a1c:2cc4:: with SMTP id s187mr6647108wms.36.1601208431360;
+        Sun, 27 Sep 2020 05:07:11 -0700 (PDT)
+Received: from kheib-workstation.redhat.com ([2a00:a040:19b:e02f:5cc2:9fa6:fc6d:771d])
+        by smtp.gmail.com with ESMTPSA id m10sm5263279wmi.9.2020.09.27.05.07.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Sep 2020 04:33:21 -0700 (PDT)
-From:   Alex Dewar <alex.dewar90@gmail.com>
-Cc:     Alex Dewar <alex.dewar90@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] net/mlx5e: Fix possible null pointer dereference
-Date:   Sun, 27 Sep 2020 12:32:54 +0100
-Message-Id: <20200927113254.362480-4-alex.dewar90@gmail.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200927113254.362480-1-alex.dewar90@gmail.com>
-References: <20200927113254.362480-1-alex.dewar90@gmail.com>
+        Sun, 27 Sep 2020 05:07:10 -0700 (PDT)
+From:   Kamal Heib <kamalheib1@gmail.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Kamal Heib <kamalheib1@gmail.com>
+Subject: [PATCH iproute2-next] ip: iplink_ipoib.c: Remove extra spaces
+Date:   Sun, 27 Sep 2020 15:06:56 +0300
+Message-Id: <20200927120656.21488-1-kamalheib1@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In mlx5e_tc_unoffload_from_slow_path() a null check is performed for the
-variable slow_attr and a warning is issued if it is null. However,
-slow_attr is used later on in the function regardless. Fix this by
-returning if slow_attr is null.
+Remove the extra space between the reported ipoib attrs - use only one
+space instead of two.
 
-Addresses-Coverity: CID 1497163: Null pointer dereferences (FORWARD_NULL)
-Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
+Fixes: de0389935f8c ("iplink: Added support for the kernel IPoIB RTNL ops")
+Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ ip/iplink_ipoib.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index f815b0c60a6c..b3c57b984a2a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1238,8 +1238,10 @@ mlx5e_tc_unoffload_from_slow_path(struct mlx5_eswitch *esw,
- 	struct mlx5_flow_attr *slow_attr;
+diff --git a/ip/iplink_ipoib.c b/ip/iplink_ipoib.c
+index 05dba3503373..b730c5335020 100644
+--- a/ip/iplink_ipoib.c
++++ b/ip/iplink_ipoib.c
+@@ -99,7 +99,7 @@ static void ipoib_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 		snprintf(b1, sizeof(b1), "%#.4x", pkey);
+ 		print_string(PRINT_JSON, "key", NULL, b1);
+ 	} else {
+-		fprintf(f, "pkey  %#.4x ", pkey);
++		fprintf(f, "pkey %#.4x ", pkey);
+ 	}
  
- 	slow_attr = mlx5_alloc_flow_attr(MLX5_FLOW_NAMESPACE_FDB);
--	if (!slow_attr)
-+	if (!slow_attr) {
- 		mlx5_core_warn(flow->priv->mdev, "Unable to unoffload slow path rule\n");
-+		return;
-+	}
+ 	if (!tb[IFLA_IPOIB_MODE] ||
+@@ -112,7 +112,7 @@ static void ipoib_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 		mode == IPOIB_MODE_DATAGRAM ? "datagram" :
+ 		mode == IPOIB_MODE_CONNECTED ? "connected" : "unknown";
  
- 	memcpy(slow_attr, flow->attr, ESW_FLOW_ATTR_SZ);
- 	slow_attr->action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
+-	print_string(PRINT_ANY, "mode", "mode  %s ", mode_str);
++	print_string(PRINT_ANY, "mode", "mode %s ", mode_str);
+ 
+ 	if (!tb[IFLA_IPOIB_UMCAST] ||
+ 	    RTA_PAYLOAD(tb[IFLA_IPOIB_UMCAST]) < sizeof(__u16))
+@@ -126,7 +126,7 @@ static void ipoib_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 		snprintf(b1, sizeof(b1), "%.4x", umcast);
+ 		print_string(PRINT_JSON, "umcast", NULL, b1);
+ 	} else {
+-		fprintf(f, "umcast  %.4x ", umcast);
++		fprintf(f, "umcast %.4x ", umcast);
+ 	}
+ }
+ 
 -- 
-2.28.0
+2.26.2
 
