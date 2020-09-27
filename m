@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 510A127A3AC
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:03:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 808C327A3B6
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:03:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726915AbgI0T5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 15:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726868AbgI0T5L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:57:11 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E385C0613D4;
-        Sun, 27 Sep 2020 12:57:10 -0700 (PDT)
-Message-Id: <20200927194920.103181773@linutronix.de>
+        id S1726954AbgI0T5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 15:57:19 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:40678 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726869AbgI0T5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:57:13 -0400
+Message-Id: <20200927194920.214592677@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601236629;
+        s=2020; t=1601236630;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=+Td6yEJdX0u3alrzHn3f95NHXVsu8voDQUxA06qKs/o=;
-        b=lvqAAX6akfP4YZ7xFR4LpOwETarHeBRFLM2QGdZc6nT5AgVB/4sW2QV0rl1zrbXxtvs875
-        uZ8s+pnZL9IX+9ZQfTf5t6ubPQkkOAQKHI+5xe32z1/so/OlLrIFEAdPXMqAbdUuiLNy5I
-        fw7MItHEk107qSjVOj8KnpKG8kTTP08LGiPqAldfmFKC2LrcUAKL6CyyZnYa2MZMx8KS3B
-        6g8oqlDFUUUxl3EiGW19U2kDoo63JtxfAx/i53g2+VghRAPyJbTb+QqsHxxgd/RYJaCNl1
-        OviMTI9zuVPOfs1dRgwlCiQPoBX9PY1w9BIsFYvtkhosg5mXWaHYXe6j6KmRnA==
+        bh=9orafjgYKDlDKEG62n274dWmcmLVLFnX3OlrGfMTV/Q=;
+        b=vuP6S8UXSfNxWHGc7Yb2QTKmLAxUiHJyEitt9UbeznGeTfFpoA4hIKR0wXAjx9ERlKFh9W
+        B3bju1K9kWHZBkDD4J7eFPdctXUZRyh96hhl3Tx1GvWD8Y/XyJWWryMdeorFYWMQDKrTL5
+        kqEzzHZXGSW+yc33fKh0Hu2PgYS+NeHki6h+C1HvVyfClaaDmUPPyP0mJ9LvLSPNglIAuo
+        ijVHzC9fe4+qCIeoRmB8/Z/YabntsJvY9IgF8P8zl9mXgHpPjJZSKLDCF9g88NWv4FcmbF
+        /sN3MaPfnUFBZt+Ua6vxU4jIFoZjJgzrGe8Wmt35MCdWxPI91VOXLcu/jEI4vQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601236629;
+        s=2020e; t=1601236630;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=+Td6yEJdX0u3alrzHn3f95NHXVsu8voDQUxA06qKs/o=;
-        b=M/WUbhe6ErdCayGy1R//fNscpvFnmw4BpbV19BilmIiQfA+0Y1FoXJBx98Nu47G3KEOcgz
-        7H3xxIcvoG/sxZDQ==
-Date:   Sun, 27 Sep 2020 21:48:49 +0200
+        bh=9orafjgYKDlDKEG62n274dWmcmLVLFnX3OlrGfMTV/Q=;
+        b=LxBnZ/3kK2Kn1E01Ma+vj2UE6c25FltAkOE1MjniUMmLf0trqgyT+SHySRxbhxfte+GZQe
+        x6hYcFF/6UZwDWAA==
+Date:   Sun, 27 Sep 2020 21:48:50 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -43,15 +40,14 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Matthew Wilcox <willy@infradead.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Christian Benvenuti <benve@cisco.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        netdev@vger.kernel.org, Christian Benvenuti <benve@cisco.com>,
         Govindarajulu Varadarajan <_govind@gmx.com>,
         Dave Miller <davem@davemloft.net>,
         Jonathan Corbet <corbet@lwn.net>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-doc@vger.kernel.org,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
+        linux-doc@vger.kernel.org, Jay Cliburn <jcliburn@gmail.com>,
         Chris Snook <chris.snook@gmail.com>,
         Vishal Kulkarni <vishal@chelsio.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
@@ -90,7 +86,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch 03/35] net: Add netif_rx_any_context()
+Subject: [patch 04/35] net: caif: Use netif_rx_any_context()
 References: <20200927194846.045411263@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -101,68 +97,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Quite some drivers make conditional decisions based on in_interrupt() to
-invoke either netif_rx() or netif_rx_ni().
+The usage of in_interrupt() in non-core code is phased out. Ideally the
+information of the calling context should be passed by the callers or the
+functions be split as appropriate.
 
-Conditionals based on in_interrupt() or other variants of preempt count
-checks in drivers should not exist for various reasons and Linus clearly
-requested to either split the code pathes or pass an argument to the
-common functions which provides the context.
+cfhsi_rx_desc() and cfhsi_rx_pld() use in_interrupt() to distinguish if
+they should use netif_rx() or netif_rx_ni() for receiving packets.
 
-This is obviously the correct solution, but for some of the affected
-drivers this needs a major rewrite due to their convoluted structure.
+The attempt to consolidate the code by passing an arguemnt or by
+distangling it failed due lack of knowledge about this driver and because
+the call chains are hard to follow.
 
-As in_interrupt() usage in drivers needs to be phased out, provide
-netif_rx_any_context() as a stop gap for these drivers.
+As a stop gap use netif_rx_any_context() which invokes the correct code path
+depending on context and confines the in_interrupt() usage to core code.
 
-This confines the in_interrupt() conditional to core code which in turn
-allows to remove the access to this check for driver code and provides one
-central place to do further modifications once the driver maze is cleaned
-up.
-
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
 Cc: netdev@vger.kernel.org
 ---
- include/linux/netdevice.h |    1 +
- net/core/dev.c            |   15 +++++++++++++++
- 2 files changed, 16 insertions(+)
+ drivers/net/caif/caif_hsi.c |   19 ++-----------------
+ 1 file changed, 2 insertions(+), 17 deletions(-)
 
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3764,6 +3764,7 @@ void generic_xdp_tx(struct sk_buff *skb,
- int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb);
- int netif_rx(struct sk_buff *skb);
- int netif_rx_ni(struct sk_buff *skb);
-+int netif_rx_any_context(struct sk_buff *skb);
- int netif_receive_skb(struct sk_buff *skb);
- int netif_receive_skb_core(struct sk_buff *skb);
- void netif_receive_skb_list(struct list_head *head);
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4840,6 +4840,21 @@ int netif_rx_ni(struct sk_buff *skb)
- }
- EXPORT_SYMBOL(netif_rx_ni);
+--- a/drivers/net/caif/caif_hsi.c
++++ b/drivers/net/caif/caif_hsi.c
+@@ -458,15 +458,7 @@ static int cfhsi_rx_desc(struct cfhsi_de
+ 		skb_reset_mac_header(skb);
+ 		skb->dev = cfhsi->ndev;
  
-+int netif_rx_any_context(struct sk_buff *skb)
-+{
-+	/*
-+	 * If invoked from contexts which do not invoke bottom half
-+	 * processing either at return from interrupt or when softrqs are
-+	 * reenabled, use netif_rx_ni() which invokes bottomhalf processing
-+	 * directly.
-+	 */
-+	if (in_interrupt())
-+		return netif_rx(skb);
-+	else
-+		return netif_rx_ni(skb);
-+}
-+EXPORT_SYMBOL(netif_rx_any_context);
-+
- static __latent_entropy void net_tx_action(struct softirq_action *h)
- {
- 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
+-		/*
+-		 * We are in a callback handler and
+-		 * unfortunately we don't know what context we're
+-		 * running in.
+-		 */
+-		if (in_interrupt())
+-			netif_rx(skb);
+-		else
+-			netif_rx_ni(skb);
++		netif_rx_any_context(skb);
+ 
+ 		/* Update network statistics. */
+ 		cfhsi->ndev->stats.rx_packets++;
+@@ -587,14 +579,7 @@ static int cfhsi_rx_pld(struct cfhsi_des
+ 		skb_reset_mac_header(skb);
+ 		skb->dev = cfhsi->ndev;
+ 
+-		/*
+-		 * We're called in callback from HSI
+-		 * and don't know the context we're running in.
+-		 */
+-		if (in_interrupt())
+-			netif_rx(skb);
+-		else
+-			netif_rx_ni(skb);
++		netif_rx_any_context(skb);
+ 
+ 		/* Update network statistics. */
+ 		cfhsi->ndev->stats.rx_packets++;
 
