@@ -2,156 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D428B27A21B
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 19:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0C6A27A219
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 19:43:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726478AbgI0Rm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 13:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45990 "EHLO
+        id S1726588AbgI0RnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 13:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726309AbgI0Rmw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 13:42:52 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5004C0613D4
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:52 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id jw11so2275544pjb.0
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:52 -0700 (PDT)
+        with ESMTP id S1726460AbgI0Rmy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 13:42:54 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D050C0613D5
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:54 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id y14so6207119pgf.12
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 10:42:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=f2A3y8a/pIamjkm535iP31KHAAvuOchU9in9iAHNxpA=;
-        b=bk9R1tXUrDpCfNI97aX1LkPcfClIHnmrfK3YOTH1Mvj7m8PTuAVhqhXdKIHcTWOKRV
-         9LvfVANMR4+poQ0+y/bdVpJGQc9dhYQ9//azQDuJQ0cU63N4wTQDbjytRnkCUwCHuLVb
-         RbZ26GMAoYCBmf6ubu3L+Nz3iUBQkLRETdwBk=
+        bh=zKx8NItLm16acUl6Jd2OXcmmoVpWoFCZZ3PqUD23OBg=;
+        b=e87LrvWJHJMzWi//ZEqvDGJWiyuaEee4jSrWVkbcoH6tu8Yo5yY/Yug4fxKGXfOcK8
+         6eWoYT8lHUbKBMC7KrMq1ViOEgoJJwmmMnn96FNG5ws4Ae5F6LxYhKEdEsCrpXxL/pqM
+         vlUaSCgjsRpLAtPWoob265X7YkSNiyoLThSQc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=f2A3y8a/pIamjkm535iP31KHAAvuOchU9in9iAHNxpA=;
-        b=N1fNkG29A9wj7MlGG94HOvkA4Q9eIynToQpQ9Wqob18zawtMsF7weyhT0cgr6P+XGc
-         x9J2R8Pz2NsnDSucoLwxYNOFk/2bydljdMh7XGgfEmahQ1U/nVywztjUnNzP7Okt2KGr
-         WqHwlHTO4Huq4b8Xkq+wtt7gsPe7U9Qn2GFGcBsWVEQHdXoES+YCZ3+bjyqfhxY6odab
-         Z3ytVb00LQTiApIgMzuWYU06cz+TsMes9eLG/Xkfmd2NqNO7JWkcsmcpe8M262lCFMTc
-         uPGR+DhyxHAV+bAIpXi8OQtaZROUKBzBCSw3AftcRFiQCX5JbxhmM8r74Oe54o1bS7lu
-         KwYw==
-X-Gm-Message-State: AOAM532c5NfsAYXh/rYzxjY9VXFRabht48tkZRAH9XXVuE98KYPz8GRA
-        KhuVdmJEq9tsfGf3Ser8bqCkmGu4oNe+gA==
-X-Google-Smtp-Source: ABdhPJz7ovUVoR5QJ05m963o4bCZxG1rtzoeI7IVdKG0vwlJgWTnRu/eBFloEv97ZlDTX/yT8C01gQ==
-X-Received: by 2002:a17:902:bf06:b029:d2:8abd:c8f3 with SMTP id bi6-20020a170902bf06b02900d28abdc8f3mr619958plb.13.1601228572163;
-        Sun, 27 Sep 2020 10:42:52 -0700 (PDT)
+        bh=zKx8NItLm16acUl6Jd2OXcmmoVpWoFCZZ3PqUD23OBg=;
+        b=qsiZ+arYrhYnhNBhDKwKJzvh6HZNKfr0k3eTJBZcExlRohugCBrkt8V6lXdgRk5rSy
+         71GwKlFMKItANCwAJTkkpLQvjRUYwqSsxrcRZYrNsoQXzpW8lCW5VlIWD6tlOLeqt6ai
+         pGoqVLD7kqbNljyZy8v3SuAon2nT43plQpWu5Og3gu07pv5aGPB4V7fN7a7OMd7vwcU+
+         h/MCDi0vuGXRcDRi3c7mQ8W3wM3JypCq8A2ocuAmqqfcXsz26783zSbpIMt6jbPhxF0i
+         Z2oBFS/K3J/jNNykWLKlj5mBdHNGTmgg8kKWXcnRz7DocwSF447XNG58RPtopDitZc5F
+         G24g==
+X-Gm-Message-State: AOAM531a2JsRN3w8+psnIgZg1EKGVnqCjahZHkPVIwcxLLO3GSw105e6
+        RyWE1FYyjjZelY6KZZQ6Yr34SQIkWZRngg==
+X-Google-Smtp-Source: ABdhPJysJxAw9ATp3T9KQmtOQk7H+A1+BYRZh+ZQLkfb9rDALdHddY1XmDYDUEbZ8vHHZxjnnYld6A==
+X-Received: by 2002:a05:6a00:23cc:b029:142:2501:34e5 with SMTP id g12-20020a056a0023ccb0290142250134e5mr7986783pfc.62.1601228573417;
+        Sun, 27 Sep 2020 10:42:53 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o19sm8765570pfp.64.2020.09.27.10.42.51
+        by smtp.gmail.com with ESMTPSA id o19sm8765570pfp.64.2020.09.27.10.42.52
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 27 Sep 2020 10:42:51 -0700 (PDT)
+        Sun, 27 Sep 2020 10:42:52 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 06/11] bnxt_en: Handle ethernet link being disabled by firmware.
-Date:   Sun, 27 Sep 2020 13:42:15 -0400
-Message-Id: <1601228540-20852-7-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        Edwin Peer <edwin.peer@broadcom.com>
+Subject: [PATCH net-next 07/11] bnxt_en: avoid link reset if speed is not changed
+Date:   Sun, 27 Sep 2020 13:42:16 -0400
+Message-Id: <1601228540-20852-8-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1601228540-20852-1-git-send-email-michael.chan@broadcom.com>
 References: <1601228540-20852-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000004619ac05b04f14ba"
+        boundary="0000000000005b619805b04f1475"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000004619ac05b04f14ba
+--0000000000005b619805b04f1475
 
-On some 200G dual port NICs, if one port is configured to 200G,
-firmware will disable the ethernet link on the other port.  Firmware
-will send notification to the driver for the disabled port when this
-happens.  Define a new field in the link_info structure to keep track
-of this state.  The new phy_state field replaces the unused loop_back
-field.
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-Log a message when the phy_state changes state.  In the disabled state,
-disallow any PHY configurations on the disabled port as the firmware
-will fail all calls to configure the PHY in this state.
+PORT_PHY_CONFIG is always sent with REQ_FLAGS_RESET_PHY set. This flag
+must be set in order for the firmware to institute the requested PHY
+change immediately, but it results in a link flap. This is unnecessary
+and results in an improved user experience if the PHY reconfiguration
+is avoided when the user requested speed does not constitute a change.
 
-Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 22 ++++++++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h | 10 +++++++---
- 2 files changed, 29 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index f97b3ba8fc09..a76ae6a68ca2 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8777,6 +8777,16 @@ static void bnxt_report_link(struct bnxt *bp)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 2cb2495c2351..4fdb672a47a0 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -1736,6 +1736,11 @@ static int bnxt_force_link_speed(struct net_device *dev, u32 ethtool_speed)
+ 		return -EINVAL;
  	}
- }
  
-+static bool bnxt_phy_qcaps_no_speed(struct hwrm_port_phy_qcaps_output *resp)
-+{
-+	if (!resp->supported_speeds_auto_mode &&
-+	    !resp->supported_speeds_force_mode &&
-+	    !resp->supported_pam4_speeds_auto_mode &&
-+	    !resp->supported_pam4_speeds_force_mode)
-+		return true;
-+	return false;
-+}
++	if (link_info->req_link_speed == fw_speed &&
++	    link_info->req_signal_mode == sig_mode &&
++	    link_info->autoneg == 0)
++		return -EALREADY;
 +
- static int bnxt_hwrm_phy_qcaps(struct bnxt *bp)
- {
- 	int rc = 0;
-@@ -8824,6 +8834,18 @@ static int bnxt_hwrm_phy_qcaps(struct bnxt *bp)
- 	if (resp->flags & PORT_PHY_QCAPS_RESP_FLAGS_CUMULATIVE_COUNTERS_ON_RESET)
- 		bp->fw_cap |= BNXT_FW_CAP_PORT_STATS_NO_RESET;
- 
-+	if (bp->hwrm_spec_code >= 0x10a01) {
-+		if (bnxt_phy_qcaps_no_speed(resp)) {
-+			link_info->phy_state = BNXT_PHY_STATE_DISABLED;
-+			netdev_warn(bp->dev, "Ethernet link disabled\n");
-+		} else if (link_info->phy_state == BNXT_PHY_STATE_DISABLED) {
-+			link_info->phy_state = BNXT_PHY_STATE_ENABLED;
-+			netdev_info(bp->dev, "Ethernet link enabled\n");
-+			/* Phy re-enabled, reprobe the speeds */
-+			link_info->support_auto_speeds = 0;
-+			link_info->support_pam4_auto_speeds = 0;
+ 	link_info->req_link_speed = fw_speed;
+ 	link_info->req_signal_mode = sig_mode;
+ 	link_info->req_duplex = BNXT_LINK_DUPLEX_FULL;
+@@ -1816,8 +1821,11 @@ static int bnxt_set_link_ksettings(struct net_device *dev,
+ 		}
+ 		speed = base->speed;
+ 		rc = bnxt_force_link_speed(dev, speed);
+-		if (rc)
++		if (rc) {
++			if (rc == -EALREADY)
++				rc = 0;
+ 			goto set_setting_exit;
 +		}
-+	}
- 	if (resp->supported_speeds_auto_mode)
- 		link_info->support_auto_speeds =
- 			le16_to_cpu(resp->supported_speeds_auto_mode);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 8ba113622425..fbbc30288fa6 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1152,7 +1152,10 @@ struct bnxt_link_info {
- #define BNXT_LINK_SIGNAL	PORT_PHY_QCFG_RESP_LINK_SIGNAL
- #define BNXT_LINK_LINK		PORT_PHY_QCFG_RESP_LINK_LINK
- 	u8			wire_speed;
--	u8			loop_back;
-+	u8			phy_state;
-+#define BNXT_PHY_STATE_ENABLED		0
-+#define BNXT_PHY_STATE_DISABLED		1
-+
- 	u8			link_up;
- 	u8			duplex;
- #define BNXT_LINK_DUPLEX_HALF	PORT_PHY_QCFG_RESP_DUPLEX_STATE_HALF
-@@ -1601,8 +1604,9 @@ struct bnxt {
- #define BNXT_NPAR(bp)		((bp)->port_partition_type)
- #define BNXT_MH(bp)		((bp)->flags & BNXT_FLAG_MULTI_HOST)
- #define BNXT_SINGLE_PF(bp)	(BNXT_PF(bp) && !BNXT_NPAR(bp) && !BNXT_MH(bp))
--#define BNXT_PHY_CFG_ABLE(bp)	(BNXT_SINGLE_PF(bp) ||			\
--				 ((bp)->fw_cap & BNXT_FW_CAP_SHARED_PORT_CFG))
-+#define BNXT_PHY_CFG_ABLE(bp)	((BNXT_SINGLE_PF(bp) ||			\
-+				  ((bp)->fw_cap & BNXT_FW_CAP_SHARED_PORT_CFG)) && \
-+				 (bp)->link_info.phy_state == BNXT_PHY_STATE_ENABLED)
- #define BNXT_CHIP_TYPE_NITRO_A0(bp) ((bp)->flags & BNXT_FLAG_CHIP_NITRO_A0)
- #define BNXT_RX_PAGE_MODE(bp)	((bp)->flags & BNXT_FLAG_RX_PAGE_MODE)
- #define BNXT_SUPPORTS_TPA(bp)	(!BNXT_CHIP_TYPE_NITRO_A0(bp) &&	\
+ 	}
+ 
+ 	if (netif_running(dev))
 -- 
 2.18.1
 
 
---0000000000004619ac05b04f14ba
+--0000000000005b619805b04f1475
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -221,14 +178,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgyOchypMWkrwP
-BY2KZqwvxe4PmPcMW8jrSYFm7ls7XIUwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAwOTI3MTc0MjUyWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg1OPTr2YfUDQ9
+AuZkyGxp/gqQmWO9CG/HYBz4CErz+BswGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAwOTI3MTc0MjUzWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAFdAfenufIFWBQPgm4ZhP4MRnjZutkMX
-VPgCzqFsNtRn8KtXp3PNoed78YaHjbSPA9VR3oShc1nTFPIsEhKylMetMS2ENuhqHytGWWpfj/GR
-K6f+dhrJ13EL0mHMsx3+7szhfst2KowA45WNN5aOVyeGNfCDSbbpCDFyRjWyH5Ay8zNcaWR55Yl/
-GXzrCr2qRKHeioQ4L8p+MdwpeY57tGclVHkdjCkPpG6TqRBV5JcpVuyoZATtyZbqOy7ba2pmWc/O
-W4w10e882HGKfw2Hubp3aWjK8kYtqaKnPdTcvsgiJTB887a7/gU64PjhBMwsdIXYjX0Hm1mut9P4
-p85dyGk=
---0000000000004619ac05b04f14ba--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAKMmH7WcjnWopTmMUfIlgvNnyaZJSo/v
+4n38osHeauYX97gmGXx+HN+7b3jlCrCKAPsoz6+HSZeEsw2mZa/CawwtkFr1T0rQvb/452qRJEP/
+elGSbe9I16hKdjhqFQpNdBfBLJQpbL7wTMJcySKLwlL519N8v9X5zPo+ksKojoDL3w8nTKOa+8k2
+2W6QLXvEUmmTd0ZDU949v6PT7YU49yQfHKK+UZHmwXDWZ8WwRLChaO6bb7LNlbUZUlahP8f3qoKh
+7v//3srqHeQamK1aTS2yV4//jtpMJ1Af2jINy35gMUApVHAQ88+9LMAt67isfAxRNv+/zOULxs7X
+4/qXvgU=
+--0000000000005b619805b04f1475--
