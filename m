@@ -2,106 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DC9627A10F
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 14:48:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ED3027A113
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 14:49:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726562AbgI0Ms1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 08:48:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57166 "EHLO
+        id S1726595AbgI0MtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 08:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726280AbgI0Ms0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 08:48:26 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ECEAC0613CE;
-        Sun, 27 Sep 2020 05:48:26 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id x20so5722065ybs.8;
-        Sun, 27 Sep 2020 05:48:26 -0700 (PDT)
+        with ESMTP id S1726280AbgI0MtS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 08:49:18 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD3FC0613D3
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 05:49:17 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id i26so4561284ejb.12
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 05:49:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CFjxhifxWON/DLCUfUkdOBs7RV5AC/hXdvQTfoxTZtI=;
-        b=VClCX+X9V94LmGL7DVg6brtHZJE/bObWItqIbyF004J9saTqBphvh219wWPxdtOVty
-         KHNChOp69IPedz8ex/a22Pfdh6CLCI+h+NwOyD+qZjxTFKLQN23AfViYsWM9kH+4BmZE
-         a0gOd8L3qCwsqKkfS4VZMDzLzF4KLATT5z0/gRIaFyulJTtGo6EYCXcNXlcOrMzQ/Phq
-         9YcOahokYcUbwLI1bDktFRVIxqhnlnbG2+F0LGuBE9st4wk5sfnCpS/6MVDMNCbKaGDf
-         Tf7jlDfGxOOLw2+Zq6hUMYp5iKqUTx05qDXnYc9lHH2T2t+8AX+Bxki+klPOT5/6XpYb
-         s49g==
+        d=konsulko.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=asWmuNPbv7O14B/CqJ1Q3xDQ3n30hKEpCeMHeYXCIHE=;
+        b=AVFqeCvfsCAGsGp+CPkJIKaDP04FRBmne3+1Ji3H8JBJLqHTP57nXl39kk3Iq9G8OW
+         k6Ig+zwFnCUW6LQy3LN1aQIUctzLFH58cJ4+jDRIkG8fRcDaJW+KHFTtnDVofuOZ1f6c
+         uU4+DXcrojFBRC4upmYN8lsFfiRXnp18vc2qs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CFjxhifxWON/DLCUfUkdOBs7RV5AC/hXdvQTfoxTZtI=;
-        b=BqidLXCPc5qhrivjFG3rqfR+qQbicDeNoXd42io7Zaz1qKZO3/nr4aF5QZpJW2oZ1J
-         mnco5Kal2T52FsdjFMGoUPe3Pv9YxZkKAGIBvwTgzx/ONyZ5Nh1Eff+8gAHHSB1Sh94G
-         PXkwLBs2xdC/nL/VLFbKbBHndz6KzkTqt/UTKcAT2HqFk2c5jAROMK0xTd6W4y20E3J5
-         kQ/Phb9sTzflxnekoZk4KBkpd7HCVZHaTfn9an6rlzko2N4l77+S/G04/YVIlpyBj9pa
-         C3doTDMHtnSwbcerVwPKkhgjOY/ucklZrliMciuEPdIYl7y0m4aW0TorWSP0444XoQMB
-         hX1Q==
-X-Gm-Message-State: AOAM5336YVs2wWPTikyMed+gPAlctlLgedM4BkneKkT9fVybuZVSStzk
-        g6VcIi+2WVOqQ1KeJfUck6Nj8GBOavhZTcjTU2g=
-X-Google-Smtp-Source: ABdhPJy+FnbdBmS5YtYyeBJgqCp1Zn8O1PUpH6EEfcNZ2eCSmFPx75rboMFmK4ewLWQCRAWFLE/KFx/5QEidkg4HhF0=
-X-Received: by 2002:a25:aba1:: with SMTP id v30mr10543564ybi.518.1601210905495;
- Sun, 27 Sep 2020 05:48:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=asWmuNPbv7O14B/CqJ1Q3xDQ3n30hKEpCeMHeYXCIHE=;
+        b=BNR3Vp0oxPi572EQHZ945CTyYhUEl3DCcm0HlcXz0GWE0TUDDQ7laH9OPmdL9otUNq
+         bEbfAQh96OJCuXUPb2OkUfKOcWcb/AP43cjmZwbiT8/rT9xxEeVNQe9GaZSwMjEnRsfO
+         BqdkyK/wbk8sB/0mByizLDXq9gfJ0E6PvxXvN7VJvZW0j0BpwRHgc9VAOwrVmFz5ANyt
+         GZWTB/5cDJcH3ccYgAvPiIkTUnwzN5yZnVAUo8m3mGSELDnyzhek+mFDr4GhOtuUSmzc
+         M2GyLbJ5QP3Dd0l/w9edMxh3XAuW2xBnVWA5bIo4TMoY7M3X0/ZH5XmWxs6cselunjrz
+         4ZWQ==
+X-Gm-Message-State: AOAM532VmUGxoelwge/xtczHyJBe7PasHv1ADrIr48giju2v2WwpyYhE
+        9GkyhNLHbbogmgyunCevhzUBWA==
+X-Google-Smtp-Source: ABdhPJw2vRQtNip6I3qzR/LkuWDKso34YvFFPDIKj0R45xCixJL+4qpfdkzWEKaS/RcOj0GwqSyAZQ==
+X-Received: by 2002:a17:906:4a19:: with SMTP id w25mr10746155eju.199.1601210956480;
+        Sun, 27 Sep 2020 05:49:16 -0700 (PDT)
+Received: from taos.konsulko.bg (lan.nucleusys.com. [92.247.61.126])
+        by smtp.gmail.com with ESMTPSA id r16sm7234275edc.57.2020.09.27.05.49.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 27 Sep 2020 05:49:15 -0700 (PDT)
+From:   Petko Manolov <petko.manolov@konsulko.com>
+To:     gregKH@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, Petko Manolov <petko.manolov@konsulko.com>
+Subject: [PATCH RESEND v3 0/2] Use the new usb control message API.
+Date:   Sun, 27 Sep 2020 15:49:07 +0300
+Message-Id: <20200927124909.16380-1-petko.manolov@konsulko.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200923134348.23862-9-oneukum@suse.com>
+References: <20200923134348.23862-9-oneukum@suse.com>
 MIME-Version: 1.0
-References: <20200827153041.27806-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <CA+V-a8tYK4k=NQmmt-jfU6_xuLtZf=GCRMsT1dX30K_3GVBcNw@mail.gmail.com>
-In-Reply-To: <CA+V-a8tYK4k=NQmmt-jfU6_xuLtZf=GCRMsT1dX30K_3GVBcNw@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Sun, 27 Sep 2020 13:47:59 +0100
-Message-ID: <CA+V-a8tf29W5e-jnfecvqsQA7AqZCW8YAZbw2hG+6tsxrg4zPg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] dt-bindings: can: document R8A774E1
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Wolfgang Grandegger <wg@grandegger.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-can@vger.kernel.org,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Re-sending these, now CC-ing the folks at linux-netdev.
 
-On Sat, Sep 19, 2020 at 11:29 AM Lad, Prabhakar
-<prabhakar.csengg@gmail.com> wrote:
->
-> Hi Wolfgang, Marc, David,
->
-> On Thu, Aug 27, 2020 at 4:30 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> >
-> > Hi All,
-> >
-> > Both the patches are part of series [1] (patch 18/20, 19/20),
-> > rest of the patches have been acked/merged so just sending
-> > two patches from the series.
-> >
-> > [1] https://lkml.org/lkml/2020/7/15/515
-> >
-> > Cheers,
-> > Prabhakar
-> >
-> > Changes for v2:
-> > * Added R8A774E1 to the list of SoCs that can use CANFD through "clkp2".
-> > * Added R8A774E1 to the list of SoCs that can use the CANFD clock.
-> >
-> > Lad Prabhakar (2):
-> >   dt-bindings: can: rcar_canfd: Document r8a774e1 support
-> >   dt-bindings: can: rcar_can: Document r8a774e1 support
-> >
-> >  Documentation/devicetree/bindings/net/can/rcar_can.txt   | 5 +++--
-> >  Documentation/devicetree/bindings/net/can/rcar_canfd.txt | 5 +++--
-> >  2 files changed, 6 insertions(+), 4 deletions(-)
-> >
-> Could either of you pick these patches please.
->
-Gentle ping (patches have been already Acked by the DT maintainers).
+Open coding, occasional improper error handling by the caller of
+usb_control_msg() and not flagging partial read as an error requires a new API
+that takes care of these issues.  It took the form of
+usb_control_msg_send/recv() and this patch series is converting Pegasus and
+RTL8150 drivers to using the proper calls.
 
-Cheers,
-Prabhakar
+Petko Manolov (2):
+  net: pegasus: Use the new usb control message API.
+  net: rtl8150: Use the new usb control message API.
+
+ drivers/net/usb/pegasus.c | 61 ++++++++++-----------------------------
+ drivers/net/usb/rtl8150.c | 32 ++++----------------
+ 2 files changed, 21 insertions(+), 72 deletions(-)
+
+-- 
+2.28.0
+
