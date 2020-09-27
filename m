@@ -2,35 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9741C27A2EA
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 21:52:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A65A27A319
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 21:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726358AbgI0TwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 15:52:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37748 "EHLO
+        id S1726614AbgI0T4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 15:56:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726309AbgI0TwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:52:01 -0400
+        with ESMTP id S1726358AbgI0T4c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:56:32 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172E2C0613D3
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 12:52:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19916C0613D3
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 12:56:32 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kMciB-0000bT-K3; Sun, 27 Sep 2020 21:51:55 +0200
+        id 1kMcmb-0000yA-L4; Sun, 27 Sep 2020 21:56:29 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:faa2:cbaa:9ae6:cfc7] (unknown [IPv6:2a03:f580:87bc:d400:faa2:cbaa:9ae6:cfc7])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 1B7DD56BE33;
-        Sun, 27 Sep 2020 19:51:53 +0000 (UTC)
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
-Cc:     linux-imx@nxp.com, netdev@vger.kernel.org
-References: <20200927160801.28569-1-qiangqing.zhang@nxp.com>
- <20200927160801.28569-2-qiangqing.zhang@nxp.com>
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 74E2C56BE3B;
+        Sun, 27 Sep 2020 19:56:28 +0000 (UTC)
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-2-qiangqing.zhang@nxp.com>
+ <f98dcb18-19f9-9721-a191-481983158daa@pengutronix.de>
+ <DB8PR04MB6795C88B839FE5083283E157E6340@DB8PR04MB6795.eurprd04.prod.outlook.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -92,17 +96,17 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Subject: Re: [PATCH V2 1/3] can: flexcan: initialize all flexcan memory for
- ECC function
-Message-ID: <c2299dd3-e818-0192-eae4-02c045b83a30@pengutronix.de>
-Date:   Sun, 27 Sep 2020 21:51:48 +0200
+Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
+ flexcan memory for ECC function
+Message-ID: <4490a094-0b7d-4361-2c0a-906b2cff6020@pengutronix.de>
+Date:   Sun, 27 Sep 2020 21:56:24 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200927160801.28569-2-qiangqing.zhang@nxp.com>
+In-Reply-To: <DB8PR04MB6795C88B839FE5083283E157E6340@DB8PR04MB6795.eurprd04.prod.outlook.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="EnGgLJ2mMBFUXi6ZsgBqEKkISL3OqEbfX"
+ boundary="twoBRy6CW5z9V15EL8trHG2QStBcQys3d"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -112,187 +116,85 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---EnGgLJ2mMBFUXi6ZsgBqEKkISL3OqEbfX
-Content-Type: multipart/mixed; boundary="rBw4Bw9oUodFGwWuP5KrpQ0FSuNiwWUzp";
+--twoBRy6CW5z9V15EL8trHG2QStBcQys3d
+Content-Type: multipart/mixed; boundary="mKdwqUcPTsafLE81u0sL7YtMkqi7llodA";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
-Cc: linux-imx@nxp.com, netdev@vger.kernel.org
-Message-ID: <c2299dd3-e818-0192-eae4-02c045b83a30@pengutronix.de>
-Subject: Re: [PATCH V2 1/3] can: flexcan: initialize all flexcan memory for
- ECC function
-References: <20200927160801.28569-1-qiangqing.zhang@nxp.com>
- <20200927160801.28569-2-qiangqing.zhang@nxp.com>
-In-Reply-To: <20200927160801.28569-2-qiangqing.zhang@nxp.com>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>,
+ "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <4490a094-0b7d-4361-2c0a-906b2cff6020@pengutronix.de>
+Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
+ flexcan memory for ECC function
+References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-2-qiangqing.zhang@nxp.com>
+ <f98dcb18-19f9-9721-a191-481983158daa@pengutronix.de>
+ <DB8PR04MB6795C88B839FE5083283E157E6340@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <DB8PR04MB6795C88B839FE5083283E157E6340@DB8PR04MB6795.eurprd04.prod.outlook.com>
 
---rBw4Bw9oUodFGwWuP5KrpQ0FSuNiwWUzp
+--mKdwqUcPTsafLE81u0sL7YtMkqi7llodA
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 9/27/20 6:07 PM, Joakim Zhang wrote:
-> One issue was reported at a baremetal environment, which is used for
-> FPGA verification. "The first transfer will fail for extended ID
-> format(for both 2.0B and FD format), following frames can be transmitte=
-d
-> and received successfully for extended format, and standard format don'=
-t
-> have this issue. This issue occurred randomly with high possiblity, whe=
-n
-> it occurs, the transmitter will detect a BIT1 error, the receiver a CRC=
-
-> error. According to the spec, a non-correctable error may cause this
-> transfer failure."
+On 9/27/20 10:01 AM, Joakim Zhang wrote:
+> [...]
+>> Can you create a "static const struct" holding the reg (or offset) + l=
+en and loop
+>> over it. Something linke this?
+>>
+>> const struct struct flexcan_ram_init ram_init[] {
+>> 	void __iomem *reg;
+>> 	u16 len;
+>> } =3D {
+>> 	{
+>> 		.reg =3D regs->mb,	/* MB RAM */
+>> 		.len =3D sizeof(regs->mb), / sizeof(u32),
+>> 	}, {
+>> 		.reg =3D regs->rximr,	/* RXIMR RAM */
+>> 		.len =3D sizeof(regs->rximr),
+>> 	}, {
+>> 		...
+>> 	},
+>> };
 >=20
-> With FLEXCAN_QUIRK_DISABLE_MECR quirk, it supports correctable errors,
-> disable non-correctable errors interrupt and freeze mode. Initialize al=
-l
-> FlexCAN memory before accessing them, at least it can avoid non-correct=
-able
-> errors detected due to memory uninitialized. The internal region can't =
-be
-> initialized when the hardware doesn't support ECC.
->=20
-> According to IMX8MPRM, Rev.C, 04/2020. There is a NOTE at the section
-> "11.8.3.13 Detection and correction of memory errors":
-> All FlexCAN memory must be initialized before starting its operation in=
+> In this version, I only initialize the implemented memory, so that it's=
+ a
+> several trivial memory slice, reserved memory not initialized. Follow y=
+our
+> point, I need create a global pointer for struct flexcan_reg, i.e. stat=
+ic
+> struct flexcan_regs *reg, so that we can use .reg =3D regs->mb in ram_i=
+nit[],
+> IMHO, I don't quite want to add this, or is there any better solution t=
+o get
+> the reg/len value?
 
-> order to have the parity bits in memory properly updated. CTRL2[WRMFRZ]=
+One option is not to make it a global variable, but to move it into the
+function, then you have the reg pointer available.
 
-> grants write access to all memory positions that require initialization=
-,
-> ranging from 0x080 to 0xADF and from 0xF28 to 0xFFF when the CAN FD fea=
-ture
-> is enabled. The RXMGMASK, RX14MASK, RX15MASK, and RXFGMASK registers ne=
-ed to
-> be initialized as well. MCR[RFEN] must not be set during memory initial=
-ization.
->=20
-> Memory range from 0x080 to 0xADF, there are reserved memory (unimplemen=
-ted
-> by hardware, e.g. only configure 64 MBs), these memory can be initializ=
-ed or not.
-> In this patch, initialize all flexcan memory which includes reserved me=
-mory.
->=20
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-> ---
-> ChangeLogs:
-> V1->V2:
-> 	* update commit messages, add a datasheet reference.
-> 	* initialize block memory instead of trivial memory.
-> 	* inilialize reserved memory.
-> ---
->  drivers/net/can/flexcan.c | 67 +++++++++++++++++++++++++++++++++++++++=
+> According to below notes and discussed with IP owner before, reserved m=
+emory
+> also can be initialized. So I want to add two memory regions, and initi=
+alize
+> them together, this could be more clean. I will send out a V2, please l=
+et me
+> know which one do you think is better?
 
->  1 file changed, 67 insertions(+)
->=20
-> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-> index e86925134009..aca0fc40ae9b 100644
-> --- a/drivers/net/can/flexcan.c
-> +++ b/drivers/net/can/flexcan.c
-> @@ -309,6 +309,40 @@ struct flexcan_regs {
-> =20
->  static_assert(sizeof(struct flexcan_regs) =3D=3D 0x4 + 0xc08);
-> =20
-> +/* Structure of memory need be initialized for ECC feature */
-> +static const struct flexcan_ram_int {
-> +	u32 offset;
-> +	u16 len;
-> +} ram_init[] =3D {
-> +	/* ranging from 0x0080 to 0x0ADF, ram details as below list:
-> +	 * 0x0080--0x087F:	128 MBs
-> +	 * 0x0880--0x0A7F:	128 RXIMRs
-> +	 * 0x0A80--0x0A97:	6 RXFIRs
-> +	 * 0x0A98--0x0A9F:	Reserved
-> +	 * 0x0AA0--0x0AA3:	RXMGMASK
-> +	 * 0x0AA4--0x0AA7:	RXFGMASK
-> +	 * 0x0AA8--0x0AAB:	RX14MASK
-> +	 * 0x0AAC--0x0AAF:	RX15MASK
-> +	 * 0x0AB0--0x0ABF:	TX_SMB
-> +	 * 0x0AC0--0x0ACF:	RX_SMB0
-> +	 * 0x0AD0--0x0ADF:	RX_SMB1
-> +	 */
-> +	{
-> +		.offset =3D 0x80,
-> +		.len =3D (0xadf - 0x80) / sizeof(u32) + 1,
-> +	},
-> +	/* ranging from 0x0F28 to 0x0FFF when CAN FD feature is enabled,
-> +	 * ram details as below list:
-> +	 * 0x0F28--0x0F6F:	TX_SMB_FD
-> +	 * 0x0F70--0x0FB7:	RX_SMB0_FD
-> +	 * 0x0FB8--0x0FFF:	RX_SMB0_FD
-> +	 */
-> +	{
-> +		.offset =3D 0xf28,
-> +		.len =3D (0xfff - 0xf28) / sizeof(u32) + 1,
-> +	},
-> +};
+If it's OK on all SoCs to initialize the complete RAM area, just do it. T=
+hen we
+can get rid of the proposed struct at all.
 
-As it's only two ranges, I think there's no need for this struct. Directl=
-y move
-code that into the for loops.
+> "CTRL2[WRMFRZ] grants write access to all memory positions that require=
 
-> +
->  struct flexcan_devtype_data {
->  	u32 quirks;		/* quirks needed for different IP cores */
->  };
-> @@ -1292,6 +1326,36 @@ static void flexcan_set_bittiming(struct net_dev=
-ice *dev)
->  		return flexcan_set_bittiming_ctrl(dev);
->  }
-> =20
-> +static void flexcan_init_ram(struct net_device *dev)
-> +{
-> +	struct flexcan_priv *priv =3D netdev_priv(dev);
-> +	struct flexcan_regs __iomem *regs =3D priv->regs;
-> +	u32 reg_ctrl2;
-> +	int i;
-> +
-> +	/* 11.8.3.13 Detection and correction of memory errors:
-> +	 * CTRL2[WRMFRZ] grants write access to all memory positions that
-> +	 * require initialization, ranging from 0x080 to 0xADF and
-> +	 * from 0xF28 to 0xFFF when the CAN FD feature is enabled.
-> +	 * The RXMGMASK, RX14MASK, RX15MASK, and RXFGMASK registers need to
-> +	 * be initialized as well. MCR[RFEN] must not be set during memory
-> +	 * initialization.
-> +	 */
-> +	reg_ctrl2 =3D priv->read(&regs->ctrl2);
-> +	reg_ctrl2 |=3D FLEXCAN_CTRL2_WRMFRZ;
-> +	priv->write(reg_ctrl2, &regs->ctrl2);
-> +
-> +	for (i =3D 0; i < ram_init[0].len; i++)
-> +		priv->write(0, (void __iomem *)regs + ram_init[0].offset + sizeof(u3=
-2) * i);
-> +
-> +	if (priv->can.ctrlmode & CAN_CTRLMODE_FD)
-> +		for (i =3D 0; i < ram_init[1].len; i++)
-> +			priv->write(0, (void __iomem *)regs + ram_init[1].offset + sizeof(u=
-32) * i);
-> +
-> +	reg_ctrl2 &=3D ~FLEXCAN_CTRL2_WRMFRZ;
-> +	priv->write(reg_ctrl2, &regs->ctrl2);
-> +}
-> +
->  /* flexcan_chip_start
->   *
->   * this functions is entered with clocks enabled
-> @@ -1316,6 +1380,9 @@ static int flexcan_chip_start(struct net_device *=
-dev)
->  	if (err)
->  		goto out_chip_disable;
-> =20
-> +	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_DISABLE_MECR)
-> +		flexcan_init_ram(dev);
-
-Can you test this on both layerscape SoCs (fsl,ls1021ar2-flexcan and
-fsl,lx2160ar1-flexcan)
-
-> +
->  	flexcan_set_bittiming(dev);
-> =20
->  	/* MCR
->=20
+> initialization, ranging from 0x080 to 0xADF and from 0xF28 to 0xFFF whe=
+n the
+> CAN FD feature is enabled. The RXMGMASK, RX14MASK, RX15MASK, and RXFGMA=
+SK
+> registers need to be initialized as well. MCR[RFEN] must not be set dur=
+ing
+> memory initialization."
 
 Marc
 
@@ -303,23 +205,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---rBw4Bw9oUodFGwWuP5KrpQ0FSuNiwWUzp--
+--mKdwqUcPTsafLE81u0sL7YtMkqi7llodA--
 
---EnGgLJ2mMBFUXi6ZsgBqEKkISL3OqEbfX
+--twoBRy6CW5z9V15EL8trHG2QStBcQys3d
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9w7VUACgkQqclaivrt
-76nL0QgAmzClIdFl8eq/a5cFApvxP/+lZaDMUg8iSw660wgBy8ycLZyRXf4xbEpx
-/br7zFkcl1140z5CKhDssQoVuzQk9GDUNf05UTaT5bFwN5Wa1h1XlNPolrLnnyzv
-o1dAGSgF1tOxdgHygE6XEUiJUz5UnTlGxVAxcCLLwnxZ2Isyzoc64wpjBqq7xElC
-CLe38v+lwcTJv66PWou8+W8t4FBHq9gwil0Hl9EO8MGeh/t2U+lJNgoz83JlivQ6
-mRjBpeoS6pVTBvxIJYAr8cPsNiYq7/PPQTEEm7EGUy9bUPiV/cZZnLgo0ZQghgMx
-GpaMJQE/5ls8yJLbDf9zX/Y/AD2ddQ==
-=Urqu
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9w7mgACgkQqclaivrt
+76mgOwf9ErCMhKLiyyn795324OrV5dwRBLKzEBainOsHh61WioPeZEc2neu06Avq
+hMTNz0BIdmCRrUul7UlmJnB3JxcUMhrz3hBCwPb3NTG/9BH72YG6nU4a2Nuf9v09
+Y8v7r6uSyp816e4ETKrXCQz8V4EFxc4Bb6M6GYF9wIjvIfbHcboq8zNu2wHrRqiR
+SsN69u3tFXMamSF1UF40Dq2azSDcncYMmq+v1mpndavSiBp/btTsNY+LDRfAeRw3
+ikuw+A2Q/mfPSx1RBY+CajHh1Tg3W95LjdyHLvWRECRUXa16hxGH5plTRhuYeFQe
+xXNBppa87AnxdNz6jiIpm+2HgMdOqA==
+=yuWE
 -----END PGP SIGNATURE-----
 
---EnGgLJ2mMBFUXi6ZsgBqEKkISL3OqEbfX--
+--twoBRy6CW5z9V15EL8trHG2QStBcQys3d--
