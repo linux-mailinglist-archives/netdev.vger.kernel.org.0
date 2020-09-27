@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A01627A332
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9EAE27A330
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727072AbgI0T52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 15:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38562 "EHLO
+        id S1727058AbgI0T51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 15:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726884AbgI0T5R (ORCPT
+        with ESMTP id S1726882AbgI0T5R (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:57:17 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2FBC0613D8;
-        Sun, 27 Sep 2020 12:57:15 -0700 (PDT)
-Message-Id: <20200927194920.529620472@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 100A5C0613CE;
+        Sun, 27 Sep 2020 12:57:17 -0700 (PDT)
+Message-Id: <20200927194920.621578351@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601236634;
+        s=2020; t=1601236635;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=EDKBcMIgD/09FuiGSNYHhCF3jDv+nrJ0d2CEBofmw7g=;
-        b=snXKYTawQUFS88tiTEow0tXsxP1tLJM9xHT4/iSNgIAGuodQmc9Qp0KQGNZNqlz9QV4M5I
-        Rwhti+lRXO9IB8T3AG1+oqCZy8zEWXsIqGQUGjndLp2o/23CsbScRTMQxV1S+kh8QLeOFq
-        GhrN/1KMvDQQJRY8cCanEj7G/YgGLxhd8+CicY7yErSGgVrutMDhvDA+2Le5tZEPNrhF92
-        HNLfR/nf1tFFd6gkjfLx4iaWWvrDbiiNIpQNQydVKD+szuJ1u60oQehMuNWOmSJiLRtlOZ
-        NjsUY5WOXonQTXiJuGxEgPxLSh81hYb/Q/qsEkT8VlOOAQCtaHM8RWF7F0a1IA==
+        bh=GmRWTTg+MNTA0DaNDIlEXevW16R3g516zjE3yhxS5XQ=;
+        b=EcGTRs6kb2RDfe2vyrf2+4PlTt9+1DxF8xx4TukwbvrjHvPN/bK00Rh9OwV+XrLtzQQiKp
+        5YkzTiEqP+CUpeMVzxkK770Zn2LqxoGqekXuL4WpC03EEpLfqHHNc+yaATldWUENSYX8uK
+        Fpwww0Eg/kIenfNeKQFWF/4R8zudM55O/i8cF0E+53SJuBr+zlRE42pPnxnUHgpw+PpUuw
+        yxMnpHdK1H6DVKGV2jJT0QVET6zb9XNaf9xXe3Q8emDzLnwU/sRViGNhTqD5hInVKQ4bkZ
+        M6MnBlUz1M+wQzG84vC+cHQ2X8UeSNGr7HJYylvjMNB9y+F5NNaQbmd/ZsW5mA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601236634;
+        s=2020e; t=1601236635;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=EDKBcMIgD/09FuiGSNYHhCF3jDv+nrJ0d2CEBofmw7g=;
-        b=dCG7TC8ALt/lqqr+lqrqo16u3cIrM1QEOqBoykQQB7Oqrb7kPbGrYa/ghwEhg4k/GILAkS
-        r43l5jfMGGMm/jDA==
-Date:   Sun, 27 Sep 2020 21:48:53 +0200
+        bh=GmRWTTg+MNTA0DaNDIlEXevW16R3g516zjE3yhxS5XQ=;
+        b=hWtxjUGi2gFRAx8XtEhLw5uROxf7tPRASC/GDVwAj2gS8xyWHVw9Vv65j/9pO1/TwqLZ27
+        FQxcdeBMHBK0AYBw==
+Date:   Sun, 27 Sep 2020 21:48:54 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         Linus Torvalds <torvalds@linuxfoundation.org>,
         Paul McKenney <paulmck@kernel.org>,
         Matthew Wilcox <willy@infradead.org>,
-        Vishal Kulkarni <vishal@chelsio.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         Christian Benvenuti <benve@cisco.com>,
         Govindarajulu Varadarajan <_govind@gmx.com>,
         Dave Miller <davem@davemloft.net>,
         Jonathan Corbet <corbet@lwn.net>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         linux-doc@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
         Jay Cliburn <jcliburn@gmail.com>,
         Chris Snook <chris.snook@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
+        Vishal Kulkarni <vishal@chelsio.com>,
         Shannon Nelson <snelson@pensando.io>,
         Pensando Drivers <drivers@pensando.io>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -90,7 +90,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch 07/35] net: cxbg4: Remove pointless in_interrupt() check
+Subject: [patch 08/35] net: e100: Remove in_interrupt() usage and pointless
+ GFP_ATOMIC allocation
 References: <20200927194846.045411263@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -99,40 +100,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-t4_sge_stop() is only ever called from task context and the in_interrupt()
-check is presumably a leftover from copying t3_sge_stop().
+e100_hw_init() invokes e100_self_test() only if in_interrupt() returns
+false as e100_self_test() uses msleep() which requires sleepable task
+context. The in_interrupt() check is incomplete because in_interrupt()
+cannot catch callers from contexts which have just preemption or interrupts
+disabled.
 
-Aside of in_interrupt() being deprecated because it's not providing what it
-claims to provide, this check would paper over illegitimate callers.
+e100_hw_init() is invoked from:
 
-The functions invoked from t4_sge_stop() contain already warnings to catch
-invocations from invalid contexts.
+  - e100_loopback_test() which clearly is sleepable task context as the
+    function uses msleep() itself.
 
-Remove it.
+  - e100_up() which clearly is sleepable task context as well because it
+    invokes e100_alloc_cbs() abd request_irq() which both require sleepable
+    task context due to GFP_KERNEL allocations and mutex_lock() operations.
 
+Remove the pointless in_interrupt() check.
+
+As a side effect of this analysis it turned out that e100_rx_alloc_list()
+which is only invoked from e100_loopback_test() and e100_up() pointlessly
+uses a GFP_ATOMIC allocation. The next invoked function e100_alloc_cbs() is
+using GFP_KERNEL already.
+
+Change the allocation mode in e100_rx_alloc_list() to GFP_KERNEL as well.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Vishal Kulkarni <vishal@chelsio.com>
+Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: intel-wired-lan@lists.osuosl.org
 Cc: netdev@vger.kernel.org
 
-
 ---
- drivers/net/ethernet/chelsio/cxgb4/sge.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/intel/e100.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -4872,9 +4872,6 @@ void t4_sge_stop(struct adapter *adap)
- 	int i;
- 	struct sge *s = &adap->sge;
+--- a/drivers/net/ethernet/intel/e100.c
++++ b/drivers/net/ethernet/intel/e100.c
+@@ -1531,7 +1531,7 @@ static int e100_hw_init(struct nic *nic)
+ 	e100_hw_reset(nic);
  
--	if (in_interrupt())  /* actions below require waiting */
--		return;
--
- 	if (s->rx_timer.function)
- 		del_timer_sync(&s->rx_timer);
- 	if (s->tx_timer.function)
+ 	netif_err(nic, hw, nic->netdev, "e100_hw_init\n");
+-	if (!in_interrupt() && (err = e100_self_test(nic)))
++	if ((err = e100_self_test(nic)))
+ 		return err;
+ 
+ 	if ((err = e100_phy_init(nic)))
+@@ -2155,7 +2155,7 @@ static int e100_rx_alloc_list(struct nic
+ 	nic->rx_to_use = nic->rx_to_clean = NULL;
+ 	nic->ru_running = RU_UNINITIALIZED;
+ 
+-	if (!(nic->rxs = kcalloc(count, sizeof(struct rx), GFP_ATOMIC)))
++	if (!(nic->rxs = kcalloc(count, sizeof(struct rx), GFP_KERNEL)))
+ 		return -ENOMEM;
+ 
+ 	for (rx = nic->rxs, i = 0; i < count; rx++, i++) {
 
