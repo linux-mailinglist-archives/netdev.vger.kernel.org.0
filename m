@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3F2927A342
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8D2E27A351
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727196AbgI0T6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 15:58:04 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:41944 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726884AbgI0T5e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:57:34 -0400
-Message-Id: <20200927194921.948595516@linutronix.de>
+        id S1726594AbgI0T6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 15:58:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726652AbgI0T6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:58:01 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5A2C0613DC;
+        Sun, 27 Sep 2020 12:57:35 -0700 (PDT)
+Message-Id: <20200927194922.153285901@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601236651;
+        s=2020; t=1601236654;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=oz7MMx0m+YY+xDPxolgjEAAvNxkqMEkx+5nIefnzl+w=;
-        b=ABAxgXDpnDlG0Iml8NGidsjTDhZ+eA7uUHX1jdoAJ5LhUnn3435WseXwB6lsJP+8OVPO73
-        op3/YKII8cBU49VJx6qwb1fYHXy3gfjigdThQJMxq+gmvxL+kXa7pOlK9iOXXQPGOOE1uw
-        OkF/7YY3ZhdxwUhZ8ZGcRYt9Fu/Aa5s3U6qTW/fQI4ATOeEm4DmLa9sbhYMOsnkFK5A200
-        vmPrLUeKrIcET+nzYoyRZORuQ3J0F38/3kY+D1zrGUl7sprauO/ELTgD6H/Jz5OC8ksD2L
-        LKicMP7DamTEmDzyP6dV2aBydduGST9aDeVgYKnrK4P2oewaYm94my+D+EN4wQ==
+        bh=xXgylEXhoyPkkzLOzIChZbSpGTn4L/d7DXfPRgoXSY4=;
+        b=MmrDX5myreQt48S80hWpo/Yp+JNeEpTHJMbYoGYGoNahaxv8+XaCgfNX8I8mTqg+lY0ctK
+        VQfwRtSieZawPzmXMc+cGAPhUFVRj8YhyWngvL23n3Zh2DXaPd7XobVdnUW3hYwffNmhlT
+        s0RID8k+6IFztvwAzhnxSeAz1/ZfMjK8rvpE9JtNpkWUFTgRaDIj1Ncu8RQFPTbJzhwfS9
+        xaYPVMPdZkBIBS7Z/gBkXBxJ+V8MSQnhDKXakKMsIwVgXZ5ehbv6G56k2nB+XqTgeqdd5g
+        NUIx2d+kIj4QEe6ZEbdm9LYHBDMvOSi1bo+beeUUqOKYN6S0qtNH0ilRuFRQ+A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601236651;
+        s=2020e; t=1601236654;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=oz7MMx0m+YY+xDPxolgjEAAvNxkqMEkx+5nIefnzl+w=;
-        b=SlxksY1DEj9Xd72qZhNr1PYdEXP1s7TeRioy++tK3x9WpjFqV+l/nEVl7L74WkCZoo3wiA
-        TGnvuw6z6DcmmnAg==
-Date:   Sun, 27 Sep 2020 21:49:07 +0200
+        bh=xXgylEXhoyPkkzLOzIChZbSpGTn4L/d7DXfPRgoXSY4=;
+        b=r39VYfmvzaPSRa9PpYTzy7aHOCBZ7xtp16DpqXE7uoAXCDOasGHJS/te/cnNshJB0sp6am
+        8MqRRVIVhpJdN6AA==
+Date:   Sun, 27 Sep 2020 21:49:09 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -40,9 +43,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Matthew Wilcox <willy@infradead.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Christian Benvenuti <benve@cisco.com>,
         Govindarajulu Varadarajan <_govind@gmx.com>,
         Dave Miller <davem@davemloft.net>,
@@ -67,7 +68,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Jon Mason <jdmason@kudzu.us>, Daniel Drake <dsd@gentoo.org>,
         Ulrich Kunitz <kune@deine-taler.de>,
         Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Arend van Spriel <arend.vanspriel@broadcom.com>,
         Franky Lin <franky.lin@broadcom.com>,
         Hante Meuleman <hante.meuleman@broadcom.com>,
@@ -88,7 +90,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch 21/35] net: usb: kaweth: Remove last user of kaweth_control()
+Subject: [patch 23/35] net: wan/lmc: Remove lmc_trace()
 References: <20200927194846.045411263@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -99,265 +101,576 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-kaweth_async_set_rx_mode() invokes kaweth_contol() and has two callers:
+lmc_trace() was first introduced in commit e7a392d5158af ("Import
+2.3.99pre6-5") and was not touched ever since.
 
-- kaweth_open() which is invoked from preemptible context
-.
-- kaweth_start_xmit() which holds a spinlock and has bottom halfs disabled.
+The reason for looking at this was to get rid of the in_interrupt() usage,
+but while looking at it the following observations were made:
 
-If called from kaweth_start_xmit() kaweth_async_set_rx_mode() obviously
-cannot block, which means it can't call kaweth_control(). This is detected
-with an in_interrupt() check.
+ - At least lmc_get_stats() (->ndo_get_stats()) is invoked with disabled
+   preemption which is not detected by the in_interrupt() check, which
+   would cause schedule() to be called from invalid context.
 
-Replace the in_interrupt() check in kaweth_async_set_rx_mode() with an
-argument which is set true by the caller if the context is safe to sleep,
-otherwise false.
+ - The code is hidden behind #ifdef LMC_TRACE which is not defined within
+   the kernel and wasn't at the time it was introduced.
 
-Now kaweth_control() is only called from preemptible context which means
-there is no need for GFP_ATOMIC allocations anymore. Replace it with
-usb_control_msg(). Cleanup the code a bit while at it.
+ - Three jiffies don't match 50ms. msleep() would be a better match which
+   would also avoid the schedule() invocation. But why have it to begin
+   with?
 
-Finally remove kaweth_control() since the last user is gone.
+ - Nobody would do something like this today. Either netdev_dbg() or
+   trace_printk() or a trace event would be used.  If only the functions
+   related to this driver are interesting then ftrace can be used with
+   filtering.
+
+As it is obviously broken for years, simply remove it.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-usb@vger.kernel.org
 Cc: netdev@vger.kernel.org
 
 ---
- drivers/net/usb/kaweth.c |  168 ++++-------------------------------------------
- 1 file changed, 17 insertions(+), 151 deletions(-)
+ drivers/net/wan/lmc/lmc_debug.c |   18 ------
+ drivers/net/wan/lmc/lmc_debug.h |    1 
+ drivers/net/wan/lmc/lmc_main.c  |  105 +++-------------------------------------
+ drivers/net/wan/lmc/lmc_media.c |    4 -
+ drivers/net/wan/lmc/lmc_proto.c |   16 ------
+ 5 files changed, 8 insertions(+), 136 deletions(-)
 
---- a/drivers/net/usb/kaweth.c
-+++ b/drivers/net/usb/kaweth.c
-@@ -103,10 +103,6 @@ static int kaweth_probe(
- 		const struct usb_device_id *id	/* from id_table */
- 	);
- static void kaweth_disconnect(struct usb_interface *intf);
--static int kaweth_internal_control_msg(struct usb_device *usb_dev,
--				       unsigned int pipe,
--				       struct usb_ctrlrequest *cmd, void *data,
--				       int len, int timeout);
- static int kaweth_suspend(struct usb_interface *intf, pm_message_t message);
- static int kaweth_resume(struct usb_interface *intf);
+--- a/drivers/net/wan/lmc/lmc_debug.c
++++ b/drivers/net/wan/lmc/lmc_debug.c
+@@ -62,22 +62,4 @@ void lmcEventLog(u32 EventNum, u32 arg2,
+ }
+ #endif  /*  DEBUG  */
  
-@@ -236,48 +232,6 @@ struct kaweth_device
- };
- 
- /****************************************************************
-- *     kaweth_control
-- ****************************************************************/
--static int kaweth_control(struct kaweth_device *kaweth,
--			  unsigned int pipe,
--			  __u8 request,
--			  __u8 requesttype,
--			  __u16 value,
--			  __u16 index,
--			  void *data,
--			  __u16 size,
--			  int timeout)
--{
--	struct usb_ctrlrequest *dr;
--	int retval;
+-void lmc_trace(struct net_device *dev, char *msg){
+-#ifdef LMC_TRACE
+-    unsigned long j = jiffies + 3; /* Wait for 50 ms */
 -
--	if(in_interrupt()) {
--		netdev_dbg(kaweth->net, "in_interrupt()\n");
--		return -EBUSY;
--	}
--
--	dr = kmalloc(sizeof(struct usb_ctrlrequest), GFP_ATOMIC);
--	if (!dr)
--		return -ENOMEM;
--
--	dr->bRequestType = requesttype;
--	dr->bRequest = request;
--	dr->wValue = cpu_to_le16(value);
--	dr->wIndex = cpu_to_le16(index);
--	dr->wLength = cpu_to_le16(size);
--
--	retval = kaweth_internal_control_msg(kaweth->dev,
--					     pipe,
--					     dr,
--					     data,
--					     size,
--					     timeout);
--
--	kfree(dr);
--	return retval;
+-    if(in_interrupt()){
+-        printk("%s: * %s\n", dev->name, msg);
+-//        while(time_before(jiffies, j+10))
+-//            ;
+-    }
+-    else {
+-        printk("%s: %s\n", dev->name, msg);
+-        while(time_before(jiffies, j))
+-            schedule();
+-    }
+-#endif
 -}
 -
--/****************************************************************
-  *     kaweth_read_configuration
-  ****************************************************************/
- static int kaweth_read_configuration(struct kaweth_device *kaweth)
-@@ -531,7 +485,8 @@ static int kaweth_resubmit_rx_urb(struct
- 	return result;
+-
+ /* --------------------------- end if_lmc_linux.c ------------------------ */
+--- a/drivers/net/wan/lmc/lmc_debug.h
++++ b/drivers/net/wan/lmc/lmc_debug.h
+@@ -48,6 +48,5 @@ extern u32 lmcEventLogBuf[LMC_EVENTLOGSI
+ 
+ void lmcConsoleLog(char *type, unsigned char *ucData, int iLen);
+ void lmcEventLog(u32 EventNum, u32 arg2, u32 arg3);
+-void lmc_trace(struct net_device *dev, char *msg);
+ 
+ #endif
+--- a/drivers/net/wan/lmc/lmc_main.c
++++ b/drivers/net/wan/lmc/lmc_main.c
+@@ -113,8 +113,6 @@ int lmc_ioctl(struct net_device *dev, st
+     u16 regVal;
+     unsigned long flags;
+ 
+-    lmc_trace(dev, "lmc_ioctl in");
+-
+     /*
+      * Most functions mess with the structure
+      * Disable interrupts while we do the polling
+@@ -619,8 +617,6 @@ int lmc_ioctl(struct net_device *dev, st
+         break;
+     }
+ 
+-    lmc_trace(dev, "lmc_ioctl out");
+-
+     return ret;
  }
  
--static void kaweth_async_set_rx_mode(struct kaweth_device *kaweth);
-+static void kaweth_async_set_rx_mode(struct kaweth_device *kaweth,
-+				     bool may_sleep);
+@@ -634,8 +630,6 @@ static void lmc_watchdog(struct timer_li
+     u32 ticks;
+     unsigned long flags;
  
- /****************************************************************
-  *     kaweth_usb_receive
-@@ -661,7 +616,7 @@ static int kaweth_open(struct net_device
+-    lmc_trace(dev, "lmc_watchdog in");
+-
+     spin_lock_irqsave(&sc->lmc_lock, flags);
  
- 	netif_start_queue(net);
+     if(sc->check != 0xBEAFCAFE){
+@@ -782,9 +776,6 @@ static void lmc_watchdog(struct timer_li
+     add_timer (&sc->timer);
  
--	kaweth_async_set_rx_mode(kaweth);
-+	kaweth_async_set_rx_mode(kaweth, true);
- 	return 0;
+     spin_unlock_irqrestore(&sc->lmc_lock, flags);
+-
+-    lmc_trace(dev, "lmc_watchdog out");
+-
+ }
  
- err_out:
-@@ -749,7 +704,7 @@ static netdev_tx_t kaweth_start_xmit(str
+ static int lmc_attach(struct net_device *dev, unsigned short encoding,
+@@ -813,8 +804,6 @@ static int lmc_init_one(struct pci_dev *
+ 	int err;
+ 	static int cards_found;
  
- 	spin_lock_irq(&kaweth->device_lock);
+-	/* lmc_trace(dev, "lmc_init_one in"); */
+-
+ 	err = pcim_enable_device(pdev);
+ 	if (err) {
+ 		printk(KERN_ERR "lmc: pci enable failed: %d\n", err);
+@@ -955,7 +944,6 @@ static int lmc_init_one(struct pci_dev *
+     sc->lmc_ok = 0;
+     sc->last_link_status = 0;
  
--	kaweth_async_set_rx_mode(kaweth);
-+	kaweth_async_set_rx_mode(kaweth, false);
- 	netif_stop_queue(net);
- 	if (IS_BLOCKED(kaweth->status)) {
- 		goto skip;
-@@ -826,36 +781,31 @@ static void kaweth_set_rx_mode(struct ne
- /****************************************************************
-  *     kaweth_async_set_rx_mode
-  ****************************************************************/
--static void kaweth_async_set_rx_mode(struct kaweth_device *kaweth)
-+static void kaweth_async_set_rx_mode(struct kaweth_device *kaweth,
-+				     bool may_sleep)
+-    lmc_trace(dev, "lmc_init_one out");
+     return 0;
+ }
+ 
+@@ -981,8 +969,6 @@ static int lmc_open(struct net_device *d
+     lmc_softc_t *sc = dev_to_sc(dev);
+     int err;
+ 
+-    lmc_trace(dev, "lmc_open in");
+-
+     lmc_led_on(sc, LMC_DS3_LED0);
+ 
+     lmc_dec_reset(sc);
+@@ -992,17 +978,14 @@ static int lmc_open(struct net_device *d
+     LMC_EVENT_LOG(LMC_EVENT_RESET2, lmc_mii_readreg(sc, 0, 16),
+ 		  lmc_mii_readreg(sc, 0, 17));
+ 
+-    if (sc->lmc_ok){
+-        lmc_trace(dev, "lmc_open lmc_ok out");
++    if (sc->lmc_ok)
+         return 0;
+-    }
+ 
+     lmc_softreset (sc);
+ 
+     /* Since we have to use PCI bus, this should work on x86,alpha,ppc */
+     if (request_irq (dev->irq, lmc_interrupt, IRQF_SHARED, dev->name, dev)){
+         printk(KERN_WARNING "%s: could not get irq: %d\n", dev->name, dev->irq);
+-        lmc_trace(dev, "lmc_open irq failed out");
+         return -EAGAIN;
+     }
+     sc->got_irq = 1;
+@@ -1078,8 +1061,6 @@ static int lmc_open(struct net_device *d
+     sc->timer.expires = jiffies + HZ;
+     add_timer (&sc->timer);
+ 
+-    lmc_trace(dev, "lmc_open out");
+-
+     return 0;
+ }
+ 
+@@ -1091,8 +1072,6 @@ static void lmc_running_reset (struct ne
  {
--	int result;
-+	int ret;
- 	__u16 packet_filter_bitmap = kaweth->packet_filter_bitmap;
+     lmc_softc_t *sc = dev_to_sc(dev);
  
- 	kaweth->packet_filter_bitmap = 0;
- 	if (packet_filter_bitmap == 0)
- 		return;
- 
--	if (in_interrupt())
-+	if (!may_sleep)
- 		return;
- 
--	result = kaweth_control(kaweth,
--				usb_sndctrlpipe(kaweth->dev, 0),
--				KAWETH_COMMAND_SET_PACKET_FILTER,
--				USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
--				packet_filter_bitmap,
--				0,
--				(void *)&kaweth->scratch,
--				0,
--				KAWETH_CONTROL_TIMEOUT);
+-    lmc_trace(dev, "lmc_running_reset in");
 -
--	if(result < 0) {
-+	ret = usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
-+			      KAWETH_COMMAND_SET_PACKET_FILTER,
-+			      USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
-+			      packet_filter_bitmap, 0,
-+			      &kaweth->scratch, 0,
-+			      KAWETH_CONTROL_TIMEOUT);
-+	if (ret < 0)
- 		dev_err(&kaweth->intf->dev, "Failed to set Rx mode: %d\n",
--			result);
--	}
--	else {
-+			ret);
-+	else
- 		netdev_dbg(kaweth->net, "Set Rx mode to %d\n",
- 			   packet_filter_bitmap);
--	}
- }
+     /* stop interrupts */
+     /* Clear the interrupt mask */
+     LMC_CSR_WRITE (sc, csr_intr, 0x00000000);
+@@ -1114,8 +1093,6 @@ static void lmc_running_reset (struct ne
  
- /****************************************************************
-@@ -1163,88 +1113,4 @@ static void kaweth_disconnect(struct usb
+     sc->lmc_cmdmode |= (TULIP_CMD_TXRUN | TULIP_CMD_RXRUN);
+     LMC_CSR_WRITE (sc, csr_command, sc->lmc_cmdmode);
+-
+-    lmc_trace(dev, "lmc_running_reset_out");
  }
  
  
--// FIXME this completion stuff is a modified clone of
--// an OLD version of some stuff in usb.c ...
--struct usb_api_data {
--	wait_queue_head_t wqh;
--	int done;
--};
+@@ -1128,16 +1105,12 @@ static int lmc_close(struct net_device *
+     /* not calling release_region() as we should */
+     lmc_softc_t *sc = dev_to_sc(dev);
+ 
+-    lmc_trace(dev, "lmc_close in");
 -
--/*-------------------------------------------------------------------*
-- * completion handler for compatibility wrappers (sync control/bulk) *
-- *-------------------------------------------------------------------*/
--static void usb_api_blocking_completion(struct urb *urb)
--{
--        struct usb_api_data *awd = (struct usb_api_data *)urb->context;
+     sc->lmc_ok = 0;
+     sc->lmc_media->set_link_status (sc, 0);
+     del_timer (&sc->timer);
+     lmc_proto_close(sc);
+     lmc_ifdown (dev);
+ 
+-    lmc_trace(dev, "lmc_close out");
 -
--	awd->done=1;
--	wake_up(&awd->wqh);
--}
+     return 0;
+ }
+ 
+@@ -1149,8 +1122,6 @@ static int lmc_ifdown (struct net_device
+     u32 csr6;
+     int i;
+ 
+-    lmc_trace(dev, "lmc_ifdown in");
 -
--/*-------------------------------------------------------------------*
-- *                         COMPATIBILITY STUFF                       *
-- *-------------------------------------------------------------------*/
+     /* Don't let anything else go on right now */
+     //    dev->start = 0;
+     netif_stop_queue(dev);
+@@ -1200,8 +1171,6 @@ static int lmc_ifdown (struct net_device
+     netif_wake_queue(dev);
+     sc->extra_stats.tx_tbusy0++;
+ 
+-    lmc_trace(dev, "lmc_ifdown out");
 -
--// Starts urb and waits for completion or timeout
--static int usb_start_wait_urb(struct urb *urb, int timeout, int* actual_length)
--{
--	struct usb_api_data awd;
--        int status;
+     return 0;
+ }
+ 
+@@ -1220,8 +1189,6 @@ static irqreturn_t lmc_interrupt (int ir
+     int max_work = LMC_RXDESCS;
+     int handled = 0;
+ 
+-    lmc_trace(dev, "lmc_interrupt in");
 -
--        init_waitqueue_head(&awd.wqh);
--        awd.done = 0;
--
--        urb->context = &awd;
--        status = usb_submit_urb(urb, GFP_ATOMIC);
--        if (status) {
--                // something went wrong
--                usb_free_urb(urb);
--                return status;
+     spin_lock(&sc->lmc_lock);
+ 
+     /*
+@@ -1264,12 +1231,10 @@ static irqreturn_t lmc_interrupt (int ir
+             lmc_running_reset (dev);
+             break;
+         }
+-        
+-        if (csr & TULIP_STS_RXINTR){
+-            lmc_trace(dev, "rx interrupt");
++
++        if (csr & TULIP_STS_RXINTR)
+             lmc_rx (dev);
+-            
 -        }
++
+         if (csr & (TULIP_STS_TXINTR | TULIP_STS_TXNOBUF | TULIP_STS_TXSTOPPED)) {
+ 
+ 	    int		n_compl = 0 ;
+@@ -1389,7 +1354,6 @@ static irqreturn_t lmc_interrupt (int ir
+ 
+     spin_unlock(&sc->lmc_lock);
+ 
+-    lmc_trace(dev, "lmc_interrupt out");
+     return IRQ_RETVAL(handled);
+ }
+ 
+@@ -1401,8 +1365,6 @@ static netdev_tx_t lmc_start_xmit(struct
+     int entry;
+     unsigned long flags;
+ 
+-    lmc_trace(dev, "lmc_start_xmit in");
 -
--	if (!wait_event_timeout(awd.wqh, awd.done, timeout)) {
--                // timeout
--                dev_warn(&urb->dev->dev, "usb_control/bulk_msg: timeout\n");
--                usb_kill_urb(urb);  // remove urb safely
--                status = -ETIMEDOUT;
--        }
--	else {
--                status = urb->status;
--	}
+     spin_lock_irqsave(&sc->lmc_lock, flags);
+ 
+     /* normal path, tbusy known to be zero */
+@@ -1477,7 +1439,6 @@ static netdev_tx_t lmc_start_xmit(struct
+ 
+     spin_unlock_irqrestore(&sc->lmc_lock, flags);
+ 
+-    lmc_trace(dev, "lmc_start_xmit_out");
+     return NETDEV_TX_OK;
+ }
+ 
+@@ -1493,8 +1454,6 @@ static int lmc_rx(struct net_device *dev
+     struct sk_buff *skb, *nsb;
+     u16 len;
+ 
+-    lmc_trace(dev, "lmc_rx in");
 -
--        if (actual_length) {
--                *actual_length = urb->actual_length;
--	}
+     lmc_led_on(sc, LMC_DS3_LED3);
+ 
+     rxIntLoopCnt = 0;		/* debug -baz */
+@@ -1673,9 +1632,6 @@ static int lmc_rx(struct net_device *dev
+     lmc_led_off(sc, LMC_DS3_LED3);
+ 
+ skip_out_of_mem:
 -
--        usb_free_urb(urb);
--        return status;
--}
+-    lmc_trace(dev, "lmc_rx out");
 -
--/*-------------------------------------------------------------------*/
--// returns status (negative) or length (positive)
--static int kaweth_internal_control_msg(struct usb_device *usb_dev,
--				       unsigned int pipe,
--				       struct usb_ctrlrequest *cmd, void *data,
--				       int len, int timeout)
--{
--        struct urb *urb;
--        int retv;
--        int length = 0; /* shut up GCC */
+     return 0;
+ }
+ 
+@@ -1684,16 +1640,12 @@ static struct net_device_stats *lmc_get_
+     lmc_softc_t *sc = dev_to_sc(dev);
+     unsigned long flags;
+ 
+-    lmc_trace(dev, "lmc_get_stats in");
 -
--	urb = usb_alloc_urb(0, GFP_ATOMIC);
--        if (!urb)
--                return -ENOMEM;
+     spin_lock_irqsave(&sc->lmc_lock, flags);
+ 
+     sc->lmc_device->stats.rx_missed_errors += LMC_CSR_READ(sc, csr_missed_frames) & 0xffff;
+ 
+     spin_unlock_irqrestore(&sc->lmc_lock, flags);
+ 
+-    lmc_trace(dev, "lmc_get_stats out");
 -
--        usb_fill_control_urb(urb, usb_dev, pipe, (unsigned char*)cmd, data,
--			 len, usb_api_blocking_completion, NULL);
+     return &sc->lmc_device->stats;
+ }
+ 
+@@ -1712,12 +1664,8 @@ unsigned lmc_mii_readreg (lmc_softc_t *
+     int command = (0xf6 << 10) | (devaddr << 5) | regno;
+     int retval = 0;
+ 
+-    lmc_trace(sc->lmc_device, "lmc_mii_readreg in");
 -
--        retv = usb_start_wait_urb(urb, timeout, &length);
--        if (retv < 0) {
--                return retv;
--	}
--        else {
--                return length;
--	}
--}
+     LMC_MII_SYNC (sc);
+ 
+-    lmc_trace(sc->lmc_device, "lmc_mii_readreg: done sync");
 -
- module_usb_driver(kaweth_driver);
+     for (i = 15; i >= 0; i--)
+     {
+         int dataval = (command & (1 << i)) ? 0x20000 : 0;
+@@ -1730,8 +1678,6 @@ unsigned lmc_mii_readreg (lmc_softc_t *
+         /* __SLOW_DOWN_IO; */
+     }
+ 
+-    lmc_trace(sc->lmc_device, "lmc_mii_readreg: done1");
+-
+     for (i = 19; i > 0; i--)
+     {
+         LMC_CSR_WRITE (sc, csr_9, 0x40000);
+@@ -1743,8 +1689,6 @@ unsigned lmc_mii_readreg (lmc_softc_t *
+         /* __SLOW_DOWN_IO; */
+     }
+ 
+-    lmc_trace(sc->lmc_device, "lmc_mii_readreg out");
+-
+     return (retval >> 1) & 0xffff;
+ }
+ 
+@@ -1753,8 +1697,6 @@ void lmc_mii_writereg (lmc_softc_t * con
+     int i = 32;
+     int command = (0x5002 << 16) | (devaddr << 23) | (regno << 18) | data;
+ 
+-    lmc_trace(sc->lmc_device, "lmc_mii_writereg in");
+-
+     LMC_MII_SYNC (sc);
+ 
+     i = 31;
+@@ -1787,16 +1729,12 @@ void lmc_mii_writereg (lmc_softc_t * con
+         /* __SLOW_DOWN_IO; */
+         i--;
+     }
+-
+-    lmc_trace(sc->lmc_device, "lmc_mii_writereg out");
+ }
+ 
+ static void lmc_softreset (lmc_softc_t * const sc) /*fold00*/
+ {
+     int i;
+ 
+-    lmc_trace(sc->lmc_device, "lmc_softreset in");
+-
+     /* Initialize the receive rings and buffers. */
+     sc->lmc_txfull = 0;
+     sc->lmc_next_rx = 0;
+@@ -1871,55 +1809,40 @@ static void lmc_softreset (lmc_softc_t *
+     }
+     sc->lmc_txring[i - 1].buffer2 = virt_to_bus (&sc->lmc_txring[0]);
+     LMC_CSR_WRITE (sc, csr_txlist, virt_to_bus (sc->lmc_txring));
+-
+-    lmc_trace(sc->lmc_device, "lmc_softreset out");
+ }
+ 
+ void lmc_gpio_mkinput(lmc_softc_t * const sc, u32 bits) /*fold00*/
+ {
+-    lmc_trace(sc->lmc_device, "lmc_gpio_mkinput in");
+     sc->lmc_gpio_io &= ~bits;
+     LMC_CSR_WRITE(sc, csr_gp, TULIP_GP_PINSET | (sc->lmc_gpio_io));
+-    lmc_trace(sc->lmc_device, "lmc_gpio_mkinput out");
+ }
+ 
+ void lmc_gpio_mkoutput(lmc_softc_t * const sc, u32 bits) /*fold00*/
+ {
+-    lmc_trace(sc->lmc_device, "lmc_gpio_mkoutput in");
+     sc->lmc_gpio_io |= bits;
+     LMC_CSR_WRITE(sc, csr_gp, TULIP_GP_PINSET | (sc->lmc_gpio_io));
+-    lmc_trace(sc->lmc_device, "lmc_gpio_mkoutput out");
+ }
+ 
+ void lmc_led_on(lmc_softc_t * const sc, u32 led) /*fold00*/
+ {
+-    lmc_trace(sc->lmc_device, "lmc_led_on in");
+-    if((~sc->lmc_miireg16) & led){ /* Already on! */
+-        lmc_trace(sc->lmc_device, "lmc_led_on aon out");
++    if ((~sc->lmc_miireg16) & led) /* Already on! */
+         return;
+-    }
+-    
++
+     sc->lmc_miireg16 &= ~led;
+     lmc_mii_writereg(sc, 0, 16, sc->lmc_miireg16);
+-    lmc_trace(sc->lmc_device, "lmc_led_on out");
+ }
+ 
+ void lmc_led_off(lmc_softc_t * const sc, u32 led) /*fold00*/
+ {
+-    lmc_trace(sc->lmc_device, "lmc_led_off in");
+-    if(sc->lmc_miireg16 & led){ /* Already set don't do anything */
+-        lmc_trace(sc->lmc_device, "lmc_led_off aoff out");
++    if (sc->lmc_miireg16 & led) /* Already set don't do anything */
+         return;
+-    }
+-    
++
+     sc->lmc_miireg16 |= led;
+     lmc_mii_writereg(sc, 0, 16, sc->lmc_miireg16);
+-    lmc_trace(sc->lmc_device, "lmc_led_off out");
+ }
+ 
+ static void lmc_reset(lmc_softc_t * const sc) /*fold00*/
+ {
+-    lmc_trace(sc->lmc_device, "lmc_reset in");
+     sc->lmc_miireg16 |= LMC_MII16_FIFO_RESET;
+     lmc_mii_writereg(sc, 0, 16, sc->lmc_miireg16);
+ 
+@@ -1955,13 +1878,11 @@ static void lmc_reset(lmc_softc_t * cons
+     sc->lmc_media->init(sc);
+ 
+     sc->extra_stats.resetCount++;
+-    lmc_trace(sc->lmc_device, "lmc_reset out");
+ }
+ 
+ static void lmc_dec_reset(lmc_softc_t * const sc) /*fold00*/
+ {
+     u32 val;
+-    lmc_trace(sc->lmc_device, "lmc_dec_reset in");
+ 
+     /*
+      * disable all interrupts
+@@ -2017,14 +1938,11 @@ static void lmc_dec_reset(lmc_softc_t *
+     val = LMC_CSR_READ(sc, csr_sia_general);
+     val |= (TULIP_WATCHDOG_TXDISABLE | TULIP_WATCHDOG_RXDISABLE);
+     LMC_CSR_WRITE(sc, csr_sia_general, val);
+-
+-    lmc_trace(sc->lmc_device, "lmc_dec_reset out");
+ }
+ 
+ static void lmc_initcsrs(lmc_softc_t * const sc, lmc_csrptr_t csr_base, /*fold00*/
+                          size_t csr_size)
+ {
+-    lmc_trace(sc->lmc_device, "lmc_initcsrs in");
+     sc->lmc_csrs.csr_busmode	        = csr_base +  0 * csr_size;
+     sc->lmc_csrs.csr_txpoll		= csr_base +  1 * csr_size;
+     sc->lmc_csrs.csr_rxpoll		= csr_base +  2 * csr_size;
+@@ -2041,7 +1959,6 @@ static void lmc_initcsrs(lmc_softc_t * c
+     sc->lmc_csrs.csr_13		        = csr_base + 13 * csr_size;
+     sc->lmc_csrs.csr_14		        = csr_base + 14 * csr_size;
+     sc->lmc_csrs.csr_15		        = csr_base + 15 * csr_size;
+-    lmc_trace(sc->lmc_device, "lmc_initcsrs out");
+ }
+ 
+ static void lmc_driver_timeout(struct net_device *dev, unsigned int txqueue)
+@@ -2050,8 +1967,6 @@ static void lmc_driver_timeout(struct ne
+     u32 csr6;
+     unsigned long flags;
+ 
+-    lmc_trace(dev, "lmc_driver_timeout in");
+-
+     spin_lock_irqsave(&sc->lmc_lock, flags);
+ 
+     printk("%s: Xmitter busy|\n", dev->name);
+@@ -2094,8 +2009,4 @@ static void lmc_driver_timeout(struct ne
+ bug_out:
+ 
+     spin_unlock_irqrestore(&sc->lmc_lock, flags);
+-
+-    lmc_trace(dev, "lmc_driver_timeout out");
+-
+-
+ }
+--- a/drivers/net/wan/lmc/lmc_media.c
++++ b/drivers/net/wan/lmc/lmc_media.c
+@@ -1026,7 +1026,6 @@ lmc_t1_get_link_status (lmc_softc_t * co
+    * led3 red    = Loss of Signal (LOS) or out of frame (OOF)
+    *               conditions detected on T3 receive signal
+    */
+-    lmc_trace(sc->lmc_device, "lmc_t1_get_link_status in");
+     lmc_led_on(sc, LMC_DS3_LED2);
+ 
+     lmc_mii_writereg (sc, 0, 17, T1FRAMER_ALARM1_STATUS);
+@@ -1120,9 +1119,6 @@ lmc_t1_get_link_status (lmc_softc_t * co
+     lmc_mii_writereg (sc, 0, 17, T1FRAMER_ALARM2_STATUS);
+     sc->lmc_xinfo.t1_alarm2_status = lmc_mii_readreg (sc, 0, 18);
+ 
+-    
+-    lmc_trace(sc->lmc_device, "lmc_t1_get_link_status out");
+-
+     return ret;
+ }
+ 
+--- a/drivers/net/wan/lmc/lmc_proto.c
++++ b/drivers/net/wan/lmc/lmc_proto.c
+@@ -47,7 +47,6 @@
+ // attach
+ void lmc_proto_attach(lmc_softc_t *sc) /*FOLD00*/
+ {
+-    lmc_trace(sc->lmc_device, "lmc_proto_attach in");
+     if (sc->if_type == LMC_NET) {
+             struct net_device *dev = sc->lmc_device;
+             /*
+@@ -57,12 +56,10 @@ void lmc_proto_attach(lmc_softc_t *sc) /
+             dev->hard_header_len = 0;
+             dev->addr_len = 0;
+         }
+-    lmc_trace(sc->lmc_device, "lmc_proto_attach out");
+ }
+ 
+ int lmc_proto_ioctl(lmc_softc_t *sc, struct ifreq *ifr, int cmd)
+ {
+-	lmc_trace(sc->lmc_device, "lmc_proto_ioctl");
+ 	if (sc->if_type == LMC_PPP)
+ 		return hdlc_ioctl(sc->lmc_device, ifr, cmd);
+ 	return -EOPNOTSUPP;
+@@ -72,32 +69,23 @@ int lmc_proto_open(lmc_softc_t *sc)
+ {
+ 	int ret = 0;
+ 
+-	lmc_trace(sc->lmc_device, "lmc_proto_open in");
+-
+ 	if (sc->if_type == LMC_PPP) {
+ 		ret = hdlc_open(sc->lmc_device);
+ 		if (ret < 0)
+ 			printk(KERN_WARNING "%s: HDLC open failed: %d\n",
+ 			       sc->name, ret);
+ 	}
+-
+-	lmc_trace(sc->lmc_device, "lmc_proto_open out");
+ 	return ret;
+ }
+ 
+ void lmc_proto_close(lmc_softc_t *sc)
+ {
+-	lmc_trace(sc->lmc_device, "lmc_proto_close in");
+-
+ 	if (sc->if_type == LMC_PPP)
+ 		hdlc_close(sc->lmc_device);
+-
+-	lmc_trace(sc->lmc_device, "lmc_proto_close out");
+ }
+ 
+ __be16 lmc_proto_type(lmc_softc_t *sc, struct sk_buff *skb) /*FOLD00*/
+ {
+-    lmc_trace(sc->lmc_device, "lmc_proto_type in");
+     switch(sc->if_type){
+     case LMC_PPP:
+ 	    return hdlc_type_trans(skb, sc->lmc_device);
+@@ -113,13 +101,10 @@ void lmc_proto_close(lmc_softc_t *sc)
+         return htons(ETH_P_802_2);
+         break;
+     }
+-    lmc_trace(sc->lmc_device, "lmc_proto_tye out");
+-
+ }
+ 
+ void lmc_proto_netif(lmc_softc_t *sc, struct sk_buff *skb) /*FOLD00*/
+ {
+-    lmc_trace(sc->lmc_device, "lmc_proto_netif in");
+     switch(sc->if_type){
+     case LMC_PPP:
+     case LMC_NET:
+@@ -129,5 +114,4 @@ void lmc_proto_netif(lmc_softc_t *sc, st
+     case LMC_RAW:
+         break;
+     }
+-    lmc_trace(sc->lmc_device, "lmc_proto_netif out");
+ }
 
