@@ -2,153 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB45327A388
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 768EF27A3CA
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:03:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727355AbgI0T7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 15:59:47 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:41714 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727137AbgI0T6D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:58:03 -0400
-Message-Id: <20200927194923.031899444@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601236665;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=c0LQ/6xJuhVNob25oG2NjVswf02HdLBqhSkgCWoFfG4=;
-        b=BNwpzMCNvEzgCA9bu4GlhMhhVdvRv79cj4yGgf9wGod1HvEwCRyKBd/mo4XyX569hvlTTV
-        mJ8sDlGJUh0s7n0Kg121twB5Jk9x4633y93i3wCm3n+AR/9NwI9BpWIgkqQHitRErACx1s
-        /nbFmIsYBdEu1M7KDXEbdsnS0ulwBIvX4+s3EZDnz4/QmX9l4+o70l9Y0zTGxuj3CS4iq5
-        SBqQknFV6jUPDMHVq82D4ARNcN/u69R4znf24pft2CAbPGS4EiwY/Gbol8v8VoejFljSKM
-        gyMSl5tgawDOb3rajivW7LKoSbrLaW/EwO+W64Abvivr0Xi1Izy74USxL6KGtQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601236665;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=c0LQ/6xJuhVNob25oG2NjVswf02HdLBqhSkgCWoFfG4=;
-        b=RneFpvEarxklOXRwGHvMzSys1JfSZFNJD6ldlfH4hBbqdL6tpHU4K7CeDilZFuYy5rLaD2
-        ADxwxws26Ji8tMAA==
-Date:   Sun, 27 Sep 2020 21:49:18 +0200
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        Paul McKenney <paulmck@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pascal Terjan <pterjan@google.com>,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Christian Benvenuti <benve@cisco.com>,
-        Govindarajulu Varadarajan <_govind@gmx.com>,
-        Dave Miller <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-doc@vger.kernel.org,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Shannon Nelson <snelson@pensando.io>,
-        Pensando Drivers <drivers@pensando.io>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Jon Mason <jdmason@kudzu.us>, Daniel Drake <dsd@gentoo.org>,
-        Ulrich Kunitz <kune@deine-taler.de>, linux-usb@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com,
-        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Jouni Malinen <j@w1.fi>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch 32/35] net: libertas: Use netif_rx_any_context()
-References: <20200927194846.045411263@linutronix.de>
+        id S1726832AbgI0UBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 16:01:38 -0400
+Received: from mout.gmx.net ([212.227.15.18]:40363 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726942AbgI0T5T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Sep 2020 15:57:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1601236631;
+        bh=A37BwhthNeaG9NdH1BxOIfBwiGGWhAtuMmCaW6IwrRE=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=iuITyLgM7rv+ZW+mjcOANoXcUbPs38rWhT7E5yy0E9X0Ffk27Ql18PcGaFNChPPtU
+         U7wioBBXwxSSqvR7y+gG4l+/bNmwpVb1rmQXO1rKu3UE4EX6UQmqSHl7XznzW0w30f
+         xMVyinsRO99U/voo/GFErRE1sR0t+FyXj27vuFYc=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from mx-linux-amd.fritz.box ([91.0.109.210]) by mail.gmx.com
+ (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
+ 1MStCe-1jzxU048QY-00UNJj; Sun, 27 Sep 2020 21:57:11 +0200
+From:   Armin Wolf <W_Armin@gmx.de>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next] lib8390: Replace panic() call with BUILD_BUG_ON
+Date:   Sun, 27 Sep 2020 21:56:59 +0200
+Message-Id: <20200927195659.4951-1-W_Armin@gmx.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8-bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:MXqjNq+vXGcAIs4fLErTURvM3T+nSf2YF7DR4YB6XoX6SoqpF3m
+ 49V5s3MaC+5xDV40Od7PfNTuzfUnQADIyM4TRtJRJKXigOPZwgBZHt5caFjWBQ2wIZknTDp
+ vI6KfmCfnfPQhqa9FVJ/rSASAnpQ+KJhDvUUPqOb5lmcxz5ZKjwGluzeAzlSbTUYxlYboez
+ g/IwXsPnTPoDnoKjCy6Yg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:gc07HwPTWLU=:+/1gNACtA5i4eO4L9L+Rxj
+ s8vu+Kt9x8alZ7x1/SksAU1UgrD7DJ9QMfpr87r0ISbbLOXHBTqQtI8KVKtsPkDzwGPjz+fOB
+ FbKpgfQm56ko5hUYCJlbJCbn/n51ajECyMIzvLSz0voQxzrBaoO53jAzZCI+a12MX8cBRczXm
+ Cl0uVPD6/FxEoJSDiWj+ob3WyerLX7rw8wLYJBBM8LxvPvH5zyX2btZphI9oXEsx6h5DAfDOZ
+ si2BriyvMOkeIaeXsXe+6WjeIQLJJz7AJNnlDy7DDtAuyco5QPFfL4SrQ2x3mu21gpHZ7hWnO
+ g78y1ZNn+4ZGb01+98Q/ETdMcmbpskit+MSnwNqwhP5VUuGvh3+3k6b8VLfzvQfVPpwNN9Nna
+ 3gc5MrNpwL5vDnlZNhmGdZOFYAvGygZYq6Jh53yrWIC2PltASmf9BRueUpg0gx8D4ErtkFkpi
+ emBAgOGx5xB91eBiiDQBOlRWhncNZ7z4c/qob1YRqwkG0BofyGD+zDHjjBqH4Niu45zpZ5CJ9
+ bWAKa/DzsRnEG+KH/wlXC9inKXsE1jYG3P8jNEN6B887F+aXUqz84Xe0wUdH1Ouz+BHxgtWnX
+ lnE2Vtr3qwXn0tYHDFqS6eGa6YuF3dZ3MYw37iNZroA4JkV9LAu8Nfl+TxAry9yeif2HSavEg
+ FReykGIJ1AyWfNvAXZtbkbJCC75L7PtW2lPloRJ2t9CQS1pbY7VFQTmCuEmL3RhX+sv2eeVgu
+ V3aLkh8BjXHKu4eVqm1TbAZAYqpsS9pz09SmZyUiQia5Q5N68K49gj+mjKuB1Xnle55JeVhgG
+ xMLLNhIsLHyi8zwp3pSJa+xH+9qjJBivkhR17vtfkv6uq/OD+GrbpnwrOy6Z830QJFXq86KG2
+ 3NjFV6XMZ1KRv6JdFia7SoD/Vwui/AmmRDxb/ue9BXVIWZ5vpbOUrodnxUCDHVDn52i1xDBgM
+ tFuOuqfwy3ujDDakyre+KZzPOxt2RohT4X7kXgtsedYCZpLlYQSzfZK5MAfyS3ggINJ4IG/8y
+ er+pL4gC9CWzNSsgOdWqQs48aohTp9UcjkkHFsyLUb4DHQPcGyWqg81Hvsv3SMMUZiowP+yhM
+ uYtYoqw2Y9CaZ7qbc5eQqDE2mvnCEpFG3O06nty7tZvSAttHFv346YHnHFMtchB1Zixy7yoEW
+ gopwCiubVNmu5EsrekJVAsEU22oT8zSWTcx74V3ADWuXRRcWUPMe+CDS6WmjQOjgriUI+2wGy
+ e4aeMcd7t9YXVGf/U
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Replace panic() call in lib8390.c with BUILD_BUG_ON()
+since checking the size of struct e8390_pkt_hdr should
+happen at compile-time. Also add __packed to e8390_pkt_hdr
+to prevent padding.
 
-The usage of in_interrupt() in non-core code is phased out. Ideally the
-information of the calling context should be passed by the callers or the
-functions be split as appropriate.
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+=2D--
+ drivers/net/ethernet/8390/8390.h    | 2 +-
+ drivers/net/ethernet/8390/lib8390.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-libertas uses in_interupt() to select the netif_rx*() variant which matches
-the calling context. The attempt to consolidate the code by passing an
-arguemnt or by distangling it failed due lack of knowledge about this
-driver and because the call chains are hard to follow.
+diff --git a/drivers/net/ethernet/8390/8390.h b/drivers/net/ethernet/8390/=
+8390.h
+index e52264465998..e7d6fd55f6a5 100644
+=2D-- a/drivers/net/ethernet/8390/8390.h
++++ b/drivers/net/ethernet/8390/8390.h
+@@ -21,7 +21,7 @@ struct e8390_pkt_hdr {
+ 	unsigned char status; /* status */
+ 	unsigned char next;   /* pointer to next packet. */
+ 	unsigned short count; /* header + packet length in bytes */
+-};
++} __packed;
 
-As a stop gap tse netif_rx_any_context() which invokes the correct code
-path depending on context and confines the in_interrupt() usage to core
-code.
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ void ei_poll(struct net_device *dev);
+diff --git a/drivers/net/ethernet/8390/lib8390.c b/drivers/net/ethernet/83=
+90/lib8390.c
+index 1f48d7f6365c..deba94d2c909 100644
+=2D-- a/drivers/net/ethernet/8390/lib8390.c
++++ b/drivers/net/ethernet/8390/lib8390.c
+@@ -50,6 +50,7 @@
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Pascal Terjan <pterjan@google.com>
-Cc: libertas-dev@lists.infradead.org
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
+   */
 
----
- drivers/net/wireless/marvell/libertas/rx.c |   11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
++#include <linux/build_bug.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/jiffies.h>
+@@ -1018,8 +1019,7 @@ static void __NS8390_init(struct net_device *dev, in=
+t startp)
+ 	    ? (0x48 | ENDCFG_WTS | (ei_local->bigendian ? ENDCFG_BOS : 0))
+ 	    : 0x48;
 
---- a/drivers/net/wireless/marvell/libertas/rx.c
-+++ b/drivers/net/wireless/marvell/libertas/rx.c
-@@ -147,10 +147,7 @@ int lbs_process_rxed_packet(struct lbs_p
- 	dev->stats.rx_packets++;
- 
- 	skb->protocol = eth_type_trans(skb, dev);
--	if (in_interrupt())
--		netif_rx(skb);
--	else
--		netif_rx_ni(skb);
-+	netif_rx_any_context(skb);
- 
- 	ret = 0;
- done:
-@@ -265,11 +262,7 @@ static int process_rxed_802_11_packet(st
- 	dev->stats.rx_packets++;
- 
- 	skb->protocol = eth_type_trans(skb, priv->dev);
--
--	if (in_interrupt())
--		netif_rx(skb);
--	else
--		netif_rx_ni(skb);
-+	netif_rx_any_context(skb);
- 
- 	ret = 0;
- 
+-	if (sizeof(struct e8390_pkt_hdr) !=3D 4)
+-		panic("8390.c: header struct mispacked\n");
++	BUILD_BUG_ON(sizeof(struct e8390_pkt_hdr) !=3D 4);
+ 	/* Follow National Semi's recommendations for initing the DP83902. */
+ 	ei_outb_p(E8390_NODMA+E8390_PAGE0+E8390_STOP, e8390_base+E8390_CMD); /* =
+0x21 */
+ 	ei_outb_p(endcfg, e8390_base + EN0_DCFG);	/* 0x48 or 0x49 */
+=2D-
+2.20.1
 
