@@ -2,346 +2,324 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8508F27A370
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9741C27A2EA
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 21:52:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727344AbgI0T7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 15:59:12 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:41008 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727132AbgI0T6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:58:05 -0400
-Message-Id: <20200927194923.358900104@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601236669;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=ksaGPqhXSZGY4WnWtBR0byDM8dQ34v3PX/0X3fUvpQM=;
-        b=aHzJrPYU7FfUq814LOC20bsDMxiPF9kl5hv062qPTqnIj6StKd0bSDSLccSvRmXIASHhqf
-        aZR5++WuDmDCfI0fjwrlc0bANro81Ge/6/SkWNWmZ7CknohO75MPmk9RUBx5Zs8csm8eJT
-        +Vmk+qsZAPDw/MNaszn3bnwgnoPnRmygxJEr9cPQJPSgLgnjJpMVakzJ8DEfBCO7HU43Im
-        Ooc/O8v/j4db+A3q92vkqFI0aR/1S7RwPqw3jHr20cFbFMPPTVPePJFAwB/2G0nzplV+hz
-        gvCImYxktX+py8y+YnjKDpKSVo5Z89DdMSDLczbEle3un0h6LIMG4Nn2GX9S8g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601236669;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=ksaGPqhXSZGY4WnWtBR0byDM8dQ34v3PX/0X3fUvpQM=;
-        b=mU8Ag4UbwIj964lLMObE7JECFn2QEeMPOgKxS1KjDCTPv+aDXN3i+2v1K3ZjxYIiCh4FfZ
-        AJv7/jn/6+S5qpBQ==
-Date:   Sun, 27 Sep 2020 21:49:21 +0200
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        Paul McKenney <paulmck@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Christian Benvenuti <benve@cisco.com>,
-        Govindarajulu Varadarajan <_govind@gmx.com>,
-        Dave Miller <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-doc@vger.kernel.org,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Shannon Nelson <snelson@pensando.io>,
-        Pensando Drivers <drivers@pensando.io>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Jon Mason <jdmason@kudzu.us>, Daniel Drake <dsd@gentoo.org>,
-        Ulrich Kunitz <kune@deine-taler.de>, linux-usb@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com,
-        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Jouni Malinen <j@w1.fi>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        libertas-dev@lists.infradead.org,
-        Pascal Terjan <pterjan@google.com>
-Subject: [patch 35/35] net: rtlwifi: Replace in_interrupt() for context detection
-References: <20200927194846.045411263@linutronix.de>
+        id S1726358AbgI0TwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 15:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37748 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726309AbgI0TwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:52:01 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172E2C0613D3
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 12:52:01 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kMciB-0000bT-K3; Sun, 27 Sep 2020 21:51:55 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:faa2:cbaa:9ae6:cfc7] (unknown [IPv6:2a03:f580:87bc:d400:faa2:cbaa:9ae6:cfc7])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1B7DD56BE33;
+        Sun, 27 Sep 2020 19:51:53 +0000 (UTC)
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
+Cc:     linux-imx@nxp.com, netdev@vger.kernel.org
+References: <20200927160801.28569-1-qiangqing.zhang@nxp.com>
+ <20200927160801.28569-2-qiangqing.zhang@nxp.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH V2 1/3] can: flexcan: initialize all flexcan memory for
+ ECC function
+Message-ID: <c2299dd3-e818-0192-eae4-02c045b83a30@pengutronix.de>
+Date:   Sun, 27 Sep 2020 21:51:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8-bit
+In-Reply-To: <20200927160801.28569-2-qiangqing.zhang@nxp.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="EnGgLJ2mMBFUXi6ZsgBqEKkISL3OqEbfX"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--EnGgLJ2mMBFUXi6ZsgBqEKkISL3OqEbfX
+Content-Type: multipart/mixed; boundary="rBw4Bw9oUodFGwWuP5KrpQ0FSuNiwWUzp";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
+Cc: linux-imx@nxp.com, netdev@vger.kernel.org
+Message-ID: <c2299dd3-e818-0192-eae4-02c045b83a30@pengutronix.de>
+Subject: Re: [PATCH V2 1/3] can: flexcan: initialize all flexcan memory for
+ ECC function
+References: <20200927160801.28569-1-qiangqing.zhang@nxp.com>
+ <20200927160801.28569-2-qiangqing.zhang@nxp.com>
+In-Reply-To: <20200927160801.28569-2-qiangqing.zhang@nxp.com>
 
-rtl_lps_enter() and rtl_lps_leave() are using in_interrupt() to detect
-whether it is safe to acquire a mutex or if it is required to defer to a
-workqueue.
+--rBw4Bw9oUodFGwWuP5KrpQ0FSuNiwWUzp
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-The usage of in_interrupt() in drivers is phased out and Linus clearly
-requested that code which changes behaviour depending on context should
-either be seperated or the context be conveyed in an argument passed by the
-caller, which usually knows the context.
+On 9/27/20 6:07 PM, Joakim Zhang wrote:
+> One issue was reported at a baremetal environment, which is used for
+> FPGA verification. "The first transfer will fail for extended ID
+> format(for both 2.0B and FD format), following frames can be transmitte=
+d
+> and received successfully for extended format, and standard format don'=
+t
+> have this issue. This issue occurred randomly with high possiblity, whe=
+n
+> it occurs, the transmitter will detect a BIT1 error, the receiver a CRC=
 
-in_interrupt() also is only partially correct because it fails to chose the
-correct code path when just preemption or interrupts are disabled.
+> error. According to the spec, a non-correctable error may cause this
+> transfer failure."
+>=20
+> With FLEXCAN_QUIRK_DISABLE_MECR quirk, it supports correctable errors,
+> disable non-correctable errors interrupt and freeze mode. Initialize al=
+l
+> FlexCAN memory before accessing them, at least it can avoid non-correct=
+able
+> errors detected due to memory uninitialized. The internal region can't =
+be
+> initialized when the hardware doesn't support ECC.
+>=20
+> According to IMX8MPRM, Rev.C, 04/2020. There is a NOTE at the section
+> "11.8.3.13 Detection and correction of memory errors":
+> All FlexCAN memory must be initialized before starting its operation in=
 
-Add an argument 'may_block' to both functions and adjust the callers to
-pass the context information.
+> order to have the parity bits in memory properly updated. CTRL2[WRMFRZ]=
 
-The following call chains were analyzed to be safe to block:
+> grants write access to all memory positions that require initialization=
+,
+> ranging from 0x080 to 0xADF and from 0xF28 to 0xFFF when the CAN FD fea=
+ture
+> is enabled. The RXMGMASK, RX14MASK, RX15MASK, and RXFGMASK registers ne=
+ed to
+> be initialized as well. MCR[RFEN] must not be set during memory initial=
+ization.
+>=20
+> Memory range from 0x080 to 0xADF, there are reserved memory (unimplemen=
+ted
+> by hardware, e.g. only configure 64 MBs), these memory can be initializ=
+ed or not.
+> In this patch, initialize all flexcan memory which includes reserved me=
+mory.
+>=20
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> ---
+> ChangeLogs:
+> V1->V2:
+> 	* update commit messages, add a datasheet reference.
+> 	* initialize block memory instead of trivial memory.
+> 	* inilialize reserved memory.
+> ---
+>  drivers/net/can/flexcan.c | 67 +++++++++++++++++++++++++++++++++++++++=
 
-    rtl_watchdog_wq_callback()
-      rlf_lps_leave/enter()
+>  1 file changed, 67 insertions(+)
+>=20
+> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+> index e86925134009..aca0fc40ae9b 100644
+> --- a/drivers/net/can/flexcan.c
+> +++ b/drivers/net/can/flexcan.c
+> @@ -309,6 +309,40 @@ struct flexcan_regs {
+> =20
+>  static_assert(sizeof(struct flexcan_regs) =3D=3D 0x4 + 0xc08);
+> =20
+> +/* Structure of memory need be initialized for ECC feature */
+> +static const struct flexcan_ram_int {
+> +	u32 offset;
+> +	u16 len;
+> +} ram_init[] =3D {
+> +	/* ranging from 0x0080 to 0x0ADF, ram details as below list:
+> +	 * 0x0080--0x087F:	128 MBs
+> +	 * 0x0880--0x0A7F:	128 RXIMRs
+> +	 * 0x0A80--0x0A97:	6 RXFIRs
+> +	 * 0x0A98--0x0A9F:	Reserved
+> +	 * 0x0AA0--0x0AA3:	RXMGMASK
+> +	 * 0x0AA4--0x0AA7:	RXFGMASK
+> +	 * 0x0AA8--0x0AAB:	RX14MASK
+> +	 * 0x0AAC--0x0AAF:	RX15MASK
+> +	 * 0x0AB0--0x0ABF:	TX_SMB
+> +	 * 0x0AC0--0x0ACF:	RX_SMB0
+> +	 * 0x0AD0--0x0ADF:	RX_SMB1
+> +	 */
+> +	{
+> +		.offset =3D 0x80,
+> +		.len =3D (0xadf - 0x80) / sizeof(u32) + 1,
+> +	},
+> +	/* ranging from 0x0F28 to 0x0FFF when CAN FD feature is enabled,
+> +	 * ram details as below list:
+> +	 * 0x0F28--0x0F6F:	TX_SMB_FD
+> +	 * 0x0F70--0x0FB7:	RX_SMB0_FD
+> +	 * 0x0FB8--0x0FFF:	RX_SMB0_FD
+> +	 */
+> +	{
+> +		.offset =3D 0xf28,
+> +		.len =3D (0xfff - 0xf28) / sizeof(u32) + 1,
+> +	},
+> +};
 
-    rtl_op_suspend()
-      rtl_lps_leave()
+As it's only two ranges, I think there's no need for this struct. Directl=
+y move
+code that into the for loops.
 
-    rtl_op_bss_info_changed()
-      rtl_lps_leave()
+> +
+>  struct flexcan_devtype_data {
+>  	u32 quirks;		/* quirks needed for different IP cores */
+>  };
+> @@ -1292,6 +1326,36 @@ static void flexcan_set_bittiming(struct net_dev=
+ice *dev)
+>  		return flexcan_set_bittiming_ctrl(dev);
+>  }
+> =20
+> +static void flexcan_init_ram(struct net_device *dev)
+> +{
+> +	struct flexcan_priv *priv =3D netdev_priv(dev);
+> +	struct flexcan_regs __iomem *regs =3D priv->regs;
+> +	u32 reg_ctrl2;
+> +	int i;
+> +
+> +	/* 11.8.3.13 Detection and correction of memory errors:
+> +	 * CTRL2[WRMFRZ] grants write access to all memory positions that
+> +	 * require initialization, ranging from 0x080 to 0xADF and
+> +	 * from 0xF28 to 0xFFF when the CAN FD feature is enabled.
+> +	 * The RXMGMASK, RX14MASK, RX15MASK, and RXFGMASK registers need to
+> +	 * be initialized as well. MCR[RFEN] must not be set during memory
+> +	 * initialization.
+> +	 */
+> +	reg_ctrl2 =3D priv->read(&regs->ctrl2);
+> +	reg_ctrl2 |=3D FLEXCAN_CTRL2_WRMFRZ;
+> +	priv->write(reg_ctrl2, &regs->ctrl2);
+> +
+> +	for (i =3D 0; i < ram_init[0].len; i++)
+> +		priv->write(0, (void __iomem *)regs + ram_init[0].offset + sizeof(u3=
+2) * i);
+> +
+> +	if (priv->can.ctrlmode & CAN_CTRLMODE_FD)
+> +		for (i =3D 0; i < ram_init[1].len; i++)
+> +			priv->write(0, (void __iomem *)regs + ram_init[1].offset + sizeof(u=
+32) * i);
+> +
+> +	reg_ctrl2 &=3D ~FLEXCAN_CTRL2_WRMFRZ;
+> +	priv->write(reg_ctrl2, &regs->ctrl2);
+> +}
+> +
+>  /* flexcan_chip_start
+>   *
+>   * this functions is entered with clocks enabled
+> @@ -1316,6 +1380,9 @@ static int flexcan_chip_start(struct net_device *=
+dev)
+>  	if (err)
+>  		goto out_chip_disable;
+> =20
+> +	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_DISABLE_MECR)
+> +		flexcan_init_ram(dev);
 
-    rtl_op_sw_scan_start()
-      rtl_lps_leave()
+Can you test this on both layerscape SoCs (fsl,ls1021ar2-flexcan and
+fsl,lx2160ar1-flexcan)
 
-The following call chains were analyzed to be unsafe to block:
+> +
+>  	flexcan_set_bittiming(dev);
+> =20
+>  	/* MCR
+>=20
 
-    _rtl_pci_interrupt()
-      _rtl_pci_rx_interrupt()
-	  rtl_lps_leave()
+Marc
 
-    _rtl_pci_interrupt()
-      _rtl_pci_rx_interrupt()
-        rtl_is_special_data()
-	  rtl_lps_leave()
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-    _rtl_pci_interrupt()
-      _rtl_pci_rx_interrupt()
-        rtl_is_special_data()
-	  setup_special_tx()
-	    rtl_lps_leave()
 
-    _rtl_pci_interrupt()
-      _rtl_pci_tx_isr
-        rtl_lps_leave()
+--rBw4Bw9oUodFGwWuP5KrpQ0FSuNiwWUzp--
 
-      halbtc_leave_lps()
-        rtl_lps_leave()
+--EnGgLJ2mMBFUXi6ZsgBqEKkISL3OqEbfX
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-This leaves four callers of rtl_lps_enter/leave() where the analyzis
-stopped dead in the maze of several nested pointer based callchains and
-lack of rtlwifi hardware to debug this via tracing:
+-----BEGIN PGP SIGNATURE-----
 
-     halbtc_leave_lps(), halbtc_enter_lps(), halbtc_normal_lps(),
-     halbtc_pre_normal_lps()
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9w7VUACgkQqclaivrt
+76nL0QgAmzClIdFl8eq/a5cFApvxP/+lZaDMUg8iSw660wgBy8ycLZyRXf4xbEpx
+/br7zFkcl1140z5CKhDssQoVuzQk9GDUNf05UTaT5bFwN5Wa1h1XlNPolrLnnyzv
+o1dAGSgF1tOxdgHygE6XEUiJUz5UnTlGxVAxcCLLwnxZ2Isyzoc64wpjBqq7xElC
+CLe38v+lwcTJv66PWou8+W8t4FBHq9gwil0Hl9EO8MGeh/t2U+lJNgoz83JlivQ6
+mRjBpeoS6pVTBvxIJYAr8cPsNiYq7/PPQTEEm7EGUy9bUPiV/cZZnLgo0ZQghgMx
+GpaMJQE/5ls8yJLbDf9zX/Y/AD2ddQ==
+=Urqu
+-----END PGP SIGNATURE-----
 
-These four have been cautionally marked to be unable to block which is the
-safe option, but the rtwifi wizards should be able to clarify that.
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ping-Ke Shih <pkshih@realtek.com>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-
----
- drivers/net/wireless/realtek/rtlwifi/base.c                   |    8 +++---
- drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c |   12 ++++++----
- drivers/net/wireless/realtek/rtlwifi/core.c                   |    6 ++---
- drivers/net/wireless/realtek/rtlwifi/pci.c                    |    4 +--
- drivers/net/wireless/realtek/rtlwifi/ps.c                     |    8 +++---
- drivers/net/wireless/realtek/rtlwifi/ps.h                     |    4 +--
- 6 files changed, 23 insertions(+), 19 deletions(-)
-
---- a/drivers/net/wireless/realtek/rtlwifi/base.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/base.c
-@@ -1456,7 +1456,7 @@ static void setup_special_tx(struct rtl_
- 	if (rtlpriv->cfg->ops->get_btc_status())
- 		rtlpriv->btcoexist.btc_ops->btc_special_packet_notify(
- 					rtlpriv, type);
--	rtl_lps_leave(hw);
-+	rtl_lps_leave(hw, false);
- 	ppsc->last_delaylps_stamp_jiffies = jiffies;
- }
- 
-@@ -1546,7 +1546,7 @@ u8 rtl_is_special_data(struct ieee80211_
- 
- 		if (is_tx) {
- 			rtlpriv->ra.is_special_data = true;
--			rtl_lps_leave(hw);
-+			rtl_lps_leave(hw, false);
- 			ppsc->last_delaylps_stamp_jiffies = jiffies;
- 
- 			setup_special_tx(rtlpriv, ppsc, PACKET_EAPOL);
-@@ -2147,9 +2147,9 @@ static void rtl_watchdog_wq_callback(str
- 		if (rtlpriv->link_info.num_rx_inperiod +
- 		      rtlpriv->link_info.num_tx_inperiod > 8 ||
- 		    rtlpriv->link_info.num_rx_inperiod > 2)
--			rtl_lps_leave(hw);
-+			rtl_lps_leave(hw, true);
- 		else
--			rtl_lps_enter(hw);
-+			rtl_lps_enter(hw, true);
- 
- label_lps_done:
- 		;
---- a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
-@@ -285,7 +285,8 @@ static void halbtc_leave_lps(struct btc_
- 
- 	btcoexist->bt_info.bt_ctrl_lps = true;
- 	btcoexist->bt_info.bt_lps_on = false;
--	rtl_lps_leave(rtlpriv->mac80211.hw);
-+	/* FIXME: Context is unclear. Is it allowed to block? */
-+	rtl_lps_leave(rtlpriv->mac80211.hw, false);
- }
- 
- static void halbtc_enter_lps(struct btc_coexist *btcoexist)
-@@ -306,7 +307,8 @@ static void halbtc_enter_lps(struct btc_
- 
- 	btcoexist->bt_info.bt_ctrl_lps = true;
- 	btcoexist->bt_info.bt_lps_on = true;
--	rtl_lps_enter(rtlpriv->mac80211.hw);
-+	/* FIXME: Context is unclear. Is it allowed to block? */
-+	rtl_lps_enter(rtlpriv->mac80211.hw, false);
- }
- 
- static void halbtc_normal_lps(struct btc_coexist *btcoexist)
-@@ -317,7 +319,8 @@ static void halbtc_normal_lps(struct btc
- 
- 	if (btcoexist->bt_info.bt_ctrl_lps) {
- 		btcoexist->bt_info.bt_lps_on = false;
--		rtl_lps_leave(rtlpriv->mac80211.hw);
-+		/* FIXME: Context is unclear. Is it allowed to block? */
-+		rtl_lps_leave(rtlpriv->mac80211.hw, false);
- 		btcoexist->bt_info.bt_ctrl_lps = false;
- 	}
- }
-@@ -328,7 +331,8 @@ static void halbtc_pre_normal_lps(struct
- 
- 	if (btcoexist->bt_info.bt_ctrl_lps) {
- 		btcoexist->bt_info.bt_lps_on = false;
--		rtl_lps_leave(rtlpriv->mac80211.hw);
-+		/* FIXME: Context is unclear. Is it allowed to block? */
-+		rtl_lps_leave(rtlpriv->mac80211.hw, false);
- 	}
- }
- 
---- a/drivers/net/wireless/realtek/rtlwifi/core.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/core.c
-@@ -544,7 +544,7 @@ static int rtl_op_suspend(struct ieee802
- 	rtlhal->driver_is_goingto_unload = true;
- 	rtlhal->enter_pnp_sleep = true;
- 
--	rtl_lps_leave(hw);
-+	rtl_lps_leave(hw, true);
- 	rtl_op_stop(hw);
- 	device_set_wakeup_enable(wiphy_dev(hw->wiphy), true);
- 	return 0;
-@@ -1151,7 +1151,7 @@ static void rtl_op_bss_info_changed(stru
- 			mstatus = RT_MEDIA_DISCONNECT;
- 
- 			if (mac->link_state == MAC80211_LINKED)
--				rtl_lps_leave(hw);
-+				rtl_lps_leave(hw, true);
- 			if (ppsc->p2p_ps_info.p2p_ps_mode > P2P_PS_NONE)
- 				rtl_p2p_ps_cmd(hw, P2P_PS_DISABLE);
- 			mac->link_state = MAC80211_NOLINK;
-@@ -1448,7 +1448,7 @@ static void rtl_op_sw_scan_start(struct
- 	}
- 
- 	if (mac->link_state == MAC80211_LINKED) {
--		rtl_lps_leave(hw);
-+		rtl_lps_leave(hw, true);
- 		mac->link_state = MAC80211_LINKED_SCANNING;
- 	} else {
- 		rtl_ips_nic_on(hw);
---- a/drivers/net/wireless/realtek/rtlwifi/pci.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/pci.c
-@@ -622,7 +622,7 @@ static void _rtl_pci_tx_isr(struct ieee8
- 	if (((rtlpriv->link_info.num_rx_inperiod +
- 	      rtlpriv->link_info.num_tx_inperiod) > 8) ||
- 	      rtlpriv->link_info.num_rx_inperiod > 2)
--		rtl_lps_leave(hw);
-+		rtl_lps_leave(hw, false);
- }
- 
- static int _rtl_pci_init_one_rxdesc(struct ieee80211_hw *hw,
-@@ -875,7 +875,7 @@ static void _rtl_pci_rx_interrupt(struct
- 		if (((rtlpriv->link_info.num_rx_inperiod +
- 		      rtlpriv->link_info.num_tx_inperiod) > 8) ||
- 		      rtlpriv->link_info.num_rx_inperiod > 2)
--			rtl_lps_leave(hw);
-+			rtl_lps_leave(hw, false);
- 		skb = new_skb;
- no_new:
- 		if (rtlpriv->use_new_trx_flow) {
---- a/drivers/net/wireless/realtek/rtlwifi/ps.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/ps.c
-@@ -653,22 +653,22 @@ void rtl_lps_change_work_callback(struct
- }
- EXPORT_SYMBOL_GPL(rtl_lps_change_work_callback);
- 
--void rtl_lps_enter(struct ieee80211_hw *hw)
-+void rtl_lps_enter(struct ieee80211_hw *hw, bool may_block)
- {
- 	struct rtl_priv *rtlpriv = rtl_priv(hw);
- 
--	if (!in_interrupt())
-+	if (may_block)
- 		return rtl_lps_enter_core(hw);
- 	rtlpriv->enter_ps = true;
- 	schedule_work(&rtlpriv->works.lps_change_work);
- }
- EXPORT_SYMBOL_GPL(rtl_lps_enter);
- 
--void rtl_lps_leave(struct ieee80211_hw *hw)
-+void rtl_lps_leave(struct ieee80211_hw *hw, bool may_block)
- {
- 	struct rtl_priv *rtlpriv = rtl_priv(hw);
- 
--	if (!in_interrupt())
-+	if (may_block)
- 		return rtl_lps_leave_core(hw);
- 	rtlpriv->enter_ps = false;
- 	schedule_work(&rtlpriv->works.lps_change_work);
---- a/drivers/net/wireless/realtek/rtlwifi/ps.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/ps.h
-@@ -11,8 +11,8 @@ bool rtl_ps_disable_nic(struct ieee80211
- void rtl_ips_nic_off(struct ieee80211_hw *hw);
- void rtl_ips_nic_on(struct ieee80211_hw *hw);
- void rtl_ips_nic_off_wq_callback(struct work_struct *work);
--void rtl_lps_enter(struct ieee80211_hw *hw);
--void rtl_lps_leave(struct ieee80211_hw *hw);
-+void rtl_lps_enter(struct ieee80211_hw *hw, bool may_block);
-+void rtl_lps_leave(struct ieee80211_hw *hw, bool may_block);
- 
- void rtl_lps_set_psmode(struct ieee80211_hw *hw, u8 rt_psmode);
- 
-
+--EnGgLJ2mMBFUXi6ZsgBqEKkISL3OqEbfX--
