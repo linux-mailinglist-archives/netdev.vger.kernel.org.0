@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3295627A334
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55F4B27A33F
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727092AbgI0T53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 15:57:29 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:41032 "EHLO
+        id S1726638AbgI0T6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 15:58:03 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:40792 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726885AbgI0T5T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:57:19 -0400
-Message-Id: <20200927194920.730139599@linutronix.de>
+        with ESMTP id S1726931AbgI0T5U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:57:20 -0400
+Message-Id: <20200927194920.824108021@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601236636;
+        s=2020; t=1601236638;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=EEFvcB/PwX9I89XLy131RQtWz3cYksfF3sbWg1NgDKQ=;
-        b=18wUYjsdKMHJjgk4Us6khomilIdN25/SxDKIyuwyy0mSiSW/AeUP1NyRsE5FG33qrGO7QW
-        jAw9J0tpj7pkffmpsb/I2xP+dFW27rpV0wEiciSCAhxQ4lnNpojA/FRCq5TQQMHJs+lphz
-        fgNiUXBSNsmvPrgof215OGNS4MuZnGdrVxgP/w3I5rVQS+sGNlkRrVZGKmKgjWg+gIT3ZC
-        R3cytjZp8ns5FunZ7qOWr6CiFfel+oq9NIgBWersYnxzOkskjX86LkiuElpQ5nTvA14pAx
-        TSOmfZ9AKUnaegaoe9jBxklb5wqP3NKRYyZYH2Da+kRNpZ7XfqbG/dYW5gWETg==
+        bh=83qDvGuLXzUs/9fusW5YkDt4paS3sBnoEIk7Nou3kd0=;
+        b=qDV71a+1GCvWhc9lufX4zEQV7QRn9/bZHT8FQITekgxUS3UAIr0pogPAdA1ExY69S+jY/y
+        fkbAjNZifsS1uaBZ56OIZlb/i3fbugRM4FDd4AfJ2FXShvtx00KA5Db9UVXjW6mUGqUgfg
+        rinNQlXj5sEvgqNILV8BDzifz0AdiMlUsSB1znzPo1Q6Pmi+re17ux1P+Oi4e3ZiLtwaIg
+        Bsr9UzJiR/me2V1yYQ6eX720Q8Itoag1PNITz/wjwjbcca850NRUnYK12EbcnOuGtOvg5Z
+        7iEEqlEw6MUfb6qe7q0AmBk4MYMjT4fHF9lFdtOJUh92ScVj2MbYTXe8t+QmQg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601236636;
+        s=2020e; t=1601236638;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=EEFvcB/PwX9I89XLy131RQtWz3cYksfF3sbWg1NgDKQ=;
-        b=Uk0vLGNob7iKmswDXccCQehW+RKFAsRxN//Pf6BDgW08Dcoqm6jDgpCxycTWKPE0t0GELZ
-        tesv+y7MgSj9WRBg==
-Date:   Sun, 27 Sep 2020 21:48:55 +0200
+        bh=83qDvGuLXzUs/9fusW5YkDt4paS3sBnoEIk7Nou3kd0=;
+        b=VP4vqOvBpurOsdqBLfFebJsD1S6lOmeXln+fiJ3timSPl/o5O/7c6kKdrszLlbgNceW6o4
+        F9IPNZN2VRbcQUDg==
+Date:   Sun, 27 Sep 2020 21:48:56 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -39,6 +39,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Paul McKenney <paulmck@kernel.org>,
         Matthew Wilcox <willy@infradead.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Christian Benvenuti <benve@cisco.com>,
@@ -51,7 +52,6 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Jay Cliburn <jcliburn@gmail.com>,
         Chris Snook <chris.snook@gmail.com>,
         Vishal Kulkarni <vishal@chelsio.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         intel-wired-lan@lists.osuosl.org,
         Shannon Nelson <snelson@pensando.io>,
         Pensando Drivers <drivers@pensando.io>,
@@ -87,7 +87,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch 09/35] net: fec_mpc52xx: Replace in_interrupt() usage
+Subject: [patch 10/35] net: intel: Remove in_interrupt() warnings
 References: <20200927194846.045411263@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -98,71 +98,130 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-The usage of in_interrupt() in drivers is phased out and Linus clearly
-requested that code which changes behaviour depending on context should
-either be seperated or the context be conveyed in an argument passed by the
-caller, which usually knows the context.
+in_interrupt() is ill defined and does not provide what the name
+suggests. The usage especially in driver code is deprecated and a tree wide
+effort to clean up and consolidate the (ab)usage of in_interrupt() and
+related checks is happening.
 
-mpc52xx_fec_stop() uses in_interrupt() to check if it is safe to sleep. All
-callers run in well defined contexts.
+In this case the checks cover only parts of the contexts in which these
+functions cannot be called. They fail to detect preemption or interrupt
+disabled invocations.
 
-Pass an argument from the callers indicating whether it is safe to sleep.
+As the functions which are invoked from the various places contain already
+a broad variety of checks (always enabled or debug option dependent) cover
+all invalid conditions already, there is no point in having inconsistent
+warnings in those drivers.
+
+Just remove them.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: netdev@vger.kernel.org
 
 ---
- drivers/net/ethernet/freescale/fec_mpc52xx.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/e1000/e1000_main.c     |    1 -
+ drivers/net/ethernet/intel/fm10k/fm10k_pci.c      |    2 --
+ drivers/net/ethernet/intel/i40e/i40e_main.c       |    4 ----
+ drivers/net/ethernet/intel/ice/ice_main.c         |    1 -
+ drivers/net/ethernet/intel/igb/igb_main.c         |    1 -
+ drivers/net/ethernet/intel/igc/igc_main.c         |    1 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c     |    1 -
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c |    2 --
+ 8 files changed, 13 deletions(-)
 
---- a/drivers/net/ethernet/freescale/fec_mpc52xx.c
-+++ b/drivers/net/ethernet/freescale/fec_mpc52xx.c
-@@ -74,7 +74,7 @@ struct mpc52xx_fec_priv {
- static irqreturn_t mpc52xx_fec_interrupt(int, void *);
- static irqreturn_t mpc52xx_fec_rx_interrupt(int, void *);
- static irqreturn_t mpc52xx_fec_tx_interrupt(int, void *);
--static void mpc52xx_fec_stop(struct net_device *dev);
-+static void mpc52xx_fec_stop(struct net_device *dev, bool may_sleep);
- static void mpc52xx_fec_start(struct net_device *dev);
- static void mpc52xx_fec_reset(struct net_device *dev);
+--- a/drivers/net/ethernet/intel/e1000/e1000_main.c
++++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
+@@ -534,7 +534,6 @@ void e1000_down(struct e1000_adapter *ad
  
-@@ -283,7 +283,7 @@ static int mpc52xx_fec_close(struct net_
- 
- 	netif_stop_queue(dev);
- 
--	mpc52xx_fec_stop(dev);
-+	mpc52xx_fec_stop(dev, true);
- 
- 	mpc52xx_fec_free_rx_buffers(dev, priv->rx_dmatsk);
- 
-@@ -693,7 +693,7 @@ static void mpc52xx_fec_start(struct net
-  *
-  * stop all activity on fec and empty dma buffers
-  */
--static void mpc52xx_fec_stop(struct net_device *dev)
-+static void mpc52xx_fec_stop(struct net_device *dev, bool may_sleep)
+ void e1000_reinit_locked(struct e1000_adapter *adapter)
  {
- 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
- 	struct mpc52xx_fec __iomem *fec = priv->fec;
-@@ -706,7 +706,7 @@ static void mpc52xx_fec_stop(struct net_
- 	bcom_disable(priv->rx_dmatsk);
+-	WARN_ON(in_interrupt());
+ 	while (test_and_set_bit(__E1000_RESETTING, &adapter->flags))
+ 		msleep(1);
  
- 	/* Wait for tx queue to drain, but only if we're in process context */
--	if (!in_interrupt()) {
-+	if (may_sleep) {
- 		timeout = jiffies + msecs_to_jiffies(2000);
- 		while (time_before(jiffies, timeout) &&
- 				!bcom_queue_empty(priv->tx_dmatsk))
-@@ -738,7 +738,7 @@ static void mpc52xx_fec_reset(struct net
- 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
- 	struct mpc52xx_fec __iomem *fec = priv->fec;
+--- a/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
++++ b/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
+@@ -221,8 +221,6 @@ static bool fm10k_prepare_for_reset(stru
+ {
+ 	struct net_device *netdev = interface->netdev;
  
--	mpc52xx_fec_stop(dev);
-+	mpc52xx_fec_stop(dev, false);
+-	WARN_ON(in_interrupt());
+-
+ 	/* put off any impending NetWatchDogTimeout */
+ 	netif_trans_update(netdev);
  
- 	out_be32(&fec->rfifo_status, in_be32(&fec->rfifo_status));
- 	out_be32(&fec->reset_cntrl, FEC_RESET_CNTRL_RESET_FIFO);
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -6689,7 +6689,6 @@ static void i40e_vsi_reinit_locked(struc
+ {
+ 	struct i40e_pf *pf = vsi->back;
+ 
+-	WARN_ON(in_interrupt());
+ 	while (test_and_set_bit(__I40E_CONFIG_BUSY, pf->state))
+ 		usleep_range(1000, 2000);
+ 	i40e_down(vsi);
+@@ -8462,9 +8461,6 @@ void i40e_do_reset(struct i40e_pf *pf, u
+ {
+ 	u32 val;
+ 
+-	WARN_ON(in_interrupt());
+-
+-
+ 	/* do the biggest reset indicated */
+ 	if (reset_flags & BIT_ULL(__I40E_GLOBAL_RESET_REQUESTED)) {
+ 
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -486,7 +486,6 @@ static void ice_do_reset(struct ice_pf *
+ 	struct ice_hw *hw = &pf->hw;
+ 
+ 	dev_dbg(dev, "reset_type 0x%x requested\n", reset_type);
+-	WARN_ON(in_interrupt());
+ 
+ 	ice_prepare_for_reset(pf);
+ 
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -2220,7 +2220,6 @@ void igb_down(struct igb_adapter *adapte
+ 
+ void igb_reinit_locked(struct igb_adapter *adapter)
+ {
+-	WARN_ON(in_interrupt());
+ 	while (test_and_set_bit(__IGB_RESETTING, &adapter->state))
+ 		usleep_range(1000, 2000);
+ 	igb_down(adapter);
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -3831,7 +3831,6 @@ void igc_down(struct igc_adapter *adapte
+ 
+ void igc_reinit_locked(struct igc_adapter *adapter)
+ {
+-	WARN_ON(in_interrupt());
+ 	while (test_and_set_bit(__IGC_RESETTING, &adapter->state))
+ 		usleep_range(1000, 2000);
+ 	igc_down(adapter);
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -5677,7 +5677,6 @@ static void ixgbe_up_complete(struct ixg
+ 
+ void ixgbe_reinit_locked(struct ixgbe_adapter *adapter)
+ {
+-	WARN_ON(in_interrupt());
+ 	/* put off any impending NetWatchDogTimeout */
+ 	netif_trans_update(adapter->netdev);
+ 
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -2526,8 +2526,6 @@ void ixgbevf_down(struct ixgbevf_adapter
+ 
+ void ixgbevf_reinit_locked(struct ixgbevf_adapter *adapter)
+ {
+-	WARN_ON(in_interrupt());
+-
+ 	while (test_and_set_bit(__IXGBEVF_RESETTING, &adapter->state))
+ 		msleep(1);
+ 
 
