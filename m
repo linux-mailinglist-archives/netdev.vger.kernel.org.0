@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A03127A3A7
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB31127A3AA
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:01:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727485AbgI0UA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 16:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38592 "EHLO
+        id S1727512AbgI0UA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 16:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727032AbgI0T5Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:57:24 -0400
+        with ESMTP id S1727037AbgI0T5Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:57:25 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487DDC0613D3;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6749C0613D5;
         Sun, 27 Sep 2020 12:57:24 -0700 (PDT)
-Message-Id: <20200927194921.137019811@linutronix.de>
+Message-Id: <20200927194921.248795602@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601236641;
+        s=2020; t=1601236643;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=8s7EX2UsQWBhynqUTDd/u8Iv0n6j36sPbMtmCyDJsXY=;
-        b=lzOEqmioF//DgrijcaJYSRsf+YV01CsScdcw9tX79nttFriGA1I6hu2IkEtbuhvmNFVtEm
-        C83RACdG8DHmRN6Otr4E0ijc94wqzv5/KkGesIsSnKU9m9raro0j7Rx4W4yzzr7s9nUUxL
-        s8DcnuH9LuUX0ZQyqOrU5YY807/jTAloRukEG7CL+w/8udtzFa0IPSA0vdsFE4pDs2F1Lh
-        FnBI7fewv/INchgNbCQ/5kWUZZBBUFiTVmtyduitqW2P96GVxQAvbmQCBPBeIsgGqDstEe
-        +A/mlgwlVnexXesZzRSa5TVlhQG6vtEFGHYhUXfpbzGqC9YtNUJ2Z9WnFIk/aw==
+        bh=Sj3WauQU8mi402/vRACel76kLJxRIV6EoAhfHNnxpZY=;
+        b=n0fgVb3Ug96wov56+pRrgznJLENd83NZztxL5cyqW/rVs62U4xh9ED8AyXKo/EjqPo+xBF
+        peEpgiPXH9pqfPTHuc8ujx6mE3CqTAmG67DnVLbNpu8RBpazQS1wh901eYwfW/W5rp9T6+
+        mQTOLfBSNd9kRiHuwpgIPESkTjF4A0NRGBVdql3pJmsnTAOFj5m6KfoyQOWe6ssNzkS7iT
+        eBAMx2FpFw/opevgcSiqx8diP/c/uxdfw1c8BkohEzqYYLzW4BgmEd0QGstEPUth1aG0Q7
+        6fZI2on8pqr2ghE5M7Tv3ZHOD6xf+1FjO7XiKcla80cDj1W5WEtQihQWFA0ycA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601236641;
+        s=2020e; t=1601236643;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=8s7EX2UsQWBhynqUTDd/u8Iv0n6j36sPbMtmCyDJsXY=;
-        b=wUWF39OM0ztNTR2+gM6mKrXzVKN6S4B2BfM4TaXs0ECeVzREBTC4rxvaUxiISx1zOW+6zr
-        65wFpaA5Hiqb5GBQ==
-Date:   Sun, 27 Sep 2020 21:48:59 +0200
+        bh=Sj3WauQU8mi402/vRACel76kLJxRIV6EoAhfHNnxpZY=;
+        b=MxuTsE5o1wR/CArNtxLqX7nQvCbFh3lkQwB/tLVdXvBcDOcBMzl1i35xwzuVQpDS6q9W1t
+        OM74ajQF8JW2zFDw==
+Date:   Sun, 27 Sep 2020 21:49:00 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -42,9 +42,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Paul McKenney <paulmck@kernel.org>,
         Matthew Wilcox <willy@infradead.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Christian Benvenuti <benve@cisco.com>,
@@ -61,7 +59,9 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         intel-wired-lan@lists.osuosl.org,
         Shannon Nelson <snelson@pensando.io>,
         Pensando Drivers <drivers@pensando.io>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
         Edward Cree <ecree@solarflare.com>,
         Martin Habets <mhabets@solarflare.com>,
@@ -90,7 +90,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch 13/35] net: mdiobus: Remove WARN_ON_ONCE(in_interrupt())
+Subject: [patch 14/35] net: natsemi: Replace in_interrupt() usage.
 References: <20200927194846.045411263@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -99,88 +99,144 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+The usage of in_interrupt() in drivers is phased out and Linus clearly
+requested that code which changes behaviour depending on context should
+either be seperated or the context be conveyed in an argument passed by the
+caller, which usually knows the context.
 
-in_interrupt() is ill defined and does not provide what the name
-suggests. The usage especially in driver code is deprecated and a tree wide
-effort to clean up and consolidate the (ab)usage of in_interrupt() and
-related checks is happening.
+sonic_quiesce() uses 'in_interrupt() || irqs_disabled()' to chose either
+udelay() or usleep_range() in the wait loop.
 
-In this case the check covers only parts of the contexts in which these
-functions cannot be called. It fails to detect preemption or interrupt
-disabled invocations.
+In all callchains leading to it the context is well defined and known.
 
-As the functions which contain these warnings invoke mutex_lock() which
-contains a broad variety of checks (always enabled or debug option
-dependent) and therefore covers all invalid conditions already, there is no
-point in having inconsistent warnings in those drivers. The conditional
-return is not really valuable in practice either.
-
-Just remove them.
+Add a 'may_sleep' argument and pass it through the various callchains
+leading to this function.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Russell King <linux@armlinux.org.uk>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: netdev@vger.kernel.org
 
 ---
- drivers/net/phy/mdio_bus.c |   15 ---------------
- 1 file changed, 15 deletions(-)
+ drivers/net/ethernet/natsemi/sonic.c |   24 ++++++++++++------------
+ drivers/net/ethernet/natsemi/sonic.h |    2 +-
+ 2 files changed, 13 insertions(+), 13 deletions(-)
 
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -825,9 +825,6 @@ int mdiobus_read_nested(struct mii_bus *
- {
- 	int retval;
+--- a/drivers/net/ethernet/natsemi/sonic.c
++++ b/drivers/net/ethernet/natsemi/sonic.c
+@@ -143,7 +143,7 @@ static int sonic_open(struct net_device
+ 	/*
+ 	 * Initialize the SONIC
+ 	 */
+-	sonic_init(dev);
++	sonic_init(dev, true);
  
--	if (WARN_ON_ONCE(in_interrupt()))
--		return -EINVAL;
--
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 	retval = __mdiobus_read(bus, addr, regnum);
- 	mutex_unlock(&bus->mdio_lock);
-@@ -850,9 +847,6 @@ int mdiobus_read(struct mii_bus *bus, in
- {
- 	int retval;
+ 	netif_start_queue(dev);
  
--	if (WARN_ON_ONCE(in_interrupt()))
--		return -EINVAL;
--
- 	mutex_lock(&bus->mdio_lock);
- 	retval = __mdiobus_read(bus, addr, regnum);
- 	mutex_unlock(&bus->mdio_lock);
-@@ -879,9 +873,6 @@ int mdiobus_write_nested(struct mii_bus
- {
- 	int err;
+@@ -153,7 +153,7 @@ static int sonic_open(struct net_device
+ }
  
--	if (WARN_ON_ONCE(in_interrupt()))
--		return -EINVAL;
--
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 	err = __mdiobus_write(bus, addr, regnum, val);
- 	mutex_unlock(&bus->mdio_lock);
-@@ -905,9 +896,6 @@ int mdiobus_write(struct mii_bus *bus, i
+ /* Wait for the SONIC to become idle. */
+-static void sonic_quiesce(struct net_device *dev, u16 mask)
++static void sonic_quiesce(struct net_device *dev, u16 mask, bool may_sleep)
  {
- 	int err;
+ 	struct sonic_local * __maybe_unused lp = netdev_priv(dev);
+ 	int i;
+@@ -163,7 +163,7 @@ static void sonic_quiesce(struct net_dev
+ 		bits = SONIC_READ(SONIC_CMD) & mask;
+ 		if (!bits)
+ 			return;
+-		if (irqs_disabled() || in_interrupt())
++		if (!may_sleep)
+ 			udelay(20);
+ 		else
+ 			usleep_range(100, 200);
+@@ -187,7 +187,7 @@ static int sonic_close(struct net_device
+ 	 * stop the SONIC, disable interrupts
+ 	 */
+ 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXDIS);
+-	sonic_quiesce(dev, SONIC_CR_ALL);
++	sonic_quiesce(dev, SONIC_CR_ALL, true);
  
--	if (WARN_ON_ONCE(in_interrupt()))
--		return -EINVAL;
--
- 	mutex_lock(&bus->mdio_lock);
- 	err = __mdiobus_write(bus, addr, regnum, val);
- 	mutex_unlock(&bus->mdio_lock);
-@@ -929,9 +917,6 @@ int mdiobus_modify(struct mii_bus *bus,
+ 	SONIC_WRITE(SONIC_IMR, 0);
+ 	SONIC_WRITE(SONIC_ISR, 0x7fff);
+@@ -229,7 +229,7 @@ static void sonic_tx_timeout(struct net_
+ 	 * disable all interrupts before releasing DMA buffers
+ 	 */
+ 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXDIS);
+-	sonic_quiesce(dev, SONIC_CR_ALL);
++	sonic_quiesce(dev, SONIC_CR_ALL, false);
+ 
+ 	SONIC_WRITE(SONIC_IMR, 0);
+ 	SONIC_WRITE(SONIC_ISR, 0x7fff);
+@@ -246,7 +246,7 @@ static void sonic_tx_timeout(struct net_
+ 		}
+ 	}
+ 	/* Try to restart the adaptor. */
+-	sonic_init(dev);
++	sonic_init(dev, false);
+ 	lp->stats.tx_errors++;
+ 	netif_trans_update(dev); /* prevent tx timeout */
+ 	netif_wake_queue(dev);
+@@ -692,9 +692,9 @@ static void sonic_multicast_list(struct
+ 
+ 			/* LCAM and TXP commands can't be used simultaneously */
+ 			spin_lock_irqsave(&lp->lock, flags);
+-			sonic_quiesce(dev, SONIC_CR_TXP);
++			sonic_quiesce(dev, SONIC_CR_TXP, false);
+ 			SONIC_WRITE(SONIC_CMD, SONIC_CR_LCAM);
+-			sonic_quiesce(dev, SONIC_CR_LCAM);
++			sonic_quiesce(dev, SONIC_CR_LCAM, false);
+ 			spin_unlock_irqrestore(&lp->lock, flags);
+ 		}
+ 	}
+@@ -708,7 +708,7 @@ static void sonic_multicast_list(struct
+ /*
+  * Initialize the SONIC ethernet controller.
+  */
+-static int sonic_init(struct net_device *dev)
++static int sonic_init(struct net_device *dev, bool may_sleep)
  {
- 	int err;
+ 	struct sonic_local *lp = netdev_priv(dev);
+ 	int i;
+@@ -730,7 +730,7 @@ static int sonic_init(struct net_device
+ 	 */
+ 	SONIC_WRITE(SONIC_CMD, 0);
+ 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXDIS | SONIC_CR_STP);
+-	sonic_quiesce(dev, SONIC_CR_ALL);
++	sonic_quiesce(dev, SONIC_CR_ALL, may_sleep);
  
--	if (WARN_ON_ONCE(in_interrupt()))
--		return -EINVAL;
--
- 	mutex_lock(&bus->mdio_lock);
- 	err = __mdiobus_modify_changed(bus, addr, regnum, mask, set);
- 	mutex_unlock(&bus->mdio_lock);
+ 	/*
+ 	 * initialize the receive resource area
+@@ -759,7 +759,7 @@ static int sonic_init(struct net_device
+ 	netif_dbg(lp, ifup, dev, "%s: issuing RRRA command\n", __func__);
+ 
+ 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RRRA);
+-	sonic_quiesce(dev, SONIC_CR_RRRA);
++	sonic_quiesce(dev, SONIC_CR_RRRA, may_sleep);
+ 
+ 	/*
+ 	 * Initialize the receive descriptors so that they
+@@ -834,7 +834,7 @@ static int sonic_init(struct net_device
+ 	 * load the CAM
+ 	 */
+ 	SONIC_WRITE(SONIC_CMD, SONIC_CR_LCAM);
+-	sonic_quiesce(dev, SONIC_CR_LCAM);
++	sonic_quiesce(dev, SONIC_CR_LCAM, may_sleep);
+ 
+ 	/*
+ 	 * enable receiver, disable loopback
+--- a/drivers/net/ethernet/natsemi/sonic.h
++++ b/drivers/net/ethernet/natsemi/sonic.h
+@@ -338,7 +338,7 @@ static void sonic_rx(struct net_device *
+ static int sonic_close(struct net_device *dev);
+ static struct net_device_stats *sonic_get_stats(struct net_device *dev);
+ static void sonic_multicast_list(struct net_device *dev);
+-static int sonic_init(struct net_device *dev);
++static int sonic_init(struct net_device *dev, bool may_sleep);
+ static void sonic_tx_timeout(struct net_device *dev, unsigned int txqueue);
+ static void sonic_msg_init(struct net_device *dev);
+ static int sonic_alloc_descriptors(struct net_device *dev);
 
