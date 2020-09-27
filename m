@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B6FB27A37C
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98B8927A37B
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727412AbgI0T7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 15:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
+        id S1727168AbgI0T7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 15:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726632AbgI0T6B (ORCPT
+        with ESMTP id S1726621AbgI0T6B (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 15:58:01 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3352C0613D9;
-        Sun, 27 Sep 2020 12:57:30 -0700 (PDT)
-Message-Id: <20200927194921.746408581@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF89C0613DB;
+        Sun, 27 Sep 2020 12:57:32 -0700 (PDT)
+Message-Id: <20200927194921.839848434@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601236649;
+        s=2020; t=1601236650;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=zmPopyS6CXMMDwaGP3m4hwd4gLG9jhR6sVM2g3xlddU=;
-        b=XTJskUJmRKV81fGPC40eYW25HtP10YSEqIh7BdkU3p6rASbqFmFBs3o6tLYpK8PIwciw2L
-        rGTgrzg1YC3UTjV3aofvi7QzmEUFvhOk4QcAJ3ouaoudqz1BiAbnCOQUY41sdKfmzwHcir
-        uquyAVj3ouMapLsuUeDXC+Hc5Sa8gmXzMWAp94KkcxVhN7bM96FSExXhSRVAwwQyz5P15N
-        Rl/2xZA34G4QfuDYTQtBqcs1M9EYiqVFfxpP20H/jDekVH04rJG0Q0uUBwS8/umOLgW06F
-        6zZB0afQsxN2XkCZa1RyM+rl7RpOYsgYYrvUE6hkpT/cOmlN8ctBg3Cp2wjgBg==
+        bh=E8BWshtU8a/PkQjFPYy93BN17JLJsGh02VUnxk0upzE=;
+        b=N+JwA8r3ht2f/M3ne58BpHfK1GOt4GMqgR18UWPfudBaJBFVIMdq0c1il9j4d+HHmtwtzs
+        dmqcYnudPntJFjQw+NeBhPlRkwqSgONwm1d7AhSB6RMMtlKXUSrO/zsTuOPAOq0SzUhg72
+        ZYvkb2hSCYvJCyLpN5Nw1itasArreCiHk2i661yoGbLq2npjGEWG3aIJgA2yx7gcFqOoeX
+        s3wVL+sMCKLksBDWA0g69AYJhaNQL0jnR8gZXl3eqiXQxdYi914TlLexu6dI2Y6U7nqN5H
+        5n1t4HiKzEK+gZC8Kb5q4zYumbZWOdMm39zvPowPfdmw12wBDSIyP1vvzR1+2g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601236649;
+        s=2020e; t=1601236650;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=zmPopyS6CXMMDwaGP3m4hwd4gLG9jhR6sVM2g3xlddU=;
-        b=NjRg9v14IvY/TnpQv3H0FbtqUGHV1yBeMufj1xl5cAKmkVeDgETr51HIDD/3MGK89vNB6w
-        opgsFzlZimgwQoCQ==
-Date:   Sun, 27 Sep 2020 21:49:05 +0200
+        bh=E8BWshtU8a/PkQjFPYy93BN17JLJsGh02VUnxk0upzE=;
+        b=4RL85lLhlslR61dMUmztot7BjIosLb2ekytQx92VaR4TQzSfM5fCdFe3L+k6GNbwDMYffR
+        V1pCph8cyROkLAAQ==
+Date:   Sun, 27 Sep 2020 21:49:06 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -42,13 +42,9 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Paul McKenney <paulmck@kernel.org>,
         Matthew Wilcox <willy@infradead.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Drake <dsd@gentoo.org>,
-        Ulrich Kunitz <kune@deine-taler.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Christian Benvenuti <benve@cisco.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, Christian Benvenuti <benve@cisco.com>,
         Govindarajulu Varadarajan <_govind@gmx.com>,
         Dave Miller <davem@davemloft.net>,
         Jonathan Corbet <corbet@lwn.net>,
@@ -69,7 +65,10 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
         Edward Cree <ecree@solarflare.com>,
         Martin Habets <mhabets@solarflare.com>,
-        Jon Mason <jdmason@kudzu.us>, linux-usb@vger.kernel.org,
+        Jon Mason <jdmason@kudzu.us>, Daniel Drake <dsd@gentoo.org>,
+        Ulrich Kunitz <kune@deine-taler.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Arend van Spriel <arend.vanspriel@broadcom.com>,
         Franky Lin <franky.lin@broadcom.com>,
@@ -91,7 +90,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch 19/35] net: zd1211rw: Remove ZD_ASSERT(in_interrupt())
+Subject: [patch 20/35] net: usb: kaweth: Replace kaweth_control() with
+ usb_control_msg()
 References: <20200927194846.045411263@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -102,38 +102,175 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-in_interrupt() is ill defined and does not provide what the name
-suggests. The usage especially in driver code is deprecated and
-a tree wide effort to clean up and consolidate the (ab)usage of
-in_interrupt() and related checks is happening.
+kaweth_control() is almost the same as usb_control_msg() except for the
+memory allocation mode (GFP_ATOMIC vs GFP_NOIO) and the in_interrupt()
+check.
 
-handle_regs_int() is always invoked as part of URB callback which is either
-invoked from hard or soft interrupt context.
+All the invocations of kaweth_control() are within the probe function in
+fully preemtible context so there is no reason to use atomic allocations,
+GFP_NOIO which is used by usb_control_msg() is perfectly fine.
 
-Remove the magic assertion.
+Replace kaweth_control() invocations from probe with usb_control_msg().
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Daniel Drake <dsd@gentoo.org>
-Cc: Ulrich Kunitz <kune@deine-taler.de>
-Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
+Cc: linux-usb@vger.kernel.org
 Cc: netdev@vger.kernel.org
 
 ---
- drivers/net/wireless/zydas/zd1211rw/zd_usb.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/usb/kaweth.c |   93 +++++++++++++++--------------------------------
+ 1 file changed, 30 insertions(+), 63 deletions(-)
 
---- a/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
-+++ b/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
-@@ -378,7 +378,6 @@ static inline void handle_regs_int(struc
- 	int len;
- 	u16 int_num;
+--- a/drivers/net/usb/kaweth.c
++++ b/drivers/net/usb/kaweth.c
+@@ -282,19 +282,13 @@ static int kaweth_control(struct kaweth_
+  ****************************************************************/
+ static int kaweth_read_configuration(struct kaweth_device *kaweth)
+ {
+-	int retval;
+-
+-	retval = kaweth_control(kaweth,
+-				usb_rcvctrlpipe(kaweth->dev, 0),
++	return usb_control_msg(kaweth->dev, usb_rcvctrlpipe(kaweth->dev, 0),
+ 				KAWETH_COMMAND_GET_ETHERNET_DESC,
+ 				USB_TYPE_VENDOR | USB_DIR_IN | USB_RECIP_DEVICE,
+-				0,
+-				0,
+-				(void *)&kaweth->configuration,
++				0, 0,
++				&kaweth->configuration,
+ 				sizeof(kaweth->configuration),
+ 				KAWETH_CONTROL_TIMEOUT);
+-
+-	return retval;
+ }
  
--	ZD_ASSERT(in_interrupt());
- 	spin_lock_irqsave(&intr->lock, flags);
+ /****************************************************************
+@@ -302,21 +296,14 @@ static int kaweth_read_configuration(str
+  ****************************************************************/
+ static int kaweth_set_urb_size(struct kaweth_device *kaweth, __u16 urb_size)
+ {
+-	int retval;
+-
+ 	netdev_dbg(kaweth->net, "Setting URB size to %d\n", (unsigned)urb_size);
  
- 	int_num = le16_to_cpu(*(__le16 *)(urb->transfer_buffer+2));
+-	retval = kaweth_control(kaweth,
+-				usb_sndctrlpipe(kaweth->dev, 0),
+-				KAWETH_COMMAND_SET_URB_SIZE,
+-				USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
+-				urb_size,
+-				0,
+-				(void *)&kaweth->scratch,
+-				0,
+-				KAWETH_CONTROL_TIMEOUT);
+-
+-	return retval;
++	return usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
++			       KAWETH_COMMAND_SET_URB_SIZE,
++			       USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
++			       urb_size, 0,
++			       &kaweth->scratch, 0,
++			       KAWETH_CONTROL_TIMEOUT);
+ }
+ 
+ /****************************************************************
+@@ -324,21 +311,14 @@ static int kaweth_set_urb_size(struct ka
+  ****************************************************************/
+ static int kaweth_set_sofs_wait(struct kaweth_device *kaweth, __u16 sofs_wait)
+ {
+-	int retval;
+-
+ 	netdev_dbg(kaweth->net, "Set SOFS wait to %d\n", (unsigned)sofs_wait);
+ 
+-	retval = kaweth_control(kaweth,
+-				usb_sndctrlpipe(kaweth->dev, 0),
+-				KAWETH_COMMAND_SET_SOFS_WAIT,
+-				USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
+-				sofs_wait,
+-				0,
+-				(void *)&kaweth->scratch,
+-				0,
+-				KAWETH_CONTROL_TIMEOUT);
+-
+-	return retval;
++	return usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
++			       KAWETH_COMMAND_SET_SOFS_WAIT,
++			       USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
++			       sofs_wait, 0,
++			       &kaweth->scratch, 0,
++			       KAWETH_CONTROL_TIMEOUT);
+ }
+ 
+ /****************************************************************
+@@ -347,22 +327,15 @@ static int kaweth_set_sofs_wait(struct k
+ static int kaweth_set_receive_filter(struct kaweth_device *kaweth,
+ 				     __u16 receive_filter)
+ {
+-	int retval;
+-
+ 	netdev_dbg(kaweth->net, "Set receive filter to %d\n",
+ 		   (unsigned)receive_filter);
+ 
+-	retval = kaweth_control(kaweth,
+-				usb_sndctrlpipe(kaweth->dev, 0),
+-				KAWETH_COMMAND_SET_PACKET_FILTER,
+-				USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
+-				receive_filter,
+-				0,
+-				(void *)&kaweth->scratch,
+-				0,
+-				KAWETH_CONTROL_TIMEOUT);
+-
+-	return retval;
++	return usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
++			       KAWETH_COMMAND_SET_PACKET_FILTER,
++			       USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
++			       receive_filter, 0,
++			       &kaweth->scratch, 0,
++			       KAWETH_CONTROL_TIMEOUT);
+ }
+ 
+ /****************************************************************
+@@ -407,14 +380,11 @@ static int kaweth_download_firmware(stru
+ 		   kaweth->firmware_buf, kaweth);
+ 	netdev_dbg(kaweth->net, "Firmware length: %d\n", data_len);
+ 
+-	return kaweth_control(kaweth,
+-		              usb_sndctrlpipe(kaweth->dev, 0),
++	return usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
+ 			      KAWETH_COMMAND_SCAN,
+ 			      USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
+-			      0,
+-			      0,
+-			      (void *)kaweth->firmware_buf,
+-			      data_len,
++			      0, 0,
++			      kaweth->firmware_buf, data_len,
+ 			      KAWETH_CONTROL_TIMEOUT);
+ }
+ 
+@@ -433,15 +403,12 @@ static int kaweth_trigger_firmware(struc
+ 	kaweth->firmware_buf[6] = 0x00;
+ 	kaweth->firmware_buf[7] = 0x00;
+ 
+-	return kaweth_control(kaweth,
+-			      usb_sndctrlpipe(kaweth->dev, 0),
+-			      KAWETH_COMMAND_SCAN,
+-			      USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
+-			      0,
+-			      0,
+-			      (void *)kaweth->firmware_buf,
+-			      8,
+-			      KAWETH_CONTROL_TIMEOUT);
++	return usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
++			       KAWETH_COMMAND_SCAN,
++			       USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
++			       0, 0,
++			       (void *)kaweth->firmware_buf, 8,
++			       KAWETH_CONTROL_TIMEOUT);
+ }
+ 
+ /****************************************************************
 
