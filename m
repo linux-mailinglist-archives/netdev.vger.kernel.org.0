@@ -2,113 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 768EF27A3CA
-	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:03:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 651D427A3FE
+	for <lists+netdev@lfdr.de>; Sun, 27 Sep 2020 22:22:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbgI0UBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 16:01:38 -0400
-Received: from mout.gmx.net ([212.227.15.18]:40363 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726942AbgI0T5T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Sep 2020 15:57:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1601236631;
-        bh=A37BwhthNeaG9NdH1BxOIfBwiGGWhAtuMmCaW6IwrRE=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=iuITyLgM7rv+ZW+mjcOANoXcUbPs38rWhT7E5yy0E9X0Ffk27Ql18PcGaFNChPPtU
-         U7wioBBXwxSSqvR7y+gG4l+/bNmwpVb1rmQXO1rKu3UE4EX6UQmqSHl7XznzW0w30f
-         xMVyinsRO99U/voo/GFErRE1sR0t+FyXj27vuFYc=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from mx-linux-amd.fritz.box ([91.0.109.210]) by mail.gmx.com
- (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1MStCe-1jzxU048QY-00UNJj; Sun, 27 Sep 2020 21:57:11 +0200
-From:   Armin Wolf <W_Armin@gmx.de>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next] lib8390: Replace panic() call with BUILD_BUG_ON
-Date:   Sun, 27 Sep 2020 21:56:59 +0200
-Message-Id: <20200927195659.4951-1-W_Armin@gmx.de>
-X-Mailer: git-send-email 2.20.1
+        id S1726504AbgI0UWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 16:22:21 -0400
+Received: from smtprelay0082.hostedemail.com ([216.40.44.82]:39946 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726314AbgI0UWU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 16:22:20 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 12720100E7B40;
+        Sun, 27 Sep 2020 20:22:19 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:967:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2393:2525:2560:2563:2682:2685:2693:2828:2859:2892:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3870:3871:3872:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:5007:6742:6743:7903:9025:10004:10400:10848:11232:11658:11914:12043:12297:12555:12740:12760:12895:12986:13069:13311:13357:13439:14096:14097:14181:14659:14721:21080:21433:21627:21987:30012:30054:30055:30075:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: guide09_05122ab2717b
+X-Filterd-Recvd-Size: 3897
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf10.hostedemail.com (Postfix) with ESMTPA;
+        Sun, 27 Sep 2020 20:22:11 +0000 (UTC)
+Message-ID: <c7a5fd123e3c634ce0bbac9abb4ae32c8c67e0c6.camel@perches.com>
+Subject: Re: [patch 00/35] net: in_interrupt() cleanup and fixes
+From:   Joe Perches <joe@perches.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        Paul McKenney <paulmck@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Govindarajulu Varadarajan <_govind@gmx.com>,
+        Dave Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-doc@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Jon Mason <jdmason@kudzu.us>, Daniel Drake <dsd@gentoo.org>,
+        Ulrich Kunitz <kune@deine-taler.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com,
+        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
+        Stanislaw Gruszka <stf_xl@wp.pl>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Jouni Malinen <j@w1.fi>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        libertas-dev@lists.infradead.org,
+        Pascal Terjan <pterjan@google.com>,
+        Ping-Ke Shih <pkshih@realtek.com>
+Date:   Sun, 27 Sep 2020 13:22:10 -0700
+In-Reply-To: <20200927194846.045411263@linutronix.de>
+References: <20200927194846.045411263@linutronix.de>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.4-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:MXqjNq+vXGcAIs4fLErTURvM3T+nSf2YF7DR4YB6XoX6SoqpF3m
- 49V5s3MaC+5xDV40Od7PfNTuzfUnQADIyM4TRtJRJKXigOPZwgBZHt5caFjWBQ2wIZknTDp
- vI6KfmCfnfPQhqa9FVJ/rSASAnpQ+KJhDvUUPqOb5lmcxz5ZKjwGluzeAzlSbTUYxlYboez
- g/IwXsPnTPoDnoKjCy6Yg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:gc07HwPTWLU=:+/1gNACtA5i4eO4L9L+Rxj
- s8vu+Kt9x8alZ7x1/SksAU1UgrD7DJ9QMfpr87r0ISbbLOXHBTqQtI8KVKtsPkDzwGPjz+fOB
- FbKpgfQm56ko5hUYCJlbJCbn/n51ajECyMIzvLSz0voQxzrBaoO53jAzZCI+a12MX8cBRczXm
- Cl0uVPD6/FxEoJSDiWj+ob3WyerLX7rw8wLYJBBM8LxvPvH5zyX2btZphI9oXEsx6h5DAfDOZ
- si2BriyvMOkeIaeXsXe+6WjeIQLJJz7AJNnlDy7DDtAuyco5QPFfL4SrQ2x3mu21gpHZ7hWnO
- g78y1ZNn+4ZGb01+98Q/ETdMcmbpskit+MSnwNqwhP5VUuGvh3+3k6b8VLfzvQfVPpwNN9Nna
- 3gc5MrNpwL5vDnlZNhmGdZOFYAvGygZYq6Jh53yrWIC2PltASmf9BRueUpg0gx8D4ErtkFkpi
- emBAgOGx5xB91eBiiDQBOlRWhncNZ7z4c/qob1YRqwkG0BofyGD+zDHjjBqH4Niu45zpZ5CJ9
- bWAKa/DzsRnEG+KH/wlXC9inKXsE1jYG3P8jNEN6B887F+aXUqz84Xe0wUdH1Ouz+BHxgtWnX
- lnE2Vtr3qwXn0tYHDFqS6eGa6YuF3dZ3MYw37iNZroA4JkV9LAu8Nfl+TxAry9yeif2HSavEg
- FReykGIJ1AyWfNvAXZtbkbJCC75L7PtW2lPloRJ2t9CQS1pbY7VFQTmCuEmL3RhX+sv2eeVgu
- V3aLkh8BjXHKu4eVqm1TbAZAYqpsS9pz09SmZyUiQia5Q5N68K49gj+mjKuB1Xnle55JeVhgG
- xMLLNhIsLHyi8zwp3pSJa+xH+9qjJBivkhR17vtfkv6uq/OD+GrbpnwrOy6Z830QJFXq86KG2
- 3NjFV6XMZ1KRv6JdFia7SoD/Vwui/AmmRDxb/ue9BXVIWZ5vpbOUrodnxUCDHVDn52i1xDBgM
- tFuOuqfwy3ujDDakyre+KZzPOxt2RohT4X7kXgtsedYCZpLlYQSzfZK5MAfyS3ggINJ4IG/8y
- er+pL4gC9CWzNSsgOdWqQs48aohTp9UcjkkHFsyLUb4DHQPcGyWqg81Hvsv3SMMUZiowP+yhM
- uYtYoqw2Y9CaZ7qbc5eQqDE2mvnCEpFG3O06nty7tZvSAttHFv346YHnHFMtchB1Zixy7yoEW
- gopwCiubVNmu5EsrekJVAsEU22oT8zSWTcx74V3ADWuXRRcWUPMe+CDS6WmjQOjgriUI+2wGy
- e4aeMcd7t9YXVGf/U
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace panic() call in lib8390.c with BUILD_BUG_ON()
-since checking the size of struct e8390_pkt_hdr should
-happen at compile-time. Also add __packed to e8390_pkt_hdr
-to prevent padding.
+On Sun, 2020-09-27 at 21:48 +0200, Thomas Gleixner wrote:
+> Folks,
+> 
+> in the discussion about preempt count consistency accross kernel configurations:
+> 
+>   https://lore.kernel.org/r/20200914204209.256266093@linutronix.de/
+> 
+> Linus clearly requested that code in drivers and libraries which changes
+> behaviour based on execution context should either be split up so that
+> e.g. task context invocations and BH invocations have different interfaces
+> or if that's not possible the context information has to be provided by the
+> caller which knows in which context it is executing.
+> 
+> This includes conditional locking, allocation mode (GFP_*) decisions and
+> avoidance of code paths which might sleep.
 
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-=2D--
- drivers/net/ethernet/8390/8390.h    | 2 +-
- drivers/net/ethernet/8390/lib8390.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+Are these patches intended to be applied to Linus'
+tree before v5.9 is released?
 
-diff --git a/drivers/net/ethernet/8390/8390.h b/drivers/net/ethernet/8390/=
-8390.h
-index e52264465998..e7d6fd55f6a5 100644
-=2D-- a/drivers/net/ethernet/8390/8390.h
-+++ b/drivers/net/ethernet/8390/8390.h
-@@ -21,7 +21,7 @@ struct e8390_pkt_hdr {
- 	unsigned char status; /* status */
- 	unsigned char next;   /* pointer to next packet. */
- 	unsigned short count; /* header + packet length in bytes */
--};
-+} __packed;
+This patchset will cause conflicts against -next.
 
- #ifdef CONFIG_NET_POLL_CONTROLLER
- void ei_poll(struct net_device *dev);
-diff --git a/drivers/net/ethernet/8390/lib8390.c b/drivers/net/ethernet/83=
-90/lib8390.c
-index 1f48d7f6365c..deba94d2c909 100644
-=2D-- a/drivers/net/ethernet/8390/lib8390.c
-+++ b/drivers/net/ethernet/8390/lib8390.c
-@@ -50,6 +50,7 @@
+For instance, in patch 34, RT_TRACE has already
+been removed in -next.
 
-   */
-
-+#include <linux/build_bug.h>
- #include <linux/module.h>
- #include <linux/kernel.h>
- #include <linux/jiffies.h>
-@@ -1018,8 +1019,7 @@ static void __NS8390_init(struct net_device *dev, in=
-t startp)
- 	    ? (0x48 | ENDCFG_WTS | (ei_local->bigendian ? ENDCFG_BOS : 0))
- 	    : 0x48;
-
--	if (sizeof(struct e8390_pkt_hdr) !=3D 4)
--		panic("8390.c: header struct mispacked\n");
-+	BUILD_BUG_ON(sizeof(struct e8390_pkt_hdr) !=3D 4);
- 	/* Follow National Semi's recommendations for initing the DP83902. */
- 	ei_outb_p(E8390_NODMA+E8390_PAGE0+E8390_STOP, e8390_base+E8390_CMD); /* =
-0x21 */
- 	ei_outb_p(endcfg, e8390_base + EN0_DCFG);	/* 0x48 or 0x49 */
-=2D-
-2.20.1
 
