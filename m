@@ -2,70 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64E7427A96F
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 10:22:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8927527A974
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 10:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726583AbgI1IWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 04:22:03 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52436 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726526AbgI1IWD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 04:22:03 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kMoPu-0004wy-Mm; Mon, 28 Sep 2020 10:21:50 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kMoPu-000VQk-HS; Mon, 28 Sep 2020 10:21:50 +0200
-To:     bpf@vger.kernel.org, xdp-newbies@vger.kernel.org
-Cc:     netdev@vger.kernel.org, ast@fb.com, tgraf@suug.ch,
-        davem@davemloft.net
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Subject: Call for Proposals: eBPF Summit 2020
-Message-ID: <e3c3aa3d-fd07-4963-2767-793dddd42376@iogearbox.net>
-Date:   Mon, 28 Sep 2020 10:21:49 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726610AbgI1IY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 04:24:59 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:48602 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726420AbgI1IY4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 04:24:56 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 8C7AC20519;
+        Mon, 28 Sep 2020 10:24:55 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id MyDg0GSqdV6c; Mon, 28 Sep 2020 10:24:55 +0200 (CEST)
+Received: from mail-essen-02.secunet.de (unknown [10.53.40.205])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 1EC34204EF;
+        Mon, 28 Sep 2020 10:24:55 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Mon, 28 Sep 2020 10:24:54 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Mon, 28 Sep
+ 2020 10:24:54 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 6C3BA318470F;
+ Mon, 28 Sep 2020 10:24:54 +0200 (CEST)
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Miller <davem@davemloft.net>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        <netdev@vger.kernel.org>
+Subject: pull request (net): ipsec 2020-09-28
+Date:   Mon, 28 Sep 2020 10:24:42 +0200
+Message-ID: <20200928082450.29414-1-steffen.klassert@secunet.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25940/Sun Sep 27 15:51:36 2020)
+Content-Type: text/plain
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We're excited to announce that the call for proposals is now open for the inaugural
-eBPF Summit, a virtual event, targeted at DevOps, platform architects and developers.
+1) Fix a build warning in ip_vti if CONFIG_IPV6 is not set.
+   From YueHaibing.
 
-The goal is to have a gathering of users or potential users of eBPF(/XDP) as well as
-developers in order to exchange ideas, use cases and to learn about projects utilizing
-eBPF as a core technology.
+2) Restore IPCB on espintcp before handing the packet to xfrm
+   as the information there is still needed.
+   From Sabrina Dubroca.
 
-The summit will be held on October 28-29th, 2020, is open to everyone and free of
-charge.
+3) Fix pmtu updating for xfrm interfaces.
+   From Sabrina Dubroca.
 
-Please submit your proposals or register for participation on the official summit
-website at:
+4) Some xfrm state information was not cloned with xfrm_do_migrate.
+   Fixes to clone the full xfrm state, from Antony Antony.
 
-    https://ebpf.io/ebpf-summit-2020-cfp
+5) Use the correct address family in xfrm_state_find. The struct
+   flowi must always be interpreted along with the original
+   address family. This got lost over the years.
+   Fix from Herbert Xu.
 
-Potential topics of interest include:
+Please pull or let me know if there are problems.
 
-  - Using eBPF to troubleshoot application and system performance
-  - Applying eBPF to implement zero trust, runtime security, network policy
-  - Tackling infrastructure scalability challenges with eBPF
-  - Applying eBPF to networking and load-balancing
-  - Application profiling and tracing with eBPF
-  - System and application monitoring with eBPF
-  - Unlocking new levels of observability with eBPF
-  - Advancements in the eBPF core infrastructure and libraries
-  - eBPF community related topics
+Thanks!
 
-Proposals must be submitted by October 14, and submitters will be notified of
-acceptance by October 16.
+The following changes since commit 1c3b63f155f637594268cd1add8335461691b314:
+
+  net/tls: allow MSG_CMSG_COMPAT in sendmsg (2020-08-07 17:40:45 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git master
+
+for you to fetch changes up to e94ee171349db84c7cfdc5fefbebe414054d0924:
+
+  xfrm: Use correct address family in xfrm_state_find (2020-09-25 09:59:51 +0200)
+
+----------------------------------------------------------------
+Antony Antony (4):
+      xfrm: clone XFRMA_SET_MARK in xfrm_do_migrate
+      xfrm: clone XFRMA_REPLAY_ESN_VAL in xfrm_do_migrate
+      xfrm: clone XFRMA_SEC_CTX in xfrm_do_migrate
+      xfrm: clone whole liftime_cur structure in xfrm_do_migrate
+
+Herbert Xu (1):
+      xfrm: Use correct address family in xfrm_state_find
+
+Sabrina Dubroca (2):
+      espintcp: restore IP CB before handing the packet to xfrm
+      xfrmi: drop ignore_df check before updating pmtu
+
+YueHaibing (1):
+      ip_vti: Fix unused variable warning
+
+ include/net/xfrm.h        | 16 ++++++----------
+ net/ipv4/ip_vti.c         |  2 ++
+ net/xfrm/espintcp.c       |  6 +++++-
+ net/xfrm/xfrm_interface.c |  2 +-
+ net/xfrm/xfrm_state.c     | 42 +++++++++++++++++++++++++++++++++++++-----
+ 5 files changed, 51 insertions(+), 17 deletions(-)
