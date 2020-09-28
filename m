@@ -2,83 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90D7627B6B3
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 22:52:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7F3C27B6DF
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 23:13:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726874AbgI1UwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 16:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726393AbgI1UwM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 16:52:12 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BB1C061755
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 13:52:12 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id b17so1396389pji.1
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 13:52:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=N/6tMjAU83pBPZsZpiMZQiEvPJJe3wBR1akf3N9FiNg=;
-        b=h+hJMn31EVS18Wt/1JvPwFYM9jzEaJ4UyXTa9myGSBg5iBYu7kMO4nyXV/Af6kSnup
-         m07MNUrMWFFbAzKuSL5oUOYzzEwZ9G9tdOEFNbpZ2hfS2llQkYsxXkcPlkRuTGF7iT8V
-         aSZhVhMUqgA4HpsbjPPu3zDBzhD6Db761dAbw3lEnD2wI7+rPa6WPZTj6QfcTwcjiHZc
-         n04+qipeNg1oHk0V0RBhOg7cwzpdVVVr64u2y3X9CI0Tokkv0IdidCWYsmtWMSGzPNiN
-         i6lpKXDaKplNRwSIP/HzGp1h0viK0EQ1LRURfM4WL2yJjQ50tVr/I2mgzHlxHBmkflJc
-         rrUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=N/6tMjAU83pBPZsZpiMZQiEvPJJe3wBR1akf3N9FiNg=;
-        b=CFJ3zkoUKxQehlt/cR0unrXBu6+TkS8tP4bm3LGcDqhXYGSqL4238wUZB7RCU2Luvr
-         ntiSZDhVdf3aj86/dmQk/c5gLpbyH0IiabVP9+Qo7BgVnMsFZaflXToW7bXZ0rvUjg8w
-         O+b/pJ6m7roVuDbVl8t6X39YstA4kEQktWLPD/uSqqoQpZQ4gYxLbfoRuQPoYxuIoCyM
-         9X+wjqM6XHpYuUUAbthjvEgXIQssRSXFtue4m7qOGaQfqMLBNlAMhKBJnDcArvXlUMeN
-         lzwkjzWebacMsFIU6VmVK7VAFplT5Mm7yIHUZenRWZUrouH0rEcw0TZFzB5aW7ri/gUy
-         /V6A==
-X-Gm-Message-State: AOAM532xa9bJjm7pFjrUzazmi+gXHxm3GzRGt4x3seZRoh3WTk8prMEL
-        H/JUv9WOShZzG6+MZfkr4sng2lJVruD0Mw==
-X-Google-Smtp-Source: ABdhPJxfjuNUVNYzfeMMnrYhazPRBbAi6tzZ4ko+9S+XxhcYXkZyAvl68dq/WAWZclCFs2KLAF5ASg==
-X-Received: by 2002:a17:90a:13c7:: with SMTP id s7mr939141pjf.124.1601326331917;
-        Mon, 28 Sep 2020 13:52:11 -0700 (PDT)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id e16sm2196243pgv.81.2020.09.28.13.52.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2020 13:52:11 -0700 (PDT)
-Date:   Mon, 28 Sep 2020 13:52:04 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jan Engelhardt <jengelh@inai.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [iproute PATCH] build: avoid make jobserver warnings
-Message-ID: <20200928135204.3285b619@hermes.local>
-In-Reply-To: <20200928190801.561-1-jengelh@inai.de>
-References: <20200928083931.75629c32@hermes.local>
-        <20200928190801.561-1-jengelh@inai.de>
+        id S1726897AbgI1VNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 17:13:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56362 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726409AbgI1VNc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 17:13:32 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BFDEE2083B;
+        Mon, 28 Sep 2020 21:13:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601327612;
+        bh=NdK4ja5cL/3pPL+J/e4v/Bt4G2gbx5hSAWvRpS5EixM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MeC2Iqkj+Ic6c8sekVflIZfzb8PDhbZWMAD8GI2zfqUJTYZn3q0pgs1SuPAq1/k2m
+         aIG8HHTVhKNhOYoOS6pLMZHjqUK/HOwBBEyVD2gVxuCxv5eso0xdOUhVdMkO3qqOcT
+         2XoxWngFvBl4eT9nnHWlibILmMWXrWneAlkTLF8c=
+Date:   Mon, 28 Sep 2020 14:13:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     rohit maheshwari <rohitm@chelsio.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vakul.garg@nxp.com, secdev <secdev@chelsio.com>
+Subject: Re: [PATCH net] net/tls: sendfile fails with ktls offload
+Message-ID: <20200928141330.54f06deb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <439f7a6f-fdbd-8c6e-129d-c25f803e3e5e@chelsio.com>
+References: <20200925165235.5dba5d7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <b7afc12f-92a5-c2a9-087e-b826eb74194f@chelsio.com>
+        <439f7a6f-fdbd-8c6e-129d-c25f803e3e5e@chelsio.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Sep 2020 21:08:01 +0200
-Jan Engelhardt <jengelh@inai.de> wrote:
+On Sun, 27 Sep 2020 00:13:31 +0530 rohit maheshwari wrote:
+> >> > Also shouldn't we update this field or destroy the record before   
+> >> the break on line 478? If more is set, and payload is lesser than the 
+> >> max size, then we need to
+> >> hold on to get next sendpage and continue adding frags in the same 
+> >> record.
+> >> So I don't think we need to do any update or destroy the record. Please
+> >> correct me if I am wrong here.  
+> >
+> > Agreed, if more is set we should continue appending.
+> >
+> > What I'm saying is that we may exit the loop on line 478 or 525 without
+> > updating pending_open_record_frags. So if pending_open_record_frags is
+> > set, we'd be in a position where there is no data in the record, yet
+> > pending_open_record_frags is set. Won't subsequent cmsg send not cause 
+> > a zero length record to be generated?
+> > Exit on line 478 can get triggered if sk_page_frag_refill() fails, and 
+> > then by  
+> Exit on line 478 can get triggered if sk_page_frag_refill() fails,
+> and then by exiting, it will hit line 529 and will return 'rc =
+> orig_size - size', so I am sure we don't need to do anything else
+> there. 
 
-> I observe:
->=20
-> 	=C2=BB make -j8 CCOPTS=3D-ggdb3
-> 	lib
-> 	make[1]: warning: -j8 forced in submake: resetting jobserver mode.
-> 	make[1]: Nothing to be done for 'all'.
-> 	ip
-> 	make[1]: warning: -j8 forced in submake: resetting jobserver mode.
-> 	    CC       ipntable.o
->=20
-> MFLAGS is a historic variable of some kind; removing it fixes the
-> jobserver issue.
->=20
-> Signed-off-by: Jan Engelhardt <jengelh@inai.de>
+What makes sure pending_open_record_frags is up to date on that exit
+path?
 
-Applied.
+> Exit on line 525 will be, due to do_tcp_sendpage(), and I
+> think pending_open_record_frags won't be set if this is the last
+> record. And if it is not the last record, do_tcp_sendpage will be
+> failing for a complete and correct record, that doesn't need to be
+> destroyed and at this very moment pending_open_record_frags
+> will suggest that there is more data (unrelated to current failing
+> record), which actually is correct.
+
+pending_open_record_frags does not mean more was set on previous call. 
+It means there is an open record that needs to be closed in case cmsg
+needs to be sent.
+
+> I think, there won't be cmsg if pending_open_record_frags is set.
+
+cmsg comes from user space, what do you mean there won't be cmsg?
