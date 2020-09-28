@@ -2,238 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E2DE27B053
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 16:52:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B8BF27B08A
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 17:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbgI1Ov7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 10:51:59 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:46092 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726497AbgI1Ov5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 10:51:57 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08SEpqGW056401;
-        Mon, 28 Sep 2020 09:51:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1601304712;
-        bh=qQLjruEeBl3RZZDqL6Sia2UDcOOyzcj6jQq6C8WzJo4=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=RCHBbCk6y0AyY3iOFXeiU9EE3EQiRVczxFhrw0FtWqgBtl0jAO9jA/usTs329Jz7P
-         YF1VKMSJd9jdilUb6YZ0GjINmObWwvsNYC9Cp52sZ2cCqFP9wmZiYK4pFZBPuR09ry
-         yKIQWnofyFCgfNPpDO21oTHfkRY0YNfPwlxY+nAs=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08SEpqA1034934
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 28 Sep 2020 09:51:52 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 28
- Sep 2020 09:51:52 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Mon, 28 Sep 2020 09:51:51 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08SEppGC106617;
-        Mon, 28 Sep 2020 09:51:51 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
-        <hkallweit1@gmail.com>
-CC:     <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [RESEND PATCH net-next v5 2/2] net: phy: dp83869: Add speed optimization feature
-Date:   Mon, 28 Sep 2020 09:51:35 -0500
-Message-ID: <20200928145135.20847-3-dmurphy@ti.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200928145135.20847-1-dmurphy@ti.com>
-References: <20200928145135.20847-1-dmurphy@ti.com>
+        id S1726551AbgI1PKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 11:10:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59914 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726409AbgI1PKk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 11:10:40 -0400
+Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8DFEF2076D;
+        Mon, 28 Sep 2020 15:10:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601305839;
+        bh=mOYrcyMurLCIEVJc/RTuSXzbsVyUV5OUX+4/vlMC+bQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=nXWdkPIm/dNz3CbVxabf2t4P3UguURA2s3zyCky8VJxOc8ebwe3dDFEH2Rse381E8
+         sVK0jb9pO1AHue8n+hUFmgz9U40GUEpqMW3CB65eOURUNR17T6XX5A48U+gnjxmum9
+         iGk0ER07V8qAD2px31oBJHIvHyWeIYZNuOdhzp6g=
+Date:   Mon, 28 Sep 2020 10:16:17 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Ariel Elior <aelior@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     GR-everest-linux-l2@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH][next] qed/qed_ll2: Replace one-element array with
+ flexible-array member
+Message-ID: <20200928151617.GA16912@embeddedor>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set the speed optimization bit on the DP83869 PHY.
+There is a regular need in the kernel to provide a way to declare having
+a dynamically sized set of trailing elements in a structure. Kernel code
+should always use “flexible array members”[1] for these cases. The older
+style of one-element or zero-length arrays should no longer be used[2].
 
-Speed optimization, also known as link downshift, enables fallback to 100M
-operation after multiple consecutive failed attempts at Gigabit link
-establishment. Such a case could occur if cabling with only four wires
-(two twisted pairs) were connected instead of the standard cabling with
-eight wires (four twisted pairs).
+Refactor the code according to the use of a flexible-array member in
+struct qed_ll2_tx_packet, instead of a one-element array and use the
+struct_size() helper to calculate the size for the allocations. Commit
+f5823fe6897c ("qed: Add ll2 option to limit the number of bds per packet")
+was used as a reference point for these changes.
 
-The number of failed link attempts before falling back to 100M operation is
-configurable. By default, four failed link attempts are required before
-falling back to 100M.
+Also, it's important to notice that flexible-array members should occur
+last in any structure, and structures containing such arrays and that
+are members of other structures, must also occur last in the containing
+structure. That's why _cur_completing_packet_ is now moved to the bottom
+in struct qed_ll2_tx_queue. _descq_mem_ and _cur_send_packet_ are also
+moved for unification.
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/v5.9-rc1/process/deprecated.html#zero-length-and-one-element-arrays
+
+Tested-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/5f707198.PA1UCZ8MYozYZYAR%25lkp@intel.com/
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/phy/dp83869.c | 116 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 116 insertions(+)
+ drivers/net/ethernet/qlogic/qed/qed_ll2.c | 18 ++++++++----------
+ drivers/net/ethernet/qlogic/qed/qed_ll2.h |  8 ++++----
+ 2 files changed, 12 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index de68e56faf3d..0aee5f645b71 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -11,6 +11,7 @@
- #include <linux/of.h>
- #include <linux/phy.h>
- #include <linux/delay.h>
-+#include <linux/bitfield.h>
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.c b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
+index 0452b728c527..49783f365079 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_ll2.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
+@@ -1185,7 +1185,7 @@ static int qed_ll2_acquire_connection_tx(struct qed_hwfn *p_hwfn,
+ 		.elem_size	= sizeof(struct core_tx_bd),
+ 	};
+ 	struct qed_ll2_tx_packet *p_descq;
+-	u32 desc_size;
++	size_t desc_size;
+ 	u32 capacity;
+ 	int rc = 0;
  
- #include <dt-bindings/net/ti-dp83869.h>
+@@ -1198,10 +1198,9 @@ static int qed_ll2_acquire_connection_tx(struct qed_hwfn *p_hwfn,
+ 		goto out;
  
-@@ -20,6 +21,7 @@
- #define MII_DP83869_PHYCTRL	0x10
- #define MII_DP83869_MICR	0x12
- #define MII_DP83869_ISR		0x13
-+#define DP83869_CFG2		0x14
- #define DP83869_CTRL		0x1f
- #define DP83869_CFG4		0x1e
+ 	capacity = qed_chain_get_capacity(&p_ll2_info->tx_queue.txq_chain);
+-	/* First element is part of the packet, rest are flexibly added */
+-	desc_size = (sizeof(*p_descq) +
+-		     (p_ll2_info->input.tx_max_bds_per_packet - 1) *
+-		     sizeof(p_descq->bds_set));
++	/* All bds_set elements are flexibily added. */
++	desc_size = struct_size(p_descq, bds_set,
++				p_ll2_info->input.tx_max_bds_per_packet);
  
-@@ -120,6 +122,18 @@
- #define DP83869_WOL_SEC_EN		BIT(5)
- #define DP83869_WOL_ENH_MAC		BIT(7)
+ 	p_descq = kcalloc(capacity, desc_size, GFP_KERNEL);
+ 	if (!p_descq) {
+@@ -1524,7 +1523,7 @@ int qed_ll2_establish_connection(void *cxt, u8 connection_handle)
+ 	struct qed_ptt *p_ptt;
+ 	int rc = -EINVAL;
+ 	u32 i, capacity;
+-	u32 desc_size;
++	size_t desc_size;
+ 	u8 qid;
  
-+/* CFG2 bits */
-+#define DP83869_DOWNSHIFT_EN		(BIT(8) | BIT(9))
-+#define DP83869_DOWNSHIFT_ATTEMPT_MASK	(BIT(10) | BIT(11))
-+#define DP83869_DOWNSHIFT_1_COUNT_VAL	0
-+#define DP83869_DOWNSHIFT_2_COUNT_VAL	1
-+#define DP83869_DOWNSHIFT_4_COUNT_VAL	2
-+#define DP83869_DOWNSHIFT_8_COUNT_VAL	3
-+#define DP83869_DOWNSHIFT_1_COUNT	1
-+#define DP83869_DOWNSHIFT_2_COUNT	2
-+#define DP83869_DOWNSHIFT_4_COUNT	4
-+#define DP83869_DOWNSHIFT_8_COUNT	8
-+
- enum {
- 	DP83869_PORT_MIRRORING_KEEP,
- 	DP83869_PORT_MIRRORING_EN,
-@@ -350,6 +364,99 @@ static void dp83869_get_wol(struct phy_device *phydev,
- 		wol->wolopts = 0;
- }
+ 	p_ptt = qed_ptt_acquire(p_hwfn);
+@@ -1558,10 +1557,9 @@ int qed_ll2_establish_connection(void *cxt, u8 connection_handle)
+ 	INIT_LIST_HEAD(&p_tx->sending_descq);
+ 	spin_lock_init(&p_tx->lock);
+ 	capacity = qed_chain_get_capacity(&p_tx->txq_chain);
+-	/* First element is part of the packet, rest are flexibly added */
+-	desc_size = (sizeof(*p_pkt) +
+-		     (p_ll2_conn->input.tx_max_bds_per_packet - 1) *
+-		     sizeof(p_pkt->bds_set));
++	/* All bds_set elements are flexibily added. */
++	desc_size = struct_size(p_pkt, bds_set,
++				p_ll2_conn->input.tx_max_bds_per_packet);
  
-+static int dp83869_get_downshift(struct phy_device *phydev, u8 *data)
-+{
-+	int val, cnt, enable, count;
-+
-+	val = phy_read(phydev, DP83869_CFG2);
-+	if (val < 0)
-+		return val;
-+
-+	enable = FIELD_GET(DP83869_DOWNSHIFT_EN, val);
-+	cnt = FIELD_GET(DP83869_DOWNSHIFT_ATTEMPT_MASK, val);
-+
-+	switch (cnt) {
-+	case DP83869_DOWNSHIFT_1_COUNT_VAL:
-+		count = DP83869_DOWNSHIFT_1_COUNT;
-+		break;
-+	case DP83869_DOWNSHIFT_2_COUNT_VAL:
-+		count = DP83869_DOWNSHIFT_2_COUNT;
-+		break;
-+	case DP83869_DOWNSHIFT_4_COUNT_VAL:
-+		count = DP83869_DOWNSHIFT_4_COUNT;
-+		break;
-+	case DP83869_DOWNSHIFT_8_COUNT_VAL:
-+		count = DP83869_DOWNSHIFT_8_COUNT;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	*data = enable ? count : DOWNSHIFT_DEV_DISABLE;
-+
-+	return 0;
-+}
-+
-+static int dp83869_set_downshift(struct phy_device *phydev, u8 cnt)
-+{
-+	int val, count;
-+
-+	if (cnt > DP83869_DOWNSHIFT_8_COUNT)
-+		return -EINVAL;
-+
-+	if (!cnt)
-+		return phy_clear_bits(phydev, DP83869_CFG2,
-+				      DP83869_DOWNSHIFT_EN);
-+
-+	switch (cnt) {
-+	case DP83869_DOWNSHIFT_1_COUNT:
-+		count = DP83869_DOWNSHIFT_1_COUNT_VAL;
-+		break;
-+	case DP83869_DOWNSHIFT_2_COUNT:
-+		count = DP83869_DOWNSHIFT_2_COUNT_VAL;
-+		break;
-+	case DP83869_DOWNSHIFT_4_COUNT:
-+		count = DP83869_DOWNSHIFT_4_COUNT_VAL;
-+		break;
-+	case DP83869_DOWNSHIFT_8_COUNT:
-+		count = DP83869_DOWNSHIFT_8_COUNT_VAL;
-+		break;
-+	default:
-+		phydev_err(phydev,
-+			   "Downshift count must be 1, 2, 4 or 8\n");
-+		return -EINVAL;
-+	}
-+
-+	val = DP83869_DOWNSHIFT_EN;
-+	val |= FIELD_PREP(DP83869_DOWNSHIFT_ATTEMPT_MASK, count);
-+
-+	return phy_modify(phydev, DP83869_CFG2,
-+			  DP83869_DOWNSHIFT_EN | DP83869_DOWNSHIFT_ATTEMPT_MASK,
-+			  val);
-+}
-+
-+static int dp83869_get_tunable(struct phy_device *phydev,
-+			       struct ethtool_tunable *tuna, void *data)
-+{
-+	switch (tuna->id) {
-+	case ETHTOOL_PHY_DOWNSHIFT:
-+		return dp83869_get_downshift(phydev, data);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int dp83869_set_tunable(struct phy_device *phydev,
-+			       struct ethtool_tunable *tuna, const void *data)
-+{
-+	switch (tuna->id) {
-+	case ETHTOOL_PHY_DOWNSHIFT:
-+		return dp83869_set_downshift(phydev, *(const u8 *)data);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static int dp83869_config_port_mirroring(struct phy_device *phydev)
- {
- 	struct dp83869_private *dp83869 = phydev->priv;
-@@ -642,6 +749,12 @@ static int dp83869_config_init(struct phy_device *phydev)
- 	struct dp83869_private *dp83869 = phydev->priv;
- 	int ret, val;
+ 	for (i = 0; i < capacity; i++) {
+ 		p_pkt = p_tx->descq_mem + desc_size * i;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.h b/drivers/net/ethernet/qlogic/qed/qed_ll2.h
+index 500d0c4f8077..df88d00053a2 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_ll2.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.h
+@@ -56,7 +56,7 @@ struct qed_ll2_tx_packet {
+ 		struct core_tx_bd *txq_bd;
+ 		dma_addr_t tx_frag;
+ 		u16 frag_len;
+-	} bds_set[1];
++	} bds_set[];
+ };
  
-+	/* Force speed optimization for the PHY even if it strapped */
-+	ret = phy_modify(phydev, DP83869_CFG2, DP83869_DOWNSHIFT_EN,
-+			 DP83869_DOWNSHIFT_EN);
-+	if (ret)
-+		return ret;
-+
- 	ret = dp83869_configure_mode(phydev, dp83869);
- 	if (ret)
- 		return ret;
-@@ -741,6 +854,9 @@ static struct phy_driver dp83869_driver[] = {
- 		.config_intr	= dp83869_config_intr,
- 		.read_status	= dp83869_read_status,
+ struct qed_ll2_rx_queue {
+@@ -86,9 +86,6 @@ struct qed_ll2_tx_queue {
+ 	struct list_head active_descq;
+ 	struct list_head free_descq;
+ 	struct list_head sending_descq;
+-	void *descq_mem; /* memory for variable sized qed_ll2_tx_packet*/
+-	struct qed_ll2_tx_packet *cur_send_packet;
+-	struct qed_ll2_tx_packet cur_completing_packet;
+ 	u16 cur_completing_bd_idx;
+ 	void __iomem *doorbell_addr;
+ 	struct core_db_data db_msg;
+@@ -96,6 +93,9 @@ struct qed_ll2_tx_queue {
+ 	u16 cur_send_frag_num;
+ 	u16 cur_completing_frag_num;
+ 	bool b_completing_packet;
++	void *descq_mem; /* memory for variable sized qed_ll2_tx_packet*/
++	struct qed_ll2_tx_packet *cur_send_packet;
++	struct qed_ll2_tx_packet cur_completing_packet;
+ };
  
-+		.get_tunable	= dp83869_get_tunable,
-+		.set_tunable	= dp83869_set_tunable,
-+
- 		.get_wol	= dp83869_get_wol,
- 		.set_wol	= dp83869_set_wol,
- 
+ struct qed_ll2_info {
 -- 
-2.28.0.585.ge1cfff676549
+2.27.0
 
