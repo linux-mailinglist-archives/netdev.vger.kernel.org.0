@@ -2,110 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2B3927AB76
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 12:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E86D927AC30
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 12:46:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbgI1KDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 06:03:11 -0400
-Received: from mail-eopbgr50054.outbound.protection.outlook.com ([40.107.5.54]:20046
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726566AbgI1KDK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 06:03:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZCmHXGQTRRrsmISzZtAwrlsyWpdAc0w2INcr3+kosZyg4s8n0FqhSXjp5yX63ROypy0hNYuEeQlh+uToEk8QoyEzSWBQa5iAR/S7Z2hv0k1ql1XXvmIP8k28p5p+WGEjXkBrh3CtzvHizkEhJIBxobJbgVYbkp9G1kHBoL+1rzavb8s1VmscdAsKLqdIrSVrZNlKJOCFTHprMa2Kj9ydIs0nsFek2W1AY3VnKA6NW1KuARG71+mpZl7OpVxJpUVA+iP0zErGDGKJWPosq6LAwRO67yxx/WgiKKO+wKj4ur9dxq6ScMMqjutOddCMMtQRvJcW+9meadlYM20hsd/Emw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=voz73Kao5sfdCWENEH/Zme/ZX//wNmXgmMelYmmqA50=;
- b=CCYPk1S4HaspX2attr1yGXPhqQ4OHzeA1V4z9Kfw7xCsoUmXdEvuUdBSK5o3b4rgxQXwLTpg9dF9IOnCOBdEAf6orWRi0Zyt+eo9Z8Lzmfh7/lSVBH8kh8iP1cMtt81ajBjVT8o62wXOcDVEyF2+AXMKZmat2rYhyRBz+T0d30fmcsqyVm9aSlFlKPWfGCbzLV6Yk+uwUIpMjAf27jKhoqXnGqib+r8YlqEMcFVuLi+nPKg1ifh2GhYAPPJqgjfUjsHd/0WnGwZuzKjf0UxVRHbCFsCvAfqomZhgCp6Z8adfTKJGDyvHVlcge6tt2LJh/JLt1s+qNkn1OkLES5XSVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=voz73Kao5sfdCWENEH/Zme/ZX//wNmXgmMelYmmqA50=;
- b=XbcyGoVbnx4/+z28MPmFPoG3mWzaKit8cepbml5ohgnwh+MY1g7qH4Fu6deuyh7S4d4vA7aAFq2D7hydrVerc+unDdeLib7lumwF7RvdoduPBYb89FZ9JBrsFtuMOQNmEjHdzmkaGEtoWVyT0n9a242jnPUl6mMQWQmI8fmsYWk=
-Authentication-Results: pengutronix.de; dkim=none (message not signed)
- header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB3PR0402MB3769.eurprd04.prod.outlook.com (2603:10a6:8:f::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.22; Mon, 28 Sep
- 2020 10:03:03 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::d12e:689a:169:fd68]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::d12e:689a:169:fd68%8]) with mapi id 15.20.3412.029; Mon, 28 Sep 2020
- 10:03:03 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     mkl@pengutronix.de, linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
-Subject: [PATCH V3 3/3] can: flexcan: disable runtime PM if register flexcandev failed
-Date:   Tue, 29 Sep 2020 02:02:53 +0800
-Message-Id: <20200928180253.1454-4-qiangqing.zhang@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200928180253.1454-1-qiangqing.zhang@nxp.com>
-References: <20200928180253.1454-1-qiangqing.zhang@nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SGAP274CA0017.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::29)
- To DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+        id S1726600AbgI1KqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 06:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726420AbgI1KqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 06:46:13 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23800C061755
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 03:46:13 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id x22so590781pfo.12
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 03:46:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to;
+        bh=yRtbGMQGTUP5NqJbNq+sEzmQzD4cPSS5qfL+t5fGz/s=;
+        b=GPlJtmfyzoI55HVi1pMVHA3Z4fU++DgzSPnBPkDOwoicj58z79aQMnCEYyT/isKBAo
+         k4sqrvPeSlHG6q8pewRnMe8umkd4qY+NsVn1sha/JOJ4qGr6jhZagmjz90TWQ2GUqp+N
+         7sCcB0Ab/5p8wgZrBoMdQHQ54iaJaOe53iJ1k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to;
+        bh=yRtbGMQGTUP5NqJbNq+sEzmQzD4cPSS5qfL+t5fGz/s=;
+        b=U0RWKLcPvK4p1H3X4eBzVvdLHPhwsz9K9CjlMCO2NVEusRqmSSkV6lQEq6h74zVZJ3
+         VDN+ZBR2L08ynrELyzQnNq+Ue6hkz3jss6vnIbt8aIqwBeiV/M3mOIZbsNufImLquph+
+         eeCGyQE+FVYx56n76hh+Zv1Sej9Xsst6Q7ZHwmlPmE7ck7eGBbkS6aUh9dJN9oe/YA7v
+         hcZMB42/K9JDXyXhAoh/2diibJ8IKsxX52+gYKXL4VLxB/K/Tnu5pdnSrbg2l5zXd5qy
+         cpA0XVQYNxlqIYwmJP6vPX/c94OELVMF0jHZi1hwHLQCmZ1p6qDEeMzAXb3pqC/S5pno
+         vFsA==
+X-Gm-Message-State: AOAM533OuvKry1Hrz/ley3uHl8pYg6sxNh9fEVFvMy21gLxEm+aS1T4S
+        J0rI5+2hkOW+DNMhzrVIBAf4BQ==
+X-Google-Smtp-Source: ABdhPJyzrWGjZLMlYtNPjSvGzQEly2tyok365/8/D1IzXrb8KwMnlv296kJrRaEOheOA9Bl9F/ykLA==
+X-Received: by 2002:a17:902:b713:b029:d2:6153:fb62 with SMTP id d19-20020a170902b713b02900d26153fb62mr1019334pls.28.1601289972570;
+        Mon, 28 Sep 2020 03:46:12 -0700 (PDT)
+Received: from [192.168.178.129] (f140230.upc-f.chello.nl. [80.56.140.230])
+        by smtp.gmail.com with ESMTPSA id f5sm975238pfj.212.2020.09.28.03.46.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Sep 2020 03:46:11 -0700 (PDT)
+Subject: Re: WARNING: CPU: 1
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+3640e696903873858f7e@syzkaller.appspotmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless <linux-wireless@vger.kernel.org>
+References: <000000000000bbdb3b05b0477890@google.com>
+ <CACT4Y+arc_qxVnb1+FZUzEM32eDBe7zYgZhcSCgyMUMwKkkeDw@mail.gmail.com>
+ <a63808e2-3e76-596c-c0be-64922620820a@broadcom.com>
+ <CACT4Y+ZkwMZ3Bu77WGtmOGihNbgspdicEq5d_LA1hDVL=KkZyA@mail.gmail.com>
+From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <0e2bbc76-1451-a084-dc16-b21c33ca6d82@broadcom.com>
+Date:   Mon, 28 Sep 2020 12:46:08 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SGAP274CA0017.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20 via Frontend Transport; Mon, 28 Sep 2020 10:03:01 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [119.31.174.71]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: d5a3f4a8-a252-4f99-a463-08d86395afe1
-X-MS-TrafficTypeDiagnostic: DB3PR0402MB3769:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB3PR0402MB3769ED6BB690772FE4814852E6350@DB3PR0402MB3769.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:421;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FwLIupxNn9JaOrznTqMt7hCRM91RA8mhrjGUqHtvE5EmxSNt/o1rk5/CRY7RlmXGMTNbiBpVLXOFT0rzlUbtb0Urg5xJVO4ew8yI29HcbDaD6+y0lpulVScTTCCVNzgHd6le4HXrKUE5C+b+GaqEHRqtKprrTZFExx99Ph//3ejwuybo4PWVYyJEb4zrmbmM64vkK5GC5ijvUnc620UeJGIxyiyV6y2AusxxsYyKSnHXtmdt6GoXbeXG7eP3J+VzHKsIC5ERlDy2SyXgVNiJfyOLJFtwkfybMUoOqwKr1vDZDKRX12TD8aFnPp8xJExZtEYa6qNldeFC8x6cRvBmf8ZINQg8ETLybOcY3eNowUN06A7RYq+ONd9CJo7hQYGY/apLdAK0EYTcahdy7F3/lMsVFFN1Vfgl3N4h+l+dd0zltRBU1dGo3x4MaJSGICen
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(346002)(376002)(39860400002)(396003)(6506007)(52116002)(2906002)(478600001)(4744005)(956004)(2616005)(186003)(16526019)(5660300002)(66556008)(6512007)(66476007)(4326008)(316002)(8676002)(8936002)(66946007)(86362001)(36756003)(26005)(69590400008)(6666004)(6486002)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: E0xsNGAn/xRTK4EAvMjMD0G3UqBBl2ZjhQk4tiEjt4y2HZXpEl7irExEUVVdfg30oftPfyDR/VWSagEj8INerX22l4ND0GKt7V4XWsZSkvBiB+8BP24CcbK+1FFzc24lanOUNqKQGZurbjurt/N3nB+LedxVP0OmG1CdLbnwUt5G4q5LjA1q0kXssTZ4FXbemSS6XccMQgUqaRl4jZWbK4mdHtZ+j2H2kEeqzAbghQx2l80HD/C0FpOOIojJEFAWsq4ML61EEiFpnx6qy2yjKyL4S4ES0LVC10PX2w1PCRaGotVb/zg5iqeWuqwhH9a6xs4Rs/FPIf8ZmDLKObmXgVmAwwK/okuCsXnb5WiFDqBpeoGBkxNKlI0x1YDhYzBmOwG7eAsbmENdp/EmpxP5Kj0z+0uHDA3mxpMTPvYmEnHCKBJ3idKCcIdy8AExRWzCV/t3A8MNLWSbXK22XgPPFmSlygA3Ud3CnLZdFu1xey5LkxcwZG9Y/MPdiABaNoOtYBIxz94ZberD3Nd5rVpoMBlCPhRhOO00whEjXQnFXwWCh2wEQq60SCNAEXEX3EF6GunKPlF4tcQKzN1z1lcSZIInO9x6NHfVCBSlCB00HOVqPx+W4FCqoPwya9xwpMtf8++t5jtEqeYsw6xak7/7xQ==
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5a3f4a8-a252-4f99-a463-08d86395afe1
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2020 10:03:02.8457
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vhAwByDyHTZLeLZYdzQINah5W1Ain8yepCB97yzLSEXRfLHsm3phbUMUD4zEjehEtxDsDycfr2ZIcLQuK/L4TA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3769
+In-Reply-To: <CACT4Y+ZkwMZ3Bu77WGtmOGihNbgspdicEq5d_LA1hDVL=KkZyA@mail.gmail.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000004ef4505b05d608e"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Disable runtime PM if register flexcandev failed, and balance reference
-of usage_count.
+--00000000000004ef4505b05d608e
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
----
-ChangeLogs:
-V1->V3:
-	* no changes.
----
- drivers/net/can/flexcan.c | 2 ++
- 1 file changed, 2 insertions(+)
+On 9/28/2020 12:04 PM, Dmitry Vyukov wrote:
+> On Mon, Sep 28, 2020 at 11:31 AM Arend Van Spriel
+> <arend.vanspriel@broadcom.com> wrote:
+>>
+>> On 9/27/2020 10:47 AM, Dmitry Vyukov wrote:
+>>> On Sun, Sep 27, 2020 at 10:38 AM syzbot
+>>> <syzbot+3640e696903873858f7e@syzkaller.appspotmail.com> wrote:
+>>>>
+>>>> Hello,
+>>>>
+>>>> syzbot found the following issue on:
+>>>>
+>>>> HEAD commit:    748d1c8a Merge branch 'devlink-Use-nla_policy-to-validate-..
+>>>> git tree:       net-next
+>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=13ac3ec3900000
+>>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=51fb40e67d1e3dec
+>>>> dashboard link: https://syzkaller.appspot.com/bug?extid=3640e696903873858f7e
+>>>> compiler:       gcc (GCC) 10.1.0-syz 20200507
+>>>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1599be03900000
+>>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=149fd44b900000
+>>>
+>>> Based on the reproducer, this looks like some wireless bug.
+>>> +net/wireless maintainers.
+>>
+>> I don't think so looking at this part of the stacktrace:
+>>
+>> [   51.814941]  [<ffffffff8465cc95>] macvlan_common_newlink+0xa15/0x1720
+>> [   51.833542]  [<ffffffff84662548>] macvtap_newlink+0x128/0x230
+>> [   51.858008]  [<ffffffff85b68bfe>] rtnl_newlink+0xe5e/0x1780
+>> [   51.925885]  [<ffffffff85b5d32b>] rtnetlink_rcv_msg+0x22b/0xc20
+>>
+>> Regards,
+>> Arend
+> 
+> That's the trace on the oldest release and the bisection was diverged
+> somewhere midway.
+> You may see this in the bisection log:
+> https://syzkaller.appspot.com/text?tag=Log&x=1474aaad900000
+> 
+> Initially it crashed with this warning:
+> all runs: crashed: WARNING in sta_info_insert_rcu
+> 
+> This function is in net/mac80211/sta_info.c.
 
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index 925efc986b6b..fbbc90454df1 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -2058,6 +2058,8 @@ static int flexcan_probe(struct platform_device *pdev)
- 	return 0;
- 
-  failed_register:
-+	pm_runtime_put_noidle(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
- 	free_candev(dev);
- 	return err;
- }
--- 
-2.17.1
+I see. Thanks for the clarification. It was not really obvious where to 
+dig for information.
 
+Regards,
+Arend
+
+--00000000000004ef4505b05d608e
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+pra5sIx/TR6gNtLG9MpND9zQt5j42hInkP81vqu9DG8lovoPMuR0JVpFRbPjHZ07cLqqbFMVS/8z
+53iSewIDAQABo4IB0zCCAc8wDgYDVR0PAQH/BAQDAgWgMIGeBggrBgEFBQcBAQSBkTCBjjBNBggr
+BgEFBQcwAoZBaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NwZXJzb25hbHNp
+Z24yc2hhMmczb2NzcC5jcnQwPQYIKwYBBQUHMAGGMWh0dHA6Ly9vY3NwMi5nbG9iYWxzaWduLmNv
+bS9nc3BlcnNvbmFsc2lnbjJzaGEyZzMwTQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYB
+BQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAw
+RAYDVR0fBD0wOzA5oDegNYYzaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9nc3BlcnNvbmFsc2ln
+bjJzaGEyZzMuY3JsMCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYD
+VR0lBAwwCgYIKwYBBQUHAwQwHwYDVR0jBBgwFoAUaXKCYjFnlUSFd5GAxAQ2SZ17C2EwHQYDVR0O
+BBYEFHAaaA+cRo3vYiA6aKVu1bOs4YAYMA0GCSqGSIb3DQEBCwUAA4IBAQCYLdyC8SuyQV6oa5uH
+kGtqz9FCJC/9gSclQLM8dZLHF3FYX8LlcQg/3Ct5I29YLK3T/r35B2zGljtXqVOIeSEz7sDXfGNy
+3dnLIafB1y04e7aR+thVn5Rp1YTF01FUWYbZrixlVuKvjn8vtKC+HhAoDCxvqnqEuA/8Usn7B0/N
+uOA46oQTLe3kjdIgXWJ29JWVqFUavYdcK0+0zyfeMBCTO6heYABeMP3wzYHfcuFDhqldTCpumqhZ
+WwHVQUbAn+xLMIQpycIQFoJIGJX4MeaTSMfLNP2w7nP2uLNgIeleF284vS0XVkBXSCgIGylP4SN+
+HQYrv7fVCbtp+c7nFvP7MYICbzCCAmsCAQEwbTBdMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xv
+YmFsU2lnbiBudi1zYTEzMDEGA1UEAxMqR2xvYmFsU2lnbiBQZXJzb25hbFNpZ24gMiBDQSAtIFNI
+QTI1NiAtIEczAgxR3m7Pj6LvQiWjJy0wDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIE
+IJKxpgMRVWjP7P/tCLlgfsaNbHs9svkRGwTCcgYVGQsZMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0B
+BwEwHAYJKoZIhvcNAQkFMQ8XDTIwMDkyODEwNDYxMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgB
+ZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQow
+CwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBOplsBIGZu5Kmfnt/U
+TQPBPn488czy/LifFMo/tPlRZEsddrl8BOqZxYXrROoJJMIhE54h03oq6W3Cngb7LBYvNAY44RhL
+dGO7ky7nXnQ/BLzKy9/ZXIG71dNkS8XHmcRuZIOyJw0ekv8ec2GlyLPd3L++vO8+0o6GijLLRkI3
+fb1I0g4neiQ3iAq4It4v6W4BEgcGWK3HYcLdiDqidd9tqn9m/g1xpysMHoL7BioMos8UfmL0lAFE
+JAYaNIBQCTONvDhOTzTeNBkmkbopNacB6rGRlqDrqLCEO6Gq7OoYfvJzDBVnouyeLvBIP6O8CqYu
+aBVM/WgTXuf8Y1MW8Iv6
+--00000000000004ef4505b05d608e--
