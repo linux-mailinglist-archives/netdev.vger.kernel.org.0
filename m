@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 751A027AA4E
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 11:09:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76E2327AA46
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 11:08:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbgI1JI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 05:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46836 "EHLO
+        id S1726811AbgI1JIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 05:08:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726766AbgI1JIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 05:08:45 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAFA5C0613CF
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:08:44 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id t10so394777wrv.1
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:08:44 -0700 (PDT)
+        with ESMTP id S1726795AbgI1JIq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 05:08:46 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF1CC061755
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:08:46 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id o5so322865wrn.13
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:08:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WJMfBMIfNn8XZigiEDZpj+D3zsPglzZ72uaJl2xavho=;
-        b=YmTVfMa8yf3hlQc3zL+w3B3g1iuGTfYkEl9hesp5SyfJKDQsgd5OEc+Pyewc6+1t1I
-         aqbYa2D2EKunYGnTbE+EOhNZ1zjTIXbH2M5rkgYdd1ZDXPoUC8r37tzoePxalKXgbFI4
-         k4Y4NPC+P0h9pRqHo7wqbAtLxaHGha0gyR7vo=
+        bh=7RJH7pZMCVV5iroyiFLpiFRNTiQn0SSX+69PgDO+op4=;
+        b=AEutUWEmIeCuK/u0tEo45iEG6yEV0wkOBtVH6ukqPTAnsGzMjPzkYDLn3q3zMwP0UC
+         5iN2FUSdU+/ROYZro9QQyxMBGKCxwcL24Yp08ZmEeqCID+FtIDhTLeRARkrWeZrPV+o1
+         A0inX15FwgHvN2xLp8OtH7fgexKh7qcylxJYM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WJMfBMIfNn8XZigiEDZpj+D3zsPglzZ72uaJl2xavho=;
-        b=dQsmAAW6Ui3/G8dc2TfTpaX/t8gns0Cnx3fbbtGKcMln+2HER4FWiTupCNa5pdHITp
-         SQ6jrDJOrATkzmXPbUBt58Puh63urUeOud+7iOfYQbU4GaXEDEPYQDOCPngaP13tLZrD
-         LbJ+v9g9qcb30r2N0zWSvx52tqVlM5BK1/tI4IyK0KN1yqiP3KELn19dyAhjqQhhHGNZ
-         gvlyr7E0/00h16GMN5TNni/wqZ0oDyaFzal8i57WKh93oampoSjbO8/NqnM1AAPEc7An
-         DEDzyNUkTgrQTMeSW66NQmTPw36pTzMv+mJtsouOkg6/piD7SeMjh/8lh7XF4kWIxwjD
-         67ag==
-X-Gm-Message-State: AOAM532VcxOASDNefqtTBZvXiw0jmnsH8BZAlRHxztd/2YyYYMbfImEp
-        UPQfO0LFU1ER4vopnlDbnl+VNA==
-X-Google-Smtp-Source: ABdhPJyAmbTZjZ0TrzW+1rHDXb1el7LerJ/ZZTIF/Ga+wGWkVKJ0x/6crFsRT+JvjO5WmzmbLyOZvQ==
-X-Received: by 2002:a05:6000:1c8:: with SMTP id t8mr531666wrx.3.1601284123442;
-        Mon, 28 Sep 2020 02:08:43 -0700 (PDT)
+        bh=7RJH7pZMCVV5iroyiFLpiFRNTiQn0SSX+69PgDO+op4=;
+        b=pAQCQJuLFOT/2xJTohxSMGdJeg2Yr+h/LUm8jLXj0xfLPz4zsQde+8dl3oU59u6yEI
+         xahRrKGoNwTJdfBCGrc56Lk3NZOOR9CDGBiNkxfvShsdGD2kEY+SkcEK1+tA6SJ+W75C
+         7JbBDM/cfRoItEp6ZJKiH2zk3UygN+osp7z3HG7us+hAtHHyPHVsBf9Qaz/QcM+eY/S+
+         d98Hrk9j053ZuRRH9cT4kjscx8/8ANrNwU8RKcvnDqU76XEg5jMvTjthP7nRaaVbySTU
+         SazQV0jgP1+2VD9E/MCUC7W99FzK3g776IAfm2EAhVFfClgBKVqZrybAJr390lrNIs6i
+         qDWA==
+X-Gm-Message-State: AOAM530KTH0vJiI+v3UExpkM+u7rEiZt8KskFXYjt0ErDdMTBwSGfwgU
+        KPDdIi7xjeyOKnQGdXuntmIwcw==
+X-Google-Smtp-Source: ABdhPJxka0YDQqk2C5E6F4fbbDbA1rgVd/ZuMYiIQXViWIsjo1T5hyUiKJI8/ssdPAJxdj4mEFAEog==
+X-Received: by 2002:adf:e8c3:: with SMTP id k3mr576807wrn.228.1601284125220;
+        Mon, 28 Sep 2020 02:08:45 -0700 (PDT)
 Received: from antares.lan (1.f.1.6.a.e.6.5.a.0.3.2.4.7.4.0.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:474:230a:56ea:61f1])
-        by smtp.gmail.com with ESMTPSA id u13sm479631wrm.77.2020.09.28.02.08.42
+        by smtp.gmail.com with ESMTPSA id u13sm479631wrm.77.2020.09.28.02.08.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2020 02:08:42 -0700 (PDT)
+        Mon, 28 Sep 2020 02:08:44 -0700 (PDT)
 From:   Lorenz Bauer <lmb@cloudflare.com>
 To:     kafai@fb.com, Shuah Khan <shuah@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
 Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
-        Yonghong Song <yhs@fb.com>, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH bpf-next v2 3/4] selftests: bpf: remove shared header from sockmap iter test
-Date:   Mon, 28 Sep 2020 10:08:04 +0100
-Message-Id: <20200928090805.23343-4-lmb@cloudflare.com>
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next v2 4/4] selftest: bpf: Test copying a sockmap and sockhash
+Date:   Mon, 28 Sep 2020 10:08:05 +0100
+Message-Id: <20200928090805.23343-5-lmb@cloudflare.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200928090805.23343-1-lmb@cloudflare.com>
 References: <20200928090805.23343-1-lmb@cloudflare.com>
@@ -64,142 +63,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The shared header to define SOCKMAP_MAX_ENTRIES is a bit overkill.
-Dynamically allocate the sock_fd array based on bpf_map__max_entries
-instead.
+Since we can now call map_update_elem(sockmap) from bpf_iter context
+it's possible to copy a sockmap or sockhash in the kernel. Add a
+selftest which exercises this.
 
-Suggested-by: Yonghong Song <yhs@fb.com>
 Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-Acked-by: Yonghong Song <yhs@fb.com>
 ---
- .../selftests/bpf/prog_tests/sockmap_basic.c  | 36 +++++++++----------
- .../selftests/bpf/progs/bpf_iter_sockmap.c    |  5 ++-
- .../selftests/bpf/progs/bpf_iter_sockmap.h    |  3 --
- 3 files changed, 20 insertions(+), 24 deletions(-)
- delete mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_sockmap.h
+ .../selftests/bpf/prog_tests/sockmap_basic.c  | 14 +++++-----
+ .../selftests/bpf/progs/bpf_iter_sockmap.c    | 27 +++++++++++++++----
+ 2 files changed, 30 insertions(+), 11 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-index 67d3301bdf81..e8a4bfb4d9f4 100644
+index e8a4bfb4d9f4..854a508e81ce 100644
 --- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
 +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-@@ -8,8 +8,6 @@
- #include "test_sockmap_invalid_update.skel.h"
- #include "bpf_iter_sockmap.skel.h"
- 
--#include "progs/bpf_iter_sockmap.h"
--
- #define TCP_REPAIR		19	/* TCP sock is under repair right now */
- 
- #define TCP_REPAIR_ON		1
-@@ -201,9 +199,9 @@ static void test_sockmap_iter(enum bpf_map_type map_type)
- 	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
- 	int err, len, src_fd, iter_fd, duration = 0;
- 	union bpf_iter_link_info linfo = {0};
--	__s64 sock_fd[SOCKMAP_MAX_ENTRIES];
--	__u32 i, num_sockets, max_elems;
-+	__u32 i, num_sockets, num_elems;
- 	struct bpf_iter_sockmap *skel;
-+	__s64 *sock_fd = NULL;
- 	struct bpf_link *link;
- 	struct bpf_map *src;
- 	char buf[64];
-@@ -212,22 +210,23 @@ static void test_sockmap_iter(enum bpf_map_type map_type)
- 	if (CHECK(!skel, "bpf_iter_sockmap__open_and_load", "skeleton open_and_load failed\n"))
- 		return;
- 
--	for (i = 0; i < ARRAY_SIZE(sock_fd); i++)
--		sock_fd[i] = -1;
--
--	/* Make sure we have at least one "empty" entry to test iteration of
--	 * an empty slot.
--	 */
--	num_sockets = ARRAY_SIZE(sock_fd) - 1;
--
- 	if (map_type == BPF_MAP_TYPE_SOCKMAP) {
- 		src = skel->maps.sockmap;
--		max_elems = bpf_map__max_entries(src);
-+		num_elems = bpf_map__max_entries(src);
-+		num_sockets = num_elems - 1;
- 	} else {
- 		src = skel->maps.sockhash;
--		max_elems = num_sockets;
-+		num_elems = bpf_map__max_entries(src) - 1;
-+		num_sockets = num_elems;
- 	}
- 
-+	sock_fd = calloc(num_sockets, sizeof(*sock_fd));
-+	if (CHECK(!sock_fd, "calloc(sock_fd)", "failed to allocate\n"))
-+		goto out;
-+
-+	for (i = 0; i < num_sockets; i++)
-+		sock_fd[i] = -1;
-+
- 	src_fd = bpf_map__fd(src);
- 
- 	for (i = 0; i < num_sockets; i++) {
-@@ -258,8 +257,8 @@ static void test_sockmap_iter(enum bpf_map_type map_type)
- 		goto close_iter;
- 
- 	/* test results */
--	if (CHECK(skel->bss->elems != max_elems, "elems", "got %u expected %u\n",
--		  skel->bss->elems, max_elems))
-+	if (CHECK(skel->bss->elems != num_elems, "elems", "got %u expected %u\n",
-+		  skel->bss->elems, num_elems))
- 		goto close_iter;
- 
- 	if (CHECK(skel->bss->socks != num_sockets, "socks", "got %u expected %u\n",
-@@ -271,10 +270,11 @@ static void test_sockmap_iter(enum bpf_map_type map_type)
- free_link:
- 	bpf_link__destroy(link);
- out:
--	for (i = 0; i < num_sockets; i++) {
-+	for (i = 0; sock_fd && i < num_sockets; i++)
- 		if (sock_fd[i] >= 0)
- 			close(sock_fd[i]);
--	}
-+	if (sock_fd)
-+		free(sock_fd);
- 	bpf_iter_sockmap__destroy(skel);
+@@ -194,7 +194,7 @@ static void test_sockmap_invalid_update(void)
+ 		test_sockmap_invalid_update__destroy(skel);
  }
  
+-static void test_sockmap_iter(enum bpf_map_type map_type)
++static void test_sockmap_copy(enum bpf_map_type map_type)
+ {
+ 	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
+ 	int err, len, src_fd, iter_fd, duration = 0;
+@@ -242,7 +242,7 @@ static void test_sockmap_iter(enum bpf_map_type map_type)
+ 	linfo.map.map_fd = src_fd;
+ 	opts.link_info = &linfo;
+ 	opts.link_info_len = sizeof(linfo);
+-	link = bpf_program__attach_iter(skel->progs.count_elems, &opts);
++	link = bpf_program__attach_iter(skel->progs.copy, &opts);
+ 	if (CHECK(IS_ERR(link), "attach_iter", "attach_iter failed\n"))
+ 		goto out;
+ 
+@@ -265,6 +265,8 @@ static void test_sockmap_iter(enum bpf_map_type map_type)
+ 		  skel->bss->socks, num_sockets))
+ 		goto close_iter;
+ 
++	compare_cookies(src, skel->maps.dst);
++
+ close_iter:
+ 	close(iter_fd);
+ free_link:
+@@ -294,8 +296,8 @@ void test_sockmap_basic(void)
+ 		test_sockmap_update(BPF_MAP_TYPE_SOCKHASH);
+ 	if (test__start_subtest("sockmap update in unsafe context"))
+ 		test_sockmap_invalid_update();
+-	if (test__start_subtest("sockmap iter"))
+-		test_sockmap_iter(BPF_MAP_TYPE_SOCKMAP);
+-	if (test__start_subtest("sockhash iter"))
+-		test_sockmap_iter(BPF_MAP_TYPE_SOCKHASH);
++	if (test__start_subtest("sockmap copy"))
++		test_sockmap_copy(BPF_MAP_TYPE_SOCKMAP);
++	if (test__start_subtest("sockhash copy"))
++		test_sockmap_copy(BPF_MAP_TYPE_SOCKHASH);
+ }
 diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.c b/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.c
-index 0e27f73dd803..1af7555f6057 100644
+index 1af7555f6057..f3af0e30cead 100644
 --- a/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.c
 +++ b/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.c
-@@ -2,7 +2,6 @@
- /* Copyright (c) 2020 Cloudflare */
- #include "bpf_iter.h"
- #include "bpf_tracing_net.h"
--#include "bpf_iter_sockmap.h"
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_tracing.h>
- #include <errno.h>
-@@ -11,14 +10,14 @@ char _license[] SEC("license") = "GPL";
- 
- struct {
- 	__uint(type, BPF_MAP_TYPE_SOCKMAP);
--	__uint(max_entries, SOCKMAP_MAX_ENTRIES);
-+	__uint(max_entries, 64);
- 	__type(key, __u32);
- 	__type(value, __u64);
- } sockmap SEC(".maps");
- 
- struct {
- 	__uint(type, BPF_MAP_TYPE_SOCKHASH);
--	__uint(max_entries, SOCKMAP_MAX_ENTRIES);
-+	__uint(max_entries, 64);
- 	__type(key, __u32);
+@@ -22,21 +22,38 @@ struct {
  	__type(value, __u64);
  } sockhash SEC(".maps");
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.h b/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.h
-deleted file mode 100644
-index 35a675d13c0f..000000000000
---- a/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.h
-+++ /dev/null
-@@ -1,3 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--
--#define SOCKMAP_MAX_ENTRIES (64)
+ 
++struct {
++	__uint(type, BPF_MAP_TYPE_SOCKHASH);
++	__uint(max_entries, 64);
++	__type(key, __u32);
++	__type(value, __u64);
++} dst SEC(".maps");
++
+ __u32 elems = 0;
+ __u32 socks = 0;
+ 
+ SEC("iter/sockmap")
+-int count_elems(struct bpf_iter__sockmap *ctx)
++int copy(struct bpf_iter__sockmap *ctx)
+ {
+ 	struct sock *sk = ctx->sk;
+ 	__u32 tmp, *key = ctx->key;
+ 	int ret;
+ 
+-	if (key)
+-		elems++;
++	if (!key)
++		return 0;
+ 
+-	if (sk)
++	elems++;
++
++	/* We need a temporary buffer on the stack, since the verifier doesn't
++	 * let us use the pointer from the context as an argument to the helper.
++	 */
++	tmp = *key;
++
++	if (sk) {
+ 		socks++;
++		return bpf_map_update_elem(&dst, &tmp, sk, 0) != 0;
++	}
+ 
+-	return 0;
++	ret = bpf_map_delete_elem(&dst, &tmp);
++	return ret && ret != -ENOENT;
+ }
 -- 
 2.25.1
 
