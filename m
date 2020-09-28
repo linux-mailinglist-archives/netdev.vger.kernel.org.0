@@ -2,96 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B0FD27B811
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 01:25:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EAD027B87A
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 01:53:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727056AbgI1XZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 19:25:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48236 "EHLO mail.kernel.org"
+        id S1727084AbgI1Xxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 19:53:44 -0400
+Received: from mga17.intel.com ([192.55.52.151]:45483 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726369AbgI1XZs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 19:25:48 -0400
-Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6038B2076A;
-        Mon, 28 Sep 2020 23:25:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601335547;
-        bh=iCS/ts0ASN16IaSHlp9cyi3HjNkN+HRIvd/XP8pvAIQ=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=yT/rXRN14s6cXs7QXCmvczxg7To5+F3E9YvR7u89N7F1/ThSmeh4i26FMi1KP68ZD
-         8VCD0LpcJjhQ+tssv6gLf8Ho4MKRBzben9Xk9aBeUE7ZOrUqRkr6S0ODP36CkKsIF7
-         J/mc5fHDWC6/dsDx74ywdc64bITrVDIOElcyZ01o=
-Message-ID: <64f6a3eaaac505c341f996df0b0877ee9af56c00.camel@kernel.org>
-Subject: Re: net/mlx5: Refactor tc flow attributes structure
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Colin Ian King <colin.king@canonical.com>,
-        Ariel Levkovich <lariel@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Mon, 28 Sep 2020 16:25:46 -0700
-In-Reply-To: <763ea1c6-ed2b-3487-113f-fb48c1cf27dc@canonical.com>
-References: <763ea1c6-ed2b-3487-113f-fb48c1cf27dc@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1726522AbgI1Xxn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 19:53:43 -0400
+IronPort-SDR: atp8UjPapY17nFr8Uxr6yE4U1St5una6DktyaIFMGXqr2hJQbnC0h3SmJ9q7YBArUwB7yxi/HM
+ 0in/P9Yl53+w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="142086317"
+X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; 
+   d="scan'208";a="142086317"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 14:50:28 -0700
+IronPort-SDR: Z0XB1BVAiraeGNmHNkb0qdli3485cL9QcEreQrZNBtrUEEa051MPl36MWvnELgIFKbFbw7pOXn
+ Zb1EZxPfC+Dg==
+X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; 
+   d="scan'208";a="311962092"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 14:50:28 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next v2 00/15] 1GbE Intel Wired LAN Driver Updates 2020-09-28
+Date:   Mon, 28 Sep 2020 14:50:03 -0700
+Message-Id: <20200928215018.952991-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-09-28 at 17:06 +0100, Colin Ian King wrote:
-> Hi,
-> 
-> static analysis with Coverity has found a null pointer dereference
-> issue
-> with the following commit:
-> 
-> commit c620b772152b8274031083bdb2e11c963e596c5c
-> Author: Ariel Levkovich <lariel@mellanox.com>
-> Date:   Thu Apr 30 05:54:08 2020 +0300
-> 
->     net/mlx5: Refactor tc flow attributes structure
-> 
-> The analysis is as follows:
-> 
-> 1240        slow_attr =
-> mlx5_alloc_flow_attr(MLX5_FLOW_NAMESPACE_FDB);
-> 
->     1. Condition !slow_attr, taking true branch.
->     2. var_compare_op: Comparing slow_attr to null implies that
-> slow_attr might be null.
-> 
-> 1241        if (!slow_attr)
-> 1242                mlx5_core_warn(flow->priv->mdev, "Unable to
-> unoffload slow path rule\n");
-> 1243
-> 1244        memcpy(slow_attr, flow->attr, ESW_FLOW_ATTR_SZ);
-> 
-> Dereference after null check (FORWARD_NULL)
->     3. var_deref_op: Dereferencing null pointer slow_attr.
-> 
-> 1245        slow_attr->action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
-> 1246        slow_attr->esw_attr->split_count = 0;
-> 1247        slow_attr->flags |= MLX5_ESW_ATTR_FLAG_SLOW_PATH;
-> 1248        mlx5e_tc_unoffload_fdb_rules(esw, flow, slow_attr);
-> 1249        flow_flag_clear(flow, SLOW);
-> 1250        kfree(slow_attr);
-> 
-> there is a !slow_attr check but if it slow_attr is null the code then
-> dereferences it multiple times afterwards.
-> 
-> Colin
+This series contains updates to igb, igc, and e1000e drivers.
 
-Thanks Colin for the Report,
+Sven Auhagen adds XDP support for igb.
 
-Ariel is handling this internally and we will be posting the patch
-soon.
+Gal Hammer allows for 82576 to display part number string correctly for
+igb.
 
+Sasha adds device IDs for i221 and i226 parts. Exposes LPI counters and
+removes unused fields in structures for igc. He also adds Meteor Lake
+support for e1000e.
 
+For igc, Andre renames IGC_TSYNCTXCTL_VALID to IGC_TSYNCTXCTL_TXTT_0 to
+match the datasheet and adds a warning if it's not set when expected.
+Removes the PTP Tx timestamp check in igc_ptp_tx_work() as it's already
+checked in the watchdog_task. Cleans up some code by removing invalid error
+bits, renaming a bit to match datasheet naming, and removing a, now
+unneeded, macro.
+
+Vinicius makes changes for igc PTP: removes calling SYSTIMR to latch timer
+value, stores PTP time before a reset, and rejects schedules with times in
+the future.
+
+v2: Remove 'inline' from igb_xdp_tx_queue_mapping() and igb_rx_offset()
+for patch 1
+
+The following are changes since commit bcbf1be0ad49eed35f3cf27fb668f77e0c94f5f7:
+  Merge branch 'udp_tunnel-convert-Intel-drivers-with-shared-tables'
+and are available in the git repository at:
+  https://github.com/anguy11/next-queue.git 1GbE
+
+Andre Guedes (4):
+  igc: Rename IGC_TSYNCTXCTL_VALID macro
+  igc: Don't reschedule ptp_tx work
+  igc: Remove timeout check from ptp_tx work
+  igc: Clean RX descriptor error flags
+
+Gal Hammer (1):
+  igb: read PBA number from flash
+
+Sasha Neftin (5):
+  igc: Add new device ID's
+  igc: Expose LPI counters
+  igc: Remove reset disable flag
+  igc: Clean up nvm_info structure
+  e1000e: Add support for Meteor Lake
+
+Sven Auhagen (1):
+  igb: add XDP support
+
+Vinicius Costa Gomes (4):
+  igc: Remove references to SYSTIMR register
+  igc: Save PTP time before a reset
+  igc: Export a way to read the PTP timer
+  igc: Reject schedules with a base_time in the future
+
+ drivers/net/ethernet/intel/e1000e/ethtool.c  |   2 +
+ drivers/net/ethernet/intel/e1000e/hw.h       |   5 +
+ drivers/net/ethernet/intel/e1000e/ich8lan.c  |   7 +
+ drivers/net/ethernet/intel/e1000e/netdev.c   |   6 +
+ drivers/net/ethernet/intel/e1000e/ptp.c      |   1 +
+ drivers/net/ethernet/intel/igb/igb.h         |  80 +++-
+ drivers/net/ethernet/intel/igb/igb_ethtool.c |   4 +
+ drivers/net/ethernet/intel/igb/igb_main.c    | 437 +++++++++++++++++--
+ drivers/net/ethernet/intel/igc/igc.h         |   3 +
+ drivers/net/ethernet/intel/igc/igc_base.c    |   5 +
+ drivers/net/ethernet/intel/igc/igc_defines.h |  16 +-
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |   3 +
+ drivers/net/ethernet/intel/igc/igc_hw.h      |  11 +-
+ drivers/net/ethernet/intel/igc/igc_main.c    |  39 +-
+ drivers/net/ethernet/intel/igc/igc_ptp.c     |  58 +--
+ 15 files changed, 591 insertions(+), 86 deletions(-)
+
+-- 
+2.26.2
 
