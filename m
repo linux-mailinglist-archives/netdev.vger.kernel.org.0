@@ -2,73 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3EB927B88D
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 01:59:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 570CC27B883
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 01:55:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727049AbgI1X7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 19:59:06 -0400
-Received: from mga17.intel.com ([192.55.52.151]:45855 "EHLO mga17.intel.com"
+        id S1727160AbgI1Xzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 19:55:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51780 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727007AbgI1X7G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 19:59:06 -0400
-IronPort-SDR: wYxbzVHGEpQeGMxusJnJsomlkQh/sstsW60SolrtrSKDTPcK4TOdO418DwI5pUUFyUHB9VXvti
- 0MSUXtd25J+g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="142086330"
-X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; 
-   d="scan'208";a="142086330"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 14:50:30 -0700
-IronPort-SDR: X34sc1GkeoEHmlBq2LinE0de+j9uHN/LLanZRTHz8LXRx+CoTn4wmfz+dTTC/EeLqtZPTM8zN2
- ypxrdk8AzSEg==
-X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; 
-   d="scan'208";a="311962133"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 14:50:28 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com, Aaron Brown <aaron.f.brown@intel.com>
-Subject: [net-next v2 14/15] igc: Clean up nvm_info structure
-Date:   Mon, 28 Sep 2020 14:50:17 -0700
-Message-Id: <20200928215018.952991-15-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200928215018.952991-1-anthony.l.nguyen@intel.com>
-References: <20200928215018.952991-1-anthony.l.nguyen@intel.com>
+        id S1726522AbgI1Xzc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 19:55:32 -0400
+Received: from localhost (52.sub-72-107-123.myvzw.com [72.107.123.52])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BFCA52083B;
+        Mon, 28 Sep 2020 21:59:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601330373;
+        bh=0n1xJcdLngQdEbL6h/atc0mGb4YVbGMJlbNqrb3rWc0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=TPpxBphvz+2D9Uwv5VqfQh0wF+3Q/7TSzzgny4d7237sTORHdrdkk58bs1BWlGT6v
+         zx70R2QzsjjCdGSPdGWmHX1ifdjxKDGigQo4yWcs4p9sTTOTpGuvhuao0t38NmeFAX
+         O1xWNs/AwwHQU1IqkaFmk4+tPRE2S87hvWuuckTY=
+Date:   Mon, 28 Sep 2020 16:59:31 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Nitesh Narayan Lal <nitesh@redhat.com>, hch@infradead.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
+        jlelli@redhat.com, bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jiri@nvidia.com, mingo@redhat.com, peterz@infradead.org,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        lgoncalv@redhat.com
+Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to
+ housekeeping CPUs
+Message-ID: <20200928215931.GA2499944@bjorn-Precision-5520>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200928183529.471328-5-nitesh@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+[to: Christoph in case he has comments, since I think he wrote this code]
 
-flash_bank_size and flash_base_addr field not in use and can
-be removed from a nvm_info structure
+On Mon, Sep 28, 2020 at 02:35:29PM -0400, Nitesh Narayan Lal wrote:
+> If we have isolated CPUs dedicated for use by real-time tasks, we try to
+> move IRQs to housekeeping CPUs from the userspace to reduce latency
+> overhead on the isolated CPUs.
+> 
+> If we allocate too many IRQ vectors, moving them all to housekeeping CPUs
+> may exceed per-CPU vector limits.
+> 
+> When we have isolated CPUs, limit the number of vectors allocated by
+> pci_alloc_irq_vectors() to the minimum number required by the driver, or
+> to one per housekeeping CPU if that is larger.
+> 
+> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
 
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/igc/igc_hw.h | 3 ---
- 1 file changed, 3 deletions(-)
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_hw.h b/drivers/net/ethernet/intel/igc/igc_hw.h
-index 17d6669959db..55dae7c4703f 100644
---- a/drivers/net/ethernet/intel/igc/igc_hw.h
-+++ b/drivers/net/ethernet/intel/igc/igc_hw.h
-@@ -130,9 +130,6 @@ struct igc_nvm_info {
- 	struct igc_nvm_operations ops;
- 	enum igc_nvm_type type;
- 
--	u32 flash_bank_size;
--	u32 flash_base_addr;
--
- 	u16 word_size;
- 	u16 delay_usec;
- 	u16 address_bits;
--- 
-2.26.2
-
+> ---
+>  drivers/pci/msi.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+> 
+> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+> index 30ae4ffda5c1..8c156867803c 100644
+> --- a/drivers/pci/msi.c
+> +++ b/drivers/pci/msi.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/irqdomain.h>
+>  #include <linux/of_irq.h>
+> +#include <linux/sched/isolation.h>
+>  
+>  #include "pci.h"
+>  
+> @@ -1191,8 +1192,25 @@ int pci_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
+>  				   struct irq_affinity *affd)
+>  {
+>  	struct irq_affinity msi_default_affd = {0};
+> +	unsigned int hk_cpus;
+>  	int nvecs = -ENOSPC;
+>  
+> +	hk_cpus = housekeeping_num_online_cpus(HK_FLAG_MANAGED_IRQ);
+> +
+> +	/*
+> +	 * If we have isolated CPUs for use by real-time tasks, to keep the
+> +	 * latency overhead to a minimum, device-specific IRQ vectors are moved
+> +	 * to the housekeeping CPUs from the userspace by changing their
+> +	 * affinity mask. Limit the vector usage to keep housekeeping CPUs from
+> +	 * running out of IRQ vectors.
+> +	 */
+> +	if (hk_cpus < num_online_cpus()) {
+> +		if (hk_cpus < min_vecs)
+> +			max_vecs = min_vecs;
+> +		else if (hk_cpus < max_vecs)
+> +			max_vecs = hk_cpus;
+> +	}
+> +
+>  	if (flags & PCI_IRQ_AFFINITY) {
+>  		if (!affd)
+>  			affd = &msi_default_affd;
+> -- 
+> 2.18.2
+> 
