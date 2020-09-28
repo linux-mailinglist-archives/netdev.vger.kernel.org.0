@@ -2,145 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CC3C27AA8F
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 11:20:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B02C927AAA2
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 11:23:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726693AbgI1JUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 05:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
+        id S1726655AbgI1JXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 05:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726605AbgI1JUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 05:20:02 -0400
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87520C0613D0
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:20:02 -0700 (PDT)
-Received: by mail-vk1-xa36.google.com with SMTP id e5so1400527vkm.2
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:20:02 -0700 (PDT)
+        with ESMTP id S1726526AbgI1JXc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 05:23:32 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0FEC061755
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:23:31 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id j2so501964eds.9
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:23:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QQu91B+AW3IRpHZjKS2p4lMu3W034IPbEyQrKhHugtA=;
-        b=h0nsKxQ1792AaIhUo13P82vgGVMXclf9CkIZ3KapAzb2X/3tNBKYsSGecwrBlaGlfj
-         Tfj/C9Zv83pHcreLOpATprEGXKgXE7GflMxTk85DdzpRec/t1LnE+wiAfP6b5BIHasHY
-         Ignqf7gF7vwjnL8HCCY3lSkGXTjCE+cuCHlYoEe1V1ud1mcWehNemRROw+dC/JdC1/0c
-         0PedcFoH2tLhd3HHLNfHHJrCV/CVoz/bfJ60yVp2iKXm17ESSv95/LpX2Y/Dg/8GDOjv
-         2ofiMkyoa80M4iYbgDGr8oelbtFwixNkB383I0V8notORYCLMV89a0h5ooLViuYHEZeT
-         ZUiw==
+        bh=49UgUsuSZpbxMCQ1i25UEUHUhYi5jAwhqJAxsLMJJbA=;
+        b=JE0/6giF4HuaBufvw1jiR/Z4QVqaUyASMznriiZ4ifjR9k4FiKXxGOW8ql3eVeumaE
+         NcEJV866hSqG5MwWxiYng0XMqXN8vPt44auPNIJ6m5fipoh8bsAXNwOoSOoH1YR6gIqz
+         CRHtByztVrfPIy5QygCOFLFZdIW3sttFKeuNyAWxAM+ZMCEuF28Z6HlqwfDb8HklLj+K
+         t5zMvq+rBd6QD58bqv4l/CH1tFf6xvxuO3mlYvhfdjHBEWX/JGbcTapp3bAYLE6TKBAA
+         bx1iw60ffR19Fg7kRfxNU1izEP018UGdKDWxTRuIu0vhNitR09CRS1+7HTC1k/6jGrl4
+         SUaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QQu91B+AW3IRpHZjKS2p4lMu3W034IPbEyQrKhHugtA=;
-        b=oTLNU/vrfD/aSPWkZrHM4zcXMepNvQmCv3cVNwSmudP0Zxw53D0zDLyE02lzOiNO0Z
-         YjKFhqdJc/8JclRySov1jnMFO/NwUce3kfuMMBwbqjgnujSzqD0n3qlyXPtS8S4ctoZv
-         JokKga0odyHWUclSGirU0DRqocy4kllIfToiGpY5F1Gmw2+m9A4s6UsGUO+EkAq57kbG
-         XJ7mb6phEE4Q7z2A2xlbswRPg0r4MYLnlfqCgnZHdbI+f1vEuAUsl3fHWPWl8pE0kaOX
-         4fDkfXjGLUFChhObyd26tFJx5oL2DLHgYmOipcyPKO8T/R7UJHjY3+XChKY5rZU1v7nh
-         z5Lw==
-X-Gm-Message-State: AOAM530MIGeqeLZrLOu4dGgBhPzONXviFov4AtsrV0aoIRXiHS5Ha1MT
-        1AJVeivQeMFFdk5wRKGdFZE/sTivQtMe7RVpnfrq2w==
-X-Google-Smtp-Source: ABdhPJyIPAnJj5fPmVsL4k9MF4OtxiE77/7ix/Qafm1hzLnqts1eYR1koTMhcOn/iv3ljy6H8r2txH0J3D7/fATe+GY=
-X-Received: by 2002:ac5:c748:: with SMTP id b8mr4530997vkn.6.1601284801206;
- Mon, 28 Sep 2020 02:20:01 -0700 (PDT)
+        bh=49UgUsuSZpbxMCQ1i25UEUHUhYi5jAwhqJAxsLMJJbA=;
+        b=MDCXn0Ftix3BgQNPeK5duto6zpjBQff1BgmcF9/EHW9k+jVegY7AQHzKk9jm1i7xVe
+         sD4J4++6VN6gIW3Wv8hWfRl2VJWN2cooENW3cnkkosG2+/KZiT16WntL/ysO3xA1Ohy7
+         BxmtWBz/IeXscyAck9ThS+31MajFnsYdaSlxBEs2KGNVh6eOksVqPG+CskdSv7BVcT31
+         T91YUUgG+VKBh+HhSFRrdoN3Iyt/UoWr64IwXOTjKIIY9QQ5MEXmrmHyvayEq+cHTixb
+         cW1akBtobifMnAaow2m1tgvO9lY6R7tzHP8BaVbAsaMiT4LQqoeVNShX6PNX4yr1XaOR
+         sLqg==
+X-Gm-Message-State: AOAM533nGzO/prTZC3gCZWxcTSlUXhUeZsiGIDJjQuGcgQ+88xBw/mxN
+        JLh17Zx3z2dLm25qbkyQAaf5W/XoFpwThD9+K9w=
+X-Google-Smtp-Source: ABdhPJz+24UgqtQiE8ggUQSe1O6SQ1aOICXYByjZaTiGIUF4g0xhjoIeDoIOqrSJY6Ir1FZm9dcTspBNQgJUARtI9g8=
+X-Received: by 2002:aa7:de82:: with SMTP id j2mr691360edv.3.1601285010642;
+ Mon, 28 Sep 2020 02:23:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200927194846.045411263@linutronix.de> <20200927194922.245750969@linutronix.de>
- <a345ad51-4db7-5e4f-3ff9-f1673c12da99@broadcom.com>
-In-Reply-To: <a345ad51-4db7-5e4f-3ff9-f1673c12da99@broadcom.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Mon, 28 Sep 2020 11:19:25 +0200
-Message-ID: <CAPDyKFrC2j5S7NrtTRCBga=rttKBp-OZnsEnAEgnXj8zj11p0w@mail.gmail.com>
-Subject: Re: [patch 24/35] net: brcmfmac: Replace in_interrupt()
-To:     Arend Van Spriel <arend.vanspriel@broadcom.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        Paul McKenney <paulmck@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
-        netdev <netdev@vger.kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Govindarajulu Varadarajan <_govind@gmx.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Linux Documentation <linux-doc@vger.kernel.org>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Shannon Nelson <snelson@pensando.io>,
-        Pensando Drivers <drivers@pensando.io>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Jon Mason <jdmason@kudzu.us>, Daniel Drake <dsd@gentoo.org>,
-        Ulrich Kunitz <kune@deine-taler.de>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Jouni Malinen <j@w1.fi>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        libertas-dev@lists.infradead.org,
-        Pascal Terjan <pterjan@google.com>,
-        Ping-Ke Shih <pkshih@realtek.com>
+References: <20200928033915.82810-1-xiangxia.m.yue@gmail.com> <CA+FuTSe08hRwQ_c1Uk7BzHWL1HwTGWQ7kKG1tfBUifOtayVMGw@mail.gmail.com>
+In-Reply-To: <CA+FuTSe08hRwQ_c1Uk7BzHWL1HwTGWQ7kKG1tfBUifOtayVMGw@mail.gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Mon, 28 Sep 2020 17:21:18 +0800
+Message-ID: <CAMDZJNX2yUv9rL4v++SnL34bcKRiX2zJ2Qnjni4U_SDtjeOLWQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] virtio-net: don't disable guest csum when disable LRO
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Sep 2020 at 09:35, Arend Van Spriel
-<arend.vanspriel@broadcom.com> wrote:
+On Mon, Sep 28, 2020 at 4:35 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
 >
-> + Uffe
->
-> On 9/27/2020 9:49 PM, Thomas Gleixner wrote:
-> > @@ -85,7 +85,7 @@ static void brcmf_sdiod_ib_irqhandler(st
+> On Mon, Sep 28, 2020 at 5:41 AM <xiangxia.m.yue@gmail.com> wrote:
 > >
-> >       brcmf_dbg(INTR, "IB intr triggered\n");
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > >
-> > -     brcmf_sdio_isr(sdiodev->bus);
-> > +     brcmf_sdio_isr(sdiodev->bus, false);
-> >   }
+> > Open vSwitch and Linux bridge will disable LRO of the interface
+> > when this interface added to them. Now when disable the LRO, the
+> > virtio-net csum is disable too. That drops the forwarding performance.
+> >
+> > Fixes: e59ff2c49ae1 ("virtio-net: disable guest csum during XDP set")
 >
-> Hi Uffe,
+> Patch looks fine to me, but wrong commit here?
+Yes, I will change the tag.
+> That commit disables csum on purpose when enabling xdp with ndp_bpf.
 >
-> I assume the above code is okay, but want to confirm. Is the SDIO
-> interrupt guaranteed to be on a worker thread?
+> This patch refines disabling LRO with ndo_set_features.
+>
+> The relevant commit is a02e8964eaf9 ("virtio-net: ethtool configurable LRO").
+>
+> If this is a fix, it should target [PATCH net] separately from the
+> second patch in the patchset, which is a new feature and targets
+> [PATCH net-next]. They can arguably target net-next together, but then
+> it should not have a fixes tag.
+Thanks, I will send first patch for net, and next one to net-next.
+>
+> > Cc: Michael S. Tsirkin <mst@redhat.com>
+> > Cc: Jason Wang <jasowang@redhat.com>
+> > Cc: Willem de Bruijn <willemb@google.com>
+> > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > ---
+> >  drivers/net/virtio_net.c | 8 +++++++-
+> >  1 file changed, 7 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 7145c83c6c8c..21b71148c532 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -63,6 +63,11 @@ static const unsigned long guest_offloads[] = {
+> >         VIRTIO_NET_F_GUEST_CSUM
+> >  };
+> >
+> > +#define GUEST_OFFLOAD_LRO_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
+> > +                               (1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
+> > +                               (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+> > +                               (1ULL << VIRTIO_NET_F_GUEST_UFO))
+> > +
+> >  struct virtnet_stat_desc {
+> >         char desc[ETH_GSTRING_LEN];
+> >         size_t offset;
+> > @@ -2531,7 +2536,8 @@ static int virtnet_set_features(struct net_device *dev,
+> >                 if (features & NETIF_F_LRO)
+> >                         offloads = vi->guest_offloads_capable;
+> >                 else
+> > -                       offloads = 0;
+> > +                       offloads = vi->guest_offloads_capable &
+> > +                                  ~GUEST_OFFLOAD_LRO_MASK;
+> >
+> >                 err = virtnet_set_guest_offloads(vi, offloads);
+> >                 if (err)
+> > --
+> > 2.23.0
+> >
 
-Correct.
 
-As a matter of fact, the sdio irqs can be delivered through a couple
-of different paths. The legacy (scheduled for removal), is from a
-dedicated kthread. The more "modern" way is either from the context of
-a threaded IRQ handler or via a workqueue.
 
-However, there are also so-called out of band SDIO irqs, typically
-routed via a separate GPIO line. This isn't managed by the MMC/SDIO
-subsystem, but the SDIO functional driver itself.
-
-Kind regards
-Uffe
+-- 
+Best regards, Tonghao
