@@ -2,46 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5A5C27A892
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 09:27:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 753F727A8B1
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 09:35:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbgI1H1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 03:27:37 -0400
-Received: from mail-il1-f207.google.com ([209.85.166.207]:52124 "EHLO
-        mail-il1-f207.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726518AbgI1H10 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 03:27:26 -0400
-Received: by mail-il1-f207.google.com with SMTP id e3so78420ilq.18
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:27:25 -0700 (PDT)
+        id S1726604AbgI1HfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 03:35:25 -0400
+Received: from mail-io1-f80.google.com ([209.85.166.80]:41605 "EHLO
+        mail-io1-f80.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726526AbgI1HfZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 03:35:25 -0400
+Received: by mail-io1-f80.google.com with SMTP id j4so120230iob.8
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:35:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=NCkNaomJtuG8Ixkq0sPPguZMyC8HytnM7a0RscFm9Jc=;
-        b=NLFiIbpNx7eMeJRU3vsaUf6swRq6X2Om+7Bu9946gziCBN4MkLMSa5KWbFeYkz/6Pz
-         F+cGKQv/KWshAW6MGrv+/4OfcevhwGSnqXZEHOs4c7CBwndWB8kAZSDh4CPowkzIRPWe
-         QnFE2pWhaouN2VZZ1oJnn95dTnXBZ3HDNuWUY+NHq3K+W+UG/UU0otFaSx7kmFkzAp4/
-         e/oe+lBLzR0L8fpCz6ENxK0xTg9XHX8boJeokLczhcBkbkl6+uOKo/uT6ePOjon2Lyx+
-         kwJ/Z5uwCCHFW0W7Qytpd1kHpNhIhJZmKM2+JeZIUjW2KbU532011W+KAwUiQ4Zt5DYD
-         5jgg==
-X-Gm-Message-State: AOAM533zNeeHS5dw4Z3k4tEVkGlGkocm0IHrXjoJ2MjeJ6iKx4ca4l2M
-        pj18N/sI88OAlclbhZZFZnAFIsaDiHVX3Pr3nhxCkNn+h2AB
-X-Google-Smtp-Source: ABdhPJzItk4Uh0W6cDwSXiw8cDz9ZlXp6DQZfJNm3HckGO07a0OULgqJiOJSCsPNBAp87ljdpSInHeHcxqrbj5ahk7FTMp6hbrfx
+        bh=CJQvC4HTF83zOtIUthVZPbqguyH85VyIuX34JkoyPQ8=;
+        b=qMIaVjeROpT5NOJesiB8dwHfrKtKuY1xw75FhXow6D+7DK7xehT0Xjn9iYyfG1SxVs
+         v75YAcyB3wWWWtHMYxrYMza+z94Yop9OO+T3k+l6mXxlUhedyhr8yPBzTrZZ9OGtxdcv
+         cpH1ggj+CJ17FsVby9y9iVbWWkz44BvSQl+3fjFnpXhmmuQ4ot1p6HJSSGQflWoUhfL3
+         ph+7paRmpO7FvAjzKyowWr0AqBvMspTQrtu71zxBzKqRaecSYPrr3tdo5xdJZmUv+PCQ
+         P84gOlitXEmrqmou42NG+z15BIbDrUO3iKjFtHkOpUaGVXlEH54iW8nDFR2Rbraop3rZ
+         g0Ww==
+X-Gm-Message-State: AOAM5331/lFqdFe5JMmHqh3yUkgXFYZUqyEgBlb/TkA5wLJXRCk4MUMO
+        hDoXIqvG8EaKNVubD4/LXw6EE0lzbKI/iwoT/d7IVZ61hn24
+X-Google-Smtp-Source: ABdhPJwHSw48W+RND0fHB847K7SkU4zxV5vMkiMW/kbIBeVMerY/8kllZCOhccmFtlm4jE/gbEfvD81vk9/DEAxyDX04uWVTxMpv
 MIME-Version: 1.0
-X-Received: by 2002:a02:a816:: with SMTP id f22mr148732jaj.118.1601278044624;
- Mon, 28 Sep 2020 00:27:24 -0700 (PDT)
-Date:   Mon, 28 Sep 2020 00:27:24 -0700
+X-Received: by 2002:a05:6638:134a:: with SMTP id u10mr168048jad.88.1601278524106;
+ Mon, 28 Sep 2020 00:35:24 -0700 (PDT)
+Date:   Mon, 28 Sep 2020 00:35:24 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000095d3605b05a9909@google.com>
-Subject: KASAN: use-after-free Read in tcf_action_init
-From:   syzbot <syzbot+9f43bb6a66ff96a21931@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net,
-        enric.balletbo@collabora.com, groeck@chromium.org,
-        gwendal@chromium.org, jhs@mojatatu.com, jic23@kernel.org,
-        jiri@resnulli.us, kaber@trash.net, kadlec@blackhole.kfki.hu,
+Message-ID: <0000000000009dac0205b05ab52a@google.com>
+Subject: general protection fault in tcf_generic_walker
+From:   syzbot <syzbot+b47bc4f247856fb4d9e1@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
         kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
         xiyou.wangcong@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
@@ -52,142 +48,80 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    171d4ff7 Merge tag 'mmc-v5.9-rc4-2' of git://git.kernel.or..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=105fbac5900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=af502ec9a451c9fc
-dashboard link: https://syzkaller.appspot.com/bug?extid=9f43bb6a66ff96a21931
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13cb8f8b900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12af2c81900000
+HEAD commit:    ad2b9b0f tcp: skip DSACKs with dubious sequence ranges
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=13baee3d900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5f4c828c9e3cef97
+dashboard link: https://syzkaller.appspot.com/bug?extid=b47bc4f247856fb4d9e1
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-The issue was bisected to:
-
-commit 974e6f02e27e1b46c6c5e600e70ced25079f73eb
-Author: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Date:   Mon Aug 1 09:54:35 2016 +0000
-
-    iio: cros_ec_sensors_core: Add common functions for the ChromeOS EC Sensor Hub.
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11fe49d3900000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=13fe49d3900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15fe49d3900000
+Unfortunately, I don't have any reproducer for this issue yet.
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+9f43bb6a66ff96a21931@syzkaller.appspotmail.com
-Fixes: 974e6f02e27e ("iio: cros_ec_sensors_core: Add common functions for the ChromeOS EC Sensor Hub.")
+Reported-by: syzbot+b47bc4f247856fb4d9e1@syzkaller.appspotmail.com
 
-netlink: 32 bytes leftover after parsing attributes in process `syz-executor211'.
-==================================================================
-BUG: KASAN: use-after-free in tcf_action_destroy net/sched/act_api.c:724 [inline]
-BUG: KASAN: use-after-free in tcf_action_init+0x231/0x3d0 net/sched/act_api.c:1058
-Read of size 8 at addr ffff888097225c00 by task syz-executor211/7086
-
-CPU: 0 PID: 7086 Comm: syz-executor211 Not tainted 5.9.0-rc6-syzkaller #0
+general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
+CPU: 0 PID: 22478 Comm: syz-executor.4 Not tainted 5.9.0-rc6-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:tcf_dump_walker net/sched/act_api.c:240 [inline]
+RIP: 0010:tcf_generic_walker+0x367/0xba0 net/sched/act_api.c:343
+Code: 24 31 ff 48 89 de e8 b8 6c ed fa 48 85 db 74 3f e8 2e 70 ed fa 48 8d 7d 30 48 b9 00 00 00 00 00 fc ff df 48 89 f8 48 c1 e8 03 <80> 3c 08 00 0f 85 26 07 00 00 48 8b 5d 30 31 ff 48 2b 1c 24 48 89
+RSP: 0018:ffffc90006657268 EFLAGS: 00010202
+RAX: 0000000000000004 RBX: c000000100004f6c RCX: dffffc0000000000
+RDX: 0000000000040000 RSI: ffffffff8688ce12 RDI: 0000000000000020
+RBP: fffffffffffffff0 R08: 0000000000000000 R09: ffff8880a6270207
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff88809d5c3d40
+R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
+FS:  00007f9807b99700(0000) GS:ffff8880ae400000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f01a8629db8 CR3: 00000000553cb000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1d6/0x29e lib/dump_stack.c:118
- print_address_description+0x66/0x620 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report+0x132/0x1d0 mm/kasan/report.c:530
- tcf_action_destroy net/sched/act_api.c:724 [inline]
- tcf_action_init+0x231/0x3d0 net/sched/act_api.c:1058
- tcf_action_add net/sched/act_api.c:1451 [inline]
- tc_ctl_action+0x2c7/0x7e0 net/sched/act_api.c:1504
- rtnetlink_rcv_msg+0x889/0xd40 net/core/rtnetlink.c:5563
- netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2470
+ tc_dump_action+0x6d5/0xe60 net/sched/act_api.c:1623
+ netlink_dump+0x4cd/0xf60 net/netlink/af_netlink.c:2246
+ __netlink_dump_start+0x643/0x900 net/netlink/af_netlink.c:2354
+ netlink_dump_start include/linux/netlink.h:246 [inline]
+ rtnetlink_rcv_msg+0x70f/0xad0 net/core/rtnetlink.c:5526
+ netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1919
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
  sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg net/socket.c:671 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2353
- ___sys_sendmsg net/socket.c:2407 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2440
- do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
+ sock_sendmsg+0xcf/0x120 net/socket.c:671
+ ____sys_sendmsg+0x331/0x810 net/socket.c:2353
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
+ __sys_sendmmsg+0x195/0x480 net/socket.c:2497
+ __do_sys_sendmmsg net/socket.c:2526 [inline]
+ __se_sys_sendmmsg net/socket.c:2523 [inline]
+ __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2523
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x44abe9
-Code: e8 dc 13 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 cb 0b fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f842a305ce8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000006e0c48 RCX: 000000000044abe9
-RDX: 0000000000000000 RSI: 0000000020002980 RDI: 0000000000000003
-RBP: 00000000006e0c40 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006e0c4c
-R13: 00007ffcf73121ef R14: 00007f842a3069c0 R15: 00000000006e0c4c
-
-Allocated by task 7086:
- kasan_save_stack mm/kasan/common.c:48 [inline]
- kasan_set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc+0x100/0x130 mm/kasan/common.c:461
- __do_kmalloc mm/slab.c:3655 [inline]
- __kmalloc+0x205/0x300 mm/slab.c:3664
- kmalloc include/linux/slab.h:559 [inline]
- kzalloc+0x16/0x30 include/linux/slab.h:666
- tcf_idr_create+0x56/0x5e0 net/sched/act_api.c:408
- tcf_connmark_init+0x230/0x7d0 net/sched/act_connmark.c:126
- tcf_action_init_1+0x7dc/0xce0 net/sched/act_api.c:984
- tcf_action_init+0x114/0x3d0 net/sched/act_api.c:1043
- tcf_action_add net/sched/act_api.c:1451 [inline]
- tc_ctl_action+0x2c7/0x7e0 net/sched/act_api.c:1504
- rtnetlink_rcv_msg+0x889/0xd40 net/core/rtnetlink.c:5563
- netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2470
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg net/socket.c:671 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2353
- ___sys_sendmsg net/socket.c:2407 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2440
- do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task 7088:
- kasan_save_stack mm/kasan/common.c:48 [inline]
- kasan_set_track+0x3d/0x70 mm/kasan/common.c:56
- kasan_set_free_info+0x17/0x30 mm/kasan/generic.c:355
- __kasan_slab_free+0xdd/0x110 mm/kasan/common.c:422
- __cache_free mm/slab.c:3418 [inline]
- kfree+0x113/0x200 mm/slab.c:3756
- tcf_idr_release_unsafe net/sched/act_api.c:284 [inline]
- tcf_del_walker net/sched/act_api.c:310 [inline]
- tcf_generic_walker+0x6f8/0xbc0 net/sched/act_api.c:339
- tca_action_flush net/sched/act_api.c:1278 [inline]
- tca_action_gd+0x135a/0x18f0 net/sched/act_api.c:1385
- tc_ctl_action+0x395/0x7e0 net/sched/act_api.c:1512
- rtnetlink_rcv_msg+0x889/0xd40 net/core/rtnetlink.c:5563
- netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2470
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg net/socket.c:671 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2353
- ___sys_sendmsg net/socket.c:2407 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2440
- do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-The buggy address belongs to the object at ffff888097225c00
- which belongs to the cache kmalloc-512 of size 512
-The buggy address is located 0 bytes inside of
- 512-byte region [ffff888097225c00, ffff888097225e00)
-The buggy address belongs to the page:
-page:00000000598892c8 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x97225
-flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea00028423c8 ffffea00028bbc48 ffff8880aa440600
-raw: 0000000000000000 ffff888097225000 0000000100000004 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff888097225b00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff888097225b80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff888097225c00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                   ^
- ffff888097225c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff888097225d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+RIP: 0033:0x45e179
+Code: 3d b2 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 0b b2 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f9807b98c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: ffffffffffffffda RBX: 0000000000027f40 RCX: 000000000045e179
+RDX: 049249249249252e RSI: 0000000020000140 RDI: 0000000000000003
+RBP: 000000000118cf88 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118cf4c
+R13: 00007fff4792d6cf R14: 00007f9807b999c0 R15: 000000000118cf4c
+Modules linked in:
+---[ end trace dd2fc9d645cefc73 ]---
+RIP: 0010:tcf_dump_walker net/sched/act_api.c:240 [inline]
+RIP: 0010:tcf_generic_walker+0x367/0xba0 net/sched/act_api.c:343
+Code: 24 31 ff 48 89 de e8 b8 6c ed fa 48 85 db 74 3f e8 2e 70 ed fa 48 8d 7d 30 48 b9 00 00 00 00 00 fc ff df 48 89 f8 48 c1 e8 03 <80> 3c 08 00 0f 85 26 07 00 00 48 8b 5d 30 31 ff 48 2b 1c 24 48 89
+RSP: 0018:ffffc90006657268 EFLAGS: 00010202
+RAX: 0000000000000004 RBX: c000000100004f6c RCX: dffffc0000000000
+RDX: 0000000000040000 RSI: ffffffff8688ce12 RDI: 0000000000000020
+RBP: fffffffffffffff0 R08: 0000000000000000 R09: ffff8880a6270207
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff88809d5c3d40
+R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
+FS:  00007f9807b99700(0000) GS:ffff8880ae400000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000016a9e60 CR3: 00000000553cb000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
 ---
@@ -197,6 +131,3 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
