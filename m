@@ -2,117 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C817327A584
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 04:46:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 768EA27A5A2
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 05:06:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726559AbgI1CqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 22:46:18 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:43911 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726406AbgI1CqR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Sep 2020 22:46:17 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C06N32nlwz9sSJ;
-        Mon, 28 Sep 2020 12:46:10 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1601261175;
-        bh=c9z++Ebel8LrCHVKYjdGXubnlUqxLIqDpCtFsmMcirs=;
-        h=Date:From:To:Cc:Subject:From;
-        b=qyXWuHTHpcbdkw+NhrZIPyOsEk4rpE8vFPkMgunPzmj+KAPKmVUr1ERrUauY/booL
-         S1RXTFaKguGRFCU9F4qGmndXU/jKgyPw9hR79p9W6xPQ+FM+lGhwwaAJmktYeVJd8X
-         yu/S/+SjBeDG7I9Airkrf7m5W1VGeR8Tf8/TVlzXwZA3RETLv9/WSqLLJRBxyK6oPh
-         czuizWZGhnJmIKXUsEEwano+hgbydYdEKlCggir9XNRiSjPweNzsA0aREYFcv9uX8Z
-         zMSiYbNAikEEBz+y7Wu3fS+lksFtxrzRSA9HQ18eJZBAcdfwp0wGN5GgpLpYKXhdhq
-         cUyY1lpEiK7aA==
-Date:   Mon, 28 Sep 2020 12:46:08 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Randy Dunlap <rdunlap@infradead.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20200928124608.2f527504@canb.auug.org.au>
+        id S1726500AbgI1DGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 23:06:13 -0400
+Received: from mail-m975.mail.163.com ([123.126.97.5]:60194 "EHLO
+        mail-m975.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726396AbgI1DGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 23:06:12 -0400
+X-Greylist: delayed 933 seconds by postgrey-1.27 at vger.kernel.org; Sun, 27 Sep 2020 23:06:11 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=HDfLA
+        qYVfb3Z0S+amqSDOqr45I27vSggNM6rJRnL+Bk=; b=UutTpSCIgUClsa27oNpmC
+        LOtikznCIargqvC808q0xr3TdErNG4V8K6AQ7uxMv/TpXkRGVBEQVly9ktOpWT3B
+        WMF6gqgzFf7sYQWNJ6VIF4MYiRDqOqKmRV1c8uKQWpdjivoF7xEp2QEFrclcu+KJ
+        QtNCH1QvEbpntZSXJCXzv8=
+Received: from localhost.localdomain (unknown [111.202.93.98])
+        by smtp5 (Coremail) with SMTP id HdxpCgAXFuZKT3FfGVziOA--.341S2;
+        Mon, 28 Sep 2020 10:49:46 +0800 (CST)
+From:   "longguang.yue" <bigclouds@163.com>
+To:     yuelongguang@gmail.com
+Cc:     "longguang.yue" <bigclouds@163.com>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org (open list:IPVS),
+        lvs-devel@vger.kernel.org (open list:IPVS),
+        netfilter-devel@vger.kernel.org (open list:NETFILTER),
+        coreteam@netfilter.org (open list:NETFILTER),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v5] ipvs: adjust the debug info in function set_tcp_state
+Date:   Mon, 28 Sep 2020 10:49:38 +0800
+Message-Id: <20200928024938.97121-1-bigclouds@163.com>
+X-Mailer: git-send-email 2.20.1 (Apple Git-117)
+In-Reply-To: <alpine.LFD.2.23.451.2009271625160.35554@ja.home.ssi.bg>
+References: <alpine.LFD.2.23.451.2009271625160.35554@ja.home.ssi.bg>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/BwJo7GLaY/HnDA72V8UM65R";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HdxpCgAXFuZKT3FfGVziOA--.341S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Kw1UZr48Cr45JrW8ZFW5Wrg_yoW8XrWDpa
+        sayayagrW7JrZ7JrsrJr48u398Cr4vvrn0qFW5K34fJas8Xrs3tFnYkay09a1UArZ7X3yx
+        Xr1Yk3y5Aa92y3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j0OJ5UUUUU=
+X-Originating-IP: [111.202.93.98]
+X-CM-SenderInfo: peljuzprxg2qqrwthudrp/xtbBzwqtQ1aD8mLZkwAAsk
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/BwJo7GLaY/HnDA72V8UM65R
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Outputting client,virtual,dst addresses info when tcp state changes,
+which makes the connection debug more clear
 
-Hi all,
-
-Today's linux-next merge of the net-next tree got a conflict in:
-
-  drivers/net/phy/Kconfig
-
-between commit:
-
-  7dbbcf496f2a ("mdio: fix mdio-thunder.c dependency & build error")
-
-from the net tree and commit:
-
-  a9770eac511a ("net: mdio: Move MDIO drivers into a new subdirectory")
-
-from the net-next tree.
-
-I fixed it up (I used the latter and applied the following patch) and
-can carry the fix as necessary. This is now fixed as far as linux-next
-is concerned, but any non trivial conflicts should be mentioned to your
-upstream maintainer when your tree is submitted for merging.  You may
-also want to consider cooperating with the maintainer of the conflicting
-tree to minimise any particularly complex conflicts.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Mon, 28 Sep 2020 12:42:10 +1000
-Subject: [PATCH] merge fix for "mdio: fix mdio-thunder.c dependency & build=
- error"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: longguang.yue <bigclouds@163.com>
 ---
- drivers/net/mdio/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ net/netfilter/ipvs/ip_vs_proto_tcp.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
-index 840727cc9499..27a2a4a3d943 100644
---- a/drivers/net/mdio/Kconfig
-+++ b/drivers/net/mdio/Kconfig
-@@ -164,6 +164,7 @@ config MDIO_THUNDER
- 	depends on 64BIT
- 	depends on PCI
- 	select MDIO_CAVIUM
-+	select MDIO_DEVRES
- 	help
- 	  This driver supports the MDIO interfaces found on Cavium
- 	  ThunderX SoCs when the MDIO bus device appears as a PCI
---=20
-2.28.0
+diff --git a/net/netfilter/ipvs/ip_vs_proto_tcp.c b/net/netfilter/ipvs/ip_vs_proto_tcp.c
+index dc2e7da2742a..7da51390cea6 100644
+--- a/net/netfilter/ipvs/ip_vs_proto_tcp.c
++++ b/net/netfilter/ipvs/ip_vs_proto_tcp.c
+@@ -539,8 +539,8 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
+ 	if (new_state != cp->state) {
+ 		struct ip_vs_dest *dest = cp->dest;
+ 
+-		IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] %s:%d->"
+-			      "%s:%d state: %s->%s conn->refcnt:%d\n",
++		IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] c:%s:%d v:%s:%d "
++			      "d:%s:%d state: %s->%s conn->refcnt:%d\n",
+ 			      pd->pp->name,
+ 			      ((state_off == TCP_DIR_OUTPUT) ?
+ 			       "output " : "input "),
+@@ -548,10 +548,12 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
+ 			      th->fin ? 'F' : '.',
+ 			      th->ack ? 'A' : '.',
+ 			      th->rst ? 'R' : '.',
+-			      IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
+-			      ntohs(cp->dport),
+ 			      IP_VS_DBG_ADDR(cp->af, &cp->caddr),
+ 			      ntohs(cp->cport),
++			      IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
++			      ntohs(cp->vport),
++			      IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
++			      ntohs(cp->dport),
+ 			      tcp_state_name(cp->state),
+ 			      tcp_state_name(new_state),
+ 			      refcount_read(&cp->refcnt));
+-- 
+2.20.1 (Apple Git-117)
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/BwJo7GLaY/HnDA72V8UM65R
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9xTnEACgkQAVBC80lX
-0GzDKAf/TJWVMZ/tnaorjelOXkQydruUiZ2aNS102GlbsnZCXfSOmJqxb7Zcy/MM
-zJdgOMGuunu7eRT1AaM5da0eV7Q3KX4K2wDNdZP/rHnomYHjvtQotBnBwPynGZUd
-abIggJkH7z2p2ypFWTo7X8wELxuWY6iy5NbabaJxcwdV/pIoUHQJmpa9nxCX3Wtp
-j41YQtfBQ4852bCiyM7+jSSO9PJlH0ZCeWKaO2ZX4gmHDtbzaRFEh+0E1EFeGSKQ
-vuxAup2M9/63pmjtQIYrvtekSZqy5CrAlaEsW4nWtsoL143sh3dXDs9zJ5KtVRJP
-FuQ32OKo9NHVqPMKVmfDMp4yAeDx/w==
-=hQM/
------END PGP SIGNATURE-----
-
---Sig_/BwJo7GLaY/HnDA72V8UM65R--
