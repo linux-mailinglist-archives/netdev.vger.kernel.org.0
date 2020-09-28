@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82F4D27B3C9
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:59:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1454227B3CB
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbgI1R7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 13:59:31 -0400
-Received: from mga18.intel.com ([134.134.136.126]:32952 "EHLO mga18.intel.com"
+        id S1726693AbgI1R7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 13:59:36 -0400
+Received: from mga18.intel.com ([134.134.136.126]:32955 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726500AbgI1R7Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 13:59:24 -0400
-IronPort-SDR: VO2Hi2G17f+xVZ5rLljwoAPv0rcaiUdXG5u+eYN5Yaj2h9TryaOTqBLRpYRFT6z2bgFKizcrhr
- Y3o5241Co3IQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="149810268"
+        id S1726659AbgI1R72 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 13:59:28 -0400
+IronPort-SDR: swQwuLWhFeAy15QsUg7iJr4DZRpRHI4Mr95PISooZRmqQClvJbKGk+sVeySQsucGjTFmdzrcyh
+ yfas/OymBLJA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="149810269"
 X-IronPort-AV: E=Sophos;i="5.77,313,1596524400"; 
-   d="scan'208";a="149810268"
+   d="scan'208";a="149810269"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 10:59:22 -0700
-IronPort-SDR: Izg12EAUzfsOhcbYL47R3nsh1RiYwAAANMqLSMeLqUMt/zC/QNq0PPuP7PU6UlLs47NpqWB7UQ
- QxK/msdFRzqQ==
+IronPort-SDR: RVH8dcOlnqAKQys3Pi29lMTf7+uP1taaRX0iRkDxo4te/e2jJs2kBMnIAb+KvYoi/VwE2DHUy1
+ VGAmG+Qxnv4Q==
 X-IronPort-AV: E=Sophos;i="5.77,313,1596524400"; 
-   d="scan'208";a="340505389"
+   d="scan'208";a="340505392"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 10:59:21 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net
-Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
+Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         anthony.l.nguyen@intel.com, Aaron Brown <aaron.f.brown@intel.com>
-Subject: [net-next 07/15] igc: Clean RX descriptor error flags
-Date:   Mon, 28 Sep 2020 10:59:00 -0700
-Message-Id: <20200928175908.318502-8-anthony.l.nguyen@intel.com>
+Subject: [net-next 08/15] igc: Expose LPI counters
+Date:   Mon, 28 Sep 2020 10:59:01 -0700
+Message-Id: <20200928175908.318502-9-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200928175908.318502-1-anthony.l.nguyen@intel.com>
 References: <20200928175908.318502-1-anthony.l.nguyen@intel.com>
@@ -43,74 +43,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andre Guedes <andre.guedes@intel.com>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-i225 advanced receive descriptor doesn't have the following extend error
-bits: CE, SE, SEQ, CXE. In addition to that, the bit TCPE is called L4E
-in the datasheet.
+Completion to commit 900d1e8b346b ("igc: Add LPI counters")
+LPI counters exposed by statistics update method.
+A EEE TX LPI counter reflect the transmitter entries EEE (IEEE 802.3az)
+into the LPI state. A EEE RX LPI counter reflect the receiver link
+partner entries into EEE(IEEE 802.3az) LPI state.
 
-Clean up the code accordingly, and get rid of the macro
-IGC_RXDEXT_ERR_FRAME_ERR_MASK since it doesn't make much sense anymore.
-
-Signed-off-by: Andre Guedes <andre.guedes@intel.com>
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_defines.h | 14 +-------------
- drivers/net/ethernet/intel/igc/igc_main.c    |  5 ++---
- 2 files changed, 3 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_ethtool.c | 3 +++
+ drivers/net/ethernet/intel/igc/igc_hw.h      | 2 ++
+ drivers/net/ethernet/intel/igc/igc_main.c    | 2 ++
+ 3 files changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
-index 3f5a201bda89..32f5fd684139 100644
---- a/drivers/net/ethernet/intel/igc/igc_defines.h
-+++ b/drivers/net/ethernet/intel/igc/igc_defines.h
-@@ -324,22 +324,10 @@
- /* Advanced Receive Descriptor bit definitions */
- #define IGC_RXDADV_STAT_TSIP	0x08000 /* timestamp in packet */
+diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+index 44410c2265d6..61d331ce38cd 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
++++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+@@ -321,6 +321,9 @@ static void igc_ethtool_get_regs(struct net_device *netdev,
  
--#define IGC_RXDEXT_STATERR_CE		0x01000000
--#define IGC_RXDEXT_STATERR_SE		0x02000000
--#define IGC_RXDEXT_STATERR_SEQ		0x04000000
--#define IGC_RXDEXT_STATERR_CXE		0x10000000
--#define IGC_RXDEXT_STATERR_TCPE		0x20000000
-+#define IGC_RXDEXT_STATERR_L4E		0x20000000
- #define IGC_RXDEXT_STATERR_IPE		0x40000000
- #define IGC_RXDEXT_STATERR_RXE		0x80000000
+ 	for (i = 0; i < 8; i++)
+ 		regs_buff[205 + i] = rd32(IGC_ETQF(i));
++
++	regs_buff[213] = adapter->stats.tlpic;
++	regs_buff[214] = adapter->stats.rlpic;
+ }
  
--/* Same mask, but for extended and packet split descriptors */
--#define IGC_RXDEXT_ERR_FRAME_ERR_MASK ( \
--	IGC_RXDEXT_STATERR_CE  |	\
--	IGC_RXDEXT_STATERR_SE  |	\
--	IGC_RXDEXT_STATERR_SEQ |	\
--	IGC_RXDEXT_STATERR_CXE |	\
--	IGC_RXDEXT_STATERR_RXE)
--
- #define IGC_MRQC_RSS_FIELD_IPV4_TCP	0x00010000
- #define IGC_MRQC_RSS_FIELD_IPV4		0x00020000
- #define IGC_MRQC_RSS_FIELD_IPV6_TCP_EX	0x00040000
+ static void igc_ethtool_get_wol(struct net_device *netdev,
+diff --git a/drivers/net/ethernet/intel/igc/igc_hw.h b/drivers/net/ethernet/intel/igc/igc_hw.h
+index 6defdb8a31fe..b70253fb8ebc 100644
+--- a/drivers/net/ethernet/intel/igc/igc_hw.h
++++ b/drivers/net/ethernet/intel/igc/igc_hw.h
+@@ -244,6 +244,8 @@ struct igc_hw_stats {
+ 	u64 prc511;
+ 	u64 prc1023;
+ 	u64 prc1522;
++	u64 tlpic;
++	u64 rlpic;
+ 	u64 gprc;
+ 	u64 bprc;
+ 	u64 mprc;
 diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index b46bc8ded836..7a46b22413f2 100644
+index 7a46b22413f2..7576dbfdac99 100644
 --- a/drivers/net/ethernet/intel/igc/igc_main.c
 +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -1433,7 +1433,7 @@ static void igc_rx_checksum(struct igc_ring *ring,
+@@ -3683,6 +3683,8 @@ void igc_update_stats(struct igc_adapter *adapter)
+ 	adapter->stats.prc511 += rd32(IGC_PRC511);
+ 	adapter->stats.prc1023 += rd32(IGC_PRC1023);
+ 	adapter->stats.prc1522 += rd32(IGC_PRC1522);
++	adapter->stats.tlpic += rd32(IGC_TLPIC);
++	adapter->stats.rlpic += rd32(IGC_RLPIC);
  
- 	/* TCP/UDP checksum error bit is set */
- 	if (igc_test_staterr(rx_desc,
--			     IGC_RXDEXT_STATERR_TCPE |
-+			     IGC_RXDEXT_STATERR_L4E |
- 			     IGC_RXDEXT_STATERR_IPE)) {
- 		/* work around errata with sctp packets where the TCPE aka
- 		 * L4E bit is set incorrectly on 64 byte (60 byte w/o crc)
-@@ -1742,8 +1742,7 @@ static bool igc_cleanup_headers(struct igc_ring *rx_ring,
- 				union igc_adv_rx_desc *rx_desc,
- 				struct sk_buff *skb)
- {
--	if (unlikely((igc_test_staterr(rx_desc,
--				       IGC_RXDEXT_ERR_FRAME_ERR_MASK)))) {
-+	if (unlikely(igc_test_staterr(rx_desc, IGC_RXDEXT_STATERR_RXE))) {
- 		struct net_device *netdev = rx_ring->netdev;
- 
- 		if (!(netdev->features & NETIF_F_RXALL)) {
+ 	mpc = rd32(IGC_MPC);
+ 	adapter->stats.mpc += mpc;
 -- 
 2.26.2
 
