@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 485D327A8BC
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 09:36:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7F1627A8C3
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 09:37:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726670AbgI1HgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 03:36:17 -0400
-Received: from mail-il1-f206.google.com ([209.85.166.206]:52697 "EHLO
-        mail-il1-f206.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726600AbgI1HgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 03:36:16 -0400
-Received: by mail-il1-f206.google.com with SMTP id m1so91983iln.19
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:36:16 -0700 (PDT)
+        id S1726752AbgI1HhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 03:37:17 -0400
+Received: from mail-il1-f207.google.com ([209.85.166.207]:57043 "EHLO
+        mail-il1-f207.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726534AbgI1HhR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 03:37:17 -0400
+Received: by mail-il1-f207.google.com with SMTP id d16so89623ila.23
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:37:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=dQVM5rOfZiP72VmE11knrY/4zMQmueL+CPBBPaQD6Ls=;
-        b=tHXYzV6MET9TcP5Aazco+f7CvPU8VzSf1cYXenHGR+dR0zB5STzrcDjDDprsZSd9yq
-         4Doe5Zx49Bmeu8cAXQnRFW6EVvLg+ojvnRHgEr0gqJbJUQexk6seNFp5nFTjEIhbpf3u
-         1Xmo+0W9J3d7qw4xYca35Z49bp0WsGSIC4BYSiZYEw7Z6tttbr5W4y8+4Lvez29NkMAf
-         Fz4MHga/kRCzrqLRMOAza+fq7LZZ9wyVKKArJmTU3UXa5g+b2qAXFPu4jr81peVHkya6
-         Y4sex3XAWtX+InmxyQfAz6bQiu/Cci8n95/tYOTZLaXqi2CCaKPV34W1D7nxFbvdeIgr
-         FaOw==
-X-Gm-Message-State: AOAM5313gHLLhjeWfn31c3BwwmF2zXWjUJEXeQC6Spd+NuzlJkfgBdE6
-        DgTfkQnRgNdydmqKwoF7Vq65kAt0oqsBBTGWpBTpFpHbGcKE
-X-Google-Smtp-Source: ABdhPJzrFpPk1jt+c/26RXCvjoiLQ4V9RVYmzNivbXg59VgdKnkQSOgo0y7aB0EiQYwVohU8RlaLrbDpZ4wtdIyfQ/tJRkshTCct
+        bh=4/JzsdKszztej2WyY/DrDGTTnouC9MBFSHfHUXPiqFs=;
+        b=DjPv9jBDXBkkcfIBPq1LW0DZFKJ4jnuc9pWcUsgem5uUM9zMvXtBkxHimsswS99GjF
+         7zKZ5TeDi4u+wmxJl9SjSxusoHlMWmzo3OBa95msVoMYdzLZWBv/NbbvL90u0PooA4xs
+         tkV+CuiZ4qiOGK7Cjgw/OMkaOOPe2lnlrW63LQ3e7s8eyZGBqdnIPpHzx9feAUKKDq3H
+         7jgGwjg3cQ76TaXEG+o+quJ7BPsuS53WY+8nY2XFrK9NFN04FPVT7qFsRu0TlA/iAToY
+         qm2SEWK6daHdNdLNgRSdT+055PFP6g+qBR7aXg/X3Mt8SvgfLXGZ36AXlaA91SDZ65+8
+         CvsQ==
+X-Gm-Message-State: AOAM533rFq6ZX6YWQplaHp0RrujfGEOtMUKMqo5ZQmoaMtSZz/IJXaQ1
+        aTRcD88iiCEFS+cZlssQS70JVssmThgWmp1LeEaSzndAeTIF
+X-Google-Smtp-Source: ABdhPJzG9AlYyvLZe/KXHItiwqcv9vpEPO3Eh2G2B7nTWLiUYkpDmQpPIls0Erfc8w9yibExuLhYp7vO47oP8ZNI/8/lpzDsrbka
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:925:: with SMTP id o5mr125335ilt.20.1601278575890;
- Mon, 28 Sep 2020 00:36:15 -0700 (PDT)
-Date:   Mon, 28 Sep 2020 00:36:15 -0700
+X-Received: by 2002:a92:1504:: with SMTP id v4mr135357ilk.26.1601278636604;
+ Mon, 28 Sep 2020 00:37:16 -0700 (PDT)
+Date:   Mon, 28 Sep 2020 00:37:16 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b3d57105b05ab856@google.com>
-Subject: BUG: unable to handle kernel paging request in tcf_action_dump_terse
-From:   syzbot <syzbot+5f66662adc70969940fd@syzkaller.appspotmail.com>
+Message-ID: <0000000000005243f805b05abc7c@google.com>
+Subject: KASAN: null-ptr-deref Read in tcf_idrinfo_destroy
+From:   syzbot <syzbot+151e3e714d34ae4ce7e8@syzkaller.appspotmail.com>
 To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
         kuba@kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
@@ -48,86 +48,75 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    307eea32 dt-bindings: net: renesas,ravb: Add support for r..
+HEAD commit:    05943249 net: atlantic: fix build when object tree is sepa..
 git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=13b7e29d900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15054509900000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=240e2ebab67245c7
-dashboard link: https://syzkaller.appspot.com/bug?extid=5f66662adc70969940fd
+dashboard link: https://syzkaller.appspot.com/bug?extid=151e3e714d34ae4ce7e8
 compiler:       gcc (GCC) 10.1.0-syz 20200507
 
 Unfortunately, I don't have any reproducer for this issue yet.
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5f66662adc70969940fd@syzkaller.appspotmail.com
+Reported-by: syzbot+151e3e714d34ae4ce7e8@syzkaller.appspotmail.com
 
-netlink: 8 bytes leftover after parsing attributes in process `syz-executor.5'.
-BUG: unable to handle page fault for address: fffffffffffffff0
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 9e90067 P4D 9e90067 PUD 9e92067 PMD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 9876 Comm: syz-executor.5 Not tainted 5.9.0-rc6-syzkaller #0
+==================================================================
+BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrumented.h:56 [inline]
+BUG: KASAN: null-ptr-deref in atomic_read include/asm-generic/atomic-instrumented.h:27 [inline]
+BUG: KASAN: null-ptr-deref in __tcf_idr_release net/sched/act_api.c:162 [inline]
+BUG: KASAN: null-ptr-deref in tcf_idrinfo_destroy+0x129/0x1d0 net/sched/act_api.c:548
+Read of size 4 at addr 0000000000000010 by task kworker/u4:0/7
+
+CPU: 1 PID: 7 Comm: kworker/u4:0 Not tainted 5.9.0-rc6-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:tcf_action_dump_terse+0x8c/0x4e0 net/sched/act_api.c:766
-Code: 3c 03 0f 8e 0a 03 00 00 48 89 da 44 8b ad b8 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 10 04 00 00 <48> 8b 03 4c 8d 60 10 4c 89 e7 e8 d5 2b 4e fd 4c 89 e1 be 01 00 00
-RSP: 0018:ffffc9001604f170 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: fffffffffffffff0 RCX: ffffc900137c6000
-RDX: 1ffffffffffffffe RSI: ffffffff868ac439 RDI: ffff88808f9dfdf8
-RBP: ffff88808f9dfd40 R08: 0000000000000000 R09: ffff88805dd4a024
-R10: 0000000000000000 R11: 0000000000000000 R12: fffffffffffffff0
-R13: 0000000000000024 R14: ffff88805dd4a000 R15: ffff88808f9dfe00
-FS:  00007ffbf7f0d700(0000) GS:ffff8880ae500000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffffffffffffff0 CR3: 00000000a6cea000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Workqueue: netns cleanup_net
 Call Trace:
- tcf_action_dump_1+0xd2/0x5a0 net/sched/act_api.c:795
- tcf_dump_walker net/sched/act_api.c:249 [inline]
- tcf_generic_walker+0x207/0xba0 net/sched/act_api.c:343
- tc_dump_action+0x6d5/0xe60 net/sched/act_api.c:1623
- netlink_dump+0x4cd/0xf60 net/netlink/af_netlink.c:2246
- __netlink_dump_start+0x643/0x900 net/netlink/af_netlink.c:2354
- netlink_dump_start include/linux/netlink.h:246 [inline]
- rtnetlink_rcv_msg+0x70f/0xad0 net/core/rtnetlink.c:5526
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x331/0x810 net/socket.c:2353
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
- __sys_sendmmsg+0x195/0x480 net/socket.c:2497
- __do_sys_sendmmsg net/socket.c:2526 [inline]
- __se_sys_sendmmsg net/socket.c:2523 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2523
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45e179
-Code: 3d b2 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 0b b2 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffbf7f0cc78 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 0000000000027f40 RCX: 000000000045e179
-RDX: 0492492492492805 RSI: 0000000020000140 RDI: 0000000000000003
-RBP: 000000000118cf88 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118cf4c
-R13: 00007ffc4024440f R14: 00007ffbf7f0d9c0 R15: 000000000118cf4c
-Modules linked in:
-CR2: fffffffffffffff0
----[ end trace 8426deb8202e61ba ]---
-RIP: 0010:tcf_action_dump_terse+0x8c/0x4e0 net/sched/act_api.c:766
-Code: 3c 03 0f 8e 0a 03 00 00 48 89 da 44 8b ad b8 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 10 04 00 00 <48> 8b 03 4c 8d 60 10 4c 89 e7 e8 d5 2b 4e fd 4c 89 e1 be 01 00 00
-RSP: 0018:ffffc9001604f170 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: fffffffffffffff0 RCX: ffffc900137c6000
-RDX: 1ffffffffffffffe RSI: ffffffff868ac439 RDI: ffff88808f9dfdf8
-RBP: ffff88808f9dfd40 R08: 0000000000000000 R09: ffff88805dd4a024
-R10: 0000000000000000 R11: 0000000000000000 R12: fffffffffffffff0
-R13: 0000000000000024 R14: ffff88805dd4a000 R15: ffff88808f9dfe00
-FS:  00007ffbf7f0d700(0000) GS:ffff8880ae500000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffffffffffffff0 CR3: 00000000a6cea000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x198/0x1fd lib/dump_stack.c:118
+ __kasan_report mm/kasan/report.c:517 [inline]
+ kasan_report.cold+0x5/0x37 mm/kasan/report.c:530
+ check_memory_region_inline mm/kasan/generic.c:186 [inline]
+ check_memory_region+0x13d/0x180 mm/kasan/generic.c:192
+ instrument_atomic_read include/linux/instrumented.h:56 [inline]
+ atomic_read include/asm-generic/atomic-instrumented.h:27 [inline]
+ __tcf_idr_release net/sched/act_api.c:162 [inline]
+ tcf_idrinfo_destroy+0x129/0x1d0 net/sched/act_api.c:548
+ tc_action_net_exit include/net/act_api.h:151 [inline]
+ police_exit_net+0x168/0x360 net/sched/act_police.c:390
+ ops_exit_list+0x10d/0x160 net/core/net_namespace.c:189
+ cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:603
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+==================================================================
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 7 Comm: kworker/u4:0 Tainted: G    B             5.9.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x198/0x1fd lib/dump_stack.c:118
+ panic+0x382/0x7fb kernel/panic.c:231
+ end_report+0x4d/0x53 mm/kasan/report.c:104
+ __kasan_report mm/kasan/report.c:520 [inline]
+ kasan_report.cold+0xd/0x37 mm/kasan/report.c:530
+ check_memory_region_inline mm/kasan/generic.c:186 [inline]
+ check_memory_region+0x13d/0x180 mm/kasan/generic.c:192
+ instrument_atomic_read include/linux/instrumented.h:56 [inline]
+ atomic_read include/asm-generic/atomic-instrumented.h:27 [inline]
+ __tcf_idr_release net/sched/act_api.c:162 [inline]
+ tcf_idrinfo_destroy+0x129/0x1d0 net/sched/act_api.c:548
+ tc_action_net_exit include/net/act_api.h:151 [inline]
+ police_exit_net+0x168/0x360 net/sched/act_police.c:390
+ ops_exit_list+0x10d/0x160 net/core/net_namespace.c:189
+ cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:603
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
 
 ---
