@@ -2,111 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ADD227ABA2
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 12:14:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 945F527ABA3
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 12:14:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726601AbgI1KOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 06:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57028 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726477AbgI1KOa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 06:14:30 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA90DC061755
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 03:14:29 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id d6so535336pfn.9
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 03:14:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=lEjtDbZBdnjwRGg1kcxyC6IQVySSuPpaAq8CQ3uaqk4=;
-        b=NXYlJVpUrTv+/1Krlr85vgsRzg8u3U6sgLwkCmvrmaEH9I23hl2tObiY2XLc9OXbem
-         gKkpSn5UWnghhX5PVzzmwMFhkZ5UeA9P/O4fImXEoSsEdRAF7YfblRHPyPfMgwTehFQE
-         lfEFZWSnEoCtgbCF7cKw7GBGQVhoj3VTt9BIfMEJkPfkEuDbk/D6wZpX8tebrUwHG7HR
-         QAIpf9p9ea7/S5pRCYUnKcZ4tr9NQfuZ9Z37yR7+rzQQYkFPBoKKmCdDBZ6U7EN+BN7W
-         00EkemutwsO9VSpMfQH8EFBhFeGU5ds37jNt900gfVgHPgsn1wtxMTaePg+vK+xPMoAF
-         dsIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=lEjtDbZBdnjwRGg1kcxyC6IQVySSuPpaAq8CQ3uaqk4=;
-        b=buOH4ZXRT5y0AKc3iaayWBEtnQUy2CwtpQrtpP6JNRhdTGQViKdsw+BDHPvUD+zZCA
-         i4OswcFL1LTIjbxnnWJQpboWffgB2EHetQdCstWdOD9d3d5SQOO1rSKXIyXE5cvzzzSO
-         C1LNWtvvRNEM2knlwpgV0gYjsGSvSpeSZLX+lDxov+JGQ5pc7dHBimzneepzTLA8cwzF
-         72R8qxjYqcPmN4ybE+4v6CT7+KF/5L2ys4qHfgbol2pvwCGQ8YPLe0fqrG2CIiVozVKP
-         3EZSQn7qP15mABWIswCTefVrpE/hLwe6GKQ+y87UOwXyOvfrTnOvwh4yt7VEC+Ucm6nE
-         TudA==
-X-Gm-Message-State: AOAM530WCPZu9g/RDdgiPbwiBcfmRVrsGlhkHSLNovpx368kbd7RnAvY
-        koNKIklLg/3swPSR0nb/3CSm
-X-Google-Smtp-Source: ABdhPJzk5liziJ5Xk81J4WAuyzs16FSdF17XsjQZbPE9e+Qx3QjWmkcc6ex9RnRBasBTwy5ArTcw/w==
-X-Received: by 2002:a17:902:8e85:b029:d2:42a6:bb6 with SMTP id bg5-20020a1709028e85b02900d242a60bb6mr874211plb.72.1601288069243;
-        Mon, 28 Sep 2020 03:14:29 -0700 (PDT)
-Received: from localhost.localdomain ([103.59.133.81])
-        by smtp.googlemail.com with ESMTPSA id k6sm1045524pfh.92.2020.09.28.03.14.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2020 03:14:28 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     ath11k@lists.infradead.org
-Cc:     kvalo@codeaurora.org, davem@davemloft.net, govinds@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sfr@canb.auug.org.au,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH] ath11k: remove auto_start from channel config struct
-Date:   Mon, 28 Sep 2020 15:44:20 +0530
-Message-Id: <20200928101420.18745-1-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.17.1
+        id S1726652AbgI1KOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 06:14:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44287 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726497AbgI1KOi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 06:14:38 -0400
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601288077;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b+pzYD+r/mOVsj/1Rewpd8Q55idVOJS1LWXIw8yTv7k=;
+        b=Ut0RcuEkawUp7m4nEJojC5RlVj3fBzyhTebuIF4kJJC/WOqOurL+WBWqaVTj57xjwQfsJT
+        JXmbfZxxqzStU+8OqcLcr4gS8iHzmb2KR6KsmeNP9gJ75eAAAe7oIQDusmm2AhM5BgRlZW
+        GWeLWfaL094ujCcEWldgV9wDTANW9tw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-471-0FYIgwLzOgq6WXX6PVjcdQ-1; Mon, 28 Sep 2020 06:14:35 -0400
+X-MC-Unique: 0FYIgwLzOgq6WXX6PVjcdQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7F485104D3E0;
+        Mon, 28 Sep 2020 10:14:33 +0000 (UTC)
+Received: from new-host-6 (unknown [10.40.192.218])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 60BC25D9CA;
+        Mon, 28 Sep 2020 10:14:30 +0000 (UTC)
+Message-ID: <3a0677de763a6a993123fd4f01000f7e78ace353.camel@redhat.com>
+Subject: Re: [Patch net 1/2] net_sched: defer tcf_idr_insert() in
+ tcf_action_init_1()
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Vlad Buslov <vlad@buslov.dev>, Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+In-Reply-To: <8736358wu0.fsf@buslov.dev>
+References: <20200923035624.7307-1-xiyou.wangcong@gmail.com>
+         <20200923035624.7307-2-xiyou.wangcong@gmail.com>
+         <877dsh98wq.fsf@buslov.dev>
+         <CAM_iQpXy4GuHidnLAL+euBaNaJGju6KFXBZ67WS_Pws58sD6+g@mail.gmail.com>
+         <8736358wu0.fsf@buslov.dev>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Mon, 28 Sep 2020 12:14:30 +0200
+MIME-Version: 1.0
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent change in MHI bus removed the option to auto start the channels
-during MHI driver probe. The channel will only be started when the MHI
-client driver like QRTR gets probed. So, remove the option from ath11k
-channel config struct.
+hello,
 
-Fixes: 1399fb87ea3e ("ath11k: register MHI controller device for QCA6390")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/net/wireless/ath/ath11k/mhi.c | 4 ----
- 1 file changed, 4 deletions(-)
+On Fri, 2020-09-25 at 22:45 +0300, Vlad Buslov wrote:
+> On Fri 25 Sep 2020 at 22:22, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > On Fri, Sep 25, 2020 at 8:24 AM Vlad Buslov <vlad@buslov.dev> wrote:
+> > > > +     if (TC_ACT_EXT_CMP(a->tcfa_action, TC_ACT_GOTO_CHAIN) &&
+> > > > +         !rcu_access_pointer(a->goto_chain)) {
+> > > > +             tcf_action_destroy_1(a, bind);
+> > > > +             NL_SET_ERR_MSG(extack, "can't use goto chain with NULL chain");
+> > > > +             return ERR_PTR(-EINVAL);
+> > > > +     }
+> > > 
+> > > I don't think calling tcf_action_destoy_1() is enough here. Since you
+> > > moved this block before assigning cookie and releasing the module, you
+> > > also need to release them manually in addition to destroying the action
+> > > instance.
+> > > 
+> > 
+> > tcf_action_destoy_1() eventually calls free_tcf() which frees cookie and
+> > tcf_action_destroy() which releases module refcnt.
+> > 
+> > What am I missing here?
+> > 
+> > Thanks.
+> 
+> The memory referenced by the function local pointer "cookie" hasn't been
+> assigned yet to the a->act_cookie because in your patch you moved
+> goto_chain validation code before the cookie change. That means that if
+> user overwrites existing action, then action old a->act_cookie will be
+> freed by tcf_action_destroy_1() but new cookie that was allocated by
+> nla_memdup_cookie() will leak.
 
-diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-index aded9a719d51..47a1ce1bee4f 100644
---- a/drivers/net/wireless/ath/ath11k/mhi.c
-+++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -24,7 +24,6 @@ static struct mhi_channel_config ath11k_mhi_channels[] = {
- 		.offload_channel = false,
- 		.doorbell_mode_switch = false,
- 		.auto_queue = false,
--		.auto_start = false,
- 	},
- 	{
- 		.num = 1,
-@@ -39,7 +38,6 @@ static struct mhi_channel_config ath11k_mhi_channels[] = {
- 		.offload_channel = false,
- 		.doorbell_mode_switch = false,
- 		.auto_queue = false,
--		.auto_start = false,
- 	},
- 	{
- 		.num = 20,
-@@ -54,7 +52,6 @@ static struct mhi_channel_config ath11k_mhi_channels[] = {
- 		.offload_channel = false,
- 		.doorbell_mode_switch = false,
- 		.auto_queue = false,
--		.auto_start = true,
- 	},
- 	{
- 		.num = 21,
-@@ -69,7 +66,6 @@ static struct mhi_channel_config ath11k_mhi_channels[] = {
- 		.offload_channel = false,
- 		.doorbell_mode_switch = false,
- 		.auto_queue = true,
--		.auto_start = true,
- 	},
- };
- 
+maybe we can just delete this if (TC_ACT_EXT_CMP(...)) { ... }
+statement, instead of moving it? Each TC action already does the check
+for NULL "goto chains" with a_o->init() -> tcf_action_check_ctrlact(),
+so this if () statement looks dead code to me _ I probably forgot to
+remove it after all actions were converted to validate the control
+action inside their .init() function.
+
 -- 
-2.17.1
+davide
+
 
