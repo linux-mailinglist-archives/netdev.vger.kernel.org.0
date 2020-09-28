@@ -2,89 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5E9E27A70B
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 07:46:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DFC927A722
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 07:53:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726559AbgI1FqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 01:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725308AbgI1FqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 01:46:06 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED842C0613CE;
-        Sun, 27 Sep 2020 22:46:05 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601271964;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=A9eaFRIMoE0WeEdJ53JqY4q9jI4yipgGb6l9S8GlcS8=;
-        b=sIzs58AzruwgZUJMijBXyQC/4ZH238GgkcpBckJJWD6o1GrwtQSrQPbkHcXRbbfp0sdu7B
-        G9MsnpKS7UV/8487vce5FIxPpKZjlCnBlJFwHRPCdToHamRpneaT0YvgCk5tHwo5uh8Yl6
-        PIbkwtxJsyZAUj2haTHmGteiTtzzjkrdbZq6h6q5ENzbbTlHrdTvY3wSLdBpnhKxQ8bjRP
-        OW4ZbfAykuJCIN+yOIaq7N7n6jP8mUuVUOBiPYpddvVvsZuhGe2uEKcqYqbQyiCGcBweDc
-        aE7h7+BNIVeRpa0SX02TvFt0T1HqBJWhc4oOWfG7DHcZIYL+by5qpXDWfbeGzg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601271964;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=A9eaFRIMoE0WeEdJ53JqY4q9jI4yipgGb6l9S8GlcS8=;
-        b=FrCw4YN0pav3h7gyurYCoA/ypC/kzr8cyiwJyWn6dx6eJnXdZdZcmj1PqQGEPofsI75yQU
-        LMVGTugUcj+4lWCA==
-To:     Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>, linux-kernel@vger.kernel.org,
-        linux-next@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH] ptp: add stub function for ptp_get_msgtype()
-In-Reply-To: <20200927080150.8479-1-yangbo.lu@nxp.com>
-References: <20200927080150.8479-1-yangbo.lu@nxp.com>
-Date:   Mon, 28 Sep 2020 07:46:03 +0200
-Message-ID: <87imbya1yc.fsf@kurt>
+        id S1726566AbgI1Fx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 01:53:28 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:36755 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726420AbgI1Fx1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 01:53:27 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.69 with qID 08S5qdDM3027745, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb04.realtek.com.tw[172.21.6.97])
+        by rtits2.realtek.com.tw (8.15.2/2.66/5.86) with ESMTPS id 08S5qdDM3027745
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 28 Sep 2020 13:52:39 +0800
+Received: from localhost.localdomain (172.21.179.130) by
+ RTEXMB04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Mon, 28 Sep 2020 13:52:39 +0800
+From:   Willy Liu <willy.liu@realtek.com>
+To:     <andrew@lunn.ch>
+CC:     <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <fancer.lancer@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <ryankao@realtek.com>,
+        <kevans@FreeBSD.org>, Willy Liu <willy.liu@realtek.com>
+Subject: [PATCH net v3] net: phy: realtek: fix rtl8211e rx/tx delay config
+Date:   Mon, 28 Sep 2020 13:52:23 +0800
+Message-ID: <1601272343-32672-1-git-send-email-willy.liu@realtek.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain
+X-Originating-IP: [172.21.179.130]
+X-ClientProxiedBy: RTEXMB01.realtek.com.tw (172.21.6.94) To
+ RTEXMB04.realtek.com.tw (172.21.6.97)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+There are two chip pins named TXDLY and RXDLY which actually adds the 2ns
+delays to TXC and RXC for TXD/RXD latching. These two pins can config via
+4.7k-ohm resistor to 3.3V hw setting, but also config via software setting
+(extension page 0xa4 register 0x1c bit13 12 and 11).
 
-On Sun Sep 27 2020, Yangbo Lu wrote:
-> Added the missing stub function for ptp_get_msgtype().
->
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Fixes: 036c508ba95e ("ptp: Add generic ptp message type function")
-> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+The configuration register definitions from table 13 official PHY datasheet:
+PHYAD[2:0] = PHY Address
+AN[1:0] = Auto-Negotiation
+Mode = Interface Mode Select
+RX Delay = RX Delay
+TX Delay = TX Delay
+SELRGV = RGMII/GMII Selection
 
-Oh, my bad. Thanks for fixing it.
+This table describes how to config these hw pins via external pull-high or pull-
+low resistor.
 
-Thanks,
-Kurt
+It is a misunderstanding that mapping it as register bits below:
+8:6 = PHY Address
+5:4 = Auto-Negotiation
+3 = Interface Mode Select
+2 = RX Delay
+1 = TX Delay
+0 = SELRGV
+So I removed these descriptions above and add related settings as below:
+14 = reserved
+13 = force Tx RX Delay controlled by bit12 bit11
+12 = Tx Delay
+11 = Rx Delay
+10:0 = Test && debug settings reserved by realtek
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+Test && debug settings are not recommend to modify by default.
 
------BEGIN PGP SIGNATURE-----
+Fixes: f81dadbcf7fd ("net: phy: realtek: Add rtl8211e rx/tx delays config")
+Signed-off-by: Willy Liu <willy.liu@realtek.com>
+---
+ drivers/net/phy/realtek.c | 31 ++++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
+ mode change 100644 => 100755 drivers/net/phy/realtek.c
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl9xeJsACgkQeSpbgcuY
-8KZ2Sg/9HYtK+8W/h5Z24wmmt2IpN9XXT22eXxDiis6aE2fHYwTAP1/JIuLftsba
-zQ+QvrOTxJ0BHhU2ysOjVECTyImRzbAm+b1ZjAM2RU7L/YBzarjhwXE4uYQgtmUc
-cMLkDphhR6s+/mTQH9VBupbsXCLyvgJcNg2oNZXNtGqNwENqI2IzoH4tVTHyW5ep
-EmDR/hX0GIHa+2tAGgM9XKQTprshvbP0HkwoBAxVTN5DEf10gfKQ6+xkHJ9fKQFm
-kA1SWfTDttdOlzO3xYWzB4uPAbqRK1mAkpD045C/ktFv8ST7UECkljOElv6pJoP3
-W8ac5Erd4AkwqILVSrwwaoA6AR4lpSv+df+c0ig9rMmAVknG3K3kAdBn3MAAG0GR
-tYCEnk/Td2/7CItOcAuPNGtirwdRm0WyKaHtUbagQ1SNGf8gGzZVb8wdy6MDe7GQ
-YrUd3t858zapqdNuvUy+0s/fgEToP/rXmKr0nsiyY+D+hmR5HIdJKPIZ06nBs+3K
-5VTU6QOnnOLPkKRYrVSFnz43icY80X1kZU2WW/8X0MrPwjGUo/6GuKqzyZUuBhVl
-mOV7gsbQvwVyo1RISXmwDwQ9xK4mv5A/6g9SUv9MQW8Q5qZpQIzagWAPIv6UT/Fw
-1fP3aLYMLFS1SBzpR9pLm8yiejJwJeHNEijCsC/3H6Y+DNSgS2M=
-=Zj3V
------END PGP SIGNATURE-----
---=-=-=--
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+old mode 100644
+new mode 100755
+index 95dbe5e..0f09609
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -1,6 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0+
+-/*
+- * drivers/net/phy/realtek.c
++/* drivers/net/phy/realtek.c
+  *
+  * Driver for Realtek PHYs
+  *
+@@ -32,9 +31,9 @@
+ #define RTL8211F_TX_DELAY			BIT(8)
+ #define RTL8211F_RX_DELAY			BIT(3)
+ 
+-#define RTL8211E_TX_DELAY			BIT(1)
+-#define RTL8211E_RX_DELAY			BIT(2)
+-#define RTL8211E_MODE_MII_GMII			BIT(3)
++#define RTL8211E_CTRL_DELAY			BIT(13)
++#define RTL8211E_TX_DELAY			BIT(12)
++#define RTL8211E_RX_DELAY			BIT(11)
+ 
+ #define RTL8201F_ISR				0x1e
+ #define RTL8201F_IER				0x13
+@@ -246,16 +245,16 @@ static int rtl8211e_config_init(struct phy_device *phydev)
+ 	/* enable TX/RX delay for rgmii-* modes, and disable them for rgmii. */
+ 	switch (phydev->interface) {
+ 	case PHY_INTERFACE_MODE_RGMII:
+-		val = 0;
++		val = RTL8211E_CTRL_DELAY | 0;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+-		val = RTL8211E_TX_DELAY | RTL8211E_RX_DELAY;
++		val = RTL8211E_CTRL_DELAY | RTL8211E_TX_DELAY | RTL8211E_RX_DELAY;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII_RXID:
+-		val = RTL8211E_RX_DELAY;
++		val = RTL8211E_CTRL_DELAY | RTL8211E_RX_DELAY;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII_TXID:
+-		val = RTL8211E_TX_DELAY;
++		val = RTL8211E_CTRL_DELAY | RTL8211E_TX_DELAY;
+ 		break;
+ 	default: /* the rest of the modes imply leaving delays as is. */
+ 		return 0;
+@@ -263,11 +262,12 @@ static int rtl8211e_config_init(struct phy_device *phydev)
+ 
+ 	/* According to a sample driver there is a 0x1c config register on the
+ 	 * 0xa4 extension page (0x7) layout. It can be used to disable/enable
+-	 * the RX/TX delays otherwise controlled by RXDLY/TXDLY pins. It can
+-	 * also be used to customize the whole configuration register:
+-	 * 8:6 = PHY Address, 5:4 = Auto-Negotiation, 3 = Interface Mode Select,
+-	 * 2 = RX Delay, 1 = TX Delay, 0 = SELRGV (see original PHY datasheet
+-	 * for details).
++	 * the RX/TX delays otherwise controlled by RXDLY/TXDLY pins.
++	 * The configuration register definition:
++	 * 14 = reserved
++	 * 13 = Force Tx RX Delay controlled by bit12 bit11,
++	 * 12 = RX Delay, 11 = TX Delay
++	 * 10:0 = Test && debug settings reserved by realtek
+ 	 */
+ 	oldpage = phy_select_page(phydev, 0x7);
+ 	if (oldpage < 0)
+@@ -277,7 +277,8 @@ static int rtl8211e_config_init(struct phy_device *phydev)
+ 	if (ret)
+ 		goto err_restore_page;
+ 
+-	ret = __phy_modify(phydev, 0x1c, RTL8211E_TX_DELAY | RTL8211E_RX_DELAY,
++	ret = __phy_modify(phydev, 0x1c, RTL8211E_CTRL_DELAY
++			   | RTL8211E_TX_DELAY | RTL8211E_RX_DELAY,
+ 			   val);
+ 
+ err_restore_page:
+-- 
+1.9.1
+
