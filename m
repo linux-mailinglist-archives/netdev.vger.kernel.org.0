@@ -2,55 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9610527B297
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 18:52:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ED2327B29F
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 18:57:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726694AbgI1QwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 12:52:18 -0400
-Received: from mx2.suse.de ([195.135.220.15]:55712 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726424AbgI1QwS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 12:52:18 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 9E792AD63;
-        Mon, 28 Sep 2020 16:52:17 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 4A945603A9; Mon, 28 Sep 2020 18:52:17 +0200 (CEST)
-Date:   Mon, 28 Sep 2020 18:52:17 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Dan Murphy <dmurphy@ti.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool v3 1/3] Add missing 400000base modes for
- dump_link_caps
-Message-ID: <20200928165217.x7q7u4snwyegpoug@lion.mk-sys.cz>
-References: <20200928144403.19484-1-dmurphy@ti.com>
- <20200928163744.pjajgxgbnj6apf3b@lion.mk-sys.cz>
- <a963c44f-294b-baec-65a3-2d44ed3758c0@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a963c44f-294b-baec-65a3-2d44ed3758c0@ti.com>
+        id S1726650AbgI1Q5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 12:57:19 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:34257 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726534AbgI1Q5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 12:57:18 -0400
+Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1kMwQj-00068h-K9; Mon, 28 Sep 2020 16:55:14 +0000
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     yhchuang@realtek.com, kvalo@codeaurora.org
+Cc:     briannorris@chromium.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org (open list:REALTEK WIRELESS DRIVER
+        (rtw88)), netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] rtw88: pci: Power cycle device during shutdown
+Date:   Tue, 29 Sep 2020 00:55:08 +0800
+Message-Id: <20200928165508.20775-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200824093225.13689-1-kai.heng.feng@canonical.com>
+References: <20200824093225.13689-1-kai.heng.feng@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 28, 2020 at 11:43:59AM -0500, Dan Murphy wrote:
-> Michal
-> 
-> On 9/28/20 11:37 AM, Michal Kubecek wrote:
-> > On Mon, Sep 28, 2020 at 09:44:01AM -0500, Dan Murphy wrote:
-> > > Commit 63130d0b00040 ("update link mode tables") missed adding in the
-> > > 400000base link_caps to the array.
-> > > 
-> > > Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> > > ---
-> > I'm sorry, I only found these patches shortly after I pushed similar
-> > update as I needed updated UAPI headers for new format descriptions.
-> 
-> Is there an action I need to take here?
+There are reports that 8822CE fails to work rtw88 with "failed to read DBI
+register" error. Also I have a system with 8723DE which freezes the whole
+system when the rtw88 is probing the device.
 
-I don't think so, I believe I have everything that was in your patches
-(with minor diffrences) but you may want to check.
+According to [1], platform firmware may not properly power manage the
+device during shutdown. I did some expirements and putting the device to
+D3 can workaround the issue.
 
-Michal
+So let's power cycle the device by putting the device to D3 at shutdown
+to prevent the issue from happening.
+
+[1] https://bugzilla.kernel.org/show_bug.cgi?id=206411#c9
+
+BugLink: https://bugs.launchpad.net/bugs/1872984
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+v2:
+ - Add more detail in commit log.
+
+ drivers/net/wireless/realtek/rtw88/pci.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+index 3413973bc475..7f1f5073b9f4 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -1599,6 +1599,8 @@ void rtw_pci_shutdown(struct pci_dev *pdev)
+ 
+ 	if (chip->ops->shutdown)
+ 		chip->ops->shutdown(rtwdev);
++
++	pci_set_power_state(pdev, PCI_D3hot);
+ }
+ EXPORT_SYMBOL(rtw_pci_shutdown);
+ 
+-- 
+2.17.1
+
