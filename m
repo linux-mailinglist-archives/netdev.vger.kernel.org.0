@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AB4C27B7B0
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 01:15:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3457527B79A
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 01:14:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727248AbgI1XOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 19:14:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36514 "EHLO
+        id S1727091AbgI1XNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 19:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727040AbgI1XNm (ORCPT
+        with ESMTP id S1727039AbgI1XNm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 19:13:42 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED36C05BD10
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 16:04:53 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id v8so2902555iom.6
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 16:04:53 -0700 (PDT)
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFCF5C05BD12
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 16:04:54 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id u19so2929524ion.3
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 16:04:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dm8XS2HSKEv02T22veiY2AtisIW8U/KWf00I2CNm2Oc=;
-        b=Vp+hMh1DoiUYSZXD9dySKybdalCByzNL+2dPjcj6W7Am1qGkOg1mrWaKskhQEWETJf
-         v+aSj/h0pr6Bf0pRRomB90IByKSIoDsHdd+NTsn0f6bLbl+JrcZ3Sfp4z+O+3dInjZjp
-         1DjPKVx45SPvW7qzTUPBGHrzw4J0GZUwtsgDGVoWeaKhcpziGXP5sRwZDWH7aa9boi3m
-         lg/qC2e+OTGLw4q2eGnfZ3w8xgUA/CFMT0zE5FBML7L5qDPG4m42FR9NbRGMyOJzSOuK
-         NMxzDMsxnaKS7Na9obbZi/cAO+dPqSACgXzoMYyToNZ615gwhCyH47Bd+sifqAVLOnO5
-         JKew==
+        bh=vZ9KWQct8b79VV+T3ZHp62HwU/9rxwxAuHKFKCuD9EQ=;
+        b=DDXAB9xCfez4AA+dSUJmDYm3LKOywC/AOuGaptQMxarCyvmOujjdrnj5NF2AWQ53BC
+         L8gdzLBFAs4J5c8xQ4aI9POyyVLQGDCt5KxB9sp8BhxQ9Yz0qvfx+wA9DliGxSCJ06eG
+         zdg/QXSQK+ZD4FHQs40VVoejQseCIk5GIlgNHYBus4ZWLxQTAOdDAMoA/jemVVMPrZwg
+         vulPL932UbMAVN/XVgtThcJmBWk1bxOk+48HZgFVi+NtfFvb48sqke3Jr1qCtSFvk8qw
+         nk+digqGMJvhdsYzXvRYUMf641bl24yLzOamtIBjHhKws8K1UFqhU4CrMR9hHtvZVtJD
+         p/ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dm8XS2HSKEv02T22veiY2AtisIW8U/KWf00I2CNm2Oc=;
-        b=nBtpg2bavefiBRxMYTPDcGZcdRvioezSpupAcl+F6m2W4MRUSG/6hUtcuh0CYmT0qR
-         VWPifXQf1FK9wIZwz7yONtZxafvNmkah3UKHP5wi5MSVzD9CUn6O+rF1y0qqTy5Zz2ZK
-         WH2VR/tYwKrCReJ+VkqM3nt0BkoYNa2J3wSeO26j1jOzWYRmAs3SNuaV69se5mPgDO3R
-         F8jZ8lnCLx/UZkmA53p1dxa7vs6U8P2T1siWG8GQcfy7uqlvXkb58bVhASydKTHgXw3f
-         /nEcC4yNgzcm+MFMx8LSgRmKTJA8Vgr1jCdG9BtCBNvlMHE+8yDineoH41IewTiDfn5/
-         c8gg==
-X-Gm-Message-State: AOAM531B9LmO+hDI8mbJwP+4LThXYwxZixgKeu7BhPB1m2zz7Bw8s5Gf
-        RpUNWxqqY0lpSOhZUotWNe2GOg==
-X-Google-Smtp-Source: ABdhPJxwlEnNX6WziSND5XDadBAq7e+9AzVId1LMRU/SL9DrOge0DxF36SE2K647M2SxhGavMXGalg==
-X-Received: by 2002:a05:6602:21cc:: with SMTP id c12mr385935ioc.81.1601334293133;
-        Mon, 28 Sep 2020 16:04:53 -0700 (PDT)
+        bh=vZ9KWQct8b79VV+T3ZHp62HwU/9rxwxAuHKFKCuD9EQ=;
+        b=DQfqKY/6ZSvzxqIg2G396DyDF4aUn3n3GjD5j3g/1WYGOKRv6AcrvfY/cuz4uuJjaG
+         kug//SrAStJDbr2OW2FO4k97RBnvBJAY+lbos+KYHi4eH2N0MCwFUxJvEm+JSyNWTJjL
+         EvPmRKxfOutITesg9VzKcoZv6vdymCFkGqqLLOuV6cTmudrR62j24EJiOU41KViYZ9qX
+         4mt/SVJyXra78T98LCNluX4e9n7W59gUiQXTo01dpc7FDMbtsjaku5kyLhkHydKudj1s
+         oW9hiwfyK2K6vPxNQzAVs/2plzUGOSRS+cmSEVevw7yEW4j23VTLpQ/tGPNaCGcID7BJ
+         Y2mw==
+X-Gm-Message-State: AOAM533becpyvc3aw6qAAdT3Sjljo1ARTq2FECQJACUcyx5mQ269B5Mr
+        AhHSB9gYMcNYcarxxrlK6paf/g==
+X-Google-Smtp-Source: ABdhPJynjPfUqJcqGOExpfd29WkeUqlFabElW2BpYaIXZxU7JnJ2GQ2NkNsSoBbO2LUbZqH+BHwepQ==
+X-Received: by 2002:a02:8782:: with SMTP id t2mr748376jai.56.1601334294251;
+        Mon, 28 Sep 2020 16:04:54 -0700 (PDT)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id 137sm1009039ioc.20.2020.09.28.16.04.52
+        by smtp.gmail.com with ESMTPSA id 137sm1009039ioc.20.2020.09.28.16.04.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2020 16:04:52 -0700 (PDT)
+        Mon, 28 Sep 2020 16:04:53 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 03/10] net: ipa: kill unused status exceptions
-Date:   Mon, 28 Sep 2020 18:04:39 -0500
-Message-Id: <20200928230446.20561-4-elder@linaro.org>
+Subject: [PATCH net-next 04/10] net: ipa: remove unused status structure field masks
+Date:   Mon, 28 Sep 2020 18:04:40 -0500
+Message-Id: <20200928230446.20561-5-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200928230446.20561-1-elder@linaro.org>
 References: <20200928230446.20561-1-elder@linaro.org>
@@ -64,63 +64,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only the deaggregation status exception type is ever actually used.
-If any other status exception type is reported we basically ignore
-it, and consume the packet.  Remove the unused definitions of status
-exception type symbols; they can be added back when we actually
-handle them.
-
-Separately, two consecutive if statements test the same condition
-near the top of ipa_endpoint_suspend_one().  Instead, use a single
-test with a block that combines the previously-separate lines of
-code.
+Most of the field masks used for fields in a status structure are
+unused.  Remove their definitions; we can add them back again when
+we actually use them to handle arriving status messages.  These are
+warned about if "W=2" is added to the build command.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c | 27 ---------------------------
+ 1 file changed, 27 deletions(-)
 
 diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index e5e64ca244cbd..df7cd791bb408 100644
+index df7cd791bb408..24d688e3cd93a 100644
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -51,13 +51,6 @@ enum ipa_status_opcode {
- enum ipa_status_exception {
- 	/* 0 means no exception */
- 	IPA_STATUS_EXCEPTION_DEAGGR		= 0x01,
--	IPA_STATUS_EXCEPTION_IPTYPE		= 0x04,
--	IPA_STATUS_EXCEPTION_PACKET_LENGTH	= 0x08,
--	IPA_STATUS_EXCEPTION_FRAG_RULE_MISS	= 0x10,
--	IPA_STATUS_EXCEPTION_SW_FILT		= 0x20,
--	/* The meaning of the next value depends on whether the IP version */
--	IPA_STATUS_EXCEPTION_NAT		= 0x40,		/* IPv4 */
--	IPA_STATUS_EXCEPTION_IPV6CT		= IPA_STATUS_EXCEPTION_NAT,
+@@ -69,36 +69,9 @@ struct ipa_status {
  };
  
- /* Status element provided by hardware */
-@@ -1082,7 +1075,7 @@ static bool ipa_status_drop_packet(const struct ipa_status *status)
- {
- 	u32 val;
- 
--	/* Deaggregation exceptions we drop; others we consume */
-+	/* Deaggregation exceptions we drop; all other types we consume */
- 	if (status->exception)
- 		return status->exception == IPA_STATUS_EXCEPTION_DEAGGR;
- 
-@@ -1428,11 +1421,10 @@ void ipa_endpoint_suspend_one(struct ipa_endpoint *endpoint)
- 	if (!(endpoint->ipa->enabled & BIT(endpoint->endpoint_id)))
- 		return;
- 
--	if (!endpoint->toward_ipa)
-+	if (!endpoint->toward_ipa) {
- 		ipa_endpoint_replenish_disable(endpoint);
+ /* Field masks for struct ipa_status structure fields */
 -
--	if (!endpoint->toward_ipa)
- 		(void)ipa_endpoint_program_suspend(endpoint, true);
-+	}
+-#define IPA_STATUS_SRC_IDX_FMASK		GENMASK(4, 0)
+-
+ #define IPA_STATUS_DST_IDX_FMASK		GENMASK(4, 0)
+-
+-#define IPA_STATUS_FLAGS1_FLT_LOCAL_FMASK	GENMASK(0, 0)
+-#define IPA_STATUS_FLAGS1_FLT_HASH_FMASK	GENMASK(1, 1)
+-#define IPA_STATUS_FLAGS1_FLT_GLOBAL_FMASK	GENMASK(2, 2)
+-#define IPA_STATUS_FLAGS1_FLT_RET_HDR_FMASK	GENMASK(3, 3)
+-#define IPA_STATUS_FLAGS1_FLT_RULE_ID_FMASK	GENMASK(13, 4)
+-#define IPA_STATUS_FLAGS1_RT_LOCAL_FMASK	GENMASK(14, 14)
+-#define IPA_STATUS_FLAGS1_RT_HASH_FMASK		GENMASK(15, 15)
+-#define IPA_STATUS_FLAGS1_UCP_FMASK		GENMASK(16, 16)
+-#define IPA_STATUS_FLAGS1_RT_TBL_IDX_FMASK	GENMASK(21, 17)
+ #define IPA_STATUS_FLAGS1_RT_RULE_ID_FMASK	GENMASK(31, 22)
  
- 	/* IPA v3.5.1 doesn't use channel stop for suspend */
- 	stop_channel = endpoint->ipa->version != IPA_VERSION_3_5_1;
+-#define IPA_STATUS_FLAGS2_NAT_HIT_FMASK		GENMASK_ULL(0, 0)
+-#define IPA_STATUS_FLAGS2_NAT_ENTRY_IDX_FMASK	GENMASK_ULL(13, 1)
+-#define IPA_STATUS_FLAGS2_NAT_TYPE_FMASK	GENMASK_ULL(15, 14)
+-#define IPA_STATUS_FLAGS2_TAG_INFO_FMASK	GENMASK_ULL(63, 16)
+-
+-#define IPA_STATUS_FLAGS3_SEQ_NUM_FMASK		GENMASK(7, 0)
+-#define IPA_STATUS_FLAGS3_TOD_CTR_FMASK		GENMASK(31, 8)
+-
+-#define IPA_STATUS_FLAGS4_HDR_LOCAL_FMASK	GENMASK(0, 0)
+-#define IPA_STATUS_FLAGS4_HDR_OFFSET_FMASK	GENMASK(10, 1)
+-#define IPA_STATUS_FLAGS4_FRAG_HIT_FMASK	GENMASK(11, 11)
+-#define IPA_STATUS_FLAGS4_FRAG_RULE_FMASK	GENMASK(15, 12)
+-#define IPA_STATUS_FLAGS4_HW_SPECIFIC_FMASK	GENMASK(31, 16)
+-
+ #ifdef IPA_VALIDATE
+ 
+ static void ipa_endpoint_validate_build(void)
 -- 
 2.20.1
 
