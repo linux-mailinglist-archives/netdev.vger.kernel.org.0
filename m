@@ -2,111 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21ED327B4A0
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 20:36:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADFF927B495
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 20:36:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726853AbgI1Sgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 14:36:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:60771 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726821AbgI1SgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 14:36:22 -0400
-Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601318181;
+        id S1726683AbgI1SgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 14:36:00 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:40446 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726461AbgI1SgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 14:36:00 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1601318158;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:in-reply-to:in-reply-to:references:references;
-        bh=9oz+ynoTvhiufuVyMQ1xRlRqNWLd2L6kBLmgTWRX5ss=;
-        b=Ygcw0dGRLe/e3XgOOe7GEKbOi33+SmaqafwCUcO1dA69FEVi4WDYJv6GaB8TM3UCP34hBz
-        9pqAEQf4jHS35m8znmXpPvOXUEhrpWrj7L0SSeSd6impO8FlzNh69wycCKCfriBjA4vW8i
-        fXy/oBzoTgmDSJqjBgXXaYDP5cCQQaA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-498-vfI2srfRPH2G4PSp-PI-ng-1; Mon, 28 Sep 2020 14:36:16 -0400
-X-MC-Unique: vfI2srfRPH2G4PSp-PI-ng-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C434585C732;
-        Mon, 28 Sep 2020 18:36:13 +0000 (UTC)
-Received: from virtlab719.virt.lab.eng.bos.redhat.com (virtlab719.virt.lab.eng.bos.redhat.com [10.19.153.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 084E860C11;
-        Mon, 28 Sep 2020 18:36:11 +0000 (UTC)
-From:   Nitesh Narayan Lal <nitesh@redhat.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        helgaas@kernel.org, nitesh@redhat.com, jeffrey.t.kirsher@intel.com,
-        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
-        bhelgaas@google.com, mike.marciniszyn@intel.com,
-        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
-        jiri@nvidia.com, mingo@redhat.com, peterz@infradead.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        lgoncalv@redhat.com
-Subject: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
-Date:   Mon, 28 Sep 2020 14:35:29 -0400
-Message-Id: <20200928183529.471328-5-nitesh@redhat.com>
-In-Reply-To: <20200928183529.471328-1-nitesh@redhat.com>
-References: <20200928183529.471328-1-nitesh@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2q0+ELPoZ5eyuPnX8ffs96ygX/los/7drukV7oWsx/4=;
+        b=yG8QS3MZe+ukoPMvaKn69smtxPS5qDSENJbro5P5ogvchdoZnzj/5OTvmEBBH5VaA3CAAZ
+        zcmb9b/5fPIgNVPJ++k0XOKgb8DwPrOUT4UEteborj7PdqTGXvkzDhUn42lJo9kLVN0SFp
+        3XBBq3jqtkaGBfM/lX3J1ATtoAgRX7dI+aB6WedW9sTO9tyjhZ/o1KGFSw1/8UCXa+BCsp
+        RoHJFy9qS+srhHsXjC50laTO/NCFoAWMUVilYmsIkHDzVSEfrwo0bP7lCLaQiXCMvW4i7T
+        Y667dxrhW1CBUXPCyqqU8L8o9G91F4aPM37k2jvbCnnOH1Xdowg0LtKasq1Q+Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1601318158;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2q0+ELPoZ5eyuPnX8ffs96ygX/los/7drukV7oWsx/4=;
+        b=Lu+UQmBL6hgNN4B167UoD/kUuJ5sFTUJtYQztdeIdoemwdHDwUkUqvqpmQNk25Qp5Lctac
+        +YROudbC8bzGLLBg==
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+ca740b95a16399ceb9a5@syzkaller.appspotmail.com>,
+        davem@davemloft.net, hchunhui@mail.ustc.edu.cn, hdanton@sina.com,
+        ja@ssi.bg, jmorris@namei.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: Re: WARNING in hrtimer_forward
+In-Reply-To: <20200928171137.16804-1-hdanton@sina.com>
+References: <0000000000007d5ec805b04c5fc8@google.com> <20200928171137.16804-1-hdanton@sina.com>
+Date:   Mon, 28 Sep 2020 20:35:58 +0200
+Message-ID: <87mu19kaup.fsf@nanos.tec.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If we have isolated CPUs dedicated for use by real-time tasks, we try to
-move IRQs to housekeeping CPUs from the userspace to reduce latency
-overhead on the isolated CPUs.
+On Tue, Sep 29 2020 at 01:11, Hillf Danton wrote:
+> On Mon, 28 Sep 2020 18:13:42 +0200 Thomas Gleixner wrote:
+>> So the timer was armed at some point and then the expiry which does the
+>> forward races with the ioctl which starts the timer. Lack of
+>> serialization or such ...
+>
+> To make syzbot happy, s/hrtimer_is_queued/hrtimer_active/ can close
+> that race but this warning looks benign.
 
-If we allocate too many IRQ vectors, moving them all to housekeeping CPUs
-may exceed per-CPU vector limits.
+Why only make sysbot happy? It's clearly an issue and the warning is not
+benign simply because forwarding a queued timer is an absolute NONO.
+timers (both timer_list and hrtimer) need external synchronization.
 
-When we have isolated CPUs, limit the number of vectors allocated by
-pci_alloc_irq_vectors() to the minimum number required by the driver, or
-to one per housekeeping CPU if that is larger.
+> --- a/drivers/net/wireless/mac80211_hwsim.c
+> +++ b/drivers/net/wireless/mac80211_hwsim.c
+> @@ -1698,7 +1698,7 @@ static int mac80211_hwsim_config(struct
+>  
+>  	if (!data->started || !data->beacon_int)
+>  		hrtimer_cancel(&data->beacon_timer);
+> -	else if (!hrtimer_is_queued(&data->beacon_timer)) {
+> +	else if (!hrtimer_active(&data->beacon_timer)) {
+>  		u64 tsf = mac80211_hwsim_get_tsf(hw, NULL);
+>  		u32 bcn_int = data->beacon_int;
+>  		u64 until_tbtt = bcn_int - do_div(tsf, bcn_int);
+> @@ -1768,7 +1768,7 @@ static void mac80211_hwsim_bss_info_chan
+>  			  info->enable_beacon, info->beacon_int);
+>  		vp->bcn_en = info->enable_beacon;
+>  		if (data->started &&
+> -		    !hrtimer_is_queued(&data->beacon_timer) &&
+> +		    !hrtimer_active(&data->beacon_timer) &&
+>  		    info->enable_beacon) {
+>  			u64 tsf, until_tbtt;
+>  			u32 bcn_int;
 
-Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
----
- drivers/pci/msi.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Looks about right.
 
-diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-index 30ae4ffda5c1..8c156867803c 100644
---- a/drivers/pci/msi.c
-+++ b/drivers/pci/msi.c
-@@ -23,6 +23,7 @@
- #include <linux/slab.h>
- #include <linux/irqdomain.h>
- #include <linux/of_irq.h>
-+#include <linux/sched/isolation.h>
- 
- #include "pci.h"
- 
-@@ -1191,8 +1192,25 @@ int pci_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
- 				   struct irq_affinity *affd)
- {
- 	struct irq_affinity msi_default_affd = {0};
-+	unsigned int hk_cpus;
- 	int nvecs = -ENOSPC;
- 
-+	hk_cpus = housekeeping_num_online_cpus(HK_FLAG_MANAGED_IRQ);
-+
-+	/*
-+	 * If we have isolated CPUs for use by real-time tasks, to keep the
-+	 * latency overhead to a minimum, device-specific IRQ vectors are moved
-+	 * to the housekeeping CPUs from the userspace by changing their
-+	 * affinity mask. Limit the vector usage to keep housekeeping CPUs from
-+	 * running out of IRQ vectors.
-+	 */
-+	if (hk_cpus < num_online_cpus()) {
-+		if (hk_cpus < min_vecs)
-+			max_vecs = min_vecs;
-+		else if (hk_cpus < max_vecs)
-+			max_vecs = hk_cpus;
-+	}
-+
- 	if (flags & PCI_IRQ_AFFINITY) {
- 		if (!affd)
- 			affd = &msi_default_affd;
--- 
-2.18.2
+Thanks,
 
+        tglx
+
+
+   
