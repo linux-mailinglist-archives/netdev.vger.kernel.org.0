@@ -2,132 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 753F727A8B1
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 09:35:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC41827A8B6
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 09:36:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726604AbgI1HfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 03:35:25 -0400
-Received: from mail-io1-f80.google.com ([209.85.166.80]:41605 "EHLO
-        mail-io1-f80.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726526AbgI1HfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 03:35:25 -0400
-Received: by mail-io1-f80.google.com with SMTP id j4so120230iob.8
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:35:24 -0700 (PDT)
+        id S1726645AbgI1Hfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 03:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726565AbgI1Hfx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 03:35:53 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2B6C0613CF
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:35:53 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id s14so1837613pju.1
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:35:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to;
+        bh=51wDJ7nETNpowNdcnibSc/8dZSJkYREbFUOTIXqHjjw=;
+        b=h/25R46hbDo+OXk3PdjDu8Zgczz9XqPmU7BqhMe5X/HvW2D7FPiEIJgiCbntyZBEwK
+         ByjuJaw7kVLpBdyyGSvVMWHSzLMrJemd11Qk+HNF2nBIdQDs7O6VEML9ZqeftD8b2FAL
+         wMAxAOpzAD21A4j5A/AucjOtwz+zZ2DJZ6AlU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=CJQvC4HTF83zOtIUthVZPbqguyH85VyIuX34JkoyPQ8=;
-        b=qMIaVjeROpT5NOJesiB8dwHfrKtKuY1xw75FhXow6D+7DK7xehT0Xjn9iYyfG1SxVs
-         v75YAcyB3wWWWtHMYxrYMza+z94Yop9OO+T3k+l6mXxlUhedyhr8yPBzTrZZ9OGtxdcv
-         cpH1ggj+CJ17FsVby9y9iVbWWkz44BvSQl+3fjFnpXhmmuQ4ot1p6HJSSGQflWoUhfL3
-         ph+7paRmpO7FvAjzKyowWr0AqBvMspTQrtu71zxBzKqRaecSYPrr3tdo5xdJZmUv+PCQ
-         P84gOlitXEmrqmou42NG+z15BIbDrUO3iKjFtHkOpUaGVXlEH54iW8nDFR2Rbraop3rZ
-         g0Ww==
-X-Gm-Message-State: AOAM5331/lFqdFe5JMmHqh3yUkgXFYZUqyEgBlb/TkA5wLJXRCk4MUMO
-        hDoXIqvG8EaKNVubD4/LXw6EE0lzbKI/iwoT/d7IVZ61hn24
-X-Google-Smtp-Source: ABdhPJwHSw48W+RND0fHB847K7SkU4zxV5vMkiMW/kbIBeVMerY/8kllZCOhccmFtlm4jE/gbEfvD81vk9/DEAxyDX04uWVTxMpv
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to;
+        bh=51wDJ7nETNpowNdcnibSc/8dZSJkYREbFUOTIXqHjjw=;
+        b=l3HFw/bUFQX8buQAHwZlpXH1wHNexgl7Wf8z17seru7wEaHXyF5beixbvRjQRGFgU9
+         ur6Te73TixM7xI4ehAttAbRyVmfuRdB4apuw3TISQiiRhp7qpcqESqPSsLm3vCWFkV4O
+         K+6YobhmhIC/xZhwRtcKbi38JwKRO4cNH4aLULP4S6rOatFaHG5IF8SfjT6MqrZXg2Km
+         dyi4VDsTKHCHALdpxCLM/g0RptUQ1HTNgPBCpnsQTG6/bIdZ5GdMkVU6WOMwt6LsPGsS
+         aqLJlY77hHKTYCZ6nwuB7+pZdjto+OJBgmUd3lu2qoGWmpLG8Rb3cVbwJNfRtOoXEiQ7
+         2KFA==
+X-Gm-Message-State: AOAM532f2SzG6luLT27syZdTclHHCgUPYlN6M5NImOdTqouZxvZ9LKJZ
+        J5OlT18+/BMFcPsbomiCo3D/1A==
+X-Google-Smtp-Source: ABdhPJwkhr/Jv2wUoaW3XT3g7+qKw31jfp6VuvaWGdGaG/Ysxs7xdNZwsF8xhDilMbRs1rc40OKlpA==
+X-Received: by 2002:a17:90a:ed8e:: with SMTP id k14mr208261pjy.178.1601278552769;
+        Mon, 28 Sep 2020 00:35:52 -0700 (PDT)
+Received: from [192.168.1.123] ([89.146.26.173])
+        by smtp.gmail.com with ESMTPSA id 141sm447397pfb.50.2020.09.28.00.35.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Sep 2020 00:35:51 -0700 (PDT)
+Subject: Re: [patch 24/35] net: brcmfmac: Replace in_interrupt()
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        Paul McKenney <paulmck@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        Christian Benvenuti <benve@cisco.com>,
+        Govindarajulu Varadarajan <_govind@gmx.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-doc@vger.kernel.org,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Jon Mason <jdmason@kudzu.us>, Daniel Drake <dsd@gentoo.org>,
+        Ulrich Kunitz <kune@deine-taler.de>, linux-usb@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
+        Stanislaw Gruszka <stf_xl@wp.pl>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Jouni Malinen <j@w1.fi>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        libertas-dev@lists.infradead.org,
+        Pascal Terjan <pterjan@google.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+References: <20200927194846.045411263@linutronix.de>
+ <20200927194922.245750969@linutronix.de>
+From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <a345ad51-4db7-5e4f-3ff9-f1673c12da99@broadcom.com>
+Date:   Mon, 28 Sep 2020 09:35:38 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:134a:: with SMTP id u10mr168048jad.88.1601278524106;
- Mon, 28 Sep 2020 00:35:24 -0700 (PDT)
-Date:   Mon, 28 Sep 2020 00:35:24 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009dac0205b05ab52a@google.com>
-Subject: general protection fault in tcf_generic_walker
-From:   syzbot <syzbot+b47bc4f247856fb4d9e1@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200927194922.245750969@linutronix.de>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000059cec205b05ab7f9"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+--00000000000059cec205b05ab7f9
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 
-syzbot found the following issue on:
++ Uffe
 
-HEAD commit:    ad2b9b0f tcp: skip DSACKs with dubious sequence ranges
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=13baee3d900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5f4c828c9e3cef97
-dashboard link: https://syzkaller.appspot.com/bug?extid=b47bc4f247856fb4d9e1
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+On 9/27/2020 9:49 PM, Thomas Gleixner wrote:
+> @@ -85,7 +85,7 @@ static void brcmf_sdiod_ib_irqhandler(st
+>   
+>   	brcmf_dbg(INTR, "IB intr triggered\n");
+>   
+> -	brcmf_sdio_isr(sdiodev->bus);
+> +	brcmf_sdio_isr(sdiodev->bus, false);
+>   }
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Hi Uffe,
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b47bc4f247856fb4d9e1@syzkaller.appspotmail.com
+I assume the above code is okay, but want to confirm. Is the SDIO 
+interrupt guaranteed to be on a worker thread?
 
-general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
-CPU: 0 PID: 22478 Comm: syz-executor.4 Not tainted 5.9.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:tcf_dump_walker net/sched/act_api.c:240 [inline]
-RIP: 0010:tcf_generic_walker+0x367/0xba0 net/sched/act_api.c:343
-Code: 24 31 ff 48 89 de e8 b8 6c ed fa 48 85 db 74 3f e8 2e 70 ed fa 48 8d 7d 30 48 b9 00 00 00 00 00 fc ff df 48 89 f8 48 c1 e8 03 <80> 3c 08 00 0f 85 26 07 00 00 48 8b 5d 30 31 ff 48 2b 1c 24 48 89
-RSP: 0018:ffffc90006657268 EFLAGS: 00010202
-RAX: 0000000000000004 RBX: c000000100004f6c RCX: dffffc0000000000
-RDX: 0000000000040000 RSI: ffffffff8688ce12 RDI: 0000000000000020
-RBP: fffffffffffffff0 R08: 0000000000000000 R09: ffff8880a6270207
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff88809d5c3d40
-R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
-FS:  00007f9807b99700(0000) GS:ffff8880ae400000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f01a8629db8 CR3: 00000000553cb000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- tc_dump_action+0x6d5/0xe60 net/sched/act_api.c:1623
- netlink_dump+0x4cd/0xf60 net/netlink/af_netlink.c:2246
- __netlink_dump_start+0x643/0x900 net/netlink/af_netlink.c:2354
- netlink_dump_start include/linux/netlink.h:246 [inline]
- rtnetlink_rcv_msg+0x70f/0xad0 net/core/rtnetlink.c:5526
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x331/0x810 net/socket.c:2353
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
- __sys_sendmmsg+0x195/0x480 net/socket.c:2497
- __do_sys_sendmmsg net/socket.c:2526 [inline]
- __se_sys_sendmmsg net/socket.c:2523 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2523
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45e179
-Code: 3d b2 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 0b b2 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f9807b98c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 0000000000027f40 RCX: 000000000045e179
-RDX: 049249249249252e RSI: 0000000020000140 RDI: 0000000000000003
-RBP: 000000000118cf88 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118cf4c
-R13: 00007fff4792d6cf R14: 00007f9807b999c0 R15: 000000000118cf4c
-Modules linked in:
----[ end trace dd2fc9d645cefc73 ]---
-RIP: 0010:tcf_dump_walker net/sched/act_api.c:240 [inline]
-RIP: 0010:tcf_generic_walker+0x367/0xba0 net/sched/act_api.c:343
-Code: 24 31 ff 48 89 de e8 b8 6c ed fa 48 85 db 74 3f e8 2e 70 ed fa 48 8d 7d 30 48 b9 00 00 00 00 00 fc ff df 48 89 f8 48 c1 e8 03 <80> 3c 08 00 0f 85 26 07 00 00 48 8b 5d 30 31 ff 48 2b 1c 24 48 89
-RSP: 0018:ffffc90006657268 EFLAGS: 00010202
-RAX: 0000000000000004 RBX: c000000100004f6c RCX: dffffc0000000000
-RDX: 0000000000040000 RSI: ffffffff8688ce12 RDI: 0000000000000020
-RBP: fffffffffffffff0 R08: 0000000000000000 R09: ffff8880a6270207
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff88809d5c3d40
-R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
-FS:  00007f9807b99700(0000) GS:ffff8880ae400000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000016a9e60 CR3: 00000000553cb000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Thanks,
+Arend
 
+--00000000000059cec205b05ab7f9
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+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
+pra5sIx/TR6gNtLG9MpND9zQt5j42hInkP81vqu9DG8lovoPMuR0JVpFRbPjHZ07cLqqbFMVS/8z
+53iSewIDAQABo4IB0zCCAc8wDgYDVR0PAQH/BAQDAgWgMIGeBggrBgEFBQcBAQSBkTCBjjBNBggr
+BgEFBQcwAoZBaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NwZXJzb25hbHNp
+Z24yc2hhMmczb2NzcC5jcnQwPQYIKwYBBQUHMAGGMWh0dHA6Ly9vY3NwMi5nbG9iYWxzaWduLmNv
+bS9nc3BlcnNvbmFsc2lnbjJzaGEyZzMwTQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYB
+BQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAw
+RAYDVR0fBD0wOzA5oDegNYYzaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9nc3BlcnNvbmFsc2ln
+bjJzaGEyZzMuY3JsMCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYD
+VR0lBAwwCgYIKwYBBQUHAwQwHwYDVR0jBBgwFoAUaXKCYjFnlUSFd5GAxAQ2SZ17C2EwHQYDVR0O
+BBYEFHAaaA+cRo3vYiA6aKVu1bOs4YAYMA0GCSqGSIb3DQEBCwUAA4IBAQCYLdyC8SuyQV6oa5uH
+kGtqz9FCJC/9gSclQLM8dZLHF3FYX8LlcQg/3Ct5I29YLK3T/r35B2zGljtXqVOIeSEz7sDXfGNy
+3dnLIafB1y04e7aR+thVn5Rp1YTF01FUWYbZrixlVuKvjn8vtKC+HhAoDCxvqnqEuA/8Usn7B0/N
+uOA46oQTLe3kjdIgXWJ29JWVqFUavYdcK0+0zyfeMBCTO6heYABeMP3wzYHfcuFDhqldTCpumqhZ
+WwHVQUbAn+xLMIQpycIQFoJIGJX4MeaTSMfLNP2w7nP2uLNgIeleF284vS0XVkBXSCgIGylP4SN+
+HQYrv7fVCbtp+c7nFvP7MYICbzCCAmsCAQEwbTBdMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xv
+YmFsU2lnbiBudi1zYTEzMDEGA1UEAxMqR2xvYmFsU2lnbiBQZXJzb25hbFNpZ24gMiBDQSAtIFNI
+QTI1NiAtIEczAgxR3m7Pj6LvQiWjJy0wDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIE
+ILiEjwKp/fe8BM8724txdum3Wz3JwK5DFdFcCRvK1U8DMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0B
+BwEwHAYJKoZIhvcNAQkFMQ8XDTIwMDkyODA3MzU1M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgB
+ZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQow
+CwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBAciIBsQEGW1MZ5Gir
+533VuTP8s43NlUKyiuG5R1pBOBxKDy9gsKSxU2gnoZ2Af+oimTbTMqI2eaxC1CnWgQsR9a6apvzV
+2dPXSlc4TRgHPI4SeJiwOFJjwdomIb8b5ENoIrxQjNJA9v4GynG7CgnmxKCJkdB37d7GZe0pGntj
+Idv7z3TokSjL4MEcARG7uXGB27TnBYdz5Vou/p8IiYP0BgCd6MCss7DrT4/72o5UOIxY2PXKR3Uh
+zJ/h2+F7MdMMQwxtMu3AQhcKbB5uPFXfdatETbh/B4Ysz40a7/RuOhfzrtSV8jwpRTJoarSWzeVV
+RMnOotztyqCVcpDgIQ2/
+--00000000000059cec205b05ab7f9--
