@@ -2,168 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABB3727AA61
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 11:11:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA97C27AA84
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 11:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726871AbgI1JKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 05:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47148 "EHLO
+        id S1726583AbgI1JRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 05:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726773AbgI1JKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 05:10:43 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17A7C0613CF
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:10:42 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id s31so306528pga.7
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:10:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=O1+yMppnDpNfXMAMC1ZdSEkZ8OlKvslG0pRoiuAQVN0=;
-        b=i0OWzrKQVRrRW+5vXExQR3uFGBu7++GZTpfFtp5wxHPGl0QVi/qJ5OUbL+jt4X7zzi
-         XVO9IAPOK/g3UxE4+rNRbdNk6MK0TsqAr9l501hzNxohI0lrw+TYEUAUHVj5nSSPqOU1
-         +odUFDTyM9fc0fflVZx0LR8MKZnZLUbZ0w1BuUdCcjUJONhQ7IEqoSUZ+3vRBjRG/Rg2
-         3vabPIqfBohFl4gq4MAgOQyY4Bt7VpaeR67t7JwpcFaYb5sxz1ZjYyGJt4BCwYTHtdGr
-         Vx3R+P3e8jndccEUgwlRDv7eI/BuOp7ace5krUyQkMkskRGkMfbAlFjdT9GpOFgCXeUQ
-         XlTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=O1+yMppnDpNfXMAMC1ZdSEkZ8OlKvslG0pRoiuAQVN0=;
-        b=jkjc6iQxgFWg8Xiv8icLIjmePcNBrl+w47p1IokYkfy9vIYDzHGS2YCdCsLq454dnq
-         OW3cPbQtA2PxwQCjBl2xjTw2ng5f6pE12U2Y8mfOUOkb538alpFtPA5DnjquxFRcfiN4
-         cxeQ0v3Pz5jtEnqJHq+ZChFnZ63aSRmYMQDxcMdaUGUC3FD53XzleJsmOXW/w4SBoswU
-         GdbaUwzC5BeCHYlLearbZy66JS0jKSHx3kZ99gj54fTFevTeFv3kv2o6iRUR0LQmaGpA
-         Ezra5C+LRqTJB/ymV5Vn+uiqCaLWcHRAhCx75/2rw/44RJ/NfdiJKnTFBW2W0apiQXdO
-         SkPg==
-X-Gm-Message-State: AOAM531aXRI7zaJYC2BS3LzQ7+c3+keEZJmhYs1t7EhJthcrwDOpVCGS
-        XG5+lBwgQbI3SCdGNzkZvdvS
-X-Google-Smtp-Source: ABdhPJxz0IdBuu8ZZQnGUY8fl5P06ZoniHdCD4o7XYloBPzjr6aas9+xPzk+z1uzjfdwDZhKnE47gA==
-X-Received: by 2002:a62:8205:0:b029:151:c014:6915 with SMTP id w5-20020a6282050000b0290151c0146915mr591925pfd.51.1601284242177;
-        Mon, 28 Sep 2020 02:10:42 -0700 (PDT)
-Received: from linux ([103.59.133.81])
-        by smtp.gmail.com with ESMTPSA id q15sm697928pgr.27.2020.09.28.02.10.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 28 Sep 2020 02:10:41 -0700 (PDT)
-Date:   Mon, 28 Sep 2020 14:40:35 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Govind Singh <govinds@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the mhi tree
-Message-ID: <20200928091035.GA11515@linux>
-References: <20200928184230.2d973291@canb.auug.org.au>
+        with ESMTP id S1726497AbgI1JRt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 05:17:49 -0400
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795C5C061755;
+        Mon, 28 Sep 2020 02:17:49 -0700 (PDT)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4C0H3s5BsYzKmhQ;
+        Mon, 28 Sep 2020 11:17:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
+        content-disposition:content-type:content-type:mime-version
+        :message-id:subject:subject:from:from:date:date:received; s=
+        mail20150812; t=1601284662; bh=DaQNedV6DLtdwBn+je055grMSGGeN+eKd
+        aMluY5HgPA=; b=uCazI0O4zQ8/9ThymAdpvM2q41ag/kVMcICuj/HWLZ7kgSvcw
+        Jvowar61N8lKciKHvuiYNsNwi3KbnkWwHO44BAOuBFBceRIndhm2bPSOz1KnD8iS
+        OK3F9geN2kBcxsfXHhJLIsZZQsu5UQWwfY7EsaR3oXGpmS4nxUS+vNB3jDS33zAB
+        jk8F8LtCkmHO3rwZQe1GziomavNxlgI0S2Ub5F3wvLm9IFRocoNKWaJpFVaGWGlk
+        HMF9FJf2q6/5tTh304PgDahROtfEXbLTTB1sHCq9z2xKhOzYbMnjJAGHEMn8zZyN
+        9liIwlAuDQZcEx4gijvO4pGSrVsvb8Pxw+gwQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1601284663;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=MXZaoCL3jvL4JTPmpwCWyRFRJ4/ouJjr9l+t03/UAe0=;
+        b=GAh4hikUZdp5D/mRG/aWUovRD+5BAdGEvxqjKVcVLyIbMD+jA92H0FIL/9W1Xc0oykiAyi
+        WUgYQ5XpyhlkvDX0MBJtJrYnQtl+doCimzcWPRQLH2k2WJJzsaHUzsZGRhrcyRSqeX8S0f
+        9t6Nfk3E5PXBw+X8M3ike/WHIuMsWdSBZn0epYAkObc5s80ygtFRDOUVZ/m+diGlRob07V
+        VpIjgsGN9CVj6aagReSrnQ21g6xJiWlNVC3P3RcN1hdzaCjN8Rmn9G1WozZF3D8szb4xFh
+        ah8RzC1bLkNDMbX/DhUOygY4XNrWHNZkcRo2Vs5FAKJRkb7dfihr6JtiENTehA==
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
+        with ESMTP id aI_hhMDNdxGq; Mon, 28 Sep 2020 11:17:42 +0200 (CEST)
+Date:   Mon, 28 Sep 2020 11:17:40 +0200
+From:   Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH] net: usb: ax88179_178a: add MCT usb 3.0 adapter
+Message-ID: <20200928091740.GA27844@monster.powergraphx.local>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200928184230.2d973291@canb.auug.org.au>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -4.56 / 15.00 / 15.00
+X-Rspamd-Queue-Id: B56B01714
+X-Rspamd-UID: ab3207
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Adds the driver_info and usb ids of the AX88179 based MCT U3-A9003 USB
+3.0 ethernet adapter.
 
-On Mon, Sep 28, 2020 at 06:42:30PM +1000, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the mhi tree, today's linux-next build (x86_64 allmodconfig)
-> failed like this:
-> 
-> drivers/net/wireless/ath/ath11k/mhi.c:27:4: error: 'struct mhi_channel_config' has no member named 'auto_start'
->    27 |   .auto_start = false,
->       |    ^~~~~~~~~~
-> drivers/net/wireless/ath/ath11k/mhi.c:42:4: error: 'struct mhi_channel_config' has no member named 'auto_start'
->    42 |   .auto_start = false,
->       |    ^~~~~~~~~~
-> drivers/net/wireless/ath/ath11k/mhi.c:57:4: error: 'struct mhi_channel_config' has no member named 'auto_start'
->    57 |   .auto_start = true,
->       |    ^~~~~~~~~~
-> drivers/net/wireless/ath/ath11k/mhi.c:72:4: error: 'struct mhi_channel_config' has no member named 'auto_start'
->    72 |   .auto_start = true,
->       |    ^~~~~~~~~~
-> 
-> Caused by commit
-> 
->   ed39d7816885 ("bus: mhi: Remove auto-start option")
-> 
-> interacting with commit
-> 
->   1399fb87ea3e ("ath11k: register MHI controller device for QCA6390")
-> 
-> from the net-next tree.
-> 
-> I applied the following merge fix patch, but maybe more is required.
-> Even if so, this could be fixed now in the net-next tree.
-> 
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Mon, 28 Sep 2020 18:39:41 +1000
-> Subject: [PATCH] fix up for "ath11k: register MHI controller device for QCA6390"
-> 
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+---
+ drivers/net/usb/ax88179_178a.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-Sorry, I forgot to submit a patch against net-next for fixing this while merging
-the MHI change.
-
-But your change looks good and I can just modify the subject/description and
-resubmit. Or if Dave prefers to fix the original commit itself in net-next,
-I'm fine!
-
-Thanks,
-Mani
-
-> ---
->  drivers/net/wireless/ath/ath11k/mhi.c | 4 ----
->  1 file changed, 4 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-> index aded9a719d51..47a1ce1bee4f 100644
-> --- a/drivers/net/wireless/ath/ath11k/mhi.c
-> +++ b/drivers/net/wireless/ath/ath11k/mhi.c
-> @@ -24,7 +24,6 @@ static struct mhi_channel_config ath11k_mhi_channels[] = {
->  		.offload_channel = false,
->  		.doorbell_mode_switch = false,
->  		.auto_queue = false,
-> -		.auto_start = false,
->  	},
->  	{
->  		.num = 1,
-> @@ -39,7 +38,6 @@ static struct mhi_channel_config ath11k_mhi_channels[] = {
->  		.offload_channel = false,
->  		.doorbell_mode_switch = false,
->  		.auto_queue = false,
-> -		.auto_start = false,
->  	},
->  	{
->  		.num = 20,
-> @@ -54,7 +52,6 @@ static struct mhi_channel_config ath11k_mhi_channels[] = {
->  		.offload_channel = false,
->  		.doorbell_mode_switch = false,
->  		.auto_queue = false,
-> -		.auto_start = true,
->  	},
->  	{
->  		.num = 21,
-> @@ -69,7 +66,6 @@ static struct mhi_channel_config ath11k_mhi_channels[] = {
->  		.offload_channel = false,
->  		.doorbell_mode_switch = false,
->  		.auto_queue = true,
-> -		.auto_start = true,
->  	},
->  };
->  
-> -- 
-> 2.28.0
-> 
-> -- 
-> Cheers,
-> Stephen Rothwell
-
+diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
+index 8f1798b95a02..5541f3faedbc 100644
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1842,6 +1842,19 @@ static const struct driver_info toshiba_info = {
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+ 
++static const struct driver_info mct_info = {
++	.description = "MCT USB 3.0 Gigabit Ethernet Adapter",
++	.bind	= ax88179_bind,
++	.unbind	= ax88179_unbind,
++	.status	= ax88179_status,
++	.link_reset = ax88179_link_reset,
++	.reset	= ax88179_reset,
++	.stop	= ax88179_stop,
++	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
++	.rx_fixup = ax88179_rx_fixup,
++	.tx_fixup = ax88179_tx_fixup,
++};
++
+ static const struct usb_device_id products[] = {
+ {
+ 	/* ASIX AX88179 10/100/1000 */
+@@ -1879,6 +1892,10 @@ static const struct usb_device_id products[] = {
+ 	/* Toshiba USB 3.0 GBit Ethernet Adapter */
+ 	USB_DEVICE(0x0930, 0x0a13),
+ 	.driver_info = (unsigned long)&toshiba_info,
++}, {
++	/* Magic Control Technology U3-A9003 USB 3.0 Gigabit Ethernet Adapter */
++	USB_DEVICE(0x0711, 0x0179),
++	.driver_info = (unsigned long)&mct_info,
+ },
+ 	{ },
+ };
+-- 
+2.28.0
 
