@@ -2,60 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CADC27ADBB
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 14:27:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B42A527AE0C
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 14:41:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbgI1M1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 08:27:18 -0400
-Received: from bmailout1.hostsharing.net ([83.223.95.100]:45293 "EHLO
-        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726420AbgI1M1S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 08:27:18 -0400
-X-Greylist: delayed 400 seconds by postgrey-1.27 at vger.kernel.org; Mon, 28 Sep 2020 08:27:17 EDT
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 3D6F8300069E1;
-        Mon, 28 Sep 2020 14:20:36 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 202F91529B1; Mon, 28 Sep 2020 14:20:36 +0200 (CEST)
-Date:   Mon, 28 Sep 2020 14:20:36 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>, Laura Garcia <nevola@gmail.com>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
-Message-ID: <20200928122036.GA3017@wunner.de>
-References: <cover.1598517739.git.lukas@wunner.de>
- <d2256c451876583bbbf8f0e82a5a43ce35c5cf2f.1598517740.git.lukas@wunner.de>
- <20200919155405.GA28410@salvia>
+        id S1726686AbgI1Mlc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 28 Sep 2020 08:41:32 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:50555 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726393AbgI1Mlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 08:41:31 -0400
+X-Greylist: delayed 303 seconds by postgrey-1.27 at vger.kernel.org; Mon, 28 Sep 2020 08:41:31 EDT
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-216-mF0ZdjI4MHKeMhrLaFIPOw-1; Mon, 28 Sep 2020 08:35:19 -0400
+X-MC-Unique: mF0ZdjI4MHKeMhrLaFIPOw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D96C5708B;
+        Mon, 28 Sep 2020 12:35:18 +0000 (UTC)
+Received: from bahia.lan (ovpn-112-195.ams2.redhat.com [10.36.112.195])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 415965C1BB;
+        Mon, 28 Sep 2020 12:35:05 +0000 (UTC)
+Subject: [PATCH] vhost: Don't call vq_access_ok() when using IOTLB
+From:   Greg Kurz <groug@kaod.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, Laurent Vivier <laurent@vivier.eu>,
+        David Gibson <david@gibson.dropbear.id.au>
+Date:   Mon, 28 Sep 2020 14:35:04 +0200
+Message-ID: <160129650442.480158.12085353517983890660.stgit@bahia.lan>
+User-Agent: StGit/0.21
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200919155405.GA28410@salvia>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=groug@kaod.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kaod.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 19, 2020 at 05:54:05PM +0200, Pablo Neira Ayuso wrote:
-> Would you redo these numbers using this ruleset to address Daniel's
-> comments regarding performance?
-> 
-> Moreover, Daniel also suggested dev_direct_xmit() path from AF_PACKET
-> allows packets to escape from policy, it seems this also needs to be
-> extended to add a hook there too.
-> 
-> Could you work on this and send a v2?
+When the IOTLB device is enabled, the vring addresses we get from
+userspace are GIOVAs. It is thus wrong to pass them to vq_access_ok()
+which only takes HVAs. The IOTLB map is likely empty at this stage,
+so there isn't much that can be done with these GIOVAs. Access validation
+will be performed at IOTLB prefetch time anyway.
 
-Sure, will do.
+BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1883084
+Fixes: 6b1e6cc7855b ("vhost: new device IOTLB API")
+Cc: jasowang@redhat.com
+CC: stable@vger.kernel.org # 4.14+
+Signed-off-by: Greg Kurz <groug@kaod.org>
+---
+ drivers/vhost/vhost.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Thanks,
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index b45519ca66a7..6296e33df31d 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -1509,7 +1509,10 @@ static long vhost_vring_set_addr(struct vhost_dev *d,
+ 	 * If it is not, we don't as size might not have been setup.
+ 	 * We will verify when backend is configured. */
+ 	if (vq->private_data) {
+-		if (!vq_access_ok(vq, vq->num,
++		/* If an IOTLB device is present, the vring addresses are
++		 * GIOVAs. Access will be validated during IOTLB prefetch. */
++		if (!vq->iotlb &&
++		    !vq_access_ok(vq, vq->num,
+ 			(void __user *)(unsigned long)a.desc_user_addr,
+ 			(void __user *)(unsigned long)a.avail_user_addr,
+ 			(void __user *)(unsigned long)a.used_user_addr))
 
-Lukas
+
