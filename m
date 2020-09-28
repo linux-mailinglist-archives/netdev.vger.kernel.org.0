@@ -2,74 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BC7327B554
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 21:34:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1EB627B556
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 21:34:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726656AbgI1TeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 15:34:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726424AbgI1TeE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 15:34:04 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F69BC061755;
-        Mon, 28 Sep 2020 12:34:04 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9285B144E6D9C;
-        Mon, 28 Sep 2020 12:17:15 -0700 (PDT)
-Date:   Mon, 28 Sep 2020 12:34:02 -0700 (PDT)
-Message-Id: <20200928.123402.281706664300059159.davem@davemloft.net>
-To:     weifeng.voon@intel.com
-Cc:     mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joabreu@synopsys.com,
-        peppe.cavallaro@st.com, andrew@lunn.ch, alexandre.torgue@st.com,
-        boon.leong.ong@intel.com, chen.yong.seow@intel.com,
-        mgross@linux.intel.com, vee.khee.wong@intel.com
-Subject: Re: [PATCH v1 net] net: stmmac: Modify configuration method of EEE
- timers
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200928100241.7673-1-weifeng.voon@intel.com>
-References: <20200928100241.7673-1-weifeng.voon@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Mon, 28 Sep 2020 12:17:16 -0700 (PDT)
+        id S1726761AbgI1TeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 15:34:17 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60084 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726424AbgI1TeQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 15:34:16 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kMyua-00GZz7-7G; Mon, 28 Sep 2020 21:34:12 +0200
+Date:   Mon, 28 Sep 2020 21:34:12 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        mkubecek@suse.cz, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH net-next v5 2/2] net: phy: dp83869: Add speed
+ optimization feature
+Message-ID: <20200928193412.GC3950513@lunn.ch>
+References: <20200928145135.20847-1-dmurphy@ti.com>
+ <20200928145135.20847-3-dmurphy@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200928145135.20847-3-dmurphy@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Voon Weifeng <weifeng.voon@intel.com>
-Date: Mon, 28 Sep 2020 18:02:41 +0800
+On Mon, Sep 28, 2020 at 09:51:35AM -0500, Dan Murphy wrote:
+> Set the speed optimization bit on the DP83869 PHY.
+> 
+> Speed optimization, also known as link downshift, enables fallback to 100M
+> operation after multiple consecutive failed attempts at Gigabit link
+> establishment. Such a case could occur if cabling with only four wires
+> (two twisted pairs) were connected instead of the standard cabling with
+> eight wires (four twisted pairs).
+> 
+> The number of failed link attempts before falling back to 100M operation is
+> configurable. By default, four failed link attempts are required before
+> falling back to 100M.
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
 
-> @@ -90,11 +90,12 @@ static const u32 default_msg_level = (NETIF_MSG_DRV | NETIF_MSG_PROBE |
->  				      NETIF_MSG_LINK | NETIF_MSG_IFUP |
->  				      NETIF_MSG_IFDOWN | NETIF_MSG_TIMER);
->  
-> -#define STMMAC_DEFAULT_LPI_TIMER	1000
-> -static int eee_timer = STMMAC_DEFAULT_LPI_TIMER;
-> -module_param(eee_timer, int, 0644);
-> -MODULE_PARM_DESC(eee_timer, "LPI tx expiration time in msec");
-> -#define STMMAC_LPI_T(x) (jiffies + msecs_to_jiffies(x))
-> +#define STMMAC_DEFAULT_LPI_TIMER	1000000
-> +#define STMMAC_LPI_T(x)	(jiffies + usecs_to_jiffies(x))
-> +
-> +static int tw_timer = STMMAC_DEFAULT_TWT_LS;
-> +module_param(tw_timer, int, 0644);
-> +MODULE_PARM_DESC(tw_timer, "LPI TW timer value in msec");
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-This is a great example of one of the many reasons why we disallow
-module parameters in networking drivers.
+> +	default:
+> +		phydev_err(phydev,
+> +			   "Downshift count must be 1, 2, 4 or 8\n");
+> +		return -EINVAL;
+> +	}
 
-This is a user facing value, and now you changed the name which breaks
-things for anyone who was accessing this module parameter previously.
+At some point it would be good to plumb in extack so we could return
+this to user space.
 
-You have to find a way to specify this value using existing kernel
-infrastructure such as ethtool or devlink, and not using a module
-parameter.
-
-So please get rid of this module parameter, and add a way to set this
-value portably.
+     Andrew
