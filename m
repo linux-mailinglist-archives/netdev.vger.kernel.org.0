@@ -2,113 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A3EB27B369
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:38:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB2F827B36F
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:40:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726615AbgI1Rie (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 13:38:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41130 "EHLO
+        id S1726460AbgI1RkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 13:40:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726547AbgI1Rid (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 13:38:33 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7EBCC061755
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 10:38:33 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id f15so2124079ilj.2
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 10:38:33 -0700 (PDT)
+        with ESMTP id S1726613AbgI1RkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 13:40:08 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530E2C061755;
+        Mon, 28 Sep 2020 10:40:07 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id f70so1510613ybg.13;
+        Mon, 28 Sep 2020 10:40:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Ix6rK5nNILFR//2VX1TEkWq4PG6CyVnNoZXDdGJ11pM=;
-        b=R8gQX/LHqO1lVOmGFk21X1rfpqmGmVuxlAKCKTYa6pR0Xiy9zeaexSY6TzD6VxInAo
-         eDTIoQCs2OvpfrcaUZvriRTjXcB2n3LlCKnErCDzXNT12KWfaTrXwQlpXjWGXE8FElKd
-         7QRpSfeBkGQ6o7XUtb0nFHNj9EuduDUuHIrDuuC3VTeqxPubhyuIky/TtK+IqMuT8dud
-         od0OXtSIiMt+eKz6SYKe6faM1WikhxNnVZLWvcuQ1AR1rpZjuyd2zSBYbLVZDLovCQ6b
-         H3NcSS+JDjXI2YNlPphcov67u6Yo3k2+vzvS/QCkRLPgnhYdkwGgXHy6q2ARZd6MYel2
-         jlUw==
+        bh=bRUB/bwFEosynQ9K/iHMMiBU5kn7FkW/CO7KofKLlos=;
+        b=VBtgkvhfPZXlkH9wbKCdmPcpJ8oNrc5LzViJQ3qoePtupLyCjiZ4OOjm10NdGvllI9
+         j2iBN+oj8Z/ZBlPqmXgIJJCDiaUT9B3Rq/5dVhNefZZmk9udP0EPSvkwXBYf9yVDe8hM
+         WF2tjNj/IGXXK2Wl3k0fy4e+5IXuiwTToHpK+72A0nqHiwxGEEkCOl9gffBP9/g78ufT
+         TRYsVSlpHKLP5eJej2BQTyWRx4yqPJJ0ika6b5J28Nhl8Mjc24rasbTdt5SxJBE1onWx
+         0M7wZj1OsV4DKm3CdoxBzGfsjVUxzf/jTm/yP476X30evHtWD9vIDWZOPQbmktlM4GNM
+         V+8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Ix6rK5nNILFR//2VX1TEkWq4PG6CyVnNoZXDdGJ11pM=;
-        b=sW9VH+vmqkOnz1yhBDxiZySMQWOgr6AYeLu5G1abSdfO+a+XOBnsHswhxu19NTANLK
-         GqdgnZXVeHOjEgaWuUrCbnjyxz8Qi6mY9vIUUBYZwW+/+dDDOtPQOdfAX8PfuSuztb39
-         HAE/soCwq03PsHCzJDd7Lzx//t665wxn22uj4GJRz5/V7025/8wWDdmcmUYMbXpYLTyf
-         mJi5sxstDewFMKnQVPP8txeXmg5GHz4Uu0Xbz9VJlx9+4wfFtOhhhqv5FyI4yTjxSwn0
-         I8cFUNRxpzXDXpZuzbgM/bdqgqL3XlJPWUufJ43Uod4eK4pJSFd6DEinqVOMsZFrF6S1
-         X3vw==
-X-Gm-Message-State: AOAM5335eTmtOSR60s6aEP9ZYndDShKBDquuGz0KfvugqftwPQClxT8R
-        LsgEzmJcL24Y2rAlFySzvQ3Tmtuynm3EkrH0X5s=
-X-Google-Smtp-Source: ABdhPJyrQjN7kAO4Emc4j3F6+McdApSerz9RKwhDqLVIAtAQSSjmAxhvT1WFhz+kvg7UtfWdxwzBKuVg6RohEK7FG88=
-X-Received: by 2002:a92:4a0c:: with SMTP id m12mr2262647ilf.238.1601314712934;
- Mon, 28 Sep 2020 10:38:32 -0700 (PDT)
+        bh=bRUB/bwFEosynQ9K/iHMMiBU5kn7FkW/CO7KofKLlos=;
+        b=kLp/LHT1P6KQpgF4Khhv2h+2GSuWHDhuUavO7h+bP/of7gAWH/Q8h2Q9//2xrxX2hy
+         sXr0pN28AWI/tMhnsX3kXONu+msVF3Z75WglHCxQiwUUrJ5wwSS4B4e29Aq5MAfKjr9G
+         oVkAUINrStPDbLHJbYPuUSC7S7Gl1aEQDeVLpHGklrXRQ6Ur/wIkAe40e+eQAUq49iiw
+         eqpAGuPE5o0gMynGktR+ItMnt+hX9cIxeAI0sE/WeptiIRqB0OmgC3UUECKFaTlizKHC
+         NW70stvl7KMnIXAQm5t4tCwYyrMVuFkK8HKovzH5iRtgo8KT6G9T6SUlO6vQc9Mk5UpE
+         ZajA==
+X-Gm-Message-State: AOAM532U2Iw1mtkqwUKtTIRh2MQaGzbS55twd5vgV8k9y3VTrbX/Dj50
+        HSjR/HgN/Z7La6duxHQIa5HPcmI5jaU+U7lw+ck=
+X-Google-Smtp-Source: ABdhPJxQM1/V6NaKJCNgmuY84m1KTfRM5PpfbnvpUgsehTkepFHNfpLccl/qEDLPf6yIZNb4pxzYyclAl79UAG7EdRM=
+X-Received: by 2002:a25:8541:: with SMTP id f1mr905314ybn.230.1601314806520;
+ Mon, 28 Sep 2020 10:40:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200923035624.7307-1-xiyou.wangcong@gmail.com>
- <20200923035624.7307-2-xiyou.wangcong@gmail.com> <877dsh98wq.fsf@buslov.dev>
- <CAM_iQpXy4GuHidnLAL+euBaNaJGju6KFXBZ67WS_Pws58sD6+g@mail.gmail.com>
- <8736358wu0.fsf@buslov.dev> <3a0677de763a6a993123fd4f01000f7e78ace353.camel@redhat.com>
-In-Reply-To: <3a0677de763a6a993123fd4f01000f7e78ace353.camel@redhat.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 28 Sep 2020 10:38:21 -0700
-Message-ID: <CAM_iQpV8xRiwNzMYMDi6dBNLeW5TcyOWtd9Y4qwszQpiVoP_Zw@mail.gmail.com>
-Subject: Re: [Patch net 1/2] net_sched: defer tcf_idr_insert() in tcf_action_init_1()
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Vlad Buslov <vlad@buslov.dev>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
+References: <cover.1601303057.git.daniel@iogearbox.net> <9c4b6a19ced3e2ee6c6d28f5f3883cc7b2b02400.1601303057.git.daniel@iogearbox.net>
+In-Reply-To: <9c4b6a19ced3e2ee6c6d28f5f3883cc7b2b02400.1601303057.git.daniel@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 28 Sep 2020 10:39:55 -0700
+Message-ID: <CAEf4BzYxSkjJzPVzOkOQkOVPUKri9aa69QGFrUdGjAf7f9Uf=w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 4/6] bpf, libbpf: add bpf_tail_call_static
+ helper for bpf programs
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 28, 2020 at 3:14 AM Davide Caratti <dcaratti@redhat.com> wrote:
+On Mon, Sep 28, 2020 at 7:39 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
-> hello,
+> Port of tail_call_static() helper function from Cilium's BPF code base [0]
+> to libbpf, so others can easily consume it as well. We've been using this
+> in production code for some time now. The main idea is that we guarantee
+> that the kernel's BPF infrastructure and JIT (here: x86_64) can patch the
+> JITed BPF insns with direct jumps instead of having to fall back to using
+> expensive retpolines. By using inline asm, we guarantee that the compiler
+> won't merge the call from different paths with potentially different
+> content of r2/r3.
 >
-> On Fri, 2020-09-25 at 22:45 +0300, Vlad Buslov wrote:
-> > On Fri 25 Sep 2020 at 22:22, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > On Fri, Sep 25, 2020 at 8:24 AM Vlad Buslov <vlad@buslov.dev> wrote:
-> > > > > +     if (TC_ACT_EXT_CMP(a->tcfa_action, TC_ACT_GOTO_CHAIN) &&
-> > > > > +         !rcu_access_pointer(a->goto_chain)) {
-> > > > > +             tcf_action_destroy_1(a, bind);
-> > > > > +             NL_SET_ERR_MSG(extack, "can't use goto chain with NULL chain");
-> > > > > +             return ERR_PTR(-EINVAL);
-> > > > > +     }
-> > > >
-> > > > I don't think calling tcf_action_destoy_1() is enough here. Since you
-> > > > moved this block before assigning cookie and releasing the module, you
-> > > > also need to release them manually in addition to destroying the action
-> > > > instance.
-> > > >
-> > >
-> > > tcf_action_destoy_1() eventually calls free_tcf() which frees cookie and
-> > > tcf_action_destroy() which releases module refcnt.
-> > >
-> > > What am I missing here?
-> > >
-> > > Thanks.
-> >
-> > The memory referenced by the function local pointer "cookie" hasn't been
-> > assigned yet to the a->act_cookie because in your patch you moved
-> > goto_chain validation code before the cookie change. That means that if
-> > user overwrites existing action, then action old a->act_cookie will be
-> > freed by tcf_action_destroy_1() but new cookie that was allocated by
-> > nla_memdup_cookie() will leak.
-
-Yes, good catch!
-
-
+> We're also using Cilium's __throw_build_bug() macro (here as: __bpf_unreachable())
+> in different places as a neat trick to trigger compilation errors when
+> compiler does not remove code at compilation time. This works for the BPF
+> back end as it does not implement the __builtin_trap().
 >
-> maybe we can just delete this if (TC_ACT_EXT_CMP(...)) { ... }
-> statement, instead of moving it? Each TC action already does the check
-> for NULL "goto chains" with a_o->init() -> tcf_action_check_ctrlact(),
-> so this if () statement looks dead code to me _ I probably forgot to
-> remove it after all actions were converted to validate the control
-> action inside their .init() function.
+>   [0] https://github.com/cilium/cilium/commit/f5537c26020d5297b70936c6b7d03a1e412a1035
+>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Andrii Nakryiko <andriin@fb.com>
+> ---
 
-Good point, I think you are right, I will send a patch to remove it.
+few optional nits below, but looks good to me:
 
-Thanks!
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  tools/lib/bpf/bpf_helpers.h | 46 +++++++++++++++++++++++++++++++++++++
+>  1 file changed, 46 insertions(+)
+>
+
+[...]
+
+> +/*
+> + * Helper function to perform a tail call with a constant/immediate map slot.
+> + */
+> +static __always_inline void
+> +bpf_tail_call_static(void *ctx, const void *map, const __u32 slot)
+
+nit: const void *ctx would work here, right? would avoid users having
+to do unnecessary casts in some cases
+
+> +{
+> +       if (!__builtin_constant_p(slot))
+> +               __bpf_unreachable();
+> +
+> +       /*
+> +        * Provide a hard guarantee that LLVM won't optimize setting r2 (map
+> +        * pointer) and r3 (constant map index) from _different paths_ ending
+> +        * up at the _same_ call insn as otherwise we won't be able to use the
+> +        * jmpq/nopl retpoline-free patching by the x86-64 JIT in the kernel
+> +        * given they mismatch. See also d2e4c1e6c294 ("bpf: Constant map key
+> +        * tracking for prog array pokes") for details on verifier tracking.
+> +        *
+> +        * Note on clobber list: we need to stay in-line with BPF calling
+> +        * convention, so even if we don't end up using r0, r4, r5, we need
+> +        * to mark them as clobber so that LLVM doesn't end up using them
+> +        * before / after the call.
+> +        */
+> +       asm volatile("r1 = %[ctx]\n\t"
+> +                    "r2 = %[map]\n\t"
+> +                    "r3 = %[slot]\n\t"
+> +                    "call 12\n\t"
+
+nit: it's weird to have tabs at the end of each string literal,
+especially that r1 doesn't start with a tab...
+
+> +                    :: [ctx]"r"(ctx), [map]"r"(map), [slot]"i"(slot)
+> +                    : "r0", "r1", "r2", "r3", "r4", "r5");
+> +}
+> +
+>  /*
+>   * Helper structure used by eBPF C program
+>   * to describe BPF map attributes to libbpf loader
+> --
+> 2.21.0
+>
