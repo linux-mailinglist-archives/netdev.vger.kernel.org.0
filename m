@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EB2627B7BB
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 01:15:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B92A527B79F
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 01:14:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727297AbgI1XPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 19:15:03 -0400
+        id S1727182AbgI1XOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 19:14:08 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727026AbgI1XNm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 19:13:42 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5AAC05BD17
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 16:04:57 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id q4so3007882ils.4
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 16:04:57 -0700 (PDT)
+        with ESMTP id S1727090AbgI1XNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 19:13:43 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF06EC05BD1A
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 16:04:58 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id v13so826468ilc.7
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 16:04:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IejZ9HVKdCtJgxeP/Wkw81HQgdzY8PLcZSPCdSMKGqs=;
-        b=IuqZoPEAt8lZh+LH8stxOo7V1yhewO+HcnokthjTxP2EN0zz7cqBeSZ7AhPgfb2XEf
-         mkeRnkEVb568MfrMG/ECWGzFuYmG1fHXcF8g6V+1R+6R+u3PFxEIUSp7QNfxF5QTD3Sb
-         xevQc0awQWvpeNpdNOQ3uxKp+cjKlzZ89xclqi6aH90TGnmmweqhIlQtzodGKNuf/PVq
-         PiY996t/tY8Xk1l+onrHiA9zrm+LgH42de3Fn8ao5sq176vi+zRalM7g6QjCSloQa9gw
-         ZHWPHlZnpOyiPL2NGa6p4kJF1h99vkZj8hCj9pq5dUuidDqBh+BeCOlhmDryoPsVyjMF
-         yELA==
+        bh=y3er6mNwMu5Sx26fZeVu6K2o8G6XAAQwU5jOGoe2b5s=;
+        b=iWp1yNl750KTH5K1EKPuDUL4V06zOqAX2I7JtzpibswLAMpqw4c8Adpj2G81Z8pUKS
+         xX5E+Uk67BKU61O2f1AfG1HvriDxeMP3SJuwVp4FiFId5vnKmHmijTasdMvBP6z4RMfy
+         Y/vBhbEvZCKTXfJHIMgJX7c0V8nBtbwBxRc/jNonuNb9a+RdXbt+nZSpyFlkYlBQnS79
+         SHNwsOau3+DCAYEYBnkyx4EdNM+9V9Pd9U/vnjhkB/JcjEhMe0I12n2qVt+PU175Fcu2
+         WWsbrSXmp3VjBILjFT5pZTRIoD8qmKpAIjKnilPUfBHwplq42UcnLZ6JWjj6cHz0CmO2
+         uw4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IejZ9HVKdCtJgxeP/Wkw81HQgdzY8PLcZSPCdSMKGqs=;
-        b=K/YyXwGenanuivA24GVIFucQ+2UzeXWxv5Uetu0Ad5PUQcbdUEhPfO6l/sqQl9xiWU
-         J+VdgKHwwZwuJKSa5iVvdo+4RfLnGyI+Q7aA51gr1oCIqshFjH8lpcZkP88A2cuUYVGW
-         vkpTlYvBjJbEBKBeFfrmjcjbxjcWZMXvpfT5L0YTPoOzEjciZILvsbym17xe/D5l5lXK
-         rcOu5WqK++Kd0VpjbfjxryY57ifCoFMeNsDclZMd1n0+IWhF7ugp4t9inyQrVJyItn/9
-         CQ+gXeUna3opAhq2pQCvsQxFf/v7T/nTItcHDdguBihLfal9/cRwee4sTEjm/7ke9P/+
-         qkjg==
-X-Gm-Message-State: AOAM533WvTK5zFRXG89sT/PkFPLKdowPIPqpkdjGV/7mpaA9BCFYd/uN
-        b4AFdYRQbHw2ZAh1igzHqwnkazCwlY2eLg==
-X-Google-Smtp-Source: ABdhPJzY21tQ1IcsTPzkr/fxeX1zf0OND1STpUfVwi49+pDQJN4uJScWAt4g3wYXTFEH3I6F9zCnlw==
-X-Received: by 2002:a92:1952:: with SMTP id e18mr539572ilm.189.1601334297118;
-        Mon, 28 Sep 2020 16:04:57 -0700 (PDT)
+        bh=y3er6mNwMu5Sx26fZeVu6K2o8G6XAAQwU5jOGoe2b5s=;
+        b=M/TwGNi2t02tVdWIPwsivSydM+6RKMasbKJo9TLI+aqlqTqWVdHKOK14XYHzHV8ps2
+         lhrN90HOCgukiR598/w0CGbpPpc6GK95u7eA0xKAJCO1kiz5pFXt6oHcQnwgyJfC1Pax
+         iCZI8eAGHi3csvNDN8mgyhHVhDJyVvZB3SmIjStM9QA4K8nOFvTSVeNQqGGpNW/o4wOv
+         nIWUfXpQ2sLMsEHGnc50tNgmeglQvP594kiX2xY7sI2W5OJUNwtnp+miU6RwfYqjRqBt
+         XOX3BFkD0fzwJ7SxQ9pjaMddtvBML/ZMH4WZ7arcjUNJsxR4Yp5xng7FXwkbUxo8Iann
+         t5SA==
+X-Gm-Message-State: AOAM533q1BSNfMVo/C6CLOC6sRE90j0xUXtyuAame00piO16/5U8SUdL
+        TfKQ8RL5dHuvTuV88Cr23VPvvQ==
+X-Google-Smtp-Source: ABdhPJxlQl3tMX0qEez6qvL7U8ZHeXxnadQbaiO9g8p6vD9qn3PaTsXyHvtqfWSN4yNWUntZ726TVA==
+X-Received: by 2002:a92:2602:: with SMTP id n2mr631739ile.82.1601334298144;
+        Mon, 28 Sep 2020 16:04:58 -0700 (PDT)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id 137sm1009039ioc.20.2020.09.28.16.04.56
+        by smtp.gmail.com with ESMTPSA id 137sm1009039ioc.20.2020.09.28.16.04.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2020 16:04:56 -0700 (PDT)
+        Mon, 28 Sep 2020 16:04:57 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 07/10] net: ipa: share field mask values for GSI general interrupt
-Date:   Mon, 28 Sep 2020 18:04:43 -0500
-Message-Id: <20200928230446.20561-8-elder@linaro.org>
+Subject: [PATCH net-next 08/10] net: ipa: fix two mild warnings
+Date:   Mon, 28 Sep 2020 18:04:44 -0500
+Message-Id: <20200928230446.20561-9-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200928230446.20561-1-elder@linaro.org>
 References: <20200928230446.20561-1-elder@linaro.org>
@@ -64,70 +64,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The GSI general interrupt is managed by three registers: enable;
-status; and clear.  The three registers have same set of field bits
-at the same locations.  Use a common set of field masks for all
-three registers to avoid duplication.
+Fix two spots where a variable "channel_id" is unnecessarily
+redefined inside loops in "gsi.c".  This is warned about if
+"W=2" is added to the build command.
+
+Note that this problem is harmless, so there's no need to backport
+it as a bugfix.
+
+Remove a comment in gsi_init() about waking the system; the GSI
+interrupt does not wake the system any more.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/gsi.c     |  2 +-
- drivers/net/ipa/gsi_reg.h | 21 ++++++---------------
- 2 files changed, 7 insertions(+), 16 deletions(-)
+ drivers/net/ipa/gsi.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index 203d079c481c4..cb676083dfa73 100644
+index cb676083dfa73..6bfac1efe037c 100644
 --- a/drivers/net/ipa/gsi.c
 +++ b/drivers/net/ipa/gsi.c
-@@ -271,7 +271,7 @@ static void gsi_irq_enable(struct gsi *gsi)
- 	iowrite32(val, gsi->virt + GSI_CNTXT_GLOB_IRQ_EN_OFFSET);
+@@ -1600,7 +1600,7 @@ static int gsi_channel_setup(struct gsi *gsi, bool legacy)
+ 	/* Compute which modem channels need to be deallocated */
+ 	mask ^= gsi->modem_channel_bitmap;
+ 	while (mask) {
+-		u32 channel_id = __fls(mask);
++		channel_id = __fls(mask);
  
- 	/* Never enable GSI_BREAK_POINT */
--	val = GSI_CNTXT_GSI_IRQ_ALL & ~EN_BREAK_POINT_FMASK;
-+	val = GSI_CNTXT_GSI_IRQ_ALL & ~BREAK_POINT_FMASK;
- 	iowrite32(val, gsi->virt + GSI_CNTXT_GSI_IRQ_EN_OFFSET);
- }
+ 		mask ^= BIT(channel_id);
  
-diff --git a/drivers/net/ipa/gsi_reg.h b/drivers/net/ipa/gsi_reg.h
-index b789e0f866fa0..8e0e9350c3831 100644
---- a/drivers/net/ipa/gsi_reg.h
-+++ b/drivers/net/ipa/gsi_reg.h
-@@ -340,29 +340,20 @@
- 			GSI_EE_N_CNTXT_GSI_IRQ_STTS_OFFSET(GSI_EE_AP)
- #define GSI_EE_N_CNTXT_GSI_IRQ_STTS_OFFSET(ee) \
- 			(0x0001f118 + 0x4000 * (ee))
--#define BREAK_POINT_FMASK		GENMASK(0, 0)
--#define BUS_ERROR_FMASK			GENMASK(1, 1)
--#define CMD_FIFO_OVRFLOW_FMASK		GENMASK(2, 2)
--#define MCS_STACK_OVRFLOW_FMASK		GENMASK(3, 3)
--
- #define GSI_CNTXT_GSI_IRQ_EN_OFFSET \
- 			GSI_EE_N_CNTXT_GSI_IRQ_EN_OFFSET(GSI_EE_AP)
- #define GSI_EE_N_CNTXT_GSI_IRQ_EN_OFFSET(ee) \
- 			(0x0001f120 + 0x4000 * (ee))
--#define EN_BREAK_POINT_FMASK		GENMASK(0, 0)
--#define EN_BUS_ERROR_FMASK		GENMASK(1, 1)
--#define EN_CMD_FIFO_OVRFLOW_FMASK	GENMASK(2, 2)
--#define EN_MCS_STACK_OVRFLOW_FMASK	GENMASK(3, 3)
--#define GSI_CNTXT_GSI_IRQ_ALL		GENMASK(3, 0)
--
- #define GSI_CNTXT_GSI_IRQ_CLR_OFFSET \
- 			GSI_EE_N_CNTXT_GSI_IRQ_CLR_OFFSET(GSI_EE_AP)
- #define GSI_EE_N_CNTXT_GSI_IRQ_CLR_OFFSET(ee) \
- 			(0x0001f128 + 0x4000 * (ee))
--#define CLR_BREAK_POINT_FMASK		GENMASK(0, 0)
--#define CLR_BUS_ERROR_FMASK		GENMASK(1, 1)
--#define CLR_CMD_FIFO_OVRFLOW_FMASK	GENMASK(2, 2)
--#define CLR_MCS_STACK_OVRFLOW_FMASK	GENMASK(3, 3)
-+/* The masks below are used for the general IRQ STTS, EN, and CLR registers */
-+#define BREAK_POINT_FMASK		GENMASK(0, 0)
-+#define BUS_ERROR_FMASK			GENMASK(1, 1)
-+#define CMD_FIFO_OVRFLOW_FMASK		GENMASK(2, 2)
-+#define MCS_STACK_OVRFLOW_FMASK		GENMASK(3, 3)
-+#define GSI_CNTXT_GSI_IRQ_ALL		GENMASK(3, 0)
+@@ -1628,7 +1628,7 @@ static void gsi_channel_teardown(struct gsi *gsi)
+ 	mutex_lock(&gsi->mutex);
  
- #define GSI_CNTXT_INTSET_OFFSET \
- 			GSI_EE_N_CNTXT_INTSET_OFFSET(GSI_EE_AP)
+ 	while (mask) {
+-		u32 channel_id = __fls(mask);
++		channel_id = __fls(mask);
+ 
+ 		mask ^= BIT(channel_id);
+ 
+@@ -1972,7 +1972,6 @@ int gsi_init(struct gsi *gsi, struct platform_device *pdev, bool prefetch,
+ 	 */
+ 	init_dummy_netdev(&gsi->dummy_dev);
+ 
+-	/* Get the GSI IRQ and request for it to wake the system */
+ 	ret = platform_get_irq_byname(pdev, "gsi");
+ 	if (ret <= 0) {
+ 		dev_err(dev, "DT error %d getting \"gsi\" IRQ property\n", ret);
 -- 
 2.20.1
 
