@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C93C27A8E4
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 09:41:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CD8C27A8E7
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 09:42:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726760AbgI1Hlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 03:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33270 "EHLO
+        id S1726737AbgI1Hlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 03:41:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726605AbgI1Hlc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 03:41:32 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2E3C0613CE
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:41:31 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id u6so87266qte.8
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:41:31 -0700 (PDT)
+        with ESMTP id S1726610AbgI1Hlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 03:41:35 -0400
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B0FC0613D4
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:41:35 -0700 (PDT)
+Received: by mail-qt1-x84a.google.com with SMTP id b39so95590qta.0
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:41:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=Mvol+j8w8vB0lTCT5I/vIjT4SJ4p2VunYWgFZbEC5zw=;
-        b=ufB3u9ZFopAiEa9K6inwNxNDjBEAVl+Gf5YC4aWx24LzMVp/u4zXQYssqYd8av1AJ7
-         rftRc42PmZLG7IBHK0mreM9rjy1oGH8PLER161iVFH65GdCGkmVF7F2roeeNEquW4/GL
-         /vhW/FUZyNdNXS1VpqWfy+T5YisdxHLXO7jSNXyPPAJB0Tk7WNO9u536DC7HNDCptsAN
-         QB+b5jUl3xR4XIaUht2PJpjYLbh9rM+tVjA/nE7geBzrJpQUKdFJj/Xk+1M7/vEzsE97
-         71iepDNuB3c3gc/Az9GfL46XSe9tpPZjSf2zdlST5cECAzfSr6Fs9rOpoyhe9nzu6nFM
-         CLkg==
+        bh=OYN0waWCzIpz4ouqNQwOPc0HvVqV4aulKVgXstFC8pM=;
+        b=AJ6VRbDPC7e8smY4eGXu9zYa/IX0MLfCd6bcLc93w842F9ZclCRQhVODpSB3qxUaXS
+         3q5zTjxBUavZMzrU21HiiY1Rnqxls24W+X2mg2OEZlSLv8jpaUBB6hz/U7bi5xoBMFTb
+         vBfBQB97GAT4qoBrwgPsBFBG5WuuxbRrNX746+CZKMXZogMgWWU5FJlV48QFlfQLAvHm
+         vBiC0/c6vDW4ATubViknB0rQzgL9JHhk2FQgBKCNcwapfHzfnHG4yFGzV9R1rBKgSbXi
+         F6mOKdaNYV+pWJXtQdfADTJXN4eJI1vHC3IlDk4UgXCvP6HN2aB7mWcXfWVejiT7xF1y
+         GbpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Mvol+j8w8vB0lTCT5I/vIjT4SJ4p2VunYWgFZbEC5zw=;
-        b=bvjQ5NduNbMy9XrVgTkOdBj9tEuGe0WMsFw+xs6uEBXtWStCsTqTyWRqZXZwaP7Zsr
-         jSOXv01VUQt3DIjJMeDRVLCs8HqBkupKIYFuGKigjs/Lu0pSBsqn42LZc4q1j5lcFURk
-         tG+Diemxdk0R93SfH+4rjjzoSN/foxvzRqeWFyTdmKUtLkAhtcB5KyqzDGsXaa2DteWW
-         /hoL11EB5hcJAJrB08Xm55UdMQdlfe31F06X33zIa2X5cp6ac/inQITTtUdttmxv1Rlp
-         nmp5h+/ZFz3tqfVFc3qYWdwEtvlu+h64bV4TJhjCYhQsC7S4fRlioNIECD4vdaFMWYrt
-         AGQA==
-X-Gm-Message-State: AOAM5328402TD+4Ov9r6ACWD9Ay/O1VY/KJsVHjKdR0CLJQNuYyTXNjp
-        ahgIoyGw63HOxnVsBHcs+BGt2gC0LEqjxXIA6A==
-X-Google-Smtp-Source: ABdhPJz2LyZ9VTdEWF1CMtsBfWL6BNsm7tYgrYPj9hwxbSJfHZAn1iUcXwvaFdOZ5hfHmlACi1pGy5HuyCvooftwTA==
+        bh=OYN0waWCzIpz4ouqNQwOPc0HvVqV4aulKVgXstFC8pM=;
+        b=DfoY44eORd2h/RIHisG0Deafb3zBIvDk+ckQAnhx4uJWw004oQPwc6JWaM9+KzdVNh
+         y1aVMVKvZAkwdgRr7JYH4dhoVA75pzUfGrv3Xd6DdvuGpY77dXEN6hnBkvFoSw1OJlyM
+         v54rcPkVtwUjSz6wc+QiTIASojf7RsKWK5ie8GZDMcP/gJjY8QSyF71JaXcf8iS1aOb1
+         gUaIKw8kj/mlwEtCuZO9vcgfifIj3gYYn6bx5KS9bLxguBocH+dUzqx2zPuN+HFCM3KU
+         MeSnjTHMqmKS1FL4v6Dj5lQqSTE33yN+qWkGC74g/uPFkGs+Z4jgFtaYf4tb4OqG4qsD
+         bWdA==
+X-Gm-Message-State: AOAM531O6sWwCzotYMBqGALRaDJmkUCkHOEKlKo4AUIXxmrkKm39Bf2Q
+        5YI5u+RW+ODmMV3BEhdh+j9wkyDb8dPbUzPEsw==
+X-Google-Smtp-Source: ABdhPJwYplovwAH/Ggf4KQjk8UPe7L60iiVDgXR97jOVqK4Kkp/p5mkNWmU+paCz80w6qi0LVwevK/2oLluFzxDMcw==
 Sender: "howardchung via sendgmr" 
         <howardchung@howardchung-p920.tpe.corp.google.com>
 X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:10:f693:9fff:fef4:4e45])
- (user=howardchung job=sendgmr) by 2002:a0c:90f1:: with SMTP id
- p104mr10886657qvp.15.1601278891072; Mon, 28 Sep 2020 00:41:31 -0700 (PDT)
-Date:   Mon, 28 Sep 2020 15:41:19 +0800
+ (user=howardchung job=sendgmr) by 2002:a0c:b343:: with SMTP id
+ a3mr10507577qvf.41.1601278894603; Mon, 28 Sep 2020 00:41:34 -0700 (PDT)
+Date:   Mon, 28 Sep 2020 15:41:20 +0800
 In-Reply-To: <20200928154107.v6.1.Ib75f58e90c477f9b82c5598f00c59f0e95a1a352@changeid>
-Message-Id: <20200928154107.v6.2.I3774a8f0d748c7c6ec3402c4adcead32810c9164@changeid>
+Message-Id: <20200928154107.v6.3.I21e5741249e78c560ca377499ba06b56c7214985@changeid>
 Mime-Version: 1.0
 References: <20200928154107.v6.1.Ib75f58e90c477f9b82c5598f00c59f0e95a1a352@changeid>
 X-Mailer: git-send-email 2.28.0.681.g6f77f65b4e-goog
-Subject: [PATCH v6 2/4] Bluetooth: Handle system suspend resume case
+Subject: [PATCH v6 3/4] Bluetooth: Handle active scan case
 From:   Howard Chung <howardchung@google.com>
 To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
         luiz.dentz@gmail.com
 Cc:     alainm@chromium.org, mcchou@chromium.org, mmandlik@chromium.orgi,
         Howard Chung <howardchung@google.com>,
         Manish Mandlik <mmandlik@chromium.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
@@ -69,41 +68,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds code to handle the system suspension during interleave
-scan. The interleave scan will be canceled when the system is going to
-sleep, and will be restarted after waking up.
+This patch adds code to handle the active scan during interleave
+scan. The interleave scan will be canceled when users start active scan,
+and it will be restarted after active scan stopped.
 
 Signed-off-by: Howard Chung <howardchung@google.com>
 Reviewed-by: Alain Michaud <alainm@chromium.org>
 Reviewed-by: Manish Mandlik <mmandlik@chromium.org>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
 ---
 
-(no changes since v5)
-
-Changes in v5:
-- Remove the change in hci_req_config_le_suspend_scan
+(no changes since v1)
 
  net/bluetooth/hci_request.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index ba3016cc0b573..db44680fbe9c9 100644
+index db44680fbe9c9..4048c82d4257f 100644
 --- a/net/bluetooth/hci_request.c
 +++ b/net/bluetooth/hci_request.c
-@@ -1281,8 +1281,10 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 		hci_req_add(&req, HCI_OP_WRITE_SCAN_ENABLE, 1, &page_scan);
+@@ -3083,8 +3083,10 @@ static int active_scan(struct hci_request *req, unsigned long opt)
+ 	 * running. Thus, we should temporarily stop it in order to set the
+ 	 * discovery scanning parameters.
+ 	 */
+-	if (hci_dev_test_flag(hdev, HCI_LE_SCAN))
++	if (hci_dev_test_flag(hdev, HCI_LE_SCAN)) {
+ 		hci_req_add_le_scan_disable(req, false);
++		cancel_interleave_scan(hdev);
++	}
  
- 		/* Disable LE passive scan if enabled */
--		if (hci_dev_test_flag(hdev, HCI_LE_SCAN))
-+		if (hci_dev_test_flag(hdev, HCI_LE_SCAN)) {
-+			cancel_interleave_scan(hdev);
- 			hci_req_add_le_scan_disable(&req, false);
-+		}
- 
- 		/* Mark task needing completion */
- 		set_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
+ 	/* All active scans will be done with either a resolvable private
+ 	 * address (when privacy feature has been enabled) or non-resolvable
 -- 
 2.28.0.681.g6f77f65b4e-goog
 
