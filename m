@@ -2,142 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B80827ABA5
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 12:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 817CC27AB95
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 12:12:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726691AbgI1KOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 06:14:55 -0400
-Received: from mx.socionext.com ([202.248.49.38]:34120 "EHLO mx.socionext.com"
+        id S1726683AbgI1KMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 06:12:19 -0400
+Received: from mga09.intel.com ([134.134.136.24]:54519 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726497AbgI1KOy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 06:14:54 -0400
-X-Greylist: delayed 579 seconds by postgrey-1.27 at vger.kernel.org; Mon, 28 Sep 2020 06:14:54 EDT
-Received: from unknown (HELO kinkan-ex.css.socionext.com) ([172.31.9.52])
-  by mx.socionext.com with ESMTP; 28 Sep 2020 19:05:14 +0900
-Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by kinkan-ex.css.socionext.com (Postfix) with ESMTP id 1464918020F;
-        Mon, 28 Sep 2020 19:05:15 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Mon, 28 Sep 2020 19:05:15 +0900
-Received: from plum.e01.socionext.com (unknown [10.213.132.32])
-        by kinkan.css.socionext.com (Postfix) with ESMTP id C9EED1A0507;
-        Mon, 28 Sep 2020 19:05:14 +0900 (JST)
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+        id S1726461AbgI1KMS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 06:12:18 -0400
+IronPort-SDR: r1iBsign+/aMU1hcAbRI+HFjYCxU+XvTFx1pF2ZuADE/JG12+pcPo1B9tLMQ9PDMEkS+VN4epZ
+ ANaVsMri/9DQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9757"; a="162854842"
+X-IronPort-AV: E=Sophos;i="5.77,313,1596524400"; 
+   d="scan'208";a="162854842"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 03:12:16 -0700
+IronPort-SDR: 4/5R8Z+uJ6S8nnQ01H23JPefZtrf3oqoGNaJwBGJ/sU/nbwup0LCSALwLyYFweNcD7i3z6Xx6g
+ LJbEFcEP671A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,313,1596524400"; 
+   d="scan'208";a="311725475"
+Received: from climb.png.intel.com ([10.221.118.165])
+  by orsmga006.jf.intel.com with ESMTP; 28 Sep 2020 03:12:13 -0700
+From:   Voon Weifeng <weifeng.voon@intel.com>
 To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH net] net: ethernet: ave: Replace alloc_etherdev() with devm_alloc_etherdev()
-Date:   Mon, 28 Sep 2020 19:04:53 +0900
-Message-Id: <1601287493-4077-1-git-send-email-hayashi.kunihiko@socionext.com>
-X-Mailer: git-send-email 2.7.4
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Seow Chen Yong <chen.yong.seow@intel.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>
+Subject: [PATCH v1 net-next] stmmac: intel: Adding ref clock 1us tic for LPI cntr
+Date:   Mon, 28 Sep 2020 18:12:12 +0800
+Message-Id: <20200928101212.12274-1-weifeng.voon@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use devm_alloc_etherdev() to simplify the code instead of alloc_etherdev().
+From: Rusaimi Amira Ruslan <rusaimi.amira.rusaimi@intel.com>
 
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Adding reference clock (1us tic) for all LPI timer on Intel platforms.
+The reference clock is derived from ptp clk. This also enables all LPI
+counter.
+
+Signed-off-by: Rusaimi Amira Ruslan <rusaimi.amira.rusaimi@intel.com>
+Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
 ---
- drivers/net/ethernet/socionext/sni_ave.c | 32 +++++++++++---------------------
- 1 file changed, 11 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c | 9 +++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c      | 9 +++++++++
+ include/linux/stmmac.h                                 | 1 +
+ 3 files changed, 19 insertions(+)
 
-diff --git a/drivers/net/ethernet/socionext/sni_ave.c b/drivers/net/ethernet/socionext/sni_ave.c
-index eedccff..4f459b2 100644
---- a/drivers/net/ethernet/socionext/sni_ave.c
-+++ b/drivers/net/ethernet/socionext/sni_ave.c
-@@ -1629,7 +1629,7 @@ static int ave_probe(struct platform_device *pdev)
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
+index b1323d5c95b5..f61cb997a8f6 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
+@@ -11,6 +11,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/stmmac.h>
  
--	ndev = alloc_etherdev(sizeof(struct ave_private));
-+	ndev = devm_alloc_etherdev(dev, sizeof(struct ave_private));
- 	if (!ndev) {
- 		dev_err(dev, "can't allocate ethernet device\n");
- 		return -ENOMEM;
-@@ -1679,7 +1679,7 @@ static int ave_probe(struct platform_device *pdev)
++#include "dwmac4.h"
+ #include "stmmac.h"
+ #include "stmmac_platform.h"
+ 
+@@ -146,6 +147,14 @@ static int intel_eth_plat_probe(struct platform_device *pdev)
  	}
- 	ret = dma_set_mask(dev, dma_mask);
+ 
+ 	plat_dat->bsp_priv = dwmac;
++	plat_dat->eee_usecs_rate = plat_dat->clk_ptp_rate;
++
++	if (plat_dat->eee_usecs_rate > 0) {
++		u32 tx_lpi_usec;
++
++		tx_lpi_usec = (plat_dat->eee_usecs_rate / 1000000) - 1;
++		writel(tx_lpi_usec, stmmac_res.addr + GMAC_1US_TIC_COUNTER);
++	}
+ 
+ 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ 	if (ret) {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index ab0a81e0fea1..2af9458be95f 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -6,6 +6,7 @@
+ #include <linux/pci.h>
+ #include <linux/dmi.h>
+ #include "dwmac-intel.h"
++#include "dwmac4.h"
+ #include "stmmac.h"
+ 
+ struct intel_priv_data {
+@@ -295,6 +296,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 	plat->axi->axi_blen[2] = 16;
+ 
+ 	plat->ptp_max_adj = plat->clk_ptp_rate;
++	plat->eee_usecs_rate = plat->clk_ptp_rate;
+ 
+ 	/* Set system clock */
+ 	plat->stmmac_clk = clk_register_fixed_rate(&pdev->dev,
+@@ -623,6 +625,13 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
  	if (ret)
--		goto out_free_netdev;
-+		return ret;
+ 		return ret;
  
- 	priv->tx.ndesc = AVE_NR_TXDESC;
- 	priv->rx.ndesc = AVE_NR_RXDESC;
-@@ -1692,10 +1692,8 @@ static int ave_probe(struct platform_device *pdev)
- 		if (!name)
- 			break;
- 		priv->clk[i] = devm_clk_get(dev, name);
--		if (IS_ERR(priv->clk[i])) {
--			ret = PTR_ERR(priv->clk[i]);
--			goto out_free_netdev;
--		}
-+		if (IS_ERR(priv->clk[i]))
-+			return PTR_ERR(priv->clk[i]);
- 		priv->nclks++;
- 	}
- 
-@@ -1704,10 +1702,8 @@ static int ave_probe(struct platform_device *pdev)
- 		if (!name)
- 			break;
- 		priv->rst[i] = devm_reset_control_get_shared(dev, name);
--		if (IS_ERR(priv->rst[i])) {
--			ret = PTR_ERR(priv->rst[i]);
--			goto out_free_netdev;
--		}
-+		if (IS_ERR(priv->rst[i]))
-+			return PTR_ERR(priv->rst[i]);
- 		priv->nrsts++;
- 	}
- 
-@@ -1716,26 +1712,23 @@ static int ave_probe(struct platform_device *pdev)
- 					       1, 0, &args);
- 	if (ret) {
- 		dev_err(dev, "can't get syscon-phy-mode property\n");
--		goto out_free_netdev;
-+		return ret;
- 	}
- 	priv->regmap = syscon_node_to_regmap(args.np);
- 	of_node_put(args.np);
- 	if (IS_ERR(priv->regmap)) {
- 		dev_err(dev, "can't map syscon-phy-mode\n");
--		ret = PTR_ERR(priv->regmap);
--		goto out_free_netdev;
-+		return PTR_ERR(priv->regmap);
- 	}
- 	ret = priv->data->get_pinmode(priv, phy_mode, args.args[0]);
- 	if (ret) {
- 		dev_err(dev, "invalid phy-mode setting\n");
--		goto out_free_netdev;
-+		return ret;
- 	}
- 
- 	priv->mdio = devm_mdiobus_alloc(dev);
--	if (!priv->mdio) {
--		ret = -ENOMEM;
--		goto out_free_netdev;
--	}
-+	if (!priv->mdio)
-+		return -ENOMEM;
- 	priv->mdio->priv = ndev;
- 	priv->mdio->parent = dev;
- 	priv->mdio->read = ave_mdiobus_read;
-@@ -1772,8 +1765,6 @@ static int ave_probe(struct platform_device *pdev)
- out_del_napi:
- 	netif_napi_del(&priv->napi_rx);
- 	netif_napi_del(&priv->napi_tx);
--out_free_netdev:
--	free_netdev(ndev);
- 
- 	return ret;
- }
-@@ -1786,7 +1777,6 @@ static int ave_remove(struct platform_device *pdev)
- 	unregister_netdev(ndev);
- 	netif_napi_del(&priv->napi_rx);
- 	netif_napi_del(&priv->napi_tx);
--	free_netdev(ndev);
- 
- 	return 0;
- }
++	if (plat->eee_usecs_rate > 0) {
++		u32 tx_lpi_usec;
++
++		tx_lpi_usec = (plat->eee_usecs_rate / 1000000) - 1;
++		writel(tx_lpi_usec, res.addr + GMAC_1US_TIC_COUNTER);
++	}
++
+ 	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
+ 	if (ret < 0)
+ 		return ret;
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index 00e83c877496..628e28903b8b 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -200,5 +200,6 @@ struct plat_stmmacenet_data {
+ 	int has_xgmac;
+ 	bool vlan_fail_q_en;
+ 	u8 vlan_fail_q;
++	unsigned int eee_usecs_rate;
+ };
+ #endif
 -- 
-2.7.4
+2.17.1
 
