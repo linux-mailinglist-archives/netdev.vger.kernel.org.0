@@ -2,230 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27B2D27A73F
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 08:09:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2D3F27A756
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 08:19:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbgI1GJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 02:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726485AbgI1GJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 02:09:36 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2895EC0613CF
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 23:09:36 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id q9so5493487wmj.2
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 23:09:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rDQBnwudsy0mOdm938z9L6vGjeDLOfM2yyPO6zyCRA4=;
-        b=SZSYW1sOaya84+FoqIF06ha9N8ODzEi30tB3Whv6kAMRkPdbr98iqbTY7KyHJVxU8V
-         uFunGHgQBcadvUurMaapr3yKX2sc0KtcDPcLHg/vQz1w6CJk8ZOalI6VgDPGEwMt47nq
-         kvabX2xXjIpQn4YxB3n+AkQjdpWBv8pCh1ls1URToDWoor/+vbA4x/vRZE6dmP1CJbd1
-         CI1Sk6TVdg9xN+VAXWABkIzkv2hCR0es5YH3vDSwB7msBiE9UFzF0miOrTpaDxVcX2K7
-         GfZChw6mxie/zceDNlNJnn8DbstOSGL/63wBwEpzpcvPy+we9M3xhz6pYnkLo3laCA3o
-         /6mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rDQBnwudsy0mOdm938z9L6vGjeDLOfM2yyPO6zyCRA4=;
-        b=rI1Mo6TErm21VLIyPdpWq4luuN5WIJzD+jcm7bI4D1fyMouLczPWPXUguCpKS/lHun
-         yodklqxLsHifwdI/7eMYd97y6F/fXIgeFKXwqJt3ubzbEth14DvCHdP5Bnl78TyIbi3A
-         4Im2gM3C1EbpLMxs9SQCe5gJ7RmwxODKX0rO1htV38P5dfhz5Xtrqk4QgeC2BPSOxur+
-         mX2n1cpthTDuF2qagnbrZcz0ti5BCvKn+xsQF4QpTt9yixXHvUkl8YWYFzYZZS9V2ww5
-         7tdeAA+0exswIgH/yRiTQpQrPBBK12cbNpbmJCK22B2uJyst/94qKRBqH4gzOvwsYaPC
-         OFcA==
-X-Gm-Message-State: AOAM530v1TjXi7TVqzBKf1UndeFNrYTEQBhzZZRRcnB3hRo0aopkTLez
-        0d9ByB/VoqVQHfdoupmplGLGnLCNKdnuadKIlyZcIg==
-X-Google-Smtp-Source: ABdhPJwPMsOzCYyNOU4l4H5g9VucjvdO6YBRwp1gXehmk209DTR6o+lmu3TQXFkSVA/URxN74NwOjOcrkqcvy2Apbj0=
-X-Received: by 2002:a1c:7308:: with SMTP id d8mr9866967wmb.55.1601273374493;
- Sun, 27 Sep 2020 23:09:34 -0700 (PDT)
+        id S1726594AbgI1GTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 02:19:31 -0400
+Received: from mga11.intel.com ([192.55.52.93]:2836 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726380AbgI1GTa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 02:19:30 -0400
+IronPort-SDR: Y1K6SxzBC9VuZEegO+oOqlO2jRv9wMzXt99ubO3T3DugiiPqCq0VuBAbtVJq7tjovq0tWvwsya
+ F1D/DnWPbj4Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9757"; a="159291778"
+X-IronPort-AV: E=Sophos;i="5.77,312,1596524400"; 
+   d="scan'208";a="159291778"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2020 23:13:26 -0700
+IronPort-SDR: hwF5m6QvYePL7/ipbapYjSrK2vsqH0HZW4HLatd918awkUqG3iv0agS5KeoIZSMS91PYa/CtAH
+ 3USqcQM0xPTw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,312,1596524400"; 
+   d="scan'208";a="456706837"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga004.jf.intel.com with ESMTP; 27 Sep 2020 23:13:26 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sun, 27 Sep 2020 23:13:25 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Sun, 27 Sep 2020 23:13:25 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.55) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Sun, 27 Sep 2020 23:13:20 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KfpxPtvW4ZXKbh5Do9ynNs5YX4lB6Ypr/PVnJbiGNhdaNTEzYBSR+CazkIEF4ia//yaX3PIAB63j3cjZIYVvPdbGpYLpItn/P/fLtUvOruNnRdJH7RcvCnuCTJYzJyYjHcOmTMRxtos+9kV802g7fEINblpLg7zJVQebtAw0xvpMIfo/f5rDNsiVTAR4eEnl4qV8D3UxaagRn9NMABnC+vjnCQI2+N+epEK1U+nDjnxD0/dOfOQVWatggTZ8CaWs06pJOqefAC3vo4r1K2cVwZs85lh8l0CAlZnXajVnlIyv0bfbJ1XO6R5tvCBbgwPVmu7FSktxaY1dwSxd9xtDBg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v91NShPXLaorPLDF9ArQj8vDuHMef7Hw1fJvONxDt6I=;
+ b=If+ctNGnXBT+BR3KHE9XXYAtEW82osK1qKRc1TuSFuK+/MlgRv4NJR8XVst+qJZ42tp91PPz5oX1w3OOfmfssQVD2IpSfSRfPe/FJ7Psc2qvjdMe/QoWQcCSNORQjV+l0nQwPSZ4Joky0PUPPV3Arc+R+V2NJeAf+i+5DJTLb0nz7dwLFQcfeN5QcPWi4owLuR011G0DAKNNXII7gGfyHxdPxQVqDbws739tqKyur9A0yb+QWbi38wPauotPe1h967P0nZmueqcPBd5P7VFfmvVIRTAI1MJvpv0EYv51Vv6AKj7EQu5vuVty9hwPTEijIfaZsH1zy+inW5R1I7Hvyg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v91NShPXLaorPLDF9ArQj8vDuHMef7Hw1fJvONxDt6I=;
+ b=v8VcYOv3pKXMq/R5UR7hwkA12ds+6b7OfOFqAkL5JVxSm2Ds26uTXnANptXhSxKcZklntq+cEdoWnwNIDRnGORWcaAPqirMj/OEHlfSdgmy+JkgpCN5DWs4x35WtAYUwh7RxitqyuXxTgx8qAxKCPmZU8LMZwUcLMlZyEoXxL7A=
+Received: from BYAPR11MB3207.namprd11.prod.outlook.com (2603:10b6:a03:7c::14)
+ by BYAPR11MB2616.namprd11.prod.outlook.com (2603:10b6:a02:c6::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.28; Mon, 28 Sep
+ 2020 06:13:15 +0000
+Received: from BYAPR11MB3207.namprd11.prod.outlook.com
+ ([fe80::718c:ac63:d72e:f3c9]) by BYAPR11MB3207.namprd11.prod.outlook.com
+ ([fe80::718c:ac63:d72e:f3c9%4]) with mapi id 15.20.3412.028; Mon, 28 Sep 2020
+ 06:13:15 +0000
+From:   "Coelho, Luciano" <luciano.coelho@intel.com>
+To:     "tglx@linutronix.de" <tglx@linutronix.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     "stf_xl@wp.pl" <stf_xl@wp.pl>,
+        "torvalds@linuxfoundation.org" <torvalds@linuxfoundation.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "jcliburn@gmail.com" <jcliburn@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux-net-drivers@solarflare.com" <linux-net-drivers@solarflare.com>,
+        "libertas-dev@lists.infradead.org" <libertas-dev@lists.infradead.org>,
+        "jdmason@kudzu.us" <jdmason@kudzu.us>,
+        "dsd@gentoo.org" <dsd@gentoo.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "luc.vanoostenryck@gmail.com" <luc.vanoostenryck@gmail.com>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "wright.feng@cypress.com" <wright.feng@cypress.com>,
+        "amitkarwar@gmail.com" <amitkarwar@gmail.com>,
+        "ganapathi.bhat@nxp.com" <ganapathi.bhat@nxp.com>,
+        "brcm80211-dev-list@cypress.com" <brcm80211-dev-list@cypress.com>,
+        "j@w1.fi" <j@w1.fi>,
+        "tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Berg, Johannes" <johannes.berg@intel.com>,
+        "mhabets@solarflare.com" <mhabets@solarflare.com>,
+        "mchehab+huawei@kernel.org" <mchehab+huawei@kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "snelson@pensando.io" <snelson@pensando.io>,
+        "Grumbach, Emmanuel" <emmanuel.grumbach@intel.com>,
+        "willy@infradead.org" <willy@infradead.org>,
+        "chris.snook@gmail.com" <chris.snook@gmail.com>,
+        "paulmck@kernel.org" <paulmck@kernel.org>,
+        "vishal@chelsio.com" <vishal@chelsio.com>,
+        "franky.lin@broadcom.com" <franky.lin@broadcom.com>,
+        "stas.yakovlev@gmail.com" <stas.yakovlev@gmail.com>,
+        "pterjan@google.com" <pterjan@google.com>,
+        "_govind@gmx.com" <_govind@gmx.com>,
+        "benve@cisco.com" <benve@cisco.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "chi-hsien.lin@cypress.com" <chi-hsien.lin@cypress.com>,
+        "huxinming820@gmail.com" <huxinming820@gmail.com>,
+        linuxwifi <linuxwifi@intel.com>,
+        "ecree@solarflare.com" <ecree@solarflare.com>,
+        "bigeasy@linutronix.de" <bigeasy@linutronix.de>,
+        "drivers@pensando.io" <drivers@pensando.io>,
+        "pkshih@realtek.com" <pkshih@realtek.com>,
+        "kune@deine-taler.de" <kune@deine-taler.de>,
+        "arend.vanspriel@broadcom.com" <arend.vanspriel@broadcom.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "hante.meuleman@broadcom.com" <hante.meuleman@broadcom.com>
+Subject: Re: [patch 28/35] net: iwlwifi: Remove in_interrupt() from tracing
+ macro.
+Thread-Topic: [patch 28/35] net: iwlwifi: Remove in_interrupt() from tracing
+ macro.
+Thread-Index: AQHWlQh/JW5wj9yvMUGHzMIKohlOGql9ktIA
+Date:   Mon, 28 Sep 2020 06:13:14 +0000
+Message-ID: <ab22cc7b0d1f98e1d620e77ce7abce1f95b6813e.camel@intel.com>
+References: <20200927194846.045411263@linutronix.de>
+         <20200927194922.629869406@linutronix.de>
+In-Reply-To: <20200927194922.629869406@linutronix.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: linutronix.de; dkim=none (message not signed)
+ header.d=none;linutronix.de; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [134.191.233.107]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9e6d0f52-3c3d-4c3d-ed55-08d863759625
+x-ms-traffictypediagnostic: BYAPR11MB2616:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR11MB26165A549D21C656D7367F7890350@BYAPR11MB2616.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: zxUIYXyEaA1gKroiEZbP/ha+boO6xOvD1R9rW6wdW8PTbjgXTG0gkuflwRsjFdFnr8620MXy1rY0WJfosXnunN8igv/9YcPCZnhMstffrhl6deapA95+FDXCVk4KnkejoadaW9hVcovZZv09DOwGBEtiDbdJWjE4DOhoIXeMl3AqfLMtwCsRqqjVTj+8cZl4gzbrHi0mMKi14NGSZZcAK1yRwnXiCI2djTMMcXyKlOc2IC5j/+l8NWsxF892mps21PqhfK/gBmPiPWTYZDUSmLUQbDJlZWvea5hH8dH/MPBfAhdnPg3ApWGgQuv+CPJRZpCM/6yw9pvJjZapgwD58fPm7ysmLP4zDuvAT1qv/CYHlyioxHyH4BHKvRB75MrJ
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3207.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(136003)(39860400002)(376002)(346002)(7416002)(7366002)(7406005)(36756003)(6512007)(66476007)(71200400001)(91956017)(76116006)(86362001)(66446008)(66946007)(66556008)(8676002)(64756008)(5660300002)(2616005)(186003)(4326008)(6486002)(26005)(6506007)(478600001)(2906002)(316002)(8936002)(83380400001)(110136005)(54906003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: VsGwApBGm0NBGAEVSmBr7J0gOK3cf/mHi7lcKdsJLKxbrMyNvcTh3pZd3WOJSvJTpRhgq5/yNEBWUmIck+uWtIf2FZBtqdF4IgwHFY0V1/o1Py4fdRkzUwky1OeZfE3eoTYatwgVG9zvGU5isJjXNC9hr+BL4a0PVRwftEkWSK6OtPKid++IOqtDnxzY76VypxcHNqPTQXHp5ES8W2N5DgdiE0rywFxgtDL/75gi8FBB7TZL0TZFhS78/CekugCv8/34VweHv4WQ+1PsBzM+LG9XmyP7Qj2S4WlLfpEq9KFecEgQnJNqm9HqV/PzTUyQhobdOo7mXwHCrvzDb/erCsM41pYyNasvKD3HjoYIqwHe8B05Dcog+2cAVNshukjLMfQf27XR4jXMOSDFaH07OSouq8cRNgXFcv/S1Dd/RZEbI8TX85yZoMMf9Zw0G+pbMroIpCBH094MfODYzwp9z916nuNfnxkqmaCPjiM1u9rrGDE1Gk8oQQ8dB7Ltu6Ypsa79hLrmgJT4DaTH4jwbxAIuhHJ8JoPT1bA1B5FtfBMDLJMd4SLc4r/eqYoJPElyzKa5xeQ2yHHCBifP+/1nUDu+WXsv//wKuLK9oTtaDF5RslgSpDWQov/TnKOz6T1UGdcXrln7TD+cFij0hzj/fw==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <8EC18655EA315646977202E236D35B5B@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200922155548.v3.1.I67a8b8cd4def8166970ca37109db46d731b62bb6@changeid>
- <BC59363A-B32A-4DAA-BAF5-F7FBA01752E6@holtmann.org> <CAJQfnxHPDktGp=MQJzY57qmMTO7TPfNZvLHLm7DAyZ-4qM-DnQ@mail.gmail.com>
- <6FDED095-BAE4-437D-9A25-37245B8454B1@holtmann.org>
-In-Reply-To: <6FDED095-BAE4-437D-9A25-37245B8454B1@holtmann.org>
-From:   Archie Pusaka <apusaka@google.com>
-Date:   Mon, 28 Sep 2020 14:09:23 +0800
-Message-ID: <CAJQfnxFbBRfiDF2xmzzPZ7N3qr41ubH29Fa0FDg9+jh-4OQxhg@mail.gmail.com>
-Subject: Re: [PATCH v3] Bluetooth: Check for encryption key size on connect
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3207.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e6d0f52-3c3d-4c3d-ed55-08d863759625
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Sep 2020 06:13:15.0009
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ssquw4STZOlqvXnvG0eg0UwJoGWbnmLzDSIbk6cgG+xoMV2uky1TqOZtgQ4RXopay1qvfNHMxX63dEsPHjCNLb/YAvoNQrNHzEQUBZEbAVM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2616
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
-
-On Sun, 27 Sep 2020 at 20:09, Marcel Holtmann <marcel@holtmann.org> wrote:
->
-> Hi Archie,
->
-> >>> When receiving connection, we only check whether the link has been
-> >>> encrypted, but not the encryption key size of the link.
-> >>>
-> >>> This patch adds check for encryption key size, and reject L2CAP
-> >>> connection which size is below the specified threshold (default 7)
-> >>> with security block.
-> >>>
-> >>> Here is some btmon trace.
-> >>> @ MGMT Event: New Link Key (0x0009) plen 26    {0x0001} [hci0] 5.8477=
-22
-> >>>       Store hint: No (0x00)
-> >>>       BR/EDR Address: 38:00:25:F7:F1:B0 (OUI 38-00-25)
-> >>>       Key type: Unauthenticated Combination key from P-192 (0x04)
-> >>>       Link key: 7bf2f68c81305d63a6b0ee2c5a7a34bc
-> >>>       PIN length: 0
-> >>>> HCI Event: Encryption Change (0x08) plen 4        #29 [hci0] 5.87153=
-7
-> >>>       Status: Success (0x00)
-> >>>       Handle: 256
-> >>>       Encryption: Enabled with E0 (0x01)
-> >>> < HCI Command: Read Encryp... (0x05|0x0008) plen 2  #30 [hci0] 5.8716=
-09
-> >>>       Handle: 256
-> >>>> HCI Event: Command Complete (0x0e) plen 7         #31 [hci0] 5.87252=
-4
-> >>>     Read Encryption Key Size (0x05|0x0008) ncmd 1
-> >>>       Status: Success (0x00)
-> >>>       Handle: 256
-> >>>       Key size: 3
-> >>>
-> >>> ////// WITHOUT PATCH //////
-> >>>> ACL Data RX: Handle 256 flags 0x02 dlen 12        #42 [hci0] 5.89502=
-3
-> >>>     L2CAP: Connection Request (0x02) ident 3 len 4
-> >>>       PSM: 4097 (0x1001)
-> >>>       Source CID: 64
-> >>> < ACL Data TX: Handle 256 flags 0x00 dlen 16        #43 [hci0] 5.8952=
-13
-> >>>     L2CAP: Connection Response (0x03) ident 3 len 8
-> >>>       Destination CID: 64
-> >>>       Source CID: 64
-> >>>       Result: Connection successful (0x0000)
-> >>>       Status: No further information available (0x0000)
-> >>>
-> >>> ////// WITH PATCH //////
-> >>>> ACL Data RX: Handle 256 flags 0x02 dlen 12        #42 [hci0] 4.88702=
-4
-> >>>     L2CAP: Connection Request (0x02) ident 3 len 4
-> >>>       PSM: 4097 (0x1001)
-> >>>       Source CID: 64
-> >>> < ACL Data TX: Handle 256 flags 0x00 dlen 16        #43 [hci0] 4.8871=
-27
-> >>>     L2CAP: Connection Response (0x03) ident 3 len 8
-> >>>       Destination CID: 0
-> >>>       Source CID: 64
-> >>>       Result: Connection refused - security block (0x0003)
-> >>>       Status: No further information available (0x0000)
-> >>>
-> >>> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-> >>>
-> >>> ---
-> >>>
-> >>> Changes in v3:
-> >>> * Move the check to hci_conn_check_link_mode()
-> >>>
-> >>> Changes in v2:
-> >>> * Add btmon trace to the commit message
-> >>>
-> >>> net/bluetooth/hci_conn.c | 4 ++++
-> >>> 1 file changed, 4 insertions(+)
-> >>>
-> >>> diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-> >>> index 9832f8445d43..89085fac797c 100644
-> >>> --- a/net/bluetooth/hci_conn.c
-> >>> +++ b/net/bluetooth/hci_conn.c
-> >>> @@ -1348,6 +1348,10 @@ int hci_conn_check_link_mode(struct hci_conn *=
-conn)
-> >>>          !test_bit(HCI_CONN_ENCRYPT, &conn->flags))
-> >>>              return 0;
-> >>>
-> >>> +     if (test_bit(HCI_CONN_ENCRYPT, &conn->flags) &&
-> >>> +         conn->enc_key_size < conn->hdev->min_enc_key_size)
-> >>> +             return 0;
-> >>> +
-> >>>      return 1;
-> >>> }
-> >>
-> >> I am a bit concerned since we had that check and I on purpose moved it=
-. See commit 693cd8ce3f88 for the change where I removed and commit d5bb334=
-a8e17 where I initially added it.
-> >>
-> >> Naively adding the check in that location caused a major regression wi=
-th Bluetooth 2.0 devices. This makes me a bit reluctant to re-add it here s=
-ince I restructured the whole change to check the key size a different loca=
-tion.
-> >
-> > I have tried this patch (both v2 and v3) to connect with a Bluetooth
-> > 2.0 device, it doesn't have any connection problem.
-> > I suppose because in the original patch (d5bb334a8e17), there is no
-> > check for the HCI_CONN_ENCRYPT flag.
->
-> while that might be the case, I am still super careful. Especially also i=
-n conjunction with the email / patch from Alex trying to add just another e=
-ncryption key size check. If we really need them or even both, we have to a=
-udit the whole code since I must have clearly missed something when adding =
-the KNOB fix.
->
-> >> Now I have to ask, are you running an upstream kernel with both commit=
-s above that address KNOB vulnerability?
-> >
-> > Actually no, I haven't heard of KNOB vulnerability before.
-> > This patch is written for qualification purposes, specifically to pass
-> > GAP/SEC/SEM/BI-05-C to BI-08-C.
-> > However, it sounds like it could also prevent some KNOB vulnerability
-> > as a bonus.
->
-> That part worries me since there should be no gaps that allows an encrypt=
-ion key size downgrade if our side supports Read Encryption Key Size.
->
-> We really have to ensure that any L2CAP communication is stalled until we=
- have all information from HCI connection setup that we need. So maybe the =
-change Alex did would work as well, or as I mentioned put any L2CAP connect=
-ion request as pending so that the validation happens in one place.
-
-I think Alex and I are solving the same problem, either one of the
-patches should be enough.
-
-Here is my test method using BlueZ as both the IUT and the lower test.
-(1) Copy the bluez/test/test-profile python script to IUT and lower test.
-(2) Assign a fake service server to IUT
-python test-profile -u 00001fff-0000-1000-2000-123456789abc -s -P 4097
-(3) Assign a fake service client to lower test
-python test-profile -u 00001fff-0000-1000-2000-123456789abc -c
-(4) Make the lower test accept weak encryption key
-echo 1 > /sys/kernel/debug/bluetooth/hci0/min_encrypt_key_size
-(5) Enable ssp and disable sc on lower test
-btmgmt ssp on
-btmgmt sc off
-(6) Set lower test encryption key size to 1
-(7) initiate connection from lower test
-dbus-send --system --print-reply --dest=3Dorg.bluez
-/org/bluez/hci0/dev_<IUT> org.bluez.Device1.ConnectProfile
-string:00001fff-0000-1000-2000-123456789abc
-
-After MITM authentication, IUT will incorrectly accept the connection,
-even though the encryption key used is less than the one specified in
-IUT's min_encrypt_key_size.
-
->
-> Regards
->
-> Marcel
->
-
-Thanks,
-Archie
+T24gU3VuLCAyMDIwLTA5LTI3IGF0IDIxOjQ5ICswMjAwLCBUaG9tYXMgR2xlaXhuZXIgd3JvdGU6
+DQo+IEZyb206IFNlYmFzdGlhbiBBbmRyemVqIFNpZXdpb3IgPGJpZ2Vhc3lAbGludXRyb25peC5k
+ZT4NCj4gDQo+IFRoZSB1c2FnZSBvZiBpbl9pbnRlcnJ1cHQpIGluIGRyaXZlciBjb2RlIGlzIHBo
+YXNlZCBvdXQuDQo+IA0KPiBUaGUgaXdsd2lmaV9kYmcgdHJhY2Vwb2ludCByZWNvcmRzIGluX2lu
+dGVycnVwdCgpIHNlcGVyYXRlbHksIGJ1dCB0aGF0J3MNCj4gc3VwZXJmbHVvdXMgYmVjYXVzZSB0
+aGUgdHJhY2UgaGVhZGVyIGFscmVhZHkgcmVjb3JkcyBhbGwga2luZCBvZiBzdGF0ZSBhbmQNCj4g
+Y29udGV4dCBpbmZvcm1hdGlvbiBsaWtlIGhhcmRpcnEgc3RhdHVzLCBzb2Z0aXJxIHN0YXR1cywg
+cHJlZW1wdGlvbiBjb3VudA0KPiBldGMuDQo+IA0KPiBBc2lkZSBvZiB0aGF0IHRoZSByZWNvcmRp
+bmcgb2YgaW5faW50ZXJydXB0KCkgYXMgYm9vbGVhbiBkb2VzIG5vdCBhbGxvdyB0bw0KPiBkaXN0
+aW5ndWlzaCBiZXR3ZWVuIHRoZSBwb3NzaWJsZSBjb250ZXh0cyAoaGFyZCBpbnRlcnJ1cHQsIHNv
+ZnQgaW50ZXJydXB0LA0KPiBib3R0b20gaGFsZiBkaXNhYmxlZCkgd2hpbGUgdGhlIHRyYWNlIGhl
+YWRlciBnaXZlcyBwcmVjaXNlIGluZm9ybWF0aW9uLg0KPiANCj4gUmVtb3ZlIHRoZSBkdXBsaWNh
+dGUgaW5mb3JtYXRpb24gZnJvbSB0aGUgdHJhY2Vwb2ludCBhbmQgZml4dXAgdGhlIGNhbGxlci4N
+Cj4gDQo+IFNpZ25lZC1vZmYtYnk6IFNlYmFzdGlhbiBBbmRyemVqIFNpZXdpb3IgPGJpZ2Vhc3lA
+bGludXRyb25peC5kZT4NCj4gU2lnbmVkLW9mZi1ieTogVGhvbWFzIEdsZWl4bmVyIDx0Z2x4QGxp
+bnV0cm9uaXguZGU+DQo+IENjOiBKb2hhbm5lcyBCZXJnIDxqb2hhbm5lcy5iZXJnQGludGVsLmNv
+bT4NCj4gQ2M6IEVtbWFudWVsIEdydW1iYWNoIDxlbW1hbnVlbC5ncnVtYmFjaEBpbnRlbC5jb20+
+DQo+IENjOiBMdWNhIENvZWxobyA8bHVjaWFuby5jb2VsaG9AaW50ZWwuY29tPg0KPiBDYzogSW50
+ZWwgTGludXggV2lyZWxlc3MgPGxpbnV4d2lmaUBpbnRlbC5jb20+DQo+IENjOiBLYWxsZSBWYWxv
+IDxrdmFsb0Bjb2RlYXVyb3JhLm9yZz4NCj4gQ2M6ICJEYXZpZCBTLiBNaWxsZXIiIDxkYXZlbUBk
+YXZlbWxvZnQubmV0Pg0KPiBDYzogSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz4NCj4g
+Q2M6IGxpbnV4LXdpcmVsZXNzQHZnZXIua2VybmVsLm9yZw0KPiBDYzogbmV0ZGV2QHZnZXIua2Vy
+bmVsLm9yZw0KDQpBY2tlZC1ieTogTHVjYSBDb2VsaG8gPGx1Y2FAY29lbGhvLmZpPg0KDQotLQ0K
+THVjYS4NCg==
