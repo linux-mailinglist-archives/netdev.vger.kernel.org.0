@@ -2,51 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A68027B749
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 23:42:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 154F627B822
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 01:30:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726977AbgI1Vl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 17:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50404 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726582AbgI1Vl7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 17:41:59 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E42C061755
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 14:41:59 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7E04611E3E4CE;
-        Mon, 28 Sep 2020 14:25:09 -0700 (PDT)
-Date:   Mon, 28 Sep 2020 14:41:49 -0700 (PDT)
-Message-Id: <20200928.144149.790487567012040407.davem@davemloft.net>
-To:     kliteyn@nvidia.com
-Cc:     saeed@kernel.org, kuba@kernel.org, netdev@vger.kernel.org,
-        erezsh@nvidia.com, mbloch@nvidia.com, saeedm@nvidia.com
-Subject: Re: [net-next 01/15] net/mlx5: DR, Add buddy allocator utilities
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <DM6PR12MB423444C484839CF7FB7AA6B3C0350@DM6PR12MB4234.namprd12.prod.outlook.com>
-References: <20200925193809.463047-2-saeed@kernel.org>
-        <20200926.151540.1383303857229218158.davem@davemloft.net>
-        <DM6PR12MB423444C484839CF7FB7AA6B3C0350@DM6PR12MB4234.namprd12.prod.outlook.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Mon, 28 Sep 2020 14:25:09 -0700 (PDT)
+        id S1727179AbgI1Xaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 19:30:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53614 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727115AbgI1Xac (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 19:30:32 -0400
+Received: from localhost (52.sub-72-107-123.myvzw.com [72.107.123.52])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E7F57216C4;
+        Mon, 28 Sep 2020 21:54:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601330074;
+        bh=vCLOGKcx5iufJvzYIi1gpdaZ9k6pNPZgAO4Gi+Em4u0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=t/4L8KDhNWKHhluM/eSGi8PfD+bFcDMNezuYuxMnH4vGist0qhpmaSFkfhjAl1WLU
+         uzmg9dDwNoGmFGdXtye2IOj9kxfodzPKASZw3x6T1lFCcf8TFyvGuEtpIYNDv2d8C8
+         r2dqVGLQLshIfX5QMhGy7Ls0/s1DBKay6GM+/CHs=
+Date:   Mon, 28 Sep 2020 16:54:32 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, sasha.neftin@intel.com,
+        andre.guedes@intel.com, anthony.l.nguyen@intel.com,
+        linux-pci@vger.kernel.org, bhelgaas@google.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH next-queue v1 1/3] Revert "PCI: Make pci_enable_ptm()
+ private"
+Message-ID: <20200928215432.GA2499272@bjorn-Precision-5520>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200925232834.2704711-2-vinicius.gomes@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Date: Mon, 28 Sep 2020 19:58:59 +0000
+On Fri, Sep 25, 2020 at 04:28:32PM -0700, Vinicius Costa Gomes wrote:
+> Make pci_enable_ptm() accessible from the drivers.
+> 
+> Even if PTM still works on the platform I am using without calling
+> this this function, it might be possible that it's not always the
+> case.
 
-> By replacing the bits-per-long array with a single counter we loose
-> this ability to jump faster to the free spot.
+*Does* PTM work on your system without calling pci_enable_ptm()?  If
+so, I think that would mean the BIOS enabled PTM, and that seems
+slightly surprising.
 
-I don't understand why this is true, because upon the free we will
-update the hint and that's where the next bit search will start.
+> Exposing this to the driver enables the driver to use the
+> 'ptm_enabled' field of 'pci_dev' to check if PTM is enabled or not.
+> 
+> This reverts commit ac6c26da29c12fa511c877c273ed5c939dc9e96c.
+> 
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-Have you even tried my suggestion?
+AFAICT we just never had any callers at all for pci_enable_ptm().  I
+probably shouldn't have merged it in the first place.
+
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+
+> ---
+>  drivers/pci/pci.h   | 3 ---
+>  include/linux/pci.h | 7 +++++++
+>  2 files changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> index fa12f7cbc1a0..8871109fe390 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -582,11 +582,8 @@ static inline void pcie_ecrc_get_policy(char *str) { }
+>  
+>  #ifdef CONFIG_PCIE_PTM
+>  void pci_ptm_init(struct pci_dev *dev);
+> -int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
+>  #else
+>  static inline void pci_ptm_init(struct pci_dev *dev) { }
+> -static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
+> -{ return -EINVAL; }
+>  #endif
+>  
+>  struct pci_dev_reset_methods {
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 835530605c0d..ec4b28153cc4 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1593,6 +1593,13 @@ static inline bool pci_aer_available(void) { return false; }
+>  
+>  bool pci_ats_disabled(void);
+>  
+> +#ifdef CONFIG_PCIE_PTM
+> +int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
+> +#else
+> +static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
+> +{ return -EINVAL; }
+> +#endif
+> +
+>  void pci_cfg_access_lock(struct pci_dev *dev);
+>  bool pci_cfg_access_trylock(struct pci_dev *dev);
+>  void pci_cfg_access_unlock(struct pci_dev *dev);
+> -- 
+> 2.28.0
+> 
