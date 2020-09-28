@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37ADA27B11E
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 17:45:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8681D27B122
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 17:45:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726640AbgI1PpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 11:45:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24940 "EHLO
+        id S1726716AbgI1Ppf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 11:45:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:49211 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726420AbgI1PpW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 11:45:22 -0400
+        by vger.kernel.org with ESMTP id S1726651AbgI1PpZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 11:45:25 -0400
 Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601307919;
+        s=mimecast20190719; t=1601307922;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=EmoLZH3c7F182vOGcdO5c+/L/iT9ksAovxdw1FKXD9c=;
-        b=ewlg2CnPr+sfIwk0/2uWRX2HaypRD6ibv53AEJSlNG4B78ABwg+UzVUDQQFGMNcM+DCeiP
-        DT6V1YoVBMpkLo/2F/EH0dcPL2ZmMUdZpWhUiAps1Mie0x4ojK4Rgo+WFhWF3J4Uck9rmL
-        /aEOBulU6Zy6bF6sE3CCUrU1cdaxoW0=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-553-EfRHimbFM42YY8DjG10vkw-1; Mon, 28 Sep 2020 11:45:18 -0400
-X-MC-Unique: EfRHimbFM42YY8DjG10vkw-1
-Received: by mail-qt1-f200.google.com with SMTP id p43so882296qtb.23
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 08:45:17 -0700 (PDT)
+        bh=DmYUC4OP5CaeS1DJjwExak2prPtNfn/jSgbomTll8Lo=;
+        b=D/z1827Ra0x7wO4jfHnQDm3dRi7DndLt1akXYIDXy9F9+DjG49eY8Lmku8MtirkZgcOUFQ
+        FjNFAI0aNvhyTbF21/qSRsiqPWXrXBQAp2K8MXSD7vYRU0mJMNezDVVQGFMAJ81kaobLy4
+        K6jYpwO95Lk7wwdmfyxZUWRC/GQy67o=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-276-mj4FSBKkNLyXBUaKTKEP6A-1; Mon, 28 Sep 2020 11:45:19 -0400
+X-MC-Unique: mj4FSBKkNLyXBUaKTKEP6A-1
+Received: by mail-qt1-f199.google.com with SMTP id h31so897416qtd.14
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 08:45:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EmoLZH3c7F182vOGcdO5c+/L/iT9ksAovxdw1FKXD9c=;
-        b=QvUKoBn8vsMUFYvm/52UsB1RGjj29U2bCJj7x7/HypyeGfOHNaliBS2+M+V5EARDo0
-         QkYuocuGOtJvtCIX+ycAStPFMYJ5BJ/f0WhkEUo1waOZ70ufptX9qahmiQrfU3/3/tZd
-         ujW/94DEqx1dhRQtf/U/vwz1V0Tderiakwu6jp6coHhNbq0Pun35QXHZS4Dx2aElZieG
-         +1nHR86kjx45/ZjlQCpAJ1rUjGn4e/N2Q/LY/617UjOFw6y5i8fce3Xcw7C7Id3mR7FY
-         6zRAPiBFwFNqy4FcoIdSxE9CmvJrR2DOzfVzD4S5gevUkkMQlOHI2fFunknWtCHCd/kq
-         j9Bg==
-X-Gm-Message-State: AOAM531T8tN0EF4radVCh3+kjdYkB4EQjyKVQK00muvHcyzg+WTwc737
-        r3mhvbQRDx2EUFqIxhwPpuVTeov/NeYVAZTOcWp1IvPzGNUy9VEXvidQtYwwQS8Wu7y1JTZGTaQ
-        t+yOCI+0tUR+LzHhNlfl+jzeCWw6NMwGw
-X-Received: by 2002:ac8:7208:: with SMTP id a8mr2253992qtp.22.1601307917126;
-        Mon, 28 Sep 2020 08:45:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz80d8ZwANAMEdVFkB8z7olGrnUdIuUyaYlxzd50B5cqWKATJ661zvv/uzVeTXVFzBZ/7/34/QGcwHXPNeAh0k=
-X-Received: by 2002:ac8:7208:: with SMTP id a8mr2253964qtp.22.1601307916793;
- Mon, 28 Sep 2020 08:45:16 -0700 (PDT)
+        bh=DmYUC4OP5CaeS1DJjwExak2prPtNfn/jSgbomTll8Lo=;
+        b=tryAo/toAIB4HEipI45Zsxv2JfjC3IGu8t4Iyg2EI4nCNQLP+C2uEqUkRLQKuALT7Z
+         4inMeuBZB7iopGo4R3FY0VP2IsEPoQKSAgaoBMbhIIO+KUHWLkQzR9EDiWJWYstf91Xw
+         kMqmeI43pXsZsUTclIK+5SDD+11EDxo23mrRw5U9Aj5m599V7rc6T4qYinpqYe5FfT0J
+         Wf4Yv4S93DXBdvgdkj6HHrHu+rN8V+4yuG5dRANC+BK8pxwzkYsIuQYwzNfXCtG4fD4x
+         6vn399f+HrqWcyeBOM9sl+gha2HOjkeOZolc3U7bmRD3ly/dZVKFFBn+HO+2Rnuwnecq
+         F3Bg==
+X-Gm-Message-State: AOAM5302iEj9qFRjpPmX44/tMWHTvhNmSful3/BHKYcNBFDtlniDpftL
+        rsUYfzbYrivTcbz790wHkcWtGdBDtJ7NeVnJnWWhBaf97lqWmKtdr3Xft0mgfAoo49Qi4fh74Dm
+        DmWlSwfjPqWbcct8skTAHEb4W+Mp4FknQ
+X-Received: by 2002:a37:e214:: with SMTP id g20mr40701qki.89.1601307918457;
+        Mon, 28 Sep 2020 08:45:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyTWRizQfrvM/i2G+v+P1C4nhE7wnwiW4YNjilrsmbPmuWjj7xOlueSTW6vxt6NLQW9uL2Qfj+8V4WtJGVKxR8=
+X-Received: by 2002:a37:e214:: with SMTP id g20mr40674qki.89.1601307918137;
+ Mon, 28 Sep 2020 08:45:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200924032125.18619-1-jasowang@redhat.com> <20200924032125.18619-9-jasowang@redhat.com>
-In-Reply-To: <20200924032125.18619-9-jasowang@redhat.com>
+References: <20200924032125.18619-1-jasowang@redhat.com> <20200924032125.18619-19-jasowang@redhat.com>
+In-Reply-To: <20200924032125.18619-19-jasowang@redhat.com>
 From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Mon, 28 Sep 2020 17:44:40 +0200
-Message-ID: <CAJaqyWdDX4JoPUHHXxkB=veiK9nETyqCPEJxcrHdjLmpE4PRCg@mail.gmail.com>
-Subject: Re: [RFC PATCH 08/24] vdpa: introduce virtqueue groups
+Date:   Mon, 28 Sep 2020 17:44:41 +0200
+Message-ID: <CAJaqyWcsEfJ5n+U-8iNXEM-L4Y9buZntgmMdjPxKCtLxo2cEiw@mail.gmail.com>
+Subject: Re: [RFC PATCH 18/24] vhost-vdpa: support ASID based IOTLB API
 To:     Jason Wang <jasowang@redhat.com>
 Cc:     Michael Tsirkin <mst@redhat.com>, Cindy Lu <lulu@redhat.com>,
         kvm list <kvm@vger.kernel.org>,
@@ -68,230 +68,271 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 24, 2020 at 5:23 AM Jason Wang <jasowang@redhat.com> wrote:
+On Thu, Sep 24, 2020 at 5:25 AM Jason Wang <jasowang@redhat.com> wrote:
 >
-> This patch introduces virtqueue groups to vDPA device. The virtqueue
-> group is the minimal set of virtqueues that must share an address
-> space. And the adddress space identifier could only be attached to
-> a specific virtqueue group.
+> This patch extends the vhost-vdpa to support ASID based IOTLB API. The
+> vhost-vdpa device will allocated multple IOTLBs for vDPA device that
+> supports multiple address spaces. The IOTLBs and vDPA device memory
+> mappings is determined and maintained through ASID.
 >
-> A new mandated bus operation is introduced to get the virtqueue group
-> ID for a specific virtqueue.
->
-> All the vDPA device drivers were converted to simply support a single
-> virtqueue group.
+> Note that we still don't support vDPA device with more than one
+> address spaces that depends on platform IOMMU. This work will be done
+> by moving the IOMMU logic from vhost-vDPA to vDPA device driver.
 >
 > Signed-off-by: Jason Wang <jasowang@redhat.com>
 > ---
->  drivers/vdpa/ifcvf/ifcvf_main.c   |  9 ++++++++-
->  drivers/vdpa/mlx5/net/mlx5_vnet.c |  8 +++++++-
->  drivers/vdpa/vdpa.c               |  4 +++-
->  drivers/vdpa/vdpa_sim/vdpa_sim.c  | 11 ++++++++++-
->  include/linux/vdpa.h              | 12 +++++++++---
->  5 files changed, 37 insertions(+), 7 deletions(-)
+>  drivers/vhost/vdpa.c | 106 ++++++++++++++++++++++++++++++++-----------
+>  1 file changed, 79 insertions(+), 27 deletions(-)
 >
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-> index 076d7ac5e723..e6a0be374e51 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-> @@ -327,6 +327,11 @@ static u32 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
->         return IFCVF_QUEUE_ALIGNMENT;
->  }
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 978cf97dc03a..99ac13b2ed11 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -29,7 +29,8 @@
+>  enum {
+>         VHOST_VDPA_BACKEND_FEATURES =
+>         (1ULL << VHOST_BACKEND_F_IOTLB_MSG_V2) |
+> -       (1ULL << VHOST_BACKEND_F_IOTLB_BATCH),
+> +       (1ULL << VHOST_BACKEND_F_IOTLB_BATCH) |
+> +       (1ULL << VHOST_BACKEND_F_IOTLB_ASID),
+>  };
 >
-> +static u32 ifcvf_vdpa_get_vq_group(struct vdpa_device *vdpa, u16 idx)
+>  #define VHOST_VDPA_DEV_MAX (1U << MINORBITS)
+> @@ -58,12 +59,20 @@ struct vhost_vdpa {
+>         struct eventfd_ctx *config_ctx;
+>         int in_batch;
+>         int used_as;
+> +       u32 batch_asid;
+>  };
+>
+>  static DEFINE_IDA(vhost_vdpa_ida);
+>
+>  static dev_t vhost_vdpa_major;
+>
+> +static inline u32 iotlb_to_asid(struct vhost_iotlb *iotlb)
 > +{
-> +       return 0;
+> +       struct vhost_vdpa_as *as = container_of(iotlb, struct
+> +                                               vhost_vdpa_as, iotlb);
+> +       return as->id;
 > +}
 > +
->  static void ifcvf_vdpa_get_config(struct vdpa_device *vdpa_dev,
->                                   unsigned int offset,
->                                   void *buf, unsigned int len)
-> @@ -387,6 +392,7 @@ static const struct vdpa_config_ops ifc_vdpa_ops = {
->         .get_device_id  = ifcvf_vdpa_get_device_id,
->         .get_vendor_id  = ifcvf_vdpa_get_vendor_id,
->         .get_vq_align   = ifcvf_vdpa_get_vq_align,
-> +       .get_vq_group   = ifcvf_vdpa_get_vq_group,
->         .get_config     = ifcvf_vdpa_get_config,
->         .set_config     = ifcvf_vdpa_set_config,
->         .set_config_cb  = ifcvf_vdpa_set_config_cb,
-> @@ -434,7 +440,8 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->
->         adapter = vdpa_alloc_device(struct ifcvf_adapter, vdpa,
->                                     dev, &ifc_vdpa_ops,
-> -                                   IFCVF_MAX_QUEUE_PAIRS * 2);
-> +                                   IFCVF_MAX_QUEUE_PAIRS * 2, 1);
-> +
->         if (adapter == NULL) {
->                 IFCVF_ERR(pdev, "Failed to allocate vDPA structure");
->                 return -ENOMEM;
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index 9df69d5efe8c..4e480f4f754e 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -1428,6 +1428,11 @@ static u32 mlx5_vdpa_get_vq_align(struct vdpa_device *vdev)
->         return PAGE_SIZE;
+>  static struct vhost_vdpa_as *asid_to_as(struct vhost_vdpa *v, u32 asid)
+>  {
+>         struct hlist_head *head = &v->as[asid % VHOST_VDPA_IOTLB_BUCKETS];
+> @@ -76,6 +85,16 @@ static struct vhost_vdpa_as *asid_to_as(struct vhost_vdpa *v, u32 asid)
+>         return NULL;
 >  }
 >
-> +static u32 mlx5_vdpa_get_vq_group(struct vdpa_device *vdpa, u16 idx)
+> +static struct vhost_iotlb *asid_to_iotlb(struct vhost_vdpa *v, u32 asid)
 > +{
-> +       return 0;
+> +       struct vhost_vdpa_as *as = asid_to_as(v, asid);
+> +
+> +       if (!as)
+> +               return NULL;
+> +
+> +       return &as->iotlb;
 > +}
 > +
->  enum { MLX5_VIRTIO_NET_F_GUEST_CSUM = 1 << 9,
->         MLX5_VIRTIO_NET_F_CSUM = 1 << 10,
->         MLX5_VIRTIO_NET_F_HOST_TSO6 = 1 << 11,
-> @@ -1838,6 +1843,7 @@ static const struct vdpa_config_ops mlx5_vdpa_ops = {
->         .get_vq_notification = mlx5_get_vq_notification,
->         .get_vq_irq = mlx5_get_vq_irq,
->         .get_vq_align = mlx5_vdpa_get_vq_align,
-> +       .get_vq_group = mlx5_vdpa_get_vq_group,
->         .get_features = mlx5_vdpa_get_features,
->         .set_features = mlx5_vdpa_set_features,
->         .set_config_cb = mlx5_vdpa_set_config_cb,
-> @@ -1925,7 +1931,7 @@ void *mlx5_vdpa_add_dev(struct mlx5_core_dev *mdev)
->         max_vqs = min_t(u32, max_vqs, MLX5_MAX_SUPPORTED_VQS);
+>  static struct vhost_vdpa_as *vhost_vdpa_alloc_as(struct vhost_vdpa *v, u32 asid)
+>  {
+>         struct hlist_head *head = &v->as[asid % VHOST_VDPA_IOTLB_BUCKETS];
+> @@ -84,6 +103,9 @@ static struct vhost_vdpa_as *vhost_vdpa_alloc_as(struct vhost_vdpa *v, u32 asid)
+>         if (asid_to_as(v, asid))
+>                 return NULL;
 >
->         ndev = vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device, &mlx5_vdpa_ops,
-> -                                2 * mlx5_vdpa_max_qps(max_vqs));
-> +                                2 * mlx5_vdpa_max_qps(max_vqs), 1);
->         if (IS_ERR(ndev))
->                 return ndev;
+> +       if (asid >= v->vdpa->nas)
+> +               return NULL;
+> +
+>         as = kmalloc(sizeof(*as), GFP_KERNEL);
+>         if (!as)
+>                 return NULL;
+> @@ -96,13 +118,20 @@ static struct vhost_vdpa_as *vhost_vdpa_alloc_as(struct vhost_vdpa *v, u32 asid)
+>         return as;
+>  }
 >
-> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-> index a69ffc991e13..46399746ec7c 100644
-> --- a/drivers/vdpa/vdpa.c
-> +++ b/drivers/vdpa/vdpa.c
-> @@ -62,6 +62,7 @@ static void vdpa_release_dev(struct device *d)
->   * @parent: the parent device
->   * @config: the bus operations that is supported by this device
->   * @nvqs: number of virtqueues supported by this device
-> + * @ngroups: number of groups supported by this device
+> -static int vhost_vdpa_remove_as(struct vhost_vdpa *v, u32 asid)
+> +static struct vhost_vdpa_as *vhost_vdpa_find_alloc_as(struct vhost_vdpa *v,
+> +                                                     u32 asid)
+>  {
+>         struct vhost_vdpa_as *as = asid_to_as(v, asid);
+>
+> -       /* Remove default address space is not allowed */
+> -       if (asid == 0)
+> -               return -EINVAL;
+> +       if (as)
+> +               return as;
+> +
+> +       return vhost_vdpa_alloc_as(v, asid);
+> +}
+> +
+> +static int vhost_vdpa_remove_as(struct vhost_vdpa *v, u32 asid)
+> +{
+> +       struct vhost_vdpa_as *as = asid_to_as(v, asid);
+>
+>         if (!as)
+>                 return -EINVAL;
+> @@ -623,6 +652,7 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, struct vhost_iotlb *iotlb,
+>  {
+>         struct vdpa_device *vdpa = v->vdpa;
+>         const struct vdpa_config_ops *ops = vdpa->config;
+> +       u32 asid = iotlb_to_asid(iotlb);
+>         int r = 0;
+>
+>         r = vhost_iotlb_add_range(iotlb, iova, iova + size - 1,
+> @@ -631,10 +661,10 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, struct vhost_iotlb *iotlb,
+>                 return r;
+>
+>         if (ops->dma_map) {
+> -               r = ops->dma_map(vdpa, 0, iova, size, pa, perm);
+> +               r = ops->dma_map(vdpa, asid, iova, size, pa, perm);
+>         } else if (ops->set_map) {
+>                 if (!v->in_batch)
+> -                       r = ops->set_map(vdpa, 0, iotlb);
+> +                       r = ops->set_map(vdpa, asid, iotlb);
+>         } else {
+>                 r = iommu_map(v->domain, iova, pa, size,
+>                               perm_to_iommu_flags(perm));
+> @@ -643,23 +673,32 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, struct vhost_iotlb *iotlb,
+>         return r;
+>  }
+>
+> -static void vhost_vdpa_unmap(struct vhost_vdpa *v,
+> -                            struct vhost_iotlb *iotlb,
+> -                            u64 iova, u64 size)
+> +static int vhost_vdpa_unmap(struct vhost_vdpa *v,
+> +                           struct vhost_iotlb *iotlb,
+> +                           u64 iova, u64 size)
+>  {
+>         struct vdpa_device *vdpa = v->vdpa;
+>         const struct vdpa_config_ops *ops = vdpa->config;
+> +       u32 asid = (iotlb);
+> +
+> +       if (!iotlb)
+> +               return -EINVAL;
 
-Hi!
-
-Maybe the description of "ngroups" could be "number of *virtqueue*
-groups supported by this device"? I think that it could be needed in
-some contexts reading the code.
+This should be reorder to check for (!iotlb) before use at `asid =
+iotlb_to_asid()`, isn't it?
 
 Thanks!
 
->   * @size: size of the parent structure that contains private data
->   *
->   * Driver should use vdpa_alloc_device() wrapper macro instead of
-> @@ -72,7 +73,7 @@ static void vdpa_release_dev(struct device *d)
->   */
->  struct vdpa_device *__vdpa_alloc_device(struct device *parent,
->                                         const struct vdpa_config_ops *config,
-> -                                       int nvqs,
-> +                                       int nvqs, unsigned int ngroups,
->                                         size_t size)
->  {
->         struct vdpa_device *vdev;
-> @@ -100,6 +101,7 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
->         vdev->config = config;
->         vdev->features_valid = false;
->         vdev->nvqs = nvqs;
-> +       vdev->ngroups = ngroups;
 >
->         err = dev_set_name(&vdev->dev, "vdpa%u", vdev->index);
->         if (err)
-> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> index 62d640327145..6669c561bc6e 100644
-> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> @@ -75,6 +75,7 @@ struct vdpasim {
->         u32 status;
->         u32 generation;
->         u64 features;
-> +       u32 groups;
->         /* spinlock to synchronize iommu table */
->         spinlock_t iommu_lock;
->  };
-> @@ -352,7 +353,8 @@ static struct vdpasim *vdpasim_create(void)
->         else
->                 ops = &vdpasim_net_config_ops;
+>         vhost_vdpa_iotlb_unmap(v, iotlb, iova, iova + size - 1);
 >
-> -       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops, VDPASIM_VQ_NUM);
-> +       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
-> +                                   VDPASIM_VQ_NUM, 1);
->         if (!vdpasim)
->                 goto err_alloc;
->
-> @@ -481,6 +483,11 @@ static u32 vdpasim_get_vq_align(struct vdpa_device *vdpa)
->         return VDPASIM_QUEUE_ALIGN;
+>         if (ops->dma_map) {
+> -               ops->dma_unmap(vdpa, 0, iova, size);
+> +               ops->dma_unmap(vdpa, asid, iova, size);
+>         } else if (ops->set_map) {
+>                 if (!v->in_batch)
+> -                       ops->set_map(vdpa, 0, iotlb);
+> +                       ops->set_map(vdpa, asid, iotlb);
+>         } else {
+>                 iommu_unmap(v->domain, iova, size);
+>         }
+> +
+> +       if (!iotlb->nmaps)
+> +               vhost_vdpa_remove_as(v, asid);
+> +
+> +       return 0;
 >  }
 >
-> +static u32 vdpasim_get_vq_group(struct vdpa_device *vdpa, u16 idx)
-> +{
-> +       return 0;
-> +}
+>  static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+> @@ -755,30 +794,38 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev, u32 asid,
+>         struct vhost_vdpa *v = container_of(dev, struct vhost_vdpa, vdev);
+>         struct vdpa_device *vdpa = v->vdpa;
+>         const struct vdpa_config_ops *ops = vdpa->config;
+> -       struct vhost_vdpa_as *as = asid_to_as(v, 0);
+> -       struct vhost_iotlb *iotlb = &as->iotlb;
+> +       struct vhost_iotlb *iotlb = asid_to_iotlb(v, asid);
+> +       struct vhost_vdpa_as *as;
+>         int r = 0;
+>
+> -       if (asid != 0)
+> -               return -EINVAL;
+> -
+>         r = vhost_dev_check_owner(dev);
+>         if (r)
+>                 return r;
+>
+> +       if ((msg->type == VHOST_IOTLB_UPDATE) && !iotlb) {
+> +               as = vhost_vdpa_find_alloc_as(v, asid);
+> +               if (!as)
+> +                       return -EINVAL;
+> +               iotlb = &as->iotlb;
+> +       }
 > +
->  static u64 vdpasim_get_features(struct vdpa_device *vdpa)
+> +       if (v->in_batch && v->batch_asid != asid)
+> +               return -EINVAL;
+> +
+>         switch (msg->type) {
+>         case VHOST_IOTLB_UPDATE:
+>                 r = vhost_vdpa_process_iotlb_update(v, iotlb, msg);
+>                 break;
+>         case VHOST_IOTLB_INVALIDATE:
+> -               vhost_vdpa_unmap(v, iotlb, msg->iova, msg->size);
+> +               r = vhost_vdpa_unmap(v, iotlb, msg->iova, msg->size);
+>                 break;
+>         case VHOST_IOTLB_BATCH_BEGIN:
+> +               v->batch_asid = asid;
+>                 v->in_batch = true;
+>                 break;
+>         case VHOST_IOTLB_BATCH_END:
+>                 if (v->in_batch && ops->set_map)
+> -                       ops->set_map(vdpa, 0, iotlb);
+> +                       ops->set_map(vdpa, asid, iotlb);
+>                 v->in_batch = false;
+>                 break;
+>         default:
+> @@ -848,9 +895,17 @@ static void vhost_vdpa_free_domain(struct vhost_vdpa *v)
+>
+>  static void vhost_vdpa_cleanup(struct vhost_vdpa *v)
 >  {
->         return vdpasim_features;
-> @@ -646,6 +653,7 @@ static const struct vdpa_config_ops vdpasim_net_config_ops = {
->         .set_vq_state           = vdpasim_set_vq_state,
->         .get_vq_state           = vdpasim_get_vq_state,
->         .get_vq_align           = vdpasim_get_vq_align,
-> +       .get_vq_group           = vdpasim_get_vq_group,
->         .get_features           = vdpasim_get_features,
->         .set_features           = vdpasim_set_features,
->         .set_config_cb          = vdpasim_set_config_cb,
-> @@ -672,6 +680,7 @@ static const struct vdpa_config_ops vdpasim_net_batch_config_ops = {
->         .set_vq_state           = vdpasim_set_vq_state,
->         .get_vq_state           = vdpasim_get_vq_state,
->         .get_vq_align           = vdpasim_get_vq_align,
-> +       .get_vq_group           = vdpasim_get_vq_group,
->         .get_features           = vdpasim_get_features,
->         .set_features           = vdpasim_set_features,
->         .set_config_cb          = vdpasim_set_config_cb,
-> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> index df169c2f5c0f..d829512efd27 100644
-> --- a/include/linux/vdpa.h
-> +++ b/include/linux/vdpa.h
-> @@ -51,6 +51,7 @@ struct vdpa_device {
->         unsigned int index;
->         bool features_valid;
->         int nvqs;
-> +       unsigned int ngroups;
->  };
+> +       struct vhost_vdpa_as *as;
+> +       u32 asid;
+> +
+>         vhost_dev_cleanup(&v->vdev);
+>         kfree(v->vdev.vqs);
+> -       vhost_vdpa_remove_as(v, 0);
+> +
+> +       for (asid = 0; asid < v->vdpa->nas; asid++) {
+> +               as = asid_to_as(v, asid);
+> +               if (as)
+> +                       vhost_vdpa_remove_as(v, asid);
+> +       }
+>  }
 >
->  /**
-> @@ -109,6 +110,10 @@ struct vdpa_device {
->   *                             for the device
->   *                             @vdev: vdpa device
->   *                             Returns virtqueue algin requirement
-> + * @get_vq_group:              Get the group id for a specific virtqueue
-> + *                             @vdev: vdpa device
-> + *                             @idx: virtqueue index
-> + *                             Returns u32: group id for this virtqueue
->   * @get_features:              Get virtio features supported by the device
->   *                             @vdev: vdpa device
->   *                             Returns the virtio features support by the
-> @@ -203,6 +208,7 @@ struct vdpa_config_ops {
+>  static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+> @@ -883,18 +938,15 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+>         vhost_dev_init(dev, vqs, nvqs, 0, 0, 0, false,
+>                        vhost_vdpa_process_iotlb_msg);
 >
->         /* Device ops */
->         u32 (*get_vq_align)(struct vdpa_device *vdev);
-> +       u32 (*get_vq_group)(struct vdpa_device *vdev, u16 idx);
->         u64 (*get_features)(struct vdpa_device *vdev);
->         int (*set_features)(struct vdpa_device *vdev, u64 features);
->         void (*set_config_cb)(struct vdpa_device *vdev,
-> @@ -230,12 +236,12 @@ struct vdpa_config_ops {
+> -       if (!vhost_vdpa_alloc_as(v, 0))
+> -               goto err_alloc_as;
+> -
+>         r = vhost_vdpa_alloc_domain(v);
+>         if (r)
+> -               goto err_alloc_as;
+> +               goto err_alloc_domain;
 >
->  struct vdpa_device *__vdpa_alloc_device(struct device *parent,
->                                         const struct vdpa_config_ops *config,
-> -                                       int nvqs,
-> +                                       int nvqs, unsigned int ngroups,
->                                         size_t size);
+>         filep->private_data = v;
 >
-> -#define vdpa_alloc_device(dev_struct, member, parent, config, nvqs)   \
-> +#define vdpa_alloc_device(dev_struct, member, parent, config, nvqs, ngroups) \
->                           container_of(__vdpa_alloc_device( \
-> -                                      parent, config, nvqs, \
-> +                                      parent, config, nvqs, ngroups, \
->                                        sizeof(dev_struct) + \
->                                        BUILD_BUG_ON_ZERO(offsetof( \
->                                        dev_struct, member))), \
+>         return 0;
+>
+> -err_alloc_as:
+> +err_alloc_domain:
+>         vhost_vdpa_cleanup(v);
+>  err:
+>         atomic_dec(&v->opened);
+> @@ -1022,8 +1074,8 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+>         int minor;
+>         int i, r;
+>
+> -       /* Only support 1 address space */
+> -       if (vdpa->ngroups != 1)
+> +       /* We can't support platform IOMMU device with more than 1 group */
+> +       if (!ops->set_map && !ops->dma_map && vdpa->ngroups > 1)
+>                 return -ENOTSUPP;
+>
+>         /* Currently, we only accept the network devices. */
 > --
 > 2.20.1
 >
