@@ -2,105 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2F727AE43
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 14:53:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ADAF27AE72
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 14:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbgI1Mxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 08:53:47 -0400
-Received: from mail-eopbgr110139.outbound.protection.outlook.com ([40.107.11.139]:59126
-        "EHLO GBR01-CWL-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726466AbgI1Mxp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 08:53:45 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z65SdpzUCHMJF52KguaQ2DOjBgBC3V37QYnldvJ0eYSvwJwIOTed+/zPAsibDwj5VSFVUyzsHQtTxqMcDfEkFDJcQ/hexWuHsN1PgOfLGOwFGFphPBp/shGH8C3kanEI9odIFjYG85CbVlrZyfnSKcpQVO+nqG2XqboXJlArgKZh4Iwgg49CZd4Vv+ApKmgA7hxM5hZaEfHCIoVUYwShfyLN/pTiJ/MN4XwO0pl9TeIQPZkZpK+U744PnsU3C42J26fcF+8o1Wr/zc7NtacLas9a30i5RHktjrKRZVSarb/J1icvEUXWzam9tszyXg5V9VKcnozIoDHz985TXHm+2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XLXYPowHwSHTfDhGTg+dNEGFSso3PbRaJUpcmymPXcs=;
- b=F6WXE0YNuZyaJNfwC549Q8/o/iH0rn6OaW/EwajMKqKiAMjW1mdsqW5lWxbsFn3N4vMtsElBnrMbTM7eNnM2DHOKEFj6c8rhza7ZsNH25buRbvfhoDta1NnrVeQOrFIwzcBHmHVREeG+Zy8vJW3wjIBPWZXNOg6hp9iTVcT2gqWx8mzpO9Q8R+u5jJJyKe7a2RD5SgfwvnF0plIGZ3ddSz3U7RicwZK/uweCdxz+5mQu2TnRuTyDoNTEcc2Q7jReZLK+1Rw2e2BdRI8e4rL9K0URiWiB5ILOA6FSOM/Y0GqCEqryn9ldCEZNu81v/5MJFIcV2HIp1i6ToDdMOR8b3w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=purelifi.com; dmarc=pass action=none header.from=purelifi.com;
- dkim=pass header.d=purelifi.com; arc=none
+        id S1726757AbgI1M5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 08:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726656AbgI1M47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 08:56:59 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE21C061755;
+        Mon, 28 Sep 2020 05:56:59 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id 197so805215pge.8;
+        Mon, 28 Sep 2020 05:56:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=purevlc.onmicrosoft.com; s=selector2-purevlc-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XLXYPowHwSHTfDhGTg+dNEGFSso3PbRaJUpcmymPXcs=;
- b=hecLrSgaBEyEIjc6RyvuLdXqPB9eNDa8AKVyieMj0oA8MSiDCbm6XgZ6thzbJaixB73O/mp+PbeGrGFn7GmEBDTi6vFmX5OZTGOc1Un/gbINzy0TjWzEYhTJk0DBPce+rB3m32b3IeEE80SrKBKXcjJ350WWJyZB7CVdOFE3KtI=
-Received: from CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:6f::14)
- by CWLP265MB1796.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:54::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20; Mon, 28 Sep
- 2020 12:53:41 +0000
-Received: from CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM
- ([fe80::e102:fffb:c3b6:780f]) by CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM
- ([fe80::e102:fffb:c3b6:780f%8]) with mapi id 15.20.3412.029; Mon, 28 Sep 2020
- 12:53:41 +0000
-From:   Srinivasan Raju <srini.raju@purelifi.com>
-To:     Joe Perches <joe@perches.com>
-CC:     Mostafa Afgani <mostafa.afgani@purelifi.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS (WIRELESS)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] [v2] wireless: Initial driver submission for pureLiFi
- devices
-Thread-Topic: [PATCH] [v2] wireless: Initial driver submission for pureLiFi
- devices
-Thread-Index: AQHWlYEQBtpUmlBsIE2OcjRvCcmkD6l99NGAgAAMhSc=
-Date:   Mon, 28 Sep 2020 12:53:41 +0000
-Message-ID: <CWLP265MB197217D895F966587865FC93E0350@CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM>
-References: <20200924151910.21693-1-srini.raju@purelifi.com>
-         <20200928102008.32568-1-srini.raju@purelifi.com>,<c75638782a5a4bc141008c6c3dcec4fd1567da79.camel@perches.com>
-In-Reply-To: <c75638782a5a4bc141008c6c3dcec4fd1567da79.camel@perches.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: perches.com; dkim=none (message not signed)
- header.d=none;perches.com; dmarc=none action=none header.from=purelifi.com;
-x-originating-ip: [103.104.125.124]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ca7a2985-fd98-40cd-46f0-08d863ad86ab
-x-ms-traffictypediagnostic: CWLP265MB1796:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CWLP265MB17960609266CB89D610FAA4DE0350@CWLP265MB1796.GBRP265.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: h7XgFyu1YCYWtse+hswywv+8vJAH93hU3bdv7a5dnQBAfOHkRBtSTBygkXxk2xiLYs16sOA5hKkWw98rR+cgqIEEsyczYTgy1w9cN/dbT7QYUvlP1XghzMpHAzIX2EnjF4PYDbXPrhlyxSJ//SLEfAzvuHCKRib+cM0AitJ9HgqFws3LNG3Dnx2hlf498RczE0GaiZlUScmaM4qBYg054hlgMQHnxVhiUctNStTU1VoJ+xs+SYFhEm5N+E/kjX2f31BF8Sb9CoCZe6Ghnc4FGxLF/4cbdyBgCY+p5Ecc4vBJpOEGykS801yExphSm4vbBQT9FX9xDHwPhSEKGdWn7zsFj+KioniaiBKwnhhchku6EtWgWuiZ/plH6bgWYbLo
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(6029001)(4636009)(366004)(346002)(396003)(39830400003)(136003)(376002)(52536014)(9686003)(186003)(26005)(55016002)(54906003)(5660300002)(71200400001)(8676002)(8936002)(2906002)(66446008)(64756008)(66556008)(66476007)(66946007)(76116006)(91956017)(478600001)(316002)(558084003)(86362001)(6916009)(4326008)(33656002)(7696005)(6506007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: 3xAzSevfqDIDzfqatoSuDKAlq9dAsria9FDpjgomqHCNlriHUU2bB/B3gkgn2xhmjuICIsjrwXnb4AZfmJ6eMfz0N4/hVpVRvg/JM3XPlZZ576YsdJhlFgFGzVvrjlbtr63EDB0ZrVhqq8ddk+RW9wA+6guGcK3nG2LFMtJrOLljxO38IfUI+25aGF/HqD8jhotNwBcPvKtLCVHVDFkbj5hzQPfOH2aV6NOOlUqVyAc0UADbPGwtYEVgu7xj+N9HjU0bGMRG59y/RI6mIQaogFniBuPBDg1rewHHfAJMj3eFAZxNwDqcmClJMD8nLG3fDJ6JRA+a9JJAR3IxSwu7UIq7UWGjBI0j3bOYYJOYBjuiBs907k/CF2YybAYP/blj8D2NX5KZQJARxR/IYvl3T5bEIoS9cZBjX0Se1gUU5bRv8ZOwj4AJPXznU7qYHnOeBICF8KpDGTKkHkeLsCNisfotpCey0g+ciPF2MWxwskVXSd/qzmsaHQ/pTjXOPztmbqsJuNIOI/AZ3C6H7TUvyF8XJmmi17AzxrnNiXRUmQh93NAkrbfqEi0CYZrQf5ohtmOtG2jE3CyvthcCmh7rC3rpqI5c7zd4vU5d58SrLPDikrPyFe5PkXSwJ9z8w5Gw1ezfhkfKjc14hMRdXi4PNA==
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mRYM/ijXhKyqcG0hlYbKfkBIgPJZyqY3iZRUkY2MEAM=;
+        b=K2BpzpUGM5K+keY0Wj/FUqJFwjDK4osnAOoEiEuSAPpmlaLnAbYQXKAPpBKZNmme8g
+         +NlzUyroaDHcu7YqhUBU98qKgvzFk0YFmyvZe2n3+teCxbuLgA1yafjqlG0/FwM7g2h+
+         iNcsaNiFdiwz/Al92fAhMcyFwBvREAJizcJvg8tRYYqG++NAMdxWh4nMdf4pUGr/ieIW
+         4p5euwrO5Aqdz/OB/hQc36kmoQOKYV17caUlmaIZ24ucWie72p0/nvLmdYHEK77cMwbi
+         poMiwhK2/mT7L6isHqNUbHFTrUksqZxV+V49W7rwV3qfgf2Kg9vKlpduqPIyNErsyqA5
+         mJ/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mRYM/ijXhKyqcG0hlYbKfkBIgPJZyqY3iZRUkY2MEAM=;
+        b=AaCXnG+q9MQqVm4iocn0nDud7YZ3CWcpItDp29hGifNovKp8+X5a2c80vnlG+7oxQA
+         tGdxTO5AXYvhbWNf4cWCq+WGqCTjNQ8uQR4I4/IkyxfxtYJnpJiEc+YticFpbZ1y7I7b
+         Mnb6zTLtlBbHRMIrHH+LmyzlI94JAZIka3eFejC1IzsYEOWcP5pQTQ0unRTliYNdtXd9
+         rN15OvnOllY9uE0M4uIBpFVwDjhKy85RX6ezqV4+G7CvM7UoABPzTtd2BL3CWwU0G58p
+         P6PKSg2O/y7xBuAIgG42HKuGonXdIXsaNHQ2mA1muNX+8fjbONVkriFSk3c4ZSBlTp6t
+         +uRg==
+X-Gm-Message-State: AOAM533RbQUAXm9LvZ2q6Tarw7tIaX30teqmI6DbD851tIve7fW2s4Ml
+        0n9GFZVRf9lmrgCvgZYV2QE=
+X-Google-Smtp-Source: ABdhPJwx5YX5q+hrrI/wiwlHvD8cQ+jpbLwTzMvdZp15W0n7M8nFP3RT+BaViMrLdTfrhwji76axGg==
+X-Received: by 2002:aa7:941a:0:b029:142:2501:35d1 with SMTP id x26-20020aa7941a0000b0290142250135d1mr1279322pfo.49.1601297818865;
+        Mon, 28 Sep 2020 05:56:58 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:1405:efe3:1493:1a47])
+        by smtp.gmail.com with ESMTPSA id b2sm1686819pfp.3.2020.09.28.05.56.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2020 05:56:58 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net-next] drivers/net/wan/hdlc_fr: Correctly handle special skb->protocol values
+Date:   Mon, 28 Sep 2020 05:56:43 -0700
+Message-Id: <20200928125643.396575-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: purelifi.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca7a2985-fd98-40cd-46f0-08d863ad86ab
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Sep 2020 12:53:41.2550
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5cf4eba2-7b8f-4236-bed4-a2ac41f1a6dc
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rSJLhloXoH4teI4Z3HWwGvC3GnDDIbcwsLVkjx93JVmZpqMaKqHq7CgXcRnHcFqC/jrQVVa8THckERvC6Cy/Zg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWLP265MB1796
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=0A=
-=0A=
-> Didn't look at the rest=0A=
-=0A=
-Thanks for your comments Joe, I will refactor the code for clarity, remove =
-redundancy and address your comments.=0A=
-=0A=
-Regards=0A=
-Srini=0A=
-=0A=
+The fr_hard_header function is used to prepend the header to skbs before
+transmission. It is used in 3 situations:
+1) When a control packet is generated internally in this driver;
+2) When a user sends an skb on an Ethernet-emulating PVC device;
+3) When a user sends an skb on a normal PVC device.
+
+These 3 situations need to be handled differently by fr_hard_header.
+Different headers should be prepended to the skb in different situations.
+
+Currently fr_hard_header distinguishes these 3 situations using
+skb->protocol. For situation 1 and 2, a special skb->protocol value
+will be assigned before calling fr_hard_header, so that it can recognize
+these 2 situations. All skb->protocol values other than these special ones
+are treated by fr_hard_header as situation 3.
+
+However, it is possible that in situation 3, the user sends an skb with
+one of the special skb->protocol values. In this case, fr_hard_header
+would incorrectly treat it as situation 1 or 2.
+
+This patch tries to solve this issue by using skb->dev instead of
+skb->protocol to distinguish between these 3 situations. For situation
+1, skb->dev would be NULL; for situation 2, skb->dev->type would be
+ARPHRD_ETHER; and for situation 3, skb->dev->type would be ARPHRD_DLCI.
+
+This way fr_hard_header would be able to distinguish these 3 situations
+correctly regardless what skb->protocol value the user tries to use in
+situation 3.
+
+Cc: Krzysztof Halasa <khc@pm.waw.pl>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/hdlc_fr.c | 98 ++++++++++++++++++++-------------------
+ 1 file changed, 51 insertions(+), 47 deletions(-)
+
+diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
+index d6cfd51613ed..3a44dad87602 100644
+--- a/drivers/net/wan/hdlc_fr.c
++++ b/drivers/net/wan/hdlc_fr.c
+@@ -273,63 +273,69 @@ static inline struct net_device **get_dev_p(struct pvc_device *pvc,
+ 
+ static int fr_hard_header(struct sk_buff **skb_p, u16 dlci)
+ {
+-	u16 head_len;
+ 	struct sk_buff *skb = *skb_p;
+ 
+-	switch (skb->protocol) {
+-	case cpu_to_be16(NLPID_CCITT_ANSI_LMI):
+-		head_len = 4;
+-		skb_push(skb, head_len);
+-		skb->data[3] = NLPID_CCITT_ANSI_LMI;
+-		break;
+-
+-	case cpu_to_be16(NLPID_CISCO_LMI):
+-		head_len = 4;
+-		skb_push(skb, head_len);
+-		skb->data[3] = NLPID_CISCO_LMI;
+-		break;
+-
+-	case cpu_to_be16(ETH_P_IP):
+-		head_len = 4;
+-		skb_push(skb, head_len);
+-		skb->data[3] = NLPID_IP;
+-		break;
+-
+-	case cpu_to_be16(ETH_P_IPV6):
+-		head_len = 4;
+-		skb_push(skb, head_len);
+-		skb->data[3] = NLPID_IPV6;
+-		break;
+-
+-	case cpu_to_be16(ETH_P_802_3):
+-		head_len = 10;
+-		if (skb_headroom(skb) < head_len) {
+-			struct sk_buff *skb2 = skb_realloc_headroom(skb,
+-								    head_len);
++	if (!skb->dev) { /* Control packets */
++		switch (dlci) {
++		case LMI_CCITT_ANSI_DLCI:
++			skb_push(skb, 4);
++			skb->data[3] = NLPID_CCITT_ANSI_LMI;
++			break;
++
++		case LMI_CISCO_DLCI:
++			skb_push(skb, 4);
++			skb->data[3] = NLPID_CISCO_LMI;
++			break;
++
++		default:
++			return -EINVAL;
++		}
++
++	} else if (skb->dev->type == ARPHRD_DLCI) {
++		switch (skb->protocol) {
++		case htons(ETH_P_IP):
++			skb_push(skb, 4);
++			skb->data[3] = NLPID_IP;
++			break;
++
++		case htons(ETH_P_IPV6):
++			skb_push(skb, 4);
++			skb->data[3] = NLPID_IPV6;
++			break;
++
++		default:
++			skb_push(skb, 10);
++			skb->data[3] = FR_PAD;
++			skb->data[4] = NLPID_SNAP;
++			/* OUI 00-00-00 indicates an Ethertype follows */
++			skb->data[5] = 0x00;
++			skb->data[6] = 0x00;
++			skb->data[7] = 0x00;
++			/* This should be an Ethertype: */
++			*(__be16 *)(skb->data + 8) = skb->protocol;
++		}
++
++	} else if (skb->dev->type == ARPHRD_ETHER) {
++		if (skb_headroom(skb) < 10) {
++			struct sk_buff *skb2 = skb_realloc_headroom(skb, 10);
+ 			if (!skb2)
+ 				return -ENOBUFS;
+ 			dev_kfree_skb(skb);
+ 			skb = *skb_p = skb2;
+ 		}
+-		skb_push(skb, head_len);
++		skb_push(skb, 10);
+ 		skb->data[3] = FR_PAD;
+ 		skb->data[4] = NLPID_SNAP;
+-		skb->data[5] = FR_PAD;
++		/* OUI 00-80-C2 stands for the 802.1 organization */
++		skb->data[5] = 0x00;
+ 		skb->data[6] = 0x80;
+ 		skb->data[7] = 0xC2;
++		/* PID 00-07 stands for Ethernet frames without FCS */
+ 		skb->data[8] = 0x00;
+-		skb->data[9] = 0x07; /* bridged Ethernet frame w/out FCS */
+-		break;
++		skb->data[9] = 0x07;
+ 
+-	default:
+-		head_len = 10;
+-		skb_push(skb, head_len);
+-		skb->data[3] = FR_PAD;
+-		skb->data[4] = NLPID_SNAP;
+-		skb->data[5] = FR_PAD;
+-		skb->data[6] = FR_PAD;
+-		skb->data[7] = FR_PAD;
+-		*(__be16*)(skb->data + 8) = skb->protocol;
++	} else {
++		return -EINVAL;
+ 	}
+ 
+ 	dlci_to_q922(skb->data, dlci);
+@@ -425,8 +431,8 @@ static netdev_tx_t pvc_xmit(struct sk_buff *skb, struct net_device *dev)
+ 				skb_put(skb, pad);
+ 				memset(skb->data + len, 0, pad);
+ 			}
+-			skb->protocol = cpu_to_be16(ETH_P_802_3);
+ 		}
++		skb->dev = dev;
+ 		if (!fr_hard_header(&skb, pvc->dlci)) {
+ 			dev->stats.tx_bytes += skb->len;
+ 			dev->stats.tx_packets++;
+@@ -494,10 +500,8 @@ static void fr_lmi_send(struct net_device *dev, int fullrep)
+ 	memset(skb->data, 0, len);
+ 	skb_reserve(skb, 4);
+ 	if (lmi == LMI_CISCO) {
+-		skb->protocol = cpu_to_be16(NLPID_CISCO_LMI);
+ 		fr_hard_header(&skb, LMI_CISCO_DLCI);
+ 	} else {
+-		skb->protocol = cpu_to_be16(NLPID_CCITT_ANSI_LMI);
+ 		fr_hard_header(&skb, LMI_CCITT_ANSI_DLCI);
+ 	}
+ 	data = skb_tail_pointer(skb);
+-- 
+2.25.1
+
