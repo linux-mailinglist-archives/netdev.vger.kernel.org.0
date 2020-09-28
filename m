@@ -2,188 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2002D27A9B5
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 10:38:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5B9927A9B9
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 10:39:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbgI1Iiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 04:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42140 "EHLO
+        id S1726692AbgI1Ijb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 04:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726420AbgI1Iiv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 04:38:51 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C34AC0613CE
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 01:38:51 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kMogJ-0000lc-IT; Mon, 28 Sep 2020 10:38:47 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:e69a:da07:120c:40d8] (unknown [IPv6:2a03:f580:87bc:d400:e69a:da07:120c:40d8])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 6FE1656C58D;
-        Mon, 28 Sep 2020 08:38:46 +0000 (UTC)
-Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
- flexcan memory for ECC function
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>
-Cc:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
- <20200925151028.11004-2-qiangqing.zhang@nxp.com>
- <f98dcb18-19f9-9721-a191-481983158daa@pengutronix.de>
- <DB8PR04MB6795C88B839FE5083283E157E6340@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <4490a094-0b7d-4361-2c0a-906b2cff6020@pengutronix.de>
- <DB8PR04MB679574C44EC1B2D401C9B5D1E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <3910f513-1a47-5128-1a78-f412a0904911@pengutronix.de>
- <DB8PR04MB679575A5E8EE9C7534A446BAE6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <e9542cdc-cce8-8ec5-8229-5a9992352539@pengutronix.de>
- <DB8PR04MB6795064F932CF60033514367E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <91898e81-3fb6-e03f-a450-3f43ba2b7756@pengutronix.de>
-Date:   Mon, 28 Sep 2020 10:38:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1726617AbgI1Ija (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 04:39:30 -0400
+Received: from mail-vk1-xa42.google.com (mail-vk1-xa42.google.com [IPv6:2607:f8b0:4864:20::a42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA486C0613CE
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 01:39:30 -0700 (PDT)
+Received: by mail-vk1-xa42.google.com with SMTP id q124so1363916vkb.8
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 01:39:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=P2hn9r7bUHQ5/qOvCxhqCGVg5WiOwDkVWGWEKMyNnY0=;
+        b=m8E9zVAi8kq5j5HCZRX3DgXynR+9bcKt9YaJm1xEdTNq2Y1p8cEq3kBZmwZCdZM2At
+         jONoxjHFaitcyiSmwSd4SSKleFlrg8NL9yt2hY5YqAWqaV6HKWSXcjb2xwowSiI3sWZ1
+         A/fRc1AD6HS3VZRr7caYl6BVV4868ggTY7aC01veJb8EYlhxFEuvaEWHGCxrI1918xDq
+         np6D2i0VrSdKmki5ewAoMrpU3+a7XzItHHMMTfEf0q+tjpRxuV+x2voY+lHwuS81xZW3
+         59+CU6U5v3PWVkX6tpXOOhB/tLqLlaLFXyWrwmM2RV1o96qZFks+vBKxYExTLUi3Mcfe
+         fFag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=P2hn9r7bUHQ5/qOvCxhqCGVg5WiOwDkVWGWEKMyNnY0=;
+        b=IzhfkGDbfnY5ror8YAPJiUXDTTN5NUYpKErYEGIBKjr6e7AInN7ngXIfX/GHhUH9/J
+         Tiy/VJY2X6N8nmgsiPOUxJ2Be3Dputb3COTgsAI1SV0QU8dUDgXHZlu3WSh19TWsW7go
+         TCvZqK53yQiLjnrw7ldkDNQUq4qk6K+j5PEgtZ4ARz81RppILCwxx77oLd3v5MteVzG4
+         ftTA4o7SyWeuWp0caAzu5SKWTzP5vfG4y/OshTP7jQO+mhZ/o6WP0fqDragcmvXYsqkj
+         mRRtyfaPH/aafcwTzGLSx8N6vcIQ1hH1ymVaKJZNc95BLmIi87XWVpKCets9cpVxdMHh
+         6MLg==
+X-Gm-Message-State: AOAM532144GT0WXIz5zlFDTXQ6TIaKgTROZ7ZjxEu7r6SWV8AwtUKvHJ
+        6VptVhfWJMRld9a41T9VGtFqvzFJwY0yuA==
+X-Google-Smtp-Source: ABdhPJzs93xgKwq1fx8WVLJft4Of8S2aA0kDDttt0FV8nz4DvX5YBSPr6u1um5x9YHmBRW3+L63v0Q==
+X-Received: by 2002:a1f:ac0e:: with SMTP id v14mr4405295vke.21.1601282369243;
+        Mon, 28 Sep 2020 01:39:29 -0700 (PDT)
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com. [209.85.217.51])
+        by smtp.gmail.com with ESMTPSA id 67sm1021707vks.44.2020.09.28.01.39.28
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Sep 2020 01:39:28 -0700 (PDT)
+Received: by mail-vs1-f51.google.com with SMTP id x203so258278vsc.11
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 01:39:28 -0700 (PDT)
+X-Received: by 2002:a67:e83:: with SMTP id 125mr4637210vso.22.1601282367887;
+ Mon, 28 Sep 2020 01:39:27 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <DB8PR04MB6795064F932CF60033514367E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="9SEwBZLuY8Wg30vu5sgU4RAhE3EGALqVs"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20200928033915.82810-1-xiangxia.m.yue@gmail.com> <20200928033915.82810-2-xiangxia.m.yue@gmail.com>
+In-Reply-To: <20200928033915.82810-2-xiangxia.m.yue@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 28 Sep 2020 10:38:51 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSeOzCAVShBa1VTXtkqzc9YFdng_Dk1wVbjVeniTRREM=A@mail.gmail.com>
+Message-ID: <CA+FuTSeOzCAVShBa1VTXtkqzc9YFdng_Dk1wVbjVeniTRREM=A@mail.gmail.com>
+Subject: Re: [PATCH 2/2] virtio-net: ethtool configurable RXCSUM
+To:     xiangxia.m.yue@gmail.com
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---9SEwBZLuY8Wg30vu5sgU4RAhE3EGALqVs
-Content-Type: multipart/mixed; boundary="3hsv4SUzU7ukNMsUbjxBG16iqesN8y6ZK";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>,
- "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
- Pankaj Bansal <pankaj.bansal@nxp.com>
-Cc: dl-linux-imx <linux-imx@nxp.com>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <91898e81-3fb6-e03f-a450-3f43ba2b7756@pengutronix.de>
-Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
- flexcan memory for ECC function
-References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
- <20200925151028.11004-2-qiangqing.zhang@nxp.com>
- <f98dcb18-19f9-9721-a191-481983158daa@pengutronix.de>
- <DB8PR04MB6795C88B839FE5083283E157E6340@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <4490a094-0b7d-4361-2c0a-906b2cff6020@pengutronix.de>
- <DB8PR04MB679574C44EC1B2D401C9B5D1E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <3910f513-1a47-5128-1a78-f412a0904911@pengutronix.de>
- <DB8PR04MB679575A5E8EE9C7534A446BAE6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <e9542cdc-cce8-8ec5-8229-5a9992352539@pengutronix.de>
- <DB8PR04MB6795064F932CF60033514367E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
-In-Reply-To: <DB8PR04MB6795064F932CF60033514367E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
+On Mon, Sep 28, 2020 at 5:42 AM <xiangxia.m.yue@gmail.com> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> Allow user configuring RXCSUM separately with ethtool -K,
+> reusing the existing virtnet_set_guest_offloads helper
+> that configures RXCSUM for XDP. This is conditional on
+> VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
+>
+> Cc: Michael S. Tsirkin <mst@redhat.com>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> ---
+>  drivers/net/virtio_net.c | 40 ++++++++++++++++++++++++++++------------
+>  1 file changed, 28 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 21b71148c532..2e3af0b2c281 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -68,6 +68,8 @@ static const unsigned long guest_offloads[] = {
+>                                 (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+>                                 (1ULL << VIRTIO_NET_F_GUEST_UFO))
+>
+> +#define GUEST_OFFLOAD_CSUM_MASK (1ULL << VIRTIO_NET_F_GUEST_CSUM)
+> +
+>  struct virtnet_stat_desc {
+>         char desc[ETH_GSTRING_LEN];
+>         size_t offset;
+> @@ -2526,25 +2528,37 @@ static int virtnet_set_features(struct net_device *dev,
+>                                 netdev_features_t features)
+>  {
+>         struct virtnet_info *vi = netdev_priv(dev);
+> -       u64 offloads;
+> +       u64 offloads = vi->guest_offloads &
+> +                      vi->guest_offloads_capable;
+>         int err;
+>
+> -       if ((dev->features ^ features) & NETIF_F_LRO) {
+> -               if (vi->xdp_queue_pairs)
+> -                       return -EBUSY;
+> +       /* Don't allow configuration while XDP is active. */
+> +       if (vi->xdp_queue_pairs)
+> +               return -EBUSY;
+>
+> +       if ((dev->features ^ features) & NETIF_F_LRO) {
+>                 if (features & NETIF_F_LRO)
+> -                       offloads = vi->guest_offloads_capable;
+> +                       offloads |= GUEST_OFFLOAD_LRO_MASK;
+>                 else
+> -                       offloads = vi->guest_offloads_capable &
+> -                                  ~GUEST_OFFLOAD_LRO_MASK;
+> +                       offloads &= ~GUEST_OFFLOAD_LRO_MASK;
+> +       }
+>
+> -               err = virtnet_set_guest_offloads(vi, offloads);
+> -               if (err)
+> -                       return err;
+> -               vi->guest_offloads = offloads;
+> +       if ((dev->features ^ features) & NETIF_F_RXCSUM) {
+> +               if (features & NETIF_F_RXCSUM)
+> +                       offloads |= GUEST_OFFLOAD_CSUM_MASK;
+> +               else
+> +                       offloads &= ~GUEST_OFFLOAD_CSUM_MASK;
+>         }
 
---3hsv4SUzU7ukNMsUbjxBG16iqesN8y6ZK
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+LRO requires receive checksum offload: packets must have their
+checksum verified prior to coalescing.
 
-On 9/28/20 10:36 AM, Joakim Zhang wrote:
-> Could I send out a V3 to review firstly, then wait Pankaj have time to =
-do the
-> test?
-
-sure, go ahead.
-
-Marc
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---3hsv4SUzU7ukNMsUbjxBG16iqesN8y6ZK--
-
---9SEwBZLuY8Wg30vu5sgU4RAhE3EGALqVs
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9xoRIACgkQqclaivrt
-76l9Pgf/e6rinM1v0XRuQNTB89bUrwo5wqDnYyUg+duY/0z75Eqr/GGnDdWFzALz
-RAziSoMLW3ZXG9ILBlcAgeFVs30qYGRznpOLGWQAlsMLR1kzp3A6k05b2yqjcdI4
-eQzcBD/N6XwhV9W63RiUUDfuj51iY/qksVTGgvdSPST9lmT5wp5dxxiaDibj5oI7
-5hM8QleK8xg0rMTjlzjbuig+7qNFmQYcNApQu9va/qsDVIjelJhJcY9qhbgguh/t
-4Xa7U3b9g9rOTZhHZXJgWvmT6Vt/xamAF6NZqurG7M7UsJvRjmB7IonjSSZUOVUZ
-tDyd5mrwoS9NfG1nJzLWM4OBjifwgA==
-=fRPT
------END PGP SIGNATURE-----
-
---9SEwBZLuY8Wg30vu5sgU4RAhE3EGALqVs--
+The two features can thus not be configured fully independently.
