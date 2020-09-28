@@ -2,79 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D60D527B62E
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 22:25:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90D7627B6B3
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 22:52:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726844AbgI1UZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 16:25:00 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:41050 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726692AbgI1UZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 16:25:00 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601324697;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bFCfMeJz3k7KgJV/g5+JO0vuUvcWHhiaBBsDnTpUBlY=;
-        b=TP+PHTQylOshKfHId3EGDSY+kpXmrrQb8H3PwNUb84fyOn4v5ZeeI8H0JxN/b8gF8adktB
-        W7OG2fyaY3Sih3/menetx7cVg5D3lteYcAucOb6MbOoeyyuCW47eANUHyiPTvul0+No5wz
-        vtqtHjO+0efFNqmBef7hEjs9QzEFBcXj97JYGvKomBDBDXFghK+TvTeZQurFKynWXlEDYT
-        +h1dti1KMXdySYSTvj448S1p/9MD+aU3UXWBmsRYm5DQSLkEufICQL1A3mrIYQBvEQubGF
-        QgHfc4AeIYB44xI9JHCSwintZ0/I92YCAZ+XxvoSz55bsYFHMkubqvEbk+aFTw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601324697;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bFCfMeJz3k7KgJV/g5+JO0vuUvcWHhiaBBsDnTpUBlY=;
-        b=nIpAK+TLxTnYokpLYa33bQYSZ6zKFYxNxEexVmJUR3hXUJBCTfLAqtcMtiFO92LiSBBuJY
-        dGDq3BCWHqF3KDBw==
-To:     Edward Cree <ecree@solarflare.com>,
-        linux-net-drivers@solarflare.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH net-next] sfc: replace in_interrupt() usage
-In-Reply-To: <e45d9556-2759-6f33-01a0-d1739ce5760d@solarflare.com>
-References: <168a1f9e-cba4-69a8-9b29-5c121295e960@solarflare.com> <e45d9556-2759-6f33-01a0-d1739ce5760d@solarflare.com>
-Date:   Mon, 28 Sep 2020 22:24:57 +0200
-Message-ID: <87k0wdk5t2.fsf@nanos.tec.linutronix.de>
+        id S1726874AbgI1UwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 16:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726393AbgI1UwM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 16:52:12 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BB1C061755
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 13:52:12 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id b17so1396389pji.1
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 13:52:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=N/6tMjAU83pBPZsZpiMZQiEvPJJe3wBR1akf3N9FiNg=;
+        b=h+hJMn31EVS18Wt/1JvPwFYM9jzEaJ4UyXTa9myGSBg5iBYu7kMO4nyXV/Af6kSnup
+         m07MNUrMWFFbAzKuSL5oUOYzzEwZ9G9tdOEFNbpZ2hfS2llQkYsxXkcPlkRuTGF7iT8V
+         aSZhVhMUqgA4HpsbjPPu3zDBzhD6Db761dAbw3lEnD2wI7+rPa6WPZTj6QfcTwcjiHZc
+         n04+qipeNg1oHk0V0RBhOg7cwzpdVVVr64u2y3X9CI0Tokkv0IdidCWYsmtWMSGzPNiN
+         i6lpKXDaKplNRwSIP/HzGp1h0viK0EQ1LRURfM4WL2yJjQ50tVr/I2mgzHlxHBmkflJc
+         rrUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=N/6tMjAU83pBPZsZpiMZQiEvPJJe3wBR1akf3N9FiNg=;
+        b=CFJ3zkoUKxQehlt/cR0unrXBu6+TkS8tP4bm3LGcDqhXYGSqL4238wUZB7RCU2Luvr
+         ntiSZDhVdf3aj86/dmQk/c5gLpbyH0IiabVP9+Qo7BgVnMsFZaflXToW7bXZ0rvUjg8w
+         O+b/pJ6m7roVuDbVl8t6X39YstA4kEQktWLPD/uSqqoQpZQ4gYxLbfoRuQPoYxuIoCyM
+         9X+wjqM6XHpYuUUAbthjvEgXIQssRSXFtue4m7qOGaQfqMLBNlAMhKBJnDcArvXlUMeN
+         lzwkjzWebacMsFIU6VmVK7VAFplT5Mm7yIHUZenRWZUrouH0rEcw0TZFzB5aW7ri/gUy
+         /V6A==
+X-Gm-Message-State: AOAM532xa9bJjm7pFjrUzazmi+gXHxm3GzRGt4x3seZRoh3WTk8prMEL
+        H/JUv9WOShZzG6+MZfkr4sng2lJVruD0Mw==
+X-Google-Smtp-Source: ABdhPJxfjuNUVNYzfeMMnrYhazPRBbAi6tzZ4ko+9S+XxhcYXkZyAvl68dq/WAWZclCFs2KLAF5ASg==
+X-Received: by 2002:a17:90a:13c7:: with SMTP id s7mr939141pjf.124.1601326331917;
+        Mon, 28 Sep 2020 13:52:11 -0700 (PDT)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id e16sm2196243pgv.81.2020.09.28.13.52.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2020 13:52:11 -0700 (PDT)
+Date:   Mon, 28 Sep 2020 13:52:04 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jan Engelhardt <jengelh@inai.de>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [iproute PATCH] build: avoid make jobserver warnings
+Message-ID: <20200928135204.3285b619@hermes.local>
+In-Reply-To: <20200928190801.561-1-jengelh@inai.de>
+References: <20200928083931.75629c32@hermes.local>
+        <20200928190801.561-1-jengelh@inai.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 28 2020 at 21:05, Edward Cree wrote:
-> efx_ef10_try_update_nic_stats_vf() used in_interrupt() to figure out
->  whether it is safe to sleep (for MCDI) or not.
-> The only caller from which it was not is efx_net_stats(), which can be
->  invoked under dev_base_lock from net-sysfs::netstat_show().
-> So add a new update_stats_atomic() method to struct efx_nic_type, and
->  call it from efx_net_stats(), removing the need for
->  efx_ef10_try_update_nic_stats_vf() to behave differently for this case
->  (which it wasn't doing correctly anyway).
-> For all nic_types other than EF10 VF, this method is NULL and so we
->  call the regular update_stats() methods, which are happy with being
->  called from atomic contexts.
->
-> Fixes: f00bf2305cab ("sfc: don't update stats on VF when called in atomic context")
-> Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Signed-off-by: Edward Cree <ecree@solarflare.com>
+On Mon, 28 Sep 2020 21:08:01 +0200
+Jan Engelhardt <jengelh@inai.de> wrote:
 
-That's much nicer.
+> I observe:
+>=20
+> 	=C2=BB make -j8 CCOPTS=3D-ggdb3
+> 	lib
+> 	make[1]: warning: -j8 forced in submake: resetting jobserver mode.
+> 	make[1]: Nothing to be done for 'all'.
+> 	ip
+> 	make[1]: warning: -j8 forced in submake: resetting jobserver mode.
+> 	    CC       ipntable.o
+>=20
+> MFLAGS is a historic variable of some kind; removing it fixes the
+> jobserver issue.
+>=20
+> Signed-off-by: Jan Engelhardt <jengelh@inai.de>
 
-> ---
-> Only compile-tested so far, because I'm waiting for my kernel to
->  finish rebuilding with CONFIG_DEBUG_ATOMIC_SLEEP which I'm hoping
->  is the right thing to detect the bug in the existing code.
-> I also wasn't quite sure how to give credit to the thorough analysis
->  in the commit message of Sebastian's patch.  I don't think we have
->  a Whatever-by: tag to cover that, do we?
-
-Sebastian did the analysis and I did some word polishing, but the credit
-surely goes to him.
-
-Thanks,
-
-        tglx
+Applied.
