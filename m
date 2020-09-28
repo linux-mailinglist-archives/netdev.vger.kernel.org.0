@@ -2,93 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42D2527A9E2
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 10:46:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ADA827AA1B
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 11:00:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbgI1Ipo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 04:45:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47367 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726328AbgI1Ipn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 04:45:43 -0400
-Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601282742;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R/p+lmIVfxbJUcYSj4nC9UmZQslqUK3jR+nD79F1NfM=;
-        b=Saju/COAmcJtGI8H2ahFQoLwhmxzmyJk6+rRT4sV2CrJxPZuKPdi463t7Efzty8+ab+Piy
-        2JMgfikY7w2MKdF6rgtnB/uT2oE6A3naUdsFWv59kFomP4WlPJnxw5R4R8/s+Ce5gYH1GI
-        3B8RzcYuYaCTMFzILO5GZtteIikKYwg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-343--tLdz3qgO32GPoQyiYpOiw-1; Mon, 28 Sep 2020 04:45:40 -0400
-X-MC-Unique: -tLdz3qgO32GPoQyiYpOiw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B99A2801F97;
-        Mon, 28 Sep 2020 08:45:38 +0000 (UTC)
-Received: from ovpn-115-6.ams2.redhat.com (ovpn-115-6.ams2.redhat.com [10.36.115.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B49678482;
-        Mon, 28 Sep 2020 08:45:36 +0000 (UTC)
-Message-ID: <f4cb4816d70e480f1b9bc88bfee1ec5d9017d42a.camel@redhat.com>
-Subject: Re: [RFC PATCH net-next 1/6] net: implement threaded-able napi poll
- loop support
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Wei Wang <weiwan@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        id S1726684AbgI1I76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 04:59:58 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:50929 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726461AbgI1I75 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 04:59:57 -0400
+Received: by mail-wm1-f67.google.com with SMTP id e17so255581wme.0;
+        Mon, 28 Sep 2020 01:59:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Z1pXiZu8/lbpcC5OOR1HHt+WJc9Zi03GtYctvtdplD4=;
+        b=QtJN08lBetwcbva9VVuCfbu/bYexVNzn/WRCo/mDHqd/XFSGOh/vFGwOB+aNSKW98q
+         uAHe6hqAfbgXL2UzxNc++8KQdBFzMrsl1FPmCZ9exIoHyyRvwwTAHeXhw/QzkoPzXcE5
+         l7cK+9kX5DMup3/SBTby2HuKPm6qji0Q+NAwKCPhyNefi1Vm7HI5y2d3Zp0H3d3O5d58
+         iqMXpbLN0ZQjHrpdhRY+o1TP4xGrqVEGtkOU3AY/iNne0wVWH+J4pPI+G7zsSNzjfL20
+         B+w6QBy9O6z/pf7HlRjD8t+ZTRK4Suwis9iZTwHG4WaKLlP4kinhMBCvzCJ4LVfdeOFz
+         I8Jw==
+X-Gm-Message-State: AOAM532o6whpm+lqnLPdqZe8ILKqe2o1IvGCekdIlq7Gscf7GSN6FuHq
+        J314nIfhVL4DRhAZQAzJe7o=
+X-Google-Smtp-Source: ABdhPJwTUznMg4qU1PpK1jW4iQ8NBXUE7lDRIOJNIqN9idOI7XE143sfOo/KuA6ckcfJJXr8isESDg==
+X-Received: by 2002:a1c:7e15:: with SMTP id z21mr528843wmc.21.1601283594850;
+        Mon, 28 Sep 2020 01:59:54 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id i3sm548308wrs.4.2020.09.28.01.59.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2020 01:59:54 -0700 (PDT)
+Date:   Mon, 28 Sep 2020 08:59:52 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Boqun Feng <boqun.feng@gmail.com>
+Cc:     linux-hyperv@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Felix Fietkau <nbd@nbd.name>
-Date:   Mon, 28 Sep 2020 10:45:35 +0200
-In-Reply-To: <021e455b-faaf-4044-94bb-30291e1c9ee1@www.fastmail.com>
-References: <20200914172453.1833883-1-weiwan@google.com>
-         <20200914172453.1833883-2-weiwan@google.com>
-         <2ab7cdc1-b9e1-48c7-89b2-a10cd5e19545@www.fastmail.com>
-         <CAEA6p_DyU7jyHEeRiWFtNZfMPQjJJEV2jN1MV-+5txumC5nmZg@mail.gmail.com>
-         <021e455b-faaf-4044-94bb-30291e1c9ee1@www.fastmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Michael Kelley <mikelley@microsoft.com>, will@kernel.org,
+        ardb@kernel.org, arnd@arndb.de, catalin.marinas@arm.com,
+        mark.rutland@arm.com, maz@kernel.org
+Subject: Re: [PATCH v4 00/11] Hyper-V: Support PAGE_SIZE larger than 4K
+Message-ID: <20200928085952.t5ji5rjl3h6g7zks@liuwe-devbox-debian-v2>
+References: <20200916034817.30282-1-boqun.feng@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200916034817.30282-1-boqun.feng@gmail.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-On Sat, 2020-09-26 at 16:22 +0200, Hannes Frederic Sowa wrote:
-> On Sat, Sep 26, 2020, at 01:50, Wei Wang wrote:
-> > I took a look at the current "threadirqs" implementation. From my
-> > understanding, the kthread used there is to handle irq from the
-> > driver, and needs driver-specific thread_fn to be used. It is not
-> > as
-> > generic as in the napi layer where a common napi_poll() related
-> > function could be used as the thread handler. Or did I
-> > misunderstand
-> > your point?
+On Wed, Sep 16, 2020 at 11:48:06AM +0800, Boqun Feng wrote:
+> This patchset add the necessary changes to support guests whose page
+> size is larger than 4K. And the main architecture which we develop this
+> for is ARM64 (also it's the architecture that I use to test this
+> feature).
 > 
-> Based on my memories: We had napi_schedule & co being invoked inside
-> the threads 
+> Previous version:
+> v1: https://lore.kernel.org/lkml/20200721014135.84140-1-boqun.feng@gmail.com/
+> v2: https://lore.kernel.org/lkml/20200902030107.33380-1-boqun.feng@gmail.com
+> v3: https://lore.kernel.org/lkml/20200910143455.109293-1-boqun.feng@gmail.com/
+> 
+> Changes since v3:
+> 
+> *	Fix a bug that ringbuffer sizes are not page-aligned when
+> 	PAGE_SIZE = 16k. Drop the Acked-by and Reviewed-by tags for
+> 	those patches accordingly.
+> 
+> *	Code improvement as per suggestion from Michael Kelley.
+> 
+> I've done some tests with PAGE_SIZE=64k and PAGE_SIZE=16k configurations
+> on ARM64 guests (with Michael's patchset[1] for ARM64 Hyper-V guest
+> support), everything worked fine ;-)
+> 
+> Looking forwards to comments and suggestions!
+> 
+> Regards,
+> Boqun
+> 
+> [1]: https://lore.kernel.org/lkml/1598287583-71762-1-git-send-email-mikelley@microsoft.com/
+> 
+> Boqun Feng (11):
+>   Drivers: hv: vmbus: Always use HV_HYP_PAGE_SIZE for gpadl
+>   Drivers: hv: vmbus: Move __vmbus_open()
+>   Drivers: hv: vmbus: Introduce types of GPADL
+>   Drivers: hv: Use HV_HYP_PAGE in hv_synic_enable_regs()
+>   Drivers: hv: vmbus: Move virt_to_hvpfn() to hyperv header
+>   hv: hyperv.h: Introduce some hvpfn helper functions
+>   hv_netvsc: Use HV_HYP_PAGE_SIZE for Hyper-V communication
+>   Input: hyperv-keyboard: Use VMBUS_RING_SIZE() for ringbuffer sizes
+>   HID: hyperv: Use VMBUS_RING_SIZE() for ringbuffer sizes
+>   Driver: hv: util: Use VMBUS_RING_SIZE() for ringbuffer sizes
+>   scsi: storvsc: Support PAGE_SIZE larger than 4K
 
-I just looked at the code - I really forgot most details. The above is
-correct...
+Series applied to hyperv-next.
 
-> without touching any driver code when we specified
-> threadirqs. But this would need a double check. 
+I also replaced the tabs with spaces in the commit messages of patch 8
+through patch 10.
 
-... but still that code needed some per device driver modification: the
-irq subsystem handled the switch to/from threaded mode, and needed some
-callback, provided from the device driver, to notify the network code
-about the change (specifically, to mark the threaded status inside the
-relevant napi struct).
-
-Cheers,
-
-Paolo
-
+Wei.
