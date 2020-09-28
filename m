@@ -2,114 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7E0D27B52F
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 21:21:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E94827B535
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 21:25:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726562AbgI1TVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 15:21:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34301 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726281AbgI1TVs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 15:21:48 -0400
-Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601320907;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=y84J19RBiHtrF+ZCOt3RqJAf/EqA0hstnJ8ucx9jVeo=;
-        b=eTVcHPtRa8iGl22fodm5uIZgIfbVeiA6pLBgxlL/1aBi/a8OsOLKyVmMlD2sHpNf2YSGZV
-        sRzSRp5LwyrA7UbR1Ld1tMG3yjiShzxi8IxEErcnzPBkCtrx68KLyo2uXt7HzH0knk/Xw1
-        pSLqcx9KjUUT55a1YXzniYTl4u7/GmE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-123-p-TbYFN7Oq2OadJ-tWnsKA-1; Mon, 28 Sep 2020 15:21:45 -0400
-X-MC-Unique: p-TbYFN7Oq2OadJ-tWnsKA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D237A1005513;
-        Mon, 28 Sep 2020 19:21:43 +0000 (UTC)
-Received: from ceranb (unknown [10.40.195.153])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1C26C805D2;
-        Mon, 28 Sep 2020 19:21:42 +0000 (UTC)
-Date:   Mon, 28 Sep 2020 21:21:42 +0200
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool 1/2] netlink: return -ENOMEM when calloc fails
-Message-ID: <20200928212142.03afa116@ceranb>
-In-Reply-To: <20200928154455.hi6767brao7p4ac5@lion.mk-sys.cz>
-References: <20200924192758.577595-1-ivecera@redhat.com>
-        <20200928154455.hi6767brao7p4ac5@lion.mk-sys.cz>
+        id S1726566AbgI1TZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 15:25:13 -0400
+Received: from www62.your-server.de ([213.133.104.62]:46420 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726228AbgI1TZN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 15:25:13 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kMylm-0000bz-3J; Mon, 28 Sep 2020 21:25:06 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kMyll-000Ji3-Qu; Mon, 28 Sep 2020 21:25:05 +0200
+Subject: Re: [PATCH bpf-next] xsk: fix possible crash in socket_release when
+ out-of-memory
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        netdev@vger.kernel.org, jonathan.lemon@gmail.com
+Cc:     bpf@vger.kernel.org
+References: <1601112373-10595-1-git-send-email-magnus.karlsson@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c43d8022-362c-3d6f-89dc-a1ef183f77fb@iogearbox.net>
+Date:   Mon, 28 Sep 2020 21:25:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <1601112373-10595-1-git-send-email-magnus.karlsson@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25941/Mon Sep 28 15:55:11 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Sep 2020 17:44:55 +0200
-Michal Kubecek <mkubecek@suse.cz> wrote:
-
-> On Thu, Sep 24, 2020 at 09:27:57PM +0200, Ivan Vecera wrote:
-> > Fixes: f2c17e107900 ("netlink: add netlink handler for gfeatures (-k)")
-> > 
-> > Cc: Michal Kubecek <mkubecek@suse.cz>
-> > Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-> > ---
-> >  netlink/features.c | 9 +++++----
-> >  1 file changed, 5 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/netlink/features.c b/netlink/features.c
-> > index 3f1240437350..b2cf57eea660 100644
-> > --- a/netlink/features.c
-> > +++ b/netlink/features.c
-> > @@ -112,16 +112,17 @@ int dump_features(const struct nlattr *const *tb,
-> >  	unsigned int *feature_flags = NULL;
-> >  	struct feature_results results;
-> >  	unsigned int i, j;
-> > -	int ret;
-> > +	int ret = 0;
-> >  
-> >  	ret = prepare_feature_results(tb, &results);
-> >  	if (ret < 0)
-> >  		return -EFAULT;
-> >  
-> > -	ret = -ENOMEM;
-> >  	feature_flags = calloc(results.count, sizeof(feature_flags[0]));
-> > -	if (!feature_flags)
-> > +	if (!feature_flags) {
-> > +		ret = -ENOMEM;
-> >  		goto out_free;
-> > +	}
-> >  
-> >  	/* map netdev features to legacy flags */
-> >  	for (i = 0; i < results.count; i++) {
-> > @@ -184,7 +185,7 @@ int dump_features(const struct nlattr *const *tb,
-> >  
-> >  out_free:
-> >  	free(feature_flags);
-> > -	return 0;
-> > +	return ret;
-> >  }
-> >  
-> >  int features_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-> > -- 
-> > 2.26.2  
+On 9/26/20 11:26 AM, Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
 > 
-> The patch is correct but relying on ret staying zero through the whole
-> function is rather fragile (it could break when adding more checks in
-> the future) and it also isn't consistent with the way this is done in
-> other functions.
+> Fix possible crash in socket_release when an out-of-memory error has
+> occurred in the bind call. If a socket using the XDP_SHARED_UMEM flag
+> encountered an error in xp_create_and_assign_umem, the bind code
+> jumped to the exit routine but erroneously forgot to set the err value
+> before jumping. This meant that the exit routine thought the setup
+> went well and set the state of the socket to XSK_BOUND. The xsk socket
+> release code will then, at application exit, think that this is a
+> properly setup socket, when it is not, leading to a crash when all
+> fields in the socket have in fact not been initialized properly. Fix
+> this by setting the err variable in xsk_bind so that the socket is not
+> set to XSK_BOUND which leads to the clean-up in xsk_release not being
+> triggered.
 > 
-> AFAICS you could omit the first hunk and just add "ret = 0" above the
-> out_free label.
-> 
-> Michal
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> Reported-by: syzbot+ddc7b4944bc61da19b81@syzkaller.appspotmail.com
+> Fixes: 1c1efc2af158 ("xsk: Create and free buffer pool independently from umem")
 
-OK, will do.
+Looks good either way, applied, thanks!
 
-Ivan
+> I have not been able to reproduce this issue using the syzkaller
+> config and reproducer, so I cannot guarantee it fixes it. But this bug
+> is real and it is triggered by an out-of-memory in
+> xp_create_and_assign_umem, just like syzcaller injects, and would lead
+> to the same crash in dev_hold in xsk_release.
 
+You can just asked syzbot (which I just did on the original report) via:
+
+#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+
+Thanks,
+Daniel
