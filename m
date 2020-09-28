@@ -2,257 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 433D327A525
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 03:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A898B27A54B
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 04:00:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbgI1BNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 21:13:41 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:29752 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726500AbgI1BNg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 21:13:36 -0400
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08S11UBE149188
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 21:13:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=BZMfeNElNlvjkCfY9DLyQJLDYvWjNtx+PbBmFDshQtM=;
- b=esc/hiqY/4z2xkuBE5jxfygM0BfGpeuUEHSp725Q657yXaD5yOCCKCK/ZxQKnYjUUNAf
- jChnYBlFwf3mv3W427j25bPzWj5T6C2/aO4PDZJ2KkI0a7XHZuKSLKbV1IQeFL+sMBJE
- NQF5dVQgARQ/sHnIhwoSEOm0Z/iUrC1xqOMZ9FKjjc6E/uV9M0IJvg6p0xSoOG8MfI8V
- AWNOs8TT8yUM0jnSO70zcHoRHg+Bb3h5GPkuolL9V8vv9xp/rZJLwfFhGbGD5NyyJDF/
- sPQ0Qu5mOe77vehvj/xTnoPAbNbX22NbTm4sEpH6FJIjV7j8/3FEm/7Z0rkkklfl3tb1 bA== 
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33u46usyst-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 21:13:34 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08S170XE002207
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 01:13:34 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma01dal.us.ibm.com with ESMTP id 33sw98t6kk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 01:13:34 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08S1DXCu52494596
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Sep 2020 01:13:33 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 64F8FAC05F;
-        Mon, 28 Sep 2020 01:13:33 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 05221AC05E;
-        Mon, 28 Sep 2020 01:13:33 +0000 (GMT)
-Received: from pompom.ibm.com (unknown [9.85.151.55])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 28 Sep 2020 01:13:32 +0000 (GMT)
-From:   Lijun Pan <ljp@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     sukadev@linux.ibm.com, drt@linux.ibm.com,
-        Lijun Pan <ljp@linux.ibm.com>
-Subject: [PATCH net-next 5/5] ibmvnic: create send_control_ip_offload
-Date:   Sun, 27 Sep 2020 20:13:30 -0500
-Message-Id: <20200928011330.79774-6-ljp@linux.ibm.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20200928011330.79774-1-ljp@linux.ibm.com>
-References: <20200928011330.79774-1-ljp@linux.ibm.com>
+        id S1726440AbgI1CAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 22:00:21 -0400
+Received: from mail-am6eur05on2072.outbound.protection.outlook.com ([40.107.22.72]:49593
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726396AbgI1CAV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Sep 2020 22:00:21 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lRfgze7W3Vw0waeNvC2s2zpmtsk50OK0s623a+9B1CjT5rWniULDa+C8MoHoEJc1TniLN77TeTmC3xzVhvaYXqLIFGJptGraKh3dLdSk0witOMVWf3m0uN6OtcZBa3NpbWcVKBpzAiBNDkwpTUWBq/NDHxbabH3+ACWVFIGKJl/83JEGNtp4nZdT6rgEW0XRbTkrZDZ8qEG2qpzop5A9aRdg/jCKUPLkGvr2KZlk2f/SMDDo8MuKbq632d2wgWkCoaUUwP2/sFivM10KIFMRYCIa/UJCSdnINWohG56dzetqQ6a9NsBmZC82203flpZvwJOJ7V5tZugEmuaeWuonlg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5A4Eg0zlhsIWL0GLLhDOJ7ZCIruuOc4geZiwTb2YFnA=;
+ b=DW67i8Nlhh6PhzXcu9qWOclQODg7gs1JGvuPz+wdqIQMyZSp2JbVKFInl9PsV0fWIB9yAU74NRcJlOaRH5za245++caDCWn+dNZ0i3s3m8Dsh/IE/0E0Ta1MZ7drOuNlNhLV2rtqx/KUZA0ZrJIHfQS11nQyOISy1uiXWJ3qepXJ+sJ17tifIV8QS+OiKTyRooeD9+R5G+jXmpcFvphKmfUTHVudapaMrylS/MF8fivFvqlgChB8imRveXwzI9j1Q8XDiHtbUferqomUW+YmxP+0agoI11/F1IsCKJpPU2ZejckpIiIA/OPvoCMAjLVrYbbUVt1MI+8CL2XKSWqy7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5A4Eg0zlhsIWL0GLLhDOJ7ZCIruuOc4geZiwTb2YFnA=;
+ b=g18lr8hj2srtsJFUDGRZ4L5vBfq6dho4VMYXB8oISV44nS2XUwrKYwW0iJr9snFGeD0/a5QQhnH9WHb+EbDJN/oBeEOV0aHChoti1Yx5hHCyJO4wNUfZl574/+1xzzKC5It6CkumOjaJlU7o+gDf1jp8qwejmnF1Drp39oK3uKY=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB7PR04MB4283.eurprd04.prod.outlook.com (2603:10a6:5:27::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.24; Mon, 28 Sep
+ 2020 02:00:15 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::d12e:689a:169:fd68]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::d12e:689a:169:fd68%8]) with mapi id 15.20.3412.029; Mon, 28 Sep 2020
+ 02:00:15 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH V2 1/3] can: flexcan: initialize all flexcan memory for
+ ECC function
+Thread-Topic: [PATCH V2 1/3] can: flexcan: initialize all flexcan memory for
+ ECC function
+Thread-Index: AQHWlKVNGxBuk+dVOE+HzIioencc0Kl85foAgABlZqA=
+Date:   Mon, 28 Sep 2020 02:00:15 +0000
+Message-ID: <DB8PR04MB67951C7B7C74E79FE61D06A5E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20200927160801.28569-1-qiangqing.zhang@nxp.com>
+ <20200927160801.28569-2-qiangqing.zhang@nxp.com>
+ <c2299dd3-e818-0192-eae4-02c045b83a30@pengutronix.de>
+In-Reply-To: <c2299dd3-e818-0192-eae4-02c045b83a30@pengutronix.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: pengutronix.de; dkim=none (message not signed)
+ header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 83e9f8dd-9ad0-4dca-887d-08d863523e1b
+x-ms-traffictypediagnostic: DB7PR04MB4283:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB428301A0227BA6741543BE98E6350@DB7PR04MB4283.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3276;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: qF4udlnriE5iR6IYp8OoN0PDjeq1yg9cLZ/xhMc5RGogRzrwR13li6e4uXkFIlIelEtrrQDurS/nhtixYnkJKYvXoDa576ASHga+XThAjDTwDPG4GlViVMdeMiZjFLmHtmpHg1ndkk5WtMHjrxlMChIK8D99RTTthpmKZz0a4vbH6+Qqso8/c9mu/qqyslw5aaWefOCgCSefgqnrxyN/SH6bWsoTF4hBjzpn4VE7psxtfG+ox+Mt4b7/CFcysE9euP1U638UdY2B4SeEGFehzq6SEpTYVts2sNbgegfum8N+6ue7Re6woM2ZQDR4IDZ6CqPH3o5A6nJp/k0mA4kIIQMAjHbBy73E45f/6pdudhL6PVLFsqSE+HUe5Rlmu/R5ngv4WeJsZxO0BYsMAdJldrCu3f9m8NuNqF4a5HLdPYhKLmtLBdTCR2ssMeGPcTLz1rL0rQrxjGjXkgYO8kvJqg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(396003)(366004)(136003)(39860400002)(71200400001)(8936002)(7696005)(55016002)(2906002)(9686003)(110136005)(83380400001)(54906003)(186003)(6506007)(53546011)(966005)(26005)(316002)(5660300002)(52536014)(66476007)(64756008)(66446008)(66556008)(86362001)(33656002)(76116006)(83080400001)(8676002)(478600001)(4326008)(66946007)(6636002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: SNOe0r/d7RvDNUxjvqW7BfsxI7zXyqNVnCaFtNxFkySJy7PiaNCvnt8pCyN5tQM9zPElmfe4yyC0y9ZyHygref+Dwbx3IXkI1ZItlCJk9SGS2JZbg/gGrRn1fIswOM660MirrrYuFVW9ERNmVbAYu7nTtX75Kbw1ClbgosXSDb7NQU4TGXwJKh+AYqv47wJmplTotrKvaTvY5E1RhkYsRKx9YoosV+5nMiEMiXdRngYCrYLykmzKAYPwn3+nsuLAUSng4EXnrnly+WA/ZEKlH8SWKzbhzYUe1DAEt46x+gU7QZfsMQUXFqgUe8rVgfkJGOSLXPLSsCgpL18Jw+qf/QwcPhsSpV4Pb6NZ9ezHn8WaYahM9GJo3b3DslWTWKt4WML/WpJGI678Uqv1OEoBpupRKeffGasKsMbzvn6/3e0miYuqHw54THlyTLBe69MsnHBxYNzPPtxeafQ5CsOhU1BXRIhhz9rwo5SXAFR+3YyFFAI79ZmPibV9YduG07QslXjszdKF3hBel3WT1xCNBgm5C2kc1ZO33Jdb874pZG5yeIHor2feFD7C7NBHWXxnzH+XLtcIZd/QiGzTW688bpRPf+Nih5XM+j/SuvQIPK8Piuo7aFFeJG2OtKCPRsJ4/6z+zB1j+CDKKrrNyS8Glw==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-27_18:2020-09-24,2020-09-27 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
- clxscore=1015 impostorscore=0 priorityscore=1501 bulkscore=0 phishscore=0
- mlxlogscore=837 lowpriorityscore=0 malwarescore=0 suspectscore=1
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009280000
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 83e9f8dd-9ad0-4dca-887d-08d863523e1b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Sep 2020 02:00:15.2100
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: VNnnZ9tLB9Aw58iU3EFDjkDmua39xFud/Mnqt7uKzeEJGXL8s+ZRzI0rRLaApKr+cm28hshkTSEWSC0w5xhCww==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4283
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Factor send_control_ip_offload out of handle_query_ip_offload_rsp.
-
-Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 150 +++++++++++++++--------------
- 1 file changed, 80 insertions(+), 70 deletions(-)
-
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index c31b81cf43b6..22ba3dc83d2f 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -3981,6 +3981,85 @@ static void send_query_ip_offload(struct ibmvnic_adapter *adapter)
- 	ibmvnic_send_crq(adapter, &crq);
- }
- 
-+static void send_control_ip_offload(struct ibmvnic_adapter *adapter)
-+{
-+	struct ibmvnic_control_ip_offload_buffer *ctrl_buf = &adapter->ip_offload_ctrl;
-+	struct ibmvnic_query_ip_offload_buffer *buf = &adapter->ip_offload_buf;
-+	struct device *dev = &adapter->vdev->dev;
-+	netdev_features_t old_hw_features = 0;
-+	union ibmvnic_crq crq;
-+
-+	adapter->ip_offload_ctrl_tok =
-+		dma_map_single(dev,
-+			       ctrl_buf,
-+			       sizeof(adapter->ip_offload_ctrl),
-+			       DMA_TO_DEVICE);
-+
-+	if (dma_mapping_error(dev, adapter->ip_offload_ctrl_tok)) {
-+		dev_err(dev, "Couldn't map ip offload control buffer\n");
-+		return;
-+	}
-+
-+	ctrl_buf->len = cpu_to_be32(sizeof(adapter->ip_offload_ctrl));
-+	ctrl_buf->version = cpu_to_be32(INITIAL_VERSION_IOB);
-+	ctrl_buf->ipv4_chksum = buf->ipv4_chksum;
-+	ctrl_buf->ipv6_chksum = buf->ipv6_chksum;
-+	ctrl_buf->tcp_ipv4_chksum = buf->tcp_ipv4_chksum;
-+	ctrl_buf->udp_ipv4_chksum = buf->udp_ipv4_chksum;
-+	ctrl_buf->tcp_ipv6_chksum = buf->tcp_ipv6_chksum;
-+	ctrl_buf->udp_ipv6_chksum = buf->udp_ipv6_chksum;
-+	ctrl_buf->large_tx_ipv4 = buf->large_tx_ipv4;
-+	ctrl_buf->large_tx_ipv6 = buf->large_tx_ipv6;
-+
-+	/* large_rx disabled for now, additional features needed */
-+	ctrl_buf->large_rx_ipv4 = 0;
-+	ctrl_buf->large_rx_ipv6 = 0;
-+
-+	if (adapter->state != VNIC_PROBING) {
-+		old_hw_features = adapter->netdev->hw_features;
-+		adapter->netdev->hw_features = 0;
-+	}
-+
-+	adapter->netdev->hw_features = NETIF_F_SG | NETIF_F_GSO | NETIF_F_GRO;
-+
-+	if (buf->tcp_ipv4_chksum || buf->udp_ipv4_chksum)
-+		adapter->netdev->hw_features |= NETIF_F_IP_CSUM;
-+
-+	if (buf->tcp_ipv6_chksum || buf->udp_ipv6_chksum)
-+		adapter->netdev->hw_features |= NETIF_F_IPV6_CSUM;
-+
-+	if ((adapter->netdev->features &
-+	    (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM)))
-+		adapter->netdev->hw_features |= NETIF_F_RXCSUM;
-+
-+	if (buf->large_tx_ipv4)
-+		adapter->netdev->hw_features |= NETIF_F_TSO;
-+	if (buf->large_tx_ipv6)
-+		adapter->netdev->hw_features |= NETIF_F_TSO6;
-+
-+	if (adapter->state == VNIC_PROBING) {
-+		adapter->netdev->features |= adapter->netdev->hw_features;
-+	} else if (old_hw_features != adapter->netdev->hw_features) {
-+		netdev_features_t tmp = 0;
-+
-+		/* disable features no longer supported */
-+		adapter->netdev->features &= adapter->netdev->hw_features;
-+		/* turn on features now supported if previously enabled */
-+		tmp = (old_hw_features ^ adapter->netdev->hw_features) &
-+			adapter->netdev->hw_features;
-+		adapter->netdev->features |=
-+				tmp & adapter->netdev->wanted_features;
-+	}
-+
-+	memset(&crq, 0, sizeof(crq));
-+	crq.control_ip_offload.first = IBMVNIC_CRQ_CMD;
-+	crq.control_ip_offload.cmd = CONTROL_IP_OFFLOAD;
-+	crq.control_ip_offload.len =
-+	    cpu_to_be32(sizeof(adapter->ip_offload_ctrl));
-+	crq.control_ip_offload.ioba = cpu_to_be32(adapter->ip_offload_ctrl_tok);
-+	ibmvnic_send_crq(adapter, &crq);
-+}
-+
- static void handle_vpd_size_rsp(union ibmvnic_crq *crq,
- 				struct ibmvnic_adapter *adapter)
- {
-@@ -4050,8 +4129,6 @@ static void handle_query_ip_offload_rsp(struct ibmvnic_adapter *adapter)
- {
- 	struct device *dev = &adapter->vdev->dev;
- 	struct ibmvnic_query_ip_offload_buffer *buf = &adapter->ip_offload_buf;
--	netdev_features_t old_hw_features = 0;
--	union ibmvnic_crq crq;
- 	int i;
- 
- 	dma_unmap_single(dev, adapter->ip_offload_tok,
-@@ -4101,74 +4178,7 @@ static void handle_query_ip_offload_rsp(struct ibmvnic_adapter *adapter)
- 	netdev_dbg(adapter->netdev, "off_ipv6_ext_hd = %d\n",
- 		   buf->off_ipv6_ext_headers);
- 
--	adapter->ip_offload_ctrl_tok =
--	    dma_map_single(dev, &adapter->ip_offload_ctrl,
--			   sizeof(adapter->ip_offload_ctrl), DMA_TO_DEVICE);
--
--	if (dma_mapping_error(dev, adapter->ip_offload_ctrl_tok)) {
--		dev_err(dev, "Couldn't map ip offload control buffer\n");
--		return;
--	}
--
--	adapter->ip_offload_ctrl.len =
--	    cpu_to_be32(sizeof(adapter->ip_offload_ctrl));
--	adapter->ip_offload_ctrl.version = cpu_to_be32(INITIAL_VERSION_IOB);
--	adapter->ip_offload_ctrl.ipv4_chksum = buf->ipv4_chksum;
--	adapter->ip_offload_ctrl.ipv6_chksum = buf->ipv6_chksum;
--	adapter->ip_offload_ctrl.tcp_ipv4_chksum = buf->tcp_ipv4_chksum;
--	adapter->ip_offload_ctrl.udp_ipv4_chksum = buf->udp_ipv4_chksum;
--	adapter->ip_offload_ctrl.tcp_ipv6_chksum = buf->tcp_ipv6_chksum;
--	adapter->ip_offload_ctrl.udp_ipv6_chksum = buf->udp_ipv6_chksum;
--	adapter->ip_offload_ctrl.large_tx_ipv4 = buf->large_tx_ipv4;
--	adapter->ip_offload_ctrl.large_tx_ipv6 = buf->large_tx_ipv6;
--
--	/* large_rx disabled for now, additional features needed */
--	adapter->ip_offload_ctrl.large_rx_ipv4 = 0;
--	adapter->ip_offload_ctrl.large_rx_ipv6 = 0;
--
--	if (adapter->state != VNIC_PROBING) {
--		old_hw_features = adapter->netdev->hw_features;
--		adapter->netdev->hw_features = 0;
--	}
--
--	adapter->netdev->hw_features = NETIF_F_SG | NETIF_F_GSO | NETIF_F_GRO;
--
--	if (buf->tcp_ipv4_chksum || buf->udp_ipv4_chksum)
--		adapter->netdev->hw_features |= NETIF_F_IP_CSUM;
--
--	if (buf->tcp_ipv6_chksum || buf->udp_ipv6_chksum)
--		adapter->netdev->hw_features |= NETIF_F_IPV6_CSUM;
--
--	if ((adapter->netdev->features &
--	    (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM)))
--		adapter->netdev->hw_features |= NETIF_F_RXCSUM;
--
--	if (buf->large_tx_ipv4)
--		adapter->netdev->hw_features |= NETIF_F_TSO;
--	if (buf->large_tx_ipv6)
--		adapter->netdev->hw_features |= NETIF_F_TSO6;
--
--	if (adapter->state == VNIC_PROBING) {
--		adapter->netdev->features |= adapter->netdev->hw_features;
--	} else if (old_hw_features != adapter->netdev->hw_features) {
--		netdev_features_t tmp = 0;
--
--		/* disable features no longer supported */
--		adapter->netdev->features &= adapter->netdev->hw_features;
--		/* turn on features now supported if previously enabled */
--		tmp = (old_hw_features ^ adapter->netdev->hw_features) &
--			adapter->netdev->hw_features;
--		adapter->netdev->features |=
--				tmp & adapter->netdev->wanted_features;
--	}
--
--	memset(&crq, 0, sizeof(crq));
--	crq.control_ip_offload.first = IBMVNIC_CRQ_CMD;
--	crq.control_ip_offload.cmd = CONTROL_IP_OFFLOAD;
--	crq.control_ip_offload.len =
--	    cpu_to_be32(sizeof(adapter->ip_offload_ctrl));
--	crq.control_ip_offload.ioba = cpu_to_be32(adapter->ip_offload_ctrl_tok);
--	ibmvnic_send_crq(adapter, &crq);
-+	send_control_ip_offload(adapter);
- }
- 
- static const char *ibmvnic_fw_err_cause(u16 cause)
--- 
-2.23.0
-
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1hcmMgS2xlaW5lLUJ1ZGRl
+IDxta2xAcGVuZ3V0cm9uaXguZGU+DQo+IFNlbnQ6IDIwMjDlubQ55pyIMjjml6UgMzo1Mg0KPiBU
+bzogSm9ha2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT47IGxpbnV4LWNhbkB2Z2Vy
+Lmtlcm5lbC5vcmcNCj4gQ2M6IGRsLWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+OyBuZXRk
+ZXZAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggVjIgMS8zXSBjYW46IGZs
+ZXhjYW46IGluaXRpYWxpemUgYWxsIGZsZXhjYW4gbWVtb3J5IGZvciBFQ0MNCj4gZnVuY3Rpb24N
+Cj4gDQo+IE9uIDkvMjcvMjAgNjowNyBQTSwgSm9ha2ltIFpoYW5nIHdyb3RlOg0KPiA+IE9uZSBp
+c3N1ZSB3YXMgcmVwb3J0ZWQgYXQgYSBiYXJlbWV0YWwgZW52aXJvbm1lbnQsIHdoaWNoIGlzIHVz
+ZWQgZm9yDQo+ID4gRlBHQSB2ZXJpZmljYXRpb24uICJUaGUgZmlyc3QgdHJhbnNmZXIgd2lsbCBm
+YWlsIGZvciBleHRlbmRlZCBJRA0KPiA+IGZvcm1hdChmb3IgYm90aCAyLjBCIGFuZCBGRCBmb3Jt
+YXQpLCBmb2xsb3dpbmcgZnJhbWVzIGNhbiBiZQ0KPiA+IHRyYW5zbWl0dGVkIGFuZCByZWNlaXZl
+ZCBzdWNjZXNzZnVsbHkgZm9yIGV4dGVuZGVkIGZvcm1hdCwgYW5kDQo+ID4gc3RhbmRhcmQgZm9y
+bWF0IGRvbid0IGhhdmUgdGhpcyBpc3N1ZS4gVGhpcyBpc3N1ZSBvY2N1cnJlZCByYW5kb21seQ0K
+PiA+IHdpdGggaGlnaCBwb3NzaWJsaXR5LCB3aGVuIGl0IG9jY3VycywgdGhlIHRyYW5zbWl0dGVy
+IHdpbGwgZGV0ZWN0IGENCj4gPiBCSVQxIGVycm9yLCB0aGUgcmVjZWl2ZXIgYSBDUkMgZXJyb3Iu
+IEFjY29yZGluZyB0byB0aGUgc3BlYywgYQ0KPiA+IG5vbi1jb3JyZWN0YWJsZSBlcnJvciBtYXkg
+Y2F1c2UgdGhpcyB0cmFuc2ZlciBmYWlsdXJlLiINCj4gPg0KPiA+IFdpdGggRkxFWENBTl9RVUlS
+S19ESVNBQkxFX01FQ1IgcXVpcmssIGl0IHN1cHBvcnRzIGNvcnJlY3RhYmxlIGVycm9ycywNCj4g
+PiBkaXNhYmxlIG5vbi1jb3JyZWN0YWJsZSBlcnJvcnMgaW50ZXJydXB0IGFuZCBmcmVlemUgbW9k
+ZS4gSW5pdGlhbGl6ZQ0KPiA+IGFsbCBGbGV4Q0FOIG1lbW9yeSBiZWZvcmUgYWNjZXNzaW5nIHRo
+ZW0sIGF0IGxlYXN0IGl0IGNhbiBhdm9pZA0KPiA+IG5vbi1jb3JyZWN0YWJsZSBlcnJvcnMgZGV0
+ZWN0ZWQgZHVlIHRvIG1lbW9yeSB1bmluaXRpYWxpemVkLiBUaGUNCj4gPiBpbnRlcm5hbCByZWdp
+b24gY2FuJ3QgYmUgaW5pdGlhbGl6ZWQgd2hlbiB0aGUgaGFyZHdhcmUgZG9lc24ndCBzdXBwb3J0
+IEVDQy4NCj4gPg0KPiA+IEFjY29yZGluZyB0byBJTVg4TVBSTSwgUmV2LkMsIDA0LzIwMjAuIFRo
+ZXJlIGlzIGEgTk9URSBhdCB0aGUgc2VjdGlvbg0KPiA+ICIxMS44LjMuMTMgRGV0ZWN0aW9uIGFu
+ZCBjb3JyZWN0aW9uIG9mIG1lbW9yeSBlcnJvcnMiOg0KPiA+IEFsbCBGbGV4Q0FOIG1lbW9yeSBt
+dXN0IGJlIGluaXRpYWxpemVkIGJlZm9yZSBzdGFydGluZyBpdHMgb3BlcmF0aW9uDQo+ID4gaW4g
+b3JkZXIgdG8gaGF2ZSB0aGUgcGFyaXR5IGJpdHMgaW4gbWVtb3J5IHByb3Blcmx5IHVwZGF0ZWQu
+DQo+ID4gQ1RSTDJbV1JNRlJaXSBncmFudHMgd3JpdGUgYWNjZXNzIHRvIGFsbCBtZW1vcnkgcG9z
+aXRpb25zIHRoYXQgcmVxdWlyZQ0KPiA+IGluaXRpYWxpemF0aW9uLCByYW5naW5nIGZyb20gMHgw
+ODAgdG8gMHhBREYgYW5kIGZyb20gMHhGMjggdG8gMHhGRkYNCj4gPiB3aGVuIHRoZSBDQU4gRkQg
+ZmVhdHVyZSBpcyBlbmFibGVkLiBUaGUgUlhNR01BU0ssIFJYMTRNQVNLLA0KPiBSWDE1TUFTSywN
+Cj4gPiBhbmQgUlhGR01BU0sgcmVnaXN0ZXJzIG5lZWQgdG8gYmUgaW5pdGlhbGl6ZWQgYXMgd2Vs
+bC4gTUNSW1JGRU5dIG11c3Qgbm90DQo+IGJlIHNldCBkdXJpbmcgbWVtb3J5IGluaXRpYWxpemF0
+aW9uLg0KPiA+DQo+ID4gTWVtb3J5IHJhbmdlIGZyb20gMHgwODAgdG8gMHhBREYsIHRoZXJlIGFy
+ZSByZXNlcnZlZCBtZW1vcnkNCj4gPiAodW5pbXBsZW1lbnRlZCBieSBoYXJkd2FyZSwgZS5nLiBv
+bmx5IGNvbmZpZ3VyZSA2NCBNQnMpLCB0aGVzZSBtZW1vcnkNCj4gY2FuIGJlIGluaXRpYWxpemVk
+IG9yIG5vdC4NCj4gPiBJbiB0aGlzIHBhdGNoLCBpbml0aWFsaXplIGFsbCBmbGV4Y2FuIG1lbW9y
+eSB3aGljaCBpbmNsdWRlcyByZXNlcnZlZCBtZW1vcnkuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5
+OiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPg0KPiA+IC0tLQ0KPiA+IENo
+YW5nZUxvZ3M6DQo+ID4gVjEtPlYyOg0KPiA+IAkqIHVwZGF0ZSBjb21taXQgbWVzc2FnZXMsIGFk
+ZCBhIGRhdGFzaGVldCByZWZlcmVuY2UuDQo+ID4gCSogaW5pdGlhbGl6ZSBibG9jayBtZW1vcnkg
+aW5zdGVhZCBvZiB0cml2aWFsIG1lbW9yeS4NCj4gPiAJKiBpbmlsaWFsaXplIHJlc2VydmVkIG1l
+bW9yeS4NCj4gPiAtLS0NCj4gPiAgZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYyB8IDY3DQo+ID4g
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+ID4gIDEgZmlsZSBjaGFu
+Z2VkLCA2NyBpbnNlcnRpb25zKCspDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQv
+Y2FuL2ZsZXhjYW4uYyBiL2RyaXZlcnMvbmV0L2Nhbi9mbGV4Y2FuLmMNCj4gPiBpbmRleCBlODY5
+MjUxMzQwMDkuLmFjYTBmYzQwYWU5YiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL25ldC9jYW4v
+ZmxleGNhbi5jDQo+ID4gKysrIGIvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYw0KPiA+IEBAIC0z
+MDksNiArMzA5LDQwIEBAIHN0cnVjdCBmbGV4Y2FuX3JlZ3Mgew0KPiA+DQo+ID4gIHN0YXRpY19h
+c3NlcnQoc2l6ZW9mKHN0cnVjdCBmbGV4Y2FuX3JlZ3MpID09IDB4NCArIDB4YzA4KTsNCj4gPg0K
+PiA+ICsvKiBTdHJ1Y3R1cmUgb2YgbWVtb3J5IG5lZWQgYmUgaW5pdGlhbGl6ZWQgZm9yIEVDQyBm
+ZWF0dXJlICovIHN0YXRpYw0KPiA+ICtjb25zdCBzdHJ1Y3QgZmxleGNhbl9yYW1faW50IHsNCj4g
+PiArCXUzMiBvZmZzZXQ7DQo+ID4gKwl1MTYgbGVuOw0KPiA+ICt9IHJhbV9pbml0W10gPSB7DQo+
+ID4gKwkvKiByYW5naW5nIGZyb20gMHgwMDgwIHRvIDB4MEFERiwgcmFtIGRldGFpbHMgYXMgYmVs
+b3cgbGlzdDoNCj4gPiArCSAqIDB4MDA4MC0tMHgwODdGOgkxMjggTUJzDQo+ID4gKwkgKiAweDA4
+ODAtLTB4MEE3RjoJMTI4IFJYSU1Scw0KPiA+ICsJICogMHgwQTgwLS0weDBBOTc6CTYgUlhGSVJz
+DQo+ID4gKwkgKiAweDBBOTgtLTB4MEE5RjoJUmVzZXJ2ZWQNCj4gPiArCSAqIDB4MEFBMC0tMHgw
+QUEzOglSWE1HTUFTSw0KPiA+ICsJICogMHgwQUE0LS0weDBBQTc6CVJYRkdNQVNLDQo+ID4gKwkg
+KiAweDBBQTgtLTB4MEFBQjoJUlgxNE1BU0sNCj4gPiArCSAqIDB4MEFBQy0tMHgwQUFGOglSWDE1
+TUFTSw0KPiA+ICsJICogMHgwQUIwLS0weDBBQkY6CVRYX1NNQg0KPiA+ICsJICogMHgwQUMwLS0w
+eDBBQ0Y6CVJYX1NNQjANCj4gPiArCSAqIDB4MEFEMC0tMHgwQURGOglSWF9TTUIxDQo+ID4gKwkg
+Ki8NCj4gPiArCXsNCj4gPiArCQkub2Zmc2V0ID0gMHg4MCwNCj4gPiArCQkubGVuID0gKDB4YWRm
+IC0gMHg4MCkgLyBzaXplb2YodTMyKSArIDEsDQo+ID4gKwl9LA0KPiA+ICsJLyogcmFuZ2luZyBm
+cm9tIDB4MEYyOCB0byAweDBGRkYgd2hlbiBDQU4gRkQgZmVhdHVyZSBpcyBlbmFibGVkLA0KPiA+
+ICsJICogcmFtIGRldGFpbHMgYXMgYmVsb3cgbGlzdDoNCj4gPiArCSAqIDB4MEYyOC0tMHgwRjZG
+OglUWF9TTUJfRkQNCj4gPiArCSAqIDB4MEY3MC0tMHgwRkI3OglSWF9TTUIwX0ZEDQo+ID4gKwkg
+KiAweDBGQjgtLTB4MEZGRjoJUlhfU01CMF9GRA0KPiA+ICsJICovDQo+ID4gKwl7DQo+ID4gKwkJ
+Lm9mZnNldCA9IDB4ZjI4LA0KPiA+ICsJCS5sZW4gPSAoMHhmZmYgLSAweGYyOCkgLyBzaXplb2Yo
+dTMyKSArIDEsDQo+ID4gKwl9LA0KPiA+ICt9Ow0KPiANCj4gQXMgaXQncyBvbmx5IHR3byByYW5n
+ZXMsIEkgdGhpbmsgdGhlcmUncyBubyBuZWVkIGZvciB0aGlzIHN0cnVjdC4gRGlyZWN0bHkgbW92
+ZQ0KPiBjb2RlIHRoYXQgaW50byB0aGUgZm9yIGxvb3BzLg0KDQpPSy4NCg0KPiA+ICsNCj4gPiAg
+c3RydWN0IGZsZXhjYW5fZGV2dHlwZV9kYXRhIHsNCj4gPiAgCXUzMiBxdWlya3M7CQkvKiBxdWly
+a3MgbmVlZGVkIGZvciBkaWZmZXJlbnQgSVAgY29yZXMgKi8NCj4gPiAgfTsNCj4gPiBAQCAtMTI5
+Miw2ICsxMzI2LDM2IEBAIHN0YXRpYyB2b2lkIGZsZXhjYW5fc2V0X2JpdHRpbWluZyhzdHJ1Y3QN
+Cj4gbmV0X2RldmljZSAqZGV2KQ0KPiA+ICAJCXJldHVybiBmbGV4Y2FuX3NldF9iaXR0aW1pbmdf
+Y3RybChkZXYpOyAgfQ0KPiA+DQo+ID4gK3N0YXRpYyB2b2lkIGZsZXhjYW5faW5pdF9yYW0oc3Ry
+dWN0IG5ldF9kZXZpY2UgKmRldikgew0KPiA+ICsJc3RydWN0IGZsZXhjYW5fcHJpdiAqcHJpdiA9
+IG5ldGRldl9wcml2KGRldik7DQo+ID4gKwlzdHJ1Y3QgZmxleGNhbl9yZWdzIF9faW9tZW0gKnJl
+Z3MgPSBwcml2LT5yZWdzOw0KPiA+ICsJdTMyIHJlZ19jdHJsMjsNCj4gPiArCWludCBpOw0KPiA+
+ICsNCj4gPiArCS8qIDExLjguMy4xMyBEZXRlY3Rpb24gYW5kIGNvcnJlY3Rpb24gb2YgbWVtb3J5
+IGVycm9yczoNCj4gPiArCSAqIENUUkwyW1dSTUZSWl0gZ3JhbnRzIHdyaXRlIGFjY2VzcyB0byBh
+bGwgbWVtb3J5IHBvc2l0aW9ucyB0aGF0DQo+ID4gKwkgKiByZXF1aXJlIGluaXRpYWxpemF0aW9u
+LCByYW5naW5nIGZyb20gMHgwODAgdG8gMHhBREYgYW5kDQo+ID4gKwkgKiBmcm9tIDB4RjI4IHRv
+IDB4RkZGIHdoZW4gdGhlIENBTiBGRCBmZWF0dXJlIGlzIGVuYWJsZWQuDQo+ID4gKwkgKiBUaGUg
+UlhNR01BU0ssIFJYMTRNQVNLLCBSWDE1TUFTSywgYW5kIFJYRkdNQVNLIHJlZ2lzdGVycw0KPiBu
+ZWVkIHRvDQo+ID4gKwkgKiBiZSBpbml0aWFsaXplZCBhcyB3ZWxsLiBNQ1JbUkZFTl0gbXVzdCBu
+b3QgYmUgc2V0IGR1cmluZyBtZW1vcnkNCj4gPiArCSAqIGluaXRpYWxpemF0aW9uLg0KPiA+ICsJ
+ICovDQo+ID4gKwlyZWdfY3RybDIgPSBwcml2LT5yZWFkKCZyZWdzLT5jdHJsMik7DQo+ID4gKwly
+ZWdfY3RybDIgfD0gRkxFWENBTl9DVFJMMl9XUk1GUlo7DQo+ID4gKwlwcml2LT53cml0ZShyZWdf
+Y3RybDIsICZyZWdzLT5jdHJsMik7DQo+ID4gKw0KPiA+ICsJZm9yIChpID0gMDsgaSA8IHJhbV9p
+bml0WzBdLmxlbjsgaSsrKQ0KPiA+ICsJCXByaXYtPndyaXRlKDAsICh2b2lkIF9faW9tZW0gKily
+ZWdzICsgcmFtX2luaXRbMF0ub2Zmc2V0ICsNCj4gPiArc2l6ZW9mKHUzMikgKiBpKTsNCj4gPiAr
+DQo+ID4gKwlpZiAocHJpdi0+Y2FuLmN0cmxtb2RlICYgQ0FOX0NUUkxNT0RFX0ZEKQ0KPiA+ICsJ
+CWZvciAoaSA9IDA7IGkgPCByYW1faW5pdFsxXS5sZW47IGkrKykNCj4gPiArCQkJcHJpdi0+d3Jp
+dGUoMCwgKHZvaWQgX19pb21lbSAqKXJlZ3MgKyByYW1faW5pdFsxXS5vZmZzZXQgKw0KPiA+ICtz
+aXplb2YodTMyKSAqIGkpOw0KPiA+ICsNCj4gPiArCXJlZ19jdHJsMiAmPSB+RkxFWENBTl9DVFJM
+Ml9XUk1GUlo7DQo+ID4gKwlwcml2LT53cml0ZShyZWdfY3RybDIsICZyZWdzLT5jdHJsMik7IH0N
+Cj4gPiArDQo+ID4gIC8qIGZsZXhjYW5fY2hpcF9zdGFydA0KPiA+ICAgKg0KPiA+ICAgKiB0aGlz
+IGZ1bmN0aW9ucyBpcyBlbnRlcmVkIHdpdGggY2xvY2tzIGVuYWJsZWQgQEAgLTEzMTYsNiArMTM4
+MCw5DQo+ID4gQEAgc3RhdGljIGludCBmbGV4Y2FuX2NoaXBfc3RhcnQoc3RydWN0IG5ldF9kZXZp
+Y2UgKmRldikNCj4gPiAgCWlmIChlcnIpDQo+ID4gIAkJZ290byBvdXRfY2hpcF9kaXNhYmxlOw0K
+PiA+DQo+ID4gKwlpZiAocHJpdi0+ZGV2dHlwZV9kYXRhLT5xdWlya3MgJiBGTEVYQ0FOX1FVSVJL
+X0RJU0FCTEVfTUVDUikNCj4gPiArCQlmbGV4Y2FuX2luaXRfcmFtKGRldik7DQo+IA0KPiBDYW4g
+eW91IHRlc3QgdGhpcyBvbiBib3RoIGxheWVyc2NhcGUgU29DcyAoZnNsLGxzMTAyMWFyMi1mbGV4
+Y2FuIGFuZA0KPiBmc2wsbHgyMTYwYXIxLWZsZXhjYW4pDQoNCg0KV291bGQgYXNrIFBhbmthaiBC
+YW5zYWwgZm9yIGhlbHAsIHNpbmNlIGhlIGlzIHRoZSBvd25lciBvZiBsYXllcnNjYXBlIFNvQ3Ms
+IHRoZXNlIFNvQ3MgYXJlIHVuYXZhaWxhYmxlIGF0IG15IHNpZGUuDQoNCg0KQmVzdCBSZWdhcmRz
+LA0KSm9ha2ltIFpoYW5nDQo+ID4gKw0KPiA+ICAJZmxleGNhbl9zZXRfYml0dGltaW5nKGRldik7
+DQo+ID4NCj4gPiAgCS8qIE1DUg0KPiA+DQo+IA0KPiBNYXJjDQo+IA0KPiAtLQ0KPiBQZW5ndXRy
+b25peCBlLksuICAgICAgICAgICAgICAgICB8IE1hcmMgS2xlaW5lLUJ1ZGRlICAgICAgICAgICB8
+DQo+IEVtYmVkZGVkIExpbnV4ICAgICAgICAgICAgICAgICAgIHwgaHR0cHM6Ly93d3cucGVuZ3V0
+cm9uaXguZGUgIHwNCj4gVmVydHJldHVuZyBXZXN0L0RvcnRtdW5kICAgICAgICAgfCBQaG9uZTog
+KzQ5LTIzMS0yODI2LTkyNCAgICAgfA0KPiBBbXRzZ2VyaWNodCBIaWxkZXNoZWltLCBIUkEgMjY4
+NiB8IEZheDogICArNDktNTEyMS0yMDY5MTctNTU1NSB8DQoNCg==
