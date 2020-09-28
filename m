@@ -2,77 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA02C27B166
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 18:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99F4F27B18A
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 18:13:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726684AbgI1QGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 12:06:44 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:60886 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726551AbgI1QGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 12:06:44 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1kMvfm-00018L-BI; Mon, 28 Sep 2020 16:06:42 +0000
-To:     Ariel Levkovich <lariel@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Subject: re: net/mlx5: Refactor tc flow attributes structure
-Message-ID: <763ea1c6-ed2b-3487-113f-fb48c1cf27dc@canonical.com>
-Date:   Mon, 28 Sep 2020 17:06:41 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.0
+        id S1726630AbgI1QNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 12:13:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726281AbgI1QNp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 12:13:45 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B71C061755;
+        Mon, 28 Sep 2020 09:13:44 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1601309622;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fgursmpxb2O5tZTENK3QKNcBPtJOFO4D16e2e18XLWI=;
+        b=PXCpzIO2y+d7baDTO2lerLR1Zg5n8DxenaTvnh3W+iij2F3wPnCcmIfnNnCG44pXW4YJ1t
+        Hc+zBZ6W3bv4XgZ5QZjVa7SYP4Fo82SkQHl9UYU0aglc3Lw7cEBNS+K1qvkF5lv8k7PjNm
+        o+bXKxBWIfxA85bDmcbeHzNX0645TaH0dc+Blxoy0WOwCba+TjpjezgU+qCZRBoo8Oc01M
+        AGMtmBI2QH/PXHT5ewze9sTEe4/+T5ULwWKjEiIPyTnryGOOQeSp0F23hzfNYPwy7Dg1zm
+        1Vs+lk/xTxgL1PDJCcB0okhUr/6/70TR8zE8Mo7dwwUtM0hQkRK1rS7hG6/Xyg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1601309622;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fgursmpxb2O5tZTENK3QKNcBPtJOFO4D16e2e18XLWI=;
+        b=i1MLe1ztX4w4kIdRrY03/b5cyV5KiZ/2UZ+FERHut/eIc7Bq/k+HmqyxnNGkMDH4/s1WWr
+        aRV6Ehox/Vqvl2Cw==
+To:     syzbot <syzbot+ca740b95a16399ceb9a5@syzkaller.appspotmail.com>,
+        davem@davemloft.net, hchunhui@mail.ustc.edu.cn, hdanton@sina.com,
+        ja@ssi.bg, jmorris@namei.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: Re: WARNING in hrtimer_forward
+In-Reply-To: <0000000000007d5ec805b04c5fc8@google.com>
+References: <0000000000007d5ec805b04c5fc8@google.com>
+Date:   Mon, 28 Sep 2020 18:13:42 +0200
+Message-ID: <87pn65khft.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Sun, Sep 27 2020 at 07:29, syzbot wrote:
+> syzbot has bisected this issue to:
+>
+> commit 0e7bbcc104baaade4f64205e9706b7d43c46db7d
+> Author: Julian Anastasov <ja@ssi.bg>
+> Date:   Wed Jul 27 06:56:50 2016 +0000
+>
+>     neigh: allow admin to set NUD_STALE
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1661d187900000
+> start commit:   ba5f4cfe bpf: Add comment to document BTF type PTR_TO_BTF_..
+> git tree:       bpf-next
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=1561d187900000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1161d187900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=d44e1360b76d34dc
+> dashboard link: https://syzkaller.appspot.com/bug?extid=ca740b95a16399ceb9a5
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1148fe4b900000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12f5218d900000
+>
+> Reported-by: syzbot+ca740b95a16399ceb9a5@syzkaller.appspotmail.com
+> Fixes: 0e7bbcc104ba ("neigh: allow admin to set NUD_STALE")
 
-static analysis with Coverity has found a null pointer dereference issue
-with the following commit:
+That bisect does not make any sense and reverting the commit on top of
+next does not help either.
 
-commit c620b772152b8274031083bdb2e11c963e596c5c
-Author: Ariel Levkovich <lariel@mellanox.com>
-Date:   Thu Apr 30 05:54:08 2020 +0300
+What happens is:
 
-    net/mlx5: Refactor tc flow attributes structure
+            fail-16132   [029] ....   933.714866: sys_enter: NR 16 (3, 8b28, 20000000, 0, 0, 0)
+          <idle>-0       [001] d.s2   933.715768: hrtimer_cancel: hrtimer=00000000fe9fe1b9
+          <idle>-0       [001] ..s1   933.715771: hrtimer_expire_entry: hrtimer=00000000fe9fe1b9 function=mac80211_hwsim_beacon now=933716506319
+            fail-16132   [029] d..1   933.715794: hrtimer_start: hrtimer=00000000fe9fe1b9 function=mac80211_hwsim_beacon expires=933818720770 softexpires=933818720770 mode=REL|SOFT
+          <idle>-0       [001] ..s1   933.715812: hrtimer_forward: hrtimer=00000000fe9fe1b9
 
-The analysis is as follows:
+So the timer was armed at some point and then the expiry which does the
+forward races with the ioctl which starts the timer. Lack of
+serialization or such ...
 
-1240        slow_attr = mlx5_alloc_flow_attr(MLX5_FLOW_NAMESPACE_FDB);
+Thanks,
 
-    1. Condition !slow_attr, taking true branch.
-    2. var_compare_op: Comparing slow_attr to null implies that
-slow_attr might be null.
+        tglx
 
-1241        if (!slow_attr)
-1242                mlx5_core_warn(flow->priv->mdev, "Unable to
-unoffload slow path rule\n");
-1243
-1244        memcpy(slow_attr, flow->attr, ESW_FLOW_ATTR_SZ);
-
-Dereference after null check (FORWARD_NULL)
-    3. var_deref_op: Dereferencing null pointer slow_attr.
-
-1245        slow_attr->action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
-1246        slow_attr->esw_attr->split_count = 0;
-1247        slow_attr->flags |= MLX5_ESW_ATTR_FLAG_SLOW_PATH;
-1248        mlx5e_tc_unoffload_fdb_rules(esw, flow, slow_attr);
-1249        flow_flag_clear(flow, SLOW);
-1250        kfree(slow_attr);
-
-there is a !slow_attr check but if it slow_attr is null the code then
-dereferences it multiple times afterwards.
-
-Colin
