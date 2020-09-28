@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2AB827BAAD
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 04:08:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C3EE27BA98
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 04:03:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727293AbgI2CIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 22:08:50 -0400
-Received: from mga17.intel.com ([192.55.52.151]:55902 "EHLO mga17.intel.com"
+        id S1727262AbgI2CDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 22:03:46 -0400
+Received: from mga01.intel.com ([192.55.52.88]:43511 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726064AbgI2CIt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 22:08:49 -0400
-IronPort-SDR: 1jcgWE9+kqGgRWNkVK14pBw26+34o1GVkE0pETKVgJ9CR/dvvESS6f6ODTH3fuH9uT2Qb9CFNL
- LvWLKhbjALWw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="142086328"
+        id S1726421AbgI2CDq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 22:03:46 -0400
+IronPort-SDR: upjCOSuUhLrYxsVWHASNGn7hLijgpgtZvY5eUmI1dTiC2cpevlNPAiAUSdEvuWo4+D/rsxSyuD
+ 9ad5RnxYf3fw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="180224665"
 X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; 
-   d="scan'208";a="142086328"
+   d="scan'208";a="180224665"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 14:50:29 -0700
-IronPort-SDR: GCtnhOfUPjqJBu1hftzQKxtnf0n1ptYvL7o16Vv2UbvB27oKIo3zhzZ6JF5kVFilOSdj+OO9iB
- nzRtBtP9oBBg==
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 14:50:30 -0700
+IronPort-SDR: oIE9c1IJ0e+/i2gBYijDirNY6MGsboqjhQq1PaGkoOhH8ItvG3rTxCHnWqFUBQFmUpZA8emma6
+ 03zjfrMzJO+w==
 X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; 
-   d="scan'208";a="311962124"
+   d="scan'208";a="311962135"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 14:50:28 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
         anthony.l.nguyen@intel.com, Aaron Brown <aaron.f.brown@intel.com>
-Subject: [net-next v2 10/15] igc: Save PTP time before a reset
-Date:   Mon, 28 Sep 2020 14:50:13 -0700
-Message-Id: <20200928215018.952991-11-anthony.l.nguyen@intel.com>
+Subject: [net-next v2 15/15] e1000e: Add support for Meteor Lake
+Date:   Mon, 28 Sep 2020 14:50:18 -0700
+Message-Id: <20200928215018.952991-16-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200928215018.952991-1-anthony.l.nguyen@intel.com>
 References: <20200928215018.952991-1-anthony.l.nguyen@intel.com>
@@ -43,122 +43,169 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-Many TSN features depend on the internal PTP clock, so the internal
-PTP jumping when the adapter is reset can cause problems, usually in
-the form of "TX Hangs" warnings in the driver.
+Add devices IDs for the next LOM generations that will be
+available on the next Intel Client platform (Meteor Lake)
+This patch provides the initial support for these devices
 
-The solution is to save the PTP time before a reset and restore it
-after the reset is done. The value of the PTP time is saved before a
-reset and we use the difference from CLOCK_MONOTONIC from reset time
-to now, to correct what's going to be the new PTP time.
-
-This is heavily inspired by commit bf4bf09bdd91 ("i40e: save PTP time
-before a device reset").
-
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc.h      |  2 ++
- drivers/net/ethernet/intel/igc/igc_main.c |  2 ++
- drivers/net/ethernet/intel/igc/igc_ptp.c  | 28 ++++++++++++++++++++---
- 3 files changed, 29 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/e1000e/ethtool.c | 2 ++
+ drivers/net/ethernet/intel/e1000e/hw.h      | 5 +++++
+ drivers/net/ethernet/intel/e1000e/ich8lan.c | 7 +++++++
+ drivers/net/ethernet/intel/e1000e/netdev.c  | 6 ++++++
+ drivers/net/ethernet/intel/e1000e/ptp.c     | 1 +
+ 5 files changed, 21 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index 2d566f3c827b..2e5720d34a16 100644
---- a/drivers/net/ethernet/intel/igc/igc.h
-+++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -215,6 +215,8 @@ struct igc_adapter {
- 	spinlock_t tmreg_lock;
- 	struct cyclecounter cc;
- 	struct timecounter tc;
-+	struct timespec64 prev_ptp_time; /* Pre-reset PTP clock */
-+	ktime_t ptp_reset_start; /* Reset time in clock mono */
+diff --git a/drivers/net/ethernet/intel/e1000e/ethtool.c b/drivers/net/ethernet/intel/e1000e/ethtool.c
+index a8fc9208382c..03215b0aee4b 100644
+--- a/drivers/net/ethernet/intel/e1000e/ethtool.c
++++ b/drivers/net/ethernet/intel/e1000e/ethtool.c
+@@ -895,6 +895,7 @@ static int e1000_reg_test(struct e1000_adapter *adapter, u64 *data)
+ 	case e1000_pch_cnp:
+ 	case e1000_pch_tgp:
+ 	case e1000_pch_adp:
++	case e1000_pch_mtp:
+ 		mask |= BIT(18);
+ 		break;
+ 	default:
+@@ -1560,6 +1561,7 @@ static void e1000_loopback_cleanup(struct e1000_adapter *adapter)
+ 	case e1000_pch_cnp:
+ 	case e1000_pch_tgp:
+ 	case e1000_pch_adp:
++	case e1000_pch_mtp:
+ 		fext_nvm11 = er32(FEXTNVM11);
+ 		fext_nvm11 &= ~E1000_FEXTNVM11_DISABLE_MULR_FIX;
+ 		ew32(FEXTNVM11, fext_nvm11);
+diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
+index b1447221669e..69a2329ea463 100644
+--- a/drivers/net/ethernet/intel/e1000e/hw.h
++++ b/drivers/net/ethernet/intel/e1000e/hw.h
+@@ -102,6 +102,10 @@ struct e1000_hw;
+ #define E1000_DEV_ID_PCH_ADP_I219_V16		0x1A1F
+ #define E1000_DEV_ID_PCH_ADP_I219_LM17		0x1A1C
+ #define E1000_DEV_ID_PCH_ADP_I219_V17		0x1A1D
++#define E1000_DEV_ID_PCH_MTP_I219_LM18		0x550A
++#define E1000_DEV_ID_PCH_MTP_I219_V18		0x550B
++#define E1000_DEV_ID_PCH_MTP_I219_LM19		0x550C
++#define E1000_DEV_ID_PCH_MTP_I219_V19		0x550D
+ 
+ #define E1000_REVISION_4	4
+ 
+@@ -127,6 +131,7 @@ enum e1000_mac_type {
+ 	e1000_pch_cnp,
+ 	e1000_pch_tgp,
+ 	e1000_pch_adp,
++	e1000_pch_mtp,
  };
  
- void igc_up(struct igc_adapter *adapter);
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 7576dbfdac99..1c16cd35c81c 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -3778,6 +3778,8 @@ void igc_down(struct igc_adapter *adapter)
+ enum e1000_media_type {
+diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+index ded74304e8cf..9aa6fad8ed47 100644
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+@@ -320,6 +320,7 @@ static s32 e1000_init_phy_workarounds_pchlan(struct e1000_hw *hw)
+ 	case e1000_pch_cnp:
+ 	case e1000_pch_tgp:
+ 	case e1000_pch_adp:
++	case e1000_pch_mtp:
+ 		if (e1000_phy_is_accessible_pchlan(hw))
+ 			break;
  
- 	set_bit(__IGC_DOWN, &adapter->state);
+@@ -464,6 +465,7 @@ static s32 e1000_init_phy_params_pchlan(struct e1000_hw *hw)
+ 		case e1000_pch_cnp:
+ 		case e1000_pch_tgp:
+ 		case e1000_pch_adp:
++		case e1000_pch_mtp:
+ 			/* In case the PHY needs to be in mdio slow mode,
+ 			 * set slow mode and try to get the PHY id again.
+ 			 */
+@@ -708,6 +710,7 @@ static s32 e1000_init_mac_params_ich8lan(struct e1000_hw *hw)
+ 	case e1000_pch_cnp:
+ 	case e1000_pch_tgp:
+ 	case e1000_pch_adp:
++	case e1000_pch_mtp:
+ 	case e1000_pchlan:
+ 		/* check management mode */
+ 		mac->ops.check_mng_mode = e1000_check_mng_mode_pchlan;
+@@ -1648,6 +1651,7 @@ static s32 e1000_get_variants_ich8lan(struct e1000_adapter *adapter)
+ 	case e1000_pch_cnp:
+ 	case e1000_pch_tgp:
+ 	case e1000_pch_adp:
++	case e1000_pch_mtp:
+ 		rc = e1000_init_phy_params_pchlan(hw);
+ 		break;
+ 	default:
+@@ -2102,6 +2106,7 @@ static s32 e1000_sw_lcd_config_ich8lan(struct e1000_hw *hw)
+ 	case e1000_pch_cnp:
+ 	case e1000_pch_tgp:
+ 	case e1000_pch_adp:
++	case e1000_pch_mtp:
+ 		sw_cfg_mask = E1000_FEXTNVM_SW_CONFIG_ICH8M;
+ 		break;
+ 	default:
+@@ -3145,6 +3150,7 @@ static s32 e1000_valid_nvm_bank_detect_ich8lan(struct e1000_hw *hw, u32 *bank)
+ 	case e1000_pch_cnp:
+ 	case e1000_pch_tgp:
+ 	case e1000_pch_adp:
++	case e1000_pch_mtp:
+ 		bank1_offset = nvm->flash_bank_size;
+ 		act_offset = E1000_ICH_NVM_SIG_WORD;
  
-+	igc_ptp_suspend(adapter);
-+
- 	/* disable receives in the hardware */
- 	rctl = rd32(IGC_RCTL);
- 	wr32(IGC_RCTL, rctl & ~IGC_RCTL_EN);
-diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
-index 0300b45b36e2..49abefdab26c 100644
---- a/drivers/net/ethernet/intel/igc/igc_ptp.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
-@@ -8,6 +8,7 @@
- #include <linux/pci.h>
- #include <linux/ptp_classify.h>
- #include <linux/clocksource.h>
-+#include <linux/ktime.h>
+@@ -4090,6 +4096,7 @@ static s32 e1000_validate_nvm_checksum_ich8lan(struct e1000_hw *hw)
+ 	case e1000_pch_cnp:
+ 	case e1000_pch_tgp:
+ 	case e1000_pch_adp:
++	case e1000_pch_mtp:
+ 		word = NVM_COMPAT;
+ 		valid_csum_mask = NVM_COMPAT_VALID_CSUM;
+ 		break;
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 99f4ec9b5696..b30f00891c03 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -3587,6 +3587,7 @@ s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca)
+ 	case e1000_pch_cnp:
+ 	case e1000_pch_tgp:
+ 	case e1000_pch_adp:
++	case e1000_pch_mtp:
+ 		if (er32(TSYNCRXCTL) & E1000_TSYNCRXCTL_SYSCFI) {
+ 			/* Stable 24MHz frequency */
+ 			incperiod = INCPERIOD_24MHZ;
+@@ -4104,6 +4105,7 @@ void e1000e_reset(struct e1000_adapter *adapter)
+ 	case e1000_pch_cnp:
+ 	case e1000_pch_tgp:
+ 	case e1000_pch_adp:
++	case e1000_pch_mtp:
+ 		fc->refresh_time = 0xFFFF;
+ 		fc->pause_time = 0xFFFF;
  
- #define INCVALUE_MASK		0x7fffffff
- #define ISGN			0x80000000
-@@ -500,6 +501,9 @@ void igc_ptp_init(struct igc_adapter *adapter)
- 	adapter->tstamp_config.rx_filter = HWTSTAMP_FILTER_NONE;
- 	adapter->tstamp_config.tx_type = HWTSTAMP_TX_OFF;
+@@ -7877,6 +7879,10 @@ static const struct pci_device_id e1000_pci_tbl[] = {
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V16), board_pch_cnp },
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM17), board_pch_cnp },
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V17), board_pch_cnp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM18), board_pch_cnp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V18), board_pch_cnp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM19), board_pch_cnp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V19), board_pch_cnp },
  
-+	adapter->prev_ptp_time = ktime_to_timespec64(ktime_get_real());
-+	adapter->ptp_reset_start = ktime_get();
-+
- 	adapter->ptp_clock = ptp_clock_register(&adapter->ptp_caps,
- 						&adapter->pdev->dev);
- 	if (IS_ERR(adapter->ptp_clock)) {
-@@ -511,6 +515,24 @@ void igc_ptp_init(struct igc_adapter *adapter)
- 	}
- }
- 
-+static void igc_ptp_time_save(struct igc_adapter *adapter)
-+{
-+	igc_ptp_read_i225(adapter, &adapter->prev_ptp_time);
-+	adapter->ptp_reset_start = ktime_get();
-+}
-+
-+static void igc_ptp_time_restore(struct igc_adapter *adapter)
-+{
-+	struct timespec64 ts = adapter->prev_ptp_time;
-+	ktime_t delta;
-+
-+	delta = ktime_sub(ktime_get(), adapter->ptp_reset_start);
-+
-+	timespec64_add_ns(&ts, ktime_to_ns(delta));
-+
-+	igc_ptp_write_i225(adapter, &ts);
-+}
-+
- /**
-  * igc_ptp_suspend - Disable PTP work items and prepare for suspend
-  * @adapter: Board private structure
-@@ -527,6 +549,8 @@ void igc_ptp_suspend(struct igc_adapter *adapter)
- 	dev_kfree_skb_any(adapter->ptp_tx_skb);
- 	adapter->ptp_tx_skb = NULL;
- 	clear_bit_unlock(__IGC_PTP_TX_IN_PROGRESS, &adapter->state);
-+
-+	igc_ptp_time_save(adapter);
- }
- 
- /**
-@@ -576,9 +600,7 @@ void igc_ptp_reset(struct igc_adapter *adapter)
- 
- 	/* Re-initialize the timer. */
- 	if (hw->mac.type == igc_i225) {
--		struct timespec64 ts64 = ktime_to_timespec64(ktime_get_real());
--
--		igc_ptp_write_i225(adapter, &ts64);
-+		igc_ptp_time_restore(adapter);
- 	} else {
- 		timecounter_init(&adapter->tc, &adapter->cc,
- 				 ktime_to_ns(ktime_get_real()));
+ 	{ 0, 0, 0, 0, 0, 0, 0 }	/* terminate list */
+ };
+diff --git a/drivers/net/ethernet/intel/e1000e/ptp.c b/drivers/net/ethernet/intel/e1000e/ptp.c
+index 8d21bcb427ec..f3f671311855 100644
+--- a/drivers/net/ethernet/intel/e1000e/ptp.c
++++ b/drivers/net/ethernet/intel/e1000e/ptp.c
+@@ -297,6 +297,7 @@ void e1000e_ptp_init(struct e1000_adapter *adapter)
+ 	case e1000_pch_cnp:
+ 	case e1000_pch_tgp:
+ 	case e1000_pch_adp:
++	case e1000_pch_mtp:
+ 		if ((hw->mac.type < e1000_pch_lpt) ||
+ 		    (er32(TSYNCRXCTL) & E1000_TSYNCRXCTL_SYSCFI)) {
+ 			adapter->ptp_clock_info.max_adj = 24000000 - 1;
 -- 
 2.26.2
 
