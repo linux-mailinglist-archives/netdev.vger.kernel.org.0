@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 019D427B3D3
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:59:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB5E327B3D2
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:59:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgI1R7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 13:59:52 -0400
-Received: from mga18.intel.com ([134.134.136.126]:32955 "EHLO mga18.intel.com"
+        id S1726740AbgI1R7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 13:59:47 -0400
+Received: from mga18.intel.com ([134.134.136.126]:32952 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726658AbgI1R7o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726657AbgI1R7o (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 28 Sep 2020 13:59:44 -0400
-IronPort-SDR: s9twG4CnyKWXwp0ud58cHSQMRmNhNj9KnxmCU/EZy2gI5zDqTX9ML9OAaHR7xPfXAvChDucne4
- 9Ji4/KfQqwAA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="149810274"
+IronPort-SDR: A1YtpHqJgF2pLpqmuVff4SPzU6HxaCRxIj96WAvYmlZpKOJCq0BwkE51SOFFInbr1Ft9z9FlA3
+ JZoSn6vxaC/Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="149810275"
 X-IronPort-AV: E=Sophos;i="5.77,313,1596524400"; 
-   d="scan'208";a="149810274"
+   d="scan'208";a="149810275"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 10:59:22 -0700
-IronPort-SDR: ImmS4nONWXvJCKjKgUowZ5H3fEHRsTGpLPsLAZKZDmf/n3lWfyhL8ekB0rKtlRk5TFcnKI6/XX
- j2WfkVqHUuJA==
+IronPort-SDR: tch+4brJxEnxtYDkP+7u8QQOhNE9RsOeIQPSx2pdj67FxD1CnApTdUH1JulPVBP5+2uzkQnHec
+ yl6Pn5IgrZlQ==
 X-IronPort-AV: E=Sophos;i="5.77,313,1596524400"; 
-   d="scan'208";a="340505406"
+   d="scan'208";a="340505408"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 10:59:22 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
         anthony.l.nguyen@intel.com, Aaron Brown <aaron.f.brown@intel.com>
-Subject: [net-next 13/15] igc: Reject schedules with a base_time in the future
-Date:   Mon, 28 Sep 2020 10:59:06 -0700
-Message-Id: <20200928175908.318502-14-anthony.l.nguyen@intel.com>
+Subject: [net-next 14/15] igc: Clean up nvm_info structure
+Date:   Mon, 28 Sep 2020 10:59:07 -0700
+Message-Id: <20200928175908.318502-15-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200928175908.318502-1-anthony.l.nguyen@intel.com>
 References: <20200928175908.318502-1-anthony.l.nguyen@intel.com>
@@ -43,75 +43,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-When we set the BASET registers of i225 with a base_time in the
-future, i225 will "hold" all packets until that base_time is reached,
-causing a lot of TX Hangs.
+flash_bank_size and flash_base_addr field not in use and can
+be removed from a nvm_info structure
 
-As this behaviour seems contrary to the expectations of the IEEE
-802.1Q standard (section 8.6.9, especially 8.6.9.4.5), let's start by
-rejecting these types of schedules. If this is too limiting, we can
-for example, setup a timer to configure the BASET registers closer to
-the start time, only blocking the packets for a "short" while.
-
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 25 +++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_hw.h | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 1c16cd35c81c..569747bbefd8 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -4702,14 +4702,35 @@ static int igc_save_launchtime_params(struct igc_adapter *adapter, int queue,
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/intel/igc/igc_hw.h b/drivers/net/ethernet/intel/igc/igc_hw.h
+index 17d6669959db..55dae7c4703f 100644
+--- a/drivers/net/ethernet/intel/igc/igc_hw.h
++++ b/drivers/net/ethernet/intel/igc/igc_hw.h
+@@ -130,9 +130,6 @@ struct igc_nvm_info {
+ 	struct igc_nvm_operations ops;
+ 	enum igc_nvm_type type;
  
--static bool validate_schedule(const struct tc_taprio_qopt_offload *qopt)
-+static bool is_base_time_past(ktime_t base_time, const struct timespec64 *now)
-+{
-+	struct timespec64 b;
-+
-+	b = ktime_to_timespec64(base_time);
-+
-+	return timespec64_compare(now, &b) > 0;
-+}
-+
-+static bool validate_schedule(struct igc_adapter *adapter,
-+			      const struct tc_taprio_qopt_offload *qopt)
- {
- 	int queue_uses[IGC_MAX_TX_QUEUES] = { };
-+	struct timespec64 now;
- 	size_t n;
- 
- 	if (qopt->cycle_time_extension)
- 		return false;
- 
-+	igc_ptp_read(adapter, &now);
-+
-+	/* If we program the controller's BASET registers with a time
-+	 * in the future, it will hold all the packets until that
-+	 * time, causing a lot of TX Hangs, so to avoid that, we
-+	 * reject schedules that would start in the future.
-+	 */
-+	if (!is_base_time_past(qopt->base_time, &now))
-+		return false;
-+
- 	for (n = 0; n < qopt->num_entries; n++) {
- 		const struct tc_taprio_sched_entry *e;
- 		int i;
-@@ -4764,7 +4785,7 @@ static int igc_save_qbv_schedule(struct igc_adapter *adapter,
- 	if (adapter->base_time)
- 		return -EALREADY;
- 
--	if (!validate_schedule(qopt))
-+	if (!validate_schedule(adapter, qopt))
- 		return -EINVAL;
- 
- 	adapter->cycle_time = qopt->cycle_time;
+-	u32 flash_bank_size;
+-	u32 flash_base_addr;
+-
+ 	u16 word_size;
+ 	u16 delay_usec;
+ 	u16 address_bits;
 -- 
 2.26.2
 
