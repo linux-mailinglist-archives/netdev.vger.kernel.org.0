@@ -2,109 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA97C27AA84
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 11:17:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CC3C27AA8F
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 11:20:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726583AbgI1JRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 05:17:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
+        id S1726693AbgI1JUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 05:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726497AbgI1JRt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 05:17:49 -0400
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795C5C061755;
-        Mon, 28 Sep 2020 02:17:49 -0700 (PDT)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4C0H3s5BsYzKmhQ;
-        Mon, 28 Sep 2020 11:17:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
-        content-disposition:content-type:content-type:mime-version
-        :message-id:subject:subject:from:from:date:date:received; s=
-        mail20150812; t=1601284662; bh=DaQNedV6DLtdwBn+je055grMSGGeN+eKd
-        aMluY5HgPA=; b=uCazI0O4zQ8/9ThymAdpvM2q41ag/kVMcICuj/HWLZ7kgSvcw
-        Jvowar61N8lKciKHvuiYNsNwi3KbnkWwHO44BAOuBFBceRIndhm2bPSOz1KnD8iS
-        OK3F9geN2kBcxsfXHhJLIsZZQsu5UQWwfY7EsaR3oXGpmS4nxUS+vNB3jDS33zAB
-        jk8F8LtCkmHO3rwZQe1GziomavNxlgI0S2Ub5F3wvLm9IFRocoNKWaJpFVaGWGlk
-        HMF9FJf2q6/5tTh304PgDahROtfEXbLTTB1sHCq9z2xKhOzYbMnjJAGHEMn8zZyN
-        9liIwlAuDQZcEx4gijvO4pGSrVsvb8Pxw+gwQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-        t=1601284663;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=MXZaoCL3jvL4JTPmpwCWyRFRJ4/ouJjr9l+t03/UAe0=;
-        b=GAh4hikUZdp5D/mRG/aWUovRD+5BAdGEvxqjKVcVLyIbMD+jA92H0FIL/9W1Xc0oykiAyi
-        WUgYQ5XpyhlkvDX0MBJtJrYnQtl+doCimzcWPRQLH2k2WJJzsaHUzsZGRhrcyRSqeX8S0f
-        9t6Nfk3E5PXBw+X8M3ike/WHIuMsWdSBZn0epYAkObc5s80ygtFRDOUVZ/m+diGlRob07V
-        VpIjgsGN9CVj6aagReSrnQ21g6xJiWlNVC3P3RcN1hdzaCjN8Rmn9G1WozZF3D8szb4xFh
-        ah8RzC1bLkNDMbX/DhUOygY4XNrWHNZkcRo2Vs5FAKJRkb7dfihr6JtiENTehA==
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
-        with ESMTP id aI_hhMDNdxGq; Mon, 28 Sep 2020 11:17:42 +0200 (CEST)
-Date:   Mon, 28 Sep 2020 11:17:40 +0200
-From:   Wilken Gottwalt <wilken.gottwalt@mailbox.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH] net: usb: ax88179_178a: add MCT usb 3.0 adapter
-Message-ID: <20200928091740.GA27844@monster.powergraphx.local>
+        with ESMTP id S1726605AbgI1JUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 05:20:02 -0400
+Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87520C0613D0
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:20:02 -0700 (PDT)
+Received: by mail-vk1-xa36.google.com with SMTP id e5so1400527vkm.2
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:20:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QQu91B+AW3IRpHZjKS2p4lMu3W034IPbEyQrKhHugtA=;
+        b=h0nsKxQ1792AaIhUo13P82vgGVMXclf9CkIZ3KapAzb2X/3tNBKYsSGecwrBlaGlfj
+         Tfj/C9Zv83pHcreLOpATprEGXKgXE7GflMxTk85DdzpRec/t1LnE+wiAfP6b5BIHasHY
+         Ignqf7gF7vwjnL8HCCY3lSkGXTjCE+cuCHlYoEe1V1ud1mcWehNemRROw+dC/JdC1/0c
+         0PedcFoH2tLhd3HHLNfHHJrCV/CVoz/bfJ60yVp2iKXm17ESSv95/LpX2Y/Dg/8GDOjv
+         2ofiMkyoa80M4iYbgDGr8oelbtFwixNkB383I0V8notORYCLMV89a0h5ooLViuYHEZeT
+         ZUiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QQu91B+AW3IRpHZjKS2p4lMu3W034IPbEyQrKhHugtA=;
+        b=oTLNU/vrfD/aSPWkZrHM4zcXMepNvQmCv3cVNwSmudP0Zxw53D0zDLyE02lzOiNO0Z
+         YjKFhqdJc/8JclRySov1jnMFO/NwUce3kfuMMBwbqjgnujSzqD0n3qlyXPtS8S4ctoZv
+         JokKga0odyHWUclSGirU0DRqocy4kllIfToiGpY5F1Gmw2+m9A4s6UsGUO+EkAq57kbG
+         XJ7mb6phEE4Q7z2A2xlbswRPg0r4MYLnlfqCgnZHdbI+f1vEuAUsl3fHWPWl8pE0kaOX
+         4fDkfXjGLUFChhObyd26tFJx5oL2DLHgYmOipcyPKO8T/R7UJHjY3+XChKY5rZU1v7nh
+         z5Lw==
+X-Gm-Message-State: AOAM530MIGeqeLZrLOu4dGgBhPzONXviFov4AtsrV0aoIRXiHS5Ha1MT
+        1AJVeivQeMFFdk5wRKGdFZE/sTivQtMe7RVpnfrq2w==
+X-Google-Smtp-Source: ABdhPJyIPAnJj5fPmVsL4k9MF4OtxiE77/7ix/Qafm1hzLnqts1eYR1koTMhcOn/iv3ljy6H8r2txH0J3D7/fATe+GY=
+X-Received: by 2002:ac5:c748:: with SMTP id b8mr4530997vkn.6.1601284801206;
+ Mon, 28 Sep 2020 02:20:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -4.56 / 15.00 / 15.00
-X-Rspamd-Queue-Id: B56B01714
-X-Rspamd-UID: ab3207
+References: <20200927194846.045411263@linutronix.de> <20200927194922.245750969@linutronix.de>
+ <a345ad51-4db7-5e4f-3ff9-f1673c12da99@broadcom.com>
+In-Reply-To: <a345ad51-4db7-5e4f-3ff9-f1673c12da99@broadcom.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 28 Sep 2020 11:19:25 +0200
+Message-ID: <CAPDyKFrC2j5S7NrtTRCBga=rttKBp-OZnsEnAEgnXj8zj11p0w@mail.gmail.com>
+Subject: Re: [patch 24/35] net: brcmfmac: Replace in_interrupt()
+To:     Arend Van Spriel <arend.vanspriel@broadcom.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        Paul McKenney <paulmck@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
+        netdev <netdev@vger.kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Govindarajulu Varadarajan <_govind@gmx.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Linux Documentation <linux-doc@vger.kernel.org>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Jon Mason <jdmason@kudzu.us>, Daniel Drake <dsd@gentoo.org>,
+        Ulrich Kunitz <kune@deine-taler.de>,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
+        Stanislaw Gruszka <stf_xl@wp.pl>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Jouni Malinen <j@w1.fi>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        libertas-dev@lists.infradead.org,
+        Pascal Terjan <pterjan@google.com>,
+        Ping-Ke Shih <pkshih@realtek.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds the driver_info and usb ids of the AX88179 based MCT U3-A9003 USB
-3.0 ethernet adapter.
+On Mon, 28 Sep 2020 at 09:35, Arend Van Spriel
+<arend.vanspriel@broadcom.com> wrote:
+>
+> + Uffe
+>
+> On 9/27/2020 9:49 PM, Thomas Gleixner wrote:
+> > @@ -85,7 +85,7 @@ static void brcmf_sdiod_ib_irqhandler(st
+> >
+> >       brcmf_dbg(INTR, "IB intr triggered\n");
+> >
+> > -     brcmf_sdio_isr(sdiodev->bus);
+> > +     brcmf_sdio_isr(sdiodev->bus, false);
+> >   }
+>
+> Hi Uffe,
+>
+> I assume the above code is okay, but want to confirm. Is the SDIO
+> interrupt guaranteed to be on a worker thread?
 
-Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
----
- drivers/net/usb/ax88179_178a.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+Correct.
 
-diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index 8f1798b95a02..5541f3faedbc 100644
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1842,6 +1842,19 @@ static const struct driver_info toshiba_info = {
- 	.tx_fixup = ax88179_tx_fixup,
- };
- 
-+static const struct driver_info mct_info = {
-+	.description = "MCT USB 3.0 Gigabit Ethernet Adapter",
-+	.bind	= ax88179_bind,
-+	.unbind	= ax88179_unbind,
-+	.status	= ax88179_status,
-+	.link_reset = ax88179_link_reset,
-+	.reset	= ax88179_reset,
-+	.stop	= ax88179_stop,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
-+	.rx_fixup = ax88179_rx_fixup,
-+	.tx_fixup = ax88179_tx_fixup,
-+};
-+
- static const struct usb_device_id products[] = {
- {
- 	/* ASIX AX88179 10/100/1000 */
-@@ -1879,6 +1892,10 @@ static const struct usb_device_id products[] = {
- 	/* Toshiba USB 3.0 GBit Ethernet Adapter */
- 	USB_DEVICE(0x0930, 0x0a13),
- 	.driver_info = (unsigned long)&toshiba_info,
-+}, {
-+	/* Magic Control Technology U3-A9003 USB 3.0 Gigabit Ethernet Adapter */
-+	USB_DEVICE(0x0711, 0x0179),
-+	.driver_info = (unsigned long)&mct_info,
- },
- 	{ },
- };
--- 
-2.28.0
+As a matter of fact, the sdio irqs can be delivered through a couple
+of different paths. The legacy (scheduled for removal), is from a
+dedicated kthread. The more "modern" way is either from the context of
+a threaded IRQ handler or via a workqueue.
 
+However, there are also so-called out of band SDIO irqs, typically
+routed via a separate GPIO line. This isn't managed by the MMC/SDIO
+subsystem, but the SDIO functional driver itself.
+
+Kind regards
+Uffe
