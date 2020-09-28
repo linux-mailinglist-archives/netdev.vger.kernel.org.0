@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1454227B3CB
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08DE927B3CF
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:59:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726693AbgI1R7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 13:59:36 -0400
-Received: from mga18.intel.com ([134.134.136.126]:32955 "EHLO mga18.intel.com"
+        id S1726721AbgI1R7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 13:59:44 -0400
+Received: from mga18.intel.com ([134.134.136.126]:32952 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726659AbgI1R72 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 13:59:28 -0400
-IronPort-SDR: swQwuLWhFeAy15QsUg7iJr4DZRpRHI4Mr95PISooZRmqQClvJbKGk+sVeySQsucGjTFmdzrcyh
- yfas/OymBLJA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="149810269"
+        id S1726596AbgI1R7a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 13:59:30 -0400
+IronPort-SDR: VDXQyWNLEz9GNx5Cysy9xq/LxmHfUc9jZLfSJqjdFAJCV2xMT7enfaWVb2KxOSDicAQg7jxtpX
+ KmqFGqG1rVjw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="149810270"
 X-IronPort-AV: E=Sophos;i="5.77,313,1596524400"; 
-   d="scan'208";a="149810269"
+   d="scan'208";a="149810270"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 10:59:22 -0700
-IronPort-SDR: RVH8dcOlnqAKQys3Pi29lMTf7+uP1taaRX0iRkDxo4te/e2jJs2kBMnIAb+KvYoi/VwE2DHUy1
- VGAmG+Qxnv4Q==
+IronPort-SDR: y7nK3rcxrHpoItfUv0jTnnhYiF9ERVZkat+sxBaMwJEOL6SBW+LpMi01l8Qao/3ImOqokB0U8R
+ ei16c6l0V4Zw==
 X-IronPort-AV: E=Sophos;i="5.77,313,1596524400"; 
-   d="scan'208";a="340505392"
+   d="scan'208";a="340505396"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 10:59:21 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         anthony.l.nguyen@intel.com, Aaron Brown <aaron.f.brown@intel.com>
-Subject: [net-next 08/15] igc: Expose LPI counters
-Date:   Mon, 28 Sep 2020 10:59:01 -0700
-Message-Id: <20200928175908.318502-9-anthony.l.nguyen@intel.com>
+Subject: [net-next 09/15] igc: Remove references to SYSTIMR register
+Date:   Mon, 28 Sep 2020 10:59:02 -0700
+Message-Id: <20200928175908.318502-10-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200928175908.318502-1-anthony.l.nguyen@intel.com>
 References: <20200928175908.318502-1-anthony.l.nguyen@intel.com>
@@ -43,63 +43,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-Completion to commit 900d1e8b346b ("igc: Add LPI counters")
-LPI counters exposed by statistics update method.
-A EEE TX LPI counter reflect the transmitter entries EEE (IEEE 802.3az)
-into the LPI state. A EEE RX LPI counter reflect the receiver link
-partner entries into EEE(IEEE 802.3az) LPI state.
+In i225, it's no longer necessary to use the SYSTIMR register to
+latch the timer value, the timestamp is latched when SYSTIML is read.
 
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_ethtool.c | 3 +++
- drivers/net/ethernet/intel/igc/igc_hw.h      | 2 ++
- drivers/net/ethernet/intel/igc/igc_main.c    | 2 ++
- 3 files changed, 7 insertions(+)
+ drivers/net/ethernet/intel/igc/igc_ptp.c | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-index 44410c2265d6..61d331ce38cd 100644
---- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-@@ -321,6 +321,9 @@ static void igc_ethtool_get_regs(struct net_device *netdev,
+diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
+index 61852c99815d..0300b45b36e2 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ptp.c
++++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
+@@ -22,11 +22,7 @@ static void igc_ptp_read_i225(struct igc_adapter *adapter,
+ 	struct igc_hw *hw = &adapter->hw;
+ 	u32 sec, nsec;
  
- 	for (i = 0; i < 8; i++)
- 		regs_buff[205 + i] = rd32(IGC_ETQF(i));
-+
-+	regs_buff[213] = adapter->stats.tlpic;
-+	regs_buff[214] = adapter->stats.rlpic;
+-	/* The timestamp latches on lowest register read. For I210/I211, the
+-	 * lowest register is SYSTIMR. Since we only need to provide nanosecond
+-	 * resolution, we can ignore it.
+-	 */
+-	rd32(IGC_SYSTIMR);
++	/* The timestamp is latched when SYSTIML is read. */
+ 	nsec = rd32(IGC_SYSTIML);
+ 	sec = rd32(IGC_SYSTIMH);
+ 
+@@ -39,9 +35,6 @@ static void igc_ptp_write_i225(struct igc_adapter *adapter,
+ {
+ 	struct igc_hw *hw = &adapter->hw;
+ 
+-	/* Writing the SYSTIMR register is not necessary as it only
+-	 * provides sub-nanosecond resolution.
+-	 */
+ 	wr32(IGC_SYSTIML, ts->tv_nsec);
+ 	wr32(IGC_SYSTIMH, ts->tv_sec);
  }
+@@ -102,10 +95,9 @@ static int igc_ptp_gettimex64_i225(struct ptp_clock_info *ptp,
+ 	spin_lock_irqsave(&igc->tmreg_lock, flags);
  
- static void igc_ethtool_get_wol(struct net_device *netdev,
-diff --git a/drivers/net/ethernet/intel/igc/igc_hw.h b/drivers/net/ethernet/intel/igc/igc_hw.h
-index 6defdb8a31fe..b70253fb8ebc 100644
---- a/drivers/net/ethernet/intel/igc/igc_hw.h
-+++ b/drivers/net/ethernet/intel/igc/igc_hw.h
-@@ -244,6 +244,8 @@ struct igc_hw_stats {
- 	u64 prc511;
- 	u64 prc1023;
- 	u64 prc1522;
-+	u64 tlpic;
-+	u64 rlpic;
- 	u64 gprc;
- 	u64 bprc;
- 	u64 mprc;
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 7a46b22413f2..7576dbfdac99 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -3683,6 +3683,8 @@ void igc_update_stats(struct igc_adapter *adapter)
- 	adapter->stats.prc511 += rd32(IGC_PRC511);
- 	adapter->stats.prc1023 += rd32(IGC_PRC1023);
- 	adapter->stats.prc1522 += rd32(IGC_PRC1522);
-+	adapter->stats.tlpic += rd32(IGC_TLPIC);
-+	adapter->stats.rlpic += rd32(IGC_RLPIC);
+ 	ptp_read_system_prets(sts);
+-	rd32(IGC_SYSTIMR);
+-	ptp_read_system_postts(sts);
+ 	ts->tv_nsec = rd32(IGC_SYSTIML);
+ 	ts->tv_sec = rd32(IGC_SYSTIMH);
++	ptp_read_system_postts(sts);
  
- 	mpc = rd32(IGC_MPC);
- 	adapter->stats.mpc += mpc;
+ 	spin_unlock_irqrestore(&igc->tmreg_lock, flags);
+ 
 -- 
 2.26.2
 
