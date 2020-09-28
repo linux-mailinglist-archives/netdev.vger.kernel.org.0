@@ -2,125 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35DC627B380
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:43:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D49927B3A9
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726552AbgI1Rnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 13:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41934 "EHLO
+        id S1726683AbgI1Rvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 13:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726327AbgI1Rnt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 13:43:49 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548B7C061755
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 10:43:49 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id c5so2111543ilk.11
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 10:43:49 -0700 (PDT)
+        with ESMTP id S1726578AbgI1Rvb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 13:51:31 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21F4C061755;
+        Mon, 28 Sep 2020 10:51:30 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id f70so1535487ybg.13;
+        Mon, 28 Sep 2020 10:51:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=trTf9MxNXUHe/wVcl0UkPz25wyvxMrwBM3dkdlvvAJk=;
-        b=AoiO5hE+gEK/rTeD4JHu0d99EYDkbToApamZNlAnGbvbj3La7KlEOu9AlBSdCWc2dC
-         l86k9bj5OeHI540TJq7NqAUGeCiZVuFaS7aBBbuIF1QTrkU87z8TKMq1h2z+vUolI0Lf
-         wJhXgj7R/mOxB9gVBv+tzB+Jz/R4/hE4CQq7YUIcFZ/k86bK3lp4HUrKL5Ytu9/TVFy3
-         k2Mc7XYHDEQfdY77iEb/Hl6PVQW3sraqJ9lYAWS2Vf0DcAsDf2MO0dJ4vxs5Du9Or3O0
-         ljvkzEJ+jPmqL6zSw3etQZ9ZhfeK0JA2DQ1bLKurU/siQXBuAdyGPknVNZz0Bb34hEQu
-         Qaqw==
+        bh=qTP8d6dwLkAh+M4ApAYeMXWqLPV1jTHesAupoc2kHSY=;
+        b=E4fi1zAHUeotTp0Z1r5nI7mQsi3gxEL5SyafmaJ1/GlQ6KNNGQCfsT+51gs6ePjSkc
+         LlE2AkVyA10UVrMw4hQj4Ax1kjhWapYFsqdBGXKOOuQgI7k+jnByZ6iF+jUMiG0VS/yz
+         PpPEWhEruvtoyS6SDZndOGZC++A/KfE7OVVisrDH5iJ2iOveP80Ayf2Wn3PYVtU5W3sh
+         Ug+Ejwii/v+3kCRCpcqf+eKyC45hZiq0Paaeu6HAgz9RNaaQcF4ldOUpZ3Gg7TRUrp6+
+         Q9dWuccPrdz7PnVyCWkzwU06s8flWWPDI/cZ69cqaKbsnLeHtTjWvt4/FVb7uAKR50Lb
+         KJZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=trTf9MxNXUHe/wVcl0UkPz25wyvxMrwBM3dkdlvvAJk=;
-        b=RjKynS9CgfyJCGE5UeYbMA7nULVfRckExrQVpp1Ip4LMN13uvx6Slum57MRRR96yY3
-         UxQh6mvuS+S1vU7DvZxaL8aqe0/h0cPxppvPbhedsbS9R+UTFFa7/lmQeTqUsf4i4iW9
-         ixEKz5NqVtwRKPwgDjL+OIr/umv2xZx6E7ahkC5+gHeDC/GnBswGfqtxlL1COwAqWpNm
-         M6d6vWi/sniQZ92YV1l3S68i3muhhEHCOv3BDoG6QJxKqn+JHiYayV2j1jPa6CiRMXIh
-         R2ByRxUplGdyHpxPq/C2I4u0Vq9qT9CSUn8qvQgYo4tZLevHc9Q1qH+wBQzmC8pvcxTG
-         30qA==
-X-Gm-Message-State: AOAM532xEUpUYsbfPM1sygAC85VBLctGGt1H06XCigmc+ssAKolj8x6a
-        yTIR4d4W2czNYAAcFUZ97zqkwFsZvEW2rm5+gwY0KQ==
-X-Google-Smtp-Source: ABdhPJwp5fS5bBcQBa6J804Tck7n1I/5FT6CJQZnpONe4FdzFfL03YPO88rBsiDSKX2lA8tvMgMs7HvtdVCSl503mCM=
-X-Received: by 2002:a92:5882:: with SMTP id z2mr2200630ilf.137.1601315028310;
- Mon, 28 Sep 2020 10:43:48 -0700 (PDT)
+        bh=qTP8d6dwLkAh+M4ApAYeMXWqLPV1jTHesAupoc2kHSY=;
+        b=miQEotDMH5cP3oyAC4NU+AsD4D4EUnAj5u6IdiRJoSC0MMCv88O+WmG4oiZasttge6
+         Fm3QbUT62noY2KmYs1M152NJ1zKu0llNDLi9fiOKYAkX19T4Nnw9VXfAeeHQQhtZZM2V
+         dTWQ3CjXym8mi4ss80aJ09IcMFqoKuF44tGDrqOTTVREqee2iMXneCASxfVfr+F8srOP
+         B28IHm34aP0CFMCVKP6cbAnt4G9swGgFtmFykep89RqTA7bvOb5p1rRKPJfDHReUq0d1
+         VzM+/NlJjjKeKYPLXQhubYT2kLBeFQiCsQ+NaCjgc2E1mE/GenV/uACmA5ExohY8aF/N
+         YBog==
+X-Gm-Message-State: AOAM533d1WEE6SUinGy2HU1XRJuU5wDaW6gNVcTou1/cs/5VVnzwi2V+
+        /WXunzASWI1mwIMeSQnGisXCwy9c9W8hgyAyIl0=
+X-Google-Smtp-Source: ABdhPJzb4iP1Y4Z4wPLox10qrUF6c/jCk5f9w7mRUTEZzUpGrHN35vSBQ4T21G8uAgOHZ7AZHiNAaeVff+gm2HvX/7w=
+X-Received: by 2002:a25:2687:: with SMTP id m129mr906465ybm.425.1601315490150;
+ Mon, 28 Sep 2020 10:51:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200914172453.1833883-1-weiwan@google.com>
-In-Reply-To: <20200914172453.1833883-1-weiwan@google.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 28 Sep 2020 19:43:36 +0200
-Message-ID: <CANn89iJDM97U15Znrx4k4bOFKunQp7dwJ9mtPwvMmB4S+rSSbA@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 0/6] implement kthread based napi poll
-To:     Wei Wang <weiwan@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Felix Fietkau <nbd@nbd.name>
+References: <1600883188-4831-1-git-send-email-alan.maguire@oracle.com>
+ <1600883188-4831-7-git-send-email-alan.maguire@oracle.com>
+ <20200925012611.jebtlvcttusk3hbx@ast-mbp.dhcp.thefacebook.com> <alpine.LRH.2.21.2009281500220.13299@localhost>
+In-Reply-To: <alpine.LRH.2.21.2009281500220.13299@localhost>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 28 Sep 2020 10:51:19 -0700
+Message-ID: <CAEf4Bzb2JE_V7cQ=LGto6jHbiKUAg+A5MuqQ0LGb9L8qTUk6yg@mail.gmail.com>
+Subject: Re: [PATCH v6 bpf-next 6/6] selftests/bpf: add test for
+ bpf_seq_printf_btf helper
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        andriy.shevchenko@linux.intel.com, Petr Mladek <pmladek@suse.com>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Andrey Ignatov <rdna@fb.com>, scott.branden@broadcom.com,
+        Quentin Monnet <quentin@isovalent.com>,
+        Carlos Neira <cneirabustos@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 7:26 PM Wei Wang <weiwan@google.com> wrote:
+On Mon, Sep 28, 2020 at 7:14 AM Alan Maguire <alan.maguire@oracle.com> wrote:
 >
-> The idea of moving the napi poll process out of softirq context to a
-> kernel thread based context is not new.
-> Paolo Abeni and Hannes Frederic Sowa has proposed patches to move napi
-> poll to kthread back in 2016. And Felix Fietkau has also proposed
-> patches of similar ideas to use workqueue to process napi poll just a
-> few weeks ago.
 >
-> The main reason we'd like to push forward with this idea is that the
-> scheduler has poor visibility into cpu cycles spent in softirq context,
-> and is not able to make optimal scheduling decisions of the user threads.
-> For example, we see in one of the application benchmark where network
-> load is high, the CPUs handling network softirqs has ~80% cpu util. And
-> user threads are still scheduled on those CPUs, despite other more idle
-> cpus available in the system. And we see very high tail latencies. In this
-> case, we have to explicitly pin away user threads from the CPUs handling
-> network softirqs to ensure good performance.
-> With napi poll moved to kthread, scheduler is in charge of scheduling both
-> the kthreads handling network load, and the user threads, and is able to
-> make better decisions. In the previous benchmark, if we do this and we
-> pin the kthreads processing napi poll to specific CPUs, scheduler is
-> able to schedule user threads away from these CPUs automatically.
 >
-> And the reason we prefer 1 kthread per napi, instead of 1 workqueue
-> entity per host, is that kthread is more configurable than workqueue,
-> and we could leverage existing tuning tools for threads, like taskset,
-> chrt, etc to tune scheduling class and cpu set, etc. Another reason is
-> if we eventually want to provide busy poll feature using kernel threads
-> for napi poll, kthread seems to be more suitable than workqueue.
+> On Thu, 24 Sep 2020, Alexei Starovoitov wrote:
 >
-> In this patch series, I revived Paolo and Hannes's patch in 2016 and
-> left them as the first 2 patches. Then there are changes proposed by
-> Felix, Jakub, Paolo and myself on top of those, with suggestions from
-> Eric Dumazet.
+> > to whatever number, but printing single task_struct needs ~800 lines and
+> > ~18kbytes. Humans can scroll through that much spam, but can we make it less
+> > verbose by default somehow?
+> > May be not in this patch set, but in the follow up?
+> >
 >
-> In terms of performance, I ran tcp_rr tests with 1000 flows with
-> various request/response sizes, with RFS/RPS disabled, and compared
-> performance between softirq vs kthread. Host has 56 hyper threads and
-> 100Gbps nic.
+> One approach that might work would be to devote 4 bits or so of
+> flag space to a "maximum depth" specifier; i.e. at depth 1,
+> only base types are displayed, no aggregate types like arrays,
+> structs and unions.  We've already got depth processing in the
+> code to figure out if possibly zeroed nested data needs to be
+> displayed, so it should hopefully be a simple follow-up.
 >
->         req/resp   QPS   50%tile    90%tile    99%tile    99.9%tile
-> softirq   1B/1B   2.19M   284us       987us      1.1ms      1.56ms
-> kthread   1B/1B   2.14M   295us       987us      1.0ms      1.17ms
+> One way to express it would be to use "..." to denote field(s)
+> were omitted. We could even use the number of "."s to denote
+> cases where multiple fields were omitted, giving a visual sense
+> of how much data was omitted.  So for example with
+> BTF_F_MAX_DEPTH(1), task_struct looks like this:
 >
-> softirq 5KB/5KB   1.31M   869us      1.06ms     1.28ms      2.38ms
-> kthread 5KB/5KB   1.32M   878us      1.06ms     1.26ms      1.66ms
+> (struct task_struct){
+>  .state = ()1,
+>  .stack = ( *)0x00000000029d1e6f,
+>  ...
+>  .flags = (unsigned int)4194560,
+>  ...
+>  .cpu = (unsigned int)36,
+>  .wakee_flips = (unsigned int)11,
+>  .wakee_flip_decay_ts = (long unsigned int)4294914874,
+>  .last_wakee = (struct task_struct *)0x000000006c7dfe6d,
+>  .recent_used_cpu = (int)19,
+>  .wake_cpu = (int)36,
+>  .prio = (int)120,
+>  .static_prio = (int)120,
+>  .normal_prio = (int)120,
+>  .sched_class = (struct sched_class *)0x00000000ad1561e6,
+>  ...
+>  .exec_start = (u64)674402577156,
+>  .sum_exec_runtime = (u64)5009664110,
+>  .vruntime = (u64)167038057,
+>  .prev_sum_exec_runtime = (u64)5009578167,
+>  .nr_migrations = (u64)54,
+>  .depth = (int)1,
+>  .parent = (struct sched_entity *)0x00000000cba60e7d,
+>  .cfs_rq = (struct cfs_rq *)0x0000000014f353ed,
+>  ...
 >
-> softirq 1MB/1MB  10.78K   84ms       166ms      234ms       294ms
-> kthread 1MB/1MB  10.83K   82ms       173ms      262ms       320ms
+> ...etc. What do you think?
+
+It's not clear to me what exactly is omitted with ... ? Would it make
+sense to still at least list a field name and "abbreviated" value.
+E.g., for arrays:
+
+.array_field = (int[16]){ ... },
+
+Similarly for struct:
+
+.struct_field = (struct my_struct){ ... },
+
+? With just '...' I get a very strong and unsettling feeling of
+missing out on the important stuff :)
+
 >
-> I also ran one application benchmark where the user threads have more
-> work to do. We do see good amount of tail latency reductions with the
-> kthread model.
+> > > +SEC("iter/task")
+> > > +int dump_task_fs_struct(struct bpf_iter__task *ctx)
+> > > +{
+> > > +   static const char fs_type[] = "struct fs_struct";
+> > > +   struct seq_file *seq = ctx->meta->seq;
+> > > +   struct task_struct *task = ctx->task;
+> > > +   struct fs_struct *fs = (void *)0;
+> > > +   static struct btf_ptr ptr = { };
+> > > +   long ret;
+> > > +
+> > > +   if (task)
+> > > +           fs = task->fs;
+> > > +
+> > > +   ptr.type = fs_type;
+> > > +   ptr.ptr = fs;
+> >
+> > imo the following is better:
+> >        ptr.type_id = __builtin_btf_type_id(*fs, 1);
+> >        ptr.ptr = fs;
+> >
+>
+> I'm still seeing lookup failures using __builtin_btf_type_id(,1) -
+> whereas both __builtin_btf_type_id(,0) and Andrii's
+> suggestion of bpf_core_type_id_kernel() work. Not sure what's
+> going on - pahole is v1.17, clang is
+
+bpf_core_type_id_kernel() is
+
+__builtin_btf_type_id(*(typeof(type) *)0, BPF_TYPE_ID_TARGET)
+
+BPF_TYPE_ID_TARGET is exactly 1. So I bet it's because of the type
+capturing through typeof() and pointer casting/dereferencing, which
+preserves type information properly. Regardless, just use the helper,
+IMO.
 
 
+>
+> clang version 12.0.0 (/mnt/src/llvm-project/clang
+> 7ab7b979d29e1e43701cf690f5cf1903740f50e3)
+>
 
-Wei, this is a very nice work.
-
-Please re-send it without the RFC tag, so that we can hopefully merge it ASAP.
-
-Thanks !
+[...]
