@@ -2,91 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F4C127A463
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 01:02:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FEE827A4AD
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 02:06:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbgI0XBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 19:01:40 -0400
-Received: from sonic304-22.consmr.mail.ne1.yahoo.com ([66.163.191.148]:36261
-        "EHLO sonic304-22.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726328AbgI0XBk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 19:01:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1601247699; bh=Ruh8whhsLaTTwjIXmzA3PCfAl+J0v/p4XdxCHWadIAE=; h=Date:From:Reply-To:Subject:References:From:Subject; b=q/QzhmQ1PiFid7YPPHAKacKwMMWRXFkztFqjP9ZP9PPS2RaVrweoMikK7rlS9HnZk9JOxGMdD4Zl8XXR+GLfIS6lIbNvZKUS92rK/oWCFkHDtE9f5wEmzs2mZhpYa9RlLKWkMYrPIKD7xNMxHi++g2H3zgI3tIZ7VZO6MD3/RhdKL0c+WZzcki6Y3CI5AVo+Plb7YyJFzvTYknq9Ow7K8eU7PKXUtaqhNvsYAIoFhEPqCdBsNVY27G/QV8XGHtiyYe8wYFdC7a8M1qlV/Z6L/o9o3DJ85nFO4WciylN2I3DDBHLqgVbpDyxjDUiC/BwDimZ5tD9KZmCmoHI2+h6eLg==
-X-YMail-OSG: CeM7uyAVM1mrWI0yJXpn8.8anbMJXiGrqbQZv57q7nxaawTnErge.saPmwLTBln
- QA4QzDAjHaLVPIZQjulOFI7rv3s0j2q1_APxUu.tpqi3_IkOI3FXfp3yUUad4MIOXPx6yrZ7zJH_
- 8u5T65UaTK54QfDoA112pUffJgjANBdT5Grd25wA58.mJ8kmm8q.leBsGYiSP4C37y42MqHNfZ8T
- 0.joxRy2ZytiMRhHE4rGRDIMvGK70Wyz3enzsT672S_1hN79xWbLkIYd82YAB.BzwNzfnUxL2DsQ
- lcs2nUVxvbwOfrzWv6Kz_8XCeYy2Spd1WJOLaZVzcCCfc02s_lRNiMWzCpGbtjmnDv_zxsWGHVZg
- NH6HJDnvIbpTBJsoXRXOO3q9vhuFhYOCn904n1z7h5hBEKSt6ZTat616qey2D0BidogK9nCPfcgR
- cCTC9a2QEjJK48MztFAENXxRWCl1OkEZFA_vYegBqdfAz8CZOOhUFYHQeQO4bdSCceB8kzRyrb1Q
- dUglhNJZtExVKZmBcjYGZdmz4HIuYrbRL6W0RzYY4plZ_0_9i04fycwVj4cGrZpCXtdEiofEQEso
- BES3D_48_2smPaDAEMOiQ7dqjD2P_o.sYxf0nYerUdJPgv4naiv0fGc5d.G8CuQARBw61k806mP.
- yJoYpiQ.0hECS3_MBTqH9Qw9eUrLM22Ahy5sHSYzjWWymA5inC5Qr935zsl9ob2sI9S0COcY9raT
- v_7RxJs8A28l8QANZF5Jduf0x1kfCBlUsFywwAHpWdqBox_hFDShISdUFTU6dXuQ15TVXOHUdtLm
- uOR8NZp4YGavn1xhIu6_ZamsUy5PPW3UkwY3h2vIEwX73AdoQsvIiIHwI.baWoBBJfvYd5y2DBlx
- E6kH74.0LsqVHkBvkvE_TUqcsemHUd.3M5nWJXKIsXRZFJVDeHrp9zZ19x_8tQueZqemRTA3iLid
- QcTp7s7jcA48D5JY33ee.2RMdAPcrFb8rY9oL59J2CCuU4PY1Oov3H3COHylnGCbMlYaX76_7UMW
- wccwaX7E_rL8ikENI7KlhIaEDAW8atp8Yx.RsX_kQzm5U9ktfZuJ2TQb5i.O7RACwu_qZSMtk4aG
- wqC3MWBsYV9dow.g5qAh.ltnMK.MOYAq6vjWCEAABlJ.RUiZBWiW2rcS8hNifnb0sS2TUY7mp9vG
- lMAMIwp08xgKWitzkMHPetuDe4YBR..5b3XyNjIi3Q1xq_bBHuohnFwAB_FYnlVzUhPb_IV491zv
- AAkAuGAj0uv01TS5du20CuXS7D81Tu6V7eI8PlfTtoTfIRRhhBIVyBFZQVOzU2at4iO4YQLW85ER
- Xcy8vLmD3krXz7KHe2C5oVabsCbniHnNVpDcasPUzjkr1En9sTGPoQhofqGg4LcdkNQ66XXYZ..C
- xVvBv74p75gUrnEjANHBi5sDX2mJpOP1lVjauta44pK4-
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.ne1.yahoo.com with HTTP; Sun, 27 Sep 2020 23:01:39 +0000
-Date:   Sun, 27 Sep 2020 23:01:35 +0000 (UTC)
-From:   Ms Theresa Heidi <heidiali81@gmail.com>
-Reply-To: mstheresaaheidi@yahoo.com
-Message-ID: <1956075593.1375628.1601247695468@mail.yahoo.com>
-Subject: =?UTF-8?B?5Yy76Zmi55qE57Sn5oCl5biu5Yqp77yB?=
+        id S1726406AbgI1AG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 20:06:28 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:7712 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726316AbgI1AG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 20:06:28 -0400
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08S01S8A011919
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 20:06:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=9c4DDlsDiq2dkrbteCIFGwD981XIXtBxfO/3AneyRUk=;
+ b=J+RA0z0z0r9mv6i+nP/mpb5HWn295P+YHudu/d3Sr2CRJD3PSar9RSY8TIROnG9CdOJn
+ T5vmU3nNJRvHPDWRVYID+aiIC9d95L9L4hy8fn2TRkk7D60BcsCpxCPfd8XBsEAv+4yv
+ rXuun1dRR9Vd3Yy5OwltVlv+LaowqOgbvjSJ6YwCVCRWm0hEtIgVRHciBv3YJtVnBdFE
+ P8xye7VNRRQT6mABwx4Q3OgBtsOZXzZuOpIjo7es69e88Ua8075JezABRcISaaLqNwhr
+ wLe0HjzmGpKeiQlOyAqtoj2S8FYOcB1iYN+fTEZ6tINfnh72Z6kC0Im6/0mOS7euO0od AQ== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33u46ursx3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sun, 27 Sep 2020 20:06:26 -0400
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08S020mm020398
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:06:26 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma03wdc.us.ibm.com with ESMTP id 33sw98e1xh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 00:06:26 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08S06PnT27394394
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Sep 2020 00:06:25 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CA94D124052;
+        Mon, 28 Sep 2020 00:06:25 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 738CD124054;
+        Mon, 28 Sep 2020 00:06:25 +0000 (GMT)
+Received: from pompom.ibm.com (unknown [9.85.151.55])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 28 Sep 2020 00:06:25 +0000 (GMT)
+From:   Lijun Pan <ljp@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     sukadev@linux.ibm.com, drt@linux.ibm.com,
+        Lijun Pan <ljp@linux.ibm.com>
+Subject: [PATCH net] ibmvnic: set up 200GBPS speed
+Date:   Sun, 27 Sep 2020 19:06:25 -0500
+Message-Id: <20200928000625.79280-1-ljp@linux.ibm.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <1956075593.1375628.1601247695468.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16674 YMailNodin Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-27_18:2020-09-24,2020-09-27 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ clxscore=1015 impostorscore=0 priorityscore=1501 bulkscore=0 phishscore=0
+ mlxlogscore=856 lowpriorityscore=0 malwarescore=0 suspectscore=1
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009270226
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Beloved One,=20
+Set up the speed according to crq->query_phys_parms.rsp.speed.
+Fix IBMVNIC_10GBPS typo.
 
- CHARITY DONATION Please read carefully, I know it is true that this letter=
- may come to you as a surprise. nevertheless,i humbly ask you to give me yo=
-ur attention and hear me, i am writing this mail to you with heavy sorrow i=
-n my heart,i have chose to reach you through Internet because it still rema=
-ins the fastest medium of communication after going through your profile.
+Fixes: f8d6ae0d27ec ("ibmvnic: Report actual backing device speed and duplex values")
+Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 5 ++++-
+ drivers/net/ethernet/ibm/ibmvnic.h | 2 +-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-My name is Mrs Theresa Heidi i am native France currently hospitalized in a=
- private hospital here in Israel as a result of lungs cancer I am 62 years =
-old and I was diagnosed of lungs cancer for about 4 years ago, immediately =
-after the death of my husband, who has left me everything he worked for. I'=
-m with my laptop in a hospital here in where I have been undergoing treatme=
-nt for cancer of the lungs
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index cfaac1a2db7b..c3f6aa87a34d 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -4590,7 +4590,7 @@ static int handle_query_phys_parms_rsp(union ibmvnic_crq *crq,
+ 	case IBMVNIC_1GBPS:
+ 		adapter->speed = SPEED_1000;
+ 		break;
+-	case IBMVNIC_10GBP:
++	case IBMVNIC_10GBPS:
+ 		adapter->speed = SPEED_10000;
+ 		break;
+ 	case IBMVNIC_25GBPS:
+@@ -4605,6 +4605,9 @@ static int handle_query_phys_parms_rsp(union ibmvnic_crq *crq,
+ 	case IBMVNIC_100GBPS:
+ 		adapter->speed = SPEED_100000;
+ 		break;
++	case IBMVNIC_200GBPS:
++		adapter->speed = SPEED_200000;
++		break;
+ 	default:
+ 		if (netif_carrier_ok(netdev))
+ 			netdev_warn(netdev, "Unknown speed 0x%08x\n", rspeed);
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+index f8416e1d4cf0..43feb96b0a68 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.h
++++ b/drivers/net/ethernet/ibm/ibmvnic.h
+@@ -373,7 +373,7 @@ struct ibmvnic_phys_parms {
+ #define IBMVNIC_10MBPS		0x40000000
+ #define IBMVNIC_100MBPS		0x20000000
+ #define IBMVNIC_1GBPS		0x10000000
+-#define IBMVNIC_10GBP		0x08000000
++#define IBMVNIC_10GBPS		0x08000000
+ #define IBMVNIC_40GBPS		0x04000000
+ #define IBMVNIC_100GBPS		0x02000000
+ #define IBMVNIC_25GBPS		0x01000000
+-- 
+2.22.0
 
-Now that is clear that I=E2=80=99m approaching the last-days of my life and=
- i don't even need the money again for any thing and because my doctor told=
- me that i would not last for the period of one year due to Lungs cancer pr=
-oblem.I have some funds inherited from my late husband, the sum of $15 Mill=
-ion United State Dollars ( US$15,000,000,00 ),This money is still with the =
-foreign bank and the management just wrote me as the true owner to come for=
-ward to receive the money for keeping it so long or rather issue a letter o=
-f authorization to somebody to receive it on my behalf since I can't come o=
-ver because of my illness or they may get it confiscated.
-
-I need you to help me withdraw this money from the foreign bank then use th=
-e funds for Charity works/assistance to less privileged people in the socie=
-ty.It is my last wish to see that this money is invested to any organizatio=
-n of your choice.
-
-I decided to contact you if you may be willing and interested to handle the=
-se trust funds in good faith before anything happens to me.This is not a st=
-olen money and there are no dangers involved, is 100% risk free with full l=
-egal proof.
-
-I want you to take 45 percent of the total money for your personal use whil=
-e 55% of the money will go to charity. I will appreciate your utmost confid=
-entiality and trust in this matter to accomplish my heart desire, as I don'=
-t want anything that will jeopardize my last wish.
-       =20
-Yours Beloved Sister.
-Mrs Theresa Heidi
