@@ -2,127 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 586E527A97A
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 10:25:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AD9A27A99D
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 10:35:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726621AbgI1IZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 04:25:01 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:48658 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726601AbgI1IY7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 04:24:59 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 6519120534;
-        Mon, 28 Sep 2020 10:24:57 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id aoh-EbMeEqPu; Mon, 28 Sep 2020 10:24:56 +0200 (CEST)
-Received: from mail-essen-02.secunet.de (unknown [10.53.40.205])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 505B7204EF;
-        Mon, 28 Sep 2020 10:24:56 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Mon, 28 Sep 2020 10:24:56 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Mon, 28 Sep
- 2020 10:24:55 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 935C13184731;
- Mon, 28 Sep 2020 10:24:54 +0200 (CEST)
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     David Miller <davem@davemloft.net>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH 8/8] xfrm: Use correct address family in xfrm_state_find
-Date:   Mon, 28 Sep 2020 10:24:50 +0200
-Message-ID: <20200928082450.29414-9-steffen.klassert@secunet.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200928082450.29414-1-steffen.klassert@secunet.com>
-References: <20200928082450.29414-1-steffen.klassert@secunet.com>
+        id S1726513AbgI1IfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 04:35:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726440AbgI1IfF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 04:35:05 -0400
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA24C0613CE
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 01:35:05 -0700 (PDT)
+Received: by mail-vs1-xe42.google.com with SMTP id p24so257937vsf.8
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 01:35:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=K0aYGsIeM1DRZtz0d2V1pRZwao+9KEihDTgnA9Qcu1w=;
+        b=n1n7gT5E1CqfMJCTWqyJVXIAuoYqjmQo/vij57GCYi7lxCWWEqr437bBhLwOw8GgFT
+         xNiPYf4s5BXKbEE6h9w2QVcygi0NRQF5mLxSwfC9zW+vrddS4etk5tCTKU236vKE8ef6
+         MPnZ6k2Elxy0Q/B5TzxWOCi7fxOHyH4frFv3AYgSRhwwELhx/D6afd+ENgna+BWkUo+S
+         asbxeQLV/LOaHjiEpuQ6j7yw4gU3IXhidF06nolvbCUUTlV7yuLMzZxPcyp1VrtxNuTs
+         QLOKOuyFiLmdMbIVWkd4R0XNPD9aWxODih4Q3V/zQfZbzOBKExbfHruFD66Mw3HYFoJ8
+         lA4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=K0aYGsIeM1DRZtz0d2V1pRZwao+9KEihDTgnA9Qcu1w=;
+        b=to0DTFZEq23dpwvtgNkaqyfj6gmirXc5iJETijUmmNu7xFN25Wo8MqcqPxgUm9ZeZc
+         lzKxwDA5lEfLYeQHiAh31fnQShdlZuXXLlRS5Zo9PDbSfYI6tXqtfmina9t4RZNuFLU0
+         QnlN4ba9OAcH4L1M9HtjmKXNA6W6jzDq1r3xL3iogdJAoUVpmyFH8lYBNbGbOy2JRZvr
+         +A9pO2VxwGX+mZbHlVn2D2y6O2jJ9aMXZEj24Ext77OqjKfpU6VEfqYaji4HS87If7eS
+         +1pDHMuvbViGFetXvLnltUeJLsvuxXbBwjGk+1hTNzCvoIFngwu+PfuwsmexsAW8sYzu
+         uxQw==
+X-Gm-Message-State: AOAM530PFYU+zVR5f59STfiw+BgYyMp4c0UVD9zqGmeabKkeTe0vWoBd
+        bC3W0tLfM2YwMXBTXkS0alqtYIcy53Oqxg==
+X-Google-Smtp-Source: ABdhPJydfhZhKU+RiY9+RU5zekHLPGuVuVuyKyo8wwIo9jcfdaufBllqB9J7aoVVfnGV5JIZ33mBvw==
+X-Received: by 2002:a67:e248:: with SMTP id w8mr4956402vse.39.1601282103997;
+        Mon, 28 Sep 2020 01:35:03 -0700 (PDT)
+Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com. [209.85.217.47])
+        by smtp.gmail.com with ESMTPSA id s8sm1028023vke.48.2020.09.28.01.35.02
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Sep 2020 01:35:03 -0700 (PDT)
+Received: by mail-vs1-f47.google.com with SMTP id p24so257890vsf.8
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 01:35:02 -0700 (PDT)
+X-Received: by 2002:a67:d84:: with SMTP id 126mr223275vsn.51.1601282102334;
+ Mon, 28 Sep 2020 01:35:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+References: <20200928033915.82810-1-xiangxia.m.yue@gmail.com>
+In-Reply-To: <20200928033915.82810-1-xiangxia.m.yue@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 28 Sep 2020 10:34:25 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSe08hRwQ_c1Uk7BzHWL1HwTGWQ7kKG1tfBUifOtayVMGw@mail.gmail.com>
+Message-ID: <CA+FuTSe08hRwQ_c1Uk7BzHWL1HwTGWQ7kKG1tfBUifOtayVMGw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] virtio-net: don't disable guest csum when disable LRO
+To:     xiangxia.m.yue@gmail.com
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+On Mon, Sep 28, 2020 at 5:41 AM <xiangxia.m.yue@gmail.com> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> Open vSwitch and Linux bridge will disable LRO of the interface
+> when this interface added to them. Now when disable the LRO, the
+> virtio-net csum is disable too. That drops the forwarding performance.
+>
+> Fixes: e59ff2c49ae1 ("virtio-net: disable guest csum during XDP set")
 
-The struct flowi must never be interpreted by itself as its size
-depends on the address family.  Therefore it must always be grouped
-with its original family value.
+Patch looks fine to me, but wrong commit here?
 
-In this particular instance, the original family value is lost in
-the function xfrm_state_find.  Therefore we get a bogus read when
-it's coupled with the wrong family which would occur with inter-
-family xfrm states.
+That commit disables csum on purpose when enabling xdp with ndp_bpf.
 
-This patch fixes it by keeping the original family value.
+This patch refines disabling LRO with ndo_set_features.
 
-Note that the same bug could potentially occur in LSM through
-the xfrm_state_pol_flow_match hook.  I checked the current code
-there and it seems to be safe for now as only secid is used which
-is part of struct flowi_common.  But that API should be changed
-so that so that we don't get new bugs in the future.  We could
-do that by replacing fl with just secid or adding a family field.
+The relevant commit is a02e8964eaf9 ("virtio-net: ethtool configurable LRO").
 
-Reported-by: syzbot+577fbac3145a6eb2e7a5@syzkaller.appspotmail.com
-Fixes: 48b8d78315bf ("[XFRM]: State selection update to use inner...")
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
----
- net/xfrm/xfrm_state.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+If this is a fix, it should target [PATCH net] separately from the
+second patch in the patchset, which is a new feature and targets
+[PATCH net-next]. They can arguably target net-next together, but then
+it should not have a fixes tag.
 
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 5ff392e6f3c1..efc89a92961d 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1019,7 +1019,8 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
- 	 */
- 	if (x->km.state == XFRM_STATE_VALID) {
- 		if ((x->sel.family &&
--		     !xfrm_selector_match(&x->sel, fl, x->sel.family)) ||
-+		     (x->sel.family != family ||
-+		      !xfrm_selector_match(&x->sel, fl, family))) ||
- 		    !security_xfrm_state_pol_flow_match(x, pol, fl))
- 			return;
- 
-@@ -1032,7 +1033,9 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
- 		*acq_in_progress = 1;
- 	} else if (x->km.state == XFRM_STATE_ERROR ||
- 		   x->km.state == XFRM_STATE_EXPIRED) {
--		if (xfrm_selector_match(&x->sel, fl, x->sel.family) &&
-+		if ((!x->sel.family ||
-+		     (x->sel.family == family &&
-+		      xfrm_selector_match(&x->sel, fl, family))) &&
- 		    security_xfrm_state_pol_flow_match(x, pol, fl))
- 			*error = -ESRCH;
- 	}
-@@ -1072,7 +1075,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
- 		    tmpl->mode == x->props.mode &&
- 		    tmpl->id.proto == x->id.proto &&
- 		    (tmpl->id.spi == x->id.spi || !tmpl->id.spi))
--			xfrm_state_look_at(pol, x, fl, encap_family,
-+			xfrm_state_look_at(pol, x, fl, family,
- 					   &best, &acquire_in_progress, &error);
- 	}
- 	if (best || acquire_in_progress)
-@@ -1089,7 +1092,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
- 		    tmpl->mode == x->props.mode &&
- 		    tmpl->id.proto == x->id.proto &&
- 		    (tmpl->id.spi == x->id.spi || !tmpl->id.spi))
--			xfrm_state_look_at(pol, x, fl, encap_family,
-+			xfrm_state_look_at(pol, x, fl, family,
- 					   &best, &acquire_in_progress, &error);
- 	}
- 
--- 
-2.17.1
-
+> Cc: Michael S. Tsirkin <mst@redhat.com>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> ---
+>  drivers/net/virtio_net.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 7145c83c6c8c..21b71148c532 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -63,6 +63,11 @@ static const unsigned long guest_offloads[] = {
+>         VIRTIO_NET_F_GUEST_CSUM
+>  };
+>
+> +#define GUEST_OFFLOAD_LRO_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
+> +                               (1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
+> +                               (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+> +                               (1ULL << VIRTIO_NET_F_GUEST_UFO))
+> +
+>  struct virtnet_stat_desc {
+>         char desc[ETH_GSTRING_LEN];
+>         size_t offset;
+> @@ -2531,7 +2536,8 @@ static int virtnet_set_features(struct net_device *dev,
+>                 if (features & NETIF_F_LRO)
+>                         offloads = vi->guest_offloads_capable;
+>                 else
+> -                       offloads = 0;
+> +                       offloads = vi->guest_offloads_capable &
+> +                                  ~GUEST_OFFLOAD_LRO_MASK;
+>
+>                 err = virtnet_set_guest_offloads(vi, offloads);
+>                 if (err)
+> --
+> 2.23.0
+>
