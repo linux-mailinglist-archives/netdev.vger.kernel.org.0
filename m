@@ -2,96 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D85127A56D
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 04:32:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C817327A584
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 04:46:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbgI1CcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Sep 2020 22:32:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42388 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726396AbgI1CcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Sep 2020 22:32:12 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92638C0613CE;
-        Sun, 27 Sep 2020 19:32:12 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id x16so6205396pgj.3;
-        Sun, 27 Sep 2020 19:32:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dOzo5/c2tdrgQiQGFz7WuFAha6P44jvsz6cVgcm8TcY=;
-        b=kW+Zgvk2DhFr4cMdk/FE/ggsX4G5knNefZ2eo0gUQim4RNqKjTZDBOdG4JaJr+t/dR
-         mcHASO2BW+hUrMJ1QCpPe8VxlFp9hXh4H2NG0ge9hLJMoAOy5kPcU9m6ObeKFtf0DQtl
-         KKJkDUVuJwWJXryHBjNzgvTrpDY+sEcsOI4oRaEHQ0dyihuFuJRrPd9aGEfHK6pZUWuI
-         X3svmF1Wb68kET+VLaWuXV/3VP9r5T3NF9fQ/Pl9s+EeSU506OAsJnkUJwUo97zu6nnI
-         Elclk5vhN0jVWUwUOGhK8k7Eka5abD1oC4oU2efz1qTYAfE9hcjq6xun05LGEKj69IMa
-         DUSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dOzo5/c2tdrgQiQGFz7WuFAha6P44jvsz6cVgcm8TcY=;
-        b=hRCspbSUzI0gFtU1BnotmMOG2en964C4UZ1RcdkT8t74RtcogaUwUHwJZkLK9HWhwA
-         Msa8SHbLSPc6T4gQQkPZ7etrrGvOJz/JZe4FCm2o9GTBI1pHNvfbDtVsyPkRdzcMSGm6
-         3VUeKrdS0+uNipd+1sHO2QefddADWOrpuBXYTCirTWII9g01hdeQlPLK3UI3fuYBluP8
-         RGfG0hzNCt+Fd7vW9QN5WQxNWrgkVvvGU21ccv90wprfBzPoap0lid79uuF0jNtlspLx
-         uIJv5rtTuQVkG9QOGTMbn6Lej4pJdp7xrAvvD5LyXdKveFUBTypjfzxzlvP8CEdqX6iN
-         GUYg==
-X-Gm-Message-State: AOAM530iWKU9y0KMe9Ir1HYyClJ+Q6mZrtqki3AQoa6Jq8tq/J9fwKd6
-        6d4H5IBwvYEgxy+c2+fR7oL2s21hHPnNyw==
-X-Google-Smtp-Source: ABdhPJwdyItsf3llU8D2ReOXPVuFzN+E1b3zCpuRsyj3ra1guULJ59refqTesZBqpflx3jpd2JK/ew==
-X-Received: by 2002:aa7:8051:0:b029:13e:d13d:a0f7 with SMTP id y17-20020aa780510000b029013ed13da0f7mr8100970pfm.19.1601260331595;
-        Sun, 27 Sep 2020 19:32:11 -0700 (PDT)
-Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id q65sm7771306pga.88.2020.09.27.19.32.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Sep 2020 19:32:10 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     olteanv@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Taehee Yoo <ap420073@gmail.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] net: vlan: Fixed signedness in vlan_group_prealloc_vid()
-Date:   Sun, 27 Sep 2020 19:31:50 -0700
-Message-Id: <20200928023154.28031-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1726559AbgI1CqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Sep 2020 22:46:18 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:43911 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726406AbgI1CqR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Sep 2020 22:46:17 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C06N32nlwz9sSJ;
+        Mon, 28 Sep 2020 12:46:10 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1601261175;
+        bh=c9z++Ebel8LrCHVKYjdGXubnlUqxLIqDpCtFsmMcirs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=qyXWuHTHpcbdkw+NhrZIPyOsEk4rpE8vFPkMgunPzmj+KAPKmVUr1ERrUauY/booL
+         S1RXTFaKguGRFCU9F4qGmndXU/jKgyPw9hR79p9W6xPQ+FM+lGhwwaAJmktYeVJd8X
+         yu/S/+SjBeDG7I9Airkrf7m5W1VGeR8Tf8/TVlzXwZA3RETLv9/WSqLLJRBxyK6oPh
+         czuizWZGhnJmIKXUsEEwano+hgbydYdEKlCggir9XNRiSjPweNzsA0aREYFcv9uX8Z
+         zMSiYbNAikEEBz+y7Wu3fS+lksFtxrzRSA9HQ18eJZBAcdfwp0wGN5GgpLpYKXhdhq
+         cUyY1lpEiK7aA==
+Date:   Mon, 28 Sep 2020 12:46:08 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Randy Dunlap <rdunlap@infradead.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20200928124608.2f527504@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/BwJo7GLaY/HnDA72V8UM65R";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit d0186842ec5f ("net: vlan: Avoid using BUG() in
-vlan_proto_idx()"), vlan_proto_idx() was changed to return a signed
-integer, however one of its called: vlan_group_prealloc_vid() was still
-using an unsigned integer for its return value, fix that.
+--Sig_/BwJo7GLaY/HnDA72V8UM65R
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: d0186842ec5f ("net: vlan: Avoid using BUG() in vlan_proto_idx()")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Hi all,
+
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  drivers/net/phy/Kconfig
+
+between commit:
+
+  7dbbcf496f2a ("mdio: fix mdio-thunder.c dependency & build error")
+
+from the net tree and commit:
+
+  a9770eac511a ("net: mdio: Move MDIO drivers into a new subdirectory")
+
+from the net-next tree.
+
+I fixed it up (I used the latter and applied the following patch) and
+can carry the fix as necessary. This is now fixed as far as linux-next
+is concerned, but any non trivial conflicts should be mentioned to your
+upstream maintainer when your tree is submitted for merging.  You may
+also want to consider cooperating with the maintainer of the conflicting
+tree to minimise any particularly complex conflicts.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Mon, 28 Sep 2020 12:42:10 +1000
+Subject: [PATCH] merge fix for "mdio: fix mdio-thunder.c dependency & build=
+ error"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
- net/8021q/vlan.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/mdio/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-index 6c08de1116c1..f292e0267bb9 100644
---- a/net/8021q/vlan.c
-+++ b/net/8021q/vlan.c
-@@ -51,8 +51,9 @@ static int vlan_group_prealloc_vid(struct vlan_group *vg,
- 				   __be16 vlan_proto, u16 vlan_id)
- {
- 	struct net_device **array;
--	unsigned int pidx, vidx;
-+	unsigned int vidx;
- 	unsigned int size;
-+	int pidx;
- 
- 	ASSERT_RTNL();
- 
--- 
-2.25.1
+diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
+index 840727cc9499..27a2a4a3d943 100644
+--- a/drivers/net/mdio/Kconfig
++++ b/drivers/net/mdio/Kconfig
+@@ -164,6 +164,7 @@ config MDIO_THUNDER
+ 	depends on 64BIT
+ 	depends on PCI
+ 	select MDIO_CAVIUM
++	select MDIO_DEVRES
+ 	help
+ 	  This driver supports the MDIO interfaces found on Cavium
+ 	  ThunderX SoCs when the MDIO bus device appears as a PCI
+--=20
+2.28.0
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/BwJo7GLaY/HnDA72V8UM65R
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9xTnEACgkQAVBC80lX
+0GzDKAf/TJWVMZ/tnaorjelOXkQydruUiZ2aNS102GlbsnZCXfSOmJqxb7Zcy/MM
+zJdgOMGuunu7eRT1AaM5da0eV7Q3KX4K2wDNdZP/rHnomYHjvtQotBnBwPynGZUd
+abIggJkH7z2p2ypFWTo7X8wELxuWY6iy5NbabaJxcwdV/pIoUHQJmpa9nxCX3Wtp
+j41YQtfBQ4852bCiyM7+jSSO9PJlH0ZCeWKaO2ZX4gmHDtbzaRFEh+0E1EFeGSKQ
+vuxAup2M9/63pmjtQIYrvtekSZqy5CrAlaEsW4nWtsoL143sh3dXDs9zJ5KtVRJP
+FuQ32OKo9NHVqPMKVmfDMp4yAeDx/w==
+=hQM/
+-----END PGP SIGNATURE-----
+
+--Sig_/BwJo7GLaY/HnDA72V8UM65R--
