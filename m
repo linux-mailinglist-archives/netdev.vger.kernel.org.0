@@ -2,138 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB2F827B36F
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:40:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F64D27B36C
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 19:40:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726460AbgI1RkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 13:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41368 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726613AbgI1RkI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 13:40:08 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530E2C061755;
-        Mon, 28 Sep 2020 10:40:07 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id f70so1510613ybg.13;
-        Mon, 28 Sep 2020 10:40:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bRUB/bwFEosynQ9K/iHMMiBU5kn7FkW/CO7KofKLlos=;
-        b=VBtgkvhfPZXlkH9wbKCdmPcpJ8oNrc5LzViJQ3qoePtupLyCjiZ4OOjm10NdGvllI9
-         j2iBN+oj8Z/ZBlPqmXgIJJCDiaUT9B3Rq/5dVhNefZZmk9udP0EPSvkwXBYf9yVDe8hM
-         WF2tjNj/IGXXK2Wl3k0fy4e+5IXuiwTToHpK+72A0nqHiwxGEEkCOl9gffBP9/g78ufT
-         TRYsVSlpHKLP5eJej2BQTyWRx4yqPJJ0ika6b5J28Nhl8Mjc24rasbTdt5SxJBE1onWx
-         0M7wZj1OsV4DKm3CdoxBzGfsjVUxzf/jTm/yP476X30evHtWD9vIDWZOPQbmktlM4GNM
-         V+8Q==
+        id S1726601AbgI1RkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 13:40:07 -0400
+Received: from mail-il1-f208.google.com ([209.85.166.208]:54120 "EHLO
+        mail-il1-f208.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726327AbgI1RkG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 13:40:06 -0400
+Received: by mail-il1-f208.google.com with SMTP id v5so1409793ilj.20
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 10:40:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bRUB/bwFEosynQ9K/iHMMiBU5kn7FkW/CO7KofKLlos=;
-        b=kLp/LHT1P6KQpgF4Khhv2h+2GSuWHDhuUavO7h+bP/of7gAWH/Q8h2Q9//2xrxX2hy
-         sXr0pN28AWI/tMhnsX3kXONu+msVF3Z75WglHCxQiwUUrJ5wwSS4B4e29Aq5MAfKjr9G
-         oVkAUINrStPDbLHJbYPuUSC7S7Gl1aEQDeVLpHGklrXRQ6Ur/wIkAe40e+eQAUq49iiw
-         eqpAGuPE5o0gMynGktR+ItMnt+hX9cIxeAI0sE/WeptiIRqB0OmgC3UUECKFaTlizKHC
-         NW70stvl7KMnIXAQm5t4tCwYyrMVuFkK8HKovzH5iRtgo8KT6G9T6SUlO6vQc9Mk5UpE
-         ZajA==
-X-Gm-Message-State: AOAM532U2Iw1mtkqwUKtTIRh2MQaGzbS55twd5vgV8k9y3VTrbX/Dj50
-        HSjR/HgN/Z7La6duxHQIa5HPcmI5jaU+U7lw+ck=
-X-Google-Smtp-Source: ABdhPJxQM1/V6NaKJCNgmuY84m1KTfRM5PpfbnvpUgsehTkepFHNfpLccl/qEDLPf6yIZNb4pxzYyclAl79UAG7EdRM=
-X-Received: by 2002:a25:8541:: with SMTP id f1mr905314ybn.230.1601314806520;
- Mon, 28 Sep 2020 10:40:06 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=YJj+NKirC78aDBHmX2WKsxxPVFYimQaCt4KWlG1d+NM=;
+        b=skN7sLkIukXSytpr8NH42wnMVK3m/k1rJOn+2nuQU0xmrtS/xkVCL93MmQCElT5dF6
+         9hjU/uC2QnrEMiIkL5V2NqsuiB1sgIgLyom4P5iejMmfSx7WRJw4dsZwr7d7HRzKzI0P
+         6M5XxjMJodY70EQztEa7+6sHqK/exhQPytiuyG9EEDa11k7nAryf7EIHeIokmmio+Ge1
+         ntNwXgA05y4xERMSS++WiB1fz9PI/lFuL0jMAycRuBCB1TtlFsIBxDNS+2dypc5HalPm
+         uz45mwQdN97THYDlRv2b4QLJfqRcbhPHBqhROf/8kQEiQtCyKjP5tATsqdEaMHJIZXFq
+         Tm0Q==
+X-Gm-Message-State: AOAM5321PVoz7HePrr0611m2i5OrgBxwjaz/9zJ0aQRGPnr66dfY89/0
+        6vpmPbHZ2TvNgSKKWpae/+/9bnupVxhR7XHqEDb8iXZZg5ll
+X-Google-Smtp-Source: ABdhPJyACsKcOzagLGt6tchEW46xgXXf0ncWeiIXVtEwQtLLeOF/H8MmdTl5xCixGz8iVvFR/G5TTrpiwBozN+CFGBXJmyS2hR2v
 MIME-Version: 1.0
-References: <cover.1601303057.git.daniel@iogearbox.net> <9c4b6a19ced3e2ee6c6d28f5f3883cc7b2b02400.1601303057.git.daniel@iogearbox.net>
-In-Reply-To: <9c4b6a19ced3e2ee6c6d28f5f3883cc7b2b02400.1601303057.git.daniel@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 28 Sep 2020 10:39:55 -0700
-Message-ID: <CAEf4BzYxSkjJzPVzOkOQkOVPUKri9aa69QGFrUdGjAf7f9Uf=w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 4/6] bpf, libbpf: add bpf_tail_call_static
- helper for bpf programs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>
+X-Received: by 2002:a92:d105:: with SMTP id a5mr2164301ilb.206.1601314805962;
+ Mon, 28 Sep 2020 10:40:05 -0700 (PDT)
+Date:   Mon, 28 Sep 2020 10:40:05 -0700
+In-Reply-To: <000000000000650d4005b00bcb0c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000002edd5605b0632812@google.com>
+Subject: Re: general protection fault in strncasecmp
+From:   syzbot <syzbot+459a5dce0b4cb70fd076@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, coreteam@netfilter.org,
+        davem@davemloft.net, dhowells@redhat.com, hch@lst.de,
+        hdanton@sina.com, kaber@trash.net, kadlec@blackhole.kfki.hu,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        mhiramat@kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 28, 2020 at 7:39 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Port of tail_call_static() helper function from Cilium's BPF code base [0]
-> to libbpf, so others can easily consume it as well. We've been using this
-> in production code for some time now. The main idea is that we guarantee
-> that the kernel's BPF infrastructure and JIT (here: x86_64) can patch the
-> JITed BPF insns with direct jumps instead of having to fall back to using
-> expensive retpolines. By using inline asm, we guarantee that the compiler
-> won't merge the call from different paths with potentially different
-> content of r2/r3.
->
-> We're also using Cilium's __throw_build_bug() macro (here as: __bpf_unreachable())
-> in different places as a neat trick to trigger compilation errors when
-> compiler does not remove code at compilation time. This works for the BPF
-> back end as it does not implement the __builtin_trap().
->
->   [0] https://github.com/cilium/cilium/commit/f5537c26020d5297b70936c6b7d03a1e412a1035
->
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Andrii Nakryiko <andriin@fb.com>
-> ---
+syzbot has bisected this issue to:
 
-few optional nits below, but looks good to me:
+commit bfd45be0b83e8f711f3abc892850d6047972d127
+Author: Christoph Hellwig <hch@lst.de>
+Date:   Tue Oct 11 20:52:22 2016 +0000
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+    kprobes: include <asm/sections.h> instead of <asm-generic/sections.h>
 
->  tools/lib/bpf/bpf_helpers.h | 46 +++++++++++++++++++++++++++++++++++++
->  1 file changed, 46 insertions(+)
->
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1613329d900000
+start commit:   98477740 Merge branch 'rcu/urgent' of git://git.kernel.org..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1513329d900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1113329d900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5f4c828c9e3cef97
+dashboard link: https://syzkaller.appspot.com/bug?extid=459a5dce0b4cb70fd076
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=125d46c5900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16c58f8b900000
 
-[...]
+Reported-by: syzbot+459a5dce0b4cb70fd076@syzkaller.appspotmail.com
+Fixes: bfd45be0b83e ("kprobes: include <asm/sections.h> instead of <asm-generic/sections.h>")
 
-> +/*
-> + * Helper function to perform a tail call with a constant/immediate map slot.
-> + */
-> +static __always_inline void
-> +bpf_tail_call_static(void *ctx, const void *map, const __u32 slot)
-
-nit: const void *ctx would work here, right? would avoid users having
-to do unnecessary casts in some cases
-
-> +{
-> +       if (!__builtin_constant_p(slot))
-> +               __bpf_unreachable();
-> +
-> +       /*
-> +        * Provide a hard guarantee that LLVM won't optimize setting r2 (map
-> +        * pointer) and r3 (constant map index) from _different paths_ ending
-> +        * up at the _same_ call insn as otherwise we won't be able to use the
-> +        * jmpq/nopl retpoline-free patching by the x86-64 JIT in the kernel
-> +        * given they mismatch. See also d2e4c1e6c294 ("bpf: Constant map key
-> +        * tracking for prog array pokes") for details on verifier tracking.
-> +        *
-> +        * Note on clobber list: we need to stay in-line with BPF calling
-> +        * convention, so even if we don't end up using r0, r4, r5, we need
-> +        * to mark them as clobber so that LLVM doesn't end up using them
-> +        * before / after the call.
-> +        */
-> +       asm volatile("r1 = %[ctx]\n\t"
-> +                    "r2 = %[map]\n\t"
-> +                    "r3 = %[slot]\n\t"
-> +                    "call 12\n\t"
-
-nit: it's weird to have tabs at the end of each string literal,
-especially that r1 doesn't start with a tab...
-
-> +                    :: [ctx]"r"(ctx), [map]"r"(map), [slot]"i"(slot)
-> +                    : "r0", "r1", "r2", "r3", "r4", "r5");
-> +}
-> +
->  /*
->   * Helper structure used by eBPF C program
->   * to describe BPF map attributes to libbpf loader
-> --
-> 2.21.0
->
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
