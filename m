@@ -2,108 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB12027AA3D
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 11:08:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B37127AA33
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 11:06:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726693AbgI1JIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 05:08:17 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:42102 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726465AbgI1JIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 05:08:17 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08S93hJV194769;
-        Mon, 28 Sep 2020 09:08:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=jfgO1O7Ck5C96o5hB9CZqDDeCkVWsRHno5yUPfNdobY=;
- b=SHrRNC/EYgSqWf4UMZAt3acjFOmY5dZWWBZfeuJeATXT0EwqrgvmSi85QE0GN2g0LF88
- 1MKsDKM/XrrToIC/1RxJWNPBIdAxSj/M9oUHydCZUCpe4BpK8CwRDOTSu6xcnAEsLU60
- UsUxkdWFDIWu3CVo3VERK4MqaVy4hmDdnjWQEkTHrIxbJ1baKc18cvqa9eVj03Mhbudi
- tYbyeLSB4I1H7IkMKrsWj6c5PyN1SnfCPjSDXphucBSWBWEtO48ddbwu+wZ4edZvmV8R
- gWBlWPbGUNW7rJIFfzXxKDAWdjDmhnLhLv70OxRhVhcZzsR3QzWYzI7OBVq2bWHr/SYo 8A== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2130.oracle.com with ESMTP id 33su5am0uc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 28 Sep 2020 09:08:07 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08S94jHF072788;
-        Mon, 28 Sep 2020 09:06:06 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3030.oracle.com with ESMTP id 33tf7k2mmm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Sep 2020 09:06:06 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08S964Hi006320;
-        Mon, 28 Sep 2020 09:06:04 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 28 Sep 2020 02:06:04 -0700
-Date:   Mon, 28 Sep 2020 12:05:56 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
+        id S1726578AbgI1JGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 05:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726461AbgI1JGO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 05:06:14 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A148C061755
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:06:14 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id 95so166269ota.13
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 02:06:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aLMEwo1GTL8rxXudG0GEtZJfPOiss5JdOgm8YTgj2ew=;
+        b=CuyOduRhEkNZODuCVzegsNXw2bIgsJ/2DykzPHgIqv0B1FArA+4Lxc3NeipV062q/H
+         GIoxRScktP5IDFGaNlu/6riiJ2zJ4MlUQqqTYVUx8OhazSEjtFnbLowDUf54dXhw8C7/
+         6R+tL7c1tsD/hykM3Bo5VCGy61woKjidXTSMo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aLMEwo1GTL8rxXudG0GEtZJfPOiss5JdOgm8YTgj2ew=;
+        b=Jh0kIfa//jPx4oTIZxf+1PjfPUNR11dyVGozdvsY8w1gvvycOChIkLfxc99ike4e3y
+         3BiF+JT2HzETRyWmTRO5MC5L/9LViIZezIsSmYgT7DOpNGy16EupcoeGc7bDp1YkJOKu
+         Q/6NcOXC6/s/j2W20uygCz9JEr5g/tDikfJL/542TTSKqjhbKRHv6QcbIvM43N1BO1zr
+         hEe+d+xE7V29+xzMNko7MpocLkhkDvDuAs3631yYUWg+YInE++G8p3jmzgUYcBBegi3b
+         DemXUE/lBOyEpWOiPYnLd+IrfYHp9Ww5/Ay9jrE9TzKoRs0kg5cgq2t//sbHi86dGr+g
+         g6eg==
+X-Gm-Message-State: AOAM533Kgcfv1VuiWeR/xT15amfkY9Qn3CpeDWW8nhlj1MXZwDDGAUaQ
+        SLFRWh/hpBCuNasK7xt4cxpHMVNyz7Seck67O6x7Hw==
+X-Google-Smtp-Source: ABdhPJxs/FZB02Ft8ZmDTuS0bYLgBEPkG0xHeAkww2lbFRxtnPCC8MW6Nr++yZFeBJr/uUIJk4Ekbp6bKiCXxI/Gyrs=
+X-Received: by 2002:a05:6830:12c7:: with SMTP id a7mr308019otq.334.1601283973942;
+ Mon, 28 Sep 2020 02:06:13 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200925095630.49207-1-lmb@cloudflare.com> <20200925095630.49207-2-lmb@cloudflare.com>
+ <20200925215359.l5lbicqdyx44spoc@kafai-mbp>
+In-Reply-To: <20200925215359.l5lbicqdyx44spoc@kafai-mbp>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Mon, 28 Sep 2020 10:06:02 +0100
+Message-ID: <CACAyw9-iXY5GqpLOOHkkDMvhPnES_1HMR8PMz0K2PR8wfbHqew@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/4] bpf: sockmap: enable map_update_elem from bpf_iter
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Roi Dayan <roid@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Eli Britstein <elibr@mellanox.com>,
-        Ariel Levkovich <lariel@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net/mlx5e: Fix a use after free on error in
- mlx5_tc_ct_shared_counter_get()
-Message-ID: <20200928090556.GA377727@mwanda>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9757 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
- suspectscore=0 adultscore=0 malwarescore=0 phishscore=0 bulkscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009280076
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9757 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 suspectscore=0
- lowpriorityscore=0 spamscore=0 clxscore=1011 mlxscore=0 impostorscore=0
- malwarescore=0 phishscore=0 adultscore=0 bulkscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009280076
+        kernel-team <kernel-team@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This code frees "shared_counter" and then dereferences on the next line
-to get the error code.
+On Fri, 25 Sep 2020 at 22:54, Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> > +     if (unlikely(!sk))
+> sk_fullsock(sk) test is also needed.
+>
+> > +             return -EINVAL;
+>
+> > +
+> >       if (!sock_map_sk_is_suitable(sk))
+> sk->sk_type is used in sock_map_sk_is_suitable().
+> sk_type is not in sock_common.
 
-Fixes: 1edae2335adf ("net/mlx5e: CT: Use the same counter for both directions")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Oh my, thanks!
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index b5f8ed30047b..cea2070af9af 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -739,6 +739,7 @@ mlx5_tc_ct_shared_counter_get(struct mlx5_tc_ct_priv *ct_priv,
- 	struct mlx5_core_dev *dev = ct_priv->dev;
- 	struct mlx5_ct_entry *rev_entry;
- 	__be16 tmp_port;
-+	int ret;
- 
- 	/* get the reversed tuple */
- 	tmp_port = rev_tuple.port.src;
-@@ -778,8 +779,9 @@ mlx5_tc_ct_shared_counter_get(struct mlx5_tc_ct_priv *ct_priv,
- 	shared_counter->counter = mlx5_fc_create(dev, true);
- 	if (IS_ERR(shared_counter->counter)) {
- 		ct_dbg("Failed to create counter for ct entry");
-+		ret = PTR_ERR(shared_counter->counter);
- 		kfree(shared_counter);
--		return ERR_PTR(PTR_ERR(shared_counter->counter));
-+		return ERR_PTR(ret);
- 	}
- 
- 	refcount_set(&shared_counter->refcount, 1);
 -- 
-2.28.0
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
+www.cloudflare.com
