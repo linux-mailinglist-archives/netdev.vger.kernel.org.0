@@ -2,124 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E3E127B62A
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 22:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D60D527B62E
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 22:25:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726779AbgI1UYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 16:24:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726393AbgI1UYE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 16:24:04 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFA5C061755;
-        Mon, 28 Sep 2020 13:24:03 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id r7so10866457ejs.11;
-        Mon, 28 Sep 2020 13:24:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1J3xfX6mi+yH7vokRWfQjm7Vu2SF03BqzqPZ3nviNoE=;
-        b=qcxx8srT7SomaH8XuJ4Kl7Kwksp5hSYaB/IYqbbZl8eINeqiD5PSu86lQ5BkdDBNkS
-         8rG4BTru6BYE8xCZRH0+lUWWPvgLjyvhz6Ng+xGjnEZpL1lAyQu/SLmWIpRWII4PcE7Q
-         M303xrS51KomeLbXTDGh+T6C8Vbng/sqUQZX1lmKFF5pBfbUgoNOrik3dqzCht+45X+e
-         b+6wfsIaz6xd/b5DzpvzmrwOBD8Hko/AArruIRiVs5NyPEzqhXa380+HR3B3F8YlRvNP
-         bBF8gm1/IVLUTW/lB9erkPt4Wkg9qTxPSAnzgQvcCT7GvU0zJp8VW06yyrtwhu98VoBT
-         E25Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1J3xfX6mi+yH7vokRWfQjm7Vu2SF03BqzqPZ3nviNoE=;
-        b=FC4hkkJztw5jbx0eyV/91uBeSfRDqgS0VYiWhA/+yiOs/i9e1YB1cShC+JvVK12yUj
-         9A7AfEk77ftgMLq4ShNW5Mi59LePYAQ9M6600ldrurI/XK+vnpq9A8oyQkLLdjP0EKBC
-         8o1QJMn1AuzZJy07hTRS0mPY9/3YFcn7mJejvUtFaiidH0TcbfMatC8pfYie/I9K1vTz
-         QsEjPRvgWcE62Qox1aQ3IGz+EWYgn10UF79re31WobBGm3Qj5QP5mpIXiAwxeq7bNEj5
-         IhZSuMow0tKvhd4zQsu6xSWCMsbLoy6h6Pjaa2JXRiu/Qo4/b8CoKrKovuOBOozfQfJS
-         SwAw==
-X-Gm-Message-State: AOAM532wBNecXit65SEkaJBrRptuIBEhfyqcP72eVYQEuab3iZHPvr8i
-        8pJVnwK1yt08J8/WNejSXx78h93y9Uwx1UnMqaVjWg0bVVs=
-X-Google-Smtp-Source: ABdhPJyNwJznKhbkYlvL5tC9TERwX8tgB5MOPOWV37ylEdBY0oUGQGsaTist/nbW+GeLLVJypFukRI5bQks82mNJJuA=
-X-Received: by 2002:a17:906:e216:: with SMTP id gf22mr529801ejb.2.1601324641833;
- Mon, 28 Sep 2020 13:24:01 -0700 (PDT)
+        id S1726844AbgI1UZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 16:25:00 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:41050 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726692AbgI1UZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 16:25:00 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1601324697;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bFCfMeJz3k7KgJV/g5+JO0vuUvcWHhiaBBsDnTpUBlY=;
+        b=TP+PHTQylOshKfHId3EGDSY+kpXmrrQb8H3PwNUb84fyOn4v5ZeeI8H0JxN/b8gF8adktB
+        W7OG2fyaY3Sih3/menetx7cVg5D3lteYcAucOb6MbOoeyyuCW47eANUHyiPTvul0+No5wz
+        vtqtHjO+0efFNqmBef7hEjs9QzEFBcXj97JYGvKomBDBDXFghK+TvTeZQurFKynWXlEDYT
+        +h1dti1KMXdySYSTvj448S1p/9MD+aU3UXWBmsRYm5DQSLkEufICQL1A3mrIYQBvEQubGF
+        QgHfc4AeIYB44xI9JHCSwintZ0/I92YCAZ+XxvoSz55bsYFHMkubqvEbk+aFTw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1601324697;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bFCfMeJz3k7KgJV/g5+JO0vuUvcWHhiaBBsDnTpUBlY=;
+        b=nIpAK+TLxTnYokpLYa33bQYSZ6zKFYxNxEexVmJUR3hXUJBCTfLAqtcMtiFO92LiSBBuJY
+        dGDq3BCWHqF3KDBw==
+To:     Edward Cree <ecree@solarflare.com>,
+        linux-net-drivers@solarflare.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH net-next] sfc: replace in_interrupt() usage
+In-Reply-To: <e45d9556-2759-6f33-01a0-d1739ce5760d@solarflare.com>
+References: <168a1f9e-cba4-69a8-9b29-5c121295e960@solarflare.com> <e45d9556-2759-6f33-01a0-d1739ce5760d@solarflare.com>
+Date:   Mon, 28 Sep 2020 22:24:57 +0200
+Message-ID: <87k0wdk5t2.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-References: <CAFBinCATt4Hi9rigj52nMf3oygyFbnopZcsakGL=KyWnsjY3JA@mail.gmail.com>
- <20200925221403.GE3856392@lunn.ch> <CAFBinCC4VuLJDLqQb+m+h+qnh6fAK2aBLVtQaE15Tc-zQq=KSg@mail.gmail.com>
- <20200926004129.GC3850848@lunn.ch> <CAFBinCAc2-QV3E8P4gk+7Lq0ushH08UoZ0tQ8ACEoda-D8oaWg@mail.gmail.com>
- <20200926144513.GD3850848@lunn.ch>
-In-Reply-To: <20200926144513.GD3850848@lunn.ch>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Mon, 28 Sep 2020 22:23:50 +0200
-Message-ID: <CAFBinCD8PWB52qD1X4jsSbkGw2C+x14QUPcQ8R-fUugOOPx-DQ@mail.gmail.com>
-Subject: Re: RGMII timing calibration (on 12nm Amlogic SoCs) - integration
- into dwmac-meson8b
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        alexandre.torgue@st.com, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, joabreu@synopsys.com, kuba@kernel.org,
-        peppe.cavallaro@st.com, davem@davemloft.net,
-        linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-On Sat, Sep 26, 2020 at 4:45 PM Andrew Lunn <andrew@lunn.ch> wrote:
+On Mon, Sep 28 2020 at 21:05, Edward Cree wrote:
+> efx_ef10_try_update_nic_stats_vf() used in_interrupt() to figure out
+>  whether it is safe to sleep (for MCDI) or not.
+> The only caller from which it was not is efx_net_stats(), which can be
+>  invoked under dev_base_lock from net-sysfs::netstat_show().
+> So add a new update_stats_atomic() method to struct efx_nic_type, and
+>  call it from efx_net_stats(), removing the need for
+>  efx_ef10_try_update_nic_stats_vf() to behave differently for this case
+>  (which it wasn't doing correctly anyway).
+> For all nic_types other than EF10 VF, this method is NULL and so we
+>  call the regular update_stats() methods, which are happy with being
+>  called from atomic contexts.
 >
-> > I checked this again for the vendor u-boot (where Ethernet is NOT
-> > working) as well as the Android kernel which this board was shipped
-> > with (where Ethernet is working)
-> > - in u-boot the MAC side adds a 2ns TX delay and the PHY side adds a
-> > 2ns RX delay
->
-> So that suggest there is nothing on the PCB. It is all down to MAC and
-> PHY adding delays.
-u-boot with it's 2ns RX delay is the non-working case
-only if I manually turn off the 2ns RX delay generated by the PHY in
-u-boot (phyreg w 0x1f 0xd08; phyreg w 0x11 0x9; phyreg w 0x15 0x11;
-phyreg w 0x1f 0x0; phyreg w 0x0 0x9200) I can get ping/tftpboot to
-work
+> Fixes: f00bf2305cab ("sfc: don't update stats on VF when called in atomic context")
+> Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Signed-off-by: Edward Cree <ecree@solarflare.com>
 
-the Android kernel disables the 2ns RX delay on the PHY side (and as
-far as I can tell does NOT enable it on the MAC side). with that
-Ethernet is working
+That's much nicer.
 
-> > yes, there's only one calibration value
-> > the reference code is calculating the calibration setting for four
-> > configuration variants:
-> > - 2ns TX delay on the MAC side, no RX or TX delay on the PHY side, RGMII RX_CLK not inverted
-> > - 2ns TX delay on the MAC side, no RX or TX delay on the PHY side, RGMII RX_CLK inverted
-> > - 2ns TX delay on the MAC side, 2ns RX delay on the PHY side, RGMII RX_CLK not inverted
-> > - 2ns TX delay on the MAC side, 2ns RX delay on the PHY side, RGMII RX_CLK inverted
-> >
-> > now that I'm writing this, could it be a calibration of the RX_CLK
-> > signal?
->
-> Yes, seems like it. Which of these four does it end up using? I'm
-> guessing the 3rd?
-I need to double-check but if I remember correctly was close between
-the first and last one (and I think the first case won)
+> ---
+> Only compile-tested so far, because I'm waiting for my kernel to
+>  finish rebuilding with CONFIG_DEBUG_ATOMIC_SLEEP which I'm hoping
+>  is the right thing to detect the bug in the existing code.
+> I also wasn't quite sure how to give credit to the thorough analysis
+>  in the commit message of Sebastian's patch.  I don't think we have
+>  a Whatever-by: tag to cover that, do we?
 
-> So i would forget about configuration clock inversion. Hard code it to
-> whatever works. It is not something you see other MAC/PHY combinations
-> allow to configure.
-we have inversion hard-coded to "off". I'm not planning to take this
-into consideration unless there's a good reason to do so
+Sebastian did the analysis and I did some word polishing, but the credit
+surely goes to him.
 
-> I think you said a value of 0x2 works. I wonder if that corresponds to
-> something slightly larger than 0ns if option 3 is being used?
-I have tested 0x0, 0x3, 0x4 and 0xf
-the first three values are working, but 0xf isn't.
+Thanks,
 
-I'll try to reach someone at Amlogic to clarify the meaning of these
-new register bits.
-I guess Florian's patch is a good starting point for what I need -
-thanks again for the suggestion Vladimir.
-
-
-Thank you all!
-Best regards,
-Martin
+        tglx
