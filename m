@@ -2,84 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 640E027A9AD
-	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 10:37:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2002D27A9B5
+	for <lists+netdev@lfdr.de>; Mon, 28 Sep 2020 10:38:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726625AbgI1IhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 04:37:18 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:47780 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726380AbgI1IhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 04:37:18 -0400
-Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1kMoei-0006rf-AQ; Mon, 28 Sep 2020 08:37:08 +0000
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     jeffrey.t.kirsher@intel.com
-Cc:     andrew@lunn.ch, Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v4] e1000e: Increase polling timeout on MDIC ready bit
-Date:   Mon, 28 Sep 2020 16:36:58 +0800
-Message-Id: <20200928083658.8567-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200924164542.19906-1-kai.heng.feng@canonical.com>
-References: <20200924164542.19906-1-kai.heng.feng@canonical.com>
+        id S1726613AbgI1Iiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 04:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42140 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726420AbgI1Iiv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 04:38:51 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C34AC0613CE
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 01:38:51 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kMogJ-0000lc-IT; Mon, 28 Sep 2020 10:38:47 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:e69a:da07:120c:40d8] (unknown [IPv6:2a03:f580:87bc:d400:e69a:da07:120c:40d8])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 6FE1656C58D;
+        Mon, 28 Sep 2020 08:38:46 +0000 (UTC)
+Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
+ flexcan memory for ECC function
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>
+Cc:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-2-qiangqing.zhang@nxp.com>
+ <f98dcb18-19f9-9721-a191-481983158daa@pengutronix.de>
+ <DB8PR04MB6795C88B839FE5083283E157E6340@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <4490a094-0b7d-4361-2c0a-906b2cff6020@pengutronix.de>
+ <DB8PR04MB679574C44EC1B2D401C9B5D1E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <3910f513-1a47-5128-1a78-f412a0904911@pengutronix.de>
+ <DB8PR04MB679575A5E8EE9C7534A446BAE6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <e9542cdc-cce8-8ec5-8229-5a9992352539@pengutronix.de>
+ <DB8PR04MB6795064F932CF60033514367E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <91898e81-3fb6-e03f-a450-3f43ba2b7756@pengutronix.de>
+Date:   Mon, 28 Sep 2020 10:38:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
+MIME-Version: 1.0
+In-Reply-To: <DB8PR04MB6795064F932CF60033514367E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="9SEwBZLuY8Wg30vu5sgU4RAhE3EGALqVs"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are seeing the following error after S3 resume:
-[  704.746874] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-[  704.844232] e1000e 0000:00:1f.6 eno1: MDI Write did not complete
-[  704.902817] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-[  704.903075] e1000e 0000:00:1f.6 eno1: reading PHY page 769 (or 0x6020 shifted) reg 0x17
-[  704.903281] e1000e 0000:00:1f.6 eno1: Setting page 0x6020
-[  704.903486] e1000e 0000:00:1f.6 eno1: writing PHY page 769 (or 0x6020 shifted) reg 0x17
-[  704.943155] e1000e 0000:00:1f.6 eno1: MDI Error
-...
-[  705.108161] e1000e 0000:00:1f.6 eno1: Hardware Error
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--9SEwBZLuY8Wg30vu5sgU4RAhE3EGALqVs
+Content-Type: multipart/mixed; boundary="3hsv4SUzU7ukNMsUbjxBG16iqesN8y6ZK";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>,
+ "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+ Pankaj Bansal <pankaj.bansal@nxp.com>
+Cc: dl-linux-imx <linux-imx@nxp.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <91898e81-3fb6-e03f-a450-3f43ba2b7756@pengutronix.de>
+Subject: Re: [PATCH linux-can-next/flexcan 1/4] can: flexcan: initialize all
+ flexcan memory for ECC function
+References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
+ <20200925151028.11004-2-qiangqing.zhang@nxp.com>
+ <f98dcb18-19f9-9721-a191-481983158daa@pengutronix.de>
+ <DB8PR04MB6795C88B839FE5083283E157E6340@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <4490a094-0b7d-4361-2c0a-906b2cff6020@pengutronix.de>
+ <DB8PR04MB679574C44EC1B2D401C9B5D1E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <3910f513-1a47-5128-1a78-f412a0904911@pengutronix.de>
+ <DB8PR04MB679575A5E8EE9C7534A446BAE6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <e9542cdc-cce8-8ec5-8229-5a9992352539@pengutronix.de>
+ <DB8PR04MB6795064F932CF60033514367E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <DB8PR04MB6795064F932CF60033514367E6350@DB8PR04MB6795.eurprd04.prod.outlook.com>
 
-As Andrew Lunn pointed out, MDIO has nothing to do with phy, and indeed
-increase polling iteration can resolve the issue.
+--3hsv4SUzU7ukNMsUbjxBG16iqesN8y6ZK
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-This patch only papers over the symptom, as we don't really know the
-root cause of the issue. The most possible culprit is Intel ME, which
-may do its own things that conflict with software.
+On 9/28/20 10:36 AM, Joakim Zhang wrote:
+> Could I send out a V3 to review firstly, then wait Pankaj have time to =
+do the
+> test?
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v4:
- - States that this patch just papers over the symptom.
+sure, go ahead.
 
-v3:
- - Moving delay to end of loop doesn't save anytime, move it back.
- - Point out this is quitely likely caused by Intel ME.
+Marc
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-v2:
- - Increase polling iteration instead of powering down the phy.
 
- drivers/net/ethernet/intel/e1000e/phy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--3hsv4SUzU7ukNMsUbjxBG16iqesN8y6ZK--
 
-diff --git a/drivers/net/ethernet/intel/e1000e/phy.c b/drivers/net/ethernet/intel/e1000e/phy.c
-index e11c877595fb..e6d4acd90937 100644
---- a/drivers/net/ethernet/intel/e1000e/phy.c
-+++ b/drivers/net/ethernet/intel/e1000e/phy.c
-@@ -203,7 +203,7 @@ s32 e1000e_write_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 data)
- 	 * Increasing the time out as testing showed failures with
- 	 * the lower time out
- 	 */
--	for (i = 0; i < (E1000_GEN_POLL_TIMEOUT * 3); i++) {
-+	for (i = 0; i < (E1000_GEN_POLL_TIMEOUT * 10); i++) {
- 		udelay(50);
- 		mdic = er32(MDIC);
- 		if (mdic & E1000_MDIC_READY)
--- 
-2.17.1
+--9SEwBZLuY8Wg30vu5sgU4RAhE3EGALqVs
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9xoRIACgkQqclaivrt
+76l9Pgf/e6rinM1v0XRuQNTB89bUrwo5wqDnYyUg+duY/0z75Eqr/GGnDdWFzALz
+RAziSoMLW3ZXG9ILBlcAgeFVs30qYGRznpOLGWQAlsMLR1kzp3A6k05b2yqjcdI4
+eQzcBD/N6XwhV9W63RiUUDfuj51iY/qksVTGgvdSPST9lmT5wp5dxxiaDibj5oI7
+5hM8QleK8xg0rMTjlzjbuig+7qNFmQYcNApQu9va/qsDVIjelJhJcY9qhbgguh/t
+4Xa7U3b9g9rOTZhHZXJgWvmT6Vt/xamAF6NZqurG7M7UsJvRjmB7IonjSSZUOVUZ
+tDyd5mrwoS9NfG1nJzLWM4OBjifwgA==
+=fRPT
+-----END PGP SIGNATURE-----
+
+--9SEwBZLuY8Wg30vu5sgU4RAhE3EGALqVs--
