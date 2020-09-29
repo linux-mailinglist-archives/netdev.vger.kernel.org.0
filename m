@@ -2,132 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5D6927BF05
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:17:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2DB527BF50
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:26:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727731AbgI2IQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 04:16:56 -0400
-Received: from wnew1-smtp.messagingengine.com ([64.147.123.26]:59429 "EHLO
-        wnew1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725786AbgI2IQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:16:56 -0400
+        id S1727774AbgI2I0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 04:26:08 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:51781 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727753AbgI2I0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:26:07 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id C8F319DE;
-        Tue, 29 Sep 2020 04:16:54 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id F39E75807A2;
+        Tue, 29 Sep 2020 04:16:56 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 29 Sep 2020 04:16:55 -0400
+  by compute3.internal (MEProxy); Tue, 29 Sep 2020 04:16:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=maCBlS4YL09SfBfoU
-        K486fQLafDOP2uX0oH+5WVdjgQ=; b=HUtQueSeteAr0fK9IVlBnCGZ7Y7Iml7lG
-        /dI65u8p2D/9maRtSeq/h8cIhThFQ4KuHGLFld/EOwB6v9imRGUoNZy1JFRma2QL
-        cgTrvSqwhwR+EApE5t8q8SjtXmWHA7DPEMQfCEpR0N47V0qGQGbGDROTkPzMgVoX
-        W+s/eHkVatyc/dlOSBKiX8s1IGPVCnMFjiIH36J4MRON7XWoGsjjO+FeNVoqNjGd
-        kmLu35rSUjl16ZO7W9UOdvjjgXp3WNUlQHfu9Ewd5vNoTKU/Qk/N48g35MySEOXq
-        eLp8VgkzTMdbiTu26Gxcr0yYEgrh6E568+pAKSrczxGiPNyuw0Z3Q==
-X-ME-Sender: <xms:de1yX-dUD6pTpaX-_2mxVcWmVUNvsKMd25HPnkXNEhzXtIExN2BMGg>
-    <xme:de1yX4PMuA25P1YUgpfQ6kY9GcXPep7txCbrCy-r4S6x1x1bMnV4qOdtk22h0dc3j
-    DLxkdriU2wsL20>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=sRmx3hz3I+ujiBqBkrLYXJvjYEjlp9OGVjGB3V3zx2w=; b=LEhNfF52
+        JcnMJYEvdN0eTpHYDxlpD+r030F/UhyjrMuDY9qmb32QzolkuLJwlPKIiU+0uEff
+        XtTLyiT9Q9Rhzqj/vcrdyoatfysl7w5qT6OiBjQe/XJPDaesGqyNbiuZf8cXVINI
+        GD2Y/8L5xwe8QyQXMb7sTZn/xMtp6Ax0i7bUfkwk96w3x6jWXPdY+QIWd0ALBGY8
+        oHlrC3AEzhaZH/YSmfG/Bepv89+pM1EIW9LIf1b39iiJmRhfZFqppW2rFQ1j60IX
+        oTsJZIpogD5yY7GRfqs9xv8yIbKhxiaX5Pf2n/9ZhsgSQE5skhHIKoVb1+hOSAip
+        s0P8fGcHCyfCxA==
+X-ME-Sender: <xms:eO1yXzUSvBSpgIpeaMdY5d5d_oOZDvfPYwtF5zSkOlVSEGyUS9_Lkw>
+    <xme:eO1yX7l6QdM8jEMiHzjewgC31-5tQ60tXAt0yY_Cs9DADLdEPTdz_bdxH_VwMJyWq
+    0Jyv9jGAVwpmLc>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdekgddtvdcutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
-    ffieekgeehveefvdegledvffduhfenucfkphepkeegrddvvdelrdefjedrudegkeenucev
-    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthh
-    esihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:de1yX_gdkfkaUhqRE_yrB-4hTzODpqbYFJAK6hKEj7nVpmWHsY-J6w>
-    <xmx:de1yX7_-OZnS8UtzLoQrf7HZh3lt0KiximcrdwVCsoiChBqijGiHlQ>
-    <xmx:de1yX6vV6A6gKgqvXbYfbsw-aDsl5lka7f2VFGPX4zbeYZoqPYws-A>
-    <xmx:du1yX399SqtBS9N-R6V8BOaOiK1mlBJOeUQ5DBYkl_8TO73vk_lePp1dZDg>
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
+    fgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdefjedrudegkeen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    gthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:eO1yX_bOD0-1aLTJgZoRuNxMk_-iwWSk1FV_EfA0LZK1AjALouTywA>
+    <xmx:eO1yX-WOV0ELTN-qHX0YHrTVAo8d25zTLu-YjL4_4rrW8FacSSAftw>
+    <xmx:eO1yX9lZCQoUvq8REz9Lmr9_V9UPs0BRUiQFg2BEoNB6z232bde7ng>
+    <xmx:eO1yXzUl0xSyg_qLEILdxFynGvkpf1Hw8Sag5RjCO6Rm-6f4oAwOLg>
 Received: from shredder.mtl.com (igld-84-229-37-148.inter.net.il [84.229.37.148])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 11AF6328005A;
-        Tue, 29 Sep 2020 04:16:50 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 22DD9328005E;
+        Tue, 29 Sep 2020 04:16:53 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, nhorman@tuxdriver.com,
         jiri@nvidia.com, roopa@nvidia.com, aroulin@nvidia.com,
         ayal@nvidia.com, masahiroy@kernel.org, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 0/7] drop_monitor: Convert to use devlink tracepoint
-Date:   Tue, 29 Sep 2020 11:15:49 +0300
-Message-Id: <20200929081556.1634838-1-idosch@idosch.org>
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 1/7] devlink: Add a tracepoint for trap reports
+Date:   Tue, 29 Sep 2020 11:15:50 +0300
+Message-Id: <20200929081556.1634838-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200929081556.1634838-1-idosch@idosch.org>
+References: <20200929081556.1634838-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Ido Schimmel <idosch@mellanox.com>
 
-Drop monitor is able to monitor both software and hardware originated
-drops. Software drops are monitored by having drop monitor register its
-probe on the 'kfree_skb' tracepoint. Hardware originated drops are
-monitored by having devlink call into drop monitor whenever it receives
-a dropped packet from the underlying hardware.
+Add a tracepoint for trap reports so that drop monitor could register
+its probe on it. Use trace_devlink_trap_report_enabled() to avoid
+wasting cycles setting the trap metadata if the tracepoint is not
+enabled.
 
-This patch set converts drop monitor to monitor both software and
-hardware originated drops in the same way - by registering its probe on
-the relevant tracepoint.
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+---
+ include/net/devlink.h          | 14 +++++++++++++
+ include/trace/events/devlink.h | 37 ++++++++++++++++++++++++++++++++++
+ net/core/devlink.c             | 25 +++++++++++++++++++++++
+ 3 files changed, 76 insertions(+)
 
-In addition to drop monitor being more consistent, it is now also
-possible to build drop monitor as module instead of as a builtin and
-still monitor hardware originated drops. Initially, CONFIG_NET_DEVLINK
-implied CONFIG_NET_DROP_MONITOR, but after commit def2fbffe62c
-("kconfig: allow symbols implied by y to become m") we can have
-CONFIG_NET_DEVLINK=y and CONFIG_NET_DROP_MONITOR=m and hardware
-originated drops will not be monitored.
-
-Patch set overview:
-
-Patch #1 adds a tracepoint in devlink for trap reports.
-
-Patch #2 prepares probe functions in drop monitor for the new
-tracepoint.
-
-Patch #3 converts drop monitor to use the new tracepoint.
-
-Patches #4-#6 perform cleanups after the conversion.
-
-Patch #7 adds a test case for drop monitor. Both software originated
-drops and hardware originated drops (using netdevsim) are tested.
-
-Tested:
-
-| CONFIG_NET_DEVLINK | CONFIG_NET_DROP_MONITOR | Build | SW drops | HW drops |
-| -------------------|-------------------------|-------|----------|----------|
-|          y         |            y            |   v   |     v    |     v    |
-|          y         |            m            |   v   |     v    |     v    |
-|          y         |            n            |   v   |     x    |     x    |
-|          n         |            y            |   v   |     v    |     x    |
-|          n         |            m            |   v   |     v    |     x    |
-|          n         |            n            |   v   |     x    |     x    |
-
-Ido Schimmel (7):
-  devlink: Add a tracepoint for trap reports
-  drop_monitor: Prepare probe functions for devlink tracepoint
-  drop_monitor: Convert to using devlink tracepoint
-  drop_monitor: Remove no longer used functions
-  drop_monitor: Remove duplicate struct
-  drop_monitor: Filter control packets in drop monitor
-  selftests: net: Add drop monitor test
-
- MAINTAINERS                                   |   1 -
- include/net/devlink.h                         |  16 ++
- include/net/drop_monitor.h                    |  36 ---
- include/trace/events/devlink.h                |  37 +++
- net/Kconfig                                   |   1 -
- net/core/devlink.c                            |  37 ++-
- net/core/drop_monitor.c                       | 133 ++++++-----
- tools/testing/selftests/net/Makefile          |   1 +
- tools/testing/selftests/net/config            |   3 +
- .../selftests/net/drop_monitor_tests.sh       | 215 ++++++++++++++++++
- 10 files changed, 368 insertions(+), 112 deletions(-)
- delete mode 100644 include/net/drop_monitor.h
- create mode 100755 tools/testing/selftests/net/drop_monitor_tests.sh
-
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 7339bf9ba6b4..1014294ba6a0 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -624,6 +624,20 @@ struct devlink_health_reporter_ops {
+ 		    struct netlink_ext_ack *extack);
+ };
+ 
++/**
++ * struct devlink_trap_metadata - Packet trap metadata.
++ * @trap_name: Trap name.
++ * @trap_group_name: Trap group name.
++ * @input_dev: Input netdevice.
++ * @fa_cookie: Flow action user cookie.
++ */
++struct devlink_trap_metadata {
++	const char *trap_name;
++	const char *trap_group_name;
++	struct net_device *input_dev;
++	const struct flow_action_cookie *fa_cookie;
++};
++
+ /**
+  * struct devlink_trap_policer - Immutable packet trap policer attributes.
+  * @id: Policer identifier.
+diff --git a/include/trace/events/devlink.h b/include/trace/events/devlink.h
+index 6f60a78d9a7e..44d8e2981065 100644
+--- a/include/trace/events/devlink.h
++++ b/include/trace/events/devlink.h
+@@ -171,6 +171,43 @@ TRACE_EVENT(devlink_health_reporter_state_update,
+ 		  __entry->new_state)
+ );
+ 
++/*
++ * Tracepoint for devlink packet trap:
++ */
++TRACE_EVENT(devlink_trap_report,
++	TP_PROTO(const struct devlink *devlink, struct sk_buff *skb,
++		 const struct devlink_trap_metadata *metadata),
++
++	TP_ARGS(devlink, skb, metadata),
++
++	TP_STRUCT__entry(
++		__string(bus_name, devlink->dev->bus->name)
++		__string(dev_name, dev_name(devlink->dev))
++		__string(driver_name, devlink->dev->driver->name)
++		__string(trap_name, metadata->trap_name)
++		__string(trap_group_name, metadata->trap_group_name)
++		__dynamic_array(char, input_dev_name, IFNAMSIZ)
++	),
++
++	TP_fast_assign(
++		struct net_device *input_dev = metadata->input_dev;
++
++		__assign_str(bus_name, devlink->dev->bus->name);
++		__assign_str(dev_name, dev_name(devlink->dev));
++		__assign_str(driver_name, devlink->dev->driver->name);
++		__assign_str(trap_name, metadata->trap_name);
++		__assign_str(trap_group_name, metadata->trap_group_name);
++		__assign_str(input_dev_name,
++			     (input_dev ? input_dev->name : "NULL"));
++	),
++
++	TP_printk("bus_name=%s dev_name=%s driver_name=%s trap_name=%s "
++		  "trap_group_name=%s input_dev_name=%s", __get_str(bus_name),
++		  __get_str(dev_name), __get_str(driver_name),
++		  __get_str(trap_name), __get_str(trap_group_name),
++		  __get_str(input_dev_name))
++);
++
+ #endif /* _TRACE_DEVLINK_H */
+ 
+ /* This part must be outside protection */
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 7a38f9e25922..c0f300507c37 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -84,6 +84,7 @@ EXPORT_SYMBOL(devlink_dpipe_header_ipv6);
+ 
+ EXPORT_TRACEPOINT_SYMBOL_GPL(devlink_hwmsg);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(devlink_hwerr);
++EXPORT_TRACEPOINT_SYMBOL_GPL(devlink_trap_report);
+ 
+ static const struct nla_policy devlink_function_nl_policy[DEVLINK_PORT_FUNCTION_ATTR_MAX + 1] = {
+ 	[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR] = { .type = NLA_BINARY },
+@@ -9278,6 +9279,22 @@ devlink_trap_report_metadata_fill(struct net_dm_hw_metadata *hw_metadata,
+ 	spin_unlock(&in_devlink_port->type_lock);
+ }
+ 
++static void
++devlink_trap_report_metadata_set(struct devlink_trap_metadata *metadata,
++				 const struct devlink_trap_item *trap_item,
++				 struct devlink_port *in_devlink_port,
++				 const struct flow_action_cookie *fa_cookie)
++{
++	metadata->trap_name = trap_item->trap->name;
++	metadata->trap_group_name = trap_item->group_item->group->name;
++	metadata->fa_cookie = fa_cookie;
++
++	spin_lock(&in_devlink_port->type_lock);
++	if (in_devlink_port->type == DEVLINK_PORT_TYPE_ETH)
++		metadata->input_dev = in_devlink_port->type_dev;
++	spin_unlock(&in_devlink_port->type_lock);
++}
++
+ /**
+  * devlink_trap_report - Report trapped packet to drop monitor.
+  * @devlink: devlink.
+@@ -9307,6 +9324,14 @@ void devlink_trap_report(struct devlink *devlink, struct sk_buff *skb,
+ 	devlink_trap_report_metadata_fill(&hw_metadata, trap_item,
+ 					  in_devlink_port, fa_cookie);
+ 	net_dm_hw_report(skb, &hw_metadata);
++
++	if (trace_devlink_trap_report_enabled()) {
++		struct devlink_trap_metadata metadata = {};
++
++		devlink_trap_report_metadata_set(&metadata, trap_item,
++						 in_devlink_port, fa_cookie);
++		trace_devlink_trap_report(devlink, skb, &metadata);
++	}
+ }
+ EXPORT_SYMBOL_GPL(devlink_trap_report);
+ 
 -- 
 2.26.2
 
