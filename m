@@ -2,178 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE5B127BC9A
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 07:55:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E122A27BC9F
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 07:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727459AbgI2FzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 01:55:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:45383 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725355AbgI2FzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 01:55:24 -0400
-Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601358922;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CU6DE2cx0I1FLYs8fHE6zj6vjwpo9LDCmZqFve4flUg=;
-        b=EoKpJqC0nzClsUNxNS9oqV4foiJbYij+YK60wRR+YLTFvakKv/OzJ9aI9b6Yx5tivN0S39
-        rl3uLCoUvHgk3P1SDvxlf11zF2cNEA6xXMcZbwYEiSdhzrLfs5hVk1ZhUg76hy/REIzNtY
-        t7km5YjyydssV9Z2oc6ACcwwYzK0K7o=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-148-gDzWEegQPeSIjrPcb5tPrw-1; Tue, 29 Sep 2020 01:55:20 -0400
-X-MC-Unique: gDzWEegQPeSIjrPcb5tPrw-1
-Received: by mail-wr1-f71.google.com with SMTP id l9so1257977wrq.20
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 22:55:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CU6DE2cx0I1FLYs8fHE6zj6vjwpo9LDCmZqFve4flUg=;
-        b=R13V+cwHWprfNog8sReNmMYy37O4SELcFlwfLxgrbVDcXoaKqRebADGYqc5/XXAiHj
-         NVkcpOdEIRkdztz0ISWZJe/MQobXaqw0AW7mbBw8aqUAa4AD5RjZXm3uHafQQfboI+Oe
-         1rudzhHIM0MXsGTDmgMvd4Ms+Fr3ruPpZg/BEMgV0kxzoL2mD0bm09U98LVbbGc5huTL
-         CrWR7Ved+3i6YbKg8T3hWZFpg1ciE1tsKCjG7TJ7Q0xmFQOdmcVXDjVHKwhj6rF3aSuG
-         iVUhE+gy1/VglCIc0IjQD8QHyIeFsvBtMVMoUf0FUd6p3YUJxfso5FvsM7w6jjfOBTO+
-         k8Tg==
-X-Gm-Message-State: AOAM530CutDKQbZuVZiox3d36AzFQf1f4GAS37kmCTKa2byX6z+gubOD
-        6BFZsNNpMdKdEwwXopzhgVjoDeMcBjdXHB45YiXbuSp095ArS7l0GWDGsZAPjUK1uUPK81DZ/HA
-        sp0f/7U8uo4/zDssA
-X-Received: by 2002:a1c:b103:: with SMTP id a3mr2656568wmf.68.1601358918056;
-        Mon, 28 Sep 2020 22:55:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzxsOwwngwmhGeReV8HiZ7hkWkrIf0RVPILaTaEu1hmMo4H1fr7U3ZGwgZqxZtONPMxJ+qfaw==
-X-Received: by 2002:a1c:b103:: with SMTP id a3mr2656544wmf.68.1601358917787;
-        Mon, 28 Sep 2020 22:55:17 -0700 (PDT)
-Received: from redhat.com (bzq-79-179-71-128.red.bezeqint.net. [79.179.71.128])
-        by smtp.gmail.com with ESMTPSA id w14sm4153307wrk.95.2020.09.28.22.55.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2020 22:55:16 -0700 (PDT)
-Date:   Tue, 29 Sep 2020 01:55:13 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/2] virtio-net: ethtool configurable RXCSUM
-Message-ID: <20200929015427-mutt-send-email-mst@kernel.org>
-References: <20200928033915.82810-1-xiangxia.m.yue@gmail.com>
- <20200928033915.82810-2-xiangxia.m.yue@gmail.com>
- <20200928152142-mutt-send-email-mst@kernel.org>
- <CAMDZJNVUVm9y2NV5ZGHzrPoEaDF4PZEGWVFEx9g6sF3U-1Rm0Q@mail.gmail.com>
+        id S1727410AbgI2F4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 01:56:43 -0400
+Received: from mail.intenta.de ([178.249.25.132]:27200 "EHLO mail.intenta.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727331AbgI2F4m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 01:56:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=2pMj28T6Gnzme5ijvO2L3EUhNGLWzy7xk/Tfgk0DFuA=;
+        b=E4T4vFjfZ4c73i5EgjlFdygr8nqy7rNoDnidcy/VX1njr6BnKcpN1JTowcXDC9mvP+sRlOKZxXKTJx8imNAH7eEeK/g6Nlil7PsurMzKCvLF9G9STXK/sg4Z92K8BK0kDyPLmdQIQn8LunDKMbIE5xOoCTMdSQlSZmpwIundp/KAC6Vn65IRM57VV48k4k83rMBkzlcbPJNqLam/36Ij4F1hj40bYX8eXYq9zSVW2aBolofBQNJpav3SLKihhibOt3SJIgANagPa46bVcPY6b6vbvDLBFMkHzxUfrp1SUsczO8hQA2cSCcGkdBbaP2z93DKLbQ7yQTjbeT5CazCUNA==;
+Date:   Tue, 29 Sep 2020 07:56:30 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Sasha Levin <sashal@kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH AUTOSEL 5.8 08/29] net: dsa: microchip: look for phy-mode
+ in port nodes
+Message-ID: <20200929055630.GA9320@laureti-dev>
+References: <20200929013027.2406344-1-sashal@kernel.org>
+ <20200929013027.2406344-8-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <CAMDZJNVUVm9y2NV5ZGHzrPoEaDF4PZEGWVFEx9g6sF3U-1Rm0Q@mail.gmail.com>
+In-Reply-To: <20200929013027.2406344-8-sashal@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 09:45:24AM +0800, Tonghao Zhang wrote:
-> On Tue, Sep 29, 2020 at 3:25 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Mon, Sep 28, 2020 at 11:39:15AM +0800, xiangxia.m.yue@gmail.com wrote:
-> > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > >
-> > > Allow user configuring RXCSUM separately with ethtool -K,
-> > > reusing the existing virtnet_set_guest_offloads helper
-> > > that configures RXCSUM for XDP. This is conditional on
-> > > VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
-> > >
-> > > Cc: Michael S. Tsirkin <mst@redhat.com>
-> > > Cc: Jason Wang <jasowang@redhat.com>
-> > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > > ---
-> > >  drivers/net/virtio_net.c | 40 ++++++++++++++++++++++++++++------------
-> > >  1 file changed, 28 insertions(+), 12 deletions(-)
-> > >
-> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > index 21b71148c532..2e3af0b2c281 100644
-> > > --- a/drivers/net/virtio_net.c
-> > > +++ b/drivers/net/virtio_net.c
-> > > @@ -68,6 +68,8 @@ static const unsigned long guest_offloads[] = {
-> > >                               (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
-> > >                               (1ULL << VIRTIO_NET_F_GUEST_UFO))
-> > >
-> > > +#define GUEST_OFFLOAD_CSUM_MASK (1ULL << VIRTIO_NET_F_GUEST_CSUM)
-> > > +
-> > >  struct virtnet_stat_desc {
-> > >       char desc[ETH_GSTRING_LEN];
-> > >       size_t offset;
-> > > @@ -2526,25 +2528,37 @@ static int virtnet_set_features(struct net_device *dev,
-> > >                               netdev_features_t features)
-> > >  {
-> > >       struct virtnet_info *vi = netdev_priv(dev);
-> > > -     u64 offloads;
-> > > +     u64 offloads = vi->guest_offloads &
-> > > +                    vi->guest_offloads_capable;
-> > >       int err;
-> > >
-> > > -     if ((dev->features ^ features) & NETIF_F_LRO) {
-> > > -             if (vi->xdp_queue_pairs)
-> > > -                     return -EBUSY;
-> > > +     /* Don't allow configuration while XDP is active. */
-> > > +     if (vi->xdp_queue_pairs)
-> > > +             return -EBUSY;
-> > >
-> > > +     if ((dev->features ^ features) & NETIF_F_LRO) {
-> > >               if (features & NETIF_F_LRO)
-> > > -                     offloads = vi->guest_offloads_capable;
-> > > +                     offloads |= GUEST_OFFLOAD_LRO_MASK;
-> > >               else
-> > > -                     offloads = vi->guest_offloads_capable &
-> > > -                                ~GUEST_OFFLOAD_LRO_MASK;
-> > > +                     offloads &= ~GUEST_OFFLOAD_LRO_MASK;
-> > > +     }
-> > >
-> > > -             err = virtnet_set_guest_offloads(vi, offloads);
-> > > -             if (err)
-> > > -                     return err;
-> > > -             vi->guest_offloads = offloads;
-> > > +     if ((dev->features ^ features) & NETIF_F_RXCSUM) {
-> > > +             if (features & NETIF_F_RXCSUM)
-> > > +                     offloads |= GUEST_OFFLOAD_CSUM_MASK;
-> > > +             else
-> > > +                     offloads &= ~GUEST_OFFLOAD_CSUM_MASK;
-> > >       }
-> > >
-> > > +     if (offloads == (vi->guest_offloads &
-> > > +                      vi->guest_offloads_capable))
-> > > +             return 0;
-> >
-> > Hmm, what exactly does this do?
-> If the features(lro, rxcsum) we supported, are not changed, it is not
-> necessary to invoke virtnet_set_guest_offloads.
+Hi Sascha,
 
-okay, could you describe the cases where this triggers in a bit more
-detail pls?
-
-> > > +
-> > > +     err = virtnet_set_guest_offloads(vi, offloads);
-> > > +     if (err)
-> > > +             return err;
-> > > +
-> > > +     vi->guest_offloads = offloads;
-> > >       return 0;
-> > >  }
-> > >
-> > > @@ -3013,8 +3027,10 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > >       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> > >           virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
-> > >               dev->features |= NETIF_F_LRO;
-> > > -     if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-> > > +     if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS)) {
-> > > +             dev->hw_features |= NETIF_F_RXCSUM;
-> > >               dev->hw_features |= NETIF_F_LRO;
-> > > +     }
-> > >
-> > >       dev->vlan_features = dev->features;
-> > >
-> > > --
-> > > 2.23.0
-> >
+On Tue, Sep 29, 2020 at 03:30:05AM +0200, Sasha Levin wrote:
+> From: Helmut Grohne <helmut.grohne@intenta.de>
 > 
+> [ Upstream commit edecfa98f602a597666e3c5cab2677ada38d93c5 ]
 > 
-> -- 
-> Best regards, Tonghao
+> Documentation/devicetree/bindings/net/dsa/dsa.txt says that the phy-mode
+> property should be specified on port nodes. However, the microchip
+> drivers read it from the switch node.
+> 
+> Let the driver use the per-port property and fall back to the old
+> location with a warning.
+> 
+> Fix in-tree users.
 
+I don't think this patch is useful for stable users. It corrects a
+device tree layout issue. Any existing users of the functionality will
+have an odd, but working device tree and that will continue working
+(with a warning) after applying this patch. It just has a property on
+the "wrong" node. I don't think I'd like to update my device tree in a
+stable update.
+
+If you apply it anyway, please also apply a fixup:
+https://lore.kernel.org/netdev/20200924083746.GA9410@laureti-dev/
+
+Helmut
