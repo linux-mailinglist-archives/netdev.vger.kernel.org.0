@@ -2,111 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A11F27D15E
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 16:38:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A959A27D150
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 16:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729872AbgI2Ois (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 10:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38468 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729038AbgI2Ois (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 10:38:48 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0CFC061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 07:38:47 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id g96so4618877otb.12
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 07:38:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CeAhjsVpPlkutIILOxVTEMI1x28fxs4ubetSNjGcP7o=;
-        b=BHvgNDYIjjwF0sJw5DecMcDIn+fYZwnJHHA3IvTEbmCNZohrflaMw1Q4uwEpcaoOXC
-         K/fiUmSRNF0kr4L62o4kgJVirxMhMfHED6+UbhQ+AbjQv1tk2Tz1kaItDtfNsVOvjCKN
-         mEkvLykFEBhRL/cOpPgQpZRtZ0o/2nJuaRQAhPLpTs3SYVFSdP1pII3j9BDqk//OSmIA
-         9QsBmU87sB4w4TURv1M91sU7A7iMURdMzeB5E+1GkJ3aVBlnm/wKAcS4P5grH3H8mMLN
-         hkIXgP4vk4d+XjPOxaA/3CkIyzPAnTS5/VZAkcjz+3JSKU+x7yICZk6Fx3n4GkP/LT+v
-         urmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CeAhjsVpPlkutIILOxVTEMI1x28fxs4ubetSNjGcP7o=;
-        b=oE7iDkSgNl5UMhbkt0fiE8RhJo8AayqV5ETj4+L7UMeh3xH/4nR8tkAbC2gap/EjVP
-         KjKTQv11oB2QycI07klLEH4S8JiqNpdQrjhcHVaW9YAdeCBXfrB7H0C4GjRwVB3LdU2Y
-         KhZH75AU4qGEnxXrUn04pVsS0h5qCw1PnYYfkGMVm+sVl9IXGwhEmvK+n/m4cAoKRXuN
-         bDRJ/WUzaipyTxXU0FdtjXYPZZzfQuUAo6gFflRctfyeiMTOxDS0ez7pKgwqO1dTf12z
-         hwHhScXzvho8bGsfNcBuf6BTyhVlhJRcdWaH936fvskEsv7Yl3MdSJZJWTnMX31pJRKZ
-         tb6g==
-X-Gm-Message-State: AOAM5329OfK0AlujRm/KJbwChiMmR5n3tR7Bg0NJo1JGD+brJTWP9zRM
-        uHpbbzih29VzWRVO2SvvEnQATA==
-X-Google-Smtp-Source: ABdhPJz5IGtSxQ2A/ESt0jo5nLd8DAstxSqDnfZeznEkkCbWpjmzgcCx1Rj1rHFneBLKGZ3yf0l3LA==
-X-Received: by 2002:a9d:65c8:: with SMTP id z8mr2919074oth.5.1601390327249;
-        Tue, 29 Sep 2020 07:38:47 -0700 (PDT)
-Received: from builder.lan (99-135-181-32.lightspeed.austtx.sbcglobal.net. [99.135.181.32])
-        by smtp.gmail.com with ESMTPSA id w12sm2924405oow.22.2020.09.29.07.38.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Sep 2020 07:38:46 -0700 (PDT)
-Date:   Tue, 29 Sep 2020 09:34:19 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, clew@codeaurora.org,
-        manivannan.sadhasivam@linaro.org
-Subject: Re: [PATCH 1/2] net: qrtr: Allow forwarded services
-Message-ID: <20200929143419.GD71055@builder.lan>
-References: <1601386397-21067-1-git-send-email-loic.poulain@linaro.org>
+        id S1730272AbgI2OhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 10:37:07 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:46452 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728630AbgI2OhH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 10:37:07 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1601390224;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7VmCiL2ZmrGBEC6BMl9JAzfcplFXUuQxSEoukFP38Qc=;
+        b=V1+jfdupgUDguwQLoSfM1UDKyK97umPBk3RCJPtrXvo3HjkrAv7oZ8d769kr1UDVOiqeTZ
+        dYLZ91gc/sIaO50hcs95TdgAz48RhfBSdsMS4DBcFHFsnovSq6VpdWIndCw/TDoShwfw6K
+        +9gek94Fbm54gtYRDPDw8mmMw1zu7wsXy4XgCJqs+Ou4lV81QykEgsNo9DjLsy3AKB/AQT
+        G576m9HeX1S7jQnyrTObW1HKy1c9vZ/qj50V8IIaFz92XDLpVe1/eK2AHh590q7RBBj8DC
+        CNoJkwrvYs+wq1wIIZrzEBqJCA9sxTEj2C2ebwz12LDtKQOxv8zXpvTIG+C0Uw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1601390224;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7VmCiL2ZmrGBEC6BMl9JAzfcplFXUuQxSEoukFP38Qc=;
+        b=sPt4IoTcBHRSkKQG9REMY6x9b+3JCLHw6ozsiGzdslM4l4/myrfh7jYnJBRfn53aNiiK7S
+        jsmrp6TrTiHQFoDA==
+To:     Shannon Nelson <snelson@pensando.io>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        Paul McKenney <paulmck@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Pensando Drivers <drivers@pensando.io>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Christian Benvenuti <benve@cisco.com>,
+        Govindarajulu Varadarajan <_govind@gmx.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-doc@vger.kernel.org,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan@lists.osuosl.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Jon Mason <jdmason@kudzu.us>, Daniel Drake <dsd@gentoo.org>,
+        Ulrich Kunitz <kune@deine-taler.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com,
+        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
+        Stanislaw Gruszka <stf_xl@wp.pl>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Jouni Malinen <j@w1.fi>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        libertas-dev@lists.infradead.org,
+        Pascal Terjan <pterjan@google.com>,
+        Ping-Ke Shih <pkshih@realtek.com>
+Subject: Re: [patch 11/35] net: ionic: Replace in_interrupt() usage.
+In-Reply-To: <1d0950f8-cab4-9ef2-6cf7-73b71b750a8d@pensando.io>
+References: <20200927194846.045411263@linutronix.de> <20200927194920.918550822@linutronix.de> <5e4c3201-9d90-65b1-5c13-e2381445be1d@pensando.io> <1d0950f8-cab4-9ef2-6cf7-73b71b750a8d@pensando.io>
+Date:   Tue, 29 Sep 2020 16:37:04 +0200
+Message-ID: <87h7rgk5tb.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1601386397-21067-1-git-send-email-loic.poulain@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 29 Sep 08:33 CDT 2020, Loic Poulain wrote:
+On Mon, Sep 28 2020 at 12:51, Shannon Nelson wrote:
+> On 9/28/20 10:24 AM, Shannon Nelson wrote:
+>>> ionic_lif_addr() can be called from:
+>>>
+>>> =C2=A0 1) ->ndo_set_rx_mode() which is under netif_addr_lock_bh()) so i=
+t=20
+>>> must not
+>>> =C2=A0=C2=A0=C2=A0=C2=A0 sleep.
+>>>
+>>> =C2=A0 2) Init and setup functions which are in fully preemptible task=
+=20
+>>> context.
+>>>
+>>> _ionic_lif_rx_mode() has only one call path with BH disabled.
+>
+> Now that I've had my coffee, let's look at this again - there are=20
+> multiple paths that get us to _ionic_lif_rx_mode():
+>
+> .ndo_set_rx_mode
+>  =C2=A0 ionic_set_rx_mode,
+>  =C2=A0=C2=A0=C2=A0 _ionic_lif_rx_mode
+>
+> { ionic_open, ionic_lif_handle_fw_up, ionic_start_queues_reconfig }
+>  =C2=A0=C2=A0=C2=A0 ionic_txrx_init
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ionic_set_rx_mode
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 _ionic_lif_rx_mode
 
-> A remote endpoint (immediate neighbor node) can forward services
-> from other non-immediate nodes, in that case ctrl packet node ID
-> (offering distant service) can differ from the qrtr source node
-> (forwarding the packet).
-> 
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-
-Regards,
-Bjorn
-
-> ---
->  net/qrtr/ns.c | 8 --------
->  1 file changed, 8 deletions(-)
-> 
-> diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
-> index d8252fd..d542d8f 100644
-> --- a/net/qrtr/ns.c
-> +++ b/net/qrtr/ns.c
-> @@ -469,10 +469,6 @@ static int ctrl_cmd_new_server(struct sockaddr_qrtr *from,
->  		port = from->sq_port;
->  	}
->  
-> -	/* Don't accept spoofed messages */
-> -	if (from->sq_node != node_id)
-> -		return -EINVAL;
-> -
->  	srv = server_add(service, instance, node_id, port);
->  	if (!srv)
->  		return -EINVAL;
-> @@ -511,10 +507,6 @@ static int ctrl_cmd_del_server(struct sockaddr_qrtr *from,
->  		port = from->sq_port;
->  	}
->  
-> -	/* Don't accept spoofed messages */
-> -	if (from->sq_node != node_id)
-> -		return -EINVAL;
-> -
->  	/* Local servers may only unregister themselves */
->  	if (from->sq_node == qrtr_ns.local_node && from->sq_port != port)
->  		return -EINVAL;
-> -- 
-> 2.7.4
-> 
+Hrm. Let me stare at it again...
