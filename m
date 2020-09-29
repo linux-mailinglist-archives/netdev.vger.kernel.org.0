@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DA5327D8DD
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:39:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55D9627D8D8
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:39:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729637AbgI2Uj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:39:26 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:49530 "EHLO
+        id S1729593AbgI2UjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:39:11 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:49612 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729166AbgI2UgB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:01 -0400
-Message-Id: <20200929203501.174106828@linutronix.de>
+        with ESMTP id S1729480AbgI2UgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:03 -0400
+Message-Id: <20200929203501.286933338@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601411759;
+        s=2020; t=1601411761;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=N9BRw1yz6NFV8std4SkT3Uzzn3VXu0GqYfIKNTG6X5E=;
-        b=EIPi0LntqhK+k+BiAUZDRhJJMmDcnV+kcgrq+bczSg+aGDSssk7Ea3eApBpnVjKGhwoL+n
-        72qsKzhkNehonIJ+8illeSoepKWSxXbg4Cqe5sFdvOC6QaqgCM4ahPin4JASuZdOGvNApz
-        24RaaXBvEejgj8YZw1E+geQD5RX30tIl6sgQMjsIb2ji0+z3EmzkvgGIqDM1jVU4akJkNz
-        YCTrOqpB88fM2lmqVAkBWoI6xAnyYK+o1reKhe1OdLqC789iXzyeN5dOSrJRtgJz/aAiyi
-        xuWrTjxhShzL5soeTTapyamaGIcyMGfGxCjgAhjo8Y/borFi7swOz6cSeA49mg==
+        bh=cza+isFpw3pjruNrzTB8YyTwaqZU0A2/Xz5zP+VRSno=;
+        b=lxX+rTT1pI51rZFZT1JdFT4qOji42w0SzxHblZBXZSm8be+ql14IyJD5IYfetVdCq21kTh
+        bZwpBl60iJzu7ftA31P1I7DHnicK0JZKnT+a2aB/1x6S7HHdwpz4zv/NAD6DwmE0dTKset
+        2Kp9fUPpUDJyR06jN8QNKnSGkRxLDfnIY6Lia2c/qw0dnFpDbEs6hRTNVixJJEU8KY+Nck
+        Mm/6Qeu5+G5Emijx3UAxTPhiJlahyQEtrDa5lqfl6IXteQy9xiCsh1NN9eImAadW4Phyxk
+        EqmCGCq5iClRs7LPRLx49nJuW49IwwR6mGEbHT6ow5gUnowkjiuan9fB97h9rA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601411759;
+        s=2020e; t=1601411761;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=N9BRw1yz6NFV8std4SkT3Uzzn3VXu0GqYfIKNTG6X5E=;
-        b=X42r9W9iZllVNjva3r1f0qOSVOALGkcIzlwQM/efS+ROnTSVq2BO4tKuw6c6noyU1EHvkt
-        ZU9zXa3tqQEudFCg==
-Date:   Tue, 29 Sep 2020 22:25:26 +0200
+        bh=cza+isFpw3pjruNrzTB8YyTwaqZU0A2/Xz5zP+VRSno=;
+        b=jVvPk/ekodleQluohgeB/CSgyS0z1JUCu+zeuCcBc+VXPVD4aVtIlLcjuNQsP6M1OLn2vE
+        CdUSxMOMzZQ6RECA==
+Date:   Tue, 29 Sep 2020 22:25:27 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -85,7 +85,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch V2 17/36] net: sunbmac: Replace in_interrupt() usage
+Subject: [patch V2 18/36] net: sun3lance: Remove redundant checks in interrupt handler
 References: <20200929202509.673358734@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -96,106 +96,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-bigmac_init_rings() has an argument signaling if it is called from the
-interrupt handler. This is used to decide between GFP_KERNEL and GFP_ATOMIC
-for memory allocations.
+lance_interrupt() contains two pointless checks:
 
-But it also checks in_interrupt() to handle invocations which come from the
-timer callback bigmac_timer() via bigmac_hw_init(), which is invoked with
-'in_irq = 0'. While the timer callback is clearly not in hard interrupt
-context it is still not sleepable context.
+ - A check whether the 'dev_id' argument is NULL. 'dev_id' is the pointer
+   which was handed in to request_irq() and the interrupt handler will
+   always be invoked with that pointer as 'dev_id' argument by the core
+   code.
 
-Rename the argument to `non_blocking' and set it to true if invoked from
-the timer callback or the interrupt handler which allows to remove the
-in_interrupt() check and makes the code consistent.
+ - A check for interrupt reentrancy. The core code already guarantees
+   non-reentrancy of interrupt handlers.
+
+Remove these check.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
-
 ---
- drivers/net/ethernet/sun/sunbmac.c |   18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/amd/sun3lance.c |   11 -----------
+ 1 file changed, 11 deletions(-)
 
---- a/drivers/net/ethernet/sun/sunbmac.c
-+++ b/drivers/net/ethernet/sun/sunbmac.c
-@@ -209,13 +209,13 @@ static void bigmac_clean_rings(struct bi
- 	}
- }
+--- a/drivers/net/ethernet/amd/sun3lance.c
++++ b/drivers/net/ethernet/amd/sun3lance.c
+@@ -657,16 +657,6 @@ static irqreturn_t lance_interrupt( int
+ 	struct net_device *dev = dev_id;
+ 	struct lance_private *lp = netdev_priv(dev);
+ 	int csr0;
+-	static int in_interrupt;
+-
+-	if (dev == NULL) {
+-		DPRINTK( 1, ( "lance_interrupt(): invalid dev_id\n" ));
+-		return IRQ_NONE;
+-	}
+-
+-	if (in_interrupt)
+-		DPRINTK( 2, ( "%s: Re-entering the interrupt handler.\n", dev->name ));
+-	in_interrupt = 1;
  
--static void bigmac_init_rings(struct bigmac *bp, int from_irq)
-+static void bigmac_init_rings(struct bigmac *bp, bool non_blocking)
- {
- 	struct bmac_init_block *bb = bp->bmac_block;
- 	int i;
- 	gfp_t gfp_flags = GFP_KERNEL;
+  still_more:
+ 	flush_cache_all();
+@@ -774,7 +764,6 @@ static irqreturn_t lance_interrupt( int
  
--	if (from_irq || in_interrupt())
-+	if (non_blocking)
- 		gfp_flags = GFP_ATOMIC;
- 
- 	bp->rx_new = bp->rx_old = bp->tx_new = bp->tx_old = 0;
-@@ -489,7 +489,7 @@ static void bigmac_tcvr_init(struct bigm
- 	}
- }
- 
--static int bigmac_init_hw(struct bigmac *, int);
-+static int bigmac_init_hw(struct bigmac *, bool);
- 
- static int try_next_permutation(struct bigmac *bp, void __iomem *tregs)
- {
-@@ -549,7 +549,7 @@ static void bigmac_timer(struct timer_li
- 				if (ret == -1) {
- 					printk(KERN_ERR "%s: Link down, cable problem?\n",
- 					       bp->dev->name);
--					ret = bigmac_init_hw(bp, 0);
-+					ret = bigmac_init_hw(bp, true);
- 					if (ret) {
- 						printk(KERN_ERR "%s: Error, cannot re-init the "
- 						       "BigMAC.\n", bp->dev->name);
-@@ -617,7 +617,7 @@ static void bigmac_begin_auto_negotiatio
- 	add_timer(&bp->bigmac_timer);
- }
- 
--static int bigmac_init_hw(struct bigmac *bp, int from_irq)
-+static int bigmac_init_hw(struct bigmac *bp, bool non_blocking)
- {
- 	void __iomem *gregs        = bp->gregs;
- 	void __iomem *cregs        = bp->creg;
-@@ -635,7 +635,7 @@ static int bigmac_init_hw(struct bigmac
- 	qec_init(bp);
- 
- 	/* Alloc and reset the tx/rx descriptor chains. */
--	bigmac_init_rings(bp, from_irq);
-+	bigmac_init_rings(bp, non_blocking);
- 
- 	/* Initialize the PHY. */
- 	bigmac_tcvr_init(bp);
-@@ -749,7 +749,7 @@ static void bigmac_is_medium_rare(struct
- 	}
- 
- 	printk(" RESET\n");
--	bigmac_init_hw(bp, 1);
-+	bigmac_init_hw(bp, true);
- }
- 
- /* BigMAC transmit complete service routines. */
-@@ -921,7 +921,7 @@ static int bigmac_open(struct net_device
- 		return ret;
- 	}
- 	timer_setup(&bp->bigmac_timer, bigmac_timer, 0);
--	ret = bigmac_init_hw(bp, 0);
-+	ret = bigmac_init_hw(bp, false);
- 	if (ret)
- 		free_irq(dev->irq, bp);
- 	return ret;
-@@ -945,7 +945,7 @@ static void bigmac_tx_timeout(struct net
- {
- 	struct bigmac *bp = netdev_priv(dev);
- 
--	bigmac_init_hw(bp, 0);
-+	bigmac_init_hw(bp, true);
- 	netif_wake_queue(dev);
+ 	DPRINTK( 2, ( "%s: exiting interrupt, csr0=%#04x.\n",
+ 				  dev->name, DREG ));
+-	in_interrupt = 0;
+ 	return IRQ_HANDLED;
  }
  
 
