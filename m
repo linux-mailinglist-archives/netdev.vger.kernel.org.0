@@ -2,136 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1CA427D70E
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 21:40:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A230127D718
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 21:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728657AbgI2Tj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 15:39:59 -0400
-Received: from mail-eopbgr140078.outbound.protection.outlook.com ([40.107.14.78]:22165
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727700AbgI2Tj7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 15:39:59 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iAidtmjn08CJgu0GZb3ZXc0HVd0q1ttTebY0FIqYWmhEtZ5VsQCXzMvhL+gBd5sA0EHLLEMUl3N3H+8vzdNH2CfQEcHbrSS1eatRNRoSPai36aJUEp+l4nVGtzgru6ahTi+FG/nAoZUQ89irLrKU7UrY5RYrIQlrtMmKOp6NswU1Sy6G0zZymxgp3kUHFQ2LhLd7tGTVkyovAAapDZgdh5EgI9K1DpM222kSuaBwYqxaiTMTvosT/Q65S+d0vysptjFp6hftky5ercHuW+1uTRWPbYvWtNfQruUqfgsre2Tdn0R9Vbtzybt0cScF/RacIo7X3E026zn1rVfHBuT0sw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JDt+nXEOTCJBhjQ6spy6NmITLWXPfpiSvwx7MBN9f3s=;
- b=cZUCHAtqXK6TGdmO3Pdx1sSkfQOXHq5ooYUm/+VfUlEW48B3gwBEKOaDrlKHQYHIwKg1Omwq3czeLtQw4SzBwVg86GsD6DdZq9cnoHNuqTZwUIag7dZQVAD+chrvfnonU9cVqoIBAwpknKpIeBFqsIx4b67PCrVfC/zbDWJGEkICjSdWp869O6oLwI/pzqALz1waL2x/ISuB3t3FI6fmBtdIPpGGo26eCeiqzrYbNAkPWhLs/cMy4oxuQj13xY0iNxVjAxfU9OZj2Q15gMGhPCVgvGDIS87Imm3VKhm00kWN9kSPEipCW5R8b85uxOADjPEdOhK1BpCaL71XF54KDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JDt+nXEOTCJBhjQ6spy6NmITLWXPfpiSvwx7MBN9f3s=;
- b=VMmGyORlWZNdU6NnjFMViQmKR2dRTMXCzMeQ474hoSnHs4fI0TbZQyHuMKSvEKSbtS69NbptGim4hGjVVnEy6yKp/ha7mSzwAOBHhuokW3UsZYp5GcVxwOQEsmN4lWpZSlHSkoXgqcq5uH5uORdXINGqZifOAJt854IVFw+EPZE=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB4224.eurprd04.prod.outlook.com (2603:10a6:803:49::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.26; Tue, 29 Sep
- 2020 19:39:55 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.032; Tue, 29 Sep 2020
- 19:39:55 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "paulus@samba.org" <paulus@samba.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Radu-andrei Bulie <radu-andrei.bulie@nxp.com>,
-        "fido_max@inbox.ru" <fido_max@inbox.ru>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH v2 devicetree 2/2] powerpc: dts: t1040rdb: add ports for
- Seville Ethernet switch
-Thread-Topic: [PATCH v2 devicetree 2/2] powerpc: dts: t1040rdb: add ports for
- Seville Ethernet switch
-Thread-Index: AQHWllQyl+0N41wVskyCvsQrZKm24ql//B+AgAAH04A=
-Date:   Tue, 29 Sep 2020 19:39:54 +0000
-Message-ID: <20200929193953.rgibttgt6lh5huef@skbuf>
-References: <20200929113209.3767787-1-vladimir.oltean@nxp.com>
- <20200929113209.3767787-3-vladimir.oltean@nxp.com>
- <20200929191153.GF3996795@lunn.ch>
-In-Reply-To: <20200929191153.GF3996795@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.26.229.171]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: a89193ea-f94f-4d66-90ee-08d864af7103
-x-ms-traffictypediagnostic: VI1PR04MB4224:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB4224397FDAA870C4F8688406E0320@VI1PR04MB4224.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: q6XNwCuYnl2XjxiKrRHvbn0uWtIAwt5XTTFNVvEE30NWFEbnLTGqIZ9e3dC8w/x0EKipikosvt47lE8wsuvdqIYwptwGIweXAOOzscclmRXaji5IKRk1LkE/GL36NSwXYJ5/BtG7+gGiLn5lbjrcXiDur7wdB7av1z56Ief/6Nveb6Y1Y7paV/0RmHVycz7ZmGNmohI0d/rXIBsK+U0T96xCmarfjlrrDPktcypDaJjP1HvfBeegI+jMVmT/hhjspkOabPqRGA9LNotqGKb720n11WBdEMkQ2cWZYpn/s1JUN40zL4CvzqrX46KwmQePi+9lnDPJ1ZffpZzsNhP3So1roQNvZgAyOXUqSkIuMq/cXEoNE4vBFlAsAk7AZDQw
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(136003)(39860400002)(376002)(346002)(366004)(396003)(5660300002)(66446008)(64756008)(66556008)(66476007)(66946007)(91956017)(76116006)(71200400001)(33716001)(1076003)(8676002)(316002)(54906003)(6486002)(44832011)(8936002)(6512007)(9686003)(6916009)(7416002)(6506007)(4326008)(478600001)(2906002)(26005)(86362001)(186003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: HN4vyvOtYMvhPMYCQuK4UfJjxZIqDnrNE5pE4Tii/YDaXEKnSsPediKKqHB4cbTg/kynsZjAVRD5tNdwhswLcYHXo6zFfytmW44ZScpQESSYu2ehf9UhdSuhvdIKaILqyIklofFgPTGH/px8jwhAPsaO3aR5XQk5G43Cfso7iKBnvLUrtgoJfrl6yLHfvM52MzjYCBevFOn/DN7pGx/PUBwKT2fmPE0jBclOw9x2Fy2oZB+kqiaBklNWEP+YFCyN/KqxfuW9ZdK0fFiD3grjb6+P06jFvDoZCiIO2wNrzl85Sq5K1hzF0Hsly4WTpjvYQU/uq/FKq1rbPpQUKxfn3OB0sFLcv1Pa+sDiN9ZKfjUNLojsAbAEmkmTXpqj1bpcvw1IfUFyoYOZisQTepRya7n22AFLyNWBfvbKMXn93eqQOdawmQvUZML2oGYnYgzVgQsd/u0oEyoWflK9PvMp/8L+sZc1zG/iHTXUSMk4CipUs2nhRlywCSovzgwvDJxXkkvWtjETkLTld5Bg7hBoatnyvZHq64p2IsKiAxnhrSmidsJmGvKl03jltrp1r8+3lC0iXKk2Y2xSExLQP27MjQAHQHhGI+dH16P3gHUHPFQWSyLwOTttQnvwmuKrCMf5Xi2ylLps0sxGiwPBaqC/Mw==
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <D9F50CAD65BF3B4481F1F5CDABF9EFFE@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728800AbgI2Tlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 15:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728771AbgI2Tlj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 15:41:39 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0788BC061755;
+        Tue, 29 Sep 2020 12:41:39 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id j2so7703036eds.9;
+        Tue, 29 Sep 2020 12:41:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zlMyFBmbzW5FxZuomqtfTXpo4COGWABRi6GcA0YobZY=;
+        b=Cd5lM82ciKx1rQ9ZAa5+VHQDFS9b7Hr2lPGd1nCNi+hdwpVC2TzwJHrXh9SXqU0TB6
+         +9NJGVGAR2AxmBzR6Wab4CDPfAruI2OaHEFX+N/zdHrGTkshhuMTKR6K7a8Os/25p/3e
+         q0dusZdlgCNYwXjo40vizlTEIsERLS3KCWUpETKFK7OPtSxT079CfJvobR8r+Q4LjMx6
+         XFMlyExn35/PnDRDcZ+Es5SNzsXf2bPJw+bEbEBGLDIfvC+p+l87VdtqmiavK4b+Cjva
+         jvVajofBhvcM/srNfXlN7Q4OF4md/v87pTomvgd9zDOYcKojDDURG2eBvaPcxsKql3HR
+         k3cA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zlMyFBmbzW5FxZuomqtfTXpo4COGWABRi6GcA0YobZY=;
+        b=DGks0JjXEC/24lEcQrTSOF5Wtg98k0QuEXE0ndRW1QEtuV3q1IUyYVJckTFfTx+Mk9
+         fVJdKaPRqYCi43waqXaJQ0Mtn4+YEWol08Qvg2Kq0QLpGvCPlEuRwKKzvsEhymcChkY3
+         aRzqwyikophhhl+LrHMDot50ZAlcxDGjFGHWnZ+dKh975BY/bDYfKMkjgWdFRUsVezKP
+         lL5UxEuKngjkjZtroFvaEBi9rZWYGcvfGIRr0ytTG5MjN4FEQUiYntvM9Zdw2rRDvMT/
+         S+frcGCRlQu3ZQdfRDMLzRJdKyIrNffTFzG+9hSkM47qGMsS39Q+8D4tGwF5D1ZigLqs
+         NJow==
+X-Gm-Message-State: AOAM530oaxBZtsK3cI0gshZvJWpV1ODPahy1kGzK7P7dkIfvjv4wONvL
+        NrXdU9Ssreh8VkzWoDFepNaR+Mg4Kd0=
+X-Google-Smtp-Source: ABdhPJxdVWjR59wJqVzYNb1ZZnoTGAQscivoC0mSo/iFa5jzBzOV1HbJcpA8SV3Sht9E2bdk2e97EA==
+X-Received: by 2002:aa7:cb83:: with SMTP id r3mr4946860edt.35.1601408497156;
+        Tue, 29 Sep 2020 12:41:37 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f00:6a00:f1df:74ef:35e5:214d? (p200300ea8f006a00f1df74ef35e5214d.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:f1df:74ef:35e5:214d])
+        by smtp.googlemail.com with ESMTPSA id b6sm6797989eds.46.2020.09.29.12.41.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Sep 2020 12:41:36 -0700 (PDT)
+Subject: Re: RTL8402 stops working after hibernate/resume
+To:     Petr Tesarik <ptesarik@suse.cz>,
+        Hans de Goede <hdegoede@redhat.com>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        netdev@vger.kernel.org, linux-clk@vger.kernel.org
+References: <20200715102820.7207f2f8@ezekiel.suse.cz>
+ <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
+ <20200716105835.32852035@ezekiel.suse.cz>
+ <e1c7a37f-d8d0-a773-925c-987b92f12694@gmail.com>
+ <20200903104122.1e90e03c@ezekiel.suse.cz>
+ <7e6bbb75-d8db-280d-ac5b-86013af39071@gmail.com>
+ <20200924211444.3ba3874b@ezekiel.suse.cz>
+ <a10f658b-7fdf-2789-070a-83ad5549191a@gmail.com>
+ <20200925093037.0fac65b7@ezekiel.suse.cz>
+ <20200925105455.50d4d1cc@ezekiel.suse.cz>
+ <aa997635-a5b5-75e3-8a30-a77acb2adf35@gmail.com>
+ <20200925115241.3709caf6@ezekiel.suse.cz>
+ <20200925145608.66a89e73@ezekiel.suse.cz>
+ <30969885-9611-06d8-d50a-577897fcab29@gmail.com>
+ <20200929210737.7f4a6da7@ezekiel.suse.cz>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <3132f91a-505d-6e56-be97-334593f8ca12@gmail.com>
+Date:   Tue, 29 Sep 2020 21:41:31 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a89193ea-f94f-4d66-90ee-08d864af7103
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Sep 2020 19:39:54.9899
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +VuvM7A+KXGYzB66I7FbPbULSVqIhBf2GVTz7riQHeUPpcWasUqxjhAC8cVkg3ljcFgFnEZ0XoCdL5nMeJVffw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4224
+In-Reply-To: <20200929210737.7f4a6da7@ezekiel.suse.cz>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 09:11:53PM +0200, Andrew Lunn wrote:
-> > +&seville_port0 {
-> > +	managed =3D "in-band-status";
-> > +	phy-handle =3D <&phy_qsgmii_0>;
-> > +	phy-mode =3D "qsgmii";
-> > +	/* ETH4 written on chassis */
-> > +	label =3D "swp4";
->
-> If ETH4 is on the chassis why not use ETH4?
+On 29.09.2020 21:07, Petr Tesarik wrote:
+> Hi Heiner (and now also Hans)!
+> 
+> @Hans: I'm adding you to this conversation, because you're the author
+> of commit b1e3454d39f99, which seems to break the r8169 driver on a
+> laptop of mine.
+> 
+> On Fri, 25 Sep 2020 16:47:54 +0200
+> Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> 
+>> On 25.09.2020 14:56, Petr Tesarik wrote:
+>>> On Fri, 25 Sep 2020 11:52:41 +0200
+>>> Petr Tesarik <ptesarik@suse.cz> wrote:
+>>>   
+>>>> On Fri, 25 Sep 2020 11:44:09 +0200
+>>>> Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>>>>  
+>>>>> On 25.09.2020 10:54, Petr Tesarik wrote:    
+>>>> [...]  
+>>>>>> Does it make sense to bisect the change that broke the driver for me, or should I rather dispose of this waste^Wlaptop in an environmentally friendly manner? I mean, would you eventually accept a workaround for a few machines with a broken BIOS?
+>>>>>>       
+>>>>> If the workaround is small and there's little chance to break other stuff: then usually yes.
+>>>>> If you can spend the effort to bisect the issue, this would be appreciated.    
+>>>>
+>>>> OK, then I'm going to give it a try.  
+>>>
+>>> Done. The system freezes when this commit is applied:
+>>>
+>>> commit 9f0b54cd167219266bd3864570ae8f4987b57520
+>>> Author: Heiner Kallweit <hkallweit1@gmail.com>
+>>> Date:   Wed Jun 17 22:55:40 2020 +0200
+>>>
+>>>     r8169: move switching optional clock on/off to pll power functions
+>>>   
+>> This sounds weird. On your system tp->clk should be NULL, making
+>> clk_prepare_enable() et al no-ops. Please check whether tp->clk
+>> is NULL after the call to rtl_get_ether_clk().
+> 
+> This might be part of the issue. On my system tp->clk is definitely not
+> NULL:
+> 
+OK, interesting. The referenced patch changes driver behavior in a way
+that ether_clk is disabled again in probe(), and only re-enabled
+in ndo_open(). This should be helpful from a power-saving perspective
+because before that we enabled the clock even if the network device
+wasn't used.
+It seems however that disabling ether_clk has (at least on your system)
+side effects causing a system freeze. That's a best guess from my side
+however, and not really something I can comment on.
 
-You mean all-caps, just like that?
+> crash> *rtl8169_private.clk 0xffff9277aca58940
+>   clk = 0xffff9277ac2c82a0
+> 
+> crash> *clk 0xffff9277ac2c82a0
+> struct clk {
+>   core = 0xffff9277aef65d00, 
+>   dev = 0xffff9277aed000b0, 
+>   dev_id = 0xffff9277aec60c00 "0000:03:00.2", 
+>   con_id = 0xffff9277ad04b080 "ether_clk", 
+>   min_rate = 0, 
+>   max_rate = 18446744073709551615, 
+>   exclusive_count = 0, 
+>   clks_node = {
+>     next = 0xffff9277ad2428d8, 
+>     pprev = 0xffff9277aef65dc8
+>   }
+> }
+> 
+> The dev_id corresponds to the Ethernet controller:
+> 
+> 03:00.2 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL810xE PCI Express Fast Ethernet controller (rev 06)
+> 
+> Looking at clk_find(), it matches this entry in clocks:
+> 
+> struct clk_lookup {
+>   node = {
+>     next = 0xffffffffbc702f40, 
+>     prev = 0xffff9277bf7190c0
+>   }, 
+>   dev_id = 0x0, 
+>   con_id = 0xffff9277bf719524 "ether_clk", 
+>   clk = 0x0, 
+>   clk_hw = 0xffff9277ad2427f8
+> }
+> 
+> That's because this kernel is built with CONFIG_PMC_ATOM=y, and looking
+> at the platform initialization code, the "ether_clk" alias is created
+> unconditionally. Hans already added.
+> 
+> Petr T
+> 
 
-I don't know, I never saw an interface named in all-caps, it looks
-strange to me. I understand that board designers are typically
-case-insensitive, and that's kind of what my problem is, "eth4" is
-clashing with the default naming scheme of the kernel and I also want to
-avoid that. All in all, this is a reference design board, I don't care
-too much. I've seen the "swp" convention being quite frequent, and I
-thought that would be more intuitive. I've been using the same scheme
-(the switch ports starting from swp2, corresponding to ETH2 on the
-chassis) for the LS1021A-TSN board (arch/arm/boot/dts/ls1021a-tsn.dts)
-and my users haven't complained about it.
-
-Plus, it's not like the dpaa-eth (standalone) ports are named after the
-chassis labels. Freescale/NXP typically ships an udev rule file that
-names the interface after the associated FMan hardware port (for
-example, the DSA master for the switch on this SoC is called "fm1-gb0",
-and it's an internal port having nothing to do with ETH0, which is
-"fm1-gb3").
-
-I think it's a bit strange that the Rest Of World doesn't allow
-interface naming via device tree, on this board the switch ports are not
-where the big interface naming problem is. Although I'm not even sure
-what to do to not increase it even more. With users being used to have
-ETH0 going to fm1-gb3, maybe naming ETH4 as swp4 isn't the brightest
-idea, true...=
