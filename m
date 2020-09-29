@@ -2,98 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF2F27BE41
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 09:42:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E804D27BE44
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 09:43:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725826AbgI2Hmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 03:42:54 -0400
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:10874 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725554AbgI2Hmy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 03:42:54 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f72e5710000>; Tue, 29 Sep 2020 00:42:41 -0700
-Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 29 Sep
- 2020 07:42:52 +0000
-Date:   Tue, 29 Sep 2020 10:42:48 +0300
-From:   Eli Cohen <elic@nvidia.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     <jasowang@redhat.com>, <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <elic@nvidia.com>
-Subject: Re: [PATCH V1 vhost-next] vdpa/mlx5: Make vdpa core driver a
- distinct module
-Message-ID: <20200929074248.GA123696@mtl-vdi-166.wap.labs.mlnx>
-References: <20200924143231.GA186492@mtl-vdi-166.wap.labs.mlnx>
- <20200928155448-mutt-send-email-mst@kernel.org>
- <20200929062026.GB120395@mtl-vdi-166.wap.labs.mlnx>
- <20200929022430-mutt-send-email-mst@kernel.org>
- <20200929063433.GC120395@mtl-vdi-166.wap.labs.mlnx>
- <20200929025038-mutt-send-email-mst@kernel.org>
- <20200929065744.GE120395@mtl-vdi-166.wap.labs.mlnx>
- <20200929031348-mutt-send-email-mst@kernel.org>
+        id S1727495AbgI2HnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 03:43:02 -0400
+Received: from z5.mailgun.us ([104.130.96.5]:15470 "EHLO z5.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725554AbgI2HnB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 03:43:01 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1601365381; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=oqlmjzVRyWPtw3R2pIJ5rZv2jG/Zpd+i0rqfebSzAUw=; b=GA+BfBqq2a34RumZKC0Vr6esV9DrYI0PHEljCDvCWvwUP6vEeQMzGe8vBlDyYwyrLHwJ8mYv
+ geQKmDGIvRrXPviGwsAMvcu4UlyGEmIduLLSPQcScDSlMI3zHYpvCGISh7C2XxD9qrwiXRSi
+ 99vzJAYe1CsrpjfVuhePw0decwM=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
+ 5f72e5857e9d6827ecf9dd19 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 29 Sep 2020 07:43:01
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 00D92C433F1; Tue, 29 Sep 2020 07:43:01 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8E213C433FE;
+        Tue, 29 Sep 2020 07:42:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8E213C433FE
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Alex Dewar <alex.dewar90@gmail.com>
+Cc:     Julian Calaby <julian.calaby@gmail.com>,
+        linux-wireless@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, ath10k@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH v2] ath10k: sdio: remove redundant check in for loop
+References: <c2987351e3bdad16510dd35847991c2412a9db6b.camel@nvidia.com>
+        <20200916165748.20927-1-alex.dewar90@gmail.com>
+        <CAGRGNgWoFfCnK9FcWTf_f0b57JNEjsm6ZNQB5X_AMf8L3FyNcQ@mail.gmail.com>
+        <87h7rnnnrb.fsf@codeaurora.org>
+        <20200927105828.522fabbpyxx2mt3n@medion>
+Date:   Tue, 29 Sep 2020 10:42:56 +0300
+In-Reply-To: <20200927105828.522fabbpyxx2mt3n@medion> (Alex Dewar's message of
+        "Sun, 27 Sep 2020 11:58:28 +0100")
+Message-ID: <87wo0ddo5b.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200929031348-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1601365361; bh=khNyUg6fCBHz2WjAbLMQyLYkEJvYeDmjiMJT4IcmDR4=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=n1Ox6h0L1r6zOGQpGzRyQfSzRq3NzlDT35HuIqTIFBGQgtpjIQVsDtbeflwSaQJ6K
-         XkVDzlEe31USSyJKRh7tk4xxdTAuRRA0x4cx+zMnrhjodwWqTj+c3M7fQER3Kn1ACY
-         7CuVNm0Ye7x0rMtuCeOA4zmgij1kdii+MiYBUyDgDKoWugX9H6E+0euCubuykyP7jV
-         8wHDiakvHVmXta6n3mBT9KDPzKUO+hm4W3oEHGWRoRDqbpXcNhG/LawykCdM48Yg2m
-         HqbXV439INGTKl1HpYlDyGsexuvPc+zwHktE0xNSfJIpcrgvs4qI2nFTPuZPi/4ZSQ
-         sOoSVd7Oz71Lg==
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 03:17:05AM -0400, Michael S. Tsirkin wrote:
-> > 
-> > Use "select MLX5_CORE"
-> > instead of "depends on MLX5_CORE"
-> > 
-> > Wasn't this agreed upon?
-> 
-> Hmm I don't know. I recall a similar discussion around VHOST_IOTLB.
-> That's different ...
+Alex Dewar <alex.dewar90@gmail.com> writes:
 
-I see.
+>> I agree. Anyone can come up with a patch?
+>
+> Hi Kalle,
+>
+> I was thinking of having a go at this. Have you applied the v2 of this
+> patch yet though? I couldn't see it in wireless-drivers-next. I just
+> don't want to have to rebase the patch if you were going to apply this
+> v2.
 
-> 
-> I see
-> 
-> [linux]$ git grep MLX5_CORE|grep depends
-> drivers/infiniband/hw/mlx5/Kconfig:     depends on NETDEVICES && ETHERNET && PCI && MLX5_CORE
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on NETDEVICES && ETHERNET && INET && PCI && MLX5_CORE
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE_EN && RFS_ACCEL
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE_EN
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE_EN
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE_EN && NET_SWITCHDEV
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE_EN && DCB
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE_EN
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE_EN
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE_EN
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on TLS=y || MLX5_CORE=m
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE_EN
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on TLS=y || MLX5_CORE=m
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE_EN
-> drivers/net/ethernet/mellanox/mlx5/core/Kconfig:        depends on MLX5_CORE_EN && MLX5_ESWITCH
-> drivers/vdpa/Kconfig:   depends on MLX5_CORE
-> 
-> and no selects of this symbol, I guess you are saying you are changing everything
-> else to select - is that right? Then I guess vdpa should follow suit ...
-> 
+I have not applied this yet. It's in my pending branch but I can easily
+drop it. Just let me know what you prefer.
 
-No, I will leave that and will discuss internally if/who/when will do
-this.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
