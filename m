@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D26C27B923
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 02:57:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97EAE27B924
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 02:58:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727094AbgI2A5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 20:57:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58934 "EHLO mail.kernel.org"
+        id S1727161AbgI2A6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 20:58:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59602 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727039AbgI2A5U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 20:57:20 -0400
+        id S1727026AbgI2A6o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 20:58:44 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1AA2C207C4;
-        Tue, 29 Sep 2020 00:57:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3E1CE207C4;
+        Tue, 29 Sep 2020 00:58:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601341040;
+        s=default; t=1601341124;
         bh=U/iePW0NAwDYXNrYdGoLVqVliWfgDja1rnHmeuDRvJM=;
         h=From:To:Cc:Subject:Date:From;
-        b=h9xawMvZTMsCOuq2XJgB4ke2RXH5jG4CV9y3ie0T3X/T8bwzoGkutAx7l8e7wiVTT
-         rRhhh/QS5JQ0cuudKTkbHm/vCqWq7UFMHabLNSVyfWY7X2CjcpvUqsNZ5WS7fOjyFL
-         CY4Mh/ayiuUYxb9HQhHT5EuuuBkNtYiEBO4WG43c=
+        b=dW+Ob0yH1Zh3MFHQ20o0SV+EH/nMwE2v0gUV49uix4tLSlMhu4Ktee+rIGiUPYh5O
+         kKRWS7Sl9H/iTMbWm9ZcMao2TVP6MvADZvGTnSLXZII9jMkFuHh6EvWNeezV6CiuVX
+         6bAaR+H/D8//Y+5VESc7EgH8T+F0rBLgcSbclWfc=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     mkubecek@suse.cz, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net] ethtool: mark netlink policy as __ro_after_init
-Date:   Mon, 28 Sep 2020 17:57:18 -0700
-Message-Id: <20200929005718.3640588-1-kuba@kernel.org>
+Subject: [PATCH net v2] ethtool: mark netlink family as __ro_after_init
+Date:   Mon, 28 Sep 2020 17:58:41 -0700
+Message-Id: <20200929005841.3640817-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
