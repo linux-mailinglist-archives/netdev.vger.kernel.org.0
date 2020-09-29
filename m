@@ -2,82 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C6A27C0F1
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 11:21:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8331527C11A
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 11:28:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728023AbgI2JVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 05:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727893AbgI2JVS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 05:21:18 -0400
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B98C0613D0
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 02:21:17 -0700 (PDT)
-Received: by mail-oi1-x244.google.com with SMTP id x69so4676827oia.8
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 02:21:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=id5psVTZSDMhOlckpGo8CUqtpbTSRfiT9gOWo0ny4ek=;
-        b=UYXIyfDhH977ntPsM+7Oah43rWc7WFUVqZoHhuofAV+q6RF3NFEbVZay5xczF/VUZ5
-         sMVityv4M8OSy84DcK6AbcfQzSERk7VYSvBFBkAEpQCTjlxP8Z1YCzEfNfeCReBCVG6j
-         GjIvRVGx0Glf5sBtrAQS+xN6ZzUjHEsUC/Ndw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=id5psVTZSDMhOlckpGo8CUqtpbTSRfiT9gOWo0ny4ek=;
-        b=bB8aw+sfGuAfA7/tx1QarBRAm5/uylR3qERvXngAWsz4C6NZAos8AcJaKUfKY83SdC
-         bFp4pvvOhex9rp1cwW4QGn0hR1YsZPo6dvEfPIUfmFUS3Kievm7cEvZPogvHwUQDHXGq
-         E4CG5I443JTc0E75I31iJq2XCnyvgt+VRDUuQKOOJuVYQf4I3DJEm2eogogI6ovTxujx
-         NMOjJav0aim/cvk0k0BhDmHb0RZaRQZl5CnpVpLUz2FtXcuyep0ScJXWofpmrRzXNNh3
-         Y9wvUexbF24UjMyHg4+cQXS+m+EAxnugq1P7bWN3XG9WIZ3qHQGAd+JTieOEz5ps1yDk
-         EVaw==
-X-Gm-Message-State: AOAM533eFsckAvSCIR3STcezGastOsbyxvfj8utdD7fVqVIjbVMgHzqe
-        u0emyZJWMXBIqPDZHU6Q7I4ktedy5e1QT6UyTxc/61y5nGGRgA==
-X-Google-Smtp-Source: ABdhPJzEPpDikSbmSQ6GKnI9QYsxaxQGiIypykQkLCXeMXS1K9gv5joboZIw8ZWs7WWlpLRulBhfYziPmh4ivGPftuE=
-X-Received: by 2002:aca:f0a:: with SMTP id 10mr1965385oip.13.1601371276527;
- Tue, 29 Sep 2020 02:21:16 -0700 (PDT)
+        id S1727946AbgI2J2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 05:28:37 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:41776 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727746AbgI2J2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 05:28:37 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08T9OYJ8010725;
+        Tue, 29 Sep 2020 02:28:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=u4eoJftl1VM4X/M8bk9d61cersQCmUD2ckghLtciNck=;
+ b=F9CIE4LXGN24cMJyixzoOzIOyz7XN+9f1Ul/HYSrPhESge4K/u8O6Mkb6oD3/dwgGpIV
+ oq2t//WXOTO605nkenFN1dZH+WInYeTrG9b2aKxuHA47HcHfnXkFlKQkqdOTw7eep5EB
+ p5NAvmYaU/bpqzjYy5UooWrMRzYEdn1N8/4T1tMI94yIIvsNL0xOKeikj2w90sVgTiGs
+ GKYXYBYu/d99CoAsX0JvKuHjJ3D8+a4tilD+bfuNUU3fh5swqXZARpOky2MyAKSBVS1B
+ 7OGK44M2veA1qqeCkoW8VhTF4JL0iHJqCvxYHSSq14yICAQ2DbjUVqztXo31KRpKwoVj 7Q== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 33teemb7x5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 29 Sep 2020 02:28:34 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 29 Sep
+ 2020 02:28:33 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 29 Sep 2020 02:28:33 -0700
+Received: from yoga.marvell.com (unknown [10.95.131.226])
+        by maili.marvell.com (Postfix) with ESMTP id 0B2CA3F703F;
+        Tue, 29 Sep 2020 02:28:31 -0700 (PDT)
+From:   Stanislaw Kardach <skardach@marvell.com>
+To:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
+        <netdev@vger.kernel.org>
+CC:     <kda@semihalf.com>, Stanislaw Kardach <skardach@marvell.com>
+Subject: [PATCH net-next 0/7] octeontx2-af: cleanup and extend parser config
+Date:   Tue, 29 Sep 2020 11:28:13 +0200
+Message-ID: <20200929092820.22487-1-skardach@marvell.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20200928090805.23343-1-lmb@cloudflare.com> <20200928090805.23343-5-lmb@cloudflare.com>
- <20200929060619.psnobg3cz3zbfx6u@kafai-mbp>
-In-Reply-To: <20200929060619.psnobg3cz3zbfx6u@kafai-mbp>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Tue, 29 Sep 2020 10:21:05 +0100
-Message-ID: <CACAyw9-hSfaxfHHMaVMVqBU7MHLoqgPyo55UwQ3w7NKREHcCxw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 4/4] selftest: bpf: Test copying a sockmap and sockhash
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-team <kernel-team@cloudflare.com>,
-        linux-kselftest@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-29_01:2020-09-29,2020-09-29 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Sep 2020 at 07:06, Martin KaFai Lau <kafai@fb.com> wrote:
+Current KPU configuration data is spread over multiple files which makes
+it hard to read. Clean this up by gathering all configuration data in a
+single structure and also in a single file (npc_profile.h). This should
+increase the readability of KPU handling code (since it always
+references same structure), simplify updates to the CAM key extraction
+code and allow abstracting out the configuration source.
+Additionally extend and fix the parser config to support additional DSA
+types, NAT-T-ESP and IPv6 fields.
 
-...
+Patch 1 ensures that CUSTOMx LTYPEs are not aliased with meaningful
+LTYPEs where possible.
 
-> > +     /* We need a temporary buffer on the stack, since the verifier doesn't
-> > +      * let us use the pointer from the context as an argument to the helper.
-> Is it something that can be improved later?
->
-> others LGTM.
+Patch 2 gathers all KPU profile related data into a single struct and
+creates an adapter structure which provides an interface to the KPU
+profile for the octeontx2-af driver.
 
-Yeah, I think so. We'd need to do something similar to your
-sock_common work for PTR_TO_RDONLY_BUF_OR_NULL. The fact that the
-pointer is read only makes it a bit more difficult I think. After
-that, a user could just plug the key into map_update_elem directly.
-Alternatively, allow specialising map_ops per context.
+Patches 3-4 add support for Extended DSA, eDSA and Forward DSA.
+
+Patches 5-6 adds IPv6 fields to CAM key extraction and optimize the
+parser performance for fragmented IPv6 packets.
+
+Patch 7 refactors ESP handling in the parser to support NAT-T-ESP.
+
+Abhijit Ayarekar (1):
+  octeontx2-af: optimize parsing of IPv6 fragments
+
+Hariprasad Kelam (1):
+  octeontx2-af: add parser support for Forward DSA
+
+Kiran Kumar K (1):
+  octeontx2-af: add parser support for NAT-T-ESP
+
+Satha Rao (1):
+  octeontx2-af: fix Extended DSA and eDSA parsing
+
+Stanislaw Kardach (2):
+  octeontx2-af: fix LD CUSTOM LTYPE aliasing
+  octeontx2-af: cleanup KPU config data
+
+Vidhya Vidhyaraman (1):
+  octeontx2-af: Add IPv6 fields to default MKEX
+
+ .../net/ethernet/marvell/octeontx2/af/npc.h   |  43 +-
+ .../marvell/octeontx2/af/npc_profile.h        | 473 +++++++++++++++---
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  17 +
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  36 +-
+ .../ethernet/marvell/octeontx2/af/rvu_npc.c   | 202 +++-----
+ 5 files changed, 557 insertions(+), 214 deletions(-)
 
 -- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+2.20.1
 
-www.cloudflare.com
