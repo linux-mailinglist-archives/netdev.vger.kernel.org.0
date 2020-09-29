@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B94227BA3E
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 03:37:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C120A27BA51
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 03:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727294AbgI2Bae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 21:30:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39400 "EHLO mail.kernel.org"
+        id S1727937AbgI2BhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 21:37:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39428 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727186AbgI2Bad (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 21:30:33 -0400
+        id S1727305AbgI2Baf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 21:30:35 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 89CFB2080A;
-        Tue, 29 Sep 2020 01:30:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F1829216C4;
+        Tue, 29 Sep 2020 01:30:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601343033;
-        bh=Zq4MAkUNRAapzUbfhLqsFNJRbXU42khRWjBp5Tp/WM0=;
+        s=default; t=1601343034;
+        bh=4cOnDL084QNcZBUqFADt3BSsfxvJdhmNTQZseo5pD9s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I6+a91YMk25s3z8ZTCbrKDW5Z1AxqfafPuluHc2myDLaj7oDWI+0tZqFJA9xtJW3F
-         S1ksUAbhhBa7busPHZlnFLFD9Or4NogpdhOUaaqP4OJFblAMngWrjToi0B4LFjRL8j
-         NKbfxJvb76KMfdt4u4cjSJL8qkByWbDwdvCLQb/w=
+        b=SmA8rw+ozIKSxJdx6MgdG2stupf/CFtAYSVZLzDs0tfwKZuJvoz8l3Miim1pw63ut
+         KFu0QuVwTImRpaXzyqsIxmBr6l2UHl1T7lajEj5uI0Nryma7LCuXqrrXQ5PFhmC3VU
+         KiEoagzyvqE8+adj91Xm3Q8fszvIKPcgv448Ru4M=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Vaidyanathan Srinivasan <svaidy@linux.ibm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.8 04/29] libbpf: Remove arch-specific include path in Makefile
-Date:   Mon, 28 Sep 2020 21:30:01 -0400
-Message-Id: <20200929013027.2406344-4-sashal@kernel.org>
+Cc:     Xie He <xie.he.0141@gmail.com>, Krzysztof Halasa <khc@pm.waw.pl>,
+        Martin Schiller <ms@dev.tdt.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.8 05/29] drivers/net/wan/hdlc_fr: Add needed_headroom for PVC devices
+Date:   Mon, 28 Sep 2020 21:30:02 -0400
+Message-Id: <20200929013027.2406344-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200929013027.2406344-1-sashal@kernel.org>
 References: <20200929013027.2406344-1-sashal@kernel.org>
@@ -45,62 +43,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+From: Xie He <xie.he.0141@gmail.com>
 
-[ Upstream commit 21e9ba5373fc2cec608fd68301a1dbfd14df3172 ]
+[ Upstream commit 44a049c42681de71c783d75cd6e56b4e339488b0 ]
 
-Ubuntu mainline builds for ppc64le are failing with the below error (*):
-    CALL    /home/kernel/COD/linux/scripts/atomic/check-atomics.sh
-    DESCEND  bpf/resolve_btfids
+PVC devices are virtual devices in this driver stacked on top of the
+actual HDLC device. They are the devices normal users would use.
+PVC devices have two types: normal PVC devices and Ethernet-emulating
+PVC devices.
 
-  Auto-detecting system features:
-  ...                        libelf: [ [32mon[m  ]
-  ...                          zlib: [ [32mon[m  ]
-  ...                           bpf: [ [31mOFF[m ]
+When transmitting data with PVC devices, the ndo_start_xmit function
+will prepend a header of 4 or 10 bytes. Currently this driver requests
+this headroom to be reserved for normal PVC devices by setting their
+hard_header_len to 10. However, this does not work when these devices
+are used with AF_PACKET/RAW sockets. Also, this driver does not request
+this headroom for Ethernet-emulating PVC devices (but deals with this
+problem by reallocating the skb when needed, which is not optimal).
 
-  BPF API too old
-  make[6]: *** [Makefile:295: bpfdep] Error 1
-  make[5]: *** [Makefile:54: /home/kernel/COD/linux/debian/build/build-generic/tools/bpf/resolve_btfids//libbpf.a] Error 2
-  make[4]: *** [Makefile:71: bpf/resolve_btfids] Error 2
-  make[3]: *** [/home/kernel/COD/linux/Makefile:1890: tools/bpf/resolve_btfids] Error 2
-  make[2]: *** [/home/kernel/COD/linux/Makefile:335: __build_one_by_one] Error 2
-  make[2]: Leaving directory '/home/kernel/COD/linux/debian/build/build-generic'
-  make[1]: *** [Makefile:185: __sub-make] Error 2
-  make[1]: Leaving directory '/home/kernel/COD/linux'
+This patch replaces hard_header_len with needed_headroom, and set
+needed_headroom for Ethernet-emulating PVC devices, too. This makes
+the driver to request headroom for all PVC devices in all cases.
 
-resolve_btfids needs to be build as a host binary and it needs libbpf.
-However, libbpf Makefile hardcodes an include path utilizing $(ARCH).
-This results in mixing of cross-architecture headers resulting in a
-build failure.
-
-The specific header include path doesn't seem necessary for a libbpf
-build. Hence, remove the same.
-
-(*) https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.9-rc3/ppc64el/log
-
-Reported-by: Vaidyanathan Srinivasan <svaidy@linux.ibm.com>
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Link: https://lore.kernel.org/bpf/20200902084246.1513055-1-naveen.n.rao@linux.vnet.ibm.com
+Cc: Krzysztof Halasa <khc@pm.waw.pl>
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wan/hdlc_fr.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index bf8ed134cb8a3..b78484e7a6089 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -59,7 +59,7 @@ FEATURE_USER = .libbpf
- FEATURE_TESTS = libelf libelf-mmap zlib bpf reallocarray
- FEATURE_DISPLAY = libelf zlib bpf
+diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
+index 9acad651ea1f6..12b35404cd8e7 100644
+--- a/drivers/net/wan/hdlc_fr.c
++++ b/drivers/net/wan/hdlc_fr.c
+@@ -1041,7 +1041,7 @@ static void pvc_setup(struct net_device *dev)
+ {
+ 	dev->type = ARPHRD_DLCI;
+ 	dev->flags = IFF_POINTOPOINT;
+-	dev->hard_header_len = 10;
++	dev->hard_header_len = 0;
+ 	dev->addr_len = 2;
+ 	netif_keep_dst(dev);
+ }
+@@ -1093,6 +1093,7 @@ static int fr_add_pvc(struct net_device *frad, unsigned int dlci, int type)
+ 	dev->mtu = HDLC_MAX_MTU;
+ 	dev->min_mtu = 68;
+ 	dev->max_mtu = HDLC_MAX_MTU;
++	dev->needed_headroom = 10;
+ 	dev->priv_flags |= IFF_NO_QUEUE;
+ 	dev->ml_priv = pvc;
  
--INCLUDES = -I. -I$(srctree)/tools/include -I$(srctree)/tools/arch/$(ARCH)/include/uapi -I$(srctree)/tools/include/uapi
-+INCLUDES = -I. -I$(srctree)/tools/include -I$(srctree)/tools/include/uapi
- FEATURE_CHECK_CFLAGS-bpf = $(INCLUDES)
- 
- check_feat := 1
 -- 
 2.25.1
 
