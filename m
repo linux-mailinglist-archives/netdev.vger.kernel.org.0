@@ -2,187 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C3A727CB75
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:29:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B393027CB56
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:27:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732792AbgI2M1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 08:27:50 -0400
-Received: from mail-eopbgr20071.outbound.protection.outlook.com ([40.107.2.71]:50641
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728941AbgI2LdA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 07:33:00 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YzVwxlUslI9E7TgUBdRl9z5NvT93K8Wwfed8FnAm1MZtvdIzQgmrJ5ZUp1i+FmsMpSQkfY2t9YDdn7LyAy9JaMeCLEEX/NCmD1l/b6N05aVEoZKfwEUZ9XqrrAGhNkxD+B2Y3Qbv1cs8OBVPcjKITrwA9bh2NHYL6CpwKKuO0f9RRmHMvstXp6iYvDTe3fqjAcL+YpOMT0NXfq9SSZBVhciPYZIjvwVGnEEqRpyOQ3ppk8Q7rQAVwpKMcjxWSiTvjpUf2Sm4xnp3YhEBmWfytCNFtx1YyU99BopyYAXKhtA2VIl6+NOm5koxThLFjWoARMKfxFVOQeTm9iLbk5oQ7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZBtFqIM9cnXfFNVvg+Vo1W1+DlyTfFyFKvsPCnw7vYo=;
- b=bq+KqoLZyxULlwit1/tKKbnKJ0rikk1f40LKBWhJ7offdZMKybiaaQ2YpBSchtkZY2IvWQCWH7DOBbhHRT7vpKPozx39ql81HYWr5fekmE5V1NvSZHfMpTG0+X0W1bwChH2+0jaMXm67Ua6Uq3UCkfy3eBq501diBTAhBhd3ESbrQL6MGOfj0LvoYSgKxQT11Sxt3kUg1xYJx5ChPtzPudEGWlN4SHX1/YcUlRemQHGdSHD8jx85pNU6nfHGVvN2g23zX7V2KhPorYLASu1xa/hmc5qJm3TBszlSlMGwPsdIriN+Jmo1CbWRE902vwdWlM6BcgJhArm/2dxT2Z2LsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZBtFqIM9cnXfFNVvg+Vo1W1+DlyTfFyFKvsPCnw7vYo=;
- b=Z6zLrR1hycn1YhIEsuflnjJyYZPrH86ceDM6IY4CzvEGEJMNFajCqyi/A0ru0hpkkeyp0GdoBMzUdvXmP7+/+kpnCMrBJiQDk+r+95ishHxcgZfa7Tnjj+iGcS/4WWHqEpue9Rf7i565z9ZUobH++5ONZDnYd2GD1woIrzsfB28=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB5504.eurprd04.prod.outlook.com (2603:10a6:803:d8::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20; Tue, 29 Sep
- 2020 11:32:21 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.032; Tue, 29 Sep 2020
- 11:32:21 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     robh+dt@kernel.org, shawnguo@kernel.org, mpe@ellerman.id.au,
-        devicetree@vger.kernel.org
-Cc:     benh@kernel.crashing.org, paulus@samba.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, madalin.bucur@oss.nxp.com,
-        radu-andrei.bulie@nxp.com, fido_max@inbox.ru
-Subject: [PATCH v2 devicetree 1/2] powerpc: dts: t1040: add bindings for Seville Ethernet switch
-Date:   Tue, 29 Sep 2020 14:32:08 +0300
-Message-Id: <20200929113209.3767787-2-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200929113209.3767787-1-vladimir.oltean@nxp.com>
-References: <20200929113209.3767787-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [188.26.229.171]
-X-ClientProxiedBy: AM4PR05CA0008.eurprd05.prod.outlook.com (2603:10a6:205::21)
- To VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+        id S1732744AbgI2M0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 08:26:40 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:60670 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729632AbgI2Ldb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 07:33:31 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08TBPP35191277;
+        Tue, 29 Sep 2020 11:33:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=mime-version :
+ message-id : date : from : to : cc : subject : content-type :
+ content-transfer-encoding; s=corp-2020-01-29;
+ bh=Q9XFzQq1ftNd/6nhZwM6OK6igXtWaspUnrZOg4CnAdc=;
+ b=WwiMDiujMHZi+Q02nHSZamBamqnCFy26N0CgCXrHQ9265qMvZW/t7VWkbiNnSCK4RPmN
+ xw0cF0PftzA/L0X3RXtZdOBqF5pT7cm8LZUDFpb/g62Vdt+7Cl0TqhDqQsebMclFN9I6
+ jG81QNhrwDsenDafdVF29LA2OTTlG08Xv1komJoRmsTnZuEgR+2wsmyCBd1e27JXD1nF
+ HVo8jxhepx2MFVWpX2F/ZFUEKi5UyRP3GeIkiVh2fv8nPLQnh9DLMR31xd9yrnyr9vU7
+ NNicpawhp23xJCxLAPjBqa+/dM9VkpuusB1bpWsZoX/W3jFUrlisBmZtLce28SEQixZ3 Yg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2120.oracle.com with ESMTP id 33sx9n23jx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 29 Sep 2020 11:33:13 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08TBTiHT052060;
+        Tue, 29 Sep 2020 11:33:12 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 33tfjwj5ee-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 29 Sep 2020 11:33:12 +0000
+Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08TBXBwP028097;
+        Tue, 29 Sep 2020 11:33:11 GMT
+Received: from localhost.uk.oracle.com (/10.175.172.184) by default (Oracle
+ Beehive Gateway v4.0) with ESMTP ; Tue, 29 Sep 2020 04:32:42 -0700
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.26.229.171) by AM4PR05CA0008.eurprd05.prod.outlook.com (2603:10a6:205::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.32 via Frontend Transport; Tue, 29 Sep 2020 11:32:20 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 791a1174-f38a-4f06-2150-08d8646b5460
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5504:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB550438B79EDC64F0090DD353E0320@VI1PR04MB5504.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LsGIHn/GF+uL9MQG72zvlpWB4OgnGRdi4jHDYg9+vxQVYaO++nO8l643Hdf/pW6YhrIsjnUSkJQUhBkKwnX6PwPcBvA4mMhMn9Rm2bMUV4vITAu/tfECtCvUxj65qy8crC2wC4LdWQTVb5YY1WwOM4rzKf0z3HQnppm+3o1GlhRLQ9RVzWR66kNE8KePj0FfRxopt8i0fvG9bYWB+UB25yIyZxx462rczQwlDzeA6NhFH3RTIgfCPQiO2/sLrdjvb24sJYmqLdH/+nMnGCS1/rskaqoFDcipeFNbJPDqlkqaUkRlo/ap5eRt72yqt0pD1zS7BgjcqJO7MdXVPihqHqKQpSJOyh2FxuZMIQsqIbV0cMQsg3xPOXVKtwZ82AMaY8EGTzuSMS/4hr/ExbPLThmlHEHvKXrlCWxqv+DIiKgzP4IVaYTGvJnUG6ZwoPVr
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(36756003)(66476007)(66946007)(66556008)(1076003)(6512007)(69590400008)(44832011)(83380400001)(2616005)(6666004)(6486002)(26005)(4326008)(956004)(52116002)(86362001)(186003)(8936002)(16526019)(2906002)(7416002)(6506007)(8676002)(498600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: yb6sjnl9B+eLW1bvaO+FYEAYZYvpaLHykJ7o+MEzEeRJw9itHEQtSif+Yt8VWoz69xS62vBEgHK0CxiV00OWqSD7v/yh1HBFmToASf5M3znVrBaYPC83CqcRp+b+rV25nxOQiMnwCkr1u2nCbcbJh4z8tx0+nsuijpbYwNxEY3JfVFUF1sUyXKreSwe9whas7xBFGA+dTTyleJ7TEuGsFpLbXxH2F1mdGGpJGHD9rpx/O0PA5+9cAsK4YNMx00q01JO6Td35TDh7HKodF4GPHyZJxWaUjzsv0FNziMOMWYwbSU7sJg9D5nOZDHG6pzQ+qegXc7OskkGtCZjbCZzxkp4X2LACluqx2M5SuAMwdmFl74frdc7Tcu444RNKYvKDPpJu2fnv9eDpOtCh/sLYLY49IkMtxAG0TkalESZtfJ12NB5sKhb8UhNnX2qSSsyptrTnJ/rCkFsoiOv/RQx3JRhpMVhXFnAS+lC2zw5/cUECe9IVNioDz0abZpuDv4wgJqrWF3cnNljOt0LA0kvf5knVS3G1VgSYssE+r4sRvu9Mi4PUoUcUTd9OHbIdlApdyBNxp+/OeljkiW7fD/K0NLCgSECO4U02Jd1JwrLgE475OwrFleZrRHnbtZbcpwlnxneAr5Bf5TmTJvpjUa/EdA==
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 791a1174-f38a-4f06-2150-08d8646b5460
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2020 11:32:21.4928
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VcxDmi3Nfpsm165PNzd9EpIDoVFUoD5puAj4gLzq1hRZRSi6ztTlvntDsQ7tUtfdvesdHfn8aCvR2XbBzU+UFA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5504
+Message-ID: <1601379151-21449-1-git-send-email-alan.maguire@oracle.com>
+Date:   Tue, 29 Sep 2020 04:32:29 -0700 (PDT)
+From:   Alan Maguire <alan.maguire@oracle.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andriin@fb.com
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next 0/2] selftests/bpf: BTF-based kernel data display
+ fixes
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9758 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 spamscore=0 mlxscore=0
+ phishscore=0 adultscore=0 bulkscore=0 mlxlogscore=999 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009290103
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9758 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 suspectscore=0
+ phishscore=0 mlxscore=0 lowpriorityscore=0 adultscore=0 clxscore=1015
+ spamscore=0 impostorscore=0 malwarescore=0 bulkscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009290102
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the description of the embedded L2 switch inside the SoC dtsi file
-for NXP T1040.
+Resolve issues in bpf selftests introduced with BTF-based kernel data
+display selftests; these are
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes in v2:
-Make switch node disabled by default.
+- a warning introduced in snprintf_btf.c; and
+- compilation failures with old kernels vmlinux.h
 
- arch/powerpc/boot/dts/fsl/t1040si-post.dtsi | 76 +++++++++++++++++++++
- 1 file changed, 76 insertions(+)
+Alan Maguire (2):
+  selftests/bpf: fix unused-result warning in snprintf_btf.c
+  selftests/bpf: ensure snprintf_btf/bpf_iter tests compatibility with
+    old vmlinux.h
 
-diff --git a/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi b/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi
-index 315d0557eefc..5cb90c66cd3f 100644
---- a/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi
-@@ -628,6 +628,82 @@ mdio@fd000 {
- 			status = "disabled";
- 		};
- 	};
-+
-+	seville_switch: ethernet-switch@800000 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "mscc,vsc9953-switch";
-+		reg = <0x800000 0x290000>;
-+		little-endian;
-+		status = "disabled";
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			seville_port0: port@0 {
-+				reg = <0>;
-+				status = "disabled";
-+			};
-+
-+			seville_port1: port@1 {
-+				reg = <1>;
-+				status = "disabled";
-+			};
-+
-+			seville_port2: port@2 {
-+				reg = <2>;
-+				status = "disabled";
-+			};
-+
-+			seville_port3: port@3 {
-+				reg = <3>;
-+				status = "disabled";
-+			};
-+
-+			seville_port4: port@4 {
-+				reg = <4>;
-+				status = "disabled";
-+			};
-+
-+			seville_port5: port@5 {
-+				reg = <5>;
-+				status = "disabled";
-+			};
-+
-+			seville_port6: port@6 {
-+				reg = <6>;
-+				status = "disabled";
-+			};
-+
-+			seville_port7: port@7 {
-+				reg = <7>;
-+				status = "disabled";
-+			};
-+
-+			seville_port8: port@8 {
-+				reg = <8>;
-+				phy-mode = "internal";
-+				status = "disabled";
-+
-+				fixed-link {
-+					speed = <2500>;
-+					full-duplex;
-+				};
-+			};
-+
-+			seville_port9: port@9 {
-+				reg = <9>;
-+				phy-mode = "internal";
-+				status = "disabled";
-+
-+				fixed-link {
-+					speed = <2500>;
-+					full-duplex;
-+				};
-+			};
-+		};
-+	};
- };
- 
- &qe {
+ .../selftests/bpf/prog_tests/snprintf_btf.c        |  2 +-
+ tools/testing/selftests/bpf/progs/bpf_iter.h       | 23 ++++++++++++++++++
+ tools/testing/selftests/bpf/progs/btf_ptr.h        | 27 ++++++++++++++++++++++
+ .../selftests/bpf/progs/netif_receive_skb.c        |  2 +-
+ 4 files changed, 52 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/btf_ptr.h
+
 -- 
-2.25.1
+1.8.3.1
 
