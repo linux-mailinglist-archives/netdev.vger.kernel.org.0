@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7CBD27D063
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 16:02:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8786427D09E
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 16:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730318AbgI2OCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 10:02:14 -0400
-Received: from www62.your-server.de ([213.133.104.62]:42250 "EHLO
+        id S1729721AbgI2OIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 10:08:09 -0400
+Received: from www62.your-server.de ([213.133.104.62]:43052 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729073AbgI2OCN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 10:02:13 -0400
+        with ESMTP id S1725554AbgI2OIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 10:08:09 -0400
 Received: from sslproxy02.your-server.de ([78.47.166.47])
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1kNGCo-00076i-Ng; Tue, 29 Sep 2020 16:02:10 +0200
+        id 1kNGIZ-0007VA-6o; Tue, 29 Sep 2020 16:08:07 +0200
 Received: from [178.196.57.75] (helo=pc-9.home)
         by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1kNGCo-0006Xr-Hi; Tue, 29 Sep 2020 16:02:10 +0200
-Subject: Re: [PATCH bpf-next 1/2] bpf: introduce BPF_F_SHARE_PE for perf event
- array
+        id 1kNGIY-000VLQ-Vm; Tue, 29 Sep 2020 16:08:07 +0200
+Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: add tests for BPF_F_SHARE_PE
 To:     Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
 Cc:     kernel-team@fb.com, ast@kernel.org, john.fastabend@gmail.com,
         kpsingh@chromium.org
 References: <20200929084750.419168-1-songliubraving@fb.com>
- <20200929084750.419168-2-songliubraving@fb.com>
+ <20200929084750.419168-3-songliubraving@fb.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <04ba2027-a5ad-d715-ffc8-67f13e40f2d2@iogearbox.net>
-Date:   Tue, 29 Sep 2020 16:02:10 +0200
+Message-ID: <462d5ed2-727b-d932-a5f3-333c4b2c4806@iogearbox.net>
+Date:   Tue, 29 Sep 2020 16:08:05 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200929084750.419168-2-songliubraving@fb.com>
+In-Reply-To: <20200929084750.419168-3-songliubraving@fb.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -46,131 +45,80 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 9/29/20 10:47 AM, Song Liu wrote:
-> Currently, perf event in perf event array is removed from the array when
-> the map fd used to add the event is closed. This behavior makes it
-> difficult to the share perf events with perf event array.
+> Add tests for perf event array with and without BPF_F_SHARE_PE.
 > 
-> Introduce perf event map that keeps the perf event open with a new flag
-> BPF_F_SHARE_PE. With this flag set, perf events in the array are not
-> removed when the original map fd is closed. Instead, the perf event will
-> stay in the map until 1) it is explicitly removed from the array; or 2)
-> the array is freed.
+> Add a perf event to array via fd mfd. Without BPF_F_SHARE_PE, the perf
+> event is removed when mfd is closed. With BPF_F_SHARE_PE, the perf event
+> is removed when the map is freed.
 > 
 > Signed-off-by: Song Liu <songliubraving@fb.com>
-> ---
->   include/uapi/linux/bpf.h       |  3 +++
->   kernel/bpf/arraymap.c          | 31 +++++++++++++++++++++++++++++--
->   tools/include/uapi/linux/bpf.h |  3 +++
->   3 files changed, 35 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 82522f05c0213..74f7a09e9d1e3 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -414,6 +414,9 @@ enum {
->   
->   /* Enable memory-mapping BPF map */
->   	BPF_F_MMAPABLE		= (1U << 10),
-> +
-> +/* Share perf_event among processes */
-> +	BPF_F_SHARE_PE		= (1U << 11),
-
-nit but given UAPI: maybe name into something more self-descriptive
-like BPF_F_SHAREABLE_EVENT ?
-
->   };
->   
->   /* Flags for BPF_PROG_QUERY. */
-> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-> index e5fd31268ae02..4938ff183d846 100644
-> --- a/kernel/bpf/arraymap.c
-> +++ b/kernel/bpf/arraymap.c
-> @@ -15,7 +15,7 @@
->   #include "map_in_map.h"
->   
->   #define ARRAY_CREATE_FLAG_MASK \
-> -	(BPF_F_NUMA_NODE | BPF_F_MMAPABLE | BPF_F_ACCESS_MASK)
-> +	(BPF_F_NUMA_NODE | BPF_F_MMAPABLE | BPF_F_ACCESS_MASK | BPF_F_SHARE_PE)
->   
->   static void bpf_array_free_percpu(struct bpf_array *array)
->   {
-> @@ -64,6 +64,10 @@ int array_map_alloc_check(union bpf_attr *attr)
->   	    attr->map_flags & BPF_F_MMAPABLE)
->   		return -EINVAL;
->   
-> +	if (attr->map_type != BPF_MAP_TYPE_PERF_EVENT_ARRAY &&
-> +	    attr->map_flags & BPF_F_SHARE_PE)
-> +		return -EINVAL;
-> +
->   	if (attr->value_size > KMALLOC_MAX_SIZE)
->   		/* if value_size is bigger, the user space won't be able to
->   		 * access the elements.
-> @@ -778,6 +782,26 @@ static int fd_array_map_delete_elem(struct bpf_map *map, void *key)
->   	}
->   }
->   
-> +static void perf_event_fd_array_map_free(struct bpf_map *map)
+[...]
+> +static void test_one_map(struct bpf_map *map, struct bpf_program *prog,
+> +			 bool has_share_pe)
 > +{
-> +	struct bpf_event_entry *ee;
-> +	struct bpf_array *array;
-> +	int i;
+> +	int err, key = 0, pfd = -1, mfd = bpf_map__fd(map);
+> +	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts);
+> +	struct perf_event_attr attr = {
+> +		.size = sizeof(struct perf_event_attr),
+> +		.type = PERF_TYPE_SOFTWARE,
+> +		.config = PERF_COUNT_SW_CPU_CLOCK,
+> +	};
 > +
-> +	if ((map->map_flags & BPF_F_SHARE_PE) == 0) {
-> +		fd_array_map_free(map);
+> +	pfd = syscall(__NR_perf_event_open, &attr, 0 /* pid */,
+> +		      -1 /* cpu 0 */, -1 /* group id */, 0 /* flags */);
+> +	if (CHECK(pfd < 0, "perf_event_open", "failed\n"))
 > +		return;
+> +
+> +	err = bpf_map_update_elem(mfd, &key, &pfd, BPF_ANY);
+> +	if (CHECK(err < 0, "bpf_map_update_elem", "failed\n"))
+> +		goto cleanup;
+> +
+> +	err = bpf_prog_test_run_opts(bpf_program__fd(prog), &opts);
+> +	if (CHECK(err < 0, "bpf_prog_test_run_opts", "failed\n"))
+> +		goto cleanup;
+> +	if (CHECK(opts.retval != 0, "bpf_perf_event_read_value",
+> +		  "failed with %d\n", opts.retval))
+> +		goto cleanup;
+> +
+> +	/* closing mfd, prog still holds a reference on map */
+> +	close(mfd);
+> +
+> +	err = bpf_prog_test_run_opts(bpf_program__fd(prog), &opts);
+> +	if (CHECK(err < 0, "bpf_prog_test_run_opts", "failed\n"))
+> +		goto cleanup;
+> +
+> +	if (has_share_pe) {
+> +		CHECK(opts.retval != 0, "bpf_perf_event_read_value",
+> +		      "failed with %d\n", opts.retval);
+> +	} else {
+> +		CHECK(opts.retval != -ENOENT, "bpf_perf_event_read_value",
+> +		      "should have failed with %d, but got %d\n", -ENOENT,
+> +		      opts.retval);
 > +	}
 > +
-> +	array = container_of(map, struct bpf_array, map);
-> +	for (i = 0; i < array->map.max_entries; i++) {
-> +		ee = READ_ONCE(array->ptrs[i]);
-> +		if (ee)
-> +			fd_array_map_delete_elem(map, &i);
-> +	}
-> +	bpf_map_area_free(array);
+> +cleanup:
+> +	close(pfd);
 
-Why not simplify into:
+Why holding pfd until the end? The map should already hold a ref after update.
+So you should be able to just do ...
 
-	if (map->map_flags & BPF_F_SHAREABLE_EVENT)
-		bpf_fd_array_map_clear(map);
-	fd_array_map_free(map);
+err = bpf_map_update_elem(mfd, &key, &pfd, BPF_ANY);
+close(pfd);
+
+... and simplify cleanup.
 
 > +}
 > +
->   static void *prog_fd_array_get_ptr(struct bpf_map *map,
->   				   struct file *map_file, int fd)
->   {
-> @@ -1134,6 +1158,9 @@ static void perf_event_fd_array_release(struct bpf_map *map,
->   	struct bpf_event_entry *ee;
->   	int i;
->   
-> +	if (map->map_flags & BPF_F_SHARE_PE)
+> +void test_perf_event_share(void)
+> +{
+> +	struct test_perf_event_share *skel;
+> +
+> +	skel = test_perf_event_share__open_and_load();
+> +	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
 > +		return;
 > +
->   	rcu_read_lock();
->   	for (i = 0; i < array->map.max_entries; i++) {
->   		ee = READ_ONCE(array->ptrs[i]);
-> @@ -1148,7 +1175,7 @@ const struct bpf_map_ops perf_event_array_map_ops = {
->   	.map_meta_equal = bpf_map_meta_equal,
->   	.map_alloc_check = fd_array_map_alloc_check,
->   	.map_alloc = array_map_alloc,
-> -	.map_free = fd_array_map_free,
-> +	.map_free = perf_event_fd_array_map_free,
->   	.map_get_next_key = array_map_get_next_key,
->   	.map_lookup_elem = fd_array_map_lookup_elem,
->   	.map_delete_elem = fd_array_map_delete_elem,
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index 82522f05c0213..74f7a09e9d1e3 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -414,6 +414,9 @@ enum {
->   
->   /* Enable memory-mapping BPF map */
->   	BPF_F_MMAPABLE		= (1U << 10),
+> +	test_one_map(skel->maps.array_1, skel->progs.read_array_1, false);
+> +	test_one_map(skel->maps.array_2, skel->progs.read_array_2, true);
 > +
-> +/* Share perf_event among processes */
-> +	BPF_F_SHARE_PE		= (1U << 11),
->   };
->   
->   /* Flags for BPF_PROG_QUERY. */
-> 
-
+> +	test_perf_event_share__destroy(skel);
+> +}
