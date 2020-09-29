@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 783EA27D857
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:35:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C92B927D910
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:41:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729365AbgI2Ufw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
+        id S1729916AbgI2Ukp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728301AbgI2Ufo (ORCPT
+        with ESMTP id S1729295AbgI2Ufo (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:35:44 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11E6C061755;
-        Tue, 29 Sep 2020 13:35:43 -0700 (PDT)
-Message-Id: <20200929203459.759549699@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D6AC0613D0;
+        Tue, 29 Sep 2020 13:35:44 -0700 (PDT)
+Message-Id: <20200929203459.868970918@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601411742;
+        s=2020; t=1601411743;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=9gno+yzKOdLMuJ9Xz4faTO6ILG5b04BLHvO+JheY75g=;
-        b=yiY42gneBjiDDqh0Y79DvBn3YqjkNpXchXD4e5CBIFn2QkSAqgIMEPREJCO8X9Kq3D176D
-        jFnHDZKvazk50QBJBdOtZSUcTqLU9VBRYM+WRqpysnukd6P6CkcgWCXDciWZ9Fu2SK0n2r
-        4Pcp0StXIFuSxY2o0/TgPe7hShkmc6K3lo6O03bsnZiTIIOco6NIHJIptMdz84OB67sc99
-        nLxCK/dvG4VTSg9AmFz2HwFCpVu/l5STefw3m1/13gKhUEDnfk12sH5lrgfP7r8oVQf5RH
-        jQYhL5BVFTVjpLC6jnX5mj7/YIRaOAnJZAHVe6CAfHIiVAcZ+F6Ejyd1lc9AoA==
+        bh=AS1ZWbd5j+0/hCYbIZhY/JE+IutzJSfGLOpp28YBBig=;
+        b=ygGWo2pdfir7qDPK1e2kUnQc+7bNFcaKkPRyQIwZqh0hU9fhP2LpLZZ94RsBEdcJp3dqGf
+        fhjKniHfQmW1i/6Hf3s2krwxZlqsOYkmsRXSvq4OfGO0QdqqCA+9aSis60+H9KoKX2bX29
+        /QOr7UAGJJE1Ah+ZS+hQ7PXlGs18DiT9vmwi8txtLrtbS75Hs5SrNqKcKRRyX5SWQNP60s
+        q1XK8abAp2RPiCVHSibAn8bUG2bE+qp/KWkjhjvIoE9l7Uvz5Sh6/t28A2nTK2Pjb3J5oM
+        MHgWerc1wd4gjdfk1CXutmLAYNxxX6BoP6XHcBjwq0LhsW/+8gm/0An1+Pp3IQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601411742;
+        s=2020e; t=1601411743;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=9gno+yzKOdLMuJ9Xz4faTO6ILG5b04BLHvO+JheY75g=;
-        b=3/6QNokwXiifx/c6QT6thjfpjkax60IAdQdnv3k6ZHYGzaNff0p7Z8rVmKlXH8pDtcCSsC
-        4g3HKTgLr4tZQcBA==
-Date:   Tue, 29 Sep 2020 22:25:12 +0200
+        bh=AS1ZWbd5j+0/hCYbIZhY/JE+IutzJSfGLOpp28YBBig=;
+        b=GL+HPAY/AW2UtlqVOo/4HOHWBUAdf47RXLQpvs61rL0Ab5me01y9HTgbPdkzwZVtHlzMa1
+        JK2bUj1GWaqnruBQ==
+Date:   Tue, 29 Sep 2020 22:25:13 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -88,7 +88,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch V2 03/36] net: Add netif_rx_any_context()
+Subject: [patch V2 04/36] net: caif: Use netif_rx_any_context()
 References: <20200929202509.673358734@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -99,66 +99,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Quite some drivers make conditional decisions based on in_interrupt() to
-invoke either netif_rx() or netif_rx_ni().
+The usage of in_interrupt() in non-core code is phased out. Ideally the
+information of the calling context should be passed by the callers or the
+functions be split as appropriate.
 
-Conditionals based on in_interrupt() or other variants of preempt count
-checks in drivers should not exist for various reasons and Linus clearly
-requested to either split the code pathes or pass an argument to the
-common functions which provides the context.
+cfhsi_rx_desc() and cfhsi_rx_pld() use in_interrupt() to distinguish if
+they should use netif_rx() or netif_rx_ni() for receiving packets.
 
-This is obviously the correct solution, but for some of the affected
-drivers this needs a major rewrite due to their convoluted structure.
+The attempt to consolidate the code by passing an arguemnt or by
+distangling it failed due lack of knowledge about this driver and because
+the call chains are hard to follow.
 
-As in_interrupt() usage in drivers needs to be phased out, provide
-netif_rx_any_context() as a stop gap for these drivers.
+As a stop gap use netif_rx_any_context() which invokes the correct code path
+depending on context and confines the in_interrupt() usage to core code.
 
-This confines the in_interrupt() conditional to core code which in turn
-allows to remove the access to this check for driver code and provides one
-central place to do further modifications once the driver maze is cleaned
-up.
-
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
 ---
- include/linux/netdevice.h |    1 +
- net/core/dev.c            |   15 +++++++++++++++
- 2 files changed, 16 insertions(+)
+ drivers/net/caif/caif_hsi.c |   19 ++-----------------
+ 1 file changed, 2 insertions(+), 17 deletions(-)
 
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3785,6 +3785,7 @@ void generic_xdp_tx(struct sk_buff *skb,
- int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb);
- int netif_rx(struct sk_buff *skb);
- int netif_rx_ni(struct sk_buff *skb);
-+int netif_rx_any_context(struct sk_buff *skb);
- int netif_receive_skb(struct sk_buff *skb);
- int netif_receive_skb_core(struct sk_buff *skb);
- void netif_receive_skb_list(struct list_head *head);
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4841,6 +4841,21 @@ int netif_rx_ni(struct sk_buff *skb)
- }
- EXPORT_SYMBOL(netif_rx_ni);
+--- a/drivers/net/caif/caif_hsi.c
++++ b/drivers/net/caif/caif_hsi.c
+@@ -458,15 +458,7 @@ static int cfhsi_rx_desc(struct cfhsi_de
+ 		skb_reset_mac_header(skb);
+ 		skb->dev = cfhsi->ndev;
  
-+int netif_rx_any_context(struct sk_buff *skb)
-+{
-+	/*
-+	 * If invoked from contexts which do not invoke bottom half
-+	 * processing either at return from interrupt or when softrqs are
-+	 * reenabled, use netif_rx_ni() which invokes bottomhalf processing
-+	 * directly.
-+	 */
-+	if (in_interrupt())
-+		return netif_rx(skb);
-+	else
-+		return netif_rx_ni(skb);
-+}
-+EXPORT_SYMBOL(netif_rx_any_context);
-+
- static __latent_entropy void net_tx_action(struct softirq_action *h)
- {
- 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
+-		/*
+-		 * We are in a callback handler and
+-		 * unfortunately we don't know what context we're
+-		 * running in.
+-		 */
+-		if (in_interrupt())
+-			netif_rx(skb);
+-		else
+-			netif_rx_ni(skb);
++		netif_rx_any_context(skb);
+ 
+ 		/* Update network statistics. */
+ 		cfhsi->ndev->stats.rx_packets++;
+@@ -587,14 +579,7 @@ static int cfhsi_rx_pld(struct cfhsi_des
+ 		skb_reset_mac_header(skb);
+ 		skb->dev = cfhsi->ndev;
+ 
+-		/*
+-		 * We're called in callback from HSI
+-		 * and don't know the context we're running in.
+-		 */
+-		if (in_interrupt())
+-			netif_rx(skb);
+-		else
+-			netif_rx_ni(skb);
++		netif_rx_any_context(skb);
+ 
+ 		/* Update network statistics. */
+ 		cfhsi->ndev->stats.rx_packets++;
+
 
