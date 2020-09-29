@@ -2,338 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5524E27D895
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:37:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 291DE27D83E
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:33:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729338AbgI2UhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:37:08 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:49690 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729608AbgI2Ug0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:26 -0400
-Message-Id: <20200929203503.060446484@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601411784;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=ac4cwNzHht6pYIOKy4Bk2lKcaDR2ZzIEslLCjCkaC10=;
-        b=QXyn+4+TMc8Egw+tpk9foFOcszDMKM/4SgPlbOwBrN6EnPM38EmOt00P8KkfO64kXa8j56
-        ZgdzopZcnOPSbHQXb7OqzhWI8dkcjBuWitabGMpvAwUUXZTX8EviISqfa258YELzXUMWpr
-        C5Se7Ngz6CNVt+92MYdGzNComqaoDKXc24cKOm+kkqPxKrKOsvuZEm0/KvZMXA14MLfTnr
-        6isCtxPv4j8g1pQe9WBcO/9z2Qmtdi9TtsxA1rls52sA0FiJNsUJiqmI4X2SvSmoUI/jxB
-        6OQFwIX0gA41ohKniP417sKCG0Kitpwd5IuXIxT+59SpjI0Xh7U8mgGD0PtNKA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601411784;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=ac4cwNzHht6pYIOKy4Bk2lKcaDR2ZzIEslLCjCkaC10=;
-        b=UO2fXulwslbNKOLvQl0j4P3zj16bocME8ija8rnDI260wqCbufqeENyBQKmVIQ33T9alhW
-        0biJrZEWlioTrfCg==
-Date:   Tue, 29 Sep 2020 22:25:45 +0200
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Paul McKenney <paulmck@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Govindarajulu Varadarajan <_govind@gmx.com>,
-        Dave Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-doc@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Shannon Nelson <snelson@pensando.io>,
-        Pensando Drivers <drivers@pensando.io>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Jon Mason <jdmason@kudzu.us>, Daniel Drake <dsd@gentoo.org>,
-        Ulrich Kunitz <kune@deine-taler.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com,
-        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Jouni Malinen <j@w1.fi>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        libertas-dev@lists.infradead.org,
-        Pascal Terjan <pterjan@google.com>,
-        Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch V2 36/36] net: rtlwifi: Replace in_interrupt() for context detection
-References: <20200929202509.673358734@linutronix.de>
+        id S1728999AbgI2UdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:33:14 -0400
+Received: from mail-eopbgr70045.outbound.protection.outlook.com ([40.107.7.45]:64590
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725372AbgI2UdO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 16:33:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IWf4widwgQZKThnlEVLiV5f7hGJwRbTC4U4MU0IGO4bo+fWewmYoKR2JPyqkgZ8DqlOm/ae68lYqoYstOY2fcBg4oAa2P/YBbgqLrJyalH0yRnBv3TGhddj86jLgsI1I1GSQKEYuyAs6IHVdKsCpLhziKTeo+qel5NJx6L1RVmxfdpUVLfSHX4ZDBoexNeDAnHyZN8TpL3DZSPdP6URsnBxxR5GZA2E2d4T+cEXBSRM0bIgTXG0kn2E/ikRM1KSKb0pTD02pP1uLw/WlobAs+4METCwMeo+2sfR5ST2/HJZJBNxB7V0AE9cL/poOfaOWds6fgY7Aw5aeFyjAw0+UTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oafLxV+rIZES4vJ960HZFA33bMs5RePS6TRTo+/am/k=;
+ b=ODu+hkley3Ll1b4GtLlUKwwTCbxoIg4axhFj3eVeCuwTnnubMHMGImtikWW2UGjTJGe+f3ba1jcTKigOxbutMYLRQr/f5w+XAb8GVXI+Rh0Zet69ivCHMP1OGsCCuw3KFQ+hyDzOm12wM85OKpM/73bWzylW32tSYleEDG2E7wqIu1x1J8KnFAL9zs6AKQ+pxQaJ9SGDTAGHcnxzA6DYYu+W99lBGG6gWaGWzKCUAPmZGGGgyVDmgCEz0H2I7SFXX5Ex9uEHvB9EpkTA5tfrS1AzEx6szbZue6UwA8bIDKQu1GKtOvvYnvpD540PnFSUiF2nntjgzke7iAoPdthi8A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oafLxV+rIZES4vJ960HZFA33bMs5RePS6TRTo+/am/k=;
+ b=CYqpG2cSjWijk6Bfd03TugFdC2PuL2dvHWB7C14K4PRcCi5PG7f0+P0m1Mj4oeHzOOIlmR9diT0JRNoY4Hw9qnr98+YZVPLNTspnowVdAUPpZp7FoUxRKPGMpuAnCyZzB9hnbkMPqPAnD/pIIG0u757rzREzSTgPUMB+Ufh6hwQ=
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR04MB6270.eurprd04.prod.outlook.com (2603:10a6:803:fb::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.23; Tue, 29 Sep
+ 2020 20:33:09 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.032; Tue, 29 Sep 2020
+ 20:33:09 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "paulus@samba.org" <paulus@samba.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Radu-andrei Bulie <radu-andrei.bulie@nxp.com>,
+        "fido_max@inbox.ru" <fido_max@inbox.ru>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH v2 devicetree 2/2] powerpc: dts: t1040rdb: add ports for
+ Seville Ethernet switch
+Thread-Topic: [PATCH v2 devicetree 2/2] powerpc: dts: t1040rdb: add ports for
+ Seville Ethernet switch
+Thread-Index: AQHWllQyl+0N41wVskyCvsQrZKm24ql//B+AgAAH04CAAAijAIAABjyA
+Date:   Tue, 29 Sep 2020 20:33:09 +0000
+Message-ID: <20200929203307.ywjtjyogbpo6x6xl@skbuf>
+References: <20200929113209.3767787-1-vladimir.oltean@nxp.com>
+ <20200929113209.3767787-3-vladimir.oltean@nxp.com>
+ <20200929191153.GF3996795@lunn.ch> <20200929193953.rgibttgt6lh5huef@skbuf>
+ <20200929201048.GG3996795@lunn.ch>
+In-Reply-To: <20200929201048.GG3996795@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.229.171]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 349c6484-1201-4940-92b4-08d864b6e0d8
+x-ms-traffictypediagnostic: VI1PR04MB6270:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB6270903BD8B8674E2CA02B2FE0320@VI1PR04MB6270.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +JhrorQJ6bJFJFQQCHgAVp531uWb7xYbu0/KXPcOvgHuXKxOBJtkQdVzls7ayTFnSZah44jEXu7RP1TphVvh4A+yUJfYROppiieoMdAQHe07XHTTSD2pmq4qHB8QWAuGkrKdUYkykEBLNXl/9OioX9p+WrXHUgCaN/fmW/k5qvY9FrcVDhCDsrwBVOiQ2avR15LoZRfQRq6YTKIoykl6fvqoaz9al7gPQUCYyFYssZ/Jc0FXsI68oKmVcZFo5b2ulv164FwX97ufPNRp/MMuAmqZU5Lt8uDGUMzooiPGIYAOxlLkPPlyHbTfGNj1tTAumsxtXpZWGMFbs2K9N96+qY8Is6MxzBneKa6JMo81O55ll4TiFr9ybUE5O/Zp3HuE
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(39860400002)(136003)(376002)(396003)(366004)(346002)(2906002)(83380400001)(478600001)(186003)(54906003)(6506007)(316002)(91956017)(66946007)(66446008)(71200400001)(76116006)(64756008)(86362001)(66476007)(66556008)(26005)(44832011)(1076003)(33716001)(5660300002)(8936002)(4326008)(6916009)(6486002)(8676002)(6512007)(9686003)(7416002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: S+7N17SNMk6kF20BDUqYmkt4LFUJdfi+Q9g9DVoyCPS4tLj24Z2lnJqlSqjt5BmlNvt/z1AnvK+8NaY0Hh1s0itnXhvDTtY1Hs3CZ0FvpYYs1N2CUQnYdjhvk6SL4QopSaTZAF9P0QUUcCV8YQUnZkldAx5yOlHw+S4swQu9H3QpH2ypSe3vGP1I626hsSDwnnG/UpGIbM1a/B6TBT1BqKZBE2Z8JA15PQYuOotWCr/Wiju+KnFWPLGLYdOdlWddrNfFwAltq5mxkdT1HNL1C7HrXaIV8t+/SUH28D6aHypcQ8gBBEYgculKJM/ZPwn22l2kOUTV+FOYQktqBsPgEzXxGSfxUm8fDPETbemWyqlxAcA1/HnPkmgq4m75Yc5kdbfQfmioyajeNyX5CGcGaUEgTy27tffvXVdPzqWfF8VApotkp2BvM2sg9+zojZj6LJKdZoRJLtXY3La3Afapi2igL2sj3b2sK5buizcpMQJKHKwBZ2iGEyu/+C6Zwgm20I4M9OX/5VEyKZVMLH9uVDfyNCuB+MkjJ1ytOMj0lprVgOaNynkroJdLnFR0Y7P36u76/rPF8lZP7eAwjTpHXa7VieAfbUM/lIMrbnk8dtH3HtZbGrivJwRM0pz1gWJcchapc7CYeZI0BIhaxaF59w==
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <BEFB5A9AA2E4394C878894AEF5F98541@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8-bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 349c6484-1201-4940-92b4-08d864b6e0d8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Sep 2020 20:33:09.1060
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: I3IjvYFDoDRo8yPoCopYhIQaVlcFIIXhfaR9pnQMqcqogMn35AnWGl7AS5BGezwZNLYIGYUNwJJgm11Yvf5QWw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6270
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+On Tue, Sep 29, 2020 at 10:10:48PM +0200, Andrew Lunn wrote:
+> On Tue, Sep 29, 2020 at 07:39:54PM +0000, Vladimir Oltean wrote:
+> > On Tue, Sep 29, 2020 at 09:11:53PM +0200, Andrew Lunn wrote:
+> > > > +&seville_port0 {
+> > > > +	managed =3D "in-band-status";
+> > > > +	phy-handle =3D <&phy_qsgmii_0>;
+> > > > +	phy-mode =3D "qsgmii";
+> > > > +	/* ETH4 written on chassis */
+> > > > +	label =3D "swp4";
+> > >
+> > > If ETH4 is on the chassis why not use ETH4?
+> >
+> > You mean all-caps, just like that?
+>
+> Yes.
+>
+> DSA is often used in WiFI access point, etc. The user is not a
+> computer professional. If the WebGUI says ETH4, and the label on the
+> front says ETH4, they probably think the two are the same, and are
+> happy.
+>
+> I have one box which does not have an labels on the front panels, but
+> the industrial sockets for Ethernet are colour coded. So the interface
+> names are red, blue, green, to match the socket colour, and the cable
+> set is also colour coded the same.
+>
+> So long as it is unique, the kernel does not care. So make it easy for
+> the user.
 
-rtl_lps_enter() and rtl_lps_leave() are using in_interrupt() to detect
-whether it is safe to acquire a mutex or if it is required to defer to a
-workqueue.
+It would look like this:
 
-The usage of in_interrupt() in drivers is phased out and Linus clearly
-requested that code which changes behaviour depending on context should
-either be seperated or the context be conveyed in an argument passed by the
-caller, which usually knows the context.
+[root@T1040 ~] # ip link
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DE=
+FAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: dummy0: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNO=
+WN mode DEFAULT group default qlen 1000
+    link/ether de:91:41:1a:92:b8 brd ff:ff:ff:ff:ff:ff
+3: fm1-gb3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mo=
+de DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:68 brd ff:ff:ff:ff:ff:ff
+4: fm1-gb4: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOW=
+N mode DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:88 brd ff:ff:ff:ff:ff:ff
+5: fm1-gb0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1504 qdisc mq state UP mo=
+de DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:08 brd ff:ff:ff:ff:ff:ff
+6: fm1-gb1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mo=
+de DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:28 brd ff:ff:ff:ff:ff:ff
+7: fm1-gb2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOW=
+N mode DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:48 brd ff:ff:ff:ff:ff:ff
+8: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group de=
+fault qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+9: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group def=
+ault qlen 1000
+    link/sit 0.0.0.0 brd 0.0.0.0
+10: ETH4@fm1-gb0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue =
+state UP mode DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:08 brd ff:ff:ff:ff:ff:ff
+11: ETH5@fm1-gb0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueu=
+e state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:08 brd ff:ff:ff:ff:ff:ff
+12: ETH6@fm1-gb0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueu=
+e state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:08 brd ff:ff:ff:ff:ff:ff
+13: ETH7@fm1-gb0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueu=
+e state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:08 brd ff:ff:ff:ff:ff:ff
+14: ETH8@fm1-gb0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueu=
+e state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:08 brd ff:ff:ff:ff:ff:ff
+15: ETH9@fm1-gb0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueu=
+e state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:08 brd ff:ff:ff:ff:ff:ff
+16: ETH10@fm1-gb0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noque=
+ue state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:08 brd ff:ff:ff:ff:ff:ff
+17: ETH11@fm1-gb0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noque=
+ue state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
+    link/ether 00:1f:7b:6a:02:08 brd ff:ff:ff:ff:ff:ff
+[root@T1040 ~] # ip link set ETH4 down
+[   94.942190] mscc_seville ffe800000.ethernet-switch ETH4: Link is Down
+[root@T1040 ~] # ip link set ETH4 up
+[  100.262533] mscc_seville ffe800000.ethernet-switch ETH4: configuring for=
+ inband/qsgmii link mode
+[  100.272122] 8021q: adding VLAN 0 to HW filter on device ETH4
+[  103.333369] mscc_seville ffe800000.ethernet-switch ETH4: Link is Up - 1G=
+bps/Full - flow control rx/tx
+[  103.342697] IPv6: ADDRCONF(NETDEV_CHANGE): ETH4: link becomes ready
 
-in_interrupt() also is only partially correct because it fails to chose the
-correct code path when just preemption or interrupts are disabled.
+I'm not in love, but I guess at least there won't be any doubt if they
+are named like this. I'm sending another revision with these names soon.
 
-Add an argument 'may_block' to both functions and adjust the callers to
-pass the context information.
-
-The following call chains were analyzed to be safe to block:
-
-    rtl_watchdog_wq_callback()
-      rlf_lps_leave/enter()
-
-    rtl_op_suspend()
-      rtl_lps_leave()
-
-    rtl_op_bss_info_changed()
-      rtl_lps_leave()
-
-    rtl_op_sw_scan_start()
-      rtl_lps_leave()
-
-The following call chains were analyzed to be unsafe to block:
-
-    _rtl_pci_interrupt()
-      _rtl_pci_rx_interrupt()
-	  rtl_lps_leave()
-
-    _rtl_pci_interrupt()
-      _rtl_pci_rx_interrupt()
-        rtl_is_special_data()
-	  rtl_lps_leave()
-
-    _rtl_pci_interrupt()
-      _rtl_pci_rx_interrupt()
-        rtl_is_special_data()
-	  setup_special_tx()
-	    rtl_lps_leave()
-
-    _rtl_pci_interrupt()
-      _rtl_pci_tx_isr
-        rtl_lps_leave()
-
-      halbtc_leave_lps()
-        rtl_lps_leave()
-
-This leaves four callers of rtl_lps_enter/leave() where the analyzis
-stopped dead in the maze of several nested pointer based callchains and
-lack of rtlwifi hardware to debug this via tracing:
-
-     halbtc_leave_lps(), halbtc_enter_lps(), halbtc_normal_lps(),
-     halbtc_pre_normal_lps()
-
-These four have been cautionally marked to be unable to block which is the
-safe option, but the rtwifi wizards should be able to clarify that.
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
----
- drivers/net/wireless/realtek/rtlwifi/base.c                   |    8 +++---
- drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c |   12 ++++++----
- drivers/net/wireless/realtek/rtlwifi/core.c                   |    6 ++---
- drivers/net/wireless/realtek/rtlwifi/pci.c                    |    4 +--
- drivers/net/wireless/realtek/rtlwifi/ps.c                     |    8 +++---
- drivers/net/wireless/realtek/rtlwifi/ps.h                     |    4 +--
- 6 files changed, 23 insertions(+), 19 deletions(-)
-
---- a/drivers/net/wireless/realtek/rtlwifi/base.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/base.c
-@@ -1456,7 +1456,7 @@ static void setup_special_tx(struct rtl_
- 	if (rtlpriv->cfg->ops->get_btc_status())
- 		rtlpriv->btcoexist.btc_ops->btc_special_packet_notify(
- 					rtlpriv, type);
--	rtl_lps_leave(hw);
-+	rtl_lps_leave(hw, false);
- 	ppsc->last_delaylps_stamp_jiffies = jiffies;
- }
- 
-@@ -1546,7 +1546,7 @@ u8 rtl_is_special_data(struct ieee80211_
- 
- 		if (is_tx) {
- 			rtlpriv->ra.is_special_data = true;
--			rtl_lps_leave(hw);
-+			rtl_lps_leave(hw, false);
- 			ppsc->last_delaylps_stamp_jiffies = jiffies;
- 
- 			setup_special_tx(rtlpriv, ppsc, PACKET_EAPOL);
-@@ -2147,9 +2147,9 @@ static void rtl_watchdog_wq_callback(str
- 		if (rtlpriv->link_info.num_rx_inperiod +
- 		      rtlpriv->link_info.num_tx_inperiod > 8 ||
- 		    rtlpriv->link_info.num_rx_inperiod > 2)
--			rtl_lps_leave(hw);
-+			rtl_lps_leave(hw, true);
- 		else
--			rtl_lps_enter(hw);
-+			rtl_lps_enter(hw, true);
- 
- label_lps_done:
- 		;
---- a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
-@@ -285,7 +285,8 @@ static void halbtc_leave_lps(struct btc_
- 
- 	btcoexist->bt_info.bt_ctrl_lps = true;
- 	btcoexist->bt_info.bt_lps_on = false;
--	rtl_lps_leave(rtlpriv->mac80211.hw);
-+	/* FIXME: Context is unclear. Is it allowed to block? */
-+	rtl_lps_leave(rtlpriv->mac80211.hw, false);
- }
- 
- static void halbtc_enter_lps(struct btc_coexist *btcoexist)
-@@ -306,7 +307,8 @@ static void halbtc_enter_lps(struct btc_
- 
- 	btcoexist->bt_info.bt_ctrl_lps = true;
- 	btcoexist->bt_info.bt_lps_on = true;
--	rtl_lps_enter(rtlpriv->mac80211.hw);
-+	/* FIXME: Context is unclear. Is it allowed to block? */
-+	rtl_lps_enter(rtlpriv->mac80211.hw, false);
- }
- 
- static void halbtc_normal_lps(struct btc_coexist *btcoexist)
-@@ -317,7 +319,8 @@ static void halbtc_normal_lps(struct btc
- 
- 	if (btcoexist->bt_info.bt_ctrl_lps) {
- 		btcoexist->bt_info.bt_lps_on = false;
--		rtl_lps_leave(rtlpriv->mac80211.hw);
-+		/* FIXME: Context is unclear. Is it allowed to block? */
-+		rtl_lps_leave(rtlpriv->mac80211.hw, false);
- 		btcoexist->bt_info.bt_ctrl_lps = false;
- 	}
- }
-@@ -328,7 +331,8 @@ static void halbtc_pre_normal_lps(struct
- 
- 	if (btcoexist->bt_info.bt_ctrl_lps) {
- 		btcoexist->bt_info.bt_lps_on = false;
--		rtl_lps_leave(rtlpriv->mac80211.hw);
-+		/* FIXME: Context is unclear. Is it allowed to block? */
-+		rtl_lps_leave(rtlpriv->mac80211.hw, false);
- 	}
- }
- 
---- a/drivers/net/wireless/realtek/rtlwifi/core.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/core.c
-@@ -544,7 +544,7 @@ static int rtl_op_suspend(struct ieee802
- 	rtlhal->driver_is_goingto_unload = true;
- 	rtlhal->enter_pnp_sleep = true;
- 
--	rtl_lps_leave(hw);
-+	rtl_lps_leave(hw, true);
- 	rtl_op_stop(hw);
- 	device_set_wakeup_enable(wiphy_dev(hw->wiphy), true);
- 	return 0;
-@@ -1151,7 +1151,7 @@ static void rtl_op_bss_info_changed(stru
- 			mstatus = RT_MEDIA_DISCONNECT;
- 
- 			if (mac->link_state == MAC80211_LINKED)
--				rtl_lps_leave(hw);
-+				rtl_lps_leave(hw, true);
- 			if (ppsc->p2p_ps_info.p2p_ps_mode > P2P_PS_NONE)
- 				rtl_p2p_ps_cmd(hw, P2P_PS_DISABLE);
- 			mac->link_state = MAC80211_NOLINK;
-@@ -1448,7 +1448,7 @@ static void rtl_op_sw_scan_start(struct
- 	}
- 
- 	if (mac->link_state == MAC80211_LINKED) {
--		rtl_lps_leave(hw);
-+		rtl_lps_leave(hw, true);
- 		mac->link_state = MAC80211_LINKED_SCANNING;
- 	} else {
- 		rtl_ips_nic_on(hw);
---- a/drivers/net/wireless/realtek/rtlwifi/pci.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/pci.c
-@@ -621,7 +621,7 @@ static void _rtl_pci_tx_isr(struct ieee8
- 	if (((rtlpriv->link_info.num_rx_inperiod +
- 	      rtlpriv->link_info.num_tx_inperiod) > 8) ||
- 	      rtlpriv->link_info.num_rx_inperiod > 2)
--		rtl_lps_leave(hw);
-+		rtl_lps_leave(hw, false);
- }
- 
- static int _rtl_pci_init_one_rxdesc(struct ieee80211_hw *hw,
-@@ -874,7 +874,7 @@ static void _rtl_pci_rx_interrupt(struct
- 		if (((rtlpriv->link_info.num_rx_inperiod +
- 		      rtlpriv->link_info.num_tx_inperiod) > 8) ||
- 		      rtlpriv->link_info.num_rx_inperiod > 2)
--			rtl_lps_leave(hw);
-+			rtl_lps_leave(hw, false);
- 		skb = new_skb;
- no_new:
- 		if (rtlpriv->use_new_trx_flow) {
---- a/drivers/net/wireless/realtek/rtlwifi/ps.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/ps.c
-@@ -653,22 +653,22 @@ void rtl_lps_change_work_callback(struct
- }
- EXPORT_SYMBOL_GPL(rtl_lps_change_work_callback);
- 
--void rtl_lps_enter(struct ieee80211_hw *hw)
-+void rtl_lps_enter(struct ieee80211_hw *hw, bool may_block)
- {
- 	struct rtl_priv *rtlpriv = rtl_priv(hw);
- 
--	if (!in_interrupt())
-+	if (may_block)
- 		return rtl_lps_enter_core(hw);
- 	rtlpriv->enter_ps = true;
- 	schedule_work(&rtlpriv->works.lps_change_work);
- }
- EXPORT_SYMBOL_GPL(rtl_lps_enter);
- 
--void rtl_lps_leave(struct ieee80211_hw *hw)
-+void rtl_lps_leave(struct ieee80211_hw *hw, bool may_block)
- {
- 	struct rtl_priv *rtlpriv = rtl_priv(hw);
- 
--	if (!in_interrupt())
-+	if (may_block)
- 		return rtl_lps_leave_core(hw);
- 	rtlpriv->enter_ps = false;
- 	schedule_work(&rtlpriv->works.lps_change_work);
---- a/drivers/net/wireless/realtek/rtlwifi/ps.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/ps.h
-@@ -11,8 +11,8 @@ bool rtl_ps_disable_nic(struct ieee80211
- void rtl_ips_nic_off(struct ieee80211_hw *hw);
- void rtl_ips_nic_on(struct ieee80211_hw *hw);
- void rtl_ips_nic_off_wq_callback(struct work_struct *work);
--void rtl_lps_enter(struct ieee80211_hw *hw);
--void rtl_lps_leave(struct ieee80211_hw *hw);
-+void rtl_lps_enter(struct ieee80211_hw *hw, bool may_block);
-+void rtl_lps_leave(struct ieee80211_hw *hw, bool may_block);
- 
- void rtl_lps_set_psmode(struct ieee80211_hw *hw, u8 rt_psmode);
- 
-
+Thanks,
+-Vladimir=
