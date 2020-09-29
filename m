@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C70927D7B4
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:10:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CFCD27D7B7
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:10:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729100AbgI2UKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:10:08 -0400
-Received: from mout.gmx.net ([212.227.17.20]:38675 "EHLO mout.gmx.net"
+        id S1729120AbgI2UKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:10:12 -0400
+Received: from mout.gmx.net ([212.227.17.21]:35797 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728362AbgI2UKH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 16:10:07 -0400
+        id S1728362AbgI2UKK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 16:10:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1601410203;
-        bh=sMWbZD5vC0MdeV/KmHDoQvXbINr4rV74Xjinnuzwk2g=;
+        s=badeba3b8450; t=1601410205;
+        bh=G6HceT0It0VlXbkDsImh0/RDdHE+KDDap8TVy5//N4o=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=gNYgEmzRDDTInOjkXdoGpde/iqR+1Kx38YTPQIoWbWd/wdjdYpkSv/okVDtR73cwc
-         +lklFBGujOPdZBeLj0c6QiZRK/hHW87PdK4TwEQ6vBb0O47dsNYFYJsjD5hF9qynrC
-         umo6Y4zuEksRsBMAhoQw9BaTjr03O4+L6/6JY+NQ=
+        b=dr7ImIkmx8nsv+XPfGIyWN0GxMqnWROpgJjxQJoHIMzdLDaur3BeSRsacm2jAOJQr
+         fjky65m8whlw/WCPopzC/yz9jO8SGl0efHzRcm5/gx5bgL3obK1/HWBR93o4S7TbHv
+         BdiBZs8Z/UEIqLUbEAH5h+EBE9ESknRH+PpFPObQ=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from PC1310.gateway.sonic.net ([173.228.6.223]) by mail.gmx.com
  (mrgmx104 [212.227.17.174]) with ESMTPSA (Nemesis) id
- 1MxlzC-1kdDpk3yne-00zHUZ; Tue, 29 Sep 2020 22:10:03 +0200
+ 1N8XU1-1kRQXU0Idt-014X64; Tue, 29 Sep 2020 22:10:05 +0200
 From:   Kevin Brace <kevinbrace@gmx.com>
 To:     netdev@vger.kernel.org
 Cc:     Kevin Brace <kevinbrace@bracecomputerlab.com>
-Subject: [PATCH net v2 1/4] via-rhine: Fix for the hardware having a reset failure after resume
-Date:   Tue, 29 Sep 2020 13:09:40 -0700
-Message-Id: <20200929200943.3364-2-kevinbrace@gmx.com>
+Subject: [PATCH net v2 2/4] via-rhine: VTunknown1 device is really VT8251 South Bridge
+Date:   Tue, 29 Sep 2020 13:09:41 -0700
+Message-Id: <20200929200943.3364-3-kevinbrace@gmx.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200929200943.3364-1-kevinbrace@gmx.com>
 References: <20200929200943.3364-1-kevinbrace@gmx.com>
-X-Provags-ID: V03:K1:ZoBxt5B4RYaQeAIhB+A0DsymBkQpIY/52GHeJ8JbcKhTos4WxT2
- Ew95bOH0FeGHG7yQAz8yJhcARE/xdkN2u3X0RzJ8kVcGIwk8/wKS9D4e2Wkvo7YeOvotsKz
- mDGCsGHFqYyivx8kyK9sPssuciYdB4CFYZVD0+6YZsGfc8Cu6ax3w03aLxAiEH+eb75Zp/w
- ep9cNQ+7lssnBnmJhTO1Q==
+X-Provags-ID: V03:K1:GW05DPbECrhikbB6dMRNw5XO/0scZtqzrPCR/tViZCEwC2EiZ8G
+ oqec+Qc8MVytU2dOgHWBbe//WuTM9wF3oK4Lidb72KtRrzGMn2hD9YdV7fbX9myrQEtlVxd
+ i31CnlPhuHhMkJrd1R2q5q7YveR5pgiHzZ1jm3foRvkVhl5854sUULL66pS30eajfsEuZL6
+ aVoJ03hhdly3/0y2enbuA==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:PS2zRT3JGNA=:6pCjT912keythJ3VjdZuKo
- yfW4rsIe1RX4pm0rYXLI1CWIiCxJILZ+4V42iAGlf0/c8AAJSEUxfkqfpNVuQUK2iWnu/dPtX
- qE5SJ9q/WiahVXfVUg0fYOFzzKAXk+HLzsdYOZe4tJ6kuKzj3mXqjvH1kZF1o5HrHNpKU72oz
- LQtUvzbod2uzM7nfXot+spWA4e+1Oxm8GUl+hd9Opzgn/H6VW7Ao/QNdcn9HGxKY2qYwGlWja
- ajvNoD+EIdBe3dn9Z8dnyq1YmHY6r/4+K1+5FbQlYIPUNtA1x+xZ6EYVAVeam3H5PRLjFGWmZ
- +X6uz4A9YPZYynbnXfeqMTeQfeNaugCWzqkBIbBrFlkF6F+IG4xt4CVcdH1j0Du1FRtG99J2S
- NwKaiB8iH+j10R4K0S/CNZfE3I9UdKhY94UXhAtrrkaDoQ0d2jgrf1mDrvn97vEYuD27FHZnU
- GJxuFP1phpUJL0AjNUEWqllAj4KIwa88fGc+eSsXgK0EaeVM9mS/Evl/oxTHmBMzEE2RWFhgn
- vElRAVLKJHW8NtGumiEsfFH/wWy3XaBdThJC5dDPP0y0rtQ+ztdN7fIyCh9WP0/Lmvd3AWtBz
- T1wb1/b7XVbILMpmQwfJRYh7PMxt0Qvoitqw4mUnXwJ/CXaR7N63lZQHunbmuC217zkuTiwqz
- 8wJLyzWlZkQXBx+RzPk99pwFVVoZS6tSHccnRfXbvhUyp0mClsO+PyvQDCHcOQLBykbffMY8v
- 4xII7veueckZiyMYs1enuwEWN7At4QHluYvE/Qi9fRteIfQicMkGCKYy8CEPr0tAXC73UiisO
- H7h+mJS1vMw8p8Ivtn3pIkYJmFsGI9sADruwY9ir7nDV+2h8gghtLgW+X7E0nlQLiMq09z1qR
- Lidg/siHt2wEKtC/9hPho5eFTif+cz3rM0aULkI5EvEVeLqIXuQp5bZErPo2H7ByAF8Yttxvx
- xkHr1EaLd4TcU2z7VY6sQq9l24COzxiat/iUhLMvCJp2kTuUn8kJlxejDHDvt857yoWOpW6Ly
- aPECZ7DDc65BfWje2A4brw2M3vfQWn9TcJiNdKGlXsMyqMG2NtcyJcJpe/xeU8K7L0J5Yfz/s
- Y2zZ6faMJr2bcQW6reSCq8IFgNRZOiA39rh52toh1H85ql0vK5GsWYBSF+m3AMua6duziV3U2
- z2xTi7+omGvK0MmkpWOzn1KKHnCWrxVFwSwbSvhFr9D6LP+8RoVcjYPfi3q6lPgDwW191hM9W
- f4AiMwLKk3+das0HtLL7/ngS3wUScJOJPylH4ZQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:lNVK4CllrZA=:bnfIa5PgiSiKUXaNNYT3Uj
+ OkZkEt1yYoSTL0CC17/+Cm8KtHHN4fI6a8KIIt2BUq4nNAyENjpeY8sT5dUWo7lEM4be325Fo
+ 4PqlwdlA8THoTTe318EqTeJXmWNX0IolS/WwYLucUvCQlMRkAvl4wC6Gs5ax1X+vFZWOtkIF9
+ U6t7e/jBuhMksp0ZabNxnn4jTUecKBASxqu89TnE6B+O6c3gLOvCyktvpcs6qcFmBfjZZnxFP
+ zu5bfe3mmhvXKXbIYw0YQZ2cpVMCXcdtwi26otXygaqdK4mqb7fpzhhW1+3iGD1Yn8PmPwe+J
+ NvtWCbjvSvgvlcTBiXWlTnk8K9mZi8faGXDpQbcWFIKwCckxpEkwmNCB6oBfDqnTTelubyJa6
+ rk4K9Y+vB+XtnDno6UokTcFk8QDVOKo58MUtpxTxY1DCAF/MypeEFD625ab4j24IcXWCPsClq
+ GkH9KgLzszICG7yuEul3O98rcNnvR2KwaCOa7AZVvWszYdBhjqDtFZi270g5yuWC7I+4FsICH
+ VMZqr3l24s3AoahQj2QuG1iR3xe2HTCxzVhi3zwpttl3IGee9qW3zuT79IZ7DmME/QTHpuF+E
+ qiajkakMhS0Sbw7AbHG12oLRQ1xZrKCTEjephSWUSxR+JF+yMwwWr+Ge3wTL+9u9nz2zRQ010
+ YypmHIoQhkjNC+CbUmgUjiIFpioKJAGuAMUfIC1Lry9ka0H95xfw8P0r6OcnH8/jyH7P3ujw7
+ sHFYIevQ5//wrkjlptCg4p4PfJmXizaoS/9aVc4c3gh6kjRiFBq5zZMB6YQw4IaI+H3PJFNNs
+ IZGi1nv70doszMfGwGkHj8GuoiZwpBAsaveZ51UzamooLO7pI32j5dlWfthG91CXAz7s3A9Cf
+ CS+W5NYXV0BUXKG8P3wSe7pvUbnLSj2CyZxEemxmaIZwXA4CY61Z48Qg5lfzZ3T+2l2Qdhrj5
+ EUOlGo67NxxQoRp1+tCZUwlDUaPHjcOfyiVH7cnP/peliuEiyP8DFj3wzPe2cFFPpUDJ6D2PP
+ FBxp+jQpDIEiJvSJQZ0HKPYR8jMlYt7F4xAOuGiFsrf1mbr4lSev5gTWodWKobl3Z63toDzuE
+ ndLOMKJ9+TJlwdCmcltzbYdwnZcqKDnHglXaydNrdv5/nkhvJoiTUX2CLy90rdc1V3cVm0qbU
+ hwA4rmxojfJyFm8d5+9Qy3JRdIodC+CsRiOXNxrC4ruct40JjdmsvFYlkKsjjlzj/RXXrddeP
+ StLYQnLcsBBKPUnYWadVR4+YSxEW2LNlsCtSnsw==
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -62,38 +62,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kevin Brace <kevinbrace@bracecomputerlab.com>
 
-In rhine_resume() and rhine_suspend(), the code calls netif_running()
-to see if the network interface is down or not.  If it is down (i.e.,
-netif_running() returning false), they will skip any housekeeping work
-within the function relating to the hardware.  This becomes a problem
-when the hardware resumes from a standby since it is counting on
-rhine_resume() to map its MMIO and power up rest of the hardware.
-Not getting its MMIO remapped and rest of the hardware powered
-up lead to a soft reset failure and hardware disappearance.  The
-solution is to map its MMIO and power up rest of the hardware inside
-rhine_open() before soft reset is to be performed.  This solution was
-verified on ASUS P5V800-VM mainboard's integrated Rhine-II Ethernet
-MAC inside VIA Technologies VT8251 South Bridge.
+The VIA Technologies VT8251 South Bridge's integrated Rhine-II
+Ethernet MAC comes has a PCI revision value of 0x7c.  This was
+verified on ASUS P5V800-VM mainboard.
 
 Signed-off-by: Kevin Brace <kevinbrace@bracecomputerlab.com>
 =2D--
- drivers/net/ethernet/via/via-rhine.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/via/via-rhine.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/via/via-rhine.c b/drivers/net/ethernet/v=
 ia/via-rhine.c
-index 803247d51fe9..a20492da3407 100644
+index a20492da3407..d3a2be2e75d0 100644
 =2D-- a/drivers/net/ethernet/via/via-rhine.c
 +++ b/drivers/net/ethernet/via/via-rhine.c
-@@ -1706,6 +1706,8 @@ static int rhine_open(struct net_device *dev)
- 		goto out_free_ring;
-
- 	alloc_tbufs(dev);
-+	enable_mmio(rp->pioaddr, rp->quirks);
-+	rhine_power_init(dev);
- 	rhine_chip_reset(dev);
- 	rhine_task_enable(rp);
- 	init_registers(dev);
+@@ -243,7 +243,7 @@ enum rhine_revs {
+ 	VT8233		=3D 0x60,	/* Integrated MAC */
+ 	VT8235		=3D 0x74,	/* Integrated MAC */
+ 	VT8237		=3D 0x78,	/* Integrated MAC */
+-	VTunknown1	=3D 0x7C,
++	VT8251		=3D 0x7C,	/* Integrated MAC */
+ 	VT6105		=3D 0x80,
+ 	VT6105_B0	=3D 0x83,
+ 	VT6105L		=3D 0x8A,
 =2D-
 2.17.1
 
