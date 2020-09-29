@@ -2,101 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8DCD27BB46
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 05:06:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9971F27BB71
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 05:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727409AbgI2DGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 23:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
+        id S1727212AbgI2DUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 23:20:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727262AbgI2DGg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 23:06:36 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446DCC061755
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 20:06:35 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id 197so2672808pge.8
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 20:06:35 -0700 (PDT)
+        with ESMTP id S1726396AbgI2DUN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 23:20:13 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C63C061755;
+        Mon, 28 Sep 2020 20:20:13 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id q123so3178699pfb.0;
+        Mon, 28 Sep 2020 20:20:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mVuX2czDvnTWRilSn3aFswsoNUBoS6KX4tiy8h1A9Qw=;
-        b=ZHshiJg0/mg9qtSpABKGUraki7OopSwPbbCCB7/ViavoF+mwI/3Qq8uaADOQxOoQgM
-         BASMCAtDkDoh8hv4FgXLo905HZBynt8cjm6tPwjwxa1wZvSdyjrj2Q9kYICZEF8caEDl
-         5dKIwwTuh3VHfJsq2CEJGs5wf+oievF0nDvS2KdG2PnKCnnAiLj1X4K9AhsD8b5isse0
-         wS+FKhx6LvzJUKtlI6y8+8mlw81VQeaf+OGg5jDzyNY+wDZbOBcri+fZ13d0ME2qaj8C
-         GpygSLf2H1rqL+vi1M64CXlv1WwE7DDg5byc8676h5nA9xC2ChQomggU6RIB/YROMjFS
-         P68A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WtWwqXcT737XkNAJYLifSS4DuG/5VpYPU04Ao8s5w7E=;
+        b=NcfQvZK/j7VM4N/i6Aw82YgiQ8k8gnx2zZFZlY8MTq3Gqp+dDAqg5sEDUXTm3EdmHJ
+         BsAOrOaOHFvUAGMsUzNfwTAeKWUA147DeDsIHNTimbYVa8ieYddUlL9giX54p8qNBmbs
+         nc7MKJnjqLdk4FrL4G2rb5ykx8zxDpASKrkezFYOtAX69Q4ZcRsRlgUhZ9mB2wc5Njbr
+         sOnQqcpwYJRDF3pCA9OG1+NUZW3C36yNvZvYK9VKVMmRE99ouQ7lzRycKCi10k4KR2YN
+         nSveHiFgTa9g2UmyY7v7oaDF9xk3ZFTLy07Gix115BWiqNWa9Z1SxIYk3o0TU/W1IkFt
+         onOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=mVuX2czDvnTWRilSn3aFswsoNUBoS6KX4tiy8h1A9Qw=;
-        b=smixXTHUuqa4XCInPKZPBfD0sl+MvD+shvII95mETKaUKiIxLN409jB5K5vktb/1b4
-         79U7ErRzy9d+BDRTvNyRiZ6CbKRbDe9WAbJGdx1T3PQ3OArot7PdpiTEl5U5KLxkKOjO
-         S7HAA1V9AJ0/vrPFcHCaM5Jtcbhol2PKTbza65HTLOiD6iMYoz9G/NQeKpN/B9h0MPHi
-         UBwg0f42o0wRPytBM06UsuwwIHFTUkYsSZRdx//vQfHfx25NLDXsjraeBYEuVKi1u2pc
-         Q2ZdSaLfKudLEwg2wMdczhdF6oG3laQs4GJMYQ03VM6Oq5FWCK1tEAqV7/w5ZzSl2Vv2
-         vcww==
-X-Gm-Message-State: AOAM531NLCo0ds1Ia/Kj2EAyttGhph08e954V6atQOElVdozZMyNcA1y
-        1rTbvZdS+LayCYSs6sDyyx0mishVzj8=
-X-Google-Smtp-Source: ABdhPJxm7winkpLjic4NVTFBrXDrgUBDttiCEjqqdOZ8Wofd6MqxQ0WZC1WIn2nlIelqtY5cQ3byAQ==
-X-Received: by 2002:a17:902:aa02:b029:d0:cbe1:e7b4 with SMTP id be2-20020a170902aa02b02900d0cbe1e7b4mr2320058plb.37.1601348794817;
-        Mon, 28 Sep 2020 20:06:34 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local (c-24-23-181-79.hsd1.ca.comcast.net. [24.23.181.79])
-        by smtp.googlemail.com with ESMTPSA id z63sm2952845pfz.187.2020.09.28.20.06.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Sep 2020 20:06:34 -0700 (PDT)
-Subject: Re: [PATCH 1/1] Network: support default route metric per interface
-To:     Qingtao Cao <qingtao.cao.au@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, corbet@lwn.net,
-        Qingtao Cao <qingtao.cao@digi.com>,
-        David Leonard <david.leonard@digi.com>
-References: <20200925231159.945-1-qingtao.cao.au@gmail.com>
- <20200925231159.945-2-qingtao.cao.au@gmail.com>
- <609cfeac-5056-1668-46ca-e083aa6b06b5@gmail.com>
- <CAPcThSEqFwTFoU8_9+Wa3GrruGKHVBDD13ZNfeV7C1D4psm4Ew@mail.gmail.com>
- <CAPcThSFGYd=Q95GqifUu8QX4L1J_eJ=H_L5H3wDz2UgMxVbQ3Q@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <b978cadc-935e-8086-0389-60068677843e@gmail.com>
-Date:   Mon, 28 Sep 2020 20:06:32 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        bh=WtWwqXcT737XkNAJYLifSS4DuG/5VpYPU04Ao8s5w7E=;
+        b=EHmfq0jAjAnUDdnPVITFKnjJiVTVIg804E7bLVjV6yhDABlPEWbs8LE5UkwnsUPWK/
+         8WZvaZU68K/cJDA8jR2CzzbH8hEu4DBJQ8jF2KlM2JUtdj3H4fBiTFCLZIV8v2GUSBHf
+         24R36Unpeh2DVyWOMe8ilAJyrAE0bteh1+Q5zPA+PdOKdcRlClUFodpuOJ7xB+GQHVc2
+         eVKIZD1aenP7F1SsvuJihwNJJx8rOsbyN1r4BkT2XVopBkvTmVNOA8HWET0F1GRhDf9F
+         sJYYimkx+ka3qriWR9astromfl3Ewzd/XgchNtGqA3Fwb0g6G6kZ6qkrV2me2iIWF6Ig
+         OgaQ==
+X-Gm-Message-State: AOAM5300bsPaA9MmLco7j2bkrweBkOlzMx2EDPRbIPqF0vaizlTVpdux
+        YpyrCA/GLH5ZhbWcdo7A5Ihf+JYfK9S1zrJr
+X-Google-Smtp-Source: ABdhPJwcJpH2etDJh3eagS4stkeorytvsmW8AU46r8VtIg9WeKdy9oxnZYlbM7ZzG3ipSY/N3kLbrA==
+X-Received: by 2002:a17:902:c404:b029:d2:564a:e41d with SMTP id k4-20020a170902c404b02900d2564ae41dmr2381493plk.23.1601349613020;
+        Mon, 28 Sep 2020 20:20:13 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id r16sm2685292pjo.19.2020.09.28.20.20.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2020 20:20:12 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH bpf-next] libbpf: export bpf_object__reuse_map() to libbpf api
+Date:   Tue, 29 Sep 2020 11:18:45 +0800
+Message-Id: <20200929031845.751054-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-In-Reply-To: <CAPcThSFGYd=Q95GqifUu8QX4L1J_eJ=H_L5H3wDz2UgMxVbQ3Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/28/20 6:54 PM, Qingtao Cao wrote:
-> Hi David,
-> 
-> I understand I can use the "metric" parameter along with the "ip addr
-> add/change" and "ip route add/change" commands to make use of the
-> IFA_RT_PRIORITY attribute to explicitly specify the metric for routes
-> created directly or associated with added addresses, and the network
-> manager should do this.
-> 
-> But what if userspace can bypass the network manager? or forgetting to
-> apply the "metric" parameter for example directly on the CLI?
+Besides bpf_map__reuse_fd(), which could let us reuse existing map fd.
+bpf_object__reuse_map() could let us reuse existing pinned maps, which
+is helpful.
 
-use a sticky note? :-)
+This functions could also be used when we add iproute2 libbpf support,
+so we don't need to re-use or re-implement new functions like
+bpf_obj_get()/bpf_map_selfcheck_pinned() in iproute2.
 
-> 
-> Then the kernel will fall back on the same default metric (such as 0 for
-> ipv4 and IP6_RT_PRIO_ADDRCONF(256) or USER(1024) for ipv6) for ALL
-> interfaces. So I think the def_rt_metric patchset can be regarded as
-> having the kernel providing a mechanism for the uerspace to specify
-> DIFFERENT default routes per interface, which does not necessarily
-> indulge the userspace network manager skipping over specifying the metic
-> explicitly
-> 
-> What do you think?
-> 
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ tools/lib/bpf/libbpf.c | 3 +--
+ tools/lib/bpf/libbpf.h | 1 +
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-I think it is a userspace, configuration management problem.
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 32dc444224d8..e835d7a3437f 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -4033,8 +4033,7 @@ static bool map_is_reuse_compat(const struct bpf_map *map, int map_fd)
+ 		map_info.map_flags == map->def.map_flags);
+ }
+ 
+-static int
+-bpf_object__reuse_map(struct bpf_map *map)
++int bpf_object__reuse_map(struct bpf_map *map)
+ {
+ 	char *cp, errmsg[STRERR_BUFSIZE];
+ 	int err, pin_fd;
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index a750f67a23f6..4b9e615eb393 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -431,6 +431,7 @@ bpf_map__prev(const struct bpf_map *map, const struct bpf_object *obj);
+ /* get/set map FD */
+ LIBBPF_API int bpf_map__fd(const struct bpf_map *map);
+ LIBBPF_API int bpf_map__reuse_fd(struct bpf_map *map, int fd);
++LIBBPF_API int bpf_object__reuse_map(struct bpf_map *map);
+ /* get map definition */
+ LIBBPF_API const struct bpf_map_def *bpf_map__def(const struct bpf_map *map);
+ /* get map name */
+-- 
+2.25.4
+
