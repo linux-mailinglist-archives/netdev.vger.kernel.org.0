@@ -2,135 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38AB127D2CB
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 17:33:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C61627D2D8
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 17:33:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729206AbgI2PdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 11:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46902 "EHLO
+        id S1729584AbgI2Pdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 11:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725497AbgI2PdY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 11:33:24 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9445DC061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 08:33:24 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id ml18so26075pjb.2
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 08:33:24 -0700 (PDT)
+        with ESMTP id S1725497AbgI2Pdx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 11:33:53 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DCAC061755
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 08:33:53 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id x123so4899292pfc.7
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 08:33:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xdnx/+iVzw5VE3vVEpsA7ZB6zMSPgW1lE0R336Q+81c=;
-        b=T0ZPL6SvBmp/0/W/Zgeak6XZz4Ddc94BMa+zXFO5bUnJdGQl5Dmgp+H292pkYvMQFD
-         dSc16DhGI28iMErahoyckp9QRBLzUPLDP3mEh8h0ZxvatuZdZ7QYoZkls7w6Y99xBM5B
-         us18/PYXPJDHlSPqUObdVXr1pw3avUmij67PqjPoFkinxSfFlbRV5RZcTwHqzme8KEt8
-         myyAfJ+KO8cqH+rrV4zgEv4cdOr3CuxjQ7lbmqGTo7/lVGjw5gwELpgCIzHgqSqMjhnh
-         xwOLac1NLzPHm/d94x/iOiSCCs7QzdA21S+vMxsV1/qcWRkOZqp2Cb4uCWVipUzJ4sxR
-         X6Kg==
+        bh=75Wtqt4lyWjdgHnzmMKcLoHHW511LYAPmeWuH2PwaTE=;
+        b=C5XnqBADNg+dHeTJ1FfeSip5kMSFAHCyAGfgQ7dv4+KKFDjI2Y28xOJCX9iZoc5Sqv
+         c7LVRO2keBrZnfp1JH03G3+dW/vTlRo2BT9He2Y/lMegDDAKZZ22E5p97B+/r8H/5F9e
+         cT2k8sIjNSiLSIQSqD/UHqbKoA/3SvrqOiAMr8gP1a+63wseQ7ZSU96BCa0r8QOcwYHM
+         Lw5sZ8pAP+7Fz/KQwJ0I/rF7jI3PuA98gfZGz9Bp3sOEfhU9PUtwAzzm5zLxNUn4Vxp2
+         AcL7FO2yzudI/TEMhUHcP067GDg5rKelzDwiW4M3YgRC8le62OA5HIwX8WBWiV0022vA
+         NP0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=xdnx/+iVzw5VE3vVEpsA7ZB6zMSPgW1lE0R336Q+81c=;
-        b=fshyxwbGwbBmPZ1RU7qVQpX+AVTYfcxuyQTVfuaNvzrfzac55rXVAn6+DwEnXj5FgL
-         7oTgLvC7EnDV7mMlfE2CRebR3LKUTOrRgoYYkoENmolakD40ahXTgF3u0HITovgbl/Cf
-         WE+xaNEhxQkm8hDlc96Iwwl/9QVtpkpRB6og9JzZACWjM3jSoQEdcOellR0Leorl1lVQ
-         2toock9MJFz2G9aT+z4acizlf/VAxq4il4lANPuDZsi8ewFgmrEHVyZ0Nwu5T1x8Hz9G
-         fXyVwy60mNbqRfAgQb74o1mgKxetIqWdyBquDZjyTPsB9OBhtYSOMqMRzUPb/RovOV0e
-         FCuw==
-X-Gm-Message-State: AOAM531VBZMSj+D7pQsVyRgYwx2p7DsgYrL201NSNaOnC3qmu4qC2qpi
-        EWn2KHzJ9Qys/N7SDBsU2+E=
-X-Google-Smtp-Source: ABdhPJwH0nbZHj5mxlFSqwIVAUdz/JesUJ9h0JhepC+9e1e35QZ2YLBPNoHdI5GtcuMZuOvoQMm2/g==
-X-Received: by 2002:a17:90a:9a92:: with SMTP id e18mr4334078pjp.211.1601393604049;
-        Tue, 29 Sep 2020 08:33:24 -0700 (PDT)
+        bh=75Wtqt4lyWjdgHnzmMKcLoHHW511LYAPmeWuH2PwaTE=;
+        b=AiSuBrEUcmOdbmqnv8he9OoC11FVmwteCj+jbOYPFmAus/IxtAQHIHdDd6RHcPFkTt
+         yZjr7h2ZF3GF16cnx2TvEqMqQS0oKFcahIlckrTpvHWI7fQLLScekxG5w9M/0FJXC8ST
+         id2RtzF7HHDVg/BW22EAFa2BocdvrHgJILBi6U7zPDCB5ypmEUK15s01O1gnrt3TlO/G
+         oleSVQrQuOF6ry7rePM+B3SIq43RKThSs/sDa7qBAlvIe8AazatcyEcENiaIIU5hSA0l
+         SAQuB2RrhkbBxuwB8Yyb9D4ITbsV22RJ5PRUTQrr1m5BxwqOzENLWTlBD1Wc80g5hRzC
+         WnFw==
+X-Gm-Message-State: AOAM533zvNsV7Iv9ty4nzS4leGHX4+ZC624JLwTAHIjsMY0949UTIhrq
+        7LD1C/hSsWuwwcBNp6MkSLQ=
+X-Google-Smtp-Source: ABdhPJyu7HSjZC0Saw9lgl+CiUBOYGDPIogF2ZsAMx3feb5S4Q7t025ZdetfPMpFivF258zmoRIefA==
+X-Received: by 2002:a65:5185:: with SMTP id h5mr3762091pgq.37.1601393633049;
+        Tue, 29 Sep 2020 08:33:53 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local (c-24-23-181-79.hsd1.ca.comcast.net. [24.23.181.79])
-        by smtp.googlemail.com with ESMTPSA id e16sm5086801pgv.81.2020.09.29.08.33.22
+        by smtp.googlemail.com with ESMTPSA id ca6sm5016479pjb.53.2020.09.29.08.33.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Sep 2020 08:33:23 -0700 (PDT)
-Subject: Re: [iproute2-next v4 0/2] devlink: add flash update overwrite mask
-To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@mellanox.com>, Jakub Kicinski <kuba@kernel.org>
-References: <20200909222842.33952-1-jacob.e.keller@intel.com>
+        Tue, 29 Sep 2020 08:33:52 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] ss: add support for xdp statistics
+To:     Ciara Loftus <ciara.loftus@intel.com>, netdev@vger.kernel.org
+Cc:     bjorn.topel@intel.com
+References: <20200924070327.28182-1-ciara.loftus@intel.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <198b8a34-49de-88e8-629c-408e592f42a6@gmail.com>
-Date:   Tue, 29 Sep 2020 08:33:21 -0700
+Message-ID: <6f7983e8-776f-4d8a-2f25-a03f15ce7d6b@gmail.com>
+Date:   Tue, 29 Sep 2020 08:33:50 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200909222842.33952-1-jacob.e.keller@intel.com>
+In-Reply-To: <20200924070327.28182-1-ciara.loftus@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/9/20 3:28 PM, Jacob Keller wrote:
-> This series implements the iproute2 side of the new
-> DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK.
+On 9/24/20 12:03 AM, Ciara Loftus wrote:
+> The patch exposes statistics for XDP sockets which can be useful for
+> debugging purposes.
 > 
-> This attribute is used to allow userspace to indicate what a device should
-> do with various subsections of a flash component when updating. For example,
-> a flash component might contain vital data such as the PCIe serial number or
-> configuration fields such as settings that control device bootup.
+> The stats exposed are:
+>     rx dropped
+>     rx invalid
+>     rx queue full
+>     rx fill ring empty
+>     tx invalid
+>     tx ring empty
 > 
-> The overwrite mask allows the user to specify what behavior they want when
-> performing an update. If nothing is specified, then the update should
-> preserve all vital fields and configuration.
-> 
-> By specifying "overwrite identifiers" the user requests that the flash
-> update should overwrite any identifiers in the updated flash component with
-> identifier values from the provided flash image.
-> 
->   $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite identifiers
-> 
-> By specifying "overwrite settings" the user requests that the flash update
-> should overwrite any settings in the updated flash component with setting
-> values from the provided flash image.
-> 
->   $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite settings
-> 
-> These options may be combined, in which case both subsections will be sent
-> in the overwrite mask, resulting in a request to overwrite all settings and
-> identifiers stored in the updated flash components.
-> 
->   $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite settings overwrite identifiers
-> 
-> Cc: Jiri Pirko <jiri@mellanox.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> 
-> Jacob Keller (2):
->   Update devlink header for overwrite mask attribute
->   devlink: support setting the overwrite mask
-> 
->  devlink/devlink.c            | 48 ++++++++++++++++++++++++++++++++++--
->  include/uapi/linux/devlink.h | 27 ++++++++++++++++++++
->  2 files changed, 73 insertions(+), 2 deletions(-)
-> 
-> 
-> base-commit: ad34d5fadb0b4699b0fe136fc408685e26bb1b43
+> Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+> ---
+>  misc/ss.c | 22 +++++++++++++++++++++-
+>  1 file changed, 21 insertions(+), 1 deletion(-)
 > 
 
-Jacob:
+applied to iproute2-next. Thanks,
 
-Compile fails on Ubuntu 20.04:
-
-devlink
-    CC       devlink.o
-In file included from devlink.c:29:
-devlink.c: In function ‘flash_overwrite_section_get’:
-../include/uapi/linux/devlink.h:249:42: warning: implicit declaration of
-function ‘_BITUL’ [-Wimplicit-function-declaration]
-  249 | #define DEVLINK_FLASH_OVERWRITE_SETTINGS
-_BITUL(DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT)
-      |                                          ^~~~~~
-devlink.c:1293:12: note: in expansion of macro
-‘DEVLINK_FLASH_OVERWRITE_SETTINGS’
- 1293 |   *mask |= DEVLINK_FLASH_OVERWRITE_SETTINGS;
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    CC       mnlg.o
-    LINK     devlink
-
-I updated headers in -next; please redo the patch set and roll the cover
-letter details in patch 2.
