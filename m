@@ -2,210 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C3EE27BA98
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 04:03:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DA4F27BA9F
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 04:05:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727262AbgI2CDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 22:03:46 -0400
-Received: from mga01.intel.com ([192.55.52.88]:43511 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726421AbgI2CDq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 22:03:46 -0400
-IronPort-SDR: upjCOSuUhLrYxsVWHASNGn7hLijgpgtZvY5eUmI1dTiC2cpevlNPAiAUSdEvuWo4+D/rsxSyuD
- 9ad5RnxYf3fw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="180224665"
-X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; 
-   d="scan'208";a="180224665"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 14:50:30 -0700
-IronPort-SDR: oIE9c1IJ0e+/i2gBYijDirNY6MGsboqjhQq1PaGkoOhH8ItvG3rTxCHnWqFUBQFmUpZA8emma6
- 03zjfrMzJO+w==
-X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; 
-   d="scan'208";a="311962135"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 14:50:28 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com, Aaron Brown <aaron.f.brown@intel.com>
-Subject: [net-next v2 15/15] e1000e: Add support for Meteor Lake
-Date:   Mon, 28 Sep 2020 14:50:18 -0700
-Message-Id: <20200928215018.952991-16-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200928215018.952991-1-anthony.l.nguyen@intel.com>
-References: <20200928215018.952991-1-anthony.l.nguyen@intel.com>
+        id S1727338AbgI2CFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 22:05:46 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8016 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726961AbgI2CFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 22:05:46 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08T25jT0024140
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 19:05:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=KNxveQPaHGG1pCEoyZRCMLeEvUZuqztPobe7iMtIl6Q=;
+ b=rX0tl8naBpm7/bpWhrKQI6x1JLcr9ZmG4mGro6dEYA+j1K/3yCpnlU+cXTwjZuXXb2sG
+ aL4sSNNESBK7XQlLYnAD/18JD1ex0jz4Pufhh26Kb+thy5kSKY0YUJF9yG4buEbLkkVo
+ XhhRxCcti/WyOJzbjoxzg0vUAUxjUd3DjoY= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 33t3cpajy7-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 19:05:45 -0700
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 28 Sep 2020 19:05:37 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 8F6B72EC773C; Mon, 28 Sep 2020 19:05:36 -0700 (PDT)
+From:   Andrii Nakryiko <andriin@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH v3 bpf-next 0/3] libbpf: BTF writer APIs
+Date:   Mon, 28 Sep 2020 19:05:29 -0700
+Message-ID: <20200929020533.711288-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-29_01:2020-09-28,2020-09-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ malwarescore=0 clxscore=1015 impostorscore=0 mlxlogscore=343
+ suspectscore=8 priorityscore=1501 lowpriorityscore=0 spamscore=0
+ adultscore=0 mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009290019
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+This patch set introduces a new set of BTF APIs to libbpf that allow to
+conveniently produce BTF types and strings. These APIs will allow libbpf =
+to do
+more intrusive modifications of program's BTF (by rewriting it, at least =
+as of
+right now), which is necessary for the upcoming libbpf static linking. Bu=
+t
+they are complete and generic, so can be adopted by anyone who has a need=
+ to
+produce BTF type information.
 
-Add devices IDs for the next LOM generations that will be
-available on the next Intel Client platform (Meteor Lake)
-This patch provides the initial support for these devices
+One such example outside of libbpf is pahole, which was actually converte=
+d to
+these APIs (locally, pending landing of these changes in libbpf) complete=
+ly
+and shows reduction in amount of custom pahole code necessary and brings =
+nice
+savings in memory usage (about 370MB reduction at peak for my kernel
+configuration) and even BTF deduplication times (one second reduction,
+23.7s -> 22.7s). Memory savings are due to avoiding pahole's own copy of
+"uncompressed" raw BTF data. Time reduction comes from faster string
+search and deduplication by relying on hashmap instead of BST used by pah=
+ole's
+own code. Consequently, these APIs are already tested on real-world
+complicated kernel BTF, but there is also pretty extensive selftest doing
+extra validations.
 
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/e1000e/ethtool.c | 2 ++
- drivers/net/ethernet/intel/e1000e/hw.h      | 5 +++++
- drivers/net/ethernet/intel/e1000e/ich8lan.c | 7 +++++++
- drivers/net/ethernet/intel/e1000e/netdev.c  | 6 ++++++
- drivers/net/ethernet/intel/e1000e/ptp.c     | 1 +
- 5 files changed, 21 insertions(+)
+Selftests in patch #3 add a set of generic ASSERT_{EQ,STREQ,ERR,OK} macro=
+s
+that are useful for writing shorter and less repretitive selftests. I dec=
+ided
+to keep them local to that selftest for now, but if they prove to be usef=
+ul in
+more contexts we should move them to test_progs.h. And few more (e.g.,
+inequality tests) macros are probably necessary to have a more complete s=
+et.
 
-diff --git a/drivers/net/ethernet/intel/e1000e/ethtool.c b/drivers/net/ethernet/intel/e1000e/ethtool.c
-index a8fc9208382c..03215b0aee4b 100644
---- a/drivers/net/ethernet/intel/e1000e/ethtool.c
-+++ b/drivers/net/ethernet/intel/e1000e/ethtool.c
-@@ -895,6 +895,7 @@ static int e1000_reg_test(struct e1000_adapter *adapter, u64 *data)
- 	case e1000_pch_cnp:
- 	case e1000_pch_tgp:
- 	case e1000_pch_adp:
-+	case e1000_pch_mtp:
- 		mask |= BIT(18);
- 		break;
- 	default:
-@@ -1560,6 +1561,7 @@ static void e1000_loopback_cleanup(struct e1000_adapter *adapter)
- 	case e1000_pch_cnp:
- 	case e1000_pch_tgp:
- 	case e1000_pch_adp:
-+	case e1000_pch_mtp:
- 		fext_nvm11 = er32(FEXTNVM11);
- 		fext_nvm11 &= ~E1000_FEXTNVM11_DISABLE_MULR_FIX;
- 		ew32(FEXTNVM11, fext_nvm11);
-diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
-index b1447221669e..69a2329ea463 100644
---- a/drivers/net/ethernet/intel/e1000e/hw.h
-+++ b/drivers/net/ethernet/intel/e1000e/hw.h
-@@ -102,6 +102,10 @@ struct e1000_hw;
- #define E1000_DEV_ID_PCH_ADP_I219_V16		0x1A1F
- #define E1000_DEV_ID_PCH_ADP_I219_LM17		0x1A1C
- #define E1000_DEV_ID_PCH_ADP_I219_V17		0x1A1D
-+#define E1000_DEV_ID_PCH_MTP_I219_LM18		0x550A
-+#define E1000_DEV_ID_PCH_MTP_I219_V18		0x550B
-+#define E1000_DEV_ID_PCH_MTP_I219_LM19		0x550C
-+#define E1000_DEV_ID_PCH_MTP_I219_V19		0x550D
- 
- #define E1000_REVISION_4	4
- 
-@@ -127,6 +131,7 @@ enum e1000_mac_type {
- 	e1000_pch_cnp,
- 	e1000_pch_tgp,
- 	e1000_pch_adp,
-+	e1000_pch_mtp,
- };
- 
- enum e1000_media_type {
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index ded74304e8cf..9aa6fad8ed47 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -320,6 +320,7 @@ static s32 e1000_init_phy_workarounds_pchlan(struct e1000_hw *hw)
- 	case e1000_pch_cnp:
- 	case e1000_pch_tgp:
- 	case e1000_pch_adp:
-+	case e1000_pch_mtp:
- 		if (e1000_phy_is_accessible_pchlan(hw))
- 			break;
- 
-@@ -464,6 +465,7 @@ static s32 e1000_init_phy_params_pchlan(struct e1000_hw *hw)
- 		case e1000_pch_cnp:
- 		case e1000_pch_tgp:
- 		case e1000_pch_adp:
-+		case e1000_pch_mtp:
- 			/* In case the PHY needs to be in mdio slow mode,
- 			 * set slow mode and try to get the PHY id again.
- 			 */
-@@ -708,6 +710,7 @@ static s32 e1000_init_mac_params_ich8lan(struct e1000_hw *hw)
- 	case e1000_pch_cnp:
- 	case e1000_pch_tgp:
- 	case e1000_pch_adp:
-+	case e1000_pch_mtp:
- 	case e1000_pchlan:
- 		/* check management mode */
- 		mac->ops.check_mng_mode = e1000_check_mng_mode_pchlan;
-@@ -1648,6 +1651,7 @@ static s32 e1000_get_variants_ich8lan(struct e1000_adapter *adapter)
- 	case e1000_pch_cnp:
- 	case e1000_pch_tgp:
- 	case e1000_pch_adp:
-+	case e1000_pch_mtp:
- 		rc = e1000_init_phy_params_pchlan(hw);
- 		break;
- 	default:
-@@ -2102,6 +2106,7 @@ static s32 e1000_sw_lcd_config_ich8lan(struct e1000_hw *hw)
- 	case e1000_pch_cnp:
- 	case e1000_pch_tgp:
- 	case e1000_pch_adp:
-+	case e1000_pch_mtp:
- 		sw_cfg_mask = E1000_FEXTNVM_SW_CONFIG_ICH8M;
- 		break;
- 	default:
-@@ -3145,6 +3150,7 @@ static s32 e1000_valid_nvm_bank_detect_ich8lan(struct e1000_hw *hw, u32 *bank)
- 	case e1000_pch_cnp:
- 	case e1000_pch_tgp:
- 	case e1000_pch_adp:
-+	case e1000_pch_mtp:
- 		bank1_offset = nvm->flash_bank_size;
- 		act_offset = E1000_ICH_NVM_SIG_WORD;
- 
-@@ -4090,6 +4096,7 @@ static s32 e1000_validate_nvm_checksum_ich8lan(struct e1000_hw *hw)
- 	case e1000_pch_cnp:
- 	case e1000_pch_tgp:
- 	case e1000_pch_adp:
-+	case e1000_pch_mtp:
- 		word = NVM_COMPAT;
- 		valid_csum_mask = NVM_COMPAT_VALID_CSUM;
- 		break;
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 99f4ec9b5696..b30f00891c03 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -3587,6 +3587,7 @@ s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca)
- 	case e1000_pch_cnp:
- 	case e1000_pch_tgp:
- 	case e1000_pch_adp:
-+	case e1000_pch_mtp:
- 		if (er32(TSYNCRXCTL) & E1000_TSYNCRXCTL_SYSCFI) {
- 			/* Stable 24MHz frequency */
- 			incperiod = INCPERIOD_24MHZ;
-@@ -4104,6 +4105,7 @@ void e1000e_reset(struct e1000_adapter *adapter)
- 	case e1000_pch_cnp:
- 	case e1000_pch_tgp:
- 	case e1000_pch_adp:
-+	case e1000_pch_mtp:
- 		fc->refresh_time = 0xFFFF;
- 		fc->pause_time = 0xFFFF;
- 
-@@ -7877,6 +7879,10 @@ static const struct pci_device_id e1000_pci_tbl[] = {
- 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V16), board_pch_cnp },
- 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM17), board_pch_cnp },
- 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V17), board_pch_cnp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM18), board_pch_cnp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V18), board_pch_cnp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM19), board_pch_cnp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V19), board_pch_cnp },
- 
- 	{ 0, 0, 0, 0, 0, 0, 0 }	/* terminate list */
- };
-diff --git a/drivers/net/ethernet/intel/e1000e/ptp.c b/drivers/net/ethernet/intel/e1000e/ptp.c
-index 8d21bcb427ec..f3f671311855 100644
---- a/drivers/net/ethernet/intel/e1000e/ptp.c
-+++ b/drivers/net/ethernet/intel/e1000e/ptp.c
-@@ -297,6 +297,7 @@ void e1000e_ptp_init(struct e1000_adapter *adapter)
- 	case e1000_pch_cnp:
- 	case e1000_pch_tgp:
- 	case e1000_pch_adp:
-+	case e1000_pch_mtp:
- 		if ((hw->mac.type < e1000_pch_lpt) ||
- 		    (er32(TSYNCRXCTL) & E1000_TSYNCRXCTL_SYSCFI)) {
- 			adapter->ptp_clock_info.max_adj = 24000000 - 1;
--- 
-2.26.2
+Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+
+v2->v3:
+  - resending original patches #7-9 as patches #1-3 due to merge conflict=
+;
+
+v1->v2:
+  - fixed comments (John);
+  - renamed btf__append_xxx() into btf__add_xxx() (Alexei);
+  - added btf__find_str() in addition to btf__add_str();
+  - btf__new_empty() now sets kernel FD to -1 initially.
+
+Andrii Nakryiko (3):
+  libbpf: add BTF writing APIs
+  libbpf: add btf__str_by_offset() as a more generic variant of
+    name_by_offset
+  selftests/bpf: test BTF writing APIs
+
+ tools/lib/bpf/btf.c                           | 796 +++++++++++++++++-
+ tools/lib/bpf/btf.h                           |  39 +
+ tools/lib/bpf/libbpf.map                      |  20 +
+ .../selftests/bpf/prog_tests/btf_write.c      | 278 ++++++
+ 4 files changed, 1128 insertions(+), 5 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/btf_write.c
+
+--=20
+2.24.1
 
