@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E02F27D878
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:37:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5524E27D895
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:37:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729680AbgI2Ugj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:36:39 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:50286 "EHLO
+        id S1729338AbgI2UhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:37:08 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:49690 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729591AbgI2UgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:25 -0400
-Message-Id: <20200929203502.960332937@linutronix.de>
+        with ESMTP id S1729608AbgI2Ug0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:26 -0400
+Message-Id: <20200929203503.060446484@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601411782;
+        s=2020; t=1601411784;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=BzNYl/5Di+kyHWokGedFIzx/rP561B9MjZOC0kJ9vSg=;
-        b=pIrJK/4QaWydDe1lhnPEEPW8lUPHEJNhW6tvZd6cuCiHXNtLNxly31CrpWbRWeA1Nqi4ev
-        cHB3rU40dVT0tHBnGgPv/quj3XhHz3bg+yn7amm6pjqCquUOYhArLzM2Vv3ARQsAL6MdFB
-        kEbsIIqhi+nm0tONUXFZ18PIdDHC5Y0/pmkzlXbEhyqpUo8Upq3KsTEXi/65zEMfBNYd7e
-        lkYaULJsxmzQMCYn6PK6FXILSEf5BWP03FLdCEO9HUCeTtyLp4bsnja4XpMRcsxki/z2Ji
-        68ELnBK6wMaaIqG6D6QKXvnjD0xRh2x/hAF83UKqhPWdVnkMtLhcm6Mg9ELhvw==
+        bh=ac4cwNzHht6pYIOKy4Bk2lKcaDR2ZzIEslLCjCkaC10=;
+        b=QXyn+4+TMc8Egw+tpk9foFOcszDMKM/4SgPlbOwBrN6EnPM38EmOt00P8KkfO64kXa8j56
+        ZgdzopZcnOPSbHQXb7OqzhWI8dkcjBuWitabGMpvAwUUXZTX8EviISqfa258YELzXUMWpr
+        C5Se7Ngz6CNVt+92MYdGzNComqaoDKXc24cKOm+kkqPxKrKOsvuZEm0/KvZMXA14MLfTnr
+        6isCtxPv4j8g1pQe9WBcO/9z2Qmtdi9TtsxA1rls52sA0FiJNsUJiqmI4X2SvSmoUI/jxB
+        6OQFwIX0gA41ohKniP417sKCG0Kitpwd5IuXIxT+59SpjI0Xh7U8mgGD0PtNKA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601411782;
+        s=2020e; t=1601411784;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=BzNYl/5Di+kyHWokGedFIzx/rP561B9MjZOC0kJ9vSg=;
-        b=8qgu4ybn3DiYWS5CupcAxsENTbKhc+qvsJKQRLzHtLMXb63EA2V97Ykwydzc3ABFl2jstp
-        E3mOFBY4PzuNPpCA==
-Date:   Tue, 29 Sep 2020 22:25:44 +0200
+        bh=ac4cwNzHht6pYIOKy4Bk2lKcaDR2ZzIEslLCjCkaC10=;
+        b=UO2fXulwslbNKOLvQl0j4P3zj16bocME8ija8rnDI260wqCbufqeENyBQKmVIQ33T9alhW
+        0biJrZEWlioTrfCg==
+Date:   Tue, 29 Sep 2020 22:25:45 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -85,7 +85,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch V2 35/36] net: rtlwifi: Remove in_interrupt() from debug macro
+Subject: [patch V2 36/36] net: rtlwifi: Replace in_interrupt() for context detection
 References: <20200929202509.673358734@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -96,84 +96,244 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-The usage of in_interrupt() in drivers in is phased out.
+rtl_lps_enter() and rtl_lps_leave() are using in_interrupt() to detect
+whether it is safe to acquire a mutex or if it is required to defer to a
+workqueue.
 
-rtl_dbg() a printk based debug aid is using in_interrupt() in the
-underlying C function _rtl_dbg_out() which is almost identical to
-_rtl_dbg_print(). The only difference is the printout of in_interrupt().
+The usage of in_interrupt() in drivers is phased out and Linus clearly
+requested that code which changes behaviour depending on context should
+either be seperated or the context be conveyed in an argument passed by the
+caller, which usually knows the context.
 
-The decoding of in_interrupt() as hexvalue is non-trivial and aside of
-being phased out for driver usage the return value is just by chance the
-masked preempt count value and not a boolean.
+in_interrupt() also is only partially correct because it fails to chose the
+correct code path when just preemption or interrupts are disabled.
 
-These home brewn printk debug aids are tedious to work with and provide
-only minimal context.  They should be replaced by trace_printk() or a debug
-tracepoint which automatically records all context information.
+Add an argument 'may_block' to both functions and adjust the callers to
+pass the context information.
 
-To make progress on the in_interrupt() cleanup, make rtl_dbg() use
-_rtl_dbg_print() and remove _rtl_dbg_out().
+The following call chains were analyzed to be safe to block:
+
+    rtl_watchdog_wq_callback()
+      rlf_lps_leave/enter()
+
+    rtl_op_suspend()
+      rtl_lps_leave()
+
+    rtl_op_bss_info_changed()
+      rtl_lps_leave()
+
+    rtl_op_sw_scan_start()
+      rtl_lps_leave()
+
+The following call chains were analyzed to be unsafe to block:
+
+    _rtl_pci_interrupt()
+      _rtl_pci_rx_interrupt()
+	  rtl_lps_leave()
+
+    _rtl_pci_interrupt()
+      _rtl_pci_rx_interrupt()
+        rtl_is_special_data()
+	  rtl_lps_leave()
+
+    _rtl_pci_interrupt()
+      _rtl_pci_rx_interrupt()
+        rtl_is_special_data()
+	  setup_special_tx()
+	    rtl_lps_leave()
+
+    _rtl_pci_interrupt()
+      _rtl_pci_tx_isr
+        rtl_lps_leave()
+
+      halbtc_leave_lps()
+        rtl_lps_leave()
+
+This leaves four callers of rtl_lps_enter/leave() where the analyzis
+stopped dead in the maze of several nested pointer based callchains and
+lack of rtlwifi hardware to debug this via tracing:
+
+     halbtc_leave_lps(), halbtc_enter_lps(), halbtc_normal_lps(),
+     halbtc_pre_normal_lps()
+
+These four have been cautionally marked to be unable to block which is the
+safe option, but the rtwifi wizards should be able to clarify that.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Acked-by: Kalle Valo <kvalo@codeaurora.org>
 ---
-V2: Adopted to the new names of the same thing.
----
- drivers/net/wireless/realtek/rtlwifi/debug.c |   20 --------------------
- drivers/net/wireless/realtek/rtlwifi/debug.h |    8 ++------
- 2 files changed, 2 insertions(+), 26 deletions(-)
+ drivers/net/wireless/realtek/rtlwifi/base.c                   |    8 +++---
+ drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c |   12 ++++++----
+ drivers/net/wireless/realtek/rtlwifi/core.c                   |    6 ++---
+ drivers/net/wireless/realtek/rtlwifi/pci.c                    |    4 +--
+ drivers/net/wireless/realtek/rtlwifi/ps.c                     |    8 +++---
+ drivers/net/wireless/realtek/rtlwifi/ps.h                     |    4 +--
+ 6 files changed, 23 insertions(+), 19 deletions(-)
 
---- a/drivers/net/wireless/realtek/rtlwifi/debug.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/debug.c
-@@ -8,26 +8,6 @@
- #include <linux/vmalloc.h>
+--- a/drivers/net/wireless/realtek/rtlwifi/base.c
++++ b/drivers/net/wireless/realtek/rtlwifi/base.c
+@@ -1456,7 +1456,7 @@ static void setup_special_tx(struct rtl_
+ 	if (rtlpriv->cfg->ops->get_btc_status())
+ 		rtlpriv->btcoexist.btc_ops->btc_special_packet_notify(
+ 					rtlpriv, type);
+-	rtl_lps_leave(hw);
++	rtl_lps_leave(hw, false);
+ 	ppsc->last_delaylps_stamp_jiffies = jiffies;
+ }
  
- #ifdef CONFIG_RTLWIFI_DEBUG
--void _rtl_dbg_out(struct rtl_priv *rtlpriv, u64 comp, int level,
--		  const char *fmt, ...)
--{
--	if (unlikely((comp & rtlpriv->cfg->mod_params->debug_mask) &&
--		     level <= rtlpriv->cfg->mod_params->debug_level)) {
--		struct va_format vaf;
--		va_list args;
--
--		va_start(args, fmt);
--
--		vaf.fmt = fmt;
--		vaf.va = &args;
--
--		pr_info(":<%lx> %pV", in_interrupt(), &vaf);
--
--		va_end(args);
--	}
--}
--EXPORT_SYMBOL_GPL(_rtl_dbg_out);
--
- void _rtl_dbg_print(struct rtl_priv *rtlpriv, u64 comp, int level,
- 		    const char *fmt, ...)
+@@ -1546,7 +1546,7 @@ u8 rtl_is_special_data(struct ieee80211_
+ 
+ 		if (is_tx) {
+ 			rtlpriv->ra.is_special_data = true;
+-			rtl_lps_leave(hw);
++			rtl_lps_leave(hw, false);
+ 			ppsc->last_delaylps_stamp_jiffies = jiffies;
+ 
+ 			setup_special_tx(rtlpriv, ppsc, PACKET_EAPOL);
+@@ -2147,9 +2147,9 @@ static void rtl_watchdog_wq_callback(str
+ 		if (rtlpriv->link_info.num_rx_inperiod +
+ 		      rtlpriv->link_info.num_tx_inperiod > 8 ||
+ 		    rtlpriv->link_info.num_rx_inperiod > 2)
+-			rtl_lps_leave(hw);
++			rtl_lps_leave(hw, true);
+ 		else
+-			rtl_lps_enter(hw);
++			rtl_lps_enter(hw, true);
+ 
+ label_lps_done:
+ 		;
+--- a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
++++ b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
+@@ -285,7 +285,8 @@ static void halbtc_leave_lps(struct btc_
+ 
+ 	btcoexist->bt_info.bt_ctrl_lps = true;
+ 	btcoexist->bt_info.bt_lps_on = false;
+-	rtl_lps_leave(rtlpriv->mac80211.hw);
++	/* FIXME: Context is unclear. Is it allowed to block? */
++	rtl_lps_leave(rtlpriv->mac80211.hw, false);
+ }
+ 
+ static void halbtc_enter_lps(struct btc_coexist *btcoexist)
+@@ -306,7 +307,8 @@ static void halbtc_enter_lps(struct btc_
+ 
+ 	btcoexist->bt_info.bt_ctrl_lps = true;
+ 	btcoexist->bt_info.bt_lps_on = true;
+-	rtl_lps_enter(rtlpriv->mac80211.hw);
++	/* FIXME: Context is unclear. Is it allowed to block? */
++	rtl_lps_enter(rtlpriv->mac80211.hw, false);
+ }
+ 
+ static void halbtc_normal_lps(struct btc_coexist *btcoexist)
+@@ -317,7 +319,8 @@ static void halbtc_normal_lps(struct btc
+ 
+ 	if (btcoexist->bt_info.bt_ctrl_lps) {
+ 		btcoexist->bt_info.bt_lps_on = false;
+-		rtl_lps_leave(rtlpriv->mac80211.hw);
++		/* FIXME: Context is unclear. Is it allowed to block? */
++		rtl_lps_leave(rtlpriv->mac80211.hw, false);
+ 		btcoexist->bt_info.bt_ctrl_lps = false;
+ 	}
+ }
+@@ -328,7 +331,8 @@ static void halbtc_pre_normal_lps(struct
+ 
+ 	if (btcoexist->bt_info.bt_ctrl_lps) {
+ 		btcoexist->bt_info.bt_lps_on = false;
+-		rtl_lps_leave(rtlpriv->mac80211.hw);
++		/* FIXME: Context is unclear. Is it allowed to block? */
++		rtl_lps_leave(rtlpriv->mac80211.hw, false);
+ 	}
+ }
+ 
+--- a/drivers/net/wireless/realtek/rtlwifi/core.c
++++ b/drivers/net/wireless/realtek/rtlwifi/core.c
+@@ -544,7 +544,7 @@ static int rtl_op_suspend(struct ieee802
+ 	rtlhal->driver_is_goingto_unload = true;
+ 	rtlhal->enter_pnp_sleep = true;
+ 
+-	rtl_lps_leave(hw);
++	rtl_lps_leave(hw, true);
+ 	rtl_op_stop(hw);
+ 	device_set_wakeup_enable(wiphy_dev(hw->wiphy), true);
+ 	return 0;
+@@ -1151,7 +1151,7 @@ static void rtl_op_bss_info_changed(stru
+ 			mstatus = RT_MEDIA_DISCONNECT;
+ 
+ 			if (mac->link_state == MAC80211_LINKED)
+-				rtl_lps_leave(hw);
++				rtl_lps_leave(hw, true);
+ 			if (ppsc->p2p_ps_info.p2p_ps_mode > P2P_PS_NONE)
+ 				rtl_p2p_ps_cmd(hw, P2P_PS_DISABLE);
+ 			mac->link_state = MAC80211_NOLINK;
+@@ -1448,7 +1448,7 @@ static void rtl_op_sw_scan_start(struct
+ 	}
+ 
+ 	if (mac->link_state == MAC80211_LINKED) {
+-		rtl_lps_leave(hw);
++		rtl_lps_leave(hw, true);
+ 		mac->link_state = MAC80211_LINKED_SCANNING;
+ 	} else {
+ 		rtl_ips_nic_on(hw);
+--- a/drivers/net/wireless/realtek/rtlwifi/pci.c
++++ b/drivers/net/wireless/realtek/rtlwifi/pci.c
+@@ -621,7 +621,7 @@ static void _rtl_pci_tx_isr(struct ieee8
+ 	if (((rtlpriv->link_info.num_rx_inperiod +
+ 	      rtlpriv->link_info.num_tx_inperiod) > 8) ||
+ 	      rtlpriv->link_info.num_rx_inperiod > 2)
+-		rtl_lps_leave(hw);
++		rtl_lps_leave(hw, false);
+ }
+ 
+ static int _rtl_pci_init_one_rxdesc(struct ieee80211_hw *hw,
+@@ -874,7 +874,7 @@ static void _rtl_pci_rx_interrupt(struct
+ 		if (((rtlpriv->link_info.num_rx_inperiod +
+ 		      rtlpriv->link_info.num_tx_inperiod) > 8) ||
+ 		      rtlpriv->link_info.num_rx_inperiod > 2)
+-			rtl_lps_leave(hw);
++			rtl_lps_leave(hw, false);
+ 		skb = new_skb;
+ no_new:
+ 		if (rtlpriv->use_new_trx_flow) {
+--- a/drivers/net/wireless/realtek/rtlwifi/ps.c
++++ b/drivers/net/wireless/realtek/rtlwifi/ps.c
+@@ -653,22 +653,22 @@ void rtl_lps_change_work_callback(struct
+ }
+ EXPORT_SYMBOL_GPL(rtl_lps_change_work_callback);
+ 
+-void rtl_lps_enter(struct ieee80211_hw *hw)
++void rtl_lps_enter(struct ieee80211_hw *hw, bool may_block)
  {
---- a/drivers/net/wireless/realtek/rtlwifi/debug.h
-+++ b/drivers/net/wireless/realtek/rtlwifi/debug.h
-@@ -149,10 +149,6 @@ enum dbgp_flag_e {
- struct rtl_priv;
+ 	struct rtl_priv *rtlpriv = rtl_priv(hw);
  
- __printf(4, 5)
--void _rtl_dbg_out(struct rtl_priv *rtlpriv, u64 comp, int level,
--		  const char *fmt, ...);
--
--__printf(4, 5)
- void _rtl_dbg_print(struct rtl_priv *rtlpriv, u64 comp, int level,
- 		    const char *fmt, ...);
+-	if (!in_interrupt())
++	if (may_block)
+ 		return rtl_lps_enter_core(hw);
+ 	rtlpriv->enter_ps = true;
+ 	schedule_work(&rtlpriv->works.lps_change_work);
+ }
+ EXPORT_SYMBOL_GPL(rtl_lps_enter);
  
-@@ -160,8 +156,8 @@ void _rtl_dbg_print_data(struct rtl_priv
- 			 const char *titlestring,
- 			 const void *hexdata, int hexdatalen);
+-void rtl_lps_leave(struct ieee80211_hw *hw)
++void rtl_lps_leave(struct ieee80211_hw *hw, bool may_block)
+ {
+ 	struct rtl_priv *rtlpriv = rtl_priv(hw);
  
--#define rtl_dbg(rtlpriv, comp, level, fmt, ...)			\
--	_rtl_dbg_out(rtlpriv, comp, level,				\
-+#define rtl_dbg(rtlpriv, comp, level, fmt, ...)				\
-+	_rtl_dbg_print(rtlpriv, comp, level,				\
- 		       fmt, ##__VA_ARGS__)
+-	if (!in_interrupt())
++	if (may_block)
+ 		return rtl_lps_leave_core(hw);
+ 	rtlpriv->enter_ps = false;
+ 	schedule_work(&rtlpriv->works.lps_change_work);
+--- a/drivers/net/wireless/realtek/rtlwifi/ps.h
++++ b/drivers/net/wireless/realtek/rtlwifi/ps.h
+@@ -11,8 +11,8 @@ bool rtl_ps_disable_nic(struct ieee80211
+ void rtl_ips_nic_off(struct ieee80211_hw *hw);
+ void rtl_ips_nic_on(struct ieee80211_hw *hw);
+ void rtl_ips_nic_off_wq_callback(struct work_struct *work);
+-void rtl_lps_enter(struct ieee80211_hw *hw);
+-void rtl_lps_leave(struct ieee80211_hw *hw);
++void rtl_lps_enter(struct ieee80211_hw *hw, bool may_block);
++void rtl_lps_leave(struct ieee80211_hw *hw, bool may_block);
  
- #define RTPRINT(rtlpriv, dbgtype, dbgflag, fmt, ...)			\
+ void rtl_lps_set_psmode(struct ieee80211_hw *hw, u8 rt_psmode);
+ 
 
