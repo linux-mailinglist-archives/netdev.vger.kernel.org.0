@@ -2,211 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C45EF27DB29
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 23:54:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0DF727DB3E
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 23:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728391AbgI2Vyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 17:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49564 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727740AbgI2Vyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 17:54:40 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892FDC0613D0
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 14:54:40 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id x201so5660128qkb.11
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 14:54:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=xHo033oar0KgYc4e1ROf65XOwizUiV3znFMSkSu+y78=;
-        b=pU+wH0opGREdfVhc3VSiSME5TJWZYmy/jOWNVDwwtSS5v6hYxIdKLs0rpmZs1XmjUx
-         w+vtdrFion68m7I360d33S6IkOnmXMIK3sYDtMzdmb/YVsX1lrDjxcqgUROfYWyvC2T+
-         HJuEdM3x7yI7Ttqm+kQdzbSC6/3e54kFH6EFas/uy037Nxu5q/8EKKFV0GATrJBLgp2F
-         lO6baOWhOQGzuqwVXvCJi+xfw5tz49QTqjCmjZgMVfrlJHu4Frkrt+u61HA0F5adV9N9
-         PRR1j5iABgdkGsS23Kl3Lpxvgw8CwiJ8km7Ox/rlwPdPDom/WmSVWGIW1sdDs788eguG
-         GtNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=xHo033oar0KgYc4e1ROf65XOwizUiV3znFMSkSu+y78=;
-        b=qqjvrNVmhA/IGA9LeAujG7RZYURQCyNEtH/DiPSbVCFvVrQozIwa55dhV/IE/bqB5g
-         1v7wCnDjIXuySADyGunG82Pk5CKSMgUK0te94Aq4qPY+VBtraI4L1oSi0dokYk409G7t
-         tURgflVIyTDrGzADSNrQM/5xjoR1AU9sDN2EcU4BL1EfweU8wRgVwRWOGMda4B5sKtH7
-         WLgfbTE/CyU3vvR0MQDQJSflTituC7+zTLeh+qBwnMciYVV4ngjSje5Yu/ziHDMeM7Zd
-         U7/UCTpNzfY55UEuKZ0WuqjyAfm/23Wl5HKqnRo4tbbZpFKuPbwuAgjSCTllDtRFdOnB
-         TSIA==
-X-Gm-Message-State: AOAM530C6se6TY5tHaSZud0HhP5PQULS77UkduXL8WY61d6xc0fL6xCM
-        11EGDwX22uu7sm0v+qqm2d8N
-X-Google-Smtp-Source: ABdhPJw/6NYT2k3x6xGaYNBrYodwIdaQqNXOTPmefZeuiRKMRPi60CfDM1jnBuTF6NOsQPWaOfgVWw==
-X-Received: by 2002:a37:4e45:: with SMTP id c66mr6729503qkb.36.1601416479560;
-        Tue, 29 Sep 2020 14:54:39 -0700 (PDT)
-Received: from localhost (pool-96-230-24-152.bstnma.fios.verizon.net. [96.230.24.152])
-        by smtp.gmail.com with ESMTPSA id z131sm6251880qkb.59.2020.09.29.14.54.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Sep 2020 14:54:38 -0700 (PDT)
-Subject: [RFC PATCH] lsm,selinux: pass the family information along with xfrm
- flow
-From:   Paul Moore <paul@paul-moore.com>
-To:     selinux@vger.kernel.org, linux-security-module@vger.kernel.org
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>, netdev@vger.kernel.org
-Date:   Tue, 29 Sep 2020 17:54:37 -0400
-Message-ID: <160141647786.7997.5490924406329369782.stgit@sifl>
-User-Agent: StGit/0.23
+        id S1728291AbgI2V6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 17:58:00 -0400
+Received: from mga07.intel.com ([134.134.136.100]:54494 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728074AbgI2V57 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 17:57:59 -0400
+IronPort-SDR: czwefkBbGVDRQulgN+CvIK8NR57JSXHOVrL1wIpeAadxKtIMgL8TL9sBoV4EW+eDNUt6c6W0k8
+ 5XeFNO6TpD5Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9759"; a="226448344"
+X-IronPort-AV: E=Sophos;i="5.77,320,1596524400"; 
+   d="scan'208";a="226448344"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 14:57:58 -0700
+IronPort-SDR: d/lGvOvK941z2yihPbpjuw5QU4M0pm0qJYc/v438bunXMYnAjB4e7/NKsMKARHdSRqi23xpL9g
+ N1niLL2DQa+Q==
+X-IronPort-AV: E=Sophos;i="5.77,320,1596524400"; 
+   d="scan'208";a="324822023"
+Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.4])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 14:57:58 -0700
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kubakici@wp.pl>, snelson@pensando.io,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: [iproute2-next v1] devlink: display elapsed time during flash update
+Date:   Tue, 29 Sep 2020 14:56:51 -0700
+Message-Id: <20200929215651.3538844-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.28.0.497.g54e85e7af1ac
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As pointed out by Herbert in a recent related patch, the LSM hooks
-should pass the address family in addition to the xfrm flow as the
-family information is needed to safely access the flow.
+For some devices, updating the flash can take significant time during
+operations where no status can meaningfully be reported. This can be
+somewhat confusing to a user who sees devlink appear to hang on the
+terminal waiting for the device to update.
 
-While this is not technically a problem for the current LSM/SELinux
-code as it only accesses fields common to all address families, we
-should still pass the address family so that the LSM hook isn't
-inherently flawed.  An alternate solution could be to simply pass
-the LSM secid instead of flow, but this introduces the problem of
-the LSM hook callers sending the wrong secid which would be much
-worse.
+Recent changes to the kernel interface allow such long running commands
+to provide a timeout value indicating some upper bound on how long the
+relevant action could take.
 
-Reported-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Provide a ticking counter of the time elapsed since the previous status
+message in order to make it clear that the program is not simply stuck.
+
+Display this message whenever the status message from the kernel
+indicates a timeout value. Additionally also display the message if
+we've received no status for more than couple of seconds. If we elapse
+more than the timeout provided by the status message, replace the
+timeout display with "timeout reached".
+
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- include/linux/lsm_hook_defs.h   |    2 +-
- include/linux/lsm_hooks.h       |    1 +
- include/linux/security.h        |    7 +++++--
- net/xfrm/xfrm_state.c           |    4 ++--
- security/security.c             |    5 +++--
- security/selinux/include/xfrm.h |    3 ++-
- security/selinux/xfrm.c         |    3 ++-
- 7 files changed, 16 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 2a8c74d99015..e3c3b5d20469 100644
---- a/include/linux/lsm_hook_defs.h
-+++ b/include/linux/lsm_hook_defs.h
-@@ -349,7 +349,7 @@ LSM_HOOK(int, 0, xfrm_state_delete_security, struct xfrm_state *x)
- LSM_HOOK(int, 0, xfrm_policy_lookup, struct xfrm_sec_ctx *ctx, u32 fl_secid,
- 	 u8 dir)
- LSM_HOOK(int, 1, xfrm_state_pol_flow_match, struct xfrm_state *x,
--	 struct xfrm_policy *xp, const struct flowi *fl)
-+	 struct xfrm_policy *xp, const struct flowi *fl, unsigned short family)
- LSM_HOOK(int, 0, xfrm_decode_session, struct sk_buff *skb, u32 *secid,
- 	 int ckall)
- #endif /* CONFIG_SECURITY_NETWORK_XFRM */
-diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 9e2e3e63719d..ea088aacfdad 100644
---- a/include/linux/lsm_hooks.h
-+++ b/include/linux/lsm_hooks.h
-@@ -1093,6 +1093,7 @@
-  *	@x contains the state to match.
-  *	@xp contains the policy to check for a match.
-  *	@fl contains the flow to check for a match.
-+ *	@family the flow's address family.
-  *	Return 1 if there is a match.
-  * @xfrm_decode_session:
-  *	@skb points to skb to decode.
-diff --git a/include/linux/security.h b/include/linux/security.h
-index 0a0a03b36a3b..701b41eb090c 100644
---- a/include/linux/security.h
-+++ b/include/linux/security.h
-@@ -1625,7 +1625,8 @@ void security_xfrm_state_free(struct xfrm_state *x);
- int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
- int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
- 				       struct xfrm_policy *xp,
--				       const struct flowi *fl);
-+				       const struct flowi *fl,
-+				       unsigned short family);
- int security_xfrm_decode_session(struct sk_buff *skb, u32 *secid);
- void security_skb_classify_flow(struct sk_buff *skb, struct flowi *fl);
+This is a respin of an RFC at [1] based on feedback. This version works as I
+would expect, 
+
+Changes since RFC
+* Add fflush, fixing jittery output
+* Since we're only comparing the seconds value, use "> 2" instead of "> 3"
+  so that we begin displaying the elapsed time at 3 seconds rather than 4
+  seconds.
+* store only the string length instead of the full message in the context
+* Rename some variables for clarity
+* If we have a timeout, always display the elapsed time, instead of waiting
+  for a few seconds.
+* Fix a typo in a comment referring to 1/20th when the code used 1/10th of a
+  second timeout.
+
+ devlink/devlink.c | 95 ++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 94 insertions(+), 1 deletion(-)
+
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 0374175eda3d..7f3bd45c9a6e 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -33,6 +33,7 @@
+ #include <sys/select.h>
+ #include <sys/socket.h>
+ #include <sys/types.h>
++#include <sys/time.h>
+ #include <rt_names.h>
  
-@@ -1679,7 +1680,9 @@ static inline int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_s
+ #include "version.h"
+@@ -3066,6 +3067,9 @@ static int cmd_dev_info(struct dl *dl)
+ 
+ struct cmd_dev_flash_status_ctx {
+ 	struct dl *dl;
++	struct timeval time_of_last_status;
++	uint64_t status_msg_timeout;
++	size_t elapsed_time_msg_len;
+ 	char *last_msg;
+ 	char *last_component;
+ 	uint8_t not_first:1,
+@@ -3083,6 +3087,14 @@ static int nullstrcmp(const char *str1, const char *str2)
+ 	return str1 ? 1 : -1;
  }
  
- static inline int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
--			struct xfrm_policy *xp, const struct flowi *fl)
-+						     struct xfrm_policy *xp,
-+						     const struct flowi *fl,
-+						     unsigned short family)
++static void cmd_dev_flash_clear_elapsed_time(struct cmd_dev_flash_status_ctx *ctx)
++{
++	int i;
++
++	for (i = 0; i < ctx->elapsed_time_msg_len; i++)
++		pr_out_tty("\b");
++}
++
+ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
  {
- 	return 1;
- }
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 69520ad3d83b..f90d2f1da44a 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1020,7 +1020,7 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
- 	if (x->km.state == XFRM_STATE_VALID) {
- 		if ((x->sel.family &&
- 		     !xfrm_selector_match(&x->sel, fl, x->sel.family)) ||
--		    !security_xfrm_state_pol_flow_match(x, pol, fl))
-+		    !security_xfrm_state_pol_flow_match(x, pol, fl, family))
- 			return;
- 
- 		if (!*best ||
-@@ -1033,7 +1033,7 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
- 	} else if (x->km.state == XFRM_STATE_ERROR ||
- 		   x->km.state == XFRM_STATE_EXPIRED) {
- 		if (xfrm_selector_match(&x->sel, fl, x->sel.family) &&
--		    security_xfrm_state_pol_flow_match(x, pol, fl))
-+		    security_xfrm_state_pol_flow_match(x, pol, fl, family))
- 			*error = -ESRCH;
+ 	struct cmd_dev_flash_status_ctx *ctx = data;
+@@ -3116,6 +3128,11 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
+ 		return MNL_CB_STOP;
  	}
+ 
++	cmd_dev_flash_clear_elapsed_time(ctx);
++	gettimeofday(&ctx->time_of_last_status, NULL);
++	ctx->status_msg_timeout = 0;
++	ctx->elapsed_time_msg_len = 0;
++
+ 	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_MSG])
+ 		msg = mnl_attr_get_str(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_MSG]);
+ 	if (tb[DEVLINK_ATTR_FLASH_UPDATE_COMPONENT])
+@@ -3124,6 +3141,8 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
+ 		done = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_DONE]);
+ 	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL])
+ 		total = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL]);
++	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT])
++		ctx->status_msg_timeout = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT]);
+ 
+ 	if (!nullstrcmp(msg, ctx->last_msg) &&
+ 	    !nullstrcmp(component, ctx->last_component) &&
+@@ -3155,11 +3174,72 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
+ 	return MNL_CB_STOP;
  }
-diff --git a/security/security.c b/security/security.c
-index 70a7ad357bc6..62dd0af7c6bc 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -2391,7 +2391,8 @@ int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
  
- int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
- 				       struct xfrm_policy *xp,
--				       const struct flowi *fl)
-+				       const struct flowi *fl,
-+				       unsigned short family)
++static void cmd_dev_flash_time_elapsed(struct cmd_dev_flash_status_ctx *ctx)
++{
++	struct timeval now, res;
++
++	gettimeofday(&now, NULL);
++	timersub(&now, &ctx->time_of_last_status, &res);
++
++	/* Only begin displaying an elapsed time message if we've waited a few
++	 * seconds with no response, or the status message included a timeout
++	 * value.
++	 */
++	if (res.tv_sec > 2 || ctx->status_msg_timeout) {
++		uint64_t elapsed_m, elapsed_s;
++		char msg[128];
++		size_t len;
++
++		/* clear the last elapsed time message, if we have one */
++		cmd_dev_flash_clear_elapsed_time(ctx);
++
++		elapsed_m = res.tv_sec / 60;
++		elapsed_s = res.tv_sec % 60;
++
++		/**
++		 * If we've elapsed a few seconds without receiving any status
++		 * notification from the device, we display a time elapsed
++		 * message. This has a few possible formats:
++		 *
++		 * 1) just time elapsed, when no timeout was provided
++		 *    " ( Xm Ys )"
++		 * 2) time elapsed out of a timeout that came from the device
++		 *    driver via DEVLINK_CMD_FLASH_UPDATE_STATUS_TIMEOUT
++		 *    " ( Xm Ys : Am Ys)"
++		 * 3) time elapsed if we still receive no status after
++		 *    reaching the provided timeout.
++		 *    " ( Xm Ys : timeout reached )"
++		 */
++		if (!ctx->status_msg_timeout) {
++			len = snprintf(msg, sizeof(msg),
++				       " ( %lum %lus )", elapsed_m, elapsed_s);
++		} else if (res.tv_sec <= ctx->status_msg_timeout) {
++			uint64_t timeout_m, timeout_s;
++
++			timeout_m = ctx->status_msg_timeout / 60;
++			timeout_s = ctx->status_msg_timeout % 60;
++
++			len = snprintf(msg, sizeof(msg),
++				       " ( %lum %lus : %lum %lus )",
++				       elapsed_m, elapsed_s, timeout_m, timeout_s);
++		} else {
++			len = snprintf(msg, sizeof(msg),
++				       " ( %lum %lus : timeout reached )", elapsed_m, elapsed_s);
++		}
++
++		ctx->elapsed_time_msg_len = len;
++
++		pr_out_tty("%s", msg);
++		fflush(stdout);
++	}
++}
++
+ static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
+ 				     struct mnlg_socket *nlg_ntf,
+ 				     int pipe_r)
  {
- 	struct security_hook_list *hp;
- 	int rc = LSM_RET_DEFAULT(xfrm_state_pol_flow_match);
-@@ -2407,7 +2408,7 @@ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
- 	 */
- 	hlist_for_each_entry(hp, &security_hook_heads.xfrm_state_pol_flow_match,
- 				list) {
--		rc = hp->hook.xfrm_state_pol_flow_match(x, xp, fl);
-+		rc = hp->hook.xfrm_state_pol_flow_match(x, xp, fl, family);
- 		break;
+ 	int nlfd = mnlg_socket_get_fd(nlg_ntf);
++	struct timeval timeout;
+ 	fd_set fds[3];
+ 	int fdmax;
+ 	int i;
+@@ -3174,7 +3254,14 @@ static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
+ 	if (nlfd >= fdmax)
+ 		fdmax = nlfd + 1;
+ 
+-	while (select(fdmax, &fds[0], &fds[1], &fds[2], NULL) < 0) {
++	/* select only for a short while (1/10th of a second) in order to
++	 * allow periodically updating the screen with an elapsed time
++	 * indicator.
++	 */
++	timeout.tv_sec = 0;
++	timeout.tv_usec = 100000;
++
++	while (select(fdmax, &fds[0], &fds[1], &fds[2], &timeout) < 0) {
+ 		if (errno == EINTR)
+ 			continue;
+ 		pr_err("select() failed\n");
+@@ -3196,6 +3283,7 @@ static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
+ 			return err2;
+ 		ctx->flash_done = 1;
  	}
- 	return rc;
-diff --git a/security/selinux/include/xfrm.h b/security/selinux/include/xfrm.h
-index a0b465316292..36907dd06647 100644
---- a/security/selinux/include/xfrm.h
-+++ b/security/selinux/include/xfrm.h
-@@ -26,7 +26,8 @@ int selinux_xfrm_state_delete(struct xfrm_state *x);
- int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
- int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
- 				      struct xfrm_policy *xp,
--				      const struct flowi *fl);
-+				      const struct flowi *fl,
-+				      unsigned short family);
++	cmd_dev_flash_time_elapsed(ctx);
+ 	return 0;
+ }
  
- #ifdef CONFIG_SECURITY_NETWORK_XFRM
- extern atomic_t selinux_xfrm_refcount;
-diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
-index 7314196185d1..5beb30237d3a 100644
---- a/security/selinux/xfrm.c
-+++ b/security/selinux/xfrm.c
-@@ -175,7 +175,8 @@ int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
-  */
- int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
- 				      struct xfrm_policy *xp,
--				      const struct flowi *fl)
-+				      const struct flowi *fl,
-+				      unsigned short family)
- {
- 	u32 state_sid;
+@@ -3256,6 +3344,11 @@ static int cmd_dev_flash(struct dl *dl)
+ 	}
+ 	close(pipe_w);
  
++	/* initialize starting time to allow comparison for when to begin
++	 * displaying a time elapsed message.
++	 */
++	gettimeofday(&ctx.time_of_last_status, NULL);
++
+ 	do {
+ 		err = cmd_dev_flash_fds_process(&ctx, nlg_ntf, pipe_r);
+ 		if (err)
+
+base-commit: d2be31d9b671ec0b3e32f56f9c913e249ed048bd
+-- 
+2.28.0.497.g54e85e7af1ac
 
