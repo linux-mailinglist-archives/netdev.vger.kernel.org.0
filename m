@@ -2,139 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C87D127BB19
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 04:44:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E461B27BB3F
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 05:05:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727248AbgI2CoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 22:44:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40672 "EHLO
+        id S1727289AbgI2DFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 23:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726064AbgI2CoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 22:44:22 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9F1C061755
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 19:44:21 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id b17so1861833pji.1
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 19:44:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZPKYIfxt2LVhhCos7+8U/B9RRLEMtA2XFwO17M2prWY=;
-        b=B/bCtfPTuniqKfA32e7shNwbv0C5E94z1+JzxGtn59SE74B60UzY9x+8T4HWKwoN7F
-         YeYlECgsNRGA61GcgXGL6reIXWK2vBVXUCiQ47mbjmE0IRq5vUSNOzxgcnnV8HKO/9qi
-         PGF69kvqe4zfM3aiLTr37pJ+i4gavx6nYlOa/NWhMFDA2rJY2KLRTEPuMmhf1+1bJYS3
-         2U2+StMF119TStwB6QaJ67FCRgLWhVMGvsjDv/qFyMR9OmUueDRhLwCjlJRD5Gws4JaD
-         ax9gMIGYT6aW6ygvacHlX2dYpbthf8iC7Q7wgQIZEY7Addu/jmJS13PPFkT4kHYa2Q8w
-         OzmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZPKYIfxt2LVhhCos7+8U/B9RRLEMtA2XFwO17M2prWY=;
-        b=bj3zPNSRYzVyf8EV/1144As1f3O4ZtMjFysBLRDa8jzO0KLDicTCIUVYldsguHfow8
-         EyR0f7o7e47cEE834wiXaG5L6s3uwy72IKSXWYX+QhcmMAHMFR47ScFDQns0S8ZZb7gZ
-         hYUCjDP2uFdSwJ5LvSy1hhvHo7jQqL43XpeA7RFLjwN4qhDjdvqXxsmJrlUB3PFyYrBj
-         L+PKdiQRnc2yM4LpcRf1QxT0+qBUxqLnI5dlv89SyStuAXCwUEwGrQldp2CeEv/pjUhv
-         b1IppEHUhX38bfJ2D1RXPdkA4dDjeKKBjUWAzQ54rH9d7GmcNjp2dbemFJGg1KleyS9k
-         gRZg==
-X-Gm-Message-State: AOAM532G2R4QrjcikqjM/RLJZhWggHtIqwapmzdB2UUMfokVgXsbuL/b
-        oCbWpAMFmbCwNv7LA7lstEU=
-X-Google-Smtp-Source: ABdhPJyCBogyRhwvgVLB+xt/s1C8tt7NiwphRuHRnBe3PokPWulQKjbHK38ah0+sesXyOQxFcl57XQ==
-X-Received: by 2002:a17:90a:1992:: with SMTP id 18mr1893784pji.143.1601347460775;
-        Mon, 28 Sep 2020 19:44:20 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local (c-24-23-181-79.hsd1.ca.comcast.net. [24.23.181.79])
-        by smtp.googlemail.com with ESMTPSA id ca6sm2490176pjb.53.2020.09.28.19.44.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Sep 2020 19:44:20 -0700 (PDT)
-Subject: Re: [PATCH RFC net-next] virtio_net: Relax queue requirement for
- using XDP
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>
-References: <20200226005744.1623-1-dsahern@kernel.org>
- <23fe48b6-71d1-55a3-e0e8-ca4b3fac1f7f@redhat.com>
- <9a5391fb-1d80-43d1-5e88-902738cc2528@gmail.com> <87wo89zroe.fsf@toke.dk>
- <20200226032204-mutt-send-email-mst@kernel.org> <87r1yhzqz8.fsf@toke.dk>
- <0dc879c5-12ce-0df2-24b0-97d105547150@digitalocean.com>
- <87wo88wcwi.fsf@toke.dk>
- <CAJ8uoz2++_D_XFwUjFri0HmNaNWKtiPNrJr=Fvc8grj-8hRzfg@mail.gmail.com>
- <b6609e0a-eb2f-78bd-b565-c56dce9e2e48@gmail.com>
- <CAJ8uoz2bj0YWH5K6OW8m+BC06QZTSYW=xbApuEDK5pRCx+RLAA@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e6a31c99-c492-b643-3fdc-4227b89707df@gmail.com>
-Date:   Mon, 28 Sep 2020 19:44:18 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        with ESMTP id S1726944AbgI2DFB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 23:05:01 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64985C061755;
+        Mon, 28 Sep 2020 20:05:01 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C0klF3yGSz9s1t;
+        Tue, 29 Sep 2020 13:04:57 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1601348697;
+        bh=/QSIT6Tfgaxw+JmY9/F6hMsZ8bc6dWqVnIszkkrLOVE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=IDAq7OZAH1PVcYkJ45gA2TXczwKRWwk3YQEl90qdwT7duObPUXBwYp5ggGZivY4RV
+         oSBm8wiwDC44i0p6cW3hiWBTiFEUmh4o3U1/F60kdKzgAHC1iVVkmCm7gmQdfHn/FK
+         MmD2gxkX2kgCRMXEbcMDhgM3AVKRVTPD/lUDPfoJWeUwoUJqDnMYbJQbMwpn17iAa+
+         D9xGbMqQYqm+uwv+cfbY6xcm/l6kL7/DYY4IRxPdV+58ndOO4QDyMCuA7njlx5TLLV
+         8EPKeHdrhDJx4cJv3sCwcP5NmB1kFeSrmNKERFr1eaSYB9tLts/17UM+ydpCU5dbOQ
+         bsUFlvs/JY53g==
+Date:   Tue, 29 Sep 2020 13:04:46 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20200929130446.0c2630d2@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <CAJ8uoz2bj0YWH5K6OW8m+BC06QZTSYW=xbApuEDK5pRCx+RLAA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/mIiG9H84CW6wa3if/A52zoG";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/28/20 7:25 AM, Magnus Karlsson wrote:
-> On Mon, Sep 28, 2020 at 5:13 AM David Ahern <dsahern@gmail.com> wrote:
->>
->> On 2/27/20 2:41 AM, Magnus Karlsson wrote:
->>> I will unfortunately be after Netdevconf due to other commitments. The
->>> plan is to send out the RFC to the co-authors of the Plumbers
->>> presentation first, just to check the sanity of it. And after that
->>> send it to the mailing list. Note that I have taken two shortcuts in
->>> the RFC to be able to make quicker progress. The first on is the
->>> driver implementation of the dynamic queue allocation and
->>> de-allocation. It just does this within a statically pre-allocated set
->>> of queues. The second is that the user space interface is just a
->>> setsockopt instead of a rtnetlink interface. Again, just to save some
->>> time in this initial phase. The information communicated in the
->>> interface is the same though. In the current code, the queue manager
->>> can handle the queues of the networking stack, the XDP_TX queues and
->>> queues allocated by user space and used for AF_XDP. Other uses from
->>> user space is not covered due to my setsockopt shortcut. Hopefully
->>> though, this should be enough for an initial assessment.
->>
->> Any updates on the RFC? I do not recall seeing a patch set on the
->> mailing list, but maybe I missed it.
-> 
-> No, you have unfortunately not missed anything. It has been lying on
-> the shelf collecting dust for most of this time. The reason was that
-> the driver changes needed to support dynamic queue allocation just
-> became too complex as it would require major surgery to at least all
-> Intel drivers, and probably a large number of other ones as well. Do
-> not think any vendor would support such a high effort solution and I
-> could not (at that time at least) find a way around it. So, gaining
-> visibility into what queues have been allocated (by all entities in
-> the kernel that uses queue) seems to be rather straightforward, but
-> the dynamic allocation part seems to be anything but.
+--Sig_/mIiG9H84CW6wa3if/A52zoG
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-retrofitting a new idea is usually a high level of effort.
+Hi all,
 
-> 
-> I also wonder how useful this queue manager proposal would be in light
-> of Mellanox's subfunction proposal. If people just start to create
-> many small netdevs (albeit at high cost which people may argue
-> against) consisting of just an rx/tx queue pair, then the queue
-> manager dynamic allocation proposal would not be as useful. We could
-> just use one of these netdevs to bind to in the AF_XDP case and always
-> just specify queue 0. But one can argue that queue management is
-> needed even for the subfunction approach, but then it would be at a
-> much lower level than what I proposed. What is your take on this?
-> Still worth pursuing in some form or another? If yes, then we really
-> need to come up with an easy way of supporting this in current
-> drivers. It is not going to fly otherwise, IMHO.
-> 
+After merging the net-next tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
 
-I need to find some time to take a deep dive on the subfunction idea. I
-like the intent, but need to understand the details.
+drivers/net/ethernet/marvell/prestera/prestera_main.c: In function 'prester=
+a_port_dev_lower_find':
+drivers/net/ethernet/marvell/prestera/prestera_main.c:504:33: error: passin=
+g argument 2 of 'netdev_walk_all_lower_dev' from incompatible pointer type =
+[-Werror=3Dincompatible-pointer-types]
+  504 |  netdev_walk_all_lower_dev(dev, prestera_lower_dev_walk, &port);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~
+      |                                 |
+      |                                 int (*)(struct net_device *, void *)
+In file included from include/linux/etherdevice.h:21,
+                 from drivers/net/ethernet/marvell/prestera/prestera_main.c=
+:4:
+include/linux/netdevice.h:4571:16: note: expected 'int (*)(struct net_devic=
+e *, struct netdev_nested_priv *)' but argument is of type 'int (*)(struct =
+net_device *, void *)'
+ 4571 |          int (*fn)(struct net_device *lower_dev,
+      |          ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 4572 |      struct netdev_nested_priv *priv),
+      |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/marvell/prestera/prestera_main.c:504:58: error: passin=
+g argument 3 of 'netdev_walk_all_lower_dev' from incompatible pointer type =
+[-Werror=3Dincompatible-pointer-types]
+  504 |  netdev_walk_all_lower_dev(dev, prestera_lower_dev_walk, &port);
+      |                                                          ^~~~~
+      |                                                          |
+      |                                                          struct pre=
+stera_port **
+In file included from include/linux/etherdevice.h:21,
+                 from drivers/net/ethernet/marvell/prestera/prestera_main.c=
+:4:
+include/linux/netdevice.h:4573:37: note: expected 'struct netdev_nested_pri=
+v *' but argument is of type 'struct prestera_port **'
+ 4573 |          struct netdev_nested_priv *priv);
+      |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+cc1: some warnings being treated as errors
 
-Thanks for the update.
+Caused by commit
+
+  eff7423365a6 ("net: core: introduce struct netdev_nested_priv for nested =
+interface infrastructure")
+
+interacting with commit
+
+  e1189d9a5fbe ("net: marvell: prestera: Add Switchdev driver implementatio=
+n")
+
+also in the net-next tree.
+
+I applied the following fix patch.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Tue, 29 Sep 2020 12:57:59 +1000
+Subject: [PATCH] fix up for "net: core: introduce struct netdev_nested_priv=
+ for nested interface infrastructure"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ drivers/net/ethernet/marvell/prestera/prestera_main.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/driver=
+s/net/ethernet/marvell/prestera/prestera_main.c
+index 9bd57b89d1d0..633d8770be35 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+@@ -482,9 +482,10 @@ bool prestera_netdev_check(const struct net_device *de=
+v)
+ 	return dev->netdev_ops =3D=3D &prestera_netdev_ops;
+ }
+=20
+-static int prestera_lower_dev_walk(struct net_device *dev, void *data)
++static int prestera_lower_dev_walk(struct net_device *dev,
++				   struct netdev_nested_priv *priv)
+ {
+-	struct prestera_port **pport =3D data;
++	struct prestera_port **pport =3D (struct prestera_port **)priv->data;
+=20
+ 	if (prestera_netdev_check(dev)) {
+ 		*pport =3D netdev_priv(dev);
+@@ -497,11 +498,13 @@ static int prestera_lower_dev_walk(struct net_device =
+*dev, void *data)
+ struct prestera_port *prestera_port_dev_lower_find(struct net_device *dev)
+ {
+ 	struct prestera_port *port =3D NULL;
++	struct netdev_nested_priv priv;
+=20
+ 	if (prestera_netdev_check(dev))
+ 		return netdev_priv(dev);
+=20
+-	netdev_walk_all_lower_dev(dev, prestera_lower_dev_walk, &port);
++	priv.data =3D (void *)&port;
++	netdev_walk_all_lower_dev(dev, prestera_lower_dev_walk, &priv);
+=20
+ 	return port;
+ }
+--=20
+2.28.0
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/mIiG9H84CW6wa3if/A52zoG
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9ypE4ACgkQAVBC80lX
+0GyIhAgAg692cTGuoDdmBUZPumsXi8dzTcf+iDUqKKo8/cmfzDiOx/EQqZ09G8CO
+Y16VXoqXmbzqIG+X0DZq7MpR7Ul2kByk/2WSknS5xcNTBYFwWSTGGv4ooxX5zVYJ
+oGIcvBYdYt/H+TKIru34Vo0Ft7RbrSqkli1vrYjapxrK4VloHCaKtXOR73LLjKhv
+RgcHUYeNK33mTl9Ci+z+rpybPA5QV2RLdvu8TZ9oe77DN2WR9wrwyICZDKlnOe+9
+WgcrDRM9JuIPlov2e4/5ABgXBdaqDqSYGmsyvs5mpJLLqf2KN9WO5OIvVGJMayig
+CANz6GlDUsvHDgw21leSP76U0PvR0w==
+=LyoE
+-----END PGP SIGNATURE-----
+
+--Sig_/mIiG9H84CW6wa3if/A52zoG--
