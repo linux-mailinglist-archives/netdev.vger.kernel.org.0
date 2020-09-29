@@ -2,107 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92B9727BFEA
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:46:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E896C27BFF5
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:49:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727885AbgI2Iqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 04:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39704 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727468AbgI2Iqp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:46:45 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A2DC061755;
-        Tue, 29 Sep 2020 01:46:45 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id b17so2270589pji.1;
-        Tue, 29 Sep 2020 01:46:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:cc:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=09r7sX9nPa/Tp8/QlC5iZVhoyrOvmOR+znTXY5U9Huk=;
-        b=KuZh5q8LhRBsplk2Z5+5mo6NpY1YzTpyJliDMz/+XAGvQNDdpOYW01hURX4sYrwanQ
-         cBEZjrNbSPOU3KSHoeb+lpnyN7aW2rMNnx3dzLvXW0v8aft3LETr1V+vsazsJ8AXVnxU
-         tSCmjYvRoU1UCCpPqpVys1SrHeJoGMFaqdEj2UfbrNKkuewOQGKgu+hX0Y9FfF8QtXwJ
-         bXG7tTqcUuA4vOod125kD4TnPdfBxPRicQi4aDJ0Ejz4H1eOjyszS2P9fxXRYKvuhMPq
-         D3t+tXqJ/VHXYcIaJL+wVQNtUL6umnl3crAbkKCt7ycKz2g9W14zqmyYEwEa43AekD3d
-         UiBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=09r7sX9nPa/Tp8/QlC5iZVhoyrOvmOR+znTXY5U9Huk=;
-        b=KBWORzAuuXMFFhOjNCdv7fxZCHpxgz2tOjKp3vJfLsGLCcqNT+7D26ACGlgtDUFNRT
-         j6qBcvoqbgpwgmQOEaIg+4upUGdjxKDBZvFFDqnjybCJMc6EkSxSevz/8PG6P8n2QTjW
-         ln6K0PYbqovKs73lgOuG1S3ErkCooLexY3quJpsvJ84pdMdUh/HwUoTxvzKY8Ban1piT
-         t06ahOupTKEvYOrO41reO+1fkFJRPuq/Z9Ex798QLlV7C6IOw+wbMHa96OYRGoxKfc2D
-         3GYgkIQgN3hkidrepkZsACv0nzrmrKETyjvpwNng9FDmsH89N1vurPmcWggIZrcW9BYW
-         V7FQ==
-X-Gm-Message-State: AOAM530sEO2CWEpr+coh5n0wgiD3sKkqNUve2CGZhg2NhHN6dZCtgLpn
-        BsKizuh2C9ktQHeeMPwEn/uB8UHqIhpNrewdrVE=
-X-Google-Smtp-Source: ABdhPJzMivhRR0m11JQPMdLJs05kQ+Eu9B5e7Yku9mhzmu6VKvDrS4mAZLNHV9x4GjIZmjiRXP2xZg==
-X-Received: by 2002:a17:90a:104f:: with SMTP id y15mr2758898pjd.45.1601369204267;
-        Tue, 29 Sep 2020 01:46:44 -0700 (PDT)
-Received: from [192.168.0.104] ([49.207.218.220])
-        by smtp.gmail.com with ESMTPSA id q4sm4433733pjl.28.2020.09.29.01.46.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Sep 2020 01:46:43 -0700 (PDT)
-Subject: Re: [Linux-kernel-mentees][PATCH] net: usb: rtl8150: prevent
- set_ethernet_addr from setting uninit address
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
-        Petko Manolov <petkan@nucleusys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200929082028.50540-1-anant.thazhemadam@gmail.com>
-From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Message-ID: <d7304f13-1dd8-0760-2c89-6d61c0f6ab7f@gmail.com>
-Date:   Tue, 29 Sep 2020 14:16:39 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727781AbgI2IsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 04:48:03 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:51396 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726064AbgI2Ir7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:47:59 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08T8dkV7030472
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 01:47:58 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=MvNShYh0XkJBtZGp+NAVoGeK3HTwl3VwHI+goioSK5A=;
+ b=GULg01tbkZDn7RjoXFtxSSw6ZTmyoryBMUcmOmg42mzoKqTR73YVrjAXP4z1fK56Oo29
+ OuM7CylqeLr+UKinQtSu24it0wP0zwJf+XFCFXblM10SxiKBikVz+uz6amo2A/o8GM8z
+ zlkcecJF+Wn7SWYYTOollVL/au3LkMQOP9s= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33t35n3ww7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 01:47:58 -0700
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 29 Sep 2020 01:47:56 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 4BA5C62E5765; Tue, 29 Sep 2020 01:47:55 -0700 (PDT)
+From:   Song Liu <songliubraving@fb.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH bpf-next 0/2] introduce BPF_F_SHARE_PE
+Date:   Tue, 29 Sep 2020 01:47:48 -0700
+Message-ID: <20200929084750.419168-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20200929082028.50540-1-anant.thazhemadam@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-29_01:2020-09-29,2020-09-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=674
+ mlxscore=0 lowpriorityscore=0 suspectscore=0 impostorscore=0
+ malwarescore=0 phishscore=0 clxscore=1015 bulkscore=0 priorityscore=1501
+ spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009290080
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A sample crash report can be found here.
-    https://syzkaller.appspot.com/text?tag=CrashReport&x=17486911900000
+This set introduces BPF_F_SHARE_PE to perf event array for better sharing
+of perf event. By default, perf event array removes the perf event when t=
+he
+map fd used to add the event is closed. With BPF_F_SHARE_PE set, however,
+the perf event will stay in the array until it is removed, or the map is
+closed.
 
-The line where the bug seems to get triggered is,
+Song Liu (2):
+  bpf: introduce BPF_F_SHARE_PE for perf event array
+  selftests/bpf: add tests for BPF_F_SHARE_PE
 
-if (!batadv_compare_eth(hard_iface->net_dev->dev_addr,
-                    net_dev->dev_addr))
-Looks like it goes through the list of ethernet interfaces, and
-compares it with the address of the new device; which can
-end up going uninitialized too.
+ include/uapi/linux/bpf.h                      |  3 +
+ kernel/bpf/arraymap.c                         | 31 ++++++++-
+ tools/include/uapi/linux/bpf.h                |  3 +
+ .../bpf/prog_tests/perf_event_share.c         | 68 +++++++++++++++++++
+ .../bpf/progs/test_perf_event_share.c         | 44 ++++++++++++
+ 5 files changed, 147 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/perf_event_sha=
+re.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_perf_event_sha=
+re.c
 
-The address should have been set by set_ethernet_addr:
-
-    static inline void set_ethernet_addr(rtl8150_t * dev)
-    {
-        u8 node_id[6];
-
-        get_registers(dev, IDR, sizeof(node_id), node_id);
-        memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
-    }
-
-However, when get_registers() fails (when ret <= 0 or ret > size),
-no memory is copied back into node_id, which remains uninitialized.
-The address is then set to be this uninitialized node_id value.
-
-Checking for the return value of get_registers() in set_ethernet_addr()
-and further checking the value of set_ethernet_addr() where ever it has
-been invoked, and handling the condition wherein get_registers() fails
-appropriately helps solve this issue.
-Thank you for your time.
-
-Thanks,
-Anant
-
+--
+2.24.1
