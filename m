@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9285127D8BA
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:38:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACC8527D898
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729984AbgI2UiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:38:21 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:50358 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729159AbgI2UgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:16 -0400
-Message-Id: <20200929203502.290194412@linutronix.de>
+        id S1729837AbgI2Uhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729585AbgI2UgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:23 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FD1C0613DC;
+        Tue, 29 Sep 2020 13:36:17 -0700 (PDT)
+Message-Id: <20200929203502.385024523@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601411774;
+        s=2020; t=1601411775;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=7Y3JxN63Q/PAehxAHjlctr5zLB/0T1XlCp5sBBJ6ers=;
-        b=oiKP0Xh0hgA+5zrGUYdekn9rQzAC4LdhldgalfF+GD+80VdiZXZKs0d75kx8FgkG4UHHVJ
-        o3rqlCb4K9+JNHIsFIL5WLeFB7ty070G/8LtX60ximHuITgnlH9wpX7tsgz3tkwi44KWwb
-        2HCpK0W6133MFuLdi0x3bknXOXCQKj4vV33vpVcw74G548uIlqDiVhr//B8e1Y70vEooRz
-        FCokcITKwTHomIJfNuDvGD9UcFM++gfJyvxS7AqaLGGogozINtZ+NSuE0Yxm2n6PMhWcpI
-        3xl50c76FhcB18vk4+R5AN/njwD4JesFpZCbRIwbexbhX5MIjp1gUXFbryQa9g==
+        bh=SqK4/L4V4YIpR+Cf9q8Rsc2k2CTTs6ylS8pwAbu3Yj0=;
+        b=FAMEZpr0/xz2zWnRMbRiAFXGmbJoLy0tVsOnE09HVffmixLQ0JQERV3PmJGSJml7ArfdtF
+        Qrj4k6OEsA07yjNKmIIdtwvO9hNm0lraWr4COJohqbN4VWOgkHjUEs6pXs9yuk53GlEVSJ
+        A/auHDldwcEKy6qpNBk4xO1CsdICEla7jdmFRoqpjgOqp3t46Oy0gGGM82FXltWgedYUGD
+        iEXh0yEUFNGefrj4qnlvTEprk6mel0ddoIOTS6SVdLObrbPfIdOP9yW8NF7suptKhahjgF
+        awen4Yyt3Qp0zQLw3XTX/7EIu0J/QmtczQry1UeLLLnhqNZcaVWiliI1YQW71g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601411774;
+        s=2020e; t=1601411775;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=7Y3JxN63Q/PAehxAHjlctr5zLB/0T1XlCp5sBBJ6ers=;
-        b=Cv7GOQA6CjaeBoQZgaP2ugJNvaDW0z8PoRHJHLEmmHHtU9PIoDOnTj0hyjRawikbMf+aw1
-        9TZvSn3S/yPlakBw==
-Date:   Tue, 29 Sep 2020 22:25:37 +0200
+        bh=SqK4/L4V4YIpR+Cf9q8Rsc2k2CTTs6ylS8pwAbu3Yj0=;
+        b=XcVhZQenrAHTCOos0UAijJD17iujZX6ZURvEupVGG3ac+zSKjlTEYBCnenYA9RiyRRtEvZ
+        A7wdkq3eLocfzSDg==
+Date:   Tue, 29 Sep 2020 22:25:38 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -84,9 +87,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Xinming Hu <huxinming820@gmail.com>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
-        Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch V2 28/36] net: ipw2x00,iwlegacy,iwlwifi: Remove in_interrupt()
- from debug macros
+        Ping-Ke Shih <pkshih@realtek.com>, Luca Coelho <luca@coelho.fi>
+Subject: [patch V2 29/36] net: iwlwifi: Remove in_interrupt() from tracing macro.
 References: <20200929202509.673358734@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -97,99 +99,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-The usage of in_interrupt() in non-core code is phased out.
+The usage of in_interrupt) in driver code is phased out.
 
-The debugging macros in these drivers use in_interrupt() to print 'I' or
-'U' depending on the return value of in_interrupt(). While 'U' is confusing
-at best and 'I' is not really describing the actual context (hard interupt,
-soft interrupt, bottom half disabled section) these debug macros originate
-from the pre ftrace kernel era and their value today is questionable. They
-probably should be removed completely.
+The iwlwifi_dbg tracepoint records in_interrupt() seperately, but that's
+superfluous because the trace header already records all kind of state and
+context information like hardirq status, softirq status, preemption count
+etc.
 
-The macros weere added initially for ipw2100 and then spreaded when the
-driver was forked.
+Aside of that the recording of in_interrupt() as boolean does not allow to
+distinguish between the possible contexts (hard interrupt, soft interrupt,
+bottom half disabled) while the trace header gives precise information.
 
-Remove the in_interrupt() usage at least..
+Remove the duplicate information from the tracepoint and fixup the caller.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Luca Coelho <luca@coelho.fi>
 Acked-by: Kalle Valo <kvalo@codeaurora.org>
 
 ---
- drivers/net/wireless/intel/ipw2x00/ipw2100.c   |    3 +--
- drivers/net/wireless/intel/ipw2x00/ipw2200.h   |    6 ++----
- drivers/net/wireless/intel/ipw2x00/libipw.h    |    3 +--
- drivers/net/wireless/intel/iwlegacy/common.h   |    4 ++--
- drivers/net/wireless/intel/iwlwifi/iwl-debug.c |    3 +--
- 5 files changed, 7 insertions(+), 12 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/iwl-debug.c        |    2 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-devtrace-msg.h |    6 ++----
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 
---- a/drivers/net/wireless/intel/ipw2x00/ipw2100.c
-+++ b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
-@@ -201,8 +201,7 @@ static u32 ipw2100_debug_level = IPW_DL_
- #define IPW_DEBUG(level, message...) \
- do { \
- 	if (ipw2100_debug_level & (level)) { \
--		printk(KERN_DEBUG "ipw2100: %c %s ", \
--                       in_interrupt() ? 'I' : 'U',  __func__); \
-+		printk(KERN_DEBUG "ipw2100: %s ", __func__); \
- 		printk(message); \
- 	} \
- } while (0)
---- a/drivers/net/wireless/intel/ipw2x00/ipw2200.h
-+++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.h
-@@ -1382,14 +1382,12 @@ BIT_ARG16(x)
- 
- #define IPW_DEBUG(level, fmt, args...) \
- do { if (ipw_debug_level & (level)) \
--  printk(KERN_DEBUG DRV_NAME": %c %s " fmt, \
--         in_interrupt() ? 'I' : 'U', __func__ , ## args); } while (0)
-+  printk(KERN_DEBUG DRV_NAME": %s " fmt, __func__ , ## args); } while (0)
- 
- #ifdef CONFIG_IPW2200_DEBUG
- #define IPW_LL_DEBUG(level, fmt, args...) \
- do { if (ipw_debug_level & (level)) \
--  printk(KERN_DEBUG DRV_NAME": %c %s " fmt, \
--         in_interrupt() ? 'I' : 'U', __func__ , ## args); } while (0)
-+  printk(KERN_DEBUG DRV_NAME": %s " fmt, __func__ , ## args); } while (0)
- #else
- #define IPW_LL_DEBUG(level, fmt, args...) do {} while (0)
- #endif				/* CONFIG_IPW2200_DEBUG */
---- a/drivers/net/wireless/intel/ipw2x00/libipw.h
-+++ b/drivers/net/wireless/intel/ipw2x00/libipw.h
-@@ -60,8 +60,7 @@
- extern u32 libipw_debug_level;
- #define LIBIPW_DEBUG(level, fmt, args...) \
- do { if (libipw_debug_level & (level)) \
--  printk(KERN_DEBUG "libipw: %c %s " fmt, \
--         in_interrupt() ? 'I' : 'U', __func__ , ## args); } while (0)
-+  printk(KERN_DEBUG "libipw: %s " fmt, __func__ , ## args); } while (0)
- #else
- #define LIBIPW_DEBUG(level, fmt, args...) do {} while (0)
- #endif				/* CONFIG_LIBIPW_DEBUG */
---- a/drivers/net/wireless/intel/iwlegacy/common.h
-+++ b/drivers/net/wireless/intel/iwlegacy/common.h
-@@ -2925,8 +2925,8 @@ do {									\
- #define IL_DBG(level, fmt, args...)					\
- do {									\
- 	if (il_get_debug_level(il) & level)				\
--		dev_err(&il->hw->wiphy->dev, "%c %s " fmt,		\
--			in_interrupt() ? 'I' : 'U', __func__ , ##args); \
-+		dev_err(&il->hw->wiphy->dev, "%s " fmt, __func__,	\
-+			 ##args);					\
- } while (0)
- 
- #define il_print_hex_dump(il, level, p, len)				\
 --- a/drivers/net/wireless/intel/iwlwifi/iwl-debug.c
 +++ b/drivers/net/wireless/intel/iwlwifi/iwl-debug.c
-@@ -121,8 +121,7 @@ void __iwl_dbg(struct device *dev,
- #ifdef CONFIG_IWLWIFI_DEBUG
- 	if (iwl_have_debug_level(level) &&
+@@ -123,7 +123,7 @@ void __iwl_dbg(struct device *dev,
  	    (!limit || net_ratelimit()))
--		dev_printk(KERN_DEBUG, dev, "%c %s %pV",
--			   in_interrupt() ? 'I' : 'U', function, &vaf);
-+		dev_printk(KERN_DEBUG, dev, "%s %pV", function, &vaf);
+ 		dev_printk(KERN_DEBUG, dev, "%s %pV", function, &vaf);
  #endif
- 	trace_iwlwifi_dbg(level, in_interrupt(), function, &vaf);
+-	trace_iwlwifi_dbg(level, in_interrupt(), function, &vaf);
++	trace_iwlwifi_dbg(level, function, &vaf);
  	va_end(args);
+ }
+ IWL_EXPORT_SYMBOL(__iwl_dbg);
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-devtrace-msg.h
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-devtrace-msg.h
+@@ -54,18 +54,16 @@ DEFINE_EVENT(iwlwifi_msg_event, iwlwifi_
+ );
+ 
+ TRACE_EVENT(iwlwifi_dbg,
+-	TP_PROTO(u32 level, bool in_interrupt, const char *function,
++	TP_PROTO(u32 level, const char *function,
+ 		 struct va_format *vaf),
+-	TP_ARGS(level, in_interrupt, function, vaf),
++	TP_ARGS(level, function, vaf),
+ 	TP_STRUCT__entry(
+ 		__field(u32, level)
+-		__field(u8, in_interrupt)
+ 		__string(function, function)
+ 		__dynamic_array(char, msg, MAX_MSG_LEN)
+ 	),
+ 	TP_fast_assign(
+ 		__entry->level = level;
+-		__entry->in_interrupt = in_interrupt;
+ 		__assign_str(function, function);
+ 		WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
+ 				       MAX_MSG_LEN, vaf->fmt,
 
 
