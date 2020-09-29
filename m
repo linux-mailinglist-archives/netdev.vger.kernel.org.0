@@ -2,111 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC4BA27CF18
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 15:27:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 259AA27CECF
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 15:16:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729840AbgI2N1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 09:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728441AbgI2N1V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 09:27:21 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9455BC061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 06:27:20 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id z1so5422749wrt.3
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 06:27:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=XQKW1SgLV6iUzlfipBeMXYyMr41Phx/Woh2hFRAp76k=;
-        b=chEqQnrb6EAVZHpMBobYR3ReqM3LWfJVpYGaFAytCytXYp9uWYZlkCwoFTLZK6XICo
-         /Kda8bzfYD5JS1E8os4D8m25bPiwDIAscGKCkVhNC4RObdiojUgnvwd4edOHJlgY8+vM
-         KcodbkOlskY9r90NM3WepW0nDroROuJVn8osd/gpoCQ5R5hsDn/RVMGsoDT2qqsEUV/F
-         HD2JoKxNJO5wPqHqGxfgeDZVJfTyI+RCQWgnOCIMsf1908OgIML3PsidRpiT+pT95t4H
-         8ZF5Ly9vNzQHtxO/bkSGiNgXLGwgiS9Q9bPX5fAKaFOv0kal5HJKVC9v1fi3+cKQWqnE
-         RiZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=XQKW1SgLV6iUzlfipBeMXYyMr41Phx/Woh2hFRAp76k=;
-        b=M3ZiM1hUThbqxuSNrdCuJGO1iW6m/mY0HJwKHsc9DZ+MY7Vn/0pir0uwfqWmkYb934
-         E03cucvnjq/twycZDcNYZKJylAQ5j+Eqza5ER5jClbnRaVGv7jaJFQn1+1AIVXhQ2E+c
-         IurMc6HZ3kxk3acjmBOW6hZz8dQqauyl6KnkAuUvRfX+ShOEkPMMbvbC3Pq5EY/1mJxe
-         GdNKSy/6Qy59ha5EaWqweDyNd1kiNSsxkfB6TG2mFAtjkQ4D+ncAdSWfbrIrKyKeFpL7
-         8oCY+axe4bbLtzuWqG27rw6BUzSyEEJ4w//AWAI6nUzgz9BPVTzi/XOi7A6pxuU+KZup
-         xmNw==
-X-Gm-Message-State: AOAM531eeiDORUcpxqBYlgPqrQo1dLGWaq03NdUjHr2IMTvfWayfj/SU
-        HUHysLijj0HnVoYKQEvKW9TwdQ==
-X-Google-Smtp-Source: ABdhPJx49rDGDmyJnU9dKFUPcqShZOlO69OxWWxMt1WDgd6xyHCH/+WcDNIJlm+EXszlCWr6wJcwUA==
-X-Received: by 2002:a5d:6551:: with SMTP id z17mr4380913wrv.200.1601386039244;
-        Tue, 29 Sep 2020 06:27:19 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:e0a:490:8730:d9ed:65b4:1d51:1846])
-        by smtp.gmail.com with ESMTPSA id q20sm5409907wmj.5.2020.09.29.06.27.18
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Sep 2020 06:27:18 -0700 (PDT)
-From:   Loic Poulain <loic.poulain@linaro.org>
-To:     bjorn.andersson@linaro.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, clew@codeaurora.org,
-        manivannan.sadhasivam@linaro.org,
-        Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH 2/2] net: qrtr: Allow non-immediate node routing
-Date:   Tue, 29 Sep 2020 15:33:17 +0200
-Message-Id: <1601386397-21067-2-git-send-email-loic.poulain@linaro.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1601386397-21067-1-git-send-email-loic.poulain@linaro.org>
-References: <1601386397-21067-1-git-send-email-loic.poulain@linaro.org>
+        id S1729798AbgI2NPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 09:15:50 -0400
+Received: from mail-eopbgr70087.outbound.protection.outlook.com ([40.107.7.87]:63190
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725554AbgI2NPu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 09:15:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nqwP7kuHkrPQJqklItw0LKC7Kac1m+bLiXm7PITy7FXremUWnTgR+WfggQQg86vz/lkbavNuCIPU5vPzxF5AMHzz376/BT23LW2Calxm4Lr8m5LkElf0Lt99z7zcJAJ/Z2QYzktsiur696rNm/idNxxTDO5Vf3Z6XSTOLAvq9ydXJeqmjOCnlmtw9yIPM34e7iTtaHTTiVz7Aqg9+swRzThrPZICN1Oz0t03c6esjZoVqaTYJJLnmmt5ejQK9a2n4Nlo12YItH6fsNjYvsUfBXJM9rY4hxCC2pj15KMlEWVlZ/pQtTzstfgq/IG89HvW1cY5U903qjYvZmTMuehXxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PA5KhoFogSbt0fcvb9wD4jdJAOpcV8gsTGAd8jIs/do=;
+ b=hQSTJblUrV32rVG+Xr3aD3eSrxLhTeJvT4KHkuq6uaift40SZAvSQ/mfD9/vtCNmm7aaPes7Qx3KULviZHQV3MEDSEgKJIfNopFMz0Aj/J/18JjQp/kNGbUT7e1kdpa6rHcFZ9/KMX5KCCsmQ8LU4QFMP9EDvVcIYNedRkKLkCDDap1/yX+k2/K0RV0aqMpoq3T1NGd2P7Tk48N1nVJaGwFabjJj+z1tRfMhKexsDPP1/SOEyyjiBiZ9xpZK8CWp33TDeppW2qfMg1dRhjoh+U4+Tu5jBWK9LZq7wM1Xy12blWtyTpJy5j/vuW6mIAPIsVw6yJeUnTtq1oOSj/6ErA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PA5KhoFogSbt0fcvb9wD4jdJAOpcV8gsTGAd8jIs/do=;
+ b=asZgKpPtlFUwVUdobkg2HqyALJYDQQeVSZ6ZndU1ZTC16n0EI4ve4XdZu1X4m7Zj/Ej02BvbAzzXSQCRerC1dFFZmJt0yNAT5RL+Zw6fOSujvIt/Ccau/jHmkrPUJNidP3AfLYqrLsaqnC3ACvasnUk79PfFEelvlrn3mFL2A1o=
+Authentication-Results: pengutronix.de; dkim=none (message not signed)
+ header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB8PR04MB6347.eurprd04.prod.outlook.com (2603:10a6:10:107::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.32; Tue, 29 Sep
+ 2020 13:15:45 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::d12e:689a:169:fd68]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::d12e:689a:169:fd68%8]) with mapi id 15.20.3412.029; Tue, 29 Sep 2020
+ 13:15:45 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     mkl@pengutronix.de, linux-can@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
+Subject: [PATCH V5 0/3] patch set for flexcan
+Date:   Wed, 30 Sep 2020 05:15:54 +0800
+Message-Id: <20200929211557.14153-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR06CA0189.apcprd06.prod.outlook.com (2603:1096:4:1::21)
+ To DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (119.31.174.71) by SG2PR06CA0189.apcprd06.prod.outlook.com (2603:1096:4:1::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.25 via Frontend Transport; Tue, 29 Sep 2020 13:15:44 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [119.31.174.71]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: a27836c2-c1b1-4a58-7f78-08d86479c657
+X-MS-TrafficTypeDiagnostic: DB8PR04MB6347:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB8PR04MB63475BA84FC8A4FA19D4E908E6320@DB8PR04MB6347.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LNSQPGTsWLEVZ1KuOT2e+3AuBjCYfnWMy1QpJu4OX0t7j1H4/GL6SqHgz/2eJJ/E9GhjWp1zVL2OHbIiI46x99DdsM14XgPeK6sgVK83BCQISm53EAcw1NrgK4uh+Iq5M88ynzdcy1XMJF6wZJ46wzZOYYZ9CcTex/3Bws10jyC4itEOTo5jw7otUOxUH0xmDfCjyibwHX2dIUtm41tt6XnGCGiz1co9it1mdo6C6dmOrlgW7bAeFf5Mxn3tYtf9nJC4wHz2fNj6yASG6qF9jmqjhdvg9dtJ1YfhpqpSGB8mzTROxhb1s24gAalNH/RTDCcOGbP31rFL1aMjqc+Dw/eSW6Gj+Pje47P7eZsxSg4vq9GeKfXZNKZduhLaJyKC
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(376002)(39850400004)(366004)(136003)(36756003)(4326008)(6512007)(4744005)(86362001)(66556008)(66476007)(66946007)(6486002)(5660300002)(8676002)(8936002)(186003)(16526019)(69590400008)(316002)(26005)(478600001)(6666004)(2616005)(83380400001)(52116002)(1076003)(956004)(6506007)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: bWRaVrWo4Xst8fQ9Bx2LIEvE9D26pfJg2boxie9MczWv6yDMMcVltNIJuYKMiAgLWvv8Y8kUJOGCQWzflPHSYKJxkwC3D1I4XDQNvLsTzukcIaYnn/D6Wxh9QDmAAWWTloSs7ecZcfhZmPZgxu4YpvF7KHG+XSMq82oHdfNAnwQid3hCh3p/sGocjavaklAtpondpb3dSq+88XFT2h/1pJ6YDyX/NGrf7B2i8JElfQyDdM2YdHY7Q23fhZ5woSZFOLnz+vNOBqVtTkufNVhT0hvxwjmbLbX7VrnlWFjuPyEunITM46qpVxOiWVg+H/5qffa0c8mpzPPhi24XrMmwYpu6M1J/DpNMrxVmTMcjFm78kZe55AqBm5bp8c7zdR5mXc4aOAmoCb6WG+QlveSGDWzBoZuvui6W8eFjTRC8QtLkzI5twly0aiwRX9SNrh1+scDJcsVG2HIP2PopLjxbN4sr08U9iXNickyo42EgxfCGwTdEFQsPg2m6J2anR7gjG6rPexIM2QmGUhkQL5apkOP7cSGQ4naFLwNYCUfXmxIrfc5JLu8MGDTT4XvsJ4LKHtcl1yMettYercNwKXWWcQwjsyAHpiT/e+/BCdXvUL4EfM2pmidHFVNzFX3fY8VdFjULAKi8nUdQQLWoDqQIWg==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a27836c2-c1b1-4a58-7f78-08d86479c657
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2020 13:15:45.7913
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: E+pQodTsq/HU/t3t2yX3me0o5xGlQbbN38dxLprNb928+YjPonpeQP65Qu/yMcEQm7N5UyvpHZWUuRh5ZGoIPQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6347
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to reach non-immediate remote node services that are
-accessed through an intermediate node, the route to the remote
-node needs to be saved.
+Add Flexcan ECC support.
 
-E.g for a [node1 <=> node2 <=> node3] network
-- node2 forwards node3 service to node1
-- node1 must save node2 as route for reaching node3
+Joakim Zhang (3):
+  can: flexcan: initialize all flexcan memory for ECC function
+  can: flexcan: add flexcan driver for i.MX8MP
+  can: flexcan: disable runtime PM if register flexcandev failed
 
-Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
----
- net/qrtr/qrtr.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/can/flexcan.c | 62 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 60 insertions(+), 2 deletions(-)
 
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index e09154b..bd9bcea 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -400,12 +400,13 @@ static void qrtr_node_assign(struct qrtr_node *node, unsigned int nid)
- {
- 	unsigned long flags;
- 
--	if (node->nid != QRTR_EP_NID_AUTO || nid == QRTR_EP_NID_AUTO)
-+	if (nid == QRTR_EP_NID_AUTO)
- 		return;
- 
- 	spin_lock_irqsave(&qrtr_nodes_lock, flags);
- 	radix_tree_insert(&qrtr_nodes, nid, node);
--	node->nid = nid;
-+	if (node->nid == QRTR_EP_NID_AUTO)
-+		node->nid = nid;
- 	spin_unlock_irqrestore(&qrtr_nodes_lock, flags);
- }
- 
-@@ -493,6 +494,12 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
- 
- 	qrtr_node_assign(node, cb->src_node);
- 
-+	if (cb->type == QRTR_TYPE_NEW_SERVER) {
-+		/* Remote node endpoint can bridge other distant nodes */
-+		const struct qrtr_ctrl_pkt *pkt = data + hdrlen;
-+		qrtr_node_assign(node, le32_to_cpu(pkt->server.node));
-+	}
-+
- 	if (cb->type == QRTR_TYPE_RESUME_TX) {
- 		qrtr_tx_resume(node, skb);
- 	} else {
 -- 
-2.7.4
+2.17.1
 
