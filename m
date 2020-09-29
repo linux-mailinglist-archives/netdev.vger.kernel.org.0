@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE27B27B973
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 03:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92CD127BA27
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 03:36:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727427AbgI2Bax (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 21:30:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39928 "EHLO mail.kernel.org"
+        id S1727440AbgI2Bay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 21:30:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39930 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727410AbgI2Baw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727409AbgI2Baw (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 28 Sep 2020 21:30:52 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 110EA21D46;
-        Tue, 29 Sep 2020 01:30:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5BABE21D7D;
+        Tue, 29 Sep 2020 01:30:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601343048;
-        bh=vCcve0wi8t7ey0BmtIhX6anlHczScg0Iv+pVMrRjvdw=;
+        s=default; t=1601343050;
+        bh=cUj5SgROSblXrtlG0+s1tblQ9AzoAgt44FoEKAJYqKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NWslRM2bOsIxUCju8cfkAK8ELDMwZ2Nr03uyjVBDkczOxvsrQ+BKeb55es7NTZWfR
-         miRZt++H4wBjr3s8QoyUdtkxwQYy2xJwsS7ckLuoubxln5dBnmR75hLMz6HjpVrrpg
-         6Ttj+Aiddc99yn5s0sutRn5EXfZ9OZoH3MiImS7k=
+        b=d6bXeH5JCmkrYSN+8Obi8I3vNonJ1iPytC8YAMd2JAJZWtKfAVyIJb6VwFC9uxCg1
+         G/YRI+olJvAfw1hOQGWGX6vU7lo0ZRUTnEfXI7KnqEPR0Y8jcinHYzWo1lJM+spFV3
+         TTqGaCGf6q0g2h+Sej0mcQMzgOeQfX1cIVovgoU0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>, Martin Schiller <ms@dev.tdt.de>,
+Cc:     Xie He <xie.he.0141@gmail.com>, Krzysztof Halasa <khc@pm.waw.pl>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.8 16/29] drivers/net/wan/lapbether: Make skb->protocol consistent with the header
-Date:   Mon, 28 Sep 2020 21:30:13 -0400
-Message-Id: <20200929013027.2406344-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.8 17/29] drivers/net/wan/hdlc: Set skb->protocol before transmitting
+Date:   Mon, 28 Sep 2020 21:30:14 -0400
+Message-Id: <20200929013027.2406344-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200929013027.2406344-1-sashal@kernel.org>
 References: <20200929013027.2406344-1-sashal@kernel.org>
@@ -44,53 +44,102 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Xie He <xie.he.0141@gmail.com>
 
-[ Upstream commit 83f9a9c8c1edc222846dc1bde6e3479703e8e5a3 ]
+[ Upstream commit 9fb030a70431a2a2a1b292dbf0b2f399cc072c16 ]
 
-This driver is a virtual driver stacked on top of Ethernet interfaces.
+This patch sets skb->protocol before transmitting frames on the HDLC
+device, so that a user listening on the HDLC device with an AF_PACKET
+socket will see outgoing frames' sll_protocol field correctly set and
+consistent with that of incoming frames.
 
-When this driver transmits data on the Ethernet device, the skb->protocol
-setting is inconsistent with the Ethernet header prepended to the skb.
+1. Control frames in hdlc_cisco and hdlc_ppp
 
-This causes a user listening on the Ethernet interface with an AF_PACKET
-socket, to see different sll_protocol values for incoming and outgoing
-frames, because incoming frames would have this value set by parsing the
-Ethernet header.
+When these drivers send control frames, skb->protocol is not set.
 
-This patch changes the skb->protocol value for outgoing Ethernet frames,
-making it consistent with the Ethernet header prepended. This makes a
-user listening on the Ethernet device with an AF_PACKET socket, to see
-the same sll_protocol value for incoming and outgoing frames.
+This value should be set to htons(ETH_P_HDLC), because when receiving
+control frames, their skb->protocol is set to htons(ETH_P_HDLC).
 
-Cc: Martin Schiller <ms@dev.tdt.de>
+When receiving, hdlc_type_trans in hdlc.h is called, which then calls
+cisco_type_trans or ppp_type_trans. The skb->protocol of control frames
+is set to htons(ETH_P_HDLC) so that the control frames can be received
+by hdlc_rcv in hdlc.c, which calls cisco_rx or ppp_rx to process the
+control frames.
+
+2. hdlc_fr
+
+When this driver sends control frames, skb->protocol is set to internal
+values used in this driver.
+
+When this driver sends data frames (from upper stacked PVC devices),
+skb->protocol is the same as that of the user data packet being sent on
+the upper PVC device (for normal PVC devices), or is htons(ETH_P_802_3)
+(for Ethernet-emulating PVC devices).
+
+However, skb->protocol for both control frames and data frames should be
+set to htons(ETH_P_HDLC), because when receiving, all frames received on
+the HDLC device will have their skb->protocol set to htons(ETH_P_HDLC).
+
+When receiving, hdlc_type_trans in hdlc.h is called, and because this
+driver doesn't provide a type_trans function in struct hdlc_proto,
+all frames will have their skb->protocol set to htons(ETH_P_HDLC).
+The frames are then received by hdlc_rcv in hdlc.c, which calls fr_rx
+to process the frames (control frames are consumed and data frames
+are re-received on upper PVC devices).
+
+Cc: Krzysztof Halasa <khc@pm.waw.pl>
 Signed-off-by: Xie He <xie.he.0141@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wan/lapbether.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wan/hdlc_cisco.c | 1 +
+ drivers/net/wan/hdlc_fr.c    | 3 +++
+ drivers/net/wan/hdlc_ppp.c   | 1 +
+ 3 files changed, 5 insertions(+)
 
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index e61616b0b91c7..b726101d4707a 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -198,8 +198,6 @@ static void lapbeth_data_transmit(struct net_device *ndev, struct sk_buff *skb)
- 	struct net_device *dev;
- 	int size = skb->len;
- 
--	skb->protocol = htons(ETH_P_X25);
--
- 	ptr = skb_push(skb, 2);
- 
- 	*ptr++ = size % 256;
-@@ -210,6 +208,8 @@ static void lapbeth_data_transmit(struct net_device *ndev, struct sk_buff *skb)
- 
- 	skb->dev = dev = lapbeth->ethdev;
- 
-+	skb->protocol = htons(ETH_P_DEC);
-+
+diff --git a/drivers/net/wan/hdlc_cisco.c b/drivers/net/wan/hdlc_cisco.c
+index 444130655d8ea..cb5898f7d68c9 100644
+--- a/drivers/net/wan/hdlc_cisco.c
++++ b/drivers/net/wan/hdlc_cisco.c
+@@ -118,6 +118,7 @@ static void cisco_keepalive_send(struct net_device *dev, u32 type,
+ 	skb_put(skb, sizeof(struct cisco_packet));
+ 	skb->priority = TC_PRIO_CONTROL;
+ 	skb->dev = dev;
++	skb->protocol = htons(ETH_P_HDLC);
  	skb_reset_network_header(skb);
  
- 	dev_hard_header(skb, dev, ETH_P_DEC, bcast_addr, NULL, 0);
+ 	dev_queue_xmit(skb);
+diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
+index 12b35404cd8e7..d6cfd51613ed8 100644
+--- a/drivers/net/wan/hdlc_fr.c
++++ b/drivers/net/wan/hdlc_fr.c
+@@ -433,6 +433,8 @@ static netdev_tx_t pvc_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			if (pvc->state.fecn) /* TX Congestion counter */
+ 				dev->stats.tx_compressed++;
+ 			skb->dev = pvc->frad;
++			skb->protocol = htons(ETH_P_HDLC);
++			skb_reset_network_header(skb);
+ 			dev_queue_xmit(skb);
+ 			return NETDEV_TX_OK;
+ 		}
+@@ -555,6 +557,7 @@ static void fr_lmi_send(struct net_device *dev, int fullrep)
+ 	skb_put(skb, i);
+ 	skb->priority = TC_PRIO_CONTROL;
+ 	skb->dev = dev;
++	skb->protocol = htons(ETH_P_HDLC);
+ 	skb_reset_network_header(skb);
+ 
+ 	dev_queue_xmit(skb);
+diff --git a/drivers/net/wan/hdlc_ppp.c b/drivers/net/wan/hdlc_ppp.c
+index 16f33d1ffbfb9..64f8556513369 100644
+--- a/drivers/net/wan/hdlc_ppp.c
++++ b/drivers/net/wan/hdlc_ppp.c
+@@ -251,6 +251,7 @@ static void ppp_tx_cp(struct net_device *dev, u16 pid, u8 code,
+ 
+ 	skb->priority = TC_PRIO_CONTROL;
+ 	skb->dev = dev;
++	skb->protocol = htons(ETH_P_HDLC);
+ 	skb_reset_network_header(skb);
+ 	skb_queue_tail(&tx_queue, skb);
+ }
 -- 
 2.25.1
 
