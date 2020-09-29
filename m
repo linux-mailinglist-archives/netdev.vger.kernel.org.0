@@ -2,102 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEC1E27D2BC
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 17:29:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38AB127D2CB
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 17:33:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728570AbgI2P3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 11:29:23 -0400
-Received: from mout.kundenserver.de ([212.227.17.10]:35143 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725765AbgI2P3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 11:29:23 -0400
-Received: from mail-qt1-f179.google.com ([209.85.160.179]) by
- mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1N4yNG-1kXHwj1vng-010vPY; Tue, 29 Sep 2020 17:29:21 +0200
-Received: by mail-qt1-f179.google.com with SMTP id c18so3862140qtw.5;
-        Tue, 29 Sep 2020 08:29:21 -0700 (PDT)
-X-Gm-Message-State: AOAM5317LkKvvxuzsi2MsXArNlWcblwQXLxwdFEBICLscrZIrvjBfQ8k
-        ORzPu/VLCD3IhI0jGnOnP5JTCwJFSMHy/bpI3nk=
-X-Google-Smtp-Source: ABdhPJz9k/+3tANJB0rfgjiHIQ7nS0YJd5brzJANpAcdDDYLyyNmthovIwW6+viK77YcNpw2ms452kKZTl6zTF0jGxE=
-X-Received: by 2002:a37:5d8:: with SMTP id 207mr5108378qkf.352.1601393358920;
- Tue, 29 Sep 2020 08:29:18 -0700 (PDT)
+        id S1729206AbgI2PdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 11:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46902 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725497AbgI2PdY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 11:33:24 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9445DC061755
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 08:33:24 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id ml18so26075pjb.2
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 08:33:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xdnx/+iVzw5VE3vVEpsA7ZB6zMSPgW1lE0R336Q+81c=;
+        b=T0ZPL6SvBmp/0/W/Zgeak6XZz4Ddc94BMa+zXFO5bUnJdGQl5Dmgp+H292pkYvMQFD
+         dSc16DhGI28iMErahoyckp9QRBLzUPLDP3mEh8h0ZxvatuZdZ7QYoZkls7w6Y99xBM5B
+         us18/PYXPJDHlSPqUObdVXr1pw3avUmij67PqjPoFkinxSfFlbRV5RZcTwHqzme8KEt8
+         myyAfJ+KO8cqH+rrV4zgEv4cdOr3CuxjQ7lbmqGTo7/lVGjw5gwELpgCIzHgqSqMjhnh
+         xwOLac1NLzPHm/d94x/iOiSCCs7QzdA21S+vMxsV1/qcWRkOZqp2Cb4uCWVipUzJ4sxR
+         X6Kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xdnx/+iVzw5VE3vVEpsA7ZB6zMSPgW1lE0R336Q+81c=;
+        b=fshyxwbGwbBmPZ1RU7qVQpX+AVTYfcxuyQTVfuaNvzrfzac55rXVAn6+DwEnXj5FgL
+         7oTgLvC7EnDV7mMlfE2CRebR3LKUTOrRgoYYkoENmolakD40ahXTgF3u0HITovgbl/Cf
+         WE+xaNEhxQkm8hDlc96Iwwl/9QVtpkpRB6og9JzZACWjM3jSoQEdcOellR0Leorl1lVQ
+         2toock9MJFz2G9aT+z4acizlf/VAxq4il4lANPuDZsi8ewFgmrEHVyZ0Nwu5T1x8Hz9G
+         fXyVwy60mNbqRfAgQb74o1mgKxetIqWdyBquDZjyTPsB9OBhtYSOMqMRzUPb/RovOV0e
+         FCuw==
+X-Gm-Message-State: AOAM531VBZMSj+D7pQsVyRgYwx2p7DsgYrL201NSNaOnC3qmu4qC2qpi
+        EWn2KHzJ9Qys/N7SDBsU2+E=
+X-Google-Smtp-Source: ABdhPJwH0nbZHj5mxlFSqwIVAUdz/JesUJ9h0JhepC+9e1e35QZ2YLBPNoHdI5GtcuMZuOvoQMm2/g==
+X-Received: by 2002:a17:90a:9a92:: with SMTP id e18mr4334078pjp.211.1601393604049;
+        Tue, 29 Sep 2020 08:33:24 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local (c-24-23-181-79.hsd1.ca.comcast.net. [24.23.181.79])
+        by smtp.googlemail.com with ESMTPSA id e16sm5086801pgv.81.2020.09.29.08.33.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Sep 2020 08:33:23 -0700 (PDT)
+Subject: Re: [iproute2-next v4 0/2] devlink: add flash update overwrite mask
+To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@mellanox.com>, Jakub Kicinski <kuba@kernel.org>
+References: <20200909222842.33952-1-jacob.e.keller@intel.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <198b8a34-49de-88e8-629c-408e592f42a6@gmail.com>
+Date:   Tue, 29 Sep 2020 08:33:21 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
- <20200715090400.4733-2-calvin.johnson@oss.nxp.com> <f7d2de9c-a679-1ad2-d6ba-ca7e2f823343@arm.com>
- <20200929051703.GA10849@lsv03152.swis.in-blr01.nxp.com> <20200929134302.GF3950513@lunn.ch>
- <CAHp75VcMbNqizMnwz_SwBEs=yPG0+uL38C0XeS7r_RqFREj7zQ@mail.gmail.com>
- <20200929143239.GI3950513@lunn.ch> <CAHp75VfjOBDpuY_df1wdxUUfFQV_t_k2PjrwHjd0dvE3jojZ=w@mail.gmail.com>
-In-Reply-To: <CAHp75VfjOBDpuY_df1wdxUUfFQV_t_k2PjrwHjd0dvE3jojZ=w@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 29 Sep 2020 17:29:02 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1AdhWdfC148p2kRgYg1f9oYioweGGXw=V8s04m4_FuaQ@mail.gmail.com>
-Message-ID: <CAK8P3a1AdhWdfC148p2kRgYg1f9oYioweGGXw=V8s04m4_FuaQ@mail.gmail.com>
-Subject: Re: [net-next PATCH v7 1/6] Documentation: ACPI: DSD: Document MDIO PHY
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev <netdev@vger.kernel.org>, "linux.cj" <linux.cj@gmail.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        nd <nd@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:mQmuimSRPfUjA+Y4ZwNetGU7p31zJt0xJ9vTV6xSsJCjn+JAcPP
- 7Y8uVwiI0XHNiQtPq1YZOV0Uk27X9/7/XRjf4MA7n3ZgSTLX8JUFDCWD+T6EHxAB6TUR6i8
- qPrLNds94QQrri0gAo8WpATQfK7vEdSHRkd30hn8+lQ8YFSiGFSd+8/6f/PbcvXPBaws+56
- +Jk8vK1m1UdNrZox1nLdA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:OzGHeofpsjY=:0Kk9t66pcqnJa7wGjNz5kl
- 3BDxOWcS+839O1WWIJOXAZe0ZpiGlFPu23CkTLgi/zNaNf56KXh0yugMS2JlFEWAYCwVHo1OV
- VBS5aF6A+jss26T9w2tUmuYP8NLBBZTjGRTVay/aKzGj3yALYnijlv6bD+s8aJY/COoZWniEl
- b4MVTga8zMp1pChC8arBF8xun9A0nvvP3tlzt3thXHrKgrOyI+P5hlgmLKomB+oDBEo4MtmCr
- m+gV0ZbXLdDIBGls5e+0h5jeQrjD8/RvjLVtowaNWUGimxihFIZ/I7MOolHuRm5eI3kNKqprl
- eR7I1sL6tX4Ga3KGrEXZN3+qdhga495rvfB+Rdw39ImW5eEFn9/GLZzBJ95HyEUhXlXSIsMf4
- cYERMbKcUYgdEXdtmjLtof3pDqVJJHoxnN2HgPrJGsNb5Yjw/Ys25oCRNx09ZuNkQ+bBTYMKw
- kdZ24h+3W4EcIuQ2DwD4YtQCISrYE3+FcI9RVGf9DDGXi+zpFXRlkY3JxivIf0HE0PrcoEa9s
- qyVwJu3kSMdZRpKtGuDhXEpJhTpy5JVryBvNUVTNk4/ZV3gfNQX38TMrf53YbqLjiakSOIwAK
- 1ptdq/PhLpxQakw/mB++C0AvcsTS4OrE9eXEIJ98U+wMN9LrbDHAgDBhoDBHa0dsA/hF1andd
- 1dUqOZv0du/2bdRBCDOoN6N939f1i+IrjioGcE9V3xbsOHRcVlM5Big6Hq6xgtwl1Wyd68n/r
- +nAye1ynCXgrlMy4GpnOu1/X7hWO9xID7eJrdNoZQIEHAs9drngQ/33WpCMxKz0zd9TyjEeuP
- I31cxUw98oHZnzBMvNZSLGijQXjEvZEQTE06SKktcnYJv+O+EbIPBODvF6LkymDbYovc64CfY
- 9mSMrvDiXIJjcd3Y0w85MyEGWfsIT/dvYuHX8F/Ba1+3dG32tcVROBCQnu/OiElfT/DEElHfQ
- o7irRRFA22g5Lp5MrFg/vYBSIdOsNuww8YZ9o6TX2LR3tfdNCQgtT
+In-Reply-To: <20200909222842.33952-1-jacob.e.keller@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 4:49 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Tue, Sep 29, 2020 at 5:32 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > On Tue, Sep 29, 2020 at 04:55:40PM +0300, Andy Shevchenko wrote:
-> >  Does Tianocore, or any
-> > other implementations, have the needed le32_to_cpu() calls so that
-> > they can boot on a big endian CPU?
->
-> Not of my knowledge.
+On 9/9/20 3:28 PM, Jacob Keller wrote:
+> This series implements the iproute2 side of the new
+> DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK.
+> 
+> This attribute is used to allow userspace to indicate what a device should
+> do with various subsections of a flash component when updating. For example,
+> a flash component might contain vital data such as the PCIe serial number or
+> configuration fields such as settings that control device bootup.
+> 
+> The overwrite mask allows the user to specify what behavior they want when
+> performing an update. If nothing is specified, then the update should
+> preserve all vital fields and configuration.
+> 
+> By specifying "overwrite identifiers" the user requests that the flash
+> update should overwrite any identifiers in the updated flash component with
+> identifier values from the provided flash image.
+> 
+>   $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite identifiers
+> 
+> By specifying "overwrite settings" the user requests that the flash update
+> should overwrite any settings in the updated flash component with setting
+> values from the provided flash image.
+> 
+>   $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite settings
+> 
+> These options may be combined, in which case both subsections will be sent
+> in the overwrite mask, resulting in a request to overwrite all settings and
+> identifiers stored in the updated flash components.
+> 
+>   $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite settings overwrite identifiers
+> 
+> Cc: Jiri Pirko <jiri@mellanox.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> 
+> Jacob Keller (2):
+>   Update devlink header for overwrite mask attribute
+>   devlink: support setting the overwrite mask
+> 
+>  devlink/devlink.c            | 48 ++++++++++++++++++++++++++++++++++--
+>  include/uapi/linux/devlink.h | 27 ++++++++++++++++++++
+>  2 files changed, 73 insertions(+), 2 deletions(-)
+> 
+> 
+> base-commit: ad34d5fadb0b4699b0fe136fc408685e26bb1b43
+> 
 
-> > Is it feasible to boot an ARM system big endian?
->
-> Not an ARM guy.
+Jacob:
 
-Most CPUs these days support both big-endian and little-endian,
-and either allow code to switch between the two modes at runtime
-or are stateless in the way that you have two sets of load/store
-instructions, making endianness purely a compiler construct (see
-also: Intel's icc compiler has a big-endian mode using the MOVBE
-instruction).
+Compile fails on Ubuntu 20.04:
 
-For Arm kernels, we assume that the firmware is little-endian, but
-you can build a big-endian kernel that switches into big-endian
-mode before doing anything else. As I said, I don't think that will
-ever be used with UEFI (and ACPI, by extension), since it would
-be a ton of work and few users care about big-endian kernels.
+devlink
+    CC       devlink.o
+In file included from devlink.c:29:
+devlink.c: In function ‘flash_overwrite_section_get’:
+../include/uapi/linux/devlink.h:249:42: warning: implicit declaration of
+function ‘_BITUL’ [-Wimplicit-function-declaration]
+  249 | #define DEVLINK_FLASH_OVERWRITE_SETTINGS
+_BITUL(DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT)
+      |                                          ^~~~~~
+devlink.c:1293:12: note: in expansion of macro
+‘DEVLINK_FLASH_OVERWRITE_SETTINGS’
+ 1293 |   *mask |= DEVLINK_FLASH_OVERWRITE_SETTINGS;
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    CC       mnlg.o
+    LINK     devlink
 
-    Arnd
+I updated headers in -next; please redo the patch set and roll the cover
+letter details in patch 2.
