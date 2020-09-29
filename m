@@ -2,58 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEBB027DCEA
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 01:48:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4371B27DCD4
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 01:43:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729179AbgI2Xsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 19:48:37 -0400
-Received: from namei.org ([65.99.196.166]:60428 "EHLO namei.org"
+        id S1729016AbgI2Xni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 19:43:38 -0400
+Received: from mga06.intel.com ([134.134.136.31]:13564 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728192AbgI2Xsg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 19:48:36 -0400
-X-Greylist: delayed 2347 seconds by postgrey-1.27 at vger.kernel.org; Tue, 29 Sep 2020 19:48:35 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by namei.org (8.14.4/8.14.4) with ESMTP id 08TN9KBD006807;
-        Tue, 29 Sep 2020 23:09:20 GMT
-Date:   Wed, 30 Sep 2020 09:09:20 +1000 (AEST)
-From:   James Morris <jmorris@namei.org>
-To:     Paul Moore <paul@paul-moore.com>
-cc:     selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH] lsm,selinux: pass the family information along with
- xfrm flow
-In-Reply-To: <160141647786.7997.5490924406329369782.stgit@sifl>
-Message-ID: <alpine.LRH.2.21.2009300909150.6592@namei.org>
-References: <160141647786.7997.5490924406329369782.stgit@sifl>
-User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
+        id S1728895AbgI2Xnh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 19:43:37 -0400
+IronPort-SDR: Ri2HLab/LEU91VJfEkHm2THRRpGYzS2KfQtl/eq6pbj8eiWI4TR5S5doIvQdwnYa4xMtIywamM
+ 9VfGKhjcnyGQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9759"; a="223915017"
+X-IronPort-AV: E=Sophos;i="5.77,320,1596524400"; 
+   d="scan'208";a="223915017"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 16:43:37 -0700
+IronPort-SDR: 4Bb8KL8d9XZJkcTMFb0ZQ4w7cw5SWWtQ8Q4OO7gG+NkLOz42JVJi0tgxOg5dCalQKuRcfnayh7
+ MzPgzonnRhmw==
+X-IronPort-AV: E=Sophos;i="5.77,320,1596524400"; 
+   d="scan'208";a="350464199"
+Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.4])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 16:43:36 -0700
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, Jacob Keller <jacob.e.keller@intel.com>
+Subject: [iproute2-next 0/2] devlink: add flash update overwrite mask
+Date:   Tue, 29 Sep 2020 16:42:35 -0700
+Message-Id: <20200929234237.3567664-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.28.0.497.g54e85e7af1ac
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Sep 2020, Paul Moore wrote:
+This series implements the iproute2 side of the new
+DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK.
 
-> As pointed out by Herbert in a recent related patch, the LSM hooks
-> should pass the address family in addition to the xfrm flow as the
-> family information is needed to safely access the flow.
-> 
-> While this is not technically a problem for the current LSM/SELinux
-> code as it only accesses fields common to all address families, we
-> should still pass the address family so that the LSM hook isn't
-> inherently flawed.  An alternate solution could be to simply pass
-> the LSM secid instead of flow, but this introduces the problem of
-> the LSM hook callers sending the wrong secid which would be much
-> worse.
-> 
-> Reported-by: Herbert Xu <herbert@gondor.apana.org.au>
-> Signed-off-by: Paul Moore <paul@paul-moore.com>
+This attribute is used to allow userspace to indicate what a device should
+do with various subsections of a flash component when updating. For example,
+a flash component might contain vital data such as the PCIe serial number or
+configuration fields such as settings that control device bootup.
 
-I'm not keen on adding a parameter which nobody is using. Perhaps a note 
-in the header instead?
+The overwrite mask allows the user to specify what behavior they want when
+performing an update. If nothing is specified, then the update should
+preserve all vital fields and configuration.
 
+By specifying "overwrite identifiers" the user requests that the flash
+update should overwrite any identifiers in the updated flash component with
+identifier values from the provided flash image.
+
+  $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite identifiers
+
+By specifying "overwrite settings" the user requests that the flash update
+should overwrite any settings in the updated flash component with setting
+values from the provided flash image.
+
+  $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite settings
+
+These options may be combined, in which case both subsections will be sent
+in the overwrite mask, resulting in a request to overwrite all settings and
+identifiers stored in the updated flash components.
+
+  $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite settings overwrite identifiers
+
+Jacob Keller (2):
+  Update kernel headers for devlink
+  devlink: support setting the overwrite mask
+
+ devlink/devlink.c            | 48 ++++++++++++++++++++++++++++++++++--
+ include/uapi/linux/devlink.h |  2 ++
+ 2 files changed, 48 insertions(+), 2 deletions(-)
+
+
+base-commit: d2be31d9b671ec0b3e32f56f9c913e249ed048bd
 -- 
-James Morris
-<jmorris@namei.org>
+2.28.0.497.g54e85e7af1ac
 
