@@ -2,112 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF96E27C54E
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 13:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C89627C820
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 13:59:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729717AbgI2LeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 07:34:25 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:46236 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729620AbgI2Ld1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 07:33:27 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08TBORjQ163313;
-        Tue, 29 Sep 2020 11:33:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=mime-version :
- message-id : date : from : to : cc : subject : references : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=HVb5LyBGgi3fU77zrxjv0Gn2ESkyJHXWAtQJVfno9vY=;
- b=mA1TO9XK9CFlHIQ1Yun1Dnxw6N9cPBw5zNjBXPKLstW5CEK/dCMyjqHZwn1UJUWLL/P/
- jTp3pOYAXd2XxG3lhmwYu+9gNyPRBLsbWNG2C0qUa/aLZqAHvhO5slRvkQQMXdEYhK4Y
- L0r0k5OaaMZo52ijgFKoZ+wCZWi5AeE+fF4YdhMvUQnvAprlNese8j3GFylPmhQ4tux/
- +sl5yJIH7vdH652YMp8LBEjgJPZqUeFuimTGztbVxqy2v+Y+QkPM1Z4wHo0xqA+D7gvD
- NuF+Tf2yIb34NM9e09QfdmSWXfp09a+YLngpiT4zDxi4ztlrkjxZqOELC1L/5pzS267g ig== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2130.oracle.com with ESMTP id 33su5at8h9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 29 Sep 2020 11:33:11 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08TBUpIB173331;
-        Tue, 29 Sep 2020 11:33:11 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 33uv2drd3n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Sep 2020 11:33:10 +0000
-Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08TBX9K5015999;
-        Tue, 29 Sep 2020 11:33:09 GMT
-Received: from localhost.uk.oracle.com (/10.175.172.184) by default (Oracle
- Beehive Gateway v4.0) with ESMTP ; Tue, 29 Sep 2020 04:32:47 -0700
+        id S1731651AbgI2L7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 07:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729322AbgI2Ll1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 07:41:27 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B7FC061755
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 04:41:27 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id c18so4986271wrm.9
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 04:41:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=konsulko.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XUngUu4HVak2fl3G5w7GkKRH/esnX0yARyWxIl0qyFM=;
+        b=G4qaSumRJCUQPH1Qvc9dip5Rt+mYe2cjC5IWlzOgoeSth7zBIaKGkR95HdAB0OVtpa
+         XTmNCr7nqCzFkF9bmuKVDmILNWaFK/nYE87rzKSrIzeT6EvmBpuUPcaqGySM0PAp4Xxl
+         Vz47kWT61X37khVa60mifW2m6DblWo0iWkGHo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XUngUu4HVak2fl3G5w7GkKRH/esnX0yARyWxIl0qyFM=;
+        b=iqz3pdBEG8Frp2H79O9x1hso8/IUohfVjmcblLQIrbV5cGxfkZ2gE5bUhCkcGu8BXw
+         wmQSPnoDrddXWk7dF47Ihp4YsucfyI/LuUkX7mokFrcjCUBZ9FsIp1Dg7n/+1bNOklaV
+         wi5BqHk5uyAcz20o07pyxRe/ck/19iQo9+dk2Oan5+Yv4QGpT+ey4z2ofCmc9yC7dc58
+         SslnYFG53iQKhX3kbspfcZNyc+zeaXjoiO06FXWOXC+3Pq/7cLD9e6IttzFWaZUAbuQV
+         KLP1S3Ap97YzX1Bjs/I9m/bv1ZtciqfP+6aMt5sqv6nkAXqX/PAFwCtMLyD2gHYPY/+w
+         jOfg==
+X-Gm-Message-State: AOAM5329D/ORida1CIdBXPU1z8a80sLoCzebXMxbSDTxw9yIrWEWXnu0
+        HmifSe0tp3g99qqPf5VjbIqCWgyRlS2nyQ==
+X-Google-Smtp-Source: ABdhPJy6WnAbqGE9MBfBy48s8h7QTvHkqRxdHNfrVINjX1VHZLMoE18NRemaeTB+Cxx1o9qZ+qHnZA==
+X-Received: by 2002:a05:6000:118a:: with SMTP id g10mr3929186wrx.67.1601379685471;
+        Tue, 29 Sep 2020 04:41:25 -0700 (PDT)
+Received: from taos.konsulko.bg (lan.nucleusys.com. [92.247.61.126])
+        by smtp.gmail.com with ESMTPSA id t15sm5826577wrp.20.2020.09.29.04.41.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Sep 2020 04:41:25 -0700 (PDT)
+From:   Petko Manolov <petko.manolov@konsulko.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, Petko Manolov <petko.manolov@konsulko.com>
+Subject: [PATCH] net: usb: pegasus: Proper error handing when setting pegasus' MAC address
+Date:   Tue, 29 Sep 2020 14:40:39 +0300
+Message-Id: <20200929114039.26866-1-petko.manolov@konsulko.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Message-ID: <1601379151-21449-2-git-send-email-alan.maguire@oracle.com>
-Date:   Tue, 29 Sep 2020 04:32:30 -0700 (PDT)
-From:   Alan Maguire <alan.maguire@oracle.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andriin@fb.com
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH bpf-next 1/2] selftests/bpf: fix unused-result warning in
- snprintf_btf.c
-References: <1601379151-21449-1-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1601379151-21449-1-git-send-email-alan.maguire@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9758 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 adultscore=0
- suspectscore=0 malwarescore=0 bulkscore=0 mlxlogscore=999 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009290103
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9758 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 suspectscore=0
- lowpriorityscore=0 spamscore=0 clxscore=1015 mlxscore=0 impostorscore=0
- malwarescore=0 phishscore=0 adultscore=0 bulkscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009290102
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel reports:
+Fix a bug in set_ethernet_addr() which does not take into account possible
+errors (or partial reads) returned by its helpers.  This can potentially lead to
+writing random data into device's MAC address registers.
 
-+    system("ping -c 1 127.0.0.1 > /dev/null");
-
-This generates the following new warning when compiling BPF selftests:
-
-  [...]
-  EXT-OBJ  [test_progs] cgroup_helpers.o
-  EXT-OBJ  [test_progs] trace_helpers.o
-  EXT-OBJ  [test_progs] network_helpers.o
-  EXT-OBJ  [test_progs] testing_helpers.o
-  TEST-OBJ [test_progs] snprintf_btf.test.o
-/root/bpf-next/tools/testing/selftests/bpf/prog_tests/snprintf_btf.c: In function ‘test_snprintf_btf’:
-/root/bpf-next/tools/testing/selftests/bpf/prog_tests/snprintf_btf.c:30:2: warning: ignoring return value of ‘system’, declared with attribute warn_unused_result [-Wunused-result]
-  system("ping -c 1 127.0.0.1 > /dev/null");
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  [...]
-
-Fixes: 076a95f5aff2 ("selftests/bpf: Add bpf_snprintf_btf helper tests")
-Reported-by: Daniel Borkmann <daniel@iogearbox.net>
-Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+Signed-off-by: Petko Manolov <petko.manolov@konsulko.com>
 ---
- tools/testing/selftests/bpf/prog_tests/snprintf_btf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/pegasus.c | 35 ++++++++++++++++++++++++++---------
+ 1 file changed, 26 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/snprintf_btf.c b/tools/testing/selftests/bpf/prog_tests/snprintf_btf.c
-index 3a8ecf8..3c63a70 100644
---- a/tools/testing/selftests/bpf/prog_tests/snprintf_btf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/snprintf_btf.c
-@@ -27,7 +27,7 @@ void test_snprintf_btf(void)
- 		goto cleanup;
+diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+index e92cb51a2c77..25855f976c1b 100644
+--- a/drivers/net/usb/pegasus.c
++++ b/drivers/net/usb/pegasus.c
+@@ -360,28 +360,45 @@ static int write_eprom_word(pegasus_t *pegasus, __u8 index, __u16 data)
+ }
+ #endif				/* PEGASUS_WRITE_EEPROM */
  
- 	/* generate receive event */
--	system("ping -c 1 127.0.0.1 > /dev/null");
-+	(void) system("ping -c 1 127.0.0.1 > /dev/null");
+-static inline void get_node_id(pegasus_t *pegasus, __u8 *id)
++static inline int get_node_id(pegasus_t *pegasus, u8 *id)
+ {
+-	int i;
+-	__u16 w16;
++	int i, ret;
++	u16 w16;
  
- 	if (bss->skip) {
- 		printf("%s:SKIP:no __builtin_btf_type_id\n", __func__);
+ 	for (i = 0; i < 3; i++) {
+-		read_eprom_word(pegasus, i, &w16);
++		ret = read_eprom_word(pegasus, i, &w16);
++		if (ret < 0)
++			return ret;
+ 		((__le16 *) id)[i] = cpu_to_le16(w16);
+ 	}
++
++	return 0;
+ }
+ 
+-static void set_ethernet_addr(pegasus_t *pegasus)
++static int set_ethernet_addr(pegasus_t *pegasus)
+ {
+-	__u8 node_id[6];
++	int ret;
++	u8 node_id[6];
+ 
+ 	if (pegasus->features & PEGASUS_II) {
+-		get_registers(pegasus, 0x10, sizeof(node_id), node_id);
++		ret = get_registers(pegasus, 0x10, sizeof(node_id), node_id);
++		if (ret < 0)
++			goto err;
+ 	} else {
+-		get_node_id(pegasus, node_id);
+-		set_registers(pegasus, EthID, sizeof(node_id), node_id);
++		ret = get_node_id(pegasus, node_id);
++		if (ret < 0)
++			goto err;
++		ret = set_registers(pegasus, EthID, sizeof(node_id), node_id);
++		if (ret < 0)
++			goto err;
+ 	}
++
+ 	memcpy(pegasus->net->dev_addr, node_id, sizeof(node_id));
++
++	return 0;
++err:
++	dev_err(&pegasus->intf->dev, "device's MAC address not set.\n");
++	return ret;
+ }
+ 
+ static inline int reset_mac(pegasus_t *pegasus)
 -- 
-1.8.3.1
+2.28.0
 
