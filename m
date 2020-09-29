@@ -2,72 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78CDE27CDB2
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:46:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1B6427CE0E
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731920AbgI2MqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 08:46:15 -0400
-Received: from mail-io1-f77.google.com ([209.85.166.77]:52391 "EHLO
-        mail-io1-f77.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387570AbgI2MqJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 08:46:09 -0400
-Received: by mail-io1-f77.google.com with SMTP id m4so2744298iov.19
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 05:46:08 -0700 (PDT)
+        id S1728448AbgI2MuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 08:50:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60833 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725554AbgI2MuK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 08:50:10 -0400
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601383809;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mM7JGFZ14VdMV+ifvneOX/UKONF5CIbp3sZz7ji4/m0=;
+        b=FGpkiHj6Ys5OMuqmCJCNZQhHxcVzNVwC0Sk71Y9si6HTVV6YpAgHk7YfnmmnlzqvHmfg5G
+        mRwhzm1UjCrENuIGR6gVz56ZXbrkQRK9/UvQCZtr2mXK4fZEtKYcviJHbxr/mtPpabaiAl
+        YY+fGRNYYNzZXsZSDrgC0vZrsjiwYvM=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-473-gQDqgCjBMOGv5NLdCEuxDA-1; Tue, 29 Sep 2020 08:50:05 -0400
+X-MC-Unique: gQDqgCjBMOGv5NLdCEuxDA-1
+Received: by mail-oi1-f199.google.com with SMTP id m5so1566446oib.19
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 05:50:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=aIH5+9o/WQ3U3fksD3TLsum6UmaiEhIKEW/H6MhmdWk=;
-        b=b0mq8nOqvkqeS86UNcVE8+9jmAlD1XYYh+U2+5hjEEbSTbklWO3lL9QGp4V0Wtz5lY
-         dqD+FYzdhmNXpmjfBXMZj1tyga4UPpBc1vkiD8/IOpeB7U+6gfmXkyrnItXCJoeJTWZ1
-         Bd5DfoR+78POuoBj2vyMZUexnuUq29hQR62ClBxQuWaYMiLVVTUBLpW0sw9zovE+b/y4
-         VaYY7ci1r/JgnoJNjJZNThIvqtZgVG51guQuhHsQJYGahGeo1qsZwsMagTcbZH/u+GFc
-         KjbyYyUCp9FvXq2dAFoTAJbmM/4hp/lTD0n2NRwQKEwi8CUFN04j9QAETxXbWwnMNCUQ
-         3yMA==
-X-Gm-Message-State: AOAM530FXG1rLl/Fh7k0IZcl7LyhunAufbf5vrF7sNssAsKE2HuQVs3l
-        8Xh+fX1uVWrK51zYNATXiar2ybDwBraSLXj5m4J6D6dFyN9+
-X-Google-Smtp-Source: ABdhPJwXmI8uoWFeVU57vW1YfSovrR/LKjfjYU2pu0Qiw8c9CBL2Er2mOJAkOIOmHv3XCnBwKzhAH9Zj40sRAD6sOGgoDx76gFvA
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=mM7JGFZ14VdMV+ifvneOX/UKONF5CIbp3sZz7ji4/m0=;
+        b=nTzRyVnNMg6ZClRM5QPseeaRezBkSaheqXac+u+qIuN38bE8+OCx3bqc/6ALar30Bc
+         qiWz0yopRr0li2IzHgJHXlipzG/+Pb+tEjvCwM5dFSxgN3JuTdWcke2skt1lXDlUdsVJ
+         c/7tJQD4JlvUUE/u8HweA+0gAa0mUniAGbFWYHWMvk62o8DU0kG5qhxFsRVBSTy1m346
+         Bal8elWdbiMVTolJhQdgmkPpePhdXu5p+VdvSxhsRrAi5s8KplzHbgbgfhN3lvem/H9Z
+         8L38R+VOP7qlUMD+r9TC65I5jMSB4RChFQZWnKUmJq5lW2p+Oc9gxs5kY8q0ZgikPQrh
+         /FpA==
+X-Gm-Message-State: AOAM530g92VzcupmFgEppOuXlu2s7ZIQrQ0SfX6cd2wKNbyY3IdhWbT5
+        NfiL2ZCmW/0Wlpbwl7YD3e/4H7Yo+pCzPCABKhQhrYTEyI6kLllOY3Sq2p5trfNVDvy0vaOxyMT
+        p+gc70ePlAORlhYSu
+X-Received: by 2002:a9d:6c4d:: with SMTP id g13mr2500825otq.367.1601383804698;
+        Tue, 29 Sep 2020 05:50:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw4Yi/xiyKzsAjwnkcMnL9GPFexMht69FB/IkIio1Gj1RE3uQyyPgACZ0MZq1tCC4E7GaO1gA==
+X-Received: by 2002:a9d:6c4d:: with SMTP id g13mr2500801otq.367.1601383804352;
+        Tue, 29 Sep 2020 05:50:04 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id j26sm2841526oor.21.2020.09.29.05.50.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Sep 2020 05:50:03 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 27577183C5D; Tue, 29 Sep 2020 14:50:02 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     daniel@iogearbox.net, ast@fb.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Alan Maguire <alan.maguire@oracle.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf_iter: don't fail test due to
+ missing __builtin_btf_type_id
+In-Reply-To: <alpine.LRH.2.21.2009291333310.26076@localhost>
+References: <20200929123004.46694-1-toke@redhat.com>
+ <alpine.LRH.2.21.2009291333310.26076@localhost>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 29 Sep 2020 14:50:02 +0200
+Message-ID: <87zh5821dx.fsf@toke.dk>
 MIME-Version: 1.0
-X-Received: by 2002:a92:360d:: with SMTP id d13mr2524504ila.99.1601383568081;
- Tue, 29 Sep 2020 05:46:08 -0700 (PDT)
-Date:   Tue, 29 Sep 2020 05:46:08 -0700
-In-Reply-To: <000000000000680f2905afd0649c@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b98b5505b0732a29@google.com>
-Subject: Re: BUG: unable to handle kernel paging request in bpf_trace_run2
-From:   syzbot <syzbot+cc36fd07553c0512f5f7@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        corbet@lwn.net, daniel@iogearbox.net, davem@davemloft.net,
-        dsahern@gmail.com, hawk@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@chromium.org, kuba@kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mingo@redhat.com, netdev@vger.kernel.org, rostedt@goodmis.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+Alan Maguire <alan.maguire@oracle.com> writes:
 
-commit 58956317c8de52009d1a38a721474c24aef74fe7
-Author: David Ahern <dsahern@gmail.com>
-Date:   Fri Dec 7 20:24:57 2018 +0000
+> On Tue, 29 Sep 2020, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>
+>> The new test for task iteration in bpf_iter checks (in do_btf_read()) if=
+ it
+>> should be skipped due to missing __builtin_btf_type_id. However, this
+>> 'skip' verdict is not propagated to the caller, so the parent test will
+>> still fail. Fix this by also skipping the rest of the parent test if the
+>> skip condition was reached.
+>>=20
+>> Fixes: b72091bd4ee4 ("selftests/bpf: Add test for bpf_seq_printf_btf hel=
+per")
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>
+> Reviewed-by: Alan Maguire <alan.maguire@oracle.com>
+>
+> Thanks for fixing this Toke!
 
-    neighbor: Improve garbage collection
+You're welcome! :)
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12d31675900000
-start commit:   12450081 libbpf: Fix native endian assumption when parsing..
-git tree:       bpf
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=11d31675900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=16d31675900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5ac0d21536db480b
-dashboard link: https://syzkaller.appspot.com/bug?extid=cc36fd07553c0512f5f7
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1365d2c3900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d5f08d900000
+-Toke
 
-Reported-by: syzbot+cc36fd07553c0512f5f7@syzkaller.appspotmail.com
-Fixes: 58956317c8de ("neighbor: Improve garbage collection")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
