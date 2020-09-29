@@ -2,189 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D224127DC08
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 00:29:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2129327DC2B
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 00:39:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729111AbgI2W3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 18:29:07 -0400
-Received: from mail-eopbgr130081.outbound.protection.outlook.com ([40.107.13.81]:6339
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728041AbgI2W3F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 18:29:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KzA5EDCvZ7tWyA8DUdjfZGoRqmi3pC6D+zHoW5MQKmcUemTbtzONZt3ibNFIAIei0kBq+IBxXQugHJNr0FEDqlFcHG7O8Cn9Gu2Rp6Bk3+EythEaZNEkgONiRetE2XVA7DgcySmiZAeyvT+uMBIzzEZoPuexeH1iDrEW624uNpmBpZK6B4NCoErk4uyoL9N9Fo53SWuFO966wKOfFenG5t4U5lC1pQU6lAcNhHpaxJ8p3pCGllw7ylD+gfizBAYp7uyqTd16iVKkrWmphsFYbX0bkEg6Hmc4ff049iGR60vdtGkB2GiryhmiuGXSVBE610K3J2vV7rT2R73HSTcUXQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HQYh6a0XJ/LryXyYBk6ogsbppucJcGhl3i5rStd9Bj0=;
- b=efwP/jtD8oh0jpDlVEWjVGnQVkUK4OA1f5PLQT4myHnl1qCTtro+mwOZpI2Ddw1OVTqNBjqXZQI1F7rvSrQK7kfryzy2C0dEXh8WGF6H0WAe8TA2WdnXY+yCcqurkN+KJbESfqIUGwJxgtB/+yvjuH3IZ/DIh9zK+TIUjAWGuG4Ruw0jV78BE/R8nnJNXDrowmcvi5dScRh26sdFof2tRy1Wjuz7sXHVSQYlBDyY3CX5ttoSQeEO4ePpd3mZOvNF0i1CWLmOAgYePFdjFeW0L+RBCBZsPN8kxjOsvFku/YDmboYK9/30bstZeCedQtgBlKWVVi3g1XVRqYqvmPhoEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HQYh6a0XJ/LryXyYBk6ogsbppucJcGhl3i5rStd9Bj0=;
- b=CnV1oFvOFS+zpFkR4jgVXGlFdHovR0zX3Y2OTOZcKhiFTlu9x9oxyfGUIAjQ5rVrEfAXnToo68N3TBN9oHzrrR8kSo9NtJGgnf3eMpLYqHF1AZzu0gfY6Py2P1iWgxRjNx9MlQYQut/3DqMNyZR3ypzX7BvbJWzVBOb2KmJaVhU=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR0402MB2797.eurprd04.prod.outlook.com (2603:10a6:800:ad::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.25; Tue, 29 Sep
- 2020 22:28:19 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.032; Tue, 29 Sep 2020
- 22:28:19 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     davem@davemloft.net
-Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        horatiu.vultur@microchip.com, joergen.andreasen@microchip.com,
-        allan.nielsen@microchip.com, alexandru.marginean@nxp.com,
-        claudiu.manoil@nxp.com, xiaoliang.yang_1@nxp.com,
-        hongbo.wang@nxp.com, netdev@vger.kernel.org, kuba@kernel.org,
-        UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 13/13] net: mscc: ocelot: look up the filters in flower_stats() and flower_destroy()
-Date:   Wed, 30 Sep 2020 01:27:33 +0300
-Message-Id: <20200929222733.770926-14-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200929222733.770926-1-vladimir.oltean@nxp.com>
-References: <20200929222733.770926-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [188.26.229.171]
-X-ClientProxiedBy: AM0PR06CA0126.eurprd06.prod.outlook.com
- (2603:10a6:208:ab::31) To VI1PR04MB5696.eurprd04.prod.outlook.com
- (2603:10a6:803:e7::13)
+        id S1728487AbgI2WjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 18:39:03 -0400
+Received: from sonic313-15.consmr.mail.ne1.yahoo.com ([66.163.185.38]:43314
+        "EHLO sonic313-15.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728384AbgI2WjC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 18:39:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1601419139; bh=5H2Di+3rUkkCJ2VDEQ4Nf8oV0m+Uk7fsJ6yostsItLE=; h=Subject:To:Cc:References:From:Date:In-Reply-To:From:Subject; b=Jhn+rLxkKCk1Zb2ZrWCnc9ISLYyFViZhN+tYiXrJK+0ABVMlrvbHhWnCzREtejfj51qKtl7Q7EBu0AHVfurV+t43HayBhfo6QH5my6wfJRaVBb1y/JKM9E+2CrFv2HrMza76H+Sr12vcUI3EL+DPmTkDUZJCsmi3h5Qd0F30TqR/H6++xK4C6m8IT7OgPdsLM7JD3ooP/2WO+cwqazGVnZfgo8XKSZ5Ef1I0HBCsZamjKpxv6aO5mKdP2F9REfRna1XU4JaOp5COPkgQdTyJzAHKqlQImY9pUOO5F3p1VUW8I35ISxRhZwGJHUDOwgVK0lTmaGEAQ27vrPjadNabgw==
+X-YMail-OSG: 5.K66VwVM1mtvjEvjGwCYWY8BYDodEWYV3Bty_gUYDxqF70lP1f4mB3lOGElnCS
+ byrP7v51UVFqIhHBfA0Xjvp1Gvx6oWi4vDKS.TF2ob3ui7n3288vLwKhnu3U0vGzoBkEQYtRao0R
+ mutO_M4.0ZKku9_moU458A.Ay0v6Wuyti3yPKtIKmjVQYsvoTeiOTyK5VncixegBuc9WESRIMgbj
+ S5I2W8hrsjvdZizakh8W2P8UmAQWs3WNoOwTcvFa77cZxbWRQk_36xw94o9Xqtfhdh6a9XMGqKxj
+ QxdoZbmcEkoRqE1zpgQjBsWYDv2tDZ0_3ikHypgW9Vs05blrWEIsT.f8JQWQIPIt9BIVKNH78Lal
+ l0bGhFWhHwkEzBsCYwVITDrMWrGakT6cfGTAxRkFsyDRNm5967oEtDYFqhx0KOGbC7BOvkILCbmr
+ W6rzXAYQRFHDsuF_hefXf4OoQy2sz3GTJ.RHB6_th2lHGu1UszoomV3l84aKk.zIPTDc3pLm3P2p
+ k2qw4mcwOC23O6ScfOx_ck..tFU6.77dMvhkeAP.uZ3I7Scg8YyiRvfXlyjiDphKqK_vrJtBYBmf
+ tc0hx4WFkYr5N4LXb2guXxsK3nRsRhp8EDXS9y2f5HCZ0feZWP0lMk6lwt9VSDPHFQqeK54Hjl7w
+ hSzAc.63Kynf2W08Y.YMkl30ba_fiZuR3VTUMxljViv1._Rq82h1sFQwpeVnwT_TRbHMzWg1wrlh
+ Fe8DJ0vH.uKI3e0uYlsTgJLawPqgFT1ct5JDxlZzD6UupgC10b.LQOlLXuMqdsmvIzAcGTmpEkP3
+ .kWbmkjA0ZM4Xsz0QEh2xkwPld9mClujoh5N_POwp9TeoTYorcx.mWKHgfu3rh2iYYzyXs_X_tmE
+ HEmpadtJv7v5B07XI0xcw1okBzSfTbYUGttwwpmQy_GKSAobMdoER7AT7VzKrvUMTs6oq2XH_fxQ
+ xkgbHEDTXILYTJedb3ejsApF20Qwvdn63jzeIr6lhogYl9t48r7ZGNhjV4XVTfHAHVoGxoSxH9jm
+ DAR4bBCyAj1bf7nl6pZCGCVsllgPuUhz6Uxv9RjUa7FrRD8OTGCz_qumkj8RW7hYNTSOZbNM5WUG
+ o.Sh2VrQMVVmdYt92VTgcudl4oKYL91Is5rPRFkGHsFKAot.gQd4ayHPZo3by8kJtZbuPS3ou1Id
+ pzd3VgJsVexYQFoWwAURz8R.BPkCgEUcqnNkhCmxzyYAtB9NHB9y3KlKsGyhKSXUG2RzWKV_cZ2l
+ D8WUdhyksD_93_CXvsh4_ywLR0cCVIPx4O66bTQ.5CiY62iTsrmrknYhk5QnE87cf8PEMl1xe7AG
+ dtHe2FcrTZu2lWnJ4BJSZ1pTuuqF7gMylznRHCFnQYrsUs2swcQsyTly5B_a4DRZluAnKY0DLuLM
+ .FegG7oz7f8u4VGuzZ1wlSl41KNtKR8CUOkmz4B7G1S7_PuB4XMVBQJLcx6IfzKqfpVa.BbfDjbT
+ vzsv2KTHEuR.nijf5eKbUOJpZ2ptfR4ug16nPAC1F9zIWF5jPDbO8rXCARr0y8MhEDdASgd7jrpO
+ KH2w42D_VbJo-
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.ne1.yahoo.com with HTTP; Tue, 29 Sep 2020 22:38:59 +0000
+Received: by smtp402.mail.gq1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 22585821fbf3659c583798e09b6c7ac0;
+          Tue, 29 Sep 2020 22:38:56 +0000 (UTC)
+Subject: Re: [RFC PATCH] lsm,selinux: pass the family information along with
+ xfrm flow
+To:     Paul Moore <paul@paul-moore.com>, selinux@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>, netdev@vger.kernel.org
+References: <160141647786.7997.5490924406329369782.stgit@sifl>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+Message-ID: <d42b766d-595a-b360-df13-0a3fe7a8bd7f@schaufler-ca.com>
+Date:   Tue, 29 Sep 2020 15:38:56 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.26.229.171) by AM0PR06CA0126.eurprd06.prod.outlook.com (2603:10a6:208:ab::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.32 via Frontend Transport; Tue, 29 Sep 2020 22:28:15 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 80eacfde-fbfe-4df6-4d92-08d864c6f60c
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB2797:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB2797848A9038D253077BE5FAE0320@VI1PR0402MB2797.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bnRQPaS0V/mmiglUJN1UFYPy6JRQv5VdzeUhN7kxDt5cE9G1rtzJClOjxj26djU45VwHaZBNiCmHCfScd94sAG0vy0cODQoCM3G1b/BfDjzY0m+pxH/7Go78zd9va+hAPNRtydjgYqEljXvDZpQyIb8FCG13ni/hV27Xlln3BGAVGX9HfDQs+6gZOAfdatFRlqMX6PtqWq0WB1dBCvVUBmRriQOmUqUUg3fIEy0vxBfVK8nzV5Alih3RWG5cEM/pHfOMsLqSg0bgvBIkGUMsKTHlLj4nyaLpS5kCt8ZxyamX37jWrVcGnDnI7Ygl3P0WaYqeGpbjQEpwk1LWBpLGy1gxBP3HSJuAg2TY3VsykKya6VqsLdMJ/QmroWa13eNvgQlg+eyLwJzaomPiywZJlf+EK8MchTv4CgGJCgPY9HQCAJxUepaONMXxWZGNneoT
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(136003)(376002)(396003)(39860400002)(8936002)(956004)(478600001)(1076003)(66946007)(69590400008)(6916009)(86362001)(66476007)(6486002)(316002)(83380400001)(2616005)(66556008)(6512007)(36756003)(44832011)(16526019)(2906002)(186003)(6666004)(52116002)(26005)(4326008)(6506007)(8676002)(7416002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: p/wNaKVZeJnu/rnFh2kFMfiiw6x82hNhjT8cGV/OFAFoT2qQL44fo41imGkMUteQZ39H6DGmH4bWIbEJLgOkzGdHUcL+3yBfQdsVwhMyUiCHsUE/Efi69z9moVyii+ut8KZiZUQZkFnaIhS62hrFG4EQj3VWabmdAcfXO3mZGf2VNSzaIqAJcmCjFHba3Rp2+Fs0C9czwqo5XjHfnZvqL3+j3DXdAQZ2t4/gnQ+tb0fCDiPiwtmw6ZvwuUZFJ8LppxNN4dWltAxjkwXlJ+0YORZ1U67XgAew3Vi/W7DNrsVXFY9cracDqtKW610eDx6BnEKcTTzoDa40R/geya8o8eY/1xZ4uEgmPAOXNMmjRQQ4RZcR1L/PfE2Vt3iJRvvNeBX9v58bHuXJcK2gheXnOhZp+ALU1cSyQ0DQmMuhm8Uq8dkSz1TJTnpMOkqgcR/xJxnq+ofnjAU6ym/EFG4fljjr3BLILc3b9DndAM9FBCnldOfqzyAamdzDA077sj33wgUQhfXryoPrdQkG1+FVSAyZJlWtTlNdTySNjFKlSpIF9JaF8XSB8ilaWN51j1gJ81Z38YVzgQFLk6Kt0kzcIyuHE/1nlJBbmniEwJsTMtD0IQUO+nIKemLCKdboc0LtFO++4xZ5DQB8vKgFcl4XnQ==
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80eacfde-fbfe-4df6-4d92-08d864c6f60c
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2020 22:28:16.9477
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VcZjOBx+Dw+hWWJrGYxfjUvfc4J7SkxxUI23DHJ6JeR3N45DQlyMjmcPwLfO2dWUb8MsBQWaUDIxXZrcovwySQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2797
+In-Reply-To: <160141647786.7997.5490924406329369782.stgit@sifl>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Mailer: WebService/1.1.16718 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo Apache-HttpAsyncClient/4.1.4 (Java/11.0.7)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently a new filter is created, containing just enough correct
-information to be able to call ocelot_vcap_block_find_filter_by_index()
-on it.
+On 9/29/2020 2:54 PM, Paul Moore wrote:
+> As pointed out by Herbert in a recent related patch, the LSM hooks
+> should pass the address family in addition to the xfrm flow as the
+> family information is needed to safely access the flow.
+>
+> While this is not technically a problem for the current LSM/SELinux
+> code as it only accesses fields common to all address families, we
+> should still pass the address family so that the LSM hook isn't
+> inherently flawed.  An alternate solution could be to simply pass
+> the LSM secid instead of flow, but this introduces the problem of
+> the LSM hook callers sending the wrong secid which would be much
+> worse.
+>
+> Reported-by: Herbert Xu <herbert@gondor.apana.org.au>
+> Signed-off-by: Paul Moore <paul@paul-moore.com>
 
-This will be limiting us in the future, when we'll have more metadata
-associated with a filter, which will matter in the stats() and destroy()
-callbacks, and which we can't make up on the spot. For example, we'll
-start "offloading" some dummy tc filter entries for the TCAM skeleton,
-but we won't actually be adding them to the hardware, or to block->rules.
-So, it makes sense to avoid deleting those rules too. That's the kind of
-thing which is difficult to determine unless we look up the real filter.
+For what it may be worth
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes since RFC v2:
-None.
+Acked-by: Casey Schaufler <casey@schaufler-ca.com>
 
-Changes since RFC v1:
-None.
 
- drivers/net/ethernet/mscc/ocelot_flower.c | 23 ++++++++++++++---------
- drivers/net/ethernet/mscc/ocelot_vcap.c   |  8 ++++----
- 2 files changed, 18 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index ae51ec76b9b1..0988bc9aaac5 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -234,28 +234,33 @@ EXPORT_SYMBOL_GPL(ocelot_cls_flower_replace);
- int ocelot_cls_flower_destroy(struct ocelot *ocelot, int port,
- 			      struct flow_cls_offload *f, bool ingress)
- {
--	struct ocelot_vcap_filter filter;
-+	struct ocelot_vcap_block *block = &ocelot->block;
-+	struct ocelot_vcap_filter *filter;
- 
--	filter.prio = f->common.prio;
--	filter.id = f->cookie;
-+	filter = ocelot_vcap_block_find_filter_by_id(block, f->cookie);
-+	if (!filter)
-+		return 0;
- 
--	return ocelot_vcap_filter_del(ocelot, &filter);
-+	return ocelot_vcap_filter_del(ocelot, filter);
- }
- EXPORT_SYMBOL_GPL(ocelot_cls_flower_destroy);
- 
- int ocelot_cls_flower_stats(struct ocelot *ocelot, int port,
- 			    struct flow_cls_offload *f, bool ingress)
- {
--	struct ocelot_vcap_filter filter;
-+	struct ocelot_vcap_block *block = &ocelot->block;
-+	struct ocelot_vcap_filter *filter;
- 	int ret;
- 
--	filter.prio = f->common.prio;
--	filter.id = f->cookie;
--	ret = ocelot_vcap_filter_stats_update(ocelot, &filter);
-+	filter = ocelot_vcap_block_find_filter_by_id(block, f->cookie);
-+	if (!filter)
-+		return 0;
-+
-+	ret = ocelot_vcap_filter_stats_update(ocelot, filter);
- 	if (ret)
- 		return ret;
- 
--	flow_stats_update(&f->stats, 0x0, filter.stats.pkts, 0, 0x0,
-+	flow_stats_update(&f->stats, 0x0, filter->stats.pkts, 0, 0x0,
- 			  FLOW_ACTION_HW_STATS_IMMEDIATE);
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-index aa6f6a770199..75eca3457e6e 100644
---- a/drivers/net/ethernet/mscc/ocelot_vcap.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-@@ -994,7 +994,7 @@ int ocelot_vcap_filter_stats_update(struct ocelot *ocelot,
- 				    struct ocelot_vcap_filter *filter)
- {
- 	struct ocelot_vcap_block *block = &ocelot->block;
--	struct ocelot_vcap_filter *tmp;
-+	struct ocelot_vcap_filter tmp;
- 	int index;
- 
- 	index = ocelot_vcap_block_get_filter_index(block, filter);
-@@ -1004,9 +1004,9 @@ int ocelot_vcap_filter_stats_update(struct ocelot *ocelot,
- 	vcap_entry_get(ocelot, filter, index);
- 
- 	/* After we get the result we need to clear the counters */
--	tmp = ocelot_vcap_block_find_filter_by_index(block, index);
--	tmp->stats.pkts = 0;
--	is2_entry_set(ocelot, index, tmp);
-+	tmp = *filter;
-+	tmp.stats.pkts = 0;
-+	is2_entry_set(ocelot, index, &tmp);
- 
- 	return 0;
- }
--- 
-2.25.1
-
+> ---
+>  include/linux/lsm_hook_defs.h   |    2 +-
+>  include/linux/lsm_hooks.h       |    1 +
+>  include/linux/security.h        |    7 +++++--
+>  net/xfrm/xfrm_state.c           |    4 ++--
+>  security/security.c             |    5 +++--
+>  security/selinux/include/xfrm.h |    3 ++-
+>  security/selinux/xfrm.c         |    3 ++-
+>  7 files changed, 16 insertions(+), 9 deletions(-)
+>
+> diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+> index 2a8c74d99015..e3c3b5d20469 100644
+> --- a/include/linux/lsm_hook_defs.h
+> +++ b/include/linux/lsm_hook_defs.h
+> @@ -349,7 +349,7 @@ LSM_HOOK(int, 0, xfrm_state_delete_security, struct xfrm_state *x)
+>  LSM_HOOK(int, 0, xfrm_policy_lookup, struct xfrm_sec_ctx *ctx, u32 fl_secid,
+>  	 u8 dir)
+>  LSM_HOOK(int, 1, xfrm_state_pol_flow_match, struct xfrm_state *x,
+> -	 struct xfrm_policy *xp, const struct flowi *fl)
+> +	 struct xfrm_policy *xp, const struct flowi *fl, unsigned short family)
+>  LSM_HOOK(int, 0, xfrm_decode_session, struct sk_buff *skb, u32 *secid,
+>  	 int ckall)
+>  #endif /* CONFIG_SECURITY_NETWORK_XFRM */
+> diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
+> index 9e2e3e63719d..ea088aacfdad 100644
+> --- a/include/linux/lsm_hooks.h
+> +++ b/include/linux/lsm_hooks.h
+> @@ -1093,6 +1093,7 @@
+>   *	@x contains the state to match.
+>   *	@xp contains the policy to check for a match.
+>   *	@fl contains the flow to check for a match.
+> + *	@family the flow's address family.
+>   *	Return 1 if there is a match.
+>   * @xfrm_decode_session:
+>   *	@skb points to skb to decode.
+> diff --git a/include/linux/security.h b/include/linux/security.h
+> index 0a0a03b36a3b..701b41eb090c 100644
+> --- a/include/linux/security.h
+> +++ b/include/linux/security.h
+> @@ -1625,7 +1625,8 @@ void security_xfrm_state_free(struct xfrm_state *x);
+>  int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
+>  int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+>  				       struct xfrm_policy *xp,
+> -				       const struct flowi *fl);
+> +				       const struct flowi *fl,
+> +				       unsigned short family);
+>  int security_xfrm_decode_session(struct sk_buff *skb, u32 *secid);
+>  void security_skb_classify_flow(struct sk_buff *skb, struct flowi *fl);
+>  
+> @@ -1679,7 +1680,9 @@ static inline int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_s
+>  }
+>  
+>  static inline int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+> -			struct xfrm_policy *xp, const struct flowi *fl)
+> +						     struct xfrm_policy *xp,
+> +						     const struct flowi *fl,
+> +						     unsigned short family)
+>  {
+>  	return 1;
+>  }
+> diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+> index 69520ad3d83b..f90d2f1da44a 100644
+> --- a/net/xfrm/xfrm_state.c
+> +++ b/net/xfrm/xfrm_state.c
+> @@ -1020,7 +1020,7 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
+>  	if (x->km.state == XFRM_STATE_VALID) {
+>  		if ((x->sel.family &&
+>  		     !xfrm_selector_match(&x->sel, fl, x->sel.family)) ||
+> -		    !security_xfrm_state_pol_flow_match(x, pol, fl))
+> +		    !security_xfrm_state_pol_flow_match(x, pol, fl, family))
+>  			return;
+>  
+>  		if (!*best ||
+> @@ -1033,7 +1033,7 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
+>  	} else if (x->km.state == XFRM_STATE_ERROR ||
+>  		   x->km.state == XFRM_STATE_EXPIRED) {
+>  		if (xfrm_selector_match(&x->sel, fl, x->sel.family) &&
+> -		    security_xfrm_state_pol_flow_match(x, pol, fl))
+> +		    security_xfrm_state_pol_flow_match(x, pol, fl, family))
+>  			*error = -ESRCH;
+>  	}
+>  }
+> diff --git a/security/security.c b/security/security.c
+> index 70a7ad357bc6..62dd0af7c6bc 100644
+> --- a/security/security.c
+> +++ b/security/security.c
+> @@ -2391,7 +2391,8 @@ int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
+>  
+>  int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+>  				       struct xfrm_policy *xp,
+> -				       const struct flowi *fl)
+> +				       const struct flowi *fl,
+> +				       unsigned short family)
+>  {
+>  	struct security_hook_list *hp;
+>  	int rc = LSM_RET_DEFAULT(xfrm_state_pol_flow_match);
+> @@ -2407,7 +2408,7 @@ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+>  	 */
+>  	hlist_for_each_entry(hp, &security_hook_heads.xfrm_state_pol_flow_match,
+>  				list) {
+> -		rc = hp->hook.xfrm_state_pol_flow_match(x, xp, fl);
+> +		rc = hp->hook.xfrm_state_pol_flow_match(x, xp, fl, family);
+>  		break;
+>  	}
+>  	return rc;
+> diff --git a/security/selinux/include/xfrm.h b/security/selinux/include/xfrm.h
+> index a0b465316292..36907dd06647 100644
+> --- a/security/selinux/include/xfrm.h
+> +++ b/security/selinux/include/xfrm.h
+> @@ -26,7 +26,8 @@ int selinux_xfrm_state_delete(struct xfrm_state *x);
+>  int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
+>  int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
+>  				      struct xfrm_policy *xp,
+> -				      const struct flowi *fl);
+> +				      const struct flowi *fl,
+> +				      unsigned short family);
+>  
+>  #ifdef CONFIG_SECURITY_NETWORK_XFRM
+>  extern atomic_t selinux_xfrm_refcount;
+> diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
+> index 7314196185d1..5beb30237d3a 100644
+> --- a/security/selinux/xfrm.c
+> +++ b/security/selinux/xfrm.c
+> @@ -175,7 +175,8 @@ int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
+>   */
+>  int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
+>  				      struct xfrm_policy *xp,
+> -				      const struct flowi *fl)
+> +				      const struct flowi *fl,
+> +				      unsigned short family)
+>  {
+>  	u32 state_sid;
+>  
+>
