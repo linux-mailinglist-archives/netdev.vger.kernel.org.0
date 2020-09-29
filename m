@@ -2,165 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FACB27CC64
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:36:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F11927CC66
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:36:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733153AbgI2Mf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 08:35:56 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:58686 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732825AbgI2Mfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 08:35:53 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08TCTelQ162405;
-        Tue, 29 Sep 2020 12:35:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : in-reply-to : message-id : references : mime-version :
- content-type; s=corp-2020-01-29;
- bh=XjD5+E/lRfYfuWijGUsC1sO+VMZYXDA0kVQ9CGtozzQ=;
- b=h4ktMLC7TvlTZNgfyQ6iUjidM3jALcN4/T7xAu2TnyTeDBrP7rvbFwskuW3nati7ziZ3
- WrnlX5935ZlG6ZiXTzhVFbvcc0vYtRtlzbz30DFX8myYmxEkk7iKAWRtASt1VgVSPqkX
- HHwDZsaPaNOfWNeRDbld9wJX9SkHVcMeUAcMuPhp9aup+4Veh8j7h5KiUZMyHsnEaq0P
- gPjqFD9LA0OFQAuN1tjQbryIObKZROTnROpDVLl1MbIZbA5mMLfrB9Car4nUh4MhnXFE
- hvXIEQMGNuHRMrxQuPjk8a/SDfuVR8txdGeI2rbqaUyIM5XBeA9HRO3XL9mhIijvomaj lQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 33swkktd5w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 29 Sep 2020 12:35:37 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08TCUPLp004041;
-        Tue, 29 Sep 2020 12:35:37 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3020.oracle.com with ESMTP id 33tfhxjr7v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Sep 2020 12:35:36 +0000
-Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08TCZZjP024840;
-        Tue, 29 Sep 2020 12:35:35 GMT
-Received: from dhcp-10-175-194-32.vpn.oracle.com (/10.175.194.32)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 29 Sep 2020 05:35:35 -0700
-Date:   Tue, 29 Sep 2020 13:35:26 +0100 (IST)
-From:   Alan Maguire <alan.maguire@oracle.com>
-X-X-Sender: alan@localhost
-To:     =?ISO-8859-15?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>
-cc:     daniel@iogearbox.net, ast@fb.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alan Maguire <alan.maguire@oracle.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf_iter: don't fail test due to
- missing __builtin_btf_type_id
-In-Reply-To: <20200929123004.46694-1-toke@redhat.com>
-Message-ID: <alpine.LRH.2.21.2009291333310.26076@localhost>
-References: <20200929123004.46694-1-toke@redhat.com>
-User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1737402268-1601382935=:26076"
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9758 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999 bulkscore=0
- phishscore=0 malwarescore=0 adultscore=0 suspectscore=11 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009290111
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9758 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 phishscore=0
- suspectscore=11 mlxlogscore=999 clxscore=1015 priorityscore=1501
- impostorscore=0 lowpriorityscore=0 bulkscore=0 spamscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009290111
+        id S1732743AbgI2MgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 08:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47402 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729532AbgI2Mfq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 08:35:46 -0400
+Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 118F9C061755
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 05:35:46 -0700 (PDT)
+Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 24F5C86C83;
+        Tue, 29 Sep 2020 13:35:44 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1601382944; bh=soGIhdGRsvcoY5CEjyzWEm1prQSDuMRBpoHC/klPfoc=;
+        h=From:To:Cc:Subject:Date:Message-Id:From;
+        z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
+         rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
+         in@katalix.com>|Subject:=20[PATCH=20net-next=201/1]=20l2tp:=20repo
+         rt=20rx=20cookie=20discards=20in=20netlink=20get|Date:=20Tue,=2029
+         =20Sep=202020=2013:35:41=20+0100|Message-Id:=20<20200929123541.317
+         80-1-tparkin@katalix.com>;
+        b=YHgRSbvLOCOqexjfiJ4mF8i+g0YU3uB8/ATV0fqgBDIRP3k09Mj+M26USJK8TMckE
+         XHc0ugjVTrmQCDZgaYQL+GyFTRUVitd3B7qGqyLhW44G1Zc1xn90jOID5i5asXdfPW
+         ptFjF5uVx10jjvC8mwEJd9frzBT66cGl4eJjkk1Q0DnUoozKddPqCjHNkno8qO2pEr
+         byv9IJH2O/7yVAFjBKciQbEuxJv4OgIhXRecnTXq4bRiqkmIQ6LXRyW4ctbpUC2wk6
+         i5a2iTfBFMf5NoQCL4py6ekBWedLtvF1NSgQFjT3kqf3Pl5jQ/KtJdNp39X8fUFRRo
+         rEuSPc5Myq4dg==
+From:   Tom Parkin <tparkin@katalix.com>
+To:     netdev@vger.kernel.org
+Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
+Subject: [PATCH net-next 1/1] l2tp: report rx cookie discards in netlink get
+Date:   Tue, 29 Sep 2020 13:35:41 +0100
+Message-Id: <20200929123541.31780-1-tparkin@katalix.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+When an L2TPv3 session receives a data frame with an incorrect cookie
+l2tp_core logs a warning message and bumps a stats counter to reflect
+the fact that the packet has been dropped.
 
---8323328-1737402268-1601382935=:26076
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+However, the stats counter in question is missing from the l2tp_netlink
+get message for tunnel and session instances.
 
-On Tue, 29 Sep 2020, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+Include the statistic in the netlink get response.
 
-> The new test for task iteration in bpf_iter checks (in do_btf_read()) if =
-it
-> should be skipped due to missing __builtin_btf_type_id. However, this
-> 'skip' verdict is not propagated to the caller, so the parent test will
-> still fail. Fix this by also skipping the rest of the parent test if the
-> skip condition was reached.
->=20
-> Fixes: b72091bd4ee4 ("selftests/bpf: Add test for bpf_seq_printf_btf help=
-er")
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+Signed-off-by: Tom Parkin <tparkin@katalix.com>
+---
+ include/uapi/linux/l2tp.h | 1 +
+ net/l2tp/l2tp_netlink.c   | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
-Reviewed-by: Alan Maguire <alan.maguire@oracle.com>
+diff --git a/include/uapi/linux/l2tp.h b/include/uapi/linux/l2tp.h
+index 88a0d32b8c07..30c80d5ba4bf 100644
+--- a/include/uapi/linux/l2tp.h
++++ b/include/uapi/linux/l2tp.h
+@@ -144,6 +144,7 @@ enum {
+ 	L2TP_ATTR_RX_OOS_PACKETS,	/* u64 */
+ 	L2TP_ATTR_RX_ERRORS,		/* u64 */
+ 	L2TP_ATTR_STATS_PAD,
++	L2TP_ATTR_RX_COOKIE_DISCARDS,	/* u64 */
+ 	__L2TP_ATTR_STATS_MAX,
+ };
+ 
+diff --git a/net/l2tp/l2tp_netlink.c b/net/l2tp/l2tp_netlink.c
+index 83c015f7f20d..5ca5056e9636 100644
+--- a/net/l2tp/l2tp_netlink.c
++++ b/net/l2tp/l2tp_netlink.c
+@@ -420,6 +420,9 @@ static int l2tp_nl_tunnel_send(struct sk_buff *skb, u32 portid, u32 seq, int fla
+ 	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_SEQ_DISCARDS,
+ 			      atomic_long_read(&tunnel->stats.rx_seq_discards),
+ 			      L2TP_ATTR_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_COOKIE_DISCARDS,
++			      atomic_long_read(&tunnel->stats.rx_cookie_discards),
++			      L2TP_ATTR_STATS_PAD) ||
+ 	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_OOS_PACKETS,
+ 			      atomic_long_read(&tunnel->stats.rx_oos_packets),
+ 			      L2TP_ATTR_STATS_PAD) ||
+@@ -760,6 +763,9 @@ static int l2tp_nl_session_send(struct sk_buff *skb, u32 portid, u32 seq, int fl
+ 	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_SEQ_DISCARDS,
+ 			      atomic_long_read(&session->stats.rx_seq_discards),
+ 			      L2TP_ATTR_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_COOKIE_DISCARDS,
++			      atomic_long_read(&session->stats.rx_cookie_discards),
++			      L2TP_ATTR_STATS_PAD) ||
+ 	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_OOS_PACKETS,
+ 			      atomic_long_read(&session->stats.rx_oos_packets),
+ 			      L2TP_ATTR_STATS_PAD) ||
+-- 
+2.17.1
 
-Thanks for fixing this Toke!
-
-> ---
->  tools/testing/selftests/bpf/prog_tests/bpf_iter.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
->=20
-> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/te=
-sting/selftests/bpf/prog_tests/bpf_iter.c
-> index af15630a24dd..448885b95eed 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-> @@ -172,17 +172,18 @@ static void test_task_file(void)
-> =20
->  static char taskbuf[TASKBUFSZ];
-> =20
-> -static void do_btf_read(struct bpf_iter_task_btf *skel)
-> +static int do_btf_read(struct bpf_iter_task_btf *skel)
->  {
->  =09struct bpf_program *prog =3D skel->progs.dump_task_struct;
->  =09struct bpf_iter_task_btf__bss *bss =3D skel->bss;
->  =09int iter_fd =3D -1, len =3D 0, bufleft =3D TASKBUFSZ;
->  =09struct bpf_link *link;
->  =09char *buf =3D taskbuf;
-> +=09int ret =3D 0;
-> =20
->  =09link =3D bpf_program__attach_iter(prog, NULL);
->  =09if (CHECK(IS_ERR(link), "attach_iter", "attach_iter failed\n"))
-> -=09=09return;
-> +=09=09return ret;
-> =20
->  =09iter_fd =3D bpf_iter_create(bpf_link__fd(link));
->  =09if (CHECK(iter_fd < 0, "create_iter", "create_iter failed\n"))
-> @@ -198,6 +199,7 @@ static void do_btf_read(struct bpf_iter_task_btf *ske=
-l)
-> =20
->  =09if (bss->skip) {
->  =09=09printf("%s:SKIP:no __builtin_btf_type_id\n", __func__);
-> +=09=09ret =3D 1;
->  =09=09test__skip();
->  =09=09goto free_link;
->  =09}
-> @@ -212,12 +214,14 @@ static void do_btf_read(struct bpf_iter_task_btf *s=
-kel)
->  =09if (iter_fd > 0)
->  =09=09close(iter_fd);
->  =09bpf_link__destroy(link);
-> +=09return ret;
->  }
-> =20
->  static void test_task_btf(void)
->  {
->  =09struct bpf_iter_task_btf__bss *bss;
->  =09struct bpf_iter_task_btf *skel;
-> +=09int ret;
-> =20
->  =09skel =3D bpf_iter_task_btf__open_and_load();
->  =09if (CHECK(!skel, "bpf_iter_task_btf__open_and_load",
-> @@ -226,7 +230,9 @@ static void test_task_btf(void)
-> =20
->  =09bss =3D skel->bss;
-> =20
-> -=09do_btf_read(skel);
-> +=09ret =3D do_btf_read(skel);
-> +=09if (ret)
-> +=09=09goto cleanup;
-> =20
->  =09if (CHECK(bss->tasks =3D=3D 0, "check if iterated over tasks",
->  =09=09  "no task iteration, did BPF program run?\n"))
-> --=20
-> 2.28.0
->=20
->=20
---8323328-1737402268-1601382935=:26076--
