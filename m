@@ -2,89 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14D7827D5B7
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 20:24:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3522327D60A
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 20:45:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728206AbgI2SYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 14:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45118 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727605AbgI2SYV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 14:24:21 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57A0C061755;
-        Tue, 29 Sep 2020 11:24:19 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id b22so6627549lfs.13;
-        Tue, 29 Sep 2020 11:24:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9IJ2N7Pkm2rRXP52Jxie87cMm3z3cYwKxTSBfLl7CZ0=;
-        b=N7LBkxs7uCSKldLHsw5UMtiStWNngj8ej1aq2AhQ+5IePlXEPf5oY7VlhGFEdWOLsI
-         3Z11TW8p88O8A7pM7LxMezB4jPQF2xphD3X0HPncmm2ZQzcqwGwv/eK2HIFvKmVhTY3V
-         iIEWftyPA3ZdIvlmw5rzltl9LxRFHCyYtDOMxO30jO3lR4x2lqCwdTPNxpxMj4/4lHKz
-         dWdG/gj3yyqvIaxkVzvyrB3RPvDmk8OqZiHSPxkA9FXhEbJjuhFpVwqpLYQ82ZvapgPM
-         8Lt7p1Ous3WmryOEU+wcR1Qcdi/TQuJfxOeF3f8h4vC73TRQV/UkPx4syZE4hk+ZImln
-         saKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9IJ2N7Pkm2rRXP52Jxie87cMm3z3cYwKxTSBfLl7CZ0=;
-        b=aXRybR/5w4+D35z7OkeVNZn+eCfm7TEA6Q3eHEsIaULNzcbYJgQUdeVeasX34Pc0md
-         dVZGSkJHogqepdEtQgVQHfoNwVvB+Oj1pGRT6QEGpovddJH4K7EYM2lqPnnzuVLI3Gnb
-         reogSgmw9xEf1pzJKjynu50BPcnW+DDBS0qq2Gs5dV6/qUN6JYbbit0cwvO5mv4P6Nea
-         uEV31Dv3buX7i3MC3yWGJiu2IWt+8/uTOlsBiont9g60safJxHZF2bBCe4zna9VKJaTP
-         QXB5Ym30p2bpwyIJPxkfKVwibyfr2EHRrEEqHelQqddq2Gv+BcaFeVEqrRxAOANlkHG6
-         +wIw==
-X-Gm-Message-State: AOAM530X0BjFB8z9wFBG4woNEKQJbH5JcJhfb+IJ132hYj1etOIBWp+l
-        uCdVKSkhtQFc41ovTYQABaFX1lnEBwto5g8GuggskeaFPBw=
-X-Google-Smtp-Source: ABdhPJyP//9Zr/WoY7d+28xyBF6gb1NSztyhMrjW5rKozo1Q3iCAm3Dh811sR0M9m0KKhM0mQDe6VXru8WZhBcvrarQ=
-X-Received: by 2002:a19:9141:: with SMTP id y1mr1572264lfj.554.1601403858264;
- Tue, 29 Sep 2020 11:24:18 -0700 (PDT)
+        id S1728367AbgI2Sph (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 14:45:37 -0400
+Received: from mga17.intel.com ([192.55.52.151]:21575 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728166AbgI2Sph (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 14:45:37 -0400
+IronPort-SDR: v9GmUy4+qMxqpCA3qJwgKNOcLOEkQ//o8NGsycQy3fcorDG4FC3YVbHGzae8XrEkhACnoQ+Jam
+ 2PHgciPkMxMQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9759"; a="142278952"
+X-IronPort-AV: E=Sophos;i="5.77,319,1596524400"; 
+   d="scan'208";a="142278952"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 11:45:36 -0700
+IronPort-SDR: gmpE1OnAtY8G+ewgLZbNvfC62ErKubdfwOP2r/wvp3CbOj/e3Ex5na17HWJStMujhJb14XCXQg
+ aaaT2eKGg+zw==
+X-IronPort-AV: E=Sophos;i="5.77,319,1596524400"; 
+   d="scan'208";a="492864035"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.162.133]) ([10.209.162.133])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 11:45:36 -0700
+Subject: Re: [RFC iproute2-next] devlink: display elapsed time during flash
+ update
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Jakub Kicinski <kubakici@wp.pl>, netdev@vger.kernel.org,
+        snelson@pensando.io
+References: <20200928234945.3417905-1-jacob.e.keller@intel.com>
+ <20200929101846.2a296015@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <b4f664d9-301c-1157-0049-50dbea856dda@intel.com>
+ <20200929180722.GA1674045@shredder>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <4baf15d7-3e7a-9cf3-16cc-93507d07cf5b@intel.com>
+Date:   Tue, 29 Sep 2020 11:45:33 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-References: <20200925205432.1777-1-songliubraving@fb.com> <20200925205432.1777-2-songliubraving@fb.com>
-In-Reply-To: <20200925205432.1777-2-songliubraving@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 29 Sep 2020 11:24:06 -0700
-Message-ID: <CAADnVQ+ZMOxjUDCdLfwRGPbjG8YV8kHVu2kM1+JzSffJZ9=W_w@mail.gmail.com>
-Subject: Re: [PATCH v6 bpf-next 1/3] bpf: enable BPF_PROG_TEST_RUN for raw_tracepoint
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200929180722.GA1674045@shredder>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 25, 2020 at 1:55 PM Song Liu <songliubraving@fb.com> wrote:
-> +
-> +       if ((kattr->test.flags & BPF_F_TEST_RUN_ON_CPU) == 0 ||
-> +           cpu == smp_processor_id()) {
-> +               __bpf_prog_test_run_raw_tp(&info);
 
-That's broken:
-[   35.874974] BUG: using smp_processor_id() in preemptible [00000000]
-code: new_name/87
-[   35.893983] caller is bpf_prog_test_run_raw_tp+0xd4/0x1b0
-[   35.900124] CPU: 1 PID: 87 Comm: new_name Not tainted 5.9.0-rc6-g615bd02bf #1
-[   35.907358] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS 1.10.2-1ubuntu1 04/01/2014
-[   35.916941] Call Trace:
-[   35.919660]  dump_stack+0x77/0x9b
-[   35.923273]  check_preemption_disabled+0xb4/0xc0
-[   35.928376]  bpf_prog_test_run_raw_tp+0xd4/0x1b0
-[   35.933872]  ? selinux_bpf+0xd/0x70
-[   35.937532]  __do_sys_bpf+0x6bb/0x21e0
-[   35.941570]  ? find_held_lock+0x2d/0x90
-[   35.945687]  ? vfs_write+0x150/0x220
-[   35.949586]  do_syscall_64+0x2d/0x40
-[   35.953443]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Please fix and add debug flags to your .config.
+On 9/29/2020 11:07 AM, Ido Schimmel wrote:
+> On Tue, Sep 29, 2020 at 10:56:23AM -0700, Jacob Keller wrote:
+>>
+>>
+>> On 9/29/2020 10:18 AM, Jakub Kicinski wrote:
+>>> On Mon, 28 Sep 2020 16:49:45 -0700 Jacob Keller wrote:
+>>>> For some devices, updating the flash can take significant time during
+>>>> operations where no status can meaningfully be reported. This can be
+>>>> somewhat confusing to a user who sees devlink appear to hang on the
+>>>> terminal waiting for the device to update.
+>>>>
+>>>> Provide a ticking counter of the time elapsed since the previous status
+>>>> message in order to make it clear that the program is not simply stuck.
+>>>>
+>>>> Do not display this message unless a few seconds have passed since the
+>>>> last status update. Additionally, if the previous status notification
+>>>> included a timeout, display this as part of the message. If we do not
+>>>> receive an error or a new status without that time out, replace it with
+>>>> the text "timeout reached".
+>>>>
+>>>> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+>>>> ---
+>>>> Sending this as an RFC because I doubt this is the best implementation. For
+>>>> one, I get a weird display issue where the cursor doesn't always end up on
+>>>> the end of line in my shell.. The % display works properly, so I'm not sure
+>>>> what's wrong here.
+>>>>
+>>>> Second, even though select should be timing out every 1/10th of a second for
+>>>> screen updates, I don't seem to get that behavior in my test. It takes about
+>>>> 8 to 10 seconds for the first elapsed time message to be displayed, and it
+>>>> updates really slowly. Is select just not that precise? I even tried using a
+>>>> timeout of zero, but this means we refresh way too often and it looks bad. I
+>>>> am not sure what is wrong here...
+>>>
+>>> Strange. Did you strace it? Perhaps it's some form of output buffering?
+>>>
+>>
+>> Haven't yet, just noticed the weird output behavior and timing
+>> inconsistency.
+> 
+> Might be similar to this:
+> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=8e6bce735a132150c23503a55ea0aef55a01425f
+> 
+
+Yep, I needed the fflush! That resolved the display issue!
+
+Thanks,
+Jake
