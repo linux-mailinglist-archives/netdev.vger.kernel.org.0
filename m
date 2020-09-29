@@ -2,214 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2129327DC2B
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 00:39:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3E1527DC35
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 00:44:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728487AbgI2WjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 18:39:03 -0400
-Received: from sonic313-15.consmr.mail.ne1.yahoo.com ([66.163.185.38]:43314
-        "EHLO sonic313-15.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728384AbgI2WjC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 18:39:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1601419139; bh=5H2Di+3rUkkCJ2VDEQ4Nf8oV0m+Uk7fsJ6yostsItLE=; h=Subject:To:Cc:References:From:Date:In-Reply-To:From:Subject; b=Jhn+rLxkKCk1Zb2ZrWCnc9ISLYyFViZhN+tYiXrJK+0ABVMlrvbHhWnCzREtejfj51qKtl7Q7EBu0AHVfurV+t43HayBhfo6QH5my6wfJRaVBb1y/JKM9E+2CrFv2HrMza76H+Sr12vcUI3EL+DPmTkDUZJCsmi3h5Qd0F30TqR/H6++xK4C6m8IT7OgPdsLM7JD3ooP/2WO+cwqazGVnZfgo8XKSZ5Ef1I0HBCsZamjKpxv6aO5mKdP2F9REfRna1XU4JaOp5COPkgQdTyJzAHKqlQImY9pUOO5F3p1VUW8I35ISxRhZwGJHUDOwgVK0lTmaGEAQ27vrPjadNabgw==
-X-YMail-OSG: 5.K66VwVM1mtvjEvjGwCYWY8BYDodEWYV3Bty_gUYDxqF70lP1f4mB3lOGElnCS
- byrP7v51UVFqIhHBfA0Xjvp1Gvx6oWi4vDKS.TF2ob3ui7n3288vLwKhnu3U0vGzoBkEQYtRao0R
- mutO_M4.0ZKku9_moU458A.Ay0v6Wuyti3yPKtIKmjVQYsvoTeiOTyK5VncixegBuc9WESRIMgbj
- S5I2W8hrsjvdZizakh8W2P8UmAQWs3WNoOwTcvFa77cZxbWRQk_36xw94o9Xqtfhdh6a9XMGqKxj
- QxdoZbmcEkoRqE1zpgQjBsWYDv2tDZ0_3ikHypgW9Vs05blrWEIsT.f8JQWQIPIt9BIVKNH78Lal
- l0bGhFWhHwkEzBsCYwVITDrMWrGakT6cfGTAxRkFsyDRNm5967oEtDYFqhx0KOGbC7BOvkILCbmr
- W6rzXAYQRFHDsuF_hefXf4OoQy2sz3GTJ.RHB6_th2lHGu1UszoomV3l84aKk.zIPTDc3pLm3P2p
- k2qw4mcwOC23O6ScfOx_ck..tFU6.77dMvhkeAP.uZ3I7Scg8YyiRvfXlyjiDphKqK_vrJtBYBmf
- tc0hx4WFkYr5N4LXb2guXxsK3nRsRhp8EDXS9y2f5HCZ0feZWP0lMk6lwt9VSDPHFQqeK54Hjl7w
- hSzAc.63Kynf2W08Y.YMkl30ba_fiZuR3VTUMxljViv1._Rq82h1sFQwpeVnwT_TRbHMzWg1wrlh
- Fe8DJ0vH.uKI3e0uYlsTgJLawPqgFT1ct5JDxlZzD6UupgC10b.LQOlLXuMqdsmvIzAcGTmpEkP3
- .kWbmkjA0ZM4Xsz0QEh2xkwPld9mClujoh5N_POwp9TeoTYorcx.mWKHgfu3rh2iYYzyXs_X_tmE
- HEmpadtJv7v5B07XI0xcw1okBzSfTbYUGttwwpmQy_GKSAobMdoER7AT7VzKrvUMTs6oq2XH_fxQ
- xkgbHEDTXILYTJedb3ejsApF20Qwvdn63jzeIr6lhogYl9t48r7ZGNhjV4XVTfHAHVoGxoSxH9jm
- DAR4bBCyAj1bf7nl6pZCGCVsllgPuUhz6Uxv9RjUa7FrRD8OTGCz_qumkj8RW7hYNTSOZbNM5WUG
- o.Sh2VrQMVVmdYt92VTgcudl4oKYL91Is5rPRFkGHsFKAot.gQd4ayHPZo3by8kJtZbuPS3ou1Id
- pzd3VgJsVexYQFoWwAURz8R.BPkCgEUcqnNkhCmxzyYAtB9NHB9y3KlKsGyhKSXUG2RzWKV_cZ2l
- D8WUdhyksD_93_CXvsh4_ywLR0cCVIPx4O66bTQ.5CiY62iTsrmrknYhk5QnE87cf8PEMl1xe7AG
- dtHe2FcrTZu2lWnJ4BJSZ1pTuuqF7gMylznRHCFnQYrsUs2swcQsyTly5B_a4DRZluAnKY0DLuLM
- .FegG7oz7f8u4VGuzZ1wlSl41KNtKR8CUOkmz4B7G1S7_PuB4XMVBQJLcx6IfzKqfpVa.BbfDjbT
- vzsv2KTHEuR.nijf5eKbUOJpZ2ptfR4ug16nPAC1F9zIWF5jPDbO8rXCARr0y8MhEDdASgd7jrpO
- KH2w42D_VbJo-
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.ne1.yahoo.com with HTTP; Tue, 29 Sep 2020 22:38:59 +0000
-Received: by smtp402.mail.gq1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 22585821fbf3659c583798e09b6c7ac0;
-          Tue, 29 Sep 2020 22:38:56 +0000 (UTC)
-Subject: Re: [RFC PATCH] lsm,selinux: pass the family information along with
- xfrm flow
-To:     Paul Moore <paul@paul-moore.com>, selinux@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>, netdev@vger.kernel.org
-References: <160141647786.7997.5490924406329369782.stgit@sifl>
-From:   Casey Schaufler <casey@schaufler-ca.com>
-Message-ID: <d42b766d-595a-b360-df13-0a3fe7a8bd7f@schaufler-ca.com>
-Date:   Tue, 29 Sep 2020 15:38:56 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
+        id S1728839AbgI2WoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 18:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728752AbgI2WoM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 18:44:12 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9EFC061755
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 15:44:12 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id d9so6236871pfd.3
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 15:44:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=WJ3OpDbrgTgrQ83eHhTDtyYULkP8PFP3ddpTJ7Cz6JI=;
+        b=HSRrcrIyGUWTHwolbw34ZUjTnHuIg3aAaGQBMIzy+t4tc8Vz6BSbZdLMIOyDGi6UQ6
+         CmsXhwhg1QyL/oCo6bhvzgv03gjnjnMPFzd73Dc+PNEtCzjiD0bpQ44/tS14V9HjUOnj
+         oJ3gVdhP6JgWhctqvUXqTgwz9ygmu+1qGtJGyOtEdEWiKibWbOksnxb4fvc4wu66E6uY
+         Xddng3rRkAlCNrMPzCOWj8aZsOHyiNd6aIh+Cfgd8qPHyLMzij7V9U0ho6u6NDlimzYw
+         tbPYwLNXFXNs9HaCrRQJ/aqTLY8YRr4PUIKOBDMFTCtfOwS5rusjKn0ijhLkOKmZA6o2
+         Px4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=WJ3OpDbrgTgrQ83eHhTDtyYULkP8PFP3ddpTJ7Cz6JI=;
+        b=i9b2rzevDKZvWJSezFM5OmwlUkiizIw4Mm+RQTSXqvbFu/WFmWvFJ5mb4uXKxz6G2X
+         H6ic+/AzZhWY4oAfkidLm4xRbA7Uu5SxtPLjtO0aTVK8wy0M+nBUauAhAl7rcxjEq0O4
+         SMW+6+vMMQBk4DLoCUzbDEQoQmFAqpC/XdQvOLttgEhVwA3JA5kNUO342qnuLgYH12dh
+         Q5NbIXSClvYsf8+NuhwymT6oQmrDJfI04C0Qh5UNiZpoAKYrs9U07grT4KnsMUV5MfFn
+         ZfNMGfGltYr0imZa+p+iNBxHBoqgNzdy+EdWpD9bP7/iyzuKHuyQN1zc6fQyYDQYqEXx
+         O6+A==
+X-Gm-Message-State: AOAM530PkqtrXdS28COotVKBmqa6HE3yo/H1G9mZnQr5Nh2bXptHisLP
+        2ZiFe/0gGe8TODjOi33VPBMWTw==
+X-Google-Smtp-Source: ABdhPJwAl73qbyVTDoXcKJPwWPHWg+QcdmxtCaCm2NLO+PEzxf193QdZOvGTw8aVDygF1c/UGOTPdw==
+X-Received: by 2002:a63:5b5c:: with SMTP id l28mr4750101pgm.243.1601419451673;
+        Tue, 29 Sep 2020 15:44:11 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id ep4sm5505819pjb.39.2020.09.29.15.44.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Sep 2020 15:44:11 -0700 (PDT)
+Subject: Re: [iproute2-next v1] devlink: display elapsed time during flash
+ update
+To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kubakici@wp.pl>
+References: <20200929215651.3538844-1-jacob.e.keller@intel.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <df1ad702-ab31-e027-e711-46d09f8fa095@pensando.io>
+Date:   Tue, 29 Sep 2020 15:44:08 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <160141647786.7997.5490924406329369782.stgit@sifl>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200929215651.3538844-1-jacob.e.keller@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Mailer: WebService/1.1.16718 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo Apache-HttpAsyncClient/4.1.4 (Java/11.0.7)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/29/2020 2:54 PM, Paul Moore wrote:
-> As pointed out by Herbert in a recent related patch, the LSM hooks
-> should pass the address family in addition to the xfrm flow as the
-> family information is needed to safely access the flow.
+On 9/29/20 2:56 PM, Jacob Keller wrote:
+> For some devices, updating the flash can take significant time during
+> operations where no status can meaningfully be reported. This can be
+> somewhat confusing to a user who sees devlink appear to hang on the
+> terminal waiting for the device to update.
 >
-> While this is not technically a problem for the current LSM/SELinux
-> code as it only accesses fields common to all address families, we
-> should still pass the address family so that the LSM hook isn't
-> inherently flawed.  An alternate solution could be to simply pass
-> the LSM secid instead of flow, but this introduces the problem of
-> the LSM hook callers sending the wrong secid which would be much
-> worse.
+> Recent changes to the kernel interface allow such long running commands
+> to provide a timeout value indicating some upper bound on how long the
+> relevant action could take.
 >
-> Reported-by: Herbert Xu <herbert@gondor.apana.org.au>
-> Signed-off-by: Paul Moore <paul@paul-moore.com>
-
-For what it may be worth
-
-Acked-by: Casey Schaufler <casey@schaufler-ca.com>
-
-
+> Provide a ticking counter of the time elapsed since the previous status
+> message in order to make it clear that the program is not simply stuck.
+>
+> Display this message whenever the status message from the kernel
+> indicates a timeout value. Additionally also display the message if
+> we've received no status for more than couple of seconds. If we elapse
+> more than the timeout provided by the status message, replace the
+> timeout display with "timeout reached".
+>
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 > ---
->  include/linux/lsm_hook_defs.h   |    2 +-
->  include/linux/lsm_hooks.h       |    1 +
->  include/linux/security.h        |    7 +++++--
->  net/xfrm/xfrm_state.c           |    4 ++--
->  security/security.c             |    5 +++--
->  security/selinux/include/xfrm.h |    3 ++-
->  security/selinux/xfrm.c         |    3 ++-
->  7 files changed, 16 insertions(+), 9 deletions(-)
 >
-> diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-> index 2a8c74d99015..e3c3b5d20469 100644
-> --- a/include/linux/lsm_hook_defs.h
-> +++ b/include/linux/lsm_hook_defs.h
-> @@ -349,7 +349,7 @@ LSM_HOOK(int, 0, xfrm_state_delete_security, struct xfrm_state *x)
->  LSM_HOOK(int, 0, xfrm_policy_lookup, struct xfrm_sec_ctx *ctx, u32 fl_secid,
->  	 u8 dir)
->  LSM_HOOK(int, 1, xfrm_state_pol_flow_match, struct xfrm_state *x,
-> -	 struct xfrm_policy *xp, const struct flowi *fl)
-> +	 struct xfrm_policy *xp, const struct flowi *fl, unsigned short family)
->  LSM_HOOK(int, 0, xfrm_decode_session, struct sk_buff *skb, u32 *secid,
->  	 int ckall)
->  #endif /* CONFIG_SECURITY_NETWORK_XFRM */
-> diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-> index 9e2e3e63719d..ea088aacfdad 100644
-> --- a/include/linux/lsm_hooks.h
-> +++ b/include/linux/lsm_hooks.h
-> @@ -1093,6 +1093,7 @@
->   *	@x contains the state to match.
->   *	@xp contains the policy to check for a match.
->   *	@fl contains the flow to check for a match.
-> + *	@family the flow's address family.
->   *	Return 1 if there is a match.
->   * @xfrm_decode_session:
->   *	@skb points to skb to decode.
-> diff --git a/include/linux/security.h b/include/linux/security.h
-> index 0a0a03b36a3b..701b41eb090c 100644
-> --- a/include/linux/security.h
-> +++ b/include/linux/security.h
-> @@ -1625,7 +1625,8 @@ void security_xfrm_state_free(struct xfrm_state *x);
->  int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
->  int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
->  				       struct xfrm_policy *xp,
-> -				       const struct flowi *fl);
-> +				       const struct flowi *fl,
-> +				       unsigned short family);
->  int security_xfrm_decode_session(struct sk_buff *skb, u32 *secid);
->  void security_skb_classify_flow(struct sk_buff *skb, struct flowi *fl);
->  
-> @@ -1679,7 +1680,9 @@ static inline int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_s
->  }
->  
->  static inline int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
-> -			struct xfrm_policy *xp, const struct flowi *fl)
-> +						     struct xfrm_policy *xp,
-> +						     const struct flowi *fl,
-> +						     unsigned short family)
->  {
->  	return 1;
->  }
-> diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-> index 69520ad3d83b..f90d2f1da44a 100644
-> --- a/net/xfrm/xfrm_state.c
-> +++ b/net/xfrm/xfrm_state.c
-> @@ -1020,7 +1020,7 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
->  	if (x->km.state == XFRM_STATE_VALID) {
->  		if ((x->sel.family &&
->  		     !xfrm_selector_match(&x->sel, fl, x->sel.family)) ||
-> -		    !security_xfrm_state_pol_flow_match(x, pol, fl))
-> +		    !security_xfrm_state_pol_flow_match(x, pol, fl, family))
->  			return;
->  
->  		if (!*best ||
-> @@ -1033,7 +1033,7 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
->  	} else if (x->km.state == XFRM_STATE_ERROR ||
->  		   x->km.state == XFRM_STATE_EXPIRED) {
->  		if (xfrm_selector_match(&x->sel, fl, x->sel.family) &&
-> -		    security_xfrm_state_pol_flow_match(x, pol, fl))
-> +		    security_xfrm_state_pol_flow_match(x, pol, fl, family))
->  			*error = -ESRCH;
->  	}
->  }
-> diff --git a/security/security.c b/security/security.c
-> index 70a7ad357bc6..62dd0af7c6bc 100644
-> --- a/security/security.c
-> +++ b/security/security.c
-> @@ -2391,7 +2391,8 @@ int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
->  
->  int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
->  				       struct xfrm_policy *xp,
-> -				       const struct flowi *fl)
-> +				       const struct flowi *fl,
-> +				       unsigned short family)
->  {
->  	struct security_hook_list *hp;
->  	int rc = LSM_RET_DEFAULT(xfrm_state_pol_flow_match);
-> @@ -2407,7 +2408,7 @@ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
->  	 */
->  	hlist_for_each_entry(hp, &security_hook_heads.xfrm_state_pol_flow_match,
->  				list) {
-> -		rc = hp->hook.xfrm_state_pol_flow_match(x, xp, fl);
-> +		rc = hp->hook.xfrm_state_pol_flow_match(x, xp, fl, family);
->  		break;
->  	}
->  	return rc;
-> diff --git a/security/selinux/include/xfrm.h b/security/selinux/include/xfrm.h
-> index a0b465316292..36907dd06647 100644
-> --- a/security/selinux/include/xfrm.h
-> +++ b/security/selinux/include/xfrm.h
-> @@ -26,7 +26,8 @@ int selinux_xfrm_state_delete(struct xfrm_state *x);
->  int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
->  int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
->  				      struct xfrm_policy *xp,
-> -				      const struct flowi *fl);
-> +				      const struct flowi *fl,
-> +				      unsigned short family);
->  
->  #ifdef CONFIG_SECURITY_NETWORK_XFRM
->  extern atomic_t selinux_xfrm_refcount;
-> diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
-> index 7314196185d1..5beb30237d3a 100644
-> --- a/security/selinux/xfrm.c
-> +++ b/security/selinux/xfrm.c
-> @@ -175,7 +175,8 @@ int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
->   */
->  int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
->  				      struct xfrm_policy *xp,
-> -				      const struct flowi *fl)
-> +				      const struct flowi *fl,
-> +				      unsigned short family)
->  {
->  	u32 state_sid;
->  
->
+
+Thanks, Jake.  In general this seems to work pretty well.  One thing, 
+tho'...
+
+Our fw download is slow (I won't go into the reasons here) so we're 
+clicking through the Download x% over maybe 100+ seconds.  Since we send 
+an update every 3% or so, we end up seeing the ( 0m 3s ) pop up and stay 
+there the whole time, looking a little odd:
+
+     ./iproute2-5.8.0/devlink/devlink dev flash pci/0000:b5:00.0 file 
+ionic/dsc_fw_1.15.0-150.tar
+     Preparing to flash
+     Downloading  37% ( 0m 3s )
+   ...
+     Downloading  59% ( 0m 3s )
+   ...
+     Downloading  83% ( 0m 3s )
+
+And at the end we see:
+
+     Preparing to flash
+     Downloading 100% ( 0m 3s )
+     Installing ( 0m 43s : 25m 0s )
+     Selecting ( 0m 5s : 0m 30s )
+     Flash done
+
+I can have the driver do updates more often in order to stay under the 3 
+second limit and hide this, but it looks a bit funky, especially at the 
+end where I know that 100% took a lot longer than 3 seconds.
+
+sln
+
+
