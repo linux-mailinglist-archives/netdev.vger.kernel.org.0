@@ -2,99 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F11927CC66
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:36:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 029AA27CCA0
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:38:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732743AbgI2MgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 08:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47402 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729532AbgI2Mfq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 08:35:46 -0400
-Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 118F9C061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 05:35:46 -0700 (PDT)
-Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 24F5C86C83;
-        Tue, 29 Sep 2020 13:35:44 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1601382944; bh=soGIhdGRsvcoY5CEjyzWEm1prQSDuMRBpoHC/klPfoc=;
-        h=From:To:Cc:Subject:Date:Message-Id:From;
-        z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
-         rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
-         in@katalix.com>|Subject:=20[PATCH=20net-next=201/1]=20l2tp:=20repo
-         rt=20rx=20cookie=20discards=20in=20netlink=20get|Date:=20Tue,=2029
-         =20Sep=202020=2013:35:41=20+0100|Message-Id:=20<20200929123541.317
-         80-1-tparkin@katalix.com>;
-        b=YHgRSbvLOCOqexjfiJ4mF8i+g0YU3uB8/ATV0fqgBDIRP3k09Mj+M26USJK8TMckE
-         XHc0ugjVTrmQCDZgaYQL+GyFTRUVitd3B7qGqyLhW44G1Zc1xn90jOID5i5asXdfPW
-         ptFjF5uVx10jjvC8mwEJd9frzBT66cGl4eJjkk1Q0DnUoozKddPqCjHNkno8qO2pEr
-         byv9IJH2O/7yVAFjBKciQbEuxJv4OgIhXRecnTXq4bRiqkmIQ6LXRyW4ctbpUC2wk6
-         i5a2iTfBFMf5NoQCL4py6ekBWedLtvF1NSgQFjT3kqf3Pl5jQ/KtJdNp39X8fUFRRo
-         rEuSPc5Myq4dg==
-From:   Tom Parkin <tparkin@katalix.com>
-To:     netdev@vger.kernel.org
-Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
-Subject: [PATCH net-next 1/1] l2tp: report rx cookie discards in netlink get
-Date:   Tue, 29 Sep 2020 13:35:41 +0100
-Message-Id: <20200929123541.31780-1-tparkin@katalix.com>
-X-Mailer: git-send-email 2.17.1
+        id S1733227AbgI2Mhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 08:37:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48736 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732170AbgI2MhT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 08:37:19 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5B9B92075F;
+        Tue, 29 Sep 2020 12:37:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601383038;
+        bh=S4wNT1s618zBR49BGhVX+tQF2CHbKbCGsPdgXgyr3UY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lmsXpnI7r0iwkDdjZ5+XzKl8hLcq4E7KTAWur2JExI4C/hTf9CpOt5hyaa0x7EoMJ
+         Pp1FqhwKzdYR9lulHDWiKIuXkZFw6mv9oQQXYWV2mVxtwLZiEnaW1tG7tQnKaIOiia
+         LkLIAxj7nlzosaz27eG8yAvY4EhGbsR8lzEMxgmA=
+Date:   Tue, 29 Sep 2020 15:37:13 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Alex Dewar <alex.dewar90@gmail.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Roi Dayan <roid@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Eli Britstein <elibr@mellanox.com>,
+        Ariel Levkovich <lariel@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net/mlx5e: Fix use of freed pointer
+Message-ID: <20200929123713.GG3094@unreal>
+References: <20200928074301.GC3094@unreal>
+ <20200929101554.8963-1-alex.dewar90@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200929101554.8963-1-alex.dewar90@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an L2TPv3 session receives a data frame with an incorrect cookie
-l2tp_core logs a warning message and bumps a stats counter to reflect
-the fact that the packet has been dropped.
+On Tue, Sep 29, 2020 at 11:15:49AM +0100, Alex Dewar wrote:
+> If the call to mlx5_fc_create() fails, then shared_counter will be freed
+> before its member, shared_counter->counter, is accessed to retrieve the
+> error code. Fix by using an intermediate variable.
+>
+> Addresses-Coverity: CID 1497153: Memory - illegal accesses (USE_AFTER_FREE)
+> Fixes: 1edae2335adf ("net/mlx5e: CT: Use the same counter for both directions")
+> Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
+> ---
+> v2:
+> 	- Add Fixes tag (Leon)
+> 	- Use ERR_CAST (Leon)
+>
+> Hi Leon,
+>
+> I've made the suggested changes. Let me know if there's anything else
+> you need :)
 
-However, the stats counter in question is missing from the l2tp_netlink
-get message for tunnel and session instances.
+Hi Alex,
 
-Include the statistic in the netlink get response.
+Saeed already picked Dan's patch.
+https://lore.kernel.org/linux-rdma/1017ab3724b83818c03dfa7661b3f31827a7f62f.camel@kernel.org/T/#t
 
-Signed-off-by: Tom Parkin <tparkin@katalix.com>
----
- include/uapi/linux/l2tp.h | 1 +
- net/l2tp/l2tp_netlink.c   | 6 ++++++
- 2 files changed, 7 insertions(+)
+>
+> There is also this patch in the series which doesn't seem to have been
+> reviewed yet: https://lore.kernel.org/lkml/20200927113254.362480-4-alex.dewar90@gmail.com/
 
-diff --git a/include/uapi/linux/l2tp.h b/include/uapi/linux/l2tp.h
-index 88a0d32b8c07..30c80d5ba4bf 100644
---- a/include/uapi/linux/l2tp.h
-+++ b/include/uapi/linux/l2tp.h
-@@ -144,6 +144,7 @@ enum {
- 	L2TP_ATTR_RX_OOS_PACKETS,	/* u64 */
- 	L2TP_ATTR_RX_ERRORS,		/* u64 */
- 	L2TP_ATTR_STATS_PAD,
-+	L2TP_ATTR_RX_COOKIE_DISCARDS,	/* u64 */
- 	__L2TP_ATTR_STATS_MAX,
- };
- 
-diff --git a/net/l2tp/l2tp_netlink.c b/net/l2tp/l2tp_netlink.c
-index 83c015f7f20d..5ca5056e9636 100644
---- a/net/l2tp/l2tp_netlink.c
-+++ b/net/l2tp/l2tp_netlink.c
-@@ -420,6 +420,9 @@ static int l2tp_nl_tunnel_send(struct sk_buff *skb, u32 portid, u32 seq, int fla
- 	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_SEQ_DISCARDS,
- 			      atomic_long_read(&tunnel->stats.rx_seq_discards),
- 			      L2TP_ATTR_STATS_PAD) ||
-+	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_COOKIE_DISCARDS,
-+			      atomic_long_read(&tunnel->stats.rx_cookie_discards),
-+			      L2TP_ATTR_STATS_PAD) ||
- 	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_OOS_PACKETS,
- 			      atomic_long_read(&tunnel->stats.rx_oos_packets),
- 			      L2TP_ATTR_STATS_PAD) ||
-@@ -760,6 +763,9 @@ static int l2tp_nl_session_send(struct sk_buff *skb, u32 portid, u32 seq, int fl
- 	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_SEQ_DISCARDS,
- 			      atomic_long_read(&session->stats.rx_seq_discards),
- 			      L2TP_ATTR_STATS_PAD) ||
-+	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_COOKIE_DISCARDS,
-+			      atomic_long_read(&session->stats.rx_cookie_discards),
-+			      L2TP_ATTR_STATS_PAD) ||
- 	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_OOS_PACKETS,
- 			      atomic_long_read(&session->stats.rx_oos_packets),
- 			      L2TP_ATTR_STATS_PAD) ||
--- 
-2.17.1
+Ariel is handling this internally.
+https://lore.kernel.org/linux-rdma/64f6a3eaaac505c341f996df0b0877ee9af56c00.camel@kernel.org/T/#t
 
+Thanks
