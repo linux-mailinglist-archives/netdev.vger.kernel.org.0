@@ -2,108 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD57327BF67
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:29:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF1E27BFA3
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:34:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727637AbgI2I3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 04:29:01 -0400
-Received: from z5.mailgun.us ([104.130.96.5]:36598 "EHLO z5.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725550AbgI2I3B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 04:29:01 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1601368140; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=0OOcwzqr1dYwT4LposeccPgmKVDcaqiCHCOr1JztWkE=;
- b=nMRKTjLreay9zmWTIXKj6EEYA6RKtQ3aXyE0Z/1EkaweiSFr32pCZhQ4jW7vILP2IdgAJNxc
- vlsFNx6dn81g2IU47529rO7MKfj+0fcDFj5/kgWbB/72N9lLNAJIfXFtR4ZLoT6zNYd9/ckb
- BvDXr9C1Q828hdIubqon8P5VDYs=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 5f72f04cbebf546dbbd4c977 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 29 Sep 2020 08:29:00
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 12899C433CB; Tue, 29 Sep 2020 08:29:00 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 091CCC433C8;
-        Tue, 29 Sep 2020 08:28:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 091CCC433C8
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath10k: qmi: Skip host capability request for Xiaomi Poco
- F1
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1600328501-8832-1-git-send-email-amit.pundir@linaro.org>
-References: <1600328501-8832-1-git-send-email-amit.pundir@linaro.org>
-To:     Amit Pundir <amit.pundir@linaro.org>
-Cc:     David S Miller <davem@davemloft.net>,
+        id S1727717AbgI2Ies (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 04:34:48 -0400
+Received: from mail-m974.mail.163.com ([123.126.97.4]:52928 "EHLO
+        mail-m974.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725372AbgI2Ier (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:34:47 -0400
+X-Greylist: delayed 938 seconds by postgrey-1.27 at vger.kernel.org; Tue, 29 Sep 2020 04:34:46 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=uJw7P
+        bcKiwi2XDoJgHU84ZZoA4o7HeGvmqfG+5az7NQ=; b=Rch5DBd1wq3OPbV+pGi1J
+        sTNEnhW6f4f3z88dTUN4HcS+OjL71Ve71ISYm5tp52UHtD9jJtnCGO+SJuwrbx56
+        WnvMT6MVq22LY35zeR9xoTuf40qN3efev4SbKNilGO99Ydd8LQ/HMXpzBYq3DPC0
+        4dOCS6Cd1tYcEilUgDDfEw=
+Received: from localhost.localdomain (unknown [111.202.93.98])
+        by smtp4 (Coremail) with SMTP id HNxpCgDncWjK7XJfSDh4Rw--.1631S2;
+        Tue, 29 Sep 2020 16:18:18 +0800 (CST)
+From:   "longguang.yue" <bigclouds@163.com>
+Cc:     yuelongguang@gmail.com, "longguang.yue" <bigclouds@163.com>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200929082900.12899C433CB@smtp.codeaurora.org>
-Date:   Tue, 29 Sep 2020 08:29:00 +0000 (UTC)
+        netdev@vger.kernel.org (open list:IPVS),
+        lvs-devel@vger.kernel.org (open list:IPVS),
+        netfilter-devel@vger.kernel.org (open list:NETFILTER),
+        coreteam@netfilter.org (open list:NETFILTER),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] ipvs: Add traffic statistic up even it is VS/DR or VS/TUN mode
+Date:   Tue, 29 Sep 2020 16:18:11 +0800
+Message-Id: <20200929081811.32302-1-bigclouds@163.com>
+X-Mailer: git-send-email 2.20.1 (Apple Git-117)
+In-Reply-To: <20200929050302.28105-1-bigclouds@163.com>
+References: <20200929050302.28105-1-bigclouds@163.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HNxpCgDncWjK7XJfSDh4Rw--.1631S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxJryDCFykGr18CrWfGr4rZrb_yoW8uw1DpF
+        18tay3XrW8WFy5J3WxAr97CryfCr1kt3Zrur4Yka4Sy3WDXF13AFsYkrWa9ay5ArsYqaya
+        qw4Fqw13C34Dt3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j3xhdUUUUU=
+X-Originating-IP: [111.202.93.98]
+X-CM-SenderInfo: peljuzprxg2qqrwthudrp/xtbBzwquQ1aD8nIV5wAAsP
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Amit Pundir <amit.pundir@linaro.org> wrote:
+It's ipvs's duty to do traffic statistic if packets get hit,
+no matter what mode it is.
 
-> Workaround to get WiFi working on Xiaomi Poco F1 (sdm845)
-> phone. We get a non-fatal QMI_ERR_MALFORMED_MSG_V01 error
-> message in ath10k_qmi_host_cap_send_sync(), but we can still
-> bring up WiFi services successfully on AOSP if we ignore it.
-> 
-> We suspect either the host cap is not implemented or there
-> may be firmware specific issues. Firmware version is
-> QC_IMAGE_VERSION_STRING=WLAN.HL.2.0.c3-00257-QCAHLSWMTPLZ-1
-> 
-> qcom,snoc-host-cap-8bit-quirk didn't help. If I use this
-> quirk, then the host capability request does get accepted,
-> but we run into fatal "msa info req rejected" error and
-> WiFi interface doesn't come up.
-> 
-> Attempts are being made to debug the failure reasons but no
-> luck so far. Hence this device specific workaround instead
-> of checking for QMI_ERR_MALFORMED_MSG_V01 error message.
-> Tried ath10k/WCN3990/hw1.0/wlanmdsp.mbn from the upstream
-> linux-firmware project but it didn't help and neither did
-> building board-2.bin file from stock bdwlan* files.
-> 
-> This workaround will be removed once we have a viable fix.
-> Thanks to postmarketOS guys for catching this.
-> 
-> Signed-off-by: Amit Pundir <amit.pundir@linaro.org>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Signed-off-by: longguang.yue <bigclouds@163.com>
+---
+ net/netfilter/ipvs/ip_vs_conn.c | 13 +++++++++++--
+ net/netfilter/ipvs/ip_vs_core.c |  5 ++++-
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
-Dropped per discussion.
-
-Patch set to Changes Requested.
-
+diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
+index a90b8eac16ac..2620c585d0c0 100644
+--- a/net/netfilter/ipvs/ip_vs_conn.c
++++ b/net/netfilter/ipvs/ip_vs_conn.c
+@@ -401,6 +401,8 @@ struct ip_vs_conn *ip_vs_ct_in_get(const struct ip_vs_conn_param *p)
+ struct ip_vs_conn *ip_vs_conn_out_get(const struct ip_vs_conn_param *p)
+ {
+ 	unsigned int hash;
++	__be16 cport;
++	const union nf_inet_addr *caddr;
+ 	struct ip_vs_conn *cp, *ret=NULL;
+ 
+ 	/*
+@@ -411,10 +413,17 @@ struct ip_vs_conn *ip_vs_conn_out_get(const struct ip_vs_conn_param *p)
+ 	rcu_read_lock();
+ 
+ 	hlist_for_each_entry_rcu(cp, &ip_vs_conn_tab[hash], c_list) {
+-		if (p->vport == cp->cport && p->cport == cp->dport &&
++		if (IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ){
++			cport = cp->vport;
++			caddr = &cp->vaddr;
++		} else {
++			cport = cp->dport;
++			caddr = &cp->daddr;
++		}
++		if (p->vport == cp->cport && p->cport == cport &&
+ 		    cp->af == p->af &&
+ 		    ip_vs_addr_equal(p->af, p->vaddr, &cp->caddr) &&
+-		    ip_vs_addr_equal(p->af, p->caddr, &cp->daddr) &&
++		    ip_vs_addr_equal(p->af, p->caddr, caddr) &&
+ 		    p->protocol == cp->protocol &&
+ 		    cp->ipvs == p->ipvs) {
+ 			if (!__ip_vs_conn_get(cp))
+diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+index e3668a6e54e4..ed523057f07f 100644
+--- a/net/netfilter/ipvs/ip_vs_core.c
++++ b/net/netfilter/ipvs/ip_vs_core.c
+@@ -1413,8 +1413,11 @@ ip_vs_out(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, in
+ 			     ipvs, af, skb, &iph);
+ 
+ 	if (likely(cp)) {
+-		if (IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ)
++		if (IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ){
++			ip_vs_out_stats(cp, skb);
++			skb->ipvs_property = 1;
+ 			goto ignore_cp;
++		}
+ 		return handle_response(af, skb, pd, cp, &iph, hooknum);
+ 	}
+ 
 -- 
-https://patchwork.kernel.org/patch/11781801/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.20.1 (Apple Git-117)
 
