@@ -2,138 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CF4B27D44F
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 19:19:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DBEC27D45B
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 19:24:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729269AbgI2RS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 13:18:57 -0400
-Received: from mx4.wp.pl ([212.77.101.12]:31529 "EHLO mx4.wp.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728205AbgI2RS5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 13:18:57 -0400
-Received: (wp-smtpd smtp.wp.pl 28907 invoked from network); 29 Sep 2020 19:18:52 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1601399933; bh=wbAXs32pZ3bQDQV1uH+M8ERsXSGLGZuUyyrIu8xDhOg=;
-          h=From:To:Cc:Subject;
-          b=fwk+azLTHGAmGrrbe++utWiq9I1a21lWUT79oebhJrKCz48XpISVbqakk78S4kkMK
-           Hy0qNxHYb48i7U69rrhETX+kgrQazxoZRPlj/zlegCCqOia2tN8uCQsv+CDWGi8W76
-           ZJkk8c6SKwwqG57ieDROfd/MSoANtHo+lfW7KI7M=
-Received: from unknown (HELO kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com) (kubakici@wp.pl@[163.114.132.7])
-          (envelope-sender <kubakici@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <jacob.e.keller@intel.com>; 29 Sep 2020 19:18:52 +0200
-Date:   Tue, 29 Sep 2020 10:18:46 -0700
-From:   Jakub Kicinski <kubakici@wp.pl>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, snelson@pensando.io
-Subject: Re: [RFC iproute2-next] devlink: display elapsed time during flash
- update
-Message-ID: <20200929101846.2a296015@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200928234945.3417905-1-jacob.e.keller@intel.com>
-References: <20200928234945.3417905-1-jacob.e.keller@intel.com>
+        id S1729269AbgI2RYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 13:24:06 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:15584 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727650AbgI2RYG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 13:24:06 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 08THK1PK018911;
+        Tue, 29 Sep 2020 10:23:51 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=nDCWED7cTWXio+7n4CbBlSFCTLArN57bTmDje6cvFBQ=;
+ b=g+vKrLTPIJ3E9//KCN2jLbFnmvA4KqGiaML8OKY2txkYJ47VfOPgy/mqtDUjkKPd/+NQ
+ oTaZLL9iKgeGqpcFv3q4vnHd6yphj7jv9R+JN1HCS5pPj/LV0uM8aFj8KUEkFykO5Eg0
+ IOaUL38FuKAknR4EAsa0nvgopVWtp8KZGIw= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 33t14yephn-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 29 Sep 2020 10:23:51 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 29 Sep 2020 10:23:48 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gsrS7EKF2INrkUka2s6ewF8y3PbYUlLF2CvEZ3prG4gjr3rNst2QTzrfP9T5YAA7jgE41h9CltIqDxp2bys9otrbB2KP0iwrDGDSeTQkHUj7Cmk7sM5++bV3a1JLa4k9Tw2rfR/uvmC4C0JSY8aLRZBS1Fuz9QEnGA/y8z/qe5yylyvgIFBCekqY2z6GI8jWAHkpjNR+SceQwz8ZiAZtOcbTT05b5yYFa0kFOKDdtIV2/D1t0RFGyHLNW2nJRKzzVHLh9gJQHzjXVGhMO3KLRp2VevmrXdNY/bxDMfdJA0zLNKqGCwt37I369nybVjTCOJNeOLQSd9FL1zCF69wv/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nDCWED7cTWXio+7n4CbBlSFCTLArN57bTmDje6cvFBQ=;
+ b=flUGeHMsJChkYLvBM3urMqvScDp/Vt02+FN3TPBreut8V1Wcvac6Tyr8v7MIrW0+z2wUNfcqXRh76hvX0/xzA8OJ2tFWoo+2ranjKE6sbpJedmzxW+5MVBbvVRWPc0ue8m+cUWOOWo2CK2/x1U+eMPmKYOXbG6MOqCKYIBlQHPd1OKN+toiUm4gSOvRcpyaOU/DBy+85Dkee9ziR4qmMBR+DldOA+prms/p3qdPPzY4IEzp7FQtV+h/Aih17IZ38FIRfz8kXWDu2PlwiVBVICJ9kI17vIN6YUGw4eHfXhF99DS+XD1RpJj6LIZviRi4HlblOp47NEbeQzbY6LBIn4A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nDCWED7cTWXio+7n4CbBlSFCTLArN57bTmDje6cvFBQ=;
+ b=ixglXIT13mYg3QNWOs5b30YLSPvIraf6e1kiyeqhDySHm/Y5N18Za/e6rBXy05ji+Tp+9KEMvB5pLHZ0fzaynIImk47r/39anFU4WlFXj9nEI9e9oFFNEjwOW7e3VpeN+vieHbdFOk9No7+MjBP7LEqfncurX2P6OV6FCq05GKg=
+Authentication-Results: cloudflare.com; dkim=none (message not signed)
+ header.d=none;cloudflare.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2725.namprd15.prod.outlook.com (2603:10b6:a03:158::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.24; Tue, 29 Sep
+ 2020 17:23:48 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c13c:fca9:5e04:9bfb]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c13c:fca9:5e04:9bfb%3]) with mapi id 15.20.3412.029; Tue, 29 Sep 2020
+ 17:23:47 +0000
+Date:   Tue, 29 Sep 2020 10:23:40 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+CC:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team <kernel-team@cloudflare.com>,
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v2 4/4] selftest: bpf: Test copying a sockmap
+ and sockhash
+Message-ID: <20200929172340.hogj6zficvhkpibx@kafai-mbp.dhcp.thefacebook.com>
+References: <20200928090805.23343-1-lmb@cloudflare.com>
+ <20200928090805.23343-5-lmb@cloudflare.com>
+ <20200929060619.psnobg3cz3zbfx6u@kafai-mbp>
+ <CACAyw9-hSfaxfHHMaVMVqBU7MHLoqgPyo55UwQ3w7NKREHcCxw@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACAyw9-hSfaxfHHMaVMVqBU7MHLoqgPyo55UwQ3w7NKREHcCxw@mail.gmail.com>
+X-Originating-IP: [2620:10d:c090:400::5:f2d3]
+X-ClientProxiedBy: MWHPR10CA0020.namprd10.prod.outlook.com (2603:10b6:301::30)
+ To BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-WP-MailID: 166c28eb58544daa53fae94e7c550943
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000001 [YZKD]                               
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:f2d3) by MWHPR10CA0020.namprd10.prod.outlook.com (2603:10b6:301::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20 via Frontend Transport; Tue, 29 Sep 2020 17:23:46 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 16af6e4b-bf25-4724-7cdd-08d8649c6cb2
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2725:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB27255B1B9F5DFA9B01F08A22D5320@BYAPR15MB2725.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Hq+gyuyMlphFJFAj/35IsFtF+IU0fL6ivst+Fc0054Fzwu6YyDrUJdPB72FpH1+1jV1tTxO1b41UvhJNqLhAxiumK9dszHl3GkogPa4Xh+b0bRKTnsNRKu8AgYUTOTkZhauhQWg7nirNNXeB+X9opYg1onArbtbAybJ67LVBliUHnb5NUdNNlUTgs2+3lJ5HceWAhaGUXsVVNcn/oD/FpsVcIt5iH+Ysr8wZfD1v6enl6zsi97Pf3zv1M4TlvG+I1L5jzNh/0ceuBO6ja8mARBOJ7p+7/HSpernQVAXOWqcUnKKA67M+6Ng11P1mbXbnqx7G4A+zM9Glk586q14UzddTQX+/ERh76ATE4SYFshTfv7AfMLRosruf9rgeUYF9
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(396003)(346002)(366004)(136003)(376002)(83380400001)(478600001)(4326008)(8676002)(186003)(52116002)(7696005)(2906002)(54906003)(316002)(16526019)(66476007)(6506007)(66556008)(8936002)(55016002)(6916009)(5660300002)(9686003)(1076003)(86362001)(66946007)(4744005)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: J9rmFVVnbQ/37zqLcCK0sVgBAfWUGEImh03NqZScluAq5m8S6xWSb0KQyftlCmemwWJJ7cjqu9v7ugJNBvsACh8/aQCy47xB5KN8YJpY92/rJYxYjFdyda7N1AU+gVVUCQQFCsb1hZCjbIBMmmZiLE1LVQHJ/zibxsSQ5W4ReT1q/1mZPj85UL07H4mxD1Mh4rX8b07sXp7sTz0s1z/yQ1uTDa271auY0OC42v/FLnb/AGu92vVqoNUgzJs7TVkQJes8pvBh3wcJDANmZ5LVhJTpYkFq+H2fj/u866NC9g5VIQNK7/6udIAUiR3tpP0bwmZtIib9ic8LgtyTPfEzaqbWclH5kcPMtYFev9A2WZY0VaHbF9fxIEN0N7Oi5ajcqyMuu6kVVcMz7E9mBdSWawCvjs7svx7lvgfwyUsybuRee/MsnGi+g6wPpJT+v/tFM8w7t/5U3XE0ptZtrOyAwT0X7jQt8Q+rZl+HIvxus1QnqGngE6HSBVHJRHEL3fDq+rysVMtCq7u9VvGOT0sKKxKYG0TXF6U/AV/1nt+jn+vmKrelbyGvCUI69HGPoNliDWlFZkshvTwQYyhMaW3AyG58nqacZMpmIaxTYbL7YpzGd4xsqU0Mc8nq9vY78cgJXgvxwMyCWU68ti7UFNr35RvdRu4LgQptVUgleCZhOaM=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16af6e4b-bf25-4724-7cdd-08d8649c6cb2
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2020 17:23:47.8245
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0OA87K0JFaIt6ZZg9bCCCiLe9hlX8Ura6HNHTh37F+FcE3D9ZEtoL1HgXb61/gsk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2725
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-29_11:2020-09-29,2020-09-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ lowpriorityscore=0 mlxlogscore=969 priorityscore=1501 phishscore=0
+ spamscore=0 adultscore=0 bulkscore=0 mlxscore=0 clxscore=1015
+ impostorscore=0 suspectscore=1 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009290147
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Sep 2020 16:49:45 -0700 Jacob Keller wrote:
-> For some devices, updating the flash can take significant time during
-> operations where no status can meaningfully be reported. This can be
-> somewhat confusing to a user who sees devlink appear to hang on the
-> terminal waiting for the device to update.
+On Tue, Sep 29, 2020 at 10:21:05AM +0100, Lorenz Bauer wrote:
+> On Tue, 29 Sep 2020 at 07:06, Martin KaFai Lau <kafai@fb.com> wrote:
 > 
-> Provide a ticking counter of the time elapsed since the previous status
-> message in order to make it clear that the program is not simply stuck.
+> ...
 > 
-> Do not display this message unless a few seconds have passed since the
-> last status update. Additionally, if the previous status notification
-> included a timeout, display this as part of the message. If we do not
-> receive an error or a new status without that time out, replace it with
-> the text "timeout reached".
+> > > +     /* We need a temporary buffer on the stack, since the verifier doesn't
+> > > +      * let us use the pointer from the context as an argument to the helper.
+> > Is it something that can be improved later?
+> >
+> > others LGTM.
 > 
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> ---
-> Sending this as an RFC because I doubt this is the best implementation. For
-> one, I get a weird display issue where the cursor doesn't always end up on
-> the end of line in my shell.. The % display works properly, so I'm not sure
-> what's wrong here.
-> 
-> Second, even though select should be timing out every 1/10th of a second for
-> screen updates, I don't seem to get that behavior in my test. It takes about
-> 8 to 10 seconds for the first elapsed time message to be displayed, and it
-> updates really slowly. Is select just not that precise? I even tried using a
-> timeout of zero, but this means we refresh way too often and it looks bad. I
-> am not sure what is wrong here...
+> Yeah, I think so. We'd need to do something similar to your
+> sock_common work for PTR_TO_RDONLY_BUF_OR_NULL. The fact that the
+> pointer is read only makes it a bit more difficult I think. After
+I thought the key arg should be used as read-only in the map's helper.
+or there is map type's helper that modifies the key?
 
-Strange. Did you strace it? Perhaps it's some form of output buffering?
-
-> diff --git a/devlink/devlink.c b/devlink/devlink.c
-> index 0374175eda3d..7fb4b5ef1ebe 100644
-> --- a/devlink/devlink.c
-> +++ b/devlink/devlink.c
-> @@ -33,6 +33,7 @@
->  #include <sys/select.h>
->  #include <sys/socket.h>
->  #include <sys/types.h>
-> +#include <sys/time.h>
->  #include <rt_names.h>
->  
->  #include "version.h"
-> @@ -3066,6 +3067,9 @@ static int cmd_dev_info(struct dl *dl)
->  
->  struct cmd_dev_flash_status_ctx {
->  	struct dl *dl;
-> +	struct timeval last_status_msg;
-> +	char timeout_msg[128];
-
-Really you just need the length (as returned by snprintf), right?
-
-> +	uint64_t timeout;
->  	char *last_msg;
->  	char *last_component;
->  	uint8_t not_first:1,
-> @@ -3083,6 +3087,14 @@ static int nullstrcmp(const char *str1, const char *str2)
->  	return str1 ? 1 : -1;
->  }
->  
-> +static void cmd_dev_flash_clear_elapsed_time(struct cmd_dev_flash_status_ctx *ctx)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < strlen(ctx->timeout_msg); i++)
-> +		pr_out_tty("\b");
-
-I wonder if it's not easier to \r, I guess the existing code likes \b
-so be it.
-
-> +}
-> +
->  static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
->  {
->  	struct cmd_dev_flash_status_ctx *ctx = data;
-
-> +static void cmd_dev_flash_time_elapsed(struct cmd_dev_flash_status_ctx *ctx)
-> +{
-> +	struct timeval now, res;
-> +
-> +	gettimeofday(&now, NULL);
-> +	timersub(&now, &ctx->last_status_msg, &res);
-> +
-> +	/* Don't start displaying a timeout message until we've elapsed a few
-> +	 * seconds...
-> +	 */
-> +	if (res.tv_sec > 3) {
-> +		uint elapsed_m, elapsed_s;
-
-This may be the first uint use in iproute2..
-
-> +		/* clear the last elapsed time message, if we have one */
-> +		cmd_dev_flash_clear_elapsed_time(ctx);
-> +
-> +		elapsed_m = res.tv_sec / 60;
-> +		elapsed_s = res.tv_sec % 60;
+> that, a user could just plug the key into map_update_elem directly.
+> Alternatively, allow specialising map_ops per context.
