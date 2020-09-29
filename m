@@ -2,61 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E56B427DDC7
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 03:30:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAA9927DE7F
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 04:25:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729516AbgI3BaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 21:30:17 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:51166 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726689AbgI3BaR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 21:30:17 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id E8A7A46749E585AF801D;
-        Wed, 30 Sep 2020 09:30:14 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.487.0; Wed, 30 Sep 2020 09:30:09 +0800
-From:   Jing Xiangfeng <jingxiangfeng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <luc.vanoostenryck@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jingxiangfeng@huawei.com>
-Subject: [PATCH] caif_virtio: Remove redundant initialization of variable err
-Date:   Wed, 30 Sep 2020 09:29:54 +0800
-Message-ID: <20200930012954.1355-1-jingxiangfeng@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1729842AbgI3CY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 22:24:58 -0400
+Received: from [110.74.151.213] ([110.74.151.213]:52517 "EHLO
+        mail.bless.gov.my" rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729761AbgI3CY6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 22:24:58 -0400
+X-Greylist: delayed 12297 seconds by postgrey-1.27 at vger.kernel.org; Tue, 29 Sep 2020 22:24:57 EDT
+Received: from User (unknown [172.20.84.1])
+        by mail.bless.gov.my (Postfix) with SMTP id A053143ED1D5;
+        Wed, 30 Sep 2020 05:00:23 +0800 (MYT)
+Reply-To: <iinfo446@gmail.com>
+From:   "Mrs. Susan Carter" <test@mail.bless.gov.my>
+Subject: Good day,    
+Date:   Tue, 29 Sep 2020 22:00:44 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain;
+        charset="Windows-1251"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
+Message-Id: <20200929210023.A053143ED1D5@mail.bless.gov.my>
+To:     undisclosed-recipients:;
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit a8c7687bf216 ("caif_virtio: Check that vringh_config is not
-null"), the variable err is being initialized with '-EINVAL' that is
-meaningless. So remove it.
+Good day,
 
-Signed-off-by: Jing Xiangfeng <jingxiangfeng@huawei.com>
----
- drivers/net/caif/caif_virtio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+My name are Mrs. Susan Carter an America but a United Kingdom Citizen, I???m 57 years old, widow, married to late Eng Martins Carter who is a British, who until his death worked with Dutch Filtration for Twenty-Six years before he died in the year 2015 after a brief illness that lasted only five days.
 
-diff --git a/drivers/net/caif/caif_virtio.c b/drivers/net/caif/caif_virtio.c
-index 80ea2e913c2b..47a6d62b7511 100644
---- a/drivers/net/caif/caif_virtio.c
-+++ b/drivers/net/caif/caif_virtio.c
-@@ -652,7 +652,7 @@ static int cfv_probe(struct virtio_device *vdev)
- 	const char *cfv_netdev_name = "cfvrt";
- 	struct net_device *netdev;
- 	struct cfv_info *cfv;
--	int err = -EINVAL;
-+	int err;
- 
- 	netdev = alloc_netdev(sizeof(struct cfv_info), cfv_netdev_name,
- 			      NET_NAME_UNKNOWN, cfv_netdev_setup);
--- 
-2.17.1
+When my late husband was alive he deposited the sum of US$50 Million in bank USA through his Financial Lawyer in the United State of America and we all agreed as a couple to donate all of that to charity. Following my health (Lung Cancer), my Doctor told me that I may not live longer than required due to my health condition.
 
+Looking forward to seeing someone who can use the money for charitable work.
+
+Best Regards
+Yours sincerely
+Mrs. Susan Carter
