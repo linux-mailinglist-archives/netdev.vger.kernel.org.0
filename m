@@ -2,129 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C89627C820
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 13:59:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5E7427CAE0
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:24:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731651AbgI2L7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 07:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729322AbgI2Ll1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 07:41:27 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B7FC061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 04:41:27 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id c18so4986271wrm.9
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 04:41:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XUngUu4HVak2fl3G5w7GkKRH/esnX0yARyWxIl0qyFM=;
-        b=G4qaSumRJCUQPH1Qvc9dip5Rt+mYe2cjC5IWlzOgoeSth7zBIaKGkR95HdAB0OVtpa
-         XTmNCr7nqCzFkF9bmuKVDmILNWaFK/nYE87rzKSrIzeT6EvmBpuUPcaqGySM0PAp4Xxl
-         Vz47kWT61X37khVa60mifW2m6DblWo0iWkGHo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XUngUu4HVak2fl3G5w7GkKRH/esnX0yARyWxIl0qyFM=;
-        b=iqz3pdBEG8Frp2H79O9x1hso8/IUohfVjmcblLQIrbV5cGxfkZ2gE5bUhCkcGu8BXw
-         wmQSPnoDrddXWk7dF47Ihp4YsucfyI/LuUkX7mokFrcjCUBZ9FsIp1Dg7n/+1bNOklaV
-         wi5BqHk5uyAcz20o07pyxRe/ck/19iQo9+dk2Oan5+Yv4QGpT+ey4z2ofCmc9yC7dc58
-         SslnYFG53iQKhX3kbspfcZNyc+zeaXjoiO06FXWOXC+3Pq/7cLD9e6IttzFWaZUAbuQV
-         KLP1S3Ap97YzX1Bjs/I9m/bv1ZtciqfP+6aMt5sqv6nkAXqX/PAFwCtMLyD2gHYPY/+w
-         jOfg==
-X-Gm-Message-State: AOAM5329D/ORida1CIdBXPU1z8a80sLoCzebXMxbSDTxw9yIrWEWXnu0
-        HmifSe0tp3g99qqPf5VjbIqCWgyRlS2nyQ==
-X-Google-Smtp-Source: ABdhPJy6WnAbqGE9MBfBy48s8h7QTvHkqRxdHNfrVINjX1VHZLMoE18NRemaeTB+Cxx1o9qZ+qHnZA==
-X-Received: by 2002:a05:6000:118a:: with SMTP id g10mr3929186wrx.67.1601379685471;
-        Tue, 29 Sep 2020 04:41:25 -0700 (PDT)
-Received: from taos.konsulko.bg (lan.nucleusys.com. [92.247.61.126])
-        by smtp.gmail.com with ESMTPSA id t15sm5826577wrp.20.2020.09.29.04.41.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Sep 2020 04:41:25 -0700 (PDT)
-From:   Petko Manolov <petko.manolov@konsulko.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Petko Manolov <petko.manolov@konsulko.com>
-Subject: [PATCH] net: usb: pegasus: Proper error handing when setting pegasus' MAC address
-Date:   Tue, 29 Sep 2020 14:40:39 +0300
-Message-Id: <20200929114039.26866-1-petko.manolov@konsulko.com>
+        id S1732566AbgI2MWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 08:22:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48452 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729797AbgI2LfL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 07:35:11 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A683323C40;
+        Tue, 29 Sep 2020 11:28:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601378904;
+        bh=1+bDAC057cRqevoqUn1yDT8QoWbfQBjWAA7gtYY30kk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eRSGQ1QpMAxoGQ1LejssabvHFZ4GLivTXSNNyV9lfeFY0kJp65KT8mcmgipUTPQTz
+         4o8prcnEwSMZ4uNI/Q2UJkdSm8mMmLaPeIGMptjo/y+wyKFLXF5111nctCE9+q+y00
+         mrMe8ltTjssKdikq8YD26Ke0CEYsPQra7/ygtU3Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ian Rogers <irogers@google.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        John Garry <john.garry@huawei.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Stephane Eranian <eranian@google.com>,
+        Vince Weaver <vincent.weaver@maine.edu>,
+        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        kp singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 182/245] perf metricgroup: Free metric_events on error
+Date:   Tue, 29 Sep 2020 13:00:33 +0200
+Message-Id: <20200929105955.829907379@linuxfoundation.org>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200929105946.978650816@linuxfoundation.org>
+References: <20200929105946.978650816@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a bug in set_ethernet_addr() which does not take into account possible
-errors (or partial reads) returned by its helpers.  This can potentially lead to
-writing random data into device's MAC address registers.
+From: Ian Rogers <irogers@google.com>
 
-Signed-off-by: Petko Manolov <petko.manolov@konsulko.com>
+[ Upstream commit a159e2fe89b4d1f9fb54b0ae418b961e239bf617 ]
+
+Avoid a simple memory leak.
+
+Signed-off-by: Ian Rogers <irogers@google.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Andrii Nakryiko <andriin@fb.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Jin Yao <yao.jin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: John Garry <john.garry@huawei.com>
+Cc: Kajol Jain <kjain@linux.ibm.com>
+Cc: Kan Liang <kan.liang@linux.intel.com>
+Cc: Kim Phillips <kim.phillips@amd.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Vince Weaver <vincent.weaver@maine.edu>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: bpf@vger.kernel.org
+Cc: kp singh <kpsingh@chromium.org>
+Cc: netdev@vger.kernel.org
+Link: http://lore.kernel.org/lkml/20200508053629.210324-10-irogers@google.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/pegasus.c | 35 ++++++++++++++++++++++++++---------
- 1 file changed, 26 insertions(+), 9 deletions(-)
+ tools/perf/util/metricgroup.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-index e92cb51a2c77..25855f976c1b 100644
---- a/drivers/net/usb/pegasus.c
-+++ b/drivers/net/usb/pegasus.c
-@@ -360,28 +360,45 @@ static int write_eprom_word(pegasus_t *pegasus, __u8 index, __u16 data)
- }
- #endif				/* PEGASUS_WRITE_EEPROM */
- 
--static inline void get_node_id(pegasus_t *pegasus, __u8 *id)
-+static inline int get_node_id(pegasus_t *pegasus, u8 *id)
- {
--	int i;
--	__u16 w16;
-+	int i, ret;
-+	u16 w16;
- 
- 	for (i = 0; i < 3; i++) {
--		read_eprom_word(pegasus, i, &w16);
-+		ret = read_eprom_word(pegasus, i, &w16);
-+		if (ret < 0)
-+			return ret;
- 		((__le16 *) id)[i] = cpu_to_le16(w16);
- 	}
-+
-+	return 0;
- }
- 
--static void set_ethernet_addr(pegasus_t *pegasus)
-+static int set_ethernet_addr(pegasus_t *pegasus)
- {
--	__u8 node_id[6];
-+	int ret;
-+	u8 node_id[6];
- 
- 	if (pegasus->features & PEGASUS_II) {
--		get_registers(pegasus, 0x10, sizeof(node_id), node_id);
-+		ret = get_registers(pegasus, 0x10, sizeof(node_id), node_id);
-+		if (ret < 0)
-+			goto err;
- 	} else {
--		get_node_id(pegasus, node_id);
--		set_registers(pegasus, EthID, sizeof(node_id), node_id);
-+		ret = get_node_id(pegasus, node_id);
-+		if (ret < 0)
-+			goto err;
-+		ret = set_registers(pegasus, EthID, sizeof(node_id), node_id);
-+		if (ret < 0)
-+			goto err;
- 	}
-+
- 	memcpy(pegasus->net->dev_addr, node_id, sizeof(node_id));
-+
-+	return 0;
-+err:
-+	dev_err(&pegasus->intf->dev, "device's MAC address not set.\n");
-+	return ret;
- }
- 
- static inline int reset_mac(pegasus_t *pegasus)
+diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
+index 8b3dafe3fac3a..6dcc6e1182a54 100644
+--- a/tools/perf/util/metricgroup.c
++++ b/tools/perf/util/metricgroup.c
+@@ -171,6 +171,7 @@ static int metricgroup__setup_events(struct list_head *groups,
+ 		if (!evsel) {
+ 			pr_debug("Cannot resolve %s: %s\n",
+ 					eg->metric_name, eg->metric_expr);
++			free(metric_events);
+ 			continue;
+ 		}
+ 		for (i = 0; i < eg->idnum; i++)
+@@ -178,11 +179,13 @@ static int metricgroup__setup_events(struct list_head *groups,
+ 		me = metricgroup__lookup(metric_events_list, evsel, true);
+ 		if (!me) {
+ 			ret = -ENOMEM;
++			free(metric_events);
+ 			break;
+ 		}
+ 		expr = malloc(sizeof(struct metric_expr));
+ 		if (!expr) {
+ 			ret = -ENOMEM;
++			free(metric_events);
+ 			break;
+ 		}
+ 		expr->metric_expr = eg->metric_expr;
 -- 
-2.28.0
+2.25.1
+
+
 
