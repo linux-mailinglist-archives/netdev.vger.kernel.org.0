@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C92B927D910
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:41:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA75A27D90E
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:41:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729916AbgI2Ukp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729295AbgI2Ufo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:35:44 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D6AC0613D0;
-        Tue, 29 Sep 2020 13:35:44 -0700 (PDT)
-Message-Id: <20200929203459.868970918@linutronix.de>
+        id S1729808AbgI2Uko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:40:44 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:48690 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729296AbgI2Ufq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:35:46 -0400
+Message-Id: <20200929203459.967800092@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601411743;
+        s=2020; t=1601411744;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=AS1ZWbd5j+0/hCYbIZhY/JE+IutzJSfGLOpp28YBBig=;
-        b=ygGWo2pdfir7qDPK1e2kUnQc+7bNFcaKkPRyQIwZqh0hU9fhP2LpLZZ94RsBEdcJp3dqGf
-        fhjKniHfQmW1i/6Hf3s2krwxZlqsOYkmsRXSvq4OfGO0QdqqCA+9aSis60+H9KoKX2bX29
-        /QOr7UAGJJE1Ah+ZS+hQ7PXlGs18DiT9vmwi8txtLrtbS75Hs5SrNqKcKRRyX5SWQNP60s
-        q1XK8abAp2RPiCVHSibAn8bUG2bE+qp/KWkjhjvIoE9l7Uvz5Sh6/t28A2nTK2Pjb3J5oM
-        MHgWerc1wd4gjdfk1CXutmLAYNxxX6BoP6XHcBjwq0LhsW/+8gm/0An1+Pp3IQ==
+        bh=yPLMFV0AoKzVfjkZGD1cBol7ZHiDqQNGHcgytaaR7SU=;
+        b=DGmRniuwLHzIUi4k/mQQVGbmHmlc5hKx7KI3F+Vt92K4HbV+4/N++j7KAiLrK0Aig5EI27
+        OK4nc7WDsMiyTI4/TtPmO0qJWpgf23aOyvOwL6BP3SpKXbLdpDBkbXGes6GmQDAtisSw4+
+        NR9MnI2PyeekW2W3WlcAcAqbaORHvTZ0ER5Zet/4TFYBCqr+vGzjXZ5fWdft3D9FxNtAR7
+        n3LgKckRM18g7rRH5sLOSYPXk62LNNdGaL9Sze7y155ktki/zLKhk0pjW7usA8ejPxRQyh
+        HKGpF2HD9KC7ZuQD0Oc5/IsUAXjLcIZSHxXBZ9Bb8ciVF2E9DukQYKImu4ZOyg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601411743;
+        s=2020e; t=1601411744;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=AS1ZWbd5j+0/hCYbIZhY/JE+IutzJSfGLOpp28YBBig=;
-        b=GL+HPAY/AW2UtlqVOo/4HOHWBUAdf47RXLQpvs61rL0Ab5me01y9HTgbPdkzwZVtHlzMa1
-        JK2bUj1GWaqnruBQ==
-Date:   Tue, 29 Sep 2020 22:25:13 +0200
+        bh=yPLMFV0AoKzVfjkZGD1cBol7ZHiDqQNGHcgytaaR7SU=;
+        b=STkATloI5Xd/LYwyRA1wjacSEWk8sYNo/Fk8PiYrZnl0nulJcadbqh65bbryKovkMRPRbM
+        i9eLFjLBfU9eplDQ==
+Date:   Tue, 29 Sep 2020 22:25:14 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -88,7 +85,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch V2 04/36] net: caif: Use netif_rx_any_context()
+Subject: [patch V2 05/36] net: atheros: Remove WARN_ON(in_interrupt())
 References: <20200929202509.673358734@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -97,63 +94,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-The usage of in_interrupt() in non-core code is phased out. Ideally the
-information of the calling context should be passed by the callers or the
-functions be split as appropriate.
+in_interrupt() is ill defined and does not provide what the name
+suggests. The usage especially in driver code is deprecated and a tree wide
+effort to clean up and consolidate the (ab)usage of in_interrupt() and
+related checks is happening.
 
-cfhsi_rx_desc() and cfhsi_rx_pld() use in_interrupt() to distinguish if
-they should use netif_rx() or netif_rx_ni() for receiving packets.
+In this case the check covers only parts of the contexts in which these
+functions cannot be called. It fails to detect preemption or interrupt
+disabled invocations.
 
-The attempt to consolidate the code by passing an arguemnt or by
-distangling it failed due lack of knowledge about this driver and because
-the call chains are hard to follow.
+As the functions which are invoked from at*_reinit_locked() contain a broad
+variety of checks (always enabled or debug option dependent) which cover
+all invalid conditions already, there is no point in having inconsistent
+warnings in those drivers.
 
-As a stop gap use netif_rx_any_context() which invokes the correct code path
-depending on context and confines the in_interrupt() usage to core code.
+Just remove them.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
+
 ---
- drivers/net/caif/caif_hsi.c |   19 ++-----------------
- 1 file changed, 2 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/atheros/atl1c/atl1c_main.c |    1 -
+ drivers/net/ethernet/atheros/atl1e/atl1e_main.c |    2 --
+ drivers/net/ethernet/atheros/atlx/atl2.c        |    1 -
+ 3 files changed, 4 deletions(-)
 
---- a/drivers/net/caif/caif_hsi.c
-+++ b/drivers/net/caif/caif_hsi.c
-@@ -458,15 +458,7 @@ static int cfhsi_rx_desc(struct cfhsi_de
- 		skb_reset_mac_header(skb);
- 		skb->dev = cfhsi->ndev;
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+@@ -220,7 +220,6 @@ static void atl1c_phy_config(struct time
  
--		/*
--		 * We are in a callback handler and
--		 * unfortunately we don't know what context we're
--		 * running in.
--		 */
--		if (in_interrupt())
--			netif_rx(skb);
--		else
--			netif_rx_ni(skb);
-+		netif_rx_any_context(skb);
+ void atl1c_reinit_locked(struct atl1c_adapter *adapter)
+ {
+-	WARN_ON(in_interrupt());
+ 	atl1c_down(adapter);
+ 	atl1c_up(adapter);
+ 	clear_bit(__AT_RESETTING, &adapter->flags);
+--- a/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
++++ b/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
+@@ -127,8 +127,6 @@ static void atl1e_phy_config(struct time
  
- 		/* Update network statistics. */
- 		cfhsi->ndev->stats.rx_packets++;
-@@ -587,14 +579,7 @@ static int cfhsi_rx_pld(struct cfhsi_des
- 		skb_reset_mac_header(skb);
- 		skb->dev = cfhsi->ndev;
+ void atl1e_reinit_locked(struct atl1e_adapter *adapter)
+ {
+-
+-	WARN_ON(in_interrupt());
+ 	while (test_and_set_bit(__AT_RESETTING, &adapter->flags))
+ 		msleep(1);
+ 	atl1e_down(adapter);
+--- a/drivers/net/ethernet/atheros/atlx/atl2.c
++++ b/drivers/net/ethernet/atheros/atlx/atl2.c
+@@ -1086,7 +1086,6 @@ static int atl2_up(struct atl2_adapter *
  
--		/*
--		 * We're called in callback from HSI
--		 * and don't know the context we're running in.
--		 */
--		if (in_interrupt())
--			netif_rx(skb);
--		else
--			netif_rx_ni(skb);
-+		netif_rx_any_context(skb);
- 
- 		/* Update network statistics. */
- 		cfhsi->ndev->stats.rx_packets++;
-
+ static void atl2_reinit_locked(struct atl2_adapter *adapter)
+ {
+-	WARN_ON(in_interrupt());
+ 	while (test_and_set_bit(__ATL2_RESETTING, &adapter->flags))
+ 		msleep(1);
+ 	atl2_down(adapter);
 
