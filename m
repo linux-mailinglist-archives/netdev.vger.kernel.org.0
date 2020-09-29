@@ -2,77 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CF2A27D0A1
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 16:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7CBD27D063
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 16:02:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730316AbgI2OI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 10:08:28 -0400
-Received: from fallback23.m.smailru.net ([94.100.187.222]:45086 "EHLO
-        fallback23.mail.ru" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725554AbgI2OI2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 10:08:28 -0400
-X-Greylist: delayed 3398 seconds by postgrey-1.27 at vger.kernel.org; Tue, 29 Sep 2020 10:08:26 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=6RSxY738ACpF+Ino9SWbcQaQGlKofTJn7oumjFW5fzQ=;
-        b=O0gShlYECDL+4ylfDc3t8Xb7A4cvQJkdbhnJ8zVkQmdpzgWnX7wxedlgfpl3qxn8JflTTXi6dF9I1dHY3YiPgHOytcA51x5TVZxGfLbxQpsD51n2KtxgtYHWIgw/HseZ8KOlQk/eWrcCTAwBGN/KvCh9GRadbfh95ui+iwjjIWU=;
-Received: from [10.161.25.38] (port=52190 helo=smtp61.i.mail.ru)
-        by fallback23.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1kNFPy-0002JK-Mw; Tue, 29 Sep 2020 16:11:43 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=6RSxY738ACpF+Ino9SWbcQaQGlKofTJn7oumjFW5fzQ=;
-        b=EVvtcjCG6iG0MRH8VznkQUDbusbVCMgyb98pKRrUiNHZFLxpji7qlsAMCvjBEe9s9/W/EARvx+qBDcYaWZoqVNH1zNqYZY7tXILI70LKoFc+rV7xFqTTji5W3xRz4asfoKYlkwxyK+oO+p9jgxiGnSsEQlEmcMVOU4cA6b1D08A=;
-Received: by smtp61.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1kNFPg-0001yn-6c; Tue, 29 Sep 2020 16:11:24 +0300
-Subject: Re: [PATCH v2 devicetree 0/2] Add Seville Ethernet switch to T1040RDB
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, robh+dt@kernel.org,
-        shawnguo@kernel.org, mpe@ellerman.id.au, devicetree@vger.kernel.org
-Cc:     benh@kernel.crashing.org, paulus@samba.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, madalin.bucur@oss.nxp.com,
-        radu-andrei.bulie@nxp.com
-References: <20200929113209.3767787-1-vladimir.oltean@nxp.com>
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-Message-ID: <5e3155b5-5fc1-387a-9721-02a2b7b9cf4e@inbox.ru>
-Date:   Tue, 29 Sep 2020 16:11:53 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.1
+        id S1730318AbgI2OCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 10:02:14 -0400
+Received: from www62.your-server.de ([213.133.104.62]:42250 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729073AbgI2OCN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 10:02:13 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kNGCo-00076i-Ng; Tue, 29 Sep 2020 16:02:10 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kNGCo-0006Xr-Hi; Tue, 29 Sep 2020 16:02:10 +0200
+Subject: Re: [PATCH bpf-next 1/2] bpf: introduce BPF_F_SHARE_PE for perf event
+ array
+To:     Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     kernel-team@fb.com, ast@kernel.org, john.fastabend@gmail.com,
+        kpsingh@chromium.org
+References: <20200929084750.419168-1-songliubraving@fb.com>
+ <20200929084750.419168-2-songliubraving@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <04ba2027-a5ad-d715-ffc8-67f13e40f2d2@iogearbox.net>
+Date:   Tue, 29 Sep 2020 16:02:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200929113209.3767787-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20200929084750.419168-2-songliubraving@fb.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-7564579A: 646B95376F6C166E
-X-77F55803: 4F1203BC0FB41BD9943D5126A2FD5EE2E4744A35E03BDE7E88A2F725AC4993DD182A05F538085040E00759E436B1AE8B00F915B731C3D5B5EFF1BEFEFC18FF7FDBC6893C7533B864
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE782A779A89F7D69B2C2099A533E45F2D0395957E7521B51C2CFCAF695D4D8E9FCEA1F7E6F0F101C6778DA827A17800CE7DECE8D0A5E25C0FCEA1F7E6F0F101C674E70A05D1297E1BBC6CDE5D1141D2B1CA653A634B32B94ECB68811EB7CA856A18F8A64FDE1EEBEBE9FA2833FD35BB23D9E625A9149C048EE33AC447995A7AD18C26CFBAC0749D213D2E47CDBA5A96583BD4B6F7A4D31EC0BB23A54CFFDBC96A8389733CBF5DBD5E9D5E8D9A59859A8B68424CA1AAF98A6958941B15DA834481F9449624AB7ADAF372AE38A8E97BAFFB1D8FC6C240DEA76428AA50765F79006374B5E63B45CF01F35D81D268191BDAD3DBD4B6F7A4D31EC0B7A15B7713DBEF166D81D268191BDAD3D78DA827A17800CE75FBA0EF8B1D2889EEC76A7562686271E8729DE7A884B61D135872C767BF85DA29E625A9149C048EE0A3850AC1BE2E7352686C055BC15B7FB4AD6D5ED66289B524E70A05D1297E1BB35872C767BF85DA227C277FBC8AE2E8B80B9CEB5436E71E375ECD9A6C639B01B4E70A05D1297E1BBC6867C52282FAC85D9B7C4F32B44FF57C2F2A386D11C4599BD9CCCA9EDD067B1EDA766A37F9254B7
-X-C8649E89: C9FAD1E4A4F7ECA36AADBFC215A6348C82396AFA045BE753B9041556026F05AF288F6AE2636E4FD6
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj50aJSQv4UNby20YYs+zVBg==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24928DA749C2ED0FF3FD4E7ECC4866820231FC2BFA7FE3EA0CEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: EEAE043A70213CC8
-X-77F55803: 6242723A09DB00B4DAC42D0CFF71F59E1485FCD7B475D8D787079C09ED9F4FF368F3CF0E9FE49B69332DF44F249B4C8D935375F240E155F4699919774D6B3F81A78295C7688E7FE6
-X-7FA49CB5: 0D63561A33F958A5EE1B9F76EDE2F3692C72DEB705C7C3BAC603FC59B98070898941B15DA834481FA18204E546F3947C6FF1B927F95F3316F6B57BC7E64490618DEB871D839B7333395957E7521B51C2545D4CF71C94A83E9FA2833FD35BB23D27C277FBC8AE2E8BAA867293B0326636D2E47CDBA5A96583CDB5D6C1DA9E2EA8302FCEF25BFAB3454AD6D5ED66289B5278DA827A17800CE7044D3B264367893ED32BA5DBAC0009BE395957E7521B51C20B4866841D68ED3567F23339F89546C55F5C1EE8F4F765FC80B9CEB5436E71E375ECD9A6C639B01BBD4B6F7A4D31EC0BC0CAF46E325F83A522CA9DD8327EE4930A3850AC1BE2E7352686C055BC15B7FBC4224003CC836476C0CAF46E325F83A50BF2EBBBDD9D6B0F8DB212830C5B42F72623479134186CDE6BA297DBC24807EABDAD6C7F3747799A
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj50aJSQv4UNZUBTMZe2p1tQ==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C9005EA165EA48716E380811A351EE4D290472FA911C9A7E4EC6DC8217CE68A9CF838C099ADC76E806A99D50E20E2BC48EF5A30D242760C51EA9CEAB4BC95F72C04283CDA0F3B3F5B9367
-X-Mras: Ok
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25941/Mon Sep 28 15:55:11 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
+On 9/29/20 10:47 AM, Song Liu wrote:
+> Currently, perf event in perf event array is removed from the array when
+> the map fd used to add the event is closed. This behavior makes it
+> difficult to the share perf events with perf event array.
+> 
+> Introduce perf event map that keeps the perf event open with a new flag
+> BPF_F_SHARE_PE. With this flag set, perf events in the array are not
+> removed when the original map fd is closed. Instead, the perf event will
+> stay in the map until 1) it is explicitly removed from the array; or 2)
+> the array is freed.
+> 
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
+>   include/uapi/linux/bpf.h       |  3 +++
+>   kernel/bpf/arraymap.c          | 31 +++++++++++++++++++++++++++++--
+>   tools/include/uapi/linux/bpf.h |  3 +++
+>   3 files changed, 35 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 82522f05c0213..74f7a09e9d1e3 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -414,6 +414,9 @@ enum {
+>   
+>   /* Enable memory-mapping BPF map */
+>   	BPF_F_MMAPABLE		= (1U << 10),
+> +
+> +/* Share perf_event among processes */
+> +	BPF_F_SHARE_PE		= (1U << 11),
 
-29.09.2020 14:32, Vladimir Oltean пишет:
-> Seville is a DSA switch that is embedded inside the T1040 SoC, and
-> supported by the mscc_seville DSA driver inside drivers/net/dsa/ocelot.
+nit but given UAPI: maybe name into something more self-descriptive
+like BPF_F_SHAREABLE_EVENT ?
+
+>   };
+>   
+>   /* Flags for BPF_PROG_QUERY. */
+> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+> index e5fd31268ae02..4938ff183d846 100644
+> --- a/kernel/bpf/arraymap.c
+> +++ b/kernel/bpf/arraymap.c
+> @@ -15,7 +15,7 @@
+>   #include "map_in_map.h"
+>   
+>   #define ARRAY_CREATE_FLAG_MASK \
+> -	(BPF_F_NUMA_NODE | BPF_F_MMAPABLE | BPF_F_ACCESS_MASK)
+> +	(BPF_F_NUMA_NODE | BPF_F_MMAPABLE | BPF_F_ACCESS_MASK | BPF_F_SHARE_PE)
+>   
+>   static void bpf_array_free_percpu(struct bpf_array *array)
+>   {
+> @@ -64,6 +64,10 @@ int array_map_alloc_check(union bpf_attr *attr)
+>   	    attr->map_flags & BPF_F_MMAPABLE)
+>   		return -EINVAL;
+>   
+> +	if (attr->map_type != BPF_MAP_TYPE_PERF_EVENT_ARRAY &&
+> +	    attr->map_flags & BPF_F_SHARE_PE)
+> +		return -EINVAL;
+> +
+>   	if (attr->value_size > KMALLOC_MAX_SIZE)
+>   		/* if value_size is bigger, the user space won't be able to
+>   		 * access the elements.
+> @@ -778,6 +782,26 @@ static int fd_array_map_delete_elem(struct bpf_map *map, void *key)
+>   	}
+>   }
+>   
+> +static void perf_event_fd_array_map_free(struct bpf_map *map)
+> +{
+> +	struct bpf_event_entry *ee;
+> +	struct bpf_array *array;
+> +	int i;
+> +
+> +	if ((map->map_flags & BPF_F_SHARE_PE) == 0) {
+> +		fd_array_map_free(map);
+> +		return;
+> +	}
+> +
+> +	array = container_of(map, struct bpf_array, map);
+> +	for (i = 0; i < array->map.max_entries; i++) {
+> +		ee = READ_ONCE(array->ptrs[i]);
+> +		if (ee)
+> +			fd_array_map_delete_elem(map, &i);
+> +	}
+> +	bpf_map_area_free(array);
+
+Why not simplify into:
+
+	if (map->map_flags & BPF_F_SHAREABLE_EVENT)
+		bpf_fd_array_map_clear(map);
+	fd_array_map_free(map);
+
+> +}
+> +
+>   static void *prog_fd_array_get_ptr(struct bpf_map *map,
+>   				   struct file *map_file, int fd)
+>   {
+> @@ -1134,6 +1158,9 @@ static void perf_event_fd_array_release(struct bpf_map *map,
+>   	struct bpf_event_entry *ee;
+>   	int i;
+>   
+> +	if (map->map_flags & BPF_F_SHARE_PE)
+> +		return;
+> +
+>   	rcu_read_lock();
+>   	for (i = 0; i < array->map.max_entries; i++) {
+>   		ee = READ_ONCE(array->ptrs[i]);
+> @@ -1148,7 +1175,7 @@ const struct bpf_map_ops perf_event_array_map_ops = {
+>   	.map_meta_equal = bpf_map_meta_equal,
+>   	.map_alloc_check = fd_array_map_alloc_check,
+>   	.map_alloc = array_map_alloc,
+> -	.map_free = fd_array_map_free,
+> +	.map_free = perf_event_fd_array_map_free,
+>   	.map_get_next_key = array_map_get_next_key,
+>   	.map_lookup_elem = fd_array_map_lookup_elem,
+>   	.map_delete_elem = fd_array_map_delete_elem,
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index 82522f05c0213..74f7a09e9d1e3 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -414,6 +414,9 @@ enum {
+>   
+>   /* Enable memory-mapping BPF map */
+>   	BPF_F_MMAPABLE		= (1U << 10),
+> +
+> +/* Share perf_event among processes */
+> +	BPF_F_SHARE_PE		= (1U << 11),
+>   };
+>   
+>   /* Flags for BPF_PROG_QUERY. */
 > 
-> This series adds this switch to the SoC's dtsi files and to the T1040RDB
-> board file.
-> 
-> Vladimir Oltean (2):
->    powerpc: dts: t1040: add bindings for Seville Ethernet switch
->    powerpc: dts: t1040rdb: add ports for Seville Ethernet switch
-> 
->   arch/powerpc/boot/dts/fsl/t1040rdb.dts      | 115 ++++++++++++++++++++
->   arch/powerpc/boot/dts/fsl/t1040si-post.dtsi |  76 +++++++++++++
->   2 files changed, 191 insertions(+)
-> 
+
