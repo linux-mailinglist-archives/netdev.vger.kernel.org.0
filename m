@@ -2,39 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DBB427B98A
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 03:31:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA69627BA14
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 03:35:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727622AbgI2Bb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 21:31:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40064 "EHLO mail.kernel.org"
+        id S1727697AbgI2Bfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 21:35:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40342 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727473AbgI2BbA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 21:31:00 -0400
+        id S1727519AbgI2BbI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 21:31:08 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A3E1E2080A;
-        Tue, 29 Sep 2020 01:30:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 90D622080A;
+        Tue, 29 Sep 2020 01:31:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601343059;
-        bh=4H/fR5q1JoOOjC4z3zPdkX31ixnSBx8yrYjHOz3qP/I=;
+        s=default; t=1601343068;
+        bh=oKlU8FM28e6ANTU8QXRTYh2YZok5VQeYlfNAw6/iHw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RJ+7UUfstL5VPqQflLnTSbj/NGZWs8De/E+qWMP9ZuhsWHqr9wrYb9q8ArQNWasii
-         860luA0Z8njc6JqyC4oxYM9gc1tQcSbzBwVS+Cd0F623QddysFgeG5psc3vCzO3YU0
-         H90rII5NwxUovQNiDs11Ao0i8Jgqb46Kudeb8VZE=
+        b=rwqDYGXYaz6lFOnrwDQf8zKGv3XiP3ss3qXiQWlEXklIBL8WrG4TysqovkOXyvYyR
+         Mjw83+d279/UKSOnGIUtpOhmIf0idANfr+GEwJGR2aJJAO0P3uE0p7eYbSD5trbZZO
+         NzQxEGiB9Xk7TOWJulmm3vy8m9eyXkUtMO9hhhxE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.8 25/29] net: dsa: felix: fix some key offsets for IP4_TCP_UDP VCAP IS2 entries
-Date:   Mon, 28 Sep 2020 21:30:22 -0400
-Message-Id: <20200929013027.2406344-25-sashal@kernel.org>
+Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Vaidyanathan Srinivasan <svaidy@linux.ibm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 02/18] libbpf: Remove arch-specific include path in Makefile
+Date:   Mon, 28 Sep 2020 21:30:48 -0400
+Message-Id: <20200929013105.2406634-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200929013027.2406344-1-sashal@kernel.org>
-References: <20200929013027.2406344-1-sashal@kernel.org>
+In-Reply-To: <20200929013105.2406634-1-sashal@kernel.org>
+References: <20200929013105.2406634-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,52 +45,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+From: "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
 
-[ Upstream commit 8b9e03cd08250c60409099c791e858157838d9eb ]
+[ Upstream commit 21e9ba5373fc2cec608fd68301a1dbfd14df3172 ]
 
-Some of the IS2 IP4_TCP_UDP keys are not correct, like L4_DPORT,
-L4_SPORT and other L4 keys. This prevents offloaded tc-flower rules from
-matching on src_port and dst_port for TCP and UDP packets.
+Ubuntu mainline builds for ppc64le are failing with the below error (*):
+    CALL    /home/kernel/COD/linux/scripts/atomic/check-atomics.sh
+    DESCEND  bpf/resolve_btfids
 
-Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+  Auto-detecting system features:
+  ...                        libelf: [ [32mon[m  ]
+  ...                          zlib: [ [32mon[m  ]
+  ...                           bpf: [ [31mOFF[m ]
+
+  BPF API too old
+  make[6]: *** [Makefile:295: bpfdep] Error 1
+  make[5]: *** [Makefile:54: /home/kernel/COD/linux/debian/build/build-generic/tools/bpf/resolve_btfids//libbpf.a] Error 2
+  make[4]: *** [Makefile:71: bpf/resolve_btfids] Error 2
+  make[3]: *** [/home/kernel/COD/linux/Makefile:1890: tools/bpf/resolve_btfids] Error 2
+  make[2]: *** [/home/kernel/COD/linux/Makefile:335: __build_one_by_one] Error 2
+  make[2]: Leaving directory '/home/kernel/COD/linux/debian/build/build-generic'
+  make[1]: *** [Makefile:185: __sub-make] Error 2
+  make[1]: Leaving directory '/home/kernel/COD/linux'
+
+resolve_btfids needs to be build as a host binary and it needs libbpf.
+However, libbpf Makefile hardcodes an include path utilizing $(ARCH).
+This results in mixing of cross-architecture headers resulting in a
+build failure.
+
+The specific header include path doesn't seem necessary for a libbpf
+build. Hence, remove the same.
+
+(*) https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.9-rc3/ppc64el/log
+
+Reported-by: Vaidyanathan Srinivasan <svaidy@linux.ibm.com>
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+Link: https://lore.kernel.org/bpf/20200902084246.1513055-1-naveen.n.rao@linux.vnet.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ tools/lib/bpf/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 1dd9e348152d7..7c167a394b762 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -607,17 +607,17 @@ struct vcap_field vsc9959_vcap_is2_keys[] = {
- 	[VCAP_IS2_HK_DIP_EQ_SIP]		= {118,   1},
- 	/* IP4_TCP_UDP (TYPE=100) */
- 	[VCAP_IS2_HK_TCP]			= {119,   1},
--	[VCAP_IS2_HK_L4_SPORT]			= {120,  16},
--	[VCAP_IS2_HK_L4_DPORT]			= {136,  16},
-+	[VCAP_IS2_HK_L4_DPORT]			= {120,  16},
-+	[VCAP_IS2_HK_L4_SPORT]			= {136,  16},
- 	[VCAP_IS2_HK_L4_RNG]			= {152,   8},
- 	[VCAP_IS2_HK_L4_SPORT_EQ_DPORT]		= {160,   1},
- 	[VCAP_IS2_HK_L4_SEQUENCE_EQ0]		= {161,   1},
--	[VCAP_IS2_HK_L4_URG]			= {162,   1},
--	[VCAP_IS2_HK_L4_ACK]			= {163,   1},
--	[VCAP_IS2_HK_L4_PSH]			= {164,   1},
--	[VCAP_IS2_HK_L4_RST]			= {165,   1},
--	[VCAP_IS2_HK_L4_SYN]			= {166,   1},
--	[VCAP_IS2_HK_L4_FIN]			= {167,   1},
-+	[VCAP_IS2_HK_L4_FIN]			= {162,   1},
-+	[VCAP_IS2_HK_L4_SYN]			= {163,   1},
-+	[VCAP_IS2_HK_L4_RST]			= {164,   1},
-+	[VCAP_IS2_HK_L4_PSH]			= {165,   1},
-+	[VCAP_IS2_HK_L4_ACK]			= {166,   1},
-+	[VCAP_IS2_HK_L4_URG]			= {167,   1},
- 	[VCAP_IS2_HK_L4_1588_DOM]		= {168,   8},
- 	[VCAP_IS2_HK_L4_1588_VER]		= {176,   4},
- 	/* IP4_OTHER (TYPE=101) */
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index d045707e7c9a4..283caeaaffc30 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -59,7 +59,7 @@ FEATURE_USER = .libbpf
+ FEATURE_TESTS = libelf libelf-mmap bpf reallocarray cxx
+ FEATURE_DISPLAY = libelf bpf
+ 
+-INCLUDES = -I. -I$(srctree)/tools/include -I$(srctree)/tools/arch/$(ARCH)/include/uapi -I$(srctree)/tools/include/uapi
++INCLUDES = -I. -I$(srctree)/tools/include -I$(srctree)/tools/include/uapi
+ FEATURE_CHECK_CFLAGS-bpf = $(INCLUDES)
+ 
+ check_feat := 1
 -- 
 2.25.1
 
