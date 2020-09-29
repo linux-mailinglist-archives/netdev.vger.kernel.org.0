@@ -2,116 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C097027BAC1
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 04:16:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D94027BACA
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 04:26:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727386AbgI2CQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 22:16:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36284 "EHLO
+        id S1727288AbgI2C0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 22:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727035AbgI2CQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 22:16:04 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831FEC061755;
-        Mon, 28 Sep 2020 19:16:03 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id u8so3674543lff.1;
-        Mon, 28 Sep 2020 19:16:03 -0700 (PDT)
+        with ESMTP id S1727088AbgI2C0q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 22:26:46 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E72C061755;
+        Mon, 28 Sep 2020 19:26:44 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id a22so2679806ljp.13;
+        Mon, 28 Sep 2020 19:26:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=DjSQ9+lJ+KOY1QhLkpVLHaBOWFdrcLty+nw0yJV/I8Q=;
-        b=DZhXDdSMQJIGkkVrGwyQS/lGggQc5c3pvIXYhO/IPdOhvQbCY+2marDi29JbT2EsKu
-         yFJZHGwHAVox4UH2X2grKfs/9aOk7V/MQYOMlAVwDCWEpTT8Qha5YjjpVgtFX53/PEGY
-         65Om4LcgoWwGsOtjri619XxiMgldZC+WAQbaE4XCJGF4B/aYF5sN/P8/WmgfSf/c7qpk
-         ERrZXQr2wol0jNmvtQHOYFSkFNz9E+4/LOeAlnNMiJegctoKTYOPSyrXui3T+YsoclU7
-         lt41N1uZG4PGWEuTqnJ+PVaEvxOLrfMMBQWL0FYkCsJ4ifddfSz3PTgiT0JA1uKXZ4To
-         Ab+g==
+        bh=80vsUD7XRT+rdywfaQIBARge/5coTPkk91LpfH8qlnU=;
+        b=NWqDoo1ixRdUdGqFzGNat03uVOapJkwM80kz2KdFQewWTNN+EXgicYDUDeWq8gi/xY
+         KJUrpBmpKc/583tnI8abSR1AaY1O1AM0AZ+zD9wylRWei6XYJ4dmlhx+SDvFYBVgSg2U
+         w1XUcCgpfZINc+BqO93/t1U0v6e9tGaQSqGQvtMtamYtXiTtXpCDyHyP7hI0DVdZJaTu
+         C0v/mtUjcY1o44rto8narIGTseboxK7GNiWrXp+jDaU4qsQH3ylqGlQABH3pC6cwcpKV
+         IGpKUzeI6axSDpuAnuIsPxvqExcBVkPYRHXpdxRshqC+9UhmAJahxn4clfxhuLru83C0
+         V19A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DjSQ9+lJ+KOY1QhLkpVLHaBOWFdrcLty+nw0yJV/I8Q=;
-        b=VFlNgeEvacsTG23U2JdwY36hVbWYK1FF5S7vqzOUYvjQDrCpGWVBGzEHnN91tQ0Khs
-         AcDbDX6rMyQDhDSIC4TYPxDcfYQ/90Hsc4B4BHlAZpwMfbbPUcgT/+2KiIMye6X1x7H3
-         FlSwQ+/oi68/q8mPr4m5wQ0i8U/f4Yo761mXtxhEgEyfWBQ5XYU6OtX79/jzFJpTB7oc
-         QMYm55OZPgw8tDUqbbWqnzc784N5REESAhv/Gaw+pKJAsEYrjB5XvusWhpkPJA0aN0NH
-         kaKL0iuWzeycecd/Y2BGxg2FCW+D96fIOVrFfjvF1NJ0fjgrwlUd5P5U1at9N4sAT8Ei
-         bSpw==
-X-Gm-Message-State: AOAM531sligha/B7hk65AQ6OGUN5jKp1Q/lAi8RwMvTC71z5HNMNuNm9
-        iFcyXy4qWsnvLhlBpoz0LJzx1jR2aKs7TJpb/XE=
-X-Google-Smtp-Source: ABdhPJzqPVHpxv1ABhfMES4dUiXbyCk4RTPwO8HCUtEr/JaIgCt6w4BXYPRcNnSoFkQntb43JJE/GzPGH6BacmE9YvY=
-X-Received: by 2002:ac2:5594:: with SMTP id v20mr402181lfg.344.1601345760502;
- Mon, 28 Sep 2020 19:16:00 -0700 (PDT)
+        bh=80vsUD7XRT+rdywfaQIBARge/5coTPkk91LpfH8qlnU=;
+        b=XFPdEfK4qVtKkufbVyUmaI4ZBoLJRLi7IVpEXVS2hWgkk289JSZAtCE8dzB3Yv0MeO
+         XKMqFuTcpgglcAN2VhnfytpIytBwVcHNttVmGJuvrvOOM7fs0tg+WJmGYHoEE6D6uijm
+         Sa7Xtn0FsFAbQYZdxN4RODSkI1F64Pk+883WMRiamEMtM+kunjIlwlAp/Voy6KXtGLht
+         mEy5+oEjVhsTC4ZIUTmr17HtXW1VqCYI/oa2z1nKCBK2+ZSkqPOG721jo3DigPIBoDgc
+         jBsXf8SIASfo/dFUwz1bcrkG2YsmO80OSimZnEHC5DQgthWNDAZ2sVLk4FzmF1PpxPVv
+         HomA==
+X-Gm-Message-State: AOAM530mVGzs1wNkFrKH82rw0pmtB7LpxJhMW9MLhVTeYF0+NBZN3DEC
+        OsiLaxvMHrs32LG2teld6foNMnASmd28tlSbVFQrYdFV
+X-Google-Smtp-Source: ABdhPJzLItEZ0cDm14shGuXkyP3EuYeWHvQE1H+6fgx4o6u/yoa6bDjFzlUj2m9vAYsGq7GtRg/u9Dio4h8NSBYTKww=
+X-Received: by 2002:a05:651c:cb:: with SMTP id 11mr468724ljr.2.1601346400853;
+ Mon, 28 Sep 2020 19:26:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <alpine.LFD.2.23.451.2009271625160.35554@ja.home.ssi.bg> <20200928024938.97121-1-bigclouds@163.com>
-In-Reply-To: <20200928024938.97121-1-bigclouds@163.com>
-From:   yue longguang <yuelongguang@gmail.com>
-Date:   Tue, 29 Sep 2020 10:15:49 +0800
-Message-ID: <CAPaK2r8DnR_dcZ8E9w0mvDbK2KiWCt+JswO=-tqvbWb2RibaYw@mail.gmail.com>
-Subject: Re: [PATCH v5] ipvs: adjust the debug info in function set_tcp_state
-To:     Julian Anastasov <ja@ssi.bg>, "longguang.yue" <bigclouds@163.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Simon Horman <horms@verge.net.au>
-Cc:     Wensong Zhang <wensong@linux-vs.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:IPVS" <netdev@vger.kernel.org>,
-        "open list:IPVS" <lvs-devel@vger.kernel.org>,
-        "open list:NETFILTER" <netfilter-devel@vger.kernel.org>,
-        "open list:NETFILTER" <coreteam@netfilter.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20200929020533.711288-1-andriin@fb.com>
+In-Reply-To: <20200929020533.711288-1-andriin@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 28 Sep 2020 19:26:29 -0700
+Message-ID: <CAADnVQ+Z5BhbNm9qiWNn7hxo=mgUHt5xOaMG-z15cPJmVZssVw@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 0/3] libbpf: BTF writer APIs
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I sincerely apologize for the trouble which takes up much of your
-time. If the last patch does not work , would you please fix it?
-thanks
+On Mon, Sep 28, 2020 at 7:06 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> This patch set introduces a new set of BTF APIs to libbpf that allow to
+> conveniently produce BTF types and strings. These APIs will allow libbpf to do
+> more intrusive modifications of program's BTF (by rewriting it, at least as of
+> right now), which is necessary for the upcoming libbpf static linking. But
+> they are complete and generic, so can be adopted by anyone who has a need to
+> produce BTF type information.
+>
+> One such example outside of libbpf is pahole, which was actually converted to
+> these APIs (locally, pending landing of these changes in libbpf) completely
+> and shows reduction in amount of custom pahole code necessary and brings nice
+> savings in memory usage (about 370MB reduction at peak for my kernel
+> configuration) and even BTF deduplication times (one second reduction,
+> 23.7s -> 22.7s). Memory savings are due to avoiding pahole's own copy of
+> "uncompressed" raw BTF data. Time reduction comes from faster string
+> search and deduplication by relying on hashmap instead of BST used by pahole's
+> own code. Consequently, these APIs are already tested on real-world
+> complicated kernel BTF, but there is also pretty extensive selftest doing
+> extra validations.
+>
+> Selftests in patch #3 add a set of generic ASSERT_{EQ,STREQ,ERR,OK} macros
+> that are useful for writing shorter and less repretitive selftests. I decided
+> to keep them local to that selftest for now, but if they prove to be useful in
+> more contexts we should move them to test_progs.h. And few more (e.g.,
+> inequality tests) macros are probably necessary to have a more complete set.
+>
+> Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+>
+> v2->v3:
+>   - resending original patches #7-9 as patches #1-3 due to merge conflict;
 
-On Mon, Sep 28, 2020 at 10:51 AM longguang.yue <bigclouds@163.com> wrote:
->
-> Outputting client,virtual,dst addresses info when tcp state changes,
-> which makes the connection debug more clear
->
-> Signed-off-by: longguang.yue <bigclouds@163.com>
-> ---
->  net/netfilter/ipvs/ip_vs_proto_tcp.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
->
-> diff --git a/net/netfilter/ipvs/ip_vs_proto_tcp.c b/net/netfilter/ipvs/ip_vs_proto_tcp.c
-> index dc2e7da2742a..7da51390cea6 100644
-> --- a/net/netfilter/ipvs/ip_vs_proto_tcp.c
-> +++ b/net/netfilter/ipvs/ip_vs_proto_tcp.c
-> @@ -539,8 +539,8 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
->         if (new_state != cp->state) {
->                 struct ip_vs_dest *dest = cp->dest;
->
-> -               IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] %s:%d->"
-> -                             "%s:%d state: %s->%s conn->refcnt:%d\n",
-> +               IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] c:%s:%d v:%s:%d "
-> +                             "d:%s:%d state: %s->%s conn->refcnt:%d\n",
->                               pd->pp->name,
->                               ((state_off == TCP_DIR_OUTPUT) ?
->                                "output " : "input "),
-> @@ -548,10 +548,12 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
->                               th->fin ? 'F' : '.',
->                               th->ack ? 'A' : '.',
->                               th->rst ? 'R' : '.',
-> -                             IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
-> -                             ntohs(cp->dport),
->                               IP_VS_DBG_ADDR(cp->af, &cp->caddr),
->                               ntohs(cp->cport),
-> +                             IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
-> +                             ntohs(cp->vport),
-> +                             IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
-> +                             ntohs(cp->dport),
->                               tcp_state_name(cp->state),
->                               tcp_state_name(new_state),
->                               refcount_read(&cp->refcnt));
-> --
-> 2.20.1 (Apple Git-117)
->
+Applied. Thanks
