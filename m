@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBE8927BA44
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 03:37:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B94227BA3E
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 03:37:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727316AbgI2Baf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 21:30:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39388 "EHLO mail.kernel.org"
+        id S1727294AbgI2Bae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 21:30:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39400 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726064AbgI2Bac (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 21:30:32 -0400
+        id S1727186AbgI2Bad (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Sep 2020 21:30:33 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1749D20678;
-        Tue, 29 Sep 2020 01:30:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 89CFB2080A;
+        Tue, 29 Sep 2020 01:30:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601343032;
-        bh=41COe5x7JjD1OwT5Ov3l1HjeqLrAse49svUyDHzocaU=;
+        s=default; t=1601343033;
+        bh=Zq4MAkUNRAapzUbfhLqsFNJRbXU42khRWjBp5Tp/WM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CLhgSvA4xq02Lz8Ei0c/KN2TB6mD3QSsLkPiJJ3ZrL9SCZfGKFb/xstXxaNamrpGH
-         rSJPbmA+504RfW2sSE5sXbzWZ1vJZWJrp8IvE+1yLZ8iV0ax1BaHzCUJBJszvW7ZJF
-         KAxUJw4L3M5WhjBK3LvXSA7pq8COtzOmIZ2TUvmc=
+        b=I6+a91YMk25s3z8ZTCbrKDW5Z1AxqfafPuluHc2myDLaj7oDWI+0tZqFJA9xtJW3F
+         S1ksUAbhhBa7busPHZlnFLFD9Or4NogpdhOUaaqP4OJFblAMngWrjToi0B4LFjRL8j
+         NKbfxJvb76KMfdt4u4cjSJL8qkByWbDwdvCLQb/w=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.8 03/29] mt76: mt7915: use ieee80211_free_txskb to free tx skbs
-Date:   Mon, 28 Sep 2020 21:30:00 -0400
-Message-Id: <20200929013027.2406344-3-sashal@kernel.org>
+Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Vaidyanathan Srinivasan <svaidy@linux.ibm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.8 04/29] libbpf: Remove arch-specific include path in Makefile
+Date:   Mon, 28 Sep 2020 21:30:01 -0400
+Message-Id: <20200929013027.2406344-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200929013027.2406344-1-sashal@kernel.org>
 References: <20200929013027.2406344-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -47,57 +45,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
 
-[ Upstream commit b4be5a53ebf478ffcfb4c98c0ccc4a8d922b9a02 ]
+[ Upstream commit 21e9ba5373fc2cec608fd68301a1dbfd14df3172 ]
 
-Using dev_kfree_skb for tx skbs breaks AQL. This worked until now only
-by accident, because a mac80211 issue breaks AQL on drivers with firmware
-rate control that report the rate via ieee80211_tx_status_ext as struct
-rate_info.
+Ubuntu mainline builds for ppc64le are failing with the below error (*):
+    CALL    /home/kernel/COD/linux/scripts/atomic/check-atomics.sh
+    DESCEND  bpf/resolve_btfids
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20200812144943.91974-1-nbd@nbd.name
+  Auto-detecting system features:
+  ...                        libelf: [ [32mon[m  ]
+  ...                          zlib: [ [32mon[m  ]
+  ...                           bpf: [ [31mOFF[m ]
+
+  BPF API too old
+  make[6]: *** [Makefile:295: bpfdep] Error 1
+  make[5]: *** [Makefile:54: /home/kernel/COD/linux/debian/build/build-generic/tools/bpf/resolve_btfids//libbpf.a] Error 2
+  make[4]: *** [Makefile:71: bpf/resolve_btfids] Error 2
+  make[3]: *** [/home/kernel/COD/linux/Makefile:1890: tools/bpf/resolve_btfids] Error 2
+  make[2]: *** [/home/kernel/COD/linux/Makefile:335: __build_one_by_one] Error 2
+  make[2]: Leaving directory '/home/kernel/COD/linux/debian/build/build-generic'
+  make[1]: *** [Makefile:185: __sub-make] Error 2
+  make[1]: Leaving directory '/home/kernel/COD/linux'
+
+resolve_btfids needs to be build as a host binary and it needs libbpf.
+However, libbpf Makefile hardcodes an include path utilizing $(ARCH).
+This results in mixing of cross-architecture headers resulting in a
+build failure.
+
+The specific header include path doesn't seem necessary for a libbpf
+build. Hence, remove the same.
+
+(*) https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.9-rc3/ppc64el/log
+
+Reported-by: Vaidyanathan Srinivasan <svaidy@linux.ibm.com>
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+Link: https://lore.kernel.org/bpf/20200902084246.1513055-1-naveen.n.rao@linux.vnet.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/init.c | 8 ++++++--
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c  | 2 +-
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ tools/lib/bpf/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/init.c b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
-index aadf56e80bae8..d7a3b05ab50c3 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/init.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
-@@ -691,8 +691,12 @@ void mt7915_unregister_device(struct mt7915_dev *dev)
- 	spin_lock_bh(&dev->token_lock);
- 	idr_for_each_entry(&dev->token, txwi, id) {
- 		mt7915_txp_skb_unmap(&dev->mt76, txwi);
--		if (txwi->skb)
--			dev_kfree_skb_any(txwi->skb);
-+		if (txwi->skb) {
-+			struct ieee80211_hw *hw;
-+
-+			hw = mt76_tx_status_get_hw(&dev->mt76, txwi->skb);
-+			ieee80211_free_txskb(hw, txwi->skb);
-+		}
- 		mt76_put_txwi(&dev->mt76, txwi);
- 	}
- 	spin_unlock_bh(&dev->token_lock);
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index a264e304a3dfb..5800b2d1fb233 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -844,7 +844,7 @@ mt7915_tx_complete_status(struct mt76_dev *mdev, struct sk_buff *skb,
- 	if (sta || !(info->flags & IEEE80211_TX_CTL_NO_ACK))
- 		mt7915_tx_status(sta, hw, info, NULL);
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index bf8ed134cb8a3..b78484e7a6089 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -59,7 +59,7 @@ FEATURE_USER = .libbpf
+ FEATURE_TESTS = libelf libelf-mmap zlib bpf reallocarray
+ FEATURE_DISPLAY = libelf zlib bpf
  
--	dev_kfree_skb(skb);
-+	ieee80211_free_txskb(hw, skb);
- }
+-INCLUDES = -I. -I$(srctree)/tools/include -I$(srctree)/tools/arch/$(ARCH)/include/uapi -I$(srctree)/tools/include/uapi
++INCLUDES = -I. -I$(srctree)/tools/include -I$(srctree)/tools/include/uapi
+ FEATURE_CHECK_CFLAGS-bpf = $(INCLUDES)
  
- void mt7915_txp_skb_unmap(struct mt76_dev *dev,
+ check_feat := 1
 -- 
 2.25.1
 
