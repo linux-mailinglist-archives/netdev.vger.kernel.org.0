@@ -2,76 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F73E27BC1B
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 06:35:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD2927BC27
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 06:42:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725601AbgI2EfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 00:35:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
+        id S1725747AbgI2Eme (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 00:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbgI2EfE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 00:35:04 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1567C061755;
-        Mon, 28 Sep 2020 21:35:03 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id b12so3888416lfp.9;
-        Mon, 28 Sep 2020 21:35:03 -0700 (PDT)
+        with ESMTP id S1725355AbgI2Eme (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 00:42:34 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4476EC061755;
+        Mon, 28 Sep 2020 21:42:34 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id k2so2647591ybp.7;
+        Mon, 28 Sep 2020 21:42:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gjeJyyE8PC7GfPzcN4PQWzjypUXN1n7OcjUJtTFiY5U=;
-        b=uws9czqlJkhrE+bsInmIXL24QeIejlQD4BDubD2OrvM6D982Wr0cotIBBg5clCe2jn
-         w1+KF1vwRJ+M6/eBX+N9x+eGe/WJI9GArGiuQjdb77T53zM2ck83vkX18LKzeQLb8C0T
-         W703wbGkL/7OwvAsBvcc5n02SmNa15pVeIP2YHsEYdikhg1FNidMgL4VuYQc2667LW0c
-         QPY7dM43YUwWBhyc1WZBfQgwlJwoSwcDuTjwVwLYRWk6MDwRe0xqzB9Q3mGsmwxUfqpy
-         BxwkpgzuumqHjxoUdTZSAoq5S0oyYMANpFtL3GxivnkQlqMW9XlsJKRjCl0XCkhG2MKx
-         3bnQ==
+        bh=wy9ej14LRvl4nWE/PIY+t/pIRhCnJYdbgSPQ0Fl2e2Q=;
+        b=TCBfF2+cI2n48t41J2QHPVdVq+2HEBFHl3OxHDgqB2lg6fNOns+lnqQps0zY7jTBZj
+         9KPS3/4zp63AKKt6LMSSxD+dj7oWN8+6Gp4JxsCSwR7tUd7RDXTd1YCl4TkDOrC9XRZx
+         EEJYNMxpoLV8qfWdcQce/CQqIkIxxvsuvcyGBFWCXpXOFLw7hgvfLGc5CW7ECuS8EG7X
+         6ZGnJ57ds/QVW8hgCRSwqjE+RQ36YfqKDP+f67/+iYCaFeKfudgb4MpX5BqsTsBt8WSc
+         vtGoFYmWaHeFp2NsJ80UlmXwEC+MgmnIYF6OgbuGY1zYxdoWbMuc0hvazKUm+JHO2rLH
+         CWiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gjeJyyE8PC7GfPzcN4PQWzjypUXN1n7OcjUJtTFiY5U=;
-        b=OlaBhTBX0pKrKNhmmpzPlQvNqFaeLZVIyFTZ2KOZoGCVlJfKBaqDgOGXzrsij8i7GP
-         B3HKb27rtfSvCd0xyi4Pv561zNf6zG9XRNZlpUssG5Bu4+1ymjrdQVma0TW2j1ck9f+w
-         jF5ET8icuNhju92tHS/YkDZe7UBasJO0D6lVQGkWTBJ3SQbp6m8IcnfaLRxOCiJEOr73
-         lK8MPhIyhvnodU3O/WpwIvmdtSEiPMqhqW3GsGggUDR6kC1lB3zJOjBUCILtUlT+Q+uC
-         o1XYDx5cgNk3ZYVyahKrpSUN9iIQLp+bqyDvTs+PW0hgmIfzdJvGmrBpxKboD5ivRPBa
-         xJ3g==
-X-Gm-Message-State: AOAM5322cM8yZrIkITdmFKX30TZ7Xte1ufKOlM1YtPsj7bIhsahepe/C
-        61b+YArWBQDHvg/O+nTzAXSvVMAEf8pmPuACn1w=
-X-Google-Smtp-Source: ABdhPJxrHjpkXLv75U/Xklioz9uKhO5tQ3M+xRO/iodPJ6qNxkuDd4jcochQ6LJ7Dd+BAiIzNWy1kTPATTwFNWAtAEY=
-X-Received: by 2002:a19:df53:: with SMTP id q19mr471107lfj.119.1601354101576;
- Mon, 28 Sep 2020 21:35:01 -0700 (PDT)
+        bh=wy9ej14LRvl4nWE/PIY+t/pIRhCnJYdbgSPQ0Fl2e2Q=;
+        b=MEIp//gFS40xtOlr4J89Cp2VnwXQ6jM79T/kkC2G4IN2gxOgIasKEkQy7/Wpfpmye8
+         MFBZBD3ACH2hjyd15SUKUgFNqfSmEx2c+M+sj0p5y4E9gCairRq0FPbcQqYRpSKc9cE2
+         3L72xAhb3lIh6XeBm2XUkFoTgn7PoE/GaxAimZMYTJlvD82ilComviD59DevZkEOA4wo
+         XN6j07wfdlVr4tOrGLrDeZXRqMy19UPdMYmvcMov3v5vpnkc7rpbMn1fn26+M6ptKWnb
+         QNSD3rmVgtbrWS99hICBalcH8CGAhwtJ/ybxImN7oBsePDgBUuieKyc/pBI+ZcjNXgRG
+         Mz/g==
+X-Gm-Message-State: AOAM530kGDxbQz03I9y45tm89kHVUXt+QIRVHqSz73YmHamq0hfikz49
+        0uowSeYWUztOGjEwsxKhhUAkqZU3mVw5mEtJuIM=
+X-Google-Smtp-Source: ABdhPJxGfwxGbXwq0QrXarG4kpNQGm3ZRViG/OrHCDRuD/c7wbOZkS+rq2YpBxA/6ZJ6u5djgka6DkiPqrrG80RHbxs=
+X-Received: by 2002:a25:6644:: with SMTP id z4mr3789946ybm.347.1601354553467;
+ Mon, 28 Sep 2020 21:42:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <160134424745.11199.13841922833336698133.stgit@john-Precision-5820-Tower>
-In-Reply-To: <160134424745.11199.13841922833336698133.stgit@john-Precision-5820-Tower>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 28 Sep 2020 21:34:50 -0700
-Message-ID: <CAADnVQKUmuLU5GDdy7FS-=+no=FhC1u6iCCp6zGnN_X7kAG5uA@mail.gmail.com>
-Subject: Re: [bpf-next PATCH] bpf, selftests: Fix cast to smaller integer type
- 'int' warning in raw_tp
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <1601292670-1616-1-git-send-email-alan.maguire@oracle.com> <1601292670-1616-9-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1601292670-1616-9-git-send-email-alan.maguire@oracle.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 28 Sep 2020 21:42:22 -0700
+Message-ID: <CAEf4Bzb+V-EKgqMFWUGoQLiC_560mCUCdjD4UTPuqnN26-qnvA@mail.gmail.com>
+Subject: Re: [PATCH v7 bpf-next 8/8] selftests/bpf: add test for
+ bpf_seq_printf_btf helper
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        andriy.shevchenko@linux.intel.com, Petr Mladek <pmladek@suse.com>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Andrey Ignatov <rdna@fb.com>, scott.branden@broadcom.com,
+        Quentin Monnet <quentin@isovalent.com>,
+        Carlos Neira <cneirabustos@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 28, 2020 at 6:51 PM John Fastabend <john.fastabend@gmail.com> wrote:
+On Mon, Sep 28, 2020 at 4:36 AM Alan Maguire <alan.maguire@oracle.com> wrote:
 >
-> Fix warning in bpf selftests,
+> Add a test verifying iterating over tasks and displaying BTF
+> representation of task_struct succeeds.
 >
-> progs/test_raw_tp_test_run.c:18:10: warning: cast to smaller integer type 'int' from 'struct task_struct *' [-Wpointer-to-int-cast]
->
-> Change int type cast to long to fix. Discovered with gcc-9 and llvm-11+
-> where llvm was recent main branch.
->
-> Fixes: 09d8ad16885ee ("selftests/bpf: Add raw_tp_test_run")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+> ---
 
-Applied. Thanks
+Hey Alan,
+
+These selftests rely on having struct btf_ptr and BTF_F_COMPACT (and
+other) flags to be present in vmlinux.h. While there is nothing wrong
+with that per se, it does break selftests builds on older kernels,
+because there struct btf_ptr isn't yet present in kernel:
+
+progs/netif_receive_skb.c:131:21: error: use of undeclared identifier
+'BTF_F_NONAME'
+        TEST_BTF(str, int, BTF_F_NONAME, "0", 0);
+                           ^
+progs/netif_receive_skb.c:131:2: error: use of undeclared identifier
+'BTF_F_COMPACT'; did you mean 'TT_COMPAT'?
+        TEST_BTF(str, int, BTF_F_NONAME, "0", 0);
+        ^
+progs/netif_receive_skb.c:50:28: note: expanded from macro 'TEST_BTF'
+                __u64 _hflags = _flags | BTF_F_COMPACT;                 \
+                                         ^
+/data/users/andriin/linux/tools/testing/selftests/bpf/tools/include/vmlinux.h:330:2:
+note: 'TT_COMPAT' declared here
+        TT_COMPAT = 2,
+        ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+
+progs/bpf_iter_task_btf.c:21:24: error: variable has incomplete type
+'struct btf_ptr'
+        static struct btf_ptr ptr = { };
+                              ^
+/data/users/andriin/linux/tools/testing/selftests/bpf/tools/include/bpf/bpf_helper_defs.h:33:8:
+note: forward declaration of 'struct btf_ptr'
+struct btf_ptr;
+
+
+We actually do build the very latest selftests against old kernels
+(4.9 and 5.5 at the moment) as part of libbpf CI, so it would be nice
+to fix this problem and keep selftests compilable.
+
+Do you mind following up with a change to define struct btf_ptr and
+those BTF_F_xxx flags explicitly for selftests only, similarly to how
+we do it for bpf_iter context structs? See progs/bpf_iter.h for
+examples. Thanks.
+
+>  tools/testing/selftests/bpf/prog_tests/bpf_iter.c  | 74 ++++++++++++++++++++++
+>  .../selftests/bpf/progs/bpf_iter_task_btf.c        | 50 +++++++++++++++
+>  2 files changed, 124 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task_btf.c
+>
+
+[...]
