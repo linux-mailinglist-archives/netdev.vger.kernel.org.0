@@ -2,112 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF3B627CFD6
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 15:49:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DCF227CFCA
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 15:49:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730537AbgI2Ntr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 09:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730501AbgI2Ntp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 09:49:45 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527CAC061755;
-        Tue, 29 Sep 2020 06:49:45 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id n14so4596807pff.6;
-        Tue, 29 Sep 2020 06:49:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=F9gzu4ux1/gIDa9kBXORz7PWDK9PRGfbQUFqQq4SV/k=;
-        b=TKKUR2owYbVnPKq6L/2bqdFncahUX2SllZzrr+291d644txwI6k5PJcACFDEuJChyP
-         bgQHIPv1epPp+Coc5axdDjeXhsVvgEhB7mZuJjrUkRcqBYsDsV1BVF8HwQtkw9rgw40E
-         MPyLZs/NE9NQePSC8g0I8siYQGBjoO7NAGAQcMen9V4cwk+oewNG1MHmWlLRNsWyFB2f
-         VDUyMfZFfQzU/5y5GD3GKOAKYBVZ9PrTRTU8nbMN/yLH3i5ZZBjdO1SdUZugl2TPKdCh
-         BGpyQ028YVkg86mefK+6nFaI5uC0RQEy20bqk8Ulxxdbmu4BLtNrQOzYJZQO6JDSQKf5
-         s67Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=F9gzu4ux1/gIDa9kBXORz7PWDK9PRGfbQUFqQq4SV/k=;
-        b=Q9yMafJ/RkqT4MoXWhJ6aZ4LXHpnF4Skw6fSv8aN+2D7DoclFtLbPji6D4nnnNDehe
-         at9nnIeWuKwBm9CH0tmwKreSwPCQT1pRWk3wN48tWzY7VNyybOmdauK4+Tq/dBYuNpne
-         EH4raToUjriMcczWUwXgK6Z2GuRnD5O/wyMjqo3XYTBBYQi18+n569Xsf5YGUgcDE3Mm
-         yQyM3WssO8gp9uSrkTow8EVhi4aSIWJQqZwlZ5PbI3eFlBc6urAKB6Ry7F3PTE3oFirE
-         C/ghdHOU/AESqwFALCE1+iWgSBiXqWsoiER9BA1VXiEhLnVvX5CxXrzDZ8J8vqOB//sJ
-         FMbA==
-X-Gm-Message-State: AOAM5328DCvQokSYUtfcRx1DpPginGWXQPCPibFFl4YKbnG3w1a+8Bub
-        YsMQ27CEBjRylPpDWeHPZRIyRPEkjko=
-X-Google-Smtp-Source: ABdhPJxPP4YAHkG6xMFycUU8aMW8/TXDPNMrEtXWDIzd5xgH5MWAHr3LfzHxBNbEcwji7bt08YHozA==
-X-Received: by 2002:a63:1d5c:: with SMTP id d28mr3217268pgm.82.1601387384298;
-        Tue, 29 Sep 2020 06:49:44 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id h12sm5393320pfo.68.2020.09.29.06.49.42
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Sep 2020 06:49:43 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Michael Tuexen <tuexen@fh-muenster.de>,
-        Tom Herbert <therbert@google.com>, davem@davemloft.net
-Subject: [PATCH net-next 03/15] udp: do checksum properly in skb_udp_tunnel_segment
-Date:   Tue, 29 Sep 2020 21:48:55 +0800
-Message-Id: <49a1cbb99341f50304b514aeaace078d0b065248.1601387231.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <65f713004ab546e0b6ec793572c72c1d0399f0fe.1601387231.git.lucien.xin@gmail.com>
-References: <cover.1601387231.git.lucien.xin@gmail.com>
- <51c1fdad515076f3014476711aec1c0a81c18d36.1601387231.git.lucien.xin@gmail.com>
- <65f713004ab546e0b6ec793572c72c1d0399f0fe.1601387231.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1601387231.git.lucien.xin@gmail.com>
-References: <cover.1601387231.git.lucien.xin@gmail.com>
+        id S1730077AbgI2NtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 09:49:03 -0400
+Received: from mail-eopbgr00068.outbound.protection.outlook.com ([40.107.0.68]:28802
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729807AbgI2NtB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 09:49:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ETmzGDvAyqGSIj19d6xNCgaL5oTf57M1SXpo6yEF2b/2SJQwyGbmL5K3nf+3FE8e5PTvA7iD+BEsPFGEDTjM78dEPadWKVaXNKNos6ZqwSRYJap05KyRLQ2OM4fW/ZrjW2eRCVt4OiupO9+AVhgTR3uhdaVU6skqHCBrEoyrSsVGoDvOE8qz4ld7H3wcJ5V2jvsfg0L8mp8L18h8Bv1xPGy3yHF4/nV4kKokah/LS1VcSq9wSS2r5gxy2ZyMi4XiSb1QaP0dDNZfU+yO+eDX5pXQ9BHLs9vIBHK35CGbBg+SON7KqklbojZdZ4y5tCuexR0lCs3UxG1nlzADKD9JpA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BdX/R9tt8K47/Pa9bYbr1gSmKSFG7OqL4QvwUyz7ut8=;
+ b=eGFc1BHJVNu4hsvq6uBkn2OdSG1Xmv/rWx+Voo9gWZd6dYyg1Ml7sibW72LujvWmxznD0eUqHn2o1N7sRJv70LARQTPvwMf56eMRRVv/8lpMwhBBevdlod9734+iHVGAa4F8nZZ/A7Jb/S5CjWG/ktGtqFaoZymt3c6vcsXBnIJAkldsRScUOETDB/qkQZHr0qNvxPg7DCg8a1ScCWelO0hjCVUxJEAkvdcMYM7OHAWDf4jKFzEhcCgcPoo/xMmgef+gKB7JYfreLcuRr33v9SN/TNhK/cwTMEExtjhlI1y56jlS3LgnkoSXGmRcKSqvbOGE3p8ZpY7o6LyOhmjDrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BdX/R9tt8K47/Pa9bYbr1gSmKSFG7OqL4QvwUyz7ut8=;
+ b=FxZPoux5dMRhHGeznvh5A4wrgPRAoZi7f31g7jKzY/YFQk/ePwybMO/lrJw+pzscoDl9KuM5Ok+t4XishUrAWWqQGzubZ5PWStzy7ETAE4Hvox2sBnpr5+rFJXIikFioE1MUp1G4vtHmgkK2qeXKe3zQFYitTW7T00JqJxKxvwI=
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR04MB4223.eurprd04.prod.outlook.com (2603:10a6:803:41::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20; Tue, 29 Sep
+ 2020 13:48:56 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.032; Tue, 29 Sep 2020
+ 13:48:56 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH net-next v2 1/7] net: devlink: Add unused port flavour
+Thread-Topic: [PATCH net-next v2 1/7] net: devlink: Add unused port flavour
+Thread-Index: AQHWlEkF4CNV15jT2UqI85y8iY116Kl+lQCAgAAJR4CAAACrAIAAB7MAgAAAfwCAABGJAIAAI2IAgACb0QCAACKoAIAAC3GA
+Date:   Tue, 29 Sep 2020 13:48:56 +0000
+Message-ID: <20200929134855.5vqrvdrtjxdzb23t@skbuf>
+References: <20200926210632.3888886-2-andrew@lunn.ch>
+ <20200928143155.4b12419d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200928220507.olh77t464bqsc4ll@skbuf> <20200928220730.GD3950513@lunn.ch>
+ <20200928153504.1b39a65d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <61860d84-d0c6-c711-0674-774149a8d0af@gmail.com>
+ <20200928163936.1bdacb89@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <c877bda0-140c-dce1-49ff-61fac47a66bc@gmail.com>
+ <20200929110356.jnqoyy72bjer6psw@skbuf> <20200929130758.GF8264@nanopsycho>
+In-Reply-To: <20200929130758.GF8264@nanopsycho>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: resnulli.us; dkim=none (message not signed)
+ header.d=none;resnulli.us; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.229.171]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 0b6b36fc-f798-477e-ae45-08d8647e6906
+x-ms-traffictypediagnostic: VI1PR04MB4223:
+x-microsoft-antispam-prvs: <VI1PR04MB4223895DF75BD92A9E73BC70E0320@VI1PR04MB4223.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: guhFY9k91yUzA0SwETY6TWdLTBUiTFoPp2YzyQzFsuY+7bp8H66861G8NU99qNNbordNaJqYY7G441FpzG08kM+lEniYe5NQ/qtcwUSS7zqM2Gy7QIP0bgJI9yBlEc7xy3Oivt3hJa8Ns5vcb02Xz+p+fKDZcv3v8GZqwFItFP2QTYxILqSjaFzHSwIeSCGHy1q5KMStvId7dDsW/JYyhYxNMHFjf0eQ7gZHwQ5iu1M2II4Emc7DLrrL+pRHWGHVDsJDGMYcYidMYICjCrND0+2/zpb5ovqXoN5xKaDXuxGDmRqmqn4dVkH+hNTJHKs6SxHrIQ6mndItLzIuQItzkHZbwTflHcwuhOTYtGsAKyV62Y7F5zNAaP5nSErnFanI9DEnPuZ6wb9zIT1apkhS1jFNdwIf58slWxrmHDvS+VtLItpctqDqLBjXCQTniSEpuzN6BheKOMM1lFTBjm229w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(396003)(39850400004)(136003)(346002)(376002)(366004)(71200400001)(44832011)(8936002)(478600001)(8676002)(6486002)(4326008)(66476007)(5660300002)(76116006)(91956017)(6916009)(66556008)(966005)(6512007)(9686003)(66946007)(64756008)(4744005)(2906002)(1076003)(66446008)(54906003)(186003)(26005)(33716001)(6506007)(316002)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: xbUz9EQ0eEJzlutWZrDIuiTCuusm6GE0tLVBJbq8Uk4TV8MkghL99Gl8bxSdQffnnfffyROWsDjND4bICR6qK9BhhdoXOgS9HihfaYHlnAApwtf77FXVz8znsy0QJpn55GW466rODXJlsxI/l1ktwyesbIawBwjYe3RkNdW5+rlH5SqLAOu6kesKKhvcICzbchi80b3HGEdFB3HAsO/pFNIy0EDenb+zUwcOOZ2jb8xkCSw5jNNVHh7RCf02mMsGmZdtOmA1SNSQ5jIS0hy0jL/fEZKzQomT5Mxci02RxObCs3h/H/Uf/QtafpiYnhSsRGXSkA5r+/2DQ+E2KSjZh/t36UUOEL5sKEiVg2qvAeD7CnLX8vTDgjewt+yr2LBYWFSivtELuxpI0Ttf8HILfd6A36JWI+lFjc7exkcDHeWZW43gtn09mOzkCl01ysGy/qAy0/KJuXvn4vZiNbPhuaqTFKB1X++tyh5I2ErpXaNy6zMXUS0ZeC5Q5ChnJcPvG2g8WA+70/aqC9d9wB5lYXCK1YjK9v+73wBwZKpp3G/X+ta6S3aXe38Qs6+o5f0Muwu8pkuQ4BNfwCnRRnVx7NHhf8kdCJUCqGZpkQm6Z/SCB0X6/aapXvd+I2TLZZiPOcMXYpzk5F5/3/i5OmEngA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <FC164E235C23E544B1CE618F908DA9E8@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b6b36fc-f798-477e-ae45-08d8647e6906
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Sep 2020 13:48:56.2768
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ql+9OZHZkq0umx2P49zcxsUyHGDfSgdQqAUYNLfBmfMkpiN6LibyAql6qN5LiAWZjYg21dxg/A5rpAiycP8XZw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4223
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes two things:
+On Tue, Sep 29, 2020 at 03:07:58PM +0200, Jiri Pirko wrote:
+> Tue, Sep 29, 2020 at 01:03:56PM CEST, vladimir.oltean@nxp.com wrote:
+> >On Mon, Sep 28, 2020 at 06:46:14PM -0700, Florian Fainelli wrote:
+> >> That makes sense to me as it would be confusing to suddenly show unuse=
+d port
+> >> flavors after this patch series land. Andrew, Vladimir, does that work=
+ for
+> >> you as well?
+> >
+> >I have nothing to object against somebody adding a '--all' argument to
+> >devlink port commands.
+>=20
+> How "unused" is a "flavour"? It seems to me more like a separate
+> attribute as port of any "flavour" may be potentially "unused". I don't
+> think we should mix these 2.
+>=20
 
-  When skb->ip_summed == CHECKSUM_PARTIAL, skb_checksum_help() should be
-  called do the checksum, instead of gso_make_checksum(), which is used
-  to do the checksum for current proto after calling skb_segment(), not
-  after the inner proto's gso_segment().
+I guess it's you who suggested it might make sense to add an "unused"
+port flavour?
 
-  When offload_csum is disabled, the hardware will not do the checksum
-  for the current proto, udp. So instead of calling gso_make_checksum(),
-  it should calculate checksum for udp itself.
+> Okay. That looks fine. I wonder if it would make sense to have another
+> flavour for "unused" ports.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/ipv4/udp_offload.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+https://patchwork.ozlabs.org/project/netdev/cover/20180322105522.8186-1-jir=
+i@resnulli.us/
 
-diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-index e67a66f..c0b010b 100644
---- a/net/ipv4/udp_offload.c
-+++ b/net/ipv4/udp_offload.c
-@@ -131,14 +131,15 @@ static struct sk_buff *__skb_udp_tunnel_segment(struct sk_buff *skb,
- 		uh->check = ~csum_fold(csum_add(partial,
- 				       (__force __wsum)htonl(len)));
- 
--		if (skb->encapsulation || !offload_csum) {
--			uh->check = gso_make_checksum(skb, ~uh->check);
--			if (uh->check == 0)
--				uh->check = CSUM_MANGLED_0;
--		} else {
-+		if (skb->encapsulation)
-+			skb_checksum_help(skb);
-+
-+		if (offload_csum) {
- 			skb->ip_summed = CHECKSUM_PARTIAL;
- 			skb->csum_start = skb_transport_header(skb) - skb->head;
- 			skb->csum_offset = offsetof(struct udphdr, check);
-+		} else {
-+			uh->check = csum_fold(skb_checksum(skb, udp_offset, len, 0));
- 		}
- 	} while ((skb = skb->next));
- out:
--- 
-2.1.0
-
+Thanks,
+-Vladimir=
