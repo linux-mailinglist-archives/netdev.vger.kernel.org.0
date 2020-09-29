@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AF0D27D8E9
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:39:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF1AC27D8F1
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:40:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729667AbgI2Ujp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:39:45 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:48614 "EHLO
+        id S1729138AbgI2Ujn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:39:43 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:49174 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729388AbgI2Uf6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:35:58 -0400
-Message-Id: <20200929203500.870136509@linutronix.de>
+        with ESMTP id S1729417AbgI2UgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:00 -0400
+Message-Id: <20200929203500.979315007@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601411756;
+        s=2020; t=1601411757;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=z3moHQN6gl51QG697Ig4fcwx454n2NJK4rp8mf5cNuM=;
-        b=jVCtw2ljxAFvqhAGfu6tMOO+k6YrsNVclMOkPke8dvG+YpIVNxH2QBcy0bO04sbuPXYwUw
-        xZrde8ZuN+JyPv2TTYVvIiktfDoyR2T7ZurcH+IieZjs0HigDqt30ptzHdpdtWBukvdhDI
-        15A+imKV1yQ80015acETWy241+VdPwNHT7wGtVOmknIM1heY5YZlS5kDdHn3V1/YxpTj9z
-        uA+iH1qXViLCb14RpMVnHLY16VbqN045hZ4D1VKoO5b1XKcZ0H0EgJazSX7k51qG2fZYSu
-        KvB/j2+KnuKsoN3n7nceS1o28YzQCbFp4VUvjyRG6BujSIVZZFBAtyeBKTL+9w==
+        bh=p8noynpUYoUVoCA3AcE8IXexBkfCyLsxGEPrAE+AsI4=;
+        b=GxWZdTIIqHgC4sHF/8+MlpMTpyE+Ys7tQM9ClxFYteeOzpdW9CUV+RfZQVpPshQ3Jab8uF
+        VwiNSF1l+v37TyOEY0oLQ1Mg3WesnhOVDP4eOsDsAcBRO1CSdyL+HeQVl2qEEE0ZPmurlk
+        mKSrHiTvvwoUUrs5H3BmGYzLfYENz7JzMWcY7ns6CZKAkEtFM1xIL8z67wRo57YMJHSeEL
+        9foUpmZNYtmQKmUriWGskXls5938ymTN43trd/XooNNNzixOQUY9vxDqYaInxzFmlXyrKF
+        /IpsVlVqLnsucsRLF4dHfWjutANDXz4i/LF4lPR/sjWVffc1CNwwAam73IGyRg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601411756;
+        s=2020e; t=1601411757;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=z3moHQN6gl51QG697Ig4fcwx454n2NJK4rp8mf5cNuM=;
-        b=cz/fvbwEmtU2I7VB5GFxobVdz4+igLoEhz0hFG5h/u9T4PsPi5iWQ70/vcLbBgcyROmgwp
-        Hr2Z0yFyRFjlJqAg==
-Date:   Tue, 29 Sep 2020 22:25:23 +0200
+        bh=p8noynpUYoUVoCA3AcE8IXexBkfCyLsxGEPrAE+AsI4=;
+        b=CyXJ7UyYA/JETWPHQnDFpdz/d1SjcViFnqKn1ddsxKPw2C0BkbX2Q7Dvp3KSrmhyLaB6Qq
+        amDNkvL368OqZVAA==
+Date:   Tue, 29 Sep 2020 22:25:24 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -85,7 +85,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch V2 14/36] net: natsemi: Replace in_interrupt() usage.
+Subject: [patch V2 15/36] net: sfc: Replace in_interrupt() usage
 References: <20200929202509.673358734@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -94,144 +94,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Edward Cree <ecree@solarflare.com>
 
-The usage of in_interrupt() in drivers is phased out and Linus clearly
-requested that code which changes behaviour depending on context should
-either be seperated or the context be conveyed in an argument passed by the
-caller, which usually knows the context.
+efx_ef10_try_update_nic_stats_vf() used in_interrupt() to figure out
+whether it is safe to sleep (for MCDI) or not.
 
-sonic_quiesce() uses 'in_interrupt() || irqs_disabled()' to chose either
-udelay() or usleep_range() in the wait loop.
+The only caller from which it was not is efx_net_stats(), which can be
+invoked under dev_base_lock from net-sysfs::netstat_show().
 
-In all callchains leading to it the context is well defined and known.
+So add a new update_stats_atomic() method to struct efx_nic_type, and call
+it from efx_net_stats(), removing the need for
+efx_ef10_try_update_nic_stats_vf() to behave differently for this case
+(which it wasn't doing correctly anyway).
 
-Add a 'may_sleep' argument and pass it through the various callchains
-leading to this function.
+For all nic_types other than EF10 VF, this method is NULL so the the
+regular update_stats() methods are invoked , which are happy with being
+called from atomic contexts.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Fixes: f00bf2305cab ("sfc: don't update stats on VF when called in atomic context")
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Edward Cree <ecree@solarflare.com>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-
+Reviewed-by: Martin Habets <mhabets@solarflare.com>
 
 ---
- drivers/net/ethernet/natsemi/sonic.c |   24 ++++++++++++------------
- drivers/net/ethernet/natsemi/sonic.h |    2 +-
- 2 files changed, 13 insertions(+), 13 deletions(-)
+Only compile-tested so far, because I'm waiting for my kernel to
+ finish rebuilding with CONFIG_DEBUG_ATOMIC_SLEEP which I'm hoping
+ is the right thing to detect the bug in the existing code.
+I also wasn't quite sure how to give credit to the thorough analysis
+ in the commit message of Sebastian's patch.  I don't think we have
+ a Whatever-by: tag to cover that, do we?
+And this doesn't include your GFP_KERNEL change, which should
+ probably go in separately if you take this.
 
---- a/drivers/net/ethernet/natsemi/sonic.c
-+++ b/drivers/net/ethernet/natsemi/sonic.c
-@@ -143,7 +143,7 @@ static int sonic_open(struct net_device
- 	/*
- 	 * Initialize the SONIC
- 	 */
--	sonic_init(dev);
-+	sonic_init(dev, true);
+ drivers/net/ethernet/sfc/ef10.c       |   22 +++++++++++++---------
+ drivers/net/ethernet/sfc/efx_common.c |    2 +-
+ drivers/net/ethernet/sfc/net_driver.h |    5 +++++
+ drivers/net/ethernet/sfc/nic_common.h |    7 +++++++
+ 4 files changed, 26 insertions(+), 10 deletions(-)
+
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -1871,15 +1871,6 @@ static int efx_ef10_try_update_nic_stats
  
- 	netif_start_queue(dev);
+ 	spin_unlock_bh(&efx->stats_lock);
  
-@@ -153,7 +153,7 @@ static int sonic_open(struct net_device
+-	if (in_interrupt()) {
+-		/* If in atomic context, cannot update stats.  Just update the
+-		 * software stats and return so the caller can continue.
+-		 */
+-		spin_lock_bh(&efx->stats_lock);
+-		efx_update_sw_stats(efx, stats);
+-		return 0;
+-	}
+-
+ 	efx_ef10_get_stat_mask(efx, mask);
+ 
+ 	rc = efx_nic_alloc_buffer(efx, &stats_buf, dma_len, GFP_ATOMIC);
+@@ -1938,6 +1929,18 @@ static size_t efx_ef10_update_stats_vf(s
+ 	return efx_ef10_update_stats_common(efx, full_stats, core_stats);
  }
  
- /* Wait for the SONIC to become idle. */
--static void sonic_quiesce(struct net_device *dev, u16 mask)
-+static void sonic_quiesce(struct net_device *dev, u16 mask, bool may_sleep)
++static size_t efx_ef10_update_stats_atomic_vf(struct efx_nic *efx, u64 *full_stats,
++					      struct rtnl_link_stats64 *core_stats)
++{
++	struct efx_ef10_nic_data *nic_data = efx->nic_data;
++
++	/* In atomic context, cannot update HW stats.  Just update the
++	 * software stats and return so the caller can continue.
++	 */
++	efx_update_sw_stats(efx, nic_data->stats);
++	return efx_ef10_update_stats_common(efx, full_stats, core_stats);
++}
++
+ static void efx_ef10_push_irq_moderation(struct efx_channel *channel)
  {
- 	struct sonic_local * __maybe_unused lp = netdev_priv(dev);
- 	int i;
-@@ -163,7 +163,7 @@ static void sonic_quiesce(struct net_dev
- 		bits = SONIC_READ(SONIC_CMD) & mask;
- 		if (!bits)
- 			return;
--		if (irqs_disabled() || in_interrupt())
-+		if (!may_sleep)
- 			udelay(20);
- 		else
- 			usleep_range(100, 200);
-@@ -187,7 +187,7 @@ static int sonic_close(struct net_device
- 	 * stop the SONIC, disable interrupts
- 	 */
- 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXDIS);
--	sonic_quiesce(dev, SONIC_CR_ALL);
-+	sonic_quiesce(dev, SONIC_CR_ALL, true);
+ 	struct efx_nic *efx = channel->efx;
+@@ -3998,6 +4001,7 @@ const struct efx_nic_type efx_hunt_a0_vf
+ 	.finish_flr = efx_port_dummy_op_void,
+ 	.describe_stats = efx_ef10_describe_stats,
+ 	.update_stats = efx_ef10_update_stats_vf,
++	.update_stats_atomic = efx_ef10_update_stats_atomic_vf,
+ 	.start_stats = efx_port_dummy_op_void,
+ 	.pull_stats = efx_port_dummy_op_void,
+ 	.stop_stats = efx_port_dummy_op_void,
+--- a/drivers/net/ethernet/sfc/efx_common.c
++++ b/drivers/net/ethernet/sfc/efx_common.c
+@@ -602,7 +602,7 @@ void efx_net_stats(struct net_device *ne
+ 	struct efx_nic *efx = netdev_priv(net_dev);
  
- 	SONIC_WRITE(SONIC_IMR, 0);
- 	SONIC_WRITE(SONIC_ISR, 0x7fff);
-@@ -229,7 +229,7 @@ static void sonic_tx_timeout(struct net_
- 	 * disable all interrupts before releasing DMA buffers
- 	 */
- 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXDIS);
--	sonic_quiesce(dev, SONIC_CR_ALL);
-+	sonic_quiesce(dev, SONIC_CR_ALL, false);
+ 	spin_lock_bh(&efx->stats_lock);
+-	efx->type->update_stats(efx, NULL, stats);
++	efx_nic_update_stats_atomic(efx, NULL, stats);
+ 	spin_unlock_bh(&efx->stats_lock);
+ }
  
- 	SONIC_WRITE(SONIC_IMR, 0);
- 	SONIC_WRITE(SONIC_ISR, 0x7fff);
-@@ -246,7 +246,7 @@ static void sonic_tx_timeout(struct net_
- 		}
- 	}
- 	/* Try to restart the adaptor. */
--	sonic_init(dev);
-+	sonic_init(dev, false);
- 	lp->stats.tx_errors++;
- 	netif_trans_update(dev); /* prevent tx timeout */
- 	netif_wake_queue(dev);
-@@ -692,9 +692,9 @@ static void sonic_multicast_list(struct
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -1172,6 +1172,9 @@ struct efx_udp_tunnel {
+  * @describe_stats: Describe statistics for ethtool
+  * @update_stats: Update statistics not provided by event handling.
+  *	Either argument may be %NULL.
++ * @update_stats_atomic: Update statistics while in atomic context, if that
++ *	is more limiting than @update_stats.  Otherwise, leave %NULL and
++ *	driver core will call @update_stats.
+  * @start_stats: Start the regular fetching of statistics
+  * @pull_stats: Pull stats from the NIC and wait until they arrive.
+  * @stop_stats: Stop the regular fetching of statistics
+@@ -1316,6 +1319,8 @@ struct efx_nic_type {
+ 	size_t (*describe_stats)(struct efx_nic *efx, u8 *names);
+ 	size_t (*update_stats)(struct efx_nic *efx, u64 *full_stats,
+ 			       struct rtnl_link_stats64 *core_stats);
++	size_t (*update_stats_atomic)(struct efx_nic *efx, u64 *full_stats,
++				      struct rtnl_link_stats64 *core_stats);
+ 	void (*start_stats)(struct efx_nic *efx);
+ 	void (*pull_stats)(struct efx_nic *efx);
+ 	void (*stop_stats)(struct efx_nic *efx);
+--- a/drivers/net/ethernet/sfc/nic_common.h
++++ b/drivers/net/ethernet/sfc/nic_common.h
+@@ -244,6 +244,13 @@ void efx_nic_update_stats(const struct e
+ 			  const unsigned long *mask, u64 *stats,
+ 			  const void *dma_buf, bool accumulate);
+ void efx_nic_fix_nodesc_drop_stat(struct efx_nic *efx, u64 *stat);
++static inline size_t efx_nic_update_stats_atomic(struct efx_nic *efx, u64 *full_stats,
++						 struct rtnl_link_stats64 *core_stats)
++{
++	if (efx->type->update_stats_atomic)
++		return efx->type->update_stats_atomic(efx, full_stats, core_stats);
++	return efx->type->update_stats(efx, full_stats, core_stats);
++}
  
- 			/* LCAM and TXP commands can't be used simultaneously */
- 			spin_lock_irqsave(&lp->lock, flags);
--			sonic_quiesce(dev, SONIC_CR_TXP);
-+			sonic_quiesce(dev, SONIC_CR_TXP, false);
- 			SONIC_WRITE(SONIC_CMD, SONIC_CR_LCAM);
--			sonic_quiesce(dev, SONIC_CR_LCAM);
-+			sonic_quiesce(dev, SONIC_CR_LCAM, false);
- 			spin_unlock_irqrestore(&lp->lock, flags);
- 		}
- 	}
-@@ -708,7 +708,7 @@ static void sonic_multicast_list(struct
- /*
-  * Initialize the SONIC ethernet controller.
-  */
--static int sonic_init(struct net_device *dev)
-+static int sonic_init(struct net_device *dev, bool may_sleep)
- {
- 	struct sonic_local *lp = netdev_priv(dev);
- 	int i;
-@@ -730,7 +730,7 @@ static int sonic_init(struct net_device
- 	 */
- 	SONIC_WRITE(SONIC_CMD, 0);
- 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RXDIS | SONIC_CR_STP);
--	sonic_quiesce(dev, SONIC_CR_ALL);
-+	sonic_quiesce(dev, SONIC_CR_ALL, may_sleep);
+ #define EFX_MAX_FLUSH_TIME 5000
  
- 	/*
- 	 * initialize the receive resource area
-@@ -759,7 +759,7 @@ static int sonic_init(struct net_device
- 	netif_dbg(lp, ifup, dev, "%s: issuing RRRA command\n", __func__);
- 
- 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RRRA);
--	sonic_quiesce(dev, SONIC_CR_RRRA);
-+	sonic_quiesce(dev, SONIC_CR_RRRA, may_sleep);
- 
- 	/*
- 	 * Initialize the receive descriptors so that they
-@@ -834,7 +834,7 @@ static int sonic_init(struct net_device
- 	 * load the CAM
- 	 */
- 	SONIC_WRITE(SONIC_CMD, SONIC_CR_LCAM);
--	sonic_quiesce(dev, SONIC_CR_LCAM);
-+	sonic_quiesce(dev, SONIC_CR_LCAM, may_sleep);
- 
- 	/*
- 	 * enable receiver, disable loopback
---- a/drivers/net/ethernet/natsemi/sonic.h
-+++ b/drivers/net/ethernet/natsemi/sonic.h
-@@ -338,7 +338,7 @@ static void sonic_rx(struct net_device *
- static int sonic_close(struct net_device *dev);
- static struct net_device_stats *sonic_get_stats(struct net_device *dev);
- static void sonic_multicast_list(struct net_device *dev);
--static int sonic_init(struct net_device *dev);
-+static int sonic_init(struct net_device *dev, bool may_sleep);
- static void sonic_tx_timeout(struct net_device *dev, unsigned int txqueue);
- static void sonic_msg_init(struct net_device *dev);
- static int sonic_alloc_descriptors(struct net_device *dev);
-
 
