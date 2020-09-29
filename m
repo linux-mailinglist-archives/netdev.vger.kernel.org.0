@@ -2,141 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0801427DB20
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 23:53:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C45EF27DB29
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 23:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728142AbgI2VxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 17:53:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49318 "EHLO
+        id S1728391AbgI2Vyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 17:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728041AbgI2VxI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 17:53:08 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84980C061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 14:53:08 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id g29so5042672pgl.2
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 14:53:08 -0700 (PDT)
+        with ESMTP id S1727740AbgI2Vyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 17:54:40 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892FDC0613D0
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 14:54:40 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id x201so5660128qkb.11
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 14:54:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=laptop-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=f/gWOu1TrRoNXxwTjONo7o5+Ij7ibEG5IfBYm/+HET8=;
-        b=E33XYTuKaxFZeZYJMW6eTtEGrlyGXTkwcx/zyYE4FwwLi+COEW+yWd/+0Cf95/WGtY
-         gA86BU5Drjiy9diRFKDvzElxjUhLaGUOgLxvPHqm4KrxiVokwNDSCtjIpcES/TpEIpc6
-         dVmJeB/tex75y/Bc/sY6UtXa0A77E3dRr5L+1KAoi+AbU1W6Vt9GYfXyFtcOrRf/wp6Q
-         D0a6jDjLfVX1kaG9HLQV63nTT6mPqCav4kqlRwsiC9ZYjBegbY+4NXor8wgJHhd2Y461
-         EpM2ZClNwNHNBuUJ9Q6GRMia0EL2Pv5QHFBk+FzsVmbnGLFb638dkqk6/2raUfpv9cRX
-         /G4g==
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=xHo033oar0KgYc4e1ROf65XOwizUiV3znFMSkSu+y78=;
+        b=pU+wH0opGREdfVhc3VSiSME5TJWZYmy/jOWNVDwwtSS5v6hYxIdKLs0rpmZs1XmjUx
+         w+vtdrFion68m7I360d33S6IkOnmXMIK3sYDtMzdmb/YVsX1lrDjxcqgUROfYWyvC2T+
+         HJuEdM3x7yI7Ttqm+kQdzbSC6/3e54kFH6EFas/uy037Nxu5q/8EKKFV0GATrJBLgp2F
+         lO6baOWhOQGzuqwVXvCJi+xfw5tz49QTqjCmjZgMVfrlJHu4Frkrt+u61HA0F5adV9N9
+         PRR1j5iABgdkGsS23Kl3Lpxvgw8CwiJ8km7Ox/rlwPdPDom/WmSVWGIW1sdDs788eguG
+         GtNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=f/gWOu1TrRoNXxwTjONo7o5+Ij7ibEG5IfBYm/+HET8=;
-        b=M0Yd1F57oypcxUYX2GoGb2heREp7EKSDKkDaF7gQjj02qqpsXEd3Xw7duTiQK3ap+t
-         o/4Zx7DmHXJV6jiTlBjBcnc7zAw/LdCkbImDwop7Vgmd05VwZCOrAI12s4zIpk/XclD/
-         Dwc8TZWu5gb2F/N29vl1kp+L85Ub1WesgA83IIH9SvcbizxH6TLWCaWzr4pX8/B3Uz79
-         iY9FLpxxy/TR8lC/qSNW1w5VxpZTyaEUTfobQfkTmoTQosFVUSz15M4GgWWevwcRK/i0
-         SLLY2kEDqYhMoRzMTT7mNv0nJO9xjsbE5VVHlchZNSf1lOxMjcZPMNrRb++hBChQPj9R
-         31fA==
-X-Gm-Message-State: AOAM531DA7aA4X+bhl/hcT32hmQ2jYsdB4rGYtJpzTzGGSaSiEYgyJSL
-        4RMo/RzO6WEKOcgHsRzAJl2L/w==
-X-Google-Smtp-Source: ABdhPJzIeNXHHc94ebLFB9qkrPXXAtz33vlk/UqWEatHhLEUSYCsDM/sIDsnSGbSOH4e+0OMNyZK5g==
-X-Received: by 2002:a63:2845:: with SMTP id o66mr4631601pgo.77.1601416387878;
-        Tue, 29 Sep 2020 14:53:07 -0700 (PDT)
-Received: from esk ([1.129.134.212])
-        by smtp.gmail.com with ESMTPSA id l79sm6516011pfd.210.2020.09.29.14.53.06
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 29 Sep 2020 14:53:07 -0700 (PDT)
-Received: from james by esk with local (Exim 4.90_1)
-        (envelope-from <quozl@laptop.org>)
-        id 1kNNYV-0004eb-0z; Wed, 30 Sep 2020 07:53:03 +1000
-Date:   Wed, 30 Sep 2020 07:53:03 +1000
-From:   James Cameron <quozl@laptop.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        linux-doc@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Chris Snook <chris.snook@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Christian Benvenuti <benve@cisco.com>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Govindarajulu Varadarajan <_govind@gmx.com>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Edward Cree <ecree@solarflare.com>,
-        libertas-dev@lists.infradead.org, brcm80211-dev-list@cypress.com,
-        brcm80211-dev-list.pdl@broadcom.com,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Matthew Wilcox <willy@infradead.org>,
-        intel-wired-lan@lists.osuosl.org,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Martin Habets <mhabets@solarflare.com>,
-        Ulrich Kunitz <kune@deine-taler.de>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Paul McKenney <paulmck@kernel.org>,
-        Stanislaw Gruszka <stf_xl@wp.pl>, Jouni Malinen <j@w1.fi>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Pascal Terjan <pterjan@google.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Daniel Drake <dsd@gentoo.org>,
-        Pensando Drivers <drivers@pensando.io>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Xinming Hu <huxinming820@gmail.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        Jon Mason <jdmason@kudzu.us>,
-        Shannon Nelson <snelson@pensando.io>,
-        Dave Miller <davem@davemloft.net>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [patch V2 33/36] net: libertas: Use netif_rx_any_context()
-Message-ID: <20200929215302.GB16571@laptop.org>
-References: <20200929202509.673358734@linutronix.de>
- <20200929203502.769744809@linutronix.de>
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=xHo033oar0KgYc4e1ROf65XOwizUiV3znFMSkSu+y78=;
+        b=qqjvrNVmhA/IGA9LeAujG7RZYURQCyNEtH/DiPSbVCFvVrQozIwa55dhV/IE/bqB5g
+         1v7wCnDjIXuySADyGunG82Pk5CKSMgUK0te94Aq4qPY+VBtraI4L1oSi0dokYk409G7t
+         tURgflVIyTDrGzADSNrQM/5xjoR1AU9sDN2EcU4BL1EfweU8wRgVwRWOGMda4B5sKtH7
+         WLgfbTE/CyU3vvR0MQDQJSflTituC7+zTLeh+qBwnMciYVV4ngjSje5Yu/ziHDMeM7Zd
+         U7/UCTpNzfY55UEuKZ0WuqjyAfm/23Wl5HKqnRo4tbbZpFKuPbwuAgjSCTllDtRFdOnB
+         TSIA==
+X-Gm-Message-State: AOAM530C6se6TY5tHaSZud0HhP5PQULS77UkduXL8WY61d6xc0fL6xCM
+        11EGDwX22uu7sm0v+qqm2d8N
+X-Google-Smtp-Source: ABdhPJw/6NYT2k3x6xGaYNBrYodwIdaQqNXOTPmefZeuiRKMRPi60CfDM1jnBuTF6NOsQPWaOfgVWw==
+X-Received: by 2002:a37:4e45:: with SMTP id c66mr6729503qkb.36.1601416479560;
+        Tue, 29 Sep 2020 14:54:39 -0700 (PDT)
+Received: from localhost (pool-96-230-24-152.bstnma.fios.verizon.net. [96.230.24.152])
+        by smtp.gmail.com with ESMTPSA id z131sm6251880qkb.59.2020.09.29.14.54.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Sep 2020 14:54:38 -0700 (PDT)
+Subject: [RFC PATCH] lsm,selinux: pass the family information along with xfrm
+ flow
+From:   Paul Moore <paul@paul-moore.com>
+To:     selinux@vger.kernel.org, linux-security-module@vger.kernel.org
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>, netdev@vger.kernel.org
+Date:   Tue, 29 Sep 2020 17:54:37 -0400
+Message-ID: <160141647786.7997.5490924406329369782.stgit@sifl>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200929203502.769744809@linutronix.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 10:25:42PM +0200, Thomas Gleixner wrote:
-> From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> 
-> The usage of in_interrupt() in non-core code is phased out. Ideally the
-> information of the calling context should be passed by the callers or the
-> functions be split as appropriate.
-> 
-> libertas uses in_interupt() to select the netif_rx*() variant which matches
-> the calling context. The attempt to consolidate the code by passing an
-> arguemnt or by distangling it failed due lack of knowledge about this
-> driver and because the call chains are hard to follow.
-> 
-> As a stop gap use netif_rx_any_context() which invokes the correct code
-> path depending on context and confines the in_interrupt() usage to core
-> code.
-> 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Acked-by: Kalle Valo <kvalo@codeaurora.org>
+As pointed out by Herbert in a recent related patch, the LSM hooks
+should pass the address family in addition to the xfrm flow as the
+family information is needed to safely access the flow.
 
-Reviewed-by: James Cameron <quozl@laptop.org>
+While this is not technically a problem for the current LSM/SELinux
+code as it only accesses fields common to all address families, we
+should still pass the address family so that the LSM hook isn't
+inherently flawed.  An alternate solution could be to simply pass
+the LSM secid instead of flow, but this introduces the problem of
+the LSM hook callers sending the wrong secid which would be much
+worse.
 
--- 
-James Cameron
-http://quozl.netrek.org/
+Reported-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+---
+ include/linux/lsm_hook_defs.h   |    2 +-
+ include/linux/lsm_hooks.h       |    1 +
+ include/linux/security.h        |    7 +++++--
+ net/xfrm/xfrm_state.c           |    4 ++--
+ security/security.c             |    5 +++--
+ security/selinux/include/xfrm.h |    3 ++-
+ security/selinux/xfrm.c         |    3 ++-
+ 7 files changed, 16 insertions(+), 9 deletions(-)
+
+diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+index 2a8c74d99015..e3c3b5d20469 100644
+--- a/include/linux/lsm_hook_defs.h
++++ b/include/linux/lsm_hook_defs.h
+@@ -349,7 +349,7 @@ LSM_HOOK(int, 0, xfrm_state_delete_security, struct xfrm_state *x)
+ LSM_HOOK(int, 0, xfrm_policy_lookup, struct xfrm_sec_ctx *ctx, u32 fl_secid,
+ 	 u8 dir)
+ LSM_HOOK(int, 1, xfrm_state_pol_flow_match, struct xfrm_state *x,
+-	 struct xfrm_policy *xp, const struct flowi *fl)
++	 struct xfrm_policy *xp, const struct flowi *fl, unsigned short family)
+ LSM_HOOK(int, 0, xfrm_decode_session, struct sk_buff *skb, u32 *secid,
+ 	 int ckall)
+ #endif /* CONFIG_SECURITY_NETWORK_XFRM */
+diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
+index 9e2e3e63719d..ea088aacfdad 100644
+--- a/include/linux/lsm_hooks.h
++++ b/include/linux/lsm_hooks.h
+@@ -1093,6 +1093,7 @@
+  *	@x contains the state to match.
+  *	@xp contains the policy to check for a match.
+  *	@fl contains the flow to check for a match.
++ *	@family the flow's address family.
+  *	Return 1 if there is a match.
+  * @xfrm_decode_session:
+  *	@skb points to skb to decode.
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 0a0a03b36a3b..701b41eb090c 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -1625,7 +1625,8 @@ void security_xfrm_state_free(struct xfrm_state *x);
+ int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
+ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 				       struct xfrm_policy *xp,
+-				       const struct flowi *fl);
++				       const struct flowi *fl,
++				       unsigned short family);
+ int security_xfrm_decode_session(struct sk_buff *skb, u32 *secid);
+ void security_skb_classify_flow(struct sk_buff *skb, struct flowi *fl);
+ 
+@@ -1679,7 +1680,9 @@ static inline int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_s
+ }
+ 
+ static inline int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+-			struct xfrm_policy *xp, const struct flowi *fl)
++						     struct xfrm_policy *xp,
++						     const struct flowi *fl,
++						     unsigned short family)
+ {
+ 	return 1;
+ }
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 69520ad3d83b..f90d2f1da44a 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -1020,7 +1020,7 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
+ 	if (x->km.state == XFRM_STATE_VALID) {
+ 		if ((x->sel.family &&
+ 		     !xfrm_selector_match(&x->sel, fl, x->sel.family)) ||
+-		    !security_xfrm_state_pol_flow_match(x, pol, fl))
++		    !security_xfrm_state_pol_flow_match(x, pol, fl, family))
+ 			return;
+ 
+ 		if (!*best ||
+@@ -1033,7 +1033,7 @@ static void xfrm_state_look_at(struct xfrm_policy *pol, struct xfrm_state *x,
+ 	} else if (x->km.state == XFRM_STATE_ERROR ||
+ 		   x->km.state == XFRM_STATE_EXPIRED) {
+ 		if (xfrm_selector_match(&x->sel, fl, x->sel.family) &&
+-		    security_xfrm_state_pol_flow_match(x, pol, fl))
++		    security_xfrm_state_pol_flow_match(x, pol, fl, family))
+ 			*error = -ESRCH;
+ 	}
+ }
+diff --git a/security/security.c b/security/security.c
+index 70a7ad357bc6..62dd0af7c6bc 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -2391,7 +2391,8 @@ int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
+ 
+ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 				       struct xfrm_policy *xp,
+-				       const struct flowi *fl)
++				       const struct flowi *fl,
++				       unsigned short family)
+ {
+ 	struct security_hook_list *hp;
+ 	int rc = LSM_RET_DEFAULT(xfrm_state_pol_flow_match);
+@@ -2407,7 +2408,7 @@ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 	 */
+ 	hlist_for_each_entry(hp, &security_hook_heads.xfrm_state_pol_flow_match,
+ 				list) {
+-		rc = hp->hook.xfrm_state_pol_flow_match(x, xp, fl);
++		rc = hp->hook.xfrm_state_pol_flow_match(x, xp, fl, family);
+ 		break;
+ 	}
+ 	return rc;
+diff --git a/security/selinux/include/xfrm.h b/security/selinux/include/xfrm.h
+index a0b465316292..36907dd06647 100644
+--- a/security/selinux/include/xfrm.h
++++ b/security/selinux/include/xfrm.h
+@@ -26,7 +26,8 @@ int selinux_xfrm_state_delete(struct xfrm_state *x);
+ int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
+ int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 				      struct xfrm_policy *xp,
+-				      const struct flowi *fl);
++				      const struct flowi *fl,
++				      unsigned short family);
+ 
+ #ifdef CONFIG_SECURITY_NETWORK_XFRM
+ extern atomic_t selinux_xfrm_refcount;
+diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
+index 7314196185d1..5beb30237d3a 100644
+--- a/security/selinux/xfrm.c
++++ b/security/selinux/xfrm.c
+@@ -175,7 +175,8 @@ int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
+  */
+ int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 				      struct xfrm_policy *xp,
+-				      const struct flowi *fl)
++				      const struct flowi *fl,
++				      unsigned short family)
+ {
+ 	u32 state_sid;
+ 
+
