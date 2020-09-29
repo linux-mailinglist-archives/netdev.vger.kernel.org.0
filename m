@@ -2,97 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D94027BACA
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 04:26:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C87D127BB19
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 04:44:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727288AbgI2C0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 22:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37918 "EHLO
+        id S1727248AbgI2CoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 22:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727088AbgI2C0q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 22:26:46 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E72C061755;
-        Mon, 28 Sep 2020 19:26:44 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id a22so2679806ljp.13;
-        Mon, 28 Sep 2020 19:26:44 -0700 (PDT)
+        with ESMTP id S1726064AbgI2CoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 22:44:22 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9F1C061755
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 19:44:21 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id b17so1861833pji.1
+        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 19:44:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=80vsUD7XRT+rdywfaQIBARge/5coTPkk91LpfH8qlnU=;
-        b=NWqDoo1ixRdUdGqFzGNat03uVOapJkwM80kz2KdFQewWTNN+EXgicYDUDeWq8gi/xY
-         KJUrpBmpKc/583tnI8abSR1AaY1O1AM0AZ+zD9wylRWei6XYJ4dmlhx+SDvFYBVgSg2U
-         w1XUcCgpfZINc+BqO93/t1U0v6e9tGaQSqGQvtMtamYtXiTtXpCDyHyP7hI0DVdZJaTu
-         C0v/mtUjcY1o44rto8narIGTseboxK7GNiWrXp+jDaU4qsQH3ylqGlQABH3pC6cwcpKV
-         IGpKUzeI6axSDpuAnuIsPxvqExcBVkPYRHXpdxRshqC+9UhmAJahxn4clfxhuLru83C0
-         V19A==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZPKYIfxt2LVhhCos7+8U/B9RRLEMtA2XFwO17M2prWY=;
+        b=B/bCtfPTuniqKfA32e7shNwbv0C5E94z1+JzxGtn59SE74B60UzY9x+8T4HWKwoN7F
+         YeYlECgsNRGA61GcgXGL6reIXWK2vBVXUCiQ47mbjmE0IRq5vUSNOzxgcnnV8HKO/9qi
+         PGF69kvqe4zfM3aiLTr37pJ+i4gavx6nYlOa/NWhMFDA2rJY2KLRTEPuMmhf1+1bJYS3
+         2U2+StMF119TStwB6QaJ67FCRgLWhVMGvsjDv/qFyMR9OmUueDRhLwCjlJRD5Gws4JaD
+         ax9gMIGYT6aW6ygvacHlX2dYpbthf8iC7Q7wgQIZEY7Addu/jmJS13PPFkT4kHYa2Q8w
+         OzmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=80vsUD7XRT+rdywfaQIBARge/5coTPkk91LpfH8qlnU=;
-        b=XFPdEfK4qVtKkufbVyUmaI4ZBoLJRLi7IVpEXVS2hWgkk289JSZAtCE8dzB3Yv0MeO
-         XKMqFuTcpgglcAN2VhnfytpIytBwVcHNttVmGJuvrvOOM7fs0tg+WJmGYHoEE6D6uijm
-         Sa7Xtn0FsFAbQYZdxN4RODSkI1F64Pk+883WMRiamEMtM+kunjIlwlAp/Voy6KXtGLht
-         mEy5+oEjVhsTC4ZIUTmr17HtXW1VqCYI/oa2z1nKCBK2+ZSkqPOG721jo3DigPIBoDgc
-         jBsXf8SIASfo/dFUwz1bcrkG2YsmO80OSimZnEHC5DQgthWNDAZ2sVLk4FzmF1PpxPVv
-         HomA==
-X-Gm-Message-State: AOAM530mVGzs1wNkFrKH82rw0pmtB7LpxJhMW9MLhVTeYF0+NBZN3DEC
-        OsiLaxvMHrs32LG2teld6foNMnASmd28tlSbVFQrYdFV
-X-Google-Smtp-Source: ABdhPJzLItEZ0cDm14shGuXkyP3EuYeWHvQE1H+6fgx4o6u/yoa6bDjFzlUj2m9vAYsGq7GtRg/u9Dio4h8NSBYTKww=
-X-Received: by 2002:a05:651c:cb:: with SMTP id 11mr468724ljr.2.1601346400853;
- Mon, 28 Sep 2020 19:26:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200929020533.711288-1-andriin@fb.com>
-In-Reply-To: <20200929020533.711288-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 28 Sep 2020 19:26:29 -0700
-Message-ID: <CAADnVQ+Z5BhbNm9qiWNn7hxo=mgUHt5xOaMG-z15cPJmVZssVw@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 0/3] libbpf: BTF writer APIs
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZPKYIfxt2LVhhCos7+8U/B9RRLEMtA2XFwO17M2prWY=;
+        b=bj3zPNSRYzVyf8EV/1144As1f3O4ZtMjFysBLRDa8jzO0KLDicTCIUVYldsguHfow8
+         EyR0f7o7e47cEE834wiXaG5L6s3uwy72IKSXWYX+QhcmMAHMFR47ScFDQns0S8ZZb7gZ
+         hYUCjDP2uFdSwJ5LvSy1hhvHo7jQqL43XpeA7RFLjwN4qhDjdvqXxsmJrlUB3PFyYrBj
+         L+PKdiQRnc2yM4LpcRf1QxT0+qBUxqLnI5dlv89SyStuAXCwUEwGrQldp2CeEv/pjUhv
+         b1IppEHUhX38bfJ2D1RXPdkA4dDjeKKBjUWAzQ54rH9d7GmcNjp2dbemFJGg1KleyS9k
+         gRZg==
+X-Gm-Message-State: AOAM532G2R4QrjcikqjM/RLJZhWggHtIqwapmzdB2UUMfokVgXsbuL/b
+        oCbWpAMFmbCwNv7LA7lstEU=
+X-Google-Smtp-Source: ABdhPJyCBogyRhwvgVLB+xt/s1C8tt7NiwphRuHRnBe3PokPWulQKjbHK38ah0+sesXyOQxFcl57XQ==
+X-Received: by 2002:a17:90a:1992:: with SMTP id 18mr1893784pji.143.1601347460775;
+        Mon, 28 Sep 2020 19:44:20 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local (c-24-23-181-79.hsd1.ca.comcast.net. [24.23.181.79])
+        by smtp.googlemail.com with ESMTPSA id ca6sm2490176pjb.53.2020.09.28.19.44.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Sep 2020 19:44:20 -0700 (PDT)
+Subject: Re: [PATCH RFC net-next] virtio_net: Relax queue requirement for
+ using XDP
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
         Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>
+References: <20200226005744.1623-1-dsahern@kernel.org>
+ <23fe48b6-71d1-55a3-e0e8-ca4b3fac1f7f@redhat.com>
+ <9a5391fb-1d80-43d1-5e88-902738cc2528@gmail.com> <87wo89zroe.fsf@toke.dk>
+ <20200226032204-mutt-send-email-mst@kernel.org> <87r1yhzqz8.fsf@toke.dk>
+ <0dc879c5-12ce-0df2-24b0-97d105547150@digitalocean.com>
+ <87wo88wcwi.fsf@toke.dk>
+ <CAJ8uoz2++_D_XFwUjFri0HmNaNWKtiPNrJr=Fvc8grj-8hRzfg@mail.gmail.com>
+ <b6609e0a-eb2f-78bd-b565-c56dce9e2e48@gmail.com>
+ <CAJ8uoz2bj0YWH5K6OW8m+BC06QZTSYW=xbApuEDK5pRCx+RLAA@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <e6a31c99-c492-b643-3fdc-4227b89707df@gmail.com>
+Date:   Mon, 28 Sep 2020 19:44:18 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
+MIME-Version: 1.0
+In-Reply-To: <CAJ8uoz2bj0YWH5K6OW8m+BC06QZTSYW=xbApuEDK5pRCx+RLAA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 28, 2020 at 7:06 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> This patch set introduces a new set of BTF APIs to libbpf that allow to
-> conveniently produce BTF types and strings. These APIs will allow libbpf to do
-> more intrusive modifications of program's BTF (by rewriting it, at least as of
-> right now), which is necessary for the upcoming libbpf static linking. But
-> they are complete and generic, so can be adopted by anyone who has a need to
-> produce BTF type information.
->
-> One such example outside of libbpf is pahole, which was actually converted to
-> these APIs (locally, pending landing of these changes in libbpf) completely
-> and shows reduction in amount of custom pahole code necessary and brings nice
-> savings in memory usage (about 370MB reduction at peak for my kernel
-> configuration) and even BTF deduplication times (one second reduction,
-> 23.7s -> 22.7s). Memory savings are due to avoiding pahole's own copy of
-> "uncompressed" raw BTF data. Time reduction comes from faster string
-> search and deduplication by relying on hashmap instead of BST used by pahole's
-> own code. Consequently, these APIs are already tested on real-world
-> complicated kernel BTF, but there is also pretty extensive selftest doing
-> extra validations.
->
-> Selftests in patch #3 add a set of generic ASSERT_{EQ,STREQ,ERR,OK} macros
-> that are useful for writing shorter and less repretitive selftests. I decided
-> to keep them local to that selftest for now, but if they prove to be useful in
-> more contexts we should move them to test_progs.h. And few more (e.g.,
-> inequality tests) macros are probably necessary to have a more complete set.
->
-> Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
->
-> v2->v3:
->   - resending original patches #7-9 as patches #1-3 due to merge conflict;
+On 9/28/20 7:25 AM, Magnus Karlsson wrote:
+> On Mon, Sep 28, 2020 at 5:13 AM David Ahern <dsahern@gmail.com> wrote:
+>>
+>> On 2/27/20 2:41 AM, Magnus Karlsson wrote:
+>>> I will unfortunately be after Netdevconf due to other commitments. The
+>>> plan is to send out the RFC to the co-authors of the Plumbers
+>>> presentation first, just to check the sanity of it. And after that
+>>> send it to the mailing list. Note that I have taken two shortcuts in
+>>> the RFC to be able to make quicker progress. The first on is the
+>>> driver implementation of the dynamic queue allocation and
+>>> de-allocation. It just does this within a statically pre-allocated set
+>>> of queues. The second is that the user space interface is just a
+>>> setsockopt instead of a rtnetlink interface. Again, just to save some
+>>> time in this initial phase. The information communicated in the
+>>> interface is the same though. In the current code, the queue manager
+>>> can handle the queues of the networking stack, the XDP_TX queues and
+>>> queues allocated by user space and used for AF_XDP. Other uses from
+>>> user space is not covered due to my setsockopt shortcut. Hopefully
+>>> though, this should be enough for an initial assessment.
+>>
+>> Any updates on the RFC? I do not recall seeing a patch set on the
+>> mailing list, but maybe I missed it.
+> 
+> No, you have unfortunately not missed anything. It has been lying on
+> the shelf collecting dust for most of this time. The reason was that
+> the driver changes needed to support dynamic queue allocation just
+> became too complex as it would require major surgery to at least all
+> Intel drivers, and probably a large number of other ones as well. Do
+> not think any vendor would support such a high effort solution and I
+> could not (at that time at least) find a way around it. So, gaining
+> visibility into what queues have been allocated (by all entities in
+> the kernel that uses queue) seems to be rather straightforward, but
+> the dynamic allocation part seems to be anything but.
 
-Applied. Thanks
+retrofitting a new idea is usually a high level of effort.
+
+> 
+> I also wonder how useful this queue manager proposal would be in light
+> of Mellanox's subfunction proposal. If people just start to create
+> many small netdevs (albeit at high cost which people may argue
+> against) consisting of just an rx/tx queue pair, then the queue
+> manager dynamic allocation proposal would not be as useful. We could
+> just use one of these netdevs to bind to in the AF_XDP case and always
+> just specify queue 0. But one can argue that queue management is
+> needed even for the subfunction approach, but then it would be at a
+> much lower level than what I proposed. What is your take on this?
+> Still worth pursuing in some form or another? If yes, then we really
+> need to come up with an easy way of supporting this in current
+> drivers. It is not going to fly otherwise, IMHO.
+> 
+
+I need to find some time to take a deep dive on the subfunction idea. I
+like the intent, but need to understand the details.
+
+Thanks for the update.
