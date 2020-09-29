@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62DB927C2BA
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 12:49:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFABE27C2DF
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 12:54:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728288AbgI2KtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 06:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58662 "EHLO
+        id S1728302AbgI2KyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 06:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727761AbgI2KtF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 06:49:05 -0400
+        with ESMTP id S1728295AbgI2KyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 06:54:06 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DE8C061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 03:49:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A695C0613D0
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 03:54:06 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kNDBu-0004fx-4h; Tue, 29 Sep 2020 12:49:02 +0200
+        id 1kNDGl-0005ZD-UE; Tue, 29 Sep 2020 12:54:04 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:feea:fa2e:c0c5:a14c] (unknown [IPv6:2a03:f580:87bc:d400:feea:fa2e:c0c5:a14c])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 4A4FB56D528;
-        Tue, 29 Sep 2020 10:49:00 +0000 (UTC)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id C075156D534;
+        Tue, 29 Sep 2020 10:54:02 +0000 (UTC)
 To:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
-Cc:     linux-imx@nxp.com, netdev@vger.kernel.org
-References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
- <20200925151028.11004-4-qiangqing.zhang@nxp.com>
+Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
+References: <20200928180253.1454-1-qiangqing.zhang@nxp.com>
+ <20200928180253.1454-2-qiangqing.zhang@nxp.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -92,17 +92,17 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Subject: Re: [PATCH linux-can-next/flexcan 3/4] can: flexcan: add CAN wakeup
- function for i.MX8
-Message-ID: <8ac4e125-96b6-af39-ac2d-0cd69beeaea8@pengutronix.de>
-Date:   Tue, 29 Sep 2020 12:48:55 +0200
+Subject: Re: [PATCH V3 1/3] can: flexcan: initialize all flexcan memory for
+ ECC function
+Message-ID: <32c4ab0a-2e16-5cf2-5c26-7917d91f3429@pengutronix.de>
+Date:   Tue, 29 Sep 2020 12:53:58 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200925151028.11004-4-qiangqing.zhang@nxp.com>
+In-Reply-To: <20200928180253.1454-2-qiangqing.zhang@nxp.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="7y3EHm5r3UPziiBrV5gJHg2qW2XjvpPR0"
+ boundary="WaooT3O5c7P3Qn8nnkYrNwPw8LLzX7Rc6"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -112,254 +112,183 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---7y3EHm5r3UPziiBrV5gJHg2qW2XjvpPR0
-Content-Type: multipart/mixed; boundary="i8QVTGK5XrO26A2pAcUeJa7bDULLFFAxr";
+--WaooT3O5c7P3Qn8nnkYrNwPw8LLzX7Rc6
+Content-Type: multipart/mixed; boundary="6W9iCNT63NqxnsmXeN1BTH9wQey6JAu9n";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
-Cc: linux-imx@nxp.com, netdev@vger.kernel.org
-Message-ID: <8ac4e125-96b6-af39-ac2d-0cd69beeaea8@pengutronix.de>
-Subject: Re: [PATCH linux-can-next/flexcan 3/4] can: flexcan: add CAN wakeup
- function for i.MX8
-References: <20200925151028.11004-1-qiangqing.zhang@nxp.com>
- <20200925151028.11004-4-qiangqing.zhang@nxp.com>
-In-Reply-To: <20200925151028.11004-4-qiangqing.zhang@nxp.com>
+Cc: netdev@vger.kernel.org, linux-imx@nxp.com
+Message-ID: <32c4ab0a-2e16-5cf2-5c26-7917d91f3429@pengutronix.de>
+Subject: Re: [PATCH V3 1/3] can: flexcan: initialize all flexcan memory for
+ ECC function
+References: <20200928180253.1454-1-qiangqing.zhang@nxp.com>
+ <20200928180253.1454-2-qiangqing.zhang@nxp.com>
+In-Reply-To: <20200928180253.1454-2-qiangqing.zhang@nxp.com>
 
---i8QVTGK5XrO26A2pAcUeJa7bDULLFFAxr
+--6W9iCNT63NqxnsmXeN1BTH9wQey6JAu9n
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 9/25/20 5:10 PM, Joakim Zhang wrote:
-> The System Controller Firmware (SCFW) is a low-level system function
-> which runs on a dedicated Cortex-M core to provide power, clock, and
-> resource management. It exists on some i.MX8 processors. e.g. i.MX8QM
-> (QM, QP), and i.MX8QX (QXP, DX).
->=20
-> SCU driver manages the IPC interface between host CPU and the
-> SCU firmware running on M4.
->=20
-> For i.MX8, stop mode request is controlled by System Controller Unit(SC=
-U)
-> firmware.
+On 9/28/20 8:02 PM, Joakim Zhang wrote:
+> One issue was reported at a baremetal environment, which is used for
+> FPGA verification. "The first transfer will fail for extended ID
+> format(for both 2.0B and FD format), following frames can be transmitte=
+d
+> and received successfully for extended format, and standard format don'=
+t
+> have this issue. This issue occurred randomly with high possiblity, whe=
+n
+> it occurs, the transmitter will detect a BIT1 error, the receiver a CRC=
 
-As you mentioned in the other mail, some functions are missing from the
+> error. According to the spec, a non-correctable error may cause this
+> transfer failure."
+>=20
+> With FLEXCAN_QUIRK_DISABLE_MECR quirk, it supports correctable errors,
+> disable non-correctable errors interrupt and freeze mode. Platform has
+> ECC hardware support, but select this quirk, this issue may not come to=
+
+> light. Initialize all FlexCAN memory before accessing them, at least it=
+
+> can avoid non-correctable errors detected due to memory uninitialized.
+> The internal region can't be initialized when the hardware doesn't supp=
+ort
+> ECC.
+>=20
+> According to IMX8MPRM, Rev.C, 04/2020. There is a NOTE at the section
+> 11.8.3.13 Detection and correction of memory errors:
+> "All FlexCAN memory must be initialized before starting its operation i=
+n
+> order to have the parity bits in memory properly updated. CTRL2[WRMFRZ]=
+
+> grants write access to all memory positions that require initialization=
+,
+> ranging from 0x080 to 0xADF and from 0xF28 to 0xFFF when the CAN FD fea=
+ture
+> is enabled. The RXMGMASK, RX14MASK, RX15MASK, and RXFGMASK registers ne=
+ed to
+> be initialized as well. MCR[RFEN] must not be set during memory initial=
+ization."
+>=20
+> Memory range from 0x080 to 0xADF, there are reserved memory (unimplemen=
+ted
+> by hardware, e.g. only configure 64 MBs), these memory can be initializ=
+ed or not.
+> In this patch, initialize all flexcan memory which includes reserved me=
+mory.
+>=20
+> In this patch, create FLEXCAN_QUIRK_SUPPORT_ECC for platforms which has=
+ ECC
+> feature. If you have a ECC platform in your hand, please select this
+> qurik to initialize all flexcan memory firstly, then you can select
+> FLEXCAN_QUIRK_DISABLE_MECR to only enable correctable errors.
 >=20
 > Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 > ---
->  drivers/net/can/flexcan.c | 81 ++++++++++++++++++++++++++++++++-------=
+> ChangeLogs:
+> V1->V2:
+> 	* update commit messages, add a datasheet reference.
+> 	* initialize block memory instead of trivial memory.
+> 	* inilialize reserved memory.
+> V2->V3:
+> 	* add FLEXCAN_QUIRK_SUPPORT_ECC quirk.
+> 	* remove init_ram struct.
+> ---
+>  drivers/net/can/flexcan.c | 50 +++++++++++++++++++++++++++++++++++++++=
 
->  1 file changed, 68 insertions(+), 13 deletions(-)
+>  1 file changed, 50 insertions(+)
 >=20
 > diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-> index 8c8753f77764..41b52cb56f93 100644
+> index e86925134009..0ae7436ee6ef 100644
 > --- a/drivers/net/can/flexcan.c
 > +++ b/drivers/net/can/flexcan.c
-> @@ -9,6 +9,7 @@
->  //
->  // Based on code originally by Andrey Volkov <avolkov@varma-el.com>
-> =20
-> +#include <dt-bindings/firmware/imx/rsrc.h>
->  #include <linux/bitfield.h>
->  #include <linux/can.h>
->  #include <linux/can/dev.h>
-> @@ -17,6 +18,7 @@
->  #include <linux/can/rx-offload.h>
->  #include <linux/clk.h>
->  #include <linux/delay.h>
-> +#include <linux/firmware/imx/sci.h>
->  #include <linux/interrupt.h>
->  #include <linux/io.h>
->  #include <linux/mfd/syscon.h>
-> @@ -240,6 +242,8 @@
+> @@ -239,6 +239,8 @@
 >  #define FLEXCAN_QUIRK_SETUP_STOP_MODE BIT(8)
-
-rename this into "FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR"
-
 >  /* Support CAN-FD mode */
 >  #define FLEXCAN_QUIRK_SUPPORT_FD BIT(9)
-> +/* Use System Controller Firmware */
-> +#define FLEXCAN_QUIRK_USE_SCFW BIT(10)
-
-=2E..and this into FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW
-
+> +/* support memory detection and correction */
+> +#define FLEXCAN_QUIRK_SUPPORT_ECC BIT(10)
 > =20
 >  /* Structure of the message buffer */
 >  struct flexcan_mb {
-> @@ -358,6 +362,9 @@ struct flexcan_priv {
->  	struct regulator *reg_xceiver;
->  	struct flexcan_stop_mode stm;
-> =20
-> +	/* IPC handle when enable stop mode by System Controller firmware(scf=
-w) */
-> +	struct imx_sc_ipc *sc_ipc_handle;
-> +
->  	/* Read and Write APIs */
->  	u32 (*read)(void __iomem *addr);
->  	void (*write)(u32 val, void __iomem *addr);
-> @@ -387,7 +394,8 @@ static const struct flexcan_devtype_data fsl_imx6q_=
-devtype_data =3D {
->  static const struct flexcan_devtype_data fsl_imx8qm_devtype_data =3D {=
-
->  	.quirks =3D FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_R=
-RS |
->  		FLEXCAN_QUIRK_USE_OFF_TIMESTAMP | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
-> -		FLEXCAN_QUIRK_SUPPORT_FD,
-> +		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SETUP_STOP_MODE |
-> +		FLEXCAN_QUIRK_USE_SCFW,
->  };
-> =20
->  static struct flexcan_devtype_data fsl_imx8mp_devtype_data =3D {
-> @@ -546,6 +554,25 @@ static void flexcan_enable_wakeup_irq(struct flexc=
-an_priv *priv, bool enable)
->  	priv->write(reg_mcr, &regs->mcr);
+> @@ -1292,6 +1294,51 @@ static void flexcan_set_bittiming(struct net_dev=
+ice *dev)
+>  		return flexcan_set_bittiming_ctrl(dev);
 >  }
 > =20
-> +static void flexcan_stop_mode_enable_scfw(struct flexcan_priv *priv, b=
-ool enabled)
+> +static void flexcan_init_ram(struct net_device *dev)
 > +{
-> +	struct device_node *np =3D priv->dev->of_node;
-> +	u32 rsrc_id, val;
-> +	int idx;
+> +	struct flexcan_priv *priv =3D netdev_priv(dev);
+> +	struct flexcan_regs __iomem *regs =3D priv->regs;
+> +	u32 reg_ctrl2;
 > +
-> +	idx =3D of_alias_get_id(np, "can");
-> +	if (idx =3D=3D 0)
-> +		rsrc_id =3D IMX_SC_R_CAN_0;
-> +	else if (idx =3D=3D 1)
-> +		rsrc_id =3D IMX_SC_R_CAN_1;
-> +	else
-> +		rsrc_id =3D IMX_SC_R_CAN_2;
+> +	/* 11.8.3.13 Detection and correction of memory errors:
+> +	 * CTRL2[WRMFRZ] grants write access to all memory positions that
+> +	 * require initialization, ranging from 0x080 to 0xADF and
+> +	 * from 0xF28 to 0xFFF when the CAN FD feature is enabled.
+> +	 * The RXMGMASK, RX14MASK, RX15MASK, and RXFGMASK registers need to
+> +	 * be initialized as well. MCR[RFEN] must not be set during memory
+> +	 * initialization.
+> +	 */
+> +	reg_ctrl2 =3D priv->read(&regs->ctrl2);
+> +	reg_ctrl2 |=3D FLEXCAN_CTRL2_WRMFRZ;
+> +	priv->write(reg_ctrl2, &regs->ctrl2);
+> +
+> +	/* ranging from 0x0080 to 0x0ADF, ram details as below list:
+> +	 * 0x0080--0x087F:	128 MBs
+> +	 * 0x0880--0x0A7F:	128 RXIMRs
+> +	 * 0x0A80--0x0A97:	6 RXFIRs
+> +	 * 0x0A98--0x0A9F:	Reserved
+> +	 * 0x0AA0--0x0AA3:	RXMGMASK
+> +	 * 0x0AA4--0x0AA7:	RXFGMASK
+> +	 * 0x0AA8--0x0AAB:	RX14MASK
+> +	 * 0x0AAC--0x0AAF:	RX15MASK
+> +	 * 0x0AB0--0x0ABF:	TX_SMB
+> +	 * 0x0AC0--0x0ACF:	RX_SMB0
+> +	 * 0x0AD0--0x0ADF:	RX_SMB1
 
-This looks too fragile to me. Better add a property to the DT which indic=
-ates
-the index.
+I don't like to have the register definition here *again), we have struct=
+
+flexcan_regs for this.
+
+> +	 */
+> +	memset_io((void __iomem *)regs + 0x80, 0, 0xadf - 0x80 + 1);
+
+why the cast?
+
+Can you use the "&regs->foo - &regs->bar + x" to get the length for the m=
+emset?
 
 > +
-> +	val =3D enabled ? 1 : 0;
+> +	/* ranging from 0x0F28 to 0x0FFF when CAN FD feature is enabled,
+> +	 * ram details as below list:
+> +	 * 0x0F28--0x0F6F:	TX_SMB_FD
+> +	 * 0x0F70--0x0FB7:	RX_SMB0_FD
+> +	 * 0x0FB8--0x0FFF:	RX_SMB0_FD
+> +	 */
+> +	memset_io((void __iomem *)regs + 0xf28, 0, 0xfff - 0xf28 + 1);
 
-Please use an if() here.
+same here
 
-> +	/* stop mode request */
-> +	imx_sc_misc_set_control(priv->sc_ipc_handle, rsrc_id, IMX_SC_C_IPG_ST=
-OP, val);
+> +
+> +	reg_ctrl2 &=3D ~FLEXCAN_CTRL2_WRMFRZ;
+> +	priv->write(reg_ctrl2, &regs->ctrl2);
 > +}
 > +
->  static inline int flexcan_enter_stop_mode(struct flexcan_priv *priv)
->  {
->  	struct flexcan_regs __iomem *regs =3D priv->regs;
-> @@ -555,9 +582,12 @@ static inline int flexcan_enter_stop_mode(struct f=
-lexcan_priv *priv)
->  	reg_mcr |=3D FLEXCAN_MCR_SLF_WAK;
->  	priv->write(reg_mcr, &regs->mcr);
+>  /* flexcan_chip_start
+>   *
+>   * this functions is entered with clocks enabled
+> @@ -1316,6 +1363,9 @@ static int flexcan_chip_start(struct net_device *=
+dev)
+>  	if (err)
+>  		goto out_chip_disable;
 > =20
-> -	/* enable stop request */
-> -	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
-> -			   1 << priv->stm.req_bit, 1 << priv->stm.req_bit);
-> +	 /* enable stop request */
-> +	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_SCFW)
-> +		flexcan_stop_mode_enable_scfw(priv, true);
-
-error handling?
-
-> +	else
-> +		regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
-> +				   1 << priv->stm.req_bit, 1 << priv->stm.req_bit);
-> =20
->  	return flexcan_low_power_enter_ack(priv);
->  }
-> @@ -568,8 +598,11 @@ static inline int flexcan_exit_stop_mode(struct fl=
-excan_priv *priv)
->  	u32 reg_mcr;
-> =20
->  	/* remove stop request */
-> -	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
-> -			   1 << priv->stm.req_bit, 0);
-> +	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_SCFW)
-> +		flexcan_stop_mode_enable_scfw(priv, false);
-
-error handling?
-
-> +	else
-> +		regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
-> +				   1 << priv->stm.req_bit, 0);
-> =20
->  	reg_mcr =3D priv->read(&regs->mcr);
->  	reg_mcr &=3D ~FLEXCAN_MCR_SLF_WAK;
-> @@ -1927,11 +1960,6 @@ static int flexcan_setup_stop_mode(struct platfo=
-rm_device *pdev)
->  		gpr_np->full_name, priv->stm.req_gpr, priv->stm.req_bit,
->  		priv->stm.ack_gpr, priv->stm.ack_bit);
-> =20
-> -	device_set_wakeup_capable(&pdev->dev, true);
-> -
-> -	if (of_property_read_bool(np, "wakeup-source"))
-> -		device_set_wakeup_enable(&pdev->dev, true);
-> -
->  	return 0;
-> =20
->  out_put_node:
-> @@ -1939,6 +1967,23 @@ static int flexcan_setup_stop_mode(struct platfo=
-rm_device *pdev)
->  	return ret;
->  }
-> =20
-> +static int flexcan_setup_stop_mode_scfw(struct platform_device *pdev)
-> +{
-> +	struct net_device *dev =3D platform_get_drvdata(pdev);
-> +	struct flexcan_priv *priv;
-> +	int ret;
+> +	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SUPPORT_ECC)
+> +		flexcan_init_ram(dev);
 > +
-> +	priv =3D netdev_priv(dev);
-> +
-> +	ret =3D imx_scu_get_handle(&priv->sc_ipc_handle);
-
-this function can return -EPROBE_DEFER
-
-https://elixir.bootlin.com/linux/latest/source/drivers/firmware/imx/imx-s=
-cu.c#L97
-
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "get ipc handle used by SCU failed\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static const struct of_device_id flexcan_of_match[] =3D {
->  	{ .compatible =3D "fsl,imx8mp-flexcan", .data =3D &fsl_imx8mp_devtype=
-_data, },
->  	{ .compatible =3D "fsl,imx8qm-flexcan", .data =3D &fsl_imx8qm_devtype=
-_data, },
-> @@ -2088,9 +2133,19 @@ static int flexcan_probe(struct platform_device =
-*pdev)
->  	devm_can_led_init(dev);
+>  	flexcan_set_bittiming(dev);
 > =20
->  	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE) {
-> -		err =3D flexcan_setup_stop_mode(pdev);
-
-what about renaming the flexcan_setup_stop_mode() to
-flexcan_setup_stop_mode_gpr() and moving this below into a function calle=
-d
-flexcan_setup_stop_mode().
-
-> -		if (err)
-> +		if (priv->devtype_data->quirks & FLEXCAN_QUIRK_USE_SCFW)
-> +			err =3D flexcan_setup_stop_mode_scfw(pdev);
-> +		else
-> +			err =3D flexcan_setup_stop_mode(pdev);
-> +
-> +		if (err) {
->  			dev_dbg(&pdev->dev, "failed to setup stop-mode\n");
-> +		} else {
-> +			device_set_wakeup_capable(&pdev->dev, true);
-> +
-> +			if (of_property_read_bool(pdev->dev.of_node, "wakeup-source"))
-> +				device_set_wakeup_enable(&pdev->dev, true);
-> +		}
->  	}
-> =20
->  	return 0;
+>  	/* MCR
 >=20
 
 Marc
@@ -371,23 +300,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---i8QVTGK5XrO26A2pAcUeJa7bDULLFFAxr--
+--6W9iCNT63NqxnsmXeN1BTH9wQey6JAu9n--
 
---7y3EHm5r3UPziiBrV5gJHg2qW2XjvpPR0
+--WaooT3O5c7P3Qn8nnkYrNwPw8LLzX7Rc6
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9zERgACgkQqclaivrt
-76niJgf/TvIDPn4kXYwWpnReipILFFgnk1xCscLFiCfh+LJzoIpWTkAZEL5SJQr7
-UIjwkMNWtuOiLO6gc/q27gGAU3TCEfMF85snjDrGyNXuBhprMzn7G6vOarKyJGXG
-MYpDu9WLSV0SojYUYklED3JW7MmJQhpTR9IRz2Xtreq6dR4jYSMaozjacbrvazH3
-8FrJ0KBlmHaY0vf6nHyrBpFnqfD/Rc7Cy1eExtXOQwxG2wf41TBabdirGZKrefnC
-gl+Q3v4L5e4rZAnbX2LTUCR8m6JL8LsiEPmkSczfNVZQJQZrOYYrWXv+XrxpMYm9
-HUqaDckHlKdCA4sOWZTqiLsW9YpFcw==
-=iSWu
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9zEkYACgkQqclaivrt
+76l9JwgAlh2B1cYw8XP0jCQOz7yoNwbPYIGYpT2EzEOR93A+xPE4s2zt5KRGN7vA
+M+vh0YzegggkfwE4aaxijytwWAJHnG0cWQIO0r13PbB67lCIymosF0FDtRPGgpa4
+tRSRrqlsN+8aLMC0BCCCtMEaUI55CToGdwBzng3HXQGG9+PavPhw+OruEXC7heht
+wxihcyEjGv/9Vo8O3X/O52Ds6V/USvrpYsQOo/JxphdMiuXDveJBfyneCuCSA4Js
+TvkWIQlVsIIp2Aq/qLONIutoIZPDBaDMyeiTMLhW51AHX0u0DbZz47FCKTWt5J8d
+Uivy4RRYOSNT/+3Wu/arrPu1VtWbCQ==
+=7ruS
 -----END PGP SIGNATURE-----
 
---7y3EHm5r3UPziiBrV5gJHg2qW2XjvpPR0--
+--WaooT3O5c7P3Qn8nnkYrNwPw8LLzX7Rc6--
