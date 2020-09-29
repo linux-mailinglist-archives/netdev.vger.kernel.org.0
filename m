@@ -2,252 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0DF727DB3E
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 23:58:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BE8F27DB38
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 23:57:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728291AbgI2V6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 17:58:00 -0400
-Received: from mga07.intel.com ([134.134.136.100]:54494 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728074AbgI2V57 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 17:57:59 -0400
-IronPort-SDR: czwefkBbGVDRQulgN+CvIK8NR57JSXHOVrL1wIpeAadxKtIMgL8TL9sBoV4EW+eDNUt6c6W0k8
- 5XeFNO6TpD5Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9759"; a="226448344"
-X-IronPort-AV: E=Sophos;i="5.77,320,1596524400"; 
-   d="scan'208";a="226448344"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 14:57:58 -0700
-IronPort-SDR: d/lGvOvK941z2yihPbpjuw5QU4M0pm0qJYc/v438bunXMYnAjB4e7/NKsMKARHdSRqi23xpL9g
- N1niLL2DQa+Q==
-X-IronPort-AV: E=Sophos;i="5.77,320,1596524400"; 
-   d="scan'208";a="324822023"
-Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.4])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 14:57:58 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kubakici@wp.pl>, snelson@pensando.io,
-        Jacob Keller <jacob.e.keller@intel.com>
-Subject: [iproute2-next v1] devlink: display elapsed time during flash update
-Date:   Tue, 29 Sep 2020 14:56:51 -0700
-Message-Id: <20200929215651.3538844-1-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.28.0.497.g54e85e7af1ac
+        id S1728508AbgI2V5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 17:57:11 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:48736 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728041AbgI2V5K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 17:57:10 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08TLucql014970
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 14:57:10 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=q8DOaP2zNVDpf7BaUv2l0Ns1Xl6nLR1DxSk9kMxN8hc=;
+ b=GWrFkYxy5jUWZUtmh2mnvfvrwG42g4pOXbChj0eiFIfiM/utWto4AyDtd3OWBn+Mj3Pv
+ SechmFxZzrLfrmlK2CpKoDqvF+PjbYEXe8DfNDQ5rsEFGQXaWW5mSXBUNg1XenbvysBm
+ 7Vi9MH1sIKIj/iKLNhjsJdt4vz9bEiI0zZs= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 33v3vtu8tn-8
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 14:57:10 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 29 Sep 2020 14:57:05 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 4E0F062E55BF; Tue, 29 Sep 2020 14:57:01 -0700 (PDT)
+From:   Song Liu <songliubraving@fb.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH v2 bpf-next 0/2] introduce BPF_F_PRESERVE_ELEMS
+Date:   Tue, 29 Sep 2020 14:56:57 -0700
+Message-ID: <20200929215659.3938706-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-29_14:2020-09-29,2020-09-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ suspectscore=0 phishscore=0 mlxlogscore=905 clxscore=1015 bulkscore=0
+ impostorscore=0 adultscore=0 priorityscore=1501 spamscore=0 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009290188
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For some devices, updating the flash can take significant time during
-operations where no status can meaningfully be reported. This can be
-somewhat confusing to a user who sees devlink appear to hang on the
-terminal waiting for the device to update.
+This set introduces BPF_F_PRESERVE_ELEMS to perf event array for better
+sharing of perf event. By default, perf event array removes the perf even=
+t
+when the map fd used to add the event is closed. With BPF_F_PRESERVE_ELEM=
+S
+set, however, the perf event will stay in the array until it is removed, =
+or
+the map is closed.
 
-Recent changes to the kernel interface allow such long running commands
-to provide a timeout value indicating some upper bound on how long the
-relevant action could take.
-
-Provide a ticking counter of the time elapsed since the previous status
-message in order to make it clear that the program is not simply stuck.
-
-Display this message whenever the status message from the kernel
-indicates a timeout value. Additionally also display the message if
-we've received no status for more than couple of seconds. If we elapse
-more than the timeout provided by the status message, replace the
-timeout display with "timeout reached".
-
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
+Changes v1 =3D> v2:
+1. Rename the flag as BPF_F_PRESERVE_ELEMS. (Alexei, Daniel)
+2. Simplify the code and selftest. (Daniel, Alexei)
 
-This is a respin of an RFC at [1] based on feedback. This version works as I
-would expect, 
+Song Liu (2):
+  bpf: introduce BPF_F_PRESERVE_ELEMS for perf event array
+  selftests/bpf: add tests for BPF_F_PRESERVE_ELEMS
 
-Changes since RFC
-* Add fflush, fixing jittery output
-* Since we're only comparing the seconds value, use "> 2" instead of "> 3"
-  so that we begin displaying the elapsed time at 3 seconds rather than 4
-  seconds.
-* store only the string length instead of the full message in the context
-* Rename some variables for clarity
-* If we have a timeout, always display the elapsed time, instead of waiting
-  for a few seconds.
-* Fix a typo in a comment referring to 1/20th when the code used 1/10th of a
-  second timeout.
+ include/uapi/linux/bpf.h                      |  3 +
+ kernel/bpf/arraymap.c                         | 21 +++++-
+ tools/include/uapi/linux/bpf.h                |  3 +
+ .../bpf/prog_tests/pe_preserve_elems.c        | 66 +++++++++++++++++++
+ .../bpf/progs/test_pe_preserve_elems.c        | 44 +++++++++++++
+ 5 files changed, 135 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/pe_preserve_el=
+ems.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_pe_preserve_el=
+ems.c
 
- devlink/devlink.c | 95 ++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 94 insertions(+), 1 deletion(-)
-
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 0374175eda3d..7f3bd45c9a6e 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -33,6 +33,7 @@
- #include <sys/select.h>
- #include <sys/socket.h>
- #include <sys/types.h>
-+#include <sys/time.h>
- #include <rt_names.h>
- 
- #include "version.h"
-@@ -3066,6 +3067,9 @@ static int cmd_dev_info(struct dl *dl)
- 
- struct cmd_dev_flash_status_ctx {
- 	struct dl *dl;
-+	struct timeval time_of_last_status;
-+	uint64_t status_msg_timeout;
-+	size_t elapsed_time_msg_len;
- 	char *last_msg;
- 	char *last_component;
- 	uint8_t not_first:1,
-@@ -3083,6 +3087,14 @@ static int nullstrcmp(const char *str1, const char *str2)
- 	return str1 ? 1 : -1;
- }
- 
-+static void cmd_dev_flash_clear_elapsed_time(struct cmd_dev_flash_status_ctx *ctx)
-+{
-+	int i;
-+
-+	for (i = 0; i < ctx->elapsed_time_msg_len; i++)
-+		pr_out_tty("\b");
-+}
-+
- static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
- {
- 	struct cmd_dev_flash_status_ctx *ctx = data;
-@@ -3116,6 +3128,11 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
- 		return MNL_CB_STOP;
- 	}
- 
-+	cmd_dev_flash_clear_elapsed_time(ctx);
-+	gettimeofday(&ctx->time_of_last_status, NULL);
-+	ctx->status_msg_timeout = 0;
-+	ctx->elapsed_time_msg_len = 0;
-+
- 	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_MSG])
- 		msg = mnl_attr_get_str(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_MSG]);
- 	if (tb[DEVLINK_ATTR_FLASH_UPDATE_COMPONENT])
-@@ -3124,6 +3141,8 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
- 		done = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_DONE]);
- 	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL])
- 		total = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL]);
-+	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT])
-+		ctx->status_msg_timeout = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT]);
- 
- 	if (!nullstrcmp(msg, ctx->last_msg) &&
- 	    !nullstrcmp(component, ctx->last_component) &&
-@@ -3155,11 +3174,72 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
- 	return MNL_CB_STOP;
- }
- 
-+static void cmd_dev_flash_time_elapsed(struct cmd_dev_flash_status_ctx *ctx)
-+{
-+	struct timeval now, res;
-+
-+	gettimeofday(&now, NULL);
-+	timersub(&now, &ctx->time_of_last_status, &res);
-+
-+	/* Only begin displaying an elapsed time message if we've waited a few
-+	 * seconds with no response, or the status message included a timeout
-+	 * value.
-+	 */
-+	if (res.tv_sec > 2 || ctx->status_msg_timeout) {
-+		uint64_t elapsed_m, elapsed_s;
-+		char msg[128];
-+		size_t len;
-+
-+		/* clear the last elapsed time message, if we have one */
-+		cmd_dev_flash_clear_elapsed_time(ctx);
-+
-+		elapsed_m = res.tv_sec / 60;
-+		elapsed_s = res.tv_sec % 60;
-+
-+		/**
-+		 * If we've elapsed a few seconds without receiving any status
-+		 * notification from the device, we display a time elapsed
-+		 * message. This has a few possible formats:
-+		 *
-+		 * 1) just time elapsed, when no timeout was provided
-+		 *    " ( Xm Ys )"
-+		 * 2) time elapsed out of a timeout that came from the device
-+		 *    driver via DEVLINK_CMD_FLASH_UPDATE_STATUS_TIMEOUT
-+		 *    " ( Xm Ys : Am Ys)"
-+		 * 3) time elapsed if we still receive no status after
-+		 *    reaching the provided timeout.
-+		 *    " ( Xm Ys : timeout reached )"
-+		 */
-+		if (!ctx->status_msg_timeout) {
-+			len = snprintf(msg, sizeof(msg),
-+				       " ( %lum %lus )", elapsed_m, elapsed_s);
-+		} else if (res.tv_sec <= ctx->status_msg_timeout) {
-+			uint64_t timeout_m, timeout_s;
-+
-+			timeout_m = ctx->status_msg_timeout / 60;
-+			timeout_s = ctx->status_msg_timeout % 60;
-+
-+			len = snprintf(msg, sizeof(msg),
-+				       " ( %lum %lus : %lum %lus )",
-+				       elapsed_m, elapsed_s, timeout_m, timeout_s);
-+		} else {
-+			len = snprintf(msg, sizeof(msg),
-+				       " ( %lum %lus : timeout reached )", elapsed_m, elapsed_s);
-+		}
-+
-+		ctx->elapsed_time_msg_len = len;
-+
-+		pr_out_tty("%s", msg);
-+		fflush(stdout);
-+	}
-+}
-+
- static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
- 				     struct mnlg_socket *nlg_ntf,
- 				     int pipe_r)
- {
- 	int nlfd = mnlg_socket_get_fd(nlg_ntf);
-+	struct timeval timeout;
- 	fd_set fds[3];
- 	int fdmax;
- 	int i;
-@@ -3174,7 +3254,14 @@ static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
- 	if (nlfd >= fdmax)
- 		fdmax = nlfd + 1;
- 
--	while (select(fdmax, &fds[0], &fds[1], &fds[2], NULL) < 0) {
-+	/* select only for a short while (1/10th of a second) in order to
-+	 * allow periodically updating the screen with an elapsed time
-+	 * indicator.
-+	 */
-+	timeout.tv_sec = 0;
-+	timeout.tv_usec = 100000;
-+
-+	while (select(fdmax, &fds[0], &fds[1], &fds[2], &timeout) < 0) {
- 		if (errno == EINTR)
- 			continue;
- 		pr_err("select() failed\n");
-@@ -3196,6 +3283,7 @@ static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
- 			return err2;
- 		ctx->flash_done = 1;
- 	}
-+	cmd_dev_flash_time_elapsed(ctx);
- 	return 0;
- }
- 
-@@ -3256,6 +3344,11 @@ static int cmd_dev_flash(struct dl *dl)
- 	}
- 	close(pipe_w);
- 
-+	/* initialize starting time to allow comparison for when to begin
-+	 * displaying a time elapsed message.
-+	 */
-+	gettimeofday(&ctx.time_of_last_status, NULL);
-+
- 	do {
- 		err = cmd_dev_flash_fds_process(&ctx, nlg_ntf, pipe_r);
- 		if (err)
-
-base-commit: d2be31d9b671ec0b3e32f56f9c913e249ed048bd
--- 
-2.28.0.497.g54e85e7af1ac
-
+--
+2.24.1
