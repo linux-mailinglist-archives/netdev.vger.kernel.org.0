@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B79F427C1FD
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 12:11:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3325627C1FE
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 12:11:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728242AbgI2KKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 06:10:49 -0400
-Received: from mail-eopbgr70087.outbound.protection.outlook.com ([40.107.7.87]:9902
+        id S1728248AbgI2KKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 06:10:50 -0400
+Received: from mail-eopbgr70048.outbound.protection.outlook.com ([40.107.7.48]:54849
         "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728220AbgI2KKn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 06:10:43 -0400
+        id S1728215AbgI2KKl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 06:10:41 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Td51kt1/jesLYjzQuBuAs7H8qbf8d7W/xZnf0d2Q556p44FpO2ohg36/0AQ+3m4f4JkGVXahaswCrq2lJ4MLGXF2l6I2kOpeCWztq5dypZ67piox6feydanIjKRpAtCOFeCTj+mWEyCcLcgIAxZV07h2cWp5BTO9UOaSYXgBJ44Yq2jf37Ulej57bsnhpDPG7NI85y6IdVHDfB9mgwU3hHNDUlMGzHUXmV9p//oNBn7Y3mwPhDsGeE0GHFVYlccwbCHqEq4RgBGQtha+CI9elbbmdlHiZpEnpyUcpP8CuWzv8l39LNosqGnrp4aIlZXeC+eDYD/u3fPSKUXnu6GPmg==
+ b=M93tWaScWV5yk547Mq4tttZfd7IyeoMKwbxQStlSFW6dXuIzx0a1XpNes9t3tt7rfOryKsdkXyMLSDN22oXfor8zT+Q6BnmQLIZGeRU532e6Az6t+XOCKuTn9Y84U/okMOeU/DbGE1llrHTjbB2uZDg/asEP87ebPxJkxBjub2Nq/5+OzE8tPqsOR2ZY5/gH3dsz9/QKY5FIqB9gYTXgxwwWYMDL0WqOH2RI9HV5uuqPMFikaA6L23vqrWmsdM5rY4CMcLPFZiWzzil9dclv7QD78MZecQpXaqF6AoXW/u34fT9C6ECUOEs/W1TaWANmttfgYopvzyCbOdGbs5/IVA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PM8QTSG9TNjTknsk6diwxCNvqv9wLvsWZp2swNkBjlI=;
- b=GREmiO/lccHB737GxAy9XPZDGp+UJ9dqIZ32TCr9tKjBzA9RDD7fcR9uTaKPa/XV7i0pfjgXDn8FL9bywb/cfH/zUGr7HGD6e8X3hHH5YXz+1dksoPqNoST2iEV8lfcqRVReOMULHJZqpQsabisfFJTzHcqAR7l5hTIOFAMYjmtRBVJa1cyRyscrP6GEIt1HLgRWlKMLD3eCSFjp+6JnyxtY1ajLbauCLxpyPaXOI4pALDiSSu1iVeyTcVgmMSQ+w8jEaVWigNYAY7Yf8L4dMFouw9eui/DQdTDlZX/N9eFSlx7l0g4Am8cz2poLF92IKopRDV8SlrIcvqYt6e6FSA==
+ bh=6ar9sfrRXLD//Rs1zlfv4jfE21qLI3+Tp5ogqV7rVTo=;
+ b=Qv7gyPxF353cjFOQ4G9xmLas5V34DzFKnB8hKLnfvcuNidjafCRXX86OHIuRgPkfM1PCHaNoSxxhjQcyxXs4UG+jwAxOkykSstnIjy5Jmo5cTCuA3Px24H22OvR/C2jw1k6xMyvl+/Qil0YdpwmSzWx1Zi52fRYaFMSdkxHarIk0ArfWuYgtawRwRye+HZL1nWuxZwXBErZY9zZRE1UeSPfJWE7q6Ml2B/il+2h/isf8I+RrGMPcY+tqfkX1ix/D3bqL5T2cRQYzvMB3ASmb+j2VunyXoIvog+pHufbRB+guJywTSZZcms12Zi6KaCvP3xut/iXouWDmZMfamA/3pQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PM8QTSG9TNjTknsk6diwxCNvqv9wLvsWZp2swNkBjlI=;
- b=Gxrcea3AV3fNM6/NtzQzy57j5275fYcOuEvCIpYG4dPQYWX2vmDheJI2ODQrMCKTBrX6x+EhPuduLYSCSjxvvsvRCYptIB5ADLOkkh503U9OJA0IJ+FNcAuKeLhXvoVuRjaprOo9fn6htkEV7bf8iiffDY7WUbBhjuKP+eWNpFM=
+ bh=6ar9sfrRXLD//Rs1zlfv4jfE21qLI3+Tp5ogqV7rVTo=;
+ b=li2Tl38yMWE/OIHyAvcUeyuayZKUKdKuw3iGss+M7E4L7yF2R9RDT+4JnTidPhv4gb2TNZuW9wKSrtC80sQfWpcdiubONau4sdSi9++FCRBDhxdrUpc+pDH88VfFjqcwBs6GwFlCgIvnMiLSbYji6mX7rNIjBwZjeigNk6/8m2g=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VI1PR04MB5295.eurprd04.prod.outlook.com (2603:10a6:803:59::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.22; Tue, 29 Sep
- 2020 10:10:35 +0000
+ 2020 10:10:36 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.032; Tue, 29 Sep 2020
- 10:10:35 +0000
+ 10:10:36 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     davem@davemloft.net
 Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
@@ -46,160 +46,133 @@ Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
         claudiu.manoil@nxp.com, xiaoliang.yang_1@nxp.com,
         hongbo.wang@nxp.com, netdev@vger.kernel.org, kuba@kernel.org,
         jiri@resnulli.us, idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: [RFC PATCH v2 net-next 01/21] net: mscc: ocelot: introduce a new ocelot_target_{read,write} API
-Date:   Tue, 29 Sep 2020 13:09:56 +0300
-Message-Id: <20200929101016.3743530-2-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH v2 net-next 02/21] net: mscc: ocelot: return error if VCAP filter is not found
+Date:   Tue, 29 Sep 2020 13:09:57 +0300
+Message-Id: <20200929101016.3743530-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200929101016.3743530-1-vladimir.oltean@nxp.com>
 References: <20200929101016.3743530-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-Originating-IP: [188.26.229.171]
 X-ClientProxiedBy: VI1PR08CA0112.eurprd08.prod.outlook.com
  (2603:10a6:800:d4::14) To VI1PR04MB5696.eurprd04.prod.outlook.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.26.229.171) by VI1PR08CA0112.eurprd08.prod.outlook.com (2603:10a6:800:d4::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.32 via Frontend Transport; Tue, 29 Sep 2020 10:10:34 +0000
+Received: from localhost.localdomain (188.26.229.171) by VI1PR08CA0112.eurprd08.prod.outlook.com (2603:10a6:800:d4::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.32 via Frontend Transport; Tue, 29 Sep 2020 10:10:35 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 8a2956b8-3750-443b-e16f-08d8645fe7dc
+X-MS-Office365-Filtering-Correlation-Id: ae6c1130-e1c1-4ced-5e8a-08d8645fe865
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5295:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5295B35B783F3D15E1FADC22E0320@VI1PR04MB5295.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB5295D5FF64ADE764405FEEA6E0320@VI1PR04MB5295.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LH3+J9NUXNZQf85eEDwnZSei9hm1jaB4gmlh/rnunrJ9G2SxJu3fwwy7oN8cPsduJK1+/BRouu40+rnCyg7wlqrlyt6sR3alUJkrFORxoo3vc/wqRf3SiYBJ0RBtFT+ZmDeUX9c0RPuRXAkrF8I3vqZL/Eixx+iQ85n9LXf2vgsWCGTmMdsq+CMrmp1txUFN2x7NqCyPIii1k70qYLfPRVSs18LSQnfYEGqdFqndlG+mB8Qgz419gW4aqeVmiCwm8yQADQnkuhA83wAi8OxOer741287lHhDKMFc3fCRDoCcz8LrwaToVOTTQVVA7L0H0hN2fU49jOUBm5IqFv4j27D2AZ4C8oq1rBt7+y9L7VKjjf7K7o6+xPCB2jtU4k79M7h+c4RE798zdT7e58nMIBFJUMb1npGOameN7nxO1EO/pALMDxqI1fCXmYqEG8sc
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(136003)(346002)(39860400002)(396003)(83380400001)(69590400008)(66946007)(4326008)(8936002)(86362001)(36756003)(1076003)(5660300002)(316002)(6666004)(7416002)(52116002)(2616005)(44832011)(956004)(66556008)(8676002)(6486002)(66476007)(6506007)(478600001)(16526019)(6916009)(186003)(26005)(6512007)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: W+UUd1IhglRXDOTXMDEWbVroLD7ZFlKTkDCZm5TdAZzr6nrLswaQCDTU3oC8fB18pL9A7laUFhlCqxeewPjyR12Z22mqoGy/h4dIksgOdRJyKHTZNX/5Wsk+02IGqIrWO+ih1iPqx4EsRaX3tWPjm+QNJM/OG9J2VL7O57tO2u6ZLDG0vEuaPb9A09votvUlss6aHpDzJ9QsstiyWY+4M33ls+TrnXDjgFgcN2e/MwRGUSFO/oPdbmN75zWMSmoulZq1lb6yJO0iusUNzdnq371wHgEzzOZjlQabgBxwHIk1/RUKg9skI2vhsM6oCshSTXuvFRxy70HkL1CAmd2yARip+1EKF2vOg/Mz1lod2leMF+TnR4A8ydubAE0oJOthFG+elxcSw06OpPsUQFw57p9TM0fUeF593kbBnpgU4eFt+jxeL/lwgzCjIAJgIhAsL1rshCgNcHPxAY3SXWzpcOIi0zF98gq9VS9FKqsYB6S0RN8x7VUAVufrUZh9ajEJh8DiQvB2BtitT3lGv/yTEMJ8cCgrsFTc1PrCWEXD6+UzIYIon3sF/CeUXYRTVhpE2vcd9CIKx+U9+GW+uTMjF71vBZFpurRlzeL8Qud/j52wY6U0VK7iJo9AG8okdksRNtqVHHfJDrmGZeWxKVfYlw==
+X-Microsoft-Antispam-Message-Info: OQiIkpvzbGmwH6yJnujIigzmhchSK5/3Ni5dyhSjZNSkq9znXVk5LM9IINdvDzZmY5VarQsbO27awrWp3JM22l9CqcoaItJO52YLjS2q2F8qrxyihMPsKsIGHjb7ZLKiXfRV8Nm7IR1FveNj7CyPMW3EeLuoo18uu98LFXw4UvQbDLdYUP5AfS8GuWAPYyfutzoxLCBqauLkHuZeZavLmmN8CgYdfK6y7BT8Jq3nYoH0jQ4NmcuaVEbwd2Bqd4uISekUJeEHbxwvjsxkA861JjCuNEyp7QFoUy7S+xpvXZMl7Pv4ipI110owgA/Lqx8XUV1fY5hC2nPAK7j+5J57ekiJFMCC0nLxKS99q7kJ2mBjtGMOwnY8K6i2y78Vacyg
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(136003)(346002)(39860400002)(396003)(66574015)(83380400001)(66946007)(4326008)(8936002)(86362001)(36756003)(1076003)(5660300002)(316002)(6666004)(7416002)(52116002)(2616005)(44832011)(956004)(66556008)(8676002)(6486002)(66476007)(6506007)(478600001)(16526019)(6916009)(186003)(26005)(6512007)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: dbeONRXuvfWO5Gu5Uktewak8lcKLIOXFMLbtX3OpicY20wFniRTvm2vaiZaFps8DAWlX15ztrmx0Jo3+k6by/xR6qF6VaT4fBcQY8dbGnQnaliLS42AkiDENEG/45IugzOpcpi5KtWAP4s2sbauup7xlhqzYdaep+pTadugac31d8t4LvqXnGXSeoSdFBuh47Tx5zL4PO4q70Omwe+DwnAsT8WmI9iJsGLa0yTfwtLbVGQiP4ciLwgRzJ72P0lDl4VcXPltMQEdw6/pf7FOeMZ3BaVGpQBfedEZd6jWA8QGibCWDj7X1kVBzds93j5XUuP0bajZiWagIU8tuUdWZwnqoj9uzZnkFqDyQ4ZwFpbhOMvao3KsAQorCgME7lDrzc+bxDmu5RxCSa+9/gSQBQ8irORlKJYRplFAFs5kHPVnu2hSFdbWmtJMxBAT9lJabxVPKMphxJuRGFfiOw8FOEKILx33UY1RDEj00S3AFxlZoIgZ0ZDemO8EAZppAZCF6QWDvv0uXqZkwHnuBO4kCQKZEOrtEVweZhXLThbpWMLbmRGnUUuzI7/DteJwg8WH9n1av5RHgQip7nubQ8qLjUJdK3P+Rns9WSgs01jsIKQJi/TcOUf1sYHCY6GtutGcZAu7IMnoIe5t+G5v8Ek8NyQ==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a2956b8-3750-443b-e16f-08d8645fe7dc
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae6c1130-e1c1-4ced-5e8a-08d8645fe865
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2020 10:10:35.0396
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2020 10:10:35.8952
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eoFGwz/OITDg+8QvSM6aLOzAovVF1dwB2JFOXJxdbGPS4+xNl/Cg63fNq7oDluzfkDs2XRzjCsFLW2KbgYCQqQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0caDW5g/f+gJzt2KVvTKcYoHfGaIe7i84v/NvWJfFUaunoRtAPJrfdqsMamJvoiqiNsaZNMj+odNa2h+yP13Cw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5295
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are some targets (register blocks) in the Ocelot switch that are
-instantiated more than once. For example, the VCAP IS1, IS2 and ES0
-blocks all share the same register layout for interacting with the cache
-for the TCAM and the action RAM.
+From: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 
-For the VCAPs, the procedure for servicing them is actually common. We
-just need an API specifying which VCAP we are talking to, and we do that
-via these raw ocelot_target_read and ocelot_target_write accessors.
+Although it doesn't look like it is possible to hit these conditions
+from user space, there are 2 separate, but related, issues.
 
-In plain ocelot_read, the target is encoded into the register enum
-itself:
+First, the ocelot_vcap_block_get_filter_index function, née
+ocelot_ace_rule_get_index_id prior to the aae4e500e106 ("net: mscc:
+ocelot: generalize the "ACE/ACL" names") rename, does not do what the
+author probably intended. If the desired filter entry is not present in
+the ACL block, this function returns an index equal to the total number
+of filters, instead of -1, which is maybe what was intended, judging
+from the curious initialization with -1, and the "++index" idioms.
+Either way, none of the callers seems to expect this behavior.
 
-	u16 target = reg >> TARGET_OFFSET;
+Second issue, the callers don't actually check the return value at all.
+So in case the filter is not found in the rule list, propagate the
+return code.
 
-For the VCAPs, the registers are currently defined like this:
+So update the callers and also take the opportunity to get rid of the
+odd coding idioms that appear to work but don't.
 
-	enum ocelot_reg {
-	[...]
-		S2_CORE_UPDATE_CTRL = S2 << TARGET_OFFSET,
-		S2_CORE_MV_CFG,
-		S2_CACHE_ENTRY_DAT,
-		S2_CACHE_MASK_DAT,
-		S2_CACHE_ACTION_DAT,
-		S2_CACHE_CNT_DAT,
-		S2_CACHE_TG_DAT,
-	[...]
-	};
-
-which is precisely what we want to avoid, because we'd have to duplicate
-the same register map for S1 and for S0, and then figure out how to pass
-VCAP instance-specific registers to the ocelot_read calls (basically
-another lookup table that undoes the effect of shifting with
-TARGET_OFFSET).
-
-So for some targets, propose a more raw API, similar to what is
-currently done with ocelot_port_readl and ocelot_port_writel. Those
-targets can only be accessed with ocelot_target_{read,write} and not
-with ocelot_{read,write} after the conversion, which is fine.
-
-The VCAP registers are not actually modified to use this new API as of
-this patch. They will be modified in the next one.
-
+Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
 Changes in v2:
-None.
+Took this patch which was previously targeted to "net" and re-targeted
+it to "net-next", because it doesn't appear that this bug can be
+triggered, and in plus, when in "net", it conflicts with the work done
+here.
 
- drivers/net/ethernet/mscc/ocelot_io.c | 17 +++++++++++++++++
- include/soc/mscc/ocelot.h             | 14 ++++++++++++++
- 2 files changed, 31 insertions(+)
+ drivers/net/ethernet/mscc/ocelot_vcap.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_io.c b/drivers/net/ethernet/mscc/ocelot_io.c
-index d22711282183..0acb45948418 100644
---- a/drivers/net/ethernet/mscc/ocelot_io.c
-+++ b/drivers/net/ethernet/mscc/ocelot_io.c
-@@ -71,6 +71,23 @@ void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg)
- }
- EXPORT_SYMBOL(ocelot_port_writel);
- 
-+u32 __ocelot_target_read_ix(struct ocelot *ocelot, enum ocelot_target target,
-+			    u32 reg, u32 offset)
-+{
-+	u32 val;
-+
-+	regmap_read(ocelot->targets[target],
-+		    ocelot->map[target][reg] + offset, &val);
-+	return val;
-+}
-+
-+void __ocelot_target_write_ix(struct ocelot *ocelot, enum ocelot_target target,
-+			      u32 val, u32 reg, u32 offset)
-+{
-+	regmap_write(ocelot->targets[target],
-+		     ocelot->map[target][reg] + offset, val);
-+}
-+
- int ocelot_regfields_init(struct ocelot *ocelot,
- 			  const struct reg_field *const regfields)
+diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
+index 3ef620faf995..51d442ca5cb3 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vcap.c
++++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+@@ -726,14 +726,15 @@ static int ocelot_vcap_block_get_filter_index(struct ocelot_vcap_block *block,
+ 					      struct ocelot_vcap_filter *filter)
  {
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 3093385f6147..16030092b9f7 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -661,6 +661,16 @@ struct ocelot_policer {
- #define ocelot_fields_write(ocelot, id, reg, val) regmap_fields_write((ocelot)->regfields[(reg)], (id), (val))
- #define ocelot_fields_read(ocelot, id, reg, val) regmap_fields_read((ocelot)->regfields[(reg)], (id), (val))
+ 	struct ocelot_vcap_filter *tmp;
+-	int index = -1;
++	int index = 0;
  
-+#define ocelot_target_read_ix(ocelot, target, reg, gi, ri) __ocelot_target_read_ix(ocelot, target, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
-+#define ocelot_target_read_gix(ocelot, target, reg, gi) __ocelot_target_read_ix(ocelot, target, reg, reg##_GSZ * (gi))
-+#define ocelot_target_read_rix(ocelot, target, reg, ri) __ocelot_target_read_ix(ocelot, target, reg, reg##_RSZ * (ri))
-+#define ocelot_target_read(ocelot, target, reg) __ocelot_target_read_ix(ocelot, target, reg, 0)
+ 	list_for_each_entry(tmp, &block->rules, list) {
+-		++index;
+ 		if (filter->id == tmp->id)
+-			break;
++			return index;
++		index++;
+ 	}
+-	return index;
 +
-+#define ocelot_target_write_ix(ocelot, target, val, reg, gi, ri) __ocelot_target_write_ix(ocelot, target, val, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
-+#define ocelot_target_write_gix(ocelot, target, val, reg, gi) __ocelot_target_write_ix(ocelot, target, val, reg, reg##_GSZ * (gi))
-+#define ocelot_target_write_rix(ocelot, target, val, reg, ri) __ocelot_target_write_ix(ocelot, target, val, reg, reg##_RSZ * (ri))
-+#define ocelot_target_write(ocelot, target, val, reg) __ocelot_target_write_ix(ocelot, target, val, reg, 0)
-+
- /* I/O */
- u32 ocelot_port_readl(struct ocelot_port *port, u32 reg);
- void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg);
-@@ -668,6 +678,10 @@ u32 __ocelot_read_ix(struct ocelot *ocelot, u32 reg, u32 offset);
- void __ocelot_write_ix(struct ocelot *ocelot, u32 val, u32 reg, u32 offset);
- void __ocelot_rmw_ix(struct ocelot *ocelot, u32 val, u32 mask, u32 reg,
- 		     u32 offset);
-+u32 __ocelot_target_read_ix(struct ocelot *ocelot, enum ocelot_target target,
-+			    u32 reg, u32 offset);
-+void __ocelot_target_write_ix(struct ocelot *ocelot, enum ocelot_target target,
-+			      u32 val, u32 reg, u32 offset);
++	return -ENOENT;
+ }
  
- /* Hardware initialization */
- int ocelot_regfields_init(struct ocelot *ocelot,
+ static struct ocelot_vcap_filter*
+@@ -877,6 +878,8 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
+ 
+ 	/* Get the index of the inserted filter */
+ 	index = ocelot_vcap_block_get_filter_index(block, filter);
++	if (index < 0)
++		return index;
+ 
+ 	/* Move down the rules to make place for the new filter */
+ 	for (i = block->count - 1; i > index; i--) {
+@@ -924,6 +927,8 @@ int ocelot_vcap_filter_del(struct ocelot *ocelot,
+ 
+ 	/* Gets index of the filter */
+ 	index = ocelot_vcap_block_get_filter_index(block, filter);
++	if (index < 0)
++		return index;
+ 
+ 	/* Delete filter */
+ 	ocelot_vcap_block_remove_filter(ocelot, block, filter);
+@@ -950,6 +955,9 @@ int ocelot_vcap_filter_stats_update(struct ocelot *ocelot,
+ 	int index;
+ 
+ 	index = ocelot_vcap_block_get_filter_index(block, filter);
++	if (index < 0)
++		return index;
++
+ 	is2_entry_get(ocelot, filter, index);
+ 
+ 	/* After we get the result we need to clear the counters */
 -- 
 2.25.1
 
