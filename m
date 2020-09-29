@@ -2,200 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1D1F27CDB9
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:46:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45E8A27CDC3
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:46:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387414AbgI2MqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 08:46:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:32019 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1733294AbgI2MqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 08:46:06 -0400
-Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601383564;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+g4gavvzkE9a6aqv0X291vvrq93unWSXrCpz4oNLKB8=;
-        b=iOwHuFquA4001/R0rEDuogHArlpaoIRx9bsS5KaLUvo6Hg1iKcAd+hKDCg+jysjos1gmyL
-        vrXlAf5C3uHaJ8Fllcx0iD0ZzAy1ajIL4AG7Cg62LvFb4DndV+GenmCimgYCJppQ3upjzu
-        NqJOkzjDcuzRE98KaBvc6mm2ymN8Uiw=
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
- [209.85.167.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-466-dX9cQLbNPy-JBnAM3Npwjw-1; Tue, 29 Sep 2020 08:46:02 -0400
-X-MC-Unique: dX9cQLbNPy-JBnAM3Npwjw-1
-Received: by mail-oi1-f197.google.com with SMTP id j189so1561287oih.16
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 05:46:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=+g4gavvzkE9a6aqv0X291vvrq93unWSXrCpz4oNLKB8=;
-        b=VNShuCT8+gxuBnKaqldrCPj49IzcDVaRRWas6XErNMcgQODwzw9I4xWPbi80X2SFyg
-         sg4GvYQDcHgY7cEnQw7KnAfS7BByy67qa7HnfuJZ218a3b7+E7rocaEKIIVCPJkU2syY
-         rXiKVQs3SuGtpTCzQzf7qjF56tsTkeMti4oc26kFp/eYsadd1ZUoof3YtN/q17W5vw55
-         ojLm2MLV5j/A8tvhUSTFmc9slsiqvTV2Ehelyd/LXLBpl38lzLFWms1h6Lfr+hQ6P0yq
-         pFGp1rah7G5B7hG70P4tyil63X04NSboPiIKf/8eXEkCbsplkVPrMPHoKMyDPpMehLiF
-         kLaQ==
-X-Gm-Message-State: AOAM533R4mv7oUcBMqdbXJBRSHsdQUWErufIjvgMUWknwNkeAuzxp4nf
-        K0x0dpOHpSNhSHK8dHgpB/287XXOjuirWzVrkL7yM3IouKjh5AjKrnXbtI+BzLkL8RCnD2XcHQp
-        +u4O4CJo78rWDq4ch
-X-Received: by 2002:a05:6830:150a:: with SMTP id k10mr2490489otp.167.1601383560678;
-        Tue, 29 Sep 2020 05:46:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyhZ6bbqG0rcTTHpIecObb0KcP+Dmz9DesXltkItA3D2L762yo+YRChxD3SAPCXz7ANYjPgKg==
-X-Received: by 2002:a05:6830:150a:: with SMTP id k10mr2490476otp.167.1601383560453;
-        Tue, 29 Sep 2020 05:46:00 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id a2sm2871165ooo.26.2020.09.29.05.45.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Sep 2020 05:45:58 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 37FF2183C5F; Tue, 29 Sep 2020 14:45:57 +0200 (CEST)
-Subject: [PATCH bpf-next v10 7/7] selftests: Add selftest for disallowing
- modify_return attachment to freplace
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Date:   Tue, 29 Sep 2020 14:45:57 +0200
-Message-ID: <160138355713.48470.3811074984255709369.stgit@toke.dk>
-In-Reply-To: <160138354947.48470.11523413403103182788.stgit@toke.dk>
-References: <160138354947.48470.11523413403103182788.stgit@toke.dk>
-User-Agent: StGit/0.23
+        id S1733064AbgI2Mqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 08:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387564AbgI2MqO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 08:46:14 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD79C0613D0
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 05:46:14 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kNF1G-0005FO-TB; Tue, 29 Sep 2020 14:46:10 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:feea:fa2e:c0c5:a14c] (unknown [IPv6:2a03:f580:87bc:d400:feea:fa2e:c0c5:a14c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id EBA1656D6DC;
+        Tue, 29 Sep 2020 12:46:08 +0000 (UTC)
+Subject: Re: [PATCH V4 1/3] can: flexcan: initialize all flexcan memory for
+ ECC function
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+References: <20200929203041.29758-1-qiangqing.zhang@nxp.com>
+ <20200929203041.29758-2-qiangqing.zhang@nxp.com>
+ <a48af36d-86ac-8523-a1be-f176b4e14540@pengutronix.de>
+ <DB8PR04MB67955F29A48029246831EA85E6320@DB8PR04MB6795.eurprd04.prod.outlook.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <93f814c5-e782-81dd-36a9-1d6013f791d7@pengutronix.de>
+Date:   Tue, 29 Sep 2020 14:46:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <DB8PR04MB67955F29A48029246831EA85E6320@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="KBbhbBUJItCbfc4qbuCp4H3bvOGAV4sRK"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--KBbhbBUJItCbfc4qbuCp4H3bvOGAV4sRK
+Content-Type: multipart/mixed; boundary="yAckOQoLarytbBhrfWHgGruzz8IEUmE9Z";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>,
+ "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ dl-linux-imx <linux-imx@nxp.com>
+Message-ID: <93f814c5-e782-81dd-36a9-1d6013f791d7@pengutronix.de>
+Subject: Re: [PATCH V4 1/3] can: flexcan: initialize all flexcan memory for
+ ECC function
+References: <20200929203041.29758-1-qiangqing.zhang@nxp.com>
+ <20200929203041.29758-2-qiangqing.zhang@nxp.com>
+ <a48af36d-86ac-8523-a1be-f176b4e14540@pengutronix.de>
+ <DB8PR04MB67955F29A48029246831EA85E6320@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <DB8PR04MB67955F29A48029246831EA85E6320@DB8PR04MB6795.eurprd04.prod.outlook.com>
 
-This adds a selftest that ensures that modify_return tracing programs
-cannot be attached to freplace programs. The security_ prefix is added to
-the freplace program because that would otherwise let it pass the check for
-modify_return.
+--yAckOQoLarytbBhrfWHgGruzz8IEUmE9Z
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       |   56 ++++++++++++++++++++
- .../selftests/bpf/progs/fmod_ret_freplace.c        |   14 +++++
- .../selftests/bpf/progs/freplace_get_constant.c    |    2 -
- 3 files changed, 71 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/progs/fmod_ret_freplace.c
+On 9/29/20 2:38 PM, Joakim Zhang wrote:
+>>>  		return flexcan_set_bittiming_ctrl(dev);  }
+>>>
+>>> +static void flexcan_init_ram(struct net_device *dev) {
+>>> +	struct flexcan_priv *priv =3D netdev_priv(dev);
+>>> +	struct flexcan_regs __iomem *regs =3D priv->regs;
+>>> +	u32 reg_ctrl2;
+>>> +
+>>> +	/* 11.8.3.13 Detection and correction of memory errors:
+>>> +	 * CTRL2[WRMFRZ] grants write access to all memory positions that
+>>> +	 * require initialization, ranging from 0x080 to 0xADF and
+>>> +	 * from 0xF28 to 0xFFF when the CAN FD feature is enabled.
+>>> +	 * The RXMGMASK, RX14MASK, RX15MASK, and RXFGMASK registers
+>> need to
+>>> +	 * be initialized as well. MCR[RFEN] must not be set during memory
+>>> +	 * initialization.
+>>> +	 */
+>>> +	reg_ctrl2 =3D priv->read(&regs->ctrl2);
+>>> +	reg_ctrl2 |=3D FLEXCAN_CTRL2_WRMFRZ;
+>>> +	priv->write(reg_ctrl2, &regs->ctrl2);
+>>> +
+>>> +	memset_io(&regs->mb[0][0], 0,
+>>> +		  (u8 *)&regs->rx_smb1[3] - &regs->mb[0][0] + 0x4);
+>>
+>> why the cast?
+>=20
+> Due to mb is defined as a u8. And the count of memset_io is bytes.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-index 2b94e827b2c5..5c0448910426 100644
---- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-@@ -232,6 +232,60 @@ static void test_func_replace_multi(void)
- 				  prog_name, true, test_second_attach);
- }
- 
-+static void test_fmod_ret_freplace(void)
-+{
-+	struct bpf_object *freplace_obj = NULL, *pkt_obj, *fmod_obj = NULL;
-+	const char *freplace_name = "./freplace_get_constant.o";
-+	const char *fmod_ret_name = "./fmod_ret_freplace.o";
-+	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts);
-+	const char *tgt_name = "./test_pkt_access.o";
-+	struct bpf_link *freplace_link = NULL;
-+	struct bpf_program *prog;
-+	__u32 duration = 0;
-+	int err, pkt_fd;
-+
-+	err = bpf_prog_load(tgt_name, BPF_PROG_TYPE_UNSPEC,
-+			    &pkt_obj, &pkt_fd);
-+	/* the target prog should load fine */
-+	if (CHECK(err, "tgt_prog_load", "file %s err %d errno %d\n",
-+		  tgt_name, err, errno))
-+		return;
-+	opts.attach_prog_fd = pkt_fd;
-+
-+	freplace_obj = bpf_object__open_file(freplace_name, &opts);
-+	if (CHECK(IS_ERR_OR_NULL(freplace_obj), "freplace_obj_open",
-+		  "failed to open %s: %ld\n", freplace_name,
-+		  PTR_ERR(freplace_obj)))
-+		goto out;
-+
-+	err = bpf_object__load(freplace_obj);
-+	if (CHECK(err, "freplace_obj_load", "err %d\n", err))
-+		goto out;
-+
-+	prog = bpf_program__next(NULL, freplace_obj);
-+	freplace_link = bpf_program__attach_trace(prog);
-+	if (CHECK(IS_ERR(freplace_link), "freplace_attach_trace", "failed to link\n"))
-+		goto out;
-+
-+	opts.attach_prog_fd = bpf_program__fd(prog);
-+	fmod_obj = bpf_object__open_file(fmod_ret_name, &opts);
-+	if (CHECK(IS_ERR_OR_NULL(fmod_obj), "fmod_obj_open",
-+		  "failed to open %s: %ld\n", fmod_ret_name,
-+		  PTR_ERR(fmod_obj)))
-+		goto out;
-+
-+	err = bpf_object__load(fmod_obj);
-+	if (CHECK(!err, "fmod_obj_load", "loading fmod_ret should fail\n"))
-+		goto out;
-+
-+out:
-+	bpf_link__destroy(freplace_link);
-+	bpf_object__close(freplace_obj);
-+	bpf_object__close(fmod_obj);
-+	bpf_object__close(pkt_obj);
-+}
-+
-+
- static void test_func_sockmap_update(void)
- {
- 	const char *prog_name[] = {
-@@ -314,4 +368,6 @@ void test_fexit_bpf2bpf(void)
- 		test_func_map_prog_compatibility();
- 	if (test__start_subtest("func_replace_multi"))
- 		test_func_replace_multi();
-+	if (test__start_subtest("fmod_ret_freplace"))
-+		test_fmod_ret_freplace();
- }
-diff --git a/tools/testing/selftests/bpf/progs/fmod_ret_freplace.c b/tools/testing/selftests/bpf/progs/fmod_ret_freplace.c
-new file mode 100644
-index 000000000000..c8943ccee6c0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/fmod_ret_freplace.c
-@@ -0,0 +1,14 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+volatile __u64 test_fmod_ret = 0;
-+SEC("fmod_ret/security_new_get_constant")
-+int BPF_PROG(fmod_ret_test, long val, int ret)
-+{
-+	test_fmod_ret = 1;
-+	return 120;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/freplace_get_constant.c b/tools/testing/selftests/bpf/progs/freplace_get_constant.c
-index 8f0ecf94e533..705e4b64dfc2 100644
---- a/tools/testing/selftests/bpf/progs/freplace_get_constant.c
-+++ b/tools/testing/selftests/bpf/progs/freplace_get_constant.c
-@@ -5,7 +5,7 @@
- 
- volatile __u64 test_get_constant = 0;
- SEC("freplace/get_constant")
--int new_get_constant(long val)
-+int security_new_get_constant(long val)
- {
- 	if (val != 123)
- 		return 0;
+right. this is why you don't need the 2nd cast.
 
+Marc
+
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--yAckOQoLarytbBhrfWHgGruzz8IEUmE9Z--
+
+--KBbhbBUJItCbfc4qbuCp4H3bvOGAV4sRK
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9zLI0ACgkQqclaivrt
+76k0sAf8DIyL1r7JAVBnoYfIDiShQ6Da3d/20UgxNQjPhw+qm1djeb6sI0TFWSc4
+/XEBk3zaBZzVnP8iAc/i7qDcHuIlyq9RPv2CKZhKiERhm15TAx2PMXko8nqGDIbi
+vC8x4vFtkPEGldtawHB89Xr7afG6mmX0OTOoNuncUA7RvQibiBi4bUPHE9R+s+At
+/KYdrjJ2DEF3uP6vnS5D40uZ1q4fngye8N/UT7gX3Fmx7zRdsRVC955DFkXXn1Y8
+ShvkQCA3rxN4DxGVdwKLTq3XGRgUa8LBcVlCbwMlgQtKRqj8DnMTYdjMcL24ZEfv
+k1eJwbgC9L4NrkObJoI9M84bh5Hi7A==
+=MHjp
+-----END PGP SIGNATURE-----
+
+--KBbhbBUJItCbfc4qbuCp4H3bvOGAV4sRK--
