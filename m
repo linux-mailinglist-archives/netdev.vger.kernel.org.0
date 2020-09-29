@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CFCD27D7B7
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3D5327D7B6
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:10:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729120AbgI2UKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:10:12 -0400
-Received: from mout.gmx.net ([212.227.17.21]:35797 "EHLO mout.gmx.net"
+        id S1729111AbgI2UKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:10:11 -0400
+Received: from mout.gmx.net ([212.227.17.21]:48447 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728362AbgI2UKK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729104AbgI2UKK (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 29 Sep 2020 16:10:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1601410205;
-        bh=G6HceT0It0VlXbkDsImh0/RDdHE+KDDap8TVy5//N4o=;
+        s=badeba3b8450; t=1601410206;
+        bh=BYVGwhdYWRwPgIgX6pe4TbIptFotKQQncbHF2lSJXfE=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=dr7ImIkmx8nsv+XPfGIyWN0GxMqnWROpgJjxQJoHIMzdLDaur3BeSRsacm2jAOJQr
-         fjky65m8whlw/WCPopzC/yz9jO8SGl0efHzRcm5/gx5bgL3obK1/HWBR93o4S7TbHv
-         BdiBZs8Z/UEIqLUbEAH5h+EBE9ESknRH+PpFPObQ=
+        b=PNMkN0WG7upY332AU2/z8uj7/JA3Z2P+GGRfP8L4jMwKQ+EaZasKniy2zQ0FAg9fB
+         bHFPPJar5N9yyj5gyLTjih6juI9WtQ0v8duGc/EuBWl4mwL0sJukePAGdKiZwop0gb
+         o2wjOZ9FKabqF4XXDsHi2C3T/TeUVTY8R7tqlQD0=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from PC1310.gateway.sonic.net ([173.228.6.223]) by mail.gmx.com
  (mrgmx104 [212.227.17.174]) with ESMTPSA (Nemesis) id
- 1N8XU1-1kRQXU0Idt-014X64; Tue, 29 Sep 2020 22:10:05 +0200
+ 1MAONX-1kFyUv0uDb-00BsBC; Tue, 29 Sep 2020 22:10:06 +0200
 From:   Kevin Brace <kevinbrace@gmx.com>
 To:     netdev@vger.kernel.org
 Cc:     Kevin Brace <kevinbrace@bracecomputerlab.com>
-Subject: [PATCH net v2 2/4] via-rhine: VTunknown1 device is really VT8251 South Bridge
-Date:   Tue, 29 Sep 2020 13:09:41 -0700
-Message-Id: <20200929200943.3364-3-kevinbrace@gmx.com>
+Subject: [PATCH net v2 3/4] via-rhine: Eliminate version information
+Date:   Tue, 29 Sep 2020 13:09:42 -0700
+Message-Id: <20200929200943.3364-4-kevinbrace@gmx.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200929200943.3364-1-kevinbrace@gmx.com>
 References: <20200929200943.3364-1-kevinbrace@gmx.com>
-X-Provags-ID: V03:K1:GW05DPbECrhikbB6dMRNw5XO/0scZtqzrPCR/tViZCEwC2EiZ8G
- oqec+Qc8MVytU2dOgHWBbe//WuTM9wF3oK4Lidb72KtRrzGMn2hD9YdV7fbX9myrQEtlVxd
- i31CnlPhuHhMkJrd1R2q5q7YveR5pgiHzZ1jm3foRvkVhl5854sUULL66pS30eajfsEuZL6
- aVoJ03hhdly3/0y2enbuA==
+X-Provags-ID: V03:K1:GfygOfKfz/jty/7+rPxFj9bGk4HrKM1zkqE0WGxrExSQsZ5LbMi
+ 6ZvqoLguKBV2qnkPWtNBLVXMVGtOB9YtvUTvgJf9VJTjHY/pMiea8gBap+/OuuUCi0g2NOC
+ CjV7VqaALUUKjfbYZCopDVkEG6S4H1a3GeXAoyOj6dgTOI6ak1pJ7Yc+RDfCfbpjSrxBjzW
+ mi4DG2IKX5Ugv9S5K4m3Q==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:lNVK4CllrZA=:bnfIa5PgiSiKUXaNNYT3Uj
- OkZkEt1yYoSTL0CC17/+Cm8KtHHN4fI6a8KIIt2BUq4nNAyENjpeY8sT5dUWo7lEM4be325Fo
- 4PqlwdlA8THoTTe318EqTeJXmWNX0IolS/WwYLucUvCQlMRkAvl4wC6Gs5ax1X+vFZWOtkIF9
- U6t7e/jBuhMksp0ZabNxnn4jTUecKBASxqu89TnE6B+O6c3gLOvCyktvpcs6qcFmBfjZZnxFP
- zu5bfe3mmhvXKXbIYw0YQZ2cpVMCXcdtwi26otXygaqdK4mqb7fpzhhW1+3iGD1Yn8PmPwe+J
- NvtWCbjvSvgvlcTBiXWlTnk8K9mZi8faGXDpQbcWFIKwCckxpEkwmNCB6oBfDqnTTelubyJa6
- rk4K9Y+vB+XtnDno6UokTcFk8QDVOKo58MUtpxTxY1DCAF/MypeEFD625ab4j24IcXWCPsClq
- GkH9KgLzszICG7yuEul3O98rcNnvR2KwaCOa7AZVvWszYdBhjqDtFZi270g5yuWC7I+4FsICH
- VMZqr3l24s3AoahQj2QuG1iR3xe2HTCxzVhi3zwpttl3IGee9qW3zuT79IZ7DmME/QTHpuF+E
- qiajkakMhS0Sbw7AbHG12oLRQ1xZrKCTEjephSWUSxR+JF+yMwwWr+Ge3wTL+9u9nz2zRQ010
- YypmHIoQhkjNC+CbUmgUjiIFpioKJAGuAMUfIC1Lry9ka0H95xfw8P0r6OcnH8/jyH7P3ujw7
- sHFYIevQ5//wrkjlptCg4p4PfJmXizaoS/9aVc4c3gh6kjRiFBq5zZMB6YQw4IaI+H3PJFNNs
- IZGi1nv70doszMfGwGkHj8GuoiZwpBAsaveZ51UzamooLO7pI32j5dlWfthG91CXAz7s3A9Cf
- CS+W5NYXV0BUXKG8P3wSe7pvUbnLSj2CyZxEemxmaIZwXA4CY61Z48Qg5lfzZ3T+2l2Qdhrj5
- EUOlGo67NxxQoRp1+tCZUwlDUaPHjcOfyiVH7cnP/peliuEiyP8DFj3wzPe2cFFPpUDJ6D2PP
- FBxp+jQpDIEiJvSJQZ0HKPYR8jMlYt7F4xAOuGiFsrf1mbr4lSev5gTWodWKobl3Z63toDzuE
- ndLOMKJ9+TJlwdCmcltzbYdwnZcqKDnHglXaydNrdv5/nkhvJoiTUX2CLy90rdc1V3cVm0qbU
- hwA4rmxojfJyFm8d5+9Qy3JRdIodC+CsRiOXNxrC4ruct40JjdmsvFYlkKsjjlzj/RXXrddeP
- StLYQnLcsBBKPUnYWadVR4+YSxEW2LNlsCtSnsw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:CitgprZXY6Q=:2YxQqwwKquEupqpNf/1jkA
+ 6vhuIygy37PXgjStu31/t6WZCISRO8o/JeS/SpUkXyInSjdYlTK1H4hXXgWuMZffmbz5LTRcP
+ GVdJPLJ6JDAm4rZKNFTomKfKYngImtumCINwzd2eRUHDWYj8OVH5XyusX8iAKfZxyOPXkzs5Z
+ nE1aaqZnbgXJbS1Wv00IAQN3gqQyqrIoYs8priLKzRxNLRI6RDs0xkhGmqawTkvnCSn7FQKCG
+ 6/dtnpI36dW5KbLBCrj2YGWc8yBsNVWLGHuJGu93RESlJ55hGmh/1bKNeRkOaMgxTCvuWMhAU
+ KFYW5WpZmWYphXlaFug7Ham0KDX/du3vJqVSjP2vaF/VxvaMR8FvSWYKmoI3jNlCKd3o9f8O/
+ ol1OolQswYEtqRb0/DLC8S6KKQ3NP2RyOr86SkqspLF6RIi8woVvWiZP4b6ifZsBVPPrTaVSV
+ L6p2B6FPHaKyQzD5tR6h6XYd/1awMPoOK0uccO5IqGhQpZlZOGteUleHwdhT4syiJnSXWV935
+ 2NpaWDPZLsE+E/AqRy1e2WcddH/C4B5yGeryHt+3Yyu3oo/86maFpSGmLv2CF4/zu6Hyf5Nkz
+ zxt3vH4kjEkYQmguHNJuppf+buEb9XD8EOOmRUg9m78f8+2qiOweTnYxxF8botDBFRV8rTl0m
+ i+bHvKdUBlzKPKvWq0Dwv1BKJPtPtKl/1QZ8VEHKwQ6Hxp1GWUhh4knR18rlNVtUcK7xqYWRb
+ +/3m01Coh9XrpPak38RfjR//Yy7VyjuRU1pAWWzYrKa3FPnq71iP51PqRK612pEx/TVdM/MJP
+ KR78pO8G+/G/2yqx7XNBplC6c17cLzClLFOLhpgwuOEC3AFxuZHVVVYOu75qpmwg8Ab8PXFUV
+ vJHwIJFD2Id2PLNDk8ywXz84vvY6z8P91Nh12yJFzV68pAeuRlQS4e0f6kHZytg3wkFCiHi4W
+ XcyxLbZBcnG97SuiQMtdnnhI2RrIn3sRk5cHPOBk5tRAbhjwoqzF0MII/vMzjtQKJN1Sbfvxn
+ lEddyl6QX9ubT4JE2uZAGsObapKg0At3QLAYTBMU8t/00DvirrdicJVInyplaHdvXSztvRhyg
+ mAfh2iIB73H5O2/FZeR7p82OKOxnPBrbPQkzS92pLxbrfxyBTR7lKE1YN9EAjusx25t6YucWR
+ A5GuVY7MkJfaH8okwYcWJrUt7ty1XA1FxYmdvUBwqBovzaLFFBOjYCeQoZKqjG7qhr495227v
+ KdkjfdF1uIz3tB5PkX1G8AqbYmO+awdOmxfAgYQ==
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -62,29 +62,69 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kevin Brace <kevinbrace@bracecomputerlab.com>
 
-The VIA Technologies VT8251 South Bridge's integrated Rhine-II
-Ethernet MAC comes has a PCI revision value of 0x7c.  This was
-verified on ASUS P5V800-VM mainboard.
-
 Signed-off-by: Kevin Brace <kevinbrace@bracecomputerlab.com>
 =2D--
- drivers/net/ethernet/via/via-rhine.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/via/via-rhine.c | 15 ---------------
+ 1 file changed, 15 deletions(-)
 
 diff --git a/drivers/net/ethernet/via/via-rhine.c b/drivers/net/ethernet/v=
 ia/via-rhine.c
-index a20492da3407..d3a2be2e75d0 100644
+index d3a2be2e75d0..8e8cfe110d95 100644
 =2D-- a/drivers/net/ethernet/via/via-rhine.c
 +++ b/drivers/net/ethernet/via/via-rhine.c
-@@ -243,7 +243,7 @@ enum rhine_revs {
- 	VT8233		=3D 0x60,	/* Integrated MAC */
- 	VT8235		=3D 0x74,	/* Integrated MAC */
- 	VT8237		=3D 0x78,	/* Integrated MAC */
--	VTunknown1	=3D 0x7C,
-+	VT8251		=3D 0x7C,	/* Integrated MAC */
- 	VT6105		=3D 0x80,
- 	VT6105_B0	=3D 0x83,
- 	VT6105L		=3D 0x8A,
+@@ -32,8 +32,6 @@
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+ #define DRV_NAME	"via-rhine"
+-#define DRV_VERSION	"1.5.1"
+-#define DRV_RELDATE	"2010-10-09"
+
+ #include <linux/types.h>
+
+@@ -117,10 +115,6 @@ static const int multicast_filter_limit =3D 32;
+ #include <linux/uaccess.h>
+ #include <linux/dmi.h>
+
+-/* These identify the driver base version and may not be removed. */
+-static const char version[] =3D
+-	"v1.10-LK" DRV_VERSION " " DRV_RELDATE " Written by Donald Becker";
+-
+ MODULE_AUTHOR("Donald Becker <becker@scyld.com>");
+ MODULE_DESCRIPTION("VIA Rhine PCI Fast Ethernet driver");
+ MODULE_LICENSE("GPL");
+@@ -1051,11 +1045,6 @@ static int rhine_init_one_pci(struct pci_dev *pdev,
+ 	u32 quirks =3D 0;
+ #endif
+
+-/* when built into the kernel, we only print version if device is found *=
+/
+-#ifndef MODULE
+-	pr_info_once("%s\n", version);
+-#endif
+-
+ 	rc =3D pci_enable_device(pdev);
+ 	if (rc)
+ 		goto err_out;
+@@ -2296,7 +2285,6 @@ static void netdev_get_drvinfo(struct net_device *de=
+v, struct ethtool_drvinfo *i
+ 	struct device *hwdev =3D dev->dev.parent;
+
+ 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
+-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
+ 	strlcpy(info->bus_info, dev_name(hwdev), sizeof(info->bus_info));
+ }
+
+@@ -2618,9 +2606,6 @@ static int __init rhine_init(void)
+ 	int ret_pci, ret_platform;
+
+ /* when a module, this is printed whether or not devices are found in pro=
+be */
+-#ifdef MODULE
+-	pr_info("%s\n", version);
+-#endif
+ 	if (dmi_check_system(rhine_dmi_table)) {
+ 		/* these BIOSes fail at PXE boot if chip is in D3 */
+ 		avoid_D3 =3D true;
 =2D-
 2.17.1
 
