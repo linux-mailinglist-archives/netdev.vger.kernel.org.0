@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2DB527BF50
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:26:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1792E27BF53
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:26:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727774AbgI2I0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 04:26:08 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:51781 "EHLO
+        id S1727783AbgI2I0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 04:26:15 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:42853 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727753AbgI2I0H (ORCPT
+        by vger.kernel.org with ESMTP id S1727736AbgI2I0H (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:26:07 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id F39E75807A2;
-        Tue, 29 Sep 2020 04:16:56 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 9077C5807A4;
+        Tue, 29 Sep 2020 04:16:59 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 29 Sep 2020 04:16:57 -0400
+  by compute3.internal (MEProxy); Tue, 29 Sep 2020 04:16:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=sRmx3hz3I+ujiBqBkrLYXJvjYEjlp9OGVjGB3V3zx2w=; b=LEhNfF52
-        JcnMJYEvdN0eTpHYDxlpD+r030F/UhyjrMuDY9qmb32QzolkuLJwlPKIiU+0uEff
-        XtTLyiT9Q9Rhzqj/vcrdyoatfysl7w5qT6OiBjQe/XJPDaesGqyNbiuZf8cXVINI
-        GD2Y/8L5xwe8QyQXMb7sTZn/xMtp6Ax0i7bUfkwk96w3x6jWXPdY+QIWd0ALBGY8
-        oHlrC3AEzhaZH/YSmfG/Bepv89+pM1EIW9LIf1b39iiJmRhfZFqppW2rFQ1j60IX
-        oTsJZIpogD5yY7GRfqs9xv8yIbKhxiaX5Pf2n/9ZhsgSQE5skhHIKoVb1+hOSAip
-        s0P8fGcHCyfCxA==
-X-ME-Sender: <xms:eO1yXzUSvBSpgIpeaMdY5d5d_oOZDvfPYwtF5zSkOlVSEGyUS9_Lkw>
-    <xme:eO1yX7l6QdM8jEMiHzjewgC31-5tQ60tXAt0yY_Cs9DADLdEPTdz_bdxH_VwMJyWq
-    0Jyv9jGAVwpmLc>
+        fm3; bh=QoINI29ECUgOwi4u+OWA9z1Jr+7hBl0nsGW70fNgRUE=; b=QlyS024s
+        HrJvs8omCmq8TJtyDw5lR2DxFrf3b2cpARqMzLgplJPCs9lVgW0LbWbxrk9XM/fM
+        sS1w3PQeCOvUp/Q5cnUS7/K3JkcgdMlKQ4SWWEAPnxAiKhucsrFImMFzVp+Cw/K7
+        L/ydR+qxQhhyTtlZcqxaszx813VET2/CkpouwsA+k9qMqq/ngjTVaf9aFCrumIiL
+        fzB9PTpMhLzcG2Ys3YP0ngZb2qWBQiy6PUnYpxS3PDa6C/BUr47wGl1GkZ9xybVo
+        Gb1B2xTgrX5IaYdZHohI1cZXK5DKuhfqnsD9bIdZeKMolMalrqF+b8pa5reyuze3
+        mxWWhIIQBcBYzA==
+X-ME-Sender: <xms:e-1yX30hKZA4WABaq8JC7y3LNMs5oS5V0HVb86jTOvDzkf_-Ut1BKA>
+    <xme:e-1yX2Gsy-IxS0e5hv2GDPYGqmjfzFRYjIiQQDf4kGGJ8D81mB-mBBFbBGEQbodE9
+    6NdK0LWTAa4KWE>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdekgddtvdcutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -38,22 +38,22 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdekgddtvdcutefuodetggdote
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdefjedrudegkeen
     ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:eO1yX_bOD0-1aLTJgZoRuNxMk_-iwWSk1FV_EfA0LZK1AjALouTywA>
-    <xmx:eO1yX-WOV0ELTN-qHX0YHrTVAo8d25zTLu-YjL4_4rrW8FacSSAftw>
-    <xmx:eO1yX9lZCQoUvq8REz9Lmr9_V9UPs0BRUiQFg2BEoNB6z232bde7ng>
-    <xmx:eO1yXzUl0xSyg_qLEILdxFynGvkpf1Hw8Sag5RjCO6Rm-6f4oAwOLg>
+X-ME-Proxy: <xmx:e-1yX37jY4wTnDBwNAkHTm0x2RNf3ACFLJ6zyfqtDbcOiyWTtc6x1Q>
+    <xmx:e-1yX8189sUYnfbbZ0jA15R40a97NIF5X-XgkiRx855VE5OvP6mx9A>
+    <xmx:e-1yX6EVU82WW2F5-Z9cXhkCl2XPtHXD6GHdMgDNl0ISeWiH8cOgQQ>
+    <xmx:e-1yX90QbZsigs8qAH0_Ix8GMlqxc5FUGLl2yBN8hHgpm_m9hPP_yw>
 Received: from shredder.mtl.com (igld-84-229-37-148.inter.net.il [84.229.37.148])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 22DD9328005E;
-        Tue, 29 Sep 2020 04:16:53 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1B725328005A;
+        Tue, 29 Sep 2020 04:16:56 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, nhorman@tuxdriver.com,
         jiri@nvidia.com, roopa@nvidia.com, aroulin@nvidia.com,
         ayal@nvidia.com, masahiroy@kernel.org, mlxsw@nvidia.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 1/7] devlink: Add a tracepoint for trap reports
-Date:   Tue, 29 Sep 2020 11:15:50 +0300
-Message-Id: <20200929081556.1634838-2-idosch@idosch.org>
+Subject: [PATCH net-next 2/7] drop_monitor: Prepare probe functions for devlink tracepoint
+Date:   Tue, 29 Sep 2020 11:15:51 +0300
+Message-Id: <20200929081556.1634838-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200929081556.1634838-1-idosch@idosch.org>
 References: <20200929081556.1634838-1-idosch@idosch.org>
@@ -65,142 +65,214 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Add a tracepoint for trap reports so that drop monitor could register
-its probe on it. Use trace_devlink_trap_report_enabled() to avoid
-wasting cycles setting the trap metadata if the tracepoint is not
-enabled.
+Drop monitor supports two alerting modes: Summary and packet. Prepare a
+probe function for each, so that they could be later registered on the
+devlink tracepoint by calling register_trace_devlink_trap_report(),
+based on the configured alerting mode.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- include/net/devlink.h          | 14 +++++++++++++
- include/trace/events/devlink.h | 37 ++++++++++++++++++++++++++++++++++
- net/core/devlink.c             | 25 +++++++++++++++++++++++
- 3 files changed, 76 insertions(+)
+ net/core/drop_monitor.c | 146 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 146 insertions(+)
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 7339bf9ba6b4..1014294ba6a0 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -624,6 +624,20 @@ struct devlink_health_reporter_ops {
- 		    struct netlink_ext_ack *extack);
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 9704522b0872..03aba582c0b9 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -30,6 +30,7 @@
+ #include <net/genetlink.h>
+ #include <net/netevent.h>
+ #include <net/flow_offload.h>
++#include <net/devlink.h>
+ 
+ #include <trace/events/skb.h>
+ #include <trace/events/napi.h>
+@@ -116,6 +117,9 @@ struct net_dm_alert_ops {
+ 	void (*hw_work_item_func)(struct work_struct *work);
+ 	void (*hw_probe)(struct sk_buff *skb,
+ 			 const struct net_dm_hw_metadata *hw_metadata);
++	void (*hw_trap_probe)(void *ignore, const struct devlink *devlink,
++			      struct sk_buff *skb,
++			      const struct devlink_trap_metadata *metadata);
  };
  
-+/**
-+ * struct devlink_trap_metadata - Packet trap metadata.
-+ * @trap_name: Trap name.
-+ * @trap_group_name: Trap group name.
-+ * @input_dev: Input netdevice.
-+ * @fa_cookie: Flow action user cookie.
-+ */
-+struct devlink_trap_metadata {
-+	const char *trap_name;
-+	const char *trap_group_name;
-+	struct net_device *input_dev;
-+	const struct flow_action_cookie *fa_cookie;
-+};
-+
- /**
-  * struct devlink_trap_policer - Immutable packet trap policer attributes.
-  * @id: Policer identifier.
-diff --git a/include/trace/events/devlink.h b/include/trace/events/devlink.h
-index 6f60a78d9a7e..44d8e2981065 100644
---- a/include/trace/events/devlink.h
-+++ b/include/trace/events/devlink.h
-@@ -171,6 +171,43 @@ TRACE_EVENT(devlink_health_reporter_state_update,
- 		  __entry->new_state)
- );
- 
-+/*
-+ * Tracepoint for devlink packet trap:
-+ */
-+TRACE_EVENT(devlink_trap_report,
-+	TP_PROTO(const struct devlink *devlink, struct sk_buff *skb,
-+		 const struct devlink_trap_metadata *metadata),
-+
-+	TP_ARGS(devlink, skb, metadata),
-+
-+	TP_STRUCT__entry(
-+		__string(bus_name, devlink->dev->bus->name)
-+		__string(dev_name, dev_name(devlink->dev))
-+		__string(driver_name, devlink->dev->driver->name)
-+		__string(trap_name, metadata->trap_name)
-+		__string(trap_group_name, metadata->trap_group_name)
-+		__dynamic_array(char, input_dev_name, IFNAMSIZ)
-+	),
-+
-+	TP_fast_assign(
-+		struct net_device *input_dev = metadata->input_dev;
-+
-+		__assign_str(bus_name, devlink->dev->bus->name);
-+		__assign_str(dev_name, dev_name(devlink->dev));
-+		__assign_str(driver_name, devlink->dev->driver->name);
-+		__assign_str(trap_name, metadata->trap_name);
-+		__assign_str(trap_group_name, metadata->trap_group_name);
-+		__assign_str(input_dev_name,
-+			     (input_dev ? input_dev->name : "NULL"));
-+	),
-+
-+	TP_printk("bus_name=%s dev_name=%s driver_name=%s trap_name=%s "
-+		  "trap_group_name=%s input_dev_name=%s", __get_str(bus_name),
-+		  __get_str(dev_name), __get_str(driver_name),
-+		  __get_str(trap_name), __get_str(trap_group_name),
-+		  __get_str(input_dev_name))
-+);
-+
- #endif /* _TRACE_DEVLINK_H */
- 
- /* This part must be outside protection */
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 7a38f9e25922..c0f300507c37 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -84,6 +84,7 @@ EXPORT_SYMBOL(devlink_dpipe_header_ipv6);
- 
- EXPORT_TRACEPOINT_SYMBOL_GPL(devlink_hwmsg);
- EXPORT_TRACEPOINT_SYMBOL_GPL(devlink_hwerr);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(devlink_trap_report);
- 
- static const struct nla_policy devlink_function_nl_policy[DEVLINK_PORT_FUNCTION_ATTR_MAX + 1] = {
- 	[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR] = { .type = NLA_BINARY },
-@@ -9278,6 +9279,22 @@ devlink_trap_report_metadata_fill(struct net_dm_hw_metadata *hw_metadata,
- 	spin_unlock(&in_devlink_port->type_lock);
+ struct net_dm_skb_cb {
+@@ -474,12 +478,57 @@ net_dm_hw_summary_probe(struct sk_buff *skb,
+ 	spin_unlock_irqrestore(&hw_data->lock, flags);
  }
  
 +static void
-+devlink_trap_report_metadata_set(struct devlink_trap_metadata *metadata,
-+				 const struct devlink_trap_item *trap_item,
-+				 struct devlink_port *in_devlink_port,
-+				 const struct flow_action_cookie *fa_cookie)
++net_dm_hw_trap_summary_probe(void *ignore, const struct devlink *devlink,
++			     struct sk_buff *skb,
++			     const struct devlink_trap_metadata *metadata)
 +{
-+	metadata->trap_name = trap_item->trap->name;
-+	metadata->trap_group_name = trap_item->group_item->group->name;
-+	metadata->fa_cookie = fa_cookie;
++	struct net_dm_hw_entries *hw_entries;
++	struct net_dm_hw_entry *hw_entry;
++	struct per_cpu_dm_data *hw_data;
++	unsigned long flags;
++	int i;
 +
-+	spin_lock(&in_devlink_port->type_lock);
-+	if (in_devlink_port->type == DEVLINK_PORT_TYPE_ETH)
-+		metadata->input_dev = in_devlink_port->type_dev;
-+	spin_unlock(&in_devlink_port->type_lock);
++	hw_data = this_cpu_ptr(&dm_hw_cpu_data);
++	spin_lock_irqsave(&hw_data->lock, flags);
++	hw_entries = hw_data->hw_entries;
++
++	if (!hw_entries)
++		goto out;
++
++	for (i = 0; i < hw_entries->num_entries; i++) {
++		hw_entry = &hw_entries->entries[i];
++		if (!strncmp(hw_entry->trap_name, metadata->trap_name,
++			     NET_DM_MAX_HW_TRAP_NAME_LEN - 1)) {
++			hw_entry->count++;
++			goto out;
++		}
++	}
++	if (WARN_ON_ONCE(hw_entries->num_entries == dm_hit_limit))
++		goto out;
++
++	hw_entry = &hw_entries->entries[hw_entries->num_entries];
++	strlcpy(hw_entry->trap_name, metadata->trap_name,
++		NET_DM_MAX_HW_TRAP_NAME_LEN - 1);
++	hw_entry->count = 1;
++	hw_entries->num_entries++;
++
++	if (!timer_pending(&hw_data->send_timer)) {
++		hw_data->send_timer.expires = jiffies + dm_delay * HZ;
++		add_timer(&hw_data->send_timer);
++	}
++
++out:
++	spin_unlock_irqrestore(&hw_data->lock, flags);
 +}
 +
- /**
-  * devlink_trap_report - Report trapped packet to drop monitor.
-  * @devlink: devlink.
-@@ -9307,6 +9324,14 @@ void devlink_trap_report(struct devlink *devlink, struct sk_buff *skb,
- 	devlink_trap_report_metadata_fill(&hw_metadata, trap_item,
- 					  in_devlink_port, fa_cookie);
- 	net_dm_hw_report(skb, &hw_metadata);
-+
-+	if (trace_devlink_trap_report_enabled()) {
-+		struct devlink_trap_metadata metadata = {};
-+
-+		devlink_trap_report_metadata_set(&metadata, trap_item,
-+						 in_devlink_port, fa_cookie);
-+		trace_devlink_trap_report(devlink, skb, &metadata);
-+	}
- }
- EXPORT_SYMBOL_GPL(devlink_trap_report);
+ static const struct net_dm_alert_ops net_dm_alert_summary_ops = {
+ 	.kfree_skb_probe	= trace_kfree_skb_hit,
+ 	.napi_poll_probe	= trace_napi_poll_hit,
+ 	.work_item_func		= send_dm_alert,
+ 	.hw_work_item_func	= net_dm_hw_summary_work,
+ 	.hw_probe		= net_dm_hw_summary_probe,
++	.hw_trap_probe		= net_dm_hw_trap_summary_probe,
+ };
  
+ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+@@ -858,6 +907,54 @@ net_dm_hw_metadata_clone(const struct net_dm_hw_metadata *hw_metadata)
+ 	return NULL;
+ }
+ 
++static struct net_dm_hw_metadata *
++net_dm_hw_metadata_copy(const struct devlink_trap_metadata *metadata)
++{
++	const struct flow_action_cookie *fa_cookie;
++	struct net_dm_hw_metadata *hw_metadata;
++	const char *trap_group_name;
++	const char *trap_name;
++
++	hw_metadata = kzalloc(sizeof(*hw_metadata), GFP_ATOMIC);
++	if (!hw_metadata)
++		return NULL;
++
++	trap_group_name = kstrdup(metadata->trap_group_name, GFP_ATOMIC);
++	if (!trap_group_name)
++		goto free_hw_metadata;
++	hw_metadata->trap_group_name = trap_group_name;
++
++	trap_name = kstrdup(metadata->trap_name, GFP_ATOMIC);
++	if (!trap_name)
++		goto free_trap_group;
++	hw_metadata->trap_name = trap_name;
++
++	if (metadata->fa_cookie) {
++		size_t cookie_size = sizeof(*fa_cookie) +
++				     metadata->fa_cookie->cookie_len;
++
++		fa_cookie = kmemdup(metadata->fa_cookie, cookie_size,
++				    GFP_ATOMIC);
++		if (!fa_cookie)
++			goto free_trap_name;
++		hw_metadata->fa_cookie = fa_cookie;
++	}
++
++	hw_metadata->input_dev = metadata->input_dev;
++	if (hw_metadata->input_dev)
++		dev_hold(hw_metadata->input_dev);
++
++	return hw_metadata;
++
++free_trap_name:
++	kfree(trap_name);
++free_trap_group:
++	kfree(trap_group_name);
++free_hw_metadata:
++	kfree(hw_metadata);
++	return NULL;
++}
++
+ static void
+ net_dm_hw_metadata_free(const struct net_dm_hw_metadata *hw_metadata)
+ {
+@@ -970,12 +1067,61 @@ net_dm_hw_packet_probe(struct sk_buff *skb,
+ 	consume_skb(nskb);
+ }
+ 
++static void
++net_dm_hw_trap_packet_probe(void *ignore, const struct devlink *devlink,
++			    struct sk_buff *skb,
++			    const struct devlink_trap_metadata *metadata)
++{
++	struct net_dm_hw_metadata *n_hw_metadata;
++	ktime_t tstamp = ktime_get_real();
++	struct per_cpu_dm_data *hw_data;
++	struct sk_buff *nskb;
++	unsigned long flags;
++
++	if (!skb_mac_header_was_set(skb))
++		return;
++
++	nskb = skb_clone(skb, GFP_ATOMIC);
++	if (!nskb)
++		return;
++
++	n_hw_metadata = net_dm_hw_metadata_copy(metadata);
++	if (!n_hw_metadata)
++		goto free;
++
++	NET_DM_SKB_CB(nskb)->hw_metadata = n_hw_metadata;
++	nskb->tstamp = tstamp;
++
++	hw_data = this_cpu_ptr(&dm_hw_cpu_data);
++
++	spin_lock_irqsave(&hw_data->drop_queue.lock, flags);
++	if (skb_queue_len(&hw_data->drop_queue) < net_dm_queue_len)
++		__skb_queue_tail(&hw_data->drop_queue, nskb);
++	else
++		goto unlock_free;
++	spin_unlock_irqrestore(&hw_data->drop_queue.lock, flags);
++
++	schedule_work(&hw_data->dm_alert_work);
++
++	return;
++
++unlock_free:
++	spin_unlock_irqrestore(&hw_data->drop_queue.lock, flags);
++	u64_stats_update_begin(&hw_data->stats.syncp);
++	hw_data->stats.dropped++;
++	u64_stats_update_end(&hw_data->stats.syncp);
++	net_dm_hw_metadata_free(n_hw_metadata);
++free:
++	consume_skb(nskb);
++}
++
+ static const struct net_dm_alert_ops net_dm_alert_packet_ops = {
+ 	.kfree_skb_probe	= net_dm_packet_trace_kfree_skb_hit,
+ 	.napi_poll_probe	= net_dm_packet_trace_napi_poll_hit,
+ 	.work_item_func		= net_dm_packet_work,
+ 	.hw_work_item_func	= net_dm_hw_packet_work,
+ 	.hw_probe		= net_dm_hw_packet_probe,
++	.hw_trap_probe		= net_dm_hw_trap_packet_probe,
+ };
+ 
+ static const struct net_dm_alert_ops *net_dm_alert_ops_arr[] = {
 -- 
 2.26.2
 
