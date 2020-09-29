@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C824427BF4E
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:26:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C46027BF51
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:26:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727759AbgI2I0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 04:26:07 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:45115 "EHLO
+        id S1727780AbgI2I0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 04:26:11 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:35875 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727731AbgI2I0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:26:06 -0400
+        by vger.kernel.org with ESMTP id S1727746AbgI2I0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:26:07 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A77715807D3;
-        Tue, 29 Sep 2020 04:17:08 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id F1D895807D7;
+        Tue, 29 Sep 2020 04:17:10 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 29 Sep 2020 04:17:08 -0400
+  by compute3.internal (MEProxy); Tue, 29 Sep 2020 04:17:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=PF/O5pnw+i550s0SAF+/HzoAXGtkdwSoamgI4EekWok=; b=CX3EuAuz
-        z5vzgUXCJcvK1dBVXW2CKKIwW683Q9aaZZBg/K6Rb8jOGAQWqXnkO4UIfK3iGpfS
-        PpnY5/T5zv71MwHIpMQp3W0yi6WA09Eay8rV3nHTy2UCLD18KvxAQfBEcoaC+g3g
-        pjrgqjFEg9cWKmUlOz3zGS3HBp4xDkx1oaMeP+WJM06nTTioPd88LzCX0FKIgVTw
-        C6rIO9GRTskUqDfXptyXzFl5SbyKeuX8cRZxhKYKoQRqm5hMGuHCDHCSdgAhipfA
-        QhW561HJLCwpZ++UL7EyOfa/hcgUHlpbnstEltMDnfFI0m+s0qqvm3INnj4A6egl
-        USSBQbN+uczLOg==
-X-ME-Sender: <xms:hO1yX7I1X9X4IEJah0IgT20cpl8R_Tm0k6EP4D8_MZzGLFuJqoCHcA>
-    <xme:hO1yX_Lk1YfalCBC_AysgXVWj90IfUO4_qbLAarTObd3Qw2Xchc3pCjWbaAhMADJX
-    t4NMw7BdaGE9Jw>
+        fm3; bh=l1jrsL/NCa4jTi7QhGYfqgFPquFpgDW0c5HqQGYuh6Y=; b=c1fznVqe
+        2Gpc4BvUimYNf7eR2xzqVAjxjK6j4yaB29abyv/y6xlrSJXoSiCZB10hxowrRTq4
+        4VpCHM+E4C9eWW6lBKHPYCAkwB2/AIstHNCYitzEtSsCAmi/AdJ3TRZ/sA8igMp6
+        RdWwB8CWeq4l/0z3rLd25uSrm/hsKTxSVRmWJ5AvIBQcmyO1SYaRJjduTV/wAqck
+        mMygzh3hVHXdBev4rzUEvMoELxaA0Nsui55/yRb+GtzQeQDwUIIpvot8IdUWOjsS
+        kk6CKk7rfnMzJrr/Oq+1ubG4ud9IdGfPpAJxooUUitt/Q2l+ypTIgxxt2VDsGFL+
+        WvPI6zsU2zerUg==
+X-ME-Sender: <xms:hu1yX7fKFClqu0RI3zSMIBVaXE1PNV1cLiZgsOOcE8IdUkjms3ysiA>
+    <xme:hu1yXxPWpAZKekrgD9PqdQ6OUmG65RFp-Z35a-Oun83zyLUlaJ4iAi9g3HokXAup8
+    khGluNUWULy7Y0>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdekgddtvdcutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -38,22 +38,22 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdekgddtvdcutefuodetggdote
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdefjedrudegkeen
     ucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:hO1yXzs_POSX8Q26bPCiKFGs3doihgGVwby4RkRGFoDupNPa0C2Zhg>
-    <xmx:hO1yX0ZavQcfn_sCFKVPxXAsEVbEa9U3aUq23WyENxWly3I7EBmXoQ>
-    <xmx:hO1yXyYYhpOYDnIEfNDRjAvG64SB-_La3miXEkqVxnbOqcJK44wYLw>
-    <xmx:hO1yX66PKpnO2DLyg_suQ2OMXflHCjKl8yc_rB0BfJu--UISpH9XdA>
+X-ME-Proxy: <xmx:hu1yX0iQaLcX2pymCMtvH8Pt8Sn1vxJjLz1-6OYQwfn_5dORVbEC9w>
+    <xmx:hu1yX8-KacBH3GtSCQ7u7BBWLWFaKMmlLXMfuaSoEwxlUKmK_PS4cg>
+    <xmx:hu1yX3vYvXTjf-_cDHLmhFg2VOgDyXRHmYQs1SDXPyDfNpPfsq5V7A>
+    <xmx:hu1yXw8LjAwaD1lSlEN68_Pd49p9t58YxccNuUtFI2C5HnVj4irdMA>
 Received: from shredder.mtl.com (igld-84-229-37-148.inter.net.il [84.229.37.148])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 50E913280059;
-        Tue, 29 Sep 2020 04:17:06 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id BC9EC3280059;
+        Tue, 29 Sep 2020 04:17:08 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, nhorman@tuxdriver.com,
         jiri@nvidia.com, roopa@nvidia.com, aroulin@nvidia.com,
         ayal@nvidia.com, masahiroy@kernel.org, mlxsw@nvidia.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 6/7] drop_monitor: Filter control packets in drop monitor
-Date:   Tue, 29 Sep 2020 11:15:55 +0300
-Message-Id: <20200929081556.1634838-7-idosch@idosch.org>
+Subject: [PATCH net-next 7/7] selftests: net: Add drop monitor test
+Date:   Tue, 29 Sep 2020 11:15:56 +0300
+Message-Id: <20200929081556.1634838-8-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200929081556.1634838-1-idosch@idosch.org>
 References: <20200929081556.1634838-1-idosch@idosch.org>
@@ -65,95 +65,274 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Previously, devlink called into drop monitor in order to report hardware
-originated drops / exceptions. devlink intentionally filtered control
-packets and did not pass them to drop monitor as they were not dropped
-by the underlying hardware.
+Test that drop monitor correctly captures both software and hardware
+originated packet drops.
 
-Now drop monitor registers its probe on a generic 'devlink_trap_report'
-tracepoint and should therefore perform this filtering itself instead of
-having devlink do that.
+# ./drop_monitor_tests.sh
 
-Add the trap type as metadata and have drop monitor ignore control
-packets.
+Software drops test
+    TEST: Capturing active software drops                               [ OK ]
+    TEST: Capturing inactive software drops                             [ OK ]
+
+Hardware drops test
+    TEST: Capturing active hardware drops                               [ OK ]
+    TEST: Capturing inactive hardware drops                             [ OK ]
+
+Tests passed:   4
+Tests failed:   0
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- include/net/devlink.h   | 2 ++
- net/core/devlink.c      | 8 +-------
- net/core/drop_monitor.c | 6 ++++++
- 3 files changed, 9 insertions(+), 7 deletions(-)
+ tools/testing/selftests/net/Makefile          |   1 +
+ tools/testing/selftests/net/config            |   3 +
+ .../selftests/net/drop_monitor_tests.sh       | 215 ++++++++++++++++++
+ 3 files changed, 219 insertions(+)
+ create mode 100755 tools/testing/selftests/net/drop_monitor_tests.sh
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 1014294ba6a0..1c286e9a3590 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -630,12 +630,14 @@ struct devlink_health_reporter_ops {
-  * @trap_group_name: Trap group name.
-  * @input_dev: Input netdevice.
-  * @fa_cookie: Flow action user cookie.
-+ * @trap_type: Trap type.
-  */
- struct devlink_trap_metadata {
- 	const char *trap_name;
- 	const char *trap_group_name;
- 	struct net_device *input_dev;
- 	const struct flow_action_cookie *fa_cookie;
-+	enum devlink_trap_type trap_type;
- };
- 
- /**
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 2ea9fdc0df2d..6f2863e717a9 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -9269,6 +9269,7 @@ devlink_trap_report_metadata_set(struct devlink_trap_metadata *metadata,
- 	metadata->trap_name = trap_item->trap->name;
- 	metadata->trap_group_name = trap_item->group_item->group->name;
- 	metadata->fa_cookie = fa_cookie;
-+	metadata->trap_type = trap_item->trap->type;
- 
- 	spin_lock(&in_devlink_port->type_lock);
- 	if (in_devlink_port->type == DEVLINK_PORT_TYPE_ETH)
-@@ -9294,13 +9295,6 @@ void devlink_trap_report(struct devlink *devlink, struct sk_buff *skb,
- 	devlink_trap_stats_update(trap_item->stats, skb->len);
- 	devlink_trap_stats_update(trap_item->group_item->stats, skb->len);
- 
--	/* Control packets were not dropped by the device or encountered an
--	 * exception during forwarding and therefore should not be reported to
--	 * the kernel's drop monitor.
--	 */
--	if (trap_item->trap->type == DEVLINK_TRAP_TYPE_CONTROL)
--		return;
--
- 	if (trace_devlink_trap_report_enabled()) {
- 		struct devlink_trap_metadata metadata = {};
- 
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index 0e4309414a30..a28b743489c5 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -444,6 +444,9 @@ net_dm_hw_trap_summary_probe(void *ignore, const struct devlink *devlink,
- 	unsigned long flags;
- 	int i;
- 
-+	if (metadata->trap_type == DEVLINK_TRAP_TYPE_CONTROL)
-+		return;
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 9491bbaa0831..52923eb08934 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -19,6 +19,7 @@ TEST_PROGS += txtimestamp.sh
+ TEST_PROGS += vrf-xfrm-tests.sh
+ TEST_PROGS += rxtimestamp.sh
+ TEST_PROGS += devlink_port_split.py
++TEST_PROGS += drop_monitor_tests.sh
+ TEST_PROGS_EXTENDED := in_netns.sh
+ TEST_GEN_FILES =  socket nettest
+ TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
+diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
+index 5a57ea02802d..43649242adc0 100644
+--- a/tools/testing/selftests/net/config
++++ b/tools/testing/selftests/net/config
+@@ -30,3 +30,6 @@ CONFIG_NET_SCH_ETF=m
+ CONFIG_NET_SCH_NETEM=y
+ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_KALLSYMS=y
++CONFIG_TRACEPOINTS=y
++CONFIG_NET_DROP_MONITOR=m
++CONFIG_NETDEVSIM=m
+diff --git a/tools/testing/selftests/net/drop_monitor_tests.sh b/tools/testing/selftests/net/drop_monitor_tests.sh
+new file mode 100755
+index 000000000000..b7650e30d18b
+--- /dev/null
++++ b/tools/testing/selftests/net/drop_monitor_tests.sh
+@@ -0,0 +1,215 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
- 	hw_data = this_cpu_ptr(&dm_hw_cpu_data);
- 	spin_lock_irqsave(&hw_data->lock, flags);
- 	hw_entries = hw_data->hw_entries;
-@@ -937,6 +940,9 @@ net_dm_hw_trap_packet_probe(void *ignore, const struct devlink *devlink,
- 	struct sk_buff *nskb;
- 	unsigned long flags;
- 
-+	if (metadata->trap_type == DEVLINK_TRAP_TYPE_CONTROL)
-+		return;
++# This test is for checking drop monitor functionality.
 +
- 	if (!skb_mac_header_was_set(skb))
- 		return;
- 
++ret=0
++# Kselftest framework requirement - SKIP code is 4.
++ksft_skip=4
++
++# all tests in this script. Can be overridden with -t option
++TESTS="
++	sw_drops
++	hw_drops
++"
++
++IP="ip -netns ns1"
++TC="tc -netns ns1"
++DEVLINK="devlink -N ns1"
++NS_EXEC="ip netns exec ns1"
++NETDEVSIM_PATH=/sys/bus/netdevsim/
++DEV_ADDR=1337
++DEV=netdevsim${DEV_ADDR}
++DEVLINK_DEV=netdevsim/${DEV}
++
++log_test()
++{
++	local rc=$1
++	local expected=$2
++	local msg="$3"
++
++	if [ ${rc} -eq ${expected} ]; then
++		printf "    TEST: %-60s  [ OK ]\n" "${msg}"
++		nsuccess=$((nsuccess+1))
++	else
++		ret=1
++		nfail=$((nfail+1))
++		printf "    TEST: %-60s  [FAIL]\n" "${msg}"
++	fi
++}
++
++setup()
++{
++	modprobe netdevsim &> /dev/null
++
++	set -e
++	ip netns add ns1
++	$IP link add dummy10 up type dummy
++
++	$NS_EXEC echo "$DEV_ADDR 1" > ${NETDEVSIM_PATH}/new_device
++	udevadm settle
++	local netdev=$($NS_EXEC ls ${NETDEVSIM_PATH}/devices/${DEV}/net/)
++	$IP link set dev $netdev up
++
++	set +e
++}
++
++cleanup()
++{
++	$NS_EXEC echo "$DEV_ADDR" > ${NETDEVSIM_PATH}/del_device
++	ip netns del ns1
++}
++
++sw_drops_test()
++{
++	echo
++	echo "Software drops test"
++
++	setup
++
++	local dir=$(mktemp -d)
++
++	$TC qdisc add dev dummy10 clsact
++	$TC filter add dev dummy10 egress pref 1 handle 101 proto ip \
++		flower dst_ip 192.0.2.10 action drop
++
++	$NS_EXEC mausezahn dummy10 -a 00:11:22:33:44:55 -b 00:aa:bb:cc:dd:ee \
++		-A 192.0.2.1 -B 192.0.2.10 -t udp sp=12345,dp=54321 -c 0 -q \
++		-d 100msec &
++	timeout 5 dwdump -o sw -w ${dir}/packets.pcap
++	(( $(tshark -r ${dir}/packets.pcap \
++		-Y 'ip.dst == 192.0.2.10' 2> /dev/null | wc -l) != 0))
++	log_test $? 0 "Capturing active software drops"
++
++	rm ${dir}/packets.pcap
++
++	{ kill %% && wait %%; } 2>/dev/null
++	timeout 5 dwdump -o sw -w ${dir}/packets.pcap
++	(( $(tshark -r ${dir}/packets.pcap \
++		-Y 'ip.dst == 192.0.2.10' 2> /dev/null | wc -l) == 0))
++	log_test $? 0 "Capturing inactive software drops"
++
++	rm -r $dir
++
++	cleanup
++}
++
++hw_drops_test()
++{
++	echo
++	echo "Hardware drops test"
++
++	setup
++
++	local dir=$(mktemp -d)
++
++	$DEVLINK trap set $DEVLINK_DEV trap blackhole_route action trap
++	timeout 5 dwdump -o hw -w ${dir}/packets.pcap
++	(( $(tshark -r ${dir}/packets.pcap \
++		-Y 'net_dm.hw_trap_name== blackhole_route' 2> /dev/null \
++		| wc -l) != 0))
++	log_test $? 0 "Capturing active hardware drops"
++
++	rm ${dir}/packets.pcap
++
++	$DEVLINK trap set $DEVLINK_DEV trap blackhole_route action drop
++	timeout 5 dwdump -o hw -w ${dir}/packets.pcap
++	(( $(tshark -r ${dir}/packets.pcap \
++		-Y 'net_dm.hw_trap_name== blackhole_route' 2> /dev/null \
++		| wc -l) == 0))
++	log_test $? 0 "Capturing inactive hardware drops"
++
++	rm -r $dir
++
++	cleanup
++}
++
++################################################################################
++# usage
++
++usage()
++{
++	cat <<EOF
++usage: ${0##*/} OPTS
++
++        -t <test>   Test(s) to run (default: all)
++                    (options: $TESTS)
++EOF
++}
++
++################################################################################
++# main
++
++while getopts ":t:h" opt; do
++	case $opt in
++		t) TESTS=$OPTARG;;
++		h) usage; exit 0;;
++		*) usage; exit 1;;
++	esac
++done
++
++if [ "$(id -u)" -ne 0 ];then
++	echo "SKIP: Need root privileges"
++	exit $ksft_skip;
++fi
++
++if [ ! -x "$(command -v ip)" ]; then
++	echo "SKIP: Could not run test without ip tool"
++	exit $ksft_skip
++fi
++
++if [ ! -x "$(command -v devlink)" ]; then
++	echo "SKIP: Could not run test without devlink tool"
++	exit $ksft_skip
++fi
++
++if [ ! -x "$(command -v tshark)" ]; then
++	echo "SKIP: Could not run test without tshark tool"
++	exit $ksft_skip
++fi
++
++if [ ! -x "$(command -v dwdump)" ]; then
++	echo "SKIP: Could not run test without dwdump tool"
++	exit $ksft_skip
++fi
++
++if [ ! -x "$(command -v udevadm)" ]; then
++	echo "SKIP: Could not run test without udevadm tool"
++	exit $ksft_skip
++fi
++
++if [ ! -x "$(command -v timeout)" ]; then
++	echo "SKIP: Could not run test without timeout tool"
++	exit $ksft_skip
++fi
++
++if [ ! -x "$(command -v mausezahn)" ]; then
++	echo "SKIP: Could not run test without mausezahn tool"
++	exit $ksft_skip
++fi
++
++tshark -G fields 2> /dev/null | grep -q net_dm
++if [ $? -ne 0 ]; then
++	echo "SKIP: tshark too old, missing net_dm dissector"
++	exit $ksft_skip
++fi
++
++# start clean
++cleanup &> /dev/null
++
++for t in $TESTS
++do
++	case $t in
++	sw_drops|sw)			sw_drops_test;;
++	hw_drops|hw)			hw_drops_test;;
++
++	help) echo "Test names: $TESTS"; exit 0;;
++	esac
++done
++
++if [ "$TESTS" != "none" ]; then
++	printf "\nTests passed: %3d\n" ${nsuccess}
++	printf "Tests failed: %3d\n"   ${nfail}
++fi
++
++exit $ret
 -- 
 2.26.2
 
