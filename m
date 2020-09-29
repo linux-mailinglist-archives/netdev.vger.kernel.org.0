@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B0CE27D861
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:36:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A53EA27D85F
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729448AbgI2Uf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729166AbgI2Ufz (ORCPT
+        id S1729405AbgI2Uf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:35:57 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:49110 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729372AbgI2Ufz (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:35:55 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA2CC0613D6;
-        Tue, 29 Sep 2020 13:35:52 -0700 (PDT)
-Message-Id: <20200929203500.481750554@linutronix.de>
+Message-Id: <20200929203500.579810110@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601411750;
+        s=2020; t=1601411752;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=VICDOx2EIISDwW+YF3QvD5vk142qLSDR+atrWMc+BeY=;
-        b=pLhqEL6ZGWSBgJ9nzOjc+QUMoPVWpE4jz349MJWEFKO5TI348m5PQgXEUEoRJaUXnvFLAO
-        Npm+2XlTIkv74YUj7zNV4u3Sc6cTkrdvLjUoxP2HL6M+cfwsbuwusfS/1zRw16DETrQ9MY
-        o1WplOBvkiBCZTbs0NtfUjdRB7LfRyDt8OTmfHQgltGY9H0XG8JYxQxmG2jlRaxsD71vnh
-        vi+3+E067kHa7BSdTsAe5CSthJW6Qb0/ACt9F9YKnWCgIQ5Rg1Qw+MBBSs9Zaqq9dfwcC8
-        XgIGjeEQzb35lFbyQCXkP2jYh3mzF6jSSPUJJsM4l60uyICjlXCZ/SjqGLmoZg==
+        bh=7A0i41gQJ/jaywFxeyOJx2shJ3OAIzso1ZapJJEzz0I=;
+        b=x9VNUjW3UhjXawHze0N9X7waM046YqAuAEtl+aeXbianGAnhXgFsSqnTYrJ6K+DxH4ZbKQ
+        r4QNlXs9Xna57gIoMMtiQTirPjgrYi8JaRm+mKr7celqmDHBCaVAeaeTdZq0RupXUYQcGV
+        wgV3JKUBE0h4I+FllmpCIGO7H+ygcoxQDSN4PSimL3K+3swSR78hMFJBPuxh61nI0F0hEr
+        ttiZ7tIiugpCb+E9AArqio9M1BrMfzjJfFWCzatnSUY4aRE4742Zskk/37HNbcLM+mqnWX
+        twMuWxi9pqKsJuJCF0ST3rn2SWIKj7FDFgQEtn76YRVOOi+bug7QKFTW46AxJw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601411751;
+        s=2020e; t=1601411752;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=VICDOx2EIISDwW+YF3QvD5vk142qLSDR+atrWMc+BeY=;
-        b=BTy/4a8HncmpoDwnXDEurZSKOP5mWdJwALMMKLG/chU7a6Y2N0g2DffQlMJcSEODI7DDYP
-        CD/HFFakt7GQE8AQ==
-Date:   Tue, 29 Sep 2020 22:25:19 +0200
+        bh=7A0i41gQJ/jaywFxeyOJx2shJ3OAIzso1ZapJJEzz0I=;
+        b=lIKvBa507QD8w6eBx1eHyxYQdAw7I2lyHTNyDJp9+jiiicKmHN82JbIP/9QMLw36BeSwui
+        rzrxfsKTabcD+0Dw==
+Date:   Tue, 29 Sep 2020 22:25:20 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -87,9 +84,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Xinming Hu <huxinming820@gmail.com>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Alexander Duyck <alexander.h.duyck@linux.intel.com>
-Subject: [patch V2 10/36] net: intel: Remove in_interrupt() warnings
+        Ping-Ke Shih <pkshih@realtek.com>
+Subject: [patch V2 11/36] net: ionic: Replace in_interrupt() usage.
 References: <20200929202509.673358734@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -100,128 +96,254 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-in_interrupt() is ill defined and does not provide what the name
-suggests. The usage especially in driver code is deprecated and a tree wide
-effort to clean up and consolidate the (ab)usage of in_interrupt() and
-related checks is happening.
+The in_interrupt() usage in this driver tries to figure out which context
+may sleep and which context may not sleep. in_interrupt() is not really
+suitable as it misses both preemption disabled and interrupt disabled
+invocations from task context.
 
-In this case the checks cover only parts of the contexts in which these
-functions cannot be called. They fail to detect preemption or interrupt
-disabled invocations.
+Conditionals like that in driver code are frowned upon in general because
+invocations of functions from invalid contexts might not be detected
+as the conditional papers over it.
 
-As the functions which are invoked from the various places contain already
-a broad variety of checks (always enabled or debug option dependent) cover
-all invalid conditions already, there is no point in having inconsistent
-warnings in those drivers.
+ionic_lif_addr() and _ionoc_lif_rx_mode() can be called from:
 
-Just remove them.
+ 1) ->ndo_set_rx_mode() which is under netif_addr_lock_bh()) so it must not
+    sleep.
+
+ 2) Init and setup functions which are in fully preemptible task context.
+
+ionic_link_status_check_request() has two call paths:
+
+ 1) NAPI which obviously cannot sleep
+
+ 2) Setup which is again fully preemptible task context
+
+Add arguments which convey the execution context to the affected functions
+and let the callers provide the context instead of letting the functions
+deduce it.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-
 ---
- drivers/net/ethernet/intel/e1000/e1000_main.c     |    1 -
- drivers/net/ethernet/intel/fm10k/fm10k_pci.c      |    2 --
- drivers/net/ethernet/intel/i40e/i40e_main.c       |    4 ----
- drivers/net/ethernet/intel/ice/ice_main.c         |    1 -
- drivers/net/ethernet/intel/igb/igb_main.c         |    1 -
- drivers/net/ethernet/intel/igc/igc_main.c         |    1 -
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c     |    1 -
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c |    2 --
- 8 files changed, 13 deletions(-)
+V2: Treat _ionoc_lif_rx_mode() correclty (Shannon)
+---
+ drivers/net/ethernet/pensando/ionic/ionic_dev.c |    2 
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c |   64 ++++++++++++++++--------
+ drivers/net/ethernet/pensando/ionic/ionic_lif.h |    2 
+ 3 files changed, 47 insertions(+), 21 deletions(-)
 
---- a/drivers/net/ethernet/intel/e1000/e1000_main.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-@@ -534,7 +534,6 @@ void e1000_down(struct e1000_adapter *ad
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+@@ -22,7 +22,7 @@ static void ionic_watchdog_cb(struct tim
+ 	hb = ionic_heartbeat_check(ionic);
  
- void e1000_reinit_locked(struct e1000_adapter *adapter)
+ 	if (hb >= 0 && ionic->lif)
+-		ionic_link_status_check_request(ionic->lif);
++		ionic_link_status_check_request(ionic->lif, false);
+ }
+ 
+ void ionic_init_devinfo(struct ionic *ionic)
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -151,7 +151,7 @@ static void ionic_link_status_check(stru
+ 	clear_bit(IONIC_LIF_F_LINK_CHECK_REQUESTED, lif->state);
+ }
+ 
+-void ionic_link_status_check_request(struct ionic_lif *lif)
++void ionic_link_status_check_request(struct ionic_lif *lif, bool can_sleep)
  {
--	WARN_ON(in_interrupt());
- 	while (test_and_set_bit(__E1000_RESETTING, &adapter->flags))
- 		msleep(1);
+ 	struct ionic_deferred_work *work;
  
---- a/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
-@@ -221,8 +221,6 @@ static bool fm10k_prepare_for_reset(stru
+@@ -159,7 +159,7 @@ void ionic_link_status_check_request(str
+ 	if (test_and_set_bit(IONIC_LIF_F_LINK_CHECK_REQUESTED, lif->state))
+ 		return;
+ 
+-	if (in_interrupt()) {
++	if (!can_sleep) {
+ 		work = kzalloc(sizeof(*work), GFP_ATOMIC);
+ 		if (!work)
+ 			return;
+@@ -798,7 +798,7 @@ static bool ionic_notifyq_service(struct
+ 
+ 	switch (le16_to_cpu(comp->event.ecode)) {
+ 	case IONIC_EVENT_LINK_CHANGE:
+-		ionic_link_status_check_request(lif);
++		ionic_link_status_check_request(lif, false);
+ 		break;
+ 	case IONIC_EVENT_RESET:
+ 		work = kzalloc(sizeof(*work), GFP_ATOMIC);
+@@ -981,7 +981,8 @@ static int ionic_lif_addr_del(struct ion
+ 	return 0;
+ }
+ 
+-static int ionic_lif_addr(struct ionic_lif *lif, const u8 *addr, bool add)
++static int ionic_lif_addr(struct ionic_lif *lif, const u8 *addr, bool add,
++			  bool can_sleep)
  {
- 	struct net_device *netdev = interface->netdev;
+ 	struct ionic *ionic = lif->ionic;
+ 	struct ionic_deferred_work *work;
+@@ -1010,7 +1011,7 @@ static int ionic_lif_addr(struct ionic_l
+ 			lif->nucast--;
+ 	}
  
--	WARN_ON(in_interrupt());
--
- 	/* put off any impending NetWatchDogTimeout */
- 	netif_trans_update(netdev);
+-	if (in_interrupt()) {
++	if (!can_sleep) {
+ 		work = kzalloc(sizeof(*work), GFP_ATOMIC);
+ 		if (!work) {
+ 			netdev_err(lif->netdev, "%s OOM\n", __func__);
+@@ -1036,12 +1037,22 @@ static int ionic_lif_addr(struct ionic_l
  
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -6689,7 +6689,6 @@ static void i40e_vsi_reinit_locked(struc
+ static int ionic_addr_add(struct net_device *netdev, const u8 *addr)
  {
- 	struct i40e_pf *pf = vsi->back;
+-	return ionic_lif_addr(netdev_priv(netdev), addr, true);
++	return ionic_lif_addr(netdev_priv(netdev), addr, true, true);
++}
++
++static int ionic_ndo_addr_add(struct net_device *netdev, const u8 *addr)
++{
++	return ionic_lif_addr(netdev_priv(netdev), addr, true, false);
+ }
  
--	WARN_ON(in_interrupt());
- 	while (test_and_set_bit(__I40E_CONFIG_BUSY, pf->state))
- 		usleep_range(1000, 2000);
- 	i40e_down(vsi);
-@@ -8462,9 +8461,6 @@ void i40e_do_reset(struct i40e_pf *pf, u
+ static int ionic_addr_del(struct net_device *netdev, const u8 *addr)
  {
- 	u32 val;
+-	return ionic_lif_addr(netdev_priv(netdev), addr, false);
++	return ionic_lif_addr(netdev_priv(netdev), addr, false, true);
++}
++
++static int ionic_ndo_addr_del(struct net_device *netdev, const u8 *addr)
++{
++	return ionic_lif_addr(netdev_priv(netdev), addr, false, false);
+ }
  
--	WARN_ON(in_interrupt());
--
--
- 	/* do the biggest reset indicated */
- 	if (reset_flags & BIT_ULL(__I40E_GLOBAL_RESET_REQUESTED)) {
+ static void ionic_lif_rx_mode(struct ionic_lif *lif, unsigned int rx_mode)
+@@ -1081,11 +1092,12 @@ static void ionic_lif_rx_mode(struct ion
+ 		lif->rx_mode = rx_mode;
+ }
  
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -486,7 +486,6 @@ static void ice_do_reset(struct ice_pf *
- 	struct ice_hw *hw = &pf->hw;
- 
- 	dev_dbg(dev, "reset_type 0x%x requested\n", reset_type);
--	WARN_ON(in_interrupt());
- 
- 	ice_prepare_for_reset(pf);
- 
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -2220,7 +2220,6 @@ void igb_down(struct igb_adapter *adapte
- 
- void igb_reinit_locked(struct igb_adapter *adapter)
+-static void _ionic_lif_rx_mode(struct ionic_lif *lif, unsigned int rx_mode)
++static void _ionic_lif_rx_mode(struct ionic_lif *lif, unsigned int rx_mode,
++			       bool from_ndo)
  {
--	WARN_ON(in_interrupt());
- 	while (test_and_set_bit(__IGB_RESETTING, &adapter->state))
- 		usleep_range(1000, 2000);
- 	igb_down(adapter);
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -3831,7 +3831,6 @@ void igc_down(struct igc_adapter *adapte
+ 	struct ionic_deferred_work *work;
  
- void igc_reinit_locked(struct igc_adapter *adapter)
+-	if (in_interrupt()) {
++	if (from_ndo) {
+ 		work = kzalloc(sizeof(*work), GFP_ATOMIC);
+ 		if (!work) {
+ 			netdev_err(lif->netdev, "%s OOM\n", __func__);
+@@ -1100,7 +1112,16 @@ static void _ionic_lif_rx_mode(struct io
+ 	}
+ }
+ 
+-static void ionic_set_rx_mode(struct net_device *netdev)
++static void ionic_dev_uc_sync(struct net_device *netdev, bool from_ndo)
++{
++	if (from_ndo)
++		__dev_uc_sync(netdev, ionic_ndo_addr_add, ionic_ndo_addr_del);
++	else
++		__dev_uc_sync(netdev, ionic_addr_add, ionic_addr_del);
++
++}
++
++static void ionic_set_rx_mode(struct net_device *netdev, bool from_ndo)
  {
--	WARN_ON(in_interrupt());
- 	while (test_and_set_bit(__IGC_RESETTING, &adapter->state))
- 		usleep_range(1000, 2000);
- 	igc_down(adapter);
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -5677,7 +5677,6 @@ static void ixgbe_up_complete(struct ixg
+ 	struct ionic_lif *lif = netdev_priv(netdev);
+ 	struct ionic_identity *ident;
+@@ -1122,7 +1143,7 @@ static void ionic_set_rx_mode(struct net
+ 	 *       we remove our overflow flag and check the netdev flags
+ 	 *       to see if we can disable NIC PROMISC
+ 	 */
+-	__dev_uc_sync(netdev, ionic_addr_add, ionic_addr_del);
++	ionic_dev_uc_sync(netdev, from_ndo);
+ 	nfilters = le32_to_cpu(ident->lif.eth.max_ucast_filters);
+ 	if (netdev_uc_count(netdev) + 1 > nfilters) {
+ 		rx_mode |= IONIC_RX_MODE_F_PROMISC;
+@@ -1134,7 +1155,7 @@ static void ionic_set_rx_mode(struct net
+ 	}
  
- void ixgbe_reinit_locked(struct ixgbe_adapter *adapter)
- {
--	WARN_ON(in_interrupt());
- 	/* put off any impending NetWatchDogTimeout */
- 	netif_trans_update(adapter->netdev);
+ 	/* same for multicast */
+-	__dev_mc_sync(netdev, ionic_addr_add, ionic_addr_del);
++	ionic_dev_uc_sync(netdev, from_ndo);
+ 	nfilters = le32_to_cpu(ident->lif.eth.max_mcast_filters);
+ 	if (netdev_mc_count(netdev) > nfilters) {
+ 		rx_mode |= IONIC_RX_MODE_F_ALLMULTI;
+@@ -1146,7 +1167,12 @@ static void ionic_set_rx_mode(struct net
+ 	}
  
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -2526,8 +2526,6 @@ void ixgbevf_down(struct ixgbevf_adapter
+ 	if (lif->rx_mode != rx_mode)
+-		_ionic_lif_rx_mode(lif, rx_mode);
++		_ionic_lif_rx_mode(lif, rx_mode, from_ndo);
++}
++
++static void ionic_ndo_set_rx_mode(struct net_device *netdev)
++{
++	ionic_set_rx_mode(netdev, true);
+ }
  
- void ixgbevf_reinit_locked(struct ixgbevf_adapter *adapter)
- {
--	WARN_ON(in_interrupt());
--
- 	while (test_and_set_bit(__IXGBEVF_RESETTING, &adapter->state))
- 		msleep(1);
+ static __le64 ionic_netdev_features_to_nic(netdev_features_t features)
+@@ -1391,7 +1417,7 @@ static int ionic_start_queues_reconfig(s
+ 	 */
+ 	err = ionic_txrx_init(lif);
+ 	mutex_unlock(&lif->queue_lock);
+-	ionic_link_status_check_request(lif);
++	ionic_link_status_check_request(lif, true);
+ 	netif_device_attach(lif->netdev);
  
-
+ 	return err;
+@@ -1720,7 +1746,7 @@ static int ionic_txrx_init(struct ionic_
+ 	if (lif->netdev->features & NETIF_F_RXHASH)
+ 		ionic_lif_rss_init(lif);
+ 
+-	ionic_set_rx_mode(lif->netdev);
++	ionic_set_rx_mode(lif->netdev, false);
+ 
+ 	return 0;
+ 
+@@ -2093,7 +2119,7 @@ static const struct net_device_ops ionic
+ 	.ndo_stop               = ionic_stop,
+ 	.ndo_start_xmit		= ionic_start_xmit,
+ 	.ndo_get_stats64	= ionic_get_stats64,
+-	.ndo_set_rx_mode	= ionic_set_rx_mode,
++	.ndo_set_rx_mode	= ionic_ndo_set_rx_mode,
+ 	.ndo_set_features	= ionic_set_features,
+ 	.ndo_set_mac_address	= ionic_set_mac_address,
+ 	.ndo_validate_addr	= eth_validate_addr,
+@@ -2521,7 +2547,7 @@ static void ionic_lif_handle_fw_up(struc
+ 	}
+ 
+ 	clear_bit(IONIC_LIF_F_FW_RESET, lif->state);
+-	ionic_link_status_check_request(lif);
++	ionic_link_status_check_request(lif, true);
+ 	netif_device_attach(lif->netdev);
+ 	dev_info(ionic->dev, "FW Up: LIFs restarted\n");
+ 
+@@ -2713,7 +2739,7 @@ static int ionic_station_set(struct ioni
+ 		 */
+ 		if (!ether_addr_equal(ctx.comp.lif_getattr.mac,
+ 				      netdev->dev_addr))
+-			ionic_lif_addr(lif, netdev->dev_addr, true);
++			ionic_lif_addr(lif, netdev->dev_addr, true, true);
+ 	} else {
+ 		/* Update the netdev mac with the device's mac */
+ 		memcpy(addr.sa_data, ctx.comp.lif_getattr.mac, netdev->addr_len);
+@@ -2730,7 +2756,7 @@ static int ionic_station_set(struct ioni
+ 
+ 	netdev_dbg(lif->netdev, "adding station MAC addr %pM\n",
+ 		   netdev->dev_addr);
+-	ionic_lif_addr(lif, netdev->dev_addr, true);
++	ionic_lif_addr(lif, netdev->dev_addr, true, true);
+ 
+ 	return 0;
+ }
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+@@ -245,7 +245,7 @@ static inline u32 ionic_coal_usec_to_hw(
+ 
+ typedef void (*ionic_reset_cb)(struct ionic_lif *lif, void *arg);
+ 
+-void ionic_link_status_check_request(struct ionic_lif *lif);
++void ionic_link_status_check_request(struct ionic_lif *lif, bool can_sleep);
+ void ionic_get_stats64(struct net_device *netdev,
+ 		       struct rtnl_link_stats64 *ns);
+ void ionic_lif_deferred_enqueue(struct ionic_deferred *def,
 
