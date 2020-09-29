@@ -2,123 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3E1527DC35
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 00:44:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB20527DC4E
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 00:50:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728839AbgI2WoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 18:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728752AbgI2WoM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 18:44:12 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9EFC061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 15:44:12 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id d9so6236871pfd.3
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 15:44:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=WJ3OpDbrgTgrQ83eHhTDtyYULkP8PFP3ddpTJ7Cz6JI=;
-        b=HSRrcrIyGUWTHwolbw34ZUjTnHuIg3aAaGQBMIzy+t4tc8Vz6BSbZdLMIOyDGi6UQ6
-         CmsXhwhg1QyL/oCo6bhvzgv03gjnjnMPFzd73Dc+PNEtCzjiD0bpQ44/tS14V9HjUOnj
-         oJ3gVdhP6JgWhctqvUXqTgwz9ygmu+1qGtJGyOtEdEWiKibWbOksnxb4fvc4wu66E6uY
-         Xddng3rRkAlCNrMPzCOWj8aZsOHyiNd6aIh+Cfgd8qPHyLMzij7V9U0ho6u6NDlimzYw
-         tbPYwLNXFXNs9HaCrRQJ/aqTLY8YRr4PUIKOBDMFTCtfOwS5rusjKn0ijhLkOKmZA6o2
-         Px4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=WJ3OpDbrgTgrQ83eHhTDtyYULkP8PFP3ddpTJ7Cz6JI=;
-        b=i9b2rzevDKZvWJSezFM5OmwlUkiizIw4Mm+RQTSXqvbFu/WFmWvFJ5mb4uXKxz6G2X
-         H6ic+/AzZhWY4oAfkidLm4xRbA7Uu5SxtPLjtO0aTVK8wy0M+nBUauAhAl7rcxjEq0O4
-         SMW+6+vMMQBk4DLoCUzbDEQoQmFAqpC/XdQvOLttgEhVwA3JA5kNUO342qnuLgYH12dh
-         Q5NbIXSClvYsf8+NuhwymT6oQmrDJfI04C0Qh5UNiZpoAKYrs9U07grT4KnsMUV5MfFn
-         ZfNMGfGltYr0imZa+p+iNBxHBoqgNzdy+EdWpD9bP7/iyzuKHuyQN1zc6fQyYDQYqEXx
-         O6+A==
-X-Gm-Message-State: AOAM530PkqtrXdS28COotVKBmqa6HE3yo/H1G9mZnQr5Nh2bXptHisLP
-        2ZiFe/0gGe8TODjOi33VPBMWTw==
-X-Google-Smtp-Source: ABdhPJwAl73qbyVTDoXcKJPwWPHWg+QcdmxtCaCm2NLO+PEzxf193QdZOvGTw8aVDygF1c/UGOTPdw==
-X-Received: by 2002:a63:5b5c:: with SMTP id l28mr4750101pgm.243.1601419451673;
-        Tue, 29 Sep 2020 15:44:11 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id ep4sm5505819pjb.39.2020.09.29.15.44.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Sep 2020 15:44:11 -0700 (PDT)
-Subject: Re: [iproute2-next v1] devlink: display elapsed time during flash
- update
-To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kubakici@wp.pl>
-References: <20200929215651.3538844-1-jacob.e.keller@intel.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <df1ad702-ab31-e027-e711-46d09f8fa095@pensando.io>
-Date:   Tue, 29 Sep 2020 15:44:08 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1728471AbgI2Wu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 18:50:27 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:33880 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728192AbgI2Wu0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 18:50:26 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08TMjt9F012619
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 15:50:25 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=yeIlLcPVe73ANCroUFPRO6l+RyUYuFYQQpuTnrOuYEs=;
+ b=N+QCM+e8S36WAu7lubtYsPf6iR+s9EONLOsRK36e1L7ucqijHV4dNPCm4lyk+ZLbc2v4
+ tU4bzQiEScKNPaWgXgzLWfiqxQZeKjSyRi55MDjnOnVAAFfzYT45aByhqsoZJQKGK//a
+ neDQsp5icMDqA76s7MWWEnke51OG9TwM1jM= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33t3cpfwu2-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 15:50:25 -0700
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 29 Sep 2020 15:50:23 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 71E5B62E56DB; Tue, 29 Sep 2020 15:50:22 -0700 (PDT)
+From:   Song Liu <songliubraving@fb.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH bpf-next] bpf: fix raw_tp test run in preempt kernel
+Date:   Tue, 29 Sep 2020 15:50:13 -0700
+Message-ID: <20200929225013.930-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20200929215651.3538844-1-jacob.e.keller@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-29_14:2020-09-29,2020-09-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ malwarescore=0 clxscore=1015 impostorscore=0 mlxlogscore=808
+ suspectscore=0 priorityscore=1501 lowpriorityscore=0 spamscore=0
+ adultscore=0 mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009290193
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/29/20 2:56 PM, Jacob Keller wrote:
-> For some devices, updating the flash can take significant time during
-> operations where no status can meaningfully be reported. This can be
-> somewhat confusing to a user who sees devlink appear to hang on the
-> terminal waiting for the device to update.
->
-> Recent changes to the kernel interface allow such long running commands
-> to provide a timeout value indicating some upper bound on how long the
-> relevant action could take.
->
-> Provide a ticking counter of the time elapsed since the previous status
-> message in order to make it clear that the program is not simply stuck.
->
-> Display this message whenever the status message from the kernel
-> indicates a timeout value. Additionally also display the message if
-> we've received no status for more than couple of seconds. If we elapse
-> more than the timeout provided by the status message, replace the
-> timeout display with "timeout reached".
->
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> ---
->
+In preempt kernel, BPF_PROG_TEST_RUN on raw_tp triggers:
 
-Thanks, Jake.  In general this seems to work pretty well.  One thing, 
-tho'...
+[   35.874974] BUG: using smp_processor_id() in preemptible [00000000]
+code: new_name/87
+[   35.893983] caller is bpf_prog_test_run_raw_tp+0xd4/0x1b0
+[   35.900124] CPU: 1 PID: 87 Comm: new_name Not tainted 5.9.0-rc6-g615bd=
+02bf #1
+[   35.907358] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+BIOS 1.10.2-1ubuntu1 04/01/2014
+[   35.916941] Call Trace:
+[   35.919660]  dump_stack+0x77/0x9b
+[   35.923273]  check_preemption_disabled+0xb4/0xc0
+[   35.928376]  bpf_prog_test_run_raw_tp+0xd4/0x1b0
+[   35.933872]  ? selinux_bpf+0xd/0x70
+[   35.937532]  __do_sys_bpf+0x6bb/0x21e0
+[   35.941570]  ? find_held_lock+0x2d/0x90
+[   35.945687]  ? vfs_write+0x150/0x220
+[   35.949586]  do_syscall_64+0x2d/0x40
+[   35.953443]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Our fw download is slow (I won't go into the reasons here) so we're 
-clicking through the Download x% over maybe 100+ seconds.  Since we send 
-an update every 3% or so, we end up seeing the ( 0m 3s ) pop up and stay 
-there the whole time, looking a little odd:
+Fix this by calling migrate_disable() before smp_processor_id().
 
-     ./iproute2-5.8.0/devlink/devlink dev flash pci/0000:b5:00.0 file 
-ionic/dsc_fw_1.15.0-150.tar
-     Preparing to flash
-     Downloading  37% ( 0m 3s )
-   ...
-     Downloading  59% ( 0m 3s )
-   ...
-     Downloading  83% ( 0m 3s )
+Fixes: 1b4d60ec162f ("bpf: Enable BPF_PROG_TEST_RUN for raw_tracepoint")
+Reported-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Song Liu <songliubraving@fb.com>
+---
+ net/bpf/test_run.c | 20 ++++++++------------
+ 1 file changed, 8 insertions(+), 12 deletions(-)
 
-And at the end we see:
-
-     Preparing to flash
-     Downloading 100% ( 0m 3s )
-     Installing ( 0m 43s : 25m 0s )
-     Selecting ( 0m 5s : 0m 30s )
-     Flash done
-
-I can have the driver do updates more often in order to stay under the 3 
-second limit and hide this, but it looks a bit funky, especially at the 
-end where I know that 100% took a lot longer than 3 seconds.
-
-sln
-
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index fde5db93507c4..3ea05a5daf544 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -251,11 +251,7 @@ __bpf_prog_test_run_raw_tp(void *data)
+ {
+ 	struct bpf_raw_tp_test_run_info *info =3D data;
+=20
+-	rcu_read_lock();
+-	migrate_disable();
+ 	info->retval =3D BPF_PROG_RUN(info->prog, info->ctx);
+-	migrate_enable();
+-	rcu_read_unlock();
+ }
+=20
+ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
+@@ -293,27 +289,27 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
+=20
+ 	info.prog =3D prog;
+=20
++	rcu_read_lock();
++	migrate_disable();
+ 	if ((kattr->test.flags & BPF_F_TEST_RUN_ON_CPU) =3D=3D 0 ||
+ 	    cpu =3D=3D smp_processor_id()) {
+ 		__bpf_prog_test_run_raw_tp(&info);
+-	} else {
++	} else if (cpu >=3D nr_cpu_ids || !cpu_online(cpu)) {
+ 		/* smp_call_function_single() also checks cpu_online()
+ 		 * after csd_lock(). However, since cpu is from user
+ 		 * space, let's do an extra quick check to filter out
+ 		 * invalid value before smp_call_function_single().
+ 		 */
+-		if (cpu >=3D nr_cpu_ids || !cpu_online(cpu)) {
+ 		err =3D -ENXIO;
+-			goto out;
+-		}
+-
++	} else {
+ 		err =3D smp_call_function_single(cpu, __bpf_prog_test_run_raw_tp,
+ 					       &info, 1);
+-		if (err)
+-			goto out;
+ 	}
++	migrate_enable();
++	rcu_read_unlock();
+=20
+-	if (copy_to_user(&uattr->test.retval, &info.retval, sizeof(u32)))
++	if (err =3D=3D 0 &&
++	    copy_to_user(&uattr->test.retval, &info.retval, sizeof(u32)))
+ 		err =3D -EFAULT;
+=20
+ out:
+--=20
+2.24.1
 
