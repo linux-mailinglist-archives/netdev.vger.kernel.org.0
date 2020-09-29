@@ -2,204 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60A4127BFF8
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD8D27BFF3
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:49:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727730AbgI2IsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 04:48:15 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:3356 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725372AbgI2IsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:48:15 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08T8dmgo020572
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 01:48:14 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=f1DRt8DSh7xvwsbLwZtA/reljbesfZWQwqhLxzP0MJY=;
- b=iuH70HO4HlPxk8dd7EZ+wP1NRWtlHsW+aXTzKUjr99w2M9RnwVTKHGj2jAycU09EUsau
- MIv8SdtzeNHf82riPBxfN46hx5X0wWg6vU6zC6mwWrbl9p0Fj8zy6W1TKAUY2FMNLRiz
- /3PB7tuTtesLoAqU5AN839e5cjkNDCR/4cQ= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 33t3cpbv3w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 01:48:14 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 29 Sep 2020 01:48:13 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 165DB62E5765; Tue, 29 Sep 2020 01:48:06 -0700 (PDT)
-From:   Song Liu <songliubraving@fb.com>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH bpf-next 2/2] selftests/bpf: add tests for BPF_F_SHARE_PE
-Date:   Tue, 29 Sep 2020 01:47:50 -0700
-Message-ID: <20200929084750.419168-3-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200929084750.419168-1-songliubraving@fb.com>
-References: <20200929084750.419168-1-songliubraving@fb.com>
+        id S1727717AbgI2Ir4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 04:47:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726064AbgI2Ir4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:47:56 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B13C061755
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 01:47:55 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id y15so3924019wmi.0
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 01:47:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=konsulko.com; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=04NOm1CcnqBFH1lFELuJnkJP2M/KCWXwaUl0Wh9OcUc=;
+        b=tO+PmyVtTbztmBizvLgCmAX4QG5q377A4oSC57bt1amxOb796KuKCoWdTtewoRDcFF
+         xrlMO6QZd6X8lLgT5lrb5eFLu/Ra6uCxW7NKQyYNS/LmWwu5V1WgG32EXm6FaXx+7TAo
+         7X1w7o6HRAWI6ZE9lvKdfCledlYDRck0hynQE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=04NOm1CcnqBFH1lFELuJnkJP2M/KCWXwaUl0Wh9OcUc=;
+        b=jpHeumt1w2evG7OJ+Df40JDImLLsP61b015kDM82n1sroBWP/SFHQLTUrr7dwcKna+
+         O+Vi6/3sjJYTCCP3IKxh6+hC3rcvn4ByUxOphjHTW5fFSbycMTV+hXPZoq88ReDsnlq2
+         2kOF7x7b89zPFwBZa68hGyJUxnR5TZfHoQo+b4jEUJcMDqHH3yYw3Th3jQEuYD58EbUS
+         ypm752LGXEWKgzXIHALm3tTz/R98iZOWd9T1X1k0ECuCYY4LOlnswTHpOSvucH+/gbhm
+         9wFm+/0h06C75nGfehp5LQp9tv/OCZYB3uO3jL/Gr5KZnaG2TF4y2LkRnL+CFClWtamQ
+         T6eQ==
+X-Gm-Message-State: AOAM533pD+YMksHHRbPiTe5gwywFq0UMTzgFW6au3ktrBJuNYYRyyNFe
+        COupA6tBwwWZgKM48AYYWilbBw==
+X-Google-Smtp-Source: ABdhPJzCaYhOmzZGYjtY3NFO+dcWZjeq7anc17VA56qyI4ndCuaOwSJMJVZxvCxDqgu253DyYg8FFg==
+X-Received: by 2002:a1c:f612:: with SMTP id w18mr3235574wmc.47.1601369274642;
+        Tue, 29 Sep 2020 01:47:54 -0700 (PDT)
+Received: from carbon ([94.26.108.4])
+        by smtp.gmail.com with ESMTPSA id m3sm5155328wrs.83.2020.09.29.01.47.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Sep 2020 01:47:54 -0700 (PDT)
+Date:   Tue, 29 Sep 2020 11:47:52 +0300
+From:   Petko Manolov <petko.manolov@konsulko.com>
+To:     Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
+        Petko Manolov <petkan@nucleusys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [Linux-kernel-mentees][PATCH] net: usb: rtl8150: prevent
+ set_ethernet_addr from setting uninit address
+Message-ID: <20200929084752.GA8101@carbon>
+Mail-Followup-To: Anant Thazhemadam <anant.thazhemadam@gmail.com>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
+        Petko Manolov <petkan@nucleusys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200929082028.50540-1-anant.thazhemadam@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-29_01:2020-09-29,2020-09-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- malwarescore=0 clxscore=1015 impostorscore=0 mlxlogscore=999
- suspectscore=0 priorityscore=1501 lowpriorityscore=0 spamscore=0
- adultscore=0 mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2009290080
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200929082028.50540-1-anant.thazhemadam@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tests for perf event array with and without BPF_F_SHARE_PE.
+On 20-09-29 13:50:28, Anant Thazhemadam wrote:
+> When get_registers() fails (which happens when usb_control_msg() fails)
+> in set_ethernet_addr(), the uninitialized value of node_id gets copied
+> as the address.
+> 
+> Checking for the return values appropriately, and handling the case
+> wherein set_ethernet_addr() fails like this, helps in avoiding the
+> mac address being incorrectly set in this manner.
+> 
+> Reported-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+> Tested-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+> Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+> ---
+>  drivers/net/usb/rtl8150.c | 24 ++++++++++++++++--------
+>  1 file changed, 16 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
+> index 733f120c852b..e542a9ab2ff8 100644
+> --- a/drivers/net/usb/rtl8150.c
+> +++ b/drivers/net/usb/rtl8150.c
+> @@ -150,7 +150,7 @@ static const char driver_name [] = "rtl8150";
+>  **	device related part of the code
+>  **
+>  */
+> -static int get_registers(rtl8150_t * dev, u16 indx, u16 size, void *data)
+> +static int get_registers(rtl8150_t *dev, u16 indx, u16 size, void *data)
+>  {
+>  	void *buf;
+>  	int ret;
+> @@ -274,12 +274,17 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
+>  		return 1;
+>  }
+>  
+> -static inline void set_ethernet_addr(rtl8150_t * dev)
+> +static bool set_ethernet_addr(rtl8150_t *dev)
+>  {
+>  	u8 node_id[6];
+> +	int ret;
+>  
+> -	get_registers(dev, IDR, sizeof(node_id), node_id);
+> -	memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
+> +	ret = get_registers(dev, IDR, sizeof(node_id), node_id);
+> +	if (ret > 0 && ret <= sizeof(node_id)) {
 
-Add a perf event to array via fd mfd. Without BPF_F_SHARE_PE, the perf
-event is removed when mfd is closed. With BPF_F_SHARE_PE, the perf event
-is removed when the map is freed.
+get_registers() was recently modified to use usb_control_msg_recv() which does
+not return partial reads.  IOW you'll either get negative value or
+sizeof(node_id).  Since it is good to be paranoid i'd convert the above check
+to:
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../bpf/prog_tests/perf_event_share.c         | 68 +++++++++++++++++++
- .../bpf/progs/test_perf_event_share.c         | 44 ++++++++++++
- 2 files changed, 112 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/perf_event_sha=
-re.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_perf_event_sha=
-re.c
+	if (ret == sizeof(node_id)) {
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/perf_event_share.c b/=
-tools/testing/selftests/bpf/prog_tests/perf_event_share.c
-new file mode 100644
-index 0000000000000..a37cfdd047ea6
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/perf_event_share.c
-@@ -0,0 +1,68 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2019 Facebook */
-+#include <test_progs.h>
-+#include <linux/bpf.h>
-+#include "test_perf_event_share.skel.h"
-+
-+static int duration;
-+
-+static void test_one_map(struct bpf_map *map, struct bpf_program *prog,
-+			 bool has_share_pe)
-+{
-+	int err, key =3D 0, pfd =3D -1, mfd =3D bpf_map__fd(map);
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts);
-+	struct perf_event_attr attr =3D {
-+		.size =3D sizeof(struct perf_event_attr),
-+		.type =3D PERF_TYPE_SOFTWARE,
-+		.config =3D PERF_COUNT_SW_CPU_CLOCK,
-+	};
-+
-+	pfd =3D syscall(__NR_perf_event_open, &attr, 0 /* pid */,
-+		      -1 /* cpu 0 */, -1 /* group id */, 0 /* flags */);
-+	if (CHECK(pfd < 0, "perf_event_open", "failed\n"))
-+		return;
-+
-+	err =3D bpf_map_update_elem(mfd, &key, &pfd, BPF_ANY);
-+	if (CHECK(err < 0, "bpf_map_update_elem", "failed\n"))
-+		goto cleanup;
-+
-+	err =3D bpf_prog_test_run_opts(bpf_program__fd(prog), &opts);
-+	if (CHECK(err < 0, "bpf_prog_test_run_opts", "failed\n"))
-+		goto cleanup;
-+	if (CHECK(opts.retval !=3D 0, "bpf_perf_event_read_value",
-+		  "failed with %d\n", opts.retval))
-+		goto cleanup;
-+
-+	/* closing mfd, prog still holds a reference on map */
-+	close(mfd);
-+
-+	err =3D bpf_prog_test_run_opts(bpf_program__fd(prog), &opts);
-+	if (CHECK(err < 0, "bpf_prog_test_run_opts", "failed\n"))
-+		goto cleanup;
-+
-+	if (has_share_pe) {
-+		CHECK(opts.retval !=3D 0, "bpf_perf_event_read_value",
-+		      "failed with %d\n", opts.retval);
-+	} else {
-+		CHECK(opts.retval !=3D -ENOENT, "bpf_perf_event_read_value",
-+		      "should have failed with %d, but got %d\n", -ENOENT,
-+		      opts.retval);
-+	}
-+
-+cleanup:
-+	close(pfd);
-+}
-+
-+void test_perf_event_share(void)
-+{
-+	struct test_perf_event_share *skel;
-+
-+	skel =3D test_perf_event_share__open_and_load();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+		return;
-+
-+	test_one_map(skel->maps.array_1, skel->progs.read_array_1, false);
-+	test_one_map(skel->maps.array_2, skel->progs.read_array_2, true);
-+
-+	test_perf_event_share__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_perf_event_share.c b/=
-tools/testing/selftests/bpf/progs/test_perf_event_share.c
-new file mode 100644
-index 0000000000000..005bfe375352f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_perf_event_share.c
-@@ -0,0 +1,44 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2020 Facebook
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
-+	__uint(max_entries, 1);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+} array_1 SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
-+	__uint(max_entries, 1);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+	__uint(map_flags, BPF_F_SHARE_PE);  /* array_2 has BPF_F_SHARE_PE */
-+} array_2 SEC(".maps");
-+
-+SEC("raw_tp/sched_switch")
-+int BPF_PROG(read_array_1)
-+{
-+	struct bpf_perf_event_value val;
-+	long ret;
-+
-+	ret =3D bpf_perf_event_read_value(&array_1, 0, &val, sizeof(val));
-+	bpf_printk("read_array_1 returns %ld", ret);
-+	return ret;
-+}
-+
-+SEC("raw_tp/task_rename")
-+int BPF_PROG(read_array_2)
-+{
-+	struct bpf_perf_event_value val;
-+	long ret;
-+
-+	ret =3D bpf_perf_event_read_value(&array_2, 0, &val, sizeof(val));
-+	bpf_printk("read_array_2 returns %ld", ret);
-+	return ret;
-+}
-+
-+char LICENSE[] SEC("license") =3D "GPL";
---=20
-2.24.1
+and fail in any other case.  Apart from this minor detail the rest of the patch 
+looks good to me.
 
+Acked-by: Petko Manolov
