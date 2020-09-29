@@ -2,190 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88D2627BBBA
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 06:03:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C883627BBD2
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 06:13:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725765AbgI2ED4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 00:03:56 -0400
-Received: from mail-db8eur05on2059.outbound.protection.outlook.com ([40.107.20.59]:57057
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725710AbgI2ED4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 00:03:56 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kUQbL4ufRqG9GH7JIt8vZFz/IHeDsAMQDkQJ49xHDWMwZJGzmEsmaXk2jy4f6/4wU6YiVdY/7Xv3HZBYFSWm7oEe+rehK4tqOxGyXBl5h5aALDuAJmhrB8W2dTEdOKUIIma+evFAxlow0gTvyxsucnBGx0li7xw3hwh3KZxRY8k2oK+6nitoAYzEApbMI08FztsIjOWzJvRR7/AHok6+1huPVaDaZ4c2ksBVXQNHRDA1y38s+7cKq4SepcuqnN5e0ngdEvCKYksNHvNi6skXHuOYXxpwFBxf4GsrpSENLewJ0cpE93l72I8LrSitRa7IO2Lw6JaDPYzSS2pNCJjenw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3SeWDOOoHj2n+BOIpv9ER2msiiCUHjP4jmV8P/Fpqvc=;
- b=h7Y7LDRersRAu7cq28EbAFvklcmywdS5BEF1iVFZyaZPJP5N2cHWV424G4Lt40Go4wRiWeh3QqggsLB0rshWCnjtVQ0fJnaP0vgIhzwI1vbWE2Ep94Q6d6NBfRxGjuk+ShZUhRFkL17swtLGeK+zDu4JaGUU2oed/KVUwsgS5/1boawwQlnkswWRJDCaoVUvjbY1ooaeb0IfMruVzXB7r45NIN0P7yibeYAYSoVb2d6Vv1lq4imhCemhHpKwPm4kAc9+4cNYXRi9Kmaje6GSb5h0Gu321KCrDdblCF3BA3IB0ngRIyPoiYwPXmHNdKBMCBUTKMZdni4jmBSabsW6+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3SeWDOOoHj2n+BOIpv9ER2msiiCUHjP4jmV8P/Fpqvc=;
- b=BV+iqfMYwlH11fJHr51oe+lZNCIpu2iNbUZa9FXjw7Uqj3Zzt0oROvy9zJGitOlmf4gWmp4ftw1vrIPhXokZppOKKXG5QmkSdCPg0MnH+UPh65dU3OzrO3GFpqJBE4qp7C3ijEFfZvIiyf29UvlOCWmK7kSTEuT/+x+bS2tAUdI=
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DBAPR04MB7240.eurprd04.prod.outlook.com (2603:10a6:10:1af::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.22; Tue, 29 Sep
- 2020 04:03:51 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::d12e:689a:169:fd68]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::d12e:689a:169:fd68%8]) with mapi id 15.20.3412.029; Tue, 29 Sep 2020
- 04:03:51 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH V3 1/3] can: flexcan: initialize all flexcan memory for
- ECC function
-Thread-Topic: [PATCH V3 1/3] can: flexcan: initialize all flexcan memory for
- ECC function
-Thread-Index: AQHWlX6LIgjQf3dNuUOzXhPgMCIyi6l+4ZHw
-Date:   Tue, 29 Sep 2020 04:03:50 +0000
-Message-ID: <DB8PR04MB67950FA3AD93C22DE358646AE6320@DB8PR04MB6795.eurprd04.prod.outlook.com>
-References: <20200928180253.1454-1-qiangqing.zhang@nxp.com>
- <20200928180253.1454-2-qiangqing.zhang@nxp.com>
-In-Reply-To: <20200928180253.1454-2-qiangqing.zhang@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: pengutronix.de; dkim=none (message not signed)
- header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 4b8e12f7-007a-445b-a35b-08d8642cacb0
-x-ms-traffictypediagnostic: DBAPR04MB7240:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DBAPR04MB7240CF27A1DE77701E69850FE6320@DBAPR04MB7240.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1jOtQIu4rtePw+X7r6vpLmkKb4eDnqaj4l6P9B7ObMHGsyTcIzO10b9gBpse/7Jh+0mTIdEEo5oKZK61H+pb3teoSz9x0YyzlX74ZtVFCy/EQ7Y4PdtojyLCNybio3FvPo5OqABbUfaanlad94YD+Yusj85sBDFTANZo6kIx3AnBFCP9z49rqoVQQx5cTuQTikYYBxtMzHRpD94yTO7Vsguj+BCgiBT6yqawu2frcIJojHiEX6lmK8wwzdsOPcqO6iel1GtQRjGs9+U6LBjAwh0cDhNjPEcOF5voc7nwGK6qw0WTzoYN+u5AvMVzYK6ThiTjcj2+BeAwbMivnffprGKyQn6VYjxgzY86nqLEWOnY88ho6I8Yzk7AcADbBeyh
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(366004)(376002)(346002)(136003)(52536014)(66476007)(66556008)(64756008)(66446008)(7696005)(8676002)(26005)(2906002)(53546011)(110136005)(6506007)(186003)(9686003)(478600001)(86362001)(8936002)(33656002)(83380400001)(54906003)(4326008)(66946007)(71200400001)(76116006)(316002)(55016002)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: Yn7PyNxocwS46PJN0qUBty4JpE/W0hXMZRm3Xaqo6ULNLIhn78m9yDNAr1gSktB/PBdpl0D4W+/OAtfsS0l0sWfAtcEV1+QsWZrmdzg+pbJl1OACBIozG762ushd0njbFsWNvUYtukhGLQiZxFVA6JfE8qB3VqnhTmosN8eYVWtPIjWGkjVBdK+2dxqxEgz0O+czCmtof1CPEF6sbJ+fG4nPZQkJUEMltzuDgiwWqZxLv3z6pdSHyp/Jomp8uB7Yax1uFjH/DTe/uRpb9AxVaRxiLyfVvIsBF9VyW+eeirur4NJaMs0CVc+dFV+xV7YvGZasobeMjuPbFKFxyQyRDW/M7ZdR6DQ+3UH8pyPipVqbmDjOlu3qtKyz63ocdxHz7UB8Rsdltv8K9oxNMp+NSwYa/J0XYW1ttwvwkZ2SB2Yf8hoMyFE1jG/FOTJc0GF7b8TloEoBcyi0fnmZ4xW9vdvBt/+mhS+/S8BuDAFhMOrnY8vIuBwQ5z0ZqFLR2GB3VS7MFWjHjAMBU7CXWHo0JQGFP6RBi8a6hDiUa65EP+zwpaK6C7tV9MsBmahMlYMiqXG9MzND78RMzKTmmLtiyeEpooSkbPQrsgJy4ZUksP6Kum2zDvKGCfNQl9/pJ2+yDWKWAxGgcAFXEIXCxv6U1g==
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S1725730AbgI2ENE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 00:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725320AbgI2END (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 00:13:03 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875B1C061755;
+        Mon, 28 Sep 2020 21:13:03 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id j19so809236pjl.4;
+        Mon, 28 Sep 2020 21:13:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kzHV7kRs624uoUHo9YKEdvr1ljcLOGG/mpwSJhaxV2Y=;
+        b=gktB7qtclfq93ixS190QNbfre1O3ogaFaw2zpFHbgDi9Oh/QWyncivzjfQ3fx8NaeB
+         Nh+CvCn3dj94XGm5UQCeXt5qVbvXpwbzJjqWVDfNXOl/GunDCOSSPem33YjVOTDcS1kz
+         yfscqK/SoK/VysYdCYVXuFA69VQwb+AF1Tu9enV2a1wGM0j91boGMv7jCfqs9/qsNhH1
+         r7+Cayi9sA1a1hzmEVf/tAq3ds6oO+h6SpF5qKr4ec1Z+cPUyEgHYGxSfbp6lcwx1hfI
+         gVpxvE62PgGe4vjXEwDpA/HzN3EQWGEeJQcN12v8D6UKksmlLn/BRIyhva5Ah6tXtKfS
+         2OeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kzHV7kRs624uoUHo9YKEdvr1ljcLOGG/mpwSJhaxV2Y=;
+        b=ClGdLMG5y7j/yCYcsinUZRzaGYs1MiofrF2nRTIm4dChttazldBX+GKXoNhHwRipUj
+         I7+JuoYd6YZmVR8GfFjNK1iVxWa7X06iL+3VmQR2zomFECopGyYdcpHnnrcc6t95L07t
+         RA9wz7DzpAKczgIQItoT3ddp8iNna+z4/nB+s3xijgicOfsC9TFCG1OR1vBb6u3qnSup
+         rPqsRLkT92p+mZ2opT5ixOJa2bmwJGtOQzA7pAdHhDICENYW+J2U6fK5XbkDoHgBdacR
+         Z4Z5LO1cY9JgFd15z/rXIpC1kMgfWBrTz8ZiNwlQ81KfZYs0OQGhhTr3qYctC7oD324w
+         zzWw==
+X-Gm-Message-State: AOAM530rDQkFKAZ9J7DM9x9m7mWc2pLtCdv71yCE+Y+STqYaJqZIzwRM
+        r+Y2ysjgLa/QvuFiRy5vAZQ=
+X-Google-Smtp-Source: ABdhPJxtiU2Pqwx2Hbj7UITZPDgH040o5avTpp21JULJ6lIMFltyLHG9hCIdkyeXZu32dM8Ujh4Idw==
+X-Received: by 2002:a17:90a:c20f:: with SMTP id e15mr2048547pjt.163.1601352782880;
+        Mon, 28 Sep 2020 21:13:02 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local (c-24-23-181-79.hsd1.ca.comcast.net. [24.23.181.79])
+        by smtp.googlemail.com with ESMTPSA id l13sm3102368pgq.33.2020.09.28.21.13.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Sep 2020 21:13:02 -0700 (PDT)
+Subject: Re: [PATCH bpf-next v2 3/6] bpf: add redirect_neigh helper as
+ redirect drop-in
+To:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org
+Cc:     john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, David Ahern <dsahern@kernel.org>
+References: <cover.1601303057.git.daniel@iogearbox.net>
+ <f4dec1d6d0fd9d79cf23bc4b54092f089e59f6b7.1601303057.git.daniel@iogearbox.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <e7eb6be7-2c03-0377-0712-90a3bb289594@gmail.com>
+Date:   Mon, 28 Sep 2020 21:13:01 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b8e12f7-007a-445b-a35b-08d8642cacb0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Sep 2020 04:03:51.0167
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: AkgWYmbZlqgP+6xLetAVbNPVQ77MOa7ziyjnQwha93+cvjrRZWe15BDhT995QHQiQvAaGv6CD/KtXo4EnqK0Kg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7240
+In-Reply-To: <f4dec1d6d0fd9d79cf23bc4b54092f089e59f6b7.1601303057.git.daniel@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEpvYWtpbSBaaGFuZyA8cWlh
-bmdxaW5nLnpoYW5nQG54cC5jb20+DQo+IFNlbnQ6IDIwMjDE6jnUwjI5yNUgMjowMw0KPiBUbzog
-bWtsQHBlbmd1dHJvbml4LmRlOyBsaW51eC1jYW5Admdlci5rZXJuZWwub3JnDQo+IENjOiBuZXRk
-ZXZAdmdlci5rZXJuZWwub3JnOyBkbC1saW51eC1pbXggPGxpbnV4LWlteEBueHAuY29tPg0KPiBT
-dWJqZWN0OiBbUEFUQ0ggVjMgMS8zXSBjYW46IGZsZXhjYW46IGluaXRpYWxpemUgYWxsIGZsZXhj
-YW4gbWVtb3J5IGZvciBFQ0MNCj4gZnVuY3Rpb24NCj4gDQo+IE9uZSBpc3N1ZSB3YXMgcmVwb3J0
-ZWQgYXQgYSBiYXJlbWV0YWwgZW52aXJvbm1lbnQsIHdoaWNoIGlzIHVzZWQgZm9yIEZQR0ENCj4g
-dmVyaWZpY2F0aW9uLiAiVGhlIGZpcnN0IHRyYW5zZmVyIHdpbGwgZmFpbCBmb3IgZXh0ZW5kZWQg
-SUQgZm9ybWF0KGZvciBib3RoIDIuMEIgYW5kDQo+IEZEIGZvcm1hdCksIGZvbGxvd2luZyBmcmFt
-ZXMgY2FuIGJlIHRyYW5zbWl0dGVkIGFuZCByZWNlaXZlZCBzdWNjZXNzZnVsbHkgZm9yDQo+IGV4
-dGVuZGVkIGZvcm1hdCwgYW5kIHN0YW5kYXJkIGZvcm1hdCBkb24ndCBoYXZlIHRoaXMgaXNzdWUu
-IFRoaXMgaXNzdWUNCj4gb2NjdXJyZWQgcmFuZG9tbHkgd2l0aCBoaWdoIHBvc3NpYmxpdHksIHdo
-ZW4gaXQgb2NjdXJzLCB0aGUgdHJhbnNtaXR0ZXIgd2lsbA0KPiBkZXRlY3QgYSBCSVQxIGVycm9y
-LCB0aGUgcmVjZWl2ZXIgYSBDUkMgZXJyb3IuIEFjY29yZGluZyB0byB0aGUgc3BlYywgYQ0KPiBu
-b24tY29ycmVjdGFibGUgZXJyb3IgbWF5IGNhdXNlIHRoaXMgdHJhbnNmZXIgZmFpbHVyZS4iDQo+
-IA0KPiBXaXRoIEZMRVhDQU5fUVVJUktfRElTQUJMRV9NRUNSIHF1aXJrLCBpdCBzdXBwb3J0cyBj
-b3JyZWN0YWJsZSBlcnJvcnMsDQo+IGRpc2FibGUgbm9uLWNvcnJlY3RhYmxlIGVycm9ycyBpbnRl
-cnJ1cHQgYW5kIGZyZWV6ZSBtb2RlLiBQbGF0Zm9ybSBoYXMgRUNDDQo+IGhhcmR3YXJlIHN1cHBv
-cnQsIGJ1dCBzZWxlY3QgdGhpcyBxdWlyaywgdGhpcyBpc3N1ZSBtYXkgbm90IGNvbWUgdG8gbGln
-aHQuDQo+IEluaXRpYWxpemUgYWxsIEZsZXhDQU4gbWVtb3J5IGJlZm9yZSBhY2Nlc3NpbmcgdGhl
-bSwgYXQgbGVhc3QgaXQgY2FuIGF2b2lkDQo+IG5vbi1jb3JyZWN0YWJsZSBlcnJvcnMgZGV0ZWN0
-ZWQgZHVlIHRvIG1lbW9yeSB1bmluaXRpYWxpemVkLg0KPiBUaGUgaW50ZXJuYWwgcmVnaW9uIGNh
-bid0IGJlIGluaXRpYWxpemVkIHdoZW4gdGhlIGhhcmR3YXJlIGRvZXNuJ3Qgc3VwcG9ydCBFQ0Mu
-DQo+IA0KPiBBY2NvcmRpbmcgdG8gSU1YOE1QUk0sIFJldi5DLCAwNC8yMDIwLiBUaGVyZSBpcyBh
-IE5PVEUgYXQgdGhlIHNlY3Rpb24NCj4gMTEuOC4zLjEzIERldGVjdGlvbiBhbmQgY29ycmVjdGlv
-biBvZiBtZW1vcnkgZXJyb3JzOg0KPiAiQWxsIEZsZXhDQU4gbWVtb3J5IG11c3QgYmUgaW5pdGlh
-bGl6ZWQgYmVmb3JlIHN0YXJ0aW5nIGl0cyBvcGVyYXRpb24gaW4gb3JkZXINCj4gdG8gaGF2ZSB0
-aGUgcGFyaXR5IGJpdHMgaW4gbWVtb3J5IHByb3Blcmx5IHVwZGF0ZWQuIENUUkwyW1dSTUZSWl0g
-Z3JhbnRzDQo+IHdyaXRlIGFjY2VzcyB0byBhbGwgbWVtb3J5IHBvc2l0aW9ucyB0aGF0IHJlcXVp
-cmUgaW5pdGlhbGl6YXRpb24sIHJhbmdpbmcgZnJvbQ0KPiAweDA4MCB0byAweEFERiBhbmQgZnJv
-bSAweEYyOCB0byAweEZGRiB3aGVuIHRoZSBDQU4gRkQgZmVhdHVyZSBpcyBlbmFibGVkLg0KPiBU
-aGUgUlhNR01BU0ssIFJYMTRNQVNLLCBSWDE1TUFTSywgYW5kIFJYRkdNQVNLIHJlZ2lzdGVycyBu
-ZWVkIHRvIGJlDQo+IGluaXRpYWxpemVkIGFzIHdlbGwuIE1DUltSRkVOXSBtdXN0IG5vdCBiZSBz
-ZXQgZHVyaW5nIG1lbW9yeSBpbml0aWFsaXphdGlvbi4iDQo+IA0KPiBNZW1vcnkgcmFuZ2UgZnJv
-bSAweDA4MCB0byAweEFERiwgdGhlcmUgYXJlIHJlc2VydmVkIG1lbW9yeQ0KPiAodW5pbXBsZW1l
-bnRlZCBieSBoYXJkd2FyZSwgZS5nLiBvbmx5IGNvbmZpZ3VyZSA2NCBNQnMpLCB0aGVzZSBtZW1v
-cnkgY2FuDQo+IGJlIGluaXRpYWxpemVkIG9yIG5vdC4NCj4gSW4gdGhpcyBwYXRjaCwgaW5pdGlh
-bGl6ZSBhbGwgZmxleGNhbiBtZW1vcnkgd2hpY2ggaW5jbHVkZXMgcmVzZXJ2ZWQgbWVtb3J5Lg0K
-PiANCj4gSW4gdGhpcyBwYXRjaCwgY3JlYXRlIEZMRVhDQU5fUVVJUktfU1VQUE9SVF9FQ0MgZm9y
-IHBsYXRmb3JtcyB3aGljaCBoYXMNCj4gRUNDIGZlYXR1cmUuIElmIHlvdSBoYXZlIGEgRUNDIHBs
-YXRmb3JtIGluIHlvdXIgaGFuZCwgcGxlYXNlIHNlbGVjdCB0aGlzIHF1cmlrIHRvDQo+IGluaXRp
-YWxpemUgYWxsIGZsZXhjYW4gbWVtb3J5IGZpcnN0bHksIHRoZW4geW91IGNhbiBzZWxlY3QNCj4g
-RkxFWENBTl9RVUlSS19ESVNBQkxFX01FQ1IgdG8gb25seSBlbmFibGUgY29ycmVjdGFibGUgZXJy
-b3JzLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogSm9ha2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdA
-bnhwLmNvbT4NCj4gLS0tDQo+IENoYW5nZUxvZ3M6DQo+IFYxLT5WMjoNCj4gCSogdXBkYXRlIGNv
-bW1pdCBtZXNzYWdlcywgYWRkIGEgZGF0YXNoZWV0IHJlZmVyZW5jZS4NCj4gCSogaW5pdGlhbGl6
-ZSBibG9jayBtZW1vcnkgaW5zdGVhZCBvZiB0cml2aWFsIG1lbW9yeS4NCj4gCSogaW5pbGlhbGl6
-ZSByZXNlcnZlZCBtZW1vcnkuDQo+IFYyLT5WMzoNCj4gCSogYWRkIEZMRVhDQU5fUVVJUktfU1VQ
-UE9SVF9FQ0MgcXVpcmsuDQo+IAkqIHJlbW92ZSBpbml0X3JhbSBzdHJ1Y3QuDQo+IC0tLQ0KPiAg
-ZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYyB8IDUwDQo+ICsrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKw0KPiAgMSBmaWxlIGNoYW5nZWQsIDUwIGluc2VydGlvbnMoKykNCj4g
-DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9jYW4vZmxleGNhbi5jIGIvZHJpdmVycy9uZXQv
-Y2FuL2ZsZXhjYW4uYyBpbmRleA0KPiBlODY5MjUxMzQwMDkuLjBhZTc0MzZlZTZlZiAxMDA2NDQN
-Cj4gLS0tIGEvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYw0KPiArKysgYi9kcml2ZXJzL25ldC9j
-YW4vZmxleGNhbi5jDQo+IEBAIC0yMzksNiArMjM5LDggQEANCj4gICNkZWZpbmUgRkxFWENBTl9R
-VUlSS19TRVRVUF9TVE9QX01PREUgQklUKDgpDQo+ICAvKiBTdXBwb3J0IENBTi1GRCBtb2RlICov
-DQo+ICAjZGVmaW5lIEZMRVhDQU5fUVVJUktfU1VQUE9SVF9GRCBCSVQoOSkNCj4gKy8qIHN1cHBv
-cnQgbWVtb3J5IGRldGVjdGlvbiBhbmQgY29ycmVjdGlvbiAqLyAjZGVmaW5lDQo+ICtGTEVYQ0FO
-X1FVSVJLX1NVUFBPUlRfRUNDIEJJVCgxMCkNCj4gDQo+ICAvKiBTdHJ1Y3R1cmUgb2YgdGhlIG1l
-c3NhZ2UgYnVmZmVyICovDQo+ICBzdHJ1Y3QgZmxleGNhbl9tYiB7DQo+IEBAIC0xMjkyLDYgKzEy
-OTQsNTEgQEAgc3RhdGljIHZvaWQgZmxleGNhbl9zZXRfYml0dGltaW5nKHN0cnVjdCBuZXRfZGV2
-aWNlDQo+ICpkZXYpDQo+ICAJCXJldHVybiBmbGV4Y2FuX3NldF9iaXR0aW1pbmdfY3RybChkZXYp
-OyAgfQ0KPiANCj4gK3N0YXRpYyB2b2lkIGZsZXhjYW5faW5pdF9yYW0oc3RydWN0IG5ldF9kZXZp
-Y2UgKmRldikgew0KPiArCXN0cnVjdCBmbGV4Y2FuX3ByaXYgKnByaXYgPSBuZXRkZXZfcHJpdihk
-ZXYpOw0KPiArCXN0cnVjdCBmbGV4Y2FuX3JlZ3MgX19pb21lbSAqcmVncyA9IHByaXYtPnJlZ3M7
-DQo+ICsJdTMyIHJlZ19jdHJsMjsNCj4gKw0KPiArCS8qIDExLjguMy4xMyBEZXRlY3Rpb24gYW5k
-IGNvcnJlY3Rpb24gb2YgbWVtb3J5IGVycm9yczoNCj4gKwkgKiBDVFJMMltXUk1GUlpdIGdyYW50
-cyB3cml0ZSBhY2Nlc3MgdG8gYWxsIG1lbW9yeSBwb3NpdGlvbnMgdGhhdA0KPiArCSAqIHJlcXVp
-cmUgaW5pdGlhbGl6YXRpb24sIHJhbmdpbmcgZnJvbSAweDA4MCB0byAweEFERiBhbmQNCj4gKwkg
-KiBmcm9tIDB4RjI4IHRvIDB4RkZGIHdoZW4gdGhlIENBTiBGRCBmZWF0dXJlIGlzIGVuYWJsZWQu
-DQo+ICsJICogVGhlIFJYTUdNQVNLLCBSWDE0TUFTSywgUlgxNU1BU0ssIGFuZCBSWEZHTUFTSyBy
-ZWdpc3RlcnMNCj4gbmVlZCB0bw0KPiArCSAqIGJlIGluaXRpYWxpemVkIGFzIHdlbGwuIE1DUltS
-RkVOXSBtdXN0IG5vdCBiZSBzZXQgZHVyaW5nIG1lbW9yeQ0KPiArCSAqIGluaXRpYWxpemF0aW9u
-Lg0KPiArCSAqLw0KPiArCXJlZ19jdHJsMiA9IHByaXYtPnJlYWQoJnJlZ3MtPmN0cmwyKTsNCj4g
-KwlyZWdfY3RybDIgfD0gRkxFWENBTl9DVFJMMl9XUk1GUlo7DQo+ICsJcHJpdi0+d3JpdGUocmVn
-X2N0cmwyLCAmcmVncy0+Y3RybDIpOw0KPiArDQo+ICsJLyogcmFuZ2luZyBmcm9tIDB4MDA4MCB0
-byAweDBBREYsIHJhbSBkZXRhaWxzIGFzIGJlbG93IGxpc3Q6DQo+ICsJICogMHgwMDgwLS0weDA4
-N0Y6CTEyOCBNQnMNCj4gKwkgKiAweDA4ODAtLTB4MEE3RjoJMTI4IFJYSU1Scw0KPiArCSAqIDB4
-MEE4MC0tMHgwQTk3Ogk2IFJYRklScw0KPiArCSAqIDB4MEE5OC0tMHgwQTlGOglSZXNlcnZlZA0K
-PiArCSAqIDB4MEFBMC0tMHgwQUEzOglSWE1HTUFTSw0KPiArCSAqIDB4MEFBNC0tMHgwQUE3OglS
-WEZHTUFTSw0KPiArCSAqIDB4MEFBOC0tMHgwQUFCOglSWDE0TUFTSw0KPiArCSAqIDB4MEFBQy0t
-MHgwQUFGOglSWDE1TUFTSw0KPiArCSAqIDB4MEFCMC0tMHgwQUJGOglUWF9TTUINCj4gKwkgKiAw
-eDBBQzAtLTB4MEFDRjoJUlhfU01CMA0KPiArCSAqIDB4MEFEMC0tMHgwQURGOglSWF9TTUIxDQo+
-ICsJICovDQo+ICsJbWVtc2V0X2lvKCh2b2lkIF9faW9tZW0gKilyZWdzICsgMHg4MCwgMCwgMHhh
-ZGYgLSAweDgwICsgMSk7DQo+ICsNCj4gKwkvKiByYW5naW5nIGZyb20gMHgwRjI4IHRvIDB4MEZG
-RiB3aGVuIENBTiBGRCBmZWF0dXJlIGlzIGVuYWJsZWQsDQo+ICsJICogcmFtIGRldGFpbHMgYXMg
-YmVsb3cgbGlzdDoNCj4gKwkgKiAweDBGMjgtLTB4MEY2RjoJVFhfU01CX0ZEDQo+ICsJICogMHgw
-RjcwLS0weDBGQjc6CVJYX1NNQjBfRkQNCj4gKwkgKiAweDBGQjgtLTB4MEZGRjoJUlhfU01CMF9G
-RA0KPiArCSAqLw0KPiArCW1lbXNldF9pbygodm9pZCBfX2lvbWVtICopcmVncyArIDB4ZjI4LCAw
-LCAweGZmZiAtIDB4ZjI4ICsgMSk7DQoNClNvcnJ5LCBzaG91bGQgYmUgdGhpcywgcGxlYXNlIGln
-bm9yZSBpdCBmaXJzdC4NCg0KaWYgKHByaXYtPmNhbi5jdHJsbW9kZSAmIENBTl9DVFJMTU9ERV9G
-RCkNCgltZW1zZXRfaW8oKHZvaWQgX19pb21lbSAqKXJlZ3MgKyAweGYyOCwgMCwgMHhmZmYgLSAw
-eGYyOCArIDEpOw0KDQpCZXN0IFJlZ2FyZHMsDQpKb2FraW0gWmhhbmcNCj4gKwlyZWdfY3RybDIg
-Jj0gfkZMRVhDQU5fQ1RSTDJfV1JNRlJaOw0KPiArCXByaXYtPndyaXRlKHJlZ19jdHJsMiwgJnJl
-Z3MtPmN0cmwyKTsNCj4gK30NCj4gKw0KPiAgLyogZmxleGNhbl9jaGlwX3N0YXJ0DQo+ICAgKg0K
-PiAgICogdGhpcyBmdW5jdGlvbnMgaXMgZW50ZXJlZCB3aXRoIGNsb2NrcyBlbmFibGVkIEBAIC0x
-MzE2LDYgKzEzNjMsOSBAQA0KPiBzdGF0aWMgaW50IGZsZXhjYW5fY2hpcF9zdGFydChzdHJ1Y3Qg
-bmV0X2RldmljZSAqZGV2KQ0KPiAgCWlmIChlcnIpDQo+ICAJCWdvdG8gb3V0X2NoaXBfZGlzYWJs
-ZTsNCj4gDQo+ICsJaWYgKHByaXYtPmRldnR5cGVfZGF0YS0+cXVpcmtzICYgRkxFWENBTl9RVUlS
-S19TVVBQT1JUX0VDQykNCj4gKwkJZmxleGNhbl9pbml0X3JhbShkZXYpOw0KPiArDQo+ICAJZmxl
-eGNhbl9zZXRfYml0dGltaW5nKGRldik7DQo+IA0KPiAgCS8qIE1DUg0KPiAtLQ0KPiAyLjE3LjEN
-Cg0K
+On 9/28/20 7:38 AM, Daniel Borkmann wrote:
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index a0776e48dcc9..64c6e5ec97d7 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> +static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev)
+> +{
+> +	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
+> +	struct net *net = dev_net(dev);
+> +	int err, ret = NET_XMIT_DROP;
+> +	struct flowi6 fl6 = {
+> +		.flowi6_flags	= FLOWI_FLAG_ANYSRC,
+> +		.flowi6_mark	= skb->mark,
+> +		.flowlabel	= ip6_flowinfo(ip6h),
+> +		.flowi6_proto	= ip6h->nexthdr,
+> +		.flowi6_oif	= dev->ifindex,
+> +		.daddr		= ip6h->daddr,
+> +		.saddr		= ip6h->saddr,
+> +	};
+> +	struct dst_entry *dst;
+> +
+> +	skb->dev = dev;
+
+this is not needed here. You set dev in bpf_out_neigh_v6 to the dst dev.
+Everything else is an error path where the skb is dropped.
+
+
+> +	skb->tstamp = 0;
+> +
+> +	dst = ipv6_stub->ipv6_dst_lookup_flow(net, NULL, &fl6, NULL);
+> +	if (IS_ERR(dst))
+> +		goto out_drop;
+> +
+> +	skb_dst_set(skb, dst);
+> +
+> +	err = bpf_out_neigh_v6(net, skb);
+> +	if (unlikely(net_xmit_eval(err)))
+> +		dev->stats.tx_errors++;
+> +	else
+> +		ret = NET_XMIT_SUCCESS;
+> +	goto out_xmit;
+> +out_drop:
+> +	dev->stats.tx_errors++;
+> +	kfree_skb(skb);
+> +out_xmit:
+> +	return ret;
+> +}
+> +#else
+> +static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev)
+> +{
+> +	kfree_skb(skb);
+> +	return NET_XMIT_DROP;
+> +}
+> +#endif /* CONFIG_IPV6 */
+> +
+> +#if IS_ENABLED(CONFIG_INET)
+> +static int bpf_out_neigh_v4(struct net *net, struct sk_buff *skb)
+> +{
+> +	struct dst_entry *dst = skb_dst(skb);
+> +	struct rtable *rt = container_of(dst, struct rtable, dst);
+> +	struct net_device *dev = dst->dev;
+> +	u32 hh_len = LL_RESERVED_SPACE(dev);
+> +	struct neighbour *neigh;
+> +	bool is_v6gw = false;
+> +
+> +	if (dev_xmit_recursion())
+> +		goto out_rec;
+> +	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
+
+Why is this check needed for v4 but not v6?
+
+> +		struct sk_buff *skb2;
+> +
+> +		skb2 = skb_realloc_headroom(skb, hh_len);
+> +		if (!skb2) {
+> +			kfree_skb(skb);
+> +			return -ENOMEM;
+> +		}
+> +		if (skb->sk)
+> +			skb_set_owner_w(skb2, skb->sk);
+> +		consume_skb(skb);
+> +		skb = skb2;
+> +	}
+> +	rcu_read_lock_bh();
+> +	neigh = ip_neigh_for_gw(rt, skb, &is_v6gw);
+> +	if (likely(!IS_ERR(neigh))) {
+> +		int ret;
+> +
+> +		sock_confirm_neigh(skb, neigh);
+> +		dev_xmit_recursion_inc();
+> +		ret = neigh_output(neigh, skb, is_v6gw);
+> +		dev_xmit_recursion_dec();
+> +		rcu_read_unlock_bh();
+> +		return ret;
+> +	}
+> +	rcu_read_unlock_bh();
+> +out_drop:
+> +	kfree_skb(skb);
+> +	return -EINVAL;
+> +out_rec:
+> +	net_crit_ratelimited("bpf: recursion limit reached on datapath, buggy bpf program?\n");
+> +	goto out_drop;
+> +}
+> +
+> +static int __bpf_redirect_neigh_v4(struct sk_buff *skb, struct net_device *dev)
+> +{
+> +	const struct iphdr *ip4h = ip_hdr(skb);
+> +	struct net *net = dev_net(dev);
+> +	int err, ret = NET_XMIT_DROP;
+> +	struct flowi4 fl4 = {
+> +		.flowi4_flags	= FLOWI_FLAG_ANYSRC,
+> +		.flowi4_mark	= skb->mark,
+> +		.flowi4_tos	= RT_TOS(ip4h->tos),
+
+set flowi4_proto here.
+
+> +		.flowi4_oif	= dev->ifindex,
+> +		.daddr		= ip4h->daddr,
+> +		.saddr		= ip4h->saddr,
+> +	};
+> +	struct rtable *rt;
+> +
+> +	skb->dev = dev;
+> +	skb->tstamp = 0;
+> +
+> +	rt = ip_route_output_flow(net, &fl4, NULL);
+> +	if (IS_ERR(rt))
+> +		goto out_drop;
+> +	if (rt->rt_type != RTN_UNICAST && rt->rt_type != RTN_LOCAL) {
+> +		ip_rt_put(rt);
+> +		goto out_drop;
+> +	}
+> +
+> +	skb_dst_set(skb, &rt->dst);
+> +
+> +	err = bpf_out_neigh_v4(net, skb);
+> +	if (unlikely(net_xmit_eval(err)))
+> +		dev->stats.tx_errors++;
+> +	else
+> +		ret = NET_XMIT_SUCCESS;
+> +	goto out_xmit;
+> +out_drop:
+> +	dev->stats.tx_errors++;
+> +	kfree_skb(skb);
+> +out_xmit:
+> +	return ret;
+> +}
