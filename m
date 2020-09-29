@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE30F27D8B4
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:38:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08FFF27D86D
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:36:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729953AbgI2UiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:38:18 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:50578 "EHLO
+        id S1729659AbgI2Ug1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:36:27 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:49316 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729392AbgI2UgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:20 -0400
-Message-Id: <20200929203502.481146256@linutronix.de>
+        with ESMTP id S1729557AbgI2UgY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:24 -0400
+Message-Id: <20200929203502.576396860@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601411776;
+        s=2020; t=1601411777;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=60HDT5DhE8SC2OZ0F8d0KZw6s4EX8xVrL/PVP+OTIeg=;
-        b=RMOQhTVgBWYvgJW6v9UhblZTsppMMIcgZV++8+B2pRW64Kd1HeJ9PGycKLfMxYzhaQdOhc
-        WHLhtFz46AWXPNLluC9Y0nQ9u8U5hhMtcxX7Hvjk9xdWVFUg9cCf7LjpmMqKDXr/0HhjLI
-        hgZi0BPlJ/CSRqqbJ4SNeLzRiJquqT1+jwX6bH8X89mrtJLvd/UaAf1nod/Fwn6FUWA+eG
-        tn7Iz1SxlLG27Q6yjKfPpSkgd9N58IoeBCr+360rmp7lUYqDoIn4n45BLMSaGBMAyLnAuq
-        JHTYp4N3cTYmfh8eT3e1TE+6lTTklQjyAYAtfmeHQ+9BTSkxtFjLKOR3XcUN3A==
+        bh=UnzuSiCObj+zFPVGaKyuZiIb7D6OLcNGc9ENqe1uVGQ=;
+        b=vZl3shb7lESVoE5rGcsQuHjYQ/fa5cDZrNHIl7MWKprP2nDTxh+UiXoGoNhoyPOG3ZR6Ec
+        OqDVY1cwYOIVHljzUvQ8ltfuwFex6OdvuWoxIWITAirpmYpSUnNRITnTlIqsdJtyQHlNNQ
+        zu3a4RaAqYrIMR1hFA5FwaJbXsMDZPnv41GdNsrCiif4/iF8ti4sgby8VnR3GZepWXJruj
+        cqll3nwhvohnYlRT+EtVODCfO3LpycGffxw3iQSGCE7h/aPSLN1q3sWSbw6WRD+2MGym9O
+        9XIPoHKCBg3DCg1ftunbc0jBG68xHKIFgZcYu++27bgNP9AejAvpAlyoGdlccA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601411776;
+        s=2020e; t=1601411777;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=60HDT5DhE8SC2OZ0F8d0KZw6s4EX8xVrL/PVP+OTIeg=;
-        b=uynYowaB8wyvJDh/sGgqeLLNpQ/TnV1z/qETkqkeENX7iVEBdUK0/Bt8J701JfWo79N5al
-        bmpUyhRknzvZKHCg==
-Date:   Tue, 29 Sep 2020 22:25:39 +0200
+        bh=UnzuSiCObj+zFPVGaKyuZiIb7D6OLcNGc9ENqe1uVGQ=;
+        b=pUmcG6WSjGiBJSD30L5Ts+Rw8ty5B3RFaWadF1x3qr8P3r4h5t4nPP3NVC5tKR/8VdYiTM
+        BQIKbwyc6AytfhCw==
+Date:   Tue, 29 Sep 2020 22:25:40 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -85,7 +85,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch V2 30/36] net: hostap: Remove in_interrupt() usage
+Subject: [patch V2 31/36] net: mwifiex: Use netif_rx_any_context().
 References: <20200929202509.673358734@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -96,60 +96,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-in_interrupt() is ill defined and does not provide what the name
-suggests. The usage especially in driver code is deprecated and a tree wide
-effort to clean up and consolidate the (ab)usage of in_interrupt() and
-related checks is happening.
+The usage of in_interrupt() in non-core code is phased out. Ideally the
+information of the calling context should be passed by the callers or the
+functions be split as appropriate.
 
-hfa384x_cmd() and prism2_hw_reset() check in_interrupt() at function entry
-and if true emit a printk at debug loglevel and return. This is clearly debug
+mwifiex uses in_interupt() to select the netif_rx*() variant which matches
+the calling context. The attempt to consolidate the code by passing an
+arguemnt or by distangling it failed due lack of knowledge about this
+driver and because the call chains are hard to follow.
+
+As a stop gap use netif_rx_any_context() which invokes the correct code
+path depending on context and confines the in_interrupt() usage to core
 code.
-
-Both functions invoke functions which can sleep. These functions already
-have appropriate debug checks which cover all invalid contexts, while
-in_interrupt() fails to detect context which just has preemption or
-interrupts disabled.
-
-Remove both checks as they are incomplete, debug only and already covered
-by the subsequently invoked functions properly. If called from invalid
-context the resulting back trace is definitely more helpful to analyze the
-problem than a printk at debug loglevel.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Acked-by: Kalle Valo <kvalo@codeaurora.org>
 
 ---
- drivers/net/wireless/intersil/hostap/hostap_hw.c |   12 ------------
- 1 file changed, 12 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/uap_txrx.c |    6 +-----
+ drivers/net/wireless/marvell/mwifiex/util.c     |    6 +-----
+ 2 files changed, 2 insertions(+), 10 deletions(-)
 
---- a/drivers/net/wireless/intersil/hostap/hostap_hw.c
-+++ b/drivers/net/wireless/intersil/hostap/hostap_hw.c
-@@ -320,12 +320,6 @@ static int hfa384x_cmd(struct net_device
- 	iface = netdev_priv(dev);
- 	local = iface->local;
+--- a/drivers/net/wireless/marvell/mwifiex/uap_txrx.c
++++ b/drivers/net/wireless/marvell/mwifiex/uap_txrx.c
+@@ -350,11 +350,7 @@ int mwifiex_uap_recv_packet(struct mwifi
+ 		skb->truesize += (skb->len - MWIFIEX_RX_DATA_BUF_SIZE);
  
--	if (in_interrupt()) {
--		printk(KERN_DEBUG "%s: hfa384x_cmd called from interrupt "
--		       "context\n", dev->name);
--		return -1;
--	}
+ 	/* Forward multicast/broadcast packet to upper layer*/
+-	if (in_interrupt())
+-		netif_rx(skb);
+-	else
+-		netif_rx_ni(skb);
 -
- 	if (local->cmd_queue_len >= HOSTAP_CMD_QUEUE_MAX_LEN) {
- 		printk(KERN_DEBUG "%s: hfa384x_cmd: cmd_queue full\n",
- 		       dev->name);
-@@ -1560,12 +1554,6 @@ static void prism2_hw_reset(struct net_d
- 	iface = netdev_priv(dev);
- 	local = iface->local;
++	netif_rx_any_context(skb);
+ 	return 0;
+ }
  
--	if (in_interrupt()) {
--		printk(KERN_DEBUG "%s: driver bug - prism2_hw_reset() called "
--		       "in interrupt context\n", dev->name);
--		return;
--	}
+--- a/drivers/net/wireless/marvell/mwifiex/util.c
++++ b/drivers/net/wireless/marvell/mwifiex/util.c
+@@ -488,11 +488,7 @@ int mwifiex_recv_packet(struct mwifiex_p
+ 	    (skb->truesize > MWIFIEX_RX_DATA_BUF_SIZE))
+ 		skb->truesize += (skb->len - MWIFIEX_RX_DATA_BUF_SIZE);
+ 
+-	if (in_interrupt())
+-		netif_rx(skb);
+-	else
+-		netif_rx_ni(skb);
 -
- 	if (local->hw_downloading)
- 		return;
++	netif_rx_any_context(skb);
+ 	return 0;
+ }
  
 
 
