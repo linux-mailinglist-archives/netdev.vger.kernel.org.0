@@ -2,239 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3997027B8E0
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 02:29:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B64A27B8A0
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 02:05:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbgI2A3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 20:29:50 -0400
-Received: from mga17.intel.com ([192.55.52.151]:48272 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726421AbgI2A3u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Sep 2020 20:29:50 -0400
-IronPort-SDR: KTIxbfH6uNpk5p6tDCEnJThzOHMSP/Dya4byYzSCpXOHnFqMvBzfCdWBmEb7VXMwSjH+Bn10x1
- 5kABuz7M8WPw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="142099530"
-X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; 
-   d="scan'208";a="142099530"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 16:50:43 -0700
-IronPort-SDR: Sg28NC//OtE6J+EO0fImHvJP2xejQTSVeK4IXt23C/m1J48n8+bCnJ6A/eb9Ze4M8cJzebjtPn
- ib0uKsOvrjcw==
-X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; 
-   d="scan'208";a="350915764"
-Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.4])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2020 16:50:42 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kubakici@wp.pl>, snelson@pensando.io,
-        Jacob Keller <jacob.e.keller@intel.com>
-Subject: [RFC iproute2-next] devlink: display elapsed time during flash update
-Date:   Mon, 28 Sep 2020 16:49:45 -0700
-Message-Id: <20200928234945.3417905-1-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.28.0.497.g54e85e7af1ac
+        id S1727093AbgI2AF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 20:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726698AbgI2AF0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 20:05:26 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F36F1C0613D3;
+        Mon, 28 Sep 2020 17:05:25 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id q123so2791047pfb.0;
+        Mon, 28 Sep 2020 17:05:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Ky3GHtUnDiMuVik4STrZUm38B7aK49ldf1V6Z9L4Zdk=;
+        b=s9j2J2aXKxp1g4LHwnttUUWGL3N3AtPQaXmu9BaPu5BPu47hGJozo37+boZn0QXXc/
+         6ogcH2XWQ1/uPvRTu7AgAHUna4dSVfXnYKrXv8q5VXVQSeUS8z2flRjrXdj7AkrRALih
+         SVvD3b+PegqDDBm9n6EvjHy/XpPiC9hCv7LqCI+DDQ7jCand9W4CPWNGhqW8AgxWswch
+         CnzVArZQ9PvOySsSeA2lBrv2xprA7o3mCQY1mqAnQSWiH2DWDbFqyYKuyqUo327gAcSE
+         G/WxsZ2jl7m88rVrgpzxTr96P79sUVlEGKhlr+wh7PltM3JuAC1HNBQ1zAkNhkUsgUGx
+         rREw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Ky3GHtUnDiMuVik4STrZUm38B7aK49ldf1V6Z9L4Zdk=;
+        b=MedXJTV6g5CAYdiNWzAUCfN8scuIwLIwcNVzNieUUTxBxDNe3u8akb+q7Ccp39nJd9
+         mCnpxlgz8Y3T6XHxT0BbrvYWvqKBRJbZ5Kpb7bclHYYP3dyv3RtgmE7mbsNSluHtO7NB
+         jj9B8LEhdMhnlIc4k6xGmb4HRyLQPU8rw1sW71XtUj8WUM7f5Pwqk1Z3TmNbcnyU/iPb
+         5X81TIgVuTUySJwGVSeSAcHH9paSkq/EGz1pZ/kJYtpKtIT+A+KHPTaGb0YMAxhI1/FH
+         gNz1xRMU90Qmkt9kT7Z5GgLBG1dz0MRVURRytirekDsBksAiaohImYGE8GymHnuGRZb5
+         n3/g==
+X-Gm-Message-State: AOAM5335qoFDR2TCVgCNfic2K50x3epBrZ8Hp4MNe8x1FzpbVOylQvUk
+        5jNseOCIO+4cV4yrRALStFA=
+X-Google-Smtp-Source: ABdhPJwfknYYssFMj624Af5APdIzJrkQOq6bosw2DUg1lZ7mE5Pt1xm5/Uyov3Evxjyw1gfwpK8Uyg==
+X-Received: by 2002:a62:cd49:0:b029:150:7742:c6c8 with SMTP id o70-20020a62cd490000b02901507742c6c8mr1598462pfg.61.1601337925417;
+        Mon, 28 Sep 2020 17:05:25 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:8e77])
+        by smtp.gmail.com with ESMTPSA id d12sm2306603pgd.93.2020.09.28.17.05.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2020 17:05:24 -0700 (PDT)
+Date:   Mon, 28 Sep 2020 17:05:22 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v9 04/11] bpf: move prog->aux->linked_prog and
+ trampoline into bpf_link on attach
+Message-ID: <20200929000522.n5g2hcahqjxwseye@ast-mbp.dhcp.thefacebook.com>
+References: <160106909952.27725.8383447127582216829.stgit@toke.dk>
+ <160106910382.27725.8204173893583455016.stgit@toke.dk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <160106910382.27725.8204173893583455016.stgit@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For some devices, updating the flash can take significant time during
-operations where no status can meaningfully be reported. This can be
-somewhat confusing to a user who sees devlink appear to hang on the
-terminal waiting for the device to update.
+On Fri, Sep 25, 2020 at 11:25:03PM +0200, Toke Høiland-Jørgensen wrote:
+>  
+>  int bpf_check_attach_target(struct bpf_verifier_log *log,
+>  			    const struct bpf_prog *prog,
+> -			    const struct bpf_prog *tgt_prog,
+> +			    const struct bpf_prog *dst_prog,
 
-Provide a ticking counter of the time elapsed since the previous status
-message in order to make it clear that the program is not simply stuck.
+so you really did blind search and replace?
+That's not at all what I was asking.
+The function is called check_attach_target and the argument name
+'tgt_prog' fits perfectly.
 
-Do not display this message unless a few seconds have passed since the
-last status update. Additionally, if the previous status notification
-included a timeout, display this as part of the message. If we do not
-receive an error or a new status without that time out, replace it with
-the text "timeout reached".
+>  			    u32 btf_id,
+>  			    struct bpf_attach_target_info *tgt_info);
+>  
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 868c03a24d0a..faf57c6f8804 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -3706,10 +3706,10 @@ struct btf *btf_parse_vmlinux(void)
+>  
+>  struct btf *bpf_prog_get_target_btf(const struct bpf_prog *prog)
+>  {
+> -	struct bpf_prog *tgt_prog = prog->aux->linked_prog;
+> +	struct bpf_prog *dst_prog = prog->aux->dst_prog;
 
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
----
+same here. tgt_prog fits just fine as a name.
 
-Sending this as an RFC because I doubt this is the best implementation. For
-one, I get a weird display issue where the cursor doesn't always end up on
-the end of line in my shell.. The % display works properly, so I'm not sure
-what's wrong here.
+>  
+> -	if (tgt_prog) {
+> -		return tgt_prog->aux->btf;
+> +	if (dst_prog) {
+> +		return dst_prog->aux->btf;
+>  	} else {
+>  		return btf_vmlinux;
+>  	}
+> @@ -3733,7 +3733,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+>  		    struct bpf_insn_access_aux *info)
+>  {
+>  	const struct btf_type *t = prog->aux->attach_func_proto;
+> -	struct bpf_prog *tgt_prog = prog->aux->linked_prog;
+> +	struct bpf_prog *dst_prog = prog->aux->dst_prog;
 
-Second, even though select should be timing out every 1/10th of a second for
-screen updates, I don't seem to get that behavior in my test. It takes about
-8 to 10 seconds for the first elapsed time message to be displayed, and it
-updates really slowly. Is select just not that precise? I even tried using a
-timeout of zero, but this means we refresh way too often and it looks bad. I
-am not sure what is wrong here...
+here as well.
+it's a tgt_prog being checked.
 
- devlink/devlink.c | 89 ++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 88 insertions(+), 1 deletion(-)
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 2740df19f55e..099a651efe8b 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -2154,14 +2154,14 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
+>  	prog->expected_attach_type = attr->expected_attach_type;
+>  	prog->aux->attach_btf_id = attr->attach_btf_id;
+>  	if (attr->attach_prog_fd) {
+> -		struct bpf_prog *tgt_prog;
+> +		struct bpf_prog *dst_prog;
+>  
+> -		tgt_prog = bpf_prog_get(attr->attach_prog_fd);
+> -		if (IS_ERR(tgt_prog)) {
+> -			err = PTR_ERR(tgt_prog);
+> +		dst_prog = bpf_prog_get(attr->attach_prog_fd);
+> +		if (IS_ERR(dst_prog)) {
+> +			err = PTR_ERR(dst_prog);
+>  			goto free_prog_nouncharge;
+>  		}
+> -		prog->aux->linked_prog = tgt_prog;
+> +		prog->aux->dst_prog = dst_prog;
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 0374175eda3d..7fb4b5ef1ebe 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -33,6 +33,7 @@
- #include <sys/select.h>
- #include <sys/socket.h>
- #include <sys/types.h>
-+#include <sys/time.h>
- #include <rt_names.h>
- 
- #include "version.h"
-@@ -3066,6 +3067,9 @@ static int cmd_dev_info(struct dl *dl)
- 
- struct cmd_dev_flash_status_ctx {
- 	struct dl *dl;
-+	struct timeval last_status_msg;
-+	char timeout_msg[128];
-+	uint64_t timeout;
- 	char *last_msg;
- 	char *last_component;
- 	uint8_t not_first:1,
-@@ -3083,6 +3087,14 @@ static int nullstrcmp(const char *str1, const char *str2)
- 	return str1 ? 1 : -1;
- }
- 
-+static void cmd_dev_flash_clear_elapsed_time(struct cmd_dev_flash_status_ctx *ctx)
-+{
-+	int i;
-+
-+	for (i = 0; i < strlen(ctx->timeout_msg); i++)
-+		pr_out_tty("\b");
-+}
-+
- static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
- {
- 	struct cmd_dev_flash_status_ctx *ctx = data;
-@@ -3116,6 +3128,11 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
- 		return MNL_CB_STOP;
- 	}
- 
-+	cmd_dev_flash_clear_elapsed_time(ctx);
-+	gettimeofday(&ctx->last_status_msg, NULL);
-+	ctx->timeout_msg[0] = '\0';
-+	ctx->timeout = 0;
-+
- 	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_MSG])
- 		msg = mnl_attr_get_str(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_MSG]);
- 	if (tb[DEVLINK_ATTR_FLASH_UPDATE_COMPONENT])
-@@ -3124,6 +3141,8 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
- 		done = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_DONE]);
- 	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL])
- 		total = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL]);
-+	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT])
-+		ctx->timeout = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT]);
- 
- 	if (!nullstrcmp(msg, ctx->last_msg) &&
- 	    !nullstrcmp(component, ctx->last_component) &&
-@@ -3155,11 +3174,66 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
- 	return MNL_CB_STOP;
- }
- 
-+static void cmd_dev_flash_time_elapsed(struct cmd_dev_flash_status_ctx *ctx)
-+{
-+	struct timeval now, res;
-+
-+	gettimeofday(&now, NULL);
-+	timersub(&now, &ctx->last_status_msg, &res);
-+
-+	/* Don't start displaying a timeout message until we've elapsed a few
-+	 * seconds...
-+	 */
-+	if (res.tv_sec > 3) {
-+		uint elapsed_m, elapsed_s;
-+
-+		/* clear the last elapsed time message, if we have one */
-+		cmd_dev_flash_clear_elapsed_time(ctx);
-+
-+		elapsed_m = res.tv_sec / 60;
-+		elapsed_s = res.tv_sec % 60;
-+
-+		/**
-+		 * If we've elapsed a few seconds without receiving any status
-+		 * notification from the device, we display a time elapsed
-+		 * message. This has a few possible formats:
-+		 *
-+		 * 1) just time elapsed, when no timeout was provided
-+		 *    " ( Xm Ys )"
-+		 * 2) time elapsed out of a timeout that came from the device
-+		 *    driver via DEVLINK_CMD_FLASH_UPDATE_STATUS_TIMEOUT
-+		 *    " ( Xm Ys : Am Ys)"
-+		 * 3) time elapsed if we still receive no status after
-+		 *    reaching the provided timeout.
-+		 *    " ( Xm Ys : timeout reached )"
-+		 */
-+		if (!ctx->timeout) {
-+			snprintf(ctx->timeout_msg, sizeof(ctx->timeout_msg),
-+				 " ( %um %us )", elapsed_m, elapsed_s);
-+		} else if (res.tv_sec <= ctx->timeout) {
-+			uint timeout_m, timeout_s;
-+
-+			timeout_m = ctx->timeout / 60;
-+			timeout_s = ctx->timeout % 60;
-+
-+			snprintf(ctx->timeout_msg, sizeof(ctx->timeout_msg),
-+				 " ( %um %us : %um %us )",
-+				 elapsed_m, elapsed_s, timeout_m, timeout_s);
-+		} else {
-+			snprintf(ctx->timeout_msg, sizeof(ctx->timeout_msg),
-+				 " ( %um %us : timeout reached )", elapsed_m, elapsed_s);
-+		}
-+
-+		pr_out_tty("%s", ctx->timeout_msg);
-+	}
-+}
-+
- static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
- 				     struct mnlg_socket *nlg_ntf,
- 				     int pipe_r)
- {
- 	int nlfd = mnlg_socket_get_fd(nlg_ntf);
-+	struct timeval timeout;
- 	fd_set fds[3];
- 	int fdmax;
- 	int i;
-@@ -3174,7 +3248,14 @@ static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
- 	if (nlfd >= fdmax)
- 		fdmax = nlfd + 1;
- 
--	while (select(fdmax, &fds[0], &fds[1], &fds[2], NULL) < 0) {
-+	/* select only for a short while (1/20th of a second) in order to
-+	 * allow periodically updating the screen with an elapsed time
-+	 * indicator.
-+	 */
-+	timeout.tv_sec = 0;
-+	timeout.tv_usec = 100000;
-+
-+	while (select(fdmax, &fds[0], &fds[1], &fds[2], &timeout) < 0) {
- 		if (errno == EINTR)
- 			continue;
- 		pr_err("select() failed\n");
-@@ -3196,6 +3277,7 @@ static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
- 			return err2;
- 		ctx->flash_done = 1;
- 	}
-+	cmd_dev_flash_time_elapsed(ctx);
- 	return 0;
- }
- 
-@@ -3256,6 +3338,11 @@ static int cmd_dev_flash(struct dl *dl)
- 	}
- 	close(pipe_w);
- 
-+	/* initialize starting time to allow comparison for when to begin
-+	 * displaying a time elapsed message.
-+	 */
-+	gettimeofday(&ctx.last_status_msg, NULL);
-+
- 	do {
- 		err = cmd_dev_flash_fds_process(&ctx, nlg_ntf, pipe_r);
- 		if (err)
+Here 'dst_prog' makes logical sense, but I wouldn't bother renaming.
+You can keep this hunk, if you like.
 
-base-commit: b8663da04939dd5de223ca0de23e466ce0a372f7
--- 
-2.28.0.497.g54e85e7af1ac
+>  int bpf_check_attach_target(struct bpf_verifier_log *log,
+>  			    const struct bpf_prog *prog,
+> -			    const struct bpf_prog *tgt_prog,
+> +			    const struct bpf_prog *dst_prog,
 
+pls keep it as 'tgt_prog' here and through the function.
+
+>  static int check_attach_btf_id(struct bpf_verifier_env *env)
+>  {
+>  	struct bpf_prog *prog = env->prog;
+> -	struct bpf_prog *tgt_prog = prog->aux->linked_prog;
+> +	struct bpf_prog *dst_prog = prog->aux->dst_prog;
+
+no need to rename either. It's a target program being checked.
