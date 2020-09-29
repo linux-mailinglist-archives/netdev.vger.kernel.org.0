@@ -2,86 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B519C27BFC2
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17D0B27C004
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727755AbgI2IkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 04:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38730 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbgI2IkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:40:24 -0400
-Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6589CC061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 01:40:24 -0700 (PDT)
-Received: by mail-ua1-x941.google.com with SMTP id f15so3157350uaq.9
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 01:40:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AXj/2yxnGnqCJt2X6VbEHmHDtztk3H2f7Rx1q9RXDZI=;
-        b=BQOT5WZ3Z+bOTnWz8gvG12jKNxVN59x2UlU8MSp+/urX8FyRHPSz1Vjv0aV/bXeKh1
-         qUeLnj6QJBE673kmQDSxu4mwrjTHsJdWbtVsOmFFjXcRjYKFli6woTYF2wKzUamEr7gf
-         3eYd2cZiXZjLXBWCAc2pGxXa/WM961m8Y0l6iChOO4hZmwsziiXDaMFCieMqn1PTmi8Q
-         i4S3N1bHKw6wUtUYJ1lLhaHViCQQ7bUp/0iwJl3URLuAnXprBvNkCROuPbvNAjE99WoQ
-         yZLBV0JD+pnh4/lEKwF9jy2e47YzklkZLR2qpJ51q1cc5MT/2YYC2ssOW0uBTLpEM5TK
-         erzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AXj/2yxnGnqCJt2X6VbEHmHDtztk3H2f7Rx1q9RXDZI=;
-        b=r5TZb95HuktCd/f0CQPqgbKQyTHJ8hoXenpNO8WiJDhMIF8irJmB7JHrfEMUo0qjrY
-         HTE+Vpg8hc2X+nO+imRGSI+K4PrqQwlSwvzihMt26MzycvFW8/RoJwgYqSEO2AwQQ8SF
-         whsDaIJl8oqhahQkNDxmp3WLDC4Gw4I5fNy5MvVIBLCEmno5iMLZazUMtA/RIXxDjxpN
-         qnatNqK5PXqV6obcD4UjC7VE0Up3lLTk7UV/WaoxxsGrJtvLfx2LnUvCbulus2QrBLm/
-         kCpZmWPKK8BPeOC74FJQf0iXhnIm/YmEZo/86CN4WqtujWuTJXGlaghxlrIW0YJz9fDM
-         /Yaw==
-X-Gm-Message-State: AOAM531aTyeEYLkZzvInBocjc3pVtT864tsoVPKATwZTPWXi9Bx2k4zq
-        grj54sCotdcmq3ScrNHFSmj+HfXLKVMZVQ==
-X-Google-Smtp-Source: ABdhPJy7AjchKJe0lv4X7dSG/0DipzPOzHWXPq+010rAVfBHFnilbgwoOJ4tVPiejPzZ2jTCUsRkKw==
-X-Received: by 2002:ab0:4425:: with SMTP id m34mr2904766uam.19.1601368822884;
-        Tue, 29 Sep 2020 01:40:22 -0700 (PDT)
-Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com. [209.85.217.50])
-        by smtp.gmail.com with ESMTPSA id h27sm1471041vko.38.2020.09.29.01.40.21
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Sep 2020 01:40:22 -0700 (PDT)
-Received: by mail-vs1-f50.google.com with SMTP id w11so469424vsw.13
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 01:40:21 -0700 (PDT)
-X-Received: by 2002:a67:8a8a:: with SMTP id m132mr2059005vsd.14.1601368821464;
- Tue, 29 Sep 2020 01:40:21 -0700 (PDT)
+        id S1727824AbgI2Itm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 04:49:42 -0400
+Received: from smtpout1.mo529.mail-out.ovh.net ([178.32.125.2]:54083 "EHLO
+        smtpout1.mo529.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725355AbgI2Itm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:49:42 -0400
+X-Greylist: delayed 319 seconds by postgrey-1.27 at vger.kernel.org; Tue, 29 Sep 2020 04:49:41 EDT
+Received: from mxplan5.mail.ovh.net (unknown [10.108.20.149])
+        by mo529.mail-out.ovh.net (Postfix) with ESMTPS id 23A735FF0FD9;
+        Tue, 29 Sep 2020 10:44:20 +0200 (CEST)
+Received: from kaod.org (37.59.142.106) by DAG8EX1.mxp5.local (172.16.2.71)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Tue, 29 Sep
+ 2020 10:44:19 +0200
+Authentication-Results: garm.ovh; auth=pass (GARM-106R006a120b7c1-6ccf-49c4-8f3c-c4e193ec0ad7,
+                    725C9DACA52B44C04E0B7BA4242CB9DA5DB7567C) smtp.auth=groug@kaod.org
+Date:   Tue, 29 Sep 2020 10:44:18 +0200
+From:   Greg Kurz <groug@kaod.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Jason Wang <jasowang@redhat.com>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, "Laurent Vivier" <laurent@vivier.eu>,
+        David Gibson <david@gibson.dropbear.id.au>
+Subject: Re: [PATCH] vhost: Don't call vq_access_ok() when using IOTLB
+Message-ID: <20200929104418.7efad38b@bahia.lan>
+In-Reply-To: <20200929034358-mutt-send-email-mst@kernel.org>
+References: <160129650442.480158.12085353517983890660.stgit@bahia.lan>
+        <20200929034358-mutt-send-email-mst@kernel.org>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <20200929015806.19171-1-xiangxia.m.yue@gmail.com>
-In-Reply-To: <20200929015806.19171-1-xiangxia.m.yue@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 29 Sep 2020 10:39:46 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSfjMQXLN6nvTu+P8r1eUt=Sw56GDqwGG+tuKK3pF5U9jQ@mail.gmail.com>
-Message-ID: <CA+FuTSfjMQXLN6nvTu+P8r1eUt=Sw56GDqwGG+tuKK3pF5U9jQ@mail.gmail.com>
-Subject: Re: [PATCH net v2] virtio-net: don't disable guest csum when disable LRO
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [37.59.142.106]
+X-ClientProxiedBy: DAG3EX2.mxp5.local (172.16.2.22) To DAG8EX1.mxp5.local
+ (172.16.2.71)
+X-Ovh-Tracer-GUID: 026b43cc-c807-47e9-88a9-2c90f0a77d81
+X-Ovh-Tracer-Id: 17573890174354626921
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedujedrvdekgddtkecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvuffkjghfofggtgfgihesthejredtredtvdenucfhrhhomhepifhrvghgucfmuhhriicuoehgrhhouhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepvdefgfdtgeeluddujeejleffgffhhedtieeggffguddvgfekvefgfeettdejheevnecuffhomhgrihhnpehrvgguhhgrthdrtghomhenucfkpheptddrtddrtddrtddpfeejrdehledrudegvddruddtieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphdqohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepghhrohhugheskhgrohgurdhorhhgpdhrtghpthhtohepuggrvhhiugesghhisghsohhnrdgurhhophgsvggrrhdrihgurdgruh
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 4:00 AM <xiangxia.m.yue@gmail.com> wrote:
->
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->
-> Open vSwitch and Linux bridge will disable LRO of the interface
-> when this interface added to them. Now when disable the LRO, the
-> virtio-net csum is disable too. That drops the forwarding performance.
->
-> Fixes: a02e8964eaf9 ("virtio-net: ethtool configurable LRO")
-> Cc: Michael S. Tsirkin <mst@redhat.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> Cc: Willem de Bruijn <willemb@google.com>
-> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Tue, 29 Sep 2020 03:45:28 -0400
+"Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+> On Mon, Sep 28, 2020 at 02:35:04PM +0200, Greg Kurz wrote:
+> > When the IOTLB device is enabled, the vring addresses we get from
+> > userspace are GIOVAs. It is thus wrong to pass them to vq_access_ok()
+> > which only takes HVAs. The IOTLB map is likely empty at this stage,
+> > so there isn't much that can be done with these GIOVAs. Access validation
+> > will be performed at IOTLB prefetch time anyway.
+> > 
+> > BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1883084
+> > Fixes: 6b1e6cc7855b ("vhost: new device IOTLB API")
+> > Cc: jasowang@redhat.com
+> > CC: stable@vger.kernel.org # 4.14+
+> > Signed-off-by: Greg Kurz <groug@kaod.org>
+> > ---
+> >  drivers/vhost/vhost.c |    5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > index b45519ca66a7..6296e33df31d 100644
+> > --- a/drivers/vhost/vhost.c
+> > +++ b/drivers/vhost/vhost.c
+> > @@ -1509,7 +1509,10 @@ static long vhost_vring_set_addr(struct vhost_dev *d,
+> >  	 * If it is not, we don't as size might not have been setup.
+> >  	 * We will verify when backend is configured. */
+> >  	if (vq->private_data) {
+> > -		if (!vq_access_ok(vq, vq->num,
+> > +		/* If an IOTLB device is present, the vring addresses are
+> > +		 * GIOVAs. Access will be validated during IOTLB prefetch. */
+> > +		if (!vq->iotlb &&
+> > +		    !vq_access_ok(vq, vq->num,
+> >  			(void __user *)(unsigned long)a.desc_user_addr,
+> >  			(void __user *)(unsigned long)a.avail_user_addr,
+> >  			(void __user *)(unsigned long)a.used_user_addr))
+> 
+> OK I think you are right here.
+> 
+> Jason, can you ack pls?
+> 
+> However, I think a cleaner way to check this is by moving
+> the following check from vhost_vq_access_ok to vq_access_ok:
+> 
+>         /* Access validation occurs at prefetch time with IOTLB */
+>         if (vq->iotlb)
+>                 return true;
+> 
+
+Yes I agree. I'll do that in v2.
+
+> 
+> > 
+> 
+
