@@ -2,117 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 881D627D65D
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 21:04:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98BF727D669
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 21:07:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728284AbgI2TEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 15:04:40 -0400
-Received: from mga17.intel.com ([192.55.52.151]:23290 "EHLO mga17.intel.com"
+        id S1728456AbgI2THn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 15:07:43 -0400
+Received: from mx2.suse.de ([195.135.220.15]:55708 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727740AbgI2TEk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 15:04:40 -0400
-IronPort-SDR: EejvoYsWown7srYIb/v4odrGUlbA9CIVlfZ86ES6pM/FMW85WFwv0XxFGOPdSs8UMoWkO8lCo1
- bsdbuQ5/QVCQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9759"; a="142282385"
-X-IronPort-AV: E=Sophos;i="5.77,319,1596524400"; 
-   d="scan'208";a="142282385"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 12:04:39 -0700
-IronPort-SDR: AZH+SdxckCVhaiu9xZ54yF0cswJj7i4QtmoJAWvtIaWc5OsEVsmeUH8B6Zu3GwH2xZ+5BIfRVI
- onf9EKzAjUGg==
-X-IronPort-AV: E=Sophos;i="5.77,319,1596524400"; 
-   d="scan'208";a="492963948"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.162.133]) ([10.209.162.133])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 12:04:39 -0700
-Subject: Re: [RFC iproute2-next] devlink: display elapsed time during flash
- update
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jakub Kicinski <kubakici@wp.pl>, netdev@vger.kernel.org,
-        snelson@pensando.io
-References: <20200928234945.3417905-1-jacob.e.keller@intel.com>
- <20200929101846.2a296015@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <b4f664d9-301c-1157-0049-50dbea856dda@intel.com>
- <20200929180722.GA1674045@shredder>
- <4baf15d7-3e7a-9cf3-16cc-93507d07cf5b@intel.com>
-Organization: Intel Corporation
-Message-ID: <a645c270-0219-1908-0f8d-ed2569d4bf57@intel.com>
-Date:   Tue, 29 Sep 2020 12:04:36 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
+        id S1727740AbgI2THn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 15:07:43 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id BF19AAFAA;
+        Tue, 29 Sep 2020 19:07:41 +0000 (UTC)
+Date:   Tue, 29 Sep 2020 21:07:37 +0200
+From:   Petr Tesarik <ptesarik@suse.cz>
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        netdev@vger.kernel.org, linux-clk@vger.kernel.org
+Subject: Re: RTL8402 stops working after hibernate/resume
+Message-ID: <20200929210737.7f4a6da7@ezekiel.suse.cz>
+In-Reply-To: <30969885-9611-06d8-d50a-577897fcab29@gmail.com>
+References: <20200715102820.7207f2f8@ezekiel.suse.cz>
+        <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
+        <20200716105835.32852035@ezekiel.suse.cz>
+        <e1c7a37f-d8d0-a773-925c-987b92f12694@gmail.com>
+        <20200903104122.1e90e03c@ezekiel.suse.cz>
+        <7e6bbb75-d8db-280d-ac5b-86013af39071@gmail.com>
+        <20200924211444.3ba3874b@ezekiel.suse.cz>
+        <a10f658b-7fdf-2789-070a-83ad5549191a@gmail.com>
+        <20200925093037.0fac65b7@ezekiel.suse.cz>
+        <20200925105455.50d4d1cc@ezekiel.suse.cz>
+        <aa997635-a5b5-75e3-8a30-a77acb2adf35@gmail.com>
+        <20200925115241.3709caf6@ezekiel.suse.cz>
+        <20200925145608.66a89e73@ezekiel.suse.cz>
+        <30969885-9611-06d8-d50a-577897fcab29@gmail.com>
+Organization: SUSE Linux, s.r.o.
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <4baf15d7-3e7a-9cf3-16cc-93507d07cf5b@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/5NIX3CuMdDx9m3Ed8bZcLEz";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/5NIX3CuMdDx9m3Ed8bZcLEz
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi Heiner (and now also Hans)!
 
-On 9/29/2020 11:45 AM, Jacob Keller wrote:
-> 
-> 
-> On 9/29/2020 11:07 AM, Ido Schimmel wrote:
->> On Tue, Sep 29, 2020 at 10:56:23AM -0700, Jacob Keller wrote:
->>>
->>>
->>> On 9/29/2020 10:18 AM, Jakub Kicinski wrote:
->>>> On Mon, 28 Sep 2020 16:49:45 -0700 Jacob Keller wrote:
->>>>> For some devices, updating the flash can take significant time during
->>>>> operations where no status can meaningfully be reported. This can be
->>>>> somewhat confusing to a user who sees devlink appear to hang on the
->>>>> terminal waiting for the device to update.
->>>>>
->>>>> Provide a ticking counter of the time elapsed since the previous status
->>>>> message in order to make it clear that the program is not simply stuck.
->>>>>
->>>>> Do not display this message unless a few seconds have passed since the
->>>>> last status update. Additionally, if the previous status notification
->>>>> included a timeout, display this as part of the message. If we do not
->>>>> receive an error or a new status without that time out, replace it with
->>>>> the text "timeout reached".
->>>>>
->>>>> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->>>>> ---
->>>>> Sending this as an RFC because I doubt this is the best implementation. For
->>>>> one, I get a weird display issue where the cursor doesn't always end up on
->>>>> the end of line in my shell.. The % display works properly, so I'm not sure
->>>>> what's wrong here.
->>>>>
->>>>> Second, even though select should be timing out every 1/10th of a second for
->>>>> screen updates, I don't seem to get that behavior in my test. It takes about
->>>>> 8 to 10 seconds for the first elapsed time message to be displayed, and it
->>>>> updates really slowly. Is select just not that precise? I even tried using a
->>>>> timeout of zero, but this means we refresh way too often and it looks bad. I
->>>>> am not sure what is wrong here...
->>>>
->>>> Strange. Did you strace it? Perhaps it's some form of output buffering?
->>>>
->>>
->>> Haven't yet, just noticed the weird output behavior and timing
->>> inconsistency.
->>
->> Might be similar to this:
->> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=8e6bce735a132150c23503a55ea0aef55a01425f
->>
-> 
-> Yep, I needed the fflush! That resolved the display issue!
-> 
-> Thanks,
-> Jake
-> 
+@Hans: I'm adding you to this conversation, because you're the author
+of commit b1e3454d39f99, which seems to break the r8169 driver on a
+laptop of mine.
 
-This also appears to have resolved the weird timing aspect.. the line
-wasn't flushed right away. strace with relative timestamps confirmed
-that select was infact waking up.
+On Fri, 25 Sep 2020 16:47:54 +0200
+Heiner Kallweit <hkallweit1@gmail.com> wrote:
 
-I'll post a non-RFC version that includes the suggested cleanups from
-Jakub. Shannon, I'd appreciate if you could try out the next revision
-with your device to see if it looks good!
+> On 25.09.2020 14:56, Petr Tesarik wrote:
+> > On Fri, 25 Sep 2020 11:52:41 +0200
+> > Petr Tesarik <ptesarik@suse.cz> wrote:
+> >  =20
+> >> On Fri, 25 Sep 2020 11:44:09 +0200
+> >> Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> >> =20
+> >>> On 25.09.2020 10:54, Petr Tesarik wrote:   =20
+> >> [...] =20
+> >>>> Does it make sense to bisect the change that broke the driver for me=
+, or should I rather dispose of this waste^Wlaptop in an environmentally fr=
+iendly manner? I mean, would you eventually accept a workaround for a few m=
+achines with a broken BIOS?
+> >>>>      =20
+> >>> If the workaround is small and there's little chance to break other s=
+tuff: then usually yes.
+> >>> If you can spend the effort to bisect the issue, this would be apprec=
+iated.   =20
+> >>
+> >> OK, then I'm going to give it a try. =20
+> >=20
+> > Done. The system freezes when this commit is applied:
+> >=20
+> > commit 9f0b54cd167219266bd3864570ae8f4987b57520
+> > Author: Heiner Kallweit <hkallweit1@gmail.com>
+> > Date:   Wed Jun 17 22:55:40 2020 +0200
+> >=20
+> >     r8169: move switching optional clock on/off to pll power functions
+> >  =20
+> This sounds weird. On your system tp->clk should be NULL, making
+> clk_prepare_enable() et al no-ops. Please check whether tp->clk
+> is NULL after the call to rtl_get_ether_clk().
 
-Thanks,
-Jake
+This might be part of the issue. On my system tp->clk is definitely not
+NULL:
+
+crash> *rtl8169_private.clk 0xffff9277aca58940
+  clk =3D 0xffff9277ac2c82a0
+
+crash> *clk 0xffff9277ac2c82a0
+struct clk {
+  core =3D 0xffff9277aef65d00,=20
+  dev =3D 0xffff9277aed000b0,=20
+  dev_id =3D 0xffff9277aec60c00 "0000:03:00.2",=20
+  con_id =3D 0xffff9277ad04b080 "ether_clk",=20
+  min_rate =3D 0,=20
+  max_rate =3D 18446744073709551615,=20
+  exclusive_count =3D 0,=20
+  clks_node =3D {
+    next =3D 0xffff9277ad2428d8,=20
+    pprev =3D 0xffff9277aef65dc8
+  }
+}
+
+The dev_id corresponds to the Ethernet controller:
+
+03:00.2 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL810xE PCI E=
+xpress Fast Ethernet controller (rev 06)
+
+Looking at clk_find(), it matches this entry in clocks:
+
+struct clk_lookup {
+  node =3D {
+    next =3D 0xffffffffbc702f40,=20
+    prev =3D 0xffff9277bf7190c0
+  },=20
+  dev_id =3D 0x0,=20
+  con_id =3D 0xffff9277bf719524 "ether_clk",=20
+  clk =3D 0x0,=20
+  clk_hw =3D 0xffff9277ad2427f8
+}
+
+That's because this kernel is built with CONFIG_PMC_ATOM=3Dy, and looking
+at the platform initialization code, the "ether_clk" alias is created
+unconditionally. Hans already added.
+
+Petr T
+
+--Sig_/5NIX3CuMdDx9m3Ed8bZcLEz
+Content-Type: application/pgp-signature
+Content-Description: Digitální podpis OpenPGP
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEHl2YIZkIo5VO2MxYqlA7ya4PR6cFAl9zhfkACgkQqlA7ya4P
+R6dRrggAtS8yhdmtAZwoaP0L4XoTFwCaIdxFpl40AbCb0KPPHue+FMWQoph7Rljt
+K1gRwCD1xTQcR2CTXM1H4M95mIR+wLSGtkqkKSp71MSHZ+K1kp9nycfU7ew0bHrm
+gDrov/5CrAedi3uNOoVeMW5y+qfawjNewX+92hU+wy1QGuZA4yYjy2nUfBrk1d/i
+/4+yAUQJDgiNXfdCct6BzLLVj1HOPS1COCcAgY3n9hKIOlHia3N7IzQis91MbBoK
+2oI+t5mi1S1fEPXJYFs3ULHXcaIQKOcV1U2xMckv6RlrWIPTSC8KWf4m2TCGFU/l
+ed6zYz4Lqw2TLzINiaY1RU6V3m6+rw==
+=D/V5
+-----END PGP SIGNATURE-----
+
+--Sig_/5NIX3CuMdDx9m3Ed8bZcLEz--
