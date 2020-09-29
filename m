@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDBCB27D8D7
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:39:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42A5927D8CC
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 22:39:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730054AbgI2UjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 16:39:10 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:49690 "EHLO
+        id S1729398AbgI2Ui5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 16:38:57 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:49774 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729375AbgI2UgE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:04 -0400
-Message-Id: <20200929203501.384359804@linutronix.de>
+        with ESMTP id S1729491AbgI2UgG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 16:36:06 -0400
+Message-Id: <20200929203501.493579905@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601411762;
+        s=2020; t=1601411763;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=fic2oF38maLPjPgIPYA9CNGhq9WYNsn4UUVLjOIQ4Yc=;
-        b=DsOiiyLnllJKv8DXD1ITRdFwttZavH4BitIxzxhOTLKbM3lFF+1Uy1bhGv2oWrUg038FUI
-        IpkF7hWFGSKqKyu3vlZfdCWRAsxpfcuPQivMhcDL29MWeXAr99TUc5J+jZ0OnwchOglAfT
-        HEeU6CwQwamjWVo4nxnsJdNpCTXW6ysfCLORlvzVb0lShFeBhRg9kyQHHAQA554LEALUsO
-        yawJTzO61XnnOGqrXdnKma8Pg9IrJcWeWcgFg7NI9YtvHYMMSeC0ZhjKYyl3B4pNpDc3vP
-        JXYT9WRa47XoB1N5GFk9s4eFPHwj1TvJhQdB3sbArhGNNueV/S3EmNAMQevysQ==
+        bh=ReSPk9z+UkyzJFbPFHl4mkK3mIZvHsH9ynI/qMcmX0Y=;
+        b=jnjXIpI3i45YTQ5jT2RcskdnwhVSfkgsfdjX/LnuHZYTRNr2AA+OQvX2uU681RdnssE3JW
+        0n8CckwcTCxsnDGBLzGqhLYPwVVFmd2NpWEkeUZwpyBbRZxAHUe9RKtWlpLpaqh4C2Ye/z
+        ddl/id4Cxj0nLfF6EmtNajXAlS6ZmR3yP7GI+h3KXN53V5UBN7bEm3AUGLarCt30t1z93a
+        /VUE9ksSDsiflGWuNefAclPp/DhtlN9Hj5v1dVTUotJEahmnrSTUZmbTnoAOkdeQ1kRlYF
+        X2oqOXxFc1z6AzmDQVMm+AZpUM8z8m9zydIoWEEREZFLXk5ZgCURGoc9tw3rfA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601411762;
+        s=2020e; t=1601411763;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=fic2oF38maLPjPgIPYA9CNGhq9WYNsn4UUVLjOIQ4Yc=;
-        b=aTr/bQVceg0LVg317+omnTdQBuqT2WpvaGqxz6OuJWvQIe93iXRiXC9t4tZxlEDWJDn0LI
-        yCuQHq64Gj46/3CQ==
-Date:   Tue, 29 Sep 2020 22:25:28 +0200
+        bh=ReSPk9z+UkyzJFbPFHl4mkK3mIZvHsH9ynI/qMcmX0Y=;
+        b=oShgwZnILxMeutUwkuD/E5nmdUV3E0sjRKc1ck0kMKqm8HQdNgPy9Oh5qh4CFk7QF4Ubs5
+        F+CY7e9LE86PXBBQ==
+Date:   Tue, 29 Sep 2020 22:25:29 +0200
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -85,7 +85,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         libertas-dev@lists.infradead.org,
         Pascal Terjan <pterjan@google.com>,
         Ping-Ke Shih <pkshih@realtek.com>
-Subject: [patch V2 19/36] net: vxge: Remove in_interrupt() conditionals
+Subject: [patch V2 20/36] net: zd1211rw: Remove ZD_ASSERT(in_interrupt())
 References: <20200929202509.673358734@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -96,78 +96,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-vxge_os_dma_malloc() and vxge_os_dma_malloc_async() are both called from
-callchains which use GFP_KERNEL allocations unconditionally or have other
-requirements to be called from fully preemptible task context..
+in_interrupt() is ill defined and does not provide what the name
+suggests. The usage especially in driver code is deprecated and
+a tree wide effort to clean up and consolidate the (ab)usage of
+in_interrupt() and related checks is happening.
 
-vxge_os_dma_malloc():
-  1)  __vxge_hw_blockpool_create() <- GFP_KERNEL
-	
-  2)  __vxge_hw_mempool_grow() <- vzalloc()
-        __vxge_hw_blockpool_malloc()
+handle_regs_int() is always invoked as part of URB callback which is either
+invoked from hard or soft interrupt context.
 
-vxge_os_dma_malloc_async():
-  1  __vxge_hw_mempool_grow() <- vzalloc()
-      __vxge_hw_blockpool_malloc()
-	__vxge_hw_blockpool_blocks_add()
-
-  2)  vxge_hw_vpath_open()	<- vzalloc()
-	__vxge_hw_blockpool_block_allocate()
-
-That means neither of these functions needs a conditional allocation mode.
-
-Remove the in_interrupt() conditional and use GFP_KERNEL.
+Remove the magic assertion.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
 
 ---
- drivers/net/ethernet/neterion/vxge/vxge-config.c |    9 +--------
- drivers/net/ethernet/neterion/vxge/vxge-config.h |    7 +------
- 2 files changed, 2 insertions(+), 14 deletions(-)
+ drivers/net/wireless/zydas/zd1211rw/zd_usb.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/net/ethernet/neterion/vxge/vxge-config.c
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-config.c
-@@ -2303,16 +2303,9 @@ static void vxge_hw_blockpool_block_add(
- static inline void
- vxge_os_dma_malloc_async(struct pci_dev *pdev, void *devh, unsigned long size)
- {
--	gfp_t flags;
- 	void *vaddr;
+--- a/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
++++ b/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
+@@ -378,7 +378,6 @@ static inline void handle_regs_int(struc
+ 	int len;
+ 	u16 int_num;
  
--	if (in_interrupt())
--		flags = GFP_ATOMIC | GFP_DMA;
--	else
--		flags = GFP_KERNEL | GFP_DMA;
--
--	vaddr = kmalloc((size), flags);
--
-+	vaddr = kmalloc(size, GFP_KERNEL | GFP_DMA);
- 	vxge_hw_blockpool_block_add(devh, vaddr, size, pdev, pdev);
- }
+-	ZD_ASSERT(in_interrupt());
+ 	spin_lock_irqsave(&intr->lock, flags);
  
---- a/drivers/net/ethernet/neterion/vxge/vxge-config.h
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-config.h
-@@ -1899,18 +1899,13 @@ static inline void *vxge_os_dma_malloc(s
- 			struct pci_dev **p_dmah,
- 			struct pci_dev **p_dma_acch)
- {
--	gfp_t flags;
- 	void *vaddr;
- 	unsigned long misaligned = 0;
- 	int realloc_flag = 0;
- 	*p_dma_acch = *p_dmah = NULL;
- 
--	if (in_interrupt())
--		flags = GFP_ATOMIC | GFP_DMA;
--	else
--		flags = GFP_KERNEL | GFP_DMA;
- realloc:
--	vaddr = kmalloc((size), flags);
-+	vaddr = kmalloc(size, GFP_KERNEL | GFP_DMA);
- 	if (vaddr == NULL)
- 		return vaddr;
- 	misaligned = (unsigned long)VXGE_ALIGN((unsigned long)vaddr,
+ 	int_num = le16_to_cpu(*(__le16 *)(urb->transfer_buffer+2));
 
 
