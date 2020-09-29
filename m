@@ -2,314 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F80027CD90
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:45:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E6A927CE38
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 14:56:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732567AbgI2MpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 08:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728873AbgI2MpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 08:45:04 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28672C0613D0
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 05:45:04 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kNF08-0004iT-LM; Tue, 29 Sep 2020 14:45:00 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:feea:fa2e:c0c5:a14c] (unknown [IPv6:2a03:f580:87bc:d400:feea:fa2e:c0c5:a14c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 812A356D6D2;
-        Tue, 29 Sep 2020 12:44:59 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
-References: <20200929203041.29758-1-qiangqing.zhang@nxp.com>
- <20200929203041.29758-2-qiangqing.zhang@nxp.com>
- <a48af36d-86ac-8523-a1be-f176b4e14540@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: [PATCH V4 1/3] can: flexcan: initialize all flexcan memory for
- ECC function
-Message-ID: <bc3ed323-8ad8-769c-d70e-2d9f57343c31@pengutronix.de>
-Date:   Tue, 29 Sep 2020 14:44:50 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1729648AbgI2Mzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 08:55:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49946 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729307AbgI2Mzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 08:55:48 -0400
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601384146;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=z0mOWDzsWiiH8Jf3EZHvZUXIwlqc+nZpBB7WoCjGzR0=;
+        b=U6xKmQgeZTOxHma+bXl/tqd03DS/64+7h10aKKPnDHq5TDoTtj9Fv6ps3JyN7izmKmD9Kw
+        uWsFC290E5o/Y8Yyo1vTp5qr0pLm6/VZ07gqyg4/LmShFkLn8GSzfbtrPydx0Vj6BesHrh
+        Tdy+SUsvIa+NuPo0jje2UqfPW4kybrA=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-147-MpTH4w3KM6OEjpa_se1KqA-1; Tue, 29 Sep 2020 08:55:43 -0400
+X-MC-Unique: MpTH4w3KM6OEjpa_se1KqA-1
+Received: by mail-oo1-f70.google.com with SMTP id p17so2011356ooe.22
+        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 05:55:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=z0mOWDzsWiiH8Jf3EZHvZUXIwlqc+nZpBB7WoCjGzR0=;
+        b=SBHTViGWGyAnUH2DBEjrfuLozNa4nvernF84zegwydJxULaOgd/y/RPwLIae1uM71/
+         Jm8rPUDS/Vd3rNBl4dJ69oho42SKotZR9IJpEA8uTkkINLqw8VEy248eqzjQET95egnj
+         TeAQeoPHTpMN0aUAlxXkCKQ3sss6stwSxab50DVzBTBBFfKk6HXmTBrs00txjnXPq/xd
+         5eeefr/r7EGdpNmltI45mfzdfwi3u0jvTgYAc+Fe7bYqIafzUQqPSmIann85oujKBd0j
+         ye6GJiB8hqw4pV1AO9wDQJmbR57yaEmUMwqOwNk7wHINZvWuzFSQBZYWKJ7GpNZ9o73N
+         rp9A==
+X-Gm-Message-State: AOAM5317qGO+3CAXyqqWA6c5Vvmz3Hvy+SVVK7Qv368PStLL5U9uEpiy
+        wKucCzIAPnLhOnZfuCq+7soVgo3jonWHiDlmOFLBIX5tLaSOVFr+6JqSRc5eelV8oGr9A69FTvF
+        42oJow4UmOxRXzC/W
+X-Received: by 2002:aca:4d89:: with SMTP id a131mr2465306oib.69.1601384142691;
+        Tue, 29 Sep 2020 05:55:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz4l7INAd0F4fimbz0ScQfy2Erv8uNLc1Yx/zCDgGWmyl8VU2tz4FYUNW9aS8knL1nI4w4VzQ==
+X-Received: by 2002:aca:4d89:: with SMTP id a131mr2465285oib.69.1601384142405;
+        Tue, 29 Sep 2020 05:55:42 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id z5sm966850otp.16.2020.09.29.05.55.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Sep 2020 05:55:41 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 93FBE183C5B; Tue, 29 Sep 2020 14:45:49 +0200 (CEST)
+Subject: [PATCH bpf-next v10 0/7] bpf: Support multi-attach for freplace
+ programs
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Date:   Tue, 29 Sep 2020 14:45:49 +0200
+Message-ID: <160138354947.48470.11523413403103182788.stgit@toke.dk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-In-Reply-To: <a48af36d-86ac-8523-a1be-f176b4e14540@pengutronix.de>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="cIemPKqkQeBv2s8naQDe6bptocAxVYyDw"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---cIemPKqkQeBv2s8naQDe6bptocAxVYyDw
-Content-Type: multipart/mixed; boundary="1JekL9uXaiyYbacbQBJKIXDz5vhHUXXqH";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org
-Cc: netdev@vger.kernel.org, linux-imx@nxp.com
-Message-ID: <bc3ed323-8ad8-769c-d70e-2d9f57343c31@pengutronix.de>
-Subject: Re: [PATCH V4 1/3] can: flexcan: initialize all flexcan memory for
- ECC function
-References: <20200929203041.29758-1-qiangqing.zhang@nxp.com>
- <20200929203041.29758-2-qiangqing.zhang@nxp.com>
- <a48af36d-86ac-8523-a1be-f176b4e14540@pengutronix.de>
-In-Reply-To: <a48af36d-86ac-8523-a1be-f176b4e14540@pengutronix.de>
+This series adds support attaching freplace BPF programs to multiple targets.
+This is needed to support incremental attachment of multiple XDP programs using
+the libxdp dispatcher model.
 
---1JekL9uXaiyYbacbQBJKIXDz5vhHUXXqH
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Patch 1 moves prog_aux->linked_prog and the trampoline to be embedded in
+bpf_tracing_link on attach, and freed by the link release logic, and introduces
+a mutex to protect the writing of the pointers in prog->aux.
 
-On 9/29/20 2:34 PM, Marc Kleine-Budde wrote:
-> On 9/29/20 10:30 PM, Joakim Zhang wrote:
->> One issue was reported at a baremetal environment, which is used for
->> FPGA verification. "The first transfer will fail for extended ID
->> format(for both 2.0B and FD format), following frames can be transmitt=
-ed
->> and received successfully for extended format, and standard format don=
-'t
->> have this issue. This issue occurred randomly with high possiblity, wh=
-en
->> it occurs, the transmitter will detect a BIT1 error, the receiver a CR=
-C
->> error. According to the spec, a non-correctable error may cause this
->> transfer failure."
->>
->> With FLEXCAN_QUIRK_DISABLE_MECR quirk, it supports correctable errors,=
+Based on this refactoring (and previously applied patches), it becomes pretty
+straight-forward to support multiple-attach for freplace programs (patch 2).
+This is simply a matter of creating a second bpf_tracing_link if a target is
+supplied. However, for API consistency with other types of link attach, this
+option is added to the BPF_LINK_CREATE API instead of extending
+bpf_raw_tracepoint_open().
 
->> disable non-correctable errors interrupt and freeze mode. Platform has=
+Patch 3 is a port of Jiri Olsa's patch to support fentry/fexit on freplace
+programs. His approach of getting the target type from the target program
+reference no longer works after we've gotten rid of linked_prog (because the
+bpf_tracing_link reference disappears on attach). Instead, we used the saved
+reference to the target prog type that is also used to verify compatibility on
+secondary freplace attachment.
 
->> ECC hardware support, but select this quirk, this issue may not come t=
-o
->> light. Initialize all FlexCAN memory before accessing them, at least i=
-t
->> can avoid non-correctable errors detected due to memory uninitialized.=
+Patch 4 is the accompanying libbpf update, and patches 5-7 are selftests: patch
+5 tests for the multi-freplace functionality itself; patch 6 is Jiri's previous
+selftest for the fentry-to-freplace fix; patch 7 is a test for the change
+introduced in the previously-applied patches, blocking MODIFY_RETURN functions
+from attaching to other BPF programs.
 
->> The internal region can't be initialized when the hardware doesn't sup=
-port
->> ECC.
->>
->> According to IMX8MPRM, Rev.C, 04/2020. There is a NOTE at the section
->> 11.8.3.13 Detection and correction of memory errors:
->> "All FlexCAN memory must be initialized before starting its operation =
-in
->> order to have the parity bits in memory properly updated. CTRL2[WRMFRZ=
-]
->> grants write access to all memory positions that require initializatio=
-n,
->> ranging from 0x080 to 0xADF and from 0xF28 to 0xFFF when the CAN FD fe=
-ature
->> is enabled. The RXMGMASK, RX14MASK, RX15MASK, and RXFGMASK registers n=
-eed to
->> be initialized as well. MCR[RFEN] must not be set during memory initia=
-lization."
->>
->> Memory range from 0x080 to 0xADF, there are reserved memory (unimpleme=
-nted
->> by hardware, e.g. only configure 64 MBs), these memory can be initiali=
-zed or not.
->> In this patch, initialize all flexcan memory which includes reserved m=
-emory.
->>
->> In this patch, create FLEXCAN_QUIRK_SUPPORT_ECC for platforms which ha=
-s ECC
->> feature. If you have a ECC platform in your hand, please select this
->> qurik to initialize all flexcan memory firstly, then you can select
->> FLEXCAN_QUIRK_DISABLE_MECR to only enable correctable errors.
->>
->> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
->> ---
->> ChangeLogs:
->> V1->V2:
->> 	* update commit messages, add a datasheet reference.
->> 	* initialize block memory instead of trivial memory.
->> 	* inilialize reserved memory.
->> V2->V3:
->> 	* add FLEXCAN_QUIRK_SUPPORT_ECC quirk.
->> 	* remove init_ram struct.
->> V3->V4:
->> 	* move register definition into flexcan_reg.
->> ---
->>  drivers/net/can/flexcan.c | 51 +++++++++++++++++++++++++++++++++++++-=
--
->>  1 file changed, 49 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
->> index e86925134009..ede25db42e87 100644
->> --- a/drivers/net/can/flexcan.c
->> +++ b/drivers/net/can/flexcan.c
->> @@ -239,6 +239,8 @@
->>  #define FLEXCAN_QUIRK_SETUP_STOP_MODE BIT(8)
->>  /* Support CAN-FD mode */
->>  #define FLEXCAN_QUIRK_SUPPORT_FD BIT(9)
->> +/* support memory detection and correction */
->> +#define FLEXCAN_QUIRK_SUPPORT_ECC BIT(10)
->> =20
->>  /* Structure of the message buffer */
->>  struct flexcan_mb {
->> @@ -292,7 +294,16 @@ struct flexcan_regs {
->>  	u32 rximr[64];		/* 0x880 - Not affected by Soft Reset */
->>  	u32 _reserved5[24];	/* 0x980 */
->>  	u32 gfwr_mx6;		/* 0x9e0 - MX6 */
->> -	u32 _reserved6[63];	/* 0x9e4 */
->> +	u32 _reserved6[39];	/* 0x9e4 */
->> +	u32 _rxfir[6];		/* 0xa80 */
->> +	u32 _reserved8[2];	/* 0xa98 */
->> +	u32 _rxmgmask;		/* 0xaa0 */
->> +	u32 _rxfgmask;		/* 0xaa4 */
->> +	u32 _rx14mask;		/* 0xaa8 */
->> +	u32 _rx15mask;		/* 0xaac */
->> +	u32 tx_smb[4];		/* 0xab0 */
->> +	u32 rx_smb0[4];		/* 0xac0 */
->> +	u32 rx_smb1[4];		/* 0xad0 */
->>  	u32 mecr;		/* 0xae0 */
->>  	u32 erriar;		/* 0xae4 */
->>  	u32 erridpr;		/* 0xae8 */
->> @@ -305,9 +316,13 @@ struct flexcan_regs {
->>  	u32 fdctrl;		/* 0xc00 - Not affected by Soft Reset */
->>  	u32 fdcbt;		/* 0xc04 - Not affected by Soft Reset */
->>  	u32 fdcrc;		/* 0xc08 */
->> +	u32 _reserved9[199];	/* 0xc0c */
->> +	u32 tx_smb_fd[18];	/* 0xf28 */
->> +	u32 rx_smb0_fd[18];	/* 0xf70 */
->> +	u32 rx_smb1_fd[18];	/* 0xfb8 */
->>  };
->> =20
->> -static_assert(sizeof(struct flexcan_regs) =3D=3D 0x4 + 0xc08);
->> +static_assert(sizeof(struct flexcan_regs) =3D=3D  0x4 * 18 + 0xfb8);
->> =20
->>  struct flexcan_devtype_data {
->>  	u32 quirks;		/* quirks needed for different IP cores */
->> @@ -1292,6 +1307,35 @@ static void flexcan_set_bittiming(struct net_de=
-vice *dev)
->>  		return flexcan_set_bittiming_ctrl(dev);
->>  }
->> =20
->> +static void flexcan_init_ram(struct net_device *dev)
->> +{
->> +	struct flexcan_priv *priv =3D netdev_priv(dev);
->> +	struct flexcan_regs __iomem *regs =3D priv->regs;
->> +	u32 reg_ctrl2;
->> +
->> +	/* 11.8.3.13 Detection and correction of memory errors:
->> +	 * CTRL2[WRMFRZ] grants write access to all memory positions that
->> +	 * require initialization, ranging from 0x080 to 0xADF and
->> +	 * from 0xF28 to 0xFFF when the CAN FD feature is enabled.
->> +	 * The RXMGMASK, RX14MASK, RX15MASK, and RXFGMASK registers need to
->> +	 * be initialized as well. MCR[RFEN] must not be set during memory
->> +	 * initialization.
->> +	 */
->> +	reg_ctrl2 =3D priv->read(&regs->ctrl2);
->> +	reg_ctrl2 |=3D FLEXCAN_CTRL2_WRMFRZ;
->> +	priv->write(reg_ctrl2, &regs->ctrl2);
->> +
->> +	memset_io(&regs->mb[0][0], 0,
->> +		  (u8 *)&regs->rx_smb1[3] - &regs->mb[0][0] + 0x4);
->=20
-> why the cast?
+With this series, libxdp and xdp-tools can successfully attach multiple programs
+one at a time. To play with this, use the 'freplace-multi-attach' branch of
+xdp-tools:
 
-Doh. Of cource you need to case, but you should better cast both. :) ... =
-or use
-offsetof()
+$ git clone --recurse-submodules --branch freplace-multi-attach https://github.com/xdp-project/xdp-tools
+$ cd xdp-tools/xdp-loader
+$ make
+$ sudo ./xdp-loader load veth0 ../lib/testing/xdp_drop.o
+$ sudo ./xdp-loader load veth0 ../lib/testing/xdp_pass.o
+$ sudo ./xdp-loader status
 
-Marc
+The series is also available here:
+https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git/log/?h=bpf-freplace-multi-attach-alt-10
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Changelog:
+
+v10:
+  - Dial back the s/tgt_/dst_/ replacement a bit
+  - Fix smatch warning (from ktest robot)
+  - Rebase to bpf-next, drop already-applied patches
+
+v9:
+  - Clarify commit message of patch 3
+  - Add new struct bpf_attach_target_info for returning from
+    bpf_check_attach_target() and passing to bpf_trampoline_get()
+  - Move trampoline key computation into a helper
+  - Make sure we don't break bpffs debug umh
+  - Add some comment blocks explaining the logic flow in
+    bpf_tracing_prog_attach()
+  - s/tgt_/dst_/ in prog->aux, and for local variables using those members
+  - Always drop dst_trampoline and dst_prog from prog->aux on first attach
+  - Don't remove syscall fmod_ret test from selftest benchmarks
+  - Add saved_ prefix to dst_{prog,attach}_type members in prog_aux
+  - Drop prog argument from check_attach_modify_return()
+  - Add comment about possible NULL of tr_link->tgt_prog on link_release()
+
+v8:
+  - Add a separate error message when trying to attach FMOD_REPLACE to tgt_prog
+  - Better error messages in bpf_program__attach_freplace()
+  - Don't lock mutex when setting tgt_* pointers in prog create and verifier
+  - Remove fmod_ret programs from benchmarks in selftests (new patch 11)
+  - Fix a few other nits in selftests
+
+v7:
+  - Add back missing ptype == prog->type check in link_create()
+  - Use tracing_bpf_link_attach() instead of separate freplace_bpf_link_attach()
+  - Don't break attachment of bpf_iters in libbpf (by clobbering link_create.iter_info)
+
+v6:
+  - Rebase to latest bpf-next
+  - Simplify logic in bpf_tracing_prog_attach()
+  - Don't create a new attach_type for link_create(), disambiguate on prog->type
+    instead
+  - Use raw_tracepoint_open() in libbpf bpf_program__attach_ftrace() if called
+    with NULL target
+  - Switch bpf_program__attach_ftrace() to take function name as parameter
+    instead of btf_id
+  - Add a patch disallowing MODIFY_RETURN programs from attaching to other BPF
+    programs, and an accompanying selftest (patches 1 and 10)
+
+v5:
+  - Fix typo in inline function definition of bpf_trampoline_get()
+  - Don't put bpf_tracing_link in prog->aux, use a mutex to protect tgt_prog and
+    trampoline instead, and move them to the link on attach.
+  - Restore Jiri as author of the last selftest patch
+
+v4:
+  - Cleanup the refactored check_attach_btf_id() to make the logic easier to follow
+  - Fix cleanup paths for bpf_tracing_link
+  - Use xchg() for removing the bpf_tracing_link from prog->aux and restore on (some) failures
+  - Use BPF_LINK_CREATE operation to create link with target instead of extending raw_tracepoint_open
+  - Fold update of tools/ UAPI header into main patch
+  - Update arg dereference patch to use skeletons and set_attach_target()
+
+v3:
+  - Get rid of prog_aux->linked_prog entirely in favour of a bpf_tracing_link
+  - Incorporate Jiri's fix for attaching fentry to freplace programs
+
+v2:
+  - Drop the log arguments from bpf_raw_tracepoint_open
+  - Fix kbot errors
+  - Rebase to latest bpf-next
+
+---
+
+Jiri Olsa (1):
+      selftests/bpf: Adding test for arg dereference in extension trace
+
+Toke Høiland-Jørgensen (6):
+      bpf: move prog->aux->linked_prog and trampoline into bpf_link on attach
+      bpf: support attaching freplace programs to multiple attach points
+      bpf: Fix context type resolving for extension programs
+      libbpf: add support for freplace attachment in bpf_link_create
+      selftests: add test for multiple attachments of freplace program
+      selftests: Add selftest for disallowing modify_return attachment to freplace
 
 
---1JekL9uXaiyYbacbQBJKIXDz5vhHUXXqH--
+ include/linux/bpf.h                           |   2 +
+ include/uapi/linux/bpf.h                      |   9 +-
+ kernel/bpf/btf.c                              |   9 +-
+ kernel/bpf/syscall.c                          | 132 +++++++++--
+ kernel/bpf/verifier.c                         |  10 +
+ tools/include/uapi/linux/bpf.h                |   9 +-
+ tools/lib/bpf/bpf.c                           |  18 +-
+ tools/lib/bpf/bpf.h                           |   3 +-
+ tools/lib/bpf/libbpf.c                        |  44 +++-
+ tools/lib/bpf/libbpf.h                        |   3 +
+ tools/lib/bpf/libbpf.map                      |   1 +
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  | 212 +++++++++++++++---
+ .../selftests/bpf/prog_tests/trace_ext.c      | 111 +++++++++
+ .../selftests/bpf/progs/fmod_ret_freplace.c   |  14 ++
+ .../bpf/progs/freplace_get_constant.c         |  15 ++
+ .../selftests/bpf/progs/test_trace_ext.c      |  18 ++
+ .../bpf/progs/test_trace_ext_tracing.c        |  25 +++
+ 17 files changed, 573 insertions(+), 62 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_ext.c
+ create mode 100644 tools/testing/selftests/bpf/progs/fmod_ret_freplace.c
+ create mode 100644 tools/testing/selftests/bpf/progs/freplace_get_constant.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_trace_ext.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_trace_ext_tracing.c
 
---cIemPKqkQeBv2s8naQDe6bptocAxVYyDw
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl9zLEIACgkQqclaivrt
-76mYVQf+OyKqGjDs54/P8cxDmz4sCgxG6mtaQMXXN6XwNT0Ju/Hdm/6LCuGINo3R
-OfAAxT2P8TU/T6yPOPvkqT8mxYu2cLViOsVkrqfl/SGUrpcGAUdsvmiDZ+LRmSLv
-38GdO8yQRT0BmsKW2FGlQtfeP+YDa8zk00DfhpGOyVfwWnirIU07esmSIS7u3MpN
-Lw+9HoM2D/0dqwonovrtLTUwGRSQybVHLAC0Bg4S2gFfLODXEACWuFesy+xMVPXq
-xH2dYs32NcgPCmlAc1Ku3wOBR/3gLw3fEQKn6sT197P6R9AY4Cr6fHDHXEUA4blp
-jdTzplyn1hZnrZ8AoqSYqW9EP7i2Ww==
-=7dav
------END PGP SIGNATURE-----
-
---cIemPKqkQeBv2s8naQDe6bptocAxVYyDw--
