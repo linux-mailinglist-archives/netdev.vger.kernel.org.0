@@ -2,79 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32EEE27C006
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:50:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ABA627C00C
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 10:51:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727729AbgI2IuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 04:50:20 -0400
-Received: from z5.mailgun.us ([104.130.96.5]:39529 "EHLO z5.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727035AbgI2IuU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 04:50:20 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1601369419; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=mRaPxdfj4LJlgy+NgHgvOHUAL2Pv9lq3ue6VUFHWv00=; b=haYu0/3PzoawcvXezFxCMURy2FALlKsoUc37c1RYB5sbO6r9WZrI34lja1/DTswJt/VJNQgq
- avAQS7oNbCjX+BRhmwb1sXzO0Ar1KuR6XUiu5gJnEYOnh8jNzUDVkvwi5YhaaNQtZdGSCjHI
- hlwwE28sKcYgYiqvoS9OLFTSuHA=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 5f72f54b97ca3ed0fb6c854a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 29 Sep 2020 08:50:19
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 661E8C43382; Tue, 29 Sep 2020 08:50:18 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DB1E1C433CB;
-        Tue, 29 Sep 2020 08:50:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DB1E1C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     ath11k@lists.infradead.org, sfr@canb.auug.org.au,
-        govinds@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH] ath11k: remove auto_start from channel config struct
-References: <20200928101420.18745-1-manivannan.sadhasivam@linaro.org>
-Date:   Tue, 29 Sep 2020 11:50:12 +0300
-In-Reply-To: <20200928101420.18745-1-manivannan.sadhasivam@linaro.org>
-        (Manivannan Sadhasivam's message of "Mon, 28 Sep 2020 15:44:20 +0530")
-Message-ID: <87k0wddl17.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1727766AbgI2IvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 04:51:20 -0400
+Received: from www62.your-server.de ([213.133.104.62]:55300 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725554AbgI2IvT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 04:51:19 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kNBLf-00061o-Oa; Tue, 29 Sep 2020 10:50:59 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kNBLf-0004qV-AC; Tue, 29 Sep 2020 10:50:59 +0200
+Subject: Re: [PATCH v7 bpf-next 4/8] selftests/bpf: add bpf_snprintf_btf
+ helper tests
+To:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org,
+        andriin@fb.com, yhs@fb.com
+Cc:     linux@rasmusvillemoes.dk, andriy.shevchenko@linux.intel.com,
+        pmladek@suse.com, kafai@fb.com, songliubraving@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org, shuah@kernel.org,
+        rdna@fb.com, scott.branden@broadcom.com, quentin@isovalent.com,
+        cneirabustos@gmail.com, jakub@cloudflare.com, mingo@redhat.com,
+        rostedt@goodmis.org, acme@kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+References: <1601292670-1616-1-git-send-email-alan.maguire@oracle.com>
+ <1601292670-1616-5-git-send-email-alan.maguire@oracle.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <30b2a441-9772-1662-ca03-13bfa0b37d46@iogearbox.net>
+Date:   Tue, 29 Sep 2020 10:50:57 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1601292670-1616-5-git-send-email-alan.maguire@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25941/Mon Sep 28 15:55:11 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org> writes:
+On 9/28/20 1:31 PM, Alan Maguire wrote:
+> Tests verifying snprintf()ing of various data structures,
+> flags combinations using a tp_btf program. Tests are skipped
+> if __builtin_btf_type_id is not available to retrieve BTF
+> type ids.
+> 
+> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+[...]
+> +void test_snprintf_btf(void)
+> +{
+> +	struct netif_receive_skb *skel;
+> +	struct netif_receive_skb__bss *bss;
+> +	int err, duration = 0;
+> +
+> +	skel = netif_receive_skb__open();
+> +	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
+> +		return;
+> +
+> +	err = netif_receive_skb__load(skel);
+> +	if (CHECK(err, "skel_load", "failed to load skeleton: %d\n", err))
+> +		goto cleanup;
+> +
+> +	bss = skel->bss;
+> +
+> +	err = netif_receive_skb__attach(skel);
+> +	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
+> +		goto cleanup;
+> +
+> +	/* generate receive event */
+> +	system("ping -c 1 127.0.0.1 > /dev/null");
 
-> Recent change in MHI bus removed the option to auto start the channels
-> during MHI driver probe. The channel will only be started when the MHI
-> client driver like QRTR gets probed. So, remove the option from ath11k
-> channel config struct.
->
-> Fixes: 1399fb87ea3e ("ath11k: register MHI controller device for QCA6390")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+This generates the following new warning when compiling BPF selftests:
 
-In the future please cc linux-wireless so that patchwork sees the patch.
-I'll resend this as v2 and add the cc.
+   [...]
+   EXT-OBJ  [test_progs] cgroup_helpers.o
+   EXT-OBJ  [test_progs] trace_helpers.o
+   EXT-OBJ  [test_progs] network_helpers.o
+   EXT-OBJ  [test_progs] testing_helpers.o
+   TEST-OBJ [test_progs] snprintf_btf.test.o
+/root/bpf-next/tools/testing/selftests/bpf/prog_tests/snprintf_btf.c: In function ‘test_snprintf_btf’:
+/root/bpf-next/tools/testing/selftests/bpf/prog_tests/snprintf_btf.c:30:2: warning: ignoring return value of ‘system’, declared with attribute warn_unused_result [-Wunused-result]
+   system("ping -c 1 127.0.0.1 > /dev/null");
+   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   [...]
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Please fix, thx!
