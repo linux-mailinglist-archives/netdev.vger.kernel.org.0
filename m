@@ -2,121 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBE8127BA68
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 03:42:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8927227BA67
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 03:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727298AbgI2Bmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Sep 2020 21:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
+        id S1727357AbgI2Bl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Sep 2020 21:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727280AbgI2Bmt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 21:42:49 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5B6C061755
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 18:42:48 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id e22so4549431edq.6
-        for <netdev@vger.kernel.org>; Mon, 28 Sep 2020 18:42:48 -0700 (PDT)
+        with ESMTP id S1725272AbgI2Bl0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Sep 2020 21:41:26 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613F2C061755;
+        Mon, 28 Sep 2020 18:41:25 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id u8so3605014lff.1;
+        Mon, 28 Sep 2020 18:41:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=IQKWtC0wIHlSJXdfuyYSbunoEcU6dfwYtAy5hCXjdZ8=;
-        b=NrBpM1Pu4gPdmggMcZ8OxQ/ECw5kW4etkMwgZvySzOblDj4FUJwORp/LkrTWrpnrkV
-         W5jH8xHGLT5lVqELy/zvIUC7u3ZTmBJWCn0QdISXTjIWbyC4VCoXen1apEzowuKTq64m
-         FaWjVeIxTldjKwxjfoEdTcrrHk7XwDzucdLWewkjNscz8vrUigsHHrrBq7DV7F5/V7dk
-         Wb85rVrqoJxhd2soAN8QK+tawYf6dPYOxQOsh9ZNm2uhXlw7onghNTqGJRFZjh70vy9F
-         rPPeGtEw5lCzL18umFYymXqo+GjFWrbQGiIefwY3eCVmhPJh9OC53/p2yFibNHDfDDRL
-         YuRw==
+        bh=Abk1BbjdM00OPRd2uWXilrq7XrEyhsA1YlL5eIiAOQk=;
+        b=Ptvbu4P9DCSuekWRtfhjMZE06Me6IMHCoxGgTUCYPevR8cH5RNlW86knbQQDPhAtuI
+         M13rD57niMA36oBQACsQezC4knFkkAzwu6Gq1/trQaVmygY16yctQGLKOJ6XNEx9m4Iw
+         gIP0qKgLuam6QHnm5MyJQs55EbdANVKO3KlYfCs9mdXL4e6mshCAJV6nflznYI9ZgN0L
+         XfuXCJ1mfg98O9lUbExY1tK5tBlTpZVdGI6qv4I9shpI39mZxVQWHRm575ntMtreflLN
+         U6QTrkHIOOnWoJHDFQCZgxgO2K+kN+68UyXwYYTdc1GhMJAhNK0XA9lxS3sxgcPbTprS
+         FrFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=IQKWtC0wIHlSJXdfuyYSbunoEcU6dfwYtAy5hCXjdZ8=;
-        b=gQjs5S71fEDryFkvgfkvrjjZq4aUpL2RWOs3Ea1MO6hoaU9ZhWLGHIJUb1Jqm87h/B
-         wFXojYowYP/7nLk+pwBbHJYfOAJPpdcC+df6TZTnMIi6K+aVqodjC8BuhvidmOq4mBYl
-         3Kdq2tX3YGqO438JrlQueK+qGSzmAVw6CiU6SMdm4ZBv93E4o2eZ0CLBMSzqtqHic6Go
-         0fvbsqTzFLcw2Un5LOwjWlPvp85elmfleYHFi+h6bx3Xp44AorCWm91XonWka40qjTxq
-         GCEMjxywJUL6TmePP0C2qgMa2vexdxfKEK6pakwOMmBIviFskjWDRQFSAWmiz02aU0QK
-         8YJA==
-X-Gm-Message-State: AOAM532sRgSml6Oc6g49sZ8qeq5ID/W7OMnZi99CGjSzIsPmLJbDiEMU
-        H6/GpWPb044FP75flQOQq2+QuWRhFP241ucwTHo=
-X-Google-Smtp-Source: ABdhPJxWP+vDQBZIyhqtl/TJR0OyD55XOIXLvNoXKt1oybE+bSm9jtwbhrvExc8KL6cFbnfaY5ZQWkamrUbHYzePfnM=
-X-Received: by 2002:a05:6402:2c3:: with SMTP id b3mr796758edx.213.1601343766492;
- Mon, 28 Sep 2020 18:42:46 -0700 (PDT)
+        bh=Abk1BbjdM00OPRd2uWXilrq7XrEyhsA1YlL5eIiAOQk=;
+        b=jSkB3rWPRYJguh4H/DivRE3KC81x3PEXbJdJQhx++G2Jkq4pHTIQrPPw1TUSZmJVjN
+         MzB38DjY6Olsh1+ZWHyC+WodTI3eMXN6zLYoK21/BGiJ/OOBhQEXf1Hl5vtJ3C1sruNM
+         oiqYxW+Ji0HmOLRn3WiZplGhrghYHOdJFhHL0sqy3vVumDctMG06TAIner0lpUfuEX+q
+         5vvILDh+lGoQU+Nlk/IDOdIUEVZHhOhmmZTdHY5JOpWC/IBKGMxVWtxrFbyXWbKR+3Hy
+         b/fa5/mW9DBgmLlv8CG+iZeaKqcuCBWhRkdYOx2lv6q6H2CJCr++bBSgBzjA749prIwW
+         XsPw==
+X-Gm-Message-State: AOAM5325Z9AJGcNVv2WMrznQwh7Rc3GLbefhFWgH/Rcqv+Na8YQBekPr
+        5anrw0EWVLG+ITx6zEk5/kJM54HvWfXwR4xPv5I=
+X-Google-Smtp-Source: ABdhPJxxF3quQ4a9pf5J7PQ5Ts2VVam9GUZMb+6YyxfzFXvPphQaXipRI0kMcEUXYzR9EzjEflvD/4WvC+ouOCDl0Cw=
+X-Received: by 2002:a19:8606:: with SMTP id i6mr303196lfd.263.1601343681439;
+ Mon, 28 Sep 2020 18:41:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200928033915.82810-1-xiangxia.m.yue@gmail.com> <20200928151531-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200928151531-mutt-send-email-mst@kernel.org>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Tue, 29 Sep 2020 09:40:22 +0800
-Message-ID: <CAMDZJNV_A+EuqFGEhB_-g_5unUJ9TyyDZu1krtxBS22EnW1mAw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] virtio-net: don't disable guest csum when disable LRO
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>
+References: <1601292670-1616-1-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1601292670-1616-1-git-send-email-alan.maguire@oracle.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 28 Sep 2020 18:41:10 -0700
+Message-ID: <CAADnVQ+Va+gZQb2ShMB3yS3SpW-2uuqe9GL+Hz0A8NZkiNhsEA@mail.gmail.com>
+Subject: Re: [PATCH v7 bpf-next 0/8] bpf: add helpers to support BTF-based
+ kernel data display
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Andrey Ignatov <rdna@fb.com>, scott.branden@broadcom.com,
+        Quentin Monnet <quentin@isovalent.com>,
+        carlos antonio neira bustos <cneirabustos@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 3:21 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Mon, Sep 28, 2020 at 4:33 AM Alan Maguire <alan.maguire@oracle.com> wrote:
 >
-> On Mon, Sep 28, 2020 at 11:39:14AM +0800, xiangxia.m.yue@gmail.com wrote:
-> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> >
-> > Open vSwitch and Linux bridge will disable LRO of the interface
-> > when this interface added to them. Now when disable the LRO, the
-> > virtio-net csum is disable too. That drops the forwarding performance.
-> >
-> > Fixes: e59ff2c49ae1 ("virtio-net: disable guest csum during XDP set")
+> Default output for an sk_buff looks like this (zeroed fields
+> are omitted):
 >
-> I am a bit confused by this tag. Did this change bring about
-> disabling checksum when LRO is disabled? I am not sure
-> I follow how ...
-Hi Michael
-It's not right fix tag.
-The commit a02e8964eaf9 ("virtio-net: ethtool configurable LRO"),
-disable the csum, when we disable the LRO
-
-> > Cc: Michael S. Tsirkin <mst@redhat.com>
-> > Cc: Jason Wang <jasowang@redhat.com>
-> > Cc: Willem de Bruijn <willemb@google.com>
-> > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > ---
-> >  drivers/net/virtio_net.c | 8 +++++++-
-> >  1 file changed, 7 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 7145c83c6c8c..21b71148c532 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -63,6 +63,11 @@ static const unsigned long guest_offloads[] = {
-> >       VIRTIO_NET_F_GUEST_CSUM
-> >  };
-> >
-> > +#define GUEST_OFFLOAD_LRO_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
-> > +                             (1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
-> > +                             (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
-> > +                             (1ULL << VIRTIO_NET_F_GUEST_UFO))
-> > +
-> >  struct virtnet_stat_desc {
-> >       char desc[ETH_GSTRING_LEN];
-> >       size_t offset;
-> > @@ -2531,7 +2536,8 @@ static int virtnet_set_features(struct net_device *dev,
-> >               if (features & NETIF_F_LRO)
-> >                       offloads = vi->guest_offloads_capable;
-> >               else
-> > -                     offloads = 0;
-> > +                     offloads = vi->guest_offloads_capable &
-> > +                                ~GUEST_OFFLOAD_LRO_MASK;
-> >
-> >               err = virtnet_set_guest_offloads(vi, offloads);
-> >               if (err)
-> > --
-> > 2.23.0
+> (struct sk_buff){
+>  .transport_header = (__u16)65535,
+>  .mac_header = (__u16)65535,
+>  .end = (sk_buff_data_t)192,
+>  .head = (unsigned char *)0x000000007524fd8b,
+>  .data = (unsigned char *)0x000000007524fd8b,
+>  .truesize = (unsigned int)768,
+>  .users = (refcount_t){
+>   .refs = (atomic_t){
+>    .counter = (int)1,
+>   },
+>  },
+> }
 >
+> Flags can modify aspects of output format; see patch 3
+> for more details.
 
-
--- 
-Best regards, Tonghao
+Applied. Thanks a lot.
