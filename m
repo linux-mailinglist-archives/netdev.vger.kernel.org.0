@@ -2,110 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F39127CFCE
-	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 15:49:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C421627CFD4
+	for <lists+netdev@lfdr.de>; Tue, 29 Sep 2020 15:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730318AbgI2Nt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 09:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
+        id S1730496AbgI2Ntm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 09:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728487AbgI2Nt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 09:49:27 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45DEC061755;
-        Tue, 29 Sep 2020 06:49:27 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id k8so4613441pfk.2;
-        Tue, 29 Sep 2020 06:49:27 -0700 (PDT)
+        with ESMTP id S1730283AbgI2Nti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 09:49:38 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B835BC061755;
+        Tue, 29 Sep 2020 06:49:37 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id w7so4604916pfi.4;
+        Tue, 29 Sep 2020 06:49:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=jGFHohiLMKmOcbBELvAHtKl6/eKf2Rs4EotDZ5VjkE0=;
-        b=ZkkNgOj71CzBiqwUx2PHMXjo+A7b+XwnHK/P0XlALa0bzJUKaqJ98/zbXF9OPFtgiJ
-         ozAXkcmyHmyyJUF7CWb+3+Axpl6wze+7Vo9WOx7WEX8iTmzTnhvtioMkALMgR8nsGzsC
-         uZ3u4iNJ975QRy2MlKhWCd6a5u9dEdZnx5R/Ow3RedlXm7BtMdpLbrIubrEe2nbzjz9a
-         G14kdFiIZ/d3iWTtNUjQoHloUCXiYG9CZ2l6QJXqocBKU/zcm63uBB5jmN+mYWeJWOuj
-         cGvgk2f4p4uhvGb/QkkbTnyIw+UV3HwmUafdnJKM+g9tT84qcQXNjS8tDfdND7iwN8es
-         EpAA==
+        bh=kh+4Akzr9Y2ohk7JE0CkOp4rDs5Jp9+QPNorc2hZCXo=;
+        b=mrjFwkTl2E2VeXUMo5tIFObiJYgdyLpW2x1AnOsdFoUZAGX6DXUGdw+iShr2++QNKa
+         X8Q+DfW2bUyNYAc7IhMCUpRCwADJNuV64sf+nB7OK+YatajXoqd+RxYGbCr+ToWHKP12
+         EEN9xAEeKz7ph1GVPMB62pPMh8F5g3f7arV2gAADZyXakk93nQk/8wh+aQrdbngzfRFN
+         o47gRYPppYNByyZDHCjlmGAnoArF91wDyTikS+7eXW95sSVX2mFhYJ9y9rO6fvzDigTK
+         mORMlt+xzac1PjG2U+JFV5qJYgZFc4J9JNMJk3ZEBHLE9qjCN3cXAyOQiGXYOesmzgrA
+         bUmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=jGFHohiLMKmOcbBELvAHtKl6/eKf2Rs4EotDZ5VjkE0=;
-        b=lOiKS8AIUmJaDsTwUPZSaELO7Z6nGj+ELBOmW5Ht1EFL7eKB+uKrYP+pxl5HGQMhOi
-         X30VB4xn75Cru9HgdC96ZwpjzgPiWTuojMcoLchO5E2AYJTDO1YifRF34KGCn6H/2Ut6
-         UUou6KuO8L+LQzu3sU2MsFoXvHwClWhRLnVIqswU0a50ndRMe1tSU0cOr31QkYVH5pim
-         SaT9q7HMYdG3/7VY/l7S5O4DLsDc5NCAl2FksLaN5OVp2U7vbZMICg+IEWBeWpJiQd9I
-         3QwImCZWUS964Fr81uforaiWs4bfv2ob3430NAo0W68nFVAE2qGBYuY0uv52tFxmVboW
-         3UpQ==
-X-Gm-Message-State: AOAM530pqM0rOCtTskt41+X9lgWdPVcDHS8/ZcXAQ4zynVkUPMuJzdqY
-        /QzskAlWP3MnAnfz3t/fGFrmDoDVfkk=
-X-Google-Smtp-Source: ABdhPJzC4hQYvDoZWetKVnRMIS2puis0AMvfyEcfImrXwhQXsPUPSYYB2RTuvwtBUSd6quLanPqKCQ==
-X-Received: by 2002:a17:902:9041:b029:d0:cc02:8540 with SMTP id w1-20020a1709029041b02900d0cc028540mr4425386plz.41.1601387366744;
-        Tue, 29 Sep 2020 06:49:26 -0700 (PDT)
+        bh=kh+4Akzr9Y2ohk7JE0CkOp4rDs5Jp9+QPNorc2hZCXo=;
+        b=LZSlyjM1hqoQL6SePfFUmThWz02ZB9IHaLDjlLDjdvjdgSUCuV/QFWMUV2C8mjP4lY
+         CGqwvOScZBBwdXqssW0uC++g022JxgGzDLWjIwNX9ryTryqSYgRvFrJf1/Z3ZnSKjncL
+         kxohtsNSXquJMxCTbDE3VFHlr8qi9OISrlXyZpq0TKBIGFdo5i0KNTW0++bQFV/3kcW2
+         k8PHfeIiAgxskDWPsjhTirMLuHwSlnqx1mwPTpkd+PXQ+md2p5npDWOdURKx5SqoEnha
+         dWo3AZyW7BWQGvXs7QFkHVwAKeQSp+2L/cN19AoxYktvTUKa+TiI385BW2+7p7cJmwQz
+         dotg==
+X-Gm-Message-State: AOAM530F2BPWVBbFClz05bI8WsX6qDmgEvfeyKSH6bQg1RfLr8hPwwcz
+        cW1JbU4+OrQXwotV9+TRkl6+LIMYVqU=
+X-Google-Smtp-Source: ABdhPJzv7+P/ErpnFXgPsUr1GQZzuXGFXri8KKVMJtT7Ht9SW4hLRz0sDuDa5Y3K2p0NUHKT9stSgg==
+X-Received: by 2002:a63:df02:: with SMTP id u2mr3300018pgg.270.1601387376745;
+        Tue, 29 Sep 2020 06:49:36 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p4sm4849238pju.29.2020.09.29.06.49.24
+        by smtp.gmail.com with ESMTPSA id g24sm5703049pfk.65.2020.09.29.06.49.34
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Sep 2020 06:49:24 -0700 (PDT)
+        Tue, 29 Sep 2020 06:49:34 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>,
         Michael Tuexen <tuexen@fh-muenster.de>,
         Tom Herbert <therbert@google.com>, davem@davemloft.net
-Subject: [PATCH net-next 01/15] udp: check udp sock encap_type in __udp_lib_err
-Date:   Tue, 29 Sep 2020 21:48:53 +0800
-Message-Id: <51c1fdad515076f3014476711aec1c0a81c18d36.1601387231.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 02/15] udp6: move the mss check after udp gso tunnel processing
+Date:   Tue, 29 Sep 2020 21:48:54 +0800
+Message-Id: <65f713004ab546e0b6ec793572c72c1d0399f0fe.1601387231.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <cover.1601387231.git.lucien.xin@gmail.com>
+In-Reply-To: <51c1fdad515076f3014476711aec1c0a81c18d36.1601387231.git.lucien.xin@gmail.com>
 References: <cover.1601387231.git.lucien.xin@gmail.com>
+ <51c1fdad515076f3014476711aec1c0a81c18d36.1601387231.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1601387231.git.lucien.xin@gmail.com>
 References: <cover.1601387231.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a chance that __udp4/6_lib_lookup() returns a udp encap
-sock in __udp_lib_err(), like the udp encap listening sock may
-use the same port as remote encap port, in which case it should
-go to __udp4/6_lib_err_encap() for more validation before
-processing the icmp packet.
+For some protocol's gso, like SCTP, it's using GSO_BY_FRAGS for
+gso_size. When using UDP to encapsulate its packet, it will
+return error in udp6_ufo_fragment() as skb->len < gso_size,
+and it will never go to the gso tunnel processing.
 
-This patch is to check encap_type in __udp_lib_err() for the
-further validation for a encap sock.
+So we should move this check after udp gso tunnel processing,
+the same as udp4_ufo_fragment() does. While at it, also tidy
+the variables up.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/ipv4/udp.c | 2 +-
- net/ipv6/udp.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/ipv6/udp_offload.c | 154 ++++++++++++++++++++++++-------------------------
+ 1 file changed, 76 insertions(+), 78 deletions(-)
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 09f0a23..ca04a8a 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -702,7 +702,7 @@ int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
- 	sk = __udp4_lib_lookup(net, iph->daddr, uh->dest,
- 			       iph->saddr, uh->source, skb->dev->ifindex,
- 			       inet_sdif(skb), udptable, NULL);
--	if (!sk) {
-+	if (!sk || udp_sk(sk)->encap_type) {
- 		/* No socket for error: try tunnels before discarding */
- 		sk = ERR_PTR(-ENOENT);
- 		if (static_branch_unlikely(&udp_encap_needed_key)) {
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 29d9691..cde9b88 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -560,7 +560,7 @@ int __udp6_lib_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
+index 584157a..3c5ec8e 100644
+--- a/net/ipv6/udp_offload.c
++++ b/net/ipv6/udp_offload.c
+@@ -17,96 +17,94 @@
+ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
+ 					 netdev_features_t features)
+ {
++	u8 nexthdr, frag_hdr_sz = sizeof(struct frag_hdr);
++	unsigned int unfrag_ip6hlen, unfrag_len, mss;
+ 	struct sk_buff *segs = ERR_PTR(-EINVAL);
+-	unsigned int mss;
+-	unsigned int unfrag_ip6hlen, unfrag_len;
+-	struct frag_hdr *fptr;
++	const struct ipv6hdr *ipv6h;
+ 	u8 *packet_start, *prevhdr;
+-	u8 nexthdr;
+-	u8 frag_hdr_sz = sizeof(struct frag_hdr);
++	struct frag_hdr *fptr;
++	int tnl_hlen, err;
++	struct udphdr *uh;
+ 	__wsum csum;
+-	int tnl_hlen;
+-	int err;
  
- 	sk = __udp6_lib_lookup(net, daddr, uh->dest, saddr, uh->source,
- 			       inet6_iif(skb), inet6_sdif(skb), udptable, NULL);
--	if (!sk) {
-+	if (!sk || udp_sk(sk)->encap_type) {
- 		/* No socket for error: try tunnels before discarding */
- 		sk = ERR_PTR(-ENOENT);
- 		if (static_branch_unlikely(&udpv6_encap_needed_key)) {
+-	mss = skb_shinfo(skb)->gso_size;
+-	if (unlikely(skb->len <= mss))
++	if (skb->encapsulation &&
++	    (skb_shinfo(skb)->gso_type &
++	     (SKB_GSO_UDP_TUNNEL | SKB_GSO_UDP_TUNNEL_CSUM))) {
++		segs = skb_udp_tunnel_segment(skb, features, true);
+ 		goto out;
++	}
+ 
+-	if (skb->encapsulation && skb_shinfo(skb)->gso_type &
+-	    (SKB_GSO_UDP_TUNNEL|SKB_GSO_UDP_TUNNEL_CSUM))
+-		segs = skb_udp_tunnel_segment(skb, features, true);
+-	else {
+-		const struct ipv6hdr *ipv6h;
+-		struct udphdr *uh;
++	if (!(skb_shinfo(skb)->gso_type & (SKB_GSO_UDP | SKB_GSO_UDP_L4)))
++		goto out;
+ 
+-		if (!(skb_shinfo(skb)->gso_type & (SKB_GSO_UDP | SKB_GSO_UDP_L4)))
+-			goto out;
++	if (!pskb_may_pull(skb, sizeof(struct udphdr)))
++		goto out;
+ 
+-		if (!pskb_may_pull(skb, sizeof(struct udphdr)))
+-			goto out;
++	if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)
++		return __udp_gso_segment(skb, features);
+ 
+-		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)
+-			return __udp_gso_segment(skb, features);
+-
+-		/* Do software UFO. Complete and fill in the UDP checksum as HW cannot
+-		 * do checksum of UDP packets sent as multiple IP fragments.
+-		 */
+-
+-		uh = udp_hdr(skb);
+-		ipv6h = ipv6_hdr(skb);
+-
+-		uh->check = 0;
+-		csum = skb_checksum(skb, 0, skb->len, 0);
+-		uh->check = udp_v6_check(skb->len, &ipv6h->saddr,
+-					  &ipv6h->daddr, csum);
+-		if (uh->check == 0)
+-			uh->check = CSUM_MANGLED_0;
+-
+-		skb->ip_summed = CHECKSUM_UNNECESSARY;
+-
+-		/* If there is no outer header we can fake a checksum offload
+-		 * due to the fact that we have already done the checksum in
+-		 * software prior to segmenting the frame.
+-		 */
+-		if (!skb->encap_hdr_csum)
+-			features |= NETIF_F_HW_CSUM;
+-
+-		/* Check if there is enough headroom to insert fragment header. */
+-		tnl_hlen = skb_tnl_header_len(skb);
+-		if (skb->mac_header < (tnl_hlen + frag_hdr_sz)) {
+-			if (gso_pskb_expand_head(skb, tnl_hlen + frag_hdr_sz))
+-				goto out;
+-		}
++	mss = skb_shinfo(skb)->gso_size;
++	if (unlikely(skb->len <= mss))
++		goto out;
+ 
+-		/* Find the unfragmentable header and shift it left by frag_hdr_sz
+-		 * bytes to insert fragment header.
+-		 */
+-		err = ip6_find_1stfragopt(skb, &prevhdr);
+-		if (err < 0)
+-			return ERR_PTR(err);
+-		unfrag_ip6hlen = err;
+-		nexthdr = *prevhdr;
+-		*prevhdr = NEXTHDR_FRAGMENT;
+-		unfrag_len = (skb_network_header(skb) - skb_mac_header(skb)) +
+-			     unfrag_ip6hlen + tnl_hlen;
+-		packet_start = (u8 *) skb->head + SKB_GSO_CB(skb)->mac_offset;
+-		memmove(packet_start-frag_hdr_sz, packet_start, unfrag_len);
+-
+-		SKB_GSO_CB(skb)->mac_offset -= frag_hdr_sz;
+-		skb->mac_header -= frag_hdr_sz;
+-		skb->network_header -= frag_hdr_sz;
+-
+-		fptr = (struct frag_hdr *)(skb_network_header(skb) + unfrag_ip6hlen);
+-		fptr->nexthdr = nexthdr;
+-		fptr->reserved = 0;
+-		fptr->identification = ipv6_proxy_select_ident(dev_net(skb->dev), skb);
+-
+-		/* Fragment the skb. ipv6 header and the remaining fields of the
+-		 * fragment header are updated in ipv6_gso_segment()
+-		 */
+-		segs = skb_segment(skb, features);
++	/* Do software UFO. Complete and fill in the UDP checksum as HW cannot
++	 * do checksum of UDP packets sent as multiple IP fragments.
++	 */
++
++	uh = udp_hdr(skb);
++	ipv6h = ipv6_hdr(skb);
++
++	uh->check = 0;
++	csum = skb_checksum(skb, 0, skb->len, 0);
++	uh->check = udp_v6_check(skb->len, &ipv6h->saddr,
++				 &ipv6h->daddr, csum);
++	if (uh->check == 0)
++		uh->check = CSUM_MANGLED_0;
++
++	skb->ip_summed = CHECKSUM_UNNECESSARY;
++
++	/* If there is no outer header we can fake a checksum offload
++	 * due to the fact that we have already done the checksum in
++	 * software prior to segmenting the frame.
++	 */
++	if (!skb->encap_hdr_csum)
++		features |= NETIF_F_HW_CSUM;
++
++	/* Check if there is enough headroom to insert fragment header. */
++	tnl_hlen = skb_tnl_header_len(skb);
++	if (skb->mac_header < (tnl_hlen + frag_hdr_sz)) {
++		if (gso_pskb_expand_head(skb, tnl_hlen + frag_hdr_sz))
++			goto out;
+ 	}
+ 
++	/* Find the unfragmentable header and shift it left by frag_hdr_sz
++	 * bytes to insert fragment header.
++	 */
++	err = ip6_find_1stfragopt(skb, &prevhdr);
++	if (err < 0)
++		return ERR_PTR(err);
++	unfrag_ip6hlen = err;
++	nexthdr = *prevhdr;
++	*prevhdr = NEXTHDR_FRAGMENT;
++	unfrag_len = (skb_network_header(skb) - skb_mac_header(skb)) +
++		     unfrag_ip6hlen + tnl_hlen;
++	packet_start = (u8 *)skb->head + SKB_GSO_CB(skb)->mac_offset;
++	memmove(packet_start - frag_hdr_sz, packet_start, unfrag_len);
++
++	SKB_GSO_CB(skb)->mac_offset -= frag_hdr_sz;
++	skb->mac_header -= frag_hdr_sz;
++	skb->network_header -= frag_hdr_sz;
++
++	fptr = (struct frag_hdr *)(skb_network_header(skb) + unfrag_ip6hlen);
++	fptr->nexthdr = nexthdr;
++	fptr->reserved = 0;
++	fptr->identification = ipv6_proxy_select_ident(dev_net(skb->dev), skb);
++
++	/* Fragment the skb. ipv6 header and the remaining fields of the
++	 * fragment header are updated in ipv6_gso_segment()
++	 */
++	segs = skb_segment(skb, features);
++
+ out:
+ 	return segs;
+ }
 -- 
 2.1.0
 
