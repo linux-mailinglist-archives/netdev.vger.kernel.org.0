@@ -2,45 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CDA027F506
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 00:22:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1606927F51D
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 00:28:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731489AbgI3WWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 18:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727210AbgI3WWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 18:22:01 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341CCC061755;
-        Wed, 30 Sep 2020 15:22:01 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3C6B713C79213;
-        Wed, 30 Sep 2020 15:05:13 -0700 (PDT)
-Date:   Wed, 30 Sep 2020 15:21:59 -0700 (PDT)
-Message-Id: <20200930.152159.116377724536752338.davem@davemloft.net>
-To:     mkl@pengutronix.de
-Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: pull-request: can-next 2020-09-30
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200930201816.1032054-1-mkl@pengutronix.de>
-References: <20200930201816.1032054-1-mkl@pengutronix.de>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Wed, 30 Sep 2020 15:05:13 -0700 (PDT)
+        id S1731339AbgI3W2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 18:28:38 -0400
+Received: from mga03.intel.com ([134.134.136.65]:40330 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730499AbgI3W2h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 18:28:37 -0400
+IronPort-SDR: 7NeHopKkEp5hQ+vhllQbH6RgZ/dZEspXnf9KPTkt9c4obibgM5Y4q9GLQ33AP32xImtUUEjhgB
+ BF+0d38LPVQQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="162616455"
+X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; 
+   d="scan'208";a="162616455"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2020 15:28:33 -0700
+IronPort-SDR: 8+K8LH92PdQEaTc38Hijo2GusyCw8SfgFNt2BsDUbn1G12jdLymjvHuSJMLAjuTVuBRBnjcTiV
+ diTnzWBPolvw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; 
+   d="scan'208";a="351685057"
+Received: from bpujari-bxdsw.sc.intel.com ([10.232.14.242])
+  by orsmga007.jf.intel.com with ESMTP; 30 Sep 2020 15:28:26 -0700
+From:   bimmy.pujari@intel.com
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, mchehab@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, kafai@fb.com, maze@google.com,
+        bimmy.pujari@intel.com, ashkan.nikravesh@intel.com,
+        Daniel.A.Alvarez@intel.com
+Subject: [PATCH bpf-next v6 1/2] bpf: Add bpf_ktime_get_real_ns
+Date:   Wed, 30 Sep 2020 15:28:48 -0700
+Message-Id: <20200930222848.14254-1-bimmy.pujari@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-Date: Wed, 30 Sep 2020 22:18:03 +0200
+From: Bimmy Pujari <bimmy.pujari@intel.com>
 
-> this is a pull request of 13 patches for net-next.
+The existing bpf helper functions to get timestamp return the time
+elapsed since system boot. This timestamp is not particularly useful
+where epoch timestamp is required or more than one server is involved
+and time sync is required. Instead, you want to use CLOCK_REALTIME,
+which provides epoch timestamp. Hence adding a new helper
+bfp_ktime_get_real_ns() based around CLOCK_REALTIME.
 
-Pulled, thanks Marc.
+Signed-off-by: Ashkan Nikravesh <ashkan.nikravesh@intel.com>
+Signed-off-by: Bimmy Pujari <bimmy.pujari@intel.com>
+---
+ drivers/media/rc/bpf-lirc.c    |  2 ++
+ include/linux/bpf.h            |  1 +
+ include/uapi/linux/bpf.h       | 11 +++++++++++
+ kernel/bpf/core.c              |  1 +
+ kernel/bpf/helpers.c           | 14 ++++++++++++++
+ kernel/trace/bpf_trace.c       |  2 ++
+ tools/include/uapi/linux/bpf.h | 11 +++++++++++
+ 7 files changed, 42 insertions(+)
+
+diff --git a/drivers/media/rc/bpf-lirc.c b/drivers/media/rc/bpf-lirc.c
+index 3fe3edd80876..82b184e02248 100644
+--- a/drivers/media/rc/bpf-lirc.c
++++ b/drivers/media/rc/bpf-lirc.c
+@@ -105,6 +105,8 @@ lirc_mode2_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_ktime_get_ns_proto;
+ 	case BPF_FUNC_ktime_get_boot_ns:
+ 		return &bpf_ktime_get_boot_ns_proto;
++	case BPF_FUNC_ktime_get_real_ns:
++		return &bpf_ktime_get_real_ns_proto
+ 	case BPF_FUNC_tail_call:
+ 		return &bpf_tail_call_proto;
+ 	case BPF_FUNC_get_prandom_u32:
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 50e5c4b52bd1..01866d714438 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1791,6 +1791,7 @@ extern const struct bpf_func_proto bpf_get_numa_node_id_proto;
+ extern const struct bpf_func_proto bpf_tail_call_proto;
+ extern const struct bpf_func_proto bpf_ktime_get_ns_proto;
+ extern const struct bpf_func_proto bpf_ktime_get_boot_ns_proto;
++extern const struct bpf_func_proto bpf_ktime_get_real_ns_proto;
+ extern const struct bpf_func_proto bpf_get_current_pid_tgid_proto;
+ extern const struct bpf_func_proto bpf_get_current_uid_gid_proto;
+ extern const struct bpf_func_proto bpf_get_current_comm_proto;
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 1f17c6752deb..f944d9a14137 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3665,6 +3665,16 @@ union bpf_attr {
+  * 	Return
+  * 		The helper returns **TC_ACT_REDIRECT** on success or
+  * 		**TC_ACT_SHOT** on error.
++ *
++ * u64 bpf_ktime_get_real_ns(void)
++ *	Description
++ *		Return the real time since epoch in nanoseconds.
++ *		See: **clock_gettime**\ (**CLOCK_REALTIME**)
++ *
++ *		As REALCLOCK can jump around, this helper should not be used to
++ *		measure passage of time.
++ *	Return
++ *		Current *ktime*.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3820,6 +3830,7 @@ union bpf_attr {
+ 	FN(seq_printf_btf),		\
+ 	FN(skb_cgroup_classid),		\
+ 	FN(redirect_neigh),		\
++	FN(ktime_get_real_ns),		\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index cda674f1392f..7fb353ccb8ae 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2211,6 +2211,7 @@ const struct bpf_func_proto bpf_get_smp_processor_id_proto __weak;
+ const struct bpf_func_proto bpf_get_numa_node_id_proto __weak;
+ const struct bpf_func_proto bpf_ktime_get_ns_proto __weak;
+ const struct bpf_func_proto bpf_ktime_get_boot_ns_proto __weak;
++const struct bpf_func_proto bpf_ktime_get_real_ns_proto __weak;
+ 
+ const struct bpf_func_proto bpf_get_current_pid_tgid_proto __weak;
+ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index e825441781ab..0fefcd076d7b 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -167,6 +167,18 @@ const struct bpf_func_proto bpf_ktime_get_boot_ns_proto = {
+ 	.ret_type	= RET_INTEGER,
+ };
+ 
++BPF_CALL_0(bpf_ktime_get_real_ns)
++{
++	/* NMI safe access to clock realtime */
++	return ktime_get_real_fast_ns();
++}
++
++const struct bpf_func_proto bpf_ktime_get_real_ns_proto = {
++	.func		= bpf_ktime_get_real_ns,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++};
++
+ BPF_CALL_0(bpf_get_current_pid_tgid)
+ {
+ 	struct task_struct *task = current;
+@@ -657,6 +669,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+ 		return &bpf_ktime_get_ns_proto;
+ 	case BPF_FUNC_ktime_get_boot_ns:
+ 		return &bpf_ktime_get_boot_ns_proto;
++	case BPF_FUNC_ktime_get_real_ns:
++		return &bpf_ktime_get_real_ns_proto;
+ 	case BPF_FUNC_ringbuf_output:
+ 		return &bpf_ringbuf_output_proto;
+ 	case BPF_FUNC_ringbuf_reserve:
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index e118a83439c3..1ee1c29cb711 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1259,6 +1259,8 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_ktime_get_ns_proto;
+ 	case BPF_FUNC_ktime_get_boot_ns:
+ 		return &bpf_ktime_get_boot_ns_proto;
++	case BPF_FUNC_ktime_get_real_ns:
++		return &bpf_ktime_get_real_ns_proto;
+ 	case BPF_FUNC_tail_call:
+ 		return &bpf_tail_call_proto;
+ 	case BPF_FUNC_get_current_pid_tgid:
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 1f17c6752deb..f944d9a14137 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -3665,6 +3665,16 @@ union bpf_attr {
+  * 	Return
+  * 		The helper returns **TC_ACT_REDIRECT** on success or
+  * 		**TC_ACT_SHOT** on error.
++ *
++ * u64 bpf_ktime_get_real_ns(void)
++ *	Description
++ *		Return the real time since epoch in nanoseconds.
++ *		See: **clock_gettime**\ (**CLOCK_REALTIME**)
++ *
++ *		As REALCLOCK can jump around, this helper should not be used to
++ *		measure passage of time.
++ *	Return
++ *		Current *ktime*.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3820,6 +3830,7 @@ union bpf_attr {
+ 	FN(seq_printf_btf),		\
+ 	FN(skb_cgroup_classid),		\
+ 	FN(redirect_neigh),		\
++	FN(ktime_get_real_ns),		\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+-- 
+2.17.1
+
