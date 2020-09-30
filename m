@@ -2,120 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7B8627F453
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 23:43:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD0627F455
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 23:44:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730117AbgI3Vn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 17:43:27 -0400
-Received: from mga01.intel.com ([192.55.52.88]:30825 "EHLO mga01.intel.com"
+        id S1730560AbgI3VoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 17:44:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:58912 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725814AbgI3Vn1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Sep 2020 17:43:27 -0400
-IronPort-SDR: eHkylh3V/cVIZKJduYez4B1XVL9KTBgBeHHYt2px9bRQBCFb+JosOjQ7H7BR2cN0uImZB4+0l5
- ABfMDdnNq9Lw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="180713514"
-X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; 
-   d="scan'208";a="180713514"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2020 14:43:24 -0700
-IronPort-SDR: eYudss1prjY/reT+PbLCsNhEGDvAW5/yqExThupUY6Hks5TWkChM9Z3OAk8Zv6WU+iac88+W+A
- a5SiLAydAidA==
-X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; 
-   d="scan'208";a="457824315"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.35.112]) ([10.212.35.112])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2020 14:43:23 -0700
-Subject: Re: [iproute2-next v1] devlink: display elapsed time during flash
- update
-To:     Jakub Kicinski <kubakici@wp.pl>
-Cc:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org
-References: <20200929215651.3538844-1-jacob.e.keller@intel.com>
- <df1ad702-ab31-e027-e711-46d09f8fa095@pensando.io>
- <1f8a0423-97ef-29c4-4d77-4b91d23a9e7c@intel.com>
- <20200930143659.7fee35d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <7a9ff898-bdae-9dab-12a9-30d825b6b67d@intel.com>
-Date:   Wed, 30 Sep 2020 14:43:19 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.1
+        id S1725814AbgI3VoQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 17:44:16 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id A24F1ABAD;
+        Wed, 30 Sep 2020 21:44:14 +0000 (UTC)
+Date:   Wed, 30 Sep 2020 23:44:07 +0200
+From:   Petr Tesarik <ptesarik@suse.cz>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        netdev@vger.kernel.org
+Subject: Re: RTL8402 stops working after hibernate/resume
+Message-ID: <20200930234407.0ce0b6d9@ezekiel.suse.cz>
+In-Reply-To: <2e91f3b7-b675-e117-2200-e97b089e9996@gmail.com>
+References: <20200715102820.7207f2f8@ezekiel.suse.cz>
+        <e1c7a37f-d8d0-a773-925c-987b92f12694@gmail.com>
+        <20200903104122.1e90e03c@ezekiel.suse.cz>
+        <7e6bbb75-d8db-280d-ac5b-86013af39071@gmail.com>
+        <20200924211444.3ba3874b@ezekiel.suse.cz>
+        <a10f658b-7fdf-2789-070a-83ad5549191a@gmail.com>
+        <20200925093037.0fac65b7@ezekiel.suse.cz>
+        <20200925105455.50d4d1cc@ezekiel.suse.cz>
+        <aa997635-a5b5-75e3-8a30-a77acb2adf35@gmail.com>
+        <20200925115241.3709caf6@ezekiel.suse.cz>
+        <20200925145608.66a89e73@ezekiel.suse.cz>
+        <30969885-9611-06d8-d50a-577897fcab29@gmail.com>
+        <20200929210737.7f4a6da7@ezekiel.suse.cz>
+        <217ae37d-f2b0-1805-5696-11644b058819@redhat.com>
+        <5f2d3d48-9d1d-e9fe-49bc-d1feeb8a92eb@gmail.com>
+        <1c2d888a-5702-cca9-195c-23c3d0d936b9@redhat.com>
+        <8a82a023-e361-79db-7127-769e4f6e0d1b@gmail.com>
+        <20200930184124.68a86b1d@ezekiel.suse.cz>
+        <20200930193231.205ee7bd@ezekiel.suse.cz>
+        <20200930200027.3b512633@ezekiel.suse.cz>
+        <2e91f3b7-b675-e117-2200-e97b089e9996@gmail.com>
+Organization: SUSE Linux, s.r.o.
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20200930143659.7fee35d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/Ifv9FSNHijJpFU2eXAWU2n1";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/Ifv9FSNHijJpFU2eXAWU2n1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+On Wed, 30 Sep 2020 22:11:02 +0200
+Heiner Kallweit <hkallweit1@gmail.com> wrote:
 
-On 9/30/2020 2:36 PM, Jakub Kicinski wrote:
-> On Wed, 30 Sep 2020 14:20:43 -0700 Jacob Keller wrote:
->>> Thanks, Jake.  In general this seems to work pretty well.  One thing, 
->>> tho'...
->>>
->>> Our fw download is slow (I won't go into the reasons here) so we're 
->>> clicking through the Download x% over maybe 100+ seconds.  Since we send 
->>> an update every 3% or so, we end up seeing the ( 0m 3s ) pop up and stay 
->>> there the whole time, looking a little odd:
->>>
->>>      ./iproute2-5.8.0/devlink/devlink dev flash pci/0000:b5:00.0 file 
->>> ionic/dsc_fw_1.15.0-150.tar
->>>      Preparing to flash
->>>      Downloading  37% ( 0m 3s )
->>>    ...
->>>      Downloading  59% ( 0m 3s )
->>>    ...
->>>      Downloading  83% ( 0m 3s )
-> 
-> I'm not sure how to interpret this - are you saying that the timer
-> doesn't tick up or that the FW happens to complete the operation right
-> around the 3sec mark?
-> 
+> On 30.09.2020 20:00, Petr Tesarik wrote:
+>[...]
+> > WoL still does not work on my laptop, but this might be an unrelated
+> > issue, and I can even imagine the BIOS is buggy in this regard.
+> >  =20
+> A simple further check you could do:
+> After sending the WoL packet (that doesn't wake the system) you wake
+> the system by e.g. a keystroke. Then check in /proc/interrupts for
+> a PCIe PME interrupt. If there's a PME interrupt, then the network
+> chip successfully detected the WoL packet, and it seems we have to
+> blame the BIOS.
 
+Well, the switch does not sense carrier on the corresponding port while
+the laptop is suspended, so I'm pretty sure nothing gets delivered over
+that link. No, I suspect the ACPI suspend method turns off the RTL8208
+PHY chip, maybe as a side effect...
 
-The elapsed time is calculated from the last status message we receive.
-In Shannon's case, the done/total % status messages come approximately
-slow enough that the elapsed time message keeps popping up. Since it's
-measuring from the last time we got a status message, it looks weird
-because it resets to 3 seconds over and over and over.
+But I don't need working WoL on this system - look, this is cheap old
+stuff that the previous owner considered electronic waste. I even
+suspect this was because wired network never worked well after resume.
+With your fix, this piece can still serve some purpose.
 
->>> And at the end we see:
->>>
->>>      Preparing to flash
->>>      Downloading 100% ( 0m 3s )
->>>      Installing ( 0m 43s : 25m 0s )
->>>      Selecting ( 0m 5s : 0m 30s )
->>>      Flash done
->>>
->>> I can have the driver do updates more often in order to stay under the 3 
->>> second limit and hide this, but it looks a bit funky, especially at the 
->>> end where I know that 100% took a lot longer than 3 seconds.
->>>   
->>
->> I think we have two options here:
->>
->> 1) never display an elapsed time when we have done/total information
->>
->> or
->>
->> 2) treat elapsed time as a measure since the last status message
->> changed, refactoring this so that it shows the total time spent on that
->> status message.
->>
->> Thoughts on this? I think I'm leaning towards (2) at the moment myself.
->> This might lead to displaying the timing info on many % calculations
->> though... Hmm
-> 
-> Is the time information useful after stage is complete? I'd just wipe
-> it before moving on to the next message.
-> 
+Thank you!
 
-My point was about changing when we calculated elapsed time from to be
-"since the status message changed" rather than "since the last time the
-driver sent any status even if the message remains the same".
+Petr T
 
-I think clearing the timing message is a good improvement either way, so
-I'll do that too.
+--Sig_/Ifv9FSNHijJpFU2eXAWU2n1
+Content-Type: application/pgp-signature
+Content-Description: Digitální podpis OpenPGP
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEHl2YIZkIo5VO2MxYqlA7ya4PR6cFAl90/CcACgkQqlA7ya4P
+R6fWqggAmC1S7XRZE243/oCFrYJiodejsNwHHTup/r0DbjujMPXdd6i+Fl/kVydj
+YhnNJE6UsQ+VzYPooPl/STsSPDD2KtGav616HEHybEZEf3nd5Z0VuQIbJJO4cu/Q
+nZgzO0nn3CuHZf2DOuZvJI+z7QXTDaz/Z5zqfZdjFQSw1FBlmOUfCmUUOZ1klHrm
+nU3sPeNsDrSQuBgedLhp9i/R+FBDnqFunOG5xoXKQQAsF7mFdUTfzPFgKLeKrAWI
+iqWZD5eCWZVPK5rfy1R948sWlcL79lU88vwkDNDLan+hprlgDlgxZAAvGlF6DidJ
+awqWk4VrXQqVz53yJkQXe8/uWQqhog==
+=Kkw8
+-----END PGP SIGNATURE-----
+
+--Sig_/Ifv9FSNHijJpFU2eXAWU2n1--
