@@ -2,97 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 981DF27F10B
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 20:08:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B427027F111
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 20:10:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729351AbgI3SHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 14:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
+        id S1726992AbgI3SKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 14:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725814AbgI3SHw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 14:07:52 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D87C061755;
-        Wed, 30 Sep 2020 11:07:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=uShV4aZV0sOQPScv6kvv8M8xF1Pqa9FFraKmruEA5YI=; b=iuAGM7wLs0u/JhRHhU5OKESMA
-        CpeXu6cKMr6bL+xEi0wXMyPVsxuAm7eYj3NHm/sGf/NbCZMISdL6CiqrD+TdfHELb/9O0UMgN7FhZ
-        OrYYSH+gp34wOpIe+6K+mlgh8iHdfkOn6jUszoiGcviFrAJ+++FHJyBq4YxaGb2ODo/Xe9pertYSN
-        /ftJcKPgk6g+QfQC633HHznr5sP3AZcFYlLkUQWLKH0LDRPprUTydKjDt/HL6hPfQrxg7MXYvnU+B
-        uiWJqoK2UWR69NbwH5h6UsjvX5HosXE59NiwMQ7OrQJVvDbXWb9vyXjgAi0acdVYsnPyzSTU3RpYv
-        beMTQbYgw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40280)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kNgVn-0002zh-7O; Wed, 30 Sep 2020 19:07:31 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kNgVh-0002Kj-KP; Wed, 30 Sep 2020 19:07:25 +0100
-Date:   Wed, 30 Sep 2020 19:07:25 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux.cj@gmail.com,
-        netdev@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [net-next PATCH v1 3/7] net: phy: Introduce fwnode_get_phy_id()
-Message-ID: <20200930180725.GE1551@shell.armlinux.org.uk>
-References: <20200930160430.7908-1-calvin.johnson@oss.nxp.com>
- <20200930160430.7908-4-calvin.johnson@oss.nxp.com>
- <20200930163440.GR3996795@lunn.ch>
+        with ESMTP id S1725355AbgI3SKk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 14:10:40 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA9AC061755;
+        Wed, 30 Sep 2020 11:10:38 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id g128so2904299iof.11;
+        Wed, 30 Sep 2020 11:10:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eNF2DTAtjoh3BWytNcKCrhLvx2bkbI2XntobJ3hyrNY=;
+        b=u7Fj0kyDbe8b4vltpaXVO+Bu1yIpy8egL4l6CgUBF3S6/7kayVhmXnEevPag6oHo4i
+         ZhUkQGNPbzXmHB0WIlv5YsewUrNR0iNi3+0QepmYl0cikVu6EJ0S2nSXULfqaKe7xJSW
+         JWN7qlB3tQhNb4HpYtQielFwGgsOTarignKY/qWKUuiR7sc5PI+AeOsI8kq9bR1kvq3P
+         ln0BnYWdYtCzj6pLO2IEcPVfqPeUZ+2urgjLqmaU+eCadqG+aVe7XHLIetCoYDpr8k2G
+         6VIFBlbgi4nqVcdyWxxZHZsHPrjYNd/rYhnUKjBNxmRf96JTVKS9Rq5AcCNIZ4spqdi3
+         mkuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eNF2DTAtjoh3BWytNcKCrhLvx2bkbI2XntobJ3hyrNY=;
+        b=NO8sxuQk+qDlwe3+A7MkiQKFB2tzZnSbxhVS+cfRf3IrhRyBoXMh4fLz5iMDidZrWv
+         3QdN3xuwJj6uWWSF8MQXepxAhRdaNliBySunkSf0aTTv6IoAfJwuILGB4YIgK/C/BDvJ
+         61erg2zpLGDd+oKVjQrpXbbUa1C+0wcmsoS+ew3arzvi01xBA1CLx48yk+G+RQmAdIrp
+         UiWtFpE3lHol7SOAARRIc7Pee5bLjpU1GX8qzv/xe/VstkKz8ilUu1j+9iXVWLab1/3W
+         35xykf++MbsXw9QZr5b68piEoNTdMmB+9sxFVCyGjDGkcobpkETR0iIM2ACGoNKyR/sM
+         D0hQ==
+X-Gm-Message-State: AOAM530bJHrJGzYaGBkcFcdK5O3E1aGeaNALE6sm701DnbvylrlImB/c
+        BikmK/0kHFTRnH7vq74qQUZdGKaTBZuNFLRoWw4=
+X-Google-Smtp-Source: ABdhPJyhbEH3tt7cxKslGSE2sIZ6aUT8Ly08g3MB5w+Sumr9vImjHzqJ3LlhuE+fBPWW4FuLgBSHEL9n+orugS10nII=
+X-Received: by 2002:a02:2b04:: with SMTP id h4mr2456439jaa.49.1601489437588;
+ Wed, 30 Sep 2020 11:10:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200930163440.GR3996795@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+References: <0000000000009dac0205b05ab52a@google.com> <000000000000c4d11a05b08b6b56@google.com>
+In-Reply-To: <000000000000c4d11a05b08b6b56@google.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 30 Sep 2020 11:10:25 -0700
+Message-ID: <CAM_iQpU+aq5XPmeyvWHhgi9Xc=thhtvqbYQ4GSLB227JmRPayw@mail.gmail.com>
+Subject: Re: general protection fault in tcf_generic_walker
+To:     syzbot <syzbot+b47bc4f247856fb4d9e1@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 06:34:40PM +0200, Andrew Lunn wrote:
-> > @@ -2866,7 +2888,15 @@ EXPORT_SYMBOL_GPL(device_phy_find_device);
-> >   */
-> >  struct fwnode_handle *fwnode_get_phy_node(struct fwnode_handle *fwnode)
-> >  {
-> > -	return fwnode_find_reference(fwnode, "phy-handle", 0);
-> > +	struct fwnode_handle *phy_node;
-> > +
-> > +	phy_node = fwnode_find_reference(fwnode, "phy-handle", 0);
-> > +	if (is_acpi_node(fwnode) || !IS_ERR(phy_node))
-> > +		return phy_node;
-> > +	phy_node = fwnode_find_reference(fwnode, "phy", 0);
-> > +	if (IS_ERR(phy_node))
-> > +		phy_node = fwnode_find_reference(fwnode, "phy-device", 0);
-> > +	return phy_node;
-> 
-> Why do you have three different ways to reference a PHY?
+On Wed, Sep 30, 2020 at 10:42 AM syzbot
+<syzbot+b47bc4f247856fb4d9e1@syzkaller.appspotmail.com> wrote:
+>
+> syzbot has found a reproducer for the following issue on:
+>
+> HEAD commit:    2b3e981a Merge branch 'mptcp-Fix-for-32-bit-DATA_FIN'
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=16537247900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=99a7c78965c75e07
+> dashboard link: https://syzkaller.appspot.com/bug?extid=b47bc4f247856fb4d9e1
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1412a5a7900000
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+b47bc4f247856fb4d9e1@syzkaller.appspotmail.com
+>
+> general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
+> KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
+> CPU: 0 PID: 8855 Comm: syz-executor.1 Not tainted 5.9.0-rc6-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:tcf_dump_walker net/sched/act_api.c:240 [inline]
+> RIP: 0010:tcf_generic_walker+0x367/0xba0 net/sched/act_api.c:343
+> Code: 24 31 ff 48 89 de e8 c8 55 eb fa 48 85 db 74 3f e8 3e 59 eb fa 48 8d 7d 30 48 b9 00 00 00 00 00 fc ff df 48 89 f8 48 c1 e8 03 <80> 3c 08 00 0f 85 26 07 00 00 48 8b 5d 30 31 ff 48 2b 1c 24 48 89
+> RSP: 0018:ffffc9000b6ff3a8 EFLAGS: 00010202
+> RAX: 0000000000000004 RBX: c0000000ffffaae4 RCX: dffffc0000000000
+> RDX: ffff8880a82aa140 RSI: ffffffff868ae502 RDI: 0000000000000020
+> RBP: fffffffffffffff0 R08: 0000000000000000 R09: ffff8880a8c41e07
+> R10: 0000000000000000 R11: 0000000000000000 R12: ffff88809f226340
+> R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
+> FS:  00007f156f7fa700(0000) GS:ffff8880ae400000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 000055d25128b348 CR3: 00000000a7d3d000 CR4: 00000000001506f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  tc_dump_action+0x6d5/0xe60 net/sched/act_api.c:1609
 
-Compatibility with the DT version - note that "phy" and "phy-device"
-are only used for non-ACPI fwnodes. This should allow us to convert
-drivers where necessary without fear of causing DT regressions.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Probably just need another IS_ERR() check on the dump path.
+I will take a second look.
+
+Thanks.
