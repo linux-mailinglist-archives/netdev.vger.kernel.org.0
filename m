@@ -2,120 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD06427F0AD
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 19:42:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 047FF27F0B4
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 19:49:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731400AbgI3RmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 13:42:20 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:36951 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbgI3RmU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 13:42:20 -0400
-Received: by mail-il1-f197.google.com with SMTP id c66so2156135ilf.4
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 10:42:19 -0700 (PDT)
+        id S1731337AbgI3RtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 13:49:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726992AbgI3Rs7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 13:48:59 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A50CC061755
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 10:48:58 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id o20so1650710pfp.11
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 10:48:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=2+jr7anQSGM1Vpj925NUsc8SzcyVKFX/9RxXihlZg60=;
+        b=Bwy4qJNaQDw2JaCFJ7kyzCCEItZkdJA8guk5EENusCcArvzwU08EFtr7JAtAI9+qhJ
+         kYNn3TOmyfKrNXbq7W+PAKF3Hcr6bpash6jLniJFENVXlWU7glGzNYRLlwv4xpW/6y4o
+         dD0aG3haKfZ8YDH22MmNewATNyRju5P49uZu9PH3bxPqSvy3ombieNnuFM8OZnG4JY6C
+         QBNAN/sXNbTXsbYwIav7udvaROXdYwy5gTeKBD3WRyuA1NWGrYUDhWraHoV0yc3X+sAo
+         V7/J7MZvnjLQ5OwH/HeJvWohd09LQvEBuEr84HS5OsaKGRoJogO0g16q5Z/pht7sK8rt
+         5xRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=gFm1XYQPKEm64e3IzyGsuW+y9Ev3roInvd+o9HWt0+4=;
-        b=j8YnK6tieoZKjD0GFWlkqWlfTzdJzxTFPUlb73I1T8hYDFVkXwaCqUeQBoed6iNg8r
-         0L5HuwCaZ+asZVH4JmeItKu5igGS3JgGUyRGTnYfSgOUMVvOmNNtXway0CV92rH/4m6o
-         tRYGJgxae6gA60aewcHMZ2TjoljeblVWaYL9WX7uJB3O7fgXaXy8YJO5rJEAYSbF9PS4
-         7E/g/8eTi1kx3e00rDOxXQQtwVParDvaIDSj+pTN+mkLLGIH++6l6LJbKQKpqZ9LT29j
-         xWQoY1LymZI5/xMlzy8kpAHu6DEZz4/rZUooFzDWrpxZC/2pX1laCjxtMBk3Nw78HBQ0
-         ftOQ==
-X-Gm-Message-State: AOAM533BzgWMQtGnY2ai8bksCeH94CepVRvPFRE0FTGdWFqU8gWpCymO
-        EALhXjLK5P22HaLWRkjQL56RZGugYGmwNZPOO73HR4L5uEts
-X-Google-Smtp-Source: ABdhPJwnu9ZDb3d6uC4lwGErimwV67tihcQIJZwN2yFAJRDttab0qePiaifswtJFkcHsTrKljmcnCVFQC440Qby+tSYZkoguNzN1
-MIME-Version: 1.0
-X-Received: by 2002:a05:6602:21cc:: with SMTP id c12mr2455264ioc.81.1601487738554;
- Wed, 30 Sep 2020 10:42:18 -0700 (PDT)
-Date:   Wed, 30 Sep 2020 10:42:18 -0700
-In-Reply-To: <0000000000009dac0205b05ab52a@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c4d11a05b08b6b56@google.com>
-Subject: Re: general protection fault in tcf_generic_walker
-From:   syzbot <syzbot+b47bc4f247856fb4d9e1@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=2+jr7anQSGM1Vpj925NUsc8SzcyVKFX/9RxXihlZg60=;
+        b=r+CMggRltOJ8WntZdVfsvMCdF65XTzQ1SK196GitTbnP1OqV8XIH0UC83rIIwM97TZ
+         kVGMu+FNMqBUoNAI2zBZ6g79O4j8Uw9upZzfP+NPCalkM56pwUZawY5fkpLLtQ2OAGHG
+         3QWpG7YStveO66irRBTduME0qZHcfNSAMdz8NijOlgFIJIGSVgK5hF57nClxF73SUO+J
+         Uesgyqa8ANkykV/yUtpB4rcs/3RgQams2LshfTYmlByGhNgyKRbN+0fix6UWTxklji9Q
+         Qmz604hPODR1EIeXITzLUEds1BKcNNe/kaE1mVR1d9+bnXufF2DrWdRHg06zNEhAmqxN
+         egrw==
+X-Gm-Message-State: AOAM533tQyqWrugov9RLfUbCzBSLOWUV9oUF3EFRevYIuRvhRCTL6AaF
+        CkVdY1G/S0ZNlsoSH1nWIqBxHwEfzIypnA==
+X-Google-Smtp-Source: ABdhPJwaOSKtk8wgasDkm4mOFbXP21SN2VKLptfg7DgbDacfZruJScHf9fZ5kgHM+sKw9pOnCmmb1w==
+X-Received: by 2002:a63:3448:: with SMTP id b69mr3070149pga.269.1601488137579;
+        Wed, 30 Sep 2020 10:48:57 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id l13sm2993974pgq.33.2020.09.30.10.48.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 30 Sep 2020 10:48:57 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH v2 net-next 0/2] ionic watchdog training
+Date:   Wed, 30 Sep 2020 10:48:26 -0700
+Message-Id: <20200930174828.39657-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+Our link watchdog displayed a couple of unfriendly behaviors in some recent
+stress testing.  These patches change the startup and stop timing in order
+to be sure that expected structures are ready to be used by the watchdog.
 
-HEAD commit:    2b3e981a Merge branch 'mptcp-Fix-for-32-bit-DATA_FIN'
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=16537247900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=99a7c78965c75e07
-dashboard link: https://syzkaller.appspot.com/bug?extid=b47bc4f247856fb4d9e1
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1412a5a7900000
+Shannon Nelson (2):
+  ionic: stop watchdog timer earlier on remove
+  ionic: prevent early watchdog check
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b47bc4f247856fb4d9e1@syzkaller.appspotmail.com
+v2: rebased to fold in recent changes
 
-general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
-CPU: 0 PID: 8855 Comm: syz-executor.1 Not tainted 5.9.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:tcf_dump_walker net/sched/act_api.c:240 [inline]
-RIP: 0010:tcf_generic_walker+0x367/0xba0 net/sched/act_api.c:343
-Code: 24 31 ff 48 89 de e8 c8 55 eb fa 48 85 db 74 3f e8 3e 59 eb fa 48 8d 7d 30 48 b9 00 00 00 00 00 fc ff df 48 89 f8 48 c1 e8 03 <80> 3c 08 00 0f 85 26 07 00 00 48 8b 5d 30 31 ff 48 2b 1c 24 48 89
-RSP: 0018:ffffc9000b6ff3a8 EFLAGS: 00010202
-RAX: 0000000000000004 RBX: c0000000ffffaae4 RCX: dffffc0000000000
-RDX: ffff8880a82aa140 RSI: ffffffff868ae502 RDI: 0000000000000020
-RBP: fffffffffffffff0 R08: 0000000000000000 R09: ffff8880a8c41e07
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff88809f226340
-R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
-FS:  00007f156f7fa700(0000) GS:ffff8880ae400000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055d25128b348 CR3: 00000000a7d3d000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- tc_dump_action+0x6d5/0xe60 net/sched/act_api.c:1609
- netlink_dump+0x4cd/0xf60 net/netlink/af_netlink.c:2246
- __netlink_dump_start+0x643/0x900 net/netlink/af_netlink.c:2354
- netlink_dump_start include/linux/netlink.h:246 [inline]
- rtnetlink_rcv_msg+0x70f/0xad0 net/core/rtnetlink.c:5526
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45dd99
-Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f156f7f9c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000002d3c0 RCX: 000000000045dd99
-RDX: 0000000000000000 RSI: 0000000020000040 RDI: 0000000000000005
-RBP: 000000000118bf60 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118bf2c
-R13: 00007ffc8f863a6f R14: 00007f156f7fa9c0 R15: 000000000118bf2c
-Modules linked in:
----[ end trace 5123f6b953bfe0e8 ]---
-RIP: 0010:tcf_dump_walker net/sched/act_api.c:240 [inline]
-RIP: 0010:tcf_generic_walker+0x367/0xba0 net/sched/act_api.c:343
-Code: 24 31 ff 48 89 de e8 c8 55 eb fa 48 85 db 74 3f e8 3e 59 eb fa 48 8d 7d 30 48 b9 00 00 00 00 00 fc ff df 48 89 f8 48 c1 e8 03 <80> 3c 08 00 0f 85 26 07 00 00 48 8b 5d 30 31 ff 48 2b 1c 24 48 89
-RSP: 0018:ffffc9000b6ff3a8 EFLAGS: 00010202
-RAX: 0000000000000004 RBX: c0000000ffffaae4 RCX: dffffc0000000000
-RDX: ffff8880a82aa140 RSI: ffffffff868ae502 RDI: 0000000000000020
-RBP: fffffffffffffff0 R08: 0000000000000000 R09: ffff8880a8c41e07
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff88809f226340
-R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
-FS:  00007f156f7fa700(0000) GS:ffff8880ae400000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055d251258ed8 CR3: 00000000a7d3d000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c |  5 +++--
+ drivers/net/ethernet/pensando/ionic/ionic_dev.c     | 10 ++++------
+ drivers/net/ethernet/pensando/ionic/ionic_dev.h     |  1 -
+ 3 files changed, 7 insertions(+), 9 deletions(-)
+
+-- 
+2.17.1
 
