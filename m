@@ -2,135 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4051727E1E4
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 08:56:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44DDC27E28C
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 09:25:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727861AbgI3G4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 02:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47810 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725320AbgI3G4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 02:56:09 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21042C061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 23:56:08 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id nw23so1213707ejb.4
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 23:56:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=seqWg6438avW/SyZJnQRajfGCr85wJolvYrN3kEylco=;
-        b=raJc62wW7lnAdJ0Yowq4+HgZc9IrVQILbQqli+DYDdPfz7w+ah1AjvGDaRLQ+59Bgh
-         nesacY9Ve8t10KDIG5aInit41WvuCLmRSSg4RNEjH0/3rupo+YILxwhp2P5EF2feR4FP
-         46nN3sH0tiBhCNGvC2GzayoRD1mWkd/6iRBmClcEiLm6sPZwP8BVIh34wmy6Z6kFR7Pj
-         ZA6Cmo7VblnLBFZTJiRzqZrYTFHV3oityEpqoopwKI6tD5j+yoDPYiatianSTVG2TYR0
-         hjH2vo3/0iQGr1Uhw+8kMzzEwm2wGnBS5Yn0QLak830sbp0gF8kzSGxzEAV6i7X9Cefw
-         6F6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=seqWg6438avW/SyZJnQRajfGCr85wJolvYrN3kEylco=;
-        b=EkGPWSjAq3yQBCQ/LZukBs6HZpLE/1z/yYRks2msbh4gHjHgJaHesAlAKqsh4iQRfx
-         n44FTwkywXNQtkd712/CViOfG3w95Masq2QKuvpAGOFSkp+P8ccMl79t1lFb6G3WRYAs
-         fBL1P2MlX9A4AH42Nd4IMOoyigmkIhFHZw66lSc06L7w3MSCsB94aeU8DQi6HJZN3ZdJ
-         qD1aipR458AQLW4J7XF4ZxgZg81tabFqdBmDafsOT+WwpolpwexSlpBIJGv6TnQLYnhT
-         0NLxADpTWh508wpgC2tMwHbFoxDvO9lA5yB16aeF5DlJMjHnHS0MVMBf3JrJPgD21kMM
-         Okpg==
-X-Gm-Message-State: AOAM533noWYwU4Qhg+zYkMD0Sx02cdQpgFzmfXdOaHcx+KNDxgXGbEzd
-        3iREI5MHQNdik1uORhV1ls/7NA==
-X-Google-Smtp-Source: ABdhPJzeoYwAi0NZoFIvVNn3ZW68wsBnR7cQ6mXiuTceUIVN9jRIf8A5dHbHNbHhkSjgwaCRs7l8Bw==
-X-Received: by 2002:a17:906:3e0c:: with SMTP id k12mr1338736eji.189.1601448966777;
-        Tue, 29 Sep 2020 23:56:06 -0700 (PDT)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id w15sm693255ejy.121.2020.09.29.23.56.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Sep 2020 23:56:06 -0700 (PDT)
-Date:   Wed, 30 Sep 2020 08:56:04 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next v2 1/7] net: devlink: Add unused port flavour
-Message-ID: <20200930065604.GI8264@nanopsycho>
-References: <20200928143155.4b12419d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200928220507.olh77t464bqsc4ll@skbuf>
- <20200928220730.GD3950513@lunn.ch>
- <20200928153504.1b39a65d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <61860d84-d0c6-c711-0674-774149a8d0af@gmail.com>
- <20200928163936.1bdacb89@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <c877bda0-140c-dce1-49ff-61fac47a66bc@gmail.com>
- <20200929110356.jnqoyy72bjer6psw@skbuf>
- <20200929130758.GF8264@nanopsycho>
- <20200929135700.GG3950513@lunn.ch>
+        id S1728149AbgI3HZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 03:25:36 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:51905 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725440AbgI3HZg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 03:25:36 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 790C75800D1;
+        Wed, 30 Sep 2020 03:25:34 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 30 Sep 2020 03:25:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=44Dd05
+        leTjDWONi5AFHYRdQFsFgVavGpzQquHVI0sV8=; b=KskhIYxBycxjceuzY5+J2P
+        3LZIZl8TmZysgj/4mSQrjZYIZk9PwvHeAl1kY+ne1oVzxpkA1ncGPBad4dr1SL2I
+        6E7JTG+A5ac01k5JMH6xCZarqznlRYDR3OootaecFiHCUZswUDMmIzDUyjqzehL6
+        TgiNWQrEMiumx9pkA8M4/zDHSZvyo78WKXdUb93Kk3HDIaDoyCpe4jNtiFL/GtPA
+        1vHZ+i0OQLLW77TyvWX72237vr3kfQKNS1QQT0VQUv8gMZFvy2F0Y4JV8Cwm8p50
+        Bf5dDEOQQ0k6lnRszmk8woxjFRsu4r++TuBoSMd155zFOq13McNSBqcNwkW4dgOQ
+        ==
+X-ME-Sender: <xms:7TJ0X2zYhelW5wXx_giTPk5HdSor-s4PuZSLdR0HW7nTIDVv4L5zvQ>
+    <xme:7TJ0XyRK9CFdkHUB2OMbW5pMfaV0BGNGBh_7p50lHNT3cBStoz1xXlReoc-acwboZ
+    oYrmt-f1vGBnek>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrfedtgdduudekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpefgvefgveeuudeuffeiffehieffgfejleevtdetueetueffkeevgffgtddugfek
+    veenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppeekgedrvddvledrfeejrd
+    dugeeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhep
+    ihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:7TJ0X4VBMHjZCS98kOSyhQddnynZhHPsJSpOE3-y73n6548cAMrTBQ>
+    <xmx:7TJ0X8jP6Ij0i9CNejXGzJXXrzcw3x7KHTtYOOOJqxaX4oavERmhQw>
+    <xmx:7TJ0X4Dsca4ZJUeMhcpSO0Qpp5aDHbsdmqwCkHBblARMnAiNYTCZpw>
+    <xmx:7jJ0X2ClVJIMzy63COyXfPdnADoDEAylq0zA9ee96VQuh8Idzdvz0w>
+Received: from localhost (igld-84-229-37-148.inter.net.il [84.229.37.148])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8FDDD3064610;
+        Wed, 30 Sep 2020 03:25:32 -0400 (EDT)
+Date:   Wed, 30 Sep 2020 10:25:29 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        f.fainelli@gmail.com, andrew@lunn.ch, ayal@nvidia.com,
+        danieller@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net] ethtool: Fix incompatibility between netlink and
+ ioctl interfaces
+Message-ID: <20200930072529.GA1788067@shredder>
+References: <20200929160247.1665922-1-idosch@idosch.org>
+ <20200929164455.pzymi4chmvl3yua5@lion.mk-sys.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200929135700.GG3950513@lunn.ch>
+In-Reply-To: <20200929164455.pzymi4chmvl3yua5@lion.mk-sys.cz>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Sep 29, 2020 at 03:57:00PM CEST, andrew@lunn.ch wrote:
->On Tue, Sep 29, 2020 at 03:07:58PM +0200, Jiri Pirko wrote:
->> Tue, Sep 29, 2020 at 01:03:56PM CEST, vladimir.oltean@nxp.com wrote:
->> >On Mon, Sep 28, 2020 at 06:46:14PM -0700, Florian Fainelli wrote:
->> >> That makes sense to me as it would be confusing to suddenly show unused port
->> >> flavors after this patch series land. Andrew, Vladimir, does that work for
->> >> you as well?
->> >
->> >I have nothing to object against somebody adding a '--all' argument to
->> >devlink port commands.
->> 
->> How "unused" is a "flavour"? It seems to me more like a separate
->> attribute as port of any "flavour" may be potentially "unused". I don't
->> think we should mix these 2.
->
->Hi Jiri
->
->Current flavours are:
->
->enum devlink_port_flavour {
->        DEVLINK_PORT_FLAVOUR_PHYSICAL, /* Any kind of a port physically
->                                        * facing the user.
->                                        */
->        DEVLINK_PORT_FLAVOUR_CPU, /* CPU port */
->        DEVLINK_PORT_FLAVOUR_DSA, /* Distributed switch architecture
->                                   * interconnect port.
->                                   */
->        DEVLINK_PORT_FLAVOUR_PCI_PF, /* Represents eswitch port for
->                                      * the PCI PF. It is an internal
->                                      * port that faces the PCI PF.
->                                      */
->        DEVLINK_PORT_FLAVOUR_PCI_VF, /* Represents eswitch port
->                                      * for the PCI VF. It is an internal
->                                      * port that faces the PCI VF.
->                                      */
->        DEVLINK_PORT_FLAVOUR_VIRTUAL, /* Any virtual port facing the user. */
->};
->
->A port in the DSA world is generally just a port on the switch. It is
->not limited in nature. It can be used as a PHYSICAL, or CPU, or a DSA
->port. We don't consider them as unused PHYISCAL ports, or unused CPU
->ports. They are just unused ports. Which is why i added an UNUSED
->flavour.
+On Tue, Sep 29, 2020 at 06:44:55PM +0200, Michal Kubecek wrote:
+> On Tue, Sep 29, 2020 at 07:02:47PM +0300, Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@nvidia.com>
+> > 
+> > With the ioctl interface, when autoneg is enabled, but without
+> > specifying speed, duplex or link modes, the advertised link modes are
+> > set to the supported link modes by the ethtool user space utility.
+> > 
+> [...] 
+> > 
+> > With the netlink interface, the same thing is done by the kernel, but
+> > only if speed or duplex are specified. In which case, the advertised
+> > link modes are set by traversing the supported link modes and picking
+> > the ones matching the specified speed or duplex.
+> > 
+> > However, if speed nor duplex are specified, the driver is passed an
+> > empty advertised link modes bitmap. This causes the mlxsw driver to
+> > return an error. Other drivers might also be affected. Example:
+> 
+> This is not completely correct. What actually happens is that the
+> advertised modes bitmap is left untouched. The reason why advertised
+> modes are cleared for mlxsw is that this driver reports empty advertised
+> modes whenever autonegotiation is disabled.
 
-I get it. But I as I wrote previously, I wonder if used/unused should
-not be another attribute. Then the flavour can be "undefined".
+Correct. I'll reword.
 
-But, why do you want to show "unused" ports? Can the user do something
-with them? What is the value in showing them?
+> 
+> This is similar to recent discussions about distinguishing between
+> configuration and state. One of them was related to EEE settings, one to
+> pause settings, one to WoL settings vs. general wakeup enable/disable:
+> 
+>   http://lkml.kernel.org/r/20200511132258.GT1551@shell.armlinux.org.uk
+>   http://lkml.kernel.org/r/20200512185503.GD1551@shell.armlinux.org.uk
+>   http://lkml.kernel.org/r/20200521192342.GE8771@lion.mk-sys.cz
+> 
+> All of these are about common problem: we have a settings A and B such
+> that B is only effective if A is enabled. Should we report B as disabled
+> whenever A is disabled? I believe - and the consensus in those
+> discussions seemed to be - that we should report and set A and B
+> independently to distinguish between configuration (what user wants) and
+> state (how the device behaves). There is also practical aspect: (1) if
+> we don't do this, switching A off and on would reset the value of B even
+> if no change of B was requested and (2) commands setting A and B must be
+> issued in a specific order for changes of B to take effect.
+> 
+> Unfortunately there are drivers like mlxsw (I'm not sure how many) which
+> report zero advertised bitmap whenever autonegotiation is off.
+> 
+> > diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
+> > index 7044a2853886..a9458c76209e 100644
+> > --- a/net/ethtool/linkmodes.c
+> > +++ b/net/ethtool/linkmodes.c
+> > @@ -288,9 +288,9 @@ linkmodes_set_policy[ETHTOOL_A_LINKMODES_MAX + 1] = {
+> >  };
+> >  
+> >  /* Set advertised link modes to all supported modes matching requested speed
+> > - * and duplex values. Called when autonegotiation is on, speed or duplex is
+> > - * requested but no link mode change. This is done in userspace with ioctl()
+> > - * interface, move it into kernel for netlink.
+> > + * and duplex values, if specified. Called when autonegotiation is on, but no
+> > + * link mode change. This is done in userspace with ioctl() interface, move it
+> > + * into kernel for netlink.
+> >   * Returns true if advertised modes bitmap was modified.
+> >   */
+> >  static bool ethnl_auto_linkmodes(struct ethtool_link_ksettings *ksettings,
+> > @@ -381,7 +381,6 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
+> >  	ethnl_update_u8(&lsettings->master_slave_cfg, master_slave_cfg, mod);
+> >  
+> >  	if (!tb[ETHTOOL_A_LINKMODES_OURS] && lsettings->autoneg &&
+> > -	    (req_speed || req_duplex) &&
+> >  	    ethnl_auto_linkmodes(ksettings, req_speed, req_duplex))
+> >  		*mod = true;
+> 
+> I'm afraid we will have to cope with existing drivers hiding advertised
+> mode setting when autonegotiation is off. Could we at least limit the
+> call to such drivers, i.e. replacing that line with something like
+> 
+> 	(req_speed || req_duplex || (!old_autoneg && advertised_empty))
+> 
+> where old_autoneg would be the original value of lsettings->autoneg and
+> advertised_empty would be set if currently reported advertised modes are
+> zero?
 
+I don't think so. Doing:
 
+# ethtool -s eth0 autoneg
 
->
->Now, it could be this world view is actually just a DSA world
->view. Maybe some ASICs have strict roles for their ports? They are not
->configurable? And then i could see it being an attribute? But that
->messes up the DSA world view :-(
->
->      Andrew
+Is a pretty established behavior to enable all the supported advertise
+bits. Here is an example with an unpatched kernel, two ethtool versions
+(ioctl & netlink) and e1000 in QEMU.
+
+Ioctl:
+
+# ethtool --version
+ethtool version 5.4
+
+# ethtool -s eth0 advertise 0xC autoneg on
+
+# ethtool eth0
+Settings for eth0:
+        Supported ports: [ TP ]
+        Supported link modes:   10baseT/Half 10baseT/Full 
+                                100baseT/Half 100baseT/Full 
+                                1000baseT/Full 
+        Supported pause frame use: No
+        Supports auto-negotiation: Yes
+        Supported FEC modes: Not reported
+        Advertised link modes:  100baseT/Half 100baseT/Full 
+        Advertised pause frame use: No
+        Advertised auto-negotiation: Yes
+        Advertised FEC modes: Not reported
+        Speed: 1000Mb/s
+        Duplex: Full
+        Port: Twisted Pair
+        PHYAD: 0
+        Transceiver: internal
+        Auto-negotiation: on
+        MDI-X: off (auto)
+        Supports Wake-on: umbg
+        Wake-on: d
+        Current message level: 0x00000007 (7)
+                               drv probe link
+        Link detected: yes
+
+# ethtool -s eth0 autoneg on
+
+# ethtool eth0
+Settings for eth0:
+        Supported ports: [ TP ]
+        Supported link modes:   10baseT/Half 10baseT/Full 
+                                100baseT/Half 100baseT/Full 
+                                1000baseT/Full 
+        Supported pause frame use: No
+        Supports auto-negotiation: Yes
+        Supported FEC modes: Not reported
+        Advertised link modes:  10baseT/Half 10baseT/Full 
+                                100baseT/Half 100baseT/Full 
+                                1000baseT/Full 
+        Advertised pause frame use: No
+        Advertised auto-negotiation: Yes
+        Advertised FEC modes: Not reported
+        Speed: 1000Mb/s
+        Duplex: Full
+        Port: Twisted Pair
+        PHYAD: 0
+        Transceiver: internal
+        Auto-negotiation: on
+        MDI-X: off (auto)
+        Supports Wake-on: umbg
+        Wake-on: d
+        Current message level: 0x00000007 (7)
+                               drv probe link
+        Link detected: yes
+
+Netlink:
+
+# ethtool --version
+ethtool version 5.8
+
+# ethtool -s eth0 advertise 0xC autoneg on
+
+# ethtool eth0
+Settings for eth0:
+        Supported ports: [ TP ]
+        Supported link modes:   10baseT/Half 10baseT/Full
+                                100baseT/Half 100baseT/Full
+                                1000baseT/Full
+        Supported pause frame use: No
+        Supports auto-negotiation: Yes
+        Supported FEC modes: Not reported
+        Advertised link modes:  100baseT/Half 100baseT/Full
+        Advertised pause frame use: No
+        Advertised auto-negotiation: Yes
+        Advertised FEC modes: Not reported
+        Speed: 1000Mb/s
+        Duplex: Full
+        Auto-negotiation: on
+        Port: Twisted Pair
+        PHYAD: 0
+        Transceiver: internal
+        MDI-X: off (auto)
+        Supports Wake-on: umbg
+        Wake-on: d
+        Current message level: 0x00000007 (7)
+                               drv probe link
+        Link detected: yes
+
+# ethtool -s eth0 autoneg on
+
+# ethtool eth0
+Settings for eth0:
+        Supported ports: [ TP ]
+        Supported link modes:   10baseT/Half 10baseT/Full
+                                100baseT/Half 100baseT/Full
+                                1000baseT/Full
+        Supported pause frame use: No
+        Supports auto-negotiation: Yes
+        Supported FEC modes: Not reported
+        Advertised link modes:  100baseT/Half 100baseT/Full
+        Advertised pause frame use: No
+        Advertised auto-negotiation: Yes
+        Advertised FEC modes: Not reported
+        Speed: 1000Mb/s
+        Duplex: Full
+        Auto-negotiation: on
+        Port: Twisted Pair
+        PHYAD: 0
+        Transceiver: internal
+        MDI-X: off (auto)
+        Supports Wake-on: umbg
+        Wake-on: d
+        Current message level: 0x00000007 (7)
+                               drv probe link
+        Link detected: yes
