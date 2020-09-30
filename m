@@ -2,141 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B246027E4FA
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 11:20:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CA8527E520
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 11:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728953AbgI3JUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 05:20:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35488 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728399AbgI3JUl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Sep 2020 05:20:41 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 502C82071E;
-        Wed, 30 Sep 2020 09:20:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601457640;
-        bh=TuUEOYfttt2XSC5lv8UlVA7p/TZhBbYY1+fsNnTdlY0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ovgYSE/U7h9JtCjG1jh3biFGgeKMV6aFswViAcIPYtcH3FDckzlfMdA4mHTW8fcHZ
-         08wLUOmZ3QCREVI/FukAdRJ1RyxqYLB3KKTLIxX9Uok8U0EZUf78rSPNOIx9Ou94cX
-         s+GKij0zF7QooraQrgHtYddO93s3Q7CsgdT14LBA=
-Date:   Wed, 30 Sep 2020 11:20:43 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        David Heidelberg <david@ixit.cz>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Removal of HCI commands, userspace bluetooth regression?
-Message-ID: <20200930092043.GB1580803@kroah.com>
-References: <20191228171212.56anj4d4kvjeqhms@pali>
- <45BB2908-4E16-4C74-9DB4-8BAD93B42A21@holtmann.org>
- <20200104102436.bhqagqrfwupj6hkm@pali>
- <20200209132137.7pi4pgnassosh3ax@pali>
- <20200414225618.zgh5h4jexahfukdl@pali>
- <20200808132747.4byefjg5ysddgkel@pali>
- <20200929213254.difivzrhapk766xp@pali>
- <20200930080205.GA1571308@kroah.com>
- <20200930082534.rrck6qb3fntm25wz@pali>
+        id S1728851AbgI3J2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 05:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728660AbgI3J2q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 05:28:46 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09BA9C061755
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 02:28:45 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id y5so1157857otg.5
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 02:28:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=FCLVZ13s2A1DgySuwXRnxGS7cpstquPbJaPgNjBvO64=;
+        b=Nf+iXt9Q+W3wuykljBC0zdhMYnMqxjUojtb8TRh4984evIAub+t9Qi9FyokxlZVkz1
+         JgGp1og7inZFVLDQee/ePVlah3cclhQZicb4KltFZ3hGwtbIsFDjlm1QCDOfy4+Y9eE3
+         CSrLDPdSvfT1RcbZ/GbrmHhOxXlminFXHfhXE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=FCLVZ13s2A1DgySuwXRnxGS7cpstquPbJaPgNjBvO64=;
+        b=ENrJGq6F0QuGPUCL15SNSjhMOuf1decbvps1CLE8PxDpEfSAWJPRtpOn4wKeBiyu//
+         C41Mi4wlmL9Lr8U2756Vojtpw9hIFteo3CvrBKvrYe0AXZqwyCXVGK1tsVwenXedRAAc
+         6PnFVHZBVAzQK1+Xd+g2Njxto257zkjIxDjsav8I7CKOQG5PChcAaXaNjm8N5znoAJCV
+         vEjCD8pc9jvFOZah958pvezlGCVY3A7cZDy/4Q6PH+sseEy5Q7wGtVWmoVPvs87ho8IQ
+         za/aeN8XekfWpsgQlImsRTCIHYSyfolfJTmxm2gj9pNyheKEUdkItFIp2W81df+N0XHJ
+         I4Ew==
+X-Gm-Message-State: AOAM530/xpQFvEBzrsUiIy8XBpsHiHDLicTTsQS6yDtOqHGacCCXqZzW
+        bFmQpiNLaTPDHchpuJ4S9ogh086ULPgsewDZ5bS4XXpN69GBjw==
+X-Google-Smtp-Source: ABdhPJySlEuKD+GqJiylXHWVvB1hpaCEqGmXDnomoKNWIy72Tv+613MZTN7zgjkgfOZu3h1OhisP/gWLBIPZs6kr928=
+X-Received: by 2002:a05:6830:12c7:: with SMTP id a7mr1025005otq.334.1601458124389;
+ Wed, 30 Sep 2020 02:28:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200930082534.rrck6qb3fntm25wz@pali>
+References: <20200928090805.23343-1-lmb@cloudflare.com> <20200928090805.23343-3-lmb@cloudflare.com>
+ <20200929055851.n7fa3os7iu7grni3@kafai-mbp> <CAADnVQLwpWMea1rbFAwvR_k+GzOphaOW-kUGORf90PJ-Ezxm4w@mail.gmail.com>
+In-Reply-To: <CAADnVQLwpWMea1rbFAwvR_k+GzOphaOW-kUGORf90PJ-Ezxm4w@mail.gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Wed, 30 Sep 2020 10:28:33 +0100
+Message-ID: <CACAyw98WzZGcFnnr7ELvbCziz2axJA_7x2mcoQTf2DYWDYJ=KA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/4] selftests: bpf: Add helper to compare
+ socket cookies
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team <kernel-team@cloudflare.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 10:25:34AM +0200, Pali Rohár wrote:
-> On Wednesday 30 September 2020 10:02:05 Greg Kroah-Hartman wrote:
-> > On Tue, Sep 29, 2020 at 11:32:54PM +0200, Pali Rohár wrote:
-> > > CCing other lists and maintainers, hopefully, somebody would have a time to look at it...
-> > > 
-> > > On Saturday 08 August 2020 15:27:47 Pali Rohár wrote:
-> > > > On Wednesday 15 April 2020 00:56:18 Pali Rohár wrote:
-> > > > > On Sunday 09 February 2020 14:21:37 Pali Rohár wrote:
-> > > > > > On Saturday 04 January 2020 11:24:36 Pali Rohár wrote:
-> > > > > > > On Saturday 04 January 2020 10:44:52 Marcel Holtmann wrote:
-> > > > > > > > Hi Pali,
-> > > > > > > > 
-> > > > > > > > > I wrote a simple script "sco_features.pl" which show all supported
-> > > > > > > > > codecs by local HCI bluetooth adapter. Script is available at:
-> > > > > > > > > 
-> > > > > > > > > https://github.com/pali/hsphfpd-prototype/blob/prototype/sco_features.pl
-> > > > > > > > > 
-> > > > > > > > > And I found out that OCF_READ_LOCAL_CODECS HCI command cannot be send by
-> > > > > > > > > non-root user. Kernel returns "Operation not permitted" error.
-> > > > > > > > > 
-> > > > > > > > > What is reason that kernel blocks OCF_READ_LOCAL_CODECS command for
-> > > > > > > > > non-root users? Without it (audio) application does not know which
-> > > > > > > > > codecs local bluetooth adapter supports.
-> > > > > > > > > 
-> > > > > > > > > E.g. OCF_READ_LOCAL_EXT_FEATURES or OCF_READ_VOICE_SETTING commands can
-> > > > > > > > > be send also by non-root user and kernel does not block them.
-> > > > > > > > 
-> > > > > > > > actually the direct access to HCI commands is being removed. So we have no plans to add new commands into the list since that it what the kernel is suppose to handle. If we wanted to expose this, then it has to be via mgmt.
-> > > > > > > 
-> > > > > > > Hi Marcel! Thank you for information. I have not know that this API is
-> > > > > > > "deprecated" and is going to be removed. But userspace audio
-> > > > > > > applications need to know what bluetooth adapter supports, so can you
-> > > > > > > export result of these commands to userspace? My script linked above
-> > > > > > > calls: OCF_READ_VOICE_SETTING, OCF_READ_LOCAL_COMMANDS,
-> > > > > > > OCF_READ_LOCAL_EXT_FEATURES, OCF_READ_LOCAL_CODECS
-> > > > > > 
-> > > > > > Hello! Just a gently reminder for this question. How to retrieve
-> > > > > > information about supported codecs from userspace by non-root user?
-> > > > > > Because running all bluetooth audio applications by root is not really a
-> > > > > > solution. Plus if above API for root user is going to be removed, what
-> > > > > > is a replacement?
-> > > > > 
-> > > > > Hello!
-> > > > > 
-> > > > > I have not got any answer to my email from Marcel for months, so I'm
-> > > > > adding other developers to loop. Could somebody tell me that is the
-> > > > > replacement API if above one is going to be removed?
-> > > > > 
-> > > > > I was not able to find any documentation where could be described this
-> > > > > API nor information about deprecation / removal.
-> > > > > 
-> > > > > And are you aware of the fact that removing of API could potentially
-> > > > > break existing applications?
-> > > > > 
-> > > > > I really need to know which API should I use, because when I use API
-> > > > > which is going to be removed, then my application stops working. And I
-> > > > > really want to avoid it.
-> > > > > 
-> > > > > Also I have not got any response yet, how can I read list of supported
-> > > > > codecs by bluetooth adapter by ordinary non-root user? Audio application
-> > > > > needs to know list of supported codecs and it is really insane to run it
-> > > > > as root.
-> > > > 
-> > > > Hello! This is just another reminder that I have not got any reply to
-> > > > this email.
-> > > > 
-> > > > Does silence mean that audio applications are expected to work only
-> > > > under root account and ordinary users are not able to use audio and list
-> > > > supported codecs?
-> > > 
-> > > Hello! I have not got any reply for this issue for 10 months and if you
-> > > are going to remove (or after these 10 months you already did it?)
-> > > existing HCI API from kernel it would break existing and working
-> > > userspace application. How do you want to handle such regressions?
-> > 
-> > What git commit caused this regression?
-> 
-> Hello! Marcel in January wrote that access for HCI commands is being
-> removed from kernel. I do not know if he managed to do it in since
-> January, but I'm going to check it...
+On Tue, 29 Sep 2020 at 16:48, Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 
-So you don't see a regression/problem, but are saying there is one?
+...
 
-odd...
+> There was a warning. I noticed it while applying and fixed it up.
+> Lorenz, please upgrade your compiler. This is not the first time such
+> warning has been missed.
+
+I tried reproducing this on latest bpf-next (b0efc216f577997) with gcc
+9.3.0 by removing the initialization of duration:
+
+make: Entering directory '/home/lorenz/dev/bpf-next/tools/testing/selftests=
+/bpf'
+  TEST-OBJ [test_progs] sockmap_basic.test.o
+  TEST-HDR [test_progs] tests.h
+  EXT-OBJ  [test_progs] test_progs.o
+  EXT-OBJ  [test_progs] cgroup_helpers.o
+  EXT-OBJ  [test_progs] trace_helpers.o
+  EXT-OBJ  [test_progs] network_helpers.o
+  EXT-OBJ  [test_progs] testing_helpers.o
+  BINARY   test_progs
+make: Leaving directory '/home/lorenz/dev/bpf-next/tools/testing/selftests/=
+bpf'
+
+So, gcc doesn't issue a warning. Jakub did the following little experiment:
+
+jkbs@toad ~/tmp $ cat warning.c
+#include <stdio.h>
+
+int main(void)
+{
+        int duration;
+
+        fprintf(stdout, "%d", duration);
+
+        return 0;
+}
+jkbs@toad ~/tmp $ gcc -Wall -o /dev/null warning.c
+warning.c: In function =E2=80=98main=E2=80=99:
+warning.c:7:2: warning: =E2=80=98duration=E2=80=99 is used uninitialized in=
+ this
+function [-Wuninitialized]
+    7 |  fprintf(stdout, "%d", duration);
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+The simple case seems to work. However, adding the macro breaks things:
+
+jkbs@toad ~/tmp $ cat warning.c
+#include <stdio.h>
+
+#define _CHECK(duration) \
+        ({                                                      \
+                fprintf(stdout, "%d", duration);                \
+        })
+#define CHECK() _CHECK(duration)
+
+int main(void)
+{
+        int duration;
+
+        CHECK();
+
+        return 0;
+}
+jkbs@toad ~/tmp $ gcc -Wall -o /dev/null warning.c
+jkbs@toad ~/tmp $
+
+Maybe this is https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D18501 ? The
+problem is still there on gcc 10. Compiling test_progs with clang does
+issue a warning FWIW, but it seems like other things break when doing
+that.
+
+--
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
