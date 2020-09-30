@@ -2,116 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08F2727EB02
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 16:35:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A7F727EB05
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 16:35:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730229AbgI3Oe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 10:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728149AbgI3Oe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 10:34:56 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54A1C061755
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 07:34:54 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id q13so3142096ejo.9
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 07:34:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TQyEaAgESegXFCVeihxqlmK1ccraTLpe4yE+R7O6ES4=;
-        b=g8C07i+8/CBCWmnCF/Zf470TzY9dG+UaSxd5HPjKKc+s5Xybbf78Gf0RA7BVuQkJ42
-         D6WsWP7KJr2HKS+ea2MeTC59iKY35k5gBaVgZE4Ha23FR2m+NtufeToA2tHkUGRS/K+F
-         lrUnOhDE0fUCQ9gofFxDK+1LJ5q6fZIxBm1KNr+7oPfPd9zYplzodHHpNyjBeYfahDv0
-         web9HhQvwnOp0tOuO7Sj84ZNZEpx7EIGiBro5o5LwH52SUn2FPIWi1XHhrz/cY4Pb3Io
-         65WESo6SrQ+BEz/R1Ant6dKuvU6LCho4zLgy827NpRCeQZq/tf6ycKDQbAxUnEa4yEN7
-         UGyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TQyEaAgESegXFCVeihxqlmK1ccraTLpe4yE+R7O6ES4=;
-        b=I4HuCW6q+RmJcmfwebVXhY4keg8WLGKMv9C4AkjMeQm8Mby6dIaK8J4UNa1vhPiTPW
-         dQyLAghbqXO/D1IJ5R5ZCJ8sIgVLRamihirTjkvI6/CLnRXCT9q11KL5kQ/WftYG4m79
-         AWBnBa6ZyDpUjX69Fp0FeWK0ZgcH/ezEAOiZT3l7GG95zlw5FDSMu7WjP3hZ1biNDRBp
-         AU/aYdNYGKjbi/V5KGjcBM2UyOHHfyaqnO6ui3tzaGw5id4nUZqqiD0yg8s+kvuNfUiH
-         bmHcWBwvuHmmJ4nELk0uScYO11njt2hnlGN0lh9g//kPbRAuU0NFOOvZA5M7uQ/EKtRh
-         /YTg==
-X-Gm-Message-State: AOAM531MMZdIDWXP0agVNpvR59x5+v3WVcWoijY61aZ1tl5MYO+1o9Z9
-        a2bZdRbWlSPvGE6ZEOjws4wFYg==
-X-Google-Smtp-Source: ABdhPJzvhXDL0zW16VflvAk75XjPUAikvC8SFao/GpoNvUmMoYokCtT5XN/LeFLdjUJ/VRe8+LPgbw==
-X-Received: by 2002:a17:906:d7ab:: with SMTP id pk11mr3085169ejb.472.1601476493597;
-        Wed, 30 Sep 2020 07:34:53 -0700 (PDT)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id rn10sm1197054ejb.8.2020.09.30.07.34.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2020 07:34:53 -0700 (PDT)
-Date:   Wed, 30 Sep 2020 16:34:52 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
+        id S1730588AbgI3Ofe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 10:35:34 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:34939 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728496AbgI3Ofd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 10:35:33 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id D37BD5803A5;
+        Wed, 30 Sep 2020 10:35:32 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 30 Sep 2020 10:35:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=epeZdv
+        7/aFa/KIm5g07zoe24B4eWVcEw3jq5pRYXsbA=; b=gJYm105PEXFYIHe6YEimOg
+        l/d6AM6NMAsc8J05VfVprqgN5wyM6/LDepzlWuu1XjFf4O9qFcBFnjZJbKDYjpgg
+        oP9VoX/3SqvuWHSoCp294DbEWotk9/u9lcTksbIjQxUuezxc7xYex9rPlwnVus5j
+        ecFPUWJArlX5sD421qQ6rhECX0c/zNoN7jmfhgITlf0uByD3tPs/VN7GZllBtYos
+        HVEnu2xUFrBNtOY2pyHH0PRnigdiWRXLmuXiajdDi8iLryQiab93uYaCjxHbsUIj
+        6qyraakrRS2AuPMSc8efWfhH/FbiRXKsAgKFlkQosO0GDJJLFFvYPuNEDf0SFehA
+        ==
+X-ME-Sender: <xms:s5d0Xwvf5bqKhrI3j8xk9Usk3ip3WWolg55SpBMTdeENWZdOdFTNgA>
+    <xme:s5d0X9f1XYoTo8yPBb0bts9-9JYBva5kER4NymLWUt3deDWe42u9YWVt1lS9W6mTX
+    gph4UI7pW9efsg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrfedvgdejgecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhepfeegtddtkefhgeehteelgedvheeghedvkeeggefgveekteelffevfefhvdelheeg
+    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghdpghhithhhuhgsrdgtohhmnecukfhppe
+    ekgedrvddvledrfeejrddugeeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghm
+    pehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:s5d0X7wudWDmLJdrx1RjuGj-0lPW0oehSOPch2Wd63ADHFx_V6dcNw>
+    <xmx:s5d0XzM6FbzCtTmax7S6v3t3KiIF3cmbBRZ6xAC81ygdiCa9IOnAfQ>
+    <xmx:s5d0Xw9em0SqsKM5k33kPyML5XJm_0G--vhsinVnCo_C66ioAcwodg>
+    <xmx:tJd0X9OjnNVUnJPdZmvoWD4fM6LmrWKl_-V4VmUTmyoU1kfDPDYOFg>
+Received: from localhost (igld-84-229-37-148.inter.net.il [84.229.37.148])
+        by mail.messagingengine.com (Postfix) with ESMTPA id B8C8E328005A;
+        Wed, 30 Sep 2020 10:35:30 -0400 (EDT)
+Date:   Wed, 30 Sep 2020 17:35:27 +0300
+From:   Ido Schimmel <idosch@idosch.org>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next v2 1/7] net: devlink: Add unused port flavour
-Message-ID: <20200930143452.GJ8264@nanopsycho>
-References: <20200928220730.GD3950513@lunn.ch>
- <20200928153504.1b39a65d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <61860d84-d0c6-c711-0674-774149a8d0af@gmail.com>
- <20200928163936.1bdacb89@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <c877bda0-140c-dce1-49ff-61fac47a66bc@gmail.com>
- <20200929110356.jnqoyy72bjer6psw@skbuf>
- <20200929130758.GF8264@nanopsycho>
- <20200929135700.GG3950513@lunn.ch>
- <20200930065604.GI8264@nanopsycho>
- <20200930135725.GH3996795@lunn.ch>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com,
+        ayal@nvidia.com, danieller@nvidia.com, amcohen@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net] ethtool: Fix incompatibility between netlink and
+ ioctl interfaces
+Message-ID: <20200930143527.GA1824481@shredder>
+References: <20200929160247.1665922-1-idosch@idosch.org>
+ <20200929164455.pzymi4chmvl3yua5@lion.mk-sys.cz>
+ <20200930072529.GA1788067@shredder>
+ <20200930085917.xr2orisrg3oxw6cw@lion.mk-sys.cz>
+ <20200930141909.GJ3996795@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200930135725.GH3996795@lunn.ch>
+In-Reply-To: <20200930141909.GJ3996795@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Sep 30, 2020 at 03:57:25PM CEST, andrew@lunn.ch wrote:
->> I get it. But I as I wrote previously, I wonder if used/unused should
->> not be another attribute. Then the flavour can be "undefined".
->
->In the DSA world, it is not undefined. It is clear defined as
->unused. And it cannot be on-the-fly changed. It is a property of the
->PCB, in that the pins exist on the chip, but they simply don't go
->anywhere on the PCB. This is quite common on appliances, e.g. The
->switch has 7 ports, but the installation in the aircraft is a big
->ring, so there is a 'left', 'right', 'aux' and the CPU port. That
->leaves 3 ports totally unused.
+On Wed, Sep 30, 2020 at 04:19:09PM +0200, Andrew Lunn wrote:
+> > > I don't think so. Doing:
+> > > 
+> > > # ethtool -s eth0 autoneg
+> > > 
+> > > Is a pretty established behavior to enable all the supported advertise
+> > > bits.
+> 
+> I would disagree. phylib will return -EINVAL for this.
 
-Understand the DSA usecase.
+This has nothing to do with the kernel / phylib. With the ioctl
+interface when you do:
 
+# ethtool -s eth0 autoneg on
 
->
->> But, why do you want to show "unused" ports? Can the user do something
->> with them? What is the value in showing them?
->
->Because they are just ports, they can have regions. We can look at the
+The ethtool user space utility will enable all the supported link modes:
 
-What do you mean by "regions"? Devlink regions? They are per-device, not
-per-port. I have to be missing something.
+https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/tree/ethtool.c#n3170
 
+For the netlink interface this is done by the kernel:
 
->region and be sure they are powered off, the boot loader etc has not
->left them in a funny state, bridged to other ports, etc.
+https://github.com/torvalds/linux/blob/master/net/ethtool/linkmodes.c#L2
 
-It is driver's responsibility to ensure that. But that does not mean
-that the devlink port needs to be visible.
+But only if speed or duplex were specified:
 
+https://github.com/torvalds/linux/blob/master/net/ethtool/linkmodes.c#L383
 
->
->Regions are a developers tool, not a 'user' tools. So the idea of
->hiding them by default in 'devlink port show' does make some sense,
->and have a flag like -d for details, which includes them. In 'devlink
->region show' i would probably list all regions, independent of any -d
->flag.
->
->      Andrew
+Which is a problem.
+
+> 
+> int phy_ethtool_ksettings_set(struct phy_device *phydev,
+>                               const struct ethtool_link_ksettings *cmd)
+> {
+>         __ETHTOOL_DECLARE_LINK_MODE_MASK(advertising);
+>         u8 autoneg = cmd->base.autoneg;
+>         u8 duplex = cmd->base.duplex;
+>         u32 speed = cmd->base.speed;
+> 
+> ...
+>         linkmode_copy(advertising, cmd->link_modes.advertising);
+> 
+> ...
+> 
+>         if (autoneg == AUTONEG_ENABLE && linkmode_empty(advertising))
+>                 return -EINVAL;
+> 
+> You have to pass a list of modes you want it to advertise. If you are
+> using phylink and not a copper PHY, and autoneg, that means you are
+> using in-band signalling. The same is imposed:
+> 
+>         /* If autonegotiation is enabled, we must have an advertisement */
+>         if (config.an_enabled && phylink_is_empty_linkmode(config.advertising))
+>                 return -EINVAL;
+> 
+> We have consistent behaviour whenever Linux is controlling the PHY
+> because the core is imposing that behaviour. It would be nice if
+> drivers ignoring the PHY core where consistent with this.
+
+You will get an error from mlxsw as well (see example in the change
+log).
+
+> 
+> 	Andrew
