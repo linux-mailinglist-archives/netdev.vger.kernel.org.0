@@ -2,214 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE2C27E017
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 07:18:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3022727E058
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 07:29:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727761AbgI3FR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 01:17:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbgI3FRy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 01:17:54 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80376C061755;
-        Tue, 29 Sep 2020 22:17:54 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id y6so301861plt.9;
-        Tue, 29 Sep 2020 22:17:54 -0700 (PDT)
+        id S1727983AbgI3F31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 01:29:27 -0400
+Received: from mail-eopbgr100120.outbound.protection.outlook.com ([40.107.10.120]:19616
+        "EHLO GBR01-LO2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725306AbgI3F31 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 01:29:27 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=akQ5W6dkV3OobqAFiJvzWC/Qrb5xanKVy0VZ9KqwwIzbBIsX1BM4zhIGWlQyCqUqxY7Oy4w7A7P2K0qNryGUo1GBhd75msOiq4Zv/MNzL/4Ze8zNKeeaAr3TXVPTcAaJs5O03z7tGWYaBgzs8NEouX9CuhJrBhvBms6XE4Fai5tyTUdHgRLZ5X7EQLKRNNAulw476ToEWisqRKoN1CbzKkEjmHLQcGbWVbCuYRL+jVwPrsClvDBCZCpP3cJR79vm1x8Y2+PI2vjjpQFyaClqfpqx6ooF9jYtbr9Qvl3Ttz9glNjpPpix2i5FGSEHiijMnIflt7Qp5CkC5LjPaf0fow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tutr2RCClZVWeMZE6qG7csybtPUs4H2PHeTKVpflSPc=;
+ b=oe60aNRgNBAR69H8HV1i2TCVDRdHR8FUi/j5psr/nDXjTTEUPgl+JLMDKLYUsL/2Zq/uQiKJcIlR8XJbXIYRyXN9kraT0Ocxh33ASpM4YLPrfEkxCFCdCgRXw29wKxAc6tV4KO6XVnsyTkiHIMUuT26qB0IwzZDX3Wc7jL+3uhleO4kRVVgVJ6HWZEv1kUYbnRe6Exj9MQw4QHtIdWDa94N4MwsrxaThJow/xOSiMHFCa7JhpuZcbRecrpsnX7HNIv4wVBkeWtuigRO2WWyRslqTfTMP+pKDZso2jk8JVjHmyUi3/CFpJWpY7UotehRN6ocoYOTP/dPLrL/6PeqlTQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=purelifi.com; dmarc=pass action=none header.from=purelifi.com;
+ dkim=pass header.d=purelifi.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3kFQkly1sTsAvr9NqpCdE/6D85qWzElfytCruQQ6xp0=;
-        b=baEIgc1tAUz1CwCztA6ANx5C1M1eacWueIwa4tbHblGGxkmzCqNHjvhO+P/HWeEtiV
-         VLIXdvqHNVLsk3fOqxcPATIMh9b7Rr+ctg3rk00Fo9WKt8g/s73sPS5xujg6Cy3573iC
-         4hGaJGvw0cVOb9ZTnjXCiV4xIemufkqGd4nJ54J9Pal1W2uhpZWDeW3wx0ul077oR+qw
-         gKqOSgTybJLRHockdq/oPVoXNwy/BXfAAWih2bB7Hdjvvrc+VGvzNZZEO5K+yILLYy6P
-         0h529DY47EjOiKdvaoS7nXipkDAcxsIVZKNrNyYBb01R7pur9ytj1zZJBGzvsg5hn7EA
-         J85Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3kFQkly1sTsAvr9NqpCdE/6D85qWzElfytCruQQ6xp0=;
-        b=QRR73ddHQDM0kF2p8Jtkl5ApzSTR/rOg1BDLvzgL0LMTrfTbcWHQtxSZv9URHxn2lX
-         8Xx7hIewGd6vme+a+bO1yJ7m8Ezfec+9Q4r/DgLRNtWZW5TDNE21M8Wm5voiiUajEHXs
-         6pjjL6rXeaud2n5E2xv1JFNFGmJuZ2nhDZxSZ4O8rWM9gcoS9aQoZser312io8iHb7Hn
-         xEfRrFMM4us4iGx8cf5uwn39Om/smaQqF7NOJqp21fHaDDGlza18jpfOV0H5h3Tm/YCj
-         42pT4AjqzliV6dH5+6fk2A3YgQyyiRkM41EPYT+2I6UD5MfiK1Pr68LfViI65Pqz1cHV
-         9weQ==
-X-Gm-Message-State: AOAM531oC+G7RndCWwu6yQ+Cm1PupLM2fhZFwZ53iLIWRJxN1TfLeeOh
-        gHP7gJQSQL5rCw6tTpT2vgk=
-X-Google-Smtp-Source: ABdhPJwSER/8mTDxyPrH6z2kjHv64sIYRdLt4cRdx81XrZFtXXE3LVUl+Eyuk4hLLb+2aEhI8YLkBQ==
-X-Received: by 2002:a17:902:c3d2:b029:d2:93f9:1d8a with SMTP id j18-20020a170902c3d2b02900d293f91d8amr1105887plj.66.1601443073874;
-        Tue, 29 Sep 2020 22:17:53 -0700 (PDT)
-Received: from localhost.localdomain ([49.207.218.220])
-        by smtp.gmail.com with ESMTPSA id gm17sm633432pjb.46.2020.09.29.22.17.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Sep 2020 22:17:53 -0700 (PDT)
-From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
-To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        kpsingh@chromium.org
-Cc:     Anant Thazhemadam <anant.thazhemadam@gmail.com>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: [Linux-kernel-mentees][PATCH 2/2] net: reorder members of receive_queue in virtio_net for optimization
-Date:   Wed, 30 Sep 2020 10:47:22 +0530
-Message-Id: <20200930051722.389587-3-anant.thazhemadam@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200930051722.389587-1-anant.thazhemadam@gmail.com>
-References: <20200930051722.389587-1-anant.thazhemadam@gmail.com>
+ d=purevlc.onmicrosoft.com; s=selector2-purevlc-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tutr2RCClZVWeMZE6qG7csybtPUs4H2PHeTKVpflSPc=;
+ b=jFiXEpoqLqHVN1GKFxd/QcnG/xH+j1CUNXpXkxUNlVo2zzzSurgXSw/LJv7IXAmr/royhKA8hNIkCr+LnTTR7qbpHPoqdC2k0orvztUkNHvJT/jLDjMqU8uzR+22RfYhTThUDhf8Ee3pwa7W3vfPgYWedz6SjxzZkIAyDkelboM=
+Received: from CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:6f::14)
+ by CWXP265MB2439.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:4c::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.24; Wed, 30 Sep
+ 2020 05:29:23 +0000
+Received: from CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::e102:fffb:c3b6:780f]) by CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::e102:fffb:c3b6:780f%8]) with mapi id 15.20.3433.032; Wed, 30 Sep 2020
+ 05:29:23 +0000
+From:   Srinivasan Raju <srini.raju@purelifi.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Mostafa Afgani <mostafa.afgani@purelifi.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] [v2] wireless: Initial driver submission for pureLiFi
+ devices
+Thread-Topic: [PATCH] [v2] wireless: Initial driver submission for pureLiFi
+ devices
+Thread-Index: AQHWlYEQBtpUmlBsIE2OcjRvCcmkD6mAppEAgAADTrc=
+Date:   Wed, 30 Sep 2020 05:29:23 +0000
+Message-ID: <CWLP265MB1972EC8E3D4BDE977F11C8F5E0330@CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM>
+References: <20200924151910.21693-1-srini.raju@purelifi.com>
+ <20200928102008.32568-1-srini.raju@purelifi.com>,<20200930051602.GJ3094@unreal>
+In-Reply-To: <20200930051602.GJ3094@unreal>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=purelifi.com;
+x-originating-ip: [103.104.125.101]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: daf1552e-969b-4e57-31f5-08d86501ca6c
+x-ms-traffictypediagnostic: CWXP265MB2439:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CWXP265MB2439195F010B26FAF5A53D7EE0330@CWXP265MB2439.GBRP265.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 4kLO4p2DE8Uedpx15ElBnFHJ59gBh/bqtL9F/MkUGEtUcvnTkb9B28+XwitfsEyrpDa/Ems5cHK/SniSZt9d0g6jAky4rMOV/v82D8gxQCilZKhF/r1Dkm56bmRRq/gd8PJs/4m5xFIRg8Rl/DwDn07F3ucEmp2R10B7K1hLVkpnbfxsl8DPThYA5HsbWClv3/RK9kKZH+JfzMo2tt8ut20OLs/J15zbIruvi+ykJMH7vXL0MVedJbHWOdtmldS4ihaY3JpD0q0A1IxILUdqPHsj4edmXb3/bRsvgu5XHOBckKz2k+keYxogL2OLNYb8581uC8P4YpfSEYKOqbqsYp5+NB8lKKQ62Hb7jdVvfOCqMEJSRXVSrNpKLMvEqrwu
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(6029001)(4636009)(346002)(396003)(136003)(376002)(39830400003)(366004)(9686003)(8936002)(8676002)(2906002)(5660300002)(558084003)(4326008)(6916009)(55016002)(52536014)(6506007)(7696005)(316002)(76116006)(91956017)(54906003)(478600001)(26005)(186003)(33656002)(86362001)(66946007)(71200400001)(66476007)(66556008)(64756008)(66446008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: i7+uE7bJmGc+dMWXTtrC+3bzEWI9fyclItmwTb8Zz/cByEpk7e8QnYG7OSWlyYuKhWaEdmKz2alksBDQuhLyl9awc0WJkdf8SQW5NFg3nOUheAutavU/snQnnq6db2QUOrIDotEFe2b6KVqlfz4ulk9y1grLtNeAo02AAG8m1SeDxLu5lW/IvJaFhYKot7A29cMrqyTpgDjao++H3SOst9kxtSITQ/U1WKkLkOZ33YBnR0ITmnmsczyOtPGLK5vYdfpxEVbt9Hpb0vcYWMEKbhhlcrR/P4Gkwz8TTOe1tf7GxvaKMc0TPkUi055OFhKx8xw3QYVKttox5n6hh/lW3LjsLELN43ZRhKYtPmqIz5RmhVELQD07lF+8khYeSWYuvjcY05njYJmYWOAGKMmgzqNMKZgwAvbs3C90FGmpSQrUfiLW8LQN6V+VizRsY2gSVIfQJqYbOXTrW9B6gHjcjpsRlN6CKxrjsx5xeSb1g+WYE9CyCOxUaugdjJvG0Kfed2L0nMwXffjrfAO80OsCUW6t3HVmn8xq20Z52axpvRPUPIV0U1+c7wmyz/5H3FQ41UamHJItAE3rszP1PlDqZ6FqZzCqc6K4Q2il84fw8t8+ApHSA6NNsHw3gokZ0dWWzjZh6ZG7N3SL2wd+AW/ewQ==
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: purelifi.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CWLP265MB1972.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: daf1552e-969b-4e57-31f5-08d86501ca6c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Sep 2020 05:29:23.7111
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5cf4eba2-7b8f-4236-bed4-a2ac41f1a6dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: om+wb3mW1Z2+t8fWJzPDFxMQDD+18f+FTtdzuj32tmCZ1uyLXZ+xmU8tPA/MaZg453Ugch1H5c3/FkUcAV3Vxg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWXP265MB2439
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Analysis of the structure receive_queue using pahole gives the
-following stats.
-	/* size: 1280, cachelines: 20, members: 11 */
-        /* sum members: 1220, holes: 1, sum holes: 60 */
-        /* paddings: 2, sum paddings: 44 */
-        /* forced alignments: 2, forced holes: 1, sum forced holes: 60 */
-
-Reordering the order in which the members of receive_queue are declared
-helps in packing byte holes in the middle of receive_queue, and also
-allows more members to be fully stored in a cacheline (of size 64bytes)
-without overstepping over cachelines unnecessarily.
-
-Analysis using pahole post-reordering of members gives us the following
-stats.
-	/* size: 1280, cachelines: 20, members: 11 */
-        /* padding: 60 */
-        /* paddings: 2, sum paddings: 44 */
-        /* forced alignments: 2 */
-
-Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
----
-The complete analysis done by pahole can be found below.
-
-Before the change:
-	struct receive_queue {
-		struct virtqueue *         vq;                   /*     0     8 */
-		struct napi_struct napi __attribute__((__aligned__(8))); /*     8   392 */
-
-		/* XXX last struct has 4 bytes of padding */
-
-		/* --- cacheline 6 boundary (384 bytes) was 16 bytes ago --- */
-		struct bpf_prog *          xdp_prog;             /*   400     8 */
-		struct virtnet_rq_stats stats;                   /*   408    64 */
-		/* --- cacheline 7 boundary (448 bytes) was 24 bytes ago --- */
-		struct page *              pages;                /*   472     8 */
-		struct ewma_pkt_len mrg_avg_pkt_len;             /*   480     8 */
-		struct page_frag   alloc_frag;                   /*   488    16 */
-		struct scatterlist sg[19];                       /*   504   608 */
-		/* --- cacheline 17 boundary (1088 bytes) was 24 bytes ago --- */
-		unsigned int               min_buf_len;          /*  1112     4 */
-		char                       name[40];             /*  1116    40 */
-
-		/* XXX 60 bytes hole, try to pack */
-
-		/* --- cacheline 19 boundary (1216 bytes) --- */
-		struct xdp_rxq_info xdp_rxq __attribute__((__aligned__(64))); /*  1216    64 */
-
-		/* XXX last struct has 40 bytes of padding */
-
-		/* size: 1280, cachelines: 20, members: 11 */
-		/* sum members: 1220, holes: 1, sum holes: 60 */
-		/* paddings: 2, sum paddings: 44 */
-		/* forced alignments: 2, forced holes: 1, sum forced holes: 60 */
-	} __attribute__((__aligned__(64)));
-
-After the change:
-	struct receive_queue {
-		struct virtqueue *         vq;                   /*     0     8 */
-		struct napi_struct napi __attribute__((__aligned__(8))); /*     8   392 */
-
-		/* XXX last struct has 4 bytes of padding */
-
-		/* --- cacheline 6 boundary (384 bytes) was 16 bytes ago --- */
-		char                       name[40];             /*   400    40 */
-		struct bpf_prog *          xdp_prog;             /*   440     8 */
-		/* --- cacheline 7 boundary (448 bytes) --- */
-		struct virtnet_rq_stats stats;                   /*   448    64 */
-		/* --- cacheline 8 boundary (512 bytes) --- */
-		struct scatterlist sg[19];                       /*   512   608 */
-		/* --- cacheline 17 boundary (1088 bytes) was 32 bytes ago --- */
-		struct page_frag   alloc_frag;                   /*  1120    16 */
-		struct page *              pages;                /*  1136     8 */
-		struct ewma_pkt_len mrg_avg_pkt_len;             /*  1144     8 */
-		/* --- cacheline 18 boundary (1152 bytes) --- */
-		struct xdp_rxq_info xdp_rxq __attribute__((__aligned__(64))); /*  1152    64 */
-
-		/* XXX last struct has 40 bytes of padding */
-
-		/* --- cacheline 19 boundary (1216 bytes) --- */
-		unsigned int               min_buf_len;          /*  1216     4 */
-
-		/* size: 1280, cachelines: 20, members: 11 */
-		/* padding: 60 */
-		/* paddings: 2, sum paddings: 44 */
-		/* forced alignments: 2 */
-	} __attribute__((__aligned__(64)));
-
-It can be observed that the holes have been eliminated. 
-Also, more members of virtnet_info are accomodated within a cacheline (instead of 
-unnecessarily crossing over the cacheline boundary).
-There is a padding of 60 performed at the end since the min_buf_len is only of 
-size 4, and xdp_rxq is of size 64. If declared anywhere else other than at the 
-end, a 60 bytes hole would open up again.
-
- drivers/net/virtio_net.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index f7bd85001cf0..b52db0b4879a 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -137,29 +137,29 @@ struct receive_queue {
- 
- 	struct napi_struct napi;
- 
-+	/* Name of this receive queue: input.$index */
-+	char name[40];
-+
- 	struct bpf_prog __rcu *xdp_prog;
- 
- 	struct virtnet_rq_stats stats;
- 
-+	/* RX: fragments + linear part + virtio header */
-+	struct scatterlist sg[MAX_SKB_FRAGS + 2];
-+
-+	/* Page frag for packet buffer allocation. */
-+	struct page_frag alloc_frag;
-+
- 	/* Chain pages by the private ptr. */
- 	struct page *pages;
- 
- 	/* Average packet length for mergeable receive buffers. */
- 	struct ewma_pkt_len mrg_avg_pkt_len;
- 
--	/* Page frag for packet buffer allocation. */
--	struct page_frag alloc_frag;
--
--	/* RX: fragments + linear part + virtio header */
--	struct scatterlist sg[MAX_SKB_FRAGS + 2];
-+	struct xdp_rxq_info xdp_rxq;
- 
- 	/* Min single buffer size for mergeable buffers case. */
- 	unsigned int min_buf_len;
--
--	/* Name of this receive queue: input.$index */
--	char name[40];
--
--	struct xdp_rxq_info xdp_rxq;
- };
- 
- /* Control VQ buffers: protected by the rtnl lock */
--- 
-2.25.1
-
+=0A=
+> I stopped here.=0A=
+>=0A=
+> Thanks=0A=
+=0A=
+Thanks for your comments Leon, I will resubmit after the changes=0A=
+=0A=
+Thanks=0A=
+Srini=
