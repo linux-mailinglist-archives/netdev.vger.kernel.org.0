@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B754427F579
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 00:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9D6427F57A
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 00:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731880AbgI3WuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1731874AbgI3WuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 30 Sep 2020 18:50:21 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:62286 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731839AbgI3WuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 18:50:05 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08UMkl0b024866
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 15:50:05 -0700
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:39228 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731867AbgI3WuJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 18:50:09 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 08UMo2se031664
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 15:50:08 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=6o+g6CvLKaTKQuIHDUh/KcMdLPvg7ltHmTb/OOFUgJM=;
- b=Ahw38LIDJpON7f8Q7HLkr09kdWe++6F61Y3UZ06ozaZZPdoan6qxAM/EyOMLhRpuneUt
- 7lz2IQsgIo4fNudAJqg53AfoFwAZbEki5H7/CrVoK/UBLWJqKd8uohRT9Vnxi5ldh9ko
- g1+B7zT3XsGCAUaN3QsCG6ASkla7sPpcGdw= 
+ bh=+iqZEJ6ofrrbaQW3OiP/THnJrOiHkT1t5ffjgtdqkSc=;
+ b=qvGf3XJh4f9kYv9FKh+XB6PxI/chhCjQtClRWlUyL6OShhw8c9MGWnA9+Uaipr0BEwhx
+ zQaYyqqcTNb1Vi2itlmJI9XlpqsRzjLnDPXdRFLyHuSV3esWX3TGCJOHKY7HcVaTDnKq
+ 2XNNcBxGqK57sIqf/xeEqEPpc0HYoN4X8yE= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 33v3vu1t5u-6
+        by m0089730.ppops.net with ESMTP id 33w01t15hg-15
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 15:50:04 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 15:50:08 -0700
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1979.3; Wed, 30 Sep 2020 15:49:58 -0700
 Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id BDA8862E586A; Wed, 30 Sep 2020 15:49:53 -0700 (PDT)
+        id E45FD62E586A; Wed, 30 Sep 2020 15:49:56 -0700 (PDT)
 From:   Song Liu <songliubraving@fb.com>
 To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
 CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
         <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
         Song Liu <songliubraving@fb.com>
-Subject: [PATCH v5 bpf-next 1/2] bpf: introduce BPF_F_PRESERVE_ELEMS for perf event array
-Date:   Wed, 30 Sep 2020 15:49:26 -0700
-Message-ID: <20200930224927.1936644-2-songliubraving@fb.com>
+Subject: [PATCH v5 bpf-next 2/2] selftests/bpf: add tests for BPF_F_PRESERVE_ELEMS
+Date:   Wed, 30 Sep 2020 15:49:27 -0700
+Message-ID: <20200930224927.1936644-3-songliubraving@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200930224927.1936644-1-songliubraving@fb.com>
 References: <20200930224927.1936644-1-songliubraving@fb.com>
@@ -48,121 +48,154 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-09-30_13:2020-09-30,2020-09-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- suspectscore=2 phishscore=0 mlxlogscore=999 clxscore=1015 bulkscore=0
- impostorscore=0 adultscore=0 priorityscore=1501 spamscore=0 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009300183
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ lowpriorityscore=0 bulkscore=0 adultscore=0 spamscore=0 impostorscore=0
+ clxscore=1015 malwarescore=0 phishscore=0 mlxlogscore=999 mlxscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009300184
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, perf event in perf event array is removed from the array when
-the map fd used to add the event is closed. This behavior makes it
-difficult to the share perf events with perf event array.
+Add tests for perf event array with and without BPF_F_PRESERVE_ELEMS.
 
-Introduce perf event map that keeps the perf event open with a new flag
-BPF_F_PRESERVE_ELEMS. With this flag set, perf events in the array are no=
-t
-removed when the original map fd is closed. Instead, the perf event will
-stay in the map until 1) it is explicitly removed from the array; or 2)
-the array is freed.
+Add a perf event to array via fd mfd. Without BPF_F_PRESERVE_ELEMS, the
+perf event is removed when mfd is closed. With BPF_F_PRESERVE_ELEMS, the
+perf event is removed when the map is freed.
 
 Signed-off-by: Song Liu <songliubraving@fb.com>
 ---
- include/uapi/linux/bpf.h       |  3 +++
- kernel/bpf/arraymap.c          | 19 +++++++++++++++++--
- tools/include/uapi/linux/bpf.h |  3 +++
- 3 files changed, 23 insertions(+), 2 deletions(-)
+ .../bpf/prog_tests/pe_preserve_elems.c        | 66 +++++++++++++++++++
+ .../bpf/progs/test_pe_preserve_elems.c        | 42 ++++++++++++
+ 2 files changed, 108 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/pe_preserve_el=
+ems.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_pe_preserve_el=
+ems.c
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 1f17c6752debb..4f556cfcbfbee 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -414,6 +414,9 @@ enum {
-=20
- /* Enable memory-mapping BPF map */
- 	BPF_F_MMAPABLE		=3D (1U << 10),
+diff --git a/tools/testing/selftests/bpf/prog_tests/pe_preserve_elems.c b=
+/tools/testing/selftests/bpf/prog_tests/pe_preserve_elems.c
+new file mode 100644
+index 0000000000000..673d38395253b
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/pe_preserve_elems.c
+@@ -0,0 +1,66 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (c) 2019 Facebook */
++#include <test_progs.h>
++#include <linux/bpf.h>
++#include "test_pe_preserve_elems.skel.h"
 +
-+/* Share perf_event among processes */
-+	BPF_F_PRESERVE_ELEMS	=3D (1U << 11),
- };
-=20
- /* Flags for BPF_PROG_QUERY. */
-diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-index e5fd31268ae02..bd777dd6f9677 100644
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -15,7 +15,8 @@
- #include "map_in_map.h"
-=20
- #define ARRAY_CREATE_FLAG_MASK \
--	(BPF_F_NUMA_NODE | BPF_F_MMAPABLE | BPF_F_ACCESS_MASK)
-+	(BPF_F_NUMA_NODE | BPF_F_MMAPABLE | BPF_F_ACCESS_MASK | \
-+	 BPF_F_PRESERVE_ELEMS)
-=20
- static void bpf_array_free_percpu(struct bpf_array *array)
- {
-@@ -64,6 +65,10 @@ int array_map_alloc_check(union bpf_attr *attr)
- 	    attr->map_flags & BPF_F_MMAPABLE)
- 		return -EINVAL;
-=20
-+	if (attr->map_type !=3D BPF_MAP_TYPE_PERF_EVENT_ARRAY &&
-+	    attr->map_flags & BPF_F_PRESERVE_ELEMS)
-+		return -EINVAL;
++static int duration;
 +
- 	if (attr->value_size > KMALLOC_MAX_SIZE)
- 		/* if value_size is bigger, the user space won't be able to
- 		 * access the elements.
-@@ -1134,6 +1139,9 @@ static void perf_event_fd_array_release(struct bpf_=
-map *map,
- 	struct bpf_event_entry *ee;
- 	int i;
-=20
-+	if (map->map_flags & BPF_F_PRESERVE_ELEMS)
++static void test_one_map(struct bpf_map *map, struct bpf_program *prog,
++			 bool has_share_pe)
++{
++	int err, key =3D 0, pfd =3D -1, mfd =3D bpf_map__fd(map);
++	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts);
++	struct perf_event_attr attr =3D {
++		.size =3D sizeof(struct perf_event_attr),
++		.type =3D PERF_TYPE_SOFTWARE,
++		.config =3D PERF_COUNT_SW_CPU_CLOCK,
++	};
++
++	pfd =3D syscall(__NR_perf_event_open, &attr, 0 /* pid */,
++		      -1 /* cpu 0 */, -1 /* group id */, 0 /* flags */);
++	if (CHECK(pfd < 0, "perf_event_open", "failed\n"))
 +		return;
 +
- 	rcu_read_lock();
- 	for (i =3D 0; i < array->map.max_entries; i++) {
- 		ee =3D READ_ONCE(array->ptrs[i]);
-@@ -1143,12 +1151,19 @@ static void perf_event_fd_array_release(struct bp=
-f_map *map,
- 	rcu_read_unlock();
- }
-=20
-+static void perf_event_fd_array_map_free(struct bpf_map *map)
-+{
-+	if (map->map_flags & BPF_F_PRESERVE_ELEMS)
-+		bpf_fd_array_map_clear(map);
-+	fd_array_map_free(map);
++	err =3D bpf_map_update_elem(mfd, &key, &pfd, BPF_ANY);
++	close(pfd);
++	if (CHECK(err < 0, "bpf_map_update_elem", "failed\n"))
++		return;
++
++	err =3D bpf_prog_test_run_opts(bpf_program__fd(prog), &opts);
++	if (CHECK(err < 0, "bpf_prog_test_run_opts", "failed\n"))
++		return;
++	if (CHECK(opts.retval !=3D 0, "bpf_perf_event_read_value",
++		  "failed with %d\n", opts.retval))
++		return;
++
++	/* closing mfd, prog still holds a reference on map */
++	close(mfd);
++
++	err =3D bpf_prog_test_run_opts(bpf_program__fd(prog), &opts);
++	if (CHECK(err < 0, "bpf_prog_test_run_opts", "failed\n"))
++		return;
++
++	if (has_share_pe) {
++		CHECK(opts.retval !=3D 0, "bpf_perf_event_read_value",
++		      "failed with %d\n", opts.retval);
++	} else {
++		CHECK(opts.retval !=3D -ENOENT, "bpf_perf_event_read_value",
++		      "should have failed with %d, but got %d\n", -ENOENT,
++		      opts.retval);
++	}
 +}
 +
- static int perf_event_array_map_btf_id;
- const struct bpf_map_ops perf_event_array_map_ops =3D {
- 	.map_meta_equal =3D bpf_map_meta_equal,
- 	.map_alloc_check =3D fd_array_map_alloc_check,
- 	.map_alloc =3D array_map_alloc,
--	.map_free =3D fd_array_map_free,
-+	.map_free =3D perf_event_fd_array_map_free,
- 	.map_get_next_key =3D array_map_get_next_key,
- 	.map_lookup_elem =3D fd_array_map_lookup_elem,
- 	.map_delete_elem =3D fd_array_map_delete_elem,
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bp=
-f.h
-index 1f17c6752debb..4f556cfcbfbee 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -414,6 +414,9 @@ enum {
-=20
- /* Enable memory-mapping BPF map */
- 	BPF_F_MMAPABLE		=3D (1U << 10),
++void test_pe_preserve_elems(void)
++{
++	struct test_pe_preserve_elems *skel;
 +
-+/* Share perf_event among processes */
-+	BPF_F_PRESERVE_ELEMS	=3D (1U << 11),
- };
-=20
- /* Flags for BPF_PROG_QUERY. */
++	skel =3D test_pe_preserve_elems__open_and_load();
++	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
++		return;
++
++	test_one_map(skel->maps.array_1, skel->progs.read_array_1, false);
++	test_one_map(skel->maps.array_2, skel->progs.read_array_2, true);
++
++	test_pe_preserve_elems__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_pe_preserve_elems.c b=
+/tools/testing/selftests/bpf/progs/test_pe_preserve_elems.c
+new file mode 100644
+index 0000000000000..726a5e4823af7
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_pe_preserve_elems.c
+@@ -0,0 +1,42 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2020 Facebook
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++struct {
++	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
++	__uint(max_entries, 1);
++	__uint(key_size, sizeof(int));
++	__uint(value_size, sizeof(int));
++} array_1 SEC(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
++	__uint(max_entries, 1);
++	__uint(key_size, sizeof(int));
++	__uint(value_size, sizeof(int));
++	__uint(map_flags, BPF_F_PRESERVE_ELEMS);
++} array_2 SEC(".maps");
++
++SEC("raw_tp/sched_switch")
++int BPF_PROG(read_array_1)
++{
++	struct bpf_perf_event_value val;
++	long ret;
++
++	ret =3D bpf_perf_event_read_value(&array_1, 0, &val, sizeof(val));
++	return ret;
++}
++
++SEC("raw_tp/task_rename")
++int BPF_PROG(read_array_2)
++{
++	struct bpf_perf_event_value val;
++	long ret;
++
++	ret =3D bpf_perf_event_read_value(&array_2, 0, &val, sizeof(val));
++	return ret;
++}
++
++char LICENSE[] SEC("license") =3D "GPL";
 --=20
 2.24.1
 
