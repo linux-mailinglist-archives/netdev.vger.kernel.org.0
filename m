@@ -2,240 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B71D27E7E2
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 13:51:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE6527E801
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 13:57:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729356AbgI3Lvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 07:51:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35144 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729021AbgI3Lvg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Sep 2020 07:51:36 -0400
-Received: from pali.im (pali.im [31.31.79.79])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CAC112076B;
-        Wed, 30 Sep 2020 11:51:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601466695;
-        bh=l8HgT+WQsT8O3vdRdnI8WNom5LknMtDCIGN3e0XfiZg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lOaCOv0D4V54nNxitAoDLTpj1C2xpgrcQMMgUCjsgpmtu3d2jPcY7HiOCjjXFThy+
-         4CMolDiv+3cg2q/aUXdM6z3HXwlxj8Gyu3Kko5Tl4xR4Wcb/O7D6gdFpSa02/KCh5h
-         zqfP1PccE/oOSdYUrUNktJ7Vtu+yD7TO9mYZ5k0E=
-Received: by pali.im (Postfix)
-        id 83F7F9D2; Wed, 30 Sep 2020 13:51:32 +0200 (CEST)
-Date:   Wed, 30 Sep 2020 13:51:32 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        David Heidelberg <david@ixit.cz>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Removal of HCI commands, userspace bluetooth regression?
-Message-ID: <20200930115132.fscfugzvf6nqtglc@pali>
-References: <20200414225618.zgh5h4jexahfukdl@pali>
- <20200808132747.4byefjg5ysddgkel@pali>
- <20200929213254.difivzrhapk766xp@pali>
- <20200930080205.GA1571308@kroah.com>
- <20200930082534.rrck6qb3fntm25wz@pali>
- <20200930092043.GB1580803@kroah.com>
- <20200930094616.qmpophucxwpgu7tz@pali>
- <20200930105434.GB1592367@kroah.com>
- <20200930110013.rjejmjcsgfhdqa6l@pali>
- <20200930112006.GA1598131@kroah.com>
+        id S1729514AbgI3L5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 07:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725776AbgI3L5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 07:57:11 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4B8C061755
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 04:57:11 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id e22so1512188edq.6
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 04:57:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=OhPAOFVD+oBF810acOneFFKHLt/2svGol3+xfPNIIGc=;
+        b=SX7S5BhBtHRfXy7vaCEcReg+6OvyNUQchq6BO11lbTwHnyGUefzIv7nRnMzMNbsSKR
+         pCCrsuh7mqbYggWGR2An30iH6BT8veb307Te+15ozNRGB4FS64T/y1bACG0cf9jD/l3Y
+         Ctn1c+AsIZS9JVuGWSp5qZKnxxZbbElOYYhBBMJfjiXAkA/O+s9pkhX5oaHqa+apAyPl
+         4JseFTzHgH/OScZVd81uuy4GdtnUY52Tl7PdKDe5YtDHYxkwV3wuWLLQLhOHJ1JAwsqG
+         KPjtq3AS/qzPchB5DWZJsDWLAgLeb2sui58UISIxs2E5ocD1M3JiogmzKjfzd56uEGW/
+         ccRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=OhPAOFVD+oBF810acOneFFKHLt/2svGol3+xfPNIIGc=;
+        b=S/F5/LAR/obprjZ0VoSXbWy8fBVkmPPgM7UPSiP+KsyrmVXlgnV6G++hueFHEfLHFz
+         MjHFi+DxI5PhamADAY/bORN99d6RQYOQajh2aYXTcXUFTF3nfOP086Bs/n+TdhaRr8IP
+         U71tG/thSmsLuBOEVYV8KjO1iSleWhwRd4EZMG/kmDG/AKWFzz1aPSS0Zwz7Z2YiJysQ
+         24cti+SllzCCZaQ2XisHKp73WjFSu2Ee+Rnngl4DNITtAcdn3BP4GvmOcMornG3wWMY+
+         YWoZ3c+rA9lqHoO+90Sjjq80fchkYP5yjQEk5TuFknEFy8xM47xfV/6DBmO4W2dMQoCF
+         rX6w==
+X-Gm-Message-State: AOAM532nQqPgIOYZyB0kHnNB5WNMvVSSE7x5ljT40JX+lCxQSbAEU74v
+        52EQ8gyjhYt2d4Vc3EDY1vU=
+X-Google-Smtp-Source: ABdhPJxtwwrK5r1kYDrb89gNS4vHLe5bTncIfmd5BEQuq8+hhTAVP3F9nof+uaQ3Zdml552291h3wA==
+X-Received: by 2002:aa7:cd90:: with SMTP id x16mr2235767edv.302.1601467029812;
+        Wed, 30 Sep 2020 04:57:09 -0700 (PDT)
+Received: from fido.de.innominate.com (x59cc8adf.dyn.telefonica.de. [89.204.138.223])
+        by smtp.gmail.com with ESMTPSA id rn10sm866118ejb.8.2020.09.30.04.57.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Sep 2020 04:57:09 -0700 (PDT)
+Date:   Wed, 30 Sep 2020 13:57:06 +0200
+From:   Peter Vollmer <peter.vollmer@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>
+Subject: Re: dsa/mv88e6xxx: leaking packets on MV88E6341 switch
+Message-ID: <20200930115705.GA12758@fido.de.innominate.com>
+References: <CAGwvh_MAQWuKuhu5VuYjibmyN-FRxCXXhrQBRm34GShZPSN6Aw@mail.gmail.com>
+ <20200930102835.4ee4mogk7ogom35j@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200930112006.GA1598131@kroah.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20200930102835.4ee4mogk7ogom35j@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday 30 September 2020 13:20:06 Greg Kroah-Hartman wrote:
-> On Wed, Sep 30, 2020 at 01:00:13PM +0200, Pali Rohár wrote:
-> > On Wednesday 30 September 2020 12:54:34 Greg Kroah-Hartman wrote:
-> > > On Wed, Sep 30, 2020 at 11:46:16AM +0200, Pali Rohár wrote:
-> > > > On Wednesday 30 September 2020 11:20:43 Greg Kroah-Hartman wrote:
-> > > > > On Wed, Sep 30, 2020 at 10:25:34AM +0200, Pali Rohár wrote:
-> > > > > > On Wednesday 30 September 2020 10:02:05 Greg Kroah-Hartman wrote:
-> > > > > > > On Tue, Sep 29, 2020 at 11:32:54PM +0200, Pali Rohár wrote:
-> > > > > > > > CCing other lists and maintainers, hopefully, somebody would have a time to look at it...
-> > > > > > > > 
-> > > > > > > > On Saturday 08 August 2020 15:27:47 Pali Rohár wrote:
-> > > > > > > > > On Wednesday 15 April 2020 00:56:18 Pali Rohár wrote:
-> > > > > > > > > > On Sunday 09 February 2020 14:21:37 Pali Rohár wrote:
-> > > > > > > > > > > On Saturday 04 January 2020 11:24:36 Pali Rohár wrote:
-> > > > > > > > > > > > On Saturday 04 January 2020 10:44:52 Marcel Holtmann wrote:
-> > > > > > > > > > > > > Hi Pali,
-> > > > > > > > > > > > > 
-> > > > > > > > > > > > > > I wrote a simple script "sco_features.pl" which show all supported
-> > > > > > > > > > > > > > codecs by local HCI bluetooth adapter. Script is available at:
-> > > > > > > > > > > > > > 
-> > > > > > > > > > > > > > https://github.com/pali/hsphfpd-prototype/blob/prototype/sco_features.pl
-> > > > > > > > > > > > > > 
-> > > > > > > > > > > > > > And I found out that OCF_READ_LOCAL_CODECS HCI command cannot be send by
-> > > > > > > > > > > > > > non-root user. Kernel returns "Operation not permitted" error.
-> > > > > > > > > > > > > > 
-> > > > > > > > > > > > > > What is reason that kernel blocks OCF_READ_LOCAL_CODECS command for
-> > > > > > > > > > > > > > non-root users? Without it (audio) application does not know which
-> > > > > > > > > > > > > > codecs local bluetooth adapter supports.
-> > > > > > > > > > > > > > 
-> > > > > > > > > > > > > > E.g. OCF_READ_LOCAL_EXT_FEATURES or OCF_READ_VOICE_SETTING commands can
-> > > > > > > > > > > > > > be send also by non-root user and kernel does not block them.
-> > > > > > > > > > > > > 
-> > > > > > > > > > > > > actually the direct access to HCI commands is being removed. So we have no plans to add new commands into the list since that it what the kernel is suppose to handle. If we wanted to expose this, then it has to be via mgmt.
-> > > > > > > > > > > > 
-> > > > > > > > > > > > Hi Marcel! Thank you for information. I have not know that this API is
-> > > > > > > > > > > > "deprecated" and is going to be removed. But userspace audio
-> > > > > > > > > > > > applications need to know what bluetooth adapter supports, so can you
-> > > > > > > > > > > > export result of these commands to userspace? My script linked above
-> > > > > > > > > > > > calls: OCF_READ_VOICE_SETTING, OCF_READ_LOCAL_COMMANDS,
-> > > > > > > > > > > > OCF_READ_LOCAL_EXT_FEATURES, OCF_READ_LOCAL_CODECS
-> > > > > > > > > > > 
-> > > > > > > > > > > Hello! Just a gently reminder for this question. How to retrieve
-> > > > > > > > > > > information about supported codecs from userspace by non-root user?
-> > > > > > > > > > > Because running all bluetooth audio applications by root is not really a
-> > > > > > > > > > > solution. Plus if above API for root user is going to be removed, what
-> > > > > > > > > > > is a replacement?
-> > > > > > > > > > 
-> > > > > > > > > > Hello!
-> > > > > > > > > > 
-> > > > > > > > > > I have not got any answer to my email from Marcel for months, so I'm
-> > > > > > > > > > adding other developers to loop. Could somebody tell me that is the
-> > > > > > > > > > replacement API if above one is going to be removed?
-> > > > > > > > > > 
-> > > > > > > > > > I was not able to find any documentation where could be described this
-> > > > > > > > > > API nor information about deprecation / removal.
-> > > > > > > > > > 
-> > > > > > > > > > And are you aware of the fact that removing of API could potentially
-> > > > > > > > > > break existing applications?
-> > > > > > > > > > 
-> > > > > > > > > > I really need to know which API should I use, because when I use API
-> > > > > > > > > > which is going to be removed, then my application stops working. And I
-> > > > > > > > > > really want to avoid it.
-> > > > > > > > > > 
-> > > > > > > > > > Also I have not got any response yet, how can I read list of supported
-> > > > > > > > > > codecs by bluetooth adapter by ordinary non-root user? Audio application
-> > > > > > > > > > needs to know list of supported codecs and it is really insane to run it
-> > > > > > > > > > as root.
-> > > > > > > > > 
-> > > > > > > > > Hello! This is just another reminder that I have not got any reply to
-> > > > > > > > > this email.
-> > > > > > > > > 
-> > > > > > > > > Does silence mean that audio applications are expected to work only
-> > > > > > > > > under root account and ordinary users are not able to use audio and list
-> > > > > > > > > supported codecs?
-> > > > > > > > 
-> > > > > > > > Hello! I have not got any reply for this issue for 10 months and if you
-> > > > > > > > are going to remove (or after these 10 months you already did it?)
-> > > > > > > > existing HCI API from kernel it would break existing and working
-> > > > > > > > userspace application. How do you want to handle such regressions?
-> > > > > > > 
-> > > > > > > What git commit caused this regression?
-> > > > > > 
-> > > > > > Hello! Marcel in January wrote that access for HCI commands is being
-> > > > > > removed from kernel. I do not know if he managed to do it in since
-> > > > > > January, but I'm going to check it...
-> > > > > 
-> > > > > So you don't see a regression/problem, but are saying there is one?
-> > > > 
-> > > > Hello!
-> > > > 
-> > > > Planed removal of used API would be a regression. Marcel wrote that it
-> > > > is "being removed". Nobody reacted to that fact for 10 months so I did
-> > > > not know if this comment was lost and removal is already in progress.
-> > > > Or if something was changed and removal is not planned anymore.
-> > > > 
-> > > > So are you aware that it will break applications?
-> > > 
-> > > Does it?
-> > 
-> > Of course.
-> > 
-> > > > > odd...
-> > > > 
-> > > > I think it is not a good idea to do something and then check what happen
-> > > > if there are people who know that such thing is in use and for sure it
-> > > > will break something.
-> > > > 
-> > > > And also I still did not get any response what is the replacement of
-> > > > that API.
-> > > 
-> > > It sounds like only new commands are restricted
-> > 
-> > So existing are not being removed? It was finally changed and can you confirm it?
+On Wed, Sep 30, 2020 at 01:28:35PM +0300, Vladimir Oltean wrote:
+> On Wed, Sep 30, 2020 at 12:09:03PM +0200, Peter Vollmer wrote:
+> > lan0..lan3 are members of the br0 bridge interface.
+>
+> and so is eth0, I assume?
+
+No, eth0 is a dedicated interface with its own IP. We have routing between eth0 and br0.
+
+root@mGuard:~# ip link
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq qlen 1024
+    link/ether a8:74:1d:85:08:be brd ff:ff:ff:ff:ff:ff
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1508 qdisc mq qlen 1024
+    link/ether 00:a0:45:38:22:90 brd ff:ff:ff:ff:ff:ff
+4: sit0@NONE: <NOARP> mtu 1480 qdisc noop qlen 1000
+    link/sit 0.0.0.0 brd 0.0.0.0
+5: lan0@eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br0 qlen 1000
+    link/ether a8:74:1d:85:08:bf brd ff:ff:ff:ff:ff:ff
+6: lan1@eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br0 qlen 1000
+    link/ether a8:74:1d:85:08:c0 brd ff:ff:ff:ff:ff:ff
+7: lan2@eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue master br0 qlen 1000
+    link/ether a8:74:1d:85:08:c1 brd ff:ff:ff:ff:ff:ff
+8: lan3@eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue master br0 qlen 1000
+    link/ether a8:74:1d:85:08:c2 brd ff:ff:ff:ff:ff:ff
+9: br0: <BROADCAST,UP,LOWER_UP> mtu 1500 qdisc noqueue qlen 1000
+    link/ether a8:74:1d:85:08:bf brd ff:ff:ff:ff:ff:ff
+
+root@mGuard:~# brctl show
+bridge name     bridge id               STP enabled     interfaces
+br0             8000.a8741d8508bf       no              lan2
+                                                        lan0
+                                                        lan3
+                                                        lan1
+
+
+> > The problem is that for ICMP ping lan0-> eth0, ICMP ping request
+> > packets are leaking (i.e. flooded)  to all other ports lan1..lan3,
+> > while the ping reply eth0->lan0 arrives correctly at lan0 without any
+> > leaked packets on lan1..lan3.
 > 
-> I think you need to point us at some kernel git commits that you are
-> saying is causing problems here, as it's too confusing to determine what
-> is really happening here.
-
-Ok, to recap:
-
-Problem is causing [1] the fact that "direct access to HCI commands is
-being removed" as was written in first reply of this email thread.
-
-I asked more times [2] [3] [4] [5] what is replacement for this API
-(direct access to HCI commands) and what should userspace application
-use instead of that API and how it impact existing application which
-uses that API, but nobody answered yet.
-
-The next problem which I described in [0] is that command for listing
-supported audio codes via that direct access API is not allowed by
-non-root user and therefore audio application needs to be running under
-root user. In [2] [3] [4] [5] I asked what should userspace application
-do for listing these supported codecs, but again nobody answered.
-
-So based on [1] (the only answer) "direct access to HCI commands is
-being removed" and I deduced that existing application which uses this
-API stops working after kernel removes that API.
-
-Also as I have not figured out and nobody answered how to list supported
-audio codecs, the only current way is to use "API which is being
-removed" ([1]) from root user (due to [0]). And because nobody answered
-these questions for 10 months (I reminded it more times [2] [3] [4] [5])
-I started using this "API which is being removed" in my new applications
-[6] and forcing requirement of usage of root user.
-
-Greg, it is clear now? Or do you need more details? (If yes, which)?
-
-For any future userspace development I need to know answers to these
-questions:
-
- o When is that API for "direct access to HCI command" going to be
-   completely removed? Is there transitional period?
-
- o What is replacement for that API?
-
- o If it is really going to be completely removed, how regressions would
-   be handled? There are existing applications which use it and after
-   removal, they would be broken.
-
- o What would ensure that my new applications which use that API stay
-   working?
-
- o Why must kernel block non-root users to list supported audio codecs
-   by bluetooth adapters? Does it mean that bluetooth audio applications
-   are forced to be run as root on Linux kernel forever?
-
-
-[0] - https://lore.kernel.org/linux-bluetooth/20191228171212.56anj4d4kvjeqhms@pali/
-[1] - https://lore.kernel.org/linux-bluetooth/45BB2908-4E16-4C74-9DB4-8BAD93B42A21@holtmann.org/
-[2] - https://lore.kernel.org/linux-bluetooth/20200104102436.bhqagqrfwupj6hkm@pali/
-[3] - https://lore.kernel.org/linux-bluetooth/20200209132137.7pi4pgnassosh3ax@pali/
-[4] - https://lore.kernel.org/linux-bluetooth/20200414225618.zgh5h4jexahfukdl@pali/
-[5] - https://lore.kernel.org/linux-bluetooth/20200808132747.4byefjg5ysddgkel@pali/
-[6] - https://github.com/pali/hsphfpd-prototype
-
+> What are you pinging exactly, the IP of the eth0 interface, or a station
+> connected to the eth0 which is part of the same bridge as the lan ports?
 > 
-> thanks,
-> 
-> greg k-h
+
+I am pinging the address of a station connected to eth0 from a station
+connected to switch port lan0.
+
+Thanks,
+Peter
