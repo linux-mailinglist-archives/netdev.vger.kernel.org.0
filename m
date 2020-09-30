@@ -2,149 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97CC027F2BF
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 21:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81BC027F2F8
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 22:07:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729813AbgI3Txg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 15:53:36 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:39477 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725355AbgI3Txg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 15:53:36 -0400
+        id S1729958AbgI3UHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 16:07:01 -0400
+Received: from wnew1-smtp.messagingengine.com ([64.147.123.26]:40813 "EHLO
+        wnew1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725355AbgI3UHA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 16:07:00 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 63C635C00F9;
-        Wed, 30 Sep 2020 15:53:35 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 30 Sep 2020 15:53:35 -0400
+        by mailnew.west.internal (Postfix) with ESMTP id 4308BED5;
+        Wed, 30 Sep 2020 16:06:59 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 30 Sep 2020 16:07:00 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Ajj7eT
-        SJIQo5ftB/4qyl+BRZEs9w1r44JV1WRP1tyNg=; b=bHxezUkwJNXVU3tYOi3FUj
-        q/zUzLIiwZvzHp8UlrHfkJSdubhio3o5VmFoXLoTmMtmh9NqrEPLKWgTbu5sylZm
-        zSRXwk1xmdhtGXFUbm0Kd37Bb3vEEZxsIIvGU90CN2sFWLoxr/K3iyRLEhmR7Qmj
-        rVWAF8Q9nx1EuqKf5Lj5cbOTjSMDfb8YLJ2phhGp5g5IhwemZYGOp9hmHWlwNCtq
-        MJ0/E8Qh8FfFf3gPEhevhDFRSvopIoc36wwOBfNu3Ewh4LQ83es21gdI1PYJu/re
-        nO7wjMbsAVypCaFepIfLa9U+k8bKnq+BOuH89alrYSDSo1mTPyoGslw/ZtEvMCXw
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=6/QNCe
+        k+qf3qboJuylnkPSWPFM2M0K6i7LJTlRF0tN4=; b=i52Lk0jeeQ+EmRyAXnouFN
+        rzGg9auBXOGc1gqtm0jYxtAV0Vx+WCp7TE7XAjRckdmyvT4qt78F0ldXAnH/OaxI
+        +HVjEDrwlMET/owbDXQ2iZBk1LsTu171wDdvoc7JAbsqFntmvBt6clM38leIlArb
+        DiM37HFgFbwM1Iw97+VY/bhFBSoxxw3uOTeRtk5YQDBdHD9ERAeYl80sLcvRSIu+
+        MZ1k8xqRoVUYESLKfScUjjVT9UwCJbVahmFDjNYHgm1tV+oX7Eh694d5aMkxJyWP
+        +iMPl3tOX2A8kmVjs2zYLf0oxRJ5UdmK4roLEpxR+aUJJEPteysZh0Ki2otR35NQ
         ==
-X-ME-Sender: <xms:PuJ0X3wFF6hIBggVr2CT4JKlvtp_6O_bK-lwXYZVhohv3mW7QbLTDw>
-    <xme:PuJ0X_TZAB9y9UPkbQIsL1QIfCZAOOeTlyTaza2aanWf-tZDXTPxQ2LlA3Yi-y6u4
-    RhTM0HSpeSNQ6U>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrfedvgddufeelucetufdoteggodetrfdotf
+X-ME-Sender: <xms:YeV0Xw6r9pSxcAk2t7kVI3ij5xpzxNjaiIiiSYNzYMLc9PJ6H4YdMA>
+    <xme:YeV0Xx6Fkyclo-hp7FTe3JvMjjOhH8NCmYITFnmR_MteMDIzoBoXFTMbr199UVVh9
+    XLYHLBZPh1IeXg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrfedvgddugedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
     tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpeekhffhheetvdfhtddvgfekleetudetgeelheelvdetveefiefgveffhffhvefg
-    hfenucffohhmrghinhepthhrrghprdhshhenucfkphepkeegrddvvdelrdefjedrudegke
-    enucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiugho
-    shgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:PuJ0XxVdfnPR2IkS3zEvSlZaDtjBxrC04EOqRYSpGlWx-rd2qrKY6A>
-    <xmx:PuJ0Xxjsrf5k684jXWIepPfe-a6VFUD5wXOadV6CpSHHsddn_u81Vw>
-    <xmx:PuJ0X5DajmSQ5E1eqiQalONDgx--2FcQTjhJjIrWoX1UsmRH9tm52Q>
-    <xmx:P-J0X8OpxHMzTS9nmApAkImPeXlWkSghkuMz0yo-ZOIjn4kr2PlCuw>
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepkeegrddvvdelrdefjedrudegkeenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:YeV0X_f5cBa9CeDNwksCUE1aNmfnHVMAkloT8ZcYVwxRpuJo0civiQ>
+    <xmx:YeV0X1LERfXcpjgziGRUd3XGgKQ8wQhb3M-ME7Tll1JidpR5yXWb9g>
+    <xmx:YeV0X0IH8nCgEKslzN1DQsxi0HOLAm731TUOcYSl89d1KOtDaYxbuQ>
+    <xmx:YuV0X9qSgLdSToPYO8h_1ujOPPoXRKdBuj50kogik9ePMCQAxKAqjJERh7c>
 Received: from localhost (igld-84-229-37-148.inter.net.il [84.229.37.148])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2B2B03064610;
-        Wed, 30 Sep 2020 15:53:33 -0400 (EDT)
-Date:   Wed, 30 Sep 2020 22:53:31 +0300
+        by mail.messagingengine.com (Postfix) with ESMTPA id 026323280060;
+        Wed, 30 Sep 2020 16:06:56 -0400 (EDT)
+Date:   Wed, 30 Sep 2020 23:06:53 +0300
 From:   Ido Schimmel <idosch@idosch.org>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        jiri@nvidia.com, idosch@nvidia.com
-Subject: Re: [PATCH net-next v2 2/4] devlink: add .trap_group_action_set()
- callback
-Message-ID: <20200930195331.GB1850258@shredder>
-References: <20200930191645.9520-1-ioana.ciornei@nxp.com>
- <20200930191645.9520-3-ioana.ciornei@nxp.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        f.fainelli@gmail.com, andrew@lunn.ch, ayal@nvidia.com,
+        danieller@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net] ethtool: Fix incompatibility between netlink and
+ ioctl interfaces
+Message-ID: <20200930200653.GC1850258@shredder>
+References: <20200929160247.1665922-1-idosch@idosch.org>
+ <20200929164455.pzymi4chmvl3yua5@lion.mk-sys.cz>
+ <20200930072529.GA1788067@shredder>
+ <20200930085917.xr2orisrg3oxw6cw@lion.mk-sys.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200930191645.9520-3-ioana.ciornei@nxp.com>
+In-Reply-To: <20200930085917.xr2orisrg3oxw6cw@lion.mk-sys.cz>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 10:16:43PM +0300, Ioana Ciornei wrote:
-> Add a new devlink callback, .trap_group_action_set(), which can be used
-> by device drivers which do not support controlling the action (drop,
-> trap) on each trap but rather on the entire group trap.
-> If this new callback is populated, it will take precedence over the
-> .trap_action_set() callback when the user requests a change of all the
-> traps in a group.
-> 
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+On Wed, Sep 30, 2020 at 10:59:17AM +0200, Michal Kubecek wrote:
+> How about this compromise? Let's introduce a "legacy" flag which would
+> allow "ethtool -s <dev> autoneg on" do what it used to do while we would
+> not taint the kernel-userspace API with this special case so that
+> ETHTOOL_MSG_LINKMODES_SET request with only ETHTOOL_A_LINKMODES_AUTONEG
+> (but no other attributes like _SPEED or _DUPLEX) would leave advertised
+> link modes untouched unless the "legacy" flag is set. If the "legacy"
+> flag is set in the request, such request would set advertised modes to
+> all supported.
 
-Did you test this change with
+Sorry for the delay, busy with other obligations. Regarding the "legacy"
+flag suggestion, do you mean that the ethtool user space utility will
+always set it in ETHTOOL_MSG_LINKMODES_SET request in order to maintain
+backward compatibility with the ioctl interface?
 
-tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
-
-?
-
-Just to make sure you didn't add a regression
-
-> ---
-> Changes in v2:
->  - none
-> 
->  include/net/devlink.h | 10 ++++++++++
->  net/core/devlink.c    | 18 ++++++++++++++++++
->  2 files changed, 28 insertions(+)
-> 
-> diff --git a/include/net/devlink.h b/include/net/devlink.h
-> index 20db4a070fc8..307937efa83a 100644
-> --- a/include/net/devlink.h
-> +++ b/include/net/devlink.h
-> @@ -1226,6 +1226,16 @@ struct devlink_ops {
->  			      const struct devlink_trap_group *group,
->  			      const struct devlink_trap_policer *policer,
->  			      struct netlink_ext_ack *extack);
-> +	/**
-> +	 * @trap_group_action_set: Group action set function.
-
-To be consistent with other operations:
-
-Trap group action set function.
-
-> +	 *
-> +	 * If this callback is populated, it will take precedence over looping
-> +	 * over all traps in a group and calling .trap_action_set().
-> +	 */
-> +	int (*trap_group_action_set)(struct devlink *devlink,
-> +				     const struct devlink_trap_group *group,
-> +				     enum devlink_trap_action action,
-> +				     struct netlink_ext_ack *extack);
->  	/**
->  	 * @trap_policer_init: Trap policer initialization function.
->  	 *
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index 10fea5854bc2..18136ad413e6 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -6720,6 +6720,24 @@ __devlink_trap_group_action_set(struct devlink *devlink,
->  	struct devlink_trap_item *trap_item;
->  	int err;
->  
-> +	if (devlink->ops->trap_group_action_set) {
-> +		err = devlink->ops->trap_group_action_set(devlink, group_item->group,
-> +							  trap_action, extack);
-> +		if (err)
-> +			return err;
-> +
-> +		list_for_each_entry(trap_item, &devlink->trap_list, list) {
-> +			if (strcmp(trap_item->group_item->group->name, group_name))
-> +				continue;
-> +			if (trap_item->action != trap_action &&
-> +			    trap_item->trap->type != DEVLINK_TRAP_TYPE_DROP)
-> +				continue;
-> +			trap_item->action = trap_action;
-> +		}
-> +
-> +		return 0;
-> +	}
-> +
->  	list_for_each_entry(trap_item, &devlink->trap_list, list) {
->  		if (strcmp(trap_item->group_item->group->name, group_name))
->  			continue;
-> -- 
-> 2.28.0
-> 
+Thanks for spending time on this issue.
