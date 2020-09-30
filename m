@@ -2,83 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F24327E39D
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 10:23:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F67E27E3AC
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 10:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728367AbgI3IXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 04:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725535AbgI3IXi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 04:23:38 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12CACC061755
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 01:23:37 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id c62so606882qke.1
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 01:23:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=ht0iJaPBFl79kO3Me18iXvJ3XLtKmD8cALdfz2yOyRM=;
-        b=BvqxVlKxCOo/UTVGVsU6Td/ufZnfj8gZUVZbpQv3MK+eLCGekm9/T/DgUnuhENXa3/
-         cYy0vaBPZjohCB9QnwTFsixfnK2LHqOGkO8CE9fw16olvGenIwNsh4rBE8d/Z9lpVw4h
-         fZbT0nTdIAT92Uvic3d3l5AeaUyBqApO9cI/RyM6eErGi5/E7kKMVsh0LrCOmQ7S4H3z
-         Dx+sUkh58stKDmdStLFFvUVoKpwlS/TbH9XKP4ZG2t1CsstODqdQYlOSlcdVA7ximhxV
-         Pd8xE04PrC4ZbgeB7wGalGgDKbzbyBkA05KsdtHx028ObEK90M13M8ad2QS4S2kHyYMI
-         d/VQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=ht0iJaPBFl79kO3Me18iXvJ3XLtKmD8cALdfz2yOyRM=;
-        b=MtUupyeYnCNG9h9aRtb/7jQIxL6C9JNFQOU61Fz9z8wy+6DMf8R/fFLKnvUafgC9W5
-         4rq58Z4HdpalbQWdotOcq34O4CoozxERJCM6ZD4X/uvF6zp93/I92Z8+iVtYcnC3fT/s
-         LfcuKzDilkcDoS9k+umZNysSKd/xqiFEGpur6K7JoTwxXKRGK5tf+F3Irm1Kmb9N4OCj
-         Qwbt5KEaBRoDY89dJzD0x/e8ICaBG0yisr20fDOdgZsiSR6WM/p3z43HHgdHqvlJ371z
-         9wv0iln6UEo0BovkYMEJKnoBtzs9j0110LvOfHEK6QdDULu/MhQLg9fZA5HbO9ZcysT0
-         8Ssw==
-X-Gm-Message-State: AOAM5327KqD279rj8G2aLJElLqtoaCyQqGvtCvNxTcsl2TzUa78sbNXU
-        B+XWFZFU9XwQ378WchUGM42IeMLF4AJziNBpfEA=
-X-Google-Smtp-Source: ABdhPJy+xUuoqHIBAKbhbVLXuV2+OaY11mLcHeWZDh+ErdWDVv9HynwugQ4DllDcqdTGs2LGzHdzi7eQzD9JRbYvtts=
-X-Received: by 2002:ae9:c30d:: with SMTP id n13mr1473377qkg.138.1601454216305;
- Wed, 30 Sep 2020 01:23:36 -0700 (PDT)
+        id S1728676AbgI3IZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 04:25:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55226 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728563AbgI3IZl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 04:25:41 -0400
+Received: from pali.im (unknown [31.31.79.79])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5611021734;
+        Wed, 30 Sep 2020 08:25:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601454340;
+        bh=h12YRtace030+4IgK0t+oBgFypBtI4JrBGHJTaTeLTw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MeJnceBJMi3J8d4ZY4wOKANV2K6VqbiJPu9yK0Of/wIwdE0rcYfzeRMCg84uLRP9+
+         DAPQAHSpjkAizklVLj5l/B+2e3AFv5bpEgY7njpftZzABiwJa+s4rJeAXXaUMTem9Z
+         Wo5I1LZaqRfByGW5iJdztmNhDKslMeazyrEfPUAQ=
+Received: by pali.im (Postfix)
+        id 58F8E9D2; Wed, 30 Sep 2020 10:25:34 +0200 (CEST)
+Date:   Wed, 30 Sep 2020 10:25:34 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        David Heidelberg <david@ixit.cz>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: Removal of HCI commands, userspace bluetooth regression?
+Message-ID: <20200930082534.rrck6qb3fntm25wz@pali>
+References: <20191228171212.56anj4d4kvjeqhms@pali>
+ <45BB2908-4E16-4C74-9DB4-8BAD93B42A21@holtmann.org>
+ <20200104102436.bhqagqrfwupj6hkm@pali>
+ <20200209132137.7pi4pgnassosh3ax@pali>
+ <20200414225618.zgh5h4jexahfukdl@pali>
+ <20200808132747.4byefjg5ysddgkel@pali>
+ <20200929213254.difivzrhapk766xp@pali>
+ <20200930080205.GA1571308@kroah.com>
 MIME-Version: 1.0
-Received: by 2002:a0c:e148:0:0:0:0:0 with HTTP; Wed, 30 Sep 2020 01:23:35
- -0700 (PDT)
-Reply-To: mrs.aisha80@hotmail.com
-From:   "MESSAGE From Mrs. Aisha. Al-Qaddafi" <mr.mohamedabudu@gmail.com>
-Date:   Wed, 30 Sep 2020 09:23:35 +0100
-Message-ID: <CAMKnQRiH+oAYD+47nmThw32Ca=b8N8tHm5y9s47HcuZ3+NFP+A@mail.gmail.com>
-Subject: CONTACT
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200930080205.GA1571308@kroah.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Assalamu Alaikum Wa Rahmatullahi Wa Barakatuh,
+On Wednesday 30 September 2020 10:02:05 Greg Kroah-Hartman wrote:
+> On Tue, Sep 29, 2020 at 11:32:54PM +0200, Pali Rohár wrote:
+> > CCing other lists and maintainers, hopefully, somebody would have a time to look at it...
+> > 
+> > On Saturday 08 August 2020 15:27:47 Pali Rohár wrote:
+> > > On Wednesday 15 April 2020 00:56:18 Pali Rohár wrote:
+> > > > On Sunday 09 February 2020 14:21:37 Pali Rohár wrote:
+> > > > > On Saturday 04 January 2020 11:24:36 Pali Rohár wrote:
+> > > > > > On Saturday 04 January 2020 10:44:52 Marcel Holtmann wrote:
+> > > > > > > Hi Pali,
+> > > > > > > 
+> > > > > > > > I wrote a simple script "sco_features.pl" which show all supported
+> > > > > > > > codecs by local HCI bluetooth adapter. Script is available at:
+> > > > > > > > 
+> > > > > > > > https://github.com/pali/hsphfpd-prototype/blob/prototype/sco_features.pl
+> > > > > > > > 
+> > > > > > > > And I found out that OCF_READ_LOCAL_CODECS HCI command cannot be send by
+> > > > > > > > non-root user. Kernel returns "Operation not permitted" error.
+> > > > > > > > 
+> > > > > > > > What is reason that kernel blocks OCF_READ_LOCAL_CODECS command for
+> > > > > > > > non-root users? Without it (audio) application does not know which
+> > > > > > > > codecs local bluetooth adapter supports.
+> > > > > > > > 
+> > > > > > > > E.g. OCF_READ_LOCAL_EXT_FEATURES or OCF_READ_VOICE_SETTING commands can
+> > > > > > > > be send also by non-root user and kernel does not block them.
+> > > > > > > 
+> > > > > > > actually the direct access to HCI commands is being removed. So we have no plans to add new commands into the list since that it what the kernel is suppose to handle. If we wanted to expose this, then it has to be via mgmt.
+> > > > > > 
+> > > > > > Hi Marcel! Thank you for information. I have not know that this API is
+> > > > > > "deprecated" and is going to be removed. But userspace audio
+> > > > > > applications need to know what bluetooth adapter supports, so can you
+> > > > > > export result of these commands to userspace? My script linked above
+> > > > > > calls: OCF_READ_VOICE_SETTING, OCF_READ_LOCAL_COMMANDS,
+> > > > > > OCF_READ_LOCAL_EXT_FEATURES, OCF_READ_LOCAL_CODECS
+> > > > > 
+> > > > > Hello! Just a gently reminder for this question. How to retrieve
+> > > > > information about supported codecs from userspace by non-root user?
+> > > > > Because running all bluetooth audio applications by root is not really a
+> > > > > solution. Plus if above API for root user is going to be removed, what
+> > > > > is a replacement?
+> > > > 
+> > > > Hello!
+> > > > 
+> > > > I have not got any answer to my email from Marcel for months, so I'm
+> > > > adding other developers to loop. Could somebody tell me that is the
+> > > > replacement API if above one is going to be removed?
+> > > > 
+> > > > I was not able to find any documentation where could be described this
+> > > > API nor information about deprecation / removal.
+> > > > 
+> > > > And are you aware of the fact that removing of API could potentially
+> > > > break existing applications?
+> > > > 
+> > > > I really need to know which API should I use, because when I use API
+> > > > which is going to be removed, then my application stops working. And I
+> > > > really want to avoid it.
+> > > > 
+> > > > Also I have not got any response yet, how can I read list of supported
+> > > > codecs by bluetooth adapter by ordinary non-root user? Audio application
+> > > > needs to know list of supported codecs and it is really insane to run it
+> > > > as root.
+> > > 
+> > > Hello! This is just another reminder that I have not got any reply to
+> > > this email.
+> > > 
+> > > Does silence mean that audio applications are expected to work only
+> > > under root account and ordinary users are not able to use audio and list
+> > > supported codecs?
+> > 
+> > Hello! I have not got any reply for this issue for 10 months and if you
+> > are going to remove (or after these 10 months you already did it?)
+> > existing HCI API from kernel it would break existing and working
+> > userspace application. How do you want to handle such regressions?
+> 
+> What git commit caused this regression?
 
-My Dear Good Friend.
-
-I came across your e-mail contact prior a private search while in need
-of your assistance. My name is Aisha Gaddafi a single Mother and a
-Widow with three Children. I am the only biological Daughter of late
-Libyan President (Late Colonel Muammar Gaddafi).Please Reply me in my
-box. (aishaalqaddafi644@gmail.com)
-
-I have an investment  funds worth Twenty Seven Million Five Hundred
-Thousand United State Dollar ($27.500.000.00 ) and I need an
-investment Manager/Partner and because of the asylum status i will
-authorize you the ownership of  the funds, however, I am interested in
-you for investment project assistance in your country, may be from
-there, we can build a business relationship in the near future.
-
-I am willing to negotiate investment/business profit sharing ratio
-with you base on the future investment earning profits. If you are
-willing to handle this project kindly reply urgent to enable me
-provide you more information about the investment funds. Your Urgent
-Reply Will Be Appreciated Please Reply me in my box.
-(aishaalqaddafi644@gmail.com)
-
-Best Regards
-Mrs. Aisha. Al-Qaddafi
+Hello! Marcel in January wrote that access for HCI commands is being
+removed from kernel. I do not know if he managed to do it in since
+January, but I'm going to check it...
