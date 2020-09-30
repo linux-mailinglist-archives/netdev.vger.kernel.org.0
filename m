@@ -2,100 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F52F27EB57
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 16:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A720D27EB7A
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 16:54:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730710AbgI3Otb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 10:49:31 -0400
-Received: from www62.your-server.de ([213.133.104.62]:47002 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730520AbgI3Ota (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 10:49:30 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kNdQ8-0008QA-PB; Wed, 30 Sep 2020 16:49:28 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kNdQ8-00013G-Il; Wed, 30 Sep 2020 16:49:28 +0200
-Subject: Re: [PATCH v2 bpf-next 1/2] bpf: introduce BPF_F_PRESERVE_ELEMS for
- perf event array
-To:     Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     kernel-team@fb.com, ast@kernel.org, john.fastabend@gmail.com,
-        kpsingh@chromium.org
-References: <20200929215659.3938706-1-songliubraving@fb.com>
- <20200929215659.3938706-2-songliubraving@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c7b572d4-df22-db9d-6c01-d2b577c47116@iogearbox.net>
-Date:   Wed, 30 Sep 2020 16:49:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730568AbgI3OyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 10:54:05 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36032 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727426AbgI3OyF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 10:54:05 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kNdUT-00GuhF-V2; Wed, 30 Sep 2020 16:53:57 +0200
+Date:   Wed, 30 Sep 2020 16:53:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH net-next v2 1/7] net: devlink: Add unused port flavour
+Message-ID: <20200930145357.GM3996795@lunn.ch>
+References: <20200928153504.1b39a65d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <61860d84-d0c6-c711-0674-774149a8d0af@gmail.com>
+ <20200928163936.1bdacb89@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <c877bda0-140c-dce1-49ff-61fac47a66bc@gmail.com>
+ <20200929110356.jnqoyy72bjer6psw@skbuf>
+ <20200929130758.GF8264@nanopsycho>
+ <20200929135700.GG3950513@lunn.ch>
+ <20200930065604.GI8264@nanopsycho>
+ <20200930135725.GH3996795@lunn.ch>
+ <20200930143452.GJ8264@nanopsycho>
 MIME-Version: 1.0
-In-Reply-To: <20200929215659.3938706-2-songliubraving@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25942/Tue Sep 29 15:56:33 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200930143452.GJ8264@nanopsycho>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/29/20 11:56 PM, Song Liu wrote:
-[...]
->   
-> +static void bpf_fd_array_map_clear(struct bpf_map *map);
-> +
-> +static void perf_event_fd_array_map_free(struct bpf_map *map)
-> +{
-> +	if (map->map_flags & BPF_F_PRESERVE_ELEMS)
-> +		bpf_fd_array_map_clear(map);
-> +	fd_array_map_free(map);
-> +}
+> What do you mean by "regions"? Devlink regions? They are per-device, not
+> per-port. I have to be missing something.
 
-Not quite sure why you place that here and added the fwd declaration? If you
-place perf_event_fd_array_map_free() near perf_event_array_map_ops, then you
-also don't need the additional bpf_fd_array_map_clear declaration.
+The rest of the patch series, which add regions per port! This came
+out of the discussion from the first version of this patchset, and
+Jakub said it would make sense to add per port regions, rather than
+have regions which embedded a port number in there name.
 
->   static void *prog_fd_array_get_ptr(struct bpf_map *map,
->   				   struct file *map_file, int fd)
->   {
-> @@ -1134,6 +1148,9 @@ static void perf_event_fd_array_release(struct bpf_map *map,
->   	struct bpf_event_entry *ee;
->   	int i;
->   
-> +	if (map->map_flags & BPF_F_PRESERVE_ELEMS)
-> +		return;
-> +
->   	rcu_read_lock();
->   	for (i = 0; i < array->map.max_entries; i++) {
->   		ee = READ_ONCE(array->ptrs[i]);
-> @@ -1148,7 +1165,7 @@ const struct bpf_map_ops perf_event_array_map_ops = {
->   	.map_meta_equal = bpf_map_meta_equal,
->   	.map_alloc_check = fd_array_map_alloc_check,
->   	.map_alloc = array_map_alloc,
-> -	.map_free = fd_array_map_free,
-> +	.map_free = perf_event_fd_array_map_free,
->   	.map_get_next_key = array_map_get_next_key,
->   	.map_lookup_elem = fd_array_map_lookup_elem,
->   	.map_delete_elem = fd_array_map_delete_elem,
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index 82522f05c0213..ea78eb89f8d67 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -414,6 +414,9 @@ enum {
->   
->   /* Enable memory-mapping BPF map */
->   	BPF_F_MMAPABLE		= (1U << 10),
-> +
-> +/* Share perf_event among processes */
-> +	BPF_F_PRESERVE_ELEMS	= (1U << 11),
->   };
->   
->   /* Flags for BPF_PROG_QUERY. */
-> 
-
+     Andrew
+ 
