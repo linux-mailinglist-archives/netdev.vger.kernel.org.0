@@ -2,98 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D32C27DEC1
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 05:18:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55DE427DEED
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 05:24:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727899AbgI3DSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 23:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42704 "EHLO
+        id S1729820AbgI3DYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 23:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726327AbgI3DSN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 23:18:13 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08701C061755;
-        Tue, 29 Sep 2020 20:18:13 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id z19so179793pfn.8;
-        Tue, 29 Sep 2020 20:18:12 -0700 (PDT)
+        with ESMTP id S1726299AbgI3DYM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 23:24:12 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9261C061755;
+        Tue, 29 Sep 2020 20:24:11 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id y4so305540ljk.8;
+        Tue, 29 Sep 2020 20:24:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3O6tylxVVqIM6ry5U4hu4RAHJk9JYfiTYQ+xk4dycX8=;
-        b=otjCrOL8/SpywpOuRhM3PIj4bZSJJxcRO+gmBTVxcuFnfW5JxKLYGF53kx+fpl6uVw
-         Fi0DARE9WYc4yoFsA9ea3PDgUscR6UA+zsKxVM+EvHXrg8ZefPKbSHYBE+CFGxnDYCXo
-         OccsCHWEGU4R1cZMIr4mdKrDVhj6JiG1QVM0mm0dltGpDTWgoXAKpdsuRhnjwD41msg4
-         b2yz6q+0ZP49S5F3S2uNnMU09ArKechV6XsFsfndlQfpC9kUV9+fqgDd55YGeMNKwEhY
-         A7ruLcG9UelbkgcNDkrWQvvuPBfYIk5Jp+vWm/OfmXNzqmweTw34pnsDYvIiQjQFj50b
-         aQeg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IeYKiV1LlnGE4ZUELRBmCLDTr7v+GXQIuTlENX7Xwp4=;
+        b=q3N5OZpTNYs5uDXTHfHqnDI1xiFUxWQ76gKS/EOE+HuAHXiHQ1samk2JdnxO565FAd
+         lryyIbDNhGo3OUIsjNKvIo59ajug1MbzXbM4A07op6by5j4Se8sWiMomiQhJdmehkLt9
+         66OMp0HZgCDpGTX2/MuKPRXznrEjR2N/gmCuU7jd4EOxcJqIg/LQCFInMlLzucQE3nLS
+         cvy1inE47Am5BRtfp+adwP06pLQjZBiWyyvUK2fiSWVR9byJAEpP/rNHrQK2Kty9Sl1A
+         mk/2ms36HDnG7Y7RBm2sUBYkIGAoHj+ZzY4cWzmogeqg9wSwPiG2W2lmy5OLVZxupTIF
+         yEDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3O6tylxVVqIM6ry5U4hu4RAHJk9JYfiTYQ+xk4dycX8=;
-        b=ESQiJR2B0HM7bC1aK1pecGuVqp3xrcyTlABkhRgpBLZTebtPujxYYM9yFJ65EENIhm
-         9N5RS5cr8L9hro/fIaCtNy7pF9s0s7DoN9wA07njxA1mFPj5beMVtqEPgAmuTxR3Sj6B
-         D8v+Y15AF1lqtU1SyyXgDSlddqS/DqLx65WtVTacvnMqOtWLwBYF7wuKI0DSTPDnKhI1
-         K7EGdv6hIB6SHn8vqEL3FsVZLi6fDCh7gRVBiFnotNqb//tc4eayv/FeBmB6XcD8ON7A
-         MrxjhFqBeVeESwd1uxX+JQSTyrLVzI0mUhM/T9sZr0/p1LJ6Nj8kUJ+cFHrsZdfA3BrB
-         xRNg==
-X-Gm-Message-State: AOAM533fkF/xk0FjSBLYSW2fYfY3616XvdVwy6Gzk62M6CNvjSenxlZa
-        PWIpd+7eJdwjhmhrLiZteS7SJ8LVPbk=
-X-Google-Smtp-Source: ABdhPJwq3eOJJDOgGbBCODQOi9+1p7GEZn7QuwgUUojYJLlrE3lzQh+q0SiJpLpTrRt+h7laSNg0ZQ==
-X-Received: by 2002:a62:52d3:0:b029:142:2501:35ee with SMTP id g202-20020a6252d30000b0290142250135eemr731124pfb.78.1601435892415;
-        Tue, 29 Sep 2020 20:18:12 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:2bde])
-        by smtp.gmail.com with ESMTPSA id j10sm168182pfc.168.2020.09.29.20.18.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Sep 2020 20:18:11 -0700 (PDT)
-Date:   Tue, 29 Sep 2020 20:18:09 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 0/4] libbpf: add raw BTF type dumping
-Message-ID: <20200930031809.lto7v7e7vtyivjon@ast-mbp.dhcp.thefacebook.com>
-References: <20200929232843.1249318-1-andriin@fb.com>
- <20200930000329.bfcrg6qqvmbmlawk@ast-mbp.dhcp.thefacebook.com>
- <CAEf4BzYByimHd+FogxVHdq2-L_GLjdGEa_ku7p_c1V-hpyJrWA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IeYKiV1LlnGE4ZUELRBmCLDTr7v+GXQIuTlENX7Xwp4=;
+        b=YLyXWmGZ4E2zv++gBNaK2ipX91VAMBBWtNdEIXsPP8X+lH8JmDx9NLlDSw+uikENXi
+         Q0x5Z7e/GIIkd9tLcTRioaD4NVpVv6pu2D3XXwdLIpCZHtnAw8/3eku0LTtoynSXlYrH
+         U1XYxv33xETjf175JZ7fPzvPByjFfd4UVUnGMPnVYo9dXIhOCPFTcHYQZufZuH0TA4MM
+         L1AtqDN/7k7tqk/j46k6vKSDZgybzoBE8OUFCGHIoxAJeyi7icK943xSauM/UujFOYOa
+         WyobyvXwRVaD38i1Joeq87tpPY1Rj2aWODi1IZ6hqmcHuuZA6ad9FkiETeZsy4o+Mi45
+         LI+A==
+X-Gm-Message-State: AOAM5314cSREuBgHnNcEnpNtSU3XoRsw2P1LidHEAzo4Xnr7nf4c/2lR
+        zd4aN960ijjOiWhGpPW1ZcictOOo7k457KQxLSc=
+X-Google-Smtp-Source: ABdhPJz0Ul0ZPMg7H4/0bkrHNPN5WnxXjJqyRmFVUFh0NNFE973bM+jU1iBtL41YvEknKOwONmEdiF9BPaSbh7T8+6U=
+X-Received: by 2002:a2e:8593:: with SMTP id b19mr200969lji.290.1601436250294;
+ Tue, 29 Sep 2020 20:24:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYByimHd+FogxVHdq2-L_GLjdGEa_ku7p_c1V-hpyJrWA@mail.gmail.com>
+References: <20200930002011.521337-1-songliubraving@fb.com>
+In-Reply-To: <20200930002011.521337-1-songliubraving@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 29 Sep 2020 20:23:58 -0700
+Message-ID: <CAADnVQ+jaUfJkD0POaRyrmrLueVP9x-rN8bcN5eEz4XPBk96bw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] bpf: fix raw_tp test run in preempt kernel
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 05:44:48PM -0700, Andrii Nakryiko wrote:
-> On Tue, Sep 29, 2020 at 5:03 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Sep 29, 2020 at 04:28:39PM -0700, Andrii Nakryiko wrote:
-> > > Add btf_dump__dump_type_raw() API that emits human-readable low-level BTF type
-> > > information, same as bpftool output. bpftool is not switched to this API
-> > > because bpftool still needs to perform all the same BTF type processing logic
-> > > to do JSON output, so benefits are pretty much zero.
-> >
-> > If the only existing user cannot actually use such api it speaks heavily
-> > against adding such api to libbpf. Comparing strings in tests is nice, but
-> > could be done with C output just as well.
-> 
-> It certainly can, it just won't save much code, because bpftool would
-> still need to have a big switch over BTF type kinds to do JSON output.
+On Tue, Sep 29, 2020 at 5:20 PM Song Liu <songliubraving@fb.com> wrote:
+>
+> In preempt kernel, BPF_PROG_TEST_RUN on raw_tp triggers:
+>
+> [   35.874974] BUG: using smp_processor_id() in preemptible [00000000]
+> code: new_name/87
+> [   35.893983] caller is bpf_prog_test_run_raw_tp+0xd4/0x1b0
+> [   35.900124] CPU: 1 PID: 87 Comm: new_name Not tainted 5.9.0-rc6-g615bd02bf #1
+> [   35.907358] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+> BIOS 1.10.2-1ubuntu1 04/01/2014
+> [   35.916941] Call Trace:
+> [   35.919660]  dump_stack+0x77/0x9b
+> [   35.923273]  check_preemption_disabled+0xb4/0xc0
+> [   35.928376]  bpf_prog_test_run_raw_tp+0xd4/0x1b0
+> [   35.933872]  ? selinux_bpf+0xd/0x70
+> [   35.937532]  __do_sys_bpf+0x6bb/0x21e0
+> [   35.941570]  ? find_held_lock+0x2d/0x90
+> [   35.945687]  ? vfs_write+0x150/0x220
+> [   35.949586]  do_syscall_64+0x2d/0x40
+> [   35.953443]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>
+> Fix this by calling migrate_disable() before smp_processor_id().
+>
+> Fixes: 1b4d60ec162f ("bpf: Enable BPF_PROG_TEST_RUN for raw_tracepoint")
+> Reported-by: Alexei Starovoitov <ast@kernel.org>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+>
+> ---
+> Changes v1 => v2:
+> 1. Keep rcu_read_lock/unlock() in original places. (Alexei)
+> 2. Use get_cpu() instead of smp_processor_id(). (Alexei)
 
-So you're saying that most of the dump_btf_type() in bpftool/btf.c will stay as-is.
-Only 'if (json_output)' will become unconditional? Hmm.
-I know you don't want json in libbpf, but I think it's the point of
-making a call on such things. Either libbpf gets to dump both
-json and text dump_btf_type()-like output or it stays with C only.
-Doing C and this text and not doing json is inconsistent.
-Either libbpf can print btf in many different ways or it stays with C.
-2nd format is not special in any way.
-I don't think that text and json formats bring much value comparing to C,
-so I would be fine with C only. But if we allow 2nd format we should
-do json at the same time too to save bpftool the hassle.
-And in the future we should allow 4th and 5th formats.
+Applying: bpf: fix raw_tp test run in preempt kernel
+Using index info to reconstruct a base tree...
+error: patch failed: net/bpf/test_run.c:293
+error: net/bpf/test_run.c: patch does not apply
+error: Did you hand edit your patch?
