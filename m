@@ -2,92 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 238E027E2B9
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 09:37:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A75FD27E327
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 09:58:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727982AbgI3HhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 03:37:19 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39861 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727761AbgI3HhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 03:37:18 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@nvidia.com)
-        with SMTP; 30 Sep 2020 10:37:12 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 08U7bBBV020971;
-        Wed, 30 Sep 2020 10:37:11 +0300
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     dsahern@gmail.com, stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, Vlad Buslov <vladbu@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [RESEND PATCH iproute2-next 2/2] tc: implement support for terse dump
-Date:   Wed, 30 Sep 2020 10:36:51 +0300
-Message-Id: <20200930073651.31247-3-vladbu@nvidia.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20200930073651.31247-1-vladbu@nvidia.com>
-References: <20200930073651.31247-1-vladbu@nvidia.com>
+        id S1728557AbgI3H6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 03:58:19 -0400
+Received: from www62.your-server.de ([213.133.104.62]:36092 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725535AbgI3H6T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 03:58:19 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kNX07-0000dO-5S; Wed, 30 Sep 2020 09:58:11 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kNX06-000J9Y-SH; Wed, 30 Sep 2020 09:58:10 +0200
+Subject: Re: [PATCH bpf-next v3 3/6] bpf: add redirect_neigh helper as
+ redirect drop-in
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     ast@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, David Ahern <dsahern@kernel.org>
+References: <cover.1601414174.git.daniel@iogearbox.net>
+ <f46cce33255c0c00b8c64393a7a419253dd0b949.1601414174.git.daniel@iogearbox.net>
+ <20200930064811.mroafbnrrnb77qki@kafai-mbp.dhcp.thefacebook.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <750269bb-0b72-9fd9-bfeb-768213c8618a@iogearbox.net>
+Date:   Wed, 30 Sep 2020 09:58:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200930064811.mroafbnrrnb77qki@kafai-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25942/Tue Sep 29 15:56:33 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@mellanox.com>
+On 9/30/20 8:48 AM, Martin KaFai Lau wrote:
+> On Tue, Sep 29, 2020 at 11:23:03PM +0200, Daniel Borkmann wrote:
+[...]
+> 
+>> +/* Internal, non-exposed redirect flags. */
+>> +enum {
+>> +	BPF_F_NEIGH = (1ULL << 1),
+>> +};
+> It will be useful to ensure the future "flags" of BPF_FUNC_redirect
+> will not overlap with this.  May be a BUILD_BUG_ON?
 
-Implement support for classifier/action terse dump using new TCA_DUMP_FLAGS
-tlv with only available flag value TCA_DUMP_FLAGS_TERSE. Set the flag when
-user requested it with following example CLI:
+I was thinking about this as well, but didn't go for it since typically this would
+mean that we need to add a mask of all flags for redirect helper in uapi right next
+to where we define BPF_F_INGRESS such that people don't forget to update the mask
+whenever they extend the flags there in order for the BUILD_BUG_ON() assertion to be
+actually effective (see also RTAX_FEATURE_MASK vs DST_FEATURE_MASK). If the mask sits
+in a different location, then developers might forget to update, it might slip through
+review (since not included in diff) and the build failure doesn't trigger. So far we
+have avoided to extend bpf uapi in such way. That was basically my rationale, another
+option could be to just add a comment in the enum right underneath BPF_F_INGRESS that
+the (1ULL << 1) bit is currently kernel-internal.
 
-> tc -s filter show terse dev ens1f0 ingress
+> Others LGTM.
+> 
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
 
-In terse mode dump only outputs essential data needed to identify the
-filter and action (handle, cookie, etc.) and stats, if requested by the
-user. The intention is to significantly improve rule dump rate by omitting
-all static data that do not change after rule is created.
-
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
----
- tc/tc_filter.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/tc/tc_filter.c b/tc/tc_filter.c
-index c591a19f3123..6a82f9bb42fb 100644
---- a/tc/tc_filter.c
-+++ b/tc/tc_filter.c
-@@ -595,6 +595,7 @@ static int tc_filter_list(int cmd, int argc, char **argv)
- 		.t.tcm_parent = TC_H_UNSPEC,
- 		.t.tcm_family = AF_UNSPEC,
- 	};
-+	bool terse_dump = false;
- 	char d[IFNAMSIZ] = {};
- 	__u32 prio = 0;
- 	__u32 protocol = 0;
-@@ -687,6 +688,8 @@ static int tc_filter_list(int cmd, int argc, char **argv)
- 				invarg("invalid chain index value", *argv);
- 			filter_chain_index_set = 1;
- 			filter_chain_index = chain_index;
-+		} else if (matches(*argv, "terse") == 0) {
-+			terse_dump = true;
- 		} else if (matches(*argv, "help") == 0) {
- 			usage();
- 		} else {
-@@ -721,6 +724,15 @@ static int tc_filter_list(int cmd, int argc, char **argv)
- 	if (filter_chain_index_set)
- 		addattr32(&req.n, sizeof(req), TCA_CHAIN, chain_index);
- 
-+	if (terse_dump) {
-+		struct nla_bitfield32 flags = {
-+			.value = TCA_DUMP_FLAGS_TERSE,
-+			.selector = TCA_DUMP_FLAGS_TERSE
-+		};
-+
-+		addattr_l(&req.n, MAX_MSG, TCA_DUMP_FLAGS, &flags, sizeof(flags));
-+	}
-+
- 	if (rtnl_dump_request_n(&rth, &req.n) < 0) {
- 		perror("Cannot send dump request");
- 		return 1;
--- 
-2.21.0
-
+Thanks!
