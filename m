@@ -2,175 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C54D227F166
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 20:36:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 575DC27F17B
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 20:40:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728793AbgI3Sgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 14:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43068 "EHLO
+        id S1729848AbgI3Skt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 14:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725355AbgI3Sgc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 14:36:32 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F38C061755
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 11:36:32 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kNgxl-00DyAL-Jd; Wed, 30 Sep 2020 20:36:25 +0200
-Message-ID: <23b4d301ee35380ac21c898c04baed9643bd3651.camel@sipsolutions.net>
-Subject: Re: Genetlink per cmd policies
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Michal Kubecek <mkubecek@suse.cz>,
-        dsahern@kernel.org, pablo@netfilter.org, netdev@vger.kernel.org
-Date:   Wed, 30 Sep 2020 20:36:24 +0200
-In-Reply-To: <20200930094455.668b6bff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20200930084955.71a8c0ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <fce613c2b4c797de4be413afddf872fd6dae9ef8.camel@sipsolutions.net>
-         <a772c03bfbc8cf8230df631fe2db6f2dd7b96a2a.camel@sipsolutions.net>
-         <20200930094455.668b6bff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        with ESMTP id S1726476AbgI3Skt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 14:40:49 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18877C061755;
+        Wed, 30 Sep 2020 11:40:49 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id 133so2025475ybg.11;
+        Wed, 30 Sep 2020 11:40:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Vpp7RkZUjiG2Qq5bRQ+rscMCD+mCs58k244Ntann7LQ=;
+        b=BLRe78pplKgHB2hrTQaGss/8T2WwRho/keQ6ecVBmARmsx0b4Q2AGMVZ2gXrIq/SiT
+         hu9omIoJ/aMl/25p6KWIdqQiZrjGaiQH4T+38E5esvPMgXBqwuAAEhy82kFU/NHNKKUH
+         R87F4XDFceFKWpKL6WjE25jkJsmkWQNGk18oIJwMr/B2RgrH865a/gEfh4ovivImBGok
+         dHDUAkkj4ROhg6AvzGQOsZe12cWzghWp0uvK+WRwWA3L3gNpm34or1tuS2lTVP68GBQ3
+         ma44SH9kERFWG1vHeQG9FzIDIuZ5TDcTyOPpwWRwZgyG9zPK/Ch4TQyUkp5s6Kdic8TL
+         5IMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Vpp7RkZUjiG2Qq5bRQ+rscMCD+mCs58k244Ntann7LQ=;
+        b=DZgxDrNwGkLzr8A8uZuA8NSlkQcAdHJMotFBgGQZrCAc2D7nQTEqaUgPpPcNg6laaZ
+         GAYMHIWt83QhVfF8byCZet8ZMgoVMj6t4/FeuqSzQgHhwVEPw33JqRl4MDVZEBBXabP0
+         5XB/wUiOl/1GHBsi5IRtVNTAIusM0QgaBeV8aoYpNfBPC782UogWbxPBWkzU4Z6KbY5S
+         SeYZ6EH1xks2ysFXzgk/F2BYlpuGZuJyxlmOrSsrWlMN+5XwDOq0ZAPMYassHzhZDbQC
+         8PAMQIq5nLbSplvx6w7nf4sHdLbQyaUSCYj4jKmO8SnMzd7+jNu8fGlPPgRv/CtRa+AS
+         dgww==
+X-Gm-Message-State: AOAM5310pQBVZJdEJ6hHhaDHfUuebQjlA8Vxd78udDM1xD4oSU1OJ8i6
+        8pY3bFTaPMnNsOJdJ3LRiakA7akrHQCsPjB6VWg=
+X-Google-Smtp-Source: ABdhPJzgodkQob12/I6Zyxy82D6Q7lxeLrrxxBsd+L7EgW6FuKXMVi9OfIqBDwt8qPxjMrsLXwkf4rtn3wigzHVSxY8=
+X-Received: by 2002:a25:2d41:: with SMTP id s1mr5075873ybe.459.1601491248315;
+ Wed, 30 Sep 2020 11:40:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20200930164109.2922412-1-yhs@fb.com>
+In-Reply-To: <20200930164109.2922412-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 30 Sep 2020 11:40:37 -0700
+Message-ID: <CAEf4BzZKqrKPifnJmX8fabmXCVRK45ERiEy5aHGFJ9dg0c2oAA@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: fix "unresolved symbol" build error with resolve_btfids
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Michal Kubecek <mkubecek@suse.cz>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-09-30 at 09:44 -0700, Jakub Kicinski wrote:
+On Wed, Sep 30, 2020 at 9:41 AM Yonghong Song <yhs@fb.com> wrote:
+>
+> Michal reported a build failure likes below:
+>    BTFIDS  vmlinux
+>    FAILED unresolved symbol tcp_timewait_sock
+>    make[1]: *** [/.../linux-5.9-rc7/Makefile:1176: vmlinux] Error 255
+>
+> This error can be triggered when config has CONFIG_NET enabled
+> but CONFIG_INET disabled. In this case, there is no user of
+> structs inet_timewait_sock and tcp_timewait_sock and hence vmlinux BTF
+> types are not generated for these two structures.
+>
+> To fix the problem, omit the above two types for BTF_SOCK_TYPE_xxx
+> macro if CONFIG_INET is not defined.
+>
+> Fixes: fce557bcef11 ("bpf: Make btf_sock_ids global")
+> Reported-by: Michal Kubecek <mkubecek@suse.cz>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+>  include/linux/btf_ids.h | 20 ++++++++++++++++----
+>  1 file changed, 16 insertions(+), 4 deletions(-)
+>
+> diff --git a/include/linux/btf_ids.h b/include/linux/btf_ids.h
+> index 4867d549e3c1..d9a1e18d0921 100644
+> --- a/include/linux/btf_ids.h
+> +++ b/include/linux/btf_ids.h
+> @@ -102,24 +102,36 @@ asm(                                                      \
+>   * skc_to_*_sock() helpers. All these sockets should have
+>   * sock_common as the first argument in its memory layout.
+>   */
+> -#define BTF_SOCK_TYPE_xxx \
+> +
+> +#define __BTF_SOCK_TYPE_xxx \
+>         BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET, inet_sock)                    \
+>         BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_CONN, inet_connection_sock)    \
+>         BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_REQ, inet_request_sock)        \
+> -       BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_TW, inet_timewait_sock)        \
+>         BTF_SOCK_TYPE(BTF_SOCK_TYPE_REQ, request_sock)                  \
+>         BTF_SOCK_TYPE(BTF_SOCK_TYPE_SOCK, sock)                         \
+>         BTF_SOCK_TYPE(BTF_SOCK_TYPE_SOCK_COMMON, sock_common)           \
+>         BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP, tcp_sock)                      \
+>         BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_REQ, tcp_request_sock)          \
+> -       BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_TW, tcp_timewait_sock)          \
+>         BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP6, tcp6_sock)                    \
+>         BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP, udp_sock)                      \
+>         BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)
+>
+> +#define __BTF_SOCK_TW_TYPE_xxx \
+> +       BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_TW, inet_timewait_sock)        \
+> +       BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_TW, tcp_timewait_sock)
+> +
+> +#ifdef CONFIG_INET
+> +#define BTF_SOCK_TYPE_xxx                                              \
+> +       __BTF_SOCK_TYPE_xxx                                             \
+> +       __BTF_SOCK_TW_TYPE_xxx
+> +#else
+> +#define BTF_SOCK_TYPE_xxx      __BTF_SOCK_TYPE_xxx
+> +#endif
+> +
+>  enum {
+>  #define BTF_SOCK_TYPE(name, str) name,
+> -BTF_SOCK_TYPE_xxx
+> +__BTF_SOCK_TYPE_xxx
+> +__BTF_SOCK_TW_TYPE_xxx
 
-> I started with a get_policy() callback, but I didn't like it much.
-> Static data is much more pleasant for a client of the API IMHO.
+Why BTF_SOCK_TYPE_xxx doesn't still work here after the above changes?
 
-Yeah, true.
-
-> What do you think about "ops light"? Insufficiently flexible?
-
-TBH, I'm not really sure how you'd do it?
-
-Admittedly, it _would_ be nice to reduce struct genl_ops further, I
-could imagine, assuming that doit is far more common than anything else,
-perhaps something like
-
-diff --git a/include/net/genetlink.h b/include/net/genetlink.h
-index b9eb92f3fe86..a5abab50673c 100644
---- a/include/net/genetlink.h
-+++ b/include/net/genetlink.h
-@@ -125,23 +125,34 @@ genl_dumpit_info(struct netlink_callback *cb)
- 	return cb->data;
- }
- 
-+/**
-+ * struct genl_ops_ext - full generic netlink operations
-+ * @start: start callback for dumps
-+ * @dumpit: callback for dumpers
-+ * @done: completion callback for dumps
-+ * @policy: policy if different from the family policy
-+ * @maxattr: max attr for the policy
-+ */
-+struct genl_ops_ext {
-+	int (*start)(struct netlink_callback *cb);
-+	int (*dumpit)(struct sk_buff *skb,
-+		      struct netlink_callback *cb);
-+	int (*done)(struct netlink_callback *cb);
-+	const struct nla_policy *policy;
-+	unsigned int maxattr;
-+};
-+
- /**
-  * struct genl_ops - generic netlink operations
-  * @cmd: command identifier
-  * @internal_flags: flags used by the family
-  * @flags: flags
-  * @doit: standard command callback
-- * @start: start callback for dumps
-- * @dumpit: callback for dumpers
-- * @done: completion callback for dumps
-  */
- struct genl_ops {
- 	int		       (*doit)(struct sk_buff *skb,
- 				       struct genl_info *info);
--	int		       (*start)(struct netlink_callback *cb);
--	int		       (*dumpit)(struct sk_buff *skb,
--					 struct netlink_callback *cb);
--	int		       (*done)(struct netlink_callback *cb);
-+	struct genl_ops_ext	*extops;
- 	u8			cmd;
- 	u8			internal_flags;
- 	u8			flags;
-
-... 
-
-or perhaps even
-
-diff --git a/include/net/genetlink.h b/include/net/genetlink.h
-index b9eb92f3fe86..9be3fc051400 100644
---- a/include/net/genetlink.h
-+++ b/include/net/genetlink.h
-@@ -125,29 +125,45 @@ genl_dumpit_info(struct netlink_callback *cb)
- 	return cb->data;
- }
- 
-+/**
-+ * struct genl_ops_ext - full generic netlink operations
-+ * @start: start callback for dumps
-+ * @dumpit: callback for dumpers
-+ * @done: completion callback for dumps
-+ * @doit: standard command callback
-+ * @policy: policy if different from the family policy
-+ * @maxattr: max attr for the policy
-+ */
-+struct genl_ops_ext {
-+	int (*start)(struct netlink_callback *cb);
-+	int (*dumpit)(struct sk_buff *skb, struct netlink_callback *cb);
-+	int (*done)(struct netlink_callback *cb);
-+	int (*doit)(struct sk_buff *skb, struct genl_info *info);
-+	const struct nla_policy *policy;
-+	unsigned int maxattr;
-+};
-+
- /**
-  * struct genl_ops - generic netlink operations
-  * @cmd: command identifier
-  * @internal_flags: flags used by the family
-  * @flags: flags
-  * @doit: standard command callback
-- * @start: start callback for dumps
-- * @dumpit: callback for dumpers
-- * @done: completion callback for dumps
-+ * @extops: extended ops if needed, must use GENL_EXTOPS()
-  */
- struct genl_ops {
--	int		       (*doit)(struct sk_buff *skb,
--				       struct genl_info *info);
--	int		       (*start)(struct netlink_callback *cb);
--	int		       (*dumpit)(struct sk_buff *skb,
--					 struct netlink_callback *cb);
--	int		       (*done)(struct netlink_callback *cb);
-+	union {
-+		int (*doit)(struct sk_buff *skb, struct genl_info *info);
-+		struct genl_ops_ext *extops;
-+	};
- 	u8			cmd;
- 	u8			internal_flags;
- 	u8			flags;
- 	u8			validate;
- };
- 
-+#define GENL_EXT_OPS(ptr) ((struct genl_ops_ext *)((uintptr_t)(ptr) | 1))
-+
- int genl_register_family(struct genl_family *family);
- int genl_unregister_family(const struct genl_family *family);
- void genl_notify(const struct genl_family *family, struct sk_buff *skb,
-
-
-
-
-But both sort of feel awkward, you have to declare another structure,
-and link it manually to the right place?
-
-There isn't really a _good_ way to express such a thing easily in C?
-
-johannes
-
+>  #undef BTF_SOCK_TYPE
+>  MAX_BTF_SOCK_TYPE,
+>  };
+> --
+> 2.24.1
+>
