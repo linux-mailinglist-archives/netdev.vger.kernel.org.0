@@ -2,53 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28B9C27EF40
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 18:31:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAA6727EF4B
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 18:34:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731132AbgI3Qbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 12:31:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57842 "EHLO mail.kernel.org"
+        id S1728663AbgI3Qeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 12:34:44 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36400 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725355AbgI3Qbd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Sep 2020 12:31:33 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A01622072E;
-        Wed, 30 Sep 2020 16:31:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601483493;
-        bh=17Hn8hunUNPsI/Ri//wOwZHoYL5wJOoQnIZ5rll1kes=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TKuDWCATDWTXUyc7HZrTUesf4kCW/GGl0lCPMPLvRimAHv2RlTP40FIkxTtZeP95d
-         FU13AAss/8Zd7BZXb8dCJxA/518G1oxu4i8oPz1QE2RgikFop5qDW37ZIxPzbDrsJF
-         c32gBNQHo431laHIaH0yaRcaDmYUDev4mKBMPr7w=
-Date:   Wed, 30 Sep 2020 09:31:30 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        sameehj@amazon.com, john.fastabend@gmail.com, daniel@iogearbox.net,
-        ast@kernel.org, shayagr@amazon.com, brouer@redhat.com,
-        echaudro@redhat.com, lorenzo.bianconi@redhat.com,
-        dsahern@kernel.org
-Subject: Re: [PATCH v3 net-next 00/12] mvneta: introduce XDP multi-buffer
- support
-Message-ID: <20200930093130.3c589423@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <cover.1601478613.git.lorenzo@kernel.org>
-References: <cover.1601478613.git.lorenzo@kernel.org>
+        id S1725355AbgI3Qeo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 12:34:44 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kNf3w-00GvXT-6Z; Wed, 30 Sep 2020 18:34:40 +0200
+Date:   Wed, 30 Sep 2020 18:34:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux.cj@gmail.com,
+        netdev@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [net-next PATCH v1 3/7] net: phy: Introduce fwnode_get_phy_id()
+Message-ID: <20200930163440.GR3996795@lunn.ch>
+References: <20200930160430.7908-1-calvin.johnson@oss.nxp.com>
+ <20200930160430.7908-4-calvin.johnson@oss.nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200930160430.7908-4-calvin.johnson@oss.nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Sep 2020 17:41:51 +0200 Lorenzo Bianconi wrote:
-> This series introduce XDP multi-buffer support. The mvneta driver is
-> the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
-> please focus on how these new types of xdp_{buff,frame} packets
-> traverse the different layers and the layout design. It is on purpose
-> that BPF-helpers are kept simple, as we don't want to expose the
-> internal layout to allow later changes.
+> +/* Extract the phy ID from the compatible string of the form
+> + * ethernet-phy-idAAAA.BBBB.
+> + */
+> +int fwnode_get_phy_id(struct fwnode_handle *fwnode, u32 *phy_id)
+> +{
+> +	unsigned int upper, lower;
+> +	const char *cp;
+> +	int ret;
+> +
+> +	ret = fwnode_property_read_string(fwnode, "compatible", &cp);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (sscanf(cp, "ethernet-phy-id%4x.%4x", &upper, &lower) == 2) {
+> +		*phy_id = ((upper & 0xFFFF) << 16) | (lower & 0xFFFF);
+> +		return 0;
+> +	}
+> +	return -EINVAL;
+> +}
+> +EXPORT_SYMBOL(fwnode_get_phy_id);
 
-This does not apply cleanly to net-next =F0=9F=A4=94
+Hi Calvin
+
+Do you really need this? Do you have a board with a broken PHY ID?
+
+>  /**
+>   * get_phy_device - reads the specified PHY device and returns its @phy_device
+>   *		    struct
+> @@ -2866,7 +2888,15 @@ EXPORT_SYMBOL_GPL(device_phy_find_device);
+>   */
+>  struct fwnode_handle *fwnode_get_phy_node(struct fwnode_handle *fwnode)
+>  {
+> -	return fwnode_find_reference(fwnode, "phy-handle", 0);
+> +	struct fwnode_handle *phy_node;
+> +
+> +	phy_node = fwnode_find_reference(fwnode, "phy-handle", 0);
+> +	if (is_acpi_node(fwnode) || !IS_ERR(phy_node))
+> +		return phy_node;
+> +	phy_node = fwnode_find_reference(fwnode, "phy", 0);
+> +	if (IS_ERR(phy_node))
+> +		phy_node = fwnode_find_reference(fwnode, "phy-device", 0);
+> +	return phy_node;
+
+Why do you have three different ways to reference a PHY?
+
+    Andrew
