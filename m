@@ -2,122 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 775B127DFCA
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 07:00:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D0DA27DFE2
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 07:08:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725786AbgI3FAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 01:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58312 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725320AbgI3FAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 01:00:30 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CDAC061755;
-        Tue, 29 Sep 2020 22:00:30 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id x16so348513pgj.3;
-        Tue, 29 Sep 2020 22:00:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=76fJrHqswAhsEtCIaA5VQyQXuuOpD7Tb3T3RF+TaEvk=;
-        b=uLYx/eVoNtPuRZgFnoNAi17UGkPmDUTFcKprrI5IoNuaZa5vGOkzpRHj72oqk+S4mJ
-         1wBw3hMcNAe+CgUvscZbDfGe5RU/t7P1xur0Asmm3TCsuBG1RgzKx+iBcDXAMuTCCr2e
-         VF9rfbQNhe3a+vtuTf1XgWAtlHBCcHrHr6LGh6dSGvBbqdeZES7QjphfaXOS9pL1m+Jw
-         4rk3/4SFszsLDTJr8tep2XR0mP6b6R8FdEN6iJjrniWsUfaTDHKnCzp3MGS/EOLdnwUH
-         YTGJfRkOlQx22z+RZPxWNct+VJZLCqd0jS583nI9ig2wfk3L7imM0Pu/TsfeW5RQcLcq
-         Xz3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=76fJrHqswAhsEtCIaA5VQyQXuuOpD7Tb3T3RF+TaEvk=;
-        b=BeqJR0Iq5QRe2oY8ulppvvABaRclByN/NOxf5kx8w6y9+wz9lPm1AIA8u7QsaRq/4I
-         8rBz6I24tpiq8YfhFfaQoCAySqCAMCXLCyj2VSQBzDOx9oUg/y71UXRS6L08Ye/YmvH/
-         fMqwgk8stZdCR5U3WiBggEnIvpFn8BMAd1LhIcZiK/h7n2V+cXf9/EUu7Zqv4pYqMp0o
-         Ggus3F1jfz1cG60Iwp/RyeasMoNLUeQEvCUFF3F5bbdbaISTptAO8c1ydrek4W1Tgn7j
-         88FgShSZlp3EwddhjP+Zlu5uv45iMpWJ7dFGGBhOM7EnKLbj73Ag1m1F0ZTt8zJch3tV
-         SkIw==
-X-Gm-Message-State: AOAM530q3lm6rosGrQPZ7nr4ITGXy0II+8bHEgpt91p9J8rMBO5MmLsK
-        WvPB18HEPo9YefPUT+VfHDk=
-X-Google-Smtp-Source: ABdhPJyoSisi/Bpm+JxeLQMDLesNkraHbWz3zFHsTSHaSUohuRYmQvMQ8JhW2duaiaTZzrMH5lNKSA==
-X-Received: by 2002:a63:cb08:: with SMTP id p8mr794383pgg.247.1601442029735;
-        Tue, 29 Sep 2020 22:00:29 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id f4sm490433pfj.147.2020.09.29.22.00.28
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Sep 2020 22:00:28 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: pull-request: bpf 2020-09-29
-Date:   Tue, 29 Sep 2020 22:00:27 -0700
-Message-Id: <20200930050027.80975-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
+        id S1725875AbgI3FIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 01:08:17 -0400
+Received: from mg.ssi.bg ([178.16.128.9]:53046 "EHLO mg.ssi.bg"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725776AbgI3FIQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 01:08:16 -0400
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id C6E5A2EE97;
+        Wed, 30 Sep 2020 08:08:13 +0300 (EEST)
+Received: from ink.ssi.bg (ink.ssi.bg [178.16.128.7])
+        by mg.ssi.bg (Proxmox) with ESMTP id 4CBCC2EE90;
+        Wed, 30 Sep 2020 08:08:12 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 83E193C09BF;
+        Wed, 30 Sep 2020 08:08:06 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 08U5827H006449;
+        Wed, 30 Sep 2020 08:08:03 +0300
+Date:   Wed, 30 Sep 2020 08:08:02 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     "longguang.yue" <bigclouds@163.com>
+cc:     yuelongguang@gmail.com, Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:IPVS" <netdev@vger.kernel.org>,
+        "open list:IPVS" <lvs-devel@vger.kernel.org>,
+        "open list:NETFILTER" <netfilter-devel@vger.kernel.org>,
+        "open list:NETFILTER" <coreteam@netfilter.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5] ipvs: adjust the debug info in function
+ set_tcp_state
+In-Reply-To: <20200928024938.97121-1-bigclouds@163.com>
+Message-ID: <alpine.LFD.2.23.451.2009300803110.6056@ja.home.ssi.bg>
+References: <alpine.LFD.2.23.451.2009271625160.35554@ja.home.ssi.bg> <20200928024938.97121-1-bigclouds@163.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
 
-The following pull-request contains BPF updates for your *net* tree.
+	Hello,
 
-We've added 7 non-merge commits during the last 14 day(s) which contain
-a total of 7 files changed, 28 insertions(+), 8 deletions(-).
+On Mon, 28 Sep 2020, longguang.yue wrote:
 
-The main changes are:
+> Outputting client,virtual,dst addresses info when tcp state changes,
+> which makes the connection debug more clear
+> 
+> Signed-off-by: longguang.yue <bigclouds@163.com>
 
-1) fix xdp loading regression in libbpf for old kernels, from Andrii.
+	OK, v5 can be used instead of fixing v4.
 
-2) Do not discard packet when NETDEV_TX_BUSY, from Magnus.
+Acked-by: Julian Anastasov <ja@ssi.bg>
 
-3) Fix corner cases in libbpf related to endianness and kconfig, from Tony.
+> ---
 
-Please consider pulling these changes from:
+	longguang.yue, at this place after --- you can add info
+for changes between versions, eg:
+v5: fix indentation
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+	Use this for other patches, so that we know what is
+changed between versions.
 
-Thanks a lot!
+>  net/netfilter/ipvs/ip_vs_proto_tcp.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/netfilter/ipvs/ip_vs_proto_tcp.c b/net/netfilter/ipvs/ip_vs_proto_tcp.c
+> index dc2e7da2742a..7da51390cea6 100644
+> --- a/net/netfilter/ipvs/ip_vs_proto_tcp.c
+> +++ b/net/netfilter/ipvs/ip_vs_proto_tcp.c
+> @@ -539,8 +539,8 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
+>  	if (new_state != cp->state) {
+>  		struct ip_vs_dest *dest = cp->dest;
+>  
+> -		IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] %s:%d->"
+> -			      "%s:%d state: %s->%s conn->refcnt:%d\n",
+> +		IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] c:%s:%d v:%s:%d "
+> +			      "d:%s:%d state: %s->%s conn->refcnt:%d\n",
+>  			      pd->pp->name,
+>  			      ((state_off == TCP_DIR_OUTPUT) ?
+>  			       "output " : "input "),
+> @@ -548,10 +548,12 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
+>  			      th->fin ? 'F' : '.',
+>  			      th->ack ? 'A' : '.',
+>  			      th->rst ? 'R' : '.',
+> -			      IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
+> -			      ntohs(cp->dport),
+>  			      IP_VS_DBG_ADDR(cp->af, &cp->caddr),
+>  			      ntohs(cp->cport),
+> +			      IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
+> +			      ntohs(cp->vport),
+> +			      IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
+> +			      ntohs(cp->dport),
+>  			      tcp_state_name(cp->state),
+>  			      tcp_state_name(new_state),
+>  			      refcount_read(&cp->refcnt));
+> -- 
+> 2.20.1 (Apple Git-117)
 
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
+Regards
 
-Andrii Nakryiko, Arkadiusz Zema, Jesse Brandeburg, John Fastabend, 
-Nikita Shirokov, Quentin Monnet, Song Liu, Udip Pant
+--
+Julian Anastasov <ja@ssi.bg>
 
-----------------------------------------------------------------
-
-The following changes since commit d5d325eae7823c85eedabf05f78f9cd574fe832b:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2020-09-15 19:26:21 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 9cf51446e68607136e42a4e531a30c888c472463:
-
-  bpf, powerpc: Fix misuse of fallthrough in bpf_jit_comp() (2020-09-29 16:39:11 +0200)
-
-----------------------------------------------------------------
-Andrii Nakryiko (1):
-      libbpf: Fix XDP program load regression for old kernels
-
-He Zhe (1):
-      bpf, powerpc: Fix misuse of fallthrough in bpf_jit_comp()
-
-Magnus Karlsson (1):
-      xsk: Do not discard packet when NETDEV_TX_BUSY
-
-Tony Ambardar (4):
-      tools/bpftool: Support passing BPFTOOL_VERSION to make
-      bpf: Fix sysfs export of empty BTF section
-      bpf: Prevent .BTF section elimination
-      libbpf: Fix native endian assumption when parsing BTF
-
- arch/powerpc/net/bpf_jit_comp.c   |  1 -
- include/asm-generic/vmlinux.lds.h |  2 +-
- kernel/bpf/sysfs_btf.c            |  6 +++---
- net/xdp/xsk.c                     | 17 ++++++++++++++++-
- tools/bpf/bpftool/Makefile        |  2 +-
- tools/lib/bpf/btf.c               |  6 ++++++
- tools/lib/bpf/libbpf.c            |  2 +-
- 7 files changed, 28 insertions(+), 8 deletions(-)
