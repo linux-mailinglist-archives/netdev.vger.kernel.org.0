@@ -2,45 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07E8927DDC4
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 03:28:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E56B427DDC7
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 03:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729395AbgI3B2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 21:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726689AbgI3B2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 21:28:47 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA28FC061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 18:28:47 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9F6381280C64D;
-        Tue, 29 Sep 2020 18:11:59 -0700 (PDT)
-Date:   Tue, 29 Sep 2020 18:28:46 -0700 (PDT)
-Message-Id: <20200929.182846.1373007245621519477.davem@davemloft.net>
-To:     anthony.l.nguyen@intel.com
-Cc:     kuba@kernel.org, jacob.e.keller@intel.com, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, brijeshx.behera@intel.com
-Subject: Re: [PATCH net 1/2] ice: increase maximum wait time for flash
- write commands
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200930001548.1927323-1-anthony.l.nguyen@intel.com>
-References: <20200930001548.1927323-1-anthony.l.nguyen@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Tue, 29 Sep 2020 18:11:59 -0700 (PDT)
+        id S1729516AbgI3BaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 21:30:17 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:51166 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726689AbgI3BaR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 21:30:17 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id E8A7A46749E585AF801D;
+        Wed, 30 Sep 2020 09:30:14 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 30 Sep 2020 09:30:09 +0800
+From:   Jing Xiangfeng <jingxiangfeng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <luc.vanoostenryck@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <jingxiangfeng@huawei.com>
+Subject: [PATCH] caif_virtio: Remove redundant initialization of variable err
+Date:   Wed, 30 Sep 2020 09:29:54 +0800
+Message-ID: <20200930012954.1355-1-jingxiangfeng@huawei.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+After commit a8c7687bf216 ("caif_virtio: Check that vringh_config is not
+null"), the variable err is being initialized with '-EINVAL' that is
+meaningless. So remove it.
 
-Tony, if you want me to actually apply this series, it must be submitted
-properly with a proper "Subject: [PATCH net 0/2] ..." header posting explaing
-at a high level what the patch series does, how it does it, and why it does
-it that way.
+Signed-off-by: Jing Xiangfeng <jingxiangfeng@huawei.com>
+---
+ drivers/net/caif/caif_virtio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/caif/caif_virtio.c b/drivers/net/caif/caif_virtio.c
+index 80ea2e913c2b..47a6d62b7511 100644
+--- a/drivers/net/caif/caif_virtio.c
++++ b/drivers/net/caif/caif_virtio.c
+@@ -652,7 +652,7 @@ static int cfv_probe(struct virtio_device *vdev)
+ 	const char *cfv_netdev_name = "cfvrt";
+ 	struct net_device *netdev;
+ 	struct cfv_info *cfv;
+-	int err = -EINVAL;
++	int err;
+ 
+ 	netdev = alloc_netdev(sizeof(struct cfv_info), cfv_netdev_name,
+ 			      NET_NAME_UNKNOWN, cfv_netdev_setup);
+-- 
+2.17.1
+
