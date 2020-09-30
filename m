@@ -2,254 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AAC727EDBE
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 17:47:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E55027EDC3
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 17:48:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726476AbgI3PrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 11:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725355AbgI3PrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 11:47:23 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A96EC061755;
-        Wed, 30 Sep 2020 08:47:23 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id j11so3582375ejk.0;
-        Wed, 30 Sep 2020 08:47:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=P4/4J9jSN37VHhsqj9BXNnrpWEuCNt73zF+n6yHkwNg=;
-        b=bKC6Ui3ovge8Ncf0+Q//tChDG3h868kS7rRPoWP0bOvWmhxWFoklUq7D8S8U5ilEEP
-         WT5TcCHQxH/PeetPbx8zzDPebCLEuU4NXdt2MXH2HB09w/89N7uPi/XhmuyBbh8IJ8fI
-         mymjZIV9B+YRCxJjqAvJkzr7MGQex0A3E313HNCAoRwpzYBOWjkjD8NsgRIy1pBLduwS
-         jxYHTbFLoT4pCrAHKW+cS4OB+l8msh6HS/d3QY276HvE+iy28ZcihaUCbod5uETUZHLI
-         TdcFjBFPiai3eC4XmwXAN6ea15RgWlj4GNWnu4CaW7X7VBmpz2TPWFVm1M8ER0qZ2x7A
-         t10A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=P4/4J9jSN37VHhsqj9BXNnrpWEuCNt73zF+n6yHkwNg=;
-        b=GtYiTdX2GzAfSnLsOiXHWVfDdFhhMDJd1KektXoa9siqRjNQUAOVwmtGf/cIk91UfC
-         XPA8kGzMz8BERcWntvDc98Ld6C9dM3Bll8GXCWWSHS57H9DrubKbmdGHhCrYrLL9Mqr/
-         392mj1XH7clCjevdFBD2qepKIYvWRSs8IYDRO8deOS7/srWgwvF8Y1Q+K7ntg99a6q9H
-         ycY5mqFMDnGj2XBD14g97MruXdvKRh5B+WDi42hLGBlUnapvlMbuj/1poLmoTmuQT4Zh
-         /SMUjDdE3oCsselkHy1T7Nd1phOw1UlwC9fSqBtOV1ydDXiePqX2GDflkra0xQFHzaT6
-         04OA==
-X-Gm-Message-State: AOAM533svfa211DQE0Lmsmt78I3J1H+PJ6QaLizQoIs/pbEpSMKXQDMm
-        +pO/XoQlI2YZJezBa/gNRXPrYYqUkeo=
-X-Google-Smtp-Source: ABdhPJwf5yhdT+pyXcoW1Z/cvIkSRAHqg3djLct9ZJaTIz9ERxDPIHH6PcMWUmBX3xAgPYOEcRx/4Q==
-X-Received: by 2002:a17:906:b790:: with SMTP id dt16mr3309680ejb.33.1601480841385;
-        Wed, 30 Sep 2020 08:47:21 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f00:6a00:814c:b08d:e987:8b78? (p200300ea8f006a00814cb08de9878b78.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:814c:b08d:e987:8b78])
-        by smtp.googlemail.com with ESMTPSA id o3sm1830777edt.79.2020.09.30.08.47.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Sep 2020 08:47:20 -0700 (PDT)
-Subject: Re: RTL8402 stops working after hibernate/resume
-To:     Hans de Goede <hdegoede@redhat.com>,
-        Petr Tesarik <ptesarik@suse.cz>
-Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        netdev@vger.kernel.org, linux-clk@vger.kernel.org
-References: <20200715102820.7207f2f8@ezekiel.suse.cz>
- <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
- <20200716105835.32852035@ezekiel.suse.cz>
- <e1c7a37f-d8d0-a773-925c-987b92f12694@gmail.com>
- <20200903104122.1e90e03c@ezekiel.suse.cz>
- <7e6bbb75-d8db-280d-ac5b-86013af39071@gmail.com>
- <20200924211444.3ba3874b@ezekiel.suse.cz>
- <a10f658b-7fdf-2789-070a-83ad5549191a@gmail.com>
- <20200925093037.0fac65b7@ezekiel.suse.cz>
- <20200925105455.50d4d1cc@ezekiel.suse.cz>
- <aa997635-a5b5-75e3-8a30-a77acb2adf35@gmail.com>
- <20200925115241.3709caf6@ezekiel.suse.cz>
- <20200925145608.66a89e73@ezekiel.suse.cz>
- <30969885-9611-06d8-d50a-577897fcab29@gmail.com>
- <20200929210737.7f4a6da7@ezekiel.suse.cz>
- <217ae37d-f2b0-1805-5696-11644b058819@redhat.com>
- <5f2d3d48-9d1d-e9fe-49bc-d1feeb8a92eb@gmail.com>
- <1c2d888a-5702-cca9-195c-23c3d0d936b9@redhat.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <8a82a023-e361-79db-7127-769e4f6e0d1b@gmail.com>
-Date:   Wed, 30 Sep 2020 17:47:15 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <1c2d888a-5702-cca9-195c-23c3d0d936b9@redhat.com>
-Content-Type: text/plain; charset=utf-8
+        id S1728389AbgI3Psn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 11:48:43 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:12810 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725355AbgI3Psn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 11:48:43 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08UFkNqF003588;
+        Wed, 30 Sep 2020 08:48:28 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=DR4ZtOn4kW7m6qtkGlJ7a7MXYlnFlYugl91QrDmKAL4=;
+ b=Ajg3RaiIzSj96+2/Mjg0ijv0l6UQ5cHkEXm1t/kp1/YJcgJ+/sKihC8L91aPkaFckzv/
+ nN8dCVKlic9AHiif1/QxhBTXx27emxjiRqKsreLqU4FwNPN2uo88WlTNWAPdLN3pzYE9
+ fVsFKTZF4YzaIamTUZ4lY+NmFDQxzHwDJis= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33v6v46hn8-10
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 30 Sep 2020 08:48:28 -0700
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.230) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 30 Sep 2020 08:48:20 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aw7Qusht2ZSGubHDwVedgI1HCFeTKPrGig8b4d2tntpLyVsCN7c73poCJoAlPxFJawyV355WHa4M2o1AjexZUpu4DP3vow9Uwsk7h/QH0CK09XPWbaLtI78Xt2k2w3szum6dm1vVH0PuwOTrRDM1iMLfZ+OmKrd+8l7AHjPREJxhbRC+DyuOu1qzcSr6utWiKx/+meIYPtBOSvo+gecoBn5xfabfJZb5zI5bqBnHpWmLJYyUw/bYkwVf7s5smdLIXQAG03Liv/d4ZR0YxF+0nviKps7+6sjvAIp3sQRLs9bN77o8+Wt7EDhp2qjtFFsFBoI3CM5Y5utvNdHryX1q3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DR4ZtOn4kW7m6qtkGlJ7a7MXYlnFlYugl91QrDmKAL4=;
+ b=j1Eg5GCI4OxJDZQq2QY/gv1rRpfqTYMq6Jrmj1JwYt53u9BH3FTgJ77UA18YlJbkYTzaL7RWHYPtJW1CPtmHreRPoYop7S8cOssLWwEBKhgTdosOlkA20aLjbHFvS/rtxB353GYiOVbQeDCycHeDF3UqODaHGMMSdy3hBm0LX9sAWsMcRhoZyR3XhHVl72hzjFi/pwqhfGAuLKq+IZLpB5ShvEsxIXi7IT1ibaAnbGcQTSGiu7KRYHEKJezgln7Xffhd0CYOP8UrDGrMSJG14bCQT28CDj0VMMleI3eo3NUPsPnCqDEDzRQGXxNr8SnrGjygU3D5iUejBujqwK5+IQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DR4ZtOn4kW7m6qtkGlJ7a7MXYlnFlYugl91QrDmKAL4=;
+ b=ftcuDf1sXEsE0xcJarsx5HiOffcVjd/DdIY27Uv8U1jgy/PSb4uV62I1qQQN1ueSuzP5t3h9m/j9OJkVPfw6qrN+/C09SCLlwUs8Bi/VM5Cmwysd9bCVtBKUz9npD++fNi0btI9LHemBZkDvgpHOLSzwAwib4T0ZohoVlxl1xkk=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB2840.namprd15.prod.outlook.com (2603:10b6:a03:b2::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.25; Wed, 30 Sep
+ 2020 15:48:13 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::1400:be2f:8b3d:8f4d]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::1400:be2f:8b3d:8f4d%7]) with mapi id 15.20.3412.029; Wed, 30 Sep 2020
+ 15:48:13 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Alexei Starovoitov <ast@fb.com>
+CC:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <Kernel-team@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCH v2 bpf-next] bpf: fix raw_tp test run in preempt kernel
+Thread-Topic: [PATCH v2 bpf-next] bpf: fix raw_tp test run in preempt kernel
+Thread-Index: AQHWlr98m0MK4EXH4EugATXlfwV0VKmAhMUAgAA4WYCAAJQnAIAAA3GA
+Date:   Wed, 30 Sep 2020 15:48:13 +0000
+Message-ID: <8EFE87FC-84D2-4B63-B057-804A6F9F1F63@fb.com>
+References: <20200930002011.521337-1-songliubraving@fb.com>
+ <CAADnVQ+jaUfJkD0POaRyrmrLueVP9x-rN8bcN5eEz4XPBk96bw@mail.gmail.com>
+ <5684F41E-8748-4CBE-B37F-0E4AADC0A799@fb.com>
+ <09b5c318-afb3-2c3a-1b2f-936eb1b9b32b@fb.com>
+In-Reply-To: <09b5c318-afb3-2c3a-1b2f-936eb1b9b32b@fb.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.120.23.2.1)
+x-originating-ip: [2620:10d:c090:400::5:cb37]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 771ad239-dbb3-4ab7-7ae7-08d865583da4
+x-ms-traffictypediagnostic: BYAPR15MB2840:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB2840A9D284CFBE77BA2409D7B3330@BYAPR15MB2840.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KR/puf/WHrAkwVv+eEyP7u8Z9dFL86TUfFnjE2/5A8sPBXXhlc4z10AUiWzxyDFAgLD5G2MlSAbtGVIEPdt7dnLv3eEqE+UNXg0y5s/jO0dc+cKaC8idhm/l6dWxLPTyvf0DFGprJt2AcRrUzT21Yq2tq03OO/vG+QY9H43ZLfI6DU9oCHjFPqd9Cp82eK22rhJ4OzyHAIF4kNQazsr0WMXC64LSu6W8WQVnei9bEUgIvrcIkxjMxcH+8DDIAKkJRBuHDLYiiuowjDTRrw7Zky2Gx5KzF4YQi2qWaAl9xTWPZWUdNZSSXA8JY06sa2QsxUtAz2n5RR/qM24ojrXa540cA5K+4uHzC0vnAVtfRKhSnEY0f31k/fncVzBvdEXQ
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(396003)(136003)(376002)(39860400002)(346002)(8936002)(33656002)(54906003)(316002)(478600001)(37006003)(86362001)(5660300002)(66556008)(66476007)(66446008)(66946007)(2906002)(76116006)(64756008)(91956017)(71200400001)(83380400001)(6636002)(8676002)(4326008)(2616005)(6862004)(36756003)(6512007)(6486002)(186003)(53546011)(6506007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: cgK91gKUrkhMHa6lCrCAIKDOqKth+KF6vtOiQdMf9gyQHxX7VLFwa0O8I59CIYiRW5wdFpVwf1iEcWaCV5aA+jJGYOYigS51wEyU4E5dCmFArds1pUMmi7w8WechxOjEBXVHVJhotqThxvrtTY2kQ9I6ERqDHdccT31zNHsJnVq+vwPeMyWfywR+fGGHRSAEORoltyg9b3wLXnVel9LKvuSNNq+tqSt3qiZjQTm1FR8Gpe5vNjC+WaBxMFw1hMW4yT6rkbLAIKx1YM4nwM7vvuK7NQi/5FnBRZINOifmWul1Yz8hGefe+qICA0d6bZ1z5Yv/yROzcew82QlqZqqXZgt1K/jFnfDX+GRQn3CzJfyFexLCmNjT4IgnHgG9DdxjbUqsEnEH2Bi383mQOkW9p1mBgNliuhT9y04P+gOrTKGQqOMS4LyucaRzRuQOSqOS4Nw/p8cOGI3Y/dnJhVA22sGggk/TBzRKc3fcYszamb3qcaxxrwyG8pkIUcyUXX8UYXzoqTaiIZbuqMlbELwJ7Dvq9U4xWUltzlm2RnqCpooN7pRHk8nTpbFPQb155f4imQAXEwAlyHqYslxtSco+C/EW/NIqj7UD4pHNofckiC39g228ZNm1wGEkVIuYgakKCTsmHEXEF6Z3i/F8CMMF1lBaCnE+L4pr0xhw5XnIFhG2mVszL0Jo3sP99XcgIYfB
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <641FEC7020C17A4D8BEED90BF3DAEEC9@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 771ad239-dbb3-4ab7-7ae7-08d865583da4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Sep 2020 15:48:13.6833
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: AJK2XctE8xtzZYrH2kr8Rk2lMLIKMTNagDDiyOM76ituTWdR0W7WXfkhLC1x6nPGQBv1GXlz5cEWbYWPE54X7g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2840
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-30_08:2020-09-30,2020-09-30 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ malwarescore=0 mlxscore=0 impostorscore=0 spamscore=0 bulkscore=0
+ clxscore=1015 lowpriorityscore=0 mlxlogscore=999 phishscore=0
+ suspectscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009300125
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.09.2020 11:04, Hans de Goede wrote:
-> Hi,
-> 
-> On 9/29/20 10:35 PM, Heiner Kallweit wrote:
->> On 29.09.2020 22:08, Hans de Goede wrote:
-> 
-> <snip>
-> 
->>> Also some remarks about this while I'm being a bit grumpy about
->>> all this anyways (sorry):
->>>
->>> 1. 9f0b54cd167219 ("r8169: move switching optional clock on/off
->>> to pll power functions") commit's message does not seem to really
->>> explain why this change was made...
->>>
->>> 2. If a git blame would have been done to find the commit adding
->>> the clk support: commit c2f6f3ee7f22 ("r8169: Get and enable optional ether_clk clock")
->>> then you could have known that the clk in question is an external
->>> clock for the entire chip, the commit message pretty clearly states
->>> this (although "the entire" part is implied only) :
->>>
->>> "On some boards a platform clock is used as clock for the r8169 chip,
->>> this commit adds support for getting and enabling this clock (assuming
->>> it has an "ether_clk" alias set on it).
->>>
->> Even if the missing clock would stop the network chip completely,
->> this shouldn't freeze the system as described by Petr.
->> In some old RTL8169S spec an external 25MHz clock is mentioned,
->> what matches the MII bus frequency. Therefore I'm not 100% convinced
->> that the clock is needed for basic chip operation, but due to
->> Realtek not releasing datasheets I can't verify this.
-> 
-> Well if that 25 MHz is the only clock the chip has, then it basically
-> has to be on all the time since all clocked digital ASICs cannot work
-> without a clock.  Now pci-e is a packet-switched point-to-point bus,
-> so the ethernet chip not working should not freeze the entire system,
-> but I'm not really surprised that even though it should not do that,
-> that it still does.
-> 
->> But yes, if reverting this change avoids the issue on Petr's system,
->> then we should do it. A simple mechanical revert wouldn't work because
->> source file structure has changed since then, so I'll prepare a patch
->> that effectively reverts the change.
-> 
-> Great, thank you.
-> 
-> Regards,
-> 
-> Hans
-> 
-
-Petr,
-in the following I send two patches. First one is supposed to fix the freeze.
-It also fixes another issue that existed before my ether_clk change:
-ether_clk was disabled on suspend even if WoL is enabled. And the network
-chip most likely needs the clock to check for WoL packets.
-Please let me know whether it fixes the freeze, then I'll add your Tested-by.
-
-Second patch is a re-send of the one I sent before, it should fix
-the rx issues after resume from suspend for you.
 
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 6c7c004c2..72351c5b0 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2236,14 +2236,10 @@ static void rtl_pll_power_down(struct rtl8169_private *tp)
- 	default:
- 		break;
- 	}
--
--	clk_disable_unprepare(tp->clk);
- }
- 
- static void rtl_pll_power_up(struct rtl8169_private *tp)
- {
--	clk_prepare_enable(tp->clk);
--
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_25 ... RTL_GIGA_MAC_VER_33:
- 	case RTL_GIGA_MAC_VER_37:
-@@ -4820,29 +4816,39 @@ static void rtl8169_net_suspend(struct rtl8169_private *tp)
- 
- #ifdef CONFIG_PM
- 
-+static int rtl8169_net_resume(struct rtl8169_private *tp)
-+{
-+	rtl_rar_set(tp, tp->dev->dev_addr);
-+
-+	if (tp->TxDescArray)
-+		rtl8169_up(tp);
-+
-+	netif_device_attach(tp->dev);
-+
-+	return 0;
-+}
-+
- static int __maybe_unused rtl8169_suspend(struct device *device)
- {
- 	struct rtl8169_private *tp = dev_get_drvdata(device);
- 
- 	rtnl_lock();
- 	rtl8169_net_suspend(tp);
-+	if (!device_may_wakeup(tp_to_dev(tp)))
-+		clk_disable_unprepare(tp->clk);
- 	rtnl_unlock();
- 
- 	return 0;
- }
- 
--static int rtl8169_resume(struct device *device)
-+static int __maybe_unused rtl8169_resume(struct device *device)
- {
- 	struct rtl8169_private *tp = dev_get_drvdata(device);
- 
--	rtl_rar_set(tp, tp->dev->dev_addr);
--
--	if (tp->TxDescArray)
--		rtl8169_up(tp);
-+	if (!device_may_wakeup(tp_to_dev(tp)))
-+		clk_prepare_enable(tp->clk);
- 
--	netif_device_attach(tp->dev);
--
--	return 0;
-+	return rtl8169_net_resume(tp);
- }
- 
- static int rtl8169_runtime_suspend(struct device *device)
-@@ -4868,7 +4874,7 @@ static int rtl8169_runtime_resume(struct device *device)
- 
- 	__rtl8169_set_wol(tp, tp->saved_wolopts);
- 
--	return rtl8169_resume(device);
-+	return rtl8169_net_resume(tp);
- }
- 
- static int rtl8169_runtime_idle(struct device *device)
--- 
-2.28.0
+> On Sep 30, 2020, at 8:35 AM, Alexei Starovoitov <ast@fb.com> wrote:
+>=20
+> On 9/29/20 11:45 PM, Song Liu wrote:
+>>> On Sep 29, 2020, at 8:23 PM, Alexei Starovoitov <alexei.starovoitov@gma=
+il.com> wrote:
+>>>=20
+>>> On Tue, Sep 29, 2020 at 5:20 PM Song Liu <songliubraving@fb.com> wrote:
+>>>>=20
+>>>> In preempt kernel, BPF_PROG_TEST_RUN on raw_tp triggers:
+>>>>=20
+>>>> [   35.874974] BUG: using smp_processor_id() in preemptible [00000000]
+>>>> code: new_name/87
+>>>> [   35.893983] caller is bpf_prog_test_run_raw_tp+0xd4/0x1b0
+>>>> [   35.900124] CPU: 1 PID: 87 Comm: new_name Not tainted 5.9.0-rc6-g61=
+5bd02bf #1
+>>>> [   35.907358] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+>>>> BIOS 1.10.2-1ubuntu1 04/01/2014
+>>>> [   35.916941] Call Trace:
+>>>> [   35.919660]  dump_stack+0x77/0x9b
+>>>> [   35.923273]  check_preemption_disabled+0xb4/0xc0
+>>>> [   35.928376]  bpf_prog_test_run_raw_tp+0xd4/0x1b0
+>>>> [   35.933872]  ? selinux_bpf+0xd/0x70
+>>>> [   35.937532]  __do_sys_bpf+0x6bb/0x21e0
+>>>> [   35.941570]  ? find_held_lock+0x2d/0x90
+>>>> [   35.945687]  ? vfs_write+0x150/0x220
+>>>> [   35.949586]  do_syscall_64+0x2d/0x40
+>>>> [   35.953443]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>>>=20
+>>>> Fix this by calling migrate_disable() before smp_processor_id().
+>>>>=20
+>>>> Fixes: 1b4d60ec162f ("bpf: Enable BPF_PROG_TEST_RUN for raw_tracepoint=
+")
+>>>> Reported-by: Alexei Starovoitov <ast@kernel.org>
+>>>> Signed-off-by: Song Liu <songliubraving@fb.com>
+>>>>=20
+>>>> ---
+>>>> Changes v1 =3D> v2:
+>>>> 1. Keep rcu_read_lock/unlock() in original places. (Alexei)
+>>>> 2. Use get_cpu() instead of smp_processor_id(). (Alexei)
+>>>=20
+>>> Applying: bpf: fix raw_tp test run in preempt kernel
+>>> Using index info to reconstruct a base tree...
+>>> error: patch failed: net/bpf/test_run.c:293
+>>> error: net/bpf/test_run.c: patch does not apply
+>>> error: Did you hand edit your patch?
+>> This is so weird. I cannot apply it myself. :(
+>> [localhost] g co -b bpf-next-temp
+>> Switched to a new branch 'bpf-next-temp'
+>> [localhost] g format-patch -b HEAD~1 --subject-prefix "PATCH v3 bpf-next=
+"
+>> 0001-bpf-fix-raw_tp-test-run-in-preempt-kernel.patch
+>=20
+> could you try without -b ?
 
+Yes! -b is the problem here.=20
 
+I think the right way to format-patch is to use --ignore-space-at-eol=20
+instead of -b.=20
 
-
-
-
-
-
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 9e4e6a883..4fb49fd0d 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4837,6 +4837,10 @@ static int rtl8169_resume(struct device *device)
- 
- 	rtl_rar_set(tp, tp->dev->dev_addr);
- 
-+	/* Reportedly at least Asus X453MA corrupts packets otherwise */
-+	if (tp->mac_version == RTL_GIGA_MAC_VER_37)
-+		rtl_init_rxcfg(tp);
-+
- 	if (tp->TxDescArray)
- 		rtl8169_up(tp);
- 
--- 
-2.28.0
-
-
+Thanks,
+Song=
