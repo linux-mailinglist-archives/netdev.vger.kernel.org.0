@@ -2,100 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55DE427DEED
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 05:24:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 829CC27DEF6
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 05:25:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729820AbgI3DYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 23:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726299AbgI3DYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 23:24:12 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9261C061755;
-        Tue, 29 Sep 2020 20:24:11 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id y4so305540ljk.8;
-        Tue, 29 Sep 2020 20:24:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IeYKiV1LlnGE4ZUELRBmCLDTr7v+GXQIuTlENX7Xwp4=;
-        b=q3N5OZpTNYs5uDXTHfHqnDI1xiFUxWQ76gKS/EOE+HuAHXiHQ1samk2JdnxO565FAd
-         lryyIbDNhGo3OUIsjNKvIo59ajug1MbzXbM4A07op6by5j4Se8sWiMomiQhJdmehkLt9
-         66OMp0HZgCDpGTX2/MuKPRXznrEjR2N/gmCuU7jd4EOxcJqIg/LQCFInMlLzucQE3nLS
-         cvy1inE47Am5BRtfp+adwP06pLQjZBiWyyvUK2fiSWVR9byJAEpP/rNHrQK2Kty9Sl1A
-         mk/2ms36HDnG7Y7RBm2sUBYkIGAoHj+ZzY4cWzmogeqg9wSwPiG2W2lmy5OLVZxupTIF
-         yEDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IeYKiV1LlnGE4ZUELRBmCLDTr7v+GXQIuTlENX7Xwp4=;
-        b=YLyXWmGZ4E2zv++gBNaK2ipX91VAMBBWtNdEIXsPP8X+lH8JmDx9NLlDSw+uikENXi
-         Q0x5Z7e/GIIkd9tLcTRioaD4NVpVv6pu2D3XXwdLIpCZHtnAw8/3eku0LTtoynSXlYrH
-         U1XYxv33xETjf175JZ7fPzvPByjFfd4UVUnGMPnVYo9dXIhOCPFTcHYQZufZuH0TA4MM
-         L1AtqDN/7k7tqk/j46k6vKSDZgybzoBE8OUFCGHIoxAJeyi7icK943xSauM/UujFOYOa
-         WyobyvXwRVaD38i1Joeq87tpPY1Rj2aWODi1IZ6hqmcHuuZA6ad9FkiETeZsy4o+Mi45
-         LI+A==
-X-Gm-Message-State: AOAM5314cSREuBgHnNcEnpNtSU3XoRsw2P1LidHEAzo4Xnr7nf4c/2lR
-        zd4aN960ijjOiWhGpPW1ZcictOOo7k457KQxLSc=
-X-Google-Smtp-Source: ABdhPJz0Ul0ZPMg7H4/0bkrHNPN5WnxXjJqyRmFVUFh0NNFE973bM+jU1iBtL41YvEknKOwONmEdiF9BPaSbh7T8+6U=
-X-Received: by 2002:a2e:8593:: with SMTP id b19mr200969lji.290.1601436250294;
- Tue, 29 Sep 2020 20:24:10 -0700 (PDT)
+        id S1729957AbgI3DZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 23:25:26 -0400
+Received: from ozlabs.org ([203.11.71.1]:46211 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726299AbgI3DZ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Sep 2020 23:25:26 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C1M8L55npz9sSG;
+        Wed, 30 Sep 2020 13:25:22 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1601436323;
+        bh=u54S/ygKxoHQd93zauf7Zl/YQ7Ohsz0njaj6JvK12BQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=tZPbyFL/Un9ZbEW9flDKINmJehyEtp+G2Qmues8kfT/lzPpEznkgj9Gk6LDiJi7xS
+         d5eUt/COklLHEZ47jK5pmYNL53WNf1x36pwCqFolaRdOKet5H0Wvdr41mLrM83sH16
+         C97Q3gZGTjXhb8EyVgakNdbE0iyBOOa7p22ccPuxKUlWBqA1F8m1Gj9m9PlzNFUn1g
+         UU4csg2PLc98N/e/YEU4Y3qcumMTnCs5IgOSqHmEcIWA8vW3LbONvUFaai4CylDdFa
+         SbNqWFWBNPRnkD7asb8WX7hLzgvtizmuApGNlLM+NPzRYsRac4PvRcbl8SKuILYudo
+         Y9nW+SDGyIVtA==
+Date:   Wed, 30 Sep 2020 13:25:21 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
+        Willy Liu <willy.liu@realtek.com>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20200930132521.41e5b00d@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20200930002011.521337-1-songliubraving@fb.com>
-In-Reply-To: <20200930002011.521337-1-songliubraving@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 29 Sep 2020 20:23:58 -0700
-Message-ID: <CAADnVQ+jaUfJkD0POaRyrmrLueVP9x-rN8bcN5eEz4XPBk96bw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next] bpf: fix raw_tp test run in preempt kernel
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/FdD.lH2B3/sg9QFvd1eebk_";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 5:20 PM Song Liu <songliubraving@fb.com> wrote:
->
-> In preempt kernel, BPF_PROG_TEST_RUN on raw_tp triggers:
->
-> [   35.874974] BUG: using smp_processor_id() in preemptible [00000000]
-> code: new_name/87
-> [   35.893983] caller is bpf_prog_test_run_raw_tp+0xd4/0x1b0
-> [   35.900124] CPU: 1 PID: 87 Comm: new_name Not tainted 5.9.0-rc6-g615bd02bf #1
-> [   35.907358] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-> BIOS 1.10.2-1ubuntu1 04/01/2014
-> [   35.916941] Call Trace:
-> [   35.919660]  dump_stack+0x77/0x9b
-> [   35.923273]  check_preemption_disabled+0xb4/0xc0
-> [   35.928376]  bpf_prog_test_run_raw_tp+0xd4/0x1b0
-> [   35.933872]  ? selinux_bpf+0xd/0x70
-> [   35.937532]  __do_sys_bpf+0x6bb/0x21e0
-> [   35.941570]  ? find_held_lock+0x2d/0x90
-> [   35.945687]  ? vfs_write+0x150/0x220
-> [   35.949586]  do_syscall_64+0x2d/0x40
-> [   35.953443]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->
-> Fix this by calling migrate_disable() before smp_processor_id().
->
-> Fixes: 1b4d60ec162f ("bpf: Enable BPF_PROG_TEST_RUN for raw_tracepoint")
-> Reported-by: Alexei Starovoitov <ast@kernel.org>
-> Signed-off-by: Song Liu <songliubraving@fb.com>
->
-> ---
-> Changes v1 => v2:
-> 1. Keep rcu_read_lock/unlock() in original places. (Alexei)
-> 2. Use get_cpu() instead of smp_processor_id(). (Alexei)
+--Sig_/FdD.lH2B3/sg9QFvd1eebk_
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Applying: bpf: fix raw_tp test run in preempt kernel
-Using index info to reconstruct a base tree...
-error: patch failed: net/bpf/test_run.c:293
-error: net/bpf/test_run.c: patch does not apply
-error: Did you hand edit your patch?
+Hi all,
+
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  drivers/net/phy/realtek.c
+
+between commit:
+
+  bbc4d71d6354 ("net: phy: realtek: fix rtl8211e rx/tx delay config")
+
+from the net tree and commit:
+
+  66e22932eb79 ("net: phy: realtek: enable ALDPS to save power for RTL8211F=
+")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/phy/realtek.c
+index 0f0960971800,4bf54cded48a..000000000000
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@@ -31,9 -33,13 +32,13 @@@
+  #define RTL8211F_TX_DELAY			BIT(8)
+  #define RTL8211F_RX_DELAY			BIT(3)
+ =20
++ #define RTL8211F_ALDPS_PLL_OFF			BIT(1)
++ #define RTL8211F_ALDPS_ENABLE			BIT(2)
++ #define RTL8211F_ALDPS_XTAL_OFF			BIT(12)
++=20
+ -#define RTL8211E_TX_DELAY			BIT(1)
+ -#define RTL8211E_RX_DELAY			BIT(2)
+ -#define RTL8211E_MODE_MII_GMII			BIT(3)
+ +#define RTL8211E_CTRL_DELAY			BIT(13)
+ +#define RTL8211E_TX_DELAY			BIT(12)
+ +#define RTL8211E_RX_DELAY			BIT(11)
+ =20
+  #define RTL8201F_ISR				0x1e
+  #define RTL8201F_IER				0x13
+
+--Sig_/FdD.lH2B3/sg9QFvd1eebk_
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9z+qEACgkQAVBC80lX
+0GyY9Qf/cXBMXSwNE2gVWs91tBnwk1S3Z8hmsbC/Kfg+lhU8x4NlvFIRLmw7hq14
+/4IueTPX1EuPDna9IlWyEKM3LtJlSIxvrLD1+rirH8v6L4pzvqWO5VNtjXONljvK
+w769jrD47MzrIOo8DrC0P8EpSJukr3KWqdHG1t0p0B8wwSvAXRQwBzSOVXwY1YkL
+GKrbytiDr8zePgcIS4FsnwieflJBuJ/0dqnfSAarVRseuhTdQecV1TtibNuCwuql
+5OO/d7jsPNoKSMaNvA0iMsdP2Nx2q1xRLlMqPCEDt0g9DHqVuQYzWvPV6nOcRcSQ
+uNgYkRLtUBgKyRiupZwLMyJhcaxc5Q==
+=8cSi
+-----END PGP SIGNATURE-----
+
+--Sig_/FdD.lH2B3/sg9QFvd1eebk_--
