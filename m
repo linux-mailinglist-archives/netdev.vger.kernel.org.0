@@ -2,162 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66A0F27E57B
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 11:46:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70A9527E595
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 11:49:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728884AbgI3JqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 05:46:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45508 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728570AbgI3JqU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Sep 2020 05:46:20 -0400
-Received: from pali.im (pali.im [31.31.79.79])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C1C112075F;
-        Wed, 30 Sep 2020 09:46:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601459179;
-        bh=JC8eFB/Fh2ebPONieoeEroqX545MkCOXw/7xJvIp4Fo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=C6usw7dqILJphPfhlYXxx43CrQrvszp2QVPRIcvq2A/zm4n6tuEEmj0tekNHtMPn1
-         I798NUKhzxGaq2aRFkn8yDxDMBq6jLG1Je7ywpfUUFxPgrciQtHbLpHfOB41XxLcnj
-         pIqBuvIzKy8JrMFIYDiOcyhCcwohccFnYXBV7pHo=
-Received: by pali.im (Postfix)
-        id 844A09D2; Wed, 30 Sep 2020 11:46:16 +0200 (CEST)
-Date:   Wed, 30 Sep 2020 11:46:16 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        David Heidelberg <david@ixit.cz>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Removal of HCI commands, userspace bluetooth regression?
-Message-ID: <20200930094616.qmpophucxwpgu7tz@pali>
-References: <20191228171212.56anj4d4kvjeqhms@pali>
- <45BB2908-4E16-4C74-9DB4-8BAD93B42A21@holtmann.org>
- <20200104102436.bhqagqrfwupj6hkm@pali>
- <20200209132137.7pi4pgnassosh3ax@pali>
- <20200414225618.zgh5h4jexahfukdl@pali>
- <20200808132747.4byefjg5ysddgkel@pali>
- <20200929213254.difivzrhapk766xp@pali>
- <20200930080205.GA1571308@kroah.com>
- <20200930082534.rrck6qb3fntm25wz@pali>
- <20200930092043.GB1580803@kroah.com>
+        id S1728514AbgI3Jtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 05:49:32 -0400
+Received: from mail-eopbgr750051.outbound.protection.outlook.com ([40.107.75.51]:27879
+        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725776AbgI3Jtc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 05:49:32 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iTvmd72bhDBBRXNMCiYyVCxFxmHafT4tSOyenvSgV2yEXrd2LK9ZxgazLbygu8cO9aX8lPytUPaNqFa0LP+ipE47LKOqXhAlt1t68elI4xtiMnVMfaF4Ga4BhAGbT/nKblxMDadvK12TMAyoDUy8wXJlO+u0aPDdfffnUVzVEBRMxnYbfGcHDgDdV5Qli1PJOCnQyifMu4cx6lYtDoJteEPd8C4GKxOIPNUeU4jov07NXWWCm+3PjHgv9lV4py0FA/qnCl/SyDDtz+Ec2DSe3bsEu6ycsKh3SBYVuv+DiPPyYfpuZwA/7qFzkfloz4lEgYSC66Fj/zwwNgruJbf4rQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lUAzvz7tmvgURVhQcwOqO+i4o/F7Sg2zcSobH9sPKh4=;
+ b=hmQ3lO2nEQ9FiO+oqsV49IfLnPwqTqmhjUOjY3GuNMF9VAJ/XSZOYifVKyeMpyexnamzfiEDbMuNKElxNjJMclzGtNo5R+H0ZlCcQn5/X2yiCnlCDmpXvAXDagOFjMlBZNA3jRP1KdBy4OSp60dDr99qkonIjf887dwsBlxQBJcTUEjIXvG1cjs+AyvroDVwb32605+saj/RXV9Jd46MZazBcUOM38P24hY9qTD5wiXKMosa0N+IV1jT3a3TFc/hVbTOLZOlzCKTm9Z26VoTymYuLQhmrFQdwKrGUfvzmyVuuPHw0nEuBvcFwgM2paNJdfp2H0glC3UK4cz9QStCbg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lUAzvz7tmvgURVhQcwOqO+i4o/F7Sg2zcSobH9sPKh4=;
+ b=nj1HFBcd29SQQSTGI/zGslQdQpSRDudFugVY7a85zmeUxFiYMLR59USQJBuf83P5K3Vs75vcZQ4J/03ihWTVzuUEEC8RfTLfVNNhzbSD0be+NMlfzn0F4mX6ktiQJVKARbp0H5H7yGns6CoN/R7sBDZuGEy+SFE1GJli03sXbUI=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=synaptics.com;
+Received: from DM6PR03MB4555.namprd03.prod.outlook.com (2603:10b6:5:102::17)
+ by DM6PR03MB4361.namprd03.prod.outlook.com (2603:10b6:5:105::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.32; Wed, 30 Sep
+ 2020 09:49:30 +0000
+Received: from DM6PR03MB4555.namprd03.prod.outlook.com
+ ([fe80::e494:740f:155:4a38]) by DM6PR03MB4555.namprd03.prod.outlook.com
+ ([fe80::e494:740f:155:4a38%7]) with mapi id 15.20.3433.032; Wed, 30 Sep 2020
+ 09:49:30 +0000
+Date:   Wed, 30 Sep 2020 17:47:43 +0800
+From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC] net: phy: add shutdown hook to struct phy_driver
+Message-ID: <20200930174419.345cc9b4@xhacker.debian>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [124.74.246.114]
+X-ClientProxiedBy: HKAPR04CA0006.apcprd04.prod.outlook.com
+ (2603:1096:203:d0::16) To DM6PR03MB4555.namprd03.prod.outlook.com
+ (2603:10b6:5:102::17)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200930092043.GB1580803@kroah.com>
-User-Agent: NeoMutt/20180716
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from xhacker.debian (124.74.246.114) by HKAPR04CA0006.apcprd04.prod.outlook.com (2603:1096:203:d0::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.35 via Frontend Transport; Wed, 30 Sep 2020 09:49:27 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 36d11861-8b44-48ff-cd90-08d86526202c
+X-MS-TrafficTypeDiagnostic: DM6PR03MB4361:
+X-Microsoft-Antispam-PRVS: <DM6PR03MB43610A62676668A0851511FEED330@DM6PR03MB4361.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 48Tsjf81hpvdu4UL1TJRAUMEVtusalF7fTwsMEpAMMmLACZn1Nwx1ODrVp06H2mstvcn+zJPUnQ160zjci0J421cSlrK9+tFRia/5PIhZ19GU6G8PNeaQClPwPySk9FYpdO1S1wqr+X4KW3QEK6jTzJJLEEEiEvuaBGP+BX50yjQ3Dr+acQMQretUh9gGt5Cuo6Kr/a0Xa9s0myAnEMWC2mxjqzuMUf2jS9pZIfOziMhDuapUVBXiGtpiYXh3sF78q50BBnM7gaIzfORb9iXPIa3insgKGH8an1SlW5haDsm40Oe3pY+lqNdKzzndisxrpHeshLszPJfCjO6K4TnZQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR03MB4555.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39850400004)(346002)(376002)(366004)(136003)(110136005)(316002)(86362001)(478600001)(66946007)(4744005)(1076003)(66556008)(66476007)(5660300002)(6666004)(52116002)(7696005)(6506007)(16526019)(26005)(186003)(2906002)(8676002)(4326008)(9686003)(8936002)(956004)(55016002)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: AO6X4Hq/DIsG94VkenM0qjw0GTtudueKve8/tnbV9EOEuWxoPWNgqV8+BCwQFs7TKyumxcFDB3KReSZeyEXNntC8TKwsXmL2Iu1VtEkcBv9rs8X6+/MVS2Aw6buC3hJ+n4bO3DtCB4hqez6UTFwdHUm+0VavxAPvLNray1NuAEtc2LMQdhcFWoi3AWRCkRXqUBDncBf32AMNqAnkfgB2Nj0l+U66KqyfOJJ13LONc26C0k7xsDrddDHCl8zrKUKsyCmGyK66qnR18ILOEViP2wIB2wUq6CF/XPSfHeyun4fjyyLXEZFHAeJyxyswnKgCmjD5f7vSll2Ilvfc6RzLahpVwDFWrsW7f3pSngQzxZU5RFXBBZ980dH/NTZ5K8HnQk3xl93JbShLJ97BW5QqBku9cwihML74m/oZqPgZetBuzNPK0HijGZ8x3is8VQV+15DifvHBKv19UubY2Wrxq8YIlYHyNGB6e33uPRa32D9l8r3F7/MQiuy4bHmHFfbhqOCC0/LQzn64w+59A9JKujS82IR11dBurnZaHfWmxHm+NzLknHDOYy0XvqFMcqrRKRjqQs2wG88i1XYv8QzolWYkYSfU8hbKbm8b1Gtkd7ddb3+RIz0yCgMhKZZgl83SOIDZWbVOvXxUN0PPgIN7/A==
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 36d11861-8b44-48ff-cd90-08d86526202c
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR03MB4555.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2020 09:49:30.0142
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: C61jV/Mt5F0xF0hmKolbLCZ65Ln2n1NLUOOecNoCtLD4e3i3uCI3H3nkyomxcmMnjWMlNqRDWLnSOsqX3BpDrg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB4361
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday 30 September 2020 11:20:43 Greg Kroah-Hartman wrote:
-> On Wed, Sep 30, 2020 at 10:25:34AM +0200, Pali Rohár wrote:
-> > On Wednesday 30 September 2020 10:02:05 Greg Kroah-Hartman wrote:
-> > > On Tue, Sep 29, 2020 at 11:32:54PM +0200, Pali Rohár wrote:
-> > > > CCing other lists and maintainers, hopefully, somebody would have a time to look at it...
-> > > > 
-> > > > On Saturday 08 August 2020 15:27:47 Pali Rohár wrote:
-> > > > > On Wednesday 15 April 2020 00:56:18 Pali Rohár wrote:
-> > > > > > On Sunday 09 February 2020 14:21:37 Pali Rohár wrote:
-> > > > > > > On Saturday 04 January 2020 11:24:36 Pali Rohár wrote:
-> > > > > > > > On Saturday 04 January 2020 10:44:52 Marcel Holtmann wrote:
-> > > > > > > > > Hi Pali,
-> > > > > > > > > 
-> > > > > > > > > > I wrote a simple script "sco_features.pl" which show all supported
-> > > > > > > > > > codecs by local HCI bluetooth adapter. Script is available at:
-> > > > > > > > > > 
-> > > > > > > > > > https://github.com/pali/hsphfpd-prototype/blob/prototype/sco_features.pl
-> > > > > > > > > > 
-> > > > > > > > > > And I found out that OCF_READ_LOCAL_CODECS HCI command cannot be send by
-> > > > > > > > > > non-root user. Kernel returns "Operation not permitted" error.
-> > > > > > > > > > 
-> > > > > > > > > > What is reason that kernel blocks OCF_READ_LOCAL_CODECS command for
-> > > > > > > > > > non-root users? Without it (audio) application does not know which
-> > > > > > > > > > codecs local bluetooth adapter supports.
-> > > > > > > > > > 
-> > > > > > > > > > E.g. OCF_READ_LOCAL_EXT_FEATURES or OCF_READ_VOICE_SETTING commands can
-> > > > > > > > > > be send also by non-root user and kernel does not block them.
-> > > > > > > > > 
-> > > > > > > > > actually the direct access to HCI commands is being removed. So we have no plans to add new commands into the list since that it what the kernel is suppose to handle. If we wanted to expose this, then it has to be via mgmt.
-> > > > > > > > 
-> > > > > > > > Hi Marcel! Thank you for information. I have not know that this API is
-> > > > > > > > "deprecated" and is going to be removed. But userspace audio
-> > > > > > > > applications need to know what bluetooth adapter supports, so can you
-> > > > > > > > export result of these commands to userspace? My script linked above
-> > > > > > > > calls: OCF_READ_VOICE_SETTING, OCF_READ_LOCAL_COMMANDS,
-> > > > > > > > OCF_READ_LOCAL_EXT_FEATURES, OCF_READ_LOCAL_CODECS
-> > > > > > > 
-> > > > > > > Hello! Just a gently reminder for this question. How to retrieve
-> > > > > > > information about supported codecs from userspace by non-root user?
-> > > > > > > Because running all bluetooth audio applications by root is not really a
-> > > > > > > solution. Plus if above API for root user is going to be removed, what
-> > > > > > > is a replacement?
-> > > > > > 
-> > > > > > Hello!
-> > > > > > 
-> > > > > > I have not got any answer to my email from Marcel for months, so I'm
-> > > > > > adding other developers to loop. Could somebody tell me that is the
-> > > > > > replacement API if above one is going to be removed?
-> > > > > > 
-> > > > > > I was not able to find any documentation where could be described this
-> > > > > > API nor information about deprecation / removal.
-> > > > > > 
-> > > > > > And are you aware of the fact that removing of API could potentially
-> > > > > > break existing applications?
-> > > > > > 
-> > > > > > I really need to know which API should I use, because when I use API
-> > > > > > which is going to be removed, then my application stops working. And I
-> > > > > > really want to avoid it.
-> > > > > > 
-> > > > > > Also I have not got any response yet, how can I read list of supported
-> > > > > > codecs by bluetooth adapter by ordinary non-root user? Audio application
-> > > > > > needs to know list of supported codecs and it is really insane to run it
-> > > > > > as root.
-> > > > > 
-> > > > > Hello! This is just another reminder that I have not got any reply to
-> > > > > this email.
-> > > > > 
-> > > > > Does silence mean that audio applications are expected to work only
-> > > > > under root account and ordinary users are not able to use audio and list
-> > > > > supported codecs?
-> > > > 
-> > > > Hello! I have not got any reply for this issue for 10 months and if you
-> > > > are going to remove (or after these 10 months you already did it?)
-> > > > existing HCI API from kernel it would break existing and working
-> > > > userspace application. How do you want to handle such regressions?
-> > > 
-> > > What git commit caused this regression?
-> > 
-> > Hello! Marcel in January wrote that access for HCI commands is being
-> > removed from kernel. I do not know if he managed to do it in since
-> > January, but I'm going to check it...
-> 
-> So you don't see a regression/problem, but are saying there is one?
+Hi,
 
-Hello!
+A GE phy supports pad isolation which can save power in WOL mode. But once the
+isolation is enabled, the MAC can't send/receive pkts to/from the phy because
+the phy is "isolated". To make the PHY work normally, I need to move the
+enabling isolation to suspend hook, so far so good. But the isolation isn't
+enabled in system shutdown case, to support this, I want to add shutdown hook
+to net phy_driver, then also enable the isolation in the shutdown hook. Is
+there any elegant solution?
 
-Planed removal of used API would be a regression. Marcel wrote that it
-is "being removed". Nobody reacted to that fact for 10 months so I did
-not know if this comment was lost and removal is already in progress.
-Or if something was changed and removal is not planned anymore.
+Or we can break the assumption: ethernet can still send/receive pkts after
+enabling WoL, no?
 
-So are you aware that it will break applications?
-
-> odd...
-
-I think it is not a good idea to do something and then check what happen
-if there are people who know that such thing is in use and for sure it
-will break something.
-
-And also I still did not get any response what is the replacement of
-that API.
+Thanks in advance,
+Jisheng
