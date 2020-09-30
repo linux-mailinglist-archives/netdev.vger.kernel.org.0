@@ -2,208 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18F2227EDAB
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 17:43:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AAC727EDBE
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 17:47:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731153AbgI3PnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 11:43:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53542 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725800AbgI3PnL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Sep 2020 11:43:11 -0400
-Received: from lore-desk.redhat.com (unknown [176.207.245.61])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7E06920759;
-        Wed, 30 Sep 2020 15:43:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601480591;
-        bh=LXsn3+iKHn7bwpHBftxmVhBLsQ39Ef3e9iy3wjSNlVI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XtO5f5ZkwJTZFFdtJVu3vKKczjwxahIRJc446u2Dblu17Z/k/Kne39erEk2MAXE85
-         w6M6c+o5zzjtuP67zQhWmCLzm/YJx1mnSwZzuQ1j11iK0bzH4w6beygKAKPYNTLxDj
-         d4TSkIl4qwma92Z+4f7wu3WsHPrylRxf/eEuxBUw=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, davem@davemloft.net, sameehj@amazon.com,
-        kuba@kernel.org, john.fastabend@gmail.com, daniel@iogearbox.net,
-        ast@kernel.org, shayagr@amazon.com, brouer@redhat.com,
-        echaudro@redhat.com, lorenzo.bianconi@redhat.com,
-        dsahern@kernel.org
-Subject: [PATCH v3 net-next 12/12] bpf: cpumap: introduce xdp multi-buff support
-Date:   Wed, 30 Sep 2020 17:42:03 +0200
-Message-Id: <5473fa05a3c3fac3c2bbe132326193073d78dd5e.1601478613.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <cover.1601478613.git.lorenzo@kernel.org>
-References: <cover.1601478613.git.lorenzo@kernel.org>
+        id S1726476AbgI3PrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 11:47:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725355AbgI3PrX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 11:47:23 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A96EC061755;
+        Wed, 30 Sep 2020 08:47:23 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id j11so3582375ejk.0;
+        Wed, 30 Sep 2020 08:47:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=P4/4J9jSN37VHhsqj9BXNnrpWEuCNt73zF+n6yHkwNg=;
+        b=bKC6Ui3ovge8Ncf0+Q//tChDG3h868kS7rRPoWP0bOvWmhxWFoklUq7D8S8U5ilEEP
+         WT5TcCHQxH/PeetPbx8zzDPebCLEuU4NXdt2MXH2HB09w/89N7uPi/XhmuyBbh8IJ8fI
+         mymjZIV9B+YRCxJjqAvJkzr7MGQex0A3E313HNCAoRwpzYBOWjkjD8NsgRIy1pBLduwS
+         jxYHTbFLoT4pCrAHKW+cS4OB+l8msh6HS/d3QY276HvE+iy28ZcihaUCbod5uETUZHLI
+         TdcFjBFPiai3eC4XmwXAN6ea15RgWlj4GNWnu4CaW7X7VBmpz2TPWFVm1M8ER0qZ2x7A
+         t10A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=P4/4J9jSN37VHhsqj9BXNnrpWEuCNt73zF+n6yHkwNg=;
+        b=GtYiTdX2GzAfSnLsOiXHWVfDdFhhMDJd1KektXoa9siqRjNQUAOVwmtGf/cIk91UfC
+         XPA8kGzMz8BERcWntvDc98Ld6C9dM3Bll8GXCWWSHS57H9DrubKbmdGHhCrYrLL9Mqr/
+         392mj1XH7clCjevdFBD2qepKIYvWRSs8IYDRO8deOS7/srWgwvF8Y1Q+K7ntg99a6q9H
+         ycY5mqFMDnGj2XBD14g97MruXdvKRh5B+WDi42hLGBlUnapvlMbuj/1poLmoTmuQT4Zh
+         /SMUjDdE3oCsselkHy1T7Nd1phOw1UlwC9fSqBtOV1ydDXiePqX2GDflkra0xQFHzaT6
+         04OA==
+X-Gm-Message-State: AOAM533svfa211DQE0Lmsmt78I3J1H+PJ6QaLizQoIs/pbEpSMKXQDMm
+        +pO/XoQlI2YZJezBa/gNRXPrYYqUkeo=
+X-Google-Smtp-Source: ABdhPJwf5yhdT+pyXcoW1Z/cvIkSRAHqg3djLct9ZJaTIz9ERxDPIHH6PcMWUmBX3xAgPYOEcRx/4Q==
+X-Received: by 2002:a17:906:b790:: with SMTP id dt16mr3309680ejb.33.1601480841385;
+        Wed, 30 Sep 2020 08:47:21 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f00:6a00:814c:b08d:e987:8b78? (p200300ea8f006a00814cb08de9878b78.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:814c:b08d:e987:8b78])
+        by smtp.googlemail.com with ESMTPSA id o3sm1830777edt.79.2020.09.30.08.47.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Sep 2020 08:47:20 -0700 (PDT)
+Subject: Re: RTL8402 stops working after hibernate/resume
+To:     Hans de Goede <hdegoede@redhat.com>,
+        Petr Tesarik <ptesarik@suse.cz>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        netdev@vger.kernel.org, linux-clk@vger.kernel.org
+References: <20200715102820.7207f2f8@ezekiel.suse.cz>
+ <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
+ <20200716105835.32852035@ezekiel.suse.cz>
+ <e1c7a37f-d8d0-a773-925c-987b92f12694@gmail.com>
+ <20200903104122.1e90e03c@ezekiel.suse.cz>
+ <7e6bbb75-d8db-280d-ac5b-86013af39071@gmail.com>
+ <20200924211444.3ba3874b@ezekiel.suse.cz>
+ <a10f658b-7fdf-2789-070a-83ad5549191a@gmail.com>
+ <20200925093037.0fac65b7@ezekiel.suse.cz>
+ <20200925105455.50d4d1cc@ezekiel.suse.cz>
+ <aa997635-a5b5-75e3-8a30-a77acb2adf35@gmail.com>
+ <20200925115241.3709caf6@ezekiel.suse.cz>
+ <20200925145608.66a89e73@ezekiel.suse.cz>
+ <30969885-9611-06d8-d50a-577897fcab29@gmail.com>
+ <20200929210737.7f4a6da7@ezekiel.suse.cz>
+ <217ae37d-f2b0-1805-5696-11644b058819@redhat.com>
+ <5f2d3d48-9d1d-e9fe-49bc-d1feeb8a92eb@gmail.com>
+ <1c2d888a-5702-cca9-195c-23c3d0d936b9@redhat.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <8a82a023-e361-79db-7127-769e4f6e0d1b@gmail.com>
+Date:   Wed, 30 Sep 2020 17:47:15 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
+In-Reply-To: <1c2d888a-5702-cca9-195c-23c3d0d936b9@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce __xdp_build_skb_from_frame and xdp_build_skb_from_frame
-utility routine to build the skb from xdp_frame.
-Add xdp multi-buff support to cpumap
+On 30.09.2020 11:04, Hans de Goede wrote:
+> Hi,
+> 
+> On 9/29/20 10:35 PM, Heiner Kallweit wrote:
+>> On 29.09.2020 22:08, Hans de Goede wrote:
+> 
+> <snip>
+> 
+>>> Also some remarks about this while I'm being a bit grumpy about
+>>> all this anyways (sorry):
+>>>
+>>> 1. 9f0b54cd167219 ("r8169: move switching optional clock on/off
+>>> to pll power functions") commit's message does not seem to really
+>>> explain why this change was made...
+>>>
+>>> 2. If a git blame would have been done to find the commit adding
+>>> the clk support: commit c2f6f3ee7f22 ("r8169: Get and enable optional ether_clk clock")
+>>> then you could have known that the clk in question is an external
+>>> clock for the entire chip, the commit message pretty clearly states
+>>> this (although "the entire" part is implied only) :
+>>>
+>>> "On some boards a platform clock is used as clock for the r8169 chip,
+>>> this commit adds support for getting and enabling this clock (assuming
+>>> it has an "ether_clk" alias set on it).
+>>>
+>> Even if the missing clock would stop the network chip completely,
+>> this shouldn't freeze the system as described by Petr.
+>> In some old RTL8169S spec an external 25MHz clock is mentioned,
+>> what matches the MII bus frequency. Therefore I'm not 100% convinced
+>> that the clock is needed for basic chip operation, but due to
+>> Realtek not releasing datasheets I can't verify this.
+> 
+> Well if that 25 MHz is the only clock the chip has, then it basically
+> has to be on all the time since all clocked digital ASICs cannot work
+> without a clock.  Now pci-e is a packet-switched point-to-point bus,
+> so the ethernet chip not working should not freeze the entire system,
+> but I'm not really surprised that even though it should not do that,
+> that it still does.
+> 
+>> But yes, if reverting this change avoids the issue on Petr's system,
+>> then we should do it. A simple mechanical revert wouldn't work because
+>> source file structure has changed since then, so I'll prepare a patch
+>> that effectively reverts the change.
+> 
+> Great, thank you.
+> 
+> Regards,
+> 
+> Hans
+> 
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- include/net/xdp.h   |  5 ++++
- kernel/bpf/cpumap.c | 45 +------------------------------
- net/core/xdp.c      | 64 +++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 70 insertions(+), 44 deletions(-)
+Petr,
+in the following I send two patches. First one is supposed to fix the freeze.
+It also fixes another issue that existed before my ether_clk change:
+ether_clk was disabled on suspend even if WoL is enabled. And the network
+chip most likely needs the clock to check for WoL packets.
+Please let me know whether it fixes the freeze, then I'll add your Tested-by.
 
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 4d47076546ff..8d9224ef75ee 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -134,6 +134,11 @@ void xdp_warn(const char *msg, const char *func, const int line);
- #define XDP_WARN(msg) xdp_warn(msg, __func__, __LINE__)
- 
- struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
-+struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
-+					   struct sk_buff *skb,
-+					   struct net_device *dev);
-+struct sk_buff *xdp_build_skb_from_frame(struct xdp_frame *xdpf,
-+					 struct net_device *dev);
- 
- static inline
- void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index c61a23b564aa..fa07b4226836 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -155,49 +155,6 @@ static void cpu_map_kthread_stop(struct work_struct *work)
- 	kthread_stop(rcpu->kthread);
+Second patch is a re-send of the one I sent before, it should fix
+the rx issues after resume from suspend for you.
+
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 6c7c004c2..72351c5b0 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -2236,14 +2236,10 @@ static void rtl_pll_power_down(struct rtl8169_private *tp)
+ 	default:
+ 		break;
+ 	}
+-
+-	clk_disable_unprepare(tp->clk);
  }
  
--static struct sk_buff *cpu_map_build_skb(struct xdp_frame *xdpf,
--					 struct sk_buff *skb)
--{
--	unsigned int hard_start_headroom;
--	unsigned int frame_size;
--	void *pkt_data_start;
--
--	/* Part of headroom was reserved to xdpf */
--	hard_start_headroom = sizeof(struct xdp_frame) +  xdpf->headroom;
--
--	/* Memory size backing xdp_frame data already have reserved
--	 * room for build_skb to place skb_shared_info in tailroom.
--	 */
--	frame_size = xdpf->frame_sz;
--
--	pkt_data_start = xdpf->data - hard_start_headroom;
--	skb = build_skb_around(skb, pkt_data_start, frame_size);
--	if (unlikely(!skb))
--		return NULL;
--
--	skb_reserve(skb, hard_start_headroom);
--	__skb_put(skb, xdpf->len);
--	if (xdpf->metasize)
--		skb_metadata_set(skb, xdpf->metasize);
--
--	/* Essential SKB info: protocol and skb->dev */
--	skb->protocol = eth_type_trans(skb, xdpf->dev_rx);
--
--	/* Optional SKB info, currently missing:
--	 * - HW checksum info		(skb->ip_summed)
--	 * - HW RX hash			(skb_set_hash)
--	 * - RX ring dev queue index	(skb_record_rx_queue)
--	 */
--
--	/* Until page_pool get SKB return path, release DMA here */
--	xdp_release_frame(xdpf);
--
--	/* Allow SKB to reuse area used by xdp_frame */
--	xdp_scrub_frame(xdpf);
--
--	return skb;
--}
--
- static void __cpu_map_ring_cleanup(struct ptr_ring *ring)
+ static void rtl_pll_power_up(struct rtl8169_private *tp)
  {
- 	/* The tear-down procedure should have made sure that queue is
-@@ -364,7 +321,7 @@ static int cpu_map_kthread_run(void *data)
- 			struct sk_buff *skb = skbs[i];
- 			int ret;
+-	clk_prepare_enable(tp->clk);
+-
+ 	switch (tp->mac_version) {
+ 	case RTL_GIGA_MAC_VER_25 ... RTL_GIGA_MAC_VER_33:
+ 	case RTL_GIGA_MAC_VER_37:
+@@ -4820,29 +4816,39 @@ static void rtl8169_net_suspend(struct rtl8169_private *tp)
  
--			skb = cpu_map_build_skb(xdpf, skb);
-+			skb = __xdp_build_skb_from_frame(xdpf, skb, xdpf->dev_rx);
- 			if (!skb) {
- 				xdp_return_frame(xdpf);
- 				continue;
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 6d4fd4dddb00..a6bdefed92e6 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -507,3 +507,67 @@ void xdp_warn(const char *msg, const char *func, const int line)
- 	WARN(1, "XDP_WARN: %s(line:%d): %s\n", func, line, msg);
- };
- EXPORT_SYMBOL_GPL(xdp_warn);
-+
-+struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
-+					   struct sk_buff *skb,
-+					   struct net_device *dev)
+ #ifdef CONFIG_PM
+ 
++static int rtl8169_net_resume(struct rtl8169_private *tp)
 +{
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
-+	unsigned int headroom = sizeof(*xdpf) +  xdpf->headroom;
-+	int i, num_frags = xdpf->mb ? sinfo->nr_frags : 0;
-+	void *hard_start = xdpf->data - headroom;
++	rtl_rar_set(tp, tp->dev->dev_addr);
 +
-+	skb = build_skb_around(skb, hard_start, xdpf->frame_sz);
-+	if (unlikely(!skb))
-+		return NULL;
++	if (tp->TxDescArray)
++		rtl8169_up(tp);
 +
-+	skb_reserve(skb, headroom);
-+	__skb_put(skb, xdpf->len);
-+	if (xdpf->metasize)
-+		skb_metadata_set(skb, xdpf->metasize);
++	netif_device_attach(tp->dev);
 +
-+	if (likely(!num_frags))
-+		goto out;
-+
-+	for (i = 0; i < num_frags; i++) {
-+		skb_frag_t *frag = &sinfo->frags[i];
-+
-+		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
-+				skb_frag_page(frag), skb_frag_off(frag),
-+				skb_frag_size(frag), xdpf->frame_sz);
-+	}
-+
-+out:
-+	/* Essential SKB info: protocol and skb->dev */
-+	skb->protocol = eth_type_trans(skb, dev);
-+
-+	/* Optional SKB info, currently missing:
-+	 * - HW checksum info		(skb->ip_summed)
-+	 * - HW RX hash			(skb_set_hash)
-+	 * - RX ring dev queue index	(skb_record_rx_queue)
-+	 */
-+
-+	/* Until page_pool get SKB return path, release DMA here */
-+	xdp_release_frame(xdpf);
-+
-+	/* Allow SKB to reuse area used by xdp_frame */
-+	xdp_scrub_frame(xdpf);
-+
-+	return skb;
++	return 0;
 +}
-+EXPORT_SYMBOL_GPL(__xdp_build_skb_from_frame);
 +
-+struct sk_buff *xdp_build_skb_from_frame(struct xdp_frame *xdpf,
-+					 struct net_device *dev)
-+{
-+	struct sk_buff *skb;
-+
-+	skb = kmem_cache_alloc(skbuff_head_cache, GFP_ATOMIC);
-+	if (unlikely(!skb))
-+		return NULL;
-+
-+	memset(skb, 0, offsetof(struct sk_buff, tail));
-+
-+	return __xdp_build_skb_from_frame(xdpf, skb, dev);
-+}
-+EXPORT_SYMBOL_GPL(xdp_build_skb_from_frame);
+ static int __maybe_unused rtl8169_suspend(struct device *device)
+ {
+ 	struct rtl8169_private *tp = dev_get_drvdata(device);
+ 
+ 	rtnl_lock();
+ 	rtl8169_net_suspend(tp);
++	if (!device_may_wakeup(tp_to_dev(tp)))
++		clk_disable_unprepare(tp->clk);
+ 	rtnl_unlock();
+ 
+ 	return 0;
+ }
+ 
+-static int rtl8169_resume(struct device *device)
++static int __maybe_unused rtl8169_resume(struct device *device)
+ {
+ 	struct rtl8169_private *tp = dev_get_drvdata(device);
+ 
+-	rtl_rar_set(tp, tp->dev->dev_addr);
+-
+-	if (tp->TxDescArray)
+-		rtl8169_up(tp);
++	if (!device_may_wakeup(tp_to_dev(tp)))
++		clk_prepare_enable(tp->clk);
+ 
+-	netif_device_attach(tp->dev);
+-
+-	return 0;
++	return rtl8169_net_resume(tp);
+ }
+ 
+ static int rtl8169_runtime_suspend(struct device *device)
+@@ -4868,7 +4874,7 @@ static int rtl8169_runtime_resume(struct device *device)
+ 
+ 	__rtl8169_set_wol(tp, tp->saved_wolopts);
+ 
+-	return rtl8169_resume(device);
++	return rtl8169_net_resume(tp);
+ }
+ 
+ static int rtl8169_runtime_idle(struct device *device)
 -- 
-2.26.2
+2.28.0
+
+
+
+
+
+
+
+
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 9e4e6a883..4fb49fd0d 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4837,6 +4837,10 @@ static int rtl8169_resume(struct device *device)
+ 
+ 	rtl_rar_set(tp, tp->dev->dev_addr);
+ 
++	/* Reportedly at least Asus X453MA corrupts packets otherwise */
++	if (tp->mac_version == RTL_GIGA_MAC_VER_37)
++		rtl_init_rxcfg(tp);
++
+ 	if (tp->TxDescArray)
+ 		rtl8169_up(tp);
+ 
+-- 
+2.28.0
+
 
