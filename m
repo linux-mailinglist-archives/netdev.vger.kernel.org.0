@@ -2,151 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF5F227DD1C
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 01:53:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5D1C27DD2F
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 02:00:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729673AbgI2XxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 19:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39630 "EHLO
+        id S1729525AbgI3AAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 20:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728291AbgI2XxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 19:53:23 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6877C061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 16:53:21 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id q13so77786ejo.9
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 16:53:21 -0700 (PDT)
+        with ESMTP id S1728192AbgI3AAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 20:00:12 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB19C061755;
+        Tue, 29 Sep 2020 17:00:11 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id w7so6463657pfi.4;
+        Tue, 29 Sep 2020 17:00:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=t1rtshaSfQyMQT+kzX63bayjFTAmMlt0jI9IFlUPylY=;
-        b=Reg+DZTyVyvCf3PKzlSNKgWpuXbvt3T6g81qJpZzJTaAOok0wMUXtAheoN8eBysMIb
-         x4FfD41wAmIR6HazZQNbvU1nmTGhhF8kxvarhPEJYAZUAXdbWujfcDbpPiUzlGIYffT1
-         f/5Ahus+rAZQT23f32gFg8WHnJrHsGNG6LTIicdrSoP5PqMhFeC+ydE+B9IfJ8qxgBKA
-         yt1VVGKSE39oq01hPgGCO44yL4jY0xSiGU4VLymSDRKctb/rx6jxLepQA6q2em80/5CW
-         DBpKlOGkFi1MuWpIhCIXxau0U3ekBXoERqWCHh9AvKGz9cGcfUtAQIHZG+W/R4GU37TB
-         ky3Q==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0Pjd53fD2sBc+fXIGlMYU+kpxJEKruFYLrsekrSB8mg=;
+        b=D9uYHkxft0fGH7fMMD/yWKc/gn/G5zYOxivYKUSnQQUpm2oH314eje+pprFgShA5YT
+         QZIBPzREy87bgJWbHo/o6VxNqOc9iCcaN+voJdNUj4XMUAsKT39yYgr0t4Vry5ilqf2+
+         b/0HtF2djzdsZ222MxN6mGPt5Afx2jtTpn0jlPXFXMTbdvt0rg8dE+/wi/wDrPthBKvD
+         pyYxy8PqONvLuiOWAI4r6f0Xx3i8SB7wV7hTeJP9lfmGrqownSMzctA9pLk7LxZB6JAl
+         lRxI6mcHcq9Zkndaka5966zXTxDBS7+OSOZ71uL6qnzpdoh/lcsTP0wx3ho8AXTE79FK
+         ImSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=t1rtshaSfQyMQT+kzX63bayjFTAmMlt0jI9IFlUPylY=;
-        b=OL9VsnRh51B3zmBBXrjiCagoxtc9HnwxW/gh9107Wldw1qCtqofG4LOYRVRr/pwS+7
-         q4HYZ0wvNnRq2HlCP/WKVHN/LSHkjSYxmbjc2dMngQe8TTv37PQuVyih6eWBSbTDtnOB
-         kAb7j1YfoWJ7paosAFEOY8uFZuuqlcFWCTl2/J566TcmoOA/MzeuXX1jTyEiwG2f2g39
-         hOvzgawSwcDDgLkuSGVqhJAhH5bclJzYt2cVZhlD/xXdxwoZxAu+y9rQF8+NUUO5vG3D
-         H2Pj4W3ovzMTYxuu4hrJ56owWtEAXCwZJOr4xbxQB6uspHEPLK7bew/qU44PwXjaBWOO
-         p2TA==
-X-Gm-Message-State: AOAM53223sPcFIiS+XVCVooA3gd3cEHvuorKO3KLrGMPQXFXKIJg/An/
-        JArRJNaxrujUYa1ZRvejL2yPYOp/vs9oFu2wy2gCoQ==
-X-Google-Smtp-Source: ABdhPJwX1i8ss2VyW9+uCkdkh3uG4vD+jbxETbbqRBwCd0k3VuxCQE93UdhgF9pmN4t5dbOYxZ0ZecQJc7jg4A2uAxI=
-X-Received: by 2002:a17:907:110f:: with SMTP id qu15mr82909ejb.359.1601423600125;
- Tue, 29 Sep 2020 16:53:20 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0Pjd53fD2sBc+fXIGlMYU+kpxJEKruFYLrsekrSB8mg=;
+        b=EAtQDAm2HUC0tGEmi/cMQE7cQgDnKITvO5RjJw99yxs5192T3m17mCnf6PZNlMoDfj
+         4AV2WWgu79+2++Mup8jIQplqgVvlKsl+YCzgaU1m1J03oBNHl3cDJCa3HZgoawC7E8kw
+         eMJgaoesbkj3GBDDVlANR7hQhbsKS1BJZJ6B9LeajSfJFym+OKwPgb5pDE+Zb5aTnZRo
+         +xaGdkGnGw5OSVPlX1MXvl6C56aO3miqNz4y4jFowLFhyS01eWVtRUhGvab22NVhkyXc
+         C1/sVZMkfgQCsb+OmCRvPhw4SBJ0/bb15Egwmxjo1WyOGvhc+pkREjZ7wu/iRg37dTzh
+         J47g==
+X-Gm-Message-State: AOAM531R3N1dhiyerZDqW5QEbDR66bx9j5yZcg3kW1bIkuzympOw8oun
+        lkutzt49HvbapbTYO04aSMU=
+X-Google-Smtp-Source: ABdhPJwYCHSXD4ZlwqUov1uBMXaTtndsgo6zJRq/8CJAFWe4fph+aW02zONt8LaxqGzkoJ8wTnm3ug==
+X-Received: by 2002:a62:5a04:0:b029:142:2501:397f with SMTP id o4-20020a625a040000b02901422501397fmr121880pfb.68.1601424010777;
+        Tue, 29 Sep 2020 17:00:10 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:d27])
+        by smtp.gmail.com with ESMTPSA id gj6sm28852pjb.10.2020.09.29.17.00.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Sep 2020 17:00:09 -0700 (PDT)
+Date:   Tue, 29 Sep 2020 17:00:07 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
+        ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
+        kpsingh@chromium.org
+Subject: Re: [PATCH bpf-next] bpf: fix raw_tp test run in preempt kernel
+Message-ID: <20200930000007.dgtgbma7rfyeezjx@ast-mbp.dhcp.thefacebook.com>
+References: <20200929225013.930-1-songliubraving@fb.com>
 MIME-Version: 1.0
-References: <20200916223512.2885524-5-haoluo@google.com> <202009170943.rYEs5XMN%lkp@intel.com>
- <CA+khW7iDK+g_W30doEtjse1BSHmB62GcrtmkH3pMk7shymw=XA@mail.gmail.com> <CAEf4BzbBQ6E_ARewNvrevFBsxoey=oK6irAObfHTzYD_UQnWSA@mail.gmail.com>
-In-Reply-To: <CAEf4BzbBQ6E_ARewNvrevFBsxoey=oK6irAObfHTzYD_UQnWSA@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Tue, 29 Sep 2020 16:53:09 -0700
-Message-ID: <CA+khW7jA+BCgXANxd=nqm8waaWcH1-K=trWu+OQaO-a+Q_k=dA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 4/6] bpf: Introduce bpf_per_cpu_ptr()
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, kbuild-all@lists.01.org,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200929225013.930-1-songliubraving@fb.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 21, 2020 at 11:11 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Thu, Sep 17, 2020 at 12:14 PM Hao Luo <haoluo@google.com> wrote:
-> >
-> > I need to cast the pointer to "const void __percpu *" before passing
-> > into per_cpu_ptr. I will update and resend.
->
-> You can try just declaring it as __percpu in BPF_CALL_2 macro. That
-> might work, or not, depending on how exactly BPF_CALL macros are
-> implemented (I haven't checked).
->
+On Tue, Sep 29, 2020 at 03:50:13PM -0700, Song Liu wrote:
+> In preempt kernel, BPF_PROG_TEST_RUN on raw_tp triggers:
+> 
+> [   35.874974] BUG: using smp_processor_id() in preemptible [00000000]
+> code: new_name/87
+> [   35.893983] caller is bpf_prog_test_run_raw_tp+0xd4/0x1b0
+> [   35.900124] CPU: 1 PID: 87 Comm: new_name Not tainted 5.9.0-rc6-g615bd02bf #1
+> [   35.907358] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+> BIOS 1.10.2-1ubuntu1 04/01/2014
+> [   35.916941] Call Trace:
+> [   35.919660]  dump_stack+0x77/0x9b
+> [   35.923273]  check_preemption_disabled+0xb4/0xc0
+> [   35.928376]  bpf_prog_test_run_raw_tp+0xd4/0x1b0
+> [   35.933872]  ? selinux_bpf+0xd/0x70
+> [   35.937532]  __do_sys_bpf+0x6bb/0x21e0
+> [   35.941570]  ? find_held_lock+0x2d/0x90
+> [   35.945687]  ? vfs_write+0x150/0x220
+> [   35.949586]  do_syscall_64+0x2d/0x40
+> [   35.953443]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> Fix this by calling migrate_disable() before smp_processor_id().
+> 
+> Fixes: 1b4d60ec162f ("bpf: Enable BPF_PROG_TEST_RUN for raw_tracepoint")
+> Reported-by: Alexei Starovoitov <ast@kernel.org>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
+>  net/bpf/test_run.c | 20 ++++++++------------
+>  1 file changed, 8 insertions(+), 12 deletions(-)
+> 
+> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> index fde5db93507c4..3ea05a5daf544 100644
+> --- a/net/bpf/test_run.c
+> +++ b/net/bpf/test_run.c
+> @@ -251,11 +251,7 @@ __bpf_prog_test_run_raw_tp(void *data)
+>  {
+>  	struct bpf_raw_tp_test_run_info *info = data;
+>  
+> -	rcu_read_lock();
+> -	migrate_disable();
+>  	info->retval = BPF_PROG_RUN(info->prog, info->ctx);
+> -	migrate_enable();
+> -	rcu_read_unlock();
 
-ACK. IMO it's probably better cast inside, rather than depending on
-BPF_CALL macros. The parameters are not true percpu pointers anyway
-and potential changes on BPF_CALL may break this, I'm afraid.
+I would keep rcu_read_lock here, since there is no need to expand its scope.
 
+>  }
+>  
+>  int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
+> @@ -293,27 +289,27 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
+>  
+>  	info.prog = prog;
+>  
+> +	rcu_read_lock();
+> +	migrate_disable();
+>  	if ((kattr->test.flags & BPF_F_TEST_RUN_ON_CPU) == 0 ||
+>  	    cpu == smp_processor_id()) {
 
-> >
-> > On Wed, Sep 16, 2020 at 6:14 PM kernel test robot <lkp@intel.com> wrote:
-> > >
-> > > Hi Hao,
-> > >
-> > > Thank you for the patch! Perhaps something to improve:
-> > >
-> > > [auto build test WARNING on bpf-next/master]
-> > >
-> > > url:    https://github.com/0day-ci/linux/commits/Hao-Luo/bpf-BTF-support-for-ksyms/20200917-064052
-> > > base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-> > > config: powerpc-randconfig-s032-20200916 (attached as .config)
-> > > compiler: powerpc64-linux-gcc (GCC) 9.3.0
-> > > reproduce:
-> > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> > >         chmod +x ~/bin/make.cross
-> > >         # apt-get install sparse
-> > >         # sparse version: v0.6.2-201-g24bdaac6-dirty
-> > >         # save the attached .config to linux build tree
-> > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' ARCH=powerpc
-> > >
-> > > If you fix the issue, kindly add following tag as appropriate
-> > > Reported-by: kernel test robot <lkp@intel.com>
-> > >
-> > >
-> > > sparse warnings: (new ones prefixed by >>)
-> > >
-> > > >> kernel/bpf/helpers.c:631:31: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got void const * @@
-> > > >> kernel/bpf/helpers.c:631:31: sparse:     expected void const [noderef] __percpu *__vpp_verify
-> > > >> kernel/bpf/helpers.c:631:31: sparse:     got void const *
-> > >
-> > > # https://github.com/0day-ci/linux/commit/3f6ea3c1c73efe466a96ff7499219fe3b03b8f48
-> > > git remote add linux-review https://github.com/0day-ci/linux
-> > > git fetch --no-tags linux-review Hao-Luo/bpf-BTF-support-for-ksyms/20200917-064052
-> > > git checkout 3f6ea3c1c73efe466a96ff7499219fe3b03b8f48
-> > > vim +631 kernel/bpf/helpers.c
-> > >
-> > >    625
-> > >    626  BPF_CALL_2(bpf_per_cpu_ptr, const void *, ptr, u32, cpu)
-> > >    627  {
-> > >    628          if (cpu >= nr_cpu_ids)
-> > >    629                  return (unsigned long)NULL;
-> > >    630
-> > >  > 631          return (unsigned long)per_cpu_ptr(ptr, cpu);
-> > >    632  }
-> > >    633
-> > >    634  const struct bpf_func_proto bpf_per_cpu_ptr_proto = {
-> > >    635          .func           = bpf_per_cpu_ptr,
-> > >    636          .gpl_only       = false,
-> > >    637          .ret_type       = RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL,
-> > >    638          .arg1_type      = ARG_PTR_TO_PERCPU_BTF_ID,
-> > >    639          .arg2_type      = ARG_ANYTHING,
-> > >    640  };
-> > >    641
-> > >  > 642  const struct bpf_func_proto bpf_get_current_task_proto __weak;
-> > >    643  const struct bpf_func_proto bpf_probe_read_user_proto __weak;
-> > >    644  const struct bpf_func_proto bpf_probe_read_user_str_proto __weak;
-> > >    645  const struct bpf_func_proto bpf_probe_read_kernel_proto __weak;
-> > >    646  const struct bpf_func_proto bpf_probe_read_kernel_str_proto __weak;
-> > >    647
-> > >
-> > > ---
-> > > 0-DAY CI Kernel Test Service, Intel Corporation
-> > > https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+may be use get_cpu/put_cpu instead?
+
+>  		__bpf_prog_test_run_raw_tp(&info);
+> -	} else {
+> +	} else if (cpu >= nr_cpu_ids || !cpu_online(cpu)) {
+>  		/* smp_call_function_single() also checks cpu_online()
+>  		 * after csd_lock(). However, since cpu is from user
+>  		 * space, let's do an extra quick check to filter out
+>  		 * invalid value before smp_call_function_single().
+>  		 */
+> -		if (cpu >= nr_cpu_ids || !cpu_online(cpu)) {
+>  		err = -ENXIO;
+> -			goto out;
+> -		}
+> -
+> +	} else {
+>  		err = smp_call_function_single(cpu, __bpf_prog_test_run_raw_tp,
+>  					       &info, 1);
+> -		if (err)
+> -			goto out;
+>  	}
+> +	migrate_enable();
+> +	rcu_read_unlock();
+>  
+> -	if (copy_to_user(&uattr->test.retval, &info.retval, sizeof(u32)))
+> +	if (err == 0 &&
+
+!err would be canonical.
+
+> +	    copy_to_user(&uattr->test.retval, &info.retval, sizeof(u32)))
+>  		err = -EFAULT;
+>  
+>  out:
+> -- 
+> 2.24.1
+> 
