@@ -2,53 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E013E27F4BE
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 00:01:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2642D27F4C0
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 00:02:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731112AbgI3WBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 18:01:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730967AbgI3WB0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 18:01:26 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4CCC061755
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 15:01:26 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8BD4513C70F72;
-        Wed, 30 Sep 2020 14:44:38 -0700 (PDT)
-Date:   Wed, 30 Sep 2020 15:01:23 -0700 (PDT)
-Message-Id: <20200930.150123.1032572640658857587.davem@davemloft.net>
-To:     anthony.l.nguyen@intel.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com
-Subject: Re: [net v2 0/2][pull request] Intel Wired LAN Driver Updates
- 2020-09-30
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200930154923.2069200-1-anthony.l.nguyen@intel.com>
-References: <20200930154923.2069200-1-anthony.l.nguyen@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Wed, 30 Sep 2020 14:44:38 -0700 (PDT)
+        id S1730841AbgI3WCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 18:02:36 -0400
+Received: from mga07.intel.com ([134.134.136.100]:51030 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730090AbgI3WCg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 18:02:36 -0400
+IronPort-SDR: bA40y3DqDaSNbSSXNYPNxzuWhAxggrNw0zIeshL4s7oIxsqtyh0CLfKSF9Eg7hFw7V23rCo/VS
+ 7LYQyCwZzppg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="226694196"
+X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; 
+   d="scan'208";a="226694196"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2020 15:02:31 -0700
+IronPort-SDR: xuyJf6LtHI2Ysc2PdEz/AO58WxBoFukTuk8q88uhEeSkrbVn9ZrMVELP+I43eiSNF9G3I8qyP0
+ aqEj77uSqUzA==
+X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; 
+   d="scan'208";a="457829098"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.35.112]) ([10.212.35.112])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2020 15:02:31 -0700
+Subject: Re: [iproute2-next v1] devlink: display elapsed time during flash
+ update
+To:     Shannon Nelson <snelson@pensando.io>,
+        Jakub Kicinski <kubakici@wp.pl>
+Cc:     netdev@vger.kernel.org
+References: <20200929215651.3538844-1-jacob.e.keller@intel.com>
+ <df1ad702-ab31-e027-e711-46d09f8fa095@pensando.io>
+ <1f8a0423-97ef-29c4-4d77-4b91d23a9e7c@intel.com>
+ <20200930143659.7fee35d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <7a9ff898-bdae-9dab-12a9-30d825b6b67d@intel.com>
+ <d2cf51a6-f09d-7507-e5f1-e6cd84819554@pensando.io>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <e6c46e51-e377-20d0-564a-821c4610e35b@intel.com>
+Date:   Wed, 30 Sep 2020 15:02:27 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
+MIME-Version: 1.0
+In-Reply-To: <d2cf51a6-f09d-7507-e5f1-e6cd84819554@pensando.io>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
-Date: Wed, 30 Sep 2020 08:49:21 -0700
 
-> This series contains updates to ice driver only.
-> 
-> Jake increases the wait time for firmware response as it can take longer
-> than the current wait time. Preserves the NVM capabilities of the device in
-> safe mode so the device reports its NVM update capabilities properly
-> when in this state.
-> 
-> v2: Added cover letter
 
-Pulled, thanks Tony.
+On 9/30/2020 2:55 PM, Shannon Nelson wrote:
+> On 9/30/20 2:43 PM, Jacob Keller wrote:
+>> On 9/30/2020 2:36 PM, Jakub Kicinski wrote:
+>>> On Wed, 30 Sep 2020 14:20:43 -0700 Jacob Keller wrote:
+>>>>> Thanks, Jake.  In general this seems to work pretty well.  One thing,
+>>>>> tho'...
+>>>>>
+>>>>> Our fw download is slow (I won't go into the reasons here) so we're
+>>>>> clicking through the Download x% over maybe 100+ seconds.  Since we send
+>>>>> an update every 3% or so, we end up seeing the ( 0m 3s ) pop up and stay
+>>>>> there the whole time, looking a little odd:
+>>>>>
+>>>>>       ./iproute2-5.8.0/devlink/devlink dev flash pci/0000:b5:00.0 file
+>>>>> ionic/dsc_fw_1.15.0-150.tar
+>>>>>       Preparing to flash
+>>>>>       Downloading  37% ( 0m 3s )
+>>>>>     ...
+>>>>>       Downloading  59% ( 0m 3s )
+>>>>>     ...
+>>>>>       Downloading  83% ( 0m 3s )
+>>> I'm not sure how to interpret this - are you saying that the timer
+>>> doesn't tick up or that the FW happens to complete the operation right
+>>> around the 3sec mark?
+>>>
+>>
+>> The elapsed time is calculated from the last status message we receive.
+>> In Shannon's case, the done/total % status messages come approximately
+>> slow enough that the elapsed time message keeps popping up. Since it's
+>> measuring from the last time we got a status message, it looks weird
+>> because it resets to 3 seconds over and over and over.
+>>
+>>>>> And at the end we see:
+>>>>>
+>>>>>       Preparing to flash
+>>>>>       Downloading 100% ( 0m 3s )
+>>>>>       Installing ( 0m 43s : 25m 0s )
+>>>>>       Selecting ( 0m 5s : 0m 30s )
+>>>>>       Flash done
+>>>>>
+>>>>> I can have the driver do updates more often in order to stay under the 3
+>>>>> second limit and hide this, but it looks a bit funky, especially at the
+>>>>> end where I know that 100% took a lot longer than 3 seconds.
+>>>>>    
+>>>> I think we have two options here:
+>>>>
+>>>> 1) never display an elapsed time when we have done/total information
+>>>>
+>>>> or
+>>>>
+>>>> 2) treat elapsed time as a measure since the last status message
+>>>> changed, refactoring this so that it shows the total time spent on that
+>>>> status message.
+>>>>
+>>>> Thoughts on this? I think I'm leaning towards (2) at the moment myself.
+>>>> This might lead to displaying the timing info on many % calculations
+>>>> though... Hmm
+>>> Is the time information useful after stage is complete? I'd just wipe
+>>> it before moving on to the next message.
+>>>
+>> My point was about changing when we calculated elapsed time from to be
+>> "since the status message changed" rather than "since the last time the
+>> driver sent any status even if the message remains the same".
+> 
+> This would be better, and is a bit like what I was imagining early on, 
+> but at this point I'm wondering if the display of the elapsed time is 
+> actually useful, or simply making it messier.
+> 
+>>
+>> I think clearing the timing message is a good improvement either way, so
+>> I'll do that too.
+> Yes.
+> 
+
+I think if we always clear the elapsed time on a new message it will
+feel a lot cleaner overall.
+
+Thanks,
+Jake
+
+> sln
+> 
+> 
