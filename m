@@ -2,119 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68CB527DE84
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 04:28:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF4327DE8B
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 04:34:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729658AbgI3C2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 22:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35072 "EHLO
+        id S1729742AbgI3CeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 22:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729446AbgI3C2I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 22:28:08 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DFDC061755;
-        Tue, 29 Sep 2020 19:28:07 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id m5so243566lfp.7;
-        Tue, 29 Sep 2020 19:28:07 -0700 (PDT)
+        with ESMTP id S1729470AbgI3CeR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 22:34:17 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D2CC061755;
+        Tue, 29 Sep 2020 19:34:17 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id j19so6713pjl.4;
+        Tue, 29 Sep 2020 19:34:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sUfEpw7X1G1+6Fq/FvfW4rElhh8ieZOdIb5C6ZI1b70=;
-        b=OFyWx6O7rbcK+UhaL69VMj/ErjnRDsDx9W2RaKn6DO3pbuVuR+M2gPR1OsX9uv+mKt
-         SijSAEjT6S1jqUokRL60JNww+n3ELZ5PYfiRrrxVCuu5CgmI4/90l9T8+9IwHOlSz63q
-         QDSFbKs6NYhaTBrOzQKSlRCl1diRwtf8UTRRqzFQzH70bKT4Ldbmk8bID+TArz2cP3p3
-         f5voUI15l5VS7FgefRWfaNqQR88VEWOZrDtJPSEVhIjwfCu5ZpQZWPYH8cDMGlRSJ1+F
-         inawNCxiB2Sp33p3+5vGcJ+5WJw43xlurWxecUiwGMTE2h8ai+o8IciOxfUGqYmvd9re
-         oeTg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JM+btoJd7ENQh4x4CzX1uA1slT1szaC5YkRVd2dg3Es=;
+        b=SO4Khj6/BDZIh/7LEoVTd6EkhaMtqvLON0xorSdzNY9nq7XzUQJRBa9Jm9OgfJMPS0
+         zeVVnwqQK/0vh0KCt/vlPyAKM+lfE3rJyrKCB3961Zoddxq4/QeATinU0GYtHMoRbWFg
+         CCsC9PH1FryMFBpWAwUfSrmuZz/4AA8WeMW3FEE++mjoANxedr4KyBWc9Bu/sY1NeVhW
+         owPqJnVo1ZIuFpfiqC2iLzErcu2tZpl9kjy6cgdxYEt3wd3qN8ecmu+YnePDibNFnOFX
+         eaPXUvCOZyeZGTg5gDEusLaFn9Q2gVi3tqCuc71FdafOjZWQzsOjOFoMdzZ3DC7GWKGS
+         9aDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sUfEpw7X1G1+6Fq/FvfW4rElhh8ieZOdIb5C6ZI1b70=;
-        b=GgJNPRCHDLVIJ7Qh6c1Fvc8ubd5UkwudPeYoeI7o/+MvXDqceULJ008hBb6pMbdlWQ
-         Ms9KxLHsB+f2SB2W68MJLsCd/+4bm/1y05mrHb3aj+Cov7G8lajdFWPE5WpjWHZUsyKA
-         nEJgI0w02o/tVCQ2nZEgieYR9c1ImtuFNJiS7hlqwWPo+b7agF5s0z1l4GRjQA0T4XAN
-         NWw3BiZPEa5D4nv1KRL1zQK8m3be9aR9FF/c1+Dfinuz2ZYaDqUqYg6KbFz/onlpkJ4c
-         brxiOQOyMgKylNyL30iqyO9V+n2BnfcchBD8sqDCk3fDncYmmISve/CcmCxL1DO82DiM
-         3Plg==
-X-Gm-Message-State: AOAM533wbmo5PxxWM/ORrkVxHHno4uXuCjTrn8jfaPCELWpjDFY7g4sz
-        AUNXtPjup/PV3h/hRQRlGvmbBOhGUAycsCnNJIiKbnaeUN7lmgqZ
-X-Google-Smtp-Source: ABdhPJzZAxEohwpc/os/gL/otbXuwFGmNZlfAOd5jy85hIxnLKCLfMYuj9MwxwijWIOY+KASe8CaTba5yJ03qpWrRUc=
-X-Received: by 2002:a05:6512:31d2:: with SMTP id j18mr75425lfe.316.1601432885878;
- Tue, 29 Sep 2020 19:28:05 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JM+btoJd7ENQh4x4CzX1uA1slT1szaC5YkRVd2dg3Es=;
+        b=JqpMiv5YvtSYRS/EXEjO+pMiNj/1oPQR8BGCFXG6O3JUk4whXMoWIJBFK6CdBcNfqg
+         NyThbPdpVTWn+cxSCeZUmbZcN/pKHPaY+vFe6oy9Vo5ilYL4LcmBur+V2uxe1f/z41fo
+         DRk3p0K8qygD6+n93zLA1sVpGzT/JnboS0QF8fCZVsMXZ43hheXjd4WwQZ9rUBOVWlv5
+         H/OQr8A3vevsT5pDj8Ediy/PLAVuGkzsQy73aPI6bDtzwaKmtomgLyqHHxGWqtjgO7N6
+         TbZIBFeTavbj8Z+6MVWEzShrNwAeEVfcRv1bAasjspyES7wFqd1UOQPUanKHAZKZV5fA
+         7Scw==
+X-Gm-Message-State: AOAM533PT70I6Xerld9zdppAfxQjnAR1DuYT8zm+aIz9sPiJhVTm4lP7
+        W2TVrxzuKfqt2DoHHtQ2LBQ=
+X-Google-Smtp-Source: ABdhPJzpJ5Q2HjoE/Kc+RcEhJK3mNCefvCyz06Qjau3VuFYQl3Pt6cikw7axJ2TrWM++WNQRyRnr0w==
+X-Received: by 2002:a17:90b:3852:: with SMTP id nl18mr519796pjb.78.1601433257140;
+        Tue, 29 Sep 2020 19:34:17 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id w206sm112290pfc.1.2020.09.29.19.34.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Sep 2020 19:34:16 -0700 (PDT)
+Date:   Wed, 30 Sep 2020 10:34:05 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH bpf-next] libbpf: export bpf_object__reuse_map() to
+ libbpf api
+Message-ID: <20200930023405.GH2531@dhcp-12-153.nay.redhat.com>
+References: <20200929031845.751054-1-liuhangbin@gmail.com>
+ <CAEf4BzYKtPgSxKqduax1mW1WfVXKuCEpbGKRFvXv7yNUmUm_=A@mail.gmail.com>
+ <20200929094232.GG2531@dhcp-12-153.nay.redhat.com>
+ <CAEf4BzZy9=x0neCOdat-CWO4nM3QYgWOKaZpN31Ce5Uz9m_qfg@mail.gmail.com>
 MIME-Version: 1.0
-References: <alpine.LFD.2.23.451.2009271625160.35554@ja.home.ssi.bg>
- <20200928024938.97121-1-bigclouds@163.com> <CAPaK2r8DnR_dcZ8E9w0mvDbK2KiWCt+JswO=-tqvbWb2RibaYw@mail.gmail.com>
-In-Reply-To: <CAPaK2r8DnR_dcZ8E9w0mvDbK2KiWCt+JswO=-tqvbWb2RibaYw@mail.gmail.com>
-From:   yue longguang <yuelongguang@gmail.com>
-Date:   Wed, 30 Sep 2020 10:27:55 +0800
-Message-ID: <CAPaK2r-jJf4z28S+h=pbaP4MN5QhG_HMDFA3RZbyhRQeALmhRQ@mail.gmail.com>
-Subject: Re: [PATCH v5] ipvs: adjust the debug info in function set_tcp_state
-To:     Julian Anastasov <ja@ssi.bg>, "longguang.yue" <bigclouds@163.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Simon Horman <horms@verge.net.au>
-Cc:     Wensong Zhang <wensong@linux-vs.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:IPVS" <netdev@vger.kernel.org>,
-        "open list:IPVS" <lvs-devel@vger.kernel.org>,
-        "open list:NETFILTER" <coreteam@netfilter.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZy9=x0neCOdat-CWO4nM3QYgWOKaZpN31Ce5Uz9m_qfg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Julian, Pablo, Simon,  Hi,  ping
+On Tue, Sep 29, 2020 at 04:03:45PM -0700, Andrii Nakryiko wrote:
+> > bpf_map__set_pin_path()
+> > bpf_create_map_in_map()    <- create inner or outer map
+> > bpf_map__reuse_fd(map, inner/outer_fd)
+> > bpf_object__load(obj)
+> >   - bpf_object__load_xattr()
+> >     - bpf_object__create_maps()
+> >       - if (map->fd >= 0)
+> >           continue      <- this will skip pinning map
+> 
+> so maybe that's the part that needs to be fixed?..
 
-On Tue, Sep 29, 2020 at 10:15 AM yue longguang <yuelongguang@gmail.com> wrote:
->
-> I sincerely apologize for the trouble which takes up much of your
-> time. If the last patch does not work , would you please fix it?
-> thanks
->
-> On Mon, Sep 28, 2020 at 10:51 AM longguang.yue <bigclouds@163.com> wrote:
-> >
-> > Outputting client,virtual,dst addresses info when tcp state changes,
-> > which makes the connection debug more clear
-> >
-> > Signed-off-by: longguang.yue <bigclouds@163.com>
-> > ---
-> >  net/netfilter/ipvs/ip_vs_proto_tcp.c | 10 ++++++----
-> >  1 file changed, 6 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/net/netfilter/ipvs/ip_vs_proto_tcp.c b/net/netfilter/ipvs/ip_vs_proto_tcp.c
-> > index dc2e7da2742a..7da51390cea6 100644
-> > --- a/net/netfilter/ipvs/ip_vs_proto_tcp.c
-> > +++ b/net/netfilter/ipvs/ip_vs_proto_tcp.c
-> > @@ -539,8 +539,8 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
-> >         if (new_state != cp->state) {
-> >                 struct ip_vs_dest *dest = cp->dest;
-> >
-> > -               IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] %s:%d->"
-> > -                             "%s:%d state: %s->%s conn->refcnt:%d\n",
-> > +               IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] c:%s:%d v:%s:%d "
-> > +                             "d:%s:%d state: %s->%s conn->refcnt:%d\n",
-> >                               pd->pp->name,
-> >                               ((state_off == TCP_DIR_OUTPUT) ?
-> >                                "output " : "input "),
-> > @@ -548,10 +548,12 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
-> >                               th->fin ? 'F' : '.',
-> >                               th->ack ? 'A' : '.',
-> >                               th->rst ? 'R' : '.',
-> > -                             IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
-> > -                             ntohs(cp->dport),
-> >                               IP_VS_DBG_ADDR(cp->af, &cp->caddr),
-> >                               ntohs(cp->cport),
-> > +                             IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
-> > +                             ntohs(cp->vport),
-> > +                             IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
-> > +                             ntohs(cp->dport),
-> >                               tcp_state_name(cp->state),
-> >                               tcp_state_name(new_state),
-> >                               refcount_read(&cp->refcnt));
-> > --
-> > 2.20.1 (Apple Git-117)
-> >
+Hmm...maybe, let me see
+
+> 
+> I'm still not sure. And to be honest your examples are still a bit too
+> succinct for me to follow where the problem is exactly. Can you please
+> elaborate a bit more?
+
+Let's take iproute2 legacy map for example, if it's a map-in-map type with
+pin path defined. In user space we could do like:
+
+if (bpf_obj_get(pathname) < 0) {
+	bpf_create_map_in_map();
+	bpf_map__reuse_fd(map, map_fd);
+}
+bpf_map__set_pin_path(map, pathname);
+bpf_object__load(obj)
+
+So in libbpf we need
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 32dc444224d8..5412aa7169db 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -4215,7 +4215,7 @@ bpf_object__create_maps(struct bpf_object *obj)
+                if (map->fd >= 0) {
+                        pr_debug("map '%s': skipping creation (preset fd=%d)\n",
+                                 map->name, map->fd);
+-                       continue;
++                       goto check_pin_path;
+                }
+
+                err = bpf_object__create_map(obj, map);
+@@ -4258,6 +4258,7 @@ bpf_object__create_maps(struct bpf_object *obj)
+                        map->init_slots_sz = 0;
+                }
+
++check_pin_path:
+                if (map->pin_path && !map->pinned) {
+                        err = bpf_map__pin(map, NULL);
+                        if (err) {
+
+
+Do you think if this change be better?
+
+Thanks
+Hangbin
