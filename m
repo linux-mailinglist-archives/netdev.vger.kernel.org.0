@@ -2,188 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C43927E634
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 12:07:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D30F727E63D
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 12:09:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728500AbgI3KHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 06:07:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:39861 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725823AbgI3KHC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 06:07:02 -0400
-Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601460421;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BwVIHLEWodPVOSsatT81+9zezrxEE2RvlRZKZt8C+R0=;
-        b=IFP4H0QPKMSi/WidQRXNQO4QlAb30HsR9U0M6BmIBW3hhtklK7Q9iAxN1CQGnqrffUbKlP
-        WiTIiEfMIReVHeiQ5t0piLp8W/NYHdVJ3YlGgx5WLWE6MqIAzlteuhD8n/wkP/v6YQ+ZKb
-        8Dmh/KWlAxrp8QJCdTUPa83yS2eZU20=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-292-CWI6YIp1NFWFtFaQDfC5kw-1; Wed, 30 Sep 2020 06:06:59 -0400
-X-MC-Unique: CWI6YIp1NFWFtFaQDfC5kw-1
-Received: by mail-wr1-f71.google.com with SMTP id h4so429523wrb.4
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 03:06:59 -0700 (PDT)
+        id S1728367AbgI3KJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 06:09:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725823AbgI3KJP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 06:09:15 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D65C061755
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 03:09:15 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id f15so1054209ilj.2
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 03:09:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=6zOSxzLoBiu5XpwsWWEYRJcrZYnoVHWJjj/2em9kwUY=;
+        b=Sq6DjmnjVzo7DfYVu/+b0075/noILu5bDuC58ruhMHSlel+k4ov9svLugLEIBKxIzq
+         t1YyYOzY5JeRQEY7pnanuZm6G6/G51Covkx6MoNJKtBEpOzpi5hD9a9KurEbXcJ9AWPp
+         rAO18fmH5AZHqkFUaxv+dR32lM6vCc4wMGULnSIAwRev5pCEbBj8ycGGkukElqYNNjw4
+         kspg+AFQM2ve9a2mnUGjkwIxNHkdmQ+qrmVCs7t7RR60E8aGKsFR4lhmsPDahWkTCVpe
+         3lHqzOZZ+/7XVLwsydXJExfUyJEhitC9ZKeBmXmGujxmgEC1mCuwgPI8kXTncRUunXZQ
+         uI7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BwVIHLEWodPVOSsatT81+9zezrxEE2RvlRZKZt8C+R0=;
-        b=fLbeCCqMEm5zPgv34eP/6+MrQLZaCDwKUnE9nK7ljzGpuNHH2aAz4m+QVa6YqIl9xh
-         cu2CVO/8YZaEHex+dED3O5fyqfAr/WZgtU4l9spTRDFHLOQQ55ExDDMBT9G02LDvTshd
-         RXJQLgIzLhKXJEhyL6BQd5/Dkzl59ebppmxb0133XPfK3vjqomHJ4G5H3S5Ul/T/0KlQ
-         Ot9j71LntZNRoN7/ldQgJoI84qDH3mgZjyqw7d1RURSdbRHfr+OrrMKqMgh2gr/k2cpC
-         rWuypD/IiqrrkwKZ3+l/rosj4pwe0fXEOvFafSv5EijwuFbl+ijP1oo6or9fX2FbhHC6
-         e19w==
-X-Gm-Message-State: AOAM532syj1/raecytVhySJZWwKZw1GV977DOS2UXNQl0kC4Ue5zTsB2
-        GEwV/yaP/IplMDelGltfrpqGFTsVZEA0f8Vj3lbak9DsK3f/yv1HtYCuvB8VaTY1kqX4IwhAQ0z
-        Qja/Lx3Xr8VF44oNz
-X-Received: by 2002:a5d:44cc:: with SMTP id z12mr2293414wrr.189.1601460417953;
-        Wed, 30 Sep 2020 03:06:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwXAUnYauOkE1JQ0+HRkYxCraj5fkodDQ5XeZ6e8HpPC6ihFDym5v/2ZUmtyKsepgbZSrnwrQ==
-X-Received: by 2002:a5d:44cc:: with SMTP id z12mr2293384wrr.189.1601460417674;
-        Wed, 30 Sep 2020 03:06:57 -0700 (PDT)
-Received: from redhat.com (bzq-79-179-71-128.red.bezeqint.net. [79.179.71.128])
-        by smtp.gmail.com with ESMTPSA id 70sm1974647wme.15.2020.09.30.03.06.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2020 03:06:56 -0700 (PDT)
-Date:   Wed, 30 Sep 2020 06:06:53 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     xiangxia.m.yue@gmail.com
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2] virtio-net: ethtool configurable RXCSUM
-Message-ID: <20200930060625-mutt-send-email-mst@kernel.org>
-References: <20200930020300.62245-1-xiangxia.m.yue@gmail.com>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=6zOSxzLoBiu5XpwsWWEYRJcrZYnoVHWJjj/2em9kwUY=;
+        b=Gv+cLf+AqTk2zuqha3IM+syVARsAVD/waYgKdf3d0+bwwx+5LwCs91OcUyOcGOaBHT
+         s09mbEnIb6c5dlPcpBpKwuxPe82QpVY0bRMzYbqJHHTWY7Ody8sZ6iF/AVxPZHEOZwwB
+         cvQqRWiKjVafdhpaFt4+05wjaUAohRc7o5VceKkI0cwVnrw9LEsqck33Cj6WjStnMI9/
+         Pwc/+aRqsYEb/SEyFjz19EGCimRnwY2OjdhSrE2tQJm3hF4h8Ple6QS1oEg0fx9w/wrt
+         hKJ0ZHFHWaQSO7ufBPIgAnIuMA6e6PguGk3EbgcqBymPGXTMMcin6PC8QK+QLlXgsHoI
+         iLpA==
+X-Gm-Message-State: AOAM5312QEyWjsXdNRVxUP87ZsapRmQSiGPchP9kVjyLunWwDWTdhdza
+        P2yETM7ZLXJ+76JmTkaaU5OpQWJZmGL2WXnZ/hczIgiRIwE=
+X-Google-Smtp-Source: ABdhPJyr8Vm/KTTCsmRzdPjKK+IkbBeTIUTpDrBrxJXAtmsYeHzE5yf7BtiUNCUgCZsawMkezIRYASm3i1A6hF4J/Z8=
+X-Received: by 2002:a92:cc0f:: with SMTP id s15mr1362460ilp.254.1601460554767;
+ Wed, 30 Sep 2020 03:09:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200930020300.62245-1-xiangxia.m.yue@gmail.com>
+From:   Peter Vollmer <peter.vollmer@gmail.com>
+Date:   Wed, 30 Sep 2020 12:09:03 +0200
+Message-ID: <CAGwvh_MAQWuKuhu5VuYjibmyN-FRxCXXhrQBRm34GShZPSN6Aw@mail.gmail.com>
+Subject: dsa/mv88e6xxx: leaking packets on MV88E6341 switch
+To:     Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 10:03:00AM +0800, xiangxia.m.yue@gmail.com wrote:
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> 
-> Allow user configuring RXCSUM separately with ethtool -K,
-> reusing the existing virtnet_set_guest_offloads helper
-> that configures RXCSUM for XDP. This is conditional on
-> VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
-> 
-> If Rx checksum is disabled, LRO should also be disabled.
-> 
-> Cc: Michael S. Tsirkin <mst@redhat.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Hi all,
+I am currently investigating a leaking packets problem on a
+armada-37xx + MV88E6341 switch (via SGMII)  + MV88E1512 Phy (via
+RGMII)  platform. We are using the mainline 5.4.y kernel.
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+The switch and phy setup is defined in the flat device tree as follows:
+
+&eth0 {
+        phy-mode = "rgmii-id";
+        phy = <&ethphy0>;
+        status = "okay";
+};
+
+&eth1 {
+        phy-mode = "sgmii";
+        status = "okay";
+
+        fixed-link {
+                speed = <2500>;
+                full-duplex;
+        };
+};
+
+&mdio {
+        reset-gpios = <&gpiosb 0 GPIO_ACTIVE_LOW>;
+        reset-delay-us = <2>;
+
+        ethphy0: ethernet-phy@0 {
+                reg = <0x0>;
+                status = "okay";
+        };
+
+        switch0: switch0@1 {
+                compatible = "marvell,mv88e6085";
+                #address-cells = <1>;
+                #size-cells = <0>;
+                reg = <1>;
+                cpu-port = <5>;
+                dsa,member = <0 0>;
+                status = "okay";
+
+                ports {
+                        #address-cells = <0x1>;
+                        #size-cells = <0x0>;
+
+                        port@1 {
+                                reg = <1>;
+                                label = "lan0";
+                                phy-handle = <&switch0phy1>;
+                        };
+                        port@2 {
+                                reg = <2>;
+                                label = "lan1";
+                                phy-handle = <&switch0phy2>;
+                        };
+
+                        port@3 {
+                                reg = <3>;
+                                label = "lan2";
+                                phy-handle = <&switch0phy3>;
+                        };
+
+                        port@4 {
+                                reg = <4>;
+                                label = "lan3";
+                                phy-handle = <&switch0phy4>;
+                        };
+
+                        port@5 {
+                                reg = <5>;
+                                label = "cpu";
+                                ethernet = <&eth1>;
+                        };
+                };
 
 
-> ---
-> v2:
-> * LRO depends the rx csum
-> * remove the unnecessary check
-> ---
->  drivers/net/virtio_net.c | 49 ++++++++++++++++++++++++++++++----------
->  1 file changed, 37 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 21b71148c532..5407a0106771 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -68,6 +68,8 @@ static const unsigned long guest_offloads[] = {
->  				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
->  				(1ULL << VIRTIO_NET_F_GUEST_UFO))
->  
-> +#define GUEST_OFFLOAD_CSUM_MASK (1ULL << VIRTIO_NET_F_GUEST_CSUM)
-> +
->  struct virtnet_stat_desc {
->  	char desc[ETH_GSTRING_LEN];
->  	size_t offset;
-> @@ -2522,29 +2524,49 @@ static int virtnet_get_phys_port_name(struct net_device *dev, char *buf,
->  	return 0;
->  }
->  
-> +static netdev_features_t virtnet_fix_features(struct net_device *netdev,
-> +					      netdev_features_t features)
-> +{
-> +	/* If Rx checksum is disabled, LRO should also be disabled.
-> +	 * That is life. :)
-> +	 */
-> +	if (!(features & NETIF_F_RXCSUM))
-> +		features &= ~NETIF_F_LRO;
-> +
-> +	return features;
-> +}
-> +
->  static int virtnet_set_features(struct net_device *dev,
->  				netdev_features_t features)
->  {
->  	struct virtnet_info *vi = netdev_priv(dev);
-> -	u64 offloads;
-> +	u64 offloads = vi->guest_offloads &
-> +		       vi->guest_offloads_capable;
->  	int err;
->  
-> -	if ((dev->features ^ features) & NETIF_F_LRO) {
-> -		if (vi->xdp_queue_pairs)
-> -			return -EBUSY;
-> +	/* Don't allow configuration while XDP is active. */
-> +	if (vi->xdp_queue_pairs)
-> +		return -EBUSY;
->  
-> +	if ((dev->features ^ features) & NETIF_F_LRO) {
->  		if (features & NETIF_F_LRO)
-> -			offloads = vi->guest_offloads_capable;
-> +			offloads |= GUEST_OFFLOAD_LRO_MASK;
->  		else
-> -			offloads = vi->guest_offloads_capable &
-> -				   ~GUEST_OFFLOAD_LRO_MASK;
-> +			offloads &= ~GUEST_OFFLOAD_LRO_MASK;
-> +	}
->  
-> -		err = virtnet_set_guest_offloads(vi, offloads);
-> -		if (err)
-> -			return err;
-> -		vi->guest_offloads = offloads;
-> +	if ((dev->features ^ features) & NETIF_F_RXCSUM) {
-> +		if (features & NETIF_F_RXCSUM)
-> +			offloads |= GUEST_OFFLOAD_CSUM_MASK;
-> +		else
-> +			offloads &= ~GUEST_OFFLOAD_CSUM_MASK;
->  	}
->  
-> +	err = virtnet_set_guest_offloads(vi, offloads);
-> +	if (err)
-> +		return err;
-> +
-> +	vi->guest_offloads = offloads;
->  	return 0;
->  }
->  
-> @@ -2563,6 +2585,7 @@ static const struct net_device_ops virtnet_netdev = {
->  	.ndo_features_check	= passthru_features_check,
->  	.ndo_get_phys_port_name	= virtnet_get_phys_port_name,
->  	.ndo_set_features	= virtnet_set_features,
-> +	.ndo_fix_features	= virtnet_fix_features,
->  };
->  
->  static void virtnet_config_changed_work(struct work_struct *work)
-> @@ -3013,8 +3036,10 @@ static int virtnet_probe(struct virtio_device *vdev)
->  	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
->  	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
->  		dev->features |= NETIF_F_LRO;
-> -	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-> +	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS)) {
-> +		dev->hw_features |= NETIF_F_RXCSUM;
->  		dev->hw_features |= NETIF_F_LRO;
-> +	}
->  
->  	dev->vlan_features = dev->features;
->  
-> -- 
-> 2.23.0
+                mdio {
+                        #address-cells = <1>;
+                        #size-cells = <0>;
 
+                        switch0phy1: switch0phy0@11 {
+                                reg = <0x11>;
+                        };
+                        switch0phy2: switch0phy1@12 {
+                                reg = <0x12>;
+                        };
+                        switch0phy3: switch0phy2@13 {
+                                reg = <0x13>;
+                        };
+                        switch0phy4: switch0phy2@14 {
+                                reg = <0x14>;
+                        };
+                };
+        };
+};
+
+lan0..lan3 are members of the br0 bridge interface.
+
+The problem is that for ICMP ping lan0-> eth0, ICMP ping request
+packets are leaking (i.e. flooded)  to all other ports lan1..lan3,
+while the ping reply eth0->lan0 arrives correctly at lan0 without any
+leaked packets on lan1..lan3.
+The problem temporarily goes away for ~280 seconds after I toggle the
+multicast flag of the bridge interface ( ifconfig br0 [-]multicast )
+We also noticed an asymmetric maximum network throughput, UDP traffic
+lan0->eth0 is much slower than in the direction eth0->lan0.
+
+My assumption is that in our case the SRC MAC address of the bridge
+(or eth1) interface is not correctly learned by the switch, so it
+floods the packets in reverse direction to all ports (CPU port 5 and
+the other lan ports). As it seems the DSA packets ingressing on CPU
+port5 (eth0->lan0) are sent as DSA MGMT frames, but those seem not to
+be used for address learning.
+
+Is this a known effect for this kind of setup, and is there something
+we can do about it ?
+
+What would be the best way to debug this ? Is there a way to dump the
+ATU MAC tables to see what's going on with the address learning ?
+
+Many thanks and best regards
+
+Peter
