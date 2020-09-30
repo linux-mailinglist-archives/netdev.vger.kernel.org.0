@@ -2,101 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C417B27EDFC
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 17:56:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBA9227EE01
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 17:56:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728819AbgI3P4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 11:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46458 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725355AbgI3P4A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 11:56:00 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA93DC061755;
-        Wed, 30 Sep 2020 08:55:58 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id q9so32899wmj.2;
-        Wed, 30 Sep 2020 08:55:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=whq8WAXRjk7ec2QJ8+8MtHlF+DITSdGmvR0TsIALGuU=;
-        b=VHOonPRjYSEulblKeiMXnBs8ZvfVVNV/P4klarccoXAxPafcmRGcTNoICV79F9XrUR
-         HB1BYIAHLu641bx+bY1+7/WIRaZUvGSzDKdUb6yfU/Z4Gt91K2H088058QM7uXUd/4ls
-         E9M0xFGujQo55ayyNbQXHketTOzUmSAVYIScEy1XvsubxYCAs1ulZB1j8adW78j5a12O
-         vZp0VBR9SG/Aks1icANIeNBX3FtlmLBocPo8jhFX3FzDAJwSGAF/G3Bv/oOl+EZJ2TaC
-         fJ3WfALSF1TntHW8+VkOT1MqccwRO1BoEmILWUS8+EbbI/IW6NPBwqu/9tVskF/gBJ1l
-         Dcfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=whq8WAXRjk7ec2QJ8+8MtHlF+DITSdGmvR0TsIALGuU=;
-        b=P3aMT6mfnqJLfbUHUM/lnfCz6zema4QA98EIHX9p8RJGymc9wVgyBf2vGvRDwPIR1Q
-         3QJebQrDS+p/mOwlLzb0d5n7D97JgdCVRrx7XYB1B0UQa9OCbk+zcQbij9KVxaclD6EK
-         43e9qkThI69ME/KJqtGGsGktmIUFWvFyH7K4D64WUoixhYx2ljxQzn25TYNh1ZpPQlhA
-         xUZ5KeTJR8sZVReZLbM5uuXYrSl+lCVRZrCoMHe//cUP2IrSPF7HMFb3ZWHLaRF/2DiO
-         0Zi2A3LkRfYoeVfKXTGeS49PWDEEaXZ0ZndQjNgb/IhinI97e5AwWmtShynJ4IYMOmO8
-         nTZw==
-X-Gm-Message-State: AOAM533eXDtb31xLr/YHbpowGvX9fo3tg55UAr+T8NnnYRAmc2dIvrrt
-        ZnCaOI/Shd0mFgRmRN+HPPD5qjLxoYs=
-X-Google-Smtp-Source: ABdhPJxT7UdKtA5yQFeCtiFZQBFbedgCCZnxNOxAZoo3vBoJjUa/xQPdhMNR6kMKsAyZtstbDKD9pA==
-X-Received: by 2002:a05:600c:221a:: with SMTP id z26mr3956645wml.131.1601481357632;
-        Wed, 30 Sep 2020 08:55:57 -0700 (PDT)
-Received: from [192.168.8.147] ([37.173.161.238])
-        by smtp.gmail.com with ESMTPSA id o15sm3422075wmh.29.2020.09.30.08.55.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Sep 2020 08:55:57 -0700 (PDT)
-Subject: Re: [PATCH bpf-next v4 2/6] bpf, net: rework cookie generator as
- per-cpu one
-To:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org
-Cc:     john.fastabend@gmail.com, kafai@fb.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>
-References: <cover.1601477936.git.daniel@iogearbox.net>
- <8a80b8d27d3c49f9a14e1d5213c19d8be87d1dc8.1601477936.git.daniel@iogearbox.net>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <c42aac64-d78c-7f3b-9e07-5da7d46aa582@gmail.com>
-Date:   Wed, 30 Sep 2020 17:55:55 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1729940AbgI3P4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 11:56:24 -0400
+Received: from sonic317-38.consmr.mail.ne1.yahoo.com ([66.163.184.49]:44690
+        "EHLO sonic317-38.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725872AbgI3P4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 11:56:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1601481383; bh=RELQ6zEaKUzKotEk3T33ncEVq3IqazKA87XFz5LBnDQ=; h=Subject:To:Cc:References:From:Date:In-Reply-To:From:Subject; b=YREuWAA9BgI+sDAXKonin6pM1Z6JePzC6H3DozvvlkI+8QHbUk9L3rRz9ws+XDtHxxv7UNK1rVRsBfNsGGOXW//b2pTVzyoS2lIWVWe4J1CLCT50niU8+Y2iEckvaG0lqXd6soJ6q1YR0hzEgNHuEaix5ICY5te/1bSI6+mvrjO3LV5z3QsmrMAWLVvDBN5b/omKVXI38VRnFDwYCbrwc6iaD2IuBxxnjl3yhvHXlwnBqBhNMCRur5Kbjd7P55VIjr8sqm6wqSOt9xAJHrj0BcR3wN5knxcpyXtgH6upgkfNSA+Rcp+x2fIRUeYlvBfwXfKIKazk3ggYjdJpgd3Yog==
+X-YMail-OSG: DlAYhWIVM1nEoZgQ.gTV2uevcLhaWDdPyQW7eTYyCPW.jtc_Xu7KWxL9.P7S5JI
+ OIspIMKrRxqo92PuCKA2P4pOLQ3jXgs3axUgZL_rQdDkVJrM2YnUQBOh6aPGVRdxm3ELchi8QYd0
+ VzXFpJ221xM.VNOta15KkE98zc1HPI4Z_JOqkHqOHDPbcV22wCNOpnWX8jysDi06jjUkMtsTCivc
+ Vnd9CK2en9c9YFUNZgElmz4lAbvQ8582O0bs2RGrglrBIFWfIeMYUvoUVQ37SjzLaAI1kfc2LPrq
+ fL_VJYV4xDqWzCVE2R_Y2L5b.7R1OsHL7o9jrUTgwxZXqfkcLf5xDBtKrqBrSaUcXQXtsmA1utLM
+ vgiRzU3JQvVJEOCSCy3HcvJSy2tQGhD9NZkuCnK7BpY3IT5oYc8QhmYICDeF3.DrJHaoPYkVQsql
+ c69aZPDEU.T9nZkjfd59MzUFgt65aehOplaqyv_o1Zc9wJw3Py6EMt9zXCFtd.MsQ58A5n0vcqAd
+ r3gRZ_YmLC4wd7KOTl5JuNKolNyuN6WIg3NdOjKAGALXKxZbu2ABQUmioO5rKjF1WE7HboTRITGd
+ _WIDGbAlIjOadwWpdy0YM8qPANZMApoZH8DA9xgFh7NQcEVadDoq15603Q9NK5SolEb_YHPcwA6C
+ rh.GAJ4_zbR_Tfs8iYBWs1atyE5xKQ87eDL0kxD6AOj8DAfTpbOgsiTCoXHb2ujrEKJHb8WR58rP
+ WxBCyUiSNWB22C3a9dtVozf.OEgLTNH4YL58UbwDvxb5Odcvuh1Kji5L3B1fMhtM.SX.L0WDarZh
+ nPoMYPpegkyD97yMs4AomVfmxMGHbP1GvY6d_GHXUUy4auENbEmTs1YymA7J7iyoQWwDGdW6g5V1
+ C.xLx_itN09.R.cP6v7OIArQjZzXIyQOsfnM7.x212204byEtvY3gxuyQG1pB4bmQ1JEbiFgPlzQ
+ XJ8YAgXDRgJC44c_NlBqxiGfEx5NTpKLOiMIW39LwIV10Ht7TQOUhI6FJ75wVdIAMABtbUXS9EN2
+ Edk80ao1jic82hiS7Cb519pAi066.pU.Vqujy7WM0_EHFPrska4gmmUGi9mNo4kqka9kOVsd2ZYg
+ iP_MFLE30z7rkNfHYkcyC1Sh_dFeXHnonGjE47kdO.fzXDz6xn1nz2kTh1WUJPN.q7giwTbjePoG
+ 6BtF6hIf7I.z0XO1RTdZ1MD_b8J6c4AdHFpDMGQz.jYKZmSFgqKO4MSCbqCNlI.n3LJCiFcGjzDO
+ tBNQVQriJJ0fFmv9QGtrpNxnm0b15r2DkG6nJaW6a_0Y.zOyUVVCTuYL.vqgMOhlpE0R.Sjge5cl
+ Cza3l6Ad_DEUx1yJnWM7jTZ.jKuP01CzfiYOvMTHHYn6aLdZwS.kIP3TuV1JL50vgkJ13oZ3dXTX
+ oJq4Q6gULZ18tuTgTioj2igkfsuKOKsRKSCXLWK4hqs5ja9Octq23Iym4t.QglT8HZeJ0oYXGxLf
+ ayXIcuHJz3B5KVhPsH5QcU1C3qcSzVSZ30nwi5Ab4P9kVLhwqOKZyI7Mk2AEMGpj.TVmTUL1GXbL
+ SlMxMW6Polw--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic317.consmr.mail.ne1.yahoo.com with HTTP; Wed, 30 Sep 2020 15:56:23 +0000
+Received: by smtp418.mail.gq1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 8a38d755fdf2675bafdb143cab02cede;
+          Wed, 30 Sep 2020 15:56:22 +0000 (UTC)
+Subject: Re: [PATCH 0/3] Add LSM/SELinux support for GPRS Tunneling Protocol
+ (GTP)
+To:     Richard Haines <richard_c_haines@btinternet.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
+        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
+        stephen.smalley.work@gmail.com, paul@paul-moore.com,
+        laforge@gnumonks.org, jmorris@namei.org
+References: <20200930094934.32144-1-richard_c_haines@btinternet.com>
+ <20200930101736.GA18687@salvia>
+ <0a5e4f19d7bb5c61985dece7614dc33329858f36.camel@btinternet.com>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+Message-ID: <c075cd58-983f-0386-4281-6ff1edb6920c@schaufler-ca.com>
+Date:   Wed, 30 Sep 2020 08:56:22 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-In-Reply-To: <8a80b8d27d3c49f9a14e1d5213c19d8be87d1dc8.1601477936.git.daniel@iogearbox.net>
+In-Reply-To: <0a5e4f19d7bb5c61985dece7614dc33329858f36.camel@btinternet.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Mailer: WebService/1.1.16718 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo Apache-HttpAsyncClient/4.1.4 (Java/11.0.7)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 9/30/2020 5:20 AM, Richard Haines wrote:
+> On Wed, 2020-09-30 at 12:17 +0200, Pablo Neira Ayuso wrote:
+> ....
+>> Why do you need this?
+> I don't actually have a use for this, I only did it out of idle
+> curiosity. If it is useful to the community then okay. Given the
+> attemped move to Open 5G I thought adding MAC support might be useful
+> somewhere along the line.
 
-
-On 9/30/20 5:18 PM, Daniel Borkmann wrote:
-> With its use in BPF, the cookie generator can be called very frequently
-> in particular when used out of cgroup v2 hooks (e.g. connect / sendmsg)
-> and attached to the root cgroup, for example, when used in v1/v2 mixed
-> environments. In particular, when there's a high churn on sockets in the
-> system there can be many parallel requests to the bpf_get_socket_cookie()
-> and bpf_get_netns_cookie() helpers which then cause contention on the
-> atomic counter.
-> 
-> As similarly done in f991bd2e1421 ("fs: introduce a per-cpu last_ino
-> allocator"), add a small helper library that both can use for the 64 bit
-> counters. Given this can be called from different contexts, we also need
-> to deal with potential nested calls even though in practice they are
-> considered extremely rare. One idea as suggested by Eric Dumazet was
-> to use a reverse counter for this situation since we don't expect 64 bit
-> overflows anyways; that way, we can avoid bigger gaps in the 64 bit
-> counter space compared to just batch-wise increase. Even on machines
-> with small number of cores (e.g. 4) the cookie generation shrinks from
-> min/max/med/avg (ns) of 22/50/40/38.9 down to 10/35/14/17.3 when run
-> in parallel from multiple CPUs.
-> 
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
-> Cc: Eric Dumazet <eric.dumazet@gmail.com>
-
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-
-Thanks.
+I am not a fan of adding code that "might be useful someday".
+There's no way to determine if it's been done correctly and
+may interfere with a "real" implementation later.
 
