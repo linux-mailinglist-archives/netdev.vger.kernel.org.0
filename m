@@ -2,231 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAA4E27DE58
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 04:11:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68CB527DE84
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 04:28:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729708AbgI3CLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 22:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60812 "EHLO
+        id S1729658AbgI3C2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 22:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729322AbgI3CLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 22:11:49 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBE7C061755
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 19:11:48 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id g4so170015edk.0
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 19:11:47 -0700 (PDT)
+        with ESMTP id S1729446AbgI3C2I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 22:28:08 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DFDC061755;
+        Tue, 29 Sep 2020 19:28:07 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id m5so243566lfp.7;
+        Tue, 29 Sep 2020 19:28:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7hZ1tmJDKYbFj1JAR2kOqXmJ14cEBCBL/omVit1tt0s=;
-        b=HBThixVJFPy2i/wXeINssCE+v7YQyICrCJcnIXctSDPZcNDXhfa2QpdfTAttjX+6VD
-         nPLVueF6rZ6Q8WIhAHIMytXxlKKA0SR914CAFk+JB5Fn4IIY8W9cIWRWPrVKVxygY2Ya
-         HIRiVe/DvXPPqLeXo7WKxVJUieoOYGffMxB6zWbm6INFKA9dN09xyAR52VwtQLz31d5a
-         Y2hlia8qk63vCgHY7ZgIJ00wPM1y+79DzpPKomCMR7EKU76FwBzZfEew7FU+mL+AskEv
-         1tLakI8d9J2ccH3gV5M9t63QMxALY5fzhA4Db99/Qd/dqBbtA2pMJ5dbQrNNrMIf9R+Y
-         aCVw==
+        bh=sUfEpw7X1G1+6Fq/FvfW4rElhh8ieZOdIb5C6ZI1b70=;
+        b=OFyWx6O7rbcK+UhaL69VMj/ErjnRDsDx9W2RaKn6DO3pbuVuR+M2gPR1OsX9uv+mKt
+         SijSAEjT6S1jqUokRL60JNww+n3ELZ5PYfiRrrxVCuu5CgmI4/90l9T8+9IwHOlSz63q
+         QDSFbKs6NYhaTBrOzQKSlRCl1diRwtf8UTRRqzFQzH70bKT4Ldbmk8bID+TArz2cP3p3
+         f5voUI15l5VS7FgefRWfaNqQR88VEWOZrDtJPSEVhIjwfCu5ZpQZWPYH8cDMGlRSJ1+F
+         inawNCxiB2Sp33p3+5vGcJ+5WJw43xlurWxecUiwGMTE2h8ai+o8IciOxfUGqYmvd9re
+         oeTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7hZ1tmJDKYbFj1JAR2kOqXmJ14cEBCBL/omVit1tt0s=;
-        b=AXJ1r7brmshYJWnHNXrk0Toz6CCsfAFRN8AL74MBDjhGG+r9/OtyzKJFvB1EACwM/9
-         vM7B397hQDYYRdVMHygLcn6YbvtaE7Az+h/x0QnGavkev7tIeR3+hTnnkC0SI+8ug3ja
-         zvQRK9phYJPI3kP03IavyAq9WGdXCrYwcBAScvf8EhZNXfQdI9wqGNHCvYPeZk+J2CbO
-         +ROEjEbkcz8ySViOwDsQ69A+3/+ofShp6szWcUftXvpoPIIC4lAiBgMBW3DJtuZx3Ycc
-         kT7qWh2L28XbsHmaKH3YSHDznhc+LbWp8ZrKORVRLsIBVzp0zmRWtVld975pRDurNQNt
-         CWqg==
-X-Gm-Message-State: AOAM531sETjbH33XjhP2r2I/kICw78kZUm+AEMMFi0JRgk8AvLSii9uh
-        PZ8r0M1n8Mup0nb8NalQ4qlwNw8EhNpIyrrXXLd6uL+hHL8=
-X-Google-Smtp-Source: ABdhPJyX+Z741IY7X4VfM2bYUi7FQKJY4JmN9c+eeMmAv0Ix/UWTYfkiM6MPYX8iiH4X3y8ZifbFiJd4No6QJ2CCVTE=
-X-Received: by 2002:a50:eb0a:: with SMTP id y10mr387086edp.89.1601431906593;
- Tue, 29 Sep 2020 19:11:46 -0700 (PDT)
+        bh=sUfEpw7X1G1+6Fq/FvfW4rElhh8ieZOdIb5C6ZI1b70=;
+        b=GgJNPRCHDLVIJ7Qh6c1Fvc8ubd5UkwudPeYoeI7o/+MvXDqceULJ008hBb6pMbdlWQ
+         Ms9KxLHsB+f2SB2W68MJLsCd/+4bm/1y05mrHb3aj+Cov7G8lajdFWPE5WpjWHZUsyKA
+         nEJgI0w02o/tVCQ2nZEgieYR9c1ImtuFNJiS7hlqwWPo+b7agF5s0z1l4GRjQA0T4XAN
+         NWw3BiZPEa5D4nv1KRL1zQK8m3be9aR9FF/c1+Dfinuz2ZYaDqUqYg6KbFz/onlpkJ4c
+         brxiOQOyMgKylNyL30iqyO9V+n2BnfcchBD8sqDCk3fDncYmmISve/CcmCxL1DO82DiM
+         3Plg==
+X-Gm-Message-State: AOAM533wbmo5PxxWM/ORrkVxHHno4uXuCjTrn8jfaPCELWpjDFY7g4sz
+        AUNXtPjup/PV3h/hRQRlGvmbBOhGUAycsCnNJIiKbnaeUN7lmgqZ
+X-Google-Smtp-Source: ABdhPJzZAxEohwpc/os/gL/otbXuwFGmNZlfAOd5jy85hIxnLKCLfMYuj9MwxwijWIOY+KASe8CaTba5yJ03qpWrRUc=
+X-Received: by 2002:a05:6512:31d2:: with SMTP id j18mr75425lfe.316.1601432885878;
+ Tue, 29 Sep 2020 19:28:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200928033915.82810-1-xiangxia.m.yue@gmail.com>
- <20200928033915.82810-2-xiangxia.m.yue@gmail.com> <20200928152142-mutt-send-email-mst@kernel.org>
- <CAMDZJNVUVm9y2NV5ZGHzrPoEaDF4PZEGWVFEx9g6sF3U-1Rm0Q@mail.gmail.com>
- <20200929015427-mutt-send-email-mst@kernel.org> <CAMDZJNX94out3B_puYy+zbdotDwU=qZKG2=sMfyoj9o5nnewmA@mail.gmail.com>
- <20200929022138-mutt-send-email-mst@kernel.org> <CAMDZJNVzKc-Wb13Z5ocz_4DHqP_ZMzM1sO1GWmmKhNUKMuP9PQ@mail.gmail.com>
- <20200929032314-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200929032314-mutt-send-email-mst@kernel.org>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Wed, 30 Sep 2020 10:09:07 +0800
-Message-ID: <CAMDZJNXvWEB5-D0gFVsLfqEHwHTTe0K+4ro3EzyExFmhiFxKUg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] virtio-net: ethtool configurable RXCSUM
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <alpine.LFD.2.23.451.2009271625160.35554@ja.home.ssi.bg>
+ <20200928024938.97121-1-bigclouds@163.com> <CAPaK2r8DnR_dcZ8E9w0mvDbK2KiWCt+JswO=-tqvbWb2RibaYw@mail.gmail.com>
+In-Reply-To: <CAPaK2r8DnR_dcZ8E9w0mvDbK2KiWCt+JswO=-tqvbWb2RibaYw@mail.gmail.com>
+From:   yue longguang <yuelongguang@gmail.com>
+Date:   Wed, 30 Sep 2020 10:27:55 +0800
+Message-ID: <CAPaK2r-jJf4z28S+h=pbaP4MN5QhG_HMDFA3RZbyhRQeALmhRQ@mail.gmail.com>
+Subject: Re: [PATCH v5] ipvs: adjust the debug info in function set_tcp_state
+To:     Julian Anastasov <ja@ssi.bg>, "longguang.yue" <bigclouds@163.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Simon Horman <horms@verge.net.au>
+Cc:     Wensong Zhang <wensong@linux-vs.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:IPVS" <netdev@vger.kernel.org>,
+        "open list:IPVS" <lvs-devel@vger.kernel.org>,
+        "open list:NETFILTER" <coreteam@netfilter.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 3:25 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Tue, Sep 29, 2020 at 03:17:50PM +0800, Tonghao Zhang wrote:
-> > On Tue, Sep 29, 2020 at 2:22 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Tue, Sep 29, 2020 at 02:10:56PM +0800, Tonghao Zhang wrote:
-> > > > On Tue, Sep 29, 2020 at 1:55 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > >
-> > > > > On Tue, Sep 29, 2020 at 09:45:24AM +0800, Tonghao Zhang wrote:
-> > > > > > On Tue, Sep 29, 2020 at 3:25 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > >
-> > > > > > > On Mon, Sep 28, 2020 at 11:39:15AM +0800, xiangxia.m.yue@gmail.com wrote:
-> > > > > > > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > > > > > > >
-> > > > > > > > Allow user configuring RXCSUM separately with ethtool -K,
-> > > > > > > > reusing the existing virtnet_set_guest_offloads helper
-> > > > > > > > that configures RXCSUM for XDP. This is conditional on
-> > > > > > > > VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
-> > > > > > > >
-> > > > > > > > Cc: Michael S. Tsirkin <mst@redhat.com>
-> > > > > > > > Cc: Jason Wang <jasowang@redhat.com>
-> > > > > > > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > > > > > > > ---
-> > > > > > > >  drivers/net/virtio_net.c | 40 ++++++++++++++++++++++++++++------------
-> > > > > > > >  1 file changed, 28 insertions(+), 12 deletions(-)
-> > > > > > > >
-> > > > > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > > > > > index 21b71148c532..2e3af0b2c281 100644
-> > > > > > > > --- a/drivers/net/virtio_net.c
-> > > > > > > > +++ b/drivers/net/virtio_net.c
-> > > > > > > > @@ -68,6 +68,8 @@ static const unsigned long guest_offloads[] = {
-> > > > > > > >                               (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
-> > > > > > > >                               (1ULL << VIRTIO_NET_F_GUEST_UFO))
-> > > > > > > >
-> > > > > > > > +#define GUEST_OFFLOAD_CSUM_MASK (1ULL << VIRTIO_NET_F_GUEST_CSUM)
-> > > > > > > > +
-> > > > > > > >  struct virtnet_stat_desc {
-> > > > > > > >       char desc[ETH_GSTRING_LEN];
-> > > > > > > >       size_t offset;
-> > > > > > > > @@ -2526,25 +2528,37 @@ static int virtnet_set_features(struct net_device *dev,
-> > > > > > > >                               netdev_features_t features)
-> > > > > > > >  {
-> > > > > > > >       struct virtnet_info *vi = netdev_priv(dev);
-> > > > > > > > -     u64 offloads;
-> > > > > > > > +     u64 offloads = vi->guest_offloads &
-> > > > > > > > +                    vi->guest_offloads_capable;
-> > > > > > > >       int err;
-> > > > > > > >
-> > > > > > > > -     if ((dev->features ^ features) & NETIF_F_LRO) {
-> > > > > > > > -             if (vi->xdp_queue_pairs)
-> > > > > > > > -                     return -EBUSY;
-> > > > > > > > +     /* Don't allow configuration while XDP is active. */
-> > > > > > > > +     if (vi->xdp_queue_pairs)
-> > > > > > > > +             return -EBUSY;
-> > > > > > > >
-> > > > > > > > +     if ((dev->features ^ features) & NETIF_F_LRO) {
-> > > > > > > >               if (features & NETIF_F_LRO)
-> > > > > > > > -                     offloads = vi->guest_offloads_capable;
-> > > > > > > > +                     offloads |= GUEST_OFFLOAD_LRO_MASK;
-> > > > > > > >               else
-> > > > > > > > -                     offloads = vi->guest_offloads_capable &
-> > > > > > > > -                                ~GUEST_OFFLOAD_LRO_MASK;
-> > > > > > > > +                     offloads &= ~GUEST_OFFLOAD_LRO_MASK;
-> > > > > > > > +     }
-> > > > > > > >
-> > > > > > > > -             err = virtnet_set_guest_offloads(vi, offloads);
-> > > > > > > > -             if (err)
-> > > > > > > > -                     return err;
-> > > > > > > > -             vi->guest_offloads = offloads;
-> > > > > > > > +     if ((dev->features ^ features) & NETIF_F_RXCSUM) {
-> > > > > > > > +             if (features & NETIF_F_RXCSUM)
-> > > > > > > > +                     offloads |= GUEST_OFFLOAD_CSUM_MASK;
-> > > > > > > > +             else
-> > > > > > > > +                     offloads &= ~GUEST_OFFLOAD_CSUM_MASK;
-> > > > > > > >       }
-> > > > > > > >
-> > > > > > > > +     if (offloads == (vi->guest_offloads &
-> > > > > > > > +                      vi->guest_offloads_capable))
-> > > > > > > > +             return 0;
-> > > > > > >
-> > > > > > > Hmm, what exactly does this do?
-> > > > > > If the features(lro, rxcsum) we supported, are not changed, it is not
-> > > > > > necessary to invoke virtnet_set_guest_offloads.
-> > > > >
-> > > > > okay, could you describe the cases where this triggers in a bit more
-> > > > > detail pls?
-> > > > Hi
-> > > > As I known,  when we run che commands show as below:
-> > > > ethtool -K eth1 sg off
-> > > > ethtool -K eth1 tso off
-> > > >
-> > > > In that case, we will not invoke virtnet_set_guest_offloads.
-> > >
-> > > How about initialization though? E.g. it looks like guest_offloads
-> > > is 0-initialized, won't this skip the first command to disable
-> > > offloads?
-> > I guest you mean that: if guest_offloads == 0, and run the command
-> > "ethtool -K eth1 sg off", that will disable offload ?
-> > In that patch
-> > u64 offloads = vi->guest_offloads & vi->guest_offloads_capable; // offload = 0
-> > .....
-> >  if (offloads == (vi->guest_offloads & vi->guest_offloads_capable)) //
-> > if offload not changed, offload == 0, and (vi->guest_offloads &
-> > vi->guest_offloads_capable) == 0.
-> >         return 0;
-> >
-> > virtnet_set_guest_offloads // that will not be invoked, so will not
-> > disable offload
->
->
-> Sorry don't understand the question here.
-> At device init offloads are enabled, I am asking won't this skip
-> disabling them the first time this function is invoked.
-> Why are we bothering with this check? Is this called lots of
-> times where offloads are unchanged to make skipping the
-> command worthwhile?
-Hi Michael
-I remove the check and when rxcum is disabled, LRO also is disabled
-(suggested by Willem de Bruijn)
-please review, thanks.
+Julian, Pablo, Simon,  Hi,  ping
 
-http://patchwork.ozlabs.org/project/netdev/patch/20200930020300.62245-1-xiangxia.m.yue@gmail.com/
-
-> > > > > > > > +
-> > > > > > > > +     err = virtnet_set_guest_offloads(vi, offloads);
-> > > > > > > > +     if (err)
-> > > > > > > > +             return err;
-> > > > > > > > +
-> > > > > > > > +     vi->guest_offloads = offloads;
-> > > > > > > >       return 0;
-> > > > > > > >  }
-> > > > > > > >
-> > > > > > > > @@ -3013,8 +3027,10 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > > > > > > >       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> > > > > > > >           virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
-> > > > > > > >               dev->features |= NETIF_F_LRO;
-> > > > > > > > -     if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-> > > > > > > > +     if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS)) {
-> > > > > > > > +             dev->hw_features |= NETIF_F_RXCSUM;
-> > > > > > > >               dev->hw_features |= NETIF_F_LRO;
-> > > > > > > > +     }
-> > > > > > > >
-> > > > > > > >       dev->vlan_features = dev->features;
-> > > > > > > >
-> > > > > > > > --
-> > > > > > > > 2.23.0
-> > > > > > >
-> > > > > >
-> > > > > >
-> > > > > > --
-> > > > > > Best regards, Tonghao
-> > > > >
-> > > >
-> > > >
-> > > > --
-> > > > Best regards, Tonghao
-> > >
+On Tue, Sep 29, 2020 at 10:15 AM yue longguang <yuelongguang@gmail.com> wrote:
+>
+> I sincerely apologize for the trouble which takes up much of your
+> time. If the last patch does not work , would you please fix it?
+> thanks
+>
+> On Mon, Sep 28, 2020 at 10:51 AM longguang.yue <bigclouds@163.com> wrote:
 > >
+> > Outputting client,virtual,dst addresses info when tcp state changes,
+> > which makes the connection debug more clear
 > >
+> > Signed-off-by: longguang.yue <bigclouds@163.com>
+> > ---
+> >  net/netfilter/ipvs/ip_vs_proto_tcp.c | 10 ++++++----
+> >  1 file changed, 6 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/net/netfilter/ipvs/ip_vs_proto_tcp.c b/net/netfilter/ipvs/ip_vs_proto_tcp.c
+> > index dc2e7da2742a..7da51390cea6 100644
+> > --- a/net/netfilter/ipvs/ip_vs_proto_tcp.c
+> > +++ b/net/netfilter/ipvs/ip_vs_proto_tcp.c
+> > @@ -539,8 +539,8 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
+> >         if (new_state != cp->state) {
+> >                 struct ip_vs_dest *dest = cp->dest;
+> >
+> > -               IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] %s:%d->"
+> > -                             "%s:%d state: %s->%s conn->refcnt:%d\n",
+> > +               IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] c:%s:%d v:%s:%d "
+> > +                             "d:%s:%d state: %s->%s conn->refcnt:%d\n",
+> >                               pd->pp->name,
+> >                               ((state_off == TCP_DIR_OUTPUT) ?
+> >                                "output " : "input "),
+> > @@ -548,10 +548,12 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
+> >                               th->fin ? 'F' : '.',
+> >                               th->ack ? 'A' : '.',
+> >                               th->rst ? 'R' : '.',
+> > -                             IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
+> > -                             ntohs(cp->dport),
+> >                               IP_VS_DBG_ADDR(cp->af, &cp->caddr),
+> >                               ntohs(cp->cport),
+> > +                             IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
+> > +                             ntohs(cp->vport),
+> > +                             IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
+> > +                             ntohs(cp->dport),
+> >                               tcp_state_name(cp->state),
+> >                               tcp_state_name(new_state),
+> >                               refcount_read(&cp->refcnt));
 > > --
-> > Best regards, Tonghao
->
-
-
--- 
-Best regards, Tonghao
+> > 2.20.1 (Apple Git-117)
+> >
