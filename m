@@ -2,336 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0831527EEEC
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 18:20:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7E8527EEDF
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 18:20:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731342AbgI3QUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 12:20:40 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:50485 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1731307AbgI3QUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 12:20:36 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from borisp@mellanox.com)
-        with SMTP; 30 Sep 2020 19:20:28 +0300
-Received: from gen-l-vrt-133.mtl.labs.mlnx. (gen-l-vrt-133.mtl.labs.mlnx [10.237.11.160])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 08UGKR2G032498;
-        Wed, 30 Sep 2020 19:20:27 +0300
-From:   Boris Pismenny <borisp@mellanox.com>
-To:     kuba@kernel.org, davem@davemloft.net, saeedm@nvidia.com,
-        hch@lst.de, sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
-        viro@zeniv.linux.org.uk, edumazet@google.com
-Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>
-Subject: [PATCH net-next RFC v1 05/10] nvme-tcp: Add DDP offload control path
-Date:   Wed, 30 Sep 2020 19:20:05 +0300
-Message-Id: <20200930162010.21610-6-borisp@mellanox.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200930162010.21610-1-borisp@mellanox.com>
-References: <20200930162010.21610-1-borisp@mellanox.com>
+        id S1731214AbgI3QUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 12:20:09 -0400
+Received: from mailsec115.isp.belgacom.be ([195.238.20.111]:39596 "EHLO
+        mailsec115.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728674AbgI3QUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 12:20:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=skynet.be; i=@skynet.be; q=dns/txt; s=rmail;
+  t=1601482808; x=1633018808;
+  h=date:from:to:cc:message-id:in-reply-to:references:
+   subject:mime-version:content-transfer-encoding;
+  bh=FVgpLdsVUti+AuvsZbtoMxmvitJlkY3GKtkkbPnyybg=;
+  b=RdQKkTr0AhUnpHNXyt0Bps6GEem+g3QuhUcSBcZU6GYgiDX+O2h3ih2Z
+   QQ+P0Bfg4ceQHS7EZEpL1GXHnLI0YfO1GLvJVOaUMqGrzhXjBsSFOAUwJ
+   PQwYx8Ha8IsJwqhpTighTmpXrRWYLoLHxVO5AH+fk+qPdpQ8W0ejmJyh9
+   k=;
+IronPort-SDR: OuAzfgXpMD5kQHzgvh2lsweMpfjH7IlgZBxfS5fgefg7wFdh/vC66GCFGisNI/8lW+bjEJih3b
+ QPcCatPj3VPHj3/mogse6TBM1gnBvOj9CMW6/pPc7nONSxrO+/eLq5sxVf2v9M0bVHi7bcFDKs
+ pFndrmfLcMQ5R18sZjNpphfYgnACftuds3Z0N+8MrZJoBE2e1/+yZSNhMsgprVOAaf0C5kbhYT
+ HF1Vk/jyV8Yb6Gf5M6bQG8YACE2eCJSvYOmOWC0OXps04aIvQFqoCKL9+cFj8Eak+2GuaccuRU
+ /Vg=
+IronPort-PHdr: =?us-ascii?q?9a23=3A+GZpdREwtHWYVXfHPy8VQZ1GYnF86YWxBRYc79?=
+ =?us-ascii?q?8ds5kLTJ7ypc6wAkXT6L1XgUPTWs2DsrQY0rWQ6PqrCDBIyK3CmUhKSIZLWR?=
+ =?us-ascii?q?4BhJdetC0bK+nBN3fGKuX3ZTcxBsVIWQwt1Xi6NU9IBJS2PAWK8TW94jEIBx?=
+ =?us-ascii?q?rwKxd+KPjrFY7OlcS30P2594HObwlSizexfLF/IA+4oAnPucUbhYRvIbstxx?=
+ =?us-ascii?q?XUpXdFZ/5Yzn5yK1KJmBb86Maw/Jp9/ClVpvks6c1OX7jkcqohVbBXAygoPG?=
+ =?us-ascii?q?4z5M3wqBnMVhCP6WcGUmUXiRVHHQ7I5wznU5jrsyv6su192DSGPcDzULs5Vy?=
+ =?us-ascii?q?iu47ttRRT1jioMKjw3/3zNisFogqxVoAyvqR99zI7afY+aO+ZxcKzHc9wZQm?=
+ =?us-ascii?q?RMRdpRWi5bD4+gdYYDE+gMMOBFpIf9vVsOqh6+CBGsCuz10TBIh2X53asn2O?=
+ =?us-ascii?q?ohCwHJwhEvEMwUsHTVsNr1N7oZXOe7zKbS1jrDYehb2Sz+6InIdBAuv+2MUa?=
+ =?us-ascii?q?hrfsXP0EQiER7OgVqMp4L/JTyVyvgNvHaB7+pmTe+hhGwqpx1srzWs28oiio?=
+ =?us-ascii?q?vEi4YbxF3F6Sl03YU4K9O4RUN4btOoDoZcuiGVOYdqTM0vR31ktSI7x7AbpZ?=
+ =?us-ascii?q?K2eCsHxZI6zBDcc/yKa5WE7g75WOueIjp0nm9pdK+lixux7EStzPD3WNOu31?=
+ =?us-ascii?q?ZQtCVFl8HBtnUK1xPO9MeKUuB9/kK92TaX0ADT9/1ELVg0laXFL54hxaY9lp?=
+ =?us-ascii?q?8JvkTCGi/2n0r3g7SIeUk45uSk9v3rYrP6qZOBLYN7kR3xPrwvmsy5H+s4Lh?=
+ =?us-ascii?q?ADU3WH9eim27Du/lf1TKhXgvEskaTVrYjWJcEBqa64Bw9V3Jwj6xG6Dzq+3t?=
+ =?us-ascii?q?QXh2IILFxedRKcjIjoO1fOL+7kDfulmFujji9nx+raMb35HpXNMn/Dna/ifb?=
+ =?us-ascii?q?Zg8EFT0hE+zdNB6JJODLEOPvbzVlX2tNzCAR8zKxa0zPr/CNVhyoMeXnqCDb?=
+ =?us-ascii?q?KDP6PMr1CI4/kiLPSWa48Lpjn9Lvwl5/ngjX8lg1Mde7em3YcPYnCiAvtmO1?=
+ =?us-ascii?q?mZYWbrgtoZF2cFoBY+Q/H0h12cSjNTeXmyULwm5j0hC4KpE53DRoazj7yFxi?=
+ =?us-ascii?q?u7GYdWZm8VQmyLRFXhdJiOE9QNYyOUOcxg2mgHSLKoY4wszxejsEn90bUxaq?=
+ =?us-ascii?q?LY8zMVsLrv3cZ44unUmw108zFoXOqH1GTYYWh+n2oODxEs0axyu012yR/X36?=
+ =?us-ascii?q?FyjdRDFs1V6u8PWApsZs2U9PBzF92nAlGJRdyOUlvzGtg=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2D+AACOr3Rf/1ELMApgGwEBAQEBAQE?=
+ =?us-ascii?q?BBQEBARIBAQEDAwEBAUCBT4MagTRYg2WRSIoekgQLAQEBAQEBAQEBKBAEAQG?=
+ =?us-ascii?q?ESwKCMic4EwIDAQEBAwIFAQEGAQEBAQEBBQQBhg9FgjcigxkBAQEBAgEjBFI?=
+ =?us-ascii?q?FCwUGDgoCAiYCAlcGARIRgxaCVwW2E3Z/M4kGgUKBDiqFWINEhC2BQT+BEYM?=
+ =?us-ascii?q?QPodUgmAEmlqBGZtQgnGDE4VokWsUoRWTCqIhgXpNIBiDJAlHGQ2OKxeOJnI?=
+ =?us-ascii?q?3AgYKAQEDCY8HAQE?=
+X-IPAS-Result: =?us-ascii?q?A2D+AACOr3Rf/1ELMApgGwEBAQEBAQEBBQEBARIBAQEDA?=
+ =?us-ascii?q?wEBAUCBT4MagTRYg2WRSIoekgQLAQEBAQEBAQEBKBAEAQGESwKCMic4EwIDA?=
+ =?us-ascii?q?QEBAwIFAQEGAQEBAQEBBQQBhg9FgjcigxkBAQEBAgEjBFIFCwUGDgoCAiYCA?=
+ =?us-ascii?q?lcGARIRgxaCVwW2E3Z/M4kGgUKBDiqFWINEhC2BQT+BEYMQPodUgmAEmlqBG?=
+ =?us-ascii?q?ZtQgnGDE4VokWsUoRWTCqIhgXpNIBiDJAlHGQ2OKxeOJnI3AgYKAQEDCY8HA?=
+ =?us-ascii?q?QE?=
+Received: from mailoxbe001-nc1.bc ([10.48.11.81])
+  by privrelay100.skynet.be with ESMTP; 30 Sep 2020 18:20:05 +0200
+Date:   Wed, 30 Sep 2020 18:20:05 +0200 (CEST)
+From:   Fabian Frederick <fabf@skynet.be>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Message-ID: <121207656.52132.1601482805664@webmail.appsuite.proximus.be>
+In-Reply-To: <20200926015604.3363358-1-kuba@kernel.org>
+References: <20200926015604.3363358-1-kuba@kernel.org>
+Subject: Re: [PATCH net-next] Revert "vxlan: move encapsulation warning"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+Importance: Normal
+X-Mailer: Open-Xchange Mailer v7.10.3-Rev20
+X-Originating-Client: open-xchange-appsuite
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit introduces direct data placement offload to NVME
-TCP. There is a context per queue, which is established after the
-handshake
-using the tcp_ddp_sk_add/del NDOs.
 
-Additionally, a resynchronization routine is used to assist
-hardware recovery from TCP OOO, and continue the offload.
-Resynchronization operates as follows:
-1. TCP OOO causes the NIC HW to stop the offload
-2. NIC HW identifies a PDU header at some TCP sequence number,
-and asks NVMe-TCP to confirm it.
-This request is delivered from the NIC driver to NVMe-TCP by first
-finding the socket for the packet that triggered the request, and
-then fiding the nvme_tcp_queue that is used by this routine.
-Finally, the request is recorded in the nvme_tcp_queue.
-3. When NVMe-TCP observes the requested TCP sequence, it will compare
-it with the PDU header TCP sequence, and report the result to the
-NIC driver (tcp_ddp_resync), which will update the HW,
-and resume offload when all is successful.
+> On 26/09/2020 03:56 Jakub Kicinski <kuba@kernel.org> wrote:
+> 
+>  
+> This reverts commit 546c044c9651e81a16833806feff6b369bb5de33.
+> 
+> Nothing prevents user from sending frames to "external" VxLAN devices.
+> In fact kernel itself may generate icmp chatter.
+> 
+> This is fine, such frames should be dropped.
+> 
+> The point of the "missing encapsulation" warning was that
+> frames with missing encap should not make it into vxlan_xmit_one().
+> And vxlan_xmit() drops them cleanly, so let it just do that.
+> 
+> Without this revert the warning is triggered by the udp_tunnel_nic.sh
+> test, but the minimal repro is:
+> 
+> $ ip link add vxlan0 type vxlan \
+>      	      	     group 239.1.1.1 \
+> 		     dev lo \
+> 		     dstport 1234 \
+> 		     external
+> $ ip li set dev vxlan0 up
+> 
+> [  419.165981] vxlan0: Missing encapsulation instructions
+> [  419.166551] WARNING: CPU: 0 PID: 1041 at drivers/net/vxlan.c:2889 vxlan_xmit+0x15c0/0x1fc0 [vxlan]
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  drivers/net/vxlan.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+> index fa21d62aa79c..be3bf233a809 100644
+> --- a/drivers/net/vxlan.c
+> +++ b/drivers/net/vxlan.c
+> @@ -2651,6 +2651,11 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+>  			udp_sum = !(flags & VXLAN_F_UDP_ZERO_CSUM6_TX);
+>  		label = vxlan->cfg.label;
+>  	} else {
+> +		if (!info) {
+> +			WARN_ONCE(1, "%s: Missing encapsulation instructions\n",
+> +				  dev->name);
+> +			goto drop;
+> +		}
+>  		remote_ip.sa.sa_family = ip_tunnel_info_af(info);
+>  		if (remote_ip.sa.sa_family == AF_INET) {
+>  			remote_ip.sin.sin_addr.s_addr = info->key.u.ipv4.dst;
+> @@ -2885,10 +2890,6 @@ static netdev_tx_t vxlan_xmit(struct sk_buff *skb, struct net_device *dev)
+>  		    info->mode & IP_TUNNEL_INFO_TX) {
+>  			vni = tunnel_id_to_key32(info->key.tun_id);
+>  		} else {
+> -			if (!info)
+> -				WARN_ONCE(1, "%s: Missing encapsulation instructions\n",
+> -					  dev->name);
+> -
+>  			if (info && info->mode & IP_TUNNEL_INFO_TX)
+>  				vxlan_xmit_one(skb, dev, vni, NULL, false);
+>  			else
+> -- 
+> 2.26.2
 
-Furthermore, we let the offloading driver advertise what is the max hw
-sectors/segments via tcp_ddp_limits.
+Thanks a lot for explanations Jakub. udp_tunnel_nic.sh is a nice tool. Maybe it could also be used for remcsum testing ? I'd like to check net-next commit 2ae2904b5bac "vxlan: don't collect metadata if remote checksum is wrong" to make sure it has no impact as I had no ACK. Problem is ip encap-remcsum requires 'remote' specification not compatible with 'group' and only featuring in 'new_geneve' function in your script.
 
-A follow-up patch introduces the data-path changes required for this
-offload.
+If both vxlan_parse_gbp_hdr() and vxlan_remcsum() require metadata recovery, I can reverse that patch and add some comment in vxlan_rcv()
 
-Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
-Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
-Signed-off-by: Yoray Zack <yorayz@mellanox.com>
----
- drivers/nvme/host/tcp.c  | 188 +++++++++++++++++++++++++++++++++++++++
- include/linux/nvme-tcp.h |   2 +
- 2 files changed, 190 insertions(+)
-
-diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index 8f4f29f18b8c..06711ac095f2 100644
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -62,6 +62,7 @@ enum nvme_tcp_queue_flags {
- 	NVME_TCP_Q_ALLOCATED	= 0,
- 	NVME_TCP_Q_LIVE		= 1,
- 	NVME_TCP_Q_POLLING	= 2,
-+	NVME_TCP_Q_OFFLOADS     = 3,
- };
- 
- enum nvme_tcp_recv_state {
-@@ -110,6 +111,8 @@ struct nvme_tcp_queue {
- 	void (*state_change)(struct sock *);
- 	void (*data_ready)(struct sock *);
- 	void (*write_space)(struct sock *);
-+
-+	atomic64_t  resync_req;
- };
- 
- struct nvme_tcp_ctrl {
-@@ -129,6 +132,8 @@ struct nvme_tcp_ctrl {
- 	struct delayed_work	connect_work;
- 	struct nvme_tcp_request async_req;
- 	u32			io_queues[HCTX_MAX_TYPES];
-+
-+	struct net_device       *offloading_netdev;
- };
- 
- static LIST_HEAD(nvme_tcp_ctrl_list);
-@@ -223,6 +228,159 @@ static inline size_t nvme_tcp_pdu_last_send(struct nvme_tcp_request *req,
- 	return nvme_tcp_pdu_data_left(req) <= len;
- }
- 
-+#ifdef CONFIG_TCP_DDP
-+
-+bool nvme_tcp_resync_request(struct sock *sk, u32 seq, u32 flags);
-+const struct tcp_ddp_ulp_ops nvme_tcp_ddp_ulp_ops __read_mostly = {
-+	.resync_request		= nvme_tcp_resync_request,
-+};
-+
-+static
-+int nvme_tcp_offload_socket(struct nvme_tcp_queue *queue,
-+			    struct nvme_tcp_config *config)
-+{
-+	struct net_device *netdev = get_netdev_for_sock(queue->sock->sk, true);
-+	struct tcp_ddp_config *ddp_config = (struct tcp_ddp_config *)config;
-+	int ret;
-+
-+	if (unlikely(!netdev)) {
-+		pr_info_ratelimited("%s: netdev not found\n", __func__);
-+		return -EINVAL;
-+	}
-+
-+	if (!(netdev->features & NETIF_F_HW_TCP_DDP)) {
-+		dev_put(netdev);
-+		return -EINVAL;
-+	}
-+
-+	ret = netdev->tcp_ddp_ops->tcp_ddp_sk_add(netdev,
-+						 queue->sock->sk,
-+						 ddp_config);
-+	if (!ret)
-+		inet_csk(queue->sock->sk)->icsk_ulp_ddp_ops = &nvme_tcp_ddp_ulp_ops;
-+	else
-+		dev_put(netdev);
-+	return ret;
-+}
-+
-+static
-+void nvme_tcp_unoffload_socket(struct nvme_tcp_queue *queue)
-+{
-+	struct net_device *netdev = queue->ctrl->offloading_netdev;
-+
-+	if (unlikely(!netdev)) {
-+		pr_info_ratelimited("%s: netdev not found\n", __func__);
-+		return;
-+	}
-+
-+	netdev->tcp_ddp_ops->tcp_ddp_sk_del(netdev, queue->sock->sk);
-+
-+	inet_csk(queue->sock->sk)->icsk_ulp_ddp_ops = NULL;
-+	dev_put(netdev); /* put the queue_init get_netdev_for_sock() */
-+}
-+
-+static
-+int nvme_tcp_offload_limits(struct nvme_tcp_queue *queue,
-+			    struct tcp_ddp_limits *limits)
-+{
-+	struct net_device *netdev = get_netdev_for_sock(queue->sock->sk, true);
-+	int ret = 0;
-+
-+	if (unlikely(!netdev)) {
-+		pr_info_ratelimited("%s: netdev not found\n", __func__);
-+		return -EINVAL;
-+	}
-+
-+	if (netdev->features & NETIF_F_HW_TCP_DDP &&
-+	    netdev->tcp_ddp_ops &&
-+	    netdev->tcp_ddp_ops->tcp_ddp_limits)
-+			ret = netdev->tcp_ddp_ops->tcp_ddp_limits(netdev, limits);
-+	else
-+			ret = -EOPNOTSUPP;
-+
-+	if (!ret) {
-+		queue->ctrl->offloading_netdev = netdev;
-+		pr_info("%s netdev %s offload limits: max_ddp_sgl_len %d\n",
-+			__func__, netdev->name, limits->max_ddp_sgl_len);
-+		queue->ctrl->ctrl.max_segments = limits->max_ddp_sgl_len;
-+		queue->ctrl->ctrl.max_hw_sectors =
-+			limits->max_ddp_sgl_len << (ilog2(SZ_4K) - 9);
-+	} else {
-+		queue->ctrl->offloading_netdev = NULL;
-+	}
-+
-+	dev_put(netdev);
-+
-+	return ret;
-+}
-+
-+static
-+void nvme_tcp_resync_response(struct nvme_tcp_queue *queue,
-+			      unsigned int pdu_seq)
-+{
-+	struct net_device *netdev = queue->ctrl->offloading_netdev;
-+	u64 resync_val;
-+	u32 resync_seq;
-+
-+	if (unlikely(!netdev)) {
-+		pr_info_ratelimited("%s: netdev not found\n", __func__);
-+		return;
-+	}
-+
-+	resync_val = atomic64_read(&queue->resync_req);
-+	if ((resync_val & TCP_DDP_RESYNC_REQ) == 0)
-+		return;
-+
-+	resync_seq = resync_val >> 32;
-+	if (before(pdu_seq, resync_seq))
-+		return;
-+
-+	if (atomic64_cmpxchg(&queue->resync_req, resync_val, (resync_val - 1)))
-+		netdev->tcp_ddp_ops->tcp_ddp_resync(netdev, queue->sock->sk, pdu_seq);
-+}
-+
-+bool nvme_tcp_resync_request(struct sock *sk, u32 seq, u32 flags)
-+{
-+	struct nvme_tcp_queue *queue = sk->sk_user_data;
-+
-+	atomic64_set(&queue->resync_req,
-+		     (((uint64_t)seq << 32) | flags));
-+
-+	return true;
-+}
-+
-+#else
-+
-+static
-+int nvme_tcp_offload_socket(struct nvme_tcp_queue *queue,
-+			    struct nvme_tcp_config *config)
-+{
-+	return -EINVAL;
-+}
-+
-+static
-+void nvme_tcp_unoffload_socket(struct nvme_tcp_queue *queue)
-+{}
-+
-+static
-+int nvme_tcp_offload_limits(struct nvme_tcp_queue *queue,
-+			    struct tcp_ddp_limits *limits)
-+{
-+	return -EINVAL;
-+}
-+
-+static
-+void nvme_tcp_resync_response(struct nvme_tcp_queue *queue,
-+			      unsigned int pdu_seq)
-+{}
-+
-+bool nvme_tcp_resync_request(struct sock *sk, u32 seq, u32 flags)
-+{
-+	return false;
-+}
-+
-+#endif
-+
- static void nvme_tcp_init_iter(struct nvme_tcp_request *req,
- 		unsigned int dir)
- {
-@@ -628,6 +786,11 @@ static int nvme_tcp_recv_pdu(struct nvme_tcp_queue *queue, struct sk_buff *skb,
- 	size_t rcv_len = min_t(size_t, *len, queue->pdu_remaining);
- 	int ret;
- 
-+	u64 pdu_seq = TCP_SKB_CB(skb)->seq + *offset - queue->pdu_offset;
-+
-+	if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags))
-+		nvme_tcp_resync_response(queue, pdu_seq);
-+
- 	ret = skb_copy_bits(skb, *offset,
- 		&pdu[queue->pdu_offset], rcv_len);
- 	if (unlikely(ret))
-@@ -1370,6 +1533,8 @@ static int nvme_tcp_alloc_queue(struct nvme_ctrl *nctrl,
- {
- 	struct nvme_tcp_ctrl *ctrl = to_tcp_ctrl(nctrl);
- 	struct nvme_tcp_queue *queue = &ctrl->queues[qid];
-+	struct nvme_tcp_config config;
-+	struct tcp_ddp_limits limits;
- 	int ret, rcv_pdu_size;
- 
- 	queue->ctrl = ctrl;
-@@ -1487,6 +1652,26 @@ static int nvme_tcp_alloc_queue(struct nvme_ctrl *nctrl,
- #endif
- 	write_unlock_bh(&queue->sock->sk->sk_callback_lock);
- 
-+	if (nvme_tcp_queue_id(queue) != 0) {
-+		config.cfg.type		= TCP_DDP_NVME;
-+		config.pfv		= NVME_TCP_PFV_1_0;
-+		config.cpda		= 0;
-+		config.dgst		= queue->hdr_digest ?
-+						NVME_TCP_HDR_DIGEST_ENABLE : 0;
-+		config.dgst		|= queue->data_digest ?
-+						NVME_TCP_DATA_DIGEST_ENABLE : 0;
-+		config.queue_size	= queue->queue_size;
-+		config.queue_id		= nvme_tcp_queue_id(queue);
-+		config.io_cpu		= queue->io_cpu;
-+
-+		ret = nvme_tcp_offload_socket(queue, &config);
-+		if (!ret)
-+			set_bit(NVME_TCP_Q_OFFLOADS, &queue->flags);
-+	} else {
-+		ret = nvme_tcp_offload_limits(queue, &limits);
-+	}
-+	/* offload is opportunistic - failure is non-critical */
-+
- 	return 0;
- 
- err_init_connect:
-@@ -1519,6 +1704,9 @@ static void __nvme_tcp_stop_queue(struct nvme_tcp_queue *queue)
- 	kernel_sock_shutdown(queue->sock, SHUT_RDWR);
- 	nvme_tcp_restore_sock_calls(queue);
- 	cancel_work_sync(&queue->io_work);
-+
-+	if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags))
-+		nvme_tcp_unoffload_socket(queue);
- }
- 
- static void nvme_tcp_stop_queue(struct nvme_ctrl *nctrl, int qid)
-diff --git a/include/linux/nvme-tcp.h b/include/linux/nvme-tcp.h
-index 959e0bd9a913..65df64c34ecd 100644
---- a/include/linux/nvme-tcp.h
-+++ b/include/linux/nvme-tcp.h
-@@ -8,6 +8,8 @@
- #define _LINUX_NVME_TCP_H
- 
- #include <linux/nvme.h>
-+#include <net/sock.h>
-+#include <net/tcp_ddp.h>
- 
- #define NVME_TCP_DISC_PORT	8009
- #define NVME_TCP_ADMIN_CCSZ	SZ_8K
--- 
-2.24.1
-
+Best regards,
+Fabian
