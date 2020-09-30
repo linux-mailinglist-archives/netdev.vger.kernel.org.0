@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E85827EDA5
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 17:43:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25C3227EDA7
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 17:43:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731131AbgI3PnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 11:43:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53414 "EHLO mail.kernel.org"
+        id S1731103AbgI3PnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 11:43:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53468 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727749AbgI3PnB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Sep 2020 11:43:01 -0400
+        id S1727749AbgI3PnF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 11:43:05 -0400
 Received: from lore-desk.redhat.com (unknown [176.207.245.61])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 586F620789;
-        Wed, 30 Sep 2020 15:42:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A4080207FB;
+        Wed, 30 Sep 2020 15:43:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601480580;
-        bh=vYgd691/f2R93zk0OZ9nK+DU0fxoqA1IhJBq2Qqet6Q=;
+        s=default; t=1601480584;
+        bh=ljwjq3pVbbDfsgo6sBm6A5Ha7ul9zA0QoZhTXPsFGqw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pyl8UXdFD9vGlpLK1t0375IE2pg5VNugOVqovM+ZwaiSasMgNL19iEYCV+K169w0w
-         nsS3vQ5uaREkkMAkygvuy1hJS0aVduJqHDVr2fv1VoC7YIs9/40y4qJVJY30cKEakH
-         c0mfPoq/3dV5/Pw8QdapzQGnY3jg8X4K+WcTUaRg=
+        b=jnXIR5cJoPRruGKfWWz1LNnuJXDwuicZat/ibrfdul6BADiUVFA35FD7Uj2BRvo6x
+         ZolWY0WnjF6ZoA66kJwWLo9NrplWLM9H1Av7hcxQsCdWYHmMfJmNowalYPGIvorznD
+         qR09CanK6+ntKke0ZVFXDvnV9F2ouaZMuP/VEli4=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, davem@davemloft.net, sameehj@amazon.com,
@@ -30,9 +30,9 @@ Cc:     bpf@vger.kernel.org, davem@davemloft.net, sameehj@amazon.com,
         ast@kernel.org, shayagr@amazon.com, brouer@redhat.com,
         echaudro@redhat.com, lorenzo.bianconi@redhat.com,
         dsahern@kernel.org
-Subject: [PATCH v3 net-next 09/12] bpf: introduce multibuff support to bpf_prog_test_run_xdp()
-Date:   Wed, 30 Sep 2020 17:42:00 +0200
-Message-Id: <0f8afde24d12b1ee556cb74badd5aced0a185343.1601478613.git.lorenzo@kernel.org>
+Subject: [PATCH v3 net-next 10/12] bpf: add xdp multi-buffer selftest
+Date:   Wed, 30 Sep 2020 17:42:01 +0200
+Message-Id: <fb036cd7830a6db1ea9d68f8a987bb0004ccb8d6.1601478613.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1601478613.git.lorenzo@kernel.org>
 References: <cover.1601478613.git.lorenzo@kernel.org>
@@ -42,88 +42,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce the capability to allocate a xdp multi-buff in
-bpf_prog_test_run_xdp routine. This is a preliminary patch to introduce
-the selftests for new xdp multi-buff ebpf helpers
+Introduce xdp multi-buffer selftest for the following ebpf helpers:
+- bpf_xdp_get_frags_total_size
+- bpf_xdp_get_frag_count
 
+Co-developed-by: Eelco Chaudron <echaudro@redhat.com>
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- net/bpf/test_run.c | 36 ++++++++++++++++++++++++++++++------
- 1 file changed, 30 insertions(+), 6 deletions(-)
+ .../testing/selftests/bpf/prog_tests/xdp_mb.c | 77 +++++++++++++++++++
+ .../selftests/bpf/progs/test_xdp_multi_buff.c | 24 ++++++
+ 2 files changed, 101 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_mb.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_multi_buff.c
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 5608d5a902ff..7268542b0f3c 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -532,23 +532,22 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
- {
- 	u32 tailroom = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
- 	u32 headroom = XDP_PACKET_HEADROOM;
--	u32 size = kattr->test.data_size_in;
- 	u32 repeat = kattr->test.repeat;
- 	struct netdev_rx_queue *rxqueue;
-+	struct skb_shared_info *sinfo;
- 	struct xdp_buff xdp = {};
-+	u32 max_data_sz, size;
- 	u32 retval, duration;
--	u32 max_data_sz;
- 	void *data;
--	int ret;
-+	int i, ret;
- 
- 	if (kattr->test.ctx_in || kattr->test.ctx_out)
- 		return -EINVAL;
- 
--	/* XDP have extra tailroom as (most) drivers use full page */
- 	max_data_sz = 4096 - headroom - tailroom;
-+	size = min_t(u32, kattr->test.data_size_in, max_data_sz);
- 
--	data = bpf_test_init(kattr, kattr->test.data_size_in,
--			     max_data_sz, headroom, tailroom);
-+	data = bpf_test_init(kattr, size, max_data_sz, headroom, tailroom);
- 	if (IS_ERR(data))
- 		return PTR_ERR(data);
- 
-@@ -558,6 +557,28 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
- 	xdp.data_end = xdp.data + size;
- 	xdp.frame_sz = headroom + max_data_sz + tailroom;
- 
-+	sinfo = xdp_get_shared_info_from_buff(&xdp);
-+	if (unlikely(kattr->test.data_size_in > size)) {
-+		for (; size < kattr->test.data_size_in; size += PAGE_SIZE) {
-+			skb_frag_t *frag = &sinfo->frags[sinfo->nr_frags];
-+			struct page *page;
-+			int data_len;
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_mb.c b/tools/testing/selftests/bpf/prog_tests/xdp_mb.c
+new file mode 100644
+index 000000000000..8cfe7253bf2a
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_mb.c
+@@ -0,0 +1,77 @@
++// SPDX-License-Identifier: GPL-2.0
 +
-+			page = alloc_page(GFP_KERNEL);
-+			if (!page) {
-+				ret = -ENOMEM;
-+				goto out;
-+			}
++#include <unistd.h>
++#include <linux/kernel.h>
++#include <test_progs.h>
++#include <network_helpers.h>
 +
-+			__skb_frag_set_page(frag, page);
-+			data_len = min_t(int, kattr->test.data_size_in - size,
-+					 PAGE_SIZE);
-+			skb_frag_size_set(frag, data_len);
-+			sinfo->nr_frags++;
-+		}
-+		xdp.mb = 1;
++#include "test_xdp_multi_buff.skel.h"
++
++static void test_xdp_mb_check_len(void)
++{
++	int test_sizes[] = { 128, 4096, 9000 };
++	struct test_xdp_multi_buff *pkt_skel;
++	char *pkt_in = NULL, *pkt_out = NULL;
++	__u32 duration = 0, retval, size;
++	int err, pkt_fd, i;
++
++	/* Load XDP program */
++	pkt_skel = test_xdp_multi_buff__open_and_load();
++	if (CHECK(!pkt_skel, "pkt_skel_load", "test_xdp_mb skeleton failed\n"))
++		goto out;
++
++	/* Allocate resources */
++	pkt_out = malloc(test_sizes[ARRAY_SIZE(test_sizes) - 1]);
++	pkt_in = malloc(test_sizes[ARRAY_SIZE(test_sizes) - 1]);
++	if (CHECK(!pkt_in || !pkt_out, "malloc",
++		  "Failed malloc, in = %p, out %p\n", pkt_in, pkt_out))
++		goto out;
++
++	pkt_fd = bpf_program__fd(pkt_skel->progs._xdp_check_mb_len);
++	if (pkt_fd < 0)
++		goto out;
++
++	/* Run test for specific set of packets */
++	for (i = 0; i < ARRAY_SIZE(test_sizes); i++) {
++		int frag_count;
++
++		/* Run test program */
++		err = bpf_prog_test_run(pkt_fd, 1, &pkt_in, test_sizes[i],
++					pkt_out, &size, &retval, &duration);
++
++		if (CHECK(err || retval != XDP_PASS, // || size != test_sizes[i],
++			  "test_run", "err %d errno %d retval %d size %d[%d]\n",
++			  err, errno, retval, size, test_sizes[i]))
++			goto out;
++
++		/* Verify test results */
++		frag_count = DIV_ROUND_UP(
++			test_sizes[i] - pkt_skel->data->test_result_xdp_len,
++			getpagesize());
++
++		if (CHECK(pkt_skel->data->test_result_frag_count != frag_count,
++			  "result", "frag_count = %llu != %u\n",
++			  pkt_skel->data->test_result_frag_count, frag_count))
++			goto out;
++
++		if (CHECK(pkt_skel->data->test_result_frag_len != test_sizes[i] -
++			  pkt_skel->data->test_result_xdp_len,
++			  "result", "frag_len = %llu != %llu\n",
++			  pkt_skel->data->test_result_frag_len,
++			  test_sizes[i] - pkt_skel->data->test_result_xdp_len))
++			goto out;
 +	}
++out:
++	if (pkt_out)
++		free(pkt_out);
++	if (pkt_in)
++		free(pkt_in);
 +
- 	rxqueue = __netif_get_rx_queue(current->nsproxy->net_ns->loopback_dev, 0);
- 	xdp.rxq = &rxqueue->xdp_rxq;
- 	bpf_prog_change_xdp(NULL, prog);
-@@ -569,7 +590,10 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
- 	ret = bpf_test_finish(kattr, uattr, xdp.data, size, retval, duration);
- out:
- 	bpf_prog_change_xdp(prog, NULL);
-+	for (i = 0; i < sinfo->nr_frags; i++)
-+		__free_page(skb_frag_page(&sinfo->frags[i]));
- 	kfree(data);
++	test_xdp_multi_buff__destroy(pkt_skel);
++}
 +
- 	return ret;
- }
- 
++void test_xdp_mb(void)
++{
++	if (test__start_subtest("xdp_mb_check_len_frags"))
++		test_xdp_mb_check_len();
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_xdp_multi_buff.c b/tools/testing/selftests/bpf/progs/test_xdp_multi_buff.c
+new file mode 100644
+index 000000000000..1a46e0925282
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_xdp_multi_buff.c
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/bpf.h>
++#include <linux/if_ether.h>
++#include <bpf/bpf_helpers.h>
++#include <stdint.h>
++
++__u64 test_result_frag_len = UINT64_MAX;
++__u64 test_result_frag_count = UINT64_MAX;
++__u64 test_result_xdp_len = UINT64_MAX;
++
++SEC("xdp_check_mb_len")
++int _xdp_check_mb_len(struct xdp_md *xdp)
++{
++	void *data_end = (void *)(long)xdp->data_end;
++	void *data = (void *)(long)xdp->data;
++
++	test_result_xdp_len = (__u64)(data_end - data);
++	test_result_frag_len = bpf_xdp_get_frags_total_size(xdp);
++	test_result_frag_count = bpf_xdp_get_frag_count(xdp);
++	return XDP_PASS;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.26.2
 
