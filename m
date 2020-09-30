@@ -2,116 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A29327F573
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 00:49:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4828027F57C
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 00:50:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731828AbgI3Ws6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 18:48:58 -0400
-Received: from ozlabs.org ([203.11.71.1]:57897 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730981AbgI3Ws5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Sep 2020 18:48:57 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C1ryt4D3vz9sSf;
-        Thu,  1 Oct 2020 08:48:54 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1601506134;
-        bh=IGJbmv5mcrkAA2X9zezbI36z8dO7q2w6agEZE4CGtvI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=NjLpLjo07KfTbhqFICWl1G+mLumgIgWBFnhKtk+Nvb7eMbf/TE5b6xszvPZjsbvoW
-         8B43VGtphX9WjweZgwYp9ZX/CTpQ0qfHSYTxcM8ZBt1sCXNRzzPhNWMtfSiqj+hdxG
-         XOBBr7yVTLfx3YXBgr+DDixRDZPexHoFzjX7czg3rz+Hp/KF2ImArwXgfsg4wYL+9q
-         MlOYhGhB79zZSeslPQPAln4v7bis6AVZrG37CSPnYOF6xBgFfwZ/a0HvAZcQlz/2GF
-         Ax4NkihiVzN3kHZ88Y4HXYLxxvsqvvGEjRz/gYE06n5NDTwwjWJ9o70VZDSqZ8JRwI
-         RPui/lfMj8fkw==
-Date:   Thu, 1 Oct 2020 08:48:52 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: linux-next: Fixes tags need some work in the net tree
-Message-ID: <20201001084852.5bc93fca@canb.auug.org.au>
+        id S1731828AbgI3WuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 18:50:21 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:47720 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731812AbgI3WuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 18:50:14 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08UMoDT4000638
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 15:50:13 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=5xIBFdyzJm/dsFEH5KDFJM344HtZUaE4KWCV2yVaNzQ=;
+ b=TwnkyQHCfUdRADpUYoahv1yURgf8lZ/5spHEzijCtbwaEVDwDUMJjIOP8bY4USWF3AcM
+ jCSe+MYIy39YCKB/lmQUtQwNEppVuciF1p+4OwcL22DxnSEjlYaZEblkRV8iE5Fqx52r
+ EB3nM4Cu+F33kHdZy8SfeN2vxTCNJhDG6j8= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33v6v48ug0-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 15:50:13 -0700
+Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 30 Sep 2020 15:49:52 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 94DEB62E586A; Wed, 30 Sep 2020 15:49:50 -0700 (PDT)
+From:   Song Liu <songliubraving@fb.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH v5 bpf-next 0/2] introduce BPF_F_PRESERVE_ELEMS
+Date:   Wed, 30 Sep 2020 15:49:25 -0700
+Message-ID: <20200930224927.1936644-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/N+8f45KqlWeNX8c7Gt4=XzP";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-30_13:2020-09-30,2020-09-30 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ malwarescore=0 mlxscore=0 impostorscore=0 spamscore=0 bulkscore=0
+ clxscore=1015 lowpriorityscore=0 mlxlogscore=959 phishscore=0
+ suspectscore=2 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009300184
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/N+8f45KqlWeNX8c7Gt4=XzP
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This set introduces BPF_F_PRESERVE_ELEMS to perf event array for better
+sharing of perf event. By default, perf event array removes the perf even=
+t
+when the map fd used to add the event is closed. With BPF_F_PRESERVE_ELEM=
+S
+set, however, the perf event will stay in the array until it is removed, =
+or
+the map is closed.
 
-Hi all,
+---
+Changes v3 =3D> v5:
+1. Clean up in selftest. (Alexei)
 
-In commit
+Changes v2 =3D> v3:
+1. Move perf_event_fd_array_map_free() to avoid unnecessary forward
+   declaration. (Daniel)
 
-  66a5209b5341 ("octeontx2-pf: Fix synchnorization issue in mbox")
+Changes v1 =3D> v2:
+1. Rename the flag as BPF_F_PRESERVE_ELEMS. (Alexei, Daniel)
+2. Simplify the code and selftest. (Daniel, Alexei)
 
-Fixes tag
+Song Liu (2):
+  bpf: introduce BPF_F_PRESERVE_ELEMS for perf event array
+  selftests/bpf: add tests for BPF_F_PRESERVE_ELEMS
 
-  Fixes: d424b6c02 ("octeontx2-pf: Enable SRIOV and added VF mbox handling")
+ include/uapi/linux/bpf.h                      |  3 +
+ kernel/bpf/arraymap.c                         | 19 +++++-
+ tools/include/uapi/linux/bpf.h                |  3 +
+ .../bpf/prog_tests/pe_preserve_elems.c        | 66 +++++++++++++++++++
+ .../bpf/progs/test_pe_preserve_elems.c        | 42 ++++++++++++
+ 5 files changed, 131 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/pe_preserve_el=
+ems.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_pe_preserve_el=
+ems.c
 
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-    or later) just making sure it is not set (or set to "auto").
-
-In commit
-
-  1ea0166da050 ("octeontx2-pf: Fix the device state on error")
-
-Fixes tag
-
-  Fixes: 50fe6c02e ("octeontx2-pf: Register and handle link notifications")
-
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-    or later) just making sure it is not set (or set to "auto").
-
-In commit
-
-  89eae5e87b4f ("octeontx2-pf: Fix TCP/UDP checksum offload for IPv6 frames=
-")
-
-Fixes tag
-
-  Fixes: 3ca6c4c88 ("octeontx2-pf: Add packet transmission support")
-
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-    or later) just making sure it is not set (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/N+8f45KqlWeNX8c7Gt4=XzP
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl91C1QACgkQAVBC80lX
-0Gw2SAf9F3XXldpShN9oWWZwD0T5/Dtu/hIxQlVMY8Fsz9P9ZLTqqdRs9NnO5del
-DRLITE6lxMLwqoZjOHruYavTupQGgwQLMJ78G2GWxKzDcwE4mbH4YF4Vfq0zhiiR
-xUJeSASbXhNSDReP/XAeKvsyiPYt90sl88seflM66FE6cS2541U2nBsO7WmWJoy+
-BF2cqmBIz5x75a/T3PBa2P57rQ+weiYVIAY01cOjNydiTyxTTBTVgAGy/Yz1LC9Q
-iL/GnpQOugPWhUnJPSvutipWVST0s3x44JHRZedGS5OAUoL2o3ShgeOQQtW6WTu3
-k30G4YBVd619RCHdO2IV0HWpxMwEqQ==
-=28NP
------END PGP SIGNATURE-----
-
---Sig_/N+8f45KqlWeNX8c7Gt4=XzP--
+--
+2.24.1
