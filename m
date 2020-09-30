@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A13B27EB71
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 16:53:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC24227EB87
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 16:55:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730621AbgI3OxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 10:53:14 -0400
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:23786 "EHLO
+        id S1730682AbgI3Ozt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 10:55:49 -0400
+Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:29257 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730196AbgI3OxN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 10:53:13 -0400
+        with ESMTP id S1727426AbgI3Ozr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 10:55:47 -0400
 Received: from tomoyo.flets-east.jp ([153.230.197.127])
         by mwinf5d69 with ME
-        id aEsz2300N2lQRaH03Et73J; Wed, 30 Sep 2020 16:53:12 +0200
+        id aEvY230022lQRaH03EvhPd; Wed, 30 Sep 2020 16:55:45 +0200
 X-ME-Helo: tomoyo.flets-east.jp
 X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Wed, 30 Sep 2020 16:53:12 +0200
+X-ME-Date: Wed, 30 Sep 2020 16:55:45 +0200
 X-ME-IP: 153.230.197.127
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
@@ -27,12 +27,12 @@ To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
 Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Oliver Neukum <oneukum@suse.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
         Masahiro Yamada <masahiroy@kernel.org>,
+        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
         linux-usb@vger.kernel.org (open list:USB ACM DRIVER)
-Subject: [PATCH v2 3/6] can: dev: __can_get_echo_skb(): fix the return length
-Date:   Wed, 30 Sep 2020 23:45:30 +0900
-Message-Id: <20200930144602.10290-4-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v2 4/6] can: dev: add a helper function to calculate the duration of one bit
+Date:   Wed, 30 Sep 2020 23:45:31 +0900
+Message-Id: <20200930144602.10290-5-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200926175810.278529-1-mailhol.vincent@wanadoo.fr>
 References: <20200926175810.278529-1-mailhol.vincent@wanadoo.fr>
@@ -42,37 +42,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The length of Remote Transmission Request (RTR) frames is always 0
-bytes. The DLC represents the requested length, not the actual length
-of the RTR. But __can_get_echo_skb() returns the DLC value regardless.
+Rename macro CAN_CALC_SYNC_SEG to CAN_SYNC_SEG and make it available
+through include/linux/can/dev.h
 
-Apply get_can_len() function to retrieve the correct length.
+Add an helper function can_bit_time() which returns the duration (in
+time quanta) of one CAN bit.
+
+Rationale for this patch: the sync segment and the bit time are two
+concepts which are defined in the CAN ISO standard. Device drivers for
+CAN might need those.
+
+Please refer to ISO 11898-1:2015, section 11.3.1.1 "Bit time" for
+additional information.
 
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- drivers/net/can/dev.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/net/can/dev.c   | 13 ++++++-------
+ include/linux/can/dev.h | 15 +++++++++++++++
+ 2 files changed, 21 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
-index e291fda395a0..8c3e11820e03 100644
+index 8c3e11820e03..6070b4ab3bd8 100644
 --- a/drivers/net/can/dev.c
 +++ b/drivers/net/can/dev.c
-@@ -481,14 +481,9 @@ __can_get_echo_skb(struct net_device *dev, unsigned int idx, u8 *len_ptr)
- 	}
+@@ -60,7 +60,6 @@ EXPORT_SYMBOL_GPL(can_len2dlc);
  
- 	if (priv->echo_skb[idx]) {
--		/* Using "struct canfd_frame::len" for the frame
--		 * length is supported on both CAN and CANFD frames.
--		 */
- 		struct sk_buff *skb = priv->echo_skb[idx];
--		struct canfd_frame *cf = (struct canfd_frame *)skb->data;
--		u8 len = cf->len;
+ #ifdef CONFIG_CAN_CALC_BITTIMING
+ #define CAN_CALC_MAX_ERROR 50 /* in one-tenth of a percent */
+-#define CAN_CALC_SYNC_SEG 1
  
--		*len_ptr = len;
-+		*len_ptr = get_can_len(skb);
- 		priv->echo_skb[idx] = NULL;
+ /* Bit-timing calculation derived from:
+  *
+@@ -86,8 +85,8 @@ can_update_sample_point(const struct can_bittiming_const *btc,
+ 	int i;
  
- 		return skb;
+ 	for (i = 0; i <= 1; i++) {
+-		tseg2 = tseg + CAN_CALC_SYNC_SEG -
+-			(sample_point_nominal * (tseg + CAN_CALC_SYNC_SEG)) /
++		tseg2 = tseg + CAN_SYNC_SEG -
++			(sample_point_nominal * (tseg + CAN_SYNC_SEG)) /
+ 			1000 - i;
+ 		tseg2 = clamp(tseg2, btc->tseg2_min, btc->tseg2_max);
+ 		tseg1 = tseg - tseg2;
+@@ -96,8 +95,8 @@ can_update_sample_point(const struct can_bittiming_const *btc,
+ 			tseg2 = tseg - tseg1;
+ 		}
+ 
+-		sample_point = 1000 * (tseg + CAN_CALC_SYNC_SEG - tseg2) /
+-			(tseg + CAN_CALC_SYNC_SEG);
++		sample_point = 1000 * (tseg + CAN_SYNC_SEG - tseg2) /
++			(tseg + CAN_SYNC_SEG);
+ 		sample_point_error = abs(sample_point_nominal - sample_point);
+ 
+ 		if (sample_point <= sample_point_nominal &&
+@@ -145,7 +144,7 @@ static int can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
+ 	/* tseg even = round down, odd = round up */
+ 	for (tseg = (btc->tseg1_max + btc->tseg2_max) * 2 + 1;
+ 	     tseg >= (btc->tseg1_min + btc->tseg2_min) * 2; tseg--) {
+-		tsegall = CAN_CALC_SYNC_SEG + tseg / 2;
++		tsegall = CAN_SYNC_SEG + tseg / 2;
+ 
+ 		/* Compute all possible tseg choices (tseg=tseg1+tseg2) */
+ 		brp = priv->clock.freq / (tsegall * bt->bitrate) + tseg % 2;
+@@ -223,7 +222,7 @@ static int can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
+ 
+ 	/* real bitrate */
+ 	bt->bitrate = priv->clock.freq /
+-		(bt->brp * (CAN_CALC_SYNC_SEG + tseg1 + tseg2));
++		(bt->brp * (CAN_SYNC_SEG + tseg1 + tseg2));
+ 
+ 	return 0;
+ }
+diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
+index 72a8a60c0094..30b327f1a4bd 100644
+--- a/include/linux/can/dev.h
++++ b/include/linux/can/dev.h
+@@ -82,6 +82,21 @@ struct can_priv {
+ #endif
+ };
+ 
++#define CAN_SYNC_SEG 1
++
++/*
++ * can_bit_time() - Duration of one bit
++ *
++ * Please refer to ISO 11898-1:2015, section 11.3.1.1 "Bit time" for
++ * additional information.
++ *
++ * Return: the number of time quanta in one bit.
++ */
++static inline int can_bit_time(struct can_bittiming *bt)
++{
++	return CAN_SYNC_SEG + bt->prop_seg + bt->phase_seg1 + bt->phase_seg2;
++}
++
+ /*
+  * get_can_dlc(value) - helper macro to cast a given data length code (dlc)
+  * to __u8 and ensure the dlc value to be max. 8 bytes.
 -- 
 2.26.2
 
