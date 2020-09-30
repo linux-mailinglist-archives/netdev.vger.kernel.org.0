@@ -2,68 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F9227EA6A
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 15:57:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E870727EAC1
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 16:18:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730403AbgI3N5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 09:57:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35890 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729903AbgI3N5g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Sep 2020 09:57:36 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kNcbl-00GuLn-II; Wed, 30 Sep 2020 15:57:25 +0200
-Date:   Wed, 30 Sep 2020 15:57:25 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next v2 1/7] net: devlink: Add unused port flavour
-Message-ID: <20200930135725.GH3996795@lunn.ch>
-References: <20200928220507.olh77t464bqsc4ll@skbuf>
- <20200928220730.GD3950513@lunn.ch>
- <20200928153504.1b39a65d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <61860d84-d0c6-c711-0674-774149a8d0af@gmail.com>
- <20200928163936.1bdacb89@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <c877bda0-140c-dce1-49ff-61fac47a66bc@gmail.com>
- <20200929110356.jnqoyy72bjer6psw@skbuf>
- <20200929130758.GF8264@nanopsycho>
- <20200929135700.GG3950513@lunn.ch>
- <20200930065604.GI8264@nanopsycho>
+        id S1730198AbgI3OS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 10:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59520 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728149AbgI3OS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 10:18:26 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC469C061755;
+        Wed, 30 Sep 2020 07:18:26 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id t13so1114044plb.10;
+        Wed, 30 Sep 2020 07:18:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TwJdx0lIfhHir6Nqx17GvuwpEA6xq9365oCpCop+vGs=;
+        b=VGn/rFmLYPyMEMwlJDY0UTwwEY0T48qfEF3k+SblEi1HXQFUc4gB314tq8+0SCK+ty
+         +0qmpjsXwfWbRflf2ym2DBnbqiIaJnJdj1fqwwQ8Obl9Hn+PpXhvl2ccyZDFSN0KxVrl
+         0wYcNfXqPQS7NB7QPRT7LnEGHXxRUOVS/l7BLECFMP4PIF7uhstzuYY1IpaGE0iczKhx
+         Y0H5RhMs04NrIMJaG1HYIGK7JiUk4AAIBUvvjN7j4xaRBSX5T78mFLKCT7Ss4GPwJy6a
+         /OYW5BFqpPECa8BfLJEFm/m+yMknHQcZZP72LylqFoHHhQ4o6Sm2v1v/0SWMUiAbTLVP
+         0zeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TwJdx0lIfhHir6Nqx17GvuwpEA6xq9365oCpCop+vGs=;
+        b=dHihiQvHWTlrpfltj0y1zt72/9sm6KnShz8SAJZe1pVqIRW+yBK/qzGHUrvl9Jt8ts
+         cGQPsmbhSK0oy76Gr48DMtmyitt7DSBs+jS4M7vNHeUc0t7/1CgQsjAqzPPYDCv82GP5
+         S39OFFN0qIk4JH6egNABMKnPW4P6+XNxi5ER0XlBagdemB1PfmoEyFn1QBjz5V0H/Eft
+         A7o87kllGD1yJdQKiQD1HrO1vbGGmbHG4xfyFq/HqDVbNkuFFsJOVGIuVWlbIe9Ynfi2
+         snknMQ5Jhm1tsiwD3tSmAZ95Webd+9+Jbw6w6y2sAmkq1zFzWwxioOuL+3Iy2IRdeHxm
+         csIg==
+X-Gm-Message-State: AOAM533VCYK/DMLC/Onz1v8An6W0MjIIW54wmIP/iVbzutEow0ohxWEg
+        3cQb7O9j5D3Qrd7cdFYNDyg=
+X-Google-Smtp-Source: ABdhPJyU3iDeeonfLrCyZS8ZegFFDuTux5IsDvMQ8QoTTjVYYmJpmE38dykd4LCzMzGk2yDNKMIRRA==
+X-Received: by 2002:a17:90a:d18b:: with SMTP id fu11mr2678375pjb.203.1601475505953;
+        Wed, 30 Sep 2020 07:18:25 -0700 (PDT)
+Received: from localhost.localdomain ([45.118.167.204])
+        by smtp.googlemail.com with ESMTPSA id 34sm2460770pgp.5.2020.09.30.07.18.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Sep 2020 07:18:24 -0700 (PDT)
+From:   Anmol Karn <anmol.karan123@gmail.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, anmol.karan123@gmail.com,
+        syzbot+0bef568258653cff272f@syzkaller.appspotmail.com
+Subject: [PATCH] net: bluetooth: Fix null pointer dereference in hci_event_packet()
+Date:   Wed, 30 Sep 2020 19:48:13 +0530
+Message-Id: <20200930141813.410209-1-anmol.karan123@gmail.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200929173231.396261-1-anmol.karan123@gmail.com>
+References: <20200929173231.396261-1-anmol.karan123@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200930065604.GI8264@nanopsycho>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I get it. But I as I wrote previously, I wonder if used/unused should
-> not be another attribute. Then the flavour can be "undefined".
+AMP_MGR is getting derefernced in hci_phy_link_complete_evt(), when called from hci_event_packet() and there is a possibility, that hcon->amp_mgr may not be found when accessing after initialization of hcon.
 
-In the DSA world, it is not undefined. It is clear defined as
-unused. And it cannot be on-the-fly changed. It is a property of the
-PCB, in that the pins exist on the chip, but they simply don't go
-anywhere on the PCB. This is quite common on appliances, e.g. The
-switch has 7 ports, but the installation in the aircraft is a big
-ring, so there is a 'left', 'right', 'aux' and the CPU port. That
-leaves 3 ports totally unused.
+- net/bluetooth/hci_event.c:4945
+The bug seems to get triggered in this line:
 
-> But, why do you want to show "unused" ports? Can the user do something
-> with them? What is the value in showing them?
+bredr_hcon = hcon->amp_mgr->l2cap_conn->hcon;
 
-Because they are just ports, they can have regions. We can look at the
-region and be sure they are powered off, the boot loader etc has not
-left them in a funny state, bridged to other ports, etc.
+Fix it by adding a NULL check for the hcon->amp_mgr before checking the ev-status.
 
-Regions are a developers tool, not a 'user' tools. So the idea of
-hiding them by default in 'devlink port show' does make some sense,
-and have a flag like -d for details, which includes them. In 'devlink
-region show' i would probably list all regions, independent of any -d
-flag.
+Fixes: d5e911928bd8 ("Bluetooth: AMP: Process Physical Link Complete evt")
+Reported-and-tested-by: syzbot+0bef568258653cff272f@syzkaller.appspotmail.com 
+Link: https://syzkaller.appspot.com/bug?extid=0bef568258653cff272f 
+Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
+---
+Change in v3:
+  - changed return o; to return; (Reported-by: kernel test robot <lkp@intel.com>
+)
 
-      Andrew
+ net/bluetooth/hci_event.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 4b7fc430793c..bbe0ca42cad2 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4936,6 +4936,11 @@ static void hci_phy_link_complete_evt(struct hci_dev *hdev,
+ 		return;
+ 	}
+ 
++	if (!hcon->amp_mgr) {
++		hci_dev_unlock(hdev);
++		return;
++	}
++
+ 	if (ev->status) {
+ 		hci_conn_del(hcon);
+ 		hci_dev_unlock(hdev);
+-- 
+2.28.0
+
