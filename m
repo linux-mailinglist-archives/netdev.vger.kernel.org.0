@@ -2,141 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4295927F30C
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 22:13:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3D8227F330
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 22:19:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728793AbgI3UNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 16:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
+        id S1730104AbgI3USZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 16:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725872AbgI3UNO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 16:13:14 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05AEFC061755
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 13:13:14 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kNiTM-00E39L-UK; Wed, 30 Sep 2020 22:13:09 +0200
-Message-ID: <48868126b563b1602093f6210ed957d7ed880584.camel@sipsolutions.net>
-Subject: Re: Genetlink per cmd policies
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Michal Kubecek <mkubecek@suse.cz>,
-        dsahern@kernel.org, pablo@netfilter.org, netdev@vger.kernel.org
-Date:   Wed, 30 Sep 2020 22:13:07 +0200
-In-Reply-To: <20200930124612.32b53118@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20200930084955.71a8c0ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <fce613c2b4c797de4be413afddf872fd6dae9ef8.camel@sipsolutions.net>
-         <a772c03bfbc8cf8230df631fe2db6f2dd7b96a2a.camel@sipsolutions.net>
-         <20200930094455.668b6bff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <23b4d301ee35380ac21c898c04baed9643bd3651.camel@sipsolutions.net>
-         <20200930120129.620a49f0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <563a2334a42cc5f33089c2bff172d92e118575ea.camel@sipsolutions.net>
-         <20200930121404.221033a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <c161e922491c1a2330dcef6741a8cfa7f92999be.camel@sipsolutions.net>
-         <20200930124612.32b53118@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        with ESMTP id S1725355AbgI3USZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 16:18:25 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2D6C061755
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 13:18:25 -0700 (PDT)
+Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kNiYQ-0002Qt-6v; Wed, 30 Sep 2020 22:18:22 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can-next 2020-09-30
+Date:   Wed, 30 Sep 2020 22:18:03 +0200
+Message-Id: <20200930201816.1032054-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-09-30 at 12:46 -0700, Jakub Kicinski wrote:
+Hello David,
 
-> This builds (I think) - around 100 extra LoC:
+this is a pull request of 13 patches for net-next.
 
-Looks good to me, couple of comments below.
+The first 10 target the mcp25xxfd driver (which is renamed to mcp251xfd during
+this series).
 
-> +/**
-> + * struct genl_light_ops - generic netlink operations (small version)
-> + * @cmd: command identifier
-> + * @internal_flags: flags used by the family
-> + * @flags: flags
-> + * @validate: validation flags from enum genl_validate_flags
-> + * @doit: standard command callback
-> + * @dumpit: callback for dumpers
-> + *
-> + * This is a cut-down version of struct genl_ops for users who don't need
-> + * most of the ancillary infra and want to save space.
-> + */
-> +struct genl_light_ops {
-> +	int	(*doit)(struct sk_buff *skb, struct genl_info *info);
-> +	int	(*dumpit)(struct sk_buff *skb, struct netlink_callback *cb);
+The first two patches are by Thomas Kopp, which adds reference to the just
+related errata and updates the documentation and log messages.
 
-Even dumpit is pretty rare (e.g. 10 out of 107 in nl80211) - maybe
-remove that even? It's a bit more juggling in nl80211 to actually use
-it, but I'm certainly happy to do that myself.
+Dan Carpenter's patch fixes a resource leak during ifdown.
 
-> +static void genl_op_from_full(const struct genl_family *family,
-> +			      unsigned int i, struct genl_ops *op)
-> +{
-> +	memcpy(op, &family->ops[i], sizeof(*op));
+A patch by me adds the missing initialization of a variable.
 
-What's wrong with struct assignment? :)
+Oleksij Rempel updates the DT binding documentation as requested by Rob
+Herring.
 
-	*op = family->ops[i];
+The next 5 patches are by Thomas Kopp and me. During review Geert Uytterhoeven
+suggested to use "microchip,mcp251xfd" instead of "microchip,mcp25xxfd" as the
+DT autodetection compatible to avoid clashes with future but incompatible
+devices. We decided not only to rename the compatible but the whole driver from
+"mcp25xxfd" to "mcp251xfd". This is done in several patches.
 
+Joakim Zhang contributes three patches for the flexcan driver. The first one
+adds support for the ECC feature, which is implemented on some modern IP cores,
+by initializing the controller's memory during ifup. The next patch adds
+support for the i.MX8MP (which supports ECC) and the last patch properly
+disables the runtime PM if device registration fails.
 
-> +	if (!op->maxattr)
-> +		op->maxattr = family->maxattr;
-> +	if (!op->policy)
-> +		op->policy = family->policy;
+---
 
-That doesn't build as is, I think? Or did you have some other patch
-below it?
+The following changes since commit 879456bedbe54f2d38b15c21dc5e3c30232b53e1:
 
->  static int genl_validate_ops(const struct genl_family *family)
->  {
-[...]
-> +	n_ops = genl_get_cmd_cnt(family);
->  	if (!n_ops)
->  		return 0;
+  net: mvneta: avoid possible cache misses in mvneta_rx_swbm (2020-09-29 18:10:07 -0700)
 
-Come to think of it, that check is kinda pointless, the loop won't run
-if it's 0 and then we return 0 immediately anyway... whatever :)
+are available in the Git repository at:
 
->  	for (i = 0; i < n_ops; i++) {
-> -		if (ops[i].dumpit == NULL && ops[i].doit == NULL)
-> +		struct genl_ops op;
-> +
-> +		if (genl_get_cmd_by_index(i, family, &op))
->  			return -EINVAL;
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.10-20200930
 
-Maybe WARN_ON() or something? It really ought to not be possible for
-that to fail, since you're only iterating to n_ops, so you'd have to
-have some consistency issues if that happens.
+for you to fetch changes up to 5a9323f55d52c9246ce85f2c9c6a8ec45413b1d0:
 
-> -		for (j = i + 1; j < n_ops; j++)
-> -			if (ops[i].cmd == ops[j].cmd)
-> +		if (op.dumpit == NULL && op.doit == NULL)
-> +			return -EINVAL;
-> +		for (j = i + 1; j < n_ops; j++) {
-> +			struct genl_ops op2;
-> +
-> +			if (genl_get_cmd_by_index(j, family, &op2))
->  				return -EINVAL;
+  can: flexcan: disable runtime PM if register flexcandev failed (2020-09-30 21:56:58 +0200)
 
-same here
+----------------------------------------------------------------
+linux-can-next-for-5.10-20200930
 
-> +		for (i = 0; i < genl_get_cmd_cnt(family); i++) {
->  			struct nlattr *nest;
-> -			const struct genl_ops *ops = &family->ops[i];
-> -			u32 op_flags = ops->flags;
-> +			struct genl_ops op;
-> +			u32 op_flags;
-> +
-> +			if (genl_get_cmd_by_index(i, family, &op))
-> +				goto nla_put_failure;
+----------------------------------------------------------------
+Dan Carpenter (1):
+      can: mcp25xxfd: mcp25xxfd_ring_free(): fix memory leak during cleanup
 
-but actually, same here, so maybe it should just not even be able to
-return an error but WARN_ON instead and clear the op, so you have
-everything NULL in that case?
+Joakim Zhang (3):
+      can: flexcan: initialize all flexcan memory for ECC function
+      can: flexcan: add flexcan driver for i.MX8MP
+      can: flexcan: disable runtime PM if register flexcandev failed
 
-I don't really see a case where you'd have the index coming from
-userspace and would have to protect against it being bad, or something?
+Marc Kleine-Budde (4):
+      can: mcp25xxfd: mcp25xxfd_irq(): add missing initialization of variable set_normal mode
+      can: mcp251xfd: rename driver files and subdir to mcp251xfd
+      can: mcp251xfd: rename all user facing strings to mcp251xfd
+      can: mcp251xfd: rename all remaining occurrence to mcp251xfd
 
-johannes
+Oleksij Rempel (1):
+      dt-binding: can: mcp25xxfd: documentation fixes
+
+Thomas Kopp (4):
+      can: mcp25xxfd: mcp25xxfd_handle_eccif(): add ECC related errata and update log messages
+      can: mcp25xxfd: mcp25xxfd_probe(): add SPI clk limit related errata information
+      dt-binding: can: mcp251xfd: narrow down wildcards in device tree bindings to "microchip,mcp251xfd"
+      can: mcp25xxfd: narrow down wildcards in device tree bindings to "microchip,mcp251xfd"
+
+ ...hip,mcp25xxfd.yaml => microchip,mcp251xfd.yaml} |   16 +-
+ drivers/net/can/flexcan.c                          |   64 +-
+ drivers/net/can/spi/Kconfig                        |    2 +-
+ drivers/net/can/spi/Makefile                       |    2 +-
+ .../net/can/spi/{mcp25xxfd => mcp251xfd}/Kconfig   |   10 +-
+ drivers/net/can/spi/mcp251xfd/Makefile             |    8 +
+ .../mcp251xfd-core.c}                              | 1386 ++++++++++----------
+ .../mcp251xfd-crc16.c}                             |   24 +-
+ .../mcp251xfd-regmap.c}                            |  232 ++--
+ drivers/net/can/spi/mcp251xfd/mcp251xfd.h          |  835 ++++++++++++
+ drivers/net/can/spi/mcp25xxfd/Makefile             |    8 -
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd.h          |  835 ------------
+ 12 files changed, 1749 insertions(+), 1673 deletions(-)
+ rename Documentation/devicetree/bindings/net/can/{microchip,mcp25xxfd.yaml => microchip,mcp251xfd.yaml} (87%)
+ rename drivers/net/can/spi/{mcp25xxfd => mcp251xfd}/Kconfig (62%)
+ create mode 100644 drivers/net/can/spi/mcp251xfd/Makefile
+ rename drivers/net/can/spi/{mcp25xxfd/mcp25xxfd-core.c => mcp251xfd/mcp251xfd-core.c} (54%)
+ rename drivers/net/can/spi/{mcp25xxfd/mcp25xxfd-crc16.c => mcp251xfd/mcp251xfd-crc16.c} (81%)
+ rename drivers/net/can/spi/{mcp25xxfd/mcp25xxfd-regmap.c => mcp251xfd/mcp251xfd-regmap.c} (60%)
+ create mode 100644 drivers/net/can/spi/mcp251xfd/mcp251xfd.h
+ delete mode 100644 drivers/net/can/spi/mcp25xxfd/Makefile
+ delete mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd.h
+
 
