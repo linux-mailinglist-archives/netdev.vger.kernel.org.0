@@ -2,74 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7CD27E39C
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 10:23:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F24327E39D
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 10:23:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728149AbgI3IXX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 30 Sep 2020 04:23:23 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:56120 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725535AbgI3IXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 04:23:22 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-241-KV6fPijRMkWryXuz3TcX2Q-1; Wed, 30 Sep 2020 09:23:16 +0100
-X-MC-Unique: KV6fPijRMkWryXuz3TcX2Q-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Wed, 30 Sep 2020 09:23:15 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Wed, 30 Sep 2020 09:23:15 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jakub Kicinski' <kuba@kernel.org>, Wei Wang <weiwan@google.com>
-CC:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        "Felix Fietkau" <nbd@nbd.name>
-Subject: RE: [RFC PATCH net-next 0/6] implement kthread based napi poll
-Thread-Topic: [RFC PATCH net-next 0/6] implement kthread based napi poll
-Thread-Index: AQHWlqpf5e4ajsfgAEyc0khQ0bcmAamA19lw
-Date:   Wed, 30 Sep 2020 08:23:15 +0000
-Message-ID: <4600c4617b4b41fa8522ab2d0c8ea822@AcuMS.aculab.com>
-References: <20200914172453.1833883-1-weiwan@google.com>
-        <CANn89iJDM97U15Znrx4k4bOFKunQp7dwJ9mtPwvMmB4S+rSSbA@mail.gmail.com>
-        <20200929121902.7ee1c700@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAEA6p_BPT591fqFRqsM=k4urVXQ1sqL-31rMWjhvKQZm9-Lksg@mail.gmail.com>
- <20200929144847.05f3dcf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200929144847.05f3dcf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1728367AbgI3IXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 04:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725535AbgI3IXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 04:23:38 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12CACC061755
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 01:23:37 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id c62so606882qke.1
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 01:23:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=ht0iJaPBFl79kO3Me18iXvJ3XLtKmD8cALdfz2yOyRM=;
+        b=BvqxVlKxCOo/UTVGVsU6Td/ufZnfj8gZUVZbpQv3MK+eLCGekm9/T/DgUnuhENXa3/
+         cYy0vaBPZjohCB9QnwTFsixfnK2LHqOGkO8CE9fw16olvGenIwNsh4rBE8d/Z9lpVw4h
+         fZbT0nTdIAT92Uvic3d3l5AeaUyBqApO9cI/RyM6eErGi5/E7kKMVsh0LrCOmQ7S4H3z
+         Dx+sUkh58stKDmdStLFFvUVoKpwlS/TbH9XKP4ZG2t1CsstODqdQYlOSlcdVA7ximhxV
+         Pd8xE04PrC4ZbgeB7wGalGgDKbzbyBkA05KsdtHx028ObEK90M13M8ad2QS4S2kHyYMI
+         d/VQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=ht0iJaPBFl79kO3Me18iXvJ3XLtKmD8cALdfz2yOyRM=;
+        b=MtUupyeYnCNG9h9aRtb/7jQIxL6C9JNFQOU61Fz9z8wy+6DMf8R/fFLKnvUafgC9W5
+         4rq58Z4HdpalbQWdotOcq34O4CoozxERJCM6ZD4X/uvF6zp93/I92Z8+iVtYcnC3fT/s
+         LfcuKzDilkcDoS9k+umZNysSKd/xqiFEGpur6K7JoTwxXKRGK5tf+F3Irm1Kmb9N4OCj
+         Qwbt5KEaBRoDY89dJzD0x/e8ICaBG0yisr20fDOdgZsiSR6WM/p3z43HHgdHqvlJ371z
+         9wv0iln6UEo0BovkYMEJKnoBtzs9j0110LvOfHEK6QdDULu/MhQLg9fZA5HbO9ZcysT0
+         8Ssw==
+X-Gm-Message-State: AOAM5327KqD279rj8G2aLJElLqtoaCyQqGvtCvNxTcsl2TzUa78sbNXU
+        B+XWFZFU9XwQ378WchUGM42IeMLF4AJziNBpfEA=
+X-Google-Smtp-Source: ABdhPJy+xUuoqHIBAKbhbVLXuV2+OaY11mLcHeWZDh+ErdWDVv9HynwugQ4DllDcqdTGs2LGzHdzi7eQzD9JRbYvtts=
+X-Received: by 2002:ae9:c30d:: with SMTP id n13mr1473377qkg.138.1601454216305;
+ Wed, 30 Sep 2020 01:23:36 -0700 (PDT)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Received: by 2002:a0c:e148:0:0:0:0:0 with HTTP; Wed, 30 Sep 2020 01:23:35
+ -0700 (PDT)
+Reply-To: mrs.aisha80@hotmail.com
+From:   "MESSAGE From Mrs. Aisha. Al-Qaddafi" <mr.mohamedabudu@gmail.com>
+Date:   Wed, 30 Sep 2020 09:23:35 +0100
+Message-ID: <CAMKnQRiH+oAYD+47nmThw32Ca=b8N8tHm5y9s47HcuZ3+NFP+A@mail.gmail.com>
+Subject: CONTACT
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski
-> Sent: 29 September 2020 22:49
-...
-> Isn't the fundamental problem that scheduler works at ms scale while
-> where we're talking about 100us at most? And AFAICT scheduler doesn't
-> have a knob to adjust migration cost per process? :(
+Assalamu Alaikum Wa Rahmatullahi Wa Barakatuh,
 
-Have you tried setting the application processes to RT priorities?
-The scheduler tries very hard (maybe too hard) to avoid migrating
-RT processes.
+My Dear Good Friend.
 
-	David
+I came across your e-mail contact prior a private search while in need
+of your assistance. My name is Aisha Gaddafi a single Mother and a
+Widow with three Children. I am the only biological Daughter of late
+Libyan President (Late Colonel Muammar Gaddafi).Please Reply me in my
+box. (aishaalqaddafi644@gmail.com)
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+I have an investment  funds worth Twenty Seven Million Five Hundred
+Thousand United State Dollar ($27.500.000.00 ) and I need an
+investment Manager/Partner and because of the asylum status i will
+authorize you the ownership of  the funds, however, I am interested in
+you for investment project assistance in your country, may be from
+there, we can build a business relationship in the near future.
 
+I am willing to negotiate investment/business profit sharing ratio
+with you base on the future investment earning profits. If you are
+willing to handle this project kindly reply urgent to enable me
+provide you more information about the investment funds. Your Urgent
+Reply Will Be Appreciated Please Reply me in my box.
+(aishaalqaddafi644@gmail.com)
+
+Best Regards
+Mrs. Aisha. Al-Qaddafi
