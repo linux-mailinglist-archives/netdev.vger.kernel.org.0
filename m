@@ -2,153 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B25927E870
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 14:21:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27A1C27E882
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 14:25:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729842AbgI3MVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 08:21:43 -0400
-Received: from mail-oo1-f67.google.com ([209.85.161.67]:35138 "EHLO
-        mail-oo1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728232AbgI3MVm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 08:21:42 -0400
-Received: by mail-oo1-f67.google.com with SMTP id k13so418082oor.2;
-        Wed, 30 Sep 2020 05:21:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YEgxCdX3rAH5lHUw3+UUAJ162eHWPCVqP8JIftX6FNo=;
-        b=XKaWO/TEs0oTtYOkL7FNQj7CnOEFzXWviQIxyYNljVSBKdnmyY4IJdTNCZ50g1YgUB
-         PkqwDTk3tp6UlEXA9C1qb3sGIcxe+GHLu7CtnPnbVprI10PWHiOUpxJ4gfFwhEqJ1NGi
-         JPNKLSvAjJIvqOj/PHq0zsiJEHwMUNDXTeVGpH0iFnC8uv3+LjwhroFOV31Tv8+eaCaC
-         TacX88j28aZQQJlC2HYajJLTwH8c1Eou4saRj27fSchBuPc2SdWLkEQ743IOgWMo1WYK
-         MIke4RHCtkj5LpH/QP9lgMdTkVMB9bIEqGvNSOu188dzw36pqUb24krPE09Lo08e0IZO
-         cp7A==
-X-Gm-Message-State: AOAM530PXjGsi0ZOL75tT3B3zTe8NGA3dG2rpyv74A6OLQiUfvjYMNdI
-        CuHvIdpahKBjfk95OJaXEnHEFtXPK9dlmR5J2cY=
-X-Google-Smtp-Source: ABdhPJzLMUeyo2RdooHxaEgwwg50UkkbVNr+eZ+KLROrYvzc91lw1WbUar+pXFO9w5zVt/YCWTbDkUNDfpGlaFIHPS8=
-X-Received: by 2002:a4a:e616:: with SMTP id f22mr1799785oot.11.1601468501619;
- Wed, 30 Sep 2020 05:21:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200917135707.12563-1-geert+renesas@glider.be>
-In-Reply-To: <20200917135707.12563-1-geert+renesas@glider.be>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 30 Sep 2020 14:21:30 +0200
-Message-ID: <CAMuHMdU2k5MmUe2_g7a9268XG2=9phiWoaSTeQ9ZbxoAs3QFfw@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 0/5] net/ravb: Add support for explicit
- internal clock delay configuration
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        id S1729809AbgI3MZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 08:25:31 -0400
+Received: from mailomta22-re.btinternet.com ([213.120.69.115]:57744 "EHLO
+        re-prd-fep-046.btinternet.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727997AbgI3MZb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 08:25:31 -0400
+Received: from re-prd-rgout-005.btmx-prd.synchronoss.net ([10.2.54.8])
+          by re-prd-fep-046.btinternet.com with ESMTP
+          id <20200930122528.LKFI4657.re-prd-fep-046.btinternet.com@re-prd-rgout-005.btmx-prd.synchronoss.net>;
+          Wed, 30 Sep 2020 13:25:28 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=btinternet.com; s=btmx201904; t=1601468728; 
+        bh=He3ZtxOHYvntd/R39t6Gn9zL395jrRUUUHVz9mi1hac=;
+        h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:MIME-Version;
+        b=eH9wjcha8BwbeVvRIfr8Lao8j0me5TljlX59UK2B0WBBD6MJ2tYLUQpBYl0z4tJVOky3YtI10bFEeAIwK/UI16m7oSZq9CrRdX2U4IF4+NIWytefqk+BBo7pMhqhzXbZbEGrIOfwKq5PYmxHH11Agzw8L7isEA8z+zJaELANxxlx4UNVUU9gnWoNE8F4p0tIVYheUzAypjMnyaIV+OkrlbQ1FXDYosrmQysvOnmHzBeEynMuZcoFn4jr1Zt28HjSSytgAWlO6vgZXUj2hXCS/lHR/ojFeCF7HTsRbiGX+7Ghkrxx8x2d3ZC9xueCzot4g2FazP2i5Bp/S7zpDCwCFg==
+Authentication-Results: btinternet.com;
+    auth=pass (LOGIN) smtp.auth=richard_c_haines@btinternet.com
+X-Originating-IP: [81.141.56.129]
+X-OWM-Source-IP: 81.141.56.129 (GB)
+X-OWM-Env-Sender: richard_c_haines@btinternet.com
+X-VadeSecure-score: verdict=clean score=0/300, class=clean
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedujedrfedvgdeglecutefuodetggdotefrodftvfcurfhrohhfihhlvgemuceutffkvffkuffjvffgnffgvefqofdpqfgfvfenuceurghilhhouhhtmecufedtudenucenucfjughrpefkuffhvfffjghftggfggfgsehtjeertddtreejnecuhfhrohhmpeftihgthhgrrhguucfjrghinhgvshcuoehrihgthhgrrhgupggtpghhrghinhgvshessghtihhnthgvrhhnvghtrdgtohhmqeenucggtffrrghtthgvrhhnpeekgeeftdffkeeikedugedvkeejheeiffevveelgedtleduteevudelffdugffgieenucfkphepkedurddugedurdehiedruddvleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopehlohgtrghlhhhoshhtrdhlohgtrghlughomhgrihhnpdhinhgvthepkedurddugedurdehiedruddvledpmhgrihhlfhhrohhmpeeorhhitghhrghruggptggphhgrihhnvghssegsthhinhhtvghrnhgvthdrtghomhequceuqfffjgepkeeukffvoffkoffgpdhrtghpthhtohepoehjmhhorhhrihhssehnrghmvghirdhorhhgqedprhgtphhtthhopeeolhgrfhhorhhgvgesghhnuhhmohhnkhhsrdhorhhgqedprhgtphhtthhopeeolhhinhhugidqshgvtghurhhithihqdhmohguuhhlvgesvhhgvghrrdhkvghrnhgvlhdrohhrgheqpdhrtghpthhtohepoehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrgheqpdhrtghpthhtohep
+        oehoshhmohgtohhmqdhnvghtqdhgphhrsheslhhishhtshdrohhsmhhotghomhdrohhrgheqpdhrtghpthhtohepoehprggslhhosehnvghtfhhilhhtvghrrdhorhhgqedprhgtphhtthhopeeophgruhhlsehprghulhdqmhhoohhrvgdrtghomheqpdhrtghpthhtohepoehsvghlihhnuhigsehvghgvrhdrkhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeoshhtvghphhgvnhdrshhmrghllhgvhidrfihorhhksehgmhgrihhlrdgtohhmqe
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+X-SNCR-hdrdom: btinternet.com
+Received: from localhost.localdomain (81.141.56.129) by re-prd-rgout-005.btmx-prd.synchronoss.net (5.8.340) (authenticated as richard_c_haines@btinternet.com)
+        id 5ED9C74D136677D7; Wed, 30 Sep 2020 13:25:28 +0100
+Message-ID: <33cf57c9599842247c45c92aa22468ec89f7ba64.camel@btinternet.com>
+Subject: Re: [PATCH 3/3] selinux: Add SELinux GTP support
+From:   Richard Haines <richard_c_haines@btinternet.com>
+To:     Harald Welte <laforge@gnumonks.org>
+Cc:     selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
+        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
+        stephen.smalley.work@gmail.com, paul@paul-moore.com,
+        pablo@netfilter.org, jmorris@namei.org
+Date:   Wed, 30 Sep 2020 13:25:27 +0100
+In-Reply-To: <20200930110153.GT3871@nataraja>
+References: <20200930094934.32144-1-richard_c_haines@btinternet.com>
+         <20200930094934.32144-4-richard_c_haines@btinternet.com>
+         <20200930110153.GT3871@nataraja>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, Jakub,
+On Wed, 2020-09-30 at 13:01 +0200, Harald Welte wrote:
+> Hi Richard,
+> 
+> I don't fully understand in which context you need / use those
+> SELinux GTP hooks,
 
-On Thu, Sep 17, 2020 at 3:57 PM Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
-> Some Renesas EtherAVB variants support internal clock delay
-> configuration, which can add larger delays than the delays that are
-> typically supported by the PHY (using an "rgmii-*id" PHY mode, and/or
-> "[rt]xc-skew-ps" properties).
->
-> Historically, the EtherAVB driver configured these delays based on the
-> "rgmii-*id" PHY mode.  This caused issues with PHY drivers that
-> implement PHY internal delays properly[1].  Hence a backwards-compatible
-> workaround was added by masking the PHY mode[2].
->
-> This patch series implements the next step of the plan outlined in [3],
-> and adds proper support for explicit configuration of the MAC internal
-> clock delays using new "[rt]x-internal-delay-ps" properties.  If none of
-> these properties is present, the driver falls back to the old handling.
->
-> This can be considered the MAC counterpart of commit 9150069bf5fc0e86
-> ("dt-bindings: net: Add tx and rx internal delays"), which applies to
-> the PHY.  Note that unlike commit 92252eec913b2dd5 ("net: phy: Add a
-> helper to return the index for of the internal delay"), no helpers are
-> provided to parse the DT properties, as so far there is a single user
-> only, which supports only zero or a single fixed value.  Of course such
-> helpers can be added later, when the need arises, or when deemed useful
-> otherwise.
->
-> This series consists of 3 parts:
->   1. DT binding updates documenting the new properties, for both the
->      generic ethernet-controller and the EtherAVB-specific bindings,
->   2. Conversion to json-schema of the Renesas EtherAVB DT bindings.
->      Technically, the conversion is independent of all of the above.
->      I included it in this series, as it shows how all sanity checks on
->      "[rt]x-internal-delay-ps" values are implemented as DT binding
->      checks,
->   3. EtherAVB driver update implementing support for the new properties.
->
-> Given Rob has provided his acks for the DT binding updates, all of this
-> can be merged through net-next.
->
-> Changes compared to v3[4]:
->   - Add Reviewed-by,
->   - Drop the DT updates, as they will be merged through renesas-devel and
->     arm-soc, and have a hard dependency on this series.
->
-> Changes compared to v2[5]:
->   - Update recently added board DTS files,
->   - Add Reviewed-by.
->
-> Changes compared to v1[6]:
->   - Added "[PATCH 1/7] dt-bindings: net: ethernet-controller: Add
->     internal delay properties",
->   - Replace "renesas,[rt]xc-delay-ps" by "[rt]x-internal-delay-ps",
->   - Incorporated EtherAVB DT binding conversion to json-schema,
->   - Add Reviewed-by.
->
-> Impacted, tested:
->   - Salvator-X(S) with R-Car H3 ES1.0 and ES2.0, M3-W, and M3-N.
->
-> Not impacted, tested:
->   - Ebisu with R-Car E3.
->
-> Impacted, not tested:
->   - Salvator-X(S) with other SoC variants,
->   - ULCB with R-Car H3/M3-W/M3-N variants,
->   - V3MSK and Eagle with R-Car V3M,
->   - Draak with R-Car V3H,
->   - HiHope RZ/G2[MN] with RZ/G2M or RZ/G2N,
->   - Beacon EmbeddedWorks RZ/G2M Development Kit.
->
-> To ease testing, I have pushed this series and the DT updates to the
-> topic/ravb-internal-clock-delays-v4 branch of my renesas-drivers
-> repository at
-> git://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-drivers.git.
->
-> Thanks for applying!
+As in the reply to Pablo, I did it for no particular reason other than
+idle curiosity, and given the attempted move to Open 5G I thought
+adding MAC support might be useful somewhere along the line.
 
-Is there anything still blocking this series?
+> however one comment from the point of view of somebody who is working
+> on GGSN/P-GW
+> software using the GTP kernel module:
+> 
+> On Wed, Sep 30, 2020 at 10:49:34AM +0100, Richard Haines wrote:
+> > +selinux_gtp_dev_cmd()
+> > +~~~~~~~~~~~~~~~~~~~~~
+> > +Validate if the caller (current SID) and the GTP device SID have
+> > the required
+> > +permission to perform the operation. The GTP/SELinux permission
+> > map is
+> > +as follow::
+> > +
+> > +    GTP_CMD_NEWPDP = gtp { add }
+> > +    GTP_CMD_DELPDP = gtp { del }
+> > +    GTP_CMD_GETPDP = gtp { get }
+> 
+> Wouldn't it make sense to differentiate between:
+> 
+> a) add/del/get on the GTP netdev
+> b) add/del/get on the indivudual PDP wihin the GTP netdev
+> 
+> 'a' is typically only created once at startup of a GGSN/P-GW
+> software, or is
+> done even at system stat-up time.
+> 
+> 'b' is performed frequently during runtime as the GGSN/P-GW function
+> runs, as
+> subscribers attach to / detach from the cellular network.
+> 
+> By differentiating between those two, one could further constrain the
+> permissions
+> required at runtime.
 
-Thanks!
+Yes, at first I did separate them (add_dev, del_dev, add_pkt, del_pkt,
+get_pkt), so if this patchset goes anywhere then I can change it no
+problem. I guess the '*_pkt' permissions would cover PDP for 3G and PDR
+& FAR for 5G ?.
+I didn't implement 'get_dev' but thought it could be useful for
+retrieving the security context of a device, but that requires passing
+it back via netlink so thought I would leave it until later.
 
-Gr{oetje,eeting}s,
+> 
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
