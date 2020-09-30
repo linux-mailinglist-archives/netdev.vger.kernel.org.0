@@ -2,167 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ADE027F200
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 20:58:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EA1827F22A
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 21:01:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730740AbgI3S5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 14:57:51 -0400
-Received: from static-71-183-126-102.nycmny.fios.verizon.net ([71.183.126.102]:37756
-        "EHLO chicken.badula.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730723AbgI3S5u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 14:57:50 -0400
-X-Greylist: delayed 487 seconds by postgrey-1.27 at vger.kernel.org; Wed, 30 Sep 2020 14:57:50 EDT
-Received: from moisil.badula.org (pool-71-187-225-100.nwrknj.fios.verizon.net [71.187.225.100])
-        (authenticated bits=0)
-        by chicken.badula.org (8.14.4/8.14.4) with ESMTP id 08UInfuK019696
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=NO);
-        Wed, 30 Sep 2020 14:49:41 -0400
-Subject: Network packet reordering with the 5.4 stable tree
-References: <d3066d86-b63a-4a96-0537-e3e40c3826aa@badula.org>
-To:     stable@vger.kernel.org, netdev@vger.kernel.org
-From:   Ion Badulescu <ionut@badula.org>
-X-Forwarded-Message-Id: <d3066d86-b63a-4a96-0537-e3e40c3826aa@badula.org>
-Message-ID: <b11a3198-2d78-c90a-9586-f4752ae4fe6a@badula.org>
-Date:   Wed, 30 Sep 2020 14:49:41 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <d3066d86-b63a-4a96-0537-e3e40c3826aa@badula.org>
-Content-Type: multipart/mixed;
- boundary="------------CC0861635165DEE286A4CA0C"
+        id S1729645AbgI3TAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 15:00:40 -0400
+Received: from mail-eopbgr20041.outbound.protection.outlook.com ([40.107.2.41]:54457
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725799AbgI3TAj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 15:00:39 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WiU2Vy1ZMw+yn/0PRplRKFWXn56rMQBOl26Xo9HslpNMgAJJWBYQnIoZLvqq3Om0pf9GAz4oASoiKExXMIuHe6zqDIw7V64okXAcrH5pRDKuvrtR2EuS6cJHQ6BOIHnA7GbqzdVe1suWQRFuxWajthkxGbsF9WM+NZKkS0yBIz5bZNpHvMTTNBbkHy3kGFUnMZavwdrkLYeAd+2g9rpWCUhQ5px+mzzUdgvYyNAYp2TABLjBvV/KcyQ3nTkVdLhgK1NKBOfww6Syz7lT7191bFgYotO1dsPFYR3xjivaiW9SaMWNBYfewPBOVwPQR13QX5HUkNXpaaHmvlXYXrjFeA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K5RNsFNvLcyhBNLcfyjQ8q6oaJbQIxb8PlgZfha6WvM=;
+ b=HhHpoUemjk28z3VgvpvzXC/HbtHxn/ga9cRSeJ0e8KgldDUoz9YRUwfZWVCjd/gMqiNruoIZ6Vfi67g+akDRs0LwCXP6xK2M1GNoCD3HsMTej5iK5d5+BmRVaPXTTiHxfVYwhopOqBPo31EWOKIAICQao3F8vlQRjtlsdzgFwdoMuSF1IDiL4b5cTwK3KLPKq8nTdn2S3Pr0ox6MGZEM78L35tGdoks0JP314blx6auPbV9oevP+lWnWL+V5yqaZKG4FHJ/QK0vvIZ1nL91b4qRhoMEBG3CQHAhVcuqPe+FTd9gJr0YyAH4AhDrEcxNOaExym7LbIvcShyuXVhfAhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K5RNsFNvLcyhBNLcfyjQ8q6oaJbQIxb8PlgZfha6WvM=;
+ b=CSwb9khtHL0ZLn6TvwOMUJio6kAtqKGzKPB6JOic5iN6V20sGYKVZUD5AOPD6MJ3RlRvhiAKqorVojNnXbyc0zVL5aoCmg0Ti/D0YR05okJxD/3bkQ5g574ChezCp5qYF5yon3bx3WXpfvLeVN8aCHhYk9vhz3SI2iAU2UB1ixE=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR04MB7007.eurprd04.prod.outlook.com
+ (2603:10a6:803:13e::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.35; Wed, 30 Sep
+ 2020 19:00:36 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::3c18:4bf1:4da0:a3bf]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::3c18:4bf1:4da0:a3bf%3]) with mapi id 15.20.3412.029; Wed, 30 Sep 2020
+ 19:00:36 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jiri@nvidia.com" <jiri@nvidia.com>,
+        "idosch@nvidia.com" <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 3/4] dpaa2-eth: add basic devlink support
+Thread-Topic: [PATCH net-next 3/4] dpaa2-eth: add basic devlink support
+Thread-Index: AQHWl01xeoMMuSGY3kKylyKku97egKmBePeAgAAQYwA=
+Date:   Wed, 30 Sep 2020 19:00:36 +0000
+Message-ID: <20200930190036.5z4bof5sjieddfmi@skbuf>
+References: <20200930171611.27121-1-ioana.ciornei@nxp.com>
+ <20200930171611.27121-4-ioana.ciornei@nxp.com>
+ <20200930110157.55d85efa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200930110157.55d85efa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
 Content-Language: en-US
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on chicken.badula.org
-X-Spam-Level: 
-X-Spam-Language: en
-X-Spam-Status: No, score=0.078 required=5 tests=AWL=0.595,BAYES_00=-1.9,KHOP_HELO_FCRDNS=0.399,RDNS_DYNAMIC=0.982,SPF_FAIL=0.001,URIBL_BLOCKED=0.001
-X-Scanned-By: MIMEDefang 2.84
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.229.171]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: f7759f04-909a-4622-0a1a-08d865731db7
+x-ms-traffictypediagnostic: VI1PR04MB7007:
+x-microsoft-antispam-prvs: <VI1PR04MB70076C92825A860D72AECC56E0330@VI1PR04MB7007.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2512;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: P4byQL7dCGhkg6nOZktyCMK+12H56JqttJsdKlu/r02hMj/hcGWC5VieLvDc66uPKbzkXOsDAFZAAT9CTpHg76GgnZ2tB5tgBTP3/jAJYHq0N14RG9pjz7/23HBwGY58FowmNfpsS4Bf4k17NHdUqBMu/Bu6DEbBnjDq/QO6kVnhNkhAuo9oRbo57toB66/vClA6yKidhKqteDy+ttFW050s5NbzfqXEBiWnSeRpSxm8HyNcj6CTBjET4pyisDIJ+7FKgap8Skoi89FKmp+SnHn/1VOp/I7tG4tgTHysVXcug0m+qEgnJn2Z8lqzxfhUeh7I3I8ZFFKH7RaVEws3aw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(396003)(376002)(366004)(346002)(39860400002)(136003)(6512007)(9686003)(66476007)(64756008)(8676002)(66446008)(66946007)(66556008)(76116006)(478600001)(316002)(1076003)(186003)(2906002)(4326008)(54906003)(8936002)(33716001)(86362001)(6506007)(71200400001)(6486002)(26005)(5660300002)(6916009)(44832011)(4744005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: U/Eps+9PQDAc/598g4GMAb3Xb9OLdFF3O5WnkRt8v6a136vL8lvC22l8sgWFolAZjjntkRHu5zkICH+608HZrmq1YCLssDmEhcaO62Ogm0x4+yDEtk5vZrT0o3syc0c97kcMabfGaLupo7FX2upkMH1bhJ/5t2IfPyrYshyzrEp7Pt/ZdH2u1YpTc1V2JmFRHEmTgVUA6d2PR7VReFlQwP2kEaOMeCHxKpzS4YSFXdR6siZoRDxXVe3jp0hcxACIW0UIC0R3Cx+uYFfjhGACr1Gl0UArboIAH2XKnlsbkFY4T5GhEH/bDmNyR0zWeUdkv9yN3bbSzBWzhjn/FcztPJttSJZ4u6eZxp9SmB93FuBLPkIYeKcWCEJhbbZ+Ea704vC9EPbRrnZGAsmfCDOIdzxDxchnxM0/Pk2Gbru7HglQSFEIAggKY2fYCvPbssldDJjWa0JNkOPhBtA+clqDtY0LTspgzFoTs/Xr72M2hWYbnzVKzZT3sJMqGbnIW7SaMWWGurlYNVxOa2uWKzxFAhClfGAE34pY8IrlktyV6RkoG4p1OSo1zPRgCuOxyoMIotowXmM7aIOVDOJjKmI/Y4dAtJxOM5MUhi3uIL16e/59fw6NbbaPYj4kDZk62cGrjTWMPRZfYjGkh3T8OJSoUQ==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <043FF4C00CFDA742A3B1E67C90DD1DE4@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f7759f04-909a-4622-0a1a-08d865731db7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Sep 2020 19:00:36.5785
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QOCOlw38onpNrSldaYaIxqmnl1hbvwv6bIHqDmyELuwIDZ78IvxpIrstPHlZR336kmQg974WZUhpk3RVLwBGBg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7007
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------CC0861635165DEE286A4CA0C
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+On Wed, Sep 30, 2020 at 11:01:57AM -0700, Jakub Kicinski wrote:
+> On Wed, 30 Sep 2020 20:16:10 +0300 Ioana Ciornei wrote:
+> > Add basic support in dpaa2-eth for devlink. For the moment, just
+> > register the device with devlink, add the corresponding devlink port an=
+d
+> > implement the .info_get() callback.
+> >=20
+> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+>=20
+> This one does not build, sadly.
 
-[As suggested by Greg K-H, I'm reposting this to both stable and netdev. 
-I'm also including a backported patch for the 5.4-stable tree, which is 
-now confirmed to be working and fixing the packet reordering issue I was 
-seeing.]
+Uhh, sorry for this. I'll send a v2 shortly.
 
-Hello,
-
-I ran into some packet reordering using a plain vanilla 5.4.49 kernel 
-and the Amazon AWS ena driver. The external symptom was that every now 
-and again, one or more larger packets would be delivered to the UDP 
-socket after some smaller packets, even though the smaller packets were 
-sent after the larger packets. They were also delivered late to a packet 
-socket sniffer, which initially made me suspect an RSS bug in the ena 
-hardware. Eventually, I modified the ena driver to stamp each packet (by 
-overwriting its ethernet source mac field) with the id of the RSS queue 
-that delivered it, and with the value of a per-RSS-queue counter that 
-incremented for each packet received in that queue. That hack showed RSS 
-functioning properly, and also showed packets received earlier (with a 
-smaller counter value) being delivered after packets with a larger 
-counter value. It established that the reordering was in fact happening 
-inside the kernel network core.
-
-The breakthrough came from realizing that the ena driver defaults its 
-rx_copybreak to 256, which matched perfectly the boundary between the 
-delayed large packets and the smaller packets being delivered first. 
-After changing ena's rx_copybreak to zero, the reordering issue disappeared.
-
-After a lot of hair pulling, I think I figured out what the issue is -- 
-and it's confined to the 5.4 stable tree. Commit 323ebb61e32b4 (present 
-in 5.4) introduced queueing for GRO_NORMAL packets received via 
-napi_gro_frags() -> napi_frags_finish(). Commit 6570bc79c0df (NOT 
-present in 5.4) extended the same GRO_NORMAL queueing to packets 
-received via napi_gro_receive() -> napi_skb_finish(). Without 
-6570bc79c0df, packets received via napi_gro_receive() can get delivered 
-ahead of the earlier, queued up packets received via napi_gro_frags(). 
-And this is precisely what happens in the ena driver with packets 
-smaller than rx_copybreak vs packets larger than rx_copybreak.
-
-Interestingly, the 5.4 stable tree does contain a backport of the 
-upstream c80794323e commit, which to fixes packet reordering issues 
-introduced by 323ebb61e32b4 and 6570bc79c0df. But 6570bc79c0df itself is 
-missing, which creates another avenue for packet reordering.
-
-The patch I'm attaching is a backport of 6570bc79c0df to the 5.4 stable 
-tree. It is confirmed to completely eliminate the packet reordering 
-previously seen with the ena driver and rx_copybreak=256.
-
-Thanks,
--Ion
-
---------------CC0861635165DEE286A4CA0C
-Content-Type: text/x-patch;
- name="pkt-reord-fix-5.4.x.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="pkt-reord-fix-5.4.x.diff"
-
-commit f54898541d50bb3b47085a6decbffcd06b0f72a6
-Author: Alexander Lobakin <alobakin@dlink.ru>
-Date:   Mon Oct 14 11:00:33 2019 +0300
-
-    net: core: use listified Rx for GRO_NORMAL in napi_gro_receive()
-    
-    [ Upstream commit 6570bc79c0dfff0f228b7afd2de720fb4e84d61d ]
-    
-    Commit 323ebb61e32b4 ("net: use listified RX for handling GRO_NORMAL
-    skbs") made use of listified skb processing for the users of
-    napi_gro_frags().
-    The same technique can be used in a way more common napi_gro_receive()
-    to speed up non-merged (GRO_NORMAL) skbs for a wide range of drivers
-    including gro_cells and mac80211 users.
-    This slightly changes the return value in cases where skb is being
-    dropped by the core stack, but it seems to have no impact on related
-    drivers' functionality.
-    gro_normal_batch is left untouched as it's very individual for every
-    single system configuration and might be tuned in manual order to
-    achieve an optimal performance.
-    
-    5.4-stable note: This patch is required to avoid packet reordering when
-    both napi_gro_receive() and napi_gro_frags() are used. The specific case
-    used to debug this involved the ena driver and its use of rx_copybreak
-    to select between napi_gro_receive()/napi_gro_frags().
-    
-    Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
-    Acked-by: Edward Cree <ecree@solarflare.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-    [Ion: backported to v5.4]
-    Signed-off-by: Ion Badulescu <ionut@badula.org>
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index ee5ef71..02973a4 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5602,12 +5602,13 @@ static void napi_skb_free_stolen_head(struct sk_buff *skb)
- 	kmem_cache_free(skbuff_head_cache, skb);
- }
- 
--static gro_result_t napi_skb_finish(gro_result_t ret, struct sk_buff *skb)
-+static gro_result_t napi_skb_finish(struct napi_struct *napi,
-+				    struct sk_buff *skb,
-+				    gro_result_t ret)
- {
- 	switch (ret) {
- 	case GRO_NORMAL:
--		if (netif_receive_skb_internal(skb))
--			ret = GRO_DROP;
-+		gro_normal_one(napi, skb);
- 		break;
- 
- 	case GRO_DROP:
-@@ -5639,7 +5640,7 @@ gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
- 
- 	skb_gro_reset_offset(skb);
- 
--	ret = napi_skb_finish(dev_gro_receive(napi, skb), skb);
-+	ret = napi_skb_finish(napi, skb, dev_gro_receive(napi, skb));
- 	trace_napi_gro_receive_exit(ret);
- 
- 	return ret;
-
---------------CC0861635165DEE286A4CA0C--
+Ioana=
