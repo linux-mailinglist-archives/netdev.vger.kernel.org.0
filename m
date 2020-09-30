@@ -2,132 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B492F27F35E
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 22:33:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95E6A27F375
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 22:43:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730009AbgI3Uc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 16:32:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725355AbgI3Uc5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 16:32:57 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8F3C061755;
-        Wed, 30 Sep 2020 13:32:57 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id q123so2081066pfb.0;
-        Wed, 30 Sep 2020 13:32:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3LuZlvNy3ggiD9uof21qZJxBoN+uubQpiJaQlUZV0tQ=;
-        b=Ol8mExBTTOYnj6tzAyYWffJGTGvDOaKnZXMsSR/IJ77sPHQ0WVJaCH5VfzPgu5WZjf
-         phLMoIpxTk3vjTBoiBxGV+oIH8sfFAf1Mm7VImeaUk+wEQhP4VMMQmQtvo0PwR1sNCrI
-         Pv2/47e/lZg7aFgVCEFwxhUvBjNniyOgdtbEAYDWhS3fbSDgvuSaP3aCTPpjUVVA/aEX
-         hs1PzyV22o5xvsCdxrLbu+BUOPYy8lVW8+1Tr+6/l9z6lKminCPtjceRWqSo5MDBO7eo
-         bbfoX3HbAG8Z25G4QTqpvoee0WmoMM6gnfgz3Y810AFaYCHq9WYrsv7E8PjwXZilkwhj
-         xJmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3LuZlvNy3ggiD9uof21qZJxBoN+uubQpiJaQlUZV0tQ=;
-        b=oa/eW6m5II9wXaEn9RBxftlCWHb4Ljj7kA3DYscH5fZNjXz5zo4oBbRFMseKmksmMO
-         0NAYUb6EZpVecYXWuKSHyROeg6zdLBY4WyVdDqnn96mUjdMnD/yaYIbSHqWg0OUr9qWS
-         NivVHZAtdguM9N8Qt59YJg6/4cS9vsK+RHCzAzW0AS22Npu5TXylAb+PCGYcEfUC5i0c
-         H1BueY3/1brzBdb7eOuMnT+oHhaixY1jIKA6fmtPxP83+1iwq0xs+pE56bnhZiB5zFqX
-         Y0p1y6JsSlkjjC0ZD5wG8auAmstan9lJ5DLkguN7yWkrgbgvWUBWM+2QwWbDqbzViE0L
-         s+6Q==
-X-Gm-Message-State: AOAM531NYfydSllICEJBkAqdP5n5sccVGsMPBXt+t5lIZSU+O4F9Yanb
-        Kg9vsviNB7j+kG4g2VZ+3U3ZgajcGDaZBQ==
-X-Google-Smtp-Source: ABdhPJxTjUUlc0jT3Pvvzr5Gvp1pg7yZ7pwzPqcw68QBQ2rRR7E7gZKiC/l+ds1I18RTNQh2oxFoQw==
-X-Received: by 2002:aa7:9f81:0:b029:142:2501:34d9 with SMTP id z1-20020aa79f810000b0290142250134d9mr3772330pfr.50.1601497976817;
-        Wed, 30 Sep 2020 13:32:56 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id b11sm3322010pfo.15.2020.09.30.13.32.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2020 13:32:56 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] net: dsa: Support bridge 802.1Q while untagging
-Date:   Wed, 30 Sep 2020 13:31:03 -0700
-Message-Id: <20200930203103.225677-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1728660AbgI3UnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 16:43:06 -0400
+Received: from know-smtprelay-omc-7.server.virginmedia.net ([80.0.253.71]:34061
+        "EHLO know-smtprelay-omc-7.server.virginmedia.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725355AbgI3UnG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 16:43:06 -0400
+Received: from [192.168.1.164] ([216.213.158.137])
+        by cmsmtp with ESMTPA
+        id NiwJkk4LfzNL5NiwJkapw3; Wed, 30 Sep 2020 21:43:04 +0100
+X-Originating-IP: [216.213.158.137]
+X-Authenticated-User: d.bilsby@virgin.net
+X-Spam: 0
+X-Authority: v=2.3 cv=VOHzYeHX c=1 sm=1 tr=0 a=KkNRBMPBZrkFnDmfS57fCg==:117
+ a=KkNRBMPBZrkFnDmfS57fCg==:17 a=N659UExz7-8A:10 a=lEtCjqtbhUF9KZYFwnMA:9
+ a=pILNOxqGKmIA:10
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virgin.net;
+        s=meg.feb2017; t=1601498584;
+        bh=McxYC7HiYBlBDQCzLxnUPS3fJbvZL9e8QQHykacFNDI=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=QhHnzskPu9NZsZoNW5rowjLZs7Hx2LM5XvxyetCVECRX5KxrEmqWCINZTgKaYIzPX
+         Hmh8F6kV6CxVa6vZaCfc96cYUyWBbpl+cBjxgye8pKzXKoOs56Uq2bP/DPmB7pNatF
+         xU7clM6Mzyix5LZPEST+OEvUFr+keonavKXtwC6z64wyRKExIDhAMijdIlxZcZimck
+         8pi1Xm0idrhPSy47SlqGNF329sLMAsEDJNFdbik6KsvNuKmV+y6ZbNBq+/o4j8CWyj
+         OkLdQuLeh/Yj87hEKyDHRA2Y99hKiST6fHV5b5T5KoboWjkaBcsRsuIOtvlUT0W7EM
+         KuRtkE4pQGzKg==
+Subject: Re: Altera TSE driver not working in 100mbps mode
+To:     Petko Manolov <petkan@nucleusys.com>
+Cc:     Thor Thayer <thor.thayer@linux.intel.com>, netdev@vger.kernel.org
+References: <20191127135419.7r53qw6vtp747x62@p310>
+ <20191203092918.52x3dfuvnryr5kpx@carbon>
+ <c8e4fc3a-0f40-45b6-d9c8-f292c3fdec9d@virgin.net>
+ <20200917064239.GA40050@p310>
+ <9f312748-1069-4a30-ba3f-d1de6d84e920@virgin.net>
+ <20200918171440.GA1538@p310>
+From:   David Bilsby <d.bilsby@virgin.net>
+Message-ID: <bbd5cc3a-51a9-d46c-ef24-f0bb4d6498fe@virgin.net>
+Date:   Wed, 30 Sep 2020 21:43:04 +0100
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.12.0
 MIME-Version: 1.0
+In-Reply-To: <20200918171440.GA1538@p310>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-CMAE-Envelope: MS4wfIyxl5Oi6Hv+smDiVZoupXa3MFHfpMZBMmlZcC1YuP58VMMiizqArfrHWP4KEoX8rOyW0Wdji0HWC7p+wTLoFEKC8wORV/DG/RlehUMGWfpDuIqjiWCU
+ MCCwKcNRbEkGBCkHsAcueG5MTMlowVen1/rH72euCE6sGb3r7h7w98NiAQtnRk51/7IH7k66cOwFGAsTQpT9C0XV56dROVujng6qPz9QHf0+I/qSJIj/KvqG
+ E+agSouoES4A4ehcI1bUcg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The intent of 412a1526d067 ("net: dsa: untag the bridge pvid from rx
-skbs") is to transparently untag the bridge's default_pvid when the
-Ethernet switch can only support egress tagged of that default_pvid
-towards the CPU port.
+On 18/09/2020 18:14, Petko Manolov wrote:
+> On 20-09-17 21:29:41, David Bilsby wrote:
+>> On 17/09/2020 07:42, Petko Manolov wrote:
+>>> On 20-09-16 22:32:03, David Bilsby wrote:
+>>>> Hi
+>>>>
+>>>> Would you consider making the PhyLink modifications to the Altera TSE
+>>>> driver public as this would be very useful for a board we have which uses
+>>>> an SFP PHY connected to the TSE core via I2C. Currently we are using a
+>>>> fibre SFP and fixing the speed to 1G but would really like to be able to
+>>>> use a copper SFP which needs to do negotiation.
+>>> Well, definitely yes.
+>>>
+>>> The driver isn't 100% finished, but it mostly works.  One significant
+>>> downside is the kernel version i had to port it to: 4.19.  IIRC there is API
+>>> change so my current patches can't be applied to 5.x kernels.  Also, i could
+>>> not finish the upstreaming as the customer device i worked on had to be
+>>> returned.
+>> Interesting about kernel versions as we have just moved to the latest 5.4.44
+>> lts kernel as suggested on Rocketboard for Arria 10s. We had been having
+>> issues with 4.19 kernel which seem to have been resolved in the 5.4.44.
+> Always use mainline (and new) kernels.  If possible... ;)
+>
+>>> However, given access to Altera TSE capable device (which i don't have atm),
+>>> running a recent kernel, i'll gladly finish the upstreaming.
+>> I would be happy to take what you have at the moment, pre-upstreaming, and see
+>> if I can get it going on the latter kernel, and hopefully provide some testing
+>> feedback. Obviously pass any changes back for you to review and include as
+>> part of your original work.
+> There you go.
+>
+>
+> 		Petko
 
-Prior to this commit, users would have to configure an 802.1Q upper on
-the bridge master device when the bridge is configured with
-vlan_filtering=0 in order to pop the VLAN tag:
+Hi Petko
 
-ip link add name br0 type bridge vlan_filtering=0
-ip link add link br0 name br0.1 type vlan id 1
+I've made some progress in integrating your TSE patches, in between 
+doing my main work. I've managed to get the code into the later 5.4.44 
+kernel and compile without errors, however my initial attempts failed to 
+configure the driver. In case it was due to the kernel port I backed out 
+to my 4.19 kernel build and used your patches as is. This also failed 
+but after a bit of debug I realised it was just the device tree set up. 
+I'm using the device tree as created by the sopc2dts tool, however this 
+does not seem to create a "pcs" memory region in the TSEs iomem "reg" 
+section. Did you add this section manually or was it created 
+automatically from your sopcinfo file?
 
-After this commit we added support for managing a switch port 802.1Q
-upper but those are not usually added as bridge members, and if they do,
-they do not actually require any special management, the data path would
-pop the desired VLAN tag accordingly.
+If you added this manually was it because the "pcs" regions location 
+depends on the cores configuration, i.e. MAC and PCS or just PCS, and 
+therefore it was easier to pass this into the driver through the device 
+tree? The firmware manual suggests that for a MAC with PCS core 
+configuration the MAC registers appears at offset 0x0 for 0x80 and then 
+the PCS registers from 0x80 for 0x20. I manually edited my device tree 
+to shrink the default "control_port" region, which seems to map in the 
+driver to the MAC config registers and then added the "pcs" region above 
+this. Once I'd done that the driver loaded successfully. I suspect if I 
+make this change to the 5.4.44 kernel version it will also initialise 
+the driver.
 
-What we want to preserve is that use case and to manage when the user
-creates that 802.1Q upper for the bridge port.
+I now seem to be tantalisingly close to getting it working. I can see 
+network packets arriving if I do a "tcpdump -i eth0" using a copper 
+10/100/1000Base-T SFP, but no packets seem to be transmitted. I'm 
+guessing I've maybe messed up on the device tree entries for either the 
+SFP config or maybe how it links back to the TSE. In the TSE device tree 
+section I added the following as suggested by your original post:
 
-While we are it, call __vlan_find_dev_deep_rcu() which makes use the
-VLAN group array which is faster.
+         sfp = <&sfp_eth_b>;
 
-As soon as we return the VLAN tagged SKB though it will be used by the
-following call path:
+         managed = “in-band-status”;
 
-netif_receive_skb_list_internal
-  -> __netif_receive_skb_list_core
-    -> __netif_receive_skb_core
-      -> vlan_do_receive()
+Should I have added anything for the "phy-handle", thinks it's "<0>" at 
+the moment?
 
-which uses skb->vlan_proto, if we do not set it to the appropriate VLAN
-protocol, we will leave it set to what the DSA master has set
-(ETH_P_XDSA).
+For the SFP device tree section I added the following at the top level 
+which broadly followed the "sff,sfp" document:
 
-Fixes: 412a1526d067 ("net: dsa: untag the bridge pvid from rx skbs")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- net/dsa/dsa_priv.h | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+/ {
 
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 0348dbab4131..3456b53d4d53 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -247,12 +247,10 @@ static inline struct sk_buff *dsa_untag_bridge_pvid(struct sk_buff *skb)
- 	 * supports because vlan_filtering is 0. In that case, we should
- 	 * definitely keep the tag, to make sure it keeps working.
- 	 */
--	netdev_for_each_upper_dev_rcu(dev, upper_dev, iter) {
--		if (!is_vlan_dev(upper_dev))
--			continue;
--
--		if (vid == vlan_dev_vlan_id(upper_dev))
--			return skb;
-+	upper_dev = __vlan_find_dev_deep_rcu(br, htons(proto), vid);
-+	if (upper_dev) {
-+		skb->vlan_proto = vlan_dev_vlan_proto(upper_dev);
-+		return skb;
- 	}
- 
- 	__vlan_hwaccel_clear_tag(skb);
--- 
-2.25.1
+     sfp_eth_b: sfp-eth-b {
+
+         compatible = “sff,sfp”;
+
+         i2c-bus = <sfp_b_i2c>;
+
+         los-gpios = <&pca9506 10 GPIO_ACTIVE_HIGH>;
+
+         …
+
+     };
+
+};
+
+The SFP cage is connected to the "sfp_b_i2c" I2C bus, this is actually 
+off an I2C mux but that I'm hoping will be handled by Linux as it has a 
+driver for the MUX chip. I assume the default SFP I2C address (0x50) is 
+used by the PhyLink layer so there is no need to specify that? The LED 
+indicators for my set up are off another I2C GPIO expander (PCA9506), so 
+I used those references for the LOS, etc "gpios" entries. This section 
+also has the "tx-disable-gpios" property, again I referenced the 
+appropriate pin off the PCA9506, so I guess if I got that wrong then 
+that could explain the failure on the Tx side. That said none of the LED 
+GPIOs I hooked up seemed to light so maybe there is something up there.
+
+Any hints would be most welcome.
+
+Cheers
+
+David
+
+
 
