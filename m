@@ -2,116 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 829CC27DEF6
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 05:25:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE82427DF20
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 06:02:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729957AbgI3DZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 23:25:26 -0400
-Received: from ozlabs.org ([203.11.71.1]:46211 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726299AbgI3DZ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Sep 2020 23:25:26 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C1M8L55npz9sSG;
-        Wed, 30 Sep 2020 13:25:22 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1601436323;
-        bh=u54S/ygKxoHQd93zauf7Zl/YQ7Ohsz0njaj6JvK12BQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=tZPbyFL/Un9ZbEW9flDKINmJehyEtp+G2Qmues8kfT/lzPpEznkgj9Gk6LDiJi7xS
-         d5eUt/COklLHEZ47jK5pmYNL53WNf1x36pwCqFolaRdOKet5H0Wvdr41mLrM83sH16
-         C97Q3gZGTjXhb8EyVgakNdbE0iyBOOa7p22ccPuxKUlWBqA1F8m1Gj9m9PlzNFUn1g
-         UU4csg2PLc98N/e/YEU4Y3qcumMTnCs5IgOSqHmEcIWA8vW3LbONvUFaai4CylDdFa
-         SbNqWFWBNPRnkD7asb8WX7hLzgvtizmuApGNlLM+NPzRYsRac4PvRcbl8SKuILYudo
-         Y9nW+SDGyIVtA==
-Date:   Wed, 30 Sep 2020 13:25:21 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
-        Willy Liu <willy.liu@realtek.com>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20200930132521.41e5b00d@canb.auug.org.au>
+        id S1725797AbgI3ECW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 00:02:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725306AbgI3ECV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 00:02:21 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82FFC061755;
+        Tue, 29 Sep 2020 21:02:21 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id x16so277301pgj.3;
+        Tue, 29 Sep 2020 21:02:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-transfer-encoding:content-language;
+        bh=A6Iu8CK+fvMEAi5WAmBNnIyxewSXT0brLKenSVEGXL4=;
+        b=FOUG2k8+MaztgIzts4HwDlrGsCudjd56IKZWBLbgBRGW/+cSpuwEsCSWMlu5X5nBBu
+         8v6RNE3ofy5cTam6TcIjkuItXIvPyc7BnaDjbojyP6bpWtePhAM6lThFjdqzXAhLVzGv
+         rJbQKjncIrbIlyRWHDJ29BFUMMRVe0Y5VsBPbLsl3Bst+P8Ktaa043qBw5dyOe+/kXhe
+         UYwVUTDrG5ZOP70fROR05CZtKDJ9zhOZyHz1hblG2GGXhyuRq1b96FSREuL9ukVIUWXe
+         18YjjTXSkaJR3uRKRYnMtw/wPv5ezudgB2hkwL7x8DllO4HhtpI+cExOxnfKNgTAw4d1
+         a28Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=A6Iu8CK+fvMEAi5WAmBNnIyxewSXT0brLKenSVEGXL4=;
+        b=VcRc6mu+7brWc75q6ILlvYGzEL6KabQ23PT5qCQEAUJ26350zKIcCrIa9ueDPpQl7g
+         tmauz128WqxRYuV0/aJSrrs03p+GWwlUrLn34I3Q4/mKCh7dMapxTNeGAaD5LHKbO9R8
+         BdGwSp8Mq+z4wrccAaXtIvIZnHX8YBYi7y3qqrAKN3NeoZc3QkALRfZESJFG3Wj3kaql
+         gSiKk7QOXWogOwuXeBkvq5oBvKVwClUsYV6V0YoQEohOGkLD2uNd9SdTcq1A8RMjShMG
+         5suLpl9qAgM+7SRmLg10aAlvHqU+0UX1wYr5OoAV0PEEURvumOeeTrR9AGeOMfRrabc2
+         y94A==
+X-Gm-Message-State: AOAM5331xaOuVIzMSKRR4G7p4gGVGfROG5u3spkiwnjHBM2RJ0eB6eLQ
+        Nt71zBF5XpISpvpn6TzuX0wxGR7licyYlqdzwoQ=
+X-Google-Smtp-Source: ABdhPJyA5nA4I3XO3XKaf/fb/M89xL8cx8S1ztqnn2lD6/kSbg6onBEyGX/DZDqqLsywchH+AQJnXQ==
+X-Received: by 2002:a63:a51a:: with SMTP id n26mr624314pgf.1.1601438540777;
+        Tue, 29 Sep 2020 21:02:20 -0700 (PDT)
+Received: from [192.168.0.104] ([49.207.218.220])
+        by smtp.gmail.com with ESMTPSA id f19sm354554pfd.45.2020.09.29.21.02.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Sep 2020 21:02:19 -0700 (PDT)
+Subject: Re: [Linux-kernel-mentees][PATCH] net: usb: rtl8150: prevent
+ set_ethernet_addr from setting uninit address
+To:     linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
+        Petko Manolov <petkan@nucleusys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200929082028.50540-1-anant.thazhemadam@gmail.com>
+ <20200929084752.GA8101@carbon>
+From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Message-ID: <b5542434-7d12-0bba-8e54-8c5edfcb33b3@gmail.com>
+Date:   Wed, 30 Sep 2020 09:32:15 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/FdD.lH2B3/sg9QFvd1eebk_";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20200929084752.GA8101@carbon>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/FdD.lH2B3/sg9QFvd1eebk_
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+On 29/09/20 2:17 pm, Petko Manolov wrote:
+> On 20-09-29 13:50:28, Anant Thazhemadam wrote:
+>> When get_registers() fails (which happens when usb_control_msg() fails)
+>> in set_ethernet_addr(), the uninitialized value of node_id gets copied
+>> as the address.
+>>
+>> Checking for the return values appropriately, and handling the case
+>> wherein set_ethernet_addr() fails like this, helps in avoiding the
+>> mac address being incorrectly set in this manner.
+>>
+>> Reported-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+>> Tested-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+>> Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+>> ---
+>>  drivers/net/usb/rtl8150.c | 24 ++++++++++++++++--------
+>>  1 file changed, 16 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
+>> index 733f120c852b..e542a9ab2ff8 100644
+>> --- a/drivers/net/usb/rtl8150.c
+>> +++ b/drivers/net/usb/rtl8150.c
+>> @@ -150,7 +150,7 @@ static const char driver_name [] = "rtl8150";
+>>  **	device related part of the code
+>>  **
+>>  */
+>> -static int get_registers(rtl8150_t * dev, u16 indx, u16 size, void *data)
+>> +static int get_registers(rtl8150_t *dev, u16 indx, u16 size, void *data)
+>>  {
+>>  	void *buf;
+>>  	int ret;
+>> @@ -274,12 +274,17 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
+>>  		return 1;
+>>  }
+>>  
+>> -static inline void set_ethernet_addr(rtl8150_t * dev)
+>> +static bool set_ethernet_addr(rtl8150_t *dev)
+>>  {
+>>  	u8 node_id[6];
+>> +	int ret;
+>>  
+>> -	get_registers(dev, IDR, sizeof(node_id), node_id);
+>> -	memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
+>> +	ret = get_registers(dev, IDR, sizeof(node_id), node_id);
+>> +	if (ret > 0 && ret <= sizeof(node_id)) {
+> get_registers() was recently modified to use usb_control_msg_recv() which does
+> not return partial reads.  IOW you'll either get negative value or
+> sizeof(node_id).  Since it is good to be paranoid i'd convert the above check
+> to:
+>
+> 	if (ret == sizeof(node_id)) {
+>
+> and fail in any other case.  Apart from this minor detail the rest of the patch 
+> looks good to me.
+>
+> Acked-by: Petko Manolov
+Got it. I'll be sure to include this in a v2, and send that in soon enough.
+Thanks for pointing that out. :)
 
-Today's linux-next merge of the net-next tree got a conflict in:
+Thanks,
+Anant
 
-  drivers/net/phy/realtek.c
 
-between commit:
 
-  bbc4d71d6354 ("net: phy: realtek: fix rtl8211e rx/tx delay config")
-
-from the net tree and commit:
-
-  66e22932eb79 ("net: phy: realtek: enable ALDPS to save power for RTL8211F=
-")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/phy/realtek.c
-index 0f0960971800,4bf54cded48a..000000000000
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@@ -31,9 -33,13 +32,13 @@@
-  #define RTL8211F_TX_DELAY			BIT(8)
-  #define RTL8211F_RX_DELAY			BIT(3)
- =20
-+ #define RTL8211F_ALDPS_PLL_OFF			BIT(1)
-+ #define RTL8211F_ALDPS_ENABLE			BIT(2)
-+ #define RTL8211F_ALDPS_XTAL_OFF			BIT(12)
-+=20
- -#define RTL8211E_TX_DELAY			BIT(1)
- -#define RTL8211E_RX_DELAY			BIT(2)
- -#define RTL8211E_MODE_MII_GMII			BIT(3)
- +#define RTL8211E_CTRL_DELAY			BIT(13)
- +#define RTL8211E_TX_DELAY			BIT(12)
- +#define RTL8211E_RX_DELAY			BIT(11)
- =20
-  #define RTL8201F_ISR				0x1e
-  #define RTL8201F_IER				0x13
-
---Sig_/FdD.lH2B3/sg9QFvd1eebk_
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9z+qEACgkQAVBC80lX
-0GyY9Qf/cXBMXSwNE2gVWs91tBnwk1S3Z8hmsbC/Kfg+lhU8x4NlvFIRLmw7hq14
-/4IueTPX1EuPDna9IlWyEKM3LtJlSIxvrLD1+rirH8v6L4pzvqWO5VNtjXONljvK
-w769jrD47MzrIOo8DrC0P8EpSJukr3KWqdHG1t0p0B8wwSvAXRQwBzSOVXwY1YkL
-GKrbytiDr8zePgcIS4FsnwieflJBuJ/0dqnfSAarVRseuhTdQecV1TtibNuCwuql
-5OO/d7jsPNoKSMaNvA0iMsdP2Nx2q1xRLlMqPCEDt0g9DHqVuQYzWvPV6nOcRcSQ
-uNgYkRLtUBgKyRiupZwLMyJhcaxc5Q==
-=8cSi
------END PGP SIGNATURE-----
-
---Sig_/FdD.lH2B3/sg9QFvd1eebk_--
