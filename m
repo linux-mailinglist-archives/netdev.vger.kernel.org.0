@@ -2,103 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDABC27E1A0
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 08:48:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2347C27E1B5
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 08:49:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726924AbgI3Gs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 02:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725776AbgI3Gs0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 02:48:26 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1908CC0613D2
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 23:48:26 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id z13so662941iom.8
-        for <netdev@vger.kernel.org>; Tue, 29 Sep 2020 23:48:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Gbz4zl+cX4IPzKJ6pFWDpkBc0o8tIwNiBdIHCS8F/tg=;
-        b=KCZTzVmGKZs6ZzUeiKCFfFb1HBTk9Up4xVNCJ3fFuYRrl+2Ul+YXKAQARER/3TSjyW
-         lEiHAOvE7NQxqYd3v1hObzpmfNLRa56e/sbIyCN0X5f8BITASnBdzHN9JJwgNex9GD+1
-         nZ5raPPlVYwg0jQYcpRQM9/amuTYKH6gaAMtBJnrl7iAMC/mv0RpTYfP8o1XBa4Ga8au
-         D3TbEYaKItQxqePazENNXgoZB/P3cc2gBH0nMo4Ez5vMMoSZxavt/7e9+TXUb/QSSQIo
-         8VBDdg3x3gcHEM38goEG2o3CLMHwFO00cNA5pCKtEnJzxcojZ2VFdneyxQxTQjfRSN5L
-         K7LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Gbz4zl+cX4IPzKJ6pFWDpkBc0o8tIwNiBdIHCS8F/tg=;
-        b=Hw7ZcYJbktQBTveQcy70y/OhBXU/E8cBX6nFdvDUyoqUDDcttT72e7iqRmiH+pu4/p
-         qfZKOsdWVRj6/kHgz4X5NlKvRNckoPCfwx6qr8XVqDM2O0X0MnveVmNwlfqkxWm/9xZX
-         hR9hpHzrUX9We7ANt6Od3E9G5K+Yb9VPRXIGZfzu5W3w3/965JxaT1NRYZd/HPhlHxaZ
-         LkvhZETma1S/TnFcoUEtxzIqtzZCTZkpTrbdHew+KXb+iKpB5GxyWOGsZDfclSG56gg9
-         GtCjnz9kG/WYf3g+WyJDEDEwJITe7TiEUBdAqoPCY67cZfBqnVQHchrWos1ZLn0oPs0H
-         BdNA==
-X-Gm-Message-State: AOAM530/zREtYaxt47v+ALcZRUL3hdXgVyXCiXoy9xn8NmxurzgyOD4u
-        HQR9Dlzqq2bWjVGYBZj8G8mhrnBIONJYJkFCftdQQw==
-X-Google-Smtp-Source: ABdhPJzC3cxXikF0eF7Q5jH1wUchyoBxn4H8NS3LLdJwKaMzk5yTvfidbqER2xnVMkozpPZR/2EDGelL4oskUVja3+U=
-X-Received: by 2002:a05:6638:1643:: with SMTP id a3mr861452jat.4.1601448505053;
- Tue, 29 Sep 2020 23:48:25 -0700 (PDT)
+        id S1728349AbgI3Gtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 02:49:52 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:60419 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725823AbgI3Gtt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 02:49:49 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.69 with qID 08U6nBoqD032161, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb04.realtek.com.tw[172.21.6.97])
+        by rtits2.realtek.com.tw (8.15.2/2.66/5.86) with ESMTPS id 08U6nBoqD032161
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 30 Sep 2020 14:49:11 +0800
+Received: from localhost.localdomain (172.21.179.130) by
+ RTEXMB04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Wed, 30 Sep 2020 14:49:10 +0800
+From:   Willy Liu <willy.liu@realtek.com>
+To:     <andrew@lunn.ch>
+CC:     <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <ryankao@realtek.com>,
+        Willy Liu <willy.liu@realtek.com>
+Subject: [PATCH net v1] net: phy: realtek: Modify 2.5G PHY name to RTL8226
+Date:   Wed, 30 Sep 2020 14:48:58 +0800
+Message-ID: <1601448538-18004-1-git-send-email-willy.liu@realtek.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-References: <20200929235049.2533242-1-haoluo@google.com> <CAADnVQK8XbzDs9hWLYEqkJj+g=1HJ7nrar+0STY5CY8t5nrC=A@mail.gmail.com>
-In-Reply-To: <CAADnVQK8XbzDs9hWLYEqkJj+g=1HJ7nrar+0STY5CY8t5nrC=A@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Tue, 29 Sep 2020 23:48:14 -0700
-Message-ID: <CA+khW7i4wpvOsJTH4AePVsm4cAOnFoxEwEqv27tEzJrwOWFqxw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 0/6] bpf: BTF support for ksyms
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [172.21.179.130]
+X-ClientProxiedBy: RTEXMB01.realtek.com.tw (172.21.6.94) To
+ RTEXMB04.realtek.com.tw (172.21.6.97)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ah, this is the bug in pahole described in
-https://lkml.org/lkml/2020/8/20/1862. I proposed a fix [1] but it
-hasn't reached pahole's master branch. Let me ask Arnaldo to see if he
-is OK merging it.
+Realtek single-chip Ethernet PHY solutions can be separated as below:
+10M/100Mbps: RTL8201X
+1Gbps: RTL8211X
+2.5Gbps: RTL8226/RTL8221X
+RTL8226 is the first version for realtek that compatible 2.5Gbps single PHY.
+Since RTL8226 is single port only, realtek changes its name to RTL8221B from
+the second version.
+PHY ID for RTL8226 is 0x001cc800 and RTL8226B/RTL8221B is 0x001cc840.
 
-[1] https://www.spinics.net/lists/dwarves/msg00451.html
+RTL8125 is not a single PHY solution, it integrates PHY/MAC/PCIE bus
+controller and embedded memory.
 
-On Tue, Sep 29, 2020 at 9:36 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Sep 29, 2020 at 4:50 PM Hao Luo <haoluo@google.com> wrote:
-> >
-> > v3 -> v4:
-> >  - Rebasing
-> >  - Cast bpf_[per|this]_cpu_ptr's parameter to void __percpu * before
-> >    passing into per_cpu_ptr.
->
-> Looks good, but doesn't work:
-> ./test_progs -t ksyms_btf
-> test_ksyms_btf:PASS:kallsyms_fopen 0 nsec
-> test_ksyms_btf:PASS:ksym_find 0 nsec
-> test_ksyms_btf:PASS:kallsyms_fopen 0 nsec
-> test_ksyms_btf:PASS:ksym_find 0 nsec
-> test_ksyms_btf:PASS:btf_exists 0 nsec
-> libbpf: extern (ksym) 'bpf_prog_active': incompatible types, expected
-> [4] int int, but kernel has [18729] var bpf_user_rnd_state
-> libbpf: failed to load object 'test_ksyms_btf'
-> libbpf: failed to load BPF skeleton 'test_ksyms_btf': -22
-> test_ksyms_btf:FAIL:skel_open failed to open and load skeleton
-> #43 ksyms_btf:FAIL
->
-> I have the latest pahole from master. Any ideas?
+Signed-off-by: Willy Liu <willy.liu@realtek.com>
+---
+ drivers/net/phy/realtek.c | 38 +++++++++++++++++++-------------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 0f09609..f207607 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -401,7 +401,7 @@ static int rtlgen_write_mmd(struct phy_device *phydev, int devnum, u16 regnum,
+ 	return ret;
+ }
+ 
+-static int rtl8125_read_mmd(struct phy_device *phydev, int devnum, u16 regnum)
++static int rtl822x_read_mmd(struct phy_device *phydev, int devnum, u16 regnum)
+ {
+ 	int ret = rtlgen_read_mmd(phydev, devnum, regnum);
+ 
+@@ -425,7 +425,7 @@ static int rtl8125_read_mmd(struct phy_device *phydev, int devnum, u16 regnum)
+ 	return ret;
+ }
+ 
+-static int rtl8125_write_mmd(struct phy_device *phydev, int devnum, u16 regnum,
++static int rtl822x_write_mmd(struct phy_device *phydev, int devnum, u16 regnum,
+ 			     u16 val)
+ {
+ 	int ret = rtlgen_write_mmd(phydev, devnum, regnum, val);
+@@ -442,7 +442,7 @@ static int rtl8125_write_mmd(struct phy_device *phydev, int devnum, u16 regnum,
+ 	return ret;
+ }
+ 
+-static int rtl8125_get_features(struct phy_device *phydev)
++static int rtl822x_get_features(struct phy_device *phydev)
+ {
+ 	int val;
+ 
+@@ -460,7 +460,7 @@ static int rtl8125_get_features(struct phy_device *phydev)
+ 	return genphy_read_abilities(phydev);
+ }
+ 
+-static int rtl8125_config_aneg(struct phy_device *phydev)
++static int rtl822x_config_aneg(struct phy_device *phydev)
+ {
+ 	int ret = 0;
+ 
+@@ -480,7 +480,7 @@ static int rtl8125_config_aneg(struct phy_device *phydev)
+ 	return __genphy_config_aneg(phydev, ret);
+ }
+ 
+-static int rtl8125_read_status(struct phy_device *phydev)
++static int rtl822x_read_status(struct phy_device *phydev)
+ {
+ 	int ret;
+ 
+@@ -522,7 +522,7 @@ static int rtlgen_match_phy_device(struct phy_device *phydev)
+ 	       !rtlgen_supports_2_5gbps(phydev);
+ }
+ 
+-static int rtl8125_match_phy_device(struct phy_device *phydev)
++static int rtl8226_match_phy_device(struct phy_device *phydev)
+ {
+ 	return phydev->phy_id == RTL_GENERIC_PHYID &&
+ 	       rtlgen_supports_2_5gbps(phydev);
+@@ -627,29 +627,29 @@ static int rtlgen_resume(struct phy_device *phydev)
+ 		.read_mmd	= rtlgen_read_mmd,
+ 		.write_mmd	= rtlgen_write_mmd,
+ 	}, {
+-		.name		= "RTL8125 2.5Gbps internal",
+-		.match_phy_device = rtl8125_match_phy_device,
+-		.get_features	= rtl8125_get_features,
+-		.config_aneg	= rtl8125_config_aneg,
+-		.read_status	= rtl8125_read_status,
++		.name		= "RTL8226 2.5Gbps PHY",
++		.match_phy_device = rtl8226_match_phy_device,
++		.get_features	= rtl822x_get_features,
++		.config_aneg	= rtl822x_config_aneg,
++		.read_status	= rtl822x_read_status,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= rtlgen_resume,
+ 		.read_page	= rtl821x_read_page,
+ 		.write_page	= rtl821x_write_page,
+-		.read_mmd	= rtl8125_read_mmd,
+-		.write_mmd	= rtl8125_write_mmd,
++		.read_mmd	= rtl822x_read_mmd,
++		.write_mmd	= rtl822x_write_mmd,
+ 	}, {
+ 		PHY_ID_MATCH_EXACT(0x001cc840),
+-		.name		= "RTL8125B 2.5Gbps internal",
+-		.get_features	= rtl8125_get_features,
+-		.config_aneg	= rtl8125_config_aneg,
+-		.read_status	= rtl8125_read_status,
++		.name		= "RTL8226B_RTL8221B 2.5Gbps PHY",
++		.get_features	= rtl822x_get_features,
++		.config_aneg	= rtl822x_config_aneg,
++		.read_status	= rtl822x_read_status,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= rtlgen_resume,
+ 		.read_page	= rtl821x_read_page,
+ 		.write_page	= rtl821x_write_page,
+-		.read_mmd	= rtl8125_read_mmd,
+-		.write_mmd	= rtl8125_write_mmd,
++		.read_mmd	= rtl822x_read_mmd,
++		.write_mmd	= rtl822x_write_mmd,
+ 	}, {
+ 		PHY_ID_MATCH_EXACT(0x001cc961),
+ 		.name		= "RTL8366RB Gigabit Ethernet",
+-- 
+1.9.1
+
