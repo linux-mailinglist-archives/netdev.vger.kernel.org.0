@@ -2,115 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51BFF27F3CE
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 23:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC2DC27F3D2
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 23:01:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730054AbgI3VBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 17:01:11 -0400
-Received: from mout.gmx.net ([212.227.17.20]:34649 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725799AbgI3VBL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Sep 2020 17:01:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1601499662;
-        bh=YXarB7DY326rmeK9BBd8N/5jBVtQpyfEj4T9FTjHcpA=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=cI2/U8U7aEIWoqPj+TfvwKt5tro7eCyrCDG6n/+IDkWhXXlvPi2NNuOv07TfUwl8c
-         ZuZk02BHjkbiJXHfF5wLhylGxibN5oJ7Yg3nwabGbGUx5wJSGSOaufegi8exdEOZXH
-         fw3r4rXlmIpcA9YraxNXcEQTRUaVx6uD9AE8WY2o=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from mx-linux-amd.fritz.box ([79.242.183.5]) by mail.gmx.com
- (mrgmx105 [212.227.17.168]) with ESMTPSA (Nemesis) id
- 1MTABT-1jzAED01MN-00UXlN; Wed, 30 Sep 2020 23:01:02 +0200
-From:   Armin Wolf <W_Armin@gmx.de>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next v2] lib8390: Use netif_msg_init to initialize msg_enable bits
-Date:   Wed, 30 Sep 2020 23:00:16 +0200
-Message-Id: <20200930210016.11607-1-W_Armin@gmx.de>
-X-Mailer: git-send-email 2.20.1
+        id S1730232AbgI3VBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 17:01:52 -0400
+Received: from www62.your-server.de ([213.133.104.62]:53930 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725799AbgI3VBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 17:01:51 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kNjEQ-0003uY-Ax; Wed, 30 Sep 2020 23:01:46 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kNjEQ-000JPF-5m; Wed, 30 Sep 2020 23:01:46 +0200
+Subject: Re: [PATCH bpf-next v4 6/6] bpf, selftests: add redirect_neigh
+ selftest
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     ast@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <cover.1601477936.git.daniel@iogearbox.net>
+ <0fc7d9c5f9a6cc1c65b0d3be83b44b1ec9889f43.1601477936.git.daniel@iogearbox.net>
+ <20200930192004.acumndm6xfxwplzl@ast-mbp.dhcp.thefacebook.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7a454afe-9f5b-6e6f-5683-33fdc61dabaa@iogearbox.net>
+Date:   Wed, 30 Sep 2020 23:01:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:9w7JycksINjLfer6WGzGM8xyyDdnuiF0sI8nVF1YObTHwwexBpH
- UvjxVqqsZz0dCPW44Yx2r+oRze/Ae74TFpkdfOElRv+Ie3+1EiQb+AM9NKTPxx/LCH8OfGu
- d6W+gmD4KY5VjCm3WUtzQfc2g60G2rxV1fTIaVgy9VV7je8QIiB/GSp3G/64uWMDMvznPYN
- RVXw7LGVXKJGBBleYkiJg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6bz3787oOm8=:H9ORjUCp1xrfwW1cRePakD
- AozQ9r/uElAACwIk78MOG6PdxBfjEEb0zs4VrCiiaj91kdafmTeVL8U2b4E45+AY3C2BzdCS6
- gzRY0KluWUPhecPGiavaQ0sSpQLGPvEgfglMFH+Z5UYo/SS3NCyxh21ZuHX7f2hCVPNG7XGKR
- RS6vamoDaCS3AwUAWSNCg2BYsOSkJpJc/RVVKafX1MH7vBfqFpIje0lmBr5FscpX0d+L5puG7
- eL9c6BDZS7t6cJjb4aIwShgQSDbAQg6n33GKRfXzu1se3TZcE0yHUEmDIpmoUTfZLvkdTBzSq
- 7HUDitptAiEOk28vCHaGCKCKEjg3BF+zwKj1M6Nj9oCLXWqnzNYa9cKV69uN0AsTjpK5CA0+R
- 32PAD/lGPDyRo8ZobWBFW4b7lDdHJytzwcApmDcL1PdY0vhcQu5Y6vLq0RiP+KNmDGjQqhQV6
- thDjDgXueiTHAgHgEwZhTqn0e1Zb58UNskXuX8wskle0sSqNkq9dxkYdEVBr0pPJ6FNKgk1aW
- m6u3/No5zZAzfDfjhznLI5vk1AWcskVnYR9ycU63pDBLrMblkaGlJrZM+4ZB+K9VwSNBbNQhI
- GlK8pXE8DyuXcSsRlAbh5zqBReHGFeJjv1fdA598QyilNHXU6tP1ZtNRmrxJ5yo3d4D8FI5ti
- 5lf5g9gP9uXiiTHd9gSE1Sj8zMEuyaMDcjWN0tiKUfEMaOIcG21DgWUGEfWL0RhtPUe2CnzLV
- lSQuS6Lin6+LVNFM+WXyKooP6H8fQ8jo3Jtnrghz6y8cIA/0plcKEe/eZl8xRJx+j4AKPOCNb
- WvjaS1VcDGINZdqL8/GKKDLH9KgjWDY4DehO07doU+XXVGmL0kI+LGCyhvL/6cfdOJj/CRYL/
- N7f3gg17G8VT5N+Wl2Cbcn8gNx7h8ucNOA027+ouAf0hTnhahTHeCEiSYmF2NsCzPDqgu2Sem
- xGBh3tGaes9SGjx1QJ+NV0EbERtNipESCZgMT5a1gJSCiuxkEQoP1Mz4R07nUZ3SZ93YfdA0F
- Iqc6ZN97/DX9HACWylOfFv0xdqt3QPQa/ymO0e+n/hBc1uxhSaiLRLiu3NiwNg1DORk0j0sx2
- xXoUPUMMLANXk7038AbI7tE93BGALiKMyKIRTO4Rv/r58zKDkBeiccVXgO1La3PA+Q156ZEa2
- SabQD7YhoucVqSKsd/REQF3BmEwKpYXsymcoGIuvwyGViCk2VLh49HWt8NMWIufXOitcmt8re
- trB8kgCuVL2uF/f5M
+In-Reply-To: <20200930192004.acumndm6xfxwplzl@ast-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25943/Wed Sep 30 15:54:21 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use netif_msg_init() to process param settings
-and use only the proper initialized value of
-ei_local->msg_enable for later processing;
+On 9/30/20 9:20 PM, Alexei Starovoitov wrote:
+> On Wed, Sep 30, 2020 at 05:18:20PM +0200, Daniel Borkmann wrote:
+>> +
+>> +#ifndef barrier_data
+>> +# define barrier_data(ptr)	asm volatile("": :"r"(ptr) :"memory")
+>> +#endif
+>> +
+>> +#ifndef ctx_ptr
+>> +# define ctx_ptr(field)		(void *)(long)(field)
+>> +#endif
+> 
+>> +static __always_inline bool is_remote_ep_v4(struct __sk_buff *skb,
+>> +					    __be32 addr)
+>> +{
+>> +	void *data_end = ctx_ptr(skb->data_end);
+>> +	void *data = ctx_ptr(skb->data);
+> 
+> please consider adding:
+>          __bpf_md_ptr(void *, data);
+>          __bpf_md_ptr(void *, data_end);
+> to struct __sk_buff in a followup to avoid this casting headache.
 
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-=2D--
-v2 changes:
-- confused ei_local-> msg_enable with default_msg_level
-=2D--
- drivers/net/ethernet/8390/lib8390.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+You mean also for the other ctx types? I can take a look, yeah.
 
-diff --git a/drivers/net/ethernet/8390/lib8390.c b/drivers/net/ethernet/83=
-90/lib8390.c
-index deba94d2c909..e84021282edf 100644
-=2D-- a/drivers/net/ethernet/8390/lib8390.c
-+++ b/drivers/net/ethernet/8390/lib8390.c
-@@ -113,8 +113,10 @@ static void do_set_multicast_list(struct net_device *=
-dev);
- static void __NS8390_init(struct net_device *dev, int startp);
+>> +SEC("dst_ingress") int tc_dst(struct __sk_buff *skb)
+>> +{
+>> +	int idx = dst_to_src_tmp;
+>> +	__u8 zero[ETH_ALEN * 2];
+>> +	bool redirect = false;
+>> +
+>> +	switch (skb->protocol) {
+>> +	case __bpf_constant_htons(ETH_P_IP):
+>> +		redirect = is_remote_ep_v4(skb, __bpf_constant_htonl(ip4_src));
+>> +		break;
+>> +	case __bpf_constant_htons(ETH_P_IPV6):
+>> +		redirect = is_remote_ep_v6(skb, (struct in6_addr)ip6_src);
+>> +		break;
+>> +	}
+>> +
+>> +	if (!redirect)
+>> +		return TC_ACT_OK;
+>> +
+>> +	barrier_data(&idx);
+>> +	idx = bpf_ntohl(idx);
+> 
+> I don't follow. Why force that constant into a register and force
+> actual swap instruction?
+> 
+>> +
+>> +	__builtin_memset(&zero, 0, sizeof(zero));
+>> +	if (bpf_skb_store_bytes(skb, 0, &zero, sizeof(zero), 0) < 0)
+>> +		return TC_ACT_SHOT;
+>> +
+>> +	return bpf_redirect_neigh(idx, 0);
+>> +}
+> 
+>> +xxd -p < test_tc_neigh.o   | sed "s/eeddddee/$veth_src/g" | xxd -r -p > test_tc_neigh.x.o
+>> +xxd -p < test_tc_neigh.x.o | sed "s/eeffffee/$veth_dst/g" | xxd -r -p > test_tc_neigh.y.o
+> 
+> So the inline asm is because of the above?
+> So after compiling you're hacking elf binary for this pattern ?
+> Ouch. Please use global data or something. This is fragile.
+> This type of hacks should be discouraged and having selftests do them
+> goes as counter example.
 
- static unsigned version_printed;
--static u32 msg_enable;
--module_param(msg_enable, uint, 0444);
-+static int msg_enable;
-+static const int default_msg_level =3D (NETIF_MSG_DRV | NETIF_MSG_PROBE |=
- NETIF_MSG_RX_ERR |
-+				     NETIF_MSG_TX_ERR);
-+module_param(msg_enable, int, 0444);
- MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h =
-for bitmap)");
+Yeah, so the barrier_data() was to avoid compiler to optimize, and the bpf_ntohl()
+to load target ifindex which was stored in big endian. Thanks for applying the set,
+I'll look into reworking this to have a loader application w/ the global data and
+then to pin it and have iproute2 pick this up from the pinned location, for example
+(or directly interact with netlink wrt attaching ... I'll see which is better).
 
- /*
-@@ -974,14 +976,14 @@ static void ethdev_setup(struct net_device *dev)
- {
- 	struct ei_device *ei_local =3D netdev_priv(dev);
-
--	if ((msg_enable & NETIF_MSG_DRV) && (version_printed++ =3D=3D 0))
--		pr_info("%s", version);
--
- 	ether_setup(dev);
-
- 	spin_lock_init(&ei_local->page_lock);
-
--	ei_local->msg_enable =3D msg_enable;
-+	ei_local->msg_enable =3D netif_msg_init(msg_enable, default_msg_level);
-+
-+	if (netif_msg_drv(ei_local) && (version_printed++ =3D=3D 0))
-+		pr_info("%s", version);
- }
-
- /**
-=2D-
-2.20.1
-
+Thanks,
+Daniel
