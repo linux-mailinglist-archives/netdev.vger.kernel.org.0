@@ -2,158 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5D1C27DD2F
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 02:00:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EBD627DD32
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 02:02:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729525AbgI3AAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Sep 2020 20:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728192AbgI3AAM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 20:00:12 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB19C061755;
-        Tue, 29 Sep 2020 17:00:11 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id w7so6463657pfi.4;
-        Tue, 29 Sep 2020 17:00:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0Pjd53fD2sBc+fXIGlMYU+kpxJEKruFYLrsekrSB8mg=;
-        b=D9uYHkxft0fGH7fMMD/yWKc/gn/G5zYOxivYKUSnQQUpm2oH314eje+pprFgShA5YT
-         QZIBPzREy87bgJWbHo/o6VxNqOc9iCcaN+voJdNUj4XMUAsKT39yYgr0t4Vry5ilqf2+
-         b/0HtF2djzdsZ222MxN6mGPt5Afx2jtTpn0jlPXFXMTbdvt0rg8dE+/wi/wDrPthBKvD
-         pyYxy8PqONvLuiOWAI4r6f0Xx3i8SB7wV7hTeJP9lfmGrqownSMzctA9pLk7LxZB6JAl
-         lRxI6mcHcq9Zkndaka5966zXTxDBS7+OSOZ71uL6qnzpdoh/lcsTP0wx3ho8AXTE79FK
-         ImSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0Pjd53fD2sBc+fXIGlMYU+kpxJEKruFYLrsekrSB8mg=;
-        b=EAtQDAm2HUC0tGEmi/cMQE7cQgDnKITvO5RjJw99yxs5192T3m17mCnf6PZNlMoDfj
-         4AV2WWgu79+2++Mup8jIQplqgVvlKsl+YCzgaU1m1J03oBNHl3cDJCa3HZgoawC7E8kw
-         eMJgaoesbkj3GBDDVlANR7hQhbsKS1BJZJ6B9LeajSfJFym+OKwPgb5pDE+Zb5aTnZRo
-         +xaGdkGnGw5OSVPlX1MXvl6C56aO3miqNz4y4jFowLFhyS01eWVtRUhGvab22NVhkyXc
-         C1/sVZMkfgQCsb+OmCRvPhw4SBJ0/bb15Egwmxjo1WyOGvhc+pkREjZ7wu/iRg37dTzh
-         J47g==
-X-Gm-Message-State: AOAM531R3N1dhiyerZDqW5QEbDR66bx9j5yZcg3kW1bIkuzympOw8oun
-        lkutzt49HvbapbTYO04aSMU=
-X-Google-Smtp-Source: ABdhPJwYCHSXD4ZlwqUov1uBMXaTtndsgo6zJRq/8CJAFWe4fph+aW02zONt8LaxqGzkoJ8wTnm3ug==
-X-Received: by 2002:a62:5a04:0:b029:142:2501:397f with SMTP id o4-20020a625a040000b02901422501397fmr121880pfb.68.1601424010777;
-        Tue, 29 Sep 2020 17:00:10 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:d27])
-        by smtp.gmail.com with ESMTPSA id gj6sm28852pjb.10.2020.09.29.17.00.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Sep 2020 17:00:09 -0700 (PDT)
-Date:   Tue, 29 Sep 2020 17:00:07 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
-        ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
-        kpsingh@chromium.org
-Subject: Re: [PATCH bpf-next] bpf: fix raw_tp test run in preempt kernel
-Message-ID: <20200930000007.dgtgbma7rfyeezjx@ast-mbp.dhcp.thefacebook.com>
-References: <20200929225013.930-1-songliubraving@fb.com>
-MIME-Version: 1.0
+        id S1728943AbgI3AB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Sep 2020 20:01:58 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:59762 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728192AbgI3AB6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Sep 2020 20:01:58 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08TNs923021738;
+        Tue, 29 Sep 2020 17:01:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=BJ9HS1a/iitULrsuwDH/MV1YKhb4d12f6LlZkgRhG0c=;
+ b=IiyOfMSzhCpY5HUeo9W74tJXnpnDf5a9gUEzLRrq0/k70tkyjHBiLoR3/LJGe+/NjNU7
+ lkho2kZqi3Sp6Cmu5Km7mp4pT8aVWfz1dlyZTDbcDsJM16eVAbfebhlIpyJPz08Q37V4
+ n7/jmPIT5g1tX1QA/J5gWZQmQ+Ux1Co5bSY= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 33v1ndcaak-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 29 Sep 2020 17:01:45 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 29 Sep 2020 17:01:44 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UtbNcZSvsq85A996nKRPovKWlR7wlk6ogvPowycodWv04q+uLxjDdz09/whXAXGaKdYwKIS98X3B9ZHXfdfwU1b1jm2ZqgtDJzJLHVrRnxlKQd5B+1DJf8+U9kcKWmq2fhlzLFxz58N5yQp4WQLsZmdOAaeLlZT4mPyfHHwzRXDDrFMu3LNFxNbhDoMsgPJ5Xl+kKgRlbmir3bymCBXlhBKIyUaTZZrX8WfUUf6HxfYfO0OMb/IMlI+l7Pd7mbV5ToUma0vBU9g1C7F/laBeivMLckHfl5JAPFrys+3bp1ahE3LPnifqCMQ7zaBrK7qS46VrxcXLEtcRJovGVyImUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BJ9HS1a/iitULrsuwDH/MV1YKhb4d12f6LlZkgRhG0c=;
+ b=aVccwZwRDitG9xh9S1bG7W0eDbIIG8VX4184f9bIQOBt65l01P2K3v3s3oqu5tT2Gl5EyRva9h2SPwbpUIP0kps/boO07dGN7Et/ZSFvEt7EVypdtskla853fpScmw0F8LLSMvnZRPqZCA9Vo/cLUZrp7DFP2g0v9x8QAqqHSF8qlYWGm7n+vzq0H1EgsJD2PIHgUnaBxaZ3SrIcib2g1PLrEzNqb5yPh+SKg4s2UUKv/TAbbyDoDHdH0GZdggZ3Xk82v5RYRWQWn+/Xiye/CnGWt8NFlb2/ZmqHae9moZujSnOdNSuSLxuAEjCxZ1gkePVD3vxmTtLwTrzDxINI0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BJ9HS1a/iitULrsuwDH/MV1YKhb4d12f6LlZkgRhG0c=;
+ b=Puna+QztzpL8zjQt3gV7Pft1NeTOBX+j5nMFAht4z18l8Org4Sz9kxpccZ2jb1IkUX4j2r8Utue6aHh4wDC3VlR0BGY8vywL5ejzzRnMooNNIehsxmwA/PyBvKCKIPKdtwiZo0w8OTg6erk++mYZTE13skC3VL1IOCjnaz2sQcQ=
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2952.namprd15.prod.outlook.com (2603:10b6:a03:f9::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.25; Wed, 30 Sep
+ 2020 00:01:43 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c13c:fca9:5e04:9bfb]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c13c:fca9:5e04:9bfb%3]) with mapi id 15.20.3412.029; Wed, 30 Sep 2020
+ 00:01:43 +0000
+Date:   Tue, 29 Sep 2020 17:01:36 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <andrii.nakryiko@gmail.com>,
+        <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 1/3] libbpf: fix uninitialized variable in
+ btf_parse_type_sec
+Message-ID: <20200930000136.vv2re5usqrlp2jcs@kafai-mbp.dhcp.thefacebook.com>
+References: <20200929220604.833631-1-andriin@fb.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200929225013.930-1-songliubraving@fb.com>
+In-Reply-To: <20200929220604.833631-1-andriin@fb.com>
+X-Originating-IP: [2620:10d:c090:400::5:f2d3]
+X-ClientProxiedBy: MWHPR14CA0033.namprd14.prod.outlook.com
+ (2603:10b6:300:12b::19) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:f2d3) by MWHPR14CA0033.namprd14.prod.outlook.com (2603:10b6:300:12b::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20 via Frontend Transport; Wed, 30 Sep 2020 00:01:42 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4b614edd-fc69-497f-b47c-08d864d4039f
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2952:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB29526930E05C2DAF78B73F41D5330@BYAPR15MB2952.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:2399;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yiFqgSnO+n0OZ9p8E0Mq9AFwvKTIwNy7aSYdN32Lfj464QwK9zziUaO2rSXsDZFcpLEhBSOTKOCtAMdw2t5kF/NBbXTvvcFyUUnrGsp2VTqXrA3zEoOIl9HkEPIDOwaTllZO09whAXhorVtA0GIE6L72aUUPyrcHH2FOocILqym9QK19m5ZaiQmX6ulg11uOZ+ifj9lLSQwyBxlhCQsmmOzIdyZh3WQ6kri9F0SHcDmBywmb6QFPL12rHO9iQ+g6CRxP52+KpkWtjB/AbCQLNwDTP1N+L402G+KBuBd/fLxaKH9wuQs4e4HKeREjHWhK1+3X5B9cTRVhqzAhR2WQA0HGUpYGsmV/aLm9JtOwTf6ZNl9V25ZHaewc5pYVWLv7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(39860400002)(366004)(376002)(346002)(2906002)(8676002)(8936002)(6506007)(16526019)(186003)(9686003)(7696005)(52116002)(86362001)(6636002)(55016002)(6862004)(4326008)(558084003)(316002)(1076003)(66556008)(66476007)(478600001)(6666004)(66946007)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: QIXELAjCsUEvOEqxMqkvLyPxr2grEMYRJWl+I8QcO33m31ajw0u3LxI8SZRq/musEEMBqJuW/O9Zug/QbZQd6V0XvYsU+bZ6JOzXrXR+Y0s6uVI17Au3H401SUy6gqRwhcagKcO6+t3oXBIjmQYBrYDja51fK++yOmH+Th+IWY++RAAHWsx7g/IpzFA110rIRa/P4i7S9Dv960+J8C1wKiV4eJ4M7TzCum5+FNJVyWXmSvF1OgO3WQHHLm5ISEcBS1lPGf6HT1zS+Sg+NfEJWYtpjGyoBr9yeIP5/VR2r8jda0xFwXkzNLEeRMYfH9qfXKErKMuHlZpchXrOAOPxkDqAYPn8abZzsaG/X+U8tSeQUjf45jDC9R5p1rPARRaDJ6VK2pCY6s5ntC6RRKx71r6G60nh4J5rnYpDqVPamdrEKIAkhr+Ytbsnb4MXFjrL5ScedMRqlOgXJ5fiTijYmeHm9thD/UsJvc/ZnnrQHuiq3ckYxBBH+geGP+YmJvmT4w65wwzes7x4QpX5F9ncjXSURYTrDAAJMh+B5zfr7Y6AYADazhrjxRfvJO48qngZNHjRJXAyfvBIOQrIj5Ak2jZWy1DGHIxCDYUbtyhkdM3ZxDlivhdaJH+FJp6dA+NnJdCGRoJeawHzBu9cBabYq46FzSGukbBdixzTWiH3CgU=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b614edd-fc69-497f-b47c-08d864d4039f
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2020 00:01:43.2555
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: S15sx86zS0LGEQRwMuJWrWAhVpFnUSKsvu8WsfltMG64rnijhzONBRZAIA6K3fyg
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2952
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-29_14:2020-09-29,2020-09-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ mlxlogscore=999 clxscore=1015 priorityscore=1501 bulkscore=0 adultscore=0
+ malwarescore=0 lowpriorityscore=0 suspectscore=1 phishscore=0 mlxscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009290203
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 03:50:13PM -0700, Song Liu wrote:
-> In preempt kernel, BPF_PROG_TEST_RUN on raw_tp triggers:
-> 
-> [   35.874974] BUG: using smp_processor_id() in preemptible [00000000]
-> code: new_name/87
-> [   35.893983] caller is bpf_prog_test_run_raw_tp+0xd4/0x1b0
-> [   35.900124] CPU: 1 PID: 87 Comm: new_name Not tainted 5.9.0-rc6-g615bd02bf #1
-> [   35.907358] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-> BIOS 1.10.2-1ubuntu1 04/01/2014
-> [   35.916941] Call Trace:
-> [   35.919660]  dump_stack+0x77/0x9b
-> [   35.923273]  check_preemption_disabled+0xb4/0xc0
-> [   35.928376]  bpf_prog_test_run_raw_tp+0xd4/0x1b0
-> [   35.933872]  ? selinux_bpf+0xd/0x70
-> [   35.937532]  __do_sys_bpf+0x6bb/0x21e0
-> [   35.941570]  ? find_held_lock+0x2d/0x90
-> [   35.945687]  ? vfs_write+0x150/0x220
-> [   35.949586]  do_syscall_64+0x2d/0x40
-> [   35.953443]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Fix this by calling migrate_disable() before smp_processor_id().
-> 
-> Fixes: 1b4d60ec162f ("bpf: Enable BPF_PROG_TEST_RUN for raw_tracepoint")
-> Reported-by: Alexei Starovoitov <ast@kernel.org>
-> Signed-off-by: Song Liu <songliubraving@fb.com>
-> ---
->  net/bpf/test_run.c | 20 ++++++++------------
->  1 file changed, 8 insertions(+), 12 deletions(-)
-> 
-> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index fde5db93507c4..3ea05a5daf544 100644
-> --- a/net/bpf/test_run.c
-> +++ b/net/bpf/test_run.c
-> @@ -251,11 +251,7 @@ __bpf_prog_test_run_raw_tp(void *data)
->  {
->  	struct bpf_raw_tp_test_run_info *info = data;
->  
-> -	rcu_read_lock();
-> -	migrate_disable();
->  	info->retval = BPF_PROG_RUN(info->prog, info->ctx);
-> -	migrate_enable();
-> -	rcu_read_unlock();
-
-I would keep rcu_read_lock here, since there is no need to expand its scope.
-
->  }
->  
->  int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
-> @@ -293,27 +289,27 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
->  
->  	info.prog = prog;
->  
-> +	rcu_read_lock();
-> +	migrate_disable();
->  	if ((kattr->test.flags & BPF_F_TEST_RUN_ON_CPU) == 0 ||
->  	    cpu == smp_processor_id()) {
-
-may be use get_cpu/put_cpu instead?
-
->  		__bpf_prog_test_run_raw_tp(&info);
-> -	} else {
-> +	} else if (cpu >= nr_cpu_ids || !cpu_online(cpu)) {
->  		/* smp_call_function_single() also checks cpu_online()
->  		 * after csd_lock(). However, since cpu is from user
->  		 * space, let's do an extra quick check to filter out
->  		 * invalid value before smp_call_function_single().
->  		 */
-> -		if (cpu >= nr_cpu_ids || !cpu_online(cpu)) {
->  		err = -ENXIO;
-> -			goto out;
-> -		}
-> -
-> +	} else {
->  		err = smp_call_function_single(cpu, __bpf_prog_test_run_raw_tp,
->  					       &info, 1);
-> -		if (err)
-> -			goto out;
->  	}
-> +	migrate_enable();
-> +	rcu_read_unlock();
->  
-> -	if (copy_to_user(&uattr->test.retval, &info.retval, sizeof(u32)))
-> +	if (err == 0 &&
-
-!err would be canonical.
-
-> +	    copy_to_user(&uattr->test.retval, &info.retval, sizeof(u32)))
->  		err = -EFAULT;
->  
->  out:
-> -- 
-> 2.24.1
-> 
+On Tue, Sep 29, 2020 at 03:06:02PM -0700, Andrii Nakryiko wrote:
+> Fix obvious unitialized variable use that wasn't reported by compiler. libbpf
+> Makefile changes to catch such errors are added separately.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
