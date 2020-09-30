@@ -2,193 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8574C27ED30
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 17:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9282127ED90
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 17:42:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728368AbgI3PgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 11:36:19 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:10516 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725355AbgI3PgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 11:36:18 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08UFZu9j011450;
-        Wed, 30 Sep 2020 08:36:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=vGGLXT79P55At4T+z6gzKnHK189JjqddB3iNBOAuB9A=;
- b=FYkuijEpS+5Hk0nQrmJ5lKmIrMBs/XM7aUPkfDMuy5gqXz+a72cespCqD0l47AHkbyk7
- KC80bWR+/HZ51LfX+QQwyNuJt2/wsbB8jYDyO5OSOm3K/sWr1WXeawSBzyNgTEpeoJrI
- 0RMypflgikUQeKk82XAh78T5BOWT5q6hYBY= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33tn4tschs-12
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 30 Sep 2020 08:36:02 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 30 Sep 2020 08:36:00 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WpDwK0qPS1nFOHz9k9UcWSbtlfY5X4lHqkg7lanTC1fmmn/gnoigicnCn+hOfarHbo4CS1iDVn0gWyGUwlTbLchyl/2UwPfCA/5K08mM8z1f8zp9f45krYuJnEpmifubIV9Dz8E2thFtLoygksivPgFViMGBYUmef4Y70BESwrUNjadt9HFm/uyNUKY725P5833k1M/PFd8dn8bUjKhrNsFRi94n0WBHf2znnKrCni6/1r7tifjZSdxPcbbZwXzgJenCbVbdLAN9nlhZ+Z07pjhm9lOW8acQ6NnOjRdFWNYBonafaxvtlB6uue6jpBbvkBDcxI+sPpPjVYBgK/kMsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vGGLXT79P55At4T+z6gzKnHK189JjqddB3iNBOAuB9A=;
- b=fmcv/pr6f5dl18HI88sH637rpZeP59e88ocGJc2yyIhwy633mk4tXZWykHkd81YrFkhDr03zbB/VpR+A4XR7B/TO35XT6i8bM2ZPRb0ShHjCYuYe/JA4T9k7eS7PrXh/W79Y5yYwrlfja6WvGz9fADLH23JqITje+Xt7NVH9tSW7Q8tK0glhhGcAtVlzen7F68lZil+FZ5qNgcR0mdN6TO0GkvcmKt70HPPNKRPwWjQ5A8h3XjDZGr9tGgpShM7Zfm4LNdwbwQuEIWFk5bgBff+wLcuZtBGhfGYR3EbwClg3ifKn33TkqwPz3LdYWhHxUqrm08681Vu/2VwHaJdAug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vGGLXT79P55At4T+z6gzKnHK189JjqddB3iNBOAuB9A=;
- b=G1oUD8sP+X750+kC/WMeeFACYz1Wd9jTnPlFiwASKZJg24ZcgyunAYL3fM8taQbRQUyyU/5znaPOIdX4EYOq2fRqo1UUaiCFJxSBiyI7OYjjG0Zy72qn1H8hd74vRlnVbuWQIyDs9vGAO4W8rslLjPguhNE9uBh72dmdH/zLC+Q=
-Authentication-Results: chromium.org; dkim=none (message not signed)
- header.d=none;chromium.org; dmarc=none action=none header.from=fb.com;
-Received: from MW3PR15MB3772.namprd15.prod.outlook.com (2603:10b6:303:4c::14)
- by MW3PR15MB4042.namprd15.prod.outlook.com (2603:10b6:303:49::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.22; Wed, 30 Sep
- 2020 15:35:58 +0000
-Received: from MW3PR15MB3772.namprd15.prod.outlook.com
- ([fe80::fc4a:7d44:dff:e7bf]) by MW3PR15MB3772.namprd15.prod.outlook.com
- ([fe80::fc4a:7d44:dff:e7bf%6]) with mapi id 15.20.3433.035; Wed, 30 Sep 2020
- 15:35:58 +0000
-Subject: Re: [PATCH v2 bpf-next] bpf: fix raw_tp test run in preempt kernel
-To:     Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <Kernel-team@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-References: <20200930002011.521337-1-songliubraving@fb.com>
- <CAADnVQ+jaUfJkD0POaRyrmrLueVP9x-rN8bcN5eEz4XPBk96bw@mail.gmail.com>
- <5684F41E-8748-4CBE-B37F-0E4AADC0A799@fb.com>
-From:   Alexei Starovoitov <ast@fb.com>
-Message-ID: <09b5c318-afb3-2c3a-1b2f-936eb1b9b32b@fb.com>
-Date:   Wed, 30 Sep 2020 08:35:54 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
-In-Reply-To: <5684F41E-8748-4CBE-B37F-0E4AADC0A799@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:f22d]
-X-ClientProxiedBy: MWHPR2001CA0011.namprd20.prod.outlook.com
- (2603:10b6:301:15::21) To MW3PR15MB3772.namprd15.prod.outlook.com
- (2603:10b6:303:4c::14)
+        id S1730858AbgI3PmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 11:42:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52826 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727438AbgI3PmX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 11:42:23 -0400
+Received: from lore-desk.redhat.com (unknown [176.207.245.61])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EA67A20759;
+        Wed, 30 Sep 2020 15:42:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601480542;
+        bh=0+OubIWZhMuAWGNbktiBz99k2KcdTzGTHJHUdmxMmtI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LRKH/gJ9Y/WtFFBGLy7bX1kz2BnSTyOLj7r9oV0XaAWSHT+sJ/UeAKjkdJUt3J4rC
+         uWOHKUhBIxivb1TIHYB9uJ7RSsad9QmoAbzqLg5dhlDi3ZxxU+zorFALWyYO1C7686
+         YrFM/DlTqigp3ScgYKX21TXGeWd1bpcC96eMtrJM=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, davem@davemloft.net, sameehj@amazon.com,
+        kuba@kernel.org, john.fastabend@gmail.com, daniel@iogearbox.net,
+        ast@kernel.org, shayagr@amazon.com, brouer@redhat.com,
+        echaudro@redhat.com, lorenzo.bianconi@redhat.com,
+        dsahern@kernel.org
+Subject: [PATCH v3 net-next 00/12] mvneta: introduce XDP multi-buffer support
+Date:   Wed, 30 Sep 2020 17:41:51 +0200
+Message-Id: <cover.1601478613.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:2103:c99:e09d:8a8f:94f0] (2620:10d:c090:400::5:f22d) by MWHPR2001CA0011.namprd20.prod.outlook.com (2603:10b6:301:15::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.25 via Frontend Transport; Wed, 30 Sep 2020 15:35:57 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e9be34c6-1fc8-4602-3626-08d8655686eb
-X-MS-TrafficTypeDiagnostic: MW3PR15MB4042:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MW3PR15MB40426B082134C604E07527D2D7330@MW3PR15MB4042.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4NACkPLcESrB5fTBZG3sy2u8jr6G2GvHtgv693zwQqIjXYxrXg56cAaH1glEO8tKnkRbHa2yX8hRg0TlsIg+U38hLXH6z+un8M+CUeCVBHIwWXfFzoJ18sQAKgajI129T9kHZywQ1JzzcUbtbjyzrW5D2f8nPQNxG5cykKPtIMVr3Pi9WimR7xdRUvOe1RdTNTkSUMDOPhy7VXeSScekkpzhjChcUbvNwVmvKeB4YVLijNkYN35VWRx9zrQC+uIhvb3UZDoOIwOnc4bz9yB064Pw4qTpdWUIBkwfSGiNcEHaeHdwTvX3y8cqViitTRpbe9LMRIAH+pUfHoD+ND5VjR6uujK9AFyWc0kJgj5yY6a14TOgEki1W7j2Swy4xtVu6WZlfTpCNcEEdtTDs/qIzpTqnlVahq/GZhCdpLGBc8ehpzGbxMKzYrHlPi3yMs03A+kYOpo6+8K8MFiiXHrTe+Y4pGM0dT+s8ipqMGi6zVZn0hBg/l/AjKq2B4A3+b4v
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR15MB3772.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(396003)(376002)(346002)(136003)(366004)(16526019)(8676002)(2906002)(4326008)(966005)(31696002)(66476007)(66556008)(31686004)(83380400001)(86362001)(36756003)(8936002)(54906003)(316002)(6666004)(110136005)(2616005)(186003)(6486002)(5660300002)(66946007)(52116002)(478600001)(53546011)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: GPPTSnNREiWdLHaKEjt/Om2l6i5/Zx/YWvxAOf1pubJc579oTI4T6MkSmt1XV7mbc7WRzF10X8OrmN8h5jdwxqNvY6kIDdN9SS6jE06TstRa2vjsqwe+pgVGWoCbf45FI9UZdKF8iXvF6OB1Cx8OUqsoAMuCgkczz8ZQXBHXSwlQd89J/q6DXDbIKbUkGcD5CqCg/CfJRcQCchGc/pYBWcknOB9jmYz+YNB5gG9EbG4d9wBWwznuHwCoX4ZFsE7fdAyqdtYQkQjcJrUs7zhalzNapqhHoZVSQ19nhQlmeGDeR2I5QnYPZ550/SeRUg3Fhcl+R217RruTPAuJxJNjO55GJraMvmE90G/RLGJyqxJfSGs/YZa5l442dgTL7CgpGdgnu8bkTc2NRHSLHQFruzRe+DotMaHtujLQLuLTLaO9nHbRYpnjlws+wV/MIrX3Q1+fy7O5VIyXbS678Bw6FXQPQuZxP/ywDVcGVqGWSquxmR420ijBYI3b+zAUqPPybLZul27PR0TIdz3tMGOQDaNIw1oQsR2IVyRvT4Gq+AFbSvTMkPIYRj5rwtpGH8gvrEqvctneBOt8Xra2Ghz9PKBdDo4IHy/AIzUmwrSOyA6vv8Cd1DSVdMrnjOoNjr/RsB00ppid58z0i5gmMio35CvzKtGYTAsiYsBL1Wok8wc=
-X-MS-Exchange-CrossTenant-Network-Message-Id: e9be34c6-1fc8-4602-3626-08d8655686eb
-X-MS-Exchange-CrossTenant-AuthSource: MW3PR15MB3772.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2020 15:35:58.0529
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Gt3aIusp77vi2EzMtJx6P13wgqpPZEO9qong3tpat+pioH6j1578NS7teLTGJzRd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB4042
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-30_08:2020-09-30,2020-09-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 adultscore=0
- suspectscore=0 bulkscore=0 phishscore=0 lowpriorityscore=0 clxscore=1011
- malwarescore=0 mlxscore=0 mlxlogscore=999 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009300124
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=y
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/29/20 11:45 PM, Song Liu wrote:
-> 
-> 
->> On Sep 29, 2020, at 8:23 PM, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
->>
->> On Tue, Sep 29, 2020 at 5:20 PM Song Liu <songliubraving@fb.com> wrote:
->>>
->>> In preempt kernel, BPF_PROG_TEST_RUN on raw_tp triggers:
->>>
->>> [   35.874974] BUG: using smp_processor_id() in preemptible [00000000]
->>> code: new_name/87
->>> [   35.893983] caller is bpf_prog_test_run_raw_tp+0xd4/0x1b0
->>> [   35.900124] CPU: 1 PID: 87 Comm: new_name Not tainted 5.9.0-rc6-g615bd02bf #1
->>> [   35.907358] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
->>> BIOS 1.10.2-1ubuntu1 04/01/2014
->>> [   35.916941] Call Trace:
->>> [   35.919660]  dump_stack+0x77/0x9b
->>> [   35.923273]  check_preemption_disabled+0xb4/0xc0
->>> [   35.928376]  bpf_prog_test_run_raw_tp+0xd4/0x1b0
->>> [   35.933872]  ? selinux_bpf+0xd/0x70
->>> [   35.937532]  __do_sys_bpf+0x6bb/0x21e0
->>> [   35.941570]  ? find_held_lock+0x2d/0x90
->>> [   35.945687]  ? vfs_write+0x150/0x220
->>> [   35.949586]  do_syscall_64+0x2d/0x40
->>> [   35.953443]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->>>
->>> Fix this by calling migrate_disable() before smp_processor_id().
->>>
->>> Fixes: 1b4d60ec162f ("bpf: Enable BPF_PROG_TEST_RUN for raw_tracepoint")
->>> Reported-by: Alexei Starovoitov <ast@kernel.org>
->>> Signed-off-by: Song Liu <songliubraving@fb.com>
->>>
->>> ---
->>> Changes v1 => v2:
->>> 1. Keep rcu_read_lock/unlock() in original places. (Alexei)
->>> 2. Use get_cpu() instead of smp_processor_id(). (Alexei)
->>
->> Applying: bpf: fix raw_tp test run in preempt kernel
->> Using index info to reconstruct a base tree...
->> error: patch failed: net/bpf/test_run.c:293
->> error: net/bpf/test_run.c: patch does not apply
->> error: Did you hand edit your patch?
-> 
-> This is so weird. I cannot apply it myself. :(
-> 
-> [localhost] g co -b bpf-next-temp
-> Switched to a new branch 'bpf-next-temp'
-> 
-> [localhost] g format-patch -b HEAD~1 --subject-prefix "PATCH v3 bpf-next"
-> 0001-bpf-fix-raw_tp-test-run-in-preempt-kernel.patch
+This series introduce XDP multi-buffer support. The mvneta driver is
+the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+please focus on how these new types of xdp_{buff,frame} packets
+traverse the different layers and the layout design. It is on purpose
+that BPF-helpers are kept simple, as we don't want to expose the
+internal layout to allow later changes.
 
-could you try without -b ?
+For now, to keep the design simple and to maintain performance, the XDP
+BPF-prog (still) only have access to the first-buffer. It is left for
+later (another patchset) to add payload access across multiple buffers.
+This patchset should still allow for these future extensions. The goal
+is to lift the XDP MTU restriction that comes with XDP, but maintain
+same performance as before.
 
-> [localhost] g reset --hard HEAD~1
-> HEAD is now at b0efc216f5779 libbpf: Compile in PIC mode only for shared library case
-> 
-> [localhost] g am 0001-bpf-fix-raw_tp-test-run-in-preempt-kernel.patch
-> Applying: bpf: fix raw_tp test run in preempt kernel
-> error: patch failed: net/bpf/test_run.c:293
-> error: net/bpf/test_run.c: patch does not apply
-> Patch failed at 0001 bpf: fix raw_tp test run in preempt kernel
-> hint: Use 'git am --show-current-patch' to see the failed patch
-> When you have resolved this problem, run "git am --continue".
-> If you prefer to skip this patch, run "git am --skip" instead.
-> To restore the original branch and stop patching, run "git am --abort".
+The main idea for the new multi-buffer layout is to reuse the same
+layout used for non-linear SKB. This rely on the "skb_shared_info"
+struct at the end of the first buffer to link together subsequent
+buffers. Keeping the layout compatible with SKBs is also done to ease
+and speedup creating an SKB from an xdp_{buff,frame}. Converting
+xdp_frame to SKB and deliver it to the network stack is shown in cpumap
+code (patch 12/12).
 
-very odd indeed.
+A multi-buffer bit (mb) has been introduced in xdp_{buff,frame} structure
+to notify the bpf/network layer this is a xdp multi-buffer frame.
 
-> Any hint on how to fix this? Alternatively, could you please pull the
-> change from
-> 
->     https://git.kernel.org/pub/scm/linux/kernel/git/song/linux.git  raw_tp_preempt_fix
+In order to provide to userspace some metdata about the non-linear
+xdp_{buff,frame}, we introduced 2 bpf helpers:
+- bpf_xdp_get_frag_count:
+  get the number of fragments for a given xdp multi-buffer.
+- bpf_xdp_get_frags_total_size:
+  get the total size of fragments for a given xdp multi-buffer.
 
-pulled. thanks
+Typical use cases for this series are:
+- Jumbo-frames
+- Packet header split (please see Google’s use-case @ NetDevConf 0x14, [0])
+- TSO
+
+More info about the main idea behind this approach can be found here [1][2].
+
+We carried out some throughput tests in order to verify we did not introduced
+any performance regression adding xdp multi-buff support to mvneta:
+
+offered load is ~ 1000Kpps, packet size is 64B
+
+commit: 879456bedbe5 ("net: mvneta: avoid possible cache misses in mvneta_rx_swbm")
+- xdp-pass:     ~162Kpps
+- xdp-drop:     ~701Kpps
+- xdp-tx:       ~185Kpps
+- xdp-redirect: ~202Kpps
+
+mvneta xdp multi-buff:
+- xdp-pass:     ~163Kpps
+- xdp-drop:     ~739Kpps
+- xdp-tx:       ~182Kpps
+- xdp-redirect: ~202Kpps
+
+This series is based on "bpf: cpumap: remove rcpu pointer from cpu_map_build_skb signature"
+https://patchwork.ozlabs.org/project/netdev/patch/33cb9b7dc447de3ea6fd6ce713ac41bca8794423.1601292015.git.lorenzo@kernel.org/
+
+Changes since v2:
+- add throughput measurements
+- drop bpf_xdp_adjust_mb_header bpf helper
+- introduce selftest for xdp multibuffer
+- addressed comments on bpf_xdp_get_frag_count
+- introduce xdp multi-buff support to cpumaps
+
+Changes since v1:
+- Fix use-after-free in xdp_return_{buff/frame}
+- Introduce bpf helpers
+- Introduce xdp_mb sample program
+- access skb_shared_info->nr_frags only on the last fragment
+
+Changes since RFC:
+- squash multi-buffer bit initialization in a single patch
+- add mvneta non-linear XDP buff support for tx side
+
+[0] https://netdevconf.info/0x14/pub/slides/62/Implementing%20TCP%20RX%20zero%20copy.pdf
+[1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+[2] https://netdevconf.info/0x14/pub/slides/10/add-xdp-on-driver.pdf (XDPmulti-buffers section)
+
+Lorenzo Bianconi (10):
+  xdp: introduce mb in xdp_buff/xdp_frame
+  xdp: initialize xdp_buff mb bit to 0 in all XDP drivers
+  net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
+  xdp: add multi-buff support to xdp_return_{buff/frame}
+  net: mvneta: add multi buffer support to XDP_TX
+  bpf: move user_size out of bpf_test_init
+  bpf: introduce multibuff support to bpf_prog_test_run_xdp()
+  bpf: add xdp multi-buffer selftest
+  net: mvneta: enable jumbo frames for XDP
+  bpf: cpumap: introduce xdp multi-buff support
+
+Sameeh Jubran (2):
+  bpf: helpers: add multibuffer support
+  samples/bpf: add bpf program that uses xdp mb helpers
+
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |   1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |   1 +
+ .../net/ethernet/cavium/thunder/nicvf_main.c  |   1 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   1 +
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   |   1 +
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |   1 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   1 +
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   1 +
+ drivers/net/ethernet/marvell/mvneta.c         | 131 +++++++------
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   1 +
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    |   1 +
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   1 +
+ .../ethernet/netronome/nfp/nfp_net_common.c   |   1 +
+ drivers/net/ethernet/qlogic/qede/qede_fp.c    |   1 +
+ drivers/net/ethernet/sfc/rx.c                 |   1 +
+ drivers/net/ethernet/socionext/netsec.c       |   1 +
+ drivers/net/ethernet/ti/cpsw.c                |   1 +
+ drivers/net/ethernet/ti/cpsw_new.c            |   1 +
+ drivers/net/hyperv/netvsc_bpf.c               |   1 +
+ drivers/net/tun.c                             |   2 +
+ drivers/net/veth.c                            |   1 +
+ drivers/net/virtio_net.c                      |   2 +
+ drivers/net/xen-netfront.c                    |   1 +
+ include/net/xdp.h                             |  31 ++-
+ include/uapi/linux/bpf.h                      |  14 ++
+ kernel/bpf/cpumap.c                           |  45 +----
+ net/bpf/test_run.c                            |  45 ++++-
+ net/core/dev.c                                |   1 +
+ net/core/filter.c                             |  42 ++++
+ net/core/xdp.c                                | 104 ++++++++++
+ samples/bpf/Makefile                          |   3 +
+ samples/bpf/xdp_mb_kern.c                     |  68 +++++++
+ samples/bpf/xdp_mb_user.c                     | 182 ++++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  14 ++
+ .../testing/selftests/bpf/prog_tests/xdp_mb.c |  77 ++++++++
+ .../selftests/bpf/progs/test_xdp_multi_buff.c |  24 +++
+ 36 files changed, 691 insertions(+), 114 deletions(-)
+ create mode 100644 samples/bpf/xdp_mb_kern.c
+ create mode 100644 samples/bpf/xdp_mb_user.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_mb.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_multi_buff.c
+
+-- 
+2.26.2
+
