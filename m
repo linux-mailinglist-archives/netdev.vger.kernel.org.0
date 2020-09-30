@@ -2,138 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F67E27E3AC
-	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 10:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8A4B27E3D3
+	for <lists+netdev@lfdr.de>; Wed, 30 Sep 2020 10:34:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728676AbgI3IZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 04:25:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55226 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728563AbgI3IZl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Sep 2020 04:25:41 -0400
-Received: from pali.im (unknown [31.31.79.79])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5611021734;
-        Wed, 30 Sep 2020 08:25:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601454340;
-        bh=h12YRtace030+4IgK0t+oBgFypBtI4JrBGHJTaTeLTw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MeJnceBJMi3J8d4ZY4wOKANV2K6VqbiJPu9yK0Of/wIwdE0rcYfzeRMCg84uLRP9+
-         DAPQAHSpjkAizklVLj5l/B+2e3AFv5bpEgY7njpftZzABiwJa+s4rJeAXXaUMTem9Z
-         Wo5I1LZaqRfByGW5iJdztmNhDKslMeazyrEfPUAQ=
-Received: by pali.im (Postfix)
-        id 58F8E9D2; Wed, 30 Sep 2020 10:25:34 +0200 (CEST)
-Date:   Wed, 30 Sep 2020 10:25:34 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        David Heidelberg <david@ixit.cz>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Removal of HCI commands, userspace bluetooth regression?
-Message-ID: <20200930082534.rrck6qb3fntm25wz@pali>
-References: <20191228171212.56anj4d4kvjeqhms@pali>
- <45BB2908-4E16-4C74-9DB4-8BAD93B42A21@holtmann.org>
- <20200104102436.bhqagqrfwupj6hkm@pali>
- <20200209132137.7pi4pgnassosh3ax@pali>
- <20200414225618.zgh5h4jexahfukdl@pali>
- <20200808132747.4byefjg5ysddgkel@pali>
- <20200929213254.difivzrhapk766xp@pali>
- <20200930080205.GA1571308@kroah.com>
+        id S1727657AbgI3Ieb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 04:34:31 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:62814 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725776AbgI3Iea (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 04:34:30 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08U8UmkY013329;
+        Wed, 30 Sep 2020 01:34:25 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pfpt0220;
+ bh=kWT+B8dAfBdWfM9VjZZmb2Ae7WkDZwDzDyb8AXfIeKQ=;
+ b=V9SOF6+vEz7XvCZ9ia6etI8xZPtjBJN1FYpoL4i8I2KNXMWlSmfsk5pzyfnII22cLgjt
+ 0lnP4JgizqzGJoMd0ueHIRYG6usR8B30xCLKI9Py90gTqMFI5cANcelpTSAldAyVewTF
+ 491NWchRkll+E15IFl2z7AFySpJWOKdARdbE3+YIgtjXh59xC58PBDN3RVeqkDlTUYZB
+ IRZ02QJoinx2+DqsDm3PTU5twVRHPVqaJRxXTXZOAGw+aZ6Z/UL8ZMg7lols8ZvhKasT
+ /j+rJD4kMChkqwdJnzqJYFC7JAtGeWQOEL74op+nW6pNsQsUzNzCyA3CIf4D+856z3P+ 3w== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 33teemfm6k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 30 Sep 2020 01:34:24 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 30 Sep
+ 2020 01:34:23 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 30 Sep 2020 01:34:24 -0700
+Received: from [10.193.39.7] (NN-LT0019.marvell.com [10.193.39.7])
+        by maili.marvell.com (Postfix) with ESMTP id B40013F703F;
+        Wed, 30 Sep 2020 01:34:22 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/3] net: atlantic: implement phy downshift
+ feature
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20200929161307.542-1-irusskikh@marvell.com>
+ <20200929161307.542-3-irusskikh@marvell.com>
+ <20200929171030.GC3996795@lunn.ch>
+From:   Igor Russkikh <irusskikh@marvell.com>
+Message-ID: <0f71cbca-a8b3-5180-2cf8-391e73e2ee53@marvell.com>
+Date:   Wed, 30 Sep 2020 11:34:21 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101
+ Thunderbird/82.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200930080205.GA1571308@kroah.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20200929171030.GC3996795@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-30_05:2020-09-29,2020-09-30 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday 30 September 2020 10:02:05 Greg Kroah-Hartman wrote:
-> On Tue, Sep 29, 2020 at 11:32:54PM +0200, Pali Rohár wrote:
-> > CCing other lists and maintainers, hopefully, somebody would have a time to look at it...
-> > 
-> > On Saturday 08 August 2020 15:27:47 Pali Rohár wrote:
-> > > On Wednesday 15 April 2020 00:56:18 Pali Rohár wrote:
-> > > > On Sunday 09 February 2020 14:21:37 Pali Rohár wrote:
-> > > > > On Saturday 04 January 2020 11:24:36 Pali Rohár wrote:
-> > > > > > On Saturday 04 January 2020 10:44:52 Marcel Holtmann wrote:
-> > > > > > > Hi Pali,
-> > > > > > > 
-> > > > > > > > I wrote a simple script "sco_features.pl" which show all supported
-> > > > > > > > codecs by local HCI bluetooth adapter. Script is available at:
-> > > > > > > > 
-> > > > > > > > https://github.com/pali/hsphfpd-prototype/blob/prototype/sco_features.pl
-> > > > > > > > 
-> > > > > > > > And I found out that OCF_READ_LOCAL_CODECS HCI command cannot be send by
-> > > > > > > > non-root user. Kernel returns "Operation not permitted" error.
-> > > > > > > > 
-> > > > > > > > What is reason that kernel blocks OCF_READ_LOCAL_CODECS command for
-> > > > > > > > non-root users? Without it (audio) application does not know which
-> > > > > > > > codecs local bluetooth adapter supports.
-> > > > > > > > 
-> > > > > > > > E.g. OCF_READ_LOCAL_EXT_FEATURES or OCF_READ_VOICE_SETTING commands can
-> > > > > > > > be send also by non-root user and kernel does not block them.
-> > > > > > > 
-> > > > > > > actually the direct access to HCI commands is being removed. So we have no plans to add new commands into the list since that it what the kernel is suppose to handle. If we wanted to expose this, then it has to be via mgmt.
-> > > > > > 
-> > > > > > Hi Marcel! Thank you for information. I have not know that this API is
-> > > > > > "deprecated" and is going to be removed. But userspace audio
-> > > > > > applications need to know what bluetooth adapter supports, so can you
-> > > > > > export result of these commands to userspace? My script linked above
-> > > > > > calls: OCF_READ_VOICE_SETTING, OCF_READ_LOCAL_COMMANDS,
-> > > > > > OCF_READ_LOCAL_EXT_FEATURES, OCF_READ_LOCAL_CODECS
-> > > > > 
-> > > > > Hello! Just a gently reminder for this question. How to retrieve
-> > > > > information about supported codecs from userspace by non-root user?
-> > > > > Because running all bluetooth audio applications by root is not really a
-> > > > > solution. Plus if above API for root user is going to be removed, what
-> > > > > is a replacement?
-> > > > 
-> > > > Hello!
-> > > > 
-> > > > I have not got any answer to my email from Marcel for months, so I'm
-> > > > adding other developers to loop. Could somebody tell me that is the
-> > > > replacement API if above one is going to be removed?
-> > > > 
-> > > > I was not able to find any documentation where could be described this
-> > > > API nor information about deprecation / removal.
-> > > > 
-> > > > And are you aware of the fact that removing of API could potentially
-> > > > break existing applications?
-> > > > 
-> > > > I really need to know which API should I use, because when I use API
-> > > > which is going to be removed, then my application stops working. And I
-> > > > really want to avoid it.
-> > > > 
-> > > > Also I have not got any response yet, how can I read list of supported
-> > > > codecs by bluetooth adapter by ordinary non-root user? Audio application
-> > > > needs to know list of supported codecs and it is really insane to run it
-> > > > as root.
-> > > 
-> > > Hello! This is just another reminder that I have not got any reply to
-> > > this email.
-> > > 
-> > > Does silence mean that audio applications are expected to work only
-> > > under root account and ordinary users are not able to use audio and list
-> > > supported codecs?
-> > 
-> > Hello! I have not got any reply for this issue for 10 months and if you
-> > are going to remove (or after these 10 months you already did it?)
-> > existing HCI API from kernel it would break existing and working
-> > userspace application. How do you want to handle such regressions?
-> 
-> What git commit caused this regression?
 
-Hello! Marcel in January wrote that access for HCI commands is being
-removed from kernel. I do not know if he managed to do it in since
-January, but I'm going to check it...
+
+> 
+> Hi Igor
+> 
+> I think all other implementations return -EINVAL or -E2BIG or similar
+> when the value is not supported.
+> 
+> Also, given that a u8 is being passed, is cfg->downshift_counter > 255
+> possible? I'm not even sure 255 makes any sense. Autoneg takes around
+> 1.5s, maybe longer. Do you really want to wait 255 * 1.5 seconds
+> before downshifting? Even 15*1.5 seems a long time.
+
+Hi Andrew, here I'm just blindly follow the value limits of firmware interface
+(two device revisions have different counter field width here).
+
+To make behavior consistent you are right, we probably can leave 15 max and
+return EINVAL otherwise.
+
+Igor
