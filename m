@@ -2,200 +2,331 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BA0127FFF4
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 15:21:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9576527FFF8
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 15:21:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732337AbgJANV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 09:21:28 -0400
-Received: from mail-eopbgr80087.outbound.protection.outlook.com ([40.107.8.87]:47741
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731993AbgJANV1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Oct 2020 09:21:27 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ksc46LslphtcWl73pKWdsvHdqCR3kCWIbW2/aK51HVxfOgFsepn+BXAEAu8AlEzgjBscCSk58Ug5TIPGpmrMXh49JD7JjvsRPjGeGg7ZU45VyZ7Qg0Bz7RPjyPER2HXMjn/qXkyIdCPu+jvYE+rIEyPvJ0pve2sV0XCylNk+o4+DXNnsJd0+YebIl00ycAOeK/ghGH+BoFc7dC5o2koCYBCCUAsiSDfPW304guu/v4FGwB+C33Dh1ox1/NE8q3R14B0AIuKmT3TMIk+VzP3m7AwPbhjIY0PyD/WF3aEWK8MuNYX9E9JRmqJzhoyZ0j0Khgw0RIyZ89UQvQ3HLfqJ7A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cHJknEIud4YK3uzMb7nVz44Y8thAXiYnVQCmB+vea64=;
- b=T/KW8M6oDMnow1awF3T3K68ci5mT0Gn8mf5rbFNqXj7ZbNSUUdJn3ylsgo8mJO1WuWqym5XYq2UlLCNxhN5OQ9JmDwPxWYfcDlWAQuFAVP+UIIt54+sa5KiU+lXunUKbV2mKzZ44psOCyDzTbSpI/922juB4tlZxdUTDWtwzei9XzhX067JPRRCRnexRhIKhGvHd3WpNIUp9WvIOh3bj505wuY5gspiZalJsOmg6s48Qdhl6GzUCxhE/J0wvBqbN+GVPgfQBYINxgjJxK5thF/2wgaXYkVWqBhvYOOKBxAGAD+V/YxS+qY3U7MvC/OaiS//OAcH6wfUxTia6miyAvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cHJknEIud4YK3uzMb7nVz44Y8thAXiYnVQCmB+vea64=;
- b=KgA6TkXN/1svowr0KzZCWHINEjMXX/RwWHHLDFIP8U1inH3Poz4MfjKNAZt/AxDTJVr2bDIbdURa6d5beRWrzvBxkHp9M7cm9CLEldAvK2bIGq9W/N+EGAyYKllmfeVzg/y+f070WqJfKpq1EUr6Rg6Rh0phpgowaejIVkFonk4=
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- (2603:10a6:803:16::14) by VI1PR04MB5885.eurprd04.prod.outlook.com
- (2603:10a6:803:e1::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.37; Thu, 1 Oct
- 2020 13:21:23 +0000
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::3c18:4bf1:4da0:a3bf]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::3c18:4bf1:4da0:a3bf%3]) with mapi id 15.20.3412.029; Thu, 1 Oct 2020
- 13:21:23 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Ido Schimmel <idosch@idosch.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jiri@nvidia.com" <jiri@nvidia.com>,
-        "idosch@nvidia.com" <idosch@nvidia.com>
-Subject: Re: [PATCH net-next v2 2/4] devlink: add .trap_group_action_set()
- callback
-Thread-Topic: [PATCH net-next v2 2/4] devlink: add .trap_group_action_set()
- callback
-Thread-Index: AQHWl15KvMqyfTzp5EKMEyJy7HPJQKmBmAGAgAEkxQA=
-Date:   Thu, 1 Oct 2020 13:21:23 +0000
-Message-ID: <20201001132122.ylyroyd5c45mvbsw@skbuf>
-References: <20200930191645.9520-1-ioana.ciornei@nxp.com>
- <20200930191645.9520-3-ioana.ciornei@nxp.com>
- <20200930195331.GB1850258@shredder>
-In-Reply-To: <20200930195331.GB1850258@shredder>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: idosch.org; dkim=none (message not signed)
- header.d=none;idosch.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.26.229.171]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: e1a2fd2a-28b9-4717-2d3c-08d8660ce49c
-x-ms-traffictypediagnostic: VI1PR04MB5885:
-x-microsoft-antispam-prvs: <VI1PR04MB58852B36D8C013DD3C60695AE0300@VI1PR04MB5885.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 26P0/TeYxs2zsFG/bHC+YXWwB2Ijhr6XBL7lUQCJK0HevkHmTXC7OK9+lAZvCJ2zwevpYTM5uOfvTgavWxheNw2BPlU1RNsZxL0kTUA1NFc1xmAvCuc5pHGgn1Ms4YtGQE8GzbJ8LVZE95Jx+xctnoc1YxtyVyc10krQsffLVs/pPRwaPj9b1utTrzvXw0RE+U96Rna0rvWMoq4ofJCOVYNAPqLOzbLDP81GOAFo/K1Da4frVXEBIRHrUdstIzOFtJMpoCF1Njg76HtbmPeTlGYhpFIu2wMhiLkUO7eZObk/8jOaHWoC9U/JiHDVT2N4fwtlHyH7JufobyfptVqgHqHrcUzc3LRjQtiM5fMTClxuhS/vIKMO1GfWkqOuW0Qk
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(376002)(366004)(396003)(346002)(136003)(39860400002)(9686003)(76116006)(2906002)(6512007)(83380400001)(71200400001)(1076003)(4326008)(33716001)(8676002)(5660300002)(8936002)(6916009)(54906003)(186003)(316002)(6506007)(66946007)(66556008)(66446008)(64756008)(6486002)(66476007)(478600001)(86362001)(44832011)(26005)(142923001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: HCRAAiCgGce+fUiEHVie4H66AKsOh+Q5dBiT3+mQfHBUq2HRBZixgNTkSSumZyzbbONd2PBM8+vljdYJ3EBD9i2wDSRA/0pZ2O0Ulh1//TkRXZ2vTj5jjzS/nuP2T6FOxJP5HujTnvsg8JN/IIK5u+CP13NaStLYCkUNxh9srTx4w9lLL57l2+JTQ20eiNWd11r6pmmtHcSiNYgKBjn2aWIby/WyKgmCs3OXLeZy0hVy5uY/yjKLetqgn74Hv8Qi1jNTaJOLoyaIz/NkWdCtoEwM1uIRoKsUTcOaYGiJ8siEkZ/WoQmcbLXoK1EK3PxVreMbXSgsoN4eBoBF1bEH7NrIVFXg2yqzkUvhc3tRf+eRdaNDl8tAwef2WHsnS8tOoG9NzqW2+cZPD9yF/CMJhkMDnUe5u36mE9HJLTsabj/yJtQ+V9fG4VB2/VPDE0qL2P7QU2DVSQpjnNqjHZ5f84VHLFbNuQnhadBIhidUI3Li2HGAyWJ5tLaX2MOdNU83PO9hNBg5r5KQgXQ4BIeR3zOtJQUfh9Zr9xJYvzTJ8J0TWoD6o+ER3ZTC2oDcyXJf82kVDJzvIXp4CrpisJph3tYFfHNuGT5AeD4sHsKIzh4vcGYw06t6L/PIZuTp5PGIFu6e4t1hvOLNPLyejVwKuw==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <43B21D4009B9814DBACEDA59CEE6E337@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1732363AbgJANVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 09:21:44 -0400
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:8510 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731993AbgJANVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 09:21:39 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f75d77b0000>; Thu, 01 Oct 2020 06:19:55 -0700
+Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 1 Oct
+ 2020 13:21:27 +0000
+Date:   Thu, 1 Oct 2020 16:21:24 +0300
+From:   Eli Cohen <elic@nvidia.com>
+To:     Jason Wang <jasowang@redhat.com>
+CC:     <mst@redhat.com>, <lulu@redhat.com>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <rob.miller@broadcom.com>, <lingshan.zhu@intel.com>,
+        <eperezma@redhat.com>, <hanand@xilinx.com>,
+        <mhabets@solarflare.com>, <elic@nvidia.com>, <amorenoz@redhat.com>,
+        <maxime.coquelin@redhat.com>, <stefanha@redhat.com>,
+        <sgarzare@redhat.com>
+Subject: Re: [RFC PATCH 09/24] vdpa: multiple address spaces support
+Message-ID: <20201001132124.GA32363@mtl-vdi-166.wap.labs.mlnx>
+References: <20200924032125.18619-1-jasowang@redhat.com>
+ <20200924032125.18619-10-jasowang@redhat.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e1a2fd2a-28b9-4717-2d3c-08d8660ce49c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Oct 2020 13:21:23.2557
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hp/K8PK6eeQM1c4Iu9L74V8PgqeUH/WcBCWzqleAAm799BWsdjE088xiDxi70fqIyEl+CvqIDyKS76gFRwJmow==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5885
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200924032125.18619-10-jasowang@redhat.com>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1601558395; bh=JVGGQlso0zbstvS5VRI/Znfgr/hkwvr0Uer+8mHFvcs=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=f4nKLsrWsZcO8XTxjVzU5+a6oPX+qAKeuZEdYlv5LJbywED2+I/ubG3Xs+0ODBOms
+         C1o0l/272nL9NAQbsQYd9rX11XIfpSjBalHjLsNtwxc9G7LaJ96QzHfM7fCUTGh/47
+         TaWh86mIsaRSxL7/I/TGUGB2uhqUrb0OuZzgM9LA1uYq1OJj4zzfVpDixDYmcpKzZ9
+         GBcvAFtQQjMlG8AWTSriQf5svKX5xl6pruKRTNWT8khDzXl8Kx6stfHtoIzdsqMZEA
+         6+FSq2mOVmFNlkX+ts/YfC1Q5CB98ght5cHcB/Kfm4Y0LpvUpvhqo5sY0AlZPRj2Jl
+         4IZymXooKZJpw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 10:53:31PM +0300, Ido Schimmel wrote:
-> On Wed, Sep 30, 2020 at 10:16:43PM +0300, Ioana Ciornei wrote:
-> > Add a new devlink callback, .trap_group_action_set(), which can be used
-> > by device drivers which do not support controlling the action (drop,
-> > trap) on each trap but rather on the entire group trap.
-> > If this new callback is populated, it will take precedence over the
-> > .trap_action_set() callback when the user requests a change of all the
-> > traps in a group.
-> >=20
-> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
->=20
-> Did you test this change with
->=20
-> tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
->=20
-> ?
->=20
-> Just to make sure you didn't add a regression
+On Thu, Sep 24, 2020 at 11:21:10AM +0800, Jason Wang wrote:
+> This patches introduces the multiple address spaces support for vDPA
+> device. This idea is to identify a specific address space via an
+> dedicated identifier - ASID.
+> 
+> During vDPA device allocation, vDPA device driver needs to report the
+> number of address spaces supported by the device then the DMA mapping
+> ops of the vDPA device needs to be extended to support ASID.
+> 
+> This helps to isolate the DMA among the virtqueues. E.g in the case of
+> virtio-net, the control virtqueue will not be assigned directly to
+> guest.
+> 
+> This RFC patch only converts for the device that wants its own
+> IOMMU/DMA translation logic. So it will rejects the device with more
+> that 1 address space that depends on platform IOMMU. The plan to
 
-Yes, everything seems alright.
+This is not apparent from the code. Instead you enforce number of groups
+to 1.
 
-[root@bionic ~/.../drivers/net/netdevsim] # ./devlink_trap.sh=20
-TEST: Initialization                                                [ OK ]
-TEST: Trap action                                                   [ OK ]
-TEST: Trap metadata                                                 [ OK ]
-TEST: Non-existing trap                                             [ OK ]
-TEST: Non-existing trap action                                      [ OK ]
-TEST: Trap statistics                                               [ OK ]
-TEST: Trap group action                                             [ OK ]
-TEST: Non-existing trap group                                       [ OK ]
-TEST: Trap group statistics                                         [ OK ]
-TEST: Trap policer                                                  [ OK ]
-TEST: Trap policer binding                                          [ OK ]
-TEST: Port delete                                                   [ OK ]
-TEST: Device delete                                                 [ OK ]
+> moving all the DMA mapping logic to the vDPA device driver instead of
+> doing it in vhost-vDPA (otherwise it could result a very complicated
+> APIs and actually vhost-vDPA doesn't care about how the actual
+> composition/emulation were done in the device driver).
+> 
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  drivers/vdpa/ifcvf/ifcvf_main.c   |  2 +-
+>  drivers/vdpa/mlx5/net/mlx5_vnet.c |  5 +++--
+>  drivers/vdpa/vdpa.c               |  4 +++-
+>  drivers/vdpa/vdpa_sim/vdpa_sim.c  | 10 ++++++----
+>  drivers/vhost/vdpa.c              | 14 +++++++++-----
+>  include/linux/vdpa.h              | 23 ++++++++++++++++-------
+>  6 files changed, 38 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+> index e6a0be374e51..86cdf5f8bcae 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+> @@ -440,7 +440,7 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  
+>  	adapter = vdpa_alloc_device(struct ifcvf_adapter, vdpa,
+>  				    dev, &ifc_vdpa_ops,
+> -				    IFCVF_MAX_QUEUE_PAIRS * 2, 1);
+> +				    IFCVF_MAX_QUEUE_PAIRS * 2, 1, 1);
+>  
+>  	if (adapter == NULL) {
+>  		IFCVF_ERR(pdev, "Failed to allocate vDPA structure");
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> index 4e480f4f754e..db7404e121bf 100644
+> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -1788,7 +1788,8 @@ static u32 mlx5_vdpa_get_generation(struct vdpa_device *vdev)
+>  	return mvdev->generation;
+>  }
+>  
+> -static int mlx5_vdpa_set_map(struct vdpa_device *vdev, struct vhost_iotlb *iotlb)
+> +static int mlx5_vdpa_set_map(struct vdpa_device *vdev, unsigned int asid,
+> +			     struct vhost_iotlb *iotlb)
+>  {
+>  	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+>  	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> @@ -1931,7 +1932,7 @@ void *mlx5_vdpa_add_dev(struct mlx5_core_dev *mdev)
+>  	max_vqs = min_t(u32, max_vqs, MLX5_MAX_SUPPORTED_VQS);
+>  
+>  	ndev = vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device, &mlx5_vdpa_ops,
+> -				 2 * mlx5_vdpa_max_qps(max_vqs), 1);
+> +				 2 * mlx5_vdpa_max_qps(max_vqs), 1, 1);
+>  	if (IS_ERR(ndev))
+>  		return ndev;
+>  
+> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+> index 46399746ec7c..05195fa7865d 100644
+> --- a/drivers/vdpa/vdpa.c
+> +++ b/drivers/vdpa/vdpa.c
+> @@ -63,6 +63,7 @@ static void vdpa_release_dev(struct device *d)
+>   * @config: the bus operations that is supported by this device
+>   * @nvqs: number of virtqueues supported by this device
+>   * @ngroups: number of groups supported by this device
+> + * @nas: number of address spaces supported by this device
+>   * @size: size of the parent structure that contains private data
+>   *
+>   * Driver should use vdpa_alloc_device() wrapper macro instead of
+> @@ -74,7 +75,7 @@ static void vdpa_release_dev(struct device *d)
+>  struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+>  					const struct vdpa_config_ops *config,
+>  					int nvqs, unsigned int ngroups,
+> -					size_t size)
+> +					unsigned int nas, size_t size)
+>  {
+>  	struct vdpa_device *vdev;
+>  	int err = -EINVAL;
+> @@ -102,6 +103,7 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+>  	vdev->features_valid = false;
+>  	vdev->nvqs = nvqs;
+>  	vdev->ngroups = ngroups;
+> +	vdev->nas = nas;
+>  
+>  	err = dev_set_name(&vdev->dev, "vdpa%u", vdev->index);
+>  	if (err)
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> index 6669c561bc6e..5dc04ec271bb 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> @@ -354,7 +354,7 @@ static struct vdpasim *vdpasim_create(void)
+>  		ops = &vdpasim_net_config_ops;
+>  
+>  	vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
+> -				    VDPASIM_VQ_NUM, 1);
+> +				    VDPASIM_VQ_NUM, 1, 1);
+>  	if (!vdpasim)
+>  		goto err_alloc;
+>  
+> @@ -581,7 +581,7 @@ static u32 vdpasim_get_generation(struct vdpa_device *vdpa)
+>  	return vdpasim->generation;
+>  }
+>  
+> -static int vdpasim_set_map(struct vdpa_device *vdpa,
+> +static int vdpasim_set_map(struct vdpa_device *vdpa, unsigned int asid,
+>  			   struct vhost_iotlb *iotlb)
+>  {
+>  	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+> @@ -608,7 +608,8 @@ static int vdpasim_set_map(struct vdpa_device *vdpa,
+>  	return ret;
+>  }
+>  
+> -static int vdpasim_dma_map(struct vdpa_device *vdpa, u64 iova, u64 size,
+> +static int vdpasim_dma_map(struct vdpa_device *vdpa, unsigned int asid,
+> +			   u64 iova, u64 size,
+>  			   u64 pa, u32 perm)
+>  {
+>  	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+> @@ -622,7 +623,8 @@ static int vdpasim_dma_map(struct vdpa_device *vdpa, u64 iova, u64 size,
+>  	return ret;
+>  }
+>  
+> -static int vdpasim_dma_unmap(struct vdpa_device *vdpa, u64 iova, u64 size)
+> +static int vdpasim_dma_unmap(struct vdpa_device *vdpa, unsigned int asid,
+> +			     u64 iova, u64 size)
+>  {
+>  	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+>  
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index ec3c94f706c1..eeefcd971e3f 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -557,10 +557,10 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, struct vhost_iotlb *iotlb,
+>  		return r;
+>  
+>  	if (ops->dma_map) {
+> -		r = ops->dma_map(vdpa, iova, size, pa, perm);
+> +		r = ops->dma_map(vdpa, 0, iova, size, pa, perm);
+>  	} else if (ops->set_map) {
+>  		if (!v->in_batch)
+> -			r = ops->set_map(vdpa, iotlb);
+> +			r = ops->set_map(vdpa, 0, iotlb);
+>  	} else {
+>  		r = iommu_map(v->domain, iova, pa, size,
+>  			      perm_to_iommu_flags(perm));
+> @@ -579,10 +579,10 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v,
+>  	vhost_vdpa_iotlb_unmap(v, iotlb, iova, iova + size - 1);
+>  
+>  	if (ops->dma_map) {
+> -		ops->dma_unmap(vdpa, iova, size);
+> +		ops->dma_unmap(vdpa, 0, iova, size);
+>  	} else if (ops->set_map) {
+>  		if (!v->in_batch)
+> -			ops->set_map(vdpa, iotlb);
+> +			ops->set_map(vdpa, 0, iotlb);
+>  	} else {
+>  		iommu_unmap(v->domain, iova, size);
+>  	}
+> @@ -700,7 +700,7 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev,
+>  		break;
+>  	case VHOST_IOTLB_BATCH_END:
+>  		if (v->in_batch && ops->set_map)
+> -			ops->set_map(vdpa, iotlb);
+> +			ops->set_map(vdpa, 0, iotlb);
+>  		v->in_batch = false;
+>  		break;
+>  	default:
+> @@ -949,6 +949,10 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+>  	int minor;
+>  	int r;
+>  
+> +	/* Only support 1 address space */
+> +	if (vdpa->ngroups != 1)
+> +		return -ENOTSUPP;
+> +
 
->=20
-> > ---
-> > Changes in v2:
-> >  - none
-> >=20
-> >  include/net/devlink.h | 10 ++++++++++
-> >  net/core/devlink.c    | 18 ++++++++++++++++++
-> >  2 files changed, 28 insertions(+)
-> >=20
-> > diff --git a/include/net/devlink.h b/include/net/devlink.h
-> > index 20db4a070fc8..307937efa83a 100644
-> > --- a/include/net/devlink.h
-> > +++ b/include/net/devlink.h
-> > @@ -1226,6 +1226,16 @@ struct devlink_ops {
-> >  			      const struct devlink_trap_group *group,
-> >  			      const struct devlink_trap_policer *policer,
-> >  			      struct netlink_ext_ack *extack);
-> > +	/**
-> > +	 * @trap_group_action_set: Group action set function.
->=20
-> To be consistent with other operations:
->=20
-> Trap group action set function.
+Did you mean to check agains vdpa->nas?
 
-You mean the comment, right? Sure, will change.
->=20
-> > +	 *
-> > +	 * If this callback is populated, it will take precedence over loopin=
-g
-> > +	 * over all traps in a group and calling .trap_action_set().
-> > +	 */
-> > +	int (*trap_group_action_set)(struct devlink *devlink,
-> > +				     const struct devlink_trap_group *group,
-> > +				     enum devlink_trap_action action,
-> > +				     struct netlink_ext_ack *extack);
-> >  	/**
-> >  	 * @trap_policer_init: Trap policer initialization function.
-> >  	 *
-> > diff --git a/net/core/devlink.c b/net/core/devlink.c
-> > index 10fea5854bc2..18136ad413e6 100644
-> > --- a/net/core/devlink.c
-> > +++ b/net/core/devlink.c
-> > @@ -6720,6 +6720,24 @@ __devlink_trap_group_action_set(struct devlink *=
-devlink,
-> >  	struct devlink_trap_item *trap_item;
-> >  	int err;
-> > =20
-> > +	if (devlink->ops->trap_group_action_set) {
-> > +		err =3D devlink->ops->trap_group_action_set(devlink, group_item->gro=
-up,
-> > +							  trap_action, extack);
-> > +		if (err)
-> > +			return err;
-> > +
-> > +		list_for_each_entry(trap_item, &devlink->trap_list, list) {
-> > +			if (strcmp(trap_item->group_item->group->name, group_name))
-> > +				continue;
-> > +			if (trap_item->action !=3D trap_action &&
-> > +			    trap_item->trap->type !=3D DEVLINK_TRAP_TYPE_DROP)
-> > +				continue;
-> > +			trap_item->action =3D trap_action;
-> > +		}
-> > +
-> > +		return 0;
-> > +	}
-> > +
-> >  	list_for_each_entry(trap_item, &devlink->trap_list, list) {
-> >  		if (strcmp(trap_item->group_item->group->name, group_name))
-> >  			continue;
-> > --=20
-> > 2.28.0
-> > =
+>  	/* Currently, we only accept the network devices. */
+>  	if (ops->get_device_id(vdpa) != VIRTIO_ID_NET)
+>  		return -ENOTSUPP;
+> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+> index d829512efd27..1e1163daa352 100644
+> --- a/include/linux/vdpa.h
+> +++ b/include/linux/vdpa.h
+> @@ -43,6 +43,8 @@ struct vdpa_vq_state {
+>   * @index: device index
+>   * @features_valid: were features initialized? for legacy guests
+>   * @nvqs: the number of virtqueues
+> + * @ngroups: the number of virtqueue groups
+> + * @nas: the number of address spaces
+>   */
+>  struct vdpa_device {
+>  	struct device dev;
+> @@ -52,6 +54,7 @@ struct vdpa_device {
+>  	bool features_valid;
+>  	int nvqs;
+>  	unsigned int ngroups;
+> +	unsigned int nas;
+>  };
+>  
+>  /**
+> @@ -161,6 +164,7 @@ struct vdpa_device {
+>   *				Needed for device that using device
+>   *				specific DMA translation (on-chip IOMMU)
+>   *				@vdev: vdpa device
+> + *				@asid: address space identifier
+>   *				@iotlb: vhost memory mapping to be
+>   *				used by the vDPA
+>   *				Returns integer: success (0) or error (< 0)
+> @@ -169,6 +173,7 @@ struct vdpa_device {
+>   *				specific DMA translation (on-chip IOMMU)
+>   *				and preferring incremental map.
+>   *				@vdev: vdpa device
+> + *				@asid: address space identifier
+>   *				@iova: iova to be mapped
+>   *				@size: size of the area
+>   *				@pa: physical address for the map
+> @@ -180,6 +185,7 @@ struct vdpa_device {
+>   *				specific DMA translation (on-chip IOMMU)
+>   *				and preferring incremental unmap.
+>   *				@vdev: vdpa device
+> + *				@asid: address space identifier
+>   *				@iova: iova to be unmapped
+>   *				@size: size of the area
+>   *				Returns integer: success (0) or error (< 0)
+> @@ -225,10 +231,12 @@ struct vdpa_config_ops {
+>  	u32 (*get_generation)(struct vdpa_device *vdev);
+>  
+>  	/* DMA ops */
+> -	int (*set_map)(struct vdpa_device *vdev, struct vhost_iotlb *iotlb);
+> -	int (*dma_map)(struct vdpa_device *vdev, u64 iova, u64 size,
+> -		       u64 pa, u32 perm);
+> -	int (*dma_unmap)(struct vdpa_device *vdev, u64 iova, u64 size);
+> +	int (*set_map)(struct vdpa_device *vdev, unsigned int asid,
+> +		       struct vhost_iotlb *iotlb);
+> +	int (*dma_map)(struct vdpa_device *vdev, unsigned int asid,
+> +		       u64 iova, u64 size, u64 pa, u32 perm);
+> +	int (*dma_unmap)(struct vdpa_device *vdev, unsigned int asid,
+> +			 u64 iova, u64 size);
+>  
+>  	/* Free device resources */
+>  	void (*free)(struct vdpa_device *vdev);
+> @@ -237,11 +245,12 @@ struct vdpa_config_ops {
+>  struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+>  					const struct vdpa_config_ops *config,
+>  					int nvqs, unsigned int ngroups,
+> -					size_t size);
+> +					unsigned int nas, size_t size);
+>  
+> -#define vdpa_alloc_device(dev_struct, member, parent, config, nvqs, ngroups) \
+> +#define vdpa_alloc_device(dev_struct, member, parent, config, nvqs, \
+> +			  ngroups, nas)				    \
+>  			  container_of(__vdpa_alloc_device( \
+> -				       parent, config, nvqs, ngroups, \
+> +				       parent, config, nvqs, ngroups, nas,  \
+>  				       sizeof(dev_struct) + \
+>  				       BUILD_BUG_ON_ZERO(offsetof( \
+>  				       dev_struct, member))), \
+> -- 
+> 2.20.1
+> 
