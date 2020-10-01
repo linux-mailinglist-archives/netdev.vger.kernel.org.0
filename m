@@ -2,72 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F7FD28093A
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 23:10:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F374D280940
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 23:12:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733026AbgJAVKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 17:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726606AbgJAVKO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 17:10:14 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE43C0613D0
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 14:10:13 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kO5q7-00EpB8-OV; Thu, 01 Oct 2020 23:10:11 +0200
-Message-ID: <131f3d344499ec58fa653a8d7c15e646ff8f98d0.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next 8/9] genetlink: use per-op policy for
- CTRL_CMD_GETPOLICY
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>
+        id S1727143AbgJAVME (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 17:12:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53578 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726606AbgJAVLv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 17:11:51 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 98BB2206A5;
+        Thu,  1 Oct 2020 21:11:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601586711;
+        bh=vo5jqYOgXhiBCeJoP0VU1ki2oSlXF2VU7JE+uU5GLC8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Qh2KKp6N00ywASU7zx1bMl1c6CaOOLOwJHbDaEQZiiCsbxmTv4G4wi9ZDU61udJ9q
+         lRTjRJQr3WFBnIw1Ta40ArY+cnwB+TCesnzxVSnsBJ03Kci5p06EWasr3YkpZRS1ea
+         SpuaB/SVhtFszq+BA5M/omQx0u5HMmkXHsmOEiJo=
+Date:   Thu, 1 Oct 2020 14:11:49 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
         jiri@resnulli.us, mkubecek@suse.cz, dsahern@kernel.org,
         pablo@netfilter.org
-Date:   Thu, 01 Oct 2020 23:10:10 +0200
-In-Reply-To: <20201001140911.795b7662@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Subject: Re: [PATCH net-next 9/9] genetlink: allow dumping command-specific
+ policy
+Message-ID: <20201001141149.3f2ee7a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <dcaeaedaa179c558cab0d417277fea9ac29d8b79.camel@sipsolutions.net>
 References: <20201001183016.1259870-1-kuba@kernel.org>
-         <20201001183016.1259870-9-kuba@kernel.org>
-         <b9be586bd097f76c554d3e404e0344ae817a12f1.camel@sipsolutions.net>
-         <20201001140911.795b7662@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        <20201001183016.1259870-10-kuba@kernel.org>
+        <dcaeaedaa179c558cab0d417277fea9ac29d8b79.camel@sipsolutions.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-10-01 at 14:09 -0700, Jakub Kicinski wrote:
-> On Thu, 01 Oct 2020 22:55:09 +0200 Johannes Berg wrote:
-> > On Thu, 2020-10-01 at 11:30 -0700, Jakub Kicinski wrote:
-> > > Wire up per-op policy for CTRL_CMD_GETPOLICY.
-> > > This saves us a call to genlmsg_parse() and will soon allow
-> > > dumping this policy.  
+On Thu, 01 Oct 2020 23:03:01 +0200 Johannes Berg wrote:
+> On Thu, 2020-10-01 at 11:30 -0700, Jakub Kicinski wrote:
 > > 
-> > Hmm. Probably should've asked this before - I think the code makes
-> > perfect sense, but I'm not sure how "this" follows?
-> > 
-> > I mean, we could've saved the genlmsg_parse() call before, with much the
-> > same patch, having the per-op policy doesn't really have any bearing for
-> > that? It was just using a different policy - the family one - instead of
-> > the per-op one, but ...
-> > 
-> > Am I missing something?
+> > +++ b/net/netlink/genetlink.c
+> > @@ -1119,6 +1119,7 @@ static const struct nla_policy ctrl_policy_policy[] = {
+> >  	[CTRL_ATTR_FAMILY_ID]	= { .type = NLA_U16 },
+> >  	[CTRL_ATTR_FAMILY_NAME]	= { .type = NLA_NUL_STRING,
+> >  				    .len = GENL_NAMSIZ - 1 },
+> > +	[CTRL_ATTR_OP]		= { .type = NLA_U8 },  
 > 
-> Hm, not as far as I can tell, I was probably typing out the message
-> fast cause the commit is kinda obivious.
+> I slightly wonder if we shouldn't make this wider. There's no real
+> *benefit* to using a u8 since, due to padding, the attribute actually
+> has the same size anyway (up to U32), and we also still need to validate
+> it actually exists.
 > 
-> Looking at the code again now I can't tell why it was calling
-> genlmsg_parse() in the first place. LMK if you remember if there 
-> was a reason.
+> However, if we ever run out of command numbers in some family (nl80211
+> is almost half way :-) ) then I believe we still have some reserved
+> space in the genl header that we could use for extensions, but if then
+> we have to also go around and change a bunch of other interfaces like
+> this, it'll just be so much harder, and ... we'd probably just be
+> tempted to multiplex onto an "extension command" or something? Or maybe
+> then we should have a separate genl family at that point?
+> 
+> (Internal interfaces are much easier to change)
+> 
+> Dunno. Just a thought. We probably won't ever get there, it just sort of
+> rubs me the wrong way that we'd be restricting this in an "unfixable"
+> API for no real reason :)
 
-Quite possibly it was just old code? I _think_, but didn't check now,
-that the parsing for dumpit was added later. Hence the "don't parse"
-validate flag, because it wasn't always done and thus would've accepted
-any kind of junk as input ...
+Makes sense, I'll make it a u32. Gotta respin, anyway.
 
-johannes
+> > -	if (!rt->policy)
+> > +	if (tb[CTRL_ATTR_OP]) {
+> > +		err = genl_get_cmd(nla_get_u8(tb[CTRL_ATTR_OP]), rt, &op);  
+> 
+> OK, so maybe if we make that wider we also have to make the argument to
+> genl_get_cmd() wider so we don't erroneously return op 1 if you ask for
+> 257, but that's in an at least 32-bit register anyway, presumably?
 
+Ack.
