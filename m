@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 370492804CB
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 19:12:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CBBF2804BF
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 19:11:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733009AbgJARMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 13:12:12 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:51138 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732910AbgJARMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 13:12:00 -0400
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 091H21qe089515;
-        Thu, 1 Oct 2020 13:11:57 -0400
+        id S1732858AbgJARLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 13:11:52 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:24450 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732609AbgJARLv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 13:11:51 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 091H4QTh164103;
+        Thu, 1 Oct 2020 13:11:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references; s=pp1;
- bh=bi4Lyk6A+kPts/aPlMZRuCO3qZtamJS10WCbkTjTENk=;
- b=C5wsEupWjfo8pRogtEqhcNm6QPIl5gEhAcgrRjdqiip7yH5jPTF7KvvDMNw5wuBS1DCi
- D0mfgedPCrYPgLiKWe/Nvg/rnErXGb08U9DsTXx6LkgtG5IAePacW8T7BsH44oEeWrbj
- oqo20XnKq+iYV63weZCifOcZgjgzObGophA30gjvUrpZRQ5yXplGbj6dTR+oIxal4PpN
- Sfwmp1cTu5gf52C7a8TDi7jUhwKU6dCgjns2W8O7AsiD4PZfTu3v0roc6DdYl1mHQh3H
- y/qGidUaobIPXIOzYeoeOsL8edtYTF2jA5oRZz2hoN7J+K99yVneFW/5teBidU3psh/R qg== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33wg4cr3ga-1
+ bh=I2HwpNbU0h4cP2rBJCFmlN3QBFLkzOeD1/X6xuUPmXk=;
+ b=G2aPRTMzTA6dwrwi2ppbjzdsaVaNyrZ7lfxTBFUGOJz5NAvq5FyJGGDcPYcxqUnBsU//
+ V0cEs0NvCQ9bMUFveum/vxKyAksDhMqfMx469zCrcsslqAT9lcoj+Tjr7+tTaqZb/uLW
+ 65iqa0NJ8vKdCp6Pf5bWA78oS56+umMdQBaAij5E3vZrqpyKtApAumSDywQmLRt9NUoV
+ W6gpZXytYJhpusd29vfzqQuwQg7WmI/iK5KDiEpmZbyY7T8xdCgb07NRVJDXWgPDUk4C
+ fu15itT+9y2JO4flq0rMTcTvKw32qkuS6o7qO/oaHx8A/MqSDoFIIUICpskwCN4saj3w hw== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33wh4andfs-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Oct 2020 13:11:50 -0400
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 091H2LWA014293;
+        Thu, 01 Oct 2020 13:11:47 -0400
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 091H2jGe015175;
         Thu, 1 Oct 2020 17:11:45 GMT
 Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06fra.de.ibm.com with ESMTP id 33svwgu1ma-1
+        by ppma04fra.de.ibm.com with ESMTP id 33wgcu02wb-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 01 Oct 2020 17:11:45 +0000
 Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 091HBgB424052198
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 091HBg6f22282542
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Thu, 1 Oct 2020 17:11:42 GMT
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5AC6AA404D;
+        by IMSVA (Postfix) with ESMTP id A60B8A4040;
         Thu,  1 Oct 2020 17:11:42 +0000 (GMT)
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1471DA4055;
+        by IMSVA (Postfix) with ESMTP id 66044A4051;
         Thu,  1 Oct 2020 17:11:42 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
@@ -55,334 +55,160 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Ursula Braun <ubraun@linux.ibm.com>,
         Karsten Graul <kgraul@linux.ibm.com>,
         Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next 1/7] s390/qeth: keep track of wanted TX queues
-Date:   Thu,  1 Oct 2020 19:11:30 +0200
-Message-Id: <20201001171136.46830-2-jwi@linux.ibm.com>
+Subject: [PATCH net-next 2/7] s390/qeth: de-magic the QIB parm area
+Date:   Thu,  1 Oct 2020 19:11:31 +0200
+Message-Id: <20201001171136.46830-3-jwi@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201001171136.46830-1-jwi@linux.ibm.com>
 References: <20201001171136.46830-1-jwi@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-01_05:2020-10-01,2020-10-01 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 clxscore=1015 suspectscore=2 mlxlogscore=999
- lowpriorityscore=0 adultscore=0 bulkscore=0 phishscore=0 mlxscore=0
- malwarescore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2010010139
+ definitions=2020-10-01_06:2020-10-01,2020-10-01 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
+ priorityscore=1501 phishscore=0 suspectscore=2 bulkscore=0 clxscore=1015
+ mlxscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0 impostorscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2010010144
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When re-initializing a device, we can hit a situation where
-qeth_osa_set_output_queues() detects that it supports more or less
-HW TX queues than before. Right now we adjust dev->real_num_tx_queues
-from right there, but
-1. it's getting more & more complicated to cover all cases, and
-2. we can't re-enable the actually expected number of TX queues later
-because we lost the needed information.
-
-So keep track of the wanted TX queues (on initial setup, and whenever
-its changed via .set_channels), and later use that information when
-re-enabling the netdevice.
+Use a proper struct, and only program the QIB extensions for devices
+where they are supported.
 
 Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 ---
- drivers/s390/net/qeth_core.h      | 11 ++++-
- drivers/s390/net/qeth_core_main.c | 70 +++++++++++++------------------
- drivers/s390/net/qeth_ethtool.c   |  8 +++-
- drivers/s390/net/qeth_l2_main.c   | 14 ++++---
- drivers/s390/net/qeth_l3_main.c   | 12 ++++--
- 5 files changed, 61 insertions(+), 54 deletions(-)
+ drivers/s390/net/qeth_core.h      | 11 ++++++
+ drivers/s390/net/qeth_core_main.c | 65 ++++++++++++++-----------------
+ 2 files changed, 41 insertions(+), 35 deletions(-)
 
 diff --git a/drivers/s390/net/qeth_core.h b/drivers/s390/net/qeth_core.h
-index f321eabefbe4..f1c9a694873e 100644
+index f1c9a694873e..1e1e7104dade 100644
 --- a/drivers/s390/net/qeth_core.h
 +++ b/drivers/s390/net/qeth_core.h
-@@ -538,7 +538,7 @@ struct qeth_qdio_info {
- 	int in_buf_size;
+@@ -278,6 +278,17 @@ struct qeth_hdr {
+ 	} hdr;
+ } __attribute__ ((packed));
  
- 	/* output */
--	int no_out_queues;
-+	unsigned int no_out_queues;
- 	struct qeth_qdio_out_q *out_qs[QETH_MAX_OUT_QUEUES];
- 	struct qdio_outbuf_state *out_bufstates;
- 
-@@ -788,6 +788,7 @@ struct qeth_switch_info {
- 
- struct qeth_priv {
- 	unsigned int rx_copybreak;
-+	unsigned int tx_wanted_queues;
- 	u32 brport_hw_features;
- 	u32 brport_features;
- };
-@@ -873,6 +874,13 @@ struct qeth_trap_id {
- /*some helper functions*/
- #define QETH_CARD_IFNAME(card) (((card)->dev)? (card)->dev->name : "")
- 
-+static inline unsigned int qeth_tx_actual_queues(struct qeth_card *card)
-+{
-+	struct qeth_priv *priv = netdev_priv(card->dev);
++struct qeth_qib_parms {
++	char pcit_magic[4];
++	u32 pcit_a;
++	u32 pcit_b;
++	u32 pcit_c;
++	char blkt_magic[4];
++	u32 blkt_total;
++	u32 blkt_inter_packet;
++	u32 blkt_inter_packet_jumbo;
++};
 +
-+	return min(priv->tx_wanted_queues, card->qdio.no_out_queues);
-+}
-+
- static inline u16 qeth_iqd_translate_txq(struct net_device *dev, u16 txq)
- {
- 	if (txq == QETH_IQD_MCAST_TXQ)
-@@ -1087,7 +1095,6 @@ void qeth_dbf_longtext(debug_info_t *id, int level, char *text, ...);
- int qeth_configure_cq(struct qeth_card *, enum qeth_cq);
- int qeth_hw_trap(struct qeth_card *, enum qeth_diags_trap_action);
- int qeth_setassparms_cb(struct qeth_card *, struct qeth_reply *, unsigned long);
--int qeth_setup_netdev(struct qeth_card *card);
- int qeth_set_features(struct net_device *, netdev_features_t);
- void qeth_enable_hw_features(struct net_device *dev);
- netdev_features_t qeth_fix_features(struct net_device *, netdev_features_t);
+ /*TCP Segmentation Offload header*/
+ struct qeth_hdr_ext_tso {
+ 	__u16 hdr_tot_len;
 diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index fc2c3db9259f..b61078b27562 100644
+index b61078b27562..81f02a70680e 100644
 --- a/drivers/s390/net/qeth_core_main.c
 +++ b/drivers/s390/net/qeth_core_main.c
-@@ -1511,23 +1511,12 @@ static void qeth_drain_output_queues(struct qeth_card *card)
+@@ -2743,30 +2743,26 @@ static void qeth_free_qdio_queues(struct qeth_card *card)
  	}
  }
  
--static int qeth_osa_set_output_queues(struct qeth_card *card, bool single)
-+static void qeth_osa_set_output_queues(struct qeth_card *card, bool single)
- {
- 	unsigned int max = single ? 1 : card->dev->num_tx_queues;
--	unsigned int count;
--	int rc;
--
--	count = IS_VM_NIC(card) ? min(max, card->dev->real_num_tx_queues) : max;
--
--	rtnl_lock();
--	rc = netif_set_real_num_tx_queues(card->dev, count);
--	rtnl_unlock();
--
--	if (rc)
--		return rc;
- 
- 	if (card->qdio.no_out_queues == max)
--		return 0;
-+		return;
- 
- 	if (atomic_read(&card->qdio.state) != QETH_QDIO_UNINITIALIZED)
- 		qeth_free_qdio_queues(card);
-@@ -1536,14 +1525,12 @@ static int qeth_osa_set_output_queues(struct qeth_card *card, bool single)
- 		dev_info(&card->gdev->dev, "Priority Queueing not supported\n");
- 
- 	card->qdio.no_out_queues = max;
--	return 0;
- }
- 
- static int qeth_update_from_chp_desc(struct qeth_card *card)
- {
- 	struct ccw_device *ccwdev;
- 	struct channel_path_desc_fmt0 *chp_dsc;
--	int rc = 0;
- 
- 	QETH_CARD_TEXT(card, 2, "chp_desc");
- 
-@@ -1556,12 +1543,12 @@ static int qeth_update_from_chp_desc(struct qeth_card *card)
- 
- 	if (IS_OSD(card) || IS_OSX(card))
- 		/* CHPP field bit 6 == 1 -> single queue */
--		rc = qeth_osa_set_output_queues(card, chp_dsc->chpp & 0x02);
-+		qeth_osa_set_output_queues(card, chp_dsc->chpp & 0x02);
- 
- 	kfree(chp_dsc);
- 	QETH_CARD_TEXT_(card, 2, "nr:%x", card->qdio.no_out_queues);
- 	QETH_CARD_TEXT_(card, 2, "lvl:%02x", card->info.func_level);
--	return rc;
-+	return 0;
- }
- 
- static void qeth_init_qdio_info(struct qeth_card *card)
-@@ -5316,6 +5303,20 @@ static int qeth_set_online(struct qeth_card *card)
- 
- 	qeth_print_status_message(card);
- 
-+	if (card->dev->reg_state != NETREG_REGISTERED) {
-+		struct qeth_priv *priv = netdev_priv(card->dev);
-+
-+		if (IS_IQD(card))
-+			priv->tx_wanted_queues = QETH_IQD_MIN_TXQ;
-+		else if (IS_VM_NIC(card))
-+			priv->tx_wanted_queues = 1;
-+		else
-+			priv->tx_wanted_queues = card->dev->num_tx_queues;
-+
-+		/* no need for locking / error handling at this early stage: */
-+		qeth_set_real_num_tx_queues(card, qeth_tx_actual_queues(card));
-+	}
-+
- 	rc = card->discipline->set_online(card, carrier_ok);
- 	if (rc)
- 		goto err_online;
-@@ -6250,8 +6251,16 @@ static struct net_device *qeth_alloc_netdev(struct qeth_card *card)
- 	SET_NETDEV_DEV(dev, &card->gdev->dev);
- 	netif_carrier_off(dev);
- 
--	dev->ethtool_ops = IS_OSN(card) ? &qeth_osn_ethtool_ops :
--					  &qeth_ethtool_ops;
-+	if (IS_OSN(card)) {
-+		dev->ethtool_ops = &qeth_osn_ethtool_ops;
-+	} else {
-+		dev->ethtool_ops = &qeth_ethtool_ops;
-+		dev->priv_flags &= ~IFF_TX_SKB_SHARING;
-+		dev->hw_features |= NETIF_F_SG;
-+		dev->vlan_features |= NETIF_F_SG;
-+		if (IS_IQD(card))
-+			dev->features |= NETIF_F_SG;
-+	}
- 
- 	return dev;
- }
-@@ -6267,28 +6276,6 @@ struct net_device *qeth_clone_netdev(struct net_device *orig)
- 	return clone;
- }
- 
--int qeth_setup_netdev(struct qeth_card *card)
+-static void qeth_create_qib_param_field(struct qeth_card *card,
+-		char *param_field)
 -{
--	struct net_device *dev = card->dev;
--	unsigned int num_tx_queues;
 -
--	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
--	dev->hw_features |= NETIF_F_SG;
--	dev->vlan_features |= NETIF_F_SG;
--
--	if (IS_IQD(card)) {
--		dev->features |= NETIF_F_SG;
--		num_tx_queues = QETH_IQD_MIN_TXQ;
--	} else if (IS_VM_NIC(card)) {
--		num_tx_queues = 1;
--	} else {
--		num_tx_queues = dev->real_num_tx_queues;
--	}
--
--	return qeth_set_real_num_tx_queues(card, num_tx_queues);
+-	param_field[0] = _ascebc['P'];
+-	param_field[1] = _ascebc['C'];
+-	param_field[2] = _ascebc['I'];
+-	param_field[3] = _ascebc['T'];
+-	*((unsigned int *) (&param_field[4])) = QETH_PCI_THRESHOLD_A(card);
+-	*((unsigned int *) (&param_field[8])) = QETH_PCI_THRESHOLD_B(card);
+-	*((unsigned int *) (&param_field[12])) = QETH_PCI_TIMER_VALUE(card);
 -}
--EXPORT_SYMBOL_GPL(qeth_setup_netdev);
 -
- static int qeth_core_probe_device(struct ccwgroup_device *gdev)
- {
- 	struct qeth_card *card;
-@@ -6959,6 +6946,7 @@ int qeth_set_real_num_tx_queues(struct qeth_card *card, unsigned int count)
+-static void qeth_create_qib_param_field_blkt(struct qeth_card *card,
+-		char *param_field)
+-{
+-	param_field[16] = _ascebc['B'];
+-	param_field[17] = _ascebc['L'];
+-	param_field[18] = _ascebc['K'];
+-	param_field[19] = _ascebc['T'];
+-	*((unsigned int *) (&param_field[20])) = card->info.blkt.time_total;
+-	*((unsigned int *) (&param_field[24])) = card->info.blkt.inter_packet;
+-	*((unsigned int *) (&param_field[28])) =
+-		card->info.blkt.inter_packet_jumbo;
++static void qeth_fill_qib_parms(struct qeth_card *card,
++				struct qeth_qib_parms *parms)
++{
++	parms->pcit_magic[0] = 'P';
++	parms->pcit_magic[1] = 'C';
++	parms->pcit_magic[2] = 'I';
++	parms->pcit_magic[3] = 'T';
++	ASCEBC(parms->pcit_magic, sizeof(parms->pcit_magic));
++	parms->pcit_a = QETH_PCI_THRESHOLD_A(card);
++	parms->pcit_b = QETH_PCI_THRESHOLD_B(card);
++	parms->pcit_c = QETH_PCI_TIMER_VALUE(card);
++
++	parms->blkt_magic[0] = 'B';
++	parms->blkt_magic[1] = 'L';
++	parms->blkt_magic[2] = 'K';
++	parms->blkt_magic[3] = 'T';
++	ASCEBC(parms->blkt_magic, sizeof(parms->blkt_magic));
++	parms->blkt_total = card->info.blkt.time_total;
++	parms->blkt_inter_packet = card->info.blkt.inter_packet;
++	parms->blkt_inter_packet_jumbo = card->info.blkt.inter_packet_jumbo;
+ }
  
+ static int qeth_qdio_activate(struct qeth_card *card)
+@@ -5022,21 +5018,20 @@ static int qeth_qdio_establish(struct qeth_card *card)
+ {
+ 	struct qdio_buffer **out_sbal_ptrs[QETH_MAX_OUT_QUEUES];
+ 	struct qdio_buffer **in_sbal_ptrs[QETH_MAX_IN_QUEUES];
++	struct qeth_qib_parms *qib_parms = NULL;
+ 	struct qdio_initialize init_data;
+-	char *qib_param_field;
+ 	unsigned int i;
+ 	int rc = 0;
+ 
+ 	QETH_CARD_TEXT(card, 2, "qdioest");
+ 
+-	qib_param_field = kzalloc(sizeof_field(struct qib, parm), GFP_KERNEL);
+-	if (!qib_param_field) {
+-		rc =  -ENOMEM;
+-		goto out_free_nothing;
+-	}
++	if (!IS_IQD(card) && !IS_VM_NIC(card)) {
++		qib_parms = kzalloc(sizeof_field(struct qib, parm), GFP_KERNEL);
++		if (!qib_parms)
++			return -ENOMEM;
+ 
+-	qeth_create_qib_param_field(card, qib_param_field);
+-	qeth_create_qib_param_field_blkt(card, qib_param_field);
++		qeth_fill_qib_parms(card, qib_parms);
++	}
+ 
+ 	in_sbal_ptrs[0] = card->qdio.in_q->qdio_bufs;
+ 	if (card->options.cq == QETH_CQ_ENABLED)
+@@ -5049,7 +5044,7 @@ static int qeth_qdio_establish(struct qeth_card *card)
+ 	init_data.q_format		 = IS_IQD(card) ? QDIO_IQDIO_QFMT :
+ 							  QDIO_QETH_QFMT;
+ 	init_data.qib_param_field_format = 0;
+-	init_data.qib_param_field        = qib_param_field;
++	init_data.qib_param_field	 = (void *)qib_parms;
+ 	init_data.no_input_qs            = card->qdio.no_in_queues;
+ 	init_data.no_output_qs           = card->qdio.no_out_queues;
+ 	init_data.input_handler		 = qeth_qdio_input_handler;
+@@ -5086,9 +5081,9 @@ static int qeth_qdio_establish(struct qeth_card *card)
+ 	default:
+ 		break;
+ 	}
++
+ out:
+-	kfree(qib_param_field);
+-out_free_nothing:
++	kfree(qib_parms);
  	return rc;
  }
-+EXPORT_SYMBOL_GPL(qeth_set_real_num_tx_queues);
  
- u16 qeth_iqd_select_queue(struct net_device *dev, struct sk_buff *skb,
- 			  u8 cast_type, struct net_device *sb_dev)
-diff --git a/drivers/s390/net/qeth_ethtool.c b/drivers/s390/net/qeth_ethtool.c
-index f870c5322bfe..bc3ea0efb58b 100644
---- a/drivers/s390/net/qeth_ethtool.c
-+++ b/drivers/s390/net/qeth_ethtool.c
-@@ -211,7 +211,9 @@ static void qeth_get_channels(struct net_device *dev,
- static int qeth_set_channels(struct net_device *dev,
- 			     struct ethtool_channels *channels)
- {
-+	struct qeth_priv *priv = netdev_priv(dev);
- 	struct qeth_card *card = dev->ml_priv;
-+	int rc;
- 
- 	if (channels->rx_count == 0 || channels->tx_count == 0)
- 		return -EINVAL;
-@@ -234,7 +236,11 @@ static int qeth_set_channels(struct net_device *dev,
- 			return -EOPNOTSUPP;
- 	}
- 
--	return qeth_set_real_num_tx_queues(card, channels->tx_count);
-+	rc = qeth_set_real_num_tx_queues(card, channels->tx_count);
-+	if (!rc)
-+		priv->tx_wanted_queues = channels->tx_count;
-+
-+	return rc;
- }
- 
- static int qeth_get_ts_info(struct net_device *dev,
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index 1852d0a3c10a..290389fc7e79 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -894,18 +894,12 @@ static const struct net_device_ops qeth_osn_netdev_ops = {
- 
- static int qeth_l2_setup_netdev(struct qeth_card *card)
- {
--	int rc;
--
- 	if (IS_OSN(card)) {
- 		card->dev->netdev_ops = &qeth_osn_netdev_ops;
- 		card->dev->flags |= IFF_NOARP;
- 		goto add_napi;
- 	}
- 
--	rc = qeth_setup_netdev(card);
--	if (rc)
--		return rc;
--
- 	card->dev->needed_headroom = sizeof(struct qeth_hdr);
- 	card->dev->netdev_ops = &qeth_l2_netdev_ops;
- 	card->dev->priv_flags |= IFF_UNICAST_FLT;
-@@ -2274,6 +2268,13 @@ static int qeth_l2_set_online(struct qeth_card *card, bool carrier_ok)
- 			netif_carrier_on(dev);
- 	} else {
- 		rtnl_lock();
-+		rc = qeth_set_real_num_tx_queues(card,
-+						 qeth_tx_actual_queues(card));
-+		if (rc) {
-+			rtnl_unlock();
-+			goto err_set_queues;
-+		}
-+
- 		if (carrier_ok)
- 			netif_carrier_on(dev);
- 		else
-@@ -2291,6 +2292,7 @@ static int qeth_l2_set_online(struct qeth_card *card, bool carrier_ok)
- 	}
- 	return 0;
- 
-+err_set_queues:
- err_setup:
- 	qeth_set_allowed_threads(card, 0, 1);
- 	card->state = CARD_STATE_DOWN;
-diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-index a6f8878b55c6..ea5f25857aff 100644
---- a/drivers/s390/net/qeth_l3_main.c
-+++ b/drivers/s390/net/qeth_l3_main.c
-@@ -1875,10 +1875,6 @@ static int qeth_l3_setup_netdev(struct qeth_card *card)
- 	unsigned int headroom;
- 	int rc;
- 
--	rc = qeth_setup_netdev(card);
--	if (rc)
--		return rc;
--
- 	if (IS_OSD(card) || IS_OSX(card)) {
- 		card->dev->netdev_ops = &qeth_l3_osa_netdev_ops;
- 
-@@ -2022,6 +2018,13 @@ static int qeth_l3_set_online(struct qeth_card *card, bool carrier_ok)
- 			netif_carrier_on(dev);
- 	} else {
- 		rtnl_lock();
-+		rc = qeth_set_real_num_tx_queues(card,
-+						 qeth_tx_actual_queues(card));
-+		if (rc) {
-+			rtnl_unlock();
-+			goto err_set_queues;
-+		}
-+
- 		if (carrier_ok)
- 			netif_carrier_on(dev);
- 		else
-@@ -2038,6 +2041,7 @@ static int qeth_l3_set_online(struct qeth_card *card, bool carrier_ok)
- 	}
- 	return 0;
- 
-+err_set_queues:
- err_setup:
- 	qeth_set_allowed_threads(card, 0, 1);
- 	card->state = CARD_STATE_DOWN;
 -- 
 2.17.1
 
