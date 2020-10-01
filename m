@@ -2,161 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81DD927FA2F
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 09:23:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F334427FA54
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 09:33:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731444AbgJAHXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 03:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48764 "EHLO
+        id S1731390AbgJAHdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 03:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725921AbgJAHXw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 03:23:52 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72BCBC0613D0;
-        Thu,  1 Oct 2020 00:23:52 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id k8so3682234pfk.2;
-        Thu, 01 Oct 2020 00:23:52 -0700 (PDT)
+        with ESMTP id S1725878AbgJAHdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 03:33:22 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F3E0C0613D0;
+        Thu,  1 Oct 2020 00:33:20 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id k8so3703531pfk.2;
+        Thu, 01 Oct 2020 00:33:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=LrYLWDQM8stmz0yFz3Wg0u7Rhgkk0IZGCSoh4qC8NGo=;
-        b=WEi+4jZWtcRSC7DoRUySz4lbViIHSOBrrCEPUcWUqRej/P4QjjjyRot4hI1BEllrkY
-         uP/JYMH6mDG9HccOuI1SWE5eQDBOw5SJkGLzfQoq94tFB2JBcbA5TedKCFTDrr97+++b
-         MAXob9d8uIvxaCwXgdu5LMXmQqxMDkcLksBLKJ9TxnF/62YPOfGNFQGiZhw0MIjJhlS3
-         Ll+IYCKndZwdLXZkDLdvPMknncD+URg7GGOj+XZCGZSsK684H0MP7bRovCGsxHDHFWYE
-         37Kdw8pGDepYQ1jsTjAoio2QxjM9/Banr+hIUpvWXWtVkO/S5ahWOtUPmESjgX5x5BXU
-         +p7w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MMQaSvH0Kx6bA3nvjTwxRxny7XPXqNvhRkFHeW4802Q=;
+        b=D72DiC0Y4x01OSsq8PYVmh2eyPP1awTN2KmJxwDa2llYQkx4PYUuNyQN/dmE6ZDm2P
+         NbUUEkSI0e/8ZqqVSO2NmXqzvDVFTO5Sf8Ylmd/SqzLrhK7fx6Pp+5msfOi8tH+43zxS
+         yX7dALP9mpNFLvpC++q6WplnJaKkvI2e/vu/Kpvi+U+5no6MKrwTcsZjP7wq+mt0pQae
+         1WZ3AHCJrH8Bn9KokXVZd3139UU9OZYe6z3NnnfEMN7/71YgzjgKqMM3F8ErL8Af/WxG
+         HCVr0MOemfFzIx3ZjE/PX5wk5UuxEpPlsPjBTwCmDL6o/R5a7FOHlzF4gLBVlPQi67HM
+         9DDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=LrYLWDQM8stmz0yFz3Wg0u7Rhgkk0IZGCSoh4qC8NGo=;
-        b=qPa4pGrZQwkzQAgsEL5iu9gbi6zh3EVpdUcBQiSPKYZk9H6oR8bXoKevP6q+btX9qF
-         Bae+mNu0+KaWnRR4mXQfvfXmGaThYCVgTMmB018z+nrmYO269toyaOFcTmGQruyK5+jr
-         kxWzyhVndCY83EkNn1l0cieN2hVxzcgyuZBpJOHcaz2ny1mgZ6lDbCdq0FN/Hji0grE8
-         TZ2lPfir4fkSzuwCkaDWta9MYDrgVX+8sg53+Kn3eLsqywGlXKL0oY34gx+/ZUI+5w62
-         wz8WX+yRhHWMdJG69/TcRtgYMLBPaVTkyl5XdGSmG9oOJ4SPkY4ClZS8tLNbmD+RMrJm
-         h7YA==
-X-Gm-Message-State: AOAM531ywrCWokadB/hFyvxWWSrHSk6KvrHp1Np1r9TQ3pnHuDlndyPT
-        xssRxZhmhcz5f6I6IzbaFaA=
-X-Google-Smtp-Source: ABdhPJwMyLOXMi2i32b5+lOK7RIN4L5ZLWJ8vMk6L5e/S71dxOIZstKJCsskm0686d08wPnHTn9YBg==
-X-Received: by 2002:a65:5802:: with SMTP id g2mr4917679pgr.261.1601537031863;
-        Thu, 01 Oct 2020 00:23:51 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:76d9])
-        by smtp.gmail.com with ESMTPSA id c20sm5141227pfc.209.2020.10.01.00.23.50
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MMQaSvH0Kx6bA3nvjTwxRxny7XPXqNvhRkFHeW4802Q=;
+        b=FsetFPlwztg5Y+ZdW8AzDsPdVzjwUy9DnRrE5IEOEiMjzX+SXNXbWNpEHRH81JXJlv
+         MDfxD0tav2LrxU1bAuvBS3vbnUUuIp+Pc47RzSS3tVWKriY4p0Zohb948ASro4XdrG0E
+         kb3dvD7Dct5mGOCqxYYpaWINRK7nRpix/OOPNgVni707Qr5ra1vPFUp1GBb5w4/6mM/i
+         LVpAjQYX7fndWT7T0ev454V7IWSzOndr8USfjjNGwOdvl7YfiC83gfLJFZMEjvWz4kgh
+         m2wnu6Anzw2WoC2VgfAwOGbPpbj0bHo7lBz0x7qQtDkN/tkzUE/BV2YxE0HbgJkes6E1
+         R/pQ==
+X-Gm-Message-State: AOAM533qhgSPwk4KsGP8NVWXl4ecRem7Ok4GUgyS5NHAk3m3HsC+1gTn
+        On7cm/ghIGUwLxXq8Oy1WZ0=
+X-Google-Smtp-Source: ABdhPJwuU76xzp1pRklPBcovrJe7OwB7CKUmZLAEVCOio2OiSt94fQu2tR4KKcbO4pQVITEWWqgagQ==
+X-Received: by 2002:a63:e1a:: with SMTP id d26mr5191223pgl.190.1601537599777;
+        Thu, 01 Oct 2020 00:33:19 -0700 (PDT)
+Received: from localhost.localdomain ([49.207.212.76])
+        by smtp.gmail.com with ESMTPSA id u14sm5058589pfm.80.2020.10.01.00.33.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Oct 2020 00:23:50 -0700 (PDT)
-Date:   Thu, 1 Oct 2020 00:23:48 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-team <kernel-team@cloudflare.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v2 2/4] selftests: bpf: Add helper to compare
- socket cookies
-Message-ID: <20201001072348.hxhpuoqmeln6twxw@ast-mbp.dhcp.thefacebook.com>
-References: <20200928090805.23343-1-lmb@cloudflare.com>
- <20200928090805.23343-3-lmb@cloudflare.com>
- <20200929055851.n7fa3os7iu7grni3@kafai-mbp>
- <CAADnVQLwpWMea1rbFAwvR_k+GzOphaOW-kUGORf90PJ-Ezxm4w@mail.gmail.com>
- <CACAyw98WzZGcFnnr7ELvbCziz2axJA_7x2mcoQTf2DYWDYJ=KA@mail.gmail.com>
+        Thu, 01 Oct 2020 00:33:18 -0700 (PDT)
+From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        Anant Thazhemadam <anant.thazhemadam@gmail.com>,
+        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
+        Petko Manolov <petkan@nucleusys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [Linux-kernel-mentees][PATCH v2] net: usb: rtl8150: prevent set_ethernet_addr from setting uninit address
+Date:   Thu,  1 Oct 2020 13:02:20 +0530
+Message-Id: <20201001073221.239618-1-anant.thazhemadam@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACAyw98WzZGcFnnr7ELvbCziz2axJA_7x2mcoQTf2DYWDYJ=KA@mail.gmail.com>
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 10:28:33AM +0100, Lorenz Bauer wrote:
-> On Tue, 29 Sep 2020 at 16:48, Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> 
-> ...
-> 
-> > There was a warning. I noticed it while applying and fixed it up.
-> > Lorenz, please upgrade your compiler. This is not the first time such
-> > warning has been missed.
-> 
-> I tried reproducing this on latest bpf-next (b0efc216f577997) with gcc
-> 9.3.0 by removing the initialization of duration:
-> 
-> make: Entering directory '/home/lorenz/dev/bpf-next/tools/testing/selftests/bpf'
->   TEST-OBJ [test_progs] sockmap_basic.test.o
->   TEST-HDR [test_progs] tests.h
->   EXT-OBJ  [test_progs] test_progs.o
->   EXT-OBJ  [test_progs] cgroup_helpers.o
->   EXT-OBJ  [test_progs] trace_helpers.o
->   EXT-OBJ  [test_progs] network_helpers.o
->   EXT-OBJ  [test_progs] testing_helpers.o
->   BINARY   test_progs
-> make: Leaving directory '/home/lorenz/dev/bpf-next/tools/testing/selftests/bpf'
-> 
-> So, gcc doesn't issue a warning. Jakub did the following little experiment:
-> 
-> jkbs@toad ~/tmp $ cat warning.c
-> #include <stdio.h>
-> 
-> int main(void)
-> {
->         int duration;
-> 
->         fprintf(stdout, "%d", duration);
-> 
->         return 0;
-> }
-> jkbs@toad ~/tmp $ gcc -Wall -o /dev/null warning.c
-> warning.c: In function ‘main’:
-> warning.c:7:2: warning: ‘duration’ is used uninitialized in this
-> function [-Wuninitialized]
->     7 |  fprintf(stdout, "%d", duration);
->       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> 
-> The simple case seems to work. However, adding the macro breaks things:
-> 
-> jkbs@toad ~/tmp $ cat warning.c
-> #include <stdio.h>
-> 
-> #define _CHECK(duration) \
->         ({                                                      \
->                 fprintf(stdout, "%d", duration);                \
->         })
-> #define CHECK() _CHECK(duration)
-> 
-> int main(void)
-> {
->         int duration;
-> 
->         CHECK();
-> 
->         return 0;
-> }
-> jkbs@toad ~/tmp $ gcc -Wall -o /dev/null warning.c
-> jkbs@toad ~/tmp $
+When get_registers() fails (which happens when usb_control_msg() fails)
+in set_ethernet_addr(), the uninitialized value of node_id gets copied
+as the address.
 
-That's very interesting. Thanks for the pointers.
-I'm using gcc version 9.1.1 20190605 (Red Hat 9.1.1-2)
-and I saw this warning while compiling selftests,
-but I don't see it with above warning.c example.
-clang warns correctly in both cases.
+Checking for the return values appropriately, and handling the case
+wherein set_ethernet_addr() fails like this, helps in avoiding the
+mac address being incorrectly set in this manner.
 
-> Maybe this is https://gcc.gnu.org/bugzilla/show_bug.cgi?id=18501 ? The
-> problem is still there on gcc 10. Compiling test_progs with clang does
-> issue a warning FWIW, but it seems like other things break when doing
-> that.
+Reported-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+Tested-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Acked-by: Petko Manolov <petkan@nucleusys.com>
+---
+Changes in v2:
+	* Modified condition checking get_registers()'s return value to 
+		ret == sizeof(node_id)
+	  for stricter checking in compliance with the new usb_control_msg_recv()
+	  API
+	* Added Acked-by: Petko Manolov
 
-That gcc bug has been opened since transition to ssa. That was a huge
-transition for gcc. But I think the bug number is not correct. It points to a
-different issue. I've checked -fdump-tree-uninit-all dump with and without
-macro. They're identical. The tree-ssa-uninit pass suppose to warn, but it
-doesn't. I wish I had more time to dig into it. A bit of debugging in
-gcc/tree-ssa-uninit.c can probably uncover the root cause.
+Since Petko didn't explicitly mention an email-id in his Ack, I put the
+email-id present in the MAINTAINERS file. I hope that's not an issue.
+
+
+ drivers/net/usb/rtl8150.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
+index 733f120c852b..e542a9ab2ff8 100644
+--- a/drivers/net/usb/rtl8150.c
++++ b/drivers/net/usb/rtl8150.c
+@@ -150,7 +150,7 @@ static const char driver_name [] = "rtl8150";
+ **	device related part of the code
+ **
+ */
+-static int get_registers(rtl8150_t * dev, u16 indx, u16 size, void *data)
++static int get_registers(rtl8150_t *dev, u16 indx, u16 size, void *data)
+ {
+ 	void *buf;
+ 	int ret;
+@@ -274,12 +274,17 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
+ 		return 1;
+ }
+ 
+-static inline void set_ethernet_addr(rtl8150_t * dev)
++static bool set_ethernet_addr(rtl8150_t *dev)
+ {
+ 	u8 node_id[6];
++	int ret;
+ 
+-	get_registers(dev, IDR, sizeof(node_id), node_id);
+-	memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
++	ret = get_registers(dev, IDR, sizeof(node_id), node_id);
++	if (ret == sizeof(node_id)) {
++		memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
++		return true;
++	}
++	return false;
+ }
+ 
+ static int rtl8150_set_mac_address(struct net_device *netdev, void *p)
+@@ -909,21 +914,24 @@ static int rtl8150_probe(struct usb_interface *intf,
+ 		goto out1;
+ 	}
+ 	fill_skb_pool(dev);
+-	set_ethernet_addr(dev);
+-
++	if (!set_ethernet_addr(dev)) {
++		dev_err(&intf->dev, "couldn't set the ethernet address for the device\n");
++		goto out2;
++	}
+ 	usb_set_intfdata(intf, dev);
+ 	SET_NETDEV_DEV(netdev, &intf->dev);
+ 	if (register_netdev(netdev) != 0) {
+ 		dev_err(&intf->dev, "couldn't register the device\n");
+-		goto out2;
++		goto out3;
+ 	}
+ 
+ 	dev_info(&intf->dev, "%s: rtl8150 is detected\n", netdev->name);
+ 
+ 	return 0;
+ 
+-out2:
++out3:
+ 	usb_set_intfdata(intf, NULL);
++out2:
+ 	free_skb_pool(dev);
+ out1:
+ 	free_all_urbs(dev);
+-- 
+2.25.1
+
