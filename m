@@ -2,173 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 796012800A3
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 16:00:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D0FC2800D5
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 16:02:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732431AbgJAOAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 10:00:31 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:36669 "EHLO
+        id S1732812AbgJAOCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 10:02:55 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:36620 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732466AbgJAOA3 (ORCPT
+        with ESMTP id S1732339AbgJAOA3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 10:00:29 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 1 Oct 2020 17:00:26 +0300
+        with SMTP; 1 Oct 2020 17:00:23 +0300
 Received: from dev-l-vrt-136.mtl.labs.mlnx (dev-l-vrt-136.mtl.labs.mlnx [10.234.136.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 091E0QqW002259;
-        Thu, 1 Oct 2020 17:00:26 +0300
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 091E0Nsh001671;
+        Thu, 1 Oct 2020 17:00:23 +0300
 Received: from dev-l-vrt-136.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7) with ESMTP id 091E0QuL011185;
-        Thu, 1 Oct 2020 17:00:26 +0300
+        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7) with ESMTP id 091E0NMa011159;
+        Thu, 1 Oct 2020 17:00:23 +0300
 Received: (from moshe@localhost)
-        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7/Submit) id 091E0QQr011184;
-        Thu, 1 Oct 2020 17:00:26 +0300
+        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7/Submit) id 091E0Lit011158;
+        Thu, 1 Oct 2020 17:00:21 +0300
 From:   Moshe Shemesh <moshe@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net-next 13/16] net/mlx5: Add devlink param enable_remote_dev_reset support
-Date:   Thu,  1 Oct 2020 16:59:16 +0300
-Message-Id: <1601560759-11030-14-git-send-email-moshe@mellanox.com>
+Subject: [PATCH net-next 00/16] Add devlink reload action and limit options
+Date:   Thu,  1 Oct 2020 16:59:03 +0300
+Message-Id: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
-References: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The enable_remote_dev_reset devlink param flags that the host admin
-allows resets by other hosts. In case it is cleared mlx5 host PF driver
-will send NACK on pci sync for firmware update reset request and the
-command will fail.
-By default enable_remote_dev_reset parameter is true, so pci sync for
-firmware update reset is enabled.
+Introduce new options on devlink reload API to enable the user to select
+the reload action required and constrains limits on these actions that he
+may want to ensure. Complete support for reload actions in mlx5.
+The following reload actions are supported:
+  driver_reinit: driver entities re-initialization, applying devlink-param
+                 and devlink-resource values.
+  fw_activate: firmware activate.
 
-Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
-Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
----
-RFCv1 -> RFCv2:
-- Have MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST instead of
-  MLX5_HEALTH_RESET_FLAGS_NACK_RESET_REQUEST
----
- .../net/ethernet/mellanox/mlx5/core/devlink.c | 21 ++++++++++++++
- .../ethernet/mellanox/mlx5/core/fw_reset.c    | 29 +++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/fw_reset.h    |  2 ++
- 3 files changed, 52 insertions(+)
+The uAPI is backward compatible, if the reload action option is omitted
+from the reload command, the driver reinit action will be used.
+Note that when required to do firmware activation some drivers may need
+to reload the driver. On the other hand some drivers may need to reset
+the firmware to reinitialize the driver entities. Therefore, the devlink
+reload command returns the actions which were actually performed.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 13153454cc05..7b304227ad57 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -278,6 +278,24 @@ static int mlx5_devlink_large_group_num_validate(struct devlink *devlink, u32 id
- }
- #endif
- 
-+static int mlx5_devlink_enable_remote_dev_reset_set(struct devlink *devlink, u32 id,
-+						    struct devlink_param_gset_ctx *ctx)
-+{
-+	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+
-+	mlx5_fw_reset_enable_remote_dev_reset_set(dev, ctx->val.vbool);
-+	return 0;
-+}
-+
-+static int mlx5_devlink_enable_remote_dev_reset_get(struct devlink *devlink, u32 id,
-+						    struct devlink_param_gset_ctx *ctx)
-+{
-+	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+
-+	ctx->val.vbool = mlx5_fw_reset_enable_remote_dev_reset_get(dev);
-+	return 0;
-+}
-+
- static const struct devlink_param mlx5_devlink_params[] = {
- 	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_FLOW_STEERING_MODE,
- 			     "flow_steering_mode", DEVLINK_PARAM_TYPE_STRING,
-@@ -293,6 +311,9 @@ static const struct devlink_param mlx5_devlink_params[] = {
- 			     NULL, NULL,
- 			     mlx5_devlink_large_group_num_validate),
- #endif
-+	DEVLINK_PARAM_GENERIC(ENABLE_REMOTE_DEV_RESET, BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			      mlx5_devlink_enable_remote_dev_reset_get,
-+			      mlx5_devlink_enable_remote_dev_reset_set, NULL),
- };
- 
- static void mlx5_devlink_set_params_init_values(struct devlink *devlink)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-index f5ffb6fc55c3..b2aaff8d4fcd 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -5,6 +5,7 @@
- 
- enum {
- 	MLX5_FW_RESET_FLAGS_RESET_REQUESTED,
-+	MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST,
- 	MLX5_FW_RESET_FLAGS_PENDING_COMP
- };
- 
-@@ -22,6 +23,23 @@ struct mlx5_fw_reset {
- 	int ret;
- };
- 
-+void mlx5_fw_reset_enable_remote_dev_reset_set(struct mlx5_core_dev *dev, bool enable)
-+{
-+	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
-+
-+	if (enable)
-+		clear_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST, &fw_reset->reset_flags);
-+	else
-+		set_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST, &fw_reset->reset_flags);
-+}
-+
-+bool mlx5_fw_reset_enable_remote_dev_reset_get(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
-+
-+	return !test_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST, &fw_reset->reset_flags);
-+}
-+
- static int mlx5_reg_mfrl_set(struct mlx5_core_dev *dev, u8 reset_level,
- 			     u8 reset_type_sel, u8 sync_resp, bool sync_start)
- {
-@@ -160,6 +178,11 @@ static int mlx5_fw_reset_set_reset_sync_ack(struct mlx5_core_dev *dev)
- 	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 1, false);
- }
- 
-+static int mlx5_fw_reset_set_reset_sync_nack(struct mlx5_core_dev *dev)
-+{
-+	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 2, false);
-+}
-+
- static void mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
-@@ -176,6 +199,12 @@ static void mlx5_sync_reset_request_event(struct work_struct *work)
- 	struct mlx5_core_dev *dev = fw_reset->dev;
- 	int err;
- 
-+	if (test_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST, &fw_reset->reset_flags)) {
-+		err = mlx5_fw_reset_set_reset_sync_nack(dev);
-+		mlx5_core_warn(dev, "PCI Sync FW Update Reset Nack %s",
-+			       err ? "Failed" : "Sent");
-+		return;
-+	}
- 	mlx5_sync_reset_set_reset_requested(dev);
- 	err = mlx5_fw_reset_set_reset_sync_ack(dev);
- 	if (err)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
-index e7937447ce1d..7761ee5fc7d0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
-@@ -6,6 +6,8 @@
- 
- #include "mlx5_core.h"
- 
-+void mlx5_fw_reset_enable_remote_dev_reset_set(struct mlx5_core_dev *dev, bool enable);
-+bool mlx5_fw_reset_enable_remote_dev_reset_get(struct mlx5_core_dev *dev);
- int mlx5_fw_reset_query(struct mlx5_core_dev *dev, u8 *reset_level, u8 *reset_type);
- int mlx5_fw_reset_set_reset_sync(struct mlx5_core_dev *dev, u8 reset_type_sel);
- int mlx5_fw_reset_set_live_patch(struct mlx5_core_dev *dev);
+By default reload actions are not limited and driver implementation may
+include reset or downtime as needed to perform the actions.
+However, if reload limit is selected, the driver should perform only if
+it can do it while keeping the limit constrains.
+Reload limit added:
+  no_reset: No reset allowed, no down time allowed, no link flap and no
+            configuration is lost.
+
+Each driver which supports devlink reload command should expose the
+reload actions and limits supported.
+
+Add reload stats to hold the history per reload action per limit.
+For example, the number of times fw_activate has been done on this
+device since the driver module was added or if the firmware activation
+was done with or without reset.
+
+Change log: Preceding to this version were 5 RFC versions. The changes
+applied according to comments mainly from Jakub and Jiri on RFC API
+patches are listed in each patch.
+
+Patch 1 changes devlink_reload_supported() param type to enable using
+        it before allocating devlink.
+Patch 2-3 add the new API reload action and reload limit options to
+          devlink reload.
+Patch 4-5 add reload stats and remote reload stats. These stats are
+          exposed through devlink dev get.
+Patches 6-11 add support on mlx5 for devlink reload action fw_activate
+            and handle the firmware reset events.
+Patches 12-13 add devlink enable remote dev reset parameter and use it
+             in mlx5.
+Patches 14-15 mlx5 add devlink reload limit no_reset support for
+              fw_activate reload action.
+Patch 16 adds documentation file devlink-reload.rst 
+
+Moshe Shemesh (16):
+  devlink: Change devlink_reload_supported() param type
+  devlink: Add reload action option to devlink reload command
+  devlink: Add devlink reload limit option
+  devlink: Add reload stats
+  devlink: Add remote reload stats
+  net/mlx5: Add functions to set/query MFRL register
+  net/mlx5: Set cap for pci sync for fw update event
+  net/mlx5: Handle sync reset request event
+  net/mlx5: Handle sync reset now event
+  net/mlx5: Handle sync reset abort event
+  net/mlx5: Add support for devlink reload action fw activate
+  devlink: Add enable_remote_dev_reset generic parameter
+  net/mlx5: Add devlink param enable_remote_dev_reset support
+  net/mlx5: Add support for fw live patch event
+  net/mlx5: Add support for devlink reload limit no reset
+  devlink: Add Documentation/networking/devlink/devlink-reload.rst
+
+ .../networking/devlink/devlink-params.rst     |   6 +
+ .../networking/devlink/devlink-reload.rst     |  81 +++
+ Documentation/networking/devlink/index.rst    |   1 +
+ drivers/net/ethernet/mellanox/mlx4/main.c     |   9 +-
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 114 ++++-
+ .../mellanox/mlx5/core/diag/fw_tracer.c       |  52 ++
+ .../mellanox/mlx5/core/diag/fw_tracer.h       |   1 +
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    | 463 ++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/fw_reset.h    |  21 +
+ .../net/ethernet/mellanox/mlx5/core/health.c  |  35 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  16 +
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  13 +-
+ drivers/net/netdevsim/dev.c                   |   8 +-
+ include/linux/mlx5/device.h                   |   1 +
+ include/linux/mlx5/driver.h                   |   2 +
+ include/net/devlink.h                         |  21 +-
+ include/uapi/linux/devlink.h                  |  42 ++
+ net/core/devlink.c                            | 318 +++++++++++-
+ 20 files changed, 1164 insertions(+), 44 deletions(-)
+ create mode 100644 Documentation/networking/devlink/devlink-reload.rst
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+
 -- 
 2.18.2
 
