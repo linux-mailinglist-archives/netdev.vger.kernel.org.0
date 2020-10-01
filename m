@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB55280AD6
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 01:04:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFEF5280AD4
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 01:04:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387481AbgJAXEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 19:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52766 "EHLO
+        id S2387456AbgJAXES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 19:04:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733275AbgJAXET (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 19:04:19 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8929C0613E6
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 16:04:12 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id j13so50711pgp.11
-        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 16:04:12 -0700 (PDT)
+        with ESMTP id S1733166AbgJAXER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 19:04:17 -0400
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E03FC0613E8
+        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 16:04:15 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id ct11so222700qvb.16
+        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 16:04:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=rxBMaJePd96IgXSq9LOGeo4fcYxt8NTX6vFaRbMAyJE=;
-        b=YEHgSwRF1JszkLpIe6rvsLOIXY86PLEzXinWueiJ4pvDaXeAF+zICET+jQ+TkxVxIL
-         9+JJH6dx59VlVjvmK/pUeUkmAtzIQFwM9oBwusxHJogCh8Zv+/JeNLjDx4ufv8cAqGG2
-         5ckHaB85gfiCJAs+c3S1CpIheqvnDSGiAplPB/4vvKVQ+L8FlBdFZb2vyVebFH+jsIRL
-         eLR7PU7Yv5hr1HYA27D6v3vb8QyNetTueovaBhPVll03Sl9Oe941eUYpIiJbjCFmII2L
-         vpkQNZW1+PWjPgM05/V3H077qN7leu6mIBNxLWfIdry4/HJIXT0ugkWV10Aj4CTN14k7
-         2iAw==
+        bh=uGPT9ZFGr1gCPGmxTU64gW1NZp/uXULj+Hk1WeDcCEQ=;
+        b=KMeabiKAe/Q1mPqjMNqphKlhHfrVCxN2sLE3KIrjRT60CiyF/Hx+DCQoG7plcJRx6g
+         3SFFHpP3fca86hnvZL8mqbdwb0iMWdprCNGlFPyg9EnaxdahFcOP8ud8OGrLFQD3Mlsn
+         VU2u86M9/AjkjidorqxXsGAq6quV2qeUmhHCRfiEcfk893++z9mRJAGsjZFAr9wWdCHd
+         GOD29K2iIsDEBcVgvYdfY5Man0CpEdTEXtg2e8pKlckGbRrmdf5PMVfmcry0qdJBOrBa
+         IojJv11MPmkJd5uOFgo9XSlNoXnUvyy59WKNzfUkQSFSa0F/pau89CluZPWDqW6q/0AJ
+         ZJIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=rxBMaJePd96IgXSq9LOGeo4fcYxt8NTX6vFaRbMAyJE=;
-        b=qUCHgwSmA+tmpsfV8Ckkf6H/Pz9GtPx5/6+IerDd6OPJkcuR4jTSBsNT88/4J7GFib
-         hTI4uRjJY5DNzGp4nxEC59/E8w1JYxD2lSImTOb8LLGb6aOAP6AMMsdiPudRffK65KIi
-         eZl2vuWur0jr4dMGZftBrZxsWWy5CAOR70qW0a3K2ISIu5uN8x05CCP+EcSUcjYh7qjG
-         9IjYQmtEx+fORzh5CeYo9liTd9pr+W9YWgMQr3j5iitBNGb+nf5OMQHpUXox8aAEijXu
-         Jfl4jES4QxH87bVotlf0xEVvp0HwL3rkQpCmyo0cd7KbuIbUQ/JZqwDkL5kGZyVIcCFL
-         eYdA==
-X-Gm-Message-State: AOAM533RUjCUPJ8CKUC6DHiGvI4tVrcfDi5L3sgU772FNhvumPw0DYqT
-        VefMCpUI6sYZXrlwoYkMuCPGfFB8HUnv6Lzsvcd/
-X-Google-Smtp-Source: ABdhPJw0BXA79AGtd7OByFBrYsl4M5Rp7H6sm9HJE1OEqQb71ERyGKIHAPoM9cvC6r+hC3xq65G50fYWm4oqaZtBGzIw
+        bh=uGPT9ZFGr1gCPGmxTU64gW1NZp/uXULj+Hk1WeDcCEQ=;
+        b=RhRWuwj24OZO28Z/YvTeirGO676HN43C8gx1ZR3wZt/qJwwEYOPhScwF5O3h/81slk
+         r/mh6eb2a1M1XSR6yz0TjCXBMCNMzG/+RxTxZhUWLaPZouHAmKvxyw44x03iC5f3DLU4
+         srEds0YHdrhKvdHkhFxpKaGlePdsDfaihtwDSovshNEcQBYl5QMIPFSnt/5Fk48W40Pm
+         YfyyByjGCijXecK+ODkRSkjjgC2wycHD9FpuSxT4P9XIGrQuwW+yQenEy73w0FdAAGuL
+         9kRgyTqZMMPNFqHN9nl8plXkOZUvbjfIZhQmLkKZnQ97i3QTkOpyQhk+cbCFn4xnu5zF
+         oOHg==
+X-Gm-Message-State: AOAM5335E9pQRl29P+2ghDNxEp4vadL4rL3bVCm2MXjfvmfXvKpWhuAO
+        YJxpwjcV0P/fk3ltIlo5yplk8aYTHhjq4Zr68vN9
+X-Google-Smtp-Source: ABdhPJwVcLNXFe9geKJiVEMRmBXw9/4qBCTuGOOJAjiFJecYNNc2I+J/b+123Dax1Nw6Vq7YDSrQLqAGrZJjGYocnIPl
 Sender: "danielwinkler via sendgmr" 
         <danielwinkler@danielwinkler-linux.mtv.corp.google.com>
 X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:f693:9fff:fef4:4e59])
- (user=danielwinkler job=sendgmr) by 2002:a63:d841:: with SMTP id
- k1mr8103878pgj.59.1601593452199; Thu, 01 Oct 2020 16:04:12 -0700 (PDT)
-Date:   Thu,  1 Oct 2020 16:04:00 -0700
+ (user=danielwinkler job=sendgmr) by 2002:a0c:b343:: with SMTP id
+ a3mr10001894qvf.41.1601593454276; Thu, 01 Oct 2020 16:04:14 -0700 (PDT)
+Date:   Thu,  1 Oct 2020 16:04:01 -0700
 In-Reply-To: <20201001230403.2445035-1-danielwinkler@google.com>
-Message-Id: <20201001160305.v4.2.Id8bee28ed00d158d0894b32c0cd94baa5a012605@changeid>
+Message-Id: <20201001160305.v4.3.I74255537fa99ed3c0025321008b361c6ad90a431@changeid>
 Mime-Version: 1.0
 References: <20201001230403.2445035-1-danielwinkler@google.com>
 X-Mailer: git-send-email 2.28.0.709.gb0816b6eb0-goog
-Subject: [PATCH v4 2/5] Bluetooth: Break add adv into two mgmt commands
+Subject: [PATCH v4 3/5] Bluetooth: Use intervals and tx power from mgmt cmds
 From:   Daniel Winkler <danielwinkler@google.com>
 To:     marcel@holtmann.org
 Cc:     linux-bluetooth@vger.kernel.org,
@@ -68,568 +68,191 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for the new advertising add interface, with the
-first command setting advertising parameters and the second to set
-advertising data. The set parameters command allows the caller to leave
-some fields "unset", with a params bitfield defining which params were
-purposefully set. Unset parameters will be given defaults when calling
-hci_add_adv_instance. The data passed to the param mgmt command is
-allowed to be flexible, so in the future if bluetoothd passes a larger
-structure with new params, the mgmt command will ignore the unknown
-members at the end.
+This patch takes the min/max intervals and tx power optionally provided
+in mgmt interface, stores them in the advertisement struct, and uses
+them when configuring the hci requests. While tx power is not used if
+extended advertising is unavailable, software rotation will use the min
+and max advertising intervals specified by the client.
 
-This change has been validated on both hatch (extended advertising) and
-kukui (no extended advertising) chromebooks running bluetoothd that
-support this new interface. I ran the following manual tests:
-- Set several (3) advertisements using modified test_advertisement.py
-- For each, validate correct data and parameters in btmon trace
-- Verified both for software rotation and extended adv
-
-Automatic test suite also run, testing many (25) scenarios of single and
-multi-advertising for data/parameter correctness.
+This change is validated manually by ensuring the min/max intervals are
+propagated to the controller on both hatch (extended advertising) and
+kukui (no extended advertising) chromebooks, and that tx power is
+propagated correctly on hatch. These tests are performed with multiple
+advertisements simultaneously.
 
 Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
 Signed-off-by: Daniel Winkler <danielwinkler@google.com>
 ---
 
-Changes in v4:
-- Add remaining data and scan response length to MGMT params response
-- Moving optional params into 'flags' field of MGMT command
-
-Changes in v3:
-- Adding selected tx power to adv params mgmt response, removing event
-
+Changes in v4: None
+Changes in v3: None
 Changes in v2: None
 
- include/net/bluetooth/hci_core.h |   2 +
- include/net/bluetooth/mgmt.h     |  34 +++
- net/bluetooth/hci_event.c        |   1 +
- net/bluetooth/mgmt.c             | 379 ++++++++++++++++++++++++++++++-
- 4 files changed, 405 insertions(+), 11 deletions(-)
+ include/net/bluetooth/hci_core.h |  5 ++++-
+ net/bluetooth/hci_core.c         |  8 +++++---
+ net/bluetooth/hci_request.c      | 29 +++++++++++++++++++----------
+ net/bluetooth/mgmt.c             |  8 ++++++--
+ 4 files changed, 34 insertions(+), 16 deletions(-)
 
 diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 300b3572d479e1..48d144ae8b57d6 100644
+index 48d144ae8b57d6..ab168f46b6d909 100644
 --- a/include/net/bluetooth/hci_core.h
 +++ b/include/net/bluetooth/hci_core.h
-@@ -238,6 +238,8 @@ struct adv_info {
- #define HCI_MAX_ADV_INSTANCES		5
- #define HCI_DEFAULT_ADV_DURATION	2
+@@ -230,6 +230,8 @@ struct adv_info {
+ 	__u16	scan_rsp_len;
+ 	__u8	scan_rsp_data[HCI_MAX_AD_LENGTH];
+ 	__s8	tx_power;
++	__u32   min_interval;
++	__u32   max_interval;
+ 	bdaddr_t	random_addr;
+ 	bool 		rpa_expired;
+ 	struct delayed_work	rpa_expired_cb;
+@@ -1292,7 +1294,8 @@ struct adv_info *hci_get_next_instance(struct hci_dev *hdev, u8 instance);
+ int hci_add_adv_instance(struct hci_dev *hdev, u8 instance, u32 flags,
+ 			 u16 adv_data_len, u8 *adv_data,
+ 			 u16 scan_rsp_len, u8 *scan_rsp_data,
+-			 u16 timeout, u16 duration);
++			 u16 timeout, u16 duration, s8 tx_power,
++			 u32 min_interval, u32 max_interval);
+ int hci_set_adv_instance_data(struct hci_dev *hdev, u8 instance,
+ 			 u16 adv_data_len, u8 *adv_data,
+ 			 u16 scan_rsp_len, u8 *scan_rsp_data);
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 3f73f147826409..3a2332f4a9bba2 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -2951,7 +2951,8 @@ static void adv_instance_rpa_expired(struct work_struct *work)
+ int hci_add_adv_instance(struct hci_dev *hdev, u8 instance, u32 flags,
+ 			 u16 adv_data_len, u8 *adv_data,
+ 			 u16 scan_rsp_len, u8 *scan_rsp_data,
+-			 u16 timeout, u16 duration)
++			 u16 timeout, u16 duration, s8 tx_power,
++			 u32 min_interval, u32 max_interval)
+ {
+ 	struct adv_info *adv_instance;
  
-+#define HCI_ADV_TX_POWER_NO_PREFERENCE 0x7F
-+
- struct adv_pattern {
- 	struct list_head list;
- 	__u8 ad_type;
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 6b55155e05e977..117578bb88743c 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -574,6 +574,10 @@ struct mgmt_rp_add_advertising {
- #define MGMT_ADV_FLAG_SEC_CODED 	BIT(9)
- #define MGMT_ADV_FLAG_CAN_SET_TX_POWER	BIT(10)
- #define MGMT_ADV_FLAG_HW_OFFLOAD	BIT(11)
-+#define MGMT_ADV_PARAM_DURATION		BIT(12)
-+#define MGMT_ADV_PARAM_TIMEOUT		BIT(13)
-+#define MGMT_ADV_PARAM_INTERVALS	BIT(14)
-+#define MGMT_ADV_PARAM_TX_POWER		BIT(15)
+@@ -2979,6 +2980,9 @@ int hci_add_adv_instance(struct hci_dev *hdev, u8 instance, u32 flags,
+ 	adv_instance->flags = flags;
+ 	adv_instance->adv_data_len = adv_data_len;
+ 	adv_instance->scan_rsp_len = scan_rsp_len;
++	adv_instance->min_interval = min_interval;
++	adv_instance->max_interval = max_interval;
++	adv_instance->tx_power = tx_power;
  
- #define MGMT_ADV_FLAG_SEC_MASK	(MGMT_ADV_FLAG_SEC_1M | MGMT_ADV_FLAG_SEC_2M | \
- 				 MGMT_ADV_FLAG_SEC_CODED)
-@@ -782,6 +786,36 @@ struct mgmt_rp_remove_adv_monitor {
- 	__le16 monitor_handle;
- } __packed;
+ 	if (adv_data_len)
+ 		memcpy(adv_instance->adv_data, adv_data, adv_data_len);
+@@ -2995,8 +2999,6 @@ int hci_add_adv_instance(struct hci_dev *hdev, u8 instance, u32 flags,
+ 	else
+ 		adv_instance->duration = duration;
  
-+#define MGMT_OP_ADD_EXT_ADV_PARAMS		0x0054
-+struct mgmt_cp_add_ext_adv_params {
-+	__u8	instance;
-+	__le32	flags;
-+	__le16	duration;
-+	__le16	timeout;
-+	__le32	min_interval;
-+	__le32	max_interval;
-+	__s8	tx_power;
-+} __packed;
-+#define MGMT_ADD_EXT_ADV_PARAMS_MIN_SIZE	18
-+struct mgmt_rp_add_ext_adv_params {
-+	__u8	instance;
-+	__s8	tx_power;
-+	__u8	max_adv_data_len;
-+	__u8	max_scan_rsp_len;
-+} __packed;
+-	adv_instance->tx_power = HCI_TX_POWER_INVALID;
+-
+ 	INIT_DELAYED_WORK(&adv_instance->rpa_expired_cb,
+ 			  adv_instance_rpa_expired);
+ 
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index 413e3a5aabf544..bd984b32e07553 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -1425,6 +1425,7 @@ static bool is_advertising_allowed(struct hci_dev *hdev, bool connectable)
+ void __hci_req_enable_advertising(struct hci_request *req)
+ {
+ 	struct hci_dev *hdev = req->hdev;
++	struct adv_info *adv_instance;
+ 	struct hci_cp_le_set_adv_param cp;
+ 	u8 own_addr_type, enable = 0x01;
+ 	bool connectable;
+@@ -1432,6 +1433,7 @@ void __hci_req_enable_advertising(struct hci_request *req)
+ 	u32 flags;
+ 
+ 	flags = get_adv_instance_flags(hdev, hdev->cur_adv_instance);
++	adv_instance = hci_find_adv_instance(hdev, hdev->cur_adv_instance);
+ 
+ 	/* If the "connectable" instance flag was not set, then choose between
+ 	 * ADV_IND and ADV_NONCONN_IND based on the global connectable setting.
+@@ -1463,11 +1465,16 @@ void __hci_req_enable_advertising(struct hci_request *req)
+ 
+ 	memset(&cp, 0, sizeof(cp));
+ 
+-	if (connectable) {
+-		cp.type = LE_ADV_IND;
+-
++	if (adv_instance) {
++		adv_min_interval = adv_instance->min_interval;
++		adv_max_interval = adv_instance->max_interval;
++	} else {
+ 		adv_min_interval = hdev->le_adv_min_interval;
+ 		adv_max_interval = hdev->le_adv_max_interval;
++	}
 +
-+#define MGMT_OP_ADD_EXT_ADV_DATA		0x0055
-+struct mgmt_cp_add_ext_adv_data {
-+	__u8	instance;
-+	__u8	adv_data_len;
-+	__u8	scan_rsp_len;
-+	__u8	data[];
-+} __packed;
-+#define MGMT_ADD_EXT_ADV_DATA_SIZE	3
-+struct mgmt_rp_add_ext_adv_data {
-+	__u8	instance;
-+} __packed;
-+
- #define MGMT_EV_CMD_COMPLETE		0x0001
- struct mgmt_ev_cmd_complete {
- 	__le16	opcode;
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index bd306ba3ade545..4281f4ac6700d4 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -1749,6 +1749,7 @@ static void hci_cc_set_ext_adv_param(struct hci_dev *hdev, struct sk_buff *skb)
++	if (connectable) {
++		cp.type = LE_ADV_IND;
+ 	} else {
+ 		if (get_cur_adv_instance_scan_rsp_len(hdev))
+ 			cp.type = LE_ADV_SCAN_IND;
+@@ -1478,9 +1485,6 @@ void __hci_req_enable_advertising(struct hci_request *req)
+ 		    hci_dev_test_flag(hdev, HCI_LIMITED_DISCOVERABLE)) {
+ 			adv_min_interval = DISCOV_LE_FAST_ADV_INT_MIN;
+ 			adv_max_interval = DISCOV_LE_FAST_ADV_INT_MAX;
+-		} else {
+-			adv_min_interval = hdev->le_adv_min_interval;
+-			adv_max_interval = hdev->le_adv_max_interval;
+ 		}
  	}
- 	/* Update adv data as tx power is known now */
- 	hci_req_update_adv_data(hdev, hdev->cur_adv_instance);
-+
- 	hci_dev_unlock(hdev);
- }
  
+@@ -1997,9 +2001,15 @@ int __hci_req_setup_ext_adv_instance(struct hci_request *req, u8 instance)
+ 
+ 	memset(&cp, 0, sizeof(cp));
+ 
+-	/* In ext adv set param interval is 3 octets */
+-	hci_cpu_to_le24(hdev->le_adv_min_interval, cp.min_interval);
+-	hci_cpu_to_le24(hdev->le_adv_max_interval, cp.max_interval);
++	if (adv_instance) {
++		hci_cpu_to_le24(adv_instance->min_interval, cp.min_interval);
++		hci_cpu_to_le24(adv_instance->max_interval, cp.max_interval);
++		cp.tx_power = adv_instance->tx_power;
++	} else {
++		hci_cpu_to_le24(hdev->le_adv_min_interval, cp.min_interval);
++		hci_cpu_to_le24(hdev->le_adv_max_interval, cp.max_interval);
++		cp.tx_power = HCI_ADV_TX_POWER_NO_PREFERENCE;
++	}
+ 
+ 	secondary_adv = (flags & MGMT_ADV_FLAG_SEC_MASK);
+ 
+@@ -2022,7 +2032,6 @@ int __hci_req_setup_ext_adv_instance(struct hci_request *req, u8 instance)
+ 
+ 	cp.own_addr_type = own_addr_type;
+ 	cp.channel_map = hdev->le_adv_channel_map;
+-	cp.tx_power = 127;
+ 	cp.handle = instance;
+ 
+ 	if (flags & MGMT_ADV_FLAG_SEC_2M) {
 diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 0b711ad80f6bd1..425d04722aa962 100644
+index 425d04722aa962..092ac7fffb4124 100644
 --- a/net/bluetooth/mgmt.c
 +++ b/net/bluetooth/mgmt.c
-@@ -122,6 +122,8 @@ static const u16 mgmt_commands[] = {
- 	MGMT_OP_READ_ADV_MONITOR_FEATURES,
- 	MGMT_OP_ADD_ADV_PATTERNS_MONITOR,
- 	MGMT_OP_REMOVE_ADV_MONITOR,
-+	MGMT_OP_ADD_EXT_ADV_PARAMS,
-+	MGMT_OP_ADD_EXT_ADV_DATA,
- };
- 
- static const u16 mgmt_events[] = {
-@@ -7198,6 +7200,10 @@ static u32 get_supported_adv_flags(struct hci_dev *hdev)
- 	flags |= MGMT_ADV_FLAG_MANAGED_FLAGS;
- 	flags |= MGMT_ADV_FLAG_APPEARANCE;
- 	flags |= MGMT_ADV_FLAG_LOCAL_NAME;
-+	flags |= MGMT_ADV_PARAM_DURATION;
-+	flags |= MGMT_ADV_PARAM_TIMEOUT;
-+	flags |= MGMT_ADV_PARAM_INTERVALS;
-+	flags |= MGMT_ADV_PARAM_TX_POWER;
- 
- 	/* In extended adv TX_POWER returned from Set Adv Param
- 	 * will be always valid.
-@@ -7372,6 +7378,31 @@ static bool tlv_data_is_valid(struct hci_dev *hdev, u32 adv_flags, u8 *data,
- 	return true;
- }
- 
-+static bool requested_adv_flags_are_valid(struct hci_dev *hdev, u32 adv_flags)
-+{
-+	u32 supported_flags, phy_flags;
-+
-+	/* The current implementation only supports a subset of the specified
-+	 * flags. Also need to check mutual exclusiveness of sec flags.
-+	 */
-+	supported_flags = get_supported_adv_flags(hdev);
-+	phy_flags = adv_flags & MGMT_ADV_FLAG_SEC_MASK;
-+	if (adv_flags & ~supported_flags ||
-+	    ((phy_flags && (phy_flags ^ (phy_flags & -phy_flags)))))
-+		return false;
-+
-+	return true;
-+}
-+
-+static bool adv_busy(struct hci_dev *hdev)
-+{
-+	return (pending_find(MGMT_OP_ADD_ADVERTISING, hdev) ||
-+		pending_find(MGMT_OP_REMOVE_ADVERTISING, hdev) ||
-+		pending_find(MGMT_OP_SET_LE, hdev) ||
-+		pending_find(MGMT_OP_ADD_EXT_ADV_PARAMS, hdev) ||
-+		pending_find(MGMT_OP_ADD_EXT_ADV_DATA, hdev));
-+}
-+
- static void add_advertising_complete(struct hci_dev *hdev, u8 status,
- 				     u16 opcode)
- {
-@@ -7386,6 +7417,8 @@ static void add_advertising_complete(struct hci_dev *hdev, u8 status,
- 	hci_dev_lock(hdev);
- 
- 	cmd = pending_find(MGMT_OP_ADD_ADVERTISING, hdev);
-+	if (!cmd)
-+		cmd = pending_find(MGMT_OP_ADD_EXT_ADV_DATA, hdev);
- 
- 	list_for_each_entry_safe(adv_instance, n, &hdev->adv_instances, list) {
- 		if (!adv_instance->pending)
-@@ -7430,7 +7463,6 @@ static int add_advertising(struct sock *sk, struct hci_dev *hdev,
- 	struct mgmt_cp_add_advertising *cp = data;
- 	struct mgmt_rp_add_advertising rp;
- 	u32 flags;
--	u32 supported_flags, phy_flags;
- 	u8 status;
- 	u16 timeout, duration;
- 	unsigned int prev_instance_cnt = hdev->adv_instance_cnt;
-@@ -7466,13 +7498,7 @@ static int add_advertising(struct sock *sk, struct hci_dev *hdev,
- 	timeout = __le16_to_cpu(cp->timeout);
- 	duration = __le16_to_cpu(cp->duration);
- 
--	/* The current implementation only supports a subset of the specified
--	 * flags. Also need to check mutual exclusiveness of sec flags.
--	 */
--	supported_flags = get_supported_adv_flags(hdev);
--	phy_flags = flags & MGMT_ADV_FLAG_SEC_MASK;
--	if (flags & ~supported_flags ||
--	    ((phy_flags && (phy_flags ^ (phy_flags & -phy_flags)))))
-+	if (!requested_adv_flags_are_valid(hdev, flags))
- 		return mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_ADVERTISING,
- 				       MGMT_STATUS_INVALID_PARAMS);
- 
-@@ -7484,9 +7510,7 @@ static int add_advertising(struct sock *sk, struct hci_dev *hdev,
- 		goto unlock;
- 	}
- 
--	if (pending_find(MGMT_OP_ADD_ADVERTISING, hdev) ||
--	    pending_find(MGMT_OP_REMOVE_ADVERTISING, hdev) ||
--	    pending_find(MGMT_OP_SET_LE, hdev)) {
-+	if (adv_busy(hdev)) {
+@@ -7528,7 +7528,10 @@ static int add_advertising(struct sock *sk, struct hci_dev *hdev,
+ 				   cp->adv_data_len, cp->data,
+ 				   cp->scan_rsp_len,
+ 				   cp->data + cp->adv_data_len,
+-				   timeout, duration);
++				   timeout, duration,
++				   HCI_ADV_TX_POWER_NO_PREFERENCE,
++				   hdev->le_adv_min_interval,
++				   hdev->le_adv_max_interval);
+ 	if (err < 0) {
  		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_ADVERTISING,
- 				      MGMT_STATUS_BUSY);
- 		goto unlock;
-@@ -7577,6 +7601,335 @@ static int add_advertising(struct sock *sk, struct hci_dev *hdev,
- 	return err;
- }
+ 				      MGMT_STATUS_FAILED);
+@@ -7736,7 +7739,8 @@ static int add_ext_adv_params(struct sock *sk, struct hci_dev *hdev,
  
-+static void add_ext_adv_params_complete(struct hci_dev *hdev, u8 status,
-+					u16 opcode)
-+{
-+	struct mgmt_pending_cmd *cmd;
-+	struct mgmt_cp_add_ext_adv_params *cp;
-+	struct mgmt_rp_add_ext_adv_params rp;
-+	struct adv_info *adv_instance;
-+	u32 flags;
-+
-+	BT_DBG("%s", hdev->name);
-+
-+	hci_dev_lock(hdev);
-+
-+	cmd = pending_find(MGMT_OP_ADD_EXT_ADV_PARAMS, hdev);
-+	if (!cmd)
-+		goto unlock;
-+
-+	cp = cmd->param;
-+	adv_instance = hci_find_adv_instance(hdev, cp->instance);
-+	if (!adv_instance)
-+		goto unlock;
-+
-+	rp.instance = cp->instance;
-+	rp.tx_power = adv_instance->tx_power;
-+
-+	/* While we're at it, inform userspace of the available space for this
-+	 * advertisement, given the flags that will be used.
-+	 */
-+	flags = __le32_to_cpu(cp->flags);
-+	rp.max_adv_data_len = tlv_data_max_len(hdev, flags, true);
-+	rp.max_scan_rsp_len = tlv_data_max_len(hdev, flags, false);
-+
-+	if (status) {
-+		/* If this advertisement was previously advertising and we
-+		 * failed to update it, we signal that it has been removed and
-+		 * delete its structure
-+		 */
-+		if (!adv_instance->pending)
-+			mgmt_advertising_removed(cmd->sk, hdev, cp->instance);
-+
-+		hci_remove_adv_instance(hdev, cp->instance);
-+
-+		mgmt_cmd_status(cmd->sk, cmd->index, cmd->opcode,
-+				mgmt_status(status));
-+
-+	} else {
-+		mgmt_cmd_complete(cmd->sk, cmd->index, cmd->opcode,
-+				  mgmt_status(status), &rp, sizeof(rp));
-+	}
-+
-+unlock:
-+	if (cmd)
-+		mgmt_pending_remove(cmd);
-+
-+	hci_dev_unlock(hdev);
-+}
-+
-+static int add_ext_adv_params(struct sock *sk, struct hci_dev *hdev,
-+			      void *data, u16 data_len)
-+{
-+	struct mgmt_cp_add_ext_adv_params *cp = data;
-+	struct mgmt_rp_add_ext_adv_params rp;
-+	struct mgmt_pending_cmd *cmd = NULL;
-+	struct adv_info *adv_instance;
-+	struct hci_request req;
-+	u32 flags, min_interval, max_interval;
-+	u16 timeout, duration;
-+	u8 status;
-+	s8 tx_power;
-+	int err;
-+
-+	BT_DBG("%s", hdev->name);
-+
-+	status = mgmt_le_support(hdev);
-+	if (status)
-+		return mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_PARAMS,
-+				       status);
-+
-+	if (cp->instance < 1 || cp->instance > hdev->le_num_of_adv_sets)
-+		return mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_PARAMS,
-+				       MGMT_STATUS_INVALID_PARAMS);
-+
-+	/* The purpose of breaking add_advertising into two separate MGMT calls
-+	 * for params and data is to allow more parameters to be added to this
-+	 * structure in the future. For this reason, we verify that we have the
-+	 * bare minimum structure we know of when the interface was defined. Any
-+	 * extra parameters we don't know about will be ignored in this request.
-+	 */
-+	if (data_len < MGMT_ADD_EXT_ADV_PARAMS_MIN_SIZE)
-+		return mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_ADVERTISING,
-+				       MGMT_STATUS_INVALID_PARAMS);
-+
-+	flags = __le32_to_cpu(cp->flags);
-+
-+	if (!requested_adv_flags_are_valid(hdev, flags))
-+		return mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_PARAMS,
-+				       MGMT_STATUS_INVALID_PARAMS);
-+
-+	hci_dev_lock(hdev);
-+
-+	/* In new interface, we require that we are powered to register */
-+	if (!hdev_is_powered(hdev)) {
-+		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_PARAMS,
-+				      MGMT_STATUS_REJECTED);
-+		goto unlock;
-+	}
-+
-+	if (adv_busy(hdev)) {
-+		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_PARAMS,
-+				      MGMT_STATUS_BUSY);
-+		goto unlock;
-+	}
-+
-+	/* Parse defined parameters from request, use defaults otherwise */
-+	timeout = (flags & MGMT_ADV_PARAM_TIMEOUT) ?
-+		  __le16_to_cpu(cp->timeout) : 0;
-+
-+	duration = (flags & MGMT_ADV_PARAM_DURATION) ?
-+		   __le16_to_cpu(cp->duration) :
-+		   hdev->def_multi_adv_rotation_duration;
-+
-+	min_interval = (flags & MGMT_ADV_PARAM_INTERVALS) ?
-+		       __le32_to_cpu(cp->min_interval) :
-+		       hdev->le_adv_min_interval;
-+
-+	max_interval = (flags & MGMT_ADV_PARAM_INTERVALS) ?
-+		       __le32_to_cpu(cp->max_interval) :
-+		       hdev->le_adv_max_interval;
-+
-+	tx_power = (flags & MGMT_ADV_PARAM_TX_POWER) ?
-+		   cp->tx_power :
-+		   HCI_ADV_TX_POWER_NO_PREFERENCE;
-+
-+	/* Create advertising instance with no advertising or response data */
-+	err = hci_add_adv_instance(hdev, cp->instance, flags,
-+				   0, NULL, 0, NULL, timeout, duration);
-+
-+	if (err < 0) {
-+		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_PARAMS,
-+				      MGMT_STATUS_FAILED);
-+		goto unlock;
-+	}
-+
-+	hdev->cur_adv_instance = cp->instance;
-+	/* Submit request for advertising params if ext adv available */
-+	if (ext_adv_capable(hdev)) {
-+		hci_req_init(&req, hdev);
-+		adv_instance = hci_find_adv_instance(hdev, cp->instance);
-+
-+		/* Updating parameters of an active instance will return a
-+		 * Command Disallowed error, so we must first disable the
-+		 * instance if it is active.
-+		 */
-+		if (!adv_instance->pending)
-+			__hci_req_disable_ext_adv_instance(&req, cp->instance);
-+
-+		__hci_req_setup_ext_adv_instance(&req, cp->instance);
-+
-+		err = hci_req_run(&req, add_ext_adv_params_complete);
-+
-+		if (!err)
-+			cmd = mgmt_pending_add(sk, MGMT_OP_ADD_EXT_ADV_PARAMS,
-+					       hdev, data, data_len);
-+		if (!cmd) {
-+			err = -ENOMEM;
-+			hci_remove_adv_instance(hdev, cp->instance);
-+			goto unlock;
-+		}
-+
-+	} else {
-+		rp.instance = cp->instance;
-+		rp.tx_power = HCI_ADV_TX_POWER_NO_PREFERENCE;
-+		err = mgmt_cmd_complete(sk, hdev->id,
-+					MGMT_OP_ADD_EXT_ADV_PARAMS,
-+					MGMT_STATUS_SUCCESS, &rp, sizeof(rp));
-+	}
-+
-+unlock:
-+	hci_dev_unlock(hdev);
-+
-+	return err;
-+}
-+
-+static int add_ext_adv_data(struct sock *sk, struct hci_dev *hdev, void *data,
-+			    u16 data_len)
-+{
-+	struct mgmt_cp_add_ext_adv_data *cp = data;
-+	struct mgmt_rp_add_ext_adv_data rp;
-+	u8 schedule_instance = 0;
-+	struct adv_info *next_instance;
-+	struct adv_info *adv_instance;
-+	int err = 0;
-+	struct mgmt_pending_cmd *cmd;
-+	struct hci_request req;
-+
-+	BT_DBG("%s", hdev->name);
-+
-+	hci_dev_lock(hdev);
-+
-+	adv_instance = hci_find_adv_instance(hdev, cp->instance);
-+
-+	if (!adv_instance) {
-+		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_DATA,
-+				      MGMT_STATUS_INVALID_PARAMS);
-+		goto unlock;
-+	}
-+
-+	/* In new interface, we require that we are powered to register */
-+	if (!hdev_is_powered(hdev)) {
-+		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_DATA,
-+				      MGMT_STATUS_REJECTED);
-+		goto clear_new_instance;
-+	}
-+
-+	if (adv_busy(hdev)) {
-+		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_DATA,
-+				      MGMT_STATUS_BUSY);
-+		goto clear_new_instance;
-+	}
-+
-+	/* Validate new data */
-+	if (!tlv_data_is_valid(hdev, adv_instance->flags, cp->data,
-+			       cp->adv_data_len, true) ||
-+	    !tlv_data_is_valid(hdev, adv_instance->flags, cp->data +
-+			       cp->adv_data_len, cp->scan_rsp_len, false)) {
-+		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_DATA,
-+				      MGMT_STATUS_INVALID_PARAMS);
-+		goto clear_new_instance;
-+	}
-+
-+	/* Set the data in the advertising instance */
-+	hci_set_adv_instance_data(hdev, cp->instance, cp->adv_data_len,
-+				  cp->data, cp->scan_rsp_len,
-+				  cp->data + cp->adv_data_len);
-+
-+	/* We're good to go, update advertising data, parameters, and start
-+	 * advertising.
-+	 */
-+
-+	hci_req_init(&req, hdev);
-+
-+	hci_req_add(&req, HCI_OP_READ_LOCAL_NAME, 0, NULL);
-+
-+	if (ext_adv_capable(hdev)) {
-+		__hci_req_update_adv_data(&req, cp->instance);
-+		__hci_req_update_scan_rsp_data(&req, cp->instance);
-+		__hci_req_enable_ext_advertising(&req, cp->instance);
-+
-+	} else {
-+		/* If using software rotation, determine next instance to use */
-+
-+		if (hdev->cur_adv_instance == cp->instance) {
-+			/* If the currently advertised instance is being changed
-+			 * then cancel the current advertising and schedule the
-+			 * next instance. If there is only one instance then the
-+			 * overridden advertising data will be visible right
-+			 * away
-+			 */
-+			cancel_adv_timeout(hdev);
-+
-+			next_instance = hci_get_next_instance(hdev,
-+							      cp->instance);
-+			if (next_instance)
-+				schedule_instance = next_instance->instance;
-+		} else if (!hdev->adv_instance_timeout) {
-+			/* Immediately advertise the new instance if no other
-+			 * instance is currently being advertised.
-+			 */
-+			schedule_instance = cp->instance;
-+		}
-+
-+		/* If the HCI_ADVERTISING flag is set or there is no instance to
-+		 * be advertised then we have no HCI communication to make.
-+		 * Simply return.
-+		 */
-+		if (hci_dev_test_flag(hdev, HCI_ADVERTISING) ||
-+		    !schedule_instance) {
-+			if (adv_instance->pending) {
-+				mgmt_advertising_added(sk, hdev, cp->instance);
-+				adv_instance->pending = false;
-+			}
-+			rp.instance = cp->instance;
-+			err = mgmt_cmd_complete(sk, hdev->id,
-+						MGMT_OP_ADD_EXT_ADV_DATA,
-+						MGMT_STATUS_SUCCESS, &rp,
-+						sizeof(rp));
-+			goto unlock;
-+		}
-+
-+		err = __hci_req_schedule_adv_instance(&req, schedule_instance,
-+						      true);
-+	}
-+
-+	cmd = mgmt_pending_add(sk, MGMT_OP_ADD_EXT_ADV_DATA, hdev, data,
-+			       data_len);
-+	if (!cmd) {
-+		err = -ENOMEM;
-+		goto clear_new_instance;
-+	}
-+
-+	if (!err)
-+		err = hci_req_run(&req, add_advertising_complete);
-+
-+	if (err < 0) {
-+		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_DATA,
-+				      MGMT_STATUS_FAILED);
-+		mgmt_pending_remove(cmd);
-+		goto clear_new_instance;
-+	}
-+
-+	/* We were successful in updating data, so trigger advertising_added
-+	 * event if this is an instance that wasn't previously advertising. If
-+	 * a failure occurs in the requests we initiated, we will remove the
-+	 * instance again in add_advertising_complete
-+	 */
-+	if (adv_instance->pending)
-+		mgmt_advertising_added(sk, hdev, cp->instance);
-+
-+	goto unlock;
-+
-+clear_new_instance:
-+	hci_remove_adv_instance(hdev, cp->instance);
-+
-+unlock:
-+	hci_dev_unlock(hdev);
-+
-+	return err;
-+}
-+
- static void remove_advertising_complete(struct hci_dev *hdev, u8 status,
- 					u16 opcode)
- {
-@@ -7851,6 +8204,10 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ add_adv_patterns_monitor,MGMT_ADD_ADV_PATTERNS_MONITOR_SIZE,
- 						HCI_MGMT_VAR_LEN },
- 	{ remove_adv_monitor,      MGMT_REMOVE_ADV_MONITOR_SIZE },
-+	{ add_ext_adv_params,      MGMT_ADD_EXT_ADV_PARAMS_MIN_SIZE,
-+						HCI_MGMT_VAR_LEN },
-+	{ add_ext_adv_data,        MGMT_ADD_EXT_ADV_DATA_SIZE,
-+						HCI_MGMT_VAR_LEN },
- };
+ 	/* Create advertising instance with no advertising or response data */
+ 	err = hci_add_adv_instance(hdev, cp->instance, flags,
+-				   0, NULL, 0, NULL, timeout, duration);
++				   0, NULL, 0, NULL, timeout, duration,
++				   tx_power, min_interval, max_interval);
  
- void mgmt_index_added(struct hci_dev *hdev)
+ 	if (err < 0) {
+ 		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_ADD_EXT_ADV_PARAMS,
 -- 
 2.28.0.709.gb0816b6eb0-goog
 
