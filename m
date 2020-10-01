@@ -2,128 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA7FE280A61
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 00:44:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA5B7280A88
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 00:50:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733085AbgJAWoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 18:44:23 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:38796 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726741AbgJAWoX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 18:44:23 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601592260;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=f5pavRIPBXFgoArTS09EMAvE+9XTGOcnORwLcRx4kkA=;
-        b=U84f6VB+uoY56yY0AbL7m5zFgUQvOqpAnDuLzL3VgEIUJxo3VWnvTmp2r3XUK47/T9+W3/
-        GuaMG375NPiap38Xpq+NieKRecG+teH4PClBFb01m+pyIuxlw3K18VA8kZlmYDCUzLZxrO
-        BxAstiqQYGKe8B7quD/kZ4Ki/Z+w5tMLV4r7VzGOq/UgRGRzZ7qhgfdXay4ECCvbqNv8Dg
-        70F6RFVZFQr0+QI0ovAYfxGYELQYMWbnPi9353lf4a2yTGRFO9YIs87/wg7svnN3lGVQ30
-        3Fw7obB0uR90Z/Oo6ny8VWlc0UPhETzmecph2ts+Mx0h4F5sPk6dcnRupfYkNA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601592260;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=f5pavRIPBXFgoArTS09EMAvE+9XTGOcnORwLcRx4kkA=;
-        b=Xsq66SYfx5Fu5ZSQwlHHuBW51rXywOjw4mGFPmrJrIvzjPkx1LtZ+fV4PzJgwhwk89w2qi
-        jrpBapKbZaJSMlAQ==
-To:     Erez Geva <erez.geva.ext@siemens.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>, Andrei Vagin <avagin@gmail.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Vladis Dronov <vdronov@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Jesus Sanchez-Palencia <jesus.sanchez-palencia@intel.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Vedang Patel <vedang.patel@intel.com>,
-        Simon Sudler <simon.sudler@siemens.com>,
-        Andreas Meisinger <andreas.meisinger@siemens.com>,
-        Andreas Bucher <andreas.bucher@siemens.com>,
-        Henning Schild <henning.schild@siemens.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Andreas Zirkler <andreas.zirkler@siemens.com>,
-        Ermin Sakic <ermin.sakic@siemens.com>,
-        An Ninh Nguyen <anninh.nguyen@siemens.com>,
-        Michael Saenger <michael.saenger@siemens.com>,
-        Bernd Maehringer <bernd.maehringer@siemens.com>,
-        Gisela Greinert <gisela.greinert@siemens.com>,
-        Erez Geva <erez.geva.ext@siemens.com>,
-        Erez Geva <ErezGeva2@gmail.com>
-Subject: Re: [PATCH 4/7] Fix qdisc_watchdog_schedule_range_ns range check
-In-Reply-To: <20201001205141.8885-5-erez.geva.ext@siemens.com>
-References: <20201001205141.8885-1-erez.geva.ext@siemens.com> <20201001205141.8885-5-erez.geva.ext@siemens.com>
-Date:   Fri, 02 Oct 2020 00:44:19 +0200
-Message-ID: <87pn61efcs.fsf@nanos.tec.linutronix.de>
+        id S1733002AbgJAWuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 18:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727053AbgJAWuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 18:50:20 -0400
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11BB4C0613D0;
+        Thu,  1 Oct 2020 15:50:19 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id m5so573335lfp.7;
+        Thu, 01 Oct 2020 15:50:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y9to2P3MnQRvS65OIRtoj6JaR6yWu9/hCXhnCwnQDpI=;
+        b=Ctk/8DqQbYbAZoIDhsyfGcrJxXpnnRJPi3JU7jN7NMbtzqHLRdf7apus3vnhwvZ7iD
+         rAVn3MFoEPUiM0ym9VJaeQ2pb4cGtSxGVq1k72wi7E97eaLOQCfdi4BW0dsPKbASoZb9
+         gy20zTZCtZVJFmMQXYwnQY1PdVnjN0QhoV1kbW77dX3YSaclxJViELchhGnMSHnI88Z3
+         zKfd0w88rybxA3B8vtgJWDhTqT7J69DT1Wp6TVxvl85tpTByuU4VK48bp1Yal2k5mmmK
+         Nu1tPEWu32R6UDrDfPow0LD1BwBZXcHI0Qbw0uLXqE48bcxLs7WkhOze6C4uELQVbYgS
+         qlLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y9to2P3MnQRvS65OIRtoj6JaR6yWu9/hCXhnCwnQDpI=;
+        b=gHJqs1p0c9ZsxqtM1U1JgevhZgxzQFQkIxvuA2kUpA2DEaw+jTfVxbkqouaCpBR6di
+         WxEqqnFso/a5h75Qp4xpG8ZwpnBUHjCUyGkeeaAab5ZhZjUOymdlFfK+YcV3+GoVuqws
+         IaN3523dKPcz/BOCVf2fwkKD9+oDqCRx3AEEINOKeE2CIghK+dqdI0KzXcLVyyZj2T+s
+         R8cfnZDSw8KLfowDBsbs7HKVAFilsBj17iao45j1n3WbMsNUKfjGmserC2tkJ5kLG2TY
+         ntkd+S7QHJ9t5vI8EZQGncFNsC5JviKJArVaurVPHekfS8lTjIwPNlceqojX0qQ7+mGX
+         mBrA==
+X-Gm-Message-State: AOAM530FY9yWfTzZpfJyGrHqvhcMnfQT1QJH1yQ5ajeiSNMBfXeoHoFi
+        PWHeCSK7Ouxk5TFUnkNc05sm9Jaf6mUsImjka0Q=
+X-Google-Smtp-Source: ABdhPJzT8eeJd0Fp8nEjNQfsKYTrNpb+4WAOydutlRAXuuvr6+RElNRiGTXQyWJ+CSYe8JhDEiYnRWwDlUPx/YdbFBE=
+X-Received: by 2002:a19:50d:: with SMTP id 13mr3053620lff.500.1601592617492;
+ Thu, 01 Oct 2020 15:50:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20201001020504.18151-1-bimmy.pujari@intel.com>
+ <20201001020504.18151-2-bimmy.pujari@intel.com> <20201001053501.mp6uqtan2bkhdgck@ast-mbp.dhcp.thefacebook.com>
+ <BY5PR11MB4354F2C9189C169C0CE40A9B86300@BY5PR11MB4354.namprd11.prod.outlook.com>
+In-Reply-To: <BY5PR11MB4354F2C9189C169C0CE40A9B86300@BY5PR11MB4354.namprd11.prod.outlook.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 1 Oct 2020 15:50:05 -0700
+Message-ID: <CAADnVQJmmY_HER23=3bxCrrsbJoNs1Ue__P24KHj3YY1EkzuKQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 2/2] selftests/bpf: Selftest for real time helper
+To:     "Pujari, Bimmy" <bimmy.pujari@intel.com>
+Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mchehab@kernel.org" <mchehab@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "kafai@fb.com" <kafai@fb.com>, "maze@google.com" <maze@google.com>,
+        "Nikravesh, Ashkan" <ashkan.nikravesh@intel.com>,
+        "Alvarez, Daniel A" <daniel.a.alvarez@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 01 2020 at 22:51, Erez Geva wrote:
+On Thu, Oct 1, 2020 at 2:52 PM Pujari, Bimmy <bimmy.pujari@intel.com> wrote:
+>
+> Thanks everyone for putting your valuable time to review these patches. Can any one from you suggest the best way to test this function in selftest?
 
-Fixes should be at the beginning of a patch series and not be hidden
-somewhere in the middle.
+Don't bother. This helper is no go.
 
->    - As all parameters are unsigned.
-
-This is not a sentence and this list style does not make that changelog
-more readable.
-
->    - If 'expires' is bigger than 'last_expires' then the left expression
->      overflows.
-
-This would be the most important information and should be clearly
-spelled out as problem description at the very beginning of the change
-log.
-
->    - It is better to use addition and check both ends of the range.
-
-Is better? Either your change is correcting the problem or not. Just
-better but incorrect does not cut it.
-
-But let's look at the problem itself. The check is about:
-
-    B <= A <= B + C
-
-A, B, C are all unsigned. So if B > A then the result is false.
-
-Now lets look at the implementation:
-
-    if (A - B <= C)
-    	return;
-
-which works correctly due the wonders of unsigned math.
-
-For B <= A the check is obviously correct.
-
-If B > A then the result of the unsigned subtraction A - B is a very
-large positive number which is pretty much guaranteed to be larger than
-C, i.e. the result is false.
-
-So while not immediately obvious, it's still correct.
-
-Thanks,
-
-        tglx
-
-
-
+Please trim your replies next time and do not top post.
