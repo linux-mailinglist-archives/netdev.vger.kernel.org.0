@@ -2,139 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C221827F84B
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 06:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB4D627F8AF
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 06:33:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725909AbgJAEAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 00:00:31 -0400
-Received: from mail-eopbgr140083.outbound.protection.outlook.com ([40.107.14.83]:61600
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725800AbgJAEAb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Oct 2020 00:00:31 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=noLCTy4MksICJVtQTy4lA8i6bFqF2qlNiqLlB9su/Xa4nfuWqY3gOf8Va/TeyQvMAkVgOTyVDEPIrMFiau16a6ylbgyE4zsSJIqL+3vd12CipklGdiV8vKL/6zNxf1dqQf30lswB+ZULT3suEkV84KTjWwiuoEvDGr1BXLF1P5ln5V+1jMkynZbgw64trbf8/Eu/AutOCxYi52lcC9zmbSvblL+BisVUUSV668y3C6W/S6JoH145Y3ni7q4irYiYA/w/JkjjP3DepjNXtJRWigumZ6tOuQBOn9NmLfpwTzlBc5g1tPOUOw6GUbC//xIkPbfqU1nFJ+/pSMuT8GMIVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mniY/2SBo3Dk+MPb3i3uo8k/QHtqhV6Ejk4jZT4vD6k=;
- b=jgmJqNQhTdvu04cLYom3zI0m8166xV87e28V+oa8zInZFRbmrRPMFV46yKgeyuk4gmvFMJIEquroaf/hX6pCWvQoDe3fHoYSjcQH6/S0qSjYoMkZAnuq/31SZftSrdSPAfNYt6pywolXSOqQ5Aa97DkhuFmd8u80unJ+YH+b2efr9psU2wEXQX6bH+F9BrozoJ7LJj211LzsD4Qhgew9gxelS6FMVGhSgf58HSyrm7xnmDlxrcQXTloAGXUqonsmYloETpYWJkFE59G0hoX0Dj1qJ157tY81+h8Bl5QeAACjc2vlhJg+a4e2WsjSnKbmTvu/xwN+ux1iBUbipcJA2A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mniY/2SBo3Dk+MPb3i3uo8k/QHtqhV6Ejk4jZT4vD6k=;
- b=iwegsnW4o3axApTVrNk3LZ2p6tiwPoG1omWEMCbnXTWR/9gP40T1TDPDjLYXS8SDNI6DkkHNMnHpJFxcaG0WuTsfv0LcGcqooSnVPDi5n4xxJx4cDNT3GJdF9WSGBANQBeErlwaps+d1xA88fDvrYa8rMiEDIt7KB0M0yGQoJaA=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM8PR04MB7394.eurprd04.prod.outlook.com (2603:10a6:20b:1d1::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.32; Thu, 1 Oct
- 2020 04:00:27 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::a997:35ae:220c:14ef]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::a997:35ae:220c:14ef%7]) with mapi id 15.20.3433.032; Thu, 1 Oct 2020
- 04:00:27 +0000
-Date:   Thu, 1 Oct 2020 09:30:16 +0530
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux.cj@gmail.com,
-        netdev@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        id S1725897AbgJAEdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 00:33:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39766 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725823AbgJAEdP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 00:33:15 -0400
+Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C8EF821531;
+        Thu,  1 Oct 2020 04:33:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601526794;
+        bh=PrcAnbRfqcmVMjDuI3QIAc2B43lqun1H5zfPncpvACA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=wAD4bLaGO17sPacXRxTFCdGtOmQskODjwtWRbH/gN1/8vjBM7cvXBkROT0EC30dw6
+         8mnnuo4kROV8PSdNdoNODRtqq/YYXyB4vBHWd67VkWIK55fbuB1y9cinwphPe6wBIl
+         RdXouOSODbavQ73K35WuUwl5bnDWDgdDOTj8mYR0=
+From:   saeed@kernel.org
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [net-next PATCH v1 3/7] net: phy: Introduce fwnode_get_phy_id()
-Message-ID: <20201001040016.GC9110@lsv03152.swis.in-blr01.nxp.com>
-References: <20200930160430.7908-1-calvin.johnson@oss.nxp.com>
- <20200930160430.7908-4-calvin.johnson@oss.nxp.com>
- <20200930163440.GR3996795@lunn.ch>
- <20200930180725.GE1551@shell.armlinux.org.uk>
- <20200930181902.GT3996795@lunn.ch>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200930181902.GT3996795@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Originating-IP: [14.142.151.118]
-X-ClientProxiedBy: SG2PR01CA0085.apcprd01.prod.exchangelabs.com
- (2603:1096:3:15::11) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/15] mlx5 updates 2020-09-30
+Date:   Wed, 30 Sep 2020 21:32:47 -0700
+Message-Id: <20201001043302.48113-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR01CA0085.apcprd01.prod.exchangelabs.com (2603:1096:3:15::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.36 via Frontend Transport; Thu, 1 Oct 2020 04:00:22 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 80023a5c-239e-492a-3dbc-08d865be87c2
-X-MS-TrafficTypeDiagnostic: AM8PR04MB7394:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM8PR04MB73941E0CEE0EE0E9F9001963D2300@AM8PR04MB7394.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CGa3RCV4YFRif9VDKLjih2W3UXRoC40Y+jasx1sWck5mNSxYEHu+cVmzSO4iuPx2MLqXlG2wToWhTBZFi/WBCXiGRz8LhJtEGGpaguPyxXwJ93Z0a0s8AEHHOI3xzgojAboTh/h/aQvz10h9iB+sahuxixg1b3Y65PcFXp4HCe1K8xN4WsqAFHPg1zGUM8uYdolP9mwG38AMaxR4CtZEBSiptu+iNe6f1uJPNVySQ/BIyay8xkr7f0xn0nr0RE9NK7Gndj5SFDsW1T/AhABkti4EVjfojAcwH+6AILUK4Oiik6DsH7AzAwpl0VT1HpfqJMXppZMjIy2UWw1DTaCYAcAnCXdbDFzf9ShHpOWFZ1pOapoE/sqJznpSe3pGnxlI
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(396003)(136003)(366004)(39860400002)(316002)(66476007)(7416002)(55016002)(86362001)(6916009)(5660300002)(66946007)(66556008)(4326008)(8676002)(8936002)(9686003)(26005)(55236004)(54906003)(186003)(16526019)(44832011)(1006002)(6666004)(33656002)(478600001)(956004)(1076003)(7696005)(83380400001)(52116002)(6506007)(2906002)(110426005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: BHuZ7Lh4Bb7n+YeJOVeYMl1Yn/+w++6jEaxOrQSt4jBhqSaZfbH+c6PmqREcCc5+qRnF0A/eNxlpZglKtqAR4GDJT1UwzJtB6zWh2p96RSzAROUaUInVBBHDPly4+0513NhEM6/m2SHeuObrEXlppj7vO0vS69xj5a5IJDrmpAtq2mmlN+Mzq4EFa7CDqVElLy2wSd1VkTrPJDNhtZrS4nhtvsO6kAZnsCcpvFf+hAorza6Fuk7YJjMcxoxzXTLX4R8OP5YxkXo8r6Q5GZ3rQROR0jqTPJKAHUoYHoFdVPhQYzMQGdf5mqtAGNatAIHo+pBj9QIbr0v7v0t/AUPYuprtDfMv/mSDKOUHpy6N+NcDeUj06xWMOQcclK1G9nokeVYbeBTYbW1LAbgPqTUOB5hoevwMg9MQCjAZ7YfVheKzkrRuRCWAFLpidCZ6ZmKPVDKPrYSUsvOT1WHutIWP4dXvfN9HdR4/ZMSOciWSSbd1RtsY2Ab/WorWFyk/uN7dyFGg2c7uenD/9OIc9qTeQVoj6W6hEG5mM+Ym7dHLz1f7kjqOXtBohvNkIBDmeYZUqEaJpyDxRAZUJzH8hrfWA1ydy03kYi4mJToKzG5oykx3h9qDOK93TDjc19o7+YzBhdnnukcDpTHOFmE+Iqp88A==
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80023a5c-239e-492a-3dbc-08d865be87c2
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2020 04:00:27.2258
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: K+p5L2wtX5GeN+16JFoSgCtL7v9IaVCYq07nPZe/ImaxUB0TEFRRq57Yvw8Pnlz6bK6tGkPugAReSIYpiYbKaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7394
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 08:19:02PM +0200, Andrew Lunn wrote:
-> On Wed, Sep 30, 2020 at 07:07:25PM +0100, Russell King - ARM Linux admin wrote:
-> > On Wed, Sep 30, 2020 at 06:34:40PM +0200, Andrew Lunn wrote:
-> > > > @@ -2866,7 +2888,15 @@ EXPORT_SYMBOL_GPL(device_phy_find_device);
-> > > >   */
-> > > >  struct fwnode_handle *fwnode_get_phy_node(struct fwnode_handle *fwnode)
-> > > >  {
-> > > > -	return fwnode_find_reference(fwnode, "phy-handle", 0);
-> > > > +	struct fwnode_handle *phy_node;
-> > > > +
-> > > > +	phy_node = fwnode_find_reference(fwnode, "phy-handle", 0);
-> > > > +	if (is_acpi_node(fwnode) || !IS_ERR(phy_node))
-> > > > +		return phy_node;
-> > > > +	phy_node = fwnode_find_reference(fwnode, "phy", 0);
-> > > > +	if (IS_ERR(phy_node))
-> > > > +		phy_node = fwnode_find_reference(fwnode, "phy-device", 0);
-> > > > +	return phy_node;
-> > > 
-> > > Why do you have three different ways to reference a PHY?
-> > 
-> > Compatibility with the DT version - note that "phy" and "phy-device"
-> > are only used for non-ACPI fwnodes. This should allow us to convert
-> > drivers where necessary without fear of causing DT regressions.
-> 
-> Ah.
-> 
-> A comment would be good here.
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Sure. Will add comment.
+Hi Dave, Jakub,
 
-Thanks
-Calvin
+While the other Software steering buddy allocator series is being
+debated, I thought it is fine to submit this series which provides
+misc and small updates to mlx5 driver.
+
+For more information please see tag log below.
+
+This series doesn't conflict with the other ongoing mlx5 net and
+net-next submissions.
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit f2e834694b0d92187d889172da842e27829df371:
+
+  Merge branch 'drop_monitor-Convert-to-use-devlink-tracepoint' (2020-09-30 18:01:27 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-09-30
+
+for you to fetch changes up to ff7ea04ad579c1f5f5aed73d2d5dc13314d25c75:
+
+  net/mlx5e: Fix potential null pointer dereference (2020-09-30 21:26:31 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2020-09-30
+
+Updates and cleanups for mlx5 driver:
+
+1) From Ariel, Dan Carpenter and Gostavo, Fixes to the previous
+   mlx5 Connection track series.
+
+2) From Yevgeny, trivial cleanups for Software steering
+
+3) From Hamdan, Support for Flow source hint in software steering and
+   E-Switch
+
+4) From Parav and Sunil, Small and trivial E-Switch updates and
+   cleanups in preparation for mlx5 Sub-functions support
+
+----------------------------------------------------------------
+Ariel Levkovich (1):
+      net/mlx5: Fix dereference on pointer attr after null check
+
+Dan Carpenter (1):
+      net/mlx5e: Fix a use after free on error in mlx5_tc_ct_shared_counter_get()
+
+Gustavo A. R. Silva (1):
+      net/mlx5e: Fix potential null pointer dereference
+
+Hamdan Igbaria (2):
+      net/mlx5: DR, Add support for rule creation with flow source hint
+      net/mlx5: E-Switch, Support flow source for local vport
+
+Parav Pandit (4):
+      net/mlx5: E-switch, Add helper to check egress ACL need
+      net/mlx5: E-switch, Use helper function to load unload representor
+      net/mlx5: E-switch, Move devlink eswitch ports closer to eswitch
+      net/mlx5: Use dma device access helper
+
+Yevgeny Kliteynik (5):
+      net/mlx5: DR, Replace the check for valid STE entry
+      net/mlx5: DR, Remove unneeded check from source port builder
+      net/mlx5: DR, Remove unneeded vlan check from L2 builder
+      net/mlx5: DR, Remove unneeded local variable
+      net/mlx5: DR, Call ste_builder directly with tag pointer
+
+sunils (1):
+      net/mlx5: E-switch, Use PF num in metadata reg c0
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/alloc.c    |  12 +-
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |  14 +-
+ .../ethernet/mellanox/mlx5/core/diag/fw_tracer.c   |   6 +-
+ .../ethernet/mellanox/mlx5/core/diag/rsc_dump.c    |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/pool.c  |   2 +-
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  12 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   | 103 ++----------
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   1 -
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  16 +-
+ .../mellanox/mlx5/core/esw/acl/egress_ofld.c       |   8 +
+ .../ethernet/mellanox/mlx5/core/esw/devlink_port.c | 124 ++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   4 +
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  91 ++++++----
+ .../net/ethernet/mellanox/mlx5/core/fpga/conn.c    |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |   5 +
+ .../net/ethernet/mellanox/mlx5/core/pagealloc.c    |   4 +-
+ .../mellanox/mlx5/core/steering/dr_matcher.c       |  22 +--
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  47 +++---
+ .../ethernet/mellanox/mlx5/core/steering/dr_send.c |   8 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  | 183 ++++++---------------
+ .../mellanox/mlx5/core/steering/dr_types.h         |  24 +--
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |   3 +-
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |   3 +-
+ include/linux/mlx5/eswitch.h                       |  15 +-
+ 28 files changed, 371 insertions(+), 355 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
