@@ -2,292 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 019B327F7E7
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 04:18:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 273A827F7F3
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 04:24:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730333AbgJACSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 22:18:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58346 "EHLO
+        id S1726992AbgJACXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 22:23:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730090AbgJACSC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 22:18:02 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A46E0C061755
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 19:18:02 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id l126so2959223pfd.5
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 19:18:02 -0700 (PDT)
+        with ESMTP id S1725800AbgJACXy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 22:23:54 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08847C061755
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 19:23:54 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id j3so2124626qvi.7
+        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 19:23:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=Z9qE8uetHSNY5pUKZ2lfhQvTyhk+B3AqrYNoaNuPPrU=;
-        b=LJBNQcsxmIV/HhoqS4Zl15kagRb4FhJIXarYoZk5gDyh7f4jS4anNcD/xfR40kHcWY
-         842209RH5BvBC1kcmhnZSFhSe7I5AP2F7wsP3FPcAQSWmGrwmQ6U6nWTlrn8gPql8eYQ
-         cZg2IiWZU5g9JL+Utm8vWwSL2xPiVPH1AFVvct6tCyF1LU9A5iSJIy3+Xj76lzde0iRN
-         e4d/aCJQK1nap7nhqXIa5Ts5aLRLRYkQQnMbWGsIx6TBSH0DkyskROx3gNZfTx482OiE
-         NiFjPq2HIkPh7oeDPK3KqbrXrmqerJ6w6Gc/mESZoU/PNCMPu0s+4iH08mMCyMBMSA6T
-         O91w==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=GQy53KQGVo9s9Qi70vRCqrNFtySzhamAuU+VZ7Y7aJs=;
+        b=Yp9pKzJCMCVAmXMK/O/dk9zEcpA48TwhHGELyUeStftfjD5L9wBVVkPVV917U8iDKg
+         FVbc9yqWPmVhYlchsWd9aLTMSIVwajgItuVPnCi8Kl+7TSmw1PSB1nK81nu7kuZaXgYf
+         TkQgmQY2BFfe82L+EXW+XKXLg562lxfP+l1kTcb3vQ8RNYy10mi6OhYa0LpW3zKp/nZm
+         J7Axt6RR7EEd82Y6VTtf7TiELijQ43QdGqmI4iwPt4c706yjk+zF2B/QZ26ADbfo3Vp7
+         lI0NfXpZGR0/omj7ruhHLot98o2dbfBR5Ebj5J7F+YsNu9LxbjzOhzpTB0cIrpKljQOP
+         c7/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Z9qE8uetHSNY5pUKZ2lfhQvTyhk+B3AqrYNoaNuPPrU=;
-        b=T9a9CpQM57E3maS7u+ClupWclq62rz3hl3+QBR/RchI0Mzw83t5UfpJgrJ7H/2d7Fc
-         FkypBkZEH9ivaZ7MSCwi6QwINn4Lh0WpXXVwA45vjEuxUv6xouY62j4hyfN6kDFEjKhd
-         6iInThRmLgMc7g6DwL5uN7ZaaKHJ9tYLyTuILmzAxZ/hVC8WhQslYw5N/Swp+9RcvzqH
-         mUTvD2aegXj0dO7bx8ugdgo0d+K0+KT/GSkdx6GYBSCUrXDC7gGGaB5ofwS4qFXB5MPM
-         rCzSonrAefZvsLdHaBJlNbIOt4eNyJo0HpRVPDpnKqVv4YFeVZlksGzlDjiSBvFcPMi1
-         Sp/A==
-X-Gm-Message-State: AOAM533VDJE4VAeF872ifqOvqLcz18nZEyBXXlXKhMfXu5569Gf7tPzS
-        NVjk2MI+ttM7DfvxJ1E2nWCFYTQbEI/RwQ==
-X-Google-Smtp-Source: ABdhPJy1aoZWCIpSMArww893j7K2MPiG24grxDqHx/5i+0mQB/ZzTKCNAkc2Vl3tdQSKUZo4gYoiQA==
-X-Received: by 2002:aa7:8146:0:b029:152:10aa:2dbb with SMTP id d6-20020aa781460000b029015210aa2dbbmr20330pfn.3.1601518681909;
-        Wed, 30 Sep 2020 19:18:01 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id ih11sm3412181pjb.51.2020.09.30.19.18.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Sep 2020 19:18:01 -0700 (PDT)
-Subject: Re: [iproute2-next v2 1/1] devlink: display elapsed time during flash
- update
-To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20200930234012.137020-1-jacob.e.keller@intel.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <3180c80b-5d53-abd3-4929-3282cae526b4@pensando.io>
-Date:   Wed, 30 Sep 2020 19:18:55 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=GQy53KQGVo9s9Qi70vRCqrNFtySzhamAuU+VZ7Y7aJs=;
+        b=L/O4QOSXm0oRLTdKr3JDO651NJDYaQTekbJTEpyyYRP5S8MRjucOH24tAOh0bRVvO3
+         jXo01ErPMzYmES3m+5a9TKC5/wrLqTRB3xYJJn4OQ8f5IEbwGkapKZZ2p6QVeWyezR1R
+         N2z+ZkX0ytsSa0b23IgmgX2rpiV49uLSuyWtM6hRMmwNkwY4USfUnZih9fPLkYvoUsJx
+         PWVfLnFe6oRNdfIoryDs2s0+j/xr/xC/l78mGg3bsrs5lZbr/HCjpOo6GmyD106pRGGN
+         bq+H7iuy6l3C6MURdF5EM/ZjVPMLaDoS5O8Np7ruLJS9G22qSnWV6xWknbeU4vGxZukl
+         OAvg==
+X-Gm-Message-State: AOAM531f3kUUJGestLqdNlmNpIo6yOCeX2HGScQQT5FtA18uZtGnZA+Z
+        RbEp9ffGdbx0vNVKrl4J3Q==
+X-Google-Smtp-Source: ABdhPJzxT0S1VJsf10yEXUwXvIk1feqzJwaCvIJ+HXTa6rcVjOSau3PyrnnxOiBuSgIo8uRcGIdIJA==
+X-Received: by 2002:a0c:8d82:: with SMTP id t2mr5556929qvb.62.1601519032995;
+        Wed, 30 Sep 2020 19:23:52 -0700 (PDT)
+Received: from vmserver ([136.56.89.69])
+        by smtp.gmail.com with ESMTPSA id f8sm4534524qkb.123.2020.09.30.19.23.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Sep 2020 19:23:52 -0700 (PDT)
+Date:   Wed, 30 Sep 2020 22:23:45 -0400
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: ip rule iif oif and vrf
+Message-ID: <20201001022345.GA3527@vmserver>
+References: <20200922131122.GB1601@ICIPI.localdomain>
+ <2bea9311-e6b6-91ea-574a-4aa7838d53ea@gmail.com>
+ <20200923235002.GA25818@ICIPI.localdomain>
+ <ccba2d59-58ad-40ca-0a09-b55c90e9145e@gmail.com>
+ <20200924134845.GA3688@ICIPI.localdomain>
+ <97ce9942-2115-ed3a-75ea-8b58aa799ceb@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200930234012.137020-1-jacob.e.keller@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: multipart/mixed; boundary="3V7upXqbjpZ4EhLz"
+Content-Disposition: inline
+In-Reply-To: <97ce9942-2115-ed3a-75ea-8b58aa799ceb@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/30/20 4:40 PM, Jacob Keller wrote:
-> For some devices, updating the flash can take significant time during
-> operations where no status can meaningfully be reported. This can be
-> somewhat confusing to a user who sees devlink appear to hang on the
-> terminal waiting for the device to update.
->
-> Recent changes to the kernel interface allow such long running commands
-> to provide a timeout value indicating some upper bound on how long the
-> relevant action could take.
->
-> Provide a ticking counter of the time elapsed since the previous status
-> message in order to make it clear that the program is not simply stuck.
->
-> Display this message whenever the status message from the kernel
-> indicates a timeout value. Additionally also display the message if
-> we've received no status for more than couple of seconds. If we elapse
-> more than the timeout provided by the status message, replace the
-> timeout display with "timeout reached".
->
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 
-Works for me - thanks!
+--3V7upXqbjpZ4EhLz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Tested-by: Shannon Nelson <snelson@pensando.io>
+On Thu, Sep 24, 2020 at 08:41:54AM -0600, David Ahern wrote:
+> > We have multiple options on the table right now. One that can be done
+> > without writing any code is to use an nft prerouting rule to mark
+> > the packet with iif equals the tunnel and use ip rule fwmark to lookup
+> > the right table.
+> > 
+> > ip netns exec r0 nft add table ip c2t
+> > ip netns exec r0 nft add chain ip c2t prerouting '{ type filter hook prerouting priority 0; policy accept; }'
+> > ip netns exec r0 nft rule ip c2t prerouting iif gre01 mark set 101 counter
+> > ip netns exec r0 ip rule add fwmark 101 table 10 pref 999
+> > 
+> > ip netns exec r1 nft add table ip c2t
+> > ip netns exec r1 nft add chain ip c2t prerouting '{ type filter hook prerouting priority 0; policy accept; }'
+> > ip netns exec r1 nft rule ip c2t prerouting iif gre10 mark set 101 counter
+> > ip netns exec r1 ip rule add fwmark 101 table 10 pref 999
+> > 
+> > But this doesn't seem to work on my Ubuntu VM with the namespaces
+> > script, i.e. pinging from h0 to h1. The packet doesn't egress r1_v11. It
+> > does work on our target, based on 4.14 kernel.
+> 
+> add debugs to net/core/fib_rules.c, fib_rule_match() to see if
+> flowi_mark is getting set properly. There could easily be places that
+> are missed. Or if it works on one setup, but not another compare sysctl
+> settings for net.core and net.ipv4
 
+Sorry, I got side-tracked. Coming back to this: I made a mistake in the
+ip rule fwmark pref in the script. I have fixed it and the script is
+attached (gre_setup_nft.sh). It has the nft and ip rule commands above.
+The ping between h0 and h1 works.
 
-> ---
->
-> Changes since v1
-> * update last status time only when the message changes, allowing an elapsed
->    time to represent the full operation of downloading or programming the
->    image.
-> * Use "\b \b" to erase the elapsed time message properly even when we will
->    not be printing new text over it. This ensures that the messages disappear
->    as intended when we move to a new line.
->
-> Because this is a bit confusing to understand the behavior when looking
-> purely at text logs, I captured video of an update with this patch set and
-> have posted it at [1] in case reviewers would like to actually see behavior
-> in action
->
-> [1] https://youtu.be/aeVuQzK0Lo8
->
->   devlink/devlink.c | 99 ++++++++++++++++++++++++++++++++++++++++++++++-
->   1 file changed, 98 insertions(+), 1 deletion(-)
->
-> diff --git a/devlink/devlink.c b/devlink/devlink.c
-> index 0374175eda3d..aae5055e2c71 100644
-> --- a/devlink/devlink.c
-> +++ b/devlink/devlink.c
-> @@ -33,6 +33,7 @@
->   #include <sys/select.h>
->   #include <sys/socket.h>
->   #include <sys/types.h>
-> +#include <sys/time.h>
->   #include <rt_names.h>
->   
->   #include "version.h"
-> @@ -3066,6 +3067,9 @@ static int cmd_dev_info(struct dl *dl)
->   
->   struct cmd_dev_flash_status_ctx {
->   	struct dl *dl;
-> +	struct timeval time_of_last_status;
-> +	uint64_t status_msg_timeout;
-> +	size_t elapsed_time_msg_len;
->   	char *last_msg;
->   	char *last_component;
->   	uint8_t not_first:1,
-> @@ -3083,6 +3087,16 @@ static int nullstrcmp(const char *str1, const char *str2)
->   	return str1 ? 1 : -1;
->   }
->   
-> +static void cmd_dev_flash_clear_elapsed_time(struct cmd_dev_flash_status_ctx *ctx)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < ctx->elapsed_time_msg_len; i++)
-> +		pr_out_tty("\b \b");
-> +
-> +	ctx->elapsed_time_msg_len = 0;
-> +}
-> +
->   static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
->   {
->   	struct cmd_dev_flash_status_ctx *ctx = data;
-> @@ -3095,6 +3109,8 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
->   	const char *bus_name;
->   	const char *dev_name;
->   
-> +	cmd_dev_flash_clear_elapsed_time(ctx);
-> +
->   	if (genl->cmd != DEVLINK_CMD_FLASH_UPDATE_STATUS &&
->   	    genl->cmd != DEVLINK_CMD_FLASH_UPDATE_END)
->   		return MNL_CB_STOP;
-> @@ -3124,12 +3140,19 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
->   		done = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_DONE]);
->   	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL])
->   		total = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL]);
-> +	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT])
-> +		ctx->status_msg_timeout = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT]);
-> +	else
-> +		ctx->status_msg_timeout = 0;
->   
->   	if (!nullstrcmp(msg, ctx->last_msg) &&
->   	    !nullstrcmp(component, ctx->last_component) &&
->   	    ctx->last_pc && ctx->not_first) {
->   		pr_out_tty("\b\b\b\b\b"); /* clean percentage */
->   	} else {
-> +		/* only update the last status timestamp if the message changed */
-> +		gettimeofday(&ctx->time_of_last_status, NULL);
-> +
->   		if (ctx->not_first)
->   			pr_out("\n");
->   		if (component) {
-> @@ -3155,11 +3178,72 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
->   	return MNL_CB_STOP;
->   }
->   
-> +static void cmd_dev_flash_time_elapsed(struct cmd_dev_flash_status_ctx *ctx)
-> +{
-> +	struct timeval now, res;
-> +
-> +	gettimeofday(&now, NULL);
-> +	timersub(&now, &ctx->time_of_last_status, &res);
-> +
-> +	/* Only begin displaying an elapsed time message if we've waited a few
-> +	 * seconds with no response, or the status message included a timeout
-> +	 * value.
-> +	 */
-> +	if (res.tv_sec > 2 || ctx->status_msg_timeout) {
-> +		uint64_t elapsed_m, elapsed_s;
-> +		char msg[128];
-> +		size_t len;
-> +
-> +		/* clear the last elapsed time message, if we have one */
-> +		cmd_dev_flash_clear_elapsed_time(ctx);
-> +
-> +		elapsed_m = res.tv_sec / 60;
-> +		elapsed_s = res.tv_sec % 60;
-> +
-> +		/**
-> +		 * If we've elapsed a few seconds without receiving any status
-> +		 * notification from the device, we display a time elapsed
-> +		 * message. This has a few possible formats:
-> +		 *
-> +		 * 1) just time elapsed, when no timeout was provided
-> +		 *    " ( Xm Ys )"
-> +		 * 2) time elapsed out of a timeout that came from the device
-> +		 *    driver via DEVLINK_CMD_FLASH_UPDATE_STATUS_TIMEOUT
-> +		 *    " ( Xm Ys : Am Ys)"
-> +		 * 3) time elapsed if we still receive no status after
-> +		 *    reaching the provided timeout.
-> +		 *    " ( Xm Ys : timeout reached )"
-> +		 */
-> +		if (!ctx->status_msg_timeout) {
-> +			len = snprintf(msg, sizeof(msg),
-> +				       " ( %lum %lus )", elapsed_m, elapsed_s);
-> +		} else if (res.tv_sec <= ctx->status_msg_timeout) {
-> +			uint64_t timeout_m, timeout_s;
-> +
-> +			timeout_m = ctx->status_msg_timeout / 60;
-> +			timeout_s = ctx->status_msg_timeout % 60;
-> +
-> +			len = snprintf(msg, sizeof(msg),
-> +				       " ( %lum %lus : %lum %lus )",
-> +				       elapsed_m, elapsed_s, timeout_m, timeout_s);
-> +		} else {
-> +			len = snprintf(msg, sizeof(msg),
-> +				       " ( %lum %lus : timeout reached )", elapsed_m, elapsed_s);
-> +		}
-> +
-> +		ctx->elapsed_time_msg_len = len;
-> +
-> +		pr_out_tty("%s", msg);
-> +		fflush(stdout);
-> +	}
-> +}
-> +
->   static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
->   				     struct mnlg_socket *nlg_ntf,
->   				     int pipe_r)
->   {
->   	int nlfd = mnlg_socket_get_fd(nlg_ntf);
-> +	struct timeval timeout;
->   	fd_set fds[3];
->   	int fdmax;
->   	int i;
-> @@ -3174,7 +3258,14 @@ static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
->   	if (nlfd >= fdmax)
->   		fdmax = nlfd + 1;
->   
-> -	while (select(fdmax, &fds[0], &fds[1], &fds[2], NULL) < 0) {
-> +	/* select only for a short while (1/10th of a second) in order to
-> +	 * allow periodically updating the screen with an elapsed time
-> +	 * indicator.
-> +	 */
-> +	timeout.tv_sec = 0;
-> +	timeout.tv_usec = 100000;
-> +
-> +	while (select(fdmax, &fds[0], &fds[1], &fds[2], &timeout) < 0) {
->   		if (errno == EINTR)
->   			continue;
->   		pr_err("select() failed\n");
-> @@ -3196,6 +3287,7 @@ static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
->   			return err2;
->   		ctx->flash_done = 1;
->   	}
-> +	cmd_dev_flash_time_elapsed(ctx);
->   	return 0;
->   }
->   
-> @@ -3256,6 +3348,11 @@ static int cmd_dev_flash(struct dl *dl)
->   	}
->   	close(pipe_w);
->   
-> +	/* initialize starting time to allow comparison for when to begin
-> +	 * displaying a time elapsed message.
-> +	 */
-> +	gettimeofday(&ctx.time_of_last_status, NULL);
-> +
->   	do {
->   		err = cmd_dev_flash_fds_process(&ctx, nlg_ntf, pipe_r);
->   		if (err)
+> > We also notice though in on the target platform that the ip rule fwmark
+> > doesn't seem to change the skb->dev to the vrf of the lookup table.
+> 
+> not following that statement. fwmark should be marking the skb, not
+> changing the skb->dev.
 
+Yes and it causes the ping between h0 and r1 r1_v11 to not work, e.g.:
+
+ip netns exec h0 ping -c 1 11.0.0.1
+
+Similarly, ping between r0_v00 and r1_v11 also does not work:
+
+ip netns exec r0 ip vrf exec vrf_r0t ping -c 1 -I 10.0.0.1 11.0.0.1
+
+> > E.g., ping from 10.0.0.1 to 11.0.0.1. With net.ipv4.fwmark_reflect set,
+> > the reply is generated but the originating ping application doesn't get
+> > the packet.  I suspect it is caused by the socket is bound to the tenant
+> > vrf. I haven't been able to repro this because of the problem with the
+> > nft approach above.
+
+To illustrate my statements above, this is what I did:
+ip netns exec r1 sysctl -w net.ipv4.fwmark_reflect=1
+ip netns exec h0 ping -c 1 11.0.0.1
+PING 11.0.0.1 (11.0.0.1) 56(84) bytes of data.
+64 bytes from 11.0.0.1: icmp_seq=1 ttl=63 time=0.079 ms
+
+The ping between h0 and r1 r1_v11 works, but it still doesn't work for this:
+ip netns exec r0 ip vrf exec vrf_r0t ping -c 1 -I 10.0.0.1 11.0.0.1
+
+eventhough the reply is received by gre01:
+ip netns exec r0 tcpdump -nexi gre01
+22:10:57.173680 Out ethertype IPv4 (0x0800), length 100: 10.0.0.1 > 11.0.0.1: ICMP echo request, id 3803, seq 1, length 64
+	0x0000:  4500 0054 1d2a 4000 4001 087e 0a00 0001
+	0x0010:  0b00 0001 0800 a410 0edb 0001 b13a 755f
+	0x0020:  0000 0000 5da6 0200 0000 0000 1011 1213
+	0x0030:  1415 1617 1819 1a1b 1c1d 1e1f 2021 2223
+	0x0040:  2425 2627 2829 2a2b 2c2d 2e2f 3031 3233
+	0x0050:  3435 3637
+22:10:57.173724  In ethertype IPv4 (0x0800), length 100: 11.0.0.1 > 10.0.0.1: ICMP echo reply, id 3803, seq 1, length 64
+	0x0000:  4500 0054 c709 0000 4001 9e9e 0b00 0001
+	0x0010:  0a00 0001 0000 ac10 0edb 0001 b13a 755f
+	0x0020:  0000 0000 5da6 0200 0000 0000 1011 1213
+	0x0030:  1415 1617 1819 1a1b 1c1d 1e1f 2021 2223
+	0x0040:  2425 2627 2829 2a2b 2c2d 2e2f 3031 3233
+	0x0050:  3435 3637
+
+In summary the question is: should ip rule with action FR_ACT_TO_TBL
+also change the skb->dev to the right l3mdev?
+
+Thank you,
+
+Stephen.
+
+--3V7upXqbjpZ4EhLz
+Content-Type: application/x-sh
+Content-Disposition: attachment; filename="gre_setup_nft.sh"
+Content-Transfer-Encoding: quoted-printable
+
+# +-------+     +----------+   +----------+   +-------+=0A# | h0    |     |=
+    r0    |   |    r1    |   |    h1 |=0A# |    v00+-----+v00    v01+---+v1=
+0    v11+---+v11    |=0A# |       |     |          |   |          |   |    =
+   |=0A# +-------+     +----------+   +----------+   +-------+=0A#         =
+         |    <=3D=3D=3Dgre=3D=3D=3D>    |=0A#                  | gre01    =
+   gre10 |=0A#                  |                   |=0A#          vrf_r0t =
+| vrf_r0c   vrf_r1c | vrf_r1t=0A#         (tenant)        (core)         (t=
+enant)=0A#=0A# h0_v00 10.0.0.2/24     r0_v00 10.0.0.1/24=0A# r0_v01 1.1.1.1=
+/24      r1_v10 1.1.1.2/24=0A# h1_v11 11.0.0.2/24     r1_v11 11.0.0.1/24=0A=
+# gre01 2.2.2.1/30       gre10 2.2.2.2/30=0A=0A# start=0Aip netns add h0=0A=
+ip netns add r0=0Aip netns add h1=0Aip netns add r1=0A=0A# disable v6=0Aip =
+netns exec h0 sysctl -w net.ipv6.conf.all.disable_ipv6=3D1=0Aip netns exec =
+h0 sysctl -w net.ipv6.conf.default.disable_ipv6=3D1=0Aip netns exec h0 sysc=
+tl -w net.ipv6.conf.lo.disable_ipv6=3D1=0Aip netns exec r0 sysctl -w net.ip=
+v6.conf.all.disable_ipv6=3D1=0Aip netns exec r0 sysctl -w net.ipv6.conf.def=
+ault.disable_ipv6=3D1=0Aip netns exec r0 sysctl -w net.ipv6.conf.lo.disable=
+_ipv6=3D1=0Aip netns exec r1 sysctl -w net.ipv6.conf.all.disable_ipv6=3D1=
+=0Aip netns exec r1 sysctl -w net.ipv6.conf.default.disable_ipv6=3D1=0Aip n=
+etns exec r1 sysctl -w net.ipv6.conf.lo.disable_ipv6=3D1=0Aip netns exec h1=
+ sysctl -w net.ipv6.conf.all.disable_ipv6=3D1=0Aip netns exec h1 sysctl -w =
+net.ipv6.conf.default.disable_ipv6=3D1=0Aip netns exec h1 sysctl -w net.ipv=
+6.conf.lo.disable_ipv6=3D1=0A=0A# setup topology=0Aip link add h0_v00 type =
+veth peer name r0_v00=0Aip link set h0_v00 netns h0=0Aip link set r0_v00 ne=
+tns r0=0Aip link add r0_v01 type veth peer name r1_v10=0Aip link set r0_v01=
+ netns r0=0Aip link set r1_v10 netns r1=0Aip link add r1_v11 type veth peer=
+ name h1_v11=0Aip link set r1_v11 netns r1=0Aip link set h1_v11 netns h1=0A=
+=0Aip netns exec r0 ip link add vrf_r0t type vrf table 10=0Aip netns exec r=
+0 ip addr add 127.0.0.1/8 dev vrf_r0t=0Aip netns exec r0 ip link set vrf_r0=
+t up=0Aip netns exec r0 ip link add vrf_r0c type vrf table 100=0Aip netns e=
+xec r0 ip addr add 127.0.0.1/8 dev vrf_r0c=0Aip netns exec r0 ip link set v=
+rf_r0c up=0Aip netns exec r1 ip link add vrf_r1t type vrf table 10=0Aip net=
+ns exec r1 ip addr add 127.0.0.1/8 dev vrf_r1t=0Aip netns exec r1 ip link s=
+et vrf_r1t up=0Aip netns exec r1 ip link add vrf_r1c type vrf table 100=0Ai=
+p netns exec r1 ip addr add 127.0.0.1/8 dev vrf_r1c=0Aip netns exec r1 ip l=
+ink set vrf_r1c up=0A=0Aip netns exec r0 ip link set dev r0_v00 master vrf_=
+r0t=0Aip netns exec r0 ip link set dev r0_v01 master vrf_r0c=0Aip netns exe=
+c r1 ip link set dev r1_v11 master vrf_r1t=0Aip netns exec r1 ip link set d=
+ev r1_v10 master vrf_r1c=0A=0Aip netns exec h0 ip addr add 10.0.0.2/24 dev =
+h0_v00=0Aip netns exec r0 ip addr add 10.0.0.1/24 dev r0_v00=0Aip netns exe=
+c r0 ip addr add 1.1.1.1/24 dev r0_v01=0Aip netns exec r1 ip addr add 1.1.1=
+=2E2/24 dev r1_v10=0Aip netns exec r1 ip addr add 11.0.0.1/24 dev r1_v11=0A=
+ip netns exec h1 ip addr add 11.0.0.2/24 dev h1_v11=0A=0Aip netns exec r0 i=
+p tunnel add gre01 mode gre local 1.1.1.1 remote 1.1.1.2 dev vrf_r0c=0Aip n=
+etns exec r0 ip link set dev gre01 master vrf_r0c=0Aip netns exec r0 ip add=
+r add 2.2.2.1/30 dev gre01=0Aip netns exec r1 ip tunnel add gre10 mode gre =
+local 1.1.1.2 remote 1.1.1.1 dev vrf_r1c=0Aip netns exec r1 ip link set dev=
+ gre10 master vrf_r1c=0Aip netns exec r1 ip addr add 2.2.2.2/30 dev gre10=
+=0A=0Aip netns exec h0 ip link set dev h0_v00 up=0Aip netns exec r0 ip link=
+ set dev r0_v00 up=0Aip netns exec r0 ip link set dev r0_v01 up=0Aip netns =
+exec r0 ip link set dev gre01 up=0Aip netns exec r1 ip link set dev r1_v10 =
+up=0Aip netns exec r1 ip link set dev r1_v11 up=0Aip netns exec r1 ip link =
+set dev gre10 up=0Aip netns exec h1 ip link set dev h1_v11 up=0A=0Aip netns=
+ exec r0 sysctl -w net.ipv4.ip_forward=3D1 > /dev/null=0Aip netns exec r1 s=
+ysctl -w net.ipv4.ip_forward=3D1 > /dev/null=0A=0Aip netns exec h0 ip route=
+ add default via 10.0.0.1=0Aip netns exec h1 ip route add default via 11.0.=
+0.1=0A=0Aip netns exec r0 ip route add 11.0.0.0/24 via 2.2.2.2 dev gre01 ta=
+ble 10=0Aip netns exec r1 ip route add 10.0.0.0/24 via 2.2.2.1 dev gre10 ta=
+ble 10=0A=0A# do these to match the config on the target platform=0Aip netn=
+s exec r0 ip route add unreachable default metric 8192 table 10=0Aip netns =
+exec r0 ip route add unreachable default metric 8192 table 100=0Aip netns e=
+xec r1 ip route add unreachable default metric 8192 table 10=0Aip netns exe=
+c r1 ip route add unreachable default metric 8192 table 100=0Aip netns exec=
+ r0 ip rule delete from all lookup local=0Aip netns exec r0 ip rule add fro=
+m all lookup local pref 32765=0Aip netns exec r1 ip rule delete from all lo=
+okup local=0Aip netns exec r1 ip rule add from all lookup local pref 32765=
+=0A=0A# packets out of the core vrf tunnel are leak-routed to the tenant vr=
+f=0A# NOTE: This doesn't work=0A#ip netns exec r0 ip rule add iif gre01 tab=
+le 10 pref 999=0A#ip netns exec r1 ip rule add iif gre10 table 10 pref 999=
+=0A=0A# nft rules for tunnel to tenant routing/forwarding=0A# NOTE: make su=
+re the rule is before the l3mdev all=0A#       this works for ping between =
+h0 and h1 but not between vrf_r0t and vrf_r1t=0Aip netns exec r0 nft add ta=
+ble ip c2t=0Aip netns exec r0 nft add chain ip c2t prerouting '{ type filte=
+r hook prerouting priority 0; policy accept; }'=0Aip netns exec r0 nft rule=
+ ip c2t prerouting iif gre01 mark set 101 counter=0Aip netns exec r0 ip rul=
+e add fwmark 101 table 10 pref 999=0A=0Aip netns exec r1 nft add table ip c=
+2t=0Aip netns exec r1 nft add chain ip c2t prerouting '{ type filter hook p=
+rerouting priority 0; policy accept; }'=0Aip netns exec r1 nft rule ip c2t =
+prerouting iif gre10 mark set 101 counter=0Aip netns exec r1 ip rule add fw=
+mark 101 table 10 pref 999=0A
+--3V7upXqbjpZ4EhLz--
