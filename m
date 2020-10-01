@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B09027F8B0
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 06:33:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A8427F8B1
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 06:33:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725933AbgJAEdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 00:33:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39772 "EHLO mail.kernel.org"
+        id S1725939AbgJAEdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 00:33:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39780 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725876AbgJAEdP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725878AbgJAEdP (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 1 Oct 2020 00:33:15 -0400
 Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2FBAF21D92;
+        by mail.kernel.org (Postfix) with ESMTPSA id 932F5221E8;
         Thu,  1 Oct 2020 04:33:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1601526794;
-        bh=tF4/hDOZLPmMJcTpVYbYrrMluefwsDuExYxhThaKj3E=;
+        bh=E5uVgOiG8BwsqP+4pWI65AqQRQFtvRaYtHGBXo96SzE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bwMnSqeLeuMDCJdWjpKHy4cupKb/oADjpyehaCG2huRcxghmYwTrRGKKKpU//5QOl
-         o2EVrQyQfJ4V62OBHCUH2n0SbmyaoL6MAy7nKXggJbohX8zrARIIWRWCZgzkYBppvc
-         ea+xo+esPvS6EOwMyb59H4ZtM3YpGLHzNiJ8NrbY=
+        b=nGF/vQbX5Q9JKp1HVSz9crdnAFRraPHNsy0lAxJM0I+IXdk6gTWIIKSMTnIDOcGcQ
+         dBO5cOZlLrgZ0mLbnsRGIoHfbNF4YQf740kkBcM36dLozzAehwS0xtQXqXWgK/jvz+
+         UYP7B1BtJ8gZGMCA96NXy8dRvMh1qel3+z/sNGAM=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Alex Vesker <valex@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 01/15] net/mlx5: DR, Replace the check for valid STE entry
-Date:   Wed, 30 Sep 2020 21:32:48 -0700
-Message-Id: <20201001043302.48113-2-saeed@kernel.org>
+Subject: [net-next 02/15] net/mlx5: DR, Remove unneeded check from source port builder
+Date:   Wed, 30 Sep 2020 21:32:49 -0700
+Message-Id: <20201001043302.48113-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201001043302.48113-1-saeed@kernel.org>
 References: <20201001043302.48113-1-saeed@kernel.org>
@@ -43,130 +43,137 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Validity check is done by reading the next lu_type from the STE,
-this check can be replaced by checking the refcount.
-This will make the check independent on internal STE structure.
+Mask validity for ste builders is checked by mlx5dr_ste_build_pre_check
+during matcher creation.
+It already checks the mask value of source_vport, so removing
+this duplicated check.
+Also, moving there the check of source_eswitch_owner_vhca_id mask.
 
 Signed-off-by: Alex Vesker <valex@nvidia.com>
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_rule.c     |  6 +++---
- .../mellanox/mlx5/core/steering/dr_send.c     |  4 ++--
- .../mellanox/mlx5/core/steering/dr_ste.c      | 19 -------------------
- .../mellanox/mlx5/core/steering/dr_types.h    |  7 +++++--
- 4 files changed, 10 insertions(+), 26 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_matcher.c  |  6 +--
+ .../mellanox/mlx5/core/steering/dr_ste.c      | 40 +++++++------------
+ .../mellanox/mlx5/core/steering/dr_types.h    |  8 ++--
+ 3 files changed, 21 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-index 6ec5106bc472..17577181ce8f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-@@ -242,7 +242,7 @@ dr_rule_rehash_copy_ste(struct mlx5dr_matcher *matcher,
- 	new_idx = mlx5dr_ste_calc_hash_index(hw_ste, new_htbl);
- 	new_ste = &new_htbl->ste_arr[new_idx];
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
+index c63f727273d8..2b794daca436 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
+@@ -252,10 +252,8 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
+ 		if (dr_mask_is_gvmi_or_qpn_set(&mask.misc) &&
+ 		    (dmn->type == MLX5DR_DOMAIN_TYPE_FDB ||
+ 		     dmn->type == MLX5DR_DOMAIN_TYPE_NIC_RX)) {
+-			ret = mlx5dr_ste_build_src_gvmi_qpn(&sb[idx++], &mask,
+-							    dmn, inner, rx);
+-			if (ret)
+-				return ret;
++			mlx5dr_ste_build_src_gvmi_qpn(&sb[idx++], &mask,
++						      dmn, inner, rx);
+ 		}
  
--	if (mlx5dr_ste_not_used_ste(new_ste)) {
-+	if (mlx5dr_ste_is_not_used(new_ste)) {
- 		mlx5dr_htbl_get(new_htbl);
- 		list_add_tail(&new_ste->miss_list_node,
- 			      mlx5dr_ste_get_miss_list(new_ste));
-@@ -335,7 +335,7 @@ static int dr_rule_rehash_copy_htbl(struct mlx5dr_matcher *matcher,
- 
- 	for (i = 0; i < cur_entries; i++) {
- 		cur_ste = &cur_htbl->ste_arr[i];
--		if (mlx5dr_ste_not_used_ste(cur_ste)) /* Empty, nothing to copy */
-+		if (mlx5dr_ste_is_not_used(cur_ste)) /* Empty, nothing to copy */
- 			continue;
- 
- 		err = dr_rule_rehash_copy_miss_list(matcher,
-@@ -791,7 +791,7 @@ dr_rule_handle_ste_branch(struct mlx5dr_rule *rule,
- 	miss_list = &cur_htbl->chunk->miss_list[index];
- 	ste = &cur_htbl->ste_arr[index];
- 
--	if (mlx5dr_ste_not_used_ste(ste)) {
-+	if (mlx5dr_ste_is_not_used(ste)) {
- 		if (dr_rule_handle_empty_entry(matcher, nic_matcher, cur_htbl,
- 					       ste, ste_location,
- 					       hw_ste, miss_list,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-index 2ca79b9bde1f..3d77f7d9fbdf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-@@ -466,10 +466,10 @@ int mlx5dr_send_postsend_htbl(struct mlx5dr_domain *dmn,
- 		 * need to add the bit_mask
- 		 */
- 		for (j = 0; j < num_stes_per_iter; j++) {
--			u8 *hw_ste = htbl->ste_arr[ste_index + j].hw_ste;
-+			struct mlx5dr_ste *ste = &htbl->ste_arr[ste_index + j];
- 			u32 ste_off = j * DR_STE_SIZE;
- 
--			if (mlx5dr_ste_is_not_valid_entry(hw_ste)) {
-+			if (mlx5dr_ste_is_not_used(ste)) {
- 				memcpy(data + ste_off,
- 				       formatted_ste, DR_STE_SIZE);
- 			} else {
+ 		if (dr_mask_is_smac_set(&mask.outer) &&
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-index 00c2f598f034..053e63844bd2 100644
+index 053e63844bd2..6e86704181cc 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-@@ -549,25 +549,6 @@ void mlx5dr_ste_always_miss_addr(struct mlx5dr_ste *ste, u64 miss_addr)
- 	dr_ste_set_always_miss((struct dr_hw_ste_format *)ste->hw_ste);
+@@ -709,7 +709,14 @@ int mlx5dr_ste_build_pre_check(struct mlx5dr_domain *dmn,
+ {
+ 	if (!value && (match_criteria & DR_MATCHER_CRITERIA_MISC)) {
+ 		if (mask->misc.source_port && mask->misc.source_port != 0xffff) {
+-			mlx5dr_err(dmn, "Partial mask source_port is not supported\n");
++			mlx5dr_err(dmn,
++				   "Partial mask source_port is not supported\n");
++			return -EINVAL;
++		}
++		if (mask->misc.source_eswitch_owner_vhca_id &&
++		    mask->misc.source_eswitch_owner_vhca_id != 0xffff) {
++			mlx5dr_err(dmn,
++				   "Partial mask source_eswitch_owner_vhca_id is not supported\n");
+ 			return -EINVAL;
+ 		}
+ 	}
+@@ -2257,25 +2264,14 @@ void mlx5dr_ste_build_register_1(struct mlx5dr_ste_build *sb,
+ 	sb->ste_build_tag_func = &dr_ste_build_register_1_tag;
  }
  
--/* The assumption here is that we don't update the ste->hw_ste if it is not
-- * used ste, so it will be all zero, checking the next_lu_type.
-- */
--bool mlx5dr_ste_is_not_valid_entry(u8 *p_hw_ste)
--{
--	struct dr_hw_ste_format *hw_ste = (struct dr_hw_ste_format *)p_hw_ste;
+-static int dr_ste_build_src_gvmi_qpn_bit_mask(struct mlx5dr_match_param *value,
+-					      u8 *bit_mask)
++static void dr_ste_build_src_gvmi_qpn_bit_mask(struct mlx5dr_match_param *value,
++					       u8 *bit_mask)
+ {
+ 	struct mlx5dr_match_misc *misc_mask = &value->misc;
+ 
+-	/* Partial misc source_port is not supported */
+-	if (misc_mask->source_port && misc_mask->source_port != 0xffff)
+-		return -EINVAL;
 -
--	if (MLX5_GET(ste_general, hw_ste, next_lu_type) ==
--	    MLX5DR_STE_LU_TYPE_NOP)
--		return true;
+-	/* Partial misc source_eswitch_owner_vhca_id is not supported */
+-	if (misc_mask->source_eswitch_owner_vhca_id &&
+-	    misc_mask->source_eswitch_owner_vhca_id != 0xffff)
+-		return -EINVAL;
 -
--	return false;
--}
+ 	DR_STE_SET_MASK(src_gvmi_qp, bit_mask, source_gvmi, misc_mask, source_port);
+ 	DR_STE_SET_MASK(src_gvmi_qp, bit_mask, source_qp, misc_mask, source_sqn);
+ 	misc_mask->source_eswitch_owner_vhca_id = 0;
 -
--bool mlx5dr_ste_not_used_ste(struct mlx5dr_ste *ste)
--{
--	return !ste->refcount;
--}
+-	return 0;
+ }
+ 
+ static int dr_ste_build_src_gvmi_qpn_tag(struct mlx5dr_match_param *value,
+@@ -2320,19 +2316,15 @@ static int dr_ste_build_src_gvmi_qpn_tag(struct mlx5dr_match_param *value,
+ 	return 0;
+ }
+ 
+-int mlx5dr_ste_build_src_gvmi_qpn(struct mlx5dr_ste_build *sb,
+-				  struct mlx5dr_match_param *mask,
+-				  struct mlx5dr_domain *dmn,
+-				  bool inner, bool rx)
++void mlx5dr_ste_build_src_gvmi_qpn(struct mlx5dr_ste_build *sb,
++				   struct mlx5dr_match_param *mask,
++				   struct mlx5dr_domain *dmn,
++				   bool inner, bool rx)
+ {
+-	int ret;
 -
- /* Init one ste as a pattern for ste data array */
- void mlx5dr_ste_set_formatted_ste(u16 gvmi,
- 				  struct mlx5dr_domain_rx_tx *nic_dmn,
+ 	/* Set vhca_id_valid before we reset source_eswitch_owner_vhca_id */
+ 	sb->vhca_id_valid = mask->misc.source_eswitch_owner_vhca_id;
+ 
+-	ret = dr_ste_build_src_gvmi_qpn_bit_mask(mask, sb->bit_mask);
+-	if (ret)
+-		return ret;
++	dr_ste_build_src_gvmi_qpn_bit_mask(mask, sb->bit_mask);
+ 
+ 	sb->rx = rx;
+ 	sb->dmn = dmn;
+@@ -2340,6 +2332,4 @@ int mlx5dr_ste_build_src_gvmi_qpn(struct mlx5dr_ste_build *sb,
+ 	sb->lu_type = MLX5DR_STE_LU_TYPE_SRC_GVMI_AND_QP;
+ 	sb->byte_mask = dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
+ 	sb->ste_build_tag_func = &dr_ste_build_src_gvmi_qpn_tag;
+-
+-	return 0;
+ }
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 0883956c58c0..6d898facd26d 100644
+index 6d898facd26d..a3825338caaa 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -227,7 +227,6 @@ void mlx5dr_ste_set_hit_gvmi(u8 *hw_ste_p, u16 gvmi);
- void mlx5dr_ste_set_hit_addr(u8 *hw_ste, u64 icm_addr, u32 ht_size);
- void mlx5dr_ste_always_miss_addr(struct mlx5dr_ste *ste, u64 miss_addr);
- void mlx5dr_ste_set_bit_mask(u8 *hw_ste_p, u8 *bit_mask);
--bool mlx5dr_ste_not_used_ste(struct mlx5dr_ste *ste);
- bool mlx5dr_ste_is_last_in_rule(struct mlx5dr_matcher_rx_tx *nic_matcher,
- 				u8 ste_location);
- void mlx5dr_ste_rx_set_flow_tag(u8 *hw_ste_p, u32 flow_tag);
-@@ -266,6 +265,11 @@ static inline void mlx5dr_ste_get(struct mlx5dr_ste *ste)
- 	ste->refcount++;
- }
+@@ -346,10 +346,10 @@ void mlx5dr_ste_build_register_0(struct mlx5dr_ste_build *sb,
+ void mlx5dr_ste_build_register_1(struct mlx5dr_ste_build *sb,
+ 				 struct mlx5dr_match_param *mask,
+ 				 bool inner, bool rx);
+-int mlx5dr_ste_build_src_gvmi_qpn(struct mlx5dr_ste_build *sb,
+-				  struct mlx5dr_match_param *mask,
+-				  struct mlx5dr_domain *dmn,
+-				  bool inner, bool rx);
++void mlx5dr_ste_build_src_gvmi_qpn(struct mlx5dr_ste_build *sb,
++				   struct mlx5dr_match_param *mask,
++				   struct mlx5dr_domain *dmn,
++				   bool inner, bool rx);
+ void mlx5dr_ste_build_empty_always_hit(struct mlx5dr_ste_build *sb, bool rx);
  
-+static inline bool mlx5dr_ste_is_not_used(struct mlx5dr_ste *ste)
-+{
-+	return !ste->refcount;
-+}
-+
- void mlx5dr_ste_set_hit_addr_by_next_htbl(u8 *hw_ste,
- 					  struct mlx5dr_ste_htbl *next_htbl);
- bool mlx5dr_ste_equal_tag(void *src, void *dst);
-@@ -991,7 +995,6 @@ struct mlx5dr_icm_chunk *
- mlx5dr_icm_alloc_chunk(struct mlx5dr_icm_pool *pool,
- 		       enum mlx5dr_icm_chunk_size chunk_size);
- void mlx5dr_icm_free_chunk(struct mlx5dr_icm_chunk *chunk);
--bool mlx5dr_ste_is_not_valid_entry(u8 *p_hw_ste);
- int mlx5dr_ste_htbl_init_and_postsend(struct mlx5dr_domain *dmn,
- 				      struct mlx5dr_domain_rx_tx *nic_dmn,
- 				      struct mlx5dr_ste_htbl *htbl,
+ /* Actions utils */
 -- 
 2.26.2
 
