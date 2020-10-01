@@ -2,175 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE8C27FC1A
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 10:59:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F08F727FC2A
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 11:04:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731067AbgJAI7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 04:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35286 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725894AbgJAI73 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 04:59:29 -0400
-Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4599DC0613D0
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 01:59:29 -0700 (PDT)
-Received: from [IPv6:2a02:8010:6359:1:28b7:b31f:54ed:5afa] (unknown [IPv6:2a02:8010:6359:1:28b7:b31f:54ed:5afa])
-        (Authenticated sender: james)
-        by mail.katalix.com (Postfix) with ESMTPSA id 4AC3C7EBB6;
-        Thu,  1 Oct 2020 09:59:27 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1601542767; bh=54o+rjcQCNgXAoPAo06NGvn06wbXmN7sz/igcoBKY8M=;
-        h=Subject:To:References:From:Message-ID:Date:MIME-Version:
-         In-Reply-To:From;
-        z=Subject:=20Re:=20[PATCH=20net-next=200/6]=20l2tp:=20add=20ac/pppo
-         e=20driver|To:=20Tom=20Parkin=20<tparkin@katalix.com>,=20netdev@vg
-         er.kernel.org|References:=20<20200930210707.10717-1-tparkin@katali
-         x.com>|From:=20James=20Chapman=20<jchapman@katalix.com>|Message-ID
-         :=20<34026662-1db6-c9b4-f523-e1a9cc869c80@katalix.com>|Date:=20Thu
-         ,=201=20Oct=202020=2009:59:26=20+0100|MIME-Version:=201.0|In-Reply
-         -To:=20<20200930210707.10717-1-tparkin@katalix.com>;
-        b=jwKmXdeAoquyjF0ucRTqUh8rdixPpP0blrwJLyP4KKz48fXWOi/Ra6qyRgiMmZq7A
-         A1OEbGJy4XrBfM/vBv7LZvM9vsHyIAhUpuITS8ejLgLK0d+yFkF5fQSaTHhXIgaZoP
-         UHwLgdsNJMYzMS9/lJY3k49M3VYSv8pvTtWxaxWLD8O63YLiFcjM3zcF9OTQYiUW8e
-         jHCJ0ka3B1Lz4bK9yfCl6fK0tjlOVMduIjp5DAASQsmJKeKcZYbY56iY9TvuwzQ1F3
-         mUcfXZ0qnmJBGE/5kDU4X+TjZgEbp9PLk1rPnRreWpz/EB43iDaPsU7eB5/3X5pBpL
-         6eK3piV62oWsA==
-Subject: Re: [PATCH net-next 0/6] l2tp: add ac/pppoe driver
-To:     Tom Parkin <tparkin@katalix.com>, netdev@vger.kernel.org
-References: <20200930210707.10717-1-tparkin@katalix.com>
-From:   James Chapman <jchapman@katalix.com>
-Autocrypt: addr=jchapman@katalix.com; prefer-encrypt=mutual; keydata=
- xsBNBFDmvq0BCACizu6XvQjeWZ1Mnal/oG9AkCs5Rl3GULpnH0mLvPZhU7oKbgx5MHaFDKVJ
- rQTbNEchbLDN6e5+UD98qa4ebvNx1ZkoOoNxxiuMQGWaLojDKBc9x+baW1CPtX55ikq2LwGr
- 0glmtUF6Aolpw6GzDrzZEqH+Nb+L3hNTLBfVP+D1scd4R7w2Nw+BSQXPQYjnOEBDDq4fSWoI
- Cm2E18s3bOHDT9a4ZuB9xLS8ZuYGW6p2SMPFHQb09G82yidgxRIbKsJuOdRTIrQD/Z3mEuT/
- 3iZsUFEcUN0T/YBN3a3i0P1uIad7XfdHy95oJTAMyrxnJlnAX3F7YGs80rnrKBLZ8rFfABEB
- AAHNJEphbWVzIENoYXBtYW4gPGpjaGFwbWFuQGthdGFsaXguY29tPsLAeAQTAQIAIgUCUOa+
- rQIbIwYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQINzVgFp/OkBr2gf7BA4jmtvUOGOO
- JFsj1fDmbAzyE6Q79H6qnkgYm7QNEw7o+5r7EjaUwsh0w13lNtKNS8g7ZWkiBmSOguJueKph
- GCdyY/KOHZ7NoJw39dTGVZrvJmyLDn/CQN0saRSJZXWtV31ccjfpJGQEn9Gb0Xci0KjrlH1A
- cqxzjwTmBUr4S2EHIzCcini1KTtjbtsE+dKP4zqR/T52SXVoYvqMmJOhUhXh62C0mu8FoDM0
- iFDEy4B0LcGAJt6zXy+YCqz7dOwhZBB4QX4F1N2BLF3Yd1pv8wBBZE7w70ds7rD7pnIaxXEK
- D6yCGrsZrdqAJfAgYL1lqkNffZ6uOSQPFOPod9UiZM7ATQRQ5r6tAQgAyROh3s0PyPx2L2Fb
- jC1mMi4cZSCpeX3zM9aM4aU8P16EDfzBgGv/Sme3JcrYSzIAJqxCvKpR+HoKhPk34HUR/AOk
- 16pP3lU0rt6lKel2spD1gpMuCWjAaFs+dPyUAw13py4Y5Ej2ww38iKujHyT586U6skk9xixK
- 1aHmGJx7IqqRXHgjb6ikUlx4PJdAUn2duqasQ8axjykIVK5xGwXnva/pnVprPSIKrydNmXUq
- BIDtFQ4Qz1PQVvK93KeCVQpxxisYNFRQ5TL6PtgVtK8uunABFdsRqlsw1Ob0+mD5fidITCIJ
- mYOL8K74RYU4LfhspS4JwT8nmKuJmJVZ5DjY2wARAQABwsBfBBgBAgAJBQJQ5r6tAhsMAAoJ
- ECDc1YBafzpA9CEH/jJ8Ye73Vgm38iMsxNYJ9Do9JvVJzq7TEduqWzAFew8Ft0F9tZAiY0J3
- U2i4vlVWK8Kbnh+44VAKXYzaddLXAxOcZ8YYy+sVfeVoJs3lAH+SuRwt0EplHWvCK5AkUhUN
- jjIvsQoNBVUP3AcswIqNOrtSkbuUkevNMyPtd0GLS9HVOW0e+7nFce7Ow9ahKA3iGg5Re9rD
- UlDluVylCCNnUD8Wxgve4K+thRL9T7kxkr7aX7WJ7A4a8ky+r3Daf7OhGN9S/Z/GMSs0E+1P
- Qm7kZ2e0J6PSfzy9xDtoRXRNigtN2o8DHf/quwckT5T6Z6WiKEaIKdgaXZVhphENThl7lp8=
-Organization: Katalix Systems Ltd
-Message-ID: <34026662-1db6-c9b4-f523-e1a9cc869c80@katalix.com>
-Date:   Thu, 1 Oct 2020 09:59:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1731657AbgJAJEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 05:04:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45208 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725921AbgJAJEV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 05:04:21 -0400
+Received: from localhost (unknown [176.207.245.61])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BB5FE20B1F;
+        Thu,  1 Oct 2020 09:04:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601543060;
+        bh=HQjoEcOv8KwEfpAXjiY8y6TCpgLSyjHKGWFELU9g2YY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RS5MA3n8y2Nh2jiSlK3gngSrTWZ2qjjG9kwhb1JSCt+fSTnCYA6pXaq47G4mrh/6a
+         js0l9WxkNOqT10sPDsO5gr78Qxtdgp3UgSecO2+xMYDMZx4+xnpYSop+k90ZRUFPo4
+         WyBMqdUT2hKbaOjXLVMLbLtLFdwkDtxL145Ol7kE=
+Date:   Thu, 1 Oct 2020 11:04:15 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        sameehj@amazon.com, kuba@kernel.org, daniel@iogearbox.net,
+        ast@kernel.org, shayagr@amazon.com, brouer@redhat.com,
+        echaudro@redhat.com, lorenzo.bianconi@redhat.com,
+        dsahern@kernel.org
+Subject: Re: [PATCH v3 net-next 00/12] mvneta: introduce XDP multi-buffer
+ support
+Message-ID: <20201001090415.GB13449@lore-desk>
+References: <cover.1601478613.git.lorenzo@kernel.org>
+ <5f74e0cc804fa_364f8208d4@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-In-Reply-To: <20200930210707.10717-1-tparkin@katalix.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="LyciRD1jyfeSSjG0"
+Content-Disposition: inline
+In-Reply-To: <5f74e0cc804fa_364f8208d4@john-XPS-13-9370.notmuch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/09/2020 22:07, Tom Parkin wrote:
-> L2TPv2 tunnels are often used as a part of a home broadband connection,=
 
-> using a PPP link to connect the subscriber network into the Internet
-> Service Provider's network.
->
-> In this scenario, PPPoE is widely used between the L2TP Access
-> Concentrator (LAC) and the subscriber.  The LAC effectively acts as a
-> PPPoE server, switching PPP frames from incoming PPPoE packets into an
-> L2TP session.  The PPP session is then terminated at the L2TP Network
-> Server (LNS) on the edge of the ISP's IP network.
->
-> This patchset adds a driver to the L2TP subsystem to support this mode
-> of operation.
->
-> The new driver, l2tp_ac_pppoe, adds support for the existing pseudowire=
+--LyciRD1jyfeSSjG0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> type L2TP_PWTYPE_PPP_AC, and is instantiated using the existing L2TP
-> netlink L2TP_CMD_SESSION_CREATE.  It is expected to be used as follows:=
+> Lorenzo Bianconi wrote:
+> > This series introduce XDP multi-buffer support. The mvneta driver is
+> > the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+> > please focus on how these new types of xdp_{buff,frame} packets
+> > traverse the different layers and the layout design. It is on purpose
+> > that BPF-helpers are kept simple, as we don't want to expose the
+> > internal layout to allow later changes.
+> >=20
+> > For now, to keep the design simple and to maintain performance, the XDP
+> > BPF-prog (still) only have access to the first-buffer. It is left for
+> > later (another patchset) to add payload access across multiple buffers.
+> > This patchset should still allow for these future extensions. The goal
+> > is to lift the XDP MTU restriction that comes with XDP, but maintain
+> > same performance as before.
+> >=20
+> > The main idea for the new multi-buffer layout is to reuse the same
+> > layout used for non-linear SKB. This rely on the "skb_shared_info"
+> > struct at the end of the first buffer to link together subsequent
+> > buffers. Keeping the layout compatible with SKBs is also done to ease
+> > and speedup creating an SKB from an xdp_{buff,frame}. Converting
+> > xdp_frame to SKB and deliver it to the network stack is shown in cpumap
+> > code (patch 12/12).
+>=20
+> Couple questions I think we want in the cover letter. How I read above
+> is if mb is enabled every frame received at the end of the first buffer
+> there will be skb_shared_info field.
 
->
->  * A userspace PPPoE daemon running on the LAC handles the PPPoE
->    discovery process up to the point of assigning a PPPoE session ID an=
-d
->    sending the PADS packet to the PPPoE peer to establish the PPPoE
->    session.
->  * Userspace code running on the LAC then instantiates an L2TP tunnel
->    and session with the LNS using the L2TP control protocol.
->  * Finally, the data path for PPPoE session frames through the L2TP
->    session to the LAC is instantiated by sending a genetlink
->    L2TP_CMD_SESSION_CREATE command to the kernel, including
->    the PPPoE-specific metadata required for L2TP_PWTYPE_PPP_AC sessions=
+setting mb bit the driver notifies the current xdp_frame is a "non-linear"
+one and the skb_shared_info is properly populated. As you said below,
+the info is per-frame, so we can receive linear frames (mb =3D 0) and
+non-linear ones (mb =3D 1). For a linear frame we do not need to access
+the skb_shared_info, so we will not introduce any penalty.
 
->    (this is documented in the patch series commit comments).
->
-> Supporting this driver submission we have two examples of userspace
-> projects which use L2TP_PWTYPE_PPP_AC:
->
->  * https://github.com/katalix/l2tp-ktest
->
->    This is a unit-test suite for the kernel L2TP subsystem which has
->    been updated to include basic lifetime and datapath tests for
->    l2tp_ac_pppoe.
->
->    The new tests are automatically enabled when l2tp_ac_pppoe
->    availability is detected, and hence support for l2tp_ac_pppoe is on
->    the master branch of the git repository.
->
->  * https://github.com/katalix/go-l2tp
->
->    This is a Go library for building L2TP applications on Linux, and
->    includes a suite of example daemons which utilise the library.
->
->    The daemon kpppoed implements the PPPoE discovery protocol, and spaw=
-ns
->    an instance of a daemon kl2tpd which handles the L2TP control protoc=
-ol
->    and instantiates the kernel data path.
->
->    The code utilising l2tp_ac_pppoe is on the branch tp_002_pppoe_1
->    pending merge of this patchset in the kernel.
->
-> Notes on the patchset itself:
->
->  * Patches 1-4 lay groundwork for the addition of the new driver, makin=
-g
->    tweaks to the l2tp netlink code to allow l2tp_ac_pppoe to access the=
+>=20
+> First just to be clear a driver may have mb support but the mb bit
+> should only be used per frame so a frame with only a single buffer
+> will not have any extra cost even when driver/network layer support
+> mb. This way I can receive both multibuffer and single buffer frames
+> in the same stack without extra overhead on single buffer frames. I
+> think we want to put the details here in the cover letter so we don't
+> have to read mvneta driver to learn these details. I'll admit we've
+> sort of flung features like this with minimal descriptions in the
+> past, but this is important so lets get it described here.
 
->    netlink attributes it requires.
->  * Patch 5 adds the new driver itself and hooks it into the kernel
->    configuration and build system.
->  * Patch 6 updates the l2tp documentation under Documentation/ to
->    include information about the new driver.
->
-> Tom Parkin (6):
->   l2tp: add netlink info to session create callback
->   l2tp: tweak netlink session create to allow L2TPv2 ac_pppoe
->   l2tp: allow v2 netlink session create to pass ifname attribute
->   l2tp: add netlink attributes for ac_ppp session creation
->   l2tp: add ac_pppoe pseudowire driver
->   docs: networking: update l2tp.rst to document PPP_AC pseudowires
->
->  Documentation/networking/l2tp.rst |  69 +++--
->  include/uapi/linux/l2tp.h         |   2 +
->  net/l2tp/Kconfig                  |   7 +
->  net/l2tp/Makefile                 |   1 +
->  net/l2tp/l2tp_ac_pppoe.c          | 446 ++++++++++++++++++++++++++++++=
+ack, I will add the info above in cover letter. Thanks for pointing this ou=
+t.
 
->  net/l2tp/l2tp_core.h              |   4 +-
->  net/l2tp/l2tp_eth.c               |   3 +-
->  net/l2tp/l2tp_netlink.c           |  20 +-
->  net/l2tp/l2tp_ppp.c               |   3 +-
->  9 files changed, 527 insertions(+), 28 deletions(-)
->  create mode 100644 net/l2tp/l2tp_ac_pppoe.c
->
-Reviewed-by: James Chapman <jchapman@katalix.com>
+>=20
+> Or put the details in the patch commits those are pretty terse for
+> a new feature that has impacts for all xdp driver writers.
+> >=20
+> > In order to provide to userspace some metdata about the non-linear
+> > xdp_{buff,frame}, we introduced 2 bpf helpers:
+> > - bpf_xdp_get_frag_count:
+> >   get the number of fragments for a given xdp multi-buffer.
+> > - bpf_xdp_get_frags_total_size:
+> >   get the total size of fragments for a given xdp multi-buffer.
+> >=20
+> > Typical use cases for this series are:
+> > - Jumbo-frames
+> > - Packet header split (please see Google=EF=BF=BD=EF=BF=BD=EF=BF=BDs us=
+e-case @ NetDevConf 0x14, [0])
+> > - TSO
+> >=20
+> > More info about the main idea behind this approach can be found here [1=
+][2].
+> >=20
+> > We carried out some throughput tests in order to verify we did not intr=
+oduced
+> > any performance regression adding xdp multi-buff support to mvneta:
+> >=20
+> > offered load is ~ 1000Kpps, packet size is 64B
+> >=20
+> > commit: 879456bedbe5 ("net: mvneta: avoid possible cache misses in mvne=
+ta_rx_swbm")
+> > - xdp-pass:     ~162Kpps
+> > - xdp-drop:     ~701Kpps
+> > - xdp-tx:       ~185Kpps
+> > - xdp-redirect: ~202Kpps
+> >=20
+> > mvneta xdp multi-buff:
+> > - xdp-pass:     ~163Kpps
+> > - xdp-drop:     ~739Kpps
+> > - xdp-tx:       ~182Kpps
+> > - xdp-redirect: ~202Kpps
+>=20
+> But these are fairly low rates?  Also why can't we push line rate
+> here on xdp-tx and xdp-redirect, 1gbps should be no problem unless
+> we have a very small core or something? Finally, can you explain
 
+I am using a marvell EspressoBin to develop this feature.
+The Espressobin runs a cortex a53 and it is not able to push line rate.
+The tests above want to prove there is no penalty introducing xdp multi-buff
+for linear case (I will point out clearly in the next cover-letter,
+the tests above refer to linear case (mb =3D 0))
 
+> why the huge hit between xdp-drop and xdp-tx?
+
+not sure at the moment, the difference is not due to xdp multi-buff
+
+>=20
+> I'm a bit wary of touching the end of a buffer on 40/100Gbps nic
+> with DDIO and getting a cache miss. Do you have some argument why
+> this wouldn't be the case? Do we need someone to step up with a
+> 10/40/100gbps nic and implement the feature as well so we can verify
+> this?
+
+It would be interesting to have the implementation on a high-end device.
+IIRC intel folks are working on it for AF_XDP.
+
+Regards,
+Lorenzo
+
+>=20
+> >=20
+> > This series is based on "bpf: cpumap: remove rcpu pointer from cpu_map_=
+build_skb signature"
+> > https://patchwork.ozlabs.org/project/netdev/patch/33cb9b7dc447de3ea6fd6=
+ce713ac41bca8794423.1601292015.git.lorenzo@kernel.org/
+> >=20
+> > Changes since v2:
+> > - add throughput measurements
+> > - drop bpf_xdp_adjust_mb_header bpf helper
+> > - introduce selftest for xdp multibuffer
+> > - addressed comments on bpf_xdp_get_frag_count
+> > - introduce xdp multi-buff support to cpumaps
+> >=20
+> > Changes since v1:
+> > - Fix use-after-free in xdp_return_{buff/frame}
+> > - Introduce bpf helpers
+> > - Introduce xdp_mb sample program
+> > - access skb_shared_info->nr_frags only on the last fragment
+> >=20
+> > Changes since RFC:
+> > - squash multi-buffer bit initialization in a single patch
+> > - add mvneta non-linear XDP buff support for tx side
+> >=20
+> > [0] https://netdevconf.info/0x14/pub/slides/62/Implementing%20TCP%20RX%=
+20zero%20copy.pdf
+> > [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/x=
+dp-multi-buffer01-design.org
+> > [2] https://netdevconf.info/0x14/pub/slides/10/add-xdp-on-driver.pdf (X=
+DPmulti-buffers section)
+> >=20
+> > Lorenzo Bianconi (10):
+> >   xdp: introduce mb in xdp_buff/xdp_frame
+> >   xdp: initialize xdp_buff mb bit to 0 in all XDP drivers
+> >   net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
+> >   xdp: add multi-buff support to xdp_return_{buff/frame}
+> >   net: mvneta: add multi buffer support to XDP_TX
+> >   bpf: move user_size out of bpf_test_init
+> >   bpf: introduce multibuff support to bpf_prog_test_run_xdp()
+> >   bpf: add xdp multi-buffer selftest
+> >   net: mvneta: enable jumbo frames for XDP
+> >   bpf: cpumap: introduce xdp multi-buff support
+> >=20
+> > Sameeh Jubran (2):
+> >   bpf: helpers: add multibuffer support
+> >   samples/bpf: add bpf program that uses xdp mb helpers
+> >=20
+> >  drivers/net/ethernet/amazon/ena/ena_netdev.c  |   1 +
+> >  drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |   1 +
+> >  .../net/ethernet/cavium/thunder/nicvf_main.c  |   1 +
+> >  .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   1 +
+> >  drivers/net/ethernet/intel/i40e/i40e_txrx.c   |   1 +
+> >  drivers/net/ethernet/intel/ice/ice_txrx.c     |   1 +
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   1 +
+> >  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   1 +
+> >  drivers/net/ethernet/marvell/mvneta.c         | 131 +++++++------
+> >  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   1 +
+> >  drivers/net/ethernet/mellanox/mlx4/en_rx.c    |   1 +
+> >  .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   1 +
+> >  .../ethernet/netronome/nfp/nfp_net_common.c   |   1 +
+> >  drivers/net/ethernet/qlogic/qede/qede_fp.c    |   1 +
+> >  drivers/net/ethernet/sfc/rx.c                 |   1 +
+> >  drivers/net/ethernet/socionext/netsec.c       |   1 +
+> >  drivers/net/ethernet/ti/cpsw.c                |   1 +
+> >  drivers/net/ethernet/ti/cpsw_new.c            |   1 +
+> >  drivers/net/hyperv/netvsc_bpf.c               |   1 +
+> >  drivers/net/tun.c                             |   2 +
+> >  drivers/net/veth.c                            |   1 +
+> >  drivers/net/virtio_net.c                      |   2 +
+> >  drivers/net/xen-netfront.c                    |   1 +
+> >  include/net/xdp.h                             |  31 ++-
+> >  include/uapi/linux/bpf.h                      |  14 ++
+> >  kernel/bpf/cpumap.c                           |  45 +----
+> >  net/bpf/test_run.c                            |  45 ++++-
+> >  net/core/dev.c                                |   1 +
+> >  net/core/filter.c                             |  42 ++++
+> >  net/core/xdp.c                                | 104 ++++++++++
+> >  samples/bpf/Makefile                          |   3 +
+> >  samples/bpf/xdp_mb_kern.c                     |  68 +++++++
+> >  samples/bpf/xdp_mb_user.c                     | 182 ++++++++++++++++++
+> >  tools/include/uapi/linux/bpf.h                |  14 ++
+> >  .../testing/selftests/bpf/prog_tests/xdp_mb.c |  77 ++++++++
+> >  .../selftests/bpf/progs/test_xdp_multi_buff.c |  24 +++
+> >  36 files changed, 691 insertions(+), 114 deletions(-)
+> >  create mode 100644 samples/bpf/xdp_mb_kern.c
+> >  create mode 100644 samples/bpf/xdp_mb_user.c
+> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_mb.c
+> >  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_multi_bu=
+ff.c
+> >=20
+> > --=20
+> > 2.26.2
+> >=20
+>=20
+>=20
+
+--LyciRD1jyfeSSjG0
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX3WbjQAKCRA6cBh0uS2t
+rCARAQCZAsQr+KSYL2L7r2JKPLxJp7mE+tJ+wCn8UOhe2m2fhQD/QLBZlVfnnPU8
+mPh59FdoES7vq+6sd4LQp/qhx2qClwk=
+=lNg1
+-----END PGP SIGNATURE-----
+
+--LyciRD1jyfeSSjG0--
