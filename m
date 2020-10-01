@@ -2,187 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE0E92804BA
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 19:11:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2CBE2804BE
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 19:11:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732787AbgJARLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 13:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732213AbgJARLh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 13:11:37 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC4AC0613D0;
-        Thu,  1 Oct 2020 10:11:37 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id u4so5288619ljd.10;
-        Thu, 01 Oct 2020 10:11:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OQfLRcAOWIw59NGfi9I7ckeREQIiyms4IQUXnhx6Cus=;
-        b=rlOFvsv5FwPcqIxobQWQ1xGP+0tJz/39SJOrkdvVSsV2wDiuwU5KtbGGXd8gIbfp7G
-         Fz6lUfVfTVmWLBGLtXoNYw5eQVGBSPylBSM3LLMgoQm4rNGuGouXPYPxnh5b13Tm6Xi/
-         9jPJPlx3TXKfi033zJMImDtn2B5KDHOfFKLm8ZfRLsh+Y0sx58PzJsqcJJEKBqrvyZL9
-         Jr47hoX3ChaN1NL8tf5GQ3cxM6fo30suy5NHN4V+pORPKwttTDAZCMYDKrnEEXCAZcNd
-         UveDzaVg6YnTHEkgTsI9lAszviyJ9DZloRmnuFfD3pgbdjAZWcP20KqEgSuwfQYx84YY
-         1N2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OQfLRcAOWIw59NGfi9I7ckeREQIiyms4IQUXnhx6Cus=;
-        b=DEQUbGVKQeVaeRSUrEcGh6QNbfNb0vvgf1VrenOMNb2cvlchPFXne3X8ZZRgz25MfK
-         9rcEXbUi2+3wvvXeOKzgpfFqjIwiljbl4NjbJy3/BDoEXlTWo8EtiscfTgew8hVAfvbo
-         B73cXXyC5ZP7+2PavLnPjmebJ52hOj1F/eMHh/+LBiquIA93e+/n8i1k6W6tuZmEUutQ
-         396CB3ZCwddo1Mx1Ydkw34WJxBaJYaDP9eE++O11kS5bebdx/R9aWfUmvimtYdpdlk1L
-         boul2CWqAqoByr4lTMATJZOTgquPbzOseNdLUxmJ8ZRamV8pirLrLYC5lvf9pWOehKv+
-         R7xA==
-X-Gm-Message-State: AOAM531biNBTMijuF9DOIiSr7byuXBq+trL9Ce7FZhhwBjVbLFDlwZhs
-        7E02hF43mVKkQvuSpRCxdI92idifpt/PLBzMGKA=
-X-Google-Smtp-Source: ABdhPJxbusDTVfGWazhL3Hy3TeKApmIaH1qJcr83UTbUoH5BawhRrulOUmnUjCsEXKnbJ0c6OAv7vgNv5W0mkEGmYro=
-X-Received: by 2002:a2e:7014:: with SMTP id l20mr2810578ljc.91.1601572295556;
- Thu, 01 Oct 2020 10:11:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200928090805.23343-1-lmb@cloudflare.com> <20200928090805.23343-3-lmb@cloudflare.com>
- <20200929055851.n7fa3os7iu7grni3@kafai-mbp> <CAADnVQLwpWMea1rbFAwvR_k+GzOphaOW-kUGORf90PJ-Ezxm4w@mail.gmail.com>
- <CACAyw98WzZGcFnnr7ELvbCziz2axJA_7x2mcoQTf2DYWDYJ=KA@mail.gmail.com>
- <20201001072348.hxhpuoqmeln6twxw@ast-mbp.dhcp.thefacebook.com> <CAEf4Bzbjzj3wwxX84bLi-PLy=9+Bpe1bTDt=t0qR5t=xEkNjwQ@mail.gmail.com>
-In-Reply-To: <CAEf4Bzbjzj3wwxX84bLi-PLy=9+Bpe1bTDt=t0qR5t=xEkNjwQ@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 1 Oct 2020 10:11:23 -0700
-Message-ID: <CAADnVQJQeiyrN2JzOwV+zHDU5xg4TtpT0w9MgG6nujCK5z+GNQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/4] selftests: bpf: Add helper to compare
- socket cookies
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>, Martin KaFai Lau <kafai@fb.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-team <kernel-team@cloudflare.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S1732835AbgJARLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 13:11:51 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:14276 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732213AbgJARLv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 13:11:51 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 091H4Q7p164137;
+        Thu, 1 Oct 2020 13:11:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=7HYd247Ic8iyvRm6N7LXfzAGe5JT4hjDQbL+SDolh7w=;
+ b=Rjonb6Gnw0+M1m2u3SOzBTNxmd4gz59//5SprWxZzkfF2VcyZXhkU4+2o8l7PHgd1cA0
+ GKW+RtJZyRHaOZ/2PvcCJKtf+cuxjvGCsJB5wW3CtTRUj5NpAqRbovq3dL1xT0e+xj61
+ g/bluiHbR2LtAgoeWOD0cc40JxjgvehLpMOx+/t/z4YxyChrMTP1EyFHzNKwklsh26Nx
+ +e/rGjTVFM90F8K/WXBJC9PEDaYVXM53zs4rcUxuGBfrYeOCoBStbRQfjQSRdi4xSukP
+ b+pwFjtM8bC7guRYSGiq1Pg4fs9KpTdMFABxT/r/HnO9UIEf/+g5l4Kh0GIFK22gsgCD zQ== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33wh4andfb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 01 Oct 2020 13:11:46 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 091H2tpH017937;
+        Thu, 1 Oct 2020 17:11:44 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 33sw97wrt6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 01 Oct 2020 17:11:44 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 091HBgQm10617342
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 1 Oct 2020 17:11:42 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 099C0A4051;
+        Thu,  1 Oct 2020 17:11:42 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B2FD1A4040;
+        Thu,  1 Oct 2020 17:11:41 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  1 Oct 2020 17:11:41 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next 0/7] s390/net: updates 2020-10-01
+Date:   Thu,  1 Oct 2020 19:11:29 +0200
+Message-Id: <20201001171136.46830-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-01_06:2020-10-01,2020-10-01 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
+ priorityscore=1501 phishscore=0 suspectscore=0 bulkscore=0 clxscore=1015
+ mlxscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0 impostorscore=0
+ mlxlogscore=562 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2010010144
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 1, 2020 at 10:09 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Thu, Oct 1, 2020 at 12:25 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Wed, Sep 30, 2020 at 10:28:33AM +0100, Lorenz Bauer wrote:
-> > > On Tue, 29 Sep 2020 at 16:48, Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > ...
-> > >
-> > > > There was a warning. I noticed it while applying and fixed it up.
-> > > > Lorenz, please upgrade your compiler. This is not the first time su=
-ch
-> > > > warning has been missed.
-> > >
-> > > I tried reproducing this on latest bpf-next (b0efc216f577997) with gc=
-c
-> > > 9.3.0 by removing the initialization of duration:
-> > >
-> > > make: Entering directory '/home/lorenz/dev/bpf-next/tools/testing/sel=
-ftests/bpf'
-> > >   TEST-OBJ [test_progs] sockmap_basic.test.o
-> > >   TEST-HDR [test_progs] tests.h
-> > >   EXT-OBJ  [test_progs] test_progs.o
-> > >   EXT-OBJ  [test_progs] cgroup_helpers.o
-> > >   EXT-OBJ  [test_progs] trace_helpers.o
-> > >   EXT-OBJ  [test_progs] network_helpers.o
-> > >   EXT-OBJ  [test_progs] testing_helpers.o
-> > >   BINARY   test_progs
-> > > make: Leaving directory '/home/lorenz/dev/bpf-next/tools/testing/self=
-tests/bpf'
-> > >
-> > > So, gcc doesn't issue a warning. Jakub did the following little exper=
-iment:
-> > >
-> > > jkbs@toad ~/tmp $ cat warning.c
-> > > #include <stdio.h>
-> > >
-> > > int main(void)
-> > > {
-> > >         int duration;
-> > >
-> > >         fprintf(stdout, "%d", duration);
-> > >
-> > >         return 0;
-> > > }
-> > > jkbs@toad ~/tmp $ gcc -Wall -o /dev/null warning.c
-> > > warning.c: In function =E2=80=98main=E2=80=99:
-> > > warning.c:7:2: warning: =E2=80=98duration=E2=80=99 is used uninitiali=
-zed in this
-> > > function [-Wuninitialized]
-> > >     7 |  fprintf(stdout, "%d", duration);
-> > >       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > >
-> > >
-> > > The simple case seems to work. However, adding the macro breaks thing=
-s:
-> > >
-> > > jkbs@toad ~/tmp $ cat warning.c
-> > > #include <stdio.h>
-> > >
-> > > #define _CHECK(duration) \
-> > >         ({                                                      \
-> > >                 fprintf(stdout, "%d", duration);                \
-> > >         })
-> > > #define CHECK() _CHECK(duration)
-> > >
-> > > int main(void)
-> > > {
-> > >         int duration;
-> > >
-> > >         CHECK();
-> > >
-> > >         return 0;
-> > > }
-> > > jkbs@toad ~/tmp $ gcc -Wall -o /dev/null warning.c
-> > > jkbs@toad ~/tmp $
-> >
-> > That's very interesting. Thanks for the pointers.
-> > I'm using gcc version 9.1.1 20190605 (Red Hat 9.1.1-2)
-> > and I saw this warning while compiling selftests,
-> > but I don't see it with above warning.c example.
-> > clang warns correctly in both cases.
->
-> I think this might be the same problem I fixed for libbpf with [0].
-> Turns out, GCC explicitly calls out (somewhere in their docs) that
-> uninitialized variable warnings work only when compiled in optimized
-> mode, because some internal data structures used to detect this are
-> only maintained in optimized mode build.
->
-> Laurenz, can you try compiling your example with -O2?
+Hi Dave & Jakub,
 
-All of my experiments I did with -O2.
+please apply the following patch series to netdev's net-next tree.
 
->   [0] https://patchwork.ozlabs.org/project/netdev/patch/20200929220604.83=
-3631-2-andriin@fb.com/
->
-> >
-> > > Maybe this is https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D18501 ? =
-The
-> > > problem is still there on gcc 10. Compiling test_progs with clang doe=
-s
-> > > issue a warning FWIW, but it seems like other things break when doing
-> > > that.
-> >
-> > That gcc bug has been opened since transition to ssa. That was a huge
-> > transition for gcc. But I think the bug number is not correct. It point=
-s to a
-> > different issue. I've checked -fdump-tree-uninit-all dump with and with=
-out
-> > macro. They're identical. The tree-ssa-uninit pass suppose to warn, but=
- it
-> > doesn't. I wish I had more time to dig into it. A bit of debugging in
-> > gcc/tree-ssa-uninit.c can probably uncover the root cause.
+Patches 1-3 enable qeth to also support the .set_channels() ethtool
+callback for OSA devices. This completes support for the full range
+of device types.
+
+The other patches are just the usual mix of cleanups.
+(Even one for ctcm!)
+
+Thanks,
+Julian
+
+Julian Wiedmann (6):
+  s390/qeth: keep track of wanted TX queues
+  s390/qeth: de-magic the QIB parm area
+  s390/qeth: allow configuration of TX queues for OSA devices
+  s390/qeth: constify the disciplines
+  s390/qeth: use netdev_name()
+  s390/qeth: static checker cleanups
+
+Vasily Gorbik (1):
+  s390/ctcm: remove orphaned function declarations
+
+ drivers/s390/net/ctcm_fsms.h      |   1 -
+ drivers/s390/net/ctcm_mpc.h       |   1 -
+ drivers/s390/net/qeth_core.h      |  54 ++++++++--
+ drivers/s390/net/qeth_core_main.c | 163 ++++++++++++++----------------
+ drivers/s390/net/qeth_core_sys.c  |   6 +-
+ drivers/s390/net/qeth_ethtool.c   |  16 ++-
+ drivers/s390/net/qeth_l2_main.c   |  28 ++---
+ drivers/s390/net/qeth_l3_main.c   |  85 +++++++++-------
+ drivers/s390/net/qeth_l3_sys.c    |   8 +-
+ 9 files changed, 202 insertions(+), 160 deletions(-)
+
+-- 
+2.17.1
+
