@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D91052808D8
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 22:55:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 631F02808D9
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 22:55:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727172AbgJAUy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 16:54:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44788 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726515AbgJAUy4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Oct 2020 16:54:56 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8A52F20738;
-        Thu,  1 Oct 2020 20:54:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601585695;
-        bh=SjmdQT/xowg1GrQZByhxKNZm5Btq5Bqi/jfw9XlnQP4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WLCTM/cDciFV0g70Qi2DEeiebne3c1E03kClrfL9hPXhRh5qQMMyMxSrJvawYbhA4
-         KLaetytFp1AO/ABrSOIHlgGGDERI2Mq56Ee2EyNbnp8aXROdhLveJgfL5txuOne9Qu
-         gfP9RFXQj2iC7aA/5ScMHra7r1vQwhWGVf4XVrIU=
-Date:   Thu, 1 Oct 2020 13:54:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Moshe Shemesh <moshe@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 01/16] devlink: Change
- devlink_reload_supported() param type
-Message-ID: <20201001135454.668bafca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1601560759-11030-2-git-send-email-moshe@mellanox.com>
-References: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
-        <1601560759-11030-2-git-send-email-moshe@mellanox.com>
+        id S1730017AbgJAUzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 16:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726515AbgJAUzM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 16:55:12 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10596C0613D0
+        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 13:55:12 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kO5ba-00EodC-3N; Thu, 01 Oct 2020 22:55:10 +0200
+Message-ID: <b9be586bd097f76c554d3e404e0344ae817a12f1.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next 8/9] genetlink: use per-op policy for
+ CTRL_CMD_GETPOLICY
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, jiri@resnulli.us,
+        mkubecek@suse.cz, dsahern@kernel.org, pablo@netfilter.org
+Date:   Thu, 01 Oct 2020 22:55:09 +0200
+In-Reply-To: <20201001183016.1259870-9-kuba@kernel.org>
+References: <20201001183016.1259870-1-kuba@kernel.org>
+         <20201001183016.1259870-9-kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  1 Oct 2020 16:59:04 +0300 Moshe Shemesh wrote:
-> Change devlink_reload_supported() function to get devlink_ops pointer
-> param instead of devlink pointer param.
-> This change will be used in the next patch to check if devlink reload is
-> supported before devlink instance is allocated.
-> 
-> Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+On Thu, 2020-10-01 at 11:30 -0700, Jakub Kicinski wrote:
+> Wire up per-op policy for CTRL_CMD_GETPOLICY.
+> This saves us a call to genlmsg_parse() and will soon allow
+> dumping this policy.
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+Hmm. Probably should've asked this before - I think the code makes
+perfect sense, but I'm not sure how "this" follows?
+
+I mean, we could've saved the genlmsg_parse() call before, with much the
+same patch, having the per-op policy doesn't really have any bearing for
+that? It was just using a different policy - the family one - instead of
+the per-op one, but ...
+
+Am I missing something?
+
+johannes
+
+
