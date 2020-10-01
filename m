@@ -2,34 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5C2A27FABD
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 09:55:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF24827FAD3
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 09:55:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731689AbgJAHy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 03:54:59 -0400
-Received: from mx2.suse.de ([195.135.220.15]:44372 "EHLO mx2.suse.de"
+        id S1731828AbgJAHzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 03:55:21 -0400
+Received: from mx2.suse.de ([195.135.220.15]:44582 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731649AbgJAHyz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Oct 2020 03:54:55 -0400
+        id S1731685AbgJAHy7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 03:54:59 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 14467AC83;
-        Thu,  1 Oct 2020 07:54:53 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id E039DAC97;
+        Thu,  1 Oct 2020 07:54:57 +0000 (UTC)
 From:   Coly Li <colyli@suse.de>
 To:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
         netdev@vger.kernel.org, open-iscsi@googlegroups.com,
         linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Coly Li <colyli@suse.de>,
-        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
-        Christoph Hellwig <hch@lst.de>, Hannes Reinecke <hare@suse.de>,
-        Jan Kara <jack@suse.com>, Jens Axboe <axboe@kernel.dk>,
-        Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Vlastimil Babka <vbabka@suse.com>, stable@vger.kernel.org
-Subject: [PATCH v9 3/7] nvme-tcp: check page by sendpage_ok() before calling kernel_sendpage()
-Date:   Thu,  1 Oct 2020 15:54:04 +0800
-Message-Id: <20201001075408.25508-4-colyli@suse.de>
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        "David S . Miller" <davem@davemloft.net>, stable@vger.kernel.org
+Subject: [PATCH v9 4/7] tcp: use sendpage_ok() to detect misused .sendpage
+Date:   Thu,  1 Oct 2020 15:54:05 +0800
+Message-Id: <20201001075408.25508-5-colyli@suse.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201001075408.25508-1-colyli@suse.de>
 References: <20201001075408.25508-1-colyli@suse.de>
@@ -39,54 +35,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently nvme_tcp_try_send_data() doesn't use kernel_sendpage() to
-send slab pages. But for pages allocated by __get_free_pages() without
-__GFP_COMP, which also have refcount as 0, they are still sent by
-kernel_sendpage() to remote end, this is problematic.
+commit a10674bf2406 ("tcp: detecting the misuse of .sendpage for Slab
+objects") adds the checks for Slab pages, but the pages don't have
+page_count are still missing from the check.
 
-The new introduced helper sendpage_ok() checks both PageSlab tag and
-page_count counter, and returns true if the checking page is OK to be
-sent by kernel_sendpage().
+Network layer's sendpage method is not designed to send page_count 0
+pages neither, therefore both PageSlab() and page_count() should be
+both checked for the sending page. This is exactly what sendpage_ok()
+does.
 
-This patch fixes the page checking issue of nvme_tcp_try_send_data()
-with sendpage_ok(). If sendpage_ok() returns true, send this page by
-kernel_sendpage(), otherwise use sock_no_sendpage to handle this page.
+This patch uses sendpage_ok() in do_tcp_sendpages() to detect misused
+.sendpage, to make the code more robust.
 
+Fixes: a10674bf2406 ("tcp: detecting the misuse of .sendpage for Slab objects")
+Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
 Signed-off-by: Coly Li <colyli@suse.de>
-Cc: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Hannes Reinecke <hare@suse.de>
-Cc: Jan Kara <jack@suse.com>
-Cc: Jens Axboe <axboe@kernel.dk>
-Cc: Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>
-Cc: Philipp Reisner <philipp.reisner@linbit.com>
-Cc: Sagi Grimberg <sagi@grimberg.me>
-Cc: Vlastimil Babka <vbabka@suse.com>
+Cc: Vasily Averin <vvs@virtuozzo.com>
+Cc: David S. Miller <davem@davemloft.net>
 Cc: stable@vger.kernel.org
 ---
- drivers/nvme/host/tcp.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ net/ipv4/tcp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index 8f4f29f18b8c..d6a3e1487354 100644
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -913,12 +913,11 @@ static int nvme_tcp_try_send_data(struct nvme_tcp_request *req)
- 		else
- 			flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 31f3b858db81..2135ee7c806d 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -970,7 +970,8 @@ ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
+ 	long timeo = sock_sndtimeo(sk, flags & MSG_DONTWAIT);
  
--		/* can't zcopy slab pages */
--		if (unlikely(PageSlab(page))) {
--			ret = sock_no_sendpage(queue->sock, page, offset, len,
-+		if (sendpage_ok(page)) {
-+			ret = kernel_sendpage(queue->sock, page, offset, len,
- 					flags);
- 		} else {
--			ret = kernel_sendpage(queue->sock, page, offset, len,
-+			ret = sock_no_sendpage(queue->sock, page, offset, len,
- 					flags);
- 		}
- 		if (ret <= 0)
+ 	if (IS_ENABLED(CONFIG_DEBUG_VM) &&
+-	    WARN_ONCE(PageSlab(page), "page must not be a Slab one"))
++	    WARN_ONCE(!sendpage_ok(page),
++		      "page must not be a Slab one and have page_count > 0"))
+ 		return -EINVAL;
+ 
+ 	/* Wait for a connection to finish. One exception is TCP Fast Open
 -- 
 2.26.2
 
