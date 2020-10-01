@@ -2,83 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EE6727FB0A
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 10:07:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A37627FAFB
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 10:04:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731668AbgJAIHG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 1 Oct 2020 04:07:06 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:52078 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731596AbgJAIHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 04:07:05 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-402-6b_LtMKCMyORfAEColTw4A-1; Thu, 01 Oct 2020 04:00:50 -0400
-X-MC-Unique: 6b_LtMKCMyORfAEColTw4A-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9FA913EB9;
-        Thu,  1 Oct 2020 08:00:48 +0000 (UTC)
-Received: from hog.localdomain, (unknown [10.40.192.241])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E20CB5C1CF;
-        Thu,  1 Oct 2020 08:00:46 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
-        Sven Eckelmann <sven@narfation.org>,
-        b.a.t.m.a.n@lists.open-mesh.org
-Subject: [PATCH net 12/12] batman-adv: fix detection of lower link in batadv_get_real_netdevice
-Date:   Thu,  1 Oct 2020 09:59:36 +0200
-Message-Id: <9599bc5738a16580aa5b87a6586110953918d622.1600770261.git.sd@queasysnail.net>
-In-Reply-To: <cover.1600770261.git.sd@queasysnail.net>
-References: <cover.1600770261.git.sd@queasysnail.net>
+        id S1731067AbgJAIE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 04:04:29 -0400
+Received: from mx2.suse.de ([195.135.220.15]:53684 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725938AbgJAIE3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 04:04:29 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 98518AFAE;
+        Thu,  1 Oct 2020 08:04:27 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 5FD4960787; Thu,  1 Oct 2020 10:04:26 +0200 (CEST)
+Date:   Thu, 1 Oct 2020 10:04:26 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        andrew@lunn.ch, jiri@resnulli.us, dsahern@kernel.org,
+        pablo@netfilter.org
+Subject: Re: [RFC net-next 5/9] genetlink: add a structure for dump state
+Message-ID: <20201001080426.vh4eccbylwsyimde@lion.mk-sys.cz>
+References: <20201001000518.685243-1-kuba@kernel.org>
+ <20201001000518.685243-6-kuba@kernel.org>
+ <f035af6008cdca32c84f13bc3f38614fa0b535ac.camel@sipsolutions.net>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sd@queasysnail.net
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f035af6008cdca32c84f13bc3f38614fa0b535ac.camel@sipsolutions.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, batadv_get_real_netdevice can return different results in
-this situation:
+On Thu, Oct 01, 2020 at 09:48:31AM +0200, Johannes Berg wrote:
+> On Wed, 2020-09-30 at 17:05 -0700, Jakub Kicinski wrote:
+> > Whenever netlink dump uses more than 2 cb->args[] entries
+> > code gets hard to read. We're about to add more state to
+> > ctrl_dumppolicy() so create a structure.
+> > 
+> > Since the structure is typed and clearly named we can remove
+> > the local fam_id variable and use ctx->fam_id directly.
+> > 
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > ---
+> >  net/netlink/genetlink.c | 22 +++++++++++++---------
+> >  1 file changed, 13 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+> > index 38d8f353dba1..a8001044d8cd 100644
+> > --- a/net/netlink/genetlink.c
+> > +++ b/net/netlink/genetlink.c
+> > @@ -1102,13 +1102,18 @@ static int genl_ctrl_event(int event, const struct genl_family *family,
+> >  	return 0;
+> >  }
+> >  
+> > +struct ctrl_dump_policy_ctx {
+> > +	unsigned long state;
+> 
+> Maybe if we do this, also make a "struct netlink_policy_dump_state" in
+> include/net/netlink.h for the policy dump to use as a state? Right now
+> it just uses an "unsigned long *state" there.
+> 
+> I feel that would more clearly show what this "state" actually is.
+> 
+> Alternatively, perhaps just rename it to "policy_dump_state"? Yeah,
+> that's longer, but at least would be very obvious?
+> 
+> > +	unsigned int fam_id;
+> 
+> You could make this a u16 I guess, but it doesn't really matter.
+> 
+> >  static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
+> >  {
+> > +	struct ctrl_dump_policy_ctx *ctx = (void *)cb->args;
+> 
+> 
+> I'd also prefer if you stuck a
+> 
+> 	BUILD_BUG_ON(sizeof(*ctx) > sizeof(cb->args));
+> 
+> here. It's not likely we'll need so much more state here, but would
+> still be good to check IMHO.
 
-    ip netns add main
-    ip netns add peer
-    ip -net main link add dummy1 type dummy
-    ip -net main link add link dummy1 netns peer type macsec # same ifindex as dummy1
-    ip -net main link add link dummy1 netns peer type macsec port 2
+Definitely. And it should rather be cb->ctx than cb->args as on 32-bit
+architectures, cb->args is technically only 24 bytes while cb->ctx is
+always 48 bytes long. After all, the comment in the structure definition
+says args is deprecated.
 
-Let's use the presence of a ndo_get_iflink operation, rather than the
-value it returns, to detect a device without a link.
-
-Fixes: 5ed4a460a1d3 ("batman-adv: additional checks for virtual interfaces on top of WiFi")
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
----
- net/batman-adv/hard-interface.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/batman-adv/hard-interface.c b/net/batman-adv/hard-interface.c
-index 0d87c5d56844..8f7d2dd37321 100644
---- a/net/batman-adv/hard-interface.c
-+++ b/net/batman-adv/hard-interface.c
-@@ -223,7 +223,7 @@ static struct net_device *batadv_get_real_netdevice(struct net_device *netdev)
- 	if (!netdev)
- 		return NULL;
- 
--	if (netdev->ifindex == dev_get_iflink(netdev)) {
-+	if (!(netdev->netdev_ops && netdev->netdev_ops->ndo_get_iflink)) {
- 		dev_hold(netdev);
- 		return netdev;
- 	}
--- 
-2.28.0
-
+Michal
