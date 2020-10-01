@@ -2,162 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F2FB280AEA
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 01:09:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B125280B3F
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 01:16:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733131AbgJAXJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 19:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53664 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726855AbgJAXJz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 19:09:55 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0625C0613D0
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 16:09:55 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id h23so197677pjv.5
-        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 16:09:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0c4sDngFZ83QHOY6hrIOQuCbDbd9L0RjnD0ZUNXCSMI=;
-        b=g7SAlLwDXzsKB0Q/bEudflp3IYuyCct1d6qGzLO/5Am18xuQLQnnJEBMZW8a1L6N1K
-         vLGGv4/qG3NK11TJiaQLjDwXuRyh4HptrQblG34DqD/IMb3EO2S2Yfu+UbFPiOz0YsXY
-         eTDvKe1w2t54z50EFqV/lqp1fFL0ox5RFizkvFLG7xONN4m8KpfOfPImCEnU0+ZXVAr5
-         MfBsbaNpZbpq00uBTas3LA1rlilMDHbcWEF9A61p201fmWhJiUqYKi6llgoeN+ygf5ov
-         vZYVrHYgd7dEKygvfI1wuusd18u6ru0qXE1700bLutqmPiijJbeubK8L7rK3whDcmnHb
-         xKMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0c4sDngFZ83QHOY6hrIOQuCbDbd9L0RjnD0ZUNXCSMI=;
-        b=ioP7WiBDY7QFqikR3ikWTtbWUgfHQtKu57Cr57oa8n3fKgFHPtUh990ueVuVbcsShZ
-         rPQxTnOMfC/4qM5XC4/9oTxgaGQBc93cHxX7OEPBz64PurfTnjN6++iU33MFk1Adw22J
-         kygNRPj5p0U0+vknuBj4ZjKsFcdwqkrBvn7lkMtp5wRqoCfky95+x0a/V5L4+s/vFdMt
-         ZGQfZcOAwyevQloxNbkJo13/8uSAuOLWp8ztmXp8UTbNnN0270nu53vtW8qoyFrkYOWi
-         FUFwXf1AZetQ2ili02CvyI3f3KIUC0EqOIwoc2hmXb4LZ6o3F66MEhElWTct2Akn+7UV
-         FwrQ==
-X-Gm-Message-State: AOAM532kC0KygoZ8ZXVcY/SIhqFQjA08rStyQByJmxgJHbIgnes8lcAj
-        1lBmR/MMmvWtKpstzr1tWwQbvMgs5AgQDT6eYqBwKYH4JhA=
-X-Google-Smtp-Source: ABdhPJyn+Aih1Ex9qnhutouDBAnQIZB1G1mt45Qt2e+ubM0Iy59vX20BRF36UW3mCxVumzhMmdnbOAwhDzu4m3k21z8=
-X-Received: by 2002:a17:90a:6b04:: with SMTP id v4mr2220022pjj.101.1601593795113;
- Thu, 01 Oct 2020 16:09:55 -0700 (PDT)
+        id S1733085AbgJAXQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 19:16:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57086 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727780AbgJAXQB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 19:16:01 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 47D78206C1;
+        Thu,  1 Oct 2020 23:16:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601594160;
+        bh=H+dcucJ4STU7LMOUgRY8nTpNgSIe4iv/bRK1KL1Ig5w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e9QKeY//duY5x7epLGUHh7jvTjhk+E9Hy161W3LHuc2uwD+BQFGscaUMX3BIO1SVO
+         sw6PnEGxff79AhAWiQsHF4X3xkdfrJsGKEY7E0QM64kIZ0go2IHn6UTj2QWWP8YJ+y
+         q3FKTnSgOFfMU4UUTXdRD/AKSPMPWwneQj5kVdvE=
+Date:   Thu, 1 Oct 2020 16:15:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     saeed@kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Shay Drory <shayd@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [net V2 01/15] net/mlx5: Don't allow health work when device is
+ uninitialized
+Message-ID: <20201001161558.1a095385@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201001195247.66636-2-saeed@kernel.org>
+References: <20201001195247.66636-1-saeed@kernel.org>
+        <20201001195247.66636-2-saeed@kernel.org>
 MIME-Version: 1.0
-References: <20201001011232.4050282-1-andrew@lunn.ch> <20201001011232.4050282-2-andrew@lunn.ch>
-In-Reply-To: <20201001011232.4050282-2-andrew@lunn.ch>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Thu, 1 Oct 2020 16:09:43 -0700
-Message-ID: <CAKwvOdnVC8F1=QT03W5Zh9pJdTxxNfRcqXeob5_b4CXycvG1+g@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/2] Makefile.extrawarn: Add symbol for W=1
- warnings for today
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 6:12 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> There is a movement to try to make more and more of /drivers W=1
-> clean. But it will only stay clean if new warnings are quickly
-> detected and fixed, ideally by the developer adding the new code.
->
-> To allow subdirectories to sign up to being W=1 clean for a given
-> definition of W=1, export the current set of additional compile flags
-> using the symbol KBUILD_CFLAGS_W1_20200930. Subdirectory Makefiles can
-> then use:
->
-> subdir-ccflags-y := $(KBUILD_CFLAGS_W1_20200930)
->
-> To indicate they want to W=1 warnings as defined on 20200930.
->
-> Additional warnings can be added to the W=1 definition. This will not
-> affect KBUILD_CFLAGS_W1_20200930 and hence no additional warnings will
-> start appearing unless W=1 is actually added to the command
-> line. Developers can then take their time to fix any new W=1 warnings,
-> and then update to the latest KBUILD_CFLAGS_W1_<DATESTAMP> symbol.
+On Thu,  1 Oct 2020 12:52:33 -0700 saeed@kernel.org wrote:
+> From: Shay Drory <shayd@mellanox.com>
+> 
+> On error flow due to failure on driver load, driver can be
+> un-initializing while a health work is running in the background,
+> health work shouldn't be allowed at this point, as it needs resources to
+> be initialized and there is no point to recover on driver load failures.
+> 
+> Therefore, introducing a new state bit to indicated if device is
+> initialized, for health work to check before trying to recover the driver.
 
-I'm not a fan of this approach.  Are DATESTAMP configs just going to
-keep being added? Is it going to complicate isolating the issue from a
-randconfig build?  If we want more things to build warning-free at
-W=1, then why don't we start moving warnings from W=1 into the
-default, until this is no W=1 left?  That way we're cutting down on
-the kernel's configuration combinatorial explosion, rather than adding
-to it?
+Can't you cancel this work? Or make sure it's not scheduled?
+IMHO those "INITILIZED" bits are an anti-pattern.
 
->
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  scripts/Makefile.extrawarn | 34 ++++++++++++++++++----------------
->  1 file changed, 18 insertions(+), 16 deletions(-)
->
-> diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
-> index 95e4cdb94fe9..957dca35ae3e 100644
-> --- a/scripts/Makefile.extrawarn
-> +++ b/scripts/Makefile.extrawarn
-> @@ -20,24 +20,26 @@ export KBUILD_EXTRA_WARN
->  #
->  # W=1 - warnings which may be relevant and do not occur too often
->  #
-> -ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
-> -
-> -KBUILD_CFLAGS += -Wextra -Wunused -Wno-unused-parameter
-> -KBUILD_CFLAGS += -Wmissing-declarations
-> -KBUILD_CFLAGS += -Wmissing-format-attribute
-> -KBUILD_CFLAGS += -Wmissing-prototypes
-> -KBUILD_CFLAGS += -Wold-style-definition
-> -KBUILD_CFLAGS += -Wmissing-include-dirs
-> -KBUILD_CFLAGS += $(call cc-option, -Wunused-but-set-variable)
-> -KBUILD_CFLAGS += $(call cc-option, -Wunused-const-variable)
-> -KBUILD_CFLAGS += $(call cc-option, -Wpacked-not-aligned)
-> -KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation)
-> +KBUILD_CFLAGS_W1_20200930 += -Wextra -Wunused -Wno-unused-parameter
-> +KBUILD_CFLAGS_W1_20200930 += -Wmissing-declarations
-> +KBUILD_CFLAGS_W1_20200930 += -Wmissing-format-attribute
-> +KBUILD_CFLAGS_W1_20200930 += -Wmissing-prototypes
-> +KBUILD_CFLAGS_W1_20200930 += -Wold-style-definition
-> +KBUILD_CFLAGS_W1_20200930 += -Wmissing-include-dirs
-> +KBUILD_CFLAGS_W1_20200930 += $(call cc-option, -Wunused-but-set-variable)
-> +KBUILD_CFLAGS_W1_20200930 += $(call cc-option, -Wunused-const-variable)
-> +KBUILD_CFLAGS_W1_20200930 += $(call cc-option, -Wpacked-not-aligned)
-> +KBUILD_CFLAGS_W1_20200930 += $(call cc-option, -Wstringop-truncation)
->  # The following turn off the warnings enabled by -Wextra
-> -KBUILD_CFLAGS += -Wno-missing-field-initializers
-> -KBUILD_CFLAGS += -Wno-sign-compare
-> -KBUILD_CFLAGS += -Wno-type-limits
-> +KBUILD_CFLAGS_W1_20200930 += -Wno-missing-field-initializers
-> +KBUILD_CFLAGS_W1_20200930 += -Wno-sign-compare
-> +KBUILD_CFLAGS_W1_20200930 += -Wno-type-limits
-> +
-> +export KBUILD_CFLAGS_W1_20200930
-> +
-> +ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
->
-> -KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN1
-> +KBUILD_CPPFLAGS += $(KBUILD_CFLAGS_W1_20200930) -DKBUILD_EXTRA_WARN1
->
->  else
->
-> --
-> 2.28.0
->
-> --
-> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20201001011232.4050282-2-andrew%40lunn.ch.
+> Fixes: b6e0b6bebe07 ("net/mlx5: Fix fatal error handling during device load")
+> Signed-off-by: Shay Drory <shayd@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 
+You signed off twice :)
 
-
--- 
-Thanks,
-~Nick Desaulniers
+We should teach verify_signoff to catch that..
