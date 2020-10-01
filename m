@@ -2,129 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F5B02801CD
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 16:57:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 816B02801CB
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 16:57:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732626AbgJAO5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 10:57:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:41158 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732594AbgJAO5g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 10:57:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601564254;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WYkZxkGH8+Ni3dL2UCH+Omr99WI7mAY98UR45J0c/1o=;
-        b=KDmHl0h9B4Iu4VrIGw3Va0hfSP6mYzADJjzt+IhgkSTUBtAjwNk0w4QF5D6XZ/qP4+6pTc
-        8y6Y9POYFKQcpkgK7zR5pg5V1QhVN3Xm9VXiK7DppRWCfs3SC22SX2maVhvVPtEIY6yPG2
-        5LnocDJZiNMMvCc6LlHWAAa4E3PjYbM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-120-4mMyFhyaNIq8vZYS6jSNhw-1; Thu, 01 Oct 2020 10:57:32 -0400
-X-MC-Unique: 4mMyFhyaNIq8vZYS6jSNhw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3588818C9F72;
-        Thu,  1 Oct 2020 14:57:26 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-116-196.rdu2.redhat.com [10.10.116.196])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 693C860BFA;
-        Thu,  1 Oct 2020 14:57:25 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 06/23] rxrpc: Fix loss of final ack on shutdown
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 01 Oct 2020 15:57:24 +0100
-Message-ID: <160156424463.1728886.11605866471456123858.stgit@warthog.procyon.org.uk>
-In-Reply-To: <160156420377.1728886.5309670328610130816.stgit@warthog.procyon.org.uk>
-References: <160156420377.1728886.5309670328610130816.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/0.23
+        id S1732616AbgJAO5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 10:57:34 -0400
+Received: from mail.katalix.com ([3.9.82.81]:42614 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732594AbgJAO5b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 10:57:31 -0400
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 420948AD68;
+        Thu,  1 Oct 2020 15:57:29 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1601564249; bh=ODU+ecc/TJexyeOy+Dr8Q47qo0cPcZWtLatWf7Co2Jk=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Thu,=201=20Oct=202020=2015:57:29=20+0100|From:=20Tom=20Pa
+         rkin=20<tparkin@katalix.com>|To:=20Guillaume=20Nault=20<gnault@red
+         hat.com>|Cc:=20netdev@vger.kernel.org,=20jchapman@katalix.com|Subj
+         ect:=20Re:=20[PATCH=20net-next=200/6]=20l2tp:=20add=20ac/pppoe=20d
+         river|Message-ID:=20<20201001145728.GA4708@katalix.com>|References
+         :=20<20200930210707.10717-1-tparkin@katalix.com>=0D=0A=20<20201001
+         122617.GA9528@pc-2.home>|MIME-Version:=201.0|Content-Disposition:=
+         20inline|In-Reply-To:=20<20201001122617.GA9528@pc-2.home>;
+        b=2gl+ODcfgDl0/Fi5Le4B8trM69ug3e3O47nPUwAwzkP07wwd7GzH/0uj5Vu+vZmmI
+         5SwJtfrQJ6U9ueqiRQCbF/JjUFNLFTJmyJ1zE1wnpmd8dgA4WljqOxqPNEy4+riGgI
+         lyOPsP2dBMwC3h4uIadAnY6cRVzNlJ8nTk1pUCH0dv+taaY4LpIuKxWOhnAtUbWWXH
+         lf3DwHAfna3C3K7/gNBSk3ZcEVmqgG2DRYgS2rAWuepIQJlqKcdirQAgw5CDsFJa+p
+         edEP6ZBDtPpbde1iDZEnaSTIVbhlRjBZRzRBQOHHBQi+77QIjUz3HPsTHfY0+3X68U
+         Raxx3ZDQO2l8w==
+Date:   Thu, 1 Oct 2020 15:57:29 +0100
+From:   Tom Parkin <tparkin@katalix.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [PATCH net-next 0/6] l2tp: add ac/pppoe driver
+Message-ID: <20201001145728.GA4708@katalix.com>
+References: <20200930210707.10717-1-tparkin@katalix.com>
+ <20201001122617.GA9528@pc-2.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5vNYLRcllDrimb99"
+Content-Disposition: inline
+In-Reply-To: <20201001122617.GA9528@pc-2.home>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the loss of transmission of a call's final ack when a socket gets shut
-down.  This means that the server will retransmit the last data packet or
-send a ping ack and then get an ICMP indicating the port got closed.  The
-server will then view this as a failure.
 
-Fixes: 3136ef49a14c ("rxrpc: Delay terminal ACK transmission on a client call")
-Signed-off-by: David Howells <dhowells@redhat.com>
----
+--5vNYLRcllDrimb99
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
- net/rxrpc/ar-internal.h |    1 +
- net/rxrpc/conn_client.c |    3 +++
- net/rxrpc/conn_event.c  |    6 +++---
- 3 files changed, 7 insertions(+), 3 deletions(-)
+On  Thu, Oct 01, 2020 at 14:26:17 +0200, Guillaume Nault wrote:
+> On Wed, Sep 30, 2020 at 10:07:01PM +0100, Tom Parkin wrote:
+> > L2TPv2 tunnels are often used as a part of a home broadband connection,
+> > using a PPP link to connect the subscriber network into the Internet
+> > Service Provider's network.
+> >=20
+> > In this scenario, PPPoE is widely used between the L2TP Access
+> > Concentrator (LAC) and the subscriber.  The LAC effectively acts as a
+> > PPPoE server, switching PPP frames from incoming PPPoE packets into an
+> > L2TP session.  The PPP session is then terminated at the L2TP Network
+> > Server (LNS) on the edge of the ISP's IP network.
+> >=20
+> > This patchset adds a driver to the L2TP subsystem to support this mode
+> > of operation.
+>=20
+> Hi Tom,
+>=20
+> Nice to see someone working on this use case. However, have you
+> considered other implementation approaches?
+>=20
+> This new module reimplements PPPoE in net/l2tp (ouch!), so we'd now
+> have two PPPoE implementations with two different packet handlers for
+> ETH_P_PPP_SES. Also this implementation doesn't take into account other
+> related use cases, like forwarding PPP frames between two L2TP sessions
+> (not even talking about PPTP).
+>=20
+> A much simpler and more general approach would be to define a new PPP
+> ioctl, to "bridge" two PPP channels together. I discussed this with
+> DaveM at netdevconf 2.2 (Seoul, 2017) and we agreed that it was
+> probably the best way forward.
 
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 19f714386654..0b4233fdd740 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -834,6 +834,7 @@ void rxrpc_clean_up_local_conns(struct rxrpc_local *);
-  * conn_event.c
-  */
- void rxrpc_process_connection(struct work_struct *);
-+void rxrpc_process_delayed_final_acks(struct rxrpc_connection *, bool);
- 
- /*
-  * conn_object.c
-diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
-index 5d9adfd4c84f..7e574c75be8e 100644
---- a/net/rxrpc/conn_client.c
-+++ b/net/rxrpc/conn_client.c
-@@ -906,6 +906,9 @@ static void rxrpc_unbundle_conn(struct rxrpc_connection *conn)
- 
- 	_enter("C=%x", conn->debug_id);
- 
-+	if (conn->flags & RXRPC_CONN_FINAL_ACK_MASK)
-+		rxrpc_process_delayed_final_acks(conn, true);
-+
- 	spin_lock(&bundle->channel_lock);
- 	bindex = conn->bundle_shift / RXRPC_MAXCALLS;
- 	if (bundle->conns[bindex] == conn) {
-diff --git a/net/rxrpc/conn_event.c b/net/rxrpc/conn_event.c
-index bba5d7906df6..c1b64e1dfc4e 100644
---- a/net/rxrpc/conn_event.c
-+++ b/net/rxrpc/conn_event.c
-@@ -397,7 +397,7 @@ static void rxrpc_secure_connection(struct rxrpc_connection *conn)
- /*
-  * Process delayed final ACKs that we haven't subsumed into a subsequent call.
-  */
--static void rxrpc_process_delayed_final_acks(struct rxrpc_connection *conn)
-+void rxrpc_process_delayed_final_acks(struct rxrpc_connection *conn, bool force)
- {
- 	unsigned long j = jiffies, next_j;
- 	unsigned int channel;
-@@ -416,7 +416,7 @@ static void rxrpc_process_delayed_final_acks(struct rxrpc_connection *conn)
- 		smp_rmb(); /* vs rxrpc_disconnect_client_call */
- 		ack_at = READ_ONCE(chan->final_ack_at);
- 
--		if (time_before(j, ack_at)) {
-+		if (time_before(j, ack_at) && !force) {
- 			if (time_before(ack_at, next_j)) {
- 				next_j = ack_at;
- 				set = true;
-@@ -450,7 +450,7 @@ static void rxrpc_do_process_connection(struct rxrpc_connection *conn)
- 
- 	/* Process delayed ACKs whose time has come. */
- 	if (conn->flags & RXRPC_CONN_FINAL_ACK_MASK)
--		rxrpc_process_delayed_final_acks(conn);
-+		rxrpc_process_delayed_final_acks(conn, false);
- 
- 	/* go through the conn-level event packets, releasing the ref on this
- 	 * connection that each one has when we've finished with it */
+Hi Guillaume,
 
+Thank you for reviewing the patchset.
 
+I hadn't considered supporting this usecase in the ppp subsystem
+directly, so thank you for that suggestion.  I can definitely see the
+appeal of avoiding reimplementing the PPPoE session packet handling.
+Having looked at the ppp code, I think it'd be a smaller change
+overall than this series, so that's also appealing.
+
+I'll wait on a little to let any other review comments come in, but
+if doing as you suggest is still the preferred approach I'll happily
+look at implementing it -- assuming you don't have a patch ready to go?
+
+Best regards,
+Tom
+
+--5vNYLRcllDrimb99
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl917lQACgkQlIwGZQq6
+i9CUuwf/bCkR5P3jEo/kn53yQQhU0p5i7AxZPt0aoxCwNrJ70820Dkv640yHxrms
+AwiWprQqkQZd/yrvJaSDGwCtvIGVDsJtUMm/eaN+IVC0EH/yxQP44NzZo98MZlAy
+eyq2hYeG+n7h0+gSxsiC28UsaPgKUCzUtSP+W4HTxS3rDCpZlJuqmrcmukpfkOeh
+DWPhEP7eHgHwu7D45ryor/4kBb3l8wJrRWTMji02tUVtK4YfrvNBzAMoZjOLshdz
+bt8gEbhQ0WgNeC+1ykGa+BQHvK6cvls6IGL03uuznKmOjPDsd/GI/AIt+qHa02Uy
+B+36Qi1TSun1KqGmAUbL23nLhWPMlQ==
+=lijL
+-----END PGP SIGNATURE-----
+
+--5vNYLRcllDrimb99--
