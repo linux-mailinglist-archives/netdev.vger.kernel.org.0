@@ -2,67 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECDB027F708
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 03:10:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54D6127F714
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 03:13:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730723AbgJABKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Sep 2020 21:10:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728660AbgJABKu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Sep 2020 21:10:50 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF18BC061755;
-        Wed, 30 Sep 2020 18:10:50 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id j13so4493371ilc.4;
-        Wed, 30 Sep 2020 18:10:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZypJVFE6v/3Jo2AiBRXxfrvf66bExjGHXFBsT718YSg=;
-        b=mlu+nXufabQCXgtl/aLMdhskyqL9Xpz7Nkqz4yvDjkIlJrKcy9heINS+TQ/6IZ0MCU
-         R8PQt3MGhN2oWQruQjs6Z2LyiZaI8Aio0aiIvnEY76SQTtfQGJ8Fk3BRe8iNJ6++xMgy
-         cauXc5+zm/E1hDYKETTV0Rt/DR0vBcTT7uDy4FZJqiJECwfTtvJ9KPQF7KNul/JR0SLs
-         MoxDEIJ6d/VVMZghX4SjISQD2rQwJ2OYbpzHV6OvsGtV4QZiiUUdItr/y15KSgMgB1In
-         YbfpIEs/SujGUF7djO0/bY3AkECr+q40GthfFP/xbCQCokpvRlMP/P0jl0yhdOMWG9PN
-         cV7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZypJVFE6v/3Jo2AiBRXxfrvf66bExjGHXFBsT718YSg=;
-        b=cuHUUpRv03zxNa+H84V4xYIleP9F2TCab1jnQUGUGW85dAXtDx0RDaJPZ5P7eXV3Ki
-         WVrYzbd34pMmFUSMfjJBRpZA9V3ZN4P4uBjY6hOt/EceDm58zPSERM/5IumGlD+7w5Hm
-         XlBuevJrHpY5DMH48M3FJ6VU6hD7IgeThMf6k+06ISNL1z2utUJ3Wz/Bp2jOcPc6mPu7
-         B11tWjFX0w6QwF+VbdrqJxdLvmoTdW/8FcegH/mYEAD20kdsQfyytDk0vHWSoWOPKNxr
-         VAUiTdaSTEzWib/WUUvoZjDJHK4+CejmMX1M6P2mlYlu4exnu488P1YIyBBMlCXxeRZ6
-         LvSQ==
-X-Gm-Message-State: AOAM532eeZx8Bf5gr5A/edDVF/R3LS7Ft6OEz/eUHyHpfUmb8SLYimWn
-        S0hPbDaWHX7dL6TJR9UQr4gqEHHUGakzWI8ilLc=
-X-Google-Smtp-Source: ABdhPJzwp7SrDj1j7a9sADzkI3mbaNIW3HuRXVx3hSkH3CXqpgpTJ4YWwE8SzY8RS4UFX7QfC8Q5kJ/KTx72gcdUa2w=
-X-Received: by 2002:a92:910:: with SMTP id y16mr541160ilg.22.1601514649994;
- Wed, 30 Sep 2020 18:10:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <000000000000065deb05b05a99a5@google.com>
-In-Reply-To: <000000000000065deb05b05a99a5@google.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 30 Sep 2020 18:10:38 -0700
-Message-ID: <CAM_iQpW+_5wLteCoVc6Wn+z9WOp6FwVUpsy456hM+up0daxedw@mail.gmail.com>
-Subject: Re: INFO: task hung in tcf_action_init_1
-To:     syzbot <syzbot+82752bc5331601cf4899@syzkaller.appspotmail.com>
+        id S1730794AbgJABM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Sep 2020 21:12:56 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37214 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728660AbgJABMz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Sep 2020 21:12:55 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kNn9C-00Gzfr-Mz; Thu, 01 Oct 2020 03:12:38 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     netdev <netdev@vger.kernel.org>
 Cc:     David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Content-Type: text/plain; charset="UTF-8"
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [RFC PATCH net-next v2 0/2] driver/net/ethernet W=1 by default
+Date:   Thu,  1 Oct 2020 03:12:30 +0200
+Message-Id: <20201001011232.4050282-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz test: https://github.com/congwang/linux.git net
+There is a movement to make the code base compile clean with W=1. Some
+subsystems are already clean. In order to keep them clean, we need
+developers to build new code with W=1 by default in these
+subsystems. Otherwise new warnings will be added. To prove the point:
+
+commit e666a4c668528ae1f5b8b3a2e7cb6a5be488dfbb
+Merge: d0186842ec5f d0ea5cbdc286
+Author: David S. Miller <davem@davemloft.net>
+Date:   Fri Sep 25 16:29:00 2020 -0700
+
+    Merge branch 'drivers-net-warning-clean'
+
+    Jesse Brandeburg says:
+
+    ====================
+    make drivers/net/ethernet W=1 clean
+
+Then 4 days later a new W=1 warning has added:
+
+drivers/net/ethernet//chelsio/inline_crypto/ch_ktls/chcr_ktls.c: In function ‘chcr_ktls_cpl_set_tcb_rpl’:
+drivers/net/ethernet//chelsio/inline_crypto/ch_ktls/chcr_ktls.c:684:22: warning: implicit conversion from ‘enum <anonymous>’ to ‘enum ch_ktls_open_state’ [-Wenum-conversion]
+  684 |  tx_info->open_state = false;
+
+This patchset refactors the core Makefile warning code to allow the
+additional warnings W=1 adds available to any Makefile. The Ethernet
+driver subsystem Makefiles then make use of this to make W=1 the
+default for this subsystem.
+
+v2:
+
+Address the comment that we need to be able to add new W=1 compiler
+flags without actually causing new warnings for builds which don't have W=1
+
+Andrew Lunn (2):
+  Makefile.extrawarn: Add symbol for W=1 warnings for today
+  driver/net/ethernet: Sign up for W=1 as defined on 20200930
+
+ drivers/net/ethernet/Makefile |  3 +++
+ scripts/Makefile.extrawarn    | 34 ++++++++++++++++++----------------
+ 2 files changed, 21 insertions(+), 16 deletions(-)
+
+-- 
+2.28.0
+
