@@ -2,88 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FA7428035D
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 17:58:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD0CA280363
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 18:01:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732681AbgJAP6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 11:58:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43460 "EHLO
+        id S1732527AbgJAQBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 12:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732119AbgJAP6p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 11:58:45 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA90EC0613D0
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 08:58:44 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id e16so6428740wrm.2
-        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 08:58:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6cYK+RtjQ+W5rEmU2HGzzVDLSsh+K9fVGR7NF7mO73Q=;
-        b=TnN7pmaI3FPSKr7fVQPgjjyoyqWMcvheFVsn8W1VAUO7e4qnPTUt5X1c0vIsFFfiks
-         Y4MlGteo1B6w98aNh59IZo4EAaVNu1PhWQ1wrf/se6gak4Rux3UaMQQmWBhk6rGrszf7
-         f01hRWaZ0gP0tWbMCBhaaQgRQ+blwktd/UqxQbVwEZL/E/eNm5krSiVVHmNceHr15Dye
-         ZCnGiGouEVNq3B0BLfLETf0UivQ9SosluxLVvLE2X8J5pfEch43p03NzOHZralwY3wci
-         KE7aMwD8Xe6EScL4yl7dfBmxNXX3G7GB2PcLkDP9nGnlIrJCjU5tI2rNlsgSRSTryLJX
-         JE+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=6cYK+RtjQ+W5rEmU2HGzzVDLSsh+K9fVGR7NF7mO73Q=;
-        b=SC5F2+HyMDBBtwwE9PCTPzi7UA3T/SvOoIZk8M3MwraXINAFKdBbnFEajDBP1SF2eX
-         5zufHF6sgbZNrjrvtl7TU4kRAovp4kBhdb6Cb6FnmUFgIxCID4uCntPD3jOhRGMy05/J
-         oYaPEahwfHuLO703TneQ+B2skKQEvbCyJnHlUiUDG+WWgueeUGDiGdMNmSQvWm4BbdvI
-         EXLtcYpRe60NTc3dROGF5Pu4fqNgndUW9sCvzq9USnZVg6noNAxZcSDDeezIkbFvoOnQ
-         zdyGoTiYInGYshlBVF0WqVNBwX/XoikePsd0T0ue935HOFI1c8W5yplNnxieTMrWcyFL
-         XcYw==
-X-Gm-Message-State: AOAM533/1Pg7X9LEMeTgEjwHMUkZVxvyT702xo8gah9Y+A6SQKiiPfh7
-        iB+vUvZanJ5f4BBtsOohTddTy10L/KhPag==
-X-Google-Smtp-Source: ABdhPJzSiGcDDQ5ZPZ+w+jT/GH/FtzQx+Ef6BQyEqiwgy/lbaxnfTPxVgMx4vmFZ118zXjZ50spqOQ==
-X-Received: by 2002:a5d:4cc1:: with SMTP id c1mr9857037wrt.122.1601567921954;
-        Thu, 01 Oct 2020 08:58:41 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:65ff:4b3c:809e:8987? ([2a01:e0a:410:bb00:65ff:4b3c:809e:8987])
-        by smtp.gmail.com with ESMTPSA id e18sm10860609wra.36.2020.10.01.08.58.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Oct 2020 08:58:41 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net 08/12] ipv6: advertise IFLA_LINK_NETNSID when dumping
- ipv6 addresses
-To:     Sabrina Dubroca <sd@queasysnail.net>, netdev@vger.kernel.org
-References: <cover.1600770261.git.sd@queasysnail.net>
- <00ecfc1804b58d8dbb23b8a6e7e5c0646f0100e1.1600770261.git.sd@queasysnail.net>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <40925424-06ff-c0c5-0456-c7a9d58dff91@6wind.com>
-Date:   Thu, 1 Oct 2020 17:58:40 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        with ESMTP id S1732368AbgJAQBC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 12:01:02 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAE0C0613D0
+        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 09:01:02 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kO10t-00EgNW-Hc; Thu, 01 Oct 2020 18:00:59 +0200
+Message-ID: <3de28a3b54737ffd5c7d9944acc0614745242a30.camel@sipsolutions.net>
+Subject: Re: [RFC net-next 9/9] genetlink: allow dumping command-specific
+ policy
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, jiri@resnulli.us,
+        mkubecek@suse.cz, dsahern@kernel.org, pablo@netfilter.org
+Date:   Thu, 01 Oct 2020 18:00:58 +0200
+In-Reply-To: <20201001084152.33cc5bf2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201001000518.685243-1-kuba@kernel.org>
+         <20201001000518.685243-10-kuba@kernel.org>
+         <591d18f08b82a84c5dc19b110962dabc598c479d.camel@sipsolutions.net>
+         <20201001084152.33cc5bf2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-In-Reply-To: <00ecfc1804b58d8dbb23b8a6e7e5c0646f0100e1.1600770261.git.sd@queasysnail.net>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 01/10/2020 à 09:59, Sabrina Dubroca a écrit :
-> Currently, we're not advertising link-netnsid when dumping IPv6
-> addresses, so the "ip -6 addr" command will not correctly interpret
-> the value of the IFLA_LINK attribute.
+On Thu, 2020-10-01 at 08:41 -0700, Jakub Kicinski wrote:
+
+> > Even if I don't have a good idea now on how to avoid the duplication, it
+> > might be nicer to have a (flag) attribute here for "CTRL_ATTR_ALL_OPS"?
 > 
-> For example, we'll get:
->     9: macvlan0@macvlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 state UP qlen 1000
->         <snip>
+> Hm. How would you see the dump structured? 
+
+Yeah, that's the tricky part ... Hence why I said "I don't have a good
+idea now" :)
+
+> We need to annotate the root
+> policies with the command. Right now I have:
 > 
-> Instead of:
->     9: macvlan0@if9: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 state UP qlen 1000 link-netns main
->         <snip>
+>  [ATTR_FAMILY_ID]
+>  [ATTR_OP]
+>  [ATTR_POLICY]
+>    [policy idx]
+>      [attr idx]
+>        [bla]
+>        [bla]
+>        [bla]
 > 
-> ndisc_ifinfo_sysctl_change calls inet6_fill_ifinfo without rcu or
-> rtnl, so I'm adding rcu_read_lock around rtnl_fill_link_netnsid.
-I don't think this is needed.
-ndisc_ifinfo_sysctl_change() takes a reference on the idev (with in6_dev_get(dev)).
+> But if we're dumping _all_ the policy to op mapping is actually 1:n,
+> so we'd need to restructure the dump a lil' bit and have OP only
+> reported on root of the policy and make it a nested array.
+
+So today you see something like
+
+[ATTR_FAMILY_ID]
+[ATTR_POLICY]
+  [policy idx, 0 = main policy]
+    [bla]
+    ...
+  ...
+
+
+I guess the most compact representation, that also preserves the most
+data about sharing, would be to do something like
+
+[ATTR_FAMILY_ID]
+[ATTR_POLICY]
+  [policy idx, 0 = main policy]
+    [bla]
+    ...
+  ...
+[ATTR_OP_POLICY]
+  [op] = [policy idx]
+  ...
+
+This preserves all the information because it tells you which policies
+actually are identical (shared), each per-op policy can have nested
+policies referring to common ones, like in the ethtool case, etc.
+
+
+OTOH, it's a lot trickier to implement - I haven't really come up with a
+good way of doing it "generically" with the net/netlink/policy.c code.
+I'm sure it can be solved, but I haven't really given it enough thought.
+Perhaps by passing a "policy iterator" to netlink_policy_dump_start(),
+instead of just a single policy (i.e. a function & a data ptr or so),
+and then it can walk all the policies using that, assign the idxes etc.,
+and dump them out in netlink_policy_dump_write()?
+
+But then we'd still have to get the policy idx for a given policy, and
+not clean up all the state when netlink_policy_dump_loop() returns
+false, because you still need it for ATTR_OP_POLICY to find the idx from
+the pointer?
+
+I guess it's doable. Just seems a bit more complex. OTOH, it may be that
+such complexity also completely makes sense for non-generic netlink
+families anyway, I haven't looked at them much at all.
+
+johannes
+
