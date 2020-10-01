@@ -2,123 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C05C32804B4
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 19:09:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0E92804BA
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 19:11:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733001AbgJARJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 13:09:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43442 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732213AbgJARJg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Oct 2020 13:09:36 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 031D420897;
-        Thu,  1 Oct 2020 17:09:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601572175;
-        bh=bgPR/lLlUkHS1Pw8Jgu1JPoVWLdJONn2kCntR2elb/U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=z0ZraMMM+zcQM7IltBLpVZ0BAIdq9LJ6VmcRKqqfc19rZR85ePLOXmJVcoqDOWbtk
-         JYKmYt+1od9QrwNmRxB1zwhOWPWdTK0/Ny8Ze1t9K0u1b8ZAFwqh2ZuqAHha5ixafb
-         M91DbiXt1HG8kh7gB2oSvFfXQbwoEqOamoVMy8BQ=
-Date:   Thu, 1 Oct 2020 10:09:33 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, jiri@resnulli.us,
-        mkubecek@suse.cz, dsahern@kernel.org, pablo@netfilter.org
-Subject: Re: [RFC net-next 9/9] genetlink: allow dumping command-specific
- policy
-Message-ID: <20201001100933.26afbb46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <f5b9fe3a40de1e9d2b98c6ce21c2c3ae95065da9.camel@sipsolutions.net>
-References: <20201001000518.685243-1-kuba@kernel.org>
-        <20201001000518.685243-10-kuba@kernel.org>
-        <591d18f08b82a84c5dc19b110962dabc598c479d.camel@sipsolutions.net>
-        <20201001084152.33cc5bf2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3de28a3b54737ffd5c7d9944acc0614745242a30.camel@sipsolutions.net>
-        <20201001092434.3f916d80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <f5b9fe3a40de1e9d2b98c6ce21c2c3ae95065da9.camel@sipsolutions.net>
+        id S1732787AbgJARLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 13:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732213AbgJARLh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 13:11:37 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC4AC0613D0;
+        Thu,  1 Oct 2020 10:11:37 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id u4so5288619ljd.10;
+        Thu, 01 Oct 2020 10:11:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=OQfLRcAOWIw59NGfi9I7ckeREQIiyms4IQUXnhx6Cus=;
+        b=rlOFvsv5FwPcqIxobQWQ1xGP+0tJz/39SJOrkdvVSsV2wDiuwU5KtbGGXd8gIbfp7G
+         Fz6lUfVfTVmWLBGLtXoNYw5eQVGBSPylBSM3LLMgoQm4rNGuGouXPYPxnh5b13Tm6Xi/
+         9jPJPlx3TXKfi033zJMImDtn2B5KDHOfFKLm8ZfRLsh+Y0sx58PzJsqcJJEKBqrvyZL9
+         Jr47hoX3ChaN1NL8tf5GQ3cxM6fo30suy5NHN4V+pORPKwttTDAZCMYDKrnEEXCAZcNd
+         UveDzaVg6YnTHEkgTsI9lAszviyJ9DZloRmnuFfD3pgbdjAZWcP20KqEgSuwfQYx84YY
+         1N2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=OQfLRcAOWIw59NGfi9I7ckeREQIiyms4IQUXnhx6Cus=;
+        b=DEQUbGVKQeVaeRSUrEcGh6QNbfNb0vvgf1VrenOMNb2cvlchPFXne3X8ZZRgz25MfK
+         9rcEXbUi2+3wvvXeOKzgpfFqjIwiljbl4NjbJy3/BDoEXlTWo8EtiscfTgew8hVAfvbo
+         B73cXXyC5ZP7+2PavLnPjmebJ52hOj1F/eMHh/+LBiquIA93e+/n8i1k6W6tuZmEUutQ
+         396CB3ZCwddo1Mx1Ydkw34WJxBaJYaDP9eE++O11kS5bebdx/R9aWfUmvimtYdpdlk1L
+         boul2CWqAqoByr4lTMATJZOTgquPbzOseNdLUxmJ8ZRamV8pirLrLYC5lvf9pWOehKv+
+         R7xA==
+X-Gm-Message-State: AOAM531biNBTMijuF9DOIiSr7byuXBq+trL9Ce7FZhhwBjVbLFDlwZhs
+        7E02hF43mVKkQvuSpRCxdI92idifpt/PLBzMGKA=
+X-Google-Smtp-Source: ABdhPJxbusDTVfGWazhL3Hy3TeKApmIaH1qJcr83UTbUoH5BawhRrulOUmnUjCsEXKnbJ0c6OAv7vgNv5W0mkEGmYro=
+X-Received: by 2002:a2e:7014:: with SMTP id l20mr2810578ljc.91.1601572295556;
+ Thu, 01 Oct 2020 10:11:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200928090805.23343-1-lmb@cloudflare.com> <20200928090805.23343-3-lmb@cloudflare.com>
+ <20200929055851.n7fa3os7iu7grni3@kafai-mbp> <CAADnVQLwpWMea1rbFAwvR_k+GzOphaOW-kUGORf90PJ-Ezxm4w@mail.gmail.com>
+ <CACAyw98WzZGcFnnr7ELvbCziz2axJA_7x2mcoQTf2DYWDYJ=KA@mail.gmail.com>
+ <20201001072348.hxhpuoqmeln6twxw@ast-mbp.dhcp.thefacebook.com> <CAEf4Bzbjzj3wwxX84bLi-PLy=9+Bpe1bTDt=t0qR5t=xEkNjwQ@mail.gmail.com>
+In-Reply-To: <CAEf4Bzbjzj3wwxX84bLi-PLy=9+Bpe1bTDt=t0qR5t=xEkNjwQ@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 1 Oct 2020 10:11:23 -0700
+Message-ID: <CAADnVQJQeiyrN2JzOwV+zHDU5xg4TtpT0w9MgG6nujCK5z+GNQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/4] selftests: bpf: Add helper to compare
+ socket cookies
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>, Martin KaFai Lau <kafai@fb.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team <kernel-team@cloudflare.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 01 Oct 2020 18:57:35 +0200 Johannes Berg wrote:
-> On Thu, 2020-10-01 at 09:24 -0700, Jakub Kicinski wrote:
-> > > I guess the most compact representation, that also preserves the most
-> > > data about sharing, would be to do something like
-> > > 
-> > > [ATTR_FAMILY_ID]
-> > > [ATTR_POLICY]
-> > >   [policy idx, 0 = main policy]
-> > >     [bla]
-> > >     ...
-> > >   ...
-> > > [ATTR_OP_POLICY]
-> > >   [op] = [policy idx]
-> > >   ...  
-> 
-> > Only comment I have is - can we make sure to put the ATTR_OP_POLICY
-> > first? That way user space can parse the stream an pick out the info
-> > it needs rather than recording all the policies only to find out later
-> > which one is which.  
-> 
-> Hmm. Yes, that makes sense. But I don't see why not - you could go do
-> the netlink_policy_dump_start() which that assigns the indexes, then
-> dump out ATTR_OP_POLICY looking up the indexes in the table that it
-> created, and then dump out all the policies?
+On Thu, Oct 1, 2020 at 10:09 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Thu, Oct 1, 2020 at 12:25 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Wed, Sep 30, 2020 at 10:28:33AM +0100, Lorenz Bauer wrote:
+> > > On Tue, 29 Sep 2020 at 16:48, Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > ...
+> > >
+> > > > There was a warning. I noticed it while applying and fixed it up.
+> > > > Lorenz, please upgrade your compiler. This is not the first time su=
+ch
+> > > > warning has been missed.
+> > >
+> > > I tried reproducing this on latest bpf-next (b0efc216f577997) with gc=
+c
+> > > 9.3.0 by removing the initialization of duration:
+> > >
+> > > make: Entering directory '/home/lorenz/dev/bpf-next/tools/testing/sel=
+ftests/bpf'
+> > >   TEST-OBJ [test_progs] sockmap_basic.test.o
+> > >   TEST-HDR [test_progs] tests.h
+> > >   EXT-OBJ  [test_progs] test_progs.o
+> > >   EXT-OBJ  [test_progs] cgroup_helpers.o
+> > >   EXT-OBJ  [test_progs] trace_helpers.o
+> > >   EXT-OBJ  [test_progs] network_helpers.o
+> > >   EXT-OBJ  [test_progs] testing_helpers.o
+> > >   BINARY   test_progs
+> > > make: Leaving directory '/home/lorenz/dev/bpf-next/tools/testing/self=
+tests/bpf'
+> > >
+> > > So, gcc doesn't issue a warning. Jakub did the following little exper=
+iment:
+> > >
+> > > jkbs@toad ~/tmp $ cat warning.c
+> > > #include <stdio.h>
+> > >
+> > > int main(void)
+> > > {
+> > >         int duration;
+> > >
+> > >         fprintf(stdout, "%d", duration);
+> > >
+> > >         return 0;
+> > > }
+> > > jkbs@toad ~/tmp $ gcc -Wall -o /dev/null warning.c
+> > > warning.c: In function =E2=80=98main=E2=80=99:
+> > > warning.c:7:2: warning: =E2=80=98duration=E2=80=99 is used uninitiali=
+zed in this
+> > > function [-Wuninitialized]
+> > >     7 |  fprintf(stdout, "%d", duration);
+> > >       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > >
+> > >
+> > > The simple case seems to work. However, adding the macro breaks thing=
+s:
+> > >
+> > > jkbs@toad ~/tmp $ cat warning.c
+> > > #include <stdio.h>
+> > >
+> > > #define _CHECK(duration) \
+> > >         ({                                                      \
+> > >                 fprintf(stdout, "%d", duration);                \
+> > >         })
+> > > #define CHECK() _CHECK(duration)
+> > >
+> > > int main(void)
+> > > {
+> > >         int duration;
+> > >
+> > >         CHECK();
+> > >
+> > >         return 0;
+> > > }
+> > > jkbs@toad ~/tmp $ gcc -Wall -o /dev/null warning.c
+> > > jkbs@toad ~/tmp $
+> >
+> > That's very interesting. Thanks for the pointers.
+> > I'm using gcc version 9.1.1 20190605 (Red Hat 9.1.1-2)
+> > and I saw this warning while compiling selftests,
+> > but I don't see it with above warning.c example.
+> > clang warns correctly in both cases.
+>
+> I think this might be the same problem I fixed for libbpf with [0].
+> Turns out, GCC explicitly calls out (somewhere in their docs) that
+> uninitialized variable warnings work only when compiled in optimized
+> mode, because some internal data structures used to detect this are
+> only maintained in optimized mode build.
+>
+> Laurenz, can you try compiling your example with -O2?
 
-Ack.
+All of my experiments I did with -O2.
 
-> > > I guess it's doable. Just seems a bit more complex. OTOH, it may be that
-> > > such complexity also completely makes sense for non-generic netlink
-> > > families anyway, I haven't looked at them much at all.  
-> > 
-> > IDK, doesn't seem crazy hard. We can create some iterator or expand the
-> > API with "begin" "add" "end" calls. Then once dumper state is build we
-> > can ask it which ids it assigned.  
-> 
-> Yeah. Seems feasible. Maybe I'll take a stab at it (later, when I can).
-> 
-> > OTOH I don't think we have a use for this in ethtool, because user
-> > space usually does just one op per execution. So I'm thinking to use
-> > your structure for the dump, but leave the actual implementation of
-> > "dump all" for "later".
-> > 
-> > How does that sound?  
-> 
-> I'm not sure you even need that structure if you have the "filter by
-> op"? I mean, then just stick to what you had?
-
-I was adding OP as an attribute to each message. I will just ditch that
-given user space should know what it asked for.
-
-> When I started down this road I more had in mind "sniffer-like" tools
-> that want to understand the messages better, etc. without really having
-> any domain-specific "knowledge" encoded in them. And then you'd probably
-> really want to build the entire policy representation in the tool side
-> first.
-> 
-> Or perhaps even tools you could run on the latest kernel to generate
-> code (e.g. python code was discussed) that would be able to build
-> messages. You'd want to generate the code once on the latest kernel when
-> you need a new feature, and then actually use it instead of redoing it
-> at runtime, but still, could be done.
-> 
-> I suppose you have a completely different use case in mind :-)
-
-I see. Yes, I'm trying to avoid having to probe the kernel for features.
-We added new flags to ethtool to include extra info in the output, and
-older kernels with return EOPNOTSUPP for the entire operation if those
-are set (due to strict checking). While user would probably expect the
-information to just not be there if kernel can't provide it. New
-kernels can't provide it all the time either (it's extra stats from the
-driver).
-
-I'm hoping Michal will accept this as a solution :) Retrying on
-EOPNOTSUPP gets a little hairy for my taste.
-
-That should have been in the cover letter, I guess.
+>   [0] https://patchwork.ozlabs.org/project/netdev/patch/20200929220604.83=
+3631-2-andriin@fb.com/
+>
+> >
+> > > Maybe this is https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D18501 ? =
+The
+> > > problem is still there on gcc 10. Compiling test_progs with clang doe=
+s
+> > > issue a warning FWIW, but it seems like other things break when doing
+> > > that.
+> >
+> > That gcc bug has been opened since transition to ssa. That was a huge
+> > transition for gcc. But I think the bug number is not correct. It point=
+s to a
+> > different issue. I've checked -fdump-tree-uninit-all dump with and with=
+out
+> > macro. They're identical. The tree-ssa-uninit pass suppose to warn, but=
+ it
+> > doesn't. I wish I had more time to dig into it. A bit of debugging in
+> > gcc/tree-ssa-uninit.c can probably uncover the root cause.
