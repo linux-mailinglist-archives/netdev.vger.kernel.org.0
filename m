@@ -2,86 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED7C6280A96
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 00:54:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41520280AB7
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 01:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733140AbgJAWyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 18:54:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726855AbgJAWyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 18:54:43 -0400
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6878CC0613E2
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 15:54:43 -0700 (PDT)
-Received: by mail-qt1-x84a.google.com with SMTP id m13so61087qtu.10
-        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 15:54:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=8NDHpbgsPNM+iNp/uNoQ+501O5J56BypM4WtDS2Nd1Y=;
-        b=eOkCW6T+L2aH17IRHXFo4AT2PE5ym0MzNKpGLyFKgcr8xskaO5g8XLF5GRpdl+bnsv
-         JU9/XEtaeeoRrWEMJb8fplf7YpCQb+MzE9lkVhcR8IEL73TtG9aOBvEedlX8NtyGAJy1
-         VZI28F4MLRvY+wK56qmBIP6VR8d/c0L6Poau2sZxdBu6kXpkoTvCttq0BFEnnOn68gyo
-         qkxPCyZSSDShB3bEVbJhbrj/ezjI87YBdDQKnUbFXxvj9FTmbqDN/VwapSjApzWdNNNz
-         vqHpI1tNEWqunhvrq9T/IUGNtw/f7tOIu1i0y3VWHI8Jo+AvDAhzBCE5RuDE/Fd51ko6
-         9rPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=8NDHpbgsPNM+iNp/uNoQ+501O5J56BypM4WtDS2Nd1Y=;
-        b=GEr1TudLwG16YTB7VFHUF6mCOtvLYxs+MqWs6+Z8Rmzq8K/yV3VVMmDyeKYgZIIX8W
-         JFAmfT+jmutkb4/B5aLf/KHXiNOJiey4F7rIvxQZbRHOyRtntOV4OYrNPbXF+rtwYVIQ
-         gsZ5FlQ7B3CUXXbTNrtCRX75304ZJvHsNTQmN6adbq5JLdT04iliYxckHhpOFeTwyHIz
-         FIQ48TdHjFe9mSfh9aTtgvK/hkfoxUf7VmkH2fprPmLVqRBn5OMaRICY9DXbhM6TSQ0j
-         bDGSyM3U6TvyktKu65z4LKIreL6QW6MZ+HlKpDVtyOZGjIn0qCOR0GFauHbYbLgi4xh7
-         R1bA==
-X-Gm-Message-State: AOAM531Br8ZUZ9SjneH+F/9wQolymy9y+aIxfjVw2TAIHEYXTAGetkGM
-        AILFWRzTHwAnv0Ksu4uoIGbU/ze6kYh+IOIS5SmNJSmcuvv3H81cxOE1I2dH2L9KhXMVQnWddi0
-        K3sZzKhbiW6KQ3j8qOsvBP6tFiPzCA/VBGT7IUKUVcGxtJGeyboO9dQ==
-X-Google-Smtp-Source: ABdhPJz1ugT0jI+7txOBsRSdiSxMIueL4oJqrTxiUo0LWqkB2m4duvqlL6Vu8iEA6/FbPinWsC8/8RQ=
-Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:a0c:f0d1:: with SMTP id d17mr10086089qvl.34.1601592882388;
- Thu, 01 Oct 2020 15:54:42 -0700 (PDT)
-Date:   Thu,  1 Oct 2020 15:54:40 -0700
-Message-Id: <20201001225440.1373233-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.28.0.709.gb0816b6eb0-goog
-Subject: [PATCH bpf-next] selftests/bpf: initialize duration in xdp_noinline.c
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1733171AbgJAW7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 18:59:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40606 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726855AbgJAW7m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 18:59:42 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A3E4620796;
+        Thu,  1 Oct 2020 22:59:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601593182;
+        bh=nmuKeGezY1IutyJRkhDtJQGTxkyet2bazX2g6mGXjXw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=N8XNqBeRVclJbKi0EOfB4IoSoejcDqQ5xHstu7mQxeKs3Ic2WO/VzGeZ+XdwuxIdT
+         SVIadD9KRWUFVibIXmb/mZmKB3wfNjdwyTpJPqbcuR0evDowef208QoI/s9fF0+bvr
+         NbQY1uzU23D2BVaX35FR0tLc8F/EUSjzOMuXLYxU=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, johannes@sipsolutions.net,
+        jiri@resnulli.us, mkubecek@suse.cz, dsahern@kernel.org,
+        pablo@netfilter.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 00/10] genetlink: support per-command policy dump
+Date:   Thu,  1 Oct 2020 15:59:23 -0700
+Message-Id: <20201001225933.1373426-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes clang error:
-tools/testing/selftests/bpf/prog_tests/xdp_noinline.c:35:6: error: variable 'duration' is uninitialized when used here [-Werror,-Wuninitialized]
-        if (CHECK(!skel, "skel_open_and_load", "failed\n"))
-            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hi!
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/testing/selftests/bpf/prog_tests/xdp_noinline.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The objective of this series is to dump ethtool policies
+to be able to tell which flags are supported by the kernel.
+Current release adds ETHTOOL_FLAG_STATS for dumping extra
+stats, but because of strict checking we need to make sure
+that the flag is actually supported before setting it in
+a request.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_noinline.c b/tools/testing/selftests/bpf/prog_tests/xdp_noinline.c
-index a1f06424cf83..0281095de266 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_noinline.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_noinline.c
-@@ -25,7 +25,7 @@ void test_xdp_noinline(void)
- 		__u8 flags;
- 	} real_def = {.dst = MAGIC_VAL};
- 	__u32 ch_key = 11, real_num = 3;
--	__u32 duration, retval, size;
-+	__u32 duration = 0, retval, size;
- 	int err, i;
- 	__u64 bytes = 0, pkts = 0;
- 	char buf[128];
+Ethtool policies are per command, and so far only dumping
+family policies was supported.
+
+The series adds new set of "light" ops to genl families which
+don't have all the callbacks, and won't have the policy.
+Most of families are then moved to these ops. This gives
+us 4096B in savings on an allyesconfig build (not counting
+the growth that would have happened when policy is added):
+
+     text       data       bss        dec       hex
+244415581  227958581  78372980  550747142  20d3bc06
+244415581  227962677  78372980  550751238  20d3cc06
+
+Next 6 patches deal the dumping per-op policy.
+
+v2:
+ - remove the stale comment in taskstats
+ - split patch 8 -> 8, 9
+ - now the getfamily policy is also in the op
+ - make cmd u32
+v1:
+ - replace remaining uses of "light" with "small"
+ - fix dump (ops can't be on the stack there)
+ - coding changes in patch 4
+ - new patch 7
+ - don't echo op in responses - to make dump all easier
+
+Dave - this series will cause a very trivial conflict with
+the patch I sent to net. Both sides add some kdoc to struct
+genl_ops so we'll need to keep it all.  I'm sending this
+already because I also need to restructure ethool policies
+in time for 5.10 if we want to use it for the stats flag.
+
+Jakub Kicinski (10):
+  genetlink: reorg struct genl_family
+  genetlink: add small version of ops
+  genetlink: move to smaller ops wherever possible
+  genetlink: add a structure for dump state
+  genetlink: use .start callback for dumppolicy
+  genetlink: bring back per op policy
+  taskstats: move specifying netlink policy back to ops
+  genetlink: use parsed attrs in dumppolicy
+  genetlink: switch control commands to per-op policies
+  genetlink: allow dumping command-specific policy
+
+ drivers/block/nbd.c                      |   6 +-
+ drivers/net/gtp.c                        |   6 +-
+ drivers/net/ieee802154/mac802154_hwsim.c |   6 +-
+ drivers/net/macsec.c                     |   6 +-
+ drivers/net/team/team.c                  |   6 +-
+ drivers/net/wireless/mac80211_hwsim.c    |   6 +-
+ drivers/target/target_core_user.c        |   6 +-
+ drivers/thermal/thermal_netlink.c        |   8 +-
+ fs/dlm/netlink.c                         |   6 +-
+ include/net/genetlink.h                  |  67 +++++--
+ include/net/netlink.h                    |   9 +-
+ include/uapi/linux/genetlink.h           |   1 +
+ kernel/taskstats.c                       |  40 +---
+ net/batman-adv/netlink.c                 |   6 +-
+ net/core/devlink.c                       |   6 +-
+ net/core/drop_monitor.c                  |   6 +-
+ net/hsr/hsr_netlink.c                    |   6 +-
+ net/ieee802154/netlink.c                 |   6 +-
+ net/ipv4/fou.c                           |   6 +-
+ net/ipv4/tcp_metrics.c                   |   6 +-
+ net/l2tp/l2tp_netlink.c                  |   6 +-
+ net/mptcp/pm_netlink.c                   |   6 +-
+ net/ncsi/ncsi-netlink.c                  |   6 +-
+ net/netfilter/ipvs/ip_vs_ctl.c           |   6 +-
+ net/netlabel/netlabel_calipso.c          |   6 +-
+ net/netlabel/netlabel_cipso_v4.c         |   6 +-
+ net/netlabel/netlabel_mgmt.c             |   6 +-
+ net/netlabel/netlabel_unlabeled.c        |   6 +-
+ net/netlink/genetlink.c                  | 234 ++++++++++++++++-------
+ net/netlink/policy.c                     |  29 +--
+ net/openvswitch/conntrack.c              |   6 +-
+ net/openvswitch/datapath.c               |  24 +--
+ net/openvswitch/meter.c                  |   6 +-
+ net/psample/psample.c                    |   6 +-
+ net/tipc/netlink_compat.c                |   6 +-
+ net/wimax/stack.c                        |   6 +-
+ net/wireless/nl80211.c                   |   5 +
+ 37 files changed, 346 insertions(+), 239 deletions(-)
+
 -- 
-2.28.0.709.gb0816b6eb0-goog
+2.26.2
 
