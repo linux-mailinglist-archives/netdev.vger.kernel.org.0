@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 750AB27F8B2
+	by mail.lfdr.de (Postfix) with ESMTP id E9D4F27F8B3
 	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 06:33:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725921AbgJAEdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 00:33:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39788 "EHLO mail.kernel.org"
+        id S1725963AbgJAEdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 00:33:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39796 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725823AbgJAEdQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725912AbgJAEdQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 1 Oct 2020 00:33:16 -0400
 Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 06B89221EF;
-        Thu,  1 Oct 2020 04:33:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 69A3A22204;
+        Thu,  1 Oct 2020 04:33:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1601526795;
-        bh=l5wng0caCRf7bIGo8F6Ohwz4oh/Sqtwi87Nu+DLwqak=;
+        bh=Enhrsj8jzTY4TQqMUmcWT3F8gE5k5AkZbiSu6Q3oy9k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HWnup/fY2qVlEVjPAcE9TaxuW0ttsq4xZJy1dYUpt/ckpPC0ZB51+91Vt2BK+08cx
-         N19klKliCEr41Codb5r6X0z84H/M8e9/mbLfbwu5+i84JYamBVGw9QoVBbs2QUkq+x
-         gEplN7Yr972osrmiu/NBWXL3SIkRM8dOf661wBjc=
+        b=uB4/KnYaRyVDTQyXYHIFZ1wr01ERjeqLWFGpDlSWWEJ52Fd94yBX56MiLEhAhtJ4b
+         QqUwVE6SK5OGqN0EfgXNw1hkW3EEebE8x1cQ2lGPaf8do1H3xJu9u43oHGJZz7Lv9O
+         8+BOqBkShAjYLEt3XO+pT5AvRPLaMtuUHM5RLc9o=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Alex Vesker <valex@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 03/15] net/mlx5: DR, Remove unneeded vlan check from L2 builder
-Date:   Wed, 30 Sep 2020 21:32:50 -0700
-Message-Id: <20201001043302.48113-4-saeed@kernel.org>
+Subject: [net-next 04/15] net/mlx5: DR, Remove unneeded local variable
+Date:   Wed, 30 Sep 2020 21:32:51 -0700
+Message-Id: <20201001043302.48113-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201001043302.48113-1-saeed@kernel.org>
 References: <20201001043302.48113-1-saeed@kernel.org>
@@ -43,123 +43,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-When we create a matcher we check that all fields are consumed.
-There is no need for this specific check. This keeps the STE
-builder functions simple and clean.
+The misc3 variable is used only once and can be dropped.
 
 Signed-off-by: Alex Vesker <valex@nvidia.com>
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_matcher.c  | 12 +++------
- .../mellanox/mlx5/core/steering/dr_ste.c      | 25 +++++--------------
- .../mellanox/mlx5/core/steering/dr_types.h    |  6 ++---
- 3 files changed, 13 insertions(+), 30 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-index 2b794daca436..a16d7faa2bb8 100644
+index a16d7faa2bb8..7df883686d46 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-@@ -258,10 +258,8 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
+@@ -203,7 +203,6 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
+ 	struct mlx5dr_domain_rx_tx *nic_dmn = nic_matcher->nic_tbl->nic_dmn;
+ 	struct mlx5dr_domain *dmn = matcher->tbl->dmn;
+ 	struct mlx5dr_match_param mask = {};
+-	struct mlx5dr_match_misc3 *misc3;
+ 	struct mlx5dr_ste_build *sb;
+ 	bool inner, rx;
+ 	int idx = 0;
+@@ -309,8 +308,7 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
+ 			mlx5dr_ste_build_flex_parser_0(&sb[idx++], &mask,
+ 						       inner, rx);
  
- 		if (dr_mask_is_smac_set(&mask.outer) &&
- 		    dr_mask_is_dmac_set(&mask.outer)) {
--			ret = mlx5dr_ste_build_eth_l2_src_des(&sb[idx++], &mask,
--							      inner, rx);
--			if (ret)
--				return ret;
-+			mlx5dr_ste_build_eth_l2_src_des(&sb[idx++], &mask,
-+							inner, rx);
- 		}
- 
- 		if (dr_mask_is_smac_set(&mask.outer))
-@@ -338,10 +336,8 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
- 
- 		if (dr_mask_is_smac_set(&mask.inner) &&
- 		    dr_mask_is_dmac_set(&mask.inner)) {
--			ret = mlx5dr_ste_build_eth_l2_src_des(&sb[idx++],
--							      &mask, inner, rx);
--			if (ret)
--				return ret;
-+			mlx5dr_ste_build_eth_l2_src_des(&sb[idx++],
-+							&mask, inner, rx);
- 		}
- 
- 		if (dr_mask_is_smac_set(&mask.inner))
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-index 6e86704181cc..970dbabe3ea2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-@@ -766,8 +766,8 @@ int mlx5dr_ste_build_ste_arr(struct mlx5dr_matcher *matcher,
- 	return 0;
- }
- 
--static int dr_ste_build_eth_l2_src_des_bit_mask(struct mlx5dr_match_param *value,
--						bool inner, u8 *bit_mask)
-+static void dr_ste_build_eth_l2_src_des_bit_mask(struct mlx5dr_match_param *value,
-+						 bool inner, u8 *bit_mask)
- {
- 	struct mlx5dr_match_spec *mask = inner ? &value->inner : &value->outer;
- 
-@@ -795,13 +795,6 @@ static int dr_ste_build_eth_l2_src_des_bit_mask(struct mlx5dr_match_param *value
- 		MLX5_SET(ste_eth_l2_src_dst, bit_mask, first_vlan_qualifier, -1);
- 		mask->svlan_tag = 0;
- 	}
--
--	if (mask->cvlan_tag || mask->svlan_tag) {
--		pr_info("Invalid c/svlan mask configuration\n");
--		return -EINVAL;
--	}
--
--	return 0;
- }
- 
- static void dr_ste_copy_mask_misc(char *mask, struct mlx5dr_match_misc *spec)
-@@ -1092,23 +1085,17 @@ static int dr_ste_build_eth_l2_src_des_tag(struct mlx5dr_match_param *value,
- 	return 0;
- }
- 
--int mlx5dr_ste_build_eth_l2_src_des(struct mlx5dr_ste_build *sb,
--				    struct mlx5dr_match_param *mask,
--				    bool inner, bool rx)
-+void mlx5dr_ste_build_eth_l2_src_des(struct mlx5dr_ste_build *sb,
-+				     struct mlx5dr_match_param *mask,
-+				     bool inner, bool rx)
- {
--	int ret;
--
--	ret = dr_ste_build_eth_l2_src_des_bit_mask(mask, inner, sb->bit_mask);
--	if (ret)
--		return ret;
-+	dr_ste_build_eth_l2_src_des_bit_mask(mask, inner, sb->bit_mask);
- 
- 	sb->rx = rx;
- 	sb->inner = inner;
- 	sb->lu_type = DR_STE_CALC_LU_TYPE(ETHL2_SRC_DST, rx, inner);
- 	sb->byte_mask = dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
- 	sb->ste_build_tag_func = &dr_ste_build_eth_l2_src_des_tag;
--
--	return 0;
- }
- 
- static void dr_ste_build_eth_l3_ipv6_dst_bit_mask(struct mlx5dr_match_param *value,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index a3825338caaa..ff3361df086a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -288,9 +288,9 @@ int mlx5dr_ste_build_ste_arr(struct mlx5dr_matcher *matcher,
- 			     struct mlx5dr_matcher_rx_tx *nic_matcher,
- 			     struct mlx5dr_match_param *value,
- 			     u8 *ste_arr);
--int mlx5dr_ste_build_eth_l2_src_des(struct mlx5dr_ste_build *builder,
--				    struct mlx5dr_match_param *mask,
--				    bool inner, bool rx);
-+void mlx5dr_ste_build_eth_l2_src_des(struct mlx5dr_ste_build *builder,
-+				     struct mlx5dr_match_param *mask,
-+				     bool inner, bool rx);
- void mlx5dr_ste_build_eth_l3_ipv4_5_tuple(struct mlx5dr_ste_build *sb,
- 					  struct mlx5dr_match_param *mask,
- 					  bool inner, bool rx);
+-		misc3 = &mask.misc3;
+-		if ((DR_MASK_IS_FLEX_PARSER_ICMPV4_SET(misc3) &&
++		if ((DR_MASK_IS_FLEX_PARSER_ICMPV4_SET(&mask.misc3) &&
+ 		     mlx5dr_matcher_supp_flex_parser_icmp_v4(&dmn->info.caps)) ||
+ 		    (dr_mask_is_flex_parser_icmpv6_set(&mask.misc3) &&
+ 		     mlx5dr_matcher_supp_flex_parser_icmp_v6(&dmn->info.caps))) {
 -- 
 2.26.2
 
