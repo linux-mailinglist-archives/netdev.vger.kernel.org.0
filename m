@@ -2,138 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 938AC28062C
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 20:03:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F08328065C
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 20:17:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732967AbgJASDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 14:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
+        id S1730029AbgJASRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 14:17:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730029AbgJASDg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 14:03:36 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98460C0613D0
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 11:03:34 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id n16so346837ilm.8
-        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 11:03:34 -0700 (PDT)
+        with ESMTP id S1729493AbgJASRT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 14:17:19 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E48C0613D0;
+        Thu,  1 Oct 2020 11:17:19 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id f70so4700537ybg.13;
+        Thu, 01 Oct 2020 11:17:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=MGfncaNXf3ZlLjOYkE0CYXhheRa1qte1gZDOf7whOh4=;
-        b=bMk0eQxWk615dOwbj6tmX+SmuGbya8vj7egai7N7UK9hsKCsuX7XdO/POzjFztWqIf
-         faW1/nwjt8fAPU8aJMvARMJJMDVaCgOS+v+BLwk9zVc3ujnkAXxPxUPtk3uirCNIES3Y
-         Ud+Kb916wR98tiNzBbBcX++Ehl7Bj21DOA0REy3PQu5KAWVJ6/jJXmWbfQtN8TKgLrD1
-         S+3RcHLsQEAz+5ucWbE7DvUnAWQjpgUFdsuI52zz0xdi4N3xx9rmpJKrHo3EXaKBYGk7
-         D+mzqyiBwlQNuHBggQCNUZdS2N1YkevQ8Ooy3QXhKKJxNRMim4xNSXHjvLIrkdBpota4
-         xZaA==
+        bh=RAC5Se9PuPOggrcST5NI+UPYKW6AY39SOgPucfQ9Cis=;
+        b=W2Kw28BCkt8KhKuBpkExAaNDKuC2kojSMVHOn/t2Z2ZleF1ZAwaxsfiPkNHMvo+usK
+         YsLjdc0kVfqAhHAa0VapXpId+Gt2BTh3pUkAjGcd1so4mZPCl4VxKxFi24y1f2d/PqIn
+         eG1eBiBljfUHo7Gj/hG/+8ZxZmZ/YrlL6uJ2Sk795mgSHl4QZXgwxZrM9U5cwXhZsmkL
+         be+A9rodogga7l2dUJSVmo56W1kyWLDtw2W15g5+tQJ5sRf8HCUOkkXOXqzeCvXfh6lN
+         NZJhp/kbAZIvxetee2HAXbZTHd1105ytQA4tSDfi+RCUGrjNeAxs+3ibbC1nI9OY4T5d
+         oO4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=MGfncaNXf3ZlLjOYkE0CYXhheRa1qte1gZDOf7whOh4=;
-        b=p03tQGEXjIzTX8NvoE37CpjAqh2U6CuBe7bTavQaiXcDIsPTraBvTKzAHsOQnBhbBu
-         T6Gscf94peQMOvLPG9Rs5plqftKCfKiXAhNjqrgwnZiDMeD9sGD6H6/qmmLyslZRF5SD
-         FCm7ORwmMFpuu+Mne5vymcOThiIwavX9MhBhHxzKxq8q5COv4chHdNoOPmnOdlUbPqK0
-         KpleHevENc6WEjoEYyWce7P9HGGnkrUDzgxOVjTBUwTpHqHfTfyZQG3BAtJjO/6yKdvT
-         Z9iizFuSuxXpGy7ep7VzOEuY5x+VLYPVTbC1MBQn5CFGiq3azOkSMfYYpB7AJ/VzS/gB
-         TIcQ==
-X-Gm-Message-State: AOAM5306phFEOasnZ6joIr/yaVbwadybYQRqTcFq08W/wNd7JvCbsfzN
-        qyd7YGW1Ws4q+OR7lj3SNJrYrRdGjO2uNqnC4GZPDA==
-X-Google-Smtp-Source: ABdhPJw5DHhk+b1erJckwD/POhUXKgdfh/o2mpG3TCQ2MQCTmd7OrYtZNhYFqJrMmm5husp+mrpZOLRJP6ruij3h2IM=
-X-Received: by 2002:a92:ba4d:: with SMTP id o74mr3547198ili.205.1601575413663;
- Thu, 01 Oct 2020 11:03:33 -0700 (PDT)
+        bh=RAC5Se9PuPOggrcST5NI+UPYKW6AY39SOgPucfQ9Cis=;
+        b=AKylTAwfMAeVRZTWb57kVn4SWhsG9BlV9EuMCfw9tufczPMBe5HRPSattmc42QImFR
+         NeIHSS2TuQtuVwv6I9BXpt0TXDSXLLwTaGoujTqfxrfjOTp3XgRgpBT5QtoEeKSW43Zx
+         PD/lDlBNKp9HW0ZMwSXxuOz8JyU6eM1+EGgVPYi7OSZ8nuGmaS/WtVcYfWbZDoPlRaM2
+         JTBIYtTGBd0KKHzxVY40wAfOz9aAgfpp9ANkF6NtM8WsWZy0YWpvsIgK1u0QS8LQakk6
+         VRClYuQt8qkLouzMPie6n4N3xDiW4Sx0cx4kkdxeXRM4pI9sWpBOv0dsfGt0fCrlFdsI
+         bJhQ==
+X-Gm-Message-State: AOAM5325QBkgehd9SZ1muzJRKUq2Qj52h0iRFGs6oS6RUV5URumLZkGG
+        ch18mZnt8M/i2/21itbZhX6r1czkOskzzxoSj18=
+X-Google-Smtp-Source: ABdhPJygbkl/A8PX82cYfHnjLVSkwHcdrZhuK5g09YeLVdGkcORS7ChJ4aZ9dCoFM6sbt/xirLejWvb5cThfuzgi3+Y=
+X-Received: by 2002:a25:8541:: with SMTP id f1mr11163136ybn.230.1601576238244;
+ Thu, 01 Oct 2020 11:17:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200930192140.4192859-1-weiwan@google.com> <20200930192140.4192859-6-weiwan@google.com>
- <03d4edde-dce3-b263-39eb-d217f06936da@nbd.name> <CAEA6p_AsJuGb3C2MmWNDQYaZQtcCQc2CHdqcSPiH9i9NmPZMdQ@mail.gmail.com>
- <e9fdabda-72b1-fabd-8522-38965a62744c@nbd.name>
-In-Reply-To: <e9fdabda-72b1-fabd-8522-38965a62744c@nbd.name>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 1 Oct 2020 20:03:22 +0200
-Message-ID: <CANn89iL0dVFZ1QxMsJd4mT=idtb+AwLE4cFQy9DLzN0heUrqVQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 5/5] net: improve napi threaded config
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Wei Wang <weiwan@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Paolo Abeni <pabeni@redhat.com>
+References: <20200929031845.751054-1-liuhangbin@gmail.com> <CAEf4BzYKtPgSxKqduax1mW1WfVXKuCEpbGKRFvXv7yNUmUm_=A@mail.gmail.com>
+ <20200929094232.GG2531@dhcp-12-153.nay.redhat.com> <CAEf4BzZy9=x0neCOdat-CWO4nM3QYgWOKaZpN31Ce5Uz9m_qfg@mail.gmail.com>
+ <20200930023405.GH2531@dhcp-12-153.nay.redhat.com> <CAEf4BzYVVUq=eNwb4Z1JkVmRc4i+nxC4zWxbv2qGQAs-2cxkhw@mail.gmail.com>
+ <CAPwn2JT6KGPxKD0fGZLfR8EsRHhYcfbvCATWO9WsiH_wqhheFg@mail.gmail.com>
+In-Reply-To: <CAPwn2JT6KGPxKD0fGZLfR8EsRHhYcfbvCATWO9WsiH_wqhheFg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 1 Oct 2020 11:17:07 -0700
+Message-ID: <CAEf4BzZ+ffmWfGfDSYTv6OGOy8KjC95=XnA18MSkUEPEA_7zgQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: export bpf_object__reuse_map() to libbpf api
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 1, 2020 at 7:12 PM Felix Fietkau <nbd@nbd.name> wrote:
+On Thu, Oct 1, 2020 at 4:34 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
 >
-> On 2020-10-01 19:01, Wei Wang wrote:
-> > On Thu, Oct 1, 2020 at 3:01 AM Felix Fietkau <nbd@nbd.name> wrote:
-> >>
-> >>
-> >> On 2020-09-30 21:21, Wei Wang wrote:
-> >> > This commit mainly addresses the threaded config to make the switch
-> >> > between softirq based and kthread based NAPI processing not require
-> >> > a device down/up.
-> >> > It also moves the kthread_create() call to the sysfs handler when user
-> >> > tries to enable "threaded" on napi, and properly handles the
-> >> > kthread_create() failure. This is because certain drivers do not have
-> >> > the napi created and linked to the dev when dev_open() is called. So
-> >> > the previous implementation does not work properly there.
-> >> >
-> >> > Signed-off-by: Wei Wang <weiwan@google.com>
-> >> > ---
-> >> > Changes since RFC:
-> >> > changed the thread name to napi/<dev>-<napi-id>
-> >> >
-> >> >  net/core/dev.c       | 49 +++++++++++++++++++++++++-------------------
-> >> >  net/core/net-sysfs.c |  9 +++-----
-> >> >  2 files changed, 31 insertions(+), 27 deletions(-)
-> >> >
-> >> > diff --git a/net/core/dev.c b/net/core/dev.c
-> >> > index b4f33e442b5e..bf878d3a9d89 100644
-> >> > --- a/net/core/dev.c
-> >> > +++ b/net/core/dev.c
-> >> > @@ -1490,17 +1490,24 @@ EXPORT_SYMBOL(netdev_notify_peers);
-> >> >
-> >> >  static int napi_threaded_poll(void *data);
-> >> >
-> >> > -static void napi_thread_start(struct napi_struct *n)
-> >> > +static int napi_kthread_create(struct napi_struct *n)
-> >> >  {
-> >> > -     if (test_bit(NAPI_STATE_THREADED, &n->state) && !n->thread)
-> >> > -             n->thread = kthread_create(napi_threaded_poll, n, "%s-%d",
-> >> > -                                        n->dev->name, n->napi_id);
-> >> > +     int err = 0;
-> >> > +
-> >> > +     n->thread = kthread_create(napi_threaded_poll, n, "napi/%s-%d",
-> >> > +                                n->dev->name, n->napi_id);
-> >> > +     if (IS_ERR(n->thread)) {
-> >> > +             err = PTR_ERR(n->thread);
-> >> > +             pr_err("kthread_create failed with err %d\n", err);
-> >> > +             n->thread = NULL;
-> >> > +     }
-> >> > +
-> >> > +     return err;
-> >> If I remember correctly, using kthread_create with no explicit first
-> >> wakeup means the task will sit there and contribute to system loadavg
-> >> until it is woken up the first time.
-> >> Shouldn't we use kthread_run here instead?
-> >>
+> On Thu, 1 Oct 2020 at 02:30, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > > index 32dc444224d8..5412aa7169db 100644
+> > > --- a/tools/lib/bpf/libbpf.c
+> > > +++ b/tools/lib/bpf/libbpf.c
+> > > @@ -4215,7 +4215,7 @@ bpf_object__create_maps(struct bpf_object *obj)
+> > >                 if (map->fd >= 0) {
+> > >                         pr_debug("map '%s': skipping creation (preset fd=%d)\n",
+> > >                                  map->name, map->fd);
+> > > -                       continue;
+> > > +                       goto check_pin_path;
+> > >                 }
+> > >
+> > >                 err = bpf_object__create_map(obj, map);
+> > > @@ -4258,6 +4258,7 @@ bpf_object__create_maps(struct bpf_object *obj)
+> > >                         map->init_slots_sz = 0;
+> > >                 }
+> > >
+> > > +check_pin_path:
+> > >                 if (map->pin_path && !map->pinned) {
+> > >                         err = bpf_map__pin(map, NULL);
+> > >                         if (err) {
+> > >
+> > >
+> > > Do you think if this change be better?
 > >
-> > Right. kthread_create() basically creates the thread and leaves it in
-> > sleep mode. I think that is what we want. We rely on the next
-> > ___napi_schedule() call to wake up this thread when there is work to
-> > do.
-> But what if you have a device that's basically idle and napi isn't
-> scheduled until much later? It will get a confusing loadavg until then.
-> I'd prefer waking up the thread immediately and filtering going back to
-> sleep once in the thread function before running the loop if
-> NAPI_STATE_SCHED wasn't set.
+> > Yes, of course. Just don't do it through use of goto. Guard map
+> > creation with that if instead.
 >
+> Hi Andrii,
+>
+> Looks I missed something, Would you like to explain why we should not use goto?
 
-I was not aware of this kthread_create() impact on loadavg.
-This seems like a bug to me. (although I do not care about loadavg)
+Because goto shouldn't be a default way of altering the control flow.
 
-Do you have pointers on some documentation ?
+> And for "guard map creation with the if", do you mean duplicate the
+> if (map->pin_path && !map->pinned) in if (map->fd >= 0)? like
 
-Probably not a big deal, but this seems quite odd to me.
+I mean something like:
+
+
+if (map->pin_path) { ... }
+
+if (map fd < 0) {
+  bpf_object__create_map(..);
+  if (bpf_map__is_internal(..)) { ... }
+  if (map->init_slot_sz) { ...}
+}
+
+if (map->pin_path && !map->pinned) { ...  }
+
+
+>
+> diff --git a/src/libbpf.c b/src/libbpf.c
+> index 3df1f4d..705abcb 100644
+> --- a/src/libbpf.c
+> +++ b/src/libbpf.c
+> @@ -4215,6 +4215,15 @@ bpf_object__create_maps(struct bpf_object *obj)
+>                 if (map->fd >= 0) {
+>                         pr_debug("map '%s': skipping creation (preset fd=%d)\n",
+>                                  map->name, map->fd);
+> +                       if (map->pin_path && !map->pinned) {
+> +                               err = bpf_map__pin(map, NULL);
+> +                               if (err) {
+> +                                       pr_warn("map '%s': failed to
+> auto-pin at '%s': %d\n",
+> +                                               map->name, map->pin_path, err);
+> +                                       zclose(map->fd);
+> +                                       goto err_out;
+> +                               }
+> +                       }
+>                         continue;
+>                 }
+>
+> (Sorry if the code format got corrupted as I replied in web gmail....)
+>
+> Thanks
+> Hangbin
