@@ -2,158 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BCCD27FA15
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 09:21:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9733727FA2B
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 09:23:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730415AbgJAHVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 03:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48284 "EHLO
+        id S1731449AbgJAHXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 03:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725878AbgJAHVR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 03:21:17 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FCDC0613D0
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 00:21:16 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id s12so4377411wrw.11
-        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 00:21:16 -0700 (PDT)
+        with ESMTP id S1731498AbgJAHXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 03:23:11 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA41FC0613D0
+        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 00:23:10 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id md26so841867ejb.10
+        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 00:23:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8HVibruU0dcUMR5RZeUD1cZ/NXBGV9rTxBVK6DiY0Fc=;
-        b=kR3TpPwBkDKIsM9GuhaVoF7JOHpwGF2O0pIpFpd/+JhnPoYfkRdPnqHd5RkeUNc/Dz
-         r75jGN45RNbpTxYuU8b+B8qGsh970E/yiVPquDfd0d1/1LDSngtFgaRUvKYPWq21SNJW
-         e8z1DCtPLhDm/zy2pNIWQX5p7v2pCdLwc1/mxZAHbbkwvUdrFrliqZkwjs4HkMVZ+vlQ
-         ttEYGKZMgewG1vqeg2M/l0fGhD/WKjWkYN9D4QMgFgehP0t54XzUp7frKMsJyvkqJhW1
-         B4yf390axYw1aXDRUYOzz2MpQStxsP2iokMmyx3t5T/ptbA6Vhw1OJtkYPMsoFiFMGk+
-         plKA==
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=euySubMLNn0hpcE/3ehb/nX++VODJcqhFgRzScT/BDo=;
+        b=BbPsYL+LyQ0iDdWfm4g9SaQpkl2jEEkwScvdZWOFgI6EqO58T6T242c6IzUgSVIubx
+         d5AxrbuWyjnaM3sd/RzwDCk1w2xyNR2PdyR0CeFGypIWvM5ySHSnGbvsI1Ss95MSDltw
+         n0DXdanLVwrNvwNowU1++eNOmmSc3aVfGtjhKQWTKxciZXQoVklIVD9WkBe+fGBmyi1C
+         YjFiuJMljBATrg7ajRkASyKIxVHuoIW4P+U9K/+Bh8wh3RQLBW+J4Gsylskz0R9w2l3o
+         uuKWDu9QnMHp154fghLdSG2fJXiCsXeyvBx3GOFzgFGVMr64i9qWnM3qY7fRb+anIa5d
+         4nXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8HVibruU0dcUMR5RZeUD1cZ/NXBGV9rTxBVK6DiY0Fc=;
-        b=X5SX2a9E+GJcNQLk+jQHHD7NiyEsxId0CNBU9ZsJNhNLRcjsFKcPnJ6uH9ZUNDOFlZ
-         mI8l4vcavQFpvh1UaMWrOugFKYpMrDg1/E0OsI0tbIblqNRQInx2gi+JvxdSKkMafJyP
-         ICLPqFF+MIpjxTadzRjSUBSMF4cF+I7SSrnYMjYT1tvalBxODg3p79tt0W2tC5CsYqhx
-         44gj+5hMLHLSnRavUVOQCh+yddjtGpkS2/Zh9Vc0UCJ+emFs2PAayuZIG/jP/390vpDC
-         sqxgW88pFjkCNtagTiQdcAeJpCbFqdBVJQwgt66kLVydI7WOcSPCwz6F2iNQo0670yCa
-         OsFg==
-X-Gm-Message-State: AOAM533VgL39d4PFJ6GZvR03b4feY4gaa4lUrbgMauev6Iinbjc+C18B
-        JMv5u3by0a8S7UsNmzOqSO4GqvaveeVqNniB
-X-Google-Smtp-Source: ABdhPJyADsm+FmvGSJ3wHlfwNqFB59gTdiiz2Q9EVZPhSshKnPIj1BiboE5rcGx1L4JEcI/oeO58Ug==
-X-Received: by 2002:a5d:4603:: with SMTP id t3mr6953341wrq.424.1601536875109;
-        Thu, 01 Oct 2020 00:21:15 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id k8sm6995429wrl.42.2020.10.01.00.21.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Oct 2020 00:21:14 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com, mlxsw@nvidia.com
-Subject: [patch iproute2-next] devlink: Add health reporter test command support
-Date:   Thu,  1 Oct 2020 09:21:13 +0200
-Message-Id: <20201001072113.493092-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.26.2
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=euySubMLNn0hpcE/3ehb/nX++VODJcqhFgRzScT/BDo=;
+        b=C2U3bS+H758ZSdX5gMe3/OCrQf/WZVwbz7tc+0y6bf2c1VZ8HPUTvUaI2YroBSyZ0h
+         4TFN0DcsX0A5VgFq/NHmUxZnwIVrBE6fNVSI2CwH44Ec+TvtPGOaN3meuZoUT3nKkoIa
+         yBhaVS30H0nrmCeqpXjEntdx3+iVUcy7u/3eGAkPoghk3ysr2w0Tp3Ccg0S/kb/trsxw
+         4jdVlKreSY6ADiTB5MZ9BjTnZo+1kyqUrXvCSfMPEtB9MwXIq0z1AdTxRx1n+nminP/F
+         yhVQrO9Qk8GXJvm8k+qzCaytciGOhbrSPPid72YXtSoLTXeQDCTxgoDXdHp7leYhjcAw
+         pvRg==
+X-Gm-Message-State: AOAM532ys+zyCsf6f8KiAmcr2BqNZwOZ7nRmyHjaNhQZFqp0patUqsbI
+        9M4cAHtfRTWjRrMp0McQLf8=
+X-Google-Smtp-Source: ABdhPJy873iDtJZxUWOHwTbeOjftYDhaTPrlYsftcvcDZOhJtVNVniOBjpi8LZ5gBb2eEw85hf0VSw==
+X-Received: by 2002:a17:906:1f42:: with SMTP id d2mr6548793ejk.407.1601536989345;
+        Thu, 01 Oct 2020 00:23:09 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f00:6a00:758b:d2db:8faf:4c9e? (p200300ea8f006a00758bd2db8faf4c9e.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:758b:d2db:8faf:4c9e])
+        by smtp.googlemail.com with ESMTPSA id o23sm3514440eju.17.2020.10.01.00.23.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Oct 2020 00:23:08 -0700 (PDT)
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Petr Tesarik <ptesarik@suse.cz>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net] r8169: fix data corruption issue on RTL8402
+Message-ID: <41cca6ed-088c-da5d-94bd-4269b2071a9c@gmail.com>
+Date:   Thu, 1 Oct 2020 09:23:02 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+Petr reported that after resume from suspend RTL8402 partially
+truncates incoming packets, and re-initializing register RxConfig
+before the actual chip re-initialization sequence is needed to avoid
+the issue.
 
-Add health reporter test command and allow user to trigger a test event.
-
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+Reported-by: Petr Tesarik <ptesarik@suse.cz>
+Proposed-by: Petr Tesarik <ptesarik@suse.cz>
+Tested-by: Petr Tesarik <ptesarik@suse.cz>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- bash-completion/devlink   |  2 +-
- devlink/devlink.c         | 11 +++++++++++
- man/man8/devlink-health.8 | 16 ++++++++++++++++
- 3 files changed, 28 insertions(+), 1 deletion(-)
+Hard to provide a Fixes tag because it seems the issue has been
+always there. Due to frequent changes in function rtl8169_resume()
+we would need a number of different fixes for the stable kernel
+versions. That the issue was reported only now indicates that chip
+version RTL8402 is rare. Therefore treat this change mainly as an
+improvement. This fix version applies from 5.9 after just submitted
+fix "r8169: fix handling ether_clk".
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/bash-completion/devlink b/bash-completion/devlink
-index f710c888652e..7395b5040232 100644
---- a/bash-completion/devlink
-+++ b/bash-completion/devlink
-@@ -635,7 +635,7 @@ _devlink_health_reporter()
- _devlink_health()
- {
-     case $command in
--        show|recover|diagnose|set)
-+        show|recover|diagnose|set|test)
-             _devlink_health_reporter 0
-             if [[ $command == "set" ]]; then
-                 case $cword in
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 0374175eda3d..126156a200c9 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -7055,6 +7055,13 @@ static int cmd_health_diagnose(struct dl *dl)
- 					0);
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 72351c5b0..0fa99298a 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4848,6 +4848,10 @@ static int __maybe_unused rtl8169_resume(struct device *device)
+ 	if (!device_may_wakeup(tp_to_dev(tp)))
+ 		clk_prepare_enable(tp->clk);
+ 
++	/* Reportedly at least Asus X453MA truncates packets otherwise */
++	if (tp->mac_version == RTL_GIGA_MAC_VER_37)
++		rtl_init_rxcfg(tp);
++
+ 	return rtl8169_net_resume(tp);
  }
  
-+static int cmd_health_test(struct dl *dl)
-+{
-+	return cmd_health_object_common(dl,
-+					DEVLINK_CMD_HEALTH_REPORTER_TEST,
-+					0);
-+}
-+
- static int cmd_health_recover(struct dl *dl)
- {
- 	struct nlmsghdr *nlh;
-@@ -7259,6 +7266,7 @@ static void cmd_health_help(void)
- 	pr_err("Usage: devlink health show [ { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME ]\n");
- 	pr_err("       devlink health recover { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME\n");
- 	pr_err("       devlink health diagnose { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME\n");
-+	pr_err("       devlink health test { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME\n");
- 	pr_err("       devlink health dump show { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME\n");
- 	pr_err("       devlink health dump clear { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME\n");
- 	pr_err("       devlink health set { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME\n");
-@@ -7282,6 +7290,9 @@ static int cmd_health(struct dl *dl)
- 	} else if (dl_argv_match(dl, "diagnose")) {
- 		dl_arg_inc(dl);
- 		return cmd_health_diagnose(dl);
-+	} else if (dl_argv_match(dl, "test")) {
-+		dl_arg_inc(dl);
-+		return cmd_health_test(dl);
- 	} else if (dl_argv_match(dl, "dump")) {
- 		dl_arg_inc(dl);
- 		if (dl_argv_match(dl, "show")) {
-diff --git a/man/man8/devlink-health.8 b/man/man8/devlink-health.8
-index 47b96135ef01..975b8c75d798 100644
---- a/man/man8/devlink-health.8
-+++ b/man/man8/devlink-health.8
-@@ -41,6 +41,12 @@ devlink-health \- devlink health reporting and recovery
- .B  reporter
- .RI "" REPORTER ""
- 
-+.ti -8
-+.BR "devlink health test"
-+.RI "{ " DEV " | " DEV/PORT_INDEX " }"
-+.B reporter
-+.RI "" REPORTER ""
-+
- .ti -8
- .B devlink health dump clear
- .RI "{ " DEV " | " DEV/PORT_INDEX " }"
-@@ -105,6 +111,16 @@ This action performs a recovery and increases the recoveries counter on success.
- .I "REPORTER"
- - specifies the reporter's name registered on specified devlink device or port.
- 
-+.SS devlink health test - Trigger a test event on a reporter.
-+
-+.PP
-+.I "DEV"
-+- specifies the devlink device.
-+
-+.PP
-+.I "REPORTER"
-+- specifies the reporter's name registered on the devlink device.
-+
- .SS devlink health dump show - Display the last saved dump.
- 
- .PD 0
 -- 
-2.26.2
+2.28.0
 
