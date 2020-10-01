@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F93F280AD5
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 01:04:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB56B280AD8
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 01:04:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733283AbgJAXET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 19:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
+        id S2387498AbgJAXEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 19:04:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733257AbgJAXER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 19:04:17 -0400
+        with ESMTP id S2387469AbgJAXEU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 19:04:20 -0400
 Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACF4C0613A6
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 16:04:17 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id u64so535358ybb.8
-        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 16:04:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97DDC0613D0
+        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 16:04:19 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id v4so547610ybk.5
+        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 16:04:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=m3yi1dYg0De53HWOeGwrrfVixnnxwRN+NlpTXCn7/v4=;
-        b=pjrbFFZD0pLSRUSuVnFFrgjqRDKzEK/x8htCiauoliTrkWwnUp4TIecq6X5BTfaXgC
-         jBNikGet+GZhi759zlH6zQ9lMrphRRYaIf5jkaq9hpDcxoCSmzGQXF6Xyp9KyARGbFiF
-         byPpkhT4jO2LMntX8dixKYwEQTN38tOWxPInrN8YuyMgvbKBk6ywvepMoQYhkzgdOqit
-         tiVNEWXMRchwaNNTSeT9Txc/ec+rYZSqmvCB0iW24gmp5xnRgqiy0QtaYaB0RSbNQH3v
-         ykJRmdMRcVQKn8vCEzy7TE0s+sJf4WPWcThRG4vSaVY1n4Rm3AuAMOuLVR33CthQHQHQ
-         iQkw==
+        bh=gzdgjx4eVJh7Xb7eAH+TAn3vgdcp4FzjfRPQGrQVIYM=;
+        b=iZS5amP9Lf4HCo6AGVGN9M02oAOt//S+fbR9GM1fnxY7vJx3Ehhn32VbpvdNERuDIL
+         9UjRbSbidGMMT3hEoUqs1sg9UzQa7vj4S0JB8LN6ATC3pMfDmfd+P5gh/B4IBO7YCBTv
+         dsGaSzXGuNmpP+qenL8Ty/nVbEqtLr5PL3FkMJdSxAJfori9M1YgkG3GG1DeDVGupAAy
+         5U/vJhkQDr54llmMPN/Eo5X9tO+osR9C0fgo+fKlLTIASel0FE82Bfkka5oako3Nk3vS
+         y/y/FfIQJ6AcAVVlWQYsgErxkl+IkFUYBFlCj9XJy1/zS3XRose281Vsx0WYunZtvTQJ
+         jpAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=m3yi1dYg0De53HWOeGwrrfVixnnxwRN+NlpTXCn7/v4=;
-        b=YZku2Ff1hkKVZZnKJ2AFKRSB9pzQb4B6d+OOnskEGv3JIMcIDLhoMEluj825bm5inn
-         T69hKPSeMNgM0qHKicjWiz3/PreZQlaOjSP0ihtZRroXyqoGHMAv84JA2MD5NhpSJnUS
-         meLSo9kLO8PJhZwtLVO/9glpSshQVDkX4Al2v8knZHRoaDvUvkju5WqDIWv+JyePKk1o
-         7VbY7Oxzoy5Afw4mnbE3/n/9uYwCt/KRTm+akO2U+0PaNb+PqpKTX/OuPmiXFdZsuoMh
-         0OdmKrQSKfjOG9chNYscjlEEBG+EJ0OwTOiOhpTHFprsd9dEVFkel58ObIkK7/72cJJm
-         GuLg==
-X-Gm-Message-State: AOAM531y7mVHcJSxkj2QJdNlN4NhLCH1swNIzocKWm9883QWB8+SUAMA
-        Xl5zeMXCw/J5262A5pmryweXezOfrmRptwbfizZ9
-X-Google-Smtp-Source: ABdhPJwHmgE/iATWoB38o4y2JKjfVIYGyMQoFZgm6Smr4u7Rv+N4qHoRt5R91P2XGGZO33ypTEfNj9Qmq8vOskEcpy9D
+        bh=gzdgjx4eVJh7Xb7eAH+TAn3vgdcp4FzjfRPQGrQVIYM=;
+        b=LXcC2M4e1NX7FWIR/JqcqvlBhkJc7h92Dq0JDjxIPwLhxf3X/TTiHV8RAj0xNyTq9N
+         iw0+hhBemQftqGSTY+qHppV9EXIViytdhSi4IPeACy+1yZ1mIW9tFb7vcV8Y0CZ7LJ+B
+         Es+0HlkZS6DAiorL2GZO/YpxAnPmRxuDG4jMxL5gCSz2QMi5RNvjg0183PmmYZtNtyAu
+         9vKNc22VwoKESeKrXnYbqAhEWIl+YWkfIEnsEOeAscKhgAZUzLVwGPStjaHdQSVlkzuU
+         phFPNKOmHz9JyAUijquff/o7MJVfuTfRWDUqo/F5drNTjKXbv7zMdnlMQeISh+Y4CurT
+         ejcg==
+X-Gm-Message-State: AOAM531V7+QiheLwwpx1GmTYUL6vVoMpAlJyX/iLePN1/c1XW2SvQyYY
+        RqmAtB/mEYtacMKvFkzKgZ5goLM9BfruZQSW7+I6
+X-Google-Smtp-Source: ABdhPJy+UASECqoWVlksJQpDXRpNIVWb3viFYi+3OiFH8zyTG9r3lde/IpQ+gpHCZkk8NtdrPrWoZsQWzx5JHYZJoI/K
 Sender: "danielwinkler via sendgmr" 
         <danielwinkler@danielwinkler-linux.mtv.corp.google.com>
 X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:f693:9fff:fef4:4e59])
- (user=danielwinkler job=sendgmr) by 2002:a25:dc92:: with SMTP id
- y140mr14300457ybe.113.1601593456211; Thu, 01 Oct 2020 16:04:16 -0700 (PDT)
-Date:   Thu,  1 Oct 2020 16:04:02 -0700
+ (user=danielwinkler job=sendgmr) by 2002:a25:c549:: with SMTP id
+ v70mr13905718ybe.516.1601593458903; Thu, 01 Oct 2020 16:04:18 -0700 (PDT)
+Date:   Thu,  1 Oct 2020 16:04:03 -0700
 In-Reply-To: <20201001230403.2445035-1-danielwinkler@google.com>
-Message-Id: <20201001160305.v4.4.Ibedcb7af24f1c01a680de4cc8cc5a98951588393@changeid>
+Message-Id: <20201001160305.v4.5.I5068c01cae3cea674a96e103a0cf4d8c81425a4f@changeid>
 Mime-Version: 1.0
 References: <20201001230403.2445035-1-danielwinkler@google.com>
 X-Mailer: git-send-email 2.28.0.709.gb0816b6eb0-goog
-Subject: [PATCH v4 4/5] Bluetooth: Query LE tx power on startup
+Subject: [PATCH v4 5/5] Bluetooth: Change MGMT security info CMD to be more generic
 From:   Daniel Winkler <danielwinkler@google.com>
 To:     marcel@holtmann.org
 Cc:     linux-bluetooth@vger.kernel.org,
@@ -68,121 +68,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Queries tx power via HCI_LE_Read_Transmit_Power command when the hci
-device is initialized, and stores resulting min/max LE power in hdev
-struct. If command isn't available (< BT5 support), min/max values
-both default to HCI_TX_POWER_INVALID.
+For advertising, we wish to know the LE tx power capabilities of the
+controller in userspace, so this patch edits the Security Info MGMT
+command to be more generic, such that other various controller
+capabilities can be included in the EIR data. This change also includes
+the LE min and max tx power into this newly-named command.
 
-This patch is manually verified by ensuring BT5 devices correctly query
-and receive controller tx power range.
+The change was tested by manually verifying that the MGMT command
+returns the tx power range as expected in userspace.
 
 Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
 Signed-off-by: Daniel Winkler <danielwinkler@google.com>
 ---
 
-Changes in v4: None
-Changes in v3: None
-Changes in v2: None
+Changes in v4:
+- Combine LE tx range into a single EIR field for MGMT capabilities cmd
 
- include/net/bluetooth/hci.h      |  7 +++++++
- include/net/bluetooth/hci_core.h |  2 ++
- net/bluetooth/hci_core.c         |  8 ++++++++
- net/bluetooth/hci_event.c        | 18 ++++++++++++++++++
- 4 files changed, 35 insertions(+)
+Changes in v3:
+- Re-using security info MGMT command to carry controller capabilities
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index c8e67042a3b14c..c1504aa3d9cfd5 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -1797,6 +1797,13 @@ struct hci_cp_le_set_adv_set_rand_addr {
- 	bdaddr_t  bdaddr;
+Changes in v2:
+- Fixed sparse error in Capabilities MGMT command
+
+ include/net/bluetooth/mgmt.h | 15 +++++++++-----
+ net/bluetooth/mgmt.c         | 39 +++++++++++++++++++++++-------------
+ 2 files changed, 35 insertions(+), 19 deletions(-)
+
+diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+index 117578bb88743c..42c3ece9931936 100644
+--- a/include/net/bluetooth/mgmt.h
++++ b/include/net/bluetooth/mgmt.h
+@@ -686,11 +686,16 @@ struct mgmt_cp_set_blocked_keys {
+ 
+ #define MGMT_OP_SET_WIDEBAND_SPEECH	0x0047
+ 
+-#define MGMT_OP_READ_SECURITY_INFO	0x0048
+-#define MGMT_READ_SECURITY_INFO_SIZE	0
+-struct mgmt_rp_read_security_info {
+-	__le16   sec_len;
+-	__u8     sec[];
++#define MGMT_CAP_SEC_FLAGS		0x01
++#define MGMT_CAP_MAX_ENC_KEY_SIZE	0x02
++#define MGMT_CAP_SMP_MAX_ENC_KEY_SIZE	0x03
++#define MGMT_CAP_LE_TX_PWR		0x04
++
++#define MGMT_OP_READ_CONTROLLER_CAP	0x0048
++#define MGMT_READ_CONTROLLER_CAP_SIZE	0
++struct mgmt_rp_read_controller_cap {
++	__le16   cap_len;
++	__u8     cap[0];
  } __packed;
  
-+#define HCI_OP_LE_READ_TRANSMIT_POWER	0x204b
-+struct hci_rp_le_read_transmit_power {
-+	__u8  status;
-+	__s8  min_le_tx_power;
-+	__s8  max_le_tx_power;
-+} __packed;
-+
- #define HCI_OP_LE_READ_BUFFER_SIZE_V2	0x2060
- struct hci_rp_le_read_buffer_size_v2 {
- 	__u8    status;
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index ab168f46b6d909..9463039f85442c 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -381,6 +381,8 @@ struct hci_dev {
- 	__u16		def_page_timeout;
- 	__u16		def_multi_adv_rotation_duration;
- 	__u16		def_le_autoconnect_timeout;
-+	__s8		min_le_tx_power;
-+	__s8		max_le_tx_power;
- 
- 	__u16		pkt_type;
- 	__u16		esco_type;
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 3a2332f4a9bba2..6bff1c09be3b42 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -741,6 +741,12 @@ static int hci_init3_req(struct hci_request *req, unsigned long opt)
- 			hci_req_add(req, HCI_OP_LE_READ_ADV_TX_POWER, 0, NULL);
- 		}
- 
-+		if (hdev->commands[38] & 0x80) {
-+			/* Read LE Min/Max Tx Power*/
-+			hci_req_add(req, HCI_OP_LE_READ_TRANSMIT_POWER,
-+				    0, NULL);
-+		}
-+
- 		if (hdev->commands[26] & 0x40) {
- 			/* Read LE White List Size */
- 			hci_req_add(req, HCI_OP_LE_READ_WHITE_LIST_SIZE,
-@@ -3654,6 +3660,8 @@ struct hci_dev *hci_alloc_dev(void)
- 	hdev->le_num_of_adv_sets = HCI_MAX_ADV_INSTANCES;
- 	hdev->def_multi_adv_rotation_duration = HCI_DEFAULT_ADV_DURATION;
- 	hdev->def_le_autoconnect_timeout = HCI_LE_AUTOCONN_TIMEOUT;
-+	hdev->min_le_tx_power = HCI_TX_POWER_INVALID;
-+	hdev->max_le_tx_power = HCI_TX_POWER_INVALID;
- 
- 	hdev->rpa_timeout = HCI_DEFAULT_RPA_TIMEOUT;
- 	hdev->discov_interleaved_timeout = DISCOV_INTERLEAVED_TIMEOUT;
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 4281f4ac6700d4..de51188a3dc15d 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -1202,6 +1202,20 @@ static void hci_cc_le_set_adv_set_random_addr(struct hci_dev *hdev,
- 	hci_dev_unlock(hdev);
+ #define MGMT_OP_READ_EXP_FEATURES_INFO	0x0049
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 092ac7fffb4124..3a35385017f568 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -110,7 +110,7 @@ static const u16 mgmt_commands[] = {
+ 	MGMT_OP_SET_APPEARANCE,
+ 	MGMT_OP_SET_BLOCKED_KEYS,
+ 	MGMT_OP_SET_WIDEBAND_SPEECH,
+-	MGMT_OP_READ_SECURITY_INFO,
++	MGMT_OP_READ_CONTROLLER_CAP,
+ 	MGMT_OP_READ_EXP_FEATURES_INFO,
+ 	MGMT_OP_SET_EXP_FEATURE,
+ 	MGMT_OP_READ_DEF_SYSTEM_CONFIG,
+@@ -176,7 +176,7 @@ static const u16 mgmt_untrusted_commands[] = {
+ 	MGMT_OP_READ_CONFIG_INFO,
+ 	MGMT_OP_READ_EXT_INDEX_LIST,
+ 	MGMT_OP_READ_EXT_INFO,
+-	MGMT_OP_READ_SECURITY_INFO,
++	MGMT_OP_READ_CONTROLLER_CAP,
+ 	MGMT_OP_READ_EXP_FEATURES_INFO,
+ 	MGMT_OP_READ_DEF_SYSTEM_CONFIG,
+ 	MGMT_OP_READ_DEF_RUNTIME_CONFIG,
+@@ -3705,13 +3705,14 @@ static int set_wideband_speech(struct sock *sk, struct hci_dev *hdev,
+ 	return err;
  }
  
-+static void hci_cc_le_read_transmit_power(struct hci_dev *hdev,
-+					  struct sk_buff *skb)
-+{
-+	struct hci_rp_le_read_transmit_power *rp = (void *)skb->data;
-+
-+	BT_DBG("%s status 0x%2.2x", hdev->name, rp->status);
-+
-+	if (rp->status)
-+		return;
-+
-+	hdev->min_le_tx_power = rp->min_le_tx_power;
-+	hdev->max_le_tx_power = rp->max_le_tx_power;
-+}
-+
- static void hci_cc_le_set_adv_enable(struct hci_dev *hdev, struct sk_buff *skb)
+-static int read_security_info(struct sock *sk, struct hci_dev *hdev,
+-			      void *data, u16 data_len)
++static int read_controller_cap(struct sock *sk, struct hci_dev *hdev,
++			       void *data, u16 data_len)
  {
- 	__u8 *sent, status = *((__u8 *) skb->data);
-@@ -3574,6 +3588,10 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, struct sk_buff *skb,
- 		hci_cc_le_set_adv_set_random_addr(hdev, skb);
- 		break;
+-	char buf[16];
+-	struct mgmt_rp_read_security_info *rp = (void *)buf;
+-	u16 sec_len = 0;
++	char buf[20];
++	struct mgmt_rp_read_controller_cap *rp = (void *)buf;
++	u16 cap_len = 0;
+ 	u8 flags = 0;
++	u8 tx_power_range[2];
  
-+	case HCI_OP_LE_READ_TRANSMIT_POWER:
-+		hci_cc_le_read_transmit_power(hdev, skb);
-+		break;
+ 	bt_dev_dbg(hdev, "sock %p", sk);
+ 
+@@ -3735,23 +3736,33 @@ static int read_security_info(struct sock *sk, struct hci_dev *hdev,
+ 
+ 	flags |= 0x08;		/* Encryption key size enforcement (LE) */
+ 
+-	sec_len = eir_append_data(rp->sec, sec_len, 0x01, &flags, 1);
++	cap_len = eir_append_data(rp->cap, cap_len, MGMT_CAP_SEC_FLAGS,
++				  &flags, 1);
+ 
+ 	/* When the Read Simple Pairing Options command is supported, then
+ 	 * also max encryption key size information is provided.
+ 	 */
+ 	if (hdev->commands[41] & 0x08)
+-		sec_len = eir_append_le16(rp->sec, sec_len, 0x02,
++		cap_len = eir_append_le16(rp->cap, cap_len,
++					  MGMT_CAP_MAX_ENC_KEY_SIZE,
+ 					  hdev->max_enc_key_size);
+ 
+-	sec_len = eir_append_le16(rp->sec, sec_len, 0x03, SMP_MAX_ENC_KEY_SIZE);
++	cap_len = eir_append_le16(rp->cap, cap_len,
++				  MGMT_CAP_SMP_MAX_ENC_KEY_SIZE,
++				  SMP_MAX_ENC_KEY_SIZE);
 +
- 	default:
- 		BT_DBG("%s opcode 0x%4.4x", hdev->name, *opcode);
- 		break;
++	/* Append the min/max LE tx power parameters */
++	memcpy(&tx_power_range[0], &hdev->min_le_tx_power, 1);
++	memcpy(&tx_power_range[1], &hdev->max_le_tx_power, 1);
++	cap_len = eir_append_data(rp->cap, cap_len, MGMT_CAP_LE_TX_PWR,
++				  tx_power_range, 2);
+ 
+-	rp->sec_len = cpu_to_le16(sec_len);
++	rp->cap_len = cpu_to_le16(cap_len);
+ 
+ 	hci_dev_unlock(hdev);
+ 
+-	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_READ_SECURITY_INFO, 0,
+-				 rp, sizeof(*rp) + sec_len);
++	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_READ_CONTROLLER_CAP, 0,
++				 rp, sizeof(*rp) + cap_len);
+ }
+ 
+ #ifdef CONFIG_BT_FEATURE_DEBUG
+@@ -8186,7 +8197,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
+ 	{ set_blocked_keys,	   MGMT_OP_SET_BLOCKED_KEYS_SIZE,
+ 						HCI_MGMT_VAR_LEN },
+ 	{ set_wideband_speech,	   MGMT_SETTING_SIZE },
+-	{ read_security_info,      MGMT_READ_SECURITY_INFO_SIZE,
++	{ read_controller_cap,     MGMT_READ_CONTROLLER_CAP_SIZE,
+ 						HCI_MGMT_UNTRUSTED },
+ 	{ read_exp_features_info,  MGMT_READ_EXP_FEATURES_INFO_SIZE,
+ 						HCI_MGMT_UNTRUSTED |
 -- 
 2.28.0.709.gb0816b6eb0-goog
 
