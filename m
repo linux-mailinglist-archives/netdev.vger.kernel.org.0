@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E81A528069E
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 20:31:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A2BD280698
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 20:31:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732824AbgJASbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 14:31:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41996 "EHLO mail.kernel.org"
+        id S1732836AbgJASbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 14:31:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42016 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732684AbgJASbj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Oct 2020 14:31:39 -0400
+        id S1732702AbgJASbk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 14:31:40 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4EC7921481;
+        by mail.kernel.org (Postfix) with ESMTPSA id E504521D24;
         Thu,  1 Oct 2020 18:31:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601577098;
-        bh=8zSLngd3lHFqJeRzf4cQrqEJKd+FhNMWzB6TUSfdC60=;
+        s=default; t=1601577099;
+        bh=0tZuVw3aih5eX5+VgGDDMBSqV0wwhSggok/lMsHVLHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ncGpc5hM0Qd0J3Ys6YSul+FxEGhvyMgJW2YcYFhW/x1EfrHB6NNnUYc4+PX6xAgUn
-         RkHmGuY9uQYfomHz1vMCdUrdywIZNQwBtv5UyUhyp4XDuVLitMTOIpPi24M452eGxz
-         nu+rffrjBFrDgMvjjvghKAxrenYN0VJKnAL7S2ec=
+        b=RjW/2uoAGkoFvCBH2S0cu8AqtkmhEBFd9Bo3FCjrskenfPPhA7JcahlJr2XWtjmrQ
+         coiqXLcc3kt3w+2gsq4camuKbRq6rUSYwK9agKGbAoC+zcI8xYrwt0Wp5I7xcwLRZh
+         2RgGcsV+D2AqN1NOJMhZ4hW6HVLbRQCMFBTIbzbY=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, johannes@sipsolutions.net,
         jiri@resnulli.us, mkubecek@suse.cz, dsahern@kernel.org,
         pablo@netfilter.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 5/9] genetlink: use .start callback for dumppolicy
-Date:   Thu,  1 Oct 2020 11:30:12 -0700
-Message-Id: <20201001183016.1259870-6-kuba@kernel.org>
+Subject: [PATCH net-next 6/9] genetlink: bring back per op policy
+Date:   Thu,  1 Oct 2020 11:30:13 -0700
+Message-Id: <20201001183016.1259870-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201001183016.1259870-1-kuba@kernel.org>
 References: <20201001183016.1259870-1-kuba@kernel.org>
@@ -40,105 +40,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The structure of ctrl_dumppolicy() is clearly split into
-init and dumping. Move the init to a .start callback
-for clarity, it's a more idiomatic netlink dump code structure.
+Add policy to the struct genl_ops structure, this time
+with maxattr, so it can be used properly.
+
+Propagate .policy and .maxattr from the family
+in genl_get_cmd() if needed, this way the rest of the
+code does not have to worry if the policy is per op
+or global.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
 ---
- net/netlink/genetlink.c | 48 ++++++++++++++++++++---------------------
- 1 file changed, 24 insertions(+), 24 deletions(-)
+ include/net/genetlink.h |  4 ++++
+ net/netlink/genetlink.c | 18 +++++++++++++-----
+ 2 files changed, 17 insertions(+), 5 deletions(-)
 
+diff --git a/include/net/genetlink.h b/include/net/genetlink.h
+index 8ea1fc1ed1c7..cb35625d001e 100644
+--- a/include/net/genetlink.h
++++ b/include/net/genetlink.h
+@@ -137,6 +137,8 @@ struct genl_small_ops {
+  * @cmd: command identifier
+  * @internal_flags: flags used by the family
+  * @flags: flags
++ * @maxattr: maximum number of attributes supported
++ * @policy: netlink policy (takes precedence over family policy)
+  * @doit: standard command callback
+  * @start: start callback for dumps
+  * @dumpit: callback for dumpers
+@@ -149,6 +151,8 @@ struct genl_ops {
+ 	int		       (*dumpit)(struct sk_buff *skb,
+ 					 struct netlink_callback *cb);
+ 	int		       (*done)(struct netlink_callback *cb);
++	const struct nla_policy *policy;
++	unsigned int		maxattr;
+ 	u8			cmd;
+ 	u8			internal_flags;
+ 	u8			flags;
 diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index c27653b61bcf..183f01e62ae9 100644
+index 183f01e62ae9..2a3608cfb179 100644
 --- a/net/netlink/genetlink.c
 +++ b/net/netlink/genetlink.c
-@@ -1107,35 +1107,31 @@ struct ctrl_dump_policy_ctx {
- 	u16 fam_id;
- };
- 
--static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
-+static int ctrl_dumppolicy_start(struct netlink_callback *cb)
+@@ -116,6 +116,11 @@ static void genl_op_from_full(const struct genl_family *family,
+ 			      unsigned int i, struct genl_ops *op)
  {
- 	struct ctrl_dump_policy_ctx *ctx = (void *)cb->ctx;
-+	struct nlattr *tb[CTRL_ATTR_MAX + 1];
- 	const struct genl_family *rt;
+ 	*op = family->ops[i];
++
++	if (!op->maxattr)
++		op->maxattr = family->maxattr;
++	if (!op->policy)
++		op->policy = family->policy;
+ }
+ 
+ static int genl_get_cmd_full(u8 cmd, const struct genl_family *family,
+@@ -142,6 +147,9 @@ static void genl_op_from_small(const struct genl_family *family,
+ 	op->internal_flags = family->small_ops[i].internal_flags;
+ 	op->flags	= family->small_ops[i].flags;
+ 	op->validate	= family->small_ops[i].validate;
++
++	op->maxattr = family->maxattr;
++	op->policy = family->policy;
+ }
+ 
+ static int genl_get_cmd_small(u8 cmd, const struct genl_family *family,
+@@ -529,16 +537,16 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
+ 	struct nlattr **attrbuf;
  	int err;
  
- 	BUILD_BUG_ON(sizeof(*ctx) > sizeof(cb->ctx));
+-	if (!family->maxattr)
++	if (!ops->maxattr)
+ 		return NULL;
  
--	if (!ctx->fam_id) {
--		struct nlattr *tb[CTRL_ATTR_MAX + 1];
--
--		err = genlmsg_parse(cb->nlh, &genl_ctrl, tb,
--				    genl_ctrl.maxattr,
--				    genl_ctrl.policy, cb->extack);
--		if (err)
--			return err;
-+	err = genlmsg_parse(cb->nlh, &genl_ctrl, tb, genl_ctrl.maxattr,
-+			    genl_ctrl.policy, cb->extack);
-+	if (err)
-+		return err;
+-	attrbuf = kmalloc_array(family->maxattr + 1,
++	attrbuf = kmalloc_array(ops->maxattr + 1,
+ 				sizeof(struct nlattr *), GFP_KERNEL);
+ 	if (!attrbuf)
+ 		return ERR_PTR(-ENOMEM);
  
--		if (!tb[CTRL_ATTR_FAMILY_ID] && !tb[CTRL_ATTR_FAMILY_NAME])
--			return -EINVAL;
-+	if (!tb[CTRL_ATTR_FAMILY_ID] && !tb[CTRL_ATTR_FAMILY_NAME])
-+		return -EINVAL;
+-	err = __nlmsg_parse(nlh, hdrlen, attrbuf, family->maxattr,
+-			    family->policy, validate, extack);
++	err = __nlmsg_parse(nlh, hdrlen, attrbuf, ops->maxattr, ops->policy,
++			    validate, extack);
+ 	if (err) {
+ 		kfree(attrbuf);
+ 		return ERR_PTR(err);
+@@ -845,7 +853,7 @@ static int ctrl_fill_info(const struct genl_family *family, u32 portid, u32 seq,
+ 				op_flags |= GENL_CMD_CAP_DUMP;
+ 			if (op.doit)
+ 				op_flags |= GENL_CMD_CAP_DO;
+-			if (family->policy)
++			if (op.policy)
+ 				op_flags |= GENL_CMD_CAP_HASPOL;
  
--		if (tb[CTRL_ATTR_FAMILY_ID]) {
--			ctx->fam_id = nla_get_u16(tb[CTRL_ATTR_FAMILY_ID]);
--		} else {
--			rt = genl_family_find_byname(
--				nla_data(tb[CTRL_ATTR_FAMILY_NAME]));
--			if (!rt)
--				return -ENOENT;
--			ctx->fam_id = rt->id;
--		}
-+	if (tb[CTRL_ATTR_FAMILY_ID]) {
-+		ctx->fam_id = nla_get_u16(tb[CTRL_ATTR_FAMILY_ID]);
-+	} else {
-+		rt = genl_family_find_byname(
-+			nla_data(tb[CTRL_ATTR_FAMILY_NAME]));
-+		if (!rt)
-+			return -ENOENT;
-+		ctx->fam_id = rt->id;
- 	}
- 
- 	rt = genl_family_find_byid(ctx->fam_id);
-@@ -1145,9 +1141,12 @@ static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
- 	if (!rt->policy)
- 		return -ENODATA;
- 
--	err = netlink_policy_dump_start(rt->policy, rt->maxattr, &ctx->state);
--	if (err)
--		return err;
-+	return netlink_policy_dump_start(rt->policy, rt->maxattr, &ctx->state);
-+}
-+
-+static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
-+{
-+	struct ctrl_dump_policy_ctx *ctx = (void *)cb->ctx;
- 
- 	while (netlink_policy_dump_loop(&ctx->state)) {
- 		void *hdr;
-@@ -1159,7 +1158,7 @@ static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
- 		if (!hdr)
- 			goto nla_put_failure;
- 
--		if (nla_put_u16(skb, CTRL_ATTR_FAMILY_ID, rt->id))
-+		if (nla_put_u16(skb, CTRL_ATTR_FAMILY_ID, ctx->fam_id))
- 			goto nla_put_failure;
- 
- 		nest = nla_nest_start(skb, CTRL_ATTR_POLICY);
-@@ -1191,6 +1190,7 @@ static const struct genl_ops genl_ctrl_ops[] = {
- 	},
- 	{
- 		.cmd		= CTRL_CMD_GETPOLICY,
-+		.start		= ctrl_dumppolicy_start,
- 		.dumpit		= ctrl_dumppolicy,
- 	},
- };
+ 			nest = nla_nest_start_noflag(skb, i + 1);
 -- 
 2.26.2
 
