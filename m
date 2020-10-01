@@ -2,148 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F08328065C
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 20:17:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD946280697
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 20:31:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730029AbgJASRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 14:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729493AbgJASRT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 14:17:19 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E48C0613D0;
-        Thu,  1 Oct 2020 11:17:19 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id f70so4700537ybg.13;
-        Thu, 01 Oct 2020 11:17:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RAC5Se9PuPOggrcST5NI+UPYKW6AY39SOgPucfQ9Cis=;
-        b=W2Kw28BCkt8KhKuBpkExAaNDKuC2kojSMVHOn/t2Z2ZleF1ZAwaxsfiPkNHMvo+usK
-         YsLjdc0kVfqAhHAa0VapXpId+Gt2BTh3pUkAjGcd1so4mZPCl4VxKxFi24y1f2d/PqIn
-         eG1eBiBljfUHo7Gj/hG/+8ZxZmZ/YrlL6uJ2Sk795mgSHl4QZXgwxZrM9U5cwXhZsmkL
-         be+A9rodogga7l2dUJSVmo56W1kyWLDtw2W15g5+tQJ5sRf8HCUOkkXOXqzeCvXfh6lN
-         NZJhp/kbAZIvxetee2HAXbZTHd1105ytQA4tSDfi+RCUGrjNeAxs+3ibbC1nI9OY4T5d
-         oO4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RAC5Se9PuPOggrcST5NI+UPYKW6AY39SOgPucfQ9Cis=;
-        b=AKylTAwfMAeVRZTWb57kVn4SWhsG9BlV9EuMCfw9tufczPMBe5HRPSattmc42QImFR
-         NeIHSS2TuQtuVwv6I9BXpt0TXDSXLLwTaGoujTqfxrfjOTp3XgRgpBT5QtoEeKSW43Zx
-         PD/lDlBNKp9HW0ZMwSXxuOz8JyU6eM1+EGgVPYi7OSZ8nuGmaS/WtVcYfWbZDoPlRaM2
-         JTBIYtTGBd0KKHzxVY40wAfOz9aAgfpp9ANkF6NtM8WsWZy0YWpvsIgK1u0QS8LQakk6
-         VRClYuQt8qkLouzMPie6n4N3xDiW4Sx0cx4kkdxeXRM4pI9sWpBOv0dsfGt0fCrlFdsI
-         bJhQ==
-X-Gm-Message-State: AOAM5325QBkgehd9SZ1muzJRKUq2Qj52h0iRFGs6oS6RUV5URumLZkGG
-        ch18mZnt8M/i2/21itbZhX6r1czkOskzzxoSj18=
-X-Google-Smtp-Source: ABdhPJygbkl/A8PX82cYfHnjLVSkwHcdrZhuK5g09YeLVdGkcORS7ChJ4aZ9dCoFM6sbt/xirLejWvb5cThfuzgi3+Y=
-X-Received: by 2002:a25:8541:: with SMTP id f1mr11163136ybn.230.1601576238244;
- Thu, 01 Oct 2020 11:17:18 -0700 (PDT)
+        id S1732507AbgJASbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 14:31:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41870 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730070AbgJASbg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 14:31:36 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0387E20706;
+        Thu,  1 Oct 2020 18:31:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601577095;
+        bh=KXXII5hj+4KSdSDI64d/kqUl1qwF0KNGBK7vKhq6Ph0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=i6zI2aTwCGTnEVKARoFmHnpNuPqT+ln8erQiYDrKu8+ea0HvVkLEBsYV9Vth88BRV
+         AXyW0jlCDlwmBirDf5mHnvdOFTMT6C8eu4bZ9KRb13/+q+YGLP9mt9pPTdOFDgkVQm
+         EF2LyWJPzsEcjMuKZ09qw9CP4rHduNA7zyHgXfW4=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, johannes@sipsolutions.net,
+        jiri@resnulli.us, mkubecek@suse.cz, dsahern@kernel.org,
+        pablo@netfilter.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/9] genetlink: support per-command policy dump
+Date:   Thu,  1 Oct 2020 11:30:07 -0700
+Message-Id: <20201001183016.1259870-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20200929031845.751054-1-liuhangbin@gmail.com> <CAEf4BzYKtPgSxKqduax1mW1WfVXKuCEpbGKRFvXv7yNUmUm_=A@mail.gmail.com>
- <20200929094232.GG2531@dhcp-12-153.nay.redhat.com> <CAEf4BzZy9=x0neCOdat-CWO4nM3QYgWOKaZpN31Ce5Uz9m_qfg@mail.gmail.com>
- <20200930023405.GH2531@dhcp-12-153.nay.redhat.com> <CAEf4BzYVVUq=eNwb4Z1JkVmRc4i+nxC4zWxbv2qGQAs-2cxkhw@mail.gmail.com>
- <CAPwn2JT6KGPxKD0fGZLfR8EsRHhYcfbvCATWO9WsiH_wqhheFg@mail.gmail.com>
-In-Reply-To: <CAPwn2JT6KGPxKD0fGZLfR8EsRHhYcfbvCATWO9WsiH_wqhheFg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 1 Oct 2020 11:17:07 -0700
-Message-ID: <CAEf4BzZ+ffmWfGfDSYTv6OGOy8KjC95=XnA18MSkUEPEA_7zgQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: export bpf_object__reuse_map() to libbpf api
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 1, 2020 at 4:34 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> On Thu, 1 Oct 2020 at 02:30, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > > index 32dc444224d8..5412aa7169db 100644
-> > > --- a/tools/lib/bpf/libbpf.c
-> > > +++ b/tools/lib/bpf/libbpf.c
-> > > @@ -4215,7 +4215,7 @@ bpf_object__create_maps(struct bpf_object *obj)
-> > >                 if (map->fd >= 0) {
-> > >                         pr_debug("map '%s': skipping creation (preset fd=%d)\n",
-> > >                                  map->name, map->fd);
-> > > -                       continue;
-> > > +                       goto check_pin_path;
-> > >                 }
-> > >
-> > >                 err = bpf_object__create_map(obj, map);
-> > > @@ -4258,6 +4258,7 @@ bpf_object__create_maps(struct bpf_object *obj)
-> > >                         map->init_slots_sz = 0;
-> > >                 }
-> > >
-> > > +check_pin_path:
-> > >                 if (map->pin_path && !map->pinned) {
-> > >                         err = bpf_map__pin(map, NULL);
-> > >                         if (err) {
-> > >
-> > >
-> > > Do you think if this change be better?
-> >
-> > Yes, of course. Just don't do it through use of goto. Guard map
-> > creation with that if instead.
->
-> Hi Andrii,
->
-> Looks I missed something, Would you like to explain why we should not use goto?
+Hi!
 
-Because goto shouldn't be a default way of altering the control flow.
+The objective of this series is to dump ethtool policies
+to be able to tell which flags are supported by the kernel.
+Current release adds ETHTOOL_FLAG_STATS for dumping extra
+stats, but because of strict checking we need to make sure
+that the flag is actually supported before setting it in
+a request.
 
-> And for "guard map creation with the if", do you mean duplicate the
-> if (map->pin_path && !map->pinned) in if (map->fd >= 0)? like
+Ethtool policies are per command, and so far only dumping
+family policies was supported.
 
-I mean something like:
+The series adds new set of "light" ops to genl families which
+don't have all the callbacks, and won't have the policy.
+Most of families are then moved to these ops. This gives
+us 4096B in savings on an allyesconfig build (not counting
+the growth that would have happened when policy is added):
 
+     text       data       bss        dec       hex
+244415581  227958581  78372980  550747142  20d3bc06
+244415581  227962677  78372980  550751238  20d3cc06
 
-if (map->pin_path) { ... }
+Next 5 patches deal the dumping per-op policy.
 
-if (map fd < 0) {
-  bpf_object__create_map(..);
-  if (bpf_map__is_internal(..)) { ... }
-  if (map->init_slot_sz) { ...}
-}
+v1:
+ - replace remaining uses of "light" with "small" (patch 2)
+ - fix dump (ops can't be on the stack there) (patch 2)
+ - coding changes in patch 4
+ - new patch 7
+ - don't echo op in responses - to make dump all easier
+   (patch 9)
 
-if (map->pin_path && !map->pinned) { ...  }
+Dave - this series will cause a very trivial conflict with
+the patch I sent to net. Both sides add some kdoc to struct
+genl_ops so we'll need to keep it all.  I'm sending this
+already because I also need to restructure ethool policies
+in time for 5.10 if we want to use it for the stats flag.
 
+Jakub Kicinski (9):
+  genetlink: reorg struct genl_family
+  genetlink: add small version of ops
+  genetlink: move to smaller ops wherever possible
+  genetlink: add a structure for dump state
+  genetlink: use .start callback for dumppolicy
+  genetlink: bring back per op policy
+  taskstats: move specifying netlink policy back to ops
+  genetlink: use per-op policy for CTRL_CMD_GETPOLICY
+  genetlink: allow dumping command-specific policy
 
->
-> diff --git a/src/libbpf.c b/src/libbpf.c
-> index 3df1f4d..705abcb 100644
-> --- a/src/libbpf.c
-> +++ b/src/libbpf.c
-> @@ -4215,6 +4215,15 @@ bpf_object__create_maps(struct bpf_object *obj)
->                 if (map->fd >= 0) {
->                         pr_debug("map '%s': skipping creation (preset fd=%d)\n",
->                                  map->name, map->fd);
-> +                       if (map->pin_path && !map->pinned) {
-> +                               err = bpf_map__pin(map, NULL);
-> +                               if (err) {
-> +                                       pr_warn("map '%s': failed to
-> auto-pin at '%s': %d\n",
-> +                                               map->name, map->pin_path, err);
-> +                                       zclose(map->fd);
-> +                                       goto err_out;
-> +                               }
-> +                       }
->                         continue;
->                 }
->
-> (Sorry if the code format got corrupted as I replied in web gmail....)
->
-> Thanks
-> Hangbin
+ drivers/block/nbd.c                      |   6 +-
+ drivers/net/gtp.c                        |   6 +-
+ drivers/net/ieee802154/mac802154_hwsim.c |   6 +-
+ drivers/net/macsec.c                     |   6 +-
+ drivers/net/team/team.c                  |   6 +-
+ drivers/net/wireless/mac80211_hwsim.c    |   6 +-
+ drivers/target/target_core_user.c        |   6 +-
+ drivers/thermal/thermal_netlink.c        |   8 +-
+ fs/dlm/netlink.c                         |   6 +-
+ include/net/genetlink.h                  |  67 +++++--
+ include/net/netlink.h                    |   9 +-
+ include/uapi/linux/genetlink.h           |   1 +
+ kernel/taskstats.c                       |  36 +---
+ net/batman-adv/netlink.c                 |   6 +-
+ net/core/devlink.c                       |   6 +-
+ net/core/drop_monitor.c                  |   6 +-
+ net/hsr/hsr_netlink.c                    |   6 +-
+ net/ieee802154/netlink.c                 |   6 +-
+ net/ipv4/fou.c                           |   6 +-
+ net/ipv4/tcp_metrics.c                   |   6 +-
+ net/l2tp/l2tp_netlink.c                  |   6 +-
+ net/mptcp/pm_netlink.c                   |   6 +-
+ net/ncsi/ncsi-netlink.c                  |   6 +-
+ net/netfilter/ipvs/ip_vs_ctl.c           |   6 +-
+ net/netlabel/netlabel_calipso.c          |   6 +-
+ net/netlabel/netlabel_cipso_v4.c         |   6 +-
+ net/netlabel/netlabel_mgmt.c             |   6 +-
+ net/netlabel/netlabel_unlabeled.c        |   6 +-
+ net/netlink/genetlink.c                  | 228 ++++++++++++++++-------
+ net/netlink/policy.c                     |  29 +--
+ net/openvswitch/conntrack.c              |   6 +-
+ net/openvswitch/datapath.c               |  24 +--
+ net/openvswitch/meter.c                  |   6 +-
+ net/psample/psample.c                    |   6 +-
+ net/tipc/netlink_compat.c                |   6 +-
+ net/wimax/stack.c                        |   6 +-
+ net/wireless/nl80211.c                   |   5 +
+ 37 files changed, 343 insertions(+), 232 deletions(-)
+
+-- 
+2.26.2
+
