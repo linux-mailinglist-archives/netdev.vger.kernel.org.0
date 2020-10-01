@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BEB22804C4
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 19:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 274BE2804C5
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 19:12:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732913AbgJARL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 13:11:59 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:38692 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732609AbgJARLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 13:11:55 -0400
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 091H3Jxr107865;
-        Thu, 1 Oct 2020 13:11:49 -0400
+        id S1732932AbgJARMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 13:12:00 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:48998 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732213AbgJARLx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 13:11:53 -0400
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 091H3ukt056364;
+        Thu, 1 Oct 2020 13:11:50 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references; s=pp1;
- bh=YIvrOLdWDKYnN6NrdsvG5ferNh/l0ApIQMdkdQHbOhQ=;
- b=C7hovV2K1W5rPMbfl5Dqen6b+PlJPLAeOo/i8IYuzyqCklBByhOMYrjVXajzoZBEAM7b
- cFzUm+Ig66mFsZxmAqoHvfMgw0pxtt08ftU5mtvaIXYW9vgYlD+eqOS05M0IbXY8oGPU
- oNeyi/vpaXZ83cKdBj/qv14aqzZ7+DkYIBgCNZkj5ZdC6IYf/SOXpRUPWf1aGrNuVuDR
- l3yT6xMf3YzRftCl0a0ELyAp+rVfiTBhKRqilH1KukLHY5heRIqBiC/cQkRpAo8wNRzO
- EPTuMLC0BAmDQOIWTPAu0qNpf3Ug3q1bFpcGIZLV7nkWWuMUGNCMOhAzUkBxb5L0rqta lw== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 33wjepspx1-1
+ bh=GHmI2UthygvcfnHvuF13yT+zX9lcgIC9ZcKx7EbsE4g=;
+ b=lXXqlJ1kT02wd9Y5Cs7Wpnexij9s1dwAf9RsqmAzqXqL9zHduOu3ebzMSMM6S13E2mhK
+ h0YGGpq4q5NDqXrRPDa1f340p6aJQD+wiOQzcju7aLsXGJJOsB4apnbVrRRwpT/HlUZc
+ jf9iQpkwpAOAHRodhQ73a4mRzShHQhmqzUYxUvs23JA1YyzsWA2v4D3o20zQKrHZcDwv
+ qCy5I4F/LOSu0XneNwRLhHOeQLXZst1ZSeTlQ1ImHZxd0aPo9GDOZ3mwlc5j4MX3Ollm
+ oARSSYeUFjfTfvBu8RsBVszk0AkKubaj4C/SwnTHbr9UPCU2zOIPi2Y+u8fXkILIKOKn iA== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33wg81fva9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Oct 2020 13:11:48 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 091H3fZe001832;
+        Thu, 01 Oct 2020 13:11:50 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 091H49LT018554;
         Thu, 1 Oct 2020 17:11:46 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03ams.nl.ibm.com with ESMTP id 33sw985r8a-1
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma04ams.nl.ibm.com with ESMTP id 33sw97wrt8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 01 Oct 2020 17:11:46 +0000
 Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 091HBhiQ31785398
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 091HBi8912583310
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 1 Oct 2020 17:11:43 GMT
+        Thu, 1 Oct 2020 17:11:44 GMT
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A2A59A4057;
-        Thu,  1 Oct 2020 17:11:43 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 023C4A4053;
+        Thu,  1 Oct 2020 17:11:44 +0000 (GMT)
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5DD40A4053;
+        by IMSVA (Postfix) with ESMTP id AF316A4059;
         Thu,  1 Oct 2020 17:11:43 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
@@ -55,278 +55,278 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Ursula Braun <ubraun@linux.ibm.com>,
         Karsten Graul <kgraul@linux.ibm.com>,
         Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next 5/7] s390/qeth: use netdev_name()
-Date:   Thu,  1 Oct 2020 19:11:34 +0200
-Message-Id: <20201001171136.46830-6-jwi@linux.ibm.com>
+Subject: [PATCH net-next 6/7] s390/qeth: static checker cleanups
+Date:   Thu,  1 Oct 2020 19:11:35 +0200
+Message-Id: <20201001171136.46830-7-jwi@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201001171136.46830-1-jwi@linux.ibm.com>
 References: <20201001171136.46830-1-jwi@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-01_06:2020-10-01,2020-10-01 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 impostorscore=0
- suspectscore=0 mlxlogscore=999 adultscore=0 priorityscore=1501
- malwarescore=0 bulkscore=0 phishscore=0 clxscore=1015 lowpriorityscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2010010144
+ definitions=2020-10-01_05:2020-10-01,2020-10-01 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
+ mlxlogscore=999 clxscore=1015 lowpriorityscore=0 priorityscore=1501
+ spamscore=0 impostorscore=0 suspectscore=2 bulkscore=0 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2010010139
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace our custom version of netdev_name().
-
-Once we started to allocate the netdev at probe time with
-commit d3d1b205e89f ("s390/qeth: allocate netdevice early"), this
-stopped working as intended anyway.
+- Add/delete some blanks, white spaces and braces.
+- Fix misindentations.
+- Adjust a deprecated header include, and htons() conversion.
+- Remove extra 'return' statements.
 
 Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 ---
- drivers/s390/net/qeth_core.h      |  3 --
- drivers/s390/net/qeth_core_main.c |  6 ++--
- drivers/s390/net/qeth_core_sys.c  |  2 +-
- drivers/s390/net/qeth_l2_main.c   |  2 +-
- drivers/s390/net/qeth_l3_main.c   | 58 ++++++++++++++++---------------
- 5 files changed, 35 insertions(+), 36 deletions(-)
+ drivers/s390/net/qeth_core.h      |  7 ++++---
+ drivers/s390/net/qeth_core_main.c | 18 +++++++++---------
+ drivers/s390/net/qeth_l2_main.c   |  5 ++---
+ drivers/s390/net/qeth_l3_main.c   |  7 +++----
+ drivers/s390/net/qeth_l3_sys.c    |  8 ++++----
+ 5 files changed, 22 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/s390/net/qeth_core.h b/drivers/s390/net/qeth_core.h
-index e5f47a823a11..39d17ea2eb78 100644
+index 39d17ea2eb78..f73b4756ed5e 100644
 --- a/drivers/s390/net/qeth_core.h
 +++ b/drivers/s390/net/qeth_core.h
-@@ -892,9 +892,6 @@ struct qeth_trap_id {
- 	__u16 devno;
- } __packed;
+@@ -177,8 +177,8 @@ struct qeth_vnicc_info {
+ /**
+  * some more defs
+  */
+-#define QETH_TX_TIMEOUT		100 * HZ
+-#define QETH_RCD_TIMEOUT	60 * HZ
++#define QETH_TX_TIMEOUT		(100 * HZ)
++#define QETH_RCD_TIMEOUT	(60 * HZ)
+ #define QETH_RECLAIM_WORK_TIME	HZ
+ #define QETH_MAX_PORTNO		15
  
--/*some helper functions*/
--#define QETH_CARD_IFNAME(card) (((card)->dev)? (card)->dev->name : "")
--
- static inline bool qeth_uses_tx_prio_queueing(struct qeth_card *card)
- {
- 	return card->qdio.do_prio_queueing != QETH_NO_PRIO_QUEUEING;
+@@ -1069,7 +1069,8 @@ extern struct qeth_dbf_info qeth_dbf[QETH_DBF_INFOS];
+ 
+ struct net_device *qeth_clone_netdev(struct net_device *orig);
+ struct qeth_card *qeth_get_card_by_busid(char *bus_id);
+-void qeth_set_allowed_threads(struct qeth_card *, unsigned long , int);
++void qeth_set_allowed_threads(struct qeth_card *card, unsigned long threads,
++			      int clear_start_mask);
+ int qeth_threads_running(struct qeth_card *, unsigned long);
+ int qeth_set_offline(struct qeth_card *card, bool resetting);
+ 
 diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 9e9c229e2780..5fd614278f30 100644
+index 5fd614278f30..93c9b30ab17a 100644
 --- a/drivers/s390/net/qeth_core_main.c
 +++ b/drivers/s390/net/qeth_core_main.c
-@@ -915,12 +915,12 @@ static struct qeth_ipa_cmd *qeth_check_ipa_data(struct qeth_card *card,
- 		if (cmd->hdr.return_code == IPA_RC_VEPA_TO_VEB_TRANSITION) {
- 			dev_err(&card->gdev->dev,
- 				"Interface %s is down because the adjacent port is no longer in reflective relay mode\n",
--				QETH_CARD_IFNAME(card));
-+				netdev_name(card->dev));
- 			schedule_work(&card->close_dev_work);
- 		} else {
- 			dev_warn(&card->gdev->dev,
- 				 "The link for interface %s on CHPID 0x%X failed\n",
--				 QETH_CARD_IFNAME(card), card->info.chpid);
-+				 netdev_name(card->dev), card->info.chpid);
- 			qeth_issue_ipa_msg(cmd, cmd->hdr.return_code, card);
- 			netif_carrier_off(card->dev);
+@@ -17,6 +17,7 @@
+ #include <linux/errno.h>
+ #include <linux/kernel.h>
+ #include <linux/log2.h>
++#include <linux/io.h>
+ #include <linux/ip.h>
+ #include <linux/tcp.h>
+ #include <linux/mii.h>
+@@ -35,7 +36,6 @@
+ 
+ #include <asm/ebcdic.h>
+ #include <asm/chpid.h>
+-#include <asm/io.h>
+ #include <asm/sysinfo.h>
+ #include <asm/diag.h>
+ #include <asm/cio.h>
+@@ -209,9 +209,8 @@ static void qeth_clear_working_pool_list(struct qeth_card *card)
+ 
+ 	QETH_CARD_TEXT(card, 5, "clwrklst");
+ 	list_for_each_entry_safe(pool_entry, tmp,
+-			    &card->qdio.in_buf_pool.entry_list, list){
+-			list_del(&pool_entry->list);
+-	}
++				 &card->qdio.in_buf_pool.entry_list, list)
++		list_del(&pool_entry->list);
+ 
+ 	for (i = 0; i < ARRAY_SIZE(queue->bufs); i++)
+ 		queue->bufs[i].pool_entry = NULL;
+@@ -481,6 +480,7 @@ static void qeth_cleanup_handled_pending(struct qeth_qdio_out_q *q, int bidx,
+ 			    atomic_read(&c->state) ==
+ 			      QETH_QDIO_BUF_HANDLED_DELAYED) {
+ 				struct qeth_qdio_out_buffer *f = c;
++
+ 				QETH_CARD_TEXT(f->q->card, 5, "fp");
+ 				QETH_CARD_TEXT_(f->q->card, 5, "%lx", (long) f);
+ 				/* release here to avoid interleaving between
+@@ -507,7 +507,6 @@ static void qeth_cleanup_handled_pending(struct qeth_qdio_out_q *q, int bidx,
+ 	}
+ }
+ 
+-
+ static void qeth_qdio_handle_aob(struct qeth_card *card,
+ 				 unsigned long phys_aob_addr)
+ {
+@@ -884,6 +883,7 @@ static void qeth_issue_ipa_msg(struct qeth_ipa_cmd *cmd, int rc,
+ {
+ 	const char *ipa_name;
+ 	int com = cmd->hdr.command;
++
+ 	ipa_name = qeth_get_ipa_cmd_name(com);
+ 
+ 	if (rc)
+@@ -1253,7 +1253,7 @@ static int qeth_get_problem(struct qeth_card *card, struct ccw_device *cdev,
+ 			return 0;
  		}
-@@ -928,7 +928,7 @@ static struct qeth_ipa_cmd *qeth_check_ipa_data(struct qeth_card *card,
- 	case IPA_CMD_STARTLAN:
- 		dev_info(&card->gdev->dev,
- 			 "The link for %s on CHPID 0x%X has been restored\n",
--			 QETH_CARD_IFNAME(card), card->info.chpid);
-+			 netdev_name(card->dev), card->info.chpid);
- 		if (card->info.hwtrap)
- 			card->info.hwtrap = 2;
- 		qeth_schedule_recovery(card);
-diff --git a/drivers/s390/net/qeth_core_sys.c b/drivers/s390/net/qeth_core_sys.c
-index 7cc5649dfffe..4441b3393eaf 100644
---- a/drivers/s390/net/qeth_core_sys.c
-+++ b/drivers/s390/net/qeth_core_sys.c
-@@ -52,7 +52,7 @@ static ssize_t qeth_dev_if_name_show(struct device *dev,
+ 		QETH_CARD_TEXT(card, 2, "DGENCHK");
+-			return -EIO;
++		return -EIO;
+ 	}
+ 	return 0;
+ }
+@@ -1600,7 +1600,7 @@ static void qeth_start_kernel_thread(struct work_struct *work)
+ 	struct task_struct *ts;
+ 	struct qeth_card *card = container_of(work, struct qeth_card,
+ 					kernel_thread_starter);
+-	QETH_CARD_TEXT(card , 2, "strthrd");
++	QETH_CARD_TEXT(card, 2, "strthrd");
+ 
+ 	if (card->read.state != CH_STATE_UP &&
+ 	    card->write.state != CH_STATE_UP)
+@@ -3416,7 +3416,6 @@ static void qeth_get_trap_id(struct qeth_card *card, struct qeth_trap_id *tid)
+ 		memcpy(tid->vmname, info322->vm[0].name, sizeof(tid->vmname));
+ 	}
+ 	free_page(info);
+-	return;
+ }
+ 
+ static int qeth_hw_trap_cb(struct qeth_card *card,
+@@ -4998,7 +4997,6 @@ static void qeth_determine_capabilities(struct qeth_card *card)
+ 		card->options.cq = QETH_CQ_NOTAVAILABLE;
+ 	}
+ 
+-
+ out_offline:
+ 	if (ddev_offline == 1)
+ 		qeth_stop_channel(channel);
+@@ -6050,6 +6048,7 @@ EXPORT_SYMBOL_GPL(qeth_send_simple_setassparms_prot);
+ static void qeth_unregister_dbf_views(void)
+ {
+ 	int x;
++
+ 	for (x = 0; x < QETH_DBF_INFOS; x++) {
+ 		debug_unregister(qeth_dbf[x].id);
+ 		qeth_dbf[x].id = NULL;
+@@ -6413,6 +6412,7 @@ static int qeth_core_set_offline(struct ccwgroup_device *gdev)
+ static void qeth_core_shutdown(struct ccwgroup_device *gdev)
+ {
+ 	struct qeth_card *card = dev_get_drvdata(&gdev->dev);
++
+ 	qeth_set_allowed_threads(card, 0, 1);
+ 	if ((gdev->state == CCWGROUP_ONLINE) && card->info.hwtrap)
+ 		qeth_hw_trap(card, QETH_DIAGS_TRAP_DISARM);
+diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
+index a88d0a01e9a5..28f6dda95736 100644
+--- a/drivers/s390/net/qeth_l2_main.c
++++ b/drivers/s390/net/qeth_l2_main.c
+@@ -183,7 +183,7 @@ static void qeth_l2_fill_header(struct qeth_qdio_out_q *queue,
+ 	/* VSWITCH relies on the VLAN
+ 	 * information to be present in
+ 	 * the QDIO header */
+-	if (veth->h_vlan_proto == __constant_htons(ETH_P_8021Q)) {
++	if (veth->h_vlan_proto == htons(ETH_P_8021Q)) {
+ 		hdr->hdr.l2.flags[2] |= QETH_LAYER2_FLAG_VLAN;
+ 		hdr->hdr.l2.vlan_id = ntohs(veth->h_vlan_TCI);
+ 	}
+@@ -877,7 +877,7 @@ static const struct net_device_ops qeth_l2_netdev_ops = {
+ 	.ndo_set_mac_address    = qeth_l2_set_mac_address,
+ 	.ndo_vlan_rx_add_vid	= qeth_l2_vlan_rx_add_vid,
+ 	.ndo_vlan_rx_kill_vid   = qeth_l2_vlan_rx_kill_vid,
+-	.ndo_tx_timeout	   	= qeth_tx_timeout,
++	.ndo_tx_timeout		= qeth_tx_timeout,
+ 	.ndo_fix_features	= qeth_fix_features,
+ 	.ndo_set_features	= qeth_set_features,
+ 	.ndo_bridge_getlink	= qeth_l2_bridge_getlink,
+@@ -1125,7 +1125,6 @@ void qeth_osn_deregister(struct net_device *dev)
+ 	QETH_CARD_TEXT(card, 2, "osndereg");
+ 	card->osn_info.assist_cb = NULL;
+ 	card->osn_info.data_cb = NULL;
+-	return;
+ }
+ EXPORT_SYMBOL(qeth_osn_deregister);
+ #endif
+diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
+index e7244aa4d191..b1c1d2510d55 100644
+--- a/drivers/s390/net/qeth_l3_main.c
++++ b/drivers/s390/net/qeth_l3_main.c
+@@ -97,7 +97,7 @@ static bool qeth_l3_is_addr_covered_by_ipato(struct qeth_card *card,
+ 		return false;
+ 
+ 	qeth_l3_convert_addr_to_bits((u8 *) &addr->u, addr_bits,
+-				  (addr->proto == QETH_PROT_IPV4)? 4:16);
++				     (addr->proto == QETH_PROT_IPV4) ? 4 : 16);
+ 	list_for_each_entry(ipatoe, &card->ipato.entries, entry) {
+ 		if (addr->proto != ipatoe->proto)
+ 			continue;
+@@ -540,7 +540,7 @@ int qeth_l3_add_ipato_entry(struct qeth_card *card,
+ 		if (ipatoe->proto != new->proto)
+ 			continue;
+ 		if (!memcmp(ipatoe->addr, new->addr,
+-			    (ipatoe->proto == QETH_PROT_IPV4)? 4:16) &&
++			    (ipatoe->proto == QETH_PROT_IPV4) ? 4 : 16) &&
+ 		    (ipatoe->mask_bits == new->mask_bits)) {
+ 			rc = -EEXIST;
+ 			break;
+@@ -572,7 +572,7 @@ int qeth_l3_del_ipato_entry(struct qeth_card *card,
+ 		if (ipatoe->proto != proto)
+ 			continue;
+ 		if (!memcmp(ipatoe->addr, addr,
+-			    (proto == QETH_PROT_IPV4)? 4:16) &&
++			    (proto == QETH_PROT_IPV4) ? 4 : 16) &&
+ 		    (ipatoe->mask_bits == mask_bits)) {
+ 			list_del(&ipatoe->entry);
+ 			qeth_l3_update_ipato(card);
+@@ -2139,7 +2139,6 @@ static struct qeth_card *qeth_l3_get_card_from_dev(struct net_device *dev)
+ static int qeth_l3_ip_event(struct notifier_block *this,
+ 			    unsigned long event, void *ptr)
+ {
+-
+ 	struct in_ifaddr *ifa = (struct in_ifaddr *)ptr;
+ 	struct net_device *dev = ifa->ifa_dev->dev;
+ 	struct qeth_ipaddr addr;
+diff --git a/drivers/s390/net/qeth_l3_sys.c b/drivers/s390/net/qeth_l3_sys.c
+index 351763ae9b9c..997fbb7006a7 100644
+--- a/drivers/s390/net/qeth_l3_sys.c
++++ b/drivers/s390/net/qeth_l3_sys.c
+@@ -285,7 +285,7 @@ static ssize_t qeth_l3_dev_ipato_enable_show(struct device *dev,
  {
  	struct qeth_card *card = dev_get_drvdata(dev);
  
--	return sprintf(buf, "%s\n", QETH_CARD_IFNAME(card));
-+	return sprintf(buf, "%s\n", netdev_name(card->dev));
+-	return sprintf(buf, "%i\n", card->ipato.enabled? 1:0);
++	return sprintf(buf, "%u\n", card->ipato.enabled ? 1 : 0);
  }
  
- static DEVICE_ATTR(if_name, 0444, qeth_dev_if_name_show, NULL);
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index 2e9d3fea60e6..a88d0a01e9a5 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -1372,7 +1372,7 @@ static void qeth_addr_change_event_worker(struct work_struct *work)
+ static ssize_t qeth_l3_dev_ipato_enable_store(struct device *dev,
+@@ -330,7 +330,7 @@ static ssize_t qeth_l3_dev_ipato_invert4_show(struct device *dev,
+ {
+ 	struct qeth_card *card = dev_get_drvdata(dev);
  
- 		dev_info(&data->card->gdev->dev,
- 			 "Address change notification stopped on %s (%s)\n",
--			 data->card->dev->name,
-+			 netdev_name(card->dev),
- 			(data->ac_event.lost_event_mask == 0x01)
- 			? "Overflow"
- 			: (data->ac_event.lost_event_mask == 0x02)
-diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-index 4db7ded88fc8..e7244aa4d191 100644
---- a/drivers/s390/net/qeth_l3_main.c
-+++ b/drivers/s390/net/qeth_l3_main.c
-@@ -706,16 +706,16 @@ static int qeth_l3_start_ipa_arp_processing(struct qeth_card *card)
- 
- 	if (!qeth_is_supported(card, IPA_ARP_PROCESSING)) {
- 		dev_info(&card->gdev->dev,
--			"ARP processing not supported on %s!\n",
--			QETH_CARD_IFNAME(card));
-+			 "ARP processing not supported on %s!\n",
-+			 netdev_name(card->dev));
- 		return 0;
- 	}
- 	rc = qeth_send_simple_setassparms(card, IPA_ARP_PROCESSING,
- 					  IPA_CMD_ASS_START, NULL);
- 	if (rc) {
- 		dev_warn(&card->gdev->dev,
--			"Starting ARP processing support for %s failed\n",
--			QETH_CARD_IFNAME(card));
-+			 "Starting ARP processing support for %s failed\n",
-+			 netdev_name(card->dev));
- 	}
- 	return rc;
- }
-@@ -728,8 +728,8 @@ static int qeth_l3_start_ipa_source_mac(struct qeth_card *card)
- 
- 	if (!qeth_is_supported(card, IPA_SOURCE_MAC)) {
- 		dev_info(&card->gdev->dev,
--			"Inbound source MAC-address not supported on %s\n",
--			QETH_CARD_IFNAME(card));
-+			 "Inbound source MAC-address not supported on %s\n",
-+			 netdev_name(card->dev));
- 		return -EOPNOTSUPP;
- 	}
- 
-@@ -737,8 +737,8 @@ static int qeth_l3_start_ipa_source_mac(struct qeth_card *card)
- 					  IPA_CMD_ASS_START, NULL);
- 	if (rc)
- 		dev_warn(&card->gdev->dev,
--			"Starting source MAC-address support for %s failed\n",
--			QETH_CARD_IFNAME(card));
-+			 "Starting source MAC-address support for %s failed\n",
-+			 netdev_name(card->dev));
- 	return rc;
+-	return sprintf(buf, "%i\n", card->ipato.invert4? 1:0);
++	return sprintf(buf, "%u\n", card->ipato.invert4 ? 1 : 0);
  }
  
-@@ -750,7 +750,7 @@ static int qeth_l3_start_ipa_vlan(struct qeth_card *card)
+ static ssize_t qeth_l3_dev_ipato_invert4_store(struct device *dev,
+@@ -450,7 +450,7 @@ static ssize_t qeth_l3_dev_ipato_add_store(const char *buf, size_t count,
+ 		return -ENOMEM;
  
- 	if (!qeth_is_supported(card, IPA_FULL_VLAN)) {
- 		dev_info(&card->gdev->dev,
--			"VLAN not supported on %s\n", QETH_CARD_IFNAME(card));
-+			 "VLAN not supported on %s\n", netdev_name(card->dev));
- 		return -EOPNOTSUPP;
- 	}
+ 	ipatoe->proto = proto;
+-	memcpy(ipatoe->addr, addr, (proto == QETH_PROT_IPV4)? 4:16);
++	memcpy(ipatoe->addr, addr, (proto == QETH_PROT_IPV4) ? 4 : 16);
+ 	ipatoe->mask_bits = mask_bits;
  
-@@ -758,8 +758,8 @@ static int qeth_l3_start_ipa_vlan(struct qeth_card *card)
- 					  IPA_CMD_ASS_START, NULL);
- 	if (rc) {
- 		dev_warn(&card->gdev->dev,
--			"Starting VLAN support for %s failed\n",
--			QETH_CARD_IFNAME(card));
-+			 "Starting VLAN support for %s failed\n",
-+			 netdev_name(card->dev));
- 	} else {
- 		dev_info(&card->gdev->dev, "VLAN enabled\n");
- 	}
-@@ -774,8 +774,8 @@ static int qeth_l3_start_ipa_multicast(struct qeth_card *card)
+ 	rc = qeth_l3_add_ipato_entry(card, ipatoe);
+@@ -501,7 +501,7 @@ static ssize_t qeth_l3_dev_ipato_invert6_show(struct device *dev,
+ {
+ 	struct qeth_card *card = dev_get_drvdata(dev);
  
- 	if (!qeth_is_supported(card, IPA_MULTICASTING)) {
- 		dev_info(&card->gdev->dev,
--			"Multicast not supported on %s\n",
--			QETH_CARD_IFNAME(card));
-+			 "Multicast not supported on %s\n",
-+			 netdev_name(card->dev));
- 		return -EOPNOTSUPP;
- 	}
+-	return sprintf(buf, "%i\n", card->ipato.invert6? 1:0);
++	return sprintf(buf, "%u\n", card->ipato.invert6 ? 1 : 0);
+ }
  
-@@ -783,8 +783,8 @@ static int qeth_l3_start_ipa_multicast(struct qeth_card *card)
- 					  IPA_CMD_ASS_START, NULL);
- 	if (rc) {
- 		dev_warn(&card->gdev->dev,
--			"Starting multicast support for %s failed\n",
--			QETH_CARD_IFNAME(card));
-+			 "Starting multicast support for %s failed\n",
-+			 netdev_name(card->dev));
- 	} else {
- 		dev_info(&card->gdev->dev, "Multicast enabled\n");
- 		card->dev->flags |= IFF_MULTICAST;
-@@ -807,7 +807,7 @@ static int qeth_l3_softsetup_ipv6(struct qeth_card *card)
- 	if (rc) {
- 		dev_err(&card->gdev->dev,
- 			"Activating IPv6 support for %s failed\n",
--			QETH_CARD_IFNAME(card));
-+			netdev_name(card->dev));
- 		return rc;
- 	}
- 	rc = qeth_send_simple_setassparms_v6(card, IPA_IPV6, IPA_CMD_ASS_START,
-@@ -815,15 +815,15 @@ static int qeth_l3_softsetup_ipv6(struct qeth_card *card)
- 	if (rc) {
- 		dev_err(&card->gdev->dev,
- 			"Activating IPv6 support for %s failed\n",
--			 QETH_CARD_IFNAME(card));
-+			 netdev_name(card->dev));
- 		return rc;
- 	}
- 	rc = qeth_send_simple_setassparms_v6(card, IPA_PASSTHRU,
- 					     IPA_CMD_ASS_START, NULL);
- 	if (rc) {
- 		dev_warn(&card->gdev->dev,
--			"Enabling the passthrough mode for %s failed\n",
--			QETH_CARD_IFNAME(card));
-+			 "Enabling the passthrough mode for %s failed\n",
-+			 netdev_name(card->dev));
- 		return rc;
- 	}
- out:
-@@ -837,7 +837,7 @@ static int qeth_l3_start_ipa_ipv6(struct qeth_card *card)
- 
- 	if (!qeth_is_supported(card, IPA_IPV6)) {
- 		dev_info(&card->gdev->dev,
--			"IPv6 not supported on %s\n", QETH_CARD_IFNAME(card));
-+			 "IPv6 not supported on %s\n", netdev_name(card->dev));
- 		return 0;
- 	}
- 	return qeth_l3_softsetup_ipv6(card);
-@@ -852,16 +852,17 @@ static int qeth_l3_start_ipa_broadcast(struct qeth_card *card)
- 	card->info.broadcast_capable = 0;
- 	if (!qeth_is_supported(card, IPA_FILTERING)) {
- 		dev_info(&card->gdev->dev,
--			"Broadcast not supported on %s\n",
--			QETH_CARD_IFNAME(card));
-+			 "Broadcast not supported on %s\n",
-+			 netdev_name(card->dev));
- 		rc = -EOPNOTSUPP;
- 		goto out;
- 	}
- 	rc = qeth_send_simple_setassparms(card, IPA_FILTERING,
- 					  IPA_CMD_ASS_START, NULL);
- 	if (rc) {
--		dev_warn(&card->gdev->dev, "Enabling broadcast filtering for "
--			"%s failed\n", QETH_CARD_IFNAME(card));
-+		dev_warn(&card->gdev->dev,
-+			 "Enabling broadcast filtering for %s failed\n",
-+			 netdev_name(card->dev));
- 		goto out;
- 	}
- 
-@@ -869,8 +870,8 @@ static int qeth_l3_start_ipa_broadcast(struct qeth_card *card)
- 					  IPA_CMD_ASS_CONFIGURE, &filter_data);
- 	if (rc) {
- 		dev_warn(&card->gdev->dev,
--			"Setting up broadcast filtering for %s failed\n",
--			QETH_CARD_IFNAME(card));
-+			 "Setting up broadcast filtering for %s failed\n",
-+			 netdev_name(card->dev));
- 		goto out;
- 	}
- 	card->info.broadcast_capable = QETH_BROADCAST_WITH_ECHO;
-@@ -878,8 +879,9 @@ static int qeth_l3_start_ipa_broadcast(struct qeth_card *card)
- 	rc = qeth_send_simple_setassparms(card, IPA_FILTERING,
- 					  IPA_CMD_ASS_ENABLE, &filter_data);
- 	if (rc) {
--		dev_warn(&card->gdev->dev, "Setting up broadcast echo "
--			"filtering for %s failed\n", QETH_CARD_IFNAME(card));
-+		dev_warn(&card->gdev->dev,
-+			 "Setting up broadcast echo filtering for %s failed\n",
-+			 netdev_name(card->dev));
- 		goto out;
- 	}
- 	card->info.broadcast_capable = QETH_BROADCAST_WITHOUT_ECHO;
+ static ssize_t qeth_l3_dev_ipato_invert6_store(struct device *dev,
 -- 
 2.17.1
 
