@@ -2,159 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3F2227FDAB
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 12:49:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B72B927FDBF
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 12:53:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732109AbgJAKtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 06:49:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731131AbgJAKtG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 06:49:06 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DA0C0613D0
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 03:49:04 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id w16so4724411qkj.7
-        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 03:49:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MhtaHYvememZ4rvJmJfpq+OiKpk7hwdBKC/+1lxZP9g=;
-        b=Q5+ja/HHS3afIn1efpLSAnOb/UgOqnShksna+KJbh4xxD6Zpy0MZitkfZOm3lLQ+80
-         JWYryVmm1K8gHaFcS6oRy/CoOdOPWdQVbOciEpsXAh9jIjiu8/Xy0pDubZmdilIZBv1i
-         6X9yPRr9GZ+inosASTZjAPCQPDXo6kZLsISGwVcsAr7dhmawGu7ski6EMzpW3KBe69v5
-         89+sfY9KBprFYt/tZOeGGW6cuFXDMuwi1jMDKCPWLeqwDmS5xgpfM0EvBtVobeQQf6VU
-         wOq1O1cJzp7U5knPLp59UJyOP8R/JVK0yJJwDv/zMcdgWIoYnIF7MHbqmV2GYwpjk8uG
-         cFSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MhtaHYvememZ4rvJmJfpq+OiKpk7hwdBKC/+1lxZP9g=;
-        b=W9d4DGAy4RmUwSWvuIGpp/fpBDML3YovzShRadDIaL+A1+P7N5uC1kHZJc5rSKfUnX
-         If4PlL1yvgtlNWyURwyR8CC4a5oegUulZZITXjTmk62Ly+SgyWU3QBE4M4cRfHoPUM7Z
-         ufAiXjnFDq3AWrMUhMuB9OnggnWaWFeQX6i/WbijOE2LWI/EQ7btpsdY2hVrsLZ2Q4le
-         RPRB5arZTAdMgFgQDWXXcwh70S/o8GHmUWNH5rxjle7tqMmkY6suJTgienhc2bNgdXvu
-         GV6kofcpYxmi7iDbDj9ZWyMhHDc2Zzqg/ODVW+2kTWCZGaBqWuP+69Hd10JIXhIT55mh
-         TXgA==
-X-Gm-Message-State: AOAM531G2/YpIBywv94x1MpUTJNDNX9DVTsMANq21KavLh6VwDdtcVoP
-        pYYq969pwbqI5TqxdAEH555v6MXd9tcb8E/2jGZjiQ==
-X-Google-Smtp-Source: ABdhPJxBZa2JHmBQ+mmFyUCkkOli1nAXMt9u84WWTXJZ2g7FTJuO/3Ljb+AR9KpejYSByzfAIbL0tmNJH+2i08ZzBv8=
-X-Received: by 2002:a37:9c4f:: with SMTP id f76mr7127532qke.250.1601549343333;
- Thu, 01 Oct 2020 03:49:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <000000000000fb885a05b0997c54@google.com>
-In-Reply-To: <000000000000fb885a05b0997c54@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 1 Oct 2020 12:48:52 +0200
-Message-ID: <CACT4Y+Z5pdgzT1-Oead4Gnn-SpPinm1_MuRYD-35sDZ5TwzkZA@mail.gmail.com>
-Subject: Re: KMSAN: uninit-value in batadv_nc_worker
-To:     syzbot <syzbot+da9194708de785081f11@syzkaller.appspotmail.com>
-Cc:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        David Miller <davem@davemloft.net>,
-        Alexander Potapenko <glider@google.com>,
+        id S1731975AbgJAKxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 06:53:06 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:33976 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731131AbgJAKxF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 06:53:05 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 091Ar1WM097623;
+        Thu, 1 Oct 2020 05:53:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1601549581;
+        bh=siR2Dq0VwkakKM4NvZJ4Dd9LKdMWMVceMi7VtEmHcLI=;
+        h=From:To:CC:Subject:Date;
+        b=kOde88gdPCXuPtOyksZVL8RjA2BesqGAd4Jme61t0hEkkIINRRi+iskrUAFTrs0FC
+         BWE31KyCLY5OYAZxiv75bcStKMhR54olDHP/+AlgrG2txCJVq8YV/atjEU9VcdNWs1
+         OGXdUS2gvjWgfxf51mhbH9I16iDgenrH5VL1MlVk=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 091Ar1AW129553
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 1 Oct 2020 05:53:01 -0500
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 1 Oct
+ 2020 05:53:01 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 1 Oct 2020 05:53:01 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 091Ar0lK073206;
+        Thu, 1 Oct 2020 05:53:01 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, mareklindner@neomailbox.ch,
-        netdev <netdev@vger.kernel.org>,
-        Sven Eckelmann <sven@narfation.org>, sw@simonwunderlich.de,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        Vignesh Raghavendra <vigneshr@ti.com>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next 0/8] net: ethernet: ti: am65-cpsw: add multi port support in mac-only mode
+Date:   Thu, 1 Oct 2020 13:52:50 +0300
+Message-ID: <20201001105258.2139-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 1, 2020 at 12:29 PM syzbot
-<syzbot+da9194708de785081f11@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    5edb1df2 kmsan: drop the _nosanitize string functions
-> git tree:       https://github.com/google/kmsan.git master
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10cc55a7900000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=4991d22eb136035c
-> dashboard link: https://syzkaller.appspot.com/bug?extid=da9194708de785081f11
-> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
->
-> Unfortunately, I don't have any reproducer for this issue yet.
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+da9194708de785081f11@syzkaller.appspotmail.com
+Hi
 
-It's somewhat unobvious how this can happen (or not?).
+This series adds multi-port support in mac-only mode (multi MAC mode) to TI
+AM65x CPSW driver in preparation for enabling support for multi-port devices,
+like Main CPSW0 on K3 J721E SoC or future CPSW3g on K3 AM64x SoC.
 
-But may be related to:
-INFO: rcu detected stall in batadv_nc_worker (3)
-https://syzkaller.appspot.com/bug?id=6dba9b6476dd536c17afa799a72f265e448ff820
+The multi MAC mode is implemented by configuring every enabled port in "mac-only"
+mode (all ingress packets are sent only to the Host port and egress packets
+directed to target Ext. Port) and creating separate net_device for
+every enabled Ext. port.
 
-which happens with low frequency for the past 300 days, 21 stalls in total.
+Patches 1-3: Preparation patches to improve K3 CPSW configuration depending on DT
+Patches 4-5: Fix VLAN offload for multi MAC mode
+Patch 6: Fixes CPTS context lose issue during PM runtime transition
+Patches 7-8: add multi-port support to TI AM65x CPSW
 
-If we imagine the list somehow ends up uninitialized, occasional
-infinite loops make perfect sense.
+Grygorii Strashko (8):
+  net: ethernet: ti: am65-cpsw: move ale selection in pdata
+  net: ethernet: ti: am65-cpsw: move free desc queue mode selection in pdata
+  net: ethernet: ti: am65-cpsw: use cppi5_desc_is_tdcm()
+  net: ethernet: ti: cpsw_ale: add cpsw_ale_vlan_del_modify()
+  net: ethernet: ti: am65-cpsw: fix vlan offload for multi mac mode
+  net: ethernet: ti: am65-cpsw: keep active if cpts enabled
+  net: ethernet: ti: am65-cpsw: prepare xmit/rx path for multi-port
+    devices in mac-only mode
+  net: ethernet: ti: am65-cpsw: add multi port support in mac-only mode
 
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 179 ++++++++++++++---------
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h |   4 +
+ drivers/net/ethernet/ti/cpsw_ale.c       |  41 +++++-
+ drivers/net/ethernet/ti/cpsw_ale.h       |   1 +
+ drivers/net/ethernet/ti/cpsw_switchdev.c |   2 +-
+ 5 files changed, 153 insertions(+), 74 deletions(-)
 
+-- 
+2.17.1
 
-> =====================================================
-> BUG: KMSAN: uninit-value in batadv_nc_purge_orig_hash net/batman-adv/network-coding.c:408 [inline]
-> BUG: KMSAN: uninit-value in batadv_nc_worker+0x1c0/0x1d70 net/batman-adv/network-coding.c:718
-> CPU: 0 PID: 7 Comm: kworker/u4:0 Not tainted 5.9.0-rc4-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Workqueue: bat_events batadv_nc_worker
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x21c/0x280 lib/dump_stack.c:118
->  kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:122
->  __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:201
->  batadv_nc_purge_orig_hash net/batman-adv/network-coding.c:408 [inline]
->  batadv_nc_worker+0x1c0/0x1d70 net/batman-adv/network-coding.c:718
->  process_one_work+0x1688/0x2140 kernel/workqueue.c:2269
->  worker_thread+0x10bc/0x2730 kernel/workqueue.c:2415
->  kthread+0x551/0x590 kernel/kthread.c:293
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
->
-> Uninit was created at:
->  kmsan_save_stack_with_flags mm/kmsan/kmsan.c:143 [inline]
->  kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:126
->  kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
->  slab_alloc_node mm/slub.c:2907 [inline]
->  slab_alloc mm/slub.c:2916 [inline]
->  __kmalloc+0x2bb/0x4b0 mm/slub.c:3982
->  kmalloc_array+0x90/0x140 include/linux/slab.h:594
->  batadv_hash_new+0x129/0x530 net/batman-adv/hash.c:52
->  batadv_originator_init+0x9b/0x370 net/batman-adv/originator.c:211
->  batadv_mesh_init+0x4dc/0x9d0 net/batman-adv/main.c:204
->  batadv_softif_init_late+0x6d8/0xa30 net/batman-adv/soft-interface.c:857
->  register_netdevice+0xbbc/0x37d0 net/core/dev.c:9760
->  __rtnl_newlink net/core/rtnetlink.c:3454 [inline]
->  rtnl_newlink+0x2e77/0x3ed0 net/core/rtnetlink.c:3500
->  rtnetlink_rcv_msg+0x142b/0x18c0 net/core/rtnetlink.c:5563
->  netlink_rcv_skb+0x6d7/0x7e0 net/netlink/af_netlink.c:2470
->  rtnetlink_rcv+0x50/0x60 net/core/rtnetlink.c:5581
->  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
->  netlink_unicast+0x11c8/0x1490 net/netlink/af_netlink.c:1330
->  netlink_sendmsg+0x173a/0x1840 net/netlink/af_netlink.c:1919
->  sock_sendmsg_nosec net/socket.c:651 [inline]
->  sock_sendmsg net/socket.c:671 [inline]
->  __sys_sendto+0x9dc/0xc80 net/socket.c:1992
->  __do_sys_sendto net/socket.c:2004 [inline]
->  __se_sys_sendto+0x107/0x130 net/socket.c:2000
->  __x64_sys_sendto+0x6e/0x90 net/socket.c:2000
->  do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> =====================================================
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000fb885a05b0997c54%40google.com.
