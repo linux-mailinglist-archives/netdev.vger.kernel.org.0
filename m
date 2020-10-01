@@ -2,61 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A84DC280807
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 21:48:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D48C6280815
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 21:53:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732941AbgJATsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 15:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729990AbgJATsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 15:48:18 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3F3C0613D0;
-        Thu,  1 Oct 2020 12:48:18 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id DF86014671C73;
-        Thu,  1 Oct 2020 12:31:28 -0700 (PDT)
-Date:   Thu, 01 Oct 2020 12:48:15 -0700 (PDT)
-Message-Id: <20201001.124815.793423380665613978.davem@davemloft.net>
-To:     colyli@suse.de
-Cc:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, open-iscsi@googlegroups.com,
-        linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, chaitanya.kulkarni@wdc.com,
-        cleech@redhat.com, hch@lst.de, amwang@redhat.com,
-        eric.dumazet@gmail.com, hare@suse.de, idryomov@gmail.com,
-        jack@suse.com, jlayton@kernel.org, axboe@kernel.dk,
-        lduncan@suse.com, michaelc@cs.wisc.edu,
-        mskorzhinskiy@solarflare.com, philipp.reisner@linbit.com,
-        sagi@grimberg.me, vvs@virtuozzo.com, vbabka@suse.com
-Subject: Re: [PATCH v9 0/7] Introduce sendpage_ok() to detect misused
- sendpage in network related drivers
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20201001.124345.2303686561459641833.davem@davemloft.net>
-References: <20201001075408.25508-1-colyli@suse.de>
-        <20201001.124345.2303686561459641833.davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-7
-Content-Transfer-Encoding: base64
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Thu, 01 Oct 2020 12:31:29 -0700 (PDT)
+        id S1732829AbgJATxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 15:53:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40310 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726606AbgJATxK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 15:53:10 -0400
+Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6A6F320780;
+        Thu,  1 Oct 2020 19:53:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601581989;
+        bh=Xjg604oIXpd1LUJ0ZPoPlPaIrTsAhVLtb4XB16qRsoY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VPTTULGg3PI4O0HPe+337ujgrE13BKz3ffCE3s3JwEhgUPigFROq3qO4rV0CW1Inb
+         Vnxph1tsMsNNgej8AWHPv2MPRcdPN5F1yk2DgvHUuVYCCOj1FTaqfuE8S/sEBIshEP
+         4Us/V7nYgmoywdS9t0F9TrmGjKiDGbg3d2U0Cn2M=
+From:   saeed@kernel.org
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net V2 00/15] mlx5 fixes 2020-09-30
+Date:   Thu,  1 Oct 2020 12:52:32 -0700
+Message-Id: <20201001195247.66636-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRGF2aWQgTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0Pg0KRGF0ZTogVGh1LCAwMSBP
-Y3QgMjAyMCAxMjo0Mzo0NSAtMDcwMCAoUERUKQ0KDQo+IFNlcmllcyBhcHBsaWVkIGFuZCBxdWV1
-ZWQgdXAgZm9yIC1zdGFibGUsIHRoYW5rIHlvdS4NCg0KQWN0dWFsbHksIHRoaXMgZG9lc24ndCBl
-dmVuIGJ1aWxkOg0KDQpJbiBmaWxlIGluY2x1ZGVkIGZyb20gLi9hcmNoL3g4Ni9pbmNsdWRlL2Fz
-bS9idWcuaDo5MywNCiAgICAgICAgICAgICAgICAgZnJvbSAuL2luY2x1ZGUvbGludXgvYnVnLmg6
-NSwNCiAgICAgICAgICAgICAgICAgZnJvbSAuL2luY2x1ZGUvbGludXgvbW1kZWJ1Zy5oOjUsDQog
-ICAgICAgICAgICAgICAgIGZyb20gLi9pbmNsdWRlL2xpbnV4L21tLmg6OSwNCiAgICAgICAgICAg
-ICAgICAgZnJvbSBuZXQvc29ja2V0LmM6NTU6DQpuZXQvc29ja2V0LmM6IEluIGZ1bmN0aW9uIKFr
-ZXJuZWxfc2VuZHBhZ2WiOg0KLi9pbmNsdWRlL2FzbS1nZW5lcmljL2J1Zy5oOjk3OjM6IGVycm9y
-OiB0b28gZmV3IGFyZ3VtZW50cyB0byBmdW5jdGlvbiChX193YXJuX3ByaW50a6INCiAgIDk3IHwg
-ICBfX3dhcm5fcHJpbnRrKGFyZyk7ICAgICBcDQogICAgICB8ICAgXn5+fn5+fn5+fn5+fg0KDQpX
-YXMgdGhpcyBldmVuIGJ1aWxkIHRlc3RlZD8NCg0K
+From: Saeed Mahameed <saeedm@nvidia.com>
+
+Hi Dave,
+
+This series introduces some fixes to mlx5 driver.
+
+v1->v2:
+  - Patch #1 Don't return while mutex is held. (Dave)
+
+Please pull and let me know if there is any problem.
+
+For -stable v4.15
+ ('net/mlx5e: Fix VLAN cleanup flow')
+ ('net/mlx5e: Fix VLAN create flow')
+
+For -stable v4.16
+ ('net/mlx5: Fix request_irqs error flow')
+
+For -stable v5.4
+ ('net/mlx5e: Add resiliency in Striding RQ mode for packets larger than MTU')
+ ('net/mlx5: Avoid possible free of command entry while timeout comp handler')
+
+For -stable v5.7
+ ('net/mlx5e: Fix return status when setting unsupported FEC mode')
+
+For -stable v5.8
+ ('net/mlx5e: Fix race condition on nhe->n pointer in neigh update')
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit a59cf619787e628b31c310367f869fde26c8ede1:
+
+  Merge branch 'Fix-bugs-in-Octeontx2-netdev-driver' (2020-09-30 15:07:19 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2020-09-30
+
+for you to fetch changes up to ae2cc06daf21c2a38c6caca2c19599d61a5b3890:
+
+  net/mlx5e: Fix race condition on nhe->n pointer in neigh update (2020-10-01 12:46:37 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2020-09-30
+
+----------------------------------------------------------------
+Aya Levin (6):
+      net/mlx5e: Fix error path for RQ alloc
+      net/mlx5e: Add resiliency in Striding RQ mode for packets larger than MTU
+      net/mlx5e: Fix driver's declaration to support GRE offload
+      net/mlx5e: Fix return status when setting unsupported FEC mode
+      net/mlx5e: Fix VLAN cleanup flow
+      net/mlx5e: Fix VLAN create flow
+
+Eran Ben Elisha (4):
+      net/mlx5: Fix a race when moving command interface to polling mode
+      net/mlx5: Avoid possible free of command entry while timeout comp handler
+      net/mlx5: poll cmd EQ in case of command timeout
+      net/mlx5: Add retry mechanism to the command entry index allocation
+
+Maor Dickman (1):
+      net/mlx5e: CT, Fix coverity issue
+
+Maor Gottlieb (1):
+      net/mlx5: Fix request_irqs error flow
+
+Saeed Mahameed (1):
+      net/mlx5: cmdif, Avoid skipping reclaim pages if FW is not accessible
+
+Shay Drory (1):
+      net/mlx5: Don't allow health work when device is uninitialized
+
+Vlad Buslov (1):
+      net/mlx5e: Fix race condition on nhe->n pointer in neigh update
+
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      | 198 +++++++++++++++------
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/port.c  |   3 +
+ .../net/ethernet/mellanox/mlx5/core/en/rep/neigh.c |  81 +++++----
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |  14 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 104 +++++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   6 -
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c       |  42 ++++-
+ drivers/net/ethernet/mellanox/mlx5/core/health.c   |  11 ++
+ drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h   |   2 +
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   2 +
+ .../net/ethernet/mellanox/mlx5/core/pagealloc.c    |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  |   2 +-
+ include/linux/mlx5/driver.h                        |   4 +
+ 15 files changed, 364 insertions(+), 119 deletions(-)
