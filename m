@@ -2,215 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB56B280AD8
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 01:04:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A607280AE4
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 01:07:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387498AbgJAXEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 19:04:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387469AbgJAXEU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 19:04:20 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97DDC0613D0
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 16:04:19 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id v4so547610ybk.5
-        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 16:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=gzdgjx4eVJh7Xb7eAH+TAn3vgdcp4FzjfRPQGrQVIYM=;
-        b=iZS5amP9Lf4HCo6AGVGN9M02oAOt//S+fbR9GM1fnxY7vJx3Ehhn32VbpvdNERuDIL
-         9UjRbSbidGMMT3hEoUqs1sg9UzQa7vj4S0JB8LN6ATC3pMfDmfd+P5gh/B4IBO7YCBTv
-         dsGaSzXGuNmpP+qenL8Ty/nVbEqtLr5PL3FkMJdSxAJfori9M1YgkG3GG1DeDVGupAAy
-         5U/vJhkQDr54llmMPN/Eo5X9tO+osR9C0fgo+fKlLTIASel0FE82Bfkka5oako3Nk3vS
-         y/y/FfIQJ6AcAVVlWQYsgErxkl+IkFUYBFlCj9XJy1/zS3XRose281Vsx0WYunZtvTQJ
-         jpAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=gzdgjx4eVJh7Xb7eAH+TAn3vgdcp4FzjfRPQGrQVIYM=;
-        b=LXcC2M4e1NX7FWIR/JqcqvlBhkJc7h92Dq0JDjxIPwLhxf3X/TTiHV8RAj0xNyTq9N
-         iw0+hhBemQftqGSTY+qHppV9EXIViytdhSi4IPeACy+1yZ1mIW9tFb7vcV8Y0CZ7LJ+B
-         Es+0HlkZS6DAiorL2GZO/YpxAnPmRxuDG4jMxL5gCSz2QMi5RNvjg0183PmmYZtNtyAu
-         9vKNc22VwoKESeKrXnYbqAhEWIl+YWkfIEnsEOeAscKhgAZUzLVwGPStjaHdQSVlkzuU
-         phFPNKOmHz9JyAUijquff/o7MJVfuTfRWDUqo/F5drNTjKXbv7zMdnlMQeISh+Y4CurT
-         ejcg==
-X-Gm-Message-State: AOAM531V7+QiheLwwpx1GmTYUL6vVoMpAlJyX/iLePN1/c1XW2SvQyYY
-        RqmAtB/mEYtacMKvFkzKgZ5goLM9BfruZQSW7+I6
-X-Google-Smtp-Source: ABdhPJy+UASECqoWVlksJQpDXRpNIVWb3viFYi+3OiFH8zyTG9r3lde/IpQ+gpHCZkk8NtdrPrWoZsQWzx5JHYZJoI/K
-Sender: "danielwinkler via sendgmr" 
-        <danielwinkler@danielwinkler-linux.mtv.corp.google.com>
-X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:f693:9fff:fef4:4e59])
- (user=danielwinkler job=sendgmr) by 2002:a25:c549:: with SMTP id
- v70mr13905718ybe.516.1601593458903; Thu, 01 Oct 2020 16:04:18 -0700 (PDT)
-Date:   Thu,  1 Oct 2020 16:04:03 -0700
-In-Reply-To: <20201001230403.2445035-1-danielwinkler@google.com>
-Message-Id: <20201001160305.v4.5.I5068c01cae3cea674a96e103a0cf4d8c81425a4f@changeid>
-Mime-Version: 1.0
-References: <20201001230403.2445035-1-danielwinkler@google.com>
-X-Mailer: git-send-email 2.28.0.709.gb0816b6eb0-goog
-Subject: [PATCH v4 5/5] Bluetooth: Change MGMT security info CMD to be more generic
-From:   Daniel Winkler <danielwinkler@google.com>
-To:     marcel@holtmann.org
-Cc:     linux-bluetooth@vger.kernel.org,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        Daniel Winkler <danielwinkler@google.com>,
-        Sonny Sasaka <sonnysasaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1733221AbgJAXHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 19:07:10 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:38932 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726855AbgJAXHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 19:07:10 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1601593627;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CeWasuH8uVghjhSktob8WCpWWRYI6xR+uAJ/UcMtjBg=;
+        b=Rqxoph7dFgcG8krGiawE4Y6MUd7bF3VMca7BWA2pcwXnp6xwpF56klUV6/zJwCFJHMVNxS
+        KKkdyzPybcW9U6yOy9q/IoO+AzkNlyBTi4RUnTzuQ5Rm9smWoQrHs1QdeHvaRxmR+c9Hqh
+        hksVn5Wbk7JRy/HyfDZyF/tRlQT5AuXH7qtF3VuJzC3NG0N1Je/cmV2Rs44TfiUHuBGPsA
+        Ua5+6Jc+SrlJxvOEwfmr96eWug+PhqwiRzVzSK+/GbOr6XqxlT7/gik7Zpl0XwmzXpw04L
+        srOI9Wcud3XI6z0wilpEtj5LnaqZjFZeaNV2peOi/VBqd5xvtqSFEpMI+iUiVA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1601593627;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CeWasuH8uVghjhSktob8WCpWWRYI6xR+uAJ/UcMtjBg=;
+        b=8LfLNkmBoxXBb7XMzFYBtii8a/+WQRSJLrcjTstIUQmuOkEuGwOGR1GjESZJFY3s4ewON2
+        IeDdif8jprqmFpCQ==
+To:     Erez Geva <erez.geva.ext@siemens.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>, Andrei Vagin <avagin@gmail.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Vladis Dronov <vdronov@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Jesus Sanchez-Palencia <jesus.sanchez-palencia@intel.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Vedang Patel <vedang.patel@intel.com>,
+        Simon Sudler <simon.sudler@siemens.com>,
+        Andreas Meisinger <andreas.meisinger@siemens.com>,
+        Andreas Bucher <andreas.bucher@siemens.com>,
+        Henning Schild <henning.schild@siemens.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Andreas Zirkler <andreas.zirkler@siemens.com>,
+        Ermin Sakic <ermin.sakic@siemens.com>,
+        An Ninh Nguyen <anninh.nguyen@siemens.com>,
+        Michael Saenger <michael.saenger@siemens.com>,
+        Bernd Maehringer <bernd.maehringer@siemens.com>,
+        Gisela Greinert <gisela.greinert@siemens.com>,
+        Erez Geva <erez.geva.ext@siemens.com>,
+        Erez Geva <ErezGeva2@gmail.com>
+Subject: Re: [PATCH 5/7] Traffic control using high-resolution timer issue
+In-Reply-To: <20201001205141.8885-6-erez.geva.ext@siemens.com>
+References: <20201001205141.8885-1-erez.geva.ext@siemens.com> <20201001205141.8885-6-erez.geva.ext@siemens.com>
+Date:   Fri, 02 Oct 2020 01:07:07 +0200
+Message-ID: <87lfgpeeas.fsf@nanos.tec.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For advertising, we wish to know the LE tx power capabilities of the
-controller in userspace, so this patch edits the Security Info MGMT
-command to be more generic, such that other various controller
-capabilities can be included in the EIR data. This change also includes
-the LE min and max tx power into this newly-named command.
+On Thu, Oct 01 2020 at 22:51, Erez Geva wrote:
 
-The change was tested by manually verifying that the MGMT command
-returns the tx power range as expected in userspace.
+Issue? You again fail to decribe the problem.
 
-Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
-Signed-off-by: Daniel Winkler <danielwinkler@google.com>
----
+>   - Add new schedule function for Qdisc watchdog.
+>     The function avoids reprogram if watchdog already expire
+>     before new expire.
 
-Changes in v4:
-- Combine LE tx range into a single EIR field for MGMT capabilities cmd
+Why can't the existing function not be changed to do that?
 
-Changes in v3:
-- Re-using security info MGMT command to carry controller capabilities
+>   - Use new schedule function in ETF.
+>
+>   - Add ETF range value to kernel configuration.
+>     as the value is characteristic to Hardware.
 
-Changes in v2:
-- Fixed sparse error in Capabilities MGMT command
+No. That's completely wrong. Hardware properties need to be established
+at boot/runtime otherwise you can't build a kernel which runs on
+different platforms.
 
- include/net/bluetooth/mgmt.h | 15 +++++++++-----
- net/bluetooth/mgmt.c         | 39 +++++++++++++++++++++++-------------
- 2 files changed, 35 insertions(+), 19 deletions(-)
+> +void qdisc_watchdog_schedule_soon_ns(struct qdisc_watchdog *wd, u64 expires,
+> +				     u64 delta_ns)
 
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 117578bb88743c..42c3ece9931936 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -686,11 +686,16 @@ struct mgmt_cp_set_blocked_keys {
- 
- #define MGMT_OP_SET_WIDEBAND_SPEECH	0x0047
- 
--#define MGMT_OP_READ_SECURITY_INFO	0x0048
--#define MGMT_READ_SECURITY_INFO_SIZE	0
--struct mgmt_rp_read_security_info {
--	__le16   sec_len;
--	__u8     sec[];
-+#define MGMT_CAP_SEC_FLAGS		0x01
-+#define MGMT_CAP_MAX_ENC_KEY_SIZE	0x02
-+#define MGMT_CAP_SMP_MAX_ENC_KEY_SIZE	0x03
-+#define MGMT_CAP_LE_TX_PWR		0x04
-+
-+#define MGMT_OP_READ_CONTROLLER_CAP	0x0048
-+#define MGMT_READ_CONTROLLER_CAP_SIZE	0
-+struct mgmt_rp_read_controller_cap {
-+	__le16   cap_len;
-+	__u8     cap[0];
- } __packed;
- 
- #define MGMT_OP_READ_EXP_FEATURES_INFO	0x0049
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 092ac7fffb4124..3a35385017f568 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -110,7 +110,7 @@ static const u16 mgmt_commands[] = {
- 	MGMT_OP_SET_APPEARANCE,
- 	MGMT_OP_SET_BLOCKED_KEYS,
- 	MGMT_OP_SET_WIDEBAND_SPEECH,
--	MGMT_OP_READ_SECURITY_INFO,
-+	MGMT_OP_READ_CONTROLLER_CAP,
- 	MGMT_OP_READ_EXP_FEATURES_INFO,
- 	MGMT_OP_SET_EXP_FEATURE,
- 	MGMT_OP_READ_DEF_SYSTEM_CONFIG,
-@@ -176,7 +176,7 @@ static const u16 mgmt_untrusted_commands[] = {
- 	MGMT_OP_READ_CONFIG_INFO,
- 	MGMT_OP_READ_EXT_INDEX_LIST,
- 	MGMT_OP_READ_EXT_INFO,
--	MGMT_OP_READ_SECURITY_INFO,
-+	MGMT_OP_READ_CONTROLLER_CAP,
- 	MGMT_OP_READ_EXP_FEATURES_INFO,
- 	MGMT_OP_READ_DEF_SYSTEM_CONFIG,
- 	MGMT_OP_READ_DEF_RUNTIME_CONFIG,
-@@ -3705,13 +3705,14 @@ static int set_wideband_speech(struct sock *sk, struct hci_dev *hdev,
- 	return err;
- }
- 
--static int read_security_info(struct sock *sk, struct hci_dev *hdev,
--			      void *data, u16 data_len)
-+static int read_controller_cap(struct sock *sk, struct hci_dev *hdev,
-+			       void *data, u16 data_len)
- {
--	char buf[16];
--	struct mgmt_rp_read_security_info *rp = (void *)buf;
--	u16 sec_len = 0;
-+	char buf[20];
-+	struct mgmt_rp_read_controller_cap *rp = (void *)buf;
-+	u16 cap_len = 0;
- 	u8 flags = 0;
-+	u8 tx_power_range[2];
- 
- 	bt_dev_dbg(hdev, "sock %p", sk);
- 
-@@ -3735,23 +3736,33 @@ static int read_security_info(struct sock *sk, struct hci_dev *hdev,
- 
- 	flags |= 0x08;		/* Encryption key size enforcement (LE) */
- 
--	sec_len = eir_append_data(rp->sec, sec_len, 0x01, &flags, 1);
-+	cap_len = eir_append_data(rp->cap, cap_len, MGMT_CAP_SEC_FLAGS,
-+				  &flags, 1);
- 
- 	/* When the Read Simple Pairing Options command is supported, then
- 	 * also max encryption key size information is provided.
- 	 */
- 	if (hdev->commands[41] & 0x08)
--		sec_len = eir_append_le16(rp->sec, sec_len, 0x02,
-+		cap_len = eir_append_le16(rp->cap, cap_len,
-+					  MGMT_CAP_MAX_ENC_KEY_SIZE,
- 					  hdev->max_enc_key_size);
- 
--	sec_len = eir_append_le16(rp->sec, sec_len, 0x03, SMP_MAX_ENC_KEY_SIZE);
-+	cap_len = eir_append_le16(rp->cap, cap_len,
-+				  MGMT_CAP_SMP_MAX_ENC_KEY_SIZE,
-+				  SMP_MAX_ENC_KEY_SIZE);
-+
-+	/* Append the min/max LE tx power parameters */
-+	memcpy(&tx_power_range[0], &hdev->min_le_tx_power, 1);
-+	memcpy(&tx_power_range[1], &hdev->max_le_tx_power, 1);
-+	cap_len = eir_append_data(rp->cap, cap_len, MGMT_CAP_LE_TX_PWR,
-+				  tx_power_range, 2);
- 
--	rp->sec_len = cpu_to_le16(sec_len);
-+	rp->cap_len = cpu_to_le16(cap_len);
- 
- 	hci_dev_unlock(hdev);
- 
--	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_READ_SECURITY_INFO, 0,
--				 rp, sizeof(*rp) + sec_len);
-+	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_READ_CONTROLLER_CAP, 0,
-+				 rp, sizeof(*rp) + cap_len);
- }
- 
- #ifdef CONFIG_BT_FEATURE_DEBUG
-@@ -8186,7 +8197,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ set_blocked_keys,	   MGMT_OP_SET_BLOCKED_KEYS_SIZE,
- 						HCI_MGMT_VAR_LEN },
- 	{ set_wideband_speech,	   MGMT_SETTING_SIZE },
--	{ read_security_info,      MGMT_READ_SECURITY_INFO_SIZE,
-+	{ read_controller_cap,     MGMT_READ_CONTROLLER_CAP_SIZE,
- 						HCI_MGMT_UNTRUSTED },
- 	{ read_exp_features_info,  MGMT_READ_EXP_FEATURES_INFO_SIZE,
- 						HCI_MGMT_UNTRUSTED |
--- 
-2.28.0.709.gb0816b6eb0-goog
+schedule soon? That sounds like schedule it sooner than later, but I
+don't care.
 
+> +{
+> +	if (test_bit(__QDISC_STATE_DEACTIVATED,
+> +		     &qdisc_root_sleeping(wd->qdisc)->state))
+> +		return;
+> +
+> +	if (wd->last_expires == expires)
+> +		return;
+
+How is this supposed to be valid without checking whether the timer is
+queued in the first place?
+
+Maybe the function name should be schedule_soon_or_not()
+
+> +	/**
+
+Can you please use proper comment style? This is neither network comment
+style nor the regular sane kernel comment style. It's kerneldoc comment
+style which is reserved for function and struct documentation.
+
+> +	 * If expires is in [0, now + delta_ns],
+> +	 * do not program it.
+
+This range info is just confusing. Just use plain english.
+
+> +	 */
+> +	if (expires <= ktime_to_ns(hrtimer_cb_get_time(&wd->timer)) + delta_ns)
+> +		return;
+
+So if the watchdog is NOT queued and expiry < now + delta_ns then this
+returns and nothing starts the timer ever.
+
+That might all be correct, but without any useful explanation it looks
+completely bogus.
+
+> +	/**
+> +	 * If timer is already set in [0, expires + delta_ns],
+> +	 * do not reprogram it.
+> +	 */
+> +	if (hrtimer_is_queued(&wd->timer) &&
+> +	    wd->last_expires <= expires + delta_ns)
+> +		return;
+> +
+> +	wd->last_expires = expires;
+> +	hrtimer_start_range_ns(&wd->timer,
+> +			       ns_to_ktime(expires),
+> +			       delta_ns,
+> +			       HRTIMER_MODE_ABS_PINNED);
+> +}
+> +EXPORT_SYMBOL(qdisc_watchdog_schedule_soon_ns);
+> +
+>  void qdisc_watchdog_cancel(struct qdisc_watchdog *wd)
+>  {
+>  	hrtimer_cancel(&wd->timer);
+> diff --git a/net/sched/sch_etf.c b/net/sched/sch_etf.c
+> index c48f91075b5c..48b2868c4672 100644
+> --- a/net/sched/sch_etf.c
+> +++ b/net/sched/sch_etf.c
+> @@ -20,6 +20,11 @@
+>  #include <net/pkt_sched.h>
+>  #include <net/sock.h>
+>  
+> +#ifdef CONFIG_NET_SCH_ETF_TIMER_RANGE
+> +#define NET_SCH_ETF_TIMER_RANGE CONFIG_NET_SCH_ETF_TIMER_RANGE
+> +#else
+> +#define NET_SCH_ETF_TIMER_RANGE (5 * NSEC_PER_USEC)
+> +#endif
+>  #define DEADLINE_MODE_IS_ON(x) ((x)->flags & TC_ETF_DEADLINE_MODE_ON)
+>  #define OFFLOAD_IS_ON(x) ((x)->flags & TC_ETF_OFFLOAD_ON)
+>  #define SKIP_SOCK_CHECK_IS_SET(x) ((x)->flags & TC_ETF_SKIP_SOCK_CHECK)
+> @@ -128,8 +133,9 @@ static void reset_watchdog(struct Qdisc *sch)
+>  		return;
+>  	}
+>  
+> -	next = ktime_sub_ns(skb->tstamp, q->delta);
+> -	qdisc_watchdog_schedule_ns(&q->watchdog, ktime_to_ns(next));
+> +	next = ktime_sub_ns(skb->tstamp, q->delta + NET_SCH_ETF_TIMER_RANGE);
+> +	qdisc_watchdog_schedule_soon_ns(&q->watchdog, ktime_to_ns(next),
+> +					NET_SCH_ETF_TIMER_RANGE);
+
+This is changing 5 things at once. That's just wrong.
+
+patch 1: Add the new function and explain why it's required
+
+patch 2: Make reset_watchdog() use it
+
+patch 3: Add a mechanism to retrieve the magic hardware range from the
+         underlying hardware driver and add that value to q->delta or
+         set q->delta to it. Whatever makes sense. The current solution
+         makes no sense at all
+
+Thanks,
+
+        tglx
