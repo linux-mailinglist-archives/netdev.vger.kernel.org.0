@@ -2,119 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5096B27FD4D
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 12:29:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA92527FD54
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 12:32:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731971AbgJAK3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 06:29:18 -0400
-Received: from mail-io1-f77.google.com ([209.85.166.77]:55858 "EHLO
-        mail-io1-f77.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731647AbgJAK3R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 06:29:17 -0400
-Received: by mail-io1-f77.google.com with SMTP id t187so3195891iof.22
-        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 03:29:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=QxfnSPKGQDCFCLiF87wD/G1Td7QoNzVZUJ2E9Aaohoc=;
-        b=AZKsXPysPvycyo2oj4WMR6gdFfvb1OWYyXIX73MnoIl6xujEg5UDOqI9J30qSkCszl
-         6SsC7sJ7ZPBQx40WrTw2JZDZdGyHbMJJp5LHLxX9ZuV2HEZWYEliUTK0sz6RbHx52kK/
-         aVtGrXi+DtdYobDWHiUiO1iLKhVTktIr/GE06i4qeeIKEdsINZdm9SUWeamRpQEv/Rnq
-         UrlphdSZV9cZn4MILhPmE7LDp/ZTc0cL+HHIuwDX5zJhjTBQL1Dv3rrP5/MgbKdzhfsP
-         JLpWLcQyTVhJsr1qcHDac36fNwrw3FimnLlhEOKrNGVdF1xPXS4jZTbDOXZU/AC/f9/c
-         s3oQ==
-X-Gm-Message-State: AOAM533yFhavT3DnFuxzI9dGCeiGvCYiDKsXBTu1FEQZSVeqeXOogygT
-        AcbLH5lAjfIgR0g0/eafTJwASN1adpkySb7iABhdRA3BLmzr
-X-Google-Smtp-Source: ABdhPJwKuv3/SgAWQSCle5P2lNmjUlMIDW2FcgIk7h6NlfiRO4Mu+/XZouoBmR0Mp4mbLkk0GeBrJnCvMC0vyfYwVCwqIyg/O/6X
+        id S1731908AbgJAKcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 06:32:36 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:19704 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731131AbgJAKcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 06:32:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1601548355; x=1633084355;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=B+cZ+YKhyj76Cw7z6hfMYxOafQMHU9geMzZI4cikeuw=;
+  b=k7rlCqnCup+FXjNTxtBM6j9xW64byOi195MVcONwY4bELCsLcO0tyD0l
+   EQUd0c3opdm5jwg+G20a27SZBKdRc6+RR0lkvqqbmZ4QygPJxt1GtbVH3
+   A7vsSbRl8uKBDjnaHMH7hGfoxfdIpEowSWXbkRn52lEQgHiUFU3wCn9UW
+   XLZRUR94qcedCuvH2JuaRaj859/TC3iFyKdvWKur3MGxhtF/ZwwwyCvMw
+   uaMEUsKkvlnNz3PjDAA+GyVdU2N6d0HLQNpg552GV9uWSozkCbxtX8Av8
+   7yapNu7D/jL1xGZebGrxXD9NCB6heRrokXCaKGRXwNn1lY6eCTpr17rlj
+   g==;
+IronPort-SDR: +9pihxinvIWvX7rsoTz5kC31fjglc8AsiMduKSppPaldKRhpp3dE6Fa8O9bEjpwj92PVBY++Er
+ lL25pHSamimK6PqgRRSp0pObJoz12pyudy35ylGFDICA03R+/igTkK6e6d9J7gFdebP4Jf623E
+ 6ZWr9JhRD8iGJ8y2MDMvUYz36tedgAA1aIXIIP1P4gXml+Eg/NR44t39Rt293zmnGCqMcUJY5d
+ UYfguHbnFKx5nNNVR2lBxjEgMhRx/vgFGfyO/Vx1cUxqrGW4a8WWSEKCQkq91uVcFFXP4Fi7r3
+ k8o=
+X-IronPort-AV: E=Sophos;i="5.77,323,1596524400"; 
+   d="scan'208";a="28360871"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Oct 2020 03:32:34 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 1 Oct 2020 03:32:09 -0700
+Received: from soft-test08.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Thu, 1 Oct 2020 03:32:07 -0700
+From:   Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <roopa@nvidia.com>,
+        <nikolay@nvidia.com>, <jiri@mellanox.com>, <idosch@mellanox.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
+CC:     Henrik Bjoernlund <henrik.bjoernlund@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [net-next v2 00/11] net: bridge: cfm: Add support for Connectivity Fault Management(CFM)
+Date:   Thu, 1 Oct 2020 10:30:08 +0000
+Message-ID: <20201001103019.1342470-1-henrik.bjoernlund@microchip.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:9a13:: with SMTP id t19mr1798694ili.269.1601548156895;
- Thu, 01 Oct 2020 03:29:16 -0700 (PDT)
-Date:   Thu, 01 Oct 2020 03:29:16 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fb885a05b0997c54@google.com>
-Subject: KMSAN: uninit-value in batadv_nc_worker
-From:   syzbot <syzbot+da9194708de785081f11@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, glider@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        netdev@vger.kernel.org, sven@narfation.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Connectivity Fault Management (CFM) is defined in 802.1Q section 12.14.
 
-syzbot found the following issue on:
+Connectivity Fault Management (CFM) comprises capabilities for detecting, verifying,
+and isolating connectivity failures in Virtual Bridged Networks.
+These capabilities can be used in networks operated by multiple independent organizations,
+each with restricted management access to each other’s equipment.
 
-HEAD commit:    5edb1df2 kmsan: drop the _nosanitize string functions
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=10cc55a7900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4991d22eb136035c
-dashboard link: https://syzkaller.appspot.com/bug?extid=da9194708de785081f11
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+CFM functions are partitioned as follows:
+    — Path discovery
+    — Fault detection
+    — Fault verification and isolation
+    — Fault notification
+    — Fault recovery
 
-Unfortunately, I don't have any reproducer for this issue yet.
+The primary CFM protocol shims are called Maintenance Points (MPs).
+A MP can be either a MEP or a MHF.
+The MEP:
+    -It is the Maintenance association End Point
+     described in 802.1Q section 19.2.
+    -It is created on a specific level (1-7) and is assuring
+     that no CFM frames are passing through this MEP on lower levels.
+    -It initiates and terminates/validates CFM frames on its level.
+    -It can only exist on a port that is related to a bridge.
+The MHF:
+    -It is the Maintenance Domain Intermediate Point
+     (MIP) Half Function (MHF) described in 802.1Q section 19.3.
+    -It is created on a specific level (1-7).
+    -It is extracting/injecting certain CFM frame on this level.
+    -It can only exist on a port that is related to a bridge.
+    -Currently not supported.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+da9194708de785081f11@syzkaller.appspotmail.com
+There are defined the following CFM protocol functions:
+    -Continuity Check
+    -Loopback. Currently not supported.
+    -Linktrace. Currently not supported.
 
-=====================================================
-BUG: KMSAN: uninit-value in batadv_nc_purge_orig_hash net/batman-adv/network-coding.c:408 [inline]
-BUG: KMSAN: uninit-value in batadv_nc_worker+0x1c0/0x1d70 net/batman-adv/network-coding.c:718
-CPU: 0 PID: 7 Comm: kworker/u4:0 Not tainted 5.9.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: bat_events batadv_nc_worker
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:122
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:201
- batadv_nc_purge_orig_hash net/batman-adv/network-coding.c:408 [inline]
- batadv_nc_worker+0x1c0/0x1d70 net/batman-adv/network-coding.c:718
- process_one_work+0x1688/0x2140 kernel/workqueue.c:2269
- worker_thread+0x10bc/0x2730 kernel/workqueue.c:2415
- kthread+0x551/0x590 kernel/kthread.c:293
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+This CFM component supports create/delete of MEP instances and configuration of
+the different CFM protocols. Also status information can be fetched and delivered
+through notification due to defect status change.
 
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:143 [inline]
- kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:126
- kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
- slab_alloc_node mm/slub.c:2907 [inline]
- slab_alloc mm/slub.c:2916 [inline]
- __kmalloc+0x2bb/0x4b0 mm/slub.c:3982
- kmalloc_array+0x90/0x140 include/linux/slab.h:594
- batadv_hash_new+0x129/0x530 net/batman-adv/hash.c:52
- batadv_originator_init+0x9b/0x370 net/batman-adv/originator.c:211
- batadv_mesh_init+0x4dc/0x9d0 net/batman-adv/main.c:204
- batadv_softif_init_late+0x6d8/0xa30 net/batman-adv/soft-interface.c:857
- register_netdevice+0xbbc/0x37d0 net/core/dev.c:9760
- __rtnl_newlink net/core/rtnetlink.c:3454 [inline]
- rtnl_newlink+0x2e77/0x3ed0 net/core/rtnetlink.c:3500
- rtnetlink_rcv_msg+0x142b/0x18c0 net/core/rtnetlink.c:5563
- netlink_rcv_skb+0x6d7/0x7e0 net/netlink/af_netlink.c:2470
- rtnetlink_rcv+0x50/0x60 net/core/rtnetlink.c:5581
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x11c8/0x1490 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x173a/0x1840 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg net/socket.c:671 [inline]
- __sys_sendto+0x9dc/0xc80 net/socket.c:1992
- __do_sys_sendto net/socket.c:2004 [inline]
- __se_sys_sendto+0x107/0x130 net/socket.c:2000
- __x64_sys_sendto+0x6e/0x90 net/socket.c:2000
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
+The CFM component is trying to offload CFM functionality to HW by calling the
+switchdev interface.
 
+The user interacts with CFM using the 'cfm' user space client program,
+the client talks with the kernel using netlink. The kernel will try to
+offload the requests to the HW via switchdev API (not implemented yet).
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Any notification emitted by CFM from the kernel can be monitored in user space
+by starting 'cfm_server' program.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Currently this 'cfm' and 'cfm_server' programs are standalone placed in a cfm
+repository https://github.com/microchip-ung/cfm but it is considered to integrate
+this into 'iproute2'.
+
+v1 -> v2
+    Added the CFM switchdev interface and also added utilization by calling the
+    interface from the kernel CFM implementation trying to offload CFM functionality
+    to HW. This offload (CFM driver) is currently not implemented.
+    
+    Corrections based on RCF comments:
+        -The single CFM kernel implementation Patch is broken up into three patches.
+        -Changed the list of MEP instances from list_head to hlist_head.
+        -Removed unnecessary RCU list traversing.
+        -Solved RCU unlocking problem.
+        -Removed unnecessary comments.
+        -Added ASSERT_RTNL() where required.
+        -Shaping up on error messages.
+        -Correction NETLINK br_fill_ifinfo() to be able to handle 'filter_mask'
+         with multiple flags asserted.
+
+Reviewed-by: Horatiu Vultur  <horatiu.vultur@microchip.com>
+Signed-off-by: Henrik Bjoernlund  <henrik.bjoernlund@microchip.com>
+
+Henrik Bjoernlund (11):
+  net: bridge: extend the process of special frames
+  bridge: cfm: Add BRIDGE_CFM to Kconfig.
+  bridge: uapi: cfm: Added EtherType used by the CFM protocol.
+  bridge: cfm: Kernel space implementation of CFM.
+  bridge: cfm: Kernel space implementation of CFM.
+  bridge: cfm: Kernel space implementation of CFM.
+  bridge: cfm: Netlink Interface.
+  bridge: cfm: Netlink Notifications.
+  bridge: cfm: Bridge port remove.
+  bridge: switchdev: cfm: switchdev interface implementation
+  bridge: cfm: Added CFM switchdev utilization.
+
+ include/linux/if_bridge.h       |   13 +
+ include/net/switchdev.h         |  115 ++++
+ include/uapi/linux/cfm_bridge.h |   70 ++
+ include/uapi/linux/if_bridge.h  |  125 ++++
+ include/uapi/linux/if_ether.h   |    1 +
+ include/uapi/linux/rtnetlink.h  |    2 +
+ net/bridge/Kconfig              |   11 +
+ net/bridge/Makefile             |    2 +
+ net/bridge/br_cfm.c             | 1092 +++++++++++++++++++++++++++++++
+ net/bridge/br_cfm_netlink.c     |  728 +++++++++++++++++++++
+ net/bridge/br_cfm_switchdev.c   |  203 ++++++
+ net/bridge/br_device.c          |    4 +
+ net/bridge/br_if.c              |    1 +
+ net/bridge/br_input.c           |   31 +-
+ net/bridge/br_mrp.c             |   19 +-
+ net/bridge/br_netlink.c         |  138 +++-
+ net/bridge/br_private.h         |   76 ++-
+ net/bridge/br_private_cfm.h     |  208 ++++++
+ net/switchdev/switchdev.c       |   54 ++
+ 19 files changed, 2858 insertions(+), 35 deletions(-)
+ create mode 100644 include/uapi/linux/cfm_bridge.h
+ create mode 100644 net/bridge/br_cfm.c
+ create mode 100644 net/bridge/br_cfm_netlink.c
+ create mode 100644 net/bridge/br_cfm_switchdev.c
+ create mode 100644 net/bridge/br_private_cfm.h
+
+-- 
+2.28.0
+
