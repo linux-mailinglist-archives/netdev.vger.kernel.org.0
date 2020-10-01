@@ -2,133 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89D9D2803D9
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 18:24:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EB5F2803DA
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 18:24:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732821AbgJAQYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 12:24:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44650 "EHLO mail.kernel.org"
+        id S1732830AbgJAQY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 12:24:56 -0400
+Received: from mail.katalix.com ([3.9.82.81]:43316 "EHLO mail.katalix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732342AbgJAQYi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Oct 2020 12:24:38 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2017620848;
-        Thu,  1 Oct 2020 16:24:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601569477;
-        bh=RyMow5fyBGKKDSMrZgCCAa1EJD2TJz7FT82CA+LQ/bU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NEGMeLY4okSH7Me3F1Nd4rmNPav0Us4tUoQMOBwA5zoRSb5akLDB4CqEL5yQmvPYf
-         XGPwATzLEGHuGZTYGCoJ7zS1O1chZPIzqV7DM0gph2lDoCVhaBnhZdIc8H237HEl/r
-         Och1W8JJNf0S42QgAFyIm35iTD5VlGNJvaMrBV7A=
-Date:   Thu, 1 Oct 2020 09:24:34 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, jiri@resnulli.us,
-        mkubecek@suse.cz, dsahern@kernel.org, pablo@netfilter.org
-Subject: Re: [RFC net-next 9/9] genetlink: allow dumping command-specific
- policy
-Message-ID: <20201001092434.3f916d80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <3de28a3b54737ffd5c7d9944acc0614745242a30.camel@sipsolutions.net>
-References: <20201001000518.685243-1-kuba@kernel.org>
-        <20201001000518.685243-10-kuba@kernel.org>
-        <591d18f08b82a84c5dc19b110962dabc598c479d.camel@sipsolutions.net>
-        <20201001084152.33cc5bf2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3de28a3b54737ffd5c7d9944acc0614745242a30.camel@sipsolutions.net>
+        id S1732342AbgJAQY4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 12:24:56 -0400
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 2902A86B47;
+        Thu,  1 Oct 2020 17:24:54 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1601569494; bh=AjPba7j+bjkR9lgwROnypyrxs31pPjP/IgeE0SknijA=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Thu,=201=20Oct=202020=2017:24:53=20+0100|From:=20Tom=20Pa
+         rkin=20<tparkin@katalix.com>|To:=20Jakub=20Kicinski=20<kuba@kernel
+         .org>|Cc:=20netdev@vger.kernel.org,=20jchapman@katalix.com|Subject
+         :=20Re:=20[PATCH=20net-next=205/6]=20l2tp:=20add=20ac_pppoe=20pseu
+         dowire=20driver|Message-ID:=20<20201001162453.GB4708@katalix.com>|
+         References:=20<20200930210707.10717-1-tparkin@katalix.com>=0D=0A=2
+         0<20200930210707.10717-6-tparkin@katalix.com>=0D=0A=20<20201001075
+         640.16212741@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>|MIME-V
+         ersion:=201.0|Content-Disposition:=20inline|In-Reply-To:=20<202010
+         01075640.16212741@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>;
+        b=15Ak7Mzw88f/JUH+QhlpsOJRWT6cs+slmlvRrk0EYt3IgjVUxCY6e+QiSm6mi0y6f
+         qL2QrMlLLLKe/SXuRS8lMJsq2jEC+o7kqBkrs1XE/pGCups0AUYB1f+PZ5w7y6hS7e
+         X2iXeLgZKDLZrsqGjnXtTVO3sWYKBHnP7ptdCtbeUJIJm3Z9M/YjdnqvU9pnmxHWl0
+         EkNu7z2GZFG7PXG7QkyTjuEP5xWl7b4iGkWPG4UJl/yPiOfIQMWrTqIaTqYGW8PZEO
+         +WmflHM38YPq2pwP2isocEscV5M96rULLskcZet30cidlNMGPlQodxU19DpRSsgmFs
+         AUveNQBBc2mbA==
+Date:   Thu, 1 Oct 2020 17:24:53 +0100
+From:   Tom Parkin <tparkin@katalix.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [PATCH net-next 5/6] l2tp: add ac_pppoe pseudowire driver
+Message-ID: <20201001162453.GB4708@katalix.com>
+References: <20200930210707.10717-1-tparkin@katalix.com>
+ <20200930210707.10717-6-tparkin@katalix.com>
+ <20201001075640.16212741@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="OwLcNYc0lM97+oe1"
+Content-Disposition: inline
+In-Reply-To: <20201001075640.16212741@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 01 Oct 2020 18:00:58 +0200 Johannes Berg wrote:
-> On Thu, 2020-10-01 at 08:41 -0700, Jakub Kicinski wrote:
-> 
-> > > Even if I don't have a good idea now on how to avoid the duplication, it
-> > > might be nicer to have a (flag) attribute here for "CTRL_ATTR_ALL_OPS"?  
-> > 
-> > Hm. How would you see the dump structured?   
-> 
-> Yeah, that's the tricky part ... Hence why I said "I don't have a good
-> idea now" :)
 
-You say that, yet your idea below seems pretty good :P
+--OwLcNYc0lM97+oe1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > We need to annotate the root
-> > policies with the command. Right now I have:
-> > 
-> >  [ATTR_FAMILY_ID]
-> >  [ATTR_OP]
-> >  [ATTR_POLICY]
-> >    [policy idx]
-> >      [attr idx]
-> >        [bla]
-> >        [bla]
-> >        [bla]
-> > 
-> > But if we're dumping _all_ the policy to op mapping is actually 1:n,
-> > so we'd need to restructure the dump a lil' bit and have OP only
-> > reported on root of the policy and make it a nested array.  
-> 
-> So today you see something like
-> 
-> [ATTR_FAMILY_ID]
-> [ATTR_POLICY]
->   [policy idx, 0 = main policy]
->     [bla]
->     ...
->   ...
-> 
-> 
-> I guess the most compact representation, that also preserves the most
-> data about sharing, would be to do something like
-> 
-> [ATTR_FAMILY_ID]
-> [ATTR_POLICY]
->   [policy idx, 0 = main policy]
->     [bla]
->     ...
->   ...
-> [ATTR_OP_POLICY]
->   [op] = [policy idx]
->   ...
-> 
-> This preserves all the information because it tells you which policies
-> actually are identical (shared), each per-op policy can have nested
-> policies referring to common ones, like in the ethtool case, etc.
+On  Thu, Oct 01, 2020 at 07:56:40 -0700, Jakub Kicinski wrote:
+> On Wed, 30 Sep 2020 22:07:06 +0100 Tom Parkin wrote:
+> > The AC/PPPoE driver implements pseudowire type L2TP_PWTYPE_PPP_AC, for
+> > use in a PPPoE Access Concentrator configuration.  Rather than
+> > terminating the PPP session locally, the AC/PPPoE driver forwards PPP
+> > packets over an L2TP tunnel for termination at the LNS.
+> >=20
+> > l2tp_ac_pppoe provides a data path for PPPoE session packets, and
+> > should be instantiated once a userspace process has completed the PPPoE
+> > discovery process.
+> >=20
+> > To create an instance of an L2TP_PWTYPE_PPP_AC pseudowire, userspace
+> > must use the L2TP_CMD_SESSION_CREATE netlink command, and pass the
+> > following attributes:
+> >=20
+> >  * L2TP_ATTR_IFNAME, to specify the name of the interface associated
+> >    with the PPPoE session;
+> >  * L2TP_ATTR_PPPOE_SESSION_ID, to specify the PPPoE session ID assigned
+> >    to the session;
+> >  * L2TP_ATTR_PPPOE_PEER_MAC_ADDR, to specify the MAC address of the
+> >    PPPoE peer
+>=20
+> C=3D1 generates:
+>=20
+> net/l2tp/l2tp_ac_pppoe.c:234:20: warning: incorrect type in argument 1 (d=
+ifferent address spaces)
+> net/l2tp/l2tp_ac_pppoe.c:234:20:    expected struct net_device *dev
+> net/l2tp/l2tp_ac_pppoe.c:234:20:    got struct net_device [noderef] __rcu=
+ *dev
+> net/l2tp/l2tp_ac_pppoe.c:380:45: error: incompatible types in comparison =
+expression (different address spaces):
+> net/l2tp/l2tp_ac_pppoe.c:380:45:    struct net_device [noderef] __rcu *
+> net/l2tp/l2tp_ac_pppoe.c:380:45:    struct net_device *
 
-Only comment I have is - can we make sure to put the ATTR_OP_POLICY
-first? That way user space can parse the stream an pick out the info
-it needs rather than recording all the policies only to find out later
-which one is which.
+Thanks Jakub, and apologies for that slipping through.  My Sparse
+installation on Ubuntu wasn't working -- I've updated it now and can
+see the error you reported.
 
-> OTOH, it's a lot trickier to implement - I haven't really come up with a
-> good way of doing it "generically" with the net/netlink/policy.c code.
-> I'm sure it can be solved, but I haven't really given it enough thought.
-> Perhaps by passing a "policy iterator" to netlink_policy_dump_start(),
-> instead of just a single policy (i.e. a function & a data ptr or so),
-> and then it can walk all the policies using that, assign the idxes etc.,
-> and dump them out in netlink_policy_dump_write()?
-> 
-> But then we'd still have to get the policy idx for a given policy, and
-> not clean up all the state when netlink_policy_dump_loop() returns
-> false, because you still need it for ATTR_OP_POLICY to find the idx from
-> the pointer?
-> 
-> I guess it's doable. Just seems a bit more complex. OTOH, it may be that
-> such complexity also completely makes sense for non-generic netlink
-> families anyway, I haven't looked at them much at all.
+--OwLcNYc0lM97+oe1
+Content-Type: application/pgp-signature; name="signature.asc"
 
-IDK, doesn't seem crazy hard. We can create some iterator or expand the
-API with "begin" "add" "end" calls. Then once dumper state is build we
-can ask it which ids it assigned.
+-----BEGIN PGP SIGNATURE-----
 
-OTOH I don't think we have a use for this in ethtool, because user
-space usually does just one op per execution. So I'm thinking to use
-your structure for the dump, but leave the actual implementation of
-"dump all" for "later".
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl92AtEACgkQlIwGZQq6
+i9Aa9wgAg7dnQfVSTlMSATI7HvmDe+brqaysdLLMfF3ltn2nfcRB21IwjqNIq9fi
+W6zAg/4LJ2wqQL1jxw0beH++7vK0yN+laE7G/ugkS75Wkk9NPcbkqYZHR+68+eZ+
+wtz7MknXLyj98H5VXkFtW0+8lAnN1fJ1nn+sZIH96NaJq3yAcKp0ipeCu1olSku8
+LeO6rGiExt11PsqVEaqH34ePlDWiR0u2Y89jsTNWYFtfsX0KrCQPXVukggRAk/44
+KAtu0cCe9OKPgatXT+R/oO5ALE6mIQ/TzhYdUem54A/CaXNnKKpGKxSo+D+i7Mxf
+N5PCsix6rDpkyuZMFxeV8cKOQ0E7og==
+=6K4o
+-----END PGP SIGNATURE-----
 
-How does that sound?
+--OwLcNYc0lM97+oe1--
