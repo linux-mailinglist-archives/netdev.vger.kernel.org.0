@@ -2,109 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68E7A27FE0C
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 13:03:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E072F27FE7B
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 13:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732134AbgJALDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 07:03:35 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:30257 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731131AbgJALDf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 07:03:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1601550213;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=c7VtTMHN+fLkd5l+o+GivpKjyV0twYrb7Z/MtzLKgmQ=;
-        b=KqQRqsOFcJLyPDYXTnWgcQlaeobbZZ5G4j36MvGKz97Te5GI1nOY64dnuJBL9De347
-        pytTypCtXji9XhgsgUf9E317sx/KxxUJ/27y4VFpMBx8Wf3QXJDEsrS/1kE581BNH6Sl
-        G6+SCBqFUlGfzqc7jbkRDa9o/yXBuFSdC0duFFthCQPG95Sfuf0qG7XqJPfj5jDZgL9W
-        pTwknlOsIsTIt51m0btpmAmfzyM+urhr9iEN8iusLT+ohhdPjezCjmfkyIn2L/NfkTh6
-        Tza7m/pDvBgtijIVAe88aPsM7GD/V0xkHzR2yILBxYpepLbNK3c3TR5Iz4DyRscLe3qJ
-        MKpw==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTEVR/J89pzV0="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.10.177]
-        by smtp.strato.de (RZmta 47.1.9 DYNA|AUTH)
-        with ESMTPSA id R06c13w91B3M2wM
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Thu, 1 Oct 2020 13:03:22 +0200 (CEST)
-Subject: Re: [PATCH] can: raw: add missing error queue support
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20200926162527.270030-1-mailhol.vincent@wanadoo.fr>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <12294bf5-c791-8dea-617c-20f2b812c1b0@hartkopp.net>
-Date:   Thu, 1 Oct 2020 13:03:21 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1731839AbgJALeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 07:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59252 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731243AbgJALeh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 07:34:37 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7443CC0613D0;
+        Thu,  1 Oct 2020 04:34:37 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id o5so4806068qke.12;
+        Thu, 01 Oct 2020 04:34:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eWf42gDunz8ZrbJJsjLaSFxrKzsO9JLaDRpK146NntU=;
+        b=fhDnGMZLvPDKqI2zu+jzp3o3WiOwYCWIf48nl66PbEI6cLI8yr8A2APYf0VpLp9oMI
+         F/6pSIrqzIddXmkX1qI+8SBmldLN2O85YCdFd2fu1dO8pbRSKho83ZJaARnQhboxLEZk
+         JyOVaveHSRN+k5scKgBfq2Z5Q4uLHzbrC0zwod3SVBBMnqXwQeTly6/7+QZhy3IjZVjl
+         KPLpUR3h4bu/WTUrrpdirK+uwwLfin7vcj6DMUXDjZxcDxB8CNN667EYkGnxFoT4jw1y
+         +cRTo6439q5RNeRsRC4Ni25qfdOiKwwIkzLP/2WbjLw9Ar9vbyv8MyACoy0KCZyxzJNe
+         GLSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eWf42gDunz8ZrbJJsjLaSFxrKzsO9JLaDRpK146NntU=;
+        b=HhEbEkpmHjZX9XO62PxPLizz/QR8I6pNzBB8H0Mz18yVuDTdvRHZwumuEuGBJqo5pD
+         7KkU+FXpaHofgVcN4mtzWMkUHpLRpbCDgUlxkjlkBq6TNiG4Cv/iELXbgrJ5AkNOeKJI
+         aVVuQiWlvJ8yPgsTGnJ8vKSCwh/Cw+4812lPqBroxBpcCRohgqzFgh4vGHZ9yqnenbrb
+         YUuuTcjm56x+At3rLkocOvxZNLK8KfV1fMr7/QeSi+XDFtygBZSvr+cmlZU04jZrDc9j
+         FGhMrgP1zjIFPo1KHJrPmbDgtwH/aecBNI7ABhVkro/PvEbfWCilFbUO5PrpTD/m6yj7
+         QqSw==
+X-Gm-Message-State: AOAM531E3hc/vFROXFfmqpkPKPzRllFNAxEMq5SGxUkXjA04+eDWRQAu
+        1col6mZm5jQktog/J+0fneib+gzom50aYfF+U4I=
+X-Google-Smtp-Source: ABdhPJy+BjvzZv06nMIu2x9g81kW+OJlA7shogMnOw+3PYeBroGr8l/KZTjVAQXxm1FPchQhP2aogyys742hXqfy+as=
+X-Received: by 2002:a37:5cc2:: with SMTP id q185mr6605016qkb.35.1601552076714;
+ Thu, 01 Oct 2020 04:34:36 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200926162527.270030-1-mailhol.vincent@wanadoo.fr>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200929031845.751054-1-liuhangbin@gmail.com> <CAEf4BzYKtPgSxKqduax1mW1WfVXKuCEpbGKRFvXv7yNUmUm_=A@mail.gmail.com>
+ <20200929094232.GG2531@dhcp-12-153.nay.redhat.com> <CAEf4BzZy9=x0neCOdat-CWO4nM3QYgWOKaZpN31Ce5Uz9m_qfg@mail.gmail.com>
+ <20200930023405.GH2531@dhcp-12-153.nay.redhat.com> <CAEf4BzYVVUq=eNwb4Z1JkVmRc4i+nxC4zWxbv2qGQAs-2cxkhw@mail.gmail.com>
+In-Reply-To: <CAEf4BzYVVUq=eNwb4Z1JkVmRc4i+nxC4zWxbv2qGQAs-2cxkhw@mail.gmail.com>
+From:   Hangbin Liu <liuhangbin@gmail.com>
+Date:   Thu, 1 Oct 2020 19:34:25 +0800
+Message-ID: <CAPwn2JT6KGPxKD0fGZLfR8EsRHhYcfbvCATWO9WsiH_wqhheFg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: export bpf_object__reuse_map() to libbpf api
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 1 Oct 2020 at 02:30, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index 32dc444224d8..5412aa7169db 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -4215,7 +4215,7 @@ bpf_object__create_maps(struct bpf_object *obj)
+> >                 if (map->fd >= 0) {
+> >                         pr_debug("map '%s': skipping creation (preset fd=%d)\n",
+> >                                  map->name, map->fd);
+> > -                       continue;
+> > +                       goto check_pin_path;
+> >                 }
+> >
+> >                 err = bpf_object__create_map(obj, map);
+> > @@ -4258,6 +4258,7 @@ bpf_object__create_maps(struct bpf_object *obj)
+> >                         map->init_slots_sz = 0;
+> >                 }
+> >
+> > +check_pin_path:
+> >                 if (map->pin_path && !map->pinned) {
+> >                         err = bpf_map__pin(map, NULL);
+> >                         if (err) {
+> >
+> >
+> > Do you think if this change be better?
+>
+> Yes, of course. Just don't do it through use of goto. Guard map
+> creation with that if instead.
 
+Hi Andrii,
 
-On 26.09.20 18:24, Vincent Mailhol wrote:
-> Error queue are not yet implemented in CAN-raw sockets.
-> 
-> The problem: a userland call to recvmsg(soc, msg, MSG_ERRQUEUE) on a
-> CAN-raw socket would unqueue messages from the normal queue without
-> any kind of error or warning. As such, it prevented CAN drivers from
-> using the functionalities that relies on the error queue such as
-> skb_tx_timestamp().
-> 
-> SCM_CAN_RAW_ERRQUEUE is defined as the type for the CAN raw error
-> queue. SCM stands for "Socket control messages". The name is inspired
-> from SCM_J1939_ERRQUEUE of include/uapi/linux/can/j1939.h.
-> 
-> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Looks I missed something, Would you like to explain why we should not use goto?
+And for "guard map creation with the if", do you mean duplicate the
+if (map->pin_path && !map->pinned) in if (map->fd >= 0)? like
 
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+diff --git a/src/libbpf.c b/src/libbpf.c
+index 3df1f4d..705abcb 100644
+--- a/src/libbpf.c
++++ b/src/libbpf.c
+@@ -4215,6 +4215,15 @@ bpf_object__create_maps(struct bpf_object *obj)
+                if (map->fd >= 0) {
+                        pr_debug("map '%s': skipping creation (preset fd=%d)\n",
+                                 map->name, map->fd);
++                       if (map->pin_path && !map->pinned) {
++                               err = bpf_map__pin(map, NULL);
++                               if (err) {
++                                       pr_warn("map '%s': failed to
+auto-pin at '%s': %d\n",
++                                               map->name, map->pin_path, err);
++                                       zclose(map->fd);
++                                       goto err_out;
++                               }
++                       }
+                        continue;
+                }
 
-Thanks Vincent!
+(Sorry if the code format got corrupted as I replied in web gmail....)
 
-> ---
->   include/uapi/linux/can/raw.h | 3 +++
->   net/can/raw.c                | 4 ++++
->   2 files changed, 7 insertions(+)
-> 
-> diff --git a/include/uapi/linux/can/raw.h b/include/uapi/linux/can/raw.h
-> index 6a11d308eb5c..3386aa81fdf2 100644
-> --- a/include/uapi/linux/can/raw.h
-> +++ b/include/uapi/linux/can/raw.h
-> @@ -49,6 +49,9 @@
->   #include <linux/can.h>
->   
->   #define SOL_CAN_RAW (SOL_CAN_BASE + CAN_RAW)
-> +enum {
-> +	SCM_CAN_RAW_ERRQUEUE = 1,
-> +};
->   
->   /* for socket options affecting the socket (not the global system) */
->   
-> diff --git a/net/can/raw.c b/net/can/raw.c
-> index 94a9405658dc..98abab119136 100644
-> --- a/net/can/raw.c
-> +++ b/net/can/raw.c
-> @@ -804,6 +804,10 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->   	noblock =  flags & MSG_DONTWAIT;
->   	flags   &= ~MSG_DONTWAIT;
->   
-> +	if (flags & MSG_ERRQUEUE)
-> +		return sock_recv_errqueue(sk, msg, size,
-> +					  SOL_CAN_RAW, SCM_CAN_RAW_ERRQUEUE);
-> +
->   	skb = skb_recv_datagram(sk, flags, noblock, &err);
->   	if (!skb)
->   		return err;
-> 
+Thanks
+Hangbin
