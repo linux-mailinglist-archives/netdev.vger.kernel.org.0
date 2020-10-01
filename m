@@ -2,65 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90D3B27FACE
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 09:55:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4FE927FADF
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 09:56:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731816AbgJAHzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 03:55:19 -0400
-Received: from mx2.suse.de ([195.135.220.15]:45236 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726540AbgJAHzN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Oct 2020 03:55:13 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 2664FAD64;
-        Thu,  1 Oct 2020 07:55:12 +0000 (UTC)
-From:   Coly Li <colyli@suse.de>
-To:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, open-iscsi@googlegroups.com,
-        linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Coly Li <colyli@suse.de>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH v9 7/7] libceph: use sendpage_ok() in ceph_tcp_sendpage()
-Date:   Thu,  1 Oct 2020 15:54:08 +0800
-Message-Id: <20201001075408.25508-8-colyli@suse.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201001075408.25508-1-colyli@suse.de>
-References: <20201001075408.25508-1-colyli@suse.de>
+        id S1731390AbgJAH4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 03:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726992AbgJAH4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 03:56:12 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769ADC0613D0
+        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 00:56:12 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kNtRi-00ESVo-NM; Thu, 01 Oct 2020 09:56:10 +0200
+Message-ID: <706936107b15974af0dd51b22f9e4f3927eddef6.camel@sipsolutions.net>
+Subject: Re: [RFC net-next 8/9] genetlink: use per-op policy for
+ CTRL_CMD_GETPOLICY
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, jiri@resnulli.us, mkubecek@suse.cz,
+        dsahern@kernel.org, pablo@netfilter.org
+Date:   Thu, 01 Oct 2020 09:56:09 +0200
+In-Reply-To: <20201001000518.685243-9-kuba@kernel.org>
+References: <20201001000518.685243-1-kuba@kernel.org>
+         <20201001000518.685243-9-kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In libceph, ceph_tcp_sendpage() does the following checks before handle
-the page by network layer's zero copy sendpage method,
-	if (page_count(page) >= 1 && !PageSlab(page))
+On Wed, 2020-09-30 at 17:05 -0700, Jakub Kicinski wrote:
+> Wire up per-op policy for CTRL_CMD_GETPOLICY.
+> This saves us a call to genlmsg_parse() and will soon allow
+> dumping this policy.
+> 
+> Create a new policy definition, since we don't want to pollute
+> ctrl_policy with attributes which CTRL_CMD_GETFAMILY does not
+> support.
 
-This check is exactly what sendpage_ok() does. This patch replace the
-open coded checks by sendpage_ok() as a code cleanup.
+Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
 
-Signed-off-by: Coly Li <colyli@suse.de>
-Acked-by: Jeff Layton <jlayton@kernel.org>
-Cc: Ilya Dryomov <idryomov@gmail.com>
----
- net/ceph/messenger.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
-index bdfd66ba3843..d4d7a0e52491 100644
---- a/net/ceph/messenger.c
-+++ b/net/ceph/messenger.c
-@@ -575,7 +575,7 @@ static int ceph_tcp_sendpage(struct socket *sock, struct page *page,
- 	 * coalescing neighboring slab objects into a single frag which
- 	 * triggers one of hardened usercopy checks.
- 	 */
--	if (page_count(page) >= 1 && !PageSlab(page))
-+	if (sendpage_ok(page))
- 		sendpage = sock->ops->sendpage;
- 	else
- 		sendpage = sock_no_sendpage;
--- 
-2.26.2
+johannes
 
