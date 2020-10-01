@@ -2,118 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DFB628021F
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 17:05:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2757C280237
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 17:12:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732511AbgJAPFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 11:05:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42334 "EHLO mail.kernel.org"
+        id S1732511AbgJAPMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 11:12:00 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:36018 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732361AbgJAPFl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Oct 2020 11:05:41 -0400
-Received: from localhost (unknown [176.207.245.61])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 18024207DE;
-        Thu,  1 Oct 2020 15:05:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601564740;
-        bh=JLDT1OxqCDa0s5KtzfAv0cTuykvPiJBccjb2ADRYB44=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=A+UKtbwYO6fQ7+Nh7MdPXJN8bENSC+BfMHieiCAp5FjuCXAINlcokUP7OfXbbpWeu
-         F97N8fIOSXmUix7rKltMbEnNrXWDO+hrUBXRaYNx3CF0ziyUKMzjxmLxL2SIHfFoXk
-         aQ1XR7MwHXXLiW+2KUEGdX0ujpgYC1S1EyrO3VMU=
-Date:   Thu, 1 Oct 2020 17:05:35 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        sameehj@amazon.com, kuba@kernel.org, john.fastabend@gmail.com,
-        daniel@iogearbox.net, ast@kernel.org, shayagr@amazon.com,
-        brouer@redhat.com, echaudro@redhat.com,
-        lorenzo.bianconi@redhat.com, dsahern@kernel.org
-Subject: Re: [PATCH v3 net-next 06/12] bpf: helpers: add multibuffer support
-Message-ID: <20201001150535.GE13449@lore-desk>
-References: <cover.1601478613.git.lorenzo@kernel.org>
- <5e248485713d2470d97f36ad67c9b3ceedfc2b3f.1601478613.git.lorenzo@kernel.org>
- <20200930191121.jm62rlopekegbjx5@ast-mbp.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="xA/XKXTdy9G3iaIz"
-Content-Disposition: inline
-In-Reply-To: <20200930191121.jm62rlopekegbjx5@ast-mbp.dhcp.thefacebook.com>
+        id S1732104AbgJAPL7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 11:11:59 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 00D6F1A0097;
+        Thu,  1 Oct 2020 17:11:57 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E83951A007C;
+        Thu,  1 Oct 2020 17:11:56 +0200 (CEST)
+Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id A45F820308;
+        Thu,  1 Oct 2020 17:11:56 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     jiri@nvidia.com, idosch@nvidia.com,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next v3 0/4] dpaa2-eth: add devlink parser error drop trap support
+Date:   Thu,  1 Oct 2020 18:11:44 +0300
+Message-Id: <20201001151148.18720-1-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch set adds support in the dpaa2-eth driver for a new group of
+devlink drop traps - PARSER_ERROR_DROPS.
 
---xA/XKXTdy9G3iaIz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The first patch adds a new generic trap group and associated traps,
+their definitions in devlink and their corresponding entries in the
+Documentation.
 
-> On Wed, Sep 30, 2020 at 05:41:57PM +0200, Lorenzo Bianconi wrote:
+Because there might be more devices (besides DPAA2) which do not support
+changing the action independently on each trap, a nre devlink callback
+is introduced - .trap_group_action_set(). If this callback is populated,
+it will take precedence over .trap_action_set() when the user requests
+changing the action on all the traps in a group.
 
-Hi Alexei,
+The next patches add basic linkage with devlink for the dpaa2-eth driver
+and support for the newly added PARSER_ERROR_DROPS. Nothing special
+here, just setting up the Rx error queue, interpreting the parse result,
+and then reporting any frame received on that queue to devlink.
 
-> > From: Sameeh Jubran <sameehj@amazon.com>
-> >=20
-> > The implementation is based on this [0] draft by Jesper D. Brouer.
-> >=20
-> > Provided two new helpers:
-> >=20
-> > * bpf_xdp_get_frag_count()
-> > * bpf_xdp_get_frags_total_size()
-> >=20
-> > + * int bpf_xdp_get_frag_count(struct xdp_buff *xdp_md)
-> > + *	Description
-> > + *		Get the number of fragments for a given xdp multi-buffer.
-> > + *	Return
-> > + *		The number of fragments
-> > + *
-> > + * int bpf_xdp_get_frags_total_size(struct xdp_buff *xdp_md)
-> > + *	Description
-> > + *		Get the total size of fragments for a given xdp multi-buffer.
-> > + *	Return
-> > + *		The total size of fragments for a given xdp multi-buffer.
-> >   */
-> >  #define __BPF_FUNC_MAPPER(FN)		\
-> >  	FN(unspec),			\
-> > @@ -3737,6 +3749,8 @@ union bpf_attr {
-> >  	FN(inode_storage_delete),	\
-> >  	FN(d_path),			\
-> >  	FN(copy_from_user),		\
-> > +	FN(xdp_get_frag_count),		\
-> > +	FN(xdp_get_frags_total_size),	\
-> >  	/* */
->=20
-> Please route the set via bpf-next otherwise merge conflicts will be sever=
-e.
+Changes in v2:
+ - fix build error in 3/4
 
-ack, fine
+Changes in v3:
+ - removed a commented line in 4/4
+ - added an extack in 4/4
+ - fixed up a warning on 32bit in 4/4
+ - reworded the trap_group_action_set() description in 2/4
 
-in bpf-next the following two commits (available in net-next) are currently=
- missing:
-- 632bb64f126a: net: mvneta: try to use in-irq pp cache in mvneta_txq_bufs_=
-free
-- 879456bedbe5: net: mvneta: avoid possible cache misses in mvneta_rx_swbm
+Ioana Ciornei (4):
+  devlink: add parser error drop packet traps
+  devlink: add .trap_group_action_set() callback
+  dpaa2-eth: add basic devlink support
+  dpaa2-eth: add support for devlink parser error drop traps
 
-is it ok to rebase bpf-next ontop of net-next in order to post all the seri=
-es
-in bpf-next? Or do you prefer to post mvneta patches in net-next and bpf
-related changes in bpf-next when it will rebased ontop of net-next?
+ .../networking/devlink/devlink-trap.rst       |  70 ++++
+ drivers/net/ethernet/freescale/dpaa2/Makefile |   2 +-
+ .../freescale/dpaa2/dpaa2-eth-devlink.c       | 309 ++++++++++++++++++
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 114 +++++++
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  81 ++++-
+ include/net/devlink.h                         |  62 ++++
+ net/core/devlink.c                            |  35 ++
+ 7 files changed, 671 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.c
 
-Regards,
-Lorenzo
+-- 
+2.28.0
 
---xA/XKXTdy9G3iaIz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX3XwPAAKCRA6cBh0uS2t
-rFxNAP4ytRu+hBRyuLdequMfjaMXvREmUZ53BX7opXqakMR+GAEA3q1YM5dm+uj/
-a+HZNa5l4SKJi0033m9l7LtxmRh3ygo=
-=uA1M
------END PGP SIGNATURE-----
-
---xA/XKXTdy9G3iaIz--
