@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EAEF2809C4
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 23:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF4952809DD
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 00:06:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733178AbgJAV41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 17:56:27 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:38474 "EHLO
+        id S1733098AbgJAWF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 18:05:56 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:38558 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726731AbgJAV41 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 17:56:27 -0400
+        with ESMTP id S1726731AbgJAWF4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 18:05:56 -0400
 From:   Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601589385;
+        s=2020; t=1601589954;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=lMRaVPTvuWTyynCpN/PrnduR2k7t8citPdkJRksAg6s=;
-        b=U506vCVopd0a8GMRAfloiC9+jXJVPmB/xLrsPYjZs8hP/mwK7RS4FTG4eYJqyf6VBKrfRT
-        hJvq9uer/zjKUjmSFB+XGRlhDXIeu1TISLYKAAYoxhuQBPjXbkoPQ9sxPFhO/U9nbqCOr/
-        ywlK3jwQlOjpTPu2rsuMZbzBdlugQItfYYFqTDanCXYmlVxtuoVISLmH2P+FdpxbRx6OZV
-        Oe+B9NJt+dPokjH7y60rYvbNIRs4qLMOPig+7DCVfJYcbHzDN+Hrx3EhuReUuYFP17pJp1
-        XUIMHdrBvVINMmel1BWsspUu8RXMEphvds5iDhW5RANDLOr3kgthtiaVwObnWg==
+        bh=IJcSELVC6RVckkFldDPnK0A/9qc4egUUwNfx1N3iMQ0=;
+        b=hYSZvjIlCvJp6mhe7Ze4zibnAoIQOm2HevzvHSTiOeN8BpodcJvTPOuz31EbixqHdWELLE
+        h/fxpyGgqeiGzyq75iyf4VmXZBeVYzcjwG1nHRj1+VtXvK2VGBMj02Mlj7Mn8k0ss0epVx
+        mARL5Iq0k52AKNQyYoXhbz/Puy1xebrCQU5EQGIt2k0BK1pAfP2AUs4oo3JDbXprtab5wx
+        qx+4ik/A/lOLcxErJ0EWWvYlZ1C5kBB5NVCpRl3ShcdYPjqYhzgiGCbVqljHw+JvTpapkb
+        7DOa+taRH5pokl0L63jsE5oEtySdzZxOasa33MR4NDKLHB5xLUlHSN8D9ZHEIw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601589385;
+        s=2020e; t=1601589954;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=lMRaVPTvuWTyynCpN/PrnduR2k7t8citPdkJRksAg6s=;
-        b=j+Okf2S6X8t0gkpUIO+757np9aFuuwZIQcOL/1h7KGh8PyVOxobLYZHb5+2m4ZZfbIEeoM
-        CHfgu5N0ZcfF4GBg==
+        bh=IJcSELVC6RVckkFldDPnK0A/9qc4egUUwNfx1N3iMQ0=;
+        b=f/HNZgTj8Ox4bFry60y8Ijfmnnofa+tIHeeS7NaMjPdbIkdsotWtlwm6bSwY+Yw9N1asTm
+        QnMhcuUBaEDU3HAg==
 To:     Erez Geva <erez.geva.ext@siemens.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Cong Wang <xiyou.wangcong@gmail.com>,
@@ -67,11 +67,11 @@ Cc:     Jesus Sanchez-Palencia <jesus.sanchez-palencia@intel.com>,
         Gisela Greinert <gisela.greinert@siemens.com>,
         Erez Geva <erez.geva.ext@siemens.com>,
         Erez Geva <ErezGeva2@gmail.com>
-Subject: Re: [PATCH 1/7] POSIX clock ID check function
-In-Reply-To: <20201001205141.8885-2-erez.geva.ext@siemens.com>
-References: <20201001205141.8885-1-erez.geva.ext@siemens.com> <20201001205141.8885-2-erez.geva.ext@siemens.com>
-Date:   Thu, 01 Oct 2020 23:56:24 +0200
-Message-ID: <87zh55ehkn.fsf@nanos.tec.linutronix.de>
+Subject: Re: [PATCH 2/7] Function to retrieve main clock state
+In-Reply-To: <20201001205141.8885-3-erez.geva.ext@siemens.com>
+References: <20201001205141.8885-1-erez.geva.ext@siemens.com> <20201001205141.8885-3-erez.geva.ext@siemens.com>
+Date:   Fri, 02 Oct 2020 00:05:53 +0200
+Message-ID: <87wo09eh4u.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
@@ -82,20 +82,16 @@ Erez,
 
 On Thu, Oct 01 2020 at 22:51, Erez Geva wrote:
 
-thanks for your patches.
+same comments as for patch 1 apply.
 
-First of all subject lines follow the scheme:
+> Add kernel function to retrieve main clock oscillator state.
 
- subsystem: Short description
-
-The short description should be a sentence
-
-> Add function to check whether a clock ID refer to
-> a file descriptor of a POSIX dynamic clock.
-
-The changelog should not primarily describe what the patch does, it
-should describe why or which problem it is solving.
+The function you are adding is named adjtimex(). adjtimex(2) is a well
+known user space interface and naming a read only kernel interface the
+same way is misleading.
 
 Thanks,
 
         tglx
+
+
