@@ -2,163 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0098827F9A0
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 08:44:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82D3427F9DB
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 09:03:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725938AbgJAGo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 02:44:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbgJAGo2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 02:44:28 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9266C0613D0
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 23:44:27 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id g4so4460239edk.0
-        for <netdev@vger.kernel.org>; Wed, 30 Sep 2020 23:44:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=/vbPY+JiGp1PRbnofI1TTORelUAFQOBu28MS4BIy21c=;
-        b=e7dF5gXU1i6Aym+o1IMuC16l++oF6fJU+af27GomQNJ095WqlQFQ+vbBwKfEoJQHSb
-         yPelaVKBIox60IisNC9rU/En6GxbihXt8JEv2zw8anC6mpDXv4LTwK/atzbmK3AE9zzR
-         DZeSuLZBBOpZJiF3wRZ12ci60ke/wMmgVB+dDAiRwrLKdLGnsCNU0W5G/OiUngosxbZn
-         ZUb+Tahsv4mw9ASPuCDhRY2pKhTLkRN2MGCPlXjSSfO5YjddCmWt7GtDgZ9fFagPzNZH
-         FqKhsdJxqg9CBrtcF/X+xRO+au0tZI0MmCkzowEwqyk/5VOm1afK+Mwkc6KBpaxdHSAZ
-         rUNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=/vbPY+JiGp1PRbnofI1TTORelUAFQOBu28MS4BIy21c=;
-        b=IbydcMGM0tNeWVpzQlCSbJCeOUjLepcDC2uEFewdROyg3hF5+ecsYW+NehMjd6GKd3
-         DuTb+hOcCGSfMqo8rg4az8EJ3epyGona0bC/YhZlUTHh9cNDBQ+RrjE5eWOPQia5xUN2
-         Pz58HTYAS7qKxQwK0XCy0pkQLsSPCeHE4ElRUCn83lotkJDy3bl/FizVgPzmCAUuNcds
-         5PdJkb/GAsJDrDorQlWpc/D7UrCXzi8RWXoBm/22Qh3LgQ5XCHLkalxgDfYFmjbk38U/
-         oP5MYXCDkh4M9CZuI4Qig+YItrva1VnuW1X+Xdz/mkv36XIPp5QN7GPKb9r9FpqmKIbL
-         QGIw==
-X-Gm-Message-State: AOAM532kOkuk/vseGgoIQ1FbRhMfp37oNe3xKALXp3YASAXjZ9P/AgR7
-        qfj5epFLk+8Awuf6paIY+2c=
-X-Google-Smtp-Source: ABdhPJyvg65RLpZRA8myIWsYWZLWVgvEDSjGhvXOClkXv0XcLRG9WN8WCSjh0QTDrmzCWVxsxwdUbA==
-X-Received: by 2002:a05:6402:12d1:: with SMTP id k17mr6383870edx.323.1601534666613;
-        Wed, 30 Sep 2020 23:44:26 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f00:6a00:758b:d2db:8faf:4c9e? (p200300ea8f006a00758bd2db8faf4c9e.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:758b:d2db:8faf:4c9e])
-        by smtp.googlemail.com with ESMTPSA id b9sm3250255eje.114.2020.09.30.23.44.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Sep 2020 23:44:26 -0700 (PDT)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net] r8169: fix handling ether_clk
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Petr Tesarik <ptesarik@suse.cz>,
-        Hans de Goede <hdegoede@redhat.com>
-Message-ID: <9893d089-9668-258e-d2de-21a93b0486aa@gmail.com>
-Date:   Thu, 1 Oct 2020 08:44:19 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        id S1730415AbgJAHDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 03:03:10 -0400
+Received: from mga11.intel.com ([192.55.52.93]:51969 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725878AbgJAHDI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 03:03:08 -0400
+IronPort-SDR: wbkqjiEQkIgpZoxcWN2c8RgfVi2DKYRtZeKffTxvYuDRDrjC+30/FxyxrQm9qb5H9Cqdtk0oFH
+ 13qq3d7WLcmA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="159970844"
+X-IronPort-AV: E=Sophos;i="5.77,323,1596524400"; 
+   d="scan'208";a="159970844"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2020 00:03:07 -0700
+IronPort-SDR: NznTBKtR/XBr4xUZJtZnCqCOEOb6eti80F+NyWHbpI0uZ43OKa0f7dqmxL0ZVH5E6XDkkrGWBL
+ 80k67rAZq97w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,323,1596524400"; 
+   d="scan'208";a="351002516"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by FMSMGA003.fm.intel.com with ESMTP; 01 Oct 2020 00:03:07 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 1 Oct 2020 00:03:06 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 1 Oct 2020 00:03:06 -0700
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.40) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Thu, 1 Oct 2020 00:03:06 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UYVlQgif78vdOL/HbkWNbAJ54ygeWZ9TZmEaIyknDK6D9CyfqKq8yKLrcSlz2in+GmhjNEp1Q5yv8Ie0ejClSL8/AchRBumrgzDTbaKkkU1n4aCKY3dRj9k8SYyvhOzkrSvKJt4Ni9mhUJwC38sqwABLVrC2mW/u9DTgPBuhCXZy/j53FYDorwVHyliiy3DX45mLs1s1bufVxhcH2phLQU+JroQRknEsH4Z/4KfYGgO/sEK+RzJmdDA3je/4H1BY42yRMnMTJb4mhqUri7aw0CYxKOOlgAMpY5WwP3MDWZHyPbGFhKbizs4Fu5jbfVUhhZ2s5t4KcbLhRi3ZN9vyeQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BuEQ8Ul38qkmXxvLGJRCP094Tz0nbQBTSrt46rmV5To=;
+ b=dQtdf9VvlOISlFHS+4i1ADQxwSVopUi7HfKP9M5uN4ySboMJ1gw+Tm6XVWlr6U4Wp8hz3Oyd8MFBRV6kCpExN4EpstGvGznwWKwqXiqYXS0JUcRIOcL6wztrSza7DmPRUhVeRbah1K9skLISqpE1Q8GAznMTXCu5x3FofP7LfdVuzhSHS32unjwXOCStY3jqqgQzFNqpzUg04oTVVkiOv1nFRjnkCuqqNn5LBO2xYVUg3fj0HZ+i8DonxBV5qKN9mgmS3W0IERlMPFl10RZEieqgpoH6tPexhRnvgMNKBPm5c0JI83ywVHsCdPxHGkUJUac7Wo4ymQIstcP+euohtA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BuEQ8Ul38qkmXxvLGJRCP094Tz0nbQBTSrt46rmV5To=;
+ b=vR6SRQZyrJb6f8eaA0bD3WDmc9+tS1KFhOFGCMwXDQl+aREMk/V/4yUi40+n+EBu9l2789rhdsd0SjUby20kGd+Nb4V0yzcK5tZNRlP+U559u3K+c6RCtxmxYrZKob3xURlSA093/Nm0DZKSyb3Vb1AshcmVFHOw/ZACqAwYy2U=
+Received: from DM6PR11MB2890.namprd11.prod.outlook.com (2603:10b6:5:63::20) by
+ DM6PR11MB2891.namprd11.prod.outlook.com (2603:10b6:5:71::28) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3412.25; Thu, 1 Oct 2020 07:03:04 +0000
+Received: from DM6PR11MB2890.namprd11.prod.outlook.com
+ ([fe80::8c79:e56f:7f8b:ebe4]) by DM6PR11MB2890.namprd11.prod.outlook.com
+ ([fe80::8c79:e56f:7f8b:ebe4%7]) with mapi id 15.20.3412.028; Thu, 1 Oct 2020
+ 07:03:04 +0000
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     Tong Zhang <ztong0001@gmail.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [Intel-wired-lan] [PATCH] e1000: do not panic on malformed
+ rx_desc
+Thread-Topic: [Intel-wired-lan] [PATCH] e1000: do not panic on malformed
+ rx_desc
+Thread-Index: AQHWhfynZPHLUfowgUSbCO3qc22yBamCdVeg
+Date:   Thu, 1 Oct 2020 07:03:04 +0000
+Message-ID: <DM6PR11MB28906E70A61ADFD7A3BF1AE7BC300@DM6PR11MB2890.namprd11.prod.outlook.com>
+References: <20200908162231.4592-1-ztong0001@gmail.com>
+In-Reply-To: <20200908162231.4592-1-ztong0001@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [97.120.130.218]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9a27224b-1399-43e5-19cc-08d865d80b2c
+x-ms-traffictypediagnostic: DM6PR11MB2891:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB289158F0010973CFC6562EC0BC300@DM6PR11MB2891.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2733;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9NzcWC1GN1xNJ0LcJb7OXdIXEe3iwamXEPmtAKxtvhiQsLUfGRPFccR7LZ7446PfiAfvz3Mc/JAVY6UXQjcuW2prxYmFgHrfw8qU4PQKOt95A5zsinumKCgMANlBi4/d/mkITMLVtVZK9g6zr53NoaeNMlAyWkY2UFnlRW5dmM8pBV2wXGqFs2U0VxpErIWHF05uw0XYL4WFbOjy9JxispROtq0Q/7U3Ujsn7xref8SZRUzzAhuM0JjIQMR7Mt5h3n4MMLIm5CtMhKahFGb6huTTYhjDi9wg5SZ6LROhM1YqrYVfrZlCm9k8G2TzjTTuiUeqMbwT7ExcbWlVWdA3oSdwmO/MA1YIsfIldcptrQCo6ssW6/Oz57ShyudCC9zJ
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2890.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(136003)(366004)(376002)(396003)(8676002)(83380400001)(6506007)(53546011)(186003)(26005)(7696005)(9686003)(55016002)(66556008)(110136005)(316002)(8936002)(33656002)(71200400001)(5660300002)(52536014)(66446008)(86362001)(64756008)(66946007)(478600001)(2906002)(66476007)(76116006);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: R7iOC3gVJOLL9qfsY2gDaDJb94Rypwt7+Nhs5PnXLj8FYkPYZy/pTgcHnfx3651PpwBtv5I/RBRhbZI+9ZmyjlTkK3oepc03NBP55cg15hwzFpqMYDfy622ECnPjwH1wfFS/5Gx/qdeU67bcXP2ScaWf3mV3aDDFS1hGv9fJAhkemCnhxadzAPY99jj87gAZmGWeI+o35nwNs5EEEEQXyvspMx1o/91MB0VIWcSjr5d/LOWTOYcmmp4waRFSJjnqsuSApy6z7rVIY2bv0gSSxqexEhH4NTqhCcGivPMB5q68tzTUv2gq8clidXae0rEHlBAOKqPzXAezfdyNUs+LKd9YbFufhzB3naqrSNfSKs8KnNknkHsE6oadGQO+LIfChpdqWSTi65yyOw/JObo7C9kdHVzBMFehZAPQJjc1npj+1JVZ76A1iU2H8SncN1c3pD3JvvL9Gy4TBaoN/IvHVEA1hP1zDk4Ht0pp8o/vyFN6rNdlIwyGvQr5kvikVoGLqTO/YRz4Si1YlNcJpTCusPw1k+qq3hVPY0HAkn/JGUmjGGYUVa6hYVgsUgh8tnVzP9W5Mx5Py4xgUkrDRiyE1tsnjS2uYvHemmuzfL/YRI1XHYc6lo+50QVyFqfh3UfW3M6xl/6vk3gzQw2S+CcYSA==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2890.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a27224b-1399-43e5-19cc-08d865d80b2c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Oct 2020 07:03:04.5827
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: oU9tSEN3sBCjedgJbJC8+lTqMPUQlly+igNchurigN+MGNOOLcBHT79+XBfBawO93InaIPohTtvcUiA6EXecpw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2891
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Petr reported that system freezes on r8169 driver load on a system
-using ether_clk. The original change was done under the assumption
-that the clock isn't needed for basic operations like chip register
-access. But obviously that was wrong.
-Therefore effectively revert the original change, and in addition
-leave the clock active when suspending and WoL is enabled. Chip may
-not be able to process incoming packets otherwise.
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of T=
+ong
+> Zhang
+> Sent: Tuesday, September 8, 2020 9:23 AM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; David S. Miller
+> <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; intel-wired-
+> lan@lists.osuosl.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.or=
+g
+> Cc: ztong0001@gmail.com
+> Subject: [Intel-wired-lan] [PATCH] e1000: do not panic on malformed rx_de=
+sc
+>=20
+> length may be corrupted in rx_desc and lead to panic, so check the
+> sanity before passing it to skb_put
+>=20
+> [  167.667701] skbuff: skb_over_panic: text:ffffffffb1e32cc1 len:60224
+> put:60224 head:ffff888055ac5000 data:ffff888055ac5040 tail:0xeb80 end:0x6=
+c0
+> dev:e
+> th0
+> [  167.668429] ------------[ cut here ]------------
+> [  167.668661] kernel BUG at net/core/skbuff.c:109!
+> [  167.668910] invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+> [  167.669220] CPU: 1 PID: 170 Comm: sd-resolve Tainted: G        W      =
+   5.8.0+
+> #1
+> [  167.670161] RIP: 0010:skb_panic+0xc4/0xc6
+> [  167.670363] Code: 89 f0 48 c7 c7 60 f2 de b2 55 48 8b 74 24 18 4d 89 f=
+9 56 48
+> 8b 54 24 18 4c 89 e6 52 48 8b 44 24 18 4c 89 ea 50 e8 31 c5 2a ff <0f>
+> 0b 4c 8b 64 24 18 e8 f1 b4 48 ff 48 c7 c1 00 fc de b2 44 89 ee
+> [  167.671272] RSP: 0018:ffff88806d109c68 EFLAGS: 00010286
+> [  167.671527] RAX: 000000000000008c RBX: ffff888065e9af40 RCX:
+> 0000000000000000
+> [  167.671878] RDX: 1ffff1100da24c91 RSI: 0000000000000008 RDI:
+> ffffed100da21380
+> [  167.672227] RBP: ffff88806bde4000 R08: 000000000000008c R09:
+> ffffed100da25cfb
+> [  167.672583] R10: ffff88806d12e7d7 R11: ffffed100da25cfa R12:
+> ffffffffb2defc40
+> [  167.672931] R13: ffffffffb1e32cc1 R14: 000000000000eb40 R15:
+> ffff888055ac5000
+> [  167.673286] FS:  00007fc5f5375700(0000) GS:ffff88806d100000(0000)
+> knlGS:0000000000000000
+> [  167.673681] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  167.673973] CR2: 0000000000cb3008 CR3: 0000000063d36000 CR4:
+> 00000000000006e0
+> [  167.674330] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+> 0000000000000000
+> [  167.674677] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+> 0000000000000400
+> [  167.675035] Call Trace:
+> [  167.675168]  <IRQ>
+> [  167.675315]  ? e1000_clean_rx_irq+0x311/0x630
+> [  167.687459]  skb_put.cold+0x1f/0x1f
+> [  167.687637]  e1000_clean_rx_irq+0x311/0x630
+> [  167.687852]  e1000e_poll+0x19a/0x4d0
+> [  167.688038]  ? e1000_watchdog_task+0x9d0/0x9d0
+> [  167.688262]  ? credit_entropy_bits.constprop.0+0x6f/0x1c0
+> [  167.688527]  net_rx_action+0x26e/0x650
+>=20
+> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+> ---
+>  drivers/net/ethernet/intel/e1000/e1000_main.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
 
-Fixes: 9f0b54cd1672 ("r8169: move switching optional clock on/off to pll power functions")
-Reported-by: Petr Tesarik <ptesarik@suse.cz>
-Tested-by: Petr Tesarik <ptesarik@suse.cz>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 32 ++++++++++++++---------
- 1 file changed, 19 insertions(+), 13 deletions(-)
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 6c7c004c2..72351c5b0 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2236,14 +2236,10 @@ static void rtl_pll_power_down(struct rtl8169_private *tp)
- 	default:
- 		break;
- 	}
--
--	clk_disable_unprepare(tp->clk);
- }
- 
- static void rtl_pll_power_up(struct rtl8169_private *tp)
- {
--	clk_prepare_enable(tp->clk);
--
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_25 ... RTL_GIGA_MAC_VER_33:
- 	case RTL_GIGA_MAC_VER_37:
-@@ -4820,29 +4816,39 @@ static void rtl8169_net_suspend(struct rtl8169_private *tp)
- 
- #ifdef CONFIG_PM
- 
-+static int rtl8169_net_resume(struct rtl8169_private *tp)
-+{
-+	rtl_rar_set(tp, tp->dev->dev_addr);
-+
-+	if (tp->TxDescArray)
-+		rtl8169_up(tp);
-+
-+	netif_device_attach(tp->dev);
-+
-+	return 0;
-+}
-+
- static int __maybe_unused rtl8169_suspend(struct device *device)
- {
- 	struct rtl8169_private *tp = dev_get_drvdata(device);
- 
- 	rtnl_lock();
- 	rtl8169_net_suspend(tp);
-+	if (!device_may_wakeup(tp_to_dev(tp)))
-+		clk_disable_unprepare(tp->clk);
- 	rtnl_unlock();
- 
- 	return 0;
- }
- 
--static int rtl8169_resume(struct device *device)
-+static int __maybe_unused rtl8169_resume(struct device *device)
- {
- 	struct rtl8169_private *tp = dev_get_drvdata(device);
- 
--	rtl_rar_set(tp, tp->dev->dev_addr);
--
--	if (tp->TxDescArray)
--		rtl8169_up(tp);
-+	if (!device_may_wakeup(tp_to_dev(tp)))
-+		clk_prepare_enable(tp->clk);
- 
--	netif_device_attach(tp->dev);
--
--	return 0;
-+	return rtl8169_net_resume(tp);
- }
- 
- static int rtl8169_runtime_suspend(struct device *device)
-@@ -4868,7 +4874,7 @@ static int rtl8169_runtime_resume(struct device *device)
- 
- 	__rtl8169_set_wol(tp, tp->saved_wolopts);
- 
--	return rtl8169_resume(device);
-+	return rtl8169_net_resume(tp);
- }
- 
- static int rtl8169_runtime_idle(struct device *device)
--- 
-2.28.0
-
+Again, regression tested.  I was not able to trigger the panic with or with=
+out patch.
