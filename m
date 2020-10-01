@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62DEA280909
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 23:04:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC229280931
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 23:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387476AbgJAVDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 17:03:15 -0400
-Received: from goliath.siemens.de ([192.35.17.28]:55485 "EHLO
-        goliath.siemens.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387429AbgJAVDP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 17:03:15 -0400
+        id S1733216AbgJAVIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 17:08:15 -0400
+Received: from thoth.sbs.de ([192.35.17.2]:56967 "EHLO thoth.sbs.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726581AbgJAVIO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 17:08:14 -0400
 Received: from mail3.siemens.de (mail3.siemens.de [139.25.208.14])
-        by goliath.siemens.de (8.15.2/8.15.2) with ESMTPS id 091KqJ5M009276
+        by thoth.sbs.de (8.15.2/8.15.2) with ESMTPS id 091KqMDn024403
         (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 1 Oct 2020 22:52:19 +0200
+        Thu, 1 Oct 2020 22:52:22 +0200
 Received: from tsnlaptop.atstm41.nbgm.siemens.de ([144.145.220.50])
-        by mail3.siemens.de (8.15.2/8.15.2) with ESMTP id 091KpxYY027868;
-        Thu, 1 Oct 2020 22:52:18 +0200
+        by mail3.siemens.de (8.15.2/8.15.2) with ESMTP id 091KpxYZ027868;
+        Thu, 1 Oct 2020 22:52:21 +0200
 From:   Erez Geva <erez.geva.ext@siemens.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Cong Wang <xiyou.wangcong@gmail.com>,
@@ -55,9 +55,9 @@ Cc:     Jesus Sanchez-Palencia <jesus.sanchez-palencia@intel.com>,
         Gisela Greinert <gisela.greinert@siemens.com>,
         Erez Geva <erez.geva.ext@siemens.com>,
         Erez Geva <ErezGeva2@gmail.com>
-Subject: [PATCH 5/7] Traffic control using high-resolution timer issue
-Date:   Thu,  1 Oct 2020 22:51:39 +0200
-Message-Id: <20201001205141.8885-6-erez.geva.ext@siemens.com>
+Subject: [PATCH 6/7] TC-ETF code improvements
+Date:   Thu,  1 Oct 2020 22:51:40 +0200
+Message-Id: <20201001205141.8885-7-erez.geva.ext@siemens.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201001205141.8885-1-erez.geva.ext@siemens.com>
 References: <20201001205141.8885-1-erez.geva.ext@siemens.com>
@@ -67,127 +67,159 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  - Add new schedule function for Qdisc watchdog.
-    The function avoids reprogram if watchdog already expire
-    before new expire.
+  - Change clockid to use clockid_t type.
 
-  - Use new schedule function in ETF.
+  - Pass pointer to ETF private structure to
+    local function instead of retrieving it
+    from Qdisc object again.
 
-  - Add ETF range value to kernel configuration.
-    as the value is characteristic to Hardware.
+  - fix comment.
 
 Signed-off-by: Erez Geva <erez.geva.ext@siemens.com>
 ---
- include/net/pkt_sched.h |  2 ++
- net/sched/Kconfig       |  8 ++++++++
- net/sched/sch_api.c     | 33 +++++++++++++++++++++++++++++++++
- net/sched/sch_etf.c     | 10 ++++++++--
- 4 files changed, 51 insertions(+), 2 deletions(-)
+ net/sched/sch_etf.c | 38 +++++++++++++++++---------------------
+ 1 file changed, 17 insertions(+), 21 deletions(-)
 
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index ac8c890a2657..4306c2773778 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -78,6 +78,8 @@ void qdisc_watchdog_init(struct qdisc_watchdog *wd, struct Qdisc *qdisc);
- 
- void qdisc_watchdog_schedule_range_ns(struct qdisc_watchdog *wd, u64 expires,
- 				      u64 delta_ns);
-+void qdisc_watchdog_schedule_soon_ns(struct qdisc_watchdog *wd, u64 expires,
-+				     u64 delta_ns);
- 
- static inline void qdisc_watchdog_schedule_ns(struct qdisc_watchdog *wd,
- 					      u64 expires)
-diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-index a3b37d88800e..0f5261ee9e1b 100644
---- a/net/sched/Kconfig
-+++ b/net/sched/Kconfig
-@@ -195,6 +195,14 @@ config NET_SCH_ETF
- 	  To compile this code as a module, choose M here: the
- 	  module will be called sch_etf.
- 
-+config NET_SCH_ETF_TIMER_RANGE
-+	int "ETF Watchdog time range delta in nano seconds"
-+	depends on NET_SCH_ETF
-+	default 5000
-+	help
-+	  Specify the time range delta for ETF watchdog
-+	  Default is 5 microsecond
-+
- config NET_SCH_TAPRIO
- 	tristate "Time Aware Priority (taprio) Scheduler"
- 	help
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index ebf59ca1faab..80bd09555f5e 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -645,6 +645,39 @@ void qdisc_watchdog_schedule_range_ns(struct qdisc_watchdog *wd, u64 expires,
- }
- EXPORT_SYMBOL(qdisc_watchdog_schedule_range_ns);
- 
-+void qdisc_watchdog_schedule_soon_ns(struct qdisc_watchdog *wd, u64 expires,
-+				     u64 delta_ns)
-+{
-+	if (test_bit(__QDISC_STATE_DEACTIVATED,
-+		     &qdisc_root_sleeping(wd->qdisc)->state))
-+		return;
-+
-+	if (wd->last_expires == expires)
-+		return;
-+
-+	/**
-+	 * If expires is in [0, now + delta_ns],
-+	 * do not program it.
-+	 */
-+	if (expires <= ktime_to_ns(hrtimer_cb_get_time(&wd->timer)) + delta_ns)
-+		return;
-+
-+	/**
-+	 * If timer is already set in [0, expires + delta_ns],
-+	 * do not reprogram it.
-+	 */
-+	if (hrtimer_is_queued(&wd->timer) &&
-+	    wd->last_expires <= expires + delta_ns)
-+		return;
-+
-+	wd->last_expires = expires;
-+	hrtimer_start_range_ns(&wd->timer,
-+			       ns_to_ktime(expires),
-+			       delta_ns,
-+			       HRTIMER_MODE_ABS_PINNED);
-+}
-+EXPORT_SYMBOL(qdisc_watchdog_schedule_soon_ns);
-+
- void qdisc_watchdog_cancel(struct qdisc_watchdog *wd)
- {
- 	hrtimer_cancel(&wd->timer);
 diff --git a/net/sched/sch_etf.c b/net/sched/sch_etf.c
-index c48f91075b5c..48b2868c4672 100644
+index 48b2868c4672..c0de4c6f9299 100644
 --- a/net/sched/sch_etf.c
 +++ b/net/sched/sch_etf.c
-@@ -20,6 +20,11 @@
- #include <net/pkt_sched.h>
- #include <net/sock.h>
- 
-+#ifdef CONFIG_NET_SCH_ETF_TIMER_RANGE
-+#define NET_SCH_ETF_TIMER_RANGE CONFIG_NET_SCH_ETF_TIMER_RANGE
-+#else
-+#define NET_SCH_ETF_TIMER_RANGE (5 * NSEC_PER_USEC)
-+#endif
- #define DEADLINE_MODE_IS_ON(x) ((x)->flags & TC_ETF_DEADLINE_MODE_ON)
- #define OFFLOAD_IS_ON(x) ((x)->flags & TC_ETF_OFFLOAD_ON)
- #define SKIP_SOCK_CHECK_IS_SET(x) ((x)->flags & TC_ETF_SKIP_SOCK_CHECK)
-@@ -128,8 +133,9 @@ static void reset_watchdog(struct Qdisc *sch)
- 		return;
- 	}
- 
--	next = ktime_sub_ns(skb->tstamp, q->delta);
--	qdisc_watchdog_schedule_ns(&q->watchdog, ktime_to_ns(next));
-+	next = ktime_sub_ns(skb->tstamp, q->delta + NET_SCH_ETF_TIMER_RANGE);
-+	qdisc_watchdog_schedule_soon_ns(&q->watchdog, ktime_to_ns(next),
-+					NET_SCH_ETF_TIMER_RANGE);
+@@ -33,7 +33,7 @@ struct etf_sched_data {
+ 	bool offload;
+ 	bool deadline_mode;
+ 	bool skip_sock_check;
+-	int clockid;
++	clockid_t clockid;
+ 	int queue;
+ 	s32 delta; /* in ns */
+ 	ktime_t last; /* The txtime of the last skb sent to the netdevice. */
+@@ -54,7 +54,7 @@ static inline int validate_input_params(struct tc_etf_qopt *qopt,
+ 	 *
+ 	 *	* Dynamic clockids are not supported.
+ 	 *
+-	 *	* Delta must be a positive integer.
++	 *	* Delta must be a positive or zero integer.
+ 	 *
+ 	 * Also note that for the HW offload case, we must
+ 	 * expect that system clocks have been synchronized to PHC.
+@@ -77,9 +77,9 @@ static inline int validate_input_params(struct tc_etf_qopt *qopt,
+ 	return 0;
  }
  
- static void report_sock_error(struct sk_buff *skb, u32 err, u8 code)
+-static bool is_packet_valid(struct Qdisc *sch, struct sk_buff *nskb)
++static bool is_packet_valid(struct Qdisc *sch, struct etf_sched_data *q,
++			    struct sk_buff *nskb)
+ {
+-	struct etf_sched_data *q = qdisc_priv(sch);
+ 	ktime_t txtime = nskb->tstamp;
+ 	struct sock *sk = nskb->sk;
+ 	ktime_t now;
+@@ -122,9 +122,8 @@ static struct sk_buff *etf_peek_timesortedlist(struct Qdisc *sch)
+ 	return rb_to_skb(p);
+ }
+ 
+-static void reset_watchdog(struct Qdisc *sch)
++static void reset_watchdog(struct Qdisc *sch, struct etf_sched_data *q)
+ {
+-	struct etf_sched_data *q = qdisc_priv(sch);
+ 	struct sk_buff *skb = etf_peek_timesortedlist(sch);
+ 	ktime_t next;
+ 
+@@ -173,7 +172,7 @@ static int etf_enqueue_timesortedlist(struct sk_buff *nskb, struct Qdisc *sch,
+ 	ktime_t txtime = nskb->tstamp;
+ 	bool leftmost = true;
+ 
+-	if (!is_packet_valid(sch, nskb)) {
++	if (!is_packet_valid(sch, q, nskb)) {
+ 		report_sock_error(nskb, EINVAL,
+ 				  SO_EE_CODE_TXTIME_INVALID_PARAM);
+ 		return qdisc_drop(nskb, sch, to_free);
+@@ -198,15 +197,14 @@ static int etf_enqueue_timesortedlist(struct sk_buff *nskb, struct Qdisc *sch,
+ 	sch->q.qlen++;
+ 
+ 	/* Now we may need to re-arm the qdisc watchdog for the next packet. */
+-	reset_watchdog(sch);
++	reset_watchdog(sch, q);
+ 
+ 	return NET_XMIT_SUCCESS;
+ }
+ 
+-static void timesortedlist_drop(struct Qdisc *sch, struct sk_buff *skb,
+-				ktime_t now)
++static void timesortedlist_drop(struct Qdisc *sch, struct etf_sched_data *q,
++				struct sk_buff *skb, ktime_t now)
+ {
+-	struct etf_sched_data *q = qdisc_priv(sch);
+ 	struct sk_buff *to_free = NULL;
+ 	struct sk_buff *tmp = NULL;
+ 
+@@ -234,10 +232,9 @@ static void timesortedlist_drop(struct Qdisc *sch, struct sk_buff *skb,
+ 	kfree_skb_list(to_free);
+ }
+ 
+-static void timesortedlist_remove(struct Qdisc *sch, struct sk_buff *skb)
++static void timesortedlist_remove(struct Qdisc *sch, struct etf_sched_data *q,
++				  struct sk_buff *skb)
+ {
+-	struct etf_sched_data *q = qdisc_priv(sch);
+-
+ 	rb_erase_cached(&skb->rbnode, &q->head);
+ 
+ 	/* The rbnode field in the skb re-uses these fields, now that
+@@ -270,7 +267,7 @@ static struct sk_buff *etf_dequeue_timesortedlist(struct Qdisc *sch)
+ 
+ 	/* Drop if packet has expired while in queue. */
+ 	if (ktime_before(skb->tstamp, now)) {
+-		timesortedlist_drop(sch, skb, now);
++		timesortedlist_drop(sch, q, skb, now);
+ 		skb = NULL;
+ 		goto out;
+ 	}
+@@ -279,7 +276,7 @@ static struct sk_buff *etf_dequeue_timesortedlist(struct Qdisc *sch)
+ 	 * txtime from deadline to (now + delta).
+ 	 */
+ 	if (q->deadline_mode) {
+-		timesortedlist_remove(sch, skb);
++		timesortedlist_remove(sch, q, skb);
+ 		skb->tstamp = now;
+ 		goto out;
+ 	}
+@@ -288,13 +285,13 @@ static struct sk_buff *etf_dequeue_timesortedlist(struct Qdisc *sch)
+ 
+ 	/* Dequeue only if now is within the [txtime - delta, txtime] range. */
+ 	if (ktime_after(now, next))
+-		timesortedlist_remove(sch, skb);
++		timesortedlist_remove(sch, q, skb);
+ 	else
+ 		skb = NULL;
+ 
+ out:
+ 	/* Now we may need to re-arm the qdisc watchdog for the next packet. */
+-	reset_watchdog(sch);
++	reset_watchdog(sch, q);
+ 
+ 	return skb;
+ }
+@@ -423,9 +420,8 @@ static int etf_init(struct Qdisc *sch, struct nlattr *opt,
+ 	return 0;
+ }
+ 
+-static void timesortedlist_clear(struct Qdisc *sch)
++static void timesortedlist_clear(struct Qdisc *sch, struct etf_sched_data *q)
+ {
+-	struct etf_sched_data *q = qdisc_priv(sch);
+ 	struct rb_node *p = rb_first_cached(&q->head);
+ 
+ 	while (p) {
+@@ -448,7 +444,7 @@ static void etf_reset(struct Qdisc *sch)
+ 		qdisc_watchdog_cancel(&q->watchdog);
+ 
+ 	/* No matter which mode we are on, it's safe to clear both lists. */
+-	timesortedlist_clear(sch);
++	timesortedlist_clear(sch, q);
+ 	__qdisc_reset_queue(&sch->q);
+ 
+ 	sch->qstats.backlog = 0;
 -- 
 2.20.1
 
