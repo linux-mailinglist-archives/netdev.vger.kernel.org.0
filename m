@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 351612807BC
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 21:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05AD62807C4
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 21:30:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732842AbgJAT1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 15:27:16 -0400
-Received: from m42-4.mailgun.net ([69.72.42.4]:19168 "EHLO m42-4.mailgun.net"
+        id S1732803AbgJATac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 15:30:32 -0400
+Received: from z5.mailgun.us ([104.130.96.5]:43550 "EHLO z5.mailgun.us"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730164AbgJAT1P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Oct 2020 15:27:15 -0400
+        id S1730152AbgJATa3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 15:30:29 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1601580434; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1601580628; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=zliNTwJnatixXoxg1jg+IQLMPUYmQap7/igTDtXYrJk=;
- b=qhxI1OSgwysybSjVSX1wLd5Yi4C7+UnslUFNHLmwkv/y6AW7H45oDofKfrdEiyG+JcedqgLT
- nYwYmd5n1FfNvPSbMHOQWWdj9FuXhHqGkFfmoPp6JMWmggmaDPcZTWN7T1kv//415AMMAp1v
- hq8C09J3G9FJTfbx+/qvwqirEgg=
-X-Mailgun-Sending-Ip: 69.72.42.4
+ Content-Type: Sender; bh=nBJ75yP41UnXYdgyDPSxmOLYDANcHjhJRBqTGpKi2qk=;
+ b=Sz5n41rM4kPnN/MRcTTm2K0SqEt18AWh/HLEjOXZNTVD49KBgSyWrNe5puiiDXHSfRLCOwkj
+ 3GuHWZ9VOxHsv10O2zkxMdUi5c3g8pqN7RZlX+X+pW/1w+YNJ5MCGPDeVk6kun8BptcAsqc9
+ 035GkkWJ3g5cGRsleWK45zSOq7k=
+X-Mailgun-Sending-Ip: 104.130.96.5
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 5f762d85726b122f31fb170b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 01 Oct 2020 19:27:01
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 5f762e53e89f7b4c78450058 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 01 Oct 2020 19:30:27
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9085EC433CB; Thu,  1 Oct 2020 19:27:00 +0000 (UTC)
+        id 0F73EC433CB; Thu,  1 Oct 2020 19:30:27 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -39,49 +39,54 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DF51FC433CA;
-        Thu,  1 Oct 2020 19:26:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DF51FC433CA
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C924BC433CA;
+        Thu,  1 Oct 2020 19:30:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C924BC433CA
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2] ath11k: remove auto_start from channel config struct
+Subject: Re: [PATCH] ath11k: Correctly check errors for calls to
+ debugfs_create_dir()
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1601369799-22328-1-git-send-email-kvalo@codeaurora.org>
-References: <1601369799-22328-1-git-send-email-kvalo@codeaurora.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        sfr@canb.auug.org.au, govinds@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        manivannan.sadhasivam@linaro.org, davem@davemloft.net
+In-Reply-To: <20200927132451.585473-1-alex.dewar90@gmail.com>
+References: <20200927132451.585473-1-alex.dewar90@gmail.com>
+To:     Alex Dewar <alex.dewar90@gmail.com>
+Cc:     unlisted-recipients:; (no To-header on input)
+        Alex Dewar <alex.dewar90@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
+        Cc:     unlisted-recipients:; (no To-header on input)Alex Dewar <alex.dewar90@gmail.com>
+                                                                     ^-missing end of address
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20201001192700.9085EC433CB@smtp.codeaurora.org>
-Date:   Thu,  1 Oct 2020 19:27:00 +0000 (UTC)
+Message-Id: <20201001193027.0F73EC433CB@smtp.codeaurora.org>
+Date:   Thu,  1 Oct 2020 19:30:27 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kalle Valo <kvalo@codeaurora.org> wrote:
+Alex Dewar <alex.dewar90@gmail.com> wrote:
 
-> Recent change in MHI bus removed the option to auto start the channels
-> during MHI driver probe. The channel will only be started when the MHI
-> client driver like QRTR gets probed. So, remove the option from ath11k
-> channel config struct.
+> debugfs_create_dir() returns an ERR_PTR in case of error, but never a
+> null pointer. There are a number of places where error-checking code can
+> accordingly be simplified.
 > 
-> Fixes: 1399fb87ea3e ("ath11k: register MHI controller device for QCA6390")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> Addresses-Coverity: CID 1497150: Memory - illegal accesses (USE_AFTER_FREE)
+> Addresses-Coverity: CID 1497158: Memory - illegal accesses (USE_AFTER_FREE)
+> Addresses-Coverity: CID 1497160: Memory - illegal accesses (USE_AFTER_FREE)
+> Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
 > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-To avoid breaking ath11k we decided to postpone this change after the
-merge window, it's a lot easier to deal at that time.
+Patch applied to ath-next branch of ath.git, thanks.
 
-Patch set to Changes Requested.
+476c1d3c2e61 ath11k: Correctly check errors for calls to debugfs_create_dir()
 
 -- 
-https://patchwork.kernel.org/patch/11805307/
+https://patchwork.kernel.org/patch/11802131/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
