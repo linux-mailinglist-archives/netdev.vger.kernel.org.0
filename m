@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27B6A27F8E1
+	by mail.lfdr.de (Postfix) with ESMTP id 111FA27F8DF
 	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 07:09:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730534AbgJAFJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 01:09:43 -0400
+        id S1730245AbgJAFJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 01:09:41 -0400
 Received: from mga06.intel.com ([134.134.136.31]:7039 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725937AbgJAFJl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Oct 2020 01:09:41 -0400
-IronPort-SDR: kvpM2IqdBY+IngfoX6NgK4q9TLqBTzvBDJdUfScoMHJs0bPV32WG/uneRnULO/Bw9uXXAQKIyM
- zEv8PSf1eKIg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="224238484"
+        id S1726540AbgJAFJk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 01:09:40 -0400
+IronPort-SDR: wfLuNr6vnmZzawe3L2F7hj59zxZn2F9kX3zKnzD9JgXWuKP2RHaoF1qGnY8JNs8bMF62UYcF7m
+ yYl8DK9J85kw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="224238486"
 X-IronPort-AV: E=Sophos;i="5.77,323,1596524400"; 
-   d="scan'208";a="224238484"
+   d="scan'208";a="224238486"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2020 22:09:37 -0700
-IronPort-SDR: nlyNjKlaRzw2WTKXbqLOdFdpIO18ESygjx7UvzSUwFyzA9u7Rc+dwD9BRJXw7eYJu+sy1bWWlq
- cUBo+kC10IuQ==
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2020 22:09:38 -0700
+IronPort-SDR: 1Nm9XJDH1faCtS8QK0i3qFIbajf2z5Od+io975UodSQosM87FpuJVU8R5Fqh4mw673xeSAQ+eM
+ 5sKpWxL/NVKg==
 X-IronPort-AV: E=Sophos;i="5.77,323,1596524400"; 
-   d="scan'208";a="341443342"
+   d="scan'208";a="341443343"
 Received: from dmert-dev.jf.intel.com ([10.166.241.5])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2020 22:09:37 -0700
 From:   Dave Ertman <david.m.ertman@intel.com>
 To:     netdev@vger.kernel.org
-Subject: [PATCH 1/6] Add ancillary bus support
-Date:   Wed, 30 Sep 2020 22:08:46 -0700
-Message-Id: <20201001050851.890722-2-david.m.ertman@intel.com>
+Subject: [PATCH 2/6] ASoC: SOF: Introduce descriptors for SOF client
+Date:   Wed, 30 Sep 2020 22:08:47 -0700
+Message-Id: <20201001050851.890722-3-david.m.ertman@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201001050851.890722-1-david.m.ertman@intel.com>
 References: <20201001050851.890722-1-david.m.ertman@intel.com>
@@ -40,633 +40,328 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the Ancillary Bus, ancillary_device and ancillary_driver.
-It enables drivers to create an ancillary_device and bind an
-ancillary_driver to it.
+From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 
-The bus supports probe/remove shutdown and suspend/resume callbacks.
-Each ancillary_device has a unique string based id; driver binds to
-an ancillary_device based on this id through the bus.
+A client in the SOF (Sound Open Firmware) context is a
+device that needs to communicate with the DSP via IPC
+messages. The SOF core is responsible for serializing the
+IPC messages to the DSP from the different clients. One
+example of an SOF client would be an IPC test client that
+floods the DSP with test IPC messages to validate if the
+serialization works as expected. Multi-client support will
+also add the ability to split the existing audio cards
+into multiple ones, so as to e.g. to deal with HDMI with a
+dedicated client instead of adding HDMI to all cards.
 
-Co-developed-by: Kiran Patil <kiran.patil@intel.com>
-Signed-off-by: Kiran Patil <kiran.patil@intel.com>
-Co-developed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+This patch introduces descriptors for SOF client driver
+and SOF client device along with APIs for registering
+and unregistering a SOF client driver, sending IPCs from
+a client device and accessing the SOF core debugfs root entry.
+
+Along with this, add a couple of new members to struct
+snd_sof_dev that will be used for maintaining the list of
+clients.
+
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 Co-developed-by: Fred Oh <fred.oh@linux.intel.com>
 Signed-off-by: Fred Oh <fred.oh@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Reviewed-by: Parav Pandit <parav@mellanox.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
 ---
- Documentation/driver-api/ancillary_bus.rst | 230 +++++++++++++++++++++
- Documentation/driver-api/index.rst         |   1 +
- drivers/bus/Kconfig                        |   3 +
- drivers/bus/Makefile                       |   3 +
- drivers/bus/ancillary.c                    | 191 +++++++++++++++++
- include/linux/ancillary_bus.h              |  58 ++++++
- include/linux/mod_devicetable.h            |   8 +
- scripts/mod/devicetable-offsets.c          |   3 +
- scripts/mod/file2alias.c                   |   8 +
- 9 files changed, 505 insertions(+)
- create mode 100644 Documentation/driver-api/ancillary_bus.rst
- create mode 100644 drivers/bus/ancillary.c
- create mode 100644 include/linux/ancillary_bus.h
+ sound/soc/sof/Kconfig      |  19 ++++++
+ sound/soc/sof/Makefile     |   3 +
+ sound/soc/sof/core.c       |   2 +
+ sound/soc/sof/sof-client.c | 117 +++++++++++++++++++++++++++++++++++++
+ sound/soc/sof/sof-client.h |  65 +++++++++++++++++++++
+ sound/soc/sof/sof-priv.h   |   6 ++
+ 6 files changed, 212 insertions(+)
+ create mode 100644 sound/soc/sof/sof-client.c
+ create mode 100644 sound/soc/sof/sof-client.h
 
-diff --git a/Documentation/driver-api/ancillary_bus.rst b/Documentation/driver-api/ancillary_bus.rst
+diff --git a/sound/soc/sof/Kconfig b/sound/soc/sof/Kconfig
+index 4dda4b62509f..cea7efedafef 100644
+--- a/sound/soc/sof/Kconfig
++++ b/sound/soc/sof/Kconfig
+@@ -50,6 +50,24 @@ config SND_SOC_SOF_DEBUG_PROBES
+ 	  Say Y if you want to enable probes.
+ 	  If unsure, select "N".
+ 
++config SND_SOC_SOF_CLIENT
++	tristate
++	select ANCILLARY_BUS
++	help
++	  This option is not user-selectable but automagically handled by
++	  'select' statements at a higher level
++
++config SND_SOC_SOF_CLIENT_SUPPORT
++	bool "SOF enable clients"
++	depends on SND_SOC_SOF
++	help
++	  This adds support for ancillary client devices to separate out the debug
++	  functionality for IPC tests, probes etc. into separate devices. This
++	  option would also allow adding client devices based on DSP FW
++	  capabilities and ACPI/OF device information.
++	  Say Y if you want to enable clients with SOF.
++	  If unsure select "N".
++
+ config SND_SOC_SOF_DEVELOPER_SUPPORT
+ 	bool "SOF developer options support"
+ 	depends on EXPERT
+@@ -186,6 +204,7 @@ endif ## SND_SOC_SOF_DEVELOPER_SUPPORT
+ 
+ config SND_SOC_SOF
+ 	tristate
++	select SND_SOC_SOF_CLIENT if SND_SOC_SOF_CLIENT_SUPPORT
+ 	select SND_SOC_TOPOLOGY
+ 	select SND_SOC_SOF_NOCODEC if SND_SOC_SOF_NOCODEC_SUPPORT
+ 	help
+diff --git a/sound/soc/sof/Makefile b/sound/soc/sof/Makefile
+index 05718dfe6cd2..5e46f25a3851 100644
+--- a/sound/soc/sof/Makefile
++++ b/sound/soc/sof/Makefile
+@@ -2,6 +2,7 @@
+ 
+ snd-sof-objs := core.o ops.o loader.o ipc.o pcm.o pm.o debug.o topology.o\
+ 		control.o trace.o utils.o sof-audio.o
++snd-sof-client-objs := sof-client.o
+ snd-sof-$(CONFIG_SND_SOC_SOF_DEBUG_PROBES) += probe.o compress.o
+ 
+ snd-sof-pci-objs := sof-pci-dev.o
+@@ -18,6 +19,8 @@ obj-$(CONFIG_SND_SOC_SOF_ACPI) += snd-sof-acpi.o
+ obj-$(CONFIG_SND_SOC_SOF_OF) += snd-sof-of.o
+ obj-$(CONFIG_SND_SOC_SOF_PCI) += snd-sof-pci.o
+ 
++obj-$(CONFIG_SND_SOC_SOF_CLIENT) += snd-sof-client.o
++
+ obj-$(CONFIG_SND_SOC_SOF_INTEL_TOPLEVEL) += intel/
+ obj-$(CONFIG_SND_SOC_SOF_IMX_TOPLEVEL) += imx/
+ obj-$(CONFIG_SND_SOC_SOF_XTENSA) += xtensa/
+diff --git a/sound/soc/sof/core.c b/sound/soc/sof/core.c
+index adc7c37145d6..72a97219395f 100644
+--- a/sound/soc/sof/core.c
++++ b/sound/soc/sof/core.c
+@@ -314,8 +314,10 @@ int snd_sof_device_probe(struct device *dev, struct snd_sof_pdata *plat_data)
+ 	INIT_LIST_HEAD(&sdev->widget_list);
+ 	INIT_LIST_HEAD(&sdev->dai_list);
+ 	INIT_LIST_HEAD(&sdev->route_list);
++	INIT_LIST_HEAD(&sdev->client_list);
+ 	spin_lock_init(&sdev->ipc_lock);
+ 	spin_lock_init(&sdev->hw_lock);
++	mutex_init(&sdev->client_mutex);
+ 
+ 	if (IS_ENABLED(CONFIG_SND_SOC_SOF_PROBE_WORK_QUEUE))
+ 		INIT_WORK(&sdev->probe_work, sof_probe_work);
+diff --git a/sound/soc/sof/sof-client.c b/sound/soc/sof/sof-client.c
 new file mode 100644
-index 000000000000..0a11979aa927
+index 000000000000..f7e476d99ff6
 --- /dev/null
-+++ b/Documentation/driver-api/ancillary_bus.rst
-@@ -0,0 +1,230 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+=============
-+Ancillary Bus
-+=============
-+
-+In some subsystems, the functionality of the core device (PCI/ACPI/other) is
-+too complex for a single device to be managed as a monolithic block or a part of
-+the functionality needs to be exposed to a different subsystem.  Splitting the
-+functionality into smaller orthogonal devices would make it easier to manage
-+data, power management and domain-specific interaction with the hardware. A key
-+requirement for such a split is that there is no dependency on a physical bus,
-+device, register accesses or regmap support. These individual devices split from
-+the core cannot live on the platform bus as they are not physical devices that
-+are controlled by DT/ACPI. The same argument applies for not using MFD in this
-+scenario as MFD relies on individual function devices being physical devices
-+that are DT enumerated.
-+
-+An example for this kind of requirement is the audio subsystem where a single
-+IP is handling multiple entities such as HDMI, Soundwire, local devices such as
-+mics/speakers etc. The split for the core's functionality can be arbitrary or
-+be defined by the DSP firmware topology and include hooks for test/debug. This
-+allows for the audio core device to be minimal and focused on hardware-specific
-+control and communication.
-+
-+The ancillary bus is intended to be minimal, generic and avoid domain-specific
-+assumptions. Each ancillary_device represents a part of its parent
-+functionality. The generic behavior can be extended and specialized as needed
-+by encapsulating an ancillary_device within other domain-specific structures and
-+the use of .ops callbacks. Devices on the ancillary bus do not share any
-+structures and the use of a communication channel with the parent is
-+domain-specific.
-+
-+When Should the Ancillary Bus Be Used
-+=====================================
-+
-+The ancillary bus is to be used when a driver and one or more kernel modules,
-+who share a common header file with the driver, need a mechanism to connect and
-+provide access to a shared object allocated by the ancillary_device's
-+registering driver.  The registering driver for the ancillary_device(s) and the
-+kernel module(s) registering ancillary_drivers can be from the same subsystem,
-+or from multiple subsystems.
-+
-+The emphasis here is on a common generic interface that keeps subsystem
-+customization out of the bus infrastructure.
-+
-+One example could be a multi-port PCI network device that is rdma-capable and
-+needs to export this functionality and attach to an rdma driver in another
-+subsystem.  The PCI driver will allocate and register an ancillary_device for
-+each physical function on the NIC.  The rdma driver will register an
-+ancillary_driver that will be matched with and probed for each of these
-+ancillary_devices.  This will give the rdma driver access to the shared data/ops
-+in the PCI drivers shared object to establish a connection with the PCI driver.
-+
-+Another use case is for the a PCI device to be split out into multiple sub
-+functions.  For each sub function an ancillary_device will be created.  A PCI
-+sub function driver will bind to such devices that will create its own one or
-+more class devices.  A PCI sub function ancillary device will likely be
-+contained in a struct with additional attributes such as user defined sub
-+function number and optional attributes such as resources and a link to the
-+parent device.  These attributes could be used by systemd/udev; and hence should
-+be initialized before a driver binds to an ancillary_device.
-+
-+Ancillary Device
-+================
-+
-+An ancillary_device is created and registered to represent a part of its parent
-+device's functionality. It is given a name that, combined with the registering
-+drivers KBUILD_MODNAME, creates a match_name that is used for driver binding,
-+and an id that combined with the match_name provide a unique name to register
-+with the bus subsystem.
-+
-+Registering an ancillary_device is a two-step process.  First you must call
-+ancillary_device_initialize(), which will check several aspects of the
-+ancillary_device struct and perform a device_initialize().  After this step
-+completes, any error state must have a call to put_device() in its resolution
-+path.  The second step in registering an ancillary_device is to perform a call
-+to ancillary_device_add(), which will set the name of the device and add the
-+device to the bus.
-+
-+To unregister an ancillary_device, just a call to ancillary_device_unregister()
-+is used.  This will perform both a device_del() and a put_device().
-+
-+.. code-block:: c
-+
-+	struct ancillary_device {
-+		struct device dev;
-+                const char *name;
-+		u32 id;
-+	};
-+
-+If two ancillary_devices both with a match_name "mod.foo" are registered onto
-+the bus, they must have unique id values (e.g. "x" and "y") so that the
-+registered devices names will be "mod.foo.x" and "mod.foo.y".  If match_name +
-+id are not unique, then the device_add will fail and generate an error message.
-+
-+The ancillary_device.dev.type.release or ancillary_device.dev.release must be
-+populated with a non-NULL pointer to successfully register the ancillary_device.
-+
-+The ancillary_device.dev.parent must also be populated.
-+
-+Ancillary Device Memory Model and Lifespan
-+------------------------------------------
-+
-+When a kernel driver registers an ancillary_device on the ancillary bus, we will
-+use the nomenclature to refer to this kernel driver as a registering driver.  It
-+is the entity that will allocate memory for the ancillary_device and register it
-+on the ancillary bus.  It is important to note that, as opposed to the platform
-+bus, the registering driver is wholly responsible for the management for the
-+memory used for the driver object.
-+
-+A parent object, defined in the shared header file, will contain the
-+ancillary_device.  It will also contain a pointer to the shared object(s), which
-+will also be defined in the shared header.  Both the parent object and the
-+shared object(s) will be allocated by the registering driver.  This layout
-+allows the ancillary_driver's registering module to perform a container_of()
-+call to go from the pointer to the ancillary_device, that is passed during the
-+call to the ancillary_driver's probe function, up to the parent object, and then
-+have access to the shared object(s).
-+
-+The memory for the ancillary_device will be freed only in its release()
-+callback flow as defined by its registering driver.
-+
-+The memory for the shared object(s) must have a lifespan equal to, or greater
-+than, the lifespan of the memory for the ancillary_device.  The ancillary_driver
-+should only consider that this shared object is valid as long as the
-+ancillary_device is still registered on the ancillary bus.  It is up to the
-+registering driver to manage (e.g. free or keep available) the memory for the
-+shared object beyond the life of the ancillary_device.
-+
-+Registering driver must unregister all ancillary devices before its registering
-+parent device's remove() is completed.
-+
-+Ancillary Drivers
-+=================
-+
-+Ancillary drivers follow the standard driver model convention, where
-+discovery/enumeration is handled by the core, and drivers
-+provide probe() and remove() methods. They support power management
-+and shutdown notifications using the standard conventions.
-+
-+.. code-block:: c
-+
-+	struct ancillary_driver {
-+		int (*probe)(struct ancillary_device *,
-+                             const struct ancillary_device_id *id);
-+		int (*remove)(struct ancillary_device *);
-+		void (*shutdown)(struct ancillary_device *);
-+		int (*suspend)(struct ancillary_device *, pm_message_t);
-+		int (*resume)(struct ancillary_device *);
-+		struct device_driver driver;
-+		const struct ancillary_device_id *id_table;
-+	};
-+
-+Ancillary drivers register themselves with the bus by calling
-+ancillary_driver_register(). The id_table contains the match_names of ancillary
-+devices that a driver can bind with.
-+
-+Example Usage
-+=============
-+
-+Ancillary devices are created and registered by a subsystem-level core device
-+that needs to break up its functionality into smaller fragments. One way to
-+extend the scope of an ancillary_device would be to encapsulate it within a
-+domain-specific structure defined by the parent device. This structure contains
-+the ancillary_device and any associated shared data/callbacks needed to
-+establish the connection with the parent.
-+
-+An example would be:
-+
-+.. code-block:: c
-+
-+        struct foo {
-+		struct ancillary_device ancildev;
-+		void (*connect)(struct ancillary_device *ancildev);
-+		void (*disconnect)(struct ancillary_device *ancildev);
-+		void *data;
-+        };
-+
-+The parent device would then register the ancillary_device by calling
-+ancillary_device_initialize(), and then ancillary_device_add(), with the pointer
-+to the ancildev member of the above structure. The parent would provide a name
-+for the ancillary_device that, combined with the parent's KBUILD_MODNAME, will
-+create a match_name that will be used for matching and binding with a driver.
-+
-+Whenever an ancillary_driver is registered, based on the match_name, the
-+ancillary_driver's probe() is invoked for the matching devices.  The
-+ancillary_driver can also be encapsulated inside custom drivers that make the
-+core device's functionality extensible by adding additional domain-specific ops
-+as follows:
-+
-+.. code-block:: c
-+
-+	struct my_ops {
-+		void (*send)(struct ancillary_device *ancildev);
-+		void (*receive)(struct ancillary_device *ancildev);
-+	};
-+
-+
-+	struct my_driver {
-+		struct ancillary_driver ancillary_drv;
-+		const struct my_ops ops;
-+	};
-+
-+An example of this type of usage would be:
-+
-+.. code-block:: c
-+
-+	const struct ancillary_device_id my_ancillary_id_table[] = {
-+		{ .name = "foo_mod.foo_dev" },
-+		{ },
-+	};
-+
-+	const struct my_ops my_custom_ops = {
-+		.send = my_tx,
-+		.receive = my_rx,
-+	};
-+
-+	const struct my_driver my_drv = {
-+		.ancillary_drv = {
-+			.driver = {
-+				.name = "myancillarydrv",
-+			},
-+			.id_table = my_ancillary_id_table,
-+			.probe = my_probe,
-+			.remove = my_remove,
-+			.shutdown = my_shutdown,
-+		},
-+		.ops = my_custom_ops,
-+	};
-diff --git a/Documentation/driver-api/index.rst b/Documentation/driver-api/index.rst
-index 5ef2cfe3a16b..9584ac2ed1f5 100644
---- a/Documentation/driver-api/index.rst
-+++ b/Documentation/driver-api/index.rst
-@@ -74,6 +74,7 @@ available subsections can be seen below.
-    thermal/index
-    fpga/index
-    acpi/index
-+   ancillary_bus
-    backlight/lp855x-driver.rst
-    connector
-    console
-diff --git a/drivers/bus/Kconfig b/drivers/bus/Kconfig
-index 0c262c2aeaf2..ba82a045b847 100644
---- a/drivers/bus/Kconfig
-+++ b/drivers/bus/Kconfig
-@@ -5,6 +5,9 @@
- 
- menu "Bus devices"
- 
-+config ANCILLARY_BUS
-+       tristate
-+
- config ARM_CCI
- 	bool
- 
-diff --git a/drivers/bus/Makefile b/drivers/bus/Makefile
-index 397e35392bff..1fd238094543 100644
---- a/drivers/bus/Makefile
-+++ b/drivers/bus/Makefile
-@@ -3,6 +3,9 @@
- # Makefile for the bus drivers.
- #
- 
-+#Ancillary bus driver
-+obj-$(CONFIG_ANCILLARY_BUS)	+= ancillary.o
-+
- # Interconnect bus drivers for ARM platforms
- obj-$(CONFIG_ARM_CCI)		+= arm-cci.o
- obj-$(CONFIG_ARM_INTEGRATOR_LM)	+= arm-integrator-lm.o
-diff --git a/drivers/bus/ancillary.c b/drivers/bus/ancillary.c
-new file mode 100644
-index 000000000000..2d940fe5717a
---- /dev/null
-+++ b/drivers/bus/ancillary.c
-@@ -0,0 +1,191 @@
++++ b/sound/soc/sof/sof-client.c
+@@ -0,0 +1,117 @@
 +// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Software based bus for Ancillary devices
-+ *
-+ * Copyright (c) 2019-2020 Intel Corporation
-+ *
-+ * Please see Documentation/driver-api/ancillary_bus.rst for more information.
-+ */
++//
++// Copyright(c) 2020 Intel Corporation. All rights reserved.
++//
++// Author: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
++//
 +
-+#include <linux/device.h>
-+#include <linux/init.h>
++#include <linux/debugfs.h>
++#include <linux/errno.h>
++#include <linux/list.h>
 +#include <linux/module.h>
-+#include <linux/pm_domain.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/string.h>
-+#include <linux/ancillary_bus.h>
++#include <linux/mutex.h>
++#include <linux/slab.h>
++#include "sof-client.h"
++#include "sof-priv.h"
 +
-+static const struct ancillary_device_id *ancillary_match_id(const struct ancillary_device_id *id,
-+							    const struct ancillary_device *ancildev)
++static void sof_client_ancildev_release(struct device *dev)
 +{
++	struct ancillary_device *ancildev = to_ancillary_dev(dev);
++	struct sof_client_dev *cdev = ancillary_dev_to_sof_client_dev(ancildev);
 +
-+	while (id->name[0]) {
-+		const char *p = strrchr(dev_name(&ancildev->dev), '.');
-+		int match_size;
++	ida_simple_remove(cdev->client_ida, ancildev->id);
++	kfree(cdev);
++}
 +
-+		if (!p)
-+			continue;
-+		match_size = p - dev_name(&ancildev->dev);
++static struct sof_client_dev *sof_client_dev_alloc(struct snd_sof_dev *sdev, const char *name,
++						   struct ida *client_ida)
++{
++	struct sof_client_dev *cdev;
++	struct ancillary_device *ancildev;
++	int ret;
 +
-+		/* use dev_name(&ancildev->dev) prefix before last '.' char to match to */
-+		if (!strncmp(dev_name(&ancildev->dev), id->name, match_size))
-+			return id;
-+		id++;
++	cdev = kzalloc(sizeof(*cdev), GFP_KERNEL);
++	if (!cdev)
++		return NULL;
++
++	cdev->sdev = sdev;
++	cdev->client_ida = client_ida;
++	ancildev = &cdev->ancildev;
++	ancildev->name = name;
++	ancildev->dev.parent = sdev->dev;
++	ancildev->dev.release = sof_client_ancildev_release;
++
++	ancildev->id = ida_alloc(client_ida, GFP_KERNEL);
++	if (ancildev->id < 0) {
++		dev_err(sdev->dev, "error: get IDA idx for ancillary device %s failed\n", name);
++		ret = ancildev->id;
++		goto err_free;
 +	}
++
++	ret = ancillary_device_initialize(ancildev);
++	if (ret < 0) {
++		dev_err(sdev->dev, "error: failed to initialize client dev %s\n", name);
++		ida_simple_remove(client_ida, ancildev->id);
++		goto err_free;
++	}
++
++	return cdev;
++
++err_free:
++	kfree(cdev);
 +	return NULL;
 +}
 +
-+static int ancillary_match(struct device *dev, struct device_driver *drv)
++int sof_client_dev_register(struct snd_sof_dev *sdev, const char *name, struct ida *client_ida)
 +{
-+	struct ancillary_device *ancildev = to_ancillary_dev(dev);
-+	struct ancillary_driver *ancildrv = to_ancillary_drv(drv);
-+
-+	return !!ancillary_match_id(ancildrv->id_table, ancildev);
-+}
-+
-+static int ancillary_uevent(struct device *dev, struct kobj_uevent_env *env)
-+{
-+	const char *name, *p;
-+
-+	name = dev_name(dev);
-+	p = strrchr(name, '.');
-+
-+	return add_uevent_var(env, "MODALIAS=%s%.*s", ANCILLARY_MODULE_PREFIX, (int)(p - name),
-+			      name);
-+}
-+
-+static const struct dev_pm_ops ancillary_dev_pm_ops = {
-+	SET_RUNTIME_PM_OPS(pm_generic_runtime_suspend, pm_generic_runtime_resume, NULL)
-+	SET_SYSTEM_SLEEP_PM_OPS(pm_generic_suspend, pm_generic_resume)
-+};
-+
-+struct bus_type ancillary_bus_type = {
-+	.name = "ancillary",
-+	.match = ancillary_match,
-+	.uevent = ancillary_uevent,
-+	.pm = &ancillary_dev_pm_ops,
-+};
-+
-+/**
-+ * ancillary_device_initialize - check ancillary_device and initialize
-+ * @ancildev: ancillary device struct
-+ */
-+int ancillary_device_initialize(struct ancillary_device *ancildev)
-+{
-+	struct device *dev = &ancildev->dev;
-+
-+	dev->bus = &ancillary_bus_type;
-+
-+	if (WARN_ON(!dev->parent) || WARN_ON(!ancildev->name) ||
-+	    WARN_ON(!(dev->type && dev->type->release) && !dev->release))
-+		return -EINVAL;
-+
-+	device_initialize(&ancildev->dev);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(ancillary_device_initialize);
-+
-+/**
-+ * __ancillary_device_add - add an ancillary bus device
-+ * @ancildev: ancillary bus device to add to the bus
-+ * @modname: name of the parent device's driver module
-+ */
-+int __ancillary_device_add(struct ancillary_device *ancildev, const char *modname)
-+{
-+	struct device *dev = &ancildev->dev;
++	struct sof_client_dev *cdev;
 +	int ret;
 +
-+	if (WARN_ON(!modname))
-+		return -EINVAL;
++	cdev = sof_client_dev_alloc(sdev, name, client_ida);
++	if (!cdev)
++		return -ENODEV;
 +
-+	ret = dev_set_name(dev, "%s.%s.%d", modname, ancildev->name, ancildev->id);
-+	if (ret) {
-+		dev_err(dev->parent, "dev_set_name failed for device: %d\n", ret);
++	ret = ancillary_device_add(&cdev->ancildev);
++	if (ret < 0) {
++		dev_err(sdev->dev, "error: failed to add client dev %s\n", name);
++		put_device(&cdev->ancildev.dev);
 +		return ret;
 +	}
 +
-+	ret = device_add(dev);
-+	if (ret)
-+		dev_err(dev, "adding device failed!: %d\n", ret);
++	/* add to list of SOF client devices */
++	mutex_lock(&sdev->client_mutex);
++	list_add(&cdev->list, &sdev->client_list);
++	mutex_unlock(&sdev->client_mutex);
 +
 +	return ret;
 +}
-+EXPORT_SYMBOL_GPL(__ancillary_device_add);
++EXPORT_SYMBOL_NS_GPL(sof_client_dev_register, SND_SOC_SOF_CLIENT);
 +
-+static int ancillary_probe_driver(struct device *dev)
++void sof_client_dev_unregister(struct sof_client_dev *cdev)
 +{
-+	struct ancillary_driver *ancildrv = to_ancillary_drv(dev->driver);
-+	struct ancillary_device *ancildev = to_ancillary_dev(dev);
-+	int ret;
++	struct snd_sof_dev *sdev = cdev->sdev;
 +
-+	ret = dev_pm_domain_attach(dev, true);
-+	if (ret) {
-+		dev_warn(&ancildev->dev, "Failed to attach to PM Domain : %d\n", ret);
-+		return ret;
-+	}
++	/* remove from list of SOF client devices */
++	mutex_lock(&sdev->client_mutex);
++	list_del(&cdev->list);
++	mutex_unlock(&sdev->client_mutex);
 +
-+	ret = ancildrv->probe(ancildev, ancillary_match_id(ancildrv->id_table, ancildev));
-+	if (ret)
-+		dev_pm_domain_detach(dev, true);
-+
-+	return ret;
++	ancillary_device_unregister(&cdev->ancildev);
 +}
++EXPORT_SYMBOL_NS_GPL(sof_client_dev_unregister, SND_SOC_SOF_CLIENT);
 +
-+static int ancillary_remove_driver(struct device *dev)
++int sof_client_ipc_tx_message(struct sof_client_dev *cdev, u32 header, void *msg_data,
++			      size_t msg_bytes, void *reply_data, size_t reply_bytes)
 +{
-+	struct ancillary_driver *ancildrv = to_ancillary_drv(dev->driver);
-+	struct ancillary_device *ancildev = to_ancillary_dev(dev);
-+	int ret;
-+
-+	ret = ancildrv->remove(ancildev);
-+	dev_pm_domain_detach(dev, true);
-+
-+	return ret;
++	return sof_ipc_tx_message(cdev->sdev->ipc, header, msg_data, msg_bytes,
++				  reply_data, reply_bytes);
 +}
++EXPORT_SYMBOL_NS_GPL(sof_client_ipc_tx_message, SND_SOC_SOF_CLIENT);
 +
-+static void ancillary_shutdown_driver(struct device *dev)
++struct dentry *sof_client_get_debugfs_root(struct sof_client_dev *cdev)
 +{
-+	struct ancillary_driver *ancildrv = to_ancillary_drv(dev->driver);
-+	struct ancillary_device *ancildev = to_ancillary_dev(dev);
-+
-+	ancildrv->shutdown(ancildev);
++	return cdev->sdev->debugfs_root;
 +}
++EXPORT_SYMBOL_NS_GPL(sof_client_get_debugfs_root, SND_SOC_SOF_CLIENT);
 +
-+/**
-+ * __ancillary_driver_register - register a driver for ancillary bus devices
-+ * @ancildrv: ancillary_driver structure
-+ * @owner: owning module/driver
-+ */
-+int __ancillary_driver_register(struct ancillary_driver *ancildrv, struct module *owner)
-+{
-+	if (WARN_ON(!ancildrv->probe) || WARN_ON(!ancildrv->remove) ||
-+	    WARN_ON(!ancildrv->shutdown) || WARN_ON(!ancildrv->id_table))
-+		return -EINVAL;
-+
-+	ancildrv->driver.owner = owner;
-+	ancildrv->driver.bus = &ancillary_bus_type;
-+	ancildrv->driver.probe = ancillary_probe_driver;
-+	ancildrv->driver.remove = ancillary_remove_driver;
-+	ancildrv->driver.shutdown = ancillary_shutdown_driver;
-+
-+	return driver_register(&ancildrv->driver);
-+}
-+EXPORT_SYMBOL_GPL(__ancillary_driver_register);
-+
-+static int __init ancillary_bus_init(void)
-+{
-+	return bus_register(&ancillary_bus_type);
-+}
-+
-+static void __exit ancillary_bus_exit(void)
-+{
-+	bus_unregister(&ancillary_bus_type);
-+}
-+
-+module_init(ancillary_bus_init);
-+module_exit(ancillary_bus_exit);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("Ancillary Bus");
-+MODULE_AUTHOR("David Ertman <david.m.ertman@intel.com>");
-+MODULE_AUTHOR("Kiran Patil <kiran.patil@intel.com>");
-diff --git a/include/linux/ancillary_bus.h b/include/linux/ancillary_bus.h
++MODULE_LICENSE("GPL");
+diff --git a/sound/soc/sof/sof-client.h b/sound/soc/sof/sof-client.h
 new file mode 100644
-index 000000000000..73b13b56403d
+index 000000000000..62212f69c236
 --- /dev/null
-+++ b/include/linux/ancillary_bus.h
-@@ -0,0 +1,58 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2019-2020 Intel Corporation
-+ *
-+ * Please see Documentation/driver-api/ancillary_bus.rst for more information.
-+ */
++++ b/sound/soc/sof/sof-client.h
+@@ -0,0 +1,65 @@
++/* SPDX-License-Identifier: (GPL-2.0-only) */
 +
-+#ifndef _ANCILLARY_BUS_H_
-+#define _ANCILLARY_BUS_H_
++#ifndef __SOUND_SOC_SOF_CLIENT_H
++#define __SOUND_SOC_SOF_CLIENT_H
 +
-+#include <linux/device.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/slab.h>
++#include <linux/ancillary_bus.h>
 +
-+struct ancillary_device {
-+	struct device dev;
++#define SOF_CLIENT_PROBE_TIMEOUT_MS 2000
++
++struct snd_sof_dev;
++
++/* SOF client device */
++struct sof_client_dev {
++	struct ancillary_device ancildev;
++	struct snd_sof_dev *sdev;
++	struct list_head list;	/* item in SOF core client dev list */
++	struct ida *client_ida;
++	void *data;
++};
++
++/* client-specific ops, all optional */
++struct sof_client_ops {
++	int (*client_ipc_rx)(struct sof_client_dev *cdev, u32 msg_cmd);
++};
++
++struct sof_client_drv {
 +	const char *name;
-+	u32 id;
++	const struct sof_client_ops ops;
++	struct ancillary_driver ancillary_drv;
 +};
 +
-+struct ancillary_driver {
-+	int (*probe)(struct ancillary_device *ancildev, const struct ancillary_device_id *id);
-+	int (*remove)(struct ancillary_device *ancildev);
-+	void (*shutdown)(struct ancillary_device *ancildev);
-+	int (*suspend)(struct ancillary_device *ancildev, pm_message_t state);
-+	int (*resume)(struct ancillary_device *ancildev);
-+	struct device_driver driver;
-+	const struct ancillary_device_id *id_table;
-+};
++#define ancillary_dev_to_sof_client_dev(ancillary_dev) \
++	container_of(ancillary_dev, struct sof_client_dev, ancildev)
 +
-+static inline struct ancillary_device *to_ancillary_dev(struct device *dev)
++static inline int sof_client_drv_register(struct sof_client_drv *drv)
 +{
-+	return container_of(dev, struct ancillary_device, dev);
++	return ancillary_driver_register(&drv->ancillary_drv);
 +}
 +
-+static inline struct ancillary_driver *to_ancillary_drv(struct device_driver *drv)
++static inline void sof_client_drv_unregister(struct sof_client_drv *drv)
 +{
-+	return container_of(drv, struct ancillary_driver, driver);
++	ancillary_driver_unregister(&drv->ancillary_drv);
 +}
 +
-+int ancillary_device_initialize(struct ancillary_device *ancildev);
-+int __ancillary_device_add(struct ancillary_device *ancildev, const char *modname);
-+#define ancillary_device_add(ancildev) __ancillary_device_add(ancildev, KBUILD_MODNAME)
++int sof_client_dev_register(struct snd_sof_dev *sdev, const char *name, struct ida *client_ida);
++void sof_client_dev_unregister(struct sof_client_dev *cdev);
 +
-+static inline void ancillary_device_unregister(struct ancillary_device *ancildev)
-+{
-+	device_unregister(&ancildev->dev);
-+}
++int sof_client_ipc_tx_message(struct sof_client_dev *cdev, u32 header, void *msg_data,
++			      size_t msg_bytes, void *reply_data, size_t reply_bytes);
 +
-+int __ancillary_driver_register(struct ancillary_driver *ancildrv, struct module *owner);
-+#define ancillary_driver_register(ancildrv) __ancillary_driver_register(ancildrv, THIS_MODULE)
++struct dentry *sof_client_get_debugfs_root(struct sof_client_dev *cdev);
 +
-+static inline void ancillary_driver_unregister(struct ancillary_driver *ancildrv)
-+{
-+	driver_unregister(&ancildrv->driver);
-+}
++/**
++ * module_sof_client_driver() - Helper macro for registering an SOF Client
++ * driver
++ * @__sof_client_driver: SOF client driver struct
++ *
++ * Helper macro for SOF client drivers which do not do anything special in
++ * module init/exit. This eliminates a lot of boilerplate. Each module may only
++ * use this macro once, and calling it replaces module_init() and module_exit()
++ */
++#define module_sof_client_driver(__sof_client_driver) \
++	module_driver(__sof_client_driver, sof_client_drv_register, sof_client_drv_unregister)
 +
-+#endif /* _ANCILLARY_BUS_H_ */
-diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-index 5b08a473cdba..7d596dc30833 100644
---- a/include/linux/mod_devicetable.h
-+++ b/include/linux/mod_devicetable.h
-@@ -838,4 +838,12 @@ struct mhi_device_id {
- 	kernel_ulong_t driver_data;
++#endif
+diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
+index 64f28e082049..043fcec5a288 100644
+--- a/sound/soc/sof/sof-priv.h
++++ b/sound/soc/sof/sof-priv.h
+@@ -438,6 +438,12 @@ struct snd_sof_dev {
+ 
+ 	bool msi_enabled;
+ 
++	/* list of client devices */
++	struct list_head client_list;
++
++	/* mutex to protect client list */
++	struct mutex client_mutex;
++
+ 	void *private;			/* core does not touch this */
  };
  
-+#define ANCILLARY_NAME_SIZE 32
-+#define ANCILLARY_MODULE_PREFIX "ancillary:"
-+
-+struct ancillary_device_id {
-+	char name[ANCILLARY_NAME_SIZE];
-+	kernel_ulong_t driver_data;
-+};
-+
- #endif /* LINUX_MOD_DEVICETABLE_H */
-diff --git a/scripts/mod/devicetable-offsets.c b/scripts/mod/devicetable-offsets.c
-index 27007c18e754..79e37c4c25b3 100644
---- a/scripts/mod/devicetable-offsets.c
-+++ b/scripts/mod/devicetable-offsets.c
-@@ -243,5 +243,8 @@ int main(void)
- 	DEVID(mhi_device_id);
- 	DEVID_FIELD(mhi_device_id, chan);
- 
-+	DEVID(ancillary_device_id);
-+	DEVID_FIELD(ancillary_device_id, name);
-+
- 	return 0;
- }
-diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
-index 2417dd1dee33..99c4fcd82bf3 100644
---- a/scripts/mod/file2alias.c
-+++ b/scripts/mod/file2alias.c
-@@ -1364,6 +1364,13 @@ static int do_mhi_entry(const char *filename, void *symval, char *alias)
- {
- 	DEF_FIELD_ADDR(symval, mhi_device_id, chan);
- 	sprintf(alias, MHI_DEVICE_MODALIAS_FMT, *chan);
-+	return 1;
-+}
-+
-+static int do_ancillary_entry(const char *filename, void *symval, char *alias)
-+{
-+	DEF_FIELD_ADDR(symval, ancillary_device_id, name);
-+	sprintf(alias, ANCILLARY_MODULE_PREFIX "%s", *name);
- 
- 	return 1;
- }
-@@ -1442,6 +1449,7 @@ static const struct devtable devtable[] = {
- 	{"tee", SIZE_tee_client_device_id, do_tee_entry},
- 	{"wmi", SIZE_wmi_device_id, do_wmi_entry},
- 	{"mhi", SIZE_mhi_device_id, do_mhi_entry},
-+	{"ancillary", SIZE_ancillary_device_id, do_ancillary_entry},
- };
- 
- /* Create MODULE_ALIAS() statements.
 -- 
 2.26.2
 
