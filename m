@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7875F2800A5
+	by mail.lfdr.de (Postfix) with ESMTP id 052302800A4
 	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 16:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732527AbgJAOAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 10:00:35 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:36619 "EHLO
+        id S1732505AbgJAOAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 10:00:32 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:36664 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732440AbgJAOAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 10:00:30 -0400
+        with ESMTP id S1732463AbgJAOA3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 10:00:29 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 1 Oct 2020 17:00:24 +0300
+        with SMTP; 1 Oct 2020 17:00:26 +0300
 Received: from dev-l-vrt-136.mtl.labs.mlnx (dev-l-vrt-136.mtl.labs.mlnx [10.234.136.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 091E0OCR001830;
-        Thu, 1 Oct 2020 17:00:24 +0300
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 091E0QZp002210;
+        Thu, 1 Oct 2020 17:00:26 +0300
 Received: from dev-l-vrt-136.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7) with ESMTP id 091E0Ol0011167;
-        Thu, 1 Oct 2020 17:00:24 +0300
+        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7) with ESMTP id 091E0QY1011183;
+        Thu, 1 Oct 2020 17:00:26 +0300
 Received: (from moshe@localhost)
-        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7/Submit) id 091E0OSm011166;
-        Thu, 1 Oct 2020 17:00:24 +0300
+        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7/Submit) id 091E0Ql1011182;
+        Thu, 1 Oct 2020 17:00:26 +0300
 From:   Moshe Shemesh <moshe@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net-next 04/16] devlink: Add reload stats
-Date:   Thu,  1 Oct 2020 16:59:07 +0300
-Message-Id: <1601560759-11030-5-git-send-email-moshe@mellanox.com>
+Subject: [PATCH net-next 12/16] devlink: Add enable_remote_dev_reset generic parameter
+Date:   Thu,  1 Oct 2020 16:59:15 +0300
+Message-Id: <1601560759-11030-13-git-send-email-moshe@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
 References: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
@@ -37,267 +37,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add reload stats to hold the history per reload action type and limit.
-
-For example, the number of times fw_activate has been performed on this
-device since the driver module was added or if the firmware activation
-was performed with or without reset.
-
-Add devlink notification on stats update.
-
-Expose devlink reload stats to the user through devlink dev get command.
-
-Examples:
-$ devlink dev show
-pci/0000:82:00.0:
-  stats:
-      reload_stats:
-        driver_reinit 2
-        fw_activate 1
-        fw_activate_no_reset 0
-pci/0000:82:00.1:
-  stats:
-      reload_stats:
-        driver_reinit 1
-        fw_activate 0
-        fw_activate_no_reset 0
-
-$ devlink dev show -jp
-{
-    "dev": {
-        "pci/0000:82:00.0": {
-            "stats": {
-                "reload_stats": [ {
-                        "driver_reinit": 2
-                    },{
-                        "fw_activate": 1
-                    },{
-                        "fw_activate_no_reset": 0
-                    } ]
-            }
-        },
-        "pci/0000:82:00.1": {
-            "stats": {
-                "reload_stats": [ {
-                        "driver_reinit": 1
-                    },{
-                        "fw_activate": 0
-                    },{
-                        "fw_activate_no_reset": 0
-                    } ]
-            }
-        }
-    }
-}
+The enable_remote_dev_reset devlink param flags that the host admin
+allows device resets that can be initiated by other hosts. This
+parameter is useful for setups where a device is shared by different
+hosts, such as multi-host setup. Once the user set this parameter to
+false, the driver should NACK any attempt to reset the device while the
+driver is loaded.
 
 Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
-RFCv5 -> v1:
-- Changed the stats output structure, have 2 stats, one for local and
-one for remote
-- Resplit this patch and the next one by remote/local reload stast
-instead of set/get reload stats
-- Add helper function devlink_reload_stats_put()
-RFCv4 -> RFCv5:
-- Add separate reload action stats for updating on remote actions
-- Protect  from updating remote actions stats during reload_down()/up()
-RFCv3 -> RFCv4:
-- Renamed reload_actions_cnts to reload_action_stats
-- Add devlink notifications on stats update
-- Renamed devlink_reload_actions_implicit_actions_performed() and add
-  function comment in code
-RFCv2 -> RFCv3:
-- New patch
----
- include/net/devlink.h        |  7 +++
- include/uapi/linux/devlink.h |  5 ++
- net/core/devlink.c           | 97 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 109 insertions(+)
+ Documentation/networking/devlink/devlink-params.rst | 6 ++++++
+ include/net/devlink.h                               | 4 ++++
+ net/core/devlink.c                                  | 5 +++++
+ 3 files changed, 15 insertions(+)
 
+diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
+index d075fd090b3d..54c9f107c4b0 100644
+--- a/Documentation/networking/devlink/devlink-params.rst
++++ b/Documentation/networking/devlink/devlink-params.rst
+@@ -108,3 +108,9 @@ own name.
+    * - ``region_snapshot_enable``
+      - Boolean
+      - Enable capture of ``devlink-region`` snapshots.
++   * - ``enable_remote_dev_reset``
++     - Boolean
++     - Enable device reset by remote host. When cleared, the device driver
++       will NACK any attempt of other host to reset the device. This parameter
++       is useful for setups where a device is shared by different hosts, such
++       as multi-host setup.
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 43dde69086e5..0f3bd23b6c04 100644
+index a4ccb83bbd2c..0a1c88805627 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -20,6 +20,9 @@
- #include <uapi/linux/devlink.h>
- #include <linux/xarray.h>
+@@ -464,6 +464,7 @@ enum devlink_param_generic_id {
+ 	DEVLINK_PARAM_GENERIC_ID_FW_LOAD_POLICY,
+ 	DEVLINK_PARAM_GENERIC_ID_RESET_DEV_ON_DRV_PROBE,
+ 	DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
++	DEVLINK_PARAM_GENERIC_ID_ENABLE_REMOTE_DEV_RESET,
  
-+#define DEVLINK_RELOAD_STATS_ARRAY_SIZE \
-+	(__DEVLINK_RELOAD_LIMIT_MAX * __DEVLINK_RELOAD_ACTION_MAX)
+ 	/* add new param generic ids above here*/
+ 	__DEVLINK_PARAM_GENERIC_ID_MAX,
+@@ -501,6 +502,9 @@ enum devlink_param_generic_id {
+ #define DEVLINK_PARAM_GENERIC_ENABLE_ROCE_NAME "enable_roce"
+ #define DEVLINK_PARAM_GENERIC_ENABLE_ROCE_TYPE DEVLINK_PARAM_TYPE_BOOL
+ 
++#define DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_NAME "enable_remote_dev_reset"
++#define DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_TYPE DEVLINK_PARAM_TYPE_BOOL
 +
- struct devlink_ops;
- 
- struct devlink {
-@@ -38,6 +41,7 @@ struct devlink {
- 	struct list_head trap_policer_list;
- 	const struct devlink_ops *ops;
- 	struct xarray snapshot_ids;
-+	u32 reload_stats[DEVLINK_RELOAD_STATS_ARRAY_SIZE];
- 	struct device *dev;
- 	possible_net_t _net;
- 	struct mutex lock; /* Serializes access to devlink instance specific objects such as
-@@ -1470,6 +1474,9 @@ void
- devlink_health_reporter_recovery_done(struct devlink_health_reporter *reporter);
- 
- bool devlink_is_reload_failed(const struct devlink *devlink);
-+void devlink_remote_reload_actions_performed(struct devlink *devlink,
-+					     enum devlink_reload_limit limit,
-+					     unsigned long actions_performed);
- 
- void devlink_flash_update_begin_notify(struct devlink *devlink);
- void devlink_flash_update_end_notify(struct devlink *devlink);
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index cc5dc4c07b4a..97e0137f6201 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -526,6 +526,11 @@ enum devlink_attr {
- 	DEVLINK_ATTR_RELOAD_ACTIONS_PERFORMED,	/* u64 */
- 	DEVLINK_ATTR_RELOAD_LIMIT,	/* u8 */
- 
-+	DEVLINK_ATTR_DEV_STATS,			/* nested */
-+	DEVLINK_ATTR_RELOAD_STATS,		/* nested */
-+	DEVLINK_ATTR_RELOAD_STATS_ENTRY,	/* nested */
-+	DEVLINK_ATTR_RELOAD_STATS_VALUE,	/* u32 */
-+
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
+ #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
+ {									\
+ 	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 6de7d6aa6ed1..05516f1e4c3e 100644
+index 3b6bd3b4d346..4f074c81a5e4 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -500,10 +500,68 @@ devlink_reload_limit_is_supported(struct devlink *devlink, enum devlink_reload_l
- 	return test_bit(limit, &devlink->ops->reload_limits);
- }
+@@ -3484,6 +3484,11 @@ static const struct devlink_param devlink_param_generic[] = {
+ 		.name = DEVLINK_PARAM_GENERIC_ENABLE_ROCE_NAME,
+ 		.type = DEVLINK_PARAM_GENERIC_ENABLE_ROCE_TYPE,
+ 	},
++	{
++		.id = DEVLINK_PARAM_GENERIC_ID_ENABLE_REMOTE_DEV_RESET,
++		.name = DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_NAME,
++		.type = DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_TYPE,
++	},
+ };
  
-+static int devlink_reload_stat_put(struct sk_buff *msg, enum devlink_reload_action action,
-+				   enum devlink_reload_limit limit, u32 value)
-+{
-+	struct nlattr *reload_stats_entry;
-+
-+	reload_stats_entry = nla_nest_start(msg, DEVLINK_ATTR_RELOAD_STATS_ENTRY);
-+	if (!reload_stats_entry)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_ACTION, action))
-+		goto nla_put_failure;
-+	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_LIMIT, limit))
-+		goto nla_put_failure;
-+	if (nla_put_u32(msg, DEVLINK_ATTR_RELOAD_STATS_VALUE, value))
-+		goto nla_put_failure;
-+	nla_nest_end(msg, reload_stats_entry);
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(msg, reload_stats_entry);
-+	return -EMSGSIZE;
-+}
-+
-+static int devlink_reload_stats_put(struct sk_buff *msg, struct devlink *devlink)
-+{
-+	struct nlattr *reload_stats_attr;
-+	int i, j, stat_idx;
-+	u32 value;
-+
-+	reload_stats_attr = nla_nest_start(msg, DEVLINK_ATTR_RELOAD_STATS);
-+
-+	if (!reload_stats_attr)
-+		return -EMSGSIZE;
-+
-+	for (j = 0; j <= DEVLINK_RELOAD_LIMIT_MAX; j++) {
-+		if (j != DEVLINK_RELOAD_LIMIT_UNSPEC &&
-+		    !devlink_reload_limit_is_supported(devlink, j))
-+			continue;
-+		for (i = 0; i <= DEVLINK_RELOAD_ACTION_MAX; i++) {
-+			if (!devlink_reload_action_is_supported(devlink, i) ||
-+			    devlink_reload_combination_is_invalid(i, j))
-+				continue;
-+
-+			stat_idx = j * __DEVLINK_RELOAD_ACTION_MAX + i;
-+			value = devlink->reload_stats[stat_idx];
-+			if (devlink_reload_stat_put(msg, i, j, value))
-+				goto nla_put_failure;
-+		}
-+	}
-+	nla_nest_end(msg, reload_stats_attr);
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(msg, reload_stats_attr);
-+	return -EMSGSIZE;
-+}
-+
- static int devlink_nl_fill(struct sk_buff *msg, struct devlink *devlink,
- 			   enum devlink_command cmd, u32 portid,
- 			   u32 seq, int flags)
- {
-+	struct nlattr *dev_stats;
- 	void *hdr;
- 
- 	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
-@@ -515,9 +573,19 @@ static int devlink_nl_fill(struct sk_buff *msg, struct devlink *devlink,
- 	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_FAILED, devlink->reload_failed))
- 		goto nla_put_failure;
- 
-+	dev_stats = nla_nest_start(msg, DEVLINK_ATTR_DEV_STATS);
-+	if (!dev_stats)
-+		goto nla_put_failure;
-+
-+	if (devlink_reload_stats_put(msg, devlink))
-+		goto dev_stats_nest_cancel;
-+
-+	nla_nest_end(msg, dev_stats);
- 	genlmsg_end(msg, hdr);
- 	return 0;
- 
-+dev_stats_nest_cancel:
-+	nla_nest_cancel(msg, dev_stats);
- nla_put_failure:
- 	genlmsg_cancel(msg, hdr);
- 	return -EMSGSIZE;
-@@ -3004,6 +3072,34 @@ bool devlink_is_reload_failed(const struct devlink *devlink)
- }
- EXPORT_SYMBOL_GPL(devlink_is_reload_failed);
- 
-+static void
-+__devlink_reload_stats_update(struct devlink *devlink, u32 *reload_stats,
-+			      enum devlink_reload_limit limit, unsigned long actions_performed)
-+{
-+	int stat_idx;
-+	int action;
-+
-+	if (!actions_performed)
-+		return;
-+
-+	if (WARN_ON(limit > DEVLINK_RELOAD_LIMIT_MAX))
-+		return;
-+	for (action = 0; action <= DEVLINK_RELOAD_ACTION_MAX; action++) {
-+		if (!test_bit(action, &actions_performed))
-+			continue;
-+		stat_idx = limit * __DEVLINK_RELOAD_ACTION_MAX + action;
-+		reload_stats[stat_idx]++;
-+	}
-+	devlink_notify(devlink, DEVLINK_CMD_NEW);
-+}
-+
-+static void
-+devlink_reload_stats_update(struct devlink *devlink, enum devlink_reload_limit limit,
-+			    unsigned long actions_performed)
-+{
-+	__devlink_reload_stats_update(devlink, devlink->reload_stats, limit, actions_performed);
-+}
-+
- static int devlink_reload(struct devlink *devlink, struct net *dest_net,
- 			  enum devlink_reload_action action, enum devlink_reload_limit limit,
- 			  struct netlink_ext_ack *extack, unsigned long *actions_performed)
-@@ -3026,6 +3122,7 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
- 		return err;
- 
- 	WARN_ON(!test_bit(action, actions_performed));
-+	devlink_reload_stats_update(devlink, limit, *actions_performed);
- 	return 0;
- }
- 
+ static int devlink_param_generic_verify(const struct devlink_param *param)
 -- 
 2.18.2
 
