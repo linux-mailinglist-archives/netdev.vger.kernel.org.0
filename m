@@ -2,60 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD23D27FAA3
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 09:53:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A91327FAA9
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 09:54:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730415AbgJAHx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 03:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53340 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbgJAHx1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 03:53:27 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2345C0613D0
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 00:53:26 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kNtP3-00ESRZ-6s; Thu, 01 Oct 2020 09:53:25 +0200
-Message-ID: <6eff3aff2667adc8477eb1404df216562c067315.camel@sipsolutions.net>
-Subject: Re: [RFC net-next 7/9] genetlink: bring back per op policy
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, jiri@resnulli.us, mkubecek@suse.cz,
-        dsahern@kernel.org, pablo@netfilter.org
-Date:   Thu, 01 Oct 2020 09:53:24 +0200
-In-Reply-To: <20201001000518.685243-8-kuba@kernel.org>
-References: <20201001000518.685243-1-kuba@kernel.org>
-         <20201001000518.685243-8-kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1731459AbgJAHyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 03:54:37 -0400
+Received: from mx2.suse.de ([195.135.220.15]:44124 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725878AbgJAHyh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 03:54:37 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 1A9C6AC97;
+        Thu,  1 Oct 2020 07:54:35 +0000 (UTC)
+From:   Coly Li <colyli@suse.de>
+To:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, open-iscsi@googlegroups.com,
+        linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Coly Li <colyli@suse.de>,
+        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
+        Chris Leech <cleech@redhat.com>,
+        Christoph Hellwig <hch@lst.de>, Cong Wang <amwang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.com>,
+        Jeff Layton <jlayton@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Lee Duncan <lduncan@suse.com>,
+        Mike Christie <michaelc@cs.wisc.edu>,
+        Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Vlastimil Babka <vbabka@suse.com>
+Subject: [PATCH v9 0/7] Introduce sendpage_ok() to detect misused sendpage in network related drivers
+Date:   Thu,  1 Oct 2020 15:54:01 +0800
+Message-Id: <20201001075408.25508-1-colyli@suse.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-09-30 at 17:05 -0700, Jakub Kicinski wrote:
-> Add policy to the struct genl_ops structure, this time
-> with maxattr, so it can be used properly.
-> 
-> Propagate .policy and .maxattr from the family
-> in genl_get_cmd() if needed, this say the rest of the
+This series was original by a bug fix in nvme-over-tcp driver which only
+checked whether a page was allocated from slab allcoator, but forgot to
+check its page_count: The page handled by sendpage should be neither a
+Slab page nor 0 page_count page.
 
-typo: "this way"
+As Sagi Grimberg suggested, the original fix is refind to a more common
+inline routine:
+    static inline bool sendpage_ok(struct page *page)
+    {
+        return  (!PageSlab(page) && page_count(page) >= 1);
+    }
+If sendpage_ok() returns true, the checking page can be handled by the
+concrete zero-copy sendpage method in network layer.
 
-> code does not have to worry if the policy is per op
-> or global.
+The v9 series has 7 patches, no change from v8 series,
+- The 1st patch in this series introduces sendpage_ok() in header file
+  include/linux/net.h.
+- The 2nd patch adds WARN_ONCE() for improper zero-copy send in
+  kernel_sendpage().
+- The 3rd patch fixes the page checking issue in nvme-over-tcp driver.
+- The 4th patch adds page_count check by using sendpage_ok() in
+  do_tcp_sendpages() as Eric Dumazet suggested.
+- The 5th and 6th patches just replace existing open coded checks with
+  the inline sendpage_ok() routine.
 
-Maybe make 'taskstats', which I munged a bit in commit 3b0f31f2b8c9
-("genetlink: make policy common to family") go back to using per-command 
-policy - properly this time with maxattr?
+Coly Li
+
+Cc: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
+Cc: Chris Leech <cleech@redhat.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Cong Wang <amwang@redhat.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Eric Dumazet <eric.dumazet@gmail.com>
+Cc: Hannes Reinecke <hare@suse.de>
+Cc: Ilya Dryomov <idryomov@gmail.com>
+Cc: Jan Kara <jack@suse.com>
+Cc: Jeff Layton <jlayton@kernel.org>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: Lee Duncan <lduncan@suse.com>
+Cc: Mike Christie <michaelc@cs.wisc.edu>
+Cc: Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>
+Cc: Philipp Reisner <philipp.reisner@linbit.com>
+Cc: Sagi Grimberg <sagi@grimberg.me>
+Cc: Vasily Averin <vvs@virtuozzo.com>
+Cc: Vlastimil Babka <vbabka@suse.com>
+---
+Changelog:
+v9, fix a typo pointed out by Greg KH.
+    add Acked-by tags from Martin K. Petersen and Ilya Dryomov.
+v8: add WARN_ONCE() in kernel_sendpage() as Christoph suggested.
+v7: remove outer brackets from the return line of sendpage_ok() as
+    Eric Dumazet suggested.
+v6: fix page check in do_tcp_sendpages(), as Eric Dumazet suggested.
+    replace other open coded checks with sendpage_ok() in libceph,
+    iscsi drivers.
+v5, include linux/mm.h in include/linux/net.h
+v4, change sendpage_ok() as an inline helper, and post it as
+    separate patch, as Christoph Hellwig suggested.
+v3, introduce a more common sendpage_ok() as Sagi Grimberg suggested.
+v2, fix typo in patch subject
+v1, the initial version.
 
 
-But the code here looks good to me.
+Coly Li (7):
+  net: introduce helper sendpage_ok() in include/linux/net.h
+  net: add WARN_ONCE in kernel_sendpage() for improper zero-copy send
+  nvme-tcp: check page by sendpage_ok() before calling kernel_sendpage()
+  tcp: use sendpage_ok() to detect misused .sendpage
+  drbd: code cleanup by using sendpage_ok() to check page for
+    kernel_sendpage()
+  scsi: libiscsi: use sendpage_ok() in iscsi_tcp_segment_map()
+  libceph: use sendpage_ok() in ceph_tcp_sendpage()
 
-Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+ drivers/block/drbd/drbd_main.c |  2 +-
+ drivers/nvme/host/tcp.c        |  7 +++----
+ drivers/scsi/libiscsi_tcp.c    |  2 +-
+ include/linux/net.h            | 16 ++++++++++++++++
+ net/ceph/messenger.c           |  2 +-
+ net/ipv4/tcp.c                 |  3 ++-
+ net/socket.c                   |  6 ++++--
+ 7 files changed, 28 insertions(+), 10 deletions(-)
 
-johannes
+-- 
+2.26.2
 
