@@ -2,116 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D9D227FB60
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 10:19:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43ACA27FB78
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 10:29:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731489AbgJAITZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 04:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730862AbgJAITZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 04:19:25 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877ADC0613D0
-        for <netdev@vger.kernel.org>; Thu,  1 Oct 2020 01:19:23 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id o5so4558935wrn.13
-        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 01:19:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=aITCYqxNnSwPgx6KqXTuhuIl3KXLFHswvG0zkyiyE2E=;
-        b=KKQKKGQb2AAOWNCrEnqOpsuxAkFCTERAg6DWUaKLJ+wg3X+4/zImR5KCILsPxYg0kQ
-         cd61OeEPMNRKLZu0S5xD1uqWDccYOpnL00gg3f7HCtqkFQ+2zSIOL0paQnEERgiNfZMa
-         eokkyaLr+Gmv2xYhssfis88zJGB8iy0j0EREyJN/HROYgioLp4YK2EW2kg6jf5AzTEow
-         wVpYf0nILv2XprQqQ8xvTcPlOyA/j5Cku40nLHHmF/QsvFdiHx+k+0aOy6NHH83/GuQJ
-         KZSe6ghqL9qC51i5Qc2UWmu8dPgXGS2VSjzBcq8c2NitWGP+HubkpjoGPFDMz9DKLUmL
-         t+Gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aITCYqxNnSwPgx6KqXTuhuIl3KXLFHswvG0zkyiyE2E=;
-        b=CqhieVbN5qmUTeSURVmWh8TlyYQi1MEXBwqdh2drrvZ5rHg7rFtDoAg8/zg28f3IQM
-         /1GQpN8WxWeG30fteZIbVdVNRRUr3jZ5dKQLJic3IC/KqQAuizk3PJ1a1qO/GR9TZxCi
-         DMnnlbyV0zT2Jtqn3JgmQ/7Xmu2MfvvBIqM++gtfWDwSjPI1zLb28Z5rA1NrM5UmbnX2
-         6E6Q8SWnhZZHJKLkDaxHelhbQNRkhsgIWk+EF1s6Ooc6HUftpwNZ9OKjsxGtY0Chi/3T
-         OKJ+63AYdY6JF4PdzWsxir6yZ7EfWY6rPnCWNzlDuCcAFiCgpcmwq3ed3f8T/kZs4if5
-         4Fpg==
-X-Gm-Message-State: AOAM530d4jh6jrXhA5d2EGz0I3lcbHBP2KPEkCpSbYSILw4m6kmjZDPp
-        8lPykDrJOqTL47vA1SFlucf3833m9L8=
-X-Google-Smtp-Source: ABdhPJz6lV1flJ4bOVllN+B5QSrOpzFvqEWAAxyYmSSBL+UZLCFfUZoNW5IbbOHgzywBTJWvkq6gqA==
-X-Received: by 2002:a05:6000:7:: with SMTP id h7mr7863928wrx.16.1601540361713;
-        Thu, 01 Oct 2020 01:19:21 -0700 (PDT)
-Received: from [192.168.8.147] ([37.173.50.42])
-        by smtp.gmail.com with ESMTPSA id w2sm7490138wrs.15.2020.10.01.01.19.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Oct 2020 01:19:20 -0700 (PDT)
-Subject: Re: [PATCH net 01/12] ipvlan: add get_link_net
-To:     Sabrina Dubroca <sd@queasysnail.net>, netdev@vger.kernel.org
-References: <cover.1600770261.git.sd@queasysnail.net>
- <b920e279472824d78949401e3bc837713d1f54ea.1600770261.git.sd@queasysnail.net>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <b3a6433e-35c4-603b-5939-eaebc27a21c9@gmail.com>
-Date:   Thu, 1 Oct 2020 10:19:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1731365AbgJAI3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 04:29:17 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:38323 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730695AbgJAI3Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 04:29:16 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-225-ILwDGfD-PReVCn78K21u1g-1; Thu, 01 Oct 2020 09:29:11 +0100
+X-MC-Unique: ILwDGfD-PReVCn78K21u1g-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 1 Oct 2020 09:29:11 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 1 Oct 2020 09:29:11 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Petko Manolov' <petkan@nucleusys.com>,
+        David Bilsby <d.bilsby@virgin.net>
+CC:     Thor Thayer <thor.thayer@linux.intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: Altera TSE driver not working in 100mbps mode
+Thread-Topic: Altera TSE driver not working in 100mbps mode
+Thread-Index: AQHWl722UOgH1w9MMUi35dKxafwVgqmCaXnQ
+Date:   Thu, 1 Oct 2020 08:29:11 +0000
+Message-ID: <c1e0be78292e4044951227a66c1822c7@AcuMS.aculab.com>
+References: <20191127135419.7r53qw6vtp747x62@p310>
+ <20191203092918.52x3dfuvnryr5kpx@carbon>
+ <c8e4fc3a-0f40-45b6-d9c8-f292c3fdec9d@virgin.net>
+ <20200917064239.GA40050@p310>
+ <9f312748-1069-4a30-ba3f-d1de6d84e920@virgin.net>
+ <20200918171440.GA1538@p310>
+ <bbd5cc3a-51a9-d46c-ef24-f0bb4d6498fe@virgin.net>
+ <20201001063959.GA8609@carbon>
+In-Reply-To: <20201001063959.GA8609@carbon>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <b920e279472824d78949401e3bc837713d1f54ea.1600770261.git.sd@queasysnail.net>
-Content-Type: text/plain; charset=windows-1252
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+PiBUaGVzZSBhcmUgaW1wbGVtZW50YXRpb24gc3BlY2lmaWMuICBEb24ndCBmb3JnZXQgeW91J3Jl
+IG9uIEZQR0EgZGV2aWNlLCB3aGljaA0KPiBhbGxvd3MgZm9yIGEgbG90IG9mIGZsZXhpYmlsaXR5
+IC0gbWVtb3J5IHJlZ2lvbiBhZGRyZXNzIGFuZCBzaXplIHNoaWZ0cywgMzIgdnMNCj4gMTYgYml0
+IHdpZGUgbWVtb3J5LCBldGMuICBZb3UgaGF2ZSB0byB0YWtlIGludG8gYWNjb3VudCBib3RoLCBU
+U0UncyBtYW51YWwgYXMNCj4gd2VsbCBhcyB0aGUgYWN0dWFsIGltcGxlbWVudGF0aW9uIGRvY3Mu
+DQoNCkFyZSB5b3UgYnVpbGRpbmcgeW91ciBvd24gZnBnYSBpbWFnZT8NCg0KSWYgc28gSSdkIGNv
+bnNpZGVyIHVzaW5nIHNpZ25hbHRhcCB0byBsb29rICdpbnNpZGUnIHRoZSBUU0UNCmxvZ2ljIHRv
+IHNlZSBpZiBpdCBhY3R1YWxseSB0cnlpbmcgdG8gc2VuZCBhbnl0aGluZyBhdCBhbGwuDQoNCglE
+YXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91
+bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5
+NzM4NiAoV2FsZXMpDQo=
 
-
-On 10/1/20 9:59 AM, Sabrina Dubroca wrote:
-> Currently, ipvlan devices don't advertise a link-netnsid. We can get
-> it from the lower device, like macvlan does.
-> 
-> Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
-> ---
->  drivers/net/ipvlan/ipvlan_main.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
-> index 5bca94c99006..a81bb68a5713 100644
-> --- a/drivers/net/ipvlan/ipvlan_main.c
-> +++ b/drivers/net/ipvlan/ipvlan_main.c
-> @@ -678,6 +678,14 @@ void ipvlan_link_setup(struct net_device *dev)
->  }
->  EXPORT_SYMBOL_GPL(ipvlan_link_setup);
->  
-> +static struct net *ipvlan_get_link_net(const struct net_device *dev)
-> +{
-> +	struct ipvl_dev *ipvlan = netdev_priv(dev);
-> +	struct net_device *phy_dev = ipvlan->phy_dev;
-> +
-> +	return dev_net(phy_dev);
-> +}
-> +
->  static const struct nla_policy ipvlan_nl_policy[IFLA_IPVLAN_MAX + 1] =
->  {
->  	[IFLA_IPVLAN_MODE] = { .type = NLA_U16 },
-> @@ -691,6 +699,7 @@ static struct rtnl_link_ops ipvlan_link_ops = {
->  	.setup		= ipvlan_link_setup,
->  	.newlink	= ipvlan_link_new,
->  	.dellink	= ipvlan_link_delete,
-> +	.get_link_net	= ipvlan_get_link_net,
->  };
->  
->  int ipvlan_link_register(struct rtnl_link_ops *ops)
-> 
-
-This conflicts with a patch in net-next...
-
-commit 0bad834ca7bf9999ed9841f2bf9f5f07fbe02136
-Author: Taehee Yoo <ap420073@gmail.com>
-Date:   Fri Aug 21 17:47:32 2020 +0000
-
-    ipvlan: advertise link netns via netlink
-
-I think you should take it as is.
