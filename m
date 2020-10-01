@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A0D0280822
-	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 21:53:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E09DF28081D
+	for <lists+netdev@lfdr.de>; Thu,  1 Oct 2020 21:53:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733073AbgJATx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 15:53:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40436 "EHLO mail.kernel.org"
+        id S1733095AbgJATxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 15:53:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40450 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733026AbgJATxR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1733031AbgJATxR (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 1 Oct 2020 15:53:17 -0400
 Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EDC21208A9;
-        Thu,  1 Oct 2020 19:53:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7A17521D82;
+        Thu,  1 Oct 2020 19:53:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1601581996;
-        bh=u7ZwC47uolB5RAe2RdrA3nnXH4+/eV1tmsqC0Wsg1lM=;
+        bh=1q9hPhhtfibTMsqVbaaAYf+OabxR7NCQzWZkd98DhL4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A0sIB1anYaC8Epln0VPZLU9qOC5UxmLOISLgisejsE2BVU6MrOfSqoMgIH1s3kO+w
-         79hp2LrnlF51gD+8sppM6jw6yyXOJnoW94Ssld10YiYv4r3ObFQELtxfOXJ8dya4Jf
-         bow4MHZBfxdV0LeNfY4hE2QFydu1Um1L2XeT4UKU=
+        b=StlTxWjua6zUq7zuSFuAid65f5LaQs7+bmFPvwZgaWyb0TFFolA/BDTwg7iSV6lB0
+         D2XTX+f2sVgz3TX7oMie5pZP26tZDyJmgjM1sKS5MKcVaAN48c4c62k2yWxC18A275
+         Nk28eyVbFVHABjQEuj1lko3Y4FKmY6BvGYUuLj2o=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Aya Levin <ayal@mellanox.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net V2 11/15] net/mlx5e: Fix driver's declaration to support GRE offload
-Date:   Thu,  1 Oct 2020 12:52:43 -0700
-Message-Id: <20201001195247.66636-12-saeed@kernel.org>
+Subject: [net V2 12/15] net/mlx5e: Fix return status when setting unsupported FEC mode
+Date:   Thu,  1 Oct 2020 12:52:44 -0700
+Message-Id: <20201001195247.66636-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201001195247.66636-1-saeed@kernel.org>
 References: <20201001195247.66636-1-saeed@kernel.org>
@@ -44,57 +44,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@mellanox.com>
 
-Declare GRE offload support with respect to the inner protocol. Add a
-list of supported inner protocols on which the driver can offload
-checksum and GSO. For other protocols, inform the stack to do the needed
-operations. There is no noticeable impact on GRE performance.
+Verify the configured FEC mode is supported by at least a single link
+mode before applying the command. Otherwise fail the command and return
+"Operation not supported".
+Prior to this patch, the command was successful, yet it falsely set all
+link modes to FEC auto mode - like configuring FEC mode to auto. Auto
+mode is the default configuration if a link mode doesn't support the
+configured FEC mode.
 
-Fixes: 2729984149e6 ("net/mlx5e: Support TSO and TX checksum offloads for GRE tunnels")
+Fixes: b5ede32d3329 ("net/mlx5e: Add support for FEC modes based on 50G per lane links")
 Signed-off-by: Aya Levin <ayal@mellanox.com>
+Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/port.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index b1a16fb9667e..42ec28e29834 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4226,6 +4226,21 @@ int mlx5e_get_vf_stats(struct net_device *dev,
- }
- #endif
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/port.c b/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
+index 96608dbb9314..308fd279669e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
+@@ -569,6 +569,9 @@ int mlx5e_set_fec_mode(struct mlx5_core_dev *dev, u16 fec_policy)
+ 	if (fec_policy >= (1 << MLX5E_FEC_LLRS_272_257_1) && !fec_50g_per_lane)
+ 		return -EOPNOTSUPP;
  
-+static bool mlx5e_gre_tunnel_inner_proto_offload_supported(struct mlx5_core_dev *mdev,
-+							   struct sk_buff *skb)
-+{
-+	switch (skb->inner_protocol) {
-+	case htons(ETH_P_IP):
-+	case htons(ETH_P_IPV6):
-+	case htons(ETH_P_TEB):
-+		return true;
-+	case htons(ETH_P_MPLS_UC):
-+	case htons(ETH_P_MPLS_MC):
-+		return MLX5_CAP_ETH(mdev, tunnel_stateless_mpls_over_gre);
-+	}
-+	return false;
-+}
++	if (fec_policy && !mlx5e_fec_in_caps(dev, fec_policy))
++		return -EOPNOTSUPP;
 +
- static netdev_features_t mlx5e_tunnel_features_check(struct mlx5e_priv *priv,
- 						     struct sk_buff *skb,
- 						     netdev_features_t features)
-@@ -4248,7 +4263,9 @@ static netdev_features_t mlx5e_tunnel_features_check(struct mlx5e_priv *priv,
- 
- 	switch (proto) {
- 	case IPPROTO_GRE:
--		return features;
-+		if (mlx5e_gre_tunnel_inner_proto_offload_supported(priv->mdev, skb))
-+			return features;
-+		break;
- 	case IPPROTO_IPIP:
- 	case IPPROTO_IPV6:
- 		if (mlx5e_tunnel_proto_supported(priv->mdev, IPPROTO_IPIP))
+ 	MLX5_SET(pplm_reg, in, local_port, 1);
+ 	err = mlx5_core_access_reg(dev, in, sz, out, sz, MLX5_REG_PPLM, 0, 0);
+ 	if (err)
 -- 
 2.26.2
 
