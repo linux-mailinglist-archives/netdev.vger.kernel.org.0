@@ -2,65 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E5628185C
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 18:54:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A273628185F
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 18:55:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388161AbgJBQy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 12:54:29 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:56379 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725991AbgJBQy3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 12:54:29 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1kOOK6-0000so-UM; Fri, 02 Oct 2020 16:54:23 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Dan Murphy <dmurphy@ti.com>,
-        netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] net: phy: dp83869: fix unsigned comparisons against less than zero values
-Date:   Fri,  2 Oct 2020 17:54:22 +0100
-Message-Id: <20201002165422.94328-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.27.0
+        id S2388111AbgJBQzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 12:55:03 -0400
+Received: from mx2.suse.de ([195.135.220.15]:35290 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387692AbgJBQzD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 12:55:03 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 569F9B285;
+        Fri,  2 Oct 2020 16:55:02 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id C92F360787; Fri,  2 Oct 2020 18:55:01 +0200 (CEST)
+Date:   Fri, 2 Oct 2020 18:55:01 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>, davem@davemloft.net,
+        netdev@vger.kernel.org, andrew@lunn.ch, jiri@resnulli.us,
+        dsahern@kernel.org, pablo@netfilter.org
+Subject: Re: [PATCH net-next v2 00/10] genetlink: support per-command policy
+ dump
+Message-ID: <20201002165501.glpdxfjstpya3srj@lion.mk-sys.cz>
+References: <d26ccd875ebac452321343cc9f6a9e8ef990efbf.camel@sipsolutions.net>
+ <20201002074001.3484568a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <1dacbe07dc89cd69342199e61aeead4475f3621c.camel@sipsolutions.net>
+ <20201002075538.2a52dccb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <e350fbdadd8dfa07bef8a76631d8ec6a6c6e8fdf.camel@sipsolutions.net>
+ <20201002080308.7832bcc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <a69c92aac65c718b1bd80c8dc0cbb471cdd17d9b.camel@sipsolutions.net>
+ <20201002080944.2f63ccf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <db56057454ee3338a7fe13c8d5cc450b22b18c3b.camel@sipsolutions.net>
+ <20201002082517.31e644ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201002082517.31e644ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Fri, Oct 02, 2020 at 08:25:17AM -0700, Jakub Kicinski wrote:
+> On Fri, 02 Oct 2020 17:13:28 +0200 Johannes Berg wrote:
+> > I suppose, I thought you wanted to change it to have separate dump/do
+> > policies? Whatever you like there, I don't really care much :)
+> 
+> I just want to make the uAPI future-proof for now.
+> 
+> At a quick look ethtool doesn't really accept any attributes but
+> headers for GET requests. DO and DUMP are the same there so it's 
+> not a priority for me.
 
-Currently the comparisons of u16 integers value and sopass_val with
-less than zero for error checking is always false because the values
-are unsigned. Fix this by making these variables int.  This does not
-affect the shift and mask operations performed on these variables
+This is likely to change, for -x / --show-rxfh-indir / --show-rxfh we
+will neeed to specify RSS context id. This is also an example where
+different policy for doit and dumpit would make sense.
 
-Addresses-Coverity: ("Unsigned compared against zero")
-Fixes: 49fc23018ec6 ("net: phy: dp83869: support Wake on LAN")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/phy/dp83869.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index 0aee5f645b71..cf6dec7b7d8e 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -305,7 +305,7 @@ static int dp83869_set_wol(struct phy_device *phydev,
- static void dp83869_get_wol(struct phy_device *phydev,
- 			    struct ethtool_wolinfo *wol)
- {
--	u16 value, sopass_val;
-+	int value, sopass_val;
- 
- 	wol->supported = (WAKE_UCAST | WAKE_BCAST | WAKE_MAGIC |
- 			WAKE_MAGICSECURE);
--- 
-2.27.0
-
+Michal
