@@ -2,461 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 687192811F5
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 14:03:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 237AB2811F7
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 14:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387823AbgJBMD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 08:03:56 -0400
-Received: from mail-eopbgr150042.outbound.protection.outlook.com ([40.107.15.42]:10595
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726010AbgJBMD4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Oct 2020 08:03:56 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FnwjlQjsfRnptUCSmpwSIvKt7khuARMn3cUC0LsPyj3RKjXi0SPEWiYg/jOMSYEgFkWV1zdriT7c7SS8crd4Csg1bKh7BJy2ZA9sgPQ2ppH5ssN4RauhaiOplrUCQTovcOw+seorjkMyzXGJNAsnE+7htwFdpDna+j6ZjE21hnq0DF6uCVB8cQ4rs5CNySKYIvmEV2KP+DQnnNiFqzHLhOWmRdSNwg9WYKlxtn4PgnzP/YYoJQgxA+PCNt1aADNrIS0d6DnZRoO7WBIgW3FPY5MssUX0XCOn7rizkVjZMCTNcbaU8Gj8DgQ+rKk1pXqYTsc+HZGQ5kV77YHbXcNxHQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GuD8ZpgEmpuO0s9DcSkPo8iWnf7gEEYo1tm4WZkN4UY=;
- b=DLEjwkF5kXHnmq2VHogDW4khq1TIHLHVXN2dW/hkCGQ1PDwK2i6DCqsMzdYJDhnaMzk/j+flANWsOCVBC/j4iC2lPKl3r+mP+k65rnE0MXtMd7LjASWft/bF1g3qBfTOfdFjU9dAkkMyfUOlWH0EHP4LbrGvcMUbDDtC5fin1XZ8ibVBbnlaDNlIjTpJawwyrt8+bvAp3hBPb8Coa/kY9mA5HAjbnNWZqQEWtmGrDtBESMuj8bS3CnnvVq4ClG0UmtRsmd0oZjGneLXzbS+CcNiWBOOKzaG0jn1A948seeqns5MR+JqDXH1gW7bqhPXVSiNIh+wNKvccRBcpvTv86w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GuD8ZpgEmpuO0s9DcSkPo8iWnf7gEEYo1tm4WZkN4UY=;
- b=etJjJR0IWgeU5tQaHWUmvBuX4LJlyqj4pFLpzz6LTitqyTXcVBnK5s+3yhAyYj42J5lMYTy1frcsUVMqCwPFb67yMWjiTEnHMtPsvQ+MxGNXtzbcga+YXxtn8Fj261KrfyXWXUKZICBa9onSdNRZ1dv0MbOKo2IfgyZ/nH+B8KE=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB4222.eurprd04.prod.outlook.com (2603:10a6:803:46::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.28; Fri, 2 Oct
- 2020 12:03:14 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.038; Fri, 2 Oct 2020
- 12:03:14 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     davem@davemloft.net
-Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        horatiu.vultur@microchip.com, joergen.andreasen@microchip.com,
-        allan.nielsen@microchip.com, alexandru.marginean@nxp.com,
-        claudiu.manoil@nxp.com, xiaoliang.yang_1@nxp.com,
-        hongbo.wang@nxp.com, netdev@vger.kernel.org, kuba@kernel.org,
-        jiri@resnulli.us, idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 9/9] selftests: ocelot: add some example VCAP IS1, IS2 and ES0 tc offloads
-Date:   Fri,  2 Oct 2020 15:02:28 +0300
-Message-Id: <20201002120228.3451337-10-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201002120228.3451337-1-vladimir.oltean@nxp.com>
-References: <20201002120228.3451337-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [188.26.229.171]
-X-ClientProxiedBy: AM3PR07CA0130.eurprd07.prod.outlook.com
- (2603:10a6:207:8::16) To VI1PR04MB5696.eurprd04.prod.outlook.com
- (2603:10a6:803:e7::13)
+        id S2387792AbgJBMFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 08:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726010AbgJBMFd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 08:05:33 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1C9C0613D0;
+        Fri,  2 Oct 2020 05:05:33 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id e10so525209pfj.1;
+        Fri, 02 Oct 2020 05:05:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=w1TvZfZh4isNWotj7H9ZpgiclRpL+b6gwGNHtAMeGfA=;
+        b=ffFurLmVaxtXwzcnJEaqB1gru5dm6vI+Yy2ehevm3MXFrs8meWnp0RONHY/qpj1ger
+         gn6bOStiXStdWk2FP2aswkZ+LFRqEH19tfQ4LSVCPw2kwjiIH+S7+cRaBICWoqvZLZJE
+         A64IP3YVBHEryefDcgtKOawzuuSQzsWzIOgQEMJMmUJE7iT4QT5JrQQzy8Vj6tg1XZip
+         C3avl1yg+Lt+EAZRCwzDcfMG5rZTtaqkZOwmdXlOeBwih4EgbHbysFycZjTzKC/HmQy3
+         ZNXgcObzNdT0kOd6Fbzqvt2KF7H5AZfITtfFb3aw1yu5yJLk4cDeBM5u1m2A+2Cmgs0D
+         QBRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=w1TvZfZh4isNWotj7H9ZpgiclRpL+b6gwGNHtAMeGfA=;
+        b=Tnnkt+dRjveHHjdemKyrHNMvqv6bGZXB4E8nSTYQ3rSW/LCngXBXBs5Zy/ERKBFrrj
+         6HQ13gKdbozqXpzq8NbhFtHbxfs7YeZe8KS94BhD3Rlkd0bsxYdEbVY6Hvq7wNOscQIr
+         pn7HRcFwMmHZOi1an0oa6XjJoMMsFMhFRrRPnav5AwHEXs6Tm/bnyJYOf9zv+LXxvWrP
+         OGA9CN5755ZbR2q8sULYOuz9xs/VO2FgNcJAYG8gISju1NEnZLOgIv+ENAvvoi8XH1Sz
+         eRKm38QBkE4KCQSQxWziSAA6+TPRkmYMwjaSiAZE4XpQkcTMlwD4DHNa9+U2HYexVws5
+         4fTw==
+X-Gm-Message-State: AOAM531j2UtsWg5H2U/WraPsSkDNxSo9cKnVGDFVgImQB/drz7RbbX/p
+        wsMK3K8VAHRf56dV8wb83zJBz9eKCYI7RV9I2TI=
+X-Google-Smtp-Source: ABdhPJzgdyvn6+K1n7d3iUaIhztN8ozzw6PCYu3w2pr3T3t8cnbc9jj5J5XR82OT43GVhyoVmNILig==
+X-Received: by 2002:a63:e:: with SMTP id 14mr1906638pga.426.1601640332098;
+        Fri, 02 Oct 2020 05:05:32 -0700 (PDT)
+Received: from [192.168.0.104] ([49.207.217.69])
+        by smtp.gmail.com with ESMTPSA id 1sm1541864pgm.4.2020.10.02.05.05.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Oct 2020 05:05:30 -0700 (PDT)
+Subject: Re: [PATCH v2] net: usb: rtl8150: prevent set_ethernet_addr from
+ setting uninit address
+To:     Greg KH <greg@kroah.com>
+Cc:     David Miller <davem@davemloft.net>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
+        petkan@nucleusys.com, kuba@kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201001073221.239618-1-anant.thazhemadam@gmail.com>
+ <20201001.191522.1749084221364678705.davem@davemloft.net>
+ <83804e93-8f59-4d35-ec61-e9b5e6f00323@gmail.com>
+ <20201002115453.GA3338729@kroah.com>
+From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Message-ID: <a19aa514-14a9-8c92-d41a-0b9e17daa8e3@gmail.com>
+Date:   Fri, 2 Oct 2020 17:35:25 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.26.229.171) by AM3PR07CA0130.eurprd07.prod.outlook.com (2603:10a6:207:8::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.14 via Frontend Transport; Fri, 2 Oct 2020 12:03:12 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 45174d4e-7700-4e3d-d849-08d866cb23d6
-X-MS-TrafficTypeDiagnostic: VI1PR04MB4222:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB422253BD1219E3048F928044E0310@VI1PR04MB4222.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pZj5F0EX5MsYRsjen3aa49l/Nle3SSM+9bsr3mfYZ0e1PGIfdAgD4cvrQRS2cCOgLRtuxJFjDd+VnuWUSOcgHWl+fQ6beIHMpovAmfKzBFjHjrGHSENz7DyLcSQFgl/+U/KpnI9Y+BgMO2AKPLQXtz5XXLF+X123cgMeEQpSc73BiTHFThGw6XYFAgTb/sGSGkSkVhmNyh+gNjvlq2vocVyWhpzdBzOEB6zSNXYY2BNIZ8NZnTasewnUjWjLQyGZEyIXiEKrrthAEO50EW5CIw8YQeR/vTQHuF+eE1JO6V+98IdHDA8Bu6ZOs0ROo6tYBOX9eUpOXsexp64AFKW3zCPp/4p1UbT21hL7KPgZpOZe+jXU9BHEv+Gf//2JN1f5ALBnYUSZ64QIlFTn6m9QYiAHklVqnnikoG7kmAWdBULVQYJXI/bPadPbnUFM+R7ZONtc45D+VfU+esW4GgqN2byJN3KfTj5woS1j56hEF0MT+kK49zMn85SoK3f+6YCl
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(346002)(366004)(376002)(86362001)(186003)(26005)(2616005)(16526019)(7416002)(52116002)(478600001)(5660300002)(6916009)(2906002)(6506007)(30864003)(6486002)(66946007)(36756003)(69590400008)(66476007)(66556008)(956004)(6512007)(6666004)(44832011)(4326008)(83380400001)(8676002)(8936002)(1076003)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: ZV1JSICdUytR+tzd2GxrM2OXBoV/X8p15yF65KJABNV7pWmwWjSr15zZ2EZ/b9HWz4w2aHZS2+4Rp0Z3hq7z/0f19h15OkLX8rU0Ga4TMGXtWmz1YS0Eo7z8Y9S7m7HygzOQnX9Ht/DuHB+TiPLCevcl8ePhPNuxLSCqvEyWExQy8xGSNSGM2eXiwOtrNfsPltVVNX2mEc17aMhSiC2Pfxn7zMM4yUArNc2bX/NK4vINsvefcPrKobc5ysaa+qq9CAnKt+B+3Iw351d9Pewt8Lgz5FqMBLY5oQ5aEi0AAsz/nP1Ybl17qe5ba2haDfpCTYJJ9WslM8Ai8XwdcjT55hQqeywNgqabWrsnyNG99inUSUwB4kG4TsjYZRMLVwUNJZWJ1B0SKN85EHXZybsdzDfcbc8Jpz4I1CYeFywcG/ymHmeUJlBk7Sww968i3heE32bSFW6+eHd5qCVrZB7JpomKM82ydKyD2n+asRMTRShEwOGqhQtpClM2na9c9og1OlllF3cyaf4G/wzGWHtngiedMW3ibBKUlbB2l7nTDjzKzrF4RlLLQuEkSrDdnMqxgZPxd5CuQewAX5MJuvRzNSPc+YiriVZvo+z2ztEi0uf+0vsF3FKIGwwmGhCPBA3ucEIsolnN/GzHkHdfWEIxaQ==
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 45174d4e-7700-4e3d-d849-08d866cb23d6
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Oct 2020 12:03:14.4398
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Swr+3dYAGyFdXDhLTFd1euEvuoUjhHx8UULeN7gJcpZy5SCOe4xEUy+lCiJJdUNpSPKYu9UG3N7dUUWSYxl5nA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4222
+In-Reply-To: <20201002115453.GA3338729@kroah.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provide an example script which can be used as a skeleton for offloading
-TCAM rules in the Ocelot switches.
 
-Not all actions are demoed, mostly because of difficulty to automate
-this from a single board.
+On 02-10-2020 17:24, Greg KH wrote:
+> On Fri, Oct 02, 2020 at 05:04:13PM +0530, Anant Thazhemadam wrote:
+>> On 02/10/20 7:45 am, David Miller wrote:
+>>> From: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+>>> Date: Thu,  1 Oct 2020 13:02:20 +0530
+>>>
+>>>> When get_registers() fails (which happens when usb_control_msg() fails)
+>>>> in set_ethernet_addr(), the uninitialized value of node_id gets copied
+>>>> as the address.
+>>>>
+>>>> Checking for the return values appropriately, and handling the case
+>>>> wherein set_ethernet_addr() fails like this, helps in avoiding the
+>>>> mac address being incorrectly set in this manner.
+>>>>
+>>>> Reported-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+>>>> Tested-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
+>>>> Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+>>>> Acked-by: Petko Manolov <petkan@nucleusys.com>
+>>> First, please remove "Linux-kernel-mentees" from the Subject line.
+>>>
+>>> All patch submitters should have their work judged equally, whoever
+>>> they are.  So this Subject text gives no extra information, and it
+>>> simply makes scanning Subject lines in one's mailer more difficult.
+>> I will keep that in mind for all future submissions. Thank you.
+>>
+>>> Second, when a MAC address fails to probe a random MAC address should
+>>> be selected.  We have helpers for this.  This way an interface still
+>>> comes up and is usable, even in the event of a failed MAC address
+>>> probe.
+>> Okay... I see.
+>> But this patch is about ensuring that an uninitialized variable's
+>> value (whatever that may be) is not set as the ethernet address
+>> blindly (without any form of checking if get_registers() worked
+>> as expected, or not). And I didn't think uninitialized values being
+>> set as MAC address was considered a good outcome (after all, it
+>> seemed to have triggered a bug), especially when it could have
+>> been avoided by introducing a simple check that doesn't break
+>> anything.
+> If the read from the device for the MAC address fails, don't abort the
+> whole probe process and make the device not work at all, call the
+> networking core to assign a random MAC address.
+>
+>> However, if I was mistaken, and if that is something that we can live
+>> with after all, then I don't really see the understand the purpose of
+>> similar checks being made (in all the many places that the return
+>> value of get_registers() (or a similar function gets checked) in the first
+>> place at all.
+> Different values and registers determine what should be done with an
+> error.  It's all relative.
+>
+> For this type of error, we should gracefully recover and keep on going.
+> For others, maybe we just ignore the issue, or log it, or something
+> else, it all depends.
+>
+> hope this helps,
+>
+> greg k-h
+Yes, this clears things up for me. I'll see to it that this gets done in a v3.
 
-For example, policing. We can set up an iperf3 UDP server and client and
-measure throughput at destination. But at least with DSA setups, network
-namespacing the individual ports is not possible because all switch
-ports are handled by the same DSA master. And we cannot assume that the
-target platform (an embedded board) has 2 other non-switch generator
-ports, we need to work with the generator ports as switch ports (this is
-the reason why mausezahn is used, and not IP traffic like ping). When
-somebody has an idea how to test policing, that can be added to this
-test.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes since RFC:
-Much more comprehensive test, with traffic.
-
- MAINTAINERS                                   |   1 +
- .../drivers/net/ocelot/tc_flower_chains.sh    | 273 ++++++++++++++++++
- tools/testing/selftests/net/forwarding/lib.sh |  43 +++
- 3 files changed, 317 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c1e946606dce..98d0747ce07c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12541,6 +12541,7 @@ F:	drivers/net/dsa/ocelot/*
- F:	drivers/net/ethernet/mscc/
- F:	include/soc/mscc/ocelot*
- F:	net/dsa/tag_ocelot.c
-+F:	tools/testing/selftests/drivers/net/ocelot/*
- 
- OCXL (Open Coherent Accelerator Processor Interface OpenCAPI) DRIVER
- M:	Frederic Barrat <fbarrat@linux.ibm.com>
-diff --git a/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh b/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-new file mode 100755
-index 000000000000..71a538add08a
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-@@ -0,0 +1,273 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright 2020 NXP Semiconductors
-+
-+WAIT_TIME=1
-+NUM_NETIFS=4
-+lib_dir=$(dirname $0)/../../../net/forwarding
-+source $lib_dir/tc_common.sh
-+source $lib_dir/lib.sh
-+
-+require_command tcpdump
-+
-+#
-+#   +---------------------------------------------+
-+#   |       DUT ports         Generator ports     |
-+#   | +--------+ +--------+ +--------+ +--------+ |
-+#   | |        | |        | |        | |        | |
-+#   | |  eth0  | |  eth1  | |  eth2  | |  eth3  | |
-+#   | |        | |        | |        | |        | |
-+#   +-+--------+-+--------+-+--------+-+--------+-+
-+#          |         |           |          |
-+#          |         |           |          |
-+#          |         +-----------+          |
-+#          |                                |
-+#          +--------------------------------+
-+
-+eth0=${NETIFS[p1]}
-+eth1=${NETIFS[p2]}
-+eth2=${NETIFS[p3]}
-+eth3=${NETIFS[p4]}
-+
-+eth0_mac="de:ad:be:ef:00:00"
-+eth1_mac="de:ad:be:ef:00:01"
-+eth2_mac="de:ad:be:ef:00:02"
-+eth3_mac="de:ad:be:ef:00:03"
-+
-+# Helpers to map a VCAP IS1 and VCAP IS2 lookup and policy to a chain number
-+# used by the kernel driver. The numbers are:
-+# VCAP IS1 lookup 0:            10000
-+# VCAP IS1 lookup 1:            11000
-+# VCAP IS1 lookup 2:            12000
-+# VCAP IS2 lookup 0 policy 0:   20000
-+# VCAP IS2 lookup 0 policy 1:   20001
-+# VCAP IS2 lookup 0 policy 255: 20255
-+# VCAP IS2 lookup 1 policy 0:   21000
-+# VCAP IS2 lookup 1 policy 1:   21001
-+# VCAP IS2 lookup 1 policy 255: 21255
-+IS1()
-+{
-+	local lookup=$1
-+
-+	echo $((10000 + 1000 * lookup))
-+}
-+
-+IS2()
-+{
-+	local lookup=$1
-+	local pag=$2
-+
-+	echo $((20000 + 1000 * lookup + pag))
-+}
-+
-+ES0()
-+{
-+	echo 0
-+}
-+
-+# The Ocelot switches have a fixed ingress pipeline composed of:
-+#
-+# +----------------------------------------------+      +-----------------------------------------+
-+# |                   VCAP IS1                   |      |                  VCAP IS2               |
-+# |                                              |      |                                         |
-+# | +----------+    +----------+    +----------+ |      |            +----------+    +----------+ |
-+# | | Lookup 0 |    | Lookup 1 |    | Lookup 2 | | --+------> PAG 0: | Lookup 0 | -> | Lookup 1 | |
-+# | +----------+ -> +----------+ -> +----------+ |   |  |            +----------+    +----------+ |
-+# | |key&action|    |key&action|    |key&action| |   |  |            |key&action|    |key&action| |
-+# | |key&action|    |key&action|    |key&action| |   |  |            |    ..    |    |    ..    | |
-+# | |    ..    |    |    ..    |    |    ..    | |   |  |            +----------+    +----------+ |
-+# | +----------+    +----------+    +----------+ |   |  |                                         |
-+# |                                 selects PAG  |   |  |            +----------+    +----------+ |
-+# +----------------------------------------------+   +------> PAG 1: | Lookup 0 | -> | Lookup 1 | |
-+#                                                    |  |            +----------+    +----------+ |
-+#                                                    |  |            |key&action|    |key&action| |
-+#                                                    |  |            |    ..    |    |    ..    | |
-+#                                                    |  |            +----------+    +----------+ |
-+#                                                    |  |      ...                                |
-+#                                                    |  |                                         |
-+#                                                    |  |            +----------+    +----------+ |
-+#                                                    +----> PAG 254: | Lookup 0 | -> | Lookup 1 | |
-+#                                                    |  |            +----------+    +----------+ |
-+#                                                    |  |            |key&action|    |key&action| |
-+#                                                    |  |            |    ..    |    |    ..    | |
-+#                                                    |  |            +----------+    +----------+ |
-+#                                                    |  |                                         |
-+#                                                    |  |            +----------+    +----------+ |
-+#                                                    +----> PAG 255: | Lookup 0 | -> | Lookup 1 | |
-+#                                                       |            +----------+    +----------+ |
-+#                                                       |            |key&action|    |key&action| |
-+#                                                       |            |    ..    |    |    ..    | |
-+#                                                       |            +----------+    +----------+ |
-+#                                                       +-----------------------------------------+
-+#
-+# Both the VCAP IS1 (Ingress Stage 1) and IS2 (Ingress Stage 2) are indexed
-+# (looked up) multiple times: IS1 3 times, and IS2 2 times. Each filter
-+# (key and action pair) can be configured to only match during the first, or
-+# second, etc, lookup.
-+#
-+# During one TCAM lookup, the filter processing stops at the first entry that
-+# matches, then the pipeline jumps to the next lookup.
-+# The driver maps each individual lookup of each individual ingress TCAM to a
-+# separate chain number. For correct rule offloading, it is mandatory that each
-+# filter installed in one TCAM is terminated by a non-optional GOTO action to
-+# the next lookup from the fixed pipeline.
-+#
-+# A chain can only be used if there is a GOTO action correctly set up from the
-+# prior lookup in the processing pipeline. Setting up all chains is not
-+# mandatory.
-+
-+# NOTE: VCAP IS1 currently uses only S1_NORMAL half keys and VCAP IS2
-+# dynamically chooses between MAC_ETYPE, ARP, IP4_TCP_UDP, IP4_OTHER, which are
-+# all half keys as well.
-+
-+create_tcam_skeleton()
-+{
-+	local eth=$1
-+
-+	tc qdisc add dev $eth clsact
-+
-+	# VCAP IS1 is the Ingress Classification TCAM and can offload the
-+	# following actions:
-+	# - skbedit priority
-+	# - vlan pop
-+	# - vlan modify
-+	# - goto (only in lookup 2, the last IS1 lookup)
-+	tc filter add dev $eth ingress chain 0 pref 49152 flower \
-+		skip_sw action goto chain $(IS1 0)
-+	tc filter add dev $eth ingress chain $(IS1 0) pref 49152 \
-+		flower skip_sw action goto chain $(IS1 1)
-+	tc filter add dev $eth ingress chain $(IS1 1) pref 49152 \
-+		flower skip_sw action goto chain $(IS1 2)
-+	tc filter add dev $eth ingress chain $(IS1 2) pref 49152 \
-+		flower skip_sw action goto chain $(IS2 0 0)
-+
-+	# VCAP IS2 is the Security Enforcement ingress TCAM and can offload the
-+	# following actions:
-+	# - trap
-+	# - drop
-+	# - police
-+	# The two VCAP IS2 lookups can be segmented into up to 256 groups of
-+	# rules, called Policies. A Policy is selected through the Policy
-+	# Association Group (PAG) action of VCAP IS1 (which is the
-+	# GOTO offload).
-+	tc filter add dev $eth ingress chain $(IS2 0 0) pref 49152 \
-+		flower skip_sw action goto chain $(IS2 1 0)
-+}
-+
-+setup_prepare()
-+{
-+	create_tcam_skeleton $eth0
-+
-+	ip link add br0 type bridge
-+	ip link set $eth0 master br0
-+	ip link set $eth1 master br0
-+	ip link set br0 up
-+
-+	ip link add link $eth3 name $eth3.100 type vlan id 100
-+	ip link set $eth3.100 up
-+
-+	tc filter add dev $eth0 ingress chain $(IS1 1) pref 1 \
-+		protocol 802.1Q flower skip_sw vlan_id 100 \
-+		action vlan pop \
-+		action goto chain $(IS1 2)
-+
-+	tc filter add dev $eth0 egress chain $(ES0) pref 1 \
-+		flower skip_sw indev $eth1 \
-+		action vlan push protocol 802.1Q id 100
-+
-+	tc filter add dev $eth0 ingress chain $(IS1 0) \
-+		protocol ipv4 flower skip_sw src_ip 10.1.1.2 \
-+		action skbedit priority 7 \
-+		action goto chain $(IS1 1)
-+
-+	tc filter add dev $eth0 ingress chain $(IS2 0 0) \
-+		protocol ipv4 flower skip_sw ip_proto udp dst_port 5201 \
-+		action police rate 50mbit burst 64k \
-+		action goto chain $(IS2 1 0)
-+}
-+
-+cleanup()
-+{
-+	ip link del $eth3.100
-+	tc qdisc del dev $eth0 clsact
-+	ip link del br0
-+}
-+
-+test_vlan_pop()
-+{
-+	printf "Testing VLAN pop..			"
-+
-+	tcpdump_start $eth2
-+
-+	# Work around Mausezahn VLAN builder bug
-+	# (https://github.com/netsniff-ng/netsniff-ng/issues/225) by using
-+	# an 8021q upper
-+	$MZ $eth3.100 -q -c 1 -p 64 -a $eth3_mac -b $eth2_mac -t ip
-+
-+	sleep 1
-+
-+	tcpdump_stop
-+
-+	if tcpdump_show | grep -q "$eth3_mac > $eth2_mac, ethertype IPv4"; then
-+		echo "OK"
-+	else
-+		echo "FAIL"
-+	fi
-+
-+	tcpdump_cleanup
-+}
-+
-+test_vlan_push()
-+{
-+	printf "Testing VLAN push..			"
-+
-+	tcpdump_start $eth3.100
-+
-+	$MZ $eth2 -q -c 1 -p 64 -a $eth2_mac -b $eth3_mac -t ip
-+
-+	sleep 1
-+
-+	tcpdump_stop
-+
-+	if tcpdump_show | grep -q "$eth2_mac > $eth3_mac"; then
-+		echo "OK"
-+	else
-+		echo "FAIL"
-+	fi
-+
-+	tcpdump_cleanup
-+}
-+
-+test_skbedit_priority()
-+{
-+	local num_pkts=100
-+
-+	printf "Testing frame prioritization..		"
-+
-+	before=$(ethtool_stats_get $eth0 'rx_green_prio_7')
-+
-+	$MZ $eth3 -q -c $num_pkts -p 64 -a $eth3_mac -b $eth2_mac -t ip -A 10.1.1.2
-+
-+	after=$(ethtool_stats_get $eth0 'rx_green_prio_7')
-+
-+	if [ $((after - before)) = $num_pkts ]; then
-+		echo "OK"
-+	else
-+		echo "FAIL"
-+	fi
-+}
-+
-+trap cleanup EXIT
-+
-+ALL_TESTS="
-+	test_vlan_pop
-+	test_vlan_push
-+	test_skbedit_priority
-+"
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 977fc2b326a2..927f9ba49e08 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -1227,3 +1227,46 @@ stop_traffic()
- 	# Suppress noise from killing mausezahn.
- 	{ kill %% && wait %%; } 2>/dev/null
- }
-+
-+tcpdump_start()
-+{
-+	local if_name=$1; shift
-+	local ns=$1; shift
-+
-+	capfile=$(mktemp)
-+	capout=$(mktemp)
-+
-+	if [ -z $ns ]; then
-+		ns_cmd=""
-+	else
-+		ns_cmd="ip netns exec ${ns}"
-+	fi
-+
-+	if [ -z $SUDO_USER ] ; then
-+		capuser=""
-+	else
-+		capuser="-Z $SUDO_USER"
-+	fi
-+
-+	$ns_cmd tcpdump -e -n -Q in -i $if_name \
-+		-s 65535 -B 32768 $capuser -w $capfile > "$capout" 2>&1 &
-+	cappid=$!
-+
-+	sleep 1
-+}
-+
-+tcpdump_stop()
-+{
-+	$ns_cmd kill $cappid
-+	sleep 1
-+}
-+
-+tcpdump_cleanup()
-+{
-+	rm $capfile $capout
-+}
-+
-+tcpdump_show()
-+{
-+	tcpdump -e -n -r $capfile 2>&1
-+}
--- 
-2.25.1
-
+Thanks,
+Anant
