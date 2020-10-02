@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFC26280C55
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 04:42:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D58E2280C57
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 04:42:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387600AbgJBCmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 22:42:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59076 "EHLO
+        id S2387626AbgJBCmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 22:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387485AbgJBCmi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 22:42:38 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2861FC0613D0;
-        Thu,  1 Oct 2020 19:42:38 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id e18so518518pgd.4;
-        Thu, 01 Oct 2020 19:42:38 -0700 (PDT)
+        with ESMTP id S2387604AbgJBCmo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 22:42:44 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74F6C0613D0;
+        Thu,  1 Oct 2020 19:42:43 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id o25so536584pgm.0;
+        Thu, 01 Oct 2020 19:42:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PVE6dj7KElSm5JHuEzI9VdWXB5S7Zzgg0Ylks3nzGTA=;
-        b=QK0odRNw1YbgwIN2z/O6EwmnuAh8zTAPtPAq291jHHuQOIFUnorxxfBeq4hzQDCRE2
-         42iJfjCOgnapQ5iZ+7UqEy8dSaK+1AHQACRJNvhO3NKp0xh9m52oHPb7qZ7RSzyhEujr
-         WqKOzEeS2MPzVZX7LtPU1zs0GIqsXLOdQnKIApzfhiRHhybyGsxK5rxMH9RAQaVLUdRs
-         3stajDvV9shpg358X0Jd80VfQYuouVZ7hGseKiOXaPdrL7vdsg2/yIk2j0eLq/Vh/p15
-         I0Einu+IVvI7RYHxW6ZEO5Hi5lCCeQpfTXYrQ2P+LULnOw6J27nce2T1x9l5hTw2rahl
-         Y1dg==
+        bh=vhJrTuKe7PDz10GtNZQbkYGDQuGZYuoM+kYSrehJVgg=;
+        b=snQHdcK2Lj0GYmkGAMK+uTYrfZPPy/CkOc4CDSftneJIFxmF/+ZJC/pLeIPJk4N0wm
+         jTtIYJ38X33KJLvA6yr/Vut3N2E8Qq5MdgK4qsyKSvGpY6jwAxh/3lXICP1Tjc0OgZUD
+         yY0PdElkMYfdrBAZiGZNh6KL8h6NXZyIC6DI8vHKXDsdI5Hae7mzE5QvaesltPflNPmb
+         vBT73gdfmh4xl1g9VfRapcGsUU7Ttytvb38iy53Y0yNvLQiwMBsillsyVoa/7JQIVvaF
+         JidnH7q5TM+nJlLhuQL+eiXwxMt6R+D4P5lKc0pkgg9Jc9RmHJgCU+y12yJII+bEx879
+         yabQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PVE6dj7KElSm5JHuEzI9VdWXB5S7Zzgg0Ylks3nzGTA=;
-        b=EBa7w5EZTJmauZ2N6NngkQ6UujNv0Xlru4sxP2mbK4N1v0Hwb4QvC0njShnVKw6VRE
-         hEswnAtLFfY6zHkNv6hrdz/J3C5WfTiWjrhVI+UT58PQf2hKhcALdInyZbW9YQH6obdP
-         bTzt8jATDBLuT051VdBfJhh2ROKTGRhI5SQ9MusAnyU29ZB69n0oixvPizdX+lVNKb+1
-         aARwc2rQrTeJFDWYgQ4tYystO0sKh+Ho3FHwSOmEZn42DLP+TT80+6JjkFo9smkGABLa
-         DFm8Gv06N0pvOViQuw4Ep5snMrusMA1MPPlbf1v1L2hrdbyidybd85ro+YM2ygLWA4Tb
-         oTIw==
-X-Gm-Message-State: AOAM530FlKvnFVzb0WvGzYsmT07gMYy2sp9AZmV3oBx/c001K+WG327C
-        ouuDaKAdLCibt6nqRWdtyRfShA7Rg782og==
-X-Google-Smtp-Source: ABdhPJyqetfkTbQRqPyc/nUNuil1jXA6b5y3h2eNa3/SPC9H8ZKGRx0e/1xQRczANyJGdbbAbrA/nw==
-X-Received: by 2002:a62:7a14:0:b029:13e:d13d:a0f5 with SMTP id v20-20020a627a140000b029013ed13da0f5mr175423pfc.17.1601606557193;
-        Thu, 01 Oct 2020 19:42:37 -0700 (PDT)
+        bh=vhJrTuKe7PDz10GtNZQbkYGDQuGZYuoM+kYSrehJVgg=;
+        b=uQ6ulqffxTaJaA3hJ4n3to7SZyELjo4aUKOM1bUpSYqGuwnt72ZvrlZ1cRdlz1DUrS
+         lq16AT0//BuUISUm2FCrUcDWvNFf71OK6h8CAUJn9igq53Y4MJ+4fgtCJ0Pp7ZUGDv6l
+         W95H76oJDCSJHXxKMeQTW96+OoXO3ONX1uOJT0ruhfxyE+yGRTuZlJCVzzbwGwZfjP64
+         p+Wpgfi2tls7Ja0y3Yqt2N2JpUV9WQeemqdikkxwAR3yylcqGYV11DW9jAP60BtC0pqK
+         tGIEtT+c72wWt2FEI47zraXnlQfKjrE299AtNb6Wv5osPzdlHs75kebqvVuLnRS6VLfe
+         39Bw==
+X-Gm-Message-State: AOAM5331xHI6CPSCBkBDnDxvP0jmuKMuhlCXuYSgbH8gHT+RuZ2dczZL
+        bgLZC2khDkVsIHncapn8oJXV/gofULSUig==
+X-Google-Smtp-Source: ABdhPJwSVJkhy6QDj4UfhIyYeyf97BTCqf224vB3pU5Fu8758ZvLqreNoLtNHtqCh1L2ZUm2XKPqoA==
+X-Received: by 2002:a62:2985:0:b029:142:2501:3969 with SMTP id p127-20020a6229850000b029014225013969mr139245pfp.46.1601606562137;
+        Thu, 01 Oct 2020 19:42:42 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id gt11sm150185pjb.48.2020.10.01.19.42.32
+        by smtp.gmail.com with ESMTPSA id gt11sm150185pjb.48.2020.10.01.19.42.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Oct 2020 19:42:36 -0700 (PDT)
+        Thu, 01 Oct 2020 19:42:41 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -56,9 +56,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         linux-kernel@vger.kernel.org (open list),
         vladimir.oltean@nxp.com, olteanv@gmail.com
-Subject: [PATCH net-next 2/4] net: dsa: b53: Set untag_bridge_pvid
-Date:   Thu,  1 Oct 2020 19:42:13 -0700
-Message-Id: <20201002024215.660240-3-f.fainelli@gmail.com>
+Subject: [PATCH net-next 3/4] net: dsa: Obtain VLAN protocol from skb->protocol
+Date:   Thu,  1 Oct 2020 19:42:14 -0700
+Message-Id: <20201002024215.660240-4-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201002024215.660240-1-f.fainelli@gmail.com>
 References: <20201002024215.660240-1-f.fainelli@gmail.com>
@@ -68,69 +68,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Indicate to the DSA receive path that we need to untage the bridge PVID,
-this allows us to remove the dsa_untag_bridge_pvid() calls from
-net/dsa/tag_brcm.c.
+Now that dsa_untag_bridge_pvid() is called after eth_type_trans() we are
+guaranteed that skb->protocol will be set to a correct value, thus
+allowing us to avoid calling vlan_eth_hdr().
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/b53/b53_common.c |  1 +
- net/dsa/tag_brcm.c               | 15 ++-------------
- 2 files changed, 3 insertions(+), 13 deletions(-)
+ net/dsa/dsa_priv.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 73507cff3bc4..ce18ba0b74eb 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -2603,6 +2603,7 @@ struct b53_device *b53_switch_alloc(struct device *base,
- 	dev->ops = ops;
- 	ds->ops = &b53_switch_ops;
- 	ds->configure_vlan_while_not_filtering = true;
-+	ds->untag_bridge_pvid = true;
- 	dev->vlan_enabled = ds->configure_vlan_while_not_filtering;
- 	mutex_init(&dev->reg_mutex);
- 	mutex_init(&dev->stats_mutex);
-diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
-index 69d6b8c597a9..ad72dff8d524 100644
---- a/net/dsa/tag_brcm.c
-+++ b/net/dsa/tag_brcm.c
-@@ -152,11 +152,6 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
- 	/* Remove Broadcom tag and update checksum */
- 	skb_pull_rcsum(skb, BRCM_TAG_LEN);
- 
--	/* Set the MAC header to where it should point for
--	 * dsa_untag_bridge_pvid() to parse the correct VLAN header.
--	 */
--	skb_set_mac_header(skb, -ETH_HLEN);
--
- 	skb->offload_fwd_mark = 1;
- 
- 	return skb;
-@@ -187,7 +182,7 @@ static struct sk_buff *brcm_tag_rcv(struct sk_buff *skb, struct net_device *dev,
- 		nskb->data - ETH_HLEN - BRCM_TAG_LEN,
- 		2 * ETH_ALEN);
- 
--	return dsa_untag_bridge_pvid(nskb);
-+	return nskb;
- }
- 
- static const struct dsa_device_ops brcm_netdev_ops = {
-@@ -214,14 +209,8 @@ static struct sk_buff *brcm_tag_rcv_prepend(struct sk_buff *skb,
- 					    struct net_device *dev,
- 					    struct packet_type *pt)
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 0348dbab4131..d6ce8c2a2590 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -201,7 +201,6 @@ dsa_slave_to_master(const struct net_device *dev)
+ static inline struct sk_buff *dsa_untag_bridge_pvid(struct sk_buff *skb)
  {
--	struct sk_buff *nskb;
--
- 	/* tag is prepended to the packet */
--	nskb = brcm_tag_rcv_ll(skb, dev, pt, ETH_HLEN);
--	if (!nskb)
--		return nskb;
--
--	return dsa_untag_bridge_pvid(nskb);
-+	return brcm_tag_rcv_ll(skb, dev, pt, ETH_HLEN);
- }
+ 	struct dsa_port *dp = dsa_slave_to_port(skb->dev);
+-	struct vlan_ethhdr *hdr = vlan_eth_hdr(skb);
+ 	struct net_device *br = dp->bridge_dev;
+ 	struct net_device *dev = skb->dev;
+ 	struct net_device *upper_dev;
+@@ -217,7 +216,7 @@ static inline struct sk_buff *dsa_untag_bridge_pvid(struct sk_buff *skb)
+ 		return skb;
  
- static const struct dsa_device_ops brcm_prepend_netdev_ops = {
+ 	/* Move VLAN tag from data to hwaccel */
+-	if (!skb_vlan_tag_present(skb) && hdr->h_vlan_proto == htons(proto)) {
++	if (!skb_vlan_tag_present(skb) && skb->protocol == htons(proto)) {
+ 		skb = skb_vlan_untag(skb);
+ 		if (!skb)
+ 			return NULL;
 -- 
 2.25.1
 
