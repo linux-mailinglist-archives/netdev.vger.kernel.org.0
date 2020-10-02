@@ -2,108 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8690281D67
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 23:08:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48CE5281D84
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 23:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725812AbgJBVIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 17:08:48 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:47002 "EHLO inva021.nxp.com"
+        id S1725616AbgJBVRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 17:17:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37636 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725793AbgJBVIp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Oct 2020 17:08:45 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id B9B32200EE8;
-        Fri,  2 Oct 2020 23:08:43 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id AD944200178;
-        Fri,  2 Oct 2020 23:08:43 +0200 (CEST)
-Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 5FB16203C5;
-        Fri,  2 Oct 2020 23:08:43 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     shawnguo@kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v2 10/10] arm64: dts: lx2160ardb: add nodes for the AQR107 PHYs
-Date:   Sat,  3 Oct 2020 00:07:37 +0300
-Message-Id: <20201002210737.27645-11-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201002210737.27645-1-ioana.ciornei@nxp.com>
-References: <20201002210737.27645-1-ioana.ciornei@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1725446AbgJBVRD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 17:17:03 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AE9FF206DD;
+        Fri,  2 Oct 2020 21:17:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601673423;
+        bh=R9I7SrHtNVS9cRV2hbKb30JCWTq8F6cN2FKCkABTy3g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XcwFA4KoI0TykPwdMnayC+XyrXuWPZiq7iEQyMIHxjQx7U2rjAjsdTwyEE+GQ2Ak6
+         wi0e4nPbjzsKdZJjlERSuUqofktlfV4lneBfo1eFOC1T1rDyN/RQ2mEN/jPBHOSbIu
+         AMY1JMQmkN57giYvkQn0a3K4G/z9bDi2S7SVRxMg=
+Date:   Fri, 2 Oct 2020 14:17:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
+        jiri@resnulli.us, mkubecek@suse.cz, dsahern@kernel.org,
+        pablo@netfilter.org
+Subject: Re: [PATCH net-next v2 00/10] genetlink: support per-command policy
+ dump
+Message-ID: <20201002141701.3a30c54c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <6adbdd333e2db1ab9ac8f08e8ad3263d43bde55e.camel@sipsolutions.net>
+References: <20201001225933.1373426-1-kuba@kernel.org>
+        <20201001173644.74ed67da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <d26ccd875ebac452321343cc9f6a9e8ef990efbf.camel@sipsolutions.net>
+        <20201002074001.3484568a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <1dacbe07dc89cd69342199e61aeead4475f3621c.camel@sipsolutions.net>
+        <20201002075538.2a52dccb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <e350fbdadd8dfa07bef8a76631d8ec6a6c6e8fdf.camel@sipsolutions.net>
+        <20201002080308.7832bcc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a69c92aac65c718b1bd80c8dc0cbb471cdd17d9b.camel@sipsolutions.net>
+        <20201002080944.2f63ccf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <cc9594d16270aeb55f9f429a234ec72468403b93.camel@sipsolutions.net>
+        <20201002135059.1657d673@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <47b6644999ce2946a262d5eac0c82e33057e7321.camel@sipsolutions.net>
+        <6adbdd333e2db1ab9ac8f08e8ad3263d43bde55e.camel@sipsolutions.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Annotate the EMDIO1 node and describe the 2 AQR107 PHYs found on the
-LX2160ARDB board. Also, add the necessary phy-handles for DPMACs 3 and 4
-to their associated PHY.
+On Fri, 02 Oct 2020 23:00:15 +0200 Johannes Berg wrote:
+> On Fri, 2020-10-02 at 22:59 +0200, Johannes Berg wrote:
+> > On Fri, 2020-10-02 at 13:50 -0700, Jakub Kicinski wrote:  
+> > > My thinking was that until kernel actually start using separate dump
+> > > policies user space can assume policy 0 is relevant. But yeah, merging
+> > > your changes first would probably be best.  
+> > 
+> > Works for me. I have it based on yours. Just updated my branch (top
+> > commit is 4d5045adfe90), but I'll probably only actually email it out
+> > once things are a bit more settled wrt. your changes.  
+> 
+> Forgot the link ...
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git/log/?h=genetlink-op-policy-export
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
-Changes in v2:
- - none
+If it's not too late for you - do you want to merge the two series and
+post everything together? Perhaps squashing patch 10 into something if
+that makes sense?
 
- .../boot/dts/freescale/fsl-lx2160a-rdb.dts    | 32 +++++++++++++++++++
- 1 file changed, 32 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/freescale/fsl-lx2160a-rdb.dts b/arch/arm64/boot/dts/freescale/fsl-lx2160a-rdb.dts
-index 54fe8cd3a711..7723ad5efd37 100644
---- a/arch/arm64/boot/dts/freescale/fsl-lx2160a-rdb.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-lx2160a-rdb.dts
-@@ -35,6 +35,18 @@ &crypto {
- 	status = "okay";
- };
- 
-+&dpmac3 {
-+	phy-handle = <&aquantia_phy1>;
-+	phy-connection-type = "usxgmii";
-+	managed = "in-band-status";
-+};
-+
-+&dpmac4 {
-+	phy-handle = <&aquantia_phy2>;
-+	phy-connection-type = "usxgmii";
-+	managed = "in-band-status";
-+};
-+
- &dpmac17 {
- 	phy-handle = <&rgmii_phy1>;
- 	phy-connection-type = "rgmii-id";
-@@ -61,6 +73,18 @@ rgmii_phy2: ethernet-phy@2 {
- 		reg = <0x2>;
- 		eee-broken-1000t;
- 	};
-+
-+	aquantia_phy1: ethernet-phy@4 {
-+		/* AQR107 PHY */
-+		compatible = "ethernet-phy-ieee802.3-c45";
-+		reg = <0x4>;
-+	};
-+
-+	aquantia_phy2: ethernet-phy@5 {
-+		/* AQR107 PHY */
-+		compatible = "ethernet-phy-ieee802.3-c45";
-+		reg = <0x5>;
-+	};
- };
- 
- &esdhc0 {
-@@ -156,6 +180,14 @@ rtc@51 {
- 	};
- };
- 
-+&pcs_mdio3 {
-+	status = "okay";
-+};
-+
-+&pcs_mdio4 {
-+	status = "okay";
-+};
-+
- &sata0 {
- 	status = "okay";
- };
--- 
-2.28.0
-
+You already seem to have it rebased.
