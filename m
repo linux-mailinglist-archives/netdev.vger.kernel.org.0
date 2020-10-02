@@ -2,91 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C589281CEA
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 22:27:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B92B7281CFA
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 22:35:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725765AbgJBU13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 16:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53822 "EHLO
+        id S1725497AbgJBUfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 16:35:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725355AbgJBU13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 16:27:29 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E39C0613D0
-        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 13:27:29 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kOReC-00FRs6-5r; Fri, 02 Oct 2020 22:27:20 +0200
-Message-ID: <cc9594d16270aeb55f9f429a234ec72468403b93.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next v2 00/10] genetlink: support per-command policy
- dump
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
-        jiri@resnulli.us, mkubecek@suse.cz, dsahern@kernel.org,
-        pablo@netfilter.org
-Date:   Fri, 02 Oct 2020 22:27:19 +0200
-In-Reply-To: <20201002080944.2f63ccf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201001225933.1373426-1-kuba@kernel.org>
-         <20201001173644.74ed67da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <d26ccd875ebac452321343cc9f6a9e8ef990efbf.camel@sipsolutions.net>
-         <20201002074001.3484568a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <1dacbe07dc89cd69342199e61aeead4475f3621c.camel@sipsolutions.net>
-         <20201002075538.2a52dccb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <e350fbdadd8dfa07bef8a76631d8ec6a6c6e8fdf.camel@sipsolutions.net>
-         <20201002080308.7832bcc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <a69c92aac65c718b1bd80c8dc0cbb471cdd17d9b.camel@sipsolutions.net>
-         <20201002080944.2f63ccf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
-MIME-Version: 1.0
+        with ESMTP id S1725283AbgJBUfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 16:35:00 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89724C0613D0
+        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 13:35:00 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6D1A511E3E4C6;
+        Fri,  2 Oct 2020 13:18:12 -0700 (PDT)
+Date:   Fri, 02 Oct 2020 13:34:59 -0700 (PDT)
+Message-Id: <20201002.133459.170176193993294293.davem@davemloft.net>
+To:     steffen.klassert@secunet.com
+Cc:     herbert@gondor.apana.org.au, netdev@vger.kernel.org
+Subject: Re: pull request (net-next): ipsec-next 2020-10-02
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20201002050113.2210-1-steffen.klassert@secunet.com>
+References: <20201002050113.2210-1-steffen.klassert@secunet.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 02 Oct 2020 13:18:12 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-10-02 at 08:09 -0700, Jakub Kicinski wrote:
-> On Fri, 02 Oct 2020 17:04:11 +0200 Johannes Berg wrote:
-> > > > Yeah, that'd work. I'd probably wonder if we shouldn't do
-> > > > 
-> > > > [OP_POLICY]
-> > > >   [OP] -> (u32, u32)
-> > > > 
-> > > > in a struct with two u32's, since that's quite a bit more compact.  
-> > > 
-> > > What do we do if the op doesn't have a dump or do callback?
-> > > 0 is a valid policy ID, sadly :(  
-> > 
-> > Hm, good point. We could do -1 since that can't ever be reached though.
-> > 
-> > But compactness isn't really that necessary here anyway, so ...
+From: Steffen Klassert <steffen.klassert@secunet.com>
+Date: Fri, 2 Oct 2020 07:01:06 +0200
+
+> 1) Add a full xfrm compatible layer for 32-bit applications on
+>    64-bit kernels. From Dmitry Safonov.
 > 
-> Cool, sounds like a plan.
-> 
-> This series should be good to merge, then.
+> Please pull or let me know if there are problems.
 
-So I'm having second thoughts on this now :)
-
-If you ask me to split the policy dump to do/dump, like we discussed
-above, then what you did here for "retrieve a single policy" doesn't
-really make any sense? Because you'd be able to do that properly only
-for do, or you need my patches to get both?
-
-Perhaps it would make sense if you removed patch 10 from your set, and
-we add it back after my patches?
-
-Or I could submit my patches right after yours, but that leaves the code
-between the commits doing something weird, in that it would only give
-you the policies but no indication of which is for do/dump? Obviously
-today it'd only be one, but still, from a uAPI perspective.
-
-I guess it doesn't matter too much though, we get to the state that we
-want to be in, just the intermediate steps won't necessarily make much
-sense.
-
-For now I'll respin my patches so we see how the above do/dump
-separating looks.
-
-johannes
-
+Pulled, thanks so much.
