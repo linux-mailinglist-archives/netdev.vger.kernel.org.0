@@ -2,127 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65D84281CC3
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 22:17:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 938E2281CCA
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 22:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725710AbgJBURO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 16:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52226 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgJBURN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 16:17:13 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A98FC0613D0;
-        Fri,  2 Oct 2020 13:17:13 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id z1so3082912wrt.3;
-        Fri, 02 Oct 2020 13:17:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v3O9WdsNLJVkgSoGDOH52JrLXl2wjpYEbzt5PhqJt+U=;
-        b=kZ2FLydQyJOeChz2+eQqxX1EvGjWsn7aK57kZBT7uLeaRvAo4YGypf08XVVgAcrIpB
-         ci6XrP4OVAlNTE5eb+d/oudhPenqgsX43Hj9mv3+sjlphL5gPPYmU5x6rwlZCFYX491e
-         Z8mEAKHjWR96UIqvXr4FGFPtdEJbtaR+qtS2YkQI5eKiwgx3bqoyXg54KOWkfenC2YMf
-         jkw9NNdYbuiQCKW3WXaYHWB8DZMZ3uU0g4gxQAUucKsYgGMkQMJ/s+EquU+9kquaU2hc
-         JOIrz6HUvJXZz27ylqSbBBxX1Syb9v8V4WPcfNGC5bTVBWQ8Z9CZTTfS1BNhH+B8e3Ac
-         M5jQ==
+        id S1725835AbgJBURt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 16:17:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27417 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725792AbgJBURt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 16:17:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601669867;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EEUOwZ0tWV1logok69UsC+MxMC9OHL/Bwty2qonClRw=;
+        b=NkCWONlzobPHP6gYsx4eom4HRv+Z3F8uV8WtGh6lopLgvYDI2xZY80CTwW5b8McDU+Wu1R
+        DaRO1e4m3z2RCR9E0S8fHqhXXG4TF86VMBT4gzmcj8YkMfd1ZTnDEhqUugFaotgkqEfR4x
+        xNx23/qf4ndwflHpNuxs4sAonTBHFME=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-201-z5IqJTPyNw6TxVwolxrRyg-1; Fri, 02 Oct 2020 16:17:46 -0400
+X-MC-Unique: z5IqJTPyNw6TxVwolxrRyg-1
+Received: by mail-oo1-f72.google.com with SMTP id n19so1237329oof.4
+        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 13:17:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=v3O9WdsNLJVkgSoGDOH52JrLXl2wjpYEbzt5PhqJt+U=;
-        b=diz3r9i4renKDRvOyNWoNhDrTVbIcXVq1E+itIyRFBzzIBs8O2/aZJh3RYHJBtGG8q
-         fxrINK/H84IDzCyaVvUMWtC612xvUgZCWuSJ3AvUngIumoSuuZkY4Cc9teg7tqwW4PpJ
-         IWyQebShjH2Qrpuz44EjuKvgnTlAl50teDEb4rl11iOc840WWZo/bkzY3YlNeANhELqC
-         GMe9veMQFgH3+41OI96tP1krEfOyR+fLbjfE98zPzsEkmkj+JzaTEwoDxENFOuamRYdB
-         GIKiAtdoSF2BtGK/7Ykhm+qDlvFxmpoFsKSTcmbwK/uokKOSvABEMeJidXvtnVx6ZYk4
-         +o9A==
-X-Gm-Message-State: AOAM530BF9Mxg/ef9g5u5CNSHbhaC6k0uWei7iYXZ0MAV5SMkLeL6kH+
-        +5BpwbDZ4fCIcrX+c+Xiya7vjIqDqyyAZrOKn2E=
-X-Google-Smtp-Source: ABdhPJxDiEQEtoaAOw9HKt+VxBNfpYEIgQgCD70lGzkeo1gpZ4TBeouF9MBOGhLTV31M695d1Ih5aVELkR7gjWFwa3Y=
-X-Received: by 2002:adf:ab46:: with SMTP id r6mr5079040wrc.360.1601669832211;
- Fri, 02 Oct 2020 13:17:12 -0700 (PDT)
+        bh=EEUOwZ0tWV1logok69UsC+MxMC9OHL/Bwty2qonClRw=;
+        b=HKu2kqtuCU9km8+mlhxm/2CIatgzVqPNE8PRdIJgHEncti1RytwrMO1Czst9yCg0lP
+         lYLBZ/dAeljvDiboWfbFtMDqUDJ8hlGzZ1J/TNHvqZYFd6GmbG9EFQ3fopt/X2ik1nM0
+         BqeTVHUs1jy4N5CXXJmPIdb+ZJU24bIbgloJvbaNP1FL1y2p6ip6ft/Zx4f/0cSVE8Gz
+         ikbn3TCR/Zw3Egl6LoZlZbe/cEteHf68YDjSTtY5nHNO59YSdVMA8Kug7P+guk/lRIe7
+         Ex/POOBBV3/7tbwsWGa6pJDzA2Tlu/nAn2Se9GYfDtKCA6uVTP1HOBNrm3TdLZ32OX4c
+         5HRQ==
+X-Gm-Message-State: AOAM533ltZ/7QHvu5hO+3Kt8EfAT+OiH9Bn1hzGXEiR4GdO2Cptk4guU
+        4tNDnDrErI5i9h6hMlfNMOoJ66towVAIV8gfvY8d4OPmzPftcoczPVXfMGGmF0/lIYibccHkDBc
+        gEX0uUf9sSzHa0R1/rNCDwU8xFYOHTVaq
+X-Received: by 2002:aca:4e06:: with SMTP id c6mr489537oib.120.1601669865239;
+        Fri, 02 Oct 2020 13:17:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwvdS35Ea37ROGo1fYbebLRZH1ABdflntD5YaM5bNZwtZgSOpxbSaOedhxZbd0qqjj2olyqKx8Kqwb0YkeFG3s=
+X-Received: by 2002:aca:4e06:: with SMTP id c6mr489527oib.120.1601669865016;
+ Fri, 02 Oct 2020 13:17:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <1601583511-15138-1-git-send-email-si-wei.liu@oracle.com>
-In-Reply-To: <1601583511-15138-1-git-send-email-si-wei.liu@oracle.com>
-From:   Si-Wei Liu <siwliu.kernel@gmail.com>
-Date:   Fri, 2 Oct 2020 13:17:00 -0700
-Message-ID: <CAPWQSg1y8uvpiwxxp_ONGFs8GeuOY09q3AShfLCmhv77ePma-Q@mail.gmail.com>
-Subject: Re: [PATCH] vdpa/mlx5: should keep avail_index despite device status
-To:     elic@nvidia.com, mst@redhat.com, jasowang@redhat.com,
-        netdev@vger.kernel.org
-Cc:     joao.m.martins@oracle.com, boris.ostrovsky@oracle.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Si-Wei Liu <si-wei.liu@oracle.com>
+References: <20201002174001.3012643-1-jarod@redhat.com> <20201002174001.3012643-6-jarod@redhat.com>
+ <20201002180906.GG3996795@lunn.ch>
+In-Reply-To: <20201002180906.GG3996795@lunn.ch>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Fri, 2 Oct 2020 16:17:34 -0400
+Message-ID: <CAKfmpSd00=ryeznA3ubfMCmeiFAeo-jQhvT3fAgwJqbDEL7w_w@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 5/6] bonding: update Documentation for
+ port/bond terminology
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ Eli.
+On Fri, Oct 2, 2020 at 2:09 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Fri, Oct 02, 2020 at 01:40:00PM -0400, Jarod Wilson wrote:
+> > Point users to the new interface names instead of the old ones, where
+> > appropriate. Userspace bits referenced still include use of master/slave,
+> > but those can't be altered until userspace changes too, ideally after
+> > these changes propagate to the community at large.
+> >
+> > Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+> > Cc: Veaceslav Falico <vfalico@gmail.com>
+> > Cc: Andy Gospodarek <andy@greyhouse.net>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Thomas Davis <tadavis@lbl.gov>
+> > Cc: netdev@vger.kernel.org
+> > Signed-off-by: Jarod Wilson <jarod@redhat.com>
+> > ---
+> >  Documentation/networking/bonding.rst | 440 +++++++++++++--------------
+> >  1 file changed, 220 insertions(+), 220 deletions(-)
+> >
+> > diff --git a/Documentation/networking/bonding.rst b/Documentation/networking/bonding.rst
+> > index adc314639085..f4c4f0fae83b 100644
+> > --- a/Documentation/networking/bonding.rst
+> > +++ b/Documentation/networking/bonding.rst
+> > @@ -167,22 +167,22 @@ or, for backwards compatibility, the option value.  E.g.,
+> >
+> >  The parameters are as follows:
+> >
+> > -active_slave
+> > +active_port
+>
+> Hi Jarod
+>
+> It is going to take quite a while before all distributions user space
+> gets updated. So todays API is going to live on for a few
+> years. People are going to be search the documentation using the terms
+> their user space uses, which are going to be todays terms, not the new
+> ones you are introducing here. For that to work, i think you are going
+> to have to introduce a table listing todays names and the new names
+> you are adding, so search engines have some chance of finding this
+> document, and readers have some clue as to how to translate from what
+> their user space is using to the terms used in the document.
 
-On Thu, Oct 1, 2020 at 2:02 PM Si-Wei Liu <si-wei.liu@oracle.com> wrote:
->
-> A VM with mlx5 vDPA has below warnings while being reset:
->
-> vhost VQ 0 ring restore failed: -1: Resource temporarily unavailable (11)
-> vhost VQ 1 ring restore failed: -1: Resource temporarily unavailable (11)
->
-> We should allow userspace emulating the virtio device be
-> able to get to vq's avail_index, regardless of vDPA device
-> status. Save the index that was last seen when virtq was
-> stopped, so that userspace doesn't complain.
->
-> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> ---
->  drivers/vdpa/mlx5/net/mlx5_vnet.c | 20 ++++++++++++++------
->  1 file changed, 14 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index 70676a6..74264e59 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -1133,15 +1133,17 @@ static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
->         if (!mvq->initialized)
->                 return;
->
-> -       if (query_virtqueue(ndev, mvq, &attr)) {
-> -               mlx5_vdpa_warn(&ndev->mvdev, "failed to query virtqueue\n");
-> -               return;
-> -       }
->         if (mvq->fw_state != MLX5_VIRTIO_NET_Q_OBJECT_STATE_RDY)
->                 return;
->
->         if (modify_virtqueue(ndev, mvq, MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND))
->                 mlx5_vdpa_warn(&ndev->mvdev, "modify to suspend failed\n");
-> +
-> +       if (query_virtqueue(ndev, mvq, &attr)) {
-> +               mlx5_vdpa_warn(&ndev->mvdev, "failed to query virtqueue\n");
-> +               return;
-> +       }
-> +       mvq->avail_idx = attr.available_index;
->  }
->
->  static void suspend_vqs(struct mlx5_vdpa_net *ndev)
-> @@ -1411,8 +1413,14 @@ static int mlx5_vdpa_get_vq_state(struct vdpa_device *vdev, u16 idx, struct vdpa
->         struct mlx5_virtq_attr attr;
->         int err;
->
-> -       if (!mvq->initialized)
-> -               return -EAGAIN;
-> +       /* If the virtq object was destroyed, use the value saved at
-> +        * the last minute of suspend_vq. This caters for userspace
-> +        * that cares about emulating the index after vq is stopped.
-> +        */
-> +       if (!mvq->initialized) {
-> +               state->avail_index = mvq->avail_idx;
-> +               return 0;
-> +       }
->
->         err = query_virtqueue(ndev, mvq, &attr);
->         if (err) {
-> --
-> 1.8.3.1
->
+Hm. Would a simple blurb describing the when the changes were made and
+why at the top of bonding.rst be sufficient? And then would the rest
+of the doc remain as-is (old master/slave language), or with
+terminology conversions?
+
+-- 
+Jarod Wilson
+jarod@redhat.com
+
