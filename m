@@ -2,91 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18787280C9A
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 06:13:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ED38280CD6
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 06:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725957AbgJBENV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 00:13:21 -0400
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:41041 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725914AbgJBENV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 00:13:21 -0400
-X-Greylist: delayed 98887 seconds by postgrey-1.27 at vger.kernel.org; Fri, 02 Oct 2020 00:13:20 EDT
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 7AF9383640;
-        Fri,  2 Oct 2020 17:13:18 +1300 (NZDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1601611998;
-        bh=4oz/oKoF+lZpfXkTSL8gENBk4/Z/ClPql25fmVsmNqw=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=CIGkEyRBG2+ThaU537abtygQi7FbSRNzFerdT4pzyyyUgcb6Yoz+A8xMabdYLdkbR
-         2Br9Puyb8Xz5l73KpdqmwAC+6zw7/Mfp0cn9gtoWUcanJGNEhCJkEcKgePFv3wDuCW
-         pAUS6iIwaHVzfyysoF7tYVMqHAiRNtGPTGMCgVqFMm1UfCipdzVUhfyG0CdCbW71cY
-         vNUweUMkrmsJL8kCd2j8jxooQkIM4bUTVYQfvKbsCCLtEIgEMwtX8HM1h5ml9bZvq/
-         odxPgUrrHFhEre4dAjnfyTTfl6jc16G1sXLHC+FsnAoPWEpk17Uxv45PvPNl7va6bo
-         1tOCk46Ni5AvQ==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5f76a8d70000>; Fri, 02 Oct 2020 17:13:11 +1300
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
- svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
- (TLS) id 15.0.1497.2; Fri, 2 Oct 2020 17:13:05 +1300
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1497.006; Fri, 2 Oct 2020 17:13:05 +1300
-From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Russell King <linux@armlinux.org.uk>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: dsa: mv88e6xxx: serdes link without phy
-Thread-Topic: dsa: mv88e6xxx: serdes link without phy
-Thread-Index: AQHWl4wd1x9X1OqsB0SXADYVDL5/gKmBGhoAgAARowCAAKpMgIABBZeA
-Date:   Fri, 2 Oct 2020 04:13:05 +0000
-Message-ID: <5789dbdb-da65-f3be-a65d-038750acde43@alliedtelesis.co.nz>
-References: <72e8e25a-db0d-275f-e80e-0b74bf112832@alliedtelesis.co.nz>
- <20201001012410.GA4050473@lunn.ch>
- <e2c1196a-3a0f-6527-2ae0-8d53af2912df@alliedtelesis.co.nz>
- <20201001123649.GC4050473@lunn.ch>
-In-Reply-To: <20201001123649.GC4050473@lunn.ch>
-Accept-Language: en-NZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.32.1.11]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D6303FFD0BF9B44183178889C6DD8D21@atlnz.lc>
-Content-Transfer-Encoding: base64
+        id S1725972AbgJBEbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 00:31:10 -0400
+Received: from mail-il1-f205.google.com ([209.85.166.205]:52204 "EHLO
+        mail-il1-f205.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725914AbgJBEbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 00:31:09 -0400
+Received: by mail-il1-f205.google.com with SMTP id e3so145398ilq.18
+        for <netdev@vger.kernel.org>; Thu, 01 Oct 2020 21:31:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=2rR7OFCkiGOcbn8yg3FFIizJzk0Y5CDsOwEAe9MFfqY=;
+        b=XIreAtQLfU/h0u30mvyteBJK8g4q/gOaiYuJWg6sXu9k32PK4qWIRHlM4kz7j9CZPo
+         blKWZTGvTNbwcBcSTYf5Irlo760OBJeT5tvXOvoX64w/Zp/5wHASi18SLr0c94vrMp1m
+         kg1GxTipx7qPMuPj/YPXFTbJfGN8eiAbLdrDPvu+inSbUe2Xt9pvA6YGsp65A5k+nJCT
+         3Xjk2lQaaRnnUJV7LNRwQ3Aulre3G1Xbj+RfBeDuVMSkxNsMSeQ8BiIbHrwQbCiiA/oS
+         CGymqKnvoJF1dISJ16m3eUAQcxYpReEx+17JCF5T9uD8Ro6ggyR2uXzVSBGf3CvOZeR+
+         UETg==
+X-Gm-Message-State: AOAM5315JyD/oMZHIbaKgf/jQyeLblmiqW6z+3VH5AxmyFGNqnHuSZU7
+        rWT4kKTX/X1vbZYXFUlRtM+qgY+o/8fKnIBRfTQ49ACNxCHr
+X-Google-Smtp-Source: ABdhPJwyio9B9RK4QMV+77SSkDUiL2aBMDrXygJtRXJZn8ix0TJV07LbSiIGdgU/ICZl+Xp6JhyjTk1bOjljcqJ5nfrSfAkO2l0T
 MIME-Version: 1.0
+X-Received: by 2002:a05:6638:24c1:: with SMTP id y1mr616780jat.119.1601613068931;
+ Thu, 01 Oct 2020 21:31:08 -0700 (PDT)
+Date:   Thu, 01 Oct 2020 21:31:08 -0700
+In-Reply-To: <0000000000007b357405b099798f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000a954d05b0a89a86@google.com>
+Subject: Re: WARNING in cfg80211_connect
+From:   syzbot <syzbot+5f9392825de654244975@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, david@fromorbit.com, dchinner@redhat.com,
+        hch@lst.de, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiAyLzEwLzIwIDE6MzYgYW0sIEFuZHJldyBMdW5uIHdyb3RlOg0KPj4+IENhbiB5b3UgcnVu
-IDEwMDBCYXNlLVggb3ZlciB0aGVzZSBsaW5rcz8NCj4+IFdpdGggc29tZSByZWFkaW5nICIxMDAw
-YmFzZS14IiBkb2VzIHNlZW0gdGhlIHJpZ2h0IHRoaW5nIHRvIHNheSBoZXJlLg0KPj4gSXQncyBl
-dmVuIHdoYXQgaXMgcmVmbGVjdGVkIGluIHRoZSBDTU9ERSBmaWVsZCBmb3IgdGhvc2UgcG9ydHMu
-DQo+IE9uZSBtb3JlIHRoaW5nIHlvdSBtaWdodCBuZWVkIGlzDQo+DQo+IG1hbmFnZWQgPSAiaW4t
-YmFuZC1zdGF0dXMiOw0KPg0KPj4+IElmIHlvdSBjYW4sIGl0IGlzIHByb2JhYmx5DQo+Pj4gd29y
-dGggY2hhdHRpbmcgdG8gUnVzc2VsbCBLaW5nIGFib3V0IHVzaW5nIGluYmFuZC1zaWduYWxsaW5n
-LCBhbmQgd2hhdA0KPj4+IGlzIG5lZWRlZCB0byBtYWtlIGl0IHdvcmsgd2l0aG91dCBoYXZpbmcg
-YmFjayB0byBiYWNrIFNGUHMuIElmIGkNCj4+PiByZW1lbWJlciBjb3JyZWN0bHksIFJ1c3NlbGwg
-aGFzIHNhaWQgbm90IG11Y2ggaXMgYWN0dWFsbHkgbmVlZGVkLg0KPj4gVGhhdCdkIGJlIGlkZWFs
-LiBUaGUgc3RpY2tpbmcgcG9pbnQgc2VlbXMgdG8gYmUgYWxsb3dpbmcgaXQgdG8gaGF2ZSBubyBQ
-SFkuDQo+IEkgdGhpbmsgdGhlcmUgaXMgbW9yZSB0byBpdCB0aGFuIHRoYXQuIFRoaXMgaXMgbmV3
-IGdyb3VuZCB0byBzb21lDQo+IGV4dGVudC4NCg0KbWFuYWdlZCA9ICJpbi1iYW5kLXN0YXR1cyI7
-IGhlbHBzIHRvIGNvbnZpbmNlIHRoaW5ncyB0aGF0IHRoZXJlIGlzbid0IGEgDQpQSFkuIEkgbmVl
-ZCB0byB1cGRhdGUgbXY4OGU2eHh4X21hY19saW5rX3VwIHRvIG5vdCBmb3JjZSB0aGUgbGluayB3
-aGVuIA0KbW9kZSA9PSBNTE9fQU5fSU5CQU5ELg0KDQpJIGFsc28gaGF2ZSBhIHByb2JsZW0gd2l0
-aCBtdjg4ZTZ4eHhfc2VyZGVzX3Bjc19nZXRfc3RhdGUgZXhwZWN0aW5nIA0KbXY4OGU2eHh4X3Nl
-cmRlc19nZXRfbGFuZSgpIHRvIHJldHVybiBhIGxhbmUgbnVtYmVyLiBJbXBsZW1lbnRpbmcgDQpt
-djg4ZTZ4eHhfc2VyZGVzX2dldF9sYW5lKCkgZm9yIHRoZSBtdjg4ZTYwOTcgY2F1c2VzIGEgbG90
-IG9mIG90aGVyIGNvZGUgDQpwYXRocyB0byB0cmlnZ2VyIHdoaWNoIGRpZG4ndCBiZWZvcmUuIEkg
-dGhpbmsgSSdtIGNsb3NlIHRvIGdldHRpbmcgDQpzb21ldGhpbmcgc2Vuc2libGUgd29ya2luZyBm
-b3IgbXkgaGFyZHdhcmUgYnV0IEknbSBvZmYgb24gbGVhdmUgZm9yIGEgDQp3ZWVrIHNvIEkganVz
-dCB3YW50ZWQgdG8gZ2V0IHRoaXMgb3V0IGJlZm9yZSBJIGdvLg0K
+syzbot has bisected this issue to:
+
+commit 16d4d43595b4780daac8fcea6d042689124cb094
+Author: Christoph Hellwig <hch@lst.de>
+Date:   Wed Jul 20 01:38:55 2016 +0000
+
+    xfs: split direct I/O and DAX path
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14f662b7900000
+start commit:   87d5034d Merge tag 'mlx5-updates-2020-09-30' of git://git...
+git tree:       net-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=16f662b7900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12f662b7900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7b5cc8ec2218e99d
+dashboard link: https://syzkaller.appspot.com/bug?extid=5f9392825de654244975
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1100d333900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1414c997900000
+
+Reported-by: syzbot+5f9392825de654244975@syzkaller.appspotmail.com
+Fixes: 16d4d43595b4 ("xfs: split direct I/O and DAX path")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
