@@ -2,94 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7074A281697
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 17:28:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1604028169A
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 17:29:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388168AbgJBP24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 11:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35460 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726017AbgJBP24 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 11:28:56 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F54CC0613D0
-        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 08:28:56 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kOMzO-00FJKS-2j; Fri, 02 Oct 2020 17:28:54 +0200
-Message-ID: <a5d78d7a54c684a0d23d2af7e21826ae87414bf5.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next v2 00/10] genetlink: support per-command policy
- dump
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, jiri@resnulli.us,
-        mkubecek@suse.cz, dsahern@kernel.org, pablo@netfilter.org
-Date:   Fri, 02 Oct 2020 17:28:53 +0200
-In-Reply-To: <20201002082517.31e644ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201001225933.1373426-1-kuba@kernel.org>
-         <20201001173644.74ed67da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <d26ccd875ebac452321343cc9f6a9e8ef990efbf.camel@sipsolutions.net>
-         <20201002074001.3484568a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <1dacbe07dc89cd69342199e61aeead4475f3621c.camel@sipsolutions.net>
-         <20201002075538.2a52dccb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <e350fbdadd8dfa07bef8a76631d8ec6a6c6e8fdf.camel@sipsolutions.net>
-         <20201002080308.7832bcc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <a69c92aac65c718b1bd80c8dc0cbb471cdd17d9b.camel@sipsolutions.net>
-         <20201002080944.2f63ccf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <db56057454ee3338a7fe13c8d5cc450b22b18c3b.camel@sipsolutions.net>
-         <20201002082517.31e644ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S2388322AbgJBP3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 11:29:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33466 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387984AbgJBP3M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 11:29:12 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C82AB206DC;
+        Fri,  2 Oct 2020 15:29:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601652552;
+        bh=C7vTverLdRNo9bIYmatLP+3W5HGIUob3f1oPI5go6gU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Zk1sXc1VpBhyDlKk47X9GcxYtbsKsSlF0tlYpQeS7I9rBpeH5zcDh4zhgcO5Qtnqi
+         VRBVQtp3FtT9cTWDMXwXGHo1ikor/VGWkxd7RE79tQX90IskgNy2TA2H6+Bv38b931
+         Hch5aDWWeTorXBk3fvRdr+aGHyqHt3LahLrgFAbc=
+Date:   Fri, 2 Oct 2020 08:29:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     netdev@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>
+Subject: Re: [PATCH] netlink: fix policy dump leak
+Message-ID: <20201002082910.6951a5db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201002094604.480c760e3c47.I7811da1539351a26cd0e5a10b98a8842cfbc1b55@changeid>
+References: <20201002094604.480c760e3c47.I7811da1539351a26cd0e5a10b98a8842cfbc1b55@changeid>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-10-02 at 08:25 -0700, Jakub Kicinski wrote:
+On Fri,  2 Oct 2020 09:46:04 +0200 Johannes Berg wrote:
+> From: Johannes Berg <johannes.berg@intel.com>
 > 
-> > I suppose, I thought you wanted to change it to have separate dump/do
-> > policies? Whatever you like there, I don't really care much :)
+> If userspace doesn't complete the policy dump, we leak the
+> allocated state. Fix this.
 > 
-> I just want to make the uAPI future-proof for now.
+> Fixes: d07dcf9aadd6 ("netlink: add infrastructure to expose policies to userspace")
+> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 
-Yeah, makes sense.
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 
-> At a quick look ethtool doesn't really accept any attributes but
-> headers for GET requests. DO and DUMP are the same there so it's 
-> not a priority for me.
-
-OK.
-
-> > But I can also change my patches later to separately advertise dump/do
-> > policies, and simply always use the same one for now.
-> 
-> Right that was what I was thinking. Basically:
-> 
-> 	if ((op.doit && nla_put_u32(skb, CTRL_whatever_DO, idx)) ||
-> 	    (op.dumpit && nla_put_u32(skb, CTRL_whatever_DUMP, idx)))
-> 		goto nla_put_failure;
-
-Right, easy enough.
-
-> > But this series does conflict with the little bugfix I also sent, could
-> > you please take a look?
-> > 
-> > https://lore.kernel.org/netdev/20201002094604.480c760e3c47.I7811da1539351a26cd0e5a10b98a8842cfbc1b55@changeid/
-> > 
-> > I'm not really sure how to handle.
-> 
-> Yeah, just noticed that one now :S
-
-Yeah, sorry ... The conflicts indeed weren't difficult, but non-trivial
-unless you know what's going on in each side. I pushed them to my
-mac80211-next tree, in the genetlink-op-policy-export branch (not sure
-you saw my patches and cover letter yet :) )
-
-I'll wait for this to get resolved and then respin my patches with the
-above doit/dumpit after your series is in, and will also respin the
-userspace side then.
-
-johannes
-
+FWIW make sure to mark the patches with net and net-next in the tag. 
+The more automation we have, the more it matters.
