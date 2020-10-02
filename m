@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00B562811EC
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 14:03:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 432FD2811ED
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 14:03:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387767AbgJBMDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 08:03:07 -0400
+        id S2387787AbgJBMDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 08:03:11 -0400
 Received: from mail-eopbgr150042.outbound.protection.outlook.com ([40.107.15.42]:10595
         "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726017AbgJBMDG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Oct 2020 08:03:06 -0400
+        id S1726010AbgJBMDK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 08:03:10 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PihDuOs5ir3ZIzXmUgovyowhoVWYdqfcGCt8kdS99nzlNuhKDCt/H/McqziWBl4mocX764/LiAMpE0y8yLm/1pjX8KDlo40sMaVmPWokWGaol506y4IAaM3SBHGgn0NRzxuem6vVJg8biI2nh2H3HQls99mqYwlcqUDt3tVy/Jcv8c4dJXFEZsE7R84NJWTkohvQvtWLrzcmecCtUDYgHrDKTPj179iZkp6cJ4jv0uO+8y3ByPtEfZkR5M3bFS4khHZlr2y3p211hReH2/J1L7tNOJXUjXpZJax7tRRlpMbaax5ZF/ICcTkqbr/hxQoLwyEps+0T1uTfkVPldU11nw==
+ b=nwhdK8gq1lkTMPkd+79TI0qLuMnsQyxVAQOjAeUQV3v4sXBi6p+qzGngYLcoThwCKdOvYuflGzWXAiNof4SespOja74FkRKZmbA7SE2snzLsZhSxa7aS7xr5g6tWSnYTWiXjHuGtHGz+dAdt7OS2qZERttFVRInKs6lXDplYtpHiiXN1dq25SOoNxNbp6hTCkh+AxsMZLWruwv0NnAbi/NqvOhYCc+/b50nrsnDPC8BiOZNkuZ+MqUWAQmI089a0trVn0VmvCVOITHSgAE1jDqvAki8lVQW6wYG14zhnunDmosGcDsAymNw1fy7Dua8OfM452zwhAlUjqMoJhHMC4g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O4KvpjYvJaSGTRCALDvuS4QVCxiQixK1nZZMrC6lo1o=;
- b=efJqGZXaSnsk6479Jw6zimo+asMrKbNFWZrX2E5Efy8ieAlhL0V5fjLBSGSqZC3lIBIJtQ+u2KTElrIWDDulNs25f0EJ5JTRKAuEqQGOUbpAMfzqrNbd69mWs89Qr3P+waIPNleb6DCBxFONJHvS0Su5JlwSXzLwiyBN+ILiLCm9nXsoSLobYZIkYzjzKesPcp8lXrmMalSeU9c6Q8vTBavgZbj8inPz5XXDIs+n3bKqnrbtBltHbFboQo80hRTyP05hr515F5NXClbwOmQgv98F6X0fvBugb5pMQsKLapww7ha4KjLSs2S+jM0XUMrHgZ2LlAva6Vf81rfQQ2A4tg==
+ bh=XKzyKJoXmR5vjGb1NCALDuE5vrQdPD5zXdm5ImflJZQ=;
+ b=IQcEDXxQod759s+RsBjYVhOfOMwELYFGWORsGAmLfPWT3NITQd7Jce74aReLBjKx4RQowGG7wvlwfDyXj7NWNk0VURR7TAKBChjdVVRzuJFGC+9ov9mVuWmSN4ZN34xTfb+MEG730kKqPdCvVN396SwEJHAB6Xub0rDY7vFz+Krbe+NkMhyP2w4tRQol0N3jlEvT+NQOX1Kyqc80VdD+e6g1gnSGmr+AkNwCe4vhdIxsNoAsCOGgF8BD6YuZLK4d/lIE2VDWAYvVUMszQ3xtzuZNGpJbyVHdozvlecO3PuhwcFOlO9fgwL/SMSVC6nI2lmU+ZYA07xVHkIwgdu+S2Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O4KvpjYvJaSGTRCALDvuS4QVCxiQixK1nZZMrC6lo1o=;
- b=gdnrI+SrpDIKjXy7VRjuT3+QoN784fJOoEvGLO4W48UQb+0gNcJX00Rrl0DG9z9iRjCl2415iRfSKvXw3X6cplAzM5w0mnWdPk0FP4osOofSWxFj/OKLBT0uxEn9aNLXJ9IdDH6c4qjJ++6vR+qzRJaUvUOkdAdtTGzxhyTBx9g=
+ bh=XKzyKJoXmR5vjGb1NCALDuE5vrQdPD5zXdm5ImflJZQ=;
+ b=lFziokKdgK8/yvmExGPk/x/G5J99d58hVihQaFj4zqoia9MgQcoOASun5EkXcULXCDc8ixtZmzUVuCskU6zCMkeMSUeQuORPndDbwHRcgTxJtg/gheYcdZtQ13lgVybJQsIwJT2DckIDvhEXnRg4lTxwwpCaqRcci2Nxz2ziSZg=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VI1PR04MB4222.eurprd04.prod.outlook.com (2603:10a6:803:46::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.28; Fri, 2 Oct
- 2020 12:02:57 +0000
+ 2020 12:03:00 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.038; Fri, 2 Oct 2020
- 12:02:57 +0000
+ 12:03:00 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     davem@davemloft.net
 Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
@@ -46,9 +46,9 @@ Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
         claudiu.manoil@nxp.com, xiaoliang.yang_1@nxp.com,
         hongbo.wang@nxp.com, netdev@vger.kernel.org, kuba@kernel.org,
         jiri@resnulli.us, idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 1/9] net: mscc: ocelot: offload multiple tc-flower actions in same rule
-Date:   Fri,  2 Oct 2020 15:02:20 +0300
-Message-Id: <20201002120228.3451337-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 2/9] net: mscc: ocelot: introduce conversion helpers between port and netdev
+Date:   Fri,  2 Oct 2020 15:02:21 +0300
+Message-Id: <20201002120228.3451337-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201002120228.3451337-1-vladimir.oltean@nxp.com>
 References: <20201002120228.3451337-1-vladimir.oltean@nxp.com>
@@ -60,263 +60,210 @@ X-ClientProxiedBy: AM3PR07CA0130.eurprd07.prod.outlook.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.26.229.171) by AM3PR07CA0130.eurprd07.prod.outlook.com (2603:10a6:207:8::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.14 via Frontend Transport; Fri, 2 Oct 2020 12:02:54 +0000
+Received: from localhost.localdomain (188.26.229.171) by AM3PR07CA0130.eurprd07.prod.outlook.com (2603:10a6:207:8::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.14 via Frontend Transport; Fri, 2 Oct 2020 12:02:57 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 4274822a-0a26-4692-6f6c-08d866cb1937
+X-MS-Office365-Filtering-Correlation-Id: 993dbcd5-3f1e-40ad-650b-08d866cb1acd
 X-MS-TrafficTypeDiagnostic: VI1PR04MB4222:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB42229144C6E8D02F68F8C90AE0310@VI1PR04MB4222.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB42227F2E39F92F95354C128DE0310@VI1PR04MB4222.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +dvxWhB9ojJEb8Sa++scfwYDhuNKsc+wFF5bjwjoHiLy/yoeEA3SLpFd2QdrNjQv7FnobcRstM9y61piEjekI7BLgDPVOp8eMlMuuK+bDL2M6MlC8k3ZlY+hJkh6Edg4bOaY/w+pJYmeLiKkr25ozCwWy0KqVimHSeXvSR+9DQiJd5QkRdSixXvwy/YpBt06w+cpBX8wYIEcO0TpubWduy9sCB1nSjizBOU0yyiTmU30hth5WOnjKfPQOpbhZjgJwyi14Ca/MIgkPQc1wvFLP3ECZc9KlM/VypLqPzD44tT2A5yCYtO7Ena1UTJaNPBbrQFv7pLPAWomI+hy9YvjaZHYyMm/tEVkkx1O8UaMEEm4sReJTURHBpqR9sDo9BJm4THW4JcFYPWDMWJvF3xikBSsud4Gfxr0uAD47e28cC48WHNv6nYoSp7Q96PSfUuk
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(346002)(366004)(376002)(86362001)(186003)(26005)(2616005)(16526019)(7416002)(52116002)(478600001)(5660300002)(6916009)(2906002)(6506007)(6486002)(66946007)(36756003)(69590400008)(66476007)(66556008)(956004)(6512007)(6666004)(44832011)(4326008)(83380400001)(8676002)(8936002)(1076003)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: /rXWCgVTf8mDko+ediXMRw7gkCrVjx/Dszh6ObTLfbtHyyJWt4IYECoezMZwNVkUqLDdKIJHYGTGHFyCA9PCuxsWgFU+C/FKIXACPMlwRJUBveMWqQGALj4xuY7HI3OHVKiyBEn62G+2hksU9UazGuo/jJHdXfdIZdtbKqv7ZUZDl+Ym7DNTbKoDQpPr5K09IBbxFGJz5/AmDTI6bPlf/FgYuaX6qtoMYG7hKTg+e9LHKug2a/y3GwyTzaROvRC4Vy0Boqsny23UFr9BGUzDk70dwFN8GM5bZgzklxqo/NP1b3WHwU7xYam4WxnBsboqOGMxT+99J8RhIFyC6QPlEWmNGgKz8JcMqEL/yyssLvxdKK0vzyL9sbDM9L+z/66W4q+fzppp6HRpciK2TpuHouLjlVet1jGuAbss36Htnj9a2mssVhuHpUVkVCzgNgwFAg/ummQz2Fj32pUEbg2LlOAKMW4HYZY1l/Z7OAgbH1H+aY8Kh2evp1z3qvTxFmZVT3lS2qOHjXtZOb/GY7ChVBjoC1n7aH8sR2pVykNNNb1XawJHRJuUPGecrpaqorhDxRgBc9kcJq5jMIYftJ9IZTTp4MmpxsIYsUP5+z9MpGbBd8xA8vPpcnGPRCqYPUlHpttgAMYgRJppCdnbBfDnow==
+X-Microsoft-Antispam-Message-Info: 7qXFJcSPim6lGMDSpyM0iWzeFfaDrau/6yuNI5c1GKK1xyT5YXW0EBkPQgsVaWt36ZD3wIp1J0HIO1+AnTz5Gq5bdxuCRZisrhXcMfHP9899tpiM1lT1e+kWiJsS6xv6prBkehsxRwgCSVVo22rvAn6cyvMuqseLGBeri4Rm4laNC7FPNnrZg0x3NflvTaWCJvwb6ajJYrlDzkhWk2QWYdlItCUNRBRfK5BK112mPRWjDcHPUBvrtRndTylxIU5bsqlDVhl+1BdEnGGFlT4G+6DB72TIw2vZL2cATLQcV1PRaw26T9TKlHUnPrV4fonO/puD0IAJbz8kMIL/zpElHHRGLknEDZczUHImFfgf57M680Gz3kaUZSisjdtpYDozKgFBMkNv4rH0utq0A6zfWNlGMzK/6+kPkxgm1CwhuG2xcZs0k8IvXuELONPwg0vM
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(346002)(366004)(376002)(86362001)(186003)(26005)(2616005)(16526019)(7416002)(52116002)(478600001)(5660300002)(6916009)(2906002)(6506007)(6486002)(66946007)(36756003)(69590400008)(66476007)(66556008)(956004)(6512007)(6666004)(44832011)(4326008)(8676002)(8936002)(1076003)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: xbWVqhIV/nAeXVjYZwQ9YFE8mhUVss+LaBdo0GjKLk5a6wy0eZY8P5IPxDB8YVImsRJWwSX37PzzxXS+ko8dNN9eo1zj+glYOm+xYKr7eYW8HbZUdDr4nB2ZhuHjeXMnieOjniArVqe064sCJqdJKRWW27YYpg9MMZyOu07GYzVfizSRAU2vQ132UMAkp29/DpnsM3WW9J3RvZvDlrcWjQXbtMZ1hUFLxmMuF8lcFapPA8RwbuWzh7de4bXjo+nk8qKmzMUfX/g+zwW0MBuk970ovk0OcuztoAFrlKQsxfaB0PAT0PLZjG93aBD4IsSQkOg4fjuItmBZ9AMLj/s1mASZC+baa9ZOZLX0VGYb+5jdZqi0S0EZD/55RbAbd6LJACsSTRN5CydwaLTSy9oRZzMkXYNjImICH6YOlI3uooC64mcH5v6d8o6OgpbgOk1tRPTPTMpjXrALRhyANFlQUBI/bDVqE6tpkuA30R6zfrpnAbuzQPKE35IzZ684Do+HSVAlfVzU4n7HE08LQsMl14YVihZapgCdkjHHwEYkehBRQo0qzo4IODWc5pVgM+6CsAYOtIS9tuONhdL5AuiVnH5FnrZPHhQHVjIU4vn9mCjpDeB/U50NroemZorq8oXtguJObQ+3m4JEhpRlkb25YQ==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4274822a-0a26-4692-6f6c-08d866cb1937
+X-MS-Exchange-CrossTenant-Network-Message-Id: 993dbcd5-3f1e-40ad-650b-08d866cb1acd
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Oct 2020 12:02:56.5829
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Oct 2020 12:02:59.9140
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QLOj4t0vzxLFBlUeA+cqmzt4VHGTB8jHcfwzWqEYqtTonrBZaN4KPlkeU+QyGWRl0BFKuE4SY2F5xsi+XipeyQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: wVYO6yEe0+JjWsfOm60GNSsxz6hV32MHi2ym0JZzaYetadbz8ebnuAR7PZDtwpBYQhf6JkCyfPUzq8lLnwZeUQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4222
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At this stage, the tc-flower offload of mscc_ocelot can only delegate
-rules to the VCAP IS2 security enforcement block. These rules have, in
-hardware, separate bits for policing and for overriding the destination
-port mask and/or copying to the CPU. So it makes sense that we attempt
-to expose some more of that low-level complexity instead of simply
-choosing between a single type of action.
+Since the mscc_ocelot_switch_lib is common between a pure switchdev and
+a DSA driver, the procedure of retrieving a net_device for a certain
+port index differs, as those are registered by their individual
+front-ends.
 
-Something similar happens with the VCAP IS1 block, where the same action
-can contain enable bits for VLAN classification and for QoS
-classification at the same time.
-
-So model the action structure after the hardware description, and let
-the high-level ocelot_flower.c construct an action vector from multiple
-tc actions.
+Up to now that has been dealt with by always passing the port index to
+the switch library, but now, we're going to need to work with net_device
+pointers from the tc-flower offload, for things like indev, or mirred.
+It is not desirable to refactor that, so let's make sure that the flower
+offload core has the ability to translate between a net_device and a
+port index properly.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
 Changes since RFC:
 None.
 
- drivers/net/ethernet/mscc/ocelot_flower.c | 19 +++++---
- drivers/net/ethernet/mscc/ocelot_vcap.c   | 59 ++++++++---------------
- drivers/net/ethernet/mscc/ocelot_vcap.h   | 30 +++++++++---
- 3 files changed, 53 insertions(+), 55 deletions(-)
+ drivers/net/dsa/ocelot/felix.c             | 22 ++++++++++++++++
+ drivers/net/dsa/ocelot/felix.h             |  3 +++
+ drivers/net/dsa/ocelot/felix_vsc9959.c     |  2 ++
+ drivers/net/dsa/ocelot/seville_vsc9953.c   |  2 ++
+ drivers/net/ethernet/mscc/ocelot.h         |  2 ++
+ drivers/net/ethernet/mscc/ocelot_net.c     | 30 ++++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c |  2 ++
+ include/soc/mscc/ocelot.h                  |  2 ++
+ 8 files changed, 65 insertions(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index 0988bc9aaac5..00b02b76164e 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -15,9 +15,6 @@ static int ocelot_flower_parse_action(struct flow_cls_offload *f,
- 	u64 rate;
- 	int i;
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index da54363b5c92..552b1f7bde17 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -810,3 +810,25 @@ const struct dsa_switch_ops felix_switch_ops = {
+ 	.cls_flower_stats	= felix_cls_flower_stats,
+ 	.port_setup_tc		= felix_port_setup_tc,
+ };
++
++struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port)
++{
++	struct felix *felix = ocelot_to_felix(ocelot);
++	struct dsa_switch *ds = felix->ds;
++
++	if (!dsa_is_user_port(ds, port))
++		return NULL;
++
++	return dsa_to_port(ds, port)->slave;
++}
++
++int felix_netdev_to_port(struct net_device *dev)
++{
++	struct dsa_port *dp;
++
++	dp = dsa_port_from_netdev(dev);
++	if (IS_ERR(dp))
++		return -EINVAL;
++
++	return dp->index;
++}
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index d5f46784306e..4c717324ac2f 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -52,4 +52,7 @@ struct felix {
+ 	resource_size_t			imdio_base;
+ };
  
--	if (!flow_offload_has_one_action(&f->rule->action))
--		return -EOPNOTSUPP;
--
- 	if (!flow_action_basic_hw_stats_check(&f->rule->action,
- 					      f->common.extack))
- 		return -EOPNOTSUPP;
-@@ -25,16 +22,22 @@ static int ocelot_flower_parse_action(struct flow_cls_offload *f,
- 	flow_action_for_each(i, a, &f->rule->action) {
- 		switch (a->id) {
- 		case FLOW_ACTION_DROP:
--			filter->action = OCELOT_VCAP_ACTION_DROP;
-+			filter->action.mask_mode = OCELOT_MASK_MODE_PERMIT_DENY;
-+			filter->action.port_mask = 0;
-+			filter->action.police_ena = true;
-+			filter->action.pol_ix = OCELOT_POLICER_DISCARD;
- 			break;
- 		case FLOW_ACTION_TRAP:
--			filter->action = OCELOT_VCAP_ACTION_TRAP;
-+			filter->action.mask_mode = OCELOT_MASK_MODE_PERMIT_DENY;
-+			filter->action.port_mask = 0;
-+			filter->action.cpu_copy_ena = true;
-+			filter->action.cpu_qu_num = 0;
- 			break;
- 		case FLOW_ACTION_POLICE:
--			filter->action = OCELOT_VCAP_ACTION_POLICE;
-+			filter->action.police_ena = true;
- 			rate = a->police.rate_bytes_ps;
--			filter->pol.rate = div_u64(rate, 1000) * 8;
--			filter->pol.burst = a->police.burst;
-+			filter->action.pol.rate = div_u64(rate, 1000) * 8;
-+			filter->action.pol.burst = a->police.burst;
- 			break;
- 		default:
- 			return -EOPNOTSUPP;
-diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-index 75eca3457e6e..1d880045786c 100644
---- a/drivers/net/ethernet/mscc/ocelot_vcap.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-@@ -10,7 +10,6 @@
- #include "ocelot_police.h"
- #include "ocelot_vcap.h"
++struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port);
++int felix_netdev_to_port(struct net_device *dev);
++
+ #endif
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 7d9b5fb73f2e..c98ba7c529c5 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1006,6 +1006,8 @@ static u16 vsc9959_wm_enc(u16 value)
+ static const struct ocelot_ops vsc9959_ops = {
+ 	.reset			= vsc9959_reset,
+ 	.wm_enc			= vsc9959_wm_enc,
++	.port_to_netdev		= felix_port_to_netdev,
++	.netdev_to_port		= felix_netdev_to_port,
+ };
  
--#define OCELOT_POLICER_DISCARD 0x17f
- #define ENTRY_WIDTH 32
+ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
+index 874e84092b68..e993f3eac3eb 100644
+--- a/drivers/net/dsa/ocelot/seville_vsc9953.c
++++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
+@@ -1058,6 +1058,8 @@ static u16 vsc9953_wm_enc(u16 value)
+ static const struct ocelot_ops vsc9953_ops = {
+ 	.reset			= vsc9953_reset,
+ 	.wm_enc			= vsc9953_wm_enc,
++	.port_to_netdev		= felix_port_to_netdev,
++	.netdev_to_port		= felix_netdev_to_port,
+ };
  
- enum vcap_sel {
-@@ -332,35 +331,14 @@ static void is2_action_set(struct ocelot *ocelot, struct vcap_data *data,
- 			   struct ocelot_vcap_filter *filter)
+ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
+diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
+index dc29e05103a1..abb407dff93c 100644
+--- a/drivers/net/ethernet/mscc/ocelot.h
++++ b/drivers/net/ethernet/mscc/ocelot.h
+@@ -98,6 +98,8 @@ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
+ 			 struct net_device *bond);
+ void ocelot_port_lag_leave(struct ocelot *ocelot, int port,
+ 			   struct net_device *bond);
++struct net_device *ocelot_port_to_netdev(struct ocelot *ocelot, int port);
++int ocelot_netdev_to_port(struct net_device *dev);
+ 
+ u32 ocelot_port_readl(struct ocelot_port *port, u32 reg);
+ void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg);
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index 028a0150f97d..64e619f0f5b2 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -656,6 +656,36 @@ static const struct net_device_ops ocelot_port_netdev_ops = {
+ 	.ndo_do_ioctl			= ocelot_ioctl,
+ };
+ 
++struct net_device *ocelot_port_to_netdev(struct ocelot *ocelot, int port)
++{
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	struct ocelot_port_private *priv;
++
++	if (!ocelot_port)
++		return NULL;
++
++	priv = container_of(ocelot_port, struct ocelot_port_private, port);
++
++	return priv->dev;
++}
++
++static bool ocelot_port_dev_check(const struct net_device *dev)
++{
++	return dev->netdev_ops == &ocelot_port_netdev_ops;
++}
++
++int ocelot_netdev_to_port(struct net_device *dev)
++{
++	struct ocelot_port_private *priv;
++
++	if (!dev || !ocelot_port_dev_check(dev))
++		return -EINVAL;
++
++	priv = netdev_priv(dev);
++
++	return priv->chip_port;
++}
++
+ static void ocelot_port_get_strings(struct net_device *netdev, u32 sset,
+ 				    u8 *data)
  {
- 	const struct vcap_props *vcap = &ocelot->vcap[VCAP_IS2];
--
--	switch (filter->action) {
--	case OCELOT_VCAP_ACTION_DROP:
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_PORT_MASK, 0);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_MASK_MODE, 1);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_ENA, 1);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_IDX,
--				OCELOT_POLICER_DISCARD);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_QU_NUM, 0);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_COPY_ENA, 0);
--		break;
--	case OCELOT_VCAP_ACTION_TRAP:
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_PORT_MASK, 0);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_MASK_MODE, 1);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_ENA, 0);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_IDX, 0);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_QU_NUM, 0);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_COPY_ENA, 1);
--		break;
--	case OCELOT_VCAP_ACTION_POLICE:
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_PORT_MASK, 0);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_MASK_MODE, 0);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_ENA, 1);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_IDX,
--				filter->pol_ix);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_QU_NUM, 0);
--		vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_COPY_ENA, 0);
--		break;
--	}
-+	struct ocelot_vcap_action *a = &filter->action;
-+
-+	vcap_action_set(vcap, data, VCAP_IS2_ACT_MASK_MODE, a->mask_mode);
-+	vcap_action_set(vcap, data, VCAP_IS2_ACT_PORT_MASK, a->port_mask);
-+	vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_ENA, a->police_ena);
-+	vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_IDX, a->pol_ix);
-+	vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_QU_NUM, a->cpu_qu_num);
-+	vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_COPY_ENA, a->cpu_copy_ena);
- }
- 
- static void is2_entry_set(struct ocelot *ocelot, int ix,
-@@ -710,11 +688,11 @@ static void ocelot_vcap_policer_del(struct ocelot *ocelot,
- 
- 	list_for_each_entry(filter, &block->rules, list) {
- 		index++;
--		if (filter->action == OCELOT_VCAP_ACTION_POLICE &&
--		    filter->pol_ix < pol_ix) {
--			filter->pol_ix += 1;
--			ocelot_vcap_policer_add(ocelot, filter->pol_ix,
--						&filter->pol);
-+		if (filter->action.police_ena &&
-+		    filter->action.pol_ix < pol_ix) {
-+			filter->action.pol_ix += 1;
-+			ocelot_vcap_policer_add(ocelot, filter->action.pol_ix,
-+						&filter->action.pol);
- 			is2_entry_set(ocelot, index, filter);
- 		}
- 	}
-@@ -732,10 +710,11 @@ static void ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
- 	struct ocelot_vcap_filter *tmp;
- 	struct list_head *pos, *n;
- 
--	if (filter->action == OCELOT_VCAP_ACTION_POLICE) {
-+	if (filter->action.police_ena) {
- 		block->pol_lpr--;
--		filter->pol_ix = block->pol_lpr;
--		ocelot_vcap_policer_add(ocelot, filter->pol_ix, &filter->pol);
-+		filter->action.pol_ix = block->pol_lpr;
-+		ocelot_vcap_policer_add(ocelot, filter->action.pol_ix,
-+					&filter->action.pol);
- 	}
- 
- 	block->count++;
-@@ -947,9 +926,9 @@ static void ocelot_vcap_block_remove_filter(struct ocelot *ocelot,
- 	list_for_each_safe(pos, q, &block->rules) {
- 		tmp = list_entry(pos, struct ocelot_vcap_filter, list);
- 		if (tmp->id == filter->id) {
--			if (tmp->action == OCELOT_VCAP_ACTION_POLICE)
-+			if (tmp->action.police_ena)
- 				ocelot_vcap_policer_del(ocelot, block,
--							tmp->pol_ix);
-+							tmp->action.pol_ix);
- 
- 			list_del(pos);
- 			kfree(tmp);
-diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.h b/drivers/net/ethernet/mscc/ocelot_vcap.h
-index 7db6da6e35b9..70d4f7131fde 100644
---- a/drivers/net/ethernet/mscc/ocelot_vcap.h
-+++ b/drivers/net/ethernet/mscc/ocelot_vcap.h
-@@ -11,6 +11,8 @@
- #include <net/sch_generic.h>
- #include <net/pkt_cls.h>
- 
-+#define OCELOT_POLICER_DISCARD 0x17f
-+
- struct ocelot_ipv4 {
- 	u8 addr[4];
- };
-@@ -174,10 +176,26 @@ struct ocelot_vcap_key_ipv6 {
- 	enum ocelot_vcap_bit seq_zero;       /* TCP sequence number is zero */
+diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+index 086cddef319f..f3e54589e6d6 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
++++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+@@ -763,6 +763,8 @@ static u16 ocelot_wm_enc(u16 value)
+ static const struct ocelot_ops ocelot_ops = {
+ 	.reset			= ocelot_reset,
+ 	.wm_enc			= ocelot_wm_enc,
++	.port_to_netdev		= ocelot_port_to_netdev,
++	.netdev_to_port		= ocelot_netdev_to_port,
  };
  
--enum ocelot_vcap_action {
--	OCELOT_VCAP_ACTION_DROP,
--	OCELOT_VCAP_ACTION_TRAP,
--	OCELOT_VCAP_ACTION_POLICE,
-+enum ocelot_mask_mode {
-+	OCELOT_MASK_MODE_NONE,
-+	OCELOT_MASK_MODE_PERMIT_DENY,
-+	OCELOT_MASK_MODE_POLICY,
-+	OCELOT_MASK_MODE_REDIRECT,
-+};
-+
-+struct ocelot_vcap_action {
-+	union {
-+		/* VCAP IS2 */
-+		struct {
-+			bool cpu_copy_ena;
-+			u8 cpu_qu_num;
-+			enum ocelot_mask_mode mask_mode;
-+			unsigned long port_mask;
-+			bool police_ena;
-+			struct ocelot_policer pol;
-+			u32 pol_ix;
-+		};
-+	};
+ static const struct vcap_field vsc7514_vcap_es0_keys[] = {
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 0c40122dcb88..424256fa531b 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -559,6 +559,8 @@ enum ocelot_tag_prefix {
+ struct ocelot;
+ 
+ struct ocelot_ops {
++	struct net_device *(*port_to_netdev)(struct ocelot *ocelot, int port);
++	int (*netdev_to_port)(struct net_device *dev);
+ 	int (*reset)(struct ocelot *ocelot);
+ 	u16 (*wm_enc)(u16 value);
  };
- 
- struct ocelot_vcap_stats {
-@@ -192,7 +210,7 @@ struct ocelot_vcap_filter {
- 	u16 prio;
- 	u32 id;
- 
--	enum ocelot_vcap_action action;
-+	struct ocelot_vcap_action action;
- 	struct ocelot_vcap_stats stats;
- 	unsigned long ingress_port_mask;
- 
-@@ -210,8 +228,6 @@ struct ocelot_vcap_filter {
- 		struct ocelot_vcap_key_ipv4 ipv4;
- 		struct ocelot_vcap_key_ipv6 ipv6;
- 	} key;
--	struct ocelot_policer pol;
--	u32 pol_ix;
- };
- 
- int ocelot_vcap_filter_add(struct ocelot *ocelot,
 -- 
 2.25.1
 
