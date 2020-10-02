@@ -2,75 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7DD1281CD8
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 22:20:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A621281CE0
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 22:23:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725768AbgJBUU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 16:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbgJBUU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 16:20:29 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83929C0613D0;
-        Fri,  2 Oct 2020 13:20:27 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id a2so2045697ybj.2;
-        Fri, 02 Oct 2020 13:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZjYnH8NMd9EvKTTZ3QWx8KfiPBRRSNu4BBCpFrxwX6U=;
-        b=jglmkFc7yMnmRm2kf3IEajZwdq/N5wMlZqj1wcr/RoBp7JeOLUhQFSswNRX9+m3SL0
-         FT1ga/PQYnhCSW32/8M/6POIYCpcb46e1xvKi0CVB6DtcHPniQObCSe1Zd3qQIZKJlcz
-         x/r2Tk0DnAcYwf59jzV8p1acVAc9QmoQPkj02DpCjuHPn0lwIBOvnGPjmEFhZBQpixfW
-         W7aulzdcnyOmvETDek2MHUyuvrjEdVWfkh813gnNVWB9BTuLr9gqH50ObVZaUqyY2Q+i
-         tYi7LF7jsqNikZtjl5swV27lHf9vMWmTUYq2vheBqdg0ox1AzcDXfse6keDcy2GF1DkP
-         JzJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZjYnH8NMd9EvKTTZ3QWx8KfiPBRRSNu4BBCpFrxwX6U=;
-        b=S7S0eR4RMpNqSX5Lpnxi36mCkrfoEtDbBL2r2DvPKr9LGllZRatEyjDEYIFlf94K4t
-         +12GOTz0nsBYCUAEtoYBolL1EBHI872spC87WP+h+v5ut3w+tubrlkRSSE4zrky7xlkg
-         2wwDWfs6Sw8fUQRWjCpM4xwphNYkRsK1eKh2M2SXfOVXoM9Xij0dyxYeMZ93yxmQo6YG
-         fseu18AFQ2nxtRRl+GhXoQ7TB672eCC4wHWbymjor5EFfQA1Zp7snqv1vf3UIUdmpzMS
-         7lk/3Qt4/Vly5mH7+viPYUouws6RRTLZWC09TyXdMsTRbHLJs3m/I+aTI7ENBOgcb5i9
-         CIgQ==
-X-Gm-Message-State: AOAM530KL65uibBqFVoCTtDJPxttZ/tqpkkizHwAbN69DCJO+X89XpUl
-        L1cAU3xhb+O+naNc5MZp9/SbXvJSf4Z9sYtuy/Q=
-X-Google-Smtp-Source: ABdhPJwzt36OP4Lp8Ish2l0V38vFOreqRh7WQEtDvB8x4bQ+GzXB/7cHtAZN64Qxg0IYfpcCW7l6T34e6u4n9Ckfn3U=
-X-Received: by 2002:a05:6902:4ae:: with SMTP id r14mr5197035ybs.22.1601670026875;
- Fri, 02 Oct 2020 13:20:26 -0700 (PDT)
+        id S1725764AbgJBUX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 16:23:26 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:34960 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725497AbgJBUX0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 16:23:26 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 092KDgD5031679;
+        Fri, 2 Oct 2020 20:23:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=mGrqbNiIG2oSetxa9Ch2rvMCl7MD4N2YXqSt+SzFuAA=;
+ b=UAgsgqU5w6jiR0pszezRNhmGDTfQs0EIlHW80khM2ZquDmUszWZQSzTnFKERXAHOSemj
+ sPHcDlHQMrXLUzRYHwYs+FeL44v63YSyr+SiB0PolBy0FkLaVekZDpftEPzKYWG+IG26
+ uydm3UHLJyPJE7DMciZJQhh8l+cOKF1hccRQQme5kWG2GGRmBH9bdcxH0D1EzD0Rf22h
+ +pEvA9939+QofyUnj2pVfD420Z1VT2NrE0+rV08DDqJAJ3rwph4oQdv6G5sSQQvtVMJo
+ DU9TI3jHF7EshsKlAcnTkXr3+y1m5k6AJ+cHgNQGs2FnrSRjgbR1zQny4ZC7fHcv+4GE vA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 33swkmcsdr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 02 Oct 2020 20:23:24 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 092KKi5Y150686;
+        Fri, 2 Oct 2020 20:23:24 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 33tfj3hkqg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 02 Oct 2020 20:23:24 +0000
+Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 092KNO7w015147;
+        Fri, 2 Oct 2020 20:23:24 GMT
+Received: from [10.159.145.96] (/10.159.145.96)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 02 Oct 2020 13:23:23 -0700
+Subject: Re: [PATCH 1/1] net/rds: suppress page allocation failure error in
+ recv buffer refill
+To:     santosh.shilimkar@oracle.com
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        aruna.ramakrishna@oracle.com, rama.nichanamatlu@oracle.com
+References: <1601669145-13604-1-git-send-email-manjunath.b.patil@oracle.com>
+ <733882f3-9bd5-8fe4-5d70-ec197455257e@oracle.com>
+From:   Manjunath Patil <manjunath.b.patil@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <60a5b017-7b59-b258-8305-760a152b8faa@oracle.com>
+Date:   Fri, 2 Oct 2020 13:23:22 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-References: <20201002174001.3012643-1-jarod@redhat.com> <20201002174001.3012643-4-jarod@redhat.com>
-In-Reply-To: <20201002174001.3012643-4-jarod@redhat.com>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Fri, 2 Oct 2020 22:20:13 +0200
-Message-ID: <CANiq72=WDR028qoM0du_ZKr0FSVv+X5BsZJJUw_Hf51dE6MD6w@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 3/6] bonding: rename slave to port where possible
-To:     Jarod Wilson <jarod@redhat.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <733882f3-9bd5-8fe4-5d70-ec197455257e@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9762 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999 bulkscore=0
+ phishscore=0 malwarescore=0 adultscore=0 suspectscore=1 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2010020148
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9762 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 phishscore=0
+ suspectscore=1 mlxlogscore=999 clxscore=1015 priorityscore=1501
+ impostorscore=0 lowpriorityscore=0 bulkscore=0 spamscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2010020147
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jarod,
+Thanks for ack'ing.
 
-On Fri, Oct 2, 2020 at 7:44 PM Jarod Wilson <jarod@redhat.com> wrote:
+Yeah, sorry about version. I had it in my mind to add it when I started, 
+but forgot it at the last moment.
+
+-Thanks,
+Manjunath
+On 10/2/2020 1:10 PM, santosh.shilimkar@oracle.com wrote:
+> On 10/2/20 1:05 PM, Manjunath Patil wrote:
+>> RDS/IB tries to refill the recv buffer in softirq context using
+>> GFP_NOWAIT flag. However alloc failure is handled by queueing a work to
+>> refill the recv buffer with GFP_KERNEL flag. This means failure to
+>> allocate with GFP_NOWAIT isn't fatal. Do not print the PAF warnings if
+>> softirq context fails to refill the recv buffer, instead print rate
+>> limited warnings.
+>>
+>> Signed-off-by: Manjunath Patil <manjunath.b.patil@oracle.com>
+>> Reviewed-by: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
+>> ---
+> Thanks for the updated version. Whenever you send updated patch,
+> you should add version so that it helps for archiving as well as
+> review.
 >
->  .clang-format                                 |    4 +->  #ifdef CONFIG_NET_POLL_CONTROLLER
+> Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
 
-Acked-by: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-
-Cheers,
-Miguel
