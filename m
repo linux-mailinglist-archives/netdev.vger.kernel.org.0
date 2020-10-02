@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A684B280C53
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 04:42:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFC26280C55
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 04:42:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387581AbgJBCmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 22:42:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59064 "EHLO
+        id S2387600AbgJBCmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 22:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387485AbgJBCme (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 22:42:34 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E76C0613D0;
-        Thu,  1 Oct 2020 19:42:33 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id k13so230270pfg.1;
-        Thu, 01 Oct 2020 19:42:33 -0700 (PDT)
+        with ESMTP id S2387485AbgJBCmi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 22:42:38 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2861FC0613D0;
+        Thu,  1 Oct 2020 19:42:38 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id e18so518518pgd.4;
+        Thu, 01 Oct 2020 19:42:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=odFd5HP3SrWjbzeDvFMjd47wiKSJOjEU0D88/qTJTVI=;
-        b=uAqnAgxkUY/UrVdDabt8vA0fjYMREHfTZfbYcFAGDMqUIPNiwNVyv0yPHQvkJ69K4B
-         TkxEUb3bBF3ZK6K7PpIlKIVkfBBDzklz2VZP0aG9K7tFjMlpw9Wvnd3mRcVlxLXfBeas
-         +2k8n3ruZrdTHEclfdVh1pQaiTw+4T4TsLnYzEYFTr88mztbC8g1KFnRTJVXT4Px6oFy
-         3vZQIrN3/etersVmBGV0MUE9KKWW9wV9swyrTPk3FP36QkVkKL1lMJdfYrC/Ceq07cR0
-         DqrOyEGXHbeAJXfnr65qkiqm3Vvn8qZj7z7aH/Prwn4fY9A5ofWSG7Ow71fgRbNoiGIZ
-         A5cA==
+        bh=PVE6dj7KElSm5JHuEzI9VdWXB5S7Zzgg0Ylks3nzGTA=;
+        b=QK0odRNw1YbgwIN2z/O6EwmnuAh8zTAPtPAq291jHHuQOIFUnorxxfBeq4hzQDCRE2
+         42iJfjCOgnapQ5iZ+7UqEy8dSaK+1AHQACRJNvhO3NKp0xh9m52oHPb7qZ7RSzyhEujr
+         WqKOzEeS2MPzVZX7LtPU1zs0GIqsXLOdQnKIApzfhiRHhybyGsxK5rxMH9RAQaVLUdRs
+         3stajDvV9shpg358X0Jd80VfQYuouVZ7hGseKiOXaPdrL7vdsg2/yIk2j0eLq/Vh/p15
+         I0Einu+IVvI7RYHxW6ZEO5Hi5lCCeQpfTXYrQ2P+LULnOw6J27nce2T1x9l5hTw2rahl
+         Y1dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=odFd5HP3SrWjbzeDvFMjd47wiKSJOjEU0D88/qTJTVI=;
-        b=mc+uO7bkmOQeunYo/YufqOn9TNSaVpv/j5ZkAJKFN1al8grqGXDCI7RCIijVNIO6hM
-         IeoeHThfaMYpNrU5EEhm3H1prBcgECNcjqKT25QoeFugUAhb7u//EqLH1cOGxE8aTKrn
-         6tKdDABciz1meq31YTcAGvFXs7SNt0UHLLjk8B/UaZAxOD8TxOQm42Td7D17I62pWNnk
-         h+9bC8xTudM7vm4+pDAY2EZcj7A6qanijLsF+WD3Y/3o0ACT7VVWIClwDD5WrH32B7zO
-         dNkHw6N/eauYeTF827Cja8bNNnMdm3b/8BIysGGmpYC3DEr6GAHcugqcOdk2jem8Ut/y
-         vgOg==
-X-Gm-Message-State: AOAM53059o/FBDDSso49xoRN48w+6u6x/Lsc5CSG1xdyN64jSljuGstv
-        t0kTg8xhj6le3eYOtnGqFR5cgL8A50Uj4g==
-X-Google-Smtp-Source: ABdhPJx+BKNzjXZOlCBR2SmJyxmtWkplyGOTBO/0nS47RliLDmvuMMBoJ+NXZVHqjTpngBm1YDf7mA==
-X-Received: by 2002:a65:6487:: with SMTP id e7mr8486945pgv.409.1601606552344;
-        Thu, 01 Oct 2020 19:42:32 -0700 (PDT)
+        bh=PVE6dj7KElSm5JHuEzI9VdWXB5S7Zzgg0Ylks3nzGTA=;
+        b=EBa7w5EZTJmauZ2N6NngkQ6UujNv0Xlru4sxP2mbK4N1v0Hwb4QvC0njShnVKw6VRE
+         hEswnAtLFfY6zHkNv6hrdz/J3C5WfTiWjrhVI+UT58PQf2hKhcALdInyZbW9YQH6obdP
+         bTzt8jATDBLuT051VdBfJhh2ROKTGRhI5SQ9MusAnyU29ZB69n0oixvPizdX+lVNKb+1
+         aARwc2rQrTeJFDWYgQ4tYystO0sKh+Ho3FHwSOmEZn42DLP+TT80+6JjkFo9smkGABLa
+         DFm8Gv06N0pvOViQuw4Ep5snMrusMA1MPPlbf1v1L2hrdbyidybd85ro+YM2ygLWA4Tb
+         oTIw==
+X-Gm-Message-State: AOAM530FlKvnFVzb0WvGzYsmT07gMYy2sp9AZmV3oBx/c001K+WG327C
+        ouuDaKAdLCibt6nqRWdtyRfShA7Rg782og==
+X-Google-Smtp-Source: ABdhPJyqetfkTbQRqPyc/nUNuil1jXA6b5y3h2eNa3/SPC9H8ZKGRx0e/1xQRczANyJGdbbAbrA/nw==
+X-Received: by 2002:a62:7a14:0:b029:13e:d13d:a0f5 with SMTP id v20-20020a627a140000b029013ed13da0f5mr175423pfc.17.1601606557193;
+        Thu, 01 Oct 2020 19:42:37 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id gt11sm150185pjb.48.2020.10.01.19.42.27
+        by smtp.gmail.com with ESMTPSA id gt11sm150185pjb.48.2020.10.01.19.42.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Oct 2020 19:42:31 -0700 (PDT)
+        Thu, 01 Oct 2020 19:42:36 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -56,9 +56,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         linux-kernel@vger.kernel.org (open list),
         vladimir.oltean@nxp.com, olteanv@gmail.com
-Subject: [PATCH net-next 1/4] net: dsa: Call dsa_untag_bridge_pvid() from dsa_switch_rcv()
-Date:   Thu,  1 Oct 2020 19:42:12 -0700
-Message-Id: <20201002024215.660240-2-f.fainelli@gmail.com>
+Subject: [PATCH net-next 2/4] net: dsa: b53: Set untag_bridge_pvid
+Date:   Thu,  1 Oct 2020 19:42:13 -0700
+Message-Id: <20201002024215.660240-3-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201002024215.660240-1-f.fainelli@gmail.com>
 References: <20201002024215.660240-1-f.fainelli@gmail.com>
@@ -68,57 +68,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a DSA switch driver needs to call dsa_untag_bridge_pvid(), it can
-set dsa_switch::untag_brige_pvid to indicate this is necessary.
-
-This is a pre-requisite to making sure that we are always calling
-dsa_untag_bridge_pvid() after eth_type_trans() has been called.
+Indicate to the DSA receive path that we need to untage the bridge PVID,
+this allows us to remove the dsa_untag_bridge_pvid() calls from
+net/dsa/tag_brcm.c.
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- include/net/dsa.h | 8 ++++++++
- net/dsa/dsa.c     | 9 +++++++++
- 2 files changed, 17 insertions(+)
+ drivers/net/dsa/b53/b53_common.c |  1 +
+ net/dsa/tag_brcm.c               | 15 ++-------------
+ 2 files changed, 3 insertions(+), 13 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index b502a63d196e..8b0696e08cac 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -308,6 +308,14 @@ struct dsa_switch {
- 	 */
- 	bool			configure_vlan_while_not_filtering;
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 73507cff3bc4..ce18ba0b74eb 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -2603,6 +2603,7 @@ struct b53_device *b53_switch_alloc(struct device *base,
+ 	dev->ops = ops;
+ 	ds->ops = &b53_switch_ops;
+ 	ds->configure_vlan_while_not_filtering = true;
++	ds->untag_bridge_pvid = true;
+ 	dev->vlan_enabled = ds->configure_vlan_while_not_filtering;
+ 	mutex_init(&dev->reg_mutex);
+ 	mutex_init(&dev->stats_mutex);
+diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
+index 69d6b8c597a9..ad72dff8d524 100644
+--- a/net/dsa/tag_brcm.c
++++ b/net/dsa/tag_brcm.c
+@@ -152,11 +152,6 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
+ 	/* Remove Broadcom tag and update checksum */
+ 	skb_pull_rcsum(skb, BRCM_TAG_LEN);
  
-+	/* If the switch driver always programs the CPU port as egress tagged
-+	 * despite the VLAN configuration indicating otherwise, then setting
-+	 * @untag_bridge_pvid will force the DSA receive path to pop the bridge's
-+	 * default_pvid VLAN tagged frames to offer a consistent behavior
-+	 * between a vlan_filtering=0 and vlan_filtering=1 bridge device.
-+	 */
-+	bool			untag_bridge_pvid;
-+
- 	/* In case vlan_filtering_is_global is set, the VLAN awareness state
- 	 * should be retrieved from here and not from the per-port settings.
- 	 */
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index 5c18c0214aac..dec4ab59b7c4 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -225,6 +225,15 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
- 	skb->pkt_type = PACKET_HOST;
- 	skb->protocol = eth_type_trans(skb, skb->dev);
+-	/* Set the MAC header to where it should point for
+-	 * dsa_untag_bridge_pvid() to parse the correct VLAN header.
+-	 */
+-	skb_set_mac_header(skb, -ETH_HLEN);
+-
+ 	skb->offload_fwd_mark = 1;
  
-+	if (unlikely(cpu_dp->ds->untag_bridge_pvid)) {
-+		nskb = dsa_untag_bridge_pvid(skb);
-+		if (!nskb) {
-+			kfree_skb(skb);
-+			return 0;
-+		}
-+		skb = nskb;
-+	}
-+
- 	s = this_cpu_ptr(p->stats64);
- 	u64_stats_update_begin(&s->syncp);
- 	s->rx_packets++;
+ 	return skb;
+@@ -187,7 +182,7 @@ static struct sk_buff *brcm_tag_rcv(struct sk_buff *skb, struct net_device *dev,
+ 		nskb->data - ETH_HLEN - BRCM_TAG_LEN,
+ 		2 * ETH_ALEN);
+ 
+-	return dsa_untag_bridge_pvid(nskb);
++	return nskb;
+ }
+ 
+ static const struct dsa_device_ops brcm_netdev_ops = {
+@@ -214,14 +209,8 @@ static struct sk_buff *brcm_tag_rcv_prepend(struct sk_buff *skb,
+ 					    struct net_device *dev,
+ 					    struct packet_type *pt)
+ {
+-	struct sk_buff *nskb;
+-
+ 	/* tag is prepended to the packet */
+-	nskb = brcm_tag_rcv_ll(skb, dev, pt, ETH_HLEN);
+-	if (!nskb)
+-		return nskb;
+-
+-	return dsa_untag_bridge_pvid(nskb);
++	return brcm_tag_rcv_ll(skb, dev, pt, ETH_HLEN);
+ }
+ 
+ static const struct dsa_device_ops brcm_prepend_netdev_ops = {
 -- 
 2.25.1
 
