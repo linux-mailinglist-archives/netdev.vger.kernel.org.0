@@ -2,137 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88CA42811AD
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 13:55:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B99B22811E2
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 14:00:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387869AbgJBLy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 07:54:57 -0400
-Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:53167 "EHLO
-        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387765AbgJBLy4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 07:54:56 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 3E0EAA5C;
-        Fri,  2 Oct 2020 07:54:55 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Fri, 02 Oct 2020 07:54:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=xtRK2xXZ/v/QUkP9zj3e/x8jRHl
-        U4UVCaVvPb2DgxG4=; b=mpYT5qPrblB6kHeE4d72vu8RAsUDsA3t5Mk27Yf5XzJ
-        f4oUugKCSduLv109iXqKbeF2uT8CM9lwtNXg3vf0AIpQqhcPZxsfNjIOoOK2M/JE
-        Zz6/MSA3XbDhjuY05UgrW5fBIcCbYwdYiLp7bVsAXsk3C9XbuIM4v0K/X/9T0cWE
-        pyRi7acAGE1Sqarj9wIObjuLWTQRD26v/VFgWhIpWU/GsU5clmp7j2VINCyTlUwF
-        rQiKkyoeQgrVog2bz3PiG52qdEH9Ch/3DMOqRN3jz4tKLNjLFh+1DZO2mJQrjKYz
-        0Yf3lGumjWm8FCYnKdIpyab5Pa4fiA6BAQgn7J8sy4A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=xtRK2x
-        XZ/v/QUkP9zj3e/x8jRHlU4UVCaVvPb2DgxG4=; b=Ns6oCo38v3htoZZ46HHJp+
-        0ndfOAdzg+SfkYWsjVmmnZ3LYYIIib4EMqXDGdPewMe2vgCEF8Cs+FI5IkFHNRfr
-        3CXiw2JqrNd52Klzpf6Jyktd1J1vyFDsSG76wg93NO78QsgNzplwDhM5VrUUuK40
-        rifXvUvIhA2lRMe8gRVrkj3xorETFOZXCika8iXQtONmW85H027myEkzCXxdFZ50
-        bhO23rgvy27LRQi5p0bM1pu0GwZ9ctZqlGHfoy4xk8GffvH4VT2yOUVo5Ak5AP29
-        SsGDsYSdDxEa7ZXBlshob9NrlsRJoL/v3MvFHAuqPTUOfIMnU3ZURIVzHKonYsUA
-        ==
-X-ME-Sender: <xms:DhV3X1nA-tG7JmA4GNrYz6672e4qbC9YMRLZo99gIw3Jh1dvCD5axQ>
-    <xme:DhV3Xw34lXhNY1bNYF0q5KHIZWgIQ2p1mmGv2e7iB093N4eavaccrUwUftBIjPwVJ
-    dRWFJUxIw8zUQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrfeeigdegfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghgucfm
-    jfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepveeuheejgf
-    ffgfeivddukedvkedtleelleeghfeljeeiueeggeevueduudekvdetnecukfhppeekfedr
-    keeirdejgedrieegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilh
-    hfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
-X-ME-Proxy: <xmx:DhV3X7qjEv4QQlNqQJEV1mqdBoQBZYSKTCuTet0JuFnZmVsCMdridA>
-    <xmx:DhV3X1k-ZG0HWDkWUnYNafo8RbKvjXXIsOwKls1m9cK2HSuOWjmzhQ>
-    <xmx:DhV3Xz1GAog33lwpBCDxz8fHFzMvywyqHbWtno6ziWbici93TOFUFQ>
-    <xmx:DhV3X9rt7HntiM2qDPe6t7M8xZvOE2PkPwrqA6vKm7TqQdBFbx_gng>
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C14CE3064683;
-        Fri,  2 Oct 2020 07:54:53 -0400 (EDT)
-Date:   Fri, 2 Oct 2020 13:54:53 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
-        petkan@nucleusys.com, kuba@kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: usb: rtl8150: prevent set_ethernet_addr from
- setting uninit address
-Message-ID: <20201002115453.GA3338729@kroah.com>
-References: <20201001073221.239618-1-anant.thazhemadam@gmail.com>
- <20201001.191522.1749084221364678705.davem@davemloft.net>
- <83804e93-8f59-4d35-ec61-e9b5e6f00323@gmail.com>
+        id S2387785AbgJBMAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 08:00:10 -0400
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2940 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725964AbgJBMAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 08:00:09 -0400
+Received: from lhreml724-chm.china.huawei.com (unknown [172.18.7.106])
+        by Forcepoint Email with ESMTP id 79E40690D0CDFE47C8A8;
+        Fri,  2 Oct 2020 13:00:06 +0100 (IST)
+Received: from [127.0.0.1] (10.47.8.137) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Fri, 2 Oct 2020
+ 13:00:04 +0100
+Subject: Issue of metrics for multiple uncore PMUs (was Re: [RFC PATCH v2
+ 23/23] perf metricgroup: remove duped metric group events)
+To:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        <linux-kernel@vger.kernel.org>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+References: <20200507140819.126960-1-irogers@google.com>
+ <20200507140819.126960-24-irogers@google.com>
+From:   John Garry <john.garry@huawei.com>
+Message-ID: <e3c4f253-e1ed-32f6-c252-e8657968fc42@huawei.com>
+Date:   Fri, 2 Oct 2020 12:57:04 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <83804e93-8f59-4d35-ec61-e9b5e6f00323@gmail.com>
+In-Reply-To: <20200507140819.126960-24-irogers@google.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.8.137]
+X-ClientProxiedBy: lhreml727-chm.china.huawei.com (10.201.108.78) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 02, 2020 at 05:04:13PM +0530, Anant Thazhemadam wrote:
+On 07/05/2020 15:08, Ian Rogers wrote:
+
+Hi Ian,
+
+I was wondering if you ever tested commit 2440689d62e9 ("perf 
+metricgroup: Remove duped metric group events") for when we have a 
+metric which aliases multiple instances of the same uncore PMU in the 
+system?
+
+I have been rebasing some of my arm64 perf work to v5.9-rc7, and find an 
+issue where find_evsel_group() fails for the uncore metrics under the 
+condition mentioned above.
+
+Unfortunately I don't have an x86 machine to which this test applies. 
+However, as an experiment, I added a test metric to my broadwell JSON:
+
+diff --git a/tools/perf/pmu-events/arch/x86/broadwell/bdw-metrics.json 
+b/tools/perf/pmu-events/arch/x86/broadwell/bdw-metrics.json
+index 8cdc7c13dc2a..fc6d9adf996a 100644
+--- a/tools/perf/pmu-events/arch/x86/broadwell/bdw-metrics.json
++++ b/tools/perf/pmu-events/arch/x86/broadwell/bdw-metrics.json
+@@ -348,5 +348,11 @@
+         "MetricExpr": "(cstate_pkg@c7\\-residency@ / msr@tsc@) * 100",
+         "MetricGroup": "Power",
+         "MetricName": "C7_Pkg_Residency"
++    },
++    {
++        "BriefDescription": "test metric",
++        "MetricExpr": "UNC_CBO_XSNP_RESPONSE.MISS_XCORE * 
+UNC_CBO_XSNP_RESPONSE.MISS_EVICTION",
++        "MetricGroup": "Test",
++        "MetricName": "test_metric_inc"
+     }
+]
+
+
+And get this:
+
+john@localhost:~/linux/tools/perf> sudo ./perf stat -v -M 
+test_metric_inc sleep 1
+Using CPUID GenuineIntel-6-3D-4
+metric expr unc_cbo_xsnp_response.miss_xcore * 
+unc_cbo_xsnp_response.miss_eviction for test_metric_inc
+found event unc_cbo_xsnp_response.miss_eviction
+found event unc_cbo_xsnp_response.miss_xcore
+adding 
+{unc_cbo_xsnp_response.miss_eviction,unc_cbo_xsnp_response.miss_xcore}:W
+unc_cbo_xsnp_response.miss_eviction -> uncore_cbox_1/umask=0x81,event=0x22/
+unc_cbo_xsnp_response.miss_eviction -> uncore_cbox_0/umask=0x81,event=0x22/
+unc_cbo_xsnp_response.miss_xcore -> uncore_cbox_1/umask=0x41,event=0x22/
+unc_cbo_xsnp_response.miss_xcore -> uncore_cbox_0/umask=0x41,event=0x22/
+Cannot resolve test_metric_inc: unc_cbo_xsnp_response.miss_xcore * 
+unc_cbo_xsnp_response.miss_eviction
+task-clock: 688876 688876 688876
+context-switches: 2 688876 688876
+cpu-migrations: 0 688876 688876
+page-faults: 69 688876 688876
+cycles: 2101719 695690 695690
+instructions: 1180534 695690 695690
+branches: 249450 695690 695690
+branch-misses: 10815 695690 695690
+
+Performance counter stats for 'sleep 1':
+
+              0.69 msec task-clock                #    0.001 CPUs 
+utilized
+                 2      context-switches          #    0.003 M/sec 
+
+                 0      cpu-migrations            #    0.000 K/sec 
+
+                69      page-faults               #    0.100 M/sec 
+
+         2,101,719      cycles                    #    3.051 GHz 
+
+         1,180,534      instructions              #    0.56  insn per 
+cycle
+           249,450      branches                  #  362.112 M/sec 
+
+            10,815      branch-misses             #    4.34% of all 
+branches
+
+       1.001177693 seconds time elapsed
+
+       0.001149000 seconds user
+       0.000000000 seconds sys
+
+
+john@localhost:~/linux/tools/perf>
+
+
+Any idea what is going wrong here, before I have to dive in? The issue 
+seems to be this named commit.
+
+Thanks,
+John
+
+> A metric group contains multiple metrics. These metrics may use the same
+> events. If metrics use separate events then it leads to more
+> multiplexing and overall metric counts fail to sum to 100%.
+> Modify how metrics are associated with events so that if the events in
+> an earlier group satisfy the current metric, the same events are used.
+> A record of used events is kept and at the end of processing unnecessary
+> events are eliminated.
 > 
-> On 02/10/20 7:45 am, David Miller wrote:
-> > From: Anant Thazhemadam <anant.thazhemadam@gmail.com>
-> > Date: Thu,  1 Oct 2020 13:02:20 +0530
-> >
-> >> When get_registers() fails (which happens when usb_control_msg() fails)
-> >> in set_ethernet_addr(), the uninitialized value of node_id gets copied
-> >> as the address.
-> >>
-> >> Checking for the return values appropriately, and handling the case
-> >> wherein set_ethernet_addr() fails like this, helps in avoiding the
-> >> mac address being incorrectly set in this manner.
-> >>
-> >> Reported-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
-> >> Tested-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
-> >> Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
-> >> Acked-by: Petko Manolov <petkan@nucleusys.com>
-> > First, please remove "Linux-kernel-mentees" from the Subject line.
-> >
-> > All patch submitters should have their work judged equally, whoever
-> > they are.  So this Subject text gives no extra information, and it
-> > simply makes scanning Subject lines in one's mailer more difficult.
-> I will keep that in mind for all future submissions. Thank you.
-> 
-> > Second, when a MAC address fails to probe a random MAC address should
-> > be selected.  We have helpers for this.  This way an interface still
-> > comes up and is usable, even in the event of a failed MAC address
-> > probe.
-> 
-> Okay... I see.
-> But this patch is about ensuring that an uninitialized variable's
-> value (whatever that may be) is not set as the ethernet address
-> blindly (without any form of checking if get_registers() worked
-> as expected, or not). And I didn't think uninitialized values being
-> set as MAC address was considered a good outcome (after all, it
-> seemed to have triggered a bug), especially when it could have
-> been avoided by introducing a simple check that doesn't break
-> anything.
-
-If the read from the device for the MAC address fails, don't abort the
-whole probe process and make the device not work at all, call the
-networking core to assign a random MAC address.
-
-> However, if I was mistaken, and if that is something that we can live
-> with after all, then I don't really see the understand the purpose of
-> similar checks being made (in all the many places that the return
-> value of get_registers() (or a similar function gets checked) in the first
-> place at all.
-
-Different values and registers determine what should be done with an
-error.  It's all relative.
-
-For this type of error, we should gracefully recover and keep on going.
-For others, maybe we just ignore the issue, or log it, or something
-else, it all depends.
-
-hope this helps,
-
-greg k-h
+> Before:
