@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1508A280CF9
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 07:01:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 870C5280CFB
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 07:01:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725999AbgJBFB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 01:01:27 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:41906 "EHLO a.mx.secunet.com"
+        id S1726020AbgJBFB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 01:01:29 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:41946 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725926AbgJBFB0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Oct 2020 01:01:26 -0400
+        id S1725993AbgJBFB1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 01:01:27 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 9AEE020512;
-        Fri,  2 Oct 2020 07:01:24 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 3B77D20501;
+        Fri,  2 Oct 2020 07:01:26 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id OBgqMz0tbkQy; Fri,  2 Oct 2020 07:01:24 +0200 (CEST)
+        with ESMTP id fSpsQ2jFBXWu; Fri,  2 Oct 2020 07:01:25 +0200 (CEST)
 Received: from mail-essen-01.secunet.de (unknown [10.53.40.204])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 1471A2019C;
+        by a.mx.secunet.com (Postfix) with ESMTPS id D83BE204EF;
         Fri,  2 Oct 2020 07:01:24 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Fri, 2 Oct 2020 07:01:23 +0200
+ 14.3.487.0; Fri, 2 Oct 2020 07:01:24 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Fri, 2 Oct 2020
  07:01:23 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 51C2931843B3;
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 5740731845EA;
  Fri,  2 Oct 2020 07:01:23 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 3/7] xfrm/compat: Attach xfrm dumps to 64=>32 bit translator
-Date:   Fri, 2 Oct 2020 07:01:09 +0200
-Message-ID: <20201002050113.2210-4-steffen.klassert@secunet.com>
+Subject: [PATCH 4/7] netlink/compat: Append NLMSG_DONE/extack to frag_list
+Date:   Fri, 2 Oct 2020 07:01:10 +0200
+Message-ID: <20201002050113.2210-5-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201002050113.2210-1-steffen.klassert@secunet.com>
 References: <20201002050113.2210-1-steffen.klassert@secunet.com>
@@ -54,120 +54,99 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmitry Safonov <dima@arista.com>
 
-Currently nlmsg_unicast() is used by functions that dump structures that
-can be different in size for compat tasks, see dump_one_state() and
-dump_one_policy().
+Modules those use netlink may supply a 2nd skb, (via frag_list)
+that contains an alternative data set meant for applications
+using 32bit compatibility mode.
 
-The following nlmsg_unicast() users exist today in xfrm:
+In such a case, netlink_recvmsg will use this 2nd skb instead of the
+original one.
 
-         Function                          |    Message can be different
-                                           |       in size on compat
--------------------------------------------|------------------------------
-    xfrm_get_spdinfo()                     |               N
-    xfrm_get_sadinfo()                     |               N
-    xfrm_get_sa()                          |               Y
-    xfrm_alloc_userspi()                   |               Y
-    xfrm_get_policy()                      |               Y
-    xfrm_get_ae()                          |               N
+Without this patch, such compat applications will retrieve
+all netlink dump data, but will then get an unexpected EOF.
 
-Besides, dump_one_state() and dump_one_policy() can be used by filtered
-netlink dump for XFRM_MSG_GETSA, XFRM_MSG_GETPOLICY.
-
-Just as for xfrm multicast, allocate frag_list for compat skb journey
-down to recvmsg() which will give user the desired skb according to
-syscall bitness.
-
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Dmitry Safonov <dima@arista.com>
-
+Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- net/xfrm/xfrm_user.c | 38 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ net/netlink/af_netlink.c | 47 ++++++++++++++++++++++++++++------------
+ 1 file changed, 33 insertions(+), 14 deletions(-)
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 3769227ed4e1..7fd7b16a8805 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -975,6 +975,7 @@ static int dump_one_state(struct xfrm_state *x, int count, void *ptr)
- 	struct xfrm_dump_info *sp = ptr;
- 	struct sk_buff *in_skb = sp->in_skb;
- 	struct sk_buff *skb = sp->out_skb;
-+	struct xfrm_translator *xtr;
- 	struct xfrm_usersa_info *p;
- 	struct nlmsghdr *nlh;
- 	int err;
-@@ -992,6 +993,18 @@ static int dump_one_state(struct xfrm_state *x, int count, void *ptr)
- 		return err;
- 	}
- 	nlmsg_end(skb, nlh);
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index f9efd2c1cb50..56ade862662e 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2186,13 +2186,35 @@ EXPORT_SYMBOL(__nlmsg_put);
+  * It would be better to create kernel thread.
+  */
+ 
++static int netlink_dump_done(struct netlink_sock *nlk, struct sk_buff *skb,
++			     struct netlink_callback *cb,
++			     struct netlink_ext_ack *extack)
++{
++	struct nlmsghdr *nlh;
 +
-+	xtr = xfrm_get_translator();
-+	if (xtr) {
-+		err = xtr->alloc_compat(skb, nlh);
++	nlh = nlmsg_put_answer(skb, cb, NLMSG_DONE, sizeof(nlk->dump_done_errno),
++			       NLM_F_MULTI | cb->answer_flags);
++	if (WARN_ON(!nlh))
++		return -ENOBUFS;
 +
-+		xfrm_put_translator(xtr);
-+		if (err) {
-+			nlmsg_cancel(skb, nlh);
-+			return err;
-+		}
++	nl_dump_check_consistent(cb, nlh);
++	memcpy(nlmsg_data(nlh), &nlk->dump_done_errno, sizeof(nlk->dump_done_errno));
++
++	if (extack->_msg && nlk->flags & NETLINK_F_EXT_ACK) {
++		nlh->nlmsg_flags |= NLM_F_ACK_TLVS;
++		if (!nla_put_string(skb, NLMSGERR_ATTR_MSG, extack->_msg))
++			nlmsg_end(skb, nlh);
 +	}
 +
- 	return 0;
- }
- 
-@@ -1320,6 +1333,7 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	struct net *net = sock_net(skb->sk);
- 	struct xfrm_state *x;
- 	struct xfrm_userspi_info *p;
-+	struct xfrm_translator *xtr;
- 	struct sk_buff *resp_skb;
- 	xfrm_address_t *daddr;
- 	int family;
-@@ -1370,6 +1384,17 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		goto out;
++	return 0;
++}
++
+ static int netlink_dump(struct sock *sk)
+ {
+ 	struct netlink_sock *nlk = nlk_sk(sk);
+ 	struct netlink_ext_ack extack = {};
+ 	struct netlink_callback *cb;
+ 	struct sk_buff *skb = NULL;
+-	struct nlmsghdr *nlh;
+ 	struct module *module;
+ 	int err = -ENOBUFS;
+ 	int alloc_min_size;
+@@ -2258,22 +2280,19 @@ static int netlink_dump(struct sock *sk)
+ 		return 0;
  	}
  
-+	xtr = xfrm_get_translator();
-+	if (xtr) {
-+		err = xtr->alloc_compat(skb, nlmsg_hdr(skb));
-+
-+		xfrm_put_translator(xtr);
-+		if (err) {
-+			kfree_skb(resp_skb);
-+			goto out;
-+		}
-+	}
-+
- 	err = nlmsg_unicast(net->xfrm.nlsk, resp_skb, NETLINK_CB(skb).portid);
+-	nlh = nlmsg_put_answer(skb, cb, NLMSG_DONE,
+-			       sizeof(nlk->dump_done_errno),
+-			       NLM_F_MULTI | cb->answer_flags);
+-	if (WARN_ON(!nlh))
++	if (netlink_dump_done(nlk, skb, cb, &extack))
+ 		goto errout_skb;
  
- out:
-@@ -1776,6 +1801,7 @@ static int dump_one_policy(struct xfrm_policy *xp, int dir, int count, void *ptr
- 	struct xfrm_userpolicy_info *p;
- 	struct sk_buff *in_skb = sp->in_skb;
- 	struct sk_buff *skb = sp->out_skb;
-+	struct xfrm_translator *xtr;
- 	struct nlmsghdr *nlh;
- 	int err;
- 
-@@ -1800,6 +1826,18 @@ static int dump_one_policy(struct xfrm_policy *xp, int dir, int count, void *ptr
- 		return err;
+-	nl_dump_check_consistent(cb, nlh);
+-
+-	memcpy(nlmsg_data(nlh), &nlk->dump_done_errno,
+-	       sizeof(nlk->dump_done_errno));
+-
+-	if (extack._msg && nlk->flags & NETLINK_F_EXT_ACK) {
+-		nlh->nlmsg_flags |= NLM_F_ACK_TLVS;
+-		if (!nla_put_string(skb, NLMSGERR_ATTR_MSG, extack._msg))
+-			nlmsg_end(skb, nlh);
++#ifdef CONFIG_COMPAT_NETLINK_MESSAGES
++	/* frag_list skb's data is used for compat tasks
++	 * and the regular skb's data for normal (non-compat) tasks.
++	 * See netlink_recvmsg().
++	 */
++	if (unlikely(skb_shinfo(skb)->frag_list)) {
++		if (netlink_dump_done(nlk, skb_shinfo(skb)->frag_list, cb, &extack))
++			goto errout_skb;
  	}
- 	nlmsg_end(skb, nlh);
-+
-+	xtr = xfrm_get_translator();
-+	if (xtr) {
-+		err = xtr->alloc_compat(skb, nlh);
-+
-+		xfrm_put_translator(xtr);
-+		if (err) {
-+			nlmsg_cancel(skb, nlh);
-+			return err;
-+		}
-+	}
-+
- 	return 0;
- }
++#endif
  
+ 	if (sk_filter(sk, skb))
+ 		kfree_skb(skb);
 -- 
 2.17.1
 
