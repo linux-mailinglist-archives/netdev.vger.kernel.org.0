@@ -2,112 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FB72281C57
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 21:53:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CCE4281C59
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 21:53:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725793AbgJBTxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 15:53:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29767 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725283AbgJBTxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 15:53:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601668394;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=3K0Pxu+gC6syY9syny9BArfDKK8IA+0REr3HjAGSJuA=;
-        b=Oq8ICsWcerI75eV64EB8fDxTzIg/sdyfKmDOVcbruPJPHgDB04y30yEJ84bktozxPsYvMl
-        G1KTXkKJSa1z4RK2RPwA+MIwEyku4tpnYx0NkdPuqJ98cRaAibi8AIYX6EhMgZ/ncfGElS
-        Ctwvzw9DHAhGgm5wCDLPofGqKtWAcMs=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-235-0KknLvu1MFe6HjzobF88zg-1; Fri, 02 Oct 2020 15:53:12 -0400
-X-MC-Unique: 0KknLvu1MFe6HjzobF88zg-1
-Received: by mail-wm1-f70.google.com with SMTP id b20so910473wmj.1
-        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 12:53:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=3K0Pxu+gC6syY9syny9BArfDKK8IA+0REr3HjAGSJuA=;
-        b=pE8rCHoniDOuFOdeDQf9CRX1/KAtdHS9EAbAQR6GtH2pz8hMTR6mmgW9rYeKHaVLqD
-         mNiEHyn+y6BcH5fA/UCZAcq/7wDv6BGkwqMm902dAlX6L39wK43xQWANHOS0Mr9d/Afu
-         pUb3SjTElli2Q2qc2k6h+ZgX9WWkvMB+k58MJZrFnmUsMZu+twESdhFeQq9qudt+H3yM
-         XB4k2dj7trdt4y1UHl6PCABrxgQGPudE21r2YtgNvl7ucS0fXsogYP8kOXySgfVbk63W
-         c2zeDsGzn4Ns2HwQdutkMkR2BKPkWCEAHeA6+Zmtjx6lHOaoNjnDGEa3kCrr1X2fpHyU
-         d0yw==
-X-Gm-Message-State: AOAM531bt4FebyO1hj+OCULwQllruPCIHQxCPAPKdqVmjYvLj67vluHE
-        vMU0EyPWNCiiSmSsOacfoAsJDdZmJ5CelcGETB19I/yllwIUz1KO9mTc2S22TFd0UEgigIV+08p
-        Yttz3sedaHVYhuTTr
-X-Received: by 2002:a05:600c:20c:: with SMTP id 12mr4687312wmi.40.1601668391302;
-        Fri, 02 Oct 2020 12:53:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyU7xq/zIJOBm5rQfh4PzTyUVQTnUO/LhIQ5x/O7xVdLxit6qX51ayaTDuDje3fg5ZvZSrjPQ==
-X-Received: by 2002:a05:600c:20c:: with SMTP id 12mr4687299wmi.40.1601668391090;
-        Fri, 02 Oct 2020 12:53:11 -0700 (PDT)
-Received: from pc-2.home (2a01cb058d4f8400c9f0d639f7c74c26.ipv6.abo.wanadoo.fr. [2a01:cb05:8d4f:8400:c9f0:d639:f7c7:4c26])
-        by smtp.gmail.com with ESMTPSA id z67sm2907107wme.41.2020.10.02.12.53.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2020 12:53:10 -0700 (PDT)
-Date:   Fri, 2 Oct 2020 21:53:08 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Davide Caratti <dcaratti@redhat.com>
-Subject: [PATCH net] net/core: check length before updating Ethertype in
- skb_mpls_{push,pop}
-Message-ID: <71ec98d51cc4aab7615061336fb1498ad16cda30.1601667845.git.gnault@redhat.com>
+        id S1725796AbgJBTxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 15:53:32 -0400
+Received: from www62.your-server.de ([213.133.104.62]:47456 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725283AbgJBTxc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 15:53:32 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kOR7Q-0005HG-Io; Fri, 02 Oct 2020 21:53:28 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kOR7Q-0007i3-A8; Fri, 02 Oct 2020 21:53:28 +0200
+Subject: Re: [PATCH v4 bpf-next 00/13] mvneta: introduce XDP multi-buffer
+ support
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        shayagr@amazon.com, sameehj@amazon.com, dsahern@kernel.org,
+        brouer@redhat.com, lorenzo.bianconi@redhat.com, echaudro@redhat.com
+References: <cover.1601648734.git.lorenzo@kernel.org>
+ <5f77467dbc1_38b0208ef@john-XPS-13-9370.notmuch>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5c22ee38-e2c3-0724-5033-603d19c4169f@iogearbox.net>
+Date:   Fri, 2 Oct 2020 21:53:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <5f77467dbc1_38b0208ef@john-XPS-13-9370.notmuch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25945/Fri Oct  2 15:54:22 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Openvswitch allows to drop a packet's Ethernet header, therefore
-skb_mpls_push() and skb_mpls_pop() might be called with ethernet=true
-and mac_len=0. In that case the pointer passed to skb_mod_eth_type()
-doesn't point to an Ethernet header and the new Ethertype is written at
-unexpected locations.
+On 10/2/20 5:25 PM, John Fastabend wrote:
+> Lorenzo Bianconi wrote:
+>> This series introduce XDP multi-buffer support. The mvneta driver is
+>> the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+>> please focus on how these new types of xdp_{buff,frame} packets
+>> traverse the different layers and the layout design. It is on purpose
+>> that BPF-helpers are kept simple, as we don't want to expose the
+>> internal layout to allow later changes.
+>>
+>> For now, to keep the design simple and to maintain performance, the XDP
+>> BPF-prog (still) only have access to the first-buffer. It is left for
+>> later (another patchset) to add payload access across multiple buffers.
+>> This patchset should still allow for these future extensions. The goal
+>> is to lift the XDP MTU restriction that comes with XDP, but maintain
+>> same performance as before.
+>>
+>> The main idea for the new multi-buffer layout is to reuse the same
+>> layout used for non-linear SKB. This rely on the "skb_shared_info"
+>> struct at the end of the first buffer to link together subsequent
+>> buffers. Keeping the layout compatible with SKBs is also done to ease
+>> and speedup creating an SKB from an xdp_{buff,frame}. Converting
+>> xdp_frame to SKB and deliver it to the network stack is shown in cpumap
+>> code (patch 13/13).
+> 
+> Using the end of the buffer for the skb_shared_info struct is going to
+> become driver API so unwinding it if it proves to be a performance issue
+> is going to be ugly. So same question as before, for the use case where
+> we receive packet and do XDP_TX with it how do we avoid cache miss
+> overhead? This is not just a hypothetical use case, the Facebook
+> load balancer is doing this as well as Cilium and allowing this with
+> multi-buffer packets >1500B would be useful.
+[...]
 
-Fix this by verifying that mac_len is big enough to contain an Ethernet
-header.
+Fully agree. My other question would be if someone else right now is in the process
+of implementing this scheme for a 40G+ NIC? My concern is the numbers below are rather
+on the lower end of the spectrum, so I would like to see a comparison of XDP as-is
+today vs XDP multi-buff on a higher end NIC so that we have a picture how well the
+current designed scheme works there and into which performance issue we'll run e.g.
+under typical XDP L4 load balancer scenario with XDP_TX. I think this would be crucial
+before the driver API becomes 'sort of' set in stone where others start to adapting
+it and changing design becomes painful. Do ena folks have an implementation ready as
+well? And what about virtio_net, for example, anyone committing there too? Typically
+for such features to land is to require at least 2 drivers implementing it.
 
-Fixes: fa4e0f8855fc ("net/sched: fix corrupted L2 header with MPLS 'push' and 'pop' actions")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
-Notes:
-  - Found by code inspection.
-  - Using commit fa4e0f8855fc for the Fixes tag because mac_len is
-    needed for the test. The problem probably exists since openvswitch
-    can pop the Ethernet header though.
-
- net/core/skbuff.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 6faf73d6a0f7..2b48cb0cc684 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5622,7 +5622,7 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
- 	lse->label_stack_entry = mpls_lse;
- 	skb_postpush_rcsum(skb, lse, MPLS_HLEN);
- 
--	if (ethernet)
-+	if (ethernet && mac_len >= ETH_HLEN)
- 		skb_mod_eth_type(skb, eth_hdr(skb), mpls_proto);
- 	skb->protocol = mpls_proto;
- 
-@@ -5662,7 +5662,7 @@ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
- 	skb_reset_mac_header(skb);
- 	skb_set_network_header(skb, mac_len);
- 
--	if (ethernet) {
-+	if (ethernet && mac_len >= ETH_HLEN) {
- 		struct ethhdr *hdr;
- 
- 		/* use mpls_hdr() to get ethertype to account for VLANs. */
--- 
-2.21.3
-
+>> Typical use cases for this series are:
+>> - Jumbo-frames
+>> - Packet header split (please see Google���s use-case @ NetDevConf 0x14, [0])
+>> - TSO
+>>
+>> More info about the main idea behind this approach can be found here [1][2].
+>>
+>> We carried out some throughput tests in a standard linear frame scenario in order
+>> to verify we did not introduced any performance regression adding xdp multi-buff
+>> support to mvneta:
+>>
+>> offered load is ~ 1000Kpps, packet size is 64B, mvneta descriptor size is one PAGE
+>>
+>> commit: 879456bedbe5 ("net: mvneta: avoid possible cache misses in mvneta_rx_swbm")
+>> - xdp-pass:      ~162Kpps
+>> - xdp-drop:      ~701Kpps
+>> - xdp-tx:        ~185Kpps
+>> - xdp-redirect:  ~202Kpps
+>>
+>> mvneta xdp multi-buff:
+>> - xdp-pass:      ~163Kpps
+>> - xdp-drop:      ~739Kpps
+>> - xdp-tx:        ~182Kpps
+>> - xdp-redirect:  ~202Kpps
+[...]
