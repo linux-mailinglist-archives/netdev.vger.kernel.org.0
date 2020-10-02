@@ -2,128 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC0C7281423
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 15:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1B95281433
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 15:39:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387939AbgJBNgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 09:36:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46342 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbgJBNgj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 09:36:39 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE5BC0613D0;
-        Fri,  2 Oct 2020 06:36:39 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id x16so801320pgj.3;
-        Fri, 02 Oct 2020 06:36:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=9abpwhVY5F1y6r9U1G6EegFsxLY2I9VNVQvWHKJ7Pls=;
-        b=Zhdkzt9oY6UHJwCSsbAVuPeNe0P9ao6ZY/ZUprw4RaJxMxQ1XqI1o4a6aIl3JOptii
-         jkQWJaQMt6DyNGOqpr3gebahqu7SDZjE38KSmSc+6vbVdH0miNxrVs30okS1TD/+WohO
-         5k0q5jtI5H7lu/8cvDbaML92qv1nQMQflP62XQlHWS3GxZCiE1YoQGj1775/fdYos/X+
-         RXWEC2R1NJsUSg7pDjlJy2L/Cv3da/WEg3yrHQu+ETyJ+Imtx1xX+j8QhSu1dJJZ357Q
-         1jd1ZThEWWpPIvv1dIwB0gcqzIysbMccYto4BM+WMmM95EoZsHdtiLIpQbyH6B4CBd5b
-         IceA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=9abpwhVY5F1y6r9U1G6EegFsxLY2I9VNVQvWHKJ7Pls=;
-        b=qvT7wUZ+slct1Y2r5zUwRj2LK4LvR+H9/DRWt3Nr2zs6HDR9Mc/aiVR5MSdn2zpNIE
-         reImuO+bF5FimR0HysQR+YSQzUXb+QhGsGO4SU/55bVAUm8aRP/Oq6zl+yA4FgGtT8Ft
-         2piB0cmciJEZa31yhyLsZtacGHmgh1hCQVJNI9EDqdZnfrt2VwQ4L+SZL+W6z82W516z
-         w075YKWJbMEC2CmBrEDW3BhbImDHLHSRuHQ+UxbNwYd+Vh1C7LrVg9ojjL/oRN2NZHvU
-         G2qwpAYADwZdKmMie0ZGodAMLpkegeNo7HZGhVtC0TpoMkvmVhy8vRzsRkcBdbTcOrJc
-         E7Fw==
-X-Gm-Message-State: AOAM5334kRX2THQltlUhis8bNYCQBSqJ7bJZYt0+MQebJd4FAGGoGvE9
-        jYexghzyc/7T+ZEoVFpql6M=
-X-Google-Smtp-Source: ABdhPJx7HyTAx1Bl7iujSOGyJLOJRS6gYHY1GtqCMlnIdnX7uTEl9hs0a7xbaWXoMP5EXVtP80Ob0A==
-X-Received: by 2002:a63:e354:: with SMTP id o20mr2284002pgj.317.1601645799079;
-        Fri, 02 Oct 2020 06:36:39 -0700 (PDT)
-Received: from VM.ger.corp.intel.com (fmdmzpr04-ext.fm.intel.com. [192.55.55.39])
-        by smtp.gmail.com with ESMTPSA id q65sm1666126pga.88.2020.10.02.06.36.36
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 02 Oct 2020 06:36:38 -0700 (PDT)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com
-Cc:     bpf@vger.kernel.org, ciara.loftus@intel.com
-Subject: [PATCH bpf-next] libbpf: fix compatibility problem in xsk_socket__create
-Date:   Fri,  2 Oct 2020 15:36:27 +0200
-Message-Id: <1601645787-16944-1-git-send-email-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1726569AbgJBNjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 09:39:47 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:64978 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387917AbgJBNjm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 09:39:42 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 092DU81V005042;
+        Fri, 2 Oct 2020 06:39:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=KTKcL+VHIp7pc/TWqouEIcmEdyTZLhZaH5Mkthe6Fug=;
+ b=GnYatbnRCVvoQeI8E6v5w5rRPXbzs20gjyxaLtb0pvW3as5j9ubEAyns+aX2puxdaZD2
+ ioMl+JB6EWZVfUHDgrW9HsJZirCh3HuvndAcBjo0/LfEkl7q4vzE7mj2mtZyiszZn1O7
+ irjngby18od44msVwol207aRLuvlevYHIkTAPTNirU5HYwqo6XXDnamJWYtzONVnJurz
+ 7l4dY/81LFU1ek0O2y2RvYb2itqPRPpZJyt3jqtucIp/ECj6cuE9rZJ5byef4Cro/GaK
+ Yic0Ar1VUB3MbuY7y3jEgZ+oOqv08k/T/qI+bX+CNDlMtcQ9cWkgdTMQO2QZp4Ret70b Sw== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 33t55pj6r5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 02 Oct 2020 06:39:34 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 2 Oct
+ 2020 06:39:32 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 2 Oct
+ 2020 06:39:31 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 2 Oct 2020 06:39:31 -0700
+Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.193.39.7])
+        by maili.marvell.com (Postfix) with ESMTP id C82DE3F703F;
+        Fri,  2 Oct 2020 06:39:29 -0700 (PDT)
+From:   Igor Russkikh <irusskikh@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH v2 net-next 0/3] net: atlantic: phy tunables from mac driver
+Date:   Fri, 2 Oct 2020 16:39:20 +0300
+Message-ID: <20201002133923.1677-1-irusskikh@marvell.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-02_06:2020-10-02,2020-10-02 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+This series implements phy tunables settings via MAC driver callbacks.
 
-Fix a compatibility problem when the old XDP_SHARED_UMEM mode is used
-together with the xsk_socket__create() call. In the old XDP_SHARED_UMEM
-mode, only sharing of the same device and queue id was allowed, and in
-this mode, the fill ring and completion ring were shared between the
-AF_XDP sockets. Therfore, it was perfectly fine to call the
-xsk_socket__create() API for each socket and not use the new
-xsk_socket__create_shared() API. This behaviour was ruined by the
-commit introducing XDP_SHARED_UMEM support between different devices
-and/or queue ids. This patch restores the ability to use
-xsk_socket__create in these circumstances so that backward
-compatibility is not broken.
+AQC 10G devices use integrated MAC+PHY solution, where PHY is fully controlled
+by MAC firmware. Therefore, it is not possible to implement separate phy driver
+for these.
 
-We also make sure that a user that uses the
-xsk_socket__create_shared() api for the first socket in the old
-XDP_SHARED_UMEM mode above, gets and error message if the user tries
-to feed a fill ring or a completion ring that is not the same as the
-ones used for the umem registration. Previously, libbpf would just
-have silently ignored the supplied fill and completion rings and just
-taken them from the umem. Better to provide an error to the user.
+We use ethtool ops callbacks to implement downshift and EDPC tunables.
 
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
----
- tools/lib/bpf/xsk.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+v2: comments from Andrew
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index 30b4ca5..5b61932 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -705,7 +705,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 	struct xsk_ctx *ctx;
- 	int err, ifindex;
- 
--	if (!umem || !xsk_ptr || !(rx || tx) || !fill || !comp)
-+	if (!umem || !xsk_ptr || !(rx || tx))
- 		return -EFAULT;
- 
- 	xsk = calloc(1, sizeof(*xsk));
-@@ -735,12 +735,24 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 
- 	ctx = xsk_get_ctx(umem, ifindex, queue_id);
- 	if (!ctx) {
-+		if (!fill || !comp) {
-+			err = -EFAULT;
-+			goto out_socket;
-+		}
-+
- 		ctx = xsk_create_ctx(xsk, umem, ifindex, ifname, queue_id,
- 				     fill, comp);
- 		if (!ctx) {
- 			err = -ENOMEM;
- 			goto out_socket;
- 		}
-+	} else if ((fill && ctx->fill != fill) || (comp && ctx->comp != comp)) {
-+		/* If the xsk_socket__create_shared() api is used for the first socket
-+		 * registration, then make sure the fill and completion rings supplied
-+		 * are the same as the ones used to register the umem. If not, bail out.
-+		 */
-+		err = -EINVAL;
-+		goto out_socket;
- 	}
- 	xsk->ctx = ctx;
- 
+Igor Russkikh (3):
+  ethtool: allow netdev driver to define phy tunables
+  net: atlantic: implement phy downshift feature
+  net: atlantic: implement media detect feature via phy tunables
+
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   | 53 +++++++++++++++++++
+ .../net/ethernet/aquantia/atlantic/aq_hw.h    |  6 +++
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   | 49 +++++++++++++++++
+ .../net/ethernet/aquantia/atlantic/aq_nic.h   |  4 ++
+ .../atlantic/hw_atl/hw_atl_utils_fw2x.c       | 37 +++++++++++++
+ .../atlantic/hw_atl2/hw_atl2_utils_fw.c       | 13 +++++
+ include/linux/ethtool.h                       |  4 ++
+ net/ethtool/ioctl.c                           | 37 ++++++++-----
+ 8 files changed, 190 insertions(+), 13 deletions(-)
+
 -- 
-2.7.4
+2.17.1
 
