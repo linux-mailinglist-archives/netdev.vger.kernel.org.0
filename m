@@ -2,55 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CB732816D6
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 17:39:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DFA72816E8
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 17:42:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388116AbgJBPjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 11:39:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38058 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387974AbgJBPjy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Oct 2020 11:39:54 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9F64520795;
-        Fri,  2 Oct 2020 15:39:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601653193;
-        bh=vaZBkeWLMXU07nclgdAmRRBh+eG246QJDsBoZOQcRds=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eA3CJRLVIADXFmHYnYJLncFMDX6XKYRRp+d8FI6f/UWbPJS506m8M1H8rnVsVr7im
-         UbsTJmdGRa3yxkPcnOGwpZEDUcFOb7TDuioxgzV396ib6DMkEFTwEkgWja5smku2Ia
-         7gIL+KUr0TlPaftXiXzfRDuM1ZHAlkk/8Y84KqPg=
-Date:   Fri, 2 Oct 2020 08:39:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     netdev@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>
-Subject: Re: [PATCH 2/5] netlink: compare policy more accurately
-Message-ID: <20201002083952.6532f201@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201002110205.73a89b98cf10.I78718edf29745b8e5f5ea2d289e59c8884fdd8c7@changeid>
-References: <20201002090944.195891-1-johannes@sipsolutions.net>
-        <20201002110205.73a89b98cf10.I78718edf29745b8e5f5ea2d289e59c8884fdd8c7@changeid>
+        id S2387768AbgJBPmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 11:42:46 -0400
+Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:49516 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2387692AbgJBPmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 11:42:46 -0400
+Received: from tomoyo.flets-east.jp ([153.230.197.127])
+        by mwinf5d76 with ME
+        id b3iL230022lQRaH033iZfK; Fri, 02 Oct 2020 17:42:43 +0200
+X-ME-Helo: tomoyo.flets-east.jp
+X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
+X-ME-Date: Fri, 02 Oct 2020 17:42:43 +0200
+X-ME-IP: 153.230.197.127
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
+        linux-usb@vger.kernel.org (open list:USB ACM DRIVER)
+Subject: [PATCH v3 0/7] can: add support for ETAS ES58X CAN USB
+Date:   Sat,  3 Oct 2020 00:41:44 +0900
+Message-Id: <20201002154219.4887-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200926175810.278529-1-mailhol.vincent@wanadoo.fr>
+References: <20200926175810.278529-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  2 Oct 2020 11:09:41 +0200 Johannes Berg wrote:
-> From: Johannes Berg <johannes.berg@intel.com>
-> 
-> The maxtype is really an integral part of the policy, and while we
-> haven't gotten into a situation yet where this happens, it seems
-> that some developer might eventually have two places pointing to
-> identical policies, with different maxattr to exclude some attrs
-> in one of the places.
-> 
-> Even if not, it's really the right thing to compare both since the
-> two data items fundamentally belong together.
-> 
-> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+The purpose of this patch series is to introduce a new CAN USB
+driver to support ETAS USB interfaces (ES58X series).
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+During development, issues in drivers/net/can/dev.c where discovered,
+the fix for those issues are included in this patch series.
+
+We also propose to add two helper functions in include/linux/can/dev.h
+which we think can benefit other drivers: get_can_len() and
+can_bit_time().
+
+The driver indirectly relies on https://lkml.org/lkml/2020/9/26/251
+([PATCH] can: raw: add missing error queue support) for the call to
+skb_tx_timestamp() to work but can still compile without it.
+
+*Side notes*: scripts/checkpatch.pl returns 4 'checks' findings in
+[PATCH 5/6]. All those findings are of type: "Macro argument reuse 'x'
+possible side-effects?".  Those arguments reuse are actually made by
+calling either __stringify() or sizeof_field() which are both
+pre-processor constant. Furthermore, those macro are never called with
+arguments sensible to side-effects. So no actual side effect would
+occur.
+
+Changes in v3:
+  - Added one additional patch: [PATCH v3 2/7] can: dev: fix type of
+ get_can_dlc() and get_canfd_dlc() macros.
+  - Make get_can_len() return u8 and make the skb const in PATCH 3/7.
+  - Remove all the calls to likely() and unlikely() in PATCH 6/7.
+
+Changes in v2:
+  - Fixed -W1 warnings in PATCH 6/7 (v1 was tested with GCC -WExtra
+  but not with -W1).
+  - Added lsusb -v information in PATCH 7/7 and rephrased the comment.
+  - Take care to put everyone in CC of each of the patch of the series
+  (sorry for the mess in v1...)
+
+Vincent Mailhol (7):
+  can: dev: can_get_echo_skb(): prevent call to kfree_skb() in hard IRQ
+    context
+  can: dev: fix type of get_can_dlc() and get_canfd_dlc() macros
+  can: dev: add a helper function to get the correct length of Classical
+    frames
+  can: dev: __can_get_echo_skb(): fix the return length
+  can: dev: add a helper function to calculate the duration of one bit
+  can: usb: etas_es58X: add support for ETAS ES58X CAN USB interfaces
+  usb: cdc-acm: add quirk to blacklist ETAS ES58X devices
+
+ drivers/net/can/dev.c                       |   26 +-
+ drivers/net/can/usb/Kconfig                 |    9 +
+ drivers/net/can/usb/Makefile                |    1 +
+ drivers/net/can/usb/etas_es58x/Makefile     |    3 +
+ drivers/net/can/usb/etas_es58x/es581_4.c    |  559 ++++
+ drivers/net/can/usb/etas_es58x/es581_4.h    |  237 ++
+ drivers/net/can/usb/etas_es58x/es58x_core.c | 2725 +++++++++++++++++++
+ drivers/net/can/usb/etas_es58x/es58x_core.h |  700 +++++
+ drivers/net/can/usb/etas_es58x/es58x_fd.c   |  648 +++++
+ drivers/net/can/usb/etas_es58x/es58x_fd.h   |  243 ++
+ drivers/usb/class/cdc-acm.c                 |   11 +
+ include/linux/can/dev.h                     |   44 +-
+ 12 files changed, 5189 insertions(+), 17 deletions(-)
+ create mode 100644 drivers/net/can/usb/etas_es58x/Makefile
+ create mode 100644 drivers/net/can/usb/etas_es58x/es581_4.c
+ create mode 100644 drivers/net/can/usb/etas_es58x/es581_4.h
+ create mode 100644 drivers/net/can/usb/etas_es58x/es58x_core.c
+ create mode 100644 drivers/net/can/usb/etas_es58x/es58x_core.h
+ create mode 100644 drivers/net/can/usb/etas_es58x/es58x_fd.c
+ create mode 100644 drivers/net/can/usb/etas_es58x/es58x_fd.h
+
+-- 
+2.26.2
+
