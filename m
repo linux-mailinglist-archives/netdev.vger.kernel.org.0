@@ -2,144 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CC31281185
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 13:49:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB9A22811C9
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 13:56:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387717AbgJBLtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 07:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725964AbgJBLtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 07:49:00 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B41C0613D0
-        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 04:49:00 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id y20so1111824iod.5
-        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 04:49:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5HdSaawojkjITSm04Va0vCB5ZOkJqs6bcYYV5reDXiw=;
-        b=ICCtf/EqlVISgwoo/faxqifEqDC9whb2V7RRhmw79AAH7uxUPulyC5laVe/F8gwXXa
-         jsSK+wf/m+EvnEvaqi+mTVtI+Dx+m1HLwPrJ5Nq1cuP0RNRpOXtXAbGI/64757WqTWu+
-         MSwQKBvnAyu4NmmlbzQZehmIqRYusj4tx1rw00+t88Tehg4fCFMlSgwXVMRatZ2SNoJ0
-         89gZb4KsD932V66rOi0JvB19eCbHhNwzczw9EAT5Xaf/Uhgp3hqzR6xiv9B13vNoROo8
-         EPAccp30waTXfG2y4tNXoQD026lORY8FRXLf2ydSRzsDv0l6P+QckR07s2kMiaHO1hPc
-         yRDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5HdSaawojkjITSm04Va0vCB5ZOkJqs6bcYYV5reDXiw=;
-        b=pwyjkfL/em4qknptqla/oPbbWEbiO4+faBB3uJ6NItZ2ksKRPykaVyoOlZbQAEIERu
-         9/NPo/DfWFTRC05S9r3ynPQE1C5KHyJ5yUY/puVY265bJmdyNoB5lU9io5/OydXgdNVC
-         EE0xDY6WncjqLbc/9d5+nlB6b9HjVP5JRUNGOmR6XWkW4dlv1b2vVgiKd7I8CFseuDKF
-         DAphv2YAEbTyVtK3+ksM/YMBOJxeK4LBUb/zXjgvrxoQ8NXPnYERAOy3DTp6xjVzcabK
-         s/WYncc4VR9Hn+PKTt/KjkfdwHv5Qs8j3P19EGzzM6HzWJ3A1/zTHCFkteI+DtMrddCo
-         VK8w==
-X-Gm-Message-State: AOAM531Cyu+F/T0Yo7urenNg8Och6+kNDTYLBcqE3JWADA9w1IZaiark
-        UHkyNorPMzAtx4bVYq9uSiihYNvYHTLR1ci3e8TBoEIYedu0WA==
-X-Google-Smtp-Source: ABdhPJyRKNnZpGzjgndHAXrknvXe6ikf4g8I4yNX0DyUNhX18/VX722dPZratIe2+vyTzqG9fqS7AUtLTiMhpWtx68M=
-X-Received: by 2002:a02:cd2e:: with SMTP id h14mr1965618jaq.6.1601639339275;
- Fri, 02 Oct 2020 04:48:59 -0700 (PDT)
+        id S2387936AbgJBL4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 07:56:39 -0400
+Received: from mga02.intel.com ([134.134.136.20]:49200 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726090AbgJBL4i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 07:56:38 -0400
+IronPort-SDR: f4MhOr0IJj27enTpHxqZT0m66cy11mZP9+zmpC22jmROy7JXUuQanxIV7kgQQ1MFr7T488PfA9
+ DlgTFw3JWGTw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9761"; a="150605520"
+X-IronPort-AV: E=Sophos;i="5.77,327,1596524400"; 
+   d="scan'208";a="150605520"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Oct 2020 04:56:34 -0700
+IronPort-SDR: KMIushWI+tKTPMsZSbXkeqOW/8LRd4C5WXZk+9caixuIBRvEkonRuxCUoPBpBcu529NqxBPgGC
+ 6rN6LGmMIz2g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,327,1596524400"; 
+   d="scan'208";a="352354403"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga007.jf.intel.com with ESMTP; 02 Oct 2020 04:56:30 -0700
+Date:   Fri, 2 Oct 2020 13:49:36 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Subject: Re: [PATCH libbpf] libbpf: check if pin_path was set even map fd
+ exist
+Message-ID: <20201002114936.GA20275@ranger.igk.intel.com>
+References: <20201002075750.1978298-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-References: <bug-209423-201211-atteo0d1ZY@https.bugzilla.kernel.org/>
- <80adc922-f667-a1ab-35a6-02bf1acfd5a1@gmail.com> <CANn89i+ZC5y_n_kQTm4WCWZsYaph4E2vtC9k_caE6dkuQrXdPQ@mail.gmail.com>
- <733a6e54-f03c-0076-1bdc-9b0d4ec1038c@gmail.com> <CANn89iJ2zqH=_fvJQ8dhG4nBVnKNB7SjHnHDLv+0iR7UwgxTsw@mail.gmail.com>
- <b6ff841a-320c-5592-1c2b-650e18dfe3e0@gmail.com>
-In-Reply-To: <b6ff841a-320c-5592-1c2b-650e18dfe3e0@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 2 Oct 2020 13:48:47 +0200
-Message-ID: <CANn89iJ2KxQKZmT2ShVZRTjdgyYkF_2ZWBraTZE4TJVtUKh--Q@mail.gmail.com>
-Subject: Re: [Bug 209423] WARN_ON_ONCE() at rtl8169_tso_csum_v2()
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201002075750.1978298-1-liuhangbin@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 2, 2020 at 1:09 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->
-> On 02.10.2020 10:46, Eric Dumazet wrote:
-> > On Fri, Oct 2, 2020 at 10:32 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >>
-> >>
-> >>
-> >> On 10/2/20 10:26 AM, Eric Dumazet wrote:
-> >>> On Thu, Oct 1, 2020 at 10:34 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> >>>>
-> >>>> I have a problem with the following code in ndo_start_xmit() of
-> >>>> the r8169 driver. A user reported the WARN being triggered due
-> >>>> to gso_size > 0 and gso_type = 0. The chip supports TSO(6).
-> >>>> The driver is widely used, therefore I'd expect much more such
-> >>>> reports if it should be a common problem. Not sure what's special.
-> >>>> My primary question: Is it a valid use case that gso_size is
-> >>>> greater than 0, and no SKB_GSO_ flag is set?
-> >>>> Any hint would be appreciated.
-> >>>>
-> >>>>
-> >>>
-> >>> Maybe this is not a TCP packet ? But in this case GSO should have taken place.
-> >>>
-> >>> You might add a
-> >>> pr_err_once("gso_type=%x\n", shinfo->gso_type);
-> >>>
-> >
-> >>
-> >> Ah, sorry I see you already printed gso_type
-> >>
-> >> Must then be a bug somewhere :/
-> >
-> >
-> > napi_reuse_skb() does :
-> >
-> > skb_shinfo(skb)->gso_type = 0;
-> >
-> > It does _not_ clear gso_size.
-> >
-> > I wonder if in some cases we could reuse an skb while gso_size is not zero.
-> >
-> > Normally, we set it only from dev_gro_receive() when the skb is queued
-> > into GRO engine (status being GRO_HELD)
-> >
-> Thanks Eric. I'm no expert that deep in the network stack and just wonder
-> why napi_reuse_skb() re-initializes less fields in shinfo than __alloc_skb().
-> The latter one does a
-> memset(shinfo, 0, offsetof(struct skb_shared_info, dataref));
->
+On Fri, Oct 02, 2020 at 03:57:50PM +0800, Hangbin Liu wrote:
+> Say a user reuse map fd after creating a map manually and set the
+> pin_path, then load the object via libbpf.
+> 
+> In libbpf bpf_object__create_maps(), bpf_object__reuse_map() will
+> return 0 if there is no pinned map in map->pin_path. Then after
+> checking if map fd exist, we should also check if pin_path was set
+> and do bpf_map__pin() instead of continue the loop.
+> 
+> Fix it by creating map if fd not exist and continue checking pin_path
+> after that.
+> 
+> Suggested-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  tools/lib/bpf/libbpf.c | 75 +++++++++++++++++++++---------------------
+>  1 file changed, 37 insertions(+), 38 deletions(-)
+> 
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index e493d6048143..d4149585a76c 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -3861,50 +3861,49 @@ bpf_object__create_maps(struct bpf_object *obj)
+>  			}
+>  		}
+>  
+> -		if (map->fd >= 0) {
+> -			pr_debug("map '%s': skipping creation (preset fd=%d)\n",
+> -				 map->name, map->fd);
+> -			continue;
+> -		}
+> -
+> -		err = bpf_object__create_map(obj, map);
+> -		if (err)
+> -			goto err_out;
+> -
+> -		pr_debug("map '%s': created successfully, fd=%d\n", map->name,
+> -			 map->fd);
+> -
+> -		if (bpf_map__is_internal(map)) {
+> -			err = bpf_object__populate_internal_map(obj, map);
+> -			if (err < 0) {
+> -				zclose(map->fd);
+> +		if (map->fd < 0) {
+> +			err = bpf_object__create_map(obj, map);
+> +			if (err)
+>  				goto err_out;
+> -			}
+> -		}
+> -
+> -		if (map->init_slots_sz) {
+> -			for (j = 0; j < map->init_slots_sz; j++) {
+> -				const struct bpf_map *targ_map;
+> -				int fd;
+>  
+> -				if (!map->init_slots[j])
+> -					continue;
+> +			pr_debug("map '%s': created successfully, fd=%d\n", map->name,
+> +				 map->fd);
+>  
+> -				targ_map = map->init_slots[j];
+> -				fd = bpf_map__fd(targ_map);
+> -				err = bpf_map_update_elem(map->fd, &j, &fd, 0);
+> -				if (err) {
+> -					err = -errno;
+> -					pr_warn("map '%s': failed to initialize slot [%d] to map '%s' fd=%d: %d\n",
+> -						map->name, j, targ_map->name,
+> -						fd, err);
+> +			if (bpf_map__is_internal(map)) {
+> +				err = bpf_object__populate_internal_map(obj, map);
+> +				if (err < 0) {
+> +					zclose(map->fd);
+>  					goto err_out;
+>  				}
+> -				pr_debug("map '%s': slot [%d] set to map '%s' fd=%d\n",
+> -					 map->name, j, targ_map->name, fd);
+>  			}
+> -			zfree(&map->init_slots);
+> -			map->init_slots_sz = 0;
+> +
+> +			if (map->init_slots_sz) {
 
-memset() over the whole thing is more expensive.
+Couldn't we flatten the code by inverting the logic here and using goto?
 
-Here we know the prior state of some fields, while __alloc_skb() just
-got a piece of memory with random content.
+	if (!map->init_slot_sz) {
+		pr_debug("map '%s': skipping creation (preset fd=%d)\n",
+			 map->name, map->fd);
+		goto map_pin;
+	}
 
-> What I can do is letting the affected user test the following.
->
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 62b06523b..8e75399cc 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -6088,6 +6088,7 @@ static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
->
->         skb->encapsulation = 0;
->         skb_shinfo(skb)->gso_type = 0;
-> +       skb_shinfo(skb)->gso_size = 0;
->         skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
->         skb_ext_reset(skb);
->
+	(...)
+map_pin:
+	if (map->pin_path && !map->pinned) {
 
-As I hinted, this should not be needed.
+If I'm reading this right.
 
-For debugging purposes, I would rather do :
-
-BUG_ON(skb_shinfo(skb)->gso_size);
-
-
-Nothing in GRO stack will change gso_size, unless the packet is queued
-by GRO layer (after this, napi_reuse_skb() wont be called)
-
-napi_reuse_skb() is only used when a packet has been aggregated to
-another, and at this point gso_size should be still 0.
+> +				for (j = 0; j < map->init_slots_sz; j++) {
+> +					const struct bpf_map *targ_map;
+> +					int fd;
+> +
+> +					if (!map->init_slots[j])
+> +						continue;
+> +
+> +					targ_map = map->init_slots[j];
+> +					fd = bpf_map__fd(targ_map);
+> +					err = bpf_map_update_elem(map->fd, &j, &fd, 0);
+> +					if (err) {
+> +						err = -errno;
+> +						pr_warn("map '%s': failed to initialize slot [%d] to map '%s' fd=%d: %d\n",
+> +							map->name, j, targ_map->name,
+> +							fd, err);
+> +						goto err_out;
+> +					}
+> +					pr_debug("map '%s': slot [%d] set to map '%s' fd=%d\n",
+> +						map->name, j, targ_map->name, fd);
+> +				}
+> +				zfree(&map->init_slots);
+> +				map->init_slots_sz = 0;
+> +			}
+> +		} else {
+> +			pr_debug("map '%s': skipping creation (preset fd=%d)\n",
+> +				 map->name, map->fd);
+>  		}
+>  
+>  		if (map->pin_path && !map->pinned) {
+> -- 
+> 2.25.4
+> 
