@@ -2,383 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B368281735
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 17:56:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8632F2816EB
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 17:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387983AbgJBP4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 11:56:00 -0400
-Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:17874 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2387688AbgJBPz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 11:55:59 -0400
-Received: from tomoyo.flets-east.jp ([153.230.197.127])
-        by mwinf5d76 with ME
-        id b3vk230042lQRaH033vrag; Fri, 02 Oct 2020 17:55:57 +0200
-X-ME-Helo: tomoyo.flets-east.jp
-X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Fri, 02 Oct 2020 17:55:57 +0200
-X-ME-IP: 153.230.197.127
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Oliver Neukum <oneukum@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH v3 7/7] usb: cdc-acm: add quirk to blacklist ETAS ES58X devices
-Date:   Sat,  3 Oct 2020 00:41:51 +0900
-Message-Id: <20201002154219.4887-8-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201002154219.4887-1-mailhol.vincent@wanadoo.fr>
-References: <20200926175810.278529-1-mailhol.vincent@wanadoo.fr>
- <20201002154219.4887-1-mailhol.vincent@wanadoo.fr>
+        id S2387990AbgJBPmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 11:42:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39844 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387777AbgJBPmy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 11:42:54 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2464E2074B;
+        Fri,  2 Oct 2020 15:42:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601653374;
+        bh=zlkla6EnJXIi15Um2j+RZZTMQ9PmueD5XO+tx9Z3kYs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=1bGTLkDYEzyFPNNvWbgDVnDHlaHleB8+VNlaQ3tcMWa+uHDzP9aLI3lcEJYe4WZHW
+         /TiEx1IgG1He/WYLycjrnF2bpI27Q3Xhxs/Mqo7M4a+0I4VH4rP79MTIA4DHwTumFe
+         inozgaWae2PgJQllKdpR8+GNVJGRwDACW8XyyUG8=
+Date:   Fri, 2 Oct 2020 08:42:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     netdev@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>
+Subject: Re: [PATCH 4/5] genetlink: factor skb preparation out of
+ ctrl_dumppolicy()
+Message-ID: <20201002084252.5f18a244@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201002110205.ce65a163aebd.I0e59ae414404a92143c6ed8b0b0caf7e0e0d11a0@changeid>
+References: <20201002090944.195891-1-johannes@sipsolutions.net>
+        <20201002110205.ce65a163aebd.I0e59ae414404a92143c6ed8b0b0caf7e0e0d11a0@changeid>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ES58X devices has a CDC ACM interface (used for debug
-purpose). During probing, the device is thus recognized as USB Modem
-(CDC ACM), preventing the etas-es58x module to load:
-  usbcore: registered new interface driver etas_es58x
-  usb 1-1.1: new full-speed USB device number 14 using xhci_hcd
-  usb 1-1.1: New USB device found, idVendor=108c, idProduct=0159, bcdDevice= 1.00
-  usb 1-1.1: New USB device strings: Mfr=1, Product=2, SerialNumber=3
-  usb 1-1.1: Product: ES581.4
-  usb 1-1.1: Manufacturer: ETAS GmbH
-  usb 1-1.1: SerialNumber: 2204355
-  cdc_acm 1-1.1:1.0: No union descriptor, testing for castrated device
-  cdc_acm 1-1.1:1.0: ttyACM0: USB ACM device
+On Fri,  2 Oct 2020 11:09:43 +0200 Johannes Berg wrote:
+> From: Johannes Berg <johannes.berg@intel.com>
+> 
+> We'll need this later for the per-op policy index dump.
+> 
+> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 
-Thus, these have been added to the ignore list in
-drivers/usb/class/cdc-acm.c
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 
-N.B. Future firmware release of the ES58X will remove the CDC-ACM
-interface.
+>  	while (netlink_policy_dump_loop(ctx->state)) {
+> -		void *hdr;
+> +		void *hdr = ctrl_dumppolicy_prep(skb, cb);
+>  		struct nlattr *nest;
+>  
+> -		hdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid,
+> -				  cb->nlh->nlmsg_seq, &genl_ctrl,
+> -				  NLM_F_MULTI, CTRL_CMD_GETPOLICY);
+>  		if (!hdr)
+>  			goto nla_put_failure;
 
-`lsusb -v` of the three devices variant (ES581.4, ES582.1 and
-ES584.1):
-
-  Bus 001 Device 011: ID 108c:0159 Robert Bosch GmbH ES581.4
-  Device Descriptor:
-    bLength                18
-    bDescriptorType         1
-    bcdUSB               1.10
-    bDeviceClass            2 Communications
-    bDeviceSubClass         0
-    bDeviceProtocol         0
-    bMaxPacketSize0        64
-    idVendor           0x108c Robert Bosch GmbH
-    idProduct          0x0159
-    bcdDevice            1.00
-    iManufacturer           1 ETAS GmbH
-    iProduct                2 ES581.4
-    iSerial                 3 2204355
-    bNumConfigurations      1
-    Configuration Descriptor:
-      bLength                 9
-      bDescriptorType         2
-      wTotalLength       0x0035
-      bNumInterfaces          1
-      bConfigurationValue     1
-      iConfiguration          5 Bus Powered Configuration
-      bmAttributes         0x80
-        (Bus Powered)
-      MaxPower              100mA
-      Interface Descriptor:
-        bLength                 9
-        bDescriptorType         4
-        bInterfaceNumber        0
-        bAlternateSetting       0
-        bNumEndpoints           3
-        bInterfaceClass         2 Communications
-        bInterfaceSubClass      2 Abstract (modem)
-        bInterfaceProtocol      0
-        iInterface              4 ACM Control Interface
-        CDC Header:
-          bcdCDC               1.10
-        CDC Call Management:
-          bmCapabilities       0x01
-            call management
-          bDataInterface          0
-        CDC ACM:
-          bmCapabilities       0x06
-            sends break
-            line coding and serial state
-        Endpoint Descriptor:
-          bLength                 7
-          bDescriptorType         5
-          bEndpointAddress     0x81  EP 1 IN
-          bmAttributes            3
-            Transfer Type            Interrupt
-            Synch Type               None
-            Usage Type               Data
-          wMaxPacketSize     0x0010  1x 16 bytes
-          bInterval              10
-        Endpoint Descriptor:
-          bLength                 7
-          bDescriptorType         5
-          bEndpointAddress     0x82  EP 2 IN
-          bmAttributes            2
-            Transfer Type            Bulk
-            Synch Type               None
-            Usage Type               Data
-          wMaxPacketSize     0x0040  1x 64 bytes
-          bInterval               0
-        Endpoint Descriptor:
-          bLength                 7
-          bDescriptorType         5
-          bEndpointAddress     0x03  EP 3 OUT
-          bmAttributes            2
-            Transfer Type            Bulk
-            Synch Type               None
-            Usage Type               Data
-          wMaxPacketSize     0x0040  1x 64 bytes
-          bInterval               0
-  Device Status:     0x0000
-    (Bus Powered)
-
-  Bus 001 Device 012: ID 108c:0168 Robert Bosch GmbH ES582
-  Device Descriptor:
-    bLength                18
-    bDescriptorType         1
-    bcdUSB               2.00
-    bDeviceClass            2 Communications
-    bDeviceSubClass         0
-    bDeviceProtocol         0
-    bMaxPacketSize0        64
-    idVendor           0x108c Robert Bosch GmbH
-    idProduct          0x0168
-    bcdDevice            1.00
-    iManufacturer           1 ETAS GmbH
-    iProduct                2 ES582
-    iSerial                 3 0108933
-    bNumConfigurations      1
-    Configuration Descriptor:
-      bLength                 9
-      bDescriptorType         2
-      wTotalLength       0x0043
-      bNumInterfaces          2
-      bConfigurationValue     1
-      iConfiguration          0
-      bmAttributes         0x80
-        (Bus Powered)
-      MaxPower              500mA
-      Interface Descriptor:
-        bLength                 9
-        bDescriptorType         4
-        bInterfaceNumber        0
-        bAlternateSetting       0
-        bNumEndpoints           1
-        bInterfaceClass         2 Communications
-        bInterfaceSubClass      2 Abstract (modem)
-        bInterfaceProtocol      1 AT-commands (v.25ter)
-        iInterface              0
-        CDC Header:
-          bcdCDC               1.10
-        CDC ACM:
-          bmCapabilities       0x02
-            line coding and serial state
-        CDC Union:
-          bMasterInterface        0
-          bSlaveInterface         1
-        CDC Call Management:
-          bmCapabilities       0x03
-            call management
-            use DataInterface
-          bDataInterface          1
-        Endpoint Descriptor:
-          bLength                 7
-          bDescriptorType         5
-          bEndpointAddress     0x83  EP 3 IN
-          bmAttributes            3
-            Transfer Type            Interrupt
-            Synch Type               None
-            Usage Type               Data
-          wMaxPacketSize     0x0040  1x 64 bytes
-          bInterval              16
-      Interface Descriptor:
-        bLength                 9
-        bDescriptorType         4
-        bInterfaceNumber        1
-        bAlternateSetting       0
-        bNumEndpoints           2
-        bInterfaceClass        10 CDC Data
-        bInterfaceSubClass      0
-        bInterfaceProtocol      0
-        iInterface              0
-        Endpoint Descriptor:
-          bLength                 7
-          bDescriptorType         5
-          bEndpointAddress     0x81  EP 1 IN
-          bmAttributes            2
-            Transfer Type            Bulk
-            Synch Type               None
-            Usage Type               Data
-          wMaxPacketSize     0x0200  1x 512 bytes
-          bInterval               0
-        Endpoint Descriptor:
-          bLength                 7
-          bDescriptorType         5
-          bEndpointAddress     0x02  EP 2 OUT
-          bmAttributes            2
-            Transfer Type            Bulk
-            Synch Type               None
-            Usage Type               Data
-          wMaxPacketSize     0x0200  1x 512 bytes
-          bInterval               0
-  Device Qualifier (for other device speed):
-    bLength                10
-    bDescriptorType         6
-    bcdUSB               2.00
-    bDeviceClass            2 Communications
-    bDeviceSubClass         0
-    bDeviceProtocol         0
-    bMaxPacketSize0        64
-    bNumConfigurations      1
-  Device Status:     0x0000
-    (Bus Powered)
-
-  Bus 001 Device 013: ID 108c:0169 Robert Bosch GmbH ES584.1
-  Device Descriptor:
-    bLength                18
-    bDescriptorType         1
-    bcdUSB               2.00
-    bDeviceClass            2 Communications
-    bDeviceSubClass         0
-    bDeviceProtocol         0
-    bMaxPacketSize0        64
-    idVendor           0x108c Robert Bosch GmbH
-    idProduct          0x0169
-    bcdDevice            1.00
-    iManufacturer           1 ETAS GmbH
-    iProduct                2 ES584.1
-    iSerial                 3 0100320
-    bNumConfigurations      1
-    Configuration Descriptor:
-      bLength                 9
-      bDescriptorType         2
-      wTotalLength       0x0043
-      bNumInterfaces          2
-      bConfigurationValue     1
-      iConfiguration          0
-      bmAttributes         0x80
-        (Bus Powered)
-      MaxPower              500mA
-      Interface Descriptor:
-        bLength                 9
-        bDescriptorType         4
-        bInterfaceNumber        0
-        bAlternateSetting       0
-        bNumEndpoints           1
-        bInterfaceClass         2 Communications
-        bInterfaceSubClass      2 Abstract (modem)
-        bInterfaceProtocol      1 AT-commands (v.25ter)
-        iInterface              0
-        CDC Header:
-          bcdCDC               1.10
-        CDC ACM:
-          bmCapabilities       0x02
-            line coding and serial state
-        CDC Union:
-          bMasterInterface        0
-          bSlaveInterface         1
-        CDC Call Management:
-          bmCapabilities       0x03
-            call management
-            use DataInterface
-          bDataInterface          1
-        Endpoint Descriptor:
-          bLength                 7
-          bDescriptorType         5
-          bEndpointAddress     0x83  EP 3 IN
-          bmAttributes            3
-            Transfer Type            Interrupt
-            Synch Type               None
-            Usage Type               Data
-          wMaxPacketSize     0x0040  1x 64 bytes
-          bInterval              16
-      Interface Descriptor:
-        bLength                 9
-        bDescriptorType         4
-        bInterfaceNumber        1
-        bAlternateSetting       0
-        bNumEndpoints           2
-        bInterfaceClass        10 CDC Data
-        bInterfaceSubClass      0
-        bInterfaceProtocol      0
-        iInterface              0
-        Endpoint Descriptor:
-          bLength                 7
-          bDescriptorType         5
-          bEndpointAddress     0x81  EP 1 IN
-          bmAttributes            2
-            Transfer Type            Bulk
-            Synch Type               None
-            Usage Type               Data
-          wMaxPacketSize     0x0200  1x 512 bytes
-          bInterval               0
-        Endpoint Descriptor:
-          bLength                 7
-          bDescriptorType         5
-          bEndpointAddress     0x02  EP 2 OUT
-          bmAttributes            2
-            Transfer Type            Bulk
-            Synch Type               None
-            Usage Type               Data
-          wMaxPacketSize     0x0200  1x 512 bytes
-          bInterval               0
-  Device Qualifier (for other device speed):
-    bLength                10
-    bDescriptorType         6
-    bcdUSB               2.00
-    bDeviceClass            2 Communications
-    bDeviceSubClass         0
-    bDeviceProtocol         0
-    bMaxPacketSize0        64
-    bNumConfigurations      1
-  Device Status:     0x0000
-    (Bus Powered)
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
-
-Changes in v3: None
-
-Changes in v2:
-  - Added dmesg and lsusb -v information and rephrased the comment.
----
- drivers/usb/class/cdc-acm.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
-index 7f6f3ab5b8a6..ed9355094e8c 100644
---- a/drivers/usb/class/cdc-acm.c
-+++ b/drivers/usb/class/cdc-acm.c
-@@ -1906,6 +1906,17 @@ static const struct usb_device_id acm_ids[] = {
- 	.driver_info = IGNORE_DEVICE,
- 	},
- 
-+	/* Exclude ETAS ES58x */
-+	{ USB_DEVICE(0x108c, 0x0159), /* ES581.4 */
-+	.driver_info = IGNORE_DEVICE,
-+	},
-+	{ USB_DEVICE(0x108c, 0x0168), /* ES582.1 */
-+	.driver_info = IGNORE_DEVICE,
-+	},
-+	{ USB_DEVICE(0x108c, 0x0169), /* ES584.1 */
-+	.driver_info = IGNORE_DEVICE,
-+	},
-+
- 	{ USB_DEVICE(0x1bc7, 0x0021), /* Telit 3G ACM only composition */
- 	.driver_info = SEND_ZERO_PACKET,
- 	},
--- 
-2.26.2
-
+bike shedding, but I find it less pretty when functions which require
+error checking are called as variable init (if it's not the only
+variable declared).
