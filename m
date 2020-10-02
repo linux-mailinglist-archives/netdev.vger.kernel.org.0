@@ -2,140 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDA8D280E54
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 09:56:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 789AF280E56
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 09:56:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726096AbgJBH4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 03:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
+        id S1726225AbgJBH4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 03:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725968AbgJBH4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 03:56:14 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7C8C0613D0
-        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 00:56:12 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id o5so670092wrn.13
-        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 00:56:12 -0700 (PDT)
+        with ESMTP id S1725961AbgJBH4o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 03:56:44 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0E4C0613D0
+        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 00:56:44 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id y13so624950iow.4
+        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 00:56:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=f6NaUlbiFaG0QhwEZraCS9b07TNXa7e3Xcgo3B9hjfA=;
-        b=ceLaeViDnK314Nnw6mNMuU4/86iD8iCG0p18BOB3Co4DyX3i/uAX9s3wQ5NDEjr8aG
-         MU3m7/pTxhLhsXDrNxS9ADogKn644y04oo5lNFUd+Jz8VduNgSHazgeyhf9nmV+5N1D/
-         m+fwJRYc/+bU4aC57QIrrH39ENwDiyznLFi4w=
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jDwFpEIvfdUGt6crCvIdEg+JF7XiM7T2tgmieF2Kyx8=;
+        b=sitpXb3pv3MEvAhrTgVD8MersSwJcwaTBdDPlFy5vQs+fJ/bhInL4fpC0BYHrW1+pe
+         RtaJ+a6zK4NxidkuLgofvmB3sBhHS9IgTCnDZ1B4pOofywZBIPeJnidr2p/zRsIFcg4X
+         pUoGDlauNKXL6Bvvuz2SUhvxO29X5qGunZS74J50bR/CVTurNQyxq3NFbJflS7eyCk9Y
+         LeEYD5WdSBtDO+h90nNS96yZablwYHsH4RJhF0Kcf3868YS6P5uqTJXHXMk1kXCkNogC
+         l2nqyhYR8MfhoBot7N/8CCsOiX0oSvzbl+AvB4q60lPywdSYshOP1DnJV1rr0xkZ05kr
+         UiZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=f6NaUlbiFaG0QhwEZraCS9b07TNXa7e3Xcgo3B9hjfA=;
-        b=RPnTnZvP1aIyzfZXWWN8LH6ZVDebKNM3Q3krx0r9C447fJu8nxykce6Uq8SV+PreUp
-         RkJc98hDTuUGuCji6FwCvjiwo5VKP3REl3W2lxDWJ9XxLr0js6QUt3pw5a/IlPYa9vQZ
-         fx6N6CsKCrz8yORsZysvtX3/zIhu1f2PKAu00liwFPUwn29S+2KZr8lzlfXhKklLPOj9
-         cfXbnPJP+Hrr461ZtN7V5pTn6dsR5w2vmpJquiep3gdvyDe1/ZJCNZKuz98AiWy9k87T
-         +gRyjC/WNpvUE7+4FuQkiUYy7WhJzB/CQ0FUkdbOctLWh6DUUkM6TKqzKaeEgKjtAH8L
-         cISA==
-X-Gm-Message-State: AOAM533yD9zcdwSYF+5D2fud/zndrUxwqutZq4Wt6lxqyAHdppI/htOs
-        RCn4q0U0ew6CDKpcThgFX5WvB0dLjOnXQw==
-X-Google-Smtp-Source: ABdhPJwDPhtnvf+9GW1vSexqffi9809JuZhLDfQ9Ldfl7GqRgVf89K6O5OTWU9sKc1g4rG4OViMAVA==
-X-Received: by 2002:adf:e44b:: with SMTP id t11mr1561662wrm.101.1601625371202;
-        Fri, 02 Oct 2020 00:56:11 -0700 (PDT)
-Received: from taos.konsulko.bg (lan.nucleusys.com. [92.247.61.126])
-        by smtp.gmail.com with ESMTPSA id z11sm779217wru.88.2020.10.02.00.56.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2020 00:56:10 -0700 (PDT)
-From:   Petko Manolov <petko.manolov@konsulko.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Petko Manolov <petko.manolov@konsulko.com>
-Subject: [PATCH v2] net: usb: pegasus: Proper error handing when setting pegasus' MAC address
-Date:   Fri,  2 Oct 2020 10:56:04 +0300
-Message-Id: <20201002075604.44335-1-petko.manolov@konsulko.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201001.184218.21920326424555147.davem@davemloft.net>
-References: <20201001.184218.21920326424555147.davem@davemloft.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jDwFpEIvfdUGt6crCvIdEg+JF7XiM7T2tgmieF2Kyx8=;
+        b=eJFuzfpJ1YlIniQULPs4ExHZ+L70og6NU3E2LH4+44LDfVEH9er6R+tIiyy224EASi
+         J6puy9M6hqFAtI1EVEzFeC+6FoM2B5TFXuuei36p7qMamdhocN3OtTyAFL9iNVR8yXg5
+         5jlwCUC0u0eTPzQWOC+niiphBK2GRiLWrfXjAjli+jtJk7dfzRsso9hyhsyzqAgdKC0p
+         rVcLrYcGlt9S9T2VrgMRFiuf0g3A2FMz8C/wkJUp2jPNbFIPFes7JkPL/99cr5Jw+Jua
+         2xPx/2XDIotRireyezr2L7vxC8zEQM4X+BzO7+o8MUFHGBNZ8aIdmEtEu+9oG5w3igoI
+         neow==
+X-Gm-Message-State: AOAM5302FHdKr6Q3aPL5bKpN2EBFO5JTP3qx8jAR1+4453cWf5KEox9w
+        8sIOjpOlctbxTMwJ/LHIxMZz+NgSGSyi+9tGwLUf/w==
+X-Google-Smtp-Source: ABdhPJxXui6z8+ytKiIIAE/TEIQDen2il7yv8DKof/QfSml9A7culWGJXRaH8obnpbJZsVFDn/7VPJNSZGKAgY8+R2Y=
+X-Received: by 2002:a6b:3bd3:: with SMTP id i202mr1091413ioa.145.1601625403220;
+ Fri, 02 Oct 2020 00:56:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200930192140.4192859-1-weiwan@google.com> <20200930130839.427eafa9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CANn89iK2-Wu8HMkWiD8U3pdRbwj2tjng-4-fJ81zVw_a3R6OqQ@mail.gmail.com> <20201001132607.21bcaa17@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201001132607.21bcaa17@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 2 Oct 2020 09:56:31 +0200
+Message-ID: <CANn89iK30VVUggQn6-ULOhKnLxz4Ogjw8fMZxbqWiOztURdccA@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/5] implement kthread based napi poll
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Wei Wang <weiwan@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Paolo Abeni <pabeni@redhat.com>, Felix Fietkau <nbd@nbd.name>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v2:
+On Thu, Oct 1, 2020 at 10:26 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 1 Oct 2020 09:52:45 +0200 Eric Dumazet wrote:
 
-If reading the MAC address from eeprom fail don't throw an error, use randomly
-generated MAC instead.  Either way the adapter will soldier on and the return
-type of set_ethernet_addr() can be reverted to void.
+> > The unique work queue is a problem on server class platforms, with
+> > NUMA placement.
+> > We now have servers with NIC on different NUMA nodes.
+>
+> Are you saying that the wq code is less NUMA friendly than unpinned
+> threads?
 
-v1:
+Yes this is what I am saying.
 
-Fix a bug in set_ethernet_addr() which does not take into account possible
-errors (or partial reads) returned by its helpers.  This can potentially lead to
-writing random data into device's MAC address registers.
+Using a single and shared wq wont allow you to make sure :
+- work for NIC0 attached on NUMA node#0 will be using CPUS belonging to node#0
+- work for NIC1 attached on NUMA node#1 will be using CPUS belonging to node#1
 
-Signed-off-by: Petko Manolov <petko.manolov@konsulko.com>
----
- drivers/net/usb/pegasus.c | 34 ++++++++++++++++++++++++++--------
- 1 file changed, 26 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-index e92cb51a2c77..39b78d8fcc79 100644
---- a/drivers/net/usb/pegasus.c
-+++ b/drivers/net/usb/pegasus.c
-@@ -360,28 +360,47 @@ static int write_eprom_word(pegasus_t *pegasus, __u8 index, __u16 data)
- }
- #endif				/* PEGASUS_WRITE_EEPROM */
- 
--static inline void get_node_id(pegasus_t *pegasus, __u8 *id)
-+static inline int get_node_id(pegasus_t *pegasus, u8 *id)
- {
--	int i;
--	__u16 w16;
-+	int i, ret;
-+	u16 w16;
- 
- 	for (i = 0; i < 3; i++) {
--		read_eprom_word(pegasus, i, &w16);
-+		ret = read_eprom_word(pegasus, i, &w16);
-+		if (ret < 0)
-+			return ret;
- 		((__le16 *) id)[i] = cpu_to_le16(w16);
- 	}
-+
-+	return 0;
- }
- 
- static void set_ethernet_addr(pegasus_t *pegasus)
- {
--	__u8 node_id[6];
-+	int ret;
-+	u8 node_id[6];
- 
- 	if (pegasus->features & PEGASUS_II) {
--		get_registers(pegasus, 0x10, sizeof(node_id), node_id);
-+		ret = get_registers(pegasus, 0x10, sizeof(node_id), node_id);
-+		if (ret < 0)
-+			goto err;
- 	} else {
--		get_node_id(pegasus, node_id);
--		set_registers(pegasus, EthID, sizeof(node_id), node_id);
-+		ret = get_node_id(pegasus, node_id);
-+		if (ret < 0)
-+			goto err;
-+		ret = set_registers(pegasus, EthID, sizeof(node_id), node_id);
-+		if (ret < 0)
-+			goto err;
- 	}
-+
- 	memcpy(pegasus->net->dev_addr, node_id, sizeof(node_id));
-+
-+	return;
-+err:
-+	eth_hw_addr_random(pegasus->net);
-+	dev_info(&pegasus->intf->dev, "software assigned MAC address.\n");
-+
-+	return;
- }
- 
- static inline int reset_mac(pegasus_t *pegasus)
--- 
-2.28.0
+The only way you can tune things with a single wq is tweaking a single cpumask,
+that we can change with /sys/devices/virtual/workqueue/{wqname}/cpumask
+The same for the nice value with  /sys/devices/virtual/workqueue/{wqname}/nice.
 
+In contrast, having kthreads let you tune things independently, if needed.
+
+Even with a single NIC, you can still need isolation between queues.
+We have queues dedicated to a certain kind of traffic/application.
+
+The work queue approach would need to be able to create/delete
+independent workqueues.
+But we tested the workqueue with a single NIC and our results gave to
+kthreads a win over the work queue.
+
+Really, wq concept might be a nice abstraction when each work can be
+running for arbitrary durations,
+and arbitrary numbers of cpus, but with the NAPI model of up to 64
+packets at a time, and a fixed number of queues,
+we should not add the work queue overhead.
