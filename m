@@ -2,117 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F44C281CE1
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 22:24:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C589281CEA
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 22:27:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725769AbgJBUYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 16:24:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:34769 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725446AbgJBUYA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 16:24:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601670240;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1BtRx1BSPtmWbCbhAW/KtfQIVoEEo/4AK+T/10zLCAU=;
-        b=RQPEvWsRv/Xfy1+bBf0qcEzyKAG7FxeO2LzYBGEL/iLrDlvEgBhDFQ6Z68arj6UiVpAbI+
-        diq6yB4mlaskexifQK0IKCOQnR+dI6QTb4yu1zO8G36MCBhlnssax7PkovebVF1CdOgR0F
-        zXfQV/i1JoXXCEqYufjMtb0pmG88sks=
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
- [209.85.210.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-394-FcIz4TCEOp6yln6Bn2LpxQ-1; Fri, 02 Oct 2020 16:23:58 -0400
-X-MC-Unique: FcIz4TCEOp6yln6Bn2LpxQ-1
-Received: by mail-ot1-f72.google.com with SMTP id f15so1108828oto.6
-        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 13:23:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1BtRx1BSPtmWbCbhAW/KtfQIVoEEo/4AK+T/10zLCAU=;
-        b=Wq5y6oBbNFvxt+88tYV5D+wbvXfRbj78LcVY7+fKCfWqDIIedTtPnXH+HgtiWPBHvW
-         Fseqxa95rkn5ezh90LjteYLBqS/17dfVu2xFCwVtRvj0CvWUZwbfg1I+C0o/FIxecJrv
-         QLXWj06mJdy80Lrxiq7D4zVhfzNzQQtEKeE9/9lEhAZgA1UKriExEQAK6WP0Nk31L5Hq
-         LlDoznXtzSU50+5O8MyVvbKuj3F5N61Ew+OZQWDoKFJ3+HvwyaPmzN5iBF8ycvNZ0GQj
-         e+aFA0m11BcXnGq+WDZZfUaoaSepSZ4+InnyDy1GW++QQ9M26VZWZNIPoIZIMCJMT+dk
-         /IKA==
-X-Gm-Message-State: AOAM5317MdIsPukZ59s+v+ac2NMkYS4vhuK8dP3zYvKA/ut1akn3YLrS
-        id13RRZmt8R6TMf/Qw0Lo3vXp3k3xaEYfG4266H553iUxLDTkx8TAPgMrt4iCJr7bqiN3z7inGx
-        S1OuzlbZTS5ttjvvWJmFXLLJcednSyE/k
-X-Received: by 2002:a9d:6c4f:: with SMTP id g15mr2998944otq.277.1601670237869;
-        Fri, 02 Oct 2020 13:23:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx1gWWCddrZxrj9sNrhg+fkQWj8i0BYmrOGqgsFgdmOfXtbeSMXzBC4l59z6AWV2YwQgZ+1j0OdmCfede0NrJ0=
-X-Received: by 2002:a9d:6c4f:: with SMTP id g15mr2998935otq.277.1601670237639;
- Fri, 02 Oct 2020 13:23:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201002174001.3012643-1-jarod@redhat.com> <20201002174001.3012643-7-jarod@redhat.com>
- <20201002121317.474c95f0@hermes.local>
-In-Reply-To: <20201002121317.474c95f0@hermes.local>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Fri, 2 Oct 2020 16:23:46 -0400
-Message-ID: <CAKfmpSc3-j2GtQtdskEb8BQvB6q_zJPcZc2GhG8t+M3yFxS4MQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 6/6] bonding: make Kconfig toggle to disable
- legacy interfaces
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
+        id S1725765AbgJBU13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 16:27:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53822 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725355AbgJBU13 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 16:27:29 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E39C0613D0
+        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 13:27:29 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kOReC-00FRs6-5r; Fri, 02 Oct 2020 22:27:20 +0200
+Message-ID: <cc9594d16270aeb55f9f429a234ec72468403b93.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next v2 00/10] genetlink: support per-command policy
+ dump
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
+        jiri@resnulli.us, mkubecek@suse.cz, dsahern@kernel.org,
+        pablo@netfilter.org
+Date:   Fri, 02 Oct 2020 22:27:19 +0200
+In-Reply-To: <20201002080944.2f63ccf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201001225933.1373426-1-kuba@kernel.org>
+         <20201001173644.74ed67da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <d26ccd875ebac452321343cc9f6a9e8ef990efbf.camel@sipsolutions.net>
+         <20201002074001.3484568a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <1dacbe07dc89cd69342199e61aeead4475f3621c.camel@sipsolutions.net>
+         <20201002075538.2a52dccb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <e350fbdadd8dfa07bef8a76631d8ec6a6c6e8fdf.camel@sipsolutions.net>
+         <20201002080308.7832bcc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <a69c92aac65c718b1bd80c8dc0cbb471cdd17d9b.camel@sipsolutions.net>
+         <20201002080944.2f63ccf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 2, 2020 at 3:13 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Fri,  2 Oct 2020 13:40:01 -0400
-> Jarod Wilson <jarod@redhat.com> wrote:
->
-> > By default, enable retaining all user-facing API that includes the use of
-> > master and slave, but add a Kconfig knob that allows those that wish to
-> > remove it entirely do so in one shot.
-> >
-> > Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-> > Cc: Veaceslav Falico <vfalico@gmail.com>
-> > Cc: Andy Gospodarek <andy@greyhouse.net>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Thomas Davis <tadavis@lbl.gov>
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Jarod Wilson <jarod@redhat.com>
-> > ---
-> >  drivers/net/Kconfig                   | 12 ++++++++++++
-> >  drivers/net/bonding/bond_main.c       |  4 ++--
-> >  drivers/net/bonding/bond_options.c    |  4 ++--
-> >  drivers/net/bonding/bond_procfs.c     |  8 ++++++++
-> >  drivers/net/bonding/bond_sysfs.c      | 14 ++++++++++----
-> >  drivers/net/bonding/bond_sysfs_port.c |  6 ++++--
-> >  6 files changed, 38 insertions(+), 10 deletions(-)
-> >
->
-> This is problematic. You are printing both old and new values.
-> Also every distribution will have to enable it.
->
-> This looks like too much of change to users.
+On Fri, 2020-10-02 at 08:09 -0700, Jakub Kicinski wrote:
+> On Fri, 02 Oct 2020 17:04:11 +0200 Johannes Berg wrote:
+> > > > Yeah, that'd work. I'd probably wonder if we shouldn't do
+> > > > 
+> > > > [OP_POLICY]
+> > > >   [OP] -> (u32, u32)
+> > > > 
+> > > > in a struct with two u32's, since that's quite a bit more compact.  
+> > > 
+> > > What do we do if the op doesn't have a dump or do callback?
+> > > 0 is a valid policy ID, sadly :(  
+> > 
+> > Hm, good point. We could do -1 since that can't ever be reached though.
+> > 
+> > But compactness isn't really that necessary here anyway, so ...
+> 
+> Cool, sounds like a plan.
+> 
+> This series should be good to merge, then.
 
-I'd had a bit of feedback that people would rather see both, and be
-able to toggle off the old ones, rather than only having one or the
-other, depending on the toggle, so I thought I'd give this a try. I
-kind of liked the one or the other route, but I see the problems with
-that too.
+So I'm having second thoughts on this now :)
 
-For simplicity, I'm kind of liking the idea of just not updating the
-proc and sysfs interfaces, have a toggle entirely disable them, and
-work on enhancing userspace to only use netlink, but ... it's going to
-be a while before any such work makes its way to any already shipping
-distros. I don't have a satisfying answer here.
+If you ask me to split the policy dump to do/dump, like we discussed
+above, then what you did here for "retrieve a single policy" doesn't
+really make any sense? Because you'd be able to do that properly only
+for do, or you need my patches to get both?
 
--- 
-Jarod Wilson
-jarod@redhat.com
+Perhaps it would make sense if you removed patch 10 from your set, and
+we add it back after my patches?
+
+Or I could submit my patches right after yours, but that leaves the code
+between the commits doing something weird, in that it would only give
+you the policies but no indication of which is for do/dump? Obviously
+today it'd only be one, but still, from a uAPI perspective.
+
+I guess it doesn't matter too much though, we get to the state that we
+want to be in, just the intermediate steps won't necessarily make much
+sense.
+
+For now I'll respin my patches so we see how the above do/dump
+separating looks.
+
+johannes
 
