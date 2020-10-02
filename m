@@ -2,153 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0645A280F41
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 10:51:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 015DE280F6A
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 11:03:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726329AbgJBIvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 04:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725993AbgJBIvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 04:51:20 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA8CC0613D0;
-        Fri,  2 Oct 2020 01:51:20 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id b19so550603lji.11;
-        Fri, 02 Oct 2020 01:51:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=i9UuqBprgLgN+56WyW7bVdQAfR56QqIoXp2EYG3DzI8=;
-        b=RTxIg94Qhj4nu/2O9OLnchT6Zp4Au+NXTqkr1j9MF1E4SIWvA8P4Vwqle3kHLif9BG
-         ZB7YmXD6O/NPxZuQKjDdNO/IVP8bPNxpx4VpN27f5geWxUDlovYeL4VVyV7qPne11V8l
-         rbpFJD+Jmy3e6BREPy6SZkVkjcz+P94BtyWT7jYw6M7DCzugNrNia8cv4TchVKh2mWt8
-         4lKUH8em1NoJDrYOs7GnjkowgJu9IuA2wvyOW/NhaZOIY3jZ/G6uMljdmNwdXt4RpWpq
-         fRKknXxGwU9AePsGwQ4gabniJLlW2Hx7Dy6fSC0ysbuZl/MjwXjuIV3YqbAeKlbtyBsY
-         XNgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=i9UuqBprgLgN+56WyW7bVdQAfR56QqIoXp2EYG3DzI8=;
-        b=KAt01vqH0aHrqwiyqPZSL3IY8jCnE+SmAKHZdvfH/X1m8Mr/hYfUOby7GZQIX2vnrp
-         jJlQ+zrOXyCcf5pR0eSeGeXjGx6wOQCX2Wn7+JPwfDs/Mu7oUatgiipZ6tmytkfAZpLC
-         KSf85ClEvpcV7+KwGnFpIwfdeYDshzY/THvUfs+qtvM33R65NH5WkPcu2L6w2AXpGA66
-         pAbt6xoxR8FQJDtE+wHMeDLfWMWvwxB+wPN2X9vBtHp3zZjEAFfx6frL7crRJ9QN1YeX
-         mkXtqty3fT/BiocAC6pu5tndf/uaZj4XqwmOQSRKtf774UGWAj1DfEgCCn/zq9beWBof
-         9QXg==
-X-Gm-Message-State: AOAM532BE1mc/G01Ol4mJ059Q+AgIRROFxTUxQFzua46jkHjUxfxRgED
-        1EHqszoCz1D0NYVuTZ6gNabJLmXjfaDjbdEEIZGmOJgpuDE=
-X-Google-Smtp-Source: ABdhPJzTTOib4aoP23sqvPAGEo1rJYMk0OD+MFvQRWzwDvKzB8l88C9pOE7f/U41j9KtJuhf7AyWtHpyBlRVg4CjEYA=
-X-Received: by 2002:a2e:7014:: with SMTP id l20mr431835ljc.91.1601628678212;
- Fri, 02 Oct 2020 01:51:18 -0700 (PDT)
+        id S1726295AbgJBJDu convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 2 Oct 2020 05:03:50 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:60069 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725993AbgJBJDt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 05:03:49 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-35-QlEWHUDMNjed8ouX9iMDPw-1; Fri, 02 Oct 2020 05:03:46 -0400
+X-MC-Unique: QlEWHUDMNjed8ouX9iMDPw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4461918C89EA;
+        Fri,  2 Oct 2020 09:03:29 +0000 (UTC)
+Received: from bistromath.localdomain (ovpn-115-83.ams2.redhat.com [10.36.115.83])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6D3522C31E;
+        Fri,  2 Oct 2020 09:03:26 +0000 (UTC)
+Date:   Fri, 2 Oct 2020 11:03:23 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net 08/12] ipv6: advertise IFLA_LINK_NETNSID when dumping
+ ipv6 addresses
+Message-ID: <20201002090323.GC3565727@bistromath.localdomain>
+References: <cover.1600770261.git.sd@queasysnail.net>
+ <00ecfc1804b58d8dbb23b8a6e7e5c0646f0100e1.1600770261.git.sd@queasysnail.net>
+ <40925424-06ff-c0c5-0456-c7a9d58dff91@6wind.com>
 MIME-Version: 1.0
-From:   =?UTF-8?B?5Y+25bCP6b6Z?= <muryo.ye@gmail.com>
-Date:   Fri, 2 Oct 2020 16:51:07 +0800
-Message-ID: <CAP0D=1X946M=yy=hMBvXuT11paPqxMi_xens-R4m7vyCnkUQzw@mail.gmail.com>
-Subject: Why ping latency is smaller with shorter send interval?
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <40925424-06ff-c0c5-0456-c7a9d58dff91@6wind.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, net experts,
+2020-10-01, 17:58:40 +0200, Nicolas Dichtel wrote:
+> Le 01/10/2020 à 09:59, Sabrina Dubroca a écrit :
+> > Currently, we're not advertising link-netnsid when dumping IPv6
+> > addresses, so the "ip -6 addr" command will not correctly interpret
+> > the value of the IFLA_LINK attribute.
+> > 
+> > For example, we'll get:
+> >     9: macvlan0@macvlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 state UP qlen 1000
+> >         <snip>
+> > 
+> > Instead of:
+> >     9: macvlan0@if9: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 state UP qlen 1000 link-netns main
+> >         <snip>
+> > 
+> > ndisc_ifinfo_sysctl_change calls inet6_fill_ifinfo without rcu or
+> > rtnl, so I'm adding rcu_read_lock around rtnl_fill_link_netnsid.
+> I don't think this is needed.
+> ndisc_ifinfo_sysctl_change() takes a reference on the idev (with in6_dev_get(dev)).
 
-Hope this is the right place to ask the question :)
+The problem is veth's get_link_net implementation, even after my change in patch 6:
 
-Recently I've tried to measure the network latency between two
-machines by using ping, one interesting observation I found is that
-ping latency will be smaller if I use a shorter interval with -i
-option. For example,
-
-when I use default ping (interval is 1s), then the ping result is as
-below with avg latency 0.062ms
-
-# ping 9.9.9.2 -c 10
-PING 9.9.9.2 (9.9.9.2) 56(84) bytes of data.
-64 bytes from 9.9.9.2: icmp_seq=1 ttl=64 time=0.059 ms
-64 bytes from 9.9.9.2: icmp_seq=2 ttl=64 time=0.079 ms
-64 bytes from 9.9.9.2: icmp_seq=3 ttl=64 time=0.060 ms
-64 bytes from 9.9.9.2: icmp_seq=4 ttl=64 time=0.072 ms
-64 bytes from 9.9.9.2: icmp_seq=5 ttl=64 time=0.048 ms
-64 bytes from 9.9.9.2: icmp_seq=6 ttl=64 time=0.069 ms
-64 bytes from 9.9.9.2: icmp_seq=7 ttl=64 time=0.067 ms
-64 bytes from 9.9.9.2: icmp_seq=8 ttl=64 time=0.055 ms
-64 bytes from 9.9.9.2: icmp_seq=9 ttl=64 time=0.058 ms
-64 bytes from 9.9.9.2: icmp_seq=10 ttl=64 time=0.055 ms
-
---- 9.9.9.2 ping statistics ---
-10 packets transmitted, 10 received, 0% packet loss, time 9001ms
-rtt min/avg/max/mdev = 0.048/0.062/0.079/0.010 ms
-
-Then I use "-i 0.001", the lateny (0.038) is way better than defaut ping
-
-# ping 9.9.9.2 -i 0.001 -c 10
-PING 9.9.9.2 (9.9.9.2) 56(84) bytes of data.
-64 bytes from 9.9.9.2: icmp_seq=1 ttl=64 time=0.069 ms
-64 bytes from 9.9.9.2: icmp_seq=2 ttl=64 time=0.039 ms
-64 bytes from 9.9.9.2: icmp_seq=3 ttl=64 time=0.034 ms
-64 bytes from 9.9.9.2: icmp_seq=4 ttl=64 time=0.033 ms
-64 bytes from 9.9.9.2: icmp_seq=5 ttl=64 time=0.033 ms
-64 bytes from 9.9.9.2: icmp_seq=6 ttl=64 time=0.033 ms
-64 bytes from 9.9.9.2: icmp_seq=7 ttl=64 time=0.034 ms
-64 bytes from 9.9.9.2: icmp_seq=8 ttl=64 time=0.036 ms
-64 bytes from 9.9.9.2: icmp_seq=9 ttl=64 time=0.037 ms
-64 bytes from 9.9.9.2: icmp_seq=10 ttl=64 time=0.038 ms
-
---- 9.9.9.2 ping statistics ---
-10 packets transmitted, 10 received, 0% packet loss, time 9ms
-rtt min/avg/max/mdev = 0.033/0.038/0.069/0.012 ms
+    static struct net *veth_get_link_net(const struct net_device *dev)
+    {
+    	struct veth_priv *priv = netdev_priv(dev);
+    	struct net_device *peer = rcu_dereference_rtnl(priv->peer);
+    
+    	return peer ? dev_net(peer) : dev_net(dev);
+    }
 
 
-ping loopback shows the similar result.
+These commands:
 
-Default ping avg latency is 0.049ms
+    ip link add type veth
+    sysctl net.ipv6.neigh.veth0.retrans_time_ms=2000
 
-# ping 127.0.0.1 -c 10
-PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
-64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.032 ms
-64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.049 ms
-64 bytes from 127.0.0.1: icmp_seq=3 ttl=64 time=0.054 ms
-64 bytes from 127.0.0.1: icmp_seq=4 ttl=64 time=0.058 ms
-64 bytes from 127.0.0.1: icmp_seq=5 ttl=64 time=0.049 ms
-64 bytes from 127.0.0.1: icmp_seq=6 ttl=64 time=0.042 ms
-64 bytes from 127.0.0.1: icmp_seq=7 ttl=64 time=0.052 ms
-64 bytes from 127.0.0.1: icmp_seq=8 ttl=64 time=0.052 ms
-64 bytes from 127.0.0.1: icmp_seq=9 ttl=64 time=0.053 ms
-64 bytes from 127.0.0.1: icmp_seq=10 ttl=64 time=0.055 ms
+cause this splat:
 
---- 127.0.0.1 ping statistics ---
-10 packets transmitted, 10 received, 0% packet loss, time 9001ms
-rtt min/avg/max/mdev = 0.032/0.049/0.058/0.010 ms
+[   91.426764] =============================
+[   91.427445] WARNING: suspicious RCU usage
+[   91.428129] 5.9.0-rc6-net-00331-gae48bef8808b-dirty #266 Not tainted
+[   91.429209] -----------------------------
+[   91.433898] drivers/net/veth.c:1436 suspicious rcu_dereference_check() usage!
+[   91.435127] 
+               other info that might help us debug this:
 
-ping with "-i 0.001" shows 0.014ms avg latency.
-
-# ping 127.0.0.1 -i 0.001 -c 10
-PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
-64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.040 ms
-64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.014 ms
-64 bytes from 127.0.0.1: icmp_seq=3 ttl=64 time=0.012 ms
-64 bytes from 127.0.0.1: icmp_seq=4 ttl=64 time=0.011 ms
-64 bytes from 127.0.0.1: icmp_seq=5 ttl=64 time=0.011 ms
-64 bytes from 127.0.0.1: icmp_seq=6 ttl=64 time=0.011 ms
-64 bytes from 127.0.0.1: icmp_seq=7 ttl=64 time=0.011 ms
-64 bytes from 127.0.0.1: icmp_seq=8 ttl=64 time=0.010 ms
-64 bytes from 127.0.0.1: icmp_seq=9 ttl=64 time=0.010 ms
-64 bytes from 127.0.0.1: icmp_seq=10 ttl=64 time=0.011 ms
-
---- 127.0.0.1 ping statistics ---
-10 packets transmitted, 10 received, 0% packet loss, time 9ms
-rtt min/avg/max/mdev = 0.010/0.014/0.040/0.008 ms
-
-I'm using centos 7.2 with kernel 3.10.
-
-I am very confused about the result. As I understand it, it doesn't
-matter how frequently I send packets, each packet's latency should be
-the same. So How can I understand it from network stack point of view?
-
-Any thoughts or suggestions would be highly appreciated.
+[   91.436515] 
+               rcu_scheduler_active = 2, debug_locks = 1
+[   91.437636] 1 lock held by sysctl/3718:
+[   91.438310]  #0: ffff88806488c430 (sb_writers#5){.+.+}-{0:0}, at: vfs_write+0x2a7/0x350
+[   91.439769] 
+               stack backtrace:
+[   91.440552] CPU: 2 PID: 3718 Comm: sysctl Not tainted 5.9.0-rc6-net-00331-gae48bef8808b-dirty #266
+[   91.442132] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ArchLinux 1.14.0-1 04/01/2014
+[   91.443742] Call Trace:
+[   91.444204]  dump_stack+0x9a/0xd0
+[   91.444810]  veth_get_link_net+0xa6/0xb0
+[   91.445534]  rtnl_fill_link_netnsid+0xa2/0x130
+[   91.446330]  ? rtnl_put_cacheinfo+0x190/0x190
+[   91.447120]  ? memcpy+0x39/0x60
+[   91.447717]  inet6_fill_ifinfo+0x2f7/0x480
 
 
-Thanks,
-Xiaolong
+
+I guess I could push the rcu_read_lock down into veth and vxcan's
+handlers instead of the rcu_dereference_rtnl change in patch 6 and
+adding this rcu_read_lock.
+
+-- 
+Sabrina
+
