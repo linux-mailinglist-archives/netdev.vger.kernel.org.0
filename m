@@ -2,62 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87E8B280C7E
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 05:20:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75573280C6C
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 05:02:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387545AbgJBDUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 23:20:40 -0400
-Received: from mediacoverage.servers.prgn.misp.co.uk ([95.142.155.130]:54216
-        "EHLO mediacoverage.servers.prgn.misp.co.uk" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727780AbgJBDUj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 23:20:39 -0400
-X-Greylist: delayed 2784 seconds by postgrey-1.27 at vger.kernel.org; Thu, 01 Oct 2020 23:20:39 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=media-coverage.co.uk; s=default; h=Content-Transfer-Encoding:Content-Type:
-        Message-ID:Reply-To:Subject:To:From:Date:MIME-Version:Sender:Cc:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=rNM9Ci/s0XAoXblICRqZq2MmhRRU/Xnag3dngQj0rf0=; b=KXRL2sNjxET2X0Frvsh+lnPZRd
-        A6HThzofWTkiUuroC3yjt1H9otlJV1PbJzqF4PmVqf7U39703GLukPL0btFuHemmfOIMRjV3ogDsa
-        wvVJfyaNXk/JDsdxSXHyBqVOsbJYn6W2qsi32fKiik+DT1a/x11kCp/rij+mhjzWbLGb+rKTnSkuX
-        o1pPNtH9SzSPkTP6WZFT3nTYaJ1kJoILPQKllHZ65r/GKmEmIJ552UOE6tNFau9D5ihVyByCydGhr
-        m+gNVCzlxbCcN38Mw1yRKPmVkPc9vsYJSA9lj0Q8+sL3Ivwl/2P3AO4wFgyWWrcj+i8s2vXZcIO2q
-        0Oce75wg==;
-Received: from [127.0.0.1] (port=50642 helo=mediacoverage.servers.prgn.misp.co.uk)
-        by mediacoverage.servers.prgn.misp.co.uk with esmtpa (Exim 4.93)
-        (envelope-from <smtpfox-d7smy@media-coverage.co.uk>)
-        id 1kOAk3-0000M6-1W; Fri, 02 Oct 2020 03:24:16 +0100
+        id S2387605AbgJBDCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 23:02:46 -0400
+Received: from ozlabs.org ([203.11.71.1]:33575 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727780AbgJBDCq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Oct 2020 23:02:46 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C2ZYC59Bbz9sSn;
+        Fri,  2 Oct 2020 13:02:38 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1601607762;
+        bh=j53jquxv8eIAVcycClyih3HfZma6HX/HBe3EZidk8Vs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=HDtakTJPdDRTtFG+PENzQYZTKweVWPbsyJpb3IFvuXGx6Xt8bkCRVEJ8XHnZJiOlB
+         LK9qxo4WSfVGFmWfB+v7vVqAjCKpftnRrLPDVREc/bpIm1KDZPwa5iNMInSadrBBkl
+         WL2ixftGxEQt5wp2Apcr62UI47Syhf+814XGI31zJkNjwzdj2vPSaCTR6GaWpy2RVq
+         8MXFkWLop3HfzmBdKr2Rva4XOHmnIbXg8NJyRUSQBQyfoFeZACrxi2lZunMkVS64F2
+         F7Hr6x2PwiiXzUJBcIJbdCkOGdQFcYzQiq2AV/3xSKQFp/9uAHf6Vyj/6b7gAEnfc6
+         fcsn8eCvGhXHg==
+Date:   Fri, 2 Oct 2020 13:02:37 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Marian-Cristian Rotariu 
+        <marian-cristian.rotariu.rb@bp.renesas.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20201002130237.42fe476e@canb.auug.org.au>
 MIME-Version: 1.0
-Date:   Fri, 02 Oct 2020 03:24:12 +0100
-From:   Julianna Stefan Ndoi <smtpfox-d7smy@media-coverage.co.uk>
-To:     undisclosed-recipients:;
-Subject: good morning
-Reply-To: maryp1799_8335@yahoo.co.jp
-Mail-Reply-To: maryp1799_8335@yahoo.co.jp
-Message-ID: <8faac3b8a4abac950c50ee8140ced87b@media-coverage.co.uk>
-X-Sender: smtpfox-d7smy@media-coverage.co.uk
-User-Agent: Roundcube Webmail/1.3.15
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-OutGoing-Spam-Status: No, score=-0.3
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - mediacoverage.servers.prgn.misp.co.uk
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - media-coverage.co.uk
-X-Get-Message-Sender-Via: mediacoverage.servers.prgn.misp.co.uk: authenticated_id: smtpfox-d7smy@media-coverage.co.uk
-X-Authenticated-Sender: mediacoverage.servers.prgn.misp.co.uk: smtpfox-d7smy@media-coverage.co.uk
+Content-Type: multipart/signed; boundary="Sig_/1DvaFRiXCr4m2OmR.rD6n_Y";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/1DvaFRiXCr4m2OmR.rD6n_Y
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
--- 
-Greetings my beloved,
-My name is Mrs.Julianna Stefan Ndoi. I am a cancer patient who had
-decided to donate what I have to you for God's works. I want to donate
-$8.5 million to you so that you will use part of the this fund to help
-the poor ones,while you use the rest for your family.
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  Documentation/devicetree/bindings/net/renesas,ravb.txt
+
+between commit:
+
+  307eea32b202 ("dt-bindings: net: renesas,ravb: Add support for r8a774e1 S=
+oC")
+
+from the net tree and commit:
+
+  d7adf6331189 ("dt-bindings: net: renesas,etheravb: Convert to json-schema=
+")
+
+from the net-next tree.
+
+I fixed it up (I deleted the file and added the following patch) and
+can carry the fix as necessary. This is now fixed as far as linux-next
+is concerned, but any non trivial conflicts should be mentioned to your
+upstream maintainer when your tree is submitted for merging.  You may
+also want to consider cooperating with the maintainer of the conflicting
+tree to minimise any particularly complex conflicts.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Fri, 2 Oct 2020 12:57:33 +1000
+Subject: [PATCH] fix up for "dt-bindings: net: renesas,ravb: Add support fo=
+r r8a774e1 SoC"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ Documentation/devicetree/bindings/net/renesas,etheravb.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml b/=
+Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+index e13653051b23..244befb6402a 100644
+--- a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
++++ b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+@@ -31,6 +31,7 @@ properties:
+               - renesas,etheravb-r8a774a1     # RZ/G2M
+               - renesas,etheravb-r8a774b1     # RZ/G2N
+               - renesas,etheravb-r8a774c0     # RZ/G2E
++              - renesas,etheravb-r8a774e1     # RZ/G2H
+               - renesas,etheravb-r8a7795      # R-Car H3
+               - renesas,etheravb-r8a7796      # R-Car M3-W
+               - renesas,etheravb-r8a77961     # R-Car M3-W+
+--=20
+2.28.0
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/1DvaFRiXCr4m2OmR.rD6n_Y
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl92mE0ACgkQAVBC80lX
+0GyFkwgAk5IVGtAIGvgu9lD2+ANmo3Acy5T7ifjEcWfo3lxiJEoTeCEU61fwX2kM
+RwfBBOscw5WrWZFAwo9KMxZX0Uf57fwCyYXm5y0ppRa8IZBhE9S7EL75sbmbvBcl
+VTQZ8ryTOcYh+d+mOnyJzo0bT9lthZMYH9FSM3W9HcRNB4FxA1NvrOFM3EOzxnCX
+Sq5IcmRpxODzw7JvMBUY0axMqje4vF+szYv81tNIryWKtvAvxKjkwIf+61GgDYYQ
+htOAgWPFd+daht924kwG6QUUTsba05rfBwa1/uC1cNYOkkgmWo4ySoAa2WtADq1E
+30uzNIKW9CQkbHBG++L6Lic9zJHBBg==
+=U9tM
+-----END PGP SIGNATURE-----
+
+--Sig_/1DvaFRiXCr4m2OmR.rD6n_Y--
