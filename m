@@ -2,198 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7007E281A7A
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 20:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2521A281A7C
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 20:07:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388397AbgJBSGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 14:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726224AbgJBSGW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 14:06:22 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13C7DC0613D0;
-        Fri,  2 Oct 2020 11:06:22 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id e5so2045045ils.10;
-        Fri, 02 Oct 2020 11:06:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=xQHdD9FYvaSVDKe3FGt16IcuIG+7ix3939R7cUq5vHw=;
-        b=uEtRAiinQabjTTjsVo4InS/Uby38Yc8HB2T+DH5ohJORdEX4PQKgyEYltUbsxCs8Eu
-         eR8WW2sEruObE8FyAHV97E2X03luqJIygIecBwV3ySZaGz+MkJOO6jYhMwjObrWX20ic
-         HES/25+/0A0KCf5kRfLxEhYY9r2UmB913GFS5WmNhaeuhmVZdJpS0l/fozfwW6nSzJKL
-         AIKez1ZJp/1cEtXljrnnIsX2Pm5t8wJ7iQny7ACxKW5vT/OkJ/YgGET6Tcd4Xb/KhdHg
-         TKjH2B2eRotK5G/bKxzM5TNLDg1GMzHYIb0fdSAjRnD5W5k3rQNLICuqbridtqbxH4N0
-         A5HA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=xQHdD9FYvaSVDKe3FGt16IcuIG+7ix3939R7cUq5vHw=;
-        b=pRreAZDDLPGPr7+O73tp9iqW7ZMH8TZxRCaqMWnNnDSsXvYmppfIIdAqBhYhFtSGZN
-         sooT+y6baBoDzZQC022EyyAcmvrh+C70FvEArYTvtjjUlskt1acErGDY0WiLtdulFWz8
-         iNnftrNNNqDzx9BHmCpRbKgnsDGT8Vf9yeW0GKhvjx20spjMCiD8slKuw3/GeE6BbLBa
-         3dAmOMqlE/CY5OKZwKm7/9lhfxJxZIZgV4dLPVYIcsYEBX0YuG3LxyblyT8Qml559SVh
-         uyMu5SpGu7DLwesckvFVCKxX/6iZbsHFUwi8b7WAHU40GrfoXPrEu+3wwwKRMy6dIdrX
-         pD2A==
-X-Gm-Message-State: AOAM532H2yeYn+ALjrIjVQPjKRnuEf1OKRRujNge7yjzNkylmtFVTXgM
-        5Q/YeMZj2xQnBkGxL2MZFcA=
-X-Google-Smtp-Source: ABdhPJweUhBuEB99WaFi6EQ0t/qRJdVFTH23M2hMah+XMKg+rI8BBG8p64T2eIcyhOGT+jbSn9BJKQ==
-X-Received: by 2002:a92:ccc5:: with SMTP id u5mr2845241ilq.178.1601661981275;
-        Fri, 02 Oct 2020 11:06:21 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id f21sm1004316ioh.1.2020.10.02.11.06.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2020 11:06:20 -0700 (PDT)
-Date:   Fri, 02 Oct 2020 11:06:12 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        sameehj@amazon.com, dsahern@kernel.org, brouer@redhat.com,
-        echaudro@redhat.com
-Message-ID: <5f776c14d69b3_a6402087e@john-XPS-13-9370.notmuch>
-In-Reply-To: <20201002160623.GA40027@lore-desk>
-References: <cover.1601648734.git.lorenzo@kernel.org>
- <5f77467dbc1_38b0208ef@john-XPS-13-9370.notmuch>
- <20201002160623.GA40027@lore-desk>
-Subject: Re: [PATCH v4 bpf-next 00/13] mvneta: introduce XDP multi-buffer
- support
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S2387692AbgJBSHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 14:07:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36620 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726224AbgJBSHG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 14:07:06 -0400
+Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6788F20795;
+        Fri,  2 Oct 2020 18:07:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601662025;
+        bh=aXCgCQ8P+5n02VM+r/7igfPHUVD/9Y3N8SLyQ/Hd680=;
+        h=From:To:Cc:Subject:Date:From;
+        b=J/saCXCz3tCUTGsaXZ5ektUt+XJeXkaSO5Diew1H1H5+Xq/b4wCLGhmUQ2h4pcgNy
+         hYo+CiEO6jBoORHEI7hXESt3Oon1a+d2xTMAOmBGsNo47Y91jH8/Y5pYV7h7su40Fw
+         BSYmQ9wNCWCIzyJ9USyEz6waiaJW2kSUlc6rsVqs=
+From:   saeed@kernel.org
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net V3 00/14] mlx5 fixes 2020-09-30
+Date:   Fri,  2 Oct 2020 11:06:40 -0700
+Message-Id: <20201002180654.262800-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi wrote:
-> > Lorenzo Bianconi wrote:
-> > > This series introduce XDP multi-buffer support. The mvneta driver is
-> > > the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
-> > > please focus on how these new types of xdp_{buff,frame} packets
-> > > traverse the different layers and the layout design. It is on purpose
-> > > that BPF-helpers are kept simple, as we don't want to expose the
-> > > internal layout to allow later changes.
-> > > 
-> > > For now, to keep the design simple and to maintain performance, the XDP
-> > > BPF-prog (still) only have access to the first-buffer. It is left for
-> > > later (another patchset) to add payload access across multiple buffers.
-> > > This patchset should still allow for these future extensions. The goal
-> > > is to lift the XDP MTU restriction that comes with XDP, but maintain
-> > > same performance as before.
-> > > 
-> > > The main idea for the new multi-buffer layout is to reuse the same
-> > > layout used for non-linear SKB. This rely on the "skb_shared_info"
-> > > struct at the end of the first buffer to link together subsequent
-> > > buffers. Keeping the layout compatible with SKBs is also done to ease
-> > > and speedup creating an SKB from an xdp_{buff,frame}. Converting
-> > > xdp_frame to SKB and deliver it to the network stack is shown in cpumap
-> > > code (patch 13/13).
-> > 
-> > Using the end of the buffer for the skb_shared_info struct is going to
-> > become driver API so unwinding it if it proves to be a performance issue
-> > is going to be ugly. So same question as before, for the use case where
-> > we receive packet and do XDP_TX with it how do we avoid cache miss
-> > overhead? This is not just a hypothetical use case, the Facebook
-> > load balancer is doing this as well as Cilium and allowing this with
-> > multi-buffer packets >1500B would be useful.
-> > 
-> > Can we write the skb_shared_info lazily? It should only be needed once
-> > we know the packet is going up the stack to some place that needs the
-> > info. Which we could learn from the return code of the XDP program.
-> 
-> Hi John,
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Hi, I'll try to join the two threads this one and the one on helpers here
-so we don't get too fragmented.
+Hi Dave,
 
-> 
-> I agree, I think for XDP_TX use-case it is not strictly necessary to fill the
-> skb_hared_info. The driver can just keep this info on the stack and use it
-> inserting the packet back to the DMA ring.
-> For mvneta I implemented it in this way to keep the code aligned with ndo_xdp_xmit
-> path since it is a low-end device. I guess we are not introducing any API constraint
-> for XDP_TX. A high-end device can implement multi-buff for XDP_TX in a different way
-> in order to avoid the cache miss.
+This series introduces some fixes to mlx5 driver.
 
-Agree it would be an implementation detail for XDP_TX except the two helpers added
-in this series currently require it to be there.
+v1->v2:
+ - Patch #1 Don't return while mutex is held. (Dave)
 
-> 
-> We need to fill the skb_shared info only when we want to pass the frame to the
-> network stack (build_skb() can directly reuse skb_shared_info->frags[]) or for
-> XDP_REDIRECT use-case.
+v2->v3:
+ - Drop patch #1, will consider a better approach (Jakub)
+ - use cpu_relax() instead of cond_resched() (Jakub)
+ - while(i--) to reveres a loop (Jakub)
+ - Drop old mellanox email sign-off and change the committer email
+   (Jakub)
 
-It might be good to think about the XDP_REDIRECT case as well then. If the
-frags list fit in the metadata/xdp_frame would we expect better
-performance?
+Please pull and let me know if there is any problem.
 
-Looking at skb_shared_info{} that is a rather large structure with many
-fields that look unnecessary for XDP_REDIRECT case and only needed when
-passing to the stack. Fundamentally, a frag just needs
+For -stable v4.15
+ ('net/mlx5e: Fix VLAN cleanup flow')
+ ('net/mlx5e: Fix VLAN create flow')
 
- struct bio_vec {
-     struct page *bv_page;     // 8B
-     unsigned int bv_len;      // 4B
-     unsigned int bv_offset;   // 4B
- } // 16B
+For -stable v4.16
+ ('net/mlx5: Fix request_irqs error flow')
 
-With header split + data we only need a single frag so we could use just
-16B. And worse case jumbo frame + header split seems 3 entries would be
-enough giving 48B (header plus 3 4k pages). Could we just stick this in
-the metadata and make it read only? Then programs that care can read it
-and get all the info they need without helpers. I would expect performance
-to be better in the XDP_TX and XDP_REDIRECT cases. And copying an extra
-worse case 48B in passing to the stack I guess is not measurable given
-all the work needed in that path.
+For -stable v5.4
+ ('net/mlx5e: Add resiliency in Striding RQ mode for packets larger than MTU')
+ ('net/mlx5: Avoid possible free of command entry while timeout comp handler')
 
-> 
-> > 
-> > > 
-> > > A multi-buffer bit (mb) has been introduced in xdp_{buff,frame} structure
-> > > to notify the bpf/network layer if this is a xdp multi-buffer frame (mb = 1)
-> > > or not (mb = 0).
-> > > The mb bit will be set by a xdp multi-buffer capable driver only for
-> > > non-linear frames maintaining the capability to receive linear frames
-> > > without any extra cost since the skb_shared_info structure at the end
-> > > of the first buffer will be initialized only if mb is set.
-> > 
-> > Thanks above is clearer.
-> > 
-> > > 
-> > > In order to provide to userspace some metdata about the non-linear
-> > > xdp_{buff,frame}, we introduced 2 bpf helpers:
-> > > - bpf_xdp_get_frags_count:
-> > >   get the number of fragments for a given xdp multi-buffer.
-> > > - bpf_xdp_get_frags_total_size:
-> > >   get the total size of fragments for a given xdp multi-buffer.
-> > 
-> > Whats the use case for these? Do you have an example where knowing
-> > the frags count is going to be something a BPF program will use?
-> > Having total size seems interesting but perhaps we should push that
-> > into the metadata so its pulled into the cache if users are going to
-> > be reading it on every packet or something.
-> 
-> At the moment we do not have any use-case for these helpers (not considering
-> the sample in the series :)). We introduced them to provide some basic metadata
-> about the non-linear xdp_frame.
-> IIRC we decided to introduce some helpers instead of adding this info in xdp_frame
-> in order to save space on it (for xdp it is essential xdp_frame to fit in a single
-> cache-line).
+For -stable v5.7
+ ('net/mlx5e: Fix return status when setting unsupported FEC mode')
 
-Sure, how about in the metadata then? (From other thread I was suggesting putting
-the total length in metadata) We could even allow programs to overwrite it if
-they wanted if its not used by the stack for anything other than packet length
-visibility. Of course users would then need to be a bit careful not to overwrite
-it and then read it again expecting the length to be correct. I think from a
-users perspective though that would be expected.
+For -stable v5.8
+ ('net/mlx5e: Fix race condition on nhe->n pointer in neigh update')
 
-> 
-> Regards,
-> Lorenzo
-> 
+Thanks,
+Saeed.
+---
+The following changes since commit a59cf619787e628b31c310367f869fde26c8ede1:
+
+  Merge branch 'Fix-bugs-in-Octeontx2-netdev-driver' (2020-09-30 15:07:19 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2020-09-30
+
+for you to fetch changes up to 1253935ad801485270194d5651acab04abc97b36:
+
+  net/mlx5e: Fix race condition on nhe->n pointer in neigh update (2020-10-02 10:59:58 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2020-09-30
+
+----------------------------------------------------------------
+Aya Levin (6):
+      net/mlx5e: Fix error path for RQ alloc
+      net/mlx5e: Add resiliency in Striding RQ mode for packets larger than MTU
+      net/mlx5e: Fix driver's declaration to support GRE offload
+      net/mlx5e: Fix return status when setting unsupported FEC mode
+      net/mlx5e: Fix VLAN cleanup flow
+      net/mlx5e: Fix VLAN create flow
+
+Eran Ben Elisha (4):
+      net/mlx5: Fix a race when moving command interface to polling mode
+      net/mlx5: Avoid possible free of command entry while timeout comp handler
+      net/mlx5: poll cmd EQ in case of command timeout
+      net/mlx5: Add retry mechanism to the command entry index allocation
+
+Maor Dickman (1):
+      net/mlx5e: CT, Fix coverity issue
+
+Maor Gottlieb (1):
+      net/mlx5: Fix request_irqs error flow
+
+Saeed Mahameed (1):
+      net/mlx5: cmdif, Avoid skipping reclaim pages if FW is not accessible
+
+Vlad Buslov (1):
+      net/mlx5e: Fix race condition on nhe->n pointer in neigh update
+
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      | 198 +++++++++++++++------
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/port.c  |   3 +
+ .../net/ethernet/mellanox/mlx5/core/en/rep/neigh.c |  81 +++++----
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |  14 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 104 +++++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   6 -
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c       |  42 ++++-
+ drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h   |   2 +
+ .../net/ethernet/mellanox/mlx5/core/pagealloc.c    |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  |   2 +-
+ include/linux/mlx5/driver.h                        |   3 +
+ 13 files changed, 350 insertions(+), 119 deletions(-)
