@@ -2,101 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47EBB280F2C
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 10:46:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0645A280F41
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 10:51:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726229AbgJBIqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 04:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58250 "EHLO
+        id S1726329AbgJBIvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 04:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725993AbgJBIqT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 04:46:19 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C70C0613D0
-        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 01:46:19 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id z13so730960iom.8
-        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 01:46:19 -0700 (PDT)
+        with ESMTP id S1725993AbgJBIvU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 04:51:20 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA8CC0613D0;
+        Fri,  2 Oct 2020 01:51:20 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id b19so550603lji.11;
+        Fri, 02 Oct 2020 01:51:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mV5oCrjYgsy7pP7Rmnz0HCmw3gV3dLtGa7yao12dilE=;
-        b=JLD+jfRM4dTkAx3HEHA2TiFMi90Dib9A39laSWzDbOzq6G6zFq9T77aWilezKLO0Y1
-         ihENGOQtx13JSPnX/COCBnBmIXtew+F5DYomKD8J5PEAXTUuiKz/DKFl6F/6S7jChmvU
-         MA81H7fgpw30L81R37RpOgl9WNKhVMogmbRoIaSrO4CQYbJYOPQMI9QWLceokA17bg2d
-         wSEbo1baXE66Ul0wvf7vBGqtis0/KBVx/lwuunNoDkXKRMb0Vgia/JKxLQDxE8RIQj5t
-         viOQ7FNgFFYRbjz28UelLsjQFbGTlb7Wc+1mvYY6PL0KeY1hSbh+yDQbB4DspY4JZFsQ
-         5+ww==
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=i9UuqBprgLgN+56WyW7bVdQAfR56QqIoXp2EYG3DzI8=;
+        b=RTxIg94Qhj4nu/2O9OLnchT6Zp4Au+NXTqkr1j9MF1E4SIWvA8P4Vwqle3kHLif9BG
+         ZB7YmXD6O/NPxZuQKjDdNO/IVP8bPNxpx4VpN27f5geWxUDlovYeL4VVyV7qPne11V8l
+         rbpFJD+Jmy3e6BREPy6SZkVkjcz+P94BtyWT7jYw6M7DCzugNrNia8cv4TchVKh2mWt8
+         4lKUH8em1NoJDrYOs7GnjkowgJu9IuA2wvyOW/NhaZOIY3jZ/G6uMljdmNwdXt4RpWpq
+         fRKknXxGwU9AePsGwQ4gabniJLlW2Hx7Dy6fSC0ysbuZl/MjwXjuIV3YqbAeKlbtyBsY
+         XNgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mV5oCrjYgsy7pP7Rmnz0HCmw3gV3dLtGa7yao12dilE=;
-        b=g8zYmzGH37mrM4X520G43pTRsIXJOWQVZYuy0vemVdaTesBWFVRrKvS0280wNobOjL
-         YAOe++2XyhV9Aienrdx9/Dt3jKbXD86NN03jeioEL/n5pWJU1GgtbGvvbcwOHNvKumzQ
-         h1Fc6wR9OTROHGpMFv+L0RAUCLPvl3BltTNO0X0MxZpXqynqpOm8g8vXGXd6mXHQI77E
-         uYzsM7o7joZS/cIsAs4LUkPhRxgklpvA7aVly+IY0M1ik6uZPmXniAGA0uE9ZBDzmzPh
-         fRLaAaLFJv+Ek+E5O4pw3WLa2055V//4Q4ZR1UtUcLjdtvhvPhQmCCg3ydf6EoFlmkHs
-         LvVg==
-X-Gm-Message-State: AOAM531gSylerQUyyCyqMe+B85HnsU46aAuElVqevk3tQ8+8OywtAiOP
-        vMrAg0LOEJJ98WhU4MH0tpf5/ePW1DzDYTcWLHii3Q==
-X-Google-Smtp-Source: ABdhPJwgdMY0W3oRHWIN1ixB++Ic6G+bdJjBN2YsGP+mEHCllE2yE2h2+XCvSOc2Z7S9Dq/1FiR/gEf2+LjBN5P10RE=
-X-Received: by 2002:a05:6602:2d0c:: with SMTP id c12mr1175621iow.117.1601628378603;
- Fri, 02 Oct 2020 01:46:18 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=i9UuqBprgLgN+56WyW7bVdQAfR56QqIoXp2EYG3DzI8=;
+        b=KAt01vqH0aHrqwiyqPZSL3IY8jCnE+SmAKHZdvfH/X1m8Mr/hYfUOby7GZQIX2vnrp
+         jJlQ+zrOXyCcf5pR0eSeGeXjGx6wOQCX2Wn7+JPwfDs/Mu7oUatgiipZ6tmytkfAZpLC
+         KSf85ClEvpcV7+KwGnFpIwfdeYDshzY/THvUfs+qtvM33R65NH5WkPcu2L6w2AXpGA66
+         pAbt6xoxR8FQJDtE+wHMeDLfWMWvwxB+wPN2X9vBtHp3zZjEAFfx6frL7crRJ9QN1YeX
+         mkXtqty3fT/BiocAC6pu5tndf/uaZj4XqwmOQSRKtf774UGWAj1DfEgCCn/zq9beWBof
+         9QXg==
+X-Gm-Message-State: AOAM532BE1mc/G01Ol4mJ059Q+AgIRROFxTUxQFzua46jkHjUxfxRgED
+        1EHqszoCz1D0NYVuTZ6gNabJLmXjfaDjbdEEIZGmOJgpuDE=
+X-Google-Smtp-Source: ABdhPJzTTOib4aoP23sqvPAGEo1rJYMk0OD+MFvQRWzwDvKzB8l88C9pOE7f/U41j9KtJuhf7AyWtHpyBlRVg4CjEYA=
+X-Received: by 2002:a2e:7014:: with SMTP id l20mr431835ljc.91.1601628678212;
+ Fri, 02 Oct 2020 01:51:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <bug-209423-201211-atteo0d1ZY@https.bugzilla.kernel.org/>
- <80adc922-f667-a1ab-35a6-02bf1acfd5a1@gmail.com> <CANn89i+ZC5y_n_kQTm4WCWZsYaph4E2vtC9k_caE6dkuQrXdPQ@mail.gmail.com>
- <733a6e54-f03c-0076-1bdc-9b0d4ec1038c@gmail.com>
-In-Reply-To: <733a6e54-f03c-0076-1bdc-9b0d4ec1038c@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 2 Oct 2020 10:46:07 +0200
-Message-ID: <CANn89iJ2zqH=_fvJQ8dhG4nBVnKNB7SjHnHDLv+0iR7UwgxTsw@mail.gmail.com>
-Subject: Re: [Bug 209423] WARN_ON_ONCE() at rtl8169_tso_csum_v2()
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   =?UTF-8?B?5Y+25bCP6b6Z?= <muryo.ye@gmail.com>
+Date:   Fri, 2 Oct 2020 16:51:07 +0800
+Message-ID: <CAP0D=1X946M=yy=hMBvXuT11paPqxMi_xens-R4m7vyCnkUQzw@mail.gmail.com>
+Subject: Why ping latency is smaller with shorter send interval?
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 2, 2020 at 10:32 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 10/2/20 10:26 AM, Eric Dumazet wrote:
-> > On Thu, Oct 1, 2020 at 10:34 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> >>
-> >> I have a problem with the following code in ndo_start_xmit() of
-> >> the r8169 driver. A user reported the WARN being triggered due
-> >> to gso_size > 0 and gso_type = 0. The chip supports TSO(6).
-> >> The driver is widely used, therefore I'd expect much more such
-> >> reports if it should be a common problem. Not sure what's special.
-> >> My primary question: Is it a valid use case that gso_size is
-> >> greater than 0, and no SKB_GSO_ flag is set?
-> >> Any hint would be appreciated.
-> >>
-> >>
-> >
-> > Maybe this is not a TCP packet ? But in this case GSO should have taken place.
-> >
-> > You might add a
-> > pr_err_once("gso_type=%x\n", shinfo->gso_type);
-> >
+Hi, net experts,
 
->
-> Ah, sorry I see you already printed gso_type
->
-> Must then be a bug somewhere :/
+Hope this is the right place to ask the question :)
+
+Recently I've tried to measure the network latency between two
+machines by using ping, one interesting observation I found is that
+ping latency will be smaller if I use a shorter interval with -i
+option. For example,
+
+when I use default ping (interval is 1s), then the ping result is as
+below with avg latency 0.062ms
+
+# ping 9.9.9.2 -c 10
+PING 9.9.9.2 (9.9.9.2) 56(84) bytes of data.
+64 bytes from 9.9.9.2: icmp_seq=1 ttl=64 time=0.059 ms
+64 bytes from 9.9.9.2: icmp_seq=2 ttl=64 time=0.079 ms
+64 bytes from 9.9.9.2: icmp_seq=3 ttl=64 time=0.060 ms
+64 bytes from 9.9.9.2: icmp_seq=4 ttl=64 time=0.072 ms
+64 bytes from 9.9.9.2: icmp_seq=5 ttl=64 time=0.048 ms
+64 bytes from 9.9.9.2: icmp_seq=6 ttl=64 time=0.069 ms
+64 bytes from 9.9.9.2: icmp_seq=7 ttl=64 time=0.067 ms
+64 bytes from 9.9.9.2: icmp_seq=8 ttl=64 time=0.055 ms
+64 bytes from 9.9.9.2: icmp_seq=9 ttl=64 time=0.058 ms
+64 bytes from 9.9.9.2: icmp_seq=10 ttl=64 time=0.055 ms
+
+--- 9.9.9.2 ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9001ms
+rtt min/avg/max/mdev = 0.048/0.062/0.079/0.010 ms
+
+Then I use "-i 0.001", the lateny (0.038) is way better than defaut ping
+
+# ping 9.9.9.2 -i 0.001 -c 10
+PING 9.9.9.2 (9.9.9.2) 56(84) bytes of data.
+64 bytes from 9.9.9.2: icmp_seq=1 ttl=64 time=0.069 ms
+64 bytes from 9.9.9.2: icmp_seq=2 ttl=64 time=0.039 ms
+64 bytes from 9.9.9.2: icmp_seq=3 ttl=64 time=0.034 ms
+64 bytes from 9.9.9.2: icmp_seq=4 ttl=64 time=0.033 ms
+64 bytes from 9.9.9.2: icmp_seq=5 ttl=64 time=0.033 ms
+64 bytes from 9.9.9.2: icmp_seq=6 ttl=64 time=0.033 ms
+64 bytes from 9.9.9.2: icmp_seq=7 ttl=64 time=0.034 ms
+64 bytes from 9.9.9.2: icmp_seq=8 ttl=64 time=0.036 ms
+64 bytes from 9.9.9.2: icmp_seq=9 ttl=64 time=0.037 ms
+64 bytes from 9.9.9.2: icmp_seq=10 ttl=64 time=0.038 ms
+
+--- 9.9.9.2 ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9ms
+rtt min/avg/max/mdev = 0.033/0.038/0.069/0.012 ms
 
 
-napi_reuse_skb() does :
+ping loopback shows the similar result.
 
-skb_shinfo(skb)->gso_type = 0;
+Default ping avg latency is 0.049ms
 
-It does _not_ clear gso_size.
+# ping 127.0.0.1 -c 10
+PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.032 ms
+64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.049 ms
+64 bytes from 127.0.0.1: icmp_seq=3 ttl=64 time=0.054 ms
+64 bytes from 127.0.0.1: icmp_seq=4 ttl=64 time=0.058 ms
+64 bytes from 127.0.0.1: icmp_seq=5 ttl=64 time=0.049 ms
+64 bytes from 127.0.0.1: icmp_seq=6 ttl=64 time=0.042 ms
+64 bytes from 127.0.0.1: icmp_seq=7 ttl=64 time=0.052 ms
+64 bytes from 127.0.0.1: icmp_seq=8 ttl=64 time=0.052 ms
+64 bytes from 127.0.0.1: icmp_seq=9 ttl=64 time=0.053 ms
+64 bytes from 127.0.0.1: icmp_seq=10 ttl=64 time=0.055 ms
 
-I wonder if in some cases we could reuse an skb while gso_size is not zero.
+--- 127.0.0.1 ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9001ms
+rtt min/avg/max/mdev = 0.032/0.049/0.058/0.010 ms
 
-Normally, we set it only from dev_gro_receive() when the skb is queued
-into GRO engine (status being GRO_HELD)
+ping with "-i 0.001" shows 0.014ms avg latency.
+
+# ping 127.0.0.1 -i 0.001 -c 10
+PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.040 ms
+64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.014 ms
+64 bytes from 127.0.0.1: icmp_seq=3 ttl=64 time=0.012 ms
+64 bytes from 127.0.0.1: icmp_seq=4 ttl=64 time=0.011 ms
+64 bytes from 127.0.0.1: icmp_seq=5 ttl=64 time=0.011 ms
+64 bytes from 127.0.0.1: icmp_seq=6 ttl=64 time=0.011 ms
+64 bytes from 127.0.0.1: icmp_seq=7 ttl=64 time=0.011 ms
+64 bytes from 127.0.0.1: icmp_seq=8 ttl=64 time=0.010 ms
+64 bytes from 127.0.0.1: icmp_seq=9 ttl=64 time=0.010 ms
+64 bytes from 127.0.0.1: icmp_seq=10 ttl=64 time=0.011 ms
+
+--- 127.0.0.1 ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9ms
+rtt min/avg/max/mdev = 0.010/0.014/0.040/0.008 ms
+
+I'm using centos 7.2 with kernel 3.10.
+
+I am very confused about the result. As I understand it, it doesn't
+matter how frequently I send packets, each packet's latency should be
+the same. So How can I understand it from network stack point of view?
+
+Any thoughts or suggestions would be highly appreciated.
+
+
+Thanks,
+Xiaolong
