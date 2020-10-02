@@ -2,105 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 615AC281B66
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 21:13:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1363281BCB
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 21:23:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388365AbgJBTNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 15:13:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387712AbgJBTNp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 15:13:45 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58322C0613D0
-        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 12:13:45 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id 5so1418013pgf.5
-        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 12:13:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uNJs9pxvzX60LPaGBiVfHoplXWEUEMr0awFIuGZwEpk=;
-        b=Ee6JXggLvSie9Hjk6V6BfqUAIoveC/R2C0SREOfMGSza1RLeH5mBUPUyO8bWsrvq4o
-         LoYBJlfPv97pQL6O2qeABYk3Y1/UOekbZN41DG/CYm0gFGcshKUvv2PeiDL7RCwASzlD
-         THVjBnkuhtsHhuYWdzTKB8S5g5j+ufDU3s10Ny7dXQieDifwbLPH9q0A4XdMhCFZ2Y1b
-         vPZeeJKlzLJe1ztIlayB1PpMyZoF0Ac21ZJ1ecGt1XNCuBY2sj9O79sREe4WCqeTMl1Y
-         2bIfRms/YCUU20KxAYH5Bd/Bj+RxWQLBXEV70Fy+cbAWOEThIiZtSbIE0KBWbzzvoYel
-         863g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uNJs9pxvzX60LPaGBiVfHoplXWEUEMr0awFIuGZwEpk=;
-        b=YrSlcmZEsDRDbyvxRabBN0DrC5S8zvzf6yO9ckAdYcDiZjwbAq89q19UYy5dVX4zDr
-         yKSNCFnken8ySBvJ9oQQeHSMTyjqI8BIkufokwexrSyuvjj3YBnZAAkZhoVZzvzeGUTZ
-         fW3x5RpDVPeIfypwCfNOV+s5J3pIXu7YzORfPKYs2vc+fEyCrUQqwIAjwMWRcQOPpu72
-         Uuzzs98tgaZet1KMEbRMBdJ5+/ulGA7m8mPqI5JXEwDke8OiIhP0N7la4vXPsBi6mUHE
-         djqfvRVmZ/L7xrMo+8Qo5vNoRl35ZtCxScHOo1SII4i9slvwNiYooGqJXE81jwyCqpIB
-         ogdA==
-X-Gm-Message-State: AOAM533CfmB6EZ3exuSP/FF15BtxtkX25aD0k9TAWoDWo+POXl1Gf1LG
-        R2FW7zOM4G8kxImqEL8oB7Bi1pOSuHmduA==
-X-Google-Smtp-Source: ABdhPJyDGMRINxFhKNu993xj7QBzR+93XuakcnG5ZD2LwsIVpc26Jr9fgZL27wj3aoBZ3tyPoe8mxw==
-X-Received: by 2002:a63:ed01:: with SMTP id d1mr3548290pgi.58.1601666021662;
-        Fri, 02 Oct 2020 12:13:41 -0700 (PDT)
-Received: from unknown.linux-6brj.site ([2600:1700:65a0:ab60::46])
-        by smtp.gmail.com with ESMTPSA id o134sm2855676pfg.134.2020.10.02.12.13.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2020 12:13:40 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+b47bc4f247856fb4d9e1@syzkaller.appspotmail.com,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: [Patch net] net_sched: check error pointer in tcf_dump_walker()
-Date:   Fri,  2 Oct 2020 12:13:34 -0700
-Message-Id: <20201002191334.14135-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.28.0
+        id S2388567AbgJBTXP convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 2 Oct 2020 15:23:15 -0400
+Received: from mx.metalurgs.lv ([81.198.125.103]:50644 "EHLO mx.metalurgs.lv"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388574AbgJBTXN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 15:23:13 -0400
+X-Greylist: delayed 532 seconds by postgrey-1.27 at vger.kernel.org; Fri, 02 Oct 2020 15:23:13 EDT
+Received: from mx.metalurgs.lv (localhost [127.0.0.1])
+        by mx.metalurgs.lv (Postfix) with ESMTP id 608BB62AB8
+        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 22:14:15 +0300 (EEST)
+Received: from kas30pipe.localhost (localhost [127.0.0.1])
+        by mx.metalurgs.lv (Postfix) with ESMTP id 4306A62AB1
+        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 22:14:15 +0300 (EEST)
+Received: by mx.metalurgs.lv (Postfix, from userid 1005)
+        id C8F7C62A07; Fri,  2 Oct 2020 22:14:13 +0300 (EEST)
+Received: from [100.64.1.74] (unknown [190.15.125.50])
+        (Authenticated sender: admin)
+        by mx.metalurgs.lv (Postfix) with ESMTPA id 60954622E9;
+        Fri,  2 Oct 2020 22:14:07 +0300 (EEST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Description: Mail message body
+To:     Recipients <financialcapability6@gmail.com>
+From:   "Mr. Hashim Bin" <financialcapability6@gmail.com>
+Date:   Fri, 02 Oct 2020 16:14:00 -0300
+Reply-To: binmurrah@gmail.com
+X-SpamTest-Envelope-From: financialcapability6@gmail.com
+X-SpamTest-Group-ID: 00000000
+X-SpamTest-Info: Profiles 71303 [Jan 01 2015]
+X-SpamTest-Info: {TO: forged address, i.e. recipient, investors, public, etc.}
+X-SpamTest-Info: {DATE: unreal year}
+X-SpamTest-Method: none
+X-SpamTest-Rate: 55
+X-SpamTest-Status: Not detected
+X-SpamTest-Status-Extended: not_detected
+X-SpamTest-Version: SMTP-Filter Version 3.0.0 [0284], KAS30/Release
+Message-ID: <20201002191413.C8F7C62A07@mx.metalurgs.lv>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Subject: Low Rate Loan.
+X-Anti-Virus: Kaspersky Anti-Virus for Linux Mail Server 5.6.39/RELEASE,
+         bases: 20140401 #7726142, check: 20201002 notchecked
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Although we take RTNL on dump path, it is possible to
-skip RTNL on insertion path. So the following race condition
-is possible:
+Hello Dear,
 
-rtnl_lock()		// no rtnl lock
-			mutex_lock(&idrinfo->lock);
-			// insert ERR_PTR(-EBUSY)
-			mutex_unlock(&idrinfo->lock);
-tc_dump_action()
-rtnl_unlock()
+We are Investment Company offering Corporate and Personal
+Loan at 3% Interest Rate for a duration of 10Years.
 
-So we have to skip those temporary -EBUSY entries on dump path
-too.
+We also pay 1% commission to brokers, who introduce project
+owners for finance or other opportunities.
 
-Reported-and-tested-by: syzbot+b47bc4f247856fb4d9e1@syzkaller.appspotmail.com
-Fixes: 0fedc63fadf0 ("net_sched: commit action insertions together")
-Cc: Vlad Buslov <vladbu@mellanox.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- net/sched/act_api.c | 2 ++
- 1 file changed, 2 insertions(+)
+Please get back to me if you are interested for more
+details.
 
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 5612b336e18e..798430e1a79f 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -235,6 +235,8 @@ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
- 		index++;
- 		if (index < s_i)
- 			continue;
-+		if (IS_ERR(p))
-+			continue;
- 
- 		if (jiffy_since &&
- 		    time_after(jiffy_since,
--- 
-2.28.0
-
+Yours faithfully,
+Hashim Bin 
