@@ -2,132 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2521A281A7C
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 20:07:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10CAC281A7D
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 20:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387692AbgJBSHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 14:07:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36620 "EHLO mail.kernel.org"
+        id S2388400AbgJBSHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 14:07:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36646 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726224AbgJBSHG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726813AbgJBSHG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 2 Oct 2020 14:07:06 -0400
 Received: from sx1.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6788F20795;
+        by mail.kernel.org (Postfix) with ESMTPSA id C470C208B6;
         Fri,  2 Oct 2020 18:07:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601662025;
-        bh=aXCgCQ8P+5n02VM+r/7igfPHUVD/9Y3N8SLyQ/Hd680=;
-        h=From:To:Cc:Subject:Date:From;
-        b=J/saCXCz3tCUTGsaXZ5ektUt+XJeXkaSO5Diew1H1H5+Xq/b4wCLGhmUQ2h4pcgNy
-         hYo+CiEO6jBoORHEI7hXESt3Oon1a+d2xTMAOmBGsNo47Y91jH8/Y5pYV7h7su40Fw
-         BSYmQ9wNCWCIzyJ9USyEz6waiaJW2kSUlc6rsVqs=
+        s=default; t=1601662026;
+        bh=U8P41oSAqhaQ7HCq8VzIHFjjhCogaVVfm4fsuFKd1Gg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wamQAP6qFZ/ywFxwDe/NztDvDFn90DsdsZgtV2nH1WxtTqm8cSbXrR1m5T7zildZV
+         SoXKDK8KDQf9Uz3MGCy7SWLO/RJfoMldnFiRvQEahr8lJ5ntA9s0EHejwwwfDUA7sK
+         DgHxUvAeUZlWeeVPLXwUwQV3y5mfcPOY/DplzJi8=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net V3 00/14] mlx5 fixes 2020-09-30
-Date:   Fri,  2 Oct 2020 11:06:40 -0700
-Message-Id: <20201002180654.262800-1-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Eran Ben Elisha <eranbe@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net V3 01/14] net/mlx5: Fix a race when moving command interface to polling mode
+Date:   Fri,  2 Oct 2020 11:06:41 -0700
+Message-Id: <20201002180654.262800-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201002180654.262800-1-saeed@kernel.org>
+References: <20201002180654.262800-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Eran Ben Elisha <eranbe@mellanox.com>
 
-Hi Dave,
+As part of driver unload, it destroys the commands EQ (via FW command).
+As the commands EQ is destroyed, FW will not generate EQEs for any command
+that driver sends afterwards. Driver should poll for later commands status.
 
-This series introduces some fixes to mlx5 driver.
+Driver commands mode metadata is updated before the commands EQ is
+actually destroyed. This can lead for double completion handle by the
+driver (polling and interrupt), if a command is executed and completed by
+FW after the mode was changed, but before the EQ was destroyed.
 
-v1->v2:
- - Patch #1 Don't return while mutex is held. (Dave)
+Fix that by using the mlx5_cmd_allowed_opcode mechanism to guarantee
+that only DESTROY_EQ command can be executed during this time period.
 
-v2->v3:
- - Drop patch #1, will consider a better approach (Jakub)
- - use cpu_relax() instead of cond_resched() (Jakub)
- - while(i--) to reveres a loop (Jakub)
- - Drop old mellanox email sign-off and change the committer email
-   (Jakub)
-
-Please pull and let me know if there is any problem.
-
-For -stable v4.15
- ('net/mlx5e: Fix VLAN cleanup flow')
- ('net/mlx5e: Fix VLAN create flow')
-
-For -stable v4.16
- ('net/mlx5: Fix request_irqs error flow')
-
-For -stable v5.4
- ('net/mlx5e: Add resiliency in Striding RQ mode for packets larger than MTU')
- ('net/mlx5: Avoid possible free of command entry while timeout comp handler')
-
-For -stable v5.7
- ('net/mlx5e: Fix return status when setting unsupported FEC mode')
-
-For -stable v5.8
- ('net/mlx5e: Fix race condition on nhe->n pointer in neigh update')
-
-Thanks,
-Saeed.
+Fixes: e126ba97dba9 ("mlx5: Add driver for Mellanox Connect-IB adapters")
+Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
+Reviewed-by: Moshe Shemesh <moshe@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-The following changes since commit a59cf619787e628b31c310367f869fde26c8ede1:
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-  Merge branch 'Fix-bugs-in-Octeontx2-netdev-driver' (2020-09-30 15:07:19 -0700)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 31ef9f8420c8..1318d774b18f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -656,8 +656,10 @@ static void destroy_async_eqs(struct mlx5_core_dev *dev)
+ 
+ 	cleanup_async_eq(dev, &table->pages_eq, "pages");
+ 	cleanup_async_eq(dev, &table->async_eq, "async");
++	mlx5_cmd_allowed_opcode(dev, MLX5_CMD_OP_DESTROY_EQ);
+ 	mlx5_cmd_use_polling(dev);
+ 	cleanup_async_eq(dev, &table->cmd_eq, "cmd");
++	mlx5_cmd_allowed_opcode(dev, CMD_ALLOWED_OPCODE_ALL);
+ 	mlx5_eq_notifier_unregister(dev, &table->cq_err_nb);
+ }
+ 
+-- 
+2.26.2
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2020-09-30
-
-for you to fetch changes up to 1253935ad801485270194d5651acab04abc97b36:
-
-  net/mlx5e: Fix race condition on nhe->n pointer in neigh update (2020-10-02 10:59:58 -0700)
-
-----------------------------------------------------------------
-mlx5-fixes-2020-09-30
-
-----------------------------------------------------------------
-Aya Levin (6):
-      net/mlx5e: Fix error path for RQ alloc
-      net/mlx5e: Add resiliency in Striding RQ mode for packets larger than MTU
-      net/mlx5e: Fix driver's declaration to support GRE offload
-      net/mlx5e: Fix return status when setting unsupported FEC mode
-      net/mlx5e: Fix VLAN cleanup flow
-      net/mlx5e: Fix VLAN create flow
-
-Eran Ben Elisha (4):
-      net/mlx5: Fix a race when moving command interface to polling mode
-      net/mlx5: Avoid possible free of command entry while timeout comp handler
-      net/mlx5: poll cmd EQ in case of command timeout
-      net/mlx5: Add retry mechanism to the command entry index allocation
-
-Maor Dickman (1):
-      net/mlx5e: CT, Fix coverity issue
-
-Maor Gottlieb (1):
-      net/mlx5: Fix request_irqs error flow
-
-Saeed Mahameed (1):
-      net/mlx5: cmdif, Avoid skipping reclaim pages if FW is not accessible
-
-Vlad Buslov (1):
-      net/mlx5e: Fix race condition on nhe->n pointer in neigh update
-
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c      | 198 +++++++++++++++------
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |   8 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/port.c  |   3 +
- .../net/ethernet/mellanox/mlx5/core/en/rep/neigh.c |  81 +++++----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |  14 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 104 +++++++++--
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   6 -
- drivers/net/ethernet/mellanox/mlx5/core/eq.c       |  42 ++++-
- drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h   |   2 +
- .../net/ethernet/mellanox/mlx5/core/pagealloc.c    |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  |   2 +-
- include/linux/mlx5/driver.h                        |   3 +
- 13 files changed, 350 insertions(+), 119 deletions(-)
