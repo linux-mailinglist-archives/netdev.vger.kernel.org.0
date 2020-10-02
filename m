@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19A2128157C
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 16:42:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CA2228157E
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 16:42:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388201AbgJBOmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 10:42:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60844 "EHLO mail.kernel.org"
+        id S2388207AbgJBOmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 10:42:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60902 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726017AbgJBOmm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Oct 2020 10:42:42 -0400
+        id S1726017AbgJBOmv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 10:42:51 -0400
 Received: from lore-desk.redhat.com (unknown [176.207.245.61])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0CD1C20708;
-        Fri,  2 Oct 2020 14:42:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6CCE6206FA;
+        Fri,  2 Oct 2020 14:42:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601649761;
-        bh=DHwBCoNNncxM6JrG4uH+mEpyA4XxNAtuDwPzRels8lE=;
+        s=default; t=1601649770;
+        bh=MeoOo4bg3O/0X0i354wiVWGpLoopVwV3Irb8n4wowas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jeltZfKJhEb7loo6HXku7TettDBMYy+9Vdvf+oS2UpbUSloyQpI2cjzp1ugPazfXJ
-         TR3q5xlgGqg0bJxYJ2JQ4kpzRKkN1Q14jDp4TvvUN4J58NKSuqepuNdfuQRtP80DUK
-         JqefJe42vBXIJ9ZtDjBO4GGY2ZcGdqfdh6yq3bpk=
+        b=ObQmjaDmcbhtZX+9SYFt1aWtGUSr5nUostE1DcAL0hD4TkguOd31v4pKQAfw1vRBw
+         Sq+9fZtxdWFFHhV5TFEHEU5qES+RsAgiFrHk1ORA8xFPTPoseiOeKlI2EHNoRql207
+         85JGkzBi1esE6qR1aTit5WMw7KxEFaLX8UJMgYfI=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, shayagr@amazon.com, sameehj@amazon.com,
         john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
         lorenzo.bianconi@redhat.com, echaudro@redhat.com
-Subject: [PATCH v4 bpf-next 05/13] net: mvneta: add multi buffer support to XDP_TX
-Date:   Fri,  2 Oct 2020 16:42:03 +0200
-Message-Id: <983d6a55ddf2ef68b0269554ec2f0487271b4d12.1601648734.git.lorenzo@kernel.org>
+Subject: [PATCH v4 bpf-next 06/13] bpf: introduce bpf_xdp_get_frags_{count, total_size} helpers
+Date:   Fri,  2 Oct 2020 16:42:04 +0200
+Message-Id: <deb81e4cf02db9a1da2b4088a49afd7acf8b82b6.1601648734.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1601648734.git.lorenzo@kernel.org>
 References: <cover.1601648734.git.lorenzo@kernel.org>
@@ -41,120 +41,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce the capability to map non-linear xdp buffer running
-mvneta_xdp_submit_frame() for XDP_TX and XDP_REDIRECT
+From: Sameeh Jubran <sameehj@amazon.com>
 
+Introduce the two following bpf helpers in order to provide some
+metadata about a xdp multi-buff fame to bpf layer:
+
+- bpf_xdp_get_frags_count()
+  get the number of fragments for a given xdp multi-buffer.
+
+* bpf_xdp_get_frags_total_size()
+  get the total size of fragments for a given xdp multi-buffer.
+
+Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
+Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvneta.c | 79 +++++++++++++++++----------
- 1 file changed, 49 insertions(+), 30 deletions(-)
+ include/uapi/linux/bpf.h       | 14 ++++++++++++
+ net/core/filter.c              | 42 ++++++++++++++++++++++++++++++++++
+ tools/include/uapi/linux/bpf.h | 14 ++++++++++++
+ 3 files changed, 70 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index a431e8478297..f709650974ea 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1852,8 +1852,8 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
- 			bytes_compl += buf->skb->len;
- 			pkts_compl++;
- 			dev_kfree_skb_any(buf->skb);
--		} else if (buf->type == MVNETA_TYPE_XDP_TX ||
--			   buf->type == MVNETA_TYPE_XDP_NDO) {
-+		} else if ((buf->type == MVNETA_TYPE_XDP_TX ||
-+			    buf->type == MVNETA_TYPE_XDP_NDO) && buf->xdpf) {
- 			if (napi && buf->type == MVNETA_TYPE_XDP_TX)
- 				xdp_return_frame_rx_napi(buf->xdpf);
- 			else
-@@ -2046,43 +2046,62 @@ static int
- mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
- 			struct xdp_frame *xdpf, bool dma_map)
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 4f556cfcbfbe..0715995eb18c 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3668,6 +3668,18 @@ union bpf_attr {
+  * 	Return
+  * 		The helper returns **TC_ACT_REDIRECT** on success or
+  * 		**TC_ACT_SHOT** on error.
++ *
++ * int bpf_xdp_get_frags_count(struct xdp_buff *xdp_md)
++ *	Description
++ *		Get the number of fragments for a given xdp multi-buffer.
++ *	Return
++ *		The number of fragments
++ *
++ * int bpf_xdp_get_frags_total_size(struct xdp_buff *xdp_md)
++ *	Description
++ *		Get the total size of fragments for a given xdp multi-buffer.
++ *	Return
++ *		The total size of fragments for a given xdp multi-buffer.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3823,6 +3835,8 @@ union bpf_attr {
+ 	FN(seq_printf_btf),		\
+ 	FN(skb_cgroup_classid),		\
+ 	FN(redirect_neigh),		\
++	FN(xdp_get_frags_count),	\
++	FN(xdp_get_frags_total_size),	\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 3fb6adad1957..4c55b788c4c5 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3739,6 +3739,44 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
+ 	.arg2_type	= ARG_ANYTHING,
+ };
+ 
++BPF_CALL_1(bpf_xdp_get_frags_count, struct  xdp_buff*, xdp)
++{
++	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
++
++	return xdp->mb ? sinfo->nr_frags : 0;
++}
++
++const struct bpf_func_proto bpf_xdp_get_frags_count_proto = {
++	.func		= bpf_xdp_get_frags_count,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_CTX,
++};
++
++BPF_CALL_1(bpf_xdp_get_frags_total_size, struct  xdp_buff*, xdp)
++{
++	struct skb_shared_info *sinfo;
++	int nfrags, i, size = 0;
++
++	if (likely(!xdp->mb))
++		return 0;
++
++	sinfo = xdp_get_shared_info_from_buff(xdp);
++	nfrags = min_t(u8, sinfo->nr_frags, MAX_SKB_FRAGS);
++
++	for (i = 0; i < nfrags; i++)
++		size += skb_frag_size(&sinfo->frags[i]);
++
++	return size;
++}
++
++const struct bpf_func_proto bpf_xdp_get_frags_total_size_proto = {
++	.func		= bpf_xdp_get_frags_total_size,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_CTX,
++};
++
+ BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
  {
--	struct mvneta_tx_desc *tx_desc;
--	struct mvneta_tx_buf *buf;
--	dma_addr_t dma_addr;
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
-+	int i, num_frames = xdpf->mb ? sinfo->nr_frags + 1 : 1;
-+	struct mvneta_tx_desc *tx_desc = NULL;
-+	struct page *page;
+ 	void *data_hard_end = xdp_data_hard_end(xdp); /* use xdp->frame_sz */
+@@ -7092,6 +7130,10 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_xdp_redirect_map_proto;
+ 	case BPF_FUNC_xdp_adjust_tail:
+ 		return &bpf_xdp_adjust_tail_proto;
++	case BPF_FUNC_xdp_get_frags_count:
++		return &bpf_xdp_get_frags_count_proto;
++	case BPF_FUNC_xdp_get_frags_total_size:
++		return &bpf_xdp_get_frags_total_size_proto;
+ 	case BPF_FUNC_fib_lookup:
+ 		return &bpf_xdp_fib_lookup_proto;
+ #ifdef CONFIG_INET
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 4f556cfcbfbe..0715995eb18c 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -3668,6 +3668,18 @@ union bpf_attr {
+  * 	Return
+  * 		The helper returns **TC_ACT_REDIRECT** on success or
+  * 		**TC_ACT_SHOT** on error.
++ *
++ * int bpf_xdp_get_frags_count(struct xdp_buff *xdp_md)
++ *	Description
++ *		Get the number of fragments for a given xdp multi-buffer.
++ *	Return
++ *		The number of fragments
++ *
++ * int bpf_xdp_get_frags_total_size(struct xdp_buff *xdp_md)
++ *	Description
++ *		Get the total size of fragments for a given xdp multi-buffer.
++ *	Return
++ *		The total size of fragments for a given xdp multi-buffer.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3823,6 +3835,8 @@ union bpf_attr {
+ 	FN(seq_printf_btf),		\
+ 	FN(skb_cgroup_classid),		\
+ 	FN(redirect_neigh),		\
++	FN(xdp_get_frags_count),	\
++	FN(xdp_get_frags_total_size),	\
+ 	/* */
  
--	if (txq->count >= txq->tx_stop_threshold)
-+	if (txq->count + num_frames >= txq->tx_stop_threshold)
- 		return MVNETA_XDP_DROPPED;
- 
--	tx_desc = mvneta_txq_next_desc_get(txq);
-+	for (i = 0; i < num_frames; i++) {
-+		struct mvneta_tx_buf *buf = &txq->buf[txq->txq_put_index];
-+		skb_frag_t *frag = i ? &sinfo->frags[i - 1] : NULL;
-+		int len = frag ? skb_frag_size(frag) : xdpf->len;
-+		dma_addr_t dma_addr;
- 
--	buf = &txq->buf[txq->txq_put_index];
--	if (dma_map) {
--		/* ndo_xdp_xmit */
--		dma_addr = dma_map_single(pp->dev->dev.parent, xdpf->data,
--					  xdpf->len, DMA_TO_DEVICE);
--		if (dma_mapping_error(pp->dev->dev.parent, dma_addr)) {
--			mvneta_txq_desc_put(txq);
--			return MVNETA_XDP_DROPPED;
-+		tx_desc = mvneta_txq_next_desc_get(txq);
-+		if (dma_map) {
-+			/* ndo_xdp_xmit */
-+			void *data;
-+
-+			data = frag ? skb_frag_address(frag) : xdpf->data;
-+			dma_addr = dma_map_single(pp->dev->dev.parent, data,
-+						  len, DMA_TO_DEVICE);
-+			if (dma_mapping_error(pp->dev->dev.parent, dma_addr)) {
-+				for (; i >= 0; i--)
-+					mvneta_txq_desc_put(txq);
-+				return MVNETA_XDP_DROPPED;
-+			}
-+			buf->type = MVNETA_TYPE_XDP_NDO;
-+		} else {
-+			page = frag ? skb_frag_page(frag)
-+				    : virt_to_page(xdpf->data);
-+			dma_addr = page_pool_get_dma_addr(page);
-+			if (frag)
-+				dma_addr += skb_frag_off(frag);
-+			else
-+				dma_addr += sizeof(*xdpf) + xdpf->headroom;
-+			dma_sync_single_for_device(pp->dev->dev.parent,
-+						   dma_addr, len,
-+						   DMA_BIDIRECTIONAL);
-+			buf->type = MVNETA_TYPE_XDP_TX;
- 		}
--		buf->type = MVNETA_TYPE_XDP_NDO;
--	} else {
--		struct page *page = virt_to_page(xdpf->data);
-+		buf->xdpf = i ? NULL : xdpf;
- 
--		dma_addr = page_pool_get_dma_addr(page) +
--			   sizeof(*xdpf) + xdpf->headroom;
--		dma_sync_single_for_device(pp->dev->dev.parent, dma_addr,
--					   xdpf->len, DMA_BIDIRECTIONAL);
--		buf->type = MVNETA_TYPE_XDP_TX;
-+		if (!i)
-+			tx_desc->command = MVNETA_TXD_F_DESC;
-+		tx_desc->buf_phys_addr = dma_addr;
-+		tx_desc->data_size = len;
-+
-+		mvneta_txq_inc_put(txq);
- 	}
--	buf->xdpf = xdpf;
- 
--	tx_desc->command = MVNETA_TXD_FLZ_DESC;
--	tx_desc->buf_phys_addr = dma_addr;
--	tx_desc->data_size = xdpf->len;
-+	/*last descriptor */
-+	tx_desc->command |= MVNETA_TXD_L_DESC | MVNETA_TXD_Z_PAD;
- 
--	mvneta_txq_inc_put(txq);
--	txq->pending++;
--	txq->count++;
-+	txq->pending += num_frames;
-+	txq->count += num_frames;
- 
- 	return MVNETA_XDP_TX;
- }
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
 -- 
 2.26.2
 
