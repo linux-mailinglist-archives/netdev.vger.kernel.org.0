@@ -2,121 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8E3C280C59
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 04:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84404280C5B
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 04:46:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387633AbgJBCm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Oct 2020 22:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
+        id S2387571AbgJBCqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Oct 2020 22:46:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387623AbgJBCmt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 22:42:49 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6D6C0613D0;
-        Thu,  1 Oct 2020 19:42:47 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id q4so173272pjh.5;
-        Thu, 01 Oct 2020 19:42:47 -0700 (PDT)
+        with ESMTP id S1727780AbgJBCpn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Oct 2020 22:45:43 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4184C0613D0;
+        Thu,  1 Oct 2020 19:45:43 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id 144so223752pfb.4;
+        Thu, 01 Oct 2020 19:45:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pNIFCfbxn/994O6tOncE60q/cKfHn8CJSzrbaSDB3Bc=;
-        b=ZIAxAI3LB542ee7hXFPsZjEdnq9/UH8jbb3Stpq8hN1b/FBaLPqG+SIsRK0wtRCS53
-         Tz56f9PKsbKDcZQokW3WzR8jm6PcdRT5LPMhSPf2IFYv7u0XmGP0Ms/b5tpgrKx4aSUZ
-         ds7nRnT8Pk8zrErOCMbJ989MkywmIIVipUxVYqp6FJCkiKF0+QaEk1C/sxhR1v+Oysf7
-         7z6Uq444AzF71+PM/YbsopVzY4cjdNwi5dQcBSsVMDdTHy0ZLz97jhhP1K2RoG3AWrL0
-         Db3YpVJYMU2fvoGPCYaALZFIxr8gnXMAPGuUfPXuCOF5Wpm185jLl6X/FZEaXtHKVYEJ
-         K/cA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=O0Z5Xh7F8Sgunq9oXGphROqj/x/MPAfwrOrby64MrFg=;
+        b=aWXdtf7me+ao/wzCMKLDegKTH9EqHO0YZSm6vUEXCoYrlT8HdBwV+vGlzfPNkHSqtr
+         2Tk33pyqavIhxZwKegavQEO7UsI8RDlv1LPx+h6qeFRc3dgepCBmYrTGRiVo0qFdnZqU
+         m/YwyS9S83q0v+M3hjC6cYRXKJgQN+mlOFkSQHoUX83upO+WP+m6EYtleqHb8MAMe/+i
+         fpL3pfhQYpnCmpQEV20/0i58NaZCkPRL011lw28vxt4npPyf/RpBicbNV9U7EwGau6SL
+         BZ5oZqxIw+MrQBsU1RIiGipV344YraRCSq8KVOYRSIZrrf1SfxmxXpdPGevWif0lMzlL
+         VETA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pNIFCfbxn/994O6tOncE60q/cKfHn8CJSzrbaSDB3Bc=;
-        b=R3QLZI1AGlTuf0IraZGCtwJbnxlqORVKwTjoo5fG+vXiTC9QKvEHUW2vajB4/GD12U
-         x3RkUeXaGnL+0gZ5GCqYuSVvEoV4perRK7w8mDlCEtC8bu2iUezGgG53id85pIZQ8ubq
-         Fj4uxfVDsqFNLZJ/BjnRwlwgtfspogOXRE50lRLJvjc/heLIBDkcARVTmAa1unP5xC4Z
-         hxmG4vrdpQECyzZzQclpQ/SmNrYDoCi6W7vL6O5Bm8V0HK4kmrAkgVUkQR2NRpQxc2br
-         OJ1Fo1t1tmblpi7h/gRcls3dRCc+JKRE/eIoRjTk/swsUEhC+TVw2yMAoNqgGEGhfqRz
-         5m/w==
-X-Gm-Message-State: AOAM533RUgvCEILulpBx+QGn19lQrGve3DFqEHi0sAJx9O6DKd6yeShY
-        99jME0YrdqUFBFFC8YjN58IAtENXSY16nw==
-X-Google-Smtp-Source: ABdhPJzKhXnK0vZ8esfwylqznfrHKgFVR3MRH2VN/JYz+WcFROH/2z0GjS2o1YoyQl145HarX3XgMg==
-X-Received: by 2002:a17:90a:f486:: with SMTP id bx6mr344996pjb.130.1601606567011;
-        Thu, 01 Oct 2020 19:42:47 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id gt11sm150185pjb.48.2020.10.01.19.42.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Oct 2020 19:42:46 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=O0Z5Xh7F8Sgunq9oXGphROqj/x/MPAfwrOrby64MrFg=;
+        b=T7OuhKIAqJ5wSSY0mMnVomvA6dJp/UgI8RJ20aNWSatejs94w4lXCXUiTW+Ufxc0SE
+         W+mJYWWi3n5lDzGJgv26BgXcOHthsKFeizpuUyphqR9XgMF/HPXtsz3ngJlJ4adQMGq0
+         Us5Xv3Ilfb6UFAMQYSb28lRzSljqDvmaoeSvarQT5u7jaNvWpE1x78dW99CoByRip1lz
+         UmR4R0xeoz8kimXdzj6Bd3R+p4hJqKZ8Sse3rUkEB16BzrFonoJGPUdkyqv9NHg8MyFB
+         ylUryjU9O26m4bFBrTPAooYiyyujMwZDOOKgCATq0uTdnbWGBDKcOTD9ESoUrfwEfcWK
+         JJJg==
+X-Gm-Message-State: AOAM532q+ECXXB8azBCOlpUTssaOQELactgC0GLeusshnFRhfCO3kUh2
+        92YpwdAFSA0R0F/nutQlj6OHtkEFIT5cvQ==
+X-Google-Smtp-Source: ABdhPJzKOX3oATYsOLO2ByPK6SGhrVxp8M3BBhRnnEtn6T7bkjkvqxNrZdYNZsIosJjWrVUcZM1VCQ==
+X-Received: by 2002:a63:4459:: with SMTP id t25mr13497pgk.104.1601606743181;
+        Thu, 01 Oct 2020 19:45:43 -0700 (PDT)
+Received: from [10.230.29.112] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id i126sm7845882pfc.48.2020.10.01.19.45.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Oct 2020 19:45:41 -0700 (PDT)
+Subject: Re: [PATCH] net/smscx5xx: change to of_get_mac_address()
+ eth_platform_get_mac_address()
+To:     David Miller <davem@davemloft.net>, l.stelmach@samsung.com
+Cc:     steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com,
+        kuba@kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        b.zolnierkie@samsung.com, m.szyprowski@samsung.com
+References: <CGME20200930142529eucas1p12ae6db625be4a7bdfaf2ca60bf94cb8e@eucas1p1.samsung.com>
+ <20200930142525.23261-1-l.stelmach@samsung.com>
+ <20201001.190539.943246074133907153.davem@davemloft.net>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel@vger.kernel.org (open list),
-        vladimir.oltean@nxp.com, olteanv@gmail.com
-Subject: [PATCH net-next 4/4] net: dsa: Utilize __vlan_find_dev_deep_rcu()
-Date:   Thu,  1 Oct 2020 19:42:15 -0700
-Message-Id: <20201002024215.660240-5-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201002024215.660240-1-f.fainelli@gmail.com>
-References: <20201002024215.660240-1-f.fainelli@gmail.com>
+Message-ID: <6fad98ac-ff25-2954-8d62-85c39c16383c@gmail.com>
+Date:   Thu, 1 Oct 2020 19:45:35 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.3.1
 MIME-Version: 1.0
+In-Reply-To: <20201001.190539.943246074133907153.davem@davemloft.net>
+Content-Type: text/plain; charset=euc-kr; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we are guaranteed that dsa_untag_bridge_pvid() is called after
-eth_type_trans() we can utilize __vlan_find_dev_deep_rcu() which will
-take care of finding an 802.1Q upper on top of a bridge master.
 
-A common use case, prior to 12a1526d067 ("net: dsa: untag the bridge
-pvid from rx skbs") was to configure a bridge 802.1Q upper like this:
 
-ip link add name br0 type bridge vlan_filtering 0
-ip link add link br0 name br0.1 type vlan id 1
+On 10/1/2020 7:05 PM, David Miller wrote:
+> From: ¨©ukasz Stelmach <l.stelmach@samsung.com>
+> Date: Wed, 30 Sep 2020 16:25:25 +0200
+> 
+>> Use more generic eth_platform_get_mac_address() which can get a MAC
+>> address from other than DT platform specific sources too. Check if the
+>> obtained address is valid.
+>>
+>> Signed-off-by: ¨©ukasz Stelmach <l.stelmach@samsung.com>
+> 
+> Failure to probe a MAC address should result in the selection of a
+> random one.  This way, the interface still comes up and is usable
+> even when the MAC address fails to be probed.
 
-in order to pop the default_pvid VLAN tag.
-
-With this change we restore that behavior while still allowing the DSA
-receive path to automatically pop the VLAN tag.
-
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- net/dsa/dsa_priv.h | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
-
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index d6ce8c2a2590..12998bf04e55 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -204,7 +204,6 @@ static inline struct sk_buff *dsa_untag_bridge_pvid(struct sk_buff *skb)
- 	struct net_device *br = dp->bridge_dev;
- 	struct net_device *dev = skb->dev;
- 	struct net_device *upper_dev;
--	struct list_head *iter;
- 	u16 vid, pvid, proto;
- 	int err;
- 
-@@ -246,13 +245,9 @@ static inline struct sk_buff *dsa_untag_bridge_pvid(struct sk_buff *skb)
- 	 * supports because vlan_filtering is 0. In that case, we should
- 	 * definitely keep the tag, to make sure it keeps working.
- 	 */
--	netdev_for_each_upper_dev_rcu(dev, upper_dev, iter) {
--		if (!is_vlan_dev(upper_dev))
--			continue;
--
--		if (vid == vlan_dev_vlan_id(upper_dev))
--			return skb;
--	}
-+	upper_dev = __vlan_find_dev_deep_rcu(br, htons(proto), vid);
-+	if (upper_dev)
-+		return skb;
- 
- 	__vlan_hwaccel_clear_tag(skb);
- 
+True, however this behavior is not changed after this patch is applied, 
+I would argue that this should be a separate patch.
 -- 
-2.25.1
-
+Florian
