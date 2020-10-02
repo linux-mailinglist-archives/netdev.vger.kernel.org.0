@@ -2,226 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A048281431
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 15:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CED0A281457
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 15:42:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387948AbgJBNjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 09:39:44 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:56112 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2387938AbgJBNjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 09:39:42 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 092DVBkZ021806;
-        Fri, 2 Oct 2020 06:39:38 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=BBul3uRZUAcHGBU40C3ruSGe+4nPHhqSHyX94HxyTto=;
- b=IHANv8M28/oWibvkWyriUH1oRC+TPuPLrWeTvS7gVvLNEqwmQBK73UtRS2HW2EGM3F8P
- NtwrJ9WH+b5wkGL2N/VvIwd+I+wZryYPV5cE/GU0n8M0dpUIt7RLEVliiuEFB6ejassT
- 9zhYiUXx5JeZP9FVRWPUaMQ8JML0NlZ9nqEkao/m61ULlBK1kzpPoH9aFaW+94qRm5R4
- 0eUzWEJip6a2EQ27eNL09WV+2lPDDw7Gw0buao8fdCkzKvU8ywNTXh/AwOVk23lcyGxS
- evKfmSDNhozjsbU8N0sv/VIFkHMhfvgZWJj/wPaR3a2HLEIjrfVt9S6PsosgnWFTLMOj Sw== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 33wjds3433-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 02 Oct 2020 06:39:38 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 2 Oct
- 2020 06:39:37 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 2 Oct 2020 06:39:37 -0700
-Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.193.39.7])
-        by maili.marvell.com (Postfix) with ESMTP id 271613F703F;
-        Fri,  2 Oct 2020 06:39:35 -0700 (PDT)
-From:   Igor Russkikh <irusskikh@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Igor Russkikh <irusskikh@marvell.com>
-Subject: [PATCH v2 net-next 3/3] net: atlantic: implement media detect feature via phy tunables
-Date:   Fri, 2 Oct 2020 16:39:23 +0300
-Message-ID: <20201002133923.1677-4-irusskikh@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201002133923.1677-1-irusskikh@marvell.com>
-References: <20201002133923.1677-1-irusskikh@marvell.com>
-MIME-Version: 1.0
+        id S2388008AbgJBNlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 09:41:31 -0400
+Received: from mail-eopbgr70079.outbound.protection.outlook.com ([40.107.7.79]:45025
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726090AbgJBNl1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 09:41:27 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ip4s/KWVPRvvi3lQYdP8x+wUnOCCOQSCDq3oTgBmg/s5Zu6E3i3K2PGtT9l4qSahlPnpgSxWMC2Sg1jZLruk3ws5z6pULOyv2lSkE4h+9HSEBVuZuq3Ev3vCjMWBH4ZUA39fFGwoBIWZEFGih/769ZxOAL0cty9Od1YzN3d98uYEB7n3mzWYS02O6vku7I1vHgGcx1TcjYsmN6eha/IE8hhTdMzhJ5NmwEQCbObQQBP98gjiLY8xBHHvSWnX+/yDocTcd4cLxQY3B/d9prnlQjLNsC6HdBBn59P4/nuGfEGAdJDakUBKl2/V4ww390lHs7NjcGfQ59bIrBKFLctqZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4yZzyE3Y6L0G/GxlNwC2VNKQ+0D00VSK/nZm5Z1Nj1s=;
+ b=K9Gw7romRUmCV0+I7MUonOm/UpDITi6nM0ANs0T/yKvX6M9c5EVuIrgIo5vr0QByy2fReNHyx1uPdWs6YQq3xdVbShbSHeotgvUJk2mWePJVZRBH+/8InN0XMWU6Z+SE5fXrcONr8Xanb7Uv0W9WDkqU42ltnlPJ1w5lNmcjaWgQEAhX51dl0uJzyEpDLA4FqkEDHJ2+c4cfX9DQU0tp4gGOy0/ZziS4r2C5XzyChY2+aD5O2c6vwuJD2Y8M+kEmrLjnG6nnwxDXjg5AMU5Kiyq926Jj6rCcfHbb04gw7u1TvlZ4UaeXHeEt87C4A9toO9C6CF4zaJ+gW2pnVifBjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4yZzyE3Y6L0G/GxlNwC2VNKQ+0D00VSK/nZm5Z1Nj1s=;
+ b=obG65JtSAuMgomofK3qxVSABou/g1pWfG9ENbxioFjPxeeAvHBa8TuBRAI3zFGlxt/HBbreBQZ2tTOme30z3Xxete46xUKvRZHRCdkLSO4QXunVOsVIionrHinnXSxumtwctGoDwZTykZHzC762QX+zLfmwk8yDzJo6+PouRMuw=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR04MB5504.eurprd04.prod.outlook.com (2603:10a6:803:d8::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.38; Fri, 2 Oct
+ 2020 13:41:23 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.038; Fri, 2 Oct 2020
+ 13:41:23 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     robh+dt@kernel.org, shawnguo@kernel.org, mpe@ellerman.id.au,
+        benh@kernel.crashing.org, paulus@samba.org,
+        devicetree@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, madalin.bucur@oss.nxp.com,
+        radu-andrei.bulie@nxp.com, fido_max@inbox.ru, andrew@lunn.ch
+Subject: [PATCH v4 net-next 0/2] Add Seville Ethernet switch to T1040RDB
+Date:   Fri,  2 Oct 2020 16:41:04 +0300
+Message-Id: <20201002134106.3485970-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-02_06:2020-10-02,2020-10-02 signatures=0
+X-Originating-IP: [188.26.229.171]
+X-ClientProxiedBy: AM0PR10CA0041.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::21) To VI1PR04MB5696.eurprd04.prod.outlook.com
+ (2603:10a6:803:e7::13)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.26.229.171) by AM0PR10CA0041.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.38 via Frontend Transport; Fri, 2 Oct 2020 13:41:21 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 78307599-4edf-402c-dabc-08d866d8d9de
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5504:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR04MB5504F950368583BF6F26CCCFE0310@VI1PR04MB5504.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SRdQ/BeIRwdyYDm9U5yOAmlcuNZjJn3bU4DGUqWNmLUAXxoC5ouCqdZNzD2F+RJyDpKPR9StSqv0YWTHhxVeOOjYPEv0FgbLvOXO4jUghnc/c5qnamEKuGMA2+Z2oWyfDeQpxEukVdiz7ZSHMOVsoy+puF21kYkXbn1qjLroE/ExvlqMRnW0EJ2R+UBYrBDbA17toXYm6QmHT3h6HlEEs/jOLI3Bo6vewJeWQ/idUYPxqy1BQSUT0IZgotMAY2ScFitt1KnrxsYeC2OiuZcY5tqJXy0/Te7oSlL00r2ZTCyTvIVbNr+zcASzBcFojWyoRawXRWpx2dPrREKX3eIDj0X7ZxuGK7/JErK4dV1LLRrVXyyO6iLoBc4raYnGn4rX
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(136003)(39860400002)(346002)(366004)(8936002)(1076003)(478600001)(4326008)(44832011)(52116002)(26005)(4744005)(5660300002)(7416002)(69590400008)(6512007)(16526019)(186003)(6506007)(8676002)(66476007)(66946007)(86362001)(6486002)(66556008)(6666004)(2906002)(2616005)(956004)(316002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: hwa8Dj0VGGew6BcVTQqpN1W2CELFl1aJS1ObcVBMsusbAzi09wn+koOw+GTeFWhf18y3oP8/sGV20i/KRnYO13eSr2WRxK5GcF2ZUqMOqAzoyd7s95lIQtI/Ld7InIGUBQ2XYAIe8/MLpWdyzARWcmJqHtx4m1XhZhI+jdYVXMpMvXW5AiJ1WkwR18gKkkp5Mg7rBHvBrhCmVzW0CNZCOkDa2Fh8xzghiftmpi2VCwtq2e6vJYktA/fL6fGcr7cu2iDqPJjMVJPqxETQyko0WIlXwC6T6Ck0d0ykX9URoDibJjNifTcNZ41Fkwn12F8h7Mn+NkC3e6mwz/guKLydrkzI+n4wEJLYjCZp/pYCASTg0LdHC/tFgT+e+4ahGXyzVFldwVrdrt9tak2RCgfCvVDQmIiSkQLgWe1eKsFpxwUtMM6HRFFjs4iAggNrYpJIGz9JluRmu1aKCUJN0u55ilY+Wb5YiK6f1YnPqE5ryLKC3PePHxoxnS8Myc0ovsHO7Bioq5u7/9CfADYPXATAamweaxY3sCR79H7Hhd665kEG1/nq+tg8ux4Hf6AHobSG4DD6ODCo57J0UfxuW7FWmH5GdTk3r55ZTZjHNZsVdu+tvGkGLYfcpJ2cd2zIM6l1VU5PfIAyfaop6n8VMfzTrg==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78307599-4edf-402c-dabc-08d866d8d9de
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Oct 2020 13:41:23.4420
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WDa/XkgL2keJnvum38qvaY5NqE5UMmBkpYOHd6YxqsZ2SqgN2KFEndImQBsyN4tsgsWaZ4taeEuplcvT2KnRNw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5504
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mediadetect is another name for the EDPD (energy detect power down).
-This feature allows device to save extra power when no link is available.
+Seville is a DSA switch that is embedded inside the T1040 SoC, and
+supported by the mscc_seville DSA driver inside drivers/net/dsa/ocelot.
 
-PHY goes into the extreme power saving mode and only periodically wakes up
-and checks for the link.
+This series adds this switch to the SoC's dtsi files and to the T1040RDB
+board file.
 
-AQC devices has fixed check period of 6 seconds
+I would like to send this series through net-next. There is no conflict
+with other patches submitted to T1040 device tree. Maybe this could at
+least get an ACK from devicetree maintainers.
 
-The feature may increase linkup time.
+Vladimir Oltean (2):
+  powerpc: dts: t1040: add bindings for Seville Ethernet switch
+  powerpc: dts: t1040rdb: add ports for Seville Ethernet switch
 
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
----
- .../ethernet/aquantia/atlantic/aq_ethtool.c   | 12 +++++++++
- .../net/ethernet/aquantia/atlantic/aq_hw.h    |  4 +++
- .../net/ethernet/aquantia/atlantic/aq_nic.c   | 26 +++++++++++++++++++
- .../net/ethernet/aquantia/atlantic/aq_nic.h   |  2 ++
- .../atlantic/hw_atl/hw_atl_utils_fw2x.c       | 15 +++++++++++
- 5 files changed, 59 insertions(+)
+ arch/powerpc/boot/dts/fsl/t1040rdb.dts      | 107 ++++++++++++++++++++
+ arch/powerpc/boot/dts/fsl/t1040si-post.dtsi |  78 ++++++++++++++
+ 2 files changed, 185 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-index 3f87cc6e2538..de2a9348bc3f 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-@@ -923,6 +923,12 @@ static int aq_ethtool_get_phy_tunable(struct net_device *ndev,
- 	struct aq_nic_s *aq_nic = netdev_priv(ndev);
- 
- 	switch (tuna->id) {
-+	case ETHTOOL_PHY_EDPD: {
-+		u16 *val = data;
-+
-+		*val = aq_nic->aq_nic_cfg.is_media_detect ? AQ_HW_MEDIA_DETECT_CNT : 0;
-+		break;
-+	}
- 	case ETHTOOL_PHY_DOWNSHIFT: {
- 		u8 *val = data;
- 
-@@ -943,6 +949,12 @@ static int aq_ethtool_set_phy_tunable(struct net_device *ndev,
- 	struct aq_nic_s *aq_nic = netdev_priv(ndev);
- 
- 	switch (tuna->id) {
-+	case ETHTOOL_PHY_EDPD: {
-+		const u16 *val = data;
-+
-+		err = aq_nic_set_media_detect(aq_nic, *val);
-+		break;
-+	}
- 	case ETHTOOL_PHY_DOWNSHIFT: {
- 		const u8 *val = data;
- 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-index a17077b0dd49..bed481816ea3 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-@@ -143,6 +143,8 @@ struct aq_stats_s {
- #define AQ_HW_LED_BLINK    0x2U
- #define AQ_HW_LED_DEFAULT  0x0U
- 
-+#define AQ_HW_MEDIA_DETECT_CNT 6000
-+
- enum aq_priv_flags {
- 	AQ_HW_LOOPBACK_DMA_SYS,
- 	AQ_HW_LOOPBACK_PKT_SYS,
-@@ -388,6 +390,8 @@ struct aq_fw_ops {
- 
- 	int (*set_downshift)(struct aq_hw_s *self, u32 counter);
- 
-+	int (*set_media_detect)(struct aq_hw_s *self, bool enable);
-+
- 	u32 (*get_link_capabilities)(struct aq_hw_s *self);
- 
- 	int (*send_macsec_req)(struct aq_hw_s *self,
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 088aa3c3d19c..688920ed6c88 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -407,6 +407,8 @@ int aq_nic_init(struct aq_nic_s *self)
- 		goto err_exit;
- 	/* Restore default settings */
- 	aq_nic_set_downshift(self, self->aq_nic_cfg.downshift_counter);
-+	aq_nic_set_media_detect(self, self->aq_nic_cfg.is_media_detect ?
-+				AQ_HW_MEDIA_DETECT_CNT : 0);
- 
- 	err = self->aq_hw_ops->hw_init(self->aq_hw,
- 				       aq_nic_get_ndev(self)->dev_addr);
-@@ -1421,6 +1423,30 @@ int aq_nic_set_downshift(struct aq_nic_s *self, int val)
- 	return err;
- }
- 
-+int aq_nic_set_media_detect(struct aq_nic_s *self, int val)
-+{
-+	struct aq_nic_cfg_s *cfg = &self->aq_nic_cfg;
-+	int err = 0;
-+
-+	if (!self->aq_fw_ops->set_media_detect)
-+		return -EOPNOTSUPP;
-+
-+	if (val > 0 && val != AQ_HW_MEDIA_DETECT_CNT) {
-+		netdev_err(self->ndev, "EDPD on this device could have only fixed value of %d\n",
-+			   AQ_HW_MEDIA_DETECT_CNT);
-+		return -EINVAL;
-+	}
-+
-+	/* msecs plays no role - configuration is always fixed in PHY */
-+	cfg->is_media_detect = val ? 1 : 0;
-+
-+	mutex_lock(&self->fwreq_mutex);
-+	err = self->aq_fw_ops->set_media_detect(self->aq_hw, cfg->is_media_detect);
-+	mutex_unlock(&self->fwreq_mutex);
-+
-+	return err;
-+}
-+
- int aq_nic_setup_tc_mqprio(struct aq_nic_s *self, u32 tcs, u8 *prio_tc_map)
- {
- 	struct aq_nic_cfg_s *cfg = &self->aq_nic_cfg;
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-index 61e0e627e959..926cca9a0c83 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-@@ -62,6 +62,7 @@ struct aq_nic_cfg_s {
- 	bool is_lro;
- 	bool is_qos;
- 	bool is_ptp;
-+	bool is_media_detect;
- 	int downshift_counter;
- 	enum aq_tc_mode tc_mode;
- 	u32 priv_flags;
-@@ -197,6 +198,7 @@ struct aq_nic_cfg_s *aq_nic_get_cfg(struct aq_nic_s *self);
- u32 aq_nic_get_fw_version(struct aq_nic_s *self);
- int aq_nic_set_loopback(struct aq_nic_s *self);
- int aq_nic_set_downshift(struct aq_nic_s *self, int val);
-+int aq_nic_set_media_detect(struct aq_nic_s *self, int val);
- int aq_nic_update_interrupt_moderation_settings(struct aq_nic_s *self);
- void aq_nic_shutdown(struct aq_nic_s *self);
- u8 aq_nic_reserve_filter(struct aq_nic_s *self, enum aq_rx_filter_type type);
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-index 09500a95380b..ee0c22d04935 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-@@ -633,6 +633,20 @@ static int aq_fw2x_set_downshift(struct aq_hw_s *self, u32 counter)
- 	return err;
- }
- 
-+static int aq_fw2x_set_media_detect(struct aq_hw_s *self, bool on)
-+{
-+	u32 enable;
-+	u32 offset;
-+
-+	if (self->fw_ver_actual < HW_ATL_FW_VER_MEDIA_CONTROL)
-+		return -EOPNOTSUPP;
-+
-+	offset = offsetof(struct hw_atl_utils_settings, media_detect);
-+	enable = on;
-+
-+	return hw_atl_write_fwsettings_dwords(self, offset, &enable, 1);
-+}
-+
- static u32 aq_fw2x_get_link_capabilities(struct aq_hw_s *self)
- {
- 	int err = 0;
-@@ -714,6 +728,7 @@ const struct aq_fw_ops aq_fw_2x_ops = {
- 	.led_control        = aq_fw2x_led_control,
- 	.set_phyloopback    = aq_fw2x_set_phyloopback,
- 	.set_downshift      = aq_fw2x_set_downshift,
-+	.set_media_detect   = aq_fw2x_set_media_detect,
- 	.adjust_ptp         = aq_fw3x_adjust_ptp,
- 	.get_link_capabilities = aq_fw2x_get_link_capabilities,
- 	.send_macsec_req    = aq_fw2x_send_macsec_req,
 -- 
-2.17.1
+2.25.1
 
