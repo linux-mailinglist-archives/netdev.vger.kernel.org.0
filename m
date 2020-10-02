@@ -2,178 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB9A22811C9
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 13:56:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD65F28119B
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 13:54:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387936AbgJBL4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 07:56:39 -0400
-Received: from mga02.intel.com ([134.134.136.20]:49200 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726090AbgJBL4i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Oct 2020 07:56:38 -0400
-IronPort-SDR: f4MhOr0IJj27enTpHxqZT0m66cy11mZP9+zmpC22jmROy7JXUuQanxIV7kgQQ1MFr7T488PfA9
- DlgTFw3JWGTw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9761"; a="150605520"
-X-IronPort-AV: E=Sophos;i="5.77,327,1596524400"; 
-   d="scan'208";a="150605520"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Oct 2020 04:56:34 -0700
-IronPort-SDR: KMIushWI+tKTPMsZSbXkeqOW/8LRd4C5WXZk+9caixuIBRvEkonRuxCUoPBpBcu529NqxBPgGC
- 6rN6LGmMIz2g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,327,1596524400"; 
-   d="scan'208";a="352354403"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga007.jf.intel.com with ESMTP; 02 Oct 2020 04:56:30 -0700
-Date:   Fri, 2 Oct 2020 13:49:36 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Subject: Re: [PATCH libbpf] libbpf: check if pin_path was set even map fd
- exist
-Message-ID: <20201002114936.GA20275@ranger.igk.intel.com>
-References: <20201002075750.1978298-1-liuhangbin@gmail.com>
+        id S2387768AbgJBLyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 07:54:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726090AbgJBLyB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 07:54:01 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57211C0613D0;
+        Fri,  2 Oct 2020 04:54:01 -0700 (PDT)
+Date:   Fri, 2 Oct 2020 13:53:58 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1601639639;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QmDCCE/DzrLFNkg9IzeC2MW91V1ZMgH/Seb/D4bvH0c=;
+        b=sV9gXxmVESanAKPHJVHnQajLDipL+1e8MFp8k4/jnTC4krBPmbF7pzv58brvhg4VTLT4g+
+        GIgWcoqe7q7AS9eXxfY4xvu67vpN1sjqxDWAygWhd9HrAuf5y2C5ZETyrwBwC6GYEFQciP
+        6CMfSiLDFaKvk8s2GUKt3GbOgyni4j63qao4XX335IeCynf0vfln3XTKVDT4H8JR5VaqLV
+        apL9aSy3qbDDXc3a6+Hf8jbclx+37xxjFOtuYFFpY0sL6lM/k77d0Ll+PTGs6bWVuKKlbl
+        Yyeqm69WLyxmXVgZDFAUbRQsvJxNuDMCzlbeJp7G2muXTZtE/oM5J+qtCaC34g==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1601639639;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QmDCCE/DzrLFNkg9IzeC2MW91V1ZMgH/Seb/D4bvH0c=;
+        b=hEOOYSzQnR713OvbKYPQ1yQt4SMmV258pRx8lH4ACi+Uk9TbwGfuO8eGB7PEQEUUChtbVt
+        DkQ9rEurS4FPV0BQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [RFC] Status of orinoco_usb
+Message-ID: <20201002115358.6aqemcn5vqc5yqtw@linutronix.de>
+References: <20201002103517.fhsi5gaepzbzo2s4@linutronix.de>
+ <20201002113725.GB3292884@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20201002075750.1978298-1-liuhangbin@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20201002113725.GB3292884@kroah.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 02, 2020 at 03:57:50PM +0800, Hangbin Liu wrote:
-> Say a user reuse map fd after creating a map manually and set the
-> pin_path, then load the object via libbpf.
+On 2020-10-02 13:37:25 [+0200], Greg Kroah-Hartman wrote:
+> > Is it possible to end up here in softirq context or is this a relic?
 > 
-> In libbpf bpf_object__create_maps(), bpf_object__reuse_map() will
-> return 0 if there is no pinned map in map->pin_path. Then after
-> checking if map fd exist, we should also check if pin_path was set
-> and do bpf_map__pin() instead of continue the loop.
+> I think it's a relic of where USB host controllers completed their urbs
+> in hard-irq mode.  The BH/tasklet change is a pretty recent change.
+
+But the BH thingy for HCDs went in v3.12 for EHCI. XHCI was v5.5. My
+guess would be that people using orinoco USB are on EHCI :)
+
+> > Should it be removed?
 > 
-> Fix it by creating map if fd not exist and continue checking pin_path
-> after that.
+> We can move it out to drivers/staging/ and then drop it to see if anyone
+> complains that they have the device and is willing to test any changes.
+
+Not sure moving is easy since it depends on other files in that folder.
+USB is one interface next to PCI for instance. Unless you meant to move
+the whole driver including all interfaces.
+I was suggesting to remove the USB bits.
+
+> thanks,
 > 
-> Suggested-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  tools/lib/bpf/libbpf.c | 75 +++++++++++++++++++++---------------------
->  1 file changed, 37 insertions(+), 38 deletions(-)
-> 
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index e493d6048143..d4149585a76c 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -3861,50 +3861,49 @@ bpf_object__create_maps(struct bpf_object *obj)
->  			}
->  		}
->  
-> -		if (map->fd >= 0) {
-> -			pr_debug("map '%s': skipping creation (preset fd=%d)\n",
-> -				 map->name, map->fd);
-> -			continue;
-> -		}
-> -
-> -		err = bpf_object__create_map(obj, map);
-> -		if (err)
-> -			goto err_out;
-> -
-> -		pr_debug("map '%s': created successfully, fd=%d\n", map->name,
-> -			 map->fd);
-> -
-> -		if (bpf_map__is_internal(map)) {
-> -			err = bpf_object__populate_internal_map(obj, map);
-> -			if (err < 0) {
-> -				zclose(map->fd);
-> +		if (map->fd < 0) {
-> +			err = bpf_object__create_map(obj, map);
-> +			if (err)
->  				goto err_out;
-> -			}
-> -		}
-> -
-> -		if (map->init_slots_sz) {
-> -			for (j = 0; j < map->init_slots_sz; j++) {
-> -				const struct bpf_map *targ_map;
-> -				int fd;
->  
-> -				if (!map->init_slots[j])
-> -					continue;
-> +			pr_debug("map '%s': created successfully, fd=%d\n", map->name,
-> +				 map->fd);
->  
-> -				targ_map = map->init_slots[j];
-> -				fd = bpf_map__fd(targ_map);
-> -				err = bpf_map_update_elem(map->fd, &j, &fd, 0);
-> -				if (err) {
-> -					err = -errno;
-> -					pr_warn("map '%s': failed to initialize slot [%d] to map '%s' fd=%d: %d\n",
-> -						map->name, j, targ_map->name,
-> -						fd, err);
-> +			if (bpf_map__is_internal(map)) {
-> +				err = bpf_object__populate_internal_map(obj, map);
-> +				if (err < 0) {
-> +					zclose(map->fd);
->  					goto err_out;
->  				}
-> -				pr_debug("map '%s': slot [%d] set to map '%s' fd=%d\n",
-> -					 map->name, j, targ_map->name, fd);
->  			}
-> -			zfree(&map->init_slots);
-> -			map->init_slots_sz = 0;
-> +
-> +			if (map->init_slots_sz) {
+> greg k-h
 
-Couldn't we flatten the code by inverting the logic here and using goto?
-
-	if (!map->init_slot_sz) {
-		pr_debug("map '%s': skipping creation (preset fd=%d)\n",
-			 map->name, map->fd);
-		goto map_pin;
-	}
-
-	(...)
-map_pin:
-	if (map->pin_path && !map->pinned) {
-
-If I'm reading this right.
-
-> +				for (j = 0; j < map->init_slots_sz; j++) {
-> +					const struct bpf_map *targ_map;
-> +					int fd;
-> +
-> +					if (!map->init_slots[j])
-> +						continue;
-> +
-> +					targ_map = map->init_slots[j];
-> +					fd = bpf_map__fd(targ_map);
-> +					err = bpf_map_update_elem(map->fd, &j, &fd, 0);
-> +					if (err) {
-> +						err = -errno;
-> +						pr_warn("map '%s': failed to initialize slot [%d] to map '%s' fd=%d: %d\n",
-> +							map->name, j, targ_map->name,
-> +							fd, err);
-> +						goto err_out;
-> +					}
-> +					pr_debug("map '%s': slot [%d] set to map '%s' fd=%d\n",
-> +						map->name, j, targ_map->name, fd);
-> +				}
-> +				zfree(&map->init_slots);
-> +				map->init_slots_sz = 0;
-> +			}
-> +		} else {
-> +			pr_debug("map '%s': skipping creation (preset fd=%d)\n",
-> +				 map->name, map->fd);
->  		}
->  
->  		if (map->pin_path && !map->pinned) {
-> -- 
-> 2.25.4
-> 
+Sebastian
