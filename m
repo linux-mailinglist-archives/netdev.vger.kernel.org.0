@@ -2,134 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2803C281E96
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 00:44:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 851C0281EA0
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 00:49:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725803AbgJBWoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 18:44:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:35045 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725550AbgJBWoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 18:44:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601678676;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7zWKGhR/q69FafmsZaB4IylYsAjMnC/LKuK1PXoJhVw=;
-        b=LlXaE3Wvd5tnubCGAygDeGV3tVOkRhGEmNx5ASh0GclE16YHLUNvnMFtECm4l5b95mBG1f
-        30kqjiBeynwbfv0zoSBX43U1+bOqjCKN3oHC+JCeN1dn2WpBjYVdgwsjJqDyNAilzcGzCq
-        srO7eKU+Kh/uOPMhsSgHB3zuA+KmyUk=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-170-IcVHNv3wPV6Ju-pTKyER9A-1; Fri, 02 Oct 2020 18:44:35 -0400
-X-MC-Unique: IcVHNv3wPV6Ju-pTKyER9A-1
-Received: by mail-wr1-f72.google.com with SMTP id a12so1092165wrg.13
-        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 15:44:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7zWKGhR/q69FafmsZaB4IylYsAjMnC/LKuK1PXoJhVw=;
-        b=P/EjEBWOfaZvqwbTqZyxkt9QwBDvpo3AMDWEuN9TMw13fGZozPH3d3Zsh4gQ25gW8h
-         LYZmC6mUVDtddY9sqPQxhMJNEVf5Ief5urhOGFYHkqkV3dHc+iej+G86bjMNrEEEd/7e
-         Ob0UmU0KxXNAHevoXWrfEJnOp5pzsVk3VGDbobJef1D7b8VUi38dLPuOjqGUxCU/LmTC
-         iXpKuzE6bXbUMFTGXAybgzcN2gp4UyRFcwvQDUMi4QElSV1Kp2mlTY0VrPt9jf6JSbxO
-         1k9xBcYeg/eWLCxzUmjZhEYHB2t+gGZG38DvLJVvuqK59iGKqFSNLGLj5M9uJp5Dmo1J
-         JnIw==
-X-Gm-Message-State: AOAM530fGlSuclD696m2q3eNT3zQK3Ed+lzoOAGM9VloRSiL9K/z5mTO
-        GOLtoLPiYfJsswxlXSiyW+I2YuwLSNgDB2I2d1fhnIGpxkfw906g7Zrlh9cRX0jwkzSlu7vvE0f
-        pSdYVIHTVHfH4E3be
-X-Received: by 2002:a1c:4c17:: with SMTP id z23mr4871588wmf.40.1601678674117;
-        Fri, 02 Oct 2020 15:44:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyukUyy1OEiGzQnlndv6TPjgOVqdVvJdTXCaF1dhjrSRbkVAL0Az0QQfeZ232VYtGk1aTrG7g==
-X-Received: by 2002:a1c:4c17:: with SMTP id z23mr4871574wmf.40.1601678673917;
-        Fri, 02 Oct 2020 15:44:33 -0700 (PDT)
-Received: from pc-2.home (2a01cb058d4f8400c9f0d639f7c74c26.ipv6.abo.wanadoo.fr. [2a01:cb05:8d4f:8400:c9f0:d639:f7c7:4c26])
-        by smtp.gmail.com with ESMTPSA id l10sm3055635wru.59.2020.10.02.15.44.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2020 15:44:33 -0700 (PDT)
-Date:   Sat, 3 Oct 2020 00:44:31 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, Jiri Benc <jbenc@redhat.com>,
-        Martin Varghese <martin.varghese@nokia.com>
-Subject: [PATCH net-next 2/2] net/sched: act_mpls: Add action to push MPLS
- LSE before Ethernet header
-Message-ID: <8d62ce3ad342d3e6629a3ebbec928b9d1a205631.1601673174.git.gnault@redhat.com>
-References: <cover.1601673174.git.gnault@redhat.com>
+        id S1725648AbgJBWt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 18:49:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35476 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725283AbgJBWt2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 18:49:28 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E20DA206C9;
+        Fri,  2 Oct 2020 22:49:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601678968;
+        bh=VPkO6ENmeMnF9COaO5bw7dqy3midxEPlBeA66r5SBZU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=O+cYlX+OWRzCHsK9Uxh85kAuMFYPgdx1neNeapE2PI1vY3AhKJbM4WGi6yyMcm40Z
+         YCsjQGB30NNEbw4Zt+a2SMUVq9zxNNx0LfGbDl828wqntkGYWKzli97RZ7ZNsM/fXI
+         ydGi3uMi0Y+03LaVII8JzGl5D4FQPTdxqZ2bk+WU=
+Date:   Fri, 2 Oct 2020 15:49:26 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Wei Wang <weiwan@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Paolo Abeni <pabeni@redhat.com>, Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH net-next 0/5] implement kthread based napi poll
+Message-ID: <20201002154926.49af25e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CANn89iK30VVUggQn6-ULOhKnLxz4Ogjw8fMZxbqWiOztURdccA@mail.gmail.com>
+References: <20200930192140.4192859-1-weiwan@google.com>
+        <20200930130839.427eafa9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89iK2-Wu8HMkWiD8U3pdRbwj2tjng-4-fJ81zVw_a3R6OqQ@mail.gmail.com>
+        <20201001132607.21bcaa17@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89iK30VVUggQn6-ULOhKnLxz4Ogjw8fMZxbqWiOztURdccA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1601673174.git.gnault@redhat.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define the MAC_PUSH action which pushes an MPLS LSE before the mac
-header (instead of between the mac and the network headers as the
-plain PUSH action does).
+On Fri, 2 Oct 2020 09:56:31 +0200 Eric Dumazet wrote:
+> On Thu, Oct 1, 2020 at 10:26 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Thu, 1 Oct 2020 09:52:45 +0200 Eric Dumazet wrote:  
+> 
+> > > The unique work queue is a problem on server class platforms, with
+> > > NUMA placement.
+> > > We now have servers with NIC on different NUMA nodes.  
+> >
+> > Are you saying that the wq code is less NUMA friendly than unpinned
+> > threads?  
+> 
+> Yes this is what I am saying.
+> 
+> Using a single and shared wq wont allow you to make sure :
+> - work for NIC0 attached on NUMA node#0 will be using CPUS belonging to node#0
+> - work for NIC1 attached on NUMA node#1 will be using CPUS belonging to node#1
+> 
+> 
+> The only way you can tune things with a single wq is tweaking a single cpumask,
+> that we can change with /sys/devices/virtual/workqueue/{wqname}/cpumask
+> The same for the nice value with  /sys/devices/virtual/workqueue/{wqname}/nice.
+> 
+> In contrast, having kthreads let you tune things independently, if needed.
+> 
+> Even with a single NIC, you can still need isolation between queues.
+> We have queues dedicated to a certain kind of traffic/application.
+> 
+> The work queue approach would need to be able to create/delete
+> independent workqueues.
+> But we tested the workqueue with a single NIC and our results gave to
+> kthreads a win over the work queue.
 
-The only special case is when the skb has an offloaded VLAN. In that
-case, it has to be inlined before pushing the MPLS header.
+Not according to the results Wei posted last night..
 
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- include/uapi/linux/tc_act/tc_mpls.h |  1 +
- net/sched/act_mpls.c                | 18 ++++++++++++++++++
- 2 files changed, 19 insertions(+)
+> Really, wq concept might be a nice abstraction when each work can be
+> running for arbitrary durations,
+> and arbitrary numbers of cpus, but with the NAPI model of up to 64
+> packets at a time, and a fixed number of queues,
 
-diff --git a/include/uapi/linux/tc_act/tc_mpls.h b/include/uapi/linux/tc_act/tc_mpls.h
-index 9360e95273c7..9e4e8f52a779 100644
---- a/include/uapi/linux/tc_act/tc_mpls.h
-+++ b/include/uapi/linux/tc_act/tc_mpls.h
-@@ -10,6 +10,7 @@
- #define TCA_MPLS_ACT_PUSH	2
- #define TCA_MPLS_ACT_MODIFY	3
- #define TCA_MPLS_ACT_DEC_TTL	4
-+#define TCA_MPLS_ACT_MAC_PUSH	5
- 
- struct tc_mpls {
- 	tc_gen;		/* generic TC action fields. */
-diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
-index 8118e2640979..bb6b715636db 100644
---- a/net/sched/act_mpls.c
-+++ b/net/sched/act_mpls.c
-@@ -87,6 +87,23 @@ static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
- 				  skb->dev && skb->dev->type == ARPHRD_ETHER))
- 			goto drop;
- 		break;
-+	case TCA_MPLS_ACT_MAC_PUSH:
-+		if (skb_vlan_tag_present(skb)) {
-+			if (__vlan_insert_inner_tag(skb, skb->vlan_proto,
-+						    skb_vlan_tag_get(skb),
-+						    ETH_HLEN) < 0)
-+				goto drop;
-+
-+			skb->protocol = skb->vlan_proto;
-+			__vlan_hwaccel_clear_tag(skb);
-+		}
-+
-+		new_lse = tcf_mpls_get_lse(NULL, p, mac_len ||
-+					   !eth_p_mpls(skb->protocol));
-+
-+		if (skb_mpls_push(skb, new_lse, p->tcfm_proto, 0, false))
-+			goto drop;
-+		break;
- 	case TCA_MPLS_ACT_MODIFY:
- 		new_lse = tcf_mpls_get_lse(mpls_hdr(skb), p, false);
- 		if (skb_mpls_update_lse(skb, new_lse))
-@@ -188,6 +205,7 @@ static int tcf_mpls_init(struct net *net, struct nlattr *nla,
- 		}
- 		break;
- 	case TCA_MPLS_ACT_PUSH:
-+	case TCA_MPLS_ACT_MAC_PUSH:
- 		if (!tb[TCA_MPLS_LABEL]) {
- 			NL_SET_ERR_MSG_MOD(extack, "Label is required for MPLS push");
- 			return -EINVAL;
--- 
-2.21.3
+In my experiments the worker threads get stalled sooner or later. 
+And unless there is some work stealing going on latency spikes follow.
 
+I would also not discount the variability in processing time. For a
+budget of 64 the processing can take 0-500us per round, not counting
+outliers.
+
+> we should not add the work queue overhead.
+
+Does this mean you're going to be against the (more fleshed out)
+work queue implementation?
