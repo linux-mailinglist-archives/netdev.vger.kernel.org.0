@@ -2,58 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F7F7281EFC
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 01:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23379281EFF
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 01:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725747AbgJBXRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 19:17:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58708 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725379AbgJBXRp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Oct 2020 19:17:45 -0400
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9CABF206FA;
-        Fri,  2 Oct 2020 23:17:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601680664;
-        bh=02LX712tC3DtsWH9a3lMs8HzUH//EGxhN/uE4xunPUU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kDsfuMT0QuHjjF5rngDpNzkKCiYzckqdZhbWkgqFxvN62dk+pQXQ/2XaxOLM1Vgcf
-         C1/efCFl+uuN3TU2ojP2CcC5yXWDgOH2Ovq6N75bW/QPFMdaYFPSERc8yPlz6WMkf6
-         zEedrQIbc3XCE3EvrypCtQfCRC5FNfjKL+mPk5mo=
-Date:   Fri, 2 Oct 2020 19:17:43 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Vishnu Rangayyan <vishnu.rangayyan@apple.com>
-Cc:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Sebastien Boeuf <sebastien.boeuf@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Forgue <andrewf@apple.com>
-Subject: Re: vsock fix backport to 5.4 stable
-Message-ID: <20201002231743.GI2415204@sasha-vm>
-References: <0c41f301-bedf-50be-d233-25d0d98b64ca@apple.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <0c41f301-bedf-50be-d233-25d0d98b64ca@apple.com>
+        id S1725766AbgJBXUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 19:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725283AbgJBXUs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 19:20:48 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18968C0613D0
+        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 16:20:48 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 292AD11E58FD5;
+        Fri,  2 Oct 2020 16:03:58 -0700 (PDT)
+Date:   Fri, 02 Oct 2020 16:20:44 -0700 (PDT)
+Message-Id: <20201002.162044.1724051542310947495.davem@davemloft.net>
+To:     saeed@kernel.org
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, saeedm@nvidia.com
+Subject: Re: [pull request][net V3 00/14] mlx5 fixes 2020-09-30
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20201002180654.262800-1-saeed@kernel.org>
+References: <20201002180654.262800-1-saeed@kernel.org>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 02 Oct 2020 16:03:58 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 10:55:37AM -0700, Vishnu Rangayyan wrote:
->Hi,
->
->Can we have this backport applied to 5.4 stable, its a useful fix.
->
->commit df12eb6d6cd920ab2f0e0a43cd6e1c23a05cea91 upstream
->
->The call has a minor api change in 5.4 vs higher, only the pkt arg is 
->required.
+From: saeed@kernel.org
+Date: Fri,  2 Oct 2020 11:06:40 -0700
 
-Queued up. I took the dependencies instead.
+> This series introduces some fixes to mlx5 driver.
+> 
+> v1->v2:
+>  - Patch #1 Don't return while mutex is held. (Dave)
+> 
+> v2->v3:
+>  - Drop patch #1, will consider a better approach (Jakub)
+>  - use cpu_relax() instead of cond_resched() (Jakub)
+>  - while(i--) to reveres a loop (Jakub)
+>  - Drop old mellanox email sign-off and change the committer email
+>    (Jakub)
+> 
+> Please pull and let me know if there is any problem.
 
--- 
-Thanks,
-Sasha
+Pulled.
+
+> For -stable v4.15
+>  ('net/mlx5e: Fix VLAN cleanup flow')
+>  ('net/mlx5e: Fix VLAN create flow')
+> 
+> For -stable v4.16
+>  ('net/mlx5: Fix request_irqs error flow')
+> 
+> For -stable v5.4
+>  ('net/mlx5e: Add resiliency in Striding RQ mode for packets larger than MTU')
+>  ('net/mlx5: Avoid possible free of command entry while timeout comp handler')
+> 
+> For -stable v5.7
+>  ('net/mlx5e: Fix return status when setting unsupported FEC mode')
+> 
+> For -stable v5.8
+>  ('net/mlx5e: Fix race condition on nhe->n pointer in neigh update')
+
+Queued up, thanks.
