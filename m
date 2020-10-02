@@ -2,105 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A68E22815B8
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 16:50:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E03A2815DC
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 16:55:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388193AbgJBOtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 10:49:55 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:47618 "EHLO inva020.nxp.com"
+        id S2388128AbgJBOzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 10:55:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36838 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387688AbgJBOtt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Oct 2020 10:49:49 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 423E61A106B;
-        Fri,  2 Oct 2020 16:49:48 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 35EB21A105A;
-        Fri,  2 Oct 2020 16:49:48 +0200 (CEST)
-Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id E63F4202AC;
-        Fri,  2 Oct 2020 16:49:47 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     shawnguo@kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [RESEND net-next 9/9] arm64: dts: lx2160ardb: add nodes for the AQR107 PHYs
-Date:   Fri,  2 Oct 2020 17:48:47 +0300
-Message-Id: <20201002144847.13793-10-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201002144847.13793-1-ioana.ciornei@nxp.com>
-References: <20201002144847.13793-1-ioana.ciornei@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726386AbgJBOzl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 10:55:41 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 75D7020665;
+        Fri,  2 Oct 2020 14:55:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601650540;
+        bh=jnHBNRbkIfW9TUxwiCuyKW0hoW4fw6GoUO15PR99J90=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=zDg3pfMvBoyz2K8Sy9r5hPtbf5j29Zn1TxmEVSguJVaptYHV5V9s62ND0YvphHyoZ
+         MfBR0P5h6E0qXXNW3Pd7Zq9Av3EmbIE1muAe/Ewdar0hhJ4lWxh8QrakVgrrwJJgn1
+         xhUXK4Jk+ZHrWoR35IsM4Z5cPqOHR4E3i+HNBLqU=
+Date:   Fri, 2 Oct 2020 07:55:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
+        jiri@resnulli.us, mkubecek@suse.cz, dsahern@kernel.org,
+        pablo@netfilter.org
+Subject: Re: [PATCH net-next v2 00/10] genetlink: support per-command policy
+ dump
+Message-ID: <20201002075538.2a52dccb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1dacbe07dc89cd69342199e61aeead4475f3621c.camel@sipsolutions.net>
+References: <20201001225933.1373426-1-kuba@kernel.org>
+        <20201001173644.74ed67da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <d26ccd875ebac452321343cc9f6a9e8ef990efbf.camel@sipsolutions.net>
+        <20201002074001.3484568a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <1dacbe07dc89cd69342199e61aeead4475f3621c.camel@sipsolutions.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Annotate the EMDIO1 node and describe the 2 AQR107 PHYs found on the
-LX2160ARDB board. Also, add the necessary phy-handles for DPMACs 3 and 4
-to their associated PHY.
+On Fri, 02 Oct 2020 16:42:09 +0200 Johannes Berg wrote:
+> On Fri, 2020-10-02 at 07:40 -0700, Jakub Kicinski wrote:
+> 
+> > > I suppose you could make an argument that only some attrs might be
+> > > accepted in doit and somewhat others in dumpit, or perhaps none in
+> > > dumpit because filtering wasn't implemented?  
+> > 
+> > Right? Feels like it goes against our strict validation policy to
+> > ignore input on dumpit.
+> >   
+> > > But still ... often we treat filtering as "advisory" anyway (except
+> > > perhaps where there's no doit at all, like the dump_policy thing here),
+> > > so it wouldn't matter if some attribute is ending up ignored?  
+> > 
+> > It may be useful for feature discovery to know if an attribute is
+> > supported.  
+> 
+> Fair point.
+> 
+> > I don't think it matters for any user right now, but maybe we should
+> > require user space to specify if they are interested in normal req
+> > policy or dump policy? That'd give us the ability to report different
+> > ones in the future when the need arises.  
+> 
+> Or just give them both? I mean, in many (most?) cases they're anyway
+> going to be the same, so with the patches I posted you could just give
+> them the two different policy indexes, and they can be the same?
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- .../boot/dts/freescale/fsl-lx2160a-rdb.dts    | 32 +++++++++++++++++++
- 1 file changed, 32 insertions(+)
+Ah, I missed your posting! Like this?
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-lx2160a-rdb.dts b/arch/arm64/boot/dts/freescale/fsl-lx2160a-rdb.dts
-index 54fe8cd3a711..7723ad5efd37 100644
---- a/arch/arm64/boot/dts/freescale/fsl-lx2160a-rdb.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-lx2160a-rdb.dts
-@@ -35,6 +35,18 @@ &crypto {
- 	status = "okay";
- };
- 
-+&dpmac3 {
-+	phy-handle = <&aquantia_phy1>;
-+	phy-connection-type = "usxgmii";
-+	managed = "in-band-status";
-+};
-+
-+&dpmac4 {
-+	phy-handle = <&aquantia_phy2>;
-+	phy-connection-type = "usxgmii";
-+	managed = "in-band-status";
-+};
-+
- &dpmac17 {
- 	phy-handle = <&rgmii_phy1>;
- 	phy-connection-type = "rgmii-id";
-@@ -61,6 +73,18 @@ rgmii_phy2: ethernet-phy@2 {
- 		reg = <0x2>;
- 		eee-broken-1000t;
- 	};
-+
-+	aquantia_phy1: ethernet-phy@4 {
-+		/* AQR107 PHY */
-+		compatible = "ethernet-phy-ieee802.3-c45";
-+		reg = <0x4>;
-+	};
-+
-+	aquantia_phy2: ethernet-phy@5 {
-+		/* AQR107 PHY */
-+		compatible = "ethernet-phy-ieee802.3-c45";
-+		reg = <0x5>;
-+	};
- };
- 
- &esdhc0 {
-@@ -156,6 +180,14 @@ rtc@51 {
- 	};
- };
- 
-+&pcs_mdio3 {
-+	status = "okay";
-+};
-+
-+&pcs_mdio4 {
-+	status = "okay";
-+};
-+
- &sata0 {
- 	status = "okay";
- };
--- 
-2.28.0
+[OP_POLICY]
+   [OP]
+      [DO]   -> u32
+      [DUMP] -> u32
+
+> But whichever, doesn't really matter much.
 
