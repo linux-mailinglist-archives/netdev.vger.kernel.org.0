@@ -2,78 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F73C281EA7
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 00:53:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 565C8281E9E
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 00:47:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725768AbgJBWxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 18:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbgJBWxO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 18:53:14 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D363C0613D0;
-        Fri,  2 Oct 2020 15:53:14 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E48B911E4981C;
-        Fri,  2 Oct 2020 15:36:25 -0700 (PDT)
-Date:   Fri, 02 Oct 2020 15:53:12 -0700 (PDT)
-Message-Id: <20201002.155312.133560326274339745.davem@davemloft.net>
-To:     stephen@networkplumber.org
-Cc:     jarod@redhat.com, linux-kernel@vger.kernel.org,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        kuba@kernel.org, tadavis@lbl.gov, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 6/6] bonding: make Kconfig toggle to
- disable legacy interfaces
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20201002121317.474c95f0@hermes.local>
-References: <20201002174001.3012643-1-jarod@redhat.com>
-        <20201002174001.3012643-7-jarod@redhat.com>
-        <20201002121317.474c95f0@hermes.local>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 02 Oct 2020 15:36:26 -0700 (PDT)
+        id S1725768AbgJBWr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 18:47:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33924 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725379AbgJBWr1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Oct 2020 18:47:27 -0400
+Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 19EA1206C9;
+        Fri,  2 Oct 2020 22:47:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601678846;
+        bh=VtJgOLqz1ljDZRJ0+tvKp6/oomcXRGsEABPYY9e8m4k=;
+        h=Date:From:To:Cc:Subject:From;
+        b=KV0gQshzp3hCTERVt009h/VFNs8MUQubEGW8fY3BiNYF7lnsQJE+X4BqOcM6k4Cey
+         E10i+dxlAGrJk5XKuHu8/GNyqSh84zfcqiKHTrTW0QK2UQ80Em/w+MaDYKcrYoRDfZ
+         4ObPMjtwDlO8i76vZ66Idxl4aY+KqQttPdBllNLY=
+Date:   Fri, 2 Oct 2020 17:53:15 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] usbnet: Use fallthrough pseudo-keyword
+Message-ID: <20201002225315.GA1484@embeddedor>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Hemminger <stephen@networkplumber.org>
-Date: Fri, 2 Oct 2020 12:13:17 -0700
+Replace // FALLTHROUGH comment with the new pseudo-keyword macro
+fallthrough[1].
 
-> On Fri,  2 Oct 2020 13:40:01 -0400
-> Jarod Wilson <jarod@redhat.com> wrote:
-> 
->> By default, enable retaining all user-facing API that includes the use of
->> master and slave, but add a Kconfig knob that allows those that wish to
->> remove it entirely do so in one shot.
-> 
-> This is problematic. You are printing both old and new values.
-> Also every distribution will have to enable it.
-> 
-> This looks like too much of change to users.
+[1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
 
-Agreed, no Kconfig knob.
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/usb/usbnet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Keep everything during the deprecation period, then you can kill off
-the old names at the end of the deprecation period.
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 2b2a841cd938..bf6c58240bd4 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -597,7 +597,7 @@ static void rx_complete (struct urb *urb)
+ 	case -EPIPE:
+ 		dev->net->stats.rx_errors++;
+ 		usbnet_defer_kevent (dev, EVENT_RX_HALT);
+-		// FALLTHROUGH
++		fallthrough;
+ 
+ 	/* software-driven interface shutdown */
+ 	case -ECONNRESET:		/* async unlink */
+-- 
+2.27.0
 
-I don't want to create a situation where distribution X lists as a
-"feature" that they are able to enable this Kconfig value even though
-it breaks UAPI for legacy external code out there.
-
-That's the wrong way to go about this and creates the wrong incentive
-system.
-
-I also agree that you can't change the docs to stop mentioning the old
-names.  It's almost like we are pretending we aren't doing the
-transition and that only the new names matter.  The old names matter
-and must therefore be acknowledged, exist, and be referencable in the
-documentation until the end of the deprecation period.  You can mark
-them "(DEPRECATED)" or similar, but they can't be removed just yet.
-
-Thank you.
