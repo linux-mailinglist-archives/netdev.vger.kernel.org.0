@@ -2,114 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB78D2810A1
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 12:35:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DAAC2810AB
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 12:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387669AbgJBKfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 06:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725993AbgJBKfU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 06:35:20 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E46C0613D0;
-        Fri,  2 Oct 2020 03:35:20 -0700 (PDT)
-Date:   Fri, 2 Oct 2020 12:35:17 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601634918;
+        id S2387545AbgJBKkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 06:40:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52784 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725993AbgJBKkG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 06:40:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601635205;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=CeDJ1dXLme679M/bPGlRbCUFKCuFkyI8moFOBFkwQtM=;
-        b=Oiv80LLEtF21HuKEaTpvbjRgw5+l7EOAcB/SOXXKTYcbou07z3rJbr4MB0bYSGcA2WJJNa
-        1Nv0EKGxpPyQiztkzJb9aM2oTAOnevTd1Lz5Qk5YVsEO7Cf2Q2q+LeBBwSepc2f9hOAuH3
-        qp7N66HZyRdoSb/HV+p63t8D7iEOOAa2aZuuzyLEsORPQkKCG3HYL87gJM8ToGDGBjRzFr
-        kCrGGHcsr1L5C+cr7z6bw8OtnZofxSg5cHB6Z9qSs1ijtF+7FyN2SQboPT4yr33mbC2CyD
-        dW0xpXTeouJtrVMFvtYmsIf9x6yykUyy9ichRfpWbc5VOan4pcPYXUu84qK0GA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601634918;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=CeDJ1dXLme679M/bPGlRbCUFKCuFkyI8moFOBFkwQtM=;
-        b=3//r+E4PAS6xtqgqLaHydxvPAjbLIRQymyWCJwefulBoiGjQ02eQLJ3lMuh0vBAITCfvRA
-        RBMIj5yxxTGKH4Bw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [RFC] Status of orinoco_usb
-Message-ID: <20201002103517.fhsi5gaepzbzo2s4@linutronix.de>
+        bh=feUdseSmCaw/fcpaZPYQzD3oFiZbEy6o4GMETibwx2Y=;
+        b=Yi3QjD1bcxNSkjt8pEAvm6YsRyUVAy9jSbc3/gFLmqbVgF20Fh+H/ml0SFeSzIIug6OW94
+        tikAK6yUOpfPQXpnRez7Mc0d+u1C36JjS8ULQ9oXLtBn3Z21veL8MAzFlYpbbq0rX59Lcu
+        Zkoa7ahwAfZDZiM9MmHb7G37SQVThSU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-44-X3MJidXTOXK6-XIVYbyIpA-1; Fri, 02 Oct 2020 06:40:01 -0400
+X-MC-Unique: X3MJidXTOXK6-XIVYbyIpA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7104F1019625;
+        Fri,  2 Oct 2020 10:40:00 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-113-189.ams2.redhat.com [10.36.113.189])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 915577EB7C;
+        Fri,  2 Oct 2020 10:39:58 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Westphal <fw@strlen.de>, mptcp@lists.01.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH net] tcp: fix syn cookied MPTCP request socket leak
+Date:   Fri,  2 Oct 2020 12:39:44 +0200
+Message-Id: <867cc806e4dfeb200e84b37addff2e2847f44c0e.1601635086.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I was trying to get rid of the in in_softirq() in ezusb_req_ctx_wait()
-within the orinoco usb driver,
-drivers/net/wireless/intersil/orinoco/orinoco_usb.c. A small snippet:
+If a syn-cookies request socket don't pass MPTCP-level
+validation done in syn_recv_sock(), we need to release
+it immediately, or it will be leaked.
 
-| static void ezusb_req_ctx_wait(struct ezusb_priv *upriv,
-|                                struct request_context *ctx)
-=E2=80=A6
-|                 if (in_softirq()) {
-|                         /* If we get called from a timer, timeout timers =
-don't
-|                          * get the chance to run themselves. So we make s=
-ure
-|                          * that we don't sleep for ever */
-|                         int msecs =3D DEF_TIMEOUT * (1000 / HZ);
-|=20
-|                         while (!try_wait_for_completion(&ctx->done) && ms=
-ecs--)
-|                                 udelay(1000);
-|                 } else {
-|                         wait_for_completion(&ctx->done);
-=E2=80=A6
-| }
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/89
+Fixes: 9466a1ccebbe ("mptcp: enable JOIN requests even if cookies are in use")
+Reported-and-tested-by: Geliang Tang <geliangtang@gmail.com>
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/ipv4/syncookies.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This is broken. The EHCI and XHCI HCD will complete the URB in
-BH/tasklet. Should we ever get here in_softirq() then we will spin
-here/wait here until the timeout passes because the tasklet won't be
-able to run. OHCI/UHCI HCDs still complete in hard-IRQ so it would work
-here.
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index f0794f0232ba..e03756631541 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -214,7 +214,7 @@ struct sock *tcp_get_cookie_sock(struct sock *sk, struct sk_buff *skb,
+ 		sock_rps_save_rxhash(child, skb);
+ 
+ 		if (rsk_drop_req(req)) {
+-			refcount_set(&req->rsk_refcnt, 2);
++			reqsk_put(req);
+ 			return child;
+ 		}
+ 
+-- 
+2.26.2
 
-Is it possible to end up here in softirq context or is this a relic?
-Well I have no hardware but I see this:
-
-  orinoco_set_monitor_channel() [I assume that this is fully preemtible]
-  -> orinoco_lock() [this should point to ezusb_lock_irqsave() which
-                     does spin_lock_bh(lock), so from here on
-		     in_softirq() returns true]
-  -> hw->ops->cmd_wait() [-> ezusb_docmd_wait()]
-  -> ezusb_alloc_ctx() [ sets ctx->in_rid to EZUSB_RID_ACK/0x0710 ]
-  -> ezusb_access_ltv()
-     -> if (ctx->in_rid)
-       -> ezusb_req_ctx_wait(upriv, ctx);
-	 -> ctx->state should be EZUSB_CTX_REQ_COMPLETE so we end up in
-	    the while loop above. So we udelay() 3 * 1000 * 1ms =3D 3sec.
-	 -> Then ezusb_access_ltv() should return with an error due to
-	    timeout.
-
-This isn't limited to exotic features like monitor mode. orinoco_open()
-does orinoco_lock() followed by orinoco_hw_program_rids() which in the
-end invokes ezusb_write_ltv(,, EZUSB_RID_ACK) which is non-zero and also
-would block (ezusb_xmit() would use 0 as the last argument so it won't
-block).
-
-I don't see how this driver can work on EHCI/XHCI HCD as of today.
-The driver is an orphan since commit
-   3a59babbee409 ("orinoco: update status in MAINTAINERS")
-
-which is ten years ago. If I replace in_softirq() with a `may_sleep'
-argument then it is still broken.
-Should it be removed?
-
-Sebastian
