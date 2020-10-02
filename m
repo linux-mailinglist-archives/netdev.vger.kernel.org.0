@@ -2,83 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63EB1280F80
-	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 11:07:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD7FC280F91
+	for <lists+netdev@lfdr.de>; Fri,  2 Oct 2020 11:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726238AbgJBJHW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 2 Oct 2020 05:07:22 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:41365 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725993AbgJBJHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 05:07:22 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-595-_R0Z6NCAP1-zqcVdsmLQ3A-1; Fri, 02 Oct 2020 05:07:15 -0400
-X-MC-Unique: _R0Z6NCAP1-zqcVdsmLQ3A-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CA7EC1DDF1;
-        Fri,  2 Oct 2020 09:07:12 +0000 (UTC)
-Received: from bistromath.localdomain (ovpn-115-83.ams2.redhat.com [10.36.115.83])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D298B5C1D0;
-        Fri,  2 Oct 2020 09:07:08 +0000 (UTC)
-Date:   Fri, 2 Oct 2020 11:07:03 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
-        Sven Eckelmann <sven@narfation.org>,
-        b.a.t.m.a.n@lists.open-mesh.org, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: Re: [PATCH net 00/12] net: iflink and link-netnsid fixes
-Message-ID: <20201002090703.GD3565727@bistromath.localdomain>
-References: <cover.1600770261.git.sd@queasysnail.net>
- <20201001142538.03f28397@hermes.local>
+        id S2387679AbgJBJJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 05:09:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726398AbgJBJJ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 05:09:56 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3839CC0613D0
+        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 02:09:56 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kOH4a-00F9QD-Rk; Fri, 02 Oct 2020 11:09:52 +0200
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 0/5] genetlink: complete policy dumping
+Date:   Fri,  2 Oct 2020 11:09:39 +0200
+Message-Id: <20201002090944.195891-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20201001142538.03f28397@hermes.local>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sd@queasysnail.net
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020-10-01, 14:25:38 -0700, Stephen Hemminger wrote:
-> On Thu,  1 Oct 2020 09:59:24 +0200
-> Sabrina Dubroca <sd@queasysnail.net> wrote:
-> 
-> > In a lot of places, we use this kind of comparison to detect if a
-> > device has a lower link:
-> > 
-> >   dev->ifindex != dev_get_iflink(dev)
-> 
-> 
-> Since this is a common operation, it would be good to add a new
-> helper function in netdevice.h
-> 
-> In your patch set, you are copying the same code snippet which
-> seems to indicate that it should be a helper.
-> 
-> Something like:
-> 
-> static inline bool netdev_has_link(const struct net_device *dev)
-> {
-> 	const struct net_device_ops *ops = dev->netdev_ops;
-> 
-> 	return ops && ops->ndo_get_iflink;
-> }
+Hi,
 
-Good idea, I'll add that in v2.
+So ... Jakub added per-op policy retrieval, so you could retrieve the
+policy for a single op.
 
--- 
-Sabrina
+This then adds - as discussed - support for dumping *everything*, which
+has basically first an [op] -> [policy-idx] mapping, followed by all the
+policies. When a single op is requested, you get a convenience [op] -> 0
+mapping entry, but you might as well ignore it since the policy for the
+requested op is guaranteed to be 0.
+
+This series applies on top of Jakub's series, but I've fixed up his to
+apply on top of my bugfix (let me know how you want to handle that).
+
+For convenience, I've pushed the entire series here:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git/log/?h=genetlink-op-policy-export
+(I hope the cache will be invalidated soon, but anyway, in mac80211-next
+genetlink-op-policy-export branch)
+
+I didn't want to repost Jakub's slightly modified patches just for that.
+Depending on how we decide to deal with the conflicts, we may or may not
+need that series.
+
+johannes
+
 
