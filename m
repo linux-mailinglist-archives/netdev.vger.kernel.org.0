@@ -2,105 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F32E2825E9
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 20:43:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D303F2825EF
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 20:51:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725850AbgJCSnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 14:43:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37162 "EHLO
+        id S1725854AbgJCSvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 14:51:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55019 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725816AbgJCSnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 14:43:22 -0400
+        by vger.kernel.org with ESMTP id S1725839AbgJCSvc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 14:51:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601750601;
+        s=mimecast20190719; t=1601751091;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HWM0RfrM0HZAs25gIGx3NLfFo36RAwB9ram8EBWXtH0=;
-        b=NzL8+jxeAT74Xoye5npss0OvEUdXZQIqDGyUesVHTbcMOakxAgGGW0EhLyybungMtHp5r9
-        n9aO2gLq03wr+xNYAtifB7yTHUJFgmCtRiL94hZqJOldVnZMFhIg0NIys/VRfJKKkGhCcA
-        2urgq237/GVFZlc/1+JvIyldM5ZApXw=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-417-H_h_rk79NR2ClrtGZtblGg-1; Sat, 03 Oct 2020 14:43:19 -0400
-X-MC-Unique: H_h_rk79NR2ClrtGZtblGg-1
-Received: by mail-wr1-f70.google.com with SMTP id d13so2040308wrr.23
-        for <netdev@vger.kernel.org>; Sat, 03 Oct 2020 11:43:19 -0700 (PDT)
+         to:to:cc:cc; bh=PpQx6m8qbEXm3p16DACdfvVJytaY8r/kOwzsRi4ZXfs=;
+        b=cBfMyvUM0kw6OiZiywZ4116eXZxfqNxy5evD6fOux/mfbzi9GkuOTtweDa3Q73YC6xuNog
+        rkdKwRLnb4RwYhnsPLu/guBvlTPYwZ65rYvVOSZAAEbcgDX+ymOBAUF/pbpzmeJoTPiL2p
+        60yjRXnVKXeG0z0eU4fBTWTt2YboaKk=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-394-G3h89TDAM3GGy8lDsGcVsQ-1; Sat, 03 Oct 2020 14:51:29 -0400
+X-MC-Unique: G3h89TDAM3GGy8lDsGcVsQ-1
+Received: by mail-qt1-f200.google.com with SMTP id a16so3643749qtj.7
+        for <netdev@vger.kernel.org>; Sat, 03 Oct 2020 11:51:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HWM0RfrM0HZAs25gIGx3NLfFo36RAwB9ram8EBWXtH0=;
-        b=PfAQaZvEHo2/dZC/rzcvYPV+EaKSLRi2sh/xgpkrbZsWvWFGgfbNHhgt/M5tju0QSg
-         rQqqFFWkgyxppSTCzy6lBkOIvQr5Drx8SvOSfFCMv4nhQNjCMjvu/G5U7fPfqZBkdT//
-         u5/ZhfGODazPI2OUdcNncsGs7acXR/M6lbZnOAg+xc1bcQuwVAnAPOgxmKi5Jls432Wi
-         1o17kSVrc0Ocuwu6vrWYYBIQ9GL/IoYVuaviefNpuEIIYJQzSpUd1P2LjybHnv7VSq+V
-         H4+wMFs6oSm1/+DAv3+zU92tU6SOKwgj6M1Ri5yARJvzml12rGi3wlTulUc0mSDOroHM
-         WxOQ==
-X-Gm-Message-State: AOAM531JoZ4y3EYc0AAFQ2NoXdKGL8T4Xl0kksCalQUa8TvfXvFDtDWc
-        sKHIP3xevMim0A3NFz0wO031p1FX+unBzSKtC0YEuh8EpkUkDYoz3/so2F+XGbgv7Eeo+XPJ5rs
-        zCFWkgpciaTG0k77T
-X-Received: by 2002:adf:e852:: with SMTP id d18mr9744710wrn.40.1601750598430;
-        Sat, 03 Oct 2020 11:43:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy038Yccnpob9//W8sOr1lm3wbsl6dgaQoAhcFw98vUjFVu1T3n44Gs2WlgxSmLiPyyNgs9bw==
-X-Received: by 2002:adf:e852:: with SMTP id d18mr9744690wrn.40.1601750598224;
-        Sat, 03 Oct 2020 11:43:18 -0700 (PDT)
-Received: from redhat.com (bzq-79-179-71-128.red.bezeqint.net. [79.179.71.128])
-        by smtp.gmail.com with ESMTPSA id z127sm6091271wmc.2.2020.10.03.11.43.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=PpQx6m8qbEXm3p16DACdfvVJytaY8r/kOwzsRi4ZXfs=;
+        b=I4ykUSHrYAudpBi2bGtzKx1itoVF3ZC3J3N98KALJkgqEFYqQdnAApVQ/BO8j5aZ4h
+         QhmmBcUBW/Pq/OsLTtWE58xZbc87qUvwEuGCJEov6oEzvTHJrSyIUiKeefncSn2ywV0g
+         IMaxTiiUEChLJd3e5QdsuC9EWv/FJ7hw5y1CZ13aHaRCPCBtMP/pgvp3eOZLBwsNaKyv
+         6f9Su03EiHf/aW4dRvUVKoe3cl1KeWOVk7E9MoENPVnYxlGbUKc5IfC/1enle0C6Vslr
+         C6cdywbl2K5/lNIADsp8hu5pt9cfaxpvI+2txPCvRANis0psv72lpnRaBsPwTb6K5Ibu
+         wTvg==
+X-Gm-Message-State: AOAM533AZLmlTYiKATVCp2JMVwaD4OJvrJw4EYt69boJj3wbidAKXeGN
+        rIJ27nejhFFO0vSvXyzud4ts/BD+lmyYLngYkc5YXvVj57gQQgU6FVPh9hI8DnOGoxF57IvJoSr
+        28ymVjYCvfyfctO+2
+X-Received: by 2002:ac8:1005:: with SMTP id z5mr7605653qti.130.1601751088989;
+        Sat, 03 Oct 2020 11:51:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJycZfecxVOwp4U+Ss1sMQDY8Y7tRC1tEpgXkh9CGlzXlHbe4K/4sKNQWysyQe+dtCjHt3CMzg==
+X-Received: by 2002:ac8:1005:: with SMTP id z5mr7605637qti.130.1601751088732;
+        Sat, 03 Oct 2020 11:51:28 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id v15sm3731672qkg.108.2020.10.03.11.51.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 03 Oct 2020 11:43:17 -0700 (PDT)
-Date:   Sat, 3 Oct 2020 14:43:13 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     anant.thazhemadam@gmail.com, jasowang@redhat.com, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [Linux-kernel-mentees][PATCH 0/2] reorder members of structures
- in virtio_net for optimization
-Message-ID: <20201003144300-mutt-send-email-mst@kernel.org>
-References: <20200930051722.389587-1-anant.thazhemadam@gmail.com>
- <20201002.190638.1090456279017490485.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201002.190638.1090456279017490485.davem@davemloft.net>
+        Sat, 03 Oct 2020 11:51:28 -0700 (PDT)
+From:   trix@redhat.com
+To:     thomas.petazzoni@bootlin.com, davem@davemloft.net, kuba@kernel.org,
+        natechancellor@gmail.com, ndesaulniers@google.com,
+        ezequiel.garcia@free-electrons.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com, Tom Rix <trix@redhat.com>
+Subject: [PATCH] net: mvneta: fix double free of txq->buf
+Date:   Sat,  3 Oct 2020 11:51:21 -0700
+Message-Id: <20201003185121.12370-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 02, 2020 at 07:06:38PM -0700, David Miller wrote:
-> From: Anant Thazhemadam <anant.thazhemadam@gmail.com>
-> Date: Wed, 30 Sep 2020 10:47:20 +0530
-> 
-> > The structures virtnet_info and receive_queue have byte holes in 
-> > middle, and their members could do with some rearranging 
-> > (order-of-declaration wise) in order to overcome this.
-> > 
-> > Rearranging the members helps in:
-> >   * elimination the byte holes in the middle of the structures
-> >   * reduce the size of the structure (virtnet_info)
-> >   * have more members stored in one cache line (as opposed to 
-> >     unnecessarily crossing the cacheline boundary and spanning
-> >     different cachelines)
-> > 
-> > The analysis was performed using pahole.
-> > 
-> > These patches may be applied in any order.
-> 
-> What effects do these changes have on performance?
-> 
-> The cache locality for various TX and RX paths could be effected.
-> 
-> I'm not applying these patches without some data on the performance
-> impact.
-> 
-> Thank you.
+From: Tom Rix <trix@redhat.com>
 
-Agree wholeheartedly.
+clang static analysis reports this problem:
 
+drivers/net/ethernet/marvell/mvneta.c:3465:2: warning:
+  Attempt to free released memory
+        kfree(txq->buf);
+        ^~~~~~~~~~~~~~~
+
+When mvneta_txq_sw_init() fails to alloc txq->tso_hdrs,
+it frees without poisoning txq->buf.  The error is caught
+in the mvneta_setup_txqs() caller which handles the error
+by cleaning up all of the txqs with a call to
+mvneta_txq_sw_deinit which also frees txq->buf.
+
+Since mvneta_txq_sw_deinit is a general cleaner, all of the
+partial cleaning in mvneta_txq_sw_deinit()'s error handling
+is not needed.
+
+Fixes: 2adb719d74f6 ("net: mvneta: Implement software TSO")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/ethernet/marvell/mvneta.c | 13 ++-----------
+ 1 file changed, 2 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index d095718355d3..54b0bf574c05 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -3397,24 +3397,15 @@ static int mvneta_txq_sw_init(struct mvneta_port *pp,
+ 	txq->last_desc = txq->size - 1;
+ 
+ 	txq->buf = kmalloc_array(txq->size, sizeof(*txq->buf), GFP_KERNEL);
+-	if (!txq->buf) {
+-		dma_free_coherent(pp->dev->dev.parent,
+-				  txq->size * MVNETA_DESC_ALIGNED_SIZE,
+-				  txq->descs, txq->descs_phys);
++	if (!txq->buf)
+ 		return -ENOMEM;
+-	}
+ 
+ 	/* Allocate DMA buffers for TSO MAC/IP/TCP headers */
+ 	txq->tso_hdrs = dma_alloc_coherent(pp->dev->dev.parent,
+ 					   txq->size * TSO_HEADER_SIZE,
+ 					   &txq->tso_hdrs_phys, GFP_KERNEL);
+-	if (!txq->tso_hdrs) {
+-		kfree(txq->buf);
+-		dma_free_coherent(pp->dev->dev.parent,
+-				  txq->size * MVNETA_DESC_ALIGNED_SIZE,
+-				  txq->descs, txq->descs_phys);
++	if (!txq->tso_hdrs)
+ 		return -ENOMEM;
+-	}
+ 
+ 	/* Setup XPS mapping */
+ 	if (txq_number > 1)
 -- 
-MST
+2.18.1
 
