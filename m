@@ -2,93 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7E7B282109
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 06:08:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C85A28210E
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 06:09:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725772AbgJCEI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 00:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
+        id S1725803AbgJCEJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 00:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgJCEI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 00:08:29 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE903C0613D0;
-        Fri,  2 Oct 2020 21:08:28 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id cr8so2729638qvb.10;
-        Fri, 02 Oct 2020 21:08:28 -0700 (PDT)
+        with ESMTP id S1725681AbgJCEJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 00:09:19 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6FB4C0613D0;
+        Fri,  2 Oct 2020 21:09:19 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id g3so4555893qtq.10;
+        Fri, 02 Oct 2020 21:09:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=zBZuvzKTzC3+x63VzgUilAxVy8DCFohuKHJKD1EvjDY=;
-        b=h0Jsyp6FEyBF9oYBsoMZuqTOtYvqHaQYbVN3Yy2g1KaQD4sBoTfTJU6/Qo8LFobEji
-         ubcCLLIkkBQwAAiHz4cwapZ0F8D7qD8qI4MxS0sTdzvMBT+k1amc59ZCzyMVb0Ah7S1f
-         cwS7WKwgjedNhqAE0FhJa5g70OdxkIPCQPzVL2/RHjEGSwt0FbxOtqfuFpkqDM72Z48A
-         UllEDCJiuUrvVMNncHoxmXQ4TyIpLKJk1fbMOpRYjlivm6O+2a9zVx3mbQSxEUhahKdd
-         v6oDuqaY7AxBC5vtSt5Q00FBbDpPG9zvEudWkAflw/0peKYzt/smdz8T657JUzPLi/zn
-         xFQA==
+        bh=oh7VUxla1PMyx5S8F/d6BBPIgZAX2tpeVPfmgqzgvIE=;
+        b=W/UDDEy/EHayzSdWLvGQaSeCbloxPSSe1JpIHHJgL1+qKcY8A85ZBcKvAqr4LuNgDS
+         SL3SInSZ8I/AMNUUHuwuXTPRvpSYOX5kEhsvg8m1u9HBgFbHdjoe/SfYFloFVuYcFOnU
+         c2Dxbz4eNvUd57xCLCukn1KXh1YvCejW+TnFD6pkDp858vS4hsJTeoUTU5CkNjHW+jT6
+         TUQlOw1mmY8Im585iNTQ9e0TXfFckM0e736NI+PXCBe2WJBxq0k+dLomG0V5zqg2c1dl
+         bLjLDVwr3bOC2uXiarLZ1QYXn4Vzb65XVhwOIllY/sjZ6AP3RP5K+2EorPIlOqVOIthF
+         vx+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=zBZuvzKTzC3+x63VzgUilAxVy8DCFohuKHJKD1EvjDY=;
-        b=TQ1G0QY77D129BClFhakdBWNMCmztNloCiu69MWuOccrZO8Le5Xf1jgxQFy+PIixm9
-         5nBHJwWFW5mMu1RMEsTM5bGF33UW6RYrfZ31UxBp06p1p+UfNRoqWp04Iqz53rKues5O
-         51GuXk3GBTtzXTZ7t9YwBiTfpEAe9D+8+qXrJ7GN9ZH6EzdPQj6SSrPq+Txg++tTfteg
-         A5sdirvtwLggGaOoSVFuV968hcA6wGb8KtHuRuLFpRVx/kZbuFC7fZgd2c17iStFUUxF
-         iG1t7qBz6dSAo6nuQDQvgSB3isRhaQSZbWKm7EbcvxeEunb0vFLZZB7qGwBv33uAKoCl
-         +jUg==
-X-Gm-Message-State: AOAM532VVock7AIedB7SnvmvJUg+0G5tpXATCrvEVkBYhWtuEY1oWDL7
-        vcAcbTguK/uuWPL/z/+ZzPI=
-X-Google-Smtp-Source: ABdhPJz9A2sxgEg4Am0qpXASgb7cNvuOHN+jMeUXPvIyTFLxoz5wV91WrPBFvRXh8PD0pvM1GxT7NQ==
-X-Received: by 2002:a0c:e5cf:: with SMTP id u15mr5227462qvm.14.1601698108019;
-        Fri, 02 Oct 2020 21:08:28 -0700 (PDT)
+        bh=oh7VUxla1PMyx5S8F/d6BBPIgZAX2tpeVPfmgqzgvIE=;
+        b=i8IBkqJGhODds4eWWdlnH9iidjKOkG3F114fbeeHx62g1nGjOkFgApbsPsYWfneKUW
+         tBhyAjtrqx0rBbIDeB6eJICfog7K6POuorGQLxmzVUEhq2ZAA4ZecQiECDDt3QZcfPfn
+         3sbOHIE5zOyqiRNNs40sqlbMcuHSJ+4EqgieRdKMi0P5w2ZoDMi8xLX7g/KWZHp9L23O
+         PPpf8pnGxowmIdHSXzAQv35PT2B8/AuMi73WrNK5pKL4zGIKeYKUNKsWvxc6UKdKWmBg
+         rLt5kioNmV8we6yDu04FFciw4jlYBvOakabLsStgTWr0Mlo+N9WypXJAWfno3TY6I8xD
+         9c+A==
+X-Gm-Message-State: AOAM533Qua4xLWFwEiNfa5Cquii5FDc786sugey4Hua3EOuWG2lq2eGO
+        QAy4F9io6HIsDsEpAE510WYuM4kaODJ0fA==
+X-Google-Smtp-Source: ABdhPJznw90wUSNqjOG4WJ1TDonGmmBUoTIQ/sz9RVBhpdATVuYAq2v+CKsHCvQR4HoP/axy/eTCiw==
+X-Received: by 2002:ac8:1aae:: with SMTP id x43mr5394312qtj.30.1601698158921;
+        Fri, 02 Oct 2020 21:09:18 -0700 (PDT)
 Received: from localhost.localdomain ([177.220.172.62])
-        by smtp.gmail.com with ESMTPSA id f14sm2541258qkh.134.2020.10.02.21.08.27
+        by smtp.gmail.com with ESMTPSA id a3sm2644151qtp.63.2020.10.02.21.09.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2020 21:08:27 -0700 (PDT)
+        Fri, 02 Oct 2020 21:09:18 -0700 (PDT)
 Received: by localhost.localdomain (Postfix, from userid 1000)
-        id E040DC6195; Sat,  3 Oct 2020 01:08:24 -0300 (-03)
-Date:   Sat, 3 Oct 2020 01:08:24 -0300
+        id EF57DC6195; Sat,  3 Oct 2020 01:09:15 -0300 (-03)
+Date:   Sat, 3 Oct 2020 01:09:15 -0300
 From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        linux-sctp@vger.kernel.org, kbuild-all@lists.01.org,
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
         Neil Horman <nhorman@tuxdriver.com>,
         Michael Tuexen <tuexen@fh-muenster.de>,
         Tom Herbert <therbert@google.com>, davem@davemloft.net
-Subject: Re: [PATCH net-next 11/15] sctp: add udphdr to overhead when
- udp_port is set
-Message-ID: <20201003040824.GG70998@localhost.localdomain>
-References: <7ff312f910ada8893fa4db57d341c628d1122640.1601387231.git.lucien.xin@gmail.com>
- <202009300218.2AcHEN0L-lkp@intel.com>
+Subject: Re: [PATCH net-next 12/15] sctp: call sk_setup_caps in
+ sctp_packet_transmit instead
+Message-ID: <20201003040915.GH70998@localhost.localdomain>
+References: <cover.1601387231.git.lucien.xin@gmail.com>
+ <3716fc0699dc1d5557574b5227524e80b7fd76b8.1601387231.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202009300218.2AcHEN0L-lkp@intel.com>
+In-Reply-To: <3716fc0699dc1d5557574b5227524e80b7fd76b8.1601387231.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 03:00:42AM +0800, kernel test robot wrote:
-> Hi Xin,
+On Tue, Sep 29, 2020 at 09:49:04PM +0800, Xin Long wrote:
+> sk_setup_caps() was originally called in Commit 90017accff61 ("sctp:
+> Add GSO support"), as:
 > 
-> Thank you for the patch! Yet something to improve:
-
-I wonder how are you planning to fix this. It is quite entangled.
-This is not performance critical. Maybe the cleanest way out is to
-move it to a .c file.
-
-Adding a
-#if defined(CONFIG_IP_SCTP) || defined(CONFIG_IP_SCTP_MODULE)
-in there doesn't seem good.
-
->    In file included from include/net/sctp/checksum.h:27,
->                     from net/netfilter/nf_nat_proto.c:16:
->    include/net/sctp/sctp.h: In function 'sctp_mtu_payload':
-> >> include/net/sctp/sctp.h:583:31: error: 'struct net' has no member named 'sctp'; did you mean 'ct'?
->      583 |   if (sock_net(&sp->inet.sk)->sctp.udp_port)
->          |                               ^~~~
->          |                               ct
+>   "We have to refresh this in case we are xmiting to more than one
+>    transport at a time"
 > 
+> This actually happens in the loop of sctp_outq_flush_transports(),
+> and it shouldn't be gso related, so move it out of gso part and
+
+To be more precise, "shouldn't be tied to gso"
+
+> before sctp_packet_pack().
