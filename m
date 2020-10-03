@@ -2,93 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F8812821AC
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 07:51:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73E032821B0
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 07:54:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725777AbgJCFvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 01:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
+        id S1725778AbgJCFx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 01:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgJCFvS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 01:51:18 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F571C0613D0;
-        Fri,  2 Oct 2020 22:51:18 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id f18so2920525pfa.10;
-        Fri, 02 Oct 2020 22:51:18 -0700 (PDT)
+        with ESMTP id S1725446AbgJCFx4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 01:53:56 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968CBC0613D0;
+        Fri,  2 Oct 2020 22:53:54 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id q4so2439495pjh.5;
+        Fri, 02 Oct 2020 22:53:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=U+/EF2NGSw6neafVxjjcMYfRuR3DJX5CJ+tBNvZuiek=;
-        b=eDbrYQ1/6M4Lf6dtXjKmLkb9Mpk8YOQkWgLQJl7Oybb05dEBctkf1oZygTp3ea4U8f
-         b3yZcFTPBznd6uF9FFO/lpuyPcWr2iurLrwLPyBknKv8/VyV2/sbbpO6bP90/BInq29w
-         VQljsPxkIwjV9HjOZMB2tV+Xz6bWfJ0eafxtyOQm97yO09RiL3AIfjft1VcCc+NU+XSH
-         WESdAhGBYBMYW2F3voe9glrz/Jsquhvm5ZFpUJUK2ppJGPNnItFyRCV8o8AObWEw7kdq
-         bzBk18xgA7yASU/6crkWS18fPEYV4QFgB10WUxn1uxLu0qGV3DuRE2dCby+taRQe7wD0
-         E+nQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ZpLkhopR7RvaZKej0tLr3XiT6AwIkOjIodaqyAoILX4=;
+        b=f/seNY1BqS1fuW+3BBt5TE22tv+sxsB2sKJPkxTwJHD5KGzxSlP2HjigjY4LOhfZ/u
+         Jkii6V5xaWx4+O2Hn722cOJOvwhMimvfxd+caaq6Q2GlYRagZrMLESVkcE1z0ixQR31I
+         S+1dD44MtirDQ9XQvvMcZ709Q5iLTspCyMKI67Xv+8sqdfzn3nskdi9tGf9yFzopqj1w
+         /ikT85IojpD9sEj5PUPlfU1bwYJj8A5SVyXz3UeXVE1jyPFIusHC9UraXRBc/ulGyYk5
+         aLEVrUAJosmGbhV+iIUkiP2P1i1WXXfb7ZaHL8TUN+dwuDno41RpUL8WCZlGY6x8QeRO
+         0c/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=U+/EF2NGSw6neafVxjjcMYfRuR3DJX5CJ+tBNvZuiek=;
-        b=XwiwD//6QkObxTCXlnyeqmVob0VAg8FirmlMB09W4VSHHBx4y3V/o+slpsbD8jdX3p
-         13i+gk+reqJl7KqHITgs3AFVC3iKyCrdIXvyQXyf+r2lmX2B0Gyd2VFvTCqZtsfTAG9Z
-         1NHWZI1yreifSVl8Yxf9855YytbJ/IUonPBgiInLpkoIrZ3GPEgFXP095kFW0Y2skeH8
-         S8nlP1IxLYCDNyCBBj8NO3Qs4Wy+GC4prVRNnJjNzQBntdQVsIWwWTBA+fouGj0HaUCD
-         1y6otM5tKxmYMGq77c3DiTAebqrje+B8bA5acJ/GPe/YaffvtcCJITKyKANkZaSIVQBW
-         UJjA==
-X-Gm-Message-State: AOAM532sHjlCda8kdWJGHM9pc/Pot1GXkGZvtFxELLhEdG8nQn2RjgbQ
-        f45+R4LHvyza90aCfy03ttMpDajjIsKbA1Ref0M=
-X-Google-Smtp-Source: ABdhPJziRclfzdzIVFLhkgcO4yRti4HLZ85RSEV/uXYO2t1/x37D1oe8GpDX/yrv1LkEUj6D6VYeNQ==
-X-Received: by 2002:a63:f807:: with SMTP id n7mr5433763pgh.311.1601704277432;
-        Fri, 02 Oct 2020 22:51:17 -0700 (PDT)
-Received: from [192.168.0.104] ([49.207.217.69])
-        by smtp.gmail.com with ESMTPSA id d17sm4215270pfq.157.2020.10.02.22.51.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Oct 2020 22:51:16 -0700 (PDT)
-Subject: Re: [PATCH v2] net: usb: rtl8150: prevent set_ethernet_addr from
- setting uninit address
-To:     Greg KH <greg@kroah.com>, David Miller <davem@davemloft.net>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
-        kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20201001073221.239618-1-anant.thazhemadam@gmail.com>
- <20201001.191522.1749084221364678705.davem@davemloft.net>
- <83804e93-8f59-4d35-ec61-e9b5e6f00323@gmail.com>
- <20201002115453.GA3338729@kroah.com>
- <a19aa514-14a9-8c92-d41a-0b9e17daa8e3@gmail.com>
- <20201002142901.GA3901@carbon>
-From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Message-ID: <dbd92308-2443-0c1d-92f1-f506339e0a5e@gmail.com>
-Date:   Sat, 3 Oct 2020 11:21:12 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ZpLkhopR7RvaZKej0tLr3XiT6AwIkOjIodaqyAoILX4=;
+        b=T82udkUCCtST5OkRXcgbgBm1qGX3YWdP46PVPxTllphHIi8wOUuomCPggtOif3FNTj
+         yRvtTQ5T5Sa8L/UjN4xoz98Gex7NuI+z1f3lXCn8OZjnNEYMptCqUbVwzKWpDbEXXypW
+         q5x/0VV4e5/bGZRgKjIAPfqwYPHehf8k1+86ck2EBJHUBF6t9wKpqiPTjToqnCM/SvCy
+         98a6mxDF4UAoebXsLQTQ4AXwAw/s4Xh1GGvHMw+W4fQG9rFH+mPRfCBm27wmssNRQ3N3
+         qT98Ve7lVtKL1NI/GvQtFVCYIxPzjjW4o2EHNytkVC++vwEyb7ePRVwtZdX2Qf+78cCb
+         n4Aw==
+X-Gm-Message-State: AOAM533XZGHbPkfeLj5FBVGxJ9Ee6LL1Mu500wNejEz9ctUP1WTaTfOn
+        g9sh4WLPe3iKnBTxCItfrVQ=
+X-Google-Smtp-Source: ABdhPJxZAAyoTPwXzIq2v9cLhdcOtS/P7paRo+bVLaSACXvjGc8ZLUNUgJjGiaHmheCQSU0L8Iy59A==
+X-Received: by 2002:a17:90a:d311:: with SMTP id p17mr6275885pju.135.1601704434077;
+        Fri, 02 Oct 2020 22:53:54 -0700 (PDT)
+Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
+        by smtp.gmail.com with ESMTPSA id u6sm3354301pjy.37.2020.10.02.22.53.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Oct 2020 22:53:53 -0700 (PDT)
+Date:   Sat, 3 Oct 2020 14:53:48 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Coiby Xu <coiby.xu@gmail.com>
+Cc:     devel@driverdev.osuosl.org, Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4] staging: qlge: fix build breakage with dumping enabled
+Message-ID: <20201003055348.GA100061@f3>
+References: <20201002235941.77062-1-coiby.xu@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20201002142901.GA3901@carbon>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201002235941.77062-1-coiby.xu@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020-10-03 07:59 +0800, Coiby Xu wrote:
+> This fixes commit 0107635e15ac
+> ("staging: qlge: replace pr_err with netdev_err") which introduced an
+> build breakage of missing `struct ql_adapter *qdev` for some functions
+> and a warning of type mismatch with dumping enabled, i.e.,
+> 
+> $ make CFLAGS_MODULE="-DQL_ALL_DUMP -DQL_OB_DUMP -DQL_CB_DUMP \
+>     -DQL_IB_DUMP -DQL_REG_DUMP -DQL_DEV_DUMP" M=drivers/staging/qlge
+> 
+> qlge_dbg.c: In function ‘ql_dump_ob_mac_rsp’:
+> qlge_dbg.c:2051:13: error: ‘qdev’ undeclared (first use in this function); did you mean ‘cdev’?
+>  2051 |  netdev_err(qdev->ndev, "%s\n", __func__);
+>       |             ^~~~
+> qlge_dbg.c: In function ‘ql_dump_routing_entries’:
+> qlge_dbg.c:1435:10: warning: format ‘%s’ expects argument of type ‘char *’, but argument 3 has type ‘int’ [-Wformat=]
+>  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
+>       |         ~^
+>       |          |
+>       |          char *
+>       |         %d
+>  1436 |        i, value);
+>       |        ~
+>       |        |
+>       |        int
+> qlge_dbg.c:1435:37: warning: format ‘%x’ expects a matching ‘unsigned int’ argument [-Wformat=]
+>  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
+>       |                                 ~~~~^
+>       |                                     |
+>       |                                     unsigned int
+> 
+> Note that now ql_dump_rx_ring/ql_dump_tx_ring won't check if the passed
+> parameter is a null pointer.
+> 
+> Fixes: 0107635e15ac ("staging: qlge: replace pr_err with netdev_err")
+> Reported-by: Benjamin Poirier <benjamin.poirier@gmail.com>
+> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
+> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+> ---
 
-On 02-10-2020 19:59, Petko Manolov wrote:
-> On 20-10-02 17:35:25, Anant Thazhemadam wrote:
->> Yes, this clears things up for me. I'll see to it that this gets done in a v3.
-> If set_ethernet_addr() fail, don't return error, but use eth_hw_addr_random() 
-> instead to set random MAC address and continue with the probing.
->
-> You can take a look here:
-> https://lore.kernel.org/netdev/20201002075604.44335-1-petko.manolov@konsulko.com/
->
->
-> cheers,
-> Petko
-Thank you for this reference. :)
-
-Thanks,
-Anant
+Reviewed-by: Benjamin Poirier <benjamin.poirier@gmail.com>
