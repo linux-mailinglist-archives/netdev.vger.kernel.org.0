@@ -2,76 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2F59282080
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 04:25:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 287F828208C
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 04:33:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725782AbgJCCZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 22:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52382 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbgJCCZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 22:25:15 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C035AC0613D0;
-        Fri,  2 Oct 2020 19:25:14 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id q8so4150992lfb.6;
-        Fri, 02 Oct 2020 19:25:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kyguNtobI9WGxfG7UGTdEWOg7CmimW/i+6rbWemku+M=;
-        b=ruf6hQHbNJRK44HGElMyMcLWnS6gE1a5Bnk3BBiyVcYk0kcVwAcOWdApGrjCFMJhCo
-         D//C8nTa4Z4gpom5pxoxR+Tgv/y/o7DYqn4V9T8gZKceqX51vy219lv+mtqfW5Uj0sLO
-         jz6NGcha5LozfPw4EsOPRRHWP2rtYyrDYUhIqK6FJ4Q0vit/8C/kGwwuFBdx3XqTRb45
-         2f3/a70rivpfqI26BeTVT7nvcn0voNHf78UW8BbAGnMkeSnd6CIAZMr4ri5xjXxRcbn8
-         AJbX6XQlH3/OtpQsPBkiTlwLDlTDlp3QL34hlfvTga2PfFVIfq3slpO+byagUk4+PsMY
-         wsdg==
+        id S1725848AbgJCCdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 22:33:06 -0400
+Received: from mail-il1-f207.google.com ([209.85.166.207]:41482 "EHLO
+        mail-il1-f207.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725562AbgJCCdG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 22:33:06 -0400
+Received: by mail-il1-f207.google.com with SMTP id f10so2578397ilj.8
+        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 19:33:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kyguNtobI9WGxfG7UGTdEWOg7CmimW/i+6rbWemku+M=;
-        b=r2aI4YypfhFffzj/TKRSxLaXPeO89ASVsVoR103oFBWxabQ0m7a+AeOwX4CJt+KfZJ
-         doiIqWWXfVhqhP0JDKsNqqlEVOOFCpQw5lqLMgaIN08+73hWegQfwRDjdDut1ZvSdg2x
-         X3kjaCRn1uMjcdc9D3CBRih0fTY2NLYpMF6u2BYhRGRYghQ1yN4ZxSABj0DGkNnf6ZRL
-         P1KWyodnhx0iBug3df78lfpkpTEqKoL9EfZYnHAVZeFpgHzgJr0N06yidjbW/hXax0f/
-         /BBc+Yrjyg0DP3XW2xeU+7LwjxcM/7HkO2hY57i4WQdJLpFTufdLr9HPbw89uuUNj65s
-         JEAQ==
-X-Gm-Message-State: AOAM531+j+T6MqTdWx53PJAlJQAQfV/wYSqG8R0SM3H3w5VwQ+FTZUnK
-        00aAwOewQslSGrGu4/xHu1iWUvG7VIVXyM3IekM=
-X-Google-Smtp-Source: ABdhPJz7g9aDzCuLyh8mNm+kG5EO1pjHFuGg81CZhR2tS8bGbXsx1KwFSfF3RsJ4UeEenYrKub9MvlpvJoUMGx9oqlE=
-X-Received: by 2002:a19:8703:: with SMTP id j3mr1951823lfd.477.1601691913168;
- Fri, 02 Oct 2020 19:25:13 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=huAQ2XNxNk0+JP0caungu+yrhrmWz2OAWIUz9RtSlI4=;
+        b=RHxggjXh/gX6ebbd2Du3NGogqUrRjDkh7kDCK2sGhrJnRNy6XcnGhEKa0nfv50/0QD
+         f9AUQHj4MWQwNGLSGhC8s0QLvxQNXPYIVB+nCLwK72kmKMgKgqfctqiNGjBcxVu8c8pP
+         MFgXMy0cBGMbOFQgAM1ZxOIliNCGPWK5ReJ7CGoIAM0ilFd6XSzS3L9QanJBuNtUQgy7
+         mr0mJuNk9fLHXH4uFMMDkM/SYeBgsiUbE5futITiMciO3eFjNNTpv853QTVCu7whNDie
+         dZQaOd3LU63XYYqlj/xcsIpphhiaaOH7NfD/t3ye5oxi1+tIsNkpmrdPiSLu6bKgVXp1
+         WRzg==
+X-Gm-Message-State: AOAM532F+W5/DIMFKz4ADO0w2rvv82NdFyjvaTFSyXHO5Yr74eV6L75T
+        D2En4v7b4rAveiHxEmH4gP5wkMrboh7atPS+Tmz2dZwlcpR3
+X-Google-Smtp-Source: ABdhPJzrlAP5imDWEPKyVGiLnhg0plpe3Pjdz0K8YSADKul87MvIbS1OPbnv7c/HZQJfp1argFlx9wEiLJU/BiWVN/BRncyNJ03n
 MIME-Version: 1.0
-References: <20201003002544.3601440-1-sdf@google.com>
-In-Reply-To: <20201003002544.3601440-1-sdf@google.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 2 Oct 2020 19:25:01 -0700
-Message-ID: <CAADnVQKWw_GOd=hS6dSmXFA5Z252irr3hW45UkSgmjew+-fHRA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: deref map in BPF_PROG_BIND_MAP when it's
- already used
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
+X-Received: by 2002:a02:5d85:: with SMTP id w127mr4693509jaa.76.1601692385603;
+ Fri, 02 Oct 2020 19:33:05 -0700 (PDT)
+Date:   Fri, 02 Oct 2020 19:33:05 -0700
+In-Reply-To: <000000000000ed022605b0b1efaa@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000aef3fc05b0bb11ce@google.com>
+Subject: Re: WARNING in ieee80211_bss_info_change_notify
+From:   syzbot <syzbot+09d1cd2f71e6dd3bfd2c@syzkaller.appspotmail.com>
+To:     airlied@linux.ie, alexander.deucher@amd.com,
+        amd-gfx@lists.freedesktop.org, christian.koenig@amd.com,
+        davem@davemloft.net, dieter@nuetzel-hh.de,
+        dri-devel@lists.freedesktop.org, johannes@sipsolutions.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 2, 2020 at 5:25 PM Stanislav Fomichev <sdf@google.com> wrote:
->
-> We are missing a deref for the case when we are doing BPF_PROG_BIND_MAP
-> on a map that's being already held by the program.
-> There is 'if (ret) bpf_map_put(map)' below which doesn't trigger
-> because we don't consider this an error.
-> Let's add missing bpf_map_put() for this specific condition.
->
-> Fixes: ef15314aa5de ("bpf: Add BPF_PROG_BIND_MAP syscall")
-> Reported-by: Alexei Starovoitov <ast@kernel.org>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+syzbot has bisected this issue to:
 
-Thanks for the quick fix! Much appreciated.
+commit 135f971181d779c96ff3725c1a350a721785cc66
+Author: Alex Deucher <alexander.deucher@amd.com>
+Date:   Mon Nov 20 22:49:53 2017 +0000
+
+    drm/amdgpu: don't skip attributes when powerplay is enabled
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=120f55bd900000
+start commit:   fcadab74 Merge tag 'drm-fixes-2020-10-01-1' of git://anong..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=110f55bd900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=160f55bd900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4e672827d2ffab1f
+dashboard link: https://syzkaller.appspot.com/bug?extid=09d1cd2f71e6dd3bfd2c
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=161112eb900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=124fc533900000
+
+Reported-by: syzbot+09d1cd2f71e6dd3bfd2c@syzkaller.appspotmail.com
+Fixes: 135f971181d7 ("drm/amdgpu: don't skip attributes when powerplay is enabled")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
