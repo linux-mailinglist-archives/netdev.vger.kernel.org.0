@@ -2,99 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E232282229
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 09:52:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC71E28222C
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 09:52:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725769AbgJCHwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 03:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45790 "EHLO
+        id S1725805AbgJCHwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 03:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725648AbgJCHwM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 03:52:12 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E551FC0613D0
-        for <netdev@vger.kernel.org>; Sat,  3 Oct 2020 00:52:11 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id j2so4189742wrx.7
-        for <netdev@vger.kernel.org>; Sat, 03 Oct 2020 00:52:11 -0700 (PDT)
+        with ESMTP id S1725648AbgJCHwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 03:52:35 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72F2C0613D0
+        for <netdev@vger.kernel.org>; Sat,  3 Oct 2020 00:52:34 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id v12so3932100wmh.3
+        for <netdev@vger.kernel.org>; Sat, 03 Oct 2020 00:52:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=7b7Gm9jxzg7/k3OZeLp9T9xKAcOx+CD91zN9b3U6CB4=;
-        b=PH4NFabJpRVajcxyjtThedVQYiDclN+WKeUsmxxmKRED2sf6gzJ5mJ2VhLF7t3rjVj
-         Kua80HVueLGbIC56hvSsEByZ445UjIa0vewZcrXQGpqJWINl6IrCZNvOln28SVt3Hw+v
-         iPYljGST7OdI3oph9Pmx9BSqpnuouji5ibYOIHhZFbfE27yOgILZwlElObZsJjHhJbKY
-         UZ+bPMSwc/f4Zohakl1+aonlNKkOMTVw3y3EY2pjOQ082HYN0ZuixvkaKcFg7MCuyTe/
-         knqMy9LfRWHPWGT1wCd9hDO1ihjQxft+flBgTYHrHSEyBgUd98RjAuZ8vYZLGC8tCjFj
-         g1Xw==
+        bh=+e1wEjP2zKTA3i4arEFPGbCIAa6mi9SK5YGMFx2s/58=;
+        b=hBEor5pS9SaMEtsRWgnVc2yZT+suI2XMURmgKtWXkNePefUE3MjXJU+AgNNsq+xQdb
+         Hlx+bYZwd6uhm9jXA10jdRjM79yvr5EZC7EO3OFL2WziwDciUjELCOl1VhyrqbrpWcJM
+         Qo0DGfylF9lBhobl17IAHtBNGfWzaGRzDzCZNspCTKlJczBBgGuEdIhqyJaMeSH1yHWN
+         mSXUwYczvkWRJALzGsuIncpItO5fRrSnA75x2/uR9/JbuL/aB2ftAJHJmYS6+B9aHMiL
+         uZ8vyKyxQcEK+gfNI5vaBd+DEE8WFldd90OPRJgYpuXUDSfAO8OH9MkTuRRzMnodSsmX
+         qcIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=7b7Gm9jxzg7/k3OZeLp9T9xKAcOx+CD91zN9b3U6CB4=;
-        b=FeKViBinaypDnelCUyCjsHt4IZqx8em2gHpLI5Bhmmb1w61a2HPhrbemlvhHfHB2wh
-         PLMPs3Lgjr+h9Uo3ORfa+yar1cz+uAxx/bJVsFyO3RCnNpe6jTbW12tDwQEYJ5XWGyTm
-         KhUIEX2yqAvA7ewB/k8yBP4SQoRqa4FPBSASBdsu4vnrDWvI31gBSOXCn1pxeLxTZkbX
-         FWurODs6x6qxTlNZPXEbxMwE3lSX6ts0ttjexOoFHIotNm5A2E/hFQxklCLoQu5SAhqZ
-         wecsMfcgtXUY/jGSNWhAL9o/V/HnrTR0bN/slJsuFtZ04smHTQNu/QxUKdY3RgpU6zyv
-         FZ7g==
-X-Gm-Message-State: AOAM531wGsPDZQSB7RlajbWbXidTgoa1aEFiDfkQ2HyqoCj5qmxoh+bZ
-        yydO7obqosSiu9Sb5PEB+XnNkhzhhcGXALWX
-X-Google-Smtp-Source: ABdhPJzn73gK8q+yLkkC2rxrSwLl2igZF3RwdM0Lx7Y24GyeNHina+gpOQiKspLfTfRQ8XuUZG9Esg==
-X-Received: by 2002:adf:e312:: with SMTP id b18mr7468840wrj.372.1601711530662;
-        Sat, 03 Oct 2020 00:52:10 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id v128sm4250898wme.2.2020.10.03.00.52.09
+        bh=+e1wEjP2zKTA3i4arEFPGbCIAa6mi9SK5YGMFx2s/58=;
+        b=rWkNi+ourVjDI9BUKnZdFwoaJVd9l3BFUCG1x2xWbSbTmEWlXjRrFpkiNQ7qOl3ITB
+         lQJTflGGvuBmZUVjrM/9EA5YoBDangLgNYOSnR87av1h6Nu+kDzljPA7wz5SIcxF4TWz
+         750qC51/EGpCSjrGlZ/OhsapklT0Gk9fR+DPU0D8lgQjDPnW3hq0qHNmL4AGdQI0DY7A
+         tdeek9up0/MptTGIR4kRTXFIKSF64eAFHChZd+9+1bsJjyeEQzWsc0R0q6em/WyK/m12
+         VUzcaOOBiCgRvpRiR67TJEa7dCcOp4ny41Tu3FKYZ91qNEcOLK3GxymChsp0pt970eUu
+         8ktQ==
+X-Gm-Message-State: AOAM530D6+JaiKJF0dLcDAMBOcc7nMtaeikmFpsp0STp3FO7jMU+leEQ
+        8J1SR+Df574BhHNiqfpT0AXGLhYpe7c=
+X-Google-Smtp-Source: ABdhPJz7VY8DI6UIz7dvRqbKIgT7uHgniub1SaR51nfs5fZrDt8HBBMmcn0JIsctJkEzIadCNsDM1w==
+X-Received: by 2002:a1c:c342:: with SMTP id t63mr6337416wmf.145.1601711552464;
+        Sat, 03 Oct 2020 00:52:32 -0700 (PDT)
+Received: from skbuf ([188.26.229.171])
+        by smtp.gmail.com with ESMTPSA id i9sm4332895wma.47.2020.10.03.00.52.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 03 Oct 2020 00:52:10 -0700 (PDT)
-Date:   Sat, 3 Oct 2020 09:52:09 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Moshe Shemesh <moshe@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 02/16] devlink: Add reload action option to
- devlink reload command
-Message-ID: <20201003075209.GD3159@nanopsycho.orion>
-References: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
- <1601560759-11030-3-git-send-email-moshe@mellanox.com>
+        Sat, 03 Oct 2020 00:52:31 -0700 (PDT)
+Date:   Sat, 3 Oct 2020 10:52:29 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
+Cc:     davem@davemloft.net, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 4/4] net: dsa: set
+ configure_vlan_while_not_filtering to true by default
+Message-ID: <20201003075229.gxlndx7eh3vggxl7@skbuf>
+References: <20200907182910.1285496-1-olteanv@gmail.com>
+ <20200907182910.1285496-5-olteanv@gmail.com>
+ <87y2lkshhn.fsf@kurt>
+ <20200908102956.ked67svjhhkxu4ku@skbuf>
+ <87o8llrr0b.fsf@kurt>
+ <20201002081527.d635bjrvr6hhdrns@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1601560759-11030-3-git-send-email-moshe@mellanox.com>
+In-Reply-To: <20201002081527.d635bjrvr6hhdrns@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Oct 01, 2020 at 03:59:05PM CEST, moshe@mellanox.com wrote:
+Hi Kurt,
 
-[...]
+On Fri, Oct 02, 2020 at 11:15:27AM +0300, Vladimir Oltean wrote:
+> > Is this merged? I don't see it. Do I have to set
+> > `configure_vlan_while_not_filtering' explicitly to true for the next
+> > hellcreek version?
+> 
+> Yes, please set it to true. The refactoring change didn't get merged in
+> time, I don't want it to interfere with your series.
 
->+static int
->+devlink_nl_reload_actions_performed_snd(struct devlink *devlink,
->+					unsigned long actions_performed,
->+					enum devlink_command cmd, struct genl_info *info)
->+{
->+	struct sk_buff *msg;
->+	void *hdr;
->+
->+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
->+	if (!msg)
->+		return -ENOMEM;
->+
->+	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq, &devlink_nl_family, 0, cmd);
->+	if (!hdr)
->+		goto free_msg;
->+
->+	if (devlink_nl_put_handle(msg, devlink))
->+		goto nla_put_failure;
->+
->+	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RELOAD_ACTIONS_PERFORMED, actions_performed,
+Do you plan on resending hellcreek for 5.10?
 
-This should be NLA_BITFIELD, I believe. We use it for other bitfields
-too.
-
-
->+			      DEVLINK_ATTR_PAD))
-
-[...]
+Thanks,
+-Vladimir
