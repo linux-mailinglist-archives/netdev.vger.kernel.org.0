@@ -2,136 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99957282119
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 06:22:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAF6028214A
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 06:35:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725730AbgJCEW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 00:22:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgJCEW0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 00:22:26 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F822C0613D0;
-        Fri,  2 Oct 2020 21:22:24 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id h9so2665696ybm.4;
-        Fri, 02 Oct 2020 21:22:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LC//9RNBwY2v7Qpy8XK3c8PrpheS5Pjkp4UMfthkQAg=;
-        b=OlkdmPsiZ8jMVyoGx08blnI1QoId0iJcb+bcGs0VfGvCTVCqc7vDKVj+CWN6G9aBqw
-         ebpBcIbg3E4ddDXHoA73TDl2IWQXGTVZhIcpkUxxAnP+qwLiSzmBxXmzNvJYffy/v0F+
-         pO3HeR4kz1xg3Ggbg3vO+uuFb02Nh0tNK1/kcNUWmf8PCHYDCn+QFYzD3Nk+J2uiw6pE
-         HmdY0nvqZt84KxmjCcykURddJ28QZRhIbhQmu1jO6s1iL7ej0QC0KEDHMXZYND5gSDMB
-         +JOXVm7gV43nOj0GXvMlzcqtt/ZxRmTli4RN2ohdoeJekUrw1doo5fh56k6F5eOdsbSH
-         DvgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LC//9RNBwY2v7Qpy8XK3c8PrpheS5Pjkp4UMfthkQAg=;
-        b=YWfAalkmJ88WrD9zihLwJjCBQND7j9RaEWAS8Q2Kcvllc6L6sxACfIMMYfZX4S9301
-         deK2TrLD5bgIOjCMunhSkhftggEGpdWLg0cZrUv3SRf9VfpIgg6P7r7142OSjHPcWPFx
-         MFsVmrsf1mSuTrETi9hP5Yrm/OWVovsizJGz5Fhtx6ZNIwJ1yPhUWHKZXkBu0nfWtM29
-         darpV2e2sy9S9TcQiG3FJMgIcSb1An8SDy0BlsBFBOFHcJFq9DeJ8Ypy5Cp7T/7Xd/rd
-         doLr08Mejy/3qwHYv2BVPemGN1Iv7N3BZE0fjbLR96VgKaHsglRIQVPqEKyBPswn3XfC
-         rK+Q==
-X-Gm-Message-State: AOAM531ykG08qs9B+oEmXZD8H6vulq0btCON29id4DAMs3Y8/TNa9vq2
-        ENjkiS2V3wF+aZhPYVy4voCds4Rwfc0v+5oK/lNf+uhFGQI=
-X-Google-Smtp-Source: ABdhPJwpfxsf3Fxo4iUXR5NAnsQUAszlei8I8g7H2T8GRyZ1nwfsXP/DK/vLrF4n3YWq/N/sSntmg/PCD48x0NYbjkY=
-X-Received: by 2002:a25:2596:: with SMTP id l144mr6639116ybl.510.1601698942665;
- Fri, 02 Oct 2020 21:22:22 -0700 (PDT)
+        id S1725730AbgJCEfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 00:35:23 -0400
+Received: from mail-db8eur05on2051.outbound.protection.outlook.com ([40.107.20.51]:16129
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725446AbgJCEfW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 3 Oct 2020 00:35:22 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZtjxUJg/CMcZ0hYsMsQF//hBu5xJznpBM//9jibuZWCmP8NP8aKzaijCvAIPLZtBJl6px1BSeetStbm1EdaIbOeXhQ7ACE+hnZz+/Z3YuQ17rOnbUaRwpPZx0hN1YExCbOXZ4SwTsI6PSPWPVbxxHPDMk7/O2q9M2odlqnbo1xemCkITHki8/1FbxfCMbLC3sJnHw4Zyn8r511s8af5ImST0yLC3a9Qa6SonYHtCfGiylk80MJC8ZgtGawFQE76Dc4ba3SwJXQ5NTnaxIAEUwnw/YfwZp+8ADwWYR96VIMkW17Pi1KtlYY/E6RneP7AD4QMmuCDWEGVyICxFmpqYRQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pZnlYhcYGeqsOPD5Lv0ttxUzIm4/5nt192A+ee9SsMg=;
+ b=h7fKy/mC59LdyDNHkRck38nv2RDxqzrHUZ6WaLhvozt4xCBqZkAHcgQWJHY6xkIIh8wyPJzUbeKO4ByXrjKOhdK6rVrI8mYXmdiPBHjLogoKsBsY9JfAcrVeQM5n9zf8YNbeFNJq+4QdnqzjSh8rUGukNwYqVINKYH014VnAn3MhN1osZim+jEWxwYGRajyQnDDCcgWeSEOPqVg3RANURtEGXSuWmNQ/MuYs8BpNuhlSSqiHRBy2gifeT2o/AA52RLLOEfzcM8frVx0/B73+s+2QRbI9IrjKRGHo/huff/sHzsPe7krXKk8jtvABEffUTPlo2camcTdMCZ23qFIdxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pZnlYhcYGeqsOPD5Lv0ttxUzIm4/5nt192A+ee9SsMg=;
+ b=VpIlc0wl1Zte9OKN/ZkaLydpV5gMZQTqovF0YiuYU/9/DGczT9M2MK1ozoqL/oQg8i8XyTxZJq1wY03vlzWNG/ZAuc52Pr2WJTDZIfGiUCPbx5HcVdT6R8K44Iiz3RNoP1jNYYKEt2qhnPhqTxENS1UI41gTvMZF74WY7J1iXNM=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR0402MB3472.eurprd04.prod.outlook.com
+ (2603:10a6:803:a::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.35; Sat, 3 Oct
+ 2020 04:35:18 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::3c18:4bf1:4da0:a3bf]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::3c18:4bf1:4da0:a3bf%3]) with mapi id 15.20.3412.032; Sat, 3 Oct 2020
+ 04:35:18 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 00/10] arm64: dts: layerscape: update MAC
+ nodes with PHY information
+Thread-Topic: [PATCH net-next v2 00/10] arm64: dts: layerscape: update MAC
+ nodes with PHY information
+Thread-Index: AQHWmQA1FY6FsAhTLEeg9ZVmf4ok6KmE8TkAgABZ9oA=
+Date:   Sat, 3 Oct 2020 04:35:18 +0000
+Message-ID: <20201003043517.fcqa23bxqcufgbkm@skbuf>
+References: <20201002210737.27645-1-ioana.ciornei@nxp.com>
+ <20201002.161318.726844448692603677.davem@davemloft.net>
+In-Reply-To: <20201002.161318.726844448692603677.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.229.171]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 8d297f92-631e-4465-33c8-08d86755bb69
+x-ms-traffictypediagnostic: VI1PR0402MB3472:
+x-microsoft-antispam-prvs: <VI1PR0402MB3472702A7A2746BA0EA25A56E00E0@VI1PR0402MB3472.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: t3nAfLMj6+5L2qLEEjNIoy/GiUJ5xs0tr139nelVqrQn9zoqHnjyf0EHmnjbV8RMTPUV7YP2g1cc2rw4359DqJXISulhJMixDTPA7MhXXsAC1YIPZRL00LQR/dEaI3uIDBqH+epFYEnvvSvKKQszkZhvdytBVK0+oDSu7oLfwblvQP36Wp/KRe5OsMgslEOQVM3bKHs1T5B+7Oo+YN6CD4JzM9XDnyFTu9a9SYx7f8gLZuB2LiChXk3bTrqJjBs7KCV+Y7NPkVRa8UFT3txh5C06lqrEcJtkSsDsYwCJR050nzBW4DKzmoUjzq+WOouxEV6yXKxqgFyMvHpUCR/c9Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(39860400002)(396003)(366004)(376002)(136003)(346002)(6486002)(26005)(6512007)(9686003)(6916009)(44832011)(86362001)(83380400001)(71200400001)(66946007)(33716001)(66556008)(5660300002)(76116006)(66446008)(66476007)(186003)(64756008)(91956017)(1076003)(6506007)(8936002)(8676002)(4326008)(2906002)(478600001)(316002)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 2o93fhRHY1a1Yzs/JWz3mZ1TFjxngZGlCFm1vFx2XvY27inuVuObALvQr6dgpPtIUdm2Tu3nW3BKRmg93xf+B3iP1KL8jSycXn3ilcFf3IKL7eaQHNhis124LQr/I/23P1NIuvtefLQH6bRvH/c8YDqb/Oo5spHPEkMQz36oHiX5iIQNyDevN0MWdzVIn41tW1GylkFH1ELE2JY7uVB9CBTCBZvMo+MzEuXIovozMqy+j5J7KsEtUTd17KT1kvNxllVutSnjnfOAerzXxVu4jMhb9kcZsIET1lYLDb1cAOxODjPZA4oHXnqgxxZEvGGhfuOSiZlTbA+l/ob//AsFIjgBWjmnCWkpzAfO3TQ1BAb5tgam4nUOr9aRuz6Ddo/0bWUUdOK3di0Bj/EZ4tfoc7So4zQMXoqG7HgqSNOA2KdqGax/4CFQMP+4/r0AjJ7SEIbLbI8WZuH2VJGdQvkPRmgf4lkZ+fOru57dzSW+Csn8cqnR602iebtYiWAK28bYSrZOVJ4T5j9p8KuLgl+tIH9PCj3Kgu0y02Mi6JqVB8EmqkMK/3/lgVTVmO4l6/4qcaolUfC5+q3bkYyS9aoFGCYaGwf0CflHaLJBzEpjS/0rnrPrtXJ1O63Mua3wGVbyyhxr7uZPxvpuUIzKk/9PeA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <9C0D0A72957AC542BBCCE3E437F7F1DB@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20201003021904.1468678-1-yhs@fb.com>
-In-Reply-To: <20201003021904.1468678-1-yhs@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 2 Oct 2020 21:22:11 -0700
-Message-ID: <CAEf4BzZSg9TWF=kGVmiZ7HUbpyXwYUEqrvFMeZgYo0h7EC8b3w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] samples/bpf: change Makefile to cope with
- latest llvm
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8d297f92-631e-4465-33c8-08d86755bb69
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Oct 2020 04:35:18.5141
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KeAwvCXHwAIImIXmbOTk/cP9aC6N6ZxPok9SSUBGAMlc9lBobNbIxKG0vLya4fzj/AXRAWRr/ir8/z8koFIdjg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3472
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 2, 2020 at 7:19 PM Yonghong Song <yhs@fb.com> wrote:
->
-> With latest llvm trunk, bpf programs under samples/bpf
-> directory, if using CORE, may experience the following
-> errors:
->
-> LLVM ERROR: Cannot select: intrinsic %llvm.preserve.struct.access.index
-> PLEASE submit a bug report to https://bugs.llvm.org/ and include the crash backtrace.
-> Stack dump:
-> 0.      Program arguments: llc -march=bpf -filetype=obj -o samples/bpf/test_probe_write_user_kern.o
-> 1.      Running pass 'Function Pass Manager' on module '<stdin>'.
-> 2.      Running pass 'BPF DAG->DAG Pattern Instruction Selection' on function '@bpf_prog1'
->  #0 0x000000000183c26c llvm::sys::PrintStackTrace(llvm::raw_ostream&, int)
->     (/data/users/yhs/work/llvm-project/llvm/build.cur/install/bin/llc+0x183c26c)
-> ...
->  #7 0x00000000017c375e (/data/users/yhs/work/llvm-project/llvm/build.cur/install/bin/llc+0x17c375e)
->  #8 0x00000000016a75c5 llvm::SelectionDAGISel::CannotYetSelect(llvm::SDNode*)
->     (/data/users/yhs/work/llvm-project/llvm/build.cur/install/bin/llc+0x16a75c5)
->  #9 0x00000000016ab4f8 llvm::SelectionDAGISel::SelectCodeCommon(llvm::SDNode*, unsigned char const*,
->     unsigned int) (/data/users/yhs/work/llvm-project/llvm/build.cur/install/bin/llc+0x16ab4f8)
-> ...
-> Aborted (core dumped) | llc -march=bpf -filetype=obj -o samples/bpf/test_probe_write_user_kern.o
->
-> The reason is due to llvm change https://reviews.llvm.org/D87153
-> where the CORE relocation global generation is moved from the beginning
-> of target dependent optimization (llc) to the beginning
-> of target independent optimization (opt).
->
-> Since samples/bpf programs did not use vmlinux.h and its clang compilation
-> uses native architecture, we need to adjust arch triple at opt level
-> to do CORE relocation global generation properly. Otherwise, the above
-> error will appear.
->
-> This patch fixed the issue by introduce opt and llvm-dis to compilation chain,
-> which will do proper CORE relocation global generation as well as O2 level
-> optimization. Tested with llvm10, llvm11 and trunk/llvm12.
->
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
->  samples/bpf/Makefile | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
->
-> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> index 4f1ed0e3cf9f..79c5fdea63d2 100644
-> --- a/samples/bpf/Makefile
-> +++ b/samples/bpf/Makefile
-> @@ -211,6 +211,8 @@ TPROGLDLIBS_xsk_fwd         += -pthread
->  #  make M=samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
->  LLC ?= llc
->  CLANG ?= clang
-> +OPT ?= opt
-> +LLVM_DIS ?= llvm-dis
->  LLVM_OBJCOPY ?= llvm-objcopy
->  BTF_PAHOLE ?= pahole
->
-> @@ -314,7 +316,9 @@ $(obj)/%.o: $(src)/%.c
->                 -Wno-address-of-packed-member -Wno-tautological-compare \
->                 -Wno-unknown-warning-option $(CLANG_ARCH_ARGS) \
->                 -I$(srctree)/samples/bpf/ -include asm_goto_workaround.h \
-> -               -O2 -emit-llvm -c $< -o -| $(LLC) -march=bpf $(LLC_FLAGS) -filetype=obj -o $@
-> +               -O2 -emit-llvm -Xclang -disable-llvm-passes -c $< -o - | \
-> +               $(OPT) -O2 -mtriple=bpf-pc-linux | $(LLVM_DIS) | \
-> +               $(LLC) -march=bpf $(LLC_FLAGS) -filetype=obj -o $@
+On Fri, Oct 02, 2020 at 04:13:18PM -0700, David Miller wrote:
+> From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> Date: Sat,  3 Oct 2020 00:07:27 +0300
+>=20
+> > This patch set aims to add the necessary DTS nodes to complete the
+> > MAC/PCS/PHY representation on DPAA2 devices. The external MDIO bus node=
+s
+> > and the PHYs found on them are added, along with the PCS MDIO internal
+> > buses and their PCS PHYs. Also, links to these PHYs are added from the
+> > DPMAC node.
+> >=20
+> > I am resending these via netdev because I am not really sure if Shawn i=
+s
+> > still able to take them in time for 5.10 since his last activity on the
+> > tree has been some time ago.
+> > I tested them on linux-next and there are no conflicts.
+> >=20
+> > Changes in v2:
+> >  - documented the dpmac node into a new yaml entry
+> >  - dropped the '0x' from some unit addresses
+>=20
+> I don't feel comfortable taking such a sizable set of DT changes into
+> the networking tree rather than the devicetree or ARM tree(s).
+>=20
+> I know we're fast and more responsive than the other subsystems (by
+> several orders of magnitude) but that isn't a reason to bypass the
+> correct tree for these changes.
+>=20
+> Thank you.
 
-I keep forgetting exact details of why we do this native clang + llc
-pipeline instead of just doing `clang -target bpf`? Is it still
-relevant and necessary, or we can just simplify it now?
+No problem. At least I cleaned-up the patch set and now it's more or
+less ready to go for next time.
+Thanks for the feedback!
 
->  ifeq ($(DWARF2BTF),y)
->         $(BTF_PAHOLE) -J $@
->  endif
-> --
-> 2.24.1
->
+Ioana=
