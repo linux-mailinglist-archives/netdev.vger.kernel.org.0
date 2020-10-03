@@ -2,88 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47ADA28253E
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 17:56:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5C25282549
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 18:06:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725809AbgJCP4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 11:56:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725788AbgJCP4e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 11:56:34 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3802EC0613D0
-        for <netdev@vger.kernel.org>; Sat,  3 Oct 2020 08:56:34 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id p21so2985600pju.0
-        for <netdev@vger.kernel.org>; Sat, 03 Oct 2020 08:56:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VMKEB/jU0kRa2w6Ec/LA3ih71dBuxaWaNkrhEqUNwDc=;
-        b=o6cAbxcx93lBOu6R4xH5RAJYP8ey3pu/UwwJe681PGC9IVsRmcBb4Gb1+A2Xf/77we
-         2jvU0vPpj+1cIdpqmpUba3SnDkTosHXrv95R6uXGJyF/dcUPN8ArGRSh7ZRnhnedlnXp
-         kZS9a4bR97E2B1o3WikflHSXnTcnSbLwe+oxqTaDeTUfW3eC2TO7mvHWjoov2j1N4+cm
-         kkaHarypLhu5YpgQvRPAYo8VUNPkuBQqZGiru3KrLkD/DBtCXYZNckGgQcGETwb1LPGS
-         K+kJF7KxRP6kwxBGHPfpEsHKkdyuB9eL82swLV/W95sxyS/ImkLArVpiYoGVGEk6VT/b
-         X3ZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=VMKEB/jU0kRa2w6Ec/LA3ih71dBuxaWaNkrhEqUNwDc=;
-        b=A6Poapa3FQ1UucXQ1eF47qoGxSpR1tlmncFvXwxnhGQJ6S480o0JJc9FGy4CF03D+h
-         MeNV7/ca5lJ2mSVzQdED5q4bJz6BcxjqZSwSQekHxz8HNDhMnUr+wBV11MbxUbiZMMFv
-         gfcCvl65Fy+OPYFDSuB0H4e1RwvBpV2A8nXIN+6BFiWNz7Hm3oExmrzrZYxIZLeTZL3V
-         g6RhsMmHqVI/5Iyr9RBSKtFOREDgJLhJUUGQrawCcC9Sshb3YFTJ23wP9/dasl9YA6g5
-         hOdehzFjmw+RXTE+/BSEwhjjT8SFkHOo40VamBQEV0oK1INwxMaNenpUMkZy3kAETRz3
-         IWig==
-X-Gm-Message-State: AOAM531z5iOHzOx7AR6Ah05PtiOdpttIAFRtopl11rIg5x10gC7cSuCt
-        KgycbFTkT588wU7ohGhG5fV3xHKGSJEmUA==
-X-Google-Smtp-Source: ABdhPJwk6u0isADYnSulk3wVyPqzIPeJSFQNHs2iMOa4Kmj7H7gWxHHkf835G8icx0blY+1lzoIaVg==
-X-Received: by 2002:a17:90a:aa90:: with SMTP id l16mr8026607pjq.0.1601740593369;
-        Sat, 03 Oct 2020 08:56:33 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id bj2sm5081542pjb.20.2020.10.03.08.56.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 03 Oct 2020 08:56:32 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/2] dt-bindings: net: dsa: b53: Fix full duplex
- in example
-To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S1725801AbgJCQG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 12:06:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55296 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725789AbgJCQG3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 3 Oct 2020 12:06:29 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3F2E4206DD;
+        Sat,  3 Oct 2020 16:06:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601741188;
+        bh=apD0HcRmzAXNvqvvX6bN2EfAllTv35RqE/SFUkGFRSM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OYQSAgH9EK6A5wQHy1/z7+ul9pLXETvspHeJUQwrL/zoQmeK90ZYtrh4KFSD4tNS5
+         g82RtwvZpLZb7bTh+7Y3ynPvwVOJo6tsEXgrAQTNZxVn/7ClHUWglB8bBKxBoXFMUX
+         BQgSfb9q2ThCEbFsNmIdQgxA0cDw48la+8jbhDRA=
+Date:   Sat, 3 Oct 2020 18:07:13 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Sathish Narsimman <sathish.narasimman@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org
-References: <20201003093051.7242-1-kurt@linutronix.de>
- <20201003093051.7242-2-kurt@linutronix.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e62b8072-ab7a-ce6d-1ac1-7fcb1b28081d@gmail.com>
-Date:   Sat, 3 Oct 2020 08:56:32 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.3.1
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Revert "Bluetooth: Update resolving list when updating
+ whitelist"
+Message-ID: <20201003160713.GA1512229@kroah.com>
+References: <20201003135449.GA2691@kroah.com>
+ <A1C95238-CBCB-4FD4-B46D-A62AED0C77E5@holtmann.org>
 MIME-Version: 1.0
-In-Reply-To: <20201003093051.7242-2-kurt@linutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <A1C95238-CBCB-4FD4-B46D-A62AED0C77E5@holtmann.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/3/2020 2:30 AM, Kurt Kanzenbach wrote:
-> There is no such property as duplex-full. It's called full-duplex. Leading to
-> reduced speed when using the example as base for a real device tree.
-
-Doh, thanks for correcting this. Would you want to make this a YAML 
-binding at some point? I can take care of it if you do not have time to 
-do it.
-
+On Sat, Oct 03, 2020 at 05:51:03PM +0200, Marcel Holtmann wrote:
+> Hi Greg,
 > 
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> > This reverts commit 0eee35bdfa3b472cc986ecc6ad76293fdcda59e2 as it
+> > breaks all bluetooth connections on my machine.
+> > 
+> > Cc: Marcel Holtmann <marcel@holtmann.org>
+> > Cc: Sathish Narsimman <sathish.narasimman@intel.com>
+> > Fixes: 0eee35bdfa3b ("Bluetooth: Update resolving list when updating whitelist")
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > ---
+> > net/bluetooth/hci_request.c | 41 ++-----------------------------------
+> > 1 file changed, 2 insertions(+), 39 deletions(-)
+> > 
+> > This has been bugging me for since 5.9-rc1, when all bluetooth devices
+> > stopped working on my desktop system.  I finally got the time to do
+> > bisection today, and it came down to this patch.  Reverting it on top of
+> > 5.9-rc7 restored bluetooth devices and now my input devices properly
+> > work.
+> > 
+> > As it's almost 5.9-final, any chance this can be merged now to fix the
+> > issue?
+> 
+> can you be specific what breaks since our guys and I also think the
+> ChromeOS guys have been testing these series of patches heavily.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+My bluetooth trackball does not connect at all.  With this reverted, it
+all "just works".
+
+Same I think for a Bluetooth headset, can check that again if you really
+need me to, but the trackball is reliable here.
+
+> When you run btmon does it indicate any errors?
+
+How do I run it and where are the errors displayed?
+
+> Do you have a chance to test net-next and see the LL Privacy there might have addressed this?
+
+Have a specific set of patches I can test?  It wouldn't be good to have
+5.9-final go out with this not working at all.
+
+thanks,
+
+greg k-h
