@@ -2,111 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73E032821B0
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 07:54:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B88962821B2
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 07:54:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725778AbgJCFx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 01:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55942 "EHLO
+        id S1725795AbgJCFyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 01:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgJCFx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 01:53:56 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968CBC0613D0;
-        Fri,  2 Oct 2020 22:53:54 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id q4so2439495pjh.5;
-        Fri, 02 Oct 2020 22:53:54 -0700 (PDT)
+        with ESMTP id S1725765AbgJCFyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 01:54:40 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3CAC0613D0;
+        Fri,  2 Oct 2020 22:54:40 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id x2so2269486pjk.0;
+        Fri, 02 Oct 2020 22:54:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ZpLkhopR7RvaZKej0tLr3XiT6AwIkOjIodaqyAoILX4=;
-        b=f/seNY1BqS1fuW+3BBt5TE22tv+sxsB2sKJPkxTwJHD5KGzxSlP2HjigjY4LOhfZ/u
-         Jkii6V5xaWx4+O2Hn722cOJOvwhMimvfxd+caaq6Q2GlYRagZrMLESVkcE1z0ixQR31I
-         S+1dD44MtirDQ9XQvvMcZ709Q5iLTspCyMKI67Xv+8sqdfzn3nskdi9tGf9yFzopqj1w
-         /ikT85IojpD9sEj5PUPlfU1bwYJj8A5SVyXz3UeXVE1jyPFIusHC9UraXRBc/ulGyYk5
-         aLEVrUAJosmGbhV+iIUkiP2P1i1WXXfb7ZaHL8TUN+dwuDno41RpUL8WCZlGY6x8QeRO
-         0c/g==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=m4KS3848PrcvqXAzCFiimfxqlRCB/TpZjyjy6cihM+Q=;
+        b=IO+9gt4yl9NCpu4sQPrBhRhiq5PV/m3qFdVc/+KFj2wzRA54BRBSYhOFP4yre5nL1Z
+         IvyPI5DZJfh1pijkFXH987LFSnTBVMRjhchmXLXetC9o2ANdZw/k3XIL1n8iI/laaYEd
+         8VSL/vFWvDG22QjOI2U4WEjNmvqd2LuXbmIwxXVH6mUqaKW1Rwq2cBPVeCVOt1DT8aKN
+         bqjRNeYSkp14h2PoUGJ+ubwJdAK9o4emmXR1wjlAlqhfTob8AeeMy5V1H3A8vNYehaOV
+         K3nSRxXhAWNzjNKYzK//SAKFxwVg+2LRaxusM0Rulwcp5k+sRWWLpq5hNKTG/DHmstLk
+         +nqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ZpLkhopR7RvaZKej0tLr3XiT6AwIkOjIodaqyAoILX4=;
-        b=T82udkUCCtST5OkRXcgbgBm1qGX3YWdP46PVPxTllphHIi8wOUuomCPggtOif3FNTj
-         yRvtTQ5T5Sa8L/UjN4xoz98Gex7NuI+z1f3lXCn8OZjnNEYMptCqUbVwzKWpDbEXXypW
-         q5x/0VV4e5/bGZRgKjIAPfqwYPHehf8k1+86ck2EBJHUBF6t9wKpqiPTjToqnCM/SvCy
-         98a6mxDF4UAoebXsLQTQ4AXwAw/s4Xh1GGvHMw+W4fQG9rFH+mPRfCBm27wmssNRQ3N3
-         qT98Ve7lVtKL1NI/GvQtFVCYIxPzjjW4o2EHNytkVC++vwEyb7ePRVwtZdX2Qf+78cCb
-         n4Aw==
-X-Gm-Message-State: AOAM533XZGHbPkfeLj5FBVGxJ9Ee6LL1Mu500wNejEz9ctUP1WTaTfOn
-        g9sh4WLPe3iKnBTxCItfrVQ=
-X-Google-Smtp-Source: ABdhPJxZAAyoTPwXzIq2v9cLhdcOtS/P7paRo+bVLaSACXvjGc8ZLUNUgJjGiaHmheCQSU0L8Iy59A==
-X-Received: by 2002:a17:90a:d311:: with SMTP id p17mr6275885pju.135.1601704434077;
-        Fri, 02 Oct 2020 22:53:54 -0700 (PDT)
-Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
-        by smtp.gmail.com with ESMTPSA id u6sm3354301pjy.37.2020.10.02.22.53.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2020 22:53:53 -0700 (PDT)
-Date:   Sat, 3 Oct 2020 14:53:48 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Coiby Xu <coiby.xu@gmail.com>
-Cc:     devel@driverdev.osuosl.org, Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4] staging: qlge: fix build breakage with dumping enabled
-Message-ID: <20201003055348.GA100061@f3>
-References: <20201002235941.77062-1-coiby.xu@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=m4KS3848PrcvqXAzCFiimfxqlRCB/TpZjyjy6cihM+Q=;
+        b=tbeUM60RlrCvJxPQZSUuXGYcxH/qLy4zx96SaRAPzciuVi4IP443DVNORPh6QWIwSy
+         2y6PHBi5B33DtIlnRe3NZbgEtSLkD9k3TbDtXRMB6TgQHq0ZtsiCHS68YeWfWoafJV2g
+         aYkNPtjeohRlGfW+cYAj/3wSRO7scXP3pSV6kGjt9hnLj8Ey51mUXkFnFgFNYLkmRkn0
+         AWbyvePLiqJVauuHeaWtxubIP8+p1B2gsvNiQz6W9fBUpKj/8zzq/lQQJe4SiUD1hPt1
+         zWxvz87lNzHr7SN40DKWHkaOaSKZxvM8TinmVxLKXhOg8QNfGrySxZDm0Ihzk6R7xa2p
+         BKZQ==
+X-Gm-Message-State: AOAM533yF20NA6g7LjfmfqPEcSWXkst9dkg/PtbXKmgi2Bbb7SzhFEjQ
+        8r5O7+U4ZMi9/DvGGQDeh0jfe07O0+/OH0jeY6c=
+X-Google-Smtp-Source: ABdhPJwH2hfwWWdulLEsYcNVwJzjU39Yd92fij21PqSuzUnMzFUBCn3JLuFtQAF1U5BbEiTcaEkSFA==
+X-Received: by 2002:a17:90a:5588:: with SMTP id c8mr6110448pji.224.1601704479116;
+        Fri, 02 Oct 2020 22:54:39 -0700 (PDT)
+Received: from [192.168.0.104] ([49.207.217.69])
+        by smtp.gmail.com with ESMTPSA id j19sm4245113pfi.51.2020.10.02.22.54.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Oct 2020 22:54:38 -0700 (PDT)
+Subject: Re: [PATCH v2] net: usb: rtl8150: prevent set_ethernet_addr from
+ setting uninit address
+To:     David Miller <davem@davemloft.net>
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
+        petkan@nucleusys.com, kuba@kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201001073221.239618-1-anant.thazhemadam@gmail.com>
+ <20201001.191522.1749084221364678705.davem@davemloft.net>
+ <83804e93-8f59-4d35-ec61-e9b5e6f00323@gmail.com>
+ <20201002.153849.1212074263659708172.davem@davemloft.net>
+From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Message-ID: <2e4f7bdb-76c0-9ee4-88bf-5d31ded17116@gmail.com>
+Date:   Sat, 3 Oct 2020 11:24:34 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <20201002.153849.1212074263659708172.davem@davemloft.net>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201002235941.77062-1-coiby.xu@gmail.com>
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-10-03 07:59 +0800, Coiby Xu wrote:
-> This fixes commit 0107635e15ac
-> ("staging: qlge: replace pr_err with netdev_err") which introduced an
-> build breakage of missing `struct ql_adapter *qdev` for some functions
-> and a warning of type mismatch with dumping enabled, i.e.,
-> 
-> $ make CFLAGS_MODULE="-DQL_ALL_DUMP -DQL_OB_DUMP -DQL_CB_DUMP \
->     -DQL_IB_DUMP -DQL_REG_DUMP -DQL_DEV_DUMP" M=drivers/staging/qlge
-> 
-> qlge_dbg.c: In function ‘ql_dump_ob_mac_rsp’:
-> qlge_dbg.c:2051:13: error: ‘qdev’ undeclared (first use in this function); did you mean ‘cdev’?
->  2051 |  netdev_err(qdev->ndev, "%s\n", __func__);
->       |             ^~~~
-> qlge_dbg.c: In function ‘ql_dump_routing_entries’:
-> qlge_dbg.c:1435:10: warning: format ‘%s’ expects argument of type ‘char *’, but argument 3 has type ‘int’ [-Wformat=]
->  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
->       |         ~^
->       |          |
->       |          char *
->       |         %d
->  1436 |        i, value);
->       |        ~
->       |        |
->       |        int
-> qlge_dbg.c:1435:37: warning: format ‘%x’ expects a matching ‘unsigned int’ argument [-Wformat=]
->  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
->       |                                 ~~~~^
->       |                                     |
->       |                                     unsigned int
-> 
-> Note that now ql_dump_rx_ring/ql_dump_tx_ring won't check if the passed
-> parameter is a null pointer.
-> 
-> Fixes: 0107635e15ac ("staging: qlge: replace pr_err with netdev_err")
-> Reported-by: Benjamin Poirier <benjamin.poirier@gmail.com>
-> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
-> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
-> ---
 
-Reviewed-by: Benjamin Poirier <benjamin.poirier@gmail.com>
+On 03-10-2020 04:08, David Miller wrote:
+> From: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+> Date: Fri, 2 Oct 2020 17:04:13 +0530
+>
+>> But this patch is about ensuring that an uninitialized variable's
+>> value (whatever that may be) is not set as the ethernet address
+>> blindly (without any form of checking if get_registers() worked
+>> as expected, or not).
+> Right, and if you are going to check for errors then you have to
+> handle the error properly.
+>
+> And the proper way to handle this error is to set a random ethernet
+> address on the device.
+
+Yes, I've understood that now.
+I've prepared and tested a v3 accordingly, and will have it sent in soon enough.
+Thank you so much for this!� :)
+
+Thanks,
+Anant
+
