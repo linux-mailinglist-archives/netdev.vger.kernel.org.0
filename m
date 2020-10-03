@@ -2,91 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94416282361
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 11:57:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B04428236F
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 12:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725781AbgJCJ5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 05:57:15 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:32995 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725681AbgJCJ5P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 05:57:15 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-92-uf75rYOZO5uDD8z_t_NowA-1; Sat, 03 Oct 2020 10:57:10 +0100
-X-MC-Unique: uf75rYOZO5uDD8z_t_NowA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Sat, 3 Oct 2020 10:57:09 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Sat, 3 Oct 2020 10:57:09 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Wei Wang' <weiwan@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Felix Fietkau <nbd@nbd.name>
-Subject: RE: [PATCH net-next v2 0/5] implement kthread based napi poll
-Thread-Topic: [PATCH net-next v2 0/5] implement kthread based napi poll
-Thread-Index: AQHWmQrxY4+GJOdltE+p6T5f2TezYKmFmo0A
-Date:   Sat, 3 Oct 2020 09:57:09 +0000
-Message-ID: <e37939313fc24658a8a6b860dcea506e@AcuMS.aculab.com>
-References: <20201002222514.1159492-1-weiwan@google.com>
-In-Reply-To: <20201002222514.1159492-1-weiwan@google.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1725836AbgJCKBx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 3 Oct 2020 06:01:53 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:60934 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725826AbgJCKBx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 06:01:53 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-582-uNrKKprfMHOGpQcR7fbb3Q-1; Sat, 03 Oct 2020 06:01:48 -0400
+X-MC-Unique: uNrKKprfMHOGpQcR7fbb3Q-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D849B801ADE;
+        Sat,  3 Oct 2020 10:01:46 +0000 (UTC)
+Received: from bahia.lan (ovpn-112-192.ams2.redhat.com [10.36.112.192])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C6135D9D3;
+        Sat,  3 Oct 2020 10:01:41 +0000 (UTC)
+Subject: [PATCH v3 0/3] vhost: Skip access checks on GIOVAs
+From:   Greg Kurz <groug@kaod.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        qemu-devel@nongnu.org, Laurent Vivier <laurent@vivier.eu>,
+        David Gibson <david@gibson.dropbear.id.au>
+Date:   Sat, 03 Oct 2020 12:01:40 +0200
+Message-ID: <160171888144.284610.4628526949393013039.stgit@bahia.lan>
+User-Agent: StGit/0.21
 MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=groug@kaod.org
 X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
+X-Mimecast-Originator: kaod.org
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogV2VpIFdhbmcNCj4gU2VudDogMDIgT2N0b2JlciAyMDIwIDIzOjI1DQo+IA0KPiBUaGUg
-aWRlYSBvZiBtb3ZpbmcgdGhlIG5hcGkgcG9sbCBwcm9jZXNzIG91dCBvZiBzb2Z0aXJxIGNvbnRl
-eHQgdG8gYQ0KPiBrZXJuZWwgdGhyZWFkIGJhc2VkIGNvbnRleHQgaXMgbm90IG5ldy4NCj4gUGFv
-bG8gQWJlbmkgYW5kIEhhbm5lcyBGcmVkZXJpYyBTb3dhIGhhdmUgcHJvcG9zZWQgcGF0Y2hlcyB0
-byBtb3ZlIG5hcGkNCj4gcG9sbCB0byBrdGhyZWFkIGJhY2sgaW4gMjAxNi4gQW5kIEZlbGl4IEZp
-ZXRrYXUgaGFzIGFsc28gcHJvcG9zZWQNCj4gcGF0Y2hlcyBvZiBzaW1pbGFyIGlkZWFzIHRvIHVz
-ZSB3b3JrcXVldWUgdG8gcHJvY2VzcyBuYXBpIHBvbGwganVzdCBhDQo+IGZldyB3ZWVrcyBhZ28u
-DQoNCldoYXQgZGVmYXVsdCBzY2hlZHVsZXIgcHJpb3JpdHkgYXJlIHlvdSBwbGFubmluZyB0byB1
-c2U/DQoNClRoZSBjdXJyZW50ICdzb2Z0aW50JyBpcyAoZWZmZWN0aXZlbHkpIHNsaWdodGx5IGhp
-Z2hlciBwcmlvcml0eQ0KdGhhbiB0aGUgaGlnaGVzdCBSVCBwcmlvcml0eS4NCg0KSSB0aGluayB5
-b3UgbmVlZCB0byB1c2UgYSAnbWlkZGxlJyBwcmlvcml0eSBSVCBwcm9jZXNzIHNvIHRoYXQNCmFw
-cGxpY2F0aW9ucyBjYW4gZGVjaWRlIHdoZXRoZXIgdGhleSBuZWVkIHRvIGJlIGhpZ2hlci9sb3dl
-cg0KcHJpb3JpdHkgdGhhbiB0aGUgbmV0d29yayBjb2RlLg0KDQpCdXQgdGhlbiB5b3UgaGl0IHRo
-ZSBwcm9ibGVtIHRoYXQgdGhlIHNjaGVkdWxlciBnaXZlcyBSVA0KcHJvY2Vzc2VzIGEgdmVyeSAn
-c3RpY2t5JyBjcHUgYWZmaW5pdHkuDQpJSVJDIHRoZXkgZG9uJ3QgZXZlciBnZXQgJ3N0b2xlbicg
-YnkgYW4gaWRsZSBjcHUsIHNvIG9ubHkNCm1pZ3JhdGUgd2hlbiB0aGUgc2NoZWR1bGVyIGZvciB0
-aGUgY3B1IHRoZXkgbGFzdCByYW4gb24NCmRlY2lkZXMgdG8gcnVuIHNvbWV0aGluZyBvZiBhIGhp
-Z2hlciBwcmlvcml0eS4NClRoaXMgaXMgcHJvYmxlbWF0aWMgaWYgYSBsb3cgcHJpb3JpdHkgcHJv
-Y2VzcyBpbiBsb29waW5nDQppbiBrZXJuZWwgc3BhY2Ugc29tZXdoZXJlICh3aXRob3V0IGEgY29u
-ZF9yZXNjaGVkKCkpLg0KKEkndmUgYmVlbiBydW5uaW5nIGZ0cmFjZS4uLikNCg0KR2l2ZW4gdGhh
-dCB0aGUgbmFwaSBjcHUgY3ljbGVzIGhhdmUgdG8gaGFwcGVuIHNvbWV0aW1lLA0KdGhlIGJpZ2dl
-c3QgcHJvYmxlbSBJIGZvdW5kIHdpdGggdGhlIGN1cnJlbnQgc29mdGludA0KaW1wbGVtZW50YXRp
-b24gaXMgdGhhdCBhIGhhcmR3YXJlIGludGVycnVwdCBjYW4gaGFwcGVuDQp3aGlsZSBhbiBhcHBs
-aWNhdGlvbiBpcyBob2xkaW5nIGEgKHVzZXIgc3BhY2UpIG11dGV4Lg0KVGhpcyB3aWxsIGJsb2Nr
-IG90aGVyIGFwcGxpY2F0aW9uIHRocmVhZHMgZnJvbSBhY3F1aXJpbmcNCnRoZSBtdXRleCB1bnRp
-bCBub3Qgb25seSB0aGUgaGFyZHdhcmUgaW50ZXJydXB0DQpjb21wbGV0ZXMsIGJ1dCBhbHNvIGFs
-bCB0aGUgYXNzb2NpYXRlZCBzb2Z0aW50ICh0eXBpY2FsbHkNCm5hcGkgYW5kIHJjdSkgcHJvY2Vz
-c2luZyBoYXMgY29tcGxldGVkLg0KVGhpcyBjYW4gdGFrZSBhIHdoaWxlIQ0KTW92aW5nIHRoZSAn
-c29mdGludCcgcHJvY2Vzc2luZyB0byBhIHNlcGFyYXRlIHRocmVhZA0Kd2lsbCBhbGxvdyB0aGUg
-aW50ZXJydXB0ZWQgcHJvY2VzcyB0byByZWxlYXNlIHRoZSBtdXRleA0KYW5kIGFsbCB0aGUgYXBw
-bGljYXRpb24gdGhyZWFkcyBjb250aW51ZS4NCg0KSSBndWVzcyB0aGUgZG93bnNpZGUgb2YgdXNp
-bmcgYSB0aHJlYWQgaXMgdGhhdCB0aGUNCmRhdGEgbmVlZGVkIGlzIGxpa2VseSB0byBiZSBpbiB0
-aGUgd3JvbmcgY2FjaGUuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNp
-ZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsN
-ClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+This series addresses some misuse around vring addresses provided by
+userspace when using an IOTLB device. The misuse cause failures of
+the VHOST_SET_VRING_ADDR ioctl on POWER, which in turn causes QEMU
+to crash at migration time.
+
+Jason suggested that we should use vhost_get_used_size() during the
+review of v2. Fixed this in a preliminary patch (patch 2) and rebased
+the vq_log_used_access_ok() helper on top (patch 3).
+
+Note that I've also posted a patch for QEMU so that it skips the used
+structure GIOVA when allocating the log bitmap. Otherwise QEMU fails to
+allocate it because POWER puts GIOVAs very high in the address space (ie.
+over 0x800000000000000ULL).
+
+https://patchwork.ozlabs.org/project/qemu-devel/patch/160105498386.68108.2145229309875282336.stgit@bahia.lan/
+
+v3:
+ - patch 1: added Jason's ack
+ - patch 2: new patch to use vhost_get_used_size()
+ - patch 3: rebased patch 2 from v2
+
+v2:
+ - patch 1: move the (vq->ioltb) check from vhost_vq_access_ok() to
+            vq_access_ok() as suggested by MST
+ - patch 2: new patch
+
+---
+
+Greg Kurz (3):
+      vhost: Don't call access_ok() when using IOTLB
+      vhost: Use vhost_get_used_size() in vhost_vring_set_addr()
+      vhost: Don't call log_access_ok() when using IOTLB
+
+
+ drivers/vhost/vhost.c |   33 +++++++++++++++++++++++----------
+ 1 file changed, 23 insertions(+), 10 deletions(-)
+
+--
+Greg
 
