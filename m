@@ -2,201 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBDB7281F9B
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 02:10:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC683281FC8
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 02:25:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725648AbgJCAKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 20:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60094 "EHLO
+        id S1725681AbgJCAZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 20:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbgJCAKL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 20:10:11 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA75EC0613D0;
-        Fri,  2 Oct 2020 17:10:10 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601683808;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XTmNQU4mWz8t/0MS6mVEN8nOAMp2jm2RxipOE03ens8=;
-        b=2ksbfA9BVis5iBMK3wB9ygQURxhz6xHw5jU2Qp61CRHqSW99ojoGUJjyj0Naa5rmGY6evQ
-        ZBvRqh9+e3YihczvWJgLdsHLb+IHyzJOReXmYIBXFCpBaQry1gulqxNTBcTCow9tpXk+/O
-        HRCkNxZYFtxlm5T+dsz5DSIs9fFpiKez0cbASVbkhqEIvQoy68tNNF3YaoLYQiI/teEvQE
-        zZhbG0/HoDxJAroCzY/8L3CRTkJISbe9lEsreezoxRswFRLptUcu+0pd60o4J9+qF6DxjB
-        /pJA+AEAUr4tURoAwqpmWb54svj25h7UMGTx3Tqiy4Ttkj2UF0AWvricfOe3Dw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601683808;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XTmNQU4mWz8t/0MS6mVEN8nOAMp2jm2RxipOE03ens8=;
-        b=HV2OiNvSvzxGdm1GYBB6UiG55JPgtjIcebOlyl1Vo5GuQ2Phcbwr7P4OOPQ0yybrDHjHlc
-        85bsp93xMFjSezDQ==
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Erez Geva <erez.geva.ext@siemens.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>, Andrei Vagin <avagin@gmail.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Vladis Dronov <vdronov@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Jesus Sanchez-Palencia <jesus.sanchez-palencia@intel.com>,
-        Vedang Patel <vedang.patel@intel.com>,
-        Simon Sudler <simon.sudler@siemens.com>,
-        Andreas Meisinger <andreas.meisinger@siemens.com>,
-        Andreas Bucher <andreas.bucher@siemens.com>,
-        Henning Schild <henning.schild@siemens.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Andreas Zirkler <andreas.zirkler@siemens.com>,
-        Ermin Sakic <ermin.sakic@siemens.com>,
-        An Ninh Nguyen <anninh.nguyen@siemens.com>,
-        Michael Saenger <michael.saenger@siemens.com>,
-        Bernd Maehringer <bernd.maehringer@siemens.com>,
-        Gisela Greinert <gisela.greinert@siemens.com>,
-        Erez Geva <erez.geva.ext@siemens.com>,
-        Erez Geva <ErezGeva2@gmail.com>
-Subject: Re: [PATCH 0/7] TC-ETF support PTP clocks series
-In-Reply-To: <87eemg5u5i.fsf@intel.com>
-References: <20201001205141.8885-1-erez.geva.ext@siemens.com> <87eemg5u5i.fsf@intel.com>
-Date:   Sat, 03 Oct 2020 02:10:08 +0200
-Message-ID: <87tuvccgpr.fsf@nanos.tec.linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain
+        with ESMTP id S1725550AbgJCAZr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 20:25:47 -0400
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B084C0613E2
+        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 17:25:47 -0700 (PDT)
+Received: by mail-qt1-x849.google.com with SMTP id w10so2293414qtt.23
+        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 17:25:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=yVletPTNljF8SywZqTeMTFvBb76pdRha2hXSioNcxfM=;
+        b=qLGxXkoe3gdLeQ+1NsG4QoL8TjStvBD43kSzy4S/ne3hwCBK7GKN3nsbQ3cFRbyqt2
+         wuzI1Zw1u1VN3NKAt6vVdR1F5/rmAaI/Me/cXLgTexTfSnMkD9tj4avutf9Q8Wc+lxoT
+         umIiVm1A7t8GN1HvG3UEIvJDeUgc/5txIln35Fjzn3YJ/foGTFGeplpmFLmc+wjWhHtm
+         utECWfBmGUqPeAsJOwbGJZ2OUVl/jaJkeGqRacHnbFV1hsba2J6JCBWQmI7v3p3WjRO1
+         WDWqol2j/EEElHczOkSo9oaBgCaZ9zIchj8vLJ1OT6s9PWLaJleT5+1lLkjVBSpI3x7O
+         S7Ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=yVletPTNljF8SywZqTeMTFvBb76pdRha2hXSioNcxfM=;
+        b=JNr088LpAHqMXGDAcHa2gjvcLqx5FyptDTIQhfnbqrEYTBSD4P6PWGmGRra5mz3BF8
+         +V0Mv0bOlJU54KfQvsPjUiXp5coIPpm4P4t04VVFKz5skvHtUEW5vfwm+AaMLa43R2rQ
+         vlH6QzRGwX2HqmCdKWpOTsj49vfioM5OHzidsb3hVnadi8YSU2VMGJiF/wHHIPMw0vpY
+         WLBJ18KJmyF0zLcrphf2LHeBAnHVglmPHr78jfpfNo4+f++Lz0ZlyqHdg8ON/gGS25Fe
+         Cr37vLkCvmD/PWKQR3HA/JEQaJXWFqEU9iWxAWVQl3EgbGisMdjxqEvHQZHY9KFU8KKS
+         kcBQ==
+X-Gm-Message-State: AOAM533dsMspWq3w0PQPHqZsw7Ekd17DnffUaMFNfZNrPi2+LtfNY3Fy
+        /twsPUpVc1Wj0Yu0RnFzdHt7KijWeCSTiQRGcHG2Q89M6LHtXcblodqjvhB/7i+jpbapAZ0UMdt
+        LW4TErG5RdMFmPQDwxE+4fgsa0u9I3ceGmmUEaif44v2n8cQHHoPO8g==
+X-Google-Smtp-Source: ABdhPJxkMYP9if/Ov+6VGoIUS0DQ+i+TYv9gOINFQUYKTcstYR3Cj823rRB2ZBZ4HdnuU32H5yov+wE=
+Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
+ (user=sdf job=sendgmr) by 2002:a0c:b6d7:: with SMTP id h23mr4651730qve.17.1601684746354;
+ Fri, 02 Oct 2020 17:25:46 -0700 (PDT)
+Date:   Fri,  2 Oct 2020 17:25:44 -0700
+Message-Id: <20201003002544.3601440-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.806.g8561365e88-goog
+Subject: [PATCH bpf-next] bpf: deref map in BPF_PROG_BIND_MAP when it's
+ already used
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vinicius,
+We are missing a deref for the case when we are doing BPF_PROG_BIND_MAP
+on a map that's being already held by the program.
+There is 'if (ret) bpf_map_put(map)' below which doesn't trigger
+because we don't consider this an error.
+Let's add missing bpf_map_put() for this specific condition.
 
-On Fri, Oct 02 2020 at 12:01, Vinicius Costa Gomes wrote:
-> I think that there's an underlying problem/limitation that is the cause
-> of the issue (or at least a step in the right direction) you are trying
-> to solve: the issue is that PTP clocks can't be used as hrtimers.
+Fixes: ef15314aa5de ("bpf: Add BPF_PROG_BIND_MAP syscall")
+Reported-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ kernel/bpf/syscall.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-That's only an issue if PTP time != CLOCK_TAI, which is insane to begin
-with.
-
-As I know that these insanities exists in real world setups, e.g. grand
-clock masters which start at the epoch which causes complete disaster
-when any of the slave devices booted earlier. Obviously people came
-up with system designs which are even more insane.
-
-> I didn't spend a lot of time thinking about how to solve this (the only
-> thing that comes to mind is having a timecounter, or similar, "software
-> view" over the PHC clock).
-
-There are two aspects:
-
- 1) What's the overall time coordination especially for applications?
-
-    PTP is for a reason based on TAI which allows a universal
-    representation of time. Strict monotonic, no time zones, no leap
-    seconds, no bells and whistels.
-
-    Using TAI in distributed systems solved a gazillion of hard problems
-    in one go.
-
-    TSN depends on PTP and that obviously makes CLOCK_TAI _the_ clock of
-    choice for schedules and whatever is needed. It just solves the
-    problem nicely and we spent a great amount of time to make
-    application development for TSN reasonable and hardware agnostic.
-
-    Now industry comes along and decides to introducde independent time
-    universes. The result is a black hole for programmers because they
-    now have to waste effort - again - on solving the incredibly hard
-    problems of warping space and time.
-
-    The amount of money saved by not having properly coordinated time
-    bases in such systems is definitely marginal compared to the amount
-    of non-sensical work required to fix it in software.
-
- 2) How can an OS provide halfways usable interfaces to handle this
-    trainwreck?
-
-    Access to the various time universes is already available through
-    the dynamic POSIX clocks. But these interfaces have been designed
-    for the performance insensitive work of PTP daemons and not for the
-    performance critical work of applications dealing with real-time
-    requirements of all sorts.
-
-    As these raw PTP clocks are hardware dependend and only known at
-    boot / device discovery time they cannot be exposed to the kernel
-    internaly in any sane way. Also the user space interface has to be
-    dynamic which rules out the ability to assign fixed CLOCK_* ids.
-
-    As a consequence these clocks cannot provide timers like the regular
-    CLOCK_* variants do, which makes it insanely hard to develop sane
-    and portable applications.
-
-    What comes to my mind (without spending much thought on it) is:
-
-       1) Utilize and extend the existing PTP mechanisms to calculate
-          the time relationship between the system wide CLOCK_TAI and
-          the uncoordinated time universe. As offset is a constant and
-          frequency drift is not a high speed problem this can be done
-          with a userspace daemon of some sorts.
-
-        2) Provide CLOCK_TAI_PRIVATE which defaults to CLOCK_TAI,
-           i.e. offset = 0 and frequency ratio = 1 : 1
-
-        3) (Ab)use the existing time namespace to provide a mechanism to
-           adjust the offset and frequency ratio of CLOCK_TAI_PRIVATE
-           which is calculated by #1
-
-           This is the really tricky part and comes with severe
-           limitations:
-
-             - We can't walk task list to find tasks which have their
-               CLOCK_TAI_PRIVATE associated with a particular
-               incarnation of PCH/PTP universe, so some sane referencing
-               of the underlying parameters to convert TAI to
-               TAI_PRIVATE and vice versa has to be found. Life time
-               problems are going to be interesting to deal with.
-
-             - An application cannot coordinate multiple PCH/PTP domains
-               and has to restrict itself to pick ONE disjunct time
-               universe.
-
-               Whether that's a reasonable limitation I don't know
-               simply because the information provided in this patch
-               series is close to zero.
-
-             - Preventing early timer expiration caused by frequency
-               drift is not trivial either.
-
-      TBH, just thinking about all of that makes me shudder and my knee
-      jerk reaction is: NO WAY!
-
-Why the heck can't hardware people and system designers finally
-understand that time is not something they can define at their
-own peril?
-
-The "Let's solve it in software so I don't have to think about it"
-design approach strikes again. This caused headaches for the past five
-decades, but people obviously never learn.
-
-That said, I'm open for solutions which are at least in the proximity of
-sane, but that needs a lot more information about the use cases and the
-implications and not just some handwavy 'we screwed up our system design
-and therefore we need to inflict insanity on everyone' blurb.
-
-Thanks,
-
-        tglx
-
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index f1528c2a6927..1110ecd7d1f3 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -4323,8 +4323,10 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
+ 	used_maps_old = prog->aux->used_maps;
+ 
+ 	for (i = 0; i < prog->aux->used_map_cnt; i++)
+-		if (used_maps_old[i] == map)
++		if (used_maps_old[i] == map) {
++			bpf_map_put(map);
+ 			goto out_unlock;
++		}
+ 
+ 	used_maps_new = kmalloc_array(prog->aux->used_map_cnt + 1,
+ 				      sizeof(used_maps_new[0]),
+-- 
+2.28.0.806.g8561365e88-goog
 
