@@ -2,87 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCFC62820FE
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 06:04:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24855282100
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 06:05:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725884AbgJCEEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 00:04:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39292 "EHLO
+        id S1725778AbgJCEFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 00:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbgJCEEd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 00:04:33 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECD3C0613D0;
-        Fri,  2 Oct 2020 21:04:33 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id 16so5444223qkf.4;
-        Fri, 02 Oct 2020 21:04:33 -0700 (PDT)
+        with ESMTP id S1725747AbgJCEFz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 00:05:55 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F78C0613D0;
+        Fri,  2 Oct 2020 21:05:55 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id y11so4550858qtn.9;
+        Fri, 02 Oct 2020 21:05:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=bzA4x6TawLJ4d3ZzqizduYXnvQM8gSPQMr7fuFZ7bYo=;
-        b=auf7qJ2/k5923oTM/+ES5vTy3XiiFFXbGIQKTnr9/dOjsjAlEapJcBvTe+DNfunFwR
-         WKcLLsZZF9UZiKKtElIW0gOb8GgoprMPxpurMt+Giqh6WrZoJZEiIBixdS3glV+stMq1
-         q/Q/oOYlHxaemlBBogYSYFAhR7syZfjpPkfoTYNz584uRjtJ4Ryk3gYqUkrW7Ng1hiFb
-         9JPiO6fDOHAtZdPwup3Ruq4mWc/N6G6OSneVZkv8iw8hwldEgu+QA/NqalwgSc0e9mX+
-         EaHb4ZxV6lscLwcRk2uDXCHQrP/YKIX7vN648yNKLjzAcgL5yW6M2vN4yF0hsZ0QsWfq
-         4NCw==
+        bh=nN+E9EIMxPSBKg18ielUWPdflCd6G8az/zdi0ZiTn1g=;
+        b=iPqyJ5joQmjAyjGEWQygndBgEcUx1tHj3cUORZEBGU3F6NeVnvfjRp2mpDm8GcKoOb
+         lpDOzU3vl4QjKJZcDLb9lEOK7gwqtUjXoqaCEOrxOIXwTyMDvSL72qPl3ZeuR1A5GGzd
+         /QKC4eknkfY0XUJTjxVWy3iaWY9YOEAkdR4zhM7O5O/NI5eEdmqb4oWmy+VdMrdXhRZi
+         BF4e3VP87mW7y8gEdf5YCoao0FcGY/uI22n5hlaS/62sYm9iUL/rK7JWXdRq7g7cLbB2
+         o0aRRLvrAVvvM97QR9i3SQWus2Fbh6zyy+Hog97Qcciv//hMagENgf99VAtUHG4//54C
+         zM+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=bzA4x6TawLJ4d3ZzqizduYXnvQM8gSPQMr7fuFZ7bYo=;
-        b=qnVYwUFEo4ioiZlEcf/mk2geNUzyCJIg9iJu9ARf0awsXpMJ/7cMAaknDLN8P7L6rt
-         T7WyDHEJiVo4FUdlw3rz8IZrYGlenyBGC8nRZnPWWgWFKOt9aYV2cvZ6cnZWE7z7BxSo
-         s7RAxo5J3V+2AKkj4mP0nEiMBJcySkmGvM4CH//s8rWmWDnNjwwvoJXzMxrEkqb36gdd
-         wadEawNK4fhdNW0hDAjO50LkyDnIUMme5C34uOSRhFBdAVAQPtM/OIKipcgfArJ/U70t
-         7qv/WZmQ82nT4L43HBnoiYPDbJ3ctyizDc73IO//foXLEThLnq8NlG119VsEWNxpJXYG
-         b79A==
-X-Gm-Message-State: AOAM532+wGrufh+gKHxMUUljYyNy3trjEzjxnVC59Bx+vLBy0kGXyguC
-        uoc28K6RZSpc4TC/zJHPVks=
-X-Google-Smtp-Source: ABdhPJzsPYttSsQOzIM7T0K0Btnx91HN41eUL+SntVJ1yt7QjrqFhinEWO8p58rkTkwRGxG0cT63wA==
-X-Received: by 2002:a05:620a:1185:: with SMTP id b5mr5002472qkk.386.1601697872313;
-        Fri, 02 Oct 2020 21:04:32 -0700 (PDT)
+        bh=nN+E9EIMxPSBKg18ielUWPdflCd6G8az/zdi0ZiTn1g=;
+        b=iTdmtFFBhFc6wnNR+NP6JgGWUx3WA2edfGbyrEpFDVVW4cgxF7nSWoOoqONQGaQkzt
+         rrgWi7p0CG2xU4OSwALb+07/TA43MM7UgbdttbPWjh/7dbATPjMzn/P+qdO0Tn2ufNrs
+         wNvor7wuDd/6G7+Id6iEwQgAtTv+6mQs/9Oynq/gZ9ticWFYHx5UBXoMfPha604dAlXo
+         4Th6cJlGIDK4kpPEMudxG2WqIfEabb2joqRPszX1FBJUkGkOvyKaYpa5rjIt68/7b6kb
+         sOI/t4LyIvGp5Dx4axDKz0BO1MiIwRvs22/i6BuwgWtet606h4eh2vRM/cNIH1tfQK3D
+         YXsA==
+X-Gm-Message-State: AOAM530cNBSaauKkJUnN6kJMjv7OY+E1ND49dWjBHxWR/ktF91ko3Rr/
+        RlN2FRc7WfCLWBBnoWpTibA=
+X-Google-Smtp-Source: ABdhPJyfKyvw6LN4/7URzJ268LRTjikXW3xvxqLZrcl4XjFOq+Vt0Sfzxht3Y1k7KXVEVsihEIDWyA==
+X-Received: by 2002:ac8:735a:: with SMTP id q26mr5393488qtp.285.1601697954227;
+        Fri, 02 Oct 2020 21:05:54 -0700 (PDT)
 Received: from localhost.localdomain ([2001:1284:f016:4433:ca7a:c22f:8180:c123])
-        by smtp.gmail.com with ESMTPSA id r21sm2583285qtj.80.2020.10.02.21.04.30
+        by smtp.gmail.com with ESMTPSA id v15sm2491005qkg.108.2020.10.02.21.05.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2020 21:04:31 -0700 (PDT)
+        Fri, 02 Oct 2020 21:05:53 -0700 (PDT)
 Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 34751C6195; Sat,  3 Oct 2020 01:04:28 -0300 (-03)
-Date:   Sat, 3 Oct 2020 01:04:28 -0300
+        id F12C0C6195; Sat,  3 Oct 2020 01:05:50 -0300 (-03)
+Date:   Sat, 3 Oct 2020 01:05:50 -0300
 From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 To:     Xin Long <lucien.xin@gmail.com>
 Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
         Neil Horman <nhorman@tuxdriver.com>,
         Michael Tuexen <tuexen@fh-muenster.de>,
         Tom Herbert <therbert@google.com>, davem@davemloft.net
-Subject: Re: [PATCH net-next 03/15] udp: do checksum properly in
- skb_udp_tunnel_segment
-Message-ID: <20201003040428.GC70998@localhost.localdomain>
+Subject: Re: [PATCH net-next 09/15] sctp: add SCTP_REMOTE_UDP_ENCAPS_PORT
+ sockopt
+Message-ID: <20201003040550.GD70998@localhost.localdomain>
 References: <cover.1601387231.git.lucien.xin@gmail.com>
- <49a1cbb99341f50304b514aeaace078d0b065248.1601387231.git.lucien.xin@gmail.com>
+ <ff57fb1ff7c477ff038cebb36e9f0554d26d5915.1601387231.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <49a1cbb99341f50304b514aeaace078d0b065248.1601387231.git.lucien.xin@gmail.com>
+In-Reply-To: <ff57fb1ff7c477ff038cebb36e9f0554d26d5915.1601387231.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 09:48:55PM +0800, Xin Long wrote:
-> This patch fixes two things:
-> 
->   When skb->ip_summed == CHECKSUM_PARTIAL, skb_checksum_help() should be
->   called do the checksum, instead of gso_make_checksum(), which is used
->   to do the checksum for current proto after calling skb_segment(), not
->   after the inner proto's gso_segment().
-> 
->   When offload_csum is disabled, the hardware will not do the checksum
->   for the current proto, udp. So instead of calling gso_make_checksum(),
->   it should calculate checksum for udp itself.
+On Tue, Sep 29, 2020 at 09:49:01PM +0800, Xin Long wrote:
+...
+> +struct sctp_udpencaps {
+> +	sctp_assoc_t sue_assoc_id;
+> +	struct sockaddr_storage sue_address;
+> +	uint16_t sue_port;
+> +};
+...
+> +static int sctp_setsockopt_encap_port(struct sock *sk,
+> +				      struct sctp_udpencaps *encap,
+> +				      unsigned int optlen)
+> +{
+> +	struct sctp_association *asoc;
+> +	struct sctp_transport *t;
+> +
+> +	if (optlen != sizeof(*encap))
+> +		return -EINVAL;
+> +
+> +	/* If an address other than INADDR_ANY is specified, and
+> +	 * no transport is found, then the request is invalid.
+> +	 */
+> +	if (!sctp_is_any(sk, (union sctp_addr *)&encap->sue_address)) {
+> +		t = sctp_addr_id2transport(sk, &encap->sue_address,
+> +					   encap->sue_assoc_id);
+> +		if (!t)
+> +			return -EINVAL;
+> +
+> +		t->encap_port = encap->sue_port;
+                   ^^^^^^^^^^          ^^^^^^^^
 
-Gotta say, this is odd. It is really flipping the two around. What
-about other users of this function, did you test them too?
+encap_port is defined as __u16 is previous patch, but from RFC:
+  sue_port:  The UDP port number in network byte order...
 
-It makes sense to be, but would be nice if someone else could review
-this.
+asoc->peer.port is stored in host order, so it makes sense to follow
+it here. Then need a htons() here and its counter parts.  It is right
+in some parts of the patches already.
