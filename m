@@ -2,74 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5DFB2823B9
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 12:58:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C5E62823C9
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 13:11:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725781AbgJCK6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 06:58:17 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:33249 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725765AbgJCK6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 06:58:16 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-285-a4MfzTCoNdeqWA7R9Sj-AA-1; Sat, 03 Oct 2020 11:56:45 +0100
-X-MC-Unique: a4MfzTCoNdeqWA7R9Sj-AA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Sat, 3 Oct 2020 11:56:44 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Sat, 3 Oct 2020 11:56:44 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Wei Wang' <weiwan@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Eric Dumazet <edumazet@google.com>,
+        id S1725794AbgJCLLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 07:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725767AbgJCLLQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 07:11:16 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDF7C0613D0;
+        Sat,  3 Oct 2020 04:11:14 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id z1so4517601wrt.3;
+        Sat, 03 Oct 2020 04:11:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GnbMU4sFZhNsugLjOl+CGPMW76afg/wZKnEggQ7T6cw=;
+        b=cQOcDINVS6MiDBoZKsVMyRqVQndYXKkZv9tcvtlRcL4SrZnv/24eiwn5b/p1J6XoRq
+         b/bK231L8x74LwsmxCPPci0Cza+i0lyJfv/treN4Nlxw4Z31yj4b5YggHn2CUD1pXvXY
+         x9hue13PdN3HoWgypxTIggRgMfm0rnwzOsCQEeg5Aci+iiCDMOg82qzfXWVr1HRuC3Gm
+         wS4BmbpF867fcebKoIg1hWrJFOXn5/r75G/UXaLLAefpAjBgAZeGGWGtO/y6Uj4f9hgn
+         uSvMoynfHQG7pQExdsucOacjEe1fKSvMLQdu3L5cQIxR4BXAT1fjxvhd/loetEQakmeo
+         2/sA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GnbMU4sFZhNsugLjOl+CGPMW76afg/wZKnEggQ7T6cw=;
+        b=kOdnj8hf3Oh1jWxzmx+nkJTbli5SkOSJHtjiqNTvdupzZBIEeJOdo1ChsiiHXvopYp
+         VNJqWwXWZ1u7L3x9KAmBPY58Ot59WRxFudMe1rXztGK9WeUQ5JZ2RJnG8QBRHezVKDbw
+         dL2vICXe+sQWBTXTO9hJbwgIHXLTQCV2DUrWgTSJVJT4TGg6jBtbCW4giAxZkyXej65Y
+         80qBq3VOw612rEdtAeoXqM/p+oFJE1hNziLwDjG2+jM4onMX6497wc27uRzbVsfFiKBk
+         2ElVCv/VZhD7pzSoPqtKsY7/oEMCM3LiTR18BdqZpmyVQ90st0BCYK0PW5Aj9zJfPLen
+         gLwg==
+X-Gm-Message-State: AOAM5336VSpnsVhWQh+XvAq4EUWfj9aCB86x/k7Qtr2VQfAmHYgFxhBw
+        UtgzcLYM2n0bzD7qtleu6qU=
+X-Google-Smtp-Source: ABdhPJye6XSLqhpp984Q4kjRQ4Giw0MReRk2oETDk5NV4q7zUshaQCPtwEXp+7vyYu6U5DSl0W9HKQ==
+X-Received: by 2002:a5d:630a:: with SMTP id i10mr7550051wru.137.1601723473224;
+        Sat, 03 Oct 2020 04:11:13 -0700 (PDT)
+Received: from localhost.localdomain (cpc83661-brig20-2-0-cust443.3-3.cable.virginm.net. [82.28.105.188])
+        by smtp.gmail.com with ESMTPSA id u17sm5571995wri.45.2020.10.03.04.11.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 03 Oct 2020 04:11:12 -0700 (PDT)
+From:   Alex Dewar <alex.dewar90@gmail.com>
+Cc:     Alex Dewar <alex.dewar90@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Felix Fietkau <nbd@nbd.name>
-Subject: RE: [PATCH net-next v2 0/5] implement kthread based napi poll
-Thread-Topic: [PATCH net-next v2 0/5] implement kthread based napi poll
-Thread-Index: AQHWmQrxY4+GJOdltE+p6T5f2TezYKmFs91g
-Date:   Sat, 3 Oct 2020 10:56:44 +0000
-Message-ID: <0af00c5a9ced4a8b8b55e81a65e47990@AcuMS.aculab.com>
-References: <20201002222514.1159492-1-weiwan@google.com>
-In-Reply-To: <20201002222514.1159492-1-weiwan@google.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net/mlx5e: Fix freeing of unassigned pointer
+Date:   Sat,  3 Oct 2020 12:10:50 +0100
+Message-Id: <20201003111050.25130-1-alex.dewar90@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogV2VpIFdhbmcNCj4gU2VudDogMDIgT2N0b2JlciAyMDIwIDIzOjI1DQo+IA0KPiBUaGUg
-aWRlYSBvZiBtb3ZpbmcgdGhlIG5hcGkgcG9sbCBwcm9jZXNzIG91dCBvZiBzb2Z0aXJxIGNvbnRl
-eHQgdG8gYQ0KPiBrZXJuZWwgdGhyZWFkIGJhc2VkIGNvbnRleHQgaXMgbm90IG5ldy4NCj4gUGFv
-bG8gQWJlbmkgYW5kIEhhbm5lcyBGcmVkZXJpYyBTb3dhIGhhdmUgcHJvcG9zZWQgcGF0Y2hlcyB0
-byBtb3ZlIG5hcGkNCj4gcG9sbCB0byBrdGhyZWFkIGJhY2sgaW4gMjAxNi4gQW5kIEZlbGl4IEZp
-ZXRrYXUgaGFzIGFsc28gcHJvcG9zZWQNCj4gcGF0Y2hlcyBvZiBzaW1pbGFyIGlkZWFzIHRvIHVz
-ZSB3b3JrcXVldWUgdG8gcHJvY2VzcyBuYXBpIHBvbGwganVzdCBhDQo+IGZldyB3ZWVrcyBhZ28u
-DQoNCkkgZGlkbid0IHNwb3QgYW55dGhpbmcgdGhhdCBtYWtlcyB0aGlzIGNvbnRpbnVlIHRvIHdv
-cms/DQoNCnN0YXRpYyBpbmxpbmUgYm9vbCBuZXRkZXZfeG1pdF9tb3JlKHZvaWQpDQp7DQogICAg
-ICAgIHJldHVybiBfX3RoaXNfY3B1X3JlYWQoc29mdG5ldF9kYXRhLnhtaXQubW9yZSk7DQp9DQoN
-CkkgYXNzdW1lIGl0IG5vcm1hbGx5IHJlbGllcyBvbiB0aGUgc29mdGludCBjb2RlIHJ1bm5pbmcg
-d2l0aA0KcHJlLWVtcHRpb24gZGlzYWJsZWQuDQoNCihJdCBhbHNvIG5lZWRzIGEgbGV2ZWwgb2Yg
-aW5kaXJlY3Rpb24uDQp4bWl0Lm1vcmUgaXMgb25seSBzZXQgaWYgbW9yZSBwYWNrZXRzIGFyZSBx
-dWV1ZWQgd2hlbiB0aGUgdHgNCmNhbGwgaXMgZG9uZS4NCkkndmUgc2VlbiBhIHdvcmtsb2FkIHRo
-YXQgbWFuYWdlcyB0byByZXBlYXRlZGx5IGFkZCBhbiBleHRyYQ0KcGFja2V0IHdoaWxlIHRoZSB0
-eCBzZXR1cCBpcyBpbiBwcm9ncmVzcy4pDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJl
-c3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsx
-IDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+Commit ff7ea04ad579 ("net/mlx5e: Fix potential null pointer dereference")
+added some missing null checks but the error handling in
+mlx5e_alloc_flow() was left broken: the variable attr is passed to kfree
+although it is never assigned to and never needs to be freed in this
+function. Fix this.
+
+Addresses-Coverity-ID: 1497536 ("Memory - illegal accesses")
+Fixes: ff7ea04ad579 ("net/mlx5e: Fix potential null pointer dereference")
+Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index a0c356987e1a..88298e96c4ea 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -4536,13 +4536,14 @@ mlx5e_alloc_flow(struct mlx5e_priv *priv, int attr_size,
+ 	struct mlx5e_tc_flow_parse_attr *parse_attr;
+ 	struct mlx5_flow_attr *attr;
+ 	struct mlx5e_tc_flow *flow;
+-	int err = -ENOMEM;
+ 	int out_index;
+ 
+ 	flow = kzalloc(sizeof(*flow), GFP_KERNEL);
++	if (!flow)
++		return -ENOMEM;
+ 	parse_attr = kvzalloc(sizeof(*parse_attr), GFP_KERNEL);
+-	if (!parse_attr || !flow)
+-		goto err_free;
++	if (!parse_attr)
++		goto err_free_flow;
+ 
+ 	flow->flags = flow_flags;
+ 	flow->cookie = f->cookie;
+@@ -4550,7 +4551,7 @@ mlx5e_alloc_flow(struct mlx5e_priv *priv, int attr_size,
+ 
+ 	attr = mlx5_alloc_flow_attr(get_flow_name_space(flow));
+ 	if (!attr)
+-		goto err_free;
++		goto err_free_parse_attr;
+ 
+ 	flow->attr = attr;
+ 
+@@ -4566,11 +4567,11 @@ mlx5e_alloc_flow(struct mlx5e_priv *priv, int attr_size,
+ 
+ 	return 0;
+ 
+-err_free:
+-	kfree(flow);
++err_free_parse_attr:
+ 	kvfree(parse_attr);
+-	kfree(attr);
+-	return err;
++err_free_flow:
++	kfree(flow);
++	return -ENOMEM;
+ }
+ 
+ static void
+-- 
+2.28.0
 
