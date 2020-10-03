@@ -2,119 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB5922822D8
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 11:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E6D2822DC
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 11:04:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725770AbgJCJEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 05:04:16 -0400
-Received: from mail-il1-f206.google.com ([209.85.166.206]:35651 "EHLO
-        mail-il1-f206.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725648AbgJCJEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 05:04:16 -0400
-Received: by mail-il1-f206.google.com with SMTP id f10so3054197ilq.2
-        for <netdev@vger.kernel.org>; Sat, 03 Oct 2020 02:04:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Pdh2OQI0GV4T/rFY4m1WLv9vo8jU4IolNrdujND4j1M=;
-        b=Wke3CktKCR8Fj1E2Y25r8GKV0ICcyj0oDnZpeey00Q6PIbR7oe/7Qf5ZmIkZYN8SxR
-         BX78C30Ppjp6lAQCMCluOhbj5JI1UrrcBg7+bjxX8ylKSL023wFV0TQbE+SfsI0VLZxO
-         xc7R5Op25Xv2Az+P/YEBukfpzCg320zjDEiq4TnP6Ewb5+nUnrp34c1D2ZMbPssyEQ1p
-         kzBvsg77fnr3jYVley0blzybYIdQA58WemN/s3bAFuojuxOfGtTxicbJwtLU3tNfRZlp
-         jgg1kQq+D43sIa5F7X3UxnL6+Yqb9/j4/hMhxZvuJbhSUGIW2WISZj4dgJ6OjWRxjkJG
-         8E5Q==
-X-Gm-Message-State: AOAM531ecwWLXnCtES2yKKntCfDTM+LpZT9xWDRN5WO8b5QofHfi1/iw
-        BeFeT6BUjt84169CMqQr1W8fUwVDIT3/pE8yegADsKblhZXG
-X-Google-Smtp-Source: ABdhPJxHM8i64jh0/L4j/WPJNg7f4Q1jCmcPbGIDMQxeZCrqOmDh1S6AoI6ohpz5y4zUeB22PDq9uv2rLIacJp8uODpPtDZFQ70u
+        id S1725794AbgJCJE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 05:04:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39308 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725648AbgJCJE5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 3 Oct 2020 05:04:57 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B8BE4206F8;
+        Sat,  3 Oct 2020 09:04:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601715896;
+        bh=Lis1UA7evOjm7bj9t1+4kqOmMH5ClghWGtsEc9Jpi0Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KVzsukWHXL/c7SXWnZp/QRL7nS9XxxcbR2/JjOr45weKpTJfvY71zKb/pFzxEOttn
+         TqJDKNCX0Ye0aZg/HP+fM8Ew/4pEzF9p1MeaepR46SjJDODP+MJ2GXGSCajI2vz/Oz
+         JZvPTSvVbDYUjBbMd6Qmcl6QdZG4P9lAxd7R4M7A=
+Date:   Sat, 3 Oct 2020 12:04:52 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Dave Ertman <david.m.ertman@intel.com>, gregkh@linuxfoundation.org
+Cc:     linux-rdma@vger.kernel.org, linux-netdev <netdev@vger.kernel.org>,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH 0/6] Ancillary bus implementation and SOF multi-client
+ support
+Message-ID: <20201003090452.GF3094@unreal>
+References: <20201001050534.890666-1-david.m.ertman@intel.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:712c:: with SMTP id n44mr5831606jac.37.1601715854776;
- Sat, 03 Oct 2020 02:04:14 -0700 (PDT)
-Date:   Sat, 03 Oct 2020 02:04:14 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008e1e2205b0c08851@google.com>
-Subject: BUG: corrupted list in rxrpc_put_call
-From:   syzbot <syzbot+e6326c848f3404ffb673@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com, kuba@kernel.org,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201001050534.890666-1-david.m.ertman@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Dave,
 
-syzbot found the following issue on:
+I don't know why did you send this series separately to every mailing
+list, but it is not correct thing to do.
 
-HEAD commit:    fcadab74 Merge tag 'drm-fixes-2020-10-01-1' of git://anong..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=143340a3900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=89ab6a0c48f30b49
-dashboard link: https://syzkaller.appspot.com/bug?extid=e6326c848f3404ffb673
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+RDMA ML and discussion:
+https://lore.kernel.org/linux-rdma/20201001050534.890666-1-david.m.ertman@intel.com/T/#t
+Netdev ML (completely separated):
+https://lore.kernel.org/netdev/20201001050851.890722-1-david.m.ertman@intel.com/
+Alsa ML (separated too):
+https://lore.kernel.org/alsa-devel/20200930225051.889607-1-david.m.ertman@intel.com/
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Thanks
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e6326c848f3404ffb673@syzkaller.appspotmail.com
-
-tipc: TX() has been purged, node left!
-list_del corruption. next->prev should be ffff888000102c38, but was f000ff53f000e2c3
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:54!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 32547 Comm: kworker/u4:4 Not tainted 5.9.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-RIP: 0010:__list_del_entry_valid.cold+0x48/0x55 lib/list_debug.c:54
-Code: e8 51 9b 9b fd 0f 0b 4c 89 e2 48 89 ee 48 c7 c7 00 b4 d8 88 e8 3d 9b 9b fd 0f 0b 48 89 ee 48 c7 c7 c0 b4 d8 88 e8 2c 9b 9b fd <0f> 0b cc cc cc cc cc cc cc cc cc cc cc 41 57 41 56 41 55 41 54 55
-RSP: 0018:ffffc900190ffa20 EFLAGS: 00010286
-RAX: 0000000000000054 RBX: ffff888000102c38 RCX: 0000000000000000
-RDX: ffff888097a50280 RSI: ffffffff815f59d5 RDI: fffff5200321ff36
-RBP: ffff888000102c38 R08: 0000000000000054 R09: ffff8880ae4318e7
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff88804e898010
-R13: ffff888000000000 R14: ffff888000102c40 R15: 00000000000002b2
-FS:  0000000000000000(0000) GS:ffff8880ae400000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000334ea98 CR3: 000000009e10c000 CR4: 00000000001526f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __list_del_entry include/linux/list.h:132 [inline]
- list_del_init include/linux/list.h:204 [inline]
- rxrpc_put_call+0x17d/0x300 net/rxrpc/call_object.c:567
- rxrpc_discard_prealloc+0x7e2/0xb30 net/rxrpc/call_accept.c:242
- rxrpc_listen+0x11c/0x330 net/rxrpc/af_rxrpc.c:245
- afs_close_socket+0x95/0x320 fs/afs/rxrpc.c:110
- afs_net_exit+0x1c4/0x310 fs/afs/main.c:158
- ops_exit_list+0xb0/0x160 net/core/net_namespace.c:186
- cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:603
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Modules linked in:
----[ end trace e8b698dc6d68e2dc ]---
-RIP: 0010:__list_del_entry_valid.cold+0x48/0x55 lib/list_debug.c:54
-Code: e8 51 9b 9b fd 0f 0b 4c 89 e2 48 89 ee 48 c7 c7 00 b4 d8 88 e8 3d 9b 9b fd 0f 0b 48 89 ee 48 c7 c7 c0 b4 d8 88 e8 2c 9b 9b fd <0f> 0b cc cc cc cc cc cc cc cc cc cc cc 41 57 41 56 41 55 41 54 55
-RSP: 0018:ffffc900190ffa20 EFLAGS: 00010286
-RAX: 0000000000000054 RBX: ffff888000102c38 RCX: 0000000000000000
-RDX: ffff888097a50280 RSI: ffffffff815f59d5 RDI: fffff5200321ff36
-RBP: ffff888000102c38 R08: 0000000000000054 R09: ffff8880ae4318e7
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff88804e898010
-R13: ffff888000000000 R14: ffff888000102c40 R15: 00000000000002b2
-FS:  0000000000000000(0000) GS:ffff8880ae400000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000334ea98 CR3: 000000009e10c000 CR4: 00000000001526f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+On Wed, Sep 30, 2020 at 10:05:28PM -0700, Dave Ertman wrote:
+> Brief history of Ancillary Bus
+> ==============================
+> The ancillary bus code was originally submitted upstream as virtual
+> bus, and was submitted through the netdev tree.  This process generated
+> up to v4.  This discussion can be found here:
+>  https://lore.kernel.org/netdev/0200520070227.3392100-2-jeffrey.t.kirsher@intel.com/T/#u
+>
+> At this point, GregKH requested that we take the review and revision
+> process to an internal mailing list and garner the buy-in of a respected
+> kernel contributor.
+>
+> The ancillary bus (then known as virtual bus) was originally submitted
+> along with implementation code for the ice driver and irdma drive,
+> causing the complication of also having dependencies in the rdma tree.
+> This new submission is utilizing an ancillary bus consumer in only the
+> sound driver tree to create the initial implementation and a single
+> user.
+>
+> Since implementation work has started on this patch set, there have been
+> multiple inquiries about the time frame of its completion.  It appears
+> that there will be numerous consumers of this functionality.
+>
+> The process of internal review and implementation using the sound
+> drivers generated 19 internal versions.  The changes, including the name
+> change from virtual bus to ancillary bus, from these versions can be
+> summarized as the following:
+>
+> - Fixed compilation and checkpatch errors
+> - Improved documentation to address the motivation for virtual bus.
+> - Renamed virtual bus to ancillary bus
+> - increased maximum device name size
+> - Correct order in Kconfig and Makefile
+> - removed the mid-layer adev->release layer for device unregister
+> - pushed adev->id management to parent driver
+> - all error paths out of ancillary_device_register return error code
+> - all error paths out of ancillary_device_register use put_device
+> - added adev->name element
+> - modname in register cannot be NULL
+> - added KBUILD_MODNAME as prefix for match_name
+> - push adev->id responsibility to registering driver
+> - uevent now parses adev->dev name
+> - match_id function now parses adev->dev name
+> - changed drivers probe function to also take an ancillary_device_id param
+> - split ancillary_device_register into device_initialize and device_add
+> - adjusted what is done in device_initialize and device_add
+> - change adev to ancildev and adrv to ancildrv
+> - change adev to ancildev in documentation
+>
+> This submission is the first time that this patch set will be sent to
+> the alsa-devel mailing list, so it is currently being submitted as
+> version 1.
+>
+> ==========================
+>
+> Introduces the ancillary bus implementation along with the example usage
+> in the Sound Open Firmware(SOF) audio driver.
+>
+> In some subsystems, the functionality of the core device
+> (PCI/ACPI/other) may be too complex for a single device to be managed as
+> a monolithic block or a part of the functionality might need to be
+> exposed to a different subsystem.  Splitting the functionality into
+> smaller orthogonal devices makes it easier to manage data, power
+> management and domain-specific communication with the hardware.  Also,
+> common ancillary_device functionality across primary devices can be
+> handled by a common ancillary_device. A key requirement for such a split
+> is that there is no dependency on a physical bus, device, register
+> accesses or regmap support. These individual devices split from the core
+> cannot live on the platform bus as they are not physical devices that
+> are controlled by DT/ACPI. The same argument applies for not using MFD
+> in this scenario as it relies on individual function devices being
+> physical devices that are DT enumerated.
+>
+> An example for this kind of requirement is the audio subsystem where a
+> single IP handles multiple entities such as HDMI, Soundwire, local
+> devices such as mics/speakers etc. The split for the core's
+> functionality can be arbitrary or be defined by the DSP firmware
+> topology and include hooks for test/debug. This allows for the audio
+> core device to be minimal and tightly coupled with handling the
+> hardware-specific logic and communication.
+>
+> The ancillary bus is intended to be minimal, generic and avoid
+> domain-specific assumptions. Each ancillary bus device represents a part
+> of its parent functionality. The generic behavior can be extended and
+> specialized as needed by encapsulating an ancillary bus device within
+> other domain-specific structures and the use of .ops callbacks.
+>
+> The SOF driver adopts the ancillary bus for implementing the
+> multi-client support. A client in the context of the SOF driver
+> represents a part of the core device's functionality. It is not a
+> physical device but rather an ancillary device that needs to communicate
+> with the DSP via IPCs. With multi-client support,the sound card can be
+> separated into multiple orthogonal ancillary devices for local devices
+> (mic/speakers etc), HDMI, sensing, probes, debug etc.  In this series,
+> we demonstrate the usage of the ancillary bus with the help of the IPC
+> test client which is used for testing the serialization of IPCs when
+> multiple clients talk to the DSP at the same time.
+>
+> Dave Ertman (1):
+>   Add ancillary bus support
+>
+> Fred Oh (1):
+>   ASoC: SOF: debug: Remove IPC flood test support in SOF core
+>
+> Ranjani Sridharan (4):
+>   ASoC: SOF: Introduce descriptors for SOF client
+>   ASoC: SOF: Create client driver for IPC test
+>   ASoC: SOF: ops: Add ops for client registration
+>   ASoC: SOF: Intel: Define ops for client registration
+>
+>  Documentation/driver-api/ancillary_bus.rst | 230 +++++++++++++++
+>  Documentation/driver-api/index.rst         |   1 +
+>  drivers/bus/Kconfig                        |   3 +
+>  drivers/bus/Makefile                       |   3 +
+>  drivers/bus/ancillary.c                    | 191 +++++++++++++
+>  include/linux/ancillary_bus.h              |  58 ++++
+>  include/linux/mod_devicetable.h            |   8 +
+>  scripts/mod/devicetable-offsets.c          |   3 +
+>  scripts/mod/file2alias.c                   |   8 +
+>  sound/soc/sof/Kconfig                      |  29 +-
+>  sound/soc/sof/Makefile                     |   7 +
+>  sound/soc/sof/core.c                       |  12 +
+>  sound/soc/sof/debug.c                      | 230 ---------------
+>  sound/soc/sof/intel/Kconfig                |   9 +
+>  sound/soc/sof/intel/Makefile               |   3 +
+>  sound/soc/sof/intel/apl.c                  |  18 ++
+>  sound/soc/sof/intel/bdw.c                  |  18 ++
+>  sound/soc/sof/intel/byt.c                  |  22 ++
+>  sound/soc/sof/intel/cnl.c                  |  18 ++
+>  sound/soc/sof/intel/intel-client.c         |  49 ++++
+>  sound/soc/sof/intel/intel-client.h         |  26 ++
+>  sound/soc/sof/ops.h                        |  14 +
+>  sound/soc/sof/sof-client.c                 | 117 ++++++++
+>  sound/soc/sof/sof-client.h                 |  65 +++++
+>  sound/soc/sof/sof-ipc-test-client.c        | 314 +++++++++++++++++++++
+>  sound/soc/sof/sof-priv.h                   |  16 +-
+>  26 files changed, 1233 insertions(+), 239 deletions(-)
+>  create mode 100644 Documentation/driver-api/ancillary_bus.rst
+>  create mode 100644 drivers/bus/ancillary.c
+>  create mode 100644 include/linux/ancillary_bus.h
+>  create mode 100644 sound/soc/sof/intel/intel-client.c
+>  create mode 100644 sound/soc/sof/intel/intel-client.h
+>  create mode 100644 sound/soc/sof/sof-client.c
+>  create mode 100644 sound/soc/sof/sof-client.h
+>  create mode 100644 sound/soc/sof/sof-ipc-test-client.c
+>
+> --
+> 2.26.2
+>
