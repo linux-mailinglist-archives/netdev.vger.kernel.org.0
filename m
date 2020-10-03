@@ -2,83 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C85A28210E
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 06:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A5B2282110
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 06:12:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725803AbgJCEJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 00:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40028 "EHLO
+        id S1725747AbgJCEMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 00:12:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725681AbgJCEJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 00:09:19 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6FB4C0613D0;
-        Fri,  2 Oct 2020 21:09:19 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id g3so4555893qtq.10;
-        Fri, 02 Oct 2020 21:09:19 -0700 (PDT)
+        with ESMTP id S1725446AbgJCEMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 00:12:22 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45527C0613D0;
+        Fri,  2 Oct 2020 21:12:22 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id s131so5496903qke.0;
+        Fri, 02 Oct 2020 21:12:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=oh7VUxla1PMyx5S8F/d6BBPIgZAX2tpeVPfmgqzgvIE=;
-        b=W/UDDEy/EHayzSdWLvGQaSeCbloxPSSe1JpIHHJgL1+qKcY8A85ZBcKvAqr4LuNgDS
-         SL3SInSZ8I/AMNUUHuwuXTPRvpSYOX5kEhsvg8m1u9HBgFbHdjoe/SfYFloFVuYcFOnU
-         c2Dxbz4eNvUd57xCLCukn1KXh1YvCejW+TnFD6pkDp858vS4hsJTeoUTU5CkNjHW+jT6
-         TUQlOw1mmY8Im585iNTQ9e0TXfFckM0e736NI+PXCBe2WJBxq0k+dLomG0V5zqg2c1dl
-         bLjLDVwr3bOC2uXiarLZ1QYXn4Vzb65XVhwOIllY/sjZ6AP3RP5K+2EorPIlOqVOIthF
-         vx+g==
+        bh=hg04t68kHh/aDLKc4RiBl/UK4YGgsqcSESMyUaeK4ME=;
+        b=StvhTCnWj9t49hM0DDOXzTzeTDl1Qu6vdomrdtL2tuzVRg2NavlODTkkJg99huKkUl
+         p3AB9tDE7RWduREt5Rq+AEtUOOzjE2kSlxU7lAsk+IrHAMHEeHxFrBg+l5NN3bdwGZ8g
+         70MchwS+zF8uIPFQ6hf/Amq2Af0NMI9QyTQGLXBgeWNjmIhxtH6lNpIAKzA8dWxdpdpo
+         1c0enrT+UjDQS1Iq7eik3fMMxYOXyaSTVLBM0Efq5rinFW3XPr1GZAIjGtiX7YoDjfff
+         I3ovKW72sOR+6mgcHhK9RKUtFE6TNMjSm0eCD6GbuDWvfLl5wtFvYRX+im6WVPEthzWZ
+         6VWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=oh7VUxla1PMyx5S8F/d6BBPIgZAX2tpeVPfmgqzgvIE=;
-        b=i8IBkqJGhODds4eWWdlnH9iidjKOkG3F114fbeeHx62g1nGjOkFgApbsPsYWfneKUW
-         tBhyAjtrqx0rBbIDeB6eJICfog7K6POuorGQLxmzVUEhq2ZAA4ZecQiECDDt3QZcfPfn
-         3sbOHIE5zOyqiRNNs40sqlbMcuHSJ+4EqgieRdKMi0P5w2ZoDMi8xLX7g/KWZHp9L23O
-         PPpf8pnGxowmIdHSXzAQv35PT2B8/AuMi73WrNK5pKL4zGIKeYKUNKsWvxc6UKdKWmBg
-         rLt5kioNmV8we6yDu04FFciw4jlYBvOakabLsStgTWr0Mlo+N9WypXJAWfno3TY6I8xD
-         9c+A==
-X-Gm-Message-State: AOAM533Qua4xLWFwEiNfa5Cquii5FDc786sugey4Hua3EOuWG2lq2eGO
-        QAy4F9io6HIsDsEpAE510WYuM4kaODJ0fA==
-X-Google-Smtp-Source: ABdhPJznw90wUSNqjOG4WJ1TDonGmmBUoTIQ/sz9RVBhpdATVuYAq2v+CKsHCvQR4HoP/axy/eTCiw==
-X-Received: by 2002:ac8:1aae:: with SMTP id x43mr5394312qtj.30.1601698158921;
-        Fri, 02 Oct 2020 21:09:18 -0700 (PDT)
+        bh=hg04t68kHh/aDLKc4RiBl/UK4YGgsqcSESMyUaeK4ME=;
+        b=dJf1cWDOAH7BhZhvO8tvkxqnX4p+UqkONanXS9plD0CF4S/lec8YUZSJQucCx6L/Jn
+         FkpPLHdWUxjdVDCgfmC5Uc+5lJst/y5/ewAQ1+RQIdxVzxqnu26++t4AGdmWv5nR2OjA
+         uUbTLxUwPKHW6MBAudITmfmwiHTKl48iemTxXED7oDrm+zn3w/nuDHXvB9Kuex6xzozv
+         jWCfVKY8NP2Pbwu8yF+6e/9Ixn272sNMvvSUr1Te9/+blgavTvXPZVfJs15iGUhN8NXW
+         0syCzr4iZIhz3aeRqPLhEII97MDTzTk6lAflicvgQJ6wXzMKbEcHxNwg7lzqC7gu2kje
+         TmTA==
+X-Gm-Message-State: AOAM531YXWjTf/G+ldMQ0LKVCpzsVH1e8mg2WKZm2d5OS9ZnrqT/1xJC
+        /ErIpWL8Ig0qN28qjGeo6sk=
+X-Google-Smtp-Source: ABdhPJyAm/amwYVpjrS7vpOP4nbKrbWaYgoPlvCsZTlr7/mFZByk2TRmF0qKxnuEgfHXQxI2/3dMog==
+X-Received: by 2002:a05:620a:650:: with SMTP id a16mr5152951qka.52.1601698341411;
+        Fri, 02 Oct 2020 21:12:21 -0700 (PDT)
 Received: from localhost.localdomain ([177.220.172.62])
-        by smtp.gmail.com with ESMTPSA id a3sm2644151qtp.63.2020.10.02.21.09.18
+        by smtp.gmail.com with ESMTPSA id w128sm2582863qkb.6.2020.10.02.21.12.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2020 21:09:18 -0700 (PDT)
+        Fri, 02 Oct 2020 21:12:20 -0700 (PDT)
 Received: by localhost.localdomain (Postfix, from userid 1000)
-        id EF57DC6195; Sat,  3 Oct 2020 01:09:15 -0300 (-03)
-Date:   Sat, 3 Oct 2020 01:09:15 -0300
+        id 04534C6195; Sat,  3 Oct 2020 01:12:17 -0300 (-03)
+Date:   Sat, 3 Oct 2020 01:12:17 -0300
 From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 To:     Xin Long <lucien.xin@gmail.com>
 Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
         Neil Horman <nhorman@tuxdriver.com>,
         Michael Tuexen <tuexen@fh-muenster.de>,
         Tom Herbert <therbert@google.com>, davem@davemloft.net
-Subject: Re: [PATCH net-next 12/15] sctp: call sk_setup_caps in
- sctp_packet_transmit instead
-Message-ID: <20201003040915.GH70998@localhost.localdomain>
+Subject: Re: [PATCH net-next 15/15] sctp: enable udp tunneling socks
+Message-ID: <20201003041217.GI70998@localhost.localdomain>
 References: <cover.1601387231.git.lucien.xin@gmail.com>
- <3716fc0699dc1d5557574b5227524e80b7fd76b8.1601387231.git.lucien.xin@gmail.com>
+ <780b235b6b4446f77cfcf167ba797ce1ae507cf1.1601387231.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3716fc0699dc1d5557574b5227524e80b7fd76b8.1601387231.git.lucien.xin@gmail.com>
+In-Reply-To: <780b235b6b4446f77cfcf167ba797ce1ae507cf1.1601387231.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 09:49:04PM +0800, Xin Long wrote:
-> sk_setup_caps() was originally called in Commit 90017accff61 ("sctp:
-> Add GSO support"), as:
+On Tue, Sep 29, 2020 at 09:49:07PM +0800, Xin Long wrote:
+> This patch is to enable udp tunneling socks by calling
+> sctp_udp_sock_start() in sctp_ctrlsock_init(), and
+> sctp_udp_sock_stop() in sctp_ctrlsock_exit().
 > 
->   "We have to refresh this in case we are xmiting to more than one
->    transport at a time"
+> Also add sysctl udp_port to allow changing the listening
+> sock's port by users.
 > 
-> This actually happens in the loop of sctp_outq_flush_transports(),
-> and it shouldn't be gso related, so move it out of gso part and
+> Wit this patch, the whole sctp over udp feature can be
+  With
 
-To be more precise, "shouldn't be tied to gso"
+> enabled and used.
+...
+> @@ -1466,6 +1466,10 @@ static int __net_init sctp_ctrlsock_init(struct net *net)
+>  	if (status)
+>  		pr_err("Failed to initialize the SCTP control sock\n");
+>  
+> +	status = sctp_udp_sock_start(net);
 
-> before sctp_packet_pack().
+This can be masking the previous error.
+
+> +	if (status)
+> +		pr_err("Failed to initialize the SCTP udp tunneling sock\n");
+                                                 SCTP UDP
+
+> +
+>  	return status;
+>  }
+>  
+
+This is the last comment I had.
+Thanks Xin! Nice patches.
