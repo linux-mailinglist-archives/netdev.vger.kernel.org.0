@@ -2,68 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F13D28206D
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 04:11:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69ECA28207D
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 04:19:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725794AbgJCCLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 22:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbgJCCLj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 22:11:39 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC164C0613D0
-        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 19:11:39 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 337A012638BA3;
-        Fri,  2 Oct 2020 18:54:51 -0700 (PDT)
-Date:   Fri, 02 Oct 2020 19:11:38 -0700 (PDT)
-Message-Id: <20201002.191138.1022500168699346347.davem@davemloft.net>
-To:     kuba@kernel.org
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, johannes@sipsolutions.net,
-        jiri@resnulli.us, mkubecek@suse.cz, dsahern@kernel.org,
-        pablo@netfilter.org
-Subject: Re: [PATCH net-next v3 0/9] genetlink: support per-command policy
- dump
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20201002215000.1526096-1-kuba@kernel.org>
-References: <20201002215000.1526096-1-kuba@kernel.org>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 02 Oct 2020 18:54:51 -0700 (PDT)
+        id S1725827AbgJCCTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 22:19:12 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:58556 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725820AbgJCCTJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 22:19:09 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0932CDmM000965
+        for <netdev@vger.kernel.org>; Fri, 2 Oct 2020 19:19:08 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=facebook;
+ bh=UtoBmt7G4vnsx9cntc5KsyzqrpxcBgUDrG3pImKf9lE=;
+ b=VbKlOkYt0GKK4WpYyMFL7DDzY7g87hcUW3UQL3+dRaMcwkDnLggrV7BzqiGaypewzDPG
+ hAzkw3adao0p/yE4kwr3qr5tNkor1x4wnVRXzhbkTWtWITpw0gtqdlzRBqh0KSkjrCC3
+ NZUVJx79vDKAS+IqHaoaSrto0PNQzgVQeS4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 33w05ndq04-9
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 19:19:07 -0700
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 2 Oct 2020 19:19:05 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id D42493705CBA; Fri,  2 Oct 2020 19:19:04 -0700 (PDT)
+From:   Yonghong Song <yhs@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
+Subject: [PATCH bpf-next 2/2] samples/bpf: fix a compilation error with fallthrough marking
+Date:   Fri, 2 Oct 2020 19:19:04 -0700
+Message-ID: <20201003021904.1468772-1-yhs@fb.com>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20201003021904.1468678-1-yhs@fb.com>
+References: <20201003021904.1468678-1-yhs@fb.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-02_14:2020-10-02,2020-10-02 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
+ priorityscore=1501 mlxlogscore=713 impostorscore=0 spamscore=0 bulkscore=0
+ lowpriorityscore=0 clxscore=1015 mlxscore=0 malwarescore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2010030019
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Fri,  2 Oct 2020 14:49:51 -0700
+Compiling samples/bpf hits an error related to fallthrough marking.
+    ...
+    CC  samples/bpf/hbm.o
+  samples/bpf/hbm.c: In function =E2=80=98main=E2=80=99:
+  samples/bpf/hbm.c:486:4: error: =E2=80=98fallthrough=E2=80=99 undeclare=
+d (first use in this function)
+      fallthrough;
+      ^~~~~~~~~~~
 
-> The objective of this series is to dump ethtool policies
-> to be able to tell which flags are supported by the kernel.
-> Current release adds ETHTOOL_FLAG_STATS for dumping extra
-> stats, but because of strict checking we need to make sure
-> that the flag is actually supported before setting it in
-> a request.
-> 
-> Ethtool policies are per command, and so far only dumping
-> family policies was supported.
-> 
-> The series adds new set of "light" ops to genl families which
-> don't have all the callbacks, and won't have the policy.
-> Most of families are then moved to these ops. This gives
-> us 4096B in savings on an allyesconfig build (not counting
-> the growth that would have happened when policy is added):
-> 
->      text       data       bss        dec       hex
-> 244415581  227958581  78372980  550747142  20d3bc06
-> 244415581  227962677  78372980  550751238  20d3cc06
-> 
-> Next 5 patches deal the dumping per-op policy.
- ...
+The "fallthrough" is not defined under tools/include directory.
+Rather, it is "__fallthrough" is defined in linux/compiler.h.
+Including "linux/compiler.h" and using "__fallthrough" fixed the issue.
 
-Series applied, thanks Jakub.
+Signed-off-by: Yonghong Song <yhs@fb.com>
+---
+ samples/bpf/hbm.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/samples/bpf/hbm.c b/samples/bpf/hbm.c
+index 4b22ace52f80..ff4c533dfac2 100644
+--- a/samples/bpf/hbm.c
++++ b/samples/bpf/hbm.c
+@@ -40,6 +40,7 @@
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <linux/unistd.h>
++#include <linux/compiler.h>
+=20
+ #include <linux/bpf.h>
+ #include <bpf/bpf.h>
+@@ -483,7 +484,7 @@ int main(int argc, char **argv)
+ 					"Option -%c requires an argument.\n\n",
+ 					optopt);
+ 		case 'h':
+-			fallthrough;
++			__fallthrough;
+ 		default:
+ 			Usage();
+ 			return 0;
+--=20
+2.24.1
+
