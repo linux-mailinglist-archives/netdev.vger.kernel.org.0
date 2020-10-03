@@ -2,137 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6BC0282041
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 03:59:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D73E028204A
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 04:02:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725764AbgJCB7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 21:59:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39631 "EHLO
+        id S1725813AbgJCCCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Oct 2020 22:02:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:31722 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725536AbgJCB7N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 21:59:13 -0400
+        by vger.kernel.org with ESMTP id S1725730AbgJCCCb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 22:02:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601690352;
+        s=mimecast20190719; t=1601690549;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YeOAtvvMPwaNHz/wYRORgCGMK3Ts1ggRda1sMGxGQFA=;
-        b=V8kRsPg73mY1aqPTpDBNpne+w39tFhduFJHfFgXNot4K0HeIbJMSkXzY9C7HASfBjATxky
-        kd2zArMfpU0lxSwHWQHum36FgTWSW5HwA2O43dXoG63Qf5gpBiRTPiYui9WdztAHnK5lm2
-        k3XKZ/sQ/JOVM6DqXUZHOu88pPmbGvc=
+        bh=jiMlllEEKTQjIlICQJljkp75MtdRoQ3SeCkSnkimWXc=;
+        b=exoInPDtu8OSK+7yucXoiQcvmg7D+SYLoJHoC58d306Ef/HfRaC8Uyp+EWdeUPoS6ZTKr0
+        q981EYvJTYSQjfLR69W1c4KupPLyskpcyDABcm6i7ZWaQ6M1/bEsJKsdi6QMRebGNMGB7U
+        8Nj6XCnSR0uepqmOzbcu7kGK9dAirsg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-413-1nU4H7_uOzuVqsTeKAiepQ-1; Fri, 02 Oct 2020 21:59:08 -0400
-X-MC-Unique: 1nU4H7_uOzuVqsTeKAiepQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-414-OWteqTiIPCaVq9BquirjMw-1; Fri, 02 Oct 2020 22:02:27 -0400
+X-MC-Unique: OWteqTiIPCaVq9BquirjMw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B5F4E107464A;
-        Sat,  3 Oct 2020 01:59:06 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4B2B11006703;
+        Sat,  3 Oct 2020 02:02:26 +0000 (UTC)
 Received: from [10.72.12.21] (ovpn-12-21.pek2.redhat.com [10.72.12.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B3FDA5577C;
-        Sat,  3 Oct 2020 01:59:00 +0000 (UTC)
-Subject: Re: [PATCH v2 2/2] vhost: Don't call log_access_ok() when using IOTLB
-To:     Greg Kurz <groug@kaod.org>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, qemu-devel@nongnu.org,
-        Laurent Vivier <laurent@vivier.eu>,
-        David Gibson <david@gibson.dropbear.id.au>
-References: <160139701999.162128.2399875915342200263.stgit@bahia.lan>
- <160139704424.162128.7839027287942194310.stgit@bahia.lan>
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9E0DA1992F;
+        Sat,  3 Oct 2020 02:02:17 +0000 (UTC)
+Subject: Re: [PATCH] vhost-vdpa: fix page pinning leakage in error path
+To:     Si-Wei Liu <si-wei.liu@oracle.com>, tiwei.bie@intel.com,
+        lingshan.zhu@intel.com, mst@redhat.com
+Cc:     joao.m.martins@oracle.com, boris.ostrovsky@oracle.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <1601583799-15274-1-git-send-email-si-wei.liu@oracle.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <d9dae1ed-49a4-909a-6840-ae46a4ffdffc@redhat.com>
-Date:   Sat, 3 Oct 2020 09:58:59 +0800
+Message-ID: <37df4421-7642-9b02-1859-af3a807d3e65@redhat.com>
+Date:   Sat, 3 Oct 2020 10:02:15 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <160139704424.162128.7839027287942194310.stgit@bahia.lan>
+In-Reply-To: <1601583799-15274-1-git-send-email-si-wei.liu@oracle.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/9/30 上午12:30, Greg Kurz wrote:
-> When the IOTLB device is enabled, the log_guest_addr that is passed by
-> userspace to the VHOST_SET_VRING_ADDR ioctl, and which is then written
-> to vq->log_addr, is a GIOVA. All writes to this address are translated
-> by log_user() to writes to an HVA, and then ultimately logged through
-> the corresponding GPAs in log_write_hva(). No logging will ever occur
-> with vq->log_addr in this case. It is thus wrong to pass vq->log_addr
-> and log_guest_addr to log_access_vq() which assumes they are actual
-> GPAs.
+On 2020/10/2 上午4:23, Si-Wei Liu wrote:
+> Pinned pages are not properly accounted particularly when
+> mapping error occurs on IOTLB update. Clean up dangling
+> pinned pages for the error path. As the inflight pinned
+> pages, specifically for memory region that strides across
+> multiple chunks, would need more than one free page for
+> book keeping and accounting. For simplicity, pin pages
+> for all memory in the IOVA range in one go rather than
+> have multiple pin_user_pages calls to make up the entire
+> region. This way it's easier to track and account the
+> pages already mapped, particularly for clean-up in the
+> error path.
 >
-> Introduce a new vq_log_used_access_ok() helper that only checks accesses
-> to the log for the used structure when there isn't an IOTLB device around.
->
-> Signed-off-by: Greg Kurz <groug@kaod.org>
+> Fixes: 20453a45fb06 ("vhost: introduce vDPA-based backend")
+> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
 > ---
->   drivers/vhost/vhost.c |   23 +++++++++++++++++++----
->   1 file changed, 19 insertions(+), 4 deletions(-)
+>   drivers/vhost/vdpa.c | 121 +++++++++++++++++++++++++++++++--------------------
+>   1 file changed, 73 insertions(+), 48 deletions(-)
 >
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index c3b49975dc28..5996e32fa818 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -1370,6 +1370,20 @@ bool vhost_log_access_ok(struct vhost_dev *dev)
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 796fe97..abc4aa2 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -565,6 +565,8 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
+>   			      perm_to_iommu_flags(perm));
+>   	}
+>   
+> +	if (r)
+> +		vhost_iotlb_del_range(dev->iotlb, iova, iova + size - 1);
+>   	return r;
 >   }
->   EXPORT_SYMBOL_GPL(vhost_log_access_ok);
+
+
+Please use a separate patch for this fix.
+
+
 >   
-> +static bool vq_log_used_access_ok(struct vhost_virtqueue *vq,
-> +				  void __user *log_base,
-> +				  bool log_used,
-> +				  u64 log_addr,
-> +				  size_t log_size)
-> +{
-> +	/* If an IOTLB device is present, log_addr is a GIOVA that
-> +	 * will never be logged by log_used(). */
-> +	if (vq->iotlb)
-> +		return true;
+> @@ -592,21 +594,19 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>   	struct vhost_dev *dev = &v->vdev;
+>   	struct vhost_iotlb *iotlb = dev->iotlb;
+>   	struct page **page_list;
+> -	unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
+> +	struct vm_area_struct **vmas;
+>   	unsigned int gup_flags = FOLL_LONGTERM;
+> -	unsigned long npages, cur_base, map_pfn, last_pfn = 0;
+> -	unsigned long locked, lock_limit, pinned, i;
+> +	unsigned long map_pfn, last_pfn = 0;
+> +	unsigned long npages, lock_limit;
+> +	unsigned long i, nmap = 0;
+>   	u64 iova = msg->iova;
+> +	long pinned;
+>   	int ret = 0;
+>   
+>   	if (vhost_iotlb_itree_first(iotlb, msg->iova,
+>   				    msg->iova + msg->size - 1))
+>   		return -EEXIST;
+>   
+> -	page_list = (struct page **) __get_free_page(GFP_KERNEL);
+> -	if (!page_list)
+> -		return -ENOMEM;
+> -
+>   	if (msg->perm & VHOST_ACCESS_WO)
+>   		gup_flags |= FOLL_WRITE;
+>   
+> @@ -614,61 +614,86 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>   	if (!npages)
+>   		return -EINVAL;
+>   
+> +	page_list = kvmalloc_array(npages, sizeof(struct page *), GFP_KERNEL);
+> +	vmas = kvmalloc_array(npages, sizeof(struct vm_area_struct *),
+> +			      GFP_KERNEL);
+> +	if (!page_list || !vmas) {
+> +		ret = -ENOMEM;
+> +		goto free;
+> +	}
 > +
-> +	return !log_used || log_access_ok(log_base, log_addr, log_size);
-> +}
+>   	mmap_read_lock(dev->mm);
+>   
+> -	locked = atomic64_add_return(npages, &dev->mm->pinned_vm);
+>   	lock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+> -
+> -	if (locked > lock_limit) {
+> +	if (npages + atomic64_read(&dev->mm->pinned_vm) > lock_limit) {
+>   		ret = -ENOMEM;
+> -		goto out;
+> +		goto unlock;
+>   	}
+>   
+> -	cur_base = msg->uaddr & PAGE_MASK;
+> -	iova &= PAGE_MASK;
+> +	pinned = pin_user_pages(msg->uaddr & PAGE_MASK, npages, gup_flags,
+> +				page_list, vmas);
+> +	if (npages != pinned) {
+> +		if (pinned < 0) {
+> +			ret = pinned;
+> +		} else {
+> +			unpin_user_pages(page_list, pinned);
+> +			ret = -ENOMEM;
+> +		}
+> +		goto unlock;
+> +	}
+>   
+> -	while (npages) {
+> -		pinned = min_t(unsigned long, npages, list_size);
+> -		ret = pin_user_pages(cur_base, pinned,
+> -				     gup_flags, page_list, NULL);
+> -		if (ret != pinned)
+> -			goto out;
+> -
+> -		if (!last_pfn)
+> -			map_pfn = page_to_pfn(page_list[0]);
+> -
+> -		for (i = 0; i < ret; i++) {
+> -			unsigned long this_pfn = page_to_pfn(page_list[i]);
+> -			u64 csize;
+> -
+> -			if (last_pfn && (this_pfn != last_pfn + 1)) {
+> -				/* Pin a contiguous chunk of memory */
+> -				csize = (last_pfn - map_pfn + 1) << PAGE_SHIFT;
+> -				if (vhost_vdpa_map(v, iova, csize,
+> -						   map_pfn << PAGE_SHIFT,
+> -						   msg->perm))
+> -					goto out;
+> -				map_pfn = this_pfn;
+> -				iova += csize;
+> +	iova &= PAGE_MASK;
+> +	map_pfn = page_to_pfn(page_list[0]);
 > +
->   /* Verify access for write logging. */
->   /* Caller should have vq mutex and device mutex */
->   static bool vq_log_access_ok(struct vhost_virtqueue *vq,
-> @@ -1377,8 +1391,8 @@ static bool vq_log_access_ok(struct vhost_virtqueue *vq,
->   {
->   	return vq_memory_access_ok(log_base, vq->umem,
->   				   vhost_has_feature(vq, VHOST_F_LOG_ALL)) &&
-> -		(!vq->log_used || log_access_ok(log_base, vq->log_addr,
-> -				  vhost_get_used_size(vq, vq->num)));
-> +		vq_log_used_access_ok(vq, log_base, vq->log_used, vq->log_addr,
-> +				      vhost_get_used_size(vq, vq->num));
+> +	/* One more iteration to avoid extra vdpa_map() call out of loop. */
+> +	for (i = 0; i <= npages; i++) {
+> +		unsigned long this_pfn;
+> +		u64 csize;
+> +
+> +		/* The last chunk may have no valid PFN next to it */
+> +		this_pfn = i < npages ? page_to_pfn(page_list[i]) : -1UL;
+> +
+> +		if (last_pfn && (this_pfn == -1UL ||
+> +				 this_pfn != last_pfn + 1)) {
+> +			/* Pin a contiguous chunk of memory */
+> +			csize = last_pfn - map_pfn + 1;
+> +			ret = vhost_vdpa_map(v, iova, csize << PAGE_SHIFT,
+> +					     map_pfn << PAGE_SHIFT,
+> +					     msg->perm);
+> +			if (ret) {
+> +				/*
+> +				 * Unpin the rest chunks of memory on the
+> +				 * flight with no corresponding vdpa_map()
+> +				 * calls having been made yet. On the other
+> +				 * hand, vdpa_unmap() in the failure path
+> +				 * is in charge of accounting the number of
+> +				 * pinned pages for its own.
+> +				 * This asymmetrical pattern of accounting
+> +				 * is for efficiency to pin all pages at
+> +				 * once, while there is no other callsite
+> +				 * of vdpa_map() than here above.
+> +				 */
+> +				unpin_user_pages(&page_list[nmap],
+> +						 npages - nmap);
+> +				goto out;
+>   			}
+> -
+> -			last_pfn = this_pfn;
+> +			atomic64_add(csize, &dev->mm->pinned_vm);
+> +			nmap += csize;
+> +			iova += csize << PAGE_SHIFT;
+> +			map_pfn = this_pfn;
+>   		}
+> -
+> -		cur_base += ret << PAGE_SHIFT;
+> -		npages -= ret;
+> +		last_pfn = this_pfn;
+>   	}
+>   
+> -	/* Pin the rest chunk */
+> -	ret = vhost_vdpa_map(v, iova, (last_pfn - map_pfn + 1) << PAGE_SHIFT,
+> -			     map_pfn << PAGE_SHIFT, msg->perm);
+> +	WARN_ON(nmap != npages);
+>   out:
+> -	if (ret) {
+> +	if (ret)
+>   		vhost_vdpa_unmap(v, msg->iova, msg->size);
+> -		atomic64_sub(npages, &dev->mm->pinned_vm);
+> -	}
+> +unlock:
+>   	mmap_read_unlock(dev->mm);
+> -	free_page((unsigned long)page_list);
+> +free:
+> +	kvfree(vmas);
+> +	kvfree(page_list);
+>   	return ret;
 >   }
->   
->   /* Can we start vq? */
-> @@ -1517,8 +1531,9 @@ static long vhost_vring_set_addr(struct vhost_dev *d,
->   			return -EINVAL;
->   
->   		/* Also validate log access for used ring if enabled. */
-> -		if ((a.flags & (0x1 << VHOST_VRING_F_LOG)) &&
-> -			!log_access_ok(vq->log_base, a.log_guest_addr,
-> +		if (!vq_log_used_access_ok(vq, vq->log_base,
-> +				a.flags & (0x1 << VHOST_VRING_F_LOG),
-> +				a.log_guest_addr,
->   				sizeof *vq->used +
->   				vq->num * sizeof *vq->used->ring))
 
 
-It looks to me that we should use vhost_get_used_size() which takes 
-event into account.
+This looks like a rework, so I'd suggest to use use another patch for 
+this part.
 
-Any reason that we can't reuse vq_log_access_ok() here?
+(I was on vacation, so the reply would be slow)
 
 Thanks
 
 
->   			return -EINVAL;
->
->
+>   
 
