@@ -2,205 +2,318 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E6D2822DC
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 11:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1428C2822DF
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 11:05:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725794AbgJCJE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 05:04:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39308 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725648AbgJCJE5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 3 Oct 2020 05:04:57 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B8BE4206F8;
-        Sat,  3 Oct 2020 09:04:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601715896;
-        bh=Lis1UA7evOjm7bj9t1+4kqOmMH5ClghWGtsEc9Jpi0Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KVzsukWHXL/c7SXWnZp/QRL7nS9XxxcbR2/JjOr45weKpTJfvY71zKb/pFzxEOttn
-         TqJDKNCX0Ye0aZg/HP+fM8Ew/4pEzF9p1MeaepR46SjJDODP+MJ2GXGSCajI2vz/Oz
-         JZvPTSvVbDYUjBbMd6Qmcl6QdZG4P9lAxd7R4M7A=
-Date:   Sat, 3 Oct 2020 12:04:52 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Dave Ertman <david.m.ertman@intel.com>, gregkh@linuxfoundation.org
-Cc:     linux-rdma@vger.kernel.org, linux-netdev <netdev@vger.kernel.org>,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH 0/6] Ancillary bus implementation and SOF multi-client
- support
-Message-ID: <20201003090452.GF3094@unreal>
-References: <20201001050534.890666-1-david.m.ertman@intel.com>
+        id S1725807AbgJCJFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 05:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725648AbgJCJFp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 05:05:45 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2B0C0613E7
+        for <netdev@vger.kernel.org>; Sat,  3 Oct 2020 02:05:45 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id e16so4316982wrm.2
+        for <netdev@vger.kernel.org>; Sat, 03 Oct 2020 02:05:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PXtBvwPlcuDjwSsxSPImY3z6WHPiXSWPjxcN7VcIbOU=;
+        b=xWmUhcNwRVay4TOiYuqVk0ciV9jAYW2hkR/c5oSasXx6dlPSgDuoiEs5bQ2H1D+nK9
+         bZGhbc0jEDonbh1M6ZUlJ9xL05Aju2FkN1pNaNzRlpvStuNr0ieVLlKVMznCdecfG4nl
+         goQT6rHfdnxnr+qpIV+1svuUSVoY7D2nPXJMq4Cc8zpcvmiwCGB5ZKndgHSs6wxTyKi4
+         OfMlsWISEzPQHdfFx5xqNUScJw6aMeIJxasV+V/+9qs/GsHFIOCAOfoyziZE9+IycSCH
+         0tilHv+qVfHgbdxJvOcCDWst9h3KF6XVjfvsQgRusvQNjzYBrwgSAPDy3gFWMobbaiYs
+         nQpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PXtBvwPlcuDjwSsxSPImY3z6WHPiXSWPjxcN7VcIbOU=;
+        b=PEvTqHc3dx7buJWmboibcJeaKieotks0DyCLk2U3nnNb+dnJQJ3Wrjz1uDNiHoXCKS
+         NO4smMU5Du3T+tnafBCxwzsPSdxWdAH2n/fufcDZh/k9fj8pRSTsHGyGBUdvca70f9HD
+         FgPh79jdLY3Di+rvIk+rm60FrR/qCTg3i35/1Sj0waX7anhgPpoOjnL/NS3gliPyea85
+         tgsGT6JhvuNonh08FjMP5E68JFwNIQnVbhidvRNOQifUchZta4+86X9vqijFkz0MLLSC
+         lxphspjeYzYcALTate12pcku3K31U9kAEalyJcbj0hCmjcoJgwT/sSYy/yHLYoXTsYg0
+         G+zw==
+X-Gm-Message-State: AOAM532XAljZYOPScy7alPic96kaLaIIB57n5r6JZIaewbUBFC+M1/2N
+        +3JeHdP/RlbYiTi7deCfpGDiRw==
+X-Google-Smtp-Source: ABdhPJyBBzbxZHxBxE5j7jMZDVBv8TTqmDz4UOFNGwqcAC3B7MxDDYCOXK8ytbNIrWF9XhciuA6NKg==
+X-Received: by 2002:adf:cd0c:: with SMTP id w12mr67849wrm.305.1601715943753;
+        Sat, 03 Oct 2020 02:05:43 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id f14sm4873009wrt.53.2020.10.03.02.05.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 03 Oct 2020 02:05:43 -0700 (PDT)
+Date:   Sat, 3 Oct 2020 11:05:42 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 05/16] devlink: Add remote reload stats
+Message-ID: <20201003090542.GF3159@nanopsycho.orion>
+References: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
+ <1601560759-11030-6-git-send-email-moshe@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201001050534.890666-1-david.m.ertman@intel.com>
+In-Reply-To: <1601560759-11030-6-git-send-email-moshe@mellanox.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+Thu, Oct 01, 2020 at 03:59:08PM CEST, moshe@mellanox.com wrote:
+>Add remote reload stats to hold the history of actions performed due
+>devlink reload commands initiated by remote host. For example, in case
+>firmware activation with reset finished successfully but was initiated
+>by remote host.
+>
+>The function devlink_remote_reload_actions_performed() is exported to
+>enable drivers update on remote reload actions performed as it was not
+>initiated by their own devlink instance.
+>
+>Expose devlink remote reload stats to the user through devlink dev get
+>command.
+>
+>Examples:
+>$ devlink dev show
+>pci/0000:82:00.0:
+>  stats:
+>      reload_stats:
+>        driver_reinit 2
+>        fw_activate 1
+>        fw_activate_no_reset 0
+>      remote_reload_stats:
+>        driver_reinit 0
+>        fw_activate 0
+>        fw_activate_no_reset 0
+>pci/0000:82:00.1:
+>  stats:
+>      reload_stats:
+>        driver_reinit 1
+>        fw_activate 0
+>        fw_activate_no_reset 0
+>      remote_reload_stats:
+>        driver_reinit 1
+>        fw_activate 1
+>        fw_activate_no_reset 0
+>
+>$ devlink dev show -jp
+>{
+>    "dev": {
+>        "pci/0000:82:00.0": {
+>            "stats": {
+>                "reload_stats": [ {
+>                        "driver_reinit": 2
+>                    },{
+>                        "fw_activate": 1
+>                    },{
+>                        "fw_activate_no_reset": 0
+>                    } ],
+>                "remote_reload_stats": [ {
+>                        "driver_reinit": 0
+>                    },{
+>                        "fw_activate": 0
+>                    },{
+>                        "fw_activate_no_reset": 0
+>                    } ]
+>            }
+>        },
+>        "pci/0000:82:00.1": {
+>            "stats": {
+>                "reload_stats": [ {
+>                        "driver_reinit": 1
+>                    },{
+>                        "fw_activate": 0
+>                    },{
+>                        "fw_activate_no_reset": 0
+>                    } ],
+>                "remote_reload_stats": [ {
+>                        "driver_reinit": 1
+>                    },{
+>                        "fw_activate": 1
+>                    },{
+>                        "fw_activate_no_reset": 0
+>                    } ]
+>            }
+>        }
+>    }
+>}
+>
+>Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+>---
+>RFCv5 -> v1:
+>- Resplit this patch and the previous one by remote/local reload stats
+>instead of set/get reload stats
+>- Rename reload_action_stats to reload_stats
+>RFCv4 -> RFCv5:
+>- Add remote actions stats
+>- If devlink reload is not supported, show only remote_stats
+>RFCv3 -> RFCv4:
+>- Renamed DEVLINK_ATTR_RELOAD_ACTION_CNT to
+>  DEVLINK_ATTR_RELOAD_ACTION_STAT
+>- Add stats per action per limit level
+>RFCv2 -> RFCv3:
+>- Add reload actions counters instead of supported reload actions
+>  (reload actions counters are only for supported action so no need for
+>   both)
+>RFCv1 -> RFCv2:
+>- Removed DEVLINK_ATTR_RELOAD_DEFAULT_LEVEL
+>- Removed DEVLINK_ATTR_RELOAD_LEVELS_INFO
+>- Have actions instead of levels
+>---
+> include/net/devlink.h        |  1 +
+> include/uapi/linux/devlink.h |  1 +
+> net/core/devlink.c           | 49 +++++++++++++++++++++++++++++++-----
+> 3 files changed, 45 insertions(+), 6 deletions(-)
+>
+>diff --git a/include/net/devlink.h b/include/net/devlink.h
+>index 0f3bd23b6c04..a4ccb83bbd2c 100644
+>--- a/include/net/devlink.h
+>+++ b/include/net/devlink.h
+>@@ -42,6 +42,7 @@ struct devlink {
+> 	const struct devlink_ops *ops;
+> 	struct xarray snapshot_ids;
+> 	u32 reload_stats[DEVLINK_RELOAD_STATS_ARRAY_SIZE];
+>+	u32 remote_reload_stats[DEVLINK_RELOAD_STATS_ARRAY_SIZE];
 
-I don't know why did you send this series separately to every mailing
-list, but it is not correct thing to do.
+Perhaps a nested struct  {} stats?
 
-RDMA ML and discussion:
-https://lore.kernel.org/linux-rdma/20201001050534.890666-1-david.m.ertman@intel.com/T/#t
-Netdev ML (completely separated):
-https://lore.kernel.org/netdev/20201001050851.890722-1-david.m.ertman@intel.com/
-Alsa ML (separated too):
-https://lore.kernel.org/alsa-devel/20200930225051.889607-1-david.m.ertman@intel.com/
 
-Thanks
+> 	struct device *dev;
+> 	possible_net_t _net;
+> 	struct mutex lock; /* Serializes access to devlink instance specific objects such as
+>diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+>index 97e0137f6201..f9887d8afdc7 100644
+>--- a/include/uapi/linux/devlink.h
+>+++ b/include/uapi/linux/devlink.h
+>@@ -530,6 +530,7 @@ enum devlink_attr {
+> 	DEVLINK_ATTR_RELOAD_STATS,		/* nested */
+> 	DEVLINK_ATTR_RELOAD_STATS_ENTRY,	/* nested */
+> 	DEVLINK_ATTR_RELOAD_STATS_VALUE,	/* u32 */
+>+	DEVLINK_ATTR_REMOTE_RELOAD_STATS,	/* nested */
+> 
+> 	/* add new attributes above here, update the policy in devlink.c */
+> 
+>diff --git a/net/core/devlink.c b/net/core/devlink.c
+>index 05516f1e4c3e..3b6bd3b4d346 100644
+>--- a/net/core/devlink.c
+>+++ b/net/core/devlink.c
+>@@ -523,28 +523,35 @@ static int devlink_reload_stat_put(struct sk_buff *msg, enum devlink_reload_acti
+> 	return -EMSGSIZE;
+> }
+> 
+>-static int devlink_reload_stats_put(struct sk_buff *msg, struct devlink *devlink)
+>+static int devlink_reload_stats_put(struct sk_buff *msg, struct devlink *devlink, bool is_remote)
+> {
+> 	struct nlattr *reload_stats_attr;
+> 	int i, j, stat_idx;
+> 	u32 value;
+> 
+>-	reload_stats_attr = nla_nest_start(msg, DEVLINK_ATTR_RELOAD_STATS);
+>+	if (!is_remote)
+>+		reload_stats_attr = nla_nest_start(msg, DEVLINK_ATTR_RELOAD_STATS);
+>+	else
+>+		reload_stats_attr = nla_nest_start(msg, DEVLINK_ATTR_REMOTE_RELOAD_STATS);
+> 
+> 	if (!reload_stats_attr)
+> 		return -EMSGSIZE;
+> 
+> 	for (j = 0; j <= DEVLINK_RELOAD_LIMIT_MAX; j++) {
+>-		if (j != DEVLINK_RELOAD_LIMIT_UNSPEC &&
+>+		if (!is_remote && j != DEVLINK_RELOAD_LIMIT_UNSPEC &&
 
-On Wed, Sep 30, 2020 at 10:05:28PM -0700, Dave Ertman wrote:
-> Brief history of Ancillary Bus
-> ==============================
-> The ancillary bus code was originally submitted upstream as virtual
-> bus, and was submitted through the netdev tree.  This process generated
-> up to v4.  This discussion can be found here:
->  https://lore.kernel.org/netdev/0200520070227.3392100-2-jeffrey.t.kirsher@intel.com/T/#u
->
-> At this point, GregKH requested that we take the review and revision
-> process to an internal mailing list and garner the buy-in of a respected
-> kernel contributor.
->
-> The ancillary bus (then known as virtual bus) was originally submitted
-> along with implementation code for the ice driver and irdma drive,
-> causing the complication of also having dependencies in the rdma tree.
-> This new submission is utilizing an ancillary bus consumer in only the
-> sound driver tree to create the initial implementation and a single
-> user.
->
-> Since implementation work has started on this patch set, there have been
-> multiple inquiries about the time frame of its completion.  It appears
-> that there will be numerous consumers of this functionality.
->
-> The process of internal review and implementation using the sound
-> drivers generated 19 internal versions.  The changes, including the name
-> change from virtual bus to ancillary bus, from these versions can be
-> summarized as the following:
->
-> - Fixed compilation and checkpatch errors
-> - Improved documentation to address the motivation for virtual bus.
-> - Renamed virtual bus to ancillary bus
-> - increased maximum device name size
-> - Correct order in Kconfig and Makefile
-> - removed the mid-layer adev->release layer for device unregister
-> - pushed adev->id management to parent driver
-> - all error paths out of ancillary_device_register return error code
-> - all error paths out of ancillary_device_register use put_device
-> - added adev->name element
-> - modname in register cannot be NULL
-> - added KBUILD_MODNAME as prefix for match_name
-> - push adev->id responsibility to registering driver
-> - uevent now parses adev->dev name
-> - match_id function now parses adev->dev name
-> - changed drivers probe function to also take an ancillary_device_id param
-> - split ancillary_device_register into device_initialize and device_add
-> - adjusted what is done in device_initialize and device_add
-> - change adev to ancildev and adrv to ancildrv
-> - change adev to ancildev in documentation
->
-> This submission is the first time that this patch set will be sent to
-> the alsa-devel mailing list, so it is currently being submitted as
-> version 1.
->
-> ==========================
->
-> Introduces the ancillary bus implementation along with the example usage
-> in the Sound Open Firmware(SOF) audio driver.
->
-> In some subsystems, the functionality of the core device
-> (PCI/ACPI/other) may be too complex for a single device to be managed as
-> a monolithic block or a part of the functionality might need to be
-> exposed to a different subsystem.  Splitting the functionality into
-> smaller orthogonal devices makes it easier to manage data, power
-> management and domain-specific communication with the hardware.  Also,
-> common ancillary_device functionality across primary devices can be
-> handled by a common ancillary_device. A key requirement for such a split
-> is that there is no dependency on a physical bus, device, register
-> accesses or regmap support. These individual devices split from the core
-> cannot live on the platform bus as they are not physical devices that
-> are controlled by DT/ACPI. The same argument applies for not using MFD
-> in this scenario as it relies on individual function devices being
-> physical devices that are DT enumerated.
->
-> An example for this kind of requirement is the audio subsystem where a
-> single IP handles multiple entities such as HDMI, Soundwire, local
-> devices such as mics/speakers etc. The split for the core's
-> functionality can be arbitrary or be defined by the DSP firmware
-> topology and include hooks for test/debug. This allows for the audio
-> core device to be minimal and tightly coupled with handling the
-> hardware-specific logic and communication.
->
-> The ancillary bus is intended to be minimal, generic and avoid
-> domain-specific assumptions. Each ancillary bus device represents a part
-> of its parent functionality. The generic behavior can be extended and
-> specialized as needed by encapsulating an ancillary bus device within
-> other domain-specific structures and the use of .ops callbacks.
->
-> The SOF driver adopts the ancillary bus for implementing the
-> multi-client support. A client in the context of the SOF driver
-> represents a part of the core device's functionality. It is not a
-> physical device but rather an ancillary device that needs to communicate
-> with the DSP via IPCs. With multi-client support,the sound card can be
-> separated into multiple orthogonal ancillary devices for local devices
-> (mic/speakers etc), HDMI, sensing, probes, debug etc.  In this series,
-> we demonstrate the usage of the ancillary bus with the help of the IPC
-> test client which is used for testing the serialization of IPCs when
-> multiple clients talk to the DSP at the same time.
->
-> Dave Ertman (1):
->   Add ancillary bus support
->
-> Fred Oh (1):
->   ASoC: SOF: debug: Remove IPC flood test support in SOF core
->
-> Ranjani Sridharan (4):
->   ASoC: SOF: Introduce descriptors for SOF client
->   ASoC: SOF: Create client driver for IPC test
->   ASoC: SOF: ops: Add ops for client registration
->   ASoC: SOF: Intel: Define ops for client registration
->
->  Documentation/driver-api/ancillary_bus.rst | 230 +++++++++++++++
->  Documentation/driver-api/index.rst         |   1 +
->  drivers/bus/Kconfig                        |   3 +
->  drivers/bus/Makefile                       |   3 +
->  drivers/bus/ancillary.c                    | 191 +++++++++++++
->  include/linux/ancillary_bus.h              |  58 ++++
->  include/linux/mod_devicetable.h            |   8 +
->  scripts/mod/devicetable-offsets.c          |   3 +
->  scripts/mod/file2alias.c                   |   8 +
->  sound/soc/sof/Kconfig                      |  29 +-
->  sound/soc/sof/Makefile                     |   7 +
->  sound/soc/sof/core.c                       |  12 +
->  sound/soc/sof/debug.c                      | 230 ---------------
->  sound/soc/sof/intel/Kconfig                |   9 +
->  sound/soc/sof/intel/Makefile               |   3 +
->  sound/soc/sof/intel/apl.c                  |  18 ++
->  sound/soc/sof/intel/bdw.c                  |  18 ++
->  sound/soc/sof/intel/byt.c                  |  22 ++
->  sound/soc/sof/intel/cnl.c                  |  18 ++
->  sound/soc/sof/intel/intel-client.c         |  49 ++++
->  sound/soc/sof/intel/intel-client.h         |  26 ++
->  sound/soc/sof/ops.h                        |  14 +
->  sound/soc/sof/sof-client.c                 | 117 ++++++++
->  sound/soc/sof/sof-client.h                 |  65 +++++
->  sound/soc/sof/sof-ipc-test-client.c        | 314 +++++++++++++++++++++
->  sound/soc/sof/sof-priv.h                   |  16 +-
->  26 files changed, 1233 insertions(+), 239 deletions(-)
->  create mode 100644 Documentation/driver-api/ancillary_bus.rst
->  create mode 100644 drivers/bus/ancillary.c
->  create mode 100644 include/linux/ancillary_bus.h
->  create mode 100644 sound/soc/sof/intel/intel-client.c
->  create mode 100644 sound/soc/sof/intel/intel-client.h
->  create mode 100644 sound/soc/sof/sof-client.c
->  create mode 100644 sound/soc/sof/sof-client.h
->  create mode 100644 sound/soc/sof/sof-ipc-test-client.c
->
-> --
-> 2.26.2
+I don't follow the check "!is_remote" here,
+
+> 		    !devlink_reload_limit_is_supported(devlink, j))
+> 			continue;
+> 		for (i = 0; i <= DEVLINK_RELOAD_ACTION_MAX; i++) {
+>-			if (!devlink_reload_action_is_supported(devlink, i) ||
+>+			if ((!is_remote && !devlink_reload_action_is_supported(devlink, i)) ||
+
+and here. Could you perhaps put in a comment to describe what are you
+doing?
+
+
+
+>+			    i == DEVLINK_RELOAD_ACTION_UNSPEC ||
+> 			    devlink_reload_combination_is_invalid(i, j))
+> 				continue;
+> 
+> 			stat_idx = j * __DEVLINK_RELOAD_ACTION_MAX + i;
+>-			value = devlink->reload_stats[stat_idx];
+>+			if (!is_remote)
+>+				value = devlink->reload_stats[stat_idx];
+>+			else
+>+				value = devlink->remote_reload_stats[stat_idx];
+> 			if (devlink_reload_stat_put(msg, i, j, value))
+> 				goto nla_put_failure;
+> 		}
+>@@ -577,7 +584,9 @@ static int devlink_nl_fill(struct sk_buff *msg, struct devlink *devlink,
+> 	if (!dev_stats)
+> 		goto nla_put_failure;
+> 
+>-	if (devlink_reload_stats_put(msg, devlink))
+>+	if (devlink_reload_stats_put(msg, devlink, false))
+>+		goto dev_stats_nest_cancel;
+>+	if (devlink_reload_stats_put(msg, devlink, true))
+> 		goto dev_stats_nest_cancel;
+> 
+> 	nla_nest_end(msg, dev_stats);
+>@@ -3100,15 +3109,40 @@ devlink_reload_stats_update(struct devlink *devlink, enum devlink_reload_limit l
+> 	__devlink_reload_stats_update(devlink, devlink->reload_stats, limit, actions_performed);
+> }
+> 
+>+/**
+>+ *	devlink_remote_reload_actions_performed - Update devlink on reload actions
+>+ *	  performed which are not a direct result of devlink reload call.
+>+ *
+>+ *	This should be called by a driver after performing reload actions in case it was not
+>+ *	a result of devlink reload call. For example fw_activate was performed as a result
+>+ *	of devlink reload triggered fw_activate on another host.
+>+ *	The motivation for this function is to keep data on reload actions performed on this
+>+ *	function whether it was done due to direct devlink reload call or not.
+>+ *
+>+ *	@devlink: devlink
+>+ *	@limit: reload limit
+>+ *	@actions_performed: bitmask of actions performed
+>+ */
+>+void devlink_remote_reload_actions_performed(struct devlink *devlink,
+>+					     enum devlink_reload_limit limit,
+>+					     unsigned long actions_performed)
+>+{
+>+	__devlink_reload_stats_update(devlink, devlink->remote_reload_stats, limit,
+>+				      actions_performed);
+>+}
+>+EXPORT_SYMBOL_GPL(devlink_remote_reload_actions_performed);
+>+
+> static int devlink_reload(struct devlink *devlink, struct net *dest_net,
+> 			  enum devlink_reload_action action, enum devlink_reload_limit limit,
+> 			  struct netlink_ext_ack *extack, unsigned long *actions_performed)
+> {
+>+	u32 remote_reload_stats[DEVLINK_RELOAD_STATS_ARRAY_SIZE];
+> 	int err;
+> 
+> 	if (!devlink->reload_enabled)
+> 		return -EOPNOTSUPP;
+> 
+>+	memcpy(remote_reload_stats, devlink->remote_reload_stats, sizeof(remote_reload_stats));
+> 	err = devlink->ops->reload_down(devlink, !!dest_net, action, limit, extack);
+> 	if (err)
+> 		return err;
+>@@ -3122,6 +3156,9 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
+> 		return err;
+> 
+> 	WARN_ON(!test_bit(action, actions_performed));
+>+	/* Catch driver on updating the remote action within devlink reload */
+>+	WARN_ON(memcmp(remote_reload_stats, devlink->remote_reload_stats,
+>+		       sizeof(remote_reload_stats)));
+> 	devlink_reload_stats_update(devlink, limit, *actions_performed);
+> 	return 0;
+> }
+>-- 
+>2.18.2
 >
