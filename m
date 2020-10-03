@@ -2,122 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADF0228221A
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 09:49:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91B62282226
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 09:51:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725811AbgJCHtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 03:49:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49884 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725648AbgJCHtG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 3 Oct 2020 03:49:06 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1CF12206CA;
-        Sat,  3 Oct 2020 07:49:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601711345;
-        bh=rSNbOsR9qrZbk/22kRR7H2mTyhHla1eb6pLRYw92C3A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Xpfo7j5Ogz+5FMLQE6JEcdCuZJLS220njFOGq0w4q/ezcS8/YUJxV/tVp00x1cRme
-         PeytJ+bYJeETsXVwvFCvNmLXIxzaEU/n9jv+Ho+tcc1DWNdFus5jjW+U0OJ02cZ/dL
-         cV4hpDQF2Gtg0pwq+PecAcI5R7GAWDWmhCugOA3g=
-Date:   Sat, 3 Oct 2020 09:49:01 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-spi@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Another round of adding missing
- 'additionalProperties'
-Message-ID: <20201003074901.GA109727@kroah.com>
-References: <20201002234143.3570746-1-robh@kernel.org>
+        id S1725763AbgJCHvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 03:51:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725648AbgJCHvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 03:51:05 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA60AC0613E7
+        for <netdev@vger.kernel.org>; Sat,  3 Oct 2020 00:51:02 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id e16so4193647wrm.2
+        for <netdev@vger.kernel.org>; Sat, 03 Oct 2020 00:51:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=k2ZUOGVbagWt3EpJ+oMKDCHsZP+OazieIj8l7AmZJ0o=;
+        b=aXqNSfWiHGjdLU5AaDEHEnYaGYd29JMQZBGj4SAc3fivAPJhvOQ1hlBv9nsFlCsE4S
+         lNRg2sUIqzH2OK8cuErFg9zmzFo/nVEUmMn59Mwo8pkCkffJLfQEzcc4Wk08p16+Rrew
+         T8VK+7W1zwKNUivTBp8VvU2FW4ZSB/IhLTp0QNw/o119wqUWRrhRDahYonDP5LqUUgjD
+         Fy2Z/cQnmmRaDWg5wjdCUlLyHieo3GgcjZ5Zvzk6j55261psIQKf6bqxFx1zZ1woJccE
+         hbbG9MhIx3WBEzpfWdza/0PX0I/0uklTCDXFl3JW5htWa4zdZb4Cla9SDlNSsLYRD6oH
+         W36Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=k2ZUOGVbagWt3EpJ+oMKDCHsZP+OazieIj8l7AmZJ0o=;
+        b=HuCSR6Bt0TUi+8BCn7w8A3ncUttoHLAlDEkvQFMlCj2dIppaiY8glMJdBQEkZ8QBzO
+         3337OKPD2omo9KUf84WxpQ5OXcHkYaYP7MN20OzSmhvt47uAYi3hp2y7dmVtFyxEQqn5
+         HMLvE8Sa2Ghjh89IPwWAdewzBnsD5F4oSmDEtyIeBmLFeqKL17urwSd337qn3qkgrEg9
+         T6M+eT7CZnRF5F1mq0LV5heU5BJJCwOOG2n9hL2qWq5TcbP2E+QParYZ0Ilh8GwHVIXm
+         8zEs3jxfUEB+3oEkUKmpBJOw1YPnDTUhfeVav5rs8EttB1t7fHpQ7vqQpSdBfSvjitl9
+         QTrg==
+X-Gm-Message-State: AOAM5320lSQNPqNoqAI18AxQ/yxavDiQu1nSkfokmiigqQFuPmPt7Qql
+        sxLVnhT/RTQ9JNkrTGM19d0qsg==
+X-Google-Smtp-Source: ABdhPJxqRdPBhZAazHT0CqKubKS6w7Wua5O77b+z73+GAnYSU8NRh0JXhEPyMM5koPK2G9pe7W5IYA==
+X-Received: by 2002:adf:f504:: with SMTP id q4mr6938574wro.353.1601711461444;
+        Sat, 03 Oct 2020 00:51:01 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id i14sm4780622wro.96.2020.10.03.00.51.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 03 Oct 2020 00:51:00 -0700 (PDT)
+Date:   Sat, 3 Oct 2020 09:51:00 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 03/16] devlink: Add devlink reload limit option
+Message-ID: <20201003075100.GC3159@nanopsycho.orion>
+References: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
+ <1601560759-11030-4-git-send-email-moshe@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201002234143.3570746-1-robh@kernel.org>
+In-Reply-To: <1601560759-11030-4-git-send-email-moshe@mellanox.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 02, 2020 at 06:41:43PM -0500, Rob Herring wrote:
-> Another round of wack-a-mole. The json-schema default is additional
-> unknown properties are allowed, but for DT all properties should be
-> defined.
-> 
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Baolin Wang <baolin.wang7@gmail.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: Liam Girdwood <lgirdwood@gmail.com>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: linux-clk@vger.kernel.org
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-spi@vger.kernel.org
-> Cc: linux-gpio@vger.kernel.org
-> Cc: linux-hwmon@vger.kernel.org
-> Cc: linux-iio@vger.kernel.org
-> Cc: openipmi-developer@lists.sourceforge.net
-> Cc: linux-leds@vger.kernel.org
-> Cc: linux-media@vger.kernel.org
-> Cc: linux-rockchip@lists.infradead.org
-> Cc: linux-stm32@st-md-mailman.stormreply.com
-> Cc: linux-mips@vger.kernel.org
-> Cc: linux-mmc@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-pci@vger.kernel.org
-> Cc: linux-pm@vger.kernel.org
-> Cc: linux-remoteproc@vger.kernel.org
-> Cc: linux-serial@vger.kernel.org
-> Cc: alsa-devel@alsa-project.org
-> Cc: linux-usb@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
-> 
-> I'll take this thru the DT tree.
+Thu, Oct 01, 2020 at 03:59:06PM CEST, moshe@mellanox.com wrote:
 
-For USB:
+[...]
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> enum devlink_attr {
+> 	/* don't change the order or add anything between, this is ABI! */
+> 	DEVLINK_ATTR_UNSPEC,
+>@@ -507,6 +524,7 @@ enum devlink_attr {
+> 
+> 	DEVLINK_ATTR_RELOAD_ACTION,		/* u8 */
+> 	DEVLINK_ATTR_RELOAD_ACTIONS_PERFORMED,	/* u64 */
+>+	DEVLINK_ATTR_RELOAD_LIMIT,	/* u8 */
+
+Hmm, why there could be specified only single "limit"? I believe this
+should be a bitfield. Same for the internal api to the driver.
+
+[...]
