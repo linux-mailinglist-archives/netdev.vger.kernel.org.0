@@ -2,116 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32DFC282378
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 12:02:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC64428238A
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 12:10:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725881AbgJCKCW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 3 Oct 2020 06:02:22 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:27717 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725857AbgJCKCV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 06:02:21 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-378-tgmJOLFBPUuJiiTYcs74xg-1; Sat, 03 Oct 2020 06:02:18 -0400
-X-MC-Unique: tgmJOLFBPUuJiiTYcs74xg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1725790AbgJCKKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 06:10:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36794 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725601AbgJCKKK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 3 Oct 2020 06:10:10 -0400
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E5F43185A0C1;
-        Sat,  3 Oct 2020 10:02:16 +0000 (UTC)
-Received: from bahia.lan (ovpn-112-192.ams2.redhat.com [10.36.112.192])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C57B110013C4;
-        Sat,  3 Oct 2020 10:02:14 +0000 (UTC)
-Subject: [PATCH v3 3/3] vhost: Don't call log_access_ok() when using IOTLB
-From:   Greg Kurz <groug@kaod.org>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        qemu-devel@nongnu.org, Laurent Vivier <laurent@vivier.eu>,
-        David Gibson <david@gibson.dropbear.id.au>
-Date:   Sat, 03 Oct 2020 12:02:13 +0200
-Message-ID: <160171933385.284610.10189082586063280867.stgit@bahia.lan>
-In-Reply-To: <160171888144.284610.4628526949393013039.stgit@bahia.lan>
-References: <160171888144.284610.4628526949393013039.stgit@bahia.lan>
-User-Agent: StGit/0.21
+        by mail.kernel.org (Postfix) with ESMTPSA id 2DB35206DB;
+        Sat,  3 Oct 2020 10:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601719809;
+        bh=4uc/yvgQ0Bg2rkjDtTSRMtPCAxTyxmhc3nyBiJXwIp0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=WDzokKxhT2P5YFYukQBAb+AdsJuSG5RYTi/TLJUFAIPUNSS7FPWreUOZJPhduUgaI
+         IdxgzcQkOb0cNucRjsC+j3lE2zfFwKFgr6gSepkwrGFmGFW/fVw+LLTE6YujRgLjNx
+         r3O7NsYGeKbVugZmLsP7edh6M90bbWgQ6JiXYSpE=
+Received: by mail-ej1-f46.google.com with SMTP id p15so5084039ejm.7;
+        Sat, 03 Oct 2020 03:10:09 -0700 (PDT)
+X-Gm-Message-State: AOAM533y81cjjHObQMy2KJQ1hLfBvCke6X2WsGSpf0mdYOen+5UZVCk6
+        +qv/Qz6wr9iRpWCdr076mPjU1f9m6b1hQnPheUc=
+X-Google-Smtp-Source: ABdhPJzsmojD/sHn318W+3K8GmWS4SrdOb2+YB41wl8ewmNenZaBBjddwx/tEamQQEtD4UTCIX8d2tfHG5kC/ZRLua0=
+X-Received: by 2002:a17:906:14db:: with SMTP id y27mr6295897ejc.148.1601719807676;
+ Sat, 03 Oct 2020 03:10:07 -0700 (PDT)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=groug@kaod.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kaod.org
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+References: <CGME20201002192215eucas1p2c1d2baebfe2a9caa11d88175a2899fea@eucas1p2.samsung.com>
+ <20201002192210.19967-1-l.stelmach@samsung.com> <20201002192210.19967-2-l.stelmach@samsung.com>
+In-Reply-To: <20201002192210.19967-2-l.stelmach@samsung.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Date:   Sat, 3 Oct 2020 12:09:55 +0200
+X-Gmail-Original-Message-ID: <CAJKOXPeLiKQLSud4f9zxqBdR9a1sk04K56_=jtQr1FGxyDmDuQ@mail.gmail.com>
+Message-ID: <CAJKOXPeLiKQLSud4f9zxqBdR9a1sk04K56_=jtQr1FGxyDmDuQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] dt-bindings: net: Add bindings for AX88796C SPI
+ Ethernet Adapter
+To:     =?UTF-8?Q?=C5=81ukasz_Stelmach?= <l.stelmach@samsung.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-samsung-soc@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        =?UTF-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewicz?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the IOTLB device is enabled, the log_guest_addr that is passed by
-userspace to the VHOST_SET_VRING_ADDR ioctl, and which is then written
-to vq->log_addr, is a GIOVA. All writes to this address are translated
-by log_user() to writes to an HVA, and then ultimately logged through
-the corresponding GPAs in log_write_hva(). No logging will ever occur
-with vq->log_addr in this case. It is thus wrong to pass vq->log_addr
-and log_guest_addr to log_access_vq() which assumes they are actual
-GPAs.
+On Fri, 2 Oct 2020 at 21:22, =C5=81ukasz Stelmach <l.stelmach@samsung.com> =
+wrote:
+>
+> Add bindings for AX88796C SPI Ethernet Adapter.
+>
+> Signed-off-by: =C5=81ukasz Stelmach <l.stelmach@samsung.com>
+> ---
+>  .../bindings/net/asix,ax88796c-spi.yaml       | 76 +++++++++++++++++++
+>  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
+>  2 files changed, 78 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/asix,ax88796c-s=
+pi.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/net/asix,ax88796c-spi.yaml=
+ b/Documentation/devicetree/bindings/net/asix,ax88796c-spi.yaml
+> new file mode 100644
+> index 000000000000..50a488d59dbf
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/asix,ax88796c-spi.yaml
+> @@ -0,0 +1,76 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/asix,ax88796c-spi.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: ASIX AX88796C SPI Ethernet Adapter
+> +
+> +allOf:
+> +  - $ref: ethernet-controller.yaml#
 
-Introduce a new vq_log_used_access_ok() helper that only checks accesses
-to the log for the used structure when there isn't an IOTLB device around.
+Order of top-level entries please:
+1. id, schema
+2. title
+3. maintainers
+4. description
+and then allOf. See example-schema.yaml.
 
-Signed-off-by: Greg Kurz <groug@kaod.org>
----
- drivers/vhost/vhost.c |   23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+> +
+> +description: |
+> +  ASIX AX88796C is an Ethernet controller with a built in PHY. This
+> +  describes SPI mode of the chip.
+> +
+> +  The node for this driver must be a child node of a SPI controller, hen=
+ce
+> +  all mandatory properties described in ../spi/spi-bus.txt must be speci=
+fied.
+> +
+> +maintainers:
+> +  - =C5=81ukasz Stelmach <l.stelmach@samsung.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: asix,ax99796c-spi
+> +
+> +  reg:
+> +    description:
+> +      SPI device address.
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 9d2c225fb518..9ad45e1d27f0 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -1370,6 +1370,20 @@ bool vhost_log_access_ok(struct vhost_dev *dev)
- }
- EXPORT_SYMBOL_GPL(vhost_log_access_ok);
- 
-+static bool vq_log_used_access_ok(struct vhost_virtqueue *vq,
-+				  void __user *log_base,
-+				  bool log_used,
-+				  u64 log_addr)
-+{
-+	/* If an IOTLB device is present, log_addr is a GIOVA that
-+	 * will never be logged by log_used(). */
-+	if (vq->iotlb)
-+		return true;
-+
-+	return !log_used || log_access_ok(log_base, log_addr,
-+					  vhost_get_used_size(vq, vq->num));
-+}
-+
- /* Verify access for write logging. */
- /* Caller should have vq mutex and device mutex */
- static bool vq_log_access_ok(struct vhost_virtqueue *vq,
-@@ -1377,8 +1391,7 @@ static bool vq_log_access_ok(struct vhost_virtqueue *vq,
- {
- 	return vq_memory_access_ok(log_base, vq->umem,
- 				   vhost_has_feature(vq, VHOST_F_LOG_ALL)) &&
--		(!vq->log_used || log_access_ok(log_base, vq->log_addr,
--				  vhost_get_used_size(vq, vq->num)));
-+		vq_log_used_access_ok(vq, log_base, vq->log_used, vq->log_addr);
- }
- 
- /* Can we start vq? */
-@@ -1517,9 +1530,9 @@ static long vhost_vring_set_addr(struct vhost_dev *d,
- 			return -EINVAL;
- 
- 		/* Also validate log access for used ring if enabled. */
--		if ((a.flags & (0x1 << VHOST_VRING_F_LOG)) &&
--			!log_access_ok(vq->log_base, a.log_guest_addr,
--				       vhost_get_used_size(vq, vq->num)))
-+		if (!vq_log_used_access_ok(vq, vq->log_base,
-+				a.flags & (0x1 << VHOST_VRING_F_LOG),
-+				a.log_guest_addr))
- 			return -EINVAL;
- 	}
- 
+Skip description, it's trivial.
 
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 40000000
+> +
+> +  interrupts:
+> +    description:
+> +     GPIO interrupt to which the chip is connected.
 
+Skip the description. It's trivial and might be not accurate (does not
+have to be a GPIO).
+
+> +    maxItems: 1
+> +
+> +  interrupt-parrent:
+> +    description:
+> +      A phandle of an interrupt controller.
+
+Skip description.
+
+> +    maxItems: 1
+> +
+> +  reset-gpios:
+> +    description:
+> +      A GPIO line handling reset of the chip. As the line is active low,
+> +      it should be marked GPIO_ACTIVE_LOW.
+> +    maxItems: 1
+> +
+> +  local-mac-address: true
+> +
+> +  mac-address: true
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - spi-max-frequency
+> +  - interrupts
+> +  - interrupt-parrent
+> +  - reset-gpios
+
+Additional properties false.
+
+> +
+> +examples:
+> +  # Artik5 eval board
+> +  - |
+> +    ax88796c@0 {
+> +        compatible =3D "asix,ax88796c";
+> +        local-mac-address =3D [00 00 00 00 00 00]; /* Filled in by a boo=
+tloader */
+> +        interrupt-parent =3D <&gpx2>;
+> +        interrupts =3D <0 IRQ_TYPE_LEVEL_LOW>;
+> +        spi-max-frequency =3D <40000000>;
+> +        reg =3D <0x0>;
+> +        reset-gpios =3D <&gpe0 2 GPIO_ACTIVE_LOW>;
+> +        controller-data {
+> +            samsung,spi-feedback-delay =3D <2>;
+> +        };
+> +    };
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Doc=
+umentation/devicetree/bindings/vendor-prefixes.yaml
+> index 2baee2c817c1..5ce5c4a43735 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> @@ -117,6 +117,8 @@ patternProperties:
+>      description: Asahi Kasei Corp.
+>    "^asc,.*":
+>      description: All Sensors Corporation
+> +  "^asix,.*":
+> +    description: ASIX Electronics Corporation
+
+Separate patch please.
+
+Best regards,
+Krzysztof
+
+>    "^aspeed,.*":
+>      description: ASPEED Technology Inc.
+>    "^asus,.*":
+> --
+> 2.26.2
+>
