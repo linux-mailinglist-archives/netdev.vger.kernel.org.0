@@ -2,73 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3541B282688
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 22:02:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90D6F2826B1
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 22:58:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725935AbgJCUB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 16:01:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33122 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725807AbgJCUB4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 16:01:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601755316;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/A6rRQgh7FIao3GEZvzvwL/dFHIVr0IqDIz99fdNOBo=;
-        b=VLHwCGcKEER4YAxiBBJG7PBro7Clzpmy4/JJlDTS4PXpnyjSKgiXxh8toAkEYwAe5An2f8
-        nxXmXhU4KrEnEXh55GGWochNw9WH53iyhqB+hSrKQuTjDypUtf9Mk2cgIYnSN/r+23XcO4
-        T2Ncm0LYrbzqlts0OzAqNv/HXOdx8iw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-449-uWk0iau5OTi5HA1ASp-ruA-1; Sat, 03 Oct 2020 16:01:52 -0400
-X-MC-Unique: uWk0iau5OTi5HA1ASp-ruA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7632D1074650;
-        Sat,  3 Oct 2020 20:01:51 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-116-196.rdu2.redhat.com [10.10.116.196])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6504173681;
-        Sat,  3 Oct 2020 20:01:50 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20201002.160325.520066148052804695.davem@davemloft.net>
-References: <20201002.160325.520066148052804695.davem@davemloft.net> <160156420377.1728886.5309670328610130816.stgit@warthog.procyon.org.uk>
-To:     David Miller <davem@davemloft.net>
-Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 00/23] rxrpc: Fixes and preparation for RxGK
+        id S1725940AbgJCU6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 16:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725897AbgJCU6X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 16:58:23 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13CD7C0613D0;
+        Sat,  3 Oct 2020 13:58:23 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a17so2508357pju.1;
+        Sat, 03 Oct 2020 13:58:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=AZZnFmMC17E9yGBAkNVOXQNqt+M2aS94kheendbZAAI=;
+        b=tXSRk41dOnyVQFHFQteEMOA9RHgmNiqaQmvOeiMspL+XX3vSKCFh+mgDwfo4rsGAZB
+         wOI1k7m1YwWeVtEP8ElhegJKyHIEeltLd6mHm4nAIPaR9XYXtGJ+IEK6BZptgeXOQJZm
+         nEb9ULgDKPSWi8vMQnrBY3+R37DAjwQycwnfbPx4N3tgWwAc4KFd2HgsmSmYx/eAHjPm
+         nEf+UnInjpBuiWNL2+vdY7pNR85TxkqSUeteVJSyzaupPDu8j53qCk9yFNLDUOj2n+sJ
+         1Tyg0tjq9qgi81jgGL8q5skGli/aCuWVypJTOuo36KM06igQxOTtGqlTOox5QF2bBf3+
+         sVDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=AZZnFmMC17E9yGBAkNVOXQNqt+M2aS94kheendbZAAI=;
+        b=EWmyxIDylOp8lqTKMriwO01w2jF0f3ulG1QvaaMFK5d5mNGjCuDaWDN9xh1fyStGgW
+         rDNtBRKsDRsT7VYLqZAO1AqV6zfXAIn2tU/B2Ix3VkOHw3PMSNsdCaFFpLK1jyu16Sz1
+         LVbIUWq/KHWUlpYgG8gEOi5OiizS0mUOKRgaBx2so8dnlWGwp8WvrVKn5mBah+MvUwFG
+         N3aOx71vTA31HvnzKpXuFCetZ3tEenZm5UE40XPaCj3dWWhr7UlKB/MWynkjZVwLTwEQ
+         z7zeZbLdL8inJ/yIyzpjUbqrnJZrKbZb2q5MfVdBDX3zk8edf0/+k974ifk3DLxKJtIO
+         HEXw==
+X-Gm-Message-State: AOAM532AhwETibGy+USevlp2xsF3lwncwBbQxK3d/qjyHX38a7eebb0i
+        J4QjLD3m37bbV4WmPdnz+tlTw2JKl7wuhiXzUfU=
+X-Google-Smtp-Source: ABdhPJxiKPUGZnuM6OqUtXhszbDMEqmHhXppikt/00huy7eOAH4bexu9KtNZH7gq0ez9wPuyLS+vUQ==
+X-Received: by 2002:a17:90a:ea0a:: with SMTP id w10mr8792531pjy.165.1601758701945;
+        Sat, 03 Oct 2020 13:58:21 -0700 (PDT)
+Received: from [192.168.0.104] ([49.207.217.69])
+        by smtp.gmail.com with ESMTPSA id i17sm6640460pfa.29.2020.10.03.13.58.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 03 Oct 2020 13:58:21 -0700 (PDT)
+Subject: Re: [PATCH v2] net: usb: rtl8150: prevent set_ethernet_addr from
+ setting uninit address
+To:     Joe Perches <joe@perches.com>
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
+        Petko Manolov <petkan@nucleusys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201001073221.239618-1-anant.thazhemadam@gmail.com>
+ <dbe67fce55c6bbe569cefdc1a01708a0d01b140a.camel@perches.com>
+From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Message-ID: <81a5d8b6-5258-1f2e-15da-4324579799df@gmail.com>
+Date:   Sun, 4 Oct 2020 02:28:14 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2438799.1601755309.1@warthog.procyon.org.uk>
-Date:   Sat, 03 Oct 2020 21:01:49 +0100
-Message-ID: <2438800.1601755309@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <dbe67fce55c6bbe569cefdc1a01708a0d01b140a.camel@perches.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller <davem@davemloft.net> wrote:
 
-> > The patches are tagged here:
-> > 
-> > 	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
-> > 	rxrpc-next-20201010
-> 
-> No, they aren't.
+On 04/10/20 1:08 am, Joe Perches wrote:
+> On Thu, 2020-10-01 at 13:02 +0530, Anant Thazhemadam wrote:
+>> When get_registers() fails (which happens when usb_control_msg() fails)
+>> in set_ethernet_addr(), the uninitialized value of node_id gets copied
+>> as the address.
+> unrelated trivia:
+>
+>> diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
+> []
+>> @@ -274,12 +274,17 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
+>>  		return 1;
+>>  }
+>>  
+>> -static inline void set_ethernet_addr(rtl8150_t * dev)
+>> +static bool set_ethernet_addr(rtl8150_t *dev)
+>>  {
+>>  	u8 node_id[6];
+> This might be better as:
+>
+> 	u8 node_id[ETH_ALEN];
+>
+>> +	int ret;
+>>  
+>> -	get_registers(dev, IDR, sizeof(node_id), node_id);
+>> -	memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
+>> +	ret = get_registers(dev, IDR, sizeof(node_id), node_id);
+>> +	if (ret == sizeof(node_id)) {
+>> +		memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
+> and
+> 		ether_addr_copy(dev->netdev->dev_addr, node_id);
+>
+>
+I will include this change as well, in the v3.
+Thank you for pointing that out.
 
-oops.  I transposed the last two digits.  I really need to make my script
-check the cover message.
-
-> Also, you have to submit changes much much much earlier.
-
-Since the fixes in the set need to go after the patches in net-next, should I
-resubmit just those for net-next, or sit on them till -rc1?
-
-David
+Thanks,
+Anant
 
