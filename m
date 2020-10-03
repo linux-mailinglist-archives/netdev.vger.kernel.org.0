@@ -2,79 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E158D282659
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 21:38:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CB6B282670
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 21:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725879AbgJCTi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 15:38:26 -0400
-Received: from smtprelay0108.hostedemail.com ([216.40.44.108]:50376 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725831AbgJCTi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 15:38:26 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 211BE100E7B42;
-        Sat,  3 Oct 2020 19:38:25 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3868:3870:4321:5007:10004:10400:10471:10481:10848:11026:11232:11658:11914:12043:12114:12296:12297:12740:12760:12895:13069:13255:13311:13357:13439:13972:14659:14721:19900:21080:21611:21627:21990:30003:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: join71_03142d2271af
-X-Filterd-Recvd-Size: 2101
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf14.hostedemail.com (Postfix) with ESMTPA;
-        Sat,  3 Oct 2020 19:38:23 +0000 (UTC)
-Message-ID: <dbe67fce55c6bbe569cefdc1a01708a0d01b140a.camel@perches.com>
-Subject: Re: [Linux-kernel-mentees][PATCH v2] net: usb: rtl8150: prevent
- set_ethernet_addr from setting uninit address
-From:   Joe Perches <joe@perches.com>
-To:     Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
-        Petko Manolov <petkan@nucleusys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Sat, 03 Oct 2020 12:38:22 -0700
-In-Reply-To: <20201001073221.239618-1-anant.thazhemadam@gmail.com>
-References: <20201001073221.239618-1-anant.thazhemadam@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.4-0ubuntu1 
+        id S1725919AbgJCTos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 15:44:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49779 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725831AbgJCTos (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 15:44:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601754287;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7ajQYGYojq4f9aQLq4fZ43qbXeKvwhmhvTmq4l0hgCs=;
+        b=iolzYA72rwRTeMOgkMRLXENozUKvU2bVeoYVmk/6WGo0eH7LvDFjBmzmnfw2OuBc/N2gxi
+        K/reKmb6sq0GNPvDlURzLfogH0mlY9W5OU1ATKCPGISKnalVqQTRdibSyzsg1HbgmQUelX
+        e00OZBOry8yRo10Z2dXnPTggIi/WqYE=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-251-zd4sAqXAOO6R9oFg_8s8lw-1; Sat, 03 Oct 2020 15:44:45 -0400
+X-MC-Unique: zd4sAqXAOO6R9oFg_8s8lw-1
+Received: by mail-ot1-f69.google.com with SMTP id d10so2288802otq.11
+        for <netdev@vger.kernel.org>; Sat, 03 Oct 2020 12:44:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7ajQYGYojq4f9aQLq4fZ43qbXeKvwhmhvTmq4l0hgCs=;
+        b=mO//sATwSwYAW+VbByVWoOOIvD6SNlxPvtM1yYCwDSy2mf/9wGNwM6DUIZG+GRw5fS
+         ADNYx5UcE2eAPFZ9L2PWnBEAGE/89JTlqj4zyievymdOIT8XiXpKFUlInX2Adf66p67f
+         yRZK/KhR9TmJO3soiHEbmRl7aoEBmNBVZyg9ckYGXMvUc9YmBM1i88kBrgvAr2jq6Z4A
+         jsogF3oAiG9nIQhYWDTW0IxFsnI+R5jXzNq+WTKGIwUMkZVOWf7v7++pOUjb3wunon0T
+         7W3pLL2c7/lzQnzDO3ZwgOAA8No1zwWIY/F0G6ZS5Wy6o+suKuI6stWT2DVoTTQFmXFF
+         C8OA==
+X-Gm-Message-State: AOAM531Le9uZ3QLzxk2usQoR2t65do12kXeaoXHrink6pxSt0+OQUDrP
+        E8sjUpn2a9aeucYpIMe0mZ+2iYHSGKAk79ZFKzC3VNsVT071dECVAG6SobaCoBHsxqpRsvw1kNx
+        DkMeffjcig9j8A1WqAt+jiLScYdDs+Zmz
+X-Received: by 2002:aca:4e06:: with SMTP id c6mr2746465oib.120.1601754284256;
+        Sat, 03 Oct 2020 12:44:44 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz+1W2OcJQdBH5Es26AH2enJprMfA6Y6Ta0TykOVjsUsp+EeIZZaj3b8yn+Q4U1qjm0n74jCFvjcTLQRMWgMzI=
+X-Received: by 2002:aca:4e06:: with SMTP id c6mr2746461oib.120.1601754284042;
+ Sat, 03 Oct 2020 12:44:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20201002174001.3012643-6-jarod@redhat.com> <20201002121051.5ca41c1a@hermes.local>
+ <CAKfmpSecU63B1eJ5KEyPcCAkXxeqZQdghvUMdn_yGn3+iQWwcQ@mail.gmail.com> <20201002.155535.2066858020292000189.davem@davemloft.net>
+In-Reply-To: <20201002.155535.2066858020292000189.davem@davemloft.net>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Sat, 3 Oct 2020 15:44:33 -0400
+Message-ID: <CAKfmpSd=mSUEThgD_z58wHkyLtHZcZHcK87t+EzXHU2QSxf2Dg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 5/6] bonding: update Documentation for
+ port/bond terminology
+To:     David Miller <davem@davemloft.net>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-10-01 at 13:02 +0530, Anant Thazhemadam wrote:
-> When get_registers() fails (which happens when usb_control_msg() fails)
-> in set_ethernet_addr(), the uninitialized value of node_id gets copied
-> as the address.
+On Fri, Oct 2, 2020 at 6:55 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Jarod Wilson <jarod@redhat.com>
+> Date: Fri, 2 Oct 2020 16:12:49 -0400
+>
+> > The documentation was updated to point to the new names, but the old
+> > ones still exist across the board, there should be no userspace
+> > breakage here. (My lnst bonding tests actually fall flat currently
+> > if the old names are gone).
+>
+> The documentation is the reference point for people reading code in
+> userspace that manipulates bonding devices.
+>
+> So people will come across the deprecated names in userland code and
+> therefore will try to learn what they do and what they mean.
+>
+> Which means that the documentation must reference the old names.
+>
+> You can mark them "(DEPRECATED)" or similar, but you must not remove
+> them.
 
-unrelated trivia:
+Okay, so it sounds like just a blurb near the top of the file
+referencing the changes that have been made in the code might be the
+way to go here. Tagging every occurrence of master or slave in the doc
+inline as deprecated would get ... noisy.
 
-> diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
-[]
-> @@ -274,12 +274,17 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
->  		return 1;
->  }
->  
-> -static inline void set_ethernet_addr(rtl8150_t * dev)
-> +static bool set_ethernet_addr(rtl8150_t *dev)
->  {
->  	u8 node_id[6];
-
-This might be better as:
-
-	u8 node_id[ETH_ALEN];
-
-> +	int ret;
->  
-> -	get_registers(dev, IDR, sizeof(node_id), node_id);
-> -	memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
-> +	ret = get_registers(dev, IDR, sizeof(node_id), node_id);
-> +	if (ret == sizeof(node_id)) {
-> +		memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
-
-and
-		ether_addr_copy(dev->netdev->dev_addr, node_id);
-
+-- 
+Jarod Wilson
+jarod@redhat.com
 
