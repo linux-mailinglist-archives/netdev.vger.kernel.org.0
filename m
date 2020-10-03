@@ -2,104 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7DD4282245
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 09:57:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A4D028226B
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 10:19:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725797AbgJCH5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 03:57:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46614 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725681AbgJCH5e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 03:57:34 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10280C0613D0;
-        Sat,  3 Oct 2020 00:57:34 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id m6so4220664wrn.0;
-        Sat, 03 Oct 2020 00:57:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LyawnCgi1UNdHgpnRwunL/a5wwOIV+1RyoH/sIFjZhE=;
-        b=ZStgnWDZd6Pq9OBUHnsqpMpPwoGia4aH00oN6hHsIIJzACcAtQJ/IgPbKzFgRBcOT9
-         mSHRDcMrQcgeQk27i4liRIxdcsrxs/WvjScnL0f9XKP0zwr++4XqgWlAZqXdCdWEyatQ
-         WeNPlY2UCNLrHJ4Ga2vG0vOqo7beWRnGqobePAten03htYcKbd+eLqon2k1xopqDLEQu
-         aTEIKXlIqpAgZ7aSfqOa52X8yDQozSxXW9qKSCME9KoFinmKA7ze1b1HfrwJtJxj7VCh
-         g1e+t0guz6FpMrJQcEPQccV6FSoBg1mNnxPkwH0TYvbaAedfODcVRqUcOqwWX281hjab
-         TGhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LyawnCgi1UNdHgpnRwunL/a5wwOIV+1RyoH/sIFjZhE=;
-        b=cJBf3y4554Ko6J6NuUpAvwPZr29jZGv6EcAdvTRDXGj/uynFy3W3np+pBl8atIJBTz
-         vW9g6CS3/+xepLMR3kskc5iNOgNef93xZzRiC+8SM/o1DS1TGwqCg+Rihv+dHtveNiQo
-         Ln11tfMNm+wIdlHfEzj3/b89sVbCLtDNOB8GfcFZU89vuuwvOrfBdwUBewvOcY8w+dD0
-         Q9CTQEbf+fMsrbjsgSzypTTTJZT70L+2yRoFjyoTThAycuSo+MykhbDAzGrinpT817uP
-         cFTl4GTKfEIBh/XXoj/d+F8n19oob4qEyk6TjNbxRLIzEprGsihmwb2sEgTAcQO01rtY
-         QC3A==
-X-Gm-Message-State: AOAM530eIJPozS4R2bAXXgB3xIS1LNprexs8Zh4UI5IUh21ztyBOc1WP
-        1gmDsnkGCRg8kSz7FYYY1z9Xaj+c5JwxbqX6M74=
-X-Google-Smtp-Source: ABdhPJzw8nhuV3Avm74CHAjRRdV4e9TmGhSWhbFuT/JtjyLmypAdG1faPr22CFy3WtXhELYZP6TNwjKzxAJG3NgeQl0=
-X-Received: by 2002:a5d:45cc:: with SMTP id b12mr7030136wrs.395.1601711852753;
- Sat, 03 Oct 2020 00:57:32 -0700 (PDT)
+        id S1725778AbgJCITE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 04:19:04 -0400
+Received: from mail-eopbgr30071.outbound.protection.outlook.com ([40.107.3.71]:37957
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725601AbgJCITE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 3 Oct 2020 04:19:04 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XctzHuZuopZ3+ufRPJLSUNhRlV+KKhzrvDkyx6YIGi5M5qzHw8k8/JYA6K+TlUIiDE8VoIzgtqPirDYrKr3NBtPVbAd0zNarjPckFxm3quZsXbkNXVjg3pcOMMx7AtGx+wJEKKChj2WH7uBIqqoudC0oKCBkS4bCablVxCQuqPv037Pn5PLofJttKoVg+le7JVBbG7YQy4GHqSZ7IyhhMz3aZnnAVWckZI6xKJ6NMXg/lHMbrMxU5/e5d0sO6QWaL2sTyWETgYPphNgUTZUqBZh5amRBuF4aq7eVFjMwYFF5JCnJs3lmXoxp2PqWGW6q67IsL3NNL5uod2o527n7dA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5vToyNCY9DwGqvCLPaRYHhUNLRRsmTQslXJVVQ7kkks=;
+ b=f7HyDpcuCLe+vFZ1p2sSu0yR/9FXt0vukycZmJAOnBgP/90lBXt3mxGwOcrzQ9Fa/kWLfTaWyyuhFaZ3fO4jZnF63oPKlrXuxX/Rbq4MoMW+TyCvGpzVfX+HR/0F3TffpDQZxgtFwAkgKxmLwykdQ+ZFz8i0Q3x7AxiXU2IwsrioxD14udzhLVCXzVNh0anLjzpkX8j9SXk1pR/X4NWXmL7o41/UuNXrEm3fNbLVwXAwOwZiqToUUiJAFX2z2YC9MS8ew2Kzi1zuoHvg4fBqSBU3oqcLXSi7lkJDyyrKO+gevEh0AstFimjUiXJIgGBPtcvHRpvwl1dp1snpzUtQjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5vToyNCY9DwGqvCLPaRYHhUNLRRsmTQslXJVVQ7kkks=;
+ b=cTFFmND7WVRmUWn33RxS39J5QgjjV5oxkqDPBtOiyjgfRqdvDux7jeq1EYL6Apab6ZvWiUcvYjM8osNBt+CTjMN8ZAsMw1clmH05Oe4EK/M08nGrfBbQcwCBzAdOP1Z/sWrPS2fvtnNjJGf5IXnmHTCTVH/Na+QdJWQmId91378=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VE1PR04MB7343.eurprd04.prod.outlook.com (2603:10a6:800:1a2::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.35; Sat, 3 Oct
+ 2020 08:18:59 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.038; Sat, 3 Oct 2020
+ 08:18:59 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next] net: dsa: sja1105: remove duplicate prefix for VL Lookup dynamic config
+Date:   Sat,  3 Oct 2020 11:18:36 +0300
+Message-Id: <20201003081836.4052912-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [188.26.229.171]
+X-ClientProxiedBy: AM3PR05CA0112.eurprd05.prod.outlook.com
+ (2603:10a6:207:2::14) To VI1PR04MB5696.eurprd04.prod.outlook.com
+ (2603:10a6:803:e7::13)
 MIME-Version: 1.0
-References: <7ff312f910ada8893fa4db57d341c628d1122640.1601387231.git.lucien.xin@gmail.com>
- <202009300218.2AcHEN0L-lkp@intel.com> <20201003040824.GG70998@localhost.localdomain>
-In-Reply-To: <20201003040824.GG70998@localhost.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Sat, 3 Oct 2020 16:12:58 +0800
-Message-ID: <CADvbK_cPX1f5jrGsKuvya7ssOFPTsG7daBCkOP-NGN9hpzf5Vw@mail.gmail.com>
-Subject: Re: [PATCH net-next 11/15] sctp: add udphdr to overhead when udp_port
- is set
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        network dev <netdev@vger.kernel.org>,
-        linux-sctp@vger.kernel.org, kbuild-all@lists.01.org,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Michael Tuexen <tuexen@fh-muenster.de>,
-        Tom Herbert <therbert@google.com>, davem <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.26.229.171) by AM3PR05CA0112.eurprd05.prod.outlook.com (2603:10a6:207:2::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.36 via Frontend Transport; Sat, 3 Oct 2020 08:18:58 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 3a7c4469-89cd-4e5d-3761-08d86774fa29
+X-MS-TrafficTypeDiagnostic: VE1PR04MB7343:
+X-Microsoft-Antispam-PRVS: <VE1PR04MB73436B65BEF631A2313C97CAE00E0@VE1PR04MB7343.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Cm9TxnNEL8l0pdBsJbOzmkxd1jaI7lLUuwzjcYI8KZZtC14RMl7f4k4wU6JfxIP+P6bjrnAOiuOMDgdk4kD8WnoskRgEh+DIQYAdM6w4TQDQVFn3hqFWUMzm+S6UvV7sEBBWQwqHMiGWFU3/CiO38OPKf8AynFHNvXjiZBLy9JW/pBzzzNqaovDnWsNmujZNzGgDQerig6JKLX06299iNwzVJlGGrsOqwpK26Al9bKNNz3ea6nVlus9qTfKgD4j80mVRWyhhEnyb+qU8FoYIfMcwL8H5fpfPQu2Ggz7B+fU3MDkFZO6nI82SnAMEUXxOeiSBEnVYlvymB2sU49DfYjc0Y35UnPbo8uuYi4SnSaZ2XBWwrQ+AGfSrb1U2oGny
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(39860400002)(396003)(376002)(136003)(8676002)(26005)(69590400008)(6506007)(2906002)(36756003)(86362001)(44832011)(6486002)(66946007)(956004)(52116002)(4326008)(1076003)(2616005)(6666004)(83380400001)(16526019)(8936002)(186003)(6916009)(478600001)(66556008)(66476007)(316002)(5660300002)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: I6bWxK/ZYUTqqT006sdOc+flylIuFuBAK7e5evjFubTWCeA94QXrR/xzmiuZh1n7JAWMvYnmo5e+Z5DLRTTCxSPkKeaz5QLLhjLgK2NO8hXEzNnINRDDYhIN5zsCF0I8JzLgQkoUsgO3sFLaY49LgbrDqSiHDrSPHODGiMy6/FTqGFt10C4yAYV+UUBsB0IRhlWBe787c9W3fxNvos0DjNeKV9UimqiEWiE6VIbtLQBYGsfj+/J+ouq1enUMnZYoI48dKA9pvOZ8BHNGa25okMOKHAsQv5153PpYKxO6PIFDAtoQOEJq62K7pBh2dxHjq7MvitlEjtKsXC29BtV1tU+deM9ZIjZWkYI12avkFSe2hvFpmQNAH7Y+y20mWtFKgze1VhsMsW7npj/3fTammv+2ImLB4/iZZFNlYJZYavQSFyY7ADr+LC6c7Tb9cNWbKkuSvmQWxMqsAKrdV9U1FPNZSVO7pAfA/0YyIST7C7PJdsOcAlUNd+7t+klh9syumXh0CBXIg6GVO3L+Miq0Xe7nKXcqZr2c5FUJB+lq2xsQVUgUY7N7dR+1wkcnRUAzklCJB3lQFDVSFPW7eqaEFlGKP6CcTknlfqSRKaXn7mayMVyqJRyB2Ua3uQjUqYrGJ2nOhnHvh6OEHRhvmalOeg==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a7c4469-89cd-4e5d-3761-08d86774fa29
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2020 08:18:59.0314
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tM248Qu/OFrsDTy5CZmxI8jeIY9q94+wmt7KNWbw8lcPYmHBgj6iUkPVd80BFjRJECK12WK5rL2RAupd+o0vyg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7343
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 3, 2020 at 12:08 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Wed, Sep 30, 2020 at 03:00:42AM +0800, kernel test robot wrote:
-> > Hi Xin,
-> >
-> > Thank you for the patch! Yet something to improve:
->
-> I wonder how are you planning to fix this. It is quite entangled.
-> This is not performance critical. Maybe the cleanest way out is to
-> move it to a .c file.
->
-> Adding a
-> #if defined(CONFIG_IP_SCTP) || defined(CONFIG_IP_SCTP_MODULE)
-> in there doesn't seem good.
->
-> >    In file included from include/net/sctp/checksum.h:27,
-> >                     from net/netfilter/nf_nat_proto.c:16:
-> >    include/net/sctp/sctp.h: In function 'sctp_mtu_payload':
-> > >> include/net/sctp/sctp.h:583:31: error: 'struct net' has no member named 'sctp'; did you mean 'ct'?
-> >      583 |   if (sock_net(&sp->inet.sk)->sctp.udp_port)
-> >          |                               ^~~~
-> >          |                               ct
-> >
-Here is actually another problem, I'm still thinking how to fix it.
+This is a strictly cosmetic change that renames some macros in
+sja1105_dynamic_config.c. They were copy-pasted in haste and this has
+resulted in them having the driver prefix twice.
 
-Now sctp_mtu_payload() returns different value depending on
-net->sctp.udp_port. but net->sctp.udp_port can be changed by
-"sysctl -w" anytime. so:
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/dsa/sja1105/sja1105_dynamic_config.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-In sctp_packet_config() it gets overhead/headroom by calling
-sctp_mtu_payload(). When 'udp_port' is 0, it's IP+MAC header
-size. Then if 'udp_port' is changed to 9899 by 'sysctl -w',
-udphdr will also be added to the packet in sctp_v4_xmit(),
-and later the headroom may not be enough for IP+MAC headers.
+diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+index 75247f342124..b777d3f37573 100644
+--- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
++++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+@@ -97,10 +97,10 @@
+ 
+ #define SJA1105_SIZE_DYN_CMD					4
+ 
+-#define SJA1105ET_SJA1105_SIZE_VL_LOOKUP_DYN_CMD		\
++#define SJA1105ET_SIZE_VL_LOOKUP_DYN_CMD			\
+ 	SJA1105_SIZE_DYN_CMD
+ 
+-#define SJA1105PQRS_SJA1105_SIZE_VL_LOOKUP_DYN_CMD		\
++#define SJA1105PQRS_SIZE_VL_LOOKUP_DYN_CMD			\
+ 	(SJA1105_SIZE_DYN_CMD + SJA1105_SIZE_VL_LOOKUP_ENTRY)
+ 
+ #define SJA1105ET_SIZE_MAC_CONFIG_DYN_ENTRY			\
+@@ -183,7 +183,7 @@ static size_t sja1105et_vl_lookup_entry_packing(void *buf, void *entry_ptr,
+ 						enum packing_op op)
+ {
+ 	struct sja1105_vl_lookup_entry *entry = entry_ptr;
+-	const int size = SJA1105ET_SJA1105_SIZE_VL_LOOKUP_DYN_CMD;
++	const int size = SJA1105ET_SIZE_VL_LOOKUP_DYN_CMD;
+ 
+ 	sja1105_packing(buf, &entry->egrmirr,  21, 17, size, op);
+ 	sja1105_packing(buf, &entry->ingrmirr, 16, 16, size, op);
+@@ -644,7 +644,7 @@ const struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
+ 		.cmd_packing = sja1105_vl_lookup_cmd_packing,
+ 		.access = OP_WRITE,
+ 		.max_entry_count = SJA1105_MAX_VL_LOOKUP_COUNT,
+-		.packed_size = SJA1105ET_SJA1105_SIZE_VL_LOOKUP_DYN_CMD,
++		.packed_size = SJA1105ET_SIZE_VL_LOOKUP_DYN_CMD,
+ 		.addr = 0x35,
+ 	},
+ 	[BLK_IDX_L2_LOOKUP] = {
+@@ -728,7 +728,7 @@ const struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
+ 		.cmd_packing = sja1105_vl_lookup_cmd_packing,
+ 		.access = (OP_READ | OP_WRITE),
+ 		.max_entry_count = SJA1105_MAX_VL_LOOKUP_COUNT,
+-		.packed_size = SJA1105PQRS_SJA1105_SIZE_VL_LOOKUP_DYN_CMD,
++		.packed_size = SJA1105PQRS_SIZE_VL_LOOKUP_DYN_CMD,
+ 		.addr = 0x47,
+ 	},
+ 	[BLK_IDX_L2_LOOKUP] = {
+-- 
+2.25.1
 
-I'm thinking to add sctp_sock->udp_port, and it'll be set when
-the sock is created with net->udp_port. but not sure if we should
-update sctp_sock->udp_port with  net->udp_port when sending packets?
