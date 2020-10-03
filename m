@@ -2,140 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21B4328245D
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 15:54:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 465BA282476
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 16:10:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725803AbgJCNyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 09:54:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40180 "EHLO mail.kernel.org"
+        id S1725813AbgJCOKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 10:10:41 -0400
+Received: from smtp6-g21.free.fr ([212.27.42.6]:5462 "EHLO smtp6-g21.free.fr"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725781AbgJCNyF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 3 Oct 2020 09:54:05 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 80EE4206CD;
-        Sat,  3 Oct 2020 13:54:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601733244;
-        bh=xMa07e1e6o9GjE+aWDog3EUOHS04coMVzjLbLMskLm0=;
-        h=Date:From:To:Cc:Subject:From;
-        b=zCggCUoZ2u6fBZUuURtLlIndJ0ryQbJBkaZeCM8tlBWLh+2yDitGN5l39fnlHiA6N
-         76t9pG/FkqXWaRsdBKRSUqD5++pvBk0FNnbR1h3uRyJFvDFqofhZV2t/cyuhZbEnP9
-         ynIk+GU2pCkr6fJ/e7QNYS1c0EK6YNkXLhP9UBes=
-Date:   Sat, 3 Oct 2020 15:54:49 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Sathish Narsimman <sathish.narasimman@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Revert "Bluetooth: Update resolving list when updating
- whitelist"
-Message-ID: <20201003135449.GA2691@kroah.com>
+        id S1725781AbgJCOKl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 3 Oct 2020 10:10:41 -0400
+Received: from [IPv6:2a01:e34:ec0c:ae81:8d77:4856:46b:2117] (unknown [IPv6:2a01:e34:ec0c:ae80:8d77:4856:46b:2117])
+        by smtp6-g21.free.fr (Postfix) with ESMTPS id 29C3A780336;
+        Sat,  3 Oct 2020 14:10:06 +0000 (UTC)
+Subject: [PATCH] iproute2: ip addr: Fix noprefixroute and autojoin for IPv4
+From:   Adel Belhouane <bugs.a.b@free.fr>
+To:     netdev@vger.kernel.org
+Cc:     Adel Belhouane <bugs.a.b@free.fr>
+Message-ID: <1869e1c3-cf1e-a851-77ac-5482c694f5b3@free.fr>
+Date:   Sat, 3 Oct 2020 16:10:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux i686 on x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 0eee35bdfa3b472cc986ecc6ad76293fdcda59e2 as it
-breaks all bluetooth connections on my machine.
+These were reported as IPv6-only and ignored:
 
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Sathish Narsimman <sathish.narasimman@intel.com>
-Fixes: 0eee35bdfa3b ("Bluetooth: Update resolving list when updating whitelist")
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+     # ip address add 192.0.2.2/24 dev dummy5 noprefixroute
+     Warning: noprefixroute option can be set only for IPv6 addresses
+     # ip address add 224.1.1.10/24 dev dummy5 autojoin
+     Warning: autojoin option can be set only for IPv6 addresses
+
+This enables them back for IPv4.
+
+Fixes: 9d59c86e575b5 ("iproute2: ip addr: Organize flag properties
+structurally")
+Signed-off-by: Adel Belhouane <bugs.a.b@free.fr>
 ---
- net/bluetooth/hci_request.c | 41 ++-----------------------------------
- 1 file changed, 2 insertions(+), 39 deletions(-)
+  ip/ipaddress.c | 4 ++--
+  1 file changed, 2 insertions(+), 2 deletions(-)
 
-This has been bugging me for since 5.9-rc1, when all bluetooth devices
-stopped working on my desktop system.  I finally got the time to do
-bisection today, and it came down to this patch.  Reverting it on top of
-5.9-rc7 restored bluetooth devices and now my input devices properly
-work.
-
-As it's almost 5.9-final, any chance this can be merged now to fix the
-issue?
-
-
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index e0269192f2e5..75b0a4776f10 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -697,21 +697,6 @@ static void del_from_white_list(struct hci_request *req, bdaddr_t *bdaddr,
- 	bt_dev_dbg(req->hdev, "Remove %pMR (0x%x) from whitelist", &cp.bdaddr,
- 		   cp.bdaddr_type);
- 	hci_req_add(req, HCI_OP_LE_DEL_FROM_WHITE_LIST, sizeof(cp), &cp);
--
--	if (use_ll_privacy(req->hdev)) {
--		struct smp_irk *irk;
--
--		irk = hci_find_irk_by_addr(req->hdev, bdaddr, bdaddr_type);
--		if (irk) {
--			struct hci_cp_le_del_from_resolv_list cp;
--
--			cp.bdaddr_type = bdaddr_type;
--			bacpy(&cp.bdaddr, bdaddr);
--
--			hci_req_add(req, HCI_OP_LE_DEL_FROM_RESOLV_LIST,
--				    sizeof(cp), &cp);
--		}
--	}
- }
- 
- /* Adds connection to white list if needed. On error, returns -1. */
-@@ -732,7 +717,7 @@ static int add_to_white_list(struct hci_request *req,
- 		return -1;
- 
- 	/* White list can not be used with RPAs */
--	if (!allow_rpa && !use_ll_privacy(hdev) &&
-+	if (!allow_rpa &&
- 	    hci_find_irk_by_addr(hdev, &params->addr, params->addr_type)) {
- 		return -1;
- 	}
-@@ -750,28 +735,6 @@ static int add_to_white_list(struct hci_request *req,
- 		   cp.bdaddr_type);
- 	hci_req_add(req, HCI_OP_LE_ADD_TO_WHITE_LIST, sizeof(cp), &cp);
- 
--	if (use_ll_privacy(hdev)) {
--		struct smp_irk *irk;
--
--		irk = hci_find_irk_by_addr(hdev, &params->addr,
--					   params->addr_type);
--		if (irk) {
--			struct hci_cp_le_add_to_resolv_list cp;
--
--			cp.bdaddr_type = params->addr_type;
--			bacpy(&cp.bdaddr, &params->addr);
--			memcpy(cp.peer_irk, irk->val, 16);
--
--			if (hci_dev_test_flag(hdev, HCI_PRIVACY))
--				memcpy(cp.local_irk, hdev->irk, 16);
--			else
--				memset(cp.local_irk, 0, 16);
--
--			hci_req_add(req, HCI_OP_LE_ADD_TO_RESOLV_LIST,
--				    sizeof(cp), &cp);
--		}
--	}
--
- 	return 0;
- }
- 
-@@ -812,7 +775,7 @@ static u8 update_white_list(struct hci_request *req)
- 		}
- 
- 		/* White list can not be used with RPAs */
--		if (!allow_rpa && !use_ll_privacy(hdev) &&
-+		if (!allow_rpa &&
- 		    hci_find_irk_by_addr(hdev, &b->bdaddr, b->bdaddr_type)) {
- 			return 0x00;
- 		}
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index ccf67d1dd55c..2b4cb48a485e 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -1249,8 +1249,8 @@ static const struct ifa_flag_data_t {
+  	{ .name = "tentative",		.mask = IFA_F_TENTATIVE,	.readonly = true,	.v6only = true},
+  	{ .name = "permanent",		.mask = IFA_F_PERMANENT,	.readonly = true,	.v6only = true},
+  	{ .name = "mngtmpaddr",		.mask = IFA_F_MANAGETEMPADDR,	.readonly = false,	.v6only = true},
+-	{ .name = "noprefixroute",	.mask = IFA_F_NOPREFIXROUTE,	.readonly = false,	.v6only = true},
+-	{ .name = "autojoin",		.mask = IFA_F_MCAUTOJOIN,	.readonly = false,	.v6only = true},
++	{ .name = "noprefixroute",	.mask = IFA_F_NOPREFIXROUTE,	.readonly = false,	.v6only = false},
++	{ .name = "autojoin",		.mask = IFA_F_MCAUTOJOIN,	.readonly = false,	.v6only = false},
+  	{ .name = "stable-privacy",	.mask = IFA_F_STABLE_PRIVACY, 	.readonly = true,	.v6only = true},
+  };
+  
 -- 
-2.28.0
+2.20.1
 
