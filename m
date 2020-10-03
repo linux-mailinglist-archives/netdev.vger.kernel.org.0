@@ -2,122 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C56A2820D5
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 05:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCFC62820FE
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 06:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725868AbgJCDyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Oct 2020 23:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37778 "EHLO
+        id S1725884AbgJCEEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 00:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725772AbgJCDyw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Oct 2020 23:54:52 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A5DC0613D0
-        for <netdev@vger.kernel.org>; Fri,  2 Oct 2020 20:54:51 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id f15so3081817ilj.2
-        for <netdev@vger.kernel.org>; Fri, 02 Oct 2020 20:54:51 -0700 (PDT)
+        with ESMTP id S1725747AbgJCEEd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 00:04:33 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECD3C0613D0;
+        Fri,  2 Oct 2020 21:04:33 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id 16so5444223qkf.4;
+        Fri, 02 Oct 2020 21:04:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U0iOQNpMhR7U1FgYM8E/Ua+xB3gweiORdqVQ3ZmWEOk=;
-        b=QkHEOz+Egu60WInssW82SFR6smVoWMxsr/MfLrNrtnB3cbJbiGbrxUGkGMi3jwNDNn
-         225JuWpbl+wNFzj/g5lDNM395RCDRsU7cLroHd8KeJF8L7/ah2BH3XydUIzP7rNF87US
-         QvLWfuwDjFcgRVLcwR2ka4zGj+Tkj/RJcUnX0BYb3KD9Z5jgA7xTY0QsACPvxhXgNwT0
-         Hg77lNripA7zn5JD/kyLvuQy3Mz3SCj+s7dJ6i3oKJvUooNhZ4yZdLur7uI7etxNoHBa
-         u1iuAERfwL1Tob+a0mW/MLrSQk1ehPaII/5Mjsck3XiRogPUlvt0N9Y9gqnF8jb5C0Y7
-         gsRQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bzA4x6TawLJ4d3ZzqizduYXnvQM8gSPQMr7fuFZ7bYo=;
+        b=auf7qJ2/k5923oTM/+ES5vTy3XiiFFXbGIQKTnr9/dOjsjAlEapJcBvTe+DNfunFwR
+         WKcLLsZZF9UZiKKtElIW0gOb8GgoprMPxpurMt+Giqh6WrZoJZEiIBixdS3glV+stMq1
+         q/Q/oOYlHxaemlBBogYSYFAhR7syZfjpPkfoTYNz584uRjtJ4Ryk3gYqUkrW7Ng1hiFb
+         9JPiO6fDOHAtZdPwup3Ruq4mWc/N6G6OSneVZkv8iw8hwldEgu+QA/NqalwgSc0e9mX+
+         EaHb4ZxV6lscLwcRk2uDXCHQrP/YKIX7vN648yNKLjzAcgL5yW6M2vN4yF0hsZ0QsWfq
+         4NCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U0iOQNpMhR7U1FgYM8E/Ua+xB3gweiORdqVQ3ZmWEOk=;
-        b=MveLVetm127GYKd/1Ax/FOQ0ui44fDemmjJt1Fc6ZJDLpJcRWFHwUcqlBZvNyeinFn
-         Yg9MjtAECFHMmGvIXMJ6QClr6NstOcIKH6jSyv0/L2GYLraLuCrHeEpHEwkujUo7dY0U
-         IIj1FoE7ieOURuc9X1Z6dH6MGxKjtAo5HBbHvO/KZPhC/lU53E7ocmiSUUNo4Iv/XAzM
-         le0TAyU4Jymx3zS4plL+TnHf/KbAUcGcgabHFUGj2c8CyHv7ORyU1E0LCBX7gDSHveuk
-         ljZunLTGEniEPYSzoNRjn332Ke15cCL6Yop+9nXllJ4Bt1q8Ggx3yoDdbivc5gN/oUsA
-         RpSQ==
-X-Gm-Message-State: AOAM530A3DZi2lUVAPeUY3Nj12Zfm3wZTR5dHDFzrV8/nBi7Kw+Dglys
-        sdDJ+gPZ259q2OOmc1Ba2ic2OPCvRYSPupJ/Zpk+7A==
-X-Google-Smtp-Source: ABdhPJz0YkZeQkkZJ28kgXR6+zgbQXDetrujzT22cEY4m7955swLivp+pTj4PSkmHoVA9s1gNQNj4K2G0jFQdaFVdBc=
-X-Received: by 2002:a92:5882:: with SMTP id z2mr4351350ilf.137.1601697291001;
- Fri, 02 Oct 2020 20:54:51 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bzA4x6TawLJ4d3ZzqizduYXnvQM8gSPQMr7fuFZ7bYo=;
+        b=qnVYwUFEo4ioiZlEcf/mk2geNUzyCJIg9iJu9ARf0awsXpMJ/7cMAaknDLN8P7L6rt
+         T7WyDHEJiVo4FUdlw3rz8IZrYGlenyBGC8nRZnPWWgWFKOt9aYV2cvZ6cnZWE7z7BxSo
+         s7RAxo5J3V+2AKkj4mP0nEiMBJcySkmGvM4CH//s8rWmWDnNjwwvoJXzMxrEkqb36gdd
+         wadEawNK4fhdNW0hDAjO50LkyDnIUMme5C34uOSRhFBdAVAQPtM/OIKipcgfArJ/U70t
+         7qv/WZmQ82nT4L43HBnoiYPDbJ3ctyizDc73IO//foXLEThLnq8NlG119VsEWNxpJXYG
+         b79A==
+X-Gm-Message-State: AOAM532+wGrufh+gKHxMUUljYyNy3trjEzjxnVC59Bx+vLBy0kGXyguC
+        uoc28K6RZSpc4TC/zJHPVks=
+X-Google-Smtp-Source: ABdhPJzsPYttSsQOzIM7T0K0Btnx91HN41eUL+SntVJ1yt7QjrqFhinEWO8p58rkTkwRGxG0cT63wA==
+X-Received: by 2002:a05:620a:1185:: with SMTP id b5mr5002472qkk.386.1601697872313;
+        Fri, 02 Oct 2020 21:04:32 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f016:4433:ca7a:c22f:8180:c123])
+        by smtp.gmail.com with ESMTPSA id r21sm2583285qtj.80.2020.10.02.21.04.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Oct 2020 21:04:31 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 34751C6195; Sat,  3 Oct 2020 01:04:28 -0300 (-03)
+Date:   Sat, 3 Oct 2020 01:04:28 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Michael Tuexen <tuexen@fh-muenster.de>,
+        Tom Herbert <therbert@google.com>, davem@davemloft.net
+Subject: Re: [PATCH net-next 03/15] udp: do checksum properly in
+ skb_udp_tunnel_segment
+Message-ID: <20201003040428.GC70998@localhost.localdomain>
+References: <cover.1601387231.git.lucien.xin@gmail.com>
+ <49a1cbb99341f50304b514aeaace078d0b065248.1601387231.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-References: <20200930192140.4192859-1-weiwan@google.com> <20201002.160042.621154959486835359.davem@davemloft.net>
- <CAADnVQKdwB9ZnBnyqJG7kysBnwFr+BYBAEF=sqHj-=VRr-j34Q@mail.gmail.com>
-In-Reply-To: <CAADnVQKdwB9ZnBnyqJG7kysBnwFr+BYBAEF=sqHj-=VRr-j34Q@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sat, 3 Oct 2020 05:54:38 +0200
-Message-ID: <CANn89iLJSHhb=7mibKTBF2bbceFqSM0kNOANdFZ3rTaM3kwj7w@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/5] implement kthread based napi poll
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, Wei Wang <weiwan@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Paolo Abeni <pabeni@redhat.com>, Felix Fietkau <nbd@nbd.name>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <49a1cbb99341f50304b514aeaace078d0b065248.1601387231.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 3, 2020 at 1:15 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, Oct 2, 2020 at 4:02 PM David Miller <davem@davemloft.net> wrote:
-> >
-> > From: Wei Wang <weiwan@google.com>
-> > Date: Wed, 30 Sep 2020 12:21:35 -0700
-> >
-> >  ...
-> > > And the reason we prefer 1 kthread per napi, instead of 1 workqueue
-> > > entity per host, is that kthread is more configurable than workqueue,
-> > > and we could leverage existing tuning tools for threads, like taskset,
-> > > chrt, etc to tune scheduling class and cpu set, etc. Another reason is
-> > > if we eventually want to provide busy poll feature using kernel threads
-> > > for napi poll, kthread seems to be more suitable than workqueue.
-> > ...
-> >
-> > I think we still need to discuss this some more.
-> >
-> > Jakub has some ideas and I honestly think the whole workqueue
-> > approach hasn't been fully considered yet.
->
-> I want to point out that it's not kthread vs wq. I think the mechanism
-> has to be pluggable. The kernel needs to support both kthread and wq.
-> Or maybe even the 3rd option. Whatever it might be.
-> Via sysctl or something.
-> I suspect for some production workloads wq will perform better.
-> For the others it will be kthread.
-> Clearly kthread is more tunable, but not everyone would have
-> knowledge and desire to do the tunning.
+On Tue, Sep 29, 2020 at 09:48:55PM +0800, Xin Long wrote:
+> This patch fixes two things:
+> 
+>   When skb->ip_summed == CHECKSUM_PARTIAL, skb_checksum_help() should be
+>   called do the checksum, instead of gso_make_checksum(), which is used
+>   to do the checksum for current proto after calling skb_segment(), not
+>   after the inner proto's gso_segment().
+> 
+>   When offload_csum is disabled, the hardware will not do the checksum
+>   for the current proto, udp. So instead of calling gso_make_checksum(),
+>   it should calculate checksum for udp itself.
 
-The exact same arguments can be used against RPS and RFS
+Gotta say, this is odd. It is really flipping the two around. What
+about other users of this function, did you test them too?
 
-RPS went first, and was later augmented with RFS (with very different goals)
-
-They both are opt-in
-
-> We can argue what should be the default, but that's secondary.
->
-> > If this wan't urgent years ago (when it was NACK'd btw), it isn't
-> > urgent for 5.10 so I don't know why we are pushing so hard for
-> > this patch series to go in as-is right now.
-> >
-> > Please be patient and let's have a full discussion on this.
->
-> +1. This is the biggest change to the kernel networking in years.
-> Let's make it right.
-
-Sure. I do not think it is urgent.
-
-This has been revived by Felix some weeks ago, and I think we were the
-ones spending time on the proposed patch set.
-Not giving feedback to Felix would have been "something not right".
-
-We reviewed and tested Felix patches, and came up with something more flexible.
-
-Sure, a WQ is already giving nice results on appliances, because there
-you do not need strong isolation.
-Would a kthread approach also work well on appliances ? Probably...
+It makes sense to be, but would be nice if someone else could review
+this.
