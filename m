@@ -2,78 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B574D2826CF
-	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 23:27:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B92472826D9
+	for <lists+netdev@lfdr.de>; Sat,  3 Oct 2020 23:33:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725980AbgJCV1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Oct 2020 17:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57586 "EHLO
+        id S1725983AbgJCVcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Oct 2020 17:32:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbgJCV1t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 17:27:49 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2ECC0613D0;
-        Sat,  3 Oct 2020 14:27:49 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id f18so3912707pfa.10;
-        Sat, 03 Oct 2020 14:27:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sUHyLZFz0jS3AnouRiNsniEHZ9CbCLAeNrY1gYQCiZ4=;
-        b=APH2r1rrROFQPv4JYeMvai8cfdHgIz/5wz6Rd7SoigXP/qZN9xqJfaMKntL1Bwk9vG
-         KLAF09EfwDh3nYZG79fYnAPQ2T476z1h1Zw/6n9vR40+SHwjmr/39Np3fSvI7wttYOfi
-         p084kK79EGxwFVMnlUOH+rQiAbfY6y2i0tO7jYisziBUlWJ0JtN6wWakf9StAukQ8iqC
-         UFoY+TrEEdeFloH7p5SB7Y9Y/6OJT/PzY0tppc34khcwWIJbzpcK+E5F+PpBK0RIp7I6
-         mtmFcjnIshZ8MF/8mwmoE4N0d4UIS/oZad3T3AE96MPqWlTBrlivAeCvMwwDeP2+kcMc
-         xa3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sUHyLZFz0jS3AnouRiNsniEHZ9CbCLAeNrY1gYQCiZ4=;
-        b=ccUsYtnFur8MvAQjMzI6Bg6quwHZ+evtoNvgVC/24CJxuA0ylaqATi/MPjjx1k2Vx+
-         F30rhlrAWVoYOafdDmnmO3jVVxJGutaHf+skOoHj1T5mbZKGmMgVb7MqaswWREKqICEb
-         x0tTx8lcnVN8UgKKY+eDnQJESJCwb6Li4xpqO6eN+EB3FJeIqMHnkTXZhEpTjvGiPr3w
-         YF2hoqC3hFTab8eHab1e4SuF4FF7cNHl3uGpxVarBJ12hnK7Pwl6qUkEsFmdAicxCuKs
-         DPC2Az+E/6AAHa3BpRAEj6gJ3KN9XAJck/Q19TyUT/IMlDWx2eoCD7Aznz37+P2n7cDD
-         8Nag==
-X-Gm-Message-State: AOAM531sdVdUeqwDa4UouBP0LME8HqXEHXNl7xc7a800iQb5qcoH/H77
-        vrhO213VrqfyZzSIbR7+jB0F2f2/BAdlCmVz6j2BM/Aq
-X-Google-Smtp-Source: ABdhPJxy6/LYXaQnWAND4ztoCQ/zfhtCHBlnFKRt0omN4ZiXtZGsRvepRQs24FOaqxJZ9qqrgwowG0C1dnipcuvz4fw=
-X-Received: by 2002:aa7:8c11:0:b029:151:b0bd:d607 with SMTP id
- c17-20020aa78c110000b0290151b0bdd607mr9129197pfd.76.1601760468649; Sat, 03
- Oct 2020 14:27:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201003173528.41404-1-xie.he.0141@gmail.com> <20201003110958.5b748feb@hermes.local>
-In-Reply-To: <20201003110958.5b748feb@hermes.local>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Sat, 3 Oct 2020 14:27:37 -0700
-Message-ID: <CAJht_ENGQNFoD23G9QR6ETH_AZZS8p5Zw4y=+=nHKrhbNe3H0A@mail.gmail.com>
-Subject: Re: [PATCH net-next] drivers/net/wan/hdlc_fr: Reduce indentation in pvc_xmit
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S1725897AbgJCVcy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Oct 2020 17:32:54 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4B2C0613D0;
+        Sat,  3 Oct 2020 14:32:54 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EDD4911E3E4C0;
+        Sat,  3 Oct 2020 14:16:05 -0700 (PDT)
+Date:   Sat, 03 Oct 2020 14:32:52 -0700 (PDT)
+Message-Id: <20201003.143252.1162624907281801666.davem@davemloft.net>
+To:     dhowells@redhat.com
+Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 00/23] rxrpc: Fixes and preparation for RxGK
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <2450213.1601760295@warthog.procyon.org.uk>
+References: <160156420377.1728886.5309670328610130816.stgit@warthog.procyon.org.uk>
+        <2438800.1601755309@warthog.procyon.org.uk>
+        <2450213.1601760295@warthog.procyon.org.uk>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Sat, 03 Oct 2020 14:16:06 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 3, 2020 at 11:10 AM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> This code snippet is basically an version of skb_pad().
-> Probably it is very old and pre-dates that.
-> Could the code use skb_pad?
+From: David Howells <dhowells@redhat.com>
+Date: Sat, 03 Oct 2020 22:24:55 +0100
 
-Oh! Yes! I looked at the skb_pad function and I think we can use it in
-this code.
+> David Miller <davem@davemloft.net> wrote:
+> 
+>> > Since the fixes in the set need to go after the patches in net-next, should I
+>> > resubmit just those for net-next, or sit on them till -rc1?
+>> 
+>> My 'net' tree is always open for bug fixes, and that's where bug fixes
+>> belong.  Not 'net-next'.
+> 
+> "Need to go after the patches in net-next" - ie. there's a dependency.
 
-Since it doesn't do skb_put, I think we can first call skb_pad and
-then call skb_put.
+If the bugs exist before your net-next changes, that doesn't make any
+sense.  The fixes have to be against whatever is in 'net'.
 
-Thanks for your suggestion. I'll change this patch to make use of
-skb_pad and re-submit.
+If the fixes are introduced by your net-next changes, you should
+integrate them into your net-next changes.
