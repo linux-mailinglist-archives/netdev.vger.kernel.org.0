@@ -2,101 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CB9E282D3A
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69815282D38
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726812AbgJDTXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 15:23:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60844 "EHLO
+        id S1726482AbgJDTXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 15:23:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726624AbgJDTXg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:36 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B03C0613E8
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:36 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id g29so4353395pgl.2
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:35 -0700 (PDT)
+        with ESMTP id S1726519AbgJDTXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:37 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432A3C0613CE
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:37 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id k8so5102024pfk.2
+        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Keln/Qnb/Z2jonep27KzVYq+nsF9zU366rLziJ8qJV4=;
-        b=bnaLZOTYGsJso5j8yIWHLPSMgNfiF5swSW0Hc3kiUNSTOpG87qZgUhroWlWPEn78vb
-         fT3q5rBwLo6crxmE6KEYT4OJIybfdCB8Ds1BxCnEOmTmuTzxpqM+Gxn1650Rrzcp3UAu
-         HEkCQKBARWEY/0z0CWmwKvuF+mNO2yA1GcSzc=
+        bh=C0GsQflbuTXp9cT2ZK4a+ZMiDF+ok0r+zAHwxM7BBOw=;
+        b=LWTmEhyibKp4f/ZtjoGh9RM5ZBbVV3k+rH3SLfMvjgAOLESqlMxPzQthqS1ri0iqB2
+         9mc0+KPcjQqy7xqt1SQURJPdEjg2CK2DpyABSpuYfuwePmqsg8pnXk/C8aXIowOBCv/Q
+         b29zJZtqAh3wwMcrGilx2stA/gMKcJ/XQYHYg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Keln/Qnb/Z2jonep27KzVYq+nsF9zU366rLziJ8qJV4=;
-        b=fxZs+qFbw2ejrKB/w6LBu9+Bh9+BF4vVzIPCokZTyHF2YaOhGIhDvRMYf2fiLnelS4
-         v2r/ZHeNtmK1bDl0Hzle0ITUaHR0RILAwPdBNrxJwg1xnwa4gsQMNJB/aKbhLBLNBAZA
-         wdOimY75tn1oZsgm0lIqOXreonGxRSxDkRr3BRdSb8UVaq0mLKFEps1TIEifOoh8WlXu
-         cQb0OtWDfepnIpN7oE3u6bYcG3MpoJk/wKFAmwDfQ894x++gWI268a4lt6BOHchCGiXY
-         gSZ6LLnRUyw3lWbp8AyojSj4JcBQlS8Z6B+0ue8vk0XL0HYyGvj1/FACoEHsPK2MAKjS
-         7hRA==
-X-Gm-Message-State: AOAM533c4HhwcGHL3qiYVHOjakBwlvzR4a3xqbZ5Zg4hxc1yNuM5Eqbc
-        1OijfQSpLlN/jlfM4mdL+Vb1jPWcJL4y8g==
-X-Google-Smtp-Source: ABdhPJzlOexsDs06u9CdQnfg6MXOv0EXb+apUt/iIoK4Ou1TJz7ye2ImJIqJahQy4UfV366Br5mkrw==
-X-Received: by 2002:a63:f807:: with SMTP id n7mr11241492pgh.311.1601839415347;
-        Sun, 04 Oct 2020 12:23:35 -0700 (PDT)
+        bh=C0GsQflbuTXp9cT2ZK4a+ZMiDF+ok0r+zAHwxM7BBOw=;
+        b=nAz6/Q4JzTUe2XFeb/TAlWz7C1CZ3HV9rAemjO5bbf7zjb9nXIAyNpo+9m5jP8sQ/x
+         0pCIzhIXk5BFuG3zr766KOUxiYwn8oxYtttVj+2NIz7876l+GdZLwSM1zHdYOwcOAqGE
+         okf/Le8/UjLf9Y8sVHn93LQ+D2SZqByUu8qeqe8GXBvw1hBD1cZ0HBVkVPIS1ghFuAZf
+         Jp87yAzWfyb6zKUhh2yNTLu2H+Am/eFROQk5Adg4VaUav6+F/YuAzy6hQAfJrHyDkvHv
+         9whASn9pXdnchUzmAEmCKzxTcXUTF7B8YE8CnCEVeGr9urEJ4OAL9c+Mmn9f2S/P4Zs8
+         zIfA==
+X-Gm-Message-State: AOAM533FU9IBd/UPOSosPYtmUHdi2tO5D1Ob4ME1h0oQ1d0eISPp1YYQ
+        yvQjGqK78PqHvoEhbODhbWyOL01qNFC3sw==
+X-Google-Smtp-Source: ABdhPJyOTZgxcXa585fnd1S+HpTlJ5GkhjNTrTSW+ysUfUmmc1is5MOHkUwOtWvVByMoawKZnYjsOg==
+X-Received: by 2002:a63:1061:: with SMTP id 33mr11740946pgq.204.1601839416313;
+        Sun, 04 Oct 2020 12:23:36 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.34
+        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.35
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 04 Oct 2020 12:23:34 -0700 (PDT)
+        Sun, 04 Oct 2020 12:23:35 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 10/11] bnxt_en: Reduce unnecessary message log during RX errors.
-Date:   Sun,  4 Oct 2020 15:23:00 -0400
-Message-Id: <1601839381-10446-11-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 11/11] bnxt_en: Eliminate unnecessary RX resets.
+Date:   Sun,  4 Oct 2020 15:23:01 -0400
+Message-Id: <1601839381-10446-12-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 References: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000005dd5fa05b0dd4df6"
+        boundary="000000000000704bc405b0dd4dbd"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000005dd5fa05b0dd4df6
+--000000000000704bc405b0dd4dbd
 
-There is logic in the RX path to detect unexpected handles in the
-RX completion.  We'll print a warning and schedule a reset.  The
-next expected handle is then set to 0xffff which is guaranteed to
-not match any valid handle.  This will force all remaining packets in
-the ring to be discarded before the reset.  There can be hundreds of
-these packets remaining in the ring and there is no need to print the
-warnings for these forced errors.
+Currently, the driver will schedule RX ring reset when we get a buffer
+error in the RX completion record.  These RX buffer errors can be due
+to normal out-of-buffer conditions or a permanent error in the RX
+ring.  Because the driver cannot distinguish between these 2
+conditions, we assume all these buffer errors require reset.
 
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+This is very disruptive when it is just a normal out-of-buffer
+condition.  Newer firmware will now monitor the rings for the permanent
+failure and will send a notification to the driver when it happens.
+This allows the driver to reset only when such a notification is
+received.  In environments where we have predominently out-of-buffer
+conditions, we now can avoid these unnecessary resets.
+
 Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 53 ++++++++++++++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  1 +
+ 2 files changed, 53 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 084588436b66..1e6764000a74 100644
+index 1e6764000a74..5e4b7fbeef06 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -1741,8 +1741,10 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
- 	if (unlikely(cons != rxr->rx_next_cons)) {
- 		int rc1 = bnxt_discard_rx(bp, cpr, raw_cons, rxcmp);
+@@ -254,6 +254,7 @@ static const u16 bnxt_async_events_arr[] = {
+ 	ASYNC_EVENT_CMPL_EVENT_ID_PORT_PHY_CFG_CHANGE,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_RESET_NOTIFY,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY,
++	ASYNC_EVENT_CMPL_EVENT_ID_RING_MONITOR_MSG,
+ };
  
--		netdev_warn(bp->dev, "RX cons %x != expected cons %x\n",
--			    cons, rxr->rx_next_cons);
-+		/* 0xffff is forced error, don't print it */
-+		if (rxr->rx_next_cons != 0xffff)
-+			netdev_warn(bp->dev, "RX cons %x != expected cons %x\n",
-+				    cons, rxr->rx_next_cons);
- 		bnxt_sched_reset(bp, rxr);
- 		return rc1;
+ static struct workqueue_struct *bnxt_pf_wq;
+@@ -1777,7 +1778,8 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 		rc = -EIO;
+ 		if (rx_err & RX_CMPL_ERRORS_BUFFER_ERROR_MASK) {
+ 			bnapi->cp_ring.sw_stats.rx.rx_buf_errors++;
+-			if (!(bp->flags & BNXT_FLAG_CHIP_P5)) {
++			if (!(bp->flags & BNXT_FLAG_CHIP_P5) &&
++			    !(bp->fw_cap & BNXT_FW_CAP_RING_MONITOR)) {
+ 				netdev_warn_once(bp->dev, "RX buffer error %x\n",
+ 						 rx_err);
+ 				bnxt_sched_reset(bp, rxr);
+@@ -1946,10 +1948,33 @@ u32 bnxt_fw_health_readl(struct bnxt *bp, int reg_idx)
+ 	return val;
+ }
+ 
++static u16 bnxt_agg_ring_id_to_grp_idx(struct bnxt *bp, u16 ring_id)
++{
++	int i;
++
++	for (i = 0; i < bp->rx_nr_rings; i++) {
++		u16 grp_idx = bp->rx_ring[i].bnapi->index;
++		struct bnxt_ring_grp_info *grp_info;
++
++		grp_info = &bp->grp_info[grp_idx];
++		if (grp_info->agg_fw_ring_id == ring_id)
++			return grp_idx;
++	}
++	return INVALID_HW_RING_ID;
++}
++
+ #define BNXT_GET_EVENT_PORT(data)	\
+ 	((data) &			\
+ 	 ASYNC_EVENT_CMPL_PORT_CONN_NOT_ALLOWED_EVENT_DATA1_PORT_ID_MASK)
+ 
++#define BNXT_EVENT_RING_TYPE(data2)	\
++	((data2) &			\
++	 ASYNC_EVENT_CMPL_RING_MONITOR_MSG_EVENT_DATA2_DISABLE_RING_TYPE_MASK)
++
++#define BNXT_EVENT_RING_TYPE_RX(data2)	\
++	(BNXT_EVENT_RING_TYPE(data2) ==	\
++	 ASYNC_EVENT_CMPL_RING_MONITOR_MSG_EVENT_DATA2_DISABLE_RING_TYPE_RX)
++
+ static int bnxt_async_event_process(struct bnxt *bp,
+ 				    struct hwrm_async_event_cmpl *cmpl)
+ {
+@@ -2057,6 +2082,30 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 			bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
+ 		goto async_event_process_exit;
  	}
++	case ASYNC_EVENT_CMPL_EVENT_ID_RING_MONITOR_MSG: {
++		u32 data1 = le32_to_cpu(cmpl->event_data1);
++		u32 data2 = le32_to_cpu(cmpl->event_data2);
++		struct bnxt_rx_ring_info *rxr;
++		u16 grp_idx;
++
++		if (bp->flags & BNXT_FLAG_CHIP_P5)
++			goto async_event_process_exit;
++
++		netdev_warn(bp->dev, "Ring monitor event, ring type %lu id 0x%x\n",
++			    BNXT_EVENT_RING_TYPE(data2), data1);
++		if (!BNXT_EVENT_RING_TYPE_RX(data2))
++			goto async_event_process_exit;
++
++		grp_idx = bnxt_agg_ring_id_to_grp_idx(bp, data1);
++		if (grp_idx == INVALID_HW_RING_ID) {
++			netdev_warn(bp->dev, "Unknown RX agg ring id 0x%x\n",
++				    data1);
++			goto async_event_process_exit;
++		}
++		rxr = bp->bnapi[grp_idx]->rx_ring;
++		bnxt_sched_reset(bp, rxr);
++		goto async_event_process_exit;
++	}
+ 	default:
+ 		goto async_event_process_exit;
+ 	}
+@@ -6649,6 +6698,8 @@ static int bnxt_hwrm_func_qcfg(struct bnxt *bp)
+ 	}
+ 	if (BNXT_PF(bp) && (flags & FUNC_QCFG_RESP_FLAGS_MULTI_HOST))
+ 		bp->flags |= BNXT_FLAG_MULTI_HOST;
++	if (flags & FUNC_QCFG_RESP_FLAGS_RING_MONITOR_ENABLED)
++		bp->fw_cap |= BNXT_FW_CAP_RING_MONITOR;
+ 
+ 	switch (resp->port_partition_type) {
+ 	case FUNC_QCFG_RESP_PORT_PARTITION_TYPE_NPAR1_0:
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 7d0e6022dc19..b208ff7c5d14 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1822,6 +1822,7 @@ struct bnxt {
+ 	#define BNXT_FW_CAP_VLAN_TX_INSERT		0x02000000
+ 	#define BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED	0x04000000
+ 	#define BNXT_FW_CAP_PORT_STATS_NO_RESET		0x10000000
++	#define BNXT_FW_CAP_RING_MONITOR		0x40000000
+ 
+ #define BNXT_NEW_RM(bp)		((bp)->fw_cap & BNXT_FW_CAP_NEW_RM)
+ 	u32			hwrm_spec_code;
 -- 
 2.18.1
 
 
---0000000000005dd5fa05b0dd4df6
+--000000000000704bc405b0dd4dbd
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -166,14 +262,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg2aWBKYPf1nDo
-dHdp90NS1RnKgPU8R8mSwgfuoY2yZUkwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDA0MTkyMzM1WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgK2qS0mWnqd9r
+CHGCJlveI34HgxsBp9IUU/DXngpPbOswGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDA0MTkyMzM3WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAKeMq4XLb8AQL7PbCgu/L8voT1+9+QFp
-NTEhxdq10P0LL361pudVdJhyRaX7WcOH4y/C5qIBsCMro6EHudqurhxaSV3nV2aQyhvBH24zZM4U
-yzg/8To0afI4Lfic1aGPIt37KeACVsmzW1Tsv3uMuiArBh0xzbqLAW98jy2G5LaZKepRPvUNrJr1
-jw2vBnVsUV6iJP9rt34FomFLcpWASrwUHNJ5u+YnWTeIzzopy2PjXOgTV44FYa+c16f1vKQBuGhn
-96n0DQHkPns+PIrbgvtjcYMsKYmWt5Xjd4O/jj03fXZ4/eZaWwe7KMhmNye3NoAdC6jQ7oqyoOPe
-IfLQpDM=
---0000000000005dd5fa05b0dd4df6--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAHqThd72ndA3sGa2hiD1CDVdfbK1lVOX
+ymohs2tFAdr1ogEdT9J4Y2lJjYtzL5NAzMyuH8DQiCHW5icAy5nGfKnrXjQNeK0rNcxiGNmbdYtK
+cYhlV6HErBu9CeebIyulcqTCzx8W2l+8utWnPaR28wAmMsPVVzDOWT4z1Nml8vldeKu3/oFX5rs6
++/0hrP/Rlv3q7oSBU4hHav0ZH0wD7X219kws9QQ3VdVk0cnaK8kqkGouRDItOdm/uUSQQLW7xU7B
+IXE5Ujh9cRZ98XX6hX/faj9pn0ZsG3QOQANXsAMx6U6ysLpKPWFbHiaC5IerokV5mzzshuUcownt
+G6MfUg0=
+--000000000000704bc405b0dd4dbd--
