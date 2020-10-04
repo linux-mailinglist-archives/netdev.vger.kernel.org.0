@@ -2,100 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC42F282D31
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC09D282D32
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726523AbgJDTXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 15:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60790 "EHLO
+        id S1726610AbgJDTXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 15:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726294AbgJDTXX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:23 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B87DC0613CE
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:23 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id a17so3464777pju.1
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:23 -0700 (PDT)
+        with ESMTP id S1726294AbgJDTXY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:24 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3C3C0613CE
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:24 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id a17so3464785pju.1
+        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=ynZLIbN8IO6t9ZzwljaEF+hsR/aKhIdgeZcWzPN00g4=;
-        b=gyPeOzchF+GCuucuxvKQLH1SAE7IM2NtFU6MXLaeVYImVPOWpH3wwrUDU5N0qjtwZc
-         d28O0aJQmmEW16yNmQKEEmU5YQtJfjts7C8jLuptAP7ZwLctwhfynCFtmZQ2B4L7/kMH
-         iTsdpG/c63E/Ij0R5j7bxK0BLNBllBeM/ozQ4=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=aMLNu/nqq1cuY+ylfybAvR9vg7fYMdc7FEdftqM9hKw=;
+        b=b2sk9A50wpqeCH91zeKqglPKardvQ9WiRVJH7kjI9iYDVC4gaXMzI204zfxvA3Ls2Y
+         3yF7+gECcDSqSp1ckdmAp9VjvUxkPU5GTRPHM2cDpRLFrZq0tnpgbS6uQ48s0DJv/aPe
+         PvaGW6Wso2c4GUlhhTr5BTBd8jwvjSQpjN8bk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ynZLIbN8IO6t9ZzwljaEF+hsR/aKhIdgeZcWzPN00g4=;
-        b=siudRKyA/EZSV4kjV0msH6AtAiQpWFTBBIL7JxuRyl0fPQ4Ggfz73c5Io/F23f670w
-         p8ShG9/6HvaOdbHm5DVyYbr25PcOM0YX9yJXJKhDKcigZLE40vOG/tC+VmEWzEuog0aS
-         CTmMELITVL0uL1/4fXUPZ6vsjInOj6mifBLTULE0eggp1aFILFdb5JD1+bz7+Ytfc8iz
-         TMGHXU1Tps4MAsNCH1mOHTeK77R02F9wO1u6OgaadyH3FXZ70acV/BLaAfVJsmP30n+c
-         9aM8tw3TLXZonZm2ihsHSF9ZGhGChww8dqlgqs3m2uJGOGI0WYewieZdjPNIukAhnLgs
-         YHpQ==
-X-Gm-Message-State: AOAM5300A3VTt2mxfi/HuTSjp+jnReU+V31Mw5JUUEg3e0GxFf/CZLNG
-        IggZx84GNftnK1OwHZdsPiFBPw==
-X-Google-Smtp-Source: ABdhPJxOuvruYskj8cBIswZg56cU0F2MkTpyylV1whYvCT6w7wpbbLr2Dw78LwyU7p6HHSPsaTw2NQ==
-X-Received: by 2002:a17:90a:a014:: with SMTP id q20mr13517667pjp.77.1601839402455;
-        Sun, 04 Oct 2020 12:23:22 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=aMLNu/nqq1cuY+ylfybAvR9vg7fYMdc7FEdftqM9hKw=;
+        b=OgIYN83q0A40q7rgDk8uV5nJN8M9R57yRmEZnkY6kf1H2hcObXna3IEA0FAAYCz2p5
+         xhiviqdwaUVMI1n2Aq/Bdw9Fz3zaVg+GpmgHdMY9Lbv9WoHl5sb6/5K4ZxfqKVkdp23f
+         0M2NxMNDVvRPhX+hQLSOS/7DfbhGAR/JtqXa8H5h/OEN7xjZTpK2fvkONiz83ojwpkdE
+         h2PCZp30WMKnzg1mRHVRJDjVWxFn1fPd/axqQQ1Oqx9xH134EeDC+CqUjKMv+gv7/Eio
+         v2YNUeE1836vU/NW59AQa9YFtXC7J2bmsxdp1B/uvNgYxFv7nNO3DigtwmwnqNfpGPkF
+         B3wQ==
+X-Gm-Message-State: AOAM531WwqFrhKBlXQFsNXkF7E1Er3418xdDg32b/nU1uSe8REBykE8+
+        TS17BnxlAMP2ddm+jHXoMDeRMQ==
+X-Google-Smtp-Source: ABdhPJyhMhGdUDw6Il3xM2WBb9hqZTLU+ueDpSKuOsRiYIZSHe2Epomo056+ZO+KgB6hJV04omv5pw==
+X-Received: by 2002:a17:90a:67cb:: with SMTP id g11mr13081672pjm.56.1601839403548;
+        Sun, 04 Oct 2020 12:23:23 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.21
+        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.22
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 04 Oct 2020 12:23:21 -0700 (PDT)
+        Sun, 04 Oct 2020 12:23:22 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 00/11] bnxt_en: net-next updates.
-Date:   Sun,  4 Oct 2020 15:22:50 -0400
-Message-Id: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: [PATCH net-next 01/11] bnxt_en: Update firmware interface spec to 1.10.1.68.
+Date:   Sun,  4 Oct 2020 15:22:51 -0400
+Message-Id: <1601839381-10446-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
+References: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000009c253405b0dd4cc7"
+        boundary="000000000000a884d705b0dd4cee"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000009c253405b0dd4cc7
+--000000000000a884d705b0dd4cee
 
-This series starts off with the usual update of the firmware interface
-spec.  A new firmware status bit in the interface will be used in patch
-#4 to perform recovery on some SoC platforms.  Patches #2 and #3 first
-add the infrastructure to read the firmware status very early during
-driver probe and this will allow patch #4 to do the recovery if needed.
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-The rest of the patches add improvements to the current RX reset
-logic by localizing the reset to the affected RX ring only and to
-reset only if firmware has determined that the RX ring is in permanent
-error state.
+Main changes is to extend hwrm_nvm_get_dev_info_output() for stored
+firmware versions and a new flag is added to fw_status_reg.
 
-EdwinePeer (3):
-  bnxt_en: refactor bnxt_alloc_fw_health()
-  bnxt_en: log firmware status on firmware init failure
-  bnxt_en: perform no master recovery during startup
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h | 24 ++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
 
-Michael Chan (7):
-  bnxt_en: Log FW health status info, if reset is aborted.
-  bnxt_en: Refactor bnxt_free_rx_skbs().
-  bnxt_en: Refactor bnxt_init_one_rx_ring().
-  bnxt_en: Implement RX ring reset in response to buffer errors.
-  bnxt_en: Add a software counter for RX ring reset.
-  bnxt_en: Reduce unnecessary message log during RX errors.
-  bnxt_en: Eliminate unnecessary RX resets.
-
-Vasundhara Volam (1):
-  bnxt_en: Update firmware interface spec to 1.10.1.68.
-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 529 +++++++++++++-----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   6 +
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h |  24 +-
- 4 files changed, 403 insertions(+), 157 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
+index 303713aa03b0..2d3e962bdac3 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
+@@ -373,6 +373,7 @@ struct cmd_nums {
+ 	#define HWRM_TF_SESSION_RESC_FLUSH                0x2cfUL
+ 	#define HWRM_TF_TBL_TYPE_GET                      0x2daUL
+ 	#define HWRM_TF_TBL_TYPE_SET                      0x2dbUL
++	#define HWRM_TF_TBL_TYPE_BULK_GET                 0x2dcUL
+ 	#define HWRM_TF_CTXT_MEM_ALLOC                    0x2e2UL
+ 	#define HWRM_TF_CTXT_MEM_FREE                     0x2e3UL
+ 	#define HWRM_TF_CTXT_MEM_RGTR                     0x2e4UL
+@@ -486,8 +487,8 @@ struct hwrm_err_output {
+ #define HWRM_VERSION_MAJOR 1
+ #define HWRM_VERSION_MINOR 10
+ #define HWRM_VERSION_UPDATE 1
+-#define HWRM_VERSION_RSVD 65
+-#define HWRM_VERSION_STR "1.10.1.65"
++#define HWRM_VERSION_RSVD 68
++#define HWRM_VERSION_STR "1.10.1.68"
+ 
+ /* hwrm_ver_get_input (size:192b/24B) */
+ struct hwrm_ver_get_input {
+@@ -8272,7 +8273,7 @@ struct hwrm_nvm_get_dev_info_input {
+ 	__le64	resp_addr;
+ };
+ 
+-/* hwrm_nvm_get_dev_info_output (size:256b/32B) */
++/* hwrm_nvm_get_dev_info_output (size:640b/80B) */
+ struct hwrm_nvm_get_dev_info_output {
+ 	__le16	error_code;
+ 	__le16	req_type;
+@@ -8287,6 +8288,22 @@ struct hwrm_nvm_get_dev_info_output {
+ 	u8	nvm_cfg_ver_maj;
+ 	u8	nvm_cfg_ver_min;
+ 	u8	nvm_cfg_ver_upd;
++	u8	flags;
++	#define NVM_GET_DEV_INFO_RESP_FLAGS_FW_VER_VALID     0x1UL
++	char	pkg_name[16];
++	__le16	hwrm_fw_major;
++	__le16	hwrm_fw_minor;
++	__le16	hwrm_fw_build;
++	__le16	hwrm_fw_patch;
++	__le16	mgmt_fw_major;
++	__le16	mgmt_fw_minor;
++	__le16	mgmt_fw_build;
++	__le16	mgmt_fw_patch;
++	__le16	roce_fw_major;
++	__le16	roce_fw_minor;
++	__le16	roce_fw_build;
++	__le16	roce_fw_patch;
++	u8	unused_0[7];
+ 	u8	valid;
+ };
+ 
+@@ -8627,6 +8644,7 @@ struct fw_status_reg {
+ 	#define FW_STATUS_REG_CRASHDUMP_ONGOING      0x40000UL
+ 	#define FW_STATUS_REG_CRASHDUMP_COMPLETE     0x80000UL
+ 	#define FW_STATUS_REG_SHUTDOWN               0x100000UL
++	#define FW_STATUS_REG_CRASHED_NO_MASTER      0x200000UL
+ };
+ 
+ /* hcomm_status (size:64b/8B) */
 -- 
 2.18.1
 
 
---0000000000009c253405b0dd4cc7
+--000000000000a884d705b0dd4cee
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -165,14 +210,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgC9mv9I3RXabv
-LyIxSyhmTcl1w41JZgC8J3Ae1muRZigwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgI8sjhu9iTjQ3
+7Mhbx88f6T+6Jb1vYahwMkB6LzEcXTgwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
 9w0BCQUxDxcNMjAxMDA0MTkyMzIzWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBADPRDSvpDp9XzNLNwL/qiA5BPN73vTLt
-VNphon1DA2mhidpsA7mVi5Ewbxq2fkA0JHWWAOt3ixwubdSq0LQ2Kn4ZqF6EuMXPedG0qLLgq6lr
-QlXb5tQdRaAkjKO8YhHLah8/U/7fxQgH8FT9+l0HjugDCVVrm6rGR5p5LIrDvyK/vBWCYhwN21Qn
-sL1nupmlPp8wcSP8eZhh47HB4tiLv8FggYuuA2RoOGY/NXicIw/ANC3dETSriJpDIsEFRAQ82if8
-ijFjHWTRpZB246yDYfR1S0zhvL1PDDqf04T9lWhzf5wfc4cBAzi94cETwEbbNDT5OvcnxUyP8sHv
-rLm6uOg=
---0000000000009c253405b0dd4cc7--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAJz6ni9PslZJt+wtgTMlkjx+HuNK0HCo
+fWhxvXxRNnOEQfj7x4BDGyvYWjHnTntZVYp4BXuN8z0iRG3Dt/MLc1aKH0oTYx4uNKyKjNjeXixa
+o6t2OVZb2gLoN3+EEuMqZi0TrI7zb/E/rT6HKI4h/iwhJq9ecwrKoeT1inZfmpBHiR5UhaO3DtlV
+Keldl2cuJSUTA1bRRz87H8RvHOZhGiIoqJAb+JaCYjlmARCMMqxiRNgjovZBW8NTO8V/r2o01I0o
+fFwekU/fXVH8v2XZ3m8LrDdD0Xc6e7g0g95yZ3vpUqrY7eEN9cdvw+bmf+tPpjMTkPLcwN17w5WR
+WOVkJOY=
+--000000000000a884d705b0dd4cee--
