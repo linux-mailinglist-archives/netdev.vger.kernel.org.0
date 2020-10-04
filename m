@@ -2,245 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9948282D37
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98248282D3D
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726616AbgJDTXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 15:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60822 "EHLO
+        id S1726512AbgJDTXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 15:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726812AbgJDTXb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:31 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B186BC0613CE
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:30 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id n14so5088401pff.6
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:30 -0700 (PDT)
+        with ESMTP id S1726813AbgJDTXc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:32 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B64DC0613CF
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:32 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id w21so5078484pfc.7
+        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=bFMb8yaeuZYoKzd/kmCqAu00E8Ad/AtDc1Y+CsBxR6I=;
-        b=Hc6R+kANE8kR/UFrjz71Y8ayzF1uUYn4oi2vaa2nrAmuQ51Ziizn51B03j8EXT/jWt
-         zjHS+HNbJr9S/3x5XxwPwQcTjCbfJr6yZe8B8o1RfpreGoW8BD4y7MYhPIByB58GbsHv
-         PMrDu0GsR7Vb19wAnfLL+Mu1eKqr7Peta4098=
+        bh=Vf4h/v0f9xFEjUd6u9Fu+p9uJGql5+ReFzx6/FwYIUg=;
+        b=JtLW8wD0AXvW5Ci9ygNmkqmjVxuIhjxBmkhE4n2giv3U0/vtwcCkqk/AQlUkbMz6Lc
+         Fyo5a3tMmvQ2gVt09B1ViCibyEItTqTo+fraitduZaVlaL4zgMn+tpJLQ5wFDjLOc999
+         fWxBk1ev+S4WHvasMLF7dIHuU6J68W0DIJjoE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=bFMb8yaeuZYoKzd/kmCqAu00E8Ad/AtDc1Y+CsBxR6I=;
-        b=akYJt2N3QF4txy0VpfD9SvPw0MHkWmT58dU6ZjLCvs0H2bfKYq+txgT+sdhDphnQdJ
-         uaHc2JuDrvOm+HUc6TClKtc7vz2MVrxxRzX4yzmp0OnGc0qm+K/WWRXdIqe4EBHIY1+s
-         5zqCyz2NOgGZvCZWmWDl5uTS8Y3lnEgu1LS2kQVxsjexdhV4SoNfLcQSoy+NwStghyAu
-         h09fRXcGSNhzA9jX6qVDFpeYFwY4Xb2OmC/dLbDf4+dODm1DXr0TNEDZERqbn4PIDs5j
-         qKhsQYVlhmIcZEiOwgp9sVkx7JWGeJ+YChxepi3N6wptiyZkuWyHh+EeGvJgYISh6Ty7
-         s9FA==
-X-Gm-Message-State: AOAM53118svT/PiqIxaWweItEZFYNGNiZ7UgCC9uHuLqozvOx6dQnxal
-        JH5UkVnhAj88yuL6oDlDR+4Lqw==
-X-Google-Smtp-Source: ABdhPJyvQI/dC9zl0AMoPS6YDvXqqpqa4tgcfr3n8ygRCQ2gkcjF2blVy8TDSUWTNNJAdangzhH8pA==
-X-Received: by 2002:a63:5fcb:: with SMTP id t194mr11713516pgb.364.1601839409962;
-        Sun, 04 Oct 2020 12:23:29 -0700 (PDT)
+        bh=Vf4h/v0f9xFEjUd6u9Fu+p9uJGql5+ReFzx6/FwYIUg=;
+        b=ta5+ctun8paGCuCfXIVrlouk6+JWpzk+MkCBOytFHZL2Cri3pdb4narw29JtIj9pn4
+         N1CmbdVBhsfokXeg9v1K9pcObCm5/7YxKsyrVuaVlPWq07bPlp5sf/q8XbFQcwEB3YA3
+         bicjivNACWN+ZIKgnPj83RKYA0M0XW8jPEUpAMF1zf7K0p1UTuO/IBXI7cgoP5THrc0Q
+         qSux/STyb9C27rwqamlcl3URIJM0r/dbxlUPsPHpkAl2gKsUbL6ElWWUN5Xla0iOAqwc
+         ZXQOOT53wRrjEdVE2BQ8W7qvcYROs9HylQ7eMFjQmz3YJDusnIu5+pdxFZZrYQPImRoC
+         Vf8w==
+X-Gm-Message-State: AOAM5327zPmI/6wvugt0EckdkUy2s00cDTz4oCKZImYhaIqA2mY9HJwe
+        /tGp9SO9JTX4SCNpkQlhbGm5cg==
+X-Google-Smtp-Source: ABdhPJzs4kC2c3hpsVjgY08L78fNpvAb+R7C4IETo+7UhE9BWn9pxZi9OhRNjGBIOf2+gspz/dOkmg==
+X-Received: by 2002:a63:a0f:: with SMTP id 15mr10958218pgk.242.1601839411284;
+        Sun, 04 Oct 2020 12:23:31 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.29
+        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.30
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 04 Oct 2020 12:23:29 -0700 (PDT)
+        Sun, 04 Oct 2020 12:23:30 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 06/11] bnxt_en: Refactor bnxt_free_rx_skbs().
-Date:   Sun,  4 Oct 2020 15:22:56 -0400
-Message-Id: <1601839381-10446-7-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 07/11] bnxt_en: Refactor bnxt_init_one_rx_ring().
+Date:   Sun,  4 Oct 2020 15:22:57 -0400
+Message-Id: <1601839381-10446-8-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 References: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000000c715b05b0dd4d5a"
+        boundary="0000000000002112a105b0dd4d25"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000000c715b05b0dd4d5a
+--0000000000002112a105b0dd4d25
 
-bnxt_free_rx_skbs() frees all the allocated buffers and SKBs for
-every RX ring.  Refactor this function by calling a new function
-bnxt_free_one_rx_ring_skbs() to free these buffers on one specified
-RX ring at a time.  This is preparation work for resetting one RX
-ring during run-time.
+bnxt_init_one_rx_ring() includes logic to initialize the BDs for one RX
+ring and to allocate the buffers.  Separate the allocation logic into a
+new bnxt_alloc_one_rx_ring() function.  The allocation function will be
+used later to allocate new buffers for one specified RX ring when we
+reset that RX ring.
 
 Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 134 +++++++++++-----------
- 1 file changed, 66 insertions(+), 68 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 96 ++++++++++++-----------
+ 1 file changed, 50 insertions(+), 46 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 27fbe0cef2a9..6d7e197c875c 100644
+index 6d7e197c875c..ef0267060a46 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2540,93 +2540,91 @@ static void bnxt_free_tx_skbs(struct bnxt *bp)
+@@ -3163,31 +3163,16 @@ static void bnxt_init_rxbd_pages(struct bnxt_ring_struct *ring, u32 type)
  	}
  }
  
--static void bnxt_free_rx_skbs(struct bnxt *bp)
-+static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
+-static int bnxt_init_one_rx_ring(struct bnxt *bp, int ring_nr)
++static int bnxt_alloc_one_rx_ring(struct bnxt *bp, int ring_nr)
  {
--	int i, max_idx, max_agg_idx;
 +	struct bnxt_rx_ring_info *rxr = &bp->rx_ring[ring_nr];
- 	struct pci_dev *pdev = bp->pdev;
+ 	struct net_device *dev = bp->dev;
+-	struct bnxt_rx_ring_info *rxr;
+-	struct bnxt_ring_struct *ring;
+-	u32 prod, type;
++	u32 prod;
+ 	int i;
+ 
+-	type = (bp->rx_buf_use_size << RX_BD_LEN_SHIFT) |
+-		RX_BD_TYPE_RX_PACKET_BD | RX_BD_FLAGS_EOP;
 -
--	if (!bp->rx_ring)
--		return;
-+	struct bnxt_tpa_idx_map *map;
-+	int i, max_idx, max_agg_idx;
- 
- 	max_idx = bp->rx_nr_pages * RX_DESC_CNT;
- 	max_agg_idx = bp->rx_agg_nr_pages * RX_DESC_CNT;
--	for (i = 0; i < bp->rx_nr_rings; i++) {
--		struct bnxt_rx_ring_info *rxr = &bp->rx_ring[i];
--		struct bnxt_tpa_idx_map *map;
--		int j;
+-	if (NET_IP_ALIGN == 2)
+-		type |= RX_BD_FLAGS_SOP;
 -
--		if (rxr->rx_tpa) {
--			for (j = 0; j < bp->max_tpa; j++) {
--				struct bnxt_tpa_info *tpa_info =
--							&rxr->rx_tpa[j];
--				u8 *data = tpa_info->data;
-+	if (!rxr->rx_tpa)
-+		goto skip_rx_tpa_free;
- 
--				if (!data)
--					continue;
-+	for (i = 0; i < bp->max_tpa; i++) {
-+		struct bnxt_tpa_info *tpa_info = &rxr->rx_tpa[i];
-+		u8 *data = tpa_info->data;
- 
--				dma_unmap_single_attrs(&pdev->dev,
--						       tpa_info->mapping,
--						       bp->rx_buf_use_size,
--						       bp->rx_dir,
--						       DMA_ATTR_WEAK_ORDERING);
-+		if (!data)
-+			continue;
- 
--				tpa_info->data = NULL;
-+		dma_unmap_single_attrs(&pdev->dev, tpa_info->mapping,
-+				       bp->rx_buf_use_size, bp->rx_dir,
-+				       DMA_ATTR_WEAK_ORDERING);
- 
--				kfree(data);
--			}
--		}
-+		tpa_info->data = NULL;
- 
--		for (j = 0; j < max_idx; j++) {
--			struct bnxt_sw_rx_bd *rx_buf = &rxr->rx_buf_ring[j];
--			dma_addr_t mapping = rx_buf->mapping;
--			void *data = rx_buf->data;
-+		kfree(data);
-+	}
- 
--			if (!data)
--				continue;
-+skip_rx_tpa_free:
-+	for (i = 0; i < max_idx; i++) {
-+		struct bnxt_sw_rx_bd *rx_buf = &rxr->rx_buf_ring[i];
-+		dma_addr_t mapping = rx_buf->mapping;
-+		void *data = rx_buf->data;
- 
--			rx_buf->data = NULL;
-+		if (!data)
-+			continue;
- 
--			if (BNXT_RX_PAGE_MODE(bp)) {
--				mapping -= bp->rx_dma_offset;
--				dma_unmap_page_attrs(&pdev->dev, mapping,
--						     PAGE_SIZE, bp->rx_dir,
--						     DMA_ATTR_WEAK_ORDERING);
--				page_pool_recycle_direct(rxr->page_pool, data);
--			} else {
--				dma_unmap_single_attrs(&pdev->dev, mapping,
--						       bp->rx_buf_use_size,
--						       bp->rx_dir,
--						       DMA_ATTR_WEAK_ORDERING);
--				kfree(data);
--			}
-+		rx_buf->data = NULL;
-+		if (BNXT_RX_PAGE_MODE(bp)) {
-+			mapping -= bp->rx_dma_offset;
-+			dma_unmap_page_attrs(&pdev->dev, mapping, PAGE_SIZE,
-+					     bp->rx_dir,
-+					     DMA_ATTR_WEAK_ORDERING);
-+			page_pool_recycle_direct(rxr->page_pool, data);
-+		} else {
-+			dma_unmap_single_attrs(&pdev->dev, mapping,
-+					       bp->rx_buf_use_size, bp->rx_dir,
-+					       DMA_ATTR_WEAK_ORDERING);
-+			kfree(data);
- 		}
-+	}
-+	for (i = 0; i < max_agg_idx; i++) {
-+		struct bnxt_sw_rx_agg_bd *rx_agg_buf = &rxr->rx_agg_ring[i];
-+		struct page *page = rx_agg_buf->page;
- 
--		for (j = 0; j < max_agg_idx; j++) {
--			struct bnxt_sw_rx_agg_bd *rx_agg_buf =
--				&rxr->rx_agg_ring[j];
--			struct page *page = rx_agg_buf->page;
+-	rxr = &bp->rx_ring[ring_nr];
+-	ring = &rxr->rx_ring_struct;
+-	bnxt_init_rxbd_pages(ring, type);
 -
--			if (!page)
--				continue;
-+		if (!page)
-+			continue;
- 
--			dma_unmap_page_attrs(&pdev->dev, rx_agg_buf->mapping,
--					     BNXT_RX_PAGE_SIZE,
--					     PCI_DMA_FROMDEVICE,
--					     DMA_ATTR_WEAK_ORDERING);
-+		dma_unmap_page_attrs(&pdev->dev, rx_agg_buf->mapping,
-+				     BNXT_RX_PAGE_SIZE, PCI_DMA_FROMDEVICE,
-+				     DMA_ATTR_WEAK_ORDERING);
- 
--			rx_agg_buf->page = NULL;
--			__clear_bit(j, rxr->rx_agg_bmap);
-+		rx_agg_buf->page = NULL;
-+		__clear_bit(i, rxr->rx_agg_bmap);
- 
--			__free_page(page);
--		}
--		if (rxr->rx_page) {
--			__free_page(rxr->rx_page);
--			rxr->rx_page = NULL;
--		}
--		map = rxr->rx_tpa_idx_map;
--		if (map)
--			memset(map->agg_idx_bmap, 0, sizeof(map->agg_idx_bmap));
-+		__free_page(page);
-+	}
-+	if (rxr->rx_page) {
-+		__free_page(rxr->rx_page);
-+		rxr->rx_page = NULL;
+-	if (BNXT_RX_PAGE_MODE(bp) && bp->xdp_prog) {
+-		bpf_prog_add(bp->xdp_prog, 1);
+-		rxr->xdp_prog = bp->xdp_prog;
+-	}
+ 	prod = rxr->rx_prod;
+ 	for (i = 0; i < bp->rx_ring_size; i++) {
+-		if (bnxt_alloc_rx_data(bp, rxr, prod, GFP_KERNEL) != 0) {
++		if (bnxt_alloc_rx_data(bp, rxr, prod, GFP_KERNEL)) {
+ 			netdev_warn(dev, "init'ed rx ring %d with %d/%d skbs only\n",
+ 				    ring_nr, i, bp->rx_ring_size);
+ 			break;
+@@ -3195,22 +3180,13 @@ static int bnxt_init_one_rx_ring(struct bnxt *bp, int ring_nr)
+ 		prod = NEXT_RX(prod);
  	}
-+	map = rxr->rx_tpa_idx_map;
-+	if (map)
-+		memset(map->agg_idx_bmap, 0, sizeof(map->agg_idx_bmap));
+ 	rxr->rx_prod = prod;
+-	ring->fw_ring_id = INVALID_HW_RING_ID;
+-
+-	ring = &rxr->rx_agg_ring_struct;
+-	ring->fw_ring_id = INVALID_HW_RING_ID;
+ 
+ 	if (!(bp->flags & BNXT_FLAG_AGG_RINGS))
+ 		return 0;
+ 
+-	type = ((u32)BNXT_RX_PAGE_SIZE << RX_BD_LEN_SHIFT) |
+-		RX_BD_TYPE_RX_AGG_BD | RX_BD_FLAGS_SOP;
+-
+-	bnxt_init_rxbd_pages(ring, type);
+-
+ 	prod = rxr->rx_agg_prod;
+ 	for (i = 0; i < bp->rx_agg_ring_size; i++) {
+-		if (bnxt_alloc_rx_page(bp, rxr, prod, GFP_KERNEL) != 0) {
++		if (bnxt_alloc_rx_page(bp, rxr, prod, GFP_KERNEL)) {
+ 			netdev_warn(dev, "init'ed rx ring %d with %d/%d pages only\n",
+ 				    ring_nr, i, bp->rx_ring_size);
+ 			break;
+@@ -3219,30 +3195,58 @@ static int bnxt_init_one_rx_ring(struct bnxt *bp, int ring_nr)
+ 	}
+ 	rxr->rx_agg_prod = prod;
+ 
+-	if (bp->flags & BNXT_FLAG_TPA) {
+-		if (rxr->rx_tpa) {
+-			u8 *data;
+-			dma_addr_t mapping;
++	if (rxr->rx_tpa) {
++		dma_addr_t mapping;
++		u8 *data;
+ 
+-			for (i = 0; i < bp->max_tpa; i++) {
+-				data = __bnxt_alloc_rx_data(bp, &mapping,
+-							    GFP_KERNEL);
+-				if (!data)
+-					return -ENOMEM;
++		for (i = 0; i < bp->max_tpa; i++) {
++			data = __bnxt_alloc_rx_data(bp, &mapping, GFP_KERNEL);
++			if (!data)
++				return -ENOMEM;
+ 
+-				rxr->rx_tpa[i].data = data;
+-				rxr->rx_tpa[i].data_ptr = data + bp->rx_offset;
+-				rxr->rx_tpa[i].mapping = mapping;
+-			}
+-		} else {
+-			netdev_err(bp->dev, "No resource allocated for LRO/GRO\n");
+-			return -ENOMEM;
++			rxr->rx_tpa[i].data = data;
++			rxr->rx_tpa[i].data_ptr = data + bp->rx_offset;
++			rxr->rx_tpa[i].mapping = mapping;
+ 		}
+ 	}
+-
+ 	return 0;
+ }
+ 
++static int bnxt_init_one_rx_ring(struct bnxt *bp, int ring_nr)
++{
++	struct bnxt_rx_ring_info *rxr;
++	struct bnxt_ring_struct *ring;
++	u32 type;
++
++	type = (bp->rx_buf_use_size << RX_BD_LEN_SHIFT) |
++		RX_BD_TYPE_RX_PACKET_BD | RX_BD_FLAGS_EOP;
++
++	if (NET_IP_ALIGN == 2)
++		type |= RX_BD_FLAGS_SOP;
++
++	rxr = &bp->rx_ring[ring_nr];
++	ring = &rxr->rx_ring_struct;
++	bnxt_init_rxbd_pages(ring, type);
++
++	if (BNXT_RX_PAGE_MODE(bp) && bp->xdp_prog) {
++		bpf_prog_add(bp->xdp_prog, 1);
++		rxr->xdp_prog = bp->xdp_prog;
++	}
++	ring->fw_ring_id = INVALID_HW_RING_ID;
++
++	ring = &rxr->rx_agg_ring_struct;
++	ring->fw_ring_id = INVALID_HW_RING_ID;
++
++	if ((bp->flags & BNXT_FLAG_AGG_RINGS)) {
++		type = ((u32)BNXT_RX_PAGE_SIZE << RX_BD_LEN_SHIFT) |
++			RX_BD_TYPE_RX_AGG_BD | RX_BD_FLAGS_SOP;
++
++		bnxt_init_rxbd_pages(ring, type);
++	}
++
++	return bnxt_alloc_one_rx_ring(bp, ring_nr);
 +}
 +
-+static void bnxt_free_rx_skbs(struct bnxt *bp)
-+{
-+	int i;
-+
-+	if (!bp->rx_ring)
-+		return;
-+
-+	for (i = 0; i < bp->rx_nr_rings; i++)
-+		bnxt_free_one_rx_ring_skbs(bp, i);
- }
- 
- static void bnxt_free_skbs(struct bnxt *bp)
+ static void bnxt_init_cp_rings(struct bnxt *bp)
+ {
+ 	int i, j;
 -- 
 2.18.1
 
 
---0000000000000c715b05b0dd4d5a
+--0000000000002112a105b0dd4d25
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -310,14 +286,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgUHYhNtWM+UmP
-OrUQUlP0HRQiVvUpGmz9IkbgU13fDjIwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDA0MTkyMzMwWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgIaxIc4thqTTp
+K8G/aqRRd9ZQ+Ipl2BgJ5MKllNCUtOMwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDA0MTkyMzMxWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBACBfK2Oi4rRuV+YAG2dKDOernhq9udoS
-o+4wSXvMpLNRIoEXx95p09ZLGhnourIPdxisL87/Zw97DmEmNebPutyIqLIY5uSqtel7JDNHrPSv
-Upop7KMeztZ1kMHmCoXWjHl7TELJpuDEBtpJbx+70EVnjIwmrYP7gp9ThzGOe0QI447YVQ3Ae5vs
-pqVutqz69wttPRUQHYRN0OQUcUrDj9nX5CA/QqudvgcDfFLOAUnwm0VSz2M4XO4gmQyIRwETU6ZM
-AHcwyqDx050VmxpNtJLXaBXolM/k4BZu9z8MszWEkh2XdyLkiV23thmmHp9AsnQnv+ETlSEaQPeX
-HKuuD6Q=
---0000000000000c715b05b0dd4d5a--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAKJjy1ehwiTtzBPuAPEIv59AvvDvuaQg
+BJroJ1mI2xESwr+ycHWv7RVLWMPdIiiitk42I4fyH/U2GoHLuTGIh6GJn9Ta+keJGiHm/NdmlFpX
+iZamQxuICkFY/LGSCq7n2SbFzs5qbfwfvy1Sq8AlJWyAKm4LKUwikg6WBKNylM6VTNij9/WU+4gh
+7Pr0qlcb2iL2S7GkIiq2DlHF81GlsCvF5USMcLqtCqDqGN1OldysvEPv33nWT/6Vs2jSPiTh4NsR
+e9lvWnPNASm2GHwww3SPOlPVtUweE8iGC/FuGng+Suey604Y/YmJ9vItpeUXGCMOF+qHpxlo6aoL
+jvcojHI=
+--0000000000002112a105b0dd4d25--
