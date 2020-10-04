@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFD86282BCC
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 18:21:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1227F282BCF
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 18:23:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726092AbgJDQVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 12:21:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
+        id S1726085AbgJDQXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 12:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726077AbgJDQVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 12:21:02 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1DAC0613CE
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 09:21:02 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id g18so2022033pgd.5
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 09:21:01 -0700 (PDT)
+        with ESMTP id S1726077AbgJDQXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 12:23:38 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC489C0613CE
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 09:23:37 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id 34so4135242pgo.13
+        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 09:23:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zn6iE3+055Vjc7mBLMCWeFh5wnSF/YRe2WMN+XXTBEM=;
-        b=uyFgxJIlX088xoMagwr0sF+5r7RgopD4SK9HTj+PT30wefnQrSjSdwLzlpG6vwShF+
-         5o45EcMhX5nl5ihBsk7u/2WLqVBcM8uYREx5hD6Mr+vQn+OAUt5h2dLuNd4zJM8lc2hI
-         syJx+lGeZbdDJaLTj4PMrsIVlzLQ4juRl2XbwLoP+Y4uAJIsacIuskie23840PQxcqmO
-         /DZtOXazzj0+pTD9uReLC1IQIPBF692fhCOP8Vc8x3CNQAGITC/PGK11D46zQO0Ua91j
-         j9mkb6ea6Ir8ZFW1E3fV+RJtG0+QOIg0hdn7AbmnxBx10L4XMqcBrfdR2WGiT6Rch9+K
-         iMjg==
+        bh=FsPzic/sXAiUE8fsTaUpO+P6/ryYEx3pNlnV52APzJg=;
+        b=bAFyt5fiz5eTHTCsKgkIB2b/hlU2zDXXxpKwmrt/XN5alJK6hxwNA4KVms/qvUZmJv
+         DaPwoJTluzhJ8uo+uYMrddwVPbtHaAaiPenXx/T1hb/Sw6J8o2k8sJTL14nkPcGwec2E
+         B3OcmTQdDbjQ13J7k9UIV+so3AE2y7+wXbtv3MmRNvifVDTQk+5swJM5ko/mpKOBd6dN
+         ACKyb9yhSCZmjS0j26UgzwkcGhwaFAjGsxgoxRRrEXXXbiEqdrfXFX9PR7LKFXQskEe/
+         330xQOe0sgD+YSBFMvOeaX9pNHpavL9JbGKT6kvw3iYqgEzDFQF9od1Wg2zcNAVzzh6L
+         k9vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=zn6iE3+055Vjc7mBLMCWeFh5wnSF/YRe2WMN+XXTBEM=;
-        b=HD72oy/U6PPIsKxFWJlbApPXGU8NAumowiWpoAYZOgZJZnTKMywC/y69YKXd55Hz15
-         7zkfpcXxSySborfDCf8eKcU2i/0rIPBNg3C3vKa7MyrWpZnn0D9HUeujDpygUj3ssTTp
-         KrUWpA4QPWNReJ87H8AlJzoTYXzMNcDYCBPNgDdS/CgezVZHMU4rZZ8YIMLK9T0rXYPP
-         vn+ZPVpGXFn1BfLjCB2uT+0xeh35107d+ODIdwzRjElFIqZC9mBGbfthD1U8ZkjYCsFb
-         b0OBsRAhCtMGhf+FECxkNy5iMyni4HBfQpxht2se8XB+MhRiNOAy5q+nLEZg+1c4i1Fx
-         sFSg==
-X-Gm-Message-State: AOAM531EhIIkcXfXvbv6ekjlA97qPLikcHSymltCnz/EGNCpOaMk7ZKf
-        zuHnVDhPE3LX1SUUY+1J6kZMQkq3zpoWSw==
-X-Google-Smtp-Source: ABdhPJyCJfZBnOU8oNQJlhZJCFCIrRNQdimQ0He4z8CkIfnZ14pVJWpxZCm8oWhimTYew3DjmVh7Jg==
-X-Received: by 2002:aa7:9f04:0:b029:13e:d13d:a08c with SMTP id g4-20020aa79f040000b029013ed13da08cmr12536853pfr.35.1601828461448;
-        Sun, 04 Oct 2020 09:21:01 -0700 (PDT)
+        bh=FsPzic/sXAiUE8fsTaUpO+P6/ryYEx3pNlnV52APzJg=;
+        b=V/0PO7nFxNev1G5yWZolpLoz+T1G9YvwsaOSJWidS4Sj00BLzl9aFpLJHqGLp79RPx
+         WXLEolSr8CYGgNXDy1ybO8cgyFLVveenVkSYreW8lfAMBSyvtRXrZQeQh30FgaMK+Cex
+         qza0hEZ7lnL7KW75XEC/nX3vKuvHO0rPD4MuP157Ss+pkPtMGh5acBdjLcsLYaY4iAWN
+         ri7LZ02vP+TJ3kywTWPbW9NPblgx7fM+VJLwvFTNpQiSrGmmLSQ9Dk/dxsNUrd3CXx9k
+         EvsWnVv7VWFbec4u2gaPvNdaKrvvO69sJLSE+Mdjz3YpA97c81xMP1LipJZMY9cXdRV4
+         baIg==
+X-Gm-Message-State: AOAM530ITbwdVscMydzSUIN0td5+TTUm692FtaCyoEmUAlxO6WHUgDrf
+        JZvBaXwnCwihRfm9qsqQOpA=
+X-Google-Smtp-Source: ABdhPJxmUgOwzolpdlAqF6ctO7RkyN6cd+b8Siaokr7bvD7DhhnwV3eVjuqNdLgeuZ5GkIGO49Z1wQ==
+X-Received: by 2002:a62:7d91:0:b029:13e:d13d:a061 with SMTP id y139-20020a627d910000b029013ed13da061mr8268961pfc.39.1601828616140;
+        Sun, 04 Oct 2020 09:23:36 -0700 (PDT)
 Received: from [10.230.29.112] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z6sm7275980pfg.12.2020.10.04.09.21.00
+        by smtp.gmail.com with ESMTPSA id z4sm9167131pfr.197.2020.10.04.09.23.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 04 Oct 2020 09:21:00 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 3/7] net: dsa: Register devlink ports before
- calling DSA driver setup()
+        Sun, 04 Oct 2020 09:23:35 -0700 (PDT)
+Subject: Re: [PATCH net-next v3 5/7] net: dsa: Add devlink port regions
+ support to DSA
 To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>
 References: <20201004161257.13945-1-andrew@lunn.ch>
- <20201004161257.13945-4-andrew@lunn.ch>
+ <20201004161257.13945-6-andrew@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <f9e2971e-e38e-a4c0-babb-cc5c2125f4b9@gmail.com>
-Date:   Sun, 4 Oct 2020 09:21:00 -0700
+Message-ID: <0996b29f-ff62-cfc4-20ca-df2246b9d949@gmail.com>
+Date:   Sun, 4 Oct 2020 09:23:34 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.3.1
 MIME-Version: 1.0
-In-Reply-To: <20201004161257.13945-4-andrew@lunn.ch>
+In-Reply-To: <20201004161257.13945-6-andrew@lunn.ch>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -73,17 +74,11 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 10/4/2020 9:12 AM, Andrew Lunn wrote:
-> DSA drivers want to create regions on devlink ports as well as the
-> devlink device instance, in order to export registers and other tables
-> per port. To keep all this code together in the drivers, have the
-> devlink ports registered early, so the setup() method can setup both
-> device and port devlink regions.
+> Allow DSA drivers to make use of devlink port regions, via simple
+> wrappers.
 > 
-> v3:
-> Remove dp->setup
-> Move common code out of switch statement.
-> Fix wrong goto
-> 
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+> Tested-by: Vladimir Oltean <olteanv@gmail.com>
 > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
