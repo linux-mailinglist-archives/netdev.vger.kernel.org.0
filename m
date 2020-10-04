@@ -2,194 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B27B282D36
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 230D3282D34
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726601AbgJDTX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 15:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
+        id S1726736AbgJDTXa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 15:23:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726294AbgJDTX0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:26 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F85C0613CE
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:26 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id 7so4329620pgm.11
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:26 -0700 (PDT)
+        with ESMTP id S1726476AbgJDTX2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:28 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47CA3C0613CF
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:28 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id x22so5059725pfo.12
+        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=PPmo+WJZUzQEQ48r9G1VzLXNXh4aiIQ0rWsSzXp6P8U=;
-        b=c/xv3kcnabByZmO7twJp5TZ6XeUlx2Sx5PK1VY5xsOjhQF7H4wGohJ4V0IcDqGm9R6
-         WpLcI3IsOMNuI2b+YyfXcwCXlb+f5Dq5/+vzEjyPAWMkZtXMuSCwrv1ke59AQ7vU62qw
-         ug02TZw0b1b+D8y2zsEeY8tazcYVCG8vD/64I=
+        bh=/p+wy/m0moriUeJwAze8D8G9TDkvSYQ2TTc4XsGJiDo=;
+        b=fWvW6pukAb6wjVsiIGgnVRpPTEgijVSvX2iCoxqLtk2hKZck3wAfqiggP7g70v8pzv
+         ex5ZbyWjVKKX4NKBBkO9Zo4+r5lqzOa9oOdGPeRU0EZjWn+0+t2dDh+rfddLR1uBZHxg
+         5erOTSJV5Zf2h5FZrcISFQMMhLsTsbmptuMg8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=PPmo+WJZUzQEQ48r9G1VzLXNXh4aiIQ0rWsSzXp6P8U=;
-        b=jtxywB4gU7Fol6gJjlNvWD7ciuKi60L4QUU0jthh04r+p30ueP3VtUHE0F+o4RweIj
-         HxFn9NKIqRu+ucH1bhsDho1Zb78CSfhXUYdnyyv8y/GDympNWZWI5pC1UrLpX4cqiOJs
-         tZ6KTxCZn38CPkI2XgJQe8Rz8beC8ZTFuzRZkCv8XlIw/sWbhsuxWzgGc3gLaQtYq2vF
-         XzHq8M48FvweF2DbTOOZaixEi0bjkys8Ler3AOCzRGumgo37dyajnUKhVLNp9X1Kg8yR
-         ltCwlQbiRxx1kyBBitDmeHQEEvKzzX2GgtOY6+BgZNZEPvxYeOdfIYpfWv78z1Ga/UhT
-         8PrQ==
-X-Gm-Message-State: AOAM532oVqUtTdAO0brX3vobkb/Sv2MD3kWwOCi7Rh+gKgn3kRtq/g34
-        151lOoPURD58BE/Xn2GkXYyNds8a6dF4LQ==
-X-Google-Smtp-Source: ABdhPJySAXfb9mD8ijjW3RmQdIGA3PGA/mdCJwO7Gs6g2ZKGcCYVqbAXsFGf6dYDVqTnp+xX4UDvsQ==
-X-Received: by 2002:a63:2bd1:: with SMTP id r200mr11060352pgr.20.1601839406155;
-        Sun, 04 Oct 2020 12:23:26 -0700 (PDT)
+        bh=/p+wy/m0moriUeJwAze8D8G9TDkvSYQ2TTc4XsGJiDo=;
+        b=VmdC/YGU/WPG9JG2LowQ/Moj4JwwOPh7BaTqqUjN9CzKJpeR5crYTYEUm0zztLDDoa
+         3EZs7Kff6+LdkapeIFRHh9M/KWkfdJD32cXH35kzV2EH6uUvW3/sbQ6AkH3mareLtyxh
+         WKBFRfqHfbyojixMvq55AONDrQ7UdttwULZ1SGOyxLNbyXZyuZDI17Ed9mhetDZe8Opw
+         3ZZQY6CSK7EEGquoDalXv7wd40aUIkSpQcjtILAVkOXKc7jVf4Jym+gpv/1xopQgobey
+         6q99ZjMTE7L9j+siNKepDLn3FTq8IrxLFKdLG1owjx1K7iLUedr49QLA+Xd3Mpca0ygX
+         pNiw==
+X-Gm-Message-State: AOAM533WCLbHaidl3qJr/D3o2F1W2jn5jPIPJWAef21DciYpNxOcWBqm
+        Gb5URPNuMb549DOvBrMM50zUaFe0D0XG/Q==
+X-Google-Smtp-Source: ABdhPJw3nPM7iwemefRUBO6+W/9IMD59NiUscm0b2+eMteDExA9Xvbq85Zd4WgH/enbZmpodNOl3xg==
+X-Received: by 2002:a63:c20f:: with SMTP id b15mr10919710pgd.8.1601839407515;
+        Sun, 04 Oct 2020 12:23:27 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.24
+        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.26
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 04 Oct 2020 12:23:25 -0700 (PDT)
+        Sun, 04 Oct 2020 12:23:26 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
         Edwin Peer <edwin.peer@broadcom.com>
-Subject: [PATCH net-next 03/11] bnxt_en: log firmware status on firmware init failure
-Date:   Sun,  4 Oct 2020 15:22:53 -0400
-Message-Id: <1601839381-10446-4-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 04/11] bnxt_en: perform no master recovery during startup
+Date:   Sun,  4 Oct 2020 15:22:54 -0400
+Message-Id: <1601839381-10446-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 References: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000d1fa5505b0dd4cf1"
+        boundary="000000000000e72eb805b0dd4cc9"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000d1fa5505b0dd4cf1
+--000000000000e72eb805b0dd4cc9
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-Firmware now supports device independent discovery of the status
-register location. This status register can provide more detailed
-information about firmware errors, especially if problems occur
-before the HWRM interface is functioning. Attempt to map this
-register if it is present and report the firmware status on firmware
-init failures.
+The NS3 SoC platforms require assistance from the OP-TEE to recover
+firmware if a crash occurs while no driver is bound. The
+CRASHED_NO_MASTER condition is recorded in the firmware status register
+during the crash to indicate when driver intervension is needed to
+coordinate a firmware reload. This condition is detected during early
+driver initialization in order to effect a firmware fastboot on
+supported platforms when necessary.
 
+Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 56 +++++++++++++++++++++--
- drivers/net/ethernet/broadcom/bnxt/bnxt.h |  4 ++
- 2 files changed, 55 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 38 +++++++++++++++++------
+ 1 file changed, 29 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index cf730ec92a0f..224f76e784b8 100644
+index 224f76e784b8..afa425375cd0 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -7366,6 +7366,47 @@ static int bnxt_alloc_fw_health(struct bnxt *bp)
- 	return 0;
+@@ -11035,6 +11035,21 @@ static void bnxt_init_dflt_coal(struct bnxt *bp)
+ 	bp->stats_coal_ticks = BNXT_DEF_STATS_COAL_TICKS;
  }
  
-+static void __bnxt_map_fw_health_reg(struct bnxt *bp, u32 reg)
++static int bnxt_fw_reset_via_optee(struct bnxt *bp)
 +{
-+	writel(reg & BNXT_GRC_BASE_MASK, bp->bar0 +
-+					 BNXT_GRCPF_REG_WINDOW_BASE_OUT +
-+					 BNXT_FW_HEALTH_WIN_MAP_OFF);
++#ifdef CONFIG_TEE_BNXT_FW
++	int rc = tee_bnxt_fw_load();
++
++	if (rc)
++		netdev_err(bp->dev, "Failed FW reset via OP-TEE, rc=%d\n", rc);
++
++	return rc;
++#else
++	netdev_err(bp->dev, "OP-TEE not supported\n");
++	return -ENODEV;
++#endif
 +}
 +
-+static void bnxt_try_map_fw_health_reg(struct bnxt *bp)
-+{
-+	void __iomem *hs;
-+	u32 status_loc;
-+	u32 reg_type;
-+	u32 sig;
-+
-+	__bnxt_map_fw_health_reg(bp, HCOMM_STATUS_STRUCT_LOC);
-+	hs = bp->bar0 + BNXT_FW_HEALTH_WIN_OFF(HCOMM_STATUS_STRUCT_LOC);
-+
-+	sig = readl(hs + offsetof(struct hcomm_status, sig_ver));
-+	if ((sig & HCOMM_STATUS_SIGNATURE_MASK) != HCOMM_STATUS_SIGNATURE_VAL) {
-+		if (bp->fw_health)
-+			bp->fw_health->status_reliable = false;
-+		return;
-+	}
-+
-+	if (__bnxt_alloc_fw_health(bp)) {
-+		netdev_warn(bp->dev, "no memory for firmware status checks\n");
-+		return;
-+	}
-+
-+	status_loc = readl(hs + offsetof(struct hcomm_status, fw_status_loc));
-+	bp->fw_health->regs[BNXT_FW_HEALTH_REG] = status_loc;
-+	reg_type = BNXT_FW_HEALTH_REG_TYPE(status_loc);
-+	if (reg_type == BNXT_FW_HEALTH_REG_TYPE_GRC) {
-+		__bnxt_map_fw_health_reg(bp, status_loc);
-+		bp->fw_health->mapped_regs[BNXT_FW_HEALTH_REG] =
-+			BNXT_FW_HEALTH_WIN_OFF(status_loc);
-+	}
-+
-+	bp->fw_health->status_reliable = true;
-+}
-+
- static int bnxt_map_fw_health_regs(struct bnxt *bp)
+ static int bnxt_fw_init_one_p1(struct bnxt *bp)
  {
- 	struct bnxt_fw_health *fw_health = bp->fw_health;
-@@ -7382,14 +7423,12 @@ static int bnxt_map_fw_health_regs(struct bnxt *bp)
- 			reg_base = reg & BNXT_GRC_BASE_MASK;
- 		if ((reg & BNXT_GRC_BASE_MASK) != reg_base)
- 			return -ERANGE;
--		fw_health->mapped_regs[i] = BNXT_FW_HEALTH_WIN_BASE +
--					    (reg & BNXT_GRC_OFFSET_MASK);
-+		fw_health->mapped_regs[i] = BNXT_FW_HEALTH_WIN_OFF(reg);
- 	}
- 	if (reg_base == 0xffffffff)
- 		return 0;
- 
--	writel(reg_base, bp->bar0 + BNXT_GRCPF_REG_WINDOW_BASE_OUT +
--			 BNXT_FW_HEALTH_WIN_MAP_OFF);
-+	__bnxt_map_fw_health_reg(bp, reg_base);
- 	return 0;
- }
- 
-@@ -11002,8 +11041,15 @@ static int bnxt_fw_init_one_p1(struct bnxt *bp)
- 
- 	bp->fw_cap = 0;
+ 	int rc;
+@@ -11043,12 +11058,21 @@ static int bnxt_fw_init_one_p1(struct bnxt *bp)
  	rc = bnxt_hwrm_ver_get(bp);
--	if (rc)
-+	bnxt_try_map_fw_health_reg(bp);
-+	if (rc) {
-+		if (bp->fw_health && bp->fw_health->status_reliable)
-+			netdev_err(bp->dev,
-+				   "Firmware not responding, status: 0x%x\n",
-+				   bnxt_fw_health_readl(bp,
-+							BNXT_FW_HEALTH_REG));
- 		return rc;
-+	}
+ 	bnxt_try_map_fw_health_reg(bp);
+ 	if (rc) {
+-		if (bp->fw_health && bp->fw_health->status_reliable)
++		if (bp->fw_health && bp->fw_health->status_reliable) {
++			u32 sts = bnxt_fw_health_readl(bp, BNXT_FW_HEALTH_REG);
++
+ 			netdev_err(bp->dev,
+ 				   "Firmware not responding, status: 0x%x\n",
+-				   bnxt_fw_health_readl(bp,
+-							BNXT_FW_HEALTH_REG));
+-		return rc;
++				   sts);
++			if (sts & FW_STATUS_REG_CRASHED_NO_MASTER) {
++				netdev_warn(bp->dev, "Firmware recover via OP-TEE requested\n");
++				rc = bnxt_fw_reset_via_optee(bp);
++				if (!rc)
++					rc = bnxt_hwrm_ver_get(bp);
++			}
++		}
++		if (rc)
++			return rc;
+ 	}
  
  	if (bp->fw_cap & BNXT_FW_CAP_KONG_MB_CHNL) {
- 		rc = bnxt_alloc_kong_hwrm_resources(bp);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 74387259e1c6..e940a242d958 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1494,6 +1494,7 @@ struct bnxt_fw_health {
- 	u8 enabled:1;
- 	u8 master:1;
- 	u8 fatal:1;
-+	u8 status_reliable:1;
- 	u8 tmr_multiplier;
- 	u8 tmr_counter;
- 	u8 fw_reset_seq_cnt;
-@@ -1521,6 +1522,9 @@ struct bnxt_fw_reporter_ctx {
- #define BNXT_FW_HEALTH_WIN_BASE		0x3000
- #define BNXT_FW_HEALTH_WIN_MAP_OFF	8
+@@ -11221,12 +11245,8 @@ static void bnxt_reset_all(struct bnxt *bp)
+ 	int i, rc;
  
-+#define BNXT_FW_HEALTH_WIN_OFF(reg)	(BNXT_FW_HEALTH_WIN_BASE +	\
-+					 ((reg) & BNXT_GRC_OFFSET_MASK))
-+
- #define BNXT_FW_STATUS_HEALTHY		0x8000
- #define BNXT_FW_STATUS_SHUTDOWN		0x100000
+ 	if (bp->fw_cap & BNXT_FW_CAP_ERR_RECOVER_RELOAD) {
+-#ifdef CONFIG_TEE_BNXT_FW
+-		rc = tee_bnxt_fw_load();
+-		if (rc)
+-			netdev_err(bp->dev, "Unable to reset FW rc=%d\n", rc);
++		bnxt_fw_reset_via_optee(bp);
+ 		bp->fw_reset_timestamp = jiffies;
+-#endif
+ 		return;
+ 	}
  
 -- 
 2.18.1
 
 
---000000000000d1fa5505b0dd4cf1
+--000000000000e72eb805b0dd4cc9
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -259,14 +218,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQghYU4pxET8S5+
-7tYXsnnwZ5MUAXwKIkB3Izzv9TcyFn0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDA0MTkyMzI2WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgT7nZtwQ+iBU4
+Zav2Nyjk6u6wMWLCygrUlvknSft0BWAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDA0MTkyMzI4WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAI9tDqHCiOoXXtKDLHVSCOEo7/iO/onA
-wZKtirru35z1CGJbYLYX+/qxggMUrNZpV48PMTfUsy2+dN+S9ufmGtPtrDcs3UAqC4xSFKucb8H2
-FlQ3UtFdNlIfNSDbF8DPe0nITdWQ8QjVcWAOXLwTj7dS/xK8QgSIe+2pjqxO/Y6RjySA6IWQpWmV
-98soNRucW/KgjSQFkkQ647zumBlUxtsSxUv43jwlIDEAhdOrc5TsmG+oiVXmWI44R1UAm/65GS7P
-5F7DmyvIKgk7E4ZOKZNT3RDp8iQDDdRL7DeBYq1FHF+AOW/dvvAboqGnaiOSxaj0G1FxL7NJuLEM
-5LzJGkc=
---000000000000d1fa5505b0dd4cf1--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBADXvkMvyUXFDirMJuRhyDRzEW6ro9s0p
+YOssEn7Qn5mosJQ3/19M5bZqM9ofb2BUf6SekRsNybNjFFxHUJDzO1M8nMWnMHEc0o7hnl/k+Grp
+G051FmUhy8zwzh728wlIoph3qCa7FlGv8J1n98pfs650NvV00Xg7Y3l/FbYerdsO5xEca10G9cWd
+CAhBV81rvPwjhOcKo/cnDJB4l115V/k3ysgyIHd9BV9p4dFl21TEXgU3lnThWZ1lO0YeNUyulc7B
+Y/hjWNzwjGH6/uRg5k40WKImiUgzeK0XhXB57KSuaJusL+iflUmxJmxaAY3EBzRvLbFioJO8ybHl
+UMZWrPc=
+--000000000000e72eb805b0dd4cc9--
