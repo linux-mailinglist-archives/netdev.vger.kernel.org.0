@@ -2,92 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 501D5282AD6
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 15:14:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB232282ADA
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 15:18:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726064AbgJDNOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 09:14:01 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:64900 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725977AbgJDNOA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 09:14:00 -0400
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 094D24QU028104;
-        Sun, 4 Oct 2020 09:13:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=N845iz62l3kxl4ppjLCORup8geNzRAgQW4mhB3gQHbg=;
- b=Hlyxb8BhrO8NCJUBBbiehnblIOMYXgorDUWIo4CYcxhiWJhBlixJ+ZrN2wuYT6o2LuJP
- UPuaeJJvEwcOqGQ+ej3Lazl8FtGxsYUDSv8kV6ikpZ4dBfK8larEnKEPdvsbBE4WzUmV
- j1JmQ98IS5lPFZYwwqVeM9UaquAKD+5vymvMPMjSKFQvoHpy1cKN6k3qSY/tSGgYN/GS
- FPxvH1djBGCVFOhkqL8r6oXclpXn6ltdX8fSHDLrSWrXy6vYF10KN65ifUVxopiUMhve
- 4nKTiRrYHPhjYAzKqhHnEvbHOUWudo4QH5arSEUq4DiD2amEZNnuVpX2QZxrzANOc8W2 dA== 
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33yewrg6ut-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 04 Oct 2020 09:13:58 -0400
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 094D8qd7020041;
-        Sun, 4 Oct 2020 13:13:56 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma05fra.de.ibm.com with ESMTP id 33xgx80ksf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 04 Oct 2020 13:13:56 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 094DDrp732571800
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 4 Oct 2020 13:13:53 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A9AF111C04A;
-        Sun,  4 Oct 2020 13:13:53 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4249611C04C;
-        Sun,  4 Oct 2020 13:13:53 +0000 (GMT)
-Received: from LAPTOP-VCUDA2TK (unknown [9.145.163.16])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Sun,  4 Oct 2020 13:13:53 +0000 (GMT)
-Date:   Sun, 4 Oct 2020 15:14:00 +0200
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: Re: [PATCH net-next 1/2] net/smc: send ISM devices with unique chid
- in CLC proposal
-Message-Id: <20201004151400.bb5b1aa84b08e45ea79b54e9@linux.ibm.com>
-In-Reply-To: <20201003.170538.1607088552412478587.davem@davemloft.net>
-References: <20201002150927.72261-1-kgraul@linux.ibm.com>
-        <20201002150927.72261-2-kgraul@linux.ibm.com>
-        <20201003.170538.1607088552412478587.davem@davemloft.net>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.30; i686-pc-mingw32)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-04_09:2020-10-02,2020-10-04 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
- mlxscore=0 adultscore=0 impostorscore=0 suspectscore=0 priorityscore=1501
- malwarescore=0 mlxlogscore=795 spamscore=0 lowpriorityscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2010040096
+        id S1726116AbgJDNSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 09:18:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38754 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725977AbgJDNSA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 4 Oct 2020 09:18:00 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5DA3B20735;
+        Sun,  4 Oct 2020 13:17:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601817477;
+        bh=AiiuHjZO0icMiYjb4/nKkMOXT/QNMEYb0nKe94BHd8Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bcfsMVPWQkqi9e5ohzJimSHJFGSt2LRqiNyD+UAVK8e2UkZh0q6AuFT/spfq1tmS4
+         /Nr8JRmMUbe7NxFlMcf8q04MaTDzZO6DFdHizHSkLrj5uNXGJ2zQDIx8vznDNQM6Ho
+         OP2/F964ovcrnQ5j8ZnxcUk88cqw/ugEXaNtZKs8=
+Date:   Sun, 4 Oct 2020 15:18:44 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bastien Nocera <hadess@hadess.net>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Sathish Narsimman <sathish.narasimman@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Revert "Bluetooth: Update resolving list when updating
+ whitelist"
+Message-ID: <20201004131844.GA185109@kroah.com>
+References: <20201003135449.GA2691@kroah.com>
+ <A1C95238-CBCB-4FD4-B46D-A62AED0C77E5@holtmann.org>
+ <20201003160713.GA1512229@kroah.com>
+ <AABC2831-4E88-41A2-8A20-1BFC88895686@holtmann.org>
+ <20201004105124.GA2429@kroah.com>
+ <04e0af8618f95a4483f5a72ba90d4f8b1d9094bd.camel@hadess.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <04e0af8618f95a4483f5a72ba90d4f8b1d9094bd.camel@hadess.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 03 Oct 2020 17:05:38 -0700 (PDT)
-David Miller <davem@davemloft.net> wrote:
-
-> Series applied, but could you send a proper patch series in the future
-> with a "[PATCH 0/N] ..." header posting?  It must explain what the
-> patch series does at a high level, how it is doing it, and why it is
-> doing it that way.
+On Sun, Oct 04, 2020 at 02:17:06PM +0200, Bastien Nocera wrote:
+> On Sun, 2020-10-04 at 12:51 +0200, Greg Kroah-Hartman wrote:
+> > On Sat, Oct 03, 2020 at 08:33:18PM +0200, Marcel Holtmann wrote:
+> > > Hi Greg,
+> > > 
+> > > > > > This reverts commit 0eee35bdfa3b472cc986ecc6ad76293fdcda59e2
+> > > > > > as it
+> > > > > > breaks all bluetooth connections on my machine.
+> > > > > > 
+> > > > > > Cc: Marcel Holtmann <marcel@holtmann.org>
+> > > > > > Cc: Sathish Narsimman <sathish.narasimman@intel.com>
+> > > > > > Fixes: 0eee35bdfa3b ("Bluetooth: Update resolving list when
+> > > > > > updating whitelist")
+> > > > > > Signed-off-by: Greg Kroah-Hartman
+> > > > > > <gregkh@linuxfoundation.org>
+> > > > > > ---
+> > > > > > net/bluetooth/hci_request.c | 41 ++--------------------------
+> > > > > > ---------
+> > > > > > 1 file changed, 2 insertions(+), 39 deletions(-)
+> > > > > > 
+> > > > > > This has been bugging me for since 5.9-rc1, when all
+> > > > > > bluetooth devices
+> > > > > > stopped working on my desktop system.  I finally got the time
+> > > > > > to do
+> > > > > > bisection today, and it came down to this patch.  Reverting
+> > > > > > it on top of
+> > > > > > 5.9-rc7 restored bluetooth devices and now my input devices
+> > > > > > properly
+> > > > > > work.
+> > > > > > 
+> > > > > > As it's almost 5.9-final, any chance this can be merged now
+> > > > > > to fix the
+> > > > > > issue?
+> > > > > 
+> > > > > can you be specific what breaks since our guys and I also think
+> > > > > the
+> > > > > ChromeOS guys have been testing these series of patches
+> > > > > heavily.
+> > > > 
+> > > > My bluetooth trackball does not connect at all.  With this
+> > > > reverted, it
+> > > > all "just works".
+> > > > 
+> > > > Same I think for a Bluetooth headset, can check that again if you
+> > > > really
+> > > > need me to, but the trackball is reliable here.
+> > > > 
+> > > > > When you run btmon does it indicate any errors?
+> > > > 
+> > > > How do I run it and where are the errors displayed?
+> > > 
+> > > you can do btmon -w trace.log and just let it run like tcdpump.
+> > 
+> > Ok, attached.
+> > 
+> > The device is not connecting, and then I open the gnome bluetooth
+> > dialog
+> > and it scans for devices in the area, but does not connect to my
+> > existing devices at all.
+> > 
+> > Any ideas?
 > 
-> Thank you.
+> Use bluetoothctl instead, the Bluetooth Settings from GNOME also run a
+> discovery the whole time the panel is opened, and this breaks a fair
+> number of poor quality adapters. This is worked-around in the most
+> recent version, but using bluetoothctl is a better debugging option in
+> all cases.
 
-Hi Dave, not sure what went wrong but I sent the header posting along with
-the patches, see https://lists.openwall.net/netdev/2020/10/02/197
+Ok, but how do I use that tool?  How do I shut down the gnome bluetooth
+stuff?
 
--- 
-Karsten Graul <kgraul@linux.ibm.com>
+I need newbie steps here please for what to run and what to show you.
+
+thanks,
+
+greg k-h
