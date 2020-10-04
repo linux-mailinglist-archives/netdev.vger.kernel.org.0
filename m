@@ -2,81 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C36C5282BD1
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 18:24:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D67ED282BDD
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 18:59:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726128AbgJDQY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 12:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726077AbgJDQYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 12:24:25 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3BEC0613CE
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 09:24:24 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id g29so4168105pgl.2
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 09:24:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kpNIEUtXZIcE7jxnWTsyV66ed+69BWhBJGFa9HdjwZo=;
-        b=actFmoT0h3DINjoCIvxuyrYQwGMCO/LuWLB35f3LCXGrxkgvQiCJoJayLrmbsGhOky
-         gu9loLuxVWLg/4ZCr9iU/x/a97Mq3pHo+5Q6rzjPXCxmAScPiozufTNl9xOLf9Hry2P5
-         Aj0kBEgVK7FsPleh3UHjTisyk/aJ+IYdiTrvPhjrcD7t1bjz9LHhJ3cH6AhqRAgerJb5
-         Z6rNNO2ueO6KwTpl2T+r6oGWS1oItVqgTZwkrrtjCpj3rSBOycVZ1gSel4piDAiuJmxJ
-         hZ+PkE+8THbRoBg3gyEvsaqkS/R8fmZdavvIfWOQVllmS2XLx2Hv2i+etd0Z4lRffnsT
-         47cQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kpNIEUtXZIcE7jxnWTsyV66ed+69BWhBJGFa9HdjwZo=;
-        b=t4YPL2yumsabGHb4yT9Uq+WqI8ENGBXEMbBSp5mW6wu1xxg4K1v6rXjse2/Pn6xgVW
-         6y8Av66eIB6wltF7IsCLE6cRGRESq+sHZi/sJ5pDlzJkuvvTna5LiRUP+41REuisDduX
-         Qd+iT1EQhGRFNWnuTzXZ/B5btN2ha8Kos6baigfi0J4K8sfsfbxrvnA1w278ONPy58Y1
-         JLDYcjMzUR/aW7+rgsLN6UGqRAiDP5dGGa84kmPKSlaC45/mx08RKV1KjjzymwJPvolp
-         TUpDL+DZCUMk2kHyQIjyMu1uwE+l70HfhVdp5JLUwjzuwHxtque5NBlzAaucVYxuUj/C
-         IDKA==
-X-Gm-Message-State: AOAM530ZpuZKUp2SfhOFgUtwNyVRFCIYnSsCGHjH7oOxwNJ3KAe0/swz
-        eBkjhj5f3DCRGuxBDuML2nc=
-X-Google-Smtp-Source: ABdhPJz8xQH1rzaXc/sNfk7mnLc+JINygESB0CR1gLriHh4Er9BLJ3nyTfoRM784e8I3fbcVqcFiVg==
-X-Received: by 2002:a63:4c46:: with SMTP id m6mr10259510pgl.127.1601828663908;
-        Sun, 04 Oct 2020 09:24:23 -0700 (PDT)
-Received: from [10.230.29.112] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id w23sm2387967pfn.142.2020.10.04.09.24.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 04 Oct 2020 09:24:23 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 7/7] net: dsa: mv88e6xxx: Add per port devlink
- regions
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-References: <20201004161257.13945-1-andrew@lunn.ch>
- <20201004161257.13945-8-andrew@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <4b31decc-7b57-0e89-97ef-73984311b91c@gmail.com>
-Date:   Sun, 4 Oct 2020 09:24:22 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.3.1
-MIME-Version: 1.0
-In-Reply-To: <20201004161257.13945-8-andrew@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726128AbgJDQ72 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 4 Oct 2020 12:59:28 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:41121 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726077AbgJDQ71 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 12:59:27 -0400
+Received: from marcel-macpro.fritz.box (p4fefc7f4.dip0.t-ipconnect.de [79.239.199.244])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 077F1CED16;
+        Sun,  4 Oct 2020 19:06:25 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
+Subject: Re: [PATCH] Revert "Bluetooth: Update resolving list when updating
+ whitelist"
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20201004105124.GA2429@kroah.com>
+Date:   Sun, 4 Oct 2020 18:59:24 +0200
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Sathish Narsimman <sathish.narasimman@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <3F7BDD50-DEA3-4CB0-A9A0-69E7EE2923D5@holtmann.org>
+References: <20201003135449.GA2691@kroah.com>
+ <A1C95238-CBCB-4FD4-B46D-A62AED0C77E5@holtmann.org>
+ <20201003160713.GA1512229@kroah.com>
+ <AABC2831-4E88-41A2-8A20-1BFC88895686@holtmann.org>
+ <20201004105124.GA2429@kroah.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+X-Mailer: Apple Mail (2.3608.120.23.2.1)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Greg,
 
-
-On 10/4/2020 9:12 AM, Andrew Lunn wrote:
-> Add a devlink region to return the per port registers.
+>>>>> This reverts commit 0eee35bdfa3b472cc986ecc6ad76293fdcda59e2 as it
+>>>>> breaks all bluetooth connections on my machine.
+>>>>> 
+>>>>> Cc: Marcel Holtmann <marcel@holtmann.org>
+>>>>> Cc: Sathish Narsimman <sathish.narasimman@intel.com>
+>>>>> Fixes: 0eee35bdfa3b ("Bluetooth: Update resolving list when updating whitelist")
+>>>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>>>> ---
+>>>>> net/bluetooth/hci_request.c | 41 ++-----------------------------------
+>>>>> 1 file changed, 2 insertions(+), 39 deletions(-)
+>>>>> 
+>>>>> This has been bugging me for since 5.9-rc1, when all bluetooth devices
+>>>>> stopped working on my desktop system.  I finally got the time to do
+>>>>> bisection today, and it came down to this patch.  Reverting it on top of
+>>>>> 5.9-rc7 restored bluetooth devices and now my input devices properly
+>>>>> work.
+>>>>> 
+>>>>> As it's almost 5.9-final, any chance this can be merged now to fix the
+>>>>> issue?
+>>>> 
+>>>> can you be specific what breaks since our guys and I also think the
+>>>> ChromeOS guys have been testing these series of patches heavily.
+>>> 
+>>> My bluetooth trackball does not connect at all.  With this reverted, it
+>>> all "just works".
+>>> 
+>>> Same I think for a Bluetooth headset, can check that again if you really
+>>> need me to, but the trackball is reliable here.
+>>> 
+>>>> When you run btmon does it indicate any errors?
+>>> 
+>>> How do I run it and where are the errors displayed?
+>> 
+>> you can do btmon -w trace.log and just let it run like tcdpump.
 > 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> Ok, attached.
+> 
+> The device is not connecting, and then I open the gnome bluetooth dialog
+> and it scans for devices in the area, but does not connect to my
+> existing devices at all.
+> 
+> Any ideas?
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+the trace file is from -rc7 or from -rc7 with this patch reverted?
+
+I asked, because I see no hint that anything goes wrong. However I have a suspicion if you bisected it to this patch.
+
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index e0269192f2e5..94c0daa9f28d 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -732,7 +732,7 @@ static int add_to_white_list(struct hci_request *req,
+                return -1;
+ 
+        /* White list can not be used with RPAs */
+-       if (!allow_rpa && !use_ll_privacy(hdev) &&
++       if (!allow_rpa &&
+            hci_find_irk_by_addr(hdev, &params->addr, params->addr_type)) {
+                return -1;
+        }
+@@ -812,7 +812,7 @@ static u8 update_white_list(struct hci_request *req)
+                }
+ 
+                /* White list can not be used with RPAs */
+-               if (!allow_rpa && !use_ll_privacy(hdev) &&
++               if (!allow_rpa &&
+                    hci_find_irk_by_addr(hdev, &b->bdaddr, b->bdaddr_type)) {
+                        return 0x00;
+                }
+
+
+If you just do the above, does thing work for you again?
+
+My suspicion is that the use_ll_privacy check is the wrong one here. It only checks if hardware feature is available, not if it is also enabled.
+
+Regards
+
+Marcel
+
