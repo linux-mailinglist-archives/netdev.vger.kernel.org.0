@@ -2,129 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 545DF2829AC
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 10:48:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E3A92829D8
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 11:40:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725854AbgJDIsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 04:48:25 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:45823 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725826AbgJDIsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 04:48:25 -0400
-Received: by mail-il1-f197.google.com with SMTP id 18so1377747ilj.12
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 01:48:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=HUrxEfrvGltaT0f64KMeac1neV4ySMf1wCAqKa4nV/A=;
-        b=nN8eVETLe2ROJCDTd8QHS2UX5P2RHX98DDYyg9UgpezMuJWaqE3+fLvb0W05RrQDve
-         m/Ilrwr3p/g1+1xz6FJ02jksDFRNdriy0URCNDyfdDcnjYymzHyS6qYhQt9ZGu40E1pb
-         YAoNuYZdd02/4yWf96PFOklJgIU8+ipcrMBNoIgc+jEGxg8Zys8RwWKhiqyaZi8AHoYv
-         Wt+O3TSFyZzJwgtITHQcALizXw6G10WQI63VUsYDkLZNkYjcl5bE/Bgx+Mw1TUwUpmOh
-         kVhzdb1DIbOp6SJZ8jD3RNV2Wb4oAA74GK9uO/2uX4gZ72tohSheGMUDJExbVZVVakg8
-         1hsg==
-X-Gm-Message-State: AOAM530em7KuguoWwd6WCSeaN30/U53xRaWWmz971EGkM2wu9q/qtSvE
-        LPLzymI/Gr6DNGE3Q6TnTgpMb9f0xs60YhQ4SWvUlSFuuXx9
-X-Google-Smtp-Source: ABdhPJzDl8C9Z7q03u+hEUQKs8tiSWla+HXZPH0qQl8tPWCwQbOln0XKy/CyZn4mKZsmBgAlIoRXmjbg2FbC7cY2cxWoNhQ2Q6L8
+        id S1725911AbgJDJkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 05:40:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56512 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725898AbgJDJkH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 05:40:07 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A821C0613CE
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 02:40:07 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kP0Ul-0001Fe-Kf; Sun, 04 Oct 2020 11:39:55 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:fc36:ae63:3b35:518b] (unknown [IPv6:2a03:f580:87bc:d400:fc36:ae63:3b35:518b])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 5BD73571CE4;
+        Sun,  4 Oct 2020 09:39:50 +0000 (UTC)
+Subject: Re: [PATCH] can: raw: add missing error queue support
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20200926162527.270030-1-mailhol.vincent@wanadoo.fr>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <24898bf1-ee74-0281-bbaa-b8f922904ba9@pengutronix.de>
+Date:   Sun, 4 Oct 2020 11:39:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:b503:: with SMTP id f3mr7725977ile.23.1601801302683;
- Sun, 04 Oct 2020 01:48:22 -0700 (PDT)
-Date:   Sun, 04 Oct 2020 01:48:22 -0700
-In-Reply-To: <000000000000b3d57105b05ab856@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a5b86105b0d46d59@google.com>
-Subject: Re: BUG: unable to handle kernel paging request in tcf_action_dump_terse
-From:   syzbot <syzbot+5f66662adc70969940fd@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200926162527.270030-1-mailhol.vincent@wanadoo.fr>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="NytdA2Vhe6n4H7JCuwiJ2awZHBBvdxmyl"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--NytdA2Vhe6n4H7JCuwiJ2awZHBBvdxmyl
+Content-Type: multipart/mixed; boundary="MKPxESVFhiWd9OBqRUde7t5SIb9geUOLh";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Vincent Mailhol <mailhol.vincent@wanadoo.fr>, linux-can@vger.kernel.org
+Cc: Oliver Hartkopp <socketcan@hartkopp.net>,
+ "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+ linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Message-ID: <24898bf1-ee74-0281-bbaa-b8f922904ba9@pengutronix.de>
+Subject: Re: [PATCH] can: raw: add missing error queue support
+References: <20200926162527.270030-1-mailhol.vincent@wanadoo.fr>
+In-Reply-To: <20200926162527.270030-1-mailhol.vincent@wanadoo.fr>
 
-HEAD commit:    2172e358 Add linux-next specific files for 20201002
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12ba75ff900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=70698f530a7e856f
-dashboard link: https://syzkaller.appspot.com/bug?extid=5f66662adc70969940fd
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=142fd4af900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16ffcdeb900000
+--MKPxESVFhiWd9OBqRUde7t5SIb9geUOLh
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5f66662adc70969940fd@syzkaller.appspotmail.com
+On 9/26/20 6:24 PM, Vincent Mailhol wrote:
+> Error queue are not yet implemented in CAN-raw sockets.
+>=20
+> The problem: a userland call to recvmsg(soc, msg, MSG_ERRQUEUE) on a
+> CAN-raw socket would unqueue messages from the normal queue without
+> any kind of error or warning. As such, it prevented CAN drivers from
+> using the functionalities that relies on the error queue such as
+> skb_tx_timestamp().
+>=20
+> SCM_CAN_RAW_ERRQUEUE is defined as the type for the CAN raw error
+> queue. SCM stands for "Socket control messages". The name is inspired
+> from SCM_J1939_ERRQUEUE of include/uapi/linux/can/j1939.h.
+>=20
+> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-BUG: unable to handle page fault for address: fffffffffffffff0
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD a291067 P4D a291067 PUD a293067 PMD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 8162 Comm: syz-executor344 Not tainted 5.9.0-rc7-next-20201002-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:tcf_action_dump_terse+0x8c/0x4e0 net/sched/act_api.c:759
-Code: 3c 03 0f 8e 0a 03 00 00 48 89 da 44 8b ad b8 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 10 04 00 00 <48> 8b 03 4c 8d 60 10 4c 89 e7 e8 55 5b 58 fd 4c 89 e1 be 01 00 00
-RSP: 0018:ffffc90009bff178 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: fffffffffffffff0 RCX: 0000000000000000
-RDX: 1ffffffffffffffe RSI: ffffffff867eb859 RDI: ffff888097102eb8
-RBP: ffff888097102e00 R08: 0000000000000000 R09: ffff88809ea92024
-R10: 0000000000000000 R11: 0000000000000000 R12: fffffffffffffff0
-R13: 0000000000000024 R14: ffff88809ea92000 R15: ffff888097102ec0
-FS:  00007f6bfe65f700(0000) GS:ffff8880ae500000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffffffffffffff0 CR3: 0000000096ec4000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- tcf_action_dump_1+0xd2/0x5a0 net/sched/act_api.c:788
- tcf_dump_walker net/sched/act_api.c:249 [inline]
- tcf_generic_walker+0x207/0xba0 net/sched/act_api.c:343
- tc_dump_action+0x6d5/0xe60 net/sched/act_api.c:1610
- netlink_dump+0x4df/0xba0 net/netlink/af_netlink.c:2268
- __netlink_dump_start+0x643/0x900 net/netlink/af_netlink.c:2373
- netlink_dump_start include/linux/netlink.h:246 [inline]
- rtnetlink_rcv_msg+0x70f/0xad0 net/core/rtnetlink.c:5526
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2489
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x331/0x810 net/socket.c:2362
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2416
- __sys_sendmmsg+0x196/0x4b0 net/socket.c:2506
- __do_sys_sendmmsg net/socket.c:2535 [inline]
- __se_sys_sendmmsg net/socket.c:2532 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2532
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x44a569
-Code: e8 8c e7 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 5b 05 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f6bfe65ed98 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 00000000006dfc48 RCX: 000000000044a569
-RDX: 010efe10675dec16 RSI: 0000000020000200 RDI: 0000000000000003
-RBP: 00000000006dfc40 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006dfc4c
-R13: 0000000000000005 R14: 00a3a20740000000 R15: 0507002400000038
-Modules linked in:
-CR2: fffffffffffffff0
----[ end trace c7fd3dfeaf54c122 ]---
-RIP: 0010:tcf_action_dump_terse+0x8c/0x4e0 net/sched/act_api.c:759
-Code: 3c 03 0f 8e 0a 03 00 00 48 89 da 44 8b ad b8 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 10 04 00 00 <48> 8b 03 4c 8d 60 10 4c 89 e7 e8 55 5b 58 fd 4c 89 e1 be 01 00 00
-RSP: 0018:ffffc90009bff178 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: fffffffffffffff0 RCX: 0000000000000000
-RDX: 1ffffffffffffffe RSI: ffffffff867eb859 RDI: ffff888097102eb8
-RBP: ffff888097102e00 R08: 0000000000000000 R09: ffff88809ea92024
-R10: 0000000000000000 R11: 0000000000000000 R12: fffffffffffffff0
-R13: 0000000000000024 R14: ffff88809ea92000 R15: ffff888097102ec0
-FS:  00007f6bfe65f700(0000) GS:ffff8880ae500000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffffffffffffff0 CR3: 0000000096ec4000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Applied to linux-can-next.
 
+Tnx,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--MKPxESVFhiWd9OBqRUde7t5SIb9geUOLh--
+
+--NytdA2Vhe6n4H7JCuwiJ2awZHBBvdxmyl
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl95mGEACgkQqclaivrt
+76lHzAf/U1AMVpqPo2/7h0C6Z9tjhMWamG4gOYpgTMv0LyMGWwBOAEjvAx5ucsay
+Gydum6PjbqOM8M5D/ZxRSk0+3gOcsb+ptgjnceu4s6Kf2bW4REsyuEAw+dwzN1Mg
+4oe/bLMismeN7QywrF44DgDROsCLpHgEChKDviINYxZcQ9bi5sCb/PVdFC/OFXbQ
+5fjcVnB/t9t0GFUA6ODbnC1ikh2tlqFZaXNe75s6XdjSHN0qjqmWSybZbBBwWT22
+kujcZvSeCRKP2OLHGFIKQV0ITqByaoCJCooPYYHEUiA2R1sZ6I0amBCBH9zzU503
+E6Q9ifsNztyf8LQtzmbnB2caDHoyfQ==
+=fHaC
+-----END PGP SIGNATURE-----
+
+--NytdA2Vhe6n4H7JCuwiJ2awZHBBvdxmyl--
