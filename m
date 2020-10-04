@@ -2,219 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 799C7282D3C
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 944AA282D39
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbgJDTXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 15:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60832 "EHLO
+        id S1726821AbgJDTXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 15:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726294AbgJDTXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:33 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640A7C0613D0
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:33 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id t14so4334255pgl.10
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:33 -0700 (PDT)
+        with ESMTP id S1726623AbgJDTXe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:34 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0939C0613E7
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:34 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id p21so4201212pju.0
+        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=HUmvziSH10+NSBA4K69lu3ErQwLVzy6PHh7gve51sqI=;
-        b=KIimXRHEAbj/dCXmHsHKEvtmtYvHmXnE/N0mVDd4x2gQHPo397byeSf45Zpni/VLm+
-         jt2RCrjunk0peWE6eA4JfcKR8JLe8HKOA8ZEQoVUAFZrpheIyTXUIUpZNYXDfgIS9KMF
-         j/gXoepD+nYXHsSG9M54ptEqbmhQ5tkAhkkGY=
+        bh=bz1ObFGroPNJPOkFzm3prgC3DgC9aWseEOSrrX81+CY=;
+        b=VpbcE42Td1DIq4HH38b2bqcCFchip1YFaOaP6M1JRtLAPLztZBuTzR9aIB+SR0gv6n
+         8B4RqSDRGyWl2bBfmalaPPV8s6zDJvOG3vt/in+vPtAt8nL0pmQ5cbAK1MmzG2e4rYFh
+         LQ7Vb5R+KkVxlU8npMPY2ePPnS3kG96Z/Deak=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=HUmvziSH10+NSBA4K69lu3ErQwLVzy6PHh7gve51sqI=;
-        b=Kjlz7ueSo2PFI2J3dQpHzXOsnN/CjZf13LrjxpjoPNGcHi4/I4pofBmq08ZUjVi3UB
-         ePr0DNPCJc0C8gMWr9wInLXWhkOoUJUhb0cuqH9HawIPNg+ZzkBQ/Sive1QOCy0IQt+Z
-         v9k6woXefT6cA5Gov3STK63gEUJ/BminVSsaY/ulT8YI7N0CRnPH4mpgO1XTtGxhnQY3
-         gncALPiLXKPfXKcqITo1bf9hU3XowOfGG4io/Rg6FXL710CSswHMMCSsvRDKTqNFrE4/
-         ywYKLmv6+HftBIYzJdq63QBawXT9H63R9xWkmHo5/6y1MCh2YX82YBObXZcaVrwu8wP5
-         xpeQ==
-X-Gm-Message-State: AOAM533HU98Y78s4atcobPJbab+sAozhjp9HSHh1shnUJskI7p+qyJeC
-        uLykyjUBqu3YqngaF2MQ48u2jVtV+/0mHQ==
-X-Google-Smtp-Source: ABdhPJz1YI5f39B5TnYL42MQk3dvCLx0fH0U7Fm8x0IxkFBWPHTCBaadK74ISWyU5bRVeAGyEGZ65w==
-X-Received: by 2002:a65:6086:: with SMTP id t6mr11077390pgu.146.1601839412622;
-        Sun, 04 Oct 2020 12:23:32 -0700 (PDT)
+        bh=bz1ObFGroPNJPOkFzm3prgC3DgC9aWseEOSrrX81+CY=;
+        b=ugeb6Sh+cTj2AcTctbidpeobruGb3FZ2njtVgrw8xqLjptr8tPW67F4VrPI4QjadmN
+         54u1f3iRmcZY/zZ63Gk5phPyjeQJ8Cn2Cb6E0SAzQY4mRasSdl9shE5z7cTDxSht/ie5
+         RatMQoaLHsy7QrPNsCL24tXF3q95wXdKk4P38sqQcUb/LbgHnay63xymEAZfYClyFYl8
+         Bz+ownVfqCMrGy2IMbPbD9ENsHJrsnStfvTHxIjiux7FKvqQe1rDiHNMja7W7koVWv0R
+         mNaBTLweZ5U7R0NmCIDAeJS0qot/kKI+vzrFPMdAPc0VHmNsXd69FUjL9H2w3w9ZD40w
+         5H3A==
+X-Gm-Message-State: AOAM532f45nkS1azmsddVEivQP+pfyLoe3WH6tE5eb6gw3nN6bVB5Ewi
+        YahDRB/7LzXmvOEuxnl6FWncoQ==
+X-Google-Smtp-Source: ABdhPJxAXWvtb7XsYpaCVUyVpOjOGR9V/jm0Ow6PnmnEr1ESkrgxFR4QCI8iY9XklnXuGYkF5KQjqw==
+X-Received: by 2002:a17:90a:ead1:: with SMTP id ev17mr3387446pjb.36.1601839414095;
+        Sun, 04 Oct 2020 12:23:34 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.31
+        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.32
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 04 Oct 2020 12:23:31 -0700 (PDT)
+        Sun, 04 Oct 2020 12:23:33 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        Edwin Peer <edwin.peer@broadcom.com>
-Subject: [PATCH net-next 08/11] bnxt_en: Implement RX ring reset in response to buffer errors.
-Date:   Sun,  4 Oct 2020 15:22:58 -0400
-Message-Id: <1601839381-10446-9-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Subject: [PATCH net-next 09/11] bnxt_en: Add a software counter for RX ring reset.
+Date:   Sun,  4 Oct 2020 15:22:59 -0400
+Message-Id: <1601839381-10446-10-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 References: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000003611d305b0dd4d45"
+        boundary="00000000000049e36705b0dd4d7f"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000003611d305b0dd4d45
+--00000000000049e36705b0dd4d7f
 
-On some older chips, it is necessary to do a reset when we get buffer
-errors associated with an RX ring.  These buffer errors may become
-frequent if the RX ring underruns under heavy traffic.  The current
-code does a global reset of all reasources when this happens.  This
-works but creates a big disruption of all rings when one RX ring is
-having problem.  This patch implements a localized RX ring reset of
-just the RX ring having the issue.  All other rings including all
-TX rings will not be affected by this single RX ring reset.
+Add a per ring rx_resets counter to count these RX resets.
 
-Only the older chips prior to the P5 class supports this reset.
-Because it is not a global reset, packets may still be arriving
-while we are calling firmware to reset that ring.  We need to be
-sure that we don't post any buffers during this time while the
-ring is undergoing reset.  After firmware completes successfully,
-the ring will be in the reset state with no buffers and we can start
-filling it with new buffers and posting them.
-
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 79 +++++++++++++++++++++--
- 1 file changed, 75 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 14 ++++++++++----
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  1 +
+ 3 files changed, 12 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index ef0267060a46..31877fb4ddd9 100644
+index 31877fb4ddd9..084588436b66 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -1172,7 +1172,10 @@ static void bnxt_sched_reset(struct bnxt *bp, struct bnxt_rx_ring_info *rxr)
- {
- 	if (!rxr->bnapi->in_reset) {
- 		rxr->bnapi->in_reset = true;
--		set_bit(BNXT_RESET_TASK_SP_EVENT, &bp->sp_event);
-+		if (bp->flags & BNXT_FLAG_CHIP_P5)
-+			set_bit(BNXT_RESET_TASK_SP_EVENT, &bp->sp_event);
-+		else
-+			set_bit(BNXT_RST_RING_SP_EVENT, &bp->sp_event);
- 		bnxt_queue_sp_work(bp);
- 	}
- 	rxr->rx_next_cons = 0xffff;
-@@ -1773,8 +1776,8 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
- 		if (rx_err & RX_CMPL_ERRORS_BUFFER_ERROR_MASK) {
- 			bnapi->cp_ring.sw_stats.rx.rx_buf_errors++;
- 			if (!(bp->flags & BNXT_FLAG_CHIP_P5)) {
--				netdev_warn(bp->dev, "RX buffer error %x\n",
--					    rx_err);
-+				netdev_warn_once(bp->dev, "RX buffer error %x\n",
-+						 rx_err);
- 				bnxt_sched_reset(bp, rxr);
- 			}
- 		}
-@@ -2250,7 +2253,7 @@ static void __bnxt_poll_work_done(struct bnxt *bp, struct bnxt_napi *bnapi)
- 		bnapi->tx_pkts = 0;
- 	}
+@@ -8770,14 +8770,19 @@ static void bnxt_enable_napi(struct bnxt *bp)
+ 	int i;
  
--	if (bnapi->events & BNXT_RX_EVENT) {
-+	if ((bnapi->events & BNXT_RX_EVENT) && !(bnapi->in_reset)) {
- 		struct bnxt_rx_ring_info *rxr = bnapi->rx_ring;
- 
- 		if (bnapi->events & BNXT_AGG_EVENT)
-@@ -10510,6 +10513,23 @@ static void bnxt_dbg_dump_states(struct bnxt *bp)
- 	}
- }
- 
-+static int bnxt_hwrm_rx_ring_reset(struct bnxt *bp, int ring_nr)
-+{
-+	struct bnxt_rx_ring_info *rxr = &bp->rx_ring[ring_nr];
-+	struct hwrm_ring_reset_input req = {0};
-+	struct bnxt_napi *bnapi = rxr->bnapi;
-+	struct bnxt_cp_ring_info *cpr;
-+	u16 cp_ring_id;
-+
-+	cpr = &bnapi->cp_ring;
-+	cp_ring_id = cpr->cp_ring_struct.fw_ring_id;
-+	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_RING_RESET, cp_ring_id, -1);
-+	req.ring_type = RING_RESET_REQ_RING_TYPE_RX_RING_GRP;
-+	req.ring_id = cpu_to_le16(bp->grp_info[bnapi->index].fw_grp_id);
-+	return hwrm_send_message_silent(bp, &req, sizeof(req),
-+					HWRM_CMD_TIMEOUT);
-+}
-+
- static void bnxt_reset_task(struct bnxt *bp, bool silent)
- {
- 	if (!silent)
-@@ -10645,6 +10665,54 @@ static void bnxt_reset(struct bnxt *bp, bool silent)
- 	bnxt_rtnl_unlock_sp(bp);
- }
- 
-+/* Only called from bnxt_sp_task() */
-+static void bnxt_rx_ring_reset(struct bnxt *bp)
-+{
-+	int i;
-+
-+	bnxt_rtnl_lock_sp(bp);
-+	if (!test_bit(BNXT_STATE_OPEN, &bp->state)) {
-+		bnxt_rtnl_unlock_sp(bp);
-+		return;
-+	}
-+	/* Disable and flush TPA before resetting the RX ring */
-+	if (bp->flags & BNXT_FLAG_TPA)
-+		bnxt_set_tpa(bp, false);
-+	for (i = 0; i < bp->rx_nr_rings; i++) {
-+		struct bnxt_rx_ring_info *rxr = &bp->rx_ring[i];
+ 	for (i = 0; i < bp->cp_nr_rings; i++) {
+-		struct bnxt_cp_ring_info *cpr = &bp->bnapi[i]->cp_ring;
+-		bp->bnapi[i]->in_reset = false;
++		struct bnxt_napi *bnapi = bp->bnapi[i];
 +		struct bnxt_cp_ring_info *cpr;
-+		int rc;
 +
-+		if (!rxr->bnapi->in_reset)
-+			continue;
-+
-+		rc = bnxt_hwrm_rx_ring_reset(bp, i);
-+		if (rc) {
-+			if (rc == -EINVAL || rc == -EOPNOTSUPP)
-+				netdev_info_once(bp->dev, "RX ring reset not supported by firmware, falling back to global reset\n");
-+			else
-+				netdev_warn(bp->dev, "RX ring reset failed, rc = %d, falling back to global reset\n",
-+					    rc);
-+			bnxt_reset_task(bp, false);
-+			break;
-+		}
-+		bnxt_free_one_rx_ring_skbs(bp, i);
-+		rxr->rx_prod = 0;
-+		rxr->rx_agg_prod = 0;
-+		rxr->rx_sw_agg_prod = 0;
-+		rxr->rx_next_cons = 0;
-+		rxr->bnapi->in_reset = false;
-+		bnxt_alloc_one_rx_ring(bp, i);
-+		cpr = &rxr->bnapi->cp_ring;
-+		if (bp->flags & BNXT_FLAG_AGG_RINGS)
-+			bnxt_db_write(bp, &rxr->rx_agg_db, rxr->rx_agg_prod);
-+		bnxt_db_write(bp, &rxr->rx_db, rxr->rx_prod);
-+	}
-+	if (bp->flags & BNXT_FLAG_TPA)
-+		bnxt_set_tpa(bp, true);
-+	bnxt_rtnl_unlock_sp(bp);
-+}
-+
- static void bnxt_fw_reset_close(struct bnxt *bp)
- {
- 	bnxt_ulp_stop(bp);
-@@ -10933,6 +11001,9 @@ static void bnxt_sp_task(struct work_struct *work)
- 	if (test_and_clear_bit(BNXT_RESET_TASK_SILENT_SP_EVENT, &bp->sp_event))
- 		bnxt_reset(bp, true);
++		cpr = &bnapi->cp_ring;
++		if (bnapi->in_reset)
++			cpr->sw_stats.rx.rx_resets++;
++		bnapi->in_reset = false;
  
-+	if (test_and_clear_bit(BNXT_RST_RING_SP_EVENT, &bp->sp_event))
-+		bnxt_rx_ring_reset(bp);
-+
- 	if (test_and_clear_bit(BNXT_FW_RESET_NOTIFY_SP_EVENT, &bp->sp_event))
- 		bnxt_devlink_health_report(bp, BNXT_FW_RESET_NOTIFY_SP_EVENT);
+-		if (bp->bnapi[i]->rx_ring) {
++		if (bnapi->rx_ring) {
+ 			INIT_WORK(&cpr->dim.work, bnxt_dim_work);
+ 			cpr->dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
+ 		}
+-		napi_enable(&bp->bnapi[i]->napi);
++		napi_enable(&bnapi->napi);
+ 	}
+ }
+ 
+@@ -10704,6 +10709,7 @@ static void bnxt_rx_ring_reset(struct bnxt *bp)
+ 		rxr->bnapi->in_reset = false;
+ 		bnxt_alloc_one_rx_ring(bp, i);
+ 		cpr = &rxr->bnapi->cp_ring;
++		cpr->sw_stats.rx.rx_resets++;
+ 		if (bp->flags & BNXT_FLAG_AGG_RINGS)
+ 			bnxt_db_write(bp, &rxr->rx_agg_db, rxr->rx_agg_prod);
+ 		bnxt_db_write(bp, &rxr->rx_db, rxr->rx_prod);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index e940a242d958..7d0e6022dc19 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -907,6 +907,7 @@ struct bnxt_rx_ring_info {
+ 
+ struct bnxt_rx_sw_stats {
+ 	u64			rx_l4_csum_errors;
++	u64			rx_resets;
+ 	u64			rx_buf_errors;
+ };
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 19b8e3e822f1..52b4ea6ef8c9 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -178,6 +178,7 @@ static const char * const bnxt_ring_tpa2_stats_str[] = {
+ 
+ static const char * const bnxt_rx_sw_stats_str[] = {
+ 	"rx_l4_csum_errors",
++	"rx_resets",
+ 	"rx_buf_errors",
+ };
  
 -- 
 2.18.1
 
 
---0000000000003611d305b0dd4d45
+--00000000000049e36705b0dd4d7f
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -284,14 +203,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgdMqUSZUcvwGV
-FPNMzA+F40rDjtbYsGmiOdl9Tpe35q4wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDA0MTkyMzMzWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgS4amf2kmqOk5
+mDdVcO9t7SDUCb1IiGkNe2w7q242Xe4wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDA0MTkyMzM0WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAHzIocW6qeYCYNJGoPh1GGfNcQ1YMXgt
-vDyRf8emqBXhi2Jiy2OUiy0ASQUEQuQblq3LxVYN8YWLWhY9X+bBMn1e8hphma88+vyejUJhAZQU
-3Th47zem335OqZBc6PwL/kECPigIuKKgl/fp+5Sg3/q5UCygPjuJBazcKizzW63x9Ga6cE9/tjfl
-zn68ji7Q/xveV0+R2YQ4bYyNSYtCKWazyEFXBhnG5bGW59WgH3yW7yi+PW5rrOH7vWh3sr1fL/GW
-GUXsQLmo/ZGtMEQwB/rPw3mFpT69HZHrSKmPu8RJT3PqpgaBUKJKntGwCMDA00lXl9n7MJ6AxOsw
-mhUeTjU=
---0000000000003611d305b0dd4d45--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBADo/SbJsRsh1SfflBsa5iXWiLVO5IfWq
+zAM1LA5RDOYX49iK0CVzFuDh6ieIS5cDZV320knjAXUkFT4Le2576vlnuQdUXLXoRhF+Mj3rnuMZ
+bV1KXA1u3ddzBeJTKJEdG9NaFUaMZpE13WrqKRUXtSDewCWLeEBXdxuuAG+p9uSOUa1ctBvxpjp7
+pEWa/JYrRWtmg3xDYONGYgkgdmR2Wpec2o/QsDryBeULX0Mlip1qFI5N8n9zVQ5SYQ6Kijkd5+FY
+aB61A+LRJB+p1w7eNj1h1Ug2CkxYYo52kRRLwlWZL48viF39UNd7AtUWFqeuB31PDEnPQmk1R7gv
+W4SVP9A=
+--00000000000049e36705b0dd4d7f--
