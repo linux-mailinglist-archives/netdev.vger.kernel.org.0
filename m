@@ -2,84 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E27A0282BBD
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 18:15:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE44282BCA
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 18:18:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726277AbgJDQPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 12:15:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48318 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726083AbgJDQPc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 4 Oct 2020 12:15:32 -0400
-Received: from localhost (unknown [171.61.67.142])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 61CEB2068D;
-        Sun,  4 Oct 2020 16:15:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601828131;
-        bh=ipIbwBDHbGx7U/nYVtWvwEV/y7/NQhikV5Ng+1S41wo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BkrFjq5pesVDCZqCgigvVGnAkYU3kAenXEVcy0C+EYf4QSa7nY/PHBghx8c3UJ+K0
-         V7wA5EiZjeOgOA1F0vSfPpr62TK79z4/hmO6HvTvKyMEs+fXYkKqMHx+Zl0SJ9Rz3x
-         kkipw8CWwDYt7zwpufpGFZLd9NoEY63vruFFDBV0=
-Date:   Sun, 4 Oct 2020 21:45:26 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-spi@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Another round of adding missing
- 'additionalProperties'
-Message-ID: <20201004161526.GA2968@vkoul-mobl>
-References: <20201002234143.3570746-1-robh@kernel.org>
+        id S1726086AbgJDQR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 12:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726077AbgJDQR6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 12:17:58 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59ABC0613CE
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 09:17:57 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id t7so4028317pjd.3
+        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 09:17:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1R8CfHN597AHGftGxjc9pIo4g5jqwhdv//9a2vnOg98=;
+        b=PaeYQNUhkg48m3VS7VEw+8HxOn8ztO6AH1Vj+LXckiiPlcR+hkN2LsBPV0zL1NztC8
+         EBtnDj+4ZoBxL+my6GS2prnamP504aU9LQWLbbyhLc+L9PFtL+/CUBNPfdJlJeTHPpUA
+         Am/nM65srs47rKicYZmbldnFT0rbaby6VuRI5YFT2MNeFlEdytFLkHhJEXBP1jNIn/Wv
+         nUIM5UQZUiDkqFK3/+/CVezoOMH/SiX5yUQuCpwxgI8dnzVu3RkwFdOUFgJ6GNRHHeFC
+         JK4eD8kkSzP19064RmJK5Y7grX5lgEB+okeiBD7xxM1x5QF3+1qbBkgtxgn0u5r+ZoDL
+         Ofeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1R8CfHN597AHGftGxjc9pIo4g5jqwhdv//9a2vnOg98=;
+        b=h3T/NekDq6SGXuAZihrcgTdLU4xzZcZ/hXRF/ydutk0rht871j/hZmbvbpF4r6ZO4j
+         /xwRbuVPg30mnHogQ3OSskcTHNdnCEqlN1pqDOKwzUVudf77piuVmecP3jdNomvfxSwC
+         raletFV4rimQL/q14jvWbGQ6jvFLSHs7zQVsb4K1x6QCDNt7tvBtQqtjSiu6C/Hn9P8h
+         /tH7qxp1x0DhtFRXWYupRdEbRDlKc3cbNo7ksSSZ76QB5jb3NwUcuKjHD3nMfppWYCRb
+         B95XgcJY15Zr55+LpRd7LSpcuf7wQ2rOlXi+xJVTYSiLO7ngBtrDFRTMzjQnN09YOpbA
+         7ctQ==
+X-Gm-Message-State: AOAM533VjjUsk9KAlUGZs/iBL2Q/+ZkUpMp1WY5uXegtKMue8nlbWyXj
+        MTkfc38CAtm5NkCNuHlR8oc=
+X-Google-Smtp-Source: ABdhPJwz2jSq+R39817qmWUFFkSeb8HvLMvUAYisiKaO6NhsZIh50rkyzOnzj3nli9nFCZQEK9rjVA==
+X-Received: by 2002:a17:90b:1b52:: with SMTP id nv18mr12920905pjb.149.1601828277185;
+        Sun, 04 Oct 2020 09:17:57 -0700 (PDT)
+Received: from [10.230.29.112] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id k28sm9295854pfh.196.2020.10.04.09.17.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 04 Oct 2020 09:17:56 -0700 (PDT)
+Subject: Re: [PATCH net-next v3 1/7] net: devlink: Add unused port flavour
+To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>
+References: <20201004161257.13945-1-andrew@lunn.ch>
+ <20201004161257.13945-2-andrew@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <cb6ab3a1-914f-545c-fc32-ae63602413f8@gmail.com>
+Date:   Sun, 4 Oct 2020 09:17:55 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201002234143.3570746-1-robh@kernel.org>
+In-Reply-To: <20201004161257.13945-2-andrew@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02-10-20, 18:41, Rob Herring wrote:
 
->  .../phy/amlogic,meson-g12a-usb2-phy.yaml      |  2 ++
->  .../bindings/phy/qcom,ipq806x-usb-phy-hs.yaml |  2 ++
->  .../bindings/phy/qcom,ipq806x-usb-phy-ss.yaml |  2 ++
->  .../bindings/phy/qcom,qusb2-phy.yaml          |  1 +
->  .../bindings/phy/qcom-usb-ipq4019-phy.yaml    |  2 ++
 
-For phy changes:
+On 10/4/2020 9:12 AM, Andrew Lunn wrote:
+> Not all ports of a switch need to be used, particularly in embedded
+> systems. Add a port flavour for ports which physically exist in the
+> switch, but are not connected to the front panel etc, and so are
+> unused. By having unused ports present in devlink, it gives a more
+> accurate representation of the hardware. It also allows regions to be
+> associated to such ports, so allowing, for example, to determine
+> unused ports are correctly powered off, or to compare probable reset
+> defaults of unused ports to used ports experiences issues.
+> 
+> Actually registering unused ports and setting the flavour to unused is
+> optional. The DSA core will register all such switch ports, but such
+> ports are expected to be limited in number. Bigger ASICs may decide
+> not to list unused ports.
+> 
+> v2:
+> Expand the description about why it is useful
+> 
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+> Tested-by: Vladimir Oltean <olteanv@gmail.com>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-Acked-By: Vinod Koul <vkoul@kernel.org>
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-~Vinod
+Florian
