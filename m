@@ -2,145 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC09D282D32
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0C8F282D33
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726610AbgJDTXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 15:23:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60796 "EHLO
+        id S1726442AbgJDTX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 15:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726294AbgJDTXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:24 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3C3C0613CE
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:24 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id a17so3464785pju.1
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:24 -0700 (PDT)
+        with ESMTP id S1726294AbgJDTXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:25 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73661C0613CE
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:25 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id a17so3464798pju.1
+        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=aMLNu/nqq1cuY+ylfybAvR9vg7fYMdc7FEdftqM9hKw=;
-        b=b2sk9A50wpqeCH91zeKqglPKardvQ9WiRVJH7kjI9iYDVC4gaXMzI204zfxvA3Ls2Y
-         3yF7+gECcDSqSp1ckdmAp9VjvUxkPU5GTRPHM2cDpRLFrZq0tnpgbS6uQ48s0DJv/aPe
-         PvaGW6Wso2c4GUlhhTr5BTBd8jwvjSQpjN8bk=
+        bh=FpoKpCTbdPLI9UR53Er1KFVnORcdcj7kwAsH/OEY/AA=;
+        b=SGyzc42JvbwWgnBpnveexJaFBbnhFu7rdF7q+4zv3VoZB/i8DWS8A0CaNlBfCoMK3P
+         ve3U2qC2UrwhpJjMLkWw+S45RQrpBtF8Czu0bLLftHaYkT5Y7k/BMfqs5T8zaz8+9sHL
+         Q7F3YZuclmAoPHREfv7H1G6fGIC4NGVKtS4i8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=aMLNu/nqq1cuY+ylfybAvR9vg7fYMdc7FEdftqM9hKw=;
-        b=OgIYN83q0A40q7rgDk8uV5nJN8M9R57yRmEZnkY6kf1H2hcObXna3IEA0FAAYCz2p5
-         xhiviqdwaUVMI1n2Aq/Bdw9Fz3zaVg+GpmgHdMY9Lbv9WoHl5sb6/5K4ZxfqKVkdp23f
-         0M2NxMNDVvRPhX+hQLSOS/7DfbhGAR/JtqXa8H5h/OEN7xjZTpK2fvkONiz83ojwpkdE
-         h2PCZp30WMKnzg1mRHVRJDjVWxFn1fPd/axqQQ1Oqx9xH134EeDC+CqUjKMv+gv7/Eio
-         v2YNUeE1836vU/NW59AQa9YFtXC7J2bmsxdp1B/uvNgYxFv7nNO3DigtwmwnqNfpGPkF
-         B3wQ==
-X-Gm-Message-State: AOAM531WwqFrhKBlXQFsNXkF7E1Er3418xdDg32b/nU1uSe8REBykE8+
-        TS17BnxlAMP2ddm+jHXoMDeRMQ==
-X-Google-Smtp-Source: ABdhPJyhMhGdUDw6Il3xM2WBb9hqZTLU+ueDpSKuOsRiYIZSHe2Epomo056+ZO+KgB6hJV04omv5pw==
-X-Received: by 2002:a17:90a:67cb:: with SMTP id g11mr13081672pjm.56.1601839403548;
-        Sun, 04 Oct 2020 12:23:23 -0700 (PDT)
+        bh=FpoKpCTbdPLI9UR53Er1KFVnORcdcj7kwAsH/OEY/AA=;
+        b=WEbUAFWNVQ88LkKaq6hZ+015+/2NWb5o6WzVGahFjHNCcia2W9lSb968Fat9jIKble
+         LPsvhalmONvL3KYqi15ZbpO6U1SEfQgJx04yetvce7IKzfCZ7iqOJ/ViRiotkf8vBnjB
+         fRGowkgtiYFkLA1QaL+o8Y3okxrwUJmTCWLb6gPxQPR+GHpHEFSQmxdBck0e++jnhqpi
+         bcjH7mYpvqnhp6Cu9QydPnPRIe7cCrB4JRBiPYesMuNmsNCaCto8JC2DF8lRfBIHOQ/K
+         sCHRZHumVy44CBqOf8m7/+AJJwAuHhD2wxaBX3IMJyog0zPhsmyyXLZe3tj1gN9hY4nN
+         ojzw==
+X-Gm-Message-State: AOAM5325SnrZQANL+6pjJG5F/pDEynL+mnFVwZNa1IZMVTJqNN1x3m4w
+        bEhBO6cWP7Pz+3RjCrUbKv2KYw==
+X-Google-Smtp-Source: ABdhPJzDSpxsRKV2/n3S/DDcgMccbXCB3wkuIhmm4M7lzwerEcByTPrKp3a6n++2PDFReVvzztUL3A==
+X-Received: by 2002:a17:90a:7bcf:: with SMTP id d15mr12916988pjl.230.1601839404841;
+        Sun, 04 Oct 2020 12:23:24 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.22
+        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.23
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 04 Oct 2020 12:23:22 -0700 (PDT)
+        Sun, 04 Oct 2020 12:23:24 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net-next 01/11] bnxt_en: Update firmware interface spec to 1.10.1.68.
-Date:   Sun,  4 Oct 2020 15:22:51 -0400
-Message-Id: <1601839381-10446-2-git-send-email-michael.chan@broadcom.com>
+        Edwin Peer <edwin.peer@broadcom.com>
+Subject: [PATCH net-next 02/11] bnxt_en: refactor bnxt_alloc_fw_health()
+Date:   Sun,  4 Oct 2020 15:22:52 -0400
+Message-Id: <1601839381-10446-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 References: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a884d705b0dd4cee"
+        boundary="000000000000bc3dd005b0dd4c80"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000a884d705b0dd4cee
+--000000000000bc3dd005b0dd4c80
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-Main changes is to extend hwrm_nvm_get_dev_info_output() for stored
-firmware versions and a new flag is added to fw_status_reg.
+The allocator for the firmware health structure conflates allocation
+and capability checks, limiting the reusability of the code. This patch
+separates out the capability check and disablement and improves the
+warning message to better describe the consequences of an allocation
+failure.
 
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h | 24 ++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 60 ++++++++++++++---------
+ 1 file changed, 38 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
-index 303713aa03b0..2d3e962bdac3 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h
-@@ -373,6 +373,7 @@ struct cmd_nums {
- 	#define HWRM_TF_SESSION_RESC_FLUSH                0x2cfUL
- 	#define HWRM_TF_TBL_TYPE_GET                      0x2daUL
- 	#define HWRM_TF_TBL_TYPE_SET                      0x2dbUL
-+	#define HWRM_TF_TBL_TYPE_BULK_GET                 0x2dcUL
- 	#define HWRM_TF_CTXT_MEM_ALLOC                    0x2e2UL
- 	#define HWRM_TF_CTXT_MEM_FREE                     0x2e3UL
- 	#define HWRM_TF_CTXT_MEM_RGTR                     0x2e4UL
-@@ -486,8 +487,8 @@ struct hwrm_err_output {
- #define HWRM_VERSION_MAJOR 1
- #define HWRM_VERSION_MINOR 10
- #define HWRM_VERSION_UPDATE 1
--#define HWRM_VERSION_RSVD 65
--#define HWRM_VERSION_STR "1.10.1.65"
-+#define HWRM_VERSION_RSVD 68
-+#define HWRM_VERSION_STR "1.10.1.68"
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 38bbd7631fca..cf730ec92a0f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -7336,6 +7336,36 @@ static int bnxt_hwrm_cfa_adv_flow_mgnt_qcaps(struct bnxt *bp)
+ 	return rc;
+ }
  
- /* hwrm_ver_get_input (size:192b/24B) */
- struct hwrm_ver_get_input {
-@@ -8272,7 +8273,7 @@ struct hwrm_nvm_get_dev_info_input {
- 	__le64	resp_addr;
- };
++static int __bnxt_alloc_fw_health(struct bnxt *bp)
++{
++	if (bp->fw_health)
++		return 0;
++
++	bp->fw_health = kzalloc(sizeof(*bp->fw_health), GFP_KERNEL);
++	if (!bp->fw_health)
++		return -ENOMEM;
++
++	return 0;
++}
++
++static int bnxt_alloc_fw_health(struct bnxt *bp)
++{
++	int rc;
++
++	if (!(bp->fw_cap & BNXT_FW_CAP_HOT_RESET) &&
++	    !(bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY))
++		return 0;
++
++	rc = __bnxt_alloc_fw_health(bp);
++	if (rc) {
++		bp->fw_cap &= ~BNXT_FW_CAP_HOT_RESET;
++		bp->fw_cap &= ~BNXT_FW_CAP_ERROR_RECOVERY;
++		return rc;
++	}
++
++	return 0;
++}
++
+ static int bnxt_map_fw_health_regs(struct bnxt *bp)
+ {
+ 	struct bnxt_fw_health *fw_health = bp->fw_health;
+@@ -10966,23 +10996,6 @@ static void bnxt_init_dflt_coal(struct bnxt *bp)
+ 	bp->stats_coal_ticks = BNXT_DEF_STATS_COAL_TICKS;
+ }
  
--/* hwrm_nvm_get_dev_info_output (size:256b/32B) */
-+/* hwrm_nvm_get_dev_info_output (size:640b/80B) */
- struct hwrm_nvm_get_dev_info_output {
- 	__le16	error_code;
- 	__le16	req_type;
-@@ -8287,6 +8288,22 @@ struct hwrm_nvm_get_dev_info_output {
- 	u8	nvm_cfg_ver_maj;
- 	u8	nvm_cfg_ver_min;
- 	u8	nvm_cfg_ver_upd;
-+	u8	flags;
-+	#define NVM_GET_DEV_INFO_RESP_FLAGS_FW_VER_VALID     0x1UL
-+	char	pkg_name[16];
-+	__le16	hwrm_fw_major;
-+	__le16	hwrm_fw_minor;
-+	__le16	hwrm_fw_build;
-+	__le16	hwrm_fw_patch;
-+	__le16	mgmt_fw_major;
-+	__le16	mgmt_fw_minor;
-+	__le16	mgmt_fw_build;
-+	__le16	mgmt_fw_patch;
-+	__le16	roce_fw_major;
-+	__le16	roce_fw_minor;
-+	__le16	roce_fw_build;
-+	__le16	roce_fw_patch;
-+	u8	unused_0[7];
- 	u8	valid;
- };
+-static void bnxt_alloc_fw_health(struct bnxt *bp)
+-{
+-	if (bp->fw_health)
+-		return;
+-
+-	if (!(bp->fw_cap & BNXT_FW_CAP_HOT_RESET) &&
+-	    !(bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY))
+-		return;
+-
+-	bp->fw_health = kzalloc(sizeof(*bp->fw_health), GFP_KERNEL);
+-	if (!bp->fw_health) {
+-		netdev_warn(bp->dev, "Failed to allocate fw_health\n");
+-		bp->fw_cap &= ~BNXT_FW_CAP_HOT_RESET;
+-		bp->fw_cap &= ~BNXT_FW_CAP_ERROR_RECOVERY;
+-	}
+-}
+-
+ static int bnxt_fw_init_one_p1(struct bnxt *bp)
+ {
+ 	int rc;
+@@ -11029,11 +11042,14 @@ static int bnxt_fw_init_one_p2(struct bnxt *bp)
+ 		netdev_warn(bp->dev, "hwrm query adv flow mgnt failure rc: %d\n",
+ 			    rc);
  
-@@ -8627,6 +8644,7 @@ struct fw_status_reg {
- 	#define FW_STATUS_REG_CRASHDUMP_ONGOING      0x40000UL
- 	#define FW_STATUS_REG_CRASHDUMP_COMPLETE     0x80000UL
- 	#define FW_STATUS_REG_SHUTDOWN               0x100000UL
-+	#define FW_STATUS_REG_CRASHED_NO_MASTER      0x200000UL
- };
+-	bnxt_alloc_fw_health(bp);
+-	rc = bnxt_hwrm_error_recovery_qcfg(bp);
+-	if (rc)
+-		netdev_warn(bp->dev, "hwrm query error recovery failure rc: %d\n",
+-			    rc);
++	if (bnxt_alloc_fw_health(bp)) {
++		netdev_warn(bp->dev, "no memory for firmware error recovery\n");
++	} else {
++		rc = bnxt_hwrm_error_recovery_qcfg(bp);
++		if (rc)
++			netdev_warn(bp->dev, "hwrm query error recovery failure rc: %d\n",
++				    rc);
++	}
  
- /* hcomm_status (size:64b/8B) */
+ 	rc = bnxt_hwrm_func_drv_rgtr(bp, NULL, 0, false);
+ 	if (rc)
 -- 
 2.18.1
 
 
---000000000000a884d705b0dd4cee
+--000000000000bc3dd005b0dd4c80
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -210,14 +234,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgI8sjhu9iTjQ3
-7Mhbx88f6T+6Jb1vYahwMkB6LzEcXTgwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDA0MTkyMzIzWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgMLBgWlzxkTLB
+ovuYJ82T4HALfyEgkzj5dIlKM3GDBi8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDA0MTkyMzI1WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAJz6ni9PslZJt+wtgTMlkjx+HuNK0HCo
-fWhxvXxRNnOEQfj7x4BDGyvYWjHnTntZVYp4BXuN8z0iRG3Dt/MLc1aKH0oTYx4uNKyKjNjeXixa
-o6t2OVZb2gLoN3+EEuMqZi0TrI7zb/E/rT6HKI4h/iwhJq9ecwrKoeT1inZfmpBHiR5UhaO3DtlV
-Keldl2cuJSUTA1bRRz87H8RvHOZhGiIoqJAb+JaCYjlmARCMMqxiRNgjovZBW8NTO8V/r2o01I0o
-fFwekU/fXVH8v2XZ3m8LrDdD0Xc6e7g0g95yZ3vpUqrY7eEN9cdvw+bmf+tPpjMTkPLcwN17w5WR
-WOVkJOY=
---000000000000a884d705b0dd4cee--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBADdy2cA2EdV69pBrIK6Nck1xnSrlIrg+
+wIzDkRBKsYwseUEcHNXBpE4QNKh/9ws/GCQevXTI2Vu6AER7AmRVLuAwV4dp6bz/sKXPUsxbf5pR
+MBMxkHcoygap+ViO0U/nCmGBaZIC1pXbWGQEehAWcxJlKJ0iNzfDqhevhOcrcGxAkaPS3+mlu2P/
+j/laja6CODUYDj62VK/RhbT6i/cmJ+Pi8fBDaEFoHEnt9gik9mdHo4mda/cXAaVQ8WuW1SVUlzPe
+iMIzaYuCz0eie0yjmlrBWUTGREb/udLe8Fm6M0zcL53M+/HvTjsKDoKZUoByk5U4aqPRDeDZHBwR
+w5VfteQ=
+--000000000000bc3dd005b0dd4c80--
