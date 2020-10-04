@@ -2,178 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75BAC282A7E
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 13:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C8E3282A82
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 13:56:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725832AbgJDLuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 07:50:09 -0400
-Received: from mx1.riseup.net ([198.252.153.129]:45464 "EHLO mx1.riseup.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725868AbgJDLuI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 4 Oct 2020 07:50:08 -0400
-Received: from capuchin.riseup.net (capuchin-pn.riseup.net [10.0.1.176])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "*.riseup.net", Issuer "Sectigo RSA Domain Validation Secure Server CA" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4C420l1k8LzFglC
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 04:43:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1601811783; bh=YrlohzmzD4V5j3ole0hunSvNv+kXbswNULom3/tnIOU=;
-        h=Date:From:To:Subject:From;
-        b=T9TBiCi4j2DCdReG90Dqm2kFzrD8hdyW/cnHJrrQ1N7opuUXr16THT6JH9pyqavpb
-         6yIv5jc07eMSrXwDcMXib7PVUYcUeUp0fOWCI7GC1Tgl2M/E/w/ytyP9CK9ksKq6V0
-         CkyNTfPAPB4OOVHZ7e+TGhHj9sF1BTqAgJToeexA=
-X-Riseup-User-ID: 141766903C10584FD1FB85AC31130CDDF902AD2952B29AC1F9BDEC12F562FBFB
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by capuchin.riseup.net (Postfix) with ESMTPSA id 4C420k1MT3z8tp9
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 04:43:01 -0700 (PDT)
-Date:   Sun, 4 Oct 2020 11:42:59 +0000
-From:   Samanta Navarro <ferivoz@riseup.net>
-To:     netdev@vger.kernel.org
-Subject: [PATCH] man: fix typos
-Message-ID: <20201004114259.nwnu3j4uuaryjvx4@localhost>
+        id S1726012AbgJDL4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 07:56:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbgJDL4x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 07:56:53 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C075AC0613CE;
+        Sun,  4 Oct 2020 04:56:52 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id j2so6532588wrx.7;
+        Sun, 04 Oct 2020 04:56:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Hm2u6dVzCEbaPEQN7US7z9QgRtqrnuoagqwI7dCPKCA=;
+        b=E7fWMRTl27Q5U4lZmChv32ZRURaC85tV6q0X+hdlcGln3AH1bo7C4bx/yL/nrsKKvJ
+         /2bhxSDxbuwLwffBioW/u5xFuEES0lylr7v+s8s06ZAcJOpiByXxmhh1GeGQw2EZT+MQ
+         mtrckWAwDepg3RagFWJY2SU6qfDNcQsjeFGeWhle16WWF6Fqs5jPyUuM2pPRdPFSc8B3
+         6lYSLQ6DAbqSiNoS3ZtWb2+zks7k+1WdjbBHBbZKKkkCnbhEsA3XPVr0uxYr/FWy6lRQ
+         /VwixTmmB7+13dOKRCmKKP1Wq5TCyHvUPUJZNZCcnaRTYG24TI+x1W9yz4t7znum8IzA
+         1QQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Hm2u6dVzCEbaPEQN7US7z9QgRtqrnuoagqwI7dCPKCA=;
+        b=jri4bRJy2lb53pq+qRMyDZQQQC/wkKWiV4g5O7ZgIUr1g9SJ6BBRU5uwnjgNlfrNdB
+         5gY5xZAQKzbhgS5NvXXEYT2anecKoiPCjEcRya558dzwRwL70s1Ai2TmyZOoKTlZ2vzu
+         K1lcgP+eh6liVa9LO2GlKV352Xj8KsSOGxtxoTdDys6DgUZ9k2u+FH37n5E2ayy2IHXp
+         PwO4VWWYoWQnzWkEdhwsFR1s12Xel9AePSxKhYgqIGNUD8WJInYT53YMZpuFK32gQrD/
+         J0Sook/p/ogabeOODAz0++GW7rDVf9kNJQKLCB6RMWkHYgZ8/64vHtGjkgp4H5VKU8mc
+         r5Mw==
+X-Gm-Message-State: AOAM5300bNCFaCZ6rF/8uOHhCJZG7atPRXPzVUaheVxn1nqG4cHmWa8y
+        MGPxgo6xoAb0LpzFhUI9SF8=
+X-Google-Smtp-Source: ABdhPJw0ZJr5Yr2iUoOp4r9rDAemr7gWikE36hqZ+XC7cnDlq2S48wOcf7QQelplI0RbNAf75O/c2Q==
+X-Received: by 2002:a5d:49d2:: with SMTP id t18mr11763077wrs.99.1601812611205;
+        Sun, 04 Oct 2020 04:56:51 -0700 (PDT)
+Received: from skbuf ([188.26.229.171])
+        by smtp.gmail.com with ESMTPSA id x6sm1255383wmb.17.2020.10.04.04.56.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Oct 2020 04:56:50 -0700 (PDT)
+Date:   Sun, 4 Oct 2020 14:56:49 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next v6 1/7] net: dsa: Add tag handling for
+ Hirschmann Hellcreek switches
+Message-ID: <20201004115649.i5w7r4djxwpnjx5w@skbuf>
+References: <20201004112911.25085-1-kurt@linutronix.de>
+ <20201004112911.25085-2-kurt@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20201004112911.25085-2-kurt@linutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
----
- man/man8/ip-link.8.in   | 14 +++++++-------
- man/man8/ip-neighbour.8 |  6 +++---
- man/man8/tc-actions.8   |  2 +-
- man/man8/tc-pie.8       |  4 ++--
- 4 files changed, 13 insertions(+), 13 deletions(-)
+On Sun, Oct 04, 2020 at 01:29:05PM +0200, Kurt Kanzenbach wrote:
+> The Hirschmann Hellcreek TSN switches have a special tagging protocol for frames
+> exchanged between the CPU port and the master interface. The format is a one
+> byte trailer indicating the destination or origin port.
+> 
+> It's quite similar to the Micrel KSZ tagging. That's why the implementation is
+> based on that code.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  include/net/dsa.h       |   2 +
+>  net/dsa/Kconfig         |   6 +++
+>  net/dsa/Makefile        |   1 +
+>  net/dsa/tag_hellcreek.c | 101 ++++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 110 insertions(+)
+>  create mode 100644 net/dsa/tag_hellcreek.c
+> 
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 8b0696e08cac..ee24476a1a4c 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -45,6 +45,7 @@ struct phylink_link_state;
+>  #define DSA_TAG_PROTO_OCELOT_VALUE		15
+>  #define DSA_TAG_PROTO_AR9331_VALUE		16
+>  #define DSA_TAG_PROTO_RTL4_A_VALUE		17
+> +#define DSA_TAG_PROTO_HELLCREEK_VALUE		18
+>  
+>  enum dsa_tag_protocol {
+>  	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
+> @@ -65,6 +66,7 @@ enum dsa_tag_protocol {
+>  	DSA_TAG_PROTO_OCELOT		= DSA_TAG_PROTO_OCELOT_VALUE,
+>  	DSA_TAG_PROTO_AR9331		= DSA_TAG_PROTO_AR9331_VALUE,
+>  	DSA_TAG_PROTO_RTL4_A		= DSA_TAG_PROTO_RTL4_A_VALUE,
+> +	DSA_TAG_PROTO_HELLCREEK		= DSA_TAG_PROTO_HELLCREEK_VALUE,
+>  };
+>  
+>  struct packet_type;
+> diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
+> index 1f9b9b11008c..d975614f7dd6 100644
+> --- a/net/dsa/Kconfig
+> +++ b/net/dsa/Kconfig
+> @@ -56,6 +56,12 @@ config NET_DSA_TAG_BRCM_PREPEND
+>  	  Broadcom switches which places the tag before the Ethernet header
+>  	  (prepended).
+>  
+> +config NET_DSA_TAG_HELLCREEK
+> +	tristate "Tag driver for Hirschmann Hellcreek TSN switches"
+> +	help
+> +	  Say Y or M if you want to enable support for tagging frames
+> +	  for the Hirschmann Hellcreek TSN switches.
+> +
+>  config NET_DSA_TAG_GSWIP
+>  	tristate "Tag driver for Lantiq / Intel GSWIP switches"
+>  	help
+> diff --git a/net/dsa/Makefile b/net/dsa/Makefile
+> index 4f47b2025ff5..e25d5457964a 100644
+> --- a/net/dsa/Makefile
+> +++ b/net/dsa/Makefile
+> @@ -10,6 +10,7 @@ obj-$(CONFIG_NET_DSA_TAG_BRCM_COMMON) += tag_brcm.o
+>  obj-$(CONFIG_NET_DSA_TAG_DSA) += tag_dsa.o
+>  obj-$(CONFIG_NET_DSA_TAG_EDSA) += tag_edsa.o
+>  obj-$(CONFIG_NET_DSA_TAG_GSWIP) += tag_gswip.o
+> +obj-$(CONFIG_NET_DSA_TAG_HELLCREEK) += tag_hellcreek.o
+>  obj-$(CONFIG_NET_DSA_TAG_KSZ) += tag_ksz.o
+>  obj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o
+>  obj-$(CONFIG_NET_DSA_TAG_LAN9303) += tag_lan9303.o
+> diff --git a/net/dsa/tag_hellcreek.c b/net/dsa/tag_hellcreek.c
+> new file mode 100644
+> index 000000000000..0895eda94bb5
+> --- /dev/null
+> +++ b/net/dsa/tag_hellcreek.c
+> @@ -0,0 +1,101 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/*
+> + * net/dsa/tag_hellcreek.c - Hirschmann Hellcreek switch tag format handling
+> + *
+> + * Copyright (C) 2019,2020 Linutronix GmbH
+> + * Author Kurt Kanzenbach <kurt@linutronix.de>
+> + *
+> + * Based on tag_ksz.c.
+> + */
+> +
+> +#include <linux/etherdevice.h>
+> +#include <linux/list.h>
+> +#include <linux/slab.h>
+> +#include <net/dsa.h>
+> +
+> +#include "dsa_priv.h"
+> +
+> +#define HELLCREEK_TAG_LEN	1
+> +
+> +static struct sk_buff *hellcreek_xmit(struct sk_buff *skb,
+> +				      struct net_device *dev)
+> +{
+> +	struct dsa_port *dp = dsa_slave_to_port(dev);
+> +	struct sk_buff *nskb;
+> +	int padlen;
+> +	u8 *tag;
+> +
+> +	padlen = (skb->len >= ETH_ZLEN) ? 0 : ETH_ZLEN - skb->len;
+> +
+> +	if (skb_tailroom(skb) >= padlen + HELLCREEK_TAG_LEN) {
+> +		/* Let dsa_slave_xmit() free skb */
+> +		if (__skb_put_padto(skb, skb->len + padlen, false))
+> +			return NULL;
+> +
+> +		nskb = skb;
+> +	} else {
+> +		nskb = alloc_skb(NET_IP_ALIGN + skb->len +
+> +				 padlen + HELLCREEK_TAG_LEN, GFP_ATOMIC);
+> +		if (!nskb)
+> +			return NULL;
+> +		skb_reserve(nskb, NET_IP_ALIGN);
+> +
+> +		skb_reset_mac_header(nskb);
+> +		skb_set_network_header(nskb,
+> +				       skb_network_header(skb) - skb->head);
+> +		skb_set_transport_header(nskb,
+> +					 skb_transport_header(skb) - skb->head);
+> +		skb_copy_and_csum_dev(skb, skb_put(nskb, skb->len));
+> +
+> +		/* Let skb_put_padto() free nskb, and let dsa_slave_xmit() free
+> +		 * skb
+> +		 */
+> +		if (skb_put_padto(nskb, nskb->len + padlen))
+> +			return NULL;
+> +
+> +		consume_skb(skb);
+> +	}
+> +
+> +	if (!nskb)
+> +		return NULL;
+> +
+> +	/* Tag encoding */
+> +	tag  = skb_put(nskb, HELLCREEK_TAG_LEN);
+> +	*tag = BIT(dp->index);
+> +
+> +	return nskb;
+> +}
+> +
+> +static struct sk_buff *hellcreek_rcv(struct sk_buff *skb,
+> +				     struct net_device *dev,
+> +				     struct packet_type *pt)
+> +{
+> +	/* Tag decoding */
+> +	u8 *tag = skb_tail_pointer(skb) - HELLCREEK_TAG_LEN;
+> +	unsigned int port = tag[0] & 0x03;
+> +
+> +	skb->dev = dsa_master_find_slave(dev, 0, port);
+> +	if (!skb->dev) {
+> +		netdev_warn(dev, "Failed to get source port: %d\n", port);
+> +		return NULL;
+> +	}
+> +
+> +	pskb_trim_rcsum(skb, skb->len - HELLCREEK_TAG_LEN);
+> +
+> +	skb->offload_fwd_mark = true;
+> +
+> +	return skb;
+> +}
+> +
+> +static const struct dsa_device_ops hellcreek_netdev_ops = {
+> +	.name	  = "hellcreek",
+> +	.proto	  = DSA_TAG_PROTO_HELLCREEK,
+> +	.xmit	  = hellcreek_xmit,
+> +	.rcv	  = hellcreek_rcv,
+> +	.overhead = HELLCREEK_TAG_LEN,
 
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index f451ecf..fbc45df 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -392,7 +392,7 @@ packet the new device should accept.
- .TP
- .BI gso_max_segs " SEGMENTS "
- specifies the recommended maximum number of a Generic Segment Offload
--segments the new device should accept.
-+segment the new device should accept.
- 
- .TP
- .BI index " IDX "
-@@ -441,7 +441,7 @@ the following additional arguments are supported:
- - either 802.1Q or 802.1ad.
- 
- .BI id " VLANID "
--- specifies the VLAN Identifer to use. Note that numbers with a leading " 0 " or " 0x " are interpreted as octal or hexadeimal, respectively.
-+- specifies the VLAN Identifier to use. Note that numbers with a leading " 0 " or " 0x " are interpreted as octal or hexadecimal, respectively.
- 
- .BR reorder_hdr " { " on " | " off " } "
- - specifies whether ethernet headers are reordered or not (default is
-@@ -572,7 +572,7 @@ the following additional arguments are supported:
- .in +8
- .sp
- .BI  id " VNI "
--- specifies the VXLAN Network Identifer (or VXLAN Segment
-+- specifies the VXLAN Network Identifier (or VXLAN Segment
- Identifier) to use.
- 
- .BI dev " PHYS_DEV"
-@@ -1237,7 +1237,7 @@ the following additional arguments are supported:
- .in +8
- .sp
- .BI  id " VNI "
--- specifies the Virtual Network Identifer to use.
-+- specifies the Virtual Network Identifier to use.
- 
- .sp
- .BI remote " IPADDR"
-@@ -2147,7 +2147,7 @@ loaded under
- .B xdpgeneric object "|" pinned
- then the kernel will use the generic XDP variant instead of the native one.
- .B xdpdrv
--has the opposite effect of requestsing that the automatic fallback to the
-+has the opposite effect of requesting that the automatic fallback to the
- generic XDP variant be disabled and in case driver is not XDP-capable error
- should be returned.
- .B xdpdrv
-@@ -2466,7 +2466,7 @@ specifies the master device which enslaves devices to show.
- .TP
- .BI vrf " NAME "
- .I NAME
--speficies the VRF which enslaves devices to show.
-+specifies the VRF which enslaves devices to show.
- 
- .TP
- .BI type " TYPE "
-@@ -2497,7 +2497,7 @@ specifies the device to display address-family statistics for.
- 
- .PP
- .I "TYPE"
--specifies which help of link type to dislpay.
-+specifies which help of link type to display.
- 
- .SS
- .I GROUP
-diff --git a/man/man8/ip-neighbour.8 b/man/man8/ip-neighbour.8
-index f71f18b..a27f9ef 100644
---- a/man/man8/ip-neighbour.8
-+++ b/man/man8/ip-neighbour.8
-@@ -85,11 +85,11 @@ the interface to which this neighbour is attached.
- 
- .TP
- .BI proxy
--indicates whether we are proxying for this neigbour entry
-+indicates whether we are proxying for this neighbour entry
- 
- .TP
- .BI router
--indicates whether neigbour is a router
-+indicates whether neighbour is a router
- 
- .TP
- .BI extern_learn
-@@ -244,7 +244,7 @@ lookup a neighbour entry to a destination given a device
- 
- .TP
- .BI proxy
--indicates whether we should lookup a proxy neigbour entry
-+indicates whether we should lookup a proxy neighbour entry
- 
- .TP
- .BI to " ADDRESS " (default)
-diff --git a/man/man8/tc-actions.8 b/man/man8/tc-actions.8
-index 6f1c201..80df577 100644
---- a/man/man8/tc-actions.8
-+++ b/man/man8/tc-actions.8
-@@ -253,7 +253,7 @@ should proceed after executing the action. Any of the following are valid:
- .RS
- .TP
- .B reclassify
--Restart the classifiction by jumping back to the first filter attached to
-+Restart the classification by jumping back to the first filter attached to
- the action's parent.
- .TP
- .B pipe
-diff --git a/man/man8/tc-pie.8 b/man/man8/tc-pie.8
-index 0db97d1..5a8c782 100644
---- a/man/man8/tc-pie.8
-+++ b/man/man8/tc-pie.8
-@@ -40,7 +40,7 @@ aims to control delay. The main design goals are
- PIE is designed to control delay effectively. First, an average dequeue rate is
- estimated based on the standing queue. The rate is used to calculate the current
- delay. Then, on a periodic basis, the delay is used to calculate the dropping
--probabilty. Finally, on arrival, a packet is dropped (or marked) based on this
-+probability. Finally, on arrival, a packet is dropped (or marked) based on this
- probability.
- 
- PIE makes adjustments to the probability based on the trend of the delay i.e.
-@@ -52,7 +52,7 @@ growth and are determined through control theoretic approaches. alpha determines
- the deviation between the current and target latency changes probability. beta exerts
- additional adjustments depending on the latency trend.
- 
--The drop probabilty is used to mark packets in ecn mode. However, as in RED,
-+The drop probability is used to mark packets in ecn mode. However, as in RED,
- beyond 10% packets are dropped based on this probability. The bytemode is used
- to drop packets proportional to the packet size.
- 
--- 
-2.28.0
+After the changes in "Generic adjustment for flow dissector in DSA":
+https://patchwork.ozlabs.org/project/netdev/list/?series=204347&state=*
+you might want to set ".tail_tag = true" (see patch 07/15), either now
+or later.
 
+Either way,
+
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
+> +};
+> +
+> +MODULE_LICENSE("Dual MIT/GPL");
+> +MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_HELLCREEK);
+> +
+> +module_dsa_tag_driver(hellcreek_netdev_ops);
+> -- 
+> 2.20.1
+> 
